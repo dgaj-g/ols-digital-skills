@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Mendeleev's Cards &middot; Chemistry &middot; OLS Digital Skills</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity">
+
+<header class="act-header">
+  <a class="back" href="../../">&larr; OLS Digital Skills</a>
+  <div class="act-titles">
+    <p class="eyebrow">Chemistry &middot; GCSE</p>
+    <h1>Mendeleev's Cards</h1>
+    <p class="lede">Drag each element into the grid to recreate the periodic table. Tap any card to see its full data.</p>
+  </div>
+  <div class="act-meta">
+    <span class="score-pill"><span id="placed-count">0</span>&nbsp;/&nbsp;22 placed</span>
+    <button id="reset-btn" type="button" class="ghost-btn">Reset</button>
+  </div>
+</header>
+
+<main class="act-main">
+
+  <!-- Periodic table grid (5 periods × 7 groups, Mendeleev short form) -->
+  <section class="grid-stage" aria-label="Periodic table grid">
+    <div class="group-labels" id="group-labels" aria-hidden="true">
+      <div class="group-label" data-group="1">I</div>
+      <div class="group-label" data-group="2">II</div>
+      <div class="group-label" data-group="3">III</div>
+      <div class="group-label" data-group="4">IV</div>
+      <div class="group-label" data-group="5">V</div>
+      <div class="group-label" data-group="6">VI</div>
+      <div class="group-label" data-group="7">VII</div>
+    </div>
+    <div class="grid" id="grid" role="grid"></div>
+  </section>
+
+  <!-- Card tray -->
+  <section class="tray-stage" aria-label="Element cards to sort">
+    <div class="tray-head">
+      <h2>Element cards</h2>
+      <span class="tray-hint">Sort lightest to heaviest, left to right, top to bottom.</span>
+    </div>
+    <div class="tray" id="tray"></div>
+  </section>
+</main>
+
+<!-- Completion overlay -->
+<div class="celebrate" id="celebrate" hidden>
+  <div class="celebrate-panel">
+    <h2>You've recreated Mendeleev's periodic table!</h2>
+    <p>Look at each column. Elements that share a column share their <strong>chemistry</strong>. That's the pattern Mendeleev spotted in 1869 — it predicted elements no-one had even discovered yet.</p>
+    <div class="celebrate-groups" id="celebrate-groups"></div>
+    <button id="celebrate-close" type="button" class="primary-btn">Have a closer look</button>
+  </div>
+</div>
+
+<!-- Info modal -->
+<div class="modal" id="modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-name">
+    <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

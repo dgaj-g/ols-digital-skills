@@ -1,0 +1,413 @@
+[
+  {
+    "name": "Lithium",
+    "symbol": "Li",
+    "slug": "lithium",
+    "slide": 1,
+    "appearance": "silver white metallic solid",
+    "discovery": "1817 Johan August Arfwedson\nisolated by William Thomas Brande 1821",
+    "atomic_weight": "7",
+    "melting_point": "180.5oC",
+    "boiling_point": "\u200b1330\u00a0\u00b0C",
+    "density": "0.534\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "floats, reacts moderately vigorously, disappears leaving a colourless alkaline solution with the evolution of hydrogen gas",
+    "reaction_air": "reacts exothermically with the moisture and oxygen in the air and is stored under oil",
+    "other_reactions": "compounds produce rose-red flame when burned",
+    "images": [
+      "lithium-1.jpg",
+      "lithium-2.png"
+    ]
+  },
+  {
+    "name": "Beryllium",
+    "symbol": "Be",
+    "slug": "beryllium",
+    "slide": 2,
+    "appearance": "silver grey metallic solid",
+    "discovery": "Louis Nicolas Vauquelin(1797)\nisolated by  Friedrich W\u00f6hler\u00a0&\u00a0Antoine Bussy\u00a0(1828)",
+    "atomic_weight": "9",
+    "melting_point": "1287oC",
+    "boiling_point": "2970\u00a0\u00b0C",
+    "density": "1.85\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "no reaction",
+    "reaction_air": "slowly tarnishes in air but burns brightly when heated to 1000oC",
+    "other_reactions": "compounds do not impart a coulour to a Bunsen flame",
+    "images": [
+      "beryllium-1.png"
+    ]
+  },
+  {
+    "name": "Boron",
+    "symbol": "B",
+    "slug": "boron",
+    "slide": 3,
+    "appearance": "black-brown solid",
+    "discovery": "Joseph Louis Gay-Lussacand\u00a0Louis Jacques Th\u00e9nard 1808\nisolated by Humphry Davy 1808",
+    "atomic_weight": "11",
+    "melting_point": "2076oC",
+    "boiling_point": "3927\u00a0\u00b0C",
+    "density": "2.08\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "none",
+    "reaction_air": "none at RT but will burn at very high temperatures",
+    "other_reactions": "hardly reactive at all  but will react very slowly with very concentrated strong acids",
+    "images": [
+      "boron-1.jpg"
+    ]
+  },
+  {
+    "name": "Carbon",
+    "symbol": "C",
+    "slug": "carbon",
+    "slide": 4,
+    "appearance": "diamond colourless solid reflects light when cut\ngraphite slippery grey solid",
+    "discovery": "Joseph Louis Gay-Lussacand\u00a0Louis Jacques Th\u00e9nard 1808\nisolated by Humphry Davy 1808",
+    "atomic_weight": "12",
+    "melting_point": "3800oC diamond   3600oC graphite",
+    "boiling_point": "Graphite sublimes and diamond turns to graphite when heated strongly",
+    "density": "diamond 3.5\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)\ngraphite 2.6\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "none",
+    "reaction_air": "none at RT but will burn when ignited at very high temperatures with the elease of a large amount of heat",
+    "other_reactions": "",
+    "images": [
+      "carbon-1.jpg",
+      "carbon-2.jpg"
+    ]
+  },
+  {
+    "name": "Nitrogen",
+    "symbol": "N",
+    "slug": "nitrogen",
+    "slide": 5,
+    "appearance": "a colourless odourless  gas",
+    "discovery": "Daniel Rutherford\u00a0(1772)",
+    "atomic_weight": "14",
+    "melting_point": "-210oC",
+    "boiling_point": "-196oC",
+    "density": "0.00125g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "none",
+    "reaction_air": "none",
+    "other_reactions": "extremely unreactive",
+    "images": [
+      "nitrogen-1.jpg"
+    ]
+  },
+  {
+    "name": "Oxygen",
+    "symbol": "O",
+    "slug": "oxygen",
+    "slide": 6,
+    "appearance": "a colourless odourless  gas",
+    "discovery": "Daniel Rutherford\u00a0(1772)",
+    "atomic_weight": "16",
+    "melting_point": "-219oC",
+    "boiling_point": "-183oC",
+    "density": "0.00142g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "dissolves in water does not react with water",
+    "reaction_air": "None as oxygen is part of air",
+    "other_reactions": "extremely reactive supports combustion, meaning all substances require oxygen to burn",
+    "images": [
+      "oxygen-1.gif"
+    ]
+  },
+  {
+    "name": "Fluorine",
+    "symbol": "F",
+    "slug": "fluorine",
+    "slide": 7,
+    "appearance": "It is a pale yellow, corrosive gas,",
+    "discovery": "Joseph Black\u00a0(1755)\nisolated by Humphry Davy\u00a0(1808)",
+    "atomic_weight": "19",
+    "melting_point": "-220oC",
+    "boiling_point": "-188\u00a0\u00b0C",
+    "density": "0.001696\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "Water burns in fluorine with a bright flame",
+    "reaction_air": "No reaction",
+    "other_reactions": "It is a pale yellow, corrosive gas, which reacts with practically  everything. Finely divided metals, glass, ceramics, carbon, and even water burn in fluorine with a bright flame.",
+    "images": [
+      "fluorine-1.jpg"
+    ]
+  },
+  {
+    "name": "Sodium",
+    "symbol": "Na",
+    "slug": "sodium",
+    "slide": 8,
+    "appearance": "silver white metallic solid",
+    "discovery": "1807",
+    "atomic_weight": "23",
+    "melting_point": "97.8oC",
+    "boiling_point": "883\u00a0\u00b0C",
+    "density": "0.968\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "floats, reacts vigorously, melts into a ball, disappears leaving a colourless alkaline solution with the evolution of hydrogen gas",
+    "reaction_air": "reacts exothermically with the moisture and oxygen in the air and is stored under oil",
+    "other_reactions": "compounds produce yellow flame when burned",
+    "images": [
+      "sodium-1.jpg",
+      "sodium-2.jpg"
+    ]
+  },
+  {
+    "name": "Magnesium",
+    "symbol": "Mg",
+    "slug": "magnesium",
+    "slide": 9,
+    "appearance": "grey metallic solid",
+    "discovery": "Joseph Black\u00a0(1755)\nisolated by Humphry Davy\u00a0(1808)",
+    "atomic_weight": "24",
+    "melting_point": "650oC",
+    "boiling_point": "1090\u00a0\u00b0C",
+    "density": "1.738\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "sinks, magnesium ribbon floats, reaction takes years but will react with steam to form magnesium oxide and evolve hydrogen",
+    "reaction_air": "reaction in air is extremely slow at room temperature but burns with a very bright white light when ignited",
+    "other_reactions": "compounds do not impart a colour to a flame but metal burns with an extremely bright white light",
+    "images": [
+      "magnesium-1.jpg",
+      "magnesium-2.jpg"
+    ]
+  },
+  {
+    "name": "Aluminium",
+    "symbol": "Al",
+    "slug": "aluminium",
+    "slide": 10,
+    "appearance": "silvery grey metal",
+    "discovery": "predicted by Antoin Lavosier 1787\nIsolated by Friedrich Wohler 1827 Named by humphry Davy 1807",
+    "atomic_weight": "27",
+    "melting_point": "660oC",
+    "boiling_point": "2470oC",
+    "density": "2.70g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "no reaction",
+    "reaction_air": "corrosion resistance but \npowder burns extremely\n brightly in a flame",
+    "other_reactions": "",
+    "images": [
+      "aluminium-1.jpg",
+      "aluminium-2.jpg"
+    ]
+  },
+  {
+    "name": "Silicon",
+    "symbol": "Si",
+    "slug": "silicon",
+    "slide": 11,
+    "appearance": "crystalline, reflective with bluish-tinged faces",
+    "discovery": "predicted by Antoin Lavosier 1787\nIsolated by Berzelius 1823 Named by Thomas Thompson 1817",
+    "atomic_weight": "28",
+    "melting_point": "1414oC",
+    "boiling_point": "3265\u00a0\u00b0C",
+    "density": "2.33\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "no reaction",
+    "reaction_air": "no reaction",
+    "other_reactions": "no reaction with acids but will react with strong bases",
+    "images": [
+      "silicon-1.jpg"
+    ]
+  },
+  {
+    "name": "Phosphorous",
+    "symbol": "P",
+    "slug": "phosphorous",
+    "slide": 12,
+    "appearance": "Several different types of solid crystal, white phosphorous and red phosphorous most common",
+    "discovery": "Hennig Brand 1669\nrecognised as an element by Antoine lavosier",
+    "atomic_weight": "31",
+    "melting_point": "227oC",
+    "boiling_point": "442oC",
+    "density": "1.82g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "Can be stored in water to prevent it from reacting with oxygen in the air. Completely unreactive with water",
+    "reaction_air": "white phosphorous \nglows in the dark \nwhen exposed to\n oxygen with a very \nfaint tinge of green \nand blue",
+    "other_reactions": "highly flammable and pyrophoric (self-igniting) on contact with air and is very toxic",
+    "images": [
+      "phosphorous-1.jpg",
+      "phosphorous-2.png"
+    ]
+  },
+  {
+    "name": "Sulfur",
+    "symbol": "S",
+    "slug": "sulfur",
+    "slide": 13,
+    "appearance": "a yellow solid with a pungent smell",
+    "discovery": "Chinese,before 2000BC\nrecognised as an element by Antoine Lavosier",
+    "atomic_weight": "32",
+    "melting_point": "114oC",
+    "boiling_point": "444oC",
+    "density": "2.07g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "powder floats on water",
+    "reaction_air": "sulfur melts to a \nblood-red liquid\nand burns with a blue flame which is best viewed\n in the dark The \ncombustion product \nis a very pungent acidic gas",
+    "other_reactions": "reacts with iron once started reaction continues\n glowing red hot",
+    "images": [
+      "sulfur-1.jpg",
+      "sulfur-2.png",
+      "sulfur-3.jpg"
+    ]
+  },
+  {
+    "name": "Chlorine",
+    "symbol": "Cl",
+    "slug": "chlorine",
+    "slide": 14,
+    "appearance": "It is a pale green, corrosive gas with a distinctive choking odour (We would now refer to the odour as similar to bleach)",
+    "discovery": "Carl Wilhelm Scheele\u00a0(1774)\nRecognized as an\u00a0element\u00a0by\nHumphry Davy\u00a0(1808)",
+    "atomic_weight": "35.5",
+    "melting_point": "-101oC",
+    "boiling_point": "-34\u00a0\u00b0C",
+    "density": "at\u00a0m.p.: 1.56\u00a0g cm\u22123",
+    "reaction_water": "dissolves in water forming an acidic solution",
+    "reaction_air": "none    heavier than air",
+    "other_reactions": "It is a pale green, corrosive gas, which reacts with practically  everything.",
+    "images": [
+      "chlorine-1.jpg"
+    ]
+  },
+  {
+    "name": "Potassium",
+    "symbol": "K",
+    "slug": "potassium",
+    "slide": 15,
+    "appearance": "silver white metallic solid",
+    "discovery": "Humphry Davy\u00a0(1807)\nIsolated by Humphry Davy\u00a0(1807)",
+    "atomic_weight": "39",
+    "melting_point": "63.5oC",
+    "boiling_point": "759\u00a0\u00b0C",
+    "density": "0.862\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "floats, reacts violently, bursts into a lilac flame, disappears leaving a colourless alkaline solution with the evolution of hydrogen gas",
+    "reaction_air": "reacts exothermically with the moisture and oxygen in the air and is stored under oil",
+    "other_reactions": "compounds produce a lilac flame when burned",
+    "images": [
+      "potassium-1.jpg",
+      "potassium-2.jpg"
+    ]
+  },
+  {
+    "name": "Calcium",
+    "symbol": "Ca",
+    "slug": "calcium",
+    "slide": 16,
+    "appearance": "silver grey sometime yellow metallic solid",
+    "discovery": "Humphry Davy\u00a0(1808)",
+    "atomic_weight": "40",
+    "melting_point": "842oC",
+    "boiling_point": "1484\u00a0\u00b0C",
+    "density": "1.55\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "sinks reacts vigorously leaves an alkaline solution and a white precititate with the evolution of hydrogen gas",
+    "reaction_air": "reaction with oxygen or air is extremely slow at room temperature",
+    "other_reactions": "compounds burn with a brick red flame",
+    "images": [
+      "calcium-1.jpg",
+      "calcium-2.jpg"
+    ]
+  },
+  {
+    "name": "Rubidium",
+    "symbol": "Rb",
+    "slug": "rubidium",
+    "slide": 17,
+    "appearance": "silver white metallic solid",
+    "discovery": "Robert Bunsen\u00a0(1861)",
+    "atomic_weight": "85",
+    "melting_point": "39oC",
+    "boiling_point": "688\u00a0\u00b0C",
+    "density": "1.532\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "floats, reacts violently sometimes explosively, bursts into a lilac flame, disappears leaving a colourless alkaline solution with the evolution of hydrogen gas",
+    "reaction_air": "reacts exothermically with the moisture and oxygen in the air and is stored under oil",
+    "other_reactions": "compounds produce a lilac flame when burned",
+    "images": [
+      "rubidium-1.jpg",
+      "rubidium-2.jpg"
+    ]
+  },
+  {
+    "name": "Bromine",
+    "symbol": "Br",
+    "slug": "bromine",
+    "slide": 18,
+    "appearance": "red-brown liquid surrounded by a red-brown vapour",
+    "discovery": "Antoine J\u00e9r\u00f4me Balard and Leopold Gmelin\u00a0(1825)",
+    "atomic_weight": "80",
+    "melting_point": "-7.2oC",
+    "boiling_point": "58.8\u00a0\u00b0C",
+    "density": "3.1\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "dissolves in water leaving a yellow orange solution acidic solution known as bromine water",
+    "reaction_air": "none",
+    "other_reactions": "reacts with metals in the presence of water",
+    "images": [
+      "bromine-1.jpg"
+    ]
+  },
+  {
+    "name": "Strontium",
+    "symbol": "Sr",
+    "slug": "strontium",
+    "slide": 19,
+    "appearance": "silver grey sometime yellow metallic solid",
+    "discovery": "William Cruickshank\u00a0(1787)\nisolated by  Humphry Davy\u00a0(1808)",
+    "atomic_weight": "88",
+    "melting_point": "777oC",
+    "boiling_point": "1377\u00a0\u00b0C",
+    "density": "2.64\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "sinks reacts extremely violently, leaves an alkaline solution and a white precititate with the evolution of hydrogen gas",
+    "reaction_air": "reaction with oxygen or air occurs at room temperature, and therefore strontium is stored under oil",
+    "other_reactions": "compounds burn with an orange red flame",
+    "images": [
+      "strontium-1.jpg",
+      "strontium-2.jpg"
+    ]
+  },
+  {
+    "name": "Iodine",
+    "symbol": "I",
+    "slug": "iodine",
+    "slide": 20,
+    "appearance": "lustrous metallic grey-black solid , which sublimes to a purple vapour",
+    "discovery": "Bernard Courtois\u00a0(1811)",
+    "atomic_weight": "127",
+    "melting_point": "114oC",
+    "boiling_point": "114\u00a0\u00b0C",
+    "density": "3.1\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "reacts to form a weakly acidic solution",
+    "reaction_air": "none",
+    "other_reactions": "reacts with metals in the presence of water",
+    "images": [
+      "iodine-1.jpg",
+      "iodine-2.jpg"
+    ]
+  },
+  {
+    "name": "Caesium",
+    "symbol": "Cs",
+    "slug": "caesium",
+    "slide": 21,
+    "appearance": "silver gold metallic solid",
+    "discovery": "Robert Bunsen\u00a0(1861)",
+    "atomic_weight": "133",
+    "melting_point": "28.5oC",
+    "boiling_point": "671\u00a0\u00b0C",
+    "density": "1.93\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "reacts explosively even with ice at temperatures, disappears leaving a colourless alkaline solution with the evolution of hydrogen gas",
+    "reaction_air": "reacts exothermically with the moisture and oxygen in the air and is stored under oil",
+    "other_reactions": "",
+    "images": [
+      "caesium-1.jpg",
+      "caesium-2.jpg"
+    ]
+  },
+  {
+    "name": "Barium",
+    "symbol": "Ba",
+    "slug": "barium",
+    "slide": 22,
+    "appearance": "silver grey metallic solid",
+    "discovery": "Carl Wilhelm Scheele\u00a0(1772)\nisolated by  Humphry Davy\u00a0(1808)",
+    "atomic_weight": "137",
+    "melting_point": "727oC",
+    "boiling_point": "1845\u00a0\u00b0C",
+    "density": "3.51\u00a0g cm\u22123(at\u00a00\u00a0\u00b0C, 101.325\u00a0Kpa)",
+    "reaction_water": "sinks reacts extremely violently, leaves an alkaline solution and a white precititate with the evolution of hydrogen gas",
+    "reaction_air": "reaction with oxygen or air occurs at room temperature, and therefore barium is stored under oil",
+    "other_reactions": "compounds burn with an apple green flame",
+    "images": [
+      "barium-1.jpg",
+      "barium-2.jpg"
+    ]
+  }
+]

@@ -1,0 +1,151 @@
+:root {
+  --ols-blue: #1A3A6B;
+  --ols-blue-dark: #122A4F;
+  --ols-blue-soft: #2A4F8F;
+  --ols-gold: #E4B824;
+  --ols-gold-soft: #F5D45E;
+  --text: #222;
+  --muted: #595959;
+  --bg: #F4F6FA;
+  --card-bg: #FFFFFF;
+  --border: #595959;
+  --shadow-sm: 0 1px 3px rgba(18, 42, 79, 0.10);
+  --shadow-md: 0 6px 18px rgba(18, 42, 79, 0.16);
+  --shadow-lg: 0 14px 36px rgba(18, 42, 79, 0.22);
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* ----- Hub ----- */
+
+.hub-header {
+  background: linear-gradient(135deg, var(--ols-blue) 0%, var(--ols-blue-dark) 100%);
+  color: white;
+  padding: 32px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  border-bottom: 4px solid var(--ols-gold);
+}
+
+.hub-header .crest {
+  width: 96px;
+  height: auto;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+}
+
+.hub-title-wrap h1 {
+  margin: 0 0 4px;
+  font-size: 2rem;
+  letter-spacing: -0.01em;
+}
+
+.hub-title-wrap .subtitle {
+  margin: 0;
+  color: var(--ols-gold-soft);
+  font-size: 1rem;
+}
+
+.hub-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.dept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.dept-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 22px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(89, 89, 89, 0.18);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dept-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--ols-gold);
+}
+
+.dept-card-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dept-chip,
+.level-chip {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.dept-chip {
+  background: var(--ols-blue);
+  color: white;
+}
+
+.level-chip {
+  background: var(--ols-gold);
+  color: var(--ols-blue-dark);
+}
+
+.dept-card h2 {
+  margin: 4px 0 0;
+  font-size: 1.2rem;
+  color: var(--ols-blue);
+}
+
+.dept-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.dept-card-cta {
+  margin-top: auto;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ols-blue);
+}
+
+.hub-footer {
+  border-top: 1px solid rgba(89, 89, 89, 0.18);
+  padding: 18px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+@media (max-width: 540px) {
+  .hub-header { flex-direction: column; text-align: center; }
+  .hub-header .crest { width: 72px; }
+  .hub-title-wrap h1 { font-size: 1.5rem; }
+}
