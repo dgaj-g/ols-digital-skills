@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>OLS Digital Skills — Intro animation</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0d1f3d; color: white; font-family: Georgia, serif; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 32px 24px; text-align: center; }
+  h1 { margin: 0 0 6px; font-weight: 500; }
+  p { color: rgba(255,255,255,0.7); margin: 0 0 18px; font-size: 0.95rem; }
+  video { width: 100%; max-width: 1200px; border-radius: 10px; box-shadow: 0 16px 40px rgba(0,0,0,0.4); background: #000; }
+  .controls { margin-top: 22px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-block; background: #E4B824; color: #122A4F; padding: 10px 22px; border-radius: 999px; font-weight: 600; text-decoration: none; font-family: -apple-system, sans-serif; font-size: 0.95rem; }
+  .btn.ghost { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.4); }
+  .btn:hover { transform: translateY(-1px); }
+  .meta { margin-top: 28px; font-size: 0.84rem; color: rgba(255,255,255,0.55); font-family: -apple-system, sans-serif; }
+  a { color: #E4B824; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>OLS Digital Skills — Intro</h1>
+  <p>3 seconds &middot; 1920&times;1080 &middot; 60fps &middot; H.264 MP4</p>
+  <video controls autoplay muted playsinline loop>
+    <source src="../assets/intro.mp4" type="video/mp4" />
+    Your browser does not support inline video.
+  </video>
+  <div class="controls">
+    <a class="btn" href="../assets/intro.mp4" download>Download MP4</a>
+    <a class="btn ghost" href="../">Back to OLS Digital Skills</a>
+  </div>
+  <p class="meta">
+    Use this as a title card before a lesson, embed at the start of a video, or stick on a Promethean board while pupils settle.<br>
+    Re-rendered any time by re-running <code>node _intro/capture.js</code> and re-encoding with ffmpeg.
+  </p>
+</div>
+</body>
+</html>
