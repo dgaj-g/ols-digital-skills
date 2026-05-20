@@ -17,9 +17,15 @@
 
 (function () {
   // ---- Config ----
-  const VIDEO_FILENAME = 'intro.mp4';
+  // Two renders of the same animation: landscape (1920×1080) for desktops,
+  // portrait (1080×1920) for phones. Pick by the viewport aspect.
+  const VIDEO_FILENAME_LANDSCAPE = 'intro.mp4';
+  const VIDEO_FILENAME_PORTRAIT  = 'intro-portrait.mp4';
+  const isPortrait = window.innerHeight > window.innerWidth;
+  const VIDEO_FILENAME = isPortrait ? VIDEO_FILENAME_PORTRAIT : VIDEO_FILENAME_LANDSCAPE;
   const SESSION_KEY = 'ols-intro-seen-v1';
   const FADE_MS = 450;
+  const POST_HOLD_MS = 800;  // pause after the video ends so people can read the wordmark
   const DEBUG = false;
   const log = (...a) => { if (DEBUG) console.log('[ols-intro]', ...a); };
   log('loader running, url=', location.href);
@@ -133,7 +139,9 @@
   // Track playback so we know whether autoplay actually worked
   let startedPlaying = false;
   video.addEventListener('playing', () => { startedPlaying = true; log('playing'); });
-  video.addEventListener('ended', () => dismiss('ended'));
+  video.addEventListener('ended', () => {
+    setTimeout(() => dismiss('ended'), POST_HOLD_MS);
+  });
   video.addEventListener('loadedmetadata', () => log('loadedmetadata'));
   video.addEventListener('canplay', () => {
     log('canplay');
@@ -160,7 +168,7 @@
   // ---- Resilience ----
   // If the video fails to load or play, dismiss after a hard 4s timeout so
   // the activity is never stuck behind a broken overlay.
-  const SAFETY_MS = 4500;
+  const SAFETY_MS = 5500;  // covers video (~3s) + hold (~0.8s) + fade (~0.5s) plus buffer
   setTimeout(() => { if (!dismissed) dismiss('safety-timeout'); }, SAFETY_MS);
   video.addEventListener('error', (e) => { log('video error', video.error); dismiss('video-error'); });
   video.addEventListener('stalled', () => {
