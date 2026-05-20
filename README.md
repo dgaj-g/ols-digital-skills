@@ -32,8 +32,13 @@ Each activity folder is self-contained: no build step, no framework, pure HTML +
 
 1. Create a folder: `<department>/<activity-slug>/`
 2. Drop in `index.html` linking to `../../style.css` and the activity's own `style.css` + `script.js`
-3. Add a card to the hub `index.html` pointing at the new folder
-4. Commit and push — Pages serves the change within a minute
+3. **Include the intro overlay** by adding this line just before `</body>`:
+   ```html
+   <script src="../../assets/intro-loader.js"></script>
+   ```
+   The intro plays once per browser session, has a Skip button, and fades into the activity automatically. Add `?intro` to the URL to force-replay (handy for demos). Add `?nointro` to suppress.
+4. Add a card to the hub `index.html` pointing at the new folder
+5. Commit and push — Pages serves the change within a minute
 
 ## Design principles
 
