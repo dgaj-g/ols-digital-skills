@@ -7,8 +7,6 @@
   html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
   body { font-family: Georgia, 'Times New Roman', serif; }
   #stage {
-    width: 1920px;
-    height: 1080px;
     position: relative;
     background: radial-gradient(ellipse at center, #1f4380 0%, #16315a 55%, #0d1f3d 100%);
   }
@@ -22,7 +20,7 @@
 </head>
 <body>
 <div id="stage">
-  <canvas id="canvas" width="1920" height="1080"></canvas>
+  <canvas id="canvas"></canvas>
   <div class="vignette"></div>
 </div>
 
@@ -50,19 +48,40 @@
   };
 })();
 
-const W = 1920, H = 1080;
+// Read dimensions from URL (?w=...&h=...). Default = 1920×1080 landscape.
+const _params = new URLSearchParams(window.location.search);
+const W = parseInt(_params.get('w') || '1920', 10);
+const H = parseInt(_params.get('h') || '1080', 10);
+const PORTRAIT = H > W;
+
 const DURATION_MS = 3000;
 const FPS = 60;
 const TOTAL_FRAMES = (DURATION_MS / 1000) * FPS; // 180
 
 const canvas = document.getElementById('canvas');
+canvas.width = W;
+canvas.height = H;
+const stage = document.getElementById('stage');
+stage.style.width = W + 'px';
+stage.style.height = H + 'px';
 const ctx = canvas.getContext('2d');
 
-// Layout
-const CREST_W = 460;             // rendered crest width on stage
-const CREST_X = (W - CREST_W) / 2;
-const CREST_Y = 200;             // top edge of crest
-const TEXT_BASELINE_Y = 850;     // y for the main wordmark
+// Layout — derived from canvas dimensions so the same animation looks balanced
+// on landscape (1920×1080), portrait (1080×1920), or square (1080×1080).
+const MIN_DIM = Math.min(W, H);
+const CREST_W = Math.round(MIN_DIM * (PORTRAIT ? 0.52 : 0.42));   // a bit larger on portrait
+const CREST_H_RATIO_TMP = 1.18;  // placeholder; replaced at buildParticles using actual image ratio
+const CREST_X = Math.round((W - CREST_W) / 2);
+// Vertical centring rule: put the crest so the title sits in the upper-middle
+// of the canvas, with room for text + subtitle below it.
+const CREST_Y = Math.round(PORTRAIT ? H * 0.30 : H * 0.18);
+// Wordmark sits below the crest with a gold rule between
+const TEXT_BASELINE_Y = Math.round(PORTRAIT ? H * 0.74 : H * 0.79);
+// Font scales with dimensions
+const TITLE_PX = Math.round(MIN_DIM * (PORTRAIT ? 0.075 : 0.072));
+const SUBTITLE_PX = Math.round(MIN_DIM * (PORTRAIT ? 0.022 : 0.020));
+const RULE_W_BASE = Math.round(MIN_DIM * (PORTRAIT ? 0.28 : 0.26));
+const RULE_Y_OFFSET = Math.round(TITLE_PX * 1.1);
 
 // Tunables
 const PARTICLE_COUNT_TARGET = 4200;
@@ -118,12 +137,13 @@ function buildParticles() {
       const tx = CREST_X + x + (Math.random() - 0.5) * 0.6;
       const ty = CREST_Y + y + (Math.random() - 0.5) * 0.6;
 
-      // Start position: swirl around a centerpoint, far away
+      // Start position: swirl around a centerpoint, far away.
+      // Radius scales with canvas size so portrait works as well as landscape.
       const angle = Math.random() * Math.PI * 2;
-      const radius = 700 + Math.random() * 600;
-      const cx = W / 2, cy = H / 2 - 40;
+      const radius = MIN_DIM * (0.65 + Math.random() * 0.55);
+      const cx = W / 2, cy = CREST_Y + crestHeight / 2;
       const sx = cx + Math.cos(angle) * radius;
-      const sy = cy + Math.sin(angle) * radius * 0.7;
+      const sy = cy + Math.sin(angle) * radius * (PORTRAIT ? 1.0 : 0.7);
 
       // Per-particle timing window (so they don't all start/finish at once)
       const delay = Math.random() * 0.35;         // 0–35% of timeline before motion begins
@@ -161,7 +181,8 @@ function drawBackground(progress) {
   // Radial glow that brightens as crest assembles
   const glowStrength = easeInOutCubic(clamp01((progress - 0.15) / 0.55));
   const cx = W / 2, cy = CREST_Y + crestHeight / 2;
-  const grad = ctx.createRadialGradient(cx, cy, 30, cx, cy, 760);
+  const glowRadius = MIN_DIM * 0.72;
+  const grad = ctx.createRadialGradient(cx, cy, 30, cx, cy, glowRadius);
   grad.addColorStop(0, `rgba(244, 200, 60, ${0.18 * glowStrength})`);
   grad.addColorStop(0.45, `rgba(31, 67, 128, ${0.4 * glowStrength})`);
   grad.addColorStop(1, 'rgba(13, 31, 61, 0)');
@@ -231,18 +252,17 @@ function drawText(progress) {
   ctx.save();
   ctx.textAlign = 'center';
   ctx.fillStyle = `rgba(244, 200, 60, ${t})`;
-  ctx.font = '500 78px Georgia, "Times New Roman", serif';
+  ctx.font = `500 ${TITLE_PX}px Georgia, "Times New Roman", serif`;
   ctx.shadowColor = `rgba(244, 200, 60, ${0.4 * t})`;
   ctx.shadowBlur = 18 * t;
-  // Letter-spacing approximation via ctx not standard; use slight tracking on draw
   const text = 'OLS  Digital  Skills';
   ctx.fillText(text, W / 2, TEXT_BASELINE_Y);
 
   // Gold rule above the text
-  const ruleW = 280 * t;
+  const ruleW = RULE_W_BASE * t;
   ctx.shadowBlur = 0;
   ctx.fillStyle = `rgba(244, 200, 60, ${0.85 * t})`;
-  ctx.fillRect(W/2 - ruleW/2, TEXT_BASELINE_Y - 86, ruleW, 2);
+  ctx.fillRect(W/2 - ruleW/2, TEXT_BASELINE_Y - RULE_Y_OFFSET, ruleW, Math.max(2, Math.round(MIN_DIM * 0.002)));
   ctx.restore();
 
   // Subtitle (only on the final hold)
@@ -251,8 +271,8 @@ function drawText(progress) {
     ctx.save();
     ctx.textAlign = 'center';
     ctx.fillStyle = `rgba(255, 255, 255, ${0.65 * t2})`;
-    ctx.font = '300 22px Georgia, "Times New Roman", serif';
-    ctx.fillText('OUR LADY’S GRAMMAR SCHOOL  ·  NEWRY', W / 2, TEXT_BASELINE_Y + 48);
+    ctx.font = `300 ${SUBTITLE_PX}px Georgia, "Times New Roman", serif`;
+    ctx.fillText('OUR LADY’S GRAMMAR SCHOOL  ·  NEWRY', W / 2, TEXT_BASELINE_Y + Math.round(TITLE_PX * 0.65));
     ctx.restore();
   }
 }
@@ -262,10 +282,12 @@ function drawSparkleAccents(progress) {
   if (progress < 0.70) return;
   const phase = (progress - 0.70) / 0.30;
   const sparkles = 8;
+  const sparkleRadiusX = MIN_DIM * 0.22;
+  const sparkleRadiusY = MIN_DIM * 0.14;
   for (let i = 0; i < sparkles; i++) {
     const seed = i * 1313.7;
-    const x = W/2 + Math.cos(seed + progress * 4) * (220 + i * 18);
-    const y = CREST_Y + crestHeight/2 + Math.sin(seed * 0.7 + progress * 5) * (140 + i * 8);
+    const x = W/2 + Math.cos(seed + progress * 4) * (sparkleRadiusX + i * 18);
+    const y = CREST_Y + crestHeight/2 + Math.sin(seed * 0.7 + progress * 5) * (sparkleRadiusY + i * 8);
     const size = 1.5 + Math.sin(progress * 30 + i) * 0.9;
     const a = (0.4 + 0.4 * Math.sin(progress * 12 + i * 0.7)) * clamp01(phase * 2);
     ctx.fillStyle = `rgba(255, 222, 130, ${a})`;

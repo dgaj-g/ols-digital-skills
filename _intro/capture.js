@@ -3,11 +3,13 @@
  * Capture frames of the OLS Digital Skills intro animation.
  *
  * Usage:
- *   node capture.js [--frames N] [--out DIR] [--sample]
+ *   node capture.js [--frames N] [--out DIR] [--sample] [--w W] [--h H]
  *
  *   --frames N   Total frames (default 180 = 3s @ 60fps)
  *   --out DIR    Output dir (default ./frames)
  *   --sample     Capture only every 30th frame for QC
+ *   --w W        Canvas width  (default 1920)
+ *   --h H        Canvas height (default 1080)
  *
  * Requires the static server running at http://localhost:8098/_intro/
  */
@@ -24,17 +26,21 @@ const path = require('path');
   const TOTAL = parseInt(argv('--frames', '180'), 10);
   const OUT_DIR = path.resolve(argv('--out', './frames'));
   const SAMPLE_ONLY = has('--sample');
+  const W = parseInt(argv('--w', '1920'), 10);
+  const H = parseInt(argv('--h', '1080'), 10);
   const BASE_URL = 'http://localhost:8098/_intro/';
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
+  console.log(`Canvas size: ${W} × ${H}`);
+
   const browser = await puppeteer.launch({
     headless: 'new',
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--font-render-hinting=none'],
-    defaultViewport: { width: 1920, height: 1080, deviceScaleFactor: 1 }
+    defaultViewport: { width: W, height: H, deviceScaleFactor: 1 }
   });
   const page = await browser.newPage();
-  await page.setViewport({ width: 1920, height: 1080, deviceScaleFactor: 1 });
+  await page.setViewport({ width: W, height: H, deviceScaleFactor: 1 });
 
   const indices = SAMPLE_ONLY
     ? [0, 30, 60, 90, 120, 150, 179]
@@ -44,7 +50,7 @@ const path = require('path');
 
   const t0 = Date.now();
   for (const f of indices) {
-    const url = `${BASE_URL}?frame=${f}`;
+    const url = `${BASE_URL}?frame=${f}&w=${W}&h=${H}`;
     await page.goto(url, { waitUntil: 'load' });
     // Wait for the script to mark the body ready
     await page.waitForFunction(() => document.body && document.body.dataset.ready === 'true', { timeout: 5000 });
