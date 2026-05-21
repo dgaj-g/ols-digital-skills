@@ -139,9 +139,38 @@ html, body {
 .hub-footer {
   border-top: 1px solid rgba(89, 89, 89, 0.18);
   padding: 18px 24px;
-  text-align: center;
   color: var(--muted);
   font-size: 0.84rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.footer-crest {
+  width: 24px;
+  height: auto;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+/* ---------- Activity footer (shared brand mark, used by every activity) ---------- */
+
+.act-footer {
+  margin-top: 8px;
+  padding: 14px 22px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+}
+.act-footer .footer-crest {
+  width: 22px;
+  height: auto;
+  opacity: 0.85;
+  flex-shrink: 0;
 }
 
 @media (max-width: 540px) {
