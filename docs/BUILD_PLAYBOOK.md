@@ -81,16 +81,40 @@ Some fields may have edge-case values like "Other" with a typed override — acc
 
 ## Step 3 — Download the source materials
 
-Each "Source materials" link is an anonymous OneDrive share URL. Download each file:
+Each "Source materials" link is an anonymous SharePoint share URL of the form:
+
+```
+https://{tenant}-my.sharepoint.com/:b:/g/personal/{user}/{shareid}
+```
+
+These can't be `curl`'d directly — they redirect through a SharePoint viewer that needs browser navigation. **Transform them to the direct-download URL** first:
+
+```
+https://{tenant}-my.sharepoint.com/personal/{user}/_layouts/15/download.aspx?share={shareid}
+```
+
+Concretely, given a share URL with regex `https://([^/]+)/:[a-z]:/[gt]/personal/([^/]+)/([^/?\s]+)`:
+- $1 = tenant (e.g. `ennilive-my.sharepoint.com`)
+- $2 = user (e.g. `dgartland021_c2ken_net`)
+- $3 = share ID
+
+Then:
 
 ```bash
 mkdir -p /tmp/ols-build-<issue-number>/materials
 cd /tmp/ols-build-<issue-number>/materials
-# For each file URL:
-curl -L -o "<filename>" "<share-url>"
+
+# For each file:
+curl -sL -A "Mozilla/5.0" -o "<filename>" \
+  "https://{tenant}-my.sharepoint.com/personal/{user}/_layouts/15/download.aspx?share={shareid}"
+
+# Verify the download is the actual file type (not HTML error page):
+file "<filename>"
+# Should report: "PDF document" / "Microsoft Word" / "JPEG image" etc.
+# If it says "HTML document text" → the transform failed; the share URL is malformed
 ```
 
-If a download fails, retry once. If still failing, comment on the issue with the failure reason and stop. **Do not guess at content.**
+If a download fails or returns HTML, **don't guess at content** — comment on the issue with the failure reason and stop.
 
 ---
 
