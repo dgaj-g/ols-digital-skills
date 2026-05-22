@@ -1,6 +1,9 @@
 # Build playbook — OLS Digital Skills
 
-The durable, step-by-step process Claude follows when Damien types `/next` (or `/build <N>`) to turn a submitted request into a live activity.
+The durable, step-by-step process Claude follows when Damien turns a submitted request into a live activity. Two entry points:
+
+- **`/next`** — build the oldest open issue in the queue.
+- **`/build <N> [extra instructions]`** — build a specific issue by number. Any text after the number is extra instructions from Damien that must be folded into the build as high-priority requirements alongside the issue's own content.
 
 **Read this whole file before doing anything.** Do not skim. Each request represents real, careful work by a teacher — the playbook exists to make sure that work is honoured precisely.
 
