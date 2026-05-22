@@ -25,7 +25,7 @@ inbox issue → orient → parse → download → read everything → restate th
 1. **The teacher's request is sacred.** Every word in "What should the activity do?" and "Anything else" is a requirement, not a suggestion. If a teacher wrote "cards flip with a soft click", the cards flip with a soft click.
 2. **Read everything, fully.** Not skim. A scanned page of handwritten notes gets OCR'd and read line by line. A storyboard sketch gets every arrow and annotation interpreted. A teacher's uploaded PowerPoint gets read slide by slide.
 3. **Accuracy is non-negotiable.** These activities may be shown to pupils on a Promethean board in front of an ETI inspector. Every fact must be verifiable against the source material. Never invent content.
-4. **When unsure, ask — don't guess.** If the request is ambiguous or the source material is thin, stop and comment on the issue. A delayed activity is fine; a wrong one is not.
+4. **When unsure, build your best interpretation — then flag it. Never halt to ask.** Damien wants a finished activity to react to, not mid-build questions. If something is ambiguous, make the most sensible decision, build the activity through to completion, and record every assumption and uncertainty in the PR description. Damien reviews the completed build and requests tweaks afterwards. A complete activity with honest flagged notes always beats a halted build with a question.
 5. **Match the Mendeleev bar.** `chemistry/mendeleev-cards/` is the quality reference. If you can't match it, say so in the PR.
 
 ---
@@ -131,7 +131,7 @@ curl -sL -A "Mozilla/5.0" -o "<filename>" \
 file "<filename>"   # must report the real type, NOT "HTML document text"
 ```
 
-If a download returns HTML or fails after one retry, **stop** — comment on the issue with the failure and ask Damien. Never proceed on missing source material.
+If a download returns HTML or fails after one retry, note it — then **continue the build** with the files that did download plus the form's text. Flag the missing file prominently in the PR's "Notes for review" so Damien can re-supply it. Don't halt the build over one file.
 
 ---
 
@@ -162,14 +162,14 @@ Before writing a single line of code, write out — for yourself, and later for 
 2. **The explicit requirements checklist** (from Step 2's "What should the activity do?" + "Anything else").
 3. **The implicit requirements** (mechanics/states implied but not spelled out).
 4. **The source-material map** — which file supplies which content.
-5. **The completeness check** — go through the checklist item by item. Can each one be honoured? If any cannot, that is a flag for the PR (or, if it's fundamental, a reason to stop and ask).
+5. **The completeness check** — go through the checklist item by item. Can each one be honoured? Anything that can't is a flag for the PR's "Notes for review" — you still build the activity, you just record what couldn't be done and why.
 
-**Stop and ask (comment on the issue, then halt) if:**
-- "What should the activity do?" is too vague to build confidently (e.g. one ambiguous line, no detail).
-- The source material contradicts the form, or doesn't cover the topic.
-- The request needs a fact you cannot verify from the source or the exam-board spec.
+**If something is ambiguous or missing — do NOT halt. Build your best interpretation and flag it.** Damien needs a complete, finished activity to review; tweaks happen afterwards on the PR. Specifically:
+- If "What should the activity do?" is thin → build the most reasonable activity the topic and source material support. In the PR say: "the brief was light; here's the interpretation I chose — happy to adjust."
+- If the source material contradicts the form → trust the source material (it's the teacher's actual content), and note the discrepancy in the PR.
+- If a fact can't be verified → use the source material's version, or omit that single claim, and flag it for spot-checking.
 
-A request that waits a day for clarification is fine. A confidently-wrong activity is not.
+The deliverable is always a complete, reviewable activity plus an honest "Notes for review" list. Never a halted build with an open question.
 
 ---
 
@@ -221,22 +221,32 @@ git fetch origin main && git checkout main && git pull
 git checkout -b draft/issue-<N>-<dept-slug>-<topic-slug>
 ```
 
-Create `<department-slug>/<activity-slug>/` with `index.html`, `style.css`, `script.js`, and an `assets/` folder if needed. Add a new dept-card to the hub `index.html`.
+Create `<department-slug>/<activity-slug>/` with `index.html`, `style.css`, `script.js`, and an `assets/` folder if needed. Add a new dept-card to the hub `index.html` — the hub is Damien's *internal* index of every activity; it is not shared with pupils, but keeping it complete helps Damien.
 
 **Non-negotiable build standards:**
 - **Input:** Pointer Events (`pointerdown`/`pointermove`/`pointerup`/`pointercancel`) for all dragging and interaction — one code path for mouse, touch, and pen. `touch-action: none` on every draggable element. Tap vs drag disambiguation via a movement threshold.
 - **Real dragging (if the activity involves dragging):** the dragged element must follow the finger (on touch) or the cursor (on mouse) **continuously and in real time** — literal dragging, not a tap-source-then-tap-target substitute. **Never** use the HTML5 native drag-and-drop API (`draggable`, `dragstart`) — it is broken on touchscreens. See the Drag-and-drop pattern in Step 6 for the full requirement.
 - **No build step:** pure HTML/CSS/JS. Must work opened from `file://` — use relative paths only, never absolute `/`.
 - **Branding:** OLS deep blue `#1A3A6B`, gold `#E4B824`, borders `#595959`. Reference `../../style.css` for shared variables.
-- **Intro:** include `<script src="../../assets/intro-loader.js"></script>` just before `</body>`.
-- **Footer:** include the standard brand footer:
+- **Intro animation — MANDATORY on every activity.** Every activity opens with the OLS crest particle-assembly animation, which then leads straight into the activity. You get all of this by including ONE line just before `</body>`:
+  ```html
+  <script src="../../assets/intro-loader.js"></script>
+  ```
+  `intro-loader.js` does everything automatically — do not rebuild or modify it:
+  - It **auto-selects the right video for the device**: portrait phones get `intro-portrait.mp4` (1080×1920); everything else gets `intro.mp4` (1920×1080 landscape). The decision is made from `window.innerHeight > window.innerWidth` at load time. You do not write any orientation code — including the script is all that's needed.
+  - **Timings are already correct and agreed — do not change them:** 3-second animation, then an 800 ms hold so the wordmark can be read, then a 450 ms fade into the activity.
+  - It plays **once per browser session** (so a pupil doing several activities in a lesson only sees it the first time), has a **Skip** button, and a safety timeout so the activity is never stuck behind the overlay.
+  - After the intro it fades **directly into this activity** — see the "Standalone" rule below.
+- **Standalone — straight to the activity, no menu, no hub link.** After the intro animation, the pupil lands **directly on this one activity** — never a menu, never a list of other activities. Do **not** add a "back to OLS Digital Skills" link, a home button, or any navigation to the hub or to other activities. A teacher shares a single activity's direct URL with their class; pupils must see only that one activity (a teacher may not want a class reaching every other activity). The hub page at the repo root is Damien's *internal* index — built activities never link to it.
+- **Footer — MANDATORY brand mark.** Every activity ends with the OLS crest + wordmark footer, so the activity is unmistakably tied to the school even if the link is shared beyond OLS:
   ```html
   <footer class="act-footer">
     <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
     <span>OLS Digital Skills</span>
   </footer>
   ```
-- **No personal attribution** — never put a teacher's or Damien's name on an activity.
+  The `.act-footer` styles live in the shared `../../style.css` — just include the markup. (Reference: it's in the Mendeleev build.)
+- **No personal attribution** — never put a teacher's or Damien's name on an activity. The footer says "OLS Digital Skills" and nothing else.
 - **Responsive:** works at phone (≥360px), Chromebook (≥1024px), and Promethean board (≥1920px). Striking on a big board.
 - **Accessibility:** semantic HTML, ARIA labels on interactive elements, keyboard-operable primary interactions, sufficient colour contrast.
 - **Media rights:** only use Wikimedia Commons / public-domain / generated SVG / the teacher's own uploaded images. Never copyrighted media. Attribute where required.
@@ -348,12 +358,16 @@ If Damien comments on the PR with changes: address them on the **same branch**, 
 
 ---
 
-## Things to refuse (comment on the issue, then stop)
+## Almost never refuse — build and flag instead
 
-- A request too vague to build confidently — ask for more detail.
-- Source files that don't match the form's topic — likely an upload mistake.
-- Any request needing facts you cannot verify from the source or spec.
-- Anything requiring external API keys or paid services.
-- Anything that wouldn't be curriculum-appropriate or would embarrass the school.
+Damien wants a finished activity to review, not a blocked queue. So in almost every situation: **build your best interpretation, complete it, and flag the concern in the PR.** Examples:
 
-In every case: comment plainly on the issue explaining the block, and stop. A blocked request handled honestly is a good outcome.
+- **Vague request** → build the most sensible activity the topic supports; flag the interpretation you chose.
+- **Source files don't match the topic** → build from the form's text; flag the mismatch so Damien can re-supply files.
+- **A fact you can't verify** → use the source's version, or omit that one claim; flag it for spot-checking.
+- **Needs a paid API / external service** → build a fully client-side version that meets the same learning goal without it; flag the substitution.
+- **Content not quite age-appropriate** → build a cleaned-up version pitched to the year group; flag what you adjusted.
+
+**The only genuine hard stop** is if there is literally nothing to build from — no usable form description *and* no usable files at all. That should be vanishingly rare (the form makes the description required). Even then, don't leave the queue empty-handed: comment on the issue explaining precisely what's missing, and stop.
+
+Every flagged concern goes in the PR's "Notes for review" so Damien sees a complete activity *and* an honest list of what to check or tweak.
