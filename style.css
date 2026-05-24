@@ -28,132 +28,68 @@ html, body {
   line-height: 1.5;
 }
 
-/* ----- Hub ----- */
+/* ============================================================
+   Landing page (root /index.html)
+   ============================================================
+   The root URL deliberately does NOT list activities. Activities
+   are accessed only via direct links shared by teachers. This
+   page is a minimal, branded stub for anyone who lands at the
+   root URL by accident.
+   ============================================================ */
 
-.hub-header {
-  background: linear-gradient(135deg, var(--ols-blue) 0%, var(--ols-blue-dark) 100%);
-  color: white;
-  padding: 32px 24px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  border-bottom: 4px solid var(--ols-gold);
-}
-
-.hub-header .crest {
-  width: 96px;
-  height: auto;
-  flex-shrink: 0;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
-}
-
-.hub-title-wrap h1 {
-  margin: 0 0 4px;
-  font-size: 2rem;
-  letter-spacing: -0.01em;
-}
-
-.hub-title-wrap .subtitle {
-  margin: 0;
-  color: var(--ols-gold-soft);
-  font-size: 1rem;
-}
-
-.hub-main {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 32px 24px;
-}
-
-.dept-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.dept-card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  padding: 22px;
-  text-decoration: none;
-  color: inherit;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(89, 89, 89, 0.18);
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+body.landing {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.dept-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--ols-gold);
-}
-
-.dept-card-head {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.dept-chip,
-.level-chip {
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 4px 10px;
-  border-radius: 999px;
-}
-
-.dept-chip {
-  background: var(--ols-blue);
+  background: radial-gradient(ellipse at center, var(--ols-blue-soft) 0%, var(--ols-blue) 55%, var(--ols-blue-dark) 100%);
   color: white;
 }
 
-.level-chip {
-  background: var(--ols-gold);
-  color: var(--ols-blue-dark);
-}
-
-.dept-card h2 {
-  margin: 4px 0 0;
-  font-size: 1.2rem;
-  color: var(--ols-blue);
-}
-
-.dept-card p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.94rem;
-}
-
-.dept-card-cta {
-  margin-top: auto;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--ols-blue);
-}
-
-.hub-footer {
-  border-top: 1px solid rgba(89, 89, 89, 0.18);
-  padding: 18px 24px;
-  color: var(--muted);
-  font-size: 0.84rem;
+.landing-main {
+  flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-}
-.footer-crest {
-  width: 24px;
-  height: auto;
-  opacity: 0.85;
-  flex-shrink: 0;
+  text-align: center;
+  padding: 40px 24px;
+  gap: 18px;
 }
 
-/* ---------- Activity footer (shared brand mark, used by every activity) ---------- */
+.landing-crest {
+  width: clamp(96px, 18vw, 160px);
+  height: auto;
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.35));
+  margin-bottom: 6px;
+}
+
+.landing h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  letter-spacing: 0.01em;
+  color: var(--ols-gold-soft);
+}
+
+.landing-note {
+  margin: 0;
+  font-size: clamp(0.92rem, 1.6vw, 1.1rem);
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 560px;
+}
+
+.landing-footer {
+  padding: 22px 24px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   Activity footer (shared brand mark, used by every activity)
+   ============================================================ */
 
 .act-footer {
   margin-top: 8px;
@@ -171,10 +107,4 @@ html, body {
   height: auto;
   opacity: 0.85;
   flex-shrink: 0;
-}
-
-@media (max-width: 540px) {
-  .hub-header { flex-direction: column; text-align: center; }
-  .hub-header .crest { width: 72px; }
-  .hub-title-wrap h1 { font-size: 1.5rem; }
 }

@@ -224,7 +224,9 @@ git fetch origin main && git checkout main && git pull
 git checkout -b draft/issue-<N>-<dept-slug>-<topic-slug>
 ```
 
-Create `<department-slug>/<activity-slug>/` with `index.html`, `style.css`, `script.js`, and an `assets/` folder if needed. Add a new dept-card to the hub `index.html` — the hub is Damien's *internal* index of every activity; it is not shared with pupils, but keeping it complete helps Damien.
+Create `<department-slug>/<activity-slug>/` with `index.html`, `style.css`, `script.js`, and an `assets/` folder if needed.
+
+**Do NOT touch the root `/index.html` or add any "hub" / "directory" / "all activities" page.** There is no public hub. The root URL is a minimal branded landing on purpose — it deliberately does not list any activities. Each activity is standalone and accessed only via the direct URL a teacher shares with their class. Never add a card, link, or reference to the new activity anywhere outside its own folder.
 
 **Non-negotiable build standards:**
 - **Input:** Pointer Events (`pointerdown`/`pointermove`/`pointerup`/`pointercancel`) for all dragging and interaction — one code path for mouse, touch, and pen. `touch-action: none` on every draggable element. Tap vs drag disambiguation via a movement threshold.
@@ -240,7 +242,7 @@ Create `<department-slug>/<activity-slug>/` with `index.html`, `style.css`, `scr
   - **Timings are already correct and agreed — do not change them:** 3-second animation, then an 800 ms hold so the wordmark can be read, then a 450 ms fade into the activity.
   - It plays **once per browser session** (so a pupil doing several activities in a lesson only sees it the first time), has a **Skip** button, and a safety timeout so the activity is never stuck behind the overlay.
   - After the intro it fades **directly into this activity** — see the "Standalone" rule below.
-- **Standalone — straight to the activity, no menu, no hub link.** After the intro animation, the pupil lands **directly on this one activity** — never a menu, never a list of other activities. Do **not** add a "back to OLS Digital Skills" link, a home button, or any navigation to the hub or to other activities. A teacher shares a single activity's direct URL with their class; pupils must see only that one activity (a teacher may not want a class reaching every other activity). The hub page at the repo root is Damien's *internal* index — built activities never link to it.
+- **Standalone — straight to the activity, no menu, no hub, no cross-links.** After the intro animation, the pupil lands **directly on this one activity** — never a menu, never a list of other activities. Do **not** add a "back to OLS Digital Skills" link, a home button, a hub card, or any navigation to other activities. There is no public hub: the root `/index.html` is a minimal branded landing that deliberately lists nothing. A teacher shares a single activity's direct URL with their class; pupils must see only that one activity, and must have no way to reach others from inside it.
 - **Footer — MANDATORY brand mark.** Every activity ends with the OLS crest + wordmark footer, so the activity is unmistakably tied to the school even if the link is shared beyond OLS:
   ```html
   <footer class="act-footer">
