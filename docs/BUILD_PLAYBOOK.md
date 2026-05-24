@@ -150,10 +150,22 @@ This is the heart of the playbook. The teacher uploaded these files because they
 | **PowerPoint (.pptx)** | Use the `pptx` skill — `python3 -m markitdown file.pptx` for text AND render thumbnails to see layout. Read every slide; slides often ARE the storyboard. |
 | **Images (storyboards, sketches, photos)** | Read multimodally. Interpret **every** arrow, label, scribble, box, and annotation — a storyboard is the teacher drawing you the activity. Honour the layout they sketched. |
 | **Spreadsheets (.xlsx/.csv)** | Use the `xlsx` skill. The data may be the activity's content (e.g. quiz questions, vocab lists). |
-| **Audio (.mp3/.m4a/.wav)** | A teacher may have recorded their explanation. Attempt transcription with Whisper: `pip3 install -q openai-whisper` then `whisper file.mp3 --model small --output_dir /tmp`. If Whisper can't be installed/run in the session, **comment on the issue** asking Damien for a short summary of the audio — do not skip it silently. |
-| **Video (.mp4/.mov)** | Extract the audio track (`ffmpeg -i file.mp4 /tmp/audio.mp3`) and transcribe as above. Sample key frames (`ffmpeg -i file.mp4 -vf fps=1/5 /tmp/frame%03d.jpg`) and Read them. If this isn't feasible, flag to Damien. |
+| **Audio (.mp3/.m4a/.wav/voice memo)** | A teacher may have recorded their explanation. Whisper is **pre-installed** on this Mac — transcribe with: `/Users/damiengartland/Library/Python/3.9/bin/whisper file.mp3 --model small --output_dir /tmp --output_format txt`. Then Read the produced .txt. Use `--model base` if you want it faster; `--model small` is the sensible default. Read the transcript in full — that's the teacher's voice in writing. |
+| **Video (.mp4/.mov)** | Extract the audio (`ffmpeg -i file.mp4 -vn -acodec mp3 /tmp/audio.mp3`) and transcribe with Whisper as above for the verbal content. Sample frames (`ffmpeg -i file.mp4 -vf fps=1/10 /tmp/frame%03d.jpg`) and Read them multimodally for visual content (e.g. a teacher pointing at something). If the file is >300 MB, flag in the PR that you sampled rather than analysed exhaustively. |
 
 For **each** file, write a short note: what it contains, and which part of the activity it informs. If a file seems unrelated to the topic in the form, flag it — it may be an upload mistake.
+
+### Large files — handle them, don't skip them
+
+The form allows up to 10 files × 1 GB each, so very large uploads are possible. Apply these rules, in this order:
+
+1. **Always download every file.** Disk space on the Mac is not a concern for a single build.
+2. **Chunked reading is the expectation for big text-bearing files.** The Read tool has a per-call cap of about 20 pages for PDFs, but the underlying file can be far larger. Read in chunks across multiple calls — don't give up because page-1 of a 200-page PDF doesn't show you everything. Focus on the topic the teacher named (use `Bash + grep` to locate relevant sections quickly, then `Read` those page ranges fully).
+3. **Audio/video over ~10 minutes:** transcribe in full with Whisper — it's fast on the M5 — and read the transcript. But in the PR, note that you worked from the transcript, so the teacher can sanity-check specific timings if it matters.
+4. **Files genuinely too big to analyse exhaustively** (e.g. a 1 GB raw lesson recording): read/transcribe what you reasonably can (the first 10-15 minutes of audio, the first chapter of a textbook scan, the most-annotated frames of a long video), build from that plus the form text, and **flag prominently in the PR** that the file exceeded practical full-analysis scope. State exactly what you read and what you didn't. This is the build-and-flag principle applied to size — never quietly skip content.
+5. **If a download itself fails (network, malformed URL, file >2 GB):** flag in the PR that the file couldn't be retrieved and proceed with the form text + other files. Do not halt.
+
+In every case the deliverable is a complete activity plus an honest record of what *was* read and what wasn't.
 
 ---
 
