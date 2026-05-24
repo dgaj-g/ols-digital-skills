@@ -125,20 +125,43 @@ If anything's missing, install:
 npm install -g puppeteer sharp qrcode pptxgenjs mermaid-cli highlight.js react react-icons
 ```
 
-### 7. Smoke-test the pipeline
+### 7. Smoke-test the pipeline — BOTH commands
 
-In a fresh Claude Code session on this Mac, type:
+Open a fresh Claude Code session on this Mac. Run the two tests below in order. Don't actually confirm either build — once you've seen the one-screen summary, you've proved the command works; reply "stop, just testing setup" so the session doesn't kick off a real build.
 
+**Test 1 — `/next`**
+
+Type:
 ```
 /next
 ```
 
-It should:
-1. Read the build playbook from the local clone of the repo
-2. Run `gh issue list --repo dgaj-g/ols-digital-skills-inbox --state open` and show you the oldest open issue
-3. Show you a one-screen summary and wait for your confirmation
+Expected behaviour:
+1. Reads the build playbook from `~/Sites/ols-digital-skills/docs/BUILD_PLAYBOOK.md`
+2. Runs `gh issue list --repo dgaj-g/ols-digital-skills-inbox --state open` and finds the oldest open issue
+3. Shows you a one-screen summary with the issue number, title, and planned activity type
+4. Waits for your confirmation
 
-If you see that summary, the setup is verified. Confirm or stop as you wish.
+**Test 2 — `/build`**
+
+Type:
+```
+/build
+```
+
+(With no arguments.) Expected behaviour:
+1. Reads the build playbook
+2. Lists the open issues from the inbox
+3. Asks which issue number you want to build
+4. Waits
+
+Or, to test the extra-instructions path in one go:
+```
+/build <N> test instructions: confirm you understood and stop
+```
+Where `<N>` is any open issue number. Expected: it restates your instructions in its pre-build summary and asks you to confirm. Reply "stop, just testing setup" before it builds.
+
+If both commands produced sensible pre-build summaries, the setup is fully verified.
 
 ---
 
