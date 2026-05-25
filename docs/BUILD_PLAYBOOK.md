@@ -394,7 +394,7 @@ In order, top to bottom:
 4. **Activity name** — the human-readable activity title as it appears in the live activity's `<h1>` (or `<title>` if no h1). Centred, ~22 pt, bold, colour `#1A3A6B`. **No year group. No teacher name. No "Mr/Mrs/Miss". No "for Year 8". Just the activity title.**
 5. **One short instruction line** — e.g. *"Scan the QR code, or visit the link below, to play."* Centred, ~11 pt, colour `#595959`.
 6. **QR code** — large, centred, ~8 cm × 8 cm, error-correction level M or higher (Q is safer for projection). Encode the live activity URL exactly. Generate with Node's `qrcode` package (`require('qrcode').toFile(...)`) at a resolution that prints crisp (≥ 800 px square).
-7. **Plain-text URL** — centred under the QR, monospace (Courier New or default monospace), ~11 pt, colour `#1A3A6B`. **No markdown hyperlink, no label — plain text exactly.** This is Damien's standing preference.
+7. **Clickable URL** — centred under the QR, monospace (Courier New or default monospace), ~11 pt, colour `#1A3A6B`, underlined. **The displayed text is the URL itself** (e.g. `https://dgaj-g.github.io/ols-digital-skills/irish/sa-seomra-ranga/`) — never replaced with a label like "Click here" or "Visit the activity". The text is *also* a real Word hyperlink so that when the doc is opened in Word (or PDF-converted with hyperlinks preserved), clicking it opens the activity. This satisfies both modes: printable copy (the URL is readable text someone could type by hand) AND digital copy (the same text is hot). To add a Word hyperlink with `python-docx` you need to manipulate the XML directly — the docx skill knows the recipe, or use the standard `add_hyperlink(paragraph, url, text=url)` helper pattern.
 8. **Footer band** — thin gold rule, then a small crest (~1 cm) and the text `OLS Digital Skills` side-by-side, centred, ~9 pt grey `#595959`.
 
 **Do NOT put on the doc:** Damien's name, the teacher's name, year group, exam board, request ID, dates, "created by", any emojis.
@@ -403,29 +403,33 @@ Generate with **`python-docx`** (already installed via the new-Mac setup). Pseud
 
 ### What the email draft must say — tone guide
 
-Damien's teacher comms are short, warm, professional, not chatty. Match this register:
+Damien's teacher comms are short, warm, professional. Match this register:
 
-- **Greet by first name** (`Hi Roisin,`). No "Dear".
+- **Greet with `Dear <FirstName>,`** — use the teacher's first name (extracted from the inbox issue's "Submitted by …" line). Not "Hi", not "Mrs X".
 - **Lead with the result** in the first sentence — the activity is ready.
-- **Give them the website link** as plain text on its own line (not "URL", not a hyperlink with label text — teachers don't all know what URL means).
+- **Give them the website link** on its own line. Write it as the URL itself in plain text — when Damien pastes the draft into Outlook, Outlook auto-linkifies it, so the recipient sees the URL displayed as a clickable link. Never replace the URL with label text like "Click here" — teachers don't all know what URL means, so the visible web address is what they need.
 - **Mention the attached printout** — say a QR code and the website link are on the page so they can pop it on the board or share it however suits them.
 - **If the PR's "Notes for review" flagged anything that affects the teacher** (e.g. "uilleann pipes categorised as Wind, not Reed — let me know if you'd prefer the alternative"), mention it in one short sentence so they're not surprised.
-- **Offer to tweak** — one sentence: e.g. *"Have a play with it and let me know if you'd like anything changed."*
-- **Sign off `Damien`** — no surname, no role, no formal sign-off line.
+- **Close with this exact line** — *"Please review it and let me know if there is anything that needs changed or isn't working the way you expected."* Use it verbatim. Do not paraphrase ("have a play with it", "give it a try", etc. — Damien does not use these).
+- **Sign off** on two lines exactly:
+  ```
+  Kind regards,
+  Damien
+  ```
 
 Save as a `.md` file with:
 - Line 1: `Subject: ` followed by the subject.
 - Blank line.
-- Body — short paragraphs, plain text, no markdown formatting beyond paragraph breaks. The URL goes on its own line, no backticks, no `<>`, no `[link](...)` wrapping.
+- Body — short paragraphs, plain text, no markdown formatting beyond paragraph breaks. The URL goes on its own line, no backticks, no `<>`, no `[link](...)` wrapping (Outlook auto-linkifies bare URLs on paste).
 
-**Don't use:** "Dear Mrs X", "Kind regards", "Best wishes", "Please find attached", "I hope this email finds you well", em-dashes, exclamation marks (one is OK in the opener if it lands naturally — never more than one), emojis.
+**Don't use:** "Best wishes", "Please find attached", "I hope this email finds you well", em-dashes, exclamation marks (one is OK in the opener if it lands naturally — never more than one), emojis.
 
 **Example shape** (do not copy verbatim — adapt to the actual activity):
 
 ```
 Subject: Your "Sa Seomra Ranga" activity is ready
 
-Hi Roisin,
+Dear Roisin,
 
 Just to let you know the bespoke web activity you requested for Sa Seomra Ranga is ready for your class to use.
 
@@ -434,8 +438,9 @@ https://dgaj-g.github.io/ols-digital-skills/irish/sa-seomra-ranga/
 
 I've attached a printout with a QR code and the website link on it — pop it up on the board, or share it however suits you. Pupils don't need to log in, they just scan or click and they're in.
 
-Have a play with it and let me know if you'd like anything changed.
+Please review it and let me know if there is anything that needs changed or isn't working the way you expected.
 
+Kind regards,
 Damien
 ```
 
