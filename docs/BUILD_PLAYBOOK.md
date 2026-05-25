@@ -38,13 +38,16 @@ inbox issue → orient → parse → download → read everything → restate th
 
 ## Step 0 — Orient yourself
 
-A fresh session has no context. Before touching the request, read these files so you understand the project, the brand, and the quality bar:
+A fresh session has no context. Before touching the request, sync the repo so this playbook itself is up to date — Damien works across two Macs and the playbook evolves between builds — and then read the orient files:
 
 ```bash
 cd ~/Sites/ols-digital-skills
+git fetch origin main && git checkout main && git pull
 ```
 
-Read, in order:
+The `git pull` is the bit that matters: this playbook is committed to the repo, so pulling first means *this very file* is the latest version before you read it. Without the pull, a stale local clone would have you following yesterday's instructions.
+
+Then read, in order:
 1. `README.md` — repo structure and conventions
 2. `docs/BUILD_PLAYBOOK.md` — this file (you're reading it)
 3. `style.css` — the shared brand stylesheet (CSS variables, footer styles)
@@ -356,7 +359,7 @@ Three notifications:
 
    This pings his Mac terminal always, and his phone if Remote Control is connected.
 
-3. **Inline the PR body in the chat thread** — this is the review surface. Damien doesn't want to flip between this thread and GitHub to read the review; the same description that's on the PR lives here too. The thread is the home for the conversation around the build, so keep all the relevant context in one place.
+3. **Inline the PR body in the chat thread, with the local preview link on top** — this is the review surface. Damien doesn't want to flip between this thread and GitHub to read the review; the same description that's on the PR lives here too. The thread is the home for the conversation around the build, so keep all the relevant context in one place.
 
    After `gh pr create` succeeds, fetch the body back exactly and paste it as a quoted block in your reply to Damien, with a one-line lead-in identifying the PR (number, title, draft status) and a link to the PR on GitHub:
 
@@ -364,10 +367,16 @@ Three notifications:
    gh pr view <PR-N> --repo dgaj-g/ols-digital-skills --json body --jq .body
    ```
 
-   Format the inline copy as a top-level Markdown blockquote so it reads as a quoted artefact, not a fresh message — preserve the headings (one level down, e.g. PR `##` becomes `###` inside the quote), the checkboxes, the URLs, and every word of the body. The GitHub PR remains the canonical record; this is a mirror for Damien's convenience.
+   **Above the quoted PR body, include the local preview URL** so Damien can open the activity in his browser on the same Mac that ran the build and check it before reviewing. The URL is the `preview_start`'s `localhost:8098` plus the activity's path — e.g. `http://localhost:8098/irish/sa-seomra-ranga/`. Make sure the `digital-skills` preview server is still running when you post the link; if you stopped it during QA cleanup, restart it via `preview_start` first. (The GitHub Pages URL inside the PR body is the *post-merge* address — the local link is for review *before* merge. They coexist, they're not the same.)
+
+   Caveat to mention only if it's actually relevant in the moment: the local link works only on the Mac that ran the build, and only while the preview server is running (it stops when the Claude session ends; restarting it in a fresh session via `preview_start` brings it back at the same URL). If Damien is on the other Mac, he'll need to start a session there too. We'll layer a public preview URL (Cloudflare Pages or similar) on later if local previews prove inconvenient — for now the local link is enough.
+
+   Format the inline PR body as a top-level Markdown blockquote so it reads as a quoted artefact, not a fresh message — preserve the headings (one level down, e.g. PR `##` becomes `###` inside the quote), the checkboxes, the URLs, and every word of the body. The GitHub PR remains the canonical record; this is a mirror for Damien's convenience.
 
    Example shape:
    ```
+   **Preview (local, same Mac only):** http://localhost:8098/<dept>/<activity>/
+
    > **PR #<N> — [BUILD] <Dept> — <Topic>** · *draft* · [open on GitHub](<PR-url>)
    >
    > <full PR body, verbatim, with one-level heading demotion>
