@@ -1,9 +1,10 @@
 # Build playbook — OLS Digital Skills
 
-The durable, step-by-step process Claude follows when Damien turns a submitted request into a live activity. Two entry points:
+The durable, step-by-step process Claude follows when Damien turns a submitted request into a live activity. Three entry points:
 
 - **`/next`** — build the oldest open issue in the queue.
 - **`/build <N> [extra instructions]`** — build a specific issue by number. Any text after the number is extra instructions from Damien that must be folded into the build as high-priority requirements alongside the issue's own content.
+- **`/publish <N>`** — run *after* Damien merges the PR. Generates the teacher handoff package (OLS-branded Word doc with QR code + plain-text URL, and a drafted email in Damien's voice). See **Step 12** below.
 
 **Read this whole file before doing anything.** Do not skim. Each request represents real, careful work by a teacher — the playbook exists to make sure that work is honoured precisely.
 
@@ -19,6 +20,8 @@ The durable, step-by-step process Claude follows when Damien turns a submitted r
 ```
 inbox issue → orient → parse → download → read everything → restate the vision
 → build → test → push + draft PR → notify Damien → stop (Damien reviews + merges)
+                                                              ↓
+                                              /publish <N> → Word doc + email draft
 ```
 
 ---
@@ -360,6 +363,94 @@ Two notifications:
 Do not merge. Do not auto-publish. The draft PR waits in Damien's review queue.
 
 If Damien comments on the PR with changes: address them on the **same branch**, push a follow-up commit, re-test, and re-notify. Never open a second PR for the same request.
+
+---
+
+## Post-merge — Step 12: the handoff package (`/publish`)
+
+This step does **not** run inside a `/build` or `/next` session — those stop at Step 11. After Damien reviews and merges the PR, the activity is live on GitHub Pages. To get it into pupils' hands, Damien runs **`/publish <issue-number>`** in a fresh Claude Code session. That command produces two artefacts:
+
+1. **`<Activity>_Access.docx`** — an A4 Word document the teacher prints, projects on the board, or shares as a PDF.
+2. **`<Activity>_email.md`** — a short email drafted in Damien's voice that he pastes into Outlook, attaches the docx to, and sends to the teacher.
+
+Both files land in the **department folder under Claude Work**, never in the public repo:
+
+```
+/Users/damiengartland/Desktop/Claude Work/Digital Skills Roadmap/0. Digital Skills Web Activities/<Department>/<Activity_Slug>_Access.docx
+/Users/damiengartland/Desktop/Claude Work/Digital Skills Roadmap/0. Digital Skills Web Activities/<Department>/<Activity_Slug>_email.md
+```
+
+Use the existing department folder if one already exists (e.g. `Chemistry/`, `Music/`). Create a new title-case folder (`RE/`, `Irish/`, `Sports Science/`) if not. The Mendeleev precedent (`Chemistry/Mendeleev_Cards_Access.docx`) is the format reference.
+
+### What the Word doc must contain — strict spec
+
+The doc is what pupils glance at on the board. Polished, professional, on-brand, sparing. A4 portrait. One page only.
+
+In order, top to bottom:
+
+1. **OLS crest** — centred, ~3 cm tall. Source: `~/Sites/ols-digital-skills/assets/crest.png`.
+2. **Wordmark** — the text `OLS Digital Skills` centred under the crest. Georgia serif (or default serif if Georgia unavailable in `python-docx`), ~20 pt, colour `#1A3A6B` (OLS blue).
+3. **Thin gold rule** — full-width or near-full-width horizontal line, ~0.75 pt, colour `#E4B824` (OLS gold).
+4. **Activity name** — the human-readable activity title as it appears in the live activity's `<h1>` (or `<title>` if no h1). Centred, ~22 pt, bold, colour `#1A3A6B`. **No year group. No teacher name. No "Mr/Mrs/Miss". No "for Year 8". Just the activity title.**
+5. **One short instruction line** — e.g. *"Scan the QR code, or visit the link below, to play."* Centred, ~11 pt, colour `#595959`.
+6. **QR code** — large, centred, ~8 cm × 8 cm, error-correction level M or higher (Q is safer for projection). Encode the live activity URL exactly. Generate with Node's `qrcode` package (`require('qrcode').toFile(...)`) at a resolution that prints crisp (≥ 800 px square).
+7. **Plain-text URL** — centred under the QR, monospace (Courier New or default monospace), ~11 pt, colour `#1A3A6B`. **No markdown hyperlink, no label — plain text exactly.** This is Damien's standing preference.
+8. **Footer band** — thin gold rule, then a small crest (~1 cm) and the text `OLS Digital Skills` side-by-side, centred, ~9 pt grey `#595959`.
+
+**Do NOT put on the doc:** Damien's name, the teacher's name, year group, exam board, request ID, dates, "created by", any emojis.
+
+Generate with **`python-docx`** (already installed via the new-Mac setup). Pseudocode is fine inside the session — the point is the artefact must match the spec. The Mendeleev access doc at `/Users/damiengartland/Desktop/Claude Work/Digital Skills Roadmap/0. Digital Skills Web Activities/Chemistry/Mendeleev_Cards_Access.docx` is the visual reference.
+
+### What the email draft must say — tone guide
+
+Damien's teacher comms are short, warm, professional, not chatty. Match this register:
+
+- **Greet by first name** (`Hi Roisin,`). No "Dear".
+- **Lead with the result** in the first sentence — the activity is ready.
+- **Give them the website link** as plain text on its own line (not "URL", not a hyperlink with label text — teachers don't all know what URL means).
+- **Mention the attached printout** — say a QR code and the website link are on the page so they can pop it on the board or share it however suits them.
+- **If the PR's "Notes for review" flagged anything that affects the teacher** (e.g. "uilleann pipes categorised as Wind, not Reed — let me know if you'd prefer the alternative"), mention it in one short sentence so they're not surprised.
+- **Offer to tweak** — one sentence: e.g. *"Have a play with it and let me know if you'd like anything changed."*
+- **Sign off `Damien`** — no surname, no role, no formal sign-off line.
+
+Save as a `.md` file with:
+- Line 1: `Subject: ` followed by the subject.
+- Blank line.
+- Body — short paragraphs, plain text, no markdown formatting beyond paragraph breaks. The URL goes on its own line, no backticks, no `<>`, no `[link](...)` wrapping.
+
+**Don't use:** "Dear Mrs X", "Kind regards", "Best wishes", "Please find attached", "I hope this email finds you well", em-dashes, exclamation marks (one is OK in the opener if it lands naturally — never more than one), emojis.
+
+**Example shape** (do not copy verbatim — adapt to the actual activity):
+
+```
+Subject: Your "Sa Seomra Ranga" activity is ready
+
+Hi Roisin,
+
+Just to let you know the bespoke web activity you requested for Sa Seomra Ranga is ready for your class to use.
+
+The link is:
+https://dgaj-g.github.io/ols-digital-skills/irish/sa-seomra-ranga/
+
+I've attached a printout with a QR code and the website link on it — pop it up on the board, or share it however suits you. Pupils don't need to log in, they just scan or click and they're in.
+
+Have a play with it and let me know if you'd like anything changed.
+
+Damien
+```
+
+### Slug conventions
+
+- **Department folder** — title case with spaces preserved: `Chemistry/`, `Music/`, `RE/`, `Irish/`, `Sports Science/`. Match an existing folder if one exists.
+- **Activity slug for the filenames** — title case, underscores, no spaces, derived from the activity's on-screen title. e.g. `Sa_Seomra_Ranga_Access.docx`, `Mendeleev_Cards_Access.docx`, `Irish_Traditional_Instruments_Access.docx`. Keep it short — drop "An / The / A" prefixes if it helps.
+
+### Don't commit the handoff package to the public repo
+
+These files contain the teacher's email address (in the `_email.md`). They live in Claude Work, never in the public `ols-digital-skills` repo. Don't `git add` them.
+
+### What to do if /publish runs and the PR isn't merged yet
+
+Stop. Tell Damien: *"Issue #N is still open / its PR is still draft — nothing live yet to publish. Merge first, then re-run."* Don't speculate-generate a URL that doesn't yet resolve.
 
 ---
 
