@@ -1,9 +1,10 @@
 # Build playbook — OLS Digital Skills
 
-The durable, step-by-step process Claude follows when Damien turns a submitted request into a live activity. Two entry points:
+The durable, step-by-step process Claude follows when Damien turns a submitted request into a live activity. Three entry points:
 
 - **`/next`** — build the oldest open issue in the queue.
 - **`/build <N> [extra instructions]`** — build a specific issue by number. Any text after the number is extra instructions from Damien that must be folded into the build as high-priority requirements alongside the issue's own content.
+- **`/publish <N>`** — run when Damien has reviewed the activity and is happy with it. This one command **merges the PR (going live on GitHub Pages), waits for the deployment, then generates the teacher handoff package** (OLS-branded Word doc with QR code + clickable URL, and a drafted email in Damien's voice). See **Step 12** below.
 
 **Read this whole file before doing anything.** Do not skim. Each request represents real, careful work by a teacher — the playbook exists to make sure that work is honoured precisely.
 
@@ -18,7 +19,9 @@ The durable, step-by-step process Claude follows when Damien turns a submitted r
 
 ```
 inbox issue → orient → parse → download → read everything → restate the vision
-→ build → test → push + draft PR → notify Damien → stop (Damien reviews + merges)
+→ build → test → push + draft PR → notify Damien → stop (Damien reviews on his time)
+                                                              ↓
+                                /publish <N> → merge PR → wait for Pages → Word doc + email draft
 ```
 
 ---
@@ -360,6 +363,123 @@ Two notifications:
 Do not merge. Do not auto-publish. The draft PR waits in Damien's review queue.
 
 If Damien comments on the PR with changes: address them on the **same branch**, push a follow-up commit, re-test, and re-notify. Never open a second PR for the same request.
+
+---
+
+## Step 12 — `/publish`: go live + handoff package
+
+This step does **not** run inside a `/build` or `/next` session — those stop at Step 11 and the draft PR sits in Damien's review queue. When Damien has reviewed the activity and decided it's ready, he runs **`/publish <issue-number>`** in a fresh Claude Code session. Running `/publish` IS his "yes, ship it" decision. The command:
+
+- **Merges the draft PR** (squash merge, deletes the branch) — this is the going-live step. GitHub Pages picks it up in ~30–60 seconds.
+- **Waits for Pages to redeploy** so the live URL actually resolves before producing materials that reference it.
+- **Generates the handoff package** for the teacher — Word doc + email draft.
+
+If the PR is already merged (e.g. Damien merged manually on GitHub before running `/publish`), the merge step is skipped and the command goes straight to handoff. If no PR is linked to the issue, or the PR was closed without merging, `/publish` stops with a clear message rather than guessing.
+
+The two artefacts produced:
+
+1. **`<Activity>_Access.docx`** — an A4 Word document the teacher prints, projects on the board, or shares as a PDF.
+2. **`<Activity>_email.md`** — a short email drafted in Damien's voice that he pastes into Outlook, attaches the docx to, and sends to the teacher.
+
+Both files land in the **department folder under Claude Work**, never in the public repo:
+
+```
+/Users/damiengartland/Desktop/Claude Work/Digital Skills Roadmap/0. Digital Skills Web Activities/<Department>/<Activity_Slug>_Access.docx
+/Users/damiengartland/Desktop/Claude Work/Digital Skills Roadmap/0. Digital Skills Web Activities/<Department>/<Activity_Slug>_email.md
+```
+
+Use the existing department folder if one already exists (e.g. `Chemistry/`, `Music/`). Create a new title-case folder (`RE/`, `Irish/`, `Sports Science/`) if not. The Mendeleev precedent (`Chemistry/Mendeleev_Cards_Access.docx`) is the format reference.
+
+### What the Word doc must contain — strict spec
+
+The doc is what pupils glance at on the board. Polished, professional, on-brand, sparing. A4 portrait. One page only.
+
+In order, top to bottom:
+
+1. **OLS crest** — centred, ~3 cm tall. Source: `~/Sites/ols-digital-skills/assets/crest.png`.
+2. **Wordmark** — the text `OLS Digital Skills` centred under the crest. Georgia serif (or default serif if Georgia unavailable in `python-docx`), ~20 pt, colour `#1A3A6B` (OLS blue).
+3. **Thin gold rule** — full-width or near-full-width horizontal line, ~0.75 pt, colour `#E4B824` (OLS gold).
+4. **Activity name** — the human-readable activity title as it appears in the live activity's `<h1>` (or `<title>` if no h1). Centred, ~22 pt, bold, colour `#1A3A6B`. **No year group. No teacher name. No "Mr/Mrs/Miss". No "for Year 8". Just the activity title.**
+5. **One short instruction line** — e.g. *"Scan the QR code, or visit the link below, to play."* Centred, ~11 pt, colour `#595959`.
+6. **QR code** — large, centred, ~8 cm × 8 cm, error-correction level M or higher (Q is safer for projection). Encode the live activity URL exactly. Generate with Node's `qrcode` package (`require('qrcode').toFile(...)`) at a resolution that prints crisp (≥ 800 px square).
+7. **Clickable URL** — centred under the QR, monospace (Courier New or default monospace), ~11 pt, colour `#1A3A6B`, underlined. **The displayed text is the URL itself** (e.g. `https://dgaj-g.github.io/ols-digital-skills/irish/sa-seomra-ranga/`) — never replaced with a label like "Click here" or "Visit the activity". The text is *also* a real Word hyperlink so that when the doc is opened in Word (or PDF-converted with hyperlinks preserved), clicking it opens the activity. This satisfies both modes: printable copy (the URL is readable text someone could type by hand) AND digital copy (the same text is hot). To add a Word hyperlink with `python-docx` you need to manipulate the XML directly — the docx skill knows the recipe, or use the standard `add_hyperlink(paragraph, url, text=url)` helper pattern.
+8. **Footer band** — thin gold rule, then a small crest (~1 cm) and the text `OLS Digital Skills` side-by-side, centred, ~9 pt grey `#595959`.
+
+**Do NOT put on the doc:** Damien's name, the teacher's name, year group, exam board, request ID, dates, "created by", any emojis.
+
+Generate with **`python-docx`** (already installed via the new-Mac setup). Pseudocode is fine inside the session — the point is the artefact must match the spec. The Mendeleev access doc at `/Users/damiengartland/Desktop/Claude Work/Digital Skills Roadmap/0. Digital Skills Web Activities/Chemistry/Mendeleev_Cards_Access.docx` is the visual reference.
+
+### What the email draft must say — tone guide
+
+Damien's teacher comms are short, warm, professional. Match this register:
+
+- **Greet with `Dear <FirstName>,`** — use the teacher's first name (extracted from the inbox issue's "Submitted by …" line). Not "Hi", not "Mrs X".
+- **Lead with the result** in the first sentence — the activity is ready.
+- **Give them the website link** on its own line. Write it as the URL itself in plain text — when Damien pastes the draft into Outlook, Outlook auto-linkifies it, so the recipient sees the URL displayed as a clickable link. Never replace the URL with label text like "Click here" — teachers don't all know what URL means, so the visible web address is what they need.
+- **Mention the attached printout** — say a QR code and the website link are on the page so they can pop it on the board or share it however suits them.
+- **If the PR's "Notes for review" flagged anything that affects the teacher** (e.g. "uilleann pipes categorised as Wind, not Reed — let me know if you'd prefer the alternative"), mention it in one short sentence so they're not surprised.
+- **Close with this exact line** — *"Please review it and let me know if there is anything that needs changed or isn't working the way you expected."* Use it verbatim. Do not paraphrase ("have a play with it", "give it a try", etc. — Damien does not use these).
+- **Sign off** on two lines exactly:
+  ```
+  Kind regards,
+  Damien
+  ```
+
+Save as a `.md` file with:
+- Line 1: `Subject: ` followed by the subject.
+- Blank line.
+- Body — short paragraphs, plain text, no markdown formatting beyond paragraph breaks. The URL goes on its own line, no backticks, no `<>`, no `[link](...)` wrapping (Outlook auto-linkifies bare URLs on paste).
+
+**Don't use:** "Best wishes", "Please find attached", "I hope this email finds you well", em-dashes, exclamation marks (one is OK in the opener if it lands naturally — never more than one), emojis.
+
+**Example shape** (do not copy verbatim — adapt to the actual activity):
+
+```
+Subject: Your "Sa Seomra Ranga" activity is ready
+
+Dear Roisin,
+
+Just to let you know the bespoke web activity you requested for Sa Seomra Ranga is ready for your class to use.
+
+The link is:
+https://dgaj-g.github.io/ols-digital-skills/irish/sa-seomra-ranga/
+
+I've attached a printout with a QR code and the website link on it — pop it up on the board, or share it however suits you. Pupils don't need to log in, they just scan or click and they're in.
+
+Please review it and let me know if there is anything that needs changed or isn't working the way you expected.
+
+Kind regards,
+Damien
+```
+
+### Slug conventions
+
+- **Department folder** — title case with spaces preserved: `Chemistry/`, `Music/`, `RE/`, `Irish/`, `Sports Science/`. Match an existing folder if one exists.
+- **Activity slug for the filenames** — title case, underscores, no spaces, derived from the activity's on-screen title. e.g. `Sa_Seomra_Ranga_Access.docx`, `Mendeleev_Cards_Access.docx`, `Irish_Traditional_Instruments_Access.docx`. Keep it short — drop "An / The / A" prefixes if it helps.
+
+### Don't commit the handoff package to the public repo
+
+These files contain the teacher's email address (in the `_email.md`). They live in Claude Work, never in the public `ols-digital-skills` repo. Don't `git add` them.
+
+### Merge mechanics (the details)
+
+- Use **`gh pr list --repo dgaj-g/ols-digital-skills --search "Closes dgaj-g/ols-digital-skills-inbox#<N>" --state all`** to find the PR — search across all states so we also find already-merged ones.
+- If the PR is a **draft**, mark it ready first (`gh pr ready <PR-N>`) then merge.
+- Merge with **`--squash --delete-branch`**. Squash keeps `main` history tidy (one commit per delivered activity); delete-branch tidies up the draft branch since it's done.
+- After merging, **poll the live URL** with `curl -s -o /dev/null -w "%{http_code}" <URL>` every 10 s until it's 200, with a ~3-minute ceiling. If it's still not 200 after 3 minutes, continue but flag it in the report — Pages occasionally lags, and Damien should re-check before sending the email.
+- The "Closes dgaj-g/ols-digital-skills-inbox#<N>" trailer in the PR body auto-closes the inbox issue on merge — no manual close needed.
+
+### What /publish reports back
+
+After everything's done, Damien sees in chat:
+
+- **Live URL** (plain text on its own line, clickable in his terminal)
+- **Word doc path** (absolute path under Claude Work)
+- **Email draft path** (absolute path under Claude Work)
+- **Email subject + body inlined** in the chat so he can copy-paste without opening the file if he prefers — useful when he's mobile or away from the file system
+- **Any flag** worth surfacing (e.g. "Pages took >3 min — re-check before sending")
+
+Plus a `PushNotification`: `Published: <Topic>. Live + handoff ready in Claude Work/<Dept>/.`
 
 ---
 
