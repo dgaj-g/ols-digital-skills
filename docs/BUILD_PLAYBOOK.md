@@ -342,7 +342,7 @@ EOF
 
 ## Step 10 — Notify Damien
 
-Two notifications:
+Three notifications:
 
 1. **Comment on the inbox issue** so there's a trail:
    ```bash
@@ -355,6 +355,23 @@ Two notifications:
    > `Built: <Dept> — <Topic>. PR #<N> ready to review in ols-digital-skills.`
 
    This pings his Mac terminal always, and his phone if Remote Control is connected.
+
+3. **Inline the PR body in the chat thread** — this is the review surface. Damien doesn't want to flip between this thread and GitHub to read the review; the same description that's on the PR lives here too. The thread is the home for the conversation around the build, so keep all the relevant context in one place.
+
+   After `gh pr create` succeeds, fetch the body back exactly and paste it as a quoted block in your reply to Damien, with a one-line lead-in identifying the PR (number, title, draft status) and a link to the PR on GitHub:
+
+   ```bash
+   gh pr view <PR-N> --repo dgaj-g/ols-digital-skills --json body --jq .body
+   ```
+
+   Format the inline copy as a top-level Markdown blockquote so it reads as a quoted artefact, not a fresh message — preserve the headings (one level down, e.g. PR `##` becomes `###` inside the quote), the checkboxes, the URLs, and every word of the body. The GitHub PR remains the canonical record; this is a mirror for Damien's convenience.
+
+   Example shape:
+   ```
+   > **PR #<N> — [BUILD] <Dept> — <Topic>** · *draft* · [open on GitHub](<PR-url>)
+   >
+   > <full PR body, verbatim, with one-level heading demotion>
+   ```
 
 ---
 
