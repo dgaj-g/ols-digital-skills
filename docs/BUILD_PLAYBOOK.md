@@ -4,7 +4,7 @@ The durable, step-by-step process Claude follows when Damien turns a submitted r
 
 - **`/next`** — build the oldest open issue in the queue.
 - **`/build <N> [extra instructions]`** — build a specific issue by number. Any text after the number is extra instructions from Damien that must be folded into the build as high-priority requirements alongside the issue's own content.
-- **`/publish <N>`** — run *after* Damien merges the PR. Generates the teacher handoff package (OLS-branded Word doc with QR code + plain-text URL, and a drafted email in Damien's voice). See **Step 12** below.
+- **`/publish <N>`** — run when Damien has reviewed the activity and is happy with it. This one command **merges the PR (going live on GitHub Pages), waits for the deployment, then generates the teacher handoff package** (OLS-branded Word doc with QR code + clickable URL, and a drafted email in Damien's voice). See **Step 12** below.
 
 **Read this whole file before doing anything.** Do not skim. Each request represents real, careful work by a teacher — the playbook exists to make sure that work is honoured precisely.
 
@@ -19,9 +19,9 @@ The durable, step-by-step process Claude follows when Damien turns a submitted r
 
 ```
 inbox issue → orient → parse → download → read everything → restate the vision
-→ build → test → push + draft PR → notify Damien → stop (Damien reviews + merges)
+→ build → test → push + draft PR → notify Damien → stop (Damien reviews on his time)
                                                               ↓
-                                              /publish <N> → Word doc + email draft
+                                /publish <N> → merge PR → wait for Pages → Word doc + email draft
 ```
 
 ---
@@ -366,9 +366,17 @@ If Damien comments on the PR with changes: address them on the **same branch**, 
 
 ---
 
-## Post-merge — Step 12: the handoff package (`/publish`)
+## Step 12 — `/publish`: go live + handoff package
 
-This step does **not** run inside a `/build` or `/next` session — those stop at Step 11. After Damien reviews and merges the PR, the activity is live on GitHub Pages. To get it into pupils' hands, Damien runs **`/publish <issue-number>`** in a fresh Claude Code session. That command produces two artefacts:
+This step does **not** run inside a `/build` or `/next` session — those stop at Step 11 and the draft PR sits in Damien's review queue. When Damien has reviewed the activity and decided it's ready, he runs **`/publish <issue-number>`** in a fresh Claude Code session. Running `/publish` IS his "yes, ship it" decision. The command:
+
+- **Merges the draft PR** (squash merge, deletes the branch) — this is the going-live step. GitHub Pages picks it up in ~30–60 seconds.
+- **Waits for Pages to redeploy** so the live URL actually resolves before producing materials that reference it.
+- **Generates the handoff package** for the teacher — Word doc + email draft.
+
+If the PR is already merged (e.g. Damien merged manually on GitHub before running `/publish`), the merge step is skipped and the command goes straight to handoff. If no PR is linked to the issue, or the PR was closed without merging, `/publish` stops with a clear message rather than guessing.
+
+The two artefacts produced:
 
 1. **`<Activity>_Access.docx`** — an A4 Word document the teacher prints, projects on the board, or shares as a PDF.
 2. **`<Activity>_email.md`** — a short email drafted in Damien's voice that he pastes into Outlook, attaches the docx to, and sends to the teacher.
@@ -453,9 +461,25 @@ Damien
 
 These files contain the teacher's email address (in the `_email.md`). They live in Claude Work, never in the public `ols-digital-skills` repo. Don't `git add` them.
 
-### What to do if /publish runs and the PR isn't merged yet
+### Merge mechanics (the details)
 
-Stop. Tell Damien: *"Issue #N is still open / its PR is still draft — nothing live yet to publish. Merge first, then re-run."* Don't speculate-generate a URL that doesn't yet resolve.
+- Use **`gh pr list --repo dgaj-g/ols-digital-skills --search "Closes dgaj-g/ols-digital-skills-inbox#<N>" --state all`** to find the PR — search across all states so we also find already-merged ones.
+- If the PR is a **draft**, mark it ready first (`gh pr ready <PR-N>`) then merge.
+- Merge with **`--squash --delete-branch`**. Squash keeps `main` history tidy (one commit per delivered activity); delete-branch tidies up the draft branch since it's done.
+- After merging, **poll the live URL** with `curl -s -o /dev/null -w "%{http_code}" <URL>` every 10 s until it's 200, with a ~3-minute ceiling. If it's still not 200 after 3 minutes, continue but flag it in the report — Pages occasionally lags, and Damien should re-check before sending the email.
+- The "Closes dgaj-g/ols-digital-skills-inbox#<N>" trailer in the PR body auto-closes the inbox issue on merge — no manual close needed.
+
+### What /publish reports back
+
+After everything's done, Damien sees in chat:
+
+- **Live URL** (plain text on its own line, clickable in his terminal)
+- **Word doc path** (absolute path under Claude Work)
+- **Email draft path** (absolute path under Claude Work)
+- **Email subject + body inlined** in the chat so he can copy-paste without opening the file if he prefers — useful when he's mobile or away from the file system
+- **Any flag** worth surfacing (e.g. "Pages took >3 min — re-check before sending")
+
+Plus a `PushNotification`: `Published: <Topic>. Live + handoff ready in Claude Work/<Dept>/.`
 
 ---
 
