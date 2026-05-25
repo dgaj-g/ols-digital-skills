@@ -11,8 +11,8 @@ Designed to be pasted into a fresh Claude Code session on the new Mac — the se
 After running these steps, the new Mac will have:
 
 - A working local clone of the activities repo at `~/Sites/ols-digital-skills/` (matches the path the playbook and slash commands assume).
-- The `/next` and `/build` slash commands installed at `~/.claude/commands/` and pointing at the latest versions of the playbook in the repo.
-- All the tools a build needs: `gh` CLI authenticated, `ffmpeg`, `whisper` for audio/video transcription, the `python-pptx` / `markitdown` Python helpers, Node global packages for HTML/SVG/PDF generation.
+- The `/next`, `/build`, and `/publish` slash commands installed at `~/.claude/commands/` and pointing at the latest versions of the playbook in the repo.
+- All the tools a build needs: `gh` CLI authenticated, `ffmpeg`, `whisper` for audio/video transcription, the `python-pptx` / `python-docx` / `markitdown` Python helpers, Node global packages for HTML/SVG/PDF generation (including `qrcode` for the handoff doc).
 - Power Automate, Microsoft Forms, GitHub Issues — all already in the cloud, nothing to install.
 
 It does **not** touch:
@@ -60,15 +60,17 @@ The canonical copies live in the repo at `~/Sites/ols-digital-skills/commands/`.
 mkdir -p ~/.claude/commands
 cp ~/Sites/ols-digital-skills/commands/next.md ~/.claude/commands/next.md
 cp ~/Sites/ols-digital-skills/commands/build.md ~/.claude/commands/build.md
+cp ~/Sites/ols-digital-skills/commands/publish.md ~/.claude/commands/publish.md
 ```
 
-After this, `/next` and `/build` will be available in any new Claude Code session on this Mac.
+After this, `/next`, `/build`, and `/publish` will be available in any new Claude Code session on this Mac.
 
 **To stay in sync going forward:** whenever you pull the repo on this Mac (`git pull`), if the slash commands have changed in the repo, re-run the two `cp` commands. Or, if you prefer auto-sync, replace each copy with a symlink:
 
 ```bash
 ln -sf ~/Sites/ols-digital-skills/commands/next.md ~/.claude/commands/next.md
 ln -sf ~/Sites/ols-digital-skills/commands/build.md ~/.claude/commands/build.md
+ln -sf ~/Sites/ols-digital-skills/commands/publish.md ~/.claude/commands/publish.md
 ```
 
 (Symlinks track the repo automatically. Recommended.)
@@ -94,10 +96,14 @@ python3 -c "import whisper; whisper.load_model('small')"
 ### 4. Install / verify the supporting Python packages
 
 ```bash
-pip3 install -U python-pptx markitdown
+pip3 install -U python-pptx python-docx markitdown
 ```
 
-These are used by the `pptx` skill (PowerPoint reading) and for fast text extraction.
+These are used by the `pptx` skill (PowerPoint reading), the `/publish` command (Word doc generation), and for fast text extraction. Verify python-docx specifically (it's the one `/publish` depends on):
+
+```bash
+python3 -c "import docx; print('python-docx OK, version:', docx.__version__)"
+```
 
 ### 5. Install / verify the supporting Homebrew tools
 
@@ -125,9 +131,9 @@ If anything's missing, install:
 npm install -g puppeteer sharp qrcode pptxgenjs mermaid-cli highlight.js react react-icons
 ```
 
-### 7. Smoke-test the pipeline — BOTH commands
+### 7. Smoke-test the pipeline — all three commands
 
-Open a fresh Claude Code session on this Mac. Run the two tests below in order. Don't actually confirm either build — once you've seen the one-screen summary, you've proved the command works; reply "stop, just testing setup" so the session doesn't kick off a real build.
+Open a fresh Claude Code session on this Mac. Run the three tests below in order. Don't actually confirm any build or publish — once you've seen the one-screen summary, you've proved the command loaded; reply "stop, just testing setup" so the session doesn't kick off real work.
 
 **Test 1 — `/next`**
 
@@ -161,7 +167,26 @@ Or, to test the extra-instructions path in one go:
 ```
 Where `<N>` is any open issue number. Expected: it restates your instructions in its pre-build summary and asks you to confirm. Reply "stop, just testing setup" before it builds.
 
-If both commands produced sensible pre-build summaries, the setup is fully verified.
+**Test 3 — `/publish`**
+
+Type:
+```
+/publish
+```
+
+(With no arguments.) Expected behaviour:
+1. Reads the build playbook
+2. Lists recently CLOSED issues from the inbox (these are the ones with merged PRs, eligible for publishing)
+3. Asks which issue number to generate the handoff package for
+4. Waits
+
+Or, to dry-run against a specific closed issue (replace `<M>`):
+```
+/publish <M>
+```
+Expected: it reports it would generate `<Activity>_Access.docx` and `<Activity>_email.md` in Claude Work. Reply "stop, just testing setup" before it actually writes anything.
+
+If all three commands produced sensible pre-action summaries, the setup is fully verified.
 
 ---
 
