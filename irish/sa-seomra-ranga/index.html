@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Sa Seomra Ranga &middot; Irish &middot; OLS Digital Skills</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity">
+
+<header class="act-header">
+  <div class="act-titles">
+    <p class="eyebrow">Gaeilge &middot; Bliain a hOcht</p>
+    <h1>Sa Seomra Ranga</h1>
+    <p class="lede">Learn the Irish words for the things in your classroom. <em>Aithin</em> — recognise them. <em>Líon an mála</em> — pack them. <em>Cuimhnigh orthu</em> — remember them.</p>
+  </div>
+</header>
+
+<main class="ga">
+
+  <nav class="ga-tabs" role="tablist">
+    <button class="ga-tab active" data-tab="identify" id="tabIdentify" role="tab" aria-selected="true">
+      <span class="tab-ga">Aithin an Rud</span>
+      <span class="tab-en">Identify</span>
+    </button>
+    <button class="ga-tab" data-tab="bag" id="tabBag" role="tab" aria-selected="false">
+      <span class="tab-ga">Líon an Mála Scoile</span>
+      <span class="tab-en">Fill the school bag</span>
+    </button>
+    <button class="ga-tab" data-tab="memory" id="tabMemory" role="tab" aria-selected="false">
+      <span class="tab-ga">Cluiche Cuimhne</span>
+      <span class="tab-en">Memory match</span>
+    </button>
+  </nav>
+
+  <!-- Identify mode -->
+  <section class="ga-pane" id="paneIdentify" role="tabpanel">
+    <header class="ga-bar">
+      <div class="ga-stat"><span class="bar-label">Ceist</span><span class="bar-val"><span id="iIdx">1</span> / <span id="iTotal">10</span></span></div>
+      <div class="ga-stat"><span class="bar-label">Ceart</span><span class="bar-val" id="iCorrect">0</span></div>
+      <div class="ga-stat"><span class="bar-label">Mícheart</span><span class="bar-val" id="iWrong">0</span></div>
+      <button class="ga-secondary" id="idReset" type="button">Reset</button>
+    </header>
+
+    <div class="id-board">
+      <div class="id-card-frame">
+        <div class="id-svg" id="idSvg" aria-hidden="true"></div>
+      </div>
+      <div class="id-question">
+        <p class="id-prompt"><span class="ga-text">Cad é seo?</span><span class="en-text">What is this?</span></p>
+        <div class="id-options" id="idOptions"></div>
+        <p class="ga-feedback" id="iFeedback" aria-live="polite">Pick the Irish word that matches the picture.</p>
+      </div>
+    </div>
+
+    <div class="ga-result" id="idResult" hidden>
+      <h3 id="idTitle">Maith thú!</h3>
+      <p id="idMsg"></p>
+      <button class="ga-go" id="idAgain" type="button">Imir arís — Play again</button>
+    </div>
+  </section>
+
+  <!-- Bag mode -->
+  <section class="ga-pane" id="paneBag" hidden role="tabpanel">
+    <header class="ga-bar">
+      <div class="ga-stat"><span class="bar-label">Babhta</span><span class="bar-val"><span id="bRound">1</span> / <span id="bTotal">4</span></span></div>
+      <div class="ga-stat"><span class="bar-label">Ceart</span><span class="bar-val" id="bCorrect">0</span></div>
+      <div class="ga-stat"><span class="bar-label">Mícheart</span><span class="bar-val" id="bWrong">0</span></div>
+      <button class="ga-secondary" id="bgReset" type="button">Reset</button>
+    </header>
+
+    <p class="ga-feedback" id="bFeedback" aria-live="polite">Drag each item from the desk into your school bag — but only the ones on the packing list. Items you don't need stay on the desk.</p>
+
+    <div class="bg-top">
+      <div class="bg-list-card">
+        <header><span class="bg-tag">Liosta</span><span class="bg-tag-en">Packing list</span></header>
+        <ul class="bg-list" id="bgList"></ul>
+      </div>
+      <div class="bg-basket-card">
+        <header><span class="bg-tag bag">An Mála Scoile</span><span class="bg-tag-en">The school bag</span></header>
+        <div class="bg-basket-drop" id="bgBagDrop"></div>
+      </div>
+    </div>
+
+    <div class="bg-shelf">
+      <header><span class="bg-tag shelf">An Deasc</span><span class="bg-tag-en">The desk — drag what you need</span></header>
+      <div class="bg-pool" id="bgPool"></div>
+    </div>
+
+    <div class="ga-result" id="bgResult" hidden>
+      <h3 id="bgTitle">Maith thú!</h3>
+      <p id="bgMsg"></p>
+      <button class="ga-go" id="bgAgain" type="button">Babhta nua — Next round</button>
+    </div>
+  </section>
+
+  <!-- Memory match mode -->
+  <section class="ga-pane" id="paneMemory" hidden role="tabpanel">
+    <header class="ga-bar">
+      <div class="ga-stat"><span class="bar-label">Péirí</span><span class="bar-val"><span id="mPairs">0</span> / <span id="mTotalPairs">8</span></span></div>
+      <div class="ga-stat"><span class="bar-label">Iarrachtaí</span><span class="bar-val" id="mTries">0</span></div>
+      <button class="ga-secondary" id="mReset" type="button">Reset</button>
+    </header>
+
+    <p class="ga-feedback" id="mFeedback" aria-live="polite">Flip two cards at a time — match each picture with its Irish word.</p>
+
+    <div class="memory-grid" id="memoryGrid"></div>
+
+    <div class="ga-result" id="memoryResult" hidden>
+      <h3 id="mTitle">Maith thú!</h3>
+      <p id="mMsg"></p>
+      <button class="ga-go" id="mAgain" type="button">Imir arís — Play again</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
