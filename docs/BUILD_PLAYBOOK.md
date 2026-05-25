@@ -4,7 +4,7 @@ The durable, step-by-step process Claude follows when Damien turns a submitted r
 
 - **`/next`** — build the oldest open issue in the queue.
 - **`/build <N> [extra instructions]`** — build a specific issue by number. Any text after the number is extra instructions from Damien that must be folded into the build as high-priority requirements alongside the issue's own content.
-- **`/publish <N>`** — run when Damien has reviewed the activity and is happy with it. This one command **merges the PR (going live on GitHub Pages), waits for the deployment, then generates the teacher handoff package** (OLS-branded Word doc with QR code + clickable URL, and a drafted email in Damien's voice). See **Step 12** below.
+- **`/publish <N> [extra instructions]`** — run when Damien has reviewed the activity and is happy with it. This one command **merges the PR (going live on GitHub Pages), waits for the deployment, then generates the teacher handoff package** (OLS-branded Word doc with QR code + clickable URL, and a drafted email in Damien's voice). Any text after the issue number is extra instructions, almost always for the teacher's email — fold them in alongside the playbook's tone spec (Damien's extras win on conflict). See **Step 12** below.
 
 **Read this whole file before doing anything.** Do not skim. Each request represents real, careful work by a teacher — the playbook exists to make sure that work is honoured precisely.
 
@@ -415,6 +415,17 @@ Both files land in the **department folder under Claude Work**, never in the pub
 ```
 
 Use the existing department folder if one already exists (e.g. `Chemistry/`, `Music/`). Create a new title-case folder (`RE/`, `Irish/`, `Sports Science/`) if not. The Mendeleev precedent (`Chemistry/Mendeleev_Cards_Access.docx`) is the format reference.
+
+### Extra instructions on `/publish`
+
+`/publish` accepts the same shape of extra instructions as `/build` does: anything Damien types after the issue number is high-priority guidance, almost always intended for the **email draft** rather than the Word doc. Typical extras:
+
+- *"Mention that the audio files will follow next week once she sends the recordings."*
+- *"Thank her for the long worksheet she uploaded — it made the build straightforward."*
+- *"She prefers `Sa Seomra Ranga` as the printout title rather than `Sa Seomra Ranga — Bia agus Deoch`."*
+- *"Apologise for the delay — life got in the way."*
+
+Treat each item as a tracked requirement: decompose them into a numbered checklist, weave them into the email so it still reads as one continuous message in Damien's voice (not "canonical email plus tacked-on paragraph"), apply any doc-relevant ones to the Word doc, and in your final report list each item and exactly how it was honoured. If an extra conflicts with the canonical email tone spec below (e.g. Damien wants a warmer-than-usual opener for a teacher he knows well), Damien's extras win — but flag the override in the report so he can sanity-check it.
 
 ### What the Word doc must contain — strict spec
 
