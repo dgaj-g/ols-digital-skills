@@ -12,7 +12,10 @@
 <header class="act-header">
   <p class="eyebrow">RE &middot; KS3 &middot; Year 10</p>
   <h1 class="wordmark-title">Intro to Islam</h1>
-  <button id="reset-btn" type="button" class="ghost-btn" aria-label="Reset all three tasks">Reset all</button>
+  <div class="header-tools">
+    <span id="total-score" class="total-score" hidden aria-live="polite">Total: 0 / 9</span>
+    <button id="reset-btn" type="button" class="ghost-btn" aria-label="Reset all three tasks">Reset all</button>
+  </div>
 </header>
 
 <main class="act-main">
@@ -50,6 +53,8 @@
         <!-- Filled by script.js -->
       </div>
     </div>
+
+    <button id="check-matching" type="button" class="check-btn" hidden>Check answers</button>
   </section>
 
   <!-- ============================================================
@@ -72,12 +77,6 @@
     <div class="image-question">
       <label for="kaaba-answer" class="question-label">How do you know this is the Kaaba?</label>
       <textarea id="kaaba-answer" class="answer-lines" rows="2" placeholder="Write your answer in two lines…"></textarea>
-      <div class="keyword-tracker" aria-live="polite">
-        <p class="keyword-tracker-label">Key words to look out for &mdash; they light up as you use them:</p>
-        <ul class="keyword-chips" id="kaaba-keywords">
-          <!-- Filled by script.js -->
-        </ul>
-      </div>
     </div>
   </section>
 

@@ -2,9 +2,14 @@
    Intro to Islam — Year 10 RE mid-lesson progress check
    ------------------------------------------------------------
    Three tasks on one page:
-     1. Drag definitions onto the matching key term
-     2. Click the image of the Kaaba (from 3 choices) + textarea
-     3. Drag-and-drop timeline of Muhammad's life + textarea
+     1. Drag definitions into slots (any slot accepts any card,
+        free swap before Check) → "Check answers" reveals score
+     2. Click the image of the Kaaba — ONE attempt only; wrong
+        click locks red and the correct one auto-reveals green
+     3. Drag-and-drop timeline → "Check my order" locks each
+        card green (correct) or red (wrong)
+   Overall total (X / 9) appears in the header once all three
+   tasks have been checked.
    Works on mouse + touch via Pointer Events.
    ============================================================ */
 
@@ -30,28 +35,24 @@ const TIMELINE_EVENTS = [
   { order: 5, text: "Death of Muhammad" }
 ];
 
-// ---------- Keyword tracker data ----------
-
-// Each "keyword" is a concept the teacher wants pupils to mention in their
-// Kaaba answer. The `match` array is the case-insensitive substrings that
-// will trigger the chip. The teacher gave "cube", "Mecca", "black" as
-// examples — we accept those plus close synonyms a Y10 pupil might use.
-const KAABA_KEYWORDS = [
-  { label: "cube",        match: ["cube", "cuboid", "cubic"] },
-  { label: "black",       match: ["black"] },
-  { label: "Mecca",       match: ["mecca", "makkah"] },
-  { label: "Muslim",      match: ["muslim"] },
-  { label: "Hajj",        match: ["hajj", "pilgrim"] },
-  { label: "pray",        match: ["pray", "prayer", "worship"] }
-];
+const POINTS_TASK1 = 3;
+const POINTS_TASK2 = 1;
+const POINTS_TASK3 = 5;
+const POINTS_TOTAL = POINTS_TASK1 + POINTS_TASK2 + POINTS_TASK3;
 
 // ---------- State ----------
 
 const state = {
-  task1Placed: 0,
+  task1Placed: 0,        // how many def-cards currently sit in slots
+  task1Checked: false,
+  task1Score: 0,
+
   task2Done: false,
-  task3Placed: 0,
-  task3Complete: false,
+  task2Score: 0,
+
+  task3Checked: false,
+  task3Score: 0,
+
   modelAnswersShown: false,
   pointer: { id: null, startX: 0, startY: 0, kind: null, dragged: null, originParent: null, originNextSibling: null, moved: false, startTime: 0 },
   audioCtx: null
@@ -68,7 +69,6 @@ function shuffle(arr) {
   return a;
 }
 
-// Ensure a shuffled copy is actually different from the original order
 function shuffleEnsuringChange(arr, keyFn = (x) => x) {
   if (arr.length <= 1) return arr.slice();
   let attempts = 0;
@@ -78,7 +78,6 @@ function shuffleEnsuringChange(arr, keyFn = (x) => x) {
     if (!same) return candidate;
     attempts++;
   }
-  // Fallback: swap first two
   const fallback = arr.slice();
   [fallback[0], fallback[1]] = [fallback[1], fallback[0]];
   return fallback;
@@ -92,7 +91,7 @@ function el(tag, opts = {}) {
   return e;
 }
 
-// ---------- Audio (tiny Web Audio cues) ----------
+// ---------- Audio ----------
 
 function getAudio() {
   if (!state.audioCtx) {
@@ -126,6 +125,10 @@ function playWrongBuzz() {
   playTone(180, 0.10, 'square', 0.06);
 }
 
+function playSnapTick() {
+  playTone(520, 0.05, 'sine', 0.06);
+}
+
 function playCelebration() {
   [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
     setTimeout(() => playTone(f, 0.45, 'sine', 0.10), i * 120);
@@ -133,13 +136,12 @@ function playCelebration() {
 }
 
 // ============================================================
-//   Shared Pointer drag engine
+//   Shared Pointer drag engine (used by Task 1 & Task 3)
 // ============================================================
 
 const TAP_THRESHOLD_PX = 6;
 
 function attachDragHandlers(card, opts) {
-  // opts: { kind: 'def' | 'event' }
   card.addEventListener('pointerdown', onPointerDown);
   card.addEventListener('pointermove', onPointerMove);
   card.addEventListener('pointerup', onPointerUp);
@@ -150,7 +152,9 @@ function attachDragHandlers(card, opts) {
 function onPointerDown(e) {
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   const card = e.currentTarget;
-  if (card.classList.contains('placed') || card.classList.contains('correct')) return;
+  // After Check has been pressed for the relevant task, cards are locked
+  if (card.dataset.kind === 'def' && state.task1Checked) return;
+  if (card.dataset.kind === 'event' && state.task3Checked) return;
   try { card.setPointerCapture(e.pointerId); } catch (_) {}
   state.pointer.id = e.pointerId;
   state.pointer.startX = e.clientX;
@@ -171,7 +175,6 @@ function onPointerMove(e) {
 
   if (!state.pointer.moved && Math.hypot(dx, dy) > TAP_THRESHOLD_PX) {
     state.pointer.moved = true;
-    // Lift to fixed-position on the body for unconstrained dragging
     const r = card.getBoundingClientRect();
     card.classList.add('dragging');
     card.style.width = r.width + 'px';
@@ -199,7 +202,6 @@ function onPointerUp(e) {
   clearHighlights();
 
   if (!wasDrag) {
-    // simple tap with no drag — no action other than reset (slot was never left)
     resetInline(card);
   } else {
     const target = dropTargetUnder(e.clientX, e.clientY, state.pointer.kind);
@@ -271,7 +273,7 @@ function highlightDropTarget(x, y, kind, card) {
   const target = dropTargetUnder(x, y, kind);
   if (!target) return;
   if (kind === 'def' && target.classList.contains('term-slot')) {
-    if (!target.classList.contains('filled')) target.classList.add('drop-hover');
+    target.classList.add('drop-hover');
   }
   if (kind === 'event' && target.classList.contains('timeline-slot')) {
     target.classList.add('drop-hover');
@@ -282,7 +284,7 @@ function clearHighlights() {
   document.querySelectorAll('.drop-hover').forEach(e => e.classList.remove('drop-hover'));
 }
 
-// ---- Drop handling per task ----
+// ---- Drop handling ----
 
 function handleDrop(card, target, kind) {
   if (kind === 'def') return handleDefDrop(card, target);
@@ -290,79 +292,126 @@ function handleDrop(card, target, kind) {
 }
 
 // ============================================================
-//   TASK 1 — Matching definitions
+//   TASK 1 — Match definitions (place-then-check)
 // ============================================================
 
 const defTray = document.getElementById('def-tray');
 const matchBoard = document.getElementById('match-board');
 const task1Status = document.getElementById('task1-status');
+const checkMatchingBtn = document.getElementById('check-matching');
 
 function buildTask1() {
   defTray.innerHTML = '';
-  // Reset slots
   matchBoard.querySelectorAll('.term-slot').forEach(s => {
     s.classList.remove('filled', 'drop-hover', 'drop-wrong-flash');
     s.innerHTML = '';
   });
 
-  // Shuffle definition cards so the order isn't trivially matching the terms
+  state.task1Placed = 0;
+  state.task1Checked = false;
+  state.task1Score = 0;
+  checkMatchingBtn.hidden = true;
+  checkMatchingBtn.disabled = false;
+  checkMatchingBtn.textContent = 'Check answers';
+  checkMatchingBtn.classList.remove('complete');
+
   const order = shuffleEnsuringChange(DEFINITIONS, d => d.id);
   for (const d of order) {
-    const card = el('div', { className: 'def-card', attrs: { 'data-def': d.id, 'role': 'button', 'tabindex': '0', 'aria-label': `Definition: ${d.text}. Drag onto the matching key term.` }, text: d.text });
+    const card = el('div', {
+      className: 'def-card',
+      attrs: { 'data-def': d.id, 'role': 'button', 'tabindex': '0', 'aria-label': `Definition: ${d.text}. Drag onto the term you think it matches.` },
+      text: d.text
+    });
     attachDragHandlers(card, { kind: 'def' });
     defTray.appendChild(card);
   }
 
-  state.task1Placed = 0;
   updateTask1Status();
 }
 
 function updateTask1Status() {
-  task1Status.textContent = `${state.task1Placed} / 3`;
-  if (state.task1Placed === 3) task1Status.classList.add('done');
-  else task1Status.classList.remove('done');
+  if (state.task1Checked) {
+    task1Status.textContent = `${state.task1Score} / ${POINTS_TASK1} correct`;
+    task1Status.classList.toggle('done', state.task1Score === POINTS_TASK1);
+    task1Status.classList.toggle('partial', state.task1Score > 0 && state.task1Score < POINTS_TASK1);
+    task1Status.classList.toggle('zero', state.task1Score === 0);
+  } else {
+    task1Status.textContent = `${state.task1Placed} / 3 placed`;
+    task1Status.classList.remove('done', 'partial', 'zero');
+  }
+  // Show the Check button only when all 3 cards are placed AND not yet checked
+  checkMatchingBtn.hidden = !(state.task1Placed === 3 && !state.task1Checked);
 }
 
 function handleDefDrop(card, target) {
-  // If dropped back on the tray (or no valid target), return to origin
+  // Dropped on the tray (or off-board) → return to origin
   if (!target || target.id === 'def-tray') {
     returnToOrigin(card);
     return;
   }
   // target is a .term-slot
-  const wantedTerm = target.dataset.term;
-  const cardTerm = card.dataset.def;
-  if (target.classList.contains('filled')) {
-    returnToOrigin(card);
-    playWrongBuzz();
-    return;
+  const existing = target.querySelector('.def-card');
+  const originParent = state.pointer.originParent;
+  const originIsSlot = originParent && originParent.classList && originParent.classList.contains('term-slot');
+
+  if (existing && existing !== card) {
+    // Swap: move the existing card to wherever the dragged one came from
+    if (originIsSlot) {
+      originParent.appendChild(existing);
+    } else {
+      defTray.appendChild(existing);
+    }
   }
-  if (wantedTerm !== cardTerm) {
-    // Wrong slot — flash red, bounce back
-    target.classList.add('drop-wrong-flash');
-    setTimeout(() => target.classList.remove('drop-wrong-flash'), 480);
-    returnToOrigin(card);
-    playWrongBuzz();
-    return;
-  }
-  // Correct — snap into the slot
+
   resetInline(card);
   target.innerHTML = '';
-  target.classList.add('filled');
   target.appendChild(card);
+  target.classList.add('filled');
   card.classList.add('placed', 'snap-in');
-  card.setAttribute('aria-disabled', 'true');
   setTimeout(() => card.classList.remove('snap-in'), 360);
-  state.task1Placed += 1;
-  updateTask1Status();
-  playCorrectChime();
-  if (state.task1Placed === 3) {
-    setTimeout(playCelebration, 250);
+
+  // If the source slot is now empty, mark it un-filled
+  if (originIsSlot && originParent !== target) {
+    if (!originParent.querySelector('.def-card')) {
+      originParent.classList.remove('filled');
+    }
   }
+
+  recomputeTask1Placed();
+  playSnapTick();
 }
 
+function recomputeTask1Placed() {
+  state.task1Placed = matchBoard.querySelectorAll('.term-slot .def-card').length;
+  updateTask1Status();
+}
+
+checkMatchingBtn.addEventListener('click', () => {
+  if (state.task1Checked) return;
+  let correct = 0;
+  matchBoard.querySelectorAll('.term-slot').forEach(slot => {
+    const card = slot.querySelector('.def-card');
+    if (!card) return;
+    const isRight = card.dataset.def === slot.dataset.term;
+    if (isRight) {
+      card.classList.add('marked-correct');
+      correct += 1;
+    } else {
+      card.classList.add('marked-wrong');
+    }
+    card.classList.remove('placed');   // strip the neutral placed look
+  });
+  state.task1Score = correct;
+  state.task1Checked = true;
+  checkMatchingBtn.hidden = true;
+  if (correct === POINTS_TASK1) playCelebration();
+  else playCorrectChime();
+  updateTask1Status();
+  updateTotalScore();
+});
+
 // ============================================================
-//   TASK 2 — Click the Kaaba
+//   TASK 2 — Click the Kaaba (single attempt)
 // ============================================================
 
 const imageRow = document.getElementById('image-row');
@@ -371,12 +420,16 @@ const task2Status = document.getElementById('task2-status');
 function buildTask2() {
   imageRow.innerHTML = '';
   state.task2Done = false;
-  task2Status.classList.remove('done');
-  task2Status.textContent = 'Not yet';
+  state.task2Score = 0;
+  task2Status.classList.remove('done', 'zero');
+  task2Status.textContent = 'Pick one';
 
   const order = shuffle(IMAGES);
   for (const img of order) {
-    const wrapper = el('div', { className: 'image-choice', attrs: { 'data-id': img.id, 'role': 'radio', 'tabindex': '0', 'aria-checked': 'false', 'aria-label': `${img.caption}. ${img.alt}. Select if you think this is the Kaaba.` } });
+    const wrapper = el('div', {
+      className: 'image-choice',
+      attrs: { 'data-id': img.id, 'role': 'radio', 'tabindex': '0', 'aria-checked': 'false', 'aria-label': `${img.caption}. ${img.alt}. Select if you think this is the Kaaba.` }
+    });
     const imgEl = el('img', { attrs: { src: img.src, alt: img.alt, loading: 'lazy' } });
     const tick = el('div', { className: 'tick', text: 'Tap to select' });
     wrapper.appendChild(imgEl);
@@ -395,32 +448,42 @@ function buildTask2() {
 function handleImageChoice(wrapper, img) {
   if (state.task2Done) return;
   const tick = wrapper.querySelector('.tick');
+
   if (img.isAnswer) {
     wrapper.classList.add('chosen-correct');
     wrapper.setAttribute('aria-checked', 'true');
     tick.textContent = 'Correct — this is the Kaaba';
-    state.task2Done = true;
+    state.task2Score = POINTS_TASK2;
     task2Status.textContent = 'Correct';
     task2Status.classList.add('done');
-    imageRow.querySelectorAll('.image-choice').forEach(c => {
-      if (c !== wrapper) c.classList.add('locked');
-      c.setAttribute('tabindex', '-1');
-    });
     playCorrectChime();
   } else {
-    wrapper.classList.add('chosen-wrong');
-    tick.textContent = 'Not quite — try again';
+    wrapper.classList.add('chosen-wrong-locked');
+    tick.textContent = 'Incorrect';
+    state.task2Score = 0;
+    task2Status.textContent = 'Incorrect';
+    task2Status.classList.add('zero');
+    // Auto-reveal the actual Kaaba so the pupil sees the right answer
+    const kaabaWrapper = imageRow.querySelector('.image-choice[data-id="kaaba"]');
+    if (kaabaWrapper) {
+      kaabaWrapper.classList.add('reveal-answer');
+      const kt = kaabaWrapper.querySelector('.tick');
+      if (kt) kt.textContent = 'This was the Kaaba';
+    }
     playWrongBuzz();
-    // Let the pupil try another after the shake animation; clear after 1.2s
-    setTimeout(() => {
-      wrapper.classList.remove('chosen-wrong');
-      tick.textContent = 'Tap to select';
-    }, 1200);
   }
+
+  state.task2Done = true;
+  // Lock all choices
+  imageRow.querySelectorAll('.image-choice').forEach(c => {
+    if (c !== wrapper && !c.classList.contains('reveal-answer')) c.classList.add('locked');
+    c.setAttribute('tabindex', '-1');
+  });
+  updateTotalScore();
 }
 
 // ============================================================
-//   TASK 3 — Timeline (drag to reorder)
+//   TASK 3 — Timeline (drag to reorder, then Check)
 // ============================================================
 
 const timelineEl = document.getElementById('timeline');
@@ -429,19 +492,22 @@ const checkBtn = document.getElementById('check-timeline');
 
 function buildTask3() {
   timelineEl.innerHTML = '';
-  state.task3Placed = 0;
-  state.task3Complete = false;
-  task3Status.classList.remove('done');
-  task3Status.textContent = '0 / 5 in place';
+  state.task3Checked = false;
+  state.task3Score = 0;
+  task3Status.classList.remove('done', 'partial', 'zero');
+  task3Status.textContent = 'Drag to reorder';
   checkBtn.disabled = false;
   checkBtn.classList.remove('complete');
   checkBtn.textContent = 'Check my order';
 
-  // Jumble the events (must not be in correct order)
   const order = shuffleEnsuringChange(TIMELINE_EVENTS, e => e.order);
   for (let i = 0; i < order.length; i++) {
     const slot = el('li', { className: 'timeline-slot', attrs: { 'data-slot-index': String(i) } });
-    const card = el('div', { className: 'event-card', attrs: { 'data-order': String(order[i].order), 'role': 'listitem', 'tabindex': '0', 'aria-label': `Timeline event: ${order[i].text}` }, text: order[i].text });
+    const card = el('div', {
+      className: 'event-card',
+      attrs: { 'data-order': String(order[i].order), 'role': 'listitem', 'tabindex': '0', 'aria-label': `Timeline event: ${order[i].text}` },
+      text: order[i].text
+    });
     attachDragHandlers(card, { kind: 'event' });
     slot.appendChild(card);
     timelineEl.appendChild(slot);
@@ -449,24 +515,20 @@ function buildTask3() {
 }
 
 function handleEventDrop(card, target) {
-  // Drop must be onto a .timeline-slot
   if (!target || !target.classList.contains('timeline-slot')) {
     returnToOrigin(card);
     return;
   }
 
-  // Find current occupant of the target slot
   const existing = target.querySelector('.event-card');
   const originSlot = state.pointer.originParent && state.pointer.originParent.classList && state.pointer.originParent.classList.contains('timeline-slot')
     ? state.pointer.originParent
     : null;
 
   if (existing && existing !== card) {
-    // Swap: place existing back into the origin slot
     if (originSlot) {
       originSlot.appendChild(existing);
     } else {
-      // origin wasn't a slot — should not happen, but fall back
       target.parentElement.insertBefore(existing, target);
     }
   }
@@ -475,89 +537,61 @@ function handleEventDrop(card, target) {
   target.appendChild(card);
   card.classList.add('snap-in');
   setTimeout(() => card.classList.remove('snap-in'), 360);
-
-  updateTask3Progress();
-}
-
-function updateTask3Progress() {
-  // Count how many slots have the card whose data-order matches its slot index+1
-  const slots = timelineEl.querySelectorAll('.timeline-slot');
-  let correct = 0;
-  slots.forEach((slot, i) => {
-    const card = slot.querySelector('.event-card');
-    if (card && Number(card.dataset.order) === i + 1) correct += 1;
-  });
-  state.task3Placed = correct;
-  task3Status.textContent = `${correct} / 5 in place`;
-  if (correct === 5) {
-    task3Status.classList.add('done');
-  } else {
-    task3Status.classList.remove('done');
-  }
+  playSnapTick();
 }
 
 checkBtn.addEventListener('click', () => {
+  if (state.task3Checked) return;
   const slots = timelineEl.querySelectorAll('.timeline-slot');
   let correct = 0;
   slots.forEach((slot, i) => {
     const card = slot.querySelector('.event-card');
     if (!card) return;
-    card.classList.remove('correct', 'wrong-flash');
     if (Number(card.dataset.order) === i + 1) {
       card.classList.add('correct');
       correct += 1;
     } else {
-      card.classList.add('wrong-flash');
-      setTimeout(() => card.classList.remove('wrong-flash'), 500);
+      card.classList.add('marked-wrong');
     }
   });
-  if (correct === 5) {
+  state.task3Score = correct;
+  state.task3Checked = true;
+  task3Status.textContent = `${correct} / ${POINTS_TASK3} correct`;
+  task3Status.classList.toggle('done', correct === POINTS_TASK3);
+  task3Status.classList.toggle('partial', correct > 0 && correct < POINTS_TASK3);
+  task3Status.classList.toggle('zero', correct === 0);
+  if (correct === POINTS_TASK3) {
     checkBtn.textContent = 'Perfect order!';
     checkBtn.classList.add('complete');
-    state.task3Complete = true;
     playCelebration();
   } else {
+    checkBtn.textContent = 'Checked';
+    checkBtn.disabled = true;
     playWrongBuzz();
   }
+  updateTotalScore();
 });
 
 // ============================================================
-//   Keyword tracker (Task 2 textarea)
+//   Overall total score
 // ============================================================
 
-const kaabaAnswer = document.getElementById('kaaba-answer');
-const kaabaKeywords = document.getElementById('kaaba-keywords');
+const totalScoreEl = document.getElementById('total-score');
 
-function buildKaabaKeywords() {
-  kaabaKeywords.innerHTML = '';
-  for (const kw of KAABA_KEYWORDS) {
-    const chip = el('li', { className: 'keyword-chip', text: kw.label, attrs: { 'data-key': kw.label, 'aria-label': `Key word: ${kw.label}` } });
-    kaabaKeywords.appendChild(chip);
+function updateTotalScore() {
+  // Only show the total once all three tasks have been checked
+  if (state.task1Checked && state.task2Done && state.task3Checked) {
+    const total = state.task1Score + state.task2Score + state.task3Score;
+    totalScoreEl.textContent = `Total: ${total} / ${POINTS_TOTAL}`;
+    totalScoreEl.hidden = false;
+    totalScoreEl.classList.toggle('all-correct', total === POINTS_TOTAL);
+  } else {
+    totalScoreEl.hidden = true;
   }
 }
 
-function updateKaabaKeywords() {
-  const text = (kaabaAnswer.value || '').toLowerCase();
-  let newlyHit = 0;
-  for (const kw of KAABA_KEYWORDS) {
-    const hit = kw.match.some(m => text.includes(m));
-    const chip = kaabaKeywords.querySelector(`.keyword-chip[data-key="${kw.label}"]`);
-    if (!chip) continue;
-    const wasHit = chip.classList.contains('hit');
-    if (hit && !wasHit) {
-      chip.classList.add('hit');
-      newlyHit += 1;
-    } else if (!hit && wasHit) {
-      chip.classList.remove('hit');
-    }
-  }
-  if (newlyHit > 0) playTone(750, 0.08, 'sine', 0.06);
-}
-
-kaabaAnswer.addEventListener('input', updateKaabaKeywords);
-
 // ============================================================
-//   Model answers reveal (Task 3 textarea)
+//   Model answers reveal (Task 3 textarea — unchanged)
 // ============================================================
 
 const eventAnswer = document.getElementById('event-answer');
@@ -565,8 +599,6 @@ const showModelsBtn = document.getElementById('show-models');
 const modelAnswers = document.getElementById('model-answers');
 
 function updateShowModelsBtn() {
-  // Enable the reveal button once the pupil has actually written something
-  // meaningful — keeps them from skipping straight to the answers.
   const len = (eventAnswer.value || '').trim().length;
   if (state.modelAnswersShown) return;
   showModelsBtn.disabled = len < 10;
@@ -598,14 +630,13 @@ function resetModelAnswers() {
 // ============================================================
 
 document.getElementById('reset-btn').addEventListener('click', () => {
-  kaabaAnswer.value = '';
+  document.getElementById('kaaba-answer').value = '';
   eventAnswer.value = '';
   buildTask1();
   buildTask2();
   buildTask3();
-  buildKaabaKeywords();
-  updateKaabaKeywords();
   resetModelAnswers();
+  updateTotalScore();
 });
 
 // ============================================================
@@ -615,5 +646,5 @@ document.getElementById('reset-btn').addEventListener('click', () => {
 buildTask1();
 buildTask2();
 buildTask3();
-buildKaabaKeywords();
 updateShowModelsBtn();
+updateTotalScore();
