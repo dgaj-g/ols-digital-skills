@@ -30,6 +30,21 @@ const TIMELINE_EVENTS = [
   { order: 5, text: "Death of Muhammad" }
 ];
 
+// ---------- Keyword tracker data ----------
+
+// Each "keyword" is a concept the teacher wants pupils to mention in their
+// Kaaba answer. The `match` array is the case-insensitive substrings that
+// will trigger the chip. The teacher gave "cube", "Mecca", "black" as
+// examples — we accept those plus close synonyms a Y10 pupil might use.
+const KAABA_KEYWORDS = [
+  { label: "cube",        match: ["cube", "cuboid", "cubic"] },
+  { label: "black",       match: ["black"] },
+  { label: "Mecca",       match: ["mecca", "makkah"] },
+  { label: "Muslim",      match: ["muslim"] },
+  { label: "Hajj",        match: ["hajj", "pilgrim"] },
+  { label: "pray",        match: ["pray", "prayer", "worship"] }
+];
+
 // ---------- State ----------
 
 const state = {
@@ -37,6 +52,7 @@ const state = {
   task2Done: false,
   task3Placed: 0,
   task3Complete: false,
+  modelAnswersShown: false,
   pointer: { id: null, startX: 0, startY: 0, kind: null, dragged: null, originParent: null, originNextSibling: null, moved: false, startTime: 0 },
   audioCtx: null
 };
@@ -506,15 +522,90 @@ checkBtn.addEventListener('click', () => {
 });
 
 // ============================================================
+//   Keyword tracker (Task 2 textarea)
+// ============================================================
+
+const kaabaAnswer = document.getElementById('kaaba-answer');
+const kaabaKeywords = document.getElementById('kaaba-keywords');
+
+function buildKaabaKeywords() {
+  kaabaKeywords.innerHTML = '';
+  for (const kw of KAABA_KEYWORDS) {
+    const chip = el('li', { className: 'keyword-chip', text: kw.label, attrs: { 'data-key': kw.label, 'aria-label': `Key word: ${kw.label}` } });
+    kaabaKeywords.appendChild(chip);
+  }
+}
+
+function updateKaabaKeywords() {
+  const text = (kaabaAnswer.value || '').toLowerCase();
+  let newlyHit = 0;
+  for (const kw of KAABA_KEYWORDS) {
+    const hit = kw.match.some(m => text.includes(m));
+    const chip = kaabaKeywords.querySelector(`.keyword-chip[data-key="${kw.label}"]`);
+    if (!chip) continue;
+    const wasHit = chip.classList.contains('hit');
+    if (hit && !wasHit) {
+      chip.classList.add('hit');
+      newlyHit += 1;
+    } else if (!hit && wasHit) {
+      chip.classList.remove('hit');
+    }
+  }
+  if (newlyHit > 0) playTone(750, 0.08, 'sine', 0.06);
+}
+
+kaabaAnswer.addEventListener('input', updateKaabaKeywords);
+
+// ============================================================
+//   Model answers reveal (Task 3 textarea)
+// ============================================================
+
+const eventAnswer = document.getElementById('event-answer');
+const showModelsBtn = document.getElementById('show-models');
+const modelAnswers = document.getElementById('model-answers');
+
+function updateShowModelsBtn() {
+  // Enable the reveal button once the pupil has actually written something
+  // meaningful — keeps them from skipping straight to the answers.
+  const len = (eventAnswer.value || '').trim().length;
+  if (state.modelAnswersShown) return;
+  showModelsBtn.disabled = len < 10;
+}
+
+eventAnswer.addEventListener('input', updateShowModelsBtn);
+
+showModelsBtn.addEventListener('click', () => {
+  if (showModelsBtn.disabled) return;
+  modelAnswers.hidden = false;
+  showModelsBtn.classList.add('shown');
+  showModelsBtn.textContent = 'Model answers shown';
+  showModelsBtn.setAttribute('aria-expanded', 'true');
+  state.modelAnswersShown = true;
+  playCorrectChime();
+});
+
+function resetModelAnswers() {
+  modelAnswers.hidden = true;
+  showModelsBtn.classList.remove('shown');
+  showModelsBtn.textContent = 'Show model answers';
+  showModelsBtn.setAttribute('aria-expanded', 'false');
+  showModelsBtn.disabled = true;
+  state.modelAnswersShown = false;
+}
+
+// ============================================================
 //   Reset all
 // ============================================================
 
 document.getElementById('reset-btn').addEventListener('click', () => {
-  document.getElementById('kaaba-answer').value = '';
-  document.getElementById('event-answer').value = '';
+  kaabaAnswer.value = '';
+  eventAnswer.value = '';
   buildTask1();
   buildTask2();
   buildTask3();
+  buildKaabaKeywords();
+  updateKaabaKeywords();
+  resetModelAnswers();
 });
 
 // ============================================================
@@ -524,3 +615,5 @@ document.getElementById('reset-btn').addEventListener('click', () => {
 buildTask1();
 buildTask2();
 buildTask3();
+buildKaabaKeywords();
+updateShowModelsBtn();

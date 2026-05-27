@@ -446,6 +446,82 @@ body.activity {
   box-shadow: 0 0 0 3px rgba(0, 106, 78, 0.16);
 }
 
+/* ---------- Keyword tracker (Task 2) ---------- */
+
+.keyword-tracker {
+  margin-top: 12px;
+}
+
+.keyword-tracker-label {
+  margin: 0 0 6px;
+  font-size: 0.82rem;
+  color: var(--islam-green-dark);
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.keyword-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.keyword-chip {
+  background: white;
+  border: 1.5px solid var(--islam-line);
+  color: var(--muted, #595959);
+  padding: 5px 12px 5px 24px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  position: relative;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+
+.keyword-chip::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--islam-line);
+  background: white;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.keyword-chip.hit {
+  background: var(--islam-correct);
+  color: white;
+  border-color: var(--islam-correct);
+  animation: chip-pop 0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.keyword-chip.hit::before {
+  background: white;
+  border-color: white;
+  content: "\2713";
+  color: var(--islam-correct);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 10px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+@keyframes chip-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
 /* ============================================================
    TASK 3 — Timeline
    ============================================================ */
@@ -577,6 +653,97 @@ body.activity {
   border: 1px solid var(--islam-line);
   border-radius: 10px;
   padding: 14px 16px;
+}
+
+/* ---------- Model answers reveal (Task 3) ---------- */
+
+:root {
+  --islam-model-blue: #1E4A8E;
+  --islam-model-blue-soft: #DCE6F4;
+}
+
+.reveal-btn {
+  margin: 12px 0 0;
+  background: white;
+  color: var(--islam-model-blue);
+  border: 2px solid var(--islam-model-blue);
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, transform 0.12s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.reveal-btn::before {
+  content: "\1F4A1";   /* light bulb */
+  font-size: 0.9rem;
+}
+.reveal-btn:hover:not(:disabled) {
+  background: var(--islam-model-blue);
+  color: white;
+  transform: translateY(-1px);
+}
+.reveal-btn:focus-visible {
+  outline: 3px solid var(--islam-gold);
+  outline-offset: 2px;
+}
+.reveal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: var(--islam-line);
+  color: var(--muted, #595959);
+}
+.reveal-btn.shown {
+  background: var(--islam-model-blue);
+  color: white;
+}
+
+.model-answers {
+  margin-top: 14px;
+  background: var(--islam-model-blue-soft);
+  border: 1.5px solid var(--islam-model-blue);
+  border-radius: 10px;
+  padding: 14px 16px 12px;
+  animation: model-fade-in 0.4s ease;
+}
+
+@keyframes model-fade-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.model-intro {
+  margin: 0 0 12px;
+  font-size: 0.86rem;
+  color: var(--islam-model-blue);
+  font-weight: 600;
+  font-style: italic;
+}
+
+.model-answer {
+  background: white;
+  border: 1px solid rgba(30, 74, 142, 0.25);
+  border-left: 4px solid var(--islam-model-blue);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  color: var(--islam-model-blue);
+}
+.model-answer:last-child { margin-bottom: 0; }
+.model-answer h3 {
+  margin: 0 0 6px;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--islam-model-blue);
+}
+.model-answer p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--islam-model-blue);
 }
 
 /* ---------- Responsive ---------- */

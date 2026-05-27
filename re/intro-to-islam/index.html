@@ -12,7 +12,6 @@
 <header class="act-header">
   <p class="eyebrow">RE &middot; KS3 &middot; Year 10</p>
   <h1 class="wordmark-title">Intro to Islam</h1>
-  <p class="subhead">Lesson One &middot; mid-lesson progress check</p>
   <button id="reset-btn" type="button" class="ghost-btn" aria-label="Reset all three tasks">Reset all</button>
 </header>
 
@@ -73,6 +72,12 @@
     <div class="image-question">
       <label for="kaaba-answer" class="question-label">How do you know this is the Kaaba?</label>
       <textarea id="kaaba-answer" class="answer-lines" rows="2" placeholder="Write your answer in two lines…"></textarea>
+      <div class="keyword-tracker" aria-live="polite">
+        <p class="keyword-tracker-label">Key words to look out for &mdash; they light up as you use them:</p>
+        <ul class="keyword-chips" id="kaaba-keywords">
+          <!-- Filled by script.js -->
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -98,6 +103,22 @@
     <div class="timeline-question">
       <label for="event-answer" class="question-label">Which event is the most important? Explain why in one sentence.</label>
       <textarea id="event-answer" class="answer-lines" rows="2" placeholder="Write your answer in two lines…"></textarea>
+      <button id="show-models" type="button" class="reveal-btn" disabled aria-expanded="false" aria-controls="model-answers">Show model answers</button>
+      <div class="model-answers" id="model-answers" hidden>
+        <p class="model-intro">Any of these three events is a strong choice. Compare your answer with the model answers below:</p>
+        <article class="model-answer">
+          <h3>The first revelation was the most important event.</h3>
+          <p>This is because it was the beginning of the revelations from Angel Gabriel, which were later written as the Qur&rsquo;an. Without this event, Islam would not have started.</p>
+        </article>
+        <article class="model-answer">
+          <h3>The most important event was Muhammad flees to Medina.</h3>
+          <p>This is because it marks the beginning of the Muslim community. It also allowed Islam to grow safely after years of persecution in Mecca.</p>
+        </article>
+        <article class="model-answer">
+          <h3>The Conquest of Mecca was the most important event.</h3>
+          <p>This is because it showed that Islam had become strong and successful after years of people being against Muhammad&rsquo;s message. It also meant that Mecca became a Muslim city and many people accepted Islam.</p>
+        </article>
+      </div>
     </div>
   </section>
 
