@@ -416,12 +416,16 @@
 }
 
 /* ---------- Check outlines on cards ---------- */
+/* Specificity must beat `.card.placed { box-shadow }` (which is defined later
+   in this file), so these are written with three classes, not two. */
 
+.card.placed.check-correct,
 .card.check-correct {
-  box-shadow: 0 0 0 3px var(--good), 0 3px 8px rgba(27, 122, 71, 0.30);
+  box-shadow: 0 0 0 3px var(--good), 0 3px 8px rgba(27, 122, 71, 0.30) !important;
 }
+.card.placed.check-wrong,
 .card.check-wrong {
-  box-shadow: 0 0 0 3px var(--bad), 0 3px 8px rgba(193, 53, 64, 0.30);
+  box-shadow: 0 0 0 3px var(--bad), 0 3px 8px rgba(193, 53, 64, 0.30) !important;
   animation: wrong-wobble 0.4s ease;
 }
 @keyframes wrong-wobble {
