@@ -1284,7 +1284,7 @@ act3Continue.addEventListener('click', () => {
   showCelebrate({
     char: 'anim_06_confetti_celebration.webp',
     title: 'Lined up by weight!',
-    body: "Now read each column from top to bottom — do those elements share chemistry? Mendeleev spotted that some columns didn't fit. He fixed it by leaving gaps. Let's do the same.",
+    body: "Now read each column from top to bottom — do those elements share chemistry? Mendeleev spotted that some elements did not fit in the column in which they were placed. He fixed it by leaving gaps. Let's do the same.",
     cta: 'Spot the pattern',
     onContinue: () => {
       showAct('4');
