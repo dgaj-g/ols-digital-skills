@@ -236,10 +236,9 @@ const NARRATOR_LINES = {
   act2b_wrong:   { img:"anim_05_thumbs_down_sad.webp", text:"That observation doesn't really fit this family. Check the cards again." },
   act2b_done: { img:"anim_15_level_up_stars.webp",    text:"Brilliant — you've mapped what makes each family unique. Onwards to step 3." },
 
-  act3_open: { img:"anim_10_typing_laptop.webp", text:"Mendeleev followed John Newlands and lined the elements up by atomic weight — lightest to heaviest. Seven per row." },
-  act3_correct:  { img:"anim_07_success_check.webp", text:"In the right spot — keep going." },
-  act3_wrong:    { img:"anim_05_thumbs_down_sad.webp", text:"Not that slot — check the atomic weight in the top-right of each card." },
-  act3_done:     { img:"anim_06_confetti_celebration.webp", text:"All 22 elements placed by weight. Now read each column from top to bottom — do they share chemistry?" },
+  act3_open: { img:"anim_10_typing_laptop.webp", text:"Mendeleev followed John Newlands and lined the elements up by atomic weight — lightest to heaviest. Seven per row. Fill the grid, then check." },
+  act3_allcorrect: { img:"anim_06_confetti_celebration.webp", text:"Perfect order — all 22 by atomic weight! Now read each column top to bottom: do they share chemistry?" },
+  act3_some:     { img:"anim_09_lightbulb_idea.webp", text:"Close! The red cards are out of order — check the atomic weight in the top-right corner, move them, and check again." },
 
   act4_open: { img:"anim_14_magnifier_scan.webp", text:"Read each column top to bottom. Tap the highlighted card. Does it share chemistry with the ones above it?" },
   act4_yes:  { img:"anim_07_success_check.webp",   text:"Yes — that element fits the column. Locked in." },
@@ -1163,21 +1162,30 @@ const WEIGHT_ORDER = [
 const act3Grid = document.getElementById('weight-grid');
 const act3Tray = document.getElementById('act3-tray');
 const act3Continue = document.getElementById('act3-continue');
+const act3Check = document.getElementById('act3-check');
+const act3Result = document.getElementById('act3-result');
+const act3FootHint = document.getElementById('act3-foot-hint');
 
 function buildAct3() {
-  state.act3Placed = new Map();
   act3Grid.innerHTML = '';
   act3Tray.innerHTML = '';
-  act3Continue.disabled = true;
+  act3Check.disabled = true;
+  act3Continue.hidden = true;
+  act3Result.hidden = true;
 
-  // Build 28-cell grid (4×7)
+  // Build 28-cell grid (4×7). Cells 0–21 are active ordering slots; the rest
+  // are inactive (the row-4 tail). Each active cell remembers its expected
+  // element, but accepts ANY card (free placement) — correctness is only
+  // judged on Check.
   for (let i = 0; i < 28; i++) {
     const cell = document.createElement('div');
     cell.className = 'weight-cell';
     cell.dataset.idx = i;
     const sym = WEIGHT_ORDER[i];
     if (sym) {
-      cell.dataset.symbol = sym;
+      cell.dataset.expected = sym;
+      cell.dataset.slot = 'active';
+      cell.classList.add('placed-host');
       cell.innerHTML = `<span class="order-num">${i + 1}</span>`;
     } else {
       cell.classList.add('empty');
@@ -1185,26 +1193,29 @@ function buildAct3() {
     act3Grid.appendChild(cell);
   }
 
-  // Tray: shuffled cards
   for (const el of shuffle(ELEMENTS)) {
-    const card = makeCard(el);
-    attachDrag(card, {
-      onTap: () => openModal(el.slug),
-      onMoveHover: (x, y) => highlightAct3Cell(x, y),
-      getDropTarget: (x, y) => topElementUnder(x, y, n => n.classList && n.classList.contains('weight-cell')),
-      onDrop: (node, cell) => handleAct3Drop(node, cell),
-    });
-    act3Tray.appendChild(card);
+    act3Tray.appendChild(makeAct3Card(el));
   }
+  refreshAct3State();
+}
+
+function makeAct3Card(el) {
+  const card = makeCard(el);
+  attachDrag(card, {
+    onTap: () => openModal(el.slug),
+    onMoveHover: (x, y) => highlightAct3Cell(x, y),
+    getDropTarget: (x, y) => topElementUnder(x, y, n => n.classList && n.classList.contains('weight-cell')),
+    onDrop: (node, cell) => handleAct3Drop(node, cell),
+  });
+  return card;
 }
 
 function highlightAct3Cell(x, y) {
   clearAllHover();
   const cell = topElementUnder(x, y, n => n.classList && n.classList.contains('weight-cell'));
   if (!cell) return;
-  if (cell.classList.contains('empty') || cell.classList.contains('filled')) {
-    cell.classList.add('drop-reject');
-  } else if (cell.dataset.symbol === state.dragging.dataset.symbol) {
+  // Free placement: any active, empty cell is a valid target.
+  if (cell.dataset.slot === 'active' && !cell.querySelector('.card')) {
     cell.classList.add('drop-hover');
   } else {
     cell.classList.add('drop-reject');
@@ -1212,33 +1223,75 @@ function highlightAct3Cell(x, y) {
 }
 
 function handleAct3Drop(node, cell) {
-  if (!cell) { bounceCard(node); return; }
-  const sym = node.dataset.symbol;
-  if (cell.classList.contains('empty') || cell.classList.contains('filled') || cell.dataset.symbol !== sym) {
-    bounceCard(node);
-    playBad();
-    narrate('act3_wrong');
-    return;
-  }
+  node.classList.remove('check-correct','check-wrong');
   resetNode(node);
-  cell.classList.add('filled','placed-host');
-  cell.appendChild(node);
-  node.classList.add('placed','snap-in');
-  setTimeout(() => node.classList.remove('snap-in'), 360);
-  state.act3Placed.set(parseInt(cell.dataset.idx, 10), sym);
-  playGood();
-  narrate('act3_correct');
-
-  if (state.act3Placed.size === WEIGHT_ORDER.length) {
-    act3Continue.disabled = false;
-    narrate('act3_done');
+  if (cell && cell.dataset.slot === 'active' && !cell.querySelector('.card')) {
+    cell.appendChild(node);
+    node.classList.add('placed','snap-in');
+    setTimeout(() => node.classList.remove('snap-in'), 340);
+    playSoft();
+  } else {
+    // No valid empty active cell (off-grid, inactive, or occupied) → back to tray.
+    node.classList.remove('placed');
+    act3Tray.appendChild(node);
   }
+  refreshAct3CellsFilled();
+  refreshAct3State();
+}
+
+function refreshAct3CellsFilled() {
+  act3Grid.querySelectorAll('.weight-cell[data-slot="active"]').forEach(cell => {
+    cell.classList.toggle('filled', !!cell.querySelector('.card'));
+  });
+}
+
+function refreshAct3State() {
+  const inTray = act3Tray.querySelectorAll('.card').length;
+  act3Check.disabled = inTray > 0;
+  if (act3Continue.hidden) {
+    act3FootHint.textContent = inTray > 0
+      ? `${ELEMENTS.length - inTray} of ${ELEMENTS.length} placed — fill the grid lightest to heaviest, then check.`
+      : `All placed. Check how you did — you can still move any card and check again.`;
+  }
+}
+
+act3Check.addEventListener('click', checkAct3);
+
+function checkAct3() {
+  let correct = 0, wrong = 0;
+  act3Grid.querySelectorAll('.weight-cell[data-slot="active"]').forEach(cell => {
+    const card = cell.querySelector('.card');
+    if (!card) return;
+    card.classList.remove('check-correct','check-wrong');
+    if (card.dataset.symbol === cell.dataset.expected) { card.classList.add('check-correct'); correct++; }
+    else { card.classList.add('check-wrong'); wrong++; }
+  });
+  const total = ELEMENTS.length;
+  act3Result.hidden = false;
+  if (wrong === 0) {
+    act3Result.className = 'check-result good';
+    act3Result.innerHTML = `<strong>Perfect &mdash; all ${total} in order by atomic weight!</strong> You can move on whenever you're ready.`;
+    narrate('act3_allcorrect');
+    playChord();
+  } else {
+    act3Result.className = 'check-result partial';
+    const n = wrong === 1 ? 'card' : 'cards';
+    const v = wrong === 1 ? 'is' : 'are';
+    const them = wrong === 1 ? 'it' : 'them';
+    act3Result.innerHTML = `<strong>${correct} of ${total} in the right place.</strong> The ${wrong} ${n} outlined in red ${v} out of order &mdash; check the atomic weight (top-right of each card), move ${them}, then check again. You can also move on now if you like.`;
+    narrate('act3_some');
+    playGood();
+  }
+  // Consistent with steps 1–2: progress is allowed regardless of score, and
+  // step 4 seeds from the correct WEIGHT_ORDER so a partial step 3 is fine.
+  act3Continue.hidden = false;
+  act3FootHint.textContent = `Move any red card and check again, or continue to step 4.`;
 }
 
 act3Continue.addEventListener('click', () => {
   showCelebrate({
     char: 'anim_06_confetti_celebration.webp',
-    title: 'All 22 placed by weight!',
+    title: 'Lined up by weight!',
     body: "Now read each column from top to bottom — do those elements share chemistry? Mendeleev spotted that some columns didn't fit. He fixed it by leaving gaps. Let's do the same.",
     cta: 'Spot the pattern',
     onContinue: () => {

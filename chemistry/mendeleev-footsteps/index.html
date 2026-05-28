@@ -202,10 +202,17 @@
       </div>
 
       <div class="act-foot">
-        <button type="button" class="primary-btn" id="act3-continue" disabled>
-          <span>Continue to step 4</span>
-          <span class="btn-arrow" aria-hidden="true">&rarr;</span>
-        </button>
+        <div class="check-result" id="act3-result" role="status" aria-live="polite" hidden></div>
+        <div class="act-foot-btns">
+          <button type="button" class="primary-btn" id="act3-check" disabled>
+            <span>Check my answers</span>
+          </button>
+          <button type="button" class="primary-btn" id="act3-continue" hidden>
+            <span>Continue to step 4</span>
+            <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+        <p class="act-foot-hint" id="act3-foot-hint">Place all 22 cards in order, lightest to heaviest, then check how you did.</p>
       </div>
     </article>
 
