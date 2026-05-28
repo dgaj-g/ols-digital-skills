@@ -35,6 +35,18 @@ const TIMELINE_EVENTS = [
   { order: 5, text: "Death of Muhammad" }
 ];
 
+// Key ideas the teacher wants pupils to mention in the Kaaba answer.
+// Hidden until the pupil presses "Check answer" (so it isn't a giveaway).
+// The teacher gave "cube", "Mecca", "black" — we accept those plus close
+// synonyms a Year 10 pupil might reasonably use.
+const KAABA_KEY_IDEAS = [
+  { label: "cube-shaped",             match: ["cube", "cuboid", "cubic"] },
+  { label: "black",                   match: ["black"] },
+  { label: "in Mecca",                match: ["mecca", "makkah"] },
+  { label: "Muslims pray towards it", match: ["pray", "prayer", "worship", "qibla"] },
+  { label: "visited on Hajj",         match: ["hajj", "pilgrim"] }
+];
+
 const POINTS_TASK1 = 3;
 const POINTS_TASK2 = 1;
 const POINTS_TASK3 = 5;
@@ -596,13 +608,15 @@ function updateTotalScore() {
 }
 
 // ============================================================
-//   Model answers reveal (Task 3) — one toggle button per event
+//   Typed-answer checks + model-answer reveals
 // ============================================================
 
+const kaabaAnswer = document.getElementById('kaaba-answer');
 const eventAnswer = document.getElementById('event-answer');
-const modelButtons = document.querySelectorAll('.model-buttons .reveal-btn');
 
-modelButtons.forEach(btn => {
+// --- Model-answer toggle buttons: Task 2 (single) + Task 3 (three) ---
+const modelToggleButtons = document.querySelectorAll('.reveal-btn[data-target]');
+modelToggleButtons.forEach(btn => {
   btn.addEventListener('click', () => {
     const panel = document.getElementById(btn.dataset.target);
     if (!panel) return;
@@ -614,12 +628,74 @@ modelButtons.forEach(btn => {
   });
 });
 
-function resetModelAnswers() {
+// --- Task 2: "Check answer" → keyword marking → unlock model answer ---
+const checkKaabaBtn  = document.getElementById('check-kaaba');
+const kaabaFeedback  = document.getElementById('kaaba-feedback');
+const kaabaModelGroup = document.getElementById('kaaba-model-group');
+
+checkKaabaBtn.addEventListener('click', () => {
+  const text = (kaabaAnswer.value || '').toLowerCase().trim();
+  if (text.length < 3) {
+    kaabaFeedback.hidden = false;
+    kaabaFeedback.innerHTML = '<p class="fb-headline">Write your answer first, then press Check answer.</p>';
+    playWrongBuzz();
+    return;
+  }
+  const results = KAABA_KEY_IDEAS.map(idea => ({
+    label: idea.label,
+    hit: idea.match.some(m => text.includes(m))
+  }));
+  const hits = results.filter(r => r.hit).length;
+  const total = KAABA_KEY_IDEAS.length;
+  const chips = results.map(r =>
+    `<li class="kw-result-chip ${r.hit ? 'hit' : 'miss'}">${r.label}</li>`
+  ).join('');
+  let note;
+  if (hits === total) note = 'Excellent — a really full answer.';
+  else if (hits >= Math.ceil(total / 2)) note = 'Good answer. Could you add any of the ideas you missed?';
+  else note = 'Have a look at the ideas you missed, then compare with the model answer below.';
+  kaabaFeedback.hidden = false;
+  kaabaFeedback.innerHTML =
+    `<p class="fb-headline">You included ${hits} of ${total} key ideas:</p>` +
+    `<ul class="kw-result-chips">${chips}</ul>` +
+    `<p class="fb-note">${note}</p>`;
+  checkKaabaBtn.classList.add('checked');
+  checkKaabaBtn.textContent = 'Check again';
+  kaabaModelGroup.hidden = false;
+  if (hits === total) playCelebration(); else playCorrectChime();
+});
+
+// --- Task 3: "Check answer" → confirm answered → unlock model buttons ---
+// No keyword score: this is a 3-way opinion question, so pupils self-compare.
+const checkEventBtn   = document.getElementById('check-event');
+const eventFeedback   = document.getElementById('event-feedback');
+const eventModelGroup = document.getElementById('event-model-group');
+
+checkEventBtn.addEventListener('click', () => {
+  const text = (eventAnswer.value || '').trim();
+  if (text.length < 3) {
+    eventFeedback.hidden = false;
+    eventFeedback.innerHTML = '<p class="fb-headline">Write your answer first, then press Check answer.</p>';
+    playWrongBuzz();
+    return;
+  }
+  eventFeedback.hidden = false;
+  eventFeedback.innerHTML = '<p class="fb-headline">Answer submitted. Any of the three events can be the right choice — reveal a model answer below to compare your reasoning.</p>';
+  checkEventBtn.classList.add('checked');
+  checkEventBtn.textContent = 'Check again';
+  eventModelGroup.hidden = false;
+  playCorrectChime();
+});
+
+function resetTypedAnswers() {
   document.querySelectorAll('.model-answer-group .model-answer').forEach(p => { p.hidden = true; });
-  modelButtons.forEach(b => {
-    b.classList.remove('shown');
-    b.setAttribute('aria-expanded', 'false');
-  });
+  modelToggleButtons.forEach(b => { b.classList.remove('shown'); b.setAttribute('aria-expanded', 'false'); });
+  kaabaFeedback.hidden = true; kaabaFeedback.innerHTML = '';
+  eventFeedback.hidden = true; eventFeedback.innerHTML = '';
+  kaabaModelGroup.hidden = true;
+  eventModelGroup.hidden = true;
+  checkKaabaBtn.classList.remove('checked'); checkKaabaBtn.textContent = 'Check answer';
+  checkEventBtn.classList.remove('checked'); checkEventBtn.textContent = 'Check answer';
 }
 
 // ============================================================
@@ -627,12 +703,12 @@ function resetModelAnswers() {
 // ============================================================
 
 document.getElementById('reset-btn').addEventListener('click', () => {
-  document.getElementById('kaaba-answer').value = '';
+  kaabaAnswer.value = '';
   eventAnswer.value = '';
   buildTask1();
   buildTask2();
   buildTask3();
-  resetModelAnswers();
+  resetTypedAnswers();
   updateTotalScore();
 });
 

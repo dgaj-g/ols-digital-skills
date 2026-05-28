@@ -77,6 +77,15 @@
     <div class="image-question">
       <label for="kaaba-answer" class="question-label">How do you know this is the Kaaba?</label>
       <textarea id="kaaba-answer" class="answer-lines" rows="2" placeholder="Write your answer in two lines…"></textarea>
+      <button id="check-kaaba" type="button" class="answer-check-btn">Check answer</button>
+      <div class="answer-feedback" id="kaaba-feedback" hidden aria-live="polite"></div>
+      <div class="model-answer-group" id="kaaba-model-group" hidden>
+        <button type="button" class="reveal-btn" data-target="model-kaaba" aria-expanded="false" aria-controls="model-kaaba">Show model answer</button>
+        <article class="model-answer" id="model-kaaba" hidden>
+          <h3>Model answer</h3>
+          <p>It is a black, cube-shaped building in the city of Mecca. Muslims face it when they pray and travel to it on the Hajj pilgrimage.</p>
+        </article>
+      </div>
     </div>
   </section>
 
@@ -102,7 +111,9 @@
     <div class="timeline-question">
       <label for="event-answer" class="question-label">Which event is the most important? Explain why in one sentence.</label>
       <textarea id="event-answer" class="answer-lines" rows="2" placeholder="Write your answer in two lines…"></textarea>
-      <div class="model-answer-group">
+      <button id="check-event" type="button" class="answer-check-btn">Check answer</button>
+      <div class="answer-feedback" id="event-feedback" hidden aria-live="polite"></div>
+      <div class="model-answer-group" id="event-model-group" hidden>
         <p class="model-prompt">Any of these three events is a strong choice. Reveal the one you argued for and compare your answer:</p>
         <div class="model-buttons">
           <button type="button" class="reveal-btn" data-target="model-revelation" aria-expanded="false" aria-controls="model-revelation">First revelation</button>

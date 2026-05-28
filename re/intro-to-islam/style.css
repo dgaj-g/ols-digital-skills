@@ -686,6 +686,85 @@ body.dragging-active * {
   --islam-model-blue-soft: #DCE6F4;
 }
 
+/* ---------- Inline "Check answer" button (for typed questions) ---------- */
+
+.answer-check-btn {
+  margin-top: 12px;
+  background: var(--islam-green);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 67, 47, 0.22);
+  transition: transform 0.12s, box-shadow 0.15s, background 0.15s;
+}
+.answer-check-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(0, 67, 47, 0.32); }
+.answer-check-btn:active { transform: translateY(0); }
+.answer-check-btn:focus-visible { outline: 3px solid var(--islam-gold); outline-offset: 2px; }
+.answer-check-btn.checked { background: var(--islam-green-soft); }
+
+/* ---------- Answer feedback panel ---------- */
+
+.answer-feedback {
+  margin-top: 12px;
+  background: var(--islam-green-tint);
+  border: 1px solid var(--islam-green-soft);
+  border-radius: 10px;
+  padding: 12px 14px;
+  animation: model-fade-in 0.35s ease;
+}
+.answer-feedback .fb-headline {
+  margin: 0 0 8px;
+  font-weight: 700;
+  color: var(--islam-green-dark);
+  font-size: 0.92rem;
+}
+.answer-feedback .fb-note {
+  margin: 8px 0 0;
+  font-size: 0.84rem;
+  color: var(--islam-green-dark);
+  font-style: italic;
+}
+.kw-result-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.kw-result-chip {
+  padding: 5px 12px 5px 24px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  position: relative;
+  border: 1.5px solid;
+}
+.kw-result-chip::before {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.kw-result-chip.hit {
+  background: var(--islam-correct);
+  color: white;
+  border-color: var(--islam-correct);
+}
+.kw-result-chip.hit::before { content: "\2713"; }   /* check */
+.kw-result-chip.miss {
+  background: white;
+  color: var(--muted, #595959);
+  border-color: var(--islam-line);
+}
+.kw-result-chip.miss::before { content: "\00D7"; color: var(--muted, #595959); }  /* times */
+
 .model-answer-group {
   margin-top: 12px;
 }
