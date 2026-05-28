@@ -534,15 +534,16 @@ function onPointerMove(e) {
   if (!state.pointer.moved && Math.hypot(dx, dy) > TAP_PX) {
     state.pointer.moved = true;
     chip.classList.add("dragging");
+    // Lift the chip out of the layout flow WITHOUT re-parenting it.
+    // Re-parenting a pointer-captured element mid-drag drops the capture in
+    // Safari/WebKit, which freezes the drag; position:fixed alone escapes
+    // the flow and stays viewport-positioned regardless of its parent.
     const r = chip.getBoundingClientRect();
     chip.style.position = "fixed";
     chip.style.left = r.left + "px";
     chip.style.top = r.top + "px";
     chip.style.width = r.width + "px";
     chip.style.margin = "0";
-    document.body.appendChild(chip);
-    state.pointer.startX = e.clientX;
-    state.pointer.startY = e.clientY;
   }
   if (state.pointer.moved) {
     chip.style.transform = `translate(${dx}px, ${dy}px) scale(1.06) rotate(-1.5deg)`;
@@ -574,7 +575,6 @@ function onPointerCancel(e) {
   const chip = state.dragging;
   clearHighlights();
   resetChipStyle(chip);
-  if (chip.parentElement === document.body && chip.__origin) chip.__origin.appendChild(chip);
   state.dragging = null;
   state.pointer.id = null;
   state.pointer.moved = false;
@@ -618,7 +618,11 @@ function dropContainerUnder(x, y) {
 }
 
 function placeChip(chip, target) {
-  if (!target) { (chip.__origin || answerArea.querySelector(".tray")).appendChild(chip); bounce(chip); return; }
+  if (!target) {
+    if (chip.__origin && chip.parentElement !== chip.__origin) chip.__origin.appendChild(chip);
+    bounce(chip);
+    return;
+  }
 
   // Match slots hold one chip — evict any existing occupant back to the tray.
   if (target.classList.contains("match-slot")) {
