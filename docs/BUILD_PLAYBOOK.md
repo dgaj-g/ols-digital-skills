@@ -230,8 +230,8 @@ A deck of cards. Front = prompt/term, back = answer/definition. Tap/click flips 
 ### Timeline — reference: *(none yet)*
 Events on a chronological axis. Each event is a clickable marker; clicking opens a detail panel (date, headline, description, optional image). Drag to scroll the axis (Pointer Events). Collapses to vertical on narrow phones. Good for History, evolution-of-X topics.
 
-### Quiz — reference: *(none yet)*
-A sequence of questions. Multiple choice (or matching/true-false where it fits). Select → immediate feedback (correct/incorrect) + a short explanation. Score + progress tracking. End screen with score and a review of missed questions. Feedback must teach, not just mark.
+### Quiz — reference: `sports-science/effects-of-exercise/`
+A sequence of questions. Multiple choice (or matching/true-false where it fits). Select → immediate feedback (correct/incorrect) + a short explanation. Score + progress tracking. End screen with score and a review of missed questions. Feedback must teach, not just mark. The reference build is a **multi-mode** quiz: it blends click (multiple choice), drag (sort-into-buckets + match-to-row, real Pointer Events with the `body.dragging-active` selection lock), type (free text with synonym matching), and listen (Web Speech API `speechSynthesis` reads the clue aloud, with a "Show text" toggle as the accessible fallback) — one scored attempt per question, then a teaching explanation. Reach for this when a brief asks for several interaction styles in one revision activity.
 
 ### Interactive diagram — reference: *(none yet)*
 A base image (labelled diagram, map, scene). Clickable hotspots positioned over it; clicking reveals a label + explanation. Offer an "explore" mode and, where it fits, a "find the X" challenge mode. Hotspots scale responsively with the image.
