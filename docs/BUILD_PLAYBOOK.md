@@ -202,6 +202,28 @@ Sortable items with target slots. Correct drop → snap in + positive feedback (
 
 **The only correct implementation is the Pointer Events API** (`pointerdown`/`pointermove`/`pointerup`/`pointercancel`), exactly as in the Mendeleev reference build. Pointer Events unify mouse, touch, and pen into one code path, so the *same* real-dragging behaviour works identically on a phone and a computer. Set `touch-action: none` on every draggable element so the browser doesn't steal the gesture for scrolling. Read `chemistry/mendeleev-cards/script.js` and replicate its drag model.
 
+**Suppress text selection while dragging — MANDATORY.** When the pupil holds the mouse button and drags across the page, the browser's normal "select text" gesture fires at the same time, so every heading, label, and caption the cursor sweeps over gets highlighted blue. It is harmless but looks messy and unprofessional on a board. `touch-action: none` and `user-select: none` on the *draggable element itself* do **not** fix this, because the selection happens on the *other* text the cursor passes over. The fix is a page-wide selection lock that exists only for the duration of a drag:
+
+1. On `pointerdown`, add a class to `<body>`: `document.body.classList.add('dragging-active')`.
+2. On `pointerup` **and** `pointercancel`, remove it: `document.body.classList.remove('dragging-active')`.
+3. CSS — kill selection page-wide only while that class is present:
+   ```css
+   body.dragging-active, body.dragging-active * {
+     -webkit-user-select: none !important;
+     -moz-user-select: none !important;
+     user-select: none !important;
+     -webkit-touch-callout: none;
+   }
+   ```
+4. Belt-and-braces, cancel any selection the browser still tries to start mid-drag:
+   ```js
+   document.addEventListener('selectstart', (e) => {
+     if (document.body.classList.contains('dragging-active')) e.preventDefault();
+   });
+   ```
+
+Because the lock is scoped to the `dragging-active` class and removed on drop, normal text selection (and typing in any input/textarea) still works everywhere when no drag is in progress. Reference implementation: `chemistry/mendeleev-footsteps/` (`onPointerDown`/`onPointerUp`/`onPointerCancel` + the `body.dragging-active` rule in its `style.css`).
+
 ### Flashcards — reference: *(none yet — first build sets it)*
 A deck of cards. Front = prompt/term, back = answer/definition. Tap/click flips the card (CSS 3D transform, smooth). Next/previous navigation; swipe on touch via Pointer Events. Shuffle. Progress indicator (e.g. "7 / 20"). Optional "got it" / "review again" sorting. Audio per card where the topic needs it (language pronunciation, music).
 
@@ -237,6 +259,7 @@ Create `<department-slug>/<activity-slug>/` with `index.html`, `style.css`, `scr
 **Non-negotiable build standards:**
 - **Input:** Pointer Events (`pointerdown`/`pointermove`/`pointerup`/`pointercancel`) for all dragging and interaction — one code path for mouse, touch, and pen. `touch-action: none` on every draggable element. Tap vs drag disambiguation via a movement threshold.
 - **Real dragging (if the activity involves dragging):** the dragged element must follow the finger (on touch) or the cursor (on mouse) **continuously and in real time** — literal dragging, not a tap-source-then-tap-target substitute. **Never** use the HTML5 native drag-and-drop API (`draggable`, `dragstart`) — it is broken on touchscreens. See the Drag-and-drop pattern in Step 6 for the full requirement.
+- **No text-selection during drag:** lock page-wide text selection for the duration of every drag (a `body.dragging-active` class toggled on `pointerdown`/`pointerup`, plus a `selectstart` guard) so the mouse gesture never sweeps a blue highlight across labels and headings. Full recipe in the Step 6 Drag-and-drop pattern — this is mandatory on every drag activity.
 - **No build step:** pure HTML/CSS/JS. Must work opened from `file://` — use relative paths only, never absolute `/`.
 - **Branding:** OLS deep blue `#1A3A6B`, gold `#E4B824`, borders `#595959`. Reference `../../style.css` for shared variables.
 - **Intro animation — MANDATORY on every activity.** Every activity opens with the OLS crest particle-assembly animation, which then leads straight into the activity. You get all of this by including ONE line just before `</body>`:

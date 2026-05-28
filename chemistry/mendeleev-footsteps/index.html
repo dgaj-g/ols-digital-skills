@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Follow in the Footsteps of Mendeleev &middot; Chemistry &middot; OLS Digital Skills</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity">
+
+<header class="act-header">
+  <div class="act-titles">
+    <p class="eyebrow">Chemistry &middot; Year 9 &middot; CCEA</p>
+    <h1>Follow in the Footsteps of Mendeleev</h1>
+    <p class="lede">Discover the patterns that built the Periodic Table &mdash; the way Mendeleev did, one step at a time.</p>
+  </div>
+  <div class="act-meta">
+    <ol class="step-pills" id="step-pills" aria-label="Activity progress">
+      <li data-step="1" class="active" aria-current="step"><span class="num">1</span><span class="lbl">Sort by reaction</span></li>
+      <li data-step="2"><span class="num">2</span><span class="lbl">Two families</span></li>
+      <li data-step="3"><span class="num">3</span><span class="lbl">Order by weight</span></li>
+      <li data-step="4"><span class="num">4</span><span class="lbl">Find the pattern</span></li>
+    </ol>
+    <button id="reset-btn" type="button" class="ghost-btn" aria-label="Reset the activity">Reset</button>
+  </div>
+</header>
+
+<main class="act-main">
+
+  <!-- Persistent Young Bunsens narrator panel -->
+  <aside class="narrator" id="narrator" aria-label="Guide">
+    <div class="narrator-character">
+      <img id="narrator-img" src="assets/characters/anim_03_both_wink.webp" alt="" />
+    </div>
+    <div class="narrator-bubble">
+      <p id="narrator-text">Hello! We're the Young Bunsens. We'll guide you through Mendeleev's discovery, one step at a time.</p>
+    </div>
+  </aside>
+
+  <!-- Activity stage — only one act visible at a time -->
+  <section class="stage" id="stage">
+
+    <!-- ===================== INTRO ===================== -->
+    <article class="act act-intro" data-act="intro">
+      <div class="intro-card">
+        <h2>In the late 1800s, chemists knew of around 60 elements.</h2>
+        <p>They were sure there was a pattern connecting them &mdash; but no one had found it yet.</p>
+        <p>A Russian chemist named <strong>Dmitri Ivanovich Mendeleev</strong> took up the search. In four steps, you'll follow his footsteps and discover the pattern for yourself.</p>
+        <button type="button" class="primary-btn" data-action="begin">
+          <span>Begin the journey</span>
+          <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+    </article>
+
+    <!-- ===================== ACT 1 ===================== -->
+    <article class="act act-1" data-act="1" hidden>
+      <header class="act-banner">
+        <span class="act-number">Step 1 of 4</span>
+        <h2>Sort each element by how it reacts with water</h2>
+        <p class="act-instructions">Tap a card to read about the element. Then drag each card into the bin you think it belongs to.</p>
+      </header>
+
+      <div class="bins" id="act1-bins" aria-label="Reaction categories">
+        <div class="bin" data-bin="reactive-flame">
+          <h3>Will react with water and burn with a coloured flame</h3>
+          <div class="bin-slots" data-slots="reactive-flame"></div>
+          <p class="bin-count"><span data-count="reactive-flame">0</span> placed</p>
+        </div>
+        <div class="bin" data-bin="no-reaction">
+          <h3>Will not react with water</h3>
+          <div class="bin-slots" data-slots="no-reaction"></div>
+          <p class="bin-count"><span data-count="no-reaction">0</span> placed</p>
+        </div>
+        <div class="bin" data-bin="other">
+          <h3>Other</h3>
+          <div class="bin-slots" data-slots="other"></div>
+          <p class="bin-count"><span data-count="other">0</span> placed</p>
+        </div>
+      </div>
+
+      <div class="tray-stage">
+        <div class="tray-head">
+          <h3>Element cards</h3>
+          <span class="tray-hint" id="act1-hint">Drag a card into a bin. Or tap to read its details first.</span>
+        </div>
+        <div class="tray" id="act1-tray"></div>
+      </div>
+
+      <div class="act-foot">
+        <div class="check-result" id="act1-result" role="status" aria-live="polite" hidden></div>
+        <div class="act-foot-btns">
+          <button type="button" class="primary-btn" id="act1-check" disabled>
+            <span>Check my answers</span>
+          </button>
+          <button type="button" class="primary-btn" id="act1-continue" hidden>
+            <span>Continue to step 2</span>
+            <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+        <p class="act-foot-hint" id="act1-foot-hint">Place all 22 cards, then check how you did. You can move any card between bins as often as you like.</p>
+      </div>
+    </article>
+
+    <!-- ===================== ACT 2 ===================== -->
+    <article class="act act-2" data-act="2" hidden>
+      <header class="act-banner">
+        <span class="act-number">Step 2 of 4</span>
+        <h2>Mendeleev studied this reactive group more closely &mdash; and split them into <em>two</em> families</h2>
+        <p class="act-instructions">Click a card, study its reaction with water, then drag it to one of the two boxes. Group elements with <strong>similar</strong> observations together.</p>
+      </header>
+
+      <div class="family-bins" id="act2-bins">
+        <div class="family-bin" data-family="A">
+          <h3>Family <span class="fam-letter">A</span></h3>
+          <div class="family-slots" data-slots="famA"></div>
+        </div>
+        <div class="family-bin" data-family="B">
+          <h3>Family <span class="fam-letter">B</span></h3>
+          <div class="family-slots" data-slots="famB"></div>
+        </div>
+      </div>
+      <p class="bin-hint">It doesn't matter which box is left or right &mdash; what matters is that elements with similar reactions are <strong>together</strong>.</p>
+
+      <div class="tray-stage">
+        <div class="tray-head">
+          <h3>The reactive elements</h3>
+          <span class="tray-hint">8 elements to sort into 2 families.</span>
+        </div>
+        <div class="tray" id="act2-tray"></div>
+      </div>
+
+      <div class="act-foot">
+        <div class="check-result" id="act2-result" role="status" aria-live="polite" hidden></div>
+        <div class="act-foot-btns">
+          <button type="button" class="primary-btn" id="act2-check" disabled>
+            <span>Check my answers</span>
+          </button>
+          <button type="button" class="primary-btn" id="act2-to-obs" hidden>
+            <span>Now study the observations</span>
+            <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+        <p class="act-foot-hint" id="act2-foot-hint">Place all 8 elements into the two boxes, then check how you did.</p>
+      </div>
+    </article>
+
+    <!-- ===================== ACT 2B: Observations ===================== -->
+    <article class="act act-2b" data-act="2b" hidden>
+      <header class="act-banner">
+        <span class="act-number">Step 2 &mdash; observations</span>
+        <h2>Match each observation to the family (or families) it belongs to</h2>
+        <p class="act-instructions">Tap an observation, then tap the family column where it belongs. Some observations fit <em>both</em> columns &mdash; tap the second column too.</p>
+      </header>
+
+      <div class="obs-layout">
+        <div class="obs-columns" id="obs-columns">
+          <div class="obs-column" data-fam="A">
+            <h3 id="obs-A-title">Family A</h3>
+            <div class="obs-elements" id="obs-A-els"></div>
+            <ul class="obs-drops" data-drops="A"></ul>
+          </div>
+          <div class="obs-column" data-fam="B">
+            <h3 id="obs-B-title">Family B</h3>
+            <div class="obs-elements" id="obs-B-els"></div>
+            <ul class="obs-drops" data-drops="B"></ul>
+          </div>
+        </div>
+        <div class="obs-pool">
+          <h3>Observations to place</h3>
+          <ul class="obs-list" id="obs-list"></ul>
+        </div>
+      </div>
+
+      <div class="act-foot">
+        <button type="button" class="primary-btn" id="act2b-continue" disabled>
+          <span>Continue to step 3</span>
+          <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+    </article>
+
+    <!-- ===================== ACT 3 ===================== -->
+    <article class="act act-3" data-act="3" hidden>
+      <header class="act-banner">
+        <span class="act-number">Step 3 of 4</span>
+        <h2>Place all 22 elements in order, lightest to heaviest</h2>
+        <p class="act-instructions">Mendeleev followed John Newlands and arranged the elements by <strong>relative atomic weight</strong>. Fill each row from left to right, seven elements per row.</p>
+      </header>
+
+      <div class="weight-grid-stage">
+        <div class="weight-grid" id="weight-grid" role="grid" aria-label="Elements arranged by atomic weight"></div>
+      </div>
+
+      <div class="tray-stage">
+        <div class="tray-head">
+          <h3>Element cards</h3>
+          <span class="tray-hint">Sort lightest to heaviest, left to right, top to bottom.</span>
+        </div>
+        <div class="tray" id="act3-tray"></div>
+      </div>
+
+      <div class="act-foot">
+        <div class="check-result" id="act3-result" role="status" aria-live="polite" hidden></div>
+        <div class="act-foot-btns">
+          <button type="button" class="primary-btn" id="act3-check" disabled>
+            <span>Check my answers</span>
+          </button>
+          <button type="button" class="primary-btn" id="act3-continue" hidden>
+            <span>Continue to step 4</span>
+            <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+        <p class="act-foot-hint" id="act3-foot-hint">Place all 22 cards in order, lightest to heaviest, then check how you did.</p>
+      </div>
+    </article>
+
+    <!-- ===================== ACT 4 ===================== -->
+    <article class="act act-4" data-act="4" hidden>
+      <header class="act-banner">
+        <span class="act-number">Step 4 of 4</span>
+        <h2>Read each column top to bottom. Do the elements share <em>similar chemistry</em>?</h2>
+        <p class="act-instructions">Mendeleev's breakthrough was to spot the misfits and <strong>shift them right</strong> &mdash; leaving gaps for elements no one had even discovered yet. Click each highlighted card to make a decision.</p>
+      </header>
+
+      <div class="pattern-grid-stage">
+        <div class="pattern-grid" id="pattern-grid" role="grid" aria-label="Mendeleev's pattern grid"></div>
+      </div>
+
+      <!-- Inline yes/no panel for the currently-asked card -->
+      <div class="verdict-panel" id="verdict-panel" hidden>
+        <p class="verdict-prompt" id="verdict-prompt"></p>
+        <div class="verdict-buttons">
+          <button type="button" class="verdict-btn yes" data-verdict="yes">Yes &mdash; similar chemistry</button>
+          <button type="button" class="verdict-btn no"  data-verdict="no">No &mdash; doesn't fit</button>
+        </div>
+      </div>
+
+      <!-- Push-right action panel -->
+      <div class="push-panel" id="push-panel" hidden>
+        <p class="push-prompt" id="push-prompt"></p>
+        <button type="button" class="primary-btn push-btn" id="push-btn">
+          <span>Push to the right</span>
+          <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+
+      <div class="act-foot">
+        <button type="button" class="primary-btn" id="act4-finish" hidden>
+          <span>See your finished Periodic Table</span>
+          <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+    </article>
+
+  </section>
+</main>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<!-- ===================== Modal (element details) ===================== -->
+<div class="modal" id="modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-name">
+    <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ===================== Stage-complete overlay ===================== -->
+<div class="celebrate" id="celebrate" hidden>
+  <div class="celebrate-panel">
+    <img class="celebrate-char" id="celebrate-char" src="assets/characters/anim_06_confetti_celebration.webp" alt="" />
+    <h2 id="celebrate-title">Well done!</h2>
+    <p id="celebrate-body"></p>
+    <button id="celebrate-close" type="button" class="primary-btn">
+      <span id="celebrate-cta">Continue</span>
+      <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===================== Toast (gentle wrong-answer prompt) ===================== -->
+<div class="toast" id="toast" hidden role="status" aria-live="polite">
+  <img class="toast-char" src="assets/characters/anim_05_thumbs_down_sad.webp" alt="" />
+  <p class="toast-text" id="toast-text"></p>
+</div>
+
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
