@@ -220,16 +220,14 @@ const BY_SYMBOL = Object.fromEntries(ELEMENTS.map(e => [e.symbol, e]));
 const NARRATOR_LINES = {
   intro:     { img:"anim_03_both_wink.webp",      text:"Hello! We're the Young Bunsens. We'll guide you through Mendeleev's discovery, one step at a time." },
   begin:     { img:"anim_11_rocket_takeoff.webp", text:"Off we go! Mendeleev had to find a hidden pattern. Let's see what he saw." },
-  act1_open: { img:"anim_09_lightbulb_idea.webp", text:"Each card holds the facts Mendeleev had. Tap one to read it. Then drag it into the bin you think fits best." },
-  act1_correct:  { img:"anim_04_thumbs_up_smile.webp", text:"Good thinking! That one's in the right place." },
-  act1_correct2: { img:"anim_07_success_check.webp",   text:"Spot on. Keep going." },
-  act1_wrong:    { img:"anim_05_thumbs_down_sad.webp", text:"Hmm, take another look at how it reacts with water — that's the clue." },
-  act1_almost:   { img:"anim_09_lightbulb_idea.webp",  text:"You only need the first bin to be right to move on — Mendeleev started by spotting the most reactive ones too." },
+  act1_open: { img:"anim_09_lightbulb_idea.webp", text:"Each card holds the facts Mendeleev had. Tap one to read it, then drag it into the bin you think fits. Place all 22, then check how you did." },
+  act1_allcorrect: { img:"anim_06_confetti_celebration.webp", text:"Every card in the right home — all 22 correct! That's exactly how Mendeleev's groups looked." },
+  act1_some:     { img:"anim_09_lightbulb_idea.webp",  text:"Good effort! The cards outlined in red aren't in the right category yet. Look again at how they react with water, move them, and check again." },
   act1_done:     { img:"anim_06_confetti_celebration.webp", text:"Eight reactive elements, all together. That's exactly the group Mendeleev studied next." },
 
-  act2_open: { img:"anim_14_magnifier_scan.webp", text:"Look closer at how each one reacts with water. Some leave a clear alkaline solution. Others leave a cloudy white one. Two families hide in here." },
-  act2_correct:  { img:"anim_07_success_check.webp",    text:"Yes — same kind of reaction, same family." },
-  act2_first_in: { img:"anim_09_lightbulb_idea.webp",   text:"Nice choice. From now on, that box is this family. Group the others with similar reactions." },
+  act2_open: { img:"anim_14_magnifier_scan.webp", text:"Look closer at how each one reacts with water. Some leave a clear alkaline solution. Others leave a cloudy white one. Two families hide in here — sort all 8, then check." },
+  act2_allcorrect: { img:"anim_06_confetti_celebration.webp", text:"You and Mendeleev have found patterns between the elements — families of elements with similar chemical reactions!" },
+  act2_some:     { img:"anim_05_thumbs_down_sad.webp", text:"Nearly! Some elements aren't with their family yet. Read the note below, move the red cards, and check again." },
   act2_done:     { img:"anim_06_confetti_celebration.webp", text:"You and Mendeleev have found patterns between the elements — families of elements with similar chemical reactions!" },
 
   act2b_open: { img:"anim_12_goggles_shine.webp",     text:"Now match the observations to the family they belong to. Some fit both — tap both columns when they do." },
@@ -591,6 +589,7 @@ function playGood() {
   setTimeout(() => playTone(990, 0.10, 'sine', 0.10), 70);
 }
 function playBad() { playTone(220, 0.08, 'square', 0.08); }
+function playSoft() { playTone(440, 0.05, 'sine', 0.05); }
 function playChord() {
   [523.25, 659.25, 783.99].forEach((f, i) => {
     setTimeout(() => playTone(f, 0.55, 'sine', 0.12), i * 110);
@@ -619,35 +618,42 @@ document.querySelectorAll('[data-action="begin"]').forEach(btn => {
 const act1Tray = document.getElementById('act1-tray');
 const act1Bins = document.getElementById('act1-bins');
 const act1Continue = document.getElementById('act1-continue');
+const act1Check = document.getElementById('act1-check');
+const act1Result = document.getElementById('act1-result');
+const act1FootHint = document.getElementById('act1-foot-hint');
 
 function buildAct1() {
-  state.act1Placed.clear();
   act1Tray.innerHTML = '';
-  act1Bins.querySelectorAll('.bin-slots').forEach(s => s.innerHTML = '');
+  act1Bins.querySelectorAll('.bin-slots').forEach(s => { s.innerHTML = ''; s.classList.add('placed-host'); });
   act1Bins.querySelectorAll('[data-count]').forEach(c => c.textContent = '0');
-  act1Continue.disabled = true;
+  act1Check.disabled = true;
+  act1Continue.hidden = true;
+  act1Result.hidden = true;
 
   const shuffled = shuffle(ELEMENTS);
   for (const el of shuffled) {
-    const card = makeCard(el);
-    attachDrag(card, {
-      onTap: () => openModal(el.slug),
-      onMoveHover: (x, y) => highlightAct1Bin(x, y),
-      getDropTarget: (x, y) => topElementUnder(x, y, n => n.classList && n.classList.contains('bin')),
-      onDrop: (node, bin) => handleAct1Drop(node, bin),
-    });
-    act1Tray.appendChild(card);
+    act1Tray.appendChild(makeAct1Card(el));
   }
+  refreshAct1State();
 }
 
-function highlightAct1Bin(x, y) {
+function makeAct1Card(el) {
+  const card = makeCard(el);
+  attachDrag(card, {
+    onTap: () => openModal(el.slug),
+    onMoveHover: (x, y) => highlightAct1Target(x, y),
+    // Only bins are positive targets; a null target means "send back to the tray".
+    getDropTarget: (x, y) => topElementUnder(x, y, n => n.classList && n.classList.contains('bin')),
+    onDrop: (node, target) => handleAct1Drop(node, target),
+  });
+  return card;
+}
+
+function highlightAct1Target(x, y) {
   clearAllHover();
+  // Free placement — every bin is a willing target, so just show a neutral hover.
   const bin = topElementUnder(x, y, n => n.classList && n.classList.contains('bin'));
-  if (!bin) return;
-  const sym = state.dragging.dataset.symbol;
-  const el = BY_SYMBOL[sym];
-  if (binAccepts(el, bin.dataset.bin)) bin.classList.add('drop-hover');
-  else bin.classList.add('drop-reject');
+  if (bin) bin.classList.add('drop-hover');
 }
 
 function binAccepts(el, binId) {
@@ -655,60 +661,80 @@ function binAccepts(el, binId) {
   return el.bin1 === binId;
 }
 
-function handleAct1Drop(node, bin) {
-  const sym = node.dataset.symbol;
-  const el = BY_SYMBOL[sym];
+function handleAct1Drop(node, target) {
+  // Clear any prior check mark on the card being moved.
+  node.classList.remove('check-correct','check-wrong');
+  resetNode(node);
 
-  if (!bin) { bounceCard(node); return; }
-
-  if (binAccepts(el, bin.dataset.bin)) {
-    // Correct
-    resetNode(node);
+  const bin = target && target.closest ? target.closest('.bin') : null;
+  if (bin) {
     const slots = bin.querySelector('.bin-slots');
-    slots.classList.add('placed-host');
     slots.appendChild(node);
     node.classList.add('placed','snap-in');
-    setTimeout(() => node.classList.remove('snap-in'), 360);
-    state.act1Placed.set(sym, bin.dataset.bin);
-    updateAct1Counts();
-    playGood();
-    // Random varied feedback
-    narrate(Math.random() < 0.55 ? 'act1_correct' : 'act1_correct2');
-    checkAct1Progress();
+    setTimeout(() => node.classList.remove('snap-in'), 340);
+    playSoft();
   } else {
-    bounceCard(node);
-    playBad();
-    narrate('act1_wrong');
-    showToast(`${el.name} doesn't belong in "${bin.querySelector('h3').textContent}" — check its reaction with water.`);
+    // Back to the tray
+    node.classList.remove('placed');
+    act1Tray.appendChild(node);
   }
+  updateAct1Counts();
+  refreshAct1State();
 }
 
 function updateAct1Counts() {
-  const counts = { 'reactive-flame':0, 'no-reaction':0, 'other':0 };
-  for (const binId of state.act1Placed.values()) counts[binId] = (counts[binId]||0) + 1;
-  for (const [binId, n] of Object.entries(counts)) {
-    const c = act1Bins.querySelector(`[data-count="${binId}"]`);
+  ['reactive-flame','no-reaction','other'].forEach(binId => {
+    const bin = act1Bins.querySelector(`.bin[data-bin="${binId}"]`);
+    const n = bin.querySelectorAll('.bin-slots .card').length;
+    const c = bin.querySelector(`[data-count="${binId}"]`);
     if (c) c.textContent = n;
+  });
+}
+
+function refreshAct1State() {
+  const inTray = act1Tray.querySelectorAll('.card').length;
+  act1Check.disabled = inTray > 0;
+  if (act1Continue.hidden) {
+    act1FootHint.textContent = inTray > 0
+      ? `${ELEMENTS.length - inTray} of ${ELEMENTS.length} placed — sort them all, then check.`
+      : `All placed. Check how you did — you can still move any card and check again.`;
   }
 }
 
-function checkAct1Progress() {
-  const reactiveSet = new Set(['K','Ca','Li','Na','Cs','Rb','Sr','Ba']);
-  const placedReactive = [...state.act1Placed.entries()]
-    .filter(([sym, bin]) => bin === 'reactive-flame')
-    .map(([sym]) => sym);
-  const allReactivePresent = [...reactiveSet].every(s => placedReactive.includes(s));
-  const onlyReactiveInBin = placedReactive.every(s => reactiveSet.has(s));
-  if (allReactivePresent && onlyReactiveInBin) {
-    act1Continue.disabled = false;
-    if (state.act1Placed.size === 8) {
-      narrate('act1_almost');
-    }
+act1Check.addEventListener('click', checkAct1);
+
+function checkAct1() {
+  let correct = 0;
+  let wrong = 0;
+  ['reactive-flame','no-reaction','other'].forEach(binId => {
+    const bin = act1Bins.querySelector(`.bin[data-bin="${binId}"]`);
+    bin.querySelectorAll('.bin-slots .card').forEach(card => {
+      const el = BY_SYMBOL[card.dataset.symbol];
+      card.classList.remove('check-correct','check-wrong');
+      if (binAccepts(el, binId)) { card.classList.add('check-correct'); correct++; }
+      else { card.classList.add('check-wrong'); wrong++; }
+    });
+  });
+  const total = ELEMENTS.length;
+  act1Result.hidden = false;
+  if (wrong === 0) {
+    act1Result.className = 'check-result good';
+    act1Result.innerHTML = `<strong>Perfect &mdash; all ${total} correctly placed!</strong> You can move on whenever you're ready.`;
+    narrate('act1_allcorrect');
+    playChord();
+  } else {
+    act1Result.className = 'check-result partial';
+    const n = wrong === 1 ? 'card' : 'cards';
+    const v = wrong === 1 ? 'is' : 'are';
+    const them = wrong === 1 ? 'it' : 'them';
+    const react = wrong === 1 ? 'it reacts' : 'they react';
+    act1Result.innerHTML = `<strong>${correct} of ${total} correct.</strong> The ${wrong} ${n} outlined in red ${v} in the wrong category &mdash; look again at how ${react} with water, move ${them}, then check again. You can also move on now if you like.`;
+    narrate('act1_some');
+    playGood();
   }
-  // Full completion narrate
-  if (state.act1Placed.size === ELEMENTS.length) {
-    narrate('act1_done');
-  }
+  // Per Teresa: students may progress no matter how many are correctly placed.
+  act1Continue.hidden = false;
+  act1FootHint.textContent = `Move any red card to a new bin and check again, or continue to step 2.`;
 }
 
 act1Continue.addEventListener('click', () => {
@@ -732,17 +758,22 @@ act1Continue.addEventListener('click', () => {
 const act2Tray = document.getElementById('act2-tray');
 const act2Bins = document.getElementById('act2-bins');
 const act2ToObs = document.getElementById('act2-to-obs');
+const act2Check = document.getElementById('act2-check');
+const act2Result = document.getElementById('act2-result');
+const act2FootHint = document.getElementById('act2-foot-hint');
 
 const REACTIVE_SYMBOLS = ['K','Ca','Li','Na','Cs','Rb','Sr','Ba'];
+const ALKALI_SYMBOLS   = ['K','Rb','Li','Na','Cs'];
+const ALKEARTH_SYMBOLS = ['Ca','Ba','Sr'];
 
 function buildAct2() {
   state.act2Bins = { famA:{family:null, symbols:[]}, famB:{family:null, symbols:[]} };
   act2Tray.innerHTML = '';
-  act2Bins.querySelectorAll('.family-slots').forEach(s => s.innerHTML = '');
-  act2Bins.querySelectorAll('.family-bin').forEach(b => {
-    b.classList.remove('fam-alkali','fam-alkearth');
-  });
-  act2ToObs.disabled = true;
+  act2Bins.querySelectorAll('.family-slots').forEach(s => { s.innerHTML = ''; s.classList.add('placed-host'); });
+  act2Bins.querySelectorAll('.family-bin').forEach(b => b.classList.remove('fam-alkali','fam-alkearth'));
+  act2Check.disabled = true;
+  act2ToObs.hidden = true;
+  act2Result.hidden = true;
 
   const shuffled = shuffle(REACTIVE_SYMBOLS.map(s => BY_SYMBOL[s]));
   for (const el of shuffled) {
@@ -750,77 +781,135 @@ function buildAct2() {
     attachDrag(card, {
       onTap: () => openModal(el.slug),
       onMoveHover: (x, y) => highlightAct2Bin(x, y),
+      // Only family boxes are positive targets; null means "send back to the tray".
       getDropTarget: (x, y) => topElementUnder(x, y, n => n.classList && n.classList.contains('family-bin')),
-      onDrop: (node, bin) => handleAct2Drop(node, bin),
+      onDrop: (node, target) => handleAct2Drop(node, target),
     });
     act2Tray.appendChild(card);
   }
+  refreshAct2State();
 }
 
 function highlightAct2Bin(x, y) {
   clearAllHover();
+  // Free placement — either box accepts anything; neutral hover only.
   const bin = topElementUnder(x, y, n => n.classList && n.classList.contains('family-bin'));
-  if (!bin) return;
-  const sym = state.dragging.dataset.symbol;
-  const el = BY_SYMBOL[sym];
-  const bs = state.act2Bins[bin.dataset.family === 'A' ? 'famA' : 'famB'];
-  // If bin empty, anything goes. If bin has a family, only matching family.
-  if (!bs.family || bs.family === el.family) bin.classList.add('drop-hover');
-  else bin.classList.add('drop-reject');
+  if (bin) bin.classList.add('drop-hover');
 }
 
-function handleAct2Drop(node, bin) {
-  if (!bin) { bounceCard(node); return; }
-  const sym = node.dataset.symbol;
-  const el = BY_SYMBOL[sym];
-  const slotKey = bin.dataset.family === 'A' ? 'famA' : 'famB';
-  const bs = state.act2Bins[slotKey];
+function handleAct2Drop(node, target) {
+  node.classList.remove('check-correct','check-wrong');
+  resetNode(node);
 
-  if (bs.family && bs.family !== el.family) {
-    // Wrong family — bounce + specific Teresa-verbatim prompt
-    bounceCard(node);
+  const bin = target && target.closest ? target.closest('.family-bin') : null;
+  if (bin) {
+    bin.querySelector('.family-slots').appendChild(node);
+    node.classList.add('placed','snap-in');
+    setTimeout(() => node.classList.remove('snap-in'), 340);
+    playSoft();
+  } else {
+    node.classList.remove('placed');
+    act2Tray.appendChild(node);
+  }
+  refreshAct2State();
+}
+
+function act2BinSymbols(family) {
+  const bin = act2Bins.querySelector(`.family-bin[data-family="${family}"]`);
+  return [...bin.querySelectorAll('.family-slots .card')].map(c => c.dataset.symbol);
+}
+
+function refreshAct2State() {
+  const inTray = act2Tray.querySelectorAll('.card').length;
+  act2Check.disabled = inTray > 0;
+  if (act2ToObs.hidden) {
+    act2FootHint.textContent = inTray > 0
+      ? `${REACTIVE_SYMBOLS.length - inTray} of ${REACTIVE_SYMBOLS.length} placed — sort them all, then check.`
+      : `All placed. Check how you did — you can still move any card between the boxes.`;
+  }
+}
+
+function familyMajority(symbols) {
+  let alk = 0, ae = 0;
+  symbols.forEach(s => BY_SYMBOL[s].family === 'alkali' ? alk++ : ae++);
+  return alk >= ae ? 'alkali' : 'alkearth';
+}
+
+act2Check.addEventListener('click', checkAct2);
+
+function checkAct2() {
+  const aSyms = act2BinSymbols('A');
+  const bSyms = act2BinSymbols('B');
+
+  // Edge: a box is empty — both families ended up together.
+  if (aSyms.length === 0 || bSyms.length === 0) {
+    act2Result.hidden = false;
+    act2Result.className = 'check-result partial';
+    act2Result.innerHTML = `<strong>Both families are in the same box.</strong> Mendeleev split them into <em>two</em> sets &mdash; drag some elements across so each box holds one family, then check again.`;
+    narrate('act2_some');
     playBad();
-    const otherFamily = bs.family;
-    let msg;
-    if (otherFamily === 'alkali') {
-      // The current bin holds alkali metals (K, Rb, Li, Na, Cs).
-      // The dropped element is alkearth (Ca, Ba, Sr).
-      msg = `${el.name} (${el.symbol}) does not have similar reactions to this group, as it does not form a colourless alkaline solution.`;
-    } else {
-      msg = `${el.name} (${el.symbol}) does not have similar reactions to this group, as it forms a colourless alkaline solution.`;
-    }
-    narrate('act2b_wrong');
-    showToast(msg);
     return;
   }
 
-  // Accept
-  resetNode(node);
-  const wasEmpty = !bs.family;
-  bs.family = el.family;
-  bs.symbols.push(sym);
-  node.classList.add(`fam-${el.family === 'alkali' ? 'A' : 'B'}`);
+  // Assign each box a provisional family by majority, then flag the outliers.
+  const aFamily = familyMajority(aSyms);
+  const bFamily = familyMajority(bSyms);
+  const wrongMsgs = [];
+  let correct = 0;
 
-  const slots = bin.querySelector('.family-slots');
-  slots.classList.add('placed-host');
-  slots.appendChild(node);
-  node.classList.add('placed','snap-in');
-  setTimeout(() => node.classList.remove('snap-in'), 360);
-  // Colour-code the bin once it has a family
-  bin.classList.toggle('fam-alkali', bs.family === 'alkali');
-  bin.classList.toggle('fam-alkearth', bs.family === 'alkearth');
-  playGood();
-  if (wasEmpty) narrate('act2_first_in');
-  else          narrate('act2_correct');
+  [['A', aFamily], ['B', bFamily]].forEach(([famLetter, boxFamily]) => {
+    const bin = act2Bins.querySelector(`.family-bin[data-family="${famLetter}"]`);
+    bin.querySelectorAll('.family-slots .card').forEach(card => {
+      const el = BY_SYMBOL[card.dataset.symbol];
+      card.classList.remove('check-correct','check-wrong');
+      if (el.family === boxFamily) {
+        card.classList.add('check-correct');
+        correct++;
+      } else {
+        card.classList.add('check-wrong');
+        // Teresa's verbatim prompts (page 5).
+        if (boxFamily === 'alkali') {
+          // box is alkali; this misfit is an alkaline-earth metal
+          wrongMsgs.push(`${el.name} (${el.symbol}) does not have similar reactions to this group, as it does not form a colourless alkaline solution.`);
+        } else {
+          // box is alkaline-earth; this misfit is an alkali metal
+          wrongMsgs.push(`${el.name} (${el.symbol}) does not have similar reactions to this group, as it forms a colourless alkaline solution.`);
+        }
+      }
+    });
+  });
 
-  const totalPlaced = state.act2Bins.famA.symbols.length + state.act2Bins.famB.symbols.length;
-  if (totalPlaced === REACTIVE_SYMBOLS.length) {
-    act2ToObs.disabled = false;
-    narrate('act2_done');
+  const total = REACTIVE_SYMBOLS.length;
+  const perfect = (wrongMsgs.length === 0 && aFamily !== bFamily);
+  act2Result.hidden = false;
+  if (perfect) {
+    act2Result.className = 'check-result good';
+    act2Result.innerHTML = `<strong>Two families, perfectly sorted &mdash; all ${total} correct!</strong> Each box now holds elements that react with water the same way.`;
+    narrate('act2_allcorrect');
+    playChord();
+  } else {
+    act2Result.className = 'check-result partial';
+    const list = wrongMsgs.map(m => `<li>${m}</li>`).join('');
+    act2Result.innerHTML = `<strong>${correct} of ${total} grouped correctly.</strong> The cards outlined in red aren't with their family yet:<ul class="why-list">${list}</ul>Move them and check again &mdash; or continue if you'd like.`;
+    narrate('act2_some');
+    playGood();
   }
+  // Per Teresa, students may progress regardless.
+  act2ToObs.hidden = false;
+  act2FootHint.textContent = `Move any red card to the other box and check again, or continue.`;
 }
 
 act2ToObs.addEventListener('click', () => {
+  // Teresa: "Screen now changes to correct groupings." Carry the CORRECT families
+  // through to the observations stage, keeping the pupil's left/right choice.
+  const aFamily = familyMajority(act2BinSymbols('A').length ? act2BinSymbols('A') : ['K']);
+  if (aFamily === 'alkali') {
+    state.act2Bins.famA = { family:'alkali',   symbols: ALKALI_SYMBOLS.slice() };
+    state.act2Bins.famB = { family:'alkearth', symbols: ALKEARTH_SYMBOLS.slice() };
+  } else {
+    state.act2Bins.famA = { family:'alkearth', symbols: ALKEARTH_SYMBOLS.slice() };
+    state.act2Bins.famB = { family:'alkali',   symbols: ALKALI_SYMBOLS.slice() };
+  }
   showCelebrate({
     char: 'anim_06_confetti_celebration.webp',
     title: 'Two families revealed!',

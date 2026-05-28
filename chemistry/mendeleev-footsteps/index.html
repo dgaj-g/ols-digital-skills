@@ -89,11 +89,17 @@
       </div>
 
       <div class="act-foot">
-        <button type="button" class="primary-btn" id="act1-continue" disabled>
-          <span>Continue to step 2</span>
-          <span class="btn-arrow" aria-hidden="true">&rarr;</span>
-        </button>
-        <p class="act-foot-hint">Once the <strong>"will react with water"</strong> bin is correctly populated, you can move on.</p>
+        <div class="check-result" id="act1-result" role="status" aria-live="polite" hidden></div>
+        <div class="act-foot-btns">
+          <button type="button" class="primary-btn" id="act1-check" disabled>
+            <span>Check my answers</span>
+          </button>
+          <button type="button" class="primary-btn" id="act1-continue" hidden>
+            <span>Continue to step 2</span>
+            <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+        <p class="act-foot-hint" id="act1-foot-hint">Place all 22 cards, then check how you did. You can move any card between bins as often as you like.</p>
       </div>
     </article>
 
@@ -126,10 +132,17 @@
       </div>
 
       <div class="act-foot">
-        <button type="button" class="primary-btn" id="act2-to-obs" disabled>
-          <span>Now study the observations</span>
-          <span class="btn-arrow" aria-hidden="true">&rarr;</span>
-        </button>
+        <div class="check-result" id="act2-result" role="status" aria-live="polite" hidden></div>
+        <div class="act-foot-btns">
+          <button type="button" class="primary-btn" id="act2-check" disabled>
+            <span>Check my answers</span>
+          </button>
+          <button type="button" class="primary-btn" id="act2-to-obs" hidden>
+            <span>Now study the observations</span>
+            <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+        <p class="act-foot-hint" id="act2-foot-hint">Place all 8 elements into the two boxes, then check how you did.</p>
       </div>
     </article>
 

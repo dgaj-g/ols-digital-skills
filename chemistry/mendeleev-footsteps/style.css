@@ -364,13 +364,70 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   padding: 16px 0 4px;
 }
 .act-foot-hint {
   margin: 0;
   font-size: 0.84rem;
   color: var(--muted);
+}
+.act-foot-btns {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ---------- Check result banner ---------- */
+
+.check-result {
+  width: 100%;
+  max-width: 720px;
+  background: white;
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-sm);
+  border-left: 5px solid var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.5;
+  color: var(--text);
+  animation: act-fade-in 0.3s ease;
+}
+.check-result.good {
+  border-left-color: var(--good);
+  background: rgba(27, 122, 71, 0.06);
+}
+.check-result.partial {
+  border-left-color: var(--ols-gold);
+  background: rgba(228, 184, 36, 0.08);
+}
+.check-result strong { color: var(--ols-blue); }
+.check-result .why-list {
+  margin: 8px 0 6px;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.check-result .why-list li {
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+/* ---------- Check outlines on cards ---------- */
+
+.card.check-correct {
+  box-shadow: 0 0 0 3px var(--good), 0 3px 8px rgba(27, 122, 71, 0.30);
+}
+.card.check-wrong {
+  box-shadow: 0 0 0 3px var(--bad), 0 3px 8px rgba(193, 53, 64, 0.30);
+  animation: wrong-wobble 0.4s ease;
+}
+@keyframes wrong-wobble {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }
 
 /* ===========================================================
