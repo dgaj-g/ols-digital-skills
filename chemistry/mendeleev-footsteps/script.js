@@ -1084,20 +1084,12 @@ function assignObs(id, fam) {
       if (poolItem) poolItem.remove();
       clearObsSelection();
     } else {
-      if (poolItem) {
-        // Reveal-after-first-placement: now that the pupil has decided this
-        // observation belongs to one family, nudge them that it also fits the
-        // other. Create the tag on demand (it isn't shown before placement).
-        let tag = poolItem.querySelector('.obs-tag');
-        if (!tag) {
-          tag = document.createElement('span');
-          tag.className = 'obs-tag';
-          poolItem.appendChild(tag);
-        }
-        tag.textContent = 'now tap the other column too';
-        poolItem.classList.add('half-placed');
-      }
-      // keep it selected so the pupil can immediately tap the other column
+      // Subtle reveal-after-first-placement: no text hint. The observation
+      // stays in the pool with a gentle animated glow so the pupil notices
+      // it's "different" (still in play, can go in the other column too)
+      // without being told. They work out the rest from the cards.
+      if (poolItem) poolItem.classList.add('placed-once');
+      // keep it selected so a tap on the other column completes it straight away
     }
   } else {
     if (poolItem) poolItem.remove();

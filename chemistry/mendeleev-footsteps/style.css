@@ -1036,14 +1036,22 @@
   color: var(--good);
   font-weight: 600;
 }
-.obs-item.half-placed {
-  background: linear-gradient(180deg, #FFF8E1, #FAEFCB);
-  border-color: var(--ols-gold);
+/* "Placed in one column, still in play" — a gentle animated glow + colour
+   shift, instead of a text hint. Signals the observation is different without
+   telling the pupil to tap the other column. Uses filter:drop-shadow for the
+   glow so it doesn't clash with the gold box-shadow ring when also selected. */
+.obs-item.placed-once {
+  border-color: var(--c-grp6);
+  background: linear-gradient(180deg, #F0FBFA, #E0F4F1);
   color: var(--ols-blue-dark);
+  animation: obs-glow 1.8s ease-in-out infinite;
 }
-.obs-item.half-placed .obs-tag {
-  background: rgba(228, 184, 36, 0.30);
-  color: var(--ols-blue-dark);
+@keyframes obs-glow {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(46, 196, 182, 0.40)); }
+  50%      { filter: drop-shadow(0 0 9px rgba(46, 196, 182, 0.80)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .obs-item.placed-once { animation: none; filter: drop-shadow(0 0 5px rgba(46, 196, 182, 0.6)); }
 }
 .obs-item .obs-tag {
   display: inline-block;
