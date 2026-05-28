@@ -230,7 +230,8 @@ const NARRATOR_LINES = {
   act2_some:     { img:"anim_05_thumbs_down_sad.webp", text:"Nearly! Some elements aren't with their family yet. Read the note below, move the red cards, and check again." },
   act2_done:     { img:"anim_06_confetti_celebration.webp", text:"You and Mendeleev have found patterns between the elements — families of elements with similar chemical reactions!" },
 
-  act2b_open: { img:"anim_12_goggles_shine.webp",     text:"Now match the observations to the family they belong to. Some fit both — tap both columns when they do." },
+  act2b_open: { img:"anim_12_goggles_shine.webp",     text:"Now match the observations to the family they belong to. Tap an observation, then tap a family column. Some fit both — tap the other column too." },
+  act2b_pick: { img:"anim_12_goggles_shine.webp",     text:"Good — now tap the family column where that observation belongs. If it fits both, you'll tap the other column too." },
   act2b_correct: { img:"anim_07_success_check.webp",  text:"Yes — that observation fits this family." },
   act2b_wrong:   { img:"anim_05_thumbs_down_sad.webp", text:"That observation doesn't really fit this family. Check the cards again." },
   act2b_done: { img:"anim_15_level_up_stars.webp",    text:"Brilliant — you've mapped what makes each family unique. Onwards to step 3." },
@@ -944,6 +945,8 @@ const obsATitle = document.getElementById('obs-A-title');
 const obsBTitle = document.getElementById('obs-B-title');
 const act2bContinue = document.getElementById('act2b-continue');
 
+let obsColumnsWired = false;
+
 function buildAct2b() {
   // Map each act2 bin's family → visible column.
   // Column A always shows famA's family, column B always famB's family,
@@ -962,10 +965,13 @@ function buildAct2b() {
 
   // Reset state
   state.obsPlaced = new Set();
+  state.obsSelected = null;
   document.querySelectorAll('.obs-drops').forEach(u => u.innerHTML = '');
   act2bContinue.disabled = true;
 
-  // Build observation pool (shuffled)
+  // Build observation pool (shuffled). Teresa's brief: "Choose an observation
+  // from the list and then tap a column" — so this is tap-to-select then
+  // tap-a-column, NOT drag-and-drop.
   obsList.innerHTML = '';
   for (const o of shuffle(OBSERVATIONS)) {
     const li = document.createElement('li');
@@ -973,88 +979,111 @@ function buildAct2b() {
     li.dataset.id = o.id;
     li.setAttribute('role', 'button');
     li.setAttribute('tabindex', '0');
+    li.setAttribute('aria-pressed', 'false');
     const tagText = o.tags.length === 2 ? '<span class="obs-tag">fits both</span>' : '';
     li.innerHTML = `${escapeHTML(o.text)}${tagText}`;
-    attachDrag(li, {
-      onTap: () => {/* no detail to show */},
-      onMoveHover: (x, y) => highlightObsDrop(x, y, o),
-      getDropTarget: (x, y) => topElementUnder(x, y, n => n.classList && n.classList.contains('obs-drops')),
-      onDrop: (node, drop) => handleObsDrop(node, drop, o),
+    li.addEventListener('click', () => selectObs(o.id));
+    li.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectObs(o.id); }
     });
     obsList.appendChild(li);
   }
+
+  wireObsColumns();
 }
 
-function highlightObsDrop(x, y, obs) {
-  clearAllHover();
-  const drop = topElementUnder(x, y, n => n.classList && n.classList.contains('obs-drops'));
-  if (!drop) return;
-  drop.classList.add('drop-hover');
+function wireObsColumns() {
+  if (obsColumnsWired) return;
+  obsColumnsWired = true;
+  document.querySelectorAll('#obs-columns .obs-column').forEach(col => {
+    col.setAttribute('role', 'button');
+    col.setAttribute('tabindex', '0');
+    col.addEventListener('click', () => {
+      if (state.obsSelected) assignObs(state.obsSelected, col.dataset.fam);
+    });
+    col.addEventListener('keydown', (e) => {
+      if ((e.key === 'Enter' || e.key === ' ') && state.obsSelected) {
+        e.preventDefault();
+        assignObs(state.obsSelected, col.dataset.fam);
+      }
+    });
+  });
 }
 
-function handleObsDrop(node, drop, obs) {
-  if (!drop) { bounceObs(node); return; }
-  const fam = drop.dataset.drops;
-  // Map: column 'A' actually represents state.act2Bins.famA.family
-  // Family mapping
+function selectObs(id) {
+  if (state.obsSelected === id) { clearObsSelection(); return; }
+  state.obsSelected = id;
+  document.querySelectorAll('#obs-list .obs-item').forEach(li => {
+    const on = li.dataset.id === id;
+    li.classList.toggle('selected', on);
+    li.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  document.querySelectorAll('#obs-columns .obs-column').forEach(c => c.classList.add('assignable'));
+  narrate('act2b_pick');
+  playSoft();
+}
+
+function clearObsSelection() {
+  state.obsSelected = null;
+  document.querySelectorAll('#obs-list .obs-item').forEach(li => {
+    li.classList.remove('selected');
+    li.setAttribute('aria-pressed', 'false');
+  });
+  document.querySelectorAll('#obs-columns .obs-column').forEach(c => c.classList.remove('assignable'));
+}
+
+function assignObs(id, fam) {
+  const obs = OBSERVATIONS.find(o => o.id === id);
+  if (!obs) return;
   const colFamily = fam === 'A' ? state.act2Bins.famA.family : state.act2Bins.famB.family;
-  // Observation tags are alkali/alkearth-keyed:
-  const obsAcceptsAlkali = obs.tags.includes('A');   // A in pool data means alkali
-  const obsAcceptsAlkearth = obs.tags.includes('B');
-
-  // Wait — in the OBSERVATIONS list, tags ['A','B'] mean "fits both families".
-  // Let me clarify: tag 'A' = alkali, tag 'B' = alkearth.
+  // tag 'A' = alkali, tag 'B' = alkaline earth
   const allowedByObs =
-    (colFamily === 'alkali'   && obsAcceptsAlkali) ||
-    (colFamily === 'alkearth' && obsAcceptsAlkearth);
+    (colFamily === 'alkali'   && obs.tags.includes('A')) ||
+    (colFamily === 'alkearth' && obs.tags.includes('B'));
+  const key = `${obs.id}|${fam}`;
 
   if (!allowedByObs) {
-    bounceObs(node);
     playBad();
     narrate('act2b_wrong');
     const famName = colFamily === 'alkali' ? 'the alkali family' : 'the alkaline earth family';
     showToast(`"${obs.text}" doesn't fit ${famName} — check what their reactions with water leave behind.`);
-    return;
+    return; // keep the observation selected so they can try the other column
   }
-  // Already placed in this column?
-  const key = `${obs.id}|${fam}`;
   if (state.obsPlaced.has(key)) {
-    bounceObs(node);
+    showToast(`"${obs.text}" is already in that column — try the other one.`);
     return;
   }
 
-  // Accept — make a static "placed chip" for the drop column, and keep
-  // the original in the pool only if it's a "fits both" observation that
-  // hasn't been placed in the OTHER column yet.
-  const fitsBoth = obs.tags.length === 2;
-  const placedChip = document.createElement('li');
-  placedChip.className = 'obs-item placed';
-  placedChip.innerHTML = `${escapeHTML(obs.text)}<span class="obs-tag">placed</span>`;
-  drop.appendChild(placedChip);
+  // Place a static chip in that column.
+  const drop = document.querySelector(`.obs-drops[data-drops="${fam}"]`);
+  const chip = document.createElement('li');
+  chip.className = 'obs-item placed';
+  chip.innerHTML = `${escapeHTML(obs.text)}<span class="obs-tag">placed</span>`;
+  drop.appendChild(chip);
   state.obsPlaced.add(key);
   playGood();
   narrate('act2b_correct');
-  resetNode(node);
 
+  const poolItem = document.querySelector(`#obs-list .obs-item[data-id="${id}"]`);
+  const fitsBoth = obs.tags.length === 2;
   if (fitsBoth) {
     const otherKey = `${obs.id}|${fam === 'A' ? 'B' : 'A'}`;
     if (state.obsPlaced.has(otherKey)) {
-      node.remove();
+      if (poolItem) poolItem.remove();
+      clearObsSelection();
     } else {
-      const tag = node.querySelector('.obs-tag');
-      if (tag) tag.textContent = 'now place in the other column too';
-      node.classList.add('half-placed');
+      if (poolItem) {
+        const tag = poolItem.querySelector('.obs-tag');
+        if (tag) tag.textContent = 'now tap the other column too';
+        poolItem.classList.add('half-placed');
+      }
+      // keep it selected so the pupil can immediately tap the other column
     }
   } else {
-    node.remove();
+    if (poolItem) poolItem.remove();
+    clearObsSelection();
   }
   checkObsComplete();
-}
-
-function bounceObs(node) {
-  resetNode(node);
-  node.classList.add('bounce-back');
-  setTimeout(() => node.classList.remove('bounce-back'), 320);
 }
 
 function checkObsComplete() {
