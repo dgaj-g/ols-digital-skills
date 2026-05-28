@@ -102,18 +102,22 @@
     <div class="timeline-question">
       <label for="event-answer" class="question-label">Which event is the most important? Explain why in one sentence.</label>
       <textarea id="event-answer" class="answer-lines" rows="2" placeholder="Write your answer in two lines…"></textarea>
-      <button id="show-models" type="button" class="reveal-btn" disabled aria-expanded="false" aria-controls="model-answers">Show model answers</button>
-      <div class="model-answers" id="model-answers" hidden>
-        <p class="model-intro">Any of these three events is a strong choice. Compare your answer with the model answers below:</p>
-        <article class="model-answer">
+      <div class="model-answer-group">
+        <p class="model-prompt">Any of these three events is a strong choice. Reveal the one you argued for and compare your answer:</p>
+        <div class="model-buttons">
+          <button type="button" class="reveal-btn" data-target="model-revelation" aria-expanded="false" aria-controls="model-revelation">First revelation</button>
+          <button type="button" class="reveal-btn" data-target="model-medina" aria-expanded="false" aria-controls="model-medina">Flees to Medina</button>
+          <button type="button" class="reveal-btn" data-target="model-conquest" aria-expanded="false" aria-controls="model-conquest">Conquest of Mecca</button>
+        </div>
+        <article class="model-answer" id="model-revelation" hidden>
           <h3>The first revelation was the most important event.</h3>
           <p>This is because it was the beginning of the revelations from Angel Gabriel, which were later written as the Qur&rsquo;an. Without this event, Islam would not have started.</p>
         </article>
-        <article class="model-answer">
+        <article class="model-answer" id="model-medina" hidden>
           <h3>The most important event was Muhammad flees to Medina.</h3>
           <p>This is because it marks the beginning of the Muslim community. It also allowed Islam to grow safely after years of persecution in Mecca.</p>
         </article>
-        <article class="model-answer">
+        <article class="model-answer" id="model-conquest" hidden>
           <h3>The Conquest of Mecca was the most important event.</h3>
           <p>This is because it showed that Islam had become strong and successful after years of people being against Muhammad&rsquo;s message. It also meant that Mecca became a Muslim city and many people accepted Islam.</p>
         </article>

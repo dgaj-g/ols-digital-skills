@@ -53,7 +53,6 @@ const state = {
   task3Checked: false,
   task3Score: 0,
 
-  modelAnswersShown: false,
   pointer: { id: null, startX: 0, startY: 0, kind: null, dragged: null, originParent: null, originNextSibling: null, moved: false, startTime: 0 },
   audioCtx: null
 };
@@ -597,38 +596,30 @@ function updateTotalScore() {
 }
 
 // ============================================================
-//   Model answers reveal (Task 3 textarea — unchanged)
+//   Model answers reveal (Task 3) — one toggle button per event
 // ============================================================
 
 const eventAnswer = document.getElementById('event-answer');
-const showModelsBtn = document.getElementById('show-models');
-const modelAnswers = document.getElementById('model-answers');
+const modelButtons = document.querySelectorAll('.model-buttons .reveal-btn');
 
-function updateShowModelsBtn() {
-  const len = (eventAnswer.value || '').trim().length;
-  if (state.modelAnswersShown) return;
-  showModelsBtn.disabled = len < 10;
-}
-
-eventAnswer.addEventListener('input', updateShowModelsBtn);
-
-showModelsBtn.addEventListener('click', () => {
-  if (showModelsBtn.disabled) return;
-  modelAnswers.hidden = false;
-  showModelsBtn.classList.add('shown');
-  showModelsBtn.textContent = 'Model answers shown';
-  showModelsBtn.setAttribute('aria-expanded', 'true');
-  state.modelAnswersShown = true;
-  playCorrectChime();
+modelButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const panel = document.getElementById(btn.dataset.target);
+    if (!panel) return;
+    const opening = panel.hidden;
+    panel.hidden = !opening;
+    btn.classList.toggle('shown', opening);
+    btn.setAttribute('aria-expanded', String(opening));
+    if (opening) playCorrectChime();
+  });
 });
 
 function resetModelAnswers() {
-  modelAnswers.hidden = true;
-  showModelsBtn.classList.remove('shown');
-  showModelsBtn.textContent = 'Show model answers';
-  showModelsBtn.setAttribute('aria-expanded', 'false');
-  showModelsBtn.disabled = true;
-  state.modelAnswersShown = false;
+  document.querySelectorAll('.model-answer-group .model-answer').forEach(p => { p.hidden = true; });
+  modelButtons.forEach(b => {
+    b.classList.remove('shown');
+    b.setAttribute('aria-expanded', 'false');
+  });
 }
 
 // ============================================================
@@ -652,5 +643,4 @@ document.getElementById('reset-btn').addEventListener('click', () => {
 buildTask1();
 buildTask2();
 buildTask3();
-updateShowModelsBtn();
 updateTotalScore();
