@@ -4,6 +4,7 @@
    Drag a word card onto the matching picture (mouse + touch via
    Pointer Events), or tap/keyboard-select a word then tap a
    picture. Self-contained: no build step, works from file://.
+   The word set is chosen by <body data-set="j1|s1">.
    Emoji art: OpenMoji (openmoji.org), CC BY-SA 4.0.
    ============================================================ */
 
@@ -67,23 +68,19 @@ const ROUNDS_J1 = [
   ["ciuin", "faiteach", "falsa", "duthrachtach", "amaideach", "lag"],
 ];
 
-const ROUNDS_S1_EXTRA = [
+const ROUNDS_S1 = ROUNDS_J1.concat([
   ["gealghaireach", "feargach", "cantalach", "neirbhiseach", "dairire", "muinineach"],
   ["macanta", "dilis", "fial", "santach", "foighneach", "ceanndana"],
   ["ciallmhar", "briomhar", "neamhspleach", "dearmadach", "aclai", "argointeach"],
   ["lach", "tuisceanach", "mishlachtmhar", "millte"],
-];
+]);
 
-const LEVELS = {
-  j1: ROUNDS_J1,
-  s1: ROUNDS_J1.concat(ROUNDS_S1_EXTRA),
-};
+const ROUNDS = document.body.dataset.set === "s1" ? ROUNDS_S1 : ROUNDS_J1;
 
 // ----- 3. State -----
 
 const state = {
-  level: "j1",
-  rounds: LEVELS.j1,
+  rounds: ROUNDS,
   roundIndex: 0,
   matchedThisRound: 0,
   matchedTotal: 0,
@@ -102,7 +99,6 @@ const roundTotalEl = document.getElementById("round-total");
 const matchedCountEl = document.getElementById("matched-count");
 const matchedTotalEl = document.getElementById("matched-total");
 const resetBtn = document.getElementById("reset-btn");
-const levelBtns = document.querySelectorAll(".level-btn");
 const roundDone = document.getElementById("round-done");
 const roundDoneMsg = document.getElementById("round-done-msg");
 const nextRoundBtn = document.getElementById("next-round-btn");
@@ -110,7 +106,6 @@ const celebrate = document.getElementById("celebrate");
 const celebrateTitle = document.getElementById("celebrate-title");
 const celebrateText = document.getElementById("celebrate-text");
 const celebrateReplay = document.getElementById("celebrate-replay");
-const celebrateNext = document.getElementById("celebrate-next");
 
 // ----- 5. Helpers -----
 
@@ -123,7 +118,7 @@ function shuffle(arr) {
   return a;
 }
 
-function totalWordsInLevel() {
+function totalWords() {
   return state.rounds.reduce((n, r) => n + r.length, 0);
 }
 
@@ -134,18 +129,11 @@ function buildRound() {
   state.matchedThisRound = 0;
   const slugs = state.rounds[state.roundIndex];
 
-  // Pictures (drop targets) — fixed order
   board.innerHTML = "";
-  for (const slug of slugs) {
-    board.appendChild(makePicture(slug));
-  }
-  board.dataset.count = slugs.length;
+  for (const slug of slugs) board.appendChild(makePicture(slug));
 
-  // Word cards (draggable) — shuffled
   tray.innerHTML = "";
-  for (const slug of shuffle(slugs)) {
-    tray.appendChild(makeWord(slug));
-  }
+  for (const slug of shuffle(slugs)) tray.appendChild(makeWord(slug));
 
   roundNowEl.textContent = state.roundIndex + 1;
   roundTotalEl.textContent = state.rounds.length;
@@ -197,7 +185,6 @@ function makeWord(slug) {
 // ----- 7. Pointer drag (mouse + touch + pen) -----
 
 const TAP_PX = 6;
-const TAP_MS = 320;
 
 function attachPointerHandlers(word) {
   word.addEventListener("pointerdown", onPointerDown);
@@ -242,16 +229,12 @@ function onPointerUp(e) {
   clearPicHighlights();
 
   if (!wasDrag) {
-    // Treat as a tap → select / deselect
     toggleSelect(word);
     resetWord(word);
   } else {
     const pic = picUnderPoint(e.clientX, e.clientY);
-    if (pic) {
-      attemptMatch(word, pic);
-    } else {
-      bounceBack(word);
-    }
+    if (pic) attemptMatch(word, pic);
+    else bounceBack(word);
   }
 
   state.dragging = null;
@@ -310,10 +293,7 @@ function bounceBack(word) {
 
 function toggleSelect(word) {
   if (word.classList.contains("locked")) return;
-  if (state.selectedWord === word) {
-    clearSelection();
-    return;
-  }
+  if (state.selectedWord === word) { clearSelection(); return; }
   clearSelection();
   state.selectedWord = word;
   word.classList.add("selected");
@@ -327,10 +307,8 @@ function clearSelection() {
 }
 
 function onPicTap(e) {
-  // Only handle plain taps here (drag drops are handled on the word's pointerup)
   if (state.dragging) return;
-  const pic = e.currentTarget;
-  if (state.selectedWord) attemptMatch(state.selectedWord, pic);
+  if (state.selectedWord) attemptMatch(state.selectedWord, e.currentTarget);
 }
 
 // ----- 9. Match logic -----
@@ -355,13 +333,11 @@ function lockMatch(word, pic) {
   clearSelection();
   resetWord(word);
 
-  // Lock the word card in place and fade it out of the tray
   word.classList.add("locked");
   word.setAttribute("aria-hidden", "true");
   word.tabIndex = -1;
   setTimeout(() => { if (word.parentNode) word.parentNode.removeChild(word); }, 260);
 
-  // Reveal answer on the picture
   pic.classList.add("matched");
   pic.querySelector(".pic-tag").textContent = a.ga;
   pic.querySelector(".pic-en").textContent = a.en;
@@ -382,10 +358,10 @@ function lockMatch(word, pic) {
 
 function updateScore() {
   matchedCountEl.textContent = state.matchedTotal;
-  matchedTotalEl.textContent = totalWordsInLevel();
+  matchedTotalEl.textContent = totalWords();
 }
 
-// ----- 10. Round + level completion -----
+// ----- 10. Round + activity completion -----
 
 function finishRound() {
   const isLast = state.roundIndex >= state.rounds.length - 1;
@@ -406,38 +382,20 @@ nextRoundBtn.addEventListener("click", () => {
 });
 
 function triggerCelebration() {
-  const total = totalWordsInLevel();
   celebrateTitle.textContent = "Maith thú!";
-  celebrateText.textContent = `Tá gach aidiacht (${total}) meaitseáilte agat leis an bpictiúr ceart.`;
-  celebrateNext.hidden = state.level !== "j1";
+  celebrateText.textContent = `Tá gach aidiacht (${totalWords()}) meaitseáilte agat leis an bpictiúr ceart.`;
   celebrate.hidden = false;
   playChord([523.25, 659.25, 783.99, 1046.5]);
 }
 
 celebrateReplay.addEventListener("click", () => {
   celebrate.hidden = true;
-  startLevel(state.level);
+  start();
 });
 
-celebrateNext.addEventListener("click", () => {
-  celebrate.hidden = true;
-  setLevel("s1");
-});
+// ----- 11. Reset / init -----
 
-// ----- 11. Level switching -----
-
-function setLevel(level) {
-  state.level = level;
-  levelBtns.forEach((b) => {
-    const on = b.dataset.level === level;
-    b.classList.toggle("is-active", on);
-    b.setAttribute("aria-pressed", on ? "true" : "false");
-  });
-  startLevel(level);
-}
-
-function startLevel(level) {
-  state.rounds = LEVELS[level];
+function start() {
   state.roundIndex = 0;
   state.matchedTotal = 0;
   roundDone.hidden = true;
@@ -445,19 +403,10 @@ function startLevel(level) {
   buildRound();
 }
 
-levelBtns.forEach((b) =>
-  b.addEventListener("click", () => {
-    if (b.dataset.level !== state.level) setLevel(b.dataset.level);
-  })
-);
-
-resetBtn.addEventListener("click", () => startLevel(state.level));
+resetBtn.addEventListener("click", start);
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    clearSelection();
-    celebrate.hidden = true;
-  }
+  if (e.key === "Escape") { clearSelection(); celebrate.hidden = true; }
 });
 
 // ----- 12. Sound (Web Audio, no files) -----
@@ -492,4 +441,4 @@ function playChord(freqs) {
 
 // ----- 13. Init -----
 
-setLevel("j1");
+start();

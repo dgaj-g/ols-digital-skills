@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ga">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Aidiachtaí (J1) &middot; Gaeilge &middot; OLS Digital Skills</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity" data-set="j1">
+
+<header class="act-header">
+  <div class="act-titles">
+    <p class="eyebrow">Gaeilge &middot; J1 &middot; CCEA</p>
+    <h1>Aidiachtaí (J1)</h1>
+    <p class="lede">Tarraing gach aidiacht go dtí an pictiúr ceart. <span class="lede-en">Drag each Irish adjective onto the picture it describes.</span></p>
+  </div>
+  <div class="act-meta">
+    <span class="round-chip">Babhta <span id="round-now">1</span>&nbsp;/&nbsp;<span id="round-total">4</span></span>
+    <span class="score-pill"><span id="matched-count">0</span>&nbsp;/&nbsp;<span id="matched-total">24</span></span>
+    <button id="reset-btn" type="button" class="ghost-btn" aria-label="Tosaigh arís — start again">Arís</button>
+  </div>
+</header>
+
+<main class="act-main">
+
+  <!-- Pictures (drop targets) -->
+  <section class="board-stage" aria-label="Pictúir — pictures">
+    <div class="board" id="board"></div>
+  </section>
+
+  <!-- Word tray (draggable) -->
+  <section class="tray-stage" aria-label="Aidiachtaí le meaitseáil — adjectives to match">
+    <div class="tray-head">
+      <h2>Aidiachtaí</h2>
+      <span class="tray-hint">Tarraing focal go pictiúr — nó tapáil focal, ansin tapáil an pictiúr.</span>
+    </div>
+    <div class="tray" id="tray"></div>
+  </section>
+</main>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<!-- Round-complete banner -->
+<div class="round-done" id="round-done" hidden>
+  <div class="round-done-inner">
+    <span class="round-done-msg" id="round-done-msg">Babhta críochnaithe!</span>
+    <button id="next-round-btn" type="button" class="primary-btn">Ar aghaidh ›</button>
+  </div>
+</div>
+
+<!-- Completion overlay -->
+<div class="celebrate" id="celebrate" hidden>
+  <div class="celebrate-panel">
+    <h2 id="celebrate-title">Maith thú!</h2>
+    <p id="celebrate-text">Tá gach aidiacht meaitseáilte agat leis an bpictiúr ceart.</p>
+    <div class="celebrate-actions">
+      <button id="celebrate-replay" type="button" class="ghost-btn dark">Imir arís</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
