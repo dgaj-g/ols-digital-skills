@@ -155,6 +155,10 @@ function onPointerDown(e) {
   // After Check has been pressed for the relevant task, cards are locked
   if (card.dataset.kind === 'def' && state.task1Checked) return;
   if (card.dataset.kind === 'event' && state.task3Checked) return;
+  // Suppress the browser's native text selection while dragging so the
+  // page doesn't get highlighted blue as the cursor sweeps across it.
+  e.preventDefault();
+  document.body.classList.add('dragging-active');
   try { card.setPointerCapture(e.pointerId); } catch (_) {}
   state.pointer.id = e.pointerId;
   state.pointer.startX = e.clientX;
@@ -209,6 +213,7 @@ function onPointerUp(e) {
   }
 
   try { card.releasePointerCapture(e.pointerId); } catch (_) {}
+  document.body.classList.remove('dragging-active');
   state.pointer.id = null;
   state.pointer.dragged = null;
   state.pointer.kind = null;
@@ -220,6 +225,7 @@ function onPointerCancel(e) {
   const card = state.pointer.dragged;
   returnToOrigin(card);
   clearHighlights();
+  document.body.classList.remove('dragging-active');
   state.pointer.id = null;
   state.pointer.dragged = null;
   state.pointer.kind = null;

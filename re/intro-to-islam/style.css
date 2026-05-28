@@ -29,6 +29,17 @@ body.activity {
 
 [hidden] { display: none !important; }
 
+/* While a card is being dragged, stop the browser selecting page text
+   (the blue highlight sweep) and show the grabbing cursor everywhere. */
+body.dragging-active {
+  cursor: grabbing;
+}
+body.dragging-active,
+body.dragging-active * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
 /* ---------- Header (WordArt-feel title) ---------- */
 
 .act-header {
