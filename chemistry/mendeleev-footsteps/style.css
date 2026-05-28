@@ -1271,6 +1271,17 @@
 
 [hidden] { display: none !important; }
 
+/* While a drag is in progress, suppress text selection page-wide so the
+   mouse gesture doesn't sweep a blue highlight across labels and headings.
+   Lifted as soon as the pointer is released, so normal selection still works. */
+body.dragging-active,
+body.dragging-active * {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none;
+}
+
 @media (max-width: 600px) {
   .card .name { display: none; }
   .card .symbol { font-size: clamp(1rem, 5vw, 1.5rem); }

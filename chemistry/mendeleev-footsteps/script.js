@@ -371,6 +371,9 @@ function onPointerDown(e) {
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   const node = e.currentTarget;
   try { node.setPointerCapture(e.pointerId); } catch (_) {}
+  // Suppress the browser's text-selection gesture for the duration of the drag
+  // (otherwise dragging the mouse sweeps a blue highlight across page text).
+  document.body.classList.add('dragging-active');
   state.pointer.id = e.pointerId;
   state.pointer.startX = e.clientX;
   state.pointer.startY = e.clientY;
@@ -429,6 +432,7 @@ function onPointerUp(e) {
   state.dragging = null;
   state.pointer.id = null;
   state.pointer.moved = false;
+  document.body.classList.remove('dragging-active');
   try { node.releasePointerCapture(e.pointerId); } catch (_) {}
 }
 
@@ -440,7 +444,14 @@ function onPointerCancel(e) {
   state.dragging = null;
   state.pointer.id = null;
   state.pointer.moved = false;
+  document.body.classList.remove('dragging-active');
 }
+
+// Belt-and-braces: while a drag is active, cancel any text-selection the
+// browser tries to start (covers edge cases where user-select alone lags).
+document.addEventListener('selectstart', (e) => {
+  if (document.body.classList.contains('dragging-active')) e.preventDefault();
+});
 
 function resetNode(node) {
   node.classList.remove('dragging');
