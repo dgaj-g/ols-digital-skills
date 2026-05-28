@@ -1,0 +1,906 @@
+/* ============================================================
+   Intro to Islam — Year 10 RE mid-lesson progress check
+   Green & white palette (the colours of Islam)
+   ============================================================ */
+
+:root {
+  --islam-green:        #006A4E;   /* deep flag-green */
+  --islam-green-dark:   #00432F;
+  --islam-green-soft:   #2E8B6B;
+  --islam-green-tint:   #E8F3EE;
+  --islam-cream:        #FAF7EE;   /* warm off-white */
+  --islam-ink:          #1F2A24;
+  --islam-line:         #C9D9D1;
+  --islam-correct:      #1E8E5A;
+  --islam-wrong:        #C0392B;
+  --islam-gold:         #C9A227;   /* accent only, for the title flourish */
+}
+
+body.activity {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(0, 106, 78, 0.07), transparent 60%),
+    radial-gradient(circle at 88% 100%, rgba(0, 106, 78, 0.06), transparent 55%),
+    var(--islam-cream);
+  color: var(--islam-ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+[hidden] { display: none !important; }
+
+/* While a card is being dragged, stop the browser selecting page text
+   (the blue highlight sweep) and show the grabbing cursor everywhere. */
+body.dragging-active {
+  cursor: grabbing;
+}
+body.dragging-active,
+body.dragging-active * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* ---------- Header (WordArt-feel title) ---------- */
+
+.act-header {
+  position: relative;
+  text-align: center;
+  padding: 32px 22px 28px;
+  background: linear-gradient(180deg, white 0%, var(--islam-green-tint) 100%);
+  border-bottom: 5px solid var(--islam-green);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.act-header .eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--islam-green);
+  font-weight: 700;
+}
+
+.wordmark-title {
+  margin: 4px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: clamp(2.1rem, 6vw, 3.4rem);
+  letter-spacing: 0.01em;
+  color: var(--islam-green-dark);
+  text-shadow:
+    1px 1px 0 rgba(255, 255, 255, 0.9),
+    2px 2px 0 var(--islam-green),
+    3px 3px 8px rgba(0, 67, 47, 0.25);
+  line-height: 1.05;
+  position: relative;
+}
+
+.wordmark-title::after {
+  content: "";
+  display: block;
+  width: clamp(80px, 18vw, 160px);
+  height: 3px;
+  margin: 10px auto 0;
+  background: linear-gradient(90deg, transparent, var(--islam-gold), transparent);
+  border-radius: 2px;
+}
+
+.subhead {
+  margin: 4px 0 0;
+  font-size: clamp(0.92rem, 1.6vw, 1.1rem);
+  color: var(--islam-green-dark);
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.header-tools {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.total-score {
+  background: var(--islam-green);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  box-shadow: 0 3px 8px rgba(0, 67, 47, 0.25);
+  animation: total-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes total-pop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.ghost-btn {
+  background: transparent;
+  color: var(--islam-green-dark);
+  border: 1.5px solid var(--islam-green);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.ghost-btn:hover { background: var(--islam-green); color: white; }
+.ghost-btn:focus { outline: 2px solid var(--islam-gold); outline-offset: 2px; }
+
+/* ---------- Main ---------- */
+
+.act-main {
+  flex: 1;
+  padding: 22px clamp(12px, 3vw, 28px) 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 980px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ---------- Task boxes ---------- */
+
+.task-box {
+  background: white;
+  border: 2px solid var(--islam-green);
+  border-radius: 16px;
+  padding: 20px clamp(14px, 2.2vw, 26px) 22px;
+  box-shadow:
+    0 1px 2px rgba(0, 67, 47, 0.06),
+    0 8px 22px rgba(0, 67, 47, 0.08);
+  position: relative;
+}
+
+.task-box::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed rgba(0, 106, 78, 0.18);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.task-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.task-number {
+  background: var(--islam-green);
+  color: white;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  box-shadow: 0 3px 8px rgba(0, 67, 47, 0.25);
+  flex-shrink: 0;
+}
+
+.task-head h2 {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+  color: var(--islam-green-dark);
+  line-height: 1.25;
+}
+
+.task-instruction {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  color: var(--muted, #595959);
+}
+
+.task-status {
+  background: var(--islam-green-tint);
+  color: var(--islam-green-dark);
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--islam-green-soft);
+  white-space: nowrap;
+}
+
+.task-status.done {
+  background: var(--islam-correct);
+  color: white;
+  border-color: var(--islam-correct);
+}
+.task-status.partial {
+  background: #FBE4A6;
+  color: #6B4900;
+  border-color: #D9A93A;
+}
+.task-status.zero {
+  background: var(--islam-wrong);
+  color: white;
+  border-color: var(--islam-wrong);
+}
+
+/* ============================================================
+   TASK 1 — Matching
+   ============================================================ */
+
+.match-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.term-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.term {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.term-name {
+  background: var(--islam-green);
+  color: white;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1.02rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+.term-slot {
+  background: var(--islam-green-tint);
+  border: 2px dashed var(--islam-green-soft);
+  border-radius: 10px;
+  min-height: 56px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: var(--muted, #595959);
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.term-slot::before {
+  content: "drop definition here";
+  opacity: 0.55;
+  font-style: italic;
+}
+.term-slot.filled::before { content: ""; display: none; }
+.term-slot.filled { padding: 0; border-style: solid; }
+
+.term-slot.drop-hover {
+  background: rgba(30, 142, 90, 0.22);
+  border-color: var(--islam-correct);
+  border-style: solid;
+  box-shadow: inset 0 0 0 2px var(--islam-correct);
+}
+.term-slot.drop-wrong-flash {
+  background: rgba(192, 57, 43, 0.16);
+  border-color: var(--islam-wrong);
+}
+
+.total-score.all-correct {
+  background: var(--islam-gold);
+  color: var(--islam-green-dark);
+  box-shadow: 0 4px 14px rgba(201, 162, 39, 0.45);
+}
+
+.def-tray {
+  background: var(--islam-cream);
+  border: 1px solid var(--islam-line);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 200px;
+}
+
+.def-card {
+  background: white;
+  border: 1.5px solid var(--islam-green-soft);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.92rem;
+  color: var(--islam-ink);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 1px 2px rgba(0, 67, 47, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s;
+  position: relative;
+}
+.def-card:hover { background: var(--islam-green-tint); }
+.def-card.dragging {
+  cursor: grabbing;
+  z-index: 1000;
+  box-shadow: 0 16px 28px rgba(0, 67, 47, 0.35);
+  transform: scale(1.04) rotate(-1deg);
+  transition: none;
+  background: white;
+}
+.def-card.bounce-back { animation: bounce 0.32s ease; }
+@keyframes bounce {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-6px) rotate(-2deg); }
+  75% { transform: translateX(6px) rotate(2deg); }
+  100% { transform: translateX(0); }
+}
+.def-card.placed {
+  background: white;
+  color: var(--islam-ink);
+  border-color: var(--islam-green-dark);
+  border-width: 2px;
+  cursor: grab;   /* still draggable for swapping until Check is pressed */
+}
+.def-card.marked-correct {
+  background: var(--islam-green);
+  color: white;
+  border-color: var(--islam-green-dark);
+  cursor: default;
+  animation: snap-in 0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.def-card.marked-wrong {
+  background: var(--islam-wrong);
+  color: white;
+  border-color: #8E2D22;
+  cursor: default;
+  animation: wrong-shake 0.36s ease;
+}
+.def-card.snap-in { animation: snap-in 0.34s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes snap-in {
+  0% { transform: scale(1.15); }
+  60% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+/* ============================================================
+   TASK 2 — Image selection
+   ============================================================ */
+
+.image-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.image-choice {
+  background: white;
+  border: 3px solid var(--islam-line);
+  border-radius: 12px;
+  padding: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  position: relative;
+}
+.image-choice:hover { transform: translateY(-2px); border-color: var(--islam-green-soft); box-shadow: 0 6px 14px rgba(0, 67, 47, 0.12); }
+.image-choice:focus-visible { outline: 3px solid var(--islam-gold); outline-offset: 2px; }
+.image-choice img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--islam-cream);
+  display: block;
+}
+.image-choice .tick {
+  background: var(--islam-green-tint);
+  border: 1.5px solid var(--islam-green-soft);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--islam-green-dark);
+}
+
+.image-choice.chosen-correct {
+  border-color: var(--islam-correct);
+  box-shadow: 0 0 0 4px rgba(30, 142, 90, 0.22);
+  transform: translateY(-2px);
+  animation: correct-pulse 0.5s ease;
+}
+.image-choice.chosen-correct .tick {
+  background: var(--islam-correct);
+  color: white;
+  border-color: var(--islam-correct);
+}
+.image-choice.chosen-wrong {
+  border-color: var(--islam-wrong);
+  box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.18);
+  animation: wrong-shake 0.36s ease;
+}
+.image-choice.chosen-wrong .tick {
+  background: var(--islam-wrong);
+  color: white;
+  border-color: var(--islam-wrong);
+}
+.image-choice.chosen-wrong-locked {
+  border-color: var(--islam-wrong);
+  box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.22);
+  cursor: default;
+  animation: wrong-shake 0.36s ease;
+}
+.image-choice.chosen-wrong-locked .tick {
+  background: var(--islam-wrong);
+  color: white;
+  border-color: var(--islam-wrong);
+}
+.image-choice.reveal-answer {
+  border-color: var(--islam-correct);
+  box-shadow: 0 0 0 4px rgba(30, 142, 90, 0.22);
+  cursor: default;
+  animation: correct-pulse 0.5s ease;
+}
+.image-choice.reveal-answer .tick {
+  background: var(--islam-correct);
+  color: white;
+  border-color: var(--islam-correct);
+}
+.image-choice.locked {
+  cursor: default;
+  opacity: 0.55;
+}
+.image-choice.locked:hover { transform: none; box-shadow: none; }
+
+@keyframes correct-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1) translateY(-2px); }
+}
+@keyframes wrong-shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
+.image-question {
+  background: var(--islam-cream);
+  border: 1px solid var(--islam-line);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.question-label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: var(--islam-green-dark);
+  font-size: 0.96rem;
+}
+
+.stem-note {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--islam-green-dark);
+  opacity: 0.8;
+}
+
+.answer-lines {
+  width: 100%;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(1.6em - 1px),
+      var(--islam-green-soft) calc(1.6em - 1px),
+      var(--islam-green-soft) 1.6em
+    );
+  background-attachment: local;
+  border: 1.5px solid var(--islam-green-soft);
+  border-radius: 8px;
+  padding: 4px 12px;
+  line-height: 1.6em;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--islam-ink);
+  resize: vertical;
+  min-height: calc(1.6em * 2 + 8px);
+}
+.answer-lines:focus {
+  outline: none;
+  border-color: var(--islam-green);
+  box-shadow: 0 0 0 3px rgba(0, 106, 78, 0.16);
+}
+
+/* ============================================================
+   TASK 3 — Timeline
+   ============================================================ */
+
+.timeline {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  counter-reset: timeline;
+}
+
+.timeline-slot {
+  background: var(--islam-cream);
+  border: 2px dashed var(--islam-green-soft);
+  border-radius: 12px;
+  padding: 4px;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 10px;
+  align-items: stretch;
+  min-height: 60px;
+  transition: background 0.15s, border-color 0.15s;
+  position: relative;
+}
+
+.timeline-slot::before {
+  counter-increment: timeline;
+  content: counter(timeline);
+  background: var(--islam-green-dark);
+  color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.timeline-slot.drop-hover {
+  background: rgba(30, 142, 90, 0.18);
+  border-color: var(--islam-correct);
+  border-style: solid;
+}
+
+.event-card {
+  background: white;
+  border: 1.5px solid var(--islam-green-soft);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.96rem;
+  font-weight: 500;
+  color: var(--islam-ink);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 1px 2px rgba(0, 67, 47, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s;
+}
+.event-card::before {
+  content: "⋮⋮";
+  color: var(--islam-green-soft);
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: -2px;
+  flex-shrink: 0;
+}
+.event-card:hover { background: var(--islam-green-tint); }
+.event-card.dragging {
+  cursor: grabbing;
+  z-index: 1000;
+  box-shadow: 0 16px 28px rgba(0, 67, 47, 0.35);
+  transform: scale(1.03) rotate(-0.6deg);
+  transition: none;
+  background: white;
+}
+.event-card.snap-in { animation: snap-in 0.34s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.event-card.bounce-back { animation: bounce 0.32s ease; }
+
+.event-card.correct {
+  background: var(--islam-green);
+  color: white;
+  border-color: var(--islam-green-dark);
+  cursor: default;
+}
+.event-card.correct::before { color: rgba(255,255,255,0.5); }
+.event-card.wrong-flash {
+  background: rgba(192, 57, 43, 0.12);
+  border-color: var(--islam-wrong);
+  animation: wrong-shake 0.36s ease;
+}
+.event-card.marked-wrong {
+  background: var(--islam-wrong);
+  color: white;
+  border-color: #8E2D22;
+  cursor: default;
+  animation: wrong-shake 0.36s ease;
+}
+.event-card.marked-wrong::before { color: rgba(255,255,255,0.5); }
+
+.check-btn {
+  background: var(--islam-green);
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: block;
+  margin: 14px auto 0;
+  box-shadow: 0 4px 12px rgba(0, 67, 47, 0.25);
+  transition: transform 0.12s, box-shadow 0.15s, background 0.15s;
+  animation: total-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.check-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 67, 47, 0.35); }
+.check-btn:active { transform: translateY(0); }
+.check-btn:disabled {
+  background: var(--islam-green-soft);
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.check-btn.complete {
+  background: var(--islam-correct);
+  pointer-events: none;
+}
+
+.timeline-question {
+  background: var(--islam-cream);
+  border: 1px solid var(--islam-line);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+/* ---------- Model answers reveal (Task 3) ---------- */
+
+:root {
+  --islam-model-blue: #1E4A8E;
+  --islam-model-blue-soft: #DCE6F4;
+}
+
+/* ---------- Inline "Check answer" button (for typed questions) ---------- */
+
+.answer-check-btn {
+  margin-top: 12px;
+  background: var(--islam-green);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 67, 47, 0.22);
+  transition: transform 0.12s, box-shadow 0.15s, background 0.15s;
+}
+.answer-check-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(0, 67, 47, 0.32); }
+.answer-check-btn:active { transform: translateY(0); }
+.answer-check-btn:focus-visible { outline: 3px solid var(--islam-gold); outline-offset: 2px; }
+.answer-check-btn.checked { background: var(--islam-green-soft); }
+
+/* ---------- Answer feedback panel ---------- */
+
+.answer-feedback {
+  margin-top: 12px;
+  background: var(--islam-green-tint);
+  border: 1px solid var(--islam-green-soft);
+  border-radius: 10px;
+  padding: 12px 14px;
+  animation: model-fade-in 0.35s ease;
+}
+.answer-feedback .fb-headline {
+  margin: 0 0 8px;
+  font-weight: 700;
+  color: var(--islam-green-dark);
+  font-size: 0.92rem;
+}
+.answer-feedback .fb-note {
+  margin: 8px 0 0;
+  font-size: 0.84rem;
+  color: var(--islam-green-dark);
+  font-style: italic;
+}
+.kw-result-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.kw-result-chip {
+  padding: 5px 12px 5px 24px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  position: relative;
+  border: 1.5px solid;
+}
+.kw-result-chip::before {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.kw-result-chip.hit {
+  background: var(--islam-correct);
+  color: white;
+  border-color: var(--islam-correct);
+}
+.kw-result-chip.hit::before { content: "\2713"; }   /* check */
+.kw-result-chip.miss {
+  background: white;
+  color: var(--muted, #595959);
+  border-color: var(--islam-line);
+}
+.kw-result-chip.miss::before { content: "\00D7"; color: var(--muted, #595959); }  /* times */
+
+.model-answer-group {
+  margin-top: 12px;
+}
+
+.model-prompt {
+  margin: 0 0 10px;
+  font-size: 0.86rem;
+  color: var(--islam-model-blue);
+  font-weight: 600;
+  font-style: italic;
+}
+
+.model-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reveal-btn {
+  background: white;
+  color: var(--islam-model-blue);
+  border: 2px solid var(--islam-model-blue);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, transform 0.12s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.reveal-btn::before {
+  content: "\25B8";   /* right-pointing chevron */
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+}
+.reveal-btn:hover {
+  background: var(--islam-model-blue);
+  color: white;
+  transform: translateY(-1px);
+}
+.reveal-btn:focus-visible {
+  outline: 3px solid var(--islam-gold);
+  outline-offset: 2px;
+}
+.reveal-btn.shown {
+  background: var(--islam-model-blue);
+  color: white;
+}
+.reveal-btn.shown::before {
+  transform: rotate(90deg);   /* chevron points down when open */
+}
+
+.model-answer {
+  margin-top: 10px;
+  background: white;
+  border: 1px solid rgba(30, 74, 142, 0.25);
+  border-left: 4px solid var(--islam-model-blue);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--islam-model-blue);
+  animation: model-fade-in 0.35s ease;
+}
+
+@keyframes model-fade-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.model-answer h3 {
+  margin: 0 0 6px;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--islam-model-blue);
+}
+.model-answer p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--islam-model-blue);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 720px) {
+  .act-header { padding: 26px 18px 22px; }
+  .ghost-btn { top: 10px; right: 10px; padding: 5px 12px; font-size: 0.76rem; }
+
+  .task-head {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    row-gap: 8px;
+  }
+  .task-status {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .match-board {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .term {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .term-name {
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    border-radius: 8px 8px 0 0;
+  }
+  .term-slot {
+    border-radius: 0 0 8px 8px;
+    min-height: 48px;
+  }
+
+  .image-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .image-choice img { aspect-ratio: 16 / 10; }
+}
+
+@media (max-width: 380px) {
+  .wordmark-title { font-size: 1.8rem; }
+  .task-box { padding: 16px 12px 18px; border-radius: 12px; }
+  .task-number { width: 32px; height: 32px; font-size: 0.95rem; }
+  .task-head h2 { font-size: 1rem; }
+}
