@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Effects of Exercise &middot; Sports Science &middot; OLS Digital Skills</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity">
+
+<header class="act-header">
+  <div class="act-titles">
+    <p class="eyebrow">Sports Science &middot; A2 &middot; CCEA</p>
+    <h1>Effects of Exercise</h1>
+    <p class="lede">Revision quiz on how your body responds and adapts to exercise. Click, drag, type and listen your way through.</p>
+  </div>
+  <div class="act-meta">
+    <span class="score-pill"><span id="score">0</span>&nbsp;/&nbsp;<span id="total">0</span></span>
+    <button id="restart-btn" type="button" class="ghost-btn">Restart</button>
+  </div>
+</header>
+
+<!-- Progress bar -->
+<div class="progress-track" aria-hidden="true">
+  <div class="progress-fill" id="progress-fill"></div>
+</div>
+
+<main class="act-main">
+
+  <!-- Start screen -->
+  <section class="screen start-screen" id="start-screen">
+    <div class="start-panel">
+      <h2>Ready to revise?</h2>
+      <p>This quiz covers the four body systems and how they respond to exercise in the <strong>short term</strong> and adapt over the <strong>long term</strong>: cardiovascular, respiratory, skeletal and muscular.</p>
+      <ul class="mode-key">
+        <li><span class="mode-chip mode-click">Click</span> choose the right answer</li>
+        <li><span class="mode-chip mode-drag">Drag</span> sort and match the cards</li>
+        <li><span class="mode-chip mode-type">Type</span> fill in the key word</li>
+        <li><span class="mode-chip mode-listen">Listen</span> hear the clue, then answer</li>
+      </ul>
+      <button id="start-btn" type="button" class="primary-btn">Start the quiz</button>
+    </div>
+  </section>
+
+  <!-- Question screen -->
+  <section class="screen question-screen" id="question-screen" hidden>
+    <div class="q-card" id="q-card">
+      <div class="q-top">
+        <span class="system-chip" id="system-chip">Cardiovascular</span>
+        <span class="mode-chip" id="mode-chip">Click</span>
+        <span class="q-counter" id="q-counter">Question 1 of 19</span>
+      </div>
+
+      <h2 class="q-prompt" id="q-prompt">Question text</h2>
+
+      <!-- Listen controls (shown only on listen questions) -->
+      <div class="listen-bar" id="listen-bar" hidden>
+        <button type="button" class="listen-btn" id="listen-btn">
+          <span class="listen-icon" aria-hidden="true">&#9658;</span> Play the clue
+        </button>
+        <button type="button" class="text-toggle" id="text-toggle" aria-expanded="false">Show text</button>
+        <p class="listen-text" id="listen-text" hidden></p>
+      </div>
+
+      <!-- Answer area — filled per question type -->
+      <div class="answer-area" id="answer-area"></div>
+
+      <!-- Feedback -->
+      <div class="feedback" id="feedback" hidden>
+        <p class="feedback-head" id="feedback-head"></p>
+        <p class="feedback-explain" id="feedback-explain"></p>
+      </div>
+
+      <div class="q-actions">
+        <button type="button" class="primary-btn" id="check-btn" hidden>Check</button>
+        <button type="button" class="primary-btn" id="next-btn" hidden>Next &rsaquo;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Results screen -->
+  <section class="screen results-screen" id="results-screen" hidden>
+    <div class="results-panel">
+      <h2 id="results-title">Quiz complete</h2>
+      <div class="results-score">
+        <span class="results-num" id="results-num">0</span>
+        <span class="results-denom">/ <span id="results-total">0</span></span>
+      </div>
+      <p class="results-msg" id="results-msg"></p>
+      <div class="review" id="review" hidden>
+        <h3>Worth another look</h3>
+        <ul class="review-list" id="review-list"></ul>
+      </div>
+      <button type="button" class="primary-btn" id="again-btn">Try again</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
