@@ -47,6 +47,57 @@ const KAABA_KEY_IDEAS = [
   { label: "visited on Hajj",         match: ["hajj", "pilgrim"] }
 ];
 
+// For the "most important event" answer: detect which event the pupil
+// argued for, then check whether they gave the reasoning the teacher's
+// model answer expects. No score — qualitative feedback only.
+// Order matters: more specific events are listed first so detection
+// favours them on a tie. "Mecca" is deliberately NOT a detect word
+// (it appears in several events), so the conquest is found via
+// "conquest"/"conquer" instead.
+const EVENT_FEEDBACK = [
+  {
+    id: "conquest",
+    name: "the Conquest of Mecca",
+    detect: ["conquest", "conquer", "captured mecca", "capture of mecca", "took over mecca"],
+    ideas: [
+      { label: "Islam had become strong and successful", match: ["strong", "success", "powerful"] },
+      { label: "Mecca became a Muslim city",             match: ["muslim city", "muslim town", "became muslim"] },
+      { label: "many people accepted Islam",             match: ["accept", "convert", "join"] }
+    ]
+  },
+  {
+    id: "medina",
+    name: "Muhammad fleeing to Medina (the Hijra)",
+    detect: ["medina", "hijra", "hegira", "flee", "flees", "fled", "migrat"],
+    ideas: [
+      { label: "it began the Muslim community",     match: ["community"] },
+      { label: "Islam could grow safely",           match: ["grow", "safe", "safely"] },
+      { label: "it escaped persecution in Mecca",   match: ["persecut", "attack", "danger", "unsafe"] }
+    ]
+  },
+  {
+    id: "revelation",
+    name: "the first revelation",
+    detect: ["revelation", "gabriel", "angel"],
+    ideas: [
+      { label: "it came from the angel Gabriel",          match: ["gabriel", "angel"] },
+      { label: "it later became the Qur’an",          match: ["qur", "koran", "quran"] },
+      { label: "without it Islam would not have started",  match: ["start", "began", "begin", "beginning"] }
+    ]
+  },
+  { id: "birth", name: "Muhammad’s birth in Mecca", detect: ["birth", "born"], ideas: null },
+  { id: "death", name: "Muhammad’s death",          detect: ["death", "died", "dies", "passed away"], ideas: null }
+];
+
+function detectEvent(text) {
+  let best = null, bestCount = 0;
+  for (const ev of EVENT_FEEDBACK) {
+    const count = ev.detect.filter(d => text.includes(d)).length;
+    if (count > bestCount) { best = ev; bestCount = count; }
+  }
+  return best;   // null if nothing matched
+}
+
 const POINTS_TASK1 = 3;
 const POINTS_TASK2 = 1;
 const POINTS_TASK3 = 5;
@@ -651,18 +702,18 @@ checkKaabaBtn.addEventListener('click', () => {
     `<li class="kw-result-chip ${r.hit ? 'hit' : 'miss'}">${r.label}</li>`
   ).join('');
   let note;
-  if (hits === total) note = 'Excellent — a really full answer.';
-  else if (hits >= Math.ceil(total / 2)) note = 'Good answer. Could you add any of the ideas you missed?';
-  else note = 'Have a look at the ideas you missed, then compare with the model answer below.';
+  if (hits === total) note = 'Excellent — your answer covers all of the key ideas.';
+  else if (hits > 0) note = 'You mentioned the ideas in green. Try to include the ones in grey to make your answer even fuller.';
+  else note = 'Try to mention some of these key ideas, then compare with the model answer below.';
   kaabaFeedback.hidden = false;
   kaabaFeedback.innerHTML =
-    `<p class="fb-headline">You included ${hits} of ${total} key ideas:</p>` +
+    `<p class="fb-headline">Feedback on your answer:</p>` +
     `<ul class="kw-result-chips">${chips}</ul>` +
     `<p class="fb-note">${note}</p>`;
   checkKaabaBtn.classList.add('checked');
   checkKaabaBtn.textContent = 'Check again';
   kaabaModelGroup.hidden = false;
-  if (hits === total) playCelebration(); else playCorrectChime();
+  playCorrectChime();
 });
 
 // --- Task 3: "Check answer" → confirm answered → unlock model buttons ---
@@ -672,18 +723,50 @@ const eventFeedback   = document.getElementById('event-feedback');
 const eventModelGroup = document.getElementById('event-model-group');
 
 checkEventBtn.addEventListener('click', () => {
-  const text = (eventAnswer.value || '').trim();
-  if (text.length < 3) {
+  const raw = (eventAnswer.value || '').trim();
+  const text = raw.toLowerCase();
+  if (raw.length < 3) {
     eventFeedback.hidden = false;
     eventFeedback.innerHTML = '<p class="fb-headline">Write your answer first, then press Check answer.</p>';
     playWrongBuzz();
     return;
   }
+
+  const ev = detectEvent(text);
+  let html;
+
+  if (!ev) {
+    // Couldn't tell which event they chose
+    html = `<p class="fb-headline">Make sure you name the event you think is most important, then press Check again.</p>`
+         + `<p class="fb-note">For example: &ldquo;The first revelation&hellip;&rdquo;, &ldquo;Muhammad fleeing to Medina&hellip;&rdquo;, or &ldquo;The conquest of Mecca&hellip;&rdquo;. You can still reveal a model answer below to see what a strong response looks like.</p>`;
+  } else if (!ev.ideas) {
+    // birth / death — a real event, but not one of the three usually argued
+    html = `<p class="fb-headline">You chose ${ev.name}.</p>`
+         + `<p class="fb-note">That&rsquo;s a real event in Muhammad&rsquo;s life, but the three events people usually argue are most important are the first revelation, the move to Medina, and the conquest of Mecca. Reveal a model answer below to see the kind of reasoning to aim for.</p>`;
+  } else {
+    // One of the three with a model answer — check the reasoning keywords
+    const results = ev.ideas.map(idea => ({
+      label: idea.label,
+      hit: idea.match.some(m => text.includes(m))
+    }));
+    const chips = results.map(r =>
+      `<li class="kw-result-chip ${r.hit ? 'hit' : 'miss'}">${r.label}</li>`
+    ).join('');
+    const hitCount = results.filter(r => r.hit).length;
+    let note;
+    if (hitCount === results.length) note = `Excellent reasoning &mdash; that&rsquo;s exactly what the model answer covers.`;
+    else if (hitCount > 0) note = `Good start. To strengthen your answer, try to also explain the ideas in grey, then reveal the model answer below to compare.`;
+    else note = `You&rsquo;ve named your event &mdash; now explain <em>why</em> it matters. The ideas below are what a strong answer covers. Reveal the model answer below to compare.`;
+    html = `<p class="fb-headline">You chose ${ev.name}. Here&rsquo;s what a strong answer explains:</p>`
+         + `<ul class="kw-result-chips">${chips}</ul>`
+         + `<p class="fb-note">${note}</p>`;
+  }
+
   eventFeedback.hidden = false;
-  eventFeedback.innerHTML = '<p class="fb-headline">Answer submitted. Any of the three events can be the right choice — reveal a model answer below to compare your reasoning.</p>';
+  eventFeedback.innerHTML = html;
+  eventModelGroup.hidden = false;
   checkEventBtn.classList.add('checked');
   checkEventBtn.textContent = 'Check again';
-  eventModelGroup.hidden = false;
   playCorrectChime();
 });
 
