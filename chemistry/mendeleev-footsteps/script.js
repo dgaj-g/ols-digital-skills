@@ -991,8 +991,10 @@ function buildAct2b() {
     li.setAttribute('role', 'button');
     li.setAttribute('tabindex', '0');
     li.setAttribute('aria-pressed', 'false');
-    const tagText = o.tags.length === 2 ? '<span class="obs-tag">fits both</span>' : '';
-    li.innerHTML = `${escapeHTML(o.text)}${tagText}`;
+    // No "fits both" label up front — that would give away which observations
+    // are common to both families. The pupil reasons it out; if an observation
+    // turns out to fit both, a nudge appears only AFTER they place it once.
+    li.innerHTML = `${escapeHTML(o.text)}`;
     li.addEventListener('click', () => selectObs(o.id));
     li.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectObs(o.id); }
@@ -1084,8 +1086,16 @@ function assignObs(id, fam) {
       clearObsSelection();
     } else {
       if (poolItem) {
-        const tag = poolItem.querySelector('.obs-tag');
-        if (tag) tag.textContent = 'now tap the other column too';
+        // Reveal-after-first-placement: now that the pupil has decided this
+        // observation belongs to one family, nudge them that it also fits the
+        // other. Create the tag on demand (it isn't shown before placement).
+        let tag = poolItem.querySelector('.obs-tag');
+        if (!tag) {
+          tag = document.createElement('span');
+          tag.className = 'obs-tag';
+          poolItem.appendChild(tag);
+        }
+        tag.textContent = 'now tap the other column too';
         poolItem.classList.add('half-placed');
       }
       // keep it selected so the pupil can immediately tap the other column
