@@ -451,10 +451,11 @@ Generate with **`python-docx`** (already installed via the new-Mac setup). Pseud
 Damien's teacher comms are short, warm, professional. Match this register:
 
 - **Greet with `Dear <FirstName>,`** — use the teacher's first name (extracted from the inbox issue's "Submitted by …" line). Not "Hi", not "Mrs X".
-- **Lead with the result** in the first sentence — the activity is ready.
+- **Lead with the result** in the first sentence — the activity is ready **for them to check**. Use the phrasing "is ready for you to check" (Damien's preferred wording — NOT "for your class to use", "for your pupils", etc.). Pattern: *"Just to let you know the bespoke web activity you requested for &lt;topic&gt; is ready for you to check."*
 - **Give them the website link** on its own line. Write it as the URL itself in plain text — when Damien pastes the draft into Outlook, Outlook auto-linkifies it, so the recipient sees the URL displayed as a clickable link. Never replace the URL with label text like "Click here" — teachers don't all know what URL means, so the visible web address is what they need.
-- **Mention the attached printout** — say a QR code and the website link are on the page so they can pop it on the board or share it however suits them.
+- **Mention the attached printout** — use this wording: *"I've attached a printout with a QR code and the website link on it, so you can display it on the board or print it, or share it however suits you. Pupils don't need to log in, they just scan or click and they're in."* (Damien's preferred phrasing — "display it on the board or print it", NOT "pop it up on the board".)
 - **If the PR's "Notes for review" flagged anything that affects the teacher** (e.g. "uilleann pipes categorised as Wind, not Reed — let me know if you'd prefer the alternative"), mention it in one short sentence so they're not surprised.
+- **Ask them to test on both a computer and a smartphone** — this is a STANDING line in every handoff email (not activity-specific). Use this wording, near the end just before the closing line: *"When you get a chance, you need to try the activity on both a computer and a smartphone, just to be sure it works smoothly on each, and come back to me if anything does not look right on either."*
 - **Close with this exact line** — *"Please review it and let me know if there is anything that needs changed or isn't working the way you expected."* Use it verbatim. Do not paraphrase ("have a play with it", "give it a try", etc. — Damien does not use these).
 - **Sign off** on two lines exactly:
   ```
@@ -476,12 +477,14 @@ Subject: Your "Sa Seomra Ranga" activity is ready
 
 Dear Roisin,
 
-Just to let you know the bespoke web activity you requested for Sa Seomra Ranga is ready for your class to use.
+Just to let you know the bespoke web activity you requested for Sa Seomra Ranga is ready for you to check.
 
 The link is:
 https://dgaj-g.github.io/ols-digital-skills/irish/sa-seomra-ranga/
 
-I've attached a printout with a QR code and the website link on it — pop it up on the board, or share it however suits you. Pupils don't need to log in, they just scan or click and they're in.
+I've attached a printout with a QR code and the website link on it, so you can display it on the board or print it, or share it however suits you. Pupils don't need to log in, they just scan or click and they're in.
+
+When you get a chance, you need to try the activity on both a computer and a smartphone, just to be sure it works smoothly on each, and come back to me if anything does not look right on either.
 
 Please review it and let me know if there is anything that needs changed or isn't working the way you expected.
 
