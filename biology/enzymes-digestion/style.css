@@ -152,7 +152,14 @@
 .piece-tag { fill: var(--prod-dark); font-size: 13px; font-weight: 700; text-anchor: middle; }
 .rate-label { fill: var(--muted); font-size: 12px; font-weight: 600; }
 .rate-word { fill: var(--inh-dark); font-size: 12px; font-weight: 800; }
-#rate-fill { transition: width 0.6s ease, fill 0.6s ease; }
+/* Inhibitor rate meter: a slow, watchable drop via a CSS keyframe animation
+   (transform scaleX is reliable on SVG; geometry-attr transitions are not). */
+#rate-fill { transform-box: fill-box; transform-origin: left center; }
+#rate-fill.dropping { animation: rate-drop 1.7s cubic-bezier(0.45, 0, 0.55, 1) forwards; }
+@keyframes rate-drop {
+  from { transform: scaleX(1); fill: #3FA34D; }
+  to   { transform: scaleX(0.26); fill: #E25563; }
+}
 
 /* stepper */
 .stepper { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 8px; }

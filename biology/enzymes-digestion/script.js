@@ -146,9 +146,13 @@ function showInhibitor() {
   setPiece(substrate, 'translate(-150px,56px) rotate(-14deg)');
   const rateWord = document.getElementById('rate-word');
   hide(rateBadge, false);
-  // show the meter full, then visibly drop it so its meaning is obvious
-  rateFill.setAttribute('width', '150'); rateFill.setAttribute('fill', '#3FA34D'); rateWord.textContent = '';
-  setTimeout(() => { rateFill.setAttribute('width', '40'); rateFill.setAttribute('fill', '#E25563'); rateWord.textContent = 'Low'; }, 300);
+  // reset the meter to the full "before" state, hold it so the pupil sees it,
+  // then run a slow drop animation (CSS keyframe) and flip the label once fallen
+  rateFill.classList.remove('dropping');
+  rateFill.style.transform = 'scaleX(1)'; rateFill.setAttribute('fill', '#3FA34D'); rateWord.textContent = 'Normal';
+  void rateFill.getBoundingClientRect();
+  setTimeout(() => { rateFill.style.transform = ''; rateFill.classList.add('dropping'); }, 850);
+  setTimeout(() => { rateWord.textContent = 'Low'; }, 850 + 1700);
   setInfo($('#how-info'), { kicker: 'Inhibitor', title: 'The active site is blocked', body: 'An inhibitor fits into the active site but is <strong>not broken down</strong>. While it sits there the substrate cannot get in, so the <strong>rate of reaction falls</strong> — watch the meter on the left drop.' });
   tone(150, 0.2, 'sawtooth', 0.05);
 }
