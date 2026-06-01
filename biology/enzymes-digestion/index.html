@@ -13,177 +13,240 @@
   <div class="act-titles">
     <p class="eyebrow">Biology &middot; GCSE &middot; CCEA Unit 1 &middot; 1.4</p>
     <h1>Enzymes &amp; Digestion</h1>
-    <p class="lede">Explore how enzymes work, build the digestion reactions, then see how the villus absorbs the food.</p>
+    <p class="lede">See how enzymes work, match each one to its food, discover what speeds them up and slows them down, then follow the food into the blood.</p>
   </div>
 </header>
 
-<!-- Mode tabs -->
 <nav class="tabs" aria-label="Activity sections">
-  <button class="tab is-active" type="button" data-tab="enzyme" aria-selected="true">How enzymes work</button>
-  <button class="tab" type="button" data-tab="reaction" aria-selected="false">Build a reaction</button>
-  <button class="tab" type="button" data-tab="villus" aria-selected="false">The villus</button>
+  <button class="tab is-active" type="button" data-tab="how" aria-selected="true"><span class="tab-num">1</span> How enzymes work</button>
+  <button class="tab" type="button" data-tab="match" aria-selected="false"><span class="tab-num">2</span> Match the enzyme</button>
+  <button class="tab" type="button" data-tab="factors" aria-selected="false"><span class="tab-num">3</span> What affects them</button>
+  <button class="tab" type="button" data-tab="villus" aria-selected="false"><span class="tab-num">4</span> Into the blood</button>
 </nav>
 
 <main class="act-main">
 
   <!-- ============================================================
-       SECTION 1 — How enzymes work (interactive lock-and-key diagram)
+       SECTION 1 — How enzymes work
        ============================================================ -->
-  <section class="panel is-active" id="panel-enzyme" data-panel="enzyme" aria-label="How enzymes work">
-    <div class="diagram-layout">
-
-      <div class="diagram-stage">
-        <div class="stage-tools">
-          <button id="enz-run" type="button" class="primary-btn">▶ Run the reaction</button>
-          <button id="enz-inhibitor" type="button" class="ghost-btn" aria-pressed="false">Add an inhibitor</button>
+  <section class="panel is-active" id="panel-how" data-panel="how" aria-label="How enzymes work">
+    <div class="split">
+      <div class="stage-card">
+        <div class="seg" role="tablist" aria-label="View">
+          <button class="seg-btn is-active" type="button" data-view="explore" role="tab" aria-selected="true">Explore the parts</button>
+          <button class="seg-btn" type="button" data-view="watch" role="tab" aria-selected="false">Watch it work</button>
+          <button class="seg-btn" type="button" data-view="inhibitor" role="tab" aria-selected="false">Add an inhibitor</button>
         </div>
 
-        <svg id="enz-svg" viewBox="0 0 620 420" role="img" aria-label="Lock and key model: a substrate fits the enzyme's active site and is broken down into products.">
-          <!-- substrate (sits above, drops into active site) -->
-          <g id="enz-sub" class="enz-piece">
-            <path d="M270 60 q40 -22 80 0 q26 16 18 44 q-12 30 -58 30 q-46 0 -58 -30 q-8 -28 18 -44 Z" fill="#3FA34D"/>
-            <path d="M292 134 q18 26 36 0 Z" fill="#3FA34D"/>
+        <svg id="how-svg" viewBox="0 0 640 470" role="img" aria-label="An enzyme with a substrate fitting into its active site, then breaking into two products.">
+          <!-- rate badge (used in inhibitor view) -->
+          <g id="rate-badge" hidden>
+            <rect x="450" y="28" width="168" height="46" rx="10" fill="#fff" stroke="#E3E8F0"/>
+            <text x="466" y="49" class="rate-label">Rate of reaction</text>
+            <rect x="466" y="55" width="136" height="9" rx="4.5" fill="#EAEFF7"/>
+            <rect id="rate-fill" x="466" y="55" width="120" height="9" rx="4.5" fill="#3FA34D"/>
           </g>
+
+          <!-- enzyme body with a cradle-shaped active site (drawn first so the molecules sit on top) -->
+          <path id="enzymeBody"
+                d="M150 388
+                   L150 300
+                   Q150 252 206 252
+                   L286 252
+                   Q304 252 311 272
+                   Q320 296 329 272
+                   Q336 252 354 252
+                   L434 252
+                   Q490 252 490 300
+                   L490 388
+                   Q490 410 462 410
+                   L178 410
+                   Q150 410 150 388 Z"
+                fill="#2C5C8A" stroke="#1A3A6B" stroke-width="2"/>
 
           <!-- products (hidden until split) -->
-          <g id="enz-prodL" class="enz-piece" hidden>
-            <path d="M250 70 q34 -16 50 8 q14 22 -6 40 q-26 18 -48 -2 q-16 -22 4 -46 Z" fill="#E4B824"/>
+          <g id="productA" class="piece" hidden>
+            <path d="M250 150 q-34 0 -40 32 q-4 26 22 34 q26 6 40 -14 q12 -22 -4 -44 q-8 -8 -18 -8 Z" fill="#7BC47F" stroke="#4A9E54" stroke-width="2.5"/>
+            <text x="246" y="190" class="piece-tag" id="prodA-tag">Product</text>
           </g>
-          <g id="enz-prodR" class="enz-piece" hidden>
-            <path d="M320 70 q34 -16 50 8 q14 22 -6 40 q-26 18 -48 -2 q-16 -22 4 -46 Z" fill="#E4B824"/>
-          </g>
-
-          <!-- inhibitor (hidden unless toggled) -->
-          <g id="enz-inh" class="enz-piece" hidden>
-            <path d="M286 150 q24 -14 48 0 q14 20 0 40 q-24 14 -48 0 q-14 -20 0 -40 Z" fill="#E63946"/>
+          <g id="productB" class="piece" hidden>
+            <path d="M390 150 q34 0 40 32 q4 26 -22 34 q-26 6 -40 -14 q-12 -22 4 -44 q8 -8 18 -8 Z" fill="#7BC47F" stroke="#4A9E54" stroke-width="2.5"/>
+            <text x="392" y="190" class="piece-tag" id="prodB-tag">Product</text>
           </g>
 
-          <!-- enzyme body with a cradle-shaped active site on top -->
-          <path id="enz-body"
-                d="M150 360
-                   L150 250
-                   Q150 215 188 215
-                   L262 215
-                   Q288 215 296 240
-                   Q310 280 324 240
-                   Q332 215 358 215
-                   L432 215
-                   Q470 215 470 250
-                   L470 360
-                   Q470 380 448 380
-                   L172 380
-                   Q150 380 150 360 Z"
-                fill="#1A3A6B"/>
+          <!-- substrate (one piece; drops into the active site, then splits) -->
+          <g id="substrate" class="piece">
+            <path d="M268 120
+                     q0 -42 52 -42 q52 0 52 42
+                     q0 22 -20 31
+                     q-6 7 -14 9 l-6 14 l-6 -14 q-8 -2 -14 -9 q-20 -9 -20 -31 Z"
+                  fill="#F0A04B" stroke="#C9762B" stroke-width="2.5"/>
+          </g>
 
-          <!-- clickable hotspots -->
-          <g class="hotspot" data-key="substrate" tabindex="0" role="button" aria-label="Substrate — show information">
-            <circle class="hot-dot" cx="310" cy="98" r="13"/>
-            <text class="hot-plus" x="310" y="103">i</text>
+          <!-- inhibitor (hidden unless inhibitor view) -->
+          <g id="inhibitor" class="piece" hidden>
+            <path d="M300 250 q-6 -22 20 -22 q26 0 20 22 q-2 12 -20 12 q-18 0 -20 -12 Z" fill="#E25563" stroke="#B23644" stroke-width="2.5"/>
           </g>
-          <g class="hotspot" data-key="active" tabindex="0" role="button" aria-label="Active site — show information">
-            <circle class="hot-dot" cx="310" cy="232" r="13"/>
-            <text class="hot-plus" x="310" y="237">i</text>
+
+          <!-- labels (leader line + dot + text) — clickable -->
+          <g class="lbl" data-key="substrate" tabindex="0" role="button" aria-label="Substrate — show information">
+            <line x1="320" y1="92" x2="486" y2="92"/><circle cx="320" cy="92" r="4.5"/>
+            <text x="492" y="88" class="lbl-text">Substrate</text>
+            <text x="492" y="104" class="lbl-sub">the food molecule</text>
           </g>
-          <g class="hotspot" data-key="enzyme" tabindex="0" role="button" aria-label="Enzyme — show information">
-            <circle class="hot-dot" cx="205" cy="320" r="13"/>
-            <text class="hot-plus" x="205" y="325">i</text>
+          <g class="lbl" data-key="active" tabindex="0" role="button" aria-label="Active site — show information">
+            <line x1="320" y1="286" x2="150" y2="200"/><circle cx="320" cy="286" r="4.5"/>
+            <text x="146" y="190" class="lbl-text" text-anchor="end">Active site</text>
+            <text x="146" y="206" class="lbl-sub" text-anchor="end">where it fits</text>
           </g>
-          <g class="hotspot" data-key="product" tabindex="0" role="button" aria-label="Products — show information">
-            <circle class="hot-dot" cx="415" cy="320" r="13"/>
-            <text class="hot-plus" x="415" y="325">i</text>
+          <g class="lbl" data-key="enzyme" tabindex="0" role="button" aria-label="Enzyme — show information">
+            <line x1="220" y1="370" x2="120" y2="400"/><circle cx="220" cy="370" r="4.5"/>
+            <text x="116" y="396" class="lbl-text" text-anchor="end">Enzyme</text>
+            <text x="116" y="412" class="lbl-sub" text-anchor="end">the catalyst</text>
+          </g>
+          <g class="lbl" data-key="product" tabindex="0" role="button" aria-label="Products — show information">
+            <line x1="372" y1="120" x2="520" y2="150"/><circle cx="372" cy="120" r="4.5"/>
+            <text x="526" y="146" class="lbl-text">Products</text>
+            <text x="526" y="162" class="lbl-sub">what is made</text>
           </g>
         </svg>
-        <p class="stage-caption" id="enz-caption">Tap a marked point to learn about each part, or run the reaction to watch the enzyme work.</p>
+
+        <!-- stepper controls (watch view) -->
+        <div class="stepper" id="stepper" hidden>
+          <button class="step-btn" id="step-prev" type="button" aria-label="Previous step">‹</button>
+          <div class="step-dots" id="step-dots" aria-hidden="true"></div>
+          <button class="step-btn" id="step-next" type="button" aria-label="Next step">›</button>
+        </div>
       </div>
 
-      <aside class="info-card" id="enz-info" aria-live="polite">
-        <h2 id="enz-info-title">The lock-and-key model</h2>
-        <p id="enz-info-body">Every enzyme is a <strong>protein</strong> that acts as a <strong>biological catalyst</strong> &mdash; it speeds up the rate of a reaction without being used up. Tap any marked point on the diagram to explore its parts.</p>
-        <p class="info-tag" id="enz-info-tag">Lock and key model</p>
+      <aside class="info-card" id="how-info" aria-live="polite">
+        <span class="info-kicker" id="how-kicker">Lock and key</span>
+        <h2 id="how-title">An enzyme is a biological catalyst</h2>
+        <p id="how-body">Every enzyme is a <strong>protein</strong>. It speeds up a reaction and is <strong>not used up</strong>, so it can work again and again. Use the buttons above to explore the parts, watch a reaction step by step, or see what an inhibitor does.</p>
       </aside>
     </div>
   </section>
 
   <!-- ============================================================
-       SECTION 2 — Build a reaction (drag and drop)
+       SECTION 2 — Match the enzyme (drag & drop)
        ============================================================ -->
-  <section class="panel" id="panel-reaction" data-panel="reaction" aria-label="Build a reaction">
-
-    <div class="reaction-bar">
-      <div class="mode-switch" role="tablist" aria-label="Reaction type">
-        <button class="mode-btn is-active" type="button" data-mode="breakdown" role="tab" aria-selected="true">Break down</button>
-        <button class="mode-btn" type="button" data-mode="buildup" role="tab" aria-selected="false">Build up</button>
+  <section class="panel" id="panel-match" data-panel="match" aria-label="Match the enzyme">
+    <div class="match-bar">
+      <div class="seg" role="tablist" aria-label="Reaction type">
+        <button class="seg-btn is-active" type="button" data-mode="breakdown" role="tab" aria-selected="true">Break it down</button>
+        <button class="seg-btn" type="button" data-mode="buildup" role="tab" aria-selected="false">Build it up</button>
       </div>
-      <div class="reaction-meta">
-        <span class="score-pill"><span id="react-done">0</span>&nbsp;/&nbsp;<span id="react-total">3</span> done</span>
-        <button id="react-reset" type="button" class="ghost-btn">Reset</button>
+      <div class="match-meta">
+        <span class="score-pill"><span id="match-done">0</span>&nbsp;/&nbsp;<span id="match-total">3</span></span>
+        <button id="match-reset" type="button" class="ghost-btn">Reset</button>
       </div>
     </div>
 
-    <p class="mode-explain" id="mode-explain">
-      In digestion, enzymes <strong>break down</strong> large, insoluble molecules into small, soluble ones. Drag each substrate onto the enzyme whose active site it fits.
-    </p>
-
-    <div class="stations" id="stations" aria-label="Enzyme stations"></div>
+    <p class="prompt" id="match-prompt"></p>
+    <div class="stations" id="stations"></div>
 
     <div class="tray-stage">
       <div class="tray-head">
-        <h2 id="tray-title">Substrates</h2>
-        <span class="tray-hint" id="tray-hint">Each enzyme only fits one substrate &mdash; that is enzyme specificity.</span>
+        <h2 id="tray-title">Drag each one to where it belongs</h2>
+        <span class="tray-hint" id="tray-hint"></span>
       </div>
-      <div class="tray" id="react-tray"></div>
+      <div class="tray" id="match-tray"></div>
     </div>
   </section>
 
   <!-- ============================================================
-       SECTION 3 — The villus (interactive diagram)
+       SECTION 3 — What affects enzymes (simulator)
        ============================================================ -->
-  <section class="panel" id="panel-villus" data-panel="villus" aria-label="The villus">
-    <div class="diagram-layout">
-      <div class="diagram-stage">
-        <p class="stage-intro">The <strong>ileum</strong> (small intestine) is about 3&nbsp;metres long and folded, with millions of tiny <strong>villi</strong> on its lining. Tap each marked part to see how the villus is adapted to absorb digested food.</p>
+  <section class="panel" id="panel-factors" data-panel="factors" aria-label="What affects enzymes">
+    <div class="seg seg-center" role="tablist" aria-label="Factor">
+      <button class="seg-btn is-active" type="button" data-factor="temp" role="tab" aria-selected="true">Temperature</button>
+      <button class="seg-btn" type="button" data-factor="ph" role="tab" aria-selected="false">pH</button>
+    </div>
 
-        <svg id="villus-svg" viewBox="0 0 620 460" role="img" aria-label="Cross-section of a villus showing the surface epithelium, capillary network, lacteal and lumen.">
-          <!-- lumen background -->
-          <rect x="0" y="0" width="620" height="460" fill="#EAF1FB"/>
-          <text class="villus-bg-label" x="70" y="40">Lumen of the gut</text>
+    <div class="sim">
+      <div class="sim-graph stage-card">
+        <div class="readout">
+          <div class="readout-big"><span id="sim-value">37</span><span class="readout-unit" id="sim-unit">°C</span></div>
+          <div class="readout-rate">
+            <span class="readout-rate-label">Rate of reaction</span>
+            <strong id="sim-rate">—</strong>
+          </div>
+        </div>
+        <svg id="sim-svg" viewBox="0 0 520 320" role="img" aria-label="Graph of enzyme activity against the chosen factor, with a marker you can drag.">
+          <!-- axes + curve + marker drawn by JS -->
+        </svg>
+        <div class="slider-wrap">
+          <input id="sim-slider" type="range" min="0" max="60" value="37" step="1" aria-label="Temperature in degrees Celsius" />
+          <div class="slider-scale" id="sim-scale"></div>
+        </div>
+      </div>
 
-          <!-- villus finger-like body -->
-          <path id="vil-body" d="M210 440 L210 180 Q210 70 310 70 Q410 70 410 180 L410 440 Z" fill="#FBE3E6" stroke="#C96A75" stroke-width="3"/>
-
-          <!-- surface epithelium (single cell layer as a stroke band of cells) -->
-          <path id="vil-epi" d="M210 440 L210 180 Q210 70 310 70 Q410 70 410 180 L410 440" fill="none" stroke="#E59AA6" stroke-width="16" stroke-linecap="round"/>
-
-          <!-- capillary network (red loop) -->
-          <path id="vil-cap" d="M270 430 L270 210 Q270 140 310 140 Q350 140 350 210 L350 430"
-                fill="none" stroke="#D7263D" stroke-width="9" stroke-linecap="round"/>
-
-          <!-- lacteal (central pale tube) -->
-          <path id="vil-lac" d="M303 430 L303 200 Q303 165 311 165 Q319 165 319 200 L319 430" fill="#FFF6C9" stroke="#E4B824" stroke-width="4"/>
-
-          <!-- hotspots -->
-          <g class="hotspot" data-key="shape" tabindex="0" role="button" aria-label="Finger-like shape — show information">
-            <circle class="hot-dot" cx="310" cy="92" r="13"/><text class="hot-plus" x="310" y="97">i</text>
+      <div class="sim-enzyme stage-card">
+        <h2 class="sim-enzyme-title">What is happening to the enzyme</h2>
+        <svg id="sim-enz-svg" viewBox="0 0 320 300" role="img" aria-label="An enzyme whose active site changes shape as the factor changes.">
+          <g id="sim-particles"></g>
+          <g id="sim-substrate">
+            <path d="M126 70 q0 -30 34 -30 q34 0 34 30 q0 16 -14 22 l-6 12 l-6 -12 q-14 -6 -42 -22 Z" fill="#F0A04B" stroke="#C9762B" stroke-width="2.5"/>
           </g>
-          <g class="hotspot" data-key="epithelium" tabindex="0" role="button" aria-label="Surface epithelium — show information">
-            <circle class="hot-dot" cx="408" cy="250" r="13"/><text class="hot-plus" x="408" y="255">i</text>
+          <path id="sim-enz-body" fill="#2C5C8A" stroke="#1A3A6B" stroke-width="2"/>
+        </svg>
+        <p class="sim-state" id="sim-state"></p>
+      </div>
+    </div>
+    <p class="sim-explain" id="sim-explain"></p>
+  </section>
+
+  <!-- ============================================================
+       SECTION 4 — Into the blood (villus)
+       ============================================================ -->
+  <section class="panel" id="panel-villus" data-panel="villus" aria-label="Into the blood: the villus">
+    <div class="split">
+      <div class="stage-card">
+        <div class="seg" role="tablist" aria-label="View">
+          <button class="seg-btn is-active" type="button" data-vview="explore" role="tab" aria-selected="true">Explore the parts</button>
+          <button class="seg-btn" type="button" data-vview="absorb" role="tab" aria-selected="false">Watch absorption</button>
+        </div>
+        <svg id="villus-svg" viewBox="0 0 640 470" role="img" aria-label="Cross-section of a villus showing the epithelium, capillary network, lacteal and lumen.">
+          <rect x="0" y="0" width="640" height="470" fill="#EFF4FB"/>
+          <!-- villus body -->
+          <path id="v-body" d="M250 460 L250 190 Q250 70 320 70 Q390 70 390 190 L390 460 Z" fill="#FBDDE2" stroke="#C9737E" stroke-width="3"/>
+          <path id="v-epi" d="M250 460 L250 190 Q250 70 320 70 Q390 70 390 190 L390 460" fill="none" stroke="#E79AA6" stroke-width="14" stroke-linecap="round"/>
+          <path id="v-cap" d="M300 450 L300 210 Q300 150 320 150 Q340 150 340 210 L340 450" fill="none" stroke="#D7263D" stroke-width="8" stroke-linecap="round"/>
+          <path id="v-lac" d="M314 450 L314 205 Q314 178 320 178 Q326 178 326 205 L326 450" fill="#FFF3C4" stroke="#E4B824" stroke-width="3.5"/>
+          <g id="v-particles"></g>
+
+          <g class="lbl vlbl" data-key="shape" tabindex="0" role="button" aria-label="Finger-like shape — show information">
+            <line x1="320" y1="86" x2="470" y2="86"/><circle cx="320" cy="86" r="4.5"/>
+            <text x="476" y="82" class="lbl-text">Finger-like shape</text>
+            <text x="476" y="98" class="lbl-sub">huge surface area</text>
           </g>
-          <g class="hotspot" data-key="capillary" tabindex="0" role="button" aria-label="Capillary network — show information">
-            <circle class="hot-dot" cx="345" cy="300" r="13"/><text class="hot-plus" x="345" y="305">i</text>
+          <g class="lbl vlbl" data-key="epithelium" tabindex="0" role="button" aria-label="Surface epithelium — show information">
+            <line x1="386" y1="300" x2="486" y2="300"/><circle cx="386" cy="300" r="4.5"/>
+            <text x="492" y="296" class="lbl-text">Epithelium</text>
+            <text x="492" y="312" class="lbl-sub">one cell thick</text>
           </g>
-          <g class="hotspot" data-key="lacteal" tabindex="0" role="button" aria-label="Lacteal — show information">
-            <circle class="hot-dot" cx="311" cy="320" r="13"/><text class="hot-plus" x="311" y="325">i</text>
+          <g class="lbl vlbl" data-key="capillary" tabindex="0" role="button" aria-label="Capillary network — show information">
+            <line x1="338" y1="360" x2="486" y2="372"/><circle cx="338" cy="360" r="4.5"/>
+            <text x="492" y="368" class="lbl-text">Capillary network</text>
+            <text x="492" y="384" class="lbl-sub">sugars + amino acids</text>
           </g>
-          <g class="hotspot" data-key="lumen" tabindex="0" role="button" aria-label="Lumen of the gut — show information">
-            <circle class="hot-dot" cx="110" cy="120" r="13"/><text class="hot-plus" x="110" y="125">i</text>
+          <g class="lbl vlbl" data-key="lacteal" tabindex="0" role="button" aria-label="Lacteal — show information">
+            <line x1="320" y1="330" x2="150" y2="300"/><circle cx="320" cy="330" r="4.5"/>
+            <text x="146" y="296" class="lbl-text" text-anchor="end">Lacteal</text>
+            <text x="146" y="312" class="lbl-sub" text-anchor="end">absorbs fats</text>
+          </g>
+          <g class="lbl vlbl" data-key="lumen" tabindex="0" role="button" aria-label="Lumen of the gut — show information">
+            <line x1="160" y1="150" x2="150" y2="150"/><circle cx="160" cy="150" r="4.5"/>
+            <text x="146" y="146" class="lbl-text" text-anchor="end">Lumen</text>
+            <text x="146" y="162" class="lbl-sub" text-anchor="end">digested food</text>
           </g>
         </svg>
       </div>
 
-      <aside class="info-card" id="vil-info" aria-live="polite">
-        <h2 id="vil-info-title">A villus</h2>
-        <p id="vil-info-body">Each villus is a tiny finger-like outgrowth on the lining of the ileum. Together, millions of villi give a huge <strong>surface area</strong> for absorbing digested food. Tap any marked point to explore how it is adapted.</p>
-        <p class="info-tag" id="vil-info-tag">Adapted for absorption</p>
+      <aside class="info-card" id="v-info" aria-live="polite">
+        <span class="info-kicker" id="v-kicker">The small intestine</span>
+        <h2 id="v-title">The ileum is built to absorb</h2>
+        <p id="v-body">The ileum (small intestine) is about <strong>3 metres</strong> long and folded, with millions of tiny <strong>villi</strong> on its lining. Together they make a huge surface area for absorbing digested food. Tap any label to see how the villus is adapted.</p>
       </aside>
     </div>
   </section>
@@ -195,12 +258,11 @@
   <span>OLS Digital Skills</span>
 </footer>
 
-<!-- Completion overlay (reaction builder) -->
 <div class="celebrate" id="celebrate" hidden>
   <div class="celebrate-panel">
-    <h2 id="celebrate-title">Reactions complete!</h2>
+    <h2 id="celebrate-title"></h2>
     <p id="celebrate-body"></p>
-    <button id="celebrate-close" type="button" class="primary-btn">Have another look</button>
+    <button id="celebrate-close" type="button" class="primary-btn">Keep exploring</button>
   </div>
 </div>
 
