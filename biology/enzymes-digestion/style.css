@@ -150,7 +150,9 @@
 #enzymeBody { transition: filter 0.3s ease; }
 #enzymeBody.catalysing { filter: drop-shadow(0 0 9px rgba(228,184,36,0.8)); }
 .piece-tag { fill: var(--prod-dark); font-size: 13px; font-weight: 700; text-anchor: middle; }
-.rate-label { fill: var(--muted); font-size: 11px; font-weight: 600; }
+.rate-label { fill: var(--muted); font-size: 12px; font-weight: 600; }
+.rate-word { fill: var(--inh-dark); font-size: 12px; font-weight: 800; }
+#rate-fill { transition: width 0.6s ease, fill 0.6s ease; }
 
 /* stepper */
 .stepper { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 8px; }

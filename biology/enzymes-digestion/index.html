@@ -39,75 +39,64 @@
         </div>
 
         <svg id="how-svg" viewBox="0 0 640 470" role="img" aria-label="An enzyme with a substrate fitting into its active site, then breaking into two products.">
-          <!-- rate badge (used in inhibitor view) -->
+          <!-- rate meter (inhibitor view) -->
           <g id="rate-badge" hidden>
-            <rect x="450" y="28" width="168" height="46" rx="10" fill="#fff" stroke="#E3E8F0"/>
-            <text x="466" y="49" class="rate-label">Rate of reaction</text>
-            <rect x="466" y="55" width="136" height="9" rx="4.5" fill="#EAEFF7"/>
-            <rect id="rate-fill" x="466" y="55" width="120" height="9" rx="4.5" fill="#3FA34D"/>
+            <rect x="442" y="24" width="182" height="58" rx="10" fill="#fff" stroke="#E3E8F0"/>
+            <text x="458" y="45" class="rate-label">Rate of reaction</text>
+            <rect x="458" y="53" width="150" height="11" rx="5.5" fill="#EAEFF7"/>
+            <rect id="rate-fill" x="458" y="53" width="150" height="11" rx="5.5" fill="#3FA34D"/>
+            <text id="rate-word" x="608" y="78" class="rate-word" text-anchor="end"></text>
           </g>
 
-          <!-- enzyme body with a cradle-shaped active site (drawn first so the molecules sit on top) -->
+          <!-- enzyme body with a concave active-site bay (drawn first so molecules sit on top) -->
           <path id="enzymeBody"
-                d="M150 388
-                   L150 300
-                   Q150 252 206 252
-                   L286 252
-                   Q304 252 311 272
-                   Q320 296 329 272
-                   Q336 252 354 252
-                   L434 252
-                   Q490 252 490 300
-                   L490 388
-                   Q490 410 462 410
-                   L178 410
-                   Q150 410 150 388 Z"
+                d="M150 388 L150 300 Q150 254 198 254 L272 254
+                   Q296 254 308 282 Q320 308 332 282 Q344 254 368 254
+                   L442 254 Q490 254 490 300 L490 388
+                   Q490 410 462 410 L178 410 Q150 410 150 388 Z"
                 fill="#2C5C8A" stroke="#1A3A6B" stroke-width="2"/>
 
           <!-- products (hidden until split) -->
           <g id="productA" class="piece" hidden>
-            <path d="M250 150 q-34 0 -40 32 q-4 26 22 34 q26 6 40 -14 q12 -22 -4 -44 q-8 -8 -18 -8 Z" fill="#7BC47F" stroke="#4A9E54" stroke-width="2.5"/>
-            <text x="246" y="190" class="piece-tag" id="prodA-tag">Product</text>
+            <ellipse cx="250" cy="150" rx="33" ry="29" fill="#7BC47F" stroke="#4A9E54" stroke-width="2.5"/>
           </g>
           <g id="productB" class="piece" hidden>
-            <path d="M390 150 q34 0 40 32 q4 26 -22 34 q-26 6 -40 -14 q-12 -22 4 -44 q8 -8 18 -8 Z" fill="#7BC47F" stroke="#4A9E54" stroke-width="2.5"/>
-            <text x="392" y="190" class="piece-tag" id="prodB-tag">Product</text>
+            <ellipse cx="390" cy="150" rx="33" ry="29" fill="#7BC47F" stroke="#4A9E54" stroke-width="2.5"/>
           </g>
 
-          <!-- substrate (one piece; drops into the active site, then splits) -->
+          <!-- substrate (plug: its convex bottom is complementary to the bay) -->
           <g id="substrate" class="piece">
-            <path d="M268 120
-                     q0 -42 52 -42 q52 0 52 42
-                     q0 22 -20 31
-                     q-6 7 -14 9 l-6 14 l-6 -14 q-8 -2 -14 -9 q-20 -9 -20 -31 Z"
+            <path d="M272 104 Q296 104 308 132 Q320 158 332 132 Q344 104 368 104
+                     Q394 104 394 78 Q394 48 320 48 Q246 48 246 78 Q246 104 272 104 Z"
                   fill="#F0A04B" stroke="#C9762B" stroke-width="2.5"/>
           </g>
 
-          <!-- inhibitor (hidden unless inhibitor view) -->
+          <!-- inhibitor (sits in the bay but is the wrong molecule) -->
           <g id="inhibitor" class="piece" hidden>
-            <path d="M300 250 q-6 -22 20 -22 q26 0 20 22 q-2 12 -20 12 q-18 0 -20 -12 Z" fill="#E25563" stroke="#B23644" stroke-width="2.5"/>
+            <path d="M278 296 Q272 268 320 268 Q368 268 362 296 Q360 322 320 322 Q280 322 278 296 Z"
+                  fill="#E25563" stroke="#B23644" stroke-width="2.5"/>
           </g>
 
           <!-- labels (leader line + dot + text) — clickable -->
           <g class="lbl" data-key="substrate" tabindex="0" role="button" aria-label="Substrate — show information">
-            <line x1="320" y1="92" x2="486" y2="92"/><circle cx="320" cy="92" r="4.5"/>
-            <text x="492" y="88" class="lbl-text">Substrate</text>
-            <text x="492" y="104" class="lbl-sub">the food molecule</text>
+            <line x1="320" y1="70" x2="486" y2="70"/><circle cx="320" cy="70" r="4.5"/>
+            <text x="492" y="66" class="lbl-text">Substrate</text>
+            <text x="492" y="82" class="lbl-sub">the food molecule</text>
           </g>
           <g class="lbl" data-key="active" tabindex="0" role="button" aria-label="Active site — show information">
-            <line x1="320" y1="286" x2="150" y2="200"/><circle cx="320" cy="286" r="4.5"/>
-            <text x="146" y="190" class="lbl-text" text-anchor="end">Active site</text>
-            <text x="146" y="206" class="lbl-sub" text-anchor="end">where it fits</text>
+            <line x1="320" y1="298" x2="150" y2="210"/><circle cx="320" cy="298" r="4.5"/>
+            <text x="146" y="200" class="lbl-text" text-anchor="end">Active site</text>
+            <text x="146" y="216" class="lbl-sub" text-anchor="end">where it fits</text>
           </g>
           <g class="lbl" data-key="enzyme" tabindex="0" role="button" aria-label="Enzyme — show information">
-            <line x1="220" y1="370" x2="120" y2="400"/><circle cx="220" cy="370" r="4.5"/>
-            <text x="116" y="396" class="lbl-text" text-anchor="end">Enzyme</text>
-            <text x="116" y="412" class="lbl-sub" text-anchor="end">the catalyst</text>
+            <line x1="215" y1="372" x2="120" y2="402"/><circle cx="215" cy="372" r="4.5"/>
+            <text x="116" y="398" class="lbl-text" text-anchor="end">Enzyme</text>
+            <text x="116" y="414" class="lbl-sub" text-anchor="end">the catalyst</text>
           </g>
           <g class="lbl" data-key="product" tabindex="0" role="button" aria-label="Products — show information">
-            <line x1="372" y1="120" x2="520" y2="150"/><circle cx="372" cy="120" r="4.5"/>
-            <text x="526" y="146" class="lbl-text">Products</text>
-            <text x="526" y="162" class="lbl-sub">what is made</text>
+            <line x1="378" y1="96" x2="520" y2="140"/><circle cx="378" cy="96" r="4.5"/>
+            <text x="526" y="136" class="lbl-text">Products</text>
+            <text x="526" y="152" class="lbl-sub">what is made</text>
           </g>
         </svg>
 

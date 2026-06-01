@@ -125,14 +125,14 @@ function applyHowStep(n) {
   } else if (howStep === 2) {
     hide(substrate, true);
     hide(productA, false); hide(productB, false);
-    setPiece(productA, 'translate(68px,90px)');
-    setPiece(productB, 'translate(-66px,90px)');
+    setPiece(productA, 'translate(55px,128px)');
+    setPiece(productB, 'translate(-55px,128px)');
     enzymeBody.classList.add('catalysing');
   } else if (howStep === 3) {
     hide(substrate, true);
     hide(productA, false); hide(productB, false);
-    setPiece(productA, 'translate(-20px,50px)');
-    setPiece(productB, 'translate(24px,50px)');
+    setPiece(productA, 'translate(-14px,86px)');
+    setPiece(productB, 'translate(14px,86px)');
     enzymeBody.classList.add('catalysing');
   }
   setInfo($('#how-info'), HOW_STEPS[howStep]);
@@ -142,11 +142,14 @@ function applyHowStep(n) {
   if (howStep === 2) success(); else tick();
 }
 function showInhibitor() {
-  setPiece(inhibitor, 'translate(0px,34px)'); hide(inhibitor, false);
-  inhibitor.style.opacity = '1';
-  setPiece(substrate, 'translate(-120px,-26px) rotate(-16deg)');
-  hide(rateBadge, false); rateFill.setAttribute('width', '30'); rateFill.setAttribute('fill', '#E25563');
-  setInfo($('#how-info'), { kicker: 'Inhibitor', title: 'The active site is blocked', body: 'An inhibitor fits into the active site but is <strong>not broken down</strong>. While it sits there the substrate cannot get in, so the <strong>rate of reaction falls</strong>.' });
+  setPiece(inhibitor, 'translate(0px,0px)'); hide(inhibitor, false); inhibitor.style.opacity = '1';
+  setPiece(substrate, 'translate(-150px,56px) rotate(-14deg)');
+  const rateWord = document.getElementById('rate-word');
+  hide(rateBadge, false);
+  // show the meter full, then visibly drop it so its meaning is obvious
+  rateFill.setAttribute('width', '150'); rateFill.setAttribute('fill', '#3FA34D'); rateWord.textContent = '';
+  setTimeout(() => { rateFill.setAttribute('width', '40'); rateFill.setAttribute('fill', '#E25563'); rateWord.textContent = 'Low'; }, 300);
+  setInfo($('#how-info'), { kicker: 'Inhibitor', title: 'The active site is blocked', body: 'An inhibitor fits into the active site but is <strong>not broken down</strong>. While it sits there the substrate cannot get in, so the <strong>rate of reaction falls</strong> — watch the meter on the left drop.' });
   tone(150, 0.2, 'sawtooth', 0.05);
 }
 // build step dots
