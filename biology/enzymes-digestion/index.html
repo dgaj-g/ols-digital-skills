@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Enzymes &amp; Digestion &middot; Biology &middot; OLS Digital Skills</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity">
+
+<header class="act-header">
+  <div class="act-titles">
+    <p class="eyebrow">Biology &middot; GCSE &middot; CCEA Unit 1 &middot; 1.4</p>
+    <h1>Enzymes &amp; Digestion</h1>
+    <p class="lede">See how enzymes work, match each one to its food, discover what speeds them up and slows them down, then follow the food into the blood.</p>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Activity sections">
+  <button class="tab is-active" type="button" data-tab="how" aria-selected="true"><span class="tab-num">1</span> How enzymes work</button>
+  <button class="tab" type="button" data-tab="match" aria-selected="false"><span class="tab-num">2</span> Match the enzyme</button>
+  <button class="tab" type="button" data-tab="factors" aria-selected="false"><span class="tab-num">3</span> What affects them</button>
+  <button class="tab" type="button" data-tab="villus" aria-selected="false"><span class="tab-num">4</span> Into the blood</button>
+</nav>
+
+<main class="act-main">
+
+  <!-- ============================================================
+       SECTION 1 — How enzymes work
+       ============================================================ -->
+  <section class="panel is-active" id="panel-how" data-panel="how" aria-label="How enzymes work">
+    <div class="split">
+      <div class="stage-card">
+        <div class="seg" role="tablist" aria-label="View">
+          <button class="seg-btn is-active" type="button" data-view="explore" role="tab" aria-selected="true">Explore the parts</button>
+          <button class="seg-btn" type="button" data-view="watch" role="tab" aria-selected="false">Watch it work</button>
+          <button class="seg-btn" type="button" data-view="inhibitor" role="tab" aria-selected="false">Add an inhibitor</button>
+        </div>
+
+        <svg id="how-svg" viewBox="0 0 640 470" role="img" aria-label="An enzyme with a substrate fitting into its active site, then breaking into two products.">
+          <!-- rate meter (inhibitor view) -->
+          <g id="rate-badge" hidden>
+            <rect x="442" y="24" width="182" height="58" rx="10" fill="#fff" stroke="#E3E8F0"/>
+            <text x="458" y="45" class="rate-label">Rate of reaction</text>
+            <rect x="458" y="53" width="150" height="11" rx="5.5" fill="#EAEFF7"/>
+            <rect id="rate-fill" x="458" y="53" width="150" height="11" rx="5.5" fill="#3FA34D"/>
+            <text id="rate-word" x="608" y="78" class="rate-word" text-anchor="end"></text>
+          </g>
+
+          <!-- enzyme body with a concave active-site bay (drawn first so molecules sit on top) -->
+          <path id="enzymeBody"
+                d="M150 388 L150 300 Q150 254 198 254 L272 254
+                   Q296 254 308 282 Q320 308 332 282 Q344 254 368 254
+                   L442 254 Q490 254 490 300 L490 388
+                   Q490 410 462 410 L178 410 Q150 410 150 388 Z"
+                fill="#2C5C8A" stroke="#1A3A6B" stroke-width="2"/>
+
+          <!-- products (hidden until split) -->
+          <g id="productA" class="piece" hidden>
+            <ellipse cx="250" cy="150" rx="33" ry="29" fill="#7BC47F" stroke="#4A9E54" stroke-width="2.5"/>
+          </g>
+          <g id="productB" class="piece" hidden>
+            <ellipse cx="390" cy="150" rx="33" ry="29" fill="#7BC47F" stroke="#4A9E54" stroke-width="2.5"/>
+          </g>
+
+          <!-- substrate (plug: its convex bottom is complementary to the bay) -->
+          <g id="substrate" class="piece">
+            <path d="M272 104 Q296 104 308 132 Q320 158 332 132 Q344 104 368 104
+                     Q394 104 394 78 Q394 48 320 48 Q246 48 246 78 Q246 104 272 104 Z"
+                  fill="#F0A04B" stroke="#C9762B" stroke-width="2.5"/>
+          </g>
+
+          <!-- inhibitor (sits in the bay but is the wrong molecule) -->
+          <g id="inhibitor" class="piece" hidden>
+            <path d="M278 296 Q272 268 320 268 Q368 268 362 296 Q360 322 320 322 Q280 322 278 296 Z"
+                  fill="#E25563" stroke="#B23644" stroke-width="2.5"/>
+          </g>
+
+          <!-- labels (leader line + dot + text) — clickable -->
+          <g class="lbl" data-key="substrate" tabindex="0" role="button" aria-label="Substrate — show information">
+            <line x1="320" y1="70" x2="486" y2="70"/><circle cx="320" cy="70" r="4.5"/>
+            <text x="492" y="66" class="lbl-text">Substrate</text>
+            <text x="492" y="82" class="lbl-sub">the food molecule</text>
+          </g>
+          <g class="lbl" data-key="active" tabindex="0" role="button" aria-label="Active site — show information">
+            <line x1="320" y1="298" x2="150" y2="210"/><circle cx="320" cy="298" r="4.5"/>
+            <text x="146" y="200" class="lbl-text" text-anchor="end">Active site</text>
+            <text x="146" y="216" class="lbl-sub" text-anchor="end">where it fits</text>
+          </g>
+          <g class="lbl" data-key="enzyme" tabindex="0" role="button" aria-label="Enzyme — show information">
+            <line x1="215" y1="372" x2="120" y2="402"/><circle cx="215" cy="372" r="4.5"/>
+            <text x="116" y="398" class="lbl-text" text-anchor="end">Enzyme</text>
+            <text x="116" y="414" class="lbl-sub" text-anchor="end">the catalyst</text>
+          </g>
+          <g class="lbl" data-key="product" tabindex="0" role="button" aria-label="Products — show information">
+            <line x1="378" y1="96" x2="520" y2="140"/><circle cx="378" cy="96" r="4.5"/>
+            <text x="526" y="136" class="lbl-text">Products</text>
+            <text x="526" y="152" class="lbl-sub">what is made</text>
+          </g>
+        </svg>
+
+        <!-- stepper controls (watch view) -->
+        <div class="stepper" id="stepper" hidden>
+          <button class="step-btn" id="step-prev" type="button" aria-label="Previous step">‹</button>
+          <div class="step-dots" id="step-dots" aria-hidden="true"></div>
+          <button class="step-btn" id="step-next" type="button" aria-label="Next step">›</button>
+        </div>
+      </div>
+
+      <aside class="info-card" id="how-info" aria-live="polite">
+        <span class="info-kicker" id="how-kicker">Lock and key</span>
+        <h2 id="how-title">An enzyme is a biological catalyst</h2>
+        <p id="how-body">Every enzyme is a <strong>protein</strong>. It speeds up a reaction and is <strong>not used up</strong>, so it can work again and again. Use the buttons above to explore the parts, watch a reaction step by step, or see what an inhibitor does.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 2 — Match the enzyme (drag & drop)
+       ============================================================ -->
+  <section class="panel" id="panel-match" data-panel="match" aria-label="Match the enzyme">
+    <div class="match-bar">
+      <div class="seg" role="tablist" aria-label="Reaction type">
+        <button class="seg-btn is-active" type="button" data-mode="breakdown" role="tab" aria-selected="true">Break it down</button>
+        <button class="seg-btn" type="button" data-mode="buildup" role="tab" aria-selected="false">Build it up</button>
+      </div>
+      <div class="match-meta">
+        <span class="score-pill"><span id="match-done">0</span>&nbsp;/&nbsp;<span id="match-total">3</span></span>
+        <button id="match-reset" type="button" class="ghost-btn">Reset</button>
+      </div>
+    </div>
+
+    <p class="prompt" id="match-prompt"></p>
+    <div class="stations" id="stations"></div>
+
+    <div class="tray-stage">
+      <div class="tray-head">
+        <h2 id="tray-title">Drag each one to where it belongs</h2>
+        <span class="tray-hint" id="tray-hint"></span>
+      </div>
+      <div class="tray" id="match-tray"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 3 — What affects enzymes (simulator)
+       ============================================================ -->
+  <section class="panel" id="panel-factors" data-panel="factors" aria-label="What affects enzymes">
+    <div class="seg seg-center" role="tablist" aria-label="Factor">
+      <button class="seg-btn is-active" type="button" data-factor="temp" role="tab" aria-selected="true">Temperature</button>
+      <button class="seg-btn" type="button" data-factor="ph" role="tab" aria-selected="false">pH</button>
+    </div>
+
+    <div class="sim">
+      <div class="sim-graph stage-card">
+        <div class="readout">
+          <div class="readout-big"><span id="sim-value">37</span><span class="readout-unit" id="sim-unit">°C</span></div>
+          <div class="readout-rate">
+            <span class="readout-rate-label">Rate of reaction</span>
+            <strong id="sim-rate">—</strong>
+          </div>
+        </div>
+        <svg id="sim-svg" viewBox="0 0 520 320" role="img" aria-label="Graph of enzyme activity against the chosen factor, with a marker you can drag.">
+          <!-- axes + curve + marker drawn by JS -->
+        </svg>
+        <div class="slider-wrap">
+          <input id="sim-slider" type="range" min="0" max="60" value="37" step="1" aria-label="Temperature in degrees Celsius" />
+          <div class="slider-scale" id="sim-scale"></div>
+        </div>
+      </div>
+
+      <div class="sim-enzyme stage-card">
+        <h2 class="sim-enzyme-title">What is happening to the enzyme</h2>
+        <svg id="sim-enz-svg" viewBox="0 0 320 300" role="img" aria-label="An enzyme whose active site changes shape as the factor changes.">
+          <g id="sim-particles"></g>
+          <g id="sim-substrate">
+            <path d="M126 70 q0 -30 34 -30 q34 0 34 30 q0 16 -14 22 l-6 12 l-6 -12 q-14 -6 -42 -22 Z" fill="#F0A04B" stroke="#C9762B" stroke-width="2.5"/>
+          </g>
+          <path id="sim-enz-body" fill="#2C5C8A" stroke="#1A3A6B" stroke-width="2"/>
+        </svg>
+        <p class="sim-state" id="sim-state"></p>
+      </div>
+    </div>
+    <p class="sim-explain" id="sim-explain"></p>
+  </section>
+
+  <!-- ============================================================
+       SECTION 4 — Into the blood (villus)
+       ============================================================ -->
+  <section class="panel" id="panel-villus" data-panel="villus" aria-label="Into the blood: the villus">
+    <div class="split">
+      <div class="stage-card">
+        <div class="seg" role="tablist" aria-label="View">
+          <button class="seg-btn is-active" type="button" data-vview="explore" role="tab" aria-selected="true">Explore the parts</button>
+          <button class="seg-btn" type="button" data-vview="absorb" role="tab" aria-selected="false">Watch absorption</button>
+        </div>
+        <svg id="villus-svg" viewBox="0 0 640 470" role="img" aria-label="Cross-section of a villus showing the epithelium, capillary network, lacteal and lumen.">
+          <rect x="0" y="0" width="640" height="470" fill="#EFF4FB"/>
+          <!-- villus body -->
+          <path id="v-body" d="M250 460 L250 190 Q250 70 320 70 Q390 70 390 190 L390 460 Z" fill="#FBDDE2" stroke="#C9737E" stroke-width="3"/>
+          <path id="v-epi" d="M250 460 L250 190 Q250 70 320 70 Q390 70 390 190 L390 460" fill="none" stroke="#E79AA6" stroke-width="14" stroke-linecap="round"/>
+          <path id="v-cap" d="M300 450 L300 210 Q300 150 320 150 Q340 150 340 210 L340 450" fill="none" stroke="#D7263D" stroke-width="8" stroke-linecap="round"/>
+          <path id="v-lac" d="M314 450 L314 205 Q314 178 320 178 Q326 178 326 205 L326 450" fill="#FFF3C4" stroke="#E4B824" stroke-width="3.5"/>
+          <g id="v-particles"></g>
+
+          <g class="lbl vlbl" data-key="shape" tabindex="0" role="button" aria-label="Finger-like shape — show information">
+            <line x1="320" y1="86" x2="470" y2="86"/><circle cx="320" cy="86" r="4.5"/>
+            <text x="476" y="82" class="lbl-text">Finger-like shape</text>
+            <text x="476" y="98" class="lbl-sub">huge surface area</text>
+          </g>
+          <g class="lbl vlbl" data-key="epithelium" tabindex="0" role="button" aria-label="Surface epithelium — show information">
+            <line x1="386" y1="300" x2="486" y2="300"/><circle cx="386" cy="300" r="4.5"/>
+            <text x="492" y="296" class="lbl-text">Epithelium</text>
+            <text x="492" y="312" class="lbl-sub">one cell thick</text>
+          </g>
+          <g class="lbl vlbl" data-key="capillary" tabindex="0" role="button" aria-label="Capillary network — show information">
+            <line x1="338" y1="360" x2="486" y2="372"/><circle cx="338" cy="360" r="4.5"/>
+            <text x="492" y="368" class="lbl-text">Capillary network</text>
+            <text x="492" y="384" class="lbl-sub">sugars + amino acids</text>
+          </g>
+          <g class="lbl vlbl" data-key="lacteal" tabindex="0" role="button" aria-label="Lacteal — show information">
+            <line x1="320" y1="330" x2="150" y2="300"/><circle cx="320" cy="330" r="4.5"/>
+            <text x="146" y="296" class="lbl-text" text-anchor="end">Lacteal</text>
+            <text x="146" y="312" class="lbl-sub" text-anchor="end">absorbs fats</text>
+          </g>
+          <g class="lbl vlbl" data-key="lumen" tabindex="0" role="button" aria-label="Lumen of the gut — show information">
+            <line x1="160" y1="150" x2="150" y2="150"/><circle cx="160" cy="150" r="4.5"/>
+            <text x="146" y="146" class="lbl-text" text-anchor="end">Lumen</text>
+            <text x="146" y="162" class="lbl-sub" text-anchor="end">digested food</text>
+          </g>
+        </svg>
+      </div>
+
+      <aside class="info-card" id="v-info" aria-live="polite">
+        <span class="info-kicker" id="v-kicker">The small intestine</span>
+        <h2 id="v-title">The ileum is built to absorb</h2>
+        <p id="v-body">The ileum (small intestine) is about <strong>3 metres</strong> long and folded, with millions of tiny <strong>villi</strong> on its lining. Together they make a huge surface area for absorbing digested food. Tap any label to see how the villus is adapted.</p>
+      </aside>
+    </div>
+  </section>
+
+</main>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<div class="celebrate" id="celebrate" hidden>
+  <div class="celebrate-panel">
+    <h2 id="celebrate-title"></h2>
+    <p id="celebrate-body"></p>
+    <button id="celebrate-close" type="button" class="primary-btn">Keep exploring</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
