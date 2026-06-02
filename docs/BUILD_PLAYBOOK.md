@@ -289,6 +289,20 @@ Create `<department-slug>/<activity-slug>/` with `index.html`, `style.css`, `scr
 
 Honour every item from the Step 5 checklist. If the teacher said "colour-code alkali metals red", they are red.
 
+### Assessment integrity — genuine consequence (MANDATORY)
+
+An activity a pupil cannot fail teaches nothing, and one that hands them the answer teaches less. Every assessed interaction must let pupils be wrong, and must never give the answer away through layout, ordering, wording or colour.
+
+1. **Build a real fail state — never force correctness.** Do not reject a wrong drag by snapping it back so the only possible outcome is correct, and do not advance only on the right answer. Wrong must be a reachable, visible outcome.
+2. **Place-all-then-check for sorting / matching / ordering games.** Let pupils place every item wherever they choose (right or wrong), then grade only when they press a **Check** button that activates once everything is placed. On Check: mark each item right or wrong, lock the correct ones (revealing their teaching feedback), and let pupils move the incorrect ones and check again.
+3. **Free rearrangement before checking.** Any placed item must stay freely movable until Check — between targets/positions and back to the tray — so pupils can change their mind. Dropping onto an occupied slot **swaps**; it never blocks. (Watch the drop-target lookup: a hit-test that resolves to the dragged item's *current* container will silently snap it back — exclude the dragged element from the `elementsFromPoint`/`closest` search.)
+4. **Never reveal giveaways until after Check.** Hide any metadata that trivialises the task — chapter-and-verse numbers that betray a chronological order, sequence numbers, alphabetical IDs — and never name the answer item inside a "what does this mean?" info/clue panel. Surface them only after Check, where they become teaching feedback.
+5. **Question stems must not give away their own answer.** Never embed or telegraph the answer in a question's wording or surrounding text (e.g. "How many were in *the Twelve*?"). Each stem must require knowledge to answer. Review every question for self-answering before shipping.
+6. **Randomise order on every render.** Shuffle multiple-choice options and any "pick one" choices so the correct answer's position varies and never clusters (e.g. always first). Likewise shuffle draggable items and cards. Author the data with a *marked* correct answer and shuffle at render — never rely on hand-placed ordering. (True/False may keep its conventional order.)
+7. **Don't colour-code options to their destination.** When items are sorted or grouped into sections, the section/target must **not** share a distinctive colour with the items that belong in it — matching colours hand pupils the grouping with no thinking. Keep targets visually neutral, or give every target and item the same colour, so correct placement requires knowledge, not colour-matching. Colour is for *post-Check* feedback (green correct / red wrong) — never a pre-Check hint.
+
+These rules apply to drag-to-sort, drag-to-match, ordering/sequencing and quiz patterns. Self-test patterns (flashcards) and recall games (memory pairs) are exempt from the Check-button rule but must still never give answers away.
+
 ---
 
 ## Step 8 — Test thoroughly (QA checklist)
@@ -303,6 +317,9 @@ Run through this checklist — don't declare done until all pass:
 - [ ] **Primary interaction works with a simulated touch pointer** (`pointerType: 'touch'`).
 - [ ] Correct-action feedback fires (snap/flip/reveal/score).
 - [ ] Wrong-action handling is gentle and correct.
+- [ ] **Wrong answers are reachable and graded on Check** — not snapped back or forced correct (sort/match/order games).
+- [ ] **Placed items move freely** between targets and back to the tray before Check; dropping on an occupied slot swaps.
+- [ ] **No giveaways before Check** — no order-revealing refs/IDs on items, no answer named in info panels, options/cards randomised, and no colour match between options and their target sections.
 - [ ] Completion/end state fires when the activity is finished.
 - [ ] Layout intact at **375px** (phone), **768px** (tablet), **1280px+** (desktop). Resize and screenshot each.
 - [ ] Text is readable; nothing overflows or overlaps.

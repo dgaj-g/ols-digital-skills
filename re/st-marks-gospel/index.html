@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>St Mark's Gospel &middot; Religious Studies &middot; OLS Digital Skills</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity">
+
+<header class="act-header">
+  <div class="act-titles">
+    <p class="eyebrow">GCSE Religious Studies &middot; CCEA</p>
+    <h1>St Mark's Gospel</h1>
+    <p class="lede">Journey through the five themes of Mark's Gospel. Light every window to complete the great rose.</p>
+  </div>
+  <div class="act-meta">
+    <span class="score-pill" id="journey-pill"><span id="lit-count">0</span>&nbsp;/&nbsp;5 windows lit</span>
+    <button id="sound-btn" type="button" class="ghost-btn" aria-pressed="true" aria-label="Toggle sound effects">
+      <span class="sound-on">&#9834; Sound on</span><span class="sound-off">&#9834; Muted</span>
+    </button>
+  </div>
+</header>
+
+<main class="act-main">
+
+  <!-- ============ THE JOURNEY (map / hub) ============ -->
+  <section class="screen map-screen" id="map-screen" aria-label="The journey through Mark's Gospel">
+    <div class="cathedral" id="cathedral">
+      <!-- Rose window (finale) -->
+      <div class="rose-wrap">
+        <button class="rose" id="rose" type="button" aria-label="The great rose window — completes when all five themes are lit" disabled>
+          <span class="rose-core" aria-hidden="true"></span>
+          <span class="rose-caption" id="rose-caption">Light all five windows</span>
+        </button>
+      </div>
+      <!-- Five lancet windows, injected by script -->
+      <div class="lancets" id="lancets" role="list" aria-label="Five themes"></div>
+    </div>
+  </section>
+
+  <!-- ============ A STATION (one of the five games) ============ -->
+  <section class="screen station-screen" id="station-screen" hidden aria-label="Theme activity">
+    <div class="station-chrome">
+      <button class="back-btn" id="back-btn" type="button">&lsaquo;&nbsp;The journey</button>
+      <div class="station-headings">
+        <span class="station-eyebrow" id="station-eyebrow"></span>
+        <h2 class="station-title" id="station-title"></h2>
+      </div>
+      <div class="station-tools">
+        <span class="station-progress" id="station-progress" aria-live="polite"></span>
+        <button class="tool-btn scripture-btn" id="scripture-btn" type="button">&#128220;&nbsp;Set text</button>
+        <button class="tool-btn replay-btn" id="replay-btn" type="button" hidden>&#8635;&nbsp;Restart</button>
+      </div>
+    </div>
+    <p class="station-task" id="station-task"></p>
+    <div class="station-body" id="station-body"></div>
+  </section>
+
+</main>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<!-- ============ Scripture viewer (illuminated manuscript) ============ -->
+<div class="modal scripture-modal" id="scripture-modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-panel manuscript" role="dialog" aria-modal="true" aria-labelledby="scripture-heading">
+    <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
+    <div class="manuscript-body" id="scripture-body"></div>
+  </div>
+</div>
+
+<!-- ============ Info modal (title meanings, detail) ============ -->
+<div class="modal info-modal" id="info-modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="info-heading">
+    <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
+    <div class="info-body" id="info-body"></div>
+  </div>
+</div>
+
+<!-- ============ Celebration / finale overlay ============ -->
+<div class="celebrate" id="celebrate" hidden>
+  <div class="celebrate-glass" aria-hidden="true"></div>
+  <div class="celebrate-panel" role="dialog" aria-modal="true" aria-labelledby="celebrate-title">
+    <div class="celebrate-icon" id="celebrate-icon" aria-hidden="true"></div>
+    <h2 id="celebrate-title"></h2>
+    <p id="celebrate-text"></p>
+    <div class="celebrate-stars" id="celebrate-stars" aria-hidden="true"></div>
+    <div class="celebrate-actions" id="celebrate-actions"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
