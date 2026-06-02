@@ -8,7 +8,7 @@
    Behaviour:
    - Plays the 3-second crest animation once per browser session.
    - Auto-fades into the activity when the video finishes.
-   - Skip button (top-right) for replays.
+   - Tap the overlay or press Escape to dismiss it early (no visible button).
    - Add ?intro to the URL to force-play (handy for demos).
    - Add ?nointro to skip permanently this navigation.
    - Resilient: if the video fails to load, the overlay disappears
@@ -59,28 +59,6 @@
       object-fit: contain;
       background: #0d1f3d;
     }
-    .ols-intro-skip {
-      position: absolute;
-      top: clamp(10px, 2vw, 22px);
-      right: clamp(10px, 2vw, 22px);
-      background: rgba(255,255,255,0.10);
-      color: rgba(255,255,255,0.92);
-      border: 1px solid rgba(255,255,255,0.30);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      font-size: 0.84rem;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-      transition: background 0.15s, border-color 0.15s;
-    }
-    .ols-intro-skip:hover {
-      background: rgba(255,255,255,0.18);
-      border-color: rgba(228, 184, 36, 0.7);
-    }
-    .ols-intro-skip:focus { outline: 2px solid #E4B824; outline-offset: 2px; }
     @media (prefers-reduced-motion: reduce) {
       .ols-intro-overlay { transition: none; }
     }
@@ -100,14 +78,7 @@
   video.preload = 'auto';
   video.setAttribute('aria-hidden', 'true');
 
-  const skipBtn = document.createElement('button');
-  skipBtn.className = 'ols-intro-skip';
-  skipBtn.type = 'button';
-  skipBtn.textContent = 'Skip ›';
-  skipBtn.setAttribute('aria-label', 'Skip intro animation');
-
   overlay.appendChild(video);
-  overlay.appendChild(skipBtn);
 
   // Insert as early as possible so the overlay covers any unfinished layout
   function attach() {
@@ -152,9 +123,7 @@
       if (!startedPlaying && !dismissed) dismiss('autoplay-blocked');
     }, 700);
   });
-  // Skip button
-  skipBtn.addEventListener('click', (e) => { e.stopPropagation(); dismiss('skip-button'); });
-  // Click anywhere on the overlay also skips (forgiving UX) — but ignore clicks
+  // Click anywhere on the overlay dismisses (forgiving UX) — but ignore clicks
   // that happen before the video starts playing (avoids accidental Puppeteer/auto-focus dismiss)
   overlay.addEventListener('click', () => {
     if (video.currentTime > 0.1) dismiss('overlay-click');
