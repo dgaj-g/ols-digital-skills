@@ -280,6 +280,11 @@ body.dragging-active, body.dragging-active * {
 .event-tray { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; min-height: 56px; }
 .event-tray.drop-hover { outline: 2px dashed rgba(228,184,36,0.4); outline-offset: 3px; border-radius: 10px; }
 .event-chip { max-width: min(340px, 90vw); }
+.titles-checkbar { display: flex; justify-content: center; margin-top: 4px; }
+.event-chip.ok { background: linear-gradient(160deg, #2bbd84, #15885d); cursor: default; box-shadow: inset 0 0 0 2px rgba(228,184,36,0.55), 0 2px 6px rgba(0,0,0,0.3); }
+.event-chip.bad { background: linear-gradient(160deg, #e0606b, var(--j-passion)); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.3); }
+.id-note { background: var(--parchment); color: var(--ink); border-radius: 8px; padding: 7px 9px; margin-top: 5px; font-size: 0.72rem; line-height: 1.35; border-top: 3px solid var(--gold); }
+.id-note strong { color: color-mix(in srgb, var(--acc) 70%, #000); }
 
 /* ============================================================
    GAME 2 — MIRACLES (flashcards)

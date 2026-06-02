@@ -31,13 +31,13 @@ const THEMES = [
     motif: "chi-rho",
     short: "Who do you say I am?",
     game: "titles",
-    task: "Drag each event onto the title of Jesus it reveals. Tap a window to learn what the title means.",
+    task: "Drag each event onto the title of Jesus you think it reveals — you can move them around freely. When all eight are placed, press Check. Tap a window’s “i” to learn what a title means.",
     titles: [
-      { id: "messiah",  name: "Messiah / Christ", meaning: "‘The Anointed One’ — the promised deliverer the Jewish people waited for. But Jesus is a suffering servant, not the warrior king many expected." },
-      { id: "david",    name: "Son of David",     meaning: "A descendant of King David. A Messianic title — the Jews believed the Messiah would come from David’s royal line." },
-      { id: "god",      name: "Son of God",       meaning: "Jesus’ divine nature. God’s own voice declares it at the Baptism and the Transfiguration." },
-      { id: "man",      name: "Son of Man",       meaning: "Jesus’ favourite title for himself — both human and divine (Daniel’s prophecy). It points to his suffering, his authority, and his return in glory." },
-      { id: "saviour",  name: "Saviour",          meaning: "The name ‘Jesus’ means ‘God saves’. He rescues people from sin, from danger, and from hunger of body and soul." }
+      { id: "messiah",  name: "Messiah / Christ", meaning: "‘The Anointed One’ — the promised deliverer the Jewish people had waited for. Not the warrior king many expected, but one who would suffer and serve." },
+      { id: "david",    name: "Son of David",     meaning: "A royal, Messianic title. The Messiah was expected to come from the line of King David." },
+      { id: "god",      name: "Son of God",       meaning: "Jesus’ divine nature — that he is truly God’s own Son, sharing in God’s authority." },
+      { id: "man",      name: "Son of Man",       meaning: "Jesus’ own favourite title for himself — both fully human and divine (from Daniel’s prophecy). It points to his suffering, his authority, and his return in glory." },
+      { id: "saviour",  name: "Saviour",          meaning: "From the name ‘Jesus’, meaning ‘God saves’. He rescues people from sin, from danger, and from every kind of need." }
     ],
     events: [
       { id: "peter",    title: "messiah", ref: "Mark 8:27–33", label: "Peter at Caesarea Philippi: “You are the Messiah.”", note: "Peter finally names Jesus as the promised Messiah — though he does not yet grasp that this Messiah must suffer and die." },
@@ -150,7 +150,7 @@ const THEMES = [
       { type: "mc", prompt: "What does the word ‘disciple’ mean?", options: ["A follower", "A priest", "A teacher of the Law", "A miracle"], answer: 0, explain: "‘Disciple’ comes from the Latin for ‘follower’. Jesus’ disciples are also called Christians." },
       { type: "mc", prompt: "By the Sea of Galilee Jesus called Simon Peter and Andrew with which words?", options: ["“Come, follow me, and I will send you out to fish for people.”", "“Sell all that you have.”", "“Take up your cross.”", "“Let the little children come to me.”"], answer: 0, explain: "He called the fishermen to ‘catch people’ for God’s Kingdom — and at once they left their nets and followed him." },
       { type: "mc", prompt: "Which hated tax collector did Jesus call to follow him?", options: ["Levi (Matthew)", "Zacchaeus", "Judas", "Bartimaeus"], answer: 0, explain: "Levi, son of Alphaeus — also called Matthew. Jesus said, “I have not come to call the respectable, but the outcasts.”" },
-      { type: "mc", prompt: "How many close disciples did Jesus choose as ‘the Twelve’?", options: ["Twelve", "Three", "Seven", "Seventy"], answer: 0, explain: "Twelve — mirroring the twelve tribes of Israel. They were chosen to be with him, to preach, and to drive out demons." },
+      { type: "mc", prompt: "Jesus chose an inner group of disciples to be with him, to preach and to drive out demons. How many were there?", options: ["Twelve", "Three", "Seven", "Seventy"], answer: 0, explain: "He chose twelve — mirroring the twelve tribes of Israel — who became known as ‘the Twelve’." },
       { type: "tf", prompt: "Jesus sent the Twelve out on mission two by two, telling them to pack plenty of supplies.", answer: false, explain: "He sent them in pairs, but told them to take almost nothing — no bread, no bag, no money — and to rely on God and the kindness of others." },
       { type: "mc", prompt: "Jesus said the cost of being a disciple was to…", options: ["“Deny yourself, take up your cross and follow me.”", "Become wealthy and powerful", "Live alone in the desert", "Build a new temple"], answer: 0, explain: "Discipleship means putting others first, accepting hardship (‘your cross’), and following Jesus — even at great cost." },
       { type: "mc", prompt: "The poor widow put two small copper coins in the Temple treasury. Why did Jesus praise her?", options: ["She gave everything she had to live on", "She gave the largest amount of money", "She gave gold", "She gave in secret"], answer: 0, explain: "The rich gave from their spare wealth; she gave all she had — a total sacrifice, trusting God to provide." },
@@ -433,7 +433,9 @@ function resetChipStyle(chip) {
 
 function elementsUnder(x, y, className) {
   const els = document.elementsFromPoint(x, y);
-  for (const el of els) {
+  const dragging = state.pointer.chip;   // ignore the chip being dragged, else closest()
+  for (const el of els) {                 // resolves to its *current* container, not the target
+    if (dragging && (el === dragging || dragging.contains(el))) continue;
     if (el.classList && el.classList.contains(className)) return el;
     if (el.closest) { const c = el.closest("." + className); if (c) return c; }
   }
@@ -462,10 +464,8 @@ document.addEventListener("selectstart", (e) => {
    ============================================================ */
 
 function renderTitles(t) {
-  const wrongs = { n: 0 };
   const total = t.events.length;
-  const placed = { n: 0 };
-  setProgress(`0 / ${total} placed`);
+  const checks = { n: 0 };
 
   const wrap = document.createElement("div");
   wrap.className = "titles-stage";
@@ -489,81 +489,100 @@ function renderTitles(t) {
     board.appendChild(win);
   });
 
-  // Tray of event chips
+  // Tray of event chips (shuffled)
   const tray = document.createElement("div");
   tray.className = "event-tray drop-zone";
   tray.dataset.tray = "1";
   shuffle(t.events).forEach((ev) => {
-    const chip = makeChip(ev.label, { title: ev.title, ev: ev.id }, "event-chip");
-    chip.dataset.ref = ev.ref;
+    const chip = makeChip(ev.label, { title: ev.title, ev: ev.id, ref: ev.ref }, "event-chip");
     tray.appendChild(chip);
   });
-
   const trayWrap = document.createElement("div");
   trayWrap.className = "event-tray-wrap";
-  trayWrap.innerHTML = `<p class="tray-caption">The events</p>`;
+  trayWrap.innerHTML = `<p class="tray-caption">The events — drag each to the title it reveals</p>`;
   trayWrap.appendChild(tray);
+
+  // Check bar
+  const checkBar = document.createElement("div");
+  checkBar.className = "titles-checkbar";
+  const checkBtn = document.createElement("button");
+  checkBtn.type = "button"; checkBtn.className = "primary-btn"; checkBtn.textContent = "Check answers";
+  checkBtn.disabled = true;
+  checkBar.appendChild(checkBtn);
 
   wrap.appendChild(board);
   wrap.appendChild(trayWrap);
+  wrap.appendChild(checkBar);
   stationBody.appendChild(wrap);
 
-  // Drag wiring
+  function placedCount() { return board.querySelectorAll(".title-holders .chip").length; }
+  function refresh() {
+    const n = placedCount();
+    setProgress(`${n} / ${total} placed`);
+    checkBtn.disabled = n !== total;
+    board.querySelectorAll(".title-window").forEach((w) =>
+      w.classList.toggle("has-item", !!w.querySelector(".title-holders .chip")));
+  }
+  refresh();
+
+  // Drag wiring — free placement, NO instant grading (you can be wrong)
   state.highlight = (x, y) => {
     clearDropHighlights();
     const win = elementsUnder(x, y, "title-window");
-    if (win && !win.classList.contains("done-hint")) win.classList.add("drop-hover");
+    if (win) win.classList.add("drop-hover");
+    else { const tr = elementsUnder(x, y, "event-tray"); if (tr) tr.classList.add("drop-hover"); }
   };
   state.resolveDrop = (chip, x, y) => {
+    chip.classList.remove("bad");                  // moving clears a previous wrong mark
     const win = elementsUnder(x, y, "title-window");
-    if (!win) { returnToTray(chip, tray); bounce(chip); return; }
-    if (chip.dataset.title === win.dataset.title) {
-      // correct
-      win.querySelector(".title-holders").appendChild(chip);
-      chip.classList.add("locked", "placed");
-      chip.setAttribute("aria-disabled", "true");
-      win.classList.add("has-item");
-      snapIn(chip);
-      sfx.correct();
-      placed.n++;
-      setProgress(`${placed.n} / ${total} placed`);
-      flashNote(win, t.events.find((e) => e.id === chip.dataset.ev));
-      if (placed.n === total) {
-        board.querySelectorAll(".title-window").forEach((w) => w.classList.add("alllit"));
-        setTimeout(() => finishTitles(t, wrongs.n), 700);
-      }
-    } else {
-      // wrong — gentle bounce back to tray
-      returnToTray(chip, tray);
-      bounce(chip);
-      sfx.wrong();
-      win.classList.add("shake");
-      setTimeout(() => win.classList.remove("shake"), 360);
-      wrongs.n++;
+    if (win) { win.querySelector(".title-holders").appendChild(chip); snapIn(chip); sfx.place(); }
+    else {
+      const tr = elementsUnder(x, y, "event-tray");
+      if (tr) { tray.appendChild(chip); sfx.place(); }
+      else { (chip.__origin || tray).appendChild(chip); bounce(chip); }
     }
+    refresh();
   };
-}
 
-function returnToTray(chip, tray) {
-  if (chip.parentElement !== tray) tray.appendChild(chip);
-}
-
-function flashNote(win, ev) {
-  if (!ev) return;
-  const note = document.createElement("div");
-  note.className = "title-note";
-  note.innerHTML = `<strong>${ev.ref}</strong> ${ev.note}`;
-  win.appendChild(note);
-  requestAnimationFrame(() => note.classList.add("show"));
-  setTimeout(() => { note.classList.remove("show"); setTimeout(() => note.remove(), 400); }, 4200);
-}
-
-function finishTitles(t, wrongs) {
-  const stars = wrongs === 0 ? 3 : wrongs <= 3 ? 2 : 1;
-  const first = completeStation(t.id, stars);
-  showStationComplete(t, stars, first,
-    wrongs === 0 ? "Every event matched first time — you really know the titles of Jesus." :
-    "All eight events matched to the right title of Jesus.");
+  // Check — grade everything; lock the correct, let the wrong be moved and re-checked
+  checkBtn.addEventListener("click", () => {
+    checks.n++;
+    let correct = 0;
+    board.querySelectorAll(".title-window").forEach((w) => {
+      w.querySelectorAll(".title-holders .chip").forEach((chip) => {
+        if (chip.classList.contains("locked")) { correct++; return; }
+        if (chip.dataset.title === w.dataset.title) {
+          chip.classList.remove("bad");
+          chip.classList.add("ok", "locked", "placed");
+          chip.setAttribute("aria-disabled", "true");
+          const ev = t.events.find((e) => e.id === chip.dataset.ev);
+          if (ev && !(chip.nextElementSibling && chip.nextElementSibling.classList.contains("id-note"))) {
+            const note = document.createElement("div");
+            note.className = "id-note";
+            note.innerHTML = `<strong>${ev.ref}</strong> ${ev.note}`;
+            chip.insertAdjacentElement("afterend", note);
+          }
+          correct++;
+        } else {
+          chip.classList.add("bad");
+          w.classList.add("shake");
+          setTimeout(() => w.classList.remove("shake"), 360);
+        }
+      });
+    });
+    if (correct === total) {
+      sfx.correct();
+      board.querySelectorAll(".title-window").forEach((w) => w.classList.add("alllit"));
+      const stars = checks.n === 1 ? 3 : checks.n === 2 ? 2 : 1;
+      const first = completeStation(t.id, stars);
+      setTimeout(() => showStationComplete(t, stars, first,
+        checks.n === 1 ? "Every event matched first time — you really know the titles of Jesus."
+                       : "All the events are now matched to the right title of Jesus."), 650);
+    } else {
+      sfx.wrong();
+      setProgress(`${correct} / ${total} correct — move the ones marked red, then check again`);
+    }
+  });
 }
 
 /* ============================================================
@@ -753,13 +772,10 @@ function renderSequence(t) {
     road.appendChild(slot);
   }
 
+  // Shuffled chips. The Mark reference is hidden until Check — the verse
+  // numbers run in order and would otherwise give the sequence away.
   shuffle(events).forEach((ev) => {
-    const chip = makeChip(ev.label, { order: ev.order }, "seq-chip");
-    chip.dataset.ref = ev.ref;
-    chip.dataset.note = ev.note;
-    const r = document.createElement("span");
-    r.className = "seq-chip-ref"; r.textContent = ev.ref;
-    chip.insertBefore(r, chip.firstChild);
+    const chip = makeChip(ev.label, { order: ev.order, ref: ev.ref, note: ev.note }, "seq-chip");
     tray.appendChild(chip);
   });
 
@@ -797,12 +813,20 @@ function renderSequence(t) {
     else { const tr = elementsUnder(x, y, "seq-tray"); if (tr) tr.classList.add("drop-hover"); }
   };
   state.resolveDrop = (chip, x, y) => {
-    chip.classList.remove("ok", "bad");
+    chip.classList.remove("bad");                      // moving clears a previous wrong mark
     const slot = elementsUnder(x, y, "seq-slot");
     if (slot) {
       const holder = slot.querySelector(".seq-holder");
       const occupant = holder.querySelector(".chip");
-      if (occupant && occupant !== chip) tray.appendChild(occupant);  // evict
+      if (occupant && occupant.classList.contains("locked")) {   // can't displace a confirmed-correct event
+        (chip.__origin || tray).appendChild(chip); bounce(chip); refresh(); return;
+      }
+      if (occupant && occupant !== chip) {
+        // swap: send the occupant to where this chip came from (or back to the tray)
+        const origin = (chip.__origin && chip.__origin.classList.contains("seq-holder")) ? chip.__origin : tray;
+        occupant.classList.remove("bad");
+        origin.appendChild(occupant);
+      }
       holder.appendChild(chip);
       snapIn(chip); sfx.place();
     } else {
@@ -819,25 +843,31 @@ function renderSequence(t) {
     road.querySelectorAll(".seq-slot").forEach((slot) => {
       const chip = slot.querySelector(".seq-holder .chip");
       if (!chip) return;
+      if (chip.classList.contains("locked")) { correct++; return; }
       const ok = Number(chip.dataset.order) === Number(slot.dataset.slot);
-      chip.classList.toggle("ok", ok);
-      chip.classList.toggle("bad", !ok);
-      if (ok) { chip.classList.add("locked"); correct++; }
-      else { chip.classList.add("shake"); setTimeout(() => chip.classList.remove("shake"), 360); }
+      if (ok) {
+        chip.classList.remove("bad");
+        chip.classList.add("ok", "locked");
+        // now that it's confirmed, reveal the reference + the teaching note
+        if (!chip.querySelector(".seq-chip-ref")) {
+          const r = document.createElement("span");
+          r.className = "seq-chip-ref"; r.textContent = chip.dataset.ref;
+          chip.insertBefore(r, chip.firstChild);
+        }
+        if (!slot.querySelector(".seq-note")) {
+          const note = document.createElement("div");
+          note.className = "seq-note"; note.textContent = chip.dataset.note;
+          slot.appendChild(note);
+        }
+        correct++;
+      } else {
+        chip.classList.add("bad", "shake");
+        setTimeout(() => chip.classList.remove("shake"), 360);
+      }
     });
     if (correct === total) {
       sfx.correct();
       road.classList.add("complete");
-      // reveal each event's note
-      road.querySelectorAll(".seq-slot").forEach((slot) => {
-        const chip = slot.querySelector(".chip");
-        if (chip && !slot.querySelector(".seq-note")) {
-          const note = document.createElement("div");
-          note.className = "seq-note";
-          note.textContent = chip.dataset.note;
-          slot.appendChild(note);
-        }
-      });
       const stars = checks.n === 1 ? 3 : checks.n === 2 ? 2 : 1;
       const first = completeStation(t.id, stars);
       setTimeout(() => showStationComplete(t, stars, first,
@@ -845,7 +875,7 @@ function renderSequence(t) {
         "The road to the cross is complete and in order."), 900);
     } else {
       sfx.wrong();
-      setProgress(`${correct} / ${total} in the right place — try again`);
+      setProgress(`${correct} / ${total} in the right place — rearrange and check again`);
     }
   });
 }
@@ -856,7 +886,7 @@ function renderSequence(t) {
 
 function renderQuiz(t) {
   const qs = t.questions;
-  let idx = 0, score = 0, answered = false;
+  let idx = 0, score = 0, answered = false, curCorrect = 0;
   const missed = [];
 
   const stage = document.createElement("div");
@@ -890,7 +920,16 @@ function renderQuiz(t) {
     prompt.textContent = q.prompt;
     feedback.hidden = true; feedback.className = "quiz-feedback"; nextBtn.hidden = true;
     optionsEl.innerHTML = "";
-    const opts = q.type === "tf" ? ["True", "False"] : q.options;
+    let opts;
+    if (q.type === "tf") {
+      opts = ["True", "False"];
+      curCorrect = q.answer ? 0 : 1;
+    } else {
+      // randomise option order every render so the answer never clusters in one slot
+      const shuffled = shuffle(q.options.map((text, i) => ({ text, correct: i === q.answer })));
+      opts = shuffled.map((o) => o.text);
+      curCorrect = shuffled.findIndex((o) => o.correct);
+    }
     opts.forEach((opt, i) => {
       const btn = document.createElement("button");
       btn.type = "button"; btn.className = "quiz-opt"; btn.textContent = opt;
@@ -899,15 +938,10 @@ function renderQuiz(t) {
     });
   }
 
-  function correctIndex(q) {
-    if (q.type === "tf") return q.answer ? 0 : 1;
-    return q.answer;
-  }
-
   function grade(q, chosen, btn) {
     if (answered) return;
     answered = true;
-    const ci = correctIndex(q);
+    const ci = curCorrect;
     const ok = chosen === ci;
     const btns = optionsEl.querySelectorAll(".quiz-opt");
     btns.forEach((b, i) => {
