@@ -1006,7 +1006,7 @@
 
   const collab = {
     enabled: false, apiUrl: '', classCode: 'default', year: '',
-    email: '', name: '', passcode: '',
+    email: '', name: '', passcode: '', uid: '', identity: '',
     peers: {}, pushTimers: {}, timer: null
   };
 
@@ -1047,6 +1047,10 @@
     const cls = params.get('class') || saved['class'] || 'default';
     collab.passcode = saved.passcode || '';
     collab.name = saved.name || '';
+    // a stable per-browser id so each pupil's work stays theirs even when there's
+    // no signed-in identity (Path A / anonymous endpoint). Names are typed.
+    collab.uid = saved.uid || ('u_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
+    if (!saved.uid) writeCfg(Object.assign(readCfg(), { uid: collab.uid }));
     if (!api) { collab.enabled = false; return; }   // → offline mode
     collab.enabled = true;
     collab.apiUrl = api;
@@ -1061,7 +1065,10 @@
     let who = null;
     try { who = await jsonp({ action: 'whoami' }); } catch (e) {}
     collab.email = (who && who.email) || '';
-    if (collab.email && !collab.name) { await promptName(); }
+    // identity = verified school email if the deployment provides one, else the
+    // per-browser id. Either way the display label is the typed name.
+    collab.identity = collab.email || ('uid:' + collab.uid);
+    if (!collab.name) { await promptName(); }
     await collabLoad(true);
     if (collab.timer) clearInterval(collab.timer);
     collab.timer = setInterval(() => collabLoad(false), POLL_MS);
@@ -1100,7 +1107,7 @@
 
     const peers = {}, mine = {};
     (res.records || []).forEach((r) => {
-      if (collab.email && r.email === collab.email) {
+      if (r.email === collab.identity) {
         (mine[r.nodeId] = mine[r.nodeId] || {})[r.fieldKey] = { t: r.text, c: r.c || 0 };
       } else {
         const key = r.nodeId + '|' + r.fieldKey;
@@ -1135,7 +1142,7 @@
       saveLocal();
       refreshDots();
     }
-    setCollabStatus(collab.email ? 'Synced with your class' : 'Sign in with your school account to join in', collab.email ? 'ok' : 'warn');
+    setCollabStatus('Synced with your class', 'ok');
     refreshOpenPeers();
   }
 
@@ -1146,7 +1153,7 @@
     const send = () => {
       collab.pushTimers[key] = null;
       setCollabStatus('Saving…', 'busy');
-      jsonp({ action: 'save', 'class': collab.classCode, year: collab.year, nodeId: nodeId, fieldKey: fieldKey, text: (text || '').slice(0, MAX_SYNC_CHARS), c: colourIdx || 0, name: collab.name })
+      jsonp({ action: 'save', 'class': collab.classCode, year: collab.year, nodeId: nodeId, fieldKey: fieldKey, text: (text || '').slice(0, MAX_SYNC_CHARS), c: colourIdx || 0, name: collab.name, uid: collab.uid })
         .then((r) => setCollabStatus(r && r.ok ? 'Synced with your class' : 'Saved on this device', r && r.ok ? 'ok' : 'warn'))
         .catch(() => setCollabStatus('Saved on this device (offline)', 'warn'));
     };
@@ -1222,7 +1229,7 @@
       if (!api) { admStatus('Please paste the web app URL.'); return; }
       writeCfg(Object.assign(readCfg(), { api: api, 'class': cls, passcode: pass }));
       collab.apiUrl = api; collab.classCode = cls; collab.passcode = pass; collab.enabled = true;
-      admStatus('Connected. Now share the class link with pupils.');
+      admStatus('Settings saved on this device. Checking the connection below…');
       refreshAdminYears();
       collabStart();
     });
