@@ -754,6 +754,46 @@
 .peer-name { font-size: 0.72rem; font-weight: 700; color: var(--ols-blue); }
 .peer-text { font-size: 0.88rem; line-height: 1.45; white-space: pre-wrap; }
 
+/* join / rejoin chooser */
+.join-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 6px;
+  max-height: 210px;
+  overflow-y: auto;
+}
+.join-name {
+  background: var(--exec-soft);
+  border: 1.5px solid rgba(26,58,107,0.25);
+  color: var(--ols-blue);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: var(--content-font);
+  cursor: pointer;
+  transition: transform 0.1s, background 0.14s, border-color 0.14s;
+}
+.join-name:hover { background: var(--ols-gold); border-color: var(--ols-gold); color: var(--ols-blue-dark); transform: translateY(-1px); }
+.join-or {
+  text-align: center;
+  margin: 12px 0;
+  border-top: 1px solid rgba(89,89,89,0.2);
+  position: relative;
+}
+.join-or span {
+  position: relative;
+  top: -0.7em;
+  background: #fff;
+  padding: 0 12px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
 /* admin panel */
 .adm-group {
   border: 1px solid rgba(89,89,89,0.16);

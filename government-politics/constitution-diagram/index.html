@@ -186,13 +186,18 @@
   </div>
 </div>
 
-<!-- ===================== NAME PROMPT (class mode) ===================== -->
-<div class="modal" id="name-modal" hidden>
+<!-- ===================== JOIN / WHO ARE YOU (class mode) ===================== -->
+<div class="modal" id="join-modal" hidden>
   <div class="modal-backdrop"></div>
   <div class="modal-panel modal-panel--narrow">
     <div class="modal-body">
       <h2 class="modal-h">Welcome to your class board</h2>
-      <p class="modal-p">Type your name so your class knows whose notes are whose. You only do this once.</p>
+      <div id="join-returning" hidden>
+        <p class="modal-p">Been here before? Tap your name to carry on where you left off.</p>
+        <div class="join-list" id="join-list"></div>
+        <p class="join-or"><span>or add yourself</span></p>
+      </div>
+      <p class="modal-p" id="join-new-label">Type your name so your class knows whose notes are whose.</p>
       <input type="text" id="name-input" class="share-input" style="width:100%" maxlength="60" placeholder="e.g. Aoife M" aria-label="Your name" />
       <div class="confirm-actions" style="margin-top:14px">
         <button class="primary-btn" id="name-ok" type="button">Start</button>

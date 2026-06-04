@@ -1065,18 +1065,97 @@
     let who = null;
     try { who = await jsonp({ action: 'whoami' }); } catch (e) {}
     collab.email = (who && who.email) || '';
-    // identity = verified school email if the deployment provides one, else the
-    // per-browser id. Either way the display label is the typed name.
-    collab.identity = collab.email || ('uid:' + collab.uid);
-    if (!collab.name) { await promptName(); }
+
+    if (collab.email) {
+      // verified school identity (Path B): just confirm a display name
+      collab.identity = collab.email;
+      if (!collab.name) await promptName();
+    } else if (collab.name) {
+      // returning on THIS device — we already know who they are, straight in
+      collab.identity = 'uid:' + collab.uid;
+    } else {
+      // first time on this device: offer "tap your name to rejoin", or add new
+      let existing = [];
+      try { existing = await fetchUsers(); } catch (e) {}
+      await chooseIdentity(existing);
+    }
+
     await collabLoad(true);
     if (collab.timer) clearInterval(collab.timer);
     collab.timer = setInterval(() => collabLoad(false), POLL_MS);
   }
 
+  // distinct existing users on the board (identity -> name), for the rejoin list
+  async function fetchUsers() {
+    const res = await jsonp({ action: 'load', 'class': collab.classCode, year: collab.year });
+    if (!res || !res.ok) return [];
+    if (res.year) collab.year = res.year;
+    const map = {};
+    (res.records || []).forEach((r) => { if (r.email) map[r.email] = r.name || 'A classmate'; });
+    return Object.keys(map).map((id) => ({ id: id, name: map[id] }));
+  }
+
+  // first-time-on-this-device chooser: tap an existing name to adopt it, or add a new one
+  function chooseIdentity(existing) {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('join-modal');
+      const ret = document.getElementById('join-returning');
+      const list = document.getElementById('join-list');
+      const newLabel = document.getElementById('join-new-label');
+      const input = document.getElementById('name-input');
+      const ok = document.getElementById('name-ok');
+
+      list.innerHTML = '';
+      if (existing && existing.length) {
+        ret.hidden = false;
+        newLabel.textContent = 'New here? Type your name so your class knows whose notes are whose.';
+        existing.slice().sort((a, b) => String(a.name).localeCompare(String(b.name))).forEach((u) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'join-name';
+          b.textContent = u.name;
+          b.addEventListener('click', () => finish({ identity: u.id, name: u.name, returning: true }));
+          list.appendChild(b);
+        });
+      } else {
+        ret.hidden = true;
+        newLabel.textContent = 'Type your name so your class knows whose notes are whose.';
+      }
+      input.value = '';
+      modal.hidden = false;
+      setTimeout(() => { if (!existing || !existing.length) input.focus(); }, 50);
+
+      function finish(choice) {
+        if (choice.returning) {
+          collab.identity = choice.identity;
+          if (choice.identity.indexOf('uid:') === 0) collab.uid = choice.identity.slice(4);
+          collab.name = choice.name;
+        } else {
+          collab.name = choice.name;
+          collab.identity = 'uid:' + collab.uid;
+        }
+        writeCfg(Object.assign(readCfg(), { uid: collab.uid, name: collab.name }));
+        modal.hidden = true;
+        cleanup();
+        resolve();
+      }
+      function onNew() {
+        const v = (input.value || '').trim().slice(0, 60);
+        if (!v) { input.focus(); return; }
+        finish({ name: v, returning: false });
+      }
+      function onKey(e) { if (e.key === 'Enter') onNew(); }
+      function cleanup() { ok.removeEventListener('click', onNew); input.removeEventListener('keydown', onKey); }
+      ok.addEventListener('click', onNew);
+      input.addEventListener('keydown', onKey);
+    });
+  }
+
   function promptName() {
     return new Promise((resolve) => {
-      const modal = document.getElementById('name-modal');
+      const modal = document.getElementById('join-modal');
+      const ret = document.getElementById('join-returning');
+      if (ret) ret.hidden = true;
       const input = document.getElementById('name-input');
       const ok = document.getElementById('name-ok');
       input.value = collab.name || '';
