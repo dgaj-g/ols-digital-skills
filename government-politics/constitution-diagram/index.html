@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>The US Constitution Diagram &middot; Government &amp; Politics &middot; OLS Digital Skills</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity">
+
+<header class="act-header">
+  <div class="act-titles">
+    <p class="eyebrow">Government &amp; Politics &middot; A-Level &middot; CCEA</p>
+    <h1>The US Constitution Diagram</h1>
+    <p class="lede">Click any branch, check or principle to explore it &mdash; then build your own notes and add real-life examples. Your work saves automatically.</p>
+  </div>
+  <div class="act-meta">
+    <div class="mode-switch" role="tablist" aria-label="Choose a mode">
+      <button id="mode-explore" class="mode-btn is-active" role="tab" aria-selected="true" type="button">Explore &amp; build</button>
+      <button id="mode-test" class="mode-btn" role="tab" aria-selected="false" type="button">Test yourself</button>
+    </div>
+  </div>
+</header>
+
+<!-- Toolbar (Explore mode) -->
+<div class="toolbar" id="toolbar" aria-label="Diagram tools">
+  <span class="save-state" id="save-state" aria-live="polite">All changes saved</span>
+  <div class="toolbar-actions">
+    <button class="tool-btn" id="btn-exemplar" type="button" title="Fill the diagram with model answers built from your resources">
+      <span aria-hidden="true">&#9733;</span> Model answer
+    </button>
+    <button class="tool-btn" id="btn-save" type="button" title="Download your diagram as a file">
+      <span aria-hidden="true">&#8595;</span> Save file
+    </button>
+    <button class="tool-btn" id="btn-open" type="button" title="Open a saved diagram file">
+      <span aria-hidden="true">&#8593;</span> Open file
+    </button>
+    <button class="tool-btn" id="btn-share" type="button" title="Create a link to share your diagram">
+      <span aria-hidden="true">&#128279;</span> Share link
+    </button>
+    <button class="tool-btn tool-btn--ghost" id="btn-clear" type="button" title="Clear all your notes">
+      <span aria-hidden="true">&#8635;</span> Clear
+    </button>
+    <button class="tool-btn tool-btn--ghost" id="btn-help" type="button" title="How this activity works">
+      <span aria-hidden="true">?</span> Help
+    </button>
+  </div>
+  <input type="file" id="file-input" accept="application/json,.json" hidden />
+</div>
+
+<main class="act-main">
+
+  <!-- ===================== EXPLORE / BUILD MODE ===================== -->
+  <section id="view-explore" class="view" aria-label="Constitution diagram">
+
+    <!-- The three branches + checks -->
+    <div class="stage">
+      <p class="stage-caption" id="cap-branches">The federal government &mdash; three branches that check and balance each other</p>
+
+      <div class="branch-stage" aria-label="The three branches of US federal government and the checks between them">
+        <!-- connector check buttons sit behind the branch nodes -->
+        <div class="checks-layer" aria-hidden="false">
+          <button class="check-link check-link--exec-leg" data-node="check-exec-leg" type="button" aria-label="Checks between the Executive and the Legislative branch">
+            <span class="check-icon" aria-hidden="true">&#8644;</span><span class="check-label">Checks</span>
+          </button>
+          <button class="check-link check-link--exec-jud" data-node="check-exec-jud" type="button" aria-label="Checks between the Executive and the Judicial branch">
+            <span class="check-icon" aria-hidden="true">&#8644;</span><span class="check-label">Checks</span>
+          </button>
+          <button class="check-link check-link--leg-jud" data-node="check-leg-jud" type="button" aria-label="Checks between the Legislative and the Judicial branch">
+            <span class="check-icon" aria-hidden="true">&#8644;</span><span class="check-label">Checks</span>
+          </button>
+        </div>
+
+        <div class="branches">
+          <button class="branch branch--exec" data-node="branch-executive" type="button">
+            <span class="branch-emblem" aria-hidden="true">&#127963;&#65039;</span>
+            <span class="branch-name">Executive</span>
+            <span class="branch-sub">The President &middot; carries out the law</span>
+            <span class="branch-article">Article II</span>
+          </button>
+          <button class="branch branch--leg" data-node="branch-legislative" type="button">
+            <span class="branch-emblem" aria-hidden="true">&#127963;&#65039;</span>
+            <span class="branch-name">Legislative</span>
+            <span class="branch-sub">Congress &middot; makes the law</span>
+            <span class="branch-article">Article I</span>
+          </button>
+          <button class="branch branch--jud" data-node="branch-judicial" type="button">
+            <span class="branch-emblem" aria-hidden="true">&#9878;&#65039;</span>
+            <span class="branch-name">Judicial</span>
+            <span class="branch-sub">Supreme Court &middot; interprets the law</span>
+            <span class="branch-article">Article III</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- On narrow screens, the checks are shown as an explicit list -->
+      <div class="checks-list" aria-hidden="true">
+        <button class="check-row" data-node="check-exec-leg" type="button">Executive &#8644; Legislative <span>(Congress v the President)</span></button>
+        <button class="check-row" data-node="check-exec-jud" type="button">Executive &#8644; Judicial</button>
+        <button class="check-row" data-node="check-leg-jud" type="button">Legislative &#8644; Judicial</button>
+      </div>
+    </div>
+
+    <!-- The wider Constitution principles (built by script.js, two groups) -->
+    <div id="principles"></div>
+
+  </section>
+
+  <!-- ===================== TEST MODE ===================== -->
+  <section id="view-test" class="view" aria-label="Test yourself" hidden>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+</main>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<!-- ===================== DETAIL DRAWER ===================== -->
+<div class="drawer-scrim" id="drawer-scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+  <div class="drawer-head" id="drawer-head">
+    <div>
+      <p class="drawer-eyebrow" id="drawer-eyebrow"></p>
+      <h2 class="drawer-title" id="drawer-title"></h2>
+    </div>
+    <button class="drawer-close" id="drawer-close" type="button" aria-label="Close">&times;</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+<!-- ===================== SHARE MODAL ===================== -->
+<div class="modal" id="share-modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-panel">
+    <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
+    <div class="modal-body">
+      <h2 class="modal-h">Share your diagram</h2>
+      <p class="modal-p">Copy this link. Anyone who opens it sees your exact diagram &mdash; paste it into Google Classroom or send it to your teacher. Nothing is uploaded; your work travels inside the link itself.</p>
+      <div class="share-row">
+        <input type="text" id="share-url" class="share-input" readonly aria-label="Shareable link" />
+        <button class="primary-btn" id="share-copy" type="button">Copy</button>
+      </div>
+      <p class="share-warn" id="share-warn" hidden></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== HELP MODAL ===================== -->
+<div class="modal" id="help-modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-panel">
+    <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
+    <div class="modal-body">
+      <h2 class="modal-h">How this works</h2>
+      <ul class="help-list">
+        <li><strong>Explore &amp; build.</strong> Click any branch, the <em>Checks</em> buttons between them, or a principle below. A panel opens where you write your own summary and add real-life examples.</li>
+        <li><strong>Colour your answers.</strong> Use the colour dots in each box to colour-code your notes &mdash; for example one colour for definitions, another for examples.</li>
+        <li><strong>It saves itself.</strong> Your work is kept in this browser automatically. Use <em>Save file</em> to keep a copy, or <em>Share link</em> to send your diagram to someone.</li>
+        <li><strong>Model answer.</strong> Stuck, or want to check? <em>Model answer</em> fills the diagram with a worked example you can edit.</li>
+        <li><strong>Test yourself.</strong> Switch to <em>Test yourself</em> for a quick quiz on the essentials.</li>
+      </ul>
+      <button class="primary-btn" data-close type="button">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CONFIRM MODAL ===================== -->
+<div class="modal" id="confirm-modal" hidden>
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel modal-panel--narrow">
+    <div class="modal-body">
+      <h2 class="modal-h" id="confirm-title">Clear everything?</h2>
+      <p class="modal-p" id="confirm-text">This removes all the notes you have added. This cannot be undone.</p>
+      <div class="confirm-actions">
+        <button class="tool-btn tool-btn--ghost" id="confirm-cancel" type="button">Cancel</button>
+        <button class="danger-btn" id="confirm-ok" type="button">Clear all notes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
