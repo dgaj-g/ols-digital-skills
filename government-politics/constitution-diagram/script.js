@@ -320,6 +320,7 @@
   const saveStateEl = document.getElementById('save-state');
   function markSaved(saved) {
     if (!saveStateEl) return;
+    if (collab.enabled) return;   // class mode: the collab status owns this pill
     saveStateEl.textContent = saved ? 'All changes saved' : 'Saving…';
     saveStateEl.classList.toggle('is-dirty', !saved);
   }
@@ -429,11 +430,15 @@
       setNote(nodeId, fieldKey, ta.value, colourIdx);
       scheduleSave();
       refreshDots();
+      collabPush(nodeId, fieldKey, ta.value, colourIdx);
     }
     ta.addEventListener('input', () => { autosize(); commit(); });
     // size once shown
     requestAnimationFrame(autosize);
     setTimeout(autosize, 60);
+
+    // class mode: show classmates' contributions to this field (read-only)
+    collabAttachPeers(wrap, nodeId, fieldKey);
 
     return wrap;
   }
@@ -986,6 +991,276 @@
   function escapeHTML(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
   // ======================================================
+  //  COLLAB — live class board (Google Apps Script + Sheet)
+  //  Active ONLY when an ?api= endpoint is configured (a class link,
+  //  or the teacher's saved settings). With no endpoint the activity
+  //  is exactly the standalone, offline version above — unchanged.
+  //  All calls are JSONP (a <script> tag) so they work cross-origin
+  //  from github.io AND carry the school Google session, which is how
+  //  the backend knows who each signed-in pupil is.
+  // ======================================================
+  const CFG_KEY = 'ols-collab-cfg-v1';
+  const POLL_MS = 4500;
+  const PUSH_DEBOUNCE_MS = 800;
+  const MAX_SYNC_CHARS = 5000;
+
+  const collab = {
+    enabled: false, apiUrl: '', classCode: 'default', year: '',
+    email: '', name: '', passcode: '',
+    peers: {}, pushTimers: {}, timer: null
+  };
+
+  function readCfg() { try { return JSON.parse(localStorage.getItem(CFG_KEY) || '{}'); } catch (e) { return {}; } }
+  function writeCfg(obj) { try { localStorage.setItem(CFG_KEY, JSON.stringify(obj)); } catch (e) {} }
+
+  let _cbN = 0;
+  function jsonp(params, base) {
+    const apiUrl = base || collab.apiUrl;
+    return new Promise((resolve, reject) => {
+      if (!apiUrl) { reject(new Error('no-endpoint')); return; }
+      const cb = 'olscb_' + (++_cbN) + '_' + (new Date().getTime());
+      const qs = Object.keys(params).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&');
+      const sep = apiUrl.indexOf('?') > -1 ? '&' : '?';
+      const s = document.createElement('script');
+      let done = false;
+      function cleanup() { try { delete window[cb]; } catch (_) { window[cb] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
+      window[cb] = (data) => { done = true; cleanup(); resolve(data); };
+      s.onerror = () => { if (!done) { cleanup(); reject(new Error('network')); } };
+      s.src = apiUrl + sep + qs + '&callback=' + cb;
+      document.head.appendChild(s);
+      setTimeout(() => { if (!done) { cleanup(); reject(new Error('timeout')); } }, 12000);
+    });
+  }
+
+  function setCollabStatus(msg, kind) {
+    const el = document.getElementById('save-state');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove('is-dirty');
+    el.dataset.collab = kind || '';
+  }
+
+  function collabInit() {
+    const params = new URLSearchParams(location.search);
+    const saved = readCfg();
+    const api = params.get('api') || saved.api || '';
+    const cls = params.get('class') || saved['class'] || 'default';
+    collab.passcode = saved.passcode || '';
+    collab.name = saved.name || '';
+    if (!api) { collab.enabled = false; return; }   // → offline mode
+    collab.enabled = true;
+    collab.apiUrl = api;
+    collab.classCode = cls;
+    collab.year = params.get('year') || '';
+    writeCfg(Object.assign(readCfg(), { api: api, 'class': cls }));
+    collabStart();
+  }
+
+  async function collabStart() {
+    setCollabStatus('Connecting to your class…', 'busy');
+    let who = null;
+    try { who = await jsonp({ action: 'whoami' }); } catch (e) {}
+    collab.email = (who && who.email) || '';
+    if (collab.email && !collab.name) { await promptName(); }
+    await collabLoad(true);
+    if (collab.timer) clearInterval(collab.timer);
+    collab.timer = setInterval(() => collabLoad(false), POLL_MS);
+  }
+
+  function promptName() {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('name-modal');
+      const input = document.getElementById('name-input');
+      const ok = document.getElementById('name-ok');
+      input.value = collab.name || '';
+      modal.hidden = false;
+      setTimeout(() => input.focus(), 50);
+      function submit() {
+        const v = (input.value || '').trim().slice(0, 60);
+        if (!v) { input.focus(); return; }
+        collab.name = v;
+        writeCfg(Object.assign(readCfg(), { name: v }));
+        modal.hidden = true;
+        ok.removeEventListener('click', submit);
+        input.removeEventListener('keydown', onKey);
+        resolve();
+      }
+      function onKey(e) { if (e.key === 'Enter') submit(); }
+      ok.addEventListener('click', submit);
+      input.addEventListener('keydown', onKey);
+    });
+  }
+
+  async function collabLoad(first) {
+    let res;
+    try { res = await jsonp({ action: 'load', 'class': collab.classCode, year: collab.year }); }
+    catch (e) { setCollabStatus('Offline — your work is saved on this device', 'warn'); return; }
+    if (!res || !res.ok) { setCollabStatus('Could not load the class board', 'warn'); return; }
+    collab.year = res.year || collab.year;
+
+    const peers = {}, mine = {};
+    (res.records || []).forEach((r) => {
+      if (collab.email && r.email === collab.email) {
+        (mine[r.nodeId] = mine[r.nodeId] || {})[r.fieldKey] = { t: r.text, c: r.c || 0 };
+      } else {
+        const key = r.nodeId + '|' + r.fieldKey;
+        (peers[key] = peers[key] || []).push({ name: r.name || 'A classmate', text: r.text, c: r.c || 0 });
+      }
+    });
+    collab.peers = peers;
+
+    if (first) {
+      // adopt my server records; push any local-only fields so nothing is lost on first connect
+      const localOnly = [];
+      Object.keys(state.notes).forEach((nid) => Object.keys(state.notes[nid]).forEach((fk) => {
+        if (!(mine[nid] && mine[nid][fk])) localOnly.push([nid, fk, state.notes[nid][fk]]);
+      }));
+      state.notes = mine;
+      saveLocal();
+      localOnly.forEach(([nid, fk, v]) => { setNote(nid, fk, v.t, v.c); collabPush(nid, fk, v.t, v.c, true); });
+      saveLocal();
+      refreshDots();
+      if (!drawer.hidden && currentNodeId) openNode(currentNodeId);
+    } else {
+      // merge my fields changed elsewhere, but never overwrite the box being typed in
+      Object.keys(mine).forEach((nid) => Object.keys(mine[nid]).forEach((fk) => {
+        const incoming = mine[nid][fk], cur = getNote(nid, fk);
+        const ta = document.getElementById('ta-' + nid + '-' + fk);
+        if (ta && document.activeElement === ta) return;
+        if (!cur || cur.t !== incoming.t || cur.c !== incoming.c) {
+          setNote(nid, fk, incoming.t, incoming.c);
+          if (ta) { ta.value = incoming.t; ta.style.color = PALETTE[incoming.c || 0]; }
+        }
+      }));
+      saveLocal();
+      refreshDots();
+    }
+    setCollabStatus(collab.email ? 'Synced with your class' : 'Sign in with your school account to join in', collab.email ? 'ok' : 'warn');
+    refreshOpenPeers();
+  }
+
+  function collabPush(nodeId, fieldKey, text, colourIdx, immediate) {
+    if (!collab.enabled) return;
+    const key = nodeId + '|' + fieldKey;
+    if (collab.pushTimers[key]) clearTimeout(collab.pushTimers[key]);
+    const send = () => {
+      collab.pushTimers[key] = null;
+      setCollabStatus('Saving…', 'busy');
+      jsonp({ action: 'save', 'class': collab.classCode, year: collab.year, nodeId: nodeId, fieldKey: fieldKey, text: (text || '').slice(0, MAX_SYNC_CHARS), c: colourIdx || 0, name: collab.name })
+        .then((r) => setCollabStatus(r && r.ok ? 'Synced with your class' : 'Saved on this device', r && r.ok ? 'ok' : 'warn'))
+        .catch(() => setCollabStatus('Saved on this device (offline)', 'warn'));
+    };
+    if (immediate) send(); else collab.pushTimers[key] = setTimeout(send, PUSH_DEBOUNCE_MS);
+  }
+
+  function collabAttachPeers(wrap, nodeId, fieldKey) {
+    if (!collab.enabled) return;
+    const area = document.createElement('div');
+    area.className = 'peer-area';
+    area.dataset.peerkey = nodeId + '|' + fieldKey;
+    wrap.appendChild(area);
+    fillPeerArea(area, nodeId, fieldKey);
+  }
+  function fillPeerArea(area, nodeId, fieldKey) {
+    const list = collab.peers[nodeId + '|' + fieldKey] || [];
+    if (!list.length) { area.innerHTML = ''; area.hidden = true; return; }
+    area.hidden = false;
+    area.innerHTML = '<p class="peer-head">From the class</p>' + list.map((p) =>
+      '<div class="peer-item"><span class="peer-name">' + escapeHTML(p.name) + '</span>' +
+      '<span class="peer-text" style="color:' + PALETTE[p.c || 0] + '">' + escapeHTML(p.text) + '</span></div>'
+    ).join('');
+  }
+  function refreshOpenPeers() {
+    if (drawer.hidden) return;
+    drawerBody.querySelectorAll('.peer-area').forEach((area) => {
+      const parts = area.dataset.peerkey.split('|');
+      fillPeerArea(area, parts[0], parts.slice(1).join('|'));
+    });
+  }
+
+  // ---- Staff / admin panel ----
+  function openAdmin() {
+    const cfg = readCfg();
+    document.getElementById('adm-api').value = cfg.api || collab.apiUrl || '';
+    document.getElementById('adm-class').value = cfg['class'] || collab.classCode || 'default';
+    document.getElementById('adm-pass').value = cfg.passcode || collab.passcode || '';
+    document.getElementById('adm-status').textContent = '';
+    document.getElementById('admin-modal').hidden = false;
+    refreshAdminYears();
+  }
+  function admStatus(msg) { document.getElementById('adm-status').textContent = msg || ''; }
+  async function refreshAdminYears() {
+    const api = document.getElementById('adm-api').value.trim();
+    const pass = document.getElementById('adm-pass').value.trim();
+    const box = document.getElementById('adm-years');
+    if (!api || !pass) { box.textContent = 'Enter the web app URL and passcode, then Save & connect.'; return; }
+    box.textContent = 'Checking…';
+    try {
+      const r = await jsonp({ action: 'admin', sub: 'list', passcode: pass }, api);
+      if (!r || !r.ok) { box.textContent = (r && r.error === 'bad-passcode') ? 'Passcode not recognised.' : ('Could not read the board' + (r && r.error ? ' (' + r.error + ')' : '') + '.'); return; }
+      const counts = r.counts || {}, keys = Object.keys(counts).sort();
+      box.innerHTML = 'Current year: <strong>' + escapeHTML(r.currentYear || '—') + '</strong><br>' +
+        (keys.length ? keys.map((y) => escapeHTML(y) + ': ' + counts[y] + ' entries').join('<br>') : 'No pupil data stored yet.');
+    } catch (e) { box.textContent = 'Could not reach the web app — check the URL.'; }
+  }
+  function classLink() {
+    const api = document.getElementById('adm-api').value.trim();
+    const cls = (document.getElementById('adm-class').value.trim() || 'default');
+    const base = location.origin + location.pathname;
+    return base + '?api=' + encodeURIComponent(api) + '&class=' + encodeURIComponent(cls);
+  }
+  function wireStaff() {
+    const staffBtn = document.getElementById('btn-staff');
+    if (staffBtn) staffBtn.addEventListener('click', openAdmin);
+    const adminModal = document.getElementById('admin-modal');
+    adminModal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', () => { adminModal.hidden = true; }));
+
+    document.getElementById('adm-save').addEventListener('click', () => {
+      const api = document.getElementById('adm-api').value.trim();
+      const cls = document.getElementById('adm-class').value.trim() || 'default';
+      const pass = document.getElementById('adm-pass').value.trim();
+      if (!api) { admStatus('Please paste the web app URL.'); return; }
+      writeCfg(Object.assign(readCfg(), { api: api, 'class': cls, passcode: pass }));
+      collab.apiUrl = api; collab.classCode = cls; collab.passcode = pass; collab.enabled = true;
+      admStatus('Connected. Now share the class link with pupils.');
+      refreshAdminYears();
+      collabStart();
+    });
+    document.getElementById('adm-copy').addEventListener('click', () => {
+      const link = classLink();
+      const tmp = document.getElementById('adm-api'); // reuse a real input for selection fallback
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(() => admStatus('Class link copied — paste it into Google Classroom.')).catch(() => admStatus(link));
+      } else { admStatus(link); }
+    });
+    document.getElementById('adm-setyear-btn').addEventListener('click', async () => {
+      const api = document.getElementById('adm-api').value.trim();
+      const pass = document.getElementById('adm-pass').value.trim();
+      const year = document.getElementById('adm-setyear').value.trim();
+      if (!year) { admStatus('Type the year to set, e.g. 2026-27.'); return; }
+      admStatus('Setting…');
+      try { const r = await jsonp({ action: 'admin', sub: 'setYear', passcode: pass, year: year }, api);
+        admStatus(r && r.ok ? ('Current year set to ' + r.currentYear + '.') : 'Could not set the year (check the passcode).');
+        collab.year = (r && r.currentYear) || collab.year; refreshAdminYears();
+      } catch (e) { admStatus('Could not reach the web app.'); }
+    });
+    document.getElementById('adm-wipe-btn').addEventListener('click', () => {
+      const api = document.getElementById('adm-api').value.trim();
+      const pass = document.getElementById('adm-pass').value.trim();
+      const year = document.getElementById('adm-wipeyear').value.trim();
+      if (!year) { admStatus('Type the year to wipe, e.g. 2025-26.'); return; }
+      askConfirmCustom('Wipe ' + year + '?', 'This permanently deletes every pupil’s entries for ' + year + '. This cannot be undone.', 'Wipe ' + year, async () => {
+        admStatus('Wiping…');
+        try { const r = await jsonp({ action: 'admin', sub: 'wipe', passcode: pass, year: year }, api);
+          admStatus(r && r.ok ? ('Deleted ' + r.deleted + ' entries for ' + year + '.') : 'Could not wipe (check the passcode).');
+          refreshAdminYears();
+        } catch (e) { admStatus('Could not reach the web app.'); }
+      });
+    });
+  }
+  wireStaff();
+
+  // ======================================================
   //  INIT
   // ======================================================
   async function init() {
@@ -996,6 +1271,7 @@
     refreshDots();
     markSaved(true);
     if (fromShare) toast('Opened a shared diagram');
+    try { collabInit(); } catch (e) {}
   }
   init();
 

@@ -45,6 +45,9 @@
     <button class="tool-btn tool-btn--ghost" id="btn-help" type="button" title="How this activity works">
       <span aria-hidden="true">?</span> Help
     </button>
+    <button class="tool-btn tool-btn--ghost" id="btn-staff" type="button" title="Teacher setup for the live class board">
+      <span aria-hidden="true">&#128273;</span> Staff
+    </button>
   </div>
   <input type="file" id="file-input" accept="application/json,.json" hidden />
 </div>
@@ -179,6 +182,61 @@
         <button class="tool-btn tool-btn--ghost" id="confirm-cancel" type="button">Cancel</button>
         <button class="danger-btn" id="confirm-ok" type="button">Clear all notes</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== NAME PROMPT (class mode) ===================== -->
+<div class="modal" id="name-modal" hidden>
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel modal-panel--narrow">
+    <div class="modal-body">
+      <h2 class="modal-h">Welcome to your class board</h2>
+      <p class="modal-p">Type your name so your class knows whose notes are whose. You only do this once.</p>
+      <input type="text" id="name-input" class="share-input" style="width:100%" maxlength="60" placeholder="e.g. Aoife M" aria-label="Your name" />
+      <div class="confirm-actions" style="margin-top:14px">
+        <button class="primary-btn" id="name-ok" type="button">Start</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== STAFF / ADMIN PANEL ===================== -->
+<div class="modal" id="admin-modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-panel">
+    <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
+    <div class="modal-body">
+      <h2 class="modal-h">Staff &mdash; live class board</h2>
+      <p class="modal-p">Connect this activity to your school's Google Sheet board, then share the class link with pupils. These settings are kept on this device only.</p>
+
+      <div class="adm-group">
+        <label class="adm-label" for="adm-api">Web app URL (ends in /exec)</label>
+        <input type="text" id="adm-api" class="share-input" style="width:100%" placeholder="https://script.google.com/macros/s/…/exec" />
+        <label class="adm-label" for="adm-class">Class code</label>
+        <input type="text" id="adm-class" class="share-input" style="width:100%" placeholder="e.g. U6-POL" />
+        <label class="adm-label" for="adm-pass">Staff passcode</label>
+        <input type="password" id="adm-pass" class="share-input" style="width:100%" placeholder="from the Sheet's Config tab" />
+        <div class="adm-actions">
+          <button class="primary-btn" id="adm-save" type="button">Save &amp; connect</button>
+          <button class="tool-btn" id="adm-copy" type="button">Copy class link</button>
+        </div>
+      </div>
+
+      <div class="adm-group">
+        <h3 class="adm-h">Academic year</h3>
+        <div class="adm-years" id="adm-years">Enter the URL and passcode, then Save &amp; connect.</div>
+        <div class="adm-row">
+          <input type="text" id="adm-setyear" class="share-input" placeholder="set current year, e.g. 2026-27" />
+          <button class="tool-btn" id="adm-setyear-btn" type="button">Set</button>
+        </div>
+        <div class="adm-row">
+          <input type="text" id="adm-wipeyear" class="share-input" placeholder="wipe a year, e.g. 2025-26" />
+          <button class="danger-btn" id="adm-wipe-btn" type="button">Wipe year</button>
+        </div>
+      </div>
+
+      <p class="adm-status" id="adm-status" aria-live="polite"></p>
     </div>
   </div>
 </div>

@@ -717,6 +717,73 @@
 .quiz-review-item .qr-q { font-weight: 700; color: var(--text); }
 .quiz-review-item .qr-a { color: var(--jud); font-weight: 600; }
 
+/* ============================================================
+   COLLAB — peer view, sync status, admin panel
+   ============================================================ */
+
+/* sync status dot colours (reuses .save-state in the toolbar) */
+.save-state[data-collab="ok"]::before   { background: var(--jud); }
+.save-state[data-collab="busy"]::before { background: var(--ols-gold); }
+.save-state[data-collab="warn"]::before { background: var(--ink-5); }
+
+/* classmates' contributions under each field */
+.peer-area {
+  margin-top: 10px;
+  border-top: 1px dashed rgba(89,89,89,0.3);
+  padding-top: 8px;
+}
+.peer-area[hidden] { display: none; }
+.peer-head {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.peer-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 9px;
+  margin-bottom: 6px;
+  background: rgba(26,58,107,0.04);
+  border-radius: 8px;
+  border-left: 3px solid var(--ols-blue-soft);
+}
+.peer-name { font-size: 0.72rem; font-weight: 700; color: var(--ols-blue); }
+.peer-text { font-size: 0.88rem; line-height: 1.45; white-space: pre-wrap; }
+
+/* admin panel */
+.adm-group {
+  border: 1px solid rgba(89,89,89,0.16);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.adm-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-2);
+  margin: 10px 0 4px;
+}
+.adm-label:first-child { margin-top: 0; }
+.adm-h { margin: 0 0 8px; font-size: 0.98rem; color: var(--ols-blue); }
+.adm-years {
+  font-size: 0.86rem;
+  color: var(--text);
+  background: rgba(26,58,107,0.04);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.adm-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.adm-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.adm-row .share-input { flex: 1; }
+.adm-status { font-size: 0.85rem; color: var(--ols-blue); font-weight: 600; min-height: 1.2em; margin: 4px 0 0; }
+
 /* ---------- Helpers ---------- */
 [hidden] { display: none !important; }
 
