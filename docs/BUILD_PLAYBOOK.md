@@ -233,8 +233,12 @@ Events on a chronological axis. Each event is a clickable marker; clicking opens
 ### Quiz — reference: `sports-science/effects-of-exercise/`
 A sequence of questions. Multiple choice (or matching/true-false where it fits). Select → immediate feedback (correct/incorrect) + a short explanation. Score + progress tracking. End screen with score and a review of missed questions. Feedback must teach, not just mark. The reference build is a **multi-mode** quiz: it blends click (multiple choice), drag (sort-into-buckets + match-to-row, real Pointer Events with the `body.dragging-active` selection lock), type (free text with synonym matching), and listen (Web Speech API `speechSynthesis` reads the clue aloud, with a "Show text" toggle as the accessible fallback) — one scored attempt per question, then a teaching explanation. Reach for this when a brief asks for several interaction styles in one revision activity.
 
-### Interactive diagram — reference: *(none yet)*
+### Interactive diagram — reference: `government-politics/constitution-diagram/`
 A base image (labelled diagram, map, scene). Clickable hotspots positioned over it; clicking reveals a label + explanation. Offer an "explore" mode and, where it fits, a "find the X" challenge mode. Hotspots scale responsively with the image.
+
+The reference build is an **editable / buildable** variant: instead of a fixed base image it lays out clickable nodes (three branch cards in a checks-and-balances triangle on wide screens, collapsing to a stacked list + chip grid on phones). Each node opens a side drawer where pupils write their own notes and add real-life examples, colour-coded from a small palette and auto-saved. A **"Model answer" toggle** reveals the worked example as a **read-only reference beneath each box** — it never overwrites a pupil's work (an earlier version *filled* the boxes; don't do that — it's a footgun). A separate "Test yourself" mode is the genuine-consequence quiz. Reach for this pattern when a brief wants pupils to *construct* a labelled diagram over time, not just read a fixed one.
+
+When the brief wants pupils to **save their own work, sign in, or collaborate**, this same activity becomes a live class board — see **"Login-gated collaborative activities"** near the end of this playbook (the reference build does exactly this). A collaborative Google Slides deck is the no-code alternative when you just need shared real-time editing without a custom app.
 
 ### You decide
 Pick the pattern that best serves the topic and the described pupil experience. Justify the choice in the PR description.
@@ -560,6 +564,57 @@ After everything's done, Damien sees in chat:
 - **Any flag** worth surfacing (e.g. "Pages took >3 min — re-check before sending")
 
 Plus a `PushNotification`: `Published: <Topic>. Live + handoff ready in Claude Work/<Dept>/.`
+
+---
+
+## Login-gated collaborative activities (the "class board" capability)
+
+Some requests want pupils to **add and save their own content**, **build it up over a course**, and **see each other's work** — not just interact with a fixed activity. The reference build is **Government & Politics — The US Constitution Diagram** (`government-politics/constitution-diagram/` on github.io, plus a server package in Claude Work). It was the first to do this, and the pattern below is reusable. Read this whole section before attempting another collaborative build.
+
+### The three delivery tiers — pick the lightest that meets the brief
+
+1. **Offline / standalone** (default, what most activities are). Pure github.io, work auto-saved to `localStorage`. Single user, no accounts, no server. This is always built and is what `/publish` ships.
+2. **Path A — anonymous shared board.** A Google Apps Script web app (deployed "Anyone") the github.io page calls by **JSONP** (a `<script>` tag — the only cross-origin transport that reliably works to Apps Script). Pupils type a name; a per-browser id keeps their work theirs; the class link is shared via Classroom. No real sign-in gate. Superseded by Path B when identity matters, but kept as the lighter option.
+3. **Path B — login-gated board (RECOMMENDED for anything involving pupil identity).** The activity is **served by Apps Script itself** (HtmlService), so the page and the data are same-origin. Pupils sign in with their school Google account; they are identified by their **verified email**; work follows them to any device; no impersonation; a real sign-in gate. **Data stays inside the school's own Workspace.** This is the gold standard and what the rest of this section documents.
+
+### Path B architecture (the bits that are non-obvious)
+
+- **Hosting:** the bound script of a Google Sheet returns the activity via `HtmlService.createTemplateFromFile('Index').evaluate()`. Deploy as a **Web app, Execute as: Me, Who has access: Anyone within your domain** — that last setting *is* the sign-in gate (Google enforces it).
+- **Identity:** `Session.getActiveUser().getEmail()` returns the **accessing pupil's** verified email (not the owner's) under "Execute as: Me" within-domain. Display name is stored server-side keyed by that email, so it follows them across devices (they type it once, ever).
+- **Transport:** the page talks to the server with **`google.script.run`** (same-origin RPC — no CORS, carries the session). The front-end stays ONE codebase across all three tiers via a pluggable transport: a `window.OLS_TRANSPORT.call(params)` shim (defined only in the HtmlService page) routes through `google.script.run`; when absent (github.io) the same `jsonp()` falls back to JSONP / offline. Search `OLS_TRANSPORT` in `script.js`.
+- **The sandbox gotchas (these will bite you):** the HtmlService page runs in a **sandboxed iframe on `googleusercontent.com`**, so it **cannot read its own `/exec` URL or the `?class=` query parameter**, and JS `location.href = …` navigates the *iframe*, not the tab. Fixes, all in the reference build:
+  - `doGet(e)` captures `e.parameter.class` and `ScriptApp.getService().getUrl()` and injects them into the page via a template scriptlet → `window.OLS_BOOT = { classCode, baseUrl }`. The client reads the class and builds links from `OLS_BOOT`, never from `location`.
+  - "Go to class" navigates the whole tab with a programmatically-clicked `<a target="_top">` (set `<base target="_top">` in the page head too).
+  - Templating safety: `createTemplateFromFile` evaluates `<? ?>`/`<?= ?>`, so the assembled page must contain **no stray `<?` or `?>`** (grep the bundle; the reference build's CSS/JS/QR-lib are all clean).
+- **Data model:** a Google Sheet with a **Data** tab (`Year, Class, Email, Name, NodeId, FieldKey, Text, Colour, Updated` — `Year` is legacy/unused) and a **Config** tab (`staffPasscode`, `classes` JSON registry, and `name:<email>` rows). Boards are keyed by **named class**. Concurrent writes use `LockService`.
+- **Class management (staff panel):** a passcode (validated **server-side**, never just hidden in the page) unlocks a dropdown of classes → **Copy link / Show QR / Go to class / Delete class**, plus **Add a class**. Each class is its own board via `…/exec?class=NAME`. There is no "academic year" — the class name carries the year (e.g. `L6Po26`), a new year is a new class, and clearing last year is just **Delete class**. The teacher can always get back in from **any** board's Staff button or the bare `/exec` (the `default` board), so there is no lock-out.
+- **QR codes:** generated **in-page** by a vendored, esbuild-bundled **node-qrcode** (`qrcode.min.js`, MIT) — never a third-party QR service, so the link never leaves the Workspace. `QRCode.toCanvas(...)` in OLS blue.
+- **Modal stacking:** dialogs opened *from* the staff panel (Delete confirm, QR popup) need a **higher z-index** than it (`#confirm-modal`, `#qr-modal` are `z-index: 500` vs the panel's `300`).
+
+### The build process — one source, an assembled server page
+
+The activity is authored **once** as the normal github.io build. The Path B page is **assembled by a script** (`/tmp/ols-build-<N>/build_pathb.js` in the reference build), which: inlines the shared + activity CSS, the body HTML, the QR lib, the `OLS_TRANSPORT` shim and `script.js`; injects the `OLS_BOOT` scriptlet; rewrites relative asset paths (e.g. the crest) to **absolute github.io URLs**; and drops the intro loader. **Re-run it after any activity change** and re-paste the output. The two deploy files are:
+- **`PathB_Code.gs`** — the server (doGet template + `apiWhoAmI/apiLoad/apiSave/apiMyName/apiAdmin` for `google.script.run`).
+- **`PathB_Index.html`** — the assembled activity page (the Apps Script project's `Index` HTML file).
+
+These, plus the recipe and DPO note, live in **Claude Work / `<Dept>` /** — **never in the public repo** (they're operational, and the recipe/DPO doc reference the teacher). Big files paste cleanly with `pbcopy < "…/PathB_Index.html"` then ⌘V (don't open them in TextEdit — it renders HTML and mangles the encoding).
+
+### Prove the C2k-specific unknowns BEFORE building (probe-first)
+
+C2k is a locked-down managed Workspace. Don't assume — prove each unknown with a tiny probe Damien deploys, exactly as we did:
+1. **Apps Script + domain deploy work, and the script can read identity** — a one-line `doGet` returning `whoami` JSONP that shows the signed-in email.
+2. **`getActiveUser` returns the *accessing* user, not the owner** — an HtmlService probe opened **in a second account (incognito)**; "Active user" must show *that* account. This is the make-or-break for Path B and a same-account test cannot prove it.
+Only build the full thing once the probes pass. (The OAuth/Google-Identity-Services route is the *other* way to get identity on github.io, but it needs a Google Cloud project C2k may block — prefer the HtmlService same-origin route, which needs none.)
+
+### GDPR / safeguarding posture (this is real, ETI cares)
+
+- **Names + sign-in-gated + in-Workspace is the clean answer**, and it's what makes it lightweight to deploy: verified pupils, no third-party processor, no new international transfer, consistent with Classroom/Docs the school already uses. Pseudonyms were considered and dropped once the sign-in gate made real names safe; **never store pupil passwords** (a homemade password store is a safeguarding trap — refuse it and offer login-gating or tap-to-rejoin instead).
+- **Retention:** data is per-named-class; "Delete class" wipes it; default practice is delete at year end. Generate a **one-page DPO summary** (what's stored, where, access, retention) for every login-gated build — see `DPO_Summary.md` in the reference build.
+- **Handover to the teacher:** transfer the Sheet's ownership within the domain; the teacher re-deploys once from their account (new `/exec` URL, shared via Classroom); the github.io offline version is the always-available fallback. Steps are in `PathB_Deployment_Recipe.md`.
+
+### Effort and honesty
+
+A login-gated board is a **large** add-on (server + assembled page + staff panel + the deploy/handover loop), and the live sign-in flow can only be verified against the teacher's deployed endpoint — so the rhythm is **build → they deploy → verify together**, across several exchanges. Say so up front, and never imply background work between turns.
 
 ---
 
