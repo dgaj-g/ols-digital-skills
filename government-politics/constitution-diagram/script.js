@@ -1064,8 +1064,9 @@
     if (inPathB()) {
       collab.enabled = true;
       collab.apiUrl = '';
-      collab.classCode = cls;
-      collab.year = params.get('year') || '';
+      // the ?class= param is injected by the server (the iframe can't read it itself)
+      collab.classCode = (window.OLS_BOOT && window.OLS_BOOT.classCode) || cls;
+      collab.year = '';
       collabStart();
       return;
     }
@@ -1323,8 +1324,17 @@
   }
 
   function classLink(name) {
-    const base = (inPathB() ? location.href.split('#')[0].split('?')[0] : (location.origin + location.pathname));
+    // use the real /exec URL injected by the server (not the iframe's own URL)
+    const base = (window.OLS_BOOT && window.OLS_BOOT.baseUrl)
+      ? window.OLS_BOOT.baseUrl
+      : (location.origin + location.pathname);
     return base + '?class=' + encodeURIComponent(name);
+  }
+  function gotoTop(url) {
+    // navigate the whole tab from inside the sandboxed iframe via a _top link
+    const a = document.createElement('a');
+    a.href = url; a.target = '_top'; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
   }
   function copyLink(link, doneMsg) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1349,7 +1359,7 @@
     document.getElementById('adm-goto').addEventListener('click', () => {
       const name = selectedClass();
       if (!name) { admStatus('Pick a class first.'); return; }
-      location.href = classLink(name);
+      gotoTop(classLink(name));
     });
     document.getElementById('adm-delete').addEventListener('click', () => {
       const name = selectedClass();
