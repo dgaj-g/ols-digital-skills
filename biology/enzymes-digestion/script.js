@@ -37,7 +37,8 @@ const panels = $$('.panel');
 tabs.forEach(t => t.addEventListener('click', () => {
   tabs.forEach(x => { const on = x === t; x.classList.toggle('is-active', on); x.setAttribute('aria-selected', on ? 'true' : 'false'); });
   panels.forEach(p => p.classList.toggle('is-active', p.dataset.panel === t.dataset.tab));
-  if (t.dataset.tab === 'factors') simResize();
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  if (t.dataset.tab === 'factors') { simResize(); startField(); } else { stopField(); }
 }));
 
 // ============================================================
@@ -95,6 +96,7 @@ $$('.lbl', howSvg).forEach(l => {
     $$('.lbl', howSvg).forEach(x => x.classList.toggle('is-selected', x === l));
     if (info.part) flashPart(info.part);
     tick();
+    maybeNarrate($('#how-info'));
   };
   l.addEventListener('click', act);
   l.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(); } });
@@ -407,11 +409,11 @@ const STATE_TEXT = {
     denatured: ['Denatured', 'An extreme pH changes the shape of the active site. This is denaturation — it is irreversible, and the substrate no longer fits.']
   }
 };
-const simSvg = $('#sim-svg'), simEnzSvg = $('#sim-enz-svg'), simEnzBody = $('#sim-enz-body'),
-      simSub = $('#sim-substrate'), simParticles = $('#sim-particles'),
+const simSvg = $('#sim-svg'), simEnzSvg = $('#sim-enz-svg'),
       simSlider = $('#sim-slider'), simScale = $('#sim-scale'),
       simValue = $('#sim-value'), simUnit = $('#sim-unit'), simRate = $('#sim-rate'),
-      simState = $('#sim-state'), simExplain = $('#sim-explain');
+      simState = $('#sim-state'), simExplain = $('#sim-explain'),
+      complexCount = $('#complex-count'), ccDot = $('.cc-dot');
 let factor = 'temp';
 const PLOT = { x0: 56, x1: 494, y0: 44, yb: 272 };
 const xPlot = (f, v) => PLOT.x0 + (v - f.min) / (f.max - f.min) * (PLOT.x1 - PLOT.x0);
@@ -471,15 +473,57 @@ function buildEnzymePath(d) {
     + ` Q250 ${bottom} 232 ${bottom} L88 ${bottom} Q70 ${bottom} 70 ${bottom - 12} Z`;
 }
 function rgbLerp(a, b, t) { return `rgb(${Math.round(lerp(a[0], b[0], t))},${Math.round(lerp(a[1], b[1], t))},${Math.round(lerp(a[2], b[2], t))})`; }
-function makeParticles(n) {
-  simParticles.innerHTML = '';
-  for (let i = 0; i < n; i++) {
-    const c = svgEl('circle', { r: 3.4, cx: 40 + (i * 53) % 240, cy: 30 + (i * 37) % 70, fill: 'rgba(26,58,107,0.28)' });
-    c.style.setProperty('--dx', (i % 2 ? 1 : -1) + '');
-    c.classList.add('kin');
-    simParticles.appendChild(c);
-  }
+// ---- Reaction field: enzymes + substrates with kinetic energy, forming
+//      enzyme-substrate complexes more often as temperature rises to optimum ----
+const FIELD_ENZ = [{ cx: 78, cy: 92 }, { cx: 238, cy: 80 }, { cx: 160, cy: 176 }];
+const ENZ_SCALE = 0.42;
+let fieldEnz = [], fieldDots = [], complexes = 0, fieldLoop = null;
+function enzTransform(cx, cy) { return `translate(${(cx - 160 * ENZ_SCALE).toFixed(1)} ${(cy - 206 * ENZ_SCALE).toFixed(1)}) scale(${ENZ_SCALE})`; }
+function bayXY(cx, cy) { return [cx, cy - 48 * ENZ_SCALE]; }
+function buildField() {
+  simEnzSvg.innerHTML = '';
+  fieldEnz = []; fieldDots = [];
+  // drifting substrate dots — their speed shows kinetic energy
+  const dotPos = [[44, 48], [120, 36], [206, 50], [284, 118], [56, 150], [274, 188], [150, 118], [206, 156]];
+  dotPos.forEach((p, i) => {
+    const d = svgEl('circle', { r: 6, cx: p[0], cy: p[1], fill: '#F0A04B', stroke: '#C9762B', 'stroke-width': 1.5 });
+    d.classList.add('sim-sub-dot', 'wander');
+    d.style.setProperty('--wx', ((i % 2 ? 1 : -1) * (10 + (i * 7) % 16)) + 'px');
+    d.style.setProperty('--wy', (-(8 + (i * 5) % 14)) + 'px');
+    d.style.animationDelay = (-(i * 0.3)).toFixed(1) + 's';
+    simEnzSvg.appendChild(d); fieldDots.push(d);
+  });
+  // enzymes (drawn on top so a docked substrate shows in the active site)
+  FIELD_ENZ.forEach(pos => {
+    const g = svgEl('g', { transform: enzTransform(pos.cx, pos.cy) });
+    const body = svgEl('path', { class: 'sim-enz-shape', d: buildEnzymePath(0), fill: '#2C5C8A', stroke: '#1A3A6B', 'stroke-width': 2 });
+    g.appendChild(body); simEnzSvg.appendChild(g);
+    const [bx, by] = bayXY(pos.cx, pos.cy);
+    const glow = svgEl('circle', { class: 'sim-glow', cx: bx, cy: by, r: 15, fill: '#E4B824' });
+    const dock = svgEl('circle', { class: 'sim-dock', cx: bx, cy: by, r: 7, fill: '#F0A04B', stroke: '#C9762B', 'stroke-width': 1.5 });
+    simEnzSvg.appendChild(glow); simEnzSvg.appendChild(dock);
+    fieldEnz.push({ body, dock, glow, busy: false });
+  });
+  complexes = 0; if (complexCount) complexCount.textContent = '0';
 }
+function fieldTick() {
+  const f = FACTORS[factor], v = parseFloat(simSlider.value);
+  const a = f.activity(v), den = f.denature(v);
+  const p = den > 0.5 ? 0 : (a / 100) * 0.55;   // complexes form more often at higher activity
+  fieldEnz.forEach(e => {
+    if (e.busy || Math.random() >= p) return;
+    e.busy = true;
+    e.dock.classList.add('on');
+    e.glow.classList.remove('on'); void e.glow.getBoundingClientRect(); e.glow.classList.add('on');
+    setTimeout(() => {
+      e.dock.classList.remove('on'); e.busy = false;
+      complexes++; if (complexCount) complexCount.textContent = String(complexes);
+      if (ccDot) { ccDot.classList.remove('flash'); void ccDot.offsetWidth; ccDot.classList.add('flash'); }
+    }, 620);
+  });
+}
+function startField() { if (fieldLoop) clearInterval(fieldLoop); fieldLoop = setInterval(fieldTick, 320); }
+function stopField() { if (fieldLoop) { clearInterval(fieldLoop); fieldLoop = null; } }
 function setFactor(name) {
   factor = name;
   $$('#panel-factors .seg-btn').forEach(b => { const on = b.dataset.factor === name; b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
@@ -488,7 +532,7 @@ function setFactor(name) {
   simSlider.setAttribute('aria-label', f.name + (f.unit ? ' in ' + f.unit : ''));
   simUnit.textContent = f.unit;
   simScale.innerHTML = f.ticks.map(t => `<span>${t}${f.unit}</span>`).join('');
-  drawGraph(); makeParticles(6); updateSim();
+  drawGraph(); buildField(); updateSim();
 }
 function updateSim() {
   const f = FACTORS[factor];
@@ -503,22 +547,18 @@ function updateSim() {
   // marker
   const mk = $('#sim-marker', simSvg), gd = $('#sim-guide', simSvg);
   if (mk) { const x = xPlot(f, v), y = yPlot(a); mk.setAttribute('cx', x); mk.setAttribute('cy', y); gd.setAttribute('x1', x); gd.setAttribute('x2', x); gd.setAttribute('y1', y); }
-  // enzyme morph
-  simEnzBody.setAttribute('d', buildEnzymePath(den));
-  simEnzBody.setAttribute('fill', rgbLerp([44, 92, 138], [150, 72, 92], clamp((den - 0.15) / 0.6, 0, 1)));
-  // substrate: continuously lifts out of the site and rotates as it stops fitting
-  const fit = clamp(1 - (den - 0.1) / 0.32, 0, 1);
-  const sx = lerp(40, 0, fit), sy = lerp(-12, 92, fit), sr = lerp(20, 0, fit);
-  simSub.setAttribute('transform', `translate(${sx.toFixed(1)} ${sy.toFixed(1)}) rotate(${sr.toFixed(1)} 160 70)`);
-  simSub.style.opacity = lerp(0.85, 1, fit).toFixed(2);
+  // reaction field: every enzyme's active site morphs as it denatures
+  const denFill = rgbLerp([44, 92, 138], [150, 72, 92], clamp((den - 0.15) / 0.6, 0, 1));
+  const dpath = buildEnzymePath(den);
+  fieldEnz.forEach(e => { e.body.setAttribute('d', dpath); e.body.setAttribute('fill', denFill); });
+  // kinetic energy: substrates drift faster as temperature rises (constant for pH)
+  const ke = factor === 'temp' ? clamp(2.6 - (v / 60) * 2.2, 0.4, 2.6) : 1.3;
+  fieldDots.forEach(d => d.style.setProperty('--dur', ke.toFixed(2) + 's'));
   // state
   const stxt = STATE_TEXT[factor][zone] || STATE_TEXT[factor].warm;
   simState.textContent = stxt[0];
   simState.className = 'sim-state ' + (zone === 'cold' ? 'cold' : zone === 'optimum' ? 'optimum' : zone === 'denatured' ? 'denatured' : '');
   simExplain.innerHTML = `<strong>${esc(stxt[0])}.</strong> ${esc(stxt[1])}`;
-  // particle speed (kinetic energy) — temp only
-  const dur = factor === 'temp' ? clamp(2.4 - (v / 60) * 2.0, 0.35, 2.4) : 1.1;
-  $$('.kin', simParticles).forEach(c => c.style.animationDuration = dur.toFixed(2) + 's');
 }
 // slider + graph drag
 simSlider.addEventListener('input', () => { updateSim(); tick(); });
@@ -530,10 +570,17 @@ function graphToValue(clientX) {
   return clamp(v, f.min, f.max);
 }
 let simDragging = false;
-simSvg.addEventListener('pointerdown', e => { simDragging = true; try { simSvg.setPointerCapture(e.pointerId); } catch (_) {} simSlider.value = graphToValue(e.clientX); updateSim(); });
+simSvg.addEventListener('pointerdown', e => {
+  e.preventDefault();                                   // stop the browser starting a selection
+  simDragging = true;
+  document.body.classList.add('dragging-active');        // page-wide selection lock (mandatory on every drag)
+  try { simSvg.setPointerCapture(e.pointerId); } catch (_) {}
+  simSlider.value = graphToValue(e.clientX); updateSim();
+});
 simSvg.addEventListener('pointermove', e => { if (!simDragging) return; simSlider.value = graphToValue(e.clientX); updateSim(); });
-simSvg.addEventListener('pointerup', e => { simDragging = false; try { simSvg.releasePointerCapture(e.pointerId); } catch (_) {} });
-simSvg.addEventListener('pointercancel', () => { simDragging = false; });
+function endSimDrag(e) { if (!simDragging) return; simDragging = false; document.body.classList.remove('dragging-active'); try { if (e) simSvg.releasePointerCapture(e.pointerId); } catch (_) {} }
+simSvg.addEventListener('pointerup', endSimDrag);
+simSvg.addEventListener('pointercancel', endSimDrag);
 $$('#panel-factors .seg-btn').forEach(b => b.addEventListener('click', () => setFactor(b.dataset.factor)));
 function simResize() { /* drawGraph relies on viewBox, nothing to recompute, but redraw to be safe */ drawGraph(); updateSim(); }
 
@@ -555,6 +602,7 @@ $$('.lbl', villusSvg).forEach(l => {
     $$('.lbl', villusSvg).forEach(x => x.classList.toggle('is-selected', x === l));
     if (info.part) flashPart(info.part);
     tick();
+    maybeNarrate($('#v-info'));
   };
   l.addEventListener('click', act);
   l.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(); } });
@@ -567,31 +615,163 @@ function setVillusView(view) {
   $$('.lbl', villusSvg).forEach(l => { l.style.opacity = view === 'explore' ? '' : '0.25'; l.style.pointerEvents = view === 'explore' ? '' : 'none'; });
   vParticles.innerHTML = '';
   if (view === 'absorb') {
-    // sugars/amino acids -> capillary (red); glycerol/fatty acids -> lacteal (gold)
+    // Vessels: left capillary limb x=300, central lacteal x=320, right capillary limb x=340.
+    // RED (glucose / amino acids) is absorbed at the NEAREST capillary wall — it never
+    // crosses the lacteal. So dots enter from both sides: left-entering reds stop at the
+    // left limb (x300), right-entering reds at the right limb (x340).
+    // YELLOW (glycerol / fatty acids) is NOT taken by the capillaries — fats pass through
+    // to the central lacteal (x320), entering from either side.
     const defs = [
-      { x: 200, y: 240, to: 'cap', c: '#D7263D' }, { x: 210, y: 320, to: 'cap', c: '#D7263D' },
-      { x: 196, y: 380, to: 'cap', c: '#D7263D' }, { x: 205, y: 290, to: 'lac', c: '#E4B824' },
-      { x: 200, y: 350, to: 'lac', c: '#E4B824' }, { x: 215, y: 410, to: 'cap', c: '#D7263D' }
+      { sx: 188, sy: 226, tx: 300, ty: 228, cap: true },   // left lumen -> left capillary
+      { sx: 184, sy: 374, tx: 300, ty: 372, cap: true },   // left lumen -> left capillary
+      { sx: 452, sy: 284, tx: 340, ty: 286, cap: true },   // right lumen -> right capillary
+      { sx: 456, sy: 412, tx: 340, ty: 410, cap: true },   // right lumen -> right capillary
+      { sx: 196, sy: 304, tx: 320, ty: 304, cap: false },  // left lumen -> lacteal
+      { sx: 450, sy: 206, tx: 320, ty: 208, cap: false }   // right lumen -> lacteal
     ];
     defs.forEach((p, i) => {
-      const c = svgEl('circle', { r: 6, cx: p.x, cy: p.y, fill: p.c, opacity: 0.9 });
-      c.classList.add('absorb', p.to === 'cap' ? 'to-cap' : 'to-lac');
-      c.style.animationDelay = (i * 0.5) + 's';
+      const c = svgEl('circle', { r: 6.5, cx: p.sx, cy: p.sy, fill: p.cap ? '#D7263D' : '#E4B824', opacity: 0.9 });
+      c.classList.add('absorb');
+      c.style.setProperty('--mx', (p.tx - p.sx) + 'px');
+      c.style.setProperty('--my', (p.ty - p.sy) + 'px');
+      c.style.animationDelay = (i * 0.55) + 's';
       vParticles.appendChild(c);
     });
-    setInfo($('#v-info'), { kicker: 'Absorption', title: 'Digested food enters the blood', body: 'Glucose and amino acids pass into the <strong>capillaries</strong>; glycerol and fatty acids pass into the <strong>lacteal</strong>. The thin epithelium and rich blood supply make this fast and efficient.' });
+    // legend (lower-left lumen)
+    const legend = svgEl('g', {});
+    legend.innerHTML = '<circle cx="40" cy="406" r="6.5" fill="#D7263D"/><text class="v-legend-text" x="54" y="411">→ capillaries</text>'
+      + '<circle cx="40" cy="430" r="6.5" fill="#E4B824"/><text class="v-legend-text" x="54" y="435">→ lacteal</text>';
+    vParticles.appendChild(legend);
+    setInfo($('#v-info'), { kicker: 'Absorption', title: 'Digested food enters the blood', body: 'Glucose and amino acids (red) pass into the <strong>capillaries</strong>; glycerol and fatty acids (yellow) pass into the <strong>lacteal</strong>. The thin epithelium and rich blood supply make this fast and efficient.' });
   } else {
     setInfo($('#v-info'), { kicker: 'The small intestine', title: 'The ileum is built to absorb', body: 'The ileum (small intestine) is about <strong>3 metres</strong> long and folded, with millions of tiny <strong>villi</strong> on its lining. Together they make a huge surface area for absorbing digested food. Tap any label to see how the villus is adapted.' });
   }
 }
 $$('#panel-villus .seg-btn').forEach(b => b.addEventListener('click', () => setVillusView(b.dataset.vview)));
 
+// ============================================================
+// NARRATION — optional text-to-speech of the info box (speaker icon)
+// ============================================================
+const ttsOk = 'speechSynthesis' in window;
+let narrateOn = false;
+const narrateBtns = $$('.narrate-btn');
+function readAloud(card) {
+  if (!ttsOk || !card) return;
+  const t = card.querySelector('h2').textContent.trim();
+  const b = card.querySelector('p').textContent.trim();
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(t + '. ' + b);
+  u.rate = 0.98; u.pitch = 1;
+  u.onstart = () => narrateBtns.forEach(x => x.classList.add('speaking'));
+  u.onend = u.onerror = () => narrateBtns.forEach(x => x.classList.remove('speaking'));
+  window.speechSynthesis.speak(u);
+}
+function maybeNarrate(card) { if (narrateOn) readAloud(card); }
+function setNarrate(on, card) {
+  narrateOn = on;
+  narrateBtns.forEach(x => { x.setAttribute('aria-pressed', on ? 'true' : 'false'); x.classList.toggle('is-on', on); });
+  if (on) readAloud(card);
+  else { if (ttsOk) window.speechSynthesis.cancel(); narrateBtns.forEach(x => x.classList.remove('speaking')); }
+}
+if (!ttsOk) { narrateBtns.forEach(x => x.setAttribute('hidden', '')); }
+else {
+  narrateBtns.forEach(btn => btn.addEventListener('click', () => setNarrate(!narrateOn, btn.closest('.info-card'))));
+}
+
 // ---------- global ----------
 document.addEventListener('selectstart', e => { if (document.body.classList.contains('dragging-active')) e.preventDefault(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('#celebrate').hidden = true; kbClear(); } });
+
+// ============================================================
+// SECTION 5 — Quiz (multiple choice, from the CCEA 1.4 materials)
+// ============================================================
+// Authored with the correct answer first (a: 0); options AND questions are
+// shuffled at render (rule 6). Distractors are plausible so the question needs
+// knowledge, not elimination, and no stem gives away its own answer (rule 5).
+const QUIZ = [
+  { q: 'What type of molecule is every enzyme?', opts: ['A protein', 'A carbohydrate', 'A lipid (fat)', 'A simple sugar'], a: 0, ex: 'All enzymes are proteins. They act as biological catalysts.' },
+  { q: 'What does an enzyme do in a reaction?', opts: ['Speeds it up without being used up', 'Slows it down', 'Provides the energy for it', 'Is used up as it works'], a: 0, ex: 'Enzymes are biological catalysts — they speed reactions up and are not used up, so they work again and again.' },
+  { q: 'Which enzyme breaks down starch?', opts: ['Carbohydrase (amylase)', 'Protease', 'Lipase', 'Catalase'], a: 0, ex: 'Carbohydrase (amylase) breaks starch down into glucose.' },
+  { q: 'Protease digests protein into…', opts: ['Amino acids', 'Glucose', 'Glycerol and fatty acids', 'Simple sugars'], a: 0, ex: 'Protease digests protein into amino acids. The other options are products made by different enzymes.' },
+  { q: 'Lipase digests fat (lipid) into…', opts: ['Glycerol and fatty acids', 'Glucose', 'Amino acids', 'Simple sugars'], a: 0, ex: 'Lipase digests fats into glycerol and fatty acids.' },
+  { q: 'Why can each enzyme only work on one particular substrate?', opts: ['Its substrate is complementary in shape to the active site', 'The substrate is the same size as the whole enzyme', 'The enzyme is made of the same material as the substrate', 'The substrate is always smaller than the active site'], a: 0, ex: 'Only a substrate whose shape is complementary to the active site fits — the lock-and-key model gives enzymes their specificity.' },
+  { q: 'What happens to an enzyme heated well above its optimum temperature?', opts: ['Its active site changes shape and it denatures', 'It works faster and faster', 'It turns into its substrate', 'It is completely unaffected'], a: 0, ex: 'Heat changes the shape of the active site. This is denaturation — it is irreversible, so the substrate no longer fits.' },
+  { q: 'How does an inhibitor reduce the activity of an enzyme?', opts: ['It blocks the active site so the substrate cannot enter', 'It raises the temperature of the enzyme', 'It breaks the enzyme into products', 'It makes the substrate fit better'], a: 0, ex: 'An inhibitor fits the active site but is not broken down, so the substrate cannot get in and the rate falls.' },
+  { q: 'Why must food be digested before it can be absorbed?', opts: ['So large molecules become small and soluble enough to enter the blood', 'To release all the energy from the food', 'To kill any bacteria in the food', 'To store the food in the liver'], a: 0, ex: 'Digestion breaks large, insoluble molecules into small, soluble ones that can be absorbed into the bloodstream.' },
+  { q: 'Which adaptation gives the ileum a large surface area for absorption?', opts: ['Millions of tiny finger-like villi', 'A thick muscular wall', 'A smooth inner lining', 'A coating of fat'], a: 0, ex: 'Its length, folds and millions of villi give a very large surface area for absorbing digested food.' },
+  { q: 'The lacteal in a villus absorbs the breakdown products of which food?', opts: ['Fats (glycerol and fatty acids)', 'Starch (glucose)', 'Protein (amino acids)', 'Vitamins only'], a: 0, ex: 'The lacteal absorbs glycerol and fatty acids — the products of fat digestion.' },
+  { q: 'How does the single layer of surface cells on a villus help absorption?', opts: ['It gives a short distance for molecules to diffuse', 'It increases the surface area', 'It provides a good blood supply', 'It makes digestive enzymes'], a: 0, ex: 'A single, thin layer of cells means molecules diffuse only a short distance into the blood. Surface area and blood supply are separate adaptations.' }
+];
+const QUIZ_N = 10;
+let quizQs = [], quizIdx = 0, quizScore = 0, quizAnswered = false;
+const qProgress = $('#quiz-progress'), qScore = $('#quiz-score'), qBar = $('#quiz-bar-fill'),
+      qBody = $('#quiz-body'), qQuestion = $('#quiz-question'), qOptions = $('#quiz-options'),
+      qFeedback = $('#quiz-feedback'), qNext = $('#quiz-next'),
+      qResult = $('#quiz-result'), qResultTitle = $('#quiz-result-title'), qResultBody = $('#quiz-result-body'), qRetry = $('#quiz-retry');
+
+function buildQuiz() {
+  quizQs = shuffle(QUIZ).slice(0, Math.min(QUIZ_N, QUIZ.length));
+  quizIdx = 0; quizScore = 0; quizAnswered = false;
+  qScore.textContent = '0';
+  qResult.hidden = true; qBody.hidden = false;
+  renderQuestion();
+}
+function renderQuestion() {
+  quizAnswered = false;
+  const item = quizQs[quizIdx];
+  qProgress.textContent = `Question ${quizIdx + 1} of ${quizQs.length}`;
+  qBar.style.width = (quizIdx / quizQs.length * 100) + '%';
+  qQuestion.textContent = item.q;
+  qFeedback.hidden = true; qFeedback.className = 'quiz-feedback';
+  qNext.hidden = true;
+  qNext.textContent = quizIdx === quizQs.length - 1 ? 'See your score' : 'Next question';
+  qOptions.innerHTML = '';
+  const correctText = item.opts[item.a];
+  shuffle(item.opts).forEach(optText => {
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'quiz-option';
+    btn.innerHTML = `<span>${esc(optText)}</span><span class="opt-mark" aria-hidden="true"></span>`;
+    btn.addEventListener('click', () => quizAnswer(btn, optText === correctText, correctText, item.ex));
+    qOptions.appendChild(btn);
+  });
+}
+function quizAnswer(btn, isCorrect, correctText, ex) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  $$('.quiz-option', qOptions).forEach(o => {
+    o.disabled = true;
+    const txt = o.querySelector('span').textContent;
+    if (txt === correctText) { o.classList.add('correct'); o.querySelector('.opt-mark').textContent = '✓'; }
+    else if (o === btn) { o.classList.add('wrong'); o.querySelector('.opt-mark').textContent = '✗'; }
+    else o.classList.add('muted');
+  });
+  if (isCorrect) { quizScore++; qScore.textContent = String(quizScore); success(); qFeedback.classList.add('ok'); qFeedback.innerHTML = `<strong>Correct.</strong> ${esc(ex)}`; }
+  else { reject(); qFeedback.classList.add('no'); qFeedback.innerHTML = `<strong>Not quite.</strong> ${esc(ex)}`; }
+  qFeedback.hidden = false;
+  qBar.style.width = ((quizIdx + 1) / quizQs.length * 100) + '%';
+  qNext.hidden = false; qNext.focus();
+}
+function quizNext() {
+  if (quizIdx < quizQs.length - 1) { quizIdx++; renderQuestion(); }
+  else showQuizResult();
+}
+function showQuizResult() {
+  qBody.hidden = true; qResult.hidden = false;
+  const n = quizQs.length, pct = Math.round(quizScore / n * 100);
+  let msg;
+  if (pct >= 80) msg = 'Excellent — you really know your enzymes and digestion.';
+  else if (pct >= 50) msg = 'Good effort. Look back over the parts you missed, then try again.';
+  else msg = 'Keep going — revisit the earlier sections and give the quiz another go.';
+  qResultTitle.textContent = `You scored ${quizScore} out of ${n}`;
+  qResultBody.textContent = msg;
+  if (pct >= 80) chord();
+}
+qNext.addEventListener('click', quizNext);
+qRetry.addEventListener('click', buildQuiz);
 
 // ---------- init ----------
 setHowView('explore');
 buildMatch();
 setFactor('temp');
 setVillusView('explore');
+buildQuiz();
