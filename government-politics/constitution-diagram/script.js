@@ -1059,6 +1059,16 @@
     // no signed-in identity (Path A / anonymous endpoint). Names are typed.
     collab.uid = saved.uid || ('u_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
     if (!saved.uid) writeCfg(Object.assign(readCfg(), { uid: collab.uid }));
+    // Path B: served by Apps Script (the page IS the endpoint) — collaboration is
+    // always on, no ?api needed; identity is the verified signed-in email.
+    if (inPathB()) {
+      collab.enabled = true;
+      collab.apiUrl = '';
+      collab.classCode = cls;
+      collab.year = params.get('year') || '';
+      collabStart();
+      return;
+    }
     if (!api) { collab.enabled = false; return; }   // → offline mode
     collab.enabled = true;
     collab.apiUrl = api;
