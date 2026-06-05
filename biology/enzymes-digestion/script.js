@@ -615,15 +615,19 @@ function setVillusView(view) {
   $$('.lbl', villusSvg).forEach(l => { l.style.opacity = view === 'explore' ? '' : '0.25'; l.style.pointerEvents = view === 'explore' ? '' : 'none'; });
   vParticles.innerHTML = '';
   if (view === 'absorb') {
-    // RED dots travel from the lumen into the CAPILLARY limbs only (x~302 / x~338);
-    // YELLOW dots travel into the LACTEAL only (centre, x~320).
+    // Vessels: left capillary limb x=300, central lacteal x=320, right capillary limb x=340.
+    // RED (glucose / amino acids) is absorbed at the NEAREST capillary wall — it never
+    // crosses the lacteal. So dots enter from both sides: left-entering reds stop at the
+    // left limb (x300), right-entering reds at the right limb (x340).
+    // YELLOW (glycerol / fatty acids) is NOT taken by the capillaries — fats pass through
+    // to the central lacteal (x320), entering from either side.
     const defs = [
-      { sx: 188, sy: 232, tx: 302, ty: 234, cap: true },
-      { sx: 202, sy: 300, tx: 338, ty: 300, cap: true },
-      { sx: 186, sy: 372, tx: 302, ty: 368, cap: true },
-      { sx: 206, sy: 420, tx: 338, ty: 416, cap: true },
-      { sx: 196, sy: 266, tx: 320, ty: 268, cap: false },
-      { sx: 198, sy: 346, tx: 320, ty: 344, cap: false }
+      { sx: 188, sy: 226, tx: 300, ty: 228, cap: true },   // left lumen -> left capillary
+      { sx: 184, sy: 374, tx: 300, ty: 372, cap: true },   // left lumen -> left capillary
+      { sx: 452, sy: 284, tx: 340, ty: 286, cap: true },   // right lumen -> right capillary
+      { sx: 456, sy: 412, tx: 340, ty: 410, cap: true },   // right lumen -> right capillary
+      { sx: 196, sy: 304, tx: 320, ty: 304, cap: false },  // left lumen -> lacteal
+      { sx: 450, sy: 206, tx: 320, ty: 208, cap: false }   // right lumen -> lacteal
     ];
     defs.forEach((p, i) => {
       const c = svgEl('circle', { r: 6.5, cx: p.sx, cy: p.sy, fill: p.cap ? '#D7263D' : '#E4B824', opacity: 0.9 });
