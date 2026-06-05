@@ -600,6 +600,9 @@
 .share-warn { margin: 12px 0 0; font-size: 0.82rem; color: var(--ink-5); }
 .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
 
+/* confirm dialog must sit above any other modal that opened it (e.g. the Staff panel) */
+#confirm-modal { z-index: 500; }
+
 /* ---------- Toast ---------- */
 .toast {
   position: fixed;
