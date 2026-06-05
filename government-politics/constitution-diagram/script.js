@@ -1341,6 +1341,16 @@
       navigator.clipboard.writeText(link).then(() => admStatus(doneMsg)).catch(() => admStatus(link));
     } else { admStatus(link); }
   }
+  function showQr(name, link) {
+    const canvas = document.getElementById('qr-canvas');
+    document.getElementById('qr-class').textContent = name;
+    document.getElementById('qr-link').textContent = link;
+    if (!(window.QRCode && window.QRCode.toCanvas)) { admStatus('QR code unavailable.'); return; }
+    window.QRCode.toCanvas(canvas, link, { width: 300, margin: 2, errorCorrectionLevel: 'M', color: { dark: '#1A3A6B', light: '#ffffff' } }, function (err) {
+      if (err) { admStatus('Could not draw the QR code.'); return; }
+      document.getElementById('qr-modal').hidden = false;
+    });
+  }
 
   function wireStaff() {
     const staffBtn = document.getElementById('btn-staff');
@@ -1348,8 +1358,16 @@
     const adminModal = document.getElementById('admin-modal');
     adminModal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', () => { adminModal.hidden = true; }));
 
+    const qrModal = document.getElementById('qr-modal');
+    qrModal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', () => { qrModal.hidden = true; }));
+
     document.getElementById('adm-unlock').addEventListener('click', loadClasses);
     document.getElementById('adm-pass').addEventListener('keydown', (e) => { if (e.key === 'Enter') loadClasses(); });
+    document.getElementById('adm-qr').addEventListener('click', () => {
+      const name = selectedClass();
+      if (!name) { admStatus('Pick a class first.'); return; }
+      showQr(name, classLink(name));
+    });
 
     document.getElementById('adm-copy').addEventListener('click', () => {
       const name = selectedClass();

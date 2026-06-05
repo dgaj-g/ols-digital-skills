@@ -603,6 +603,24 @@
 /* confirm dialog must sit above any other modal that opened it (e.g. the Staff panel) */
 #confirm-modal { z-index: 500; }
 
+/* QR popup (opened from the Staff panel, so it sits above it) */
+#qr-modal { z-index: 500; }
+.qr-body { text-align: center; }
+.qr-canvas {
+  width: min(300px, 70vw);
+  height: auto;
+  margin: 6px auto 10px;
+  display: block;
+  border-radius: 8px;
+}
+.qr-link {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  word-break: break-all;
+  margin: 0;
+}
+
 /* ---------- Toast ---------- */
 .toast {
   position: fixed;

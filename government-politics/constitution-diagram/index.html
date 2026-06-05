@@ -218,6 +218,7 @@
         </div>
         <div class="adm-actions">
           <button class="tool-btn" id="adm-copy" type="button">Copy link</button>
+          <button class="tool-btn" id="adm-qr" type="button">Show QR</button>
           <button class="tool-btn" id="adm-goto" type="button">Go to class</button>
           <button class="danger-btn" id="adm-delete" type="button">Delete class</button>
         </div>
@@ -233,8 +234,23 @@
   </div>
 </div>
 
+<!-- ===================== QR CODE ===================== -->
+<div class="modal" id="qr-modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-panel modal-panel--narrow">
+    <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
+    <div class="modal-body qr-body">
+      <h2 class="modal-h">Scan to join</h2>
+      <p class="modal-p"><strong id="qr-class"></strong> &mdash; point a phone camera at this to open the activity.</p>
+      <canvas id="qr-canvas" class="qr-canvas" aria-label="QR code for the class link"></canvas>
+      <p class="qr-link" id="qr-link"></p>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" hidden></div>
 
+<script src="qrcode.min.js"></script>
 <script src="script.js"></script>
 <script src="../../assets/intro-loader.js"></script>
 </body>
