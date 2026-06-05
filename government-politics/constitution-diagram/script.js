@@ -1290,96 +1290,92 @@
 
   // ---- Staff / admin panel ----
   function inPathB() { return !!(typeof window !== 'undefined' && window.OLS_TRANSPORT && window.OLS_TRANSPORT.call); }
+  function admStatus(msg) { const e = document.getElementById('adm-status'); if (e) e.textContent = msg || ''; }
+  function admPass() { return document.getElementById('adm-pass').value.trim(); }
+  function selectedClass() { return document.getElementById('adm-class-select').value; }
+
   function openAdmin() {
     const cfg = readCfg();
-    document.getElementById('adm-api').value = cfg.api || collab.apiUrl || '';
-    document.getElementById('adm-class').value = cfg['class'] || collab.classCode || 'default';
     document.getElementById('adm-pass').value = cfg.passcode || collab.passcode || '';
-    document.getElementById('adm-status').textContent = '';
-    // Path B: the page IS the endpoint, so hide the URL / class / connect controls
-    const pb = inPathB();
-    ['adm-api', 'adm-class'].forEach((id) => {
-      document.getElementById(id).style.display = pb ? 'none' : '';
-      const lab = document.querySelector('label[for="' + id + '"]');
-      if (lab) lab.style.display = pb ? 'none' : '';
-    });
-    document.getElementById('adm-save').style.display = pb ? 'none' : '';
-    const intro = document.getElementById('adm-intro');
-    if (intro) intro.textContent = pb
-      ? 'This is the live class board. Share its link with pupils through Google Classroom, and manage the academic year below.'
-      : 'Connect this activity to your school’s Google Sheet board, then share the class link with pupils. These settings are kept on this device only.';
+    document.getElementById('adm-classes-group').hidden = true;
+    admStatus('');
     document.getElementById('admin-modal').hidden = false;
-    refreshAdminYears();
+    if (document.getElementById('adm-pass').value) loadClasses();   // already unlocked before
+    else document.getElementById('adm-pass').focus();
   }
-  function admStatus(msg) { document.getElementById('adm-status').textContent = msg || ''; }
-  async function refreshAdminYears() {
-    const api = document.getElementById('adm-api').value.trim();
-    const pass = document.getElementById('adm-pass').value.trim();
-    const box = document.getElementById('adm-years');
-    if (!pass || (!api && !inPathB())) { box.textContent = inPathB() ? 'Enter your staff passcode to manage the academic year.' : 'Enter the web app URL and passcode, then Save & connect.'; return; }
-    box.textContent = 'Checking…';
-    try {
-      const r = await jsonp({ action: 'admin', sub: 'list', passcode: pass }, api);
-      if (!r || !r.ok) { box.textContent = (r && r.error === 'bad-passcode') ? 'Passcode not recognised.' : ('Could not read the board' + (r && r.error ? ' (' + r.error + ')' : '') + '.'); return; }
-      const counts = r.counts || {}, keys = Object.keys(counts).sort();
-      box.innerHTML = 'Current year: <strong>' + escapeHTML(r.currentYear || '—') + '</strong><br>' +
-        (keys.length ? keys.map((y) => escapeHTML(y) + ': ' + counts[y] + ' entries').join('<br>') : 'No pupil data stored yet.');
-    } catch (e) { box.textContent = 'Could not reach the web app — check the URL.'; }
+
+  async function loadClasses() {
+    const pass = admPass();
+    if (!pass) { admStatus('Enter your staff passcode.'); return; }
+    admStatus('Checking…');
+    let r;
+    try { r = await jsonp({ action: 'admin', sub: 'classes', passcode: pass }); }
+    catch (e) { admStatus('Could not reach the board.'); return; }
+    if (!r || !r.ok) { admStatus(r && r.error === 'bad-passcode' ? 'Passcode not recognised.' : 'Could not read the classes.'); return; }
+    collab.passcode = pass; writeCfg(Object.assign(readCfg(), { passcode: pass }));
+    const sel = document.getElementById('adm-class-select');
+    const list = r.classes || [];
+    sel.innerHTML = list.length
+      ? list.map((c) => '<option value="' + escapeHTML(c.name) + '">' + escapeHTML(c.name) + ' (' + c.count + ' entries)</option>').join('')
+      : '<option value="">— no classes yet —</option>';
+    document.getElementById('adm-classes-group').hidden = false;
+    admStatus(list.length ? '' : 'No classes yet — add your first one below.');
   }
-  function classLink() {
-    if (inPathB()) return location.href.split('#')[0];   // the page itself is the class link
-    const api = document.getElementById('adm-api').value.trim();
-    const cls = (document.getElementById('adm-class').value.trim() || 'default');
-    const base = location.origin + location.pathname;
-    return base + '?api=' + encodeURIComponent(api) + '&class=' + encodeURIComponent(cls);
+
+  function classLink(name) {
+    const base = (inPathB() ? location.href.split('#')[0].split('?')[0] : (location.origin + location.pathname));
+    return base + '?class=' + encodeURIComponent(name);
   }
+  function copyLink(link, doneMsg) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(() => admStatus(doneMsg)).catch(() => admStatus(link));
+    } else { admStatus(link); }
+  }
+
   function wireStaff() {
     const staffBtn = document.getElementById('btn-staff');
     if (staffBtn) staffBtn.addEventListener('click', openAdmin);
     const adminModal = document.getElementById('admin-modal');
     adminModal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', () => { adminModal.hidden = true; }));
 
-    document.getElementById('adm-save').addEventListener('click', () => {
-      const api = document.getElementById('adm-api').value.trim();
-      const cls = document.getElementById('adm-class').value.trim() || 'default';
-      const pass = document.getElementById('adm-pass').value.trim();
-      if (!api) { admStatus('Please paste the web app URL.'); return; }
-      writeCfg(Object.assign(readCfg(), { api: api, 'class': cls, passcode: pass }));
-      collab.apiUrl = api; collab.classCode = cls; collab.passcode = pass; collab.enabled = true;
-      admStatus('Settings saved on this device. Checking the connection below…');
-      refreshAdminYears();
-      collabStart();
-    });
+    document.getElementById('adm-unlock').addEventListener('click', loadClasses);
+    document.getElementById('adm-pass').addEventListener('keydown', (e) => { if (e.key === 'Enter') loadClasses(); });
+
     document.getElementById('adm-copy').addEventListener('click', () => {
-      const link = classLink();
-      const tmp = document.getElementById('adm-api'); // reuse a real input for selection fallback
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(link).then(() => admStatus('Class link copied — paste it into Google Classroom.')).catch(() => admStatus(link));
-      } else { admStatus(link); }
+      const name = selectedClass();
+      if (!name) { admStatus('Pick a class first.'); return; }
+      copyLink(classLink(name), 'Link for ' + name + ' copied — paste it into Google Classroom.');
     });
-    document.getElementById('adm-setyear-btn').addEventListener('click', async () => {
-      const api = document.getElementById('adm-api').value.trim();
-      const pass = document.getElementById('adm-pass').value.trim();
-      const year = document.getElementById('adm-setyear').value.trim();
-      if (!year) { admStatus('Type the year to set, e.g. 2026-27.'); return; }
-      admStatus('Setting…');
-      try { const r = await jsonp({ action: 'admin', sub: 'setYear', passcode: pass, year: year }, api);
-        admStatus(r && r.ok ? ('Current year set to ' + r.currentYear + '.') : 'Could not set the year (check the passcode).');
-        collab.year = (r && r.currentYear) || collab.year; refreshAdminYears();
-      } catch (e) { admStatus('Could not reach the web app.'); }
+    document.getElementById('adm-goto').addEventListener('click', () => {
+      const name = selectedClass();
+      if (!name) { admStatus('Pick a class first.'); return; }
+      location.href = classLink(name);
     });
-    document.getElementById('adm-wipe-btn').addEventListener('click', () => {
-      const api = document.getElementById('adm-api').value.trim();
-      const pass = document.getElementById('adm-pass').value.trim();
-      const year = document.getElementById('adm-wipeyear').value.trim();
-      if (!year) { admStatus('Type the year to wipe, e.g. 2025-26.'); return; }
-      askConfirmCustom('Wipe ' + year + '?', 'This permanently deletes every pupil’s entries for ' + year + '. This cannot be undone.', 'Wipe ' + year, async () => {
-        admStatus('Wiping…');
-        try { const r = await jsonp({ action: 'admin', sub: 'wipe', passcode: pass, year: year }, api);
-          admStatus(r && r.ok ? ('Deleted ' + r.deleted + ' entries for ' + year + '.') : 'Could not wipe (check the passcode).');
-          refreshAdminYears();
-        } catch (e) { admStatus('Could not reach the web app.'); }
+    document.getElementById('adm-delete').addEventListener('click', () => {
+      const name = selectedClass();
+      if (!name) { admStatus('Pick a class first.'); return; }
+      askConfirmCustom('Delete ' + name + '?', 'This permanently deletes the class ' + name + ' and everything pupils have written in it. This cannot be undone.', 'Delete ' + name, async () => {
+        admStatus('Deleting…');
+        try {
+          const r = await jsonp({ action: 'admin', sub: 'deleteClass', passcode: admPass(), name: name });
+          admStatus(r && r.ok ? ('Deleted ' + name + ' (' + r.deleted + ' entries).') : 'Could not delete (check the passcode).');
+          loadClasses();
+        } catch (e) { admStatus('Could not reach the board.'); }
       });
+    });
+    document.getElementById('adm-add').addEventListener('click', async () => {
+      const input = document.getElementById('adm-newclass');
+      const name = input.value.trim();
+      if (!name) { input.focus(); return; }
+      admStatus('Adding…');
+      try {
+        const r = await jsonp({ action: 'admin', sub: 'addClass', passcode: admPass(), name: name });
+        if (!r || !r.ok) { admStatus('Could not add the class (check the passcode).'); return; }
+        input.value = '';
+        await loadClasses();
+        document.getElementById('adm-class-select').value = r.name;
+        admStatus('Added ' + r.name + '. Use “Copy link” to share it.');
+      } catch (e) { admStatus('Could not reach the board.'); }
     });
   }
   wireStaff();

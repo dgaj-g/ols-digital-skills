@@ -203,32 +203,28 @@
   <div class="modal-panel">
     <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
     <div class="modal-body">
-      <h2 class="modal-h">Staff &mdash; live class board</h2>
-      <p class="modal-p" id="adm-intro">Connect this activity to your school's Google Sheet board, then share the class link with pupils. These settings are kept on this device only.</p>
+      <h2 class="modal-h">Staff &mdash; class boards</h2>
+      <p class="modal-p" id="adm-intro">Enter your staff passcode to manage your class boards.</p>
 
-      <div class="adm-group">
-        <label class="adm-label" for="adm-api">Web app URL (ends in /exec)</label>
-        <input type="text" id="adm-api" class="share-input" style="width:100%" placeholder="https://script.google.com/macros/s/…/exec" />
-        <label class="adm-label" for="adm-class">Class code</label>
-        <input type="text" id="adm-class" class="share-input" style="width:100%" placeholder="e.g. U6-POL" />
-        <label class="adm-label" for="adm-pass">Staff passcode</label>
-        <input type="password" id="adm-pass" class="share-input" style="width:100%" placeholder="from the Sheet's Config tab" />
-        <div class="adm-actions">
-          <button class="primary-btn" id="adm-save" type="button">Save &amp; connect</button>
-          <button class="tool-btn" id="adm-copy" type="button">Copy class link</button>
-        </div>
+      <div class="adm-row">
+        <input type="password" id="adm-pass" class="share-input" placeholder="Staff passcode" aria-label="Staff passcode" />
+        <button class="primary-btn" id="adm-unlock" type="button">Unlock</button>
       </div>
 
-      <div class="adm-group">
-        <h3 class="adm-h">Academic year</h3>
-        <div class="adm-years" id="adm-years">Enter the URL and passcode, then Save &amp; connect.</div>
+      <div class="adm-group" id="adm-classes-group" hidden>
+        <h3 class="adm-h">Your classes</h3>
         <div class="adm-row">
-          <input type="text" id="adm-setyear" class="share-input" placeholder="set current year, e.g. 2026-27" />
-          <button class="tool-btn" id="adm-setyear-btn" type="button">Set</button>
+          <select id="adm-class-select" class="share-input" aria-label="Choose a class"></select>
         </div>
+        <div class="adm-actions">
+          <button class="tool-btn" id="adm-copy" type="button">Copy link</button>
+          <button class="tool-btn" id="adm-goto" type="button">Go to class</button>
+          <button class="danger-btn" id="adm-delete" type="button">Delete class</button>
+        </div>
+        <h3 class="adm-h" style="margin-top:16px">Add a class</h3>
         <div class="adm-row">
-          <input type="text" id="adm-wipeyear" class="share-input" placeholder="wipe a year, e.g. 2025-26" />
-          <button class="danger-btn" id="adm-wipe-btn" type="button">Wipe year</button>
+          <input type="text" id="adm-newclass" class="share-input" maxlength="40" placeholder="e.g. L6Po26" aria-label="New class name" />
+          <button class="tool-btn" id="adm-add" type="button">Add</button>
         </div>
       </div>
 
