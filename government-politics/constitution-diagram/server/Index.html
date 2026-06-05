@@ -1002,7 +1002,7 @@ body.landing {
   /* stack branches vertically, hide the absolute triangle + show the list */
   .checks-layer, .branch-stage::before { display: none; }
   .branches { grid-template-columns: 1fr; grid-template-rows: none; gap: 12px; }
-  .branch--exec, .branch--jud, .branch--leg { grid-column: 1; justify-self: stretch; }
+  .branch--exec, .branch--jud, .branch--leg { grid-column: 1; grid-row: auto; justify-self: stretch; }
   .branch { max-width: none; min-height: 96px; flex-direction: row; gap: 12px; justify-content: flex-start; text-align: left; padding: 14px 16px; }
   .branch-emblem { font-size: 2rem; }
   .branch-name { font-size: 1.15rem; }
