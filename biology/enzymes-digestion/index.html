@@ -22,6 +22,7 @@
   <button class="tab" type="button" data-tab="match" aria-selected="false"><span class="tab-num">2</span> Match the enzyme</button>
   <button class="tab" type="button" data-tab="factors" aria-selected="false"><span class="tab-num">3</span> What affects them</button>
   <button class="tab" type="button" data-tab="villus" aria-selected="false"><span class="tab-num">4</span> Into the blood</button>
+  <button class="tab" type="button" data-tab="quiz" aria-selected="false"><span class="tab-num">5</span> Quiz</button>
 </nav>
 
 <main class="act-main">
@@ -109,6 +110,10 @@
       </div>
 
       <aside class="info-card" id="how-info" aria-live="polite">
+        <button class="narrate-btn" id="how-narrate" type="button" aria-pressed="false" aria-label="Read the information aloud" title="Read the information aloud">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wave" d="M15.5 8.5a4.5 4.5 0 010 7" fill="none" stroke-width="1.8" stroke-linecap="round"/><path class="wave wave2" d="M18 6a8 8 0 010 12" fill="none" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="narrate-label">Read aloud</span>
+        </button>
         <span class="info-kicker" id="how-kicker">Lock and key</span>
         <h2 id="how-title">An enzyme is a biological catalyst</h2>
         <p id="how-body">Every enzyme is a <strong>protein</strong>. It speeds up a reaction and is <strong>not used up</strong>, so it can work again and again. Use the buttons above to explore the parts, watch a reaction step by step, or see what an inhibitor does.</p>
@@ -171,14 +176,11 @@
       </div>
 
       <div class="sim-enzyme stage-card">
-        <h2 class="sim-enzyme-title">What is happening to the enzyme</h2>
-        <svg id="sim-enz-svg" viewBox="0 0 320 300" role="img" aria-label="An enzyme whose active site changes shape as the factor changes.">
-          <g id="sim-particles"></g>
-          <g id="sim-substrate">
-            <path d="M126 70 q0 -30 34 -30 q34 0 34 30 q0 16 -14 22 l-6 12 l-6 -12 q-14 -6 -42 -22 Z" fill="#F0A04B" stroke="#C9762B" stroke-width="2.5"/>
-          </g>
-          <path id="sim-enz-body" fill="#2C5C8A" stroke="#1A3A6B" stroke-width="2"/>
-        </svg>
+        <div class="sim-enzyme-head">
+          <h2 class="sim-enzyme-title">What is happening to the enzyme</h2>
+          <span class="complex-counter"><span class="cc-dot" aria-hidden="true"></span>Complexes formed: <strong id="complex-count">0</strong></span>
+        </div>
+        <svg id="sim-enz-svg" viewBox="0 0 320 240" role="img" aria-label="Enzymes and substrates moving with kinetic energy and forming enzyme-substrate complexes; the active sites change shape if the enzyme denatures."></svg>
         <p class="sim-state" id="sim-state"></p>
       </div>
     </div>
@@ -233,10 +235,42 @@
       </div>
 
       <aside class="info-card" id="v-info" aria-live="polite">
+        <button class="narrate-btn" id="v-narrate" type="button" aria-pressed="false" aria-label="Read the information aloud" title="Read the information aloud">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wave" d="M15.5 8.5a4.5 4.5 0 010 7" fill="none" stroke-width="1.8" stroke-linecap="round"/><path class="wave wave2" d="M18 6a8 8 0 010 12" fill="none" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="narrate-label">Read aloud</span>
+        </button>
         <span class="info-kicker" id="v-kicker">The small intestine</span>
         <h2 id="v-title">The ileum is built to absorb</h2>
         <p id="v-body">The ileum (small intestine) is about <strong>3 metres</strong> long and folded, with millions of tiny <strong>villi</strong> on its lining. Together they make a huge surface area for absorbing digested food. Tap any label to see how the villus is adapted.</p>
       </aside>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 5 — Quiz
+       ============================================================ -->
+  <section class="panel" id="panel-quiz" data-panel="quiz" aria-label="Quiz">
+    <div class="quiz-stage stage-card">
+      <div class="quiz-top">
+        <span class="quiz-progress" id="quiz-progress">Question 1 of 10</span>
+        <span class="score-pill"><span id="quiz-score">0</span>&nbsp;correct</span>
+      </div>
+      <div class="quiz-bar"><div class="quiz-bar-fill" id="quiz-bar-fill"></div></div>
+
+      <div id="quiz-body">
+        <p class="quiz-question" id="quiz-question"></p>
+        <div class="quiz-options" id="quiz-options"></div>
+        <p class="quiz-feedback" id="quiz-feedback" hidden></p>
+        <div class="quiz-actions">
+          <button id="quiz-next" type="button" class="primary-btn" hidden>Next question</button>
+        </div>
+      </div>
+
+      <div id="quiz-result" hidden>
+        <h2 class="quiz-result-title" id="quiz-result-title"></h2>
+        <p class="quiz-result-body" id="quiz-result-body"></p>
+        <button id="quiz-retry" type="button" class="primary-btn">Try again</button>
+      </div>
     </div>
   </section>
 
