@@ -655,12 +655,41 @@ $$('#panel-villus .seg-btn').forEach(b => b.addEventListener('click', () => setV
 const ttsOk = 'speechSynthesis' in window;
 let narrateOn = false;
 const narrateBtns = $$('.narrate-btn');
+
+// Pick the most natural English voice the device offers, instead of the basic
+// default the browser would otherwise grab. If nothing better is installed it
+// stays null and we fall back to the default — so this can only improve, never
+// break, the narration. Quality voices vary by browser/OS (Edge "Natural",
+// Apple "Enhanced/Siri", Google), so we score by name and prefer en-GB.
+let bestVoice = null;
+function pickBestVoice() {
+  if (!ttsOk) return;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices || !voices.length) return; // not loaded yet — voiceschanged will retry
+  const score = v => {
+    const n = (v.name || '').toLowerCase(), lang = (v.lang || '').toLowerCase();
+    let s = 0;
+    if (lang.startsWith('en-gb')) s += 6; else if (lang.startsWith('en')) s += 2;
+    if (/natural|neural|enhanced|premium/.test(n)) s += 6;
+    if (/\bsiri\b/.test(n)) s += 5;
+    if (/google/.test(n)) s += 4;
+    if (/(daniel|sonia|libby|aria|serena|kate|stephanie|ryan|arthur|fiona|moira|emily)/.test(n)) s += 3;
+    if (v.localService === false) s += 1;
+    if (/compact|eloquence|novelty|whisper|bells|organ|cello|news|zarvox|trinoids/.test(n)) s -= 6;
+    return s;
+  };
+  let best = null, bestScore = 0; // require a positive score and an English voice
+  voices.forEach(v => { const s = score(v); if (s > bestScore && /^en/i.test(v.lang || '')) { bestScore = s; best = v; } });
+  if (best) bestVoice = best;
+}
+
 function readAloud(card) {
   if (!ttsOk || !card) return;
   const t = card.querySelector('h2').textContent.trim();
   const b = card.querySelector('p').textContent.trim();
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(t + '. ' + b);
+  if (bestVoice) { u.voice = bestVoice; u.lang = bestVoice.lang; } else { u.lang = 'en-GB'; }
   u.rate = 0.98; u.pitch = 1;
   u.onstart = () => narrateBtns.forEach(x => x.classList.add('speaking'));
   u.onend = u.onerror = () => narrateBtns.forEach(x => x.classList.remove('speaking'));
@@ -675,6 +704,8 @@ function setNarrate(on, card) {
 }
 if (!ttsOk) { narrateBtns.forEach(x => x.setAttribute('hidden', '')); }
 else {
+  pickBestVoice(); // voices may load async; retry when the browser reports them
+  if ('onvoiceschanged' in window.speechSynthesis) window.speechSynthesis.onvoiceschanged = pickBestVoice;
   narrateBtns.forEach(btn => btn.addEventListener('click', () => setNarrate(!narrateOn, btn.closest('.info-card'))));
 }
 
