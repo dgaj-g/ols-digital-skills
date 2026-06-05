@@ -282,6 +282,7 @@
   const LS_KEY = 'ols-us-constitution-v1';
   // state.notes[nodeId][fieldKey] = { t: text, c: colourIndex }
   let state = { notes: {} };
+  let showModel = false;   // "Model answer" is a read-only reference toggle, never a fill
   let saveTimer = null;
 
   function setNote(nodeId, fieldKey, text, colourIdx) {
@@ -438,6 +439,19 @@
     requestAnimationFrame(autosize);
     setTimeout(autosize, 60);
 
+    // model answer (read-only reference) when the toggle is on — never overwrites
+    if (showModel) {
+      const ex = exemplarFor(NODE[nodeId], fieldKey);
+      if (ex && ex.trim()) {
+        const m = document.createElement('div');
+        m.className = 'model-ref';
+        const h = document.createElement('p'); h.className = 'model-ref-head'; h.textContent = 'Model answer';
+        const b = document.createElement('div'); b.className = 'model-ref-body'; b.textContent = decodeEntities(ex);
+        m.appendChild(h); m.appendChild(b);
+        wrap.appendChild(m);
+      }
+    }
+
     // class mode: show classmates' contributions to this field (read-only)
     collabAttachPeers(wrap, nodeId, fieldKey);
 
@@ -517,20 +531,15 @@
   });
 
   // ======================================================
-  //  EXEMPLAR / CLEAR
+  //  MODEL ANSWER (read-only reference) / CLEAR
   // ======================================================
-  function loadExemplar() {
-    Object.keys(NODE).forEach(id => {
-      const node = NODE[id];
-      fieldKeysFor(node).forEach(fk => {
-        const ex = exemplarFor(node, fk);
-        if (ex && ex.trim()) setNote(id, fk, decodeEntities(ex), 0);
-      });
-    });
-    saveLocal();
-    refreshDots();
+  function toggleModel() {
+    showModel = !showModel;
+    const btn = document.getElementById('btn-exemplar');
+    btn.classList.toggle('is-on', showModel);
+    btn.setAttribute('aria-pressed', showModel ? 'true' : 'false');
     if (!drawer.hidden && currentNodeId) openNode(currentNodeId);
-    toast('Model answer loaded — edit any box to make it yours');
+    toast(showModel ? 'Model answers shown — read-only, your work is untouched' : 'Model answers hidden');
   }
 
   function clearAll() {
@@ -726,16 +735,7 @@
   // ======================================================
   //  TOOLBAR WIRING
   // ======================================================
-  document.getElementById('btn-exemplar').addEventListener('click', () => {
-    if (Object.keys(state.notes).length) {
-      askConfirmCustom('Load the model answer?',
-        'This replaces what is currently in the boxes with the worked example. You can still edit any box afterwards.',
-        'Load model answer', loadExemplar);
-    } else { loadExemplar(); }
-  });
-  document.getElementById('btn-save').addEventListener('click', saveFile);
-  document.getElementById('btn-open').addEventListener('click', openFile);
-  document.getElementById('btn-share').addEventListener('click', openShare);
+  document.getElementById('btn-exemplar').addEventListener('click', toggleModel);
   document.getElementById('btn-clear').addEventListener('click', () => {
     if (!Object.keys(state.notes).length) { toast('Nothing to clear yet'); return; }
     askConfirmCustom('Clear everything?', 'This removes all the notes you have added. This cannot be undone.', 'Clear all notes', clearAll);
@@ -1396,6 +1396,12 @@
     markSaved(true);
     if (fromShare) toast('Opened a shared diagram');
     try { collabInit(); } catch (e) {}
+    setupToolbarMode();
+  }
+  function setupToolbarMode() {
+    const pb = inPathB();
+    const staff = document.getElementById('btn-staff'); if (staff) staff.hidden = !pb;   // Staff only on the live board
+    const clear = document.getElementById('btn-clear'); if (clear) clear.hidden = pb;     // no Clear on the board (footgun)
   }
   init();
 

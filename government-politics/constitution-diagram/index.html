@@ -27,17 +27,8 @@
 <div class="toolbar" id="toolbar" aria-label="Diagram tools">
   <span class="save-state" id="save-state" aria-live="polite">All changes saved</span>
   <div class="toolbar-actions">
-    <button class="tool-btn" id="btn-exemplar" type="button" title="Fill the diagram with model answers built from your resources">
+    <button class="tool-btn" id="btn-exemplar" type="button" aria-pressed="false" title="Show the worked model answers as a read-only reference (your work is not changed)">
       <span aria-hidden="true">&#9733;</span> Model answer
-    </button>
-    <button class="tool-btn" id="btn-save" type="button" title="Download your diagram as a file">
-      <span aria-hidden="true">&#8595;</span> Save file
-    </button>
-    <button class="tool-btn" id="btn-open" type="button" title="Open a saved diagram file">
-      <span aria-hidden="true">&#8593;</span> Open file
-    </button>
-    <button class="tool-btn" id="btn-share" type="button" title="Create a link to share your diagram">
-      <span aria-hidden="true">&#128279;</span> Share link
     </button>
     <button class="tool-btn tool-btn--ghost" id="btn-clear" type="button" title="Clear all your notes">
       <span aria-hidden="true">&#8635;</span> Clear
@@ -45,7 +36,7 @@
     <button class="tool-btn tool-btn--ghost" id="btn-help" type="button" title="How this activity works">
       <span aria-hidden="true">?</span> Help
     </button>
-    <button class="tool-btn tool-btn--ghost" id="btn-staff" type="button" title="Teacher setup for the live class board">
+    <button class="tool-btn tool-btn--ghost" id="btn-staff" type="button" title="Teacher tools for the live class board" hidden>
       <span aria-hidden="true">&#128273;</span> Staff
     </button>
   </div>
@@ -162,8 +153,8 @@
       <ul class="help-list">
         <li><strong>Explore &amp; build.</strong> Click any branch, the <em>Checks</em> buttons between them, or a principle below. A panel opens where you write your own summary and add real-life examples.</li>
         <li><strong>Colour your answers.</strong> Use the colour dots in each box to colour-code your notes &mdash; for example one colour for definitions, another for examples.</li>
-        <li><strong>It saves itself.</strong> Your work is kept in this browser automatically. Use <em>Save file</em> to keep a copy, or <em>Share link</em> to send your diagram to someone.</li>
-        <li><strong>Model answer.</strong> Stuck, or want to check? <em>Model answer</em> fills the diagram with a worked example you can edit.</li>
+        <li><strong>It saves itself.</strong> Your work is saved automatically &mdash; just come back to the same link to carry on.</li>
+        <li><strong>Model answer.</strong> Stuck, or want to check? Tap <em>Model answer</em> to show a worked example under each box, for reference. It never changes what you&rsquo;ve written &mdash; tap again to hide it.</li>
         <li><strong>Test yourself.</strong> Switch to <em>Test yourself</em> for a quick quiz on the essentials.</li>
       </ul>
       <button class="primary-btn" data-close type="button">Got it</button>

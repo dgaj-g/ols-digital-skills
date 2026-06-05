@@ -754,6 +754,27 @@
 .peer-name { font-size: 0.72rem; font-weight: 700; color: var(--ols-blue); }
 .peer-text { font-size: 0.88rem; line-height: 1.45; white-space: pre-wrap; }
 
+/* model answer — read-only reference (shown under a field when the toggle is on) */
+.model-ref {
+  margin-top: 10px;
+  border: 1px solid rgba(228,184,36,0.55);
+  background: rgba(228,184,36,0.10);
+  border-radius: 10px;
+  padding: 9px 12px;
+}
+.model-ref-head {
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8a6d0c;
+}
+.model-ref-body { font-size: 0.88rem; line-height: 1.5; white-space: pre-wrap; color: var(--text); }
+
+/* "Model answer" toggle, on state */
+#btn-exemplar.is-on { background: var(--ols-gold-soft); box-shadow: inset 0 0 0 2px var(--ols-blue-dark); }
+
 /* join / rejoin chooser */
 .join-list {
   display: flex;
