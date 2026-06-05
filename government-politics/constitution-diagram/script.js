@@ -17,9 +17,10 @@
   'use strict';
 
   // ----- Student answer palette (teacher's requested colours) -----
-  // black, dark blue, purple, dark green, dark red
-  const PALETTE = ['#1A1A1A', '#1A3A6B', '#5B2A86', '#1E6B3B', '#8E1F23'];
-  const PALETTE_NAMES = ['Black', 'Dark blue', 'Purple', 'Dark green', 'Dark red'];
+  // Carol's five (black, dark blue, purple, dark green, dark red), lifted a notch
+  // brighter for a friendlier feel while staying readable (AA) on white.
+  const PALETTE = ['#1A1A1A', '#2D5DB0', '#7E3FB5', '#1E8246', '#C0392B'];
+  const PALETTE_NAMES = ['Black', 'Blue', 'Purple', 'Green', 'Red'];
 
   // ======================================================
   //  NODE DATA  (content authored from the uploaded sources)
