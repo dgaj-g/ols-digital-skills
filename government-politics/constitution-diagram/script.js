@@ -1279,12 +1279,25 @@
   }
 
   // ---- Staff / admin panel ----
+  function inPathB() { return !!(typeof window !== 'undefined' && window.OLS_TRANSPORT && window.OLS_TRANSPORT.call); }
   function openAdmin() {
     const cfg = readCfg();
     document.getElementById('adm-api').value = cfg.api || collab.apiUrl || '';
     document.getElementById('adm-class').value = cfg['class'] || collab.classCode || 'default';
     document.getElementById('adm-pass').value = cfg.passcode || collab.passcode || '';
     document.getElementById('adm-status').textContent = '';
+    // Path B: the page IS the endpoint, so hide the URL / class / connect controls
+    const pb = inPathB();
+    ['adm-api', 'adm-class'].forEach((id) => {
+      document.getElementById(id).style.display = pb ? 'none' : '';
+      const lab = document.querySelector('label[for="' + id + '"]');
+      if (lab) lab.style.display = pb ? 'none' : '';
+    });
+    document.getElementById('adm-save').style.display = pb ? 'none' : '';
+    const intro = document.getElementById('adm-intro');
+    if (intro) intro.textContent = pb
+      ? 'This is the live class board. Share its link with pupils through Google Classroom, and manage the academic year below.'
+      : 'Connect this activity to your school’s Google Sheet board, then share the class link with pupils. These settings are kept on this device only.';
     document.getElementById('admin-modal').hidden = false;
     refreshAdminYears();
   }
@@ -1293,7 +1306,7 @@
     const api = document.getElementById('adm-api').value.trim();
     const pass = document.getElementById('adm-pass').value.trim();
     const box = document.getElementById('adm-years');
-    if (!api || !pass) { box.textContent = 'Enter the web app URL and passcode, then Save & connect.'; return; }
+    if (!pass || (!api && !inPathB())) { box.textContent = inPathB() ? 'Enter your staff passcode to manage the academic year.' : 'Enter the web app URL and passcode, then Save & connect.'; return; }
     box.textContent = 'Checking…';
     try {
       const r = await jsonp({ action: 'admin', sub: 'list', passcode: pass }, api);
@@ -1304,6 +1317,7 @@
     } catch (e) { box.textContent = 'Could not reach the web app — check the URL.'; }
   }
   function classLink() {
+    if (inPathB()) return location.href.split('#')[0];   // the page itself is the class link
     const api = document.getElementById('adm-api').value.trim();
     const cls = (document.getElementById('adm-class').value.trim() || 'default');
     const base = location.origin + location.pathname;
