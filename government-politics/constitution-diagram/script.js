@@ -1015,6 +1015,13 @@
 
   let _cbN = 0;
   function jsonp(params, base) {
+    // Path B: when the page is served by Apps Script it injects window.OLS_TRANSPORT,
+    // which routes calls through google.script.run (same-origin, carries the verified
+    // school sign-in). On github.io this is absent, so we fall back to JSONP exactly
+    // as before — offline and Path A behaviour is unchanged.
+    if (typeof window !== 'undefined' && window.OLS_TRANSPORT && window.OLS_TRANSPORT.call) {
+      return window.OLS_TRANSPORT.call(params);
+    }
     const apiUrl = base || collab.apiUrl;
     return new Promise((resolve, reject) => {
       if (!apiUrl) { reject(new Error('no-endpoint')); return; }
@@ -1067,9 +1074,15 @@
     collab.email = (who && who.email) || '';
 
     if (collab.email) {
-      // verified school identity (Path B): just confirm a display name
+      // verified school identity (Path B): identity IS the email, so work follows
+      // them to any device. The display name is stored server-side (keyed by email)
+      // so it follows them too — they only ever type it once, on any device.
       collab.identity = collab.email;
+      if (!collab.name) {
+        try { const rn = await jsonp({ action: 'myname' }); if (rn && rn.ok && rn.name) collab.name = rn.name; } catch (e) {}
+      }
       if (!collab.name) await promptName();
+      try { await jsonp({ action: 'myname', set: collab.name }); } catch (e) {}
     } else if (collab.name) {
       // returning on THIS device — we already know who they are, straight in
       collab.identity = 'uid:' + collab.uid;
