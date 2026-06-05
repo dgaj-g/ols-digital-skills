@@ -308,6 +308,10 @@
 .readout-rate-label { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
 .readout-rate strong { font-size: 1.1rem; color: var(--prod-dark); }
 #sim-svg { width: 100%; height: auto; display: block; touch-action: none; }
+/* SVG diagrams/graphs and quiz buttons are interactive, not text — never let them highlight */
+#sim-svg, #how-svg, #villus-svg, #sim-enz-svg, .quiz-option {
+  -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+}
 .slider-wrap { margin-top: 6px; }
 #sim-slider { width: 100%; accent-color: var(--ols-gold); cursor: pointer; }
 .slider-scale { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }

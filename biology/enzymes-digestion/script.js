@@ -570,10 +570,17 @@ function graphToValue(clientX) {
   return clamp(v, f.min, f.max);
 }
 let simDragging = false;
-simSvg.addEventListener('pointerdown', e => { simDragging = true; try { simSvg.setPointerCapture(e.pointerId); } catch (_) {} simSlider.value = graphToValue(e.clientX); updateSim(); });
+simSvg.addEventListener('pointerdown', e => {
+  e.preventDefault();                                   // stop the browser starting a selection
+  simDragging = true;
+  document.body.classList.add('dragging-active');        // page-wide selection lock (mandatory on every drag)
+  try { simSvg.setPointerCapture(e.pointerId); } catch (_) {}
+  simSlider.value = graphToValue(e.clientX); updateSim();
+});
 simSvg.addEventListener('pointermove', e => { if (!simDragging) return; simSlider.value = graphToValue(e.clientX); updateSim(); });
-simSvg.addEventListener('pointerup', e => { simDragging = false; try { simSvg.releasePointerCapture(e.pointerId); } catch (_) {} });
-simSvg.addEventListener('pointercancel', () => { simDragging = false; });
+function endSimDrag(e) { if (!simDragging) return; simDragging = false; document.body.classList.remove('dragging-active'); try { if (e) simSvg.releasePointerCapture(e.pointerId); } catch (_) {} }
+simSvg.addEventListener('pointerup', endSimDrag);
+simSvg.addEventListener('pointercancel', endSimDrag);
 $$('#panel-factors .seg-btn').forEach(b => b.addEventListener('click', () => setFactor(b.dataset.factor)));
 function simResize() { /* drawGraph relies on viewBox, nothing to recompute, but redraw to be safe */ drawGraph(); updateSim(); }
 
