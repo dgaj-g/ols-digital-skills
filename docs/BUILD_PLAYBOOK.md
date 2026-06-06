@@ -532,18 +532,13 @@ Save as a `.md` file with:
 - Blank line.
 - Body — short paragraphs, plain text, no markdown formatting beyond paragraph breaks. The URL goes on its own line, no backticks, no `<>`, no `[link](...)` wrapping (Outlook auto-linkifies bare URLs on paste).
 
-**Hand the email over via the clipboard — standing handoff (do this on every `/publish`).** The macOS clipboard holds one item, so hand the two parts over in the order Damien composes them in Outlook: **subject first, then body.** After saving the `.md`:
+**Put the whole email on the clipboard in one go — standing handoff (do this on every `/publish`).** Copy the entire email to the macOS clipboard as a single block, with the `Subject: ` **label stripped** so the subject text sits as the **first line above the body**. Damien pastes once and splits the subject off into Outlook's subject field himself. Do **not** include the literal word `Subject:` (he doesn't want to delete it), and do **not** hand the subject and body over as two separate copies.
 
-1. Copy the **subject** (strip the `Subject: ` prefix) so he can paste it into Outlook's subject field:
-   ```bash
-   s=$(head -1 "…/<Activity_Slug>_email.md"); printf '%s' "${s#Subject: }" | pbcopy
-   ```
-2. When he's pasted the subject, copy the **body** — the `Dear …` greeting through `Kind regards,` / `Damien`, i.e. everything after the `Subject:` line and the blank line — so he can paste it into the message area:
-   ```bash
-   tail -n +3 "…/<Activity_Slug>_email.md" | pbcopy   # skips the Subject: line + the following blank line
-   ```
+```bash
+s=$(head -1 "…/<Activity_Slug>_email.md"); { printf '%s\n' "${s#Subject: }"; tail -n +2 "…/<Activity_Slug>_email.md"; } | pbcopy
+```
 
-Tell him which part is on the clipboard at each step and prompt him for the word to swap over to the body. Never make him copy the email by hand. (Standing clipboard-handoff preference.)
+That places: the subject text, a blank line, then the body — all on the clipboard in one paste. Tell him it's ready to ⌘V. Never make him copy the email by hand. (Standing clipboard-handoff preference.)
 
 **Don't use:** "Best wishes", "Please find attached", "I hope this email finds you well", em-dashes, exclamation marks (one is OK in the opener if it lands naturally — never more than one), emojis.
 
@@ -593,7 +588,7 @@ After everything's done, Damien sees in chat:
 - **Live URL** (plain text on its own line, clickable in his terminal)
 - **Word doc path** (absolute path under Claude Work)
 - **Email draft path** (absolute path under Claude Work)
-- **Email handed over via the clipboard in sequence** (subject first for the subject field, then the body for the message area — the clipboard holds one item); tell him which part is on it and prompt to swap to the body
+- **Whole email on the macOS clipboard in one paste** — subject text as the top line (no `Subject:` label) above the body; he pastes once and moves the subject into the subject field himself
 - **Email subject + body inlined** in the chat so he can copy-paste without opening the file if he prefers — useful when he's mobile or away from the file system
 - **Any flag** worth surfacing (e.g. "Pages took >3 min — re-check before sending")
 
