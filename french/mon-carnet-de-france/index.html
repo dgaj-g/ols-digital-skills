@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mon Carnet de France</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ============================================================
+       SHELL SLICE (issue #18). This is the branded home hub + the
+       sign-in / save / Doc-generation plumbing. The four stations are
+       placeholders for now; their real content (drag games etc.) is
+       built once this shell + the deploy model are signed off.
+       ============================================================ -->
+
+  <main id="app" class="app" aria-live="polite">
+
+    <!-- First-visit welcome (shown by script.js only on first run) -->
+    <section id="welcome" class="welcome" hidden aria-labelledby="welcome-h">
+      <div class="welcome-card">
+        <img src="../../assets/crest.png" alt="" class="welcome-crest" aria-hidden="true">
+        <h1 id="welcome-h">Bienvenue !</h1>
+        <p class="welcome-lead">Welcome to <strong>Mon Carnet de France</strong>.</p>
+        <p id="welcome-hello" class="welcome-hello"></p>
+        <p class="welcome-blurb">You are going to become a France expert and build your own project.
+          Four stops. I'll be with you the whole way. Ready? <span class="fr">Allons-y&nbsp;!</span></p>
+        <button id="welcome-start" class="btn btn-gold btn-lg" type="button">Commencer / Start</button>
+      </div>
+    </section>
+
+    <!-- Home hub -->
+    <section id="home" class="home" hidden aria-labelledby="home-h">
+      <header class="home-head">
+        <span class="ribbon" aria-hidden="true"><i></i><i></i><i></i></span>
+        <h1 id="home-h" class="home-title">Mon Carnet de France</h1>
+        <p id="home-sub" class="home-sub">Your travel notebook of France</p>
+      </header>
+
+      <!-- Passport progress strip -->
+      <div class="passport" role="group" aria-label="Your progress">
+        <span class="passport-label">Mon passeport</span>
+        <ul class="stamps" id="stamps">
+          <li data-stamp="1"></li>
+          <li data-stamp="2"></li>
+          <li data-stamp="3"></li>
+          <li data-stamp="4"></li>
+        </ul>
+        <span class="passport-count" id="passport-count">0 of 4 stops done</span>
+      </div>
+
+      <!-- The four stations -->
+      <ul class="stations" id="stations">
+        <li>
+          <button class="station" type="button" data-station="1" aria-describedby="st1-status">
+            <span class="station-num">1</span>
+            <span class="station-icon" aria-hidden="true">&#128506;</span>
+            <span class="station-titles"><span class="fr">La Carte</span><span class="en">The map of France</span></span>
+            <span class="station-status" id="st1-status">Start</span>
+          </button>
+        </li>
+        <li>
+          <button class="station" type="button" data-station="2" aria-describedby="st2-status">
+            <span class="station-num">2</span>
+            <span class="station-icon" aria-hidden="true">&#129360;</span>
+            <span class="station-titles"><span class="fr">La Cuisine</span><span class="en">French food</span></span>
+            <span class="station-status" id="st2-status">Start</span>
+          </button>
+        </li>
+        <li>
+          <button class="station" type="button" data-station="3" aria-describedby="st3-status">
+            <span class="station-num">3</span>
+            <span class="station-icon" aria-hidden="true">&#127878;</span>
+            <span class="station-titles"><span class="fr">Le 14 Juillet</span><span class="en">Bastille Day</span></span>
+            <span class="station-status" id="st3-status">Start</span>
+          </button>
+        </li>
+        <li>
+          <button class="station" type="button" data-station="4" aria-describedby="st4-status">
+            <span class="station-num">4</span>
+            <span class="station-icon" aria-hidden="true">&#11088;</span>
+            <span class="station-titles"><span class="fr">Les Personnes C&eacute;l&egrave;bres</span><span class="en">Famous French people</span></span>
+            <span class="station-status" id="st4-status">Start</span>
+          </button>
+        </li>
+      </ul>
+
+      <!-- Make my project -->
+      <div class="finish">
+        <button id="create" class="btn btn-gold btn-lg" type="button" disabled>
+          <span class="lock" aria-hidden="true">&#128274;</span>
+          Cr&eacute;er mon projet / Make my project
+        </button>
+        <p id="finish-hint" class="finish-hint">Finish all four stops to unlock this.</p>
+      </div>
+
+      <!-- Result of Doc generation (revealed after Create) -->
+      <div id="result" class="result" hidden aria-live="polite"></div>
+    </section>
+
+    <!-- Generic station overlay (placeholder content for the shell) -->
+    <div id="station-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="sm-title">
+      <div class="modal-card">
+        <button class="modal-close" id="sm-close" type="button" aria-label="Close">&times;</button>
+        <h2 id="sm-title" class="modal-title"></h2>
+        <p class="modal-body">This stop is coming soon. In the finished activity you'll explore it as a
+          mini-game, and what you discover will be written into your project.</p>
+        <p class="modal-note">For this preview, tap below to mark the stop as done so we can test the
+          journey end to end.</p>
+        <button id="sm-done" class="btn btn-blue" type="button">Mark this stop as done</button>
+      </div>
+    </div>
+
+    <!-- Staff key (passcode-gated dashboard) -->
+    <button id="staff-key" class="staff-key" type="button" aria-label="Teacher area">&#128273;</button>
+    <div id="staff-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="staff-title">
+      <div class="modal-card">
+        <button class="modal-close" id="staff-close" type="button" aria-label="Close">&times;</button>
+        <h2 id="staff-title" class="modal-title">Teacher area</h2>
+        <div id="staff-gate">
+          <label class="field-label" for="staff-pass">Staff passcode</label>
+          <input id="staff-pass" class="field" type="password" autocomplete="off" inputmode="text">
+          <button id="staff-go" class="btn btn-blue" type="button">Open</button>
+          <p id="staff-msg" class="staff-msg" role="alert"></p>
+        </div>
+        <div id="staff-board" hidden>
+          <p class="staff-hint">Who has done what (this class). Names follow each pupil's school login.</p>
+          <div class="table-wrap"><table class="dash" id="dash"></table></div>
+          <button id="staff-refresh" class="btn btn-ghost" type="button">Refresh</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="act-footer">
+    <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+    <span>OLS Digital Skills</span>
+  </footer>
+
+  <script src="qrcode.min.js"></script>
+  <script src="script.js"></script>
+  <script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
