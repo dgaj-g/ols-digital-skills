@@ -227,8 +227,10 @@ let abStep = -1;
 
 // antigens on the watch bacterium
 (function buildWatchAntigens() {
-  const g = $('#ab-antigens'); const xs = [445, 495, 545];
-  xs.forEach(x => { const p = svgEl('polygon', { points: `${x - 11},250 ${x + 11},250 ${x},230` }); g.appendChild(p); });
+  // seat the antigen spikes ON the bacterium's flat top edge (y=250), within the
+  // straight region between the rounded ends so none float over a curved corner
+  const g = $('#ab-antigens'); const xs = [470, 495, 520];
+  xs.forEach(x => { const p = svgEl('polygon', { points: `${x - 11},250 ${x + 11},250 ${x},232` }); g.appendChild(p); });
 })();
 for (let i = 0; i < 6; i++) abDots.appendChild(document.createElement('span'));
 
@@ -261,9 +263,9 @@ function applyAbStep(n) {
     [[110, 250], [90, 300], [110, 350], [200, 280], [205, 330]].forEach((p, i) =>
       abFlock.appendChild(antibodyY(p[0], p[1], 1, -20 + i * 12)));
   }
-  // step 3+: antibodies docked on antigens
+  // step 3+: antibodies docked on the antigens (aligned to the seated antigen x-positions)
   if (abStep >= 3) {
-    [445, 495, 545].forEach(x => abFlock.appendChild(antibodyY(x, 232, 0.9, 180)));
+    [470, 495, 520].forEach(x => abFlock.appendChild(antibodyY(x, 226, 0.85, 180)));
   }
   // step 4 (clump): pull bacterium + show partner microbes clumping
   if (abStep >= 4) {
@@ -381,8 +383,11 @@ $('#ab-reset').addEventListener('click', buildAbMatch);
 // ============================================================
 // EXHIBIT II — Phagocytosis
 // ============================================================
-const phBody = $('#ph-body'), phBact = $('#ph-bact'), phVac = $('#ph-vacuole'), phVes = $('#ph-vesicles'), phProd = $('#ph-products');
-const PHAGO_BLOB = 'M205 80 C150 72 112 104 108 150 C72 168 82 214 122 226 C124 272 178 298 216 286 C256 300 306 280 312 240 C346 224 340 168 300 158 C300 110 256 82 216 94 C212 88 209 84 205 80 Z';
+const phBody = $('#ph-body'), phBact = $('#ph-bact'), phVac = $('#ph-vacuole'), phVacFill = $('#ph-vac-fill'),
+      phVes = $('#ph-vesicles'), phProd = $('#ph-products'), phGran = $('#ph-granules'),
+      phCell = $('#ph-cell'), phPseudoT = $('#ph-pseudo-top'), phPseudoB = $('#ph-pseudo-bot');
+// a smooth, mostly-round cell with a few gentle lobes — reads as a leukocyte, not a cloud
+const PHAGO_BLOB = 'M210 82 C268 80 322 110 326 166 C329 206 314 246 274 266 C246 280 232 286 210 290 C176 296 130 286 112 248 C96 214 92 150 128 116 C154 90 178 84 210 82 Z';
 phBody.setAttribute('d', PHAGO_BLOB);
 
 const PHAGO_STAGES = [
@@ -407,45 +412,64 @@ function clearPhagoTimers() { phagoSeqTimers.forEach(clearTimeout); phagoSeqTime
 
 function buildVesicles() {
   phVes.innerHTML = '';
-  [[150, 235], [255, 130], [270, 235], [180, 130]].forEach(p => {
-    const c = svgEl('circle', { cx: p[0], cy: p[1], r: 8, fill: '#E4B824', stroke: '#B58A12', 'stroke-width': 1.5 });
+  [[150, 240], [262, 122], [286, 232], [176, 128]].forEach(p => {
+    const c = svgEl('circle', { cx: p[0], cy: p[1], r: 8, fill: '#E4B824', stroke: '#B58A12', 'stroke-width': 1.5, filter: 'url(#goldGlow)' });
     c.classList.add('ph-vesicle'); c.style.opacity = '0'; phVes.appendChild(c);
   });
 }
-buildVesicles();
+function buildGranules() {
+  phGran.innerHTML = '';
+  [[244, 124], [274, 152], [250, 206], [296, 182], [222, 150], [302, 138], [266, 222], [200, 110], [150, 210]]
+    .forEach(p => phGran.appendChild(svgEl('circle', { cx: p[0], cy: p[1], r: 1.5 + (p[0] % 3) * 0.4, fill: 'rgba(44,92,138,0.22)', 'pointer-events': 'none' })));
+}
+buildVesicles(); buildGranules();
 function applyPhagoStage(n) {
   phStage = clamp(n, 0, 4);
   $$('span', phDots).forEach((d, i) => d.classList.toggle('on', i === phStage));
   $('#phago-prev').disabled = phStage === 0; $('#phago-next').disabled = phStage === 4;
   phCaption.textContent = PHAGO_STAGES[phStage].text;
-  // bacterium position/scale per stage
+
+  // bacterium position/scale per stage (rect centre = 405,187)
   const bactStates = [
-    'translate(-72px,0)',                 // surrounded: at membrane
-    'translate(-175px,6px)',              // engulfed: inside
-    'translate(-175px,6px)',              // vacuole
-    'translate(-175px,6px) scale(0.25)',  // digested (shrinking)
-    'translate(-175px,6px) scale(0.25)'   // released
+    'translate(-55px,0)',                 // 0 surrounded: at the right membrane
+    'translate(-150px,2px)',              // 1 engulfed: drawn inside
+    'translate(-165px,1px)',              // 2 vacuole: centred in the vacuole
+    'translate(-165px,1px) scale(0.82)',  // 3 digested: dims + shrinks
+    'translate(-165px,1px) scale(0.18)'   // 4 released: gone
   ];
-  phBact.style.transformOrigin = '404px 187px';
+  phBact.style.transformOrigin = '405px 187px';
   phBact.style.transform = bactStates[phStage];
-  phBact.style.opacity = phStage >= 4 ? '0' : (phStage >= 3 ? '0.4' : '1');
-  phVac.style.opacity = (phStage === 2 || phStage === 3) ? '1' : '0';
-  // vesicles drift to centre on digest
-  const ves = $$('.ph-vesicle', phVes);
-  ves.forEach(v => {
-    if (phStage >= 3) {
-      v.style.opacity = phStage === 3 ? '1' : '0';
-      v.style.transformOrigin = 'center';
-      v.style.transform = `translate(${(230 - parseFloat(v.getAttribute('cx')))}px, ${(187 - parseFloat(v.getAttribute('cy')))}px)`;
+  phBact.style.opacity = phStage >= 4 ? '0' : (phStage === 3 ? '0.45' : '1');
+
+  // pseudopods reach out only while surrounding (stage 0)
+  const reach = phStage === 0;
+  [phPseudoT, phPseudoB].forEach(p => {
+    p.style.transformOrigin = '300px 186px';
+    p.style.opacity = reach ? '1' : '0';
+    p.style.transform = reach ? 'none' : 'translateX(-30px) scaleX(0.4)';
+  });
+
+  // food vacuole: clearly visible at stages 2 & 3
+  const vac = phStage === 2 || phStage === 3;
+  phVac.style.opacity = vac ? '1' : '0';
+  phVacFill.style.opacity = vac ? '1' : '0';
+  phVac.classList.toggle('digesting', phStage === 3);
+
+  // enzyme vesicles converge on the bacterium during digestion (stage 3)
+  $$('.ph-vesicle', phVes).forEach(v => {
+    if (phStage === 3) {
+      v.style.opacity = '1'; v.style.transformOrigin = 'center';
+      v.style.transform = `translate(${(238 - parseFloat(v.getAttribute('cx'))).toFixed(0)}px, ${(188 - parseFloat(v.getAttribute('cy'))).toFixed(0)}px)`;
     } else { v.style.opacity = '0'; v.style.transform = ''; }
   });
-  // products released
+
+  // products of digestion released through the membrane (stage 4)
   phProd.innerHTML = '';
   if (phStage === 4) {
-    for (let i = 0; i < 4; i++) {
-      const c = svgEl('circle', { cx: 230, cy: 170 + i * 12, r: 5, fill: '#CFE4F5', stroke: '#2C5C8A', 'stroke-width': 1.2 });
+    for (let i = 0; i < 5; i++) {
+      const c = svgEl('circle', { cx: 238, cy: 176 + i * 8, r: 4.5, fill: '#CFE4F5', stroke: '#2C5C8A', 'stroke-width': 1.2 });
       c.classList.add('ph-product'); phProd.appendChild(c);
-      requestAnimationFrame(() => { c.style.transform = `translate(${150 + i * 10}px, ${-30 + i * 16}px)`; c.style.opacity = '0'; });
+      requestAnimationFrame(() => { c.style.transform = `translate(${150 + i * 12}px, ${-34 + i * 17}px)`; c.style.opacity = '0'; });
     }
   }
   phStage === 4 ? sFx.ok() : sFx.tick();
@@ -516,14 +540,18 @@ const PLATES = {
     kicker: 'Active immunity', title: 'The response to infection',
     body: 'After a <strong>first infection</strong> the body makes its own antibodies. The level rises <strong>slowly</strong>, crosses the <strong>immunity threshold</strong>, then declines gently. You are often ill for a few days first.',
     curves: [{ cls: 'primary', pts: [[0, 0.05], [0.12, 0.05], [0.35, 0.22], [0.55, 0.55], [0.7, 0.72], [0.85, 0.7], [1, 0.62]] }],
-    flags: [{ t: 0.12, v: 0.05, n: 1 }, { t: 0.55, v: 0.55, n: 2 }, { t: 0.78, v: 0.71, n: 3 }],
+    flags: [{ t: 0.12, v: 0.05, n: 1, title: 'Infection', body: 'The microorganism enters the body and the immune response begins.' },
+            { t: 0.55, v: 0.55, n: 2, title: 'Rising slowly', body: 'The body makes its own antibodies, so the level rises slowly.' },
+            { t: 0.78, v: 0.71, n: 3, title: 'Above the threshold', body: 'The level passes the immunity threshold &mdash; high enough to fight the infection and recover.' }],
     xlabels: [{ t: 0.12, txt: 'infection' }]
   },
   passive: {
     kicker: 'Passive immunity', title: 'Ready-made antibodies',
     body: 'In <strong>passive immunity</strong>, ready-made antibodies are <strong>injected</strong>. The level rises <strong>very quickly</strong> above the threshold, then <strong>falls fast</strong> &mdash; the antibodies are used up and not replaced, so protection is <strong>short-lived</strong>.',
     curves: [{ cls: 'primary', pts: [[0, 0.02], [0.06, 0.02], [0.12, 0.78], [0.2, 0.6], [0.34, 0.28], [0.5, 0.08], [0.7, 0.02], [1, 0.02]] }],
-    flags: [{ t: 0.06, v: 0.02, n: 1 }, { t: 0.12, v: 0.78, n: 2 }, { t: 0.4, v: 0.18, n: 3 }],
+    flags: [{ t: 0.06, v: 0.02, n: 1, title: 'Injection', body: 'Ready-made antibodies are injected into the body.' },
+            { t: 0.12, v: 0.78, n: 2, title: 'Fast rise', body: 'The level rises very quickly and passes the threshold &mdash; protection is immediate.' },
+            { t: 0.4, v: 0.18, n: 3, title: 'Short-lived', body: 'The level falls fast &mdash; the antibodies are used up and not replaced, so protection does not last.' }],
     xlabels: [{ t: 0.07, txt: 'injection' }]
   },
   primsec: {
@@ -531,7 +559,8 @@ const PLATES = {
     body: 'The <strong>first infection</strong> gives a slow, small <strong>primary response</strong>. <strong>Memory lymphocytes</strong> remain for years, so on a <strong>second infection</strong> by the same microbe the <strong>secondary response</strong> is far <strong>faster and larger</strong>.',
     curves: [{ cls: 'primary', pts: [[0, 0.04], [0.1, 0.04], [0.22, 0.24], [0.32, 0.44], [0.4, 0.5], [0.48, 0.4], [0.56, 0.16], [0.6, 0.07], [0.62, 0.06]] },
              { cls: 'secondary', pts: [[0.62, 0.06], [0.66, 0.5], [0.7, 0.86], [0.78, 0.92], [0.9, 0.88], [1, 0.82]] }],
-    flags: [{ t: 0.4, v: 0.5, n: 1 }, { t: 0.72, v: 0.9, n: 2 }],
+    flags: [{ t: 0.4, v: 0.5, n: 1, title: 'Primary response', body: 'Slow and small &mdash; the body is meeting this microbe for the first time, so you may be ill for a few days.' },
+            { t: 0.72, v: 0.9, n: 2, title: 'Secondary response', body: 'Memory lymphocytes make many antibodies very quickly, so the level shoots up and you do not get ill.' }],
     xlabels: [{ t: 0.1, txt: 'first infection' }, { t: 0.63, txt: 'second infection' }],
     memory: true
   },
@@ -540,7 +569,9 @@ const PLATES = {
     body: 'The <strong>initial vaccine</strong> raises antibodies, but the level is <strong>insufficient</strong> &mdash; it does not reach the threshold. A <strong>booster</strong> later produces a large, rapid rise that <strong>exceeds the threshold</strong> and lasts.',
     curves: [{ cls: 'primary', pts: [[0, 0.03], [0.08, 0.03], [0.2, 0.26], [0.3, 0.3], [0.4, 0.2], [0.5, 0.14], [0.55, 0.13]] },
              { cls: 'primary', pts: [[0.55, 0.13], [0.6, 0.5], [0.68, 0.82], [0.78, 0.86], [0.9, 0.82], [1, 0.76]] }],
-    flags: [{ t: 0.25, v: 0.3, n: 1 }, { t: 0.55, v: 0.12, n: 2 }, { t: 0.72, v: 0.85, n: 3 }],
+    flags: [{ t: 0.25, v: 0.3, n: 1, title: 'Initial vaccine', body: 'The vaccine raises antibodies, but the level is insufficient &mdash; it does not reach the threshold.' },
+            { t: 0.55, v: 0.12, n: 2, title: 'Booster', body: 'A second (booster) dose is given to raise the antibody level again.' },
+            { t: 0.72, v: 0.85, n: 3, title: 'Now protected', body: 'The booster produces a large, rapid rise that exceeds the threshold and lasts.' }],
     xlabels: [{ t: 0.08, txt: 'initial vaccine' }, { t: 0.55, txt: 'booster' }],
     boosterPulse: true, memory: true
   }
@@ -587,13 +618,23 @@ function drawImmPlate(key, animate) {
     const p = svgEl('path', { class: 'imm-curve ' + c.cls, d: curvePath(c.pts) });
     immSvg.appendChild(p); paths.push(p);
   });
-  // flags (numbered points)
+  // flags (numbered points) — clickable to reveal what happens at that point
   const flagEls = [];
   (P.flags || []).forEach(f => {
-    const g = svgEl('g', { opacity: animate ? 0 : 1 });
-    g.appendChild(svgEl('circle', { class: 'imm-flag-dot', cx: ix(f.t), cy: iy(f.v), r: 11 }));
+    const g = svgEl('g', { class: 'imm-flag', opacity: animate ? 0 : 1, tabindex: 0, role: 'button' });
+    g.setAttribute('aria-label', `Point ${f.n}: ${f.title}. Select to read more.`);
+    g.appendChild(svgEl('circle', { class: 'imm-flag-hit', cx: ix(f.t), cy: iy(f.v), r: 20, fill: 'transparent' }));
+    g.appendChild(svgEl('circle', { class: 'imm-flag-dot', cx: ix(f.t), cy: iy(f.v), r: 13 }));
     const t = svgEl('text', { class: 'imm-flag-num', x: ix(f.t), y: iy(f.v) + 4 }); t.textContent = f.n;
-    g.appendChild(t); immSvg.appendChild(g); flagEls.push(g);
+    g.appendChild(t);
+    const show = () => {
+      setInfo(immInfoCard, { kicker: `Point ${f.n}`, title: f.title, body: f.body });
+      $$('.imm-flag', immSvg).forEach(x => x.classList.toggle('is-active', x === g));
+      sFx.tick();
+    };
+    g.addEventListener('click', show);
+    g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(); } });
+    immSvg.appendChild(g); flagEls.push(g);
   });
   setInfo(immInfoCard, P);
   if (!animate || reduceMotion()) { flagEls.forEach(g => g.setAttribute('opacity', 1)); if (P.memory) addMemoryY(P, false); return; }
