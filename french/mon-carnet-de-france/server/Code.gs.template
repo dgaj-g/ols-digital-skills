@@ -34,7 +34,8 @@ function initBoard() {
     sp.setProperty('staffPasscode', 'CHANGE-ME-' + Math.floor(Math.random() * 9000 + 1000));
   }
   if (!sp.getProperty('classes')) sp.setProperty('classes', '[]');
-  return 'Ready. Open Project Settings > Script Properties and set your own staffPasscode.';
+  if (sp.getProperty('teacherEmail') == null) sp.setProperty('teacherEmail', '');
+  return 'Ready. In Project Settings > Script Properties set staffPasscode AND teacherEmail (the address each pupil project Doc is shared to for marking).';
 }
 
 /* ---------- serve the page ---------- */
@@ -129,6 +130,19 @@ function apiMakeDoc(req) {
   var body = doc.getBody();
   body.appendParagraph('La Belle France').setHeading(DocumentApp.ParagraphHeading.TITLE);
   body.appendParagraph('This is your project, created in your own Google Drive. (Preview build - the four sections will appear here in the finished activity.)');
+
+  // Best-effort: share this pupil-owned Doc with the teacher so it opens straight
+  // from the dashboard (no "request access"). Shares ONLY with the teacher, never
+  // the domain. Wrapped so a sharing failure can NEVER block Doc creation - if it
+  // throws (e.g. the sharing scope is not granted), the Doc still exists in the
+  // pupil's Drive and Google Classroom remains the formal submission route.
+  var shared = 'no-teacher-email';
+  var teacher = String(P.getScriptProperties().getProperty('teacherEmail') || '').trim();
+  if (teacher && teacher.indexOf('@') > 0) {
+    try { doc.addViewer(teacher); shared = 'shared'; }
+    catch (e) { shared = 'share-failed: ' + (e && e.message ? e.message : e); }
+  }
+
   doc.saveAndClose();
   var url = doc.getUrl();
 
@@ -141,7 +155,7 @@ function apiMakeDoc(req) {
   d.stations = normStations_(d.stations);
   up.setProperty(draftKey_(cls), JSON.stringify(d));
   writeMeta_(cls, who, { name: String(d.name || ''), stations: d.stations, docUrl: url });
-  return { ok: true, url: String(url) };
+  return { ok: true, url: String(url), shared: String(shared) };
 }
 
 /* ---------- shared metadata store (script-properties) ---------- */
