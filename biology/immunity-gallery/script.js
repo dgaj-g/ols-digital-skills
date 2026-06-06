@@ -304,15 +304,24 @@ $$('#panel-antibodies [data-view1]').forEach(b => b.addEventListener('click', ()
 }));
 
 // ----- Antibody shape match (assessed) -----
-function shapeMarkup(kind) {
-  const m = {
-    triangle: '<polygon points="35,8 62,56 8,56"/>',
-    circle: '<circle cx="35" cy="35" r="26"/>',
-    square: '<rect x="11" y="11" width="48" height="48" rx="6"/>',
-    pentagon: '<polygon points="35,7 61,27 51,59 19,59 9,27"/>',
-    cross: '<polygon points="26,8 44,8 44,26 62,26 62,44 44,44 44,62 26,62 26,44 8,44 8,26 26,26"/>'
-  };
-  return `<svg class="tk-shape" viewBox="0 0 70 70" aria-hidden="true">${m[kind]}</svg>`;
+// The antigen is a SOLID shape (the "key"); the matching antibody shows that
+// shape PUNCHED OUT as a socket (the complementary "lock"). So pupils must apply
+// the complementary lock-and-key idea, not just spot two identical pictures.
+function kindPath(kind) {
+  return {
+    circle: 'M21 35 a14 14 0 1 0 28 0 a14 14 0 1 0 -28 0 Z',
+    triangle: 'M35 20 L50 48 L20 48 Z',
+    square: 'M22 22 H48 V48 H22 Z',
+    pentagon: 'M35 19 L50 30 L44 49 L26 49 L20 30 Z',
+    cross: 'M30 19 H40 V29 H50 V39 H40 V49 H30 V39 H20 V29 H30 Z'
+  }[kind];
+}
+function antigenMarkup(kind) {
+  return `<svg class="tk-shape" viewBox="0 0 70 70" aria-hidden="true"><path d="${kindPath(kind)}"/></svg>`;
+}
+function socketMarkup(kind) {
+  // a binding block with the antigen shape cut out (even-odd) — the complement
+  return `<svg class="tk-shape" viewBox="0 0 70 70" aria-hidden="true"><path fill-rule="evenodd" d="M9 13 H61 V57 H9 Z ${kindPath(kind)}"/></svg>`;
 }
 const AB_ANTIGENS = [{ shape: 'triangle' }, { shape: 'circle' }, { shape: 'square' }];
 const AB_ANTIBODIES = [
@@ -332,15 +341,15 @@ function buildAbMatch() {
   shuffle(AB_ANTIGENS).forEach(a => {
     const site = document.createElement('div');
     site.className = 'antigen-site';
-    site.innerHTML = `<div class="antigen-shape">${shapeMarkup(a.shape)}</div>
-      <div class="antigen-slot" data-shape="${a.shape}" aria-label="Antigen with ${a.shape} shape. Drop the matching antibody here."></div>
+    site.innerHTML = `<div class="antigen-shape">${antigenMarkup(a.shape)}</div>
+      <div class="antigen-slot" data-shape="${a.shape}" aria-label="Antigen with a ${a.shape} shape. Drop the antibody whose binding socket fits it."></div>
       <span class="ag-feedback"></span>`;
     abSites.appendChild(site);
     enableZoneKb($('.antigen-slot', site), 1, abUpdate);
   });
   enableZoneKb(abTray, 99, abUpdate);
   shuffle(AB_ANTIBODIES).forEach(a => {
-    const tk = makeToken(`${shapeMarkup(a.shape)}<span>Antibody</span>`, { shape: a.shape });
+    const tk = makeToken(`${socketMarkup(a.shape)}<span>Antibody</span>`, { shape: a.shape });
     tk.classList.add('ab-token');
     setupDrag(tk, abZones(), abUpdate);
     abTray.appendChild(tk);
