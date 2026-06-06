@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>The Immunity Gallery &middot; Biology &middot; OLS Digital Skills</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity gallery">
+
+<!-- Shared SVG definitions: the antibody-Y motif reused across exhibits -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <symbol id="sym-antibody" viewBox="0 0 40 44">
+      <!-- Y-shaped antibody: two binding arms + stem -->
+      <path d="M20 44 L20 22 M20 22 L8 4 M20 22 L32 4" fill="none" stroke-width="5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <!-- cell + organelle gradients (depth) -->
+    <linearGradient id="cellGrad" x1="0.15" y1="0" x2="0.75" y2="1">
+      <stop offset="0" stop-color="#EFF7FE"/>
+      <stop offset="0.5" stop-color="#D2E6F6"/>
+      <stop offset="1" stop-color="#B4D2EC"/>
+    </linearGradient>
+    <radialGradient id="nucGrad" cx="0.4" cy="0.34" r="0.8">
+      <stop offset="0" stop-color="#F4BACB"/>
+      <stop offset="1" stop-color="#D1738D"/>
+    </radialGradient>
+    <linearGradient id="bactGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#B6A8F0"/>
+      <stop offset="1" stop-color="#8369D4"/>
+    </linearGradient>
+    <radialGradient id="vacGrad" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="0.6" stop-color="rgba(228,184,36,0)"/>
+      <stop offset="1" stop-color="rgba(228,184,36,0.14)"/>
+    </radialGradient>
+    <!-- soft drop shadow for depth -->
+    <filter id="softShadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4.5" flood-color="#0a1f3d" flood-opacity="0.45"/>
+    </filter>
+    <filter id="goldGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="2.6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+</svg>
+
+<header class="act-header">
+  <div class="act-titles">
+    <p class="eyebrow">Biology &middot; GCSE &middot; CCEA Unit 2 &middot; 2.6</p>
+    <h1>The Immunity Gallery</h1>
+    <p class="lede">An after-hours gallery of the body&rsquo;s defences. Step up to each living exhibit, then prove what you have learned in the Examination Room.</p>
+  </div>
+</header>
+
+<nav class="floorplan" aria-label="Gallery exhibits">
+  <div class="floorplan-line" aria-hidden="true"></div>
+  <button class="exhibit-tab is-active" type="button" data-tab="antibodies" aria-selected="true">
+    <span class="ex-num">I</span><span class="ex-name">Antibodies</span>
+  </button>
+  <button class="exhibit-tab" type="button" data-tab="phagocytosis" aria-selected="false">
+    <span class="ex-num">II</span><span class="ex-name">Phagocytosis</span>
+  </button>
+  <button class="exhibit-tab" type="button" data-tab="immunity" aria-selected="false">
+    <span class="ex-num">III</span><span class="ex-name">Immunity</span>
+  </button>
+  <button class="exhibit-tab" type="button" data-tab="resistance" aria-selected="false">
+    <span class="ex-num">IV</span><span class="ex-name">Resistance</span>
+  </button>
+  <button class="exhibit-tab exam-tab" type="button" data-tab="exam" aria-selected="false">
+    <span class="ex-num">V</span><span class="ex-name">Examination&nbsp;Room</span>
+  </button>
+</nav>
+
+<main class="act-main">
+
+  <!-- ============================================================
+       EXHIBIT I — Antibodies & the immune response
+       ============================================================ -->
+  <section class="panel is-active" id="panel-antibodies" data-panel="antibodies" aria-label="Exhibit I: Antibodies and the immune response">
+    <div class="exhibit-head">
+      <p class="exhibit-eyebrow">Exhibit I</p>
+      <h2 class="exhibit-title">Antibodies &amp; the Foreign Mark</h2>
+    </div>
+
+    <div class="seg seg-center" role="tablist" aria-label="View">
+      <button class="seg-btn is-active" type="button" data-view1="watch" role="tab" aria-selected="true">Watch the response</button>
+      <button class="seg-btn" type="button" data-view1="match" role="tab" aria-selected="false">Match the shapes</button>
+    </div>
+
+    <!-- VIEW A: watch the response (explore + 6-beat film) -->
+    <div class="sub" id="ab-watch">
+      <div class="split">
+        <div class="stage-card display-case">
+          <svg id="ab-svg" viewBox="0 0 640 470" role="img" aria-label="A bacterium with antigens on its surface, a lymphocyte that recognises it, and the antibodies it produces.">
+            <!-- lymphocyte (left) -->
+            <g id="ab-lympho">
+              <circle cx="150" cy="300" r="86" fill="url(#cellGrad)" stroke="#2C5C8A" stroke-width="2.4" filter="url(#softShadow)"/>
+              <circle cx="150" cy="300" r="44" fill="url(#nucGrad)" stroke="#C26A84" stroke-width="2"/>
+            </g>
+            <!-- antibodies the lymphocyte has made (always visible in explore) -->
+            <g id="ab-statics" stroke="#E4B824">
+              <use href="#sym-antibody" x="196" y="232" width="26" height="28"/>
+              <use href="#sym-antibody" x="238" y="236" width="26" height="28" transform="rotate(18 251 250)"/>
+              <use href="#sym-antibody" x="138" y="214" width="24" height="26" transform="rotate(-12 150 227)"/>
+            </g>
+            <!-- bacterium (right) with antigen spikes -->
+            <g id="ab-bact">
+              <rect x="420" y="250" width="150" height="86" rx="38" fill="url(#bactGrad)" stroke="#5B43B8" stroke-width="2.5" filter="url(#softShadow)"/>
+              <g id="ab-antigens" fill="#E4B824" stroke="#B58A12" stroke-width="1.5"></g>
+            </g>
+            <!-- antibodies emitted (built by JS) -->
+            <g id="ab-flock"></g>
+            <!-- phagocyte (hidden until final beat) -->
+            <g id="ab-phago" hidden>
+              <path d="M540 86 C598 84 636 118 636 162 C638 200 610 232 566 232 C528 236 490 218 484 178 C478 140 496 90 540 86 Z"
+                    fill="url(#cellGrad)" stroke="#2C5C8A" stroke-width="2.4" filter="url(#softShadow)"/>
+              <path d="M512 150 q-26 8 -26 34 q0 26 26 30 q22 4 30 -14 q12 4 22 -8 q10 -14 -2 -28 q-12 -12 -26 -6 q-10 -16 -24 -8 Z" fill="url(#nucGrad)" stroke="#C26A84" stroke-width="1.5"/>
+            </g>
+
+            <!-- clickable structure labels (explore) -->
+            <g class="lbl" data-key="antigen" tabindex="0" role="button" aria-label="Antigen — show information">
+              <line x1="495" y1="244" x2="540" y2="150"/><circle cx="495" cy="244" r="4.5"/>
+              <text x="546" y="146" class="lbl-text">Antigen</text>
+              <text x="546" y="162" class="lbl-sub">foreign marker</text>
+            </g>
+            <g class="lbl" data-key="lymphocyte" tabindex="0" role="button" aria-label="Lymphocyte — show information">
+              <line x1="120" y1="372" x2="74" y2="410"/><circle cx="120" cy="372" r="4.5"/>
+              <text x="18" y="430" class="lbl-text">Lymphocyte</text>
+              <text x="18" y="446" class="lbl-sub">white blood cell</text>
+            </g>
+            <g class="lbl" data-key="antibody" tabindex="0" role="button" aria-label="Antibody — show information">
+              <line x1="250" y1="248" x2="300" y2="150"/><circle cx="250" cy="248" r="4.5"/>
+              <text x="306" y="146" class="lbl-text">Antibody</text>
+              <text x="306" y="162" class="lbl-sub">complementary shape</text>
+            </g>
+          </svg>
+
+          <div class="stepper" id="ab-stepper" hidden>
+            <button class="step-btn" id="ab-prev" type="button" aria-label="Previous step">&lsaquo;</button>
+            <div class="step-dots" id="ab-dots" aria-hidden="true"></div>
+            <button class="step-btn" id="ab-next" type="button" aria-label="Next step">&rsaquo;</button>
+          </div>
+          <div class="case-actions">
+            <button class="primary-btn" id="ab-play" type="button">Play the response</button>
+          </div>
+        </div>
+
+        <aside class="info-card" id="ab-info" aria-live="polite">
+          <button class="narrate-btn" data-narrate type="button" aria-pressed="false" aria-label="Read the information aloud" title="Read the information aloud">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wave" d="M15.5 8.5a4.5 4.5 0 010 7" fill="none" stroke-width="1.8" stroke-linecap="round"/><path class="wave wave2" d="M18 6a8 8 0 010 12" fill="none" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span class="narrate-label">Read aloud</span>
+          </button>
+          <span class="info-kicker" id="ab-kicker">The immune response</span>
+          <h3 id="ab-title">Recognise, produce, destroy</h3>
+          <p id="ab-body">Invading microorganisms carry <strong>antigens</strong> &mdash; foreign chemicals &mdash; on their surface. Tap a label to explore the parts, or press <strong>Play the response</strong> to watch how the body answers an infection, step by step.</p>
+        </aside>
+      </div>
+    </div>
+
+    <!-- VIEW B: match the complementary shapes (assessed) -->
+    <div class="sub" id="ab-match" hidden>
+      <p class="prompt">Each antibody has a <strong>specific shape</strong> that is <strong>complementary</strong> to one antigen &mdash; like a key in a lock. Drag the right antibody onto each antigen site on the bacterium, then press <strong>Check the matches</strong>. Two of the antibodies do not fit any antigen.</p>
+      <div class="match2-stage">
+        <div class="stage-card display-case match2-case">
+          <div class="bacterium" aria-label="Bacterium surface with three antigen sites">
+            <span class="bact-label">Bacterium surface</span>
+            <div class="antigen-row" id="ab-sites"></div>
+          </div>
+          <p class="spread-readout" id="ab-spread" hidden>Spread risk: <strong id="ab-spread-val">High</strong></p>
+        </div>
+        <div class="tray-stage">
+          <div class="tray-head">
+            <h3>Antibodies</h3>
+            <span class="tray-hint" id="ab-hint">Drag each antibody onto the antigen it fits.</span>
+          </div>
+          <div class="tray ab-tray" id="ab-tray"></div>
+          <div class="check-row">
+            <button class="primary-btn" id="ab-check" type="button" disabled>Check the matches</button>
+            <button class="ghost-btn" id="ab-reset" type="button">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       EXHIBIT II — Phagocytosis
+       ============================================================ -->
+  <section class="panel" id="panel-phagocytosis" data-panel="phagocytosis" aria-label="Exhibit II: White blood cell phagocytosis">
+    <div class="exhibit-head">
+      <p class="exhibit-eyebrow">Exhibit II</p>
+      <h2 class="exhibit-title">The Engulfing</h2>
+    </div>
+    <p class="prompt">A <strong>phagocyte</strong> is a white blood cell that surrounds, engulfs and digests microorganisms. Study the animation, then drag the five steps into the correct order and press <strong>Check the order</strong>. Get it right to run the whole process.</p>
+
+    <div class="phago-stage">
+      <div class="stage-card display-case phago-case">
+        <svg id="phago-svg" viewBox="0 0 480 360" role="img" aria-label="A phagocyte engulfing and digesting a bacterium in five stages.">
+          <g id="ph-cell">
+            <!-- pseudopods (reach out to surround, then retract) -->
+            <path id="ph-pseudo-top" class="ph-pseudo" d="M300 150 Q360 120 392 150 Q372 176 326 176 Z" fill="url(#cellGrad)" stroke="#2C5C8A" stroke-width="2"/>
+            <path id="ph-pseudo-bot" class="ph-pseudo" d="M300 222 Q360 252 392 222 Q372 196 326 196 Z" fill="url(#cellGrad)" stroke="#2C5C8A" stroke-width="2"/>
+            <!-- phagocyte body -->
+            <path id="ph-body" d="" fill="url(#cellGrad)" stroke="#2C5C8A" stroke-width="2.6" stroke-linejoin="round" filter="url(#softShadow)"/>
+            <!-- cytoplasm granules -->
+            <g id="ph-granules"></g>
+            <!-- lobed nucleus -->
+            <path id="ph-nucleus" d="M120 150 q-30 8 -30 38 q0 30 30 36 q26 5 34 -16 q14 4 24 -8 q12 -16 -2 -32 q-12 -14 -30 -8 q-12 -18 -26 -10 Z" fill="url(#nucGrad)" stroke="#C26A84" stroke-width="1.6"/>
+          </g>
+          <!-- food vacuole (shown stage 2+) -->
+          <circle id="ph-vac-fill" cx="240" cy="188" r="44" fill="url(#vacGrad)" opacity="0"/>
+          <circle id="ph-vacuole" cx="240" cy="188" r="44" fill="none" stroke="#E4B824" stroke-width="3" stroke-dasharray="7 6" opacity="0"/>
+          <!-- enzyme vesicles -->
+          <g id="ph-vesicles"></g>
+          <!-- bacterium -->
+          <g id="ph-bact"><rect id="ph-bact-rect" x="372" y="170" width="66" height="34" rx="17" fill="url(#bactGrad)" stroke="#5B43B8" stroke-width="2.5"/></g>
+          <!-- excreted products -->
+          <g id="ph-products"></g>
+        </svg>
+        <p class="phago-caption" id="phago-caption">Press a step or drag the cards below to begin.</p>
+        <div class="stepper" id="phago-stepper">
+          <button class="step-btn" id="phago-prev" type="button" aria-label="Previous stage" disabled>&lsaquo;</button>
+          <div class="step-dots" id="phago-dots" aria-hidden="true"></div>
+          <button class="step-btn" id="phago-next" type="button" aria-label="Next stage">&rsaquo;</button>
+        </div>
+      </div>
+
+      <div class="order-area">
+        <div class="filmstrip" id="phago-slots" aria-label="Drop the five steps in order"></div>
+        <div class="tray-stage">
+          <div class="tray-head">
+            <h3>The five steps</h3>
+            <span class="tray-hint" id="phago-hint">Drag each step into a numbered frame.</span>
+          </div>
+          <div class="tray order-tray" id="phago-tray"></div>
+          <div class="check-row">
+            <button class="primary-btn" id="phago-check" type="button" disabled>Check the order</button>
+            <button class="ghost-btn" id="phago-reset" type="button">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       EXHIBIT III — Immunity, graphs, vaccination
+       ============================================================ -->
+  <section class="panel" id="panel-immunity" data-panel="immunity" aria-label="Exhibit III: Immunity, primary and secondary responses, vaccination">
+    <div class="exhibit-head">
+      <p class="exhibit-eyebrow">Exhibit III</p>
+      <h2 class="exhibit-title">Memory &amp; the Curve</h2>
+    </div>
+
+    <div class="seg seg-center" role="tablist" aria-label="View">
+      <button class="seg-btn is-active" type="button" data-view3="explore" role="tab" aria-selected="true">Explore the graphs</button>
+      <button class="seg-btn" type="button" data-view3="read" role="tab" aria-selected="false">Read the graph</button>
+    </div>
+
+    <!-- VIEW A: explore the animated graphs -->
+    <div class="sub" id="imm-explore">
+      <div class="split">
+        <div class="stage-card display-case">
+          <div class="plate-seg" role="tablist" aria-label="Which graph">
+            <button class="plate-btn is-active" type="button" data-plate="active" role="tab" aria-selected="true">First infection</button>
+            <button class="plate-btn" type="button" data-plate="passive" role="tab" aria-selected="false">Passive</button>
+            <button class="plate-btn" type="button" data-plate="primsec" role="tab" aria-selected="false">Primary + secondary</button>
+            <button class="plate-btn" type="button" data-plate="vaccine" role="tab" aria-selected="false">Vaccine + booster</button>
+          </div>
+          <svg id="imm-svg" viewBox="0 0 560 380" role="img" aria-label="A graph of antibody level against time, with an immunity threshold line.">
+            <!-- axes, threshold, curves and flags drawn by JS -->
+          </svg>
+          <p class="case-hint">Tap a numbered point on the graph to read what happens there.</p>
+          <div class="case-actions">
+            <button class="primary-btn" id="imm-replay" type="button">Replay</button>
+          </div>
+        </div>
+
+        <aside class="info-card" id="imm-info" aria-live="polite">
+          <button class="narrate-btn" data-narrate type="button" aria-pressed="false" aria-label="Read the information aloud" title="Read the information aloud">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wave" d="M15.5 8.5a4.5 4.5 0 010 7" fill="none" stroke-width="1.8" stroke-linecap="round"/><path class="wave wave2" d="M18 6a8 8 0 010 12" fill="none" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span class="narrate-label">Read aloud</span>
+          </button>
+          <span class="info-kicker" id="imm-kicker">Immunity</span>
+          <h3 id="imm-title">Above the threshold</h3>
+          <p id="imm-body">You are <strong>immune</strong> when your antibody level is high enough &mdash; or can be made quickly enough &mdash; to pass the <strong>immunity threshold</strong> if the microbe returns. Choose a graph above to watch the antibody level change over time.</p>
+          <button class="compare-toggle" id="imm-compare-btn" type="button" aria-expanded="false">Active vs passive immunity</button>
+          <div class="compare-panel" id="imm-compare" hidden>
+            <div class="compare-col">
+              <h4>Active</h4>
+              <p>The body makes its <strong>own</strong> antibodies (from infection or a vaccine). Slow to act, but long-lasting. Memory lymphocytes are made.</p>
+            </div>
+            <div class="compare-col">
+              <h4>Passive</h4>
+              <p>Ready-made antibodies are <strong>injected</strong>. Fast-acting, but short-lived &mdash; they are used up and not replaced, and no memory lymphocytes are made.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- VIEW B: read the graph (assessed annotation) -->
+    <div class="sub" id="imm-read" hidden>
+      <p class="prompt">Here is the <strong>vaccination and booster</strong> graph. Drag each label onto the point it describes, then press <strong>Check the labels</strong>. The labels are shuffled and one or two will test whether you really understand the curve.</p>
+      <div class="read-stage">
+        <div class="stage-card display-case">
+          <svg id="imm-read-svg" viewBox="0 0 560 380" role="img" aria-label="The vaccination and booster graph with numbered points to label.">
+          </svg>
+        </div>
+        <div class="read-slots" id="imm-read-slots" aria-label="Drop a label onto each numbered point"></div>
+        <div class="tray-stage">
+          <div class="tray-head">
+            <h3>Labels</h3>
+            <span class="tray-hint" id="imm-read-hint">Drag each label onto the matching numbered point.</span>
+          </div>
+          <div class="tray label-tray" id="imm-read-tray"></div>
+          <div class="check-row">
+            <button class="primary-btn" id="imm-read-check" type="button" disabled>Check the labels</button>
+            <button class="ghost-btn" id="imm-read-reset" type="button">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       EXHIBIT IV — Antibiotic resistance
+       ============================================================ -->
+  <section class="panel" id="panel-resistance" data-panel="resistance" aria-label="Exhibit IV: Antibiotic resistance and natural selection">
+    <div class="exhibit-head">
+      <p class="exhibit-eyebrow">Exhibit IV</p>
+      <h2 class="exhibit-title">Survival of the Resistant</h2>
+    </div>
+
+    <div class="seg seg-center" role="tablist" aria-label="View">
+      <button class="seg-btn is-active" type="button" data-view4="sim" role="tab" aria-selected="true">Natural selection</button>
+      <button class="seg-btn" type="button" data-view4="advice" role="tab" aria-selected="false">Slow it down</button>
+    </div>
+
+    <!-- VIEW A: the petri-dish natural-selection simulation -->
+    <div class="sub" id="res-sim">
+      <div class="split">
+        <div class="stage-card display-case">
+          <div class="dish-readout">
+            <span class="dish-step" id="res-step-label">Step 1 of 4</span>
+            <span class="resist-counter">Resistant: <strong id="res-pct">12%</strong></span>
+          </div>
+          <svg id="res-svg" viewBox="0 0 420 300" role="img" aria-label="A dish of bacteria. Most are killed by an antibiotic; the resistant ones survive and multiply.">
+            <ellipse cx="210" cy="150" rx="196" ry="138" fill="#F4F8EC" stroke="#C8D6A8" stroke-width="3"/>
+            <ellipse cx="210" cy="150" rx="196" ry="138" fill="none" stroke="#E4B824" stroke-width="1.5" opacity="0.5"/>
+            <g id="res-colony"></g>
+            <rect id="res-wash" x="14" y="12" width="392" height="276" rx="130" fill="#E4B824" opacity="0"/>
+          </svg>
+          <div class="case-actions" id="res-actions">
+            <button class="primary-btn" id="res-go" type="button">Add the antibiotic</button>
+            <button class="ghost-btn" id="res-reset" type="button">Reset</button>
+          </div>
+        </div>
+
+        <aside class="info-card" id="res-info" aria-live="polite">
+          <button class="narrate-btn" data-narrate type="button" aria-pressed="false" aria-label="Read the information aloud" title="Read the information aloud">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wave" d="M15.5 8.5a4.5 4.5 0 010 7" fill="none" stroke-width="1.8" stroke-linecap="round"/><path class="wave wave2" d="M18 6a8 8 0 010 12" fill="none" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span class="narrate-label">Read aloud</span>
+          </button>
+          <span class="info-kicker" id="res-kicker">Natural selection</span>
+          <h3 id="res-title">A chance mutation</h3>
+          <p id="res-body">In this population, most bacteria are killed by antibiotics, but a few have a <strong>chance mutation</strong> that makes them resistant. Press <strong>Add the antibiotic</strong> and watch what happens over the generations.</p>
+        </aside>
+      </div>
+    </div>
+
+    <!-- VIEW B: advice sort + viral gate -->
+    <div class="sub" id="res-advice" hidden>
+      <div class="viral-gate" id="res-gate">
+        <p class="gate-q">A pupil has a <strong>cold</strong> (caused by a virus). Should the doctor prescribe antibiotics?</p>
+        <div class="gate-opts">
+          <button class="gate-btn" type="button" data-gate="yes">Yes, prescribe antibiotics</button>
+          <button class="gate-btn" type="button" data-gate="no">No, antibiotics will not help</button>
+        </div>
+        <p class="gate-feedback" id="res-gate-fb" hidden></p>
+      </div>
+
+      <p class="prompt">Drag each statement into the right bin, then press <strong>Check</strong>. Some are good practice that <strong>slows</strong> resistance; others are misuse that <strong>speeds it up</strong>.</p>
+      <div class="bins" id="res-bins">
+        <div class="bin" data-bin="slows" aria-label="Slows resistance bin">
+          <h3 class="bin-title">Slows resistance</h3>
+          <div class="bin-drop" data-binslot></div>
+        </div>
+        <div class="bin" data-bin="speeds" aria-label="Speeds resistance bin">
+          <h3 class="bin-title">Speeds resistance</h3>
+          <div class="bin-drop" data-binslot></div>
+        </div>
+      </div>
+      <div class="tray-stage">
+        <div class="tray-head">
+          <h3>Statements</h3>
+          <span class="tray-hint" id="res-advice-hint">Drag each one into a bin.</span>
+        </div>
+        <div class="tray advice-tray" id="res-advice-tray"></div>
+        <div class="check-row">
+          <button class="primary-btn" id="res-advice-check" type="button" disabled>Check</button>
+          <button class="ghost-btn" id="res-advice-reset" type="button">Reset</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       EXHIBIT V — Examination Room (cold assessment)
+       ============================================================ -->
+  <section class="panel" id="panel-exam" data-panel="exam" aria-label="Exhibit V: The Examination Room">
+    <div class="exhibit-head">
+      <p class="exhibit-eyebrow">Exhibit V</p>
+      <h2 class="exhibit-title">The Examination Room</h2>
+    </div>
+
+    <div class="quiz-stage stage-card" id="exam-stage">
+      <div id="exam-intro">
+        <p class="exam-blurb">One question at a time, one attempt each &mdash; just like the real thing. Answer in your own knowledge from the four exhibits. Earn your place on the curator&rsquo;s plaque.</p>
+        <button class="primary-btn" id="exam-start" type="button">Begin the examination</button>
+      </div>
+
+      <div id="exam-body" hidden>
+        <div class="quiz-top">
+          <span class="quiz-progress" id="exam-progress">Question 1 of 10</span>
+          <span class="score-pill"><span id="exam-score">0</span>&nbsp;correct</span>
+        </div>
+        <div class="quiz-bar"><div class="quiz-bar-fill" id="exam-bar"></div></div>
+        <div id="exam-question-wrap"></div>
+        <p class="quiz-feedback" id="exam-feedback" hidden></p>
+        <div class="quiz-actions">
+          <button id="exam-next" type="button" class="primary-btn" hidden>Next question</button>
+        </div>
+      </div>
+
+      <div id="exam-result" hidden>
+        <div class="plaque">
+          <span class="plaque-rank-label">Curator&rsquo;s plaque</span>
+          <h3 class="plaque-rank" id="exam-rank"></h3>
+          <p class="plaque-score" id="exam-result-score"></p>
+        </div>
+        <div class="result-breakdown" id="exam-breakdown"></div>
+        <p class="result-revision" id="exam-revision"></p>
+        <button id="exam-retry" type="button" class="primary-btn">Take it again</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<!-- Celebration overlay (exhibit completions) -->
+<div class="celebrate" id="celebrate" hidden>
+  <div class="celebrate-panel">
+    <h2 id="celebrate-title"></h2>
+    <p id="celebrate-body"></p>
+    <button id="celebrate-close" type="button" class="primary-btn">Keep exploring</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
