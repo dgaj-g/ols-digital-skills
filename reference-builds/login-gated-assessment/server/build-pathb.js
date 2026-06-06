@@ -91,7 +91,7 @@ const out = `<!doctype html>
 <base target="_top">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Coding with Confidence &mdash; Computational Thinking Challenge</title>
+<title>the reference engine &mdash; Computational Thinking Challenge</title>
 <style>
 ${css}
 </style>
