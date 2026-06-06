@@ -53,10 +53,16 @@ For an **OLS** build you MUST restore both:
       `#595959` (replace the example purple/aqua/coral "Digital Future" theme).
 - [ ] **Wordmark / header / footer →** the OLS crest + `OLS Digital Skills` wordmark (replace
       the neutral `Your Brand Here` placeholder wherever it appears in `index.html`).
-- [ ] **Intro video (MANDATORY for OLS) →** add `<script src="../../assets/intro-loader.js"></script>`
-      just before `</body>` — this gives the OLS crest particle-assembly intro and auto-picks
-      the **portrait** (`intro-portrait.mp4`) vs **landscape** (`intro.mp4`) render by device.
-      The assembler drops the intro for the Path B page, so re-add per the playbook if needed.
+- [ ] **Intro video (MANDATORY for OLS) →** keep the OLS crest portrait/landscape intro. You
+      can't put the `.mp4` inside the Apps Script project, and the page is served from
+      `googleusercontent.com`, so the normal relative `../../assets/` path does NOT resolve.
+      Instead: the **video files stay on github.io** (`/assets/intro.mp4` + `/assets/intro-portrait.mp4`,
+      already public) and the **assembler inlines the intro-loader logic and points the `<video>`
+      at the ABSOLUTE `https://dgaj-g.github.io/ols-digital-skills/assets/intro*.mp4` URLs** — the
+      same absolute-URL trick the assembler already uses for the crest. (`build-pathb.js` here
+      strips the intro because GG was non-OLS, so an OLS build adds this. Verify autoplay on the
+      live deployed page — the crest already loads cross-origin from github.io, so video should
+      too; the loader degrades gracefully if a browser blocks autoplay.)
 - [ ] **Footer brand mark →** the OLS `.act-footer` (crest + "OLS Digital Skills").
 - [ ] **Titles / copy →** set the real activity title and instructions (replace the example
       "20 questions / 40 minutes / 250 points" facts and sample wording).
