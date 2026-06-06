@@ -60,6 +60,7 @@ Then read, in order:
 - Skills available: `pdf`, `docx`, `pptx`, `xlsx` — use them for reading those file types.
 - Node global packages: `react`, `sharp`, `puppeteer`, `mermaid-cli`, `qrcode`, `highlight.js`. `ffmpeg` and `pdftoppm` are installed.
 - `python3` is available; `NODE_PATH=$(npm root -g)` lets node scripts find global packages.
+- **Clipboard handoffs (standing preference).** Whenever Damien needs to paste something — code, a config file, a big `Code.gs`/`Index.html` for an Apps Script deploy — put it **straight on the macOS clipboard** with `pbcopy < "<file>"` and tell him it's ready to ⌘V. Never dump code in chat for him to copy by hand. For multi-file handoffs, copy one, let him paste it, then copy the next when he's ready.
 
 **Who this is for:** Our Lady's Grammar School, Newry — an all-girls Catholic grammar school. Activities are used by pupils on phones, Chromebooks, and Promethean boards, and double as ETI inspection evidence. Tone: polished, professional, age-appropriate, never childish.
 
@@ -460,6 +461,25 @@ Both files land in the **department folder under Claude Work**, never in the pub
 
 Use the existing department folder if one already exists (e.g. `Chemistry/`, `Music/`). Create a new title-case folder (`RE/`, `Irish/`, `Sports Science/`) if not. The Mendeleev precedent (`Chemistry/Mendeleev_Cards_Access.docx`) is the format reference.
 
+### First: which KIND of activity is this? The handoff differs
+
+The Word-doc-with-QR + "scan or click, no login needed" handoff below is for a **standard static (github.io) activity**. A **login-gated (Path B / Apps Script) activity is fundamentally different** and must NOT get that handoff:
+
+- There is **no github.io URL to merge/publish** — the teacher deploys it themselves in Apps Script, and the live address is a long `…/exec` URL (record it in `docs/deployed-apps.md`).
+- **Do NOT generate the QR/access Word doc for pupils.** A QR of the bare `/exec` only reaches the teacher landing/Staff area, not a pupil — pupils need a **per-class link (`…/exec?class=NAME`)**, and **those links + QR codes are generated inside the activity's own admin panel**, per class, by the teacher. A static publish-time QR is pointless and misleading here.
+- The "**pupils don't need to log in, they just scan or click**" line is **wrong** — they DO sign in with their C2k account, that's the whole point.
+- These builds usually never had a draft PR in the first place (they're delivered to Claude Work, not merged to Pages), so there is **nothing to merge**; `/publish` here is about producing the **teacher email**, not a Pages deployment.
+
+So for a login-gated activity, `/publish` should skip the access-doc/QR step and instead produce an email in Damien's voice that:
+- says the activity is **ready for you to check**;
+- gives the **`/exec` link** on its own line (plain text), noting pupils **sign in with their school account**;
+- tells the teacher to open the **key/Staff button → passcode → create a class → share that class's link or QR** (the in-app admin), and that each class is its own board;
+- mentions the **teacher dashboard** (results, leaderboard, stats) behind the same passcode;
+- keeps the standing "try it on a computer and a smartphone" line and the exact closing line;
+- (if relevant) notes the **build → you deploy → we verify together** reality if it isn't yet live.
+
+Everything below (Word doc spec, "scan or click" wording) applies to **standard static activities only**.
+
 ### Extra instructions on `/publish`
 
 `/publish` accepts the same shape of extra instructions as `/build` does: anything Damien types after the issue number is high-priority guidance, almost always intended for the **email draft** rather than the Word doc. Typical extras:
@@ -569,7 +589,12 @@ Plus a `PushNotification`: `Published: <Topic>. Live + handoff ready in Claude W
 
 ## Login-gated collaborative activities (the "class board" capability)
 
-Some requests want pupils to **add and save their own content**, **build it up over a course**, and **see each other's work** — not just interact with a fixed activity. The reference build is **Government & Politics — The US Constitution Diagram** (`government-politics/constitution-diagram/` on github.io, plus a server package in Claude Work). It was the first to do this, and the pattern below is reusable. Read this whole section before attempting another collaborative build.
+Some requests want pupils to **sign in, save their own work, be scored/tracked, and have the teacher manage classes and see results** — not just interact with a fixed activity. There are now **two reference builds** for this; start from whichever is closer and reuse its code rather than building from scratch:
+
+- **Collaborative class board** — **Government & Politics — The US Constitution Diagram** (`government-politics/constitution-diagram/` on github.io + a server package in Claude Work). Pupils build up shared notes over a course. The first login-gated build.
+- **Login-gated assessment / competition with a full teacher admin** — **Girls Coding with Confidence — Computational Thinking Challenge** (a one-off, in Claude Work at `0. Digital Skills Web Activities/GG/`, `challenge/` + `server/`). This is the richer reference: **named class boards (create / select / delete), per-class link + in-page QR, a passcode-gated teacher dashboard with per-pupil results, per-class comparison, filters, question-performance analytics, CSV export, and clear-per-class**, plus server-authoritative scoring/timer/ranking and one-attempt-per-pupil. **When a brief needs a teacher admin section, class management, shareable links/QRs, or stats, copy from GG** — the server (`GG/server/Code.gs.template`), the assembler (`GG/server/build-pathb.js`), and the front-end transport/dashboard (`GG/challenge/script.js`) are the starting point.
+
+Read this whole section before attempting another login-gated build.
 
 ### The three delivery tiers — pick the lightest that meets the brief
 
@@ -597,7 +622,21 @@ The activity is authored **once** as the normal github.io build. The Path B page
 - **`PathB_Code.gs`** — the server (doGet template + `apiWhoAmI/apiLoad/apiSave/apiMyName/apiAdmin` for `google.script.run`).
 - **`PathB_Index.html`** — the assembled activity page (the Apps Script project's `Index` HTML file).
 
-These, plus the recipe and DPO note, live in **Claude Work / `<Dept>` /** — **never in the public repo** (they're operational, and the recipe/DPO doc reference the teacher). Big files paste cleanly with `pbcopy < "…/PathB_Index.html"` then ⌘V (don't open them in TextEdit — it renders HTML and mangles the encoding).
+These, plus the recipe and DPO note, live in **Claude Work / `<Dept>` /** — **never in the public repo** (they're operational, and the recipe/DPO doc reference the teacher). Big files go **straight onto the clipboard** with `pbcopy < "…/Index.html"` then the teacher hits ⌘V (this is Damien's strong preference for ALL code/file handoffs — never dump code in chat for manual copying; don't open these in TextEdit, it mangles the encoding).
+
+### Gotchas the GG build added to the canon (do these from the start)
+
+These cost real back-and-forth during the GG deploy. Bake them in next time:
+
+- **Emit the deploy files as PURE ASCII.** Pasting a large UTF-8 file into the Apps Script editor + serving via HtmlService can corrupt smart quotes, em-dashes, accented names (Méabh) and emoji into mojibake (`’` → `,Äô`). The assembler must escape every non-ASCII char to a safe escape the browser restores — `\uXXXX` inside JS, `&#NNN;` inside HTML — and **refuse to write a file containing a raw non-ASCII byte** (guard). See `GG/server/build-pathb.js` (`asciiJs` / `asciiHtml` / `guardAscii`). Question text/accents survive because they travel as real Unicode over `google.script.run` and render in the UTF-8 page.
+- **Store Sheet data as PLAIN TEXT (`setNumberFormat('@')`).** Google Sheets silently coerces values like `June-2026` or `10/2` into **dates** on write, so a later string match on the class name fails (`findRow_` returns null → crash). Set the Results range to text in `initBoard`, and write new rows with `getRange(...).setNumberFormat('@').setValues([...])`, not `appendRow`.
+- **Coerce everything to primitives before returning over `google.script.run`.** A stray Date/object in a return value makes the RPC fail silently (looks like a wrong passcode / dead button). `String(...)`/`Number(...)` every field; wrap per-row processing in try/catch and skip bad rows.
+- **Make the staff passcode forgiving** — compare `trim().toLowerCase()` both sides, so case/whitespace never bounces a correct passcode. Validate **server-side**.
+- **Every `google.script.run` call needs a `.catch`** on the client so a server error shows a message and re-enables the control, instead of a button that hangs forever.
+
+### Keep a registry of the deployed `/exec` URLs
+
+The teacher generates the `/exec` URL at deploy time inside Apps Script — Claude **cannot** know it unless it's recorded somewhere readable. So whenever a login-gated activity is deployed, **capture its `/exec` URL into `docs/deployed-apps.md` in this repo** (name, description, URL, owner, date). Because that file is committed, any future session can `git pull` and answer "give me the link for the Government & Politics activity". The `/exec` URL is **not secret** (the within-domain sign-in gate protects the data), so it lives safely in the public repo. The only way Claude learns a URL is the teacher pasting it in — at which point Claude adds it to the registry.
 
 ### Prove the C2k-specific unknowns BEFORE building (probe-first)
 
