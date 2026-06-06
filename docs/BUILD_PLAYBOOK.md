@@ -532,6 +532,14 @@ Save as a `.md` file with:
 - Blank line.
 - Body — short paragraphs, plain text, no markdown formatting beyond paragraph breaks. The URL goes on its own line, no backticks, no `<>`, no `[link](...)` wrapping (Outlook auto-linkifies bare URLs on paste).
 
+**Put the email body on the clipboard — standing handoff (do this on every `/publish`).** After saving the `.md`, copy the **body only** — the `Dear …` greeting through `Kind regards,` / `Damien`, **not** the `Subject:` line — straight onto the macOS clipboard so Damien can ⌘V it into the Outlook message area without opening the file:
+
+```bash
+tail -n +3 "…/<Activity_Slug>_email.md" | pbcopy   # skips the Subject: line + the following blank line
+```
+
+Do **not** put the subject on the clipboard (it goes in Outlook's separate subject field) — surface the subject line in the chat report instead. This is Damien's standing clipboard-handoff preference; never make him copy the email by hand.
+
 **Don't use:** "Best wishes", "Please find attached", "I hope this email finds you well", em-dashes, exclamation marks (one is OK in the opener if it lands naturally — never more than one), emojis.
 
 **Example shape** (do not copy verbatim — adapt to the actual activity):
@@ -580,6 +588,7 @@ After everything's done, Damien sees in chat:
 - **Live URL** (plain text on its own line, clickable in his terminal)
 - **Word doc path** (absolute path under Claude Work)
 - **Email draft path** (absolute path under Claude Work)
+- **Email body already on the macOS clipboard** (via `pbcopy`) — tell him it's ready to ⌘V into the Outlook message area, and give the **subject line on its own** for the subject field
 - **Email subject + body inlined** in the chat so he can copy-paste without opening the file if he prefers — useful when he's mobile or away from the file system
 - **Any flag** worth surfacing (e.g. "Pages took >3 min — re-check before sending")
 
