@@ -15,7 +15,7 @@ URL changes — update it.
 | Activity | What it is | `/exec` URL | Deployed by | Last updated |
 |---|---|---|---|---|
 | Girls Coding with Confidence — Computational Thinking Challenge | Login-gated Bebras-style timed competition (40 min, 20 questions); named class boards, per-class QR, teacher dashboard + stats | https://script.google.com/a/macros/c2ken.net/s/AKfycbxo_jz7qYI4dlfA_onu-1dEqPgXv7vw2DOxpf6-pkoS-TV-BAlJiq01xAES1PJc6mqQ/exec | dgartland021@c2ken.net | 2026-06-06 |
-| Government & Politics — The US Constitution Diagram | Login-gated collaborative class board (build shared notes) | _URL needed — paste when handy_ | Carol McMullan (handover) | — |
+| Government & Politics — The US Constitution Diagram | Login-gated collaborative class board (build shared notes) | https://script.google.com/a/macros/c2ken.net/s/AKfycbyz_Hp_XE5RbzYPYZM4EGtWh49pMLgVyhDnsE1udpDKDatwbQuDACRoDJlc9j3WpUQ/exec | Gov & Politics (c2ken) | 2026-06-06 |
 
 **Notes**
 - The teacher reaches the **bare `/exec`** for the Staff/admin landing; pupils use a **per-class link** (`…/exec?class=NAME`) that the teacher generates and shares from inside the activity's admin panel.
