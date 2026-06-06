@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Login-gated activity (reference engine)</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="gg">
+
+<a class="gg-skip" href="#main">Skip to content</a>
+
+<!-- ============================ LANDING / SIGN-IN ============================ -->
+<section id="screen-landing" class="screen screen--center is-active" aria-label="Welcome">
+  <div class="brandburst" aria-hidden="true"><span class="bb b1"></span><span class="bb b2"></span><span class="bb b3"></span></div>
+  <div class="landing-card">
+    <div class="brandmark brandmark--xl">
+      <span class="bm-glyph" aria-hidden="true">&lt;/&gt;</span>
+      <span class="bm-words"><span class="bm-girls">Your</span> Brand <span class="bm-conf">Here</span></span>
+    </div>
+    <h1 class="landing-title">Activity Title</h1>
+    <p class="landing-sub">A competition that rewards clever thinking &mdash; no coding needed. Just logic, patterns and problem solving.</p>
+    <div class="signin-box" id="signin-box">
+      <p class="signin-state" id="signin-state" aria-live="polite">Checking your sign-in&hellip;</p>
+    </div>
+    <button class="btn btn--primary btn--lg" id="to-welcome" type="button" disabled>Continue</button>
+    <p class="landing-foot">You stay signed in with your school account. Your teacher can see your result; other pupils only ever see your first name and last initial.</p>
+  </div>
+</section>
+
+<!-- ============================ WELCOME / DETAILS ============================ -->
+<section id="screen-welcome" class="screen" aria-label="Before you begin">
+  <div class="sheet">
+    <header class="sheet-head">
+      <div class="brandmark">
+        <span class="bm-glyph" aria-hidden="true">&lt;/&gt;</span>
+        <span class="bm-words"><span class="bm-girls">Your</span> Brand <span class="bm-conf">Here</span></span>
+      </div>
+      <h1 class="sheet-title">Your Activity Title</h1>
+      <p class="sheet-id" id="welcome-signed"></p>
+      <p class="sheet-class" id="welcome-class-line" hidden>Class: <strong id="welcome-class"></strong></p>
+    </header>
+
+    <div class="facts">
+      <div class="fact"><span class="fact-num">20</span><span class="fact-label">questions</span></div>
+      <div class="fact"><span class="fact-num">40</span><span class="fact-label">minutes</span></div>
+      <div class="fact"><span class="fact-num">250</span><span class="fact-label">points to win</span></div>
+    </div>
+
+    <div class="how">
+      <h2 class="how-h">How it works</h2>
+      <ul class="how-list">
+        <li>Questions get <strong>harder as you go</strong> &mdash; and worth more points: easy ones are 5, then 10, 15, and the hardest are worth 20.</li>
+        <li>Each question has <strong>four answers</strong> and exactly one is right. A right answer earns the points; a wrong answer just scores zero &mdash; there is <strong>no penalty for guessing</strong>, so never leave one blank.</li>
+        <li>You <strong>cannot go back</strong> to a question once you move on, and the timer keeps running, so trust your thinking and keep moving.</li>
+        <li>When the timer hits zero, or you finish question 20, the challenge ends and your place on your class leaderboard is locked in.</li>
+      </ul>
+    </div>
+
+    <form class="form" id="details-form" novalidate>
+      <h2 class="how-h">Your details</h2>
+      <div class="field">
+        <label for="f-first">First name</label>
+        <input id="f-first" name="first" type="text" autocomplete="off" maxlength="40" required />
+      </div>
+      <div class="field">
+        <label for="f-surname">Surname</label>
+        <input id="f-surname" name="surname" type="text" autocomplete="off" maxlength="40" required />
+      </div>
+      <p class="form-note" id="form-note" hidden></p>
+      <button class="btn btn--primary btn--lg btn--block" id="start-btn" type="submit">Start the challenge</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============================ CHALLENGE ============================ -->
+<main id="main" tabindex="-1">
+<section id="screen-challenge" class="screen" aria-label="The challenge">
+  <div class="hud">
+    <div class="hud-left">
+      <span class="hud-q" id="hud-q">Question 1 <span class="hud-q-of">of 20</span></span>
+      <div class="progress" aria-hidden="true"><span class="progress-fill" id="progress-fill"></span></div>
+    </div>
+    <div class="hud-right">
+      <span class="hud-score" id="hud-score" aria-label="Current score">0 <small>pts</small></span>
+      <span class="hud-timer" id="hud-timer" role="timer" aria-label="Time remaining">40:00</span>
+    </div>
+  </div>
+  <div class="qwrap">
+    <article class="qcard" id="qcard" aria-live="polite"></article>
+    <div class="qfoot">
+      <span class="qband" id="qband"></span>
+      <button class="btn btn--primary" id="next-btn" type="button" disabled>Next question</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============================ RESULTS ============================ -->
+<section id="screen-results" class="screen" aria-label="Your result">
+  <div class="result-wrap">
+    <div class="result-card">
+      <p class="result-eyebrow">Challenge complete</p>
+      <div class="rank-badge" id="rank-badge">
+        <span class="rank-icon" id="rank-icon" aria-hidden="true">&#9733;</span>
+        <span class="rank-title" id="rank-title">&hellip;</span>
+      </div>
+      <p class="result-msg" id="result-msg"></p>
+      <div class="scoreboard">
+        <div class="sb"><span class="sb-num" id="sb-score">0</span><span class="sb-label">total score</span></div>
+        <div class="sb"><span class="sb-num" id="sb-pct">0%</span><span class="sb-label">percentage</span></div>
+        <div class="sb"><span class="sb-num" id="sb-correct">0/20</span><span class="sb-label">correct</span></div>
+        <div class="sb"><span class="sb-num" id="sb-time">0:00</span><span class="sb-label">time left</span></div>
+        <div class="sb"><span class="sb-num" id="sb-rank">#&mdash;</span><span class="sb-label">leaderboard place</span></div>
+      </div>
+    </div>
+    <div class="lb-card">
+      <div class="lb-head">
+        <h2 class="lb-h">Live leaderboard <span class="lb-class" id="lb-class-name"></span></h2>
+        <span class="lb-live" id="lb-live"><span class="dot"></span> updating</span>
+      </div>
+      <ol class="lb-list" id="lb-list" aria-live="polite"></ol>
+      <p class="lb-mine" id="lb-mine"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ TEACHER DASHBOARD ============================ -->
+<section id="screen-staff" class="screen screen--staff" aria-label="Teacher dashboard">
+  <header class="staff-bar">
+    <div class="brandmark brandmark--sm">
+      <span class="bm-glyph" aria-hidden="true">&lt;/&gt;</span>
+      <span class="bm-words">Teacher dashboard</span>
+    </div>
+    <button class="btn btn--ghost btn--sm" id="staff-close" type="button">Close</button>
+  </header>
+
+  <div id="staff-locked" class="staff-lock">
+    <div class="lock-card">
+      <h2>Teacher access</h2>
+      <p class="muted">This area manages the class boards and shows every pupil's result. It is for staff only. Enter the administrator passcode.</p>
+      <div class="field">
+        <label for="staff-pass">Administrator passcode</label>
+        <input id="staff-pass" type="password" autocomplete="off" />
+      </div>
+      <p class="form-note" id="staff-note" hidden></p>
+      <button class="btn btn--primary btn--block" id="staff-unlock" type="button">Unlock</button>
+    </div>
+  </div>
+
+  <div id="staff-panel" class="staff-panel" hidden>
+
+    <!-- ===== Class boards ===== -->
+    <section class="cm">
+      <h3 class="dash-h">Class boards</h3>
+      <p class="muted dash-sub">Each class is its own competition with its own link and QR code. Make one board per class, then share its link or QR with that class.</p>
+      <div class="cm-grid">
+        <div class="cm-pick">
+          <select id="cm-select" class="share-input" aria-label="Choose a class board"></select>
+          <div class="cm-actions">
+            <button class="btn btn--ghost btn--sm" id="cm-copy" type="button">Copy link</button>
+            <button class="btn btn--ghost btn--sm" id="cm-qr" type="button">Show QR</button>
+            <button class="btn btn--ghost btn--sm" id="cm-goto" type="button">Open board</button>
+            <button class="btn btn--ghost btn--sm staff-danger" id="cm-delete" type="button">Delete class</button>
+          </div>
+        </div>
+        <div class="cm-add">
+          <input id="cm-new" class="share-input" maxlength="40" placeholder="New class, e.g. 10A" aria-label="New class name" />
+          <button class="btn btn--primary btn--sm" id="cm-add" type="button">Add class</button>
+        </div>
+      </div>
+      <p class="cm-status" id="cm-status" aria-live="polite"></p>
+    </section>
+
+    <!-- ===== Results & reporting ===== -->
+    <section class="rep">
+      <h3 class="dash-h">Results &amp; reporting</h3>
+      <div class="staff-controls">
+        <div class="field field--inline">
+          <label for="report-class">Show</label>
+          <select id="report-class"><option value="__ALL__">All classes</option></select>
+        </div>
+        <div class="field field--inline">
+          <label for="filter-year">Year group</label>
+          <select id="filter-year"><option value="">All years</option></select>
+        </div>
+        <div class="field field--inline">
+          <label for="filter-min">Score from</label>
+          <input id="filter-min" type="number" min="0" max="250" step="5" placeholder="0" />
+        </div>
+        <div class="field field--inline">
+          <label for="filter-max">to</label>
+          <input id="filter-max" type="number" min="0" max="250" step="5" placeholder="250" />
+        </div>
+        <button class="btn btn--ghost btn--sm" id="filter-clear" type="button">Clear filters</button>
+        <button class="btn btn--ghost btn--sm" id="staff-refresh" type="button">Refresh</button>
+        <button class="btn btn--ghost btn--sm" id="staff-csv" type="button">Export CSV</button>
+        <button class="btn btn--ghost btn--sm staff-danger" id="staff-reset" type="button">Clear results</button>
+      </div>
+
+      <div class="stat-row" id="stat-row"></div>
+
+      <div id="class-overview" class="class-overview" hidden></div>
+
+      <div class="table-scroll">
+        <table class="dash-table" id="dash-table">
+          <thead>
+            <tr>
+              <th data-sort="rank">#</th>
+              <th data-sort="name">Pupil</th>
+              <th data-sort="className">Class</th>
+              <th data-sort="score">Score</th>
+              <th data-sort="pct">%</th>
+              <th data-sort="correct">Correct</th>
+              <th data-sort="timeTakenSec">Time taken</th>
+              <th data-sort="title">Title</th>
+              <th data-sort="status">Status</th>
+            </tr>
+          </thead>
+          <tbody id="dash-body"></tbody>
+        </table>
+      </div>
+
+      <h3 class="dash-h">Question performance</h3>
+      <p class="muted dash-sub" id="qstats-sub">How many pupils answered each question correctly &mdash; the hardest questions float to the top.</p>
+      <div class="qstats" id="qstats"></div>
+    </section>
+  </div>
+</section>
+
+<!-- ============================ FLOATING STAFF BUTTON ============================ -->
+<button class="staff-fab" id="staff-fab" type="button" aria-label="Teacher tools" title="Teacher tools">&#128273;</button>
+
+<!-- ============================ QR MODAL ============================ -->
+<div class="modal" id="qr-modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-panel modal-panel--qr">
+    <button class="modal-close" type="button" data-close aria-label="Close">&times;</button>
+    <h2 class="modal-h">Scan to join <span id="qr-class"></span></h2>
+    <p class="modal-p">Point a phone camera at this, or share the link below, to open this class's challenge.</p>
+    <canvas id="qr-canvas" class="qr-canvas" aria-label="QR code for the class link"></canvas>
+    <p class="qr-link" id="qr-link"></p>
+  </div>
+</div>
+
+<!-- ============================ CONFIRM MODAL ============================ -->
+<div class="modal" id="confirm-modal" hidden>
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel">
+    <h2 class="modal-h" id="confirm-title"></h2>
+    <p class="modal-p" id="confirm-text"></p>
+    <div class="modal-actions">
+      <button class="btn btn--ghost" id="confirm-no" type="button">Cancel</button>
+      <button class="btn btn--primary" id="confirm-yes" type="button">Yes</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<footer class="gg-footer">
+  <span class="brandmark brandmark--sm">
+    <span class="bm-glyph" aria-hidden="true">&lt;/&gt;</span>
+    <span class="bm-words"><span class="bm-girls">Your</span> Brand <span class="bm-conf">Here</span></span>
+  </span>
+</footer>
+
+<script src="qrcode.min.js"></script>
+<script src="questions.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
