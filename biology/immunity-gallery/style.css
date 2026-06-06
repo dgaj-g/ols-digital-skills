@@ -305,9 +305,10 @@ body.gallery {
 .antigen-slot.lock-ok { border-color: var(--good); border-style: solid; background: rgba(46,204,113,0.2); }
 .antigen-slot.lock-no { border-color: var(--bad); border-style: solid; background: rgba(231,76,60,0.18); }
 .antigen-site .ag-feedback { font-size: 0.72rem; color: rgba(255,255,255,0.85); min-height: 1em; max-width: 140px; text-align: center; }
-/* antibody tokens carry a gold shape; colour is never the cue */
-.ab-token .tk-shape path, .ab-token .tk-shape polygon, .ab-token .tk-shape circle, .ab-token .tk-shape rect { fill: none; stroke: #B58A12; stroke-width: 3; }
-.antigen-shape path, .antigen-shape polygon, .antigen-shape circle, .antigen-shape rect { fill: var(--ols-gold); stroke: #B58A12; stroke-width: 2; }
+/* antigen = solid gold shape; antibody = gold block with that shape cut out as a
+   complementary socket. Colour is never the cue — the complementary shape is. */
+.ab-token .tk-shape path { fill: var(--ols-gold); stroke: #B58A12; stroke-width: 1.5; }
+.antigen-shape path { fill: var(--ols-gold); stroke: #B58A12; stroke-width: 2; }
 .spread-readout {
   margin: 14px 0 0; text-align: center; color: #fff; font-size: 0.9rem; font-weight: 600;
 }
