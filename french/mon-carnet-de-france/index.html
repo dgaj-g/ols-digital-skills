@@ -163,6 +163,44 @@
       </div>
     </section>
 
+    <!-- Station 3: Le 14 Juillet (order the story + write in your own words) -->
+    <section id="st3" class="station-view" hidden aria-labelledby="st3-h">
+      <header class="sv-head">
+        <button class="sv-back" id="st3-back" type="button">&#8592; Back</button>
+        <div class="sv-titles">
+          <h2 id="st3-h" class="sv-title"><span class="fr">Le 14 Juillet</span></h2>
+          <p class="sv-sub">Put the story of Bastille Day in order, from earliest to today, then press Check.</p>
+        </div>
+        <span class="sv-count" id="st3-count">0 / 5 placed</span>
+      </header>
+
+      <div class="order-stage">
+        <ol class="slots" id="bd-slots">
+          <li class="slot dropzone" data-pos="1"><span class="slot-n">1</span><span class="slot-hint">earliest</span></li>
+          <li class="slot dropzone" data-pos="2"><span class="slot-n">2</span></li>
+          <li class="slot dropzone" data-pos="3"><span class="slot-n">3</span></li>
+          <li class="slot dropzone" data-pos="4"><span class="slot-n">4</span></li>
+          <li class="slot dropzone" data-pos="5"><span class="slot-n">5</span><span class="slot-hint">today</span></li>
+        </ol>
+        <ul class="bd-tray dropzone" id="bd-tray" data-zone="tray" aria-label="Story cards to order"></ul>
+      </div>
+
+      <div class="sv-actions">
+        <button id="bd-check" class="btn btn-gold" type="button" disabled>V&eacute;rifier / Check</button>
+        <p id="bd-msg" class="sv-msg" role="status">Drag all five cards into the slots, then press Check.</p>
+      </div>
+
+      <div id="bd-write" class="bd-write" hidden>
+        <h3>Now write it in your own words</h3>
+        <p class="bd-write-prompt">Using what you have just learned, write a few sentences about <strong>how and why</strong> French people celebrate Bastille Day. Remember: your own words, in full sentences.</p>
+        <textarea id="bd-text" rows="5" placeholder="On 14 July, French people..."></textarea>
+        <div class="sv-actions">
+          <button id="bd-done" class="btn btn-blue" type="button" disabled>Save &amp; close</button>
+          <span id="bd-wc" class="sv-msg"></span>
+        </div>
+      </div>
+    </section>
+
     <!-- Generic station overlay (placeholder content for the shell) -->
     <div id="station-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="sm-title">
       <div class="modal-card">

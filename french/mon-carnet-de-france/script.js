@@ -374,6 +374,166 @@
     closeStation2();
   }
 
+  /* ============================================================
+     Station 3 - Le 14 Juillet. Order 5 story cards into slots (same
+     place-on-target + swap model, genuine fail state, date-free fronts
+     so dates don't give away the order), then write how/why in own words.
+     ============================================================ */
+  var BDAY = [
+    { key: 'storming', pos: 1, short: 'The storming of the Bastille', full: "On 14 July 1789, crowds of Parisians marched on the Bastille, an old royal fortress and prison, looking for gunpowder and weapons. People saw the prison as a symbol of the king's harsh rule, so its fall became a huge moment at the start of the French Revolution." },
+    { key: 'symbol', pos: 2, short: 'A symbol of freedom', full: 'The fall of the Bastille became a symbol of people standing up to unfair rule, and of the ideas France still values: liberté, égalité, fraternité (liberty, equality, brotherhood). Exactly one year later, on 14 July 1790, France held the Fête de la Fédération, a huge peaceful celebration of national unity.' },
+    { key: 'holiday', pos: 3, short: "It becomes France's national day", full: 'It took almost a hundred years for 14 July to become an official holiday. A French law made official on 6 July 1880 turned it into the country\'s annual national celebration, remembering both 1789 and the unity festival of 1790.' },
+    { key: 'parade', pos: 4, short: 'The grand military parade in Paris', full: 'Every year on the morning of 14 July, Paris holds a famous military parade. Since just after the First World War it has marched down the Champs-Élysées, from the Arc de Triomphe to the Place de la Concorde, where the President watches, with thousands of troops, bands and a flypast.' },
+    { key: 'fireworks', pos: 5, short: 'Fireworks and celebrations today', full: "When night falls, the celebrations continue across France. In Paris a spectacular fireworks display lights up the sky around the Eiffel Tower. All over the country there are village fêtes, music and dancing, including the popular bals des pompiers (firefighters' balls)." }
+  ];
+  function bdByKey(k) { for (var i = 0; i < BDAY.length; i++) if (BDAY[i].key === k) return BDAY[i]; return null; }
+  var BD_MIN = 80;   // min characters for the own-words write-up
+  var s3 = { built: false, home: {}, occ: {} };
+  var drag3 = null;
+
+  function openStation3() { show($('st3')); if (!s3.built) buildStation3(); }
+  function closeStation3() { captureBday(); persist(); hide($('st3')); }
+  function bdCardEl(key) { return document.getElementById('st3').querySelector('.bd-card[data-key="' + key + '"]'); }
+  function slotElByPos(pos) { return document.getElementById('bd-slots').querySelector('.slot[data-pos="' + pos + '"]'); }
+
+  function buildStation3() {
+    s3.built = true;
+    var tray = $('bd-tray'); tray.innerHTML = '';
+    for (var p = 1; p <= 5; p++) { var sl = slotElByPos(p); var card = sl.querySelector('.bd-card'); if (card) card.remove(); sl.classList.remove('correct'); }
+    s3.home = {}; s3.occ = { 1: null, 2: null, 3: null, 4: null, 5: null };
+    var saved = state.data['3'];
+    shuffle(BDAY).forEach(function (c) {
+      var li = document.createElement('li'); li.className = 'bd-card'; li.dataset.key = c.key;
+      li.innerHTML = '<span class="bd-short">' + escapeHtml(c.short) + '</span><span class="bd-full">' + escapeHtml(c.full) + '</span>';
+      li.addEventListener('pointerdown', onBdDown);
+      tray.appendChild(li); s3.home[c.key] = 'tray';
+    });
+    if (saved && saved.complete) {
+      BDAY.forEach(function (c) { s3.home[c.key] = c.pos; s3.occ[c.pos] = c.key; renderBdCard(c.key);
+        bdCardEl(c.key).classList.add('correct'); slotElByPos(c.pos).classList.add('correct'); });
+      show($('bd-write')); $('bd-text').value = saved.writeup || ''; updateBdWrite();
+      $('bd-check').hidden = true;
+    }
+    updateBdCount();
+  }
+
+  function onBdDown(e) {
+    var li = e.currentTarget;
+    if (li.classList.contains('correct')) return;
+    e.preventDefault();
+    var r = li.getBoundingClientRect();
+    drag3 = { key: li.dataset.key, el: li, pid: e.pointerId, sx: e.clientX, sy: e.clientY, offX: e.clientX - r.left, offY: e.clientY - r.top, w: r.width, moved: false };
+    try { li.setPointerCapture(e.pointerId); } catch (x) {}
+    li.addEventListener('pointermove', onBdMove);
+    li.addEventListener('pointerup', onBdUp);
+    li.addEventListener('pointercancel', onBdCancel);
+  }
+  function onBdMove(e) {
+    if (!drag3) return;
+    if (!drag3.moved) {
+      if (Math.abs(e.clientX - drag3.sx) + Math.abs(e.clientY - drag3.sy) < DRAG_THRESH) return;
+      drag3.moved = true; document.body.classList.add('dragging-active');
+      drag3.el.classList.add('dragging'); drag3.el.style.width = drag3.w + 'px';
+    }
+    drag3.el.style.left = (e.clientX - drag3.offX) + 'px';
+    drag3.el.style.top = (e.clientY - drag3.offY) + 'px';
+    bdHover(e.clientX, e.clientY);
+  }
+  function endBd(li) { li.removeEventListener('pointermove', onBdMove); li.removeEventListener('pointerup', onBdUp); li.removeEventListener('pointercancel', onBdCancel); }
+  function onBdUp(e) {
+    if (!drag3) return;
+    var el = drag3.el, key = drag3.key, moved = drag3.moved;
+    try { el.releasePointerCapture(drag3.pid); } catch (x) {}
+    endBd(el); bdClearHover();
+    document.body.classList.remove('dragging-active');
+    el.classList.remove('dragging'); el.style.width = ''; el.style.left = ''; el.style.top = '';
+    if (moved) {
+      var t = bdTargetAt(e.clientX, e.clientY, el);
+      if (t && t.type === 'slot') placeInSlot(key, t.pos);
+      else if (t && t.type === 'tray') sendBdToTray(key);
+      else renderBdCard(key);
+      updateBdCount();
+    }
+    drag3 = null;
+  }
+  function onBdCancel() {
+    if (!drag3) return;
+    try { drag3.el.releasePointerCapture(drag3.pid); } catch (x) {}
+    endBd(drag3.el); bdClearHover();
+    document.body.classList.remove('dragging-active');
+    drag3.el.classList.remove('dragging'); drag3.el.style.width = ''; drag3.el.style.left = ''; drag3.el.style.top = '';
+    renderBdCard(drag3.key); drag3 = null;
+  }
+  function bdTargetAt(x, y, exclude) {
+    exclude.style.pointerEvents = 'none';
+    var els = document.elementsFromPoint(x, y), res = null;
+    for (var i = 0; i < els.length; i++) {
+      var slot = els[i].closest && els[i].closest('.slot');
+      if (slot) { res = { type: 'slot', pos: Number(slot.dataset.pos) }; break; }
+      var tray = els[i].closest && els[i].closest('#bd-tray');
+      if (tray) { res = { type: 'tray' }; break; }
+    }
+    exclude.style.pointerEvents = '';
+    return res;
+  }
+  function bdHover(x, y) {
+    bdClearHover(); if (!drag3) return;
+    drag3.el.style.pointerEvents = 'none';
+    var els = document.elementsFromPoint(x, y);
+    drag3.el.style.pointerEvents = '';
+    for (var i = 0; i < els.length; i++) { var sl = els[i].closest && els[i].closest('.slot'); if (sl) { sl.classList.add('drop-hover'); break; } }
+  }
+  function bdClearHover() { document.querySelectorAll('#st3 .drop-hover').forEach(function (e) { e.classList.remove('drop-hover'); }); }
+  function placeInSlot(key, pos) {
+    var prev = s3.home[key], occ = s3.occ[pos];
+    if (occ && occ !== key) {
+      if (prev && prev !== 'tray') { s3.occ[prev] = occ; s3.home[occ] = prev; } else { s3.home[occ] = 'tray'; }
+    } else if (prev && prev !== 'tray' && prev !== pos) { s3.occ[prev] = null; }
+    s3.occ[pos] = key; s3.home[key] = pos;
+    renderBdCard(key); if (occ && occ !== key) renderBdCard(occ);
+  }
+  function sendBdToTray(key) { var prev = s3.home[key]; if (prev && prev !== 'tray') s3.occ[prev] = null; s3.home[key] = 'tray'; renderBdCard(key); }
+  function renderBdCard(key) {
+    var el = bdCardEl(key), home = s3.home[key];
+    el.classList.remove('wrong'); el.style.left = ''; el.style.top = '';
+    if (home === 'tray') $('bd-tray').appendChild(el);
+    else slotElByPos(home).appendChild(el);
+  }
+  function bdPlaced() { var n = 0; BDAY.forEach(function (c) { if (s3.home[c.key] !== 'tray') n++; }); return n; }
+  function updateBdCount() { $('st3-count').textContent = bdPlaced() + ' / 5 placed'; $('bd-check').disabled = bdPlaced() < 5; }
+  function checkStation3() {
+    var correct = 0;
+    BDAY.forEach(function (c) {
+      if (s3.home[c.key] === c.pos) { correct++; var el = bdCardEl(c.key); el.classList.add('correct'); slotElByPos(c.pos).classList.add('correct'); }
+    });
+    BDAY.forEach(function (c) {
+      var home = s3.home[c.key];
+      if (home !== 'tray' && home !== c.pos) { bdCardEl(c.key).classList.add('wrong'); (function (k) { setTimeout(function () { sendBdToTray(k); updateBdCount(); }, 550); })(c.key); }
+    });
+    var msg = $('bd-msg');
+    if (correct === 5) {
+      msg.textContent = 'Exactly right — that is the story of Bastille Day.'; msg.className = 'sv-msg good';
+      $('bd-check').hidden = true; show($('bd-write')); updateBdWrite();
+    } else {
+      msg.textContent = correct + ' of 5 in the right place. The others have come back — read them again and re-order.'; msg.className = 'sv-msg';
+      setTimeout(updateBdCount, 600);
+    }
+  }
+  function updateBdWrite() {
+    var txt = ($('bd-text').value || '').trim();
+    var ok = txt.length >= BD_MIN;
+    $('bd-done').disabled = !ok;
+    $('bd-wc').textContent = ok ? 'Great — that\'s plenty to put in your project.' : 'Write a little more (' + txt.length + '/' + BD_MIN + ' characters).';
+    $('bd-wc').className = ok ? 'sv-msg good' : 'sv-msg';
+  }
+  function captureBday() {
+    var ordered = BDAY.every(function (c) { return s3.home[c.key] === c.pos; });
+    var writeup = ($('bd-text') ? $('bd-text').value : '').trim();
+    state.data['3'] = { ordered: ordered, writeup: writeup, complete: ordered && writeup.length >= BD_MIN };
+    return state.data['3'].complete;
+  }
+  function finishBday() { if (captureBday()) markStationDone(3); closeStation3(); }
+
   // ---- tiny DOM helpers ----
   function $(id) { return document.getElementById(id); }
   function show(el) { if (el) el.hidden = false; }
@@ -536,6 +696,7 @@
   function openStationModal(n) {
     if (n === 1) { openStation1(); return; }
     if (n === 2) { openStation2(); return; }
+    if (n === 3) { openStation3(); return; }
     openStation = n;
     $('sm-title').textContent = STATION_NAMES[n] || ('Stop ' + n);
     var done = $('sm-done');
@@ -605,6 +766,10 @@
     $('st2-back').addEventListener('click', closeStation2);
     $('cuis-done').addEventListener('click', finishCuisine);
     $('dish-info-close').addEventListener('click', function () { hide($('dish-info')); });
+    $('st3-back').addEventListener('click', closeStation3);
+    $('bd-check').addEventListener('click', checkStation3);
+    $('bd-done').addEventListener('click', finishBday);
+    $('bd-text').addEventListener('input', updateBdWrite);
     $('create').addEventListener('click', createProject);
     $('staff-key').addEventListener('click', function () { show($('staff-modal')); var p = $('staff-pass'); if (p) p.focus(); });
     $('staff-close').addEventListener('click', function () { hide($('staff-modal')); });
