@@ -266,7 +266,8 @@ function resetWatch() {
   clearFlock();
   abLympho.style.transform = ''; abLympho.style.opacity = '';
   abBact.style.transform = ''; abBact.style.opacity = '';
-  abPhago.setAttribute('hidden', '');
+  abPhago.setAttribute('hidden', ''); abPhago.style.transform = '';
+  const eg = $('#ab-engulfed'); if (eg) eg.remove();   // clear the engulfed-microbes overlay
   $$('.lbl', abSvg).forEach(l => l.classList.remove('is-selected'));
 }
 function exploreAb() {   // static, labelled explore state (no film running)
@@ -301,11 +302,17 @@ function applyAbStep(n) {
   }
   // steps 4-5: the microbes have agglutinated — hide the single bacterium, show a clump
   if (abStep >= 4) { abBact.style.opacity = '0'; drawClump(); }
-  // step 5: a phagocyte engulfs the clump (covers it from one side; one microbe pokes out)
+  // step 5: a phagocyte engulfs the clump — the microbes are now INSIDE it, enclosed
+  // in a vacuole and being digested (drawn on top of the phagocyte so they're visible)
   if (abStep >= 5) {
     abPhago.removeAttribute('hidden');
-    abPhago.style.transform = 'translate(-78px,150px)';
-    $$('.clump-microbe', abFlock).forEach(m => { m.style.transition = 'opacity 0.4s'; m.style.opacity = '0.5'; });
+    abPhago.style.transform = 'translate(-30px,150px)';
+    $$('.clump-microbe', abFlock).forEach(m => { m.style.opacity = '0'; });   // taken inside
+    const eg = svgEl('g', { id: 'ab-engulfed' });
+    eg.appendChild(svgEl('ellipse', { cx: 556, cy: 308, rx: 46, ry: 36, fill: 'none', stroke: '#E4B824', 'stroke-width': 2.5, 'stroke-dasharray': '6 5', opacity: 0.85 }));
+    [[545, 296], [571, 310], [550, 328]].forEach(p =>
+      eg.appendChild(svgEl('ellipse', { cx: p[0], cy: p[1], rx: 18, ry: 12, fill: 'url(#bactGrad)', stroke: '#5B43B8', 'stroke-width': 1.8, opacity: 0.5 })));
+    abSvg.appendChild(eg);
   }
   setInfo(abInfoCard, AB_STEPS[abStep]);
   abStep === 5 ? sFx.ok() : sFx.tick();
