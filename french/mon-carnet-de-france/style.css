@@ -300,7 +300,7 @@ body.dragging-active, body.dragging-active *{
 .match-row{ display:grid; grid-template-columns:auto 1fr 1.5fr; align-items:center; gap:12px;
   background:var(--card-bg); border:1px solid #e3e8f0; border-radius:12px; padding:8px 10px; box-shadow:var(--shadow-sm); }
 .match-row.drop-hover{ outline:2px solid var(--ols-blue); outline-offset:-1px; background:#eef3fb; }
-.match-thumb{ width:58px; height:72px; object-fit:cover; border-radius:8px; background:#dde3ec; -webkit-user-drag:none; flex:0 0 auto; }
+.match-thumb{ width:88px; height:110px; object-fit:cover; border-radius:8px; background:#dde3ec; -webkit-user-drag:none; flex:0 0 auto; }
 .match-name{ font-family:Georgia,serif; font-weight:700; color:var(--ols-blue); font-size:.98rem; }
 .match-full{ display:none; font-family:-apple-system,system-ui,sans-serif; font-weight:400; color:var(--text); font-size:.78rem; line-height:1.4; margin-top:4px; }
 .match-row.correct{ border-color:var(--stamp); }
