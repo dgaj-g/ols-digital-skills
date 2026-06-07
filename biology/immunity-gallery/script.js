@@ -244,6 +244,24 @@ function antibodyY(x, y, scale = 1, rot = 0) {
   return u;
 }
 function clearFlock() { abFlock.innerHTML = ''; }
+const AB_DEFAULT_INFO = { kicker: 'The immune response', title: 'Recognise, produce, destroy', body: 'Invading microorganisms carry <strong>antigens</strong> &mdash; foreign chemicals &mdash; on their surface. Tap a label to explore the parts, or press <strong>Play the response</strong> to watch how the body answers an infection, step by step.' };
+// The Antibody/Antigen/Lymphocyte labels belong to the STATIC explore diagram.
+// During the film the cells move, so the labels must be hidden or they end up
+// pointing at empty space.
+function setAbLabels(show) { $$('.lbl', abSvg).forEach(l => { l.style.opacity = show ? '' : '0'; l.style.pointerEvents = show ? '' : 'none'; }); }
+function clumpMicrobe(cx, cy) {
+  const g = svgEl('g', { class: 'clump-microbe', transform: `translate(${cx} ${cy})` });
+  g.appendChild(svgEl('ellipse', { cx: 0, cy: 0, rx: 27, ry: 17, fill: 'url(#bactGrad)', stroke: '#5B43B8', 'stroke-width': 2.2 }));
+  return g;
+}
+function drawClump() {
+  // a tight clump of microbes held together by antibodies (agglutination)
+  const clump = svgEl('g', { class: 'ab-clump' });
+  [[508, 286], [560, 296], [530, 330]].forEach(p => clump.appendChild(clumpMicrobe(p[0], p[1])));
+  clump.appendChild(antibodyY(534, 300, 0.7, 0));
+  clump.appendChild(antibodyY(516, 314, 0.62, 55));
+  abFlock.appendChild(clump);
+}
 function resetWatch() {
   clearFlock();
   abLympho.style.transform = ''; abLympho.style.opacity = '';
@@ -251,32 +269,37 @@ function resetWatch() {
   abPhago.setAttribute('hidden', '');
   $$('.lbl', abSvg).forEach(l => l.classList.remove('is-selected'));
 }
+function exploreAb() {   // static, labelled explore state (no film running)
+  abStep = -1; resetWatch(); setAbLabels(true);
+  abStepper.setAttribute('hidden', '');
+  $$('span', abDots).forEach(d => d.classList.remove('on'));
+  setInfo(abInfoCard, AB_DEFAULT_INFO);
+}
 function applyAbStep(n) {
   abStep = clamp(n, 0, 5);
   resetWatch();
+  setAbLabels(false);   // hide the explore labels while the film plays
   $$('span', abDots).forEach((d, i) => d.classList.toggle('on', i === abStep));
   $('#ab-prev').disabled = abStep === 0; $('#ab-next').disabled = abStep === 5;
   // bacterium drifts in from the right on step 0
   if (abStep === 0) abBact.style.transform = 'translateX(40px)';
-  // step 2+: antibodies budding around the lymphocyte
+  // antibodies budding around the lymphocyte (step 2 onwards — they stay put, never strand)
   if (abStep >= 2) {
     [[110, 250], [90, 300], [110, 350], [200, 280], [205, 330]].forEach((p, i) =>
       abFlock.appendChild(antibodyY(p[0], p[1], 1, -20 + i * 12)));
   }
-  // step 3+: antibodies docked on the antigens (aligned to the seated antigen x-positions)
-  if (abStep >= 3) {
+  // antibodies docked on the bacterium's antigens — only while the bacterium is still whole (step 3)
+  if (abStep === 3) {
     [470, 495, 520].forEach(x => abFlock.appendChild(antibodyY(x, 226, 0.85, 180)));
   }
-  // step 4 (clump): pull bacterium + show partner microbes clumping
-  if (abStep >= 4) {
-    abBact.style.transform = 'translate(-70px,10px) scale(0.92)';
-    const extra = svgEl('g', { transform: 'translate(360 300)' });
-    extra.appendChild(svgEl('rect', { x: 0, y: 0, width: 120, height: 68, rx: 34, fill: '#9B8BE0', stroke: '#5B43B8', 'stroke-width': 2.5 }));
-    abFlock.appendChild(extra);
-    abFlock.appendChild(antibodyY(420, 300, 0.8, 90));
+  // steps 4-5: the microbes have agglutinated — hide the single bacterium, show a clump
+  if (abStep >= 4) { abBact.style.opacity = '0'; drawClump(); }
+  // step 5: a phagocyte engulfs the clump (covers it from one side; one microbe pokes out)
+  if (abStep >= 5) {
+    abPhago.removeAttribute('hidden');
+    abPhago.style.transform = 'translate(-78px,150px)';
+    $$('.clump-microbe', abFlock).forEach(m => { m.style.transition = 'opacity 0.4s'; m.style.opacity = '0.5'; });
   }
-  // step 5: phagocyte sweeps over the clump
-  if (abStep >= 5) { abPhago.removeAttribute('hidden'); abPhago.style.transform = 'translate(-150px,150px)'; }
   setInfo(abInfoCard, AB_STEPS[abStep]);
   abStep === 5 ? sFx.ok() : sFx.tick();
 }
@@ -301,6 +324,7 @@ $$('#panel-antibodies [data-view1]').forEach(b => b.addEventListener('click', ()
   $$('#panel-antibodies [data-view1]').forEach(x => { const on = x === b; x.classList.toggle('is-active', on); x.setAttribute('aria-selected', on ? 'true' : 'false'); });
   $('#ab-watch').toggleAttribute('hidden', v !== 'watch');
   $('#ab-match').toggleAttribute('hidden', v !== 'match');
+  if (v === 'watch') exploreAb();   // reset to the labelled explore state
 }));
 
 // ----- Antibody shape match (assessed) -----
@@ -1046,6 +1070,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('#celebr
 // INIT
 // ============================================================
 buildAbMatch();
+exploreAb();         // Exhibit I watch: labelled explore state, film not started
 buildPhagoOrder();   // sets stage 0 + hides the stepper + neutral caption itself
 drawImmPlate('active', false);
 resetRes();
