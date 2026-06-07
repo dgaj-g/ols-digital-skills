@@ -534,6 +534,184 @@
   }
   function finishBday() { if (captureBday()) markStationDone(3); closeStation3(); }
 
+  /* ============================================================
+     Station 4 - Les Personnes Célèbres. Match each achievement chip to
+     the right person (place-on-target + swap engine, fail state), then
+     pick a favourite and write <=100 words on why you admire them.
+     ============================================================ */
+  var PEOPLE = [
+    { key: 'curie', name: 'Marie Curie', short: 'Won Nobel Prizes in two different sciences', full: 'A Polish-born French scientist who studied radioactivity — the only person to win Nobel Prizes in two different sciences (Physics 1903, Chemistry 1911), and the first woman ever to win a Nobel Prize.' },
+    { key: 'monet', name: 'Claude Monet', short: 'Helped start Impressionist painting', full: "A painter who helped start Impressionism — his painting 'Impression, Sunrise' gave the movement its name. Famous for his water-lily paintings at Giverny." },
+    { key: 'pasteur', name: 'Louis Pasteur', short: 'Showed that germs cause disease', full: "A scientist who showed that tiny germs cause many diseases. He developed vaccines, including the first against rabies, and invented 'pasteurisation' to keep milk and drinks safe." },
+    { key: 'piaf', name: 'Édith Piaf', short: "One of France's best-loved singers", full: "One of France's most beloved singers, famous for 'La Vie en Rose' and 'Non, je ne regrette rien'. She rose from a very poor childhood to worldwide fame." },
+    { key: 'joan', name: "Jeanne d'Arc", short: 'Led French soldiers to victory in 1429', full: "A teenage girl who, believing she was guided by her faith, led French soldiers to victory at Orléans in 1429 during the Hundred Years' War. A patron saint of France, made a saint in 1920." },
+    { key: 'germain', name: 'Sophie Germain', short: 'A self-taught mathematician', full: 'A mathematician who taught herself maths in secret as a girl, when women were not allowed to study it — the first woman to win a top prize from the French Academy of Sciences.' }
+  ];
+  function personByKey(k) { for (var i = 0; i < PEOPLE.length; i++) if (PEOPLE[i].key === k) return PEOPLE[i]; return null; }
+  function wordCount(s) { s = (s || '').trim(); return s ? s.split(/\s+/).length : 0; }
+  var s4 = { built: false, home: {}, occ: {}, pick: false, fav: '' };
+  var drag4 = null;
+
+  function openStation4() { show($('st4')); if (!s4.built) buildStation4(); }
+  function closeStation4() { captureCeleb(); persist(); hide($('st4')); }
+  function chipEl(key) { return document.getElementById('st4').querySelector('.ach-chip[data-key="' + key + '"]'); }
+  function personEl(key) { return document.getElementById('st4').querySelector('.person[data-key="' + key + '"]'); }
+  function slotEl(personKey) { return personEl(personKey).querySelector('.ach-slot'); }
+
+  function buildStation4() {
+    s4.built = true;
+    var grid = $('ppl-grid'), tray = $('ach-tray');
+    grid.innerHTML = ''; tray.innerHTML = '';
+    s4.home = {}; s4.occ = {}; s4.pick = false; s4.fav = '';
+    PEOPLE.forEach(function (p) {
+      var li = document.createElement('li'); li.className = 'person'; li.dataset.key = p.key;
+      li.innerHTML = '<img class="person-img" src="' + ASSET + 'assets/people/' + p.key + '.jpg" alt="' + escapeHtml(p.name) + '">' +
+        '<span class="person-name">' + escapeHtml(p.name) + '</span>' +
+        '<div class="ach-slot dropzone" data-person="' + p.key + '"></div>' +
+        '<span class="person-full">' + escapeHtml(p.full) + '</span>';
+      li.addEventListener('click', function () { if (s4.pick) selectFav(p.key); });
+      grid.appendChild(li); s4.occ[p.key] = null;
+    });
+    shuffle(PEOPLE).forEach(function (p) {
+      var li = document.createElement('li'); li.className = 'ach-chip'; li.dataset.key = p.key; li.textContent = p.short;
+      li.addEventListener('pointerdown', onChipDown);
+      tray.appendChild(li); s4.home[p.key] = 'tray';
+    });
+    var saved = state.data['4'];
+    if (saved && saved.complete) {
+      PEOPLE.forEach(function (p) { s4.home[p.key] = p.key; s4.occ[p.key] = p.key; renderChip(p.key);
+        chipEl(p.key).classList.add('correct'); personEl(p.key).classList.add('correct'); });
+      enterPickMode(); s4.fav = saved.favourite || ''; if (s4.fav) selectFav(s4.fav, true);
+      $('ppl-text').value = saved.writeup || ''; updateCelebWrite(); $('ppl-check').hidden = true;
+    }
+    updateCelebCount();
+  }
+
+  function onChipDown(e) {
+    var li = e.currentTarget;
+    if (li.classList.contains('correct')) return;
+    e.preventDefault();
+    var r = li.getBoundingClientRect();
+    drag4 = { key: li.dataset.key, el: li, pid: e.pointerId, sx: e.clientX, sy: e.clientY, offX: e.clientX - r.left, offY: e.clientY - r.top, w: r.width, moved: false };
+    try { li.setPointerCapture(e.pointerId); } catch (x) {}
+    li.addEventListener('pointermove', onChipMove);
+    li.addEventListener('pointerup', onChipUp);
+    li.addEventListener('pointercancel', onChipCancel);
+  }
+  function onChipMove(e) {
+    if (!drag4) return;
+    if (!drag4.moved) {
+      if (Math.abs(e.clientX - drag4.sx) + Math.abs(e.clientY - drag4.sy) < DRAG_THRESH) return;
+      drag4.moved = true; document.body.classList.add('dragging-active');
+      drag4.el.classList.add('dragging'); drag4.el.style.width = drag4.w + 'px';
+    }
+    drag4.el.style.left = (e.clientX - drag4.offX) + 'px';
+    drag4.el.style.top = (e.clientY - drag4.offY) + 'px';
+    celebHover(e.clientX, e.clientY);
+  }
+  function endChip(li) { li.removeEventListener('pointermove', onChipMove); li.removeEventListener('pointerup', onChipUp); li.removeEventListener('pointercancel', onChipCancel); }
+  function onChipUp(e) {
+    if (!drag4) return;
+    var el = drag4.el, key = drag4.key, moved = drag4.moved;
+    try { el.releasePointerCapture(drag4.pid); } catch (x) {}
+    endChip(el); celebClearHover();
+    document.body.classList.remove('dragging-active');
+    el.classList.remove('dragging'); el.style.width = ''; el.style.left = ''; el.style.top = '';
+    if (moved) {
+      var person = celebTargetAt(e.clientX, e.clientY, el);
+      if (person === 'tray') sendChipToTray(key);
+      else if (person) placeChip(key, person);
+      else renderChip(key);
+      updateCelebCount();
+    }
+    drag4 = null;
+  }
+  function onChipCancel() {
+    if (!drag4) return;
+    try { drag4.el.releasePointerCapture(drag4.pid); } catch (x) {}
+    endChip(drag4.el); celebClearHover();
+    document.body.classList.remove('dragging-active');
+    drag4.el.classList.remove('dragging'); drag4.el.style.width = ''; drag4.el.style.left = ''; drag4.el.style.top = '';
+    renderChip(drag4.key); drag4 = null;
+  }
+  function celebTargetAt(x, y, exclude) {
+    exclude.style.pointerEvents = 'none';
+    var els = document.elementsFromPoint(x, y), res = null;
+    for (var i = 0; i < els.length; i++) {
+      var slot = els[i].closest && els[i].closest('.ach-slot'); if (slot) { res = slot.dataset.person; break; }
+      var tray = els[i].closest && els[i].closest('#ach-tray'); if (tray) { res = 'tray'; break; }
+    }
+    exclude.style.pointerEvents = '';
+    return res;
+  }
+  function celebHover(x, y) {
+    celebClearHover(); if (!drag4) return;
+    drag4.el.style.pointerEvents = 'none';
+    var els = document.elementsFromPoint(x, y);
+    drag4.el.style.pointerEvents = '';
+    for (var i = 0; i < els.length; i++) { var sl = els[i].closest && els[i].closest('.ach-slot'); if (sl) { sl.classList.add('drop-hover'); break; } }
+  }
+  function celebClearHover() { document.querySelectorAll('#st4 .drop-hover').forEach(function (e) { e.classList.remove('drop-hover'); }); }
+  function placeChip(key, person) {
+    var prev = s4.home[key], occ = s4.occ[person];
+    if (occ && occ !== key) { if (prev && prev !== 'tray') { s4.occ[prev] = occ; s4.home[occ] = prev; } else { s4.home[occ] = 'tray'; } }
+    else if (prev && prev !== 'tray' && prev !== person) { s4.occ[prev] = null; }
+    s4.occ[person] = key; s4.home[key] = person;
+    renderChip(key); if (occ && occ !== key) renderChip(occ);
+  }
+  function sendChipToTray(key) { var prev = s4.home[key]; if (prev && prev !== 'tray') s4.occ[prev] = null; s4.home[key] = 'tray'; renderChip(key); }
+  function renderChip(key) {
+    var el = chipEl(key), home = s4.home[key];
+    el.classList.remove('wrong'); el.style.left = ''; el.style.top = '';
+    if (home === 'tray') { el.classList.remove('placed'); $('ach-tray').appendChild(el); }
+    else { el.classList.add('placed'); slotEl(home).appendChild(el); }
+  }
+  function matchedCount() { var n = 0; PEOPLE.forEach(function (p) { if (s4.home[p.key] !== 'tray') n++; }); return n; }
+  function updateCelebCount() { $('st4-count').textContent = matchedCount() + ' / 6 matched'; $('ppl-check').disabled = matchedCount() < 6; }
+  function checkStation4() {
+    var correct = 0;
+    PEOPLE.forEach(function (p) {
+      if (s4.home[p.key] === p.key) { correct++; chipEl(p.key).classList.add('correct'); personEl(p.key).classList.add('correct'); }
+    });
+    PEOPLE.forEach(function (p) {
+      var home = s4.home[p.key];
+      if (home !== 'tray' && home !== p.key) { chipEl(p.key).classList.add('wrong'); (function (k) { setTimeout(function () { sendChipToTray(k); updateCelebCount(); }, 550); })(p.key); }
+    });
+    var msg = $('ppl-msg');
+    if (correct === 6) {
+      msg.textContent = 'All matched — now choose your favourite below.'; msg.className = 'sv-msg good';
+      $('ppl-check').hidden = true; enterPickMode();
+    } else {
+      msg.textContent = correct + ' of 6 matched. The wrong ones have come back — try them again.'; msg.className = 'sv-msg';
+      setTimeout(updateCelebCount, 600);
+    }
+  }
+  function enterPickMode() { s4.pick = true; $('ppl-grid').classList.add('picking'); show($('ppl-pick')); $('ppl-instr').textContent = 'Great matching! Now tap the person you most admire, and write why.'; }
+  function selectFav(key, silent) {
+    s4.fav = key;
+    document.querySelectorAll('#st4 .person').forEach(function (e) { e.classList.toggle('selected', e.dataset.key === key); });
+    var ta = $('ppl-text'); ta.hidden = false;
+    if (!silent) ta.focus();
+    updateCelebWrite();
+  }
+  function updateCelebWrite() {
+    var w = wordCount($('ppl-text').value);
+    var ok = s4.fav && w >= 5 && w <= 100;
+    $('ppl-done').disabled = !ok;
+    var wc = $('ppl-wc');
+    if (!s4.fav) { wc.textContent = 'Tap a person above first.'; wc.className = 'sv-msg'; }
+    else if (w > 100) { wc.textContent = w + ' / 100 words — a little too long, trim it down.'; wc.className = 'sv-msg bad'; }
+    else if (w < 5) { wc.textContent = w + ' / 100 words — write a little more.'; wc.className = 'sv-msg'; }
+    else { wc.textContent = w + ' / 100 words — perfect.'; wc.className = 'sv-msg good'; }
+  }
+  function captureCeleb() {
+    var matched = PEOPLE.every(function (p) { return s4.home[p.key] === p.key; });
+    var w = wordCount($('ppl-text') ? $('ppl-text').value : '');
+    state.data['4'] = { matched: matched, favourite: s4.fav, writeup: ($('ppl-text') ? $('ppl-text').value : '').trim(), complete: matched && !!s4.fav && w >= 5 && w <= 100 };
+    return state.data['4'].complete;
+  }
+  function finishCeleb() { if (captureCeleb()) markStationDone(4); closeStation4(); }
+
   // ---- tiny DOM helpers ----
   function $(id) { return document.getElementById(id); }
   function show(el) { if (el) el.hidden = false; }
@@ -697,6 +875,7 @@
     if (n === 1) { openStation1(); return; }
     if (n === 2) { openStation2(); return; }
     if (n === 3) { openStation3(); return; }
+    if (n === 4) { openStation4(); return; }
     openStation = n;
     $('sm-title').textContent = STATION_NAMES[n] || ('Stop ' + n);
     var done = $('sm-done');
@@ -770,6 +949,10 @@
     $('bd-check').addEventListener('click', checkStation3);
     $('bd-done').addEventListener('click', finishBday);
     $('bd-text').addEventListener('input', updateBdWrite);
+    $('st4-back').addEventListener('click', closeStation4);
+    $('ppl-check').addEventListener('click', checkStation4);
+    $('ppl-done').addEventListener('click', finishCeleb);
+    $('ppl-text').addEventListener('input', updateCelebWrite);
     $('create').addEventListener('click', createProject);
     $('staff-key').addEventListener('click', function () { show($('staff-modal')); var p = $('staff-pass'); if (p) p.focus(); });
     $('staff-close').addEventListener('click', function () { hide($('staff-modal')); });

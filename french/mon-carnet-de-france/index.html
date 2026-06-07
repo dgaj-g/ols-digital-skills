@@ -201,6 +201,38 @@
       </div>
     </section>
 
+    <!-- Station 4: Les Personnes Celebres (match, then pick a favourite + write) -->
+    <section id="st4" class="station-view" hidden aria-labelledby="st4-h">
+      <header class="sv-head">
+        <button class="sv-back" id="st4-back" type="button">&#8592; Back</button>
+        <div class="sv-titles">
+          <h2 id="st4-h" class="sv-title"><span class="fr">Les Personnes C&eacute;l&egrave;bres</span></h2>
+          <p class="sv-sub" id="ppl-instr">Match each famous person to what they are known for, then press Check.</p>
+        </div>
+        <span class="sv-count" id="st4-count">0 / 6 matched</span>
+      </header>
+
+      <div class="ppl-stage">
+        <ul class="ppl-grid" id="ppl-grid"></ul>
+        <ul class="ach-tray dropzone" id="ach-tray" data-zone="tray" aria-label="What they are famous for"></ul>
+      </div>
+
+      <div class="sv-actions">
+        <button id="ppl-check" class="btn btn-gold" type="button" disabled>V&eacute;rifier / Check</button>
+        <p id="ppl-msg" class="sv-msg" role="status">Drag each achievement onto the right person, then press Check.</p>
+      </div>
+
+      <div id="ppl-pick" class="bd-write" hidden>
+        <h3>Pick your favourite</h3>
+        <p class="bd-write-prompt">Tap the person you most admire above, then write a few sentences about <strong>why</strong> you admire them (maximum 100 words).</p>
+        <textarea id="ppl-text" rows="5" placeholder="I admire ... because ..." hidden></textarea>
+        <div class="sv-actions">
+          <button id="ppl-done" class="btn btn-blue" type="button" disabled>Save &amp; close</button>
+          <span id="ppl-wc" class="sv-msg"></span>
+        </div>
+      </div>
+    </section>
+
     <!-- Generic station overlay (placeholder content for the shell) -->
     <div id="station-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="sm-title">
       <div class="modal-card">
