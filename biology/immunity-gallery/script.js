@@ -271,6 +271,7 @@ function resetWatch() {
 }
 function exploreAb() {   // static, labelled explore state (no film running)
   abStep = -1; resetWatch(); setAbLabels(true);
+  $('#ab-statics').style.opacity = '';   // antibodies shown so the Antibody label has something to point at
   abStepper.setAttribute('hidden', '');
   $$('span', abDots).forEach(d => d.classList.remove('on'));
   setInfo(abInfoCard, AB_DEFAULT_INFO);
@@ -279,10 +280,16 @@ function applyAbStep(n) {
   abStep = clamp(n, 0, 5);
   resetWatch();
   setAbLabels(false);   // hide the explore labels while the film plays
+  $('#ab-statics').style.opacity = '0';   // antibodies appear when PRODUCED (step 3), not before
   $$('span', abDots).forEach((d, i) => d.classList.toggle('on', i === abStep));
   $('#ab-prev').disabled = abStep === 0; $('#ab-next').disabled = abStep === 5;
-  // bacterium drifts in from the right on step 0
+  // step 0: a microorganism enters (drifts in from the right)
   if (abStep === 0) abBact.style.transform = 'translateX(40px)';
+  // step 1: the lymphocyte recognises the antigen — show a recognition link to it
+  if (abStep === 1) {
+    abFlock.appendChild(svgEl('line', { x1: 234, y1: 286, x2: 452, y2: 250, stroke: '#E4B824', 'stroke-width': 3, 'stroke-dasharray': '7 6', 'stroke-linecap': 'round', opacity: 0.9 }));
+    abFlock.appendChild(svgEl('circle', { cx: 452, cy: 250, r: 9, fill: 'none', stroke: '#E4B824', 'stroke-width': 2.5, opacity: 0.9 }));
+  }
   // antibodies budding around the lymphocyte (step 2 onwards — they stay put, never strand)
   if (abStep >= 2) {
     [[110, 250], [90, 300], [110, 350], [200, 280], [205, 330]].forEach((p, i) =>
