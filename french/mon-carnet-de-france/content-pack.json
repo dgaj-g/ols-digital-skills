@@ -1,0 +1,859 @@
+{
+  "gathered": [
+    {
+      "station": "LA CARTE",
+      "items": [
+        {
+          "name": "Paris",
+          "enName": "",
+          "detail": "Paris is the capital of France and home to the Eiffel Tower, the most-visited paid monument in the world, with around 7 million visitors a year. The tower was the tallest structure on Earth from 1889 until 1929.",
+          "extra": "48.8566,2.3522",
+          "imageFile": "",
+          "imageAttribution": "",
+          "imageLicence": ""
+        },
+        {
+          "name": "Marseille",
+          "enName": "",
+          "detail": "Marseille is France's oldest city. It was founded around 600 BC by Greek settlers who called it Massalia, and it has been a busy Mediterranean trading port ever since.",
+          "extra": "43.2965,5.3698",
+          "imageFile": "",
+          "imageAttribution": "",
+          "imageLicence": ""
+        },
+        {
+          "name": "Lyon",
+          "enName": "",
+          "detail": "Lyon is famous as the food capital of France. It has more than 2,000 restaurants, and its traditional cosy eateries are called bouchons.",
+          "extra": "45.7640,4.8357",
+          "imageFile": "",
+          "imageAttribution": "",
+          "imageLicence": ""
+        },
+        {
+          "name": "Toulouse",
+          "enName": "",
+          "detail": "Toulouse is nicknamed 'the Pink City' (la Ville Rose) because so many of its buildings are made of rosy-pink terracotta brick. It is also the home of Airbus, where giant passenger planes are built.",
+          "extra": "43.6047,1.4442",
+          "imageFile": "",
+          "imageAttribution": "",
+          "imageLicence": ""
+        },
+        {
+          "name": "Nice",
+          "enName": "",
+          "detail": "Nice sits on the sunny French Riviera (the Cote d'Azur) by the sparkling blue Mediterranean Sea. Its long seafront walkway, the Promenade des Anglais, is lined with famous blue chairs.",
+          "extra": "43.7102,7.2620",
+          "imageFile": "",
+          "imageAttribution": "",
+          "imageLicence": ""
+        },
+        {
+          "name": "Nantes",
+          "enName": "",
+          "detail": "Nantes was the birthplace of the adventure writer Jules Verne. Today visitors can ride a giant 12-metre mechanical elephant called Les Machines de l'ile, inspired by his stories.",
+          "extra": "47.2184,-1.5536",
+          "imageFile": "",
+          "imageAttribution": "",
+          "imageLicence": ""
+        },
+        {
+          "name": "Strasbourg",
+          "enName": "",
+          "detail": "Strasbourg, near the German border, is home to the European Parliament, where politicians from across Europe meet. It is also famous for its beautiful Christmas market.",
+          "extra": "48.5734,7.7521",
+          "imageFile": "",
+          "imageAttribution": "",
+          "imageLicence": ""
+        },
+        {
+          "name": "Bordeaux",
+          "enName": "",
+          "detail": "Bordeaux is France's wine capital, surrounded by world-famous vineyards. Its grand riverside old town is a UNESCO World Heritage Site nicknamed the 'Port of the Moon' because the river curves like a crescent.",
+          "extra": "44.8378,-0.5792",
+          "imageFile": "",
+          "imageAttribution": "",
+          "imageLicence": ""
+        },
+        {
+          "name": "Lille",
+          "enName": "",
+          "detail": "Lille, in the north of France, hosts the Braderie de Lille, Europe's largest flea market. Every September the whole city fills with thousands of stalls and millions of visitors.",
+          "extra": "50.6292,3.0573",
+          "imageFile": "",
+          "imageAttribution": "",
+          "imageLicence": ""
+        }
+      ],
+      "extraContent": "RECOMMENDED BASE MAP (primary): File:France map Lambert-93 with regions and departments-blank.svg on Wikimedia Commons. URL: https://commons.wikimedia.org/wiki/File:France_map_Lambert-93_with_regions_and_departments-blank.svg . This is the standard, certainly-existing blank map of metropolitan France by Eric Gaba (Wikimedia Commons user 'Sting'), created 2008. Licence: dual-licensed GNU Free Documentation License 1.2+ and Creative Commons Attribution-ShareAlike (CC BY-SA, multiple versions incl. 4.0) - so you must credit and share-alike. Attribution string: 'Map: Eric Gaba (Wikimedia Commons user Sting), CC BY-SA 4.0, via Wikimedia Commons'. Dimensions: 2,000 x 1,898 px (SVG, scalable). Projection/datum: official Lambert-93 conic projection on the RGF-93 datum; the file states a map centre near 46 deg 15' N, 2 deg 06' E and a 1:2,000,000 scale. It shows region and department borders, which gives pupils helpful internal detail; if you want a cleaner outline, hide/recolour the internal borders in the SVG.\\n\\nIMPORTANT POSITIONING NOTE: Lambert-93 is a CONIC projection, not a simple flat lat/lng grid, so a plain linear latitude-longitude-to-pixel formula will NOT place dots perfectly (France slightly fans out and rotates). For a Promethean-board activity, place the nine city dots by hand once over the chosen base image and save those pixel positions - this is quicker and more accurate than computing a projection. The lat,lng values in each city's 'extra' field are the verified real-world coordinates to guide that hand-placement (north-south top-to-bottom, west-east left-to-right).\\n\\nALTERNATIVE BASE MAP (fully public domain, simpler outline): File:Blank France map, no Departments.svg . URL: https://commons.wikimedia.org/wiki/File:Blank_France_map,_no_Departments.svg . Released into the PUBLIC DOMAIN (no conditions) by Lokal_Profil, based on SuperManu / Emmanuel.boutet. 507 x 520 px SVG. This is a clean outline of mainland France with NO internal department borders - ideal if you want a simpler look and zero attribution burden. Projection is not documented on the file page (treat as an unprojected schematic outline), so again hand-place the city dots rather than computing from lat/lng.",
+      "signoffFlags": [
+        "Default city set confirmed as a sound 'main cities of France' selection. By population the standard top 10 are Paris, Marseille, Lyon, Toulouse, Nice, Nantes, Montpellier, Strasbourg, Bordeaux, Lille - i.e. Montpellier (rank ~7) is technically larger than Strasbourg/Bordeaux/Lille but is omitted in the teacher's set. The proposed nine give better geographic spread (north, east, south, Atlantic coast) and each has a strong, child-friendly cultural hook, so I recommend keeping them. If you specifically want strict 'by population' accuracy, consider swapping in Montpellier or adding it as a tenth.",
+        "City lat/lng values are approximate centre points (commonly cited city-centre coordinates) - precise to within the size of a map dot, which is all that is needed for placement.",
+        "Primary base map is CC BY-SA, so the activity page/slide must show the attribution line and, strictly, be share-alike; the alternative PD outline avoids this if you prefer no attribution. Teacher to choose which to use.",
+        "Lambert-93 conic projection means dots cannot be auto-placed by a simple linear lat/lng formula - hand-placement recommended (flagged in extraContent)."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/List_of_communes_in_France_with_over_20,000_inhabitants",
+        "https://worldpopulationreview.com/cities/france",
+        "https://www.toureiffel.paris/en/the-monument/key-figures",
+        "https://www.guinnessworldrecords.com/world-records/383941-most-visited-paid-for-monument",
+        "https://en.wikipedia.org/wiki/Marseille",
+        "https://en.wikipedia.org/wiki/Massalia",
+        "https://www.onlylyon.com/en/city-visit-france/capital-of-gastronomy",
+        "https://www.polyglottistlanguageacademy.com/language-culture-travelling-blog/2025/5/16/toulouse-the-pink-city-of-aerospace-occitan-culture-and-cassoulet",
+        "https://en.wikipedia.org/wiki/Promenade_des_Anglais",
+        "https://www.lesmachines-nantes.fr/en/the-project/the-artistic-project/",
+        "https://en.wikipedia.org/wiki/Seat_of_the_European_Parliament_in_Strasbourg",
+        "https://whc.unesco.org/en/list/1256/",
+        "https://en.wikipedia.org/wiki/Braderie_de_Lille",
+        "https://commons.wikimedia.org/wiki/File:France_map_Lambert-93_with_regions_and_departments-blank.svg",
+        "https://commons.wikimedia.org/wiki/File:Blank_France_map,_no_Departments.svg"
+      ]
+    },
+    {
+      "station": "LA CUISINE",
+      "items": [
+        {
+          "name": "Croissant",
+          "enName": "Croissant (buttery crescent pastry)",
+          "detail": "A flaky, buttery pastry shaped like a crescent moon, usually eaten at breakfast. It is made from many thin folded layers of dough, which is what gives it its light, crisp texture.",
+          "extra": "Eaten all over France, especially at breakfast; the modern French croissant developed in Paris in the early 1900s from an older Austrian pastry called the kipferl.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Croissant-Petr_Kratochvil.jpg",
+          "imageLicence": "CC0 1.0 (Public Domain Dedication)",
+          "imageAttribution": "Petr Kratochvil, via Wikimedia Commons (CC0 / public domain)"
+        },
+        {
+          "name": "Crêpe",
+          "enName": "Crêpe (thin pancake)",
+          "detail": "A very thin pancake that can be sweet or savoury. Sweet crêpes are often filled with chocolate spread, sugar and lemon, or jam, and folded up to eat.",
+          "extra": "A speciality of Brittany (Bretagne) in north-west France, where thin pancakes have been made since medieval times; the savoury buckwheat version is called a galette.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Cr%C3%AApe_au_beurre_doux.JPG",
+          "imageLicence": "CC BY-SA 4.0",
+          "imageAttribution": "Marianne Casamance, via Wikimedia Commons (CC BY-SA 4.0)"
+        },
+        {
+          "name": "Quiche lorraine",
+          "enName": "Quiche Lorraine (bacon and egg tart)",
+          "detail": "A savoury open tart with a pastry case filled with a baked mixture of eggs, cream and pieces of bacon. It is served warm or cold, often as a light lunch.",
+          "extra": "From the Lorraine region in north-east France. The traditional recipe uses only eggs, cream and bacon, though cheese is often added today.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Quiche_lorraine_01.JPG",
+          "imageLicence": "CC BY-SA 4.0",
+          "imageAttribution": "Arnaud 25, via Wikimedia Commons (CC BY-SA 4.0)"
+        },
+        {
+          "name": "Ratatouille",
+          "enName": "Ratatouille (vegetable stew)",
+          "detail": "A colourful vegetable stew made from aubergine, courgette, peppers, onion and tomato, cooked slowly with herbs. It is suitable for vegetarians.",
+          "extra": "From Provence in the south of France, especially the city of Nice; it began as a simple country dish using summer vegetables.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Ratatouille.jpg",
+          "imageLicence": "CC BY 2.0",
+          "imageAttribution": "Marcus Guimarães, via Wikimedia Commons (CC BY 2.0)"
+        },
+        {
+          "name": "Steak-frites",
+          "enName": "Steak-frites (steak and chips)",
+          "detail": "A steak served with a generous helping of French fries (chips). It is one of the most common meals in French cafés and bistros.",
+          "extra": "A classic of French and Belgian café cooking; the dish of steak with fried potatoes became popular in Paris in the 1800s.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Steak-frites_as_served_at_Le_Relais_de_Venise_-_L%27Entrecote.jpg",
+          "imageLicence": "Public domain (released by the author)",
+          "imageAttribution": "Photo by Dcollard, via Wikimedia Commons (released into the public domain)"
+        },
+        {
+          "name": "Macaron",
+          "enName": "Macaron (almond sandwich biscuit)",
+          "detail": "A small, round, brightly coloured sandwich biscuit made from ground almonds, with a soft creamy filling in the middle. They come in many flavours such as raspberry, chocolate and pistachio.",
+          "extra": "The modern filled macaron is associated with Paris, where famous pâtisseries like Ladurée made it popular in the 1900s.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Colorful_French_Macaroons.jpg",
+          "imageLicence": "CC BY-SA 4.0",
+          "imageAttribution": "C.a.ciliberto, via Wikimedia Commons (CC BY-SA 4.0)"
+        },
+        {
+          "name": "Camembert",
+          "enName": "Camembert (soft round cheese)",
+          "detail": "A soft, creamy cow's-milk cheese with a white rind, sold as a round wheel. It becomes gooey in the middle and is often spread on bread.",
+          "extra": "From the village of Camembert in Normandy, north-west France, where it was first made in the late 1700s.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Camembert_ganz.jpg",
+          "imageLicence": "CC BY-SA 4.0",
+          "imageAttribution": "IgorCalzone1, via Wikimedia Commons (CC BY-SA 4.0)"
+        },
+        {
+          "name": "Tarte Tatin",
+          "enName": "Tarte Tatin (upside-down apple tart)",
+          "detail": "An upside-down apple tart. The apples are cooked in butter and sugar at the bottom of the pan, then covered with pastry and turned over after baking so the caramelised apples are on top.",
+          "extra": "Said to have been created by the Tatin sisters at their hotel in Lamotte-Beuvron in the Loire Valley in the 1880s.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Tarte_Tatin_aux_reinettes.JPG",
+          "imageLicence": "CC BY-SA 4.0",
+          "imageAttribution": "Marianne Casamance, via Wikimedia Commons (CC BY-SA 4.0)"
+        },
+        {
+          "name": "Bouillabaisse",
+          "enName": "Bouillabaisse (fish stew)",
+          "detail": "A rich fish stew made with several kinds of fish and shellfish cooked in a broth flavoured with herbs and spices. It is usually served with bread.",
+          "extra": "The signature dish of the port city of Marseille on the Mediterranean coast; it began as a simple soup made by fishermen from the fish they could not sell.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Bouillabaisse_de_chez_Fonfon_dans_un_restaurant_du_Vieux-Port_(Marseille)_en_novembre_2022.JPG",
+          "imageLicence": "CC0 1.0 (Public Domain Dedication)",
+          "imageAttribution": "Benoît Prieur, via Wikimedia Commons (CC0 / public domain)"
+        },
+        {
+          "name": "Escargots",
+          "enName": "Escargots (cooked snails)",
+          "detail": "Cooked snails served hot in their shells, filled with a butter sauce flavoured with garlic and parsley. They are eaten as a starter, lifted out of the shell with a small fork. This is the most adventurous dish on the list.",
+          "extra": "Best known as escargots de Bourgogne, from the Burgundy region in eastern France.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Escargots_de_Bourgogne_3.JPG",
+          "imageLicence": "CC BY-SA 4.0",
+          "imageAttribution": "Arnaud 25, via Wikimedia Commons (CC BY-SA 4.0)"
+        }
+      ],
+      "extraContent": "Station 2 LA CUISINE - \"Would you try it?\" Pupils look at each French dish and decide whether they would like to try it or not, giving a reason. The ten dishes are ordered roughly from most approachable (croissant, crêpe, quiche, ratatouille, steak-frites, macaron, camembert) to more adventurous (tarte tatin is still gentle; bouillabaisse and escargots are the bold choices), so every pupil can find something they would happily try and something that challenges them. All dishes are everyday French foods with no alcohol-forward framing. Two dishes are vegetarian-friendly (crêpe can be, ratatouille is), and the list spans several French regions (Brittany, Lorraine, Provence/Nice, Marseille, Burgundy, Normandy, the Loire Valley and Paris), which ties neatly back to Station 1 LA CARTE. Suggested classroom prompt: \"Je voudrais essayer... / Je ne voudrais pas essayer...\" (I would like to try / I would not like to try) - the content is in English but this gives an optional light language link.\n\nNote for the teacher on the word \"macaron\": a macaron (the colourful almond sandwich biscuit) is different from a \"macaroon\" (a coconut biscuit). The verified Commons photo file happens to be titled \"Colorful French Macaroons\" by its uploader, but it genuinely shows French macarons - the spelling in the filename is the uploader's, not an error in the activity. The label shown to pupils should read \"Macaron\".",
+      "signoffFlags": [
+        "Escargots (snails) is included as the deliberately 'adventurous' option and is a genuine famous French dish, but please confirm you are happy showing snails to a Year 8 class - some pupils may react with an 'eeww'. It is appropriate and not graphic (cooked, in shells, with butter), and serves the activity's 'would you try it?' purpose well, but it is the one item worth a teacher eye before the lesson.",
+        "Bouillabaisse and steak-frites both contain meat/fish; ratatouille is fully vegetarian and crêpes can be - you may wish to point this out so the activity is inclusive for any vegetarian pupils.",
+        "The chosen macaron image filename on Commons reads 'Colorful French Macaroons' (uploader's spelling); the photo itself is genuine French macarons. If you would prefer a file whose name exactly matches, the alternative verified file 'File:Macaron colorati 1.JPG' is also in the same Commons category - flagging in case the filename mismatch matters for your records.",
+        "All ten images verified as really existing on Wikimedia Commons with the licences listed; three are CC0/public-domain (no attribution legally required but provided as good practice) and the rest are CC BY / CC BY-SA, so the attribution string should be displayed or credited near each image.",
+        "Tarte Tatin and Camembert origin stories include the popular 'created by accident' / 'first made by Marie Harel' legends; the pupil-facing detail uses the cautious wording ('said to have been created by...') because historians note these are traditional stories rather than firmly proven fact."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Croissant",
+        "https://en.wikipedia.org/wiki/Cr%C3%AApe_bretonne",
+        "https://www.france.fr/en/article/all-you-need-to-know-about-breton-crepes-in-5-minutes/",
+        "https://en.wikipedia.org/wiki/Quiche_Lorraine",
+        "https://en.wikipedia.org/wiki/Ratatouille",
+        "https://www.britannica.com/topic/ratatouille",
+        "https://en.wikipedia.org/wiki/Steak_frites",
+        "https://www.britannica.com/topic/steak-frites",
+        "https://nuvomagazine.com/magazine/spring-2010/the-macarons-of-pierre-herme",
+        "https://en.wikipedia.org/wiki/Camembert",
+        "https://en.wikipedia.org/wiki/Tarte_Tatin",
+        "https://en.wikipedia.org/wiki/Bouillabaisse",
+        "https://www.marseille-tourisme.com/en/discover-marseille/gastronomy-in-marseille/culinary-specialities-of-marseille/bouillabaisse/",
+        "https://www.tastefrance.com/us/recipes/french-classics/escargots-de-bourgogne-french-snails-parsley-butter",
+        "https://commons.wikimedia.org/wiki/File:Croissant-Petr_Kratochvil.jpg",
+        "https://commons.wikimedia.org/wiki/File:Cr%C3%AApe_au_beurre_doux.JPG",
+        "https://commons.wikimedia.org/wiki/File:Quiche_lorraine_01.JPG",
+        "https://commons.wikimedia.org/wiki/File:Ratatouille.jpg",
+        "https://commons.wikimedia.org/wiki/File:Steak-frites_as_served_at_Le_Relais_de_Venise_-_L%27Entrecote.jpg",
+        "https://commons.wikimedia.org/wiki/File:Colorful_French_Macaroons.jpg",
+        "https://commons.wikimedia.org/wiki/File:Camembert_ganz.jpg",
+        "https://commons.wikimedia.org/wiki/File:Tarte_Tatin_aux_reinettes.JPG",
+        "https://commons.wikimedia.org/wiki/File:Bouillabaisse_de_chez_Fonfon_dans_un_restaurant_du_Vieux-Port_(Marseille)_en_novembre_2022.JPG",
+        "https://commons.wikimedia.org/wiki/File:Escargots_de_Bourgogne_3.JPG"
+      ]
+    },
+    {
+      "station": "LE 14 JUILLET",
+      "items": [
+        {
+          "name": "La prise de la Bastille",
+          "enName": "The storming of the Bastille",
+          "detail": "On 14 July 1789, crowds of Parisians marched on the Bastille, an old royal fortress and prison in Paris, looking for gunpowder and weapons. After a tense standoff the fortress was taken. People saw the old prison as a symbol of the king's harsh rule, so its fall became a huge moment at the very start of the French Revolution.",
+          "extra": "Step 1 of 5",
+          "imageFile": "",
+          "imageLicence": "",
+          "imageAttribution": ""
+        },
+        {
+          "name": "Un symbole de liberté",
+          "enName": "A symbol of freedom",
+          "detail": "The fall of the Bastille quickly became a symbol of the people standing up to unfair rule and of the ideas France still values today: liberté, égalité, fraternité (liberty, equality, brotherhood). Exactly one year later, on 14 July 1790, France held the Fête de la Fédération, a giant peaceful celebration of national unity on the Champ de Mars in Paris.",
+          "extra": "Step 2 of 5",
+          "imageFile": "",
+          "imageLicence": "",
+          "imageAttribution": ""
+        },
+        {
+          "name": "La fête nationale (1880)",
+          "enName": "The national holiday (1880)",
+          "detail": "It took almost a hundred years for 14 July to become an official holiday. A French law passed on 6 July 1880 made it the country's annual national celebration, remembering both the storming of the Bastille in 1789 and the unity festival of 1790. The very first official 14 July celebration was held later that same year, in 1880.",
+          "extra": "Step 3 of 5",
+          "imageFile": "",
+          "imageLicence": "",
+          "imageAttribution": ""
+        },
+        {
+          "name": "Le défilé militaire",
+          "enName": "The military parade",
+          "detail": "Every year on the morning of 14 July, Paris holds a famous military parade. Since just after the First World War it has marched down the Champs-Élysées, the city's grandest avenue, from the Arc de Triomphe to the Place de la Concorde, where the President of France watches. It is one of the oldest regular military parades in Europe, with thousands of troops, a flypast of aircraft and bands.",
+          "extra": "Step 4 of 5",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Bastille_Day_Parade_170714-D-PB383-005_(35087624434).jpg",
+          "imageLicence": "CC BY 2.0",
+          "imageAttribution": "U.S. Department of Defense photo by Navy Petty Officer 2nd Class Dominique A. Pineiro, via Wikimedia Commons, CC BY 2.0"
+        },
+        {
+          "name": "Feux d'artifice et fêtes",
+          "enName": "Fireworks and celebrations",
+          "detail": "When night falls, the celebrations continue across France. In Paris a spectacular fireworks display lights up the sky around the Eiffel Tower, usually after an open-air concert. All over the country there are village fêtes, music and dancing, including the popular bals des pompiers (firefighters' balls) held at local fire stations.",
+          "extra": "Step 5 of 5",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Eiffel_Tower_fireworks_on_Bastille_Day_2017_(36303814541).jpg",
+          "imageLicence": "CC BY 2.0",
+          "imageAttribution": "Photo by Kenneth Lu, via Wikimedia Commons, CC BY 2.0"
+        }
+      ],
+      "extraContent": "HOW and WHY France celebrates Le 14 Juillet (Bastille Day)\n\nWHY: Le 14 Juillet is France's national day, and the name \"Bastille Day\" comes from one famous event. On 14 July 1789, the people of Paris marched on the Bastille, an old royal fortress and prison. To them the Bastille stood for the harsh, unfair rule of the king, so when it fell it became a powerful symbol of ordinary people standing up for their rights. It marked the beginning of the French Revolution and of the ideas France still celebrates today: liberté, égalité, fraternité (liberty, equality, brotherhood). Exactly one year later, on 14 July 1790, France held a huge peaceful celebration called the Fête de la Fédération to celebrate national unity, so the date came to stand for togetherness as well as change. Much later, a law passed on 6 July 1880 turned 14 July into France's official national holiday.\n\nHOW: Today 14 July is a joyful public holiday across the whole country. The day usually begins with a grand military parade in Paris, which has marched down the famous Champs-Élysées avenue (from the Arc de Triomphe to the Place de la Concorde) since just after the First World War, watched by the President of France. There are marching bands and a flypast of aircraft trailing the blue, white and red of the French flag. In the evening towns and villages hold fêtes with music and dancing, and Paris puts on a spectacular fireworks display around the Eiffel Tower. It is a warm, family-friendly day when French people celebrate their country, its history and its values together.",
+      "signoffFlags": [
+        "Two reliable sources differ slightly on the year the parade moved to the Champs-Élysées: the broad Bastille Day article says 'since 1918', while the detailed Bastille Day military parade article says the first time was the Victory Parade on 14 July 1919. The card text uses the safe phrasing 'since just after the First World War' to avoid stating a contested year. If you want a single year on the board, use 1919 (the well-sourced first occasion).",
+        "The 1789 storming did involve some violence and deaths; the cards deliberately frame it historically (a fortress/prison being taken, as a symbol) with no graphic detail, which suits ages 11-12 in a Catholic grammar. Please confirm this level is comfortable for your class.",
+        "The parade image is a U.S. Department of Defense photo (American troops were invited guests in the 2017 parade) showing the Champs-Élysées with the Arc de Triomphe behind. It is correctly a Bastille Day parade photo, but if you prefer French troops in shot, an alternative is File:French_Republican_Guard_Bastille_Day_2007_n1.jpg (check its licence before use).",
+        "Alternative fireworks image if a CC BY-SA share-alike licence is easier for your reuse: File:Fireworks_near_the_Eiffel_Tower_on_Bastille_Day_2022.jpg (CC BY-SA 4.0, author DiscoA340)."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Storming_of_the_Bastille",
+        "https://www.britannica.com/event/storming-of-the-Bastille",
+        "https://en.wikipedia.org/wiki/Bastille_Day",
+        "https://www.britannica.com/topic/Bastille-Day",
+        "https://blogs.loc.gov/law/2020/07/bastille-day-is-about-more-than-the-bastille/",
+        "https://en.wikipedia.org/wiki/F%C3%AAte_de_la_F%C3%A9d%C3%A9ration",
+        "https://en.wikipedia.org/wiki/Bastille_Day_military_parade",
+        "https://parisjetaime.com/eng/things-to-do-in-paris/major-events-paris/bastille-day-in-paris-i111",
+        "https://commons.wikimedia.org/wiki/File:Bastille_Day_Parade_170714-D-PB383-005_(35087624434).jpg",
+        "https://commons.wikimedia.org/wiki/File:Eiffel_Tower_fireworks_on_Bastille_Day_2017_(36303814541).jpg"
+      ]
+    },
+    {
+      "station": "LES PERSONNES CELEBRES (Famous French People)",
+      "items": [
+        {
+          "name": "Marie Curie",
+          "enName": "",
+          "detail": "A scientist who studied radioactivity. She is the only person ever to win a Nobel Prize in two different sciences (Physics in 1903 and Chemistry in 1911), and was the first woman to win a Nobel Prize at all.",
+          "extra": "Science (physics and chemistry); born Warsaw 1867, died near Sallanches, France, 1934. Polish-born; became a French citizen and did her famous work in Paris.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Marie_Curie_c._1920s.jpg",
+          "imageLicence": "Public domain (photographer Henri Manuel died 1947; CC-PD-Mark / PD-old)",
+          "imageAttribution": "Photograph by Henri Manuel (c. 1920), public domain, via Wikimedia Commons."
+        },
+        {
+          "name": "Claude Monet",
+          "enName": "",
+          "detail": "A painter who helped start the Impressionist movement. His painting 'Impression, Sunrise' gave Impressionism its name, and he is famous for his series of water-lily paintings made in his garden at Giverny.",
+          "extra": "Art (painting); born Paris 1840, died Giverny, France, 1926.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Claude_Monet_1899_Nadar_crop.jpg",
+          "imageLicence": "Public domain (photograph by Nadar, 1899; PD-old / PD-1923)",
+          "imageAttribution": "Photograph by Nadar (Gaspard-Félix Tournachon), 1899, public domain, via Wikimedia Commons."
+        },
+        {
+          "name": "Louis Pasteur",
+          "enName": "",
+          "detail": "A scientist who showed that tiny germs cause many diseases. He developed vaccines, including the first vaccine against rabies, and invented 'pasteurisation', the gentle heating that keeps milk and other drinks safe.",
+          "extra": "Science (chemistry and microbiology); born Dole, France, 1822, died near Paris 1895.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Louis_Pasteur_portrait_photo.jpg",
+          "imageLicence": "Public domain (19th-century photograph; PD-old, life + 70 years)",
+          "imageAttribution": "Photographic portrait of Louis Pasteur (c. 1891), public domain, via Wikimedia Commons."
+        },
+        {
+          "name": "Edith Piaf",
+          "enName": "Edith Piaf (\"Edith\")",
+          "detail": "One of France's most beloved singers, famous for emotional songs such as 'La Vie en Rose' (\"Life in Pink\") and 'Non, je ne regrette rien' (\"No, I regret nothing\"). She rose from a very poor childhood to become a star known around the world.",
+          "extra": "Arts (singing / chanson); born Paris 1915, died near Grasse, France, 1963.",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:%C3%89dith_Piaf_914-6440.jpg",
+          "imageLicence": "CC0 1.0 (Public Domain Dedication)",
+          "imageAttribution": "Photograph by Eric Koch / Anefo, 13 December 1962, Nationaal Archief (Dutch National Archives), CC0, via Wikimedia Commons."
+        },
+        {
+          "name": "Jeanne d'Arc",
+          "enName": "Joan of Arc",
+          "detail": "A teenage girl who, believing she was guided by her faith, led French soldiers to an important victory at Orleans in 1429 during the Hundred Years' War. She is a patron saint of France and was made a Catholic saint in 1920.",
+          "extra": "History / faith (national heroine and saint); born Domremy, France, c. 1412, died Rouen 1431. Image shown is a famous 1854 painting (she lived 600 years ago, so no portrait from her own lifetime survives).",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Ingres_coronation_charles_vii.jpg",
+          "imageLicence": "Public domain (painting by Ingres, 1854; artist died 1867; PD-old-100)",
+          "imageAttribution": "'Joan of Arc at the Coronation of Charles VII' by Jean-Auguste-Dominique Ingres, 1854, Louvre, Paris; public domain, via Wikimedia Commons."
+        },
+        {
+          "name": "Sophie Germain",
+          "enName": "",
+          "detail": "A self-taught mathematician who taught herself maths in secret as a girl, when women were not allowed to study it. She was the first woman to win a top prize from the French Academy of Sciences and did important work on number theory and on how surfaces vibrate.",
+          "extra": "Science / mathematics; born Paris 1776, died Paris 1831. Suggested REPLACEMENT for Coco Chanel (see sign-off flags).",
+          "imageFile": "https://commons.wikimedia.org/wiki/File:Ch%C3%A9garay_-_Sophie_Germain.png",
+          "imageLicence": "Public domain (engraving by Berthe Chegaray, 1896; CC-PD-Mark / PD-US-expired)",
+          "imageAttribution": "Engraving of Sophie Germain by Berthe Chegaray (nee Becher), 1896; public domain, via Wikimedia Commons."
+        }
+      ],
+      "extraContent": "Suggested roster of six famous French people, balanced for an all-girls Catholic grammar school: four women and two men, spanning science, the arts, history and faith. As role models for the girls the women carry the science/maths/arts/courage strands: Marie Curie (physics and chemistry), Sophie Germain (mathematics), Edith Piaf (the arts) and Joan of Arc (courage and faith). The two men, Monet (art) and Pasteur (medicine/science), round out the cultural picture. Every figure is clearly French (Marie Curie was Polish-born but became a French citizen and did her famous work in Paris - worth saying plainly to pupils so it is accurate), long-established and uncontroversial, and each has a genuinely reuse-clean Commons portrait. For Joan of Arc there is no surviving portrait from her own lifetime, so a famous, dignified public-domain painting (Ingres, 1854, in the Louvre) is used and labelled as a later artwork - this is both honest for an inspector and a fitting religious-themed image for the school. One important change from the brief's proposed roster is explained in the sign-off flags below: Coco Chanel has been replaced.",
+      "signoffFlags": [
+        "RECOMMENDED ROSTER CHANGE: Coco Chanel has been REMOVED and replaced with Sophie Germain (mathematician). Reason: Chanel's well-documented collaboration with Nazi German intelligence (the Sicherheitsdienst) during the WWII occupation of France is a serious, mainstream-sourced controversy. The brief requires every figure to be 'uncontroversial' and a positive role model, so Chanel is a poor fit and a real reputational/ETI risk if challenged. Sophie Germain is long-dead (clean portrait licensing), unambiguously inspiring for girls (taught herself maths in secret when barred as a woman), and keeps the four-women / two-men balance. Please confirm you are happy to swap.",
+        "If you would prefer to keep a fashion/design figure, a safer alternative to Chanel would be needed - but most famous French fashion names of that era have complications, so a mathematician or another scientist (e.g. Marie Curie's daughter Irene Joliot-Curie, also a Nobel laureate) may be cleaner.",
+        "Joan of Arc image is a famous 1854 PAINTING by Ingres, not a photo (none could exist - she lived c.1412-1431). The card text/caption should make clear it is a later artist's impression, not a portrait from her lifetime, so this is accurate for an inspector. The painting shows her at the king's coronation in Reims Cathedral, which is dignified and appropriate.",
+        "Marie Curie was born in Poland and later became a French citizen. To stay strictly accurate, the activity should describe her as 'Polish-born French scientist' rather than simply 'French', if that nuance matters to you.",
+        "Edith Piaf's life story includes hardship (a tough childhood, illness). The achievement blurb is kept positive and age-appropriate; please glance over it to be sure the framing suits J1 (Year 8).",
+        "All six portraits were checked on their actual Commons File: pages for licence and attribution. The Pasteur image chosen is a clean public-domain photo; I deliberately avoided a different Nadar file that was tagged CC BY 4.0 (a restoration claim) to keep attribution simple. The Sophie Germain image chosen (Chegaray engraving, 1788x1895 px) is higher resolution and better for the Promethean board than the small 'Sophie Germain.jpg' (only 200x243 px)."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Marie_Curie",
+        "https://www.nobelprize.org/prizes/physics/1903/marie-curie/biographical/",
+        "https://www.britannica.com/biography/Marie-Curie",
+        "https://commons.wikimedia.org/wiki/File:Marie_Curie_c._1920s.jpg",
+        "https://en.wikipedia.org/wiki/Claude_Monet",
+        "https://www.britannica.com/biography/Claude-Monet",
+        "https://commons.wikimedia.org/wiki/Category:Photographs_of_Claude_Monet_by_Nadar",
+        "https://en.wikipedia.org/wiki/Louis_Pasteur",
+        "https://www.britannica.com/biography/Louis-Pasteur",
+        "https://commons.wikimedia.org/wiki/File:Louis_Pasteur_portrait_photo.jpg",
+        "https://en.wikipedia.org/wiki/%C3%89dith_Piaf",
+        "https://www.britannica.com/biography/Edith-Piaf",
+        "https://commons.wikimedia.org/wiki/File:%C3%89dith_Piaf_914-6440.jpg",
+        "https://en.wikipedia.org/wiki/Joan_of_Arc",
+        "https://www.britannica.com/biography/Saint-Joan-of-Arc",
+        "https://en.wikipedia.org/wiki/Joan_of_Arc_at_the_Coronation_of_Charles_VII",
+        "https://commons.wikimedia.org/wiki/File:Ingres_coronation_charles_vii.jpg",
+        "https://en.wikipedia.org/wiki/Coco_Chanel",
+        "https://www.britannica.com/biography/Coco-Chanel",
+        "https://en.wikipedia.org/wiki/Sophie_Germain",
+        "https://www.britannica.com/biography/Sophie-Germain",
+        "https://commons.wikimedia.org/wiki/File:Ch%C3%A9garay_-_Sophie_Germain.png"
+      ]
+    }
+  ],
+  "verified": [
+    {
+      "station": "LA CARTE",
+      "factIssues": [
+        "Paris: 'around 7 million visitors a year' to the Eiffel Tower is on the high side for recent years. The official figure was ~6.91M in 2015 but has been ~6.3M in 2023 and 2024 (and dipped to ~5.89M in 2022). It is still the most-visited PAID monument in the world (Guinness-recognised), which is the load-bearing claim and is correct. The raw number is just slightly inflated for a 'now' statement.",
+        "Paris: 'tallest structure on Earth from 1889 until 1929' - the tower was the tallest man-made structure for 41 years until the Chrysler Building. The Chrysler Building was topped out in 1929 but completed in 1930. Wikipedia's headline framing is 'a title it held for 41 years until the Chrysler Building ... was finished in 1930.' So '1929' is defensible (date it was overtaken in height) but '1930' (completion) is the cleaner, harder-to-challenge date. Minor; an inspector could quibble either way.",
+        "Lyon: 'more than 2,000 restaurants' is true but understated - widely cited figures are around 5,300 restaurants. Not an error (2,000+ is a correct floor) but it sells the city short and a pupil who checks will find a bigger number. Consider 'more than 4,000' or simply 'thousands of restaurants'.",
+        "Strasbourg: 'is home to the European Parliament, where politicians from across Europe meet' is correct (Strasbourg is the official legal SEAT of the European Parliament, where MEPs hold their 12 plenary sessions a year). Verified accurate. Soft note only: most day-to-day Parliament work actually happens in Brussels, so a very sharp inspector might want 'official home/seat'. The claim as written is true and fine for J1.",
+        "Marseille (oldest city, founded c.600 BC by Greek settlers/Massalia) - VERIFIED CORRECT. Wikipedia: 'Massalia was established c. 600 BC by Ionian Greek settlers from Phocaea' and Marseille 'is considered the oldest city of France'.",
+        "Toulouse (Pink City / la Ville Rose, terracotta brick; home of Airbus, where passenger planes are built) - VERIFIED CORRECT. Airbus HQ and the A320/A330/A350 final assembly lines are in Toulouse.",
+        "Nice (French Riviera/Cote d'Azur, Mediterranean, Promenade des Anglais with famous blue chairs) - VERIFIED CORRECT. The iconic blue chairs (la chaise bleue) on the Promenade des Anglais are a genuine symbol of Nice.",
+        "Nantes (birthplace of Jules Verne; 12-metre mechanical elephant at Les Machines de l'ile, Jules Verne-inspired) - VERIFIED CORRECT. Jules Verne born in Nantes on 8 Feb 1828; the Grand Elephant is 12 m high (carries ~49-50 passengers) and the project is explicitly inspired by Jules Verne and Leonardo da Vinci.",
+        "Bordeaux (wine capital; riverside old town UNESCO World Heritage Site nicknamed 'Port of the Moon' because the river curves like a crescent) - VERIFIED CORRECT. 'Bordeaux, Port of the Moon' inscribed by UNESCO in 2007; the name comes from the crescent-shaped curve of the Garonne river.",
+        "Lille (Braderie de Lille, Europe's largest flea market, every September, millions of visitors) - VERIFIED CORRECT. Held the first weekend of September, ~2-2.5 million visitors, billed as Europe's largest flea market.",
+        "Signoff population claim VERIFIED CORRECT: by commune population the 2023 order is Paris, Marseille, Lyon, Toulouse, Nice, Nantes (ranks 1-6, all matching the brief), then Montpellier (7th) which does outrank Strasbourg (8th), Bordeaux (9th) and Lille (10th). The teacher's 9-city set is sound; only Montpellier is the notable population-rank omission, exactly as flagged."
+      ],
+      "imageIssues": [
+        "No issues with image EXISTENCE or LICENCE. Both base maps were fetched and confirmed to exist and be genuinely reuse-clean.",
+        "PRIMARY base map: File:France map Lambert-93 with regions and departments-blank.svg - CONFIRMED to exist; author Eric Gaba (user Sting); dimensions 2,000 x 1,898 px; dual-licensed GFDL 1.2+ AND CC BY-SA (4.0, 3.0, 2.5, 2.0, 1.0). The attribution string and licence in the brief are accurate. NOTE: because it is CC BY-SA, the slide/page must (a) display the credit line and (b) be share-alike - acceptable but an attribution burden.",
+        "ALTERNATIVE base map: File:Blank France map, no Departments.svg - CONFIRMED to exist; author Lokal_Profil (from SuperManu/Emmanuel.boutet); 507 x 520 px; genuinely PUBLIC DOMAIN, no conditions. Accurate as described. This is the lower-risk choice for an ETI-facing board (no attribution/share-alike obligation).",
+        "GAP, not an error: every per-city imageFile field is EMPTY. This is fine for a map station where cities are dots on one base map, but if the teacher wants a small photo beside each city name, those nine city photos have NOT been researched/licence-checked yet and would need a separate pass."
+      ],
+      "appropriatenessIssues": [
+        "No age-appropriateness or suitability concerns. All nine cities and their cultural hooks (Eiffel Tower, ancient port, food, pink brick/planes, seaside, an inventor and a mechanical elephant, the European Parliament, a UNESCO old town, a flea market) are wholesome, factual and engaging for 11-12 year old girls.",
+        "Bordeaux is described as France's 'wine capital' surrounded by 'vineyards'. This is geographically accurate and unavoidable for Bordeaux, and is framed around heritage/landscape, not drinking. It is fine for an all-girls Catholic grammar - it teaches that the region is famous for grape-growing, with no encouragement of alcohol. No change needed, but worth a conscious sign-off given the audience.",
+        "Tone is warm-but-factual throughout, not childish. Good fit for a Promethean-board culture activity."
+      ],
+      "corrections": [
+        "Paris detail: change 'with around 7 million visitors a year' to 'with around 6 to 7 million visitors a year' (or 'roughly 6 million visitors a year') to match 2023-24 figures and stay unimpeachable.",
+        "Paris detail: optionally change 'from 1889 until 1929' to 'from 1889 until 1930' (the year the Chrysler Building was completed) - or rephrase to 'for over 40 years, until the Chrysler Building was built in New York' to sidestep the 1929-vs-1930 distinction entirely.",
+        "Lyon detail: raise 'more than 2,000 restaurants' to 'more than 4,000 restaurants' or 'thousands of restaurants' (commonly cited ~5,300) so it isn't understated. Keep the bouchons line - it's correct.",
+        "Strasbourg detail (optional polish only): 'is the official home of the European Parliament' reads slightly more precisely than 'is home to', but the current wording is accurate and acceptable.",
+        "Image choice recommendation for an ETI-facing board: prefer the PUBLIC-DOMAIN alternative (File:Blank France map, no Departments.svg) to avoid any CC BY-SA attribution/share-alike obligation. If the CC BY-SA Lambert-93 map is used instead, ensure the exact credit line is visible on the slide: 'Map: Eric Gaba (Wikimedia Commons user Sting), CC BY-SA 4.0, via Wikimedia Commons.'",
+        "Keep the teacher's 9-city set as-is. Only consider adding Montpellier as a 10th if strict by-population accuracy is wanted; otherwise the current spread is better balanced. No swap needed.",
+        "If a photo per city is desired, commission a separate image-research pass - the per-city imageFile fields are currently empty and unverified."
+      ],
+      "verdict": "PASS WITH MINOR EDITS. All nine cities and their cultural facts are accurate and verifiable; both base-map Commons files genuinely exist and are correctly licensed (one CC BY-SA, one public domain). Only small numeric tweaks are advised: soften the Eiffel Tower '~7 million visitors' (now ~6.3M), optionally use 1930 instead of 1929 for when it was overtaken in height, and raise Lyon's understated '2,000 restaurants'. Content is fully age-appropriate and suitable for an all-girls Catholic grammar. For the ETI-facing board, favour the public-domain map to avoid the CC BY-SA attribution/share-alike burden. Note the per-city photo fields are empty (by design for a dot-map, but unresearched if photos are wanted).\""
+    },
+    {
+      "station": "LA CUISINE",
+      "factIssues": [
+        "Tarte Tatin location is inaccurate. The detail/extra says it was created at the Tatin sisters' hotel in Lamotte-Beuvron 'in the Loire Valley'. Lamotte-Beuvron is in the Sologne, in the Loir-et-Cher department of the Centre-Val de Loire region, NOT in the Loire Valley proper (the Loire Valley / Val de Loire is the river corridor of chateaux around Blois, Tours and Amboise). Sologne is a distinct inland, forested region south of the Loire. An inspector or geography-aware reader could flag 'Loire Valley' as wrong. The 'said to have been created by the Tatin sisters...in the 1880s' wording is otherwise good and correctly cautious (Wikipedia confirms it is a popular myth, sisters Stephanie and Caroline Tatin, Hotel Tatin, 1880s).",
+        "Minor sourcing nuance, not an error: the escargots 'de Bourgogne / Burgundy' association is correct (Helix pomatia is literally the 'Burgundy snail / escargot de Bourgogne' and the dish is classically Burgundian), but the plain English Wikipedia 'Escargot' article does not state the regional link explicitly. The claim is sound and verifiable from other sources; no change needed.",
+        "Minor sourcing nuance, not an error: the steak-frites claim that it 'became popular in Paris in the 1800s' is not stated in the Wikipedia 'Steak frites' article (which only notes Belgian/French brasseries and Belgium's origin claim), but it is supported by wider culinary-history sources placing the dish's rise in 19th-century Paris bistros. Low risk; the 'classic of French and Belgian cafe cooking' framing is accurate and safe.",
+        "Verified correct: croissant developed in early 1900s Paris from the Austrian kipferl (first modern recipe 1905-1906). Quiche Lorraine from Lorraine, north-east France, traditional recipe is eggs/cream/bacon with cheese as a later addition. Ratatouille from Provence, especially Nice, vegetable-only/vegetarian, peasant origin. Macaron is the almond sandwich biscuit (distinct from coconut macaroon), Parisian-style, Laduree association early 20th century. Camembert from the village of Camembert, Normandy, first made late 1700s (Marie Harel, reportedly 1791). Bouillabaisse the signature dish of Marseille, originally made by fishermen from unsold rockfish. Crepe a Breton speciality, savoury buckwheat version = galette."
+      ],
+      "imageIssues": [
+        "No blocking image issues. All ten Wikimedia Commons File: pages were fetched and confirmed to exist, with the licences, authors and subjects exactly as stated in the content. Specifically: Croissant-Petr_Kratochvil.jpg = CC0 1.0 (Petr Kratochvil); Crepe_au_beurre_doux.JPG = CC BY-SA 4.0 (Marianne Casamance); Quiche_lorraine_01.JPG = CC BY-SA 4.0 (Arnaud 25); Ratatouille.jpg = CC BY 2.0 (Marcus Guimaraes, from Flickr 2007); Steak-frites...L'Entrecote.jpg = released to public domain by author Dcollard; Colorful_French_Macaroons.jpg = CC BY-SA 4.0 (C.a.ciliberto, own work); Camembert_ganz.jpg = CC BY-SA 4.0 (IgorCalzone1); Tarte_Tatin_aux_reinettes.JPG = CC BY-SA 4.0 (Marianne Casamance); Bouillabaisse...Marseille...2022.JPG = CC0 1.0 (Benoit Prieur); Escargots_de_Bourgogne_3.JPG = CC BY-SA 4.0 (Arnaud 25). All licences are real, free and reuse-clean.",
+        "Filename cosmetic note (already self-flagged in the content, no action required): the macaron file is titled 'Colorful French Macaroons.jpg' (uploader's spelling) but genuinely shows French macarons; the pupil-facing label correctly reads 'Macaron'. If an exactly-matching filename is preferred for records, an alternative real Commons file is in the same category, but this is optional."
+      ],
+      "appropriatenessIssues": [
+        "No appropriateness problems for an all-girls Catholic grammar Year 8 class. All ten dishes are everyday French foods, described factually and warmly, with no alcohol-forward framing (bouillabaisse and tarte tatin descriptions correctly omit any wine/spirit detail). Escargots (snails) is the deliberate 'adventurous' item; it is described non-graphically (cooked, in shells, with garlic-parsley butter) and suits the 'would you try it?' purpose. The signoffFlags already surface this for a teacher eye and that is the right call.",
+        "Inclusivity point already handled well: ratatouille is fully vegetarian and crepes can be, which the content flags so the activity works for any vegetarian pupils. No religious/cultural sensitivity issues (no pork-only framing problem since alternatives are clearly available)."
+      ],
+      "corrections": [
+        "Fix the Tarte Tatin geography. Change 'in the Loire Valley' to 'in the Sologne region' (or 'in the Loir-et-Cher, in central France'). Suggested replacement for the extra field: 'Said to have been created by the Tatin sisters at their hotel in Lamotte-Beuvron, in the Sologne region of central France, in the 1880s.' Do not call Lamotte-Beuvron part of the Loire Valley.",
+        "Knock-on fix in extraContent: the regions list currently says '...the Loire Valley and Paris'. Update 'the Loire Valley' to 'the Sologne' (or 'central France') so it stays consistent with the corrected Tarte Tatin entry.",
+        "Optional tightening (not required): if you want every claim to match its cited primary source verbatim, you could soften 'became popular in Paris in the 1800s' for steak-frites to 'became popular in French and Belgian cafes in the 1800s', since the Belgian origin claim is also commonly made. Current wording is acceptable as-is.",
+        "No change needed for the macaron filename, escargots inclusion, or any image - they are correct. Keep displaying the attribution string near each CC BY / CC BY-SA image (the three CC0/public-domain ones - croissant, bouillabaisse, steak-frites - do not legally require it but crediting is good practice)."
+      ],
+      "verdict": "PASS WITH ONE CORRECTION. All ten Commons images are real and genuinely reuse-clean with licences/authors exactly as stated, and the food facts are accurate, age-appropriate and suitable for an all-girls Catholic grammar Year 8 class. The single substantive fix needed before showing on the board: Tarte Tatin's Lamotte-Beuvron is in the Sologne (Loir-et-Cher, Centre-Val de Loire), not 'the Loire Valley' - correct that wording in both the Tarte Tatin entry and the regions list in extraContent. Everything else can ship as written."
+    },
+    {
+      "station": "LE 14 JUILLET",
+      "factIssues": [
+        "MINOR / wording: Card 3 says the national-holiday law was 'passed on 6 July 1880.' The legislative vote actually happened on 27 and 29 June 1880 (Chamber and Senate); 6 July 1880 is the date the law was promulgated/made official. 'Passed' is loose but commonly used and defensible. If an inspector is pedantic, 'made official on 6 July 1880' is the safest phrasing.",
+        "MINOR: Card 3 states 'The very first official 14 July celebration was held later that same year, in 1880.' This is correct (first official celebration 1880), but note Wikipedia records a 'semi-official' feast already on 14 July 1879. The card's word 'official' keeps it accurate, so no change is strictly required.",
+        "VERIFIED: Storming of the Bastille = 14 July 1789; an old royal fortress AND prison in Paris; crowds sought gunpowder/weapons; seen as a symbol of royal authority/tyranny. All confirmed against Wikipedia and matches Britannica.",
+        "VERIFIED: Fete de la Federation = 14 July 1790, on the Champ de Mars in Paris, a peaceful celebration of national unity, one year after the storming. Confirmed.",
+        "VERIFIED: Parade route = Arc de Triomphe (Place Charles de Gaulle) down the Champs-Elysees to the Place de la Concorde, watched by the President; on the Champs-Elysees since just after WWI (first occasion the Victory Parade on 14 July 1919). The card's hedge 'since just after the First World War' is the correct safe choice; the signoff note offering 1919 as the single sourced year is accurate.",
+        "VERIFIED: 'One of the oldest regular military parades in Europe' is accurate (Wikipedia: 'one of the oldest regular military parades in the world' and 'largest regular military parade in Western Europe'). Thousands of troops, flypast and bands confirmed.",
+        "VERIFIED: Evening fireworks around the Eiffel Tower, usually after an open-air concert, plus village fetes and bals des pompiers at fire stations. All confirmed. (Aside, not a card error: in 2026 only, Paris is moving the Eiffel Tower fireworks to the evening of 13 July to allow tributes on 14 July for the 10th anniversary of the 2016 Nice attack. The card text is general/evergreen so needs no change, but the teacher should be aware if pupils ask about this year specifically.)"
+      ],
+      "imageIssues": [
+        "VERIFIED EXISTS + REUSE-CLEAN: File:Bastille_Day_Parade_170714-D-PB383-005_(35087624434).jpg resolves on Wikimedia Commons and is licensed CC BY 2.0 (genuine free licence). Author is Navy Petty Officer 2nd Class Dominique A. Pineiro, Office of the Chairman of the Joint Chiefs of Staff. Depicts the 2017 Bastille Day parade on the Champs-Elysees with Parisian architecture behind. Image is correct for the parade card.",
+        "VERIFIED EXISTS + REUSE-CLEAN: File:Eiffel_Tower_fireworks_on_Bastille_Day_2017_(36303814541).jpg resolves on Wikimedia Commons and is licensed CC BY 2.0 (genuine free licence). Author is Kenneth Lu (from San Francisco, CA), sourced from Flickr. Depicts fireworks above the Eiffel Tower on 14 July 2017. Correct for the fireworks card.",
+        "MINOR attribution wording: The parade photo's author works for the Office of the Chairman of the Joint Chiefs of Staff. The supplied attribution 'U.S. Department of Defense photo by Navy Petty Officer 2nd Class Dominique A. Pineiro' is acceptable (Joint Chiefs sits under the DoD and the Commons page treats it as a DoD work), but a marginally more precise string is 'U.S. Joint Chiefs of Staff photo by Navy Petty Officer 2nd Class Dominique A. Pineiro, via Wikimedia Commons, CC BY 2.0.' Either is fine.",
+        "NOTE: Cards 1-3 have empty imageFile/imageLicence/imageAttribution fields. This is by design (no images on the history-only cards), not an error, but confirm the activity layout does not show broken/blank image boxes for those three steps."
+      ],
+      "appropriatenessIssues": [
+        "The 1789 storming involved real violence and deaths. The cards frame it historically and symbolically (a fortress/prison taken; a symbol of unfair rule) with zero graphic detail. This is age-appropriate for J1 (11-12) and fine for an all-girls Catholic grammar. No change needed, but this is correctly flagged in signoffFlags for the teacher to confirm.",
+        "bals des pompiers: adult tourism sources describe these as lively parties with a bar and drinking ('France's hottest/spiciest party'). The card deliberately presents them innocuously as 'music and dancing... held at local fire stations,' which is accurate and age-appropriate. No change needed, but do not expand this detail or link pupils to those tourism pages.",
+        "'liberte, egalite, fraternite (liberty, equality, brotherhood)' is the standard, uncontroversial national motto and entirely appropriate. No religious or political sensitivity issues for a Catholic grammar.",
+        "Overall tone is warm-but-factual and not childish, matching the brief. No swearing, no mature themes, nothing politically contentious."
+      ],
+      "corrections": [
+        "Optional (Card 3): change 'A French law passed on 6 July 1880 made it the country's annual national celebration' to '...made official on 6 July 1880...' to be precise (the vote was 27/29 June; promulgation 6 July).",
+        "Optional (parade attribution): use 'U.S. Joint Chiefs of Staff photo by Navy Petty Officer 2nd Class Dominique A. Pineiro, via Wikimedia Commons, CC BY 2.0' for slightly greater accuracy; the current DoD wording is also acceptable.",
+        "No correction required for the '1919 vs 1918' parade-year point: the card's hedge 'since just after the First World War' is the correct, safe choice. If a single year is wanted on the board, use 1919 (the well-sourced first occasion, the Victory Parade).",
+        "No correction required to facts on Cards 1, 2, 4, 5 or the extraContent: all dates, places and claims check out.",
+        "Teacher awareness only (no card change): in 2026 the Paris Eiffel Tower fireworks are exceptionally on the evening of 13 July (tributes for the 10th anniversary of the 2016 Nice attack); the evergreen card text remains correct for a normal year."
+      ],
+      "verdict": "PASS with minor optional polish. Every factual claim on all five cards and the extraContent verified against Wikipedia (and consistent with Britannica/Library of Congress): storming 14 July 1789, Fete de la Federation 14 July 1790 on the Champ de Mars, national holiday made official 6 July 1880, parade route Arc de Triomphe to Place de la Concorde on the Champs-Elysees since just after WWI (first 1919), and the evening fireworks/bals des pompiers traditions. Both Commons images exist, resolve, and are genuinely reuse-clean CC BY 2.0 with correct authors. Content is age-appropriate for J1 (11-12) and suitable for an all-girls Catholic grammar. Only two trivial, optional wording tweaks suggested (the law was 'made official' on 6 July, and a marginally more precise attribution for the parade photo); neither is required to run the station accurately."
+    },
+    {
+      "station": "LES PERSONNES CELEBRES (Famous French People)",
+      "factIssues": [
+        "Marie Curie 'only person ever to win a Nobel Prize in two different sciences': ACCURATE as worded, but borderline. Linus Pauling also won two Nobels (Chemistry + Peace), so Wikipedia's careful phrasing is 'two different scientific FIELDS'. Because Pauling's second prize was Peace (not a science), Curie genuinely remains the only person to win in two SCIENCES. The card's wording is defensible, but an inspector who knows Pauling could query the bald 'only person ever'. Safer to say 'the only person to win Nobel Prizes in two different SCIENCES (Physics and Chemistry)'.",
+        "Marie Curie death place: card says 'died near Sallanches, France, 1934'. She actually died on 4 July 1934 at the Sancellemoz sanatorium in PASSY, Haute-Savoie. Passy is near Sallanches but the precise town is Passy. Minor imprecision; tighten to 'Passy, in the Haute-Savoie region of France'.",
+        "Marie Curie 'first woman to win a Nobel Prize at all': CONFIRMED accurate.",
+        "Claude Monet: ALL facts confirmed - 'Impression, Sunrise' gave Impressionism its name (critic Louis Leroy, 1874); water-lily series at Giverny; born Paris 1840; died Giverny 1926.",
+        "Louis Pasteur: ALL facts confirmed - germ theory; first rabies vaccine (Joseph Meister, 6 July 1885); invented pasteurisation; born Dole 1822. Death place 'near Paris' is correct: he died at Marnes-la-Coquette (south-west Paris suburb), 28 Sept 1895. 'died near Paris 1895' is accurate.",
+        "Edith Piaf: ALL facts confirmed - among France's greatest popular singers; 'La Vie en rose' (signature song) and 'Non, je ne regrette rien' (1960); born Paris 19 Dec 1915; very poor/hardship childhood. Death: she died 10 Oct 1963; her villa was in Plascassier, listed under Grasse on the French Riviera. 'died near Grasse, France, 1963' is accurate.",
+        "Translation note: card glosses 'La Vie en Rose' as 'Life in Pink'. The conventional English rendering is 'Life in rosy/rose-coloured tones' or 'Life through rose-tinted glasses'. 'Life in Pink' is a literal but slightly odd gloss; consider 'Life in rosy colours' or leave untranslated. Not an error, just a wording polish.",
+        "Joan of Arc (Jeanne d'Arc): ALL facts confirmed - led French forces to victory ending the siege of Orleans (English retreated 8 May 1429); Hundred Years' War; born Domremy c.1412; burned at Rouen 30 May 1431; patron saint of France; canonised 16 May 1920 by Pope Benedict XV; believed she acted under divine guidance/visions. 'made a Catholic saint in 1920' is accurate.",
+        "Sophie Germain: ALL facts confirmed - born Paris 1776, died Paris 1831; first woman to win a prize from the Paris/French Academy of Sciences (8 Jan 1816, for work on elasticity); taught herself maths secretly as a girl against parental opposition; work on number theory (Sophie Germain's theorem, Fermat's Last Theorem) and on vibrating elastic surfaces. Inspiring and clean.",
+        "Coco Chanel WWII controversy (basis for removal): CONFIRMED well-sourced and mainstream. Declassified documents and historian Hal Vaughan's archival research identify her as collaborating with the Sicherheitsdienst, working under Walter Schellenberg, with codename 'Westminster' / agent ref F 7124, and involvement in 'Operation Modellhut'. There is a sourced counterpoint (Serge Klarsfeld: a spy number does not prove personal involvement) and Chanel Group disputes the espionage claims, but the controversy is real and prominent. The recommendation to remove her is sound."
+      ],
+      "imageIssues": [
+        "Marie Curie image (File:Marie Curie c. 1920s.jpg): VERIFIED. Page resolves; PD-old-75-expired + CC-PD-Mark; Henri Manuel (d.1947); c.1920; restored, an enwiki featured picture. Genuinely reuse-clean. Attribution string in the content is correct.",
+        "Claude Monet image (File:Claude Monet 1899 Nadar crop.jpg): VERIFIED. Page resolves; Public Domain + CC-PD-Mark; Nadar (Gaspard-Felix Tournachon, d.1910); 1899. Reuse-clean. Note the card's licence line says 'PD-1923' - the file's actual basis is author-life+100; harmless but you could simplify to 'PD-old'.",
+        "Louis Pasteur image (File:Louis Pasteur portrait photo.jpg): VERIFIED page resolves with PD-old + CC-PD-Mark, dated 1891. ONE CAUTION: the file's source metadata references 'Hulton Archive/Getty Images'. The underlying 1891 photograph is genuinely public domain (author life+70 long expired), so Getty's branding is only a source credit, not a valid copyright claim - it is safe to use. But because Getty watermark-style credits can prompt an inspector challenge, a cleaner-provenance alternative would be lower-risk (e.g. a Nadar studio portrait from Category:Photographs of Louis Pasteur by Nadar, or a Wellcome Collection PD image). Optional, not required.",
+        "Edith Piaf image (File:Edith Piaf 914-6440.jpg): VERIFIED. Page resolves; CC0 1.0 (public domain dedication); Eric Koch for Anefo, Nationaal Archief (Dutch National Archives), 13 Dec 1962. Genuinely reuse-clean. Attribution correct.",
+        "Joan of Arc image (File:Ingres coronation charles vii.jpg): VERIFIED. Page resolves; PD-old-100-expired + PD-Art + PD Mark; Jean-Auguste-Dominique Ingres (d.1867); 1854; held at the Louvre (M.I. 667); title 'Joan of Arc at the Coronation of Charles VII'. Reuse-clean and correctly labelled as a later artwork (no lifetime portrait exists). Dignified, depicts Reims Cathedral coronation - appropriate for the school.",
+        "Sophie Germain image (File:Chegaray - Sophie Germain.png): VERIFIED. Page resolves; PD (US pre-1931) + PD (life+70) + CC-PD-Mark; engraver Berthe Chegaray nee Becher; 1896; 1788x1895 px (high-res, good for Promethean board); sourced from Retronews. NOTE: uploaded to Commons only 17 Nov 2025 (very recent), but the underlying 1896 engraving from Germain's published 'Oeuvres philosophiques' is verifiably pre-1931 PD and the Commons Sophie Germain category holds multiple versions, so the licence is sound. No action needed."
+      ],
+      "appropriatenessIssues": [
+        "Roster balance is excellent for an all-girls Catholic grammar: four women, two men, spanning science, maths, arts, history and faith - strong female role models (Curie, Germain, Piaf, Joan of Arc).",
+        "Joan of Arc - faith framing is dignified and entirely appropriate; she is a Catholic saint and patron of France, a strong fit for the school. The card honestly labels the image as a later painting.",
+        "Coco Chanel REMOVAL is the right call for this setting. Her documented Nazi-intelligence collaboration makes her a poor 'uncontroversial role model' and a genuine ETI/reputational risk if challenged. Replacement with Sophie Germain is appropriate, age-appropriate and inspiring.",
+        "Edith Piaf hardship: the card mentions 'a very poor childhood' which is accurate and handled positively. Her fuller biography (time in a brothel where her grandmother worked, later addiction/illness) is NOT mentioned and should NOT be added for J1 (Year 8) - keep the current positive 'rose from poverty to world fame' framing. Current wording is fine.",
+        "Marie Curie nationality: she was Polish-born and became a French citizen. The card already handles this well in 'extra'. For strict accuracy on the pupil-facing card, describe her as 'Polish-born French scientist' so an inspector cannot say she is misrepresented as simply French.",
+        "All six figures are long-established, age-appropriate and uncontroversial (after the Chanel swap). No content concerns for 11-12 year olds."
+      ],
+      "corrections": [
+        "Marie Curie detail: change 'the only person ever to win a Nobel Prize in two different sciences' to 'the only person to win Nobel Prizes in two different SCIENCES (Physics in 1903 and Chemistry in 1911)' - this pre-empts the Linus Pauling objection (he won Chemistry + Peace).",
+        "Marie Curie extra: change 'died near Sallanches, France, 1934' to 'died at Passy, in the Haute-Savoie region of France, in 1934'.",
+        "Marie Curie pupil-facing label: add 'Polish-born French scientist' (she became a French citizen and did her famous work in Paris) for strict accuracy.",
+        "CONFIRM the Coco Chanel -> Sophie Germain swap (recommended and well-justified). All Sophie Germain facts verified accurate.",
+        "Edith Piaf: optionally refine the gloss of 'La Vie en Rose' from 'Life in Pink' to 'Life in rosy colours' / 'seeing life through rose-tinted glasses' (or leave untranslated). Keep the hardship framing as-is - do not expand it for Year 8.",
+        "OPTIONAL (low priority): swap the Louis Pasteur photo for one without 'Hulton Archive/Getty Images' in its source metadata (e.g. a Nadar studio portrait or a Wellcome Collection PD image) to remove any Getty-credit challenge. The current image is legally PD and safe to keep.",
+        "OPTIONAL polish: simplify Monet's licence note from 'PD-old / PD-1923' to 'PD-old' to match the file page exactly.",
+        "Keep the Joan of Arc image caption explicitly stating it is an 1854 painting by Ingres (a later artist's impression), as already planned - this is exactly right for an inspector."
+      ],
+      "verdict": "PASS WITH MINOR CORRECTIONS. All six images verified on their actual Commons File: pages - every one exists and is genuinely reuse-clean (PD or CC0). All core facts for all six people are accurate and verifiable. The Coco Chanel removal is justified by a real, well-sourced WWII controversy, and Sophie Germain is a fully verified, inspiring, appropriate replacement - confirm the swap. Required fixes are small: (1) tighten Marie Curie's 'only person... two sciences' wording to pre-empt the Pauling objection, (2) correct her death place to Passy/Haute-Savoie, (3) label her 'Polish-born French'. Optional polish: a cleaner-provenance Pasteur photo (the current one is legally fine but carries a Getty source credit), a better 'La Vie en rose' gloss, and a tidied Monet licence line. Roster is well-balanced and age-appropriate for J1 at an all-girls Catholic grammar; Joan of Arc's faith theme is a positive fit and the image is correctly labelled as a later painting."
+    }
+  ],
+  "pack": {
+    "confidence": "HIGH on facts and licences. All four stations passed adversarial verification; every Commons File: page in the pack was fetched and confirmed to exist with the stated licence. I have folded in every required correction. The remaining uncertainty is operational, not factual: (1) the nine city DOT POSITIONS must be hand-placed over whichever base map is chosen (Lambert-93 is a conic projection, so no linear lat/lng formula will place them accurately) - the coordinates given are verified real-world centre points to guide that hand-placement; (2) the per-city photo fields are deliberately empty (the map uses one base map with dots) - if Damien wants a small photo beside each city, that is a separate unresearched image pass; (3) two images are legally clean but carry minor provenance smells worth a glance at build time (Pasteur photo has a Getty source credit, Sophie Germain engraving was only uploaded to Commons in Nov 2025). None of these block the activity. I am also flagging the four sign-off decisions (city list, Chanel-to-Germain swap, Bastille sequence, escargots/snails) as teacher calls, not errors.",
+    "signoffForDamien": [
+      "FINAL CITY LIST (Station 1): confirm the nine cities Paris, Marseille, Lyon, Toulouse, Nice, Nantes, Strasbourg, Bordeaux, Lille. These give the best geographic spread (capital, ancient Med port, food capital, pink city/Airbus, Riviera, Jules Verne city, EU Parliament, wine/UNESCO, flea market). NOTE: by strict population Montpellier (rank 7) is larger than Strasbourg/Bordeaux/Lille - say yes to keep the current nine, or ask to add Montpellier as a tenth for by-population accuracy.",
+      "CITY DOT POSITIONS (Station 1): confirm the base map choice. RECOMMENDED for an ETI-facing board: the PUBLIC-DOMAIN outline File:Blank France map, no Departments.svg (no attribution or share-alike burden). The dots must be hand-placed once over the chosen map image and the pixel positions saved - the lat/lng values in each city's extra field are verified real-world centre points to guide that placement (a linear formula will NOT work on the conic Lambert-93 map). Confirm which map and that you (or the build) will hand-place dots.",
+      "FAMOUS-PEOPLE ROSTER (Station 4): confirm the recommended swap - REMOVE Coco Chanel, ADD Sophie Germain (mathematician). Chanel's documented WWII Nazi-intelligence collaboration is a real, mainstream-sourced controversy and an ETI/reputational risk; Germain keeps the four-women / two-men balance and is a strongly inspiring fit for the girls. Final roster to confirm: Marie Curie, Claude Monet, Louis Pasteur, Edith Piaf, Joan of Arc, Sophie Germain.",
+      "BASTILLE DAY SEQUENCE (Station 2/Le 14 Juillet): confirm the 5-step order is correct for the activity: (1) The storming of the Bastille 1789, (2) A symbol of freedom / Fete de la Federation 1790, (3) Made the national holiday 1880, (4) The military parade on the Champs-Elysees, (5) Fireworks and celebrations. Also confirm you are comfortable that step 1 references a fortress/prison being taken (framed historically, no graphic detail) for J1.",
+      "CUISINE LIST (Station 3): confirm the ten dishes and their order from approachable to adventurous: Croissant, Crepe, Quiche Lorraine, Ratatouille, Steak-frites, Macaron, Camembert, Tarte Tatin, Bouillabaisse, Escargots. SPECIFICALLY confirm you are happy showing Escargots (cooked snails) as the deliberate adventurous 'would you try it?' item to a Year 8 class.",
+      "SOURCES: confirm you are happy with the source basis (Wikipedia, Britannica, official tourism/monument sites, UNESCO, Library of Congress for Bastille Day, Nobel Prize org for Curie) - all listed per station in the gathered content; nothing rests on a weak single source."
+    ],
+    "imageRisks": [
+      "Louis Pasteur portrait (File:Louis Pasteur portrait photo.jpg): LEGALLY public domain and safe (1891 photo, author life+70 long expired), but the file's source metadata carries a 'Hulton Archive/Getty Images' source credit. Getty branding is only a source credit, not a valid copyright claim, but it could prompt an inspector challenge. OPTIONAL lower-risk swap at build time: a Nadar studio portrait from Category:Photographs of Louis Pasteur by Nadar, or a Wellcome Collection PD image. Re-check at build.",
+      "Sophie Germain engraving (File:Chegaray - Sophie Germain.png): licence is sound (1896 engraving, pre-1931 PD, high-res 1788x1895 px and good for the board) BUT it was uploaded to Commons only on 17 Nov 2025 - very recent. Re-confirm the File: page still resolves and the PD tags are intact at build time; if it has been challenged/deleted, fall back to another file in the Commons Sophie Germain category (the small 200x243 px Sophie Germain.jpg is a lower-res backup).",
+      "Per-city photos (Station 1): every per-city imageFile field is EMPTY by design (the map uses one base map with dots). If Damien wants a small photo beside each of the nine city names, those nine images are NOT yet researched or licence-checked and need a separate image pass before build.",
+      "Base map (Station 1): if the CC BY-SA Lambert-93 map is chosen instead of the PD outline, the slide MUST display the credit line 'Map: Eric Gaba (Wikimedia Commons user Sting), CC BY-SA 4.0, via Wikimedia Commons' and the page is technically share-alike. Verify the credit is visible at build. The PD alternative avoids this entirely.",
+      "All CC BY / CC BY-SA food and people images: ensure the attribution string is displayed near each image at build (the CC0/PD ones - croissant, bouillabaisse, steak-frites, Marie Curie, Monet, Pasteur, Piaf, Joan of Arc, Sophie Germain - do not legally require it but crediting is good practice). Re-verify each File: page still resolves at build time as a routine final check."
+    ],
+    "stations": [
+      {
+        "station": "LA CARTE (Map of France - main cities)",
+        "finalItems": [
+          {
+            "name": "Paris",
+            "enName": "",
+            "detail": "Paris is the capital of France and home to the Eiffel Tower, the most-visited paid monument in the world, with around 6 to 7 million visitors a year. When it was built it was the tallest structure on Earth for over 40 years, until the Chrysler Building was completed in New York in 1930.",
+            "extra": "48.8566,2.3522",
+            "imageFile": "",
+            "imageLicence": "",
+            "imageAttribution": ""
+          },
+          {
+            "name": "Marseille",
+            "enName": "",
+            "detail": "Marseille is France's oldest city. It was founded around 600 BC by Greek settlers who called it Massalia, and it has been a busy Mediterranean trading port ever since.",
+            "extra": "43.2965,5.3698",
+            "imageFile": "",
+            "imageLicence": "",
+            "imageAttribution": ""
+          },
+          {
+            "name": "Lyon",
+            "enName": "",
+            "detail": "Lyon is famous as the food capital of France. It has thousands of restaurants, and its traditional cosy eateries are called bouchons.",
+            "extra": "45.7640,4.8357",
+            "imageFile": "",
+            "imageLicence": "",
+            "imageAttribution": ""
+          },
+          {
+            "name": "Toulouse",
+            "enName": "",
+            "detail": "Toulouse is nicknamed 'the Pink City' (la Ville Rose) because so many of its buildings are made of rosy-pink terracotta brick. It is also the home of Airbus, where giant passenger planes are built.",
+            "extra": "43.6047,1.4442",
+            "imageFile": "",
+            "imageLicence": "",
+            "imageAttribution": ""
+          },
+          {
+            "name": "Nice",
+            "enName": "",
+            "detail": "Nice sits on the sunny French Riviera (the Cote d'Azur) by the sparkling blue Mediterranean Sea. Its long seafront walkway, the Promenade des Anglais, is lined with famous blue chairs.",
+            "extra": "43.7102,7.2620",
+            "imageFile": "",
+            "imageLicence": "",
+            "imageAttribution": ""
+          },
+          {
+            "name": "Nantes",
+            "enName": "",
+            "detail": "Nantes was the birthplace of the adventure writer Jules Verne. Today visitors can ride a giant 12-metre mechanical elephant called Les Machines de l'ile, inspired by his stories.",
+            "extra": "47.2184,-1.5536",
+            "imageFile": "",
+            "imageLicence": "",
+            "imageAttribution": ""
+          },
+          {
+            "name": "Strasbourg",
+            "enName": "",
+            "detail": "Strasbourg, near the German border, is the official home of the European Parliament, where politicians from across Europe meet. It is also famous for its beautiful Christmas market.",
+            "extra": "48.5734,7.7521",
+            "imageFile": "",
+            "imageLicence": "",
+            "imageAttribution": ""
+          },
+          {
+            "name": "Bordeaux",
+            "enName": "",
+            "detail": "Bordeaux is France's wine capital, surrounded by world-famous vineyards. Its grand riverside old town is a UNESCO World Heritage Site nicknamed the 'Port of the Moon' because the river curves like a crescent.",
+            "extra": "44.8378,-0.5792",
+            "imageFile": "",
+            "imageLicence": "",
+            "imageAttribution": ""
+          },
+          {
+            "name": "Lille",
+            "enName": "",
+            "detail": "Lille, in the north of France, hosts the Braderie de Lille, Europe's largest flea market. Every September the whole city fills with thousands of stalls and millions of visitors.",
+            "extra": "50.6292,3.0573",
+            "imageFile": "",
+            "imageLicence": "",
+            "imageAttribution": ""
+          }
+        ],
+        "extraContent": "BASE MAP - RECOMMENDED (public domain, lowest risk for an ETI board): File:Blank France map, no Departments.svg - https://commons.wikimedia.org/wiki/File:Blank_France_map,_no_Departments.svg . Released into the PUBLIC DOMAIN by Lokal_Profil (based on SuperManu/Emmanuel.boutet). 507x520 px SVG, clean outline of mainland France with no internal borders, no attribution or share-alike burden. ALTERNATIVE (more internal detail, but CC BY-SA): File:France map Lambert-93 with regions and departments-blank.svg - https://commons.wikimedia.org/wiki/File:France_map_Lambert-93_with_regions_and_departments-blank.svg by Eric Gaba (user Sting), 2000x1898 px, dual GFDL 1.2+ / CC BY-SA. If this one is used, the slide must show: 'Map: Eric Gaba (Wikimedia Commons user Sting), CC BY-SA 4.0, via Wikimedia Commons' and be share-alike. POSITIONING: place the nine dots BY HAND once over the chosen image and save the pixel positions. Lambert-93 is a conic projection, so a linear lat/lng-to-pixel formula will misplace dots; the lat,lng in each city's extra field are verified real-world centre points to guide hand-placement (north-south top-to-bottom, west-east left-to-right). CLASSROOM TIE-IN: this station's cities map onto the regions in Station 3 (cuisine), e.g. Marseille=bouillabaisse, Nice=ratatouille - a nice cross-link.",
+        "notes": "PASS WITH MINOR EDITS, all folded in. Corrections applied: Eiffel Tower visitors softened to 'around 6 to 7 million' (was ~7M; recent figures ~6.3M); tallest-structure line rephrased to 'over 40 years, until the Chrysler Building was completed in New York in 1930' (sidesteps the 1929-vs-1930 quibble); Lyon 'more than 2,000 restaurants' raised to 'thousands of restaurants' (commonly ~5,300, so the old figure undersold it); Strasbourg tightened to 'the official home of the European Parliament' (it is the legal seat). All nine cities and their cultural hooks verified accurate. Per-city imageFile fields intentionally empty (dot-map design). Bordeaux 'wine capital' is framed around heritage/landscape, not drinking - fine for the school but a conscious sign-off given the audience."
+      },
+      {
+        "station": "LA CUISINE (French foods - would you try it?)",
+        "finalItems": [
+          {
+            "name": "Croissant",
+            "enName": "Croissant (buttery crescent pastry)",
+            "detail": "A flaky, buttery pastry shaped like a crescent moon, usually eaten at breakfast. It is made from many thin folded layers of dough, which is what gives it its light, crisp texture.",
+            "extra": "Eaten all over France, especially at breakfast; the modern French croissant developed in Paris in the early 1900s from an older Austrian pastry called the kipferl.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Croissant-Petr_Kratochvil.jpg",
+            "imageLicence": "CC0 1.0 (Public Domain Dedication)",
+            "imageAttribution": "Petr Kratochvil, via Wikimedia Commons (CC0 / public domain)"
+          },
+          {
+            "name": "Crepe",
+            "enName": "Crepe (thin pancake)",
+            "detail": "A very thin pancake that can be sweet or savoury. Sweet crepes are often filled with chocolate spread, sugar and lemon, or jam, and folded up to eat.",
+            "extra": "A speciality of Brittany (Bretagne) in north-west France, where thin pancakes have been made since medieval times; the savoury buckwheat version is called a galette.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Cr%C3%AApe_au_beurre_doux.JPG",
+            "imageLicence": "CC BY-SA 4.0",
+            "imageAttribution": "Marianne Casamance, via Wikimedia Commons (CC BY-SA 4.0)"
+          },
+          {
+            "name": "Quiche lorraine",
+            "enName": "Quiche Lorraine (bacon and egg tart)",
+            "detail": "A savoury open tart with a pastry case filled with a baked mixture of eggs, cream and pieces of bacon. It is served warm or cold, often as a light lunch.",
+            "extra": "From the Lorraine region in north-east France. The traditional recipe uses only eggs, cream and bacon, though cheese is often added today.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Quiche_lorraine_01.JPG",
+            "imageLicence": "CC BY-SA 4.0",
+            "imageAttribution": "Arnaud 25, via Wikimedia Commons (CC BY-SA 4.0)"
+          },
+          {
+            "name": "Ratatouille",
+            "enName": "Ratatouille (vegetable stew)",
+            "detail": "A colourful vegetable stew made from aubergine, courgette, peppers, onion and tomato, cooked slowly with herbs. It is suitable for vegetarians.",
+            "extra": "From Provence in the south of France, especially the city of Nice; it began as a simple country dish using summer vegetables.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Ratatouille.jpg",
+            "imageLicence": "CC BY 2.0",
+            "imageAttribution": "Marcus Guimaraes, via Wikimedia Commons (CC BY 2.0)"
+          },
+          {
+            "name": "Steak-frites",
+            "enName": "Steak-frites (steak and chips)",
+            "detail": "A steak served with a generous helping of French fries (chips). It is one of the most common meals in French cafes and bistros.",
+            "extra": "A classic of French and Belgian cafe cooking; the dish of steak with fried potatoes became popular in French and Belgian cafes in the 1800s.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Steak-frites_as_served_at_Le_Relais_de_Venise_-_L%27Entrecote.jpg",
+            "imageLicence": "Public domain (released by the author)",
+            "imageAttribution": "Photo by Dcollard, via Wikimedia Commons (released into the public domain)"
+          },
+          {
+            "name": "Macaron",
+            "enName": "Macaron (almond sandwich biscuit)",
+            "detail": "A small, round, brightly coloured sandwich biscuit made from ground almonds, with a soft creamy filling in the middle. They come in many flavours such as raspberry, chocolate and pistachio.",
+            "extra": "The modern filled macaron is associated with Paris, where famous patisseries like Laduree made it popular in the 1900s. (Note: a macaron is the almond biscuit, different from a coconut 'macaroon'. The Commons file happens to be titled 'Colorful French Macaroons' by its uploader but shows genuine macarons; the pupil label should read 'Macaron'.)",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Colorful_French_Macaroons.jpg",
+            "imageLicence": "CC BY-SA 4.0",
+            "imageAttribution": "C.a.ciliberto, via Wikimedia Commons (CC BY-SA 4.0)"
+          },
+          {
+            "name": "Camembert",
+            "enName": "Camembert (soft round cheese)",
+            "detail": "A soft, creamy cow's-milk cheese with a white rind, sold as a round wheel. It becomes gooey in the middle and is often spread on bread.",
+            "extra": "From the village of Camembert in Normandy, north-west France, where it was first made in the late 1700s.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Camembert_ganz.jpg",
+            "imageLicence": "CC BY-SA 4.0",
+            "imageAttribution": "IgorCalzone1, via Wikimedia Commons (CC BY-SA 4.0)"
+          },
+          {
+            "name": "Tarte Tatin",
+            "enName": "Tarte Tatin (upside-down apple tart)",
+            "detail": "An upside-down apple tart. The apples are cooked in butter and sugar at the bottom of the pan, then covered with pastry and turned over after baking so the caramelised apples are on top.",
+            "extra": "Said to have been created by the Tatin sisters at their hotel in Lamotte-Beuvron, in the Sologne region of central France, in the 1880s.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Tarte_Tatin_aux_reinettes.JPG",
+            "imageLicence": "CC BY-SA 4.0",
+            "imageAttribution": "Marianne Casamance, via Wikimedia Commons (CC BY-SA 4.0)"
+          },
+          {
+            "name": "Bouillabaisse",
+            "enName": "Bouillabaisse (fish stew)",
+            "detail": "A rich fish stew made with several kinds of fish and shellfish cooked in a broth flavoured with herbs and spices. It is usually served with bread.",
+            "extra": "The signature dish of the port city of Marseille on the Mediterranean coast; it began as a simple soup made by fishermen from the fish they could not sell.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Bouillabaisse_de_chez_Fonfon_dans_un_restaurant_du_Vieux-Port_(Marseille)_en_novembre_2022.JPG",
+            "imageLicence": "CC0 1.0 (Public Domain Dedication)",
+            "imageAttribution": "Benoit Prieur, via Wikimedia Commons (CC0 / public domain)"
+          },
+          {
+            "name": "Escargots",
+            "enName": "Escargots (cooked snails)",
+            "detail": "Cooked snails served hot in their shells, filled with a butter sauce flavoured with garlic and parsley. They are eaten as a starter, lifted out of the shell with a small fork. This is the most adventurous dish on the list.",
+            "extra": "Best known as escargots de Bourgogne, from the Burgundy region in eastern France.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Escargots_de_Bourgogne_3.JPG",
+            "imageLicence": "CC BY-SA 4.0",
+            "imageAttribution": "Arnaud 25, via Wikimedia Commons (CC BY-SA 4.0)"
+          }
+        ],
+        "extraContent": "Station 2 LA CUISINE - 'Would you try it?' Pupils look at each French dish and decide whether they would like to try it or not, giving a reason. The ten dishes run roughly from most approachable (croissant, crepe, quiche, ratatouille, steak-frites, macaron, camembert) to more adventurous (tarte tatin is still gentle; bouillabaisse and escargots are the bold choices), so every pupil can find something they would happily try and something that challenges them. No alcohol-forward framing. Two dishes are vegetarian-friendly (ratatouille is; crepes can be), worth pointing out for any vegetarian pupils. The list spans several French regions - Brittany, Lorraine, Provence/Nice, Marseille, Burgundy, Normandy, the Sologne (central France) and Paris - which ties back to Station 1 LA CARTE. Optional light language link: 'Je voudrais essayer... / Je ne voudrais pas essayer...' (I would like to try / I would not like to try). All ten Commons images verified to exist and be reuse-clean; display the attribution string near each CC BY / CC BY-SA image (the three CC0/PD ones - croissant, bouillabaisse, steak-frites - do not legally require it but crediting is good practice).",
+        "notes": "PASS WITH ONE CORRECTION, folded in. FIXED: Tarte Tatin location changed from 'in the Loire Valley' to 'in the Sologne region of central France' (Lamotte-Beuvron is in the Sologne / Loir-et-Cher, NOT the Loire Valley chateaux corridor) - corrected in both the item extra AND the regions list in extraContent. Optional polish also applied: steak-frites '...in Paris in the 1800s' softened to '...in French and Belgian cafes in the 1800s' to match sources (Belgian origin is also claimed). All food facts otherwise verified accurate. TEACHER EYE: escargots (snails) is the deliberate adventurous item, described non-graphically (cooked, in shells, garlic-parsley butter) - confirm you are happy showing it to Year 8. All images real and reuse-clean."
+      },
+      {
+        "station": "LE 14 JUILLET (Bastille Day - how and why)",
+        "finalItems": [
+          {
+            "name": "La prise de la Bastille",
+            "enName": "The storming of the Bastille",
+            "detail": "On 14 July 1789, crowds of Parisians marched on the Bastille, an old royal fortress and prison in Paris, looking for gunpowder and weapons. After a tense standoff the fortress was taken. People saw the old prison as a symbol of the king's harsh rule, so its fall became a huge moment at the very start of the French Revolution.",
+            "extra": "Step 1 of 5",
+            "imageFile": "",
+            "imageLicence": "",
+            "imageAttribution": ""
+          },
+          {
+            "name": "Un symbole de liberte",
+            "enName": "A symbol of freedom",
+            "detail": "The fall of the Bastille quickly became a symbol of the people standing up to unfair rule and of the ideas France still values today: liberte, egalite, fraternite (liberty, equality, brotherhood). Exactly one year later, on 14 July 1790, France held the Fete de la Federation, a giant peaceful celebration of national unity on the Champ de Mars in Paris.",
+            "extra": "Step 2 of 5",
+            "imageFile": "",
+            "imageLicence": "",
+            "imageAttribution": ""
+          },
+          {
+            "name": "La fete nationale (1880)",
+            "enName": "The national holiday (1880)",
+            "detail": "It took almost a hundred years for 14 July to become an official holiday. A French law made official on 6 July 1880 made it the country's annual national celebration, remembering both the storming of the Bastille in 1789 and the unity festival of 1790. The very first official 14 July celebration was held later that same year, in 1880.",
+            "extra": "Step 3 of 5",
+            "imageFile": "",
+            "imageLicence": "",
+            "imageAttribution": ""
+          },
+          {
+            "name": "Le defile militaire",
+            "enName": "The military parade",
+            "detail": "Every year on the morning of 14 July, Paris holds a famous military parade. Since just after the First World War it has marched down the Champs-Elysees, the city's grandest avenue, from the Arc de Triomphe to the Place de la Concorde, where the President of France watches. It is one of the oldest regular military parades in Europe, with thousands of troops, a flypast of aircraft and bands.",
+            "extra": "Step 4 of 5",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Bastille_Day_Parade_170714-D-PB383-005_(35087624434).jpg",
+            "imageLicence": "CC BY 2.0",
+            "imageAttribution": "U.S. Joint Chiefs of Staff photo by Navy Petty Officer 2nd Class Dominique A. Pineiro, via Wikimedia Commons (CC BY 2.0)"
+          },
+          {
+            "name": "Feux d'artifice et fetes",
+            "enName": "Fireworks and celebrations",
+            "detail": "When night falls, the celebrations continue across France. In Paris a spectacular fireworks display lights up the sky around the Eiffel Tower, usually after an open-air concert. All over the country there are village fetes, music and dancing, including the popular bals des pompiers (firefighters' balls) held at local fire stations.",
+            "extra": "Step 5 of 5",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Eiffel_Tower_fireworks_on_Bastille_Day_2017_(36303814541).jpg",
+            "imageLicence": "CC BY 2.0",
+            "imageAttribution": "Photo by Kenneth Lu, via Wikimedia Commons (CC BY 2.0)"
+          }
+        ],
+        "extraContent": "HOW and WHY France celebrates Le 14 Juillet (Bastille Day). WHY: Le 14 Juillet is France's national day. On 14 July 1789 the people of Paris marched on the Bastille, an old royal fortress and prison that to them stood for the harsh, unfair rule of the king; when it fell it became a powerful symbol of ordinary people standing up for their rights, and it marked the beginning of the French Revolution and of the ideas France still celebrates - liberte, egalite, fraternite (liberty, equality, brotherhood). Exactly one year later, on 14 July 1790, France held a huge peaceful celebration, the Fete de la Federation, to mark national unity, so the date came to stand for togetherness as well as change. A law made official on 6 July 1880 turned 14 July into France's official national holiday. HOW: Today 14 July is a joyful public holiday across the whole country. The day usually begins with a grand military parade in Paris, which has marched down the famous Champs-Elysees (from the Arc de Triomphe to the Place de la Concorde) since just after the First World War, watched by the President of France, with marching bands and a flypast trailing the blue, white and red of the French flag. In the evening towns and villages hold fetes with music and dancing, and Paris puts on a spectacular fireworks display around the Eiffel Tower. It is a warm, family-friendly day when French people celebrate their country, its history and its values together.",
+        "notes": "PASS with optional polish, applied. CHANGED: Card 3 'A French law passed on 6 July 1880' to 'made official on 6 July 1880' (the vote was 27/29 June; 6 July was promulgation) - applied in card AND extraContent. Parade photo attribution tightened to 'U.S. Joint Chiefs of Staff photo by...' (the photographer works for the Office of the Chairman of the Joint Chiefs). The '1919 vs 1918' parade-year point needs NO change: 'since just after the First World War' is the correct safe hedge; if a single year is ever wanted on the board, use 1919 (the Victory Parade, the well-sourced first occasion). Cards 1, 2, 3 have empty image fields by design (history-only steps) - confirm the layout shows no broken/blank image boxes. Both images verified to exist and be reuse-clean CC BY 2.0. TEACHER AWARENESS ONLY (no card change, evergreen text is correct): in 2026 only, the Paris Eiffel Tower fireworks are exceptionally on the evening of 13 July to allow 14 July tributes for the 10th anniversary of the 2016 Nice attack. The 1789 storming did involve real violence/deaths but is framed historically/symbolically with zero graphic detail - appropriate for J1; confirm you are comfortable."
+      },
+      {
+        "station": "LES PERSONNES CELEBRES (Famous French People)",
+        "finalItems": [
+          {
+            "name": "Marie Curie",
+            "enName": "Marie Curie (Polish-born French scientist)",
+            "detail": "A Polish-born French scientist who studied radioactivity. She is the only person to win Nobel Prizes in two different sciences (Physics in 1903 and Chemistry in 1911), and was the first woman ever to win a Nobel Prize.",
+            "extra": "Science (physics and chemistry); born Warsaw 1867, died at Passy, in the Haute-Savoie region of France, in 1934. Polish-born; became a French citizen and did her famous work in Paris.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Marie_Curie_c._1920s.jpg",
+            "imageLicence": "Public domain (photographer Henri Manuel died 1947; PD-old-75-expired + CC-PD-Mark)",
+            "imageAttribution": "Photograph by Henri Manuel (c. 1920), public domain, via Wikimedia Commons."
+          },
+          {
+            "name": "Claude Monet",
+            "enName": "",
+            "detail": "A painter who helped start the Impressionist movement. His painting 'Impression, Sunrise' gave Impressionism its name, and he is famous for his series of water-lily paintings made in his garden at Giverny.",
+            "extra": "Art (painting); born Paris 1840, died Giverny, France, 1926.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Claude_Monet_1899_Nadar_crop.jpg",
+            "imageLicence": "Public domain (photograph by Nadar, 1899; PD-old)",
+            "imageAttribution": "Photograph by Nadar (Gaspard-Felix Tournachon), 1899, public domain, via Wikimedia Commons."
+          },
+          {
+            "name": "Louis Pasteur",
+            "enName": "",
+            "detail": "A scientist who showed that tiny germs cause many diseases. He developed vaccines, including the first vaccine against rabies, and invented 'pasteurisation', the gentle heating that keeps milk and other drinks safe.",
+            "extra": "Science (chemistry and microbiology); born Dole, France, 1822, died near Paris 1895.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Louis_Pasteur_portrait_photo.jpg",
+            "imageLicence": "Public domain (19th-century photograph, c.1891; PD-old, life + 70 years)",
+            "imageAttribution": "Photographic portrait of Louis Pasteur (c. 1891), public domain, via Wikimedia Commons. (Build note: file carries a Getty source credit - legally PD and safe, but consider a cleaner-provenance Nadar/Wellcome alternative.)"
+          },
+          {
+            "name": "Edith Piaf",
+            "enName": "Edith Piaf",
+            "detail": "One of France's most beloved singers, famous for emotional songs such as 'La Vie en Rose' (which means seeing life in rosy colours) and 'Non, je ne regrette rien' ('No, I regret nothing'). She rose from a very poor childhood to become a star known around the world.",
+            "extra": "Arts (singing / chanson); born Paris 1915, died near Grasse, France, 1963.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:%C3%89dith_Piaf_914-6440.jpg",
+            "imageLicence": "CC0 1.0 (Public Domain Dedication)",
+            "imageAttribution": "Photograph by Eric Koch / Anefo, 13 December 1962, Nationaal Archief (Dutch National Archives), CC0, via Wikimedia Commons."
+          },
+          {
+            "name": "Jeanne d'Arc",
+            "enName": "Joan of Arc",
+            "detail": "A teenage girl who, believing she was guided by her faith, led French soldiers to an important victory at Orleans in 1429 during the Hundred Years' War. She is a patron saint of France and was made a Catholic saint in 1920.",
+            "extra": "History / faith (national heroine and saint); born Domremy, France, c. 1412, died Rouen 1431. The image is a famous 1854 painting by Ingres (a later artist's impression - she lived 600 years ago, so no portrait from her own lifetime survives).",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Ingres_coronation_charles_vii.jpg",
+            "imageLicence": "Public domain (painting by Ingres, 1854; artist died 1867; PD-old-100 + PD-Art)",
+            "imageAttribution": "'Joan of Arc at the Coronation of Charles VII' by Jean-Auguste-Dominique Ingres, 1854, Louvre, Paris; public domain, via Wikimedia Commons."
+          },
+          {
+            "name": "Sophie Germain",
+            "enName": "",
+            "detail": "A self-taught mathematician who taught herself maths in secret as a girl, when women were not allowed to study it. She was the first woman to win a top prize from the French Academy of Sciences and did important work on number theory and on how surfaces vibrate.",
+            "extra": "Science / mathematics; born Paris 1776, died Paris 1831. RECOMMENDED REPLACEMENT for Coco Chanel - see sign-off list.",
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Ch%C3%A9garay_-_Sophie_Germain.png",
+            "imageLicence": "Public domain (engraving by Berthe Chegaray, 1896; PD-US-expired + PD life+70 + CC-PD-Mark)",
+            "imageAttribution": "Engraving of Sophie Germain by Berthe Chegaray (nee Becher), 1896; public domain, via Wikimedia Commons."
+          }
+        ],
+        "extraContent": "Roster of six famous French people, balanced for an all-girls Catholic grammar: four women and two men, spanning science, maths, the arts, history and faith. The women carry the science/maths/arts/courage strands - Marie Curie (physics and chemistry), Sophie Germain (mathematics), Edith Piaf (the arts) and Joan of Arc (courage and faith) - and the two men, Monet (art) and Pasteur (medicine/science), round out the cultural picture. Every figure is clearly French (Marie Curie was Polish-born but became a French citizen and did her famous work in Paris - state this plainly), long-established and uncontroversial, with a genuinely reuse-clean Commons portrait. For Joan of Arc no lifetime portrait exists, so a dignified public-domain painting (Ingres, 1854, Louvre) is used and clearly LABELLED as a later artwork - honest for an inspector and a fitting religious-themed image for the school. KEY CHANGE from the brief: Coco Chanel has been removed and replaced with Sophie Germain because Chanel's documented WWII collaboration with Nazi German intelligence is a serious, mainstream-sourced controversy that conflicts with the brief's 'uncontroversial role model' requirement. Edith Piaf's harder biography (beyond 'a very poor childhood') should NOT be added for Year 8 - keep the positive 'rose from poverty to world fame' framing.",
+        "notes": "PASS WITH MINOR CORRECTIONS, all folded in. FIXED: (1) Marie Curie 'only person ever to win a Nobel Prize in two different sciences' tightened to 'the only person to win Nobel Prizes in two different sciences (Physics in 1903 and Chemistry in 1911)' - pre-empts the Linus Pauling objection (he won Chemistry + Peace, not two sciences); (2) her death place corrected from 'near Sallanches' to 'Passy, in the Haute-Savoie region of France'; (3) her label now reads 'Polish-born French scientist'. POLISH applied: 'La Vie en Rose' gloss changed from the odd 'Life in Pink' to 'seeing life in rosy colours'; Monet licence line simplified to 'PD-old'; Pasteur attribution carries a build note about the Getty source credit (legally PD/safe, optional cleaner-provenance swap). All six people's facts verified accurate; all six images verified to exist and be genuinely reuse-clean (PD or CC0). The Coco Chanel removal is justified by a real, well-sourced controversy - CONFIRM the swap to Sophie Germain. Roster well-balanced and age-appropriate; Joan of Arc's faith theme is a positive fit and the image is correctly labelled as a later painting."
+      }
+    ]
+  }
+}

@@ -70,7 +70,8 @@ fs.writeFileSync(path.join(SERVER, 'Code.gs'), codeTemplate);
 const bodyOpen = indexHtml.match(/<body[^>]*>/)[0];
 let body = indexHtml.slice(indexHtml.indexOf(bodyOpen) + bodyOpen.length);
 body = body.slice(0, body.indexOf('<script src="qrcode.min.js">'));
-body = body.replace(/\.\.\/\.\.\/assets\//g, GH + '/assets/');   // crest -> absolute github.io
+body = body.replace(/\.\.\/\.\.\/assets\//g, GH + '/assets/');   // shared crest -> absolute github.io
+body = body.replace(/(src|href)="assets\//g, '$1="' + GH + '/french/mon-carnet-de-france/assets/');  // activity-local assets (france-map.svg) -> absolute
 
 /* ---- 3. intro loader: inline, but resolve videos from absolute github.io ---- */
 /* When inlined there is no document.currentScript.src, so force the asset base. */

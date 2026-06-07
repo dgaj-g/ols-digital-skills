@@ -99,6 +99,34 @@
       <div id="result" class="result" hidden aria-live="polite"></div>
     </section>
 
+    <!-- Station 1: La Carte (real drag-and-place map) -->
+    <section id="st1" class="station-view" hidden aria-labelledby="st1-h">
+      <header class="sv-head">
+        <button class="sv-back" id="st1-back" type="button">&#8592; Back</button>
+        <div class="sv-titles">
+          <h2 id="st1-h" class="sv-title"><span class="fr">La Carte</span></h2>
+          <p class="sv-sub" id="st1-instr">Drag each city to its place on the map, then press Check.</p>
+        </div>
+        <span class="sv-count" id="st1-count">0 / 9 placed</span>
+      </header>
+
+      <div class="carte-stage">
+        <div class="carte-map" id="carte-map">
+          <img src="assets/france-map.svg" alt="Outline map of France" class="carte-img" draggable="false">
+          <!-- target dots + placed tags injected here -->
+        </div>
+        <ul class="carte-tray" id="carte-tray" aria-label="Cities to place"></ul>
+      </div>
+
+      <div class="sv-actions">
+        <button id="carte-check" class="btn btn-gold" type="button" disabled>V&eacute;rifier / Check</button>
+        <button id="carte-done" class="btn btn-blue" type="button" hidden>Save &amp; close</button>
+        <p id="carte-msg" class="sv-msg" role="status"></p>
+      </div>
+
+      <ul class="carte-facts" id="carte-facts" aria-label="What you discovered"></ul>
+    </section>
+
     <!-- Generic station overlay (placeholder content for the shell) -->
     <div id="station-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="sm-title">
       <div class="modal-card">
