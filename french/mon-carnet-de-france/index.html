@@ -207,15 +207,12 @@
         <button class="sv-back" id="st4-back" type="button">&#8592; Back</button>
         <div class="sv-titles">
           <h2 id="st4-h" class="sv-title"><span class="fr">Les Personnes C&eacute;l&egrave;bres</span></h2>
-          <p class="sv-sub" id="ppl-instr">Match each famous person to what they are known for, then press Check.</p>
+          <p class="sv-sub" id="ppl-instr">Each person has the wrong fact beside them. Drag the fact cards to swap them onto the right person, then press Check.</p>
         </div>
         <span class="sv-count" id="st4-count">0 / 6 matched</span>
       </header>
 
-      <div class="ppl-stage">
-        <ul class="ppl-grid" id="ppl-grid"></ul>
-        <ul class="ach-tray dropzone" id="ach-tray" data-zone="tray" aria-label="What they are famous for"></ul>
-      </div>
+      <div class="match-list" id="ppl-rows" aria-label="People and what they are known for"></div>
 
       <div class="sv-actions">
         <button id="ppl-check" class="btn btn-gold" type="button" disabled>V&eacute;rifier / Check</button>
