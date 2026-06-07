@@ -35,7 +35,9 @@ function initBoard() {
   }
   if (!sp.getProperty('classes')) sp.setProperty('classes', '[]');
   if (sp.getProperty('teacherEmail') == null) sp.setProperty('teacherEmail', '');
-  return 'Ready. In Project Settings > Script Properties set staffPasscode AND teacherEmail (the address each pupil project Doc is shared to for marking).';
+  if (sp.getProperty('subject') == null) sp.setProperty('subject', 'French');
+  if (sp.getProperty('yearGroup') == null) sp.setProperty('yearGroup', 'J1');
+  return 'Ready. In Script Properties set staffPasscode + teacherEmail, and (optional) subject + yearGroup for the Drive folder path (OLS Digital Skills / <subject> / <yearGroup>).';
 }
 
 /* ---------- serve the page ---------- */
@@ -146,6 +148,20 @@ function apiMakeDoc(req) {
   doc.saveAndClose();
   var url = doc.getUrl();
 
+  // Best-effort: file the Doc into a tidy, reusable structure in the PUPIL's OWN
+  // Drive - "OLS Digital Skills / <subject> / <yearGroup>" - get-or-creating each
+  // level. So a pupil builds a portfolio across OLS apps over time. Wrapped so a
+  // Drive failure can NEVER block Doc creation (the Doc just stays in My Drive root).
+  var filed = 'root';
+  try {
+    var sp2 = P.getScriptProperties();
+    var folder = ensureFolderPath_(['OLS Digital Skills', sp2.getProperty('subject'), sp2.getProperty('yearGroup')]);
+    var file = DriveApp.getFileById(doc.getId());
+    folder.addFile(file);
+    DriveApp.getRootFolder().removeFile(file);
+    filed = folder.getName();
+  } catch (e) { filed = 'file-failed: ' + (e && e.message ? e.message : e); }
+
   // record the Doc URL in both stores
   var up = P.getUserProperties();
   var raw = up.getProperty(draftKey_(cls));
@@ -155,7 +171,21 @@ function apiMakeDoc(req) {
   d.stations = normStations_(d.stations);
   up.setProperty(draftKey_(cls), JSON.stringify(d));
   writeMeta_(cls, who, { name: String(d.name || ''), stations: d.stations, docUrl: url });
-  return { ok: true, url: String(url), shared: String(shared) };
+  return { ok: true, url: String(url), shared: String(shared), filed: String(filed) };
+}
+
+/* Get-or-create a nested folder path in the user's OWN Drive; returns the leaf
+   folder. Reusable across every OLS app that generates Docs, so pupil work files
+   tidily into OLS Digital Skills / <Subject> / <Year>. Empty segments are skipped. */
+function ensureFolderPath_(segments) {
+  var parent = DriveApp.getRootFolder();
+  for (var i = 0; i < segments.length; i++) {
+    var name = String(segments[i] == null ? '' : segments[i]).trim();
+    if (!name) continue;
+    var it = parent.getFoldersByName(name);
+    parent = it.hasNext() ? it.next() : parent.createFolder(name);
+  }
+  return parent;
 }
 
 /* ---------- shared metadata store (script-properties) ---------- */
