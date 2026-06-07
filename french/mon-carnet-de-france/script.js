@@ -13,6 +13,9 @@
   'use strict';
 
   var BOOT = window.OLS_BOOT || { classCode: 'default', baseUrl: '' };
+  // Asset base: '' on github.io (relative), absolute github.io URL when served by
+  // Apps Script (injected by the assembler) so JS-built <img> paths resolve there.
+  var ASSET = window.OLS_ASSET_BASE || '';
   var STATIONS = [1, 2, 3, 4];
   var STATION_NAMES = {
     1: 'La Carte — The map of France',
@@ -219,6 +222,158 @@
     }
   }
 
+  /* ============================================================
+     Station 2 - La Cuisine. Same Pointer Events drag model, but drop
+     targets are containers (.dropzone). Opinion task (no right/wrong);
+     the gate is a typed reason for every sorted dish.
+     ============================================================ */
+  var DISHES = [
+    { key: 'croissant', name: 'Croissant', desc: 'A flaky, buttery pastry shaped like a crescent moon, usually eaten at breakfast. It is made from many thin folded layers of dough.' },
+    { key: 'crepe', name: 'Crêpe', desc: 'A very thin pancake that can be sweet or savoury. Sweet crêpes are often filled with chocolate spread, sugar and lemon, or jam.' },
+    { key: 'quiche', name: 'Quiche lorraine', desc: 'A savoury open tart with a pastry case filled with baked eggs, cream and pieces of bacon. Served warm or cold, often for lunch.' },
+    { key: 'ratatouille', name: 'Ratatouille', desc: 'A colourful vegetable stew of aubergine, courgette, peppers, onion and tomato, cooked slowly with herbs. Suitable for vegetarians.' },
+    { key: 'steakfrites', name: 'Steak-frites', desc: 'A steak served with a generous helping of French fries (chips). One of the most common meals in French cafés and bistros.' },
+    { key: 'macaron', name: 'Macaron', desc: 'A small, round, brightly coloured sandwich biscuit made from ground almonds, with a soft creamy filling. Flavours like raspberry, chocolate and pistachio.' },
+    { key: 'camembert', name: 'Camembert', desc: "A soft, creamy cow's-milk cheese with a white rind, sold as a round wheel. It becomes gooey in the middle and is often spread on bread." },
+    { key: 'tartetatin', name: 'Tarte Tatin', desc: 'An upside-down apple tart. The apples are caramelised in butter and sugar, covered with pastry, and turned over after baking.' },
+    { key: 'bouillabaisse', name: 'Bouillabaisse', desc: 'A rich fish stew from Marseille, made with several kinds of fish and shellfish in a herb-and-spice broth, usually served with bread.' },
+    { key: 'escargots', name: 'Escargots', desc: 'Cooked snails served hot in their shells with garlic-and-parsley butter, eaten as a starter with a small fork. The most adventurous dish here!' }
+  ];
+  function dishByKey(k) { for (var i = 0; i < DISHES.length; i++) if (DISHES[i].key === k) return DISHES[i]; return null; }
+
+  var s2 = { built: false, zone: {}, reason: {} };
+  var drag2 = null;
+
+  function openStation2() { show($('st2')); if (!s2.built) buildStation2(); }
+  function closeStation2() { captureCuisine(); persist(); hide($('dish-info')); hide($('st2')); }
+
+  function dishEl(key) { return document.getElementById('st2').querySelector('.dish[data-key="' + key + '"]'); }
+
+  function buildStation2() {
+    s2.built = true;
+    $('cuis-tray').innerHTML = '';
+    $('basket-yes').querySelector('.basket-list').innerHTML = '';
+    $('basket-no').querySelector('.basket-list').innerHTML = '';
+    s2.zone = {}; s2.reason = {};
+    var saved = state.data['2'];
+    shuffle(DISHES).forEach(function (d) {
+      var li = document.createElement('li'); li.className = 'dish'; li.dataset.key = d.key;
+      var grip = document.createElement('button'); grip.type = 'button'; grip.className = 'dish-grip';
+      grip.innerHTML = '<img src="' + ASSET + 'assets/cuisine/' + d.key + '.jpg" alt="' + escapeHtml(d.name) + '"><span class="dish-name">' + escapeHtml(d.name) + '</span>';
+      grip.addEventListener('pointerdown', onDishDown);
+      var why = document.createElement('input'); why.className = 'dish-why'; why.type = 'text'; why.maxLength = 160; why.placeholder = 'because…'; why.hidden = true;
+      why.addEventListener('input', function () { s2.reason[d.key] = why.value; refreshWhy(d.key); checkCuisineDone(); });
+      li.appendChild(grip); li.appendChild(why);
+      $('cuis-tray').appendChild(li);
+      s2.zone[d.key] = 'tray'; s2.reason[d.key] = '';
+    });
+    if (saved && saved.items) {
+      saved.items.forEach(function (it) {
+        s2.zone[it.key] = it.basket || 'tray'; s2.reason[it.key] = it.reason || '';
+        var el = dishEl(it.key); if (el) { el.querySelector('.dish-why').value = it.reason || ''; renderDish(it.key); }
+      });
+    }
+    updateCuisineCount(); checkCuisineDone();
+  }
+
+  function onDishDown(e) {
+    var li = e.currentTarget.parentElement;
+    e.preventDefault();
+    var r = li.getBoundingClientRect();
+    drag2 = { key: li.dataset.key, el: li, grip: e.currentTarget, pid: e.pointerId, sx: e.clientX, sy: e.clientY, offX: e.clientX - r.left, offY: e.clientY - r.top, w: r.width, moved: false };
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch (x) {}
+    e.currentTarget.addEventListener('pointermove', onDishMove);
+    e.currentTarget.addEventListener('pointerup', onDishUp);
+    e.currentTarget.addEventListener('pointercancel', onDishCancel);
+  }
+  function onDishMove(e) {
+    if (!drag2) return;
+    if (!drag2.moved) {
+      if (Math.abs(e.clientX - drag2.sx) + Math.abs(e.clientY - drag2.sy) < DRAG_THRESH) return;
+      drag2.moved = true; document.body.classList.add('dragging-active');
+      drag2.el.classList.add('dragging'); drag2.el.style.width = drag2.w + 'px';
+    }
+    drag2.el.style.left = (e.clientX - drag2.offX) + 'px';
+    drag2.el.style.top = (e.clientY - drag2.offY) + 'px';
+    hoverZone(e.clientX, e.clientY);
+  }
+  function endDish(grip) { grip.removeEventListener('pointermove', onDishMove); grip.removeEventListener('pointerup', onDishUp); grip.removeEventListener('pointercancel', onDishCancel); }
+  function onDishUp(e) {
+    if (!drag2) return;
+    var key = drag2.key, moved = drag2.moved, el = drag2.el, grip = drag2.grip;
+    try { grip.releasePointerCapture(drag2.pid); } catch (x) {}
+    endDish(grip); clearHover();
+    document.body.classList.remove('dragging-active');
+    el.classList.remove('dragging'); el.style.width = ''; el.style.left = ''; el.style.top = '';
+    if (!moved) { drag2 = null; showDishInfo(key); return; }
+    var zone = zoneAt(e.clientX, e.clientY, el);
+    if (zone) s2.zone[key] = zone;
+    renderDish(key); updateCuisineCount(); checkCuisineDone();
+    drag2 = null;
+  }
+  function onDishCancel() {
+    if (!drag2) return;
+    try { drag2.grip.releasePointerCapture(drag2.pid); } catch (x) {}
+    endDish(drag2.grip); clearHover();
+    document.body.classList.remove('dragging-active');
+    drag2.el.classList.remove('dragging'); drag2.el.style.width = ''; drag2.el.style.left = ''; drag2.el.style.top = '';
+    renderDish(drag2.key); drag2 = null;
+  }
+  function zoneAt(x, y, exclude) {
+    exclude.style.pointerEvents = 'none';
+    var els = document.elementsFromPoint(x, y), zone = null;
+    for (var i = 0; i < els.length; i++) { var z = els[i].closest && els[i].closest('.dropzone'); if (z) { zone = z.dataset.zone; break; } }
+    exclude.style.pointerEvents = '';
+    return zone;
+  }
+  function hoverZone(x, y) {
+    clearHover(); if (!drag2) return;
+    drag2.el.style.pointerEvents = 'none';
+    var els = document.elementsFromPoint(x, y);
+    drag2.el.style.pointerEvents = '';
+    for (var i = 0; i < els.length; i++) { var z = els[i].closest && els[i].closest('.dropzone'); if (z) { z.classList.add('drop-hover'); break; } }
+  }
+  function clearHover() { document.querySelectorAll('#st2 .drop-hover').forEach(function (e) { e.classList.remove('drop-hover'); }); }
+
+  function renderDish(key) {
+    var el = dishEl(key), zone = s2.zone[key], why = el.querySelector('.dish-why');
+    el.style.left = ''; el.style.top = '';
+    if (zone === 'tray') { $('cuis-tray').appendChild(el); why.hidden = true; }
+    else { (zone === 'yes' ? $('basket-yes') : $('basket-no')).querySelector('.basket-list').appendChild(el); why.hidden = false; }
+    refreshWhy(key);
+  }
+  function refreshWhy(key) {
+    var why = dishEl(key).querySelector('.dish-why');
+    if (why.hidden) return;
+    var has = (s2.reason[key] || '').trim().length > 0;
+    why.classList.toggle('needed', !has); why.classList.toggle('ok', has);
+  }
+  function sortedCount() { var n = 0; DISHES.forEach(function (d) { if (s2.zone[d.key] !== 'tray') n++; }); return n; }
+  function updateCuisineCount() { $('st2-count').textContent = sortedCount() + ' / 10 sorted'; }
+  function captureCuisine() {
+    var allSorted = sortedCount() === 10;
+    var allReasons = DISHES.every(function (d) { return s2.zone[d.key] === 'tray' || (s2.reason[d.key] || '').trim().length > 0; });
+    state.data['2'] = { items: DISHES.map(function (d) { return { key: d.key, basket: s2.zone[d.key], reason: (s2.reason[d.key] || '').trim() }; }), complete: allSorted && allReasons };
+    return state.data['2'].complete;
+  }
+  function checkCuisineDone() {
+    var done = captureCuisine();
+    $('cuis-done').disabled = !done;
+    var msg = $('cuis-msg');
+    if (done) { msg.textContent = 'All sorted with a reason for each — magnifique !'; msg.className = 'sv-msg good'; }
+    else if (sortedCount() === 10) { msg.textContent = 'Almost! Add a reason (because…) for every dish.'; msg.className = 'sv-msg'; }
+    else { msg.textContent = 'Sort all 10 dishes into a basket, then give a reason for each.'; msg.className = 'sv-msg'; }
+  }
+  function showDishInfo(key) {
+    var d = dishByKey(key);
+    $('dish-info-name').textContent = d.name; $('dish-info-text').textContent = d.desc;
+    show($('dish-info'));
+  }
+  function finishCuisine() {
+    if (captureCuisine()) markStationDone(2);
+    closeStation2();
+  }
+
   // ---- tiny DOM helpers ----
   function $(id) { return document.getElementById(id); }
   function show(el) { if (el) el.hidden = false; }
@@ -380,6 +535,7 @@
      ============================================================ */
   function openStationModal(n) {
     if (n === 1) { openStation1(); return; }
+    if (n === 2) { openStation2(); return; }
     openStation = n;
     $('sm-title').textContent = STATION_NAMES[n] || ('Stop ' + n);
     var done = $('sm-done');
@@ -446,6 +602,9 @@
     $('st1-back').addEventListener('click', closeStation1);
     $('carte-check').addEventListener('click', checkStation1);
     $('carte-done').addEventListener('click', closeStation1);
+    $('st2-back').addEventListener('click', closeStation2);
+    $('cuis-done').addEventListener('click', finishCuisine);
+    $('dish-info-close').addEventListener('click', function () { hide($('dish-info')); });
     $('create').addEventListener('click', createProject);
     $('staff-key').addEventListener('click', function () { show($('staff-modal')); var p = $('staff-pass'); if (p) p.focus(); });
     $('staff-close').addEventListener('click', function () { hide($('staff-modal')); });

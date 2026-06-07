@@ -126,7 +126,7 @@ ${actCss}
 </style>
 </head>
 ${bodyOpen}
-<script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };</script>
+<script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" }; window.OLS_ASSET_BASE = "${GH}/french/mon-carnet-de-france/";</script>
 ${asciiHtml(body)}
 <script>
 ${qrcodeBlock}

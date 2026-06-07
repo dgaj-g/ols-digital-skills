@@ -127,6 +127,42 @@
       <ul class="carte-facts" id="carte-facts" aria-label="What you discovered"></ul>
     </section>
 
+    <!-- Station 2: La Cuisine (sort into baskets + give a reason) -->
+    <section id="st2" class="station-view" hidden aria-labelledby="st2-h">
+      <header class="sv-head">
+        <button class="sv-back" id="st2-back" type="button">&#8592; Back</button>
+        <div class="sv-titles">
+          <h2 id="st2-h" class="sv-title"><span class="fr">La Cuisine</span></h2>
+          <p class="sv-sub">Drag each dish into a basket, then type <em>why</em>. There are no wrong answers &mdash; it's your opinion! Tap a dish to read what it is.</p>
+        </div>
+        <span class="sv-count" id="st2-count">0 / 10 sorted</span>
+      </header>
+
+      <div class="baskets">
+        <div class="basket dropzone" id="basket-yes" data-zone="yes">
+          <h3 class="basket-h yes"><span class="fr">J'aimerais essayer</span><small>I'd love to try</small></h3>
+          <ul class="basket-list"></ul>
+        </div>
+        <div class="basket dropzone" id="basket-no" data-zone="no">
+          <h3 class="basket-h no"><span class="fr">Non merci</span><small>Not for me</small></h3>
+          <ul class="basket-list"></ul>
+        </div>
+      </div>
+
+      <ul class="cuis-tray dropzone" id="cuis-tray" data-zone="tray" aria-label="Dishes to sort"></ul>
+
+      <div class="sv-actions">
+        <button id="cuis-done" class="btn btn-gold" type="button" disabled>Save &amp; close</button>
+        <p id="cuis-msg" class="sv-msg" role="status">Sort all 10 dishes and give a reason for each to finish.</p>
+      </div>
+
+      <div id="dish-info" class="dish-info" hidden role="dialog" aria-live="polite">
+        <button class="dish-info-close" id="dish-info-close" type="button" aria-label="Close">&times;</button>
+        <h4 id="dish-info-name"></h4>
+        <p id="dish-info-text"></p>
+      </div>
+    </section>
+
     <!-- Generic station overlay (placeholder content for the shell) -->
     <div id="station-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="sm-title">
       <div class="modal-card">

@@ -215,6 +215,45 @@ body.dragging-active, body.dragging-active *{
   .carte-tray{ order:-1; min-height:0; }
 }
 
+/* ============================================================
+   Station 2 La Cuisine (sort into baskets + reason)
+   ============================================================ */
+.baskets{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; }
+.basket{ background:var(--card-bg); border:2px dashed #c5ccd8; border-radius:14px; padding:10px 12px 14px; min-height:130px; }
+.basket.drop-hover{ border-color:var(--ols-blue); background:#eef3fb; }
+.basket-h{ margin:.2em 0 .7em; text-align:center; font-size:1.02rem; color:var(--ols-blue); font-family:Georgia,serif; }
+.basket-h small{ display:block; font-weight:400; font-family:-apple-system,system-ui,sans-serif; color:var(--muted); font-size:.78rem; }
+.basket-list{ list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+
+.cuis-tray{ list-style:none; margin:16px 0 0; padding:14px; display:grid; grid-template-columns:repeat(auto-fill,minmax(108px,1fr)); gap:12px;
+  background:var(--card-bg); border:1px dashed #c5ccd8; border-radius:14px; min-height:90px; }
+.cuis-tray.drop-hover{ border-color:var(--ols-blue); background:#eef3fb; }
+
+.dish{ list-style:none; }
+.dish-grip{ display:block; width:100%; border:1px solid #e3e8f0; background:#fff; border-radius:10px; padding:0; overflow:hidden;
+  cursor:grab; touch-action:none; box-shadow:var(--shadow-sm); }
+.dish-grip:active{ cursor:grabbing; }
+.dish-grip:focus-visible{ outline:3px solid var(--ols-blue-soft); outline-offset:2px; }
+.dish-grip img{ width:100%; aspect-ratio:4/3; object-fit:cover; display:block; pointer-events:none; -webkit-user-drag:none; }
+.dish-name{ display:block; padding:6px 4px; font-weight:700; font-size:.8rem; color:var(--ols-blue); text-align:center; }
+.dish.dragging{ position:fixed; z-index:60; width:128px; box-shadow:var(--shadow-lg); }
+/* compact thumbnails once a dish is in a basket (less scrolling) */
+.basket-list .dish-grip{ display:flex; align-items:center; text-align:left; }
+.basket-list .dish-grip img{ aspect-ratio:1/1; width:54px; height:54px; flex:0 0 auto; }
+.basket-list .dish-name{ padding:0 10px; text-align:left; }
+.dish-why{ width:100%; margin-top:6px; padding:7px 9px; border:1.5px solid var(--border); border-radius:8px; font:inherit; font-size:.82rem; }
+.dish-why::placeholder{ color:#9aa3b2; }
+.dish-why.needed{ border-color:var(--ols-gold); background:#fffdf3; }
+.dish-why.ok{ border-color:var(--stamp); }
+
+.dish-info{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:55; max-width:460px; width:calc(100% - 32px);
+  background:var(--ols-blue); color:#fff; border-radius:12px; padding:16px 18px 14px; box-shadow:var(--shadow-lg); }
+.dish-info h4{ margin:.1em 0 .3em; font-family:Georgia,serif; font-size:1.05rem; padding-right:20px; }
+.dish-info p{ margin:0; font-size:.92rem; line-height:1.5; }
+.dish-info-close{ position:absolute; top:4px; right:10px; border:0; background:transparent; color:#fff; font-size:1.5rem; line-height:1; cursor:pointer; }
+
+@media (max-width:560px){ .baskets{ grid-template-columns:1fr; } }
+
 /* ---------- responsive ---------- */
 @media (max-width:560px){
   .stations{ grid-template-columns:1fr; }
