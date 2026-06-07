@@ -507,8 +507,14 @@ function buildPhagoOrder() {
     setupDrag(tk, phZones(), phUpdate); phTray.appendChild(tk);
   });
   phUpdate(); applyPhagoStage(0);
+  // Hide the step-through animation until the first Check — otherwise a pupil
+  // could step through the captioned stages and copy the order without knowing
+  // it. After Check it's revealed (reward if right, study aid if wrong). (Step 6.)
+  $('#phago-stepper').setAttribute('hidden', '');
+  phCaption.textContent = 'Put the five steps in the correct order, then press Check to run the whole process.';
 }
 phCheck.addEventListener('click', () => {
+  $('#phago-stepper').removeAttribute('hidden');   // reveal the animation now they've committed an order
   const frames = $$('#phago-slots .frame'); let allRight = true;
   frames.forEach((f, i) => {
     const tk = tokensIn(f)[0]; const right = tk && Number(tk.dataset.order) === i;
@@ -693,24 +699,26 @@ $$('#panel-immunity [data-view3]').forEach(b => b.addEventListener('click', () =
 
 // ----- Read the graph (assessed) -----
 const READ_POINTS = [
-  { n: 1, t: 0.25, v: 0.3, correct: 'Initial vaccine: antibody level is insufficient (below the threshold)' },
-  { n: 2, t: 0.55, v: 0.12, correct: 'Booster given to raise the antibody level again' },
-  { n: 3, t: 0.72, v: 0.85, correct: 'Level now exceeds the immunity threshold' },
-  { n: 4, t: THRESH, v: THRESH, correct: 'Immunity threshold: the level needed for protection', onAxisRight: true }
+  // Labels describe what the CURVE does at each point (not the event name), so a
+  // pupil must read the graph shape, not word-match an axis label. (Step 6.)
+  { n: 1, t: 0.25, v: 0.3, correct: 'A small rise that does not reach the threshold' },
+  { n: 2, t: 0.55, v: 0.12, correct: 'A low point, then a second dose makes it climb steeply' },
+  { n: 3, t: 0.72, v: 0.85, correct: 'A high, long-lasting level above the threshold' },
+  { n: 4, t: THRESH, v: THRESH, correct: 'The immunity threshold — the level needed for protection', onAxisRight: true }
 ];
-const READ_DECOYS = ['Ready-made antibodies injected', 'Passive immunity: short-lived protection'];
+const READ_DECOYS = ['The level crashes back to zero within days', 'A rise so fast it reaches the threshold immediately'];
 const immReadSvg = $('#imm-read-svg'), immReadSlots = $('#imm-read-slots'), immReadTray = $('#imm-read-tray'), immReadCheck = $('#imm-read-check'), immReadHint = $('#imm-read-hint');
 function readZones() { return [{ sel: '.rs-drop', cap: 1 }, { sel: '#imm-read-tray', cap: 99 }]; }
 function readAllPlaced() { return $$('#imm-read-slots .rs-drop').every(s => tokensIn(s).length === 1); }
 function readUpdate() { immReadCheck.disabled = !readAllPlaced(); }
 function buildReadGraph() {
-  // draw the vaccine curve, fully shown, with numbered flags
+  // draw the vaccine curve, fully shown, with numbered flags.
+  // NOTE: unlike the explore mode, we deliberately DO NOT draw the x-axis event
+  // labels ('initial vaccine' / 'booster') here — they word-match the answer
+  // labels and would let a pupil place 1 & 2 without reading the curve. Pupils
+  // must read the curve shape instead. (Zero-knowledge test, Step 6.)
   drawImmAxes(immReadSvg);
   const P = PLATES.vaccine;
-  (P.xlabels || []).forEach(xl => {
-    immReadSvg.appendChild(svgEl('line', { class: 'imm-flag-line', x1: ix(xl.t), y1: IMP.yb, x2: ix(xl.t), y2: IMP.yb + 6, stroke: 'rgba(255,255,255,0.6)' }));
-    const t = svgEl('text', { class: 'imm-tick-label', x: ix(xl.t), y: IMP.yb + 20, 'text-anchor': 'middle' }); t.textContent = xl.txt; immReadSvg.appendChild(t);
-  });
   P.curves.forEach(c => immReadSvg.appendChild(svgEl('path', { class: 'imm-curve primary', d: curvePath(c.pts) })));
   READ_POINTS.forEach(f => {
     const g = svgEl('g', {});
@@ -887,14 +895,17 @@ $$('#res-gate .gate-btn').forEach(b => b.addEventListener('click', () => {
 }));
 
 // advice sort
+// Worded factually (not by "responsible vs reckless" tone), and including
+// counter-intuitive items that SOUND sensible but speed resistance (farm growth,
+// lower dose to last longer) — so sorting needs the mechanism, not the tone. (Step 6.)
 const ADVICE = [
-  { text: 'Always finish the full course of antibiotics', bin: 'slows' },
-  { text: 'Only take antibiotics a doctor has prescribed', bin: 'slows' },
-  { text: 'Use good hygiene and hand sanitiser in hospitals', bin: 'slows' },
-  { text: 'Isolate patients infected with a superbug', bin: 'slows' },
-  { text: 'Stop taking antibiotics as soon as you feel better', bin: 'speeds' },
-  { text: 'Take antibiotics for a cough or cold', bin: 'speeds' },
-  { text: 'Use antibiotics widely on farm animals', bin: 'speeds' }
+  { text: 'Taking the full course of antibiotics the doctor prescribed', bin: 'slows' },
+  { text: 'Testing which bacterium is causing an infection before choosing an antibiotic', bin: 'slows' },
+  { text: 'Keeping a patient who has a resistant infection apart from other patients', bin: 'slows' },
+  { text: 'Stopping antibiotics once you start to feel better', bin: 'speeds' },
+  { text: 'Taking antibiotics to treat a cough or cold', bin: 'speeds' },
+  { text: 'Giving antibiotics to healthy farm animals to help them grow', bin: 'speeds' },
+  { text: 'Taking a lower dose so a course of antibiotics lasts longer', bin: 'speeds' }
 ];
 const adviceTray = $('#res-advice-tray'), adviceCheck = $('#res-advice-check'), adviceHint = $('#res-advice-hint');
 function adviceZones() { return [{ sel: '.bin-drop', cap: 99 }, { sel: '#res-advice-tray', cap: 99 }]; }
@@ -930,13 +941,13 @@ const EXAM_BANK = [
   { ex: 'Antibodies', q: 'Which TWO types of white blood cell help defend the body against disease?', opts: ['Lymphocytes and phagocytes', 'Red blood cells and platelets', 'Lymphocytes and red blood cells', 'Phagocytes and platelets'], a: 0, fb: 'Lymphocytes produce antibodies; phagocytes engulf and digest microbes.' },
   { ex: 'Antibodies', q: 'What are the foreign chemicals on the surface of a microorganism called?', opts: ['Antigens', 'Antibodies', 'Enzymes', 'Memory cells'], a: 0, fb: 'Antigens are the foreign markers a lymphocyte recognises as non-self.' },
   { ex: 'Antibodies', q: 'Why does each antibody only work against one antigen?', opts: ['Its shape is complementary to that one antigen', 'It is the same size as the microbe', 'It is made of the same material as the antigen', 'It is produced by phagocytes'], a: 0, fb: 'An antibody has a specific shape complementary to one antigen — a lock-and-key fit.' },
-  { ex: 'Antibodies', q: 'What do antibodies make microorganisms do, which reduces their spread?', opts: ['Clump together (agglutinate)', 'Reproduce faster', 'Produce more antigens', 'Move more quickly'], a: 0, fb: 'Antibodies cause clumping (agglutination), reducing spread and helping phagocytes destroy them.' },
+  { ex: 'Antibodies', q: 'After antibodies bind to the antigens on microorganisms, what do they make the microbes do?', opts: ['Clump together (agglutinate)', 'Reproduce faster', 'Produce more antigens', 'Move more quickly'], a: 0, fb: 'Antibodies cause clumping (agglutination), which reduces spread and helps phagocytes destroy them.' },
   { ex: 'Phagocytosis', q: 'What is the correct order of phagocytosis?', opts: [
       'Surround → engulf → enclose in vacuole → digest with enzymes → release products',
       'Engulf → surround → digest with enzymes → enclose in vacuole → release products',
       'Digest with enzymes → engulf → surround → release products → enclose in vacuole',
       'Surround → enclose in vacuole → engulf → release products → digest with enzymes'], a: 0, fb: 'Surrounded → engulfed → enclosed in a food vacuole → digested by hydrolytic enzymes → products released.' },
-  { ex: 'Phagocytosis', q: 'What digests the bacterium once it is inside the phagocyte?', opts: ['Hydrolytic enzymes from vesicles', 'Antibodies', 'Antigens', 'Memory lymphocytes'], a: 0, fb: 'Hydrolytic enzymes from vesicles inside the phagocyte digest and destroy the microbe.' },
+  { ex: 'Phagocytosis', q: 'Once the bacterium is enclosed in a food vacuole, what destroys it?', opts: ['Hydrolytic enzymes from vesicles', 'Antibodies', 'Antigens', 'Memory lymphocytes'], a: 0, fb: 'Hydrolytic enzymes from vesicles inside the phagocyte digest and destroy the microbe.' },
   { ex: 'Immunity', q: 'Give a feature of PASSIVE immunity.', opts: ['It is fast-acting but short-lived', 'It is slow but long-lasting', 'The body makes its own antibodies', 'It always uses a vaccine'], a: 0, fb: 'Passive immunity injects ready-made antibodies: fast-acting but short-lived (no memory cells).' },
   { ex: 'Immunity', q: 'How does the secondary response differ from the primary response?', opts: ['It produces more antibodies, much faster', 'It is slower and smaller', 'It does not use lymphocytes', 'It only happens with passive immunity'], a: 0, fb: 'Memory lymphocytes make many antibodies very quickly on re-infection — faster and larger.' },
   { ex: 'Immunity', q: 'What is a booster vaccination?', opts: ['A follow-up vaccine that raises antibody levels back above the threshold', 'The very first dose of a vaccine', 'An injection of ready-made antibodies', 'A dose of antibiotics'], a: 0, fb: 'A booster tops up antibody and memory-lymphocyte levels so they stay above the immunity threshold.' },
@@ -1035,8 +1046,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('#celebr
 // INIT
 // ============================================================
 buildAbMatch();
-buildPhagoOrder();
-applyPhagoStage(0);
+buildPhagoOrder();   // sets stage 0 + hides the stepper + neutral caption itself
 drawImmPlate('active', false);
 resetRes();
 buildAdvice();
