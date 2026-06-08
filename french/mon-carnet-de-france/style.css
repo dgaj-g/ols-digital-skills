@@ -255,41 +255,36 @@ body.dragging-active, body.dragging-active *{
 @media (max-width:560px){ .baskets{ grid-template-columns:1fr; } }
 
 /* ============================================================
-   Station 3 Le 14 Juillet (build the celebration scene + write-up)
+   Station 3 Le 14 Juillet ("Light up the sky" - fireworks quiz)
    ============================================================ */
-.scene-wrap{ display:grid; grid-template-columns:1fr 200px; gap:16px; align-items:start; margin-top:14px; }
-.scene{ position:relative; width:100%; aspect-ratio:5/3; border-radius:14px; overflow:hidden; box-shadow:var(--shadow-md); background:#0b1733; }
-.scene.drop-hover{ outline:3px solid var(--ols-gold); outline-offset:-3px; }
-.scene-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; -webkit-user-drag:none; }
-.scene-credit{ position:absolute; right:6px; bottom:4px; font-size:.6rem; color:rgba(255,255,255,.7); background:rgba(0,0,0,.35); padding:1px 6px; border-radius:6px; }
-.marker{ position:absolute; transform:translate(-50%,-50%) scale(0); z-index:3; display:flex; flex-direction:column; align-items:center; gap:2px;
-  animation:pop-in .45s cubic-bezier(.2,1.3,.4,1) forwards; text-align:center; pointer-events:none; }
-.marker .m-emoji{ font-size:2rem; filter:drop-shadow(0 2px 4px rgba(0,0,0,.6)); }
-.marker .m-label{ font-size:.62rem; font-weight:700; color:#fff; background:rgba(13,31,61,.8); padding:2px 7px; border-radius:99px; white-space:nowrap; }
-@keyframes pop-in{ to{ transform:translate(-50%,-50%) scale(1); } }
+.sky-stage{ display:grid; grid-template-columns:1fr 320px; gap:16px; align-items:stretch; margin-top:14px; }
+.sky{ position:relative; min-height:320px; border-radius:14px; overflow:hidden; box-shadow:var(--shadow-md); background:#08122b; }
+.sky .scene-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; -webkit-user-drag:none; }
+.sky-overlay{ position:absolute; inset:0; background:linear-gradient(to bottom, rgba(4,8,26,.6) 0%, rgba(4,8,26,.15) 45%, transparent 70%); pointer-events:none; }
+.scene-credit{ position:absolute; right:6px; bottom:4px; z-index:7; font-size:.6rem; color:rgba(255,255,255,.7); background:rgba(0,0,0,.35); padding:1px 6px; border-radius:6px; }
 
-.elem-tray{ list-style:none; margin:0; padding:12px; display:grid; gap:10px; align-content:start;
-  background:var(--card-bg); border:1px dashed #c5ccd8; border-radius:12px; min-height:120px; }
-.elem-chip{ display:flex; align-items:center; gap:8px; background:#fff; border:2px solid var(--ols-blue); border-radius:10px;
-  padding:8px 10px; cursor:grab; touch-action:none; user-select:none; box-shadow:var(--shadow-sm); }
-.elem-chip:active{ cursor:grabbing; }
-.elem-chip .c-emoji{ font-size:1.4rem; flex:0 0 auto; }
-.elem-chip .c-fr{ font-weight:700; color:var(--ols-blue); font-size:.82rem; display:block; }
-.elem-chip .c-en{ color:var(--muted); font-size:.7rem; display:block; }
-.elem-chip.dragging{ position:fixed; z-index:60; box-shadow:var(--shadow-lg); }
-.elem-chip.used{ opacity:.45; pointer-events:none; }
+.quiz-panel{ background:var(--card-bg); border:1px solid #e3e8f0; border-radius:14px; padding:18px 18px 16px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; }
+.q-num{ font-size:.72rem; font-weight:700; color:var(--ols-blue-soft); text-transform:uppercase; letter-spacing:.05em; margin:0 0 6px; }
+.q-prompt{ font-family:Georgia,serif; font-size:1.12rem; color:var(--ols-blue); font-weight:700; margin:0 0 14px; line-height:1.3; }
+.q-options{ display:grid; gap:9px; }
+.q-opt{ text-align:left; background:#fff; border:2px solid #d8dee9; border-radius:10px; padding:11px 13px; font:inherit; font-size:.9rem; color:var(--text); cursor:pointer; transition:border-color .12s, background .12s; }
+.q-opt:hover:not(:disabled){ border-color:var(--ols-blue-soft); }
+.q-opt:disabled{ cursor:default; }
+.q-opt.correct{ border-color:var(--stamp); background:#eaf6ee; color:var(--stamp); font-weight:700; }
+.q-opt.wrong-locked{ border-color:var(--fr-red); background:#fdeceb; color:var(--fr-red); }
+.q-feedback{ margin:12px 0 0; font-size:.86rem; min-height:1.2em; line-height:1.4; }
+.q-feedback.good{ color:var(--stamp); } .q-feedback.bad{ color:var(--fr-red); font-weight:600; }
 
-.bd-fact{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:55; max-width:460px; width:calc(100% - 32px);
-  background:var(--ols-blue); color:#fff; border-radius:12px; padding:14px 18px 12px; box-shadow:var(--shadow-lg); }
-.bd-fact h4{ margin:.1em 0 .3em; font-family:Georgia,serif; font-size:1.02rem; padding-right:20px; }
-.bd-fact p{ margin:0; font-size:.9rem; line-height:1.45; }
-.bd-fact-close{ position:absolute; top:4px; right:10px; border:0; background:transparent; color:#fff; font-size:1.4rem; cursor:pointer; }
-
-/* fireworks particles */
-.fw{ position:absolute; width:7px; height:7px; border-radius:50%; z-index:4; pointer-events:none; opacity:1; will-change:transform,opacity; }
-.fw{ animation:fw-fly .9s ease-out forwards; }
-@keyframes fw-fly{ to{ transform:translate(var(--dx), var(--dy)) scale(.3); opacity:0; } }
-@media (prefers-reduced-motion: reduce){ .marker{ animation:none; transform:translate(-50%,-50%) scale(1); } .fw{ animation:none; opacity:0; } }
+/* fireworks animation */
+.rocket{ position:absolute; bottom:0; width:5px; height:14px; margin-left:-2px; border-radius:3px; z-index:5;
+  background:linear-gradient(#fff,#ffd86b); box-shadow:0 0 9px 2px rgba(255,225,140,.95); transition:transform .62s cubic-bezier(.25,.7,.4,1); }
+.flash{ position:absolute; width:36px; height:36px; margin:-18px 0 0 -18px; border-radius:50%; z-index:5;
+  background:radial-gradient(rgba(255,255,255,.95), rgba(255,255,255,0) 65%); animation:fw-flash .5s ease-out forwards; }
+@keyframes fw-flash{ 0%{opacity:1; transform:scale(.3);} 100%{opacity:0; transform:scale(2.1);} }
+.spark{ position:absolute; width:6px; height:6px; margin:-3px 0 0 -3px; border-radius:50%; z-index:6; opacity:1; will-change:transform,opacity;
+  box-shadow:0 0 7px 1px currentColor; animation:fw-fly 1s ease-out forwards; }
+@keyframes fw-fly{ 0%{opacity:1;} 100%{ transform:translate(var(--dx), var(--dy)) scale(.4); opacity:0; } }
+@media (prefers-reduced-motion: reduce){ .rocket{ transition:none; } .spark,.flash{ animation:none; opacity:0; } }
 @keyframes nudge2{ 0%,100%{ transform:translateX(0);} 25%{ transform:translateX(-6px);} 75%{ transform:translateX(6px);} }
 
 .bd-write{ margin-top:18px; background:var(--card-bg); border:1px solid #e3e8f0; border-top:5px solid var(--ols-gold);
@@ -298,7 +293,7 @@ body.dragging-active, body.dragging-active *{
 .bd-write-prompt{ color:var(--muted); margin:.2em 0 .8em; font-size:.92rem; }
 #bd-text{ width:100%; padding:12px; border:1.5px solid var(--border); border-radius:8px; font:inherit; font-size:.95rem; resize:vertical; }
 
-@media (max-width:680px){ .scene-wrap{ grid-template-columns:1fr; } .elem-tray{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:680px){ .sky-stage{ grid-template-columns:1fr; } .sky{ min-height:240px; } }
 
 /* ============================================================
    Station 4 Les Personnes Celebres (compact row match + pick + write)

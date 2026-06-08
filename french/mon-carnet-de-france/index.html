@@ -163,32 +163,32 @@
       </div>
     </section>
 
-    <!-- Station 3: Le 14 Juillet (build the celebration scene + write in your own words) -->
+    <!-- Station 3: Le 14 Juillet (Light up the sky - fireworks quiz + write-up) -->
     <section id="st3" class="station-view" hidden aria-labelledby="st3-h">
       <header class="sv-head">
         <button class="sv-back" id="st3-back" type="button">&#8592; Back</button>
         <div class="sv-titles">
           <h2 id="st3-h" class="sv-title"><span class="fr">Le 14 Juillet</span></h2>
-          <p class="sv-sub">France's national day! Drag each part of the celebration onto the scene to build a 14 July night in Paris.</p>
+          <p class="sv-sub">Light up the Paris sky! Answer each question to set off a firework over the Eiffel Tower.</p>
         </div>
-        <span class="sv-count" id="st3-count">0 / 4 added</span>
+        <span class="sv-count" id="st3-count">0 / 6 fireworks</span>
       </header>
 
-      <div class="scene-wrap">
-        <div class="scene dropzone" id="bd-scene" data-zone="scene">
+      <div class="sky-stage">
+        <div class="sky" id="bd-sky">
           <img class="scene-img" src="assets/juillet/eiffel-night.jpg" alt="The Eiffel Tower lit up at night over the Champ de Mars in Paris" draggable="false">
+          <div class="sky-overlay" aria-hidden="true"></div>
           <span class="scene-credit">Photo: Gussisaurio, CC BY-SA 3.0</span>
         </div>
-        <ul class="elem-tray dropzone" id="bd-tray" data-zone="tray" aria-label="Parts of the celebration"></ul>
+        <div class="quiz-panel" id="bd-quiz">
+          <p class="q-num" id="q-num"></p>
+          <p class="q-prompt" id="q-prompt"></p>
+          <div class="q-options" id="q-options"></div>
+          <p class="q-feedback" id="q-feedback" role="status"></p>
+        </div>
       </div>
 
-      <p id="bd-msg" class="sv-msg" role="status">Drag the four parts of the celebration onto the scene.</p>
-
-      <div id="bd-fact" class="bd-fact" hidden role="status">
-        <button class="bd-fact-close" id="bd-fact-close" type="button" aria-label="Close">&times;</button>
-        <h4 id="bd-fact-title"></h4>
-        <p id="bd-fact-text"></p>
-      </div>
+      <p id="bd-msg" class="sv-msg" role="status"></p>
 
       <div id="bd-write" class="bd-write" hidden>
         <h3>Now write it in your own words</h3>

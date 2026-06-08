@@ -375,142 +375,119 @@
   }
 
   /* ============================================================
-     Station 3 - Le 14 Juillet. BUILD THE CELEBRATION: drag the four
-     parts of a 14 July night in Paris (parade, flypast, fireworks, fete)
-     onto a real night scene of the Eiffel Tower. Each pops up a how/why
-     fact and animates in; the fireworks set off a burst, and completing
-     the scene triggers a fireworks finale. Then write how/why in own words.
+     Station 3 - Le 14 Juillet. "ALLUME LE CIEL" / Light up the sky.
+     A short how/why quiz over a real night photo of the Eiffel Tower:
+     each correct answer launches a real (CSS-animated) firework that
+     arcs up and bursts in colour; a wrong answer fires nothing (a real
+     consequence) and you try again. All six fills the sky, then a
+     finale, then the own-words how/why write-up that feeds the Doc.
      ============================================================ */
-  var BD_ELEMS = [
-    { key: 'flypast', emoji: '✈️', fr: 'Le défilé aérien', en: 'The flypast', x: 50, y: 12,
-      fact: 'At the start of the parade, jets fly over Paris trailing blue, white and red smoke — the colours of the French flag.' },
-    { key: 'fireworks', emoji: '🎆', fr: "Les feux d'artifice", en: 'The fireworks', x: 50, y: 26,
-      fact: 'When night falls, a spectacular fireworks display lights up the sky around the Eiffel Tower.' },
-    { key: 'parade', emoji: '🎖️', fr: 'Le défilé militaire', en: 'The military parade', x: 50, y: 86,
-      fact: 'Every 14 July a grand military parade marches down the Champs-Élysées in Paris, watched by the President — one of the oldest regular military parades in Europe.' },
-    { key: 'fete', emoji: '🎉', fr: 'La fête', en: 'Parties & dancing', x: 82, y: 72,
-      fact: "All over France there are village fêtes, music and dancing, including the popular bals des pompiers (firefighters' balls) at local fire stations." }
+  var BD_Q = [
+    { q: 'Why do French people celebrate on 14 July?',
+      opts: ['It remembers the storming of the Bastille in 1789, at the start of the French Revolution', "It is the King of France's birthday", 'It is the day France won the football World Cup', 'It marks the end of the school year'],
+      correct: 0, explain: 'On 14 July 1789 the people of Paris stormed the Bastille, a royal prison that stood for unfair rule. It became the symbol of the Revolution and of liberty.' },
+    { q: 'What happens in Paris on the morning of 14 July?',
+      opts: ['A grand military parade down the Champs-Élysées', 'A big city marathon', 'A hot-air balloon race', 'A flower market'],
+      correct: 0, explain: 'A famous military parade marches down the Champs-Élysées, watched by the President — one of the oldest regular parades in Europe.' },
+    { q: 'What do the jets trail across the sky in the flypast?',
+      opts: ['Blue, white and red — the colours of the French flag', 'Green, white and orange', 'Just plain white smoke', 'Gold sparkles'],
+      correct: 0, explain: 'Jets fly over Paris trailing blue, white and red smoke — the three colours of the French tricolore flag.' },
+    { q: 'Where is the famous fireworks display held at night?',
+      opts: ['Around the Eiffel Tower', 'Inside the Louvre museum', 'On the roof of Notre-Dame', 'At Disneyland Paris'],
+      correct: 0, explain: 'When night falls, a spectacular fireworks display lights up the sky around the Eiffel Tower.' },
+    { q: 'Which French motto is remembered on this day?',
+      opts: ['Liberté, égalité, fraternité (liberty, equality, brotherhood)', 'Bonjour, merci, au revoir', 'Vive le roi (long live the king)', 'Allez les Bleus'],
+      correct: 0, explain: 'Liberté, égalité, fraternité — liberty, equality and brotherhood — are the ideals of the Revolution and the motto of France.' },
+    { q: 'What are the "bals des pompiers"?',
+      opts: ['Parties with music and dancing held at local fire stations', 'A type of French firework', 'A military march', 'A famous French cake'],
+      correct: 0, explain: "All over France there are village fêtes and the popular bals des pompiers — firefighters' balls — with music and dancing at local fire stations." }
   ];
-  function bdByKey(k) { for (var i = 0; i < BD_ELEMS.length; i++) if (BD_ELEMS[i].key === k) return BD_ELEMS[i]; return null; }
   var BD_MIN = 80;
-  var s3 = { built: false, placed: {} };
-  var drag3 = null;
+  var FW_COLORS = ['#E4B824', '#ffffff', '#EF4135', '#4d8bff', '#ff7ad9', '#5ce1a6'];
+  var s3 = { built: false, qi: 0, done: 0 };
 
   function openStation3() { show($('st3')); if (!s3.built) buildStation3(); }
-  function closeStation3() { captureBday(); persist(); hide($('bd-fact')); hide($('st3')); }
-  function bdChip(key) { return document.getElementById('bd-tray').querySelector('.elem-chip[data-key="' + key + '"]'); }
+  function closeStation3() { captureBday(); persist(); hide($('st3')); }
 
   function buildStation3() {
-    s3.built = true;
-    var scene = $('bd-scene'); scene.querySelectorAll('.marker, .fw').forEach(function (e) { e.remove(); });
-    var tray = $('bd-tray'); tray.innerHTML = '';
-    s3.placed = {};
-    BD_ELEMS.forEach(function (el) {
-      var li = document.createElement('li'); li.className = 'elem-chip'; li.dataset.key = el.key;
-      li.innerHTML = '<span class="c-emoji">' + el.emoji + '</span><span><span class="c-fr">' + escapeHtml(el.fr) + '</span><span class="c-en">' + escapeHtml(el.en) + '</span></span>';
-      li.addEventListener('pointerdown', onElemDown);
-      tray.appendChild(li);
-    });
+    s3.built = true; s3.qi = 0; s3.done = 0;
+    $('bd-sky').querySelectorAll('.rocket, .spark, .flash').forEach(function (e) { e.remove(); });
     var saved = state.data['3'];
     if (saved && saved.complete) {
-      BD_ELEMS.forEach(function (el) { addMarker(el, true); s3.placed[el.key] = true; bdChip(el.key).classList.add('used'); });
+      s3.done = BD_Q.length;
+      hide($('bd-quiz')); $('st3-count').textContent = BD_Q.length + ' / ' + BD_Q.length + ' fireworks';
+      $('bd-msg').textContent = 'Joyeux 14 Juillet ! You lit up the whole sky.'; $('bd-msg').className = 'sv-msg good';
       show($('bd-write')); $('bd-text').value = saved.writeup || ''; updateBdWrite();
-      $('bd-msg').textContent = 'Joyeux 14 Juillet ! You have built the celebration.';
+      return;
     }
-    updateBdCount();
+    show($('bd-quiz')); hide($('bd-write'));
+    $('bd-msg').textContent = ''; $('bd-msg').className = 'sv-msg';
+    updateBdCount(); showQuestion(0);
   }
 
-  function onElemDown(e) {
-    var li = e.currentTarget;
-    if (li.classList.contains('used')) return;
-    e.preventDefault();
-    var r = li.getBoundingClientRect();
-    drag3 = { key: li.dataset.key, el: li, pid: e.pointerId, sx: e.clientX, sy: e.clientY, offX: e.clientX - r.left, offY: e.clientY - r.top, w: r.width, moved: false };
-    try { li.setPointerCapture(e.pointerId); } catch (x) {}
-    li.addEventListener('pointermove', onElemMove);
-    li.addEventListener('pointerup', onElemUp);
-    li.addEventListener('pointercancel', onElemCancel);
+  function updateBdCount() { $('st3-count').textContent = s3.done + ' / ' + BD_Q.length + ' fireworks'; }
+
+  function showQuestion(i) {
+    s3.qi = i; var q = BD_Q[i];
+    $('q-num').textContent = 'Question ' + (i + 1) + ' of ' + BD_Q.length;
+    $('q-prompt').textContent = q.q;
+    $('q-feedback').textContent = ''; $('q-feedback').className = 'q-feedback';
+    var box = $('q-options'); box.innerHTML = '';
+    shuffle(q.opts.map(function (_, idx) { return idx; })).forEach(function (idx) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'q-opt'; b.textContent = q.opts[idx];
+      b.addEventListener('click', function () { onOption(b, idx, q); });
+      box.appendChild(b);
+    });
   }
-  function onElemMove(e) {
-    if (!drag3) return;
-    if (!drag3.moved) {
-      if (Math.abs(e.clientX - drag3.sx) + Math.abs(e.clientY - drag3.sy) < DRAG_THRESH) return;
-      drag3.moved = true; document.body.classList.add('dragging-active');
-      drag3.el.classList.add('dragging'); drag3.el.style.width = drag3.w + 'px';
+
+  function onOption(btn, idx, q) {
+    if (btn.disabled) return;
+    if (idx === q.correct) {
+      btn.classList.add('correct');
+      $('q-options').querySelectorAll('.q-opt').forEach(function (b) { b.disabled = true; });
+      $('q-feedback').textContent = 'Correct! ' + q.explain; $('q-feedback').className = 'q-feedback good';
+      s3.done++; updateBdCount();
+      launchFirework();
+      setTimeout(function () { if (s3.done >= BD_Q.length) bdFinale(); else showQuestion(s3.qi + 1); }, 1700);
+    } else {
+      btn.classList.add('wrong-locked'); btn.disabled = true;
+      $('q-feedback').textContent = 'Not quite — try another answer.'; $('q-feedback').className = 'q-feedback bad';
     }
-    drag3.el.style.left = (e.clientX - drag3.offX) + 'px';
-    drag3.el.style.top = (e.clientY - drag3.offY) + 'px';
-    var over = overScene(e.clientX, e.clientY);
-    $('bd-scene').classList.toggle('drop-hover', over);
   }
-  function endElem(li) { li.removeEventListener('pointermove', onElemMove); li.removeEventListener('pointerup', onElemUp); li.removeEventListener('pointercancel', onElemCancel); }
-  function onElemUp(e) {
-    if (!drag3) return;
-    var el = drag3.el, key = drag3.key, moved = drag3.moved;
-    try { el.releasePointerCapture(drag3.pid); } catch (x) {}
-    endElem(el);
-    document.body.classList.remove('dragging-active');
-    $('bd-scene').classList.remove('drop-hover');
-    el.classList.remove('dragging'); el.style.width = ''; el.style.left = ''; el.style.top = '';
-    if (moved && overScene(e.clientX, e.clientY) && !s3.placed[key]) placeElement(key);
-    drag3 = null;
+
+  /* ---- fireworks ---- */
+  function launchFirework() {
+    fireRocket(20 + Math.random() * 60, 14 + Math.random() * 24, FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)]);
   }
-  function onElemCancel() {
-    if (!drag3) return;
-    try { drag3.el.releasePointerCapture(drag3.pid); } catch (x) {}
-    endElem(drag3.el);
-    document.body.classList.remove('dragging-active');
-    $('bd-scene').classList.remove('drop-hover');
-    drag3.el.classList.remove('dragging'); drag3.el.style.width = ''; drag3.el.style.left = ''; drag3.el.style.top = '';
-    drag3 = null;
+  function fireRocket(xPct, yPct, color) {
+    var sky = $('bd-sky'); var h = sky.getBoundingClientRect().height || 320;
+    var rocket = document.createElement('div'); rocket.className = 'rocket'; rocket.style.left = xPct + '%';
+    sky.appendChild(rocket);
+    var rise = (100 - yPct) / 100 * h;
+    setTimeout(function () { rocket.style.transform = 'translateY(-' + rise + 'px)'; }, 20);
+    setTimeout(function () { if (rocket.parentNode) rocket.parentNode.removeChild(rocket); burst(xPct, yPct, color); }, 650);
   }
-  function overScene(x, y) {
-    var r = $('bd-scene').getBoundingClientRect();
-    return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
-  }
-  function addMarker(el) {
-    var m = document.createElement('div'); m.className = 'marker'; m.dataset.key = el.key;
-    m.style.left = el.x + '%'; m.style.top = el.y + '%';
-    m.innerHTML = '<span class="m-emoji">' + el.emoji + '</span><span class="m-label">' + escapeHtml(el.fr) + '</span>';
-    $('bd-scene').appendChild(m);
-  }
-  function placeElement(key) {
-    var el = bdByKey(key);
-    s3.placed[key] = true;
-    bdChip(key).classList.add('used');
-    addMarker(el);
-    if (key === 'fireworks') fireworkBurst(el.x, el.y);
-    showBdFact(el);
-    updateBdCount();
-    if (BD_ELEMS.every(function (e) { return s3.placed[e.key]; })) bdFinale();
-  }
-  function fireworkBurst(xPct, yPct) {
-    var scene = $('bd-scene');
-    var colors = ['#E4B824', '#ffffff', '#EF4135', '#4d8bff', '#ff7ad9', '#5ce1a6'];
-    for (var i = 0; i < 18; i++) {
-      var p = document.createElement('span'); p.className = 'fw';
-      var ang = Math.random() * Math.PI * 2, dist = 28 + Math.random() * 70;
-      p.style.left = xPct + '%'; p.style.top = yPct + '%';
-      p.style.background = colors[i % colors.length];
-      p.style.setProperty('--dx', (Math.cos(ang) * dist) + 'px');
-      p.style.setProperty('--dy', (Math.sin(ang) * dist) + 'px');
-      scene.appendChild(p);
-      (function (node) { setTimeout(function () { if (node.parentNode) node.parentNode.removeChild(node); }, 1000); })(p);
+  function burst(xPct, yPct, color) {
+    var sky = $('bd-sky');
+    var flash = document.createElement('div'); flash.className = 'flash'; flash.style.left = xPct + '%'; flash.style.top = yPct + '%';
+    sky.appendChild(flash); setTimeout(function () { if (flash.parentNode) flash.parentNode.removeChild(flash); }, 520);
+    for (var i = 0; i < 26; i++) {
+      var s = document.createElement('span'); s.className = 'spark';
+      var ang = (i / 26) * Math.PI * 2, dist = 36 + Math.random() * 46;
+      s.style.left = xPct + '%'; s.style.top = yPct + '%'; s.style.background = color; s.style.color = color;
+      s.style.setProperty('--dx', (Math.cos(ang) * dist) + 'px'); s.style.setProperty('--dy', (Math.sin(ang) * dist) + 'px');
+      sky.appendChild(s);
+      (function (node) { setTimeout(function () { if (node.parentNode) node.parentNode.removeChild(node); }, 1100); })(s);
     }
   }
   function bdFinale() {
-    for (var i = 0; i < 6; i++) { (function (n) { setTimeout(function () { fireworkBurst(15 + Math.random() * 70, 8 + Math.random() * 34); }, n * 300); })(i); }
-    $('bd-msg').textContent = 'Joyeux 14 Juillet ! It all remembers the storming of the Bastille in 1789 and the ideas of liberte, egalite, fraternite.';
+    hide($('bd-quiz'));
+    for (var i = 0; i < 8; i++) { (function (n) { setTimeout(launchFirework, n * 260); })(i); }
+    $('bd-msg').textContent = 'Joyeux 14 Juillet ! You lit up the whole sky. It all remembers the storming of the Bastille in 1789 and the ideas of liberte, egalite, fraternite.';
     $('bd-msg').className = 'sv-msg good';
     show($('bd-write')); updateBdWrite();
   }
-  function showBdFact(el) {
-    $('bd-fact-title').innerHTML = '<span style="font-style:normal">' + el.emoji + '</span>  ' + escapeHtml(el.fr) + ' / ' + escapeHtml(el.en);
-    $('bd-fact-text').textContent = el.fact;
-    show($('bd-fact'));
-  }
-  function bdCount() { var n = 0; BD_ELEMS.forEach(function (e) { if (s3.placed[e.key]) n++; }); return n; }
-  function updateBdCount() { $('st3-count').textContent = bdCount() + ' / 4 added'; }
+
   function updateBdWrite() {
     var txt = ($('bd-text').value || '').trim();
     var ok = txt.length >= BD_MIN;
@@ -519,9 +496,9 @@
     $('bd-wc').className = ok ? 'sv-msg good' : 'sv-msg';
   }
   function captureBday() {
-    var built = BD_ELEMS.every(function (e) { return s3.placed[e.key]; });
+    var quizDone = s3.done >= BD_Q.length;
     var writeup = ($('bd-text') ? $('bd-text').value : '').trim();
-    state.data['3'] = { built: built, writeup: writeup, complete: built && writeup.length >= BD_MIN };
+    state.data['3'] = { quizDone: quizDone, writeup: writeup, complete: quizDone && writeup.length >= BD_MIN };
     return state.data['3'].complete;
   }
   function finishBday() { if (captureBday()) markStationDone(3); closeStation3(); }
@@ -924,7 +901,6 @@
     $('st3-back').addEventListener('click', closeStation3);
     $('bd-done').addEventListener('click', finishBday);
     $('bd-text').addEventListener('input', updateBdWrite);
-    $('bd-fact-close').addEventListener('click', function () { hide($('bd-fact')); });
     $('st4-back').addEventListener('click', closeStation4);
     $('ppl-check').addEventListener('click', checkStation4);
     $('ppl-done').addEventListener('click', finishCeleb);
