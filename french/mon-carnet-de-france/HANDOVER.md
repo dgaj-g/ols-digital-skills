@@ -153,3 +153,27 @@ Full verified content in `content-pack.json`. Headlines:
 - **The verified, fact-checked content** for all four stations — including the exact **Wikimedia Commons File: URLs, licences and attributions** for every image, and the source citations behind every fact — is in **`content-pack.json`** in this folder (committed to git = backed up here).
 - **The original teacher brief** (the Word doc the build is based on) lives in the user's local **Claude Work** folder (under the "French" department folder), which syncs across the user's two Macs (so it is backed up). It is deliberately **not** committed to this PUBLIC repo. The exact path is recorded in the private auto-memory (`project_labelle_france`).
 - The four sections, the research-skills rules and the sign-offs derived from that brief are summarised in §0 and §5 above, so the build can continue from this file alone even without re-opening the original.
+
+---
+
+## 11. PENDING TWEAKS — do these BEFORE the back-end (user, 2026-06-08)
+
+The user reviewed the stations and asked for these changes. They are NOT optional polish — build them first, then proceed to the Doc generator (§6).
+
+### 11a. La Carte (Station 1) — make it richer (it currently feels a little stale)
+1. **Tighten the layout** — there is too much empty space between the map and the city-tag tray (`.carte-stage`). Close the gap / rebalance the columns so it feels intentional.
+2. **Rich city info cards with imagery.** When a city is placed **correctly** (on Check), instead of the current plain one-line facts list, show a **beautiful pop-up card** for that city containing: a **real photo of the city**, the city name, and **rich fun facts** (2-3 sentences, expand from the verified one-liners — keep accurate, sources in content-pack.json).
+3. **Carousel.** The pop-up holds **all** correctly-placed cities and the pupil can **cycle/swipe through them fluidly** (prev/next buttons + Pointer-Events swipe). It **accumulates** as more cities are got right.
+4. **Order = order they got them right** (first-correct first). If a pupil misses one and gets it right later, it appends after the earlier-correct ones.
+5. **NEW ASSET TASK:** source **9 real Wikimedia Commons city photos** (one per city: Paris, Marseille, Lyon, Toulouse, Nice, Nantes, Strasbourg, Bordeaux, Lille), optimize like the cuisine/people images (sharp, ~440px, into `assets/carte/<city>.jpg`), record File:/licence/attribution. Use the Commons API search + verify each exists (as done for the Eiffel backdrop).
+
+### 11b. La Carte needs a TYPED write-up too (consistency + Doc + "own words")
+La Carte is currently the ONLY station with no pupil-authored text. Add a short own-words write-up after the map is complete — recommended prompt: **"Which French city would you most like to visit, and why?"** — saved into `state.data['1'].writeup` so it flows into the Doc's map section. (The other three stations already capture own-words text: cuisine reasons, Bastille how/why, person ≤100-word.)
+
+### 11c. The Doc collation spec (build this into the real `apiMakeDoc`)
+The generated Google Doc assembles all four sections from `state.data`, each as a HEADING1 + the pupil's OWN words, framed as a first draft (deletable "polish checklist" box at top):
+- **1. Ma Carte de France** — the labelled main-cities list + the pupil's "city I'd most like to visit & why" sentence + a line "[Paste your map of France here]".
+- **2. La Cuisine** — each dish as "[I would try / I would not try] [dish] — because [the pupil's reason]".
+- **3. Le 14 Juillet** — the pupil's own-words how/why write-up.
+- **4. Les Personnes Célèbres** — the favourite person's name + the pupil's ≤100-word write-up.
+Reminder: FIRST make the server `apiSave`/`apiLoad` persist `req.data` (they currently only persist name+stations) so this content survives server-side.
