@@ -856,9 +856,9 @@
         offlineSave(s);
         return Promise.resolve({ ok: true });
       case 'makeDoc':
-        s.docUrl = 'https://docs.google.com/document/d/PREVIEW_STUB/edit';
-        offlineSave(s);
-        return Promise.resolve({ ok: true, url: s.docUrl });
+        // offline/preview: there is no Drive here - signal the client to render a
+        // local preview of the composed doc (p.doc) instead of opening a real Doc.
+        return Promise.resolve({ ok: true, preview: true });
       case 'admin':
         if (String(p.passcode || '').trim().toLowerCase() !== 'demo') {
           return Promise.resolve({ ok: false, error: 'bad-passcode' });
@@ -955,18 +955,88 @@
     persist();
   }
 
+  // Build the structured project Doc from the four stations' saved content. The
+  // CLIENT composes it (it holds the city/dish/person names + the pupil's own
+  // words); the server just renders this payload into a Google Doc, and the
+  // offline build renders it as a local preview. One source of truth - and the
+  // accents travel as real Unicode over google.script.run.
+  function listToProse(a) {
+    if (!a.length) return '';
+    if (a.length === 1) return a[0];
+    return a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+  }
+  function composeDoc() {
+    var d1 = state.data['1'] || {}, d2 = state.data['2'] || {}, d3 = state.data['3'] || {}, d4 = state.data['4'] || {};
+
+    var cityNames = (d1.correct || []).map(function (k) { var c = cityByKey(k); return c ? c.name : k; });
+    var sec1 = [cityNames.length
+      ? ('On my map of France I found and labelled these main cities: ' + listToProse(cityNames) + '.')
+      : 'I labelled the main cities of France on my map.'];
+    if ((d1.writeup || '').trim()) sec1.push((d1.writeup || '').trim());
+
+    var bullets2 = (d2.items || []).filter(function (it) { return it.basket === 'yes' || it.basket === 'no'; }).map(function (it) {
+      var dish = dishByKey(it.key), nm = dish ? dish.name : it.key;
+      var lead = it.basket === 'yes' ? 'I would like to try ' : 'I would not like to try ';
+      var reason = (it.reason || '').trim();
+      return lead + nm + (reason ? ' — because ' + reason : '') + '.';
+    });
+
+    var sec3 = (d3.writeup || '').trim() ? [(d3.writeup || '').trim()] : ['(Write about how and why France celebrates Bastille Day.)'];
+
+    var fav = d4.favourite ? personByKey(d4.favourite) : null;
+    var sec4 = [];
+    if (fav) sec4.push('The famous French person I admire most is ' + fav.name + '.');
+    if ((d4.writeup || '').trim()) sec4.push((d4.writeup || '').trim());
+    if (!sec4.length) sec4.push('(Write about the famous French person you admire most.)');
+
+    return {
+      title: 'La Belle France',
+      subtitle: 'My Term 1 culture project',
+      checklist: {
+        title: 'Make it brilliant, then delete this box',
+        items: [
+          'Read it aloud. Does every sentence start with a capital and end with a full stop?',
+          'Swap one dull word for a more interesting one in each part.',
+          'Add one extra sentence to each section.',
+          'Check your spelling, and make sure every opinion has a "because".'
+        ]
+      },
+      sections: [
+        { heading: '1. Ma Carte de France', paras: sec1, bullets: [], placeholder: '[Paste your map of France here]' },
+        { heading: '2. La Cuisine', paras: ['I looked at ten famous French dishes and decided which I would like to try.'], bullets: bullets2, placeholder: '' },
+        { heading: '3. Le 14 Juillet', paras: sec3, bullets: [], placeholder: '' },
+        { heading: '4. Les Personnes Célèbres', paras: sec4, bullets: [], placeholder: '' }
+      ]
+    };
+  }
+  function renderDocPreview(doc) {
+    var h = '<div class="doc-paper">';
+    h += '<h1 class="doc-title">' + escapeHtml(doc.title) + '</h1>';
+    if (doc.subtitle) h += '<p class="doc-subtitle">' + escapeHtml(doc.subtitle) + '</p>';
+    if (doc.checklist && doc.checklist.items) {
+      h += '<div class="doc-checklist"><b>' + escapeHtml(doc.checklist.title) + '</b><ul>';
+      doc.checklist.items.forEach(function (it) { h += '<li>' + escapeHtml(it) + '</li>'; });
+      h += '</ul></div>';
+    }
+    (doc.sections || []).forEach(function (s) {
+      h += '<h2 class="doc-h">' + escapeHtml(s.heading) + '</h2>';
+      (s.paras || []).forEach(function (p) { h += '<p>' + escapeHtml(p) + '</p>'; });
+      if (s.bullets && s.bullets.length) { h += '<ul>'; s.bullets.forEach(function (b) { h += '<li>' + escapeHtml(b) + '</li>'; }); h += '</ul>'; }
+      if (s.placeholder) h += '<p class="doc-placeholder">' + escapeHtml(s.placeholder) + '</p>';
+    });
+    h += '</div>';
+    $('doc-preview-body').innerHTML = h;
+  }
   function createProject() {
     var btn = $('create');
     if (btn) { btn.disabled = true; btn.textContent = 'Creating your project...'; }
-    call('makeDoc', {})
+    var payload = composeDoc();
+    call('makeDoc', { doc: payload })
       .then(function (r) {
-        if (r && r.ok && r.url) {
-          state.docUrl = r.url;
-          showResult(r.url);
-          render();
-        } else {
-          alert('Sorry, the project could not be created just now. Please try again.');
-        }
+        if (r && r.ok && r.preview) { renderDocPreview(payload); show($('doc-preview')); }
+        else if (r && r.ok && r.url) { state.docUrl = r.url; showResult(r.url); }
+        else { alert('Sorry, the project could not be created just now. Please try again.'); }
+        render();
       })
       .catch(function () { alert('Sorry, the project could not be created just now. Please try again.'); })
       .then(function () {
@@ -1077,6 +1147,7 @@
     $('ppl-done').addEventListener('click', finishCeleb);
     $('ppl-text').addEventListener('input', updateCelebWrite);
     $('create').addEventListener('click', createProject);
+    $('doc-preview-close').addEventListener('click', function () { hide($('doc-preview')); });
     $('staff-key').addEventListener('click', function () { show($('staff-modal')); var p = $('staff-pass'); if (p) p.focus(); });
     $('staff-close').addEventListener('click', function () { hide($('staff-modal')); });
     $('staff-go').addEventListener('click', staffOpen);
@@ -1087,7 +1158,7 @@
         if (e.key === 'ArrowRight') { gotoCard(s1.idx + 1); return; }
         if (e.key === 'Escape') { closeCarousel(); return; }
       }
-      if (e.key === 'Escape') { closeStationModal(); hide($('staff-modal')); hide($('dish-info')); }
+      if (e.key === 'Escape') { closeStationModal(); hide($('staff-modal')); hide($('dish-info')); hide($('doc-preview')); }
     });
 
     // identity + saved state

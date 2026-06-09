@@ -7,7 +7,7 @@
 > `project_labelle_france.md` (in the user's Claude memory) mirrors the key points.
 >
 > **Branch:** `draft/issue-18-french-mon-carnet-de-france` · **PR:** dgaj-g/ols-digital-skills#17 (draft)
-> **Inbox issue:** dgaj-g/ols-digital-skills-inbox#18 · **Status (2026-06-09):** all 4 stations built + signed off; **§11a/§11b La Carte rework DONE** (rich city-card carousel + 9 verified Commons photos + own-words write-up + tightened layout, all browser-verified); back-end finish (Doc generator + multi-teacher panel + Sites walkthrough) remaining.
+> **Inbox issue:** dgaj-g/ols-digital-skills-inbox#18 · **Status (2026-06-09):** all 4 stations built + signed off; **§11a/§11b La Carte rework DONE** + **Doc generator + data persistence DONE** (client-composes / server-renders, with a local preview; browser-verified, not yet deployed). Back-end remaining: multi-teacher staff panel, in-app Sites walkthrough (needs screenshots), then ONE bundled Path B redeploy + verify the real Doc on a pupil account.
 
 ---
 
@@ -110,7 +110,10 @@ Full verified content in `content-pack.json`. Headlines:
 - The shell + the `apiMakeDoc` **STUB** (creates a placeholder Doc, auto-shares, folders).
 
 ### LEFT (the back-end finish)
-1. **Real Doc generator** — replace the stub `apiMakeDoc` body so it builds the formatted Doc from ALL FOUR sections' saved content:
+
+> **✅ DONE (2026-06-09) — item 1 (Doc generator + save path):** The save path is fixed BOTH halves: server `apiSave` now persists `req.data` to UserProperties and `apiLoad` returns it (cross-device continuity), AND the `build-pathb.js` shim now forwards `data` on save and `doc` on makeDoc. The real `apiMakeDoc` is built. **Design decision:** the CLIENT composes the structured Doc payload (`composeDoc()` in script.js — it holds the city/dish/person names + the pupil's own words) and sends it to `apiMakeDoc`, which renders it via a generic `renderDocBody_()` (TITLE + SUBTITLE + a deletable shaded polish-checklist box as a 1-cell table + four HEADING1 sections with paragraphs/bullets/placeholder). This avoids duplicating the name maps into GAS and lets accents travel as real Unicode. The offline build renders the SAME payload as a local preview modal (`#doc-preview`, `renderDocPreview()`) so the collation is reviewable without deploying — browser-verified with realistic content (all 4 sections correct). **NOT yet tested on a real C2k account** (needs the bundled redeploy): the real Doc creation in the pupil's Drive + auto-share + foldering are unchanged from the proven stub, only the body content changed. Items 2-3 below remain.
+
+1. **Real Doc generator** — DONE (see banner above). Original spec retained for reference: replace the stub `apiMakeDoc` body so it builds the formatted Doc from ALL FOUR sections' saved content:
    - **FIRST FIX THE SAVE PATH (TWO halves — both needed):** (a) the server `apiSave`/`apiLoad` currently persist only `name`+`stations` to UserProperties — add `data` to the UserProperties draft + return it from `apiLoad`. (b) **ALSO the transport shim in `build-pathb.js` (the `save` case, ~line 96) only forwards `{classCode,name,stations}` to `apiSave` — it DROPS `p.data`.** Add `data: p.data` there or station content never leaves the browser on Path B even after the server is fixed. (Offline localStorage already persists `data`; neither the shim nor the server does yet.) Re-run `node server/build-pathb.js` after the shim edit.
    - Then generate: a TITLE + 4 HEADING1 sections (Ma Carte / La Cuisine / Le 14 Juillet / Les Personnes Célèbres) filled from `state.data`. Accented headings via `\uXXXX` escapes in Code.gs OR pass heading text from the client (it travels as real Unicode over google.script.run). Frame the Doc as a FIRST DRAFT with a deletable "✏️ polish checklist" box at the top (the in-app "Now make it brilliant" guidance already exists on the front end).
    - For Station 1 the Doc map section = the city list + facts as TEXT + a "paste your map of France here" line (inserting a generated map image is unproven — deferred).

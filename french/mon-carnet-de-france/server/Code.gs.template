@@ -89,7 +89,8 @@ function apiLoad(req) {
     ok: true,
     name: String(d.name || ''),
     stations: normStations_(d.stations),
-    docUrl: String(d.docUrl || '')
+    docUrl: String(d.docUrl || ''),
+    data: (d.data && typeof d.data === 'object') ? d.data : {}
   };
 }
 
@@ -110,7 +111,11 @@ function apiSave(req) {
   var prev = {};
   try { prev = prevRaw ? JSON.parse(prevRaw) : {}; } catch (e) { prev = {}; }
   var docUrl = String(prev.docUrl || '');
-  up.setProperty(draftKey_(cls), JSON.stringify({ name: name, stations: stations, docUrl: docUrl }));
+  // persist the per-station content too (cities/reasons/write-ups) so it survives
+  // server-side and follows the pupil across devices. The shared dashboard store
+  // (writeMeta_) deliberately does NOT get the content - it stays lean.
+  var data = (req.data && typeof req.data === 'object') ? req.data : (prev.data || {});
+  up.setProperty(draftKey_(cls), JSON.stringify({ name: name, stations: stations, docUrl: docUrl, data: data }));
 
   // 2) shared completion metadata (this pupil's own key only -> no write contention)
   writeMeta_(cls, who, { name: name, stations: stations, docUrl: docUrl });
@@ -125,13 +130,11 @@ function apiMakeDoc(req) {
   if (!who) return { ok: false, error: 'not-signed-in' };
   var cls = realClass_(req.classCode);
 
-  // SHELL STUB: a minimal Doc that proves creation in the pupil's Drive.
-  // The real generator (four formatted sections from the pupil's own words)
-  // replaces this body once the stations are built.
+  // Build the pupil's project Doc from the structured payload the client composed
+  // (title + deletable polish-checklist box + four HEADING1 sections in her own words).
   var doc = DocumentApp.create('La Belle France - my project');
   var body = doc.getBody();
-  body.appendParagraph('La Belle France').setHeading(DocumentApp.ParagraphHeading.TITLE);
-  body.appendParagraph('This is your project, created in your own Google Drive. (Preview build - the four sections will appear here in the finished activity.)');
+  renderDocBody_(body, (req.doc && typeof req.doc === 'object') ? req.doc : null);
 
   // Best-effort: share this pupil-owned Doc with the teacher so it opens straight
   // from the dashboard (no "request access"). Shares ONLY with the teacher, never
@@ -172,6 +175,43 @@ function apiMakeDoc(req) {
   up.setProperty(draftKey_(cls), JSON.stringify(d));
   writeMeta_(cls, who, { name: String(d.name || ''), stations: d.stations, docUrl: url });
   return { ok: true, url: String(url), shared: String(shared), filed: String(filed) };
+}
+
+/* Render the client-composed project payload into the Doc body: a TITLE (+ optional
+   SUBTITLE), a deletable shaded polish-checklist box (a 1-cell table the pupil can
+   select and delete), then each section as a HEADING1 with paragraphs, an optional
+   bullet list, and an italic-grey placeholder line. Falls back to a minimal Doc if
+   no payload arrives. All accented text arrives as real Unicode from the client. */
+function renderDocBody_(body, spec) {
+  if (!spec) {
+    body.appendParagraph('La Belle France').setHeading(DocumentApp.ParagraphHeading.TITLE);
+    body.appendParagraph('Your project.');
+    return;
+  }
+  body.appendParagraph(String(spec.title || 'La Belle France')).setHeading(DocumentApp.ParagraphHeading.TITLE);
+  if (spec.subtitle) body.appendParagraph(String(spec.subtitle)).setHeading(DocumentApp.ParagraphHeading.SUBTITLE);
+
+  var cl = spec.checklist;
+  if (cl && cl.items && cl.items.length) {
+    var table = body.appendTable();
+    var cell = table.appendTableRow().appendTableCell();
+    cell.setBackgroundColor('#FCF3D9');
+    cell.getChild(0).asParagraph().setText(String(cl.title || 'Checklist')).setBold(true);
+    for (var i = 0; i < cl.items.length; i++) {
+      cell.appendListItem(String(cl.items[i])).setGlyphType(DocumentApp.GlyphType.BULLET).setBold(false);
+    }
+  }
+
+  var sections = spec.sections || [];
+  for (var s = 0; s < sections.length; s++) {
+    var sec = sections[s] || {};
+    body.appendParagraph(String(sec.heading || '')).setHeading(DocumentApp.ParagraphHeading.HEADING1);
+    var paras = sec.paras || [];
+    for (var p = 0; p < paras.length; p++) body.appendParagraph(String(paras[p]));
+    var bullets = sec.bullets || [];
+    for (var b = 0; b < bullets.length; b++) body.appendListItem(String(bullets[b])).setGlyphType(DocumentApp.GlyphType.BULLET);
+    if (sec.placeholder) body.appendParagraph(String(sec.placeholder)).editAsText().setItalic(true).setForegroundColor('#888888');
+  }
 }
 
 /* Get-or-create a nested folder path in the user's OWN Drive; returns the leaf

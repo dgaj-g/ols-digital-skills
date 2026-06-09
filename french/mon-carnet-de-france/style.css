@@ -160,6 +160,21 @@ body{
 .dash .yes{ color:var(--stamp); font-weight:800; }
 .dash .no{ color:#c5ccd8; }
 
+/* ---------- project Doc preview (local review of the generated Doc) ---------- */
+.doc-preview-card{ max-width:680px; }
+.doc-preview-body{ max-height:62vh; overflow:auto; margin-top:8px; }
+.doc-paper{ background:#fff; border:1px solid #e3e8f0; border-radius:8px; padding:26px 30px; box-shadow:var(--shadow-sm); color:#1a2230; }
+.doc-title{ font-family:Georgia,serif; color:var(--ols-blue); font-size:1.7rem; margin:0 0 .1em; }
+.doc-subtitle{ color:var(--muted); margin:0 0 1em; font-size:.98rem; }
+.doc-checklist{ background:#fcf3d9; border:1px solid #e8d79a; border-radius:8px; padding:12px 16px; margin:0 0 1.2em; font-size:.9rem; }
+.doc-checklist b{ color:#7a5b00; display:block; margin-bottom:.3em; }
+.doc-checklist ul{ margin:0; padding-left:1.2em; }
+.doc-h{ font-family:Georgia,serif; color:var(--ols-blue); font-size:1.2rem; margin:1.1em 0 .35em; border-bottom:1px solid #eee; padding-bottom:3px; }
+.doc-paper p{ margin:.4em 0; line-height:1.55; }
+.doc-paper ul{ margin:.4em 0; padding-left:1.3em; }
+.doc-paper li{ margin:.2em 0; line-height:1.5; }
+.doc-placeholder{ color:#9aa3b2; font-style:italic; }
+
 /* ============================================================
    Station view (full-screen activity) + Station 1 La Carte
    ============================================================ */
