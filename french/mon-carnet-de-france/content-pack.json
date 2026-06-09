@@ -564,85 +564,94 @@
             "enName": "",
             "detail": "Paris is the capital of France and home to the Eiffel Tower, the most-visited paid monument in the world, with around 6 to 7 million visitors a year. When it was built it was the tallest structure on Earth for over 40 years, until the Chrysler Building was completed in New York in 1930.",
             "extra": "48.8566,2.3522",
-            "imageFile": "",
-            "imageLicence": "",
-            "imageAttribution": ""
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Eiffel_Tower_%40_Seine_%40_Pont_de_Bir_Hakeim_%40_Paris_(30737797575).jpg",
+            "imageLicence": "CC BY 2.0",
+            "imageAttribution": "Photo: Guilhem Vellut, via Wikimedia Commons (CC BY 2.0)",
+            "imageLocalFile": "assets/carte/paris.jpg"
           },
           {
             "name": "Marseille",
             "enName": "",
             "detail": "Marseille is France's oldest city. It was founded around 600 BC by Greek settlers who called it Massalia, and it has been a busy Mediterranean trading port ever since.",
             "extra": "43.2965,5.3698",
-            "imageFile": "",
-            "imageLicence": "",
-            "imageAttribution": ""
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Marseille_-_Old_Port.jpg",
+            "imageLicence": "CC BY-SA 3.0",
+            "imageAttribution": "Photo: Ingo Mehling, via Wikimedia Commons (CC BY-SA 3.0)",
+            "imageLocalFile": "assets/carte/marseille.jpg"
           },
           {
             "name": "Lyon",
             "enName": "",
             "detail": "Lyon is famous as the food capital of France. It has thousands of restaurants, and its traditional cosy eateries are called bouchons.",
             "extra": "45.7640,4.8357",
-            "imageFile": "",
-            "imageLicence": "",
-            "imageAttribution": ""
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Quai_Fulchiron_in_Lyon_(1).jpg",
+            "imageLicence": "CC BY 4.0",
+            "imageAttribution": "Photo: Krzysztof Golik, via Wikimedia Commons (CC BY 4.0)",
+            "imageLocalFile": "assets/carte/lyon.jpg"
           },
           {
             "name": "Toulouse",
             "enName": "",
             "detail": "Toulouse is nicknamed 'the Pink City' (la Ville Rose) because so many of its buildings are made of rosy-pink terracotta brick. It is also the home of Airbus, where giant passenger planes are built.",
             "extra": "43.6047,1.4442",
-            "imageFile": "",
-            "imageLicence": "",
-            "imageAttribution": ""
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Hopital_de_la_Grave_-_Toulouse_-_2012-06-23.jpg",
+            "imageLicence": "CC BY 3.0",
+            "imageAttribution": "Photo: PierreSelim, via Wikimedia Commons (CC BY 3.0)",
+            "imageLocalFile": "assets/carte/toulouse.jpg"
           },
           {
             "name": "Nice",
             "enName": "",
             "detail": "Nice sits on the sunny French Riviera (the Cote d'Azur) by the sparkling blue Mediterranean Sea. Its long seafront walkway, the Promenade des Anglais, is lined with famous blue chairs.",
             "extra": "43.7102,7.2620",
-            "imageFile": "",
-            "imageLicence": "",
-            "imageAttribution": ""
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Nice%2C_France_(17630242941).jpg",
+            "imageLicence": "CC BY 2.0",
+            "imageAttribution": "Photo: Kristoffer Trolle, via Wikimedia Commons (CC BY 2.0)",
+            "imageLocalFile": "assets/carte/nice.jpg"
           },
           {
             "name": "Nantes",
             "enName": "",
             "detail": "Nantes was the birthplace of the adventure writer Jules Verne. Today visitors can ride a giant 12-metre mechanical elephant called Les Machines de l'ile, inspired by his stories.",
             "extra": "47.2184,-1.5536",
-            "imageFile": "",
-            "imageLicence": "",
-            "imageAttribution": ""
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Nantes_IdM_elephant.jpg",
+            "imageLicence": "CC BY-SA 4.0",
+            "imageAttribution": "Photo: Mechtraveller, via Wikimedia Commons (CC BY-SA 4.0)",
+            "imageLocalFile": "assets/carte/nantes.jpg"
           },
           {
             "name": "Strasbourg",
             "enName": "",
             "detail": "Strasbourg, near the German border, is the official home of the European Parliament, where politicians from across Europe meet. It is also famous for its beautiful Christmas market.",
             "extra": "48.5734,7.7521",
-            "imageFile": "",
-            "imageLicence": "",
-            "imageAttribution": ""
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Ponts_couverts_et_cath%C3%A9drale_(Strasbourg)_(3).jpg",
+            "imageLicence": "CC BY-SA 4.0",
+            "imageAttribution": "Photo: Gzen92, via Wikimedia Commons (CC BY-SA 4.0)",
+            "imageLocalFile": "assets/carte/strasbourg.jpg"
           },
           {
             "name": "Bordeaux",
             "enName": "",
             "detail": "Bordeaux is France's wine capital, surrounded by world-famous vineyards. Its grand riverside old town is a UNESCO World Heritage Site nicknamed the 'Port of the Moon' because the river curves like a crescent.",
             "extra": "44.8378,-0.5792",
-            "imageFile": "",
-            "imageLicence": "",
-            "imageAttribution": ""
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Le_miroir_d'eau_%C3%A0_Bordeaux_en_septembre_2017.jpg",
+            "imageLicence": "CC BY-SA 4.0",
+            "imageAttribution": "Photo: AlineRockstud68, via Wikimedia Commons (CC BY-SA 4.0)",
+            "imageLocalFile": "assets/carte/bordeaux.jpg"
           },
           {
             "name": "Lille",
             "enName": "",
             "detail": "Lille, in the north of France, hosts the Braderie de Lille, Europe's largest flea market. Every September the whole city fills with thousands of stalls and millions of visitors.",
             "extra": "50.6292,3.0573",
-            "imageFile": "",
-            "imageLicence": "",
-            "imageAttribution": ""
+            "imageFile": "https://commons.wikimedia.org/wiki/File:Lille_vue_gd_place.JPG",
+            "imageLicence": "CC BY-SA 3.0",
+            "imageAttribution": "Photo: Velvet, via Wikimedia Commons (CC BY-SA 3.0)",
+            "imageLocalFile": "assets/carte/lille.jpg"
           }
         ],
         "extraContent": "BASE MAP - RECOMMENDED (public domain, lowest risk for an ETI board): File:Blank France map, no Departments.svg - https://commons.wikimedia.org/wiki/File:Blank_France_map,_no_Departments.svg . Released into the PUBLIC DOMAIN by Lokal_Profil (based on SuperManu/Emmanuel.boutet). 507x520 px SVG, clean outline of mainland France with no internal borders, no attribution or share-alike burden. ALTERNATIVE (more internal detail, but CC BY-SA): File:France map Lambert-93 with regions and departments-blank.svg - https://commons.wikimedia.org/wiki/File:France_map_Lambert-93_with_regions_and_departments-blank.svg by Eric Gaba (user Sting), 2000x1898 px, dual GFDL 1.2+ / CC BY-SA. If this one is used, the slide must show: 'Map: Eric Gaba (Wikimedia Commons user Sting), CC BY-SA 4.0, via Wikimedia Commons' and be share-alike. POSITIONING: place the nine dots BY HAND once over the chosen image and save the pixel positions. Lambert-93 is a conic projection, so a linear lat/lng-to-pixel formula will misplace dots; the lat,lng in each city's extra field are verified real-world centre points to guide hand-placement (north-south top-to-bottom, west-east left-to-right). CLASSROOM TIE-IN: this station's cities map onto the regions in Station 3 (cuisine), e.g. Marseille=bouillabaisse, Nice=ratatouille - a nice cross-link.",
-        "notes": "PASS WITH MINOR EDITS, all folded in. Corrections applied: Eiffel Tower visitors softened to 'around 6 to 7 million' (was ~7M; recent figures ~6.3M); tallest-structure line rephrased to 'over 40 years, until the Chrysler Building was completed in New York in 1930' (sidesteps the 1929-vs-1930 quibble); Lyon 'more than 2,000 restaurants' raised to 'thousands of restaurants' (commonly ~5,300, so the old figure undersold it); Strasbourg tightened to 'the official home of the European Parliament' (it is the legal seat). All nine cities and their cultural hooks verified accurate. Per-city imageFile fields intentionally empty (dot-map design). Bordeaux 'wine capital' is framed around heritage/landscape, not drinking - fine for the school but a conscious sign-off given the audience."
+        "notes": "PASS WITH MINOR EDITS, all folded in. Corrections applied: Eiffel Tower visitors softened to 'around 6 to 7 million' (was ~7M; recent figures ~6.3M); tallest-structure line rephrased to 'over 40 years, until the Chrysler Building was completed in New York in 1930' (sidesteps the 1929-vs-1930 quibble); Lyon 'more than 2,000 restaurants' raised to 'thousands of restaurants' (commonly ~5,300, so the old figure undersold it); Strasbourg tightened to 'the official home of the European Parliament' (it is the legal seat). All nine cities and their cultural hooks verified accurate. Per-city imageFile fields intentionally empty (dot-map design). Bordeaux 'wine capital' is framed around heritage/landscape, not drinking - fine for the school but a conscious sign-off given the audience. [2026-06-09] Added 9 per-city hero photos for the new card carousel (sourced + adversarially licence-verified from Wikimedia Commons): all genuinely free (CC0/CC BY/CC BY-SA), all confirmed to depict the correct city, optimized to 1050x700 (3:2) in assets/carte/. imageFile/imageLicence/imageAttribution recorded per finalItem."
       },
       {
         "station": "LA CUISINE (French foods - would you try it?)",

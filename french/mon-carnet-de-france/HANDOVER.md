@@ -7,7 +7,7 @@
 > `project_labelle_france.md` (in the user's Claude memory) mirrors the key points.
 >
 > **Branch:** `draft/issue-18-french-mon-carnet-de-france` · **PR:** dgaj-g/ols-digital-skills#17 (draft)
-> **Inbox issue:** dgaj-g/ols-digital-skills-inbox#18 · **Status (2026-06-08):** all 4 stations built + signed off by the user; back-end finish remaining.
+> **Inbox issue:** dgaj-g/ols-digital-skills-inbox#18 · **Status (2026-06-09):** all 4 stations built + signed off; **§11a/§11b La Carte rework DONE** (rich city-card carousel + 9 verified Commons photos + own-words write-up + tightened layout, all browser-verified); back-end finish (Doc generator + multi-teacher panel + Sites walkthrough) remaining.
 
 ---
 
@@ -111,7 +111,7 @@ Full verified content in `content-pack.json`. Headlines:
 
 ### LEFT (the back-end finish)
 1. **Real Doc generator** — replace the stub `apiMakeDoc` body so it builds the formatted Doc from ALL FOUR sections' saved content:
-   - **FIRST FIX THE SAVE PATH:** the server `apiSave`/`apiLoad` currently persist only `name`+`stations` to UserProperties — they DO NOT persist `req.data` (the per-station content). Add `data` to the UserProperties draft, so the Doc generator can read the pupil's actual cities/reasons/write-ups. (Offline localStorage already persists `data`; the server does not yet.)
+   - **FIRST FIX THE SAVE PATH (TWO halves — both needed):** (a) the server `apiSave`/`apiLoad` currently persist only `name`+`stations` to UserProperties — add `data` to the UserProperties draft + return it from `apiLoad`. (b) **ALSO the transport shim in `build-pathb.js` (the `save` case, ~line 96) only forwards `{classCode,name,stations}` to `apiSave` — it DROPS `p.data`.** Add `data: p.data` there or station content never leaves the browser on Path B even after the server is fixed. (Offline localStorage already persists `data`; neither the shim nor the server does yet.) Re-run `node server/build-pathb.js` after the shim edit.
    - Then generate: a TITLE + 4 HEADING1 sections (Ma Carte / La Cuisine / Le 14 Juillet / Les Personnes Célèbres) filled from `state.data`. Accented headings via `\uXXXX` escapes in Code.gs OR pass heading text from the client (it travels as real Unicode over google.script.run). Frame the Doc as a FIRST DRAFT with a deletable "✏️ polish checklist" box at the top (the in-app "Now make it brilliant" guidance already exists on the front end).
    - For Station 1 the Doc map section = the city list + facts as TEXT + a "paste your map of France here" line (inserting a generated map image is unproven — deferred).
 2. **Multi-teacher staff panel** (the user decision): several teachers, each runs their OWN classes. One shared staff passcode; each **class owned by its creating teacher** (verified email); teacher sees **own classes by default with a "see all" toggle** (for HOD viewing a year group / cover). Each pupil Doc auto-shares to the **owning teacher of that pupil's class** (replaces the single global `teacherEmail`, kept as fallback). Reuse the GG/constitution staff-panel patterns (class create/select/delete, copy link, in-page QR, dashboard, CSV).
@@ -159,6 +159,9 @@ Full verified content in `content-pack.json`. Headlines:
 ## 11. PENDING TWEAKS — do these BEFORE the back-end (user, 2026-06-08)
 
 The user reviewed the stations and asked for these changes. They are NOT optional polish — build them first, then proceed to the Doc generator (§6).
+
+> **✅ §11a + §11b DONE (2026-06-09)** — built and browser-verified on the local preview:
+> 9 real Wikimedia Commons city photos (sourced + adversarially licence-verified; all genuinely free CC0/CC BY/CC BY-SA, all confirmed to depict the right city; optimized to 1050x700 3:2 in `assets/carte/`, provenance recorded in `content-pack.json` LA CARTE finalItems). Tightened the `.carte-stage` layout (capped width so map+tray sit ~28px apart; empty tray collapses + map centres once all placed). Replaced the plain facts list with a **rich swipeable city-card carousel** (hero photo + tricolore strip + city name + verified facts + credit chip; prev/next + dots + Pointer-Events swipe + keyboard arrows/Esc; reopen via a "Mes villes (n)" button). **Reveal timing kept exactly per §11a item 4** — cards reveal ONLY on Check, accumulate in first-correct order across rounds; place-all-then-Check and the wrong-bounce fail state are untouched. Added the own-words write-up (`state.data['1'].writeup`, prompt "Which French city would you most like to visit, and why?", gated: Save&close needs 5+ words; completion now requires map + write-up). Partial map progress + the carousel now survive a close/reopen. **NEXT: the Doc generator (§11c) — and FIRST add `data` persistence to the server (see §6 LEFT note below).**
 
 ### 11a. La Carte (Station 1) — make it richer (it currently feels a little stale)
 1. **Tighten the layout** — there is too much empty space between the map and the city-tag tray (`.carte-stage`). Close the gap / rebalance the columns so it feels intentional.

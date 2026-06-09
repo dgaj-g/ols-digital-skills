@@ -33,21 +33,41 @@
      Pointer Events only, place-all-then-Check, genuine fail state,
      swap-on-occupied, randomised tray, facts revealed only after Check.
      ============================================================ */
+  // facts are the verified, signed-off content-pack text; credit = the Commons
+  // attribution for assets/carte/<key>.jpg (sourced + adversarially licence-checked).
   var CITIES = [
-    { key: 'paris', name: 'Paris', x: 54.9, y: 25.6, fact: 'Paris is the capital of France and home to the Eiffel Tower, the most-visited paid monument in the world. When it was built it was the tallest structure on Earth for over 40 years.' },
-    { key: 'marseille', name: 'Marseille', x: 77.4, y: 86.5, fact: "Marseille is France's oldest city, founded around 600 BC by Greek settlers who called it Massalia. It has been a busy Mediterranean port ever since." },
-    { key: 'lyon', name: 'Lyon', x: 73.4, y: 59.5, fact: 'Lyon is the food capital of France, with thousands of restaurants. Its traditional cosy eateries are called bouchons.' },
-    { key: 'toulouse', name: 'Toulouse', x: 48.2, y: 83.2, fact: "Toulouse is the 'Pink City' (la Ville Rose) for its rosy terracotta-brick buildings. It is also the home of Airbus, where giant passenger planes are built." },
-    { key: 'nice', name: 'Nice', x: 91.4, y: 82.0, fact: 'Nice sits on the sunny French Riviera by the Mediterranean. Its seafront walkway, the Promenade des Anglais, is lined with famous blue chairs.' },
-    { key: 'nantes', name: 'Nantes', x: 25.9, y: 43.5, fact: 'Nantes was the birthplace of the adventure writer Jules Verne. Visitors can ride a giant 12-metre mechanical elephant inspired by his stories.' },
-    { key: 'strasbourg', name: 'Strasbourg', x: 95.1, y: 28.7, fact: 'Strasbourg, near the German border, is the official home of the European Parliament, and is famous for its beautiful Christmas market.' },
-    { key: 'bordeaux', name: 'Bordeaux', x: 33.2, y: 69.6, fact: "Bordeaux is France's wine capital, surrounded by vineyards. Its riverside old town is a UNESCO World Heritage Site nicknamed the 'Port of the Moon'." },
-    { key: 'lille', name: 'Lille', x: 60.2, y: 6.1, fact: "Lille, in the north, hosts the Braderie de Lille, Europe's largest flea market, every September." }
+    { key: 'paris', name: 'Paris', x: 54.9, y: 25.6,
+      fact: "Paris is the capital of France and home to the Eiffel Tower, the most-visited paid monument in the world, with around 6 to 7 million visitors a year. When it was built it was the tallest structure on Earth for over 40 years, until the Chrysler Building was completed in New York in 1930.",
+      credit: 'Photo: Guilhem Vellut, via Wikimedia Commons (CC BY 2.0)' },
+    { key: 'marseille', name: 'Marseille', x: 77.4, y: 86.5,
+      fact: "Marseille is France's oldest city. It was founded around 600 BC by Greek settlers who called it Massalia, and it has been a busy Mediterranean trading port ever since.",
+      credit: 'Photo: Ingo Mehling, via Wikimedia Commons (CC BY-SA 3.0)' },
+    { key: 'lyon', name: 'Lyon', x: 73.4, y: 59.5,
+      fact: "Lyon is famous as the food capital of France. It has thousands of restaurants, and its traditional cosy eateries are called bouchons.",
+      credit: 'Photo: Krzysztof Golik, via Wikimedia Commons (CC BY 4.0)' },
+    { key: 'toulouse', name: 'Toulouse', x: 48.2, y: 83.2,
+      fact: "Toulouse is nicknamed 'the Pink City' (la Ville Rose) because so many of its buildings are made of rosy-pink terracotta brick. It is also the home of Airbus, where giant passenger planes are built.",
+      credit: 'Photo: PierreSelim, via Wikimedia Commons (CC BY 3.0)' },
+    { key: 'nice', name: 'Nice', x: 91.4, y: 82.0,
+      fact: "Nice sits on the sunny French Riviera (the Côte d'Azur) by the sparkling blue Mediterranean Sea. Its long seafront walkway, the Promenade des Anglais, is lined with famous blue chairs.",
+      credit: 'Photo: Kristoffer Trolle, via Wikimedia Commons (CC BY 2.0)' },
+    { key: 'nantes', name: 'Nantes', x: 25.9, y: 43.5,
+      fact: "Nantes was the birthplace of the adventure writer Jules Verne. Today visitors can ride a giant 12-metre mechanical elephant called Les Machines de l'île, inspired by his stories.",
+      credit: 'Photo: Mechtraveller, via Wikimedia Commons (CC BY-SA 4.0)' },
+    { key: 'strasbourg', name: 'Strasbourg', x: 95.1, y: 28.7,
+      fact: "Strasbourg, near the German border, is the official home of the European Parliament, where politicians from across Europe meet. It is also famous for its beautiful Christmas market.",
+      credit: 'Photo: Gzen92, via Wikimedia Commons (CC BY-SA 4.0)' },
+    { key: 'bordeaux', name: 'Bordeaux', x: 33.2, y: 69.6,
+      fact: "Bordeaux is France's wine capital, surrounded by world-famous vineyards. Its grand riverside old town is a UNESCO World Heritage Site nicknamed the 'Port of the Moon' because the river curves like a crescent.",
+      credit: "Photo: AlineRockstud68, via Wikimedia Commons (CC BY-SA 4.0)" },
+    { key: 'lille', name: 'Lille', x: 60.2, y: 6.1,
+      fact: "Lille, in the north of France, hosts the Braderie de Lille, Europe's largest flea market. Every September the whole city fills with thousands of stalls and millions of visitors.",
+      credit: 'Photo: Velvet, via Wikimedia Commons (CC BY-SA 3.0)' }
   ];
   function cityByKey(k) { for (var i = 0; i < CITIES.length; i++) if (CITIES[i].key === k) return CITIES[i]; return null; }
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 
-  var s1 = { built: false, home: {}, occ: {} };   // home[city]='tray'|dotKey ; occ[dotKey]=city|null
+  var s1 = { built: false, home: {}, occ: {}, cards: [], idx: 0, mapDone: false };   // home[city]='tray'|dotKey ; occ[dotKey]=city|null ; cards=revealed cities (first-correct order)
   var drag = null;
   var DRAG_THRESH = 6;
 
@@ -59,15 +79,14 @@
     show($('st1'));
     if (!s1.built) buildStation1();
   }
-  function closeStation1() { hide($('st1')); }
+  function closeStation1() { if (s1.built) { captureCarte(); persist(); } closeCarousel(); hide($('st1')); }
 
   function buildStation1() {
     s1.built = true;
     var map = $('carte-map'), tray = $('carte-tray');
     map.querySelectorAll('.dot, .tag').forEach(function (e) { e.remove(); });
-    tray.innerHTML = ''; $('carte-facts').innerHTML = '';
-    s1.home = {}; s1.occ = {};
-    var done = state.data['1'] && state.data['1'].complete;
+    tray.innerHTML = '';
+    s1.home = {}; s1.occ = {}; s1.cards = []; s1.idx = 0; s1.mapDone = false;
     CITIES.forEach(function (c) {
       var d = document.createElement('div');
       d.className = 'dot'; d.dataset.dot = c.key; d.style.left = c.x + '%'; d.style.top = c.y + '%';
@@ -79,11 +98,25 @@
       t.addEventListener('pointerdown', onTagDown);
       tray.appendChild(t); s1.home[c.key] = 'tray';
     });
-    if (done) {                       // restore completed state read-only
-      CITIES.forEach(function (c) { s1.home[c.key] = c.key; s1.occ[c.key] = c.key; renderTag(c.key);
-        tagEl(c.key).classList.add('correct'); dotEl(c.key).classList.add('correct'); addFact(c); });
-      $('carte-check').hidden = true; $('carte-done').hidden = false;
-      st1El('#st1-instr').textContent = 'You have placed all nine cities. Tap a fact to remind yourself.';
+
+    // Restore any previously-correct cities (partial OR complete): they lock back
+    // in place and their cards rebuild, in the saved first-correct order. This lets
+    // map progress and the discovered-city carousel survive a close/reopen.
+    var saved = state.data['1'] || {};
+    var correctKeys = (saved.correct || []).filter(function (k) { return cityByKey(k); });
+    correctKeys.forEach(function (key) {
+      s1.home[key] = key; s1.occ[key] = key; renderTag(key);
+      tagEl(key).classList.add('correct'); dotEl(key).classList.add('correct');
+    });
+    s1.cards = correctKeys.slice();
+    buildCarousel(); updateCardsBtn();
+
+    if (saved.complete || correctKeys.length === 9) {
+      s1.mapDone = true;
+      $('carte-check').hidden = true; show($('carte-write'));
+      if ($('carte-text')) $('carte-text').value = saved.writeup || '';
+      updateCarteWrite();
+      st1El('#st1-instr').textContent = 'All nine cities placed! Add your last sentence below, or tap "Mes villes" to revisit them.';
     }
     updateCount();
   }
@@ -187,22 +220,109 @@
   }
   function placedCount() { var n = 0; CITIES.forEach(function (c) { if (s1.home[c.key] !== 'tray') n++; }); return n; }
   function updateCount() {
-    $('st1-count').textContent = placedCount() + ' / 9 placed';
-    $('carte-check').disabled = placedCount() < 9;
+    var p = placedCount();
+    $('st1-count').textContent = p + ' / 9 placed';
+    $('carte-check').disabled = p < 9;
+    var stage = document.querySelector('#st1 .carte-stage');
+    if (stage) stage.classList.toggle('no-tray', p === 9);   // empty tray -> collapse the column, centre the map
   }
-  function addFact(c) {
-    var li = document.createElement('li'); li.innerHTML = '<b>' + c.name + '</b> &mdash; ' + escapeHtml(c.fact);
-    $('carte-facts').appendChild(li);
+  /* ---- discovered-city cards: a swipeable carousel revealed on Check ---- */
+  var cdrag = null;
+  function cardHtml(c) {
+    return '<article class="city-card">' +
+      '<div class="city-card-photo">' +
+        '<img src="' + ASSET + 'assets/carte/' + c.key + '.jpg" alt="' + escapeHtml(c.name) + '" draggable="false">' +
+        (c.credit ? '<span class="city-card-credit">' + escapeHtml(c.credit) + '</span>' : '') +
+      '</div>' +
+      '<div class="city-card-flag" aria-hidden="true"><i></i><i></i><i></i></div>' +
+      '<div class="city-card-body">' +
+        '<h3><span class="pin" aria-hidden="true">📍</span>' + escapeHtml(c.name) + '</h3>' +
+        '<p>' + escapeHtml(c.fact) + '</p>' +
+      '</div>' +
+    '</article>';
   }
+  function buildCarousel() {
+    var track = $('carte-track'); if (!track) return;
+    track.innerHTML = s1.cards.map(function (k) { return cardHtml(cityByKey(k)); }).join('');
+    $('carte-dots').innerHTML = s1.cards.map(function () { return '<b></b>'; }).join('');
+    if (s1.idx > s1.cards.length - 1) s1.idx = Math.max(0, s1.cards.length - 1);
+    layoutCarousel(false);
+  }
+  function layoutCarousel(animate) {
+    var track = $('carte-track'); if (!track) return;
+    track.classList.toggle('animate', !!animate);
+    track.style.transform = 'translateX(' + (-s1.idx * 100) + '%)';
+    var dots = $('carte-dots').children;
+    for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('on', i === s1.idx);
+    if ($('carte-prev')) $('carte-prev').disabled = s1.idx <= 0;
+    if ($('carte-next')) $('carte-next').disabled = s1.idx >= s1.cards.length - 1;
+  }
+  function openCarousel(i) {
+    if (!s1.cards.length) return;
+    s1.idx = Math.max(0, Math.min(i || 0, s1.cards.length - 1));
+    show($('carte-carousel'));
+    layoutCarousel(false);
+  }
+  function closeCarousel() { hide($('carte-carousel')); }
+  function gotoCard(i) { s1.idx = Math.max(0, Math.min(i, s1.cards.length - 1)); layoutCarousel(true); }
+  function updateCardsBtn() {
+    var btn = $('carte-cards-btn'); if (!btn) return;
+    btn.hidden = s1.cards.length === 0;
+    if ($('carte-cards-n')) $('carte-cards-n').textContent = '(' + s1.cards.length + ')';
+  }
+  function carouselVp() { return document.querySelector('#carte-carousel .carousel-viewport'); }
+  function carouselDown(e) {
+    if (!s1.cards.length) return;
+    var vp = carouselVp();
+    cdrag = { x: e.clientX, w: vp.getBoundingClientRect().width || 1, pid: e.pointerId };
+    $('carte-track').classList.remove('animate');
+    vp.addEventListener('pointermove', carouselMove);
+    vp.addEventListener('pointerup', carouselUp);
+    vp.addEventListener('pointercancel', carouselUp);
+    try { vp.setPointerCapture(e.pointerId); } catch (x) {}
+  }
+  function carouselMove(e) {
+    if (!cdrag) return;
+    var dx = e.clientX - cdrag.x;
+    $('carte-track').style.transform = 'translateX(' + (-s1.idx * 100 + dx / cdrag.w * 100) + '%)';
+  }
+  function carouselUp(e) {
+    if (!cdrag) return;
+    var vp = carouselVp();
+    vp.removeEventListener('pointermove', carouselMove);
+    vp.removeEventListener('pointerup', carouselUp);
+    vp.removeEventListener('pointercancel', carouselUp);
+    try { vp.releasePointerCapture(cdrag.pid); } catch (x) {}
+    var dx = e.clientX - cdrag.x, thr = cdrag.w * 0.18, ni = s1.idx;
+    if (dx <= -thr) ni = s1.idx + 1; else if (dx >= thr) ni = s1.idx - 1;
+    cdrag = null;
+    gotoCard(ni);
+  }
+
+  /* ---- own-words write-up (revealed once the map is complete) ---- */
+  function carteWords() { var s = ($('carte-text') ? $('carte-text').value : '').trim(); return s ? s.split(/\s+/).length : 0; }
+  function updateCarteWrite() {
+    var w = carteWords(), ok = s1.mapDone && w >= 5;
+    if ($('carte-done')) $('carte-done').disabled = !ok;
+    if ($('carte-wc')) $('carte-wc').textContent = w >= 5 ? (w + ' words') : ('Write a sentence or two (' + w + '/5+ words)');
+  }
+  function captureCarte() {
+    var w = carteWords();
+    state.data['1'] = { correct: s1.cards.slice(), writeup: ($('carte-text') ? $('carte-text').value : '').trim(), complete: s1.mapDone && w >= 5 };
+    return state.data['1'].complete;
+  }
+  function finishCarte() { if (captureCarte()) markStationDone(1); closeStation1(); }
   function checkStation1() {
-    var correct = 0;
+    // 1) lock the correct ones; remember which are newly-correct this round
+    var newly = [];
     CITIES.forEach(function (c) {
       if (s1.home[c.key] === c.key) {
-        correct++;
         var el = tagEl(c.key);
-        if (!el.classList.contains('correct')) { el.classList.add('correct'); dotEl(c.key).classList.add('correct'); addFact(c); }
+        if (!el.classList.contains('correct')) { el.classList.add('correct'); dotEl(c.key).classList.add('correct'); }
+        if (s1.cards.indexOf(c.key) === -1) newly.push(c.key);
       }
     });
+    // 2) bounce the wrong ones back to the tray (genuine fail state, no giveaway)
     CITIES.forEach(function (c) {
       var home = s1.home[c.key];
       if (home !== 'tray' && home !== c.key) {
@@ -210,16 +330,28 @@
         (function (city) { setTimeout(function () { sendToTray(city); updateCount(); }, 550); })(c.key);
       }
     });
+    var correct = 0; CITIES.forEach(function (c) { if (s1.home[c.key] === c.key) correct++; });
+
+    // 3) reveal newly-correct cities into the carousel, in first-correct order,
+    //    and pop it open at the first new card (the reward for getting them right)
+    if (newly.length) {
+      var firstNew = s1.cards.length;
+      newly.forEach(function (k) { s1.cards.push(k); });
+      buildCarousel(); updateCardsBtn(); openCarousel(firstNew);
+    }
+
     var msg = $('carte-msg');
     if (correct === 9) {
       msg.textContent = 'Parfait ! All nine cities in the right place.'; msg.className = 'sv-msg good';
-      state.data['1'] = { correct: CITIES.map(function (c) { return c.key; }), complete: true };
-      markStationDone(1);
-      $('carte-check').hidden = true; $('carte-done').hidden = false;
+      s1.mapDone = true;
+      $('carte-check').hidden = true; show($('carte-write'));
+      st1El('#st1-instr').textContent = 'All nine cities placed! Add your last sentence below.';
+      updateCarteWrite();
     } else {
       msg.textContent = correct + ' of 9 correct. The ones in the wrong place have come back — try them again.'; msg.className = 'sv-msg';
       setTimeout(updateCount, 600);
     }
+    captureCarte(); persist();   // persist correct list so the carousel survives a reopen
   }
 
   /* ============================================================
@@ -894,7 +1026,14 @@
     $('sm-done').addEventListener('click', function () { if (openStation) markStationDone(openStation); closeStationModal(); });
     $('st1-back').addEventListener('click', closeStation1);
     $('carte-check').addEventListener('click', checkStation1);
-    $('carte-done').addEventListener('click', closeStation1);
+    $('carte-done').addEventListener('click', finishCarte);
+    $('carte-text').addEventListener('input', updateCarteWrite);
+    $('carte-cards-btn').addEventListener('click', function () { openCarousel(s1.idx); });
+    $('carte-cx').addEventListener('click', closeCarousel);
+    $('carte-scrim').addEventListener('click', closeCarousel);
+    $('carte-prev').addEventListener('click', function () { gotoCard(s1.idx - 1); });
+    $('carte-next').addEventListener('click', function () { gotoCard(s1.idx + 1); });
+    carouselVp().addEventListener('pointerdown', carouselDown);
     $('st2-back').addEventListener('click', closeStation2);
     $('cuis-done').addEventListener('click', finishCuisine);
     $('dish-info-close').addEventListener('click', function () { hide($('dish-info')); });
@@ -911,6 +1050,11 @@
     $('staff-go').addEventListener('click', staffOpen);
     $('staff-refresh').addEventListener('click', staffRefresh);
     document.addEventListener('keydown', function (e) {
+      if ($('carte-carousel') && !$('carte-carousel').hidden) {
+        if (e.key === 'ArrowLeft') { gotoCard(s1.idx - 1); return; }
+        if (e.key === 'ArrowRight') { gotoCard(s1.idx + 1); return; }
+        if (e.key === 'Escape') { closeCarousel(); return; }
+      }
       if (e.key === 'Escape') { closeStationModal(); hide($('staff-modal')); }
     });
 

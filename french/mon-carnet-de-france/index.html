@@ -120,11 +120,37 @@
 
       <div class="sv-actions">
         <button id="carte-check" class="btn btn-gold" type="button" disabled>V&eacute;rifier / Check</button>
-        <button id="carte-done" class="btn btn-blue" type="button" hidden>Save &amp; close</button>
+        <button id="carte-cards-btn" class="btn btn-ghost carte-cards-btn" type="button" hidden>
+          <span aria-hidden="true">&#128247;</span> Mes villes <span id="carte-cards-n"></span>
+        </button>
         <p id="carte-msg" class="sv-msg" role="status"></p>
       </div>
 
-      <ul class="carte-facts" id="carte-facts" aria-label="What you discovered"></ul>
+      <!-- own-words write-up, revealed once all nine cities are correct -->
+      <div id="carte-write" class="bd-write" hidden>
+        <h3>Une derni&egrave;re chose&hellip;</h3>
+        <p class="bd-write-prompt">Which French city would you most like to visit, and <strong>why</strong>?
+          Write a sentence or two in your own words.</p>
+        <textarea id="carte-text" rows="4" placeholder="I would most like to visit ... because ..."></textarea>
+        <div class="sv-actions">
+          <button id="carte-done" class="btn btn-blue" type="button" disabled>Save &amp; close</button>
+          <span id="carte-wc" class="sv-msg"></span>
+        </div>
+      </div>
+
+      <!-- discovered-city cards: opens on Check, holds every city placed correctly -->
+      <div id="carte-carousel" class="carousel" hidden role="dialog" aria-modal="true" aria-label="Cities you have discovered">
+        <div class="carousel-scrim" id="carte-scrim"></div>
+        <div class="carousel-box">
+          <button class="carousel-close" id="carte-cx" type="button" aria-label="Close">&times;</button>
+          <div class="carousel-viewport">
+            <div class="carousel-track" id="carte-track"></div>
+          </div>
+          <button class="carousel-nav prev" id="carte-prev" type="button" aria-label="Previous city">&#8249;</button>
+          <button class="carousel-nav next" id="carte-next" type="button" aria-label="Next city">&#8250;</button>
+          <div class="carousel-dots" id="carte-dots" aria-hidden="true"></div>
+        </div>
+      </div>
     </section>
 
     <!-- Station 2: La Cuisine (sort into baskets + give a reason) -->

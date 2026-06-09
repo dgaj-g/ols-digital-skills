@@ -176,8 +176,11 @@ body{
 .sv-msg{ margin:0; font-weight:600; color:var(--muted); }
 .sv-msg.good{ color:var(--stamp); } .sv-msg.bad{ color:var(--fr-red); }
 
-.carte-stage{ display:grid; grid-template-columns:1fr 220px; gap:18px; align-items:start; margin-top:14px; }
-.carte-map{ position:relative; width:100%; max-width:560px; margin:0 auto; aspect-ratio:507 / 520; }
+.carte-stage{ display:grid; grid-template-columns:1fr 224px; gap:20px; align-items:start;
+  max-width:800px; margin:16px auto 0; }   /* capped so the map and tray sit together, no dead space */
+.carte-map{ position:relative; width:100%; max-width:540px; margin:0 auto; aspect-ratio:507 / 520; }
+.carte-stage.no-tray{ grid-template-columns:1fr; }   /* all cities placed -> drop the empty tray column, centre the map */
+.carte-stage.no-tray .carte-tray{ display:none; }
 .carte-img{ width:100%; height:100%; display:block; user-select:none; -webkit-user-drag:none; filter:drop-shadow(0 4px 14px rgba(18,42,79,.18)); }
 
 /* target dots on the map */
@@ -200,10 +203,50 @@ body{
 .carte-tray{ list-style:none; margin:0; padding:14px; display:flex; flex-wrap:wrap; gap:9px; align-content:flex-start;
   background:var(--card-bg); border:1px dashed #c5ccd8; border-radius:12px; min-height:120px; }
 
-.carte-facts{ list-style:none; margin:18px 0 0; padding:0; display:grid; gap:8px; }
-.carte-facts li{ background:var(--card-bg); border:1px solid #e3e8f0; border-left:4px solid var(--ols-gold);
-  border-radius:8px; padding:10px 14px; font-size:.92rem; }
-.carte-facts li b{ color:var(--ols-blue); }
+/* "Mes villes" launcher (re-open the discovered-city cards) */
+.carte-cards-btn{ font-weight:700; }
+
+/* ---- discovered-city card carousel (revealed on Check) ---- */
+.carousel{ position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:22px; }
+.carousel-scrim{ position:absolute; inset:0; background:rgba(8,18,43,.62); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); }
+.carousel-box{ position:relative; width:100%; max-width:520px; }
+.carousel-viewport{ overflow:hidden; border-radius:18px; box-shadow:var(--shadow-lg); background:var(--card-bg); touch-action:pan-y; }
+.carousel-track{ display:flex; will-change:transform; }
+.carousel-track.animate{ transition:transform .34s cubic-bezier(.22,.61,.36,1); }
+
+.city-card{ flex:0 0 100%; }
+.city-card-photo{ position:relative; aspect-ratio:3 / 2; background:#dde3ec; }
+.city-card-photo img{ width:100%; height:100%; object-fit:cover; display:block; -webkit-user-drag:none; }
+.city-card-photo::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:42%;
+  background:linear-gradient(to top, rgba(8,18,43,.40), transparent); pointer-events:none; }
+.city-card-credit{ position:absolute; right:7px; bottom:6px; z-index:2; max-width:calc(100% - 14px); font-size:.58rem;
+  line-height:1.3; text-align:right; color:rgba(255,255,255,.88); background:rgba(0,0,0,.36); padding:2px 7px; border-radius:6px; }
+.city-card-flag{ display:flex; height:5px; }
+.city-card-flag i{ flex:1; }
+.city-card-flag i:nth-child(1){ background:var(--fr-blue); }
+.city-card-flag i:nth-child(2){ background:#fff; }
+.city-card-flag i:nth-child(3){ background:var(--fr-red); }
+.city-card-body{ padding:15px 20px 22px; }
+.city-card-body h3{ font-family:Georgia,serif; color:var(--ols-blue); font-size:1.5rem; margin:.05em 0 .35em;
+  display:flex; align-items:center; gap:8px; font-weight:600; }
+.city-card-body h3 .pin{ font-size:1.05rem; }
+.city-card-body p{ margin:0; color:var(--text); line-height:1.55; font-size:.96rem; }
+
+.carousel-close{ position:absolute; top:-15px; right:-7px; z-index:5; width:38px; height:38px; border-radius:50%;
+  border:0; background:#fff; color:var(--ols-blue); font-size:1.5rem; line-height:1; cursor:pointer; box-shadow:var(--shadow-md); }
+.carousel-nav{ position:absolute; top:33%; transform:translateY(-50%); z-index:4; width:44px; height:44px; border-radius:50%;
+  border:0; background:rgba(255,255,255,.94); color:var(--ols-blue); font-size:1.7rem; line-height:1; cursor:pointer;
+  box-shadow:var(--shadow-md); transition:opacity .15s; }
+.carousel-nav.prev{ left:-10px; } .carousel-nav.next{ right:-10px; }
+.carousel-nav:disabled{ opacity:0; pointer-events:none; }
+.carousel-dots{ display:flex; gap:7px; justify-content:center; margin-top:14px; }
+.carousel-dots b{ width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.5); display:block; transition:transform .2s, background .2s; }
+.carousel-dots b.on{ background:#fff; transform:scale(1.4); }
+
+#carte-text{ width:100%; padding:12px; border:1.5px solid var(--border); border-radius:8px; font:inherit; font-size:.95rem; resize:vertical; }
+
+@media (prefers-reduced-motion: reduce){ .carousel-track.animate{ transition:none; } .carousel-scrim{ -webkit-backdrop-filter:none; backdrop-filter:none; } }
+@media (max-width:560px){ .carousel-nav{ top:30%; width:40px; height:40px; } .city-card-body h3{ font-size:1.3rem; } .carousel-box{ max-width:none; } }
 
 /* page-wide selection lock during any drag (mandatory) */
 body.dragging-active, body.dragging-active *{
