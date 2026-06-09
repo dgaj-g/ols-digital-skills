@@ -96,6 +96,7 @@
       var t = document.createElement('button');
       t.type = 'button'; t.className = 'tag'; t.dataset.city = c.key; t.textContent = c.name;
       t.addEventListener('pointerdown', onTagDown);
+      t.addEventListener('click', onTagClick);
       tray.appendChild(t); s1.home[c.key] = 'tray';
     });
 
@@ -116,7 +117,7 @@
       $('carte-check').hidden = true; show($('carte-write'));
       if ($('carte-text')) $('carte-text').value = saved.writeup || '';
       updateCarteWrite();
-      st1El('#st1-instr').textContent = 'All nine cities placed! Add your last sentence below, or tap "Mes villes" to revisit them.';
+      st1El('#st1-instr').textContent = 'All nine cities placed! Tap any city (or "Mes villes") to revisit its facts, then add your last sentence below.';
     }
     updateCount();
   }
@@ -132,6 +133,14 @@
     el.addEventListener('pointermove', onTagMove);
     el.addEventListener('pointerup', onTagUp);
     el.addEventListener('pointercancel', onTagCancel);
+  }
+  // A correctly-placed (locked) city is tappable: open its card, so the pupil can
+  // re-read its facts any time - including while writing the end piece.
+  function onTagClick(e) {
+    var el = e.currentTarget;
+    if (!el.classList.contains('correct')) return;
+    var idx = s1.cards.indexOf(el.dataset.city);
+    if (idx >= 0) openCarousel(idx);
   }
   function onTagMove(e) {
     if (!drag) return;
@@ -332,12 +341,22 @@
     });
     var correct = 0; CITIES.forEach(function (c) { if (s1.home[c.key] === c.key) correct++; });
 
-    // 3) reveal newly-correct cities into the carousel, in first-correct order,
-    //    and pop it open at the first new card (the reward for getting them right)
+    // 3) CELEBRATE the newly-correct cities ON THE MAP first - a staggered pop on
+    //    each - so the pupil sees which ones she got right and forms the visual
+    //    link. ONLY THEN (after the celebration) reveal their cards in the carousel.
     if (newly.length) {
       var firstNew = s1.cards.length;
-      newly.forEach(function (k) { s1.cards.push(k); });
-      buildCarousel(); updateCardsBtn(); openCarousel(firstNew);
+      var stagger = Math.min(110, Math.round(700 / newly.length));
+      newly.forEach(function (k, i) {
+        var el = tagEl(k);
+        el.style.animationDelay = (i * stagger) + 'ms';
+        el.classList.add('just-correct');
+        setTimeout(function () { el.classList.remove('just-correct'); el.style.animationDelay = ''; }, i * stagger + 650);
+        s1.cards.push(k);
+      });
+      buildCarousel(); updateCardsBtn();
+      var openDelay = newly.length * stagger + 750;
+      setTimeout(function () { if (!$('st1').hidden) openCarousel(firstNew); }, openDelay);
     }
 
     var msg = $('carte-msg');
@@ -345,7 +364,7 @@
       msg.textContent = 'Parfait ! All nine cities in the right place.'; msg.className = 'sv-msg good';
       s1.mapDone = true;
       $('carte-check').hidden = true; show($('carte-write'));
-      st1El('#st1-instr').textContent = 'All nine cities placed! Add your last sentence below.';
+      st1El('#st1-instr').textContent = 'All nine cities placed! Tap any city to revisit its facts, then add your last sentence below.';
       updateCarteWrite();
     } else {
       msg.textContent = correct + ' of 9 correct. The ones in the wrong place have come back — try them again.'; msg.className = 'sv-msg';

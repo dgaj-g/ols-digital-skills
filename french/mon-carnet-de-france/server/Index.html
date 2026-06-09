@@ -315,11 +315,22 @@ body{
   border:2px solid var(--ols-blue); border-radius:999px; padding:7px 13px; cursor:grab;
   touch-action:none; user-select:none; -webkit-user-select:none; white-space:nowrap; box-shadow:var(--shadow-sm); }
 .tag:active{ cursor:grabbing; }
-.tag.dragging{ position:fixed; z-index:60; cursor:grabbing; box-shadow:var(--shadow-lg); transform:scale(1.05); }
 .tag.placed{ position:absolute; transform:translate(-50%,-50%); z-index:2; padding:5px 10px; font-size:.82rem; }
-.tag.correct{ border-color:var(--stamp); color:#fff; background:var(--stamp); cursor:default; }
+.tag.correct{ border-color:var(--stamp); color:#fff; background:var(--stamp); cursor:pointer; }
+.tag.correct:hover{ filter:brightness(1.07); }
 .tag.wrong{ border-color:var(--fr-red); color:var(--fr-red); animation:nudge .35s ease; }
 @keyframes nudge{ 0%,100%{ transform:translate(-50%,-50%); } 25%{ transform:translate(-58%,-50%); } 75%{ transform:translate(-42%,-50%); } }
+/* .dragging MUST come AFTER .placed so it wins position/transform/z-index - else a
+   re-grabbed placed tag stays position:absolute + translate(-50%,-50%) and jumps off the pointer */
+.tag.dragging{ position:fixed; z-index:60; cursor:grabbing; box-shadow:var(--shadow-lg); transform:scale(1.05); }
+/* a celebratory pop on each newly-correct city, played on the map before the cards open */
+.tag.just-correct{ animation:tag-pop .55s ease; }
+@keyframes tag-pop{
+  0%{ transform:translate(-50%,-50%) scale(1); box-shadow:0 0 0 0 rgba(228,184,36,0); }
+  35%{ transform:translate(-50%,-50%) scale(1.3); box-shadow:0 0 0 9px rgba(228,184,36,.5); }
+  100%{ transform:translate(-50%,-50%) scale(1); box-shadow:0 0 0 16px rgba(228,184,36,0); }
+}
+@media (prefers-reduced-motion: reduce){ .tag.just-correct{ animation:none; } }
 
 .carte-tray{ list-style:none; margin:0; padding:14px; display:flex; flex-wrap:wrap; gap:9px; align-content:flex-start;
   background:var(--card-bg); border:1px dashed #c5ccd8; border-radius:12px; min-height:120px; }
@@ -924,6 +935,7 @@ window.OLS_TRANSPORT = {
       var t = document.createElement('button');
       t.type = 'button'; t.className = 'tag'; t.dataset.city = c.key; t.textContent = c.name;
       t.addEventListener('pointerdown', onTagDown);
+      t.addEventListener('click', onTagClick);
       tray.appendChild(t); s1.home[c.key] = 'tray';
     });
 
@@ -944,7 +956,7 @@ window.OLS_TRANSPORT = {
       $('carte-check').hidden = true; show($('carte-write'));
       if ($('carte-text')) $('carte-text').value = saved.writeup || '';
       updateCarteWrite();
-      st1El('#st1-instr').textContent = 'All nine cities placed! Add your last sentence below, or tap "Mes villes" to revisit them.';
+      st1El('#st1-instr').textContent = 'All nine cities placed! Tap any city (or "Mes villes") to revisit its facts, then add your last sentence below.';
     }
     updateCount();
   }
@@ -960,6 +972,14 @@ window.OLS_TRANSPORT = {
     el.addEventListener('pointermove', onTagMove);
     el.addEventListener('pointerup', onTagUp);
     el.addEventListener('pointercancel', onTagCancel);
+  }
+  // A correctly-placed (locked) city is tappable: open its card, so the pupil can
+  // re-read its facts any time - including while writing the end piece.
+  function onTagClick(e) {
+    var el = e.currentTarget;
+    if (!el.classList.contains('correct')) return;
+    var idx = s1.cards.indexOf(el.dataset.city);
+    if (idx >= 0) openCarousel(idx);
   }
   function onTagMove(e) {
     if (!drag) return;
@@ -1160,12 +1180,22 @@ window.OLS_TRANSPORT = {
     });
     var correct = 0; CITIES.forEach(function (c) { if (s1.home[c.key] === c.key) correct++; });
 
-    // 3) reveal newly-correct cities into the carousel, in first-correct order,
-    //    and pop it open at the first new card (the reward for getting them right)
+    // 3) CELEBRATE the newly-correct cities ON THE MAP first - a staggered pop on
+    //    each - so the pupil sees which ones she got right and forms the visual
+    //    link. ONLY THEN (after the celebration) reveal their cards in the carousel.
     if (newly.length) {
       var firstNew = s1.cards.length;
-      newly.forEach(function (k) { s1.cards.push(k); });
-      buildCarousel(); updateCardsBtn(); openCarousel(firstNew);
+      var stagger = Math.min(110, Math.round(700 / newly.length));
+      newly.forEach(function (k, i) {
+        var el = tagEl(k);
+        el.style.animationDelay = (i * stagger) + 'ms';
+        el.classList.add('just-correct');
+        setTimeout(function () { el.classList.remove('just-correct'); el.style.animationDelay = ''; }, i * stagger + 650);
+        s1.cards.push(k);
+      });
+      buildCarousel(); updateCardsBtn();
+      var openDelay = newly.length * stagger + 750;
+      setTimeout(function () { if (!$('st1').hidden) openCarousel(firstNew); }, openDelay);
     }
 
     var msg = $('carte-msg');
@@ -1173,7 +1203,7 @@ window.OLS_TRANSPORT = {
       msg.textContent = 'Parfait ! All nine cities in the right place.'; msg.className = 'sv-msg good';
       s1.mapDone = true;
       $('carte-check').hidden = true; show($('carte-write'));
-      st1El('#st1-instr').textContent = 'All nine cities placed! Add your last sentence below.';
+      st1El('#st1-instr').textContent = 'All nine cities placed! Tap any city to revisit its facts, then add your last sentence below.';
       updateCarteWrite();
     } else {
       msg.textContent = correct + ' of 9 correct. The ones in the wrong place have come back \u2014 try them again.'; msg.className = 'sv-msg';
