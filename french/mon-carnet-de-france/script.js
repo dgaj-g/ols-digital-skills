@@ -1017,6 +1017,14 @@
      Boot
      ============================================================ */
   function boot() {
+    // Preview-only convenience: visiting the page with "?reset" wipes saved progress
+    // for a fresh run. GUARDED to offline/preview (no OLS_TRANSPORT) so it can NEVER
+    // clear a pupil's saved work on the deployed Apps Script app.
+    if (!window.OLS_TRANSPORT && /(^|[?&])reset(=|&|$)/.test(location.search)) {
+      try { localStorage.removeItem(LS_KEY); } catch (e) {}
+      if (window.history && history.replaceState) history.replaceState({}, '', location.pathname);
+    }
+
     // wire events
     $('welcome-start').addEventListener('click', function () { hide($('welcome')); show($('home')); });
     document.querySelectorAll('.station').forEach(function (btn) {
