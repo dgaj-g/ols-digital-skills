@@ -191,16 +191,8 @@ function renderDocBody_(body, spec) {
   body.appendParagraph(String(spec.title || 'La Belle France')).setHeading(DocumentApp.ParagraphHeading.TITLE);
   if (spec.subtitle) body.appendParagraph(String(spec.subtitle)).setHeading(DocumentApp.ParagraphHeading.SUBTITLE);
 
-  var cl = spec.checklist;
-  if (cl && cl.items && cl.items.length) {
-    var table = body.appendTable();
-    var cell = table.appendTableRow().appendTableCell();
-    cell.setBackgroundColor('#FCF3D9');
-    cell.getChild(0).asParagraph().setText(String(cl.title || 'Checklist')).setBold(true);
-    for (var i = 0; i < cl.items.length; i++) {
-      cell.appendListItem(String(cl.items[i])).setGlyphType(DocumentApp.GlyphType.BULLET).setBold(false);
-    }
-  }
+  renderBox_(body, spec.checklist, '#FCF3D9');   // gold: polish checklist
+  renderBox_(body, spec.skills, '#E8F0FE');      // blue: digital-skills tasks
 
   var sections = spec.sections || [];
   for (var s = 0; s < sections.length; s++) {
@@ -211,6 +203,18 @@ function renderDocBody_(body, spec) {
     var bullets = sec.bullets || [];
     for (var b = 0; b < bullets.length; b++) body.appendListItem(String(bullets[b])).setGlyphType(DocumentApp.GlyphType.BULLET);
     if (sec.placeholder) body.appendParagraph(String(sec.placeholder)).editAsText().setItalic(true).setForegroundColor('#888888');
+  }
+}
+
+/* One shaded 1-cell-table box (deletable by the pupil: right-click -> Delete table). */
+function renderBox_(body, box, bg) {
+  if (!box || !box.items || !box.items.length) return;
+  var table = body.appendTable();
+  var cell = table.appendTableRow().appendTableCell();
+  cell.setBackgroundColor(String(bg));
+  cell.getChild(0).asParagraph().setText(String(box.title || '')).setBold(true);
+  for (var i = 0; i < box.items.length; i++) {
+    cell.appendListItem(String(box.items[i])).setGlyphType(DocumentApp.GlyphType.BULLET).setBold(false);
   }
 }
 

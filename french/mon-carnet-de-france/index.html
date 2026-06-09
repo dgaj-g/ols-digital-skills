@@ -299,7 +299,24 @@
         <h2 id="doc-preview-title" class="modal-title">Your project &mdash; preview</h2>
         <p class="modal-note">This is exactly what gets created as a Google Doc in your own Drive.
           (Preview only &mdash; on the school app it opens in Google Docs for you to edit.)</p>
+        <div class="sv-actions"><button id="guide-from-preview" class="btn btn-blue" type="button">&#128214; Mon guide Google Docs</button></div>
         <div id="doc-preview-body" class="doc-preview-body"></div>
+      </div>
+    </div>
+
+    <!-- "Mon guide Google Docs" - interactive step-by-step formatting guide.
+         Same card-carousel interaction as the La Carte city cards; screenshots
+         land in assets/guide/docs/ (captured on a C2k account). -->
+    <div id="docs-guide" class="carousel" hidden role="dialog" aria-modal="true" aria-label="Mon guide Google Docs">
+      <div class="carousel-scrim" id="guide-scrim"></div>
+      <div class="carousel-box">
+        <button class="carousel-close" id="guide-cx" type="button" aria-label="Close">&times;</button>
+        <div class="carousel-viewport" id="guide-vp">
+          <div class="carousel-track" id="guide-track"></div>
+        </div>
+        <button class="carousel-nav prev" id="guide-prev" type="button" aria-label="Previous step">&#8249;</button>
+        <button class="carousel-nav next" id="guide-next" type="button" aria-label="Next step">&#8250;</button>
+        <div class="carousel-dots" id="guide-dots" aria-hidden="true"></div>
       </div>
     </div>
 

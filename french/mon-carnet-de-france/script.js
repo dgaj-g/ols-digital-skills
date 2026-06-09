@@ -938,8 +938,12 @@
         '<li>Add one extra sentence to each section.</li>' +
         '<li>Check your spelling, and make sure every opinion has a <em>because</em>.</li>' +
       '</ul>' +
-      '<p><a href="' + url + '" target="_blank" rel="noopener">Open my project to edit it</a></p>';
+      '<p><a href="' + url + '" target="_blank" rel="noopener">Open my project to edit it</a></p>' +
+      '<p class="result-guide-hint">Then show off your <strong>digital skills</strong> — colour, bold, fonts and your map picture. The guide walks you through it:</p>' +
+      '<button id="open-docs-guide" class="btn btn-blue" type="button">&#128214; Mon guide Google Docs</button>';
     show(box);
+    var g = $('open-docs-guide');
+    if (g) g.addEventListener('click', openGuide);
   }
 
   /* ============================================================
@@ -1001,6 +1005,16 @@
           'Check your spelling, and make sure every opinion has a "because".'
         ]
       },
+      skills: {
+        title: 'Show off your digital skills — then delete this box too',
+        items: [
+          'Give your title and the four headings a colour you like (select the words, then the A button with the colour strip).',
+          'Make every dish name bold — and your favourite person\'s name too (select, then the B button).',
+          'Choose a different font for your big title (the toolbar box that says Arial).',
+          'Swap the grey "[Paste your map of France here]" line for a real picture of your map (Insert → Image → Upload from computer).',
+          'Not sure how? Tap "Mon guide Google Docs" in the app — it shows you every step.'
+        ]
+      },
       sections: [
         { heading: '1. Ma Carte de France', paras: sec1, bullets: [], placeholder: '[Paste your map of France here]' },
         { heading: '2. La Cuisine', paras: ['I looked at ten famous French dishes and decided which I would like to try.'], bullets: bullets2, placeholder: '' },
@@ -1018,6 +1032,11 @@
       doc.checklist.items.forEach(function (it) { h += '<li>' + escapeHtml(it) + '</li>'; });
       h += '</ul></div>';
     }
+    if (doc.skills && doc.skills.items) {
+      h += '<div class="doc-checklist doc-skills"><b>' + escapeHtml(doc.skills.title) + '</b><ul>';
+      doc.skills.items.forEach(function (it) { h += '<li>' + escapeHtml(it) + '</li>'; });
+      h += '</ul></div>';
+    }
     (doc.sections || []).forEach(function (s) {
       h += '<h2 class="doc-h">' + escapeHtml(s.heading) + '</h2>';
       (s.paras || []).forEach(function (p) { h += '<p>' + escapeHtml(p) + '</p>'; });
@@ -1027,6 +1046,104 @@
     h += '</div>';
     $('doc-preview-body').innerHTML = h;
   }
+
+  /* ============================================================
+     "Mon guide Google Docs" - a step-by-step card guide that shows
+     pupils HOW to do each digital-skills task on their Doc (select,
+     bold, colour, font, insert their map). Screenshot per step from
+     assets/guide/docs/ (captured on a real C2k account); until a
+     screenshot exists the card shows a friendly placeholder.
+     Reuses the city-card carousel look; own tiny engine (static deck).
+     ============================================================ */
+  var GUIDE_DOCS = [
+    { img: 'open.jpg', step: 1, title: 'Open your project',
+      text: 'Tap "Open my project to edit it" in the app — or in Google Drive, look inside OLS Digital Skills → French → J1 and double-click your project.',
+      task: 'Open your La Belle France document.' },
+    { img: 'select.jpg', step: 2, title: 'Select before you style',
+      text: 'To change how words look, first select them: click at the start of the words, hold the mouse button, and drag across. The words turn blue — now any button you press changes just those words.',
+      task: 'Try it: select your big title, La Belle France.' },
+    { img: 'bold.jpg', step: 3, title: 'Make it bold',
+      text: 'With your words selected, click the B in the toolbar (or press Ctrl and B together). Bold makes important words stand out.',
+      task: 'Make every dish name bold in La Cuisine — and your favourite person’s name too.' },
+    { img: 'colour.jpg', step: 4, title: 'Add some colour',
+      text: 'Select your words, then find the A with the little colour strip under it, just right of the B, I and U buttons — it is called "Text colour". Click it and a palette pops up — click any colour you like.',
+      task: 'Give your title and the four section headings a colour that suits France.' },
+    { img: 'font.jpg', step: 5, title: 'Choose your font',
+      text: 'The toolbar box that says Arial is the font menu. Select your title, click the box, and try a few fonts until one feels right. Next to it is a number with − and + either side: click + to make your letters bigger.',
+      task: 'Pick a different font for your big title, and make it a little bigger.' },
+    { img: 'image.jpg', step: 6, title: 'Put in your map',
+      text: 'Click on the grey line that says [Paste your map of France here]. Then choose Insert → Image → Upload from computer and pick your map. (You can also copy a picture and paste it straight in.)',
+      task: 'Swap the grey line for your real map of France.' },
+    { img: 'finish.jpg', step: 7, title: 'Finishing touches',
+      text: 'Read your project aloud one last time. Happy with it? Delete the two helper boxes at the top: right-click on a box and choose Delete table. Then it’s ready for your Google Site!',
+      task: 'Delete the yellow and blue boxes when every task is done.' }
+  ];
+  var gd = { built: false, idx: 0 };
+  var gdrag = null;
+  function guideCardHtml(s) {
+    return '<article class="city-card guide-card">' +
+      '<div class="guide-shot">' +
+        '<img src="' + ASSET + 'assets/guide/docs/' + s.img + '" alt="" draggable="false" onerror="this.parentElement.classList.add(\'no-shot\')">' +
+        '<div class="guide-shot-soon" aria-hidden="true"><span>&#128247;</span>Picture coming soon</div>' +
+      '</div>' +
+      '<div class="city-card-flag" aria-hidden="true"><i></i><i></i><i></i></div>' +
+      '<div class="city-card-body">' +
+        '<p class="guide-step">&Eacute;tape ' + s.step + ' / Step ' + s.step + '</p>' +
+        '<h3>' + escapeHtml(s.title) + '</h3>' +
+        '<p>' + escapeHtml(s.text) + '</p>' +
+        (s.task ? '<p class="guide-task"><b>&#9989; Your turn:</b> ' + escapeHtml(s.task) + '</p>' : '') +
+      '</div>' +
+    '</article>';
+  }
+  function buildGuide() {
+    gd.built = true;
+    $('guide-track').innerHTML = GUIDE_DOCS.map(guideCardHtml).join('');
+    $('guide-dots').innerHTML = GUIDE_DOCS.map(function () { return '<b></b>'; }).join('');
+  }
+  function layoutGuide(animate) {
+    var track = $('guide-track');
+    track.classList.toggle('animate', !!animate);
+    track.style.transform = 'translateX(' + (-gd.idx * 100) + '%)';
+    var dots = $('guide-dots').children;
+    for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('on', i === gd.idx);
+    $('guide-prev').disabled = gd.idx <= 0;
+    $('guide-next').disabled = gd.idx >= GUIDE_DOCS.length - 1;
+  }
+  function openGuide() {
+    if (!gd.built) buildGuide();
+    gd.idx = 0;
+    show($('docs-guide'));
+    layoutGuide(false);
+  }
+  function closeGuide() { hide($('docs-guide')); }
+  function gotoGuide(i) { gd.idx = Math.max(0, Math.min(i, GUIDE_DOCS.length - 1)); layoutGuide(true); }
+  function guideDown(e) {
+    var vp = $('guide-vp');
+    gdrag = { x: e.clientX, w: vp.getBoundingClientRect().width || 1, pid: e.pointerId };
+    $('guide-track').classList.remove('animate');
+    vp.addEventListener('pointermove', guideMove);
+    vp.addEventListener('pointerup', guideUp);
+    vp.addEventListener('pointercancel', guideUp);
+    try { vp.setPointerCapture(e.pointerId); } catch (x) {}
+  }
+  function guideMove(e) {
+    if (!gdrag) return;
+    var dx = e.clientX - gdrag.x;
+    $('guide-track').style.transform = 'translateX(' + (-gd.idx * 100 + dx / gdrag.w * 100) + '%)';
+  }
+  function guideUp(e) {
+    if (!gdrag) return;
+    var vp = $('guide-vp');
+    vp.removeEventListener('pointermove', guideMove);
+    vp.removeEventListener('pointerup', guideUp);
+    vp.removeEventListener('pointercancel', guideUp);
+    try { vp.releasePointerCapture(gdrag.pid); } catch (x) {}
+    var dx = e.clientX - gdrag.x, thr = gdrag.w * 0.18, ni = gd.idx;
+    if (dx <= -thr) ni = gd.idx + 1; else if (dx >= thr) ni = gd.idx - 1;
+    gdrag = null;
+    gotoGuide(ni);
+  }
+
   function createProject() {
     var btn = $('create');
     if (btn) { btn.disabled = true; btn.textContent = 'Creating your project...'; }
@@ -1148,6 +1265,12 @@
     $('ppl-text').addEventListener('input', updateCelebWrite);
     $('create').addEventListener('click', createProject);
     $('doc-preview-close').addEventListener('click', function () { hide($('doc-preview')); });
+    $('guide-from-preview').addEventListener('click', openGuide);
+    $('guide-cx').addEventListener('click', closeGuide);
+    $('guide-scrim').addEventListener('click', closeGuide);
+    $('guide-prev').addEventListener('click', function () { gotoGuide(gd.idx - 1); });
+    $('guide-next').addEventListener('click', function () { gotoGuide(gd.idx + 1); });
+    $('guide-vp').addEventListener('pointerdown', guideDown);
     $('staff-key').addEventListener('click', function () { show($('staff-modal')); var p = $('staff-pass'); if (p) p.focus(); });
     $('staff-close').addEventListener('click', function () { hide($('staff-modal')); });
     $('staff-go').addEventListener('click', staffOpen);
@@ -1157,6 +1280,11 @@
         if (e.key === 'ArrowLeft') { gotoCard(s1.idx - 1); return; }
         if (e.key === 'ArrowRight') { gotoCard(s1.idx + 1); return; }
         if (e.key === 'Escape') { closeCarousel(); return; }
+      }
+      if ($('docs-guide') && !$('docs-guide').hidden) {
+        if (e.key === 'ArrowLeft') { gotoGuide(gd.idx - 1); return; }
+        if (e.key === 'ArrowRight') { gotoGuide(gd.idx + 1); return; }
+        if (e.key === 'Escape') { closeGuide(); return; }
       }
       if (e.key === 'Escape') { closeStationModal(); hide($('staff-modal')); hide($('dish-info')); hide($('doc-preview')); }
     });
