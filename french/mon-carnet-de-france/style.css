@@ -300,11 +300,15 @@ body.dragging-active, body.dragging-active *{
 .dish-why.needed{ border-color:var(--ols-gold); background:#fffdf3; }
 .dish-why.ok{ border-color:var(--stamp); }
 
-.dish-info{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:55; max-width:460px; width:calc(100% - 32px);
-  background:var(--ols-blue); color:#fff; border-radius:12px; padding:16px 18px 14px; box-shadow:var(--shadow-lg); }
-.dish-info h4{ margin:.1em 0 .3em; font-family:Georgia,serif; font-size:1.05rem; padding-right:20px; }
-.dish-info p{ margin:0; font-size:.92rem; line-height:1.5; }
-.dish-info-close{ position:absolute; top:4px; right:10px; border:0; background:transparent; color:#fff; font-size:1.5rem; line-height:1; cursor:pointer; }
+/* food info: a prominent centred card with a dimmed backdrop (was a small bottom toast) */
+.dish-info{ position:fixed; inset:0; z-index:55; display:flex; align-items:center; justify-content:center; padding:22px; }
+.dish-info-scrim{ position:absolute; inset:0; background:rgba(8,18,43,.55); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); }
+.dish-info-card{ position:relative; max-width:480px; width:100%; background:var(--ols-blue); color:#fff;
+  border-radius:16px; border-top:6px solid var(--ols-gold); padding:24px 26px 22px; box-shadow:var(--shadow-lg); }
+.dish-info-card h4{ margin:.1em 0 .45em; font-family:Georgia,serif; font-size:1.4rem; padding-right:26px; }
+.dish-info-card p{ margin:0; font-size:1.02rem; line-height:1.55; }
+.dish-info-close{ position:absolute; top:8px; right:13px; border:0; background:transparent; color:#fff; font-size:1.8rem; line-height:1; cursor:pointer; }
+@media (prefers-reduced-motion: reduce){ .dish-info-scrim{ -webkit-backdrop-filter:none; backdrop-filter:none; } }
 
 @media (max-width:560px){ .baskets{ grid-template-columns:1fr; } }
 

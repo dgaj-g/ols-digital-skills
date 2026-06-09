@@ -182,10 +182,13 @@
         <p id="cuis-msg" class="sv-msg" role="status">Sort all 10 dishes and give a reason for each to finish.</p>
       </div>
 
-      <div id="dish-info" class="dish-info" hidden role="dialog" aria-live="polite">
-        <button class="dish-info-close" id="dish-info-close" type="button" aria-label="Close">&times;</button>
-        <h4 id="dish-info-name"></h4>
-        <p id="dish-info-text"></p>
+      <div id="dish-info" class="dish-info" hidden role="dialog" aria-modal="true" aria-live="polite" aria-labelledby="dish-info-name">
+        <div class="dish-info-scrim" id="dish-info-scrim"></div>
+        <div class="dish-info-card">
+          <button class="dish-info-close" id="dish-info-close" type="button" aria-label="Close">&times;</button>
+          <h4 id="dish-info-name"></h4>
+          <p id="dish-info-text"></p>
+        </div>
       </div>
     </section>
 

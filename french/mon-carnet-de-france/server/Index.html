@@ -421,11 +421,15 @@ body.dragging-active, body.dragging-active *{
 .dish-why.needed{ border-color:var(--ols-gold); background:#fffdf3; }
 .dish-why.ok{ border-color:var(--stamp); }
 
-.dish-info{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:55; max-width:460px; width:calc(100% - 32px);
-  background:var(--ols-blue); color:#fff; border-radius:12px; padding:16px 18px 14px; box-shadow:var(--shadow-lg); }
-.dish-info h4{ margin:.1em 0 .3em; font-family:Georgia,serif; font-size:1.05rem; padding-right:20px; }
-.dish-info p{ margin:0; font-size:.92rem; line-height:1.5; }
-.dish-info-close{ position:absolute; top:4px; right:10px; border:0; background:transparent; color:#fff; font-size:1.5rem; line-height:1; cursor:pointer; }
+/* food info: a prominent centred card with a dimmed backdrop (was a small bottom toast) */
+.dish-info{ position:fixed; inset:0; z-index:55; display:flex; align-items:center; justify-content:center; padding:22px; }
+.dish-info-scrim{ position:absolute; inset:0; background:rgba(8,18,43,.55); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); }
+.dish-info-card{ position:relative; max-width:480px; width:100%; background:var(--ols-blue); color:#fff;
+  border-radius:16px; border-top:6px solid var(--ols-gold); padding:24px 26px 22px; box-shadow:var(--shadow-lg); }
+.dish-info-card h4{ margin:.1em 0 .45em; font-family:Georgia,serif; font-size:1.4rem; padding-right:26px; }
+.dish-info-card p{ margin:0; font-size:1.02rem; line-height:1.55; }
+.dish-info-close{ position:absolute; top:8px; right:13px; border:0; background:transparent; color:#fff; font-size:1.8rem; line-height:1; cursor:pointer; }
+@media (prefers-reduced-motion: reduce){ .dish-info-scrim{ -webkit-backdrop-filter:none; backdrop-filter:none; } }
 
 @media (max-width:560px){ .baskets{ grid-template-columns:1fr; } }
 
@@ -691,10 +695,13 @@ body.dragging-active, body.dragging-active *{
         <p id="cuis-msg" class="sv-msg" role="status">Sort all 10 dishes and give a reason for each to finish.</p>
       </div>
 
-      <div id="dish-info" class="dish-info" hidden role="dialog" aria-live="polite">
-        <button class="dish-info-close" id="dish-info-close" type="button" aria-label="Close">&times;</button>
-        <h4 id="dish-info-name"></h4>
-        <p id="dish-info-text"></p>
+      <div id="dish-info" class="dish-info" hidden role="dialog" aria-modal="true" aria-live="polite" aria-labelledby="dish-info-name">
+        <div class="dish-info-scrim" id="dish-info-scrim"></div>
+        <div class="dish-info-card">
+          <button class="dish-info-close" id="dish-info-close" type="button" aria-label="Close">&times;</button>
+          <h4 id="dish-info-name"></h4>
+          <p id="dish-info-text"></p>
+        </div>
       </div>
     </section>
 
@@ -965,6 +972,7 @@ window.OLS_TRANSPORT = {
     var el = e.currentTarget;
     if (el.classList.contains('correct')) return;     // locked
     e.preventDefault();
+    document.body.classList.add('dragging-active');   // lock selection from the first touch (stops stray highlighting)
     var r = el.getBoundingClientRect();
     drag = { city: el.dataset.city, el: el, pid: e.pointerId, sx: e.clientX, sy: e.clientY,
       offX: e.clientX - r.left, offY: e.clientY - r.top, w: r.width, moved: false };
@@ -1194,7 +1202,8 @@ window.OLS_TRANSPORT = {
         s1.cards.push(k);
       });
       buildCarousel(); updateCardsBtn();
-      var openDelay = newly.length * stagger + 750;
+      var lastPopEnds = (newly.length - 1) * stagger + 550;   // 550 = pop animation duration
+      var openDelay = lastPopEnds + 1000;                      // hold on the green map so the pupil can take in what she got right
       setTimeout(function () { if (!$('st1').hidden) openCarousel(firstNew); }, openDelay);
     }
 
@@ -1269,6 +1278,7 @@ window.OLS_TRANSPORT = {
   function onDishDown(e) {
     var li = e.currentTarget.parentElement;
     e.preventDefault();
+    document.body.classList.add('dragging-active');   // lock selection from the very first touch, not just after the drag threshold (stops stray text/element highlighting in Safari)
     var r = li.getBoundingClientRect();
     drag2 = { key: li.dataset.key, el: li, grip: e.currentTarget, pid: e.pointerId, sx: e.clientX, sy: e.clientY, offX: e.clientX - r.left, offY: e.clientY - r.top, w: r.width, moved: false };
     try { e.currentTarget.setPointerCapture(e.pointerId); } catch (x) {}
@@ -1550,6 +1560,7 @@ window.OLS_TRANSPORT = {
     var chip = e.currentTarget;
     if (chip.classList.contains('correct')) return;
     e.preventDefault();
+    document.body.classList.add('dragging-active');   // lock selection from the first touch (stops stray highlighting)
     var r = chip.getBoundingClientRect();
     drag4 = { chip: chip, key: chip.dataset.chip, pid: e.pointerId, sx: e.clientX, sy: e.clientY, offX: e.clientX - r.left, offY: e.clientY - r.top, w: r.width, moved: false };
     try { chip.setPointerCapture(e.pointerId); } catch (x) {}
@@ -1903,6 +1914,7 @@ window.OLS_TRANSPORT = {
     $('st2-back').addEventListener('click', closeStation2);
     $('cuis-done').addEventListener('click', finishCuisine);
     $('dish-info-close').addEventListener('click', function () { hide($('dish-info')); });
+    $('dish-info-scrim').addEventListener('click', function () { hide($('dish-info')); });
     $('st3-back').addEventListener('click', closeStation3);
     $('bd-done').addEventListener('click', finishBday);
     $('bd-text').addEventListener('input', updateBdWrite);
@@ -1921,7 +1933,7 @@ window.OLS_TRANSPORT = {
         if (e.key === 'ArrowRight') { gotoCard(s1.idx + 1); return; }
         if (e.key === 'Escape') { closeCarousel(); return; }
       }
-      if (e.key === 'Escape') { closeStationModal(); hide($('staff-modal')); }
+      if (e.key === 'Escape') { closeStationModal(); hide($('staff-modal')); hide($('dish-info')); }
     });
 
     // identity + saved state

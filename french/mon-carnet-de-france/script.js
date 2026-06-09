@@ -126,6 +126,7 @@
     var el = e.currentTarget;
     if (el.classList.contains('correct')) return;     // locked
     e.preventDefault();
+    document.body.classList.add('dragging-active');   // lock selection from the first touch (stops stray highlighting)
     var r = el.getBoundingClientRect();
     drag = { city: el.dataset.city, el: el, pid: e.pointerId, sx: e.clientX, sy: e.clientY,
       offX: e.clientX - r.left, offY: e.clientY - r.top, w: r.width, moved: false };
@@ -355,7 +356,8 @@
         s1.cards.push(k);
       });
       buildCarousel(); updateCardsBtn();
-      var openDelay = newly.length * stagger + 750;
+      var lastPopEnds = (newly.length - 1) * stagger + 550;   // 550 = pop animation duration
+      var openDelay = lastPopEnds + 1000;                      // hold on the green map so the pupil can take in what she got right
       setTimeout(function () { if (!$('st1').hidden) openCarousel(firstNew); }, openDelay);
     }
 
@@ -430,6 +432,7 @@
   function onDishDown(e) {
     var li = e.currentTarget.parentElement;
     e.preventDefault();
+    document.body.classList.add('dragging-active');   // lock selection from the very first touch, not just after the drag threshold (stops stray text/element highlighting in Safari)
     var r = li.getBoundingClientRect();
     drag2 = { key: li.dataset.key, el: li, grip: e.currentTarget, pid: e.pointerId, sx: e.clientX, sy: e.clientY, offX: e.clientX - r.left, offY: e.clientY - r.top, w: r.width, moved: false };
     try { e.currentTarget.setPointerCapture(e.pointerId); } catch (x) {}
@@ -711,6 +714,7 @@
     var chip = e.currentTarget;
     if (chip.classList.contains('correct')) return;
     e.preventDefault();
+    document.body.classList.add('dragging-active');   // lock selection from the first touch (stops stray highlighting)
     var r = chip.getBoundingClientRect();
     drag4 = { chip: chip, key: chip.dataset.chip, pid: e.pointerId, sx: e.clientX, sy: e.clientY, offX: e.clientX - r.left, offY: e.clientY - r.top, w: r.width, moved: false };
     try { chip.setPointerCapture(e.pointerId); } catch (x) {}
@@ -1064,6 +1068,7 @@
     $('st2-back').addEventListener('click', closeStation2);
     $('cuis-done').addEventListener('click', finishCuisine);
     $('dish-info-close').addEventListener('click', function () { hide($('dish-info')); });
+    $('dish-info-scrim').addEventListener('click', function () { hide($('dish-info')); });
     $('st3-back').addEventListener('click', closeStation3);
     $('bd-done').addEventListener('click', finishBday);
     $('bd-text').addEventListener('input', updateBdWrite);
@@ -1082,7 +1087,7 @@
         if (e.key === 'ArrowRight') { gotoCard(s1.idx + 1); return; }
         if (e.key === 'Escape') { closeCarousel(); return; }
       }
-      if (e.key === 'Escape') { closeStationModal(); hide($('staff-modal')); }
+      if (e.key === 'Escape') { closeStationModal(); hide($('staff-modal')); hide($('dish-info')); }
     });
 
     // identity + saved state
