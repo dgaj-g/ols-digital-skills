@@ -57,7 +57,15 @@ function doGet(e) {
 function userEmail_() {
   try { return Session.getActiveUser().getEmail() || ''; } catch (e) { return ''; }
 }
-function realClass_(c) { c = String(c || '').trim(); return c || 'default'; }
+/* Canonicalise a class code against the registry (case-insensitive), so a
+   hand-typed lowercase link can't split one class into two key prefixes. */
+function realClass_(c) {
+  c = String(c || '').trim();
+  if (!c) return 'default';
+  var reg = getClasses_(), lc = c.toLowerCase();
+  for (var i = 0; i < reg.length; i++) if (reg[i].name.toLowerCase() === lc) return reg[i].name;
+  return c;
+}
 
 /* ---------- key helpers ---------- */
 function draftKey_(cls) { return 'draft:' + cls; }                    // user-properties (per pupil)
@@ -136,15 +144,16 @@ function apiMakeDoc(req) {
   var body = doc.getBody();
   renderDocBody_(body, (req.doc && typeof req.doc === 'object') ? req.doc : null);
 
-  // Best-effort: share this pupil-owned Doc with the teacher so it opens straight
-  // from the dashboard (no "request access"). Shares ONLY with the teacher, never
-  // the domain. Wrapped so a sharing failure can NEVER block Doc creation - if it
-  // throws (e.g. the sharing scope is not granted), the Doc still exists in the
-  // pupil's Drive and Google Classroom remains the formal submission route.
+  // Best-effort: share this pupil-owned Doc with HER class's owning teacher
+  // (multi-teacher model) - falling back to the global teacherEmail Script
+  // Property if the class is unowned/unknown. Shares ONLY with that teacher,
+  // never the domain. Wrapped so a sharing failure can NEVER block Doc
+  // creation - the Doc still exists in the pupil's Drive and Google Classroom
+  // remains the formal submission route.
   var shared = 'no-teacher-email';
-  var teacher = String(P.getScriptProperties().getProperty('teacherEmail') || '').trim();
+  var teacher = classOwner_(cls) || String(P.getScriptProperties().getProperty('teacherEmail') || '').trim();
   if (teacher && teacher.indexOf('@') > 0) {
-    try { doc.addViewer(teacher); shared = 'shared'; }
+    try { doc.addViewer(teacher); shared = 'shared:' + teacher; }
     catch (e) { shared = 'share-failed: ' + (e && e.message ? e.message : e); }
   }
 
@@ -253,6 +262,7 @@ function apiAdmin(req) {
   var want = String(P.getScriptProperties().getProperty('staffPasscode') || '').trim().toLowerCase();
   if (!want || got !== want) return { ok: false, error: 'bad-passcode' };
 
+  var me = userEmail_();                 // verified email of the TEACHER calling (Execute-as-user)
   var cls = realClass_(req.classCode);
   var sub = req.sub || 'dashboard';
 
@@ -273,17 +283,112 @@ function apiAdmin(req) {
     rows.sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
     return { ok: true, classCode: cls, rows: rows };
   }
+
+  /* List classes with owner + pupil count. The client shows the caller's own
+     by default and the rest behind a "show all" toggle (HOD / cover view).
+     Classes that have pupil data but were never registered are surfaced too. */
+  if (sub === 'classes') {
+    var reg = getClasses_();
+    var props = P.getScriptProperties().getProperties();
+    var counts = {};
+    Object.keys(props).forEach(function (k) {
+      if (k.indexOf('p:') !== 0) return;
+      var rest = k.slice(2), cut = rest.lastIndexOf(':');
+      if (cut <= 0) return;
+      var c = rest.slice(0, cut);
+      counts[c] = (counts[c] || 0) + 1;
+    });
+    var known = {};
+    reg.forEach(function (c) { known[c.name] = true; });
+    Object.keys(counts).forEach(function (c) {
+      if (!known[c]) reg.push({ name: c, owner: '', created: '' });
+    });
+    var list = reg.map(function (c) {
+      return { name: c.name, owner: c.owner, mine: !!(c.owner && c.owner === me), pupils: counts[c.name] || 0 };
+    });
+    list.sort(function (a, b) { return a.name.localeCompare(b.name); });
+    return { ok: true, me: me, classes: list };
+  }
+
+  if (sub === 'addClass') {
+    var name = sanitizeClass_(req.name);
+    if (!name || name === 'default') return { ok: false, error: 'bad-name' };
+    if (!me) return { ok: false, error: 'not-signed-in' };
+    var lock = LockService.getScriptLock();
+    try { lock.waitLock(10000); } catch (e) { return { ok: false, error: 'busy' }; }
+    try {
+      var reg2 = getClasses_();
+      for (var i = 0; i < reg2.length; i++) {
+        if (reg2[i].name.toLowerCase() === name.toLowerCase()) return { ok: false, error: 'exists', name: reg2[i].name };
+      }
+      reg2.push({ name: name, owner: me, created: new Date().toISOString() });
+      setClasses_(reg2);
+    } finally { lock.releaseLock(); }
+    return { ok: true, name: name, owner: me };
+  }
+
+  /* Delete a class you OWN (unowned/legacy classes can be cleaned up by any
+     passcode-holder). Removes the registry entry and the shared dashboard
+     records; pupils' private drafts (their UserProperties) are untouched. */
+  if (sub === 'deleteClass') {
+    var del = String(req.name || '');
+    if (!del) return { ok: false, error: 'no-name' };
+    var entry = findClass_(del);
+    if (entry && entry.owner && entry.owner !== me) return { ok: false, error: 'not-owner', owner: entry.owner };
+    var lock2 = LockService.getScriptLock();
+    try { lock2.waitLock(10000); } catch (e) { return { ok: false, error: 'busy' }; }
+    var removed = 0;
+    try {
+      var sp = P.getScriptProperties();
+      var props2 = sp.getProperties();
+      var pre = 'p:' + del + ':';
+      Object.keys(props2).forEach(function (k) { if (k.indexOf(pre) === 0) { sp.deleteProperty(k); removed++; } });
+      var reg3 = getClasses_().filter(function (c) { return c.name !== del; });
+      setClasses_(reg3);
+    } finally { lock2.releaseLock(); }
+    return { ok: true, name: del, removed: removed };
+  }
+
   return { ok: false, error: 'unknown-sub' };
 }
 
-/* ---------- class registry (shared, lock on read-modify-write) ---------- */
-function getClasses_() { try { return JSON.parse(P.getScriptProperties().getProperty('classes') || '[]'); } catch (e) { return []; } }
+/* ---------- class registry (shared, lock on read-modify-write) ----------
+   Multi-teacher model: each class is OWNED by the teacher who created it
+   (verified email). Entries are objects {name, owner, created}; the parser
+   tolerates legacy plain-string entries (owner '' = unowned). One shared
+   staff passcode gates the panel; ownership gates deletion + Doc sharing. */
+function getClasses_() {
+  var raw;
+  try { raw = JSON.parse(P.getScriptProperties().getProperty('classes') || '[]'); } catch (e) { raw = []; }
+  if (!raw || !raw.length) return [];
+  return raw.map(function (c) {
+    if (typeof c === 'string') return { name: c, owner: '', created: '' };
+    return { name: String(c.name || ''), owner: String(c.owner || ''), created: String(c.created || '') };
+  }).filter(function (c) { return !!c.name; });
+}
+function setClasses_(arr) { P.getScriptProperties().setProperty('classes', JSON.stringify(arr)); }
+function findClass_(name) {
+  var reg = getClasses_();
+  for (var i = 0; i < reg.length; i++) if (reg[i].name === name) return reg[i];
+  return null;
+}
+/* Owning teacher's email for a class ('' if unowned/unknown). */
+function classOwner_(cls) {
+  var c = findClass_(cls);
+  return (c && c.owner.indexOf('@') > 0) ? c.owner : '';
+}
+/* Pupil-side safety net: auto-register a class a pupil arrives with (unowned). */
 function registerClass_(name) {
   if (!name || name === 'default') return;
   var lock = LockService.getScriptLock();
   try { lock.waitLock(10000); } catch (e) { return; }
   try {
-    var reg = getClasses_();
-    if (reg.indexOf(name) === -1) { reg.push(name); P.getScriptProperties().setProperty('classes', JSON.stringify(reg)); }
+    var reg = getClasses_(), lc = String(name).toLowerCase();
+    for (var i = 0; i < reg.length; i++) if (reg[i].name.toLowerCase() === lc) return;
+    reg.push({ name: name, owner: '', created: new Date().toISOString() });
+    setClasses_(reg);
   } finally { lock.releaseLock(); }
+}
+function sanitizeClass_(name) {
+  return String(name || '').trim().replace(/[^A-Za-z0-9_\- ]/g, '').replace(/\s+/g, '-').slice(0, 40);
 }

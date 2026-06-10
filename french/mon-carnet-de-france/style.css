@@ -151,7 +151,8 @@ body{
 .staff-key:hover{ opacity:1; }
 .field-label{ display:block; font-weight:700; color:var(--ols-blue); margin:.2em 0 .3em; font-size:.9rem; }
 .field{ width:100%; padding:11px 12px; border:1.5px solid var(--border); border-radius:8px; font:inherit; margin-bottom:12px; }
-.staff-msg{ color:var(--fr-red); font-weight:600; min-height:1.2em; margin:.4em 0 0; }
+.staff-msg{ color:var(--muted); font-weight:600; min-height:1.2em; margin:.4em 0 0; word-break:break-word; }
+#staff-msg{ color:var(--fr-red); }   /* the passcode-gate message is the only error-only slot */
 .staff-hint{ color:var(--muted); font-size:.9rem; margin:.1em 0 .8em; }
 .table-wrap{ overflow:auto; max-height:50vh; margin-bottom:12px; }
 .dash{ width:100%; border-collapse:collapse; font-size:.88rem; }
@@ -159,6 +160,31 @@ body{
 .dash th{ background:var(--bg); color:var(--ols-blue); position:sticky; top:0; }
 .dash .yes{ color:var(--stamp); font-weight:800; }
 .dash .no{ color:#c5ccd8; }
+
+/* ---- multi-teacher class manager ---- */
+.staff-card{ max-width:620px; }
+.staff-me{ color:var(--muted); font-size:.88rem; margin:.1em 0 .8em; }
+.staff-me b{ color:var(--ols-blue); }
+.staff-new{ display:flex; gap:10px; margin-bottom:6px; }
+.staff-new .field{ margin-bottom:0; flex:1; }
+.staff-toggle{ display:block; color:var(--muted); font-size:.86rem; margin:6px 0 10px; cursor:pointer; user-select:none; }
+.staff-classes{ list-style:none; margin:0 0 8px; padding:0; display:grid; gap:8px; max-height:46vh; overflow:auto; }
+.cls-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  background:var(--bg); border:1px solid #e3e8f0; border-radius:10px; padding:9px 12px; }
+.cls-info{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; min-width:0; }
+.cls-info b{ color:var(--ols-blue); font-size:.98rem; }
+.cls-meta{ color:var(--muted); font-size:.78rem; white-space:nowrap; }
+.cls-owner{ color:#8a94a6; font-size:.74rem; background:#eef2f9; border-radius:99px; padding:1px 8px; }
+.cls-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.btn-sm{ padding:5px 10px; font-size:.78rem; border-radius:7px; }
+.cls-del{ color:var(--fr-red); border-color:#f0c4c0; min-width:34px; }
+.cls-del.arm{ background:var(--fr-red); color:#fff; border-color:var(--fr-red); font-weight:800; }
+.cls-empty{ color:var(--muted); font-size:.9rem; background:var(--bg); border:1px dashed #c5ccd8; border-radius:10px; padding:14px; }
+.staff-dash-head{ display:flex; align-items:center; gap:12px; margin-bottom:4px; }
+.staff-h3{ font-family:Georgia,serif; color:var(--ols-blue); margin:0; font-size:1.15rem; }
+.qr-wrap{ display:grid; place-items:center; padding:10px 0 4px; }
+.qr-wrap canvas{ border:1px solid #e3e8f0; border-radius:10px; }
+.qr-link{ color:var(--muted); font-size:.74rem; word-break:break-all; text-align:center; margin:.4em 0 .8em; }
 
 /* ---------- project Doc preview (local review of the generated Doc) ---------- */
 .doc-preview-card{ max-width:680px; }

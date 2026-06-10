@@ -272,7 +272,8 @@ body{
 .staff-key:hover{ opacity:1; }
 .field-label{ display:block; font-weight:700; color:var(--ols-blue); margin:.2em 0 .3em; font-size:.9rem; }
 .field{ width:100%; padding:11px 12px; border:1.5px solid var(--border); border-radius:8px; font:inherit; margin-bottom:12px; }
-.staff-msg{ color:var(--fr-red); font-weight:600; min-height:1.2em; margin:.4em 0 0; }
+.staff-msg{ color:var(--muted); font-weight:600; min-height:1.2em; margin:.4em 0 0; word-break:break-word; }
+#staff-msg{ color:var(--fr-red); }   /* the passcode-gate message is the only error-only slot */
 .staff-hint{ color:var(--muted); font-size:.9rem; margin:.1em 0 .8em; }
 .table-wrap{ overflow:auto; max-height:50vh; margin-bottom:12px; }
 .dash{ width:100%; border-collapse:collapse; font-size:.88rem; }
@@ -280,6 +281,31 @@ body{
 .dash th{ background:var(--bg); color:var(--ols-blue); position:sticky; top:0; }
 .dash .yes{ color:var(--stamp); font-weight:800; }
 .dash .no{ color:#c5ccd8; }
+
+/* ---- multi-teacher class manager ---- */
+.staff-card{ max-width:620px; }
+.staff-me{ color:var(--muted); font-size:.88rem; margin:.1em 0 .8em; }
+.staff-me b{ color:var(--ols-blue); }
+.staff-new{ display:flex; gap:10px; margin-bottom:6px; }
+.staff-new .field{ margin-bottom:0; flex:1; }
+.staff-toggle{ display:block; color:var(--muted); font-size:.86rem; margin:6px 0 10px; cursor:pointer; user-select:none; }
+.staff-classes{ list-style:none; margin:0 0 8px; padding:0; display:grid; gap:8px; max-height:46vh; overflow:auto; }
+.cls-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  background:var(--bg); border:1px solid #e3e8f0; border-radius:10px; padding:9px 12px; }
+.cls-info{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; min-width:0; }
+.cls-info b{ color:var(--ols-blue); font-size:.98rem; }
+.cls-meta{ color:var(--muted); font-size:.78rem; white-space:nowrap; }
+.cls-owner{ color:#8a94a6; font-size:.74rem; background:#eef2f9; border-radius:99px; padding:1px 8px; }
+.cls-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.btn-sm{ padding:5px 10px; font-size:.78rem; border-radius:7px; }
+.cls-del{ color:var(--fr-red); border-color:#f0c4c0; min-width:34px; }
+.cls-del.arm{ background:var(--fr-red); color:#fff; border-color:var(--fr-red); font-weight:800; }
+.cls-empty{ color:var(--muted); font-size:.9rem; background:var(--bg); border:1px dashed #c5ccd8; border-radius:10px; padding:14px; }
+.staff-dash-head{ display:flex; align-items:center; gap:12px; margin-bottom:4px; }
+.staff-h3{ font-family:Georgia,serif; color:var(--ols-blue); margin:0; font-size:1.15rem; }
+.qr-wrap{ display:grid; place-items:center; padding:10px 0 4px; }
+.qr-wrap canvas{ border:1px solid #e3e8f0; border-radius:10px; }
+.qr-link{ color:var(--muted); font-size:.74rem; word-break:break-all; text-align:center; margin:.4em 0 .8em; }
 
 /* ---------- project Doc preview (local review of the generated Doc) ---------- */
 .doc-preview-card{ max-width:680px; }
@@ -821,22 +847,57 @@ body.dragging-active, body.dragging-active *{
       </div>
     </div>
 
-    <!-- Staff key (passcode-gated dashboard) -->
+    <!-- Staff key (passcode-gated, multi-teacher class manager) -->
     <button id="staff-key" class="staff-key" type="button" aria-label="Teacher area">&#128273;</button>
     <div id="staff-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="staff-title">
-      <div class="modal-card">
+      <div class="modal-card staff-card">
         <button class="modal-close" id="staff-close" type="button" aria-label="Close">&times;</button>
         <h2 id="staff-title" class="modal-title">Teacher area</h2>
+
         <div id="staff-gate">
           <label class="field-label" for="staff-pass">Staff passcode</label>
           <input id="staff-pass" class="field" type="password" autocomplete="off" inputmode="text">
           <button id="staff-go" class="btn btn-blue" type="button">Open</button>
           <p id="staff-msg" class="staff-msg" role="alert"></p>
         </div>
-        <div id="staff-board" hidden>
-          <p class="staff-hint">Who has done what (this class). Names follow each pupil's school login.</p>
+
+        <!-- My classes (default) / all classes (toggle) -->
+        <div id="staff-classes" hidden>
+          <p class="staff-me">Signed in as <b id="staff-me"></b></p>
+          <div class="staff-new">
+            <input id="staff-newclass" class="field" type="text" maxlength="40" placeholder="New class name, e.g. 8A French" autocomplete="off">
+            <button id="staff-add" class="btn btn-blue" type="button">Add class</button>
+          </div>
+          <label class="staff-toggle"><input type="checkbox" id="staff-all"> Show all teachers&rsquo; classes</label>
+          <ul id="staff-class-list" class="staff-classes" aria-label="Your classes"></ul>
+          <p id="staff-cmsg" class="staff-msg" role="status"></p>
+        </div>
+
+        <!-- Per-class dashboard -->
+        <div id="staff-dash" hidden>
+          <div class="staff-dash-head">
+            <button id="dash-back" class="btn btn-ghost btn-sm" type="button">&#8592; Classes</button>
+            <h3 id="dash-title" class="staff-h3"></h3>
+          </div>
+          <p class="staff-hint">Who has done what. Names follow each pupil&rsquo;s school login.</p>
           <div class="table-wrap"><table class="dash" id="dash"></table></div>
-          <button id="staff-refresh" class="btn btn-ghost" type="button">Refresh</button>
+          <div class="sv-actions">
+            <button id="staff-refresh" class="btn btn-ghost" type="button">Refresh</button>
+            <button id="staff-csv" class="btn btn-ghost" type="button">Copy CSV</button>
+          </div>
+          <p id="staff-dmsg" class="staff-msg" role="status"></p>
+        </div>
+
+        <!-- In-page QR for a class link -->
+        <div id="staff-qr" hidden>
+          <div class="staff-dash-head">
+            <button id="qr-back" class="btn btn-ghost btn-sm" type="button">&#8592; Classes</button>
+            <h3 id="qr-title" class="staff-h3"></h3>
+          </div>
+          <div class="qr-wrap"><canvas id="qr-canvas"></canvas></div>
+          <p id="qr-link" class="qr-link"></p>
+          <button id="qr-copy" class="btn btn-blue" type="button">Copy link</button>
+          <p id="staff-qmsg" class="staff-msg" role="status"></p>
         </div>
       </div>
     </div>
@@ -900,7 +961,7 @@ window.OLS_TRANSPORT = {
         case 'load':    g.apiLoad({ classCode: p['class'] }); break;
         case 'save':    g.apiSave({ classCode: p['class'], name: p.name, stations: p.stations, data: p.data }); break;
         case 'makeDoc': g.apiMakeDoc({ classCode: p['class'], doc: p.doc }); break;
-        case 'admin':   g.apiAdmin({ passcode: p.passcode, sub: p.sub, classCode: p['class'] }); break;
+        case 'admin':   g.apiAdmin({ passcode: p.passcode, sub: p.sub, name: p.name, classCode: p.classCode || p['class'] }); break;
         default: reject(new Error('unknown action ' + p.action));
       }
     });
@@ -1769,9 +1830,39 @@ window.OLS_TRANSPORT = {
         // offline/preview: there is no Drive here - signal the client to render a
         // local preview of the composed doc (p.doc) instead of opening a real Doc.
         return Promise.resolve({ ok: true, preview: true });
-      case 'admin':
+      case 'admin': {
+        // preview staff panel: passcode "demo"; demo.teacher owns 8A, another
+        // teacher owns 8B (to demo the "show all" toggle + ownership rules)
         if (String(p.passcode || '').trim().toLowerCase() !== 'demo') {
           return Promise.resolve({ ok: false, error: 'bad-passcode' });
+        }
+        var ME = 'demo.teacher@c2ken.net';
+        var reg = s.staffClasses || [
+          { name: '8A-French', owner: ME },
+          { name: '8B-French', owner: 'other.teacher@c2ken.net' }
+        ];
+        s.staffClasses = reg; offlineSave(s);
+        if (p.sub === 'classes') {
+          return Promise.resolve({
+            ok: true, me: ME,
+            classes: reg.map(function (c) {
+              return { name: c.name, owner: c.owner || '', mine: c.owner === ME, pupils: c.name === '8A-French' ? 1 : 0 };
+            })
+          });
+        }
+        if (p.sub === 'addClass') {
+          var nm = String(p.name || '').trim().replace(/[^A-Za-z0-9_\- ]/g, '').replace(/\s+/g, '-').slice(0, 40);
+          if (!nm || nm === 'default') return Promise.resolve({ ok: false, error: 'bad-name' });
+          for (var i = 0; i < reg.length; i++) if (reg[i].name.toLowerCase() === nm.toLowerCase()) return Promise.resolve({ ok: false, error: 'exists', name: reg[i].name });
+          reg.push({ name: nm, owner: ME }); s.staffClasses = reg; offlineSave(s);
+          return Promise.resolve({ ok: true, name: nm, owner: ME });
+        }
+        if (p.sub === 'deleteClass') {
+          var found = null;
+          reg.forEach(function (c) { if (c.name === p.name) found = c; });
+          if (found && found.owner && found.owner !== ME) return Promise.resolve({ ok: false, error: 'not-owner', owner: found.owner });
+          s.staffClasses = reg.filter(function (c) { return c.name !== p.name; }); offlineSave(s);
+          return Promise.resolve({ ok: true, name: p.name, removed: 0 });
         }
         return Promise.resolve({
           ok: true,
@@ -1780,6 +1871,7 @@ window.OLS_TRANSPORT = {
             s3: !!(s.stations && s.stations[3]), s4: !!(s.stations && s.stations[4]), docUrl: s.docUrl || ''
           }]
         });
+      }
       default:
         return Promise.reject(new Error('unknown action ' + p.action));
     }
@@ -1848,7 +1940,7 @@ window.OLS_TRANSPORT = {
         '<li>Add one extra sentence to each section.</li>' +
         '<li>Check your spelling, and make sure every opinion has a <em>because</em>.</li>' +
       '</ul>' +
-      '<p><a href="' + url + '" target="_blank" rel="noopener">Open my project to edit it</a></p>' +
+      '<p><a href="' + escapeHtml(url) + '" target="_blank" rel="noopener">Open my project to edit it</a></p>' +
       '<p class="result-guide-hint">Then show off your <strong>digital skills</strong> \u2014 colour, bold, fonts and your map picture. The guide walks you through it:</p>' +
       '<button id="open-docs-guide" class="btn btn-blue" type="button">&#128214; Mon guide Google Docs</button>';
     show(box);
@@ -2098,7 +2190,7 @@ window.OLS_TRANSPORT = {
     var head = '<tr><th>Pupil</th><th>1 Carte</th><th>2 Cuisine</th><th>3 Juillet</th><th>4 C\u00e9l\u00e8bres</th><th>Project</th></tr>';
     var body = (rows || []).map(function (r) {
       function cell(v) { return v ? '<td class="yes">\u2713</td>' : '<td class="no">\u2013</td>'; }
-      var doc = r.docUrl ? '<td><a href="' + r.docUrl + '" target="_blank" rel="noopener">Open</a></td>' : '<td class="no">\u2013</td>';
+      var doc = r.docUrl ? '<td><a href="' + escapeHtml(r.docUrl) + '" target="_blank" rel="noopener">Open</a></td>' : '<td class="no">\u2013</td>';
       return '<tr><td>' + escapeHtml(r.name || '') + '</td>' + cell(r.s1) + cell(r.s2) + cell(r.s3) + cell(r.s4) + doc + '</tr>';
     }).join('');
     t.innerHTML = head + (body || '<tr><td colspan="6">No pupils yet.</td></tr>');
@@ -2108,29 +2200,201 @@ window.OLS_TRANSPORT = {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
     });
   }
-  function staffOpen() {
+  /* Multi-teacher class manager. One shared passcode unlocks the panel; the
+     SERVER identifies the teacher by their verified C2k email (Execute-as-user).
+     Each class is owned by the teacher who created it: you see your own classes
+     by default (a "show all" toggle covers HOD/cover), each class offers copy
+     link / in-page QR / dashboard (+ CSV) / delete (own classes only), and each
+     pupil's Doc auto-shares to her class's owning teacher. */
+  var staff = { pass: '', me: '', all: false, classes: [], current: '', rows: [] };
+  var dashSeq = 0;   // discards superseded/out-of-order dashboard responses
+
+  function staffView(id) {
+    ['staff-gate', 'staff-classes', 'staff-dash', 'staff-qr'].forEach(function (v) { hide($(v)); });
+    show($(id));
+  }
+  function classLink(name) {
+    var base = (BOOT.baseUrl && BOOT.baseUrl.indexOf('http') === 0) ? BOOT.baseUrl : (location.origin + location.pathname);
+    return base + '?class=' + encodeURIComponent(name);
+  }
+  function copyText(text, msgEl, doneMsg, failMsg) {
+    function done() { if (msgEl) msgEl.textContent = doneMsg || 'Copied.'; }
+    // navigator.clipboard can be permission-blocked inside the Apps Script
+    // sandboxed iframe - fall back to a hidden-textarea execCommand copy,
+    // and only then to showing the text (or a task-appropriate failMsg).
+    function legacy() {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      ta.remove();
+      if (ok) done();
+      else if (msgEl) msgEl.textContent = failMsg || ('Copy this by hand: ' + text);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, legacy);
+    else legacy();
+  }
+
+  function staffUnlock() {
+    if ($('staff-go').disabled) return;   // Enter on the field must respect the in-flight state
     var pass = ($('staff-pass').value || '').trim();
     var msg = $('staff-msg');
     msg.textContent = '';
     $('staff-go').disabled = true;
-    call('admin', { passcode: pass, sub: 'dashboard' })
+    call('admin', { passcode: pass, sub: 'classes' })
       .then(function (r) {
         if (r && r.ok) {
-          hide($('staff-gate'));
-          show($('staff-board'));
-          renderDash(r.rows);
+          staff.pass = pass; staff.me = r.me || ''; staff.classes = r.classes || [];
+          $('staff-me').textContent = staff.me || 'your school account';
+          staffView('staff-classes');
+          renderClasses();
         } else {
-          msg.textContent = 'That passcode was not recognised. Try again.';
+          msg.textContent = (r && r.error === 'bad-passcode')
+            ? 'That passcode was not recognised. Try again.'
+            : 'Could not open the teacher area. Please try again.';
         }
       })
       .catch(function () { msg.textContent = 'Something went wrong. Please try again.'; })
       .then(function () { $('staff-go').disabled = false; });
   }
-  function staffRefresh() {
-    var pass = ($('staff-pass').value || '').trim();
-    call('admin', { passcode: pass, sub: 'dashboard' })
-      .then(function (r) { if (r && r.ok) renderDash(r.rows); })
-      .catch(function () {});
+  function staffReloadClasses() {
+    return call('admin', { passcode: staff.pass, sub: 'classes' })
+      .then(function (r) {
+        if (r && r.ok) { staff.me = r.me || staff.me; staff.classes = r.classes || []; renderClasses(); }
+        else if (r && r.error === 'bad-passcode') {
+          staff.pass = '';
+          staffView('staff-gate');
+          $('staff-msg').textContent = 'The staff passcode has changed \u2014 enter the new one.';
+        }
+        else $('staff-cmsg').textContent = 'The class list may be out of date \u2014 close and reopen the teacher area.';
+      })
+      .catch(function () { $('staff-cmsg').textContent = 'The class list may be out of date \u2014 close and reopen the teacher area.'; });
+  }
+  function renderClasses() {
+    var ul = $('staff-class-list');
+    var list = staff.all ? staff.classes : staff.classes.filter(function (c) { return c.mine; });
+    ul.innerHTML = list.map(function (c) {
+      var who = c.mine ? '' : (c.owner ? '<span class="cls-owner">' + escapeHtml(c.owner) + '</span>' : '<span class="cls-owner">unowned</span>');
+      return '<li class="cls-row" data-cls="' + escapeHtml(c.name) + '">' +
+        '<div class="cls-info"><b>' + escapeHtml(c.name) + '</b>' +
+          '<span class="cls-meta">' + c.pupils + (c.pupils === 1 ? ' pupil' : ' pupils') + '</span>' + who + '</div>' +
+        '<div class="cls-actions">' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-act="dash">Dashboard</button>' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-act="link">Copy link</button>' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-act="qr">QR</button>' +
+          ((c.mine || !c.owner) ? '<button type="button" class="btn btn-ghost btn-sm cls-del" data-act="del" aria-label="Delete ' + escapeHtml(c.name) + '">&times;</button>' : '') +
+        '</div></li>';
+    }).join('') || '<li class="cls-empty">No classes of your own yet \u2014 type a class name above and tap <b>Add class</b>, then share its link (or QR) with that class. (Tick &ldquo;Show all teachers&rsquo; classes&rdquo; to see everyone else&rsquo;s.)</li>';
+  }
+  function addClass() {
+    if ($('staff-add').disabled) return;   // double-tap / double-Enter guard
+    var input = $('staff-newclass'), name = (input.value || '').trim(), msg = $('staff-cmsg');
+    if (!name) { input.focus(); return; }
+    msg.textContent = 'Adding\u2026';
+    $('staff-add').disabled = true;
+    call('admin', { passcode: staff.pass, sub: 'addClass', name: name })
+      .then(function (r) {
+        if (r && r.ok) {
+          input.value = '';
+          msg.textContent = 'Added ' + r.name + '. Copy its link (or show the QR) to share with that class.';
+          // optimistic local update so the row appears even if the reload fails
+          staff.classes.push({ name: r.name, owner: r.owner || staff.me, mine: true, pupils: 0 });
+          renderClasses();
+          staffReloadClasses();
+        }
+        else if (r && r.error === 'exists') msg.textContent = 'A class called ' + (r.name || name) + ' already exists.';
+        else if (r && r.error === 'busy') msg.textContent = 'The board is busy right now \u2014 try again in a moment.';
+        else if (r && r.error === 'not-signed-in') msg.textContent = 'Your sign-in has expired \u2014 refresh the page and try again.';
+        else msg.textContent = 'Could not add that class \u2014 try a simpler name (letters and numbers).';
+      })
+      .catch(function () { msg.textContent = 'Could not add the class. Please try again.'; })
+      .then(function () { $('staff-add').disabled = false; });
+  }
+  function onClassListClick(e) {
+    var btn = e.target.closest ? e.target.closest('button[data-act]') : null;
+    if (!btn) return;
+    var row = btn.closest('.cls-row'), name = row && row.getAttribute('data-cls');
+    if (!name) return;
+    var act = btn.getAttribute('data-act'), msg = $('staff-cmsg');
+    if (act === 'dash') { openDash(name); return; }
+    if (act === 'link') { copyText(classLink(name), msg, 'Link for ' + name + ' copied \u2014 paste it into Google Classroom.'); return; }
+    if (act === 'qr') { openQr(name); return; }
+    if (act === 'del') {
+      // two-tap confirm (native confirm() is unreliable in the sandboxed iframe)
+      if (!btn.classList.contains('arm')) {
+        btn.classList.add('arm'); btn.textContent = 'Sure?';
+        msg.textContent = 'Tap again to delete ' + name + ' \u2014 this removes its dashboard records (pupils\u2019 own Docs are untouched).';
+        setTimeout(function () {
+          btn.classList.remove('arm'); btn.innerHTML = '&times;';
+          if (msg.textContent.indexOf('Tap again') === 0) msg.textContent = '';   // clear the stale prompt on disarm
+        }, 4000);
+        return;
+      }
+      btn.disabled = true;
+      msg.textContent = 'Deleting ' + name + '\u2026';
+      call('admin', { passcode: staff.pass, sub: 'deleteClass', name: name })
+        .then(function (r) {
+          if (r && r.ok) {
+            msg.textContent = 'Deleted ' + name + '.';
+            // optimistic local update so the row disappears even if the reload fails
+            staff.classes = staff.classes.filter(function (c) { return c.name !== name; });
+            renderClasses();
+            staffReloadClasses();
+          }
+          else if (r && r.error === 'not-owner') { btn.disabled = false; msg.textContent = 'Only ' + (r.owner || 'its owner') + ' can delete ' + name + '.'; }
+          else { btn.disabled = false; msg.textContent = 'Could not delete ' + name + '.'; }
+        })
+        .catch(function () { btn.disabled = false; msg.textContent = 'Could not delete ' + name + '. Please try again.'; });
+    }
+  }
+  function openDash(name) {
+    staff.current = name;
+    staff.rows = [];                       // never show (or CSV-export) another class's rows
+    $('dash').innerHTML = '';
+    $('dash-title').textContent = name;
+    staffView('staff-dash');
+    $('staff-dmsg').textContent = 'Loading\u2026';
+    var token = ++dashSeq;                 // a superseded slow response must not repopulate
+    call('admin', { passcode: staff.pass, sub: 'dashboard', classCode: name })
+      .then(function (r) {
+        if (token !== dashSeq) return;
+        if (r && r.ok) { staff.rows = r.rows || []; renderDash(staff.rows); $('staff-dmsg').textContent = ''; }
+        else $('staff-dmsg').textContent = 'Could not load the class. Please try again.';
+      })
+      .catch(function () { if (token === dashSeq) $('staff-dmsg').textContent = 'Could not load the class. Please try again.'; });
+  }
+  function dashCsv() {
+    function q(s) { return '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"'; }
+    function yn(v) { return v ? 'done' : '-'; }
+    var head = 'Pupil,La Carte,La Cuisine,Le 14 Juillet,Personnes Celebres,Project link';
+    var lines = staff.rows.map(function (r) {
+      return [q(r.name), yn(r.s1), yn(r.s2), yn(r.s3), yn(r.s4), q(r.docUrl || '')].join(',');
+    });
+    copyText([head].concat(lines).join('\n'), $('staff-dmsg'), 'CSV copied \u2014 paste it into Excel or Sheets.',
+      'Could not copy here \u2014 try again, or read the table on screen.');   // never dump multi-line CSV into the message line
+  }
+  function openQr(name) {
+    var link = classLink(name);
+    $('qr-title').textContent = name;
+    $('qr-link').textContent = link;
+    $('staff-qmsg').textContent = '';
+    staffView('staff-qr');
+    var canvas = $('qr-canvas');
+    if (window.QRCode && window.QRCode.toCanvas) {
+      window.QRCode.toCanvas(canvas, link, { width: 260, margin: 2, errorCorrectionLevel: 'M', color: { dark: '#122a4f', light: '#ffffff' } }, function (err) {
+        if (err) $('staff-qmsg').textContent = 'Could not draw the QR code \u2014 use Copy link instead.';
+      });
+    } else {
+      $('staff-qmsg').textContent = 'QR unavailable here \u2014 use Copy link instead.';
+    }
+    $('qr-copy').onclick = function () { copyText(link, $('staff-qmsg'), 'Link for ' + name + ' copied.'); };
+  }
+  function staffOpenModal() {
+    show($('staff-modal'));
+    if (staff.pass) { staffView('staff-classes'); staffReloadClasses(); }
+    else { staffView('staff-gate'); var p = $('staff-pass'); if (p) p.focus(); }
   }
 
   /* ============================================================
@@ -2181,10 +2445,18 @@ window.OLS_TRANSPORT = {
     $('guide-prev').addEventListener('click', function () { gotoGuide(gd.idx - 1); });
     $('guide-next').addEventListener('click', function () { gotoGuide(gd.idx + 1); });
     $('guide-vp').addEventListener('pointerdown', guideDown);
-    $('staff-key').addEventListener('click', function () { show($('staff-modal')); var p = $('staff-pass'); if (p) p.focus(); });
+    $('staff-key').addEventListener('click', staffOpenModal);
     $('staff-close').addEventListener('click', function () { hide($('staff-modal')); });
-    $('staff-go').addEventListener('click', staffOpen);
-    $('staff-refresh').addEventListener('click', staffRefresh);
+    $('staff-go').addEventListener('click', staffUnlock);
+    $('staff-pass').addEventListener('keydown', function (e) { if (e.key === 'Enter') staffUnlock(); });
+    $('staff-add').addEventListener('click', addClass);
+    $('staff-newclass').addEventListener('keydown', function (e) { if (e.key === 'Enter') addClass(); });
+    $('staff-all').addEventListener('change', function () { staff.all = $('staff-all').checked; renderClasses(); });
+    $('staff-class-list').addEventListener('click', onClassListClick);
+    $('dash-back').addEventListener('click', function () { staffView('staff-classes'); staffReloadClasses(); });
+    $('qr-back').addEventListener('click', function () { staffView('staff-classes'); });
+    $('staff-refresh').addEventListener('click', function () { if (staff.current) openDash(staff.current); });
+    $('staff-csv').addEventListener('click', dashCsv);
     document.addEventListener('keydown', function (e) {
       if ($('carte-carousel') && !$('carte-carousel').hidden) {
         if (e.key === 'ArrowLeft') { gotoCard(s1.idx - 1); return; }

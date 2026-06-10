@@ -95,7 +95,7 @@ window.OLS_TRANSPORT = {
         case 'load':    g.apiLoad({ classCode: p['class'] }); break;
         case 'save':    g.apiSave({ classCode: p['class'], name: p.name, stations: p.stations, data: p.data }); break;
         case 'makeDoc': g.apiMakeDoc({ classCode: p['class'], doc: p.doc }); break;
-        case 'admin':   g.apiAdmin({ passcode: p.passcode, sub: p.sub, classCode: p['class'] }); break;
+        case 'admin':   g.apiAdmin({ passcode: p.passcode, sub: p.sub, name: p.name, classCode: p.classCode || p['class'] }); break;
         default: reject(new Error('unknown action ' + p.action));
       }
     });
