@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Costa Rica: A Sustainable Tourism Success Story?</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity">
+
+<header class="act-header">
+  <div class="act-header-inner">
+    <div class="act-title-block">
+      <h1>Costa Rica: A Sustainable Tourism Success Story?</h1>
+      <p class="act-sub">Monteverde Cloud Forest Reserve · an ecotourism audit</p>
+    </div>
+    <div class="act-badges">
+      <span class="badge badge-exam">CCEA GCE Geography</span>
+      <span class="badge badge-unit">A2 Unit 2 · Tourism</span>
+    </div>
+  </div>
+</header>
+
+<main id="stage">
+
+  <!-- ============ SCREEN: BRIEFING ============ -->
+  <section id="screen-briefing" class="screen forest-bg">
+    <div class="mist mist-1" aria-hidden="true"></div>
+    <div class="mist mist-2" aria-hidden="true"></div>
+    <div class="fireflies" aria-hidden="true"></div>
+    <div class="briefing-card">
+      <div class="briefing-stamp" aria-hidden="true">CONFIDENTIAL</div>
+      <p class="briefing-kicker">MISSION BRIEFING · TROPICAL SCIENCE CENTER</p>
+      <h2>You are the Sustainability Auditor</h2>
+      <p id="briefing-mission" class="briefing-mission"></p>
+      <div id="briefing-dossier" class="dossier"></div>
+      <button id="btn-begin" class="primary-btn big-btn">Fly to Costa Rica ✈</button>
+      <button id="btn-resume" class="ghost-btn" hidden>Resume my audit →</button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN: FLIGHT (country map) ============ -->
+  <section id="screen-flight" class="screen sky-bg" hidden>
+    <div class="flight-caption" id="flight-caption">Crossing the Caribbean…</div>
+    <div id="country-map" class="country-map" role="img"
+         aria-label="Map of Costa Rica showing the flight to San José and the road to Monteverde"></div>
+    <button id="btn-skip-flight" class="ghost-btn skip-btn">Skip ⏭</button>
+  </section>
+
+  <!-- ============ SCREEN: TRAIL MAP (hub) ============ -->
+  <section id="screen-map" class="screen forest-bg" hidden>
+    <div class="mist mist-1" aria-hidden="true"></div>
+    <div class="hub-head">
+      <h2>The Audit Trail</h2>
+      <p>Complete each station along the trail to gather your evidence.</p>
+    </div>
+    <div id="trail-map" class="trail-map"></div>
+    <div class="hub-foot">
+      <button id="btn-restart" class="ghost-btn tiny-btn">↺ Restart expedition</button>
+    </div>
+  </section>
+
+  <!-- ============ STATION TEMPLATE WRAP ============ -->
+  <section id="screen-station" class="screen station-screen" hidden>
+    <div class="station-head">
+      <button id="btn-back-map" class="ghost-btn tiny-btn">🗺 Trail map</button>
+      <div class="station-title-block">
+        <p class="station-kicker" id="station-kicker"></p>
+        <h2 id="station-title"></h2>
+      </div>
+      <div class="station-score" id="station-score" aria-live="polite"></div>
+    </div>
+    <p class="station-intro" id="station-intro"></p>
+    <div id="station-body" class="station-body"></div>
+    <div class="station-foot">
+      <button id="btn-check" class="primary-btn" hidden disabled>Check my answers</button>
+      <button id="btn-station-next" class="primary-btn" hidden>Continue →</button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN: RESULTS ============ -->
+  <section id="screen-results" class="screen forest-bg" hidden>
+    <div class="mist mist-2" aria-hidden="true"></div>
+    <div class="results-card">
+      <div class="audit-stamp" id="audit-stamp" aria-hidden="true">AUDIT<br>COMPLETE</div>
+      <p class="briefing-kicker">FINAL REPORT · MONTEVERDE CLOUD FOREST RESERVE</p>
+      <h2 id="results-rank"></h2>
+      <p id="results-scoreline" class="results-scoreline"></p>
+      <div id="results-breakdown" class="results-breakdown"></div>
+      <div class="results-papers">
+        <h3>Your next missions — this case study at the real exam</h3>
+        <div id="results-papers-list"></div>
+      </div>
+      <div class="results-actions">
+        <button id="btn-open-notebook-end" class="primary-btn">📒 Review my field notebook</button>
+        <button id="btn-play-again" class="ghost-btn">↺ Start a fresh audit</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FIELD NOTEBOOK (drawer) ============ -->
+<button id="notebook-fab" class="notebook-fab" aria-label="Open field notebook" hidden>
+  📒<span id="notebook-count" class="notebook-count" aria-hidden="true">0</span>
+</button>
+<div id="notebook-drawer" class="notebook-drawer" hidden>
+  <div class="notebook-inner">
+    <div class="notebook-head">
+      <h3>📒 Field Notebook</h3>
+      <button id="btn-close-notebook" class="ghost-btn tiny-btn" aria-label="Close notebook">✕</button>
+    </div>
+    <p class="notebook-sub">Everything you learn on the trail is recorded here — your revision summary.</p>
+    <div id="notebook-body" class="notebook-body"></div>
+  </div>
+</div>
+<div id="notebook-scrim" class="notebook-scrim" hidden></div>
+
+<!-- ============ STATION COMPLETE OVERLAY ============ -->
+<div id="station-done" class="station-done" hidden>
+  <div class="station-done-card">
+    <div class="station-done-icon" id="station-done-icon">✔</div>
+    <h3 id="station-done-title">Station complete</h3>
+    <p id="station-done-text"></p>
+    <button id="btn-done-continue" class="primary-btn">Back to the trail →</button>
+  </div>
+</div>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
