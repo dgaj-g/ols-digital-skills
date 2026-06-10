@@ -7,7 +7,8 @@
 > `project_labelle_france.md` (in the user's Claude memory) mirrors the key points.
 >
 > **Branch:** `draft/issue-18-french-mon-carnet-de-france` · **PR:** dgaj-g/ols-digital-skills#17 (draft)
-> **Inbox issue:** dgaj-g/ols-digital-skills-inbox#18 · **Status (2026-06-10 PM): BUILD COMPLETE & DEPLOY-VERIFIED except the 12 Google Sites screenshots + one final redeploy — if you are the finishing session, skip straight to §12.**
+> **Inbox issue:** dgaj-g/ols-digital-skills-inbox#18 · **Status (2026-06-10 evening): BUILD 100% COMPLETE.** All 12 Sites shots captured on the pupil account + verified in the carousel (local preview AND the live deployment); guide assets (docs + sites) published to MAIN and serving from github.io; share/folder retry added; final bundled redeploy DONE (new version) and verified live. Throwaway capture Site unpublished + binned. **ONLY REMAINING: `/publish` (Path-B variant, §8) in a separate session.**
+> **KEEP ALL SCREENSHOTS** — the raw captures in `~/Desktop/Claude Work/_mcdf_capture/` and the repo JPEGs: Damien will later ask for a **comprehensive user guide for the French teachers** built from them (his instruction, 10 Jun). Do not clean any of them up.
 
 ---
 
@@ -200,7 +201,18 @@ Model note: the capture session is mechanical — Opus 4.8 is the right tier for
 ### 12.3 The 12 Sites shots (`assets/guide/sites/`; framing list in §"THE CAPTURE SESSION" above)
 `new, name, editor, banner, textbox, copy, paste, imageup, themes, preview, publish, done` (.jpg). Build a THROWAWAY site on the pupil account: Drive → New → More → Google Sites; name it "La Belle France"; stage each step on it (copy/paste step uses the real Doc — tab URL contains `15572fdwle`). **Pre-authorised by Damien:** creating/naming/editing the test site; capturing the Publish dialog; publishing the throwaway site restricted to the school domain for `done.jpg`; afterwards unpublish (if published) and move the site to the bin.
 
-### 12.4 Finish checklist (in order)
+### 12.5 Capture-session learnings (10 Jun PM — corrections to §12.2, for the teacher-guide session)
+- **Banner timing is ~1.5–2.5 min, not 10–15 s.** Deterministic recipe instead: make a trivial CDP call (e.g. the glow-hide JS below) to ARM the banner, capture within ~60 s, crop topRaw=300 (2x). For banner-free shots (URL bar in frame), go CDP-silent ~150 s then crop 168 (or 80 to keep the URL bar).
+- **front.sh now fronts the LAST matching tab** — the old session's tabs (same Doc/app URLs) sit earlier in window 1 and shadowed the MCP tab; first-match captured a STALE tab (wrong scroll, green selection). MCP tabs are appended last.
+- **Always `activate` Chrome immediately before `screencapture`** — the Claude desktop app window can come to the front between actions and photobomb the shot (cause of the previous session's botched new.jpg).
+- **"Claude is active in this tab group" pill** (browser-level UI, bottom-centre of the viewport, not in page DOM, can't be clicked/removed via CDP): excluded by making the window narrow enough that the 16:9 crop ends above it — width 1330 logical with crop 300 leaves the bottom ~80 px out of frame.
+- **Orange glow border + phantom cursor** ARE page DOM (`#claude-agent-glow-border`, `#claude-agent-glow-border-inner`, `#claude-phantom-cursor`): hide with `el.style.setProperty('display','none','important')`; survives later clicks on the same page, but RE-APPEARS after navigation (re-injected per page). Phantom cursor is usually worth KEEPING (it shows pupils where to click).
+- **Display can renegotiate 4K→1080p mid-session** (raw captures drop from 2x to 1x): `process.js`/`detect.js` are now scale-aware (args stay in 2x units; scale inferred from raw width).
+- **Docs editor selections turn green** if focus shifts (the glow-hide JS in the top frame steals it) — stage the selection clicks LAST, after the JS, then capture.
+- The Sites-guide caption for step 2 was corrected to "click where it says Enter site name" (a blank site shows that field, not "Untitled site").
+- Capture helpers live in `~/Desktop/Claude Work/_mcdf_capture/`: `front.sh <url-substr> [delay]`, `detect.js <raw>` (banner check, lavender row), `process.js <raw> <out.jpg> [topRaw] [focusX] [focusY]`.
+
+### 12.4 Finish checklist (in order) — ✅ ALL DONE 10 Jun PM (steps 1-6; only §8 /publish remains)
 1. Capture + process the 12 shots → `assets/guide/sites/` → verify each renders in the carousel on the local preview (`digital-skills` server, port 8098; seed `mcdf-shell-default` in localStorage with stations 1-4 true + minimal data, click Create, open "Mon guide Google Sites") → commit to THIS branch.
 2. **Publish `french/mon-carnet-de-france/assets/guide/` to MAIN** (the deployed app loads images from github.io, which serves main — same pattern as a0e3ee2: checkout main, pull, `git checkout draft/issue-18-french-mon-carnet-de-france -- french/mon-carnet-de-france/assets/guide`, commit, push, switch back). Poll a guide URL on github.io until HTTP 200. Without this the deployed app shows placeholders forever (the docs/ shots are ALSO only on the draft branch right now).
 3. Add a small retry (1 retry, ~600 ms `Utilities.sleep`) around BOTH best-effort blocks in `apiMakeDoc` (addViewer + Drive foldering) in `server/Code.gs.template` — one run on 10 Jun failed both transiently. Keep the audit strings. `node server/build-pathb.js`; commit + push.
