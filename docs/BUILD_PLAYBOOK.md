@@ -36,6 +36,21 @@ inbox issue → orient → parse → download → read everything → restate th
 
 ---
 
+## Work token-lean — Damien hits real usage limits
+
+Quality rules above are untouchable; the savings come from *how* you work, not what you ship. Damien's plan has hard usage caps and a long build session can burn a day's allowance, so every build session follows these rules:
+
+1. **Screenshots are the budget-killer — image-verify only when pixels matter.** Every screenshot/image read costs roughly 50–100× a text check. Verify layout/theming visually ONCE per view at the end, not after every tweak; in between, verify with text tools (console errors, DOM reads, `curl`, `grep`). Capture sessions are the exception — there the screenshot IS the deliverable, but even then verify each shot once, never re-screenshot "to be sure".
+2. **Read big files once, surgically.** Open the handover/playbook/source fully ONCE, then work from memory of it — re-read only the specific line ranges you're editing. Never re-open a whole large file to check one function.
+3. **Offload bulk reading to subagents.** When a step needs sweeping many files (orienting in a new repo, auditing content), spawn an Explore/general-purpose subagent and keep only its summary — a long main conversation re-pays its whole context every single turn, so keeping it lean compounds.
+4. **One plan, one pass.** Agree the design in a short exchange (or follow the issue + this playbook), then build straight through autonomously. Iterating a build through many review rounds costs far more than getting the spec right first — which is why the instructions in this playbook stay verbose and crystal-clear: precision here is what makes the build session cheap.
+5. **Batch the browser.** When driving Chrome, combine actions (navigate + click + type) before looking, and look with `read_page`/`find` (text) rather than screenshots wherever possible.
+6. **Don't re-derive what's written down.** The HANDOVER/memory/playbook pattern exists so a fresh session ramps in one read. Trust it; don't re-verify proven facts (deploy model, C2k probes, signed-off content) unless something contradicts them.
+7. **Split phases into fresh sessions.** Design, build, capture, publish — each as its own session with a handover note beats one mega-session whose context grows (and bills) every turn. Damien: starting a fresh session after a big phase is cheaper than continuing a long one, even though it feels wasteful.
+8. **Match the model to the phase** (Damien picks per session): top-tier (Fable/Opus) for design judgment and tricky debugging; a mid-tier model is fine for mechanical follow-the-handover work (capture sessions, asset processing, registry updates) and burns the allowance far slower.
+
+---
+
 ## Step 0 — Orient yourself
 
 A fresh session has no context. Before touching the request, sync the repo so this playbook itself is up to date — Damien works across two Macs and the playbook evolves between builds — and then read the orient files:
@@ -240,6 +255,9 @@ A base image (labelled diagram, map, scene). Clickable hotspots positioned over 
 The reference build is an **editable / buildable** variant: instead of a fixed base image it lays out clickable nodes (three branch cards in a checks-and-balances triangle on wide screens, collapsing to a stacked list + chip grid on phones). Each node opens a side drawer where pupils write their own notes and add real-life examples, colour-coded from a small palette and auto-saved. A **"Model answer" toggle** reveals the worked example as a **read-only reference beneath each box** — it never overwrites a pupil's work (an earlier version *filled* the boxes; don't do that — it's a footgun). A separate "Test yourself" mode is the genuine-consequence quiz. Reach for this pattern when a brief wants pupils to *construct* a labelled diagram over time, not just read a fixed one.
 
 When the brief wants pupils to **save their own work, sign in, or collaborate**, this same activity becomes a live class board — see **"Login-gated collaborative activities"** near the end of this playbook (the reference build does exactly this). A collaborative Google Slides deck is the no-code alternative when you just need shared real-time editing without a custom app.
+
+### Guided project builder — reference: `french/mon-carnet-de-france/`
+A teacher's **existing departmental project brief** (the homework project they already set every year) turned into a sequence of interactive **stations** (one per section of the brief, each its own game pattern from this list), finished by a button that **generates the pupil's actual project document in her own Google Drive** — formatted first draft, auto-shared with her teacher, filed into a portfolio folder, with screenshot guide decks teaching the polish/submission steps. Login-gated (Path B), so progress follows the pupil across devices. Reach for this when the request is "our pupils already do project X — can we make it digital?" Full pattern: see "**Workspace project builders**" near the end of this playbook.
 
 ### You decide
 Pick the pattern that best serves the topic and the described pupil experience. Justify the choice in the PR description.
@@ -605,10 +623,11 @@ Plus a `PushNotification`: `Published: <Topic>. Live + handoff ready in Claude W
 
 ## Login-gated collaborative activities (the "class board" capability)
 
-Some requests want pupils to **sign in, save their own work, be scored/tracked, and have the teacher manage classes and see results** — not just interact with a fixed activity. There are now **two reference builds** for this; start from whichever is closer and reuse its code rather than building from scratch:
+Some requests want pupils to **sign in, save their own work, be scored/tracked, and have the teacher manage classes and see results** — not just interact with a fixed activity. There are now **three reference builds** for this; start from whichever is closer and reuse its code rather than building from scratch:
 
 - **Collaborative class board** — **Government & Politics — The US Constitution Diagram** (`government-politics/constitution-diagram/` on github.io + a server package in Claude Work). Pupils build up shared notes over a course. The first login-gated build.
 - **Login-gated assessment / competition with a full teacher admin** — **Girls Coding with Confidence — Computational Thinking Challenge** (a one-off, in Claude Work at `0. Digital Skills Web Activities/GG/`, `challenge/` + `server/`). This is the richer reference: **named class boards (create / select / delete), per-class link + in-page QR, a passcode-gated teacher dashboard with per-pupil results, per-class comparison, filters, question-performance analytics, CSV export, and clear-per-class**, plus server-authoritative scoring/timer/ranking and one-attempt-per-pupil. **When a brief needs a teacher admin section, class management, shareable links/QRs, or stats, copy from GG** — the server (`GG/server/Code.gs.template`), the assembler (`GG/server/build-pathb.js`), and the front-end transport/dashboard (`GG/challenge/script.js`) are the starting point.
+- **Workspace project builder (generates the pupil's project in HER OWN Drive)** — **French — Mon Carnet de France** (`french/mon-carnet-de-france/`, everything in the repo including `server/`). Guided stations + a one-button **Google Doc generator**, multi-teacher class ownership, Sheet-free storage, in-app screenshot guide decks. **When a brief is "turn our existing departmental project into a guided digital experience", copy from Mon Carnet** — see the dedicated section "**Workspace project builders**" right after this one.
 
 Read this whole section before attempting another login-gated build.
 
@@ -672,6 +691,92 @@ Only build the full thing once the probes pass. (The OAuth/Google-Identity-Servi
 ### Effort and honesty
 
 A login-gated board is a **large** add-on (server + assembled page + staff panel + the deploy/handover loop), and the live sign-in flow can only be verified against the teacher's deployed endpoint — so the rhythm is **build → they deploy → verify together**, across several exchanges. Say so up front, and never imply background work between turns.
+
+---
+
+## Workspace project builders — the app writes the pupil's project INTO her own Drive (the "Mon Carnet" capability)
+
+Some requests aren't a self-contained game at all — they're an **existing departmental project** (a brief the teacher already sets every year, often as a Word doc) that we turn into a guided, login-gated experience which **generates each pupil's actual project document in her own Google Drive**, ready to polish and submit through the school's normal route (Google Classroom / a Google Site). The pupil plays through one interactive **station per section of the brief**, types her own words at each one, and a single button collates everything into a formatted Google Doc **first draft** — hers, in her Drive, auto-shared with her teacher, filed into a portfolio folder.
+
+**Reference build: French — "Mon Carnet de France"** (J1 "La Belle France" culture project). Everything is in this repo at `french/mon-carnet-de-france/`: the activity (`index.html` / `style.css` / `script.js`), the verified content + image provenance (`content-pack.json`), the server (`server/Code.gs.template`), the assembler (`server/build-pathb.js` → generated `server/Code.gs` + `server/Index.html`), and the complete build history with every decision and why (`HANDOVER.md`). Read the login-gated section above first — this pattern is **Path B plus the deltas below**. Reuse the Mon Carnet code; do not rebuild from scratch.
+
+### Pitching it to a requesting department (the intake checklist)
+
+This pattern sells itself to any department with a traditional homework project. What to collect from the teacher before building:
+
+1. **The project brief itself** — the actual document they hand out. Its fixed sections become the stations 1:1 (don't invent a different structure; the teacher's marking habits are built around theirs).
+2. **Year group + class structure** — which classes, and **which teacher runs which class** (the multi-teacher model below auto-shares each pupil's Doc to *her* class's owning teacher).
+3. **The submission route** — what pupils hand in (a Doc? a Google Site built from the Doc? Classroom assignment?). This decides which guide decks to build (see below).
+4. **Content to verify** — every fact, image, and example we'll bake into the stations gets fact-checked and licence-checked into a `content-pack.json`, then **signed off by Damien before building** (cities/dishes/people in the French build all went through this, including an ETI-risk roster swap).
+5. **The hand-holding level** — these briefs usually involve non-technical teachers and young pupils; default to *total* hand-holding (screenshot guide decks, no jargon, no video — YouTube is blocked on C2k).
+
+### The architecture delta vs classic Path B (this is the important bit)
+
+- **Deploy as "Execute as: USER ACCESSING the web app"** — NOT "Execute as: Me" like the class boards. This is what makes `DocumentApp.create()` land the Doc in the **pupil's** Drive, owned by her. Identity still comes from `Session.getActiveUser().getEmail()` (returns the pupil's verified email under within-domain deploy — proven on real C2k pupil accounts).
+- **No Google Sheet at all.** Under execute-as-user a shared Sheet would need sharing to every pupil. Instead:
+
+  ```js
+  function draftKey_(cls) { return 'draft:' + cls; }                    // UserProperties (per pupil, private)
+  function pupilKey_(cls, email) { return 'p:' + cls + ':' + email; }   // ScriptProperties (shared)
+  ```
+
+  **Per-pupil drafts** (name, station progress, all typed content) live in `PropertiesService.getUserProperties()` — private to the pupil, follows her to any device. **Completion metadata for the teacher dashboard** lives in `PropertiesService.getScriptProperties()` — the one store a pupil-context call can write and a teacher-context call can read. Each pupil writes only her own key, so there's no write contention; registry mutations take `LockService`. This single insight is what makes execute-as-user viable with a dashboard.
+- **The class registry also lives in ScriptProperties** (`classes` = JSON array of `{name, owner, created}`). `classOwner_(cls)` resolves which teacher gets shared on a pupil's Doc; global `teacherEmail` Script Property is the fallback.
+- **Consent click-through:** pupils see Google's "unverified app → Advanced → continue" interstitial once. Harmless, but **ask a C2k admin to mark the app's OAuth client trusted before a whole-class rollout** to remove it.
+- Everything else from classic Path B still applies: `doGet` injects `OLS_BOOT` (classCode, baseUrl) because the sandboxed iframe can't read its own URL; the `OLS_TRANSPORT` shim keeps one front-end codebase across Apps Script / github.io / offline; ASCII-only deploy files via the assembler; per-class links `…/exec?class=NAME`.
+
+### The Doc generator
+
+- **The CLIENT composes the Doc payload** (`composeDoc()` in `script.js`): a JSON spec — `{title, subtitle, checklist, skills, sections:[{heading, paras, bullets, placeholder}]}` — built from the pupil's saved station data. The server's `renderDocBody_()` just renders the spec generically. Two wins: the name maps and prose live in one place (the client), and **accents travel as real Unicode over `google.script.run`** so the ASCII-only server file never needs them.
+- **Deletable guidance boxes** render as shaded 1-cell tables (right-click → Delete table): a gold "Make it brilliant" polish checklist (mirrors the marking criteria) and a blue "Show off your digital skills" formatting-tasks box. The renderer carries a hard-won lesson:
+
+  ```js
+  /* Paragraph.setText() returns void and ListItem has no setBold() - chaining
+     either throws mid-render and aborts the whole Doc. Bold via editAsText(). */
+  var title = cell.getChild(0).asParagraph();
+  title.setText(String(box.title || ''));
+  title.editAsText().setBold(true);
+  ```
+
+  (The chained version crashed the first live Doc *mid-render*, which also killed the share + foldering that came after it. Render first, then share/file.)
+- **Auto-share + portfolio foldering, both best-effort with one retry.** A Doc that exists but didn't share is still a success — never let these block creation. Drive hiccups transiently (seen live: both steps failed once, identical rerun passed), so each is wrapped in a 2-attempt loop with `Utilities.sleep(600)` between. `ensureFolderPath_(['OLS Digital Skills', subject, yearGroup])` get-or-creates the nested path in the pupil's own Drive — reusable across every OLS app that generates files, so pupils build a portfolio over the years (`subject`/`yearGroup` are Script Properties).
+- **Audit the invisible.** The share/file outcomes are invisible to the pupil, so `apiMakeDoc` logs them (`console.log` → Executions log) *and* persists them in the pupil's meta record (`shared: 'shared:teacher@…' | 'share-failed: …'`, `filed: 'J1' | 'file-failed: …'`). When a teacher says "I can't see X's Doc", the answer is one Script Properties lookup away.
+- **Regeneration is non-destructive** — pressing Create again makes a NEW Doc, never touches the edited one.
+- **UX during the build:** Doc creation takes 10–20 s — show a spinner + reassuring line ("Un instant…"). On failure show an **inline** message and re-enable the button; never `alert()` (a native popup exposing a raw `googleusercontent` URL terrifies an 11-year-old).
+
+### The multi-teacher staff panel
+
+Several teachers each run their own classes behind ONE shared passcode (validated server-side, trim/lowercase-forgiving):
+
+- Each class is **owned by the teacher who created it** (verified email captured at creation). The panel shows **your own classes by default** with a "Show all teachers' classes" toggle (HOD view / cover). Delete is **owner-only** (unowned legacy classes deletable by any passcode holder) and **two-tap confirm** — native `confirm()` is unreliable inside the sandboxed iframe, so never use it.
+- Per class: **Dashboard** (per-pupil stations + Doc links — the Doc opens for the teacher because it auto-shared at creation), **Copy CSV**, **Copy link**, **in-page QR** (vendored `qrcode.min.js`, never an external QR service).
+- `realClass_()` canonicalises class codes **case-insensitively against the registry** so a hand-typed lowercase link can't silently split one class into two stores.
+- Client robustness patterns worth copying (all in `script.js`, found by adversarial review): a sequence token on dashboard loads (stale async responses otherwise paint class A's pupils under class B's title), in-flight guards on Add/Unlock (double-Enter races), clipboard writes that fall back `navigator.clipboard` → hidden-textarea `execCommand` → show-the-text (the first is permission-blocked inside the iframe), and optimistic add/delete with surfaced reload failures.
+
+### The guide decks (reusable screenshot walkthroughs)
+
+`makeGuide(cfg)` in `script.js` is a **reusable card-deck engine** — swipe/chevrons/dots/Esc, one screenshot + title + plain-words step + a "✅ Your turn:" task per card. Instance it per guide with its own data array and assets folder:
+
+```js
+var docsGuide  = makeGuide({ dir: 'docs',  data: GUIDE_DOCS,  modal: 'docs-guide',  ... });
+var sitesGuide = makeGuide({ dir: 'sites', data: GUIDE_SITES, modal: 'sites-guide', ... });
+```
+
+- The French build ships two: **"Mon guide Google Docs"** (7 steps: open → select → bold → colour → font → insert image → delete the boxes) and **"Mon guide Google Sites"** (12 steps: new site → name → editor → banner → text box → copy from the Doc → paste → upload the map → theme → preview → publish → hand in on Classroom). Build whichever decks match the department's submission route.
+- **Screenshots must be REAL, captured on the C2k PUPIL test account** — under-18 EDU accounts show no Gemini UI, so adult-account shots show buttons pupils don't have. Cards degrade to a "Picture coming soon" placeholder until the images exist (`onerror` on the `<img>`), so the deck can ship before the capture session.
+- **The images MUST be committed to MAIN**, not just the draft branch — the deployed app loads them from github.io, which serves main. (Bit us live: every station image 404'd on the deployed app while the preview looked perfect. Same rule for ALL assets a Path B app references.)
+- The repeatable screenshot capture pipeline (Claude-in-Chrome staging + `screencapture` + sharp post-processing, with all its gotchas) is documented in `french/mon-carnet-de-france/HANDOVER.md` §12.2/§12.5, helpers in Claude Work `_mcdf_capture/`.
+
+### Offline preview parity (review without deploying)
+
+The `OLS_TRANSPORT` offline stub mimics **every** server call including `makeDoc` — which returns `{preview: true}` and the client renders the composed payload in a local **doc-preview modal** instead of a real Doc. The staff panel runs in a demo mode (passcode `demo`, two fake teachers, seeded classes) so ownership rules and the dashboard are reviewable on `localhost`/github.io. Damien reviews everything on the local preview **before** any deploy round-trip — keep this parity when extending.
+
+### Deploy + handoff
+
+The build→deploy→verify rhythm, the ASCII assembler, NEW-VERSION redeploys, `pbcopy` handoffs, and the probe-first rule are all as documented in the login-gated section. Additions for this pattern:
+
+- **Probe list grows:** before building, also prove on a real pupil account that `DocumentApp.create()` lands in the pupil's Drive (no admin block on the pupil OU), `doc.addViewer(teacher)` grants, and `DriveApp` folder create/move works. (All proven for C2k on 2026-06.)
+- `/publish` uses the **Path-B variant** (see Step 12): no QR Word doc, the email gives the `/exec` link, pupils sign in with school accounts, teacher uses the Staff panel for class links/QR and the dashboard. Record the `/exec` URL in `docs/deployed-apps.md`.
 
 ---
 
