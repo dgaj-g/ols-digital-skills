@@ -7,7 +7,7 @@
 > `project_labelle_france.md` (in the user's Claude memory) mirrors the key points.
 >
 > **Branch:** `draft/issue-18-french-mon-carnet-de-france` · **PR:** dgaj-g/ols-digital-skills#17 (draft)
-> **Inbox issue:** dgaj-g/ols-digital-skills-inbox#18 · **Status (2026-06-09):** all 4 stations built + signed off; **§11a/§11b La Carte rework DONE** + **Doc generator + data persistence DONE** (client-composes / server-renders, with a local preview; browser-verified, not yet deployed). Back-end remaining: multi-teacher staff panel, in-app Sites walkthrough (needs screenshots), then ONE bundled Path B redeploy + verify the real Doc on a pupil account.
+> **Inbox issue:** dgaj-g/ols-digital-skills-inbox#18 · **Status (2026-06-10 PM): BUILD COMPLETE & DEPLOY-VERIFIED except the 12 Google Sites screenshots + one final redeploy — if you are the finishing session, skip straight to §12.**
 
 ---
 
@@ -175,6 +175,39 @@ Model note: the capture session is mechanical — Opus 4.8 is the right tier for
 - **The verified, fact-checked content** for all four stations — including the exact **Wikimedia Commons File: URLs, licences and attributions** for every image, and the source citations behind every fact — is in **`content-pack.json`** in this folder (committed to git = backed up here).
 - **The original teacher brief** (the Word doc the build is based on) lives in the user's local **Claude Work** folder (under the "French" department folder), which syncs across the user's two Macs (so it is backed up). It is deliberately **not** committed to this PUBLIC repo. The exact path is recorded in the private auto-memory (`project_labelle_france`).
 - The four sections, the research-skills rules and the sign-offs derived from that brief are summarised in §0 and §5 above, so the build can continue from this file alone even without re-opening the original.
+
+---
+
+## 12. FINISHING SESSION (written 10 Jun PM — read this FIRST if you are the finishing session)
+
+**Everything outside §12 is historical context. The build is DONE except the items in §12.4.**
+
+### 12.1 What is already done + verified (do NOT redo)
+- **Deploy verified END-TO-END on real C2k accounts (10 Jun):** pupil sign-in, save/restore across reloads, all 4 stations played live, real 4-section Doc + gold/blue boxes generated in the pupil's Drive, **auto-share to the class owner ✓**, **filed into OLS Digital Skills/French/J1 ✓** (audit fields in the pupil meta record prove it), staff panel fully exercised (gate/add/sanitize/QR/dashboard/two-tap delete), non-destructive regeneration ✓.
+- **Bugs found+fixed (committed):** activity images 404 on the deployed app (assets existed only on this draft branch → fixed by committing `french/mon-carnet-de-france/assets/` to MAIN, a0e3ee2); renderBox_ chained `.setBold` off void-returning `Paragraph.setText` (crashed the first live Doc mid-render, killing share+foldering); failure `alert()` popup + stuck Create button → inline finish-hint + un-skippable reset; spinner + "Un instant…" hint during the 10-20 s Doc build; `apiMakeDoc` now logs + persists `shared`/`filed` outcome strings (Executions log + pupil meta record).
+- **Docs guide:** 7 REAL screenshots in `assets/guide/docs/` (d734903), verified in the carousel.
+- **Sites walkthrough UI:** built + committed (3681ef0). `makeGuide(cfg)` factory, two instances (docsGuide/sitesGuide), `GUIDE_SITES` 12 steps, `#sites-guide` modal, buttons in the result box + preview modal. Shows "Picture coming soon" placeholders until `assets/guide/sites/*.jpg` exist.
+- **Pupil Drive cleaned:** ONE good Doc remains (J1 folder; URL contains `15572fdwle`); 5 test Docs binned. Test class `ZZ-Capture` (owner dgartland021) exists for any re-test.
+- **LIVE deployment** currently = audit Code.gs + spinner Index (NOT the Sites-walkthrough build).
+
+### 12.2 The screenshot capture pipeline (PROVEN — reuse, do not reinvent)
+- Browser: "Browser 1" Chrome, signed in as the **pupil test account**; extension connected. Extension (CDP) clicks/hovers work on Drive/Docs/Sites pages but **NOT inside the Apps Script app iframe** (clicks no-op there; Damien clicks in-app buttons himself).
+- macOS perms ALREADY GRANTED: Automation (AppleScript→Chrome) and Screen Recording for the claude-code helper app. `screencapture` works ONLY with Bash `dangerouslyDisableSandbox: true`. If macOS shows a new consent popup, ask Damien to click Allow.
+- Per-shot loop: (1) front the target tab by URL substring via osascript (loop tabs of window 1, `set active tab index`, then `activate`); (2) stage the UI state with extension clicks/hovers on that tab; (3) capture `screencapture -x -R $x,$y,$w,$h raw.png` using the CACHED bounds in `~/Desktop/Claude Work/_mcdf_capture/cbounds.txt` (do NOT query bounds while a menu is open — AppleScript errors -1728/-1712); (4) process: `node ~/Desktop/"Claude Work"/_mcdf_capture/process.js raw.png <repo>/assets/guide/sites/<name>.jpg [topRaw]` → 1280×720 16:9 JPEG (sharp lives at `~/.npm-global/lib/node_modules/sharp`). topRaw default 168 = clean browser chrome; pass **285** when Chrome's "'Claude' started debugging this browser" banner is visible.
+- The debug banner appears after extension actions and auto-hides ~10-15 s after the LAST CDP call. Dropdown/panel states survive that wait; **right-click context menus close during it** — for those capture immediately and crop with topRaw=285. Detect the banner by sampling raw pixels at y≈150 (lavender: blue−red > 6).
+- Damien's physical mouse must be parked at a screen edge (its halo shows in shots); nobody touches the machine during captures; verify every processed JPEG by Reading it before moving on (menus drift a few px between opens — re-screenshot and re-aim rather than assuming coordinates).
+
+### 12.3 The 12 Sites shots (`assets/guide/sites/`; framing list in §"THE CAPTURE SESSION" above)
+`new, name, editor, banner, textbox, copy, paste, imageup, themes, preview, publish, done` (.jpg). Build a THROWAWAY site on the pupil account: Drive → New → More → Google Sites; name it "La Belle France"; stage each step on it (copy/paste step uses the real Doc — tab URL contains `15572fdwle`). **Pre-authorised by Damien:** creating/naming/editing the test site; capturing the Publish dialog; publishing the throwaway site restricted to the school domain for `done.jpg`; afterwards unpublish (if published) and move the site to the bin.
+
+### 12.4 Finish checklist (in order)
+1. Capture + process the 12 shots → `assets/guide/sites/` → verify each renders in the carousel on the local preview (`digital-skills` server, port 8098; seed `mcdf-shell-default` in localStorage with stations 1-4 true + minimal data, click Create, open "Mon guide Google Sites") → commit to THIS branch.
+2. **Publish `french/mon-carnet-de-france/assets/guide/` to MAIN** (the deployed app loads images from github.io, which serves main — same pattern as a0e3ee2: checkout main, pull, `git checkout draft/issue-18-french-mon-carnet-de-france -- french/mon-carnet-de-france/assets/guide`, commit, push, switch back). Poll a guide URL on github.io until HTTP 200. Without this the deployed app shows placeholders forever (the docs/ shots are ALSO only on the draft branch right now).
+3. Add a small retry (1 retry, ~600 ms `Utilities.sleep`) around BOTH best-effort blocks in `apiMakeDoc` (addViewer + Drive foldering) in `server/Code.gs.template` — one run on 10 Jun failed both transiently. Keep the audit strings. `node server/build-pathb.js`; commit + push.
+4. Clipboard-deploy: `pbcopy < server/Code.gs` → Damien pastes into Code.gs (Cmd+A, Cmd+V, save); then `pbcopy < server/Index.html` → pastes into the Index HTML file; **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**. Guide him file by file; never reuse the pinned version.
+5. Verify: reload the pupil app tab (`…/exec?class=ZZ-Capture`), confirm the result box shows BOTH guide buttons and both guides display REAL screenshots (loaded from github.io main). No need to regenerate a Doc or re-test the staff panel.
+6. Tidy: bin the throwaway Site. `_mcdf_capture/` (outside the repo) can stay. Update this HANDOVER + the `project_labelle_france` auto-memory.
+7. `/publish` is a SEPARATE later step (Path-B variant; email requirements in §8 — Chanel→Germain swap + why, escargots, 9-city choice, fact corrections).
 
 ---
 
