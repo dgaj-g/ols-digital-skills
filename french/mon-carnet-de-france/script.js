@@ -973,10 +973,14 @@
       '</ul>' +
       '<p><a href="' + escapeHtml(url) + '" target="_blank" rel="noopener">Open my project to edit it</a></p>' +
       '<p class="result-guide-hint">Then show off your <strong>digital skills</strong> — colour, bold, fonts and your map picture. The guide walks you through it:</p>' +
-      '<button id="open-docs-guide" class="btn btn-blue" type="button">&#128214; Mon guide Google Docs</button>';
+      '<button id="open-docs-guide" class="btn btn-blue" type="button">&#128214; Mon guide Google Docs</button>' +
+      '<p class="result-guide-hint">Ready to turn your project into a website? This guide builds your <strong>Google Site</strong> step by step:</p>' +
+      '<button id="open-sites-guide" class="btn btn-blue" type="button">&#127760; Mon guide Google Sites</button>';
     show(box);
     var g = $('open-docs-guide');
-    if (g) g.addEventListener('click', openGuide);
+    if (g) g.addEventListener('click', docsGuide.open);
+    var gs = $('open-sites-guide');
+    if (gs) gs.addEventListener('click', sitesGuide.open);
   }
 
   /* ============================================================
@@ -1111,71 +1115,123 @@
       text: 'Read your project aloud one last time. Happy with it? Delete the two helper boxes at the top: right-click on a box and choose Delete table. Then it’s ready for your Google Site!',
       task: 'Delete the yellow and blue boxes when every task is done.' }
   ];
-  var gd = { built: false, idx: 0 };
-  var gdrag = null;
-  function guideCardHtml(s) {
-    return '<article class="city-card guide-card">' +
-      '<div class="guide-shot">' +
-        '<img src="' + ASSET + 'assets/guide/docs/' + s.img + '" alt="" draggable="false" onerror="this.parentElement.classList.add(\'no-shot\')">' +
-        '<div class="guide-shot-soon" aria-hidden="true"><span>&#128247;</span>Picture coming soon</div>' +
-      '</div>' +
-      '<div class="city-card-flag" aria-hidden="true"><i></i><i></i><i></i></div>' +
-      '<div class="city-card-body">' +
-        '<p class="guide-step">&Eacute;tape ' + s.step + ' / Step ' + s.step + '</p>' +
-        '<h3>' + escapeHtml(s.title) + '</h3>' +
-        '<p>' + escapeHtml(s.text) + '</p>' +
-        (s.task ? '<p class="guide-task"><b>&#9989; Your turn:</b> ' + escapeHtml(s.task) + '</p>' : '') +
-      '</div>' +
-    '</article>';
+  /* The Google Sites walkthrough reuses this exact engine as a SECOND deck
+     (own data array + assets/guide/sites/). Shown after the Doc is made, it
+     teaches the pupil to build her Google Site screen by screen. */
+  var GUIDE_SITES = [
+    { img: 'new.jpg', step: 1, title: 'Make a new Google Site',
+      text: 'In Google Drive, click New, then More, then Google Sites. A blank website opens — this is where you will show off your project.',
+      task: 'Open Google Drive and start a new Google Site.' },
+    { img: 'name.jpg', step: 2, title: 'Name your site',
+      text: 'At the top left it says "Untitled site". Click it and type a name, like La Belle France. Google Sites saves your work for you as you go.',
+      task: 'Name your site La Belle France.' },
+    { img: 'editor.jpg', step: 3, title: 'Look around the editor',
+      text: 'Your page is in the middle. On the right is the Insert panel (text boxes, images and more). At the top right are the Preview and Publish buttons.',
+      task: 'Find the Insert panel on the right-hand side.' },
+    { img: 'banner.jpg', step: 4, title: 'Add your big title',
+      text: 'Click the words on the banner at the very top and type your title, for example La Belle France. This is the first thing visitors see.',
+      task: 'Type your title onto the banner.' },
+    { img: 'textbox.jpg', step: 5, title: 'Add a text box',
+      text: 'From the Insert panel on the right, click Text box. A box appears on your page — this is where your writing will go.',
+      task: 'Insert your first text box.' },
+    { img: 'copy.jpg', step: 6, title: 'Copy from your Doc',
+      text: 'Open your La Belle France Google Doc. Select one section — for example La Cuisine — then press Ctrl and C together to copy it.',
+      task: 'Copy your first section from the Doc.' },
+    { img: 'paste.jpg', step: 7, title: 'Paste it in',
+      text: 'Back on your Site, click inside your text box and press Ctrl and V to paste. Do the same for each of your four sections.',
+      task: 'Paste your section into the text box.' },
+    { img: 'imageup.jpg', step: 8, title: 'Add your map picture',
+      text: 'From the Insert panel, click Images, then Upload, and choose your map of France. Drag the corners to make it the right size.',
+      task: 'Upload your map of France.' },
+    { img: 'themes.jpg', step: 9, title: 'Pick a theme',
+      text: 'Click Themes at the top right to choose colours and fonts for your whole site in one go. Pick one that suits France.',
+      task: 'Choose a theme you like.' },
+    { img: 'preview.jpg', step: 10, title: 'Preview your site',
+      text: 'Click the Preview button (the little screen at the top right) to see how your site looks on a phone, a tablet and a computer.',
+      task: 'Preview your site on a phone and a computer.' },
+    { img: 'publish.jpg', step: 11, title: 'Publish it',
+      text: 'When you are happy, click Publish at the top right. Type a short web address, choose who can see it, then click Publish.',
+      task: 'Publish your finished site.' },
+    { img: 'done.jpg', step: 12, title: 'Hand it in',
+      text: 'Your site is live! Copy its web address and hand it in on Google Classroom, exactly the way your teacher showed you.',
+      task: 'Copy your site link into Google Classroom.' }
+  ];
+
+  /* One reusable card-deck engine, instanced per guide (Docs, Sites). cfg names
+     the element ids + the assets/guide/<dir>/ folder + the step data array. */
+  function makeGuide(cfg) {
+    var st = { built: false, idx: 0 };
+    var dr = null;
+    function cardHtml(s) {
+      return '<article class="city-card guide-card">' +
+        '<div class="guide-shot">' +
+          '<img src="' + ASSET + 'assets/guide/' + cfg.dir + '/' + s.img + '" alt="" draggable="false" onerror="this.parentElement.classList.add(\'no-shot\')">' +
+          '<div class="guide-shot-soon" aria-hidden="true"><span>&#128247;</span>Picture coming soon</div>' +
+        '</div>' +
+        '<div class="city-card-flag" aria-hidden="true"><i></i><i></i><i></i></div>' +
+        '<div class="city-card-body">' +
+          '<p class="guide-step">&Eacute;tape ' + s.step + ' / Step ' + s.step + '</p>' +
+          '<h3>' + escapeHtml(s.title) + '</h3>' +
+          '<p>' + escapeHtml(s.text) + '</p>' +
+          (s.task ? '<p class="guide-task"><b>&#9989; Your turn:</b> ' + escapeHtml(s.task) + '</p>' : '') +
+        '</div>' +
+      '</article>';
+    }
+    function build() {
+      st.built = true;
+      $(cfg.track).innerHTML = cfg.data.map(cardHtml).join('');
+      $(cfg.dots).innerHTML = cfg.data.map(function () { return '<b></b>'; }).join('');
+    }
+    function layout(animate) {
+      var track = $(cfg.track);
+      track.classList.toggle('animate', !!animate);
+      track.style.transform = 'translateX(' + (-st.idx * 100) + '%)';
+      var dots = $(cfg.dots).children;
+      for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('on', i === st.idx);
+      $(cfg.prev).disabled = st.idx <= 0;
+      $(cfg.next).disabled = st.idx >= cfg.data.length - 1;
+    }
+    function open() { if (!st.built) build(); st.idx = 0; show($(cfg.modal)); layout(false); }
+    function close() { hide($(cfg.modal)); }
+    function go(i) { st.idx = Math.max(0, Math.min(i, cfg.data.length - 1)); layout(true); }
+    function move(e) {
+      if (!dr) return;
+      var dx = e.clientX - dr.x;
+      $(cfg.track).style.transform = 'translateX(' + (-st.idx * 100 + dx / dr.w * 100) + '%)';
+    }
+    function up(e) {
+      if (!dr) return;
+      var vp = $(cfg.vp);
+      vp.removeEventListener('pointermove', move);
+      vp.removeEventListener('pointerup', up);
+      vp.removeEventListener('pointercancel', up);
+      try { vp.releasePointerCapture(dr.pid); } catch (x) {}
+      var dx = e.clientX - dr.x, thr = dr.w * 0.18, ni = st.idx;
+      if (dx <= -thr) ni = st.idx + 1; else if (dx >= thr) ni = st.idx - 1;
+      dr = null;
+      go(ni);
+    }
+    function down(e) {
+      var vp = $(cfg.vp);
+      dr = { x: e.clientX, w: vp.getBoundingClientRect().width || 1, pid: e.pointerId };
+      $(cfg.track).classList.remove('animate');
+      vp.addEventListener('pointermove', move);
+      vp.addEventListener('pointerup', up);
+      vp.addEventListener('pointercancel', up);
+      try { vp.setPointerCapture(e.pointerId); } catch (x) {}
+    }
+    function isOpen() { var m = $(cfg.modal); return !!(m && !m.hidden); }
+    function wire() {
+      $(cfg.cx).addEventListener('click', close);
+      $(cfg.scrim).addEventListener('click', close);
+      $(cfg.prev).addEventListener('click', function () { go(st.idx - 1); });
+      $(cfg.next).addEventListener('click', function () { go(st.idx + 1); });
+      $(cfg.vp).addEventListener('pointerdown', down);
+    }
+    return { open: open, close: close, go: go, isOpen: isOpen, wire: wire, idx: function () { return st.idx; } };
   }
-  function buildGuide() {
-    gd.built = true;
-    $('guide-track').innerHTML = GUIDE_DOCS.map(guideCardHtml).join('');
-    $('guide-dots').innerHTML = GUIDE_DOCS.map(function () { return '<b></b>'; }).join('');
-  }
-  function layoutGuide(animate) {
-    var track = $('guide-track');
-    track.classList.toggle('animate', !!animate);
-    track.style.transform = 'translateX(' + (-gd.idx * 100) + '%)';
-    var dots = $('guide-dots').children;
-    for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('on', i === gd.idx);
-    $('guide-prev').disabled = gd.idx <= 0;
-    $('guide-next').disabled = gd.idx >= GUIDE_DOCS.length - 1;
-  }
-  function openGuide() {
-    if (!gd.built) buildGuide();
-    gd.idx = 0;
-    show($('docs-guide'));
-    layoutGuide(false);
-  }
-  function closeGuide() { hide($('docs-guide')); }
-  function gotoGuide(i) { gd.idx = Math.max(0, Math.min(i, GUIDE_DOCS.length - 1)); layoutGuide(true); }
-  function guideDown(e) {
-    var vp = $('guide-vp');
-    gdrag = { x: e.clientX, w: vp.getBoundingClientRect().width || 1, pid: e.pointerId };
-    $('guide-track').classList.remove('animate');
-    vp.addEventListener('pointermove', guideMove);
-    vp.addEventListener('pointerup', guideUp);
-    vp.addEventListener('pointercancel', guideUp);
-    try { vp.setPointerCapture(e.pointerId); } catch (x) {}
-  }
-  function guideMove(e) {
-    if (!gdrag) return;
-    var dx = e.clientX - gdrag.x;
-    $('guide-track').style.transform = 'translateX(' + (-gd.idx * 100 + dx / gdrag.w * 100) + '%)';
-  }
-  function guideUp(e) {
-    if (!gdrag) return;
-    var vp = $('guide-vp');
-    vp.removeEventListener('pointermove', guideMove);
-    vp.removeEventListener('pointerup', guideUp);
-    vp.removeEventListener('pointercancel', guideUp);
-    try { vp.releasePointerCapture(gdrag.pid); } catch (x) {}
-    var dx = e.clientX - gdrag.x, thr = gdrag.w * 0.18, ni = gd.idx;
-    if (dx <= -thr) ni = gd.idx + 1; else if (dx >= thr) ni = gd.idx - 1;
-    gdrag = null;
-    gotoGuide(ni);
-  }
+  var docsGuide = makeGuide({ dir: 'docs', data: GUIDE_DOCS, modal: 'docs-guide', track: 'guide-track', dots: 'guide-dots', prev: 'guide-prev', next: 'guide-next', vp: 'guide-vp', cx: 'guide-cx', scrim: 'guide-scrim' });
+  var sitesGuide = makeGuide({ dir: 'sites', data: GUIDE_SITES, modal: 'sites-guide', track: 'sguide-track', dots: 'sguide-dots', prev: 'sguide-prev', next: 'sguide-next', vp: 'sguide-vp', cx: 'sguide-cx', scrim: 'sguide-scrim' });
 
   /* alert() is blocked inside the Apps Script sandbox iframe, so failures are
      surfaced through the finish-hint line instead; the reset handler is attached
@@ -1479,12 +1535,10 @@
     $('ppl-text').addEventListener('input', updateCelebWrite);
     $('create').addEventListener('click', createProject);
     $('doc-preview-close').addEventListener('click', function () { hide($('doc-preview')); });
-    $('guide-from-preview').addEventListener('click', openGuide);
-    $('guide-cx').addEventListener('click', closeGuide);
-    $('guide-scrim').addEventListener('click', closeGuide);
-    $('guide-prev').addEventListener('click', function () { gotoGuide(gd.idx - 1); });
-    $('guide-next').addEventListener('click', function () { gotoGuide(gd.idx + 1); });
-    $('guide-vp').addEventListener('pointerdown', guideDown);
+    $('guide-from-preview').addEventListener('click', docsGuide.open);
+    $('sites-from-preview').addEventListener('click', sitesGuide.open);
+    docsGuide.wire();
+    sitesGuide.wire();
     $('staff-key').addEventListener('click', staffOpenModal);
     $('staff-close').addEventListener('click', function () { hide($('staff-modal')); });
     $('staff-go').addEventListener('click', staffUnlock);
@@ -1503,10 +1557,11 @@
         if (e.key === 'ArrowRight') { gotoCard(s1.idx + 1); return; }
         if (e.key === 'Escape') { closeCarousel(); return; }
       }
-      if ($('docs-guide') && !$('docs-guide').hidden) {
-        if (e.key === 'ArrowLeft') { gotoGuide(gd.idx - 1); return; }
-        if (e.key === 'ArrowRight') { gotoGuide(gd.idx + 1); return; }
-        if (e.key === 'Escape') { closeGuide(); return; }
+      var og = docsGuide.isOpen() ? docsGuide : (sitesGuide.isOpen() ? sitesGuide : null);
+      if (og) {
+        if (e.key === 'ArrowLeft') { og.go(og.idx() - 1); return; }
+        if (e.key === 'ArrowRight') { og.go(og.idx() + 1); return; }
+        if (e.key === 'Escape') { og.close(); return; }
       }
       if (e.key === 'Escape') { closeStationModal(); hide($('staff-modal')); hide($('dish-info')); hide($('doc-preview')); }
     });
