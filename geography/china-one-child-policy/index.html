@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>China's One-Child Policy &middot; Geography &middot; OLS Digital Skills</title>
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity ocp">
+
+  <!-- ===== Progress HUD ===== -->
+  <header class="hud" id="hud" aria-label="Your progress">
+    <span class="hud-name">China&rsquo;s One-Child Policy</span>
+    <nav class="hud-tasks" aria-label="Analyst tasks">
+      <button class="pip" id="pip-a" data-station="a" aria-label="Task 1: Read the data">1</button>
+      <button class="pip" id="pip-b" data-station="b" aria-label="Task 2: Build the timeline">2</button>
+      <button class="pip" id="pip-c" data-station="c" aria-label="Task 3: The pyramid lab">3</button>
+      <button class="pip" id="pip-d" data-station="d" aria-label="Task 4: Match the evidence">4</button>
+      <button class="pip" id="pip-e" data-station="e" aria-label="Task 5: The verdict">5</button>
+    </nav>
+    <span class="hud-score" id="hud-score" aria-live="polite">0 / 34</span>
+    <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="true">Sound on</button>
+  </header>
+
+  <div id="sr-live" class="sr-only" aria-live="polite"></div>
+
+  <main id="main">
+
+    <!-- ===== Hero ===== -->
+    <section class="hero" id="hero">
+      <div class="hero-map" id="hero-map" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <p class="eyebrow">CCEA GCE Geography &middot; Unit AS 2 &middot; Population</p>
+        <h1>China&rsquo;s One-Child Policy</h1>
+        <p class="hero-sub">The world&rsquo;s biggest population experiment &mdash; why China needed it, and what it cost.</p>
+        <div class="odometer" aria-hidden="true">
+          <span class="odo-num" id="hero-odo">540,000,000</span>
+          <span class="odo-label" id="hero-odo-label">people &middot; 1949</span>
+        </div>
+        <div class="mission" id="mission">
+          <p class="mission-title">Your mission</p>
+          <p>You are a <strong>population analyst</strong>. Scroll through the story map, complete the <strong>five analyst tasks</strong> along the route, then deliver your verdict on the policy. Your progress saves automatically on this device, so you can leave and come back.</p>
+          <p class="mission-resume" id="mission-resume" hidden>Welcome back &mdash; your earlier progress has been restored.</p>
+          <button class="btn btn-gold" id="begin-btn" type="button">Begin the investigation</button>
+        </div>
+      </div>
+      <div class="scroll-cue" aria-hidden="true"><span></span></div>
+    </section>
+
+    <!-- ===== Chapter 1 ===== -->
+    <section class="chapter" id="ch1">
+      <header class="ch-head">
+        <span class="ch-num" aria-hidden="true">01</span>
+        <div class="ch-title-block">
+          <h2>&ldquo;A large population gives a strong nation&rdquo;</h2>
+          <p class="ch-lo">Learning outcome (iii) &middot; the need for fertility policies &middot; the pro-natalist era</p>
+        </div>
+      </header>
+
+      <div class="scrolly" id="scrolly-1">
+        <div class="canvas" id="canvas-1" aria-hidden="true">
+          <div class="map-wrap" id="map-1"></div>
+          <div class="canvas-readout">
+            <span class="year-badge" id="year-1">1949</span>
+            <span class="odo-num odo-small" id="odo-1">540,000,000</span>
+            <span class="odo-label">people</span>
+          </div>
+          <div class="pop-gauge" id="gauge-1">
+            <div class="gauge-track">
+              <div class="gauge-fill" id="gauge-fill-1"></div>
+              <div class="gauge-optimum"><span>&ldquo;optimum&rdquo; 700m</span></div>
+            </div>
+            <span class="gauge-cap">1.5bn</span>
+          </div>
+        </div>
+        <div class="steps">
+          <article class="step" data-canvas="1" data-state="y1949">
+            <h3>1949 &mdash; year zero</h3>
+            <p>The People&rsquo;s Republic of China is founded with a population of around <strong>540 million</strong>. The early decades are turbulent: a series of natural disasters &mdash; earthquakes, hurricanes and floods &mdash; brings famine, and for a time deaths outnumber births and the population <em>falls</em>.</p>
+          </article>
+          <article class="step" data-canvas="1" data-state="glf">
+            <h3>The Great Leap Forward</h3>
+            <p>Chairman <strong>Mao Zedong</strong> launches a programme to make China strong again, transforming the economy from agriculture towards industry. The Great Leap Forward reverses the decline, on the principle that <em>&ldquo;a large population gives a strong nation&rdquo;</em>.</p>
+            <p class="keyterm"><strong>Key term &mdash; pro-natalist:</strong> a policy that encourages births, to raise the birth rate.</p>
+          </article>
+          <article class="step" data-canvas="1" data-state="boom">
+            <h3>The boom</h3>
+            <p>Chinese population experts had suggested an <strong>optimum population of around 700 million</strong>. China races past it: during the Cultural Revolution the population grows by <strong>55 million every three years</strong> &mdash; from 540 million in 1949 to <strong>940 million by 1976</strong>. Watch the gauge.</p>
+          </article>
+          <article class="step" data-canvas="1" data-state="strain">
+            <h3>The question changes</h3>
+            <p>By the mid-1970s the question facing China&rsquo;s planners is no longer <em>how to grow</em>. It is how to feed everyone. Before going on, prove you can read the demographic data behind this story.</p>
+          </article>
+        </div>
+      </div>
+
+      <!-- Station A -->
+      <section class="station" id="station-a" data-station="a">
+        <header class="station-head">
+          <span class="station-tag">Analyst task 1</span>
+          <h3>Read the data</h3>
+          <p class="station-brief">This is China&rsquo;s demographic transition, redrawn from your workbook&rsquo;s Figure 8. <strong>Drag the year handle</strong> across the chart to explore birth and death rates from 1950 to 2015 &mdash; then answer the three data checks. One attempt each, so read the chart carefully first.</p>
+        </header>
+        <div class="chart-card">
+          <div id="dtm-chart"></div>
+          <div class="chart-legend" aria-hidden="true">
+            <span class="leg leg-birth">Birth rate</span>
+            <span class="leg leg-death">Death rate</span>
+            <span class="leg-unit">per 1,000 people per year &middot; values read from the workbook graph</span>
+          </div>
+          <label class="scrub-label" for="dtm-scrub">Year: <span id="dtm-year">1950</span></label>
+          <input type="range" id="dtm-scrub" min="0" max="13" step="1" value="0" aria-label="Scrub through years 1950 to 2015" />
+          <p class="chart-flag" id="dtm-flag" aria-live="polite"></p>
+        </div>
+        <div class="quiz" id="quiz-a"></div>
+        <div class="station-result" id="result-a" aria-live="polite" hidden></div>
+      </section>
+    </section>
+
+    <!-- ===== Chapter 2 ===== -->
+    <section class="chapter" id="ch2">
+      <header class="ch-head">
+        <span class="ch-num" aria-hidden="true">02</span>
+        <div class="ch-title-block">
+          <h2>The squeeze</h2>
+          <p class="ch-lo">Learning outcome (iii) &middot; a population and resource imbalance forces a response</p>
+        </div>
+      </header>
+
+      <div class="scrolly" id="scrolly-2">
+        <div class="canvas" id="canvas-2" aria-hidden="true">
+          <div class="squeeze" id="squeeze">
+            <div class="squeeze-row">
+              <span class="squeeze-label">China&rsquo;s share of the world&rsquo;s <strong>people</strong></span>
+              <div class="squeeze-bar"><div class="squeeze-fill sq-people" id="sq-people"><span>22%</span></div></div>
+            </div>
+            <div class="squeeze-row">
+              <span class="squeeze-label">China&rsquo;s share of the world&rsquo;s <strong>arable land</strong></span>
+              <div class="squeeze-bar"><div class="squeeze-fill sq-land" id="sq-land"><span>&lt;7%</span></div></div>
+            </div>
+            <p class="squeeze-note" id="squeeze-note"></p>
+          </div>
+        </div>
+        <div class="steps">
+          <article class="step" data-canvas="2" data-state="sq1">
+            <h3>Feeding a nation</h3>
+            <p>China must feed <strong>22% of the world&rsquo;s population</strong> from <strong>less than 7% of the world&rsquo;s arable land</strong>. In the 1960s an estimated <strong>42 million people die in famines</strong>, and the government has to acknowledge that rising fertility is creating pressure on the balance of resources. This imbalance between population and resources is the heart of the case study.</p>
+          </article>
+          <article class="step" data-canvas="2" data-state="sq2">
+            <h3>Approaching one billion</h3>
+            <p>Despite the mass famines, the population keeps climbing &mdash; quickly approaching <strong>1 billion</strong>. A new, firmer approach to population control is required.</p>
+          </article>
+          <article class="step" data-canvas="2" data-state="sq3">
+            <h3>First steps &mdash; the 1970s</h3>
+            <p>State family planning programmes arrive, such as <strong>&lsquo;Wan-xi-shao&rsquo;</strong>, which encourages <strong>later marriages</strong> and <strong>longer gaps between children</strong>.</p>
+          </article>
+          <article class="step" data-canvas="2" data-state="sq4">
+            <h3>1979 &mdash; the One-Child Policy</h3>
+            <p>China adopts a sweeping <strong>anti-natalist</strong> policy &mdash; population control imposed in a way few other countries could replicate. Its main aim: <strong>reduce the number of children born per woman</strong>. It is also intended to limit future demands for water and other resources, and to raise standards of living.</p>
+            <p class="keyterm"><strong>Key term &mdash; anti-natalist:</strong> a policy that discourages births, to lower the birth rate.</p>
+          </article>
+        </div>
+      </div>
+
+      <!-- Station B -->
+      <section class="station" id="station-b" data-station="b">
+        <header class="station-head">
+          <span class="station-tag">Analyst task 2</span>
+          <h3>Build the policy timeline</h3>
+          <p class="station-brief">Seven events, scrambled. <strong>Drag each card onto the timeline</strong> in the order it happened, earliest at the top. You can move cards around freely &mdash; dropping on an occupied slot swaps them. When every slot is filled, press <strong>Check</strong>. The dates stay hidden until then.</p>
+          <p class="kbd-hint">Keyboard: press Enter on a card to pick it up, Tab to a timeline space, then Enter to drop. Escape cancels.</p>
+        </header>
+        <div class="timeline-game">
+          <div class="tl-tray" id="tl-tray" role="group" aria-label="Event cards to place"></div>
+          <ol class="tl-slots" id="tl-slots" aria-label="Timeline, earliest first"></ol>
+        </div>
+        <div class="station-actions">
+          <button class="btn btn-gold" id="check-b" type="button" disabled>Check the timeline</button>
+        </div>
+        <div class="station-result" id="result-b" aria-live="polite" hidden></div>
+      </section>
+    </section>
+
+    <!-- ===== Chapter 3 ===== -->
+    <section class="chapter" id="ch3">
+      <header class="ch-head">
+        <span class="ch-num" aria-hidden="true">03</span>
+        <div class="ch-title-block">
+          <h2>The transformed pyramid</h2>
+          <p class="ch-lo">From outcome (iii) to outcome (iv) &middot; what the policy did to China&rsquo;s population structure</p>
+        </div>
+      </header>
+      <p class="ch-intro">Your workbook calls it the <em>&ldquo;transformed population pyramid&rdquo;</em>. One way to see what the One-Child Policy did is to compare China&rsquo;s population structure near the start of the story with its structure today.</p>
+
+      <!-- Station C -->
+      <section class="station" id="station-c" data-station="c">
+        <header class="station-head">
+          <span class="station-tag">Analyst task 3</span>
+          <h3>The pyramid lab</h3>
+          <p class="station-brief"><strong>Drag the morph slider</strong> to transform China&rsquo;s 1970 population pyramid into its 2023 pyramid and watch half a century of policy reshape a nation. When you have explored, press <strong>Start the detective challenges</strong>: the pyramid sets itself to the right year for each challenge (the slider locks while one is live), and you <strong>tap the part of the pyramid</strong> that answers it. One attempt per challenge.</p>
+        </header>
+        <div class="pyramid-card">
+          <div class="pyramid-head">
+            <div class="pyr-side-label pyr-male">Males</div>
+            <div class="pyr-meta"><span class="pyr-year" id="pyr-year">1970</span><span class="pyr-pop" id="pyr-pop">Population: 822,534,450</span></div>
+            <div class="pyr-side-label pyr-female">Females</div>
+          </div>
+          <div id="pyramid"></div>
+          <label class="scrub-label" for="pyr-scrub"><span id="pyr-scrub-label">Morph: 1970 &rarr; 2023</span></label>
+          <input type="range" id="pyr-scrub" min="0" max="100" step="1" value="0" aria-label="Morph the pyramid between 1970 and 2023" />
+          <p class="pyr-src" aria-hidden="true">% of total population per five-year age group &middot; data: PopulationPyramid.net</p>
+        </div>
+        <div class="detective" id="detective"></div>
+        <div class="station-result" id="result-c" aria-live="polite" hidden></div>
+      </section>
+    </section>
+
+    <!-- ===== Chapter 4 ===== -->
+    <section class="chapter" id="ch4">
+      <header class="ch-head">
+        <span class="ch-num" aria-hidden="true">04</span>
+        <div class="ch-title-block">
+          <h2>The reckoning</h2>
+          <p class="ch-lo">Learning outcome (iv) &middot; the effects of the One-Child Policy</p>
+        </div>
+      </header>
+      <p class="ch-intro">The OCP reshaped Chinese society &mdash; in ways its planners intended, and in ways they did not. Here is the evidence file: <strong>seven effects</strong>. Open and read every file to unlock Analyst task 4. <span class="dossier-count" id="dossier-count" aria-live="polite">0 of 7 read</span></p>
+
+      <div class="dossier" id="dossier"></div>
+
+      <!-- Station D -->
+      <section class="station station-lockable" id="station-d" data-station="d">
+        <div class="station-lock" id="lock-d">
+          <p><strong>Locked.</strong> Open all seven evidence files above to unlock this task.</p>
+        </div>
+        <div class="station-body" id="body-d" hidden>
+          <header class="station-head">
+            <span class="station-tag">Analyst task 4</span>
+            <h3>Match the evidence</h3>
+            <p class="station-brief">Your workbook&rsquo;s exam tip is blunt: <em>facts and figures are vital for high marks</em>. Eight statistics from the case study, eight claims. <strong>Drag each figure onto the claim it proves.</strong> Cards swap if you drop onto an occupied space. Fill every space, then press <strong>Check</strong>. The evidence files above seal themselves while this task is live &mdash; this one is from memory.</p>
+          <p class="kbd-hint">Keyboard: press Enter on a figure to pick it up, Tab to a claim space, then Enter to drop. Escape cancels.</p>
+          </header>
+          <div class="match-game">
+            <div class="match-tray" id="match-tray" role="group" aria-label="Statistic cards to place"></div>
+            <div class="match-claims" id="match-claims" role="group" aria-label="Claims"></div>
+          </div>
+          <div class="station-actions">
+            <button class="btn btn-gold" id="check-d" type="button" disabled>Check the evidence</button>
+          </div>
+          <div class="station-result" id="result-d" aria-live="polite" hidden></div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ===== Chapter 5 ===== -->
+    <section class="chapter" id="ch5">
+      <header class="ch-head">
+        <span class="ch-num" aria-hidden="true">05</span>
+        <div class="ch-title-block">
+          <h2>The verdict</h2>
+          <p class="ch-lo">Learning outcome (iv) &middot; <strong>evaluate</strong> the impact of an anti-natalist policy</p>
+        </div>
+      </header>
+
+      <section class="station station-lockable" id="station-e" data-station="e">
+        <div class="station-lock" id="lock-e">
+          <p><strong>Restricted file.</strong> Complete Analyst tasks 1&ndash;4 to open the verdict.</p>
+          <ul class="lock-list" id="lock-list-e"></ul>
+        </div>
+        <div class="station-body" id="body-e" hidden>
+          <header class="station-head">
+            <span class="station-tag">Analyst task 5</span>
+            <h3>Weigh the evidence</h3>
+            <p class="station-brief">CCEA&rsquo;s command word here is <strong>evaluate</strong>: weigh up what the policy achieved against what it cost, and reach a justified judgement. <strong>Drag each of the nine evidence cards onto a pan of the scales.</strong> Watch the wording &mdash; some evidence that <em>sounds</em> dramatic was exactly what the policy set out to do. Fill both pans, then press <strong>Check</strong>.</p>
+          <p class="kbd-hint">Keyboard: press Enter on a card to pick it up, Tab to a pan, then Enter to drop. Escape cancels.</p>
+          </header>
+          <div class="scales-wrap">
+            <div class="scales-beam-wrap" aria-hidden="true">
+              <div class="scales-pillar"></div>
+              <div class="scales-beam" id="scales-beam"><span class="beam-chain bc-l"></span><span class="beam-chain bc-r"></span></div>
+            </div>
+            <div class="scales-pans">
+              <div class="pan-col" id="pan-worked" data-pan="worked">
+                <h4>It worked</h4>
+                <p class="pan-sub">Evidence the policy achieved its aims</p>
+                <div class="pan-drop" role="group" aria-label="Evidence that the policy achieved its aims"></div>
+              </div>
+              <div class="pan-col" id="pan-cost" data-pan="cost">
+                <h4>It cost</h4>
+                <p class="pan-sub">Unintended consequences and human costs</p>
+                <div class="pan-drop" role="group" aria-label="Evidence of unintended consequences and human costs"></div>
+              </div>
+            </div>
+            <div class="scales-tray" id="scales-tray" role="group" aria-label="Evidence cards to weigh"></div>
+          </div>
+          <div class="station-actions scales-actions">
+            <button class="btn btn-gold" id="check-e" type="button" disabled>Check the scales</button>
+          </div>
+          <div class="station-result" id="result-e" aria-live="polite" hidden></div>
+
+          <div class="verdict" id="verdict" hidden>
+            <header class="station-head">
+              <span class="station-tag">Final call</span>
+              <h3>Your verdict</h3>
+              <p class="station-brief">An examiner will credit <strong>any</strong> verdict &mdash; if it is justified. Choose yours, then pick the <strong>three pieces of evidence that best support it</strong>.</p>
+            </header>
+            <div class="verdict-options" id="verdict-options" role="radiogroup" aria-label="Choose your verdict"></div>
+            <div class="verdict-evidence" id="verdict-evidence" hidden>
+              <p class="verdict-prompt">Now select the <strong>three</strong> pieces of evidence that best support your verdict:</p>
+              <div class="evidence-chips" id="evidence-chips"></div>
+              <p class="chip-limit" id="chip-limit" hidden>Three pieces of evidence maximum &mdash; tap a selected one to swap it out.</p>
+              <div class="station-actions">
+                <button class="btn btn-gold" id="submit-verdict" type="button" disabled>Submit my justification</button>
+              </div>
+            </div>
+            <div class="station-result" id="result-verdict" aria-live="polite" hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="examiner" id="examiner">
+        <h3>The examiner&rsquo;s note</h3>
+        <blockquote>&ldquo;Make sure that you understand the need for fertility policy in relation to the case study. How did this policy work? Was it successful in what it was trying to achieve? <strong>Facts and figures are vital for high marks</strong> in questions on this topic.&rdquo;<cite>&mdash; Exam tip, from your workbook</cite></blockquote>
+        <ul class="lo-check">
+          <li><strong>1(c)(iii)</strong> &mdash; show knowledge and understanding of the need for fertility policies (anti-natalist and pro-natalist)</li>
+          <li><strong>1(c)(iv)</strong> &mdash; evaluate the impact of one fertility policy (either anti-natalist or pro-natalist)</li>
+        </ul>
+      </section>
+    </section>
+  </main>
+
+  <!-- ===== Completion overlay ===== -->
+  <div class="celebrate" id="celebrate" hidden role="dialog" aria-modal="true" aria-labelledby="cel-title">
+    <div class="celebrate-panel">
+      <p class="station-tag">Investigation complete</p>
+      <h2 id="cel-title">Analyst report filed</h2>
+      <p class="cel-rank" id="cel-rank"></p>
+      <div class="cel-score" id="cel-score"></div>
+      <div class="cel-breakdown" id="cel-breakdown"></div>
+      <div class="cel-revise" id="cel-revise"></div>
+      <div class="station-actions">
+        <button class="btn btn-gold" id="cel-close" type="button">Review my answers</button>
+        <button class="btn btn-ghost" id="cel-reset" type="button">Start fresh</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="act-footer">
+    <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+    <span>OLS Digital Skills</span>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
