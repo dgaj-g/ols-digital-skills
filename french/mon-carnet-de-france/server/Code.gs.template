@@ -182,7 +182,11 @@ function apiMakeDoc(req) {
   d.docUrl = url;
   d.stations = normStations_(d.stations);
   up.setProperty(draftKey_(cls), JSON.stringify(d));
-  writeMeta_(cls, who, { name: String(d.name || ''), stations: d.stations, docUrl: url });
+  // The share/file outcomes are best-effort and invisible to the pupil, so make
+  // them auditable: the owner can read them in the Executions log and in the
+  // pupil's meta record (Project Settings -> Script Properties).
+  console.log('makeDoc ' + who + ' [' + cls + '] ' + url + ' | ' + shared + ' | ' + filed);
+  writeMeta_(cls, who, { name: String(d.name || ''), stations: d.stations, docUrl: url, shared: shared, filed: filed });
   return { ok: true, url: String(url), shared: String(shared), filed: String(filed) };
 }
 
@@ -256,6 +260,8 @@ function writeMeta_(cls, email, meta) {
     docUrl: String(meta.docUrl || ''),
     updated: new Date().toISOString()
   };
+  if (meta.shared != null) rec.shared = String(meta.shared);
+  if (meta.filed != null) rec.filed = String(meta.filed);
   P.getScriptProperties().setProperty(pupilKey_(cls, email), JSON.stringify(rec));
 }
 
