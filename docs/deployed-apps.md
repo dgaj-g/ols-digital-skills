@@ -16,7 +16,8 @@ URL changes — update it.
 |---|---|---|---|---|
 | Girls Coding with Confidence — Computational Thinking Challenge | Login-gated Bebras-style timed competition (40 min, 20 questions); named class boards, per-class QR, teacher dashboard + stats | https://script.google.com/a/macros/c2ken.net/s/AKfycbxo_jz7qYI4dlfA_onu-1dEqPgXv7vw2DOxpf6-pkoS-TV-BAlJiq01xAES1PJc6mqQ/exec | dgartland021@c2ken.net | 2026-06-06 |
 | Government & Politics — The US Constitution Diagram | Login-gated collaborative class board (build shared notes) | https://script.google.com/a/macros/c2ken.net/s/AKfycbyz_Hp_XE5RbzYPYZM4EGtWh49pMLgVyhDnsE1udpDKDatwbQuDACRoDJlc9j3WpUQ/exec | Gov & Politics (c2ken) | 2026-06-06 |
+| French — Mon Carnet de France (J1 "La Belle France") | Login-gated project builder: 4 stations → generates the pupil's project as a Google Doc in HER OWN Drive (Execute-as-user), auto-shared to her class's teacher, filed into OLS Digital Skills/French/J1; multi-teacher staff panel + dashboard; Docs + Sites guide decks | https://script.google.com/a/macros/c2ken.net/s/AKfycbzsFmN2Cja5GaKKrqs9Covbw2V_hkPfTLGrSgbmB4lAiL8FRQuhkzq5jHUNZDzyYIROjw/exec | dgartland021@c2ken.net | 2026-06-10 |
 
 **Notes**
 - The teacher reaches the **bare `/exec`** for the Staff/admin landing; pupils use a **per-class link** (`…/exec?class=NAME`) that the teacher generates and shares from inside the activity's admin panel.
-- Source code: GG lives in Claude Work `0. Digital Skills Web Activities/GG/`; the Constitution Diagram lives in `government-politics/constitution-diagram/` (+ a server package in Claude Work).
+- Source code: GG lives in Claude Work `0. Digital Skills Web Activities/GG/`; the Constitution Diagram lives in `government-politics/constitution-diagram/` (+ a server package in Claude Work); Mon Carnet de France lives entirely in this repo at `french/mon-carnet-de-france/` (activity + `server/` + `HANDOVER.md`).
