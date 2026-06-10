@@ -949,7 +949,8 @@
       if (lock) lock.style.display = c === 4 ? 'none' : '';
       if (finish) finish.classList.toggle('ready', c === 4);
       if (hint) {
-        if (state.docUrl) hint.textContent = 'Your project has been created. You can make changes to it any time.';
+        if (createErr) hint.textContent = 'Sorry — your project could not be created just now. Please press the button to try again.';
+        else if (state.docUrl) hint.textContent = 'Your project has been created. You can make changes to it any time.';
         else if (ready) hint.textContent = 'All four stops done. Make your project!';
         else hint.textContent = 'Finish all four stops to unlock this.';
       }
@@ -1175,21 +1176,24 @@
     gotoGuide(ni);
   }
 
+  /* alert() is blocked inside the Apps Script sandbox iframe, so failures are
+     surfaced through the finish-hint line instead; the reset handler is attached
+     to both outcomes so the button can never stay stuck on "Creating...". */
+  var createErr = false;
   function createProject() {
     var btn = $('create');
+    createErr = false;
     if (btn) { btn.disabled = true; btn.textContent = 'Creating your project...'; }
     var payload = composeDoc();
     call('makeDoc', { doc: payload })
       .then(function (r) {
         if (r && r.ok && r.preview) { renderDocPreview(payload); show($('doc-preview')); }
         else if (r && r.ok && r.url) { state.docUrl = r.url; showResult(r.url); }
-        else { alert('Sorry, the project could not be created just now. Please try again.'); }
-        render();
-      })
-      .catch(function () { alert('Sorry, the project could not be created just now. Please try again.'); })
+        else { createErr = true; }
+      }, function () { createErr = true; })
       .then(function () {
         var b = $('create');
-        if (b) b.innerHTML = 'Créer mon projet / Make my project';
+        if (b) { b.innerHTML = 'Créer mon projet / Make my project'; b.disabled = false; }
         render();
       });
   }

@@ -221,9 +221,15 @@ function renderBox_(body, box, bg) {
   var table = body.appendTable();
   var cell = table.appendTableRow().appendTableCell();
   cell.setBackgroundColor(String(bg));
-  cell.getChild(0).asParagraph().setText(String(box.title || '')).setBold(true);
+  /* Paragraph.setText() returns void and ListItem has no setBold() - chaining
+     either throws mid-render and aborts the whole Doc. Bold via editAsText(). */
+  var title = cell.getChild(0).asParagraph();
+  title.setText(String(box.title || ''));
+  title.editAsText().setBold(true);
   for (var i = 0; i < box.items.length; i++) {
-    cell.appendListItem(String(box.items[i])).setGlyphType(DocumentApp.GlyphType.BULLET).setBold(false);
+    var li = cell.appendListItem(String(box.items[i]));
+    li.setGlyphType(DocumentApp.GlyphType.BULLET);
+    li.editAsText().setBold(false);
   }
 }
 
