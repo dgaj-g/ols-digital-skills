@@ -944,12 +944,13 @@
     var hint = $('finish-hint');
     if (create) {
       var ready = c === 4 && !state.docUrl;
-      create.disabled = c !== 4;
+      create.disabled = c !== 4 || creating;
       var lock = create.querySelector('.lock');
       if (lock) lock.style.display = c === 4 ? 'none' : '';
       if (finish) finish.classList.toggle('ready', c === 4);
       if (hint) {
-        if (createErr) hint.textContent = 'Sorry — your project could not be created just now. Please press the button to try again.';
+        if (creating) hint.textContent = 'Un instant… Google is creating your Doc — this can take a few seconds.';
+        else if (createErr) hint.textContent = 'Sorry — your project could not be created just now. Please press the button to try again.';
         else if (state.docUrl) hint.textContent = 'Your project has been created. You can make changes to it any time.';
         else if (ready) hint.textContent = 'All four stops done. Make your project!';
         else hint.textContent = 'Finish all four stops to unlock this.';
@@ -1178,12 +1179,17 @@
 
   /* alert() is blocked inside the Apps Script sandbox iframe, so failures are
      surfaced through the finish-hint line instead; the reset handler is attached
-     to both outcomes so the button can never stay stuck on "Creating...". */
+     to both outcomes so the button can never stay stuck on "Creating...". While
+     the server builds the Doc (10-20s on a cold run) the button shows a spinner
+     and the hint reassures - both clear automatically on success OR failure. */
   var createErr = false;
+  var creating = false;
   function createProject() {
     var btn = $('create');
     createErr = false;
-    if (btn) { btn.disabled = true; btn.textContent = 'Creating your project...'; }
+    creating = true;
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="btn-spin" aria-hidden="true"></span>Creating your project…'; }
+    render();
     var payload = composeDoc();
     call('makeDoc', { doc: payload })
       .then(function (r) {
@@ -1192,6 +1198,7 @@
         else { createErr = true; }
       }, function () { createErr = true; })
       .then(function () {
+        creating = false;
         var b = $('create');
         if (b) { b.innerHTML = 'Créer mon projet / Make my project'; b.disabled = false; }
         render();

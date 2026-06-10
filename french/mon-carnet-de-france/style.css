@@ -37,6 +37,12 @@ body{
 .btn-blue:hover{ background:var(--ols-blue-soft); }
 .btn-ghost{ background:transparent; color:var(--ols-blue); border:1.5px solid var(--border); }
 .btn .lock{ margin-right:6px; }
+/* spinner shown inside the Create button while the Doc is being made */
+.btn-spin{ display:inline-block; width:1em; height:1em; margin-right:9px; vertical-align:-2px;
+  border:2.5px solid rgba(58,46,0,.25); border-top-color:#3a2e00; border-radius:50%;
+  animation:btn-spin .8s linear infinite; }
+@keyframes btn-spin{ to{ transform:rotate(360deg); } }
+@media (prefers-reduced-motion: reduce){ .btn-spin{ animation:none; } }
 
 /* ---------- welcome ---------- */
 .welcome{
