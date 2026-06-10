@@ -153,8 +153,12 @@ function apiMakeDoc(req) {
   var shared = 'no-teacher-email';
   var teacher = classOwner_(cls) || String(P.getScriptProperties().getProperty('teacherEmail') || '').trim();
   if (teacher && teacher.indexOf('@') > 0) {
-    try { doc.addViewer(teacher); shared = 'shared:' + teacher; }
-    catch (e) { shared = 'share-failed: ' + (e && e.message ? e.message : e); }
+    // Drive can hiccup transiently (seen once in live testing: both best-effort
+    // steps failed, then succeeded on an identical run) - retry once, briefly.
+    for (var shareTry = 0; shareTry < 2; shareTry++) {
+      try { doc.addViewer(teacher); shared = 'shared:' + teacher; break; }
+      catch (e) { shared = 'share-failed: ' + (e && e.message ? e.message : e); if (shareTry === 0) Utilities.sleep(600); }
+    }
   }
 
   doc.saveAndClose();
@@ -165,14 +169,17 @@ function apiMakeDoc(req) {
   // level. So a pupil builds a portfolio across OLS apps over time. Wrapped so a
   // Drive failure can NEVER block Doc creation (the Doc just stays in My Drive root).
   var filed = 'root';
-  try {
-    var sp2 = P.getScriptProperties();
-    var folder = ensureFolderPath_(['OLS Digital Skills', sp2.getProperty('subject'), sp2.getProperty('yearGroup')]);
-    var file = DriveApp.getFileById(doc.getId());
-    folder.addFile(file);
-    DriveApp.getRootFolder().removeFile(file);
-    filed = folder.getName();
-  } catch (e) { filed = 'file-failed: ' + (e && e.message ? e.message : e); }
+  for (var fileTry = 0; fileTry < 2; fileTry++) {
+    try {
+      var sp2 = P.getScriptProperties();
+      var folder = ensureFolderPath_(['OLS Digital Skills', sp2.getProperty('subject'), sp2.getProperty('yearGroup')]);
+      var file = DriveApp.getFileById(doc.getId());
+      folder.addFile(file);
+      DriveApp.getRootFolder().removeFile(file);
+      filed = folder.getName();
+      break;
+    } catch (e) { filed = 'file-failed: ' + (e && e.message ? e.message : e); if (fileTry === 0) Utilities.sleep(600); }
+  }
 
   // record the Doc URL in both stores
   var up = P.getUserProperties();
