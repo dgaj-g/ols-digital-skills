@@ -376,9 +376,10 @@
       '<g id="cm-sanjose" opacity="0"><circle class="cr-city" cx="430" cy="300" r="6"/><circle class="cr-marker-pulse" cx="430" cy="300" r="8" fill="none" stroke="#1A3A6B" stroke-width="2"/><text class="cr-label" x="442" y="306" font-size="15">San José ★</text></g>' +
       '<g id="cm-monteverde" opacity="0"><circle cx="318" cy="243" r="6" fill="#C0392B"/><circle class="cr-marker-pulse" cx="318" cy="243" r="8" fill="none" stroke="#C0392B" stroke-width="2"/><text class="cr-label" x="206" y="226" font-size="15" font-weight="800">Monteverde ☁</text></g>' +
       // Paths
-      '<path id="cm-flight" class="cr-flightpath" d="M880,30 C760,60 620,150 470,250 C450,265 440,285 432,297" opacity="0"/>' +
+      '<path id="cm-flight" class="cr-flightpath" d="M888,140 C780,170 650,215 520,258 C475,272 446,286 432,297" opacity="0"/>' +
       '<path id="cm-road" class="cr-roadpath" d="M430,300 C405,292 380,275 355,262 C340,255 328,250 320,245" opacity="0"/>' +
-      '<text id="cm-plane" class="cr-plane" opacity="0">✈️</text>' +
+      // Drawn plane (not an emoji — emoji orientation varies by platform); points along +x, rotated to the flight path tangent each frame
+      '<g id="cm-plane" opacity="0"><path d="M17,0 L9,-2.4 L-1,-2.4 L-9,-10 L-12.5,-10 L-7.5,-2.4 L-13,-2.4 L-16,-6 L-18.5,-6 L-16.5,0 L-18.5,6 L-16,6 L-13,2.4 L-7.5,2.4 L-12.5,10 L-9,10 L-1,2.4 L9,2.4 Z" fill="#1A3A6B" stroke="#FFFFFF" stroke-width="1.2" stroke-linejoin="round"/></g>' +
       '<text id="cm-bus" class="cr-bus" opacity="0">🚌</text>' +
       '<text class="cr-label" x="12" y="548" font-size="11" opacity="0.6">Stylised map — not to scale</text>' +
       '</svg>';
@@ -400,9 +401,19 @@
       node.setAttribute('x', p.x - 14);
       node.setAttribute('y', p.y + 9);
     }
+    function movePlane(t) {
+      // position on the path + rotate to face the direction of travel
+      const at = fpLen * t;
+      const ahead = Math.min(fpLen, at + 2);
+      const behind = Math.max(0, ahead - 4);
+      const p = fp.getPointAtLength(at);
+      const a = fp.getPointAtLength(behind), b = fp.getPointAtLength(ahead);
+      const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+      plane.setAttribute('transform', 'translate(' + p.x + ',' + p.y + ') rotate(' + ang + ')');
+    }
     const phases = [
-      { dur: 2600, init() { caption.textContent = 'Crossing the Caribbean…'; fp.style.opacity = 1; plane.style.opacity = 1; },
-        step(t) { moveAlong(fp, fpLen, plane, t); } },
+      { dur: 2600, init() { caption.textContent = 'Crossing the Caribbean…'; fp.style.opacity = 1; plane.style.opacity = 1; movePlane(0); },
+        step(t) { movePlane(t); } },
       { dur: 1300, init() { caption.textContent = 'Touchdown — Juan Santamaría International, San José'; sj.style.opacity = 1; plane.style.opacity = 0; sfx.snap(); }, step() {} },
       { dur: 2400, init() { caption.textContent = 'Winding up into the Cordillera de Tilarán…'; road.style.opacity = 1; bus.style.opacity = 1; },
         step(t) { moveAlong(road, roadLen, bus, t); } },
