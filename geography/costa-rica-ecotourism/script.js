@@ -62,7 +62,7 @@
   const SAVE_KEY = 'ols-costarica-eco-v1';
   const STATIONS = [
     { id: 'gate', num: 1, icon: '🎟️', name: 'The Reserve Gate', kicker: 'Station 1 · Definitions', map: 'Reserve Gate' },
-    { id: 'canopy', num: 2, icon: '🌉', name: 'The Canopy Walk', kicker: 'Station 2 · Fieldwork', map: 'Canopy Walk' },
+    { id: 'field', num: 2, icon: '📷', name: 'The Field Investigation', kicker: 'Station 2 · Reading the evidence', map: 'Field Investigation' },
     { id: 'benefits', num: 3, icon: '🌱', name: 'The Evidence Trail', kicker: 'Station 3 · Benefits', map: 'Evidence Trail' },
     { id: 'shadow', num: 4, icon: '🧵', name: 'The Shadow Files', kicker: 'Station 4 · Negative impacts', map: 'Shadow Files' },
     { id: 'however', num: 5, icon: '⚖️', name: 'The “However” Workshop', kicker: 'Station 5 · Evaluation skill', map: 'However Workshop' },
@@ -657,156 +657,72 @@
     }
   }
 
-  /* =====================  Station 2 — Canopy Walk  ===================== */
-  function buildCanopy() {
-    $('#station-intro').textContent = 'Walk the suspension bridge and survey the reserve. Eight features of Monteverde’s ecotourism model are hidden in the scene — find them all to fill your field notebook.';
+  /* =====================  Station 2 — The Field Investigation  ===================== */
+  function buildField() {
+    $('#station-intro').textContent = DATA.field.intro;
     const body = $('#station-body');
-    const wrap = el('div', 'canopy-wrap'); body.appendChild(wrap);
+    const wrap = el('div', 'field-wrap'); body.appendChild(wrap);
 
-    const checklist = el('div', 'canopy-checklist');
-    DATA.canopy.forEach(c => {
-      const s = el('span', 'spot-item', '<span aria-hidden="true">' + c.icon + '</span> ' + c.name);
-      s.id = 'spot-' + c.id;
-      checklist.appendChild(s);
-    });
-    wrap.appendChild(checklist);
+    const progress = el('p', 'field-progress');
+    wrap.appendChild(progress);
+    const stage = el('div', 'field-stage'); wrap.appendChild(stage);
 
-    const scene = el('div', 'canopy-scene');
-    scene.innerHTML = buildCanopySceneSVG();
-    wrap.appendChild(scene);
-    wrap.appendChild(el('p', 'scene-hint', 'Tip: look closely — some features hide in the mist. Tap anything you spot.'));
-    const noteBox = el('div'); wrap.appendChild(noteBox);
+    const photos = shuffle(DATA.field.photos);
+    let idx = 0, earned = 0;
+    const possible = photos.length * 10;
 
-    let found = 0;
-    DATA.canopy.forEach(c => {
-      const g = scene.querySelector('#hs-' + c.id);
-      if (!g) return;
-      g.setAttribute('tabindex', '0');
-      g.setAttribute('role', 'button');
-      g.setAttribute('aria-label', 'Scene feature');
-      function findIt() {
-        if (g.classList.contains('found')) return;
-        g.classList.add('found');
-        const hit = g.querySelector('.hit');
-        const ring = document.createElementNS(SVG_NS, 'circle');
-        ring.setAttribute('class', 'found-ring');
-        ring.setAttribute('cx', hit.getAttribute('cx'));
-        ring.setAttribute('cy', hit.getAttribute('cy'));
-        ring.setAttribute('r', 28);
-        g.appendChild(ring);
-        sfx.find();
-        $('#spot-' + c.id).classList.add('found');
-        noteBox.innerHTML = '';
-        noteBox.appendChild(el('div', 'canopy-note', '<strong>' + c.icon + ' ' + c.name + ':</strong> ' + c.note));
-        addNote('canopy-' + c.id, 'Background', '<strong>' + c.name + ':</strong> ' + c.note);
-        found++;
-        if (found === DATA.canopy.length) {
-          recordScore('canopy', 0, 0); // exploratory station, not scored
-          setTimeout(() => stationComplete('canopy', 'Survey complete — all eight features logged. You now hold the background knowledge every Monteverde essay opens with.'), 900);
-        }
-      }
-      g.addEventListener('click', findIt);
-      g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); findIt(); } });
-    });
-  }
-
-  function buildCanopySceneSVG() {
-    function tree(x, y, s, hue) {
-      return '<g transform="translate(' + x + ',' + y + ') scale(' + s + ')">' +
-        '<rect x="-7" y="0" width="14" height="55" rx="5" fill="#5C4327"/>' +
-        '<ellipse cx="0" cy="-26" rx="52" ry="40" fill="' + hue + '"/>' +
-        '<ellipse cx="-30" cy="-6" rx="34" ry="26" fill="' + hue + '" opacity="0.9"/>' +
-        '<ellipse cx="30" cy="-4" rx="32" ry="25" fill="' + hue + '" opacity="0.85"/></g>';
+    function render() {
+      progress.textContent = 'Photograph ' + (idx + 1) + ' of ' + photos.length;
+      stage.innerHTML = '';
+      const p = photos[idx];
+      const card = el('div', 'field-card');
+      card.innerHTML =
+        '<figure class="field-figure">' +
+          '<img src="' + p.img + '" alt="' + p.alt + '" loading="lazy" />' +
+          '<figcaption>' + p.caption + '</figcaption>' +
+        '</figure>';
+      const panel = el('div', 'field-panel');
+      panel.appendChild(el('p', 'field-q', p.q));
+      const opts = el('div', 'quiz-options'); panel.appendChild(opts);
+      shuffle(p.options).forEach(o => {
+        const b = el('button', 'quiz-option', o.text);
+        b.addEventListener('click', () => {
+          $$('.quiz-option', opts).forEach(x => { x.disabled = true; });
+          if (o.correct) { b.classList.add('right'); sfx.snap(); earned += 10; }
+          else {
+            b.classList.add('wrong-pick'); sfx.err();
+            $$('.quiz-option', opts).forEach(x => { if (p.options.find(oo => oo.text === x.textContent && oo.correct)) x.classList.add('right'); });
+          }
+          panel.appendChild(el('div', 'feedback-note', p.note));
+          addNote('field-' + p.id, p.section, '<strong>' + p.caption + '</strong><br>' + p.note);
+          const next = el('button', 'primary-btn', idx < photos.length - 1 ? 'Next photograph →' : 'File my field report ✔');
+          next.style.marginTop = '12px';
+          next.addEventListener('click', () => {
+            idx++;
+            if (idx < photos.length) render();
+            else {
+              recordScore('field', earned, possible);
+              stationComplete('field', 'Field report filed. You can now read a photograph as geographical evidence — the resource-interpretation skill every CCEA Tourism question demands.');
+            }
+          });
+          panel.appendChild(next);
+        });
+        opts.appendChild(b);
+      });
+      card.appendChild(panel);
+      stage.appendChild(card);
     }
-    return '<svg viewBox="0 0 1000 600" xmlns="' + SVG_NS + '" role="img" aria-label="Illustrated Monteverde cloud forest scene with hidden features to find">' +
-      '<defs>' +
-      '<linearGradient id="cs-sky" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0" stop-color="#BFE0D8"/><stop offset="0.5" stop-color="#8FBFA8"/><stop offset="1" stop-color="#3D7A57"/></linearGradient>' +
-      '<linearGradient id="cs-ground" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0" stop-color="#2E6B45"/><stop offset="1" stop-color="#16402B"/></linearGradient>' +
-      '</defs>' +
-      '<rect width="1000" height="600" fill="url(#cs-sky)"/>' +
-      // far hills + Santa Elena (hotspot: town)
-      '<path d="M0,250 Q120,150 260,225 Q400,290 520,235 Q420,330 240,320 Q90,312 0,340 Z" fill="#6FA288" opacity="0.65"/>' +
-      '<path d="M520,260 Q660,180 820,250 Q930,295 1000,270 L1000,360 Q800,380 600,355 Z" fill="#5E947A" opacity="0.55"/>' +
-      '<g id="hs-town" class="hotspot"><g class="hotspot-art">' +
-      '<rect x="96" y="196" width="14" height="11" fill="#E8E2D2"/><polygon points="96,196 103,189 110,196" fill="#B5483A"/>' +
-      '<rect x="114" y="198" width="12" height="9" fill="#DCD4C0"/><polygon points="114,198 120,192 126,198" fill="#A8503E"/>' +
-      '<rect x="84" y="199" width="9" height="8" fill="#D8D0BE"/>' +
-      '<rect x="104" y="180" width="4" height="10" fill="#E8E2D2"/><polygon points="100,182 106,172 112,182" fill="#B5483A"/>' +
-      '</g><circle class="hit" cx="106" cy="194" r="36"/></g>' +
-      // mist band
-      '<ellipse cx="300" cy="270" rx="190" ry="22" fill="rgba(235,245,238,0.55)" style="filter:blur(6px)"/>' +
-      '<ellipse cx="760" cy="300" rx="170" ry="20" fill="rgba(235,245,238,0.5)" style="filter:blur(6px)"/>' +
-      // mid trees
-      tree(70, 380, 1.1, '#2F7B4E') + tree(195, 360, 0.9, '#3A8A5C') +
-      tree(905, 370, 1.2, '#2F7B4E') + tree(800, 385, 0.85, '#3A8A5C') +
-      tree(625, 372, 0.95, '#357F52') +
-      // suspension bridge between two big trees (hotspot: bridge)
-      tree(330, 350, 1.25, '#2A7148') + tree(560, 345, 1.2, '#2F7B4E') +
-      '<g id="hs-bridge" class="hotspot"><g class="hotspot-art">' +
-      '<path d="M340,310 Q450,345 555,305" stroke="#C9A86A" stroke-width="5" fill="none"/>' +
-      '<path d="M340,290 Q450,322 555,285" stroke="#A8854C" stroke-width="3" fill="none"/>' +
-      Array.from({ length: 9 }, (_, i) => { const x = 352 + i * 23; const y1 = 292 + Math.sin((i / 8) * Math.PI) * 30; return '<line x1="' + x + '" y1="' + (y1 - 1) + '" x2="' + x + '" y2="' + (y1 + 17) + '" stroke="#A8854C" stroke-width="2.5"/>'; }).join('') +
-      '<circle cx="430" cy="332" r="5" fill="#E4B824"/><rect x="426" y="335" width="8" height="12" rx="3" fill="#C0392B"/>' +
-      '</g><circle class="hit" cx="448" cy="315" r="55"/></g>' +
-      // quetzal in right tree (hotspot)
-      '<g id="hs-quetzal" class="hotspot"><g class="hotspot-art">' +
-      '<ellipse cx="582" cy="300" rx="9" ry="11" fill="#13A06B"/>' +
-      '<circle cx="582" cy="288" r="6" fill="#0E8A5C"/>' +
-      '<ellipse cx="582" cy="305" rx="5" ry="7" fill="#D53A2F"/>' +
-      '<path d="M580,310 Q576,345 581,368 M584,310 Q589,348 585,370" stroke="#0E8A5C" stroke-width="2.5" fill="none"/>' +
-      '<circle cx="584" cy="287" r="1.4" fill="#08291C"/><polygon points="588,288 594,290 588,292" fill="#E4B824"/>' +
-      '</g><circle class="hit" cx="583" cy="315" r="34"/></g>' +
-      // ground
-      '<path d="M0,420 Q250,395 500,415 Q750,435 1000,405 L1000,600 L0,600 Z" fill="url(#cs-ground)"/>' +
-      // trail
-      '<path d="M80,600 Q240,520 430,500 Q640,480 900,520 L940,600 Z" fill="#7A5C36" opacity="0.55"/>' +
-      // orchids on trunk (hotspot)
-      '<g id="hs-orchid" class="hotspot"><g class="hotspot-art">' +
-      '<rect x="172" y="395" width="16" height="90" rx="7" fill="#54391F"/>' +
-      '<circle cx="180" cy="412" r="6" fill="#E86CA8"/><circle cx="174" cy="408" r="4" fill="#F2A0C6"/><circle cx="186" cy="407" r="4" fill="#F2A0C6"/>' +
-      '<circle cx="180" cy="436" r="6" fill="#D14F92"/><circle cx="174" cy="432" r="4" fill="#E86CA8"/><circle cx="186" cy="431" r="4" fill="#E86CA8"/>' +
-      '<circle cx="180" cy="404" r="2.5" fill="#FFE89A"/><circle cx="180" cy="428" r="2.5" fill="#FFE89A"/>' +
-      '</g><circle class="hit" cx="180" cy="425" r="36"/></g>' +
-      // eco-lodge right (hotspot)
-      '<g id="hs-lodge" class="hotspot"><g class="hotspot-art">' +
-      '<rect x="812" y="442" width="92" height="52" rx="4" fill="#7A5C36"/>' +
-      '<polygon points="804,444 858,408 912,444" fill="#4E6E3C"/>' +
-      '<rect x="826" y="458" width="18" height="16" fill="#FFE9B0"/><rect x="868" y="458" width="18" height="16" fill="#FFE9B0"/>' +
-      '<rect x="850" y="468" width="13" height="26" fill="#54391F"/>' +
-      '<text x="817" y="438" font-size="13">🌿</text>' +
-      '</g><circle class="hit" cx="858" cy="455" r="48"/></g>' +
-      // guide + tourists on trail (hotspot)
-      '<g id="hs-guide" class="hotspot"><g class="hotspot-art">' +
-      '<circle cx="330" cy="497" r="7" fill="#C68B59"/><rect x="324" y="504" width="12" height="20" rx="4" fill="#2E5E3A"/>' +
-      '<path d="M322,494 Q330,486 338,494" stroke="#8A6A3A" stroke-width="5" fill="none"/>' +
-      '<circle cx="356" cy="501" r="6" fill="#E0B084"/><rect x="351" y="507" width="10" height="17" rx="4" fill="#5A7FA8"/>' +
-      '<circle cx="376" cy="503" r="6" fill="#B97F52"/><rect x="371" y="509" width="10" height="16" rx="4" fill="#A85E78"/>' +
-      '<line x1="338" y1="508" x2="344" y2="520" stroke="#2E5E3A" stroke-width="3"/>' +
-      '</g><circle class="hit" cx="352" cy="508" r="40"/></g>' +
-      // trail sign (hotspot)
-      '<g id="hs-sign" class="hotspot"><g class="hotspot-art">' +
-      '<rect x="556" y="468" width="7" height="44" fill="#54391F"/>' +
-      '<rect x="534" y="452" width="52" height="20" rx="3" fill="#C9A86A" stroke="#54391F" stroke-width="1.5"/>' +
-      '<text x="540" y="466" font-size="10" font-weight="800" fill="#3A2A12">SENDERO</text>' +
-      '<rect x="540" y="475" width="44" height="13" rx="3" fill="#B8915A" stroke="#54391F" stroke-width="1"/>' +
-      '<text x="545" y="485" font-size="8.5" font-weight="700" fill="#3A2A12">6 trails·13km</text>' +
-      '</g><circle class="hit" cx="560" cy="478" r="36"/></g>' +
-      // research station (hotspot)
-      '<g id="hs-research" class="hotspot"><g class="hotspot-art">' +
-      '<rect x="700" y="520" width="64" height="38" rx="4" fill="#DDE6DD"/>' +
-      '<polygon points="694,522 732,500 770,522" fill="#7A8C7A"/>' +
-      '<rect x="712" y="532" width="14" height="12" fill="#9FC2D6"/><rect x="738" y="532" width="14" height="12" fill="#9FC2D6"/>' +
-      '<line x1="732" y1="500" x2="732" y2="482" stroke="#5A5A5A" stroke-width="2.5"/>' +
-      '<circle cx="732" cy="480" r="3.5" fill="#C0392B"/>' +
-      '<text x="704" y="554" font-size="8" font-weight="800" fill="#3A4A42">TROPICAL SCIENCE CTR</text>' +
-      '</g><circle class="hit" cx="732" cy="528" r="44"/></g>' +
-      // foreground foliage
-      '<path d="M0,600 Q60,520 130,560 Q80,580 90,600 Z" fill="#1F5638"/>' +
-      '<path d="M1000,600 Q930,530 870,565 Q920,585 905,600 Z" fill="#1F5638"/>' +
-      '<ellipse cx="500" cy="560" rx="40" ry="9" fill="rgba(235,245,238,0.35)" style="filter:blur(5px)"/>' +
-      '</svg>';
+    render();
+
+    // Image credits (CC BY-SA attribution)
+    const credWrap = el('div', 'field-credits');
+    const credBtn = el('button', 'credits-toggle', 'ⓘ Image credits');
+    const credList = el('div', 'credits-list'); credList.hidden = true;
+    credList.innerHTML = '<p>Photographs via Wikimedia Commons:</p><ul>' +
+      DATA.imageCredits.map(c => '<li>' + c.what + ' — ' + c.who + ' (' + c.lic + ')</li>').join('') + '</ul>';
+    credBtn.addEventListener('click', () => { credList.hidden = !credList.hidden; });
+    credWrap.appendChild(credBtn); credWrap.appendChild(credList);
+    wrap.appendChild(credWrap);
   }
 
   /* =====================  Station 3 — Benefits classify  ===================== */
@@ -1373,7 +1289,7 @@
   }
 
   const BUILDERS = {
-    gate: buildGate, canopy: buildCanopy, benefits: buildBenefits,
+    gate: buildGate, field: buildField, benefits: buildBenefits,
     shadow: buildShadow, however: buildHowever, examiner: buildExaminer, verdict: buildVerdict
   };
 

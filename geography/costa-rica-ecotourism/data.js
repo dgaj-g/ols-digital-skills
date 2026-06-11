@@ -90,26 +90,111 @@ const DATA = {
   },
 
   /* ---------------------------------------------------------------
-     Station 2 — Canopy Walk: hidden-object exploration
-     Each find adds a field note. Positions are set in the SVG scene.
+     Station 2 — The Field Investigation: photo-evidence interpretation.
+     Real photographs of the case study; each asks the pupil to read the
+     image as geographical evidence — the resource-interpretation skill
+     CCEA papers test. One scored attempt per photo, then a teaching note.
+     All images: Wikimedia Commons (see imageCredits below).
      --------------------------------------------------------------- */
-  canopy: [
-    { id: 'quetzal', name: 'Resplendent Quetzal', icon: '🦚',
-      note: 'The Resplendent Quetzal is the jewel of Monteverde’s 400 bird species. 91 species of migratory bird are protected in the preserved cloud forest.' },
-    { id: 'orchid', name: 'Orchid cluster', icon: '🌸',
-      note: 'Monteverde is home to the largest number of orchids in the world — 500 species, 34 of them only recently discovered.' },
-    { id: 'lodge', name: 'Arco Iris Lodge', icon: '🏡',
-      note: 'Tourists stay in small eco-lodges like the Arco Iris Lodge — 20 small cabins integrated into existing forest. It employs 72 people directly.' },
-    { id: 'bridge', name: 'Hanging suspension bridge', icon: '🌉',
-      note: 'Hanging suspension bridge tours are common — they minimise footfall on the fragile forest floor.' },
-    { id: 'guide', name: 'Accredited forest guide', icon: '🧭',
-      note: 'Accredited guides lead tourists along protected trails. Locals earn around $20 a day as guides — more than work in coffee, banana or dairy farming.' },
-    { id: 'sign', name: 'Trail marker', icon: '🪵',
-      note: 'Just 6 main trails (13 km in total) are open — only 2% of the forest. The rest is an absolute protection zone.' },
-    { id: 'town', name: 'Santa Elena & the community', icon: '⛪',
-      note: 'The Monteverde region is home to 6,800 Costa Ricans. Lodges buy produce from local farmers, keeping tourist money in the community.' },
-    { id: 'research', name: 'Research station', icon: '🔬',
-      note: 'The Tropical Science Center has managed the reserve since 1962. Its "monitoring plots" (established 2007) and control-and-vigilance programmes guard against ecological degradation.' }
+  field: {
+    intro: 'Six real photographs from the Monteverde case study have come back from the field. An auditor does not just look — she reads each image as evidence. For every photograph, choose what it actually proves about the reserve.',
+    photos: [
+      {
+        id: 'boundary',
+        img: 'assets/reserve-boundary.jpg',
+        alt: 'Satellite image of the Monteverde Cloud Forest Reserve showing dark green protected forest beside pale brown cleared farmland.',
+        caption: 'Satellite view — the reserve boundary runs through the scene (Copernicus Sentinel-2).',
+        q: 'The dark-green forest on the right meets pale, patchy farmland on the left. What does this sharp contrast prove?',
+        options: [
+          { text: 'Reserve status has halted deforestation — intact forest inside, cleared farmland outside.', correct: true },
+          { text: 'Both sides are protected; the colour difference is only cloud shadow.', correct: false },
+          { text: 'The reserve itself has been heavily logged, leaving the pale patches.', correct: false }
+        ],
+        note: 'Less than 2% of the forest has been cut down since 1990. Protection is so effective the boundary is visible from space — logging, farming and deforestation stop at the reserve edge.',
+        section: 'Benefits'
+      },
+      {
+        id: 'quetzal',
+        img: 'assets/quetzal.jpg',
+        alt: 'A male Resplendent Quetzal, a bird with iridescent green plumage, a red breast and long tail streamers, perched on a branch.',
+        caption: 'The Resplendent Quetzal — the most sought-after of Monteverde’s 400 bird species.',
+        q: 'Tourists travel across the world to glimpse this bird. What does that make Monteverde’s biodiversity?',
+        options: [
+          { text: 'An economic asset — the 400 bird species are the “product” conserving the forest pays to protect.', correct: true },
+          { text: 'A nuisance that tourism exists to control and reduce.', correct: false },
+          { text: 'Irrelevant to tourism — visitors come only for the lodges.', correct: false }
+        ],
+        note: 'The reserve protects 400 bird species and 91 migratory species. Biodiversity is the reason 70,000 tourists come — conserving it is what sustains the income, so ecotourism and conservation reinforce each other.',
+        section: 'Benefits'
+      },
+      {
+        id: 'toad',
+        img: 'assets/golden-toad.jpg',
+        alt: 'A bright orange golden toad on a green leaf — a species now extinct.',
+        caption: 'The golden toad — found only in Monteverde, and now extinct. This photograph is historic.',
+        q: 'This species lived nowhere else on Earth and is now gone. What should an honest auditor conclude?',
+        options: [
+          { text: 'Even a protected reserve cannot guarantee survival — ecotourism’s environmental record is genuinely mixed.', correct: true },
+          { text: 'Its extinction proves ecotourism is completely harmless to wildlife.', correct: false },
+          { text: 'It proves the reserve has no biodiversity left worth protecting.', correct: false }
+        ],
+        note: 'The golden toad’s extinction is cited as an environmental negative. A reserve protects habitat, but vulnerable species can still be lost — top-level evaluation acknowledges the failures alongside the successes.',
+        section: 'Negative impacts'
+      },
+      {
+        id: 'bridge',
+        img: 'assets/suspension-bridge.jpg',
+        alt: 'A long green metal suspension bridge stretching through the forest canopy.',
+        caption: 'A canopy suspension bridge — a signature Monteverde attraction.',
+        q: 'Bridges like this are marketed as eco-friendly. What is their real environmental advantage — and the catch?',
+        options: [
+          { text: 'They minimise footfall on the fragile forest floor — but they disturb canopy species such as the toucan.', correct: true },
+          { text: 'They are made of recycled plastic, so they have no impact whatsoever.', correct: false },
+          { text: 'They remove the need for any ground-level trails at all.', correct: false }
+        ],
+        note: 'Suspension walkways protect ground-level vegetation — a real benefit — yet they disturb the habitats of canopy-based species. A textbook “however”: a benefit and a drawback in one feature.',
+        section: 'Evaluation toolkit'
+      },
+      {
+        id: 'trail',
+        img: 'assets/forest-trail.jpg',
+        alt: 'A narrow earthen trail winding through dense, misty cloud-forest vegetation.',
+        caption: 'One of the reserve’s marked trails through the cloud forest.',
+        q: 'Trails like this are the only routes open to visitors. How much of the reserve can tourists actually enter?',
+        options: [
+          { text: 'Only about 2% — via 6 main trails totalling 13 km; the rest is an absolute protection zone.', correct: true },
+          { text: 'Around 80% — only the steepest slopes are closed off.', correct: false },
+          { text: 'All of it — there are no restrictions on where visitors may walk.', correct: false }
+        ],
+        note: '6 trails, 13 km, roughly 2% of the forest. The remaining 98% is an “absolute protection zone” where flora and fauna grow without human interference — carefully managed carrying capacity.',
+        section: 'Background'
+      },
+      {
+        id: 'town',
+        img: 'assets/santa-elena.jpg',
+        alt: 'The small town centre of Santa Elena, Monteverde, with shops, parked minibuses and people on the street.',
+        caption: 'Santa Elena — the town that serves the reserve.',
+        q: 'Tourism has transformed this town. Which is the genuine social impact recorded in the case study?',
+        options: [
+          { text: 'Its population has grown by 50% since 2005 — bringing wealth, but also social tensions and a “drinking culture”.', correct: true },
+          { text: 'It was abandoned because tourism made the cost of living impossible for everyone.', correct: false },
+          { text: 'Tourism has had no measurable effect on the town at all.', correct: false }
+        ],
+        note: 'The population grew 50% since 2005; “outsiders” from San José brought city culture, and with it a drinking culture and community tensions. Social impacts cut both ways — more income, but real strain.',
+        section: 'Negative impacts'
+      }
+    ]
+  },
+
+  /* Image attribution (Wikimedia Commons) — CC BY-SA / public domain. */
+  imageCredits: [
+    { what: 'Resplendent Quetzal', who: 'Giles Laurent', lic: 'CC BY-SA 4.0' },
+    { what: 'Satellite — reserve boundary', who: 'European Union, Copernicus Sentinel-2', lic: 'Copernicus / attribution' },
+    { what: 'Golden toad', who: 'Charles H. Smith (US FWS)', lic: 'Public domain' },
+    { what: 'Suspension bridge', who: 'Katherine Baumann', lic: 'CC BY-SA 4.0' },
+    { what: 'Forest trail', who: 'Cephas', lic: 'CC BY-SA 4.0' },
+    { what: 'Santa Elena town', who: 'Erebus555', lic: 'CC BY-SA 3.0' },
+    { what: 'Cloud-forest backdrop', who: 'Cephas', lic: 'CC BY-SA 4.0' }
   ],
 
   /* ---------------------------------------------------------------
