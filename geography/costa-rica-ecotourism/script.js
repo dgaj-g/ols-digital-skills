@@ -162,7 +162,9 @@
     vel: 0, raf: null,
     start() {
       if (this.raf) return;
-      const loop = () => { if (this.vel) window.scrollBy(0, this.vel); this.raf = requestAnimationFrame(loop); };
+      // behavior:'instant' — the page's CSS scroll-behavior:smooth would turn
+      // every per-frame scrollBy into a competing animation and stall the scroll
+      const loop = () => { if (this.vel) window.scrollBy({ top: this.vel, behavior: 'instant' }); this.raf = requestAnimationFrame(loop); };
       this.raf = requestAnimationFrame(loop);
     },
     update(y) {
@@ -188,7 +190,7 @@
   function enableDrag(chip, opts) {
     chip.style.touchAction = 'none';
     chip.setAttribute('tabindex', '0');
-    const ptr = { id: null, startX: 0, startY: 0, moved: false, t0: 0, origin: null, originNext: null, w: 0 };
+    const ptr = { id: null, startX: 0, startY: 0, moved: false };
 
     function zonesUnder(x, y) {
       const stack = document.elementsFromPoint(x, y);
@@ -203,17 +205,17 @@
       $$(opts.zoneSelector).forEach(z => z.classList.remove('drop-hover'));
     }
     function liftOut(e) {
+      /* Pin the chip at its current viewport position WITHOUT re-parenting it:
+         moving an element in the DOM mid-gesture releases pointer capture in
+         real browsers, which kills the drag. position:fixed alone takes it
+         out of layout flow; it stays in its original parent throughout. */
       const r = chip.getBoundingClientRect();
-      ptr.origin = chip.parentNode;
-      ptr.originNext = chip.nextSibling;
-      ptr.w = r.width;
       chip.style.position = 'fixed';
       chip.style.left = r.left + 'px';
       chip.style.top = r.top + 'px';
       chip.style.width = r.width + 'px';
       chip.style.margin = '0';
       chip.style.zIndex = '1000';
-      document.body.appendChild(chip);
       ptr.startX = e.clientX; ptr.startY = e.clientY;
       chip.classList.add('dragging');
       document.body.classList.add('dragging-active');
@@ -225,30 +227,16 @@
       chip.style.left = ''; chip.style.top = '';
       chip.style.width = ''; chip.style.margin = '';
       chip.style.zIndex = ''; chip.style.transform = '';
-      document.body.classList.remove('dragging-active');
-    }
-    function putBack() {
-      unstyle();
-      if (ptr.origin) {
-        if (ptr.originNext && ptr.originNext.parentNode === ptr.origin) ptr.origin.insertBefore(chip, ptr.originNext);
-        else ptr.origin.appendChild(chip);
-      }
-      chip.classList.add('snap-in');
-      setTimeout(() => chip.classList.remove('snap-in'), 380);
     }
 
-    chip.addEventListener('pointerdown', e => {
-      if (chip.classList.contains('locked')) return;
-      e.preventDefault();
-      ptr.id = e.pointerId; ptr.moved = false; ptr.t0 = performance.now();
-      ptr.startX = e.clientX; ptr.startY = e.clientY;
-      try { chip.setPointerCapture(e.pointerId); } catch (err) { /* ok */ }
-    });
-    chip.addEventListener('pointermove', e => {
+    /* The gesture is tracked with document-level listeners, registered on
+       pointerdown and removed on pointerup/cancel. Element-level listeners
+       depend on pointer capture, which real browsers can drop mid-drag —
+       document-level tracking can never lose the event stream. */
+    function onMove(e) {
       if (ptr.id !== e.pointerId) return;
-      const dx = e.clientX - ptr.startX, dy = e.clientY - ptr.startY;
       if (!ptr.moved) {
-        if (Math.hypot(dx, dy) < 6) return;
+        if (Math.hypot(e.clientX - ptr.startX, e.clientY - ptr.startY) < 6) return;
         ptr.moved = true;
         liftOut(e);
         return;
@@ -258,29 +246,39 @@
       clearHover();
       const z = zonesUnder(e.clientX, e.clientY);
       if (z && (!opts.accepts || opts.accepts(z, chip))) z.classList.add('drop-hover');
-    });
-    function finish(e) {
+    }
+    function onUp(e) {
       if (ptr.id !== e.pointerId) return;
-      try { chip.releasePointerCapture(e.pointerId); } catch (err) { /* ok */ }
       ptr.id = null;
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
       autoScroll.stop();
       clearHover();
+      document.body.classList.remove('dragging-active');
       if (!ptr.moved) return; // tap — no drag happened
       const z = (e.type === 'pointercancel') ? null : zonesUnder(e.clientX, e.clientY);
+      unstyle();
       if (z && (!opts.accepts || opts.accepts(z, chip))) {
-        unstyle();
         opts.onDrop(chip, z);
-        chip.classList.add('snap-in');
-        setTimeout(() => chip.classList.remove('snap-in'), 380);
         sfx.snap();
-      } else {
-        putBack();
-        if (e.type !== 'pointercancel') sfx.err();
+      } else if (e.type !== 'pointercancel') {
+        sfx.err(); // chip never left its parent, so it settles back where it was
       }
+      chip.classList.add('snap-in');
+      setTimeout(() => chip.classList.remove('snap-in'), 380);
       if (opts.onMoved) opts.onMoved();
     }
-    chip.addEventListener('pointerup', finish);
-    chip.addEventListener('pointercancel', finish);
+
+    chip.addEventListener('pointerdown', e => {
+      if (chip.classList.contains('locked') || ptr.id !== null) return;
+      e.preventDefault();
+      ptr.id = e.pointerId; ptr.moved = false;
+      ptr.startX = e.clientX; ptr.startY = e.clientY;
+      document.addEventListener('pointermove', onMove);
+      document.addEventListener('pointerup', onUp);
+      document.addEventListener('pointercancel', onUp);
+    });
 
     // Keyboard fallback (supplementary to the pointer drag, for accessibility)
     chip.addEventListener('keydown', e => {
@@ -952,18 +950,9 @@
 
       const anchor = card.querySelector('.thread-anchor');
       let dragId = null;
-      anchor.addEventListener('pointerdown', e => {
-        if (card.classList.contains('thread-right')) return;
-        e.preventDefault(); e.stopPropagation();
-        dragId = e.pointerId;
-        try { anchor.setPointerCapture(e.pointerId); } catch (err) { /* ok */ }
-        document.body.classList.add('dragging-active');
-        autoScroll.start();
-        tempPath = document.createElementNS(SVG_NS, 'path');
-        tempPath.setAttribute('class', 'yarn-line');
-        redraw();
-      });
-      anchor.addEventListener('pointermove', e => {
+      // Document-level tracking for the same reason as enableDrag — never
+      // depend on element-level pointer capture surviving the gesture.
+      function moveThread(e) {
         if (dragId !== e.pointerId || !tempPath) return;
         const a = anchorPoint(anchor);
         const b = boardPoint(e.clientX, e.clientY);
@@ -972,11 +961,26 @@
         $$('.board-pin', pinsRow).forEach(p => p.classList.remove('drop-hover'));
         const stack = document.elementsFromPoint(e.clientX, e.clientY);
         for (const elx of stack) { const p = elx.closest && elx.closest('.board-pin'); if (p) { p.classList.add('drop-hover'); break; } }
+      }
+      anchor.addEventListener('pointerdown', e => {
+        if (card.classList.contains('thread-right')) return;
+        e.preventDefault(); e.stopPropagation();
+        dragId = e.pointerId;
+        document.addEventListener('pointermove', moveThread);
+        document.addEventListener('pointerup', endThread);
+        document.addEventListener('pointercancel', endThread);
+        document.body.classList.add('dragging-active');
+        autoScroll.start();
+        tempPath = document.createElementNS(SVG_NS, 'path');
+        tempPath.setAttribute('class', 'yarn-line');
+        redraw();
       });
       function endThread(e) {
         if (dragId !== e.pointerId) return;
-        try { anchor.releasePointerCapture(e.pointerId); } catch (err) { /* ok */ }
         dragId = null;
+        document.removeEventListener('pointermove', moveThread);
+        document.removeEventListener('pointerup', endThread);
+        document.removeEventListener('pointercancel', endThread);
         autoScroll.stop();
         document.body.classList.remove('dragging-active');
         $$('.board-pin', pinsRow).forEach(p => p.classList.remove('drop-hover'));
@@ -997,8 +1001,6 @@
         status.textContent = 'Threads connected: ' + n + ' of ' + DATA.shadow.cards.length;
         configureCheck(true, n === DATA.shadow.cards.length, checked ? 'Check again' : 'Check the board');
       }
-      anchor.addEventListener('pointerup', endThread);
-      anchor.addEventListener('pointercancel', endThread);
     });
 
     configureCheck(true, false, 'Check the board');
