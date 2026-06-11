@@ -377,7 +377,7 @@
       '<path id="cm-flight" class="cr-flightpath" d="M888,140 C780,170 650,215 520,258 C475,272 446,286 432,297" opacity="0"/>' +
       '<path id="cm-road" class="cr-roadpath" d="M430,300 C405,292 380,275 355,262 C340,255 328,250 320,245" opacity="0"/>' +
       // Drawn plane (not an emoji — emoji orientation varies by platform); points along +x, rotated to the flight path tangent each frame
-      '<g id="cm-plane" opacity="0"><path d="M17,0 L9,-2.4 L-1,-2.4 L-9,-10 L-12.5,-10 L-7.5,-2.4 L-13,-2.4 L-16,-6 L-18.5,-6 L-16.5,0 L-18.5,6 L-16,6 L-13,2.4 L-7.5,2.4 L-12.5,10 L-9,10 L-1,2.4 L9,2.4 Z" fill="#1A3A6B" stroke="#FFFFFF" stroke-width="1.2" stroke-linejoin="round"/></g>' +
+      '<g id="cm-plane" opacity="0" style="filter:drop-shadow(0 1.5px 2px rgba(18,42,79,0.5))"><path d="M17,0 L9,-2.4 L-1,-2.4 L-9,-10 L-12.5,-10 L-7.5,-2.4 L-13,-2.4 L-16,-6 L-18.5,-6 L-16.5,0 L-18.5,6 L-16,6 L-13,2.4 L-7.5,2.4 L-12.5,10 L-9,10 L-1,2.4 L9,2.4 Z" fill="#E4B824" stroke="#1A3A6B" stroke-width="1.4" stroke-linejoin="round"/></g>' +
       '<text id="cm-bus" class="cr-bus" opacity="0">🚌</text>' +
       '<text class="cr-label" x="12" y="548" font-size="11" opacity="0.6">Stylised map — not to scale</text>' +
       '</svg>';
@@ -407,7 +407,7 @@
       const p = fp.getPointAtLength(at);
       const a = fp.getPointAtLength(behind), b = fp.getPointAtLength(ahead);
       const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
-      plane.setAttribute('transform', 'translate(' + p.x + ',' + p.y + ') rotate(' + ang + ')');
+      plane.setAttribute('transform', 'translate(' + p.x + ',' + p.y + ') rotate(' + ang + ') scale(1.4)');
     }
     const phases = [
       { dur: 2600, init() { caption.textContent = 'Crossing the Caribbean…'; fp.style.opacity = 1; plane.style.opacity = 1; movePlane(0); },
