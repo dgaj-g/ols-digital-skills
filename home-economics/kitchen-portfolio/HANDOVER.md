@@ -150,22 +150,36 @@ pinned version — stale-version phantom errors are documented in the French bui
 - The "year can't be changed later" line in the staff panel is deliberate: changing
   a class's year mid-stream would silently switch every pupil's prompts.
 
-## 7. NEXT SESSION — deploy + verify (the build→deploy→verify rhythm)
+## 7. DEPLOYED 2026-06-12 (by Claude, driving Damien's signed-in Chrome) — verify next
 
-1. Damien opens script.google.com on his C2k account → new project (or a Sheet-bound
-   one; standalone is fine — there is NO Sheet in this design).
-2. `pbcopy < server/Code.gs` → paste into Code.gs. `pbcopy < server/Index.html` →
-   paste into an HTML file named exactly `Index`. Run `initBoard()` once (authorise).
-3. Project Settings → Script Properties: set `staffPasscode` (share with the HE
-   department), `teacherEmail` (fallback share target, e.g. Helena's).
-4. Deploy → New deployment → Web app → Execute as: **User accessing the web app** →
-   Who has access: **Anyone within c2ken.net** → record the `/exec` URL in
-   `docs/deployed-apps.md`.
-5. Verify on the **pupil test account** (incognito): sign-in, welcome, a full entry
-   with 2 photos + 1 short video (probe list §4), Doc created/filed/shared, second
-   entry appends, staff panel with the real passcode (add class WITH year, QR,
-   dashboard), then a teacher account opens the pupil's Doc from the dashboard.
-6. `/publish` later = **Path-B variant** (no QR Word doc; email gives the `/exec`
+**LIVE:** the web app is deployed (standalone Apps Script project "My Kitchen
+Portfolio" on dgartland021@c2ken.net; Execute as: User accessing; access: Anyone
+within c2ken). The `/exec` URL is recorded in `docs/deployed-apps.md`. Script
+Properties set by hand (no initBoard run needed): `staffPasscode=kitchen26`
+(CHANGE/share as Damien prefers), `teacherEmail=dgartland021@c2ken.net` (testing
+fallback — switch to Helena's address at handover), `subject=Home Economics`.
+Deploy method worth keeping: the editor's Monaco model is scriptable
+(`monaco.editor.getEditors()[0].getModel().setValue(...)` after fetching the
+generated files from raw.githubusercontent.com — no hand-pasting). NOTE: an
+earlier same-night project was binned because its OAuth consent screen froze the
+name "Untitled project" (first auth attempt happened pre-rename). The live one
+shows "My Kitchen Portfolio (Unverified)" correctly. **Name a project BEFORE any
+auth attempt.**
+
+**STILL TO DO (needs a human click — the OAuth popup is outside automation reach):**
+1. Damien opens the `/exec` URL → Review permissions → choose his account →
+   Advanced → Go to My Kitchen Portfolio (unsafe) → Allow. (Once per user, same
+   click-through as Mon Carnet.)
+2. Verify end-to-end on his account, then the **pupil test account** (incognito):
+   full entry with 2 photos + 1 short video (probe list §4 — the resumable upload
+   is THE unknown), Doc created/filed/shared, second entry appends, staff panel
+   (passcode above; add class WITH year), per-class link, dashboard.
+3. Re-deploys after code changes: edit source → `node server/build-pathb.js` →
+   update the two files in the Apps Script project → Manage deployments → ✏️ →
+   **Version: New version** → Deploy (never reuse the pinned version).
+4. Ask a C2k admin to mark the OAuth client trusted before whole-class rollout
+   (removes the unverified-app interstitial).
+5. `/publish` later = **Path-B variant** (no QR Word doc; email gives the `/exec`
    link, pupils sign in with school accounts, teacher uses the Staff panel for class
    links/QR + dashboard). Flag to Helena: photos optional, video size guidance
    (short clips), and the §4 probe outcomes.
