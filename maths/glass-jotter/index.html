@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>The Glass Jotter — OLS Maths</title>
+  <meta name="description" content="OLS Maths M2 revision — show your working, line by line." />
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity gj">
+
+  <!-- ════ SCREEN · THE COVER (login) ════ -->
+  <section id="scr-cover" class="gj-screen scr-cover">
+    <div class="cover-desk">
+      <div class="cover" id="cover-book" aria-label="Your maths book">
+        <div class="cover-spine" aria-hidden="true"></div>
+        <div class="cover-face">
+          <img src="../../assets/crest.png" alt="Our Lady's Grammar School crest" class="cover-crest" />
+          <h1 class="cover-foil">Mathematics</h1>
+          <p class="cover-foil-sub">M2 Revision &middot; The Glass Jotter</p>
+          <div class="cover-label" id="cover-label">
+            <p class="label-school">Our Lady's Grammar School &middot; Newry</p>
+            <div class="label-rule"></div>
+            <label class="label-row" for="cover-name">
+              <span class="label-key">Name</span>
+              <input id="cover-name" type="text" autocomplete="off" maxlength="40"
+                     spellcheck="false" aria-label="Your first name and surname" />
+            </label>
+            <div class="label-row">
+              <span class="label-key">Class</span>
+              <span class="label-val" id="cover-class">&mdash;</span>
+            </div>
+            <div class="label-row">
+              <span class="label-key">Subject</span>
+              <span class="label-val">Mathematics &middot; CCEA GCSE M2</span>
+            </div>
+            <button id="cover-open" class="btn-stamp">Open your book</button>
+            <p id="cover-msg" class="label-msg" role="alert"></p>
+          </div>
+          <button id="cover-staff" class="staff-oval" aria-label="Staff area">Staff</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ SCREEN · THE SHELF (class dashboard) ════ -->
+  <section id="scr-shelf" class="gj-screen scr-shelf" hidden>
+    <header class="shelf-head">
+      <img src="../../assets/crest.png" alt="" class="shelf-crest" aria-hidden="true" />
+      <div class="shelf-titles">
+        <p class="shelf-eyebrow">Our Lady's Grammar School &middot; Mathematics</p>
+        <h1 class="shelf-title">The Glass Jotter</h1>
+        <p class="shelf-sub" id="shelf-greeting"></p>
+      </div>
+      <div class="shelf-name-pill" id="shelf-pupil"></div>
+    </header>
+    <main class="shelf-main">
+      <p class="shelf-instruction">Take a book down from the shelf.</p>
+      <div id="shelf-tiles" class="shelf-row"></div>
+      <p class="shelf-note" id="shelf-note"></p>
+    </main>
+  </section>
+
+  <!-- ════ SCREEN · INSIDE AN ACTIVITY ════ -->
+  <section id="scr-activity" class="gj-screen scr-activity" hidden>
+    <header class="act-bar">
+      <button id="act-back" class="btn-pencil btn-back">&larr; The shelf</button>
+      <div class="act-bar-titles">
+        <p class="act-bar-eyebrow" id="act-eyebrow"></p>
+        <h1 class="act-bar-title" id="act-title"></h1>
+      </div>
+      <div class="act-instrument" id="act-instrument" aria-hidden="true"></div>
+    </header>
+    <nav id="act-contents" class="contents-strip" aria-label="Exercises"></nav>
+    <main id="act-main" class="act-paper"></main>
+  </section>
+
+  <!-- ════ SCREEN · STAFF (markbook) — rendered by staff.js ════ -->
+  <section id="scr-staff" class="gj-screen scr-staff" hidden></section>
+
+  <div id="gj-modal-root"></div>
+
+  <footer class="act-footer">
+    <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+    <span>OLS Digital Skills</span>
+  </footer>
+
+  <script src="qrcode.min.js"></script>
+  <script src="mathcore.js"></script>
+  <script src="anglecore.js"></script>
+  <script src="content-angles.js"></script>
+  <script src="content-algebra.js"></script>
+  <script src="player.js"></script>
+  <script src="jotter.js"></script>
+  <script src="staff.js"></script>
+  <script src="script.js"></script>
+  <script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
