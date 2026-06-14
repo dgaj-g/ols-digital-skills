@@ -431,13 +431,25 @@
     document.getElementById('cover-class').textContent =
       BOOT.classCode === 'default' ? 'Maths' : BOOT.classCode;
     var msg = document.getElementById('cover-msg');
+    var staffOval = document.getElementById('cover-staff');
+
+    /* The STAFF affordance belongs to the teacher only. Pupils arrive on a
+       class link (?class=NAME) and must never see it. So show the visible
+       oval ONLY on the teacher landing (the bare link, classCode 'default');
+       hide it on every pupil class board. The teacher is never locked out:
+       a discreet triple-tap on the crest opens Staff from ANY board. */
+    var isTeacherLanding = (!BOOT.classCode || BOOT.classCode === 'default');
+    staffOval.hidden = !isTeacherLanding;
+
     msg.textContent = 'Looking up your name…';
     call('whoami').then(function () { return call('hello', {}); }).then(function (r) {
       if (!r || !r.ok) { msg.textContent = 'Could not reach the server — check your connection and reload.'; return; }
       me.email = r.email; me.name = r.name || ''; me.acts = r.acts || {}; me.summaries = r.summaries || {}; me.offline = !!r.offline;
       var input = document.getElementById('cover-name');
       if (me.name) input.value = me.name;
-      msg.textContent = me.offline ? 'Preview copy — work saves to this device only.' : 'Signed in as ' + me.email;
+      if (me.offline) msg.textContent = 'Preview copy — work saves to this device only.';
+      else if (me.name) msg.textContent = 'Welcome back, ' + me.name.split(' ')[0] + '. Tap to open your book.';
+      else msg.textContent = 'Signed in as ' + me.email + '. Add your name once, so your teacher sees it on her class list.';
     }).catch(function () {
       msg.textContent = 'Could not reach the server — check your connection and reload.';
     });
@@ -463,6 +475,19 @@
     document.getElementById('cover-staff').addEventListener('click', function () {
       window.GJ_STAFF.open();
     });
+    /* discreet, always-available teacher way in (so no lock-out on a class
+       board where the visible oval is hidden): triple-tap the crest. */
+    var crest = document.querySelector('.cover-crest');
+    if (crest) {
+      var taps = 0, tapTimer = null;
+      crest.style.cursor = 'default';
+      crest.addEventListener('click', function () {
+        taps++;
+        clearTimeout(tapTimer);
+        if (taps >= 3) { taps = 0; window.GJ_STAFF.open(); return; }
+        tapTimer = setTimeout(function () { taps = 0; }, 600);
+      });
+    }
   }
 
   /* — shelf — */
