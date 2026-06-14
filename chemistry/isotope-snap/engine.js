@@ -76,7 +76,7 @@
   function offlineTransport() {
     var LS = global.localStorage;
     var DB_KEY = 'isolab:db';
-    var SEED_VERSION = 3;
+    var SEED_VERSION = 5;
 
     function loadDb() {
       try { var db = JSON.parse(LS.getItem(DB_KEY)); if (!db || db.version !== SEED_VERSION) return seed(); return db; } catch (e) { return seed(); }
@@ -87,8 +87,8 @@
        so the leaderboard, groups and dashboard are all reviewable on localhost). */
     function seed() {
       var demoNames = [
-        ['Niamh', 'Kelly'], ['Saoirse', 'Byrne'], ['Ciara', 'Doyle'], ['Erin', 'Walsh'],
-        ['Orla', 'Quinn'], ['Mia', 'Connor'], ['Eabha', 'Hughes'], ['Caoimhe', 'Ryan']
+        ['Aoife', 'Murphy'], ['Niamh', 'Kelly'], ['Saoirse', 'Byrne'], ['Ciara', 'Doyle'],
+        ['Erin', 'Walsh'], ['Orla', 'Quinn'], ['Mia', 'Connor'], ['Eabha', 'Hughes'], ['Caoimhe', 'Ryan']
       ];
       var pupils = {};
       demoNames.forEach(function (nm, i) {
@@ -101,10 +101,10 @@
           groupId: null
         };
       });
-      // the previewing pupil shares the demo class (named later on sign-in)
-      var pe = 'preview.player@c2ken.net';
-      pupils[pe] = { email: pe, firstName: '', surname: '', name: '', xp: 40,
-        progress: { atom: { done: 1, best: 1 }, snap: { plays: 1, bestStreak: 3, bestScore: 40 }, massspec: { done: 0, correct: 0 } }, groupId: null };
+      // (the previewing pupil IS one of these seeded pupils — Aoife Murphy — so the
+      // preview shows the live auto-name experience: greeted, grouped, on the board)
+      var ae = 'aoife.murphy@demo.c2ken.net';
+      if (pupils[ae]) { pupils[ae].xp = 95; pupils[ae].progress = { atom: { done: 2, best: 2 }, snap: { plays: 2, bestStreak: 5, bestScore: 65 }, massspec: { done: 3, correct: 2 } }; }
       // pre-made groups, hidden by default (demonstrates the new feature's hidden state)
       var groups = [
         { id: 'g1', name: 'Curie', members: [], revealed: false },
@@ -140,7 +140,8 @@
 
     var api = {
       whoami: function () {
-        return res({ ok: true, email: 'preview.player@c2ken.net', name: null, preview: true });
+        // mimic the live C2k auto-name so the preview shows the zero-typing flow
+        return res({ ok: true, email: 'aoife.murphy@demo.c2ken.net', name: 'Aoife Murphy', preview: true });
       },
       setName: function (p) {
         var db = loadDb(), m = me(db, p.classCode);

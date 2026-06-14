@@ -45,7 +45,16 @@
       if (live) {
         var id = Lab.$('#signin-identity'); id.hidden = false; id.textContent = 'Signed in as ' + r.email;
       }
-      // already has a saved name? skip straight in.
+      // AUTO-NAME: C2k hands us the pupil's real first name + surname, so we sign
+      // them in with NO form at all — just a greeting, then straight to the hub.
+      if (r && r.name) {
+        Lab.state.name = r.name;
+        Lab.$('#signin-title').textContent = 'Welcome, ' + r.name.split(' ')[0] + '!';
+        Lab.call('state').then(function (s) { if (s && s.ok) applyState(s); finishSignIn(false); });
+        return;
+      }
+      // no auto-name (offline preview, or userinfo came back blank): use a saved
+      // name if we have one, otherwise fall back to the type-once form.
       Lab.call('state').then(function (s) {
         if (s && s.ok && s.name) {
           Lab.state.name = s.name; applyState(s);
@@ -53,8 +62,7 @@
           finishSignIn(true);
           return;
         }
-        // first time on this device: on the real login, the email is known but
-        // C2k emails are usernames, so pre-fill a best guess and ask them to confirm once.
+        // fallback: pre-fill a best guess from the email and ask them to confirm once.
         if (live) {
           var g = guessName(r.email);
           if (g) {
