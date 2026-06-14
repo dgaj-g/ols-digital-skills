@@ -48,6 +48,15 @@ PACK.angles.sections.forEach(function (sec) {
       if (!aOk || !bOk) fails++;
       return;
     }
+    if (q.kind === 'protractor') {
+      var tol = q.tol || 3;
+      var pa = Math.abs(q.value - q.value) <= tol;                 // (A) a correct reading marks right
+      var pb = Math.abs((q.value + 11) - q.value) > tol;           // (B) an 11° misread is caught
+      var scaleDiffers = Math.abs((180 - q.value) - q.value) > tol; // the wrong-scale decoy is a real, distinct error
+      rows.push([label, 'measure ' + q.value + '° (±' + tol + ')', pa ? 'OK' : 'WRONG-ANSWER', (pb && scaleDiffers) ? 'misread + wrong-scale caught' : 'NOT CAUGHT']);
+      if (!pa || !pb || !scaleDiffers) fails++;
+      return;
+    }
     var steps = angleModelRoute(q);
     if (!steps) { rows.push([label, 'route', 'NO-ROUTE', '-']); fails++; return; }
     var v = A.checkSteps(q, steps);

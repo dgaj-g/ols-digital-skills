@@ -217,6 +217,15 @@
           var pick = makeErr ? wrongOpt : q.classify;
           rec.att.push({ pick: pick, dur: 20, res: pick === q.classify ? 'OK' : 'X@1' });
           if (makeErr) rec.att.push({ pick: q.classify, dur: 15, res: 'OK' });
+        } else if (q.kind === 'protractor') {
+          // weak pupils read the wrong scale (180 − value), the rest measure right
+          if (makeErr) {
+            rec.att.push({ read: 180 - q.value, dur: 30, res: 'X@1', dx: 'WRONG_SCALE' });
+            if (rnd() < (profile === 'weak' ? 0.3 : 0.7)) rec.att.push({ read: q.value + (rnd() < 0.5 ? 1 : -1), dur: 25, res: 'OK' });
+            else rec.att.push({ read: 180 - q.value, dur: 20, res: 'X@1', dx: 'WRONG_SCALE' });
+          } else {
+            rec.att.push({ read: q.value + (rnd() < 0.5 ? 1 : (rnd() < 0.5 ? -2 : 0)), dur: 28, res: 'OK' });
+          }
         } else {
           var steps = modelAngleSteps(q);
           if (!steps) return;
@@ -382,6 +391,10 @@
           if (q.kind === 'classify') {
             var right = last.pick === q.classify;
             verdict = { res: right ? 'OK' : 'X@1', mk: [0, right ? 1 : 0], mkMax: [0, 1], perLine: [] };
+          } else if (q.kind === 'protractor') {
+            var pok = Math.abs((last.read || 0) - q.value) <= (q.tol || 3);
+            verdict = { res: pok ? 'OK' : 'X@1', mk: [0, pok ? 1 : 0], mkMax: [0, 1],
+              perLine: pok ? [] : [{ ok: 0, dx: last.dx || 'MISREAD' }] };
           } else {
             verdict = (actId === 'angles')
               ? window.GJ_ANGLES.checkSteps(q, last.steps || [])
