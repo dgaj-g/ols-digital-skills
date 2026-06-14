@@ -104,7 +104,7 @@ Mendeleev used them as: narrator panel (cross-fade `.swap-out` img swap), celebr
 - ✅ `app.js` — boot/sign-in/router glue.
 - ✅ QA in Claude Preview: console clean; mouse+touch drag verified; desktop/tablet/mobile screenshots good; groups hidden+reveal both verified; zero-knowledge holds (Snap needs Z+mass compare, Mass spec needs formula+ID).
 - ✅ Path B `server/Code.gs.template` (Pupils+Config tabs, all 7 APIs + 10 admin subs incl groups, GG gotchas) + `server/build-pathb.js` (ASCII assembler, abs github.io rewrites, OLS_TRANSPORT shim) + `server/DPO_Summary.md` + `server/DEPLOYMENT_RECIPE.md`. Reviewed; mirrors the verified offline stub. Live verify happens WITH Teresa at deploy (build→deploy→verify).
-- ⏭️ Draft PR + inbox comment + PushNotification.
+- ✅ Draft PR dgaj-g/ols-digital-skills#24, inbox comment on #19, PushNotification sent. Playbook updated (3D + groups patterns, .slot gotcha). **BUILD COMPLETE — awaiting Damien's review. Next step is /publish #19 (login-gated variant) once reviewed + deployed with Teresa.**
 
 ## To produce deploy files later (at /publish or deploy time)
 `cd chemistry/isotope-snap/server && node build-pathb.js` → emits `PathB_Code.gs` + `PathB_Index.html`. (Three.js loads from the absolute github.io URL, which only resolves AFTER the branch is merged to main — so build + deploy after merge.) Then follow `server/DEPLOYMENT_RECIPE.md`. Record the `/exec` URL in `docs/deployed-apps.md`.
