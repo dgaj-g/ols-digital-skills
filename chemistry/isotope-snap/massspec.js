@@ -136,7 +136,7 @@
       var t = document.createElement('span');
       t.className = 'ms-tile' + (d.kind === 'op' ? ' op' : '');
       t.dataset.kind = d.kind; t.dataset.value = d.value;
-      t.textContent = d.value; t.tile = true; t.slot = null;
+      t.textContent = d.value; t._slot = null;
       tray.appendChild(t); tiles.push(t);
       Lab.makeDraggable(t, {
         getDropTarget: function (x, y, node) { return dropTargetFor(x, y, node); },
@@ -161,14 +161,14 @@
   }
   function placeTile(tile, slotEl) {
     if (slotEl.tile && slotEl.tile !== tile) returnToTray(slotEl.tile);
-    if (tile.slot) { tile.slot.tile = null; tile.slot.classList.remove('filled', 'correct', 'wrong'); }
-    slotEl.tile = tile; tile.slot = slotEl;
+    if (tile._slot) { tile._slot.tile = null; tile._slot.classList.remove('filled', 'correct', 'wrong'); }
+    slotEl.tile = tile; tile._slot = slotEl;
     slotEl.appendChild(tile); slotEl.classList.add('filled'); slotEl.classList.remove('correct', 'wrong');
     Lab.sound.pop();
     updateEquals();
   }
   function returnToTray(tile) {
-    if (tile.slot) { tile.slot.tile = null; tile.slot.classList.remove('filled', 'correct', 'wrong'); tile.slot = null; }
+    if (tile._slot) { tile._slot.tile = null; tile._slot.classList.remove('filled', 'correct', 'wrong'); tile._slot = null; }
     Lab.$('#ms-tray').appendChild(tile);
     updateEquals();
   }

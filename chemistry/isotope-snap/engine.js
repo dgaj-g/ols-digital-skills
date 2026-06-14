@@ -76,16 +76,19 @@
   function offlineTransport() {
     var LS = global.localStorage;
     var DB_KEY = 'isolab:db';
+    var SEED_VERSION = 3;
 
     function loadDb() {
-      try { return JSON.parse(LS.getItem(DB_KEY)) || seed(); } catch (e) { return seed(); }
+      try { var db = JSON.parse(LS.getItem(DB_KEY)); if (!db || db.version !== SEED_VERSION) return seed(); return db; } catch (e) { return seed(); }
     }
     function saveDb(db) { try { LS.setItem(DB_KEY, JSON.stringify(db)); } catch (e) {} }
 
+    /* Seed a populated DEMO class (the bare-URL preview pupil lands here too,
+       so the leaderboard, groups and dashboard are all reviewable on localhost). */
     function seed() {
       var demoNames = [
-        ['Aoife', 'Murphy'], ['Niamh', 'Kelly'], ['Saoirse', 'Byrne'], ['Ciara', 'Doyle'],
-        ['Erin', 'Walsh'], ['Orla', 'Quinn'], ['Mia', 'Connor'], ['Eabha', 'Hughes']
+        ['Niamh', 'Kelly'], ['Saoirse', 'Byrne'], ['Ciara', 'Doyle'], ['Erin', 'Walsh'],
+        ['Orla', 'Quinn'], ['Mia', 'Connor'], ['Eabha', 'Hughes'], ['Caoimhe', 'Ryan']
       ];
       var pupils = {};
       demoNames.forEach(function (nm, i) {
@@ -98,8 +101,20 @@
           groupId: null
         };
       });
+      // the previewing pupil shares the demo class (named later on sign-in)
+      var pe = 'preview.player@c2ken.net';
+      pupils[pe] = { email: pe, firstName: '', surname: '', name: '', xp: 40,
+        progress: { atom: { done: 1, best: 1 }, snap: { plays: 1, bestStreak: 3, bestScore: 40 }, massspec: { done: 0, correct: 0 } }, groupId: null };
+      // pre-made groups, hidden by default (demonstrates the new feature's hidden state)
+      var groups = [
+        { id: 'g1', name: 'Curie', members: [], revealed: false },
+        { id: 'g2', name: 'Bohr', members: [], revealed: false },
+        { id: 'g3', name: 'Dalton', members: [], revealed: false }
+      ];
+      Object.keys(pupils).forEach(function (em, i) { var g = groups[i % 3]; g.members.push(em); pupils[em].groupId = g.id; });
       var db = {
-        classes: { 'demo': { name: 'demo', pupils: pupils, groups: [], groupsRevealed: false } },
+        version: SEED_VERSION,
+        classes: { 'default': { name: 'default', pupils: pupils, groups: groups, groupsRevealed: false } },
         passcode: 'demo'
       };
       saveDb(db);
@@ -166,7 +181,7 @@
         var db = loadDb();
         if (String(p.passcode || '').trim().toLowerCase() !== String(db.passcode).trim().toLowerCase())
           return res({ ok: false, error: 'bad-passcode' });
-        var c = cls(db, p.className || p.classCode || 'demo');
+        var c = cls(db, p.className || p.classCode || 'default');
         switch (p.sub) {
           case 'classes':
             return res({ ok: true, classes: Object.keys(db.classes).map(function (k) {
