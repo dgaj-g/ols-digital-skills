@@ -698,9 +698,9 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 }
 .protractor-tool { cursor: grab; }
 .protractor-tool:active { cursor: grabbing; }
-.prot-num { font-family: var(--f-stationery); font-size: 8px; fill: var(--teal); transition: font-size 130ms ease, fill 130ms ease; }
+.prot-num { font-family: var(--f-stationery); font-size: 9px; fill: var(--teal); transition: font-size 130ms ease, fill 130ms ease; }
 .prot-num.inner { fill: var(--pencil); }
-.prot-num.end { font-size: 6.5px; }
+.prot-num.end { font-size: 7px; }
 /* a number an angle arm is crossing — pops into focus for easy reading */
 .prot-num.lit { font-size: 13px; fill: var(--navy); font-weight: 700; paint-order: stroke; stroke: #FFFEFA; stroke-width: 2.6; }
 .prot-focus { pointer-events: none; }
@@ -944,6 +944,11 @@ body.dragging-active, body.dragging-active * {
   .keypad { grid-template-columns: repeat(6, 1fr); }
   .act-instrument { display: none; }
   .shelf-row { justify-content: center; }
+  /* on a phone, let diagrams reclaim the margin gutter + body padding so the
+     figure (and its tap targets) are as large as the screen allows */
+  .jq-diagram, .prot-wrap { margin-left: calc(var(--sq) * -2.4); margin-right: calc(var(--sq) * -0.6); }
+  .jq-diagram svg, .prot-wrap svg { max-width: none !important; }
+  .act-paper { padding-left: calc(var(--sq) * 0.6); padding-right: calc(var(--sq) * 0.6); }
 }
 @media (min-width: 1700px) {  /* Promethean board */
   :root { --sq: 26px; }
