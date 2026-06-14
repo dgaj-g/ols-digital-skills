@@ -41,11 +41,21 @@ The build fails loudly if any input file is missing; fix and re-run.
 
 ## 5. Classes + verify
 
-1. Open the `/exec` URL → STAFF stamp (bottom-right of the cover) → passcode.
+1. Open the **bare `/exec` URL** (no `?class=`) — this is the TEACHER landing and
+   the only board that shows the **STAFF** stamp (top-right of the cover) → passcode.
+   (Fallback from any board, incl. a class link: **triple-tap the crest** to open Staff.)
 2. Add a class, tick its activities, copy the class link / QR
    (links look like `…/exec?class=10B-Maths`).
-3. Verify as a pupil: open a class link in a normal signed-in C2k browser profile —
-   cover → name asked once → shelf shows only the ticked tiles.
+3. Verify as a pupil: open a **class link** in a normal signed-in C2k browser profile —
+   the cover shows **no STAFF stamp** (pupils never see it), name asked once, shelf
+   shows only the ticked tiles.
+
+**Pupils get the per-class link; you get the bare `/exec`.** The STAFF stamp is hidden
+on class links so it can't confuse pupils. Pupils sign in with their C2k account (their
+verified email is captured automatically); they type their display **name** once only —
+Apps Script's `Session.getActiveUser()` exposes the email but not the name, and C2k
+emails aren't real names, so the one-time name is what makes your markbook read
+"Méabh O'Hare" instead of an email. It then follows them to any device.
 
 ## 6. Re-deploys (every code change)
 
