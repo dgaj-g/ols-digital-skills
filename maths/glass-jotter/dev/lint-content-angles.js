@@ -49,6 +49,7 @@ pack.reasonBank.forEach(function (r) {
 });
 
 function lintDiagramGeometry(tag, diagram) {
+  if (!diagram) return;
   Object.keys(diagram.angles || {}).forEach(function (nm) {
     var def = diagram.angles[nm];
     var m = measure(diagram, def);
@@ -84,7 +85,7 @@ function lintMovie(tag, movie) {
   return movie.steps.length;
 }
 
-var ids = {}, totalQ = 0, totalSteps = 0, totalMarks = 0, classifyN = 0, numericN = 0;
+var ids = {}, totalQ = 0, totalSteps = 0, totalMarks = 0, classifyN = 0, numericN = 0, protractorN = 0;
 pack.sections.forEach(function (sec) {
   if (!sec.walt) problems.push(sec.id + ': missing WALT');
   totalSteps += lintMovie(sec.id + ' movie "' + (sec.movie && sec.movie.title) + '"', sec.movie);
@@ -105,6 +106,15 @@ pack.sections.forEach(function (sec) {
       if (classOf(def.value) !== q.classify) problems.push(q.id + ': drawn class ' + classOf(def.value) + ' != answer ' + q.classify);
       if (!q.options || q.options.length < 4) problems.push(q.id + ': classify needs the full option set');
       if (q.options.indexOf(q.classify) === -1) problems.push(q.id + ': answer missing from options');
+      return;
+    }
+    if (q.kind === 'protractor') {
+      protractorN++;
+      if (typeof q.value !== 'number' || q.value <= 0 || q.value >= 360) problems.push(q.id + ': protractor needs a sensible value (0–360)');
+      if (typeof q.armDeg !== 'number') problems.push(q.id + ': protractor needs armDeg');
+      if (!Array.isArray(q.vertex) || q.vertex.length !== 2) problems.push(q.id + ': protractor needs vertex [x,y]');
+      // the wrong-scale decoy (180−value) must be a DIFFERENT reading, else the dx is meaningless
+      if (Math.abs((180 - q.value) - q.value) <= (q.tol || 3)) problems.push(q.id + ': value too close to its 180− mirror for a meaningful scale check');
       return;
     }
     numericN++;
@@ -144,7 +154,7 @@ pack.sections.forEach(function (sec) {
 });
 
 console.log('[lint-content-angles] sections: ' + pack.sections.length +
-  ' · questions: ' + totalQ + ' (' + classifyN + ' classify, ' + numericN + ' reasoned)' +
+  ' · questions: ' + totalQ + ' (' + classifyN + ' classify, ' + protractorN + ' protractor, ' + numericN + ' reasoned)' +
   ' · movie steps: ' + totalSteps + ' · marks: ' + totalMarks);
 if (problems.length) {
   console.error('PROBLEMS (' + problems.length + '):');

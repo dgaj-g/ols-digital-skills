@@ -266,6 +266,9 @@
       if (q.kind === 'classify') {
         var right = last.pick === q.classify;
         verdict = { res: right ? 'OK' : 'X@1', mk: [0, right ? 1 : 0], mkMax: [0, 1], perLine: [] };
+      } else if (q.kind === 'protractor') {
+        var pok = Math.abs((last.read || 0) - q.value) <= (q.tol || 3);
+        verdict = { res: pok ? 'OK' : 'X@1', mk: [0, pok ? 1 : 0], mkMax: [0, 1], perLine: [{ dx: pok ? null : (last.dx || 'MISREAD') }] };
       } else {
         verdict = actId === 'angles' ? window.GJ_ANGLES.checkSteps(q, last.steps || []) : window.GJ_MATH.checkQuestion(q, last);
       }
@@ -288,6 +291,7 @@
       var steps = last.steps || [];
       var firstBadS = (verdict.perStep || []).findIndex(function (l) { return l.val === 0 || l.rsn === 0; });
       if (firstBadS >= 0 && steps[firstBadS]) out.cluster = '∠' + steps[firstBadS].ang + ' = ' + steps[firstBadS].val + '°';
+      if (q.kind === 'protractor' && last.read != null) out.cluster = 'measured ' + last.read + '° (true ' + q.value + '°)';
     }
     return out;
   }
@@ -299,7 +303,8 @@
     NEG_MUL_SIGN: 'Negative × negative slip', BOTHSIDES_ONE_SIDE: 'Operated on one side only',
     SWAP_NOFLIP: 'Swapped sides without care', ALT_CORR_SWAP: 'Alternate/corresponding confused',
     COINT_EQUAL: 'Treated interior (U) angles as equal', TRI_SUM_360: 'Used 360° in a triangle',
-    STRAIGHT_360: 'Used 360° on a straight line', VOP_SUPP: 'Mixed up vertically opposite with the straight-line pair'
+    STRAIGHT_360: 'Used 360° on a straight line', VOP_SUPP: 'Mixed up vertically opposite with the straight-line pair',
+    WRONG_SCALE: 'Read the wrong protractor scale', MISREAD: 'Misread / misplaced the protractor'
   };
 
   /* ═══ the Working Wall ════════════════════════════════════════════ */
@@ -442,6 +447,13 @@
             '<span class="' + (rightC ? 'glyph-ok' : 'glyph-err') + '" style="margin-right:8px">' + (rightC ? '✓' : '✗') + '</span>' +
             '<span class="wl-eq">' + esc(last.pick) + '</span>' +
             (rightC ? '' : '<span class="wl-margin-note">(answer: ' + esc(q.classify) + ')</span>')));
+        }
+        if (last.read != null) {
+          var rightP = Math.abs(last.read - q.value) <= (q.tol || 3);
+          bodyEl.appendChild(el('div', 'wline',
+            '<span class="' + (rightP ? 'glyph-ok' : 'glyph-err') + '" style="margin-right:8px">' + (rightP ? '✓' : '✗') + '</span>' +
+            '<span class="wl-eq">measured ' + esc(String(last.read)) + '°</span>' +
+            (rightP ? '' : '<span class="wl-margin-note">(true ' + q.value + '°' + (res.dx === 'WRONG_SCALE' || last.dx === 'WRONG_SCALE' ? ' · read the other scale' : '') + ')</span>')));
         }
         (last.steps || []).forEach(function (s, i) {
           var v = per[i] || {};
@@ -608,6 +620,7 @@
             return '<div class="' + (v.val === 0 ? 'wavy' : '') + '">' + (v.val === 1 ? '✓ ' : '✗ ') + '∠' + esc(s.ang) + ' = ' + esc(String(s.val)) + '°</div>';
           }).join('');
           if (last.pick != null) lines += '<div>' + (last.pick === q.classify ? '✓ ' : '✗ ') + esc(last.pick) + '</div>';
+          if (last.read != null) lines += '<div>' + (Math.abs(last.read - q.value) <= (q.tol || 3) ? '✓ ' : '✗ ') + 'measured ' + esc(String(last.read)) + '°</div>';
           var badge = res.st === 'ok' ? '<span class="glyph-ok">✓</span>' : res.st === 'amber' ? '<span class="glyph-amber">◐</span>' : res.st === 'err' ? '<span class="glyph-err">✗</span>' : '<span class="glyph-live">●</span>';
           var card = el('div', 'mini-jotter', '<div class="mj-name">' + badge + ' ' + esc(p.name || p.email) + '</div>' + (lines || '<span class="ui-msg">no lines yet</span>'));
           card.addEventListener('click', function () { showJotterPage(p.email); });

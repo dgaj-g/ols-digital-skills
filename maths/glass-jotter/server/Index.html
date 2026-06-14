@@ -916,6 +916,20 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 @keyframes caret-blink { 50% { opacity: 0; } }
 .compose .ph { color: var(--pencil); font-size: 15px; font-family: var(--f-stationery); }
 
+/* draggable protractor (measure-the-angle questions) */
+.protractor-canvas {
+  background: #FFFEFA;
+  border: 1px solid var(--page-edge);
+  border-radius: 4px;
+  margin: calc(var(--sq) * 0.5) auto;
+  box-shadow: 1px 1px 0 var(--page-edge);
+}
+.protractor-tool { cursor: grab; }
+.protractor-tool:active { cursor: grabbing; }
+.prot-num { font-family: var(--f-stationery); font-size: 8px; fill: var(--teal); }
+.prot-num.inner { fill: var(--pencil); }
+.prot-centre { pointer-events: none; }
+
 /* angles question layout */
 .jq-diagram { margin: calc(var(--sq) * 0.5) 0; }
 .jq-diagram svg { max-width: 100%; height: auto; display: block; }
@@ -2788,7 +2802,13 @@ window.OLS_TRANSPORT = {
       { id: 'c3', kind: 'classify', marks: [0, 1], classify: 'reflex', options: CLASSIFY_OPTS,
         prompt: 'Careful \u2014 look at which way the arc sweeps. What type of angle is marked?', diagram: classifyFig(75, 130, 305, true) },
       { id: 'c4', kind: 'classify', marks: [0, 1], classify: 'straight', options: CLASSIFY_OPTS,
-        prompt: 'What type of angle is marked at V?', diagram: classifyFig(12, 192, 180) }
+        prompt: 'What type of angle is marked at V?', diagram: classifyFig(12, 192, 180) },
+      { id: 'm1', kind: 'protractor', marks: [0, 1], value: 115, tol: 3, armDeg: 22,
+        vertex: [248, 206], armLen: 132,
+        prompt: 'Measure the angle with the protractor. Drag it onto the corner, line the zero line up with one arm, then read the size off the scale and type it.' },
+      { id: 'm2', kind: 'protractor', marks: [0, 1], value: 50, tol: 3, armDeg: 12,
+        vertex: [248, 206], armLen: 132,
+        prompt: 'Now measure this one. Remember to use the scale that starts at 0 on the arm you lined up.' }
     ]
   };
 
@@ -4402,9 +4422,169 @@ window.OLS_TRANSPORT = {
     return { qid: q.id };
   }
 
+  /* \u2500\u2500 protractor questions (s1 "measure the angle"): a real on-screen
+       protractor the pupil drags onto the corner, rotates to line the
+       zero up with one arm, then reads off and types the size. Genuine
+       fail state \u2014 misplace it and you misread; the classic "read the
+       other scale" slip is caught with a teaching note. \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+  function protractorMark(q, read) {
+    var tol = q.tol || 3;
+    if (Math.abs(read - q.value) <= tol) return { ok: true };
+    if (Math.abs(read - (180 - q.value)) <= tol) return { ok: false, dx: 'WRONG_SCALE' };
+    return { ok: false, dx: 'MISREAD' };
+  }
+  function buildProtractor() {
+    var R = 116, p = [], d, rad, x1, y1, x2, y2, len;
+    p.push('<path d="M ' + (-R) + ' 0 A ' + R + ' ' + R + ' 0 0 1 ' + R + ' 0 Z" fill="rgba(15,107,102,0.10)" stroke="#0F6B66" stroke-width="1.6"/>');
+    p.push('<path d="M ' + (-(R - 46)) + ' 0 A ' + (R - 46) + ' ' + (R - 46) + ' 0 0 1 ' + (R - 46) + ' 0" fill="none" stroke="#0F6B66" stroke-width="0.8" opacity="0.5"/>');
+    p.push('<line x1="' + (-R) + '" y1="0" x2="' + R + '" y2="0" stroke="#0F6B66" stroke-width="1.4"/>');
+    for (d = 0; d <= 180; d++) {
+      rad = d * Math.PI / 180; len = (d % 10 === 0) ? 14 : (d % 5 === 0) ? 9 : 5;
+      x1 = Math.cos(rad) * R; y1 = -Math.sin(rad) * R;
+      x2 = Math.cos(rad) * (R - len); y2 = -Math.sin(rad) * (R - len);
+      p.push('<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="#0F6B66" stroke-width="' + (d % 10 === 0 ? 1 : 0.55) + '"/>');
+    }
+    for (d = 0; d <= 180; d += 10) {
+      rad = d * Math.PI / 180;
+      var ox = Math.cos(rad) * (R - 24), oy = -Math.sin(rad) * (R - 24);
+      var ix = Math.cos(rad) * (R - 38), iy = -Math.sin(rad) * (R - 38);
+      p.push('<text x="' + ox.toFixed(1) + '" y="' + (oy + 3).toFixed(1) + '" text-anchor="middle" class="prot-num">' + d + '</text>');
+      p.push('<text x="' + ix.toFixed(1) + '" y="' + (iy + 3).toFixed(1) + '" text-anchor="middle" class="prot-num inner">' + (180 - d) + '</text>');
+    }
+    p.push('<g class="prot-centre"><circle cx="0" cy="0" r="3.5" fill="none" stroke="#C8102E" stroke-width="1.4"/><line x1="-10" y1="0" x2="10" y2="0" stroke="#C8102E" stroke-width="1"/><line x1="0" y1="-10" x2="0" y2="7" stroke="#C8102E" stroke-width="1"/></g>');
+    p.push('<g class="rotate-handle" style="cursor:grab"><circle cx="' + (R + 17) + '" cy="0" r="12" fill="#0F6B66"/><path d="M ' + (R + 12) + ' -4 A 6 6 0 1 1 ' + (R + 12) + ' 4" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M ' + (R + 9) + ' 3 l 3 4 l 3 -3 z" fill="#fff"/></g>');
+    return p.join('');
+  }
+
+  function mountProtractor(host, q, savedRec, hooks) {
+    var rec = savedRec || { att: [], lock: false, ovr: null };
+    if (!rec.att) rec.att = [];
+    var t0 = Date.now();
+
+    var wrap = el('div', 'jotter-q');
+    var margin = el('div', 'jq-margin', 'Q' + hooks.number);
+    var body = el('div', 'jq-body');
+    wrap.appendChild(margin); wrap.appendChild(body);
+    host.appendChild(wrap);
+    body.appendChild(el('p', 'jq-prompt', esc(q.prompt) + ' <span class="q-marks">[1 mark]</span>'));
+
+    var VBW = 380, VBH = 280;
+    var svg = sv('svg', { viewBox: '0 0 ' + VBW + ' ' + VBH, class: 'protractor-canvas' });
+    svg.style.cssText = 'touch-action:none;max-width:520px;width:100%;display:block;margin:0 auto';
+    body.appendChild(svg);
+
+    var V = q.vertex || [248, 206], L = q.armLen || 132;
+    function ray(deg) { var r = deg * Math.PI / 180; return [V[0] + Math.cos(r) * L, V[1] - Math.sin(r) * L]; }
+    var a1 = ray(q.armDeg), a2 = ray(q.armDeg + q.value);
+    var gAngle = sv('g', {});
+    [a1, a2].forEach(function (pt) { gAngle.appendChild(sv('line', { x1: V[0], y1: V[1], x2: pt[0], y2: pt[1], stroke: '#14213A', 'stroke-width': 2.6, 'stroke-linecap': 'round' })); });
+    gAngle.appendChild(sv('circle', { cx: V[0], cy: V[1], r: 3, fill: '#14213A' }));
+    svg.appendChild(gAngle);
+
+    var prot = sv('g', { class: 'protractor-tool' });
+    prot.innerHTML = buildProtractor();
+    svg.appendChild(prot);
+
+    var state = { cx: 116, cy: 116, rot: 0 };
+    function apply() { prot.setAttribute('transform', 'translate(' + state.cx.toFixed(1) + ',' + state.cy.toFixed(1) + ') rotate(' + state.rot.toFixed(1) + ')'); }
+    apply();
+
+    function toSvg(e) { var pp = svg.createSVGPoint(); pp.x = e.clientX; pp.y = e.clientY; return pp.matrixTransform(svg.getScreenCTM().inverse()); }
+    var drag = null;
+    function onMove(e) {
+      if (!drag) return;
+      var pp = toSvg(e);
+      if (drag.mode === 'move') { state.cx = drag.cx + (pp.x - drag.p.x); state.cy = drag.cy + (pp.y - drag.p.y); }
+      else { var ang = Math.atan2(pp.y - state.cy, pp.x - state.cx); state.rot = drag.rot + (ang - drag.ang) * 180 / Math.PI; }
+      apply();
+    }
+    function onUp() {
+      drag = null;
+      document.body.classList.remove('dragging-active');
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
+    }
+    function onDown(e, mode) {
+      if (rec.lock) return;
+      e.preventDefault();
+      var pp = toSvg(e);
+      document.body.classList.add('dragging-active');
+      drag = { mode: mode, p: pp, cx: state.cx, cy: state.cy, rot: state.rot, ang: Math.atan2(pp.y - state.cy, pp.x - state.cx) };
+      document.addEventListener('pointermove', onMove);
+      document.addEventListener('pointerup', onUp);
+      document.addEventListener('pointercancel', onUp);
+    }
+    prot.addEventListener('pointerdown', function (e) {
+      if (e.target.closest && e.target.closest('.rotate-handle')) return;
+      onDown(e, 'move');
+    });
+    var handle = prot.querySelector('.rotate-handle');
+    if (handle) handle.addEventListener('pointerdown', function (e) { e.stopPropagation(); onDown(e, 'rotate'); });
+
+    body.appendChild(el('p', 'ui-msg', 'Line the small red centre mark on the corner, turn the protractor so 0 sits along one arm, then read where the other arm crosses. Use the rotate knob on the right to turn it.'));
+    var compHost = el('div', '');
+    body.appendChild(compHost);
+    var composer = makeComposer(compHost, { numericOnly: true, label: 'Your measurement in degrees', placeholder: 'type the size you measure, in degrees', onCommit: function () { runCheck(); } });
+
+    var msgEl = el('p', 'ui-msg');
+    body.appendChild(msgEl);
+    var checkRow = el('div', 'check-row');
+    var checkBtn = el('button', 'btn-stamp', 'Check my measurement');
+    checkBtn.type = 'button';
+    checkRow.appendChild(checkBtn);
+    body.appendChild(checkRow);
+    var feedback = el('div', 'jq-feedback');
+    body.appendChild(feedback);
+
+    function flash(t) { msgEl.textContent = t; }
+
+    function finish(last, instant) {
+      var res = protractorMark(q, last.read);
+      feedback.innerHTML = '';
+      var mk = el('span', 'wl-mark');
+      mk.style.cssText = 'position:static;display:inline-block;width:26px;height:22px;vertical-align:middle';
+      feedback.appendChild(mk);
+      drawMark(mk, res.ok ? 'tick' : 'cross');
+      feedback.appendChild(el('span', 'mk-tally', ' ' + (res.ok ? '1/1' : '0/1') + ' \u00b7 you measured ' + last.read + '\u00b0'));
+      if (rec.lock) {
+        if (res.ok) feedback.appendChild(el('p', 'mk-comment', commentFor(q.id, 'perfect')));
+        else if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', 'You read the other scale \u2014 use the one that starts at 0 on the arm you lined up. The true size is ' + q.value + '\u00b0.'));
+        else feedback.appendChild(el('p', 'ui-msg', 'Not quite \u2014 line the centre on the corner and 0 along an arm, then read again. The true size is ' + q.value + '\u00b0.'));
+        checkRow.hidden = true;
+        composer.root.setAttribute('aria-disabled', 'true');
+        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally" style="font-size:18px">' + (res.ok ? '1' : '0') + '/1</div>';
+      } else if (!instant) {
+        if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', 'Close \u2014 but check you are reading the scale that starts at 0 on your lined-up arm. One more go.'));
+        else feedback.appendChild(el('p', 'ui-msg', 'Line it up carefully and read again \u2014 one more attempt.'));
+        composer.clear();
+      }
+    }
+
+    function runCheck() {
+      if (rec.lock) return;
+      var raw = composer.value();
+      var read = parseInt(raw, 10);
+      if (raw === '' || isNaN(read)) { flash('Type the size you measured first.'); return; }
+      if (read < 0 || read > 360) { flash('A measurement should be between 0 and 360 degrees.'); return; }
+      var res = protractorMark(q, read);
+      var att = { read: read, dur: Math.round((Date.now() - t0) / 1000), res: res.ok ? 'OK' : 'X@1' };
+      if (res.dx) att.dx = res.dx;
+      rec.att.push(att);
+      if (res.ok || rec.att.length >= 2) rec.lock = true;
+      finish(att);
+      hooks.onSave(q.id, rec);
+    }
+    checkBtn.addEventListener('click', runCheck);
+
+    if (rec.lock && rec.att.length) finish(rec.att[rec.att.length - 1], true);
+    return { qid: q.id };
+  }
+
   /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 mount \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
   function mount(host, q, savedRec, hooks) {
     if (q.kind === 'classify') return mountClassify(host, q, savedRec, hooks);
+    if (q.kind === 'protractor') return mountProtractor(host, q, savedRec, hooks);
     var actId = hooks.actId;
     var isAngles = actId === 'angles';
     var rec = savedRec || { att: [], lock: false, ovr: null };
@@ -5129,6 +5309,9 @@ window.OLS_TRANSPORT = {
       if (q.kind === 'classify') {
         var right = last.pick === q.classify;
         verdict = { res: right ? 'OK' : 'X@1', mk: [0, right ? 1 : 0], mkMax: [0, 1], perLine: [] };
+      } else if (q.kind === 'protractor') {
+        var pok = Math.abs((last.read || 0) - q.value) <= (q.tol || 3);
+        verdict = { res: pok ? 'OK' : 'X@1', mk: [0, pok ? 1 : 0], mkMax: [0, 1], perLine: [{ dx: pok ? null : (last.dx || 'MISREAD') }] };
       } else {
         verdict = actId === 'angles' ? window.GJ_ANGLES.checkSteps(q, last.steps || []) : window.GJ_MATH.checkQuestion(q, last);
       }
@@ -5151,6 +5334,7 @@ window.OLS_TRANSPORT = {
       var steps = last.steps || [];
       var firstBadS = (verdict.perStep || []).findIndex(function (l) { return l.val === 0 || l.rsn === 0; });
       if (firstBadS >= 0 && steps[firstBadS]) out.cluster = '\u2220' + steps[firstBadS].ang + ' = ' + steps[firstBadS].val + '\u00b0';
+      if (q.kind === 'protractor' && last.read != null) out.cluster = 'measured ' + last.read + '\u00b0 (true ' + q.value + '\u00b0)';
     }
     return out;
   }
@@ -5162,7 +5346,8 @@ window.OLS_TRANSPORT = {
     NEG_MUL_SIGN: 'Negative \u00d7 negative slip', BOTHSIDES_ONE_SIDE: 'Operated on one side only',
     SWAP_NOFLIP: 'Swapped sides without care', ALT_CORR_SWAP: 'Alternate/corresponding confused',
     COINT_EQUAL: 'Treated interior (U) angles as equal', TRI_SUM_360: 'Used 360\u00b0 in a triangle',
-    STRAIGHT_360: 'Used 360\u00b0 on a straight line', VOP_SUPP: 'Mixed up vertically opposite with the straight-line pair'
+    STRAIGHT_360: 'Used 360\u00b0 on a straight line', VOP_SUPP: 'Mixed up vertically opposite with the straight-line pair',
+    WRONG_SCALE: 'Read the wrong protractor scale', MISREAD: 'Misread / misplaced the protractor'
   };
 
   /* \u2550\u2550\u2550 the Working Wall \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
@@ -5305,6 +5490,13 @@ window.OLS_TRANSPORT = {
             '<span class="' + (rightC ? 'glyph-ok' : 'glyph-err') + '" style="margin-right:8px">' + (rightC ? '\u2713' : '\u2717') + '</span>' +
             '<span class="wl-eq">' + esc(last.pick) + '</span>' +
             (rightC ? '' : '<span class="wl-margin-note">(answer: ' + esc(q.classify) + ')</span>')));
+        }
+        if (last.read != null) {
+          var rightP = Math.abs(last.read - q.value) <= (q.tol || 3);
+          bodyEl.appendChild(el('div', 'wline',
+            '<span class="' + (rightP ? 'glyph-ok' : 'glyph-err') + '" style="margin-right:8px">' + (rightP ? '\u2713' : '\u2717') + '</span>' +
+            '<span class="wl-eq">measured ' + esc(String(last.read)) + '\u00b0</span>' +
+            (rightP ? '' : '<span class="wl-margin-note">(true ' + q.value + '\u00b0' + (res.dx === 'WRONG_SCALE' || last.dx === 'WRONG_SCALE' ? ' \u00b7 read the other scale' : '') + ')</span>')));
         }
         (last.steps || []).forEach(function (s, i) {
           var v = per[i] || {};
@@ -5471,6 +5663,7 @@ window.OLS_TRANSPORT = {
             return '<div class="' + (v.val === 0 ? 'wavy' : '') + '">' + (v.val === 1 ? '\u2713 ' : '\u2717 ') + '\u2220' + esc(s.ang) + ' = ' + esc(String(s.val)) + '\u00b0</div>';
           }).join('');
           if (last.pick != null) lines += '<div>' + (last.pick === q.classify ? '\u2713 ' : '\u2717 ') + esc(last.pick) + '</div>';
+          if (last.read != null) lines += '<div>' + (Math.abs(last.read - q.value) <= (q.tol || 3) ? '\u2713 ' : '\u2717 ') + 'measured ' + esc(String(last.read)) + '\u00b0</div>';
           var badge = res.st === 'ok' ? '<span class="glyph-ok">\u2713</span>' : res.st === 'amber' ? '<span class="glyph-amber">\u25d0</span>' : res.st === 'err' ? '<span class="glyph-err">\u2717</span>' : '<span class="glyph-live">\u25cf</span>';
           var card = el('div', 'mini-jotter', '<div class="mj-name">' + badge + ' ' + esc(p.name || p.email) + '</div>' + (lines || '<span class="ui-msg">no lines yet</span>'));
           card.addEventListener('click', function () { showJotterPage(p.email); });
@@ -5738,6 +5931,15 @@ window.OLS_TRANSPORT = {
           var pick = makeErr ? wrongOpt : q.classify;
           rec.att.push({ pick: pick, dur: 20, res: pick === q.classify ? 'OK' : 'X@1' });
           if (makeErr) rec.att.push({ pick: q.classify, dur: 15, res: 'OK' });
+        } else if (q.kind === 'protractor') {
+          // weak pupils read the wrong scale (180 \u2212 value), the rest measure right
+          if (makeErr) {
+            rec.att.push({ read: 180 - q.value, dur: 30, res: 'X@1', dx: 'WRONG_SCALE' });
+            if (rnd() < (profile === 'weak' ? 0.3 : 0.7)) rec.att.push({ read: q.value + (rnd() < 0.5 ? 1 : -1), dur: 25, res: 'OK' });
+            else rec.att.push({ read: 180 - q.value, dur: 20, res: 'X@1', dx: 'WRONG_SCALE' });
+          } else {
+            rec.att.push({ read: q.value + (rnd() < 0.5 ? 1 : (rnd() < 0.5 ? -2 : 0)), dur: 28, res: 'OK' });
+          }
         } else {
           var steps = modelAngleSteps(q);
           if (!steps) return;
@@ -5903,6 +6105,10 @@ window.OLS_TRANSPORT = {
           if (q.kind === 'classify') {
             var right = last.pick === q.classify;
             verdict = { res: right ? 'OK' : 'X@1', mk: [0, right ? 1 : 0], mkMax: [0, 1], perLine: [] };
+          } else if (q.kind === 'protractor') {
+            var pok = Math.abs((last.read || 0) - q.value) <= (q.tol || 3);
+            verdict = { res: pok ? 'OK' : 'X@1', mk: [0, pok ? 1 : 0], mkMax: [0, 1],
+              perLine: pok ? [] : [{ ok: 0, dx: last.dx || 'MISREAD' }] };
           } else {
             verdict = (actId === 'angles')
               ? window.GJ_ANGLES.checkSteps(q, last.steps || [])

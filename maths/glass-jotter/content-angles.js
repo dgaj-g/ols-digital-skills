@@ -165,7 +165,13 @@
       { id: 'c3', kind: 'classify', marks: [0, 1], classify: 'reflex', options: CLASSIFY_OPTS,
         prompt: 'Careful — look at which way the arc sweeps. What type of angle is marked?', diagram: classifyFig(75, 130, 305, true) },
       { id: 'c4', kind: 'classify', marks: [0, 1], classify: 'straight', options: CLASSIFY_OPTS,
-        prompt: 'What type of angle is marked at V?', diagram: classifyFig(12, 192, 180) }
+        prompt: 'What type of angle is marked at V?', diagram: classifyFig(12, 192, 180) },
+      { id: 'm1', kind: 'protractor', marks: [0, 1], value: 115, tol: 3, armDeg: 22,
+        vertex: [248, 206], armLen: 132,
+        prompt: 'Measure the angle with the protractor. Drag it onto the corner, line the zero line up with one arm, then read the size off the scale and type it.' },
+      { id: 'm2', kind: 'protractor', marks: [0, 1], value: 50, tol: 3, armDeg: 12,
+        vertex: [248, 206], armLen: 132,
+        prompt: 'Now measure this one. Remember to use the scale that starts at 0 on the arm you lined up.' }
     ]
   };
 

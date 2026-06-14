@@ -688,6 +688,20 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 @keyframes caret-blink { 50% { opacity: 0; } }
 .compose .ph { color: var(--pencil); font-size: 15px; font-family: var(--f-stationery); }
 
+/* draggable protractor (measure-the-angle questions) */
+.protractor-canvas {
+  background: #FFFEFA;
+  border: 1px solid var(--page-edge);
+  border-radius: 4px;
+  margin: calc(var(--sq) * 0.5) auto;
+  box-shadow: 1px 1px 0 var(--page-edge);
+}
+.protractor-tool { cursor: grab; }
+.protractor-tool:active { cursor: grabbing; }
+.prot-num { font-family: var(--f-stationery); font-size: 8px; fill: var(--teal); }
+.prot-num.inner { fill: var(--pencil); }
+.prot-centre { pointer-events: none; }
+
 /* angles question layout */
 .jq-diagram { margin: calc(var(--sq) * 0.5) 0; }
 .jq-diagram svg { max-width: 100%; height: auto; display: block; }
