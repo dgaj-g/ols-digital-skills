@@ -700,6 +700,7 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 .protractor-tool:active { cursor: grabbing; }
 .prot-num { font-family: var(--f-stationery); font-size: 8px; fill: var(--teal); }
 .prot-num.inner { fill: var(--pencil); }
+.prot-num.end { font-size: 6.5px; }
 .prot-centre { pointer-events: none; }
 
 /* angles question layout */

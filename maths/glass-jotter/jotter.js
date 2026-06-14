@@ -252,17 +252,18 @@
       rad = d * Math.PI / 180;
       var ox = Math.cos(rad) * (R - 20), oy = -Math.sin(rad) * (R - 20) + 3;
       var ix = Math.cos(rad) * (R - 35), iy = -Math.sin(rad) * (R - 35) + 3;
+      var endCls = '';
       if (d === 0 || d === 180) {
-        /* the 0/180 labels fall ON the baseline, where +3 drops them below
-           the flat edge and they clip. Tuck them low into the baseline
-           corner (just inside the flat edge) so they read as the end
-           markers and clear the 10/170 arc numbers above them. */
+        /* the 0/180 labels fall ON the baseline; tuck them right down onto
+           the baseline endpoints (smaller, via .end) so they sit clearly
+           BELOW the 10/170 arc numbers and inside the rim, never clipping. */
         var s = (d === 0) ? 1 : -1;
-        ox = s * (R - 14); oy = -5;
-        ix = s * (R - 33); iy = -5;
+        ox = s * (R - 12); oy = -3;
+        ix = s * (R - 30); iy = -3;
+        endCls = ' end';
       }
-      p.push('<text x="' + ox.toFixed(1) + '" y="' + oy.toFixed(1) + '" text-anchor="middle" class="prot-num">' + d + '</text>');
-      p.push('<text x="' + ix.toFixed(1) + '" y="' + iy.toFixed(1) + '" text-anchor="middle" class="prot-num inner">' + (180 - d) + '</text>');
+      p.push('<text x="' + ox.toFixed(1) + '" y="' + oy.toFixed(1) + '" text-anchor="middle" class="prot-num' + endCls + '">' + d + '</text>');
+      p.push('<text x="' + ix.toFixed(1) + '" y="' + iy.toFixed(1) + '" text-anchor="middle" class="prot-num inner' + endCls + '">' + (180 - d) + '</text>');
     }
     p.push('<g class="prot-centre"><circle cx="0" cy="0" r="3.5" fill="none" stroke="#C8102E" stroke-width="1.4"/><line x1="-10" y1="0" x2="10" y2="0" stroke="#C8102E" stroke-width="1"/><line x1="0" y1="-10" x2="0" y2="7" stroke="#C8102E" stroke-width="1"/></g>');
     /* a turning knob at BOTH baseline ends, so one is always reachable even
