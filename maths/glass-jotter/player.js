@@ -444,8 +444,11 @@
     }
 
     function readTime(i) {
+      // dwell AFTER the step's animation has finished. The caption has been
+      // on screen throughout the draw, so this is top-up reading time, not
+      // the whole read — keep it snappy. ~270 wpm, floored and capped.
       var words = (movie.steps[i].say || '').split(/\s+/).length;
-      return Math.max(1600, words * 330);
+      return Math.min(3600, Math.max(850, words * 200));
     }
     function scheduleAuto() {
       if (!playing) return;
