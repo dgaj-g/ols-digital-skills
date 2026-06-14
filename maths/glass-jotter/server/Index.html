@@ -4434,25 +4434,42 @@ window.OLS_TRANSPORT = {
     return { ok: false, dx: 'MISREAD' };
   }
   function buildProtractor() {
-    var R = 116, p = [], d, rad, x1, y1, x2, y2, len;
+    var R = 108, p = [], d, rad, x1, y1, x2, y2, len;
     p.push('<path d="M ' + (-R) + ' 0 A ' + R + ' ' + R + ' 0 0 1 ' + R + ' 0 Z" fill="rgba(15,107,102,0.10)" stroke="#0F6B66" stroke-width="1.6"/>');
-    p.push('<path d="M ' + (-(R - 46)) + ' 0 A ' + (R - 46) + ' ' + (R - 46) + ' 0 0 1 ' + (R - 46) + ' 0" fill="none" stroke="#0F6B66" stroke-width="0.8" opacity="0.5"/>');
+    p.push('<path d="M ' + (-(R - 44)) + ' 0 A ' + (R - 44) + ' ' + (R - 44) + ' 0 0 1 ' + (R - 44) + ' 0" fill="none" stroke="#0F6B66" stroke-width="0.8" opacity="0.5"/>');
     p.push('<line x1="' + (-R) + '" y1="0" x2="' + R + '" y2="0" stroke="#0F6B66" stroke-width="1.4"/>');
     for (d = 0; d <= 180; d++) {
-      rad = d * Math.PI / 180; len = (d % 10 === 0) ? 14 : (d % 5 === 0) ? 9 : 5;
+      rad = d * Math.PI / 180; len = (d % 10 === 0) ? 13 : (d % 5 === 0) ? 9 : 5;
       x1 = Math.cos(rad) * R; y1 = -Math.sin(rad) * R;
       x2 = Math.cos(rad) * (R - len); y2 = -Math.sin(rad) * (R - len);
       p.push('<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="#0F6B66" stroke-width="' + (d % 10 === 0 ? 1 : 0.55) + '"/>');
     }
     for (d = 0; d <= 180; d += 10) {
       rad = d * Math.PI / 180;
-      var ox = Math.cos(rad) * (R - 24), oy = -Math.sin(rad) * (R - 24);
-      var ix = Math.cos(rad) * (R - 38), iy = -Math.sin(rad) * (R - 38);
-      p.push('<text x="' + ox.toFixed(1) + '" y="' + (oy + 3).toFixed(1) + '" text-anchor="middle" class="prot-num">' + d + '</text>');
-      p.push('<text x="' + ix.toFixed(1) + '" y="' + (iy + 3).toFixed(1) + '" text-anchor="middle" class="prot-num inner">' + (180 - d) + '</text>');
+      var ox = Math.cos(rad) * (R - 20), oy = -Math.sin(rad) * (R - 20) + 3;
+      var ix = Math.cos(rad) * (R - 35), iy = -Math.sin(rad) * (R - 35) + 3;
+      if (d === 0 || d === 180) {
+        /* the 0/180 labels fall ON the baseline, where +3 drops them below
+           the flat edge and they clip. Tuck them low into the baseline
+           corner (just inside the flat edge) so they read as the end
+           markers and clear the 10/170 arc numbers above them. */
+        var s = (d === 0) ? 1 : -1;
+        ox = s * (R - 14); oy = -5;
+        ix = s * (R - 33); iy = -5;
+      }
+      p.push('<text x="' + ox.toFixed(1) + '" y="' + oy.toFixed(1) + '" text-anchor="middle" class="prot-num">' + d + '</text>');
+      p.push('<text x="' + ix.toFixed(1) + '" y="' + iy.toFixed(1) + '" text-anchor="middle" class="prot-num inner">' + (180 - d) + '</text>');
     }
     p.push('<g class="prot-centre"><circle cx="0" cy="0" r="3.5" fill="none" stroke="#C8102E" stroke-width="1.4"/><line x1="-10" y1="0" x2="10" y2="0" stroke="#C8102E" stroke-width="1"/><line x1="0" y1="-10" x2="0" y2="7" stroke="#C8102E" stroke-width="1"/></g>');
-    p.push('<g class="rotate-handle" style="cursor:grab"><circle cx="' + (R + 17) + '" cy="0" r="12" fill="#0F6B66"/><path d="M ' + (R + 12) + ' -4 A 6 6 0 1 1 ' + (R + 12) + ' 4" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M ' + (R + 9) + ' 3 l 3 4 l 3 -3 z" fill="#fff"/></g>');
+    /* a turning knob at BOTH baseline ends, so one is always reachable even
+       when an arm or the pupil's hand covers the other */
+    function knob(hx) {
+      return '<g class="rotate-handle" style="cursor:grab"><circle cx="' + hx + '" cy="0" r="12" fill="#0F6B66"/>' +
+        '<path d="M ' + (hx - 5) + ' -4 A 6 6 0 1 1 ' + (hx - 5) + ' 4" fill="none" stroke="#fff" stroke-width="1.5"/>' +
+        '<path d="M ' + (hx - 8) + ' 3 l 3 4 l 3 -3 z" fill="#fff"/></g>';
+    }
+    p.push(knob(R + 15));
+    p.push(knob(-(R + 15)));
     return p.join('');
   }
 
@@ -4468,12 +4485,12 @@ window.OLS_TRANSPORT = {
     host.appendChild(wrap);
     body.appendChild(el('p', 'jq-prompt', esc(q.prompt) + ' <span class="q-marks">[1 mark]</span>'));
 
-    var VBW = 380, VBH = 280;
+    var VBW = 400, VBH = 290;
     var svg = sv('svg', { viewBox: '0 0 ' + VBW + ' ' + VBH, class: 'protractor-canvas' });
-    svg.style.cssText = 'touch-action:none;max-width:520px;width:100%;display:block;margin:0 auto';
+    svg.style.cssText = 'touch-action:none;max-width:540px;width:100%;display:block;margin:0 auto';
     body.appendChild(svg);
 
-    var V = q.vertex || [248, 206], L = q.armLen || 132;
+    var V = q.vertex || [252, 212], L = q.armLen || 130;
     function ray(deg) { var r = deg * Math.PI / 180; return [V[0] + Math.cos(r) * L, V[1] - Math.sin(r) * L]; }
     var a1 = ray(q.armDeg), a2 = ray(q.armDeg + q.value);
     var gAngle = sv('g', {});
@@ -4485,7 +4502,7 @@ window.OLS_TRANSPORT = {
     prot.innerHTML = buildProtractor();
     svg.appendChild(prot);
 
-    var state = { cx: 116, cy: 116, rot: 0 };
+    var state = { cx: 152, cy: 128, rot: 0 };  // starts above the angle, both knobs on-canvas
     function apply() { prot.setAttribute('transform', 'translate(' + state.cx.toFixed(1) + ',' + state.cy.toFixed(1) + ') rotate(' + state.rot.toFixed(1) + ')'); }
     apply();
 
@@ -4519,10 +4536,11 @@ window.OLS_TRANSPORT = {
       if (e.target.closest && e.target.closest('.rotate-handle')) return;
       onDown(e, 'move');
     });
-    var handle = prot.querySelector('.rotate-handle');
-    if (handle) handle.addEventListener('pointerdown', function (e) { e.stopPropagation(); onDown(e, 'rotate'); });
+    Array.prototype.forEach.call(prot.querySelectorAll('.rotate-handle'), function (h) {
+      h.addEventListener('pointerdown', function (e) { e.stopPropagation(); onDown(e, 'rotate'); });
+    });
 
-    body.appendChild(el('p', 'ui-msg', 'Line the small red centre mark on the corner, turn the protractor so 0 sits along one arm, then read where the other arm crosses. Use the rotate knob on the right to turn it.'));
+    body.appendChild(el('p', 'ui-msg', 'Line the small red centre mark on the corner, then use a rotate knob (at either end) to turn the protractor so 0 sits along one arm, and read where the other arm crosses.'));
     var compHost = el('div', '');
     body.appendChild(compHost);
     var composer = makeComposer(compHost, { numericOnly: true, label: 'Your measurement in degrees', placeholder: 'type the size you measure, in degrees', onCommit: function () { runCheck(); } });
