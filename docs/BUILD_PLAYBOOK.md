@@ -32,7 +32,60 @@ inbox issue → orient → parse → download → read everything → restate th
 2. **Read everything, fully.** Not skim. A scanned page of handwritten notes gets OCR'd and read line by line. A storyboard sketch gets every arrow and annotation interpreted. A teacher's uploaded PowerPoint gets read slide by slide.
 3. **Accuracy is non-negotiable.** These activities may be shown to pupils on a Promethean board in front of an ETI inspector. Every fact must be verifiable against the source material. Never invent content.
 4. **When unsure, build your best interpretation — then flag it. Never halt to ask.** Damien wants a finished activity to react to, not mid-build questions. If something is ambiguous, make the most sensible decision, build the activity through to completion, and record every assumption and uncertainty in the PR description. Damien reviews the completed build and requests tweaks afterwards. A complete activity with honest flagged notes always beats a halted build with a question.
-5. **Match the Mendeleev bar.** `chemistry/mendeleev-cards/` is the quality reference. If you can't match it, say so in the PR.
+5. **Clear the bar — and the bar is the whole gallery, not one app.** The quality reference is the *ceiling of everything built so far*, not a single activity. See **"The reference gallery"** below: drag-drop polish (Mendeleev), a story-map journey (Costa Rica), a buildable collaborative diagram (Constitution), a login-gated project that writes the pupil's real Google Doc (Mon Carnet), a server-scored competition with a leaderboard and full teacher admin (Girls Coding), and a working-capture marking platform with a live markbook (Glass Jotter). Before building, look across the gallery, pick the build whose *shape* is closest, reuse its code — and then aim to **add something to the gallery**, not merely match one corner of it. If you fall short of what's already been achieved for this kind of activity, say so in the PR.
+
+---
+
+## The reference gallery — the bar
+
+The standard to clear is **the ceiling of everything built so far**, not one app. Each
+build below pushed a different frontier; together they are "the bar". When a brief
+arrives, find the one whose *shape* is closest, **read it and reuse its code**, then aim
+to add to this gallery rather than merely match a corner of it. Lowering your sights to a
+single example lowers the ambition of the build — don't.
+
+- **Mendeleev's Cards** — `chemistry/mendeleev-cards/`. The reference for **tactile
+  drag-and-drop polish and house feel**: the real Pointer-Events drag engine, snap-in /
+  bounce-back, procedural audio feedback, a celebration reveal, fluid responsive scaling.
+  Also where you learn the OLS look. (See also `chemistry/mendeleev-footsteps/` for the
+  page-wide text-selection lock during drags.)
+- **Costa Rica Ecotourism** — `geography/costa-rica-ecotourism/`. The reference for a
+  **narrative journey that also builds evaluation skill**: an animated country-map intro,
+  a quest-style trail-map hub, a *different* mini-mechanic at every station, a persistent
+  field-notebook drawer, real licensed Wikimedia photos paired with "what does this
+  *prove*?" mark-scheme questions, progress surviving reloads.
+- **The US Constitution Diagram** — `government-politics/constitution-diagram/`. The
+  reference for a **buildable / editable diagram** pupils construct over time (nodes, side
+  drawers, colour-coded notes, a read-only "model answer" toggle, a separate
+  genuine-consequence quiz) — and the first **login-gated collaborative class board**.
+- **Mon Carnet de France** — `french/mon-carnet-de-france/`. The reference for a
+  **Workspace project builder**: a department's existing project turned into guided
+  stations that finish by **generating the pupil's real first-draft Google Doc in her own
+  Drive**, auto-shared to her teacher and filed into a portfolio — plus a multi-teacher
+  staff panel and screenshot guide decks. Reach for it when the brief is "turn our
+  existing project into a guided digital experience that produces a real artefact".
+- **Girls Coding — Computational Thinking Challenge** — in Claude Work at
+  `0. Digital Skills Web Activities/GG/` (`challenge/` + `server/`). The reference for a
+  **login-gated, server-scored competition with a full teacher admin**: server-authoritative
+  scoring and timer, one attempt per pupil, **named class boards, per-class link + in-page
+  QR, a passcode dashboard with per-pupil results, a leaderboard, question-performance
+  analytics, CSV export, clear-per-class**. Copy from GG whenever a brief needs class
+  management, shareable links/QRs, a leaderboard, or stats.
+- **The Glass Jotter** — `maths/glass-jotter/`. The reference for **making pupils'
+  thinking visible, bespoke marking, an extensible platform, and a premium non-"AI" visual
+  identity**: pupils answer **line by line**, an exact-rational engine **marks like an
+  examiner** (any valid route, follow-through, named misconceptions), the platform is
+  **manifest-driven across topics** with per-class activity tickboxes, and the teacher gets
+  a live **markbook** (Working Wall, per-pupil jotter drill-down with one-tap override,
+  Marking Pile, Same-Question Sweep). Animated method movies; the "FAIR COPY" identity
+  (committed fonts, grid-locked paper, drawn-not-faded motion). Add a topic via
+  `maths/glass-jotter/ADDING_A_TOPIC.md`.
+
+**Use the gallery actively, not as a museum.** "Match Mendeleev" is necessary, never
+sufficient — for anything involving identity, saving work, scoring, class management, a
+real artefact, or making thinking visible, a richer build above is the true bar. If a
+brief could plausibly reach one of these ambitions and your build doesn't, justify why in
+the PR.
 
 ---
 
@@ -66,7 +119,7 @@ Then read, in order:
 1. `README.md` — repo structure and conventions
 2. `docs/BUILD_PLAYBOOK.md` — this file (you're reading it)
 3. `style.css` — the shared brand stylesheet (CSS variables, footer styles)
-4. `chemistry/mendeleev-cards/index.html`, `style.css`, `script.js` — **the reference build.** This is what "good" looks like.
+4. **The reference gallery** (see the section "The reference gallery — the bar" below) — skim what's been built and open the ONE whose shape is closest to today's brief. `chemistry/mendeleev-cards/` (`index.html`, `style.css`, `script.js`) is the drag-and-drop polish reference and the place to learn the house feel; it is **not** the only bar. This is what "good" looks like — across a *range* of ambitions, not one app.
 5. `assets/intro-loader.js` — the intro animation loader every activity includes
 
 **Context you can rely on (the environment):**
@@ -274,6 +327,77 @@ Pick the pattern that best serves the topic and the described pupil experience. 
 
 ### Other (teacher typed their own)
 Read what they typed; build the closest fit from the patterns above, or a sensible hybrid. Explain your interpretation in the PR.
+
+---
+
+## Step 6b — The capability toolbox (libraries you can reach for)
+
+**Default to vanilla HTML/CSS/JS + SVG** — it's what every build above uses, it inlines
+cleanly, and it never breaks the no-build / single-file / Chromebook constraints. Reach
+for a library only when it genuinely lifts the activity, and only if it is **free for
+school use, self-hostable, has no build step, needs no paid API key, and runs on a
+low-end Chromebook**. For login-gated (Apps Script) builds it must also be **inline-able
+into one self-contained HTML file** — verify that, not just "loads from a CDN". Vendor the
+minified file into the activity folder (like `qrcode.min.js`) and keep the licence notice.
+
+All of the following were licence- and fit-checked (Jun 2026). Consider them when a brief
+would be *better* with one — don't bolt them on for show.
+
+**Animation / polish**
+- **GSAP** — became **100% free in 2025** (Webflow released the whole toolkit, incl. the
+  old paid plugins; a free "no-charge" licence, commercial use fine). Pure JS, ~70KB,
+  inlines into an Apps Script page, no WebGL. Best for **silky 2D motion, SVG draw/morph,
+  and choreographing many-step sequences** reliably. The current builds hand-roll motion
+  (pen-speed SVG, rAF) and look bespoke already — reach for GSAP when a future build needs
+  an *elaborate* coordinated sequence, not as a blanket retrofit.
+- **anime.js** (MIT) — the lighter free alternative for slick reveals, staggers and SVG
+  animation.
+- **canvas-confetti** (ISC, ~16KB) — the universal full-marks / completion celebration.
+
+**Maths & data (your core departments)**
+- **JSXGraph** (MIT/LGPL, zero-dep, fully inline-able) — the standout for **bespoke
+  interactive maths**: drag a point and watch a tangent/angle update live, sliders,
+  constructions — all in one self-contained file where GeoGebra/Desmos can't go.
+- **MathJax in SVG mode** (`fontCache:'local'`, Apache-2.0) — publication-quality typeset
+  equations with **no external font files**, so each equation is self-contained — the
+  right fit for single-file maths/science pages. (KaTeX is faster/lighter but its CSS
+  needs font files inlined for a true single-file build; fine over a CDN.)
+- **Chart.js** (MIT, ~70KB) — highest impact-for-effort: pupils type numbers → polished
+  animated graph. Stats, Science results, Geography/Home-Ec data.
+- **p5.js** (LGPL) — a creative-coding canvas for genuine **simulations and generative
+  art** (kinetic-theory particles, wave visualisers, build-your-own-Kandinsky). Stay 2D on
+  Chromebooks.
+- **Matter.js** (MIT) — 2D physics for real "build-a-bridge / stack-the-blocks /
+  forces-and-motion" activities with genuine consequences.
+- **D3.js** (ISC) / **Observable Plot** (ISC) — for bespoke data visuals no chart library
+  can make; reach for Plot first (far less code), raw D3 only when you must.
+
+**Other departments**
+- **Tone.js** (MIT) — turns the browser into a playable instrument (Music; Science sound/
+  waves). Audio must start on a tap (browser rule).
+- **Leaflet** (BSD) — lightweight clickable maps (Geography/History/RE/Languages). The
+  library is free; point map *tiles* at a genuinely free source (OpenFreeMap) for class
+  use, not the default OSM tiles.
+- **3Dmol.js** (BSD) — rotate real 3D molecules (Science); the best-fitting 3D tool, one
+  self-contained file (needs WebGL — keep molecules small).
+- **Three.js** (MIT) — full 3D, but ~600KB + WebGL: **reserve for genuinely 3D activities**,
+  self-host on github.io rather than inlining, and keep scenes light. For almost everything
+  GSAP + SVG/Canvas is the lighter, safer choice.
+- **Mermaid** (MIT, already in the toolchain) — text→diagram (flowcharts, timelines,
+  concept maps), auto-layout (not pixel-precise).
+
+**Approach with caution — these fail one of the constraints, despite looking ideal:**
+- **Desmos API** — needs a partnership-issued key for real use and loads its engine from
+  Desmos's servers (not offline / not single-file). Use **JSXGraph** instead.
+- **GeoGebra embeds** — free for your own teaching but a **non-commercial** licence (blocks
+  redistribution) and it loads from geogebra.org / is multi-file (not self-contained).
+  **JSXGraph** fits where GeoGebra can't.
+- **KaTeX** (single-file builds), **Lottie** (needs its own `.json` asset), **MapLibre /
+  Vega-Lite** (heavy/WebGL or large bundles on weak Chromebooks) — all free, but check the
+  asset/weight catch before committing.
+
+If a tool would materially raise a build and meets the constraints, use it and note it in
+the PR. If you considered one and rejected it, that's worth a line too.
 
 ---
 
