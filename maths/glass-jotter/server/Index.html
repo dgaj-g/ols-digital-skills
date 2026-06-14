@@ -691,7 +691,9 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
   min-height: calc(var(--sq) * 1.5);
   font-size: 21px;
 }
-.movie-line .ml-margin { font-family: var(--f-stationery); font-size: 12px; color: var(--pencil); margin-left: auto; }
+/* the move annotation sits just after the working (like a teacher's note at
+   the board), not pinned to the far edge of the wide movie stage */
+.movie-line .ml-margin { font-family: var(--f-stationery); font-size: 13px; color: var(--pencil); margin-left: calc(var(--sq) * 0.5); align-self: center; }
 .movie-caption {
   display: flex;
   align-items: center;
@@ -751,7 +753,7 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 
 .movie-balance { max-width: 320px; margin: 0 auto calc(var(--sq) * 0.5); }
 .ml-eq { white-space: nowrap; }
-.ml-margin { font-family: var(--f-stationery); font-size: 12px; color: var(--pencil); margin-left: auto; padding-left: var(--sq); }
+.ml-margin { font-family: var(--f-stationery); font-size: 13px; color: var(--pencil); margin-left: calc(var(--sq) * 0.5); }
 
 /* theorem stamp (movies + jotter feedback) */
 .theorem-stamp {
@@ -3307,7 +3309,7 @@ window.OLS_TRANSPORT = {
           mode: 'paper',
           steps: [
             { say: 'Substituting means swapping each letter for its number. Today: a = 4, b = 7 and c = 3.',
-              do: [{ write: { text: 'a = 4      b = 7      c = 3', margin: '(given)' } }] },
+              do: [{ write: { text: 'a = 4      b = 7      c = 3' } }] },
             { say: 'Start gently with 6 + b. Wherever b appears, 7 goes in its place.',
               do: [{ write: { text: '6 + b = 6 + 7 = 13' } }, { tick: { line: 1 } }] },
             { say: '2a + b. Careful \u2014 2a is shorthand. The 2 and the a are multiplied.',
@@ -3325,7 +3327,7 @@ window.OLS_TRANSPORT = {
               do: [{ write: { text: '= 4 \u00d7 4 = 16' } }, { box: { line: 6 } }] },
             { say: 'Now negatives. New values: b = \u22121 and d = \u22124. Find b \u2212 d \u2014 bracket the \u22124 as you substitute.',
               do: [{ clear: {} },
-                   { write: { text: 'b = \u22121      d = \u22124', margin: '(given)' } },
+                   { write: { text: 'b = \u22121      d = \u22124' } },
                    { write: { text: 'b \u2212 d = \u22121 \u2212 (\u22124)' } }] },
             { say: 'Subtracting \u22124 is the same as adding 4. So \u22121 + 4 = 3. The brackets saved us.',
               do: [{ write: { text: '= \u22121 + 4 = 3' } }, { tick: { line: 2 } },
@@ -3631,7 +3633,7 @@ window.OLS_TRANSPORT = {
               do: [{ write: { text: 'x = 10', margin: '(\u00f75)' } }, { tick: { line: 3 } }] },
             { say: 'Gilda thinks of a number, adds 7, then multiplies by 4. Her answer is 64. Build the equation from her story.',
               do: [{ clear: {} },
-                   { write: { text: 'x  \u2192  x + 7  \u2192  4(x + 7)', margin: '(build)' } },
+                   { write: { text: 'x  \u2192  x + 7  \u2192  4(x + 7)', margin: '(her story)' } },
                    { write: { text: '4(x + 7) = 64' } }] },
             { say: 'Expanding brackets gives 4x + 28 = 64. Subtracting 28 from both sides gives 4x = 36.',
               do: [{ write: { text: '4x + 28 = 64', margin: '(expand)' } },
