@@ -292,9 +292,11 @@
     body.appendChild(el('p', 'jq-prompt', esc(q.prompt) + ' <span class="q-marks">[1 mark]</span>'));
 
     var VBW = 400, VBH = 290;
+    var pwrap = el('div', 'prot-wrap');
+    body.appendChild(pwrap);
     var svg = sv('svg', { viewBox: '0 0 ' + VBW + ' ' + VBH, class: 'protractor-canvas' });
     svg.style.cssText = 'touch-action:none;max-width:540px;width:100%;display:block;margin:0 auto';
-    body.appendChild(svg);
+    pwrap.appendChild(svg);
 
     var V = q.vertex || [252, 212], L = q.armLen || 130;
     function ray(deg) { var r = deg * Math.PI / 180; return [V[0] + Math.cos(r) * L, V[1] - Math.sin(r) * L]; }

@@ -926,9 +926,9 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 }
 .protractor-tool { cursor: grab; }
 .protractor-tool:active { cursor: grabbing; }
-.prot-num { font-family: var(--f-stationery); font-size: 8px; fill: var(--teal); transition: font-size 130ms ease, fill 130ms ease; }
+.prot-num { font-family: var(--f-stationery); font-size: 9px; fill: var(--teal); transition: font-size 130ms ease, fill 130ms ease; }
 .prot-num.inner { fill: var(--pencil); }
-.prot-num.end { font-size: 6.5px; }
+.prot-num.end { font-size: 7px; }
 /* a number an angle arm is crossing \2014  pops into focus for easy reading */
 .prot-num.lit { font-size: 13px; fill: var(--navy); font-weight: 700; paint-order: stroke; stroke: #FFFEFA; stroke-width: 2.6; }
 .prot-focus { pointer-events: none; }
@@ -1172,6 +1172,11 @@ body.dragging-active, body.dragging-active * {
   .keypad { grid-template-columns: repeat(6, 1fr); }
   .act-instrument { display: none; }
   .shelf-row { justify-content: center; }
+  /* on a phone, let diagrams reclaim the margin gutter + body padding so the
+     figure (and its tap targets) are as large as the screen allows */
+  .jq-diagram, .prot-wrap { margin-left: calc(var(--sq) * -2.4); margin-right: calc(var(--sq) * -0.6); }
+  .jq-diagram svg, .prot-wrap svg { max-width: none !important; }
+  .act-paper { padding-left: calc(var(--sq) * 0.6); padding-right: calc(var(--sq) * 0.6); }
 }
 @media (min-width: 1700px) {  /* Promethean board */
   :root { --sq: 26px; }
@@ -3750,6 +3755,7 @@ window.OLS_TRANSPORT = {
     var SC = 10; // abstract unit \u2192 px
     var W = diagram.w * SC, H = diagram.h * SC;
     var svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img' });
+    svg.style.width = '100%';
     svg.style.maxWidth = Math.min(640, W) + 'px';
     host.appendChild(svg);
     var gSegs = sv('g', {}), gArcs = sv('g', {}), gText = sv('g', {});
@@ -3795,7 +3801,7 @@ window.OLS_TRANSPORT = {
         var dx = pt.x - cx, dy = pt.y - cy, dl = Math.hypot(dx, dy) || 1;
         var t = sv('text', {
           x: pt.x + (dx / dl) * 16, y: pt.y + (dy / dl) * 16 + 5,
-          'text-anchor': 'middle', 'data-pt': nm
+          'text-anchor': 'middle', 'data-pt': nm, 'data-basesize': 14
         });
         t.textContent = nm.replace(/\d+$/, '');
         t.style.cssText = 'font-family:var(--f-maths);font-size:17px;font-style:italic;fill:#14213A';
@@ -3843,11 +3849,13 @@ window.OLS_TRANSPORT = {
         g.appendChild(p);
         sqEls[name] = p;
       } else {
+        // wide transparent hit band so the thin arc is easy to TAP on a phone
+        g.appendChild(sv('path', { d: info.d, fill: 'none', stroke: 'transparent', 'stroke-width': 42, 'stroke-linecap': 'round', 'pointer-events': 'stroke' }));
         var p2 = sv('path', { d: info.d, fill: 'none', stroke: colour || '#1A3A6B', 'stroke-width': 2.2, 'stroke-linecap': 'round' });
         g.appendChild(p2);
       }
       // value or letter label
-      var lbl = sv('text', { x: info.mid.x, y: info.mid.y + 5, 'text-anchor': 'middle', 'data-anglabel': name });
+      var lbl = sv('text', { x: info.mid.x, y: info.mid.y + 5, 'text-anchor': 'middle', 'data-anglabel': name, 'data-basesize': 13 });
       lbl.style.cssText = 'font-family:var(--f-maths);font-size:16px;fill:#14213A';
       if (d.given) lbl.textContent = d.value + '\u00b0';
       else if (d.label) { lbl.textContent = d.label; lbl.style.fontStyle = 'italic'; }
@@ -3862,6 +3870,33 @@ window.OLS_TRANSPORT = {
 
     (diagram.segs || []).forEach(function (s) { makeSeg(s, !opts.deferred); });
     Object.keys(diagram.angles || {}).forEach(function (nm) { makeArc(nm, !opts.deferred); });
+
+    /* Responsive: fit the viewBox to the actual figure (kills the empty
+       canvas so the diagram fills the width, vital on phones) and keep every
+       label at a constant on-screen size whatever the device scale. */
+    function applyLabelScale(vbW) {
+      var dispW = svg.getBoundingClientRect().width;
+      var scale = dispW / vbW;
+      if (!scale || !isFinite(scale)) return;
+      Array.prototype.forEach.call(svg.querySelectorAll('[data-basesize]'), function (el) {
+        el.style.fontSize = (parseFloat(el.getAttribute('data-basesize')) / scale).toFixed(1) + 'px';
+      });
+    }
+    var fitW = W;
+    try {
+      var bb = svg.getBBox();
+      if (bb && bb.width > 4 && bb.height > 4) {
+        var m = 26;
+        fitW = bb.width + 2 * m;
+        svg.setAttribute('viewBox', (bb.x - m).toFixed(1) + ' ' + (bb.y - m).toFixed(1) + ' ' + fitW.toFixed(1) + ' ' + (bb.height + 2 * m).toFixed(1));
+        svg.style.maxWidth = Math.min(560, Math.max(240, fitW)) + 'px';
+      }
+    } catch (e) {}
+    applyLabelScale(fitW);
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function () { applyLabelScale(parseFloat(svg.getAttribute('viewBox').split(' ')[2]) || fitW); });
+      ro.observe(svg);
+    }
 
     var handle = {
       svg: svg,
@@ -4492,9 +4527,11 @@ window.OLS_TRANSPORT = {
     body.appendChild(el('p', 'jq-prompt', esc(q.prompt) + ' <span class="q-marks">[1 mark]</span>'));
 
     var VBW = 400, VBH = 290;
+    var pwrap = el('div', 'prot-wrap');
+    body.appendChild(pwrap);
     var svg = sv('svg', { viewBox: '0 0 ' + VBW + ' ' + VBH, class: 'protractor-canvas' });
     svg.style.cssText = 'touch-action:none;max-width:540px;width:100%;display:block;margin:0 auto';
-    body.appendChild(svg);
+    pwrap.appendChild(svg);
 
     var V = q.vertex || [252, 212], L = q.armLen || 130;
     function ray(deg) { var r = deg * Math.PI / 180; return [V[0] + Math.cos(r) * L, V[1] - Math.sin(r) * L]; }

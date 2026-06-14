@@ -41,6 +41,7 @@
     var SC = 10; // abstract unit → px
     var W = diagram.w * SC, H = diagram.h * SC;
     var svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img' });
+    svg.style.width = '100%';
     svg.style.maxWidth = Math.min(640, W) + 'px';
     host.appendChild(svg);
     var gSegs = sv('g', {}), gArcs = sv('g', {}), gText = sv('g', {});
@@ -86,7 +87,7 @@
         var dx = pt.x - cx, dy = pt.y - cy, dl = Math.hypot(dx, dy) || 1;
         var t = sv('text', {
           x: pt.x + (dx / dl) * 16, y: pt.y + (dy / dl) * 16 + 5,
-          'text-anchor': 'middle', 'data-pt': nm
+          'text-anchor': 'middle', 'data-pt': nm, 'data-basesize': 14
         });
         t.textContent = nm.replace(/\d+$/, '');
         t.style.cssText = 'font-family:var(--f-maths);font-size:17px;font-style:italic;fill:#14213A';
@@ -134,11 +135,13 @@
         g.appendChild(p);
         sqEls[name] = p;
       } else {
+        // wide transparent hit band so the thin arc is easy to TAP on a phone
+        g.appendChild(sv('path', { d: info.d, fill: 'none', stroke: 'transparent', 'stroke-width': 42, 'stroke-linecap': 'round', 'pointer-events': 'stroke' }));
         var p2 = sv('path', { d: info.d, fill: 'none', stroke: colour || '#1A3A6B', 'stroke-width': 2.2, 'stroke-linecap': 'round' });
         g.appendChild(p2);
       }
       // value or letter label
-      var lbl = sv('text', { x: info.mid.x, y: info.mid.y + 5, 'text-anchor': 'middle', 'data-anglabel': name });
+      var lbl = sv('text', { x: info.mid.x, y: info.mid.y + 5, 'text-anchor': 'middle', 'data-anglabel': name, 'data-basesize': 13 });
       lbl.style.cssText = 'font-family:var(--f-maths);font-size:16px;fill:#14213A';
       if (d.given) lbl.textContent = d.value + '°';
       else if (d.label) { lbl.textContent = d.label; lbl.style.fontStyle = 'italic'; }
@@ -153,6 +156,33 @@
 
     (diagram.segs || []).forEach(function (s) { makeSeg(s, !opts.deferred); });
     Object.keys(diagram.angles || {}).forEach(function (nm) { makeArc(nm, !opts.deferred); });
+
+    /* Responsive: fit the viewBox to the actual figure (kills the empty
+       canvas so the diagram fills the width, vital on phones) and keep every
+       label at a constant on-screen size whatever the device scale. */
+    function applyLabelScale(vbW) {
+      var dispW = svg.getBoundingClientRect().width;
+      var scale = dispW / vbW;
+      if (!scale || !isFinite(scale)) return;
+      Array.prototype.forEach.call(svg.querySelectorAll('[data-basesize]'), function (el) {
+        el.style.fontSize = (parseFloat(el.getAttribute('data-basesize')) / scale).toFixed(1) + 'px';
+      });
+    }
+    var fitW = W;
+    try {
+      var bb = svg.getBBox();
+      if (bb && bb.width > 4 && bb.height > 4) {
+        var m = 26;
+        fitW = bb.width + 2 * m;
+        svg.setAttribute('viewBox', (bb.x - m).toFixed(1) + ' ' + (bb.y - m).toFixed(1) + ' ' + fitW.toFixed(1) + ' ' + (bb.height + 2 * m).toFixed(1));
+        svg.style.maxWidth = Math.min(560, Math.max(240, fitW)) + 'px';
+      }
+    } catch (e) {}
+    applyLabelScale(fitW);
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function () { applyLabelScale(parseFloat(svg.getAttribute('viewBox').split(' ')[2]) || fitW); });
+      ro.observe(svg);
+    }
 
     var handle = {
       svg: svg,
