@@ -92,21 +92,24 @@ Mendeleev used them as: narrator panel (cross-fade `.swap-out` img swap), celebr
 
 - ✅ Branch `draft/issue-19-chemistry-isotope-snap` created off main.
 - ✅ Character assets (30 files) copied to `assets/characters/`.
-- ✅ Three.js r149 vendored to `assets/vendor/three.min.js`.
-- ✅ HANDOVER.md (this file).
-- ⏭️ `data.js` — isotope/element data, Data Set 2, element table (Z→symbol/name for ID).
-- ⏭️ `index.html` — full page shell (header/footer/intro, sign-in, hub, all mode containers, staff panel, overlays).
-- ⏭️ `style.css` — brand-aligned styles (uses ../../style.css vars).
-- ⏭️ `script.js` — app shell: transport shim + offline stub, identity/sign-in, hub, narrator, router.
-- ⏭️ Mode A: 3D Build-an-Atom (Three.js scene, particles, controls, live readout, challenges).
-- ⏭️ Mode B: Isotope Snap (card render incl. 2D Bohr SVG, Snap logic, Web-Audio sounds, scoring).
-- ⏭️ Mode C: Mass Spectrometer (SVG charts, drag Ar formula, `=` resolve, element-ID input, 3 Qs).
-- ⏭️ Leaderboard + progress tracking wiring.
-- ⏭️ Groups: pupil "My Group" panel + staff Groups manager.
-- ⏭️ Staff dashboard (per-pupil results, filters, CSV).
-- ⏭️ Path B `server/Code.gs.template` + `server/build-pathb.js` (adapt GG, add groups).
-- ⏭️ QA in Claude Preview (mouse + touch, 375/768/1280, console clean, zero-knowledge test).
+- ✅ Three.js r149 vendored; qrcode.min.js vendored (from GG).
+- ✅ `data.js` — verified isotope + Data Set 2 content.
+- ✅ `index.html` — full shell (sign-in, hub, 3 modes, staff panel, overlays).
+- ✅ `style.css` — brand glass/gradient aesthetic, responsive.
+- ✅ `engine.js` — transport shim + offline demo stub (seeded class, groups, leaderboard), Web-Audio synth, narrator, canonical drag engine, modals/router.
+- ✅ `atom3d.js` — 3D Build-an-Atom (Three.js), controls, readout, challenges. QA: C→N on proton add, Li-7 challenge check + XP. ✓
+- ✅ `snap.js` — Isotope Snap, Bohr SVG + nuclide cards, sounds, scoring, teaching feedback. QA: pair detection + advance. ✓
+- ✅ `massspec.js` — drag Ar formula, SVG charts, denominator reveal, element ID. QA: full Si question correct, Ar 28.1, denom=200 teaching. ✓ (FIXED: tile.slot reserved-prop bug → tile._slot)
+- ✅ `staff.js` + leaderboard + My Group. QA: leaderboard populated, dashboard 9 pupils + CSV, groups auto-shuffle + drag-assign + reveal toggle. ✓
+- ✅ `app.js` — boot/sign-in/router glue.
+- ✅ QA in Claude Preview: console clean; mouse+touch drag verified; desktop/tablet/mobile screenshots good; groups hidden+reveal both verified; zero-knowledge holds (Snap needs Z+mass compare, Mass spec needs formula+ID).
+- ⏭️ Path B `server/Code.gs.template` + `server/build-pathb.js` (adapt GG, add groups + the full API surface below).
 - ⏭️ DPO summary + finalise HANDOVER + draft PR + inbox comment + PushNotification.
+
+## Server API contract (offline stub + Path B Code.gs must match)
+Pupil: `whoami`→{ok,email,name,preview}; `setName`{firstName,surname}→{ok,name}; `state`→{ok,name,xp,progress}; `save`{xp,progress}→{ok,xp}; `leaderboard`→{ok,top:[{rank,name,xp,isMe}],me:{pos,total,xp}}; `myGroup`→{ok,inGroup,groupName,revealed,members|null,memberCount,teamXp,myXp}.
+Staff `admin`{passcode,sub,...}: subs `classes`,`addClass`{name},`deleteClass`{name},`data`{className}→participants[], `groups`{className}→{groups,groupsRevealed,pupils}, `createGroup`{className,name}, `assignPupil`{className,email,groupId|null}, `autoGroup`{className,n}, `setReveal`{className,revealed}, `deleteGroup`{className,groupId}.
+progress shape: `{atom:{done,best}, snap:{plays,bestStreak,bestScore}, massspec:{done,correct}}`. xp = leaderboard + group-team key.
 
 ## Resume checklist / open questions
 - Verify Three.js renders inside the Apps Script sandboxed iframe on the live deploy (cross-origin script from github.io — crest already loads this way, should be fine; verify with Teresa's deploy).
