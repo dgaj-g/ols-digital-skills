@@ -309,7 +309,12 @@ body.activity {
 }
 .snap-snap-btn:hover { transform: translateY(-2px) scale(1.02); }
 .snap-snap-btn:active { transform: translateY(1px) scale(0.98); }
-.snap-no-btn { color: #fff; padding: 16px 24px; font-size: 1rem; }
+.snap-no-btn {
+  color: var(--ols-blue); background: #fff;
+  border: 2px solid var(--ols-blue-soft);
+  padding: 15px 24px; font-size: 1rem; font-weight: 700;
+}
+.snap-no-btn:hover { background: rgba(42, 79, 143, 0.09); border-color: var(--ols-blue); }
 .snap-feedback { text-align: center; margin: 14px auto 0; max-width: 560px; padding: 12px 16px; border-radius: var(--radius-sm); font-weight: 600; border-left: 4px solid; }
 .snap-feedback.good { background: var(--good-soft); color: #1d5e38; border-color: var(--good); }
 .snap-feedback.bad { background: var(--bad-soft); color: #8a2418; border-color: var(--bad); }

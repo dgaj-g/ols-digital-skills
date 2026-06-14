@@ -41,20 +41,39 @@
     Lab.call('whoami').then(function (r) {
       Lab.state.email = (r && r.email) || '';
       Lab.state.preview = !!(r && r.preview);
-      if (r && !r.preview && r.email) {
+      var live = r && !r.preview && r.email;
+      if (live) {
         var id = Lab.$('#signin-identity'); id.hidden = false; id.textContent = 'Signed in as ' + r.email;
       }
       // already has a saved name? skip straight in.
       Lab.call('state').then(function (s) {
         if (s && s.ok && s.name) {
           Lab.state.name = s.name; applyState(s);
-          // greet returning pupil
           Lab.$('#signin-title').textContent = 'Welcome back, ' + s.name.split(' ')[0] + '!';
           finishSignIn(true);
+          return;
+        }
+        // first time on this device: on the real login, the email is known but
+        // C2k emails are usernames, so pre-fill a best guess and ask them to confirm once.
+        if (live) {
+          var g = guessName(r.email);
+          if (g) {
+            Lab.$('#in-first').value = g.first; Lab.$('#in-surname').value = g.surname;
+            Lab.$('#signin-sub').textContent = "You're signed in with your school account. Check your name is right below (you only set this once), then enter the lab.";
+          } else {
+            Lab.$('#signin-sub').textContent = "You're signed in with your school account. Tell us your name once and it will remember you on every device.";
+          }
         }
       });
     });
   }
+  function guessName(email) {
+    var local = String(email).split('@')[0];
+    var parts = local.split(/[._\-]+/).filter(function (t) { return /^[a-z]{2,}$/i.test(t); });
+    if (parts.length >= 2) return { first: cap(parts[0]), surname: cap(parts[1]) };
+    return null;
+  }
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase(); }
   function applyState(s) {
     if (typeof s.xp === 'number') Lab.state.xp = s.xp;
     if (s.progress) Lab.state.progress = s.progress;
