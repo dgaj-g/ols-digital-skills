@@ -237,8 +237,9 @@
     if (Math.abs(read - (180 - q.value)) <= tol) return { ok: false, dx: 'WRONG_SCALE' };
     return { ok: false, dx: 'MISREAD' };
   }
+  var PROT_R = 108;
   function buildProtractor() {
-    var R = 108, p = [], d, rad, x1, y1, x2, y2, len;
+    var R = PROT_R, p = [], d, rad, x1, y1, x2, y2, len;
     p.push('<path d="M ' + (-R) + ' 0 A ' + R + ' ' + R + ' 0 0 1 ' + R + ' 0 Z" fill="rgba(15,107,102,0.10)" stroke="#0F6B66" stroke-width="1.6"/>');
     p.push('<path d="M ' + (-(R - 44)) + ' 0 A ' + (R - 44) + ' ' + (R - 44) + ' 0 0 1 ' + (R - 44) + ' 0" fill="none" stroke="#0F6B66" stroke-width="0.8" opacity="0.5"/>');
     p.push('<line x1="' + (-R) + '" y1="0" x2="' + R + '" y2="0" stroke="#0F6B66" stroke-width="1.4"/>');
@@ -262,8 +263,8 @@
         ix = s * (R - 30); iy = -3;
         endCls = ' end';
       }
-      p.push('<text x="' + ox.toFixed(1) + '" y="' + oy.toFixed(1) + '" text-anchor="middle" class="prot-num' + endCls + '">' + d + '</text>');
-      p.push('<text x="' + ix.toFixed(1) + '" y="' + iy.toFixed(1) + '" text-anchor="middle" class="prot-num inner' + endCls + '">' + (180 - d) + '</text>');
+      p.push('<text data-pos="' + d + '" x="' + ox.toFixed(1) + '" y="' + oy.toFixed(1) + '" text-anchor="middle" class="prot-num' + endCls + '">' + d + '</text>');
+      p.push('<text data-pos="' + d + '" x="' + ix.toFixed(1) + '" y="' + iy.toFixed(1) + '" text-anchor="middle" class="prot-num inner' + endCls + '">' + (180 - d) + '</text>');
     }
     p.push('<g class="prot-centre"><circle cx="0" cy="0" r="3.5" fill="none" stroke="#C8102E" stroke-width="1.4"/><line x1="-10" y1="0" x2="10" y2="0" stroke="#C8102E" stroke-width="1"/><line x1="0" y1="-10" x2="0" y2="7" stroke="#C8102E" stroke-width="1"/></g>');
     /* a turning knob at BOTH baseline ends, so one is always reachable even
@@ -306,9 +307,41 @@
     var prot = sv('g', { class: 'protractor-tool' });
     prot.innerHTML = buildProtractor();
     svg.appendChild(prot);
+    var focus = sv('g', { class: 'prot-focus' });
+    prot.appendChild(focus);
+
+    /* Reading aid: once the centre is seated on the vertex, light the
+       number(s) each arm crosses (both scales) and mark the exact crossing
+       in gold — so the squished scale numbers pop into focus for reading.
+       It pops BOTH scales and only when correctly seated, so it aids the
+       READING without doing the scale-choice or the placement for her. */
+    var armA = [q.armDeg, q.armDeg + q.value];
+    var litKey = null;
+    function updateReadout() {
+      var seated = Math.hypot(state.cx - V[0], state.cy - V[1]) < 14;
+      var crossings = [];
+      if (seated) {
+        armA.forEach(function (A) {
+          var dd = ((A + state.rot) % 360 + 360) % 360;   // scale degree this arm points at
+          if (dd >= 0 && dd <= 180) crossings.push(dd);
+        });
+      }
+      var key = crossings.map(function (c) { return Math.round(c); }).sort().join(',');
+      if (key === litKey) return;
+      litKey = key;
+      Array.prototype.forEach.call(prot.querySelectorAll('.prot-num.lit'), function (n) { n.classList.remove('lit'); });
+      while (focus.firstChild) focus.removeChild(focus.firstChild);
+      crossings.forEach(function (dd) {
+        var rad = dd * Math.PI / 180, cx = Math.cos(rad), cy = -Math.sin(rad);
+        focus.appendChild(sv('line', { x1: (cx * (PROT_R - 15)).toFixed(1), y1: (cy * (PROT_R - 15)).toFixed(1), x2: (cx * (PROT_R + 3)).toFixed(1), y2: (cy * (PROT_R + 3)).toFixed(1), stroke: '#E4B824', 'stroke-width': 3, 'stroke-linecap': 'round' }));
+        focus.appendChild(sv('circle', { cx: (cx * PROT_R).toFixed(1), cy: (cy * PROT_R).toFixed(1), r: 3.2, fill: '#E4B824' }));
+        var lab = Math.max(0, Math.min(180, Math.round(dd / 10) * 10));
+        Array.prototype.forEach.call(prot.querySelectorAll('[data-pos="' + lab + '"]'), function (n) { n.classList.add('lit'); });
+      });
+    }
 
     var state = { cx: 152, cy: 128, rot: 0 };  // starts above the angle, both knobs on-canvas
-    function apply() { prot.setAttribute('transform', 'translate(' + state.cx.toFixed(1) + ',' + state.cy.toFixed(1) + ') rotate(' + state.rot.toFixed(1) + ')'); }
+    function apply() { prot.setAttribute('transform', 'translate(' + state.cx.toFixed(1) + ',' + state.cy.toFixed(1) + ') rotate(' + state.rot.toFixed(1) + ')'); updateReadout(); }
     apply();
 
     function toSvg(e) { var pp = svg.createSVGPoint(); pp.x = e.clientX; pp.y = e.clientY; return pp.matrixTransform(svg.getScreenCTM().inverse()); }

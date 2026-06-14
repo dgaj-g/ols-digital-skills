@@ -698,9 +698,12 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 }
 .protractor-tool { cursor: grab; }
 .protractor-tool:active { cursor: grabbing; }
-.prot-num { font-family: var(--f-stationery); font-size: 8px; fill: var(--teal); }
+.prot-num { font-family: var(--f-stationery); font-size: 8px; fill: var(--teal); transition: font-size 130ms ease, fill 130ms ease; }
 .prot-num.inner { fill: var(--pencil); }
 .prot-num.end { font-size: 6.5px; }
+/* a number an angle arm is crossing — pops into focus for easy reading */
+.prot-num.lit { font-size: 13px; fill: var(--navy); font-weight: 700; paint-order: stroke; stroke: #FFFEFA; stroke-width: 2.6; }
+.prot-focus { pointer-events: none; }
 .prot-centre { pointer-events: none; }
 
 /* angles question layout */
