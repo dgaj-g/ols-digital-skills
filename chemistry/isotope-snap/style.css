@@ -78,17 +78,25 @@ body.activity {
 .xp-star { color: var(--ols-gold); }
 
 /* ghost + primary buttons (header + modes) */
+/* Default ghost button is dark-on-light (most live on light modals/panels). */
 .ghost-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.34);
-  color: #fff; padding: 8px 15px; border-radius: 999px;
+  background: rgba(42, 79, 143, 0.06);
+  border: 1.5px solid var(--ols-blue-soft);
+  color: var(--ols-blue); padding: 8px 15px; border-radius: 999px;
   font-size: 0.86rem; font-weight: 600; cursor: pointer;
   transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
 }
-.ghost-btn:hover { background: rgba(228, 184, 36, 0.18); border-color: var(--ols-gold); }
+.ghost-btn:hover { background: rgba(42, 79, 143, 0.14); border-color: var(--ols-blue); }
 .ghost-btn:active { transform: translateY(1px); }
-.ghost-btn.danger { border-color: var(--bad-soft); color: #FFD9D1; }
-.ghost-btn.danger:hover { background: rgba(210, 69, 46, 0.25); border-color: var(--bad); }
+.ghost-btn.danger { color: var(--bad); border-color: var(--bad-soft); background: rgba(210, 69, 46, 0.06); }
+.ghost-btn.danger:hover { background: rgba(210, 69, 46, 0.14); border-color: var(--bad); }
+
+/* On the dark blue header and mode bars, ghost buttons are white instead. */
+.act-header .ghost-btn, .mode-bar .ghost-btn {
+  background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.34); color: #fff;
+}
+.act-header .ghost-btn:hover, .mode-bar .ghost-btn:hover { background: rgba(228, 184, 36, 0.18); border-color: var(--ols-gold); }
+.act-header .ghost-btn.danger, .mode-bar .ghost-btn.danger { color: #FFD9D1; border-color: var(--bad-soft); background: rgba(255, 255, 255, 0.06); }
 
 .primary-btn {
   background: linear-gradient(180deg, var(--ols-gold-soft), var(--ols-gold));
