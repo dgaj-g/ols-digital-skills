@@ -395,6 +395,12 @@ body.activity {
 .ms-tile.op { border-radius: 50%; color: var(--proton); }
 .ms-tile.dragging { box-shadow: var(--shadow-lg); cursor: grabbing; z-index: 50; }
 .ms-tile.used { opacity: 0.28; pointer-events: none; }
+/* a tile resting in a slot is flush — the slot is the visual box, so no nested
+   borders/shadows (only while it's not actively being dragged out). */
+.ms-slot .ms-tile:not(.dragging) {
+  background: none; border: none; box-shadow: none;
+  min-width: 0; width: auto; height: auto; padding: 0; margin: 0;
+}
 .ms-builder-actions { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
 .ms-result { margin-top: 14px; text-align: center; padding: 14px; border-radius: var(--radius-sm); font-size: 1.05rem; }
 .ms-result.good { background: var(--good-soft); color: #1d5e38; }
