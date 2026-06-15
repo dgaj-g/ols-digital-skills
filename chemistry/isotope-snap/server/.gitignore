@@ -1,0 +1,4 @@
+# Generated deploy artefacts — rebuilt from Code.gs.template + the front-end by
+# `node build-pathb.js` at deploy time. Not committed (operational, large).
+PathB_Code.gs
+PathB_Index.html
