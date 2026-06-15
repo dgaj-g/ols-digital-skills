@@ -81,7 +81,7 @@
   function aspect() { var r = stageEl.getBoundingClientRect(); return Math.max(0.6, r.width / Math.max(1, r.height)); }
   function sizeRenderer() {
     var r = stageEl.getBoundingClientRect();
-    renderer.setSize(r.width, r.height, false);
+    renderer.setSize(r.width, r.height);   // updateStyle:true -> canvas DISPLAY size matches the stage (buffer still 2x for crispness)
     if (camera) { camera.aspect = aspect(); camera.updateProjectionMatrix(); }
   }
 
