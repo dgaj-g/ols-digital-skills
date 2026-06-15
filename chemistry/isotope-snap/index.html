@@ -40,10 +40,16 @@
         <img class="signin-char" src="assets/characters/static_02_burner_wink.png" alt="Burner the Bunsen burner character" />
       </div>
       <h2 id="signin-title">Welcome to the Isotope Lab</h2>
-      <p id="signin-sub" class="signin-sub">We are the Young Bunsens. Tell us your name and we will get started.</p>
+      <p id="signin-sub" class="signin-sub">We are the Young Bunsens. One moment while we sign you in&hellip;</p>
 
-      <!-- Offline / Path-A name entry -->
-      <div id="signin-name-form">
+      <!-- shown while we fetch the pupil's details (auto-name); hides into the hub -->
+      <div id="signin-loading">
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="loading-text">Getting your details&hellip;</p>
+      </div>
+
+      <!-- fallback name entry (only shown if the school account can't supply a name) -->
+      <div id="signin-name-form" hidden>
         <label class="field">
           <span class="field-label">First name</span>
           <input id="in-first" type="text" autocomplete="given-name" maxlength="24" placeholder="e.g. Aoife" />

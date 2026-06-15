@@ -38,6 +38,9 @@
     Lab.showScreen('signin');
     var cc = Lab.state.classCode;
     if (cc && cc !== 'default') { var cl = Lab.$('#signin-class'); cl.hidden = false; cl.textContent = 'Class: ' + cc; }
+    // show the "getting your details" loader; the name form stays hidden unless we need it
+    Lab.$('#signin-loading').hidden = false;
+    Lab.$('#signin-name-form').hidden = true;
     Lab.call('whoami').then(function (r) {
       Lab.state.email = (r && r.email) || '';
       Lab.state.preview = !!(r && r.preview);
@@ -62,7 +65,9 @@
           finishSignIn(true);
           return;
         }
-        // fallback: pre-fill a best guess from the email and ask them to confirm once.
+        // no name from the account — reveal the type-once form as a fallback.
+        Lab.$('#signin-loading').hidden = true;
+        Lab.$('#signin-name-form').hidden = false;
         if (live) {
           var g = guessName(r.email);
           if (g) {
@@ -71,6 +76,8 @@
           } else {
             Lab.$('#signin-sub').textContent = "You're signed in with your school account. Tell us your name once and it will remember you on every device.";
           }
+        } else {
+          Lab.$('#signin-sub').textContent = 'Tell us your name and we will get started.';
         }
       });
     });

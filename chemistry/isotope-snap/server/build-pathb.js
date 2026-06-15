@@ -210,6 +210,13 @@ let introPatched = introLoaderJs
    the baseUrl + VIDEO_FILENAME concatenation still works (baseUrl will be
    the google URL, but VIDEO_FILENAME is already the full absolute URL). */
 
+/* The activity JS builds some asset paths at runtime (e.g. the narrator
+   character image: img.src = 'assets/characters/' + name). The body rewrite
+   above doesn't touch inlined JS, so do it here too -> absolute github.io. */
+function absAssets(js) {
+  return js.replace(/(['"])assets\/characters\//g, '$1' + GITHUB_BASE + 'assets/characters/');
+}
+
 /* ---- 2e. Assemble the full HTML document ---- */
 const out = `<!doctype html>
 <html lang="en">
@@ -237,22 +244,22 @@ ${asciiJs(shim)}
 ${asciiJs(dataJs)}
 </script>
 <script>
-${asciiJs(engineJs)}
+${asciiJs(absAssets(engineJs))}
 </script>
 <script>
-${asciiJs(atom3dJs)}
+${asciiJs(absAssets(atom3dJs))}
 </script>
 <script>
-${asciiJs(snapJs)}
+${asciiJs(absAssets(snapJs))}
 </script>
 <script>
-${asciiJs(massspecJs)}
+${asciiJs(absAssets(massspecJs))}
 </script>
 <script>
-${asciiJs(staffJs)}
+${asciiJs(absAssets(staffJs))}
 </script>
 <script>
-${asciiJs(appJs)}
+${asciiJs(absAssets(appJs))}
 </script>
 <script>
 ${asciiJs(introPatched)}
