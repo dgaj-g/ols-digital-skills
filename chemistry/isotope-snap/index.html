@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Isotope Lab &middot; Chemistry &middot; OLS Digital Skills</title>
+<base target="_top" />
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity">
+
+<!-- ===================== HEADER ===================== -->
+<header class="act-header" id="app-header">
+  <div class="brand-row">
+    <div class="act-titles">
+      <p class="eyebrow">Chemistry &middot; GCSE &middot; Atomic Structure</p>
+      <h1>Isotope Lab</h1>
+      <p class="lede">Build atoms in 3D, play Isotope Snap, and run the mass spectrometer.</p>
+    </div>
+    <div class="act-meta">
+      <span class="score-pill" id="xp-pill" hidden>
+        <span class="xp-star" aria-hidden="true">★</span>
+        <span id="xp-value">0</span> XP
+      </span>
+      <button id="leaderboard-btn" type="button" class="ghost-btn" hidden>Leaderboard</button>
+      <button id="group-btn" type="button" class="ghost-btn" hidden>My group</button>
+      <button id="staff-btn" type="button" class="ghost-btn" title="Teacher area" hidden>&#128273; Teacher</button>
+    </div>
+  </div>
+</header>
+
+<main class="act-main" id="app-main">
+
+  <!-- ===================== SIGN-IN GATE ===================== -->
+  <section id="screen-signin" class="screen" aria-label="Sign in">
+    <div class="signin-card">
+      <div class="signin-chars">
+        <img class="signin-char" src="assets/characters/static_01_beaker_wink.png" alt="Beaker the beaker character" />
+        <img class="signin-char" src="assets/characters/static_02_burner_wink.png" alt="Burner the Bunsen burner character" />
+      </div>
+      <h2 id="signin-title">Welcome to the Isotope Lab</h2>
+      <p id="signin-sub" class="signin-sub">We are the Young Bunsens. Tell us your name and we will get started.</p>
+
+      <!-- Offline / Path-A name entry -->
+      <div id="signin-name-form">
+        <label class="field">
+          <span class="field-label">First name</span>
+          <input id="in-first" type="text" autocomplete="given-name" maxlength="24" placeholder="e.g. Aoife" />
+        </label>
+        <label class="field">
+          <span class="field-label">Surname</span>
+          <input id="in-surname" type="text" autocomplete="family-name" maxlength="24" placeholder="e.g. Murphy" />
+        </label>
+        <p id="signin-identity" class="signin-identity" hidden></p>
+        <button id="signin-go" type="button" class="primary-btn">Enter the lab <span aria-hidden="true">&rarr;</span></button>
+        <p id="signin-note" class="form-note" hidden></p>
+      </div>
+
+      <p class="signin-class" id="signin-class" hidden></p>
+    </div>
+  </section>
+
+  <!-- ===================== HUB ===================== -->
+  <section id="screen-hub" class="screen" hidden aria-label="Lab hub">
+    <aside class="narrator" id="narrator" aria-live="polite">
+      <div class="narrator-character">
+        <img id="narrator-img" src="assets/characters/anim_03_both_wink.webp" alt="" />
+      </div>
+      <div class="narrator-bubble">
+        <p id="narrator-text">Pick a station to begin. Each one teaches a different part of isotopes.</p>
+      </div>
+    </aside>
+
+    <div class="hub-stations">
+      <button class="station-card" data-mode="atom" type="button">
+        <span class="station-badge" id="badge-atom">Station 1</span>
+        <span class="station-icon" aria-hidden="true">&#9883;</span>
+        <span class="station-title">Build an Atom</span>
+        <span class="station-desc">Add protons, neutrons and electrons in real 3D. Watch the element come to life.</span>
+        <span class="station-progress" id="prog-atom"></span>
+      </button>
+
+      <button class="station-card" data-mode="snap" type="button">
+        <span class="station-badge" id="badge-snap">Station 2</span>
+        <span class="station-icon" aria-hidden="true">&#9889;</span>
+        <span class="station-title">Isotope Snap</span>
+        <span class="station-desc">Two cards appear. Hit SNAP the instant they show a pair of isotopes.</span>
+        <span class="station-progress" id="prog-snap"></span>
+      </button>
+
+      <button class="station-card" data-mode="massspec" type="button">
+        <span class="station-badge" id="badge-massspec">Station 3</span>
+        <span class="station-icon" aria-hidden="true">&#128202;</span>
+        <span class="station-title">Mass Spectrometer</span>
+        <span class="station-desc">Read the data, build the Ar formula, and identify the mystery element.</span>
+        <span class="station-progress" id="prog-massspec"></span>
+      </button>
+    </div>
+
+    <div class="hub-footnote">
+      <p id="hub-group-line" hidden></p>
+    </div>
+  </section>
+
+  <!-- ===================== MODE A: BUILD AN ATOM (3D) ===================== -->
+  <section id="screen-atom" class="screen mode-screen" hidden aria-label="Build an Atom">
+    <div class="mode-bar">
+      <button class="ghost-btn back-btn" data-back type="button"><span aria-hidden="true">&larr;</span> Hub</button>
+      <h2 class="mode-heading">Build an Atom</h2>
+      <span class="score-pill mode-score"><span id="atom-challenge-label">Free build</span></span>
+    </div>
+
+    <div class="atom-layout">
+      <div class="atom-stage-wrap">
+        <div id="atom-stage" class="atom-stage" aria-label="3D atom model. Drag to rotate."></div>
+        <div class="atom-stage-hint">Drag to rotate &middot; scroll or pinch to zoom</div>
+        <div class="atom-readout" id="atom-readout">
+          <div class="readout-symbol" id="readout-symbol">&mdash;</div>
+          <div class="readout-name" id="readout-name">No protons yet</div>
+          <div class="readout-notation" id="readout-notation" aria-hidden="true"></div>
+          <ul class="readout-counts">
+            <li><span class="dot dot-proton"></span> Protons <b id="readout-p">0</b></li>
+            <li><span class="dot dot-neutron"></span> Neutrons <b id="readout-n">0</b></li>
+            <li><span class="dot dot-electron"></span> Electrons <b id="readout-e">0</b></li>
+          </ul>
+          <p class="readout-flag" id="readout-flag"></p>
+        </div>
+      </div>
+
+      <div class="atom-controls">
+        <div class="particle-control">
+          <span class="pc-label"><span class="dot dot-proton"></span> Protons</span>
+          <div class="pc-buttons">
+            <button class="pc-btn" data-particle="p" data-delta="-1" type="button" aria-label="Remove proton">&minus;</button>
+            <output class="pc-count" id="pc-p">0</output>
+            <button class="pc-btn" data-particle="p" data-delta="1" type="button" aria-label="Add proton">+</button>
+          </div>
+        </div>
+        <div class="particle-control">
+          <span class="pc-label"><span class="dot dot-neutron"></span> Neutrons</span>
+          <div class="pc-buttons">
+            <button class="pc-btn" data-particle="n" data-delta="-1" type="button" aria-label="Remove neutron">&minus;</button>
+            <output class="pc-count" id="pc-n">0</output>
+            <button class="pc-btn" data-particle="n" data-delta="1" type="button" aria-label="Add neutron">+</button>
+          </div>
+        </div>
+        <div class="particle-control">
+          <span class="pc-label"><span class="dot dot-electron"></span> Electrons</span>
+          <div class="pc-buttons">
+            <button class="pc-btn" data-particle="e" data-delta="-1" type="button" aria-label="Remove electron">&minus;</button>
+            <output class="pc-count" id="pc-e">0</output>
+            <button class="pc-btn" data-particle="e" data-delta="1" type="button" aria-label="Add electron">+</button>
+          </div>
+        </div>
+
+        <div class="atom-challenge" id="atom-challenge">
+          <p class="ac-prompt" id="ac-prompt">Free build &mdash; make any atom you like, then try a challenge.</p>
+          <div class="ac-actions">
+            <button id="ac-check" class="primary-btn" type="button" hidden>Check my atom</button>
+            <button id="ac-start" class="primary-btn" type="button">Start a challenge</button>
+            <button id="ac-next" class="ghost-btn" type="button" hidden>Next challenge</button>
+          </div>
+          <p class="ac-result" id="ac-result" hidden></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MODE B: ISOTOPE SNAP ===================== -->
+  <section id="screen-snap" class="screen mode-screen" hidden aria-label="Isotope Snap">
+    <div class="mode-bar">
+      <button class="ghost-btn back-btn" data-back type="button"><span aria-hidden="true">&larr;</span> Hub</button>
+      <h2 class="mode-heading">Isotope Snap</h2>
+      <span class="score-pill mode-score">Streak <b id="snap-streak">0</b></span>
+    </div>
+
+    <!-- intro / rules card, shown before a round -->
+    <div class="snap-intro" id="snap-intro">
+      <img class="snap-intro-char" src="assets/characters/static_09_safety_goggles.png" alt="" />
+      <h3>How to play</h3>
+      <p>Two cards appear. A <b>Drawing</b> shows the atom's structure; a <b>Code</b> shows its symbol with mass and atomic number. Press <b>SNAP</b> only when the two cards are <b>isotopes</b> &mdash; the same element (same protons / atomic number) but a <b>different</b> number of neutrons (different mass number).</p>
+      <p class="snap-rules-note">If they are not a pair, do nothing &mdash; press <b>Not a pair</b> and the next two appear. You have <b id="snap-total">10</b> rounds. Be quick: faster correct answers score more.</p>
+      <button id="snap-begin" class="primary-btn" type="button">Start round <span aria-hidden="true">&rarr;</span></button>
+    </div>
+
+    <!-- live play area -->
+    <div class="snap-play" id="snap-play" hidden>
+      <div class="snap-meta">
+        <span class="snap-round">Round <b id="snap-round">1</b> / <b id="snap-total2">10</b></span>
+        <span class="snap-timerbar" aria-hidden="true"><i id="snap-timer-fill"></i></span>
+      </div>
+      <div class="snap-cards">
+        <div class="snap-card" id="snap-card-a" aria-label="Card A"></div>
+        <div class="snap-vs" aria-hidden="true">vs</div>
+        <div class="snap-card" id="snap-card-b" aria-label="Card B"></div>
+      </div>
+      <div class="snap-actions">
+        <button id="snap-yes" class="snap-snap-btn" type="button">SNAP! &mdash; they are isotopes</button>
+        <button id="snap-no" class="ghost-btn snap-no-btn" type="button">Not a pair</button>
+      </div>
+      <p class="snap-feedback" id="snap-feedback" hidden></p>
+    </div>
+  </section>
+
+  <!-- ===================== MODE C: MASS SPECTROMETER ===================== -->
+  <section id="screen-massspec" class="screen mode-screen" hidden aria-label="Mass Spectrometer">
+    <div class="mode-bar">
+      <button class="ghost-btn back-btn" data-back type="button"><span aria-hidden="true">&larr;</span> Hub</button>
+      <h2 class="mode-heading">Mass Spectrometer</h2>
+      <span class="score-pill mode-score">Question <b id="ms-qnum">1</b> / 3</span>
+    </div>
+
+    <div class="ms-intro" id="ms-intro">
+      <img class="ms-intro-char" src="assets/characters/static_12_magnifier_discovery.png" alt="" />
+      <h3>Find the relative atomic mass</h3>
+      <p>A mass spectrometer separates the isotopes of an element by mass and measures how abundant each one is. Read the data, build the <b>relative atomic mass (A<sub>r</sub>)</b> formula by dragging the numbers and operators into place, press <b>=</b>, then identify the mystery element.</p>
+      <p class="ms-formula-hint">A<sub>r</sub> = (mass &times; abundance) added up, all divided by the total abundance.</p>
+      <button id="ms-begin" class="primary-btn" type="button">Start &mdash; 3 questions <span aria-hidden="true">&rarr;</span></button>
+    </div>
+
+    <div class="ms-play" id="ms-play" hidden>
+      <!-- data panel: one of three views -->
+      <div class="ms-data" id="ms-data" aria-label="Isotope data"></div>
+
+      <!-- the Ar formula builder -->
+      <div class="ms-builder">
+        <p class="ms-builder-title">Build the A<sub>r</sub> calculation &mdash; drag the tiles into the boxes</p>
+        <div class="ms-formula" id="ms-formula" aria-label="Relative atomic mass formula"></div>
+        <div class="ms-tray" id="ms-tray" aria-label="Number and operator tiles"></div>
+        <div class="ms-builder-actions">
+          <button id="ms-equals" class="primary-btn" type="button" disabled>= &nbsp;Calculate</button>
+          <button id="ms-clear" class="ghost-btn" type="button">Clear tiles</button>
+        </div>
+        <div class="ms-result" id="ms-result" hidden></div>
+      </div>
+
+      <!-- element identification -->
+      <div class="ms-identify" id="ms-identify" hidden>
+        <p class="ms-identify-title">Now identify the element from its A<sub>r</sub>.</p>
+        <div class="ms-identify-row">
+          <input id="ms-symbol" type="text" maxlength="2" placeholder="Symbol" autocomplete="off" autocapitalize="off" spellcheck="false" />
+          <button id="ms-identify-go" class="primary-btn" type="button">Identify</button>
+        </div>
+        <p class="ms-identify-hint">Type the element's symbol &mdash; a capital letter, then a small letter if it has one (e.g. Mg).</p>
+        <p class="ms-identify-feedback" id="ms-identify-feedback" hidden></p>
+        <button id="ms-next" class="primary-btn" type="button" hidden>Next question <span aria-hidden="true">&rarr;</span></button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<!-- ===================== OVERLAYS ===================== -->
+
+<!-- Celebrate -->
+<div class="celebrate" id="celebrate" hidden>
+  <div class="celebrate-panel">
+    <img id="celebrate-char" class="celebrate-char" src="assets/characters/anim_06_confetti_celebration.webp" alt="" />
+    <h2 id="celebrate-title">Brilliant!</h2>
+    <p id="celebrate-body">You finished the station.</p>
+    <div class="celebrate-stats" id="celebrate-stats"></div>
+    <button id="celebrate-cta" class="primary-btn" type="button">Continue</button>
+  </div>
+</div>
+
+<!-- Toast (wrong answer / gentle nudge) -->
+<div class="toast" id="toast" hidden>
+  <img class="toast-char" id="toast-char" src="assets/characters/anim_05_thumbs_down_sad.webp" alt="" />
+  <p class="toast-text" id="toast-text"></p>
+</div>
+
+<!-- Leaderboard -->
+<div class="ols-modal" id="leaderboard-modal" hidden>
+  <div class="ols-modal-card">
+    <div class="ols-modal-head">
+      <h2>Class leaderboard</h2>
+      <button class="modal-close" data-close-modal="leaderboard-modal" type="button" aria-label="Close">&times;</button>
+    </div>
+    <div class="lb-body" id="lb-body"><p class="lb-empty">Loading&hellip;</p></div>
+    <p class="lb-me" id="lb-me" hidden></p>
+  </div>
+</div>
+
+<!-- My Group (pupil view) -->
+<div class="ols-modal" id="group-modal" hidden>
+  <div class="ols-modal-card">
+    <div class="ols-modal-head">
+      <h2>My group</h2>
+      <button class="modal-close" data-close-modal="group-modal" type="button" aria-label="Close">&times;</button>
+    </div>
+    <div class="group-body" id="group-body"><p class="lb-empty">Loading&hellip;</p></div>
+  </div>
+</div>
+
+<!-- Generic confirm -->
+<div class="ols-modal" id="confirm-modal" hidden>
+  <div class="ols-modal-card ols-modal-sm">
+    <h2 id="confirm-title">Are you sure?</h2>
+    <p id="confirm-body"></p>
+    <div class="confirm-actions">
+      <button id="confirm-cancel" class="ghost-btn" type="button">Cancel</button>
+      <button id="confirm-ok" class="primary-btn danger" type="button">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- QR popup -->
+<div class="ols-modal" id="qr-modal" hidden>
+  <div class="ols-modal-card ols-modal-sm">
+    <div class="ols-modal-head">
+      <h2 id="qr-title">Class link</h2>
+      <button class="modal-close" data-close-modal="qr-modal" type="button" aria-label="Close">&times;</button>
+    </div>
+    <canvas id="qr-canvas" width="260" height="260" aria-label="QR code"></canvas>
+    <p class="qr-link" id="qr-link"></p>
+    <button id="qr-copy" class="ghost-btn" type="button">Copy link</button>
+  </div>
+</div>
+
+<!-- ===================== STAFF PANEL ===================== -->
+<div class="ols-modal staff-modal" id="staff-modal" hidden>
+  <div class="ols-modal-card staff-card">
+    <div class="ols-modal-head">
+      <h2>Teacher area</h2>
+      <button class="modal-close" data-close-modal="staff-modal" type="button" aria-label="Close">&times;</button>
+    </div>
+
+    <!-- locked -->
+    <div id="staff-locked">
+      <p class="staff-lead">Enter the staff passcode to manage classes, see results and set up groups.</p>
+      <label class="field">
+        <span class="field-label">Passcode</span>
+        <input id="staff-pass" type="password" autocomplete="off" />
+      </label>
+      <button id="staff-unlock" class="primary-btn" type="button">Unlock</button>
+      <p id="staff-locknote" class="form-note" hidden></p>
+    </div>
+
+    <!-- unlocked -->
+    <div id="staff-panel" hidden>
+      <nav class="staff-tabs" role="tablist">
+        <button class="staff-tab is-active" data-tab="classes" type="button" role="tab">Classes</button>
+        <button class="staff-tab" data-tab="results" type="button" role="tab">Results</button>
+        <button class="staff-tab" data-tab="groups" type="button" role="tab">Groups</button>
+      </nav>
+
+      <!-- Classes tab -->
+      <div class="staff-tabpane is-active" data-pane="classes">
+        <div class="cm-add">
+          <input id="cm-name" type="text" placeholder="New class name (e.g. S1-Chem-1)" maxlength="40" />
+          <button id="cm-add" class="primary-btn" type="button">Add class</button>
+        </div>
+        <p id="cm-status" class="form-note" hidden></p>
+        <label class="field">
+          <span class="field-label">Class</span>
+          <select id="cm-select"></select>
+        </label>
+        <div class="cm-actions">
+          <button id="cm-link" class="ghost-btn" type="button">Copy link</button>
+          <button id="cm-qr" class="ghost-btn" type="button">Show QR</button>
+          <button id="cm-go" class="ghost-btn" type="button">Open class board</button>
+          <button id="cm-delete" class="ghost-btn danger" type="button">Delete class</button>
+        </div>
+      </div>
+
+      <!-- Results tab -->
+      <div class="staff-tabpane" data-pane="results" hidden>
+        <div class="dash-controls">
+          <label class="field inline">
+            <span class="field-label">Class</span>
+            <select id="dash-class"></select>
+          </label>
+          <button id="dash-refresh" class="ghost-btn" type="button">Refresh</button>
+          <button id="dash-csv" class="ghost-btn" type="button">Export CSV</button>
+        </div>
+        <div class="dash-stats" id="dash-stats"></div>
+        <div class="dash-table-wrap">
+          <table class="dash-table" id="dash-table">
+            <thead><tr><th>#</th><th>Pupil</th><th>Atom</th><th>Snap</th><th>Mass spec</th><th>XP</th></tr></thead>
+            <tbody id="dash-tbody"></tbody>
+          </table>
+        </div>
+        <p class="dash-empty" id="dash-empty" hidden>No pupils have played in this class yet.</p>
+      </div>
+
+      <!-- Groups tab -->
+      <div class="staff-tabpane" data-pane="groups" hidden>
+        <div class="dash-controls">
+          <label class="field inline">
+            <span class="field-label">Class</span>
+            <select id="grp-class"></select>
+          </label>
+          <button id="grp-refresh" class="ghost-btn" type="button">Refresh</button>
+        </div>
+
+        <div class="grp-setup">
+          <div class="grp-make">
+            <input id="grp-new-name" type="text" placeholder="Group name (e.g. Curie)" maxlength="24" />
+            <button id="grp-add" class="primary-btn" type="button">Add group</button>
+            <span class="grp-or">or</span>
+            <input id="grp-auto-n" type="number" min="2" max="10" value="3" aria-label="Number of groups" />
+            <button id="grp-auto" class="ghost-btn" type="button">Auto-make &amp; shuffle</button>
+          </div>
+
+          <div class="grp-reveal">
+            <label class="switch">
+              <input id="grp-reveal-toggle" type="checkbox" />
+              <span class="switch-track" aria-hidden="true"></span>
+              <span class="switch-label">Reveal group members to pupils</span>
+            </label>
+            <p class="grp-reveal-note">When off, pupils know their group but not who is in it, until you switch this on.</p>
+          </div>
+        </div>
+
+        <p id="grp-status" class="form-note" hidden></p>
+
+        <div class="grp-board" id="grp-board">
+          <div class="grp-unassigned">
+            <h4>Unassigned pupils</h4>
+            <div class="grp-pool" id="grp-pool" aria-label="Unassigned pupils"></div>
+          </div>
+          <div class="grp-groups" id="grp-groups" aria-label="Groups"></div>
+        </div>
+        <p class="grp-hint">Drag a pupil's chip into a group, or use the menu on each chip. Groups also act as teams &mdash; each member's XP adds to the group total.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SCRIPTS ===================== -->
+<script src="assets/vendor/three.min.js" defer></script>
+<script src="assets/vendor/qrcode.min.js" defer></script>
+<script src="data.js" defer></script>
+<script src="engine.js" defer></script>
+<script src="atom3d.js" defer></script>
+<script src="snap.js" defer></script>
+<script src="massspec.js" defer></script>
+<script src="staff.js" defer></script>
+<script src="app.js" defer></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
