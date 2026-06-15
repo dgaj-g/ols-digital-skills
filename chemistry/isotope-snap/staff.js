@@ -12,7 +12,7 @@
   /* ===================== pupil: leaderboard ===================== */
   function openLeaderboard() {
     Lab.openModal('leaderboard-modal');
-    var body = Lab.$('#lb-body'); body.innerHTML = '<p class="lb-empty">Loading&hellip;</p>';
+    var body = Lab.$('#lb-body'); body.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Loading&hellip;</span></div>';
     Lab.$('#lb-me').hidden = true;
     Lab.call('leaderboard').then(function (r) {
       if (!r || !r.ok) { body.innerHTML = '<p class="lb-empty">Could not load the leaderboard.</p>'; return; }
@@ -34,7 +34,7 @@
   /* ===================== pupil: My Group ===================== */
   function openMyGroup() {
     Lab.openModal('group-modal');
-    var body = Lab.$('#group-body'); body.innerHTML = '<p class="lb-empty">Loading&hellip;</p>';
+    var body = Lab.$('#group-body'); body.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Loading&hellip;</span></div>';
     Lab.call('myGroup').then(function (r) {
       if (!r || !r.ok) { body.innerHTML = '<p class="lb-empty">Could not load your group.</p>'; return; }
       if (!r.inGroup) { body.innerHTML = '<p class="lb-empty">Your teacher has not put you into a group yet. Check back later!</p>'; return; }
@@ -137,7 +137,7 @@
   function loadDashboard() {
     var cls = Lab.$('#dash-class').value;
     Lab.$('#dash-empty').hidden = true;
-    Lab.$('#dash-stats').innerHTML = '<div class="panel-loading">Loading the class&hellip; this can take a moment.</div>';
+    Lab.$('#dash-stats').innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Loading the class&hellip; this can take a moment</span></div>';
     Lab.$('#dash-tbody').innerHTML = '';
     adminCall('data', { className: cls }).then(function (r) {
       if (!r || !r.ok) return;
@@ -184,7 +184,7 @@
   /* ===================== groups tab (the new feature) ===================== */
   function loadGroups() {
     var cls = Lab.$('#grp-class').value;
-    Lab.$('#grp-groups').innerHTML = '<p class="panel-loading">Loading&hellip; this can take a moment.</p>';
+    Lab.$('#grp-groups').innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Loading&hellip; this can take a moment</span></div>';
     Lab.$('#grp-pool').innerHTML = '';
     adminCall('groups', { className: cls }).then(function (r) {
       if (!r || !r.ok) return;
