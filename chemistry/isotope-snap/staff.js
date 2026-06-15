@@ -64,7 +64,10 @@
   }
   function unlock() {
     var p = Lab.$('#staff-pass').value, note = Lab.$('#staff-locknote');
+    var btn = Lab.$('#staff-unlock'), orig = btn.textContent;
+    note.hidden = true; btn.disabled = true; btn.textContent = 'Checking…';
     Lab.call('admin', { passcode: p, sub: 'classes' }).then(function (r) {
+      btn.disabled = false; btn.textContent = orig;
       if (!r || !r.ok) {
         note.hidden = false;
         note.textContent = r && r.error === 'bad-passcode' ? 'That passcode was not recognised.' : 'Could not open the teacher area.';
@@ -133,6 +136,9 @@
   /* ===================== results tab (dashboard) ===================== */
   function loadDashboard() {
     var cls = Lab.$('#dash-class').value;
+    Lab.$('#dash-empty').hidden = true;
+    Lab.$('#dash-stats').innerHTML = '<div class="panel-loading">Loading the class&hellip; this can take a moment.</div>';
+    Lab.$('#dash-tbody').innerHTML = '';
     adminCall('data', { className: cls }).then(function (r) {
       if (!r || !r.ok) return;
       curDash = (r.participants || []).slice().sort(function (a, b) { return b.xp - a.xp; });
@@ -178,6 +184,8 @@
   /* ===================== groups tab (the new feature) ===================== */
   function loadGroups() {
     var cls = Lab.$('#grp-class').value;
+    Lab.$('#grp-groups').innerHTML = '<p class="panel-loading">Loading&hellip; this can take a moment.</p>';
+    Lab.$('#grp-pool').innerHTML = '';
     adminCall('groups', { className: cls }).then(function (r) {
       if (!r || !r.ok) return;
       curGroups = r;

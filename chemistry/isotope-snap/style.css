@@ -525,6 +525,7 @@ body.activity {
 .dash-table td.num { text-align: center; }
 .dash-table .pct-cell { font-weight: 700; }
 .dash-empty { text-align: center; color: var(--muted); padding: 20px; }
+.panel-loading { text-align: center; color: var(--muted); padding: 18px; font-size: 0.9rem; }
 
 /* groups manager */
 .grp-setup { display: grid; gap: 14px; margin-bottom: 14px; }
