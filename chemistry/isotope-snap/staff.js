@@ -103,7 +103,10 @@
   function cmAdd() {
     var name = Lab.$('#cm-name').value.trim();
     if (!name) return;
+    var btn = Lab.$('#cm-add'); btn.disabled = true;
+    busyStatus('cm-status', 'Adding the class&hellip; this can take a moment');
     adminCall('addClass', { name: name }).then(function (r) {
+      btn.disabled = false;
       Lab.$('#cm-name').value = '';
       status('cm-status', r && r.ok ? 'Class added.' : 'Could not add the class.');
       reloadClasses();
@@ -113,6 +116,7 @@
     var n = Lab.$('#cm-select').value; if (!n) return;
     Lab.confirm('Delete class "' + n + '"?', 'This removes the class and all its pupils’ results. This cannot be undone.', 'Delete', function (ok) {
       if (!ok) return;
+      busyStatus('cm-status', 'Deleting the class&hellip; this can take a moment');
       adminCall('deleteClass', { name: n }).then(function () { status('cm-status', 'Class deleted.'); reloadClasses(); });
     });
   }
@@ -244,6 +248,7 @@
   }
   function grpAdd() {
     var name = Lab.$('#grp-new-name').value.trim(); if (!name) return;
+    busyStatus('grp-status', 'Adding the group&hellip; this can take a moment');
     adminCall('createGroup', { className: Lab.$('#grp-class').value, name: name }).then(function () {
       Lab.$('#grp-new-name').value = ''; loadGroups();
     });
@@ -252,11 +257,13 @@
     var n = parseInt(Lab.$('#grp-auto-n').value, 10) || 3;
     Lab.confirm('Auto-make ' + n + ' groups?', 'This clears any existing groups for this class and shuffles every pupil into ' + n + ' new groups.', 'Shuffle', function (ok) {
       if (!ok) return;
+      busyStatus('grp-status', 'Shuffling the class into teams&hellip; this can take a moment');
       adminCall('autoGroup', { className: Lab.$('#grp-class').value, n: n }).then(function () { status('grp-status', 'Groups shuffled.'); loadGroups(); });
     });
   }
   function setReveal() {
     var on = Lab.$('#grp-reveal-toggle').checked;
+    busyStatus('grp-status', 'Updating&hellip;');
     adminCall('setReveal', { className: Lab.$('#grp-class').value, revealed: on }).then(function () {
       status('grp-status', on ? 'Pupils can now see who is in their group.' : 'Group members are now hidden from pupils.');
     });
@@ -269,7 +276,8 @@
   }
 
   /* ===================== helpers ===================== */
-  function status(id, msg) { var el = Lab.$('#' + id); if (!el) return; el.hidden = false; el.textContent = msg; clearTimeout(el._t); el._t = setTimeout(function () { el.hidden = true; }, 2600); }
+  function status(id, msg) { var el = Lab.$('#' + id); if (!el) return; el.hidden = false; el.className = 'form-note'; el.textContent = msg; clearTimeout(el._t); el._t = setTimeout(function () { el.hidden = true; }, 2600); }
+  function busyStatus(id, msg) { var el = Lab.$('#' + id); if (!el) return; clearTimeout(el._t); el.hidden = false; el.className = 'panel-loading'; el.innerHTML = '<span class="panel-spinner"></span><span>' + msg + '</span>'; }
   function copy(text, statusId) {
     function done() { if (statusId) status(statusId, 'Link copied.'); else status('cm-status', 'Copied.'); }
     if (global.navigator && navigator.clipboard && navigator.clipboard.writeText) {
