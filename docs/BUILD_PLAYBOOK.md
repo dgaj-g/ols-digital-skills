@@ -798,6 +798,18 @@ Read this whole section before attempting another login-gated build.
 - **QR codes:** generated **in-page** by a vendored, esbuild-bundled **node-qrcode** (`qrcode.min.js`, MIT) — never a third-party QR service, so the link never leaves the Workspace. `QRCode.toCanvas(...)` in OLS blue.
 - **Modal stacking:** dialogs opened *from* the staff panel (Delete confirm, QR popup) need a **higher z-index** than it (`#confirm-modal`, `#qr-modal` are `z-index: 500` vs the panel's `300`).
 
+### Login-gated UX standard — MANDATORY (match the Isotope Lab bar)
+
+Every login-gated build (anything that signs pupils in and reads/writes the server) **must** ship these — they are the standard, not polish-if-time, because a teacher demoing on a board judges the whole thing by them. Reference implementation: `chemistry/isotope-snap/` — copy it rather than reinventing.
+
+1. **Zero-typing sign-in + a guard screen.** When auto-name is available (execute-as-user + the `userinfo.profile` scope, above), pupils **NEVER type their name**. On load, show a **"Getting your details…" guard screen** (spinner — `#signin-loading` + `.spinner`) while `whoami` resolves; **never flash the empty name form**. Reveal the type-once form **only as a fallback** if `whoami` returns no name. Pattern: `app.js` `startSignIn`. (Flashing the form for the 1–2s round-trip is a bug to fix, not ship — it was caught on the first Isotope Lab deploy.)
+
+2. **Eye-catching wait feedback on EVERY server call (reads AND writes).** `google.script.run` round-trips take ~1–3s live (userinfo fetch, ScriptProperties reads, Sheet writes), so a teacher clicking Unlock / opening Results / adding a class always sees a beat. **Bland grey "Loading…" text is NOT acceptable** (it was rejected on sight). Use a **prominent pulsing GOLD card with a spinner and bold OLS-blue "…this can take a moment" text** (`.panel-loading` + `.panel-spinner` in `style.css`; `busyStatus()` in `staff.js`). Apply it to sign-in, teacher unlock (button → "Checking…", disabled), dashboard/results, groups, leaderboard, my-group, **and every mutation** (add/delete class, add/auto/assign/reveal groups → disable the button + show the busy card, then a brief confirmation). No silent beats anywhere.
+
+3. **The dialog + admin aesthetic is the house standard.** Isotope Lab's `.ols-modal` / `.ols-modal-card`, the `Lab.confirm()` modal (two-tap; **never** native `confirm()` — unreliable in the sandboxed iframe), the QR popup, and the `.staff-*` teacher panel (tabbed Classes / Results / Groups, glass cards, brand colours) are the **reference aesthetic for all teacher-admin UIs and message boxes** — match them, don't reinvent a plainer look.
+
+4. **Every button must be readable on its background.** Ghost buttons inside light modals/panels need dark-on-light text (white-on-transparent is for the dark header / mode-bars only). Default ghost buttons dark-on-light and override to white **only** in the dark header/mode bars (see `chemistry/isotope-snap/style.css`). Eyeball every button on a rendered screenshot — white-on-white Cancel/Copy buttons shipped twice before this rule.
+
 ### The build process — one source, an assembled server page
 
 The activity is authored **once** as the normal github.io build. The Path B page is **assembled by a script** (`/tmp/ols-build-<N>/build_pathb.js` in the reference build), which: inlines the shared + activity CSS, the body HTML, the QR lib, the `OLS_TRANSPORT` shim and `script.js`; injects the `OLS_BOOT` scriptlet; rewrites relative asset paths (e.g. the crest) to **absolute github.io URLs**; and drops the intro loader.
