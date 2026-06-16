@@ -20,6 +20,41 @@
   }
   function pretty(s) { return String(s).replace(/-/g, '−').replace(/\*/g, '×'); }
 
+  /* A prominent pulsing GOLD wait-card, swapped into a .ui-msg element while a
+     server round-trip runs (the OLS login-gated standard - bland grey text is
+     not enough on a board). clearBusy restores plain text. html may contain
+     entities; escape any pupil/class names yourself. */
+  function busyCard(elm, html) {
+    if (!elm) return;
+    if (elm.getAttribute('data-base') === null) elm.setAttribute('data-base', elm.className);
+    elm.className = 'panel-loading';
+    elm.innerHTML = '<span class="panel-spinner" aria-hidden="true"></span><span>' + html + '</span>';
+  }
+  function clearBusy(elm, text) {
+    if (!elm) return;
+    var base = elm.getAttribute('data-base');
+    elm.className = (base !== null) ? base : elm.className.replace(/\bpanel-loading\b/g, '').trim();
+    elm.textContent = text || '';
+  }
+  /* Two-tap confirm dialog (mirrors showQr): a gj-modal above the panel.
+     Never native confirm() - it is unreliable in the sandboxed iframe. */
+  function openConfirm(title, bodyText, okLabel, cb) {
+    var mroot = document.getElementById('gj-modal-root');
+    if (mroot && mroot.children.length) return;   // never stack two dialogs
+    var back = el('div', 'gj-modal-backdrop gj-modal-zstack');
+    var card = el('div', 'gj-modal');
+    card.innerHTML = '<h2>' + esc(title) + '</h2><p class="ui-msg">' + esc(bodyText) + '</p>' +
+      '<div class="gj-confirm-actions"><button class="btn-pencil" id="gj-cf-cancel">Cancel</button>' +
+      '<button class="btn-stamp" id="gj-cf-ok">' + esc(okLabel || 'Confirm') + '</button></div>';
+    back.appendChild(card);
+    mroot.appendChild(back);
+    function done(v) { back.remove(); if (cb) cb(v); }
+    card.querySelector('#gj-cf-ok').addEventListener('click', function () { done(true); });
+    card.querySelector('#gj-cf-cancel').addEventListener('click', function () { done(false); });
+    back.addEventListener('click', function (e) { if (e.target === back) done(false); });
+    card.querySelector('#gj-cf-ok').focus();
+  }
+
   var root = document.getElementById('scr-staff');
   var passcode = null;
   var classes = [];
@@ -97,20 +132,21 @@
     function unlock() {
       if (go.disabled) return;
       go.disabled = true;
+      busyCard(body.querySelector('#st-msg'), 'Checking the passcode&hellip; this can take a moment');
       var tryPass = body.querySelector('#st-pass').value;
       passcode = tryPass;
       call('classes').then(function (r) {
         go.disabled = false;
         if (!r || !r.ok) {
           passcode = null;
-          body.querySelector('#st-msg').textContent = (r && r.error) || 'That passcode was not accepted.';
+          clearBusy(body.querySelector('#st-msg'), (r && r.error) || 'That passcode was not accepted.');
           return;
         }
         classes = r.classes || [];
         showClasses();
       }).catch(function () {
         go.disabled = false; passcode = null;
-        body.querySelector('#st-msg').textContent = 'Could not reach the server — try again.';
+        clearBusy(body.querySelector('#st-msg'), 'Could not reach the server — try again.');
       });
     }
     go.addEventListener('click', unlock);
@@ -183,17 +219,17 @@
         delB.setAttribute('aria-label', 'Delete ' + c.name);
         delB.style.marginLeft = '6px';
         delB.addEventListener('click', function () {
-          if (!delB.classList.contains('arm')) {
-            delB.classList.add('arm'); delB.textContent = 'Sure?';
-            cmsg.textContent = 'Tap again to delete ' + c.name + ' and all its work.';
-            setTimeout(function () { delB.classList.remove('arm'); delB.innerHTML = '&times;'; if (cmsg.textContent.indexOf('Tap again') === 0) cmsg.textContent = ''; }, 4000);
-            return;
-          }
-          delB.disabled = true;
-          call('deleteClass', { className: c.name }).then(function (r) {
-            if (r && r.ok) { classes = classes.filter(function (x) { return x.name !== c.name; }); render(); cmsg.textContent = c.name + ' deleted.'; }
-            else { delB.disabled = false; cmsg.textContent = (r && r.error) || 'Could not delete.'; }
-          });
+          openConfirm('Delete ' + c.name + '?',
+            'This deletes ' + c.name + ' and all its work from the markbook. This cannot be undone.',
+            'Delete class', function (yes) {
+              if (!yes) return;
+              delB.disabled = true;
+              busyCard(cmsg, 'Deleting ' + esc(c.name) + '&hellip; this can take a moment');
+              call('deleteClass', { className: c.name }).then(function (r) {
+                if (r && r.ok) { classes = classes.filter(function (x) { return x.name !== c.name; }); render(); clearBusy(cmsg, c.name + ' deleted.'); }
+                else { delB.disabled = false; clearBusy(cmsg, (r && r.error) || 'Could not delete.'); }
+              }).catch(function () { delB.disabled = false; clearBusy(cmsg, 'Could not reach the server.'); });
+            });
         });
         actions.appendChild(wallB); actions.appendChild(linkB); actions.appendChild(qrB); actions.appendChild(delB);
 
@@ -375,18 +411,19 @@
       wall.querySelectorAll('.cell').forEach(function (td) {
         td.addEventListener('click', function () { showJotterPage(td.getAttribute('data-email')); });
       });
-      msg.textContent = pupils.length + ' pupils · updates every 20 seconds while this page is open · tap any cell to open that pupil’s jotter.';
+      clearBusy(msg, pupils.length + ' pupils · updates every 20 seconds while this page is open · tap any cell to open that pupil’s jotter.');
     }
 
     function load() {
       var token = ++view.wallSeq;
       call('wall', { className: view.cls, act: view.act }).then(function (r) {
         if (token !== view.wallSeq) return;
-        if (!r || !r.ok) { msg.textContent = (r && r.error) || 'Could not load the wall.'; return; }
+        if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load the wall.'); return; }
         view.wallData = r.pupils || [];
         paint(view.wallData);
-      }).catch(function () { if (token === view.wallSeq) msg.textContent = 'Could not reach the server — will retry.'; });
+      }).catch(function () { if (token === view.wallSeq) clearBusy(msg, 'Could not reach the server — will retry.'); });
     }
+    busyCard(msg, 'Loading the wall&hellip; this can take a moment');
     load();
     stopPolling();
     view.wallTimer = setInterval(load, 20000);
@@ -401,12 +438,13 @@
     body.appendChild(page);
     shell(view.cls + ' · Jotter Page', body, function () { showWall(); });
 
+    busyCard(msg, 'Fetching the jotter&hellip; this can take a moment');
     call('jotter', { className: view.cls, act: view.act, email: email }).then(function (r) {
-      if (!r || !r.ok) { msg.textContent = (r && r.error) || 'Could not load.'; return; }
+      if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load.'); return; }
       var state = null;
       try { state = JSON.parse(r.state); } catch (e) {}
-      msg.textContent = (r.name || email) + ' · ' + (view.act === 'angles' ? 'Angles' : 'Algebra') +
-        ' · every committed line, attempt 1 struck through where it was retried.';
+      clearBusy(msg, (r.name || email) + ' · ' + (view.act === 'angles' ? 'Angles' : 'Algebra') +
+        ' · every committed line, attempt 1 struck through where it was retried.');
       if (!state) { page.innerHTML = '<div class="jotter-q"><div class="jq-margin"></div><div class="jq-body ui-msg">Nothing saved yet.</div></div>'; return; }
 
       questionList(view.act).forEach(function (item) {
@@ -524,7 +562,9 @@
     body.appendChild(list);
     shell(view.cls + ' · Marking Pile', body, function () { showWall(); });
 
+    busyCard(msg, 'Reading every jotter&hellip; this can take a moment');
     fullStates().then(function (all) {
+      clearBusy(msg, '');
       var piles = {}; // key → {label, names:[], example}
       all.forEach(function (p) {
         questionList(view.act).forEach(function (item) {
@@ -598,9 +638,10 @@
     go.addEventListener('click', function () {
       if (go.disabled) return;
       go.disabled = true;
-      msg.textContent = 'Reading every jotter…';
+      busyCard(msg, 'Reading every jotter&hellip; this can take a moment');
       fullStates().then(function (all) {
         go.disabled = false;
+        clearBusy(msg, '');
         grid.innerHTML = '';
         var q = questionList(view.act).filter(function (i) { return i.q.id === sel.value; })[0].q;
         var shown = 0;
