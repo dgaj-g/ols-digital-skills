@@ -77,6 +77,27 @@ function doGet(e) {
 function userEmail_() {
   try { return Session.getActiveUser().getEmail() || ''; } catch (e) { return ''; }
 }
+/* The signed-in pupil's REAL name, read once from Google's OIDC userinfo
+   endpoint with HER OWN short-lived OAuth token (we run execute-as-user, so
+   ScriptApp.getOAuthToken() is the pupil's token). Needs the userinfo.profile
+   + script.external_request scopes (see appsscript.json). C2k pupil accounts
+   expose the full first name + surname, so she never types her name. Returns
+   '' on any failure, and the front-end falls back to the type-once form. */
+function autoName_() {
+  try {
+    var resp = UrlFetchApp.fetch('https://openidconnect.googleapis.com/v1/userinfo', {
+      headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+      muteHttpExceptions: true
+    });
+    if (resp.getResponseCode() !== 200) return '';
+    var data = JSON.parse(resp.getContentText());
+    var first = String(data.given_name || '');
+    var surname = String(data.family_name || '');
+    return (first + ' ' + surname).trim() || String(data.name || '');
+  } catch (e) {
+    return '';
+  }
+}
 /* Canonicalise a class code against the registry (case-insensitive). */
 function realClass_(c) {
   c = String(c || '').trim();
@@ -129,8 +150,11 @@ function yearFor_(cls, core, reqYear) {
    API (called from the page via google.script.run)
    ============================================================ */
 
+/* whoami -- called on page load, before any name entry. Auto-name is read
+   here so the page can sign the pupil straight in (no form) when C2k gives
+   us her name; a null name tells the client to use the type-once fallback. */
 function apiWhoAmI() {
-  return { ok: true, email: String(userEmail_()) };
+  return { ok: true, email: String(userEmail_()), name: autoName_() || null };
 }
 
 function apiLoad(req) {

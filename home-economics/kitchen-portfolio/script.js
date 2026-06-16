@@ -125,13 +125,45 @@
   var MIN_WORDS_OPEN = 5;
 
   // ---- local state ----
-  var state = { email: '', name: '', year: '', docUrl: '', entries: [], draft: null };
+  var state = { email: '', name: '', autoName: '', year: '', docUrl: '', entries: [], draft: null };
   var step = 1;
 
   // ---- tiny DOM helpers ----
   function $(id) { return document.getElementById(id); }
   function show(el) { if (el) el.hidden = false; }
   function hide(el) { if (el) el.hidden = true; }
+
+  /* A prominent pulsing GOLD wait-card, swapped into a status element while a
+     server round-trip runs (the OLS login-gated standard - a bland grey
+     "Loading..." is not enough on a board). clearBusy restores plain text. The
+     message may contain HTML entities; escape any pupil/class names yourself. */
+  function busyCard(el, html) {
+    if (!el) return;
+    if (el.getAttribute('data-base') === null) el.setAttribute('data-base', el.className);
+    el.hidden = false;
+    el.className = 'panel-loading';
+    el.innerHTML = '<span class="panel-spinner" aria-hidden="true"></span><span>' + html + '</span>';
+  }
+  function clearBusy(el, text) {
+    if (!el) return;
+    var base = el.getAttribute('data-base');
+    el.className = (base !== null) ? base : el.className.replace(/\bpanel-loading\b/g, '').trim();
+    el.textContent = text || '';
+  }
+
+  /* Two-tap confirm dialog. Never use native confirm() - it is unreliable
+     inside the sandboxed Apps Script iframe. cb is called with true/false. */
+  function kpConfirm(title, body, okLabel, cb) {
+    $('confirm-title').textContent = title;
+    $('confirm-body').textContent = body || '';
+    var ok = $('confirm-ok'), cancel = $('confirm-cancel');
+    ok.textContent = okLabel || 'Confirm';
+    function close(v) { hide($('confirm-modal')); ok.onclick = null; cancel.onclick = null; if (cb) cb(v); }
+    ok.onclick = function () { close(true); };
+    cancel.onclick = function () { close(false); };
+    show($('confirm-modal'));
+    ok.focus();
+  }
   function escapeHtml(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
@@ -348,9 +380,12 @@
       });
     });
     $('welcome-start').addEventListener('click', function () {
-      var name = ($('kp-name').value || '').trim();
       var msg = $('welcome-msg');
-      if (name.length < 2) { msg.textContent = 'Type your name first — it goes on your portfolio.'; return; }
+      // When C2k gave us her name (or she saved one before) the name input is
+      // hidden - she only needs to confirm her year, so skip the typed-name check.
+      var nameKnown = !!state.name;
+      var name = nameKnown ? state.name : ($('kp-name').value || '').trim();
+      if (!nameKnown && name.length < 2) { msg.textContent = 'Type your name first — it goes on your portfolio.'; return; }
       var needYear = !state.year;
       if (needYear && YEARS.indexOf(pickedYear) === -1) { msg.textContent = 'And pick your year group.'; return; }
       msg.textContent = '';
@@ -367,6 +402,26 @@
         renderHome();
       });
     });
+  }
+
+  /* Reveal the welcome card. When we already know her name (auto from C2k, or
+     saved on an earlier visit) the name input is hidden and she only confirms
+     her year group; otherwise the type-once name form is the fallback. */
+  function enterWelcome() {
+    var nameLabel = document.querySelector('label[for="kp-name"]');
+    var nameInput = $('kp-name');
+    var hello = $('welcome-hello');
+    if (state.name) {
+      if (nameLabel) nameLabel.hidden = true;
+      if (nameInput) nameInput.hidden = true;
+      if (hello) hello.textContent = 'Welcome, ' + state.name.split(' ')[0] + '! Just pick your year group to begin.';
+    } else {
+      if (nameLabel) nameLabel.hidden = false;
+      if (nameInput) nameInput.hidden = false;
+      if (hello) hello.textContent = state.email ? ('Signed in as ' + state.email) : 'Signed in with your school account';
+    }
+    if (!state.year) show($('year-pick'));
+    show($('welcome'));
   }
 
   /* ============================================================
@@ -1162,8 +1217,7 @@
     var btn = $('entry-submit'), msg = $('entry-msg');
     btn.disabled = true;
     btn.innerHTML = '<span class="btn-spin" aria-hidden="true"></span>Adding to your portfolio…';
-    msg.textContent = 'Google is writing your portfolio page — this can take a few seconds. Stay on this screen.';
-    msg.className = 'sv-msg';
+    busyCard(msg, 'Google is writing your portfolio page&hellip; this can take a moment. Stay on this screen.');
 
     var spec = composeEntry();
     var summary = entrySummary(spec);
@@ -1178,15 +1232,16 @@
         state.draft = null;
         savePending = false;             // server already cleared the draft
         if (r.url) state.docUrl = r.url;
+        clearBusy(msg, '');
         hide($('entry')); show($('home'));
         renderHome();
         openHooray(r.preview ? spec : null);
       })
       .catch(function (e) {
         if (e && e.message === 'not-signed-in') {
-          msg.textContent = 'Your sign-in has expired. Refresh this page to sign back in — your work is saved, then press the button again.';
+          clearBusy(msg, 'Your sign-in has expired. Refresh this page to sign back in — your work is saved, then press the button again.');
         } else {
-          msg.textContent = 'Sorry — that did not save just now. Nothing is lost: please press the button to try again.';
+          clearBusy(msg, 'Sorry — that did not save just now. Nothing is lost: please press the button to try again.');
         }
         msg.className = 'sv-msg bad';
       })
@@ -1308,22 +1363,23 @@
     if ($('staff-go').disabled) return;
     var pass = ($('staff-pass').value || '').trim();
     var msg = $('staff-msg');
-    msg.textContent = '';
     $('staff-go').disabled = true;
+    busyCard(msg, 'Checking the passcode&hellip; this can take a moment');
     call('admin', { passcode: pass, sub: 'classes' })
       .then(function (r) {
         if (r && r.ok) {
+          clearBusy(msg, '');
           staff.pass = pass; staff.me = r.me || ''; staff.classes = r.classes || [];
           $('staff-me').textContent = staff.me || 'your school account';
           staffView('staff-classes');
           renderClasses();
         } else {
-          msg.textContent = (r && r.error === 'bad-passcode')
+          clearBusy(msg, (r && r.error === 'bad-passcode')
             ? 'That passcode was not recognised. Try again.'
-            : 'Could not open the teacher area. Please try again.';
+            : 'Could not open the teacher area. Please try again.');
         }
       })
-      .catch(function () { msg.textContent = 'Something went wrong. Please try again.'; })
+      .catch(function () { clearBusy(msg, 'Something went wrong. Please try again.'); })
       .then(function () { $('staff-go').disabled = false; });
   }
   function staffReloadClasses() {
@@ -1365,29 +1421,29 @@
     var input = $('staff-newclass'), name = (input.value || '').trim(), msg = $('staff-cmsg');
     if (!name) { input.focus(); return; }
     var year = chosenYear();
-    if (YEARS.indexOf(year) === -1) { msg.textContent = 'Choose the year group for this class first — it picks which focus areas the pupils see.'; return; }
-    msg.textContent = 'Adding…';
+    if (YEARS.indexOf(year) === -1) { clearBusy(msg, 'Choose the year group for this class first — it picks which focus areas the pupils see.'); return; }
+    busyCard(msg, 'Adding the class&hellip; this can take a moment');
     $('staff-add').disabled = true;
     call('admin', { passcode: staff.pass, sub: 'addClass', name: name, year: year })
       .then(function (r) {
         if (r && r.ok) {
           input.value = '';
-          msg.textContent = r.claimed
+          clearBusy(msg, r.claimed
             ? ('Added ' + r.name + ' (' + year + '). Some pupils had already opened its link — the class is now yours, with its year group set, and their work is all there.')
-            : ('Added ' + r.name + ' (' + year + '). Copy its link (or show the QR) to share with that class.');
+            : ('Added ' + r.name + ' (' + year + '). Copy its link (or show the QR) to share with that class.'));
           // claimed classes were hidden under "show all" as unowned - replace, don't duplicate
           staff.classes = staff.classes.filter(function (c) { return c.name.toLowerCase() !== r.name.toLowerCase(); });
           staff.classes.push({ name: r.name, owner: r.owner || staff.me, year: year, mine: true, pupils: 0 });
           renderClasses();
           staffReloadClasses();
         }
-        else if (r && r.error === 'exists') msg.textContent = 'A class called ' + (r.name || name) + ' already exists.';
-        else if (r && r.error === 'bad-year') msg.textContent = 'Choose the year group for this class first.';
-        else if (r && r.error === 'busy') msg.textContent = 'The board is busy right now — try again in a moment.';
-        else if (r && r.error === 'not-signed-in') msg.textContent = 'Your sign-in has expired — refresh the page and try again.';
-        else msg.textContent = 'Could not add that class — try a simpler name (letters and numbers).';
+        else if (r && r.error === 'exists') clearBusy(msg, 'A class called ' + (r.name || name) + ' already exists.');
+        else if (r && r.error === 'bad-year') clearBusy(msg, 'Choose the year group for this class first.');
+        else if (r && r.error === 'busy') clearBusy(msg, 'The board is busy right now — try again in a moment.');
+        else if (r && r.error === 'not-signed-in') clearBusy(msg, 'Your sign-in has expired — refresh the page and try again.');
+        else clearBusy(msg, 'Could not add that class — try a simpler name (letters and numbers).');
       })
-      .catch(function () { msg.textContent = 'Could not add the class. Please try again.'; })
+      .catch(function () { clearBusy(msg, 'Could not add the class. Please try again.'); })
       .then(function () { $('staff-add').disabled = false; });
   }
   function onClassListClick(e) {
@@ -1400,29 +1456,28 @@
     if (act === 'link') { copyText(classLink(name), msg, 'Link for ' + name + ' copied — paste it into Google Classroom.'); return; }
     if (act === 'qr') { openQr(name); return; }
     if (act === 'del') {
-      if (!btn.classList.contains('arm')) {
-        btn.classList.add('arm'); btn.textContent = 'Sure?';
-        msg.textContent = 'Tap again to delete ' + name + ' — this removes its dashboard records (pupils’ own portfolios and photos are untouched).';
-        setTimeout(function () {
-          btn.classList.remove('arm'); btn.innerHTML = '&times;';
-          if (msg.textContent.indexOf('Tap again') === 0) msg.textContent = '';
-        }, 4000);
-        return;
-      }
-      btn.disabled = true;
-      msg.textContent = 'Deleting ' + name + '…';
-      call('admin', { passcode: staff.pass, sub: 'deleteClass', name: name })
-        .then(function (r) {
-          if (r && r.ok) {
-            msg.textContent = 'Deleted ' + name + '.';
-            staff.classes = staff.classes.filter(function (c) { return c.name !== name; });
-            renderClasses();
-            staffReloadClasses();
-          }
-          else if (r && r.error === 'not-owner') { btn.disabled = false; msg.textContent = 'Only ' + (r.owner || 'its owner') + ' can delete ' + name + '.'; }
-          else { btn.disabled = false; msg.textContent = 'Could not delete ' + name + '.'; }
-        })
-        .catch(function () { btn.disabled = false; msg.textContent = 'Could not delete ' + name + '. Please try again.'; });
+      kpConfirm(
+        'Delete ' + name + '?',
+        'This removes the class and its dashboard records. Pupils’ own portfolios and photos in their Drive are untouched. This cannot be undone.',
+        'Delete class',
+        function (yes) {
+          if (!yes) return;
+          busyCard(msg, 'Deleting ' + escapeHtml(name) + '&hellip; this can take a moment');
+          call('admin', { passcode: staff.pass, sub: 'deleteClass', name: name })
+            .then(function (r) {
+              if (r && r.ok) {
+                clearBusy(msg, 'Deleted ' + name + '.');
+                staff.classes = staff.classes.filter(function (c) { return c.name !== name; });
+                renderClasses();
+                staffReloadClasses();
+              }
+              else if (r && r.error === 'not-owner') clearBusy(msg, 'Only ' + (r.owner || 'its owner') + ' can delete ' + name + '.');
+              else clearBusy(msg, 'Could not delete ' + name + '.');
+            })
+            .catch(function () { clearBusy(msg, 'Could not delete ' + name + '. Please try again.'); });
+        }
+      );
+      return;
     }
   }
   /* "Spag bol · 2026-06-11" (server record) -> "Spag bol · 11 June 2026" */
@@ -1458,15 +1513,15 @@
     $('dash').innerHTML = '';
     $('dash-title').textContent = name;
     staffView('staff-dash');
-    $('staff-dmsg').textContent = 'Loading…';
+    busyCard($('staff-dmsg'), 'Opening the class dashboard&hellip; this can take a moment');
     var token = ++dashSeq;
     call('admin', { passcode: staff.pass, sub: 'dashboard', classCode: name })
       .then(function (r) {
         if (token !== dashSeq) return;
-        if (r && r.ok) { staff.rows = r.rows || []; renderDash(staff.rows); $('staff-dmsg').textContent = ''; }
-        else $('staff-dmsg').textContent = 'Could not load the class. Please try again.';
+        if (r && r.ok) { staff.rows = r.rows || []; renderDash(staff.rows); clearBusy($('staff-dmsg'), ''); }
+        else clearBusy($('staff-dmsg'), 'Could not load the class. Please try again.');
       })
-      .catch(function () { if (token === dashSeq) $('staff-dmsg').textContent = 'Could not load the class. Please try again.'; });
+      .catch(function () { if (token === dashSeq) clearBusy($('staff-dmsg'), 'Could not load the class. Please try again.'); });
   }
   function dashCsv() {
     function q(s) {
@@ -1512,14 +1567,21 @@
     // a pupil's saved work on the deployed app):
     //   ?reset       wipe saved progress for a fresh run
     //   ?year=J2     preview a year group's tone + focus areas
-    var previewYear = '';
+    var previewYear = '', previewName = '';
     if (!ONLINE) {
       var qs = location.search;   // capture before ?reset strips the query string
       var ym = /[?&]year=(J[123])/.exec(qs);
       if (ym) previewYear = ym[1];
+      // ?name=Aoife%20Murphy simulates the C2k auto-name so the zero-typing path
+      // (guard screen -> shelf, no form) can be reviewed offline.
+      var nm = /[?&]name=([^&]+)/.exec(qs);
+      if (nm) { try { previewName = decodeURIComponent(nm[1]).slice(0, 60); } catch (e) { previewName = nm[1].slice(0, 60); } }
       if (/(^|[?&])reset(=|&|$)/.test(qs)) {
         try { localStorage.removeItem(LS_KEY); localStorage.removeItem(LS_THUMBS); } catch (e) {}
-        if (window.history && history.replaceState) history.replaceState({}, '', location.pathname + (previewYear ? '?year=' + previewYear : ''));
+        var keep = [];
+        if (previewYear) keep.push('year=' + previewYear);
+        if (previewName) keep.push('name=' + encodeURIComponent(previewName));
+        if (window.history && history.replaceState) history.replaceState({}, '', location.pathname + (keep.length ? '?' + keep.join('&') : ''));
       }
     }
 
@@ -1594,7 +1656,7 @@
     $('staff-refresh').addEventListener('click', function () { if (staff.current) openDash(staff.current); });
     $('staff-csv').addEventListener('click', dashCsv);
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') { hide($('staff-modal')); hide($('doc-preview')); hide($('hooray')); }
+      if (e.key === 'Escape') { hide($('staff-modal')); hide($('doc-preview')); hide($('hooray')); hide($('confirm-modal')); }
     });
     window.addEventListener('beforeunload', function () { if (savePending) persistNow(); });
     // phones rarely fire beforeunload - flush whenever the app goes to the background
@@ -1602,9 +1664,15 @@
       if (document.visibilityState === 'hidden' && savePending) persistNow();
     });
 
-    // identity + saved state
+    // identity + saved state. The #boot-guard ("Getting your details...") is
+    // already on screen; we resolve whoami + load behind it, then reveal the
+    // shelf (zero typing) or the welcome card.
+    var namePending = false;   // auto-name differs from the stored one -> mirror it once
     call('whoami', {})
-      .then(function (r) { state.email = (r && r.email) || ''; })
+      .then(function (r) {
+        state.email = (r && r.email) || '';
+        state.autoName = (r && r.name) || '';   // pupil's real C2k name, or '' offline/blank
+      })
       .catch(function () {})
       .then(function () { return call('load', {}); })
       .then(function (r) {
@@ -1621,15 +1689,22 @@
         // the class's year (set by the teacher) always wins over a self-pick
         if (BOOT.classYear && YEARS.indexOf(BOOT.classYear) !== -1) state.year = BOOT.classYear;
         else if (previewYear) state.year = previewYear;
+        // preview only: pretend C2k handed us a name (see ?name= above)
+        if (!ONLINE && !state.autoName && previewName) state.autoName = previewName;
+        // C2k gives us her real name - it wins over any earlier self-typed one,
+        // and we mirror it to her store so the teacher dashboard shows it too.
+        if (state.autoName && state.autoName !== state.name) {
+          state.name = state.autoName;
+          namePending = true;
+        }
         applyYear();
-        if (!state.name) {
-          var hello = $('welcome-hello');
-          if (hello) hello.textContent = state.email ? ('Signed in as ' + state.email) : 'Signed in with your school account';
-          if (!state.year) show($('year-pick'));
-          show($('welcome'));
-        } else {
+        hide($('boot-guard'));
+        if (state.name && state.year) {
           show($('home'));
           renderHome();
+          if (namePending) { savePending = true; persistNow(); }
+        } else {
+          enterWelcome();
         }
       });
   }

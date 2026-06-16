@@ -19,6 +19,15 @@
 
   <main id="app" class="app" aria-live="polite">
 
+    <!-- Shown immediately on load while we read the pupil's name from her
+         school account (no typing). Hides into the shelf, or the welcome
+         card if the account can't supply a name. -->
+    <section id="boot-guard" class="boot-guard" aria-live="polite">
+      <img src="../../assets/crest.png" alt="" class="boot-guard-crest" aria-hidden="true">
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="boot-guard-text">Getting your details&hellip;</p>
+    </section>
+
     <!-- First-visit welcome -->
     <section id="welcome" class="welcome" hidden aria-labelledby="welcome-h">
       <div class="welcome-card">
@@ -244,6 +253,18 @@
         <p class="modal-note">This is exactly what gets added to your portfolio Google Doc.
           (Preview only &mdash; on the school app it goes straight into your Doc in Drive.)</p>
         <div id="doc-preview-body" class="doc-preview-body"></div>
+      </div>
+    </div>
+
+    <!-- Reusable two-tap confirm dialog (e.g. deleting a class) -->
+    <div id="confirm-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="modal-card confirm-card">
+        <h2 id="confirm-title" class="modal-title"></h2>
+        <p id="confirm-body" class="confirm-body"></p>
+        <div class="confirm-actions">
+          <button id="confirm-cancel" class="btn btn-ghost" type="button">Cancel</button>
+          <button id="confirm-ok" class="btn btn-acc" type="button">Confirm</button>
+        </div>
       </div>
     </div>
 
