@@ -1170,6 +1170,7 @@ body.gj .staff-head h1 { color: var(--cream); font-size: 22px; }
 @keyframes gj-spin { to { transform: rotate(360deg); } }
 @keyframes gj-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
 @media (prefers-reduced-motion: reduce) { .panel-loading, .panel-spinner, .spinner { animation: none; } }
+.act-load-error { text-align: center; color: var(--amber-flag); font-weight: 700; margin: 28px auto; max-width: 480px; line-height: 1.4; }
 
 /* selection lock while dragging (protractor drag etc.) */
 body.dragging-active, body.dragging-active * {
@@ -5405,16 +5406,17 @@ window.OLS_TRANSPORT = {
       var nm = body.querySelector('#st-newclass').value.trim();
       if (!nm) { cmsg.textContent = 'Give the class a name first.'; return; }
       addB.disabled = true;
+      busyCard(cmsg, 'Adding ' + esc(nm) + '&hellip; this can take a moment');
       call('addClass', { name: nm }).then(function (r) {
         addB.disabled = false;
         if (r && r.ok) {
           classes.push({ name: r.name, acts: r.acts || { angles: true, algebra: true }, count: 0 });
           body.querySelector('#st-newclass').value = '';
           render();
-          cmsg.textContent = r.name + ' added with both books on its shelf \u2014 untick any you want to hold back, then copy its link.';
+          clearBusy(cmsg, r.name + ' added with both books on its shelf \u2014 untick any you want to hold back, then copy its link.');
           reloadClasses().then(render);
-        } else cmsg.textContent = (r && r.error) || 'Could not add that class.';
-      }).catch(function () { addB.disabled = false; cmsg.textContent = 'Could not reach the server.'; });
+        } else clearBusy(cmsg, (r && r.error) || 'Could not add that class.');
+      }).catch(function () { addB.disabled = false; clearBusy(cmsg, 'Could not reach the server.'); });
     });
   }
 
@@ -6443,13 +6445,22 @@ window.OLS_TRANSPORT = {
     document.documentElement.style.setProperty('--act-accent', a.accent);
     document.getElementById('act-eyebrow').textContent = pack.sections.length + ' exercises \u00b7 ' + a.sub;
     document.getElementById('act-title').textContent = a.title;
+    /* Open the book at once with a gold wait-card so the tap never feels dead
+       during the 1-3s server load (offline resolves instantly, so no real flash). */
+    document.getElementById('act-contents').innerHTML = '';
+    document.getElementById('act-main').innerHTML =
+      '<div class="panel-loading"><span class="panel-spinner" aria-hidden="true"></span>' +
+      '<span>Opening your book&hellip; this can take a moment</span></div>';
+    show('activity');
     call('load', { act: a.id }).then(function (r) {
       var st = null;
       if (r && r.ok && r.state) { try { st = JSON.parse(r.state); } catch (e) {} }
       current.state = st || { v: 1, act: a.id, start: Math.floor(Date.now() / 1000), qs: {} };
       renderContents();
       renderSection(firstOpenSection(pack));
-      show('activity');
+    }).catch(function () {
+      document.getElementById('act-main').innerHTML =
+        '<p class="act-load-error">Could not open your book &mdash; tap &ldquo;The shelf&rdquo; above and try again.</p>';
     });
   }
 
