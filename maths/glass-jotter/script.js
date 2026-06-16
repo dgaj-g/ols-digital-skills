@@ -574,13 +574,22 @@
     document.documentElement.style.setProperty('--act-accent', a.accent);
     document.getElementById('act-eyebrow').textContent = pack.sections.length + ' exercises · ' + a.sub;
     document.getElementById('act-title').textContent = a.title;
+    /* Open the book at once with a gold wait-card so the tap never feels dead
+       during the 1-3s server load (offline resolves instantly, so no real flash). */
+    document.getElementById('act-contents').innerHTML = '';
+    document.getElementById('act-main').innerHTML =
+      '<div class="panel-loading"><span class="panel-spinner" aria-hidden="true"></span>' +
+      '<span>Opening your book&hellip; this can take a moment</span></div>';
+    show('activity');
     call('load', { act: a.id }).then(function (r) {
       var st = null;
       if (r && r.ok && r.state) { try { st = JSON.parse(r.state); } catch (e) {} }
       current.state = st || { v: 1, act: a.id, start: Math.floor(Date.now() / 1000), qs: {} };
       renderContents();
       renderSection(firstOpenSection(pack));
-      show('activity');
+    }).catch(function () {
+      document.getElementById('act-main').innerHTML =
+        '<p class="act-load-error">Could not open your book &mdash; tap &ldquo;The shelf&rdquo; above and try again.</p>';
     });
   }
 

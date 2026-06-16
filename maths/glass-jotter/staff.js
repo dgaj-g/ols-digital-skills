@@ -248,16 +248,17 @@
       var nm = body.querySelector('#st-newclass').value.trim();
       if (!nm) { cmsg.textContent = 'Give the class a name first.'; return; }
       addB.disabled = true;
+      busyCard(cmsg, 'Adding ' + esc(nm) + '&hellip; this can take a moment');
       call('addClass', { name: nm }).then(function (r) {
         addB.disabled = false;
         if (r && r.ok) {
           classes.push({ name: r.name, acts: r.acts || { angles: true, algebra: true }, count: 0 });
           body.querySelector('#st-newclass').value = '';
           render();
-          cmsg.textContent = r.name + ' added with both books on its shelf — untick any you want to hold back, then copy its link.';
+          clearBusy(cmsg, r.name + ' added with both books on its shelf — untick any you want to hold back, then copy its link.');
           reloadClasses().then(render);
-        } else cmsg.textContent = (r && r.error) || 'Could not add that class.';
-      }).catch(function () { addB.disabled = false; cmsg.textContent = 'Could not reach the server.'; });
+        } else clearBusy(cmsg, (r && r.error) || 'Could not add that class.');
+      }).catch(function () { addB.disabled = false; clearBusy(cmsg, 'Could not reach the server.'); });
     });
   }
 
