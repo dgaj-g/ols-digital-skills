@@ -170,6 +170,7 @@ h1, h2, h3, .home-title, .sv-title, .modal-title {
 .field:focus, textarea:focus { outline: 2px solid var(--kp-acc); outline-offset: 1px; border-color: var(--kp-acc); }
 .field-big { font-size: 1.15rem; font-weight: 600; }
 .field-date { max-width: 220px; }
+#staff-go { margin-top: 12px; }
 textarea {
   width: 100%;
   font: inherit;
@@ -698,6 +699,8 @@ textarea {
 .submit-check li::before { content: "\25CB"; color: var(--kp-line); font-size: 0.9em; }
 .submit-check li.ok { color: var(--kp-good); }
 .submit-check li.ok::before { content: "\2713"; color: var(--kp-good); font-weight: 700; }
+.submit-check li.todo { color: var(--kp-bad); font-weight: 600; }
+.submit-check li.todo::before { content: "\25CB"; color: var(--kp-bad); }
 
 /* ---------- hooray ---------- */
 .hooray-card { text-align: center; position: relative; overflow: hidden; }

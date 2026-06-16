@@ -455,9 +455,9 @@
   function entryThumbHtml(e) {
     var inner = '<span aria-hidden="true">\u{1F37D}️</span>';
     if (e.thumbId) {
-      var src = ONLINE
+      var src = getThumb(e.thumbId) || (ONLINE
         ? ('https://drive.google.com/thumbnail?id=' + encodeURIComponent(e.thumbId) + '&sz=w400')
-        : getThumb(e.thumbId);
+        : '');
       if (src) inner = '<img src="' + escapeHtml(src) + '" alt="" onerror="this.remove()">' + inner;
     }
     return '<div class="tl-thumb">' + inner + '</div>';
@@ -626,9 +626,9 @@
     ul.innerHTML = (d.media || []).map(function (m, i) {
       var inner;
       if (m.k === 'p') {
-        var src = ONLINE
+        var src = getThumb(m.id) || (ONLINE
           ? ('https://drive.google.com/thumbnail?id=' + encodeURIComponent(m.id) + '&sz=w400')
-          : getThumb(m.id);
+          : '');
         inner = src ? '<img src="' + escapeHtml(src) + '" alt="Photo ' + (i + 1) + '" onerror="this.remove()">' : '<span aria-hidden="true">\u{1F4F7}</span>';
       } else {
         inner = '<span class="mi-video"><em aria-hidden="true">\u{1F39E}️</em>' + escapeHtml(m.n || 'video') + '</span>';
@@ -657,7 +657,8 @@
     $('add-photo').disabled = busy;
     $('add-video').disabled = busy;
     var msg = $('media-msg');
-    if (busy) { msg.textContent = label || ''; msg.className = 'sv-msg'; }
+    if (busy) busyCard(msg, label || 'Saving to your Drive&hellip; this can take a moment');
+    else clearBusy(msg, '');
     if (!$('step-4').hidden) renderSubmitCheck();
   }
 
@@ -1123,7 +1124,8 @@
     if (!draft()) return;
     var checks = submitChecks();
     $('submit-check').innerHTML = checks.map(function (c) {
-      return '<li class="' + (c.ok ? 'ok' : '') + '">' + escapeHtml(c.label) + '</li>';
+      var cls = c.ok ? 'ok' : (c.soft ? 'soft' : 'todo');
+      return '<li class="' + cls + '">' + escapeHtml(c.label) + '</li>';
     }).join('');
     var ready = checks.every(function (c) { return c.ok || c.soft; });
     $('entry-submit').disabled = !ready || submitting || mediaBusy;
