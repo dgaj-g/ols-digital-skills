@@ -7,6 +7,15 @@ digital exercise book; the engine marks like a CCEA examiner; teachers get a liv
 Read `DESIGN.md` and `INTERFACES.md` for the full design + module contracts. Add a new topic
 via `ADDING_A_TOPIC.md` (manifest-driven).
 
+## Status (16 Jun 2026) — login-gated POLISH done (Option A); still NOT deployed
+Damien chose **Option A** (polish only — keep the type-once name; NO architecture change, so
+the Sheet + Working Wall are preserved). Done + committed: `cf0f5cf` (guard spinner, gold
+busyCards on teacher flows, two-tap confirm) and `21c6d9d` (pupil **openActivity** now opens at
+once with the gold "Opening your book…" wait-card + an `.act-load-error` fallback; **addClass**
+shows the gold busyCard). `server/Index.html` rebuilt; `Code.gs` unchanged. Verified offline
+end-to-end (cover guard, shelf, open-activity card, teacher unlock/add-class busyCards, delete
+confirm; no console errors). NEXT: first deployment (`server/DEPLOY.md`) + PR #22 review/merge.
+
 ## Status (14 Jun 2026) — COMPLETE, on draft PR #22, NOT merged, NOT deployed
 Branch `draft/issue-24-25-maths-m2-revision`, repo `dgaj-g/ols-digital-skills`. Everything is
 committed + pushed. Latest work, in order:
