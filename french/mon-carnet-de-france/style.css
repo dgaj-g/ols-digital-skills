@@ -44,6 +44,28 @@ body{
 @keyframes btn-spin{ to{ transform:rotate(360deg); } }
 @media (prefers-reduced-motion: reduce){ .btn-spin{ animation:none; } }
 
+/* ---------- boot guard: "Getting your details..." (auto sign-in) ---------- */
+.boot-guard{ position:fixed; inset:0; z-index:45; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:16px; text-align:center; padding:40px 20px;
+  background:radial-gradient(1200px 600px at 50% -10%, rgba(42,79,143,.10), transparent 60%), var(--bg); }
+.boot-guard-crest{ width:72px; height:auto; opacity:.92; }
+.spinner{ width:40px; height:40px; border-radius:50%; border:4px solid var(--border);
+  border-top-color:var(--ols-blue); animation:btn-spin .8s linear infinite; }
+.boot-guard-text{ margin:0; font-family:Georgia,serif; font-size:1.15rem; color:var(--ols-blue); font-weight:700; }
+
+/* ---------- gold "this can take a moment" wait-card (every server call) ---------- */
+.panel-loading{ display:flex; align-items:center; justify-content:center; gap:14px;
+  margin:14px auto; max-width:480px; padding:18px 20px;
+  background:linear-gradient(180deg,#FFF3CF,#FCE7A0);
+  border:2px solid var(--ols-gold); border-radius:14px;
+  color:var(--ols-blue); font-weight:800; font-size:1.04rem; line-height:1.25;
+  box-shadow:var(--shadow-md); animation:panelPulse 1.4s ease-in-out infinite; }
+.panel-spinner{ width:26px; height:26px; border-radius:50%; flex:0 0 auto;
+  border:4px solid rgba(26,58,107,.22); border-top-color:var(--ols-blue);
+  animation:btn-spin .7s linear infinite; }
+@keyframes panelPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.02); } }
+@media (prefers-reduced-motion: reduce){ .spinner,.panel-spinner{ animation:none; } }
+
 /* ---------- welcome ---------- */
 .welcome{
   position:fixed; inset:0; z-index:40; display:flex; align-items:center; justify-content:center;
@@ -150,6 +172,13 @@ body{
 .modal-title{ color:var(--ols-blue); font-family:Georgia,serif; margin:.1em 0 .5em; padding-right:24px; }
 .modal-body{ margin:.2em 0; }
 .modal-note{ color:var(--muted); font-size:.92rem; margin:.4em 0 1.1em; }
+
+/* two-tap confirm dialog: above the staff panel (z-index 50); never native confirm() */
+#confirm-modal{ z-index:500; }
+.confirm-card{ max-width:420px; text-align:center; }
+.confirm-card .modal-title{ color:var(--fr-red); padding-right:0; }
+.confirm-body{ margin:.2em auto 4px; max-width:340px; color:var(--text); font-size:.95rem; line-height:1.45; }
+.confirm-actions{ display:flex; gap:10px; justify-content:center; margin-top:18px; }
 
 /* ---------- staff ---------- */
 .staff-key{ position:fixed; bottom:14px; right:14px; z-index:30; width:46px; height:46px; border-radius:50%;

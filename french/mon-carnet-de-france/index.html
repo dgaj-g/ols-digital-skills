@@ -17,6 +17,14 @@
 
   <main id="app" class="app" aria-live="polite">
 
+    <!-- Shown immediately on load while we read the pupil's name from her
+         school account (no typing). Hides into the welcome or her notebook. -->
+    <section id="signin-loading" class="boot-guard" aria-live="polite">
+      <img src="../../assets/crest.png" alt="" class="boot-guard-crest" aria-hidden="true">
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="boot-guard-text">Getting your details&hellip;</p>
+    </section>
+
     <!-- First-visit welcome (shown by script.js only on first run) -->
     <section id="welcome" class="welcome" hidden aria-labelledby="welcome-h">
       <div class="welcome-card">
@@ -323,6 +331,18 @@
           <p id="qr-link" class="qr-link"></p>
           <button id="qr-copy" class="btn btn-blue" type="button">Copy link</button>
           <p id="staff-qmsg" class="staff-msg" role="status"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reusable two-tap confirm dialog (e.g. deleting a class) -->
+    <div id="confirm-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="modal-card confirm-card">
+        <h2 id="confirm-title" class="modal-title"></h2>
+        <p id="confirm-body" class="confirm-body"></p>
+        <div class="confirm-actions">
+          <button id="confirm-cancel" class="btn btn-ghost" type="button">Cancel</button>
+          <button id="confirm-ok" class="btn btn-blue" type="button">Confirm</button>
         </div>
       </div>
     </div>
