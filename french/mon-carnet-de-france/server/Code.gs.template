@@ -57,6 +57,27 @@ function doGet(e) {
 function userEmail_() {
   try { return Session.getActiveUser().getEmail() || ''; } catch (e) { return ''; }
 }
+/* The signed-in pupil's REAL name, read once from Google's OIDC userinfo
+   endpoint with HER OWN short-lived OAuth token (we run execute-as-user, so
+   ScriptApp.getOAuthToken() is the pupil's token). Needs the userinfo.profile
+   + script.external_request scopes (see appsscript.json). C2k pupil accounts
+   expose the full first name + surname, so she never types her name. Returns
+   '' on any failure (page falls back to the plain "signed in as" greeting). */
+function autoName_() {
+  try {
+    var resp = UrlFetchApp.fetch('https://openidconnect.googleapis.com/v1/userinfo', {
+      headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+      muteHttpExceptions: true
+    });
+    if (resp.getResponseCode() !== 200) return '';
+    var data = JSON.parse(resp.getContentText());
+    var first = String(data.given_name || '');
+    var surname = String(data.family_name || '');
+    return (first + ' ' + surname).trim() || String(data.name || '');
+  } catch (e) {
+    return '';
+  }
+}
 /* Canonicalise a class code against the registry (case-insensitive), so a
    hand-typed lowercase link can't split one class into two key prefixes. */
 function realClass_(c) {
@@ -83,7 +104,7 @@ function normStations_(obj) {
    ============================================================ */
 
 function apiWhoAmI() {
-  return { ok: true, email: String(userEmail_()), effective: String((function () { try { return Session.getEffectiveUser().getEmail() || ''; } catch (e) { return ''; } })()) };
+  return { ok: true, email: String(userEmail_()), name: autoName_() || null, effective: String((function () { try { return Session.getEffectiveUser().getEmail() || ''; } catch (e) { return ''; } })()) };
 }
 
 /* Load this pupil's private draft from user-properties. */

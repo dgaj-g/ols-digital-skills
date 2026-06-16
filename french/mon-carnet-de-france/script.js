@@ -25,7 +25,7 @@
   };
 
   // ---- local state ----
-  var state = { email: '', name: '', stations: { 1: false, 2: false, 3: false, 4: false }, docUrl: '', data: {} };
+  var state = { email: '', name: '', autoName: '', stations: { 1: false, 2: false, 3: false, 4: false }, docUrl: '', data: {} };
   var openStation = null;
 
   /* ============================================================
@@ -826,6 +826,38 @@
   function hide(el) { if (el) el.hidden = true; }
   function doneCount() { return STATIONS.filter(function (n) { return state.stations[n]; }).length; }
 
+  /* A prominent pulsing GOLD wait-card, swapped into a status element while a
+     server round-trip runs (the OLS login-gated standard - a bland grey
+     "Loading..." is not enough on a board). clearBusy restores plain text. The
+     message may contain HTML entities; escape any pupil/class names yourself. */
+  function busyCard(el, html) {
+    if (!el) return;
+    if (el.getAttribute('data-base') === null) el.setAttribute('data-base', el.className);
+    el.hidden = false;
+    el.className = 'panel-loading';
+    el.innerHTML = '<span class="panel-spinner" aria-hidden="true"></span><span>' + html + '</span>';
+  }
+  function clearBusy(el, text) {
+    if (!el) return;
+    var base = el.getAttribute('data-base');
+    el.className = (base !== null) ? base : el.className.replace(/\bpanel-loading\b/g, '').trim();
+    el.textContent = text || '';
+  }
+
+  /* Two-tap confirm dialog. Never use native confirm() - it is unreliable
+     inside the sandboxed Apps Script iframe. cb is called with true/false. */
+  function frConfirm(title, body, okLabel, cb) {
+    $('confirm-title').textContent = title;
+    $('confirm-body').textContent = body || '';
+    var ok = $('confirm-ok'), cancel = $('confirm-cancel');
+    ok.textContent = okLabel || 'Confirm';
+    function close(v) { hide($('confirm-modal')); ok.onclick = null; cancel.onclick = null; if (cb) cb(v); }
+    ok.onclick = function () { close(true); };
+    cancel.onclick = function () { close(false); };
+    show($('confirm-modal'));
+    ok.focus();
+  }
+
   /* ============================================================
      Transport: OLS_TRANSPORT (Path B) or an offline localStorage stub
      ============================================================ */
@@ -949,11 +981,11 @@
       if (lock) lock.style.display = c === 4 ? 'none' : '';
       if (finish) finish.classList.toggle('ready', c === 4);
       if (hint) {
-        if (creating) hint.textContent = 'Un instant… Google is creating your Doc — this can take a few seconds.';
-        else if (createErr) hint.textContent = 'Sorry — your project could not be created just now. Please press the button to try again.';
-        else if (state.docUrl) hint.textContent = 'Your project has been created. You can make changes to it any time.';
-        else if (ready) hint.textContent = 'All four stops done. Make your project!';
-        else hint.textContent = 'Finish all four stops to unlock this.';
+        if (creating) busyCard(hint, 'Un instant&hellip; Google is creating your Doc &mdash; this can take a moment');
+        else if (createErr) clearBusy(hint, 'Sorry — your project could not be created just now. Please press the button to try again.');
+        else if (state.docUrl) clearBusy(hint, 'Your project has been created. You can make changes to it any time.');
+        else if (ready) clearBusy(hint, 'All four stops done. Make your project!');
+        else clearBusy(hint, 'Finish all four stops to unlock this.');
       }
     }
   }
@@ -1337,22 +1369,23 @@
     if ($('staff-go').disabled) return;   // Enter on the field must respect the in-flight state
     var pass = ($('staff-pass').value || '').trim();
     var msg = $('staff-msg');
-    msg.textContent = '';
     $('staff-go').disabled = true;
+    busyCard(msg, 'Checking the passcode&hellip; this can take a moment');
     call('admin', { passcode: pass, sub: 'classes' })
       .then(function (r) {
         if (r && r.ok) {
+          clearBusy(msg, '');
           staff.pass = pass; staff.me = r.me || ''; staff.classes = r.classes || [];
           $('staff-me').textContent = staff.me || 'your school account';
           staffView('staff-classes');
           renderClasses();
         } else {
-          msg.textContent = (r && r.error === 'bad-passcode')
+          clearBusy(msg, (r && r.error === 'bad-passcode')
             ? 'That passcode was not recognised. Try again.'
-            : 'Could not open the teacher area. Please try again.';
+            : 'Could not open the teacher area. Please try again.');
         }
       })
-      .catch(function () { msg.textContent = 'Something went wrong. Please try again.'; })
+      .catch(function () { clearBusy(msg, 'Something went wrong. Please try again.'); })
       .then(function () { $('staff-go').disabled = false; });
   }
   function staffReloadClasses() {
@@ -1388,24 +1421,24 @@
     if ($('staff-add').disabled) return;   // double-tap / double-Enter guard
     var input = $('staff-newclass'), name = (input.value || '').trim(), msg = $('staff-cmsg');
     if (!name) { input.focus(); return; }
-    msg.textContent = 'Adding…';
+    busyCard(msg, 'Adding the class&hellip; this can take a moment');
     $('staff-add').disabled = true;
     call('admin', { passcode: staff.pass, sub: 'addClass', name: name })
       .then(function (r) {
         if (r && r.ok) {
           input.value = '';
-          msg.textContent = 'Added ' + r.name + '. Copy its link (or show the QR) to share with that class.';
+          clearBusy(msg, 'Added ' + r.name + '. Copy its link (or show the QR) to share with that class.');
           // optimistic local update so the row appears even if the reload fails
           staff.classes.push({ name: r.name, owner: r.owner || staff.me, mine: true, pupils: 0 });
           renderClasses();
           staffReloadClasses();
         }
-        else if (r && r.error === 'exists') msg.textContent = 'A class called ' + (r.name || name) + ' already exists.';
-        else if (r && r.error === 'busy') msg.textContent = 'The board is busy right now — try again in a moment.';
-        else if (r && r.error === 'not-signed-in') msg.textContent = 'Your sign-in has expired — refresh the page and try again.';
-        else msg.textContent = 'Could not add that class — try a simpler name (letters and numbers).';
+        else if (r && r.error === 'exists') clearBusy(msg, 'A class called ' + (r.name || name) + ' already exists.');
+        else if (r && r.error === 'busy') clearBusy(msg, 'The board is busy right now — try again in a moment.');
+        else if (r && r.error === 'not-signed-in') clearBusy(msg, 'Your sign-in has expired — refresh the page and try again.');
+        else clearBusy(msg, 'Could not add that class — try a simpler name (letters and numbers).');
       })
-      .catch(function () { msg.textContent = 'Could not add the class. Please try again.'; })
+      .catch(function () { clearBusy(msg, 'Could not add the class. Please try again.'); })
       .then(function () { $('staff-add').disabled = false; });
   }
   function onClassListClick(e) {
@@ -1418,31 +1451,29 @@
     if (act === 'link') { copyText(classLink(name), msg, 'Link for ' + name + ' copied — paste it into Google Classroom.'); return; }
     if (act === 'qr') { openQr(name); return; }
     if (act === 'del') {
-      // two-tap confirm (native confirm() is unreliable in the sandboxed iframe)
-      if (!btn.classList.contains('arm')) {
-        btn.classList.add('arm'); btn.textContent = 'Sure?';
-        msg.textContent = 'Tap again to delete ' + name + ' — this removes its dashboard records (pupils’ own Docs are untouched).';
-        setTimeout(function () {
-          btn.classList.remove('arm'); btn.innerHTML = '&times;';
-          if (msg.textContent.indexOf('Tap again') === 0) msg.textContent = '';   // clear the stale prompt on disarm
-        }, 4000);
-        return;
-      }
-      btn.disabled = true;
-      msg.textContent = 'Deleting ' + name + '…';
-      call('admin', { passcode: staff.pass, sub: 'deleteClass', name: name })
-        .then(function (r) {
-          if (r && r.ok) {
-            msg.textContent = 'Deleted ' + name + '.';
-            // optimistic local update so the row disappears even if the reload fails
-            staff.classes = staff.classes.filter(function (c) { return c.name !== name; });
-            renderClasses();
-            staffReloadClasses();
-          }
-          else if (r && r.error === 'not-owner') { btn.disabled = false; msg.textContent = 'Only ' + (r.owner || 'its owner') + ' can delete ' + name + '.'; }
-          else { btn.disabled = false; msg.textContent = 'Could not delete ' + name + '.'; }
-        })
-        .catch(function () { btn.disabled = false; msg.textContent = 'Could not delete ' + name + '. Please try again.'; });
+      frConfirm(
+        'Delete ' + name + '?',
+        'This removes the class and its dashboard records. Pupils’ own project Docs in their Drive are untouched. This cannot be undone.',
+        'Delete class',
+        function (yes) {
+          if (!yes) return;
+          busyCard(msg, 'Deleting ' + escapeHtml(name) + '&hellip; this can take a moment');
+          call('admin', { passcode: staff.pass, sub: 'deleteClass', name: name })
+            .then(function (r) {
+              if (r && r.ok) {
+                clearBusy(msg, 'Deleted ' + name + '.');
+                // optimistic local update so the row disappears even if the reload fails
+                staff.classes = staff.classes.filter(function (c) { return c.name !== name; });
+                renderClasses();
+                staffReloadClasses();
+              }
+              else if (r && r.error === 'not-owner') clearBusy(msg, 'Only ' + (r.owner || 'its owner') + ' can delete ' + name + '.');
+              else clearBusy(msg, 'Could not delete ' + name + '.');
+            })
+            .catch(function () { clearBusy(msg, 'Could not delete ' + name + '. Please try again.'); });
+        }
+      );
+      return;
     }
   }
   function openDash(name) {
@@ -1451,15 +1482,15 @@
     $('dash').innerHTML = '';
     $('dash-title').textContent = name;
     staffView('staff-dash');
-    $('staff-dmsg').textContent = 'Loading…';
+    busyCard($('staff-dmsg'), 'Opening the class dashboard&hellip; this can take a moment');
     var token = ++dashSeq;                 // a superseded slow response must not repopulate
     call('admin', { passcode: staff.pass, sub: 'dashboard', classCode: name })
       .then(function (r) {
         if (token !== dashSeq) return;
-        if (r && r.ok) { staff.rows = r.rows || []; renderDash(staff.rows); $('staff-dmsg').textContent = ''; }
-        else $('staff-dmsg').textContent = 'Could not load the class. Please try again.';
+        if (r && r.ok) { staff.rows = r.rows || []; renderDash(staff.rows); clearBusy($('staff-dmsg'), ''); }
+        else clearBusy($('staff-dmsg'), 'Could not load the class. Please try again.');
       })
-      .catch(function () { if (token === dashSeq) $('staff-dmsg').textContent = 'Could not load the class. Please try again.'; });
+      .catch(function () { if (token === dashSeq) clearBusy($('staff-dmsg'), 'Could not load the class. Please try again.'); });
   }
   function dashCsv() {
     function q(s) { return '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"'; }
@@ -1497,12 +1528,18 @@
      Boot
      ============================================================ */
   function boot() {
-    // Preview-only convenience: visiting the page with "?reset" wipes saved progress
-    // for a fresh run. GUARDED to offline/preview (no OLS_TRANSPORT) so it can NEVER
-    // clear a pupil's saved work on the deployed Apps Script app.
-    if (!window.OLS_TRANSPORT && /(^|[?&])reset(=|&|$)/.test(location.search)) {
-      try { localStorage.removeItem(LS_KEY); } catch (e) {}
-      if (window.history && history.replaceState) history.replaceState({}, '', location.pathname);
+    // Preview-only conveniences (GUARDED to offline/preview - no OLS_TRANSPORT - so
+    // they can NEVER touch a pupil's saved work on the deployed Apps Script app):
+    //   ?reset            wipe saved progress for a fresh run
+    //   ?name=Aoife%20M   simulate the C2k auto-name so the greeting is reviewable
+    var previewName = '';
+    if (!window.OLS_TRANSPORT) {
+      var nmf = /[?&]name=([^&]+)/.exec(location.search);
+      if (nmf) { try { previewName = decodeURIComponent(nmf[1]).slice(0, 80); } catch (e) { previewName = nmf[1].slice(0, 80); } }
+      if (/(^|[?&])reset(=|&|$)/.test(location.search)) {
+        try { localStorage.removeItem(LS_KEY); } catch (e) {}
+        if (window.history && history.replaceState) history.replaceState({}, '', location.pathname + (previewName ? '?name=' + encodeURIComponent(previewName) : ''));
+      }
     }
 
     // wire events
@@ -1563,12 +1600,13 @@
         if (e.key === 'ArrowRight') { og.go(og.idx() + 1); return; }
         if (e.key === 'Escape') { og.close(); return; }
       }
-      if (e.key === 'Escape') { closeStationModal(); hide($('staff-modal')); hide($('dish-info')); hide($('doc-preview')); }
+      if (e.key === 'Escape') { closeStationModal(); hide($('staff-modal')); hide($('dish-info')); hide($('doc-preview')); hide($('confirm-modal')); }
     });
 
-    // identity + saved state
+    // identity + saved state. The #signin-loading guard is already on screen;
+    // we resolve whoami + load behind it, then reveal the welcome or her notebook.
     call('whoami', {})
-      .then(function (r) { state.email = (r && r.email) || ''; })
+      .then(function (r) { state.email = (r && r.email) || ''; state.autoName = (r && r.name) || ''; })
       .catch(function () {})
       .then(function () { return call('load', {}); })
       .then(function (r) {
@@ -1581,10 +1619,22 @@
       })
       .catch(function () {})
       .then(function () {
+        // preview only: pretend C2k handed us a name (see ?name= above)
+        if (!window.OLS_TRANSPORT && !state.autoName && previewName) state.autoName = previewName;
+        // C2k gives us her real name - it wins over any earlier saved one, and we
+        // mirror it to her store (best-effort) so the teacher dashboard shows it.
+        if (state.autoName && state.autoName !== state.name) {
+          state.name = state.autoName;
+          if (window.OLS_TRANSPORT) persist();
+        }
+        hide($('signin-loading'));
         var firstVisit = doneCount() === 0 && !state.docUrl;
         if (firstVisit) {
           var hello = $('welcome-hello');
-          if (hello) hello.textContent = state.email ? ('Signed in as ' + state.email) : 'Signed in with your school account';
+          var first = state.name ? state.name.split(' ')[0] : '';
+          if (hello) hello.textContent = first
+            ? ('Bonjour, ' + first + ' !')
+            : (state.email ? ('Signed in as ' + state.email) : 'Signed in with your school account');
           show($('welcome'));
         } else {
           show($('home'));
