@@ -1065,6 +1065,7 @@
     return {
       title: 'La Belle France',
       subtitle: 'My Term 1 culture project',
+      byline: state.name ? ('by ' + state.name) : '',
       checklist: {
         title: 'Make it brilliant, then delete this box',
         items: [
@@ -1096,6 +1097,7 @@
     var h = '<div class="doc-paper">';
     h += '<h1 class="doc-title">' + escapeHtml(doc.title) + '</h1>';
     if (doc.subtitle) h += '<p class="doc-subtitle">' + escapeHtml(doc.subtitle) + '</p>';
+    if (doc.byline) h += '<p class="doc-byline">' + escapeHtml(doc.byline) + '</p>';
     if (doc.checklist && doc.checklist.items) {
       h += '<div class="doc-checklist"><b>' + escapeHtml(doc.checklist.title) + '</b><ul>';
       doc.checklist.items.forEach(function (it) { h += '<li>' + escapeHtml(it) + '</li>'; });

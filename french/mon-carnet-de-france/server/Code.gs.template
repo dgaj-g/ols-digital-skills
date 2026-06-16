@@ -231,6 +231,7 @@ function renderDocBody_(body, spec) {
   }
   body.appendParagraph(String(spec.title || 'La Belle France')).setHeading(DocumentApp.ParagraphHeading.TITLE);
   if (spec.subtitle) body.appendParagraph(String(spec.subtitle)).setHeading(DocumentApp.ParagraphHeading.SUBTITLE);
+  if (spec.byline) body.appendParagraph(String(spec.byline)).editAsText().setItalic(true);
 
   renderBox_(body, spec.checklist, '#FCF3D9');   // gold: polish checklist
   renderBox_(body, spec.skills, '#E8F0FE');      // blue: digital-skills tasks

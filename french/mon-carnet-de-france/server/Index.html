@@ -347,7 +347,8 @@ body{
 .doc-preview-body{ max-height:62vh; overflow:auto; margin-top:8px; }
 .doc-paper{ background:#fff; border:1px solid #e3e8f0; border-radius:8px; padding:26px 30px; box-shadow:var(--shadow-sm); color:#1a2230; }
 .doc-title{ font-family:Georgia,serif; color:var(--ols-blue); font-size:1.7rem; margin:0 0 .1em; }
-.doc-subtitle{ color:var(--muted); margin:0 0 1em; font-size:.98rem; }
+.doc-subtitle{ color:var(--muted); margin:0 0 .15em; font-size:.98rem; }
+.doc-byline{ color:var(--ols-blue); font-style:italic; margin:0 0 1em; font-size:.98rem; }
 .doc-checklist{ background:#fcf3d9; border:1px solid #e8d79a; border-radius:8px; padding:12px 16px; margin:0 0 1.2em; font-size:.9rem; }
 .doc-checklist b{ color:#7a5b00; display:block; margin-bottom:.3em; }
 .doc-checklist ul{ margin:0; padding-left:1.2em; }
@@ -2109,6 +2110,7 @@ window.OLS_TRANSPORT = {
     return {
       title: 'La Belle France',
       subtitle: 'My Term 1 culture project',
+      byline: state.name ? ('by ' + state.name) : '',
       checklist: {
         title: 'Make it brilliant, then delete this box',
         items: [
@@ -2140,6 +2142,7 @@ window.OLS_TRANSPORT = {
     var h = '<div class="doc-paper">';
     h += '<h1 class="doc-title">' + escapeHtml(doc.title) + '</h1>';
     if (doc.subtitle) h += '<p class="doc-subtitle">' + escapeHtml(doc.subtitle) + '</p>';
+    if (doc.byline) h += '<p class="doc-byline">' + escapeHtml(doc.byline) + '</p>';
     if (doc.checklist && doc.checklist.items) {
       h += '<div class="doc-checklist"><b>' + escapeHtml(doc.checklist.title) + '</b><ul>';
       doc.checklist.items.forEach(function (it) { h += '<li>' + escapeHtml(it) + '</li>'; });
