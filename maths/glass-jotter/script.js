@@ -454,8 +454,14 @@
     var isTeacherLanding = (!BOOT.classCode || BOOT.classCode === 'default');
     staffOval.hidden = !isTeacherLanding;
 
-    msg.textContent = 'Looking up your name…';
+    /* Guard: the cover book shows at once, but hold the "open" button and show a
+       spinner until whoami+hello resolve, so the name label is prefilled before
+       she can submit (never a flash of the empty label). */
+    var coverOpenBtn = document.getElementById('cover-open');
+    coverOpenBtn.disabled = true;
+    msg.innerHTML = '<span class="spinner" aria-hidden="true"></span>Getting your details&hellip;';
     call('whoami').then(function () { return call('hello', {}); }).then(function (r) {
+      coverOpenBtn.disabled = false;
       if (!r || !r.ok) { msg.textContent = 'Could not reach the server — check your connection and reload.'; return; }
       me.email = r.email; me.name = r.name || ''; me.acts = r.acts || {}; me.summaries = r.summaries || {}; me.offline = !!r.offline;
       var input = document.getElementById('cover-name');
@@ -464,6 +470,7 @@
       else if (me.name) msg.textContent = 'Welcome back, ' + me.name.split(' ')[0] + '. Tap to open your book.';
       else msg.textContent = 'Signed in as ' + me.email + '. Add your name once, so your teacher sees it on her class list.';
     }).catch(function () {
+      coverOpenBtn.disabled = false;
       msg.textContent = 'Could not reach the server — check your connection and reload.';
     });
 
