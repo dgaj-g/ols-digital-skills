@@ -458,6 +458,14 @@
     node.style.zIndex = '9999';
     node.style.pointerEvents = 'none';
     node.classList.add('dragging');
+    // If an ancestor has transform/filter/backdrop-filter (e.g. the glass modal
+    // card), it becomes the containing block for this position:fixed node, so
+    // left/top are measured from THAT, not the viewport — the lifted chip would
+    // jump away from the pointer. Re-measure and cancel out that offset so the
+    // node stays exactly under the finger/cursor.
+    var r2 = node.getBoundingClientRect();
+    var dx = r2.left - r.left, dy = r2.top - r.top;
+    if (dx || dy) { node.style.left = (r.left - dx) + 'px'; node.style.top = (r.top - dy) + 'px'; }
   }
   function reset(node) {
     node.classList.remove('dragging');
