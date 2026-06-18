@@ -264,7 +264,7 @@
 
   function showQr(name) {
     var back = el('div', 'gj-modal-backdrop gj-modal-zstack');
-    var card = el('div', 'gj-modal');
+    var card = el('div', 'gj-modal gj-qr');
     card.innerHTML = '<h2>' + esc(name) + '</h2><canvas id="st-qr" width="260" height="260"></canvas>' +
       '<p class="ui-msg" style="word-break:break-all">' + esc(classLink(name)) + '</p>' +
       '<div class="check-row"><button class="btn-stamp" id="st-qr-copy">Copy link</button>' +
