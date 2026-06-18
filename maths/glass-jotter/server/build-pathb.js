@@ -145,7 +145,11 @@ function guardAscii(name, text) {
    assets/ paths in one rule; data:/http(s)/anchor refs pass through. ---- */
 function resolveCssUrls(css, sheetAbsUrl) {
   return css.replace(/url\(\s*(['"]?)([^'")]+)\1\s*\)/g, function (m, q, ref) {
-    if (/^(data:|https?:|[/][/]|#)/i.test(ref)) return m;
+    // anchor refs pass through: literal #w AND url-encoded %23w (SVG filter/clip
+    // refs that live inside a data: URI, e.g. the buckram texture filter='url(%23w)').
+    // Rewriting these to an absolute github.io URL breaks the in-document reference
+    // and the <rect> falls back to its default BLACK fill (navy cover went black).
+    if (/^(data:|https?:|[/][/]|#|%23)/i.test(ref)) return m;
     return 'url(' + q + new URL(ref, sheetAbsUrl).href + q + ')';
   });
 }
