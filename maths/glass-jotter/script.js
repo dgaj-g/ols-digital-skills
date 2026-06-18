@@ -35,14 +35,21 @@
   function lsSave(s) {
     try { localStorage.setItem(LSKEY, JSON.stringify(s)); } catch (e) {}
   }
+  var OFFLINE_EMAIL = 'you@offline.preview';
+  /* Offline, there is ONE staff identity and it plays the deploy owner (the HOD)
+     -- so the preview shows what Damien sees: every class. Real per-teacher
+     hiding (a colleague seeing only their own) needs two C2k logins, so it is
+     verified live, not offline. We still stamp owner on every class for data-
+     shape parity with the server. */
+  var OFFLINE_TEACHER = 'demo.teacher@c2ken.net';
   function store() {
     var s = lsLoad();
     s.classes = s.classes || [{ name: BOOT.classCode, acts: { angles: true, algebra: true } }];
     s.data = s.data || {};   // data[class][email][act] = {state, summary}
     s.names = s.names || {};
+    s.classes.forEach(function (c) { if (c && c.owner == null) c.owner = OFFLINE_TEACHER; });
     return s;
   }
-  var OFFLINE_EMAIL = 'you@offline.preview';
 
   /* — demo seeding: real engines mark synthetic pupils, so the Wall
        demo shows authentic marking, not painted data — */
@@ -253,7 +260,7 @@
 
   function seedDemo(s) {
     if (s.data[DEMO_CLASS]) return;
-    s.classes.push({ name: DEMO_CLASS, acts: { angles: true, algebra: true } });
+    s.classes.push({ name: DEMO_CLASS, acts: { angles: true, algebra: true }, owner: OFFLINE_TEACHER });
     s.data[DEMO_CLASS] = {};
     DEMO_PUPILS.forEach(function (p, i) {
       var email = p[0].toLowerCase().replace(/[^a-z]+/g, '.') + '@c2ken.net';
@@ -304,7 +311,9 @@
         seedDemo(s); s = store();
         switch (p.sub) {
           case 'classes':
-            return ok({ me: 'demo.teacher@c2ken.net', classes: s.classes.map(function (c) {
+            // isAdmin true: the single offline teacher plays the deploy owner,
+            // so (like Damien) it sees every class. Mirrors adminClasses_.
+            return ok({ me: OFFLINE_TEACHER, isAdmin: true, classes: s.classes.map(function (c) {
               return { name: c.name, acts: c.acts, count: Object.keys(s.data[c.name] || {}).length };
             }) });
           case 'addClass': {
@@ -313,7 +322,7 @@
             if (s.classes.some(function (c) { return c.name.toLowerCase() === nm.toLowerCase(); }))
               return Promise.resolve({ ok: false, error: 'That class already exists.' });
             var nacts = { angles: true, algebra: true };
-            s.classes.push({ name: nm, acts: nacts }); lsSave(s);
+            s.classes.push({ name: nm, acts: nacts, owner: OFFLINE_TEACHER }); lsSave(s);
             return ok({ name: nm, acts: nacts });
           }
           case 'deleteClass':

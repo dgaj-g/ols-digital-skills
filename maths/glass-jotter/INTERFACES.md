@@ -132,3 +132,16 @@ states contain authentic misconceptions across both activities).
 setNumberFormat('@') everywhere, LockService on writes, primitive coercion on every return,
 passcode trim/lowercase server-side, classes registry in Config, per-class acts map honoured in
 `hello` (a pupil NEVER receives a disabled activity's content gate as openable).
+
+### Per-teacher scoping (markbook only — pupils are unaffected)
+The shared `staffPasscode` lets any staff member in; their **verified active email**
+(`Session.getActiveUser`, same identity the pupil API trusts within c2ken.net) then scopes the
+markbook. Each class record carries an `owner` (lower-cased email), stamped at `addClass` =
+caller. A teacher sees and manages ONLY classes they own; the **deploy owner** (`Session.getEffectiveUser`
+= whoever deployed the web app, the HOD) sees and manages ALL — a no-maintenance rule that
+survives staff handover (re-deploying transfers it). A legacy class with no `owner` is deploy-owner-only.
+`guardClass_` enforces ownership on EVERY admin sub that names a class (deleteClass/setActs/wall/
+jotter/override) — **list filtering alone is not enough**; a passcode-holder could otherwise reach
+another teacher's class by name. Class names stay GLOBALLY unique (the `?class=` routing key), so
+`addClass` collision is checked across all owners. `admin` `classes` returns `{me, isAdmin, classes:[{name,acts,count}]}`.
+Proof: `node dev/test-server-scoping.js` (mocks Apps Script globals, runs apiAdmin as A/B/deployer).

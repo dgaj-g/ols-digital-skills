@@ -32,7 +32,8 @@ The app pre-marks; the teacher stays the marker. That is the answer to the depar
 
 - **Server**: bound script of a Google Sheet. Deploy: Web app, Execute as **Me**, access
   **Anyone within c2ken.net** (the sign-in gate). Identity via `Session.getActiveUser().getEmail()`.
-- **Tabs**: `Config` (staffPasscode; `classes` JSON `[{name, acts:{angles:bool,algebra:bool}}]`;
+- **Tabs**: `Config` (staffPasscode; `classes` JSON `[{name, acts:{angles:bool,algebra:bool}, owner:'<email>'}]`
+  — `owner` (lower-cased, stamped at `addClass`) scopes the markbook per teacher; see §6 / INTERFACES;
   `name:<email>` rows) · `Data` (one row per pupil per activity:
   `Class | Email | Name | Act | Summary | State | Updated`, all `setNumberFormat('@')`).
 - **API** (all return primitive-coerced objects; LockService on writes):
@@ -103,6 +104,12 @@ The app pre-marks; the teacher stays the marker. That is the answer to the depar
   logging. Per-line seconds + edit counts shown only as quiet grey integrity notes on drill-down.
 
 ## 6. Teacher experience (passcode-gated, same app)
+
+**Per-teacher scoping:** one shared department passcode (no staff allowlist to maintain), then
+each teacher's verified email scopes the markbook — you see/manage ONLY the classes you created
+(class `owner`, stamped at create). The **deploy owner** (whoever deployed the web app = the HOD)
+sees ALL, a no-maintenance rule that survives handover. Ownership is enforced server-side on every
+class-naming action, not just the list (INTERFACES → "Per-teacher scoping").
 
 Classes list (create/delete, per-class **activity tickboxes**, copy link, in-page QR) →
 per class: **Working Wall** (rows=pupils, cols=questions; glyphs: solid tick / amber half-tick
