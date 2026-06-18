@@ -58,6 +58,8 @@
   var root = document.getElementById('scr-staff');
   var passcode = null;
   var classes = [];
+  var meEmail = '';        // the signed-in teacher (server-verified)
+  var isAdmin = false;     // true => deploy owner (HOD): sees every class
   var view = { cls: null, act: 'angles', wallTimer: null, wallSeq: 0, wallData: null };
 
   function call(sub, extra) {
@@ -143,6 +145,7 @@
           return;
         }
         classes = r.classes || [];
+        meEmail = r.me || ''; isAdmin = !!r.isAdmin;
         showClasses();
       }).catch(function () {
         go.disabled = false; passcode = null;
@@ -157,13 +160,18 @@
   /* ═══ classes ═════════════════════════════════════════════════════ */
   function reloadClasses() {
     return call('classes').then(function (r) {
-      if (r && r.ok) classes = r.classes || [];
+      if (r && r.ok) { classes = r.classes || []; meEmail = r.me || ''; isAdmin = !!r.isAdmin; }
     });
   }
 
   function showClasses() {
     var body = el('div', '');
+    var scopeNote = isAdmin
+      ? 'You are the markbook owner &mdash; you can see and manage every class.'
+      : 'Showing the classes you created &mdash; each teacher sees only their own.';
+    if (meEmail) scopeNote += ' <span style="opacity:.65">(' + esc(meEmail) + ')</span>';
     body.innerHTML =
+      '<p class="ui-msg" style="margin-bottom:var(--sq)">' + scopeNote + '</p>' +
       '<div class="check-row" style="margin-bottom:var(--sq)">' +
       '<input id="st-newclass" type="text" maxlength="40" placeholder="e.g. 10B Maths" ' +
       'style="font-family:var(--f-stationery);font-size:15px;padding:10px;border:1.5px solid var(--navy);border-radius:4px;max-width:240px" aria-label="New class name" />' +
@@ -172,7 +180,7 @@
       '<table class="ledger"><thead><tr><th>Class</th><th>Pupils</th><th>Books on the shelf</th><th></th></tr></thead>' +
       '<tbody id="st-rows"></tbody></table>' +
       '<p class="ui-msg" style="margin-top:var(--sq)">Tick a book to put it on that class’s shelf. Pupils see ticked books only.</p>';
-    shell('The Markbook · Classes', body, null);
+    shell('The Markbook · ' + (isAdmin ? 'All classes' : 'Your classes'), body, null);
     var rows = body.querySelector('#st-rows');
     var cmsg = body.querySelector('#st-cmsg');
 

@@ -75,6 +75,21 @@ function doGet(e) {
 
 /* ============================================================ helpers ============================================================ */
 function userEmail_() { try { return Session.getActiveUser().getEmail() || ''; } catch (e) { return ''; } }
+function effectiveEmail_() { try { return Session.getEffectiveUser().getEmail() || ''; } catch (e) { return ''; } }
+function normEmail_(e) { return String(e || '').trim().toLowerCase(); }
+/* PER-TEACHER SCOPING. The shared staffPasscode lets any staff member in; who
+   they ARE (their verified active email, the same identity the pupil API trusts)
+   then scopes the markbook. The deploy owner -- whoever deployed the web app,
+   = the effective user, the HOD -- sees and manages EVERY class. This is a
+   no-maintenance rule that survives staff handover (re-deploying transfers it).
+   Every other signed-in teacher sees and manages ONLY the classes they created.
+   A legacy class with no owner is treated as owner-less => deploy owner only. */
+function isDeployOwner_(who) { var eff = normEmail_(effectiveEmail_()); return !!eff && normEmail_(who) === eff; }
+function canManageClass_(cls, who, isAdmin) {
+  if (isAdmin) return true;
+  var owner = normEmail_(cls && cls.owner), me = normEmail_(who);
+  return !!owner && !!me && owner === me;
+}
 function dataSheet_() { return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(DATA_TAB); }
 function ready_() { var ss = SpreadsheetApp.getActiveSpreadsheet(); return !!(ss.getSheetByName(DATA_TAB) && ss.getSheetByName(CONFIG_TAB)); }
 function nowIso_() { return new Date().toISOString(); }
@@ -136,9 +151,9 @@ function getClasses_() {
   var out = [];
   for (var i = 0; i < raw.length; i++) {
     var c = raw[i];
-    if (typeof c === 'string') { out.push({ name: c, acts: { angles: true, algebra: true } }); continue; }
+    if (typeof c === 'string') { out.push({ name: c, acts: { angles: true, algebra: true }, owner: '' }); continue; }
     var nm = String((c && c.name) || '');
-    if (nm) out.push({ name: nm, acts: coerceActs_(c && c.acts) });
+    if (nm) out.push({ name: nm, acts: coerceActs_(c && c.acts), owner: normEmail_(c && c.owner) });
   }
   return out;
 }
@@ -261,32 +276,53 @@ function apiAdmin(req) {
   var gotPass = String(req.passcode == null ? '' : req.passcode).trim().toLowerCase();
   var wantPass = String(getConfig_('staffPasscode') || '').trim().toLowerCase();
   if (!wantPass || gotPass !== wantPass) return { ok: false, error: 'bad-passcode', gotLen: Number(gotPass.length), expLen: Number(wantPass.length) };
+  // caller identity (verified active email) + whether they are the deploy owner;
+  // every sub below is scoped to this so passcode-holders can't see/touch each
+  // other's classes.
+  var who = normEmail_(userEmail_());
+  var ctx = { who: who, isAdmin: isDeployOwner_(who) };
   var sub = String(req.sub || 'classes');
 
-  if (sub === 'classes') return adminClasses_();
-  if (sub === 'addClass') return adminAddClass_(req);
-  if (sub === 'deleteClass') return adminDeleteClass_(req);
-  if (sub === 'setActs') return adminSetActs_(req);
-  if (sub === 'wall') return adminWall_(req);
-  if (sub === 'jotter') return adminJotter_(req);
-  if (sub === 'override') return adminOverride_(req);
+  if (sub === 'classes') return adminClasses_(ctx);
+  if (sub === 'addClass') return adminAddClass_(req, ctx);
+  if (sub === 'deleteClass') return adminDeleteClass_(req, ctx);
+  if (sub === 'setActs') return adminSetActs_(req, ctx);
+  if (sub === 'wall') return adminWall_(req, ctx);
+  if (sub === 'jotter') return adminJotter_(req, ctx);
+  if (sub === 'override') return adminOverride_(req, ctx);
   return { ok: false, error: 'unknown-sub', sub: sub };
 }
 
-function adminClasses_() {
-  var counts = pupilCountByClass_();
-  var list = getClasses_().map(function (c) {
-    return { name: String(c.name), acts: coerceActs_(c.acts), pupils: Number(counts[c.name] || 0) };
-  });
-  list.sort(function (a, b) { return a.name.localeCompare(b.name); });
-  return { ok: true, classes: list };
+/* SECURITY-CRITICAL ownership gate for every admin sub that NAMES a class.
+   Filtering the classes LIST alone is not enough -- a passcode-holder could
+   otherwise reach another teacher's class by typing its name straight into a
+   wall/jotter/override/delete/setActs call. Returns the matched (canonical)
+   class record, or an {ok:false} error to return verbatim to the caller. */
+function guardClass_(name, ctx) {
+  var rec = findClass_(name);
+  if (!rec) return { ok: false, error: 'unknown-class' };
+  if (!canManageClass_(rec, ctx.who, ctx.isAdmin)) return { ok: false, error: 'not-your-class' };
+  return { ok: true, rec: rec };
 }
 
-function adminAddClass_(req) {
+function adminClasses_(ctx) {
+  var counts = pupilCountByClass_();
+  var list = getClasses_().filter(function (c) {
+    return canManageClass_(c, ctx.who, ctx.isAdmin);
+  }).map(function (c) {
+    return { name: String(c.name), acts: coerceActs_(c.acts), count: Number(counts[c.name] || 0) };
+  });
+  list.sort(function (a, b) { return a.name.localeCompare(b.name); });
+  return { ok: true, me: String(ctx.who), isAdmin: !!ctx.isAdmin, classes: list };
+}
+
+function adminAddClass_(req, ctx) {
   var nm = sanitizeClass_(req.className);
   if (!nm) return { ok: false, error: 'bad-name' };
   var lock = LockService.getScriptLock(); lock.waitLock(15000);
   try {
+    // class names are the routing key (?class=NAME) and the Data-row key, so
+    // they stay GLOBALLY unique -- collision is checked across ALL owners.
     var reg = getClasses_();
     for (var i = 0; i < reg.length; i++) {
       if (reg[i].name.toLowerCase() === nm.toLowerCase()) return { ok: false, error: 'exists', name: String(reg[i].name) };
@@ -294,14 +330,15 @@ function adminAddClass_(req) {
     // both tiles on by default so a fresh class link works immediately;
     // the teacher unticks from the staff panel to stage topics.
     var acts = req.acts ? coerceActs_(req.acts) : { angles: true, algebra: true };
-    reg.push({ name: nm, acts: acts });
+    reg.push({ name: nm, acts: acts, owner: normEmail_(ctx.who) });
     setClasses_(reg);
     return { ok: true, name: String(nm), acts: acts };
   } finally { lock.releaseLock(); }
 }
 
-function adminDeleteClass_(req) {
-  var del = String(req.className || ''); if (!del) return { ok: false, error: 'no-name' };
+function adminDeleteClass_(req, ctx) {
+  var g = guardClass_(req.className, ctx); if (!g.ok) return g;
+  var del = String(g.rec.name);
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
     var removed = 0, sh = dataSheet_(), data = sh.getDataRange().getValues();
@@ -316,10 +353,12 @@ function adminDeleteClass_(req) {
 }
 
 /* the per-class activity tickboxes */
-function adminSetActs_(req) {
+function adminSetActs_(req, ctx) {
+  var g = guardClass_(req.className, ctx); if (!g.ok) return g;
+  var want = String(g.rec.name);
   var lock = LockService.getScriptLock(); lock.waitLock(15000);
   try {
-    var reg = getClasses_(), want = String(req.className || '');
+    var reg = getClasses_();
     for (var i = 0; i < reg.length; i++) {
       if (reg[i].name === want) {
         reg[i].acts = coerceActs_(req.acts);
@@ -333,8 +372,9 @@ function adminSetActs_(req) {
 
 /* Working Wall: summaries ONLY -- never full states -- so the 20 s poll stays
    fast no matter how big the class's jotters get. */
-function adminWall_(req) {
-  var cls = String(req.className || ''); if (!cls) return { ok: false, error: 'no-name' };
+function adminWall_(req, ctx) {
+  var g = guardClass_(req.className, ctx); if (!g.ok) return g;
+  var cls = String(g.rec.name);
   var act = String(req.act || ''); if (!actOk_(act)) return { ok: false, error: 'bad-act' };
   var vals = dataSheet_().getDataRange().getValues(), pupils = [];
   for (var i = 1; i < vals.length; i++) {
@@ -352,9 +392,10 @@ function adminWall_(req) {
 }
 
 /* Jotter Page drill-down: ONE pupil's full State (as a JSON string). */
-function adminJotter_(req) {
-  var cls = String(req.className || ''), act = String(req.act || ''), email = String(req.email || '');
-  if (!cls || !email) return { ok: false, error: 'no-name' };
+function adminJotter_(req, ctx) {
+  var g = guardClass_(req.className, ctx); if (!g.ok) return g;
+  var cls = String(g.rec.name), act = String(req.act || ''), email = String(req.email || '');
+  if (!email) return { ok: false, error: 'no-name' };
   if (!actOk_(act)) return { ok: false, error: 'bad-act' };
   var found = findRow_(cls, email, act);
   if (!found) return { ok: false, error: 'no-row' };
@@ -369,9 +410,10 @@ function adminJotter_(req) {
    (state.qs[q].ovr[idx] = val) so it wins everywhere the jotter is re-marked,
    AND mirrored as a flag into the Summary so the Working Wall reflects it
    without loading the state. */
-function adminOverride_(req) {
-  var cls = String(req.className || ''), act = String(req.act || ''), email = String(req.email || '');
-  if (!cls || !email) return { ok: false, error: 'no-name' };
+function adminOverride_(req, ctx) {
+  var g = guardClass_(req.className, ctx); if (!g.ok) return g;
+  var cls = String(g.rec.name), act = String(req.act || ''), email = String(req.email || '');
+  if (!email) return { ok: false, error: 'no-name' };
   if (!actOk_(act)) return { ok: false, error: 'bad-act' };
   var q = String(req.q || ''); if (!q) return { ok: false, error: 'no-question' };
   var idx = String(req.idx == null ? 'q' : req.idx) || 'q';
