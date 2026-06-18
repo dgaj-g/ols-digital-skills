@@ -101,6 +101,9 @@
         toks.push({ t: 'num', v: num });
         i = j;
       } else if (c === 'x') {
+        // 'x' immediately followed by a digit is rejected: pupils mean x squared,
+        // but 'x2' is not that (INTERFACES.md). x^2 and x² (normalised to x^2) are fine.
+        if (i + 1 < s.length && /[0-9]/.test(s[i + 1])) return { err: 'write x squared as x^2, not "x' + s[i + 1] + '"' };
         toks.push({ t: 'x' }); i++;
       } else if (allowLetters && /[a-wyz]/.test(c)) {
         toks.push({ t: 'var', v: c }); i++;
@@ -404,6 +407,14 @@
       }
 
       var answerRight = ansX != null && isAnswerLine(lines[lines.length - 1].t, ansX);
+
+      /* a 'form' question requires the equation to be FORMED. A single committed
+         line that is just the bare answer (x = k) shows no forming at all, so it
+         ambers exactly like a solve answer-with-no-working: the forming method
+         mark stays on the table rather than being handed over for the answer. */
+      if (type === 'form' && lines.length === 1 && answerRight && isAnswerLine(lines[0].t, ansX)) {
+        return { perLine: per, res: 'AMBER', mk: [0, mkMax[1]], mkMax: mkMax };
+      }
 
       /* method evidence = sound steps that actually transformed the line */
       var methodSteps = 0;

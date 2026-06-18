@@ -613,7 +613,6 @@
       graph: [
         { find: 'd', rule: 'STR', from: ['ext'] },
         { find: 'e', rule: 'TRI', from: ['aA', 'd'] },
-        { find: 'e', rule: 'ISO', from: ['d'] },
         { find: 'x2', rule: 'COR', from: ['e'] }
       ]
     };
