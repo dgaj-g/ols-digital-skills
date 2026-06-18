@@ -313,7 +313,7 @@
      NARRATOR — the Young Bunsens
      ============================================================ */
   var NARR = {
-    hub:        { img: 'anim_03_both_wink.webp', text: 'Pick a station to begin. Each one teaches a different part of isotopes.' },
+    hub:        { img: 'anim_03_both_wink.webp', text: 'Pick a station to begin.' },
     atom_open:  { img: 'anim_09_lightbulb_idea.webp', text: 'Add protons to choose the element, neutrons for the isotope, and electrons for the shells. Spin it around!' },
     atom_win:   { img: 'anim_06_confetti_celebration.webp', text: 'Spot on! That is exactly the right atom.' },
     atom_miss:  { img: 'anim_05_thumbs_down_sad.webp', text: 'Not quite. Check the protons and neutrons against the target.' },
@@ -321,7 +321,7 @@
     snap_yes:   { img: 'anim_07_success_check.webp', text: 'Great call! Same protons, different neutrons means isotopes.' },
     snap_no:    { img: 'anim_05_thumbs_down_sad.webp', text: 'Careful! Look again at the protons and the mass numbers.' },
     snap_done:  { img: 'anim_15_level_up_stars.webp', text: 'Round complete. Your streak counts towards the leaderboard.' },
-    mass_open:  { img: 'anim_14_magnifier_scan.webp', text: 'Drag each mass and abundance into the brackets, then divide by the total abundance.' },
+    mass_open:  { img: 'anim_14_magnifier_scan.webp', text: 'Tap each mass and abundance into the brackets, then divide by the total abundance.' },
     mass_win:   { img: 'anim_06_confetti_celebration.webp', text: 'Perfect. You read the spectrum and found the element.' },
     mass_miss:  { img: 'anim_09_lightbulb_idea.webp', text: 'Close. Remember: multiply mass by abundance, add them, then divide by the total abundance.' },
     group:      { img: 'anim_04_thumbs_up_smile.webp', text: 'You are part of a team. Every bit of XP you earn helps your group.' }
