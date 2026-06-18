@@ -74,7 +74,7 @@
         <img id="narrator-img" src="assets/characters/anim_03_both_wink.webp" alt="" />
       </div>
       <div class="narrator-bubble">
-        <p id="narrator-text">Pick a station to begin. Each one teaches a different part of isotopes.</p>
+        <p id="narrator-text">Pick a station to begin.</p>
       </div>
     </aside>
 
@@ -185,8 +185,8 @@
     <div class="snap-intro" id="snap-intro">
       <img class="snap-intro-char" src="assets/characters/static_09_safety_goggles.png" alt="" />
       <h3>How to play</h3>
-      <p>Two cards appear. A <b>Drawing</b> shows the atom's structure; a <b>Code</b> shows its symbol with mass and atomic number. Press <b>SNAP</b> only when the two cards are <b>isotopes</b> &mdash; the same element (same protons / atomic number) but a <b>different</b> number of neutrons (different mass number).</p>
-      <p class="snap-rules-note">If they are not a pair, do nothing &mdash; press <b>Not a pair</b> and the next two appear. You have <b id="snap-total">10</b> rounds. Be quick: faster correct answers score more.</p>
+      <p>Two cards appear. A <b>Drawing</b> shows the atom's structure; a <b>Code</b> shows its symbol with mass and atomic number. Press <b>SNAP</b> only when the two cards are a pair of <b>isotopes</b>.</p>
+      <p class="snap-rules-note">If they are not a pair, press <b>Not a pair</b>. You have <b id="snap-total">10</b> rounds, and you move on with the <b>Next</b> button when you are ready. Answer quickly for a bonus.</p>
       <button id="snap-begin" class="primary-btn" type="button">Start round <span aria-hidden="true">&rarr;</span></button>
     </div>
 
@@ -206,6 +206,9 @@
         <button id="snap-no" class="ghost-btn snap-no-btn" type="button">Not a pair</button>
       </div>
       <p class="snap-feedback" id="snap-feedback" hidden></p>
+      <div class="snap-next-wrap">
+        <button id="snap-next" class="primary-btn snap-next-btn" type="button" hidden>Next <span aria-hidden="true">&rarr;</span></button>
+      </div>
     </div>
   </section>
 
@@ -220,7 +223,7 @@
     <div class="ms-intro" id="ms-intro">
       <img class="ms-intro-char" src="assets/characters/static_12_magnifier_discovery.png" alt="" />
       <h3>Find the relative atomic mass</h3>
-      <p>A mass spectrometer separates the isotopes of an element by mass and measures how abundant each one is. Read the data, build the <b>relative atomic mass (A<sub>r</sub>)</b> formula by dragging the numbers and operators into place, press <b>=</b>, then identify the mystery element.</p>
+      <p>A mass spectrometer separates the isotopes of an element by mass and measures how abundant each one is. Read the data, build the <b>relative atomic mass (A<sub>r</sub>)</b> formula by tapping a number or sign and then tapping the box it belongs in, press <b>=</b>, then identify the mystery element.</p>
       <p class="ms-formula-hint">A<sub>r</sub> = (mass &times; abundance) added up, all divided by the total abundance.</p>
       <button id="ms-begin" class="primary-btn" type="button">Start &mdash; 3 questions <span aria-hidden="true">&rarr;</span></button>
     </div>
@@ -231,12 +234,12 @@
 
       <!-- the Ar formula builder -->
       <div class="ms-builder">
-        <p class="ms-builder-title">Build the A<sub>r</sub> calculation &mdash; drag the tiles into the boxes</p>
+        <p class="ms-builder-title">Build the A<sub>r</sub> calculation &mdash; tap a number or sign, then tap the box it goes in</p>
         <div class="ms-formula" id="ms-formula" aria-label="Relative atomic mass formula"></div>
-        <div class="ms-tray" id="ms-tray" aria-label="Number and operator tiles"></div>
+        <div class="ms-tray" id="ms-tray" aria-label="Numbers and operators — tap one to pick it up"></div>
         <div class="ms-builder-actions">
           <button id="ms-equals" class="primary-btn" type="button" disabled>= &nbsp;Calculate</button>
-          <button id="ms-clear" class="ghost-btn" type="button">Clear tiles</button>
+          <button id="ms-clear" class="ghost-btn" type="button">Clear boxes</button>
         </div>
         <div class="ms-result" id="ms-result" hidden></div>
       </div>
@@ -434,7 +437,7 @@
           </div>
           <div class="grp-groups" id="grp-groups" aria-label="Groups"></div>
         </div>
-        <p class="grp-hint">Drag a pupil's chip into a group, or use the menu on each chip. Groups also act as teams &mdash; each member's XP adds to the group total.</p>
+        <p class="grp-hint">Tap a pupil to choose their group (or drag their chip into a group on a computer). Groups also act as teams &mdash; each member's XP adds to the group total.</p>
       </div>
     </div>
   </div>

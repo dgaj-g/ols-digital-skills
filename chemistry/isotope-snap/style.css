@@ -182,7 +182,7 @@ body.activity {
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 .narrator-character img.swap-out { opacity: 0; transform: scale(0.94); }
-.narrator-bubble p { margin: 0; font-size: 1rem; line-height: 1.45; }
+.narrator-bubble p { margin: 0; font-size: clamp(1.15rem, 2.6vw, 1.4rem); font-weight: 600; line-height: 1.4; }
 
 .hub-stations {
   display: grid; gap: 16px;
@@ -330,6 +330,9 @@ body.activity {
 .snap-feedback { text-align: center; margin: 14px auto 0; max-width: 560px; padding: 12px 16px; border-radius: var(--radius-sm); font-weight: 600; border-left: 4px solid; }
 .snap-feedback.good { background: var(--good-soft); color: #1d5e38; border-color: var(--good); }
 .snap-feedback.bad { background: var(--bad-soft); color: #8a2418; border-color: var(--bad); }
+.snap-next-wrap { display: flex; justify-content: center; margin-top: 14px; min-height: 0; }
+.snap-next-btn { padding: 13px 34px; font-size: 1.05rem; animation: snap-next-in 0.24s ease; }
+@keyframes snap-next-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
 /* ===================== MODE C: MASS SPEC ===================== */
 .ms-play { display: grid; gap: 18px; }
@@ -383,24 +386,29 @@ body.activity {
   min-height: 64px;
 }
 .ms-tile {
-  min-width: 46px; height: 46px; padding: 0 12px;
-  border-radius: 10px; border: none; cursor: grab;
+  min-width: 46px; height: 46px; padding: 0 14px;
+  border-radius: 10px; cursor: pointer;
   background: linear-gradient(180deg, #fff, #EEF3FA);
   box-shadow: var(--shadow-sm); border: 1.5px solid #C4CEDE;
   display: inline-grid; place-items: center;
   font-size: 1.2rem; font-weight: 800; color: var(--ols-blue);
-  touch-action: none; user-select: none;
-  transition: box-shadow 0.16s ease;
+  user-select: none;
+  transition: box-shadow 0.16s ease, transform 0.1s ease, border-color 0.16s ease, background 0.16s ease;
 }
+.ms-tile:hover { border-color: var(--ols-blue-soft); }
+.ms-tile:active { transform: scale(0.94); }
 .ms-tile.op { border-radius: 50%; color: var(--proton); }
-.ms-tile.dragging { box-shadow: var(--shadow-lg); cursor: grabbing; z-index: 50; }
-.ms-tile.used { opacity: 0.28; pointer-events: none; }
-/* a tile resting in a slot is flush — the slot is the visual box, so no nested
-   borders/shadows (only while it's not actively being dragged out). */
-.ms-slot .ms-tile:not(.dragging) {
-  background: none; border: none; box-shadow: none;
-  min-width: 0; width: auto; height: auto; padding: 0; margin: 0;
+/* the picked-up tile: clearly highlighted so the pupil knows what they'll place */
+.ms-tile.selected {
+  background: linear-gradient(180deg, var(--ols-gold-soft), var(--ols-gold));
+  color: var(--ols-blue-dark); border-color: var(--ols-gold);
+  box-shadow: 0 0 0 3px rgba(228, 184, 36, 0.4), var(--shadow-md); transform: translateY(-2px);
 }
+.ms-tile.op.selected { color: var(--ols-blue-dark); }
+.ms-slot { cursor: pointer; }
+/* gentle shake to say "pick a number first" / "wrong type of box" */
+.ms-slot.nudge, .ms-tray.nudge { animation: ms-nudge 0.32s ease; }
+@keyframes ms-nudge { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 .ms-builder-actions { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
 .ms-result { margin-top: 14px; text-align: center; padding: 14px; border-radius: var(--radius-sm); font-size: 1.05rem; }
 .ms-result.good { background: var(--good-soft); color: #1d5e38; }
@@ -590,6 +598,24 @@ body.activity {
 .grp-group-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; }
 .grp-group-del:hover { color: var(--bad); }
 .grp-hint { font-size: 0.82rem; color: rgba(255,255,255,0.85); margin: 12px 0 0; }
+.grp-chip { cursor: pointer; }
+
+/* tap-a-pupil group menu (floats above the staff modal) */
+.grp-menu {
+  position: fixed; z-index: 600; min-width: 168px; max-width: 240px;
+  background: #fff; border: 1px solid #D3DCEA; border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg); padding: 6px; overflow: hidden;
+  animation: fade-in 0.14s ease;
+}
+.grp-menu-title { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 6px 10px 4px; }
+.grp-menu-item {
+  display: block; width: 100%; text-align: left; background: none; border: none;
+  padding: 9px 10px; border-radius: 8px; cursor: pointer;
+  font-size: 0.92rem; font-weight: 600; color: var(--ols-blue);
+}
+.grp-menu-item:hover { background: rgba(42, 79, 143, 0.1); }
+.grp-menu-item.current { color: var(--good); }
+.grp-menu-empty { padding: 8px 10px; font-size: 0.84rem; color: var(--muted); }
 
 /* page-wide selection lock during any drag (mandatory) */
 body.dragging-active, body.dragging-active * {

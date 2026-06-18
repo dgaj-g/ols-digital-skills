@@ -53,6 +53,30 @@
     return out;
   }
 
+  /* Where each electron sits on a shell, following the teacher's clock
+     convention (angles in radians, SVG-style: 12 o'clock = -PI/2, 3 = 0,
+     6 = +PI/2, 9 = PI).
+       - Inner shell (index 0): up to two single electrons, at 12 then 6.
+       - Every other shell: fill 12, 3, 6, 9 as SINGLE electrons first, then
+         add a second electron to each in the same order, so each clock
+         position ends as a pair (drawn side-by-side).
+     Returns an array of OCCUPIED positions: [{ ang, count }] where count is
+     1 (single) or 2 (a pair). Shared by the 2D Bohr cards and the 3D atom. */
+  function electronLayout(shellIndex, count) {
+    var TWELVE = -Math.PI / 2, THREE = 0, SIX = Math.PI / 2, NINE = Math.PI;
+    var out = [];
+    if (shellIndex === 0) {
+      var inner = [TWELVE, SIX];
+      for (var i = 0; i < count && i < 2; i++) out.push({ ang: inner[i], count: 1 });
+      return out;
+    }
+    var order = [TWELVE, THREE, SIX, NINE];
+    var occ = [0, 0, 0, 0];
+    for (var j = 0; j < count; j++) occ[j % 4]++;
+    for (var k = 0; k < 4; k++) if (occ[k] > 0) out.push({ ang: order[k], count: occ[k] });
+    return out;
+  }
+
   /* ----- Data Bank 1: isotopes used in the Snap game (element Z -> mass numbers) --- */
   var SNAP_BANK = [
     { z: 1, masses: [1, 2, 3] },   // H
@@ -105,6 +129,7 @@
     SYM_TO_Z: SYM_TO_Z,
     SHELL_CAPACITY: SHELL_CAPACITY,
     electronShells: electronShells,
+    electronLayout: electronLayout,
     SNAP_BANK: SNAP_BANK,
     SNAP_ISOTOPES: SNAP_ISOTOPES,
     MASS_SPEC: MASS_SPEC,

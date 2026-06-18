@@ -130,14 +130,18 @@
       // ring
       var ring = new THREE.Mesh(new THREE.TorusGeometry(sr, 0.012, 8, 96), mat.ring);
       shell.add(ring);
-      // electrons evenly spaced
-      for (var j = 0; j < k; j++) {
-        var ang = (j / k) * Math.PI * 2;
+      // electrons on the clock convention (singles at 12/3/6/9, then pairs);
+      // a pair is two electrons a small angle apart so they orbit side-by-side
+      function addElectron(ang) {
         var el = new THREE.Mesh(geo.electron, mat.electron);
         el.userData.ang = ang; el.userData.r = sr;
         el.position.set(Math.cos(ang) * sr, Math.sin(ang) * sr, 0);
         shell.add(el);
       }
+      D.electronLayout(idx, k).forEach(function (pos) {
+        if (pos.count === 1) { addElectron(pos.ang); }
+        else { addElectron(pos.ang - 0.17); addElectron(pos.ang + 0.17); }
+      });
       shellsGroup.add(shell);
     });
 
