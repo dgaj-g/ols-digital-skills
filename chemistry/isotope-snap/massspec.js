@@ -1,7 +1,8 @@
 /* ============================================================================
    Isotope Lab — Mode C: Mass Spectrometer
    3 questions/play, data shown 3 ways (count bar chart, % bar chart, table).
-   The pupil DRAGS number + operator tiles into the Ar formula, presses =,
+   The pupil TAPS a number/operator tile then TAPS the box it belongs in (a
+   phone-friendly palette: each value shows once and is reusable). Presses =,
    sees the denominator resolve to the total abundance (not always 100), then
    identifies the element by symbol. Honours the brief's commutativity rule.
    ============================================================================ */
@@ -12,7 +13,7 @@
   var QPLAY = 3;
   var qi = 0, questions = [], q = null, correctThisPlay = 0;
   var slots = { numPair: [], numMult: [], denNum: [], denPlus: [] };
-  var tiles = [];
+  var selected = null;   // the palette tile the pupil has tapped (picked up)
 
   /* ---------- question setup ---------- */
   function buildQuestions() {
@@ -106,7 +107,7 @@
     wrap.appendChild(top); wrap.appendChild(line); wrap.appendChild(bot);
 
     f.appendChild(label('A', true)); f.appendChild(eq()); f.appendChild(wrap);
-    buildTray();
+    buildPalette();
     Lab.$('#ms-result').hidden = true;
     Lab.$('#ms-equals').disabled = true;
   }
@@ -117,72 +118,106 @@
   function slot(kind) {
     var s = document.createElement('span');
     s.className = 'ms-slot' + (kind === 'op' ? ' op' : '');
-    s.dataset.kind = kind; s.dataset.role = 'slot'; s.tile = null;
+    s.dataset.kind = kind; s.dataset.role = 'slot';
+    s.addEventListener('click', function () { onSlotClick(s); });
     return s;
   }
 
-  function buildTray() {
-    var tray = Lab.$('#ms-tray'); tray.innerHTML = ''; tiles = [];
-    var defs = [];
+  /* The tray is a fixed PALETTE: every number that appears in the data shows
+     ONCE (deduplicated), plus one "x" and one "+". They stay on screen for the
+     whole question and can be tapped and reused as many times as needed.
+     Tap a tile to pick it up, then tap a box to drop a copy in. Phone-friendly. */
+  function buildPalette() {
+    var tray = Lab.$('#ms-tray'); tray.innerHTML = ''; clearSelection();
+    var need = {}, nums = [];
     q.isotopes.forEach(function (it) {
-      defs.push({ kind: 'num', value: it.mass });
-      defs.push({ kind: 'num', value: it.val });
-      defs.push({ kind: 'num', value: it.val }); // abundance needed twice (numerator + denominator)
+      [it.mass, it.val].forEach(function (v) { need[v] = 1; if (nums.indexOf(v) < 0) nums.push(v); });
     });
-    var k = q.isotopes.length;
-    for (var i = 0; i < k; i++) defs.push({ kind: 'op', value: '×' });
-    for (var j = 0; j < k - 1; j++) defs.push({ kind: 'op', value: '+' });
-    Lab.shuffle(defs).forEach(function (d) {
+    // distractors: plausible-but-wrong numbers, so the pupil has to read the
+    // right values off the chart rather than just placing every tile. Grading
+    // only accepts the exact required set, so a misplaced distractor goes red.
+    numberDistractors(need).forEach(function (d) { if (nums.indexOf(d) < 0) nums.push(d); });
+    nums.sort(function (a, b) { return a - b; });
+    var defs = nums.map(function (v) { return { kind: 'num', value: v }; });
+    defs.push({ kind: 'op', value: '×' });
+    defs.push({ kind: 'op', value: '+' });
+    defs.push({ kind: 'op', value: '−' });   // wrong-operator distractors
+    defs.push({ kind: 'op', value: '÷' });
+    defs.forEach(function (d) {
       var t = document.createElement('span');
       t.className = 'ms-tile' + (d.kind === 'op' ? ' op' : '');
       t.dataset.kind = d.kind; t.dataset.value = d.value;
-      t.textContent = d.value; t._slot = null;
-      tray.appendChild(t); tiles.push(t);
-      Lab.makeDraggable(t, {
-        getDropTarget: function (x, y, node) { return dropTargetFor(x, y, node); },
-        onDrop: function (node, target) { onTileDrop(node, target); }
-      });
+      t.setAttribute('role', 'button'); t.tabIndex = 0;
+      t.setAttribute('aria-label', (d.kind === 'op' ? 'operator ' : 'number ') + d.value);
+      t.textContent = d.value;
+      t.addEventListener('click', function () { selectTile(t); });
+      t.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectTile(t); } });
+      tray.appendChild(t);
     });
   }
 
-  function dropTargetFor(x, y, node) {
-    var els = document.elementsFromPoint(x, y);
-    for (var i = 0; i < els.length; i++) {
-      var el = els[i];
-      if (el.classList && el.classList.contains('ms-slot') && !el.classList.contains('bracket') && el.dataset.kind === node.dataset.kind) return el;
-      if (el.id === 'ms-tray') return el;
+  /* A few decoy numbers that look like they belong but don't: a neighbouring
+     mass number, the atomic number, the total abundance (the "just use the
+     total" trap), and the lead isotope's abundance in the OTHER unit (count vs
+     %). Anything matching a real value, or out of a believable range, is
+     dropped. Fewer decoys on the busier 3-4 isotope questions. */
+  function numberDistractors(need) {
+    var masses = q.isotopes.map(function (it) { return it.mass; });
+    var maxMass = Math.max.apply(null, masses), minMass = Math.min.apply(null, masses);
+    var altUnit = q.flavour === 'count' ? q.isotopes[0].ab : q.isotopes[0].ab * 2;
+    var cand = [maxMass + 1, minMass - 1, q.z, Math.round(q.denom), Math.round(altUnit)];
+    var seen = {}, out = [];
+    cand.forEach(function (v) {
+      if (v == null || isNaN(v) || v <= 1 || v > 260) return;
+      if (need[v] || seen[v]) return;
+      seen[v] = 1; out.push(v);
+    });
+    return Lab.shuffle(out).slice(0, q.isotopes.length >= 3 ? 2 : 3);
+  }
+
+  function selectTile(t) {
+    if (selected === t) { clearSelection(); return; }
+    clearSelection();
+    selected = t; t.classList.add('selected');
+  }
+  function clearSelection() {
+    if (selected) selected.classList.remove('selected');
+    selected = null;
+  }
+
+  function onSlotClick(s) {
+    if (selected) {
+      if (selected.dataset.kind !== s.dataset.kind) { nudge(s); return; }
+      fillSlot(s, selected.dataset.value);
+      Lab.sound.pop();
+    } else if (s.classList.contains('filled')) {
+      clearSlot(s);            // tap a filled box with nothing picked up -> empty it
+    } else {
+      nudge(Lab.$('#ms-tray')); // remind them to pick a number first
     }
-    return null;
-  }
-  function onTileDrop(node, target) {
-    if (!target || target.id === 'ms-tray') { returnToTray(node); return; }
-    if (target.dataset.kind !== node.dataset.kind) { returnToTray(node); return; }
-    placeTile(node, target);
-  }
-  function placeTile(tile, slotEl) {
-    if (slotEl.tile && slotEl.tile !== tile) returnToTray(slotEl.tile);
-    if (tile._slot) { tile._slot.tile = null; tile._slot.classList.remove('filled', 'correct', 'wrong'); }
-    slotEl.tile = tile; tile._slot = slotEl;
-    slotEl.appendChild(tile); slotEl.classList.add('filled'); slotEl.classList.remove('correct', 'wrong');
-    Lab.sound.pop();
     updateEquals();
   }
-  function returnToTray(tile) {
-    if (tile._slot) { tile._slot.tile = null; tile._slot.classList.remove('filled', 'correct', 'wrong'); tile._slot = null; }
-    Lab.$('#ms-tray').appendChild(tile);
-    updateEquals();
+  function fillSlot(s, value) {
+    s.dataset.value = value; s.textContent = value;
+    s.classList.add('filled'); s.classList.remove('correct', 'wrong');
   }
+  function clearSlot(s) {
+    s.dataset.value = ''; s.textContent = '';
+    s.classList.remove('filled', 'correct', 'wrong');
+  }
+  function nudge(el) { if (!el) return; el.classList.remove('nudge'); void el.offsetWidth; el.classList.add('nudge'); }
+
   function allSlots() { return slots.numPair.reduce(function (a, p) { return a.concat(p); }, []).concat(slots.numMult, slots.denNum, slots.denPlus); }
   function updateEquals() {
-    var filled = allSlots().every(function (s) { return !!s.tile; });
+    var filled = allSlots().every(function (s) { return s.classList.contains('filled'); });
     Lab.$('#ms-equals').disabled = !filled;
   }
-  function clearTiles() { tiles.forEach(function (t) { returnToTray(t); }); allSlots().forEach(function (s) { s.classList.remove('correct', 'wrong'); }); }
+  function clearTiles() { allSlots().forEach(clearSlot); clearSelection(); updateEquals(); }
 
   /* ---------- grading ---------- */
   function grade() {
-    var okOps = slots.numMult.every(function (s) { return s.tile && s.tile.dataset.value === '×'; }) &&
-                slots.denPlus.every(function (s) { return s.tile && s.tile.dataset.value === '+'; });
+    var okOps = slots.numMult.every(function (s) { return s.dataset.value === '×'; }) &&
+                slots.denPlus.every(function (s) { return s.dataset.value === '+'; });
     // numerator pairs as sorted multiset
     var gotPairs = slots.numPair.map(function (p) { return [num(p[0]), num(p[1])].sort(function (a, b) { return a - b; }); });
     var wantPairs = q.isotopes.map(function (it) { return [it.mass, it.val].sort(function (a, b) { return a - b; }); });
@@ -194,16 +229,16 @@
     // colour feedback per bracket / denominator
     slots.numPair.forEach(function (p, idx) {
       var pair = [num(p[0]), num(p[1])].sort(function (a, b) { return a - b; });
-      var matched = wantPairs.some(function (w) { return w[0] === pair[0] && w[1] === pair[1]; }) && slots.numMult[idx].tile.dataset.value === '×';
-      mark(p[0], matched); mark(p[1], matched); mark(slots.numMult[idx], slots.numMult[idx].tile.dataset.value === '×');
+      var matched = wantPairs.some(function (w) { return w[0] === pair[0] && w[1] === pair[1]; }) && slots.numMult[idx].dataset.value === '×';
+      mark(p[0], matched); mark(p[1], matched); mark(slots.numMult[idx], slots.numMult[idx].dataset.value === '×');
     });
     slots.denNum.forEach(function (s) { mark(s, denOk); });
-    slots.denPlus.forEach(function (s) { mark(s, s.tile.dataset.value === '+'); });
+    slots.denPlus.forEach(function (s) { mark(s, s.dataset.value === '+'); });
 
     if (okOps && pairsOk && denOk) reveal();
     else { Lab.sound.wrong(); Lab.narrate('mass_miss'); Lab.toast('Not quite — check the red boxes. Each bracket is mass × abundance, and the bottom is every abundance added up.'); }
   }
-  function num(s) { return parseFloat(s.tile.dataset.value); }
+  function num(s) { return parseFloat(s.dataset.value); }
   function mark(s, ok) { s.classList.remove('correct', 'wrong'); s.classList.add(ok ? 'correct' : 'wrong'); }
   function arrEqual(a, b) { return a.length === b.length && a.every(function (v, i) { return v === b[i]; }); }
   function multisetPairsEqual(got, want) {
@@ -216,6 +251,7 @@
   }
 
   function reveal() {
+    clearSelection();
     Lab.sound.correct();
     var sumTerms = q.isotopes.map(function (it) { return it.mass + '×' + fmt(it.val); }).join(' + ');
     var denStr = q.isotopes.map(function (it) { return fmt(it.val); }).join(' + ');

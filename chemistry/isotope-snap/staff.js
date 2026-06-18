@@ -93,6 +93,7 @@
   function reloadClasses(cb) { adminCall('classes').then(function (r) { if (r && r.ok) populateClassSelects(r.classes); if (cb) cb(); }); }
 
   function switchTab(name) {
+    closeChipMenu();
     Lab.$$('.staff-tab').forEach(function (t) { t.classList.toggle('is-active', t.dataset.tab === name); });
     Lab.$$('.staff-tabpane').forEach(function (p) { p.hidden = (p.dataset.pane !== name); p.classList.toggle('is-active', p.dataset.pane === name); });
     if (name === 'results') loadDashboard();
@@ -144,7 +145,7 @@
     Lab.$('#dash-stats').innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Loading the class&hellip; this can take a moment</span></div>';
     Lab.$('#dash-tbody').innerHTML = '';
     adminCall('data', { className: cls }).then(function (r) {
-      if (!r || !r.ok) return;
+      if (!r || !r.ok) { Lab.$('#dash-stats').innerHTML = '<p class="lb-empty">Could not load this class. Tap Refresh to try again.</p>'; return; }
       curDash = (r.participants || []).slice().sort(function (a, b) { return b.xp - a.xp; });
       renderDashboard();
     });
@@ -191,41 +192,52 @@
     Lab.$('#grp-groups').innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Loading&hellip; this can take a moment</span></div>';
     Lab.$('#grp-pool').innerHTML = '';
     adminCall('groups', { className: cls }).then(function (r) {
-      if (!r || !r.ok) return;
+      if (!r || !r.ok) {
+        Lab.$('#grp-groups').innerHTML = '<p class="lb-empty">Could not load groups. Tap Refresh to try again.</p>';
+        return;
+      }
       curGroups = r;
       Lab.$('#grp-reveal-toggle').checked = !!r.groupsRevealed;
       renderGroups();
     });
   }
   function renderGroups() {
+    closeChipMenu();
     var r = curGroups; if (!r) return;
     var assigned = {};
     r.groups.forEach(function (g) { g.members.forEach(function (m) { assigned[m.email] = true; }); });
     var unassigned = r.pupils.filter(function (p) { return !assigned[p.email]; });
 
     var pool = Lab.$('#grp-pool'); pool.innerHTML = '';
-    unassigned.forEach(function (p) { pool.appendChild(chip(p)); });
-    if (!unassigned.length) pool.innerHTML = '<span class="lb-empty" style="padding:6px;font-size:.82rem">Everyone is assigned.</span>';
+    if (!r.pupils.length) {
+      pool.innerHTML = '<span class="lb-empty" style="padding:6px;font-size:.82rem">No pupils have opened this class yet. Share the class link &mdash; everyone who signs in appears here, ready to put into groups.</span>';
+    } else if (!unassigned.length) {
+      pool.innerHTML = '<span class="lb-empty" style="padding:6px;font-size:.82rem">Everyone is assigned.</span>';
+    } else {
+      unassigned.forEach(function (p) { pool.appendChild(chip(p)); });
+    }
 
     var box = Lab.$('#grp-groups'); box.innerHTML = '';
     if (!r.groups.length) { box.innerHTML = '<p class="lb-empty" style="font-size:.85rem">No groups yet. Add one, or use Auto-make.</p>'; }
     r.groups.forEach(function (g) {
+      var teamXp = g.members.reduce(function (s, m) { return s + (m.xp || 0); }, 0); // recompute so it stays right after an instant move
       var col = document.createElement('div');
       col.className = 'grp-group'; col.dataset.groupId = g.id;
-      col.innerHTML = '<h4><span>' + Lab.esc(g.name) + ' <span class="grp-group-team">' + g.teamXp + ' XP</span></span>' +
+      col.innerHTML = '<h4><span>' + Lab.esc(g.name) + ' <span class="grp-group-team">' + teamXp + ' XP</span></span>' +
         '<button class="grp-group-del" title="Delete group" data-del="' + g.id + '">&times;</button></h4>' +
         '<div class="grp-group-members"></div>';
       var mem = col.querySelector('.grp-group-members');
       g.members.forEach(function (m) { mem.appendChild(chip(m)); });
       box.appendChild(col);
     });
-    wireGroupDrop();
   }
   function chip(p) {
     var c = document.createElement('span');
     c.className = 'grp-chip'; c.dataset.email = p.email;
+    c.title = 'Tap to choose a group';
     c.innerHTML = Lab.esc(p.name) + ' <span class="chip-xp">' + (p.xp || 0) + '</span>';
     Lab.makeDraggable(c, {
+      onTap: function (node) { openChipMenu(node, p); },
       getDropTarget: function (x, y, node) {
         var els = document.elementsFromPoint(x, y);
         for (var i = 0; i < els.length; i++) {
@@ -242,15 +254,73 @@
     });
     return c;
   }
-  function wireGroupDrop() { /* drop targets resolved live in getDropTarget; nothing persistent needed */ }
+
+  /* Tap a pupil chip -> a small menu of groups. Works on phones where dragging
+     is awkward; the live save is optimistic so the board updates instantly. */
+  var chipMenuEl = null;
+  function closeChipMenu() {
+    if (!chipMenuEl) return;
+    chipMenuEl.remove(); chipMenuEl = null;
+    document.removeEventListener('click', onDocClickForMenu, true);
+  }
+  function onDocClickForMenu(e) { if (chipMenuEl && !chipMenuEl.contains(e.target)) closeChipMenu(); }
+  function openChipMenu(anchor, p) {
+    closeChipMenu();
+    if (!curGroups) return;
+    var curGid = null;
+    curGroups.groups.forEach(function (g) { if (g.members.some(function (m) { return m.email === p.email; })) curGid = g.id; });
+    var rows = '<div class="grp-menu-title">Move ' + Lab.esc(p.name) + ' to</div>' +
+      '<button class="grp-menu-item" data-gid="">&mdash; Unassigned &mdash;</button>';
+    curGroups.groups.forEach(function (g) {
+      rows += '<button class="grp-menu-item' + (g.id === curGid ? ' current' : '') + '" data-gid="' + Lab.esc(g.id) + '">' +
+        Lab.esc(g.name) + (g.id === curGid ? ' ✓' : '') + '</button>';
+    });
+    if (!curGroups.groups.length) rows += '<div class="grp-menu-empty">Add a group first.</div>';
+    var menu = document.createElement('div');
+    menu.className = 'grp-menu'; menu.innerHTML = rows;
+    document.body.appendChild(menu);
+    var rect = anchor.getBoundingClientRect();
+    var mw = menu.offsetWidth, mh = menu.offsetHeight;
+    var left = Math.max(8, Math.min(rect.left, global.innerWidth - mw - 8));
+    var top = rect.bottom + 6;
+    if (top + mh > global.innerHeight - 8) top = Math.max(8, rect.top - mh - 6);
+    menu.style.left = left + 'px'; menu.style.top = top + 'px';
+    menu.addEventListener('click', function (e) {
+      var btn = e.target.closest && e.target.closest('.grp-menu-item'); if (!btn) return;
+      var gid = btn.getAttribute('data-gid') || null;
+      closeChipMenu();
+      assign(p.email, gid);
+    });
+    chipMenuEl = menu;
+    setTimeout(function () { document.addEventListener('click', onDocClickForMenu, true); }, 0);
+  }
+
   function assign(email, groupId) {
-    adminCall('assignPupil', { className: Lab.$('#grp-class').value, email: email, groupId: groupId }).then(function () { loadGroups(); });
+    // optimistic: move the chip in our local model and re-render at once, so the
+    // teacher never waits on a spinner (the live server can take a moment).
+    if (curGroups) {
+      var pu = curGroups.pupils.filter(function (x) { return x.email === email; })[0];
+      curGroups.groups.forEach(function (g) { g.members = g.members.filter(function (m) { return m.email !== email; }); });
+      if (groupId && pu) {
+        var g = curGroups.groups.filter(function (x) { return x.id === groupId; })[0];
+        if (g) g.members.push({ email: pu.email, name: pu.name, xp: pu.xp || 0 });
+      }
+      renderGroups();
+    }
+    adminCall('assignPupil', { className: Lab.$('#grp-class').value, email: email, groupId: groupId }).then(function (r) {
+      if (!r || !r.ok) { status('grp-status', 'Could not save that move &mdash; reloading.'); loadGroups(); }
+    });
   }
   function grpAdd() {
     var name = Lab.$('#grp-new-name').value.trim(); if (!name) return;
+    var btn = Lab.$('#grp-add'); btn.disabled = true;
     busyStatus('grp-status', 'Adding the group&hellip; this can take a moment');
-    adminCall('createGroup', { className: Lab.$('#grp-class').value, name: name }).then(function () {
-      Lab.$('#grp-new-name').value = ''; loadGroups();
+    adminCall('createGroup', { className: Lab.$('#grp-class').value, name: name }).then(function (r) {
+      btn.disabled = false;
+      if (!r || !r.ok) { status('grp-status', 'Could not add the group &mdash; please try again.'); return; }
+      Lab.$('#grp-new-name').value = '';
+      status('grp-status', 'Group “' + name + '” added.');  // clears the spinner
+      loadGroups();
     });
   }
   function grpAuto() {
@@ -258,20 +328,32 @@
     Lab.confirm('Auto-make ' + n + ' groups?', 'This clears any existing groups for this class and shuffles every pupil into ' + n + ' new groups.', 'Shuffle', function (ok) {
       if (!ok) return;
       busyStatus('grp-status', 'Shuffling the class into teams&hellip; this can take a moment');
-      adminCall('autoGroup', { className: Lab.$('#grp-class').value, n: n }).then(function () { status('grp-status', 'Groups shuffled.'); loadGroups(); });
+      adminCall('autoGroup', { className: Lab.$('#grp-class').value, n: n }).then(function (r) {
+        status('grp-status', (r && r.ok) ? 'Groups shuffled.' : 'Could not shuffle &mdash; please try again.');
+        loadGroups();
+      });
     });
   }
   function setReveal() {
     var on = Lab.$('#grp-reveal-toggle').checked;
     busyStatus('grp-status', 'Updating&hellip;');
-    adminCall('setReveal', { className: Lab.$('#grp-class').value, revealed: on }).then(function () {
+    adminCall('setReveal', { className: Lab.$('#grp-class').value, revealed: on }).then(function (r) {
+      if (!r || !r.ok) {
+        Lab.$('#grp-reveal-toggle').checked = !on;  // revert the toggle
+        status('grp-status', 'Could not update &mdash; please try again.');
+        return;
+      }
       status('grp-status', on ? 'Pupils can now see who is in their group.' : 'Group members are now hidden from pupils.');
     });
   }
   function grpDelete(id) {
     Lab.confirm('Delete this group?', 'Pupils in it become unassigned. This cannot be undone.', 'Delete', function (ok) {
       if (!ok) return;
-      adminCall('deleteGroup', { className: Lab.$('#grp-class').value, groupId: id }).then(function () { loadGroups(); });
+      busyStatus('grp-status', 'Deleting the group&hellip;');
+      adminCall('deleteGroup', { className: Lab.$('#grp-class').value, groupId: id }).then(function (r) {
+        status('grp-status', (r && r.ok) ? 'Group deleted.' : 'Could not delete &mdash; please try again.');
+        loadGroups();
+      });
     });
   }
 

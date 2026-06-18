@@ -9,7 +9,10 @@
   'use strict';
   var Lab = global.Lab, D = global.ISO_DATA;
 
-  var TOTAL = 10, ROUND_MS = 9000;
+  // ROUND_MS is a SPEED-BONUS window, not a deadline: answering inside it earns
+  // extra points, but letting it run out no longer fails the round — the pupil
+  // moves on with the Next button at their own pace.
+  var TOTAL = 10, ROUND_MS = 12000;
   var round = 0, score = 0, streak = 0, bestStreak = 0;
   var current = null, tStart = 0, tRaf = null, resolved = false;
 
@@ -36,17 +39,26 @@
       var col = types[i] === 'p' ? '#E8553B' : '#6B7A90';
       nuc += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + dotR.toFixed(1) + '" fill="' + col + '" stroke="#fff" stroke-width="0.7"/>';
     }
-    // electron shells
+    // electron shells — placed on the clock convention (see D.electronLayout):
+    // singles at 12/3/6/9, pairs drawn side-by-side at the same clock position.
     var shells = D.electronShells(z), rings = '', elec = '';
-    var radii = [46, 68, 88, 96];
+    var radii = [46, 68, 88, 96], eR = 4.4, pairGap = 6;
+    function dot(x, y) { return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + eR + '" fill="#38B6FF" stroke="#fff" stroke-width="0.8"/>'; }
     shells.forEach(function (k, idx) {
       var R = radii[idx];
       rings += '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="none" stroke="#9bdcff" stroke-width="1.4" opacity="0.7"/>';
-      for (var j = 0; j < k; j++) {
-        var ang = -Math.PI / 2 + (j / k) * Math.PI * 2;
-        var ex = cx + Math.cos(ang) * R, ey = cy + Math.sin(ang) * R;
-        elec += '<circle cx="' + ex.toFixed(1) + '" cy="' + ey.toFixed(1) + '" r="4.4" fill="#38B6FF" stroke="#fff" stroke-width="0.8"/>';
-      }
+      D.electronLayout(idx, k).forEach(function (pos) {
+        var px = cx + Math.cos(pos.ang) * R, py = cy + Math.sin(pos.ang) * R;
+        if (pos.count === 1) {
+          elec += dot(px, py);
+        } else {
+          // offset the pair tangentially (perpendicular to the radius) so the
+          // two electrons sit adjacent at the same clock position
+          var tx = -Math.sin(pos.ang), ty = Math.cos(pos.ang);
+          elec += dot(px + tx * pairGap, py + ty * pairGap);
+          elec += dot(px - tx * pairGap, py - ty * pairGap);
+        }
+      });
     });
     var svg = '<svg class="bohr" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Atom diagram">' +
       rings +
@@ -96,7 +108,7 @@
   }
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-  /* ---------- timer ---------- */
+  /* ---------- timer (speed-bonus meter; never auto-fails) ---------- */
   function startTimer() {
     tStart = Date.now(); resolved = false;
     var fill = Lab.$('#snap-timer-fill');
@@ -105,7 +117,7 @@
       var elapsed = Date.now() - tStart, frac = Lab.clamp(1 - elapsed / ROUND_MS, 0, 1);
       fill.style.width = (frac * 100) + '%';
       fill.classList.toggle('low', frac < 0.34);
-      if (elapsed >= ROUND_MS) { resolve('timeout'); return; }
+      if (elapsed >= ROUND_MS) { fill.style.width = '0%'; return; } // bonus gone, but no penalty
       tRaf = requestAnimationFrame(tick);
     }
     tick();
@@ -120,6 +132,7 @@
     renderCard('snap-card-a', current.a);
     renderCard('snap-card-b', current.b);
     Lab.$('#snap-feedback').hidden = true;
+    Lab.$('#snap-next').hidden = true;
     setButtons(true);
     startTimer();
   }
@@ -127,7 +140,7 @@
   function setButtons(on) { Lab.$('#snap-yes').disabled = !on; Lab.$('#snap-no').disabled = !on; }
 
   function resolve(decision) {
-    if (resolved && decision !== 'timeout') return;
+    if (resolved) return;
     stopTimer(); setButtons(false);
     var correct = (decision === 'snap' && current.isPair) || (decision === 'no' && !current.isPair);
     var remain = Lab.clamp(1 - (Date.now() - tStart) / ROUND_MS, 0, 1);
@@ -147,15 +160,20 @@
     } else {
       streak = 0;
       fb.className = 'snap-feedback bad';
-      fb.innerHTML = (decision === 'timeout' ? '<b>Time!</b> ' : '<b>Not quite.</b> ') + why;
+      fb.innerHTML = '<b>Not quite.</b> ' + why;
       Lab.sound.snapNo(); Lab.narrate('snap_no');
     }
     Lab.$('#snap-streak').textContent = streak;
 
-    setTimeout(function () {
-      if (round >= TOTAL) finish();
-      else nextRound();
-    }, 2100);
+    // pupil reads the feedback, then advances at their own pace
+    var nb = Lab.$('#snap-next');
+    nb.hidden = false;
+    nb.textContent = round >= TOTAL ? 'See your score →' : 'Next →';
+    nb.focus();
+  }
+  function goNext() {
+    if (round >= TOTAL) finish();
+    else nextRound();
   }
 
   function explain(r) {
@@ -207,6 +225,7 @@
     });
     Lab.$('#snap-yes').addEventListener('click', function () { resolve('snap'); });
     Lab.$('#snap-no').addEventListener('click', function () { resolve('no'); });
+    Lab.$('#snap-next').addEventListener('click', goNext);
   };
 
 })(typeof window !== 'undefined' ? window : this);
