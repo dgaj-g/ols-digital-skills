@@ -922,6 +922,9 @@ body.gj .staff-head h1 { color: var(--cream); font-size: 22px; }
 .gj-modal h2 { font-size: 22px; margin-bottom: calc(var(--sq) * 0.5); }
 .gj-modal-zstack { z-index: 500; }  /* QR / confirm above the staff panel */
 .gj-confirm-actions { display: flex; gap: 10px; justify-content: center; margin-top: calc(var(--sq) * 0.8); }
+/* QR modal: centre the code, link and buttons (heading/canvas/URL via text-align; buttons via flex) */
+.gj-qr { text-align: center; }
+.gj-qr .check-row { justify-content: center; }
 
 /* ═══ login-gated polish: gold "this can take a moment" wait-card + guard spinner ═══ */
 .panel-loading {
