@@ -249,7 +249,7 @@
       if (!nm) { cmsg.textContent = 'Give the class a name first.'; return; }
       addB.disabled = true;
       busyCard(cmsg, 'Adding ' + esc(nm) + '&hellip; this can take a moment');
-      call('addClass', { name: nm }).then(function (r) {
+      call('addClass', { className: nm }).then(function (r) {
         addB.disabled = false;
         if (r && r.ok) {
           classes.push({ name: r.name, acts: r.acts || { angles: true, algebra: true }, count: 0 });

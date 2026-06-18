@@ -345,7 +345,7 @@ body.gj :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
 .btn-pencil:disabled { color: var(--pencil); border-color: var(--pencil); opacity: 0.5; cursor: default; }
 
 /* UI problems are pencil-and-Courier \2014  marking red is for marking only */
-.ui-msg { font-family: var(--f-stationery); font-size: 12px; color: var(--pencil); min-height: var(--sq); }
+.ui-msg { font-family: var(--f-stationery); font-size: 14px; color: var(--pencil); min-height: var(--sq); }
 
 /* \2550 \2550 \2550  SCREEN \b7  THE COVER \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550  */
 .scr-cover {
@@ -1040,7 +1040,7 @@ body.gj .staff-head h1 { color: var(--cream); font-size: 22px; }
 }
 .ledger th {
   font-family: var(--f-stationery);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--navy);
@@ -5417,7 +5417,7 @@ window.OLS_TRANSPORT = {
       if (!nm) { cmsg.textContent = 'Give the class a name first.'; return; }
       addB.disabled = true;
       busyCard(cmsg, 'Adding ' + esc(nm) + '&hellip; this can take a moment');
-      call('addClass', { name: nm }).then(function (r) {
+      call('addClass', { className: nm }).then(function (r) {
         addB.disabled = false;
         if (r && r.ok) {
           classes.push({ name: r.name, acts: r.acts || { angles: true, algebra: true }, count: 0 });
@@ -6189,7 +6189,7 @@ window.OLS_TRANSPORT = {
               return { name: c.name, acts: c.acts, count: Object.keys(s.data[c.name] || {}).length };
             }) });
           case 'addClass': {
-            var nm = String(p.name || '').trim().replace(/[^A-Za-z0-9_\- ]+/g, '').slice(0, 40);
+            var nm = String(p.className || '').trim().replace(/[^A-Za-z0-9_\- ]+/g, '').replace(/\s+/g, '-').slice(0, 40);
             if (!nm) return Promise.resolve({ ok: false, error: 'Give the class a name first.' });
             if (s.classes.some(function (c) { return c.name.toLowerCase() === nm.toLowerCase(); }))
               return Promise.resolve({ ok: false, error: 'That class already exists.' });

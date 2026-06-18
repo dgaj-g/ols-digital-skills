@@ -308,7 +308,7 @@
               return { name: c.name, acts: c.acts, count: Object.keys(s.data[c.name] || {}).length };
             }) });
           case 'addClass': {
-            var nm = String(p.name || '').trim().replace(/[^A-Za-z0-9_\- ]+/g, '').slice(0, 40);
+            var nm = String(p.className || '').trim().replace(/[^A-Za-z0-9_\- ]+/g, '').replace(/\s+/g, '-').slice(0, 40);
             if (!nm) return Promise.resolve({ ok: false, error: 'Give the class a name first.' });
             if (s.classes.some(function (c) { return c.name.toLowerCase() === nm.toLowerCase(); }))
               return Promise.resolve({ ok: false, error: 'That class already exists.' });
