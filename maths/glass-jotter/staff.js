@@ -368,6 +368,7 @@
       tools.appendChild(b);
     });
     var msg = el('p', 'ui-msg', 'Loading the wall…');
+    msg.style.marginTop = '26px';   // clear the tab + tools rows so the wait-card isn't crammed against them
     var wall = el('div', 'wall');
     body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(wall);
     shell(view.cls + ' · Working Wall', body, function () { showClasses(); });
