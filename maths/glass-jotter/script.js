@@ -448,25 +448,116 @@
   var me = { email: '', name: '', acts: { angles: false, algebra: false }, summaries: {}, offline: false };
   var current = { act: null, state: null, section: 0, dirty: false, lastSave: 0 };
 
+  /* Best-effort friendly name from a c2k login email -- the execute-as-me web
+     app only ever receives the email, never the Google display name. Handles the
+     two common c2k staff formats: "dgartland021" -> "D Gartland" and
+     "firstname.surname" -> "Firstname Surname". Returns '' when it cannot parse
+     (the caller then falls back to the raw email). */
+  function staffNameFromEmail(email) {
+    var local = String(email || '').toLowerCase().split('@')[0].replace(/[0-9]+$/, '');
+    if (!/^[a-z]/.test(local)) return '';
+    function cap(w) {
+      if (!w) return '';
+      w = w.charAt(0).toUpperCase() + w.slice(1);
+      return w.replace(/^Mc([a-z])/, function (m, c) { return 'Mc' + c.toUpperCase(); });
+    }
+    if (local.indexOf('.') > -1) {
+      return local.split('.').filter(Boolean).map(cap).join(' ');
+    }
+    var surname = cap(local.slice(1));
+    return surname ? (local.charAt(0).toUpperCase() + ' ' + surname) : '';
+  }
+
   /* — cover — */
   function bootCover() {
-    document.getElementById('cover-class').textContent =
-      BOOT.classCode === 'default' ? 'Maths' : BOOT.classCode;
     var msg = document.getElementById('cover-msg');
     var staffOval = document.getElementById('cover-staff');
+    var coverOpenBtn = document.getElementById('cover-open');
 
-    /* The STAFF affordance belongs to the teacher only. Pupils arrive on a
-       class link (?class=NAME) and must never see it. So show the visible
-       oval ONLY on the teacher landing (the bare link, classCode 'default');
-       hide it on every pupil class board. The teacher is never locked out:
-       a discreet triple-tap on the crest opens Staff from ANY board. */
+    /* discreet, always-available teacher way in (so no lock-out on a class
+       board where the visible oval is hidden): triple-tap the crest. */
+    var crest = document.querySelector('.cover-crest');
+    if (crest) {
+      var taps = 0, tapTimer = null;
+      crest.style.cursor = 'default';
+      crest.addEventListener('click', function () {
+        taps++;
+        clearTimeout(tapTimer);
+        if (taps >= 3) { taps = 0; window.GJ_STAFF.open(); return; }
+        tapTimer = setTimeout(function () { taps = 0; }, 600);
+      });
+    }
+
+    /* ── TEACHER LANDING (the bare staff link, classCode 'default') ──────────
+       This is the teacher's door, NOT a pupil sign-in: there is no name to
+       type, no class/subject, and no book to open. Strip the cover to a clean
+       staff entry -- the signed-in email on the Name line and a button straight
+       into the markbook. Pupils never reach this (they arrive on a ?class=
+       link), so none of the pupil prompts belong here. */
     var isTeacherLanding = (!BOOT.classCode || BOOT.classCode === 'default');
-    staffOval.hidden = !isTeacherLanding;
+    if (isTeacherLanding) {
+      staffOval.hidden = false;                                  // keep the STAFF stamp
+      var sub = document.querySelector('.cover-foil-sub');
+      if (sub) sub.textContent = 'The Glass Jotter';            // drop "M2 Revision", keep the name
+      var rows = document.querySelectorAll('#cover-label .label-row');
+      if (rows[2]) rows[2].style.display = 'none';               // hide the Subject row
 
+      /* Name row -> read-only "signed in as" email (confirms the account). */
+      var nameInput = document.getElementById('cover-name');
+      var who = document.createElement('span');
+      who.className = 'label-val'; who.id = 'cover-staffwho'; who.textContent = '…';
+      if (nameInput && nameInput.parentNode) { nameInput.style.display = 'none'; nameInput.parentNode.appendChild(who); }
+
+      /* Class row -> the staff PASSCODE field, so the markbook opens from this
+         one page: no separate gate screen, no extra click. */
+      var passInput = document.createElement('input');
+      passInput.type = 'password'; passInput.id = 'cover-pass';
+      passInput.autocomplete = 'off'; passInput.setAttribute('aria-label', 'Staff passcode');
+      if (rows[1]) {
+        var key = rows[1].querySelector('.label-key'); if (key) key.textContent = 'Passcode';
+        var oldVal = rows[1].querySelector('.label-val'); if (oldVal) oldVal.parentNode.removeChild(oldVal);
+        rows[1].appendChild(passInput);
+      }
+
+      coverOpenBtn.textContent = 'Open the Markbook';
+      coverOpenBtn.disabled = false;
+      var toStaff = function () {
+        var pass = passInput.value.trim();
+        if (!pass) { msg.textContent = 'Enter the staff passcode.'; passInput.focus(); return; }
+        if (coverOpenBtn.disabled) return;
+        coverOpenBtn.disabled = true;
+        msg.innerHTML = '<span class="spinner" aria-hidden="true"></span>Checking the passcode&hellip;';
+        call('admin', { passcode: pass, sub: 'classes' }).then(function (r) {
+          if (r && r.ok) { window.GJ_STAFF.enterWith(pass, r); }
+          else {
+            coverOpenBtn.disabled = false;
+            msg.textContent = (r && r.error) || 'That passcode was not accepted.';
+            passInput.focus(); passInput.select();
+          }
+        }).catch(function () {
+          coverOpenBtn.disabled = false;
+          msg.textContent = 'Could not reach the server — try again.';
+        });
+      };
+      coverOpenBtn.addEventListener('click', toStaff);
+      passInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') toStaff(); });
+      staffOval.addEventListener('click', function () { passInput.focus(); });
+      msg.textContent = '';
+      /* fill the signed-in email (no class to load here, so no error). */
+      call('whoami').then(function (r) {
+        var email = (r && r.email) ? String(r.email) : '';
+        who.textContent = staffNameFromEmail(email) || email || 'Staff';
+        me.email = email;
+      }).catch(function () { who.textContent = 'Staff'; });
+      return;
+    }
+
+    /* ── PUPIL COVER (a real class link) ─────────────────────────────────── */
+    document.getElementById('cover-class').textContent = BOOT.classCode;
+    staffOval.hidden = true;
     /* Guard: the cover book shows at once, but hold the "open" button and show a
        spinner until whoami+hello resolve, so the name label is prefilled before
        she can submit (never a flash of the empty label). */
-    var coverOpenBtn = document.getElementById('cover-open');
     coverOpenBtn.disabled = true;
     msg.innerHTML = '<span class="spinner" aria-hidden="true"></span>Getting your details&hellip;';
     call('whoami').then(function () { return call('hello', {}); }).then(function (r) {
@@ -483,7 +574,7 @@
       msg.textContent = 'Could not reach the server — check your connection and reload.';
     });
 
-    document.getElementById('cover-open').addEventListener('click', function () {
+    coverOpenBtn.addEventListener('click', function () {
       var input = document.getElementById('cover-name');
       var nm = input.value.trim();
       if (!nm) { document.getElementById('cover-msg').textContent = 'Write your name on the label first.'; input.focus(); return; }
@@ -501,22 +592,6 @@
     document.getElementById('cover-name').addEventListener('keydown', function (e) {
       if (e.key === 'Enter') document.getElementById('cover-open').click();
     });
-    document.getElementById('cover-staff').addEventListener('click', function () {
-      window.GJ_STAFF.open();
-    });
-    /* discreet, always-available teacher way in (so no lock-out on a class
-       board where the visible oval is hidden): triple-tap the crest. */
-    var crest = document.querySelector('.cover-crest');
-    if (crest) {
-      var taps = 0, tapTimer = null;
-      crest.style.cursor = 'default';
-      crest.addEventListener('click', function () {
-        taps++;
-        clearTimeout(tapTimer);
-        if (taps >= 3) { taps = 0; window.GJ_STAFF.open(); return; }
-        tapTimer = setTimeout(function () { taps = 0; }, 600);
-      });
-    }
   }
 
   /* — shelf — */
