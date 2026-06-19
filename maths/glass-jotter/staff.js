@@ -714,5 +714,16 @@
     setTimeout(function () { n.remove(); }, 3500);
   }
 
-  window.GJ_STAFF = { open: open };
+  /* Cover-gate entry: the teacher-landing cover validates the passcode itself
+     (one screen, no extra click), then hands the validated passcode and the
+     already-loaded class list straight in -- no second round-trip, no gate. */
+  function enterWith(pass, r) {
+    passcode = pass;
+    classes = (r && r.classes) || [];
+    meEmail = (r && r.me) || '';
+    isAdmin = !!(r && r.isAdmin);
+    showClasses();
+  }
+
+  window.GJ_STAFF = { open: open, enterWith: enterWith };
 })();

@@ -41,9 +41,12 @@ The build fails loudly if any input file is missing; fix and re-run.
 
 ## 5. Classes + verify
 
-1. Open the **bare `/exec` URL** (no `?class=`) — this is the TEACHER landing and
-   the only board that shows the **STAFF** stamp (top-right of the cover) → passcode.
-   (Fallback from any board, incl. a class link: **triple-tap the crest** to open Staff.)
+1. Open the **bare `/exec` URL** (no `?class=`) — this is the TEACHER landing: a
+   staff cover (STAFF stamp, your derived name on the Name line) with the
+   **passcode field built in** — type the passcode and **Open the Markbook** goes
+   straight to your classes (no separate gate). Pupil prompts (name box, class,
+   subject) are stripped here. (Fallback from any board, incl. a class link:
+   **triple-tap the crest** to open Staff.)
 2. Add a class, tick its activities, copy the class link / QR
    (links look like `…/exec?class=10B-Maths`).
 3. Verify as a pupil: open a **class link** in a normal signed-in C2k browser profile —
