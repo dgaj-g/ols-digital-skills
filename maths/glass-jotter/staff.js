@@ -383,7 +383,7 @@
       else if (st === 'err') r.err++;
     });
     r.avgTime = r.timeN ? r.timeSum / r.timeN : 0;
-    r.methodRate = r.methodMax ? r.methodGot / r.methodMax : 1;
+    r.methodRate = r.methodMax ? r.methodGot / r.methodMax : null;   // null = no method marks to assess (don't read as 100%)
     r.firstTryRate = r.finished ? r.firstTry / r.finished : 0;
     r.errRate = r.finished ? r.err / r.finished : 0;
     r.amberRate = r.finished ? r.amber / r.finished : 0;
@@ -400,17 +400,18 @@
     if (st.errRate >= 0.34) sup.push(st.err + ' wrong');
     if (st.amberRate >= 0.4) sup.push(st.amber + ' answer-only');
     if (medianTime && st.avgTime > medianTime * 1.6) sup.push('slower than most');
-    if (st.avgConf != null && st.avgConf <= 1.5 && st.methodRate < 0.6) sup.push('low confidence');
+    if (st.avgConf != null && st.avgConf <= 1.5 && st.methodRate != null && st.methodRate < 0.6) sup.push('low confidence');
     if (sup.length) return { kind: 'support', reasons: sup };
-    if (st.finished >= Math.max(5, Math.round(total * 0.6)) && st.firstTryRate >= 0.8 && st.methodRate >= 0.9 && st.amber === 0 && (st.avgConf == null || st.avgConf >= 2.5)) {
+    // stretch needs shown working: methodRate must be assessable (>0 method marks) and high.
+    if (st.finished >= Math.max(5, Math.round(total * 0.6)) && st.firstTryRate >= 0.8 && st.methodRate != null && st.methodRate >= 0.9 && st.amber === 0 && (st.avgConf == null || st.avgConf >= 2.5)) {
       return { kind: 'stretch', reasons: ['all first-try', 'full working shown'] };
     }
     return null;
   }
   function confidenceFlag(st) {
     if (st.avgConf == null || st.finished < 3) return null;
-    if (st.avgConf >= 2.5 && (st.methodRate < 0.6 || st.errRate >= 0.34)) return 'over';
-    if (st.avgConf <= 1.5 && st.methodRate >= 0.8 && st.firstTryRate >= 0.6) return 'under';
+    if (st.avgConf >= 2.5 && ((st.methodRate != null && st.methodRate < 0.6) || st.errRate >= 0.34)) return 'over';
+    if (st.avgConf <= 1.5 && st.methodRate != null && st.methodRate >= 0.8 && st.firstTryRate >= 0.6) return 'under';
     return null;
   }
 

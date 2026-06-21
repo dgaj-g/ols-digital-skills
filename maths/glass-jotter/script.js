@@ -448,9 +448,12 @@
           cell = { st: 'open' };
         }
         if (rec.ovr && rec.ovr.q != null) cell.ovr = rec.ovr.q;
-        // analytics scalars (cheap; the wall already reads this cell):
+        // analytics scalars (cheap; the wall already reads this cell). a1 uses the
+        // EFFECTIVE status (teacher override folded in) so a corrected first attempt
+        // counts as first-try everywhere — the same override contract the wall honours.
+        var effSt = cell.ovr === 1 ? 'ok' : cell.ovr === 0 ? 'err' : cell.st;
         cell.at = rec.att.length;                                        // attempts used
-        cell.a1 = (rec.att.length === 1 && cell.st === 'ok') ? 1 : 0;    // correct, with working, on the first attempt
+        cell.a1 = (rec.att.length === 1 && effSt === 'ok') ? 1 : 0;      // correct on the first attempt
         sum.qs[q.id] = cell;
       });
     });
@@ -460,7 +463,10 @@
       sum.evals = {};
       Object.keys(state.evals).forEach(function (k) {
         var e = state.evals[k];
-        if (e && typeof e === 'object') sum.evals[k] = { conf: Number(e.conf) || 0, skills: e.skills || {}, ts: Number(e.ts) || 0 };
+        if (!e || typeof e !== 'object') return;
+        var sk = {};                                 // clone, so the held summary isn't aliased to live state.evals
+        if (e.skills) Object.keys(e.skills).forEach(function (c) { sk[c] = e.skills[c]; });
+        sum.evals[k] = { conf: Number(e.conf) || 0, skills: sk, ts: Number(e.ts) || 0 };
       });
     }
     return sum;
@@ -905,11 +911,12 @@
         var rb = seEl('button', 'se-rate-btn se-rate-' + rt[2], rt[1]);
         rb.type = 'button';
         rb.setAttribute('aria-label', can.text + ' — ' + rt[1]);
+        rb.setAttribute('aria-pressed', ev.skills[can.id] === rt[0] ? 'true' : 'false');
         if (ev.skills[can.id] === rt[0]) rb.classList.add('on');
         rb.addEventListener('click', function () {
           ev.skills[can.id] = rt[0];
-          rateBtns.forEach(function (x) { x.classList.remove('on'); });
-          rb.classList.add('on'); persist();
+          rateBtns.forEach(function (x) { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
+          rb.classList.add('on'); rb.setAttribute('aria-pressed', 'true'); persist();
         });
         rateBtns.push(rb); rate.appendChild(rb);
       });

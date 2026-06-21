@@ -662,7 +662,7 @@
      not renumber them once pupils have used the activity. */
   (function () {
     var CANS = {
-      s1: [{ id: 'a1c1', text: 'I can name acute, obtuse and reflex angles' },
+      s1: [{ id: 'a1c1', text: 'I can name acute, right, obtuse, straight and reflex angles' },
            { id: 'a1c2', text: 'I can measure an angle with a protractor' }],
       s2: [{ id: 'a2c1', text: 'I can use angles on a straight line adding to 180°' },
            { id: 'a2c2', text: 'I can use angles round a point adding to 360°' }],
@@ -673,7 +673,7 @@
            { id: 'a5c2', text: 'I can spot F (corresponding) angles are equal' },
            { id: 'a5c3', text: 'I can use U (interior) angles adding to 180°' }],
       s6: [{ id: 'a6c1', text: 'I can combine several angle facts in one problem' },
-           { id: 'a6c2', text: 'I can give a clear reason for each step' }]
+           { id: 'a6c2', text: 'I can explain the angle rule behind each step' }]
     };
     window.GJ_CONTENT.angles.sections.forEach(function (s) { s.cans = CANS[s.id] || []; });
   })();

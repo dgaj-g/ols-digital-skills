@@ -77,9 +77,10 @@ gentle card slides in: *"You've finished [section]. How did that go?"* — skipp
 
 **Stored** (round-trips through existing save plumbing — no transport change):
 ```
-state.evals[secIdx]   = { conf:1|2|3, skills:{ canId: 1|2|3 }, note?:string, ts:epochSec }
-summary.evals[secIdx] = { conf, skills, ts }      // small; copied in summarise() so the wall sees it
+state.evals[sectionId]   = { conf:1|2|3, skills:{ canId: 1|2|3 }, note?:string, ts:epochSec }
+summary.evals[sectionId] = { conf, skills, ts }   // small; copied in summarise() so the wall sees it
 ```
+(Keyed by the section's stable string `id` — e.g. `s1` — NOT a numeric index, so reordering sections never re-buckets evals.)
 Byte cost is tens of chars — negligible against the 8 000-char summary cap.
 
 **Why it's powerful:** the self-rating is keyed to WALT skills, so it aggregates ("62% of 10A flagged
@@ -120,11 +121,15 @@ to them. Copy CSV gains columns: confidence, attempts, time, flag, top struggle-
 
 Computed from existing metrics; **method marks and shown-working are first-class**, not just answers.
 
-- **Needs support** if any of: ≥40% of *attempted* questions are `err`; mean attempts-to-correct ≥1.7;
-  time-per-question ≫ class median; **answer-only pattern** (lots of AMBER = skipping working);
-  or low self-confidence alongside low marks.
-- **Ready for stretch** if all of: ≥80% correct on the **first** attempt; **full method marks** (working
-  shown, not AMBER); time ≤ class median; and self-confidence high (or under-confident-but-excelling).
+Computed over **finished** (locked) questions, with teacher overrides folded in (a corrected first
+attempt counts as a first-try everywhere). Implemented defaults (tunable later; hoist to constants):
+- **Needs support** (≥3 finished) if any of: ≥34% `err`; ≥40% AMBER (answer-only = skipping working);
+  avg time > 1.6× class median; or low self-confidence (≤1.5) alongside weak *assessable* method (<60%).
+- **Ready for stretch** if ≥max(5, 60% of) finished AND: ≥80% correct on the **first** attempt; method
+  rate **assessable and ≥90%** (working shown, not AMBER — a section with no method marks is *not*
+  eligible); no AMBER; and self-confidence not low.
+- Working is weighted as much as the answer: `methodRate` is `null` (not 100%) when a question type has
+  no method marks, so a tap-only question can never read as "full working shown".
 
 Flags are advisory, shown with their evidence, never punitive or pupil-visible by default.
 

@@ -412,7 +412,7 @@
       s2: [{ id: 'g2c1', text: 'I can collect like terms together' },
            { id: 'g2c2', text: 'I can handle minus signs when simplifying' }],
       s3: [{ id: 'g3c1', text: 'I can expand a single bracket' },
-           { id: 'g3c2', text: 'I can multiply every term inside the bracket' }],
+           { id: 'g3c2', text: 'I can expand a bracket with a letter in front, like x(8 − 2x)' }],
       s4: [{ id: 'g4c1', text: 'I can solve an equation with x on one side' },
            { id: 'g4c2', text: 'I can do the same to both sides to stay balanced' }],
       s5: [{ id: 'g5c1', text: 'I can collect the x-terms onto one side' },
