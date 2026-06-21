@@ -481,7 +481,7 @@
         else if (st === 'amber') t.amber++;
         else if (st === 'err') { t.err++; if (c.dx) t.dx[c.dx] = (t.dx[c.dx] || 0) + 1; if (c.errAt) t.errAt[c.errAt] = (t.errAt[c.errAt] || 0) + 1; }
       });
-      t.struggle = t.err + t.amber + t.retried;
+      t.struggle = t.err * 3 + t.amber * 2 + t.retried;   // wrong answers lead, then answer-only, then retries
       return t;
     }).filter(function (t) { return t.touched > 0 && t.struggle > 0; });
     qstats.sort(function (a, b) { return b.struggle - a.struggle; });
@@ -964,7 +964,7 @@
           if (res.st === 'un') return;
           var mk = res.verdict ? res.verdict.mk : ['', ''];
           var mkMax = (res.verdict && res.verdict.mkMax) || item.q.marks;
-          var firstTry = (res.rec && res.rec.att && res.rec.att[0] && res.rec.att[0].res === 'OK') ? 'yes' : (res.st === 'open' ? '' : 'no');
+          var firstTry = (res.rec && res.rec.att && res.rec.att.length === 1 && res.st === 'ok') ? 'yes' : (res.st === 'open' ? '' : 'no');
           var secEv = evals[qSec[item.q.id]];
           rows.push([p.name || '', p.email, view.act, item.label, res.st,
             mk[0], mk[1], mkMax[0] + mkMax[1],

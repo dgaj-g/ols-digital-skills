@@ -450,7 +450,7 @@
         if (rec.ovr && rec.ovr.q != null) cell.ovr = rec.ovr.q;
         // analytics scalars (cheap; the wall already reads this cell):
         cell.at = rec.att.length;                                        // attempts used
-        cell.a1 = (rec.att[0] && rec.att[0].res === 'OK') ? 1 : 0;       // correct, with working, first try
+        cell.a1 = (rec.att.length === 1 && cell.st === 'ok') ? 1 : 0;    // correct, with working, on the first attempt
         sum.qs[q.id] = cell;
       });
     });
