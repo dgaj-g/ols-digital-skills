@@ -1031,3 +1031,41 @@ body.dragging-active, body.dragging-active * {
 .se-note input { width: 100%; max-width: 440px; font-family: var(--f-stationery); font-size: 0.9rem;
   padding: 8px 10px; border: 1.5px solid var(--page-edge); border-radius: 6px; background: #FAF7F0; color: var(--ink); }
 .se-saved { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); margin: 8px 0 0; font-style: italic; }
+
+/* ═══ Class Insights + per-pupil header (teacher) ═══ */
+.ins-host { margin-top: 8px; }
+.ins-h { font-family: var(--f-display); color: var(--navy); font-size: 1.15rem; margin: 22px 0 10px; }
+.ins-band { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.ins-tile { background: #FFFEFA; border: 1.5px solid var(--page-edge); border-top: 3px solid var(--foil);
+  border-radius: 8px; padding: 11px 13px; display: flex; flex-direction: column; gap: 2px; }
+.ins-big { font-family: var(--f-display); font-weight: 800; color: var(--navy); font-size: 1.5rem; line-height: 1.05; }
+.ins-small { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); }
+.ins-table td.ins-q { text-align: left; max-width: 260px; }
+.ins-q b { color: var(--navy); }
+.ins-qp { display: block; font-family: var(--f-stationery); font-size: 0.72rem; color: var(--pencil); white-space: normal; }
+.ins-bad { color: var(--marking, #C8102E); font-weight: 800; }
+.ins-dim { color: var(--pencil); opacity: 0.6; }
+.ins-skills { display: flex; flex-direction: column; gap: 8px; }
+.ins-skill { display: grid; grid-template-columns: 120px 1fr auto; align-items: center; gap: 12px; }
+.ins-skill-bar { height: 10px; border-radius: 6px; background: #EFE9DC; overflow: hidden; }
+.ins-skill-bar > span { display: block; height: 100%; background: linear-gradient(90deg, #C9971C, #C0506A); }
+.ins-skill-txt { font-family: var(--f-maths); color: var(--ink); font-size: 0.95rem; }
+.ins-skill-pct { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); white-space: nowrap; }
+.ins-flags { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; align-items: start; }
+.ins-flagcol { background: #FFFEFA; border: 1.5px solid var(--page-edge); border-radius: 10px; padding: 12px 14px; }
+.ins-flagcol.ins-support { border-left: 4px solid #C0506A; }
+.ins-flagcol.ins-stretch { border-left: 4px solid #2F8F6B; }
+.ins-flagh { font-family: var(--f-display); color: var(--navy); font-size: 1rem; margin: 0 0 8px; }
+.ins-flagrow { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; text-align: left;
+  background: #FAF7F0; border: 1px solid var(--page-edge); border-radius: 7px; padding: 7px 10px; margin-bottom: 6px; cursor: pointer; }
+.ins-flagrow:hover { background: rgba(26, 58, 107, 0.06); }
+.ins-name { font-family: var(--f-maths); font-size: 0.98rem; color: var(--navy); font-weight: 600; }
+.ins-reason { font-family: var(--f-stationery); font-size: 0.76rem; color: var(--pencil); }
+/* per-pupil Jotter-Page header */
+.jp-band { margin-bottom: 10px; }
+.jp-flags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.jp-flag { font-family: var(--f-stationery); font-size: 0.82rem; font-weight: 700; padding: 6px 11px; border-radius: 999px; border: 1.5px solid; }
+.jp-support { color: #8A2E3E; border-color: #C0506A; background: #FBEDEF; }
+.jp-stretch { color: #1E5E45; border-color: #2F8F6B; background: #E9F4EF; }
+.jp-over { color: #8A2E3E; border-color: #C0506A; background: #FBEDEF; }
+.jp-under { color: #1E5E45; border-color: #2F8F6B; background: #E9F4EF; }
