@@ -1341,6 +1341,8 @@ body.dragging-active, body.dragging-active * {
 .jp-stretch { color: #1E5E45; border-color: #2F8F6B; background: #E9F4EF; }
 .jp-over { color: #8A2E3E; border-color: #C0506A; background: #FBEDEF; }
 .jp-under { color: #1E5E45; border-color: #2F8F6B; background: #E9F4EF; }
+.jp-nudge { border-color: var(--foil-lo); color: #8A6A12; background: #FBF4E2; }
+.jp-nudge:hover { background: #F6EBCB; }
 
 </style>
 </head>
@@ -1450,7 +1452,7 @@ window.OLS_TRANSPORT = {
         case 'load':    g.apiLoad({ classCode: cls, act: p.act }); break;
         case 'save':    g.apiSave({ classCode: cls, act: p.act, state: p.state, summary: p.summary }); break;
         case 'setname': g.apiSetName({ classCode: cls, name: p.name }); break;
-        case 'admin':   g.apiAdmin({ passcode: p.passcode, sub: p.sub, className: p.className, acts: p.acts, act: p.act, email: p.email, q: p.q, idx: p.idx, val: p.val }); break;
+        case 'admin':   g.apiAdmin({ passcode: p.passcode, sub: p.sub, className: p.className, acts: p.acts, act: p.act, email: p.email, q: p.q, idx: p.idx, val: p.val, sec: p.sec }); break;
         default: reject(new Error('unknown action ' + p.action));
       }
     });
@@ -5630,7 +5632,7 @@ window.OLS_TRANSPORT = {
     var out = [];
     pack.sections.forEach(function (sec, si) {
       sec.questions.forEach(function (q, qi) {
-        out.push({ q: q, label: 'Ex' + (si + 1) + '.Q' + (qi + 1) });
+        out.push({ q: q, label: 'Ex' + (si + 1) + '.Q' + (qi + 1), secId: sec.id });
       });
     });
     return out;
@@ -6263,6 +6265,20 @@ window.OLS_TRANSPORT = {
           b.addEventListener('click', function () { setOvr(o[1], b); });
           ovRow.appendChild(b);
         });
+        // content-safe support: nudge this pupil toward the section's existing method
+        // movie. Offered only where they struggled \u2014 the natural moment to suggest it.
+        if (item.secId && (res.st === 'err' || res.st === 'amber')) {
+          var nudgeB = el('button', 'btn-pencil jp-nudge', 'Nudge: watch the method \u25b8');
+          nudgeB.addEventListener('click', function () {
+            if (nudgeB.disabled) return; nudgeB.disabled = true;
+            call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId }).then(function (r3) {
+              nudgeB.disabled = false;
+              if (r3 && r3.ok) { nudgeB.textContent = 'Nudge sent \u2713'; ovMsg.textContent = 'They\u2019ll be shown this method the next time they open the book.'; }
+              else ovMsg.textContent = (r3 && r3.error) || 'Could not send the nudge.';
+            }).catch(function () { nudgeB.disabled = false; ovMsg.textContent = 'Could not send the nudge.'; });
+          });
+          ovRow.appendChild(nudgeB);
+        }
         ovRow.appendChild(ovMsg);
         bodyEl.appendChild(ovRow);
         page.appendChild(wrap);
@@ -6792,7 +6808,10 @@ window.OLS_TRANSPORT = {
       case 'setname': s.names[OFFLINE_EMAIL] = String(p.name || '').slice(0, 40); lsSave(s); return ok({});
       case 'load': {
         var r2 = row(cls, OFFLINE_EMAIL, p.act);
-        return ok({ state: r2 && r2.state ? r2.state : null });
+        var nkey = String(p.act) + '|' + OFFLINE_EMAIL.toLowerCase();
+        var nud = (s.nudges && s.nudges[cls] && s.nudges[cls][nkey]) || '';
+        if (nud) { s.nudges[cls][nkey] = ''; lsSave(s); }   // one-shot, mirrors apiLoad
+        return ok({ state: r2 && r2.state ? r2.state : null, nudge: nud });
       }
       case 'save': {
         s.data[cls] = s.data[cls] || {}; s.data[cls][OFFLINE_EMAIL] = s.data[cls][OFFLINE_EMAIL] || {};
@@ -6859,6 +6878,14 @@ window.OLS_TRANSPORT = {
               lsSave(s);
             } catch (e) { return Promise.resolve({ ok: false, error: 'Could not store that.' }); }
             return ok({});
+          }
+          case 'nudge': {
+            s.nudges = s.nudges || {};
+            s.nudges[p.className] = s.nudges[p.className] || {};
+            var nk2 = String(p.act) + '|' + String(p.email || '').toLowerCase();
+            var clr = (p.sec === null || p.sec === undefined || p.sec === '');
+            s.nudges[p.className][nk2] = clr ? '' : String(p.sec);
+            lsSave(s); return ok({ sec: clr ? null : String(p.sec) });
           }
         }
         return Promise.resolve({ ok: false, error: 'Unknown admin action.' });
@@ -7181,8 +7208,17 @@ window.OLS_TRANSPORT = {
       var st = null;
       if (r && r.ok && r.state) { try { st = JSON.parse(r.state); } catch (e) {} }
       current.state = st || { v: 1, act: a.id, start: Math.floor(Date.now() / 1000), qs: {} };
+      // a teacher nudge (one-shot from the server) points the pupil at a section's
+      // method movie: open that section so the support is right where they land.
+      var startSec = firstOpenSection(pack);
+      if (r && r.nudge) {
+        current.nudge = { sec: String(r.nudge) };
+        var ni = -1;
+        pack.sections.forEach(function (s, k) { if (s.id === current.nudge.sec) ni = k; });
+        if (ni >= 0) startSec = ni;
+      }
       renderContents();
-      renderSection(firstOpenSection(pack));
+      renderSection(startSec);
     }).catch(function () {
       document.getElementById('act-main').innerHTML =
         '<p class="act-load-error">Could not open your book &mdash; tap &ldquo;The shelf&rdquo; above and try again.</p>';
