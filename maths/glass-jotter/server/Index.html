@@ -5770,7 +5770,7 @@ window.OLS_TRANSPORT = {
         else if (st === 'amber') t.amber++;
         else if (st === 'err') { t.err++; if (c.dx) t.dx[c.dx] = (t.dx[c.dx] || 0) + 1; if (c.errAt) t.errAt[c.errAt] = (t.errAt[c.errAt] || 0) + 1; }
       });
-      t.struggle = t.err + t.amber + t.retried;
+      t.struggle = t.err * 3 + t.amber * 2 + t.retried;   // wrong answers lead, then answer-only, then retries
       return t;
     }).filter(function (t) { return t.touched > 0 && t.struggle > 0; });
     qstats.sort(function (a, b) { return b.struggle - a.struggle; });
@@ -6253,7 +6253,7 @@ window.OLS_TRANSPORT = {
           if (res.st === 'un') return;
           var mk = res.verdict ? res.verdict.mk : ['', ''];
           var mkMax = (res.verdict && res.verdict.mkMax) || item.q.marks;
-          var firstTry = (res.rec && res.rec.att && res.rec.att[0] && res.rec.att[0].res === 'OK') ? 'yes' : (res.st === 'open' ? '' : 'no');
+          var firstTry = (res.rec && res.rec.att && res.rec.att.length === 1 && res.st === 'ok') ? 'yes' : (res.st === 'open' ? '' : 'no');
           var secEv = evals[qSec[item.q.id]];
           rows.push([p.name || '', p.email, view.act, item.label, res.st,
             mk[0], mk[1], mkMax[0] + mkMax[1],
@@ -6747,7 +6747,7 @@ window.OLS_TRANSPORT = {
         if (rec.ovr && rec.ovr.q != null) cell.ovr = rec.ovr.q;
         // analytics scalars (cheap; the wall already reads this cell):
         cell.at = rec.att.length;                                        // attempts used
-        cell.a1 = (rec.att[0] && rec.att[0].res === 'OK') ? 1 : 0;       // correct, with working, first try
+        cell.a1 = (rec.att.length === 1 && cell.st === 'ok') ? 1 : 0;    // correct, with working, on the first attempt
         sum.qs[q.id] = cell;
       });
     });
