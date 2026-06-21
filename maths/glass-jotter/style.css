@@ -995,3 +995,39 @@ body.dragging-active, body.dragging-active * {
   .grain::after { display: none; }
   .act-bar, .contents-strip, .staff-head, .btn-stamp, .btn-pencil { display: none !important; }
 }
+
+/* ═══ end-of-exercise self-evaluation (pupil) ═══
+   Traffic light uses sage/amber/rose — the rose deliberately avoids the
+   reserved Marking Red so a self-rating never reads as a mark. */
+.selfeval {
+  background: #FFFEFA; border: 1.5px solid var(--page-edge); border-left: 4px solid var(--foil);
+  border-radius: 10px; padding: 14px 16px; margin: 18px 0 8px;
+  box-shadow: 0 4px 14px rgba(26, 58, 107, 0.08);
+}
+.se-head { font-family: var(--f-display); font-weight: 800; color: var(--navy); font-size: 1.06rem; margin: 0; }
+.se-opt { font-family: var(--f-stationery); font-weight: 600; font-size: 0.7em; color: var(--pencil);
+  text-transform: uppercase; letter-spacing: 0.07em; margin-left: 6px; }
+.se-label { font-family: var(--f-stationery); font-size: 0.9rem; color: var(--pencil); margin: 12px 0 6px; }
+.se-conf { display: flex; gap: 8px; flex-wrap: wrap; }
+.se-conf-btn { display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+  font-family: var(--f-stationery); font-size: 0.92rem; color: var(--navy);
+  background: #FAF7F0; border: 1.5px solid var(--page-edge); border-radius: 999px; padding: 7px 13px; }
+.se-conf-btn .se-dot { width: 12px; height: 12px; border-radius: 50%; background: #C9CDD6; flex: 0 0 auto; }
+.se-conf-1 .se-dot { background: #C0506A; }
+.se-conf-2 .se-dot { background: #C9971C; }
+.se-conf-3 .se-dot { background: #2F8F6B; }
+.se-conf-btn.on { border-color: var(--navy); box-shadow: inset 0 0 0 1px var(--navy); font-weight: 700; }
+.se-skill { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 6px 0; border-top: 1px dashed var(--page-edge); }
+.se-skill:first-of-type { border-top: none; }
+.se-skill-txt { font-family: var(--f-maths); color: var(--ink); font-size: 0.97rem; }
+.se-rate { display: inline-flex; gap: 5px; flex: 0 0 auto; }
+.se-rate-btn { cursor: pointer; font-family: var(--f-stationery); font-size: 0.78rem;
+  border: 1.5px solid var(--page-edge); background: #FAF7F0; border-radius: 7px; padding: 4px 9px; color: var(--pencil); }
+.se-rate-g.on { background: #2F8F6B; color: #FFFEFA; border-color: #2F8F6B; }
+.se-rate-y.on { background: #C9971C; color: #FFFEFA; border-color: #C9971C; }
+.se-rate-r.on { background: #C0506A; color: #FFFEFA; border-color: #C0506A; }
+.se-note { margin-top: 12px; }
+.se-note input { width: 100%; max-width: 440px; font-family: var(--f-stationery); font-size: 0.9rem;
+  padding: 8px 10px; border: 1.5px solid var(--page-edge); border-radius: 6px; background: #FAF7F0; color: var(--ink); }
+.se-saved { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); margin: 8px 0 0; font-style: italic; }
