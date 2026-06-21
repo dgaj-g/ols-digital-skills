@@ -400,4 +400,26 @@
       }
     ]
   };
+
+  /* "I can…" self-evaluation chips — pupil-voice restatements of each section's
+     WALT (content-safe; Mary may reword). Surfaced at exercise end and in the
+     teacher's Insights. The ids are stable — they key the saved self-eval, so do
+     not renumber them once pupils have used the activity. */
+  (function () {
+    var CANS = {
+      s1: [{ id: 'g1c1', text: 'I can substitute positive numbers into an expression' },
+           { id: 'g1c2', text: 'I can substitute negative numbers carefully' }],
+      s2: [{ id: 'g2c1', text: 'I can collect like terms together' },
+           { id: 'g2c2', text: 'I can handle minus signs when simplifying' }],
+      s3: [{ id: 'g3c1', text: 'I can expand a single bracket' },
+           { id: 'g3c2', text: 'I can multiply every term inside the bracket' }],
+      s4: [{ id: 'g4c1', text: 'I can solve an equation with x on one side' },
+           { id: 'g4c2', text: 'I can do the same to both sides to stay balanced' }],
+      s5: [{ id: 'g5c1', text: 'I can collect the x-terms onto one side' },
+           { id: 'g5c2', text: 'I can solve when x is on both sides' }],
+      s6: [{ id: 'g6c1', text: 'I can solve an equation with a bracket' },
+           { id: 'g6c2', text: 'I can solve with brackets on both sides' }]
+    };
+    window.GJ_CONTENT.algebra.sections.forEach(function (s) { s.cans = CANS[s.id] || []; });
+  })();
 })();

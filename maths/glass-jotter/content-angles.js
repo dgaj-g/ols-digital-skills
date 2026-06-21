@@ -655,4 +655,26 @@
     reasonBank: REASON_BANK,
     sections: [s1, s2, s3, s4, s5, s6]
   };
+
+  /* "I can…" self-evaluation chips — pupil-voice restatements of each section's
+     WALT (content-safe; Mary may reword). Surfaced at exercise end and in the
+     teacher's Insights. The ids are stable — they key the saved self-eval, so do
+     not renumber them once pupils have used the activity. */
+  (function () {
+    var CANS = {
+      s1: [{ id: 'a1c1', text: 'I can name acute, obtuse and reflex angles' },
+           { id: 'a1c2', text: 'I can measure an angle with a protractor' }],
+      s2: [{ id: 'a2c1', text: 'I can use angles on a straight line adding to 180°' },
+           { id: 'a2c2', text: 'I can use angles round a point adding to 360°' }],
+      s3: [{ id: 'a3c1', text: 'I can use vertically opposite angles being equal' }],
+      s4: [{ id: 'a4c1', text: 'I can use angles in a triangle adding to 180°' },
+           { id: 'a4c2', text: 'I can use angles in a quadrilateral adding to 360°' }],
+      s5: [{ id: 'a5c1', text: 'I can spot Z (alternate) angles are equal' },
+           { id: 'a5c2', text: 'I can spot F (corresponding) angles are equal' },
+           { id: 'a5c3', text: 'I can use U (interior) angles adding to 180°' }],
+      s6: [{ id: 'a6c1', text: 'I can combine several angle facts in one problem' },
+           { id: 'a6c2', text: 'I can give a clear reason for each step' }]
+    };
+    window.GJ_CONTENT.angles.sections.forEach(function (s) { s.cans = CANS[s.id] || []; });
+  })();
 })();
