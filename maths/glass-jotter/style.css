@@ -999,6 +999,17 @@ body.dragging-active, body.dragging-active * {
 /* ═══ end-of-exercise self-evaluation (pupil) ═══
    Traffic light uses sage/amber/rose — the rose deliberately avoids the
    reserved Marking Red so a self-rating never reads as a mark. */
+/* "Want to see how?" pupil support pull — understated, sits under a question */
+.want-how { margin: -2px 0 18px; }
+.want-how-btn { background: none; border: none; cursor: pointer; padding: 4px 2px;
+  font-family: var(--f-stationery); font-size: 0.86rem; color: var(--navy); opacity: 0.78;
+  display: inline-flex; align-items: center; gap: 6px; }
+.want-how-btn:hover { opacity: 1; text-decoration: underline; }
+.wh-caret { font-size: 0.66rem; display: inline-block; transition: transform 0.15s; color: var(--foil-lo); }
+.want-how.open .wh-caret { transform: rotate(90deg); }
+.want-how.nudged .want-how-btn { opacity: 1; font-weight: 700; }
+.want-how.nudged .want-how-btn::after { content: ' · your teacher suggests this'; font-weight: 400; color: var(--foil-lo); }
+.want-how-body { margin-top: 8px; }
 .selfeval {
   background: #FFFEFA; border: 1.5px solid var(--page-edge); border-left: 4px solid var(--foil);
   border-radius: 10px; padding: 14px 16px; margin: 18px 0 8px;

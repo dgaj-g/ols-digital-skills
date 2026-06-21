@@ -823,6 +823,7 @@
     main.appendChild(footer);
     function refreshFooter() { buildSectionFooter(footer, sec, i, pack); }
 
+    var strips = [];
     sec.questions.forEach(function (q, qi) {
       var holder = document.createElement('div');
       jotter.appendChild(holder);
@@ -836,10 +837,50 @@
           refreshFooter();
         }
       });
+      // content-safe support: a pupil-pullable "Want to see how?" that replays the
+      // section's existing method movie inline, right where the pupil is stuck.
+      if (sec.movie) { var strip = buildSupportStrip(sec, q); strips.push(strip); jotter.appendChild(strip); }
     });
+
+    // a teacher "nudge" (set on load) gently opens the support for this section once.
+    if (strips.length && current.nudge && current.nudge.sec === sec.id) {
+      strips[0].classList.add('nudged');
+      if (strips[0]._openSupport) strips[0]._openSupport();
+      current.nudge = null;   // one-shot: don't re-open every time the pupil revisits
+    }
 
     refreshFooter();
     renderContents();
+  }
+
+  /* "Want to see how?" — lazily mounts the section's existing method movie under a
+     question on demand (no new content). The pull is recorded lightly in state so a
+     teacher can see who self-served support; it rides the normal save plumbing. */
+  function buildSupportStrip(sec, q) {
+    var wrap = document.createElement('div');
+    wrap.className = 'want-how';
+    var btn = document.createElement('button');
+    btn.className = 'want-how-btn';
+    btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML = '<span class="wh-caret" aria-hidden="true">&#9656;</span> Want to see how?';
+    var host = document.createElement('div');
+    host.className = 'want-how-body';
+    host.hidden = true;
+    var mounted = false;
+    function open() {
+      if (!mounted) { window.GJ_PLAYER.mount(host, sec.movie, { accent: current.act.accent }); mounted = true; recordHelp(q.id); }
+      host.hidden = false; wrap.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
+    }
+    function close() { host.hidden = true; wrap.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
+    btn.addEventListener('click', function () { if (host.hidden) open(); else close(); });
+    wrap.appendChild(btn); wrap.appendChild(host);
+    wrap._openSupport = open;
+    return wrap;
+  }
+  function recordHelp(qid) {
+    if (!current.state) return;
+    if (!current.state.help) current.state.help = {};
+    if (!current.state.help[qid]) { current.state.help[qid] = Math.floor(Date.now() / 1000); scheduleSave(); }
   }
 
   /* The section footer: once every question in the section is locked, a gentle
