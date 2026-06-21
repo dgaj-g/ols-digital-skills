@@ -352,6 +352,263 @@
     WRONG_SCALE: 'Read the wrong protractor scale', MISREAD: 'Misread / misplaced the protractor'
   };
 
+  /* ═══ Class Insights — analytics from the cheap wall summary ═══════════
+     Reads only the per-question summary the Working Wall already polls
+     (st / errAt / dx / mk / t / at / a1) plus the per-section self-eval
+     (summary.evals), so no heavy full-state fetch is needed. Working is
+     weighted as much as the answer: every stat splits method vs accuracy,
+     and "stretch" requires shown working (not answer-only AMBER). */
+  function insAvg(arr) { var v = arr.filter(function (x) { return x != null; }); return v.length ? v.reduce(function (a, b) { return a + b; }, 0) / v.length : null; }
+  function insPct(x) { return x == null ? '—' : Math.round(100 * x) + '%'; }
+  function insTop(obj) { var k = Object.keys(obj); if (!k.length) return null; k.sort(function (a, b) { return obj[b] - obj[a]; }); return { key: k[0], n: obj[k[0]] }; }
+  function insTile(big, small) { return '<div class="ins-tile"><span class="ins-big">' + big + '</span><span class="ins-small">' + esc(small) + '</span></div>'; }
+  function insH(text) { return el('h2', 'ins-h', esc(text)); }
+
+  function pupilStats(p, qlist) {
+    var s = (p && p.summary) || {}, qs = s.qs || {};
+    var r = { attempted: 0, finished: 0, ok: 0, amber: 0, err: 0, firstTry: 0, methodGot: 0, methodMax: 0, accGot: 0, accMax: 0, timeSum: 0, timeN: 0 };
+    qlist.forEach(function (item) {
+      var mk = item.q.marks || [0, 0];
+      r.methodMax += mk[0]; r.accMax += mk[1];
+      var c = qs[item.q.id];
+      if (!c || c.st === 'un') return;
+      var st = c.ovr === 1 ? 'ok' : c.ovr === 0 ? 'err' : c.st;
+      r.attempted++;
+      if (st === 'open') return;
+      r.finished++;
+      if (c.mk) { r.methodGot += c.mk[0] || 0; r.accGot += c.mk[1] || 0; }
+      if (c.t != null) { r.timeSum += c.t; r.timeN++; }
+      if (st === 'ok') { r.ok++; if (c.a1 === 1) r.firstTry++; }
+      else if (st === 'amber') r.amber++;
+      else if (st === 'err') r.err++;
+    });
+    r.avgTime = r.timeN ? r.timeSum / r.timeN : 0;
+    r.methodRate = r.methodMax ? r.methodGot / r.methodMax : 1;
+    r.firstTryRate = r.finished ? r.firstTry / r.finished : 0;
+    r.errRate = r.finished ? r.err / r.finished : 0;
+    r.amberRate = r.finished ? r.amber / r.finished : 0;
+    var evals = s.evals || {};
+    var confs = Object.keys(evals).map(function (k) { return Number(evals[k].conf) || 0; }).filter(function (v) { return v > 0; });
+    r.avgConf = confs.length ? confs.reduce(function (a, b) { return a + b; }, 0) / confs.length : null;
+    return r;
+  }
+
+  /* Advisory flags shown with their evidence; thresholds are deliberate defaults. */
+  function pupilFlag(st, medianTime, total) {
+    if (st.finished < 3) return null;
+    var sup = [];
+    if (st.errRate >= 0.34) sup.push(st.err + ' wrong');
+    if (st.amberRate >= 0.4) sup.push(st.amber + ' answer-only');
+    if (medianTime && st.avgTime > medianTime * 1.6) sup.push('slower than most');
+    if (st.avgConf != null && st.avgConf <= 1.5 && st.methodRate < 0.6) sup.push('low confidence');
+    if (sup.length) return { kind: 'support', reasons: sup };
+    if (st.finished >= Math.max(5, Math.round(total * 0.6)) && st.firstTryRate >= 0.8 && st.methodRate >= 0.9 && st.amber === 0 && (st.avgConf == null || st.avgConf >= 2.5)) {
+      return { kind: 'stretch', reasons: ['all first-try', 'full working shown'] };
+    }
+    return null;
+  }
+  function confidenceFlag(st) {
+    if (st.avgConf == null || st.finished < 3) return null;
+    if (st.avgConf >= 2.5 && (st.methodRate < 0.6 || st.errRate >= 0.34)) return 'over';
+    if (st.avgConf <= 1.5 && st.methodRate >= 0.8 && st.firstTryRate >= 0.6) return 'under';
+    return null;
+  }
+
+  function showInsights() {
+    var body = el('div', '');
+    var actTabs = el('div', 'check-row');
+    window.GJ.app.activities.forEach(function (a) {
+      var b = el('button', view.act === a.id ? 'btn-stamp' : 'btn-pencil', a.title);
+      b.addEventListener('click', function () { view.act = a.id; showInsights(); });
+      actTabs.appendChild(b);
+    });
+    body.appendChild(actTabs);
+    var host = el('div', 'ins-host');
+    var msg = el('p', 'ui-msg', '');
+    msg.style.marginTop = '20px';
+    host.appendChild(msg);
+    body.appendChild(host);
+    shell(view.cls + ' · Class Insights', body, function () { showWall(); });
+    busyCard(msg, 'Reading the class&hellip; this can take a moment');
+    call('wall', { className: view.cls, act: view.act }).then(function (r) {
+      if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load insights.'); return; }
+      view.wallData = r.pupils || [];
+      host.innerHTML = '';
+      renderInsights(host, view.wallData);
+    }).catch(function () { clearBusy(msg, 'Could not reach the server — try again.'); });
+  }
+
+  function renderInsights(host, pupils) {
+    var qlist = questionList(view.act);
+    var pack = window.GJ.app.content(view.act);
+    var total = qlist.length;
+    var rows = (pupils || []).map(function (p) { return { p: p, st: pupilStats(p, qlist) }; })
+      .filter(function (x) { return x.st.attempted > 0; });
+    if (!rows.length) { host.appendChild(el('p', 'ui-msg', 'No pupil has opened this activity yet — share the class link to get started.')); return; }
+    var times = rows.map(function (x) { return x.st.avgTime; }).filter(function (t) { return t > 0; }).sort(function (a, b) { return a - b; });
+    var medianTime = times.length ? times[Math.floor(times.length / 2)] : 0;
+    rows.forEach(function (x) { x.flag = pupilFlag(x.st, medianTime, total); x.conf = confidenceFlag(x.st); });
+
+    /* class band */
+    var avgMethod = insAvg(rows.map(function (x) { return x.st.methodMax ? x.st.methodGot / x.st.methodMax : null; }));
+    var avgAcc = insAvg(rows.map(function (x) { return x.st.accMax ? x.st.accGot / x.st.accMax : null; }));
+    var avgConf = insAvg(rows.map(function (x) { return x.st.avgConf; }));
+    var doneCells = rows.reduce(function (a, x) { return a + x.st.finished; }, 0);
+    var pctComplete = Math.round(100 * doneCells / (rows.length * total || 1));
+    var nSupport = rows.filter(function (x) { return x.flag && x.flag.kind === 'support'; }).length;
+    var nStretch = rows.filter(function (x) { return x.flag && x.flag.kind === 'stretch'; }).length;
+    host.appendChild(insH('How ' + view.cls + ' is doing'));
+    var band = el('div', 'ins-band');
+    band.innerHTML =
+      insTile(rows.length, 'pupils started') +
+      insTile(pctComplete + '%', 'questions finished') +
+      insTile(insPct(avgMethod), 'method (working)') +
+      insTile(insPct(avgAcc), 'accuracy (answers)') +
+      insTile(avgConf != null ? avgConf.toFixed(1) : '—', 'avg confidence /3') +
+      insTile(nSupport + ' / ' + nStretch, 'support / stretch');
+    host.appendChild(band);
+
+    /* hardest questions — where the working breaks */
+    var qstats = qlist.map(function (item) {
+      var t = { item: item, ok: 0, amber: 0, err: 0, firstTry: 0, retried: 0, touched: 0, dx: {}, errAt: {} };
+      rows.forEach(function (x) {
+        var c = (x.p.summary.qs || {})[item.q.id];
+        if (!c || c.st === 'un') return;
+        var st = c.ovr === 1 ? 'ok' : c.ovr === 0 ? 'err' : c.st;
+        if (st === 'open') return;
+        t.touched++;
+        if (st === 'ok') { t.ok++; if (c.a1 === 1) t.firstTry++; else t.retried++; }
+        else if (st === 'amber') t.amber++;
+        else if (st === 'err') { t.err++; if (c.dx) t.dx[c.dx] = (t.dx[c.dx] || 0) + 1; if (c.errAt) t.errAt[c.errAt] = (t.errAt[c.errAt] || 0) + 1; }
+      });
+      t.struggle = t.err + t.amber + t.retried;
+      return t;
+    }).filter(function (t) { return t.touched > 0 && t.struggle > 0; });
+    qstats.sort(function (a, b) { return b.struggle - a.struggle; });
+    var hardest = qstats.slice(0, 8);
+    host.appendChild(insH('Where the class is struggling'));
+    if (!hardest.length) {
+      host.appendChild(el('p', 'ui-msg', 'No struggle spots yet — every finished question is sound so far.'));
+    } else {
+      var qt = ['<table class="ins-table"><thead><tr><th>Question</th><th>Got it</th><th>Wrong</th><th>Answer-only</th><th>Most common slip</th><th>Trips at</th></tr></thead><tbody>'];
+      hardest.forEach(function (t) {
+        var dxTop = insTop(t.dx), atTop = insTop(t.errAt);
+        qt.push('<tr><td class="ins-q"><b>' + esc(t.item.label) + '</b><span class="ins-qp">' + esc(String(t.item.q.prompt || '').slice(0, 48)) + '</span></td>' +
+          '<td>' + t.ok + (t.retried ? ' <span class="ins-dim">(' + t.firstTry + ' 1st)</span>' : '') + '</td>' +
+          '<td class="ins-bad">' + (t.err || '') + '</td>' +
+          '<td>' + (t.amber || '') + '</td>' +
+          '<td>' + (dxTop ? esc(DX_NAMES[dxTop.key] || dxTop.key) + ' &times;' + dxTop.n : '<span class="ins-dim">&mdash;</span>') + '</td>' +
+          '<td>' + (atTop ? 'line ' + esc(String(atTop.key)) : '<span class="ins-dim">&mdash;</span>') + '</td></tr>');
+      });
+      qt.push('</tbody></table>');
+      var qd = el('div', 'wall'); qd.innerHTML = qt.join(''); host.appendChild(qd);
+    }
+
+    /* self-eval: which "I can…" skills the class found hardest */
+    var canMap = {};
+    pack.sections.forEach(function (sec) { (sec.cans || []).forEach(function (can) { canMap[can.id] = can.text; }); });
+    var canTally = {};
+    rows.forEach(function (x) {
+      var evals = x.p.summary.evals || {};
+      Object.keys(evals).forEach(function (secId) {
+        var sk = (evals[secId] && evals[secId].skills) || {};
+        Object.keys(sk).forEach(function (cid) {
+          var v = sk[cid], tt = canTally[cid] = canTally[cid] || { hard: 0, n: 0 };
+          tt.n++; if (v === 1 || v === 2) tt.hard++;
+        });
+      });
+    });
+    var hardSkills = Object.keys(canTally).map(function (cid) {
+      var tt = canTally[cid]; return { text: canMap[cid] || cid, n: tt.n, pct: tt.n ? Math.round(100 * tt.hard / tt.n) : 0 };
+    }).filter(function (s) { return s.n > 0 && s.pct > 0; }).sort(function (a, b) { return b.pct - a.pct; }).slice(0, 5);
+    if (hardSkills.length) {
+      host.appendChild(insH('What pupils told you (self-review)'));
+      var sl = el('div', 'ins-skills');
+      hardSkills.forEach(function (s) {
+        sl.appendChild(el('div', 'ins-skill',
+          '<span class="ins-skill-bar"><span style="width:' + s.pct + '%"></span></span>' +
+          '<span class="ins-skill-txt">' + esc(s.text) + '</span>' +
+          '<span class="ins-skill-pct">' + s.pct + '% found tricky</span>'));
+      });
+      host.appendChild(sl);
+    }
+
+    /* flag board */
+    host.appendChild(insH('Pupils to look at'));
+    var fb = el('div', 'ins-flags');
+    fb.appendChild(flagCol('Needs support', 'support', rows.filter(function (x) { return x.flag && x.flag.kind === 'support'; })));
+    fb.appendChild(flagCol('Ready for stretch', 'stretch', rows.filter(function (x) { return x.flag && x.flag.kind === 'stretch'; })));
+    host.appendChild(fb);
+
+    /* confidence vs performance */
+    var over = rows.filter(function (x) { return x.conf === 'over'; });
+    var under = rows.filter(function (x) { return x.conf === 'under'; });
+    if (over.length || under.length) {
+      host.appendChild(insH('Confidence vs. performance'));
+      var cv = el('div', 'ins-flags');
+      if (over.length) cv.appendChild(confCol('Over-confident', 'high confidence, weaker working — worth a check-in', over));
+      if (under.length) cv.appendChild(confCol('Quietly excelling', 'doing well but low confidence — reassure and stretch', under));
+      host.appendChild(cv);
+    }
+
+    host.appendChild(el('p', 'ui-msg', 'Flags are a starting point from this activity, not a verdict — tap a name to open the pupil’s jotter.'));
+  }
+
+  function flagCol(title, kind, list) {
+    var col = el('div', 'ins-flagcol ins-' + kind);
+    col.appendChild(el('h3', 'ins-flagh', esc(title) + ' (' + list.length + ')'));
+    if (!list.length) { col.appendChild(el('p', 'ui-msg', kind === 'support' ? 'No one flagged — nice.' : 'No one flagged yet.')); return col; }
+    list.sort(function (a, b) { return (a.p.name || '').localeCompare(b.p.name || ''); });
+    list.forEach(function (x) {
+      var b = el('button', 'ins-flagrow');
+      b.innerHTML = '<span class="ins-name">' + esc(x.p.name || x.p.email) + '</span><span class="ins-reason">' + esc(x.flag.reasons.join(' · ')) + '</span>';
+      b.addEventListener('click', function () { showJotterPage(x.p.email); });
+      col.appendChild(b);
+    });
+    return col;
+  }
+  function confCol(title, sub, list) {
+    var col = el('div', 'ins-flagcol');
+    col.appendChild(el('h3', 'ins-flagh', esc(title) + ' (' + list.length + ')'));
+    col.appendChild(el('p', 'ui-msg', esc(sub)));
+    list.sort(function (a, b) { return (a.p.name || '').localeCompare(b.p.name || ''); });
+    list.forEach(function (x) {
+      var b = el('button', 'ins-flagrow');
+      b.innerHTML = '<span class="ins-name">' + esc(x.p.name || x.p.email) + '</span><span class="ins-reason">conf ' +
+        (x.st.avgConf != null ? x.st.avgConf.toFixed(1) : '—') + '/3 · working ' + insPct(x.st.methodRate) + '</span>';
+      b.addEventListener('click', function () { showJotterPage(x.p.email); });
+      col.appendChild(b);
+    });
+    return col;
+  }
+
+  /* per-pupil header for the Jotter Page: attempts, working/answer split,
+     time, self-confidence, and the advisory flag. */
+  function jotterHeader(state, name) {
+    var qlist = questionList(view.act);
+    var sum = window.GJ.app.summarise(view.act, state, name);
+    var st = pupilStats({ summary: sum }, qlist);
+    var times = (view.wallData || []).map(function (p) { return pupilStats(p, qlist).avgTime; }).filter(function (t) { return t > 0; }).sort(function (a, b) { return a - b; });
+    var medianTime = times.length ? times[Math.floor(times.length / 2)] : 0;
+    var flag = pupilFlag(st, medianTime, qlist.length), conf = confidenceFlag(st);
+    var out = el('div', '');
+    var wrap = el('div', 'ins-band jp-band');
+    wrap.innerHTML =
+      insTile(st.finished + '/' + st.attempted, 'finished') +
+      insTile(st.finished ? Math.round(100 * st.firstTry / st.finished) + '%' : '—', 'right first try') +
+      insTile(insPct(st.methodRate), 'method (working)') +
+      insTile(st.accMax ? Math.round(100 * st.accGot / st.accMax) + '%' : '—', 'accuracy (answers)') +
+      insTile(st.avgTime ? Math.round(st.avgTime) + 's' : '—', 'avg per question') +
+      insTile(st.avgConf != null ? st.avgConf.toFixed(1) : '—', 'self-confidence /3');
+    out.appendChild(wrap);
+    var fl = el('div', 'jp-flags');
+    if (flag) fl.appendChild(el('span', 'jp-flag jp-' + flag.kind, (flag.kind === 'support' ? 'Needs support' : 'Ready for stretch') + ' · ' + esc(flag.reasons.join(' · '))));
+    if (conf === 'over') fl.appendChild(el('span', 'jp-flag jp-over', 'Over-confident — confidence high, working weaker'));
+    if (conf === 'under') fl.appendChild(el('span', 'jp-flag jp-under', 'Quietly excelling — doing well, low confidence'));
+    if (fl.children.length) out.appendChild(fl);
+    return out;
+  }
+
   /* ═══ the Working Wall ════════════════════════════════════════════ */
   function showWall() {
     var body = el('div', '');
@@ -362,7 +619,7 @@
       actTabs.appendChild(b);
     });
     var tools = el('div', 'check-row');
-    [['Marking Pile', showPile], ['Same-Question Sweep', showSweep], ['Copy CSV', exportCsv]].forEach(function (t) {
+    [['Class Insights', showInsights], ['Marking Pile', showPile], ['Same-Question Sweep', showSweep], ['Copy CSV', exportCsv]].forEach(function (t) {
       var b = el('button', 'btn-pencil', t[0]);
       b.addEventListener('click', t[1]);
       tools.appendChild(b);
@@ -456,6 +713,8 @@
       clearBusy(msg, (r.name || email) + ' · ' + (view.act === 'angles' ? 'Angles' : 'Algebra') +
         ' · every committed line, attempt 1 struck through where it was retried.');
       if (!state) { page.innerHTML = '<div class="jotter-q"><div class="jq-margin"></div><div class="jq-body ui-msg">Nothing saved yet.</div></div>'; return; }
+
+      page.appendChild(jotterHeader(state, r.name));
 
       questionList(view.act).forEach(function (item) {
         var q = item.q;
@@ -686,18 +945,34 @@
   function exportCsv() {
     var msg = el('span', 'ui-msg');
     fullStates().then(function (all) {
-      var rows = [['Pupil', 'Email', 'Activity', 'Question', 'Status', 'Method marks', 'Accuracy marks', 'Out of', 'Attempts', 'Time (s)', 'Misconception', 'Teacher override']];
+      var qlist = questionList(view.act);
+      var pack = window.GJ.app.content(view.act);
+      var qSec = {};                                                    // question id -> section id
+      pack.sections.forEach(function (sec) { sec.questions.forEach(function (q) { qSec[q.id] = sec.id; }); });
+      // per-pupil flag (computed once) for the pupil-level Flag column
+      var pstats = all.map(function (p) { return { email: p.email, st: pupilStats({ summary: window.GJ.app.summarise(view.act, p.state, p.name) }, qlist) }; });
+      var times = pstats.map(function (s) { return s.st.avgTime; }).filter(function (t) { return t > 0; }).sort(function (a, b) { return a - b; });
+      var medianTime = times.length ? times[Math.floor(times.length / 2)] : 0;
+      var flagBy = {};
+      pstats.forEach(function (s) { var f = pupilFlag(s.st, medianTime, qlist.length); flagBy[s.email] = f ? (f.kind === 'support' ? 'needs support' : 'ready for stretch') : ''; });
+
+      var rows = [['Pupil', 'Email', 'Activity', 'Question', 'Status', 'Method marks', 'Accuracy marks', 'Out of', 'Attempts', 'First try', 'Time (s)', 'Misconception', 'Self-confidence', 'Teacher override', 'Pupil flag']];
       all.forEach(function (p) {
+        var evals = (p.state && p.state.evals) || {};
         questionList(view.act).forEach(function (item) {
           var res = markState(view.act, p.state, item.q);
           if (res.st === 'un') return;
           var mk = res.verdict ? res.verdict.mk : ['', ''];
           var mkMax = (res.verdict && res.verdict.mkMax) || item.q.marks;
+          var firstTry = (res.rec && res.rec.att && res.rec.att[0] && res.rec.att[0].res === 'OK') ? 'yes' : (res.st === 'open' ? '' : 'no');
+          var secEv = evals[qSec[item.q.id]];
           rows.push([p.name || '', p.email, view.act, item.label, res.st,
             mk[0], mk[1], mkMax[0] + mkMax[1],
-            res.rec ? res.rec.att.length : '', res.last && res.last.dur || '',
+            res.rec ? res.rec.att.length : '', firstTry, res.last && res.last.dur || '',
             res.dx ? (DX_NAMES[res.dx] || res.dx) : (res.cluster || ''),
-            res.rec && res.rec.ovr ? (res.rec.ovr.q === 1 ? 'marked right' : 'marked wrong') : '']);
+            secEv && secEv.conf ? secEv.conf + '/3' : '',
+            res.rec && res.rec.ovr ? (res.rec.ovr.q === 1 ? 'marked right' : 'marked wrong') : '',
+            flagBy[p.email] || '']);
         });
       });
       var csv = rows.map(function (r) {

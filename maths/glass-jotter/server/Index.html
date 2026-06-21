@@ -1224,6 +1224,80 @@ body.dragging-active, body.dragging-active * {
   .act-bar, .contents-strip, .staff-head, .btn-stamp, .btn-pencil { display: none !important; }
 }
 
+/* \2550 \2550 \2550  end-of-exercise self-evaluation (pupil) \2550 \2550 \2550 
+   Traffic light uses sage/amber/rose \2014  the rose deliberately avoids the
+   reserved Marking Red so a self-rating never reads as a mark. */
+.selfeval {
+  background: #FFFEFA; border: 1.5px solid var(--page-edge); border-left: 4px solid var(--foil);
+  border-radius: 10px; padding: 14px 16px; margin: 18px 0 8px;
+  box-shadow: 0 4px 14px rgba(26, 58, 107, 0.08);
+}
+.se-head { font-family: var(--f-display); font-weight: 800; color: var(--navy); font-size: 1.06rem; margin: 0; }
+.se-opt { font-family: var(--f-stationery); font-weight: 600; font-size: 0.7em; color: var(--pencil);
+  text-transform: uppercase; letter-spacing: 0.07em; margin-left: 6px; }
+.se-label { font-family: var(--f-stationery); font-size: 0.9rem; color: var(--pencil); margin: 12px 0 6px; }
+.se-conf { display: flex; gap: 8px; flex-wrap: wrap; }
+.se-conf-btn { display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+  font-family: var(--f-stationery); font-size: 0.92rem; color: var(--navy);
+  background: #FAF7F0; border: 1.5px solid var(--page-edge); border-radius: 999px; padding: 7px 13px; }
+.se-conf-btn .se-dot { width: 12px; height: 12px; border-radius: 50%; background: #C9CDD6; flex: 0 0 auto; }
+.se-conf-1 .se-dot { background: #C0506A; }
+.se-conf-2 .se-dot { background: #C9971C; }
+.se-conf-3 .se-dot { background: #2F8F6B; }
+.se-conf-btn.on { border-color: var(--navy); box-shadow: inset 0 0 0 1px var(--navy); font-weight: 700; }
+.se-skill { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 6px 0; border-top: 1px dashed var(--page-edge); }
+.se-skill:first-of-type { border-top: none; }
+.se-skill-txt { font-family: var(--f-maths); color: var(--ink); font-size: 0.97rem; }
+.se-rate { display: inline-flex; gap: 5px; flex: 0 0 auto; }
+.se-rate-btn { cursor: pointer; font-family: var(--f-stationery); font-size: 0.78rem;
+  border: 1.5px solid var(--page-edge); background: #FAF7F0; border-radius: 7px; padding: 4px 9px; color: var(--pencil); }
+.se-rate-g.on { background: #2F8F6B; color: #FFFEFA; border-color: #2F8F6B; }
+.se-rate-y.on { background: #C9971C; color: #FFFEFA; border-color: #C9971C; }
+.se-rate-r.on { background: #C0506A; color: #FFFEFA; border-color: #C0506A; }
+.se-note { margin-top: 12px; }
+.se-note input { width: 100%; max-width: 440px; font-family: var(--f-stationery); font-size: 0.9rem;
+  padding: 8px 10px; border: 1.5px solid var(--page-edge); border-radius: 6px; background: #FAF7F0; color: var(--ink); }
+.se-saved { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); margin: 8px 0 0; font-style: italic; }
+
+/* \2550 \2550 \2550  Class Insights + per-pupil header (teacher) \2550 \2550 \2550  */
+.ins-host { margin-top: 8px; }
+.ins-h { font-family: var(--f-display); color: var(--navy); font-size: 1.15rem; margin: 22px 0 10px; }
+.ins-band { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.ins-tile { background: #FFFEFA; border: 1.5px solid var(--page-edge); border-top: 3px solid var(--foil);
+  border-radius: 8px; padding: 11px 13px; display: flex; flex-direction: column; gap: 2px; }
+.ins-big { font-family: var(--f-display); font-weight: 800; color: var(--navy); font-size: 1.5rem; line-height: 1.05; }
+.ins-small { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); }
+.ins-table td.ins-q { text-align: left; max-width: 260px; }
+.ins-q b { color: var(--navy); }
+.ins-qp { display: block; font-family: var(--f-stationery); font-size: 0.72rem; color: var(--pencil); white-space: normal; }
+.ins-bad { color: var(--marking, #C8102E); font-weight: 800; }
+.ins-dim { color: var(--pencil); opacity: 0.6; }
+.ins-skills { display: flex; flex-direction: column; gap: 8px; }
+.ins-skill { display: grid; grid-template-columns: 120px 1fr auto; align-items: center; gap: 12px; }
+.ins-skill-bar { height: 10px; border-radius: 6px; background: #EFE9DC; overflow: hidden; }
+.ins-skill-bar > span { display: block; height: 100%; background: linear-gradient(90deg, #C9971C, #C0506A); }
+.ins-skill-txt { font-family: var(--f-maths); color: var(--ink); font-size: 0.95rem; }
+.ins-skill-pct { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); white-space: nowrap; }
+.ins-flags { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; align-items: start; }
+.ins-flagcol { background: #FFFEFA; border: 1.5px solid var(--page-edge); border-radius: 10px; padding: 12px 14px; }
+.ins-flagcol.ins-support { border-left: 4px solid #C0506A; }
+.ins-flagcol.ins-stretch { border-left: 4px solid #2F8F6B; }
+.ins-flagh { font-family: var(--f-display); color: var(--navy); font-size: 1rem; margin: 0 0 8px; }
+.ins-flagrow { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; text-align: left;
+  background: #FAF7F0; border: 1px solid var(--page-edge); border-radius: 7px; padding: 7px 10px; margin-bottom: 6px; cursor: pointer; }
+.ins-flagrow:hover { background: rgba(26, 58, 107, 0.06); }
+.ins-name { font-family: var(--f-maths); font-size: 0.98rem; color: var(--navy); font-weight: 600; }
+.ins-reason { font-family: var(--f-stationery); font-size: 0.76rem; color: var(--pencil); }
+/* per-pupil Jotter-Page header */
+.jp-band { margin-bottom: 10px; }
+.jp-flags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.jp-flag { font-family: var(--f-stationery); font-size: 0.82rem; font-weight: 700; padding: 6px 11px; border-radius: 999px; border: 1.5px solid; }
+.jp-support { color: #8A2E3E; border-color: #C0506A; background: #FBEDEF; }
+.jp-stretch { color: #1E5E45; border-color: #2F8F6B; background: #E9F4EF; }
+.jp-over { color: #8A2E3E; border-color: #C0506A; background: #FBEDEF; }
+.jp-under { color: #1E5E45; border-color: #2F8F6B; background: #E9F4EF; }
+
 </style>
 </head>
 <body class="activity gj">
@@ -3337,6 +3411,28 @@ window.OLS_TRANSPORT = {
     reasonBank: REASON_BANK,
     sections: [s1, s2, s3, s4, s5, s6]
   };
+
+  /* "I can\u2026" self-evaluation chips \u2014 pupil-voice restatements of each section's
+     WALT (content-safe; Mary may reword). Surfaced at exercise end and in the
+     teacher's Insights. The ids are stable \u2014 they key the saved self-eval, so do
+     not renumber them once pupils have used the activity. */
+  (function () {
+    var CANS = {
+      s1: [{ id: 'a1c1', text: 'I can name acute, obtuse and reflex angles' },
+           { id: 'a1c2', text: 'I can measure an angle with a protractor' }],
+      s2: [{ id: 'a2c1', text: 'I can use angles on a straight line adding to 180\u00b0' },
+           { id: 'a2c2', text: 'I can use angles round a point adding to 360\u00b0' }],
+      s3: [{ id: 'a3c1', text: 'I can use vertically opposite angles being equal' }],
+      s4: [{ id: 'a4c1', text: 'I can use angles in a triangle adding to 180\u00b0' },
+           { id: 'a4c2', text: 'I can use angles in a quadrilateral adding to 360\u00b0' }],
+      s5: [{ id: 'a5c1', text: 'I can spot Z (alternate) angles are equal' },
+           { id: 'a5c2', text: 'I can spot F (corresponding) angles are equal' },
+           { id: 'a5c3', text: 'I can use U (interior) angles adding to 180\u00b0' }],
+      s6: [{ id: 'a6c1', text: 'I can combine several angle facts in one problem' },
+           { id: 'a6c2', text: 'I can give a clear reason for each step' }]
+    };
+    window.GJ_CONTENT.angles.sections.forEach(function (s) { s.cans = CANS[s.id] || []; });
+  })();
 })();
 
 </script>
@@ -3743,6 +3839,28 @@ window.OLS_TRANSPORT = {
       }
     ]
   };
+
+  /* "I can\u2026" self-evaluation chips \u2014 pupil-voice restatements of each section's
+     WALT (content-safe; Mary may reword). Surfaced at exercise end and in the
+     teacher's Insights. The ids are stable \u2014 they key the saved self-eval, so do
+     not renumber them once pupils have used the activity. */
+  (function () {
+    var CANS = {
+      s1: [{ id: 'g1c1', text: 'I can substitute positive numbers into an expression' },
+           { id: 'g1c2', text: 'I can substitute negative numbers carefully' }],
+      s2: [{ id: 'g2c1', text: 'I can collect like terms together' },
+           { id: 'g2c2', text: 'I can handle minus signs when simplifying' }],
+      s3: [{ id: 'g3c1', text: 'I can expand a single bracket' },
+           { id: 'g3c2', text: 'I can multiply every term inside the bracket' }],
+      s4: [{ id: 'g4c1', text: 'I can solve an equation with x on one side' },
+           { id: 'g4c2', text: 'I can do the same to both sides to stay balanced' }],
+      s5: [{ id: 'g5c1', text: 'I can collect the x-terms onto one side' },
+           { id: 'g5c2', text: 'I can solve when x is on both sides' }],
+      s6: [{ id: 'g6c1', text: 'I can solve an equation with a bracket' },
+           { id: 'g6c2', text: 'I can solve with brackets on both sides' }]
+    };
+    window.GJ_CONTENT.algebra.sections.forEach(function (s) { s.cans = CANS[s.id] || []; });
+  })();
 })();
 
 </script>
@@ -5523,6 +5641,263 @@ window.OLS_TRANSPORT = {
     WRONG_SCALE: 'Read the wrong protractor scale', MISREAD: 'Misread / misplaced the protractor'
   };
 
+  /* \u2550\u2550\u2550 Class Insights \u2014 analytics from the cheap wall summary \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+     Reads only the per-question summary the Working Wall already polls
+     (st / errAt / dx / mk / t / at / a1) plus the per-section self-eval
+     (summary.evals), so no heavy full-state fetch is needed. Working is
+     weighted as much as the answer: every stat splits method vs accuracy,
+     and "stretch" requires shown working (not answer-only AMBER). */
+  function insAvg(arr) { var v = arr.filter(function (x) { return x != null; }); return v.length ? v.reduce(function (a, b) { return a + b; }, 0) / v.length : null; }
+  function insPct(x) { return x == null ? '\u2014' : Math.round(100 * x) + '%'; }
+  function insTop(obj) { var k = Object.keys(obj); if (!k.length) return null; k.sort(function (a, b) { return obj[b] - obj[a]; }); return { key: k[0], n: obj[k[0]] }; }
+  function insTile(big, small) { return '<div class="ins-tile"><span class="ins-big">' + big + '</span><span class="ins-small">' + esc(small) + '</span></div>'; }
+  function insH(text) { return el('h2', 'ins-h', esc(text)); }
+
+  function pupilStats(p, qlist) {
+    var s = (p && p.summary) || {}, qs = s.qs || {};
+    var r = { attempted: 0, finished: 0, ok: 0, amber: 0, err: 0, firstTry: 0, methodGot: 0, methodMax: 0, accGot: 0, accMax: 0, timeSum: 0, timeN: 0 };
+    qlist.forEach(function (item) {
+      var mk = item.q.marks || [0, 0];
+      r.methodMax += mk[0]; r.accMax += mk[1];
+      var c = qs[item.q.id];
+      if (!c || c.st === 'un') return;
+      var st = c.ovr === 1 ? 'ok' : c.ovr === 0 ? 'err' : c.st;
+      r.attempted++;
+      if (st === 'open') return;
+      r.finished++;
+      if (c.mk) { r.methodGot += c.mk[0] || 0; r.accGot += c.mk[1] || 0; }
+      if (c.t != null) { r.timeSum += c.t; r.timeN++; }
+      if (st === 'ok') { r.ok++; if (c.a1 === 1) r.firstTry++; }
+      else if (st === 'amber') r.amber++;
+      else if (st === 'err') r.err++;
+    });
+    r.avgTime = r.timeN ? r.timeSum / r.timeN : 0;
+    r.methodRate = r.methodMax ? r.methodGot / r.methodMax : 1;
+    r.firstTryRate = r.finished ? r.firstTry / r.finished : 0;
+    r.errRate = r.finished ? r.err / r.finished : 0;
+    r.amberRate = r.finished ? r.amber / r.finished : 0;
+    var evals = s.evals || {};
+    var confs = Object.keys(evals).map(function (k) { return Number(evals[k].conf) || 0; }).filter(function (v) { return v > 0; });
+    r.avgConf = confs.length ? confs.reduce(function (a, b) { return a + b; }, 0) / confs.length : null;
+    return r;
+  }
+
+  /* Advisory flags shown with their evidence; thresholds are deliberate defaults. */
+  function pupilFlag(st, medianTime, total) {
+    if (st.finished < 3) return null;
+    var sup = [];
+    if (st.errRate >= 0.34) sup.push(st.err + ' wrong');
+    if (st.amberRate >= 0.4) sup.push(st.amber + ' answer-only');
+    if (medianTime && st.avgTime > medianTime * 1.6) sup.push('slower than most');
+    if (st.avgConf != null && st.avgConf <= 1.5 && st.methodRate < 0.6) sup.push('low confidence');
+    if (sup.length) return { kind: 'support', reasons: sup };
+    if (st.finished >= Math.max(5, Math.round(total * 0.6)) && st.firstTryRate >= 0.8 && st.methodRate >= 0.9 && st.amber === 0 && (st.avgConf == null || st.avgConf >= 2.5)) {
+      return { kind: 'stretch', reasons: ['all first-try', 'full working shown'] };
+    }
+    return null;
+  }
+  function confidenceFlag(st) {
+    if (st.avgConf == null || st.finished < 3) return null;
+    if (st.avgConf >= 2.5 && (st.methodRate < 0.6 || st.errRate >= 0.34)) return 'over';
+    if (st.avgConf <= 1.5 && st.methodRate >= 0.8 && st.firstTryRate >= 0.6) return 'under';
+    return null;
+  }
+
+  function showInsights() {
+    var body = el('div', '');
+    var actTabs = el('div', 'check-row');
+    window.GJ.app.activities.forEach(function (a) {
+      var b = el('button', view.act === a.id ? 'btn-stamp' : 'btn-pencil', a.title);
+      b.addEventListener('click', function () { view.act = a.id; showInsights(); });
+      actTabs.appendChild(b);
+    });
+    body.appendChild(actTabs);
+    var host = el('div', 'ins-host');
+    var msg = el('p', 'ui-msg', '');
+    msg.style.marginTop = '20px';
+    host.appendChild(msg);
+    body.appendChild(host);
+    shell(view.cls + ' \u00b7 Class Insights', body, function () { showWall(); });
+    busyCard(msg, 'Reading the class&hellip; this can take a moment');
+    call('wall', { className: view.cls, act: view.act }).then(function (r) {
+      if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load insights.'); return; }
+      view.wallData = r.pupils || [];
+      host.innerHTML = '';
+      renderInsights(host, view.wallData);
+    }).catch(function () { clearBusy(msg, 'Could not reach the server \u2014 try again.'); });
+  }
+
+  function renderInsights(host, pupils) {
+    var qlist = questionList(view.act);
+    var pack = window.GJ.app.content(view.act);
+    var total = qlist.length;
+    var rows = (pupils || []).map(function (p) { return { p: p, st: pupilStats(p, qlist) }; })
+      .filter(function (x) { return x.st.attempted > 0; });
+    if (!rows.length) { host.appendChild(el('p', 'ui-msg', 'No pupil has opened this activity yet \u2014 share the class link to get started.')); return; }
+    var times = rows.map(function (x) { return x.st.avgTime; }).filter(function (t) { return t > 0; }).sort(function (a, b) { return a - b; });
+    var medianTime = times.length ? times[Math.floor(times.length / 2)] : 0;
+    rows.forEach(function (x) { x.flag = pupilFlag(x.st, medianTime, total); x.conf = confidenceFlag(x.st); });
+
+    /* class band */
+    var avgMethod = insAvg(rows.map(function (x) { return x.st.methodMax ? x.st.methodGot / x.st.methodMax : null; }));
+    var avgAcc = insAvg(rows.map(function (x) { return x.st.accMax ? x.st.accGot / x.st.accMax : null; }));
+    var avgConf = insAvg(rows.map(function (x) { return x.st.avgConf; }));
+    var doneCells = rows.reduce(function (a, x) { return a + x.st.finished; }, 0);
+    var pctComplete = Math.round(100 * doneCells / (rows.length * total || 1));
+    var nSupport = rows.filter(function (x) { return x.flag && x.flag.kind === 'support'; }).length;
+    var nStretch = rows.filter(function (x) { return x.flag && x.flag.kind === 'stretch'; }).length;
+    host.appendChild(insH('How ' + view.cls + ' is doing'));
+    var band = el('div', 'ins-band');
+    band.innerHTML =
+      insTile(rows.length, 'pupils started') +
+      insTile(pctComplete + '%', 'questions finished') +
+      insTile(insPct(avgMethod), 'method (working)') +
+      insTile(insPct(avgAcc), 'accuracy (answers)') +
+      insTile(avgConf != null ? avgConf.toFixed(1) : '\u2014', 'avg confidence /3') +
+      insTile(nSupport + ' / ' + nStretch, 'support / stretch');
+    host.appendChild(band);
+
+    /* hardest questions \u2014 where the working breaks */
+    var qstats = qlist.map(function (item) {
+      var t = { item: item, ok: 0, amber: 0, err: 0, firstTry: 0, retried: 0, touched: 0, dx: {}, errAt: {} };
+      rows.forEach(function (x) {
+        var c = (x.p.summary.qs || {})[item.q.id];
+        if (!c || c.st === 'un') return;
+        var st = c.ovr === 1 ? 'ok' : c.ovr === 0 ? 'err' : c.st;
+        if (st === 'open') return;
+        t.touched++;
+        if (st === 'ok') { t.ok++; if (c.a1 === 1) t.firstTry++; else t.retried++; }
+        else if (st === 'amber') t.amber++;
+        else if (st === 'err') { t.err++; if (c.dx) t.dx[c.dx] = (t.dx[c.dx] || 0) + 1; if (c.errAt) t.errAt[c.errAt] = (t.errAt[c.errAt] || 0) + 1; }
+      });
+      t.struggle = t.err + t.amber + t.retried;
+      return t;
+    }).filter(function (t) { return t.touched > 0 && t.struggle > 0; });
+    qstats.sort(function (a, b) { return b.struggle - a.struggle; });
+    var hardest = qstats.slice(0, 8);
+    host.appendChild(insH('Where the class is struggling'));
+    if (!hardest.length) {
+      host.appendChild(el('p', 'ui-msg', 'No struggle spots yet \u2014 every finished question is sound so far.'));
+    } else {
+      var qt = ['<table class="ins-table"><thead><tr><th>Question</th><th>Got it</th><th>Wrong</th><th>Answer-only</th><th>Most common slip</th><th>Trips at</th></tr></thead><tbody>'];
+      hardest.forEach(function (t) {
+        var dxTop = insTop(t.dx), atTop = insTop(t.errAt);
+        qt.push('<tr><td class="ins-q"><b>' + esc(t.item.label) + '</b><span class="ins-qp">' + esc(String(t.item.q.prompt || '').slice(0, 48)) + '</span></td>' +
+          '<td>' + t.ok + (t.retried ? ' <span class="ins-dim">(' + t.firstTry + ' 1st)</span>' : '') + '</td>' +
+          '<td class="ins-bad">' + (t.err || '') + '</td>' +
+          '<td>' + (t.amber || '') + '</td>' +
+          '<td>' + (dxTop ? esc(DX_NAMES[dxTop.key] || dxTop.key) + ' &times;' + dxTop.n : '<span class="ins-dim">&mdash;</span>') + '</td>' +
+          '<td>' + (atTop ? 'line ' + esc(String(atTop.key)) : '<span class="ins-dim">&mdash;</span>') + '</td></tr>');
+      });
+      qt.push('</tbody></table>');
+      var qd = el('div', 'wall'); qd.innerHTML = qt.join(''); host.appendChild(qd);
+    }
+
+    /* self-eval: which "I can\u2026" skills the class found hardest */
+    var canMap = {};
+    pack.sections.forEach(function (sec) { (sec.cans || []).forEach(function (can) { canMap[can.id] = can.text; }); });
+    var canTally = {};
+    rows.forEach(function (x) {
+      var evals = x.p.summary.evals || {};
+      Object.keys(evals).forEach(function (secId) {
+        var sk = (evals[secId] && evals[secId].skills) || {};
+        Object.keys(sk).forEach(function (cid) {
+          var v = sk[cid], tt = canTally[cid] = canTally[cid] || { hard: 0, n: 0 };
+          tt.n++; if (v === 1 || v === 2) tt.hard++;
+        });
+      });
+    });
+    var hardSkills = Object.keys(canTally).map(function (cid) {
+      var tt = canTally[cid]; return { text: canMap[cid] || cid, n: tt.n, pct: tt.n ? Math.round(100 * tt.hard / tt.n) : 0 };
+    }).filter(function (s) { return s.n > 0 && s.pct > 0; }).sort(function (a, b) { return b.pct - a.pct; }).slice(0, 5);
+    if (hardSkills.length) {
+      host.appendChild(insH('What pupils told you (self-review)'));
+      var sl = el('div', 'ins-skills');
+      hardSkills.forEach(function (s) {
+        sl.appendChild(el('div', 'ins-skill',
+          '<span class="ins-skill-bar"><span style="width:' + s.pct + '%"></span></span>' +
+          '<span class="ins-skill-txt">' + esc(s.text) + '</span>' +
+          '<span class="ins-skill-pct">' + s.pct + '% found tricky</span>'));
+      });
+      host.appendChild(sl);
+    }
+
+    /* flag board */
+    host.appendChild(insH('Pupils to look at'));
+    var fb = el('div', 'ins-flags');
+    fb.appendChild(flagCol('Needs support', 'support', rows.filter(function (x) { return x.flag && x.flag.kind === 'support'; })));
+    fb.appendChild(flagCol('Ready for stretch', 'stretch', rows.filter(function (x) { return x.flag && x.flag.kind === 'stretch'; })));
+    host.appendChild(fb);
+
+    /* confidence vs performance */
+    var over = rows.filter(function (x) { return x.conf === 'over'; });
+    var under = rows.filter(function (x) { return x.conf === 'under'; });
+    if (over.length || under.length) {
+      host.appendChild(insH('Confidence vs. performance'));
+      var cv = el('div', 'ins-flags');
+      if (over.length) cv.appendChild(confCol('Over-confident', 'high confidence, weaker working \u2014 worth a check-in', over));
+      if (under.length) cv.appendChild(confCol('Quietly excelling', 'doing well but low confidence \u2014 reassure and stretch', under));
+      host.appendChild(cv);
+    }
+
+    host.appendChild(el('p', 'ui-msg', 'Flags are a starting point from this activity, not a verdict \u2014 tap a name to open the pupil\u2019s jotter.'));
+  }
+
+  function flagCol(title, kind, list) {
+    var col = el('div', 'ins-flagcol ins-' + kind);
+    col.appendChild(el('h3', 'ins-flagh', esc(title) + ' (' + list.length + ')'));
+    if (!list.length) { col.appendChild(el('p', 'ui-msg', kind === 'support' ? 'No one flagged \u2014 nice.' : 'No one flagged yet.')); return col; }
+    list.sort(function (a, b) { return (a.p.name || '').localeCompare(b.p.name || ''); });
+    list.forEach(function (x) {
+      var b = el('button', 'ins-flagrow');
+      b.innerHTML = '<span class="ins-name">' + esc(x.p.name || x.p.email) + '</span><span class="ins-reason">' + esc(x.flag.reasons.join(' \u00b7 ')) + '</span>';
+      b.addEventListener('click', function () { showJotterPage(x.p.email); });
+      col.appendChild(b);
+    });
+    return col;
+  }
+  function confCol(title, sub, list) {
+    var col = el('div', 'ins-flagcol');
+    col.appendChild(el('h3', 'ins-flagh', esc(title) + ' (' + list.length + ')'));
+    col.appendChild(el('p', 'ui-msg', esc(sub)));
+    list.sort(function (a, b) { return (a.p.name || '').localeCompare(b.p.name || ''); });
+    list.forEach(function (x) {
+      var b = el('button', 'ins-flagrow');
+      b.innerHTML = '<span class="ins-name">' + esc(x.p.name || x.p.email) + '</span><span class="ins-reason">conf ' +
+        (x.st.avgConf != null ? x.st.avgConf.toFixed(1) : '\u2014') + '/3 \u00b7 working ' + insPct(x.st.methodRate) + '</span>';
+      b.addEventListener('click', function () { showJotterPage(x.p.email); });
+      col.appendChild(b);
+    });
+    return col;
+  }
+
+  /* per-pupil header for the Jotter Page: attempts, working/answer split,
+     time, self-confidence, and the advisory flag. */
+  function jotterHeader(state, name) {
+    var qlist = questionList(view.act);
+    var sum = window.GJ.app.summarise(view.act, state, name);
+    var st = pupilStats({ summary: sum }, qlist);
+    var times = (view.wallData || []).map(function (p) { return pupilStats(p, qlist).avgTime; }).filter(function (t) { return t > 0; }).sort(function (a, b) { return a - b; });
+    var medianTime = times.length ? times[Math.floor(times.length / 2)] : 0;
+    var flag = pupilFlag(st, medianTime, qlist.length), conf = confidenceFlag(st);
+    var out = el('div', '');
+    var wrap = el('div', 'ins-band jp-band');
+    wrap.innerHTML =
+      insTile(st.finished + '/' + st.attempted, 'finished') +
+      insTile(st.finished ? Math.round(100 * st.firstTry / st.finished) + '%' : '\u2014', 'right first try') +
+      insTile(insPct(st.methodRate), 'method (working)') +
+      insTile(st.accMax ? Math.round(100 * st.accGot / st.accMax) + '%' : '\u2014', 'accuracy (answers)') +
+      insTile(st.avgTime ? Math.round(st.avgTime) + 's' : '\u2014', 'avg per question') +
+      insTile(st.avgConf != null ? st.avgConf.toFixed(1) : '\u2014', 'self-confidence /3');
+    out.appendChild(wrap);
+    var fl = el('div', 'jp-flags');
+    if (flag) fl.appendChild(el('span', 'jp-flag jp-' + flag.kind, (flag.kind === 'support' ? 'Needs support' : 'Ready for stretch') + ' \u00b7 ' + esc(flag.reasons.join(' \u00b7 '))));
+    if (conf === 'over') fl.appendChild(el('span', 'jp-flag jp-over', 'Over-confident \u2014 confidence high, working weaker'));
+    if (conf === 'under') fl.appendChild(el('span', 'jp-flag jp-under', 'Quietly excelling \u2014 doing well, low confidence'));
+    if (fl.children.length) out.appendChild(fl);
+    return out;
+  }
+
   /* \u2550\u2550\u2550 the Working Wall \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
   function showWall() {
     var body = el('div', '');
@@ -5533,7 +5908,7 @@ window.OLS_TRANSPORT = {
       actTabs.appendChild(b);
     });
     var tools = el('div', 'check-row');
-    [['Marking Pile', showPile], ['Same-Question Sweep', showSweep], ['Copy CSV', exportCsv]].forEach(function (t) {
+    [['Class Insights', showInsights], ['Marking Pile', showPile], ['Same-Question Sweep', showSweep], ['Copy CSV', exportCsv]].forEach(function (t) {
       var b = el('button', 'btn-pencil', t[0]);
       b.addEventListener('click', t[1]);
       tools.appendChild(b);
@@ -5627,6 +6002,8 @@ window.OLS_TRANSPORT = {
       clearBusy(msg, (r.name || email) + ' \u00b7 ' + (view.act === 'angles' ? 'Angles' : 'Algebra') +
         ' \u00b7 every committed line, attempt 1 struck through where it was retried.');
       if (!state) { page.innerHTML = '<div class="jotter-q"><div class="jq-margin"></div><div class="jq-body ui-msg">Nothing saved yet.</div></div>'; return; }
+
+      page.appendChild(jotterHeader(state, r.name));
 
       questionList(view.act).forEach(function (item) {
         var q = item.q;
@@ -5857,18 +6234,34 @@ window.OLS_TRANSPORT = {
   function exportCsv() {
     var msg = el('span', 'ui-msg');
     fullStates().then(function (all) {
-      var rows = [['Pupil', 'Email', 'Activity', 'Question', 'Status', 'Method marks', 'Accuracy marks', 'Out of', 'Attempts', 'Time (s)', 'Misconception', 'Teacher override']];
+      var qlist = questionList(view.act);
+      var pack = window.GJ.app.content(view.act);
+      var qSec = {};                                                    // question id -> section id
+      pack.sections.forEach(function (sec) { sec.questions.forEach(function (q) { qSec[q.id] = sec.id; }); });
+      // per-pupil flag (computed once) for the pupil-level Flag column
+      var pstats = all.map(function (p) { return { email: p.email, st: pupilStats({ summary: window.GJ.app.summarise(view.act, p.state, p.name) }, qlist) }; });
+      var times = pstats.map(function (s) { return s.st.avgTime; }).filter(function (t) { return t > 0; }).sort(function (a, b) { return a - b; });
+      var medianTime = times.length ? times[Math.floor(times.length / 2)] : 0;
+      var flagBy = {};
+      pstats.forEach(function (s) { var f = pupilFlag(s.st, medianTime, qlist.length); flagBy[s.email] = f ? (f.kind === 'support' ? 'needs support' : 'ready for stretch') : ''; });
+
+      var rows = [['Pupil', 'Email', 'Activity', 'Question', 'Status', 'Method marks', 'Accuracy marks', 'Out of', 'Attempts', 'First try', 'Time (s)', 'Misconception', 'Self-confidence', 'Teacher override', 'Pupil flag']];
       all.forEach(function (p) {
+        var evals = (p.state && p.state.evals) || {};
         questionList(view.act).forEach(function (item) {
           var res = markState(view.act, p.state, item.q);
           if (res.st === 'un') return;
           var mk = res.verdict ? res.verdict.mk : ['', ''];
           var mkMax = (res.verdict && res.verdict.mkMax) || item.q.marks;
+          var firstTry = (res.rec && res.rec.att && res.rec.att[0] && res.rec.att[0].res === 'OK') ? 'yes' : (res.st === 'open' ? '' : 'no');
+          var secEv = evals[qSec[item.q.id]];
           rows.push([p.name || '', p.email, view.act, item.label, res.st,
             mk[0], mk[1], mkMax[0] + mkMax[1],
-            res.rec ? res.rec.att.length : '', res.last && res.last.dur || '',
+            res.rec ? res.rec.att.length : '', firstTry, res.last && res.last.dur || '',
             res.dx ? (DX_NAMES[res.dx] || res.dx) : (res.cluster || ''),
-            res.rec && res.rec.ovr ? (res.rec.ovr.q === 1 ? 'marked right' : 'marked wrong') : '']);
+            secEv && secEv.conf ? secEv.conf + '/3' : '',
+            res.rec && res.rec.ovr ? (res.rec.ovr.q === 1 ? 'marked right' : 'marked wrong') : '',
+            flagBy[p.email] || '']);
         });
       });
       var csv = rows.map(function (r) {
@@ -6162,6 +6555,26 @@ window.OLS_TRANSPORT = {
     return st;
   }
 
+  /* demo self-evaluations: realistic confidence per profile so the teacher
+     preview shows the Insights with data \u2014 incl. over-confident AMBER pupils
+     (high confidence, answer-only marks) for the confidence-vs-performance view. */
+  function synthEvals(actId, profile, stt) {
+    var pack = window.GJ_CONTENT[actId];
+    var conf = ({ strong: 3, mid: 2, weak: 1, amber: 3, live: 2 })[profile] || 2;
+    var evals = {};
+    pack.sections.forEach(function (sec, si) {
+      var done = sec.questions.length && sec.questions.every(function (q) { var r = stt.qs[q.id]; return r && r.lock; });
+      if (!done) return;
+      var skills = {};
+      (sec.cans || []).forEach(function (can, ci) {
+        var jitter = profile === 'weak' || profile === 'mid' ? (((si + ci + profile.length) % 3) - 1) : 0;
+        skills[can.id] = Math.min(3, Math.max(1, conf + jitter));
+      });
+      evals[sec.id] = { conf: conf, skills: skills, ts: 1765000000 + si * 600 };
+    });
+    if (Object.keys(evals).length) stt.evals = evals;
+  }
+
   function seedDemo(s) {
     if (s.data[DEMO_CLASS]) return;
     s.classes.push({ name: DEMO_CLASS, acts: { angles: true, algebra: true }, owner: OFFLINE_TEACHER });
@@ -6173,6 +6586,7 @@ window.OLS_TRANSPORT = {
       ACTIVITIES.forEach(function (a) {
         var stt = synthState(a.id, p[1]);
         if (!stt) return;
+        synthEvals(a.id, p[1], stt);
         var sum = GJ.app.summarise(a.id, stt, p[0]);
         if (p[1] === 'live') sum.upd = Math.floor(Date.now() / 1000) - 15;
         s.data[DEMO_CLASS][email][a.id] = { state: JSON.stringify(stt), summary: JSON.stringify(sum) };
@@ -6331,9 +6745,21 @@ window.OLS_TRANSPORT = {
           cell = { st: 'open' };
         }
         if (rec.ovr && rec.ovr.q != null) cell.ovr = rec.ovr.q;
+        // analytics scalars (cheap; the wall already reads this cell):
+        cell.at = rec.att.length;                                        // attempts used
+        cell.a1 = (rec.att[0] && rec.att[0].res === 'OK') ? 1 : 0;       // correct, with working, first try
         sum.qs[q.id] = cell;
       });
     });
+    // per-section self-evaluation (small: confidence + skill self-ratings; the
+    // free-text note stays in state, fetched on the Jotter Page). Keyed by section id.
+    if (state.evals && typeof state.evals === 'object') {
+      sum.evals = {};
+      Object.keys(state.evals).forEach(function (k) {
+        var e = state.evals[k];
+        if (e && typeof e === 'object') sum.evals[k] = { conf: Number(e.conf) || 0, skills: e.skills || {}, ts: Number(e.ts) || 0 };
+      });
+    }
     return sum;
   }
 
@@ -6680,6 +7106,14 @@ window.OLS_TRANSPORT = {
     var jotter = document.createElement('div');
     jotter.className = 'jotter';
     main.appendChild(jotter);
+
+    // footer holds the (optional) end-of-exercise self-evaluation card + the Next
+    // button. Rebuilt whenever a question saves, so the card appears the moment
+    // the last question in the section locks.
+    var footer = document.createElement('div');
+    main.appendChild(footer);
+    function refreshFooter() { buildSectionFooter(footer, sec, i, pack); }
+
     sec.questions.forEach(function (q, qi) {
       var holder = document.createElement('div');
       jotter.appendChild(holder);
@@ -6690,10 +7124,22 @@ window.OLS_TRANSPORT = {
           current.state.qs[qid] = rec;
           scheduleSave();
           renderContents();
+          refreshFooter();
         }
       });
     });
 
+    refreshFooter();
+    renderContents();
+  }
+
+  /* The section footer: once every question in the section is locked, a gentle
+     "how did that go?" self-evaluation card appears above the Next button.
+     Never blocking \u2014 the pupil can always just press Next. */
+  function buildSectionFooter(footer, sec, i, pack) {
+    footer.innerHTML = '';
+    var complete = sec.questions.length > 0 && sectionTicks(sec) === sec.questions.length;
+    if (complete && sec.cans && sec.cans.length) footer.appendChild(buildSelfEvalCard(sec));
     var nextRow = document.createElement('div');
     nextRow.className = 'check-row';
     var nextBtn = document.createElement('button');
@@ -6701,8 +7147,85 @@ window.OLS_TRANSPORT = {
     nextBtn.textContent = (i + 1 < pack.sections.length) ? 'Next exercise \u2192' : 'See my marks \u2192';
     nextBtn.addEventListener('click', function () { renderSection(i + 1); });
     nextRow.appendChild(nextBtn);
-    main.appendChild(nextRow);
-    renderContents();
+    footer.appendChild(nextRow);
+  }
+
+  function seEl(tag, cls, txt) {
+    var d = document.createElement(tag);
+    if (cls) d.className = cls;
+    if (txt != null) d.textContent = txt;
+    return d;
+  }
+
+  /* End-of-exercise self-evaluation. Auto-saves on every tap (no submit friction);
+     keyed by section id; surfaced to the teacher via summary.evals. Measurable:
+     a 1-3 confidence, a per-"I can\u2026" 1-3 rating, and an optional note. */
+  function buildSelfEvalCard(sec) {
+    current.state.evals = current.state.evals || {};
+    var ev = current.state.evals[sec.id] || { conf: 0, skills: {}, note: '' };
+    if (!ev.skills) ev.skills = {};
+    var card = seEl('div', 'selfeval');
+    function persist() { ev.ts = Math.floor(Date.now() / 1000); current.state.evals[sec.id] = ev; scheduleSave(); }
+
+    var h = seEl('p', 'se-head');
+    h.innerHTML = 'Exercise finished &mdash; how did that go? <span class="se-opt">optional</span>';
+    card.appendChild(h);
+
+    card.appendChild(seEl('p', 'se-label', 'How confident do you feel now?'));
+    var confWrap = seEl('div', 'se-conf');
+    var CONF = [[1, 'Still unsure'], [2, 'Getting there'], [3, 'Confident']];
+    var confBtns = [];
+    CONF.forEach(function (c) {
+      var b = seEl('button', 'se-conf-btn se-conf-' + c[0]);
+      b.type = 'button';
+      b.innerHTML = '<span class="se-dot" aria-hidden="true"></span>' + c[1];
+      if (ev.conf === c[0]) b.classList.add('on');
+      b.setAttribute('aria-pressed', ev.conf === c[0] ? 'true' : 'false');
+      b.addEventListener('click', function () {
+        ev.conf = c[0];
+        confBtns.forEach(function (x) { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
+        b.classList.add('on'); b.setAttribute('aria-pressed', 'true');
+        persist();
+      });
+      confBtns.push(b); confWrap.appendChild(b);
+    });
+    card.appendChild(confWrap);
+
+    card.appendChild(seEl('p', 'se-label', 'Tap how each part felt:'));
+    sec.cans.forEach(function (can) {
+      var row = seEl('div', 'se-skill');
+      row.appendChild(seEl('span', 'se-skill-txt', can.text));
+      var rate = seEl('span', 'se-rate');
+      var RATE = [[3, 'got it', 'g'], [2, 'unsure', 'y'], [1, 'tricky', 'r']];
+      var rateBtns = [];
+      RATE.forEach(function (rt) {
+        var rb = seEl('button', 'se-rate-btn se-rate-' + rt[2], rt[1]);
+        rb.type = 'button';
+        rb.setAttribute('aria-label', can.text + ' \u2014 ' + rt[1]);
+        if (ev.skills[can.id] === rt[0]) rb.classList.add('on');
+        rb.addEventListener('click', function () {
+          ev.skills[can.id] = rt[0];
+          rateBtns.forEach(function (x) { x.classList.remove('on'); });
+          rb.classList.add('on'); persist();
+        });
+        rateBtns.push(rb); rate.appendChild(rb);
+      });
+      row.appendChild(rate);
+      card.appendChild(row);
+    });
+
+    var noteWrap = seEl('div', 'se-note');
+    var note = document.createElement('input');
+    note.type = 'text'; note.maxLength = 140;
+    note.setAttribute('aria-label', 'Anything that tripped you up?');
+    note.placeholder = 'Anything that tripped you up? (optional)';
+    note.value = ev.note || '';
+    note.addEventListener('input', function () { ev.note = note.value; persist(); });
+    noteWrap.appendChild(note);
+    card.appendChild(noteWrap);
+
+    card.appendChild(seEl('p', 'se-saved', 'Saved as you tap \u2014 your teacher sees this on her class list.'));
+    return card;
   }
 
   function renderTally(main, pack) {
