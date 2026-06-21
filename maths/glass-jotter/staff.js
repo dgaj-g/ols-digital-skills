@@ -297,7 +297,7 @@
     var out = [];
     pack.sections.forEach(function (sec, si) {
       sec.questions.forEach(function (q, qi) {
-        out.push({ q: q, label: 'Ex' + (si + 1) + '.Q' + (qi + 1) });
+        out.push({ q: q, label: 'Ex' + (si + 1) + '.Q' + (qi + 1), secId: sec.id });
       });
     });
     return out;
@@ -930,6 +930,20 @@
           b.addEventListener('click', function () { setOvr(o[1], b); });
           ovRow.appendChild(b);
         });
+        // content-safe support: nudge this pupil toward the section's existing method
+        // movie. Offered only where they struggled — the natural moment to suggest it.
+        if (item.secId && (res.st === 'err' || res.st === 'amber')) {
+          var nudgeB = el('button', 'btn-pencil jp-nudge', 'Nudge: watch the method ▸');
+          nudgeB.addEventListener('click', function () {
+            if (nudgeB.disabled) return; nudgeB.disabled = true;
+            call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId }).then(function (r3) {
+              nudgeB.disabled = false;
+              if (r3 && r3.ok) { nudgeB.textContent = 'Nudge sent ✓'; ovMsg.textContent = 'They’ll be shown this method the next time they open the book.'; }
+              else ovMsg.textContent = (r3 && r3.error) || 'Could not send the nudge.';
+            }).catch(function () { nudgeB.disabled = false; ovMsg.textContent = 'Could not send the nudge.'; });
+          });
+          ovRow.appendChild(nudgeB);
+        }
         ovRow.appendChild(ovMsg);
         bodyEl.appendChild(ovRow);
         page.appendChild(wrap);

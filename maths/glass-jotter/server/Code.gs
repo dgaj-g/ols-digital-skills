@@ -243,8 +243,13 @@ function apiLoad(req) {
   var rec = findClass_(req.classCode); if (!rec) return { ok: false, error: 'unknown-class' };
   var act = String(req.act || ''); if (!actOk_(act)) return { ok: false, error: 'bad-act' };
   var found = findRow_(rec.name, who, act);
-  if (!found) return { ok: true, none: true };
-  return { ok: true, state: String(found.vals[5] || ''), summary: String(found.vals[4] || ''), updated: String(found.vals[6] || '') };
+  // deliver any teacher nudge once, then clear it (best-effort, lock-free like the
+  // rest of apiLoad). Read even when there is no saved row yet, so a nudge sent
+  // before the pupil starts still lands on their first open.
+  var nudge = '', nk = nudgeKey_(String(rec.name), act, who), nv = getConfig_(nk);
+  if (nv) { nudge = String(nv); setConfig_(nk, ''); }
+  if (!found) return { ok: true, none: true, nudge: nudge };
+  return { ok: true, state: String(found.vals[5] || ''), summary: String(found.vals[4] || ''), updated: String(found.vals[6] || ''), nudge: nudge };
 }
 
 /* name asked once, EVER: stored against the email in Config, not per class.
@@ -290,6 +295,7 @@ function apiAdmin(req) {
   if (sub === 'wall') return adminWall_(req, ctx);
   if (sub === 'jotter') return adminJotter_(req, ctx);
   if (sub === 'override') return adminOverride_(req, ctx);
+  if (sub === 'nudge') return adminNudge_(req, ctx);
   return { ok: false, error: 'unknown-sub', sub: sub };
 }
 
@@ -441,5 +447,26 @@ function adminOverride_(req, ctx) {
     rng.setValues([[JSON.stringify(summary), JSON.stringify(state), nowIso_()]]);
     SpreadsheetApp.flush();
     return { ok: true, q: String(q), idx: String(idx), val: clear ? null : Number(val) };
+  } finally { lock.releaseLock(); }
+}
+
+/* Teacher -> pupil "nudge support": gently point a pupil at a section's EXISTING
+   method movie. Stored in Config (NOT pupil State, which apiSave would clobber on
+   the pupil's next save), keyed by class+act+email; apiLoad delivers it once and
+   clears it. Adds no content -- just a one-shot pointer to a movie that exists.
+   Class names are sanitised to [A-Za-z0-9_- ] so ':' is a safe key separator. */
+function nudgeKey_(cls, act, email) {
+  return 'nudge:' + String(cls) + ':' + String(act) + ':' + String(email).toLowerCase();
+}
+function adminNudge_(req, ctx) {
+  var g = guardClass_(req.className, ctx); if (!g.ok) return g;
+  var cls = String(g.rec.name), act = String(req.act || ''), email = String(req.email || '');
+  if (!email) return { ok: false, error: 'no-name' };
+  if (!actOk_(act)) return { ok: false, error: 'bad-act' };
+  var clear = (req.sec === null || req.sec === '' || req.sec === undefined);
+  var lock = LockService.getScriptLock(); lock.waitLock(15000);
+  try {
+    setConfig_(nudgeKey_(cls, act, email), clear ? '' : String(req.sec));
+    return { ok: true, sec: clear ? null : String(req.sec) };
   } finally { lock.releaseLock(); }
 }

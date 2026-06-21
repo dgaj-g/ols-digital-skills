@@ -319,7 +319,10 @@
       case 'setname': s.names[OFFLINE_EMAIL] = String(p.name || '').slice(0, 40); lsSave(s); return ok({});
       case 'load': {
         var r2 = row(cls, OFFLINE_EMAIL, p.act);
-        return ok({ state: r2 && r2.state ? r2.state : null });
+        var nkey = String(p.act) + '|' + OFFLINE_EMAIL.toLowerCase();
+        var nud = (s.nudges && s.nudges[cls] && s.nudges[cls][nkey]) || '';
+        if (nud) { s.nudges[cls][nkey] = ''; lsSave(s); }   // one-shot, mirrors apiLoad
+        return ok({ state: r2 && r2.state ? r2.state : null, nudge: nud });
       }
       case 'save': {
         s.data[cls] = s.data[cls] || {}; s.data[cls][OFFLINE_EMAIL] = s.data[cls][OFFLINE_EMAIL] || {};
@@ -386,6 +389,14 @@
               lsSave(s);
             } catch (e) { return Promise.resolve({ ok: false, error: 'Could not store that.' }); }
             return ok({});
+          }
+          case 'nudge': {
+            s.nudges = s.nudges || {};
+            s.nudges[p.className] = s.nudges[p.className] || {};
+            var nk2 = String(p.act) + '|' + String(p.email || '').toLowerCase();
+            var clr = (p.sec === null || p.sec === undefined || p.sec === '');
+            s.nudges[p.className][nk2] = clr ? '' : String(p.sec);
+            lsSave(s); return ok({ sec: clr ? null : String(p.sec) });
           }
         }
         return Promise.resolve({ ok: false, error: 'Unknown admin action.' });
@@ -708,8 +719,17 @@
       var st = null;
       if (r && r.ok && r.state) { try { st = JSON.parse(r.state); } catch (e) {} }
       current.state = st || { v: 1, act: a.id, start: Math.floor(Date.now() / 1000), qs: {} };
+      // a teacher nudge (one-shot from the server) points the pupil at a section's
+      // method movie: open that section so the support is right where they land.
+      var startSec = firstOpenSection(pack);
+      if (r && r.nudge) {
+        current.nudge = { sec: String(r.nudge) };
+        var ni = -1;
+        pack.sections.forEach(function (s, k) { if (s.id === current.nudge.sec) ni = k; });
+        if (ni >= 0) startSec = ni;
+      }
       renderContents();
-      renderSection(firstOpenSection(pack));
+      renderSection(startSec);
     }).catch(function () {
       document.getElementById('act-main').innerHTML =
         '<p class="act-load-error">Could not open your book &mdash; tap &ldquo;The shelf&rdquo; above and try again.</p>';

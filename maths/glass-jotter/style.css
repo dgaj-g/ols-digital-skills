@@ -1113,3 +1113,5 @@ body.dragging-active, body.dragging-active * {
 .jp-stretch { color: #1E5E45; border-color: #2F8F6B; background: #E9F4EF; }
 .jp-over { color: #8A2E3E; border-color: #C0506A; background: #FBEDEF; }
 .jp-under { color: #1E5E45; border-color: #2F8F6B; background: #E9F4EF; }
+.jp-nudge { border-color: var(--foil-lo); color: #8A6A12; background: #FBF4E2; }
+.jp-nudge:hover { background: #F6EBCB; }
