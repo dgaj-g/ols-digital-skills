@@ -258,6 +258,26 @@
     return st;
   }
 
+  /* demo self-evaluations: realistic confidence per profile so the teacher
+     preview shows the Insights with data — incl. over-confident AMBER pupils
+     (high confidence, answer-only marks) for the confidence-vs-performance view. */
+  function synthEvals(actId, profile, stt) {
+    var pack = window.GJ_CONTENT[actId];
+    var conf = ({ strong: 3, mid: 2, weak: 1, amber: 3, live: 2 })[profile] || 2;
+    var evals = {};
+    pack.sections.forEach(function (sec, si) {
+      var done = sec.questions.length && sec.questions.every(function (q) { var r = stt.qs[q.id]; return r && r.lock; });
+      if (!done) return;
+      var skills = {};
+      (sec.cans || []).forEach(function (can, ci) {
+        var jitter = profile === 'weak' || profile === 'mid' ? (((si + ci + profile.length) % 3) - 1) : 0;
+        skills[can.id] = Math.min(3, Math.max(1, conf + jitter));
+      });
+      evals[sec.id] = { conf: conf, skills: skills, ts: 1765000000 + si * 600 };
+    });
+    if (Object.keys(evals).length) stt.evals = evals;
+  }
+
   function seedDemo(s) {
     if (s.data[DEMO_CLASS]) return;
     s.classes.push({ name: DEMO_CLASS, acts: { angles: true, algebra: true }, owner: OFFLINE_TEACHER });
@@ -269,6 +289,7 @@
       ACTIVITIES.forEach(function (a) {
         var stt = synthState(a.id, p[1]);
         if (!stt) return;
+        synthEvals(a.id, p[1], stt);
         var sum = GJ.app.summarise(a.id, stt, p[0]);
         if (p[1] === 'live') sum.upd = Math.floor(Date.now() / 1000) - 15;
         s.data[DEMO_CLASS][email][a.id] = { state: JSON.stringify(stt), summary: JSON.stringify(sum) };
@@ -427,9 +448,21 @@
           cell = { st: 'open' };
         }
         if (rec.ovr && rec.ovr.q != null) cell.ovr = rec.ovr.q;
+        // analytics scalars (cheap; the wall already reads this cell):
+        cell.at = rec.att.length;                                        // attempts used
+        cell.a1 = (rec.att[0] && rec.att[0].res === 'OK') ? 1 : 0;       // correct, with working, first try
         sum.qs[q.id] = cell;
       });
     });
+    // per-section self-evaluation (small: confidence + skill self-ratings; the
+    // free-text note stays in state, fetched on the Jotter Page). Keyed by section id.
+    if (state.evals && typeof state.evals === 'object') {
+      sum.evals = {};
+      Object.keys(state.evals).forEach(function (k) {
+        var e = state.evals[k];
+        if (e && typeof e === 'object') sum.evals[k] = { conf: Number(e.conf) || 0, skills: e.skills || {}, ts: Number(e.ts) || 0 };
+      });
+    }
     return sum;
   }
 
@@ -776,6 +809,14 @@
     var jotter = document.createElement('div');
     jotter.className = 'jotter';
     main.appendChild(jotter);
+
+    // footer holds the (optional) end-of-exercise self-evaluation card + the Next
+    // button. Rebuilt whenever a question saves, so the card appears the moment
+    // the last question in the section locks.
+    var footer = document.createElement('div');
+    main.appendChild(footer);
+    function refreshFooter() { buildSectionFooter(footer, sec, i, pack); }
+
     sec.questions.forEach(function (q, qi) {
       var holder = document.createElement('div');
       jotter.appendChild(holder);
@@ -786,10 +827,22 @@
           current.state.qs[qid] = rec;
           scheduleSave();
           renderContents();
+          refreshFooter();
         }
       });
     });
 
+    refreshFooter();
+    renderContents();
+  }
+
+  /* The section footer: once every question in the section is locked, a gentle
+     "how did that go?" self-evaluation card appears above the Next button.
+     Never blocking — the pupil can always just press Next. */
+  function buildSectionFooter(footer, sec, i, pack) {
+    footer.innerHTML = '';
+    var complete = sec.questions.length > 0 && sectionTicks(sec) === sec.questions.length;
+    if (complete && sec.cans && sec.cans.length) footer.appendChild(buildSelfEvalCard(sec));
     var nextRow = document.createElement('div');
     nextRow.className = 'check-row';
     var nextBtn = document.createElement('button');
@@ -797,8 +850,85 @@
     nextBtn.textContent = (i + 1 < pack.sections.length) ? 'Next exercise →' : 'See my marks →';
     nextBtn.addEventListener('click', function () { renderSection(i + 1); });
     nextRow.appendChild(nextBtn);
-    main.appendChild(nextRow);
-    renderContents();
+    footer.appendChild(nextRow);
+  }
+
+  function seEl(tag, cls, txt) {
+    var d = document.createElement(tag);
+    if (cls) d.className = cls;
+    if (txt != null) d.textContent = txt;
+    return d;
+  }
+
+  /* End-of-exercise self-evaluation. Auto-saves on every tap (no submit friction);
+     keyed by section id; surfaced to the teacher via summary.evals. Measurable:
+     a 1-3 confidence, a per-"I can…" 1-3 rating, and an optional note. */
+  function buildSelfEvalCard(sec) {
+    current.state.evals = current.state.evals || {};
+    var ev = current.state.evals[sec.id] || { conf: 0, skills: {}, note: '' };
+    if (!ev.skills) ev.skills = {};
+    var card = seEl('div', 'selfeval');
+    function persist() { ev.ts = Math.floor(Date.now() / 1000); current.state.evals[sec.id] = ev; scheduleSave(); }
+
+    var h = seEl('p', 'se-head');
+    h.innerHTML = 'Exercise finished &mdash; how did that go? <span class="se-opt">optional</span>';
+    card.appendChild(h);
+
+    card.appendChild(seEl('p', 'se-label', 'How confident do you feel now?'));
+    var confWrap = seEl('div', 'se-conf');
+    var CONF = [[1, 'Still unsure'], [2, 'Getting there'], [3, 'Confident']];
+    var confBtns = [];
+    CONF.forEach(function (c) {
+      var b = seEl('button', 'se-conf-btn se-conf-' + c[0]);
+      b.type = 'button';
+      b.innerHTML = '<span class="se-dot" aria-hidden="true"></span>' + c[1];
+      if (ev.conf === c[0]) b.classList.add('on');
+      b.setAttribute('aria-pressed', ev.conf === c[0] ? 'true' : 'false');
+      b.addEventListener('click', function () {
+        ev.conf = c[0];
+        confBtns.forEach(function (x) { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
+        b.classList.add('on'); b.setAttribute('aria-pressed', 'true');
+        persist();
+      });
+      confBtns.push(b); confWrap.appendChild(b);
+    });
+    card.appendChild(confWrap);
+
+    card.appendChild(seEl('p', 'se-label', 'Tap how each part felt:'));
+    sec.cans.forEach(function (can) {
+      var row = seEl('div', 'se-skill');
+      row.appendChild(seEl('span', 'se-skill-txt', can.text));
+      var rate = seEl('span', 'se-rate');
+      var RATE = [[3, 'got it', 'g'], [2, 'unsure', 'y'], [1, 'tricky', 'r']];
+      var rateBtns = [];
+      RATE.forEach(function (rt) {
+        var rb = seEl('button', 'se-rate-btn se-rate-' + rt[2], rt[1]);
+        rb.type = 'button';
+        rb.setAttribute('aria-label', can.text + ' — ' + rt[1]);
+        if (ev.skills[can.id] === rt[0]) rb.classList.add('on');
+        rb.addEventListener('click', function () {
+          ev.skills[can.id] = rt[0];
+          rateBtns.forEach(function (x) { x.classList.remove('on'); });
+          rb.classList.add('on'); persist();
+        });
+        rateBtns.push(rb); rate.appendChild(rb);
+      });
+      row.appendChild(rate);
+      card.appendChild(row);
+    });
+
+    var noteWrap = seEl('div', 'se-note');
+    var note = document.createElement('input');
+    note.type = 'text'; note.maxLength = 140;
+    note.setAttribute('aria-label', 'Anything that tripped you up?');
+    note.placeholder = 'Anything that tripped you up? (optional)';
+    note.value = ev.note || '';
+    note.addEventListener('input', function () { ev.note = note.value; persist(); });
+    noteWrap.appendChild(note);
+    card.appendChild(noteWrap);
+
+    card.appendChild(seEl('p', 'se-saved', 'Saved as you tap — your teacher sees this on her class list.'));
+    return card;
   }
 
   function renderTally(main, pack) {
