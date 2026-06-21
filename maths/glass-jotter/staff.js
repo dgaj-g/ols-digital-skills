@@ -297,7 +297,7 @@
     var out = [];
     pack.sections.forEach(function (sec, si) {
       sec.questions.forEach(function (q, qi) {
-        out.push({ q: q, label: 'Ex' + (si + 1) + '.Q' + (qi + 1), secId: sec.id });
+        out.push({ q: q, label: 'Ex' + (si + 1) + '.Q' + (qi + 1), secId: sec.id, secHasMovie: !!sec.movie });
       });
     });
     return out;
@@ -597,14 +597,17 @@
 
   function normCluster(s) { return String(s == null ? '' : s).replace(/\s+/g, '').toLowerCase(); }
   function isFirstTry(r) {
-    if (r.rec && r.rec.ovr && r.rec.ovr.q === 1) return true;   // a corrected attempt counts as first-try (mirrors P1 a1)
+    // mirror the P1 a1 contract EXACTLY: right on the FIRST (and only) attempt.
+    // a1 = (att.length===1 && effective-ok); the caller already guarantees st==='ok'
+    // (override folded in), so a single attempt is all that distinguishes 1st-try
+    // from retried — an overridden-correct pupil who needed 2+ attempts is a retry.
     return !!(r.rec && r.rec.att && r.rec.att.length === 1);
   }
   function renderDrill(cell, item, all) {
     var q = item.q;
     var first = 0, retry = 0, amber = 0, err = 0;
     var mGot = 0, mMax = 0, aGot = 0, aMax = 0;
-    var methodCredit = 0, noReach = 0, finished = 0;
+    var methodCredit = 0, soundNoReach = 0, unpinned = 0, finished = 0;
     var slips = {};                                // key → { count, label, example, dx }
     all.forEach(function (p) {
       var r = markState(view.act, p.state, q);
@@ -619,13 +622,22 @@
       else if (r.st === 'amber') amber++;
       else if (r.st === 'err') {
         err++;
-        if (v && v.mk && v.mk[0] > 0) methodCredit++;   // honour working: slipped on the answer but method still earned credit
+        var ovrWrong = !!(r.rec && r.rec.ovr && r.rec.ovr.q === 0);   // teacher marked it wrong: don't credit method against their judgement
+        if (!ovrWrong && v && v.mk && v.mk[0] > 0) methodCredit++;     // honour working: slipped on the answer but method still earned credit
         if (r.cluster) {
           var key = r.dx ? 'dx:' + r.dx : 'c:' + normCluster(r.cluster);
           var s = slips[key] = slips[key] || { count: 0, label: r.dx ? (DX_NAMES[r.dx] || r.dx) : 'Same wrong line', example: r.cluster, dx: r.dx || null };
           s.count++;
           if (!s.dx && r.dx) { s.dx = r.dx; s.label = DX_NAMES[r.dx] || r.dx; }
-        } else { noReach++; }                            // working sound, final answer not reached
+        } else {
+          // err but no single line flagged. Only claim "right method" when the
+          // working really is sound: not teacher-marked-wrong, method marks earned,
+          // and no bad line/step. Otherwise it's an error we can't pin to a line
+          // (incl. an override-to-wrong or a locked blank) — label it neutrally.
+          var anyBad = (v && (v.perLine || v.perStep) || []).some(function (x) { return x.ok === 0 || x.val === 0 || x.rsn === 0; });
+          if (!ovrWrong && v && v.mk && v.mk[0] > 0 && !anyBad) soundNoReach++;
+          else unpinned++;
+        }
       }
     });
 
@@ -645,7 +657,7 @@
     /* the exact breaking step — grouped by misconception / literal wrong line, ranked */
     out.appendChild(el('h4', 'drill-h', 'Where they break'));
     var keys = Object.keys(slips).sort(function (a, b) { return slips[b].count - slips[a].count; });
-    if (!keys.length && !noReach) {
+    if (!keys.length && !soundNoReach && !unpinned) {
       out.appendChild(el('p', 'ui-msg', 'No marked working errors — slips here are answer-only or already corrected.'));
     } else {
       var ul = el('div', 'drill-slips');
@@ -656,10 +668,14 @@
           '<span class="drill-line">' + esc(s.example) + '</span>' +
           '<span class="drill-why">' + esc(s.label) + '</span>'));
       });
-      if (noReach) ul.appendChild(el('div', 'drill-slip',
-        '<span class="drill-count">' + noReach + '</span>' +
+      if (soundNoReach) ul.appendChild(el('div', 'drill-slip',
+        '<span class="drill-count">' + soundNoReach + '</span>' +
         '<span class="drill-line ins-dim">working sound&hellip;</span>' +
         '<span class="drill-why">right method, final answer not reached</span>'));
+      if (unpinned) ul.appendChild(el('div', 'drill-slip',
+        '<span class="drill-count">' + unpinned + '</span>' +
+        '<span class="drill-line ins-dim">&mdash;</span>' +
+        '<span class="drill-why">slip not pinned to a line &mdash; check their jotter</span>'));
       out.appendChild(ul);
     }
     if (err && methodCredit) out.appendChild(el('p', 'drill-note',
@@ -932,7 +948,7 @@
         });
         // content-safe support: nudge this pupil toward the section's existing method
         // movie. Offered only where they struggled — the natural moment to suggest it.
-        if (item.secId && (res.st === 'err' || res.st === 'amber')) {
+        if (item.secId && item.secHasMovie && (res.st === 'err' || res.st === 'amber')) {   // only nudge to a section that actually has a method movie
           var nudgeB = el('button', 'btn-pencil jp-nudge', 'Nudge: watch the method ▸');
           nudgeB.addEventListener('click', function () {
             if (nudgeB.disabled) return; nudgeB.disabled = true;
