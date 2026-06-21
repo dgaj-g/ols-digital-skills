@@ -1060,6 +1060,40 @@ body.dragging-active, body.dragging-active * {
 .ins-flagrow:hover { background: rgba(26, 58, 107, 0.06); }
 .ins-name { font-family: var(--f-maths); font-size: 0.98rem; color: var(--navy); font-weight: 600; }
 .ins-reason { font-family: var(--f-stationery); font-size: 0.76rem; color: var(--pencil); }
+/* deep step-analytics drill-down (full-state tier) */
+.ins-row { cursor: pointer; }
+.ins-row:hover { background: rgba(26, 58, 107, 0.06); }
+.ins-row:focus-visible { outline: 2px solid var(--navy); outline-offset: -2px; }
+.ins-caret { color: var(--pencil); font-size: 0.7rem; display: inline-block; transition: transform 0.15s; }
+.ins-row.open .ins-caret { transform: rotate(90deg); color: var(--navy); }
+.ins-hint { font-family: var(--f-stationery); font-size: 0.74rem; color: var(--pencil); margin: 6px 0 0; }
+.ins-drill { padding: 0 !important; background: #FBF8F1; }
+.drill { padding: 14px 16px; border-left: 4px solid var(--foil); text-align: left; }
+.drill-sub { font-family: var(--f-stationery); font-size: 0.8rem; color: var(--pencil); margin: 0 0 12px; }
+.drill-mix { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.drill-chip { font-family: var(--f-stationery); font-size: 0.8rem; color: var(--ink); padding: 5px 11px; border-radius: 999px; border: 1.5px solid var(--page-edge); background: #FFFEFA; }
+.drill-chip b { font-family: var(--f-display); font-size: 0.95rem; margin-right: 2px; }
+.drill-ok b { color: #1E5E45; }
+.drill-mid b { color: #B07A12; }
+.drill-amber b { color: #B07A12; }
+.drill-bad b { color: var(--marking-red); }
+.drill-h { font-family: var(--f-display); color: var(--navy); font-size: 0.98rem; margin: 0 0 8px; }
+.drill-slips { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.drill-slip { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  background: #FFFEFA; border: 1px solid var(--page-edge); border-radius: 7px; padding: 7px 11px; }
+.drill-count { font-family: var(--f-display); font-weight: 800; color: var(--marking-red); font-size: 1.1rem; text-align: center; }
+.drill-line { font-family: var(--f-maths); font-size: 1rem; color: var(--ink); overflow-wrap: anywhere; }
+.drill-why { font-family: var(--f-stationery); font-size: 0.76rem; color: var(--pencil); text-align: right; white-space: nowrap; }
+.drill-note { font-family: var(--f-stationery); font-size: 0.78rem; color: #1E5E45; margin: 0 0 12px; }
+.drill-bars { display: flex; flex-direction: column; gap: 7px; }
+.drill-bar { display: grid; grid-template-columns: 140px 1fr 46px; align-items: center; gap: 12px; }
+.drill-bar-txt { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); }
+.drill-bar-pct { font-family: var(--f-display); font-weight: 700; color: var(--navy); font-size: 0.85rem; text-align: right; }
+@media (max-width: 560px) {
+  .drill-why { text-align: left; white-space: normal; }
+  .drill-bar { grid-template-columns: 1fr auto; }
+  .drill-bar .ins-skill-bar { grid-column: 1 / -1; }
+}
 /* per-pupil Jotter-Page header */
 .jp-band { margin-bottom: 10px; }
 .jp-flags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }

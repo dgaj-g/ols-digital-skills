@@ -494,7 +494,7 @@
       var qt = ['<table class="ins-table"><thead><tr><th>Question</th><th>Got it</th><th>Wrong</th><th>Answer-only</th><th>Most common slip</th><th>Trips at</th></tr></thead><tbody>'];
       hardest.forEach(function (t) {
         var dxTop = insTop(t.dx), atTop = insTop(t.errAt);
-        qt.push('<tr><td class="ins-q"><b>' + esc(t.item.label) + '</b><span class="ins-qp">' + esc(String(t.item.q.prompt || '').slice(0, 48)) + '</span></td>' +
+        qt.push('<tr class="ins-row" data-qid="' + esc(t.item.q.id) + '" tabindex="0" role="button" aria-expanded="false"><td class="ins-q"><b>' + esc(t.item.label) + '</b> <span class="ins-caret" aria-hidden="true">&#9656;</span><span class="ins-qp">' + esc(String(t.item.q.prompt || '').slice(0, 48)) + '</span></td>' +
           '<td>' + t.ok + (t.retried ? ' <span class="ins-dim">(' + t.firstTry + ' 1st)</span>' : '') + '</td>' +
           '<td class="ins-bad">' + (t.err || '') + '</td>' +
           '<td>' + (t.amber || '') + '</td>' +
@@ -503,6 +503,8 @@
       });
       qt.push('</tbody></table>');
       var qd = el('div', 'wall'); qd.innerHTML = qt.join(''); host.appendChild(qd);
+      host.appendChild(el('p', 'ins-hint', 'Tap a question to see the exact working step the class breaks on.'));
+      wireDrill(qd, hardest);
     }
 
     /* self-eval: which "I can…" skills the class found hardest */
@@ -553,6 +555,135 @@
     }
 
     host.appendChild(el('p', 'ui-msg', 'Flags are a starting point from this activity, not a verdict — tap a name to open the pupil’s jotter.'));
+  }
+
+  /* Deep drill-down (full-state tier): tap a struggling-question row to fetch every
+     pupil's working once and show the EXACT step the class breaks on. Heavy fetch is
+     opt-in and cached for the life of this Insights view (one open at a time). */
+  function wireDrill(qd, hardest) {
+    var fsPromise = null;                         // fullStates() fetched once per Insights view
+    var byId = {};
+    hardest.forEach(function (h) { byId[h.item.q.id] = h.item; });
+    function toggle(tr) {
+      var qid = tr.getAttribute('data-qid'), item = byId[qid];
+      if (!item) return;
+      var next = tr.nextSibling;
+      if (next && next.className === 'ins-drill-row' && next.getAttribute('data-for') === qid) {
+        next.remove(); tr.classList.remove('open'); tr.setAttribute('aria-expanded', 'false'); return;
+      }
+      Array.prototype.forEach.call(qd.querySelectorAll('tr.ins-drill-row'), function (r) { r.remove(); });
+      Array.prototype.forEach.call(qd.querySelectorAll('tr.ins-row.open'), function (r) { r.classList.remove('open'); r.setAttribute('aria-expanded', 'false'); });
+      tr.classList.add('open'); tr.setAttribute('aria-expanded', 'true');
+      var drow = document.createElement('tr');
+      drow.className = 'ins-drill-row'; drow.setAttribute('data-for', qid);
+      var cell = document.createElement('td'); cell.colSpan = 6; cell.className = 'ins-drill';
+      cell.innerHTML = '<div class="panel-loading"><span class="panel-spinner" aria-hidden="true"></span><span>Reading every pupil&rsquo;s working&hellip;</span></div>';
+      drow.appendChild(cell);
+      tr.parentNode.insertBefore(drow, tr.nextSibling);
+      (fsPromise || (fsPromise = fullStates())).then(function (all) {
+        renderDrill(cell, item, all);
+      }).catch(function () { cell.innerHTML = '<p class="ui-msg">Could not read the jotters — try again.</p>'; fsPromise = null; });
+    }
+    qd.addEventListener('click', function (e) {
+      var tr = e.target.closest && e.target.closest('tr.ins-row');
+      if (tr && qd.contains(tr)) toggle(tr);
+    });
+    qd.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var tr = e.target.closest && e.target.closest('tr.ins-row');
+      if (tr && qd.contains(tr)) { e.preventDefault(); toggle(tr); }
+    });
+  }
+
+  function normCluster(s) { return String(s == null ? '' : s).replace(/\s+/g, '').toLowerCase(); }
+  function isFirstTry(r) {
+    if (r.rec && r.rec.ovr && r.rec.ovr.q === 1) return true;   // a corrected attempt counts as first-try (mirrors P1 a1)
+    return !!(r.rec && r.rec.att && r.rec.att.length === 1);
+  }
+  function renderDrill(cell, item, all) {
+    var q = item.q;
+    var first = 0, retry = 0, amber = 0, err = 0;
+    var mGot = 0, mMax = 0, aGot = 0, aMax = 0;
+    var methodCredit = 0, noReach = 0, finished = 0;
+    var slips = {};                                // key → { count, label, example, dx }
+    all.forEach(function (p) {
+      var r = markState(view.act, p.state, q);
+      if (!r || r.st === 'un' || r.st === 'open') return;
+      finished++;
+      var v = r.verdict;
+      if (v && v.mkMax) {
+        if (v.mkMax[0]) { mGot += (v.mk && v.mk[0]) || 0; mMax += v.mkMax[0]; }
+        if (v.mkMax[1]) { aGot += (v.mk && v.mk[1]) || 0; aMax += v.mkMax[1]; }
+      }
+      if (r.st === 'ok') { if (isFirstTry(r)) first++; else retry++; }
+      else if (r.st === 'amber') amber++;
+      else if (r.st === 'err') {
+        err++;
+        if (v && v.mk && v.mk[0] > 0) methodCredit++;   // honour working: slipped on the answer but method still earned credit
+        if (r.cluster) {
+          var key = r.dx ? 'dx:' + r.dx : 'c:' + normCluster(r.cluster);
+          var s = slips[key] = slips[key] || { count: 0, label: r.dx ? (DX_NAMES[r.dx] || r.dx) : 'Same wrong line', example: r.cluster, dx: r.dx || null };
+          s.count++;
+          if (!s.dx && r.dx) { s.dx = r.dx; s.label = DX_NAMES[r.dx] || r.dx; }
+        } else { noReach++; }                            // working sound, final answer not reached
+      }
+    });
+
+    if (!finished) { cell.innerHTML = '<p class="ui-msg">No finished attempts at this question yet.</p>'; return; }
+    var out = el('div', 'drill');
+    out.appendChild(el('p', 'drill-sub', esc(item.label) + ' — ' + finished + ' finished. ' + esc(String(q.prompt || '').slice(0, 90))));
+
+    /* outcome mix — honours working (answer-only is its own bucket) */
+    var mix = el('div', 'drill-mix');
+    mix.innerHTML =
+      drillChip(first, 'right first try', 'ok') +
+      drillChip(retry, 'right on a retry', 'mid') +
+      drillChip(amber, 'answer only (no working)', 'amber') +
+      drillChip(err, 'not yet', 'bad');
+    out.appendChild(mix);
+
+    /* the exact breaking step — grouped by misconception / literal wrong line, ranked */
+    out.appendChild(el('h4', 'drill-h', 'Where they break'));
+    var keys = Object.keys(slips).sort(function (a, b) { return slips[b].count - slips[a].count; });
+    if (!keys.length && !noReach) {
+      out.appendChild(el('p', 'ui-msg', 'No marked working errors — slips here are answer-only or already corrected.'));
+    } else {
+      var ul = el('div', 'drill-slips');
+      keys.forEach(function (k) {
+        var s = slips[k];
+        ul.appendChild(el('div', 'drill-slip',
+          '<span class="drill-count">' + s.count + '</span>' +
+          '<span class="drill-line">' + esc(s.example) + '</span>' +
+          '<span class="drill-why">' + esc(s.label) + '</span>'));
+      });
+      if (noReach) ul.appendChild(el('div', 'drill-slip',
+        '<span class="drill-count">' + noReach + '</span>' +
+        '<span class="drill-line ins-dim">working sound&hellip;</span>' +
+        '<span class="drill-why">right method, final answer not reached</span>'));
+      out.appendChild(ul);
+    }
+    if (err && methodCredit) out.appendChild(el('p', 'drill-note',
+      methodCredit + ' of the ' + err + ' who went wrong still earned method marks — their working was partly sound.'));
+
+    /* method vs accuracy split for this question, class-wide */
+    var mPct = mMax ? Math.round(100 * mGot / mMax) : null;
+    var aPct = aMax ? Math.round(100 * aGot / aMax) : null;
+    var bars = el('div', 'drill-bars');
+    bars.appendChild(drillBar('Method (working)', mPct));
+    bars.appendChild(drillBar('Accuracy (answers)', aPct));
+    out.appendChild(bars);
+
+    cell.innerHTML = ''; cell.appendChild(out);
+  }
+  function drillChip(n, label, kind) {
+    return '<span class="drill-chip drill-' + kind + '"><b>' + n + '</b> ' + esc(label) + '</span>';
+  }
+  function drillBar(label, pct) {
+    var d = el('div', 'drill-bar');
+    d.innerHTML = '<span class="drill-bar-txt">' + esc(label) + '</span>' +
+      '<span class="ins-skill-bar"><span style="width:' + (pct == null ? 0 : pct) + '%"></span></span>' +
+      '<span class="drill-bar-pct">' + (pct == null ? '—' : pct + '%') + '</span>';
+    return d;
   }
 
   function flagCol(title, kind, list) {
