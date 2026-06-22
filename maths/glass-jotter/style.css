@@ -225,7 +225,8 @@ body.gj .cover-foil, body.gj .cover-foil-sub {
 }
 .label-row input:focus { outline: none; }
 .cover-label .btn-stamp { width: 100%; margin-top: var(--sq); }
-.label-msg { font-family: var(--f-stationery); font-size: 12px; color: var(--pencil); margin-top: calc(var(--sq) * 0.4); min-height: var(--sq); text-align: center; }
+/* scoped under .cover-label so the margin-top beats `body.gj p { margin: 0 }` */
+.cover-label .label-msg { font-family: var(--f-stationery); font-size: 12px; color: var(--pencil); margin-top: calc(var(--sq) * 0.85); min-height: var(--sq); text-align: center; }
 .staff-oval {
   position: absolute;
   right: calc(var(--sq) * 0.6);
@@ -964,6 +965,7 @@ body.dragging-active, body.dragging-active * {
   .btn-back { padding: 6px 8px; font-size: 12px; }
   .jotter::before { left: calc(var(--sq) * 2.2); }
   .jq-margin { width: calc(var(--sq) * 2.2); font-size: 11px; }
+  .want-how { margin-left: calc(var(--sq) * 3.2); }   /* match the narrower mobile margin column */
   .wline { font-size: 19px; }
   .movie-line { font-size: 18px; }
   .keypad { grid-template-columns: repeat(6, 1fr); }
@@ -999,8 +1001,9 @@ body.dragging-active, body.dragging-active * {
 /* ═══ end-of-exercise self-evaluation (pupil) ═══
    Traffic light uses sage/amber/rose — the rose deliberately avoids the
    reserved Marking Red so a self-rating never reads as a mark. */
-/* "Want to see how?" pupil support pull — understated, sits under a question */
-.want-how { margin: -2px 0 18px; }
+/* "Want to see how?" pupil support pull — understated, sits under a question,
+   indented to line up with the question body (past the Q-number margin column). */
+.want-how { margin: -2px 0 18px calc(var(--sq) * 4); }
 .want-how-btn { background: none; border: none; cursor: pointer; padding: 4px 2px;
   font-family: var(--f-stationery); font-size: 0.86rem; color: var(--navy); opacity: 0.78;
   display: inline-flex; align-items: center; gap: 6px; }
