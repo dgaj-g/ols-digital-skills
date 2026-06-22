@@ -7355,6 +7355,11 @@ window.OLS_TRANSPORT = {
     sec.questions.forEach(function (q, qi) {
       var holder = document.createElement('div');
       jotter.appendChild(holder);
+      // content-safe support: a pupil-pullable "Want to see how?" that replays the
+      // section's existing method movie inline. Earned only once the pupil has used
+      // both attempts and is still not right (or when a teacher nudges it on) \u2014 so it
+      // never reads as a free shortcut.
+      var strip = sec.movie ? buildSupportStrip(sec, q) : null;
       window.GJ_JOTTER.mount(holder, q, current.state.qs[q.id] || null, {
         actId: current.act.id,
         number: q.num || (qi + 1),
@@ -7363,14 +7368,18 @@ window.OLS_TRANSPORT = {
           scheduleSave();
           renderContents();
           refreshFooter();
+          if (strip && supportEarned(rec)) strip._reveal();   // surfaced the moment they're wrong twice
         }
       });
-      // content-safe support: a pupil-pullable "Want to see how?" that replays the
-      // section's existing method movie inline, right where the pupil is stuck.
-      if (sec.movie) { var strip = buildSupportStrip(sec, q); strips.push(strip); jotter.appendChild(strip); }
+      if (strip) {
+        jotter.appendChild(strip);
+        strips.push(strip);
+        if (supportEarned(current.state.qs[q.id])) strip._reveal();   // already earned on re-entry
+      }
     });
 
-    // a teacher "nudge" (set on load) gently opens the support for this section once.
+    // a teacher "nudge" (set on load) reveals + gently opens the support for this
+    // section once, regardless of attempts.
     if (strips.length && current.nudge && current.nudge.sec === sec.id) {
       strips[0].classList.add('nudged');
       if (strips[0]._openSupport) strips[0]._openSupport();
@@ -7387,6 +7396,7 @@ window.OLS_TRANSPORT = {
   function buildSupportStrip(sec, q) {
     var wrap = document.createElement('div');
     wrap.className = 'want-how';
+    wrap.hidden = true;                          // earned (2 wrong attempts) or nudged before it appears
     var btn = document.createElement('button');
     btn.className = 'want-how-btn';
     btn.setAttribute('aria-expanded', 'false');
@@ -7395,15 +7405,26 @@ window.OLS_TRANSPORT = {
     host.className = 'want-how-body';
     host.hidden = true;
     var mounted = false;
+    function reveal() { wrap.hidden = false; }
     function open() {
+      reveal();
       if (!mounted) { window.GJ_PLAYER.mount(host, sec.movie, { accent: current.act.accent }); mounted = true; recordHelp(q.id); }
       host.hidden = false; wrap.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
     }
     function close() { host.hidden = true; wrap.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
     btn.addEventListener('click', function () { if (host.hidden) open(); else close(); });
     wrap.appendChild(btn); wrap.appendChild(host);
+    wrap._reveal = reveal;
     wrap._openSupport = open;
     return wrap;
+  }
+  /* Support is earned once the pupil has used both attempts and is still not right
+     (the app caps at two tries, so this is "wrong twice in a row"). AMBER counts \u2014
+     answer with no working twice means the method movie is still the right help. */
+  function supportEarned(rec) {
+    if (!rec || !rec.lock || !rec.att || rec.att.length < 2) return false;
+    var last = rec.att[rec.att.length - 1];
+    return !!last && last.res !== 'OK';
   }
   function recordHelp(qid) {
     if (!current.state) return;
