@@ -840,6 +840,11 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 .wline.err-box { box-shadow: inset 0 0 0 2px var(--marking-red); border-radius: 3px; }
 .wline .wl-edit { margin-left: 8px; opacity: 0; font-size: 12px; }
 .wline:hover .wl-edit { opacity: 1; }
+/* teacher Jotter Page (marking view) tidy-ups \2014  scoped so the pupil book is untouched */
+#scr-staff .jotter::before { display: none; }                                  /* drop the decorative margin rule */
+#scr-staff .wline { padding-left: 6px; }                                       /* clear the err-box border so the mark isn't clipped */
+#scr-staff .wl-mark .glyph-err { font-size: inherit; font-family: inherit; }   /* cross matches the tick's size + font */
+#scr-staff .wline .wl-margin-note { margin-left: 0; padding-left: 16px; }       /* keep the (operation) note beside the working, not flung right */
 
 /* wavy red underline for the error line (post-Check only) */
 .wavy {
