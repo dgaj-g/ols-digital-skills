@@ -281,11 +281,11 @@ body.gj .shelf-title { color: var(--cream); font-size: 26px; line-height: calc(v
   white-space: nowrap;
 }
 .shelf-main { max-width: 960px; margin: 0 auto; padding: calc(var(--sq) * 2) var(--sq); }
-.shelf-instruction {
+body.gj .shelf-instruction {                 /* body.gj to beat `body.gj p { margin:0 }`, which zeroed the gap */
   font-family: var(--f-hand);
   font-size: 24px;
   color: var(--navy);
-  margin-bottom: var(--sq);
+  margin-bottom: calc(var(--sq) * 2.2);
 }
 .shelf-row {
   display: flex;
