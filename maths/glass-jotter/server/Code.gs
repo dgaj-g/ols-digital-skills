@@ -64,6 +64,11 @@ function initJotter() {
    the ?class= parameter; we capture both here and inject them via the
    window.OLS_BOOT scriptlet that build-pathb.js places at the top of Index. */
 function doGet(e) {
+  // companion "name probe": this is hit (hidden iframe) on the EXECUTE-AS-USER
+  // deployment so getOAuthToken() is the PUPIL's token. Guarded to only write when
+  // actually running as the accessing user (so the execute-as-me main deployment,
+  // if ever hit with ?probe, never writes the deployer's name).
+  if (e && e.parameter && e.parameter.probe) { return autoNameProbe_(); }
   var t = HtmlService.createTemplateFromFile('Index');
   t.classCode = (e && e.parameter && e.parameter['class']) ? String(e.parameter['class']) : 'default';
   t.baseUrl = ScriptApp.getService().getUrl();
@@ -76,6 +81,45 @@ function doGet(e) {
 /* ============================================================ helpers ============================================================ */
 function userEmail_() { try { return Session.getActiveUser().getEmail() || ''; } catch (e) { return ''; } }
 function effectiveEmail_() { try { return Session.getEffectiveUser().getEmail() || ''; } catch (e) { return ''; } }
+
+/* ---------- pupil auto-name (companion: execute-as-user) ---------- */
+function sp_() { return PropertiesService.getScriptProperties(); }
+function autoNameKey_(email) { return 'autoname:' + String(email || '').trim().toLowerCase(); }
+/* Fetch the signed-in user's real name from the OIDC userinfo endpoint. Needs the
+   userinfo.profile scope and an execute-as-user deployment (so getOAuthToken() is
+   the pupil's token). Returns "First Surname" or '' on any failure. */
+function autoName_() {
+  try {
+    var resp = UrlFetchApp.fetch('https://openidconnect.googleapis.com/v1/userinfo', {
+      headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+      muteHttpExceptions: true
+    });
+    if (resp.getResponseCode() !== 200) return '';
+    var d = JSON.parse(resp.getContentText());
+    var full = ((String(d.given_name || '') + ' ' + String(d.family_name || '')).trim()) || String(d.name || '');
+    return full.trim();
+  } catch (e) { return ''; }
+}
+/* Companion endpoint (doGet ?probe=1, execute-as-user): stash the pupil's real name
+   in ScriptProperties for the main (execute-as-me) app to read. The guard ensures we
+   only write when truly running as the accessing user. Returns a 1-line page. */
+function autoNameProbe_() {
+  var ok = false;
+  try {
+    var who = userEmail_();
+    if (who && effectiveEmail_().toLowerCase() === who.toLowerCase()) {   // running AS the pupil
+      var nm = autoName_();
+      if (nm) { sp_().setProperty(autoNameKey_(who), nm); ok = true; }
+    }
+  } catch (e) { ok = false; }
+  return HtmlService.createHtmlOutput('<!doctype html><meta charset="utf-8"><title>ok</title><p>' + (ok ? 'ok' : 'no') + '</p>')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+/* Main app (execute-as-me): read the name the companion stashed for this caller. */
+function apiAutoName() {
+  var who = userEmail_(); if (!who) return { ok: false, error: 'not-signed-in' };
+  return { ok: true, name: String(sp_().getProperty(autoNameKey_(who)) || '') };
+}
 function normEmail_(e) { return String(e || '').trim().toLowerCase(); }
 /* PER-TEACHER SCOPING. The shared staffPasscode lets any staff member in; who
    they ARE (their verified active email, the same identity the pupil API trusts)
@@ -210,7 +254,7 @@ function apiHello(req) {
       if (actOk_(act)) summaries[act] = parseJson_(vals[i][4]);
     } catch (e) { /* skip bad row */ }
   }
-  return { ok: true, email: String(who), name: String(getName_(who) || ''), classCode: String(rec.name), acts: coerceActs_(rec.acts), summaries: summaries };
+  return { ok: true, email: String(who), name: String(getName_(who) || ''), classCode: String(rec.name), acts: coerceActs_(rec.acts), summaries: summaries, autonameUrl: String(getConfig_('autonameUrl') || '') };
 }
 
 function apiSave(req) {

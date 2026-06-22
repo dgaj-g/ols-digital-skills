@@ -317,6 +317,7 @@
         return ok({ email: OFFLINE_EMAIL, name: s.names[OFFLINE_EMAIL] || '', acts: (reg && reg.acts) || { angles: true, algebra: true }, summaries: sums, offline: true });
       }
       case 'setname': s.names[OFFLINE_EMAIL] = String(p.name || '').slice(0, 40); lsSave(s); return ok({});
+      case 'autoname': return ok({ name: 'Aoife Gartland' });   // preview: simulate the c2k auto-name pull
       case 'load': {
         var r2 = row(cls, OFFLINE_EMAIL, p.act);
         var nkey = String(p.act) + '|' + OFFLINE_EMAIL.toLowerCase();
@@ -620,6 +621,9 @@
       if (me.offline) msg.textContent = 'Preview copy — work saves to this device only.';
       else if (me.name) msg.textContent = 'Welcome back, ' + me.name.split(' ')[0] + '. Tap to open your book.';
       else msg.textContent = 'Signed in as ' + me.email + '. Add your name once, so your teacher sees it on her class list.';
+      // auto-name: if there's no stored name yet, try to pull the pupil's real name
+      // from their c2k account (via the execute-as-user companion) and pre-fill it.
+      if (!me.name && (r.autonameUrl || me.offline)) tryAutoName(r.autonameUrl, input, msg);
     }).catch(function () {
       coverOpenBtn.disabled = false;
       msg.textContent = 'Could not reach the server — check your connection and reload.';
@@ -643,6 +647,35 @@
     document.getElementById('cover-name').addEventListener('keydown', function (e) {
       if (e.key === 'Enter') document.getElementById('cover-open').click();
     });
+  }
+
+  /* Pull the pupil's real name from their c2k account. Live: load the companion
+     (execute-as-user) /exec in a hidden iframe so it stashes the name, then read it
+     back via apiAutoName and pre-fill. Offline: the stub returns one directly. Always
+     graceful — if anything fails, the pupil just types their name as before. */
+  function tryAutoName(url, input, msg) {
+    var done = false;
+    function apply() {
+      if (done) return; done = true;
+      call('autoname').then(function (a) {
+        if (a && a.ok && a.name && !input.value) {
+          input.value = a.name;
+          if (msg) msg.textContent = 'Is this you, ' + a.name.split(' ')[0] + '? Tap to open your book.';
+        }
+      }).catch(function () {});
+    }
+    if (window.OLS_TRANSPORT && url) {
+      var fr = document.createElement('iframe');
+      fr.setAttribute('aria-hidden', 'true');
+      fr.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;border:0';
+      fr.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'probe=1';
+      fr.addEventListener('load', function () { setTimeout(apply, 150); });   // probe has written the name
+      document.body.appendChild(fr);
+      setTimeout(apply, 2500);                                                 // fallback if load never fires
+      setTimeout(function () { if (fr.parentNode) fr.parentNode.removeChild(fr); }, 4000);
+    } else {
+      apply();   // offline preview: the stub returns a name directly
+    }
   }
 
   /* — shelf — */
