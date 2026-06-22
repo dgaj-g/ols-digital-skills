@@ -465,6 +465,7 @@
         var effSt = cell.ovr === 1 ? 'ok' : cell.ovr === 0 ? 'err' : cell.st;
         cell.at = rec.att.length;                                        // attempts used
         cell.a1 = (rec.att.length === 1 && effSt === 'ok') ? 1 : 0;      // correct on the first attempt
+        if (state.help && state.help[q.id]) cell.hp = 1;                 // pupil pulled the method help on this Q
         sum.qs[q.id] = cell;
       });
     });
@@ -900,7 +901,16 @@
     function reveal() { wrap.hidden = false; }
     function open() {
       reveal();
-      if (!mounted) { window.GJ_PLAYER.mount(host, sec.movie, { accent: current.act.accent }); mounted = true; recordHelp(q.id); }
+      if (!mounted) {
+        // lead with THIS pupil's own slip (their flagged line + the misconception the
+        // marker found) — content-safe, no answer given; then the method movie below.
+        var slip = slipCard(q);
+        if (slip) host.appendChild(slip);
+        var movieHost = document.createElement('div');
+        host.appendChild(movieHost);                 // mount() clears its host, so give the movie its own
+        window.GJ_PLAYER.mount(movieHost, sec.movie, { accent: current.act.accent });
+        mounted = true; recordHelp(q.id);
+      }
       host.hidden = false; wrap.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
     }
     function close() { host.hidden = true; wrap.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
@@ -922,6 +932,42 @@
     if (!current.state) return;
     if (!current.state.help) current.state.help = {};
     if (!current.state.help[qid]) { current.state.help[qid] = Math.floor(Date.now() / 1000); scheduleSave(); }
+  }
+  function prettyP(s) { return String(s == null ? '' : s).replace(/-/g, '−').replace(/\*/g, '×'); }
+  function escP(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  /* The pupil's own slip for this question: their first flagged working line + the
+     misconception the marker named. Re-marks their last attempt with the existing
+     engine; returns null for tap-only questions (no working line) or if nothing was
+     flagged. No answer is revealed — only their own line and the named slip. */
+  function slipDetail(q) {
+    if (q.kind === 'classify' || q.kind === 'protractor') return null;
+    var rec = current.state && current.state.qs && current.state.qs[q.id];
+    if (!rec || !rec.att || !rec.att.length) return null;
+    var last = rec.att[rec.att.length - 1], verdict;
+    try {
+      verdict = current.act.id === 'angles' ? window.GJ_ANGLES.checkSteps(q, last.steps || []) : window.GJ_MATH.checkQuestion(q, last);
+    } catch (e) { return null; }
+    var line = null, dx = null;
+    if (verdict.perLine) {
+      var i = verdict.perLine.findIndex(function (l) { return l.ok === 0; });
+      if (i >= 0) { dx = verdict.perLine[i].dx || null; if (last.L && last.L[i]) line = prettyP(last.L[i].t); }
+    } else if (verdict.perStep) {
+      var j = verdict.perStep.findIndex(function (l) { return l.val === 0 || l.rsn === 0; });
+      if (j >= 0) { dx = verdict.perStep[j].dx || null; if (last.steps && last.steps[j]) line = '∠' + last.steps[j].ang + ' = ' + last.steps[j].val + '°'; }
+    }
+    if (!line && !dx) return null;
+    return { line: line, label: (dx && window.GJ_DX && window.GJ_DX[dx]) || null };
+  }
+  function slipCard(q) {
+    var d = slipDetail(q);
+    if (!d) return null;
+    var card = document.createElement('div');
+    card.className = 'wh-slip';
+    var html = '<p class="wh-slip-h">Where it went wrong</p>';
+    if (d.line) html += '<div class="wh-slip-line">' + escP(d.line) + '</div>';
+    if (d.label) html += '<p class="wh-slip-why">This looks like: <b>' + escP(d.label) + '</b></p>';
+    card.innerHTML = html;
+    return card;
   }
 
   /* The section footer: once every question in the section is locked, a gentle

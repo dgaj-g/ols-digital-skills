@@ -607,12 +607,13 @@
     var q = item.q;
     var first = 0, retry = 0, amber = 0, err = 0;
     var mGot = 0, mMax = 0, aGot = 0, aMax = 0;
-    var methodCredit = 0, soundNoReach = 0, unpinned = 0, finished = 0;
+    var methodCredit = 0, soundNoReach = 0, unpinned = 0, finished = 0, helpPulled = 0;
     var slips = {};                                // key → { count, label, example, dx }
     all.forEach(function (p) {
       var r = markState(view.act, p.state, q);
       if (!r || r.st === 'un' || r.st === 'open') return;
       finished++;
+      if (p.state && p.state.help && p.state.help[q.id]) helpPulled++;   // pupil opened "Want to see how?" here
       var v = r.verdict;
       if (v && v.mkMax) {
         if (v.mkMax[0]) { mGot += (v.mk && v.mk[0]) || 0; mMax += v.mkMax[0]; }
@@ -680,6 +681,8 @@
     }
     if (err && methodCredit) out.appendChild(el('p', 'drill-note',
       methodCredit + ' of the ' + err + ' who went wrong still earned method marks — their working was partly sound.'));
+    if (helpPulled) out.appendChild(el('p', 'drill-note drill-help',
+      helpPulled + (helpPulled === 1 ? ' pupil' : ' pupils') + ' opened the method help on this question.'));
 
     /* method vs accuracy split for this question, class-wide */
     var mPct = mMax ? Math.round(100 * mGot / mMax) : null;
@@ -928,6 +931,7 @@
           bodyEl.appendChild(el('p', 'mk-tally', 'M ' + res.verdict.mk[0] + '/' + mkMax[0] + ' · A ' + res.verdict.mk[1] + '/' + mkMax[1] +
             (last.dur ? ' · ' + last.dur + 's · ' + (rec.att.length) + ' attempt' + (rec.att.length > 1 ? 's' : '') : '')));
         }
+        if (state.help && state.help[q.id]) bodyEl.appendChild(el('p', 'jp-help', 'Pulled the method help after getting stuck'));
 
         /* the override — the teacher's judgement wins everywhere */
         var ovRow = el('div', 'check-row');
@@ -1164,4 +1168,5 @@
   }
 
   window.GJ_STAFF = { open: open, enterWith: enterWith };
+  window.GJ_DX = DX_NAMES;   // shared so the pupil "Want to see how?" can name a misconception
 })();

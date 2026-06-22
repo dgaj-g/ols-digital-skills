@@ -1013,6 +1013,14 @@ body.dragging-active, body.dragging-active * {
 .want-how.nudged .want-how-btn { opacity: 1; font-weight: 700; }
 .want-how.nudged .want-how-btn::after { content: ' · your teacher suggests this'; font-weight: 400; color: var(--foil-lo); }
 .want-how-body { margin-top: 8px; }
+/* the pupil's own slip, surfaced at the top of the pull (after two wrong tries) */
+.wh-slip { background: #FBF4E2; border: 1.5px solid var(--foil-lo); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; }
+.wh-slip-h { font-family: var(--f-stationery); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: #8A6A12; margin: 0 0 6px; }
+.wh-slip-line { font-family: var(--f-maths); font-size: 1.15rem; color: var(--marking-red); margin-bottom: 4px; overflow-wrap: anywhere; }
+.wh-slip-why { font-family: var(--f-stationery); font-size: 0.92rem; color: var(--ink); margin: 0; }
+/* teacher surfaces for help-access */
+.jp-help { font-family: var(--f-stationery); font-size: 0.82rem; color: #8A6A12; margin: 4px 0 0; }
+.drill-help { color: #8A6A12; }
 .selfeval {
   background: #FFFEFA; border: 1.5px solid var(--page-edge); border-left: 4px solid var(--foil);
   border-radius: 10px; padding: 14px 16px; margin: 18px 0 8px;
