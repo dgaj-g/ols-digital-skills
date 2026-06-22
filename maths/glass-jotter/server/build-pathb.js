@@ -209,6 +209,7 @@ window.OLS_TRANSPORT = {
         case 'load':    g.apiLoad({ classCode: cls, act: p.act }); break;
         case 'save':    g.apiSave({ classCode: cls, act: p.act, state: p.state, summary: p.summary }); break;
         case 'setname': g.apiSetName({ classCode: cls, name: p.name }); break;
+        case 'autoname': g.apiAutoName(); break;
         case 'admin':   g.apiAdmin({ passcode: p.passcode, sub: p.sub, className: p.className, acts: p.acts, act: p.act, email: p.email, q: p.q, idx: p.idx, val: p.val, sec: p.sec }); break;
         default: reject(new Error('unknown action ' + p.action));
       }
