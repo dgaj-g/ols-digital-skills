@@ -986,7 +986,13 @@
       if (i >= 0) { dx = verdict.perLine[i].dx || null; if (last.L && last.L[i]) line = prettyP(last.L[i].t); }
     } else if (verdict.perStep) {
       var j = verdict.perStep.findIndex(function (l) { return l.val === 0 || l.rsn === 0; });
-      if (j >= 0) { dx = verdict.perStep[j].dx || null; if (last.steps && last.steps[j]) line = '∠' + last.steps[j].ang + ' = ' + last.steps[j].val + '°'; }
+      if (j >= 0) {
+        dx = verdict.perStep[j].dx || null;
+        // ONLY show the pupil's line when the VALUE is wrong. A right-value/wrong-rule
+        // step (val 1|2, rsn 0) carries the CORRECT answer — showing it would leak it.
+        // The misconception label still names the slip without revealing the value.
+        if (verdict.perStep[j].val === 0 && last.steps && last.steps[j]) line = '∠' + last.steps[j].ang + ' = ' + last.steps[j].val + '°';
+      }
     }
     if (!line && !dx) return null;
     return { line: line, label: (dx && window.GJ_DX && window.GJ_DX[dx]) || null };
