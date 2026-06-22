@@ -1020,11 +1020,11 @@ body.dragging-active, body.dragging-active * {
 .want-how-body { margin-top: 8px; }
 /* the pupil's own slip, surfaced at the top of the pull (after two wrong tries) */
 .wh-slip { background: #FBF4E2; border: 1.5px solid var(--foil-lo); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; }
-.wh-slip-h { font-family: var(--f-stationery); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: #8A6A12; margin: 0 0 6px; }
+.wh-slip .wh-slip-h { font-family: var(--f-stationery); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: #8A6A12; margin: 0 0 6px; }  /* scoped past body.gj p { margin:0 } */
 .wh-slip-line { font-family: var(--f-maths); font-size: 1.15rem; color: var(--marking-red); margin-bottom: 4px; overflow-wrap: anywhere; }
 .wh-slip-why { font-family: var(--f-stationery); font-size: 0.92rem; color: var(--ink); margin: 0; }
 /* teacher surfaces for help-access */
-.jp-help { font-family: var(--f-stationery); font-size: 0.82rem; color: #8A6A12; margin: 4px 0 0; }
+#scr-staff .jp-help { font-family: var(--f-stationery); font-size: 0.82rem; color: #8A6A12; margin: 4px 0 0; }  /* scoped past body.gj p { margin:0 } */
 .drill-help { color: #8A6A12; }
 .selfeval {
   background: #FFFEFA; border: 1.5px solid var(--page-edge); border-left: 4px solid var(--foil);
@@ -1093,10 +1093,10 @@ body.dragging-active, body.dragging-active * {
 .ins-row:focus-visible { outline: 2px solid var(--navy); outline-offset: -2px; }
 .ins-caret { color: var(--pencil); font-size: 0.7rem; display: inline-block; transition: transform 0.15s; }
 .ins-row.open .ins-caret { transform: rotate(90deg); color: var(--navy); }
-.ins-hint { font-family: var(--f-stationery); font-size: 0.74rem; color: var(--pencil); margin: 6px 0 0; }
+#scr-staff .ins-hint { font-family: var(--f-stationery); font-size: 0.74rem; color: var(--pencil); margin: 6px 0 0; }  /* scoped past body.gj p { margin:0 } */
 .ins-drill { padding: 0 !important; background: #FBF8F1; }
 .drill { padding: 14px 16px; border-left: 4px solid var(--foil); text-align: left; }
-.drill-sub { font-family: var(--f-stationery); font-size: 0.8rem; color: var(--pencil); margin: 0 0 12px; }
+#scr-staff .drill-sub { font-family: var(--f-stationery); font-size: 0.8rem; color: var(--pencil); margin: 0 0 12px; }  /* scoped past body.gj p { margin:0 } */
 .drill-mix { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .drill-chip { font-family: var(--f-stationery); font-size: 0.8rem; color: var(--ink); padding: 5px 11px; border-radius: 999px; border: 1.5px solid var(--page-edge); background: #FFFEFA; }
 .drill-chip b { font-family: var(--f-display); font-size: 0.95rem; margin-right: 2px; }
@@ -1111,7 +1111,7 @@ body.dragging-active, body.dragging-active * {
 .drill-count { font-family: var(--f-display); font-weight: 800; color: var(--marking-red); font-size: 1.1rem; text-align: center; }
 .drill-line { font-family: var(--f-maths); font-size: 1rem; color: var(--ink); overflow-wrap: anywhere; }
 .drill-why { font-family: var(--f-stationery); font-size: 0.76rem; color: var(--pencil); text-align: right; white-space: nowrap; }
-.drill-note { font-family: var(--f-stationery); font-size: 0.78rem; color: #1E5E45; margin: 0 0 12px; }
+#scr-staff .drill-note { font-family: var(--f-stationery); font-size: 0.78rem; color: #1E5E45; margin: 0 0 12px; }  /* scoped past body.gj p { margin:0 } */
 .drill-bars { display: flex; flex-direction: column; gap: 7px; }
 .drill-bar { display: grid; grid-template-columns: 140px 1fr 46px; align-items: center; gap: 12px; }
 .drill-bar-txt { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); }
