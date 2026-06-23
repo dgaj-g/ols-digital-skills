@@ -713,11 +713,12 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 }
 .protractor-tool { cursor: grab; }
 .protractor-tool:active { cursor: grabbing; }
-.prot-num { font-family: var(--f-stationery); font-size: 9px; fill: var(--teal); transition: font-size 130ms ease, fill 130ms ease; }
-.prot-num.inner { fill: var(--pencil); }
-.prot-num.end { font-size: 7px; }
-/* a number an angle arm is crossing — pops into focus for easy reading */
-.prot-num.lit { font-size: 13px; fill: var(--navy); font-weight: 700; paint-order: stroke; stroke: #FFFEFA; stroke-width: 2.6; }
+.prot-num { font-family: var(--f-stationery); font-size: 10px; fill: var(--teal); font-weight: 600; transition: fill 130ms ease, font-weight 130ms ease; paint-order: stroke; stroke: rgba(255,254,250,0.85); stroke-width: 1.6; }
+.prot-num.inner { fill: #8A5A2B; }
+.prot-num.end { font-size: 8.5px; }
+/* a number an angle arm crosses: emphasise by COLOUR + weight + halo only — never by
+   size (a size jump made the dual scale collide). The gold crossing marker does the pointing. */
+.prot-num.lit { fill: var(--navy); font-weight: 800; stroke: #FFFEFA; stroke-width: 2.6; }
 .prot-focus { pointer-events: none; }
 .prot-centre { pointer-events: none; }
 
@@ -737,8 +738,13 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
   padding: calc(var(--sq) * 0.6) var(--sq);
   margin: calc(var(--sq) * 0.5) 0;
 }
-.step-card .sc-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 19px; }
+.step-card .sc-head { font-family: var(--f-display); font-weight: 640; font-size: 17px; color: var(--navy); margin: 0 0 8px; }
+.step-card .sc-sub { font-family: var(--f-stationery); font-size: 13px; color: var(--pencil); margin: 12px 0 4px; }
+.step-card .sc-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 19px; }
 .step-card .sc-row .sc-eq { font-family: var(--f-maths); }
+.step-card .sc-field { display: inline-flex; min-width: 96px; }
+.step-card .sc-field .compose { width: 100%; min-height: calc(var(--sq) * 1.2); border-bottom-color: var(--navy); }
+.step-card .sc-msg { font-family: var(--f-stationery); font-size: 13.5px; font-weight: 600; color: var(--amber-flag); min-height: 18px; margin: 10px 0 0; }
 
 /* reason picker — grouped then randomised */
 .reasons { margin-top: calc(var(--sq) * 0.5); }
@@ -792,13 +798,15 @@ body.gj .jq-feedback { margin-top: calc(var(--sq) * 0.9); }
 /* tick / cross marks are SVG paths drawn at pen speed */
 .mark-tick path, .mark-cross path, .box-draw rect, .box-draw path {
   fill: none;
-  stroke: var(--marking-red);
   stroke-width: 2.6;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.mark-tick.hollow path { stroke-width: 1.6; opacity: 0.75; }
-.mark-tick.amber path { stroke: var(--amber-flag); }
+.mark-tick path { stroke: #1F7A33; }                            /* correct = green tick */
+.mark-cross path { stroke: var(--marking-red); }                /* wrong = red cross */
+.box-draw rect, .box-draw path { stroke: var(--marking-red); }  /* the boxed final answer, in red pen */
+.mark-tick.hollow path { stroke: #1F7A33; stroke-width: 1.6; opacity: 0.7; }  /* follow-through credit = faded green */
+.mark-tick.amber path { stroke: var(--amber-flag); }            /* right value, missing/!wrong reason = amber */
 
 /* progress instruments */
 .instr-protractor text { font-family: var(--f-stationery); font-size: 7px; fill: rgba(250,247,240,0.8); }
