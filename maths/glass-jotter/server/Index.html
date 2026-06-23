@@ -1071,6 +1071,16 @@ body.gj .staff-head h1 { color: var(--cream); font-size: 22px; }
 .glyph-live { color: #1B5A87; animation: live-blink 2s ease-in-out infinite; }
 @keyframes live-blink { 50% { opacity: 0.35; } }
 .glyph-un { color: var(--pencil); opacity: 0.6; }
+body.gj .wall-legend {
+  font-family: var(--f-stationery); font-size: 12.5px; color: var(--ink);
+  background: #FFFEFA; border: 1px solid var(--page-edge); border-radius: 6px;
+  padding: 7px 11px; margin: 0 0 10px;
+  display: flex; flex-wrap: wrap; gap: 3px 12px; align-items: baseline;
+}
+.wall-legend .glyph-ok, .wall-legend .glyph-amber, .wall-legend .glyph-err,
+.wall-legend .glyph-live, .wall-legend .glyph-un { font-size: 14px; margin-right: 1px; }
+.wall-legend .wl-sub { color: var(--pencil); font-size: 11px; }
+body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 .wall .col-dx {
   font-family: var(--f-stationery);
   font-size: 10px;
@@ -4539,7 +4549,7 @@ window.OLS_TRANSPORT = {
     var compose = el('div', 'compose');
     compose.setAttribute('tabindex', '0');
     compose.setAttribute('role', 'textbox');
-    compose.setAttribute('aria-label', opts.label || 'Write the next line of working');
+    compose.setAttribute('aria-label', opts.label || 'Write the next step of working');
     var content = el('span', 'compose-text');
     var caret = el('span', 'caret');
     var ph = el('span', 'ph', opts.placeholder || 'write the new line here');
@@ -5236,7 +5246,7 @@ window.OLS_TRANSPORT = {
       seq.then(function () {
         feedback.innerHTML = '';
         var mk = verdict.mk, mkMax = verdict.mkMax || q.marks;
-        var tally = el('div', 'mk-tally', 'M ' + mk[0] + '/' + mkMax[0] + ' \u00b7 A ' + mk[1] + '/' + mkMax[1]);
+        var tally = el('div', 'mk-tally', 'Working ' + mk[0] + '/' + mkMax[0] + ' \u00b7 Answer ' + mk[1] + '/' + mkMax[1]);
         feedback.appendChild(tally);
         var done = verdict.res === 'OK';
         var amber = verdict.res === 'AMBER';
@@ -5324,7 +5334,7 @@ window.OLS_TRANSPORT = {
       if (verdict) {
         var mkMax2 = verdict.mkMax || q.marks;
         margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally" style="font-size:18px">' + (verdict.mk[0] + verdict.mk[1]) + '/' + (mkMax2[0] + mkMax2[1]) + '</div>';
-        feedback.appendChild(el('div', 'mk-tally', 'M ' + verdict.mk[0] + '/' + mkMax2[0] + ' \u00b7 A ' + verdict.mk[1] + '/' + mkMax2[1]));
+        feedback.appendChild(el('div', 'mk-tally', 'Working ' + verdict.mk[0] + '/' + mkMax2[0] + ' \u00b7 Answer ' + verdict.mk[1] + '/' + mkMax2[1]));
       }
       checkRow.hidden = true;
     } else {
@@ -5649,7 +5659,7 @@ window.OLS_TRANSPORT = {
     var out = [];
     pack.sections.forEach(function (sec, si) {
       sec.questions.forEach(function (q, qi) {
-        out.push({ q: q, label: 'Ex' + (si + 1) + '.Q' + (qi + 1), secId: sec.id, secHasMovie: !!sec.movie });
+        out.push({ q: q, label: 'Ex ' + (si + 1) + ' \u00b7 Q' + (qi + 1), secId: sec.id, secHasMovie: !!sec.movie });
       });
     });
     return out;
@@ -5815,8 +5825,8 @@ window.OLS_TRANSPORT = {
     band.innerHTML =
       insTile(rows.length, 'pupils started') +
       insTile(pctComplete + '%', 'questions finished') +
-      insTile(insPct(avgMethod), 'method (working)') +
-      insTile(insPct(avgAcc), 'accuracy (answers)') +
+      insTile(insPct(avgMethod), 'working') +
+      insTile(insPct(avgAcc), 'answer') +
       insTile(avgConf != null ? avgConf.toFixed(1) : '\u2014', 'avg confidence /3') +
       insTile(nSupport + ' / ' + nStretch, 'support / stretch');
     host.appendChild(band);
@@ -5851,7 +5861,7 @@ window.OLS_TRANSPORT = {
           '<td class="ins-bad">' + (t.err || '') + '</td>' +
           '<td>' + (t.amber || '') + '</td>' +
           '<td>' + (dxTop ? esc(DX_NAMES[dxTop.key] || dxTop.key) + ' &times;' + dxTop.n : '<span class="ins-dim">&mdash;</span>') + '</td>' +
-          '<td>' + (atTop ? 'line ' + esc(String(atTop.key)) : '<span class="ins-dim">&mdash;</span>') + '</td></tr>');
+          '<td>' + (atTop ? 'step ' + esc(String(atTop.key)) : '<span class="ins-dim">&mdash;</span>') + '</td></tr>');
       });
       qt.push('</tbody></table>');
       var qd = el('div', 'wall'); qd.innerHTML = qt.join(''); host.appendChild(qd);
@@ -6040,8 +6050,8 @@ window.OLS_TRANSPORT = {
     var mPct = mMax ? Math.round(100 * mGot / mMax) : null;
     var aPct = aMax ? Math.round(100 * aGot / aMax) : null;
     var bars = el('div', 'drill-bars');
-    bars.appendChild(drillBar('Method (working)', mPct));
-    bars.appendChild(drillBar('Accuracy (answers)', aPct));
+    bars.appendChild(drillBar('Working', mPct));
+    bars.appendChild(drillBar('Answer', aPct));
     out.appendChild(bars);
 
     cell.innerHTML = ''; cell.appendChild(out);
@@ -6099,8 +6109,8 @@ window.OLS_TRANSPORT = {
     wrap.innerHTML =
       insTile(st.finished + '/' + st.attempted, 'finished') +
       insTile(st.finished ? Math.round(100 * st.firstTry / st.finished) + '%' : '\u2014', 'right first try') +
-      insTile(insPct(st.methodRate), 'method (working)') +
-      insTile(st.accMax ? Math.round(100 * st.accGot / st.accMax) + '%' : '\u2014', 'accuracy (answers)') +
+      insTile(insPct(st.methodRate), 'working') +
+      insTile(st.accMax ? Math.round(100 * st.accGot / st.accMax) + '%' : '\u2014', 'answer') +
       insTile(st.avgTime ? Math.round(st.avgTime) + 's' : '\u2014', 'avg per question') +
       insTile(st.avgConf != null ? st.avgConf.toFixed(1) : '\u2014', 'self-confidence /3');
     out.appendChild(wrap);
@@ -6130,7 +6140,13 @@ window.OLS_TRANSPORT = {
     var msg = el('p', 'ui-msg', 'Loading the wall\u2026');
     msg.style.marginTop = '26px';   // clear the tab + tools rows so the wait-card isn't crammed against them
     var wall = el('div', 'wall');
-    body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(wall);
+    var legend = el('p', 'wall-legend');
+    legend.innerHTML = '<span class="glyph-ok">\u2713</span> correct &middot; ' +
+      '<span class="glyph-amber">\u25d0</span> answer only &middot; ' +
+      '<span class="glyph-err">\u2717</span> wrong <span class="wl-sub">(small number = the step it broke at)</span> &middot; ' +
+      '<span class="glyph-live">\u25cf</span> working now &middot; ' +
+      '<span class="glyph-un">\u2014</span> not started';
+    body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(legend); body.appendChild(wall);
     shell(view.cls + ' \u00b7 Working Wall', body, function () { showClasses(); });
 
     var qlist = questionList(view.act);
@@ -6148,9 +6164,9 @@ window.OLS_TRANSPORT = {
           var glyph = '<span class="glyph-un">\u2014</span>', title = 'Untouched';
           if (cell) {
             var st = cell.ovr === 1 ? 'ok' : cell.ovr === 0 ? 'err' : cell.st;
-            if (st === 'ok') { glyph = '<span class="glyph-ok">\u2713</span>'; title = 'Method and answer sound'; }
-            else if (st === 'amber') { glyph = '<span class="glyph-amber">\u25d0</span>'; title = 'Right answer, working missing'; }
-            else if (st === 'err') { glyph = '<span class="glyph-err">\u2717' + (cell.errAt ? '<sub>' + cell.errAt + '</sub>' : '') + '</span>'; title = 'First error at line ' + (cell.errAt || '?') + (cell.dx ? ' \u2014 ' + (DX_NAMES[cell.dx] || cell.dx) : ''); }
+            if (st === 'ok') { glyph = '<span class="glyph-ok">\u2713</span>'; title = 'Correct \u2014 working and answer both sound'; }
+            else if (st === 'amber') { glyph = '<span class="glyph-amber">\u25d0</span>'; title = 'Answer only \u2014 no working shown'; }
+            else if (st === 'err') { glyph = '<span class="glyph-err">\u2717' + (cell.errAt ? '<sub>' + cell.errAt + '</sub>' : '') + '</span>'; title = 'Wrong \u2014 first slip at step ' + (cell.errAt || '?') + (cell.dx ? ' \u2014 ' + (DX_NAMES[cell.dx] || cell.dx) : ''); }
             else if (st === 'open') {
               var live = p.summary.upd && (now - p.summary.upd) < 60;
               glyph = '<span class="glyph-live">\u25cf</span>'; title = live ? 'Working right now' : 'In progress';
@@ -6280,7 +6296,7 @@ window.OLS_TRANSPORT = {
 
         if (res.verdict) {
           var mkMax = res.verdict.mkMax || q.marks;
-          bodyEl.appendChild(el('p', 'mk-tally', 'M ' + res.verdict.mk[0] + '/' + mkMax[0] + ' \u00b7 A ' + res.verdict.mk[1] + '/' + mkMax[1] +
+          bodyEl.appendChild(el('p', 'mk-tally', 'Working ' + res.verdict.mk[0] + '/' + mkMax[0] + ' \u00b7 Answer ' + res.verdict.mk[1] + '/' + mkMax[1] +
             (last.dur ? ' \u00b7 ' + last.dur + 's \u00b7 ' + (rec.att.length) + ' attempt' + (rec.att.length > 1 ? 's' : '') : '')));
         }
         if (state.help && state.help[q.id]) bodyEl.appendChild(el('p', 'jp-help', 'Pulled the method help after getting stuck'));
@@ -6293,11 +6309,11 @@ window.OLS_TRANSPORT = {
           btn.disabled = true;
           call('override', { className: view.cls, act: view.act, email: email, q: q.id, idx: 'q', val: val }).then(function (r2) {
             btn.disabled = false;
-            if (r2 && r2.ok) { rec.ovr = (val == null) ? null : { q: val }; ovMsg.textContent = (val != null) ? 'Override saved \u2014 the Wall now shows your judgement.' : 'Override cleared.'; }
+            if (r2 && r2.ok) { rec.ovr = (val == null) ? null : { q: val }; ovMsg.textContent = (val === 1) ? 'Marked right \u2014 full working and answer marks. The Wall now shows your judgement.' : (val === 0) ? 'Marked wrong \u2014 the Wall now shows your judgement.' : 'Back to the automatic mark.'; }
             else ovMsg.textContent = (r2 && r2.error) || 'Could not save.';
           }).catch(function () { btn.disabled = false; ovMsg.textContent = 'Could not save.'; });
         }
-        [['Mark it right', 1], ['Mark it wrong', 0], ['Back to the app\u2019s marking', null]].forEach(function (o) {
+        [['Mark it right', 1], ['Mark it wrong', 0], ['Use the automatic mark', null]].forEach(function (o) {
           var b = el('button', 'btn-pencil', o[0]);
           b.addEventListener('click', function () { setOvr(o[1], b); });
           ovRow.appendChild(b);
@@ -6317,6 +6333,7 @@ window.OLS_TRANSPORT = {
           ovRow.appendChild(nudgeB);
         }
         ovRow.appendChild(ovMsg);
+        bodyEl.appendChild(el('p', 'ui-msg ov-why', 'The app marks the working automatically. If its verdict looks wrong \u2014 say a pupil used a valid method it didn\u2019t recognise \u2014 set your own mark here. Your judgement shows on the Wall straight away.'));
         bodyEl.appendChild(ovRow);
         page.appendChild(wrap);
       });
@@ -6474,7 +6491,8 @@ window.OLS_TRANSPORT = {
       var flagBy = {};
       pstats.forEach(function (s) { var f = pupilFlag(s.st, medianTime, qlist.length); flagBy[s.email] = f ? (f.kind === 'support' ? 'needs support' : 'ready for stretch') : ''; });
 
-      var rows = [['Pupil', 'Email', 'Activity', 'Question', 'Status', 'Method marks', 'Accuracy marks', 'Out of', 'Attempts', 'First try', 'Time (s)', 'Misconception', 'Self-confidence', 'Teacher override', 'Pupil flag']];
+      var STATUS_LABEL = { ok: 'Correct', amber: 'Answer only', err: 'Wrong', open: 'In progress' };
+      var rows = [['Pupil', 'Email', 'Activity', 'Question', 'Status', 'Working marks', 'Answer marks', 'Out of', 'Attempts', 'First try', 'Time (seconds)', 'Misconception', 'Self-confidence (1-3)', 'Teacher override', 'Pupil flag']];
       all.forEach(function (p) {
         var evals = (p.state && p.state.evals) || {};
         questionList(view.act).forEach(function (item) {
@@ -6484,7 +6502,7 @@ window.OLS_TRANSPORT = {
           var mkMax = (res.verdict && res.verdict.mkMax) || item.q.marks;
           var firstTry = (res.rec && res.rec.att && res.rec.att.length === 1 && res.st === 'ok') ? 'yes' : (res.st === 'open' ? '' : 'no');
           var secEv = evals[qSec[item.q.id]];
-          rows.push([p.name || '', p.email, view.act, item.label, res.st,
+          rows.push([p.name || '', p.email, view.act, item.label, STATUS_LABEL[res.st] || res.st,
             mk[0], mk[1], mkMax[0] + mkMax[1],
             res.rec ? res.rec.att.length : '', firstTry, res.last && res.last.dur || '',
             res.dx ? (DX_NAMES[res.dx] || res.dx) : (res.cluster || ''),
