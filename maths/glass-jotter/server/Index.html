@@ -4549,14 +4549,28 @@ window.OLS_TRANSPORT = {
     return pr;
   }
 
+  // Comments are keyed by QUESTION KIND so the praise fits what the pupil actually
+  // did. "working" = line-by-line questions (algebra + angle reasoning). "classify"
+  // = tap-the-type. "protractor" = measure-and-read. A classify pupil clicked a
+  // button \u2014 they must never be told their "working" or "lines" were lovely.
   var COMMENTS = {
-    perfect: ['Good \u2014 equals signs lined up.', 'A fair copy. Lovely clear working.', 'Every line earns its mark.'],
-    partial: ['Look again at the boxed line.', 'So close \u2014 one line lets it down.', 'The method is there \u2014 mind that step.'],
-    amber: ['Right answer \u2014 now show me the working.', 'Correct, but a marker needs to see the method.'],
-    fail: ['We\u2019ll look at this one together in class.', 'Watch the worked example again, then retry the idea in class.']
+    working: {
+      perfect: ['Good \u2014 equals signs lined up.', 'A fair copy. Lovely clear working.', 'Every line earns its mark.'],
+      partial: ['Look again at the boxed line.', 'So close \u2014 one line lets it down.', 'The method is there \u2014 mind that step.'],
+      amber: ['Right answer \u2014 now show me the working.', 'Correct, but a marker needs to see the method.'],
+      fail: ['We\u2019ll look at this one together in class.', 'Watch the worked example again, then retry the idea in class.']
+    },
+    classify: {
+      perfect: ['Spot on \u2014 that\u2019s the right type.', 'Yes \u2014 you sized it up correctly.', 'Correct \u2014 good eye.'],
+      fail: ['Not the right type \u2014 we\u2019ll size it up together in class.', 'Compare it against 90\u00b0 and 180\u00b0 next time.']
+    },
+    protractor: {
+      perfect: ['Measured spot on.', 'Neatly lined up \u2014 an accurate reading.', 'Bang on \u2014 careful measuring.']
+    }
   };
-  function commentFor(qid, bucket) {
-    var bank = COMMENTS[bucket] || [];
+  function commentFor(qid, bucket, kind) {
+    var set = COMMENTS[kind] || COMMENTS.working;
+    var bank = set[bucket] || COMMENTS.working[bucket] || [];
     if (!bank.length) return '';
     var h = 0; for (var i = 0; i < qid.length; i++) h = (h * 31 + qid.charCodeAt(i)) % 9973;
     return bank[h % bank.length];
@@ -4716,7 +4730,7 @@ window.OLS_TRANSPORT = {
       drawMark(mk, right ? 'tick' : 'cross');
       feedback.appendChild(el('span', 'mk-tally ' + (right ? 'mk-correct' : 'mk-wrong'), ' ' + (right ? '1/1' : '0/1')));
       if (rec.lock) {
-        feedback.appendChild(el('p', 'mk-comment ' + (right ? 'mk-correct' : 'mk-wrong'), right ? commentFor(q.id, 'perfect') : commentFor(q.id, 'fail')));
+        feedback.appendChild(el('p', 'mk-comment ' + (right ? 'mk-correct' : 'mk-wrong'), right ? commentFor(q.id, 'perfect', 'classify') : commentFor(q.id, 'fail', 'classify')));
         if (!right) feedback.appendChild(el('p', 'ui-msg', 'You answered \u201c' + esc(last.pick) + '\u201d \u2014 your teacher can see this and will pick it up in class.'));
         checkRow.hidden = true;
         cards.querySelectorAll('.reason-card').forEach(function (x) { x.disabled = true; });
@@ -4927,7 +4941,7 @@ window.OLS_TRANSPORT = {
       drawMark(mk, res.ok ? 'tick' : 'cross');
       feedback.appendChild(el('span', 'mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong'), ' ' + (res.ok ? '1/1' : '0/1') + (res.ok ? '' : ' \u00b7 you measured ' + last.read + '\u00b0')));
       if (rec.lock) {
-        if (res.ok) feedback.appendChild(el('p', 'mk-comment mk-correct', commentFor(q.id, 'perfect')));
+        if (res.ok) feedback.appendChild(el('p', 'mk-comment mk-correct', commentFor(q.id, 'perfect', 'protractor')));
         else if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', 'You read the other scale \u2014 use the one that starts at 0 on the arm you lined up. The true size is ' + q.value + '\u00b0.'));
         else feedback.appendChild(el('p', 'ui-msg', 'Not quite \u2014 line the centre on the corner and 0 along an arm, then read again. The true size is ' + q.value + '\u00b0.'));
         checkRow.hidden = true;
@@ -7802,14 +7816,14 @@ window.OLS_TRANSPORT = {
     var sum = summarise(current.act.id, current.state, me.name);
     var pct = sum.marks[1] ? Math.round(100 * sum.marks[0] / sum.marks[1]) : 0;
     var hand = pct === 100 ? 'Full marks. A fair copy \u2014 the gold star is yours.'
-      : pct >= 80 ? 'Lovely clear working. Nearly there \u2014 look back at the crosses.'
-      : pct >= 50 ? 'Good \u2014 now study the lines where the red pen stopped.'
+      : pct >= 80 ? 'Nearly there \u2014 look back at the crosses.'
+      : pct >= 50 ? 'Good \u2014 go back over the questions the red pen marked.'
       : 'Plenty to talk about in class \u2014 your teacher can see exactly where.';
     main.innerHTML = '<div class="tally-page">' +
       '<p class="sec-walt">' + current.act.title + ' \u00b7 marks so far</p>' +
       '<div class="tally-big">' + sum.marks[0] + ' / ' + sum.marks[1] + '</div>' +
       '<p class="tally-hand">' + hand + '</p>' +
-      '<p class="ui-msg" style="margin-top:var(--sq)">' + sum.done + ' of ' + sum.total + ' questions checked \u00b7 every line of your working is on your teacher\u2019s copy</p>' +
+      '<p class="ui-msg" style="margin-top:var(--sq)">' + sum.done + ' of ' + sum.total + ' questions checked \u00b7 your whole book is on your teacher\u2019s copy</p>' +
       '</div>';
   }
 

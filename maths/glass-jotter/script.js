@@ -1133,14 +1133,14 @@
     var sum = summarise(current.act.id, current.state, me.name);
     var pct = sum.marks[1] ? Math.round(100 * sum.marks[0] / sum.marks[1]) : 0;
     var hand = pct === 100 ? 'Full marks. A fair copy — the gold star is yours.'
-      : pct >= 80 ? 'Lovely clear working. Nearly there — look back at the crosses.'
-      : pct >= 50 ? 'Good — now study the lines where the red pen stopped.'
+      : pct >= 80 ? 'Nearly there — look back at the crosses.'
+      : pct >= 50 ? 'Good — go back over the questions the red pen marked.'
       : 'Plenty to talk about in class — your teacher can see exactly where.';
     main.innerHTML = '<div class="tally-page">' +
       '<p class="sec-walt">' + current.act.title + ' · marks so far</p>' +
       '<div class="tally-big">' + sum.marks[0] + ' / ' + sum.marks[1] + '</div>' +
       '<p class="tally-hand">' + hand + '</p>' +
-      '<p class="ui-msg" style="margin-top:var(--sq)">' + sum.done + ' of ' + sum.total + ' questions checked · every line of your working is on your teacher’s copy</p>' +
+      '<p class="ui-msg" style="margin-top:var(--sq)">' + sum.done + ' of ' + sum.total + ' questions checked · your whole book is on your teacher’s copy</p>' +
       '</div>';
   }
 
