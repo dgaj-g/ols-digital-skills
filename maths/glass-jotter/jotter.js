@@ -93,7 +93,7 @@
     var caret = el('span', 'caret');
     var ph = el('span', 'ph', opts.placeholder || 'write the new line here');
     compose.appendChild(content); compose.appendChild(caret); compose.appendChild(ph);
-    host.appendChild(compose);
+    (opts.fieldHost || host).appendChild(compose);   // fieldHost lets the input sit inline (e.g. ∠PVR = [__] °); keypad still goes to host
 
     var KEYS = opts.numericOnly
       ? ['7', '8', '9', '+', '−', '(', ')', '⌫',
@@ -428,7 +428,7 @@
       var raw = composer.value();
       var read = parseInt(raw, 10);
       if (raw === '' || isNaN(read)) { flash('Type the size you measured first.'); return; }
-      if (read < 0 || read > 360) { flash('A measurement should be between 0 and 360 degrees.'); return; }
+      if (read < 0 || read > 180) { flash('A protractor measures up to 180° — read the size again.'); return; }
       var res = protractorMark(q, read);
       var att = { read: read, dur: Math.round((Date.now() - t0) / 1000), res: res.ok ? 'OK' : 'X@1' };
       if (res.dx) att.dx = res.dx;
@@ -440,6 +440,7 @@
     checkBtn.addEventListener('click', runCheck);
 
     if (rec.lock && rec.att.length) finish(rec.att[rec.att.length - 1], true);
+    else composer.focus();   // ready to type the measurement without a second tap
     return { qid: q.id };
   }
 
@@ -551,12 +552,14 @@
             pendingOp = { kind: c.id, operand: '' };
             var opc = makeComposer(operandHost, {
               label: 'How much?', placeholder: 'how much? e.g. 15 or 3x',
-              onCommit: function () {}
+              onCommit: function () { composer.focus(); }   // Done on the operand jumps to the new-line field
             });
             opc.root.classList.add('compose-mini');
             pendingOp.reader = opc;
+            opc.focus();                                     // focus the operand straight away
           } else {
             pendingOp = { kind: c.id };
+            composer.focus();                                // no operand needed — go write the line
           }
         });
         strip.appendChild(b);
@@ -570,15 +573,16 @@
         placeholder: 'write the new line of working',
         onCommit: commitAlgebraLine
       });
-      var undo = el('button', 'btn-pencil', '↶ remove last line');
-      undo.type = 'button';
-      undo.style.marginTop = '8px';
-      undo.addEventListener('click', function () {
-        cur.L.pop();
+      undoBtn = el('button', 'btn-pencil', '↶ remove last line');
+      undoBtn.type = 'button';
+      undoBtn.style.marginTop = '8px';
+      undoBtn.hidden = true;   // shown by redrawCurrent once a line exists
+      undoBtn.addEventListener('click', function () {
+        if (cur.L.pop()) flashMsg('Removed your last line.', true);
         redrawCurrent();
         save();
       });
-      ui.appendChild(undo);
+      ui.appendChild(undoBtn);
     }
 
     function commitAlgebraLine(text) {
@@ -608,6 +612,7 @@
 
     /* ── ANGLES composer (tap angle → value → reason) ────────────── */
     var stepTarget = null, stepComposer = null, chosenReason = null;
+    var undoBtn = null;   // "remove last step/line" — hidden until there's something to remove
 
     function unknownAngles() {
       var out = [];
@@ -635,15 +640,22 @@
           openStep(nm, stepHost);
         });
       });
-      var undo = el('button', 'btn-pencil', '↶ remove last step');
-      undo.type = 'button';
-      undo.addEventListener('click', function () {
+      undoBtn = el('button', 'btn-pencil', '↶ remove last step');
+      undoBtn.type = 'button';
+      undoBtn.hidden = true;   // shown by redrawCurrent once a step exists
+      undoBtn.addEventListener('click', function () {
         var last = cur.steps.pop();
-        if (last) { delete established[last.ang]; dgm.setText(last.ang, q.diagram.angles[last.ang].label || ''); }
+        if (last) {
+          delete established[last.ang];
+          dgm.setText(last.ang, q.diagram.angles[last.ang].label || '');
+          var lbl = dgm.svg.querySelector('[data-anglabel="' + last.ang + '"]');
+          if (lbl) { lbl.style.fill = '#14213A'; lbl.style.fontStyle = q.diagram.angles[last.ang].label ? 'italic' : ''; }
+          flashMsg('Removed your last step.', true);
+        }
         redrawCurrent();
         save();
       });
-      ui.appendChild(undo);
+      ui.appendChild(undoBtn);
     }
 
     function openStep(nm, stepHost) {
@@ -652,20 +664,25 @@
       stepHost.hidden = false;
       stepHost.innerHTML = '';
       dgm.pulse(nm, true);
+
+      // STEP 1 — the size, entered inline:  ∠PVR = [ __ ] °
+      stepHost.appendChild(el('p', 'sc-head', 'Work out ∠' + esc(nm)));
       var row = el('div', 'sc-row');
-      row.innerHTML = '<span class="sc-eq">∠' + esc(nm) + ' =</span>';
-      var compHost = el('span', '');
-      row.appendChild(compHost);
-      row.innerHTML += '<span class="sc-eq">°</span>';
+      row.appendChild(el('span', 'sc-eq', '∠' + esc(nm) + ' ='));
+      var fieldHost = el('span', 'sc-field');
+      row.appendChild(fieldHost);
+      row.appendChild(el('span', 'sc-eq', '°'));
       stepHost.appendChild(row);
       stepComposer = makeComposer(stepHost, {
+        fieldHost: fieldHost,
         numericOnly: true,
         label: 'Size of angle ' + nm,
-        placeholder: 'the size — or type the calculation, e.g. 65',
-        onCommit: function () { /* committed via the step button below */ }
+        placeholder: 'e.g. 65',
+        onCommit: function () { tryAddStep(); }   // Enter / Done now ADDS the step (was a dead no-op)
       });
 
-      // reason picker — grouped, randomised within groups, FULL bank always
+      // STEP 2 — the reason (grouped, randomised within groups, FULL bank always)
+      stepHost.appendChild(el('p', 'sc-sub', 'Then choose the reason — it earns its own mark:'));
       var reasons = el('div', 'reasons');
       var bank = window.GJ_CONTENT.angles.reasonBank;
       var groups = [];
@@ -679,9 +696,10 @@
           b.textContent = r.text;
           b.setAttribute('aria-pressed', 'false');
           b.addEventListener('click', function () {
-            cards.parentNode.querySelectorAll('.reason-card').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+            reasons.querySelectorAll('.reason-card').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
             b.setAttribute('aria-pressed', 'true');
             chosenReason = r.id;
+            scMsg.textContent = '';   // clear any "now choose a reason" prompt
           });
           cards.appendChild(b);
         });
@@ -689,17 +707,19 @@
       });
       stepHost.appendChild(reasons);
 
-      var doRow = el('div', 'check-row');
-      var add = el('button', 'btn-stamp', 'Write the step in my jotter');
-      add.type = 'button';
-      add.addEventListener('click', function () {
+      // inline guidance, right where the pupil is looking (not the far-off page message)
+      var scMsg = el('p', 'sc-msg');
+      stepHost.appendChild(scMsg);
+
+      function tryAddStep() {
         var raw = stepComposer.value();
-        if (!raw) { flashMsg('Give the size of the angle first.'); return; }
+        if (!raw) { scMsg.textContent = 'First type the size of the angle above.'; stepComposer.focus(); return; }
         var calcStr = raw.replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/');
         var evald = window.GJ_MATH.evalCalc(calcStr);
-        if (!evald.ok) { flashMsg('I can’t read that number or calculation — check it.'); return; }
-        if (!chosenReason) { flashMsg('Choose the reason — it earns a separate mark.'); return; }
+        if (!evald.ok) { scMsg.textContent = 'I can’t read that — type a number, or a calculation like 180−65.'; stepComposer.focus(); return; }
         var val = evald.val.d === 1 ? evald.val.n : evald.val.n / evald.val.d;
+        if (val < 0 || val > 360) { scMsg.textContent = 'An angle here is between 0° and 360° — check the size.'; stepComposer.focus(); return; }
+        if (!chosenReason) { scMsg.textContent = 'Now choose the reason below ↓ — it earns its own mark.'; return; }
         var step = { ang: nm, val: val, rsn: chosenReason, s: Math.round((Date.now() - cur.t0) / 1000) };
         if (/[-+*/()]/.test(calcStr)) step.calc = raw;
         cur.steps.push(step);
@@ -712,14 +732,19 @@
         redrawCurrent();
         confirmStepAdded();
         save();
-      });
+      }
+
+      var doRow = el('div', 'check-row');
+      var add = el('button', 'btn-stamp', 'Add to my working');
+      add.type = 'button';
+      add.addEventListener('click', tryAddStep);
       doRow.appendChild(add);
       var cancel = el('button', 'btn-pencil', 'Cancel');
       cancel.type = 'button';
       cancel.addEventListener('click', function () { dgm.pulse(nm, false); stepHost.hidden = true; });
       doRow.appendChild(cancel);
       stepHost.appendChild(doRow);
-      stepHost.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
+      stepComposer.focus();   // auto-focus the size field — no second tap needed
     }
 
     /* ── shared render / save / check ─────────────────────────────── */
@@ -752,6 +777,7 @@
       cur.steps.forEach(function (s) { renderStepLine(s, {}); });
       var ready = isAngles ? !!established[q.target] : cur.L.length > 0;
       checkBtn.disabled = !ready || rec.lock;
+      if (undoBtn) undoBtn.hidden = rec.lock || (isAngles ? cur.steps.length === 0 : cur.L.length === 0);
       attemptNote.textContent = rec.att.length === 1 ? 'Second attempt — your first try stays on the page.' : '';
     }
 
