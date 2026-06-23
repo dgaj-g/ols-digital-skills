@@ -99,6 +99,7 @@
   function makeComposer(host, opts) {
     opts = opts || {};
     var buf = '';
+    var locked = false;   // once locked (e.g. protractor answered), ignore all input
     var compose = el('div', 'compose');
     compose.setAttribute('tabindex', '0');
     compose.setAttribute('role', 'textbox');
@@ -131,14 +132,14 @@
         var gb = el('button', 'key key-go key-wide');
         gb.type = 'button';
         gb.textContent = opts.commitLabel || '✓ Done';
-        gb.addEventListener('click', function () { if (opts.onCommit) opts.onCommit(buf.trim()); });
+        gb.addEventListener('click', function () { if (locked) return; if (opts.onCommit) opts.onCommit(buf.trim()); });
         pad.appendChild(gb);
         return;
       }
       var b = el('button', 'key' + (k === '⌫' ? ' key-del' : ''));
       b.type = 'button';
       b.textContent = k;
-      b.addEventListener('click', function () { press(k); });
+      b.addEventListener('click', function () { if (locked) return; press(k); });
       pad.appendChild(b);
     });
     host.appendChild(pad);
@@ -161,6 +162,7 @@
       render();
     }
     compose.addEventListener('keydown', function (e) {
+      if (locked) return;
       if (e.key === 'Enter') { e.preventDefault(); maybeHidePad(); if (opts.onCommit) opts.onCommit(buf.trim()); return; }
       if (e.key === 'Backspace') { e.preventDefault(); buf = buf.slice(0, -1); render(); maybeHidePad(); return; }
       if (e.key.length === 1 && /[0-9x+\-*/().=\s]/.test(e.key)) {
@@ -179,6 +181,11 @@
       clear: function () { buf = ''; render(); },
       set: function (v) { buf = v; render(); },
       focus: function () { compose.focus(); },
+      setLocked: function (v) {
+        locked = v;
+        compose.setAttribute('aria-disabled', v ? 'true' : 'false');
+        if (pad.style.display !== 'none') { pad.style.pointerEvents = v ? 'none' : ''; pad.style.opacity = v ? '0.4' : ''; }
+      },
       root: compose
     };
   }
@@ -452,7 +459,7 @@
         else if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', 'You read the other scale — use the one that starts at 0 on the arm you lined up. The true size is ' + q.value + '°.'));
         else feedback.appendChild(el('p', 'ui-msg', 'Not quite — line the centre on the corner and 0 along an arm, then read again. The true size is ' + q.value + '°.'));
         checkRow.hidden = true;
-        composer.root.setAttribute('aria-disabled', 'true');
+        composer.setLocked(true);   // functionally lock: no more typing once correct or out of attempts (also on reload)
         margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong') + '" style="font-size:18px">' + (res.ok ? '1' : '0') + '/1</div>';
       } else if (!instant) {
         if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', 'Close — but check you are reading the scale that starts at 0 on your lined-up arm. One more go.'));
@@ -653,6 +660,8 @@
     /* ── ANGLES composer (tap angle → value → reason) ────────────── */
     var stepTarget = null, stepComposer = null, chosenReason = null;
     var undoBtn = null;   // "remove last step/line" — hidden until there's something to remove
+    var refreshTappable = null;   // set in buildAnglesUI; re-marks which arcs are still tappable
+    var targetLabel = (isAngles && q.target) ? ((q.diagram.angles[q.target] && q.diagram.angles[q.target].label) || ('∠' + q.target)) : '';
 
     function unknownAngles() {
       var out = [];
@@ -665,18 +674,29 @@
 
     function buildAnglesUI() {
       ui.innerHTML = '';
-      ui.appendChild(el('p', 'ui-msg', 'Tap an angle on the diagram, give its size, and choose the reason. Find your way to ' + (q.diagram.angles[q.target] && q.diagram.angles[q.target].label ? q.diagram.angles[q.target].label : '∠' + q.target) + '.'));
+      // instruction matches reality: point straight at the one tappable arc, or to the target
+      var openCount = unknownAngles().length;
+      ui.appendChild(el('p', 'ui-msg', openCount === 1
+        ? 'One angle is dashed on the diagram — tap it, give its size, and choose the reason.'
+        : 'Tap a dashed angle on the diagram, give its size and reason, then work your way to ' + targetLabel + '.'));
       var stepHost = el('div', 'step-card');
       stepHost.hidden = true;
       ui.appendChild(stepHost);
 
-      // arcs are tappable
+      // arcs are tappable when not given and not yet established; refreshTappable marks them visibly
+      refreshTappable = function () {
+        Object.keys(q.diagram.angles).forEach(function (nm) {
+          var g = dgm.arcEl(nm);
+          if (!g) return;
+          g.classList.toggle('arc-tappable', !rec.lock && !q.diagram.angles[nm].given && !established[nm]);
+        });
+      };
       Object.keys(q.diagram.angles).forEach(function (nm) {
         var g = dgm.arcEl(nm);
         if (!g) return;
         g.addEventListener('click', function () {
           var d = q.diagram.angles[nm];
-          if (d.given || established[nm]) return;
+          if (rec.lock || d.given || established[nm]) return;
           openStep(nm, stepHost);
         });
       });
@@ -701,9 +721,11 @@
     function openStep(nm, stepHost) {
       stepTarget = nm;
       chosenReason = null;
+      var isFinalStep = (nm === q.target);   // the angle that completes the question -> "Check my answer" + mark in one press
       stepHost.hidden = false;
       stepHost.innerHTML = '';
       dgm.pulse(nm, true);
+      var activeArc = dgm.arcEl(nm); if (activeArc) activeArc.classList.remove('arc-tappable');   // it's active now, not waiting
 
       // STEP 1 — the size, entered inline:  ∠PVR = [ __ ] °
       stepHost.appendChild(el('p', 'sc-head', 'Work out ∠' + esc(nm)));
@@ -719,7 +741,7 @@
         pad: 'number',
         label: 'Size of angle ' + nm,
         placeholder: 'the size, e.g. 65',
-        onCommit: function () { tryAddStep(); }   // Enter adds the step; the "Add to my working" button is the on-screen commit
+        onCommit: function () { commitStep(); }   // Enter does the same as the on-screen button (add, or check-on-final)
       });
 
       // STEP 2 — the reason (grouped, randomised within groups, FULL bank always)
@@ -754,13 +776,13 @@
 
       function tryAddStep() {
         var raw = stepComposer.value();
-        if (!raw) { scMsg.textContent = 'First type the size of the angle above.'; stepComposer.focus(); return; }
+        if (!raw) { scMsg.textContent = 'First type the size of the angle above.'; stepComposer.focus(); return false; }
         var calcStr = raw.replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/');
         var evald = window.GJ_MATH.evalCalc(calcStr);
-        if (!evald.ok) { scMsg.textContent = 'I can’t read that — type a number, or a calculation like 180−65.'; stepComposer.focus(); return; }
+        if (!evald.ok) { scMsg.textContent = 'I can’t read that — type a number, or a calculation like 180−65.'; stepComposer.focus(); return false; }
         var val = evald.val.d === 1 ? evald.val.n : evald.val.n / evald.val.d;
-        if (val < 0 || val > 360) { scMsg.textContent = 'An angle here is between 0° and 360° — check the size.'; stepComposer.focus(); return; }
-        if (!chosenReason) { scMsg.textContent = 'Now choose the reason below ↓ — it earns its own mark.'; return; }
+        if (val < 0 || val > 360) { scMsg.textContent = 'An angle here is between 0° and 360° — check the size.'; stepComposer.focus(); return false; }
+        if (!chosenReason) { scMsg.textContent = 'Now choose the reason below ↓ — it earns its own mark.'; return false; }
         var step = { ang: nm, val: val, rsn: chosenReason, s: Math.round((Date.now() - cur.t0) / 1000) };
         if (/[-+*/()]/.test(calcStr)) step.calc = raw;
         cur.steps.push(step);
@@ -771,14 +793,21 @@
         if (lbl) { lbl.style.fill = '#5B6470'; lbl.style.fontStyle = 'italic'; }
         stepHost.hidden = true;
         redrawCurrent();
-        confirmStepAdded();
         save();
+        return true;   // confirmation/verdict handled by commitStep, so the final step shows the mark, not an "added" flash
+      }
+
+      // one press: record the step, then EITHER mark it (final/only angle) OR confirm + stay put (intermediate)
+      function commitStep() {
+        if (!tryAddStep()) return;
+        if (isFinalStep) { runCheck(); }
+        else { confirmStepAdded(); wrap.scrollIntoView({ block: 'start', behavior: REDUCED ? 'auto' : 'smooth' }); }
       }
 
       var doRow = el('div', 'check-row');
-      var add = el('button', 'btn-stamp', 'Add to my working');
+      var add = el('button', 'btn-stamp', isFinalStep ? 'Check my answer' : 'Add to my working');
       add.type = 'button';
-      add.addEventListener('click', tryAddStep);
+      add.addEventListener('click', commitStep);
       doRow.appendChild(add);
       var cancel = el('button', 'btn-pencil', 'Cancel');
       cancel.type = 'button';
@@ -820,6 +849,7 @@
       checkBtn.disabled = !ready || rec.lock;
       if (undoBtn) undoBtn.hidden = rec.lock || (isAngles ? cur.steps.length === 0 : cur.L.length === 0);
       attemptNote.textContent = rec.att.length === 1 ? 'Second attempt — your first try stays on the page.' : '';
+      if (refreshTappable) refreshTappable();   // single chokepoint: keep the dashed "tappable" marks honest (clears them on lock)
     }
 
     function save() {
@@ -849,9 +879,10 @@
       attempt.res = verdict.res;
       rec.att.push(attempt);
 
-      // keep the pupil's eye on their working as the marks ink down the margin —
-      // and out of the way of the keypad that's about to collapse below (no jump).
-      linesEl.scrollIntoView({ block: 'center', behavior: REDUCED ? 'auto' : 'smooth' });
+      // only pull the question up if its top is above the viewport (long page); otherwise
+      // leave the view put — the guarded feedback scroll below guarantees the verdict shows.
+      var wr0 = wrap.getBoundingClientRect();
+      if (wr0.top < 0) wrap.scrollIntoView({ block: 'start', behavior: REDUCED ? 'auto' : 'smooth' });
 
       var rows = linesEl.querySelectorAll('.wline:not(.struck):not(.pencil)');
       var per = verdict.perLine || verdict.perStep || [];
@@ -928,7 +959,8 @@
           }
           setTimeout(function () { redrawCurrent(); checkBtn.disabled = true; }, REDUCED ? 0 : 600);
         }
-        feedback.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });   // land on the marks + tally, never below the fold
+        var fr = feedback.getBoundingClientRect();   // bring the verdict on-screen only if it isn't already (works on tall + short questions)
+        if (fr.bottom > window.innerHeight || fr.top < 0) feedback.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
         save();
       });
     }
