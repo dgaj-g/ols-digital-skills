@@ -673,7 +673,7 @@
       if (soundNoReach) ul.appendChild(el('div', 'drill-slip',
         '<span class="drill-count">' + soundNoReach + '</span>' +
         '<span class="drill-line ins-dim">working sound&hellip;</span>' +
-        '<span class="drill-why">right method, final answer not reached</span>'));
+        '<span class="drill-why">right working, final answer not reached</span>'));
       if (unpinned) ul.appendChild(el('div', 'drill-slip',
         '<span class="drill-count">' + unpinned + '</span>' +
         '<span class="drill-line ins-dim">&mdash;</span>' +
@@ -681,9 +681,9 @@
       out.appendChild(ul);
     }
     if (err && methodCredit) out.appendChild(el('p', 'drill-note',
-      methodCredit + ' of the ' + err + ' who went wrong still earned method marks — their working was partly sound.'));
+      methodCredit + ' of the ' + err + ' who went wrong still earned working marks — their working was partly sound.'));
     if (helpPulled) out.appendChild(el('p', 'drill-note drill-help',
-      helpPulled + (helpPulled === 1 ? ' pupil' : ' pupils') + ' opened the method help on this question.'));
+      helpPulled + (helpPulled === 1 ? ' pupil' : ' pupils') + ' opened the worked example on this question.'));
 
     /* method vs accuracy split for this question, class-wide */
     var mPct = mMax ? Math.round(100 * mGot / mMax) : null;
@@ -944,7 +944,7 @@
           bodyEl.appendChild(el('p', 'mk-tally', 'Working ' + res.verdict.mk[0] + '/' + mkMax[0] + ' · Answer ' + res.verdict.mk[1] + '/' + mkMax[1] +
             (last.dur ? ' · ' + last.dur + 's · ' + (rec.att.length) + ' attempt' + (rec.att.length > 1 ? 's' : '') : '')));
         }
-        if (state.help && state.help[q.id]) bodyEl.appendChild(el('p', 'jp-help', 'Pulled the method help after getting stuck'));
+        if (state.help && state.help[q.id]) bodyEl.appendChild(el('p', 'jp-help', 'Opened the worked example after getting stuck'));
 
         /* the override — the teacher's judgement wins everywhere */
         var ovRow = el('div', 'check-row');
