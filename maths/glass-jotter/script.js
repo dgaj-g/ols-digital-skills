@@ -707,7 +707,12 @@
         anyLocked = true;
         var spine = document.createElement('div');
         spine.className = 'book locked';
-        spine.innerHTML = '<span class="book-spine-text">' + a.title + '</span>';
+        spine.innerHTML = '<svg class="book-lock" viewBox="0 0 24 24" aria-hidden="true">' +
+          '<path d="M7 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/>' +
+          '<rect x="5" y="10" width="14" height="10" rx="2" fill="currentColor"/></svg>' +
+          '<span class="book-spine-text">' + a.title + '</span>' +
+          '<span class="book-lock-note">Not set yet</span>';
+        spine.title = a.title + ' — your teacher hasn’t set this book yet.';
         spine.setAttribute('aria-label', a.title + ' — not set yet');
         wrap.appendChild(spine);
         return;

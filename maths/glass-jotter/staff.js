@@ -466,7 +466,8 @@
       insTile(insPct(avgMethod), 'working') +
       insTile(insPct(avgAcc), 'answer') +
       insTile(avgConf != null ? avgConf.toFixed(1) : '—', 'avg confidence /3') +
-      insTile(nSupport + ' / ' + nStretch, 'support / stretch');
+      insTile(nSupport, 'need support') +
+      insTile(nStretch, 'ready for stretch');
     host.appendChild(band);
 
     /* hardest questions — where the working breaks */
@@ -778,13 +779,14 @@
     var msg = el('p', 'ui-msg', 'Loading the wall…');
     msg.style.marginTop = '26px';   // clear the tab + tools rows so the wait-card isn't crammed against them
     var wall = el('div', 'wall');
+    var orient = el('p', 'wall-orient', 'Start here: each cell is one pupil × one question. Spot the reds, then tap a cell to open that pupil’s jotter.');
     var legend = el('p', 'wall-legend');
     legend.innerHTML = '<span class="glyph-ok">✓</span> correct &middot; ' +
       '<span class="glyph-amber">◐</span> answer only &middot; ' +
       '<span class="glyph-err">✗</span> wrong <span class="wl-sub">(small number = the step it broke at)</span> &middot; ' +
       '<span class="glyph-live">●</span> working now &middot; ' +
       '<span class="glyph-un">—</span> not started';
-    body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(legend); body.appendChild(wall);
+    body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(orient); body.appendChild(legend); body.appendChild(wall);
     shell(view.cls + ' · Working Wall', body, function () { showClasses(); });
 
     var qlist = questionList(view.act);
@@ -959,12 +961,14 @@
         // content-safe support: nudge this pupil toward the section's existing method
         // movie. Offered only where they struggled — the natural moment to suggest it.
         if (item.secId && item.secHasMovie && (res.st === 'err' || res.st === 'amber')) {   // only nudge to a section that actually has a method movie
-          var nudgeB = el('button', 'btn-pencil jp-nudge', 'Nudge: watch the method ▸');
+          var exPart = String(item.label).split('·')[0].trim();   // "Ex 2 · Q1" -> "Ex 2" (the nudge opens the whole exercise's worked example)
+          var nudgeB = el('button', 'btn-pencil jp-nudge', 'Send the worked example for ' + exPart + ' →');
+          nudgeB.title = 'Opens this exercise’s worked example for the pupil — the whole of ' + exPart + ', not just this question — the next time they open their book.';
           nudgeB.addEventListener('click', function () {
             if (nudgeB.disabled) return; nudgeB.disabled = true;
             call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId }).then(function (r3) {
               nudgeB.disabled = false;
-              if (r3 && r3.ok) { nudgeB.textContent = 'Nudge sent ✓'; ovMsg.textContent = 'They’ll be shown this method the next time they open the book.'; }
+              if (r3 && r3.ok) { nudgeB.textContent = 'Worked example sent ✓'; ovMsg.textContent = 'They’ll be shown the ' + exPart + ' worked example the next time they open the book.'; }
               else ovMsg.textContent = (r3 && r3.error) || 'Could not send the nudge.';
             }).catch(function () { nudgeB.disabled = false; ovMsg.textContent = 'Could not send the nudge.'; });
           });
@@ -1008,9 +1012,11 @@
     fullStates().then(function (all) {
       clearBusy(msg, '');
       var piles = {}; // key → {label, names:[], example}
+      var amberCount = 0;   // answer-only responses never reach the pile (no working line to mark) — track them so an "empty" pile doesn't read as "no problems"
       all.forEach(function (p) {
         questionList(view.act).forEach(function (item) {
           var res = markState(view.act, p.state, item.q);
+          if (res.st === 'amber') amberCount++;
           if (res.st !== 'err') return;
           var key = res.dx || ('cluster:' + (res.cluster || item.q.id));
           var label = res.dx ? (DX_NAMES[res.dx] || res.dx) : ('Same wrong line: ' + (res.cluster || '?'));
@@ -1019,7 +1025,11 @@
         });
       });
       var keys = Object.keys(piles).sort(function (a, b) { return piles[b].names.length - piles[a].names.length; });
-      msg.textContent = keys.length ? 'Misconceptions ranked by how many pupils share them. “Starter” throws the top slips on the board, anonymised.' : 'No marked errors in this class yet — the pile is empty.';
+      msg.textContent = keys.length
+        ? 'Misconceptions ranked by how many pupils share them. “Starter” throws the top slips on the board, anonymised.'
+        : amberCount
+          ? 'No marked working errors to pile up — but ' + amberCount + ' answer' + (amberCount > 1 ? 's' : '') + ' came in with no working shown (the amber ◐ cells on the Wall), so there’s nothing to mark here. Worth chasing the missing working.'
+          : 'No marked errors in this class yet — the pile is empty.';
       if (keys.length) {
         var starterB = el('button', 'btn-stamp gold', 'Next-lesson starter ▶');
         starterB.addEventListener('click', function () { showStarter(keys.slice(0, 3).map(function (k) { return piles[k]; })); });
@@ -1074,7 +1084,7 @@
       sel.appendChild(o);
     });
     picker.appendChild(sel);
-    var go = el('button', 'btn-stamp', 'Open the pile');
+    var go = el('button', 'btn-stamp', 'Show all working');
     picker.appendChild(go);
 
     go.addEventListener('click', function () {

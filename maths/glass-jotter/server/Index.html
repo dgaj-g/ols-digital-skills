@@ -564,11 +564,16 @@ body.gj .shelf-instruction {                 /* body.gj to beat `body.gj p { mar
   background: var(--pencil);
   border-radius: 3px 6px 6px 3px;
   box-shadow: inset 6px 0 8px -6px rgba(0,0,0,0.4);
-  opacity: 0.45;
+  opacity: 0.62;
   cursor: default;
   transform: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .book.locked:hover { transform: none; }
+.book-lock { width: 18px; height: 18px; color: var(--cream); margin-top: 10px; flex: none; opacity: 0.92; }
+.book-lock-note { writing-mode: vertical-rl; font-family: var(--f-stationery); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cream); opacity: 0.9; padding-bottom: 10px; }
 .book-spine-text {
   writing-mode: vertical-rl;
   font-family: var(--f-stationery);
@@ -577,6 +582,9 @@ body.gj .shelf-instruction {                 /* body.gj to beat `body.gj p { mar
   text-transform: uppercase;
   color: var(--cream);
   padding: var(--sq) 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 
 /* \2550 \2550 \2550  SCREEN \b7  ACTIVITY \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550  */
@@ -1081,6 +1089,7 @@ body.gj .staff-head h1 { color: var(--cream); font-size: 22px; }
 .glyph-live { color: #1B5A87; animation: live-blink 2s ease-in-out infinite; }
 @keyframes live-blink { 50% { opacity: 0.35; } }
 .glyph-un { color: var(--pencil); opacity: 0.6; }
+body.gj .wall-orient { font-family: var(--f-stationery); font-size: 13px; color: var(--navy); font-weight: 600; margin: 0 0 7px; }
 body.gj .wall-legend {
   font-family: var(--f-stationery); font-size: 12.5px; color: var(--ink);
   background: #FFFEFA; border: 1px solid var(--page-edge); border-radius: 6px;
@@ -4998,7 +5007,10 @@ window.OLS_TRANSPORT = {
 
     function buildAlgebraUI() {
       ui.innerHTML = '';
-      var ask = el('p', 'ui-msg', 'What are you doing to both sides?');
+      // "both sides" only makes sense for equations; substitute/simplify/expand
+      // have a single expression, so ask a neutral "next step" there instead.
+      var isEquation = q.type === 'solve' || q.type === 'form';
+      var ask = el('p', 'ui-msg', isEquation ? 'What are you doing to both sides?' : 'What\u2019s your next step?');
       ui.appendChild(ask);
       var strip = el('div', 'chip-strip');
       var CHIPS = [
@@ -5856,7 +5868,8 @@ window.OLS_TRANSPORT = {
       insTile(insPct(avgMethod), 'working') +
       insTile(insPct(avgAcc), 'answer') +
       insTile(avgConf != null ? avgConf.toFixed(1) : '\u2014', 'avg confidence /3') +
-      insTile(nSupport + ' / ' + nStretch, 'support / stretch');
+      insTile(nSupport, 'need support') +
+      insTile(nStretch, 'ready for stretch');
     host.appendChild(band);
 
     /* hardest questions \u2014 where the working breaks */
@@ -6168,13 +6181,14 @@ window.OLS_TRANSPORT = {
     var msg = el('p', 'ui-msg', 'Loading the wall\u2026');
     msg.style.marginTop = '26px';   // clear the tab + tools rows so the wait-card isn't crammed against them
     var wall = el('div', 'wall');
+    var orient = el('p', 'wall-orient', 'Start here: each cell is one pupil \u00d7 one question. Spot the reds, then tap a cell to open that pupil\u2019s jotter.');
     var legend = el('p', 'wall-legend');
     legend.innerHTML = '<span class="glyph-ok">\u2713</span> correct &middot; ' +
       '<span class="glyph-amber">\u25d0</span> answer only &middot; ' +
       '<span class="glyph-err">\u2717</span> wrong <span class="wl-sub">(small number = the step it broke at)</span> &middot; ' +
       '<span class="glyph-live">\u25cf</span> working now &middot; ' +
       '<span class="glyph-un">\u2014</span> not started';
-    body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(legend); body.appendChild(wall);
+    body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(orient); body.appendChild(legend); body.appendChild(wall);
     shell(view.cls + ' \u00b7 Working Wall', body, function () { showClasses(); });
 
     var qlist = questionList(view.act);
@@ -6349,12 +6363,14 @@ window.OLS_TRANSPORT = {
         // content-safe support: nudge this pupil toward the section's existing method
         // movie. Offered only where they struggled \u2014 the natural moment to suggest it.
         if (item.secId && item.secHasMovie && (res.st === 'err' || res.st === 'amber')) {   // only nudge to a section that actually has a method movie
-          var nudgeB = el('button', 'btn-pencil jp-nudge', 'Nudge: watch the method \u25b8');
+          var exPart = String(item.label).split('\u00b7')[0].trim();   // "Ex 2 \u00b7 Q1" -> "Ex 2" (the nudge opens the whole exercise's worked example)
+          var nudgeB = el('button', 'btn-pencil jp-nudge', 'Send the worked example for ' + exPart + ' \u2192');
+          nudgeB.title = 'Opens this exercise\u2019s worked example for the pupil \u2014 the whole of ' + exPart + ', not just this question \u2014 the next time they open their book.';
           nudgeB.addEventListener('click', function () {
             if (nudgeB.disabled) return; nudgeB.disabled = true;
             call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId }).then(function (r3) {
               nudgeB.disabled = false;
-              if (r3 && r3.ok) { nudgeB.textContent = 'Nudge sent \u2713'; ovMsg.textContent = 'They\u2019ll be shown this method the next time they open the book.'; }
+              if (r3 && r3.ok) { nudgeB.textContent = 'Worked example sent \u2713'; ovMsg.textContent = 'They\u2019ll be shown the ' + exPart + ' worked example the next time they open the book.'; }
               else ovMsg.textContent = (r3 && r3.error) || 'Could not send the nudge.';
             }).catch(function () { nudgeB.disabled = false; ovMsg.textContent = 'Could not send the nudge.'; });
           });
@@ -6398,9 +6414,11 @@ window.OLS_TRANSPORT = {
     fullStates().then(function (all) {
       clearBusy(msg, '');
       var piles = {}; // key \u2192 {label, names:[], example}
+      var amberCount = 0;   // answer-only responses never reach the pile (no working line to mark) \u2014 track them so an "empty" pile doesn't read as "no problems"
       all.forEach(function (p) {
         questionList(view.act).forEach(function (item) {
           var res = markState(view.act, p.state, item.q);
+          if (res.st === 'amber') amberCount++;
           if (res.st !== 'err') return;
           var key = res.dx || ('cluster:' + (res.cluster || item.q.id));
           var label = res.dx ? (DX_NAMES[res.dx] || res.dx) : ('Same wrong line: ' + (res.cluster || '?'));
@@ -6409,7 +6427,11 @@ window.OLS_TRANSPORT = {
         });
       });
       var keys = Object.keys(piles).sort(function (a, b) { return piles[b].names.length - piles[a].names.length; });
-      msg.textContent = keys.length ? 'Misconceptions ranked by how many pupils share them. \u201cStarter\u201d throws the top slips on the board, anonymised.' : 'No marked errors in this class yet \u2014 the pile is empty.';
+      msg.textContent = keys.length
+        ? 'Misconceptions ranked by how many pupils share them. \u201cStarter\u201d throws the top slips on the board, anonymised.'
+        : amberCount
+          ? 'No marked working errors to pile up \u2014 but ' + amberCount + ' answer' + (amberCount > 1 ? 's' : '') + ' came in with no working shown (the amber \u25d0 cells on the Wall), so there\u2019s nothing to mark here. Worth chasing the missing working.'
+          : 'No marked errors in this class yet \u2014 the pile is empty.';
       if (keys.length) {
         var starterB = el('button', 'btn-stamp gold', 'Next-lesson starter \u25b6');
         starterB.addEventListener('click', function () { showStarter(keys.slice(0, 3).map(function (k) { return piles[k]; })); });
@@ -6464,7 +6486,7 @@ window.OLS_TRANSPORT = {
       sel.appendChild(o);
     });
     picker.appendChild(sel);
-    var go = el('button', 'btn-stamp', 'Open the pile');
+    var go = el('button', 'btn-stamp', 'Show all working');
     picker.appendChild(go);
 
     go.addEventListener('click', function () {
@@ -7280,7 +7302,12 @@ window.OLS_TRANSPORT = {
         anyLocked = true;
         var spine = document.createElement('div');
         spine.className = 'book locked';
-        spine.innerHTML = '<span class="book-spine-text">' + a.title + '</span>';
+        spine.innerHTML = '<svg class="book-lock" viewBox="0 0 24 24" aria-hidden="true">' +
+          '<path d="M7 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/>' +
+          '<rect x="5" y="10" width="14" height="10" rx="2" fill="currentColor"/></svg>' +
+          '<span class="book-spine-text">' + a.title + '</span>' +
+          '<span class="book-lock-note">Not set yet</span>';
+        spine.title = a.title + ' \u2014 your teacher hasn\u2019t set this book yet.';
         spine.setAttribute('aria-label', a.title + ' \u2014 not set yet');
         wrap.appendChild(spine);
         return;
