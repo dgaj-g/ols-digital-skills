@@ -88,7 +88,7 @@
     var compose = el('div', 'compose');
     compose.setAttribute('tabindex', '0');
     compose.setAttribute('role', 'textbox');
-    compose.setAttribute('aria-label', opts.label || 'Write the next line of working');
+    compose.setAttribute('aria-label', opts.label || 'Write the next step of working');
     var content = el('span', 'compose-text');
     var caret = el('span', 'caret');
     var ph = el('span', 'ph', opts.placeholder || 'write the new line here');
@@ -785,7 +785,7 @@
       seq.then(function () {
         feedback.innerHTML = '';
         var mk = verdict.mk, mkMax = verdict.mkMax || q.marks;
-        var tally = el('div', 'mk-tally', 'M ' + mk[0] + '/' + mkMax[0] + ' · A ' + mk[1] + '/' + mkMax[1]);
+        var tally = el('div', 'mk-tally', 'Working ' + mk[0] + '/' + mkMax[0] + ' · Answer ' + mk[1] + '/' + mkMax[1]);
         feedback.appendChild(tally);
         var done = verdict.res === 'OK';
         var amber = verdict.res === 'AMBER';
@@ -873,7 +873,7 @@
       if (verdict) {
         var mkMax2 = verdict.mkMax || q.marks;
         margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally" style="font-size:18px">' + (verdict.mk[0] + verdict.mk[1]) + '/' + (mkMax2[0] + mkMax2[1]) + '</div>';
-        feedback.appendChild(el('div', 'mk-tally', 'M ' + verdict.mk[0] + '/' + mkMax2[0] + ' · A ' + verdict.mk[1] + '/' + mkMax2[1]));
+        feedback.appendChild(el('div', 'mk-tally', 'Working ' + verdict.mk[0] + '/' + mkMax2[0] + ' · Answer ' + verdict.mk[1] + '/' + mkMax2[1]));
       }
       checkRow.hidden = true;
     } else {

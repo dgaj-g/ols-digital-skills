@@ -297,7 +297,7 @@
     var out = [];
     pack.sections.forEach(function (sec, si) {
       sec.questions.forEach(function (q, qi) {
-        out.push({ q: q, label: 'Ex' + (si + 1) + '.Q' + (qi + 1), secId: sec.id, secHasMovie: !!sec.movie });
+        out.push({ q: q, label: 'Ex ' + (si + 1) + ' · Q' + (qi + 1), secId: sec.id, secHasMovie: !!sec.movie });
       });
     });
     return out;
@@ -463,8 +463,8 @@
     band.innerHTML =
       insTile(rows.length, 'pupils started') +
       insTile(pctComplete + '%', 'questions finished') +
-      insTile(insPct(avgMethod), 'method (working)') +
-      insTile(insPct(avgAcc), 'accuracy (answers)') +
+      insTile(insPct(avgMethod), 'working') +
+      insTile(insPct(avgAcc), 'answer') +
       insTile(avgConf != null ? avgConf.toFixed(1) : '—', 'avg confidence /3') +
       insTile(nSupport + ' / ' + nStretch, 'support / stretch');
     host.appendChild(band);
@@ -499,7 +499,7 @@
           '<td class="ins-bad">' + (t.err || '') + '</td>' +
           '<td>' + (t.amber || '') + '</td>' +
           '<td>' + (dxTop ? esc(DX_NAMES[dxTop.key] || dxTop.key) + ' &times;' + dxTop.n : '<span class="ins-dim">&mdash;</span>') + '</td>' +
-          '<td>' + (atTop ? 'line ' + esc(String(atTop.key)) : '<span class="ins-dim">&mdash;</span>') + '</td></tr>');
+          '<td>' + (atTop ? 'step ' + esc(String(atTop.key)) : '<span class="ins-dim">&mdash;</span>') + '</td></tr>');
       });
       qt.push('</tbody></table>');
       var qd = el('div', 'wall'); qd.innerHTML = qt.join(''); host.appendChild(qd);
@@ -688,8 +688,8 @@
     var mPct = mMax ? Math.round(100 * mGot / mMax) : null;
     var aPct = aMax ? Math.round(100 * aGot / aMax) : null;
     var bars = el('div', 'drill-bars');
-    bars.appendChild(drillBar('Method (working)', mPct));
-    bars.appendChild(drillBar('Accuracy (answers)', aPct));
+    bars.appendChild(drillBar('Working', mPct));
+    bars.appendChild(drillBar('Answer', aPct));
     out.appendChild(bars);
 
     cell.innerHTML = ''; cell.appendChild(out);
@@ -747,8 +747,8 @@
     wrap.innerHTML =
       insTile(st.finished + '/' + st.attempted, 'finished') +
       insTile(st.finished ? Math.round(100 * st.firstTry / st.finished) + '%' : '—', 'right first try') +
-      insTile(insPct(st.methodRate), 'method (working)') +
-      insTile(st.accMax ? Math.round(100 * st.accGot / st.accMax) + '%' : '—', 'accuracy (answers)') +
+      insTile(insPct(st.methodRate), 'working') +
+      insTile(st.accMax ? Math.round(100 * st.accGot / st.accMax) + '%' : '—', 'answer') +
       insTile(st.avgTime ? Math.round(st.avgTime) + 's' : '—', 'avg per question') +
       insTile(st.avgConf != null ? st.avgConf.toFixed(1) : '—', 'self-confidence /3');
     out.appendChild(wrap);
@@ -778,7 +778,13 @@
     var msg = el('p', 'ui-msg', 'Loading the wall…');
     msg.style.marginTop = '26px';   // clear the tab + tools rows so the wait-card isn't crammed against them
     var wall = el('div', 'wall');
-    body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(wall);
+    var legend = el('p', 'wall-legend');
+    legend.innerHTML = '<span class="glyph-ok">✓</span> correct &middot; ' +
+      '<span class="glyph-amber">◐</span> answer only &middot; ' +
+      '<span class="glyph-err">✗</span> wrong <span class="wl-sub">(small number = the step it broke at)</span> &middot; ' +
+      '<span class="glyph-live">●</span> working now &middot; ' +
+      '<span class="glyph-un">—</span> not started';
+    body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(legend); body.appendChild(wall);
     shell(view.cls + ' · Working Wall', body, function () { showClasses(); });
 
     var qlist = questionList(view.act);
@@ -796,9 +802,9 @@
           var glyph = '<span class="glyph-un">—</span>', title = 'Untouched';
           if (cell) {
             var st = cell.ovr === 1 ? 'ok' : cell.ovr === 0 ? 'err' : cell.st;
-            if (st === 'ok') { glyph = '<span class="glyph-ok">✓</span>'; title = 'Method and answer sound'; }
-            else if (st === 'amber') { glyph = '<span class="glyph-amber">◐</span>'; title = 'Right answer, working missing'; }
-            else if (st === 'err') { glyph = '<span class="glyph-err">✗' + (cell.errAt ? '<sub>' + cell.errAt + '</sub>' : '') + '</span>'; title = 'First error at line ' + (cell.errAt || '?') + (cell.dx ? ' — ' + (DX_NAMES[cell.dx] || cell.dx) : ''); }
+            if (st === 'ok') { glyph = '<span class="glyph-ok">✓</span>'; title = 'Correct — working and answer both sound'; }
+            else if (st === 'amber') { glyph = '<span class="glyph-amber">◐</span>'; title = 'Answer only — no working shown'; }
+            else if (st === 'err') { glyph = '<span class="glyph-err">✗' + (cell.errAt ? '<sub>' + cell.errAt + '</sub>' : '') + '</span>'; title = 'Wrong — first slip at step ' + (cell.errAt || '?') + (cell.dx ? ' — ' + (DX_NAMES[cell.dx] || cell.dx) : ''); }
             else if (st === 'open') {
               var live = p.summary.upd && (now - p.summary.upd) < 60;
               glyph = '<span class="glyph-live">●</span>'; title = live ? 'Working right now' : 'In progress';
@@ -928,7 +934,7 @@
 
         if (res.verdict) {
           var mkMax = res.verdict.mkMax || q.marks;
-          bodyEl.appendChild(el('p', 'mk-tally', 'M ' + res.verdict.mk[0] + '/' + mkMax[0] + ' · A ' + res.verdict.mk[1] + '/' + mkMax[1] +
+          bodyEl.appendChild(el('p', 'mk-tally', 'Working ' + res.verdict.mk[0] + '/' + mkMax[0] + ' · Answer ' + res.verdict.mk[1] + '/' + mkMax[1] +
             (last.dur ? ' · ' + last.dur + 's · ' + (rec.att.length) + ' attempt' + (rec.att.length > 1 ? 's' : '') : '')));
         }
         if (state.help && state.help[q.id]) bodyEl.appendChild(el('p', 'jp-help', 'Pulled the method help after getting stuck'));
@@ -941,11 +947,11 @@
           btn.disabled = true;
           call('override', { className: view.cls, act: view.act, email: email, q: q.id, idx: 'q', val: val }).then(function (r2) {
             btn.disabled = false;
-            if (r2 && r2.ok) { rec.ovr = (val == null) ? null : { q: val }; ovMsg.textContent = (val != null) ? 'Override saved — the Wall now shows your judgement.' : 'Override cleared.'; }
+            if (r2 && r2.ok) { rec.ovr = (val == null) ? null : { q: val }; ovMsg.textContent = (val === 1) ? 'Marked right — full working and answer marks. The Wall now shows your judgement.' : (val === 0) ? 'Marked wrong — the Wall now shows your judgement.' : 'Back to the automatic mark.'; }
             else ovMsg.textContent = (r2 && r2.error) || 'Could not save.';
           }).catch(function () { btn.disabled = false; ovMsg.textContent = 'Could not save.'; });
         }
-        [['Mark it right', 1], ['Mark it wrong', 0], ['Back to the app’s marking', null]].forEach(function (o) {
+        [['Mark it right', 1], ['Mark it wrong', 0], ['Use the automatic mark', null]].forEach(function (o) {
           var b = el('button', 'btn-pencil', o[0]);
           b.addEventListener('click', function () { setOvr(o[1], b); });
           ovRow.appendChild(b);
@@ -965,6 +971,7 @@
           ovRow.appendChild(nudgeB);
         }
         ovRow.appendChild(ovMsg);
+        bodyEl.appendChild(el('p', 'ui-msg ov-why', 'The app marks the working automatically. If its verdict looks wrong — say a pupil used a valid method it didn’t recognise — set your own mark here. Your judgement shows on the Wall straight away.'));
         bodyEl.appendChild(ovRow);
         page.appendChild(wrap);
       });
@@ -1122,7 +1129,8 @@
       var flagBy = {};
       pstats.forEach(function (s) { var f = pupilFlag(s.st, medianTime, qlist.length); flagBy[s.email] = f ? (f.kind === 'support' ? 'needs support' : 'ready for stretch') : ''; });
 
-      var rows = [['Pupil', 'Email', 'Activity', 'Question', 'Status', 'Method marks', 'Accuracy marks', 'Out of', 'Attempts', 'First try', 'Time (s)', 'Misconception', 'Self-confidence', 'Teacher override', 'Pupil flag']];
+      var STATUS_LABEL = { ok: 'Correct', amber: 'Answer only', err: 'Wrong', open: 'In progress' };
+      var rows = [['Pupil', 'Email', 'Activity', 'Question', 'Status', 'Working marks', 'Answer marks', 'Out of', 'Attempts', 'First try', 'Time (seconds)', 'Misconception', 'Self-confidence (1-3)', 'Teacher override', 'Pupil flag']];
       all.forEach(function (p) {
         var evals = (p.state && p.state.evals) || {};
         questionList(view.act).forEach(function (item) {
@@ -1132,7 +1140,7 @@
           var mkMax = (res.verdict && res.verdict.mkMax) || item.q.marks;
           var firstTry = (res.rec && res.rec.att && res.rec.att.length === 1 && res.st === 'ok') ? 'yes' : (res.st === 'open' ? '' : 'no');
           var secEv = evals[qSec[item.q.id]];
-          rows.push([p.name || '', p.email, view.act, item.label, res.st,
+          rows.push([p.name || '', p.email, view.act, item.label, STATUS_LABEL[res.st] || res.st,
             mk[0], mk[1], mkMax[0] + mkMax[1],
             res.rec ? res.rec.att.length : '', firstTry, res.last && res.last.dur || '',
             res.dx ? (DX_NAMES[res.dx] || res.dx) : (res.cluster || ''),

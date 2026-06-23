@@ -843,6 +843,16 @@ body.gj .staff-head h1 { color: var(--cream); font-size: 22px; }
 .glyph-live { color: #1B5A87; animation: live-blink 2s ease-in-out infinite; }
 @keyframes live-blink { 50% { opacity: 0.35; } }
 .glyph-un { color: var(--pencil); opacity: 0.6; }
+body.gj .wall-legend {
+  font-family: var(--f-stationery); font-size: 12.5px; color: var(--ink);
+  background: #FFFEFA; border: 1px solid var(--page-edge); border-radius: 6px;
+  padding: 7px 11px; margin: 0 0 10px;
+  display: flex; flex-wrap: wrap; gap: 3px 12px; align-items: baseline;
+}
+.wall-legend .glyph-ok, .wall-legend .glyph-amber, .wall-legend .glyph-err,
+.wall-legend .glyph-live, .wall-legend .glyph-un { font-size: 14px; margin-right: 1px; }
+.wall-legend .wl-sub { color: var(--pencil); font-size: 11px; }
+body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 .wall .col-dx {
   font-family: var(--f-stationery);
   font-size: 10px;
