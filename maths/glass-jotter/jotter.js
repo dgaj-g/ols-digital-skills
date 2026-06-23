@@ -56,14 +56,28 @@
     return pr;
   }
 
+  // Comments are keyed by QUESTION KIND so the praise fits what the pupil actually
+  // did. "working" = line-by-line questions (algebra + angle reasoning). "classify"
+  // = tap-the-type. "protractor" = measure-and-read. A classify pupil clicked a
+  // button — they must never be told their "working" or "lines" were lovely.
   var COMMENTS = {
-    perfect: ['Good — equals signs lined up.', 'A fair copy. Lovely clear working.', 'Every line earns its mark.'],
-    partial: ['Look again at the boxed line.', 'So close — one line lets it down.', 'The method is there — mind that step.'],
-    amber: ['Right answer — now show me the working.', 'Correct, but a marker needs to see the method.'],
-    fail: ['We’ll look at this one together in class.', 'Watch the worked example again, then retry the idea in class.']
+    working: {
+      perfect: ['Good — equals signs lined up.', 'A fair copy. Lovely clear working.', 'Every line earns its mark.'],
+      partial: ['Look again at the boxed line.', 'So close — one line lets it down.', 'The method is there — mind that step.'],
+      amber: ['Right answer — now show me the working.', 'Correct, but a marker needs to see the method.'],
+      fail: ['We’ll look at this one together in class.', 'Watch the worked example again, then retry the idea in class.']
+    },
+    classify: {
+      perfect: ['Spot on — that’s the right type.', 'Yes — you sized it up correctly.', 'Correct — good eye.'],
+      fail: ['Not the right type — we’ll size it up together in class.', 'Compare it against 90° and 180° next time.']
+    },
+    protractor: {
+      perfect: ['Measured spot on.', 'Neatly lined up — an accurate reading.', 'Bang on — careful measuring.']
+    }
   };
-  function commentFor(qid, bucket) {
-    var bank = COMMENTS[bucket] || [];
+  function commentFor(qid, bucket, kind) {
+    var set = COMMENTS[kind] || COMMENTS.working;
+    var bank = set[bucket] || COMMENTS.working[bucket] || [];
     if (!bank.length) return '';
     var h = 0; for (var i = 0; i < qid.length; i++) h = (h * 31 + qid.charCodeAt(i)) % 9973;
     return bank[h % bank.length];
@@ -223,7 +237,7 @@
       drawMark(mk, right ? 'tick' : 'cross');
       feedback.appendChild(el('span', 'mk-tally ' + (right ? 'mk-correct' : 'mk-wrong'), ' ' + (right ? '1/1' : '0/1')));
       if (rec.lock) {
-        feedback.appendChild(el('p', 'mk-comment ' + (right ? 'mk-correct' : 'mk-wrong'), right ? commentFor(q.id, 'perfect') : commentFor(q.id, 'fail')));
+        feedback.appendChild(el('p', 'mk-comment ' + (right ? 'mk-correct' : 'mk-wrong'), right ? commentFor(q.id, 'perfect', 'classify') : commentFor(q.id, 'fail', 'classify')));
         if (!right) feedback.appendChild(el('p', 'ui-msg', 'You answered “' + esc(last.pick) + '” — your teacher can see this and will pick it up in class.'));
         checkRow.hidden = true;
         cards.querySelectorAll('.reason-card').forEach(function (x) { x.disabled = true; });
@@ -434,7 +448,7 @@
       drawMark(mk, res.ok ? 'tick' : 'cross');
       feedback.appendChild(el('span', 'mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong'), ' ' + (res.ok ? '1/1' : '0/1') + (res.ok ? '' : ' · you measured ' + last.read + '°')));
       if (rec.lock) {
-        if (res.ok) feedback.appendChild(el('p', 'mk-comment mk-correct', commentFor(q.id, 'perfect')));
+        if (res.ok) feedback.appendChild(el('p', 'mk-comment mk-correct', commentFor(q.id, 'perfect', 'protractor')));
         else if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', 'You read the other scale — use the one that starts at 0 on the arm you lined up. The true size is ' + q.value + '°.'));
         else feedback.appendChild(el('p', 'ui-msg', 'Not quite — line the centre on the corner and 0 along an arm, then read again. The true size is ' + q.value + '°.'));
         checkRow.hidden = true;
