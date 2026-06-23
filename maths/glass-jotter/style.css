@@ -875,9 +875,10 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 .wall .col-dx {
   font-family: var(--f-stationery);
   font-size: 10px;
-  color: var(--marking-red);
+  color: var(--ink);
   max-width: 90px;
 }
+.wall .col-dx-slip { color: var(--marking-red); }
 
 /* tickboxes for activity visibility */
 .acts-ticks { display: flex; gap: var(--sq); align-items: center; }

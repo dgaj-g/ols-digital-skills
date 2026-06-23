@@ -1103,9 +1103,10 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 .wall .col-dx {
   font-family: var(--f-stationery);
   font-size: 10px;
-  color: var(--marking-red);
+  color: var(--ink);
   max-width: 90px;
 }
+.wall .col-dx-slip { color: var(--marking-red); }
 
 /* tickboxes for activity visibility */
 .acts-ticks { display: flex; gap: var(--sq); align-items: center; }
@@ -6231,8 +6232,13 @@ window.OLS_TRANSPORT = {
           if (st === 'ok') ok++; else if (st === 'amber') amber++; else if (st === 'err') { err++; if (c.dx) dxCount[c.dx] = (dxCount[c.dx] || 0) + 1; }
         });
         var topDx = Object.keys(dxCount).sort(function (a, b) { return dxCount[b] - dxCount[a]; })[0];
-        totals += '<td class="col-dx">' + ok + '\u2713 ' + (amber ? amber + '\u25d0 ' : '') + (err ? err + '\u2717' : '') +
-          (topDx ? '<br>' + esc(DX_NAMES[topDx] || topDx) + ' \u00d7' + dxCount[topDx] : '') + '</td>';
+        var parts = [];   // only show a count that exists, each glyph in its own legend colour (not all-red)
+        if (ok) parts.push('<span class="glyph-ok">' + ok + ' \u2713</span>');
+        if (amber) parts.push('<span class="glyph-amber">' + amber + ' \u25d0</span>');
+        if (err) parts.push('<span class="glyph-err">' + err + ' \u2717</span>');
+        var tally = parts.length ? parts.join(' ') : '<span class="glyph-un">\u2014</span>';
+        totals += '<td class="col-dx">' + tally +
+          (topDx ? '<br><span class="col-dx-slip">' + esc(DX_NAMES[topDx] || topDx) + ' \u00d7' + dxCount[topDx] + '</span>' : '') + '</td>';
       });
       totals += '</tr>';
       wall.innerHTML = t.join('').replace('</tbody>', totals + '</tbody>');
