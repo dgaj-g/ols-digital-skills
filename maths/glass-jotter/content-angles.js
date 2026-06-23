@@ -268,7 +268,7 @@
         { say: 'Round a point is a FULL turn — 360°. Here two of the three angles are known.', do: [{ seg: { id: 'p1' } }, { seg: { id: 'p2' } }, { seg: { id: 'p3' } }, { arc: { ang: 'p1' } }, { arc: { ang: 'p2' } }] },
         { say: '360 − 130 − 110 leaves the missing angle.', do: [{ arc: { ang: 'p3' } }, { stamp: { reason: 'PNT' } }] },
         { say: '360 − 130 − 110 = 120. In your jotter you will type the calculation — that counts as working.', do: [{ value: { ang: 'p3', to: 120 } }] },
-        { say: 'Exam habit: always NAME the rule. The mark scheme gives a mark for the reason itself.', do: [{ note: { text: 'Reason = a mark. Every time.', red: true } }] }
+        { say: 'Good habit: always NAME the rule — the reason earns its own mark.', do: [{ note: { text: 'Reason = a mark. Every time.', red: true } }] }
       ]
     },
     questions: [q5(), q6(), q7(), q8()]

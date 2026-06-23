@@ -62,7 +62,7 @@
   // button — they must never be told their "working" or "lines" were lovely.
   var COMMENTS = {
     working: {
-      perfect: ['Good — equals signs lined up.', 'A fair copy. Lovely clear working.', 'Every line earns its mark.'],
+      perfect: ['Good — equals signs lined up.', 'Neat, clear working.', 'Every line earns its mark.'],
       partial: ['Look again at the boxed line.', 'So close — one line lets it down.', 'The method is there — mind that step.'],
       amber: ['Right answer — now show me the working.', 'Correct, but a marker needs to see the method.'],
       fail: ['We’ll look at this one together in class.', 'Watch the worked example again, then retry the idea in class.']

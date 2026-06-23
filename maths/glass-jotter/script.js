@@ -861,7 +861,7 @@
 
     var head = document.createElement('div');
     head.className = 'sec-head';
-    head.innerHTML = '<p class="sec-walt">WALT · ' + sec.walt + '</p>' +
+    head.innerHTML = '<p class="sec-walt">In this exercise: ' + sec.walt + '</p>' +
       '<h2 class="sec-title">Exercise ' + (i + 1) + ' · ' + sec.title + '</h2>';
     main.appendChild(head);
 
@@ -1132,7 +1132,7 @@
   function renderTally(main, pack) {
     var sum = summarise(current.act.id, current.state, me.name);
     var pct = sum.marks[1] ? Math.round(100 * sum.marks[0] / sum.marks[1]) : 0;
-    var hand = pct === 100 ? 'Full marks. A fair copy — the gold star is yours.'
+    var hand = pct === 100 ? 'Full marks — the gold star is yours.'
       : pct >= 80 ? 'Nearly there — look back at the crosses.'
       : pct >= 50 ? 'Good — go back over the questions the red pen marked.'
       : 'Plenty to talk about in class — your teacher can see exactly where.';
