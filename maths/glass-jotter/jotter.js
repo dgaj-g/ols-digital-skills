@@ -110,7 +110,7 @@
     compose.appendChild(content); compose.appendChild(caret); compose.appendChild(ph);
     (opts.fieldHost || host).appendChild(compose);   // fieldHost lets the input sit inline (e.g. ∠PVR = [__] °); keypad still goes to host
 
-    var COMMIT = '';   // sentinel for the commit key, so its label can change without breaking handling
+    var COMMIT = 'commit';   // sentinel for the commit key, so its label can change without breaking handling
     var isNumberPad = opts.pad === 'number';
     var KEYS = isNumberPad
       // a compact number pad — an angle size or a measurement is just a number (+ minus for an optional sum)
