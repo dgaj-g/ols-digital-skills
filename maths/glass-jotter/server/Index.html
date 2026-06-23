@@ -456,6 +456,25 @@ body.gj .cover-foil, body.gj .cover-foil-sub {
 .cover-label .btn-stamp { width: 100%; margin-top: var(--sq); }
 /* scoped under .cover-label so the margin-top beats `body.gj p { margin: 0 }` */
 .cover-label .label-msg { font-family: var(--f-stationery); font-size: 12px; color: var(--pencil); margin-top: calc(var(--sq) * 0.85); min-height: var(--sq); text-align: center; }
+/* visible one-tap consent for auto-name (first login only, when the silent probe found no name) */
+body.gj a.gj-usename {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: calc(var(--sq) * 0.5) auto 0;
+  padding: 7px 14px;
+  font-family: var(--f-stationery, inherit);
+  font-size: 14px;
+  text-align: center;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--ink, #14213A);
+  background: rgba(228,184,36,0.18);
+  border: 1px solid #E4B824;
+  border-radius: 6px;
+  cursor: pointer;
+}
+body.gj a.gj-usename:hover { background: rgba(228,184,36,0.30); }
 .staff-oval {
   position: absolute;
   right: calc(var(--sq) * 0.6);
@@ -7372,28 +7391,68 @@ window.OLS_TRANSPORT = {
      (execute-as-user) /exec in a hidden iframe so it stashes the name, then read it
      back via apiAutoName and pre-fill. Offline: the stub returns one directly. Always
      graceful \u2014 if anything fails, the pupil just types their name as before. */
+  /* Pull the pupil's real name from their c2k account. Hidden probe first (silent for a pupil
+     who has already consented). If the probe yields nothing (not consented yet), show a visible
+     "Use my school name" button that opens the companion in a new tab so the one-time Google
+     consent CAN be approved; on return, re-read and pre-fill. Always graceful. */
   function tryAutoName(url, input, msg) {
-    var done = false;
-    function apply() {
-      if (done) return; done = true;
-      call('autoname').then(function (a) {
+    var firstDone = false, btn = null;
+
+    function readName(offer) {
+      return call('autoname').then(function (a) {
         if (a && a.ok && a.name && !input.value) {
           input.value = a.name;
           if (msg) msg.textContent = 'Is this you, ' + a.name.split(' ')[0] + '? Tap to open your book.';
+          dropBtn();
+          return true;
         }
-      }).catch(function () {});
+        if (offer && !input.value && window.OLS_TRANSPORT && url) showBtn();
+        return false;
+      }).catch(function () { return false; });
     }
+
+    function showBtn() {
+      if (btn || input.value) return;
+      var probe = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'probe=1';
+      btn = document.createElement('a');
+      btn.className = 'gj-usename';
+      btn.href = probe;
+      btn.target = '_blank';
+      btn.rel = 'noopener';
+      btn.textContent = 'Use my school name';
+      btn.addEventListener('click', function () {
+        if (msg) msg.textContent = 'Approve the permission in the new tab, then come back here.';
+        var onBack = function () { if (document.visibilityState === 'visible') readName(false); };
+        document.addEventListener('visibilitychange', onBack);
+        window.addEventListener('focus', onBack);
+        setTimeout(function () {
+          document.removeEventListener('visibilitychange', onBack);
+          window.removeEventListener('focus', onBack);
+        }, 180000);
+      });
+      // place the button on its OWN line below the NAME row, not squished inside the row's flex cell
+      var row = (input.closest && input.closest('.label-row')) || input.parentNode;
+      if (row && row.parentNode) row.parentNode.insertBefore(btn, row.nextSibling);
+      else if (input.parentNode) input.parentNode.insertBefore(btn, input.nextSibling);
+    }
+
+    function dropBtn() { if (btn && btn.parentNode) btn.parentNode.removeChild(btn); btn = null; }
+
+    input.addEventListener('input', dropBtn);   // if the pupil types their own name, retire the button
+
+    function firstPass() { if (firstDone) return; firstDone = true; readName(true); }
+
     if (window.OLS_TRANSPORT && url) {
       var fr = document.createElement('iframe');
       fr.setAttribute('aria-hidden', 'true');
       fr.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;border:0';
       fr.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'probe=1';
-      fr.addEventListener('load', function () { setTimeout(apply, 150); });   // probe has written the name
+      fr.addEventListener('load', function () { setTimeout(firstPass, 150); });
       document.body.appendChild(fr);
-      setTimeout(apply, 2500);                                                 // fallback if load never fires
+      setTimeout(firstPass, 2500);
       setTimeout(function () { if (fr.parentNode) fr.parentNode.removeChild(fr); }, 4000);
     } else {
-      apply();   // offline preview: the stub returns a name directly
+      firstPass();   // offline preview: the stub returns a name directly
     }
   }
 
