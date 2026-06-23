@@ -829,8 +829,13 @@
           if (st === 'ok') ok++; else if (st === 'amber') amber++; else if (st === 'err') { err++; if (c.dx) dxCount[c.dx] = (dxCount[c.dx] || 0) + 1; }
         });
         var topDx = Object.keys(dxCount).sort(function (a, b) { return dxCount[b] - dxCount[a]; })[0];
-        totals += '<td class="col-dx">' + ok + '✓ ' + (amber ? amber + '◐ ' : '') + (err ? err + '✗' : '') +
-          (topDx ? '<br>' + esc(DX_NAMES[topDx] || topDx) + ' ×' + dxCount[topDx] : '') + '</td>';
+        var parts = [];   // only show a count that exists, each glyph in its own legend colour (not all-red)
+        if (ok) parts.push('<span class="glyph-ok">' + ok + ' ✓</span>');
+        if (amber) parts.push('<span class="glyph-amber">' + amber + ' ◐</span>');
+        if (err) parts.push('<span class="glyph-err">' + err + ' ✗</span>');
+        var tally = parts.length ? parts.join(' ') : '<span class="glyph-un">—</span>';
+        totals += '<td class="col-dx">' + tally +
+          (topDx ? '<br><span class="col-dx-slip">' + esc(DX_NAMES[topDx] || topDx) + ' ×' + dxCount[topDx] + '</span>' : '') + '</td>';
       });
       totals += '</tr>';
       wall.innerHTML = t.join('').replace('</tbody>', totals + '</tbody>');
