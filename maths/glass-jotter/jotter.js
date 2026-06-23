@@ -525,7 +525,10 @@
 
     function buildAlgebraUI() {
       ui.innerHTML = '';
-      var ask = el('p', 'ui-msg', 'What are you doing to both sides?');
+      // "both sides" only makes sense for equations; substitute/simplify/expand
+      // have a single expression, so ask a neutral "next step" there instead.
+      var isEquation = q.type === 'solve' || q.type === 'form';
+      var ask = el('p', 'ui-msg', isEquation ? 'What are you doing to both sides?' : 'What’s your next step?');
       ui.appendChild(ask);
       var strip = el('div', 'chip-strip');
       var CHIPS = [

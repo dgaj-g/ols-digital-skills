@@ -336,11 +336,16 @@ body.gj .shelf-instruction {                 /* body.gj to beat `body.gj p { mar
   background: var(--pencil);
   border-radius: 3px 6px 6px 3px;
   box-shadow: inset 6px 0 8px -6px rgba(0,0,0,0.4);
-  opacity: 0.45;
+  opacity: 0.62;
   cursor: default;
   transform: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .book.locked:hover { transform: none; }
+.book-lock { width: 18px; height: 18px; color: var(--cream); margin-top: 10px; flex: none; opacity: 0.92; }
+.book-lock-note { writing-mode: vertical-rl; font-family: var(--f-stationery); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cream); opacity: 0.9; padding-bottom: 10px; }
 .book-spine-text {
   writing-mode: vertical-rl;
   font-family: var(--f-stationery);
@@ -349,6 +354,9 @@ body.gj .shelf-instruction {                 /* body.gj to beat `body.gj p { mar
   text-transform: uppercase;
   color: var(--cream);
   padding: var(--sq) 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 
 /* ═══ SCREEN · ACTIVITY ════════════════════════════════════════════ */
@@ -853,6 +861,7 @@ body.gj .staff-head h1 { color: var(--cream); font-size: 22px; }
 .glyph-live { color: #1B5A87; animation: live-blink 2s ease-in-out infinite; }
 @keyframes live-blink { 50% { opacity: 0.35; } }
 .glyph-un { color: var(--pencil); opacity: 0.6; }
+body.gj .wall-orient { font-family: var(--f-stationery); font-size: 13px; color: var(--navy); font-weight: 600; margin: 0 0 7px; }
 body.gj .wall-legend {
   font-family: var(--f-stationery); font-size: 12.5px; color: var(--ink);
   background: #FFFEFA; border: 1px solid var(--page-edge); border-radius: 6px;
