@@ -198,13 +198,13 @@
       mk.style.cssText = 'position:static;display:inline-block;width:26px;height:22px;vertical-align:middle';
       feedback.appendChild(mk);
       drawMark(mk, right ? 'tick' : 'cross');
-      feedback.appendChild(el('span', 'mk-tally', ' ' + (right ? '1/1' : '0/1')));
+      feedback.appendChild(el('span', 'mk-tally ' + (right ? 'mk-correct' : 'mk-wrong'), ' ' + (right ? '1/1' : '0/1')));
       if (rec.lock) {
-        feedback.appendChild(el('p', 'mk-comment', right ? commentFor(q.id, 'perfect') : commentFor(q.id, 'fail')));
+        feedback.appendChild(el('p', 'mk-comment ' + (right ? 'mk-correct' : 'mk-wrong'), right ? commentFor(q.id, 'perfect') : commentFor(q.id, 'fail')));
         if (!right) feedback.appendChild(el('p', 'ui-msg', 'You answered “' + esc(last.pick) + '” — your teacher can see this and will pick it up in class.'));
         checkRow.hidden = true;
         cards.querySelectorAll('.reason-card').forEach(function (x) { x.disabled = true; });
-        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally" style="font-size:18px">' + (right ? '1' : '0') + '/1</div>';
+        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally ' + (right ? 'mk-correct' : 'mk-wrong') + '" style="font-size:18px">' + (right ? '1' : '0') + '/1</div>';
       } else if (!instant) {
         feedback.appendChild(el('p', 'ui-msg', 'Not that one — look again at its size against 90° and 180°. One more attempt.'));
         pick = null;
@@ -337,8 +337,12 @@
         var rad = dd * Math.PI / 180, cx = Math.cos(rad), cy = -Math.sin(rad);
         focus.appendChild(sv('line', { x1: (cx * (PROT_R - 15)).toFixed(1), y1: (cy * (PROT_R - 15)).toFixed(1), x2: (cx * (PROT_R + 3)).toFixed(1), y2: (cy * (PROT_R + 3)).toFixed(1), stroke: '#E4B824', 'stroke-width': 3, 'stroke-linecap': 'round' }));
         focus.appendChild(sv('circle', { cx: (cx * PROT_R).toFixed(1), cy: (cy * PROT_R).toFixed(1), r: 3.2, fill: '#E4B824' }));
-        var lab = Math.max(0, Math.min(180, Math.round(dd / 10) * 10));
-        Array.prototype.forEach.call(prot.querySelectorAll('[data-pos="' + lab + '"]'), function (n) { n.classList.add('lit'); });
+        // light BOTH tens the reading sits between (e.g. 115 -> 110 and 120),
+        // so the aid never implies a single rounded value like "120" for a true 115
+        var lo = Math.max(0, Math.floor(dd / 10) * 10), hi = Math.min(180, Math.ceil(dd / 10) * 10);
+        [lo, hi].forEach(function (lab) {
+          Array.prototype.forEach.call(prot.querySelectorAll('[data-pos="' + lab + '"]'), function (n) { n.classList.add('lit'); });
+        });
       });
     }
 
@@ -404,14 +408,14 @@
       mk.style.cssText = 'position:static;display:inline-block;width:26px;height:22px;vertical-align:middle';
       feedback.appendChild(mk);
       drawMark(mk, res.ok ? 'tick' : 'cross');
-      feedback.appendChild(el('span', 'mk-tally', ' ' + (res.ok ? '1/1' : '0/1') + ' · you measured ' + last.read + '°'));
+      feedback.appendChild(el('span', 'mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong'), ' ' + (res.ok ? '1/1' : '0/1') + (res.ok ? '' : ' · you measured ' + last.read + '°')));
       if (rec.lock) {
-        if (res.ok) feedback.appendChild(el('p', 'mk-comment', commentFor(q.id, 'perfect')));
+        if (res.ok) feedback.appendChild(el('p', 'mk-comment mk-correct', commentFor(q.id, 'perfect')));
         else if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', 'You read the other scale — use the one that starts at 0 on the arm you lined up. The true size is ' + q.value + '°.'));
         else feedback.appendChild(el('p', 'ui-msg', 'Not quite — line the centre on the corner and 0 along an arm, then read again. The true size is ' + q.value + '°.'));
         checkRow.hidden = true;
         composer.root.setAttribute('aria-disabled', 'true');
-        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally" style="font-size:18px">' + (res.ok ? '1' : '0') + '/1</div>';
+        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong') + '" style="font-size:18px">' + (res.ok ? '1' : '0') + '/1</div>';
       } else if (!instant) {
         if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', 'Close — but check you are reading the scale that starts at 0 on your lined-up arm. One more go.'));
         else feedback.appendChild(el('p', 'ui-msg', 'Line it up carefully and read again — one more attempt.'));
@@ -595,6 +599,7 @@
       composer.clear();
       ui.querySelectorAll('.chip').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
       redrawCurrent();
+      confirmStepAdded();
       save();
     }
 
@@ -653,7 +658,7 @@
       stepComposer = makeComposer(stepHost, {
         numericOnly: true,
         label: 'Size of angle ' + nm,
-        placeholder: 'the size — or type the calculation, e.g. 180−38',
+        placeholder: 'the size — or type the calculation, e.g. 65',
         onCommit: function () { /* committed via the step button below */ }
       });
 
@@ -690,7 +695,7 @@
         var calcStr = raw.replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/');
         var evald = window.GJ_MATH.evalCalc(calcStr);
         if (!evald.ok) { flashMsg('I can’t read that number or calculation — check it.'); return; }
-        if (!chosenReason) { flashMsg('Choose the reason — the mark scheme wants it.'); return; }
+        if (!chosenReason) { flashMsg('Choose the reason — it earns a separate mark.'); return; }
         var val = evald.val.d === 1 ? evald.val.n : evald.val.n / evald.val.d;
         var step = { ang: nm, val: val, rsn: chosenReason, s: Math.round((Date.now() - cur.t0) / 1000) };
         if (/[-+*/()]/.test(calcStr)) step.calc = raw;
@@ -702,6 +707,7 @@
         if (lbl) { lbl.style.fill = '#5B6470'; lbl.style.fontStyle = 'italic'; }
         stepHost.hidden = true;
         redrawCurrent();
+        confirmStepAdded();
         save();
       });
       doRow.appendChild(add);
@@ -717,10 +723,18 @@
     var msgEl = el('p', 'ui-msg');
     body.insertBefore(msgEl, checkRow);
     var msgTimer = null;
-    function flashMsg(t) {
+    function flashMsg(t, ok) {
       msgEl.textContent = t;
+      msgEl.className = 'ui-msg' + (ok ? ' flash-ok' : '');
       clearTimeout(msgTimer);
-      msgTimer = setTimeout(function () { msgEl.textContent = ''; }, 5000);
+      msgTimer = setTimeout(function () { msgEl.textContent = ''; msgEl.className = 'ui-msg'; }, ok ? 2600 : 5000);
+    }
+    // confirm a freshly written step: a quick positive flash + a brief highlight
+    // on the new line, so the pupil sees it landed in the jotter.
+    function confirmStepAdded() {
+      flashMsg('✓ Added to your jotter.', true);
+      var last = linesEl.lastElementChild;
+      if (last) { last.classList.add('just-added'); setTimeout(function () { last.classList.remove('just-added'); }, 1300); }
     }
 
     function redrawCurrent() {
@@ -785,17 +799,18 @@
       seq.then(function () {
         feedback.innerHTML = '';
         var mk = verdict.mk, mkMax = verdict.mkMax || q.marks;
-        var tally = el('div', 'mk-tally', 'Working ' + mk[0] + '/' + mkMax[0] + ' · Answer ' + mk[1] + '/' + mkMax[1]);
-        feedback.appendChild(tally);
         var done = verdict.res === 'OK';
         var amber = verdict.res === 'AMBER';
         var secondGone = rec.att.length >= 2;
+        var mkState = done ? ' mk-correct' : amber ? ' mk-amber' : ' mk-wrong';   // colour the score by outcome, not always red
+        var tally = el('div', 'mk-tally' + mkState, 'Working ' + mk[0] + '/' + mkMax[0] + ' · Answer ' + mk[1] + '/' + mkMax[1]);
+        feedback.appendChild(tally);
 
-        if (amber) feedback.appendChild(el('p', 'amber-note', 'Right answer — but no working shown, so the method marks stay on the table.'));
+        if (amber) feedback.appendChild(el('p', 'amber-note', 'Right answer — but with no working shown, you can’t earn the working marks.'));
 
         var bucket = done ? 'perfect' : amber ? 'amber' : secondGone ? 'fail' : 'partial';
         if (done && mk[0] === mkMax[0]) bucket = 'perfect';
-        feedback.appendChild(el('p', 'mk-comment', commentFor(q.id, bucket)));
+        feedback.appendChild(el('p', 'mk-comment' + mkState, commentFor(q.id, bucket)));
 
         if (done && !isAngles) {
           var lastRow = rows[rows.length - 1];
@@ -825,7 +840,7 @@
           rec.mk = mk;
           ui.innerHTML = '';
           checkRow.hidden = true;
-          margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally" style="font-size:18px">' + (mk[0] + mk[1]) + '/' + (mkMax[0] + mkMax[1]) + '</div>';
+          margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally' + mkState + '" style="font-size:18px">' + (mk[0] + mk[1]) + '/' + (mkMax[0] + mkMax[1]) + '</div>';
         } else {
           // one more attempt: keep attempt 1 on the page, struck through
           feedback.appendChild(el('p', 'ui-msg', 'The line in the red box is where it went wrong — nothing is given away. One more attempt.'));
@@ -872,8 +887,9 @@
       });
       if (verdict) {
         var mkMax2 = verdict.mkMax || q.marks;
-        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally" style="font-size:18px">' + (verdict.mk[0] + verdict.mk[1]) + '/' + (mkMax2[0] + mkMax2[1]) + '</div>';
-        feedback.appendChild(el('div', 'mk-tally', 'Working ' + verdict.mk[0] + '/' + mkMax2[0] + ' · Answer ' + verdict.mk[1] + '/' + mkMax2[1]));
+        var mkState2 = verdict.res === 'OK' ? ' mk-correct' : verdict.res === 'AMBER' ? ' mk-amber' : ' mk-wrong';
+        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally' + mkState2 + '" style="font-size:18px">' + (verdict.mk[0] + verdict.mk[1]) + '/' + (mkMax2[0] + mkMax2[1]) + '</div>';
+        feedback.appendChild(el('div', 'mk-tally' + mkState2, 'Working ' + verdict.mk[0] + '/' + mkMax2[0] + ' · Answer ' + verdict.mk[1] + '/' + mkMax2[1]));
       }
       checkRow.hidden = true;
     } else {

@@ -908,7 +908,7 @@
     // section once, regardless of attempts.
     if (strips.length && current.nudge && current.nudge.sec === sec.id) {
       strips[0].classList.add('nudged');
-      if (strips[0]._openSupport) strips[0]._openSupport();
+      if (strips[0]._openSupport) strips[0]._openSupport(true);
       current.nudge = null;   // one-shot: don't re-open every time the pupil revisits
     }
 
@@ -932,9 +932,15 @@
     host.hidden = true;
     var mounted = false;
     function reveal() { wrap.hidden = false; }
-    function open() {
+    function open(viaNudge) {
       reveal();
       if (!mounted) {
+        if (viaNudge) {
+          var nudgeNote = document.createElement('p');
+          nudgeNote.className = 'wh-nudge-note';
+          nudgeNote.textContent = '★ Your teacher suggested watching this method.';
+          host.appendChild(nudgeNote);
+        }
         // lead with THIS pupil's own slip (their flagged line + the misconception the
         // marker found) — content-safe, no answer given; then the method movie below.
         var slip = slipCard(q);
@@ -1041,7 +1047,19 @@
     var ev = current.state.evals[sec.id] || { conf: 0, skills: {}, note: '' };
     if (!ev.skills) ev.skills = {};
     var card = seEl('div', 'selfeval');
-    function persist() { ev.ts = Math.floor(Date.now() / 1000); current.state.evals[sec.id] = ev; scheduleSave(); }
+    var savedLine, savedTimer = null;
+    function persist() {
+      ev.ts = Math.floor(Date.now() / 1000); current.state.evals[sec.id] = ev; scheduleSave();
+      if (savedLine) {                                  // active confirmation each tap, so it's clear it saved
+        savedLine.textContent = '✓ Saved — your teacher sees this on her class list.';
+        savedLine.classList.add('se-saved-flash');
+        clearTimeout(savedTimer);
+        savedTimer = setTimeout(function () {
+          savedLine.classList.remove('se-saved-flash');
+          savedLine.textContent = 'Saved as you tap — your teacher sees this on her class list.';
+        }, 1800);
+      }
+    }
 
     var h = seEl('p', 'se-head');
     h.innerHTML = 'Exercise finished &mdash; how did that go? <span class="se-opt">optional</span>';
@@ -1101,7 +1119,8 @@
     noteWrap.appendChild(note);
     card.appendChild(noteWrap);
 
-    card.appendChild(seEl('p', 'se-saved', 'Saved as you tap — your teacher sees this on her class list.'));
+    savedLine = seEl('p', 'se-saved', 'Saved as you tap — your teacher sees this on her class list.');
+    card.appendChild(savedLine);
     return card;
   }
 
