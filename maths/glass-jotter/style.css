@@ -726,7 +726,9 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 /* angles question layout */
 .jq-diagram { margin: calc(var(--sq) * 0.5) 0; }
 .jq-diagram svg { max-width: 100%; height: auto; display: block; }
-.ang-arc { cursor: pointer; }
+.ang-arc.arc-tappable { cursor: pointer; }
+/* a tappable (not-given, not-yet-done) angle: dashed teal "open" arc = your move */
+.ang-arc.arc-tappable path:not([stroke="transparent"]) { stroke: #0F6B66; stroke-dasharray: 5 3; }
 .ang-arc.pulse { animation: arc-pulse 900ms ease-in-out infinite; }
 @keyframes arc-pulse { 50% { opacity: 0.35; } }
 .ang-established { font-style: italic; }
@@ -739,6 +741,8 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
   padding: calc(var(--sq) * 0.6) var(--sq);
   margin: calc(var(--sq) * 0.5) 0;
 }
+/* when hidden, reserve no space but don't violently collapse the page (kills the post-add jump) */
+.step-card[hidden] { display: block; visibility: hidden; height: 0; margin: 0; padding: 0; overflow: hidden; border: 0; }
 .step-card .sc-head { font-family: var(--f-display); font-weight: 640; font-size: 17px; color: var(--navy); margin: 0 0 8px; }
 .step-card .sc-sub { font-family: var(--f-stationery); font-size: 13px; color: var(--pencil); margin: 12px 0 4px; }
 .step-card .sc-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 19px; }
