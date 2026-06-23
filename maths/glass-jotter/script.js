@@ -861,7 +861,7 @@
 
     var head = document.createElement('div');
     head.className = 'sec-head';
-    head.innerHTML = '<p class="sec-walt">In this exercise: ' + sec.walt + '</p>' +
+    head.innerHTML = '<p class="sec-walt">WALT · ' + sec.walt + '</p>' +
       '<h2 class="sec-title">Exercise ' + (i + 1) + ' · ' + sec.title + '</h2>';
     main.appendChild(head);
 
