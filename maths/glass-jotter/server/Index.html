@@ -3129,7 +3129,7 @@ window.OLS_TRANSPORT = {
         { say: 'Round a point is a FULL turn \u2014 360\u00b0. Here two of the three angles are known.', do: [{ seg: { id: 'p1' } }, { seg: { id: 'p2' } }, { seg: { id: 'p3' } }, { arc: { ang: 'p1' } }, { arc: { ang: 'p2' } }] },
         { say: '360 \u2212 130 \u2212 110 leaves the missing angle.', do: [{ arc: { ang: 'p3' } }, { stamp: { reason: 'PNT' } }] },
         { say: '360 \u2212 130 \u2212 110 = 120. In your jotter you will type the calculation \u2014 that counts as working.', do: [{ value: { ang: 'p3', to: 120 } }] },
-        { say: 'Exam habit: always NAME the rule. The mark scheme gives a mark for the reason itself.', do: [{ note: { text: 'Reason = a mark. Every time.', red: true } }] }
+        { say: 'Good habit: always NAME the rule \u2014 the reason earns its own mark.', do: [{ note: { text: 'Reason = a mark. Every time.', red: true } }] }
       ]
     },
     questions: [q5(), q6(), q7(), q8()]
@@ -4555,7 +4555,7 @@ window.OLS_TRANSPORT = {
   // button \u2014 they must never be told their "working" or "lines" were lovely.
   var COMMENTS = {
     working: {
-      perfect: ['Good \u2014 equals signs lined up.', 'A fair copy. Lovely clear working.', 'Every line earns its mark.'],
+      perfect: ['Good \u2014 equals signs lined up.', 'Neat, clear working.', 'Every line earns its mark.'],
       partial: ['Look again at the boxed line.', 'So close \u2014 one line lets it down.', 'The method is there \u2014 mind that step.'],
       amber: ['Right answer \u2014 now show me the working.', 'Correct, but a marker needs to see the method.'],
       fail: ['We\u2019ll look at this one together in class.', 'Watch the worked example again, then retry the idea in class.']
@@ -7544,7 +7544,7 @@ window.OLS_TRANSPORT = {
 
     var head = document.createElement('div');
     head.className = 'sec-head';
-    head.innerHTML = '<p class="sec-walt">WALT \u00b7 ' + sec.walt + '</p>' +
+    head.innerHTML = '<p class="sec-walt">In this exercise: ' + sec.walt + '</p>' +
       '<h2 class="sec-title">Exercise ' + (i + 1) + ' \u00b7 ' + sec.title + '</h2>';
     main.appendChild(head);
 
@@ -7815,7 +7815,7 @@ window.OLS_TRANSPORT = {
   function renderTally(main, pack) {
     var sum = summarise(current.act.id, current.state, me.name);
     var pct = sum.marks[1] ? Math.round(100 * sum.marks[0] / sum.marks[1]) : 0;
-    var hand = pct === 100 ? 'Full marks. A fair copy \u2014 the gold star is yours.'
+    var hand = pct === 100 ? 'Full marks \u2014 the gold star is yours.'
       : pct >= 80 ? 'Nearly there \u2014 look back at the crosses.'
       : pct >= 50 ? 'Good \u2014 go back over the questions the red pen marked.'
       : 'Plenty to talk about in class \u2014 your teacher can see exactly where.';
