@@ -910,6 +910,7 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 .key.key-wide { grid-column: span 2; }
 .key.key-go { background: var(--navy); color: var(--cream); font-family: var(--f-stationery); font-size: 13px; letter-spacing: 0.06em; }
 .key.key-del { font-size: 16px; }
+.keypad.keypad-num { grid-template-columns: repeat(3, 1fr); max-width: 216px; }   /* a number is all an angle/measurement needs */
 
 /* the line being composed \2014  div-based caret, native keyboard never opens */
 .compose {
@@ -972,6 +973,7 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 .step-card .sc-row .sc-eq { font-family: var(--f-maths); }
 .step-card .sc-field { display: inline-flex; min-width: 96px; }
 .step-card .sc-field .compose { width: 100%; min-height: calc(var(--sq) * 1.2); border-bottom-color: var(--navy); }
+.step-card .sc-hint { font-family: var(--f-stationery); font-size: 12px; color: var(--pencil); margin: 3px 0 0; }
 .step-card .sc-msg { font-family: var(--f-stationery); font-size: 13.5px; font-weight: 600; color: var(--amber-flag); min-height: 18px; margin: 10px 0 0; }
 
 /* reason picker \2014  grouped then randomised */
@@ -4586,23 +4588,45 @@ window.OLS_TRANSPORT = {
     compose.appendChild(content); compose.appendChild(caret); compose.appendChild(ph);
     (opts.fieldHost || host).appendChild(compose);   // fieldHost lets the input sit inline (e.g. \u2220PVR = [__] \u00b0); keypad still goes to host
 
-    var KEYS = opts.numericOnly
-      ? ['7', '8', '9', '+', '\u2212', '(', ')', '\u232b',
-         '4', '5', '6', '\u00d7', '\u00f7', '0', '.', '/',
-         '1', '2', '3', '\u21b6', '', '', '', '\u2713 Done']
-      : ['7', '8', '9', '+', '\u2212', '(', ')', '\u232b',
-         '4', '5', '6', '\u00d7', '\u00f7', 'x', 'x\u00b2', '/',
-         '1', '2', '3', '0', '.', '=', '\u21b6', '\u2713 Done'];
-    var pad = el('div', 'keypad');
+    var COMMIT = '';   // sentinel for the commit key, so its label can change without breaking handling
+    var isNumberPad = opts.pad === 'number';
+    var KEYS = isNumberPad
+      // a compact number pad \u2014 an angle size or a measurement is just a number (+ minus for an optional sum)
+      ? ['7', '8', '9',
+         '4', '5', '6',
+         '1', '2', '3',
+         '\u2212', '0', '\u232b']
+      : opts.numericOnly
+        ? ['7', '8', '9', '+', '\u2212', '(', ')', '\u232b',
+           '4', '5', '6', '\u00d7', '\u00f7', '0', '.', '/',
+           '1', '2', '3', '\u21b6', '', '', '', COMMIT]
+        : ['7', '8', '9', '+', '\u2212', '(', ')', '\u232b',
+           '4', '5', '6', '\u00d7', '\u00f7', 'x', 'x\u00b2', '/',
+           '1', '2', '3', '0', '.', '=', '\u21b6', COMMIT];
+    var pad = el('div', 'keypad' + (isNumberPad ? ' keypad-num' : ''));
     KEYS.forEach(function (k) {
       if (k === '') { pad.appendChild(el('span', '')); return; }
-      var b = el('button', 'key' + (k === '\u2713 Done' ? ' key-go key-wide' : '') + (k === '\u232b' ? ' key-del' : ''));
+      if (k === COMMIT) {
+        var gb = el('button', 'key key-go key-wide');
+        gb.type = 'button';
+        gb.textContent = opts.commitLabel || '\u2713 Done';
+        gb.addEventListener('click', function () { if (opts.onCommit) opts.onCommit(buf.trim()); });
+        pad.appendChild(gb);
+        return;
+      }
+      var b = el('button', 'key' + (k === '\u232b' ? ' key-del' : ''));
       b.type = 'button';
       b.textContent = k;
       b.addEventListener('click', function () { press(k); });
       pad.appendChild(b);
     });
     host.appendChild(pad);
+
+    // FOOLPROOF keyboard rule: the number pad is only for devices with no keyboard.
+    // The on-screen buttons fire click (not keydown), so any keydown here proves a
+    // real keyboard \u2014 hide the pad the instant one arrives. Touch-only users never
+    // fire a keydown, so they keep the pad. No device guessing.
+    function maybeHidePad() { if (isNumberPad) pad.style.display = 'none'; }
 
     function render() {
       content.textContent = buf;
@@ -4611,20 +4635,21 @@ window.OLS_TRANSPORT = {
     function press(k) {
       if (k === '\u232b') buf = buf.slice(0, -1);
       else if (k === '\u21b6') buf = '';
-      else if (k === '\u2713 Done') { if (opts.onCommit) opts.onCommit(buf.trim()); return; }
       else if (k === 'x\u00b2') buf += 'x\u00b2';
       else buf += k;
       render();
     }
     compose.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') { e.preventDefault(); if (opts.onCommit) opts.onCommit(buf.trim()); return; }
-      if (e.key === 'Backspace') { e.preventDefault(); buf = buf.slice(0, -1); render(); return; }
+      if (e.key === 'Enter') { e.preventDefault(); maybeHidePad(); if (opts.onCommit) opts.onCommit(buf.trim()); return; }
+      if (e.key === 'Backspace') { e.preventDefault(); buf = buf.slice(0, -1); render(); maybeHidePad(); return; }
       if (e.key.length === 1 && /[0-9x+\-*/().=\s]/.test(e.key)) {
         e.preventDefault();
         var k = e.key === '-' ? '\u2212' : e.key === '*' ? '\u00d7' : e.key === '/' ? '/' : e.key;
-        if (opts.numericOnly && (k === 'x' || k === '=')) return;
+        if ((opts.numericOnly || isNumberPad) && (k === 'x' || k === '=')) return;
+        if (isNumberPad && !/[0-9\u2212\s]/.test(k)) return;   // number field: digits + minus only
         buf += k;
         render();
+        maybeHidePad();
       }
     });
     render();
@@ -4702,6 +4727,7 @@ window.OLS_TRANSPORT = {
         checkBtn.disabled = true;
         cards.querySelectorAll('.reason-card').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
       }
+      if (!instant) feedback.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
     }
     checkBtn.addEventListener('click', function () {
       if (!pick || rec.lock) return;
@@ -4878,7 +4904,7 @@ window.OLS_TRANSPORT = {
     body.appendChild(el('p', 'ui-msg', 'Line the small red centre mark on the corner, then use a rotate knob (at either end) to turn the protractor so 0 sits along one arm, and read where the other arm crosses.'));
     var compHost = el('div', '');
     body.appendChild(compHost);
-    var composer = makeComposer(compHost, { numericOnly: true, label: 'Your measurement in degrees', placeholder: 'type the size you measure, in degrees', onCommit: function () { runCheck(); } });
+    var composer = makeComposer(compHost, { pad: 'number', label: 'Your measurement in degrees', placeholder: 'the size you measure, in degrees', onCommit: function () { runCheck(); } });
 
     var msgEl = el('p', 'ui-msg');
     body.appendChild(msgEl);
@@ -4912,6 +4938,7 @@ window.OLS_TRANSPORT = {
         else feedback.appendChild(el('p', 'ui-msg', 'Line it up carefully and read again \u2014 one more attempt.'));
         composer.clear();
       }
+      if (!instant) feedback.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
     }
 
     function runCheck() {
@@ -5042,8 +5069,8 @@ window.OLS_TRANSPORT = {
           if (c.id === '+' || c.id === '-' || c.id === '*' || c.id === '/') {
             pendingOp = { kind: c.id, operand: '' };
             var opc = makeComposer(operandHost, {
-              label: 'How much?', placeholder: 'how much? e.g. 15 or 3x',
-              onCommit: function () { composer.focus(); }   // Done on the operand jumps to the new-line field
+              label: 'How much?', placeholder: 'how much? e.g. 15 or 3x', commitLabel: 'next \u2192',
+              onCommit: function () { composer.focus(); }   // "next" on the operand jumps to the new-line field
             });
             opc.root.classList.add('compose-mini');
             pendingOp.reader = opc;
@@ -5057,11 +5084,12 @@ window.OLS_TRANSPORT = {
       });
       ui.appendChild(strip);
       ui.appendChild(operandHost);
-      ui.appendChild(el('p', 'ui-msg', 'Then write the new line:'));
+      ui.appendChild(el('p', 'ui-msg', 'Write your next line of working:'));
       var compHost = el('div', '');
       ui.appendChild(compHost);
       composer = makeComposer(compHost, {
-        placeholder: 'write the new line of working',
+        placeholder: 'your next line, then \u201cadd line\u201d',
+        commitLabel: 'add line',
         onCommit: commitAlgebraLine
       });
       undoBtn = el('button', 'btn-pencil', '\u21b6 remove last line');
@@ -5164,12 +5192,13 @@ window.OLS_TRANSPORT = {
       row.appendChild(fieldHost);
       row.appendChild(el('span', 'sc-eq', '\u00b0'));
       stepHost.appendChild(row);
+      stepHost.appendChild(el('p', 'sc-hint', 'Type the size \u2014 a number, or a sum like 180\u2212124.'));
       stepComposer = makeComposer(stepHost, {
         fieldHost: fieldHost,
-        numericOnly: true,
+        pad: 'number',
         label: 'Size of angle ' + nm,
-        placeholder: 'e.g. 65',
-        onCommit: function () { tryAddStep(); }   // Enter / Done now ADDS the step (was a dead no-op)
+        placeholder: 'the size, e.g. 65',
+        onCommit: function () { tryAddStep(); }   // Enter adds the step; the "Add to my working" button is the on-screen commit
       });
 
       // STEP 2 \u2014 the reason (grouped, randomised within groups, FULL bank always)
@@ -5299,6 +5328,10 @@ window.OLS_TRANSPORT = {
       attempt.res = verdict.res;
       rec.att.push(attempt);
 
+      // keep the pupil's eye on their working as the marks ink down the margin \u2014
+      // and out of the way of the keypad that's about to collapse below (no jump).
+      linesEl.scrollIntoView({ block: 'center', behavior: REDUCED ? 'auto' : 'smooth' });
+
       var rows = linesEl.querySelectorAll('.wline:not(.struck):not(.pencil)');
       var per = verdict.perLine || verdict.perStep || [];
       var seq = Promise.resolve();
@@ -5374,6 +5407,7 @@ window.OLS_TRANSPORT = {
           }
           setTimeout(function () { redrawCurrent(); checkBtn.disabled = true; }, REDUCED ? 0 : 600);
         }
+        feedback.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });   // land on the marks + tally, never below the fold
         save();
       });
     }
