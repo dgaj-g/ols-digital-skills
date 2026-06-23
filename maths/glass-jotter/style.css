@@ -24,7 +24,7 @@
   --grid-bold: rgba(27, 90, 135, 0.16);
   --margin-rose: #E8A0A8;
   --marking-red: #C8102E;
-  --pencil: #5B6470;
+  --pencil: #474D57;
   --teal: #0F6B66;          /* Angles — The Geometry Set */
   --plum: #7A3B5E;          /* Algebra — Ink & Balance  */
   --page-edge: #EFE9DC;
@@ -47,6 +47,7 @@ body.gj {
   color: var(--ink);
   font-family: var(--f-maths);
   font-size: 18.5px;
+  font-weight: 460;
   line-height: calc(var(--sq) * 1.1);
   -webkit-font-smoothing: antialiased;
 }
@@ -585,7 +586,7 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 }
 .jq-body { flex: 1; min-width: 0; padding-right: var(--sq); }
 .jq-prompt { font-size: 18.5px; line-height: calc(var(--sq) * 1.25); margin-bottom: calc(var(--sq) * 0.5); }
-.jq-prompt .q-marks { font-family: var(--f-stationery); font-size: 12px; color: var(--pencil); white-space: nowrap; }
+.jq-prompt .q-marks { font-family: var(--f-stationery); font-size: 15px; color: var(--pencil); white-space: nowrap; }
 
 /* committed working lines */
 .wline {
@@ -770,6 +771,15 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
   margin-top: calc(var(--sq) * 0.25);
 }
 .amber-note { font-family: var(--f-stationery); font-size: 12px; color: var(--amber-flag); }
+/* colour the score + comment by outcome: green correct, amber answer-only, red wrong */
+.mk-tally.mk-correct, .mk-comment.mk-correct { color: #1F7A33; }
+.mk-tally.mk-amber, .mk-comment.mk-amber { color: var(--amber-flag); }
+.mk-tally.mk-wrong, .mk-comment.mk-wrong { color: var(--marking-red); }
+body.gj .jq-feedback { margin-top: calc(var(--sq) * 0.9); }
+/* a freshly written step: positive flash + brief line highlight */
+.ui-msg.flash-ok { color: #1F7A33; font-weight: 600; }
+.wline.just-added { animation: step-land 1.3s ease-out; }
+@keyframes step-land { 0% { background: rgba(31, 122, 51, 0.18); } 100% { background: transparent; } }
 
 /* tick / cross marks are SVG paths drawn at pen speed */
 .mark-tick path, .mark-cross path, .box-draw rect, .box-draw path {
@@ -1028,6 +1038,7 @@ body.dragging-active, body.dragging-active * {
 .want-how.nudged .want-how-btn { opacity: 1; font-weight: 700; }
 .want-how.nudged .want-how-btn::after { content: ' · your teacher suggests this'; font-weight: 400; color: var(--foil-lo); }
 .want-how-body { margin-top: 8px; }
+body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; font-weight: 600; color: #8A6A12; background: #FBF4E2; border: 1.5px solid var(--foil-lo); border-radius: 8px; padding: 8px 12px; margin: 0 0 12px; }
 /* the pupil's own slip, surfaced at the top of the pull (after two wrong tries) */
 .wh-slip { background: #FBF4E2; border: 1.5px solid var(--foil-lo); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; }
 .wh-slip .wh-slip-h { font-family: var(--f-stationery); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: #8A6A12; margin: 0 0 6px; }  /* scoped past body.gj p { margin:0 } */
@@ -1066,7 +1077,8 @@ body.dragging-active, body.dragging-active * {
 .se-note { margin-top: 12px; }
 .se-note input { width: 100%; max-width: 440px; font-family: var(--f-stationery); font-size: 0.9rem;
   padding: 8px 10px; border: 1.5px solid var(--page-edge); border-radius: 6px; background: #FAF7F0; color: var(--ink); }
-.se-saved { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); margin: 8px 0 0; font-style: italic; }
+.se-saved { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); margin: 8px 0 0; font-style: italic; transition: color 0.2s; }
+.se-saved.se-saved-flash { color: #1F7A33; font-style: normal; font-weight: 600; }
 
 /* ═══ Class Insights + per-pupil header (teacher) ═══ */
 .ins-host { margin-top: 8px; }

@@ -178,15 +178,15 @@
   /* ════ Section 2 — Straight lines and full turns ══════════════════ */
   function q5() {
     var V = [50, 36];
-    var pts = { V: V, _P: [8, 36], _Q: [92, 36], _R: ray(V, 56, 28) };
+    var pts = { V: V, P: [8, 36], Q: [92, 36], _R: ray(V, 56, 28) };
     return {
       id: 'q5', marks: [1, 1], target: 'a',
       prompt: 'PVQ is a straight line. Work out the size of angle a. Give a reason for your answer.',
       diagram: { w: 100, h: 50, pts: pts, segs: [
-        { id: 'line', from: '_P', to: '_Q' }, { id: 'ray', from: 'V', to: '_R' }
+        { id: 'line', from: 'P', to: 'Q' }, { id: 'ray', from: 'V', to: '_R' }
       ], angles: {
-        PVR: { at: 'V', from: '_P', to: '_R', value: 124, given: true },
-        a: { at: 'V', from: '_R', to: '_Q', value: 56, label: 'a' }
+        PVR: { at: 'V', from: 'P', to: '_R', value: 124, given: true },
+        a: { at: 'V', from: '_R', to: 'Q', value: 56, label: 'a' }
       } },
       graph: [{ find: 'a', rule: 'STR', from: ['PVR'] }]
     };
