@@ -68,7 +68,7 @@ function doGet(e) {
   // deployment so getOAuthToken() is the PUPIL's token. Guarded to only write when
   // actually running as the accessing user (so the execute-as-me main deployment,
   // if ever hit with ?probe, never writes the deployer's name).
-  if (e && e.parameter && e.parameter.probe) { return autoNameProbe_(); }
+  if (e && e.parameter && e.parameter.probe) { return autoNameProbe_(e); }
   var t = HtmlService.createTemplateFromFile('Index');
   t.classCode = (e && e.parameter && e.parameter['class']) ? String(e.parameter['class']) : 'default';
   t.baseUrl = ScriptApp.getService().getUrl();
@@ -103,17 +103,30 @@ function autoName_() {
 /* Companion endpoint (doGet ?probe=1, execute-as-user): stash the pupil's real name
    in ScriptProperties for the main (execute-as-me) app to read. The guard ensures we
    only write when truly running as the accessing user. Returns a 1-line page. */
-function autoNameProbe_() {
-  var ok = false;
+function autoNameProbe_(e) {
+  var ok = false, nm = '';
   try {
     var who = userEmail_();
     if (who && effectiveEmail_().toLowerCase() === who.toLowerCase()) {   // running AS the pupil
-      var nm = autoName_();
+      nm = autoName_();
       if (nm) { sp_().setProperty(autoNameKey_(who), nm); ok = true; }
     }
-  } catch (e) { ok = false; }
-  return HtmlService.createHtmlOutput('<!doctype html><meta charset="utf-8"><title>ok</title><p>' + (ok ? 'ok' : 'no') + '</p>')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  } catch (err) { ok = false; }
+  // popup-free, full-page return: bounce the whole tab back to the class link via a
+  // user-tapped target="_top" anchor (NEVER location.href, which white-screens the bound
+  // sandbox). Open-redirect guarded to script.google.com only.
+  var ret = (e && e.parameter && e.parameter.ret) ? String(e.parameter.ret) : '';
+  if (ret && ret.indexOf('https://script.google.com/') === 0) {
+    var html = '<!doctype html><meta charset="utf-8"><title>Saved</title>'
+      + '<style>body{font:16px system-ui;padding:2rem;text-align:center;color:#1A3A6B}a{display:inline-block;margin-top:1rem;padding:.7rem 1.4rem;background:#1A3A6B;color:#fff;text-decoration:none;border-radius:8px;font-weight:600}</style>'
+      + '<p>' + (ok ? ('Saved your name' + (nm ? (', ' + nm.split(' ')[0]) : '') + '.') : 'All set.') + '</p>'
+      + '<a href=' + JSON.stringify(ret) + ' target="_top">Open your book</a>'
+      + '<script>try{document.links[0].click();}catch(e){}<\/script>';
+    return HtmlService.createHtmlOutput(html).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+  var pg = '<!doctype html><meta charset="utf-8"><title>ok</title>'
+    + '<p style="font:14px system-ui;padding:1rem">' + (ok ? 'Saved your name. ' : '') + 'You can close this tab.</p>';
+  return HtmlService.createHtmlOutput(pg).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 /* Main app (execute-as-me): read the name the companion stashed for this caller. */
 function apiAutoName() {
@@ -254,7 +267,7 @@ function apiHello(req) {
       if (actOk_(act)) summaries[act] = parseJson_(vals[i][4]);
     } catch (e) { /* skip bad row */ }
   }
-  return { ok: true, email: String(who), name: String(getName_(who) || ''), classCode: String(rec.name), acts: coerceActs_(rec.acts), summaries: summaries, autonameUrl: String(getConfig_('autonameUrl') || '') };
+  return { ok: true, email: String(who), name: String(getName_(who) || sp_().getProperty(autoNameKey_(who)) || ''), nameFromSp: (!getName_(who) && !!sp_().getProperty(autoNameKey_(who))), classCode: String(rec.name), acts: coerceActs_(rec.acts), summaries: summaries, autonameUrl: String(getConfig_('autonameUrl') || '') };
 }
 
 function apiSave(req) {

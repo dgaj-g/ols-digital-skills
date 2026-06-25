@@ -211,7 +211,7 @@
     body.appendChild(cards);
     var feedback = el('div', 'jq-feedback');
     var checkRow = el('div', 'check-row');
-    var checkBtn = el('button', 'btn-stamp', 'Check my answer');
+    var checkBtn = el('button', 'btn-stamp', 'Mark my answer');
     checkBtn.type = 'button';
     checkBtn.disabled = true;
     checkRow.appendChild(checkBtn);
@@ -437,7 +437,7 @@
     var msgEl = el('p', 'ui-msg');
     body.appendChild(msgEl);
     var checkRow = el('div', 'check-row');
-    var checkBtn = el('button', 'btn-stamp', 'Check my measurement');
+    var checkBtn = el('button', 'btn-stamp', 'Mark my measurement');
     checkBtn.type = 'button';
     checkRow.appendChild(checkBtn);
     body.appendChild(checkRow);
@@ -524,13 +524,20 @@
     }
 
     var ui = el('div', 'jq-ui');
-    body.appendChild(ui);
+    // THE DOCK — the writing line, the keys and the commit kept together and (on a tall
+    // viewport) docked to the bottom, so the pupil can always see what they're writing and
+    // the keys at once. Sticky degrades to inline where unsupported; a locked question's
+    // dock is empty (ui wiped, checkRow hidden) so docks never stack.
+    var dock = el('div', 'dock');
+    dock.hidden = true;                 // shown only while a question is active (a builder reveals it)
+    dock.appendChild(ui);
     var checkRow = el('div', 'check-row');
-    var checkBtn = el('button', 'btn-stamp', 'Check my working');
+    var checkBtn = el('button', 'btn-stamp', 'Mark my working');
     checkBtn.type = 'button';
     var attemptNote = el('span', 'attempt-note', '');
     checkRow.appendChild(checkBtn); checkRow.appendChild(attemptNote);
-    body.appendChild(checkRow);
+    dock.appendChild(checkRow);
+    body.appendChild(dock);
     var feedback = el('div', 'jq-feedback');
     body.appendChild(feedback);
 
@@ -572,11 +579,25 @@
 
     function buildAlgebraUI() {
       ui.innerHTML = '';
+      dock.hidden = false;
       // "both sides" only makes sense for equations; substitute/simplify/expand
       // have a single expression, so ask a neutral "next step" there instead.
       var isEquation = q.type === 'solve' || q.type === 'form';
-      var ask = el('p', 'ui-msg', isEquation ? 'What are you doing to both sides?' : 'What’s your next step?');
-      ui.appendChild(ask);
+
+      // LINE FIRST — the line is the primary act; the move is an optional annotation.
+      ui.appendChild(el('p', 'ui-msg', 'Write your next line of working:'));
+      var compHost = el('div', 'dock-line');
+      ui.appendChild(compHost);
+      composer = makeComposer(compHost, {
+        placeholder: 'your next line, then “add line”',
+        commitLabel: 'add line',
+        onCommit: commitAlgebraLine
+      });
+
+      // THE MOVE — an optional tag for the margin, secondary to the line above.
+      var moveWrap = el('div', 'move-annot');
+      moveWrap.appendChild(el('div', 'ui-msg msg-status',
+        (isEquation ? 'What are you doing to both sides?' : 'What’s your next step?') + ' — tag the move (optional)'));
       var strip = el('div', 'chip-strip');
       var CHIPS = [
         { id: '+', label: '+ add' }, { id: '-', label: '− subtract' },
@@ -598,28 +619,22 @@
             pendingOp = { kind: c.id, operand: '' };
             var opc = makeComposer(operandHost, {
               label: 'How much?', placeholder: 'how much? e.g. 15 or 3x', commitLabel: 'next →',
-              onCommit: function () { composer.focus(); }   // "next" on the operand jumps to the new-line field
+              onCommit: function () { composer.focus(); }   // "next" on the operand jumps back to the line field
             });
             opc.root.classList.add('compose-mini');
             pendingOp.reader = opc;
             opc.focus();                                     // focus the operand straight away
           } else {
             pendingOp = { kind: c.id };
-            composer.focus();                                // no operand needed — go write the line
+            composer.focus();                                // no operand needed — back to the line
           }
         });
         strip.appendChild(b);
       });
-      ui.appendChild(strip);
-      ui.appendChild(operandHost);
-      ui.appendChild(el('p', 'ui-msg', 'Write your next line of working:'));
-      var compHost = el('div', '');
-      ui.appendChild(compHost);
-      composer = makeComposer(compHost, {
-        placeholder: 'your next line, then “add line”',
-        commitLabel: 'add line',
-        onCommit: commitAlgebraLine
-      });
+      moveWrap.appendChild(strip);
+      moveWrap.appendChild(operandHost);
+      ui.appendChild(moveWrap);
+
       undoBtn = el('button', 'btn-pencil', '↶ remove last line');
       undoBtn.type = 'button';
       undoBtn.style.marginTop = '8px';
@@ -674,6 +689,7 @@
 
     function buildAnglesUI() {
       ui.innerHTML = '';
+      dock.hidden = false;
       // instruction matches reality: point straight at the one tappable arc, or to the target
       var openCount = unknownAngles().length;
       ui.appendChild(el('p', 'ui-msg', openCount === 1
@@ -805,7 +821,7 @@
       }
 
       var doRow = el('div', 'check-row');
-      var add = el('button', 'btn-stamp', isFinalStep ? 'Check my answer' : 'Add to my working');
+      var add = el('button', 'btn-stamp', isFinalStep ? 'Mark my working' : 'Add to my working');
       add.type = 'button';
       add.addEventListener('click', commitStep);
       doRow.appendChild(add);
@@ -818,12 +834,14 @@
     }
 
     /* ── shared render / save / check ─────────────────────────────── */
-    var msgEl = el('p', 'ui-msg');
-    body.insertBefore(msgEl, checkRow);
+    var msgEl = el('div', 'ui-msg');
+    checkRow.parentNode.insertBefore(msgEl, checkRow);   // into the dock, above the commit (validation can't scroll off)
     var msgTimer = null;
+    // ok=true -> positive sage flash; ok=false -> a validation prompt (amber "needs action",
+    // never marking-red: a pupil being asked to add a line is not wrong).
     function flashMsg(t, ok) {
       msgEl.textContent = t;
-      msgEl.className = 'ui-msg' + (ok ? ' flash-ok' : '');
+      msgEl.className = 'ui-msg' + (ok ? ' flash-ok' : ' msg-validation');
       clearTimeout(msgTimer);
       msgTimer = setTimeout(function () { msgEl.textContent = ''; msgEl.className = 'ui-msg'; }, ok ? 2600 : 5000);
     }
@@ -945,6 +963,7 @@
           rec.mk = mk;
           ui.innerHTML = '';
           checkRow.hidden = true;
+          dock.hidden = true;            // the question is marked; the dock retires
           margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally' + mkState + '" style="font-size:18px">' + (mk[0] + mk[1]) + '/' + (mkMax[0] + mkMax[1]) + '</div>';
         } else {
           // one more attempt: keep attempt 1 on the page, struck through

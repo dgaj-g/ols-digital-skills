@@ -607,6 +607,7 @@
     /* ── PUPIL COVER (a real class link) ─────────────────────────────────── */
     document.getElementById('cover-class').textContent = BOOT.classCode;
     staffOval.hidden = true;
+    var coverConsentUrl = '', coverNeedsConsent = false;
     /* Guard: the cover book shows at once, but hold the "open" button and show a
        spinner until whoami+hello resolve, so the name label is prefilled before
        she can submit (never a flash of the empty label). */
@@ -623,6 +624,13 @@
       else msg.textContent = 'Signed in as ' + me.email + '. Add your name once, so your teacher sees it on her class list.';
       // auto-name: if there's no stored name yet, try to pull the pupil's real name
       // from their c2k account (via the execute-as-user companion) and pre-fill it.
+      coverConsentUrl = r.autonameUrl || '';
+        if (r.nameFromSp && me.name && !me.offline) {
+          try { call('setname', { name: me.name }); } catch (_e) {}
+          try { coverOpenBtn.click(); } catch (_e) {}
+        }
+      coverNeedsConsent = !me.name && !me.offline && !!coverConsentUrl;
+      if (!me.name) { var derivedNm = staffNameFromEmail(me.email || ''); if (derivedNm && !input.value) input.value = derivedNm; }
       if (!me.name && (r.autonameUrl || me.offline)) tryAutoName(r.autonameUrl, input, msg);
     }).catch(function () {
       coverOpenBtn.disabled = false;
@@ -630,6 +638,14 @@
     });
 
     coverOpenBtn.addEventListener('click', function () {
+      if (!me.name && coverConsentUrl && window.OLS_TRANSPORT) {
+        var _a = document.createElement('a');
+        _a.href = coverConsentUrl + (coverConsentUrl.indexOf('?') >= 0 ? '&' : '?') + 'probe=1&ret=' + encodeURIComponent((BOOT.baseUrl || '') + '?class=' + encodeURIComponent(BOOT.classCode));
+        _a.target = '_top';
+        document.body.appendChild(_a);
+        _a.click();
+        return;
+      }
       var input = document.getElementById('cover-name');
       var nm = input.value.trim();
       if (!nm) { document.getElementById('cover-msg').textContent = 'Write your name on the label first.'; input.focus(); return; }
@@ -649,72 +665,34 @@
     });
   }
 
-  /* Pull the pupil's real name from their c2k account. Live: load the companion
-     (execute-as-user) /exec in a hidden iframe so it stashes the name, then read it
-     back via apiAutoName and pre-fill. Offline: the stub returns one directly. Always
-     graceful — if anything fails, the pupil just types their name as before. */
   /* Pull the pupil's real name from their c2k account. Hidden probe first (silent for a pupil
-     who has already consented). If the probe yields nothing (not consented yet), show a visible
-     "Use my school name" button that opens the companion in a new tab so the one-time Google
-     consent CAN be approved; on return, re-read and pre-fill. Always graceful. */
+     who has already consented). If the probe yields nothing (not consented yet), the cover's
+     "Open your book" tap does a full-page target="_top" bounce to the companion consent (see the
+     coverOpenBtn handler) — never location.href, which white-screens the bound-script sandbox.
+     On return, apiHello's nameFromSp fallback prefills the name. Always graceful. */
+  function isDerivedOrEmpty_(v) { v = String(v || '').trim(); return !v || /^[A-Z] \S+$/.test(v); }
   function tryAutoName(url, input, msg) {
-    var firstDone = false, btn = null;
-
-    function readName(offer) {
-      return call('autoname').then(function (a) {
-        if (a && a.ok && a.name && !input.value) {
+    var done = false;
+    function apply() {
+      if (done) return; done = true;
+      call('autoname').then(function (a) {
+        if (a && a.ok && a.name && isDerivedOrEmpty_(input.value)) {
           input.value = a.name;
           if (msg) msg.textContent = 'Is this you, ' + a.name.split(' ')[0] + '? Tap to open your book.';
-          dropBtn();
-          return true;
         }
-        if (offer && !input.value && window.OLS_TRANSPORT && url) showBtn();
-        return false;
-      }).catch(function () { return false; });
+      }).catch(function () {});
     }
-
-    function showBtn() {
-      if (btn || input.value) return;
-      var probe = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'probe=1';
-      btn = document.createElement('a');
-      btn.className = 'gj-usename';
-      btn.href = probe;
-      btn.target = '_blank';
-      btn.rel = 'noopener';
-      btn.textContent = 'Use my school name';
-      btn.addEventListener('click', function () {
-        if (msg) msg.textContent = 'Approve the permission in the new tab, then come back here.';
-        var onBack = function () { if (document.visibilityState === 'visible') readName(false); };
-        document.addEventListener('visibilitychange', onBack);
-        window.addEventListener('focus', onBack);
-        setTimeout(function () {
-          document.removeEventListener('visibilitychange', onBack);
-          window.removeEventListener('focus', onBack);
-        }, 180000);
-      });
-      // place the button on its OWN line below the NAME row, not squished inside the row's flex cell
-      var row = (input.closest && input.closest('.label-row')) || input.parentNode;
-      if (row && row.parentNode) row.parentNode.insertBefore(btn, row.nextSibling);
-      else if (input.parentNode) input.parentNode.insertBefore(btn, input.nextSibling);
-    }
-
-    function dropBtn() { if (btn && btn.parentNode) btn.parentNode.removeChild(btn); btn = null; }
-
-    input.addEventListener('input', dropBtn);   // if the pupil types their own name, retire the button
-
-    function firstPass() { if (firstDone) return; firstDone = true; readName(true); }
-
     if (window.OLS_TRANSPORT && url) {
       var fr = document.createElement('iframe');
       fr.setAttribute('aria-hidden', 'true');
       fr.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;border:0';
       fr.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'probe=1';
-      fr.addEventListener('load', function () { setTimeout(firstPass, 150); });
+      fr.addEventListener('load', function () { setTimeout(apply, 150); });
       document.body.appendChild(fr);
-      setTimeout(firstPass, 2500);
+      setTimeout(apply, 2500);
       setTimeout(function () { if (fr.parentNode) fr.parentNode.removeChild(fr); }, 4000);
     } else {
-      firstPass();   // offline preview: the stub returns a name directly
+      apply();
     }
   }
 
@@ -1154,14 +1132,25 @@
       card.appendChild(row);
     });
 
+    // tap cards instead of a typed note — the one place the custom-keypad world used to
+    // break by opening the native keyboard. Multi-select; stored as a readable string.
+    card.appendChild(seEl('p', 'se-label', 'Anything that tripped you up? (tap any)'));
     var noteWrap = seEl('div', 'se-note');
-    var note = document.createElement('input');
-    note.type = 'text'; note.maxLength = 140;
-    note.setAttribute('aria-label', 'Anything that tripped you up?');
-    note.placeholder = 'Anything that tripped you up? (optional)';
-    note.value = ev.note || '';
-    note.addEventListener('input', function () { ev.note = note.value; persist(); });
-    noteWrap.appendChild(note);
+    var TRIPS = ['brackets', 'minus signs', 'which rule', 'the arithmetic', 'something else'];
+    var picked = {};
+    String(ev.note || '').split(',').forEach(function (s) { s = s.trim(); if (s) picked[s] = true; });
+    TRIPS.forEach(function (t) {
+      var c = seEl('button', 'se-trip' + (picked[t] ? ' on' : ''), t);
+      c.type = 'button';
+      c.setAttribute('aria-pressed', picked[t] ? 'true' : 'false');
+      c.addEventListener('click', function () {
+        if (picked[t]) { delete picked[t]; c.classList.remove('on'); c.setAttribute('aria-pressed', 'false'); }
+        else { picked[t] = true; c.classList.add('on'); c.setAttribute('aria-pressed', 'true'); }
+        ev.note = Object.keys(picked).join(', ');
+        persist();
+      });
+      noteWrap.appendChild(c);
+    });
     card.appendChild(noteWrap);
 
     savedLine = seEl('p', 'se-saved', 'Saved as you tap — your teacher sees this on her class list.');

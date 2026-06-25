@@ -251,12 +251,20 @@ body.landing {
   --grid-line: rgba(27, 90, 135, 0.10);
   --grid-bold: rgba(27, 90, 135, 0.16);
   --margin-rose: #E8A0A8;
-  --marking-red: #C8102E;
+  /* \2500 \2500  the closed marking set: each colour means ONE thing, only on the jotter \2500 \2500  */
+  --marking-red: #C8102E;     /* a WRONG step/answer \2014  never UI chrome, box-draw or tally default */
+  --marking-green: #1F7A33;   /* a CORRECT mark \2014  the one green, was a hardcoded hex in 6 places */
+  --amber-flag: #B07D10;      /* ANSWER ONLY \2014  no working shown */
+  --debug-tint: #B500C8;      /* a verdict with NO outcome modifier: a loud magenta that appears
+                                 nowhere else, so a forgotten verdict shows as a BUG, not a red lie */
   --pencil: #474D57;
   --teal: #0F6B66;          /* Angles \2014  The Geometry Set */
   --plum: #7A3B5E;          /* Algebra \2014  Ink & Balance  */
   --page-edge: #EFE9DC;
-  --amber-flag: #B07D10;
+  /* pastoral / positive-UI tones \2014  deliberately NOT the marking three, so a self-rating or a
+     "saved" flash can never be misread as a mark (proposal \a7 5a) */
+  --support-rose: #A8507A;    /* "needs a word" \2014  mauve, pushed away from marking red */
+  --stretch-sage: #2F8F6B;    /* "ready for stretch" + positive UI confirmation flash */
 
   --f-display: 'Fraunces', Georgia, 'Times New Roman', serif;
   --f-maths: 'STIX Two Text', 'Cambria', Georgia, serif;
@@ -280,8 +288,18 @@ body.gj {
   -webkit-font-smoothing: antialiased;
 }
 body.gj * { box-sizing: border-box; }
-body.gj h1, body.gj h2, body.gj h3 { margin: 0; font-family: var(--f-display); color: var(--navy); }
-body.gj p { margin: 0; }
+body.gj h1, body.gj h2, body.gj h3 { font-family: var(--f-display); color: var(--navy); }
+/* \2500 \2500  THE MARGIN RESET, now in a low cascade layer \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 
+   `body.gj p { margin:0 }` used to silently zero ANY single-class <p> margin (it
+   out-specifies a plain `.foo { margin-bottom: X }`), which spawned eight scoping
+   workarounds. Putting ONLY the reset in @layer reset fixes it at the root: an
+   unlayered rule \2014  even a low-specificity single class \2014  always beats a layered one,
+   so component margins now win with no `body.gj`/`#id` prefix tricks. An unstyled <p>
+   still gets margin:0 (nothing competes). DO NOT add a margin rule inside this layer. */
+@layer reset {
+  body.gj h1, body.gj h2, body.gj h3 { margin: 0; }
+  body.gj p { margin: 0; }
+}
 body.gj button { font: inherit; cursor: pointer; }
 body.gj :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
 
@@ -347,6 +365,10 @@ body.gj :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
 
 /* UI problems are pencil-and-Courier \2014  marking red is for marking only */
 .ui-msg { font-family: var(--f-stationery); font-size: 14px; color: var(--pencil); min-height: var(--sq); }
+/* the three message voices (proposal \a7 5c) \2014  none of them is marking-red: a message is
+   never a wrong mark. info = neutral; validation = needs action (amber left-rule); status = quiet italic. */
+.ui-msg.msg-validation { color: var(--amber-flag); border-left: 3px solid var(--amber-flag); padding-left: 8px; }
+.ui-msg.msg-status { font-style: italic; }
 
 /* \2550 \2550 \2550  SCREEN \b7  THE COVER \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550  */
 .scr-cover {
@@ -981,6 +1003,20 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 .ang-established { font-style: italic; }
 
 /* step cards (committed angle steps render as jotter lines too) */
+/* \2550 \2550 \2550  THE DOCK \2014  the writing zone (line + keys + commit), Phase 3 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 
+   Two zones: the Page (committed lines, above) and the Dock (the line you're writing,
+   the keys and the commit, kept together below a clear rule). Only the active question
+   has a dock \2014  a locked question's dock is hidden \2014  so the writing zone is unambiguous.
+   (Kept in normal flow rather than viewport-pinned: with the full algebra keypad a pinned
+   dock would cover most of a Chromebook/iPad screen \2014  the proposal's conservative fallback.) */
+.dock { margin-top: calc(var(--sq) * 0.7); padding-top: calc(var(--sq) * 0.5);
+  border-top: 2px solid var(--page-edge); }
+.dock[hidden] { display: none; }
+.dock-line { margin-bottom: 2px; }
+/* the move tag \2014  optional, secondary to the line above it */
+.move-annot { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--page-edge); }
+.move-annot .chip-strip { margin-top: 4px; }
+
 .step-card {
   border: 1.5px solid var(--navy);
   border-radius: 6px;
@@ -1026,27 +1062,37 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 /* check button + marking sequence */
 .check-row { display: flex; align-items: center; gap: var(--sq); margin-top: calc(var(--sq) * 0.75); }
 .attempt-note { font-family: var(--f-stationery); font-size: 12px; color: var(--pencil); }
+/* The tally/comment carry NO outcome colour of their own: the base is the loud
+   debug tint, so a mark rendered without an outcome modifier shows as a visible BUG
+   rather than a red lie. The real colour comes ONLY from .mk-correct/.mk-amber/.mk-wrong. */
 .mk-tally {
   font-family: var(--f-hand);
   font-size: 24px;
-  color: var(--marking-red);
+  color: var(--debug-tint);
 }
 .mk-comment {
   font-family: var(--f-hand);
   font-size: 21px;
-  color: var(--marking-red);
+  color: var(--debug-tint);
   margin-top: calc(var(--sq) * 0.25);
 }
 .amber-note { font-family: var(--f-stationery); font-size: 12px; color: var(--amber-flag); }
 /* colour the score + comment by outcome: green correct, amber answer-only, red wrong */
-.mk-tally.mk-correct, .mk-comment.mk-correct { color: #1F7A33; }
+.mk-tally.mk-correct, .mk-comment.mk-correct { color: var(--marking-green); }
 .mk-tally.mk-amber, .mk-comment.mk-amber { color: var(--amber-flag); }
 .mk-tally.mk-wrong, .mk-comment.mk-wrong { color: var(--marking-red); }
+/* the STAFF markbook's own tally is her DATA, not simulated handwriting \2014  Courier, not Caveat
+   (proposal \a7 5c). Same neutral-base + outcome-modifier discipline so a correct pupil never reads red. */
+.staff-tally { font-family: var(--f-stationery); font-size: 15px; color: var(--debug-tint); }
+.staff-tally.mk-correct { color: var(--marking-green); }
+.staff-tally.mk-amber { color: var(--amber-flag); }
+.staff-tally.mk-wrong { color: var(--marking-red); }
+.staff-tally.mk-open { color: var(--pencil); }   /* in-progress: neutral, never red */
 body.gj .jq-feedback { margin-top: calc(var(--sq) * 0.9); }
-/* a freshly written step: positive flash + brief line highlight */
-.ui-msg.flash-ok { color: #1F7A33; font-weight: 600; }
+/* a freshly written step: positive UI flash (sage, NOT marking-green \2014  it isn't a mark) */
+.ui-msg.flash-ok { color: var(--stretch-sage); font-weight: 600; }
 .wline.just-added { animation: step-land 1.3s ease-out; }
-@keyframes step-land { 0% { background: rgba(31, 122, 51, 0.18); } 100% { background: transparent; } }
+@keyframes step-land { 0% { background: rgba(47, 143, 107, 0.18); } 100% { background: transparent; } }
 
 /* tick / cross marks are SVG paths drawn at pen speed */
 .mark-tick path, .mark-cross path, .box-draw rect, .box-draw path {
@@ -1055,10 +1101,10 @@ body.gj .jq-feedback { margin-top: calc(var(--sq) * 0.9); }
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.mark-tick path { stroke: #1F7A33; }                            /* correct = green tick */
+.mark-tick path { stroke: var(--marking-green); }               /* correct = green tick */
 .mark-cross path { stroke: var(--marking-red); }                /* wrong = red cross */
-.box-draw rect, .box-draw path { stroke: var(--marking-red); }  /* the boxed final answer, in red pen */
-.mark-tick.hollow path { stroke: #1F7A33; stroke-width: 1.6; opacity: 0.7; }  /* follow-through credit = faded green */
+.box-draw rect, .box-draw path { stroke: var(--foil); stroke-width: 3; }  /* correct answer = GOLD celebration box, never red */
+.mark-tick.hollow path { stroke: var(--marking-green); stroke-width: 1.6; opacity: 0.7; }  /* follow-through credit = faded green */
 .mark-tick.amber path { stroke: var(--amber-flag); }            /* right value, missing/!wrong reason = amber */
 
 /* progress instruments */
@@ -1116,7 +1162,7 @@ body.gj .staff-head h1 { color: var(--cream); font-size: 22px; }
 .wall td.pupil-name { text-align: left; font-family: var(--f-maths); font-size: 13.5px; white-space: nowrap; }
 .wall .cell { min-width: 38px; height: 34px; cursor: pointer; font-size: 15px; }
 .wall .cell:hover { background: rgba(26, 58, 107, 0.07); }
-.glyph-ok { color: #1F7A33; font-weight: 700; }
+.glyph-ok { color: var(--marking-green); font-weight: 700; }
 .glyph-amber { color: var(--amber-flag); font-weight: 700; }
 .glyph-err { color: var(--marking-red); font-weight: 700; font-family: var(--f-stationery); font-size: 12px; }
 .glyph-live { color: #1B5A87; animation: live-blink 2s ease-in-out infinite; }
@@ -1345,11 +1391,13 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .se-rate-g.on { background: #2F8F6B; color: #FFFEFA; border-color: #2F8F6B; }
 .se-rate-y.on { background: #C9971C; color: #FFFEFA; border-color: #C9971C; }
 .se-rate-r.on { background: #C0506A; color: #FFFEFA; border-color: #C0506A; }
-.se-note { margin-top: 12px; }
-.se-note input { width: 100%; max-width: 440px; font-family: var(--f-stationery); font-size: 0.9rem;
-  padding: 8px 10px; border: 1.5px solid var(--page-edge); border-radius: 6px; background: #FAF7F0; color: var(--ink); }
+.se-note { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+.se-trip { cursor: pointer; font-family: var(--f-stationery); font-size: 0.82rem; color: var(--ink);
+  padding: 7px 13px; border: 1.5px solid var(--page-edge); border-radius: 999px; background: #FFFEFA; }
+.se-trip:hover { border-color: var(--pencil); }
+.se-trip.on { background: var(--navy); color: var(--cream); border-color: var(--navy); }
 .se-saved { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); margin: 8px 0 0; font-style: italic; transition: color 0.2s; }
-.se-saved.se-saved-flash { color: #1F7A33; font-style: normal; font-weight: 600; }
+.se-saved.se-saved-flash { color: var(--stretch-sage); font-style: normal; font-weight: 600; }
 
 /* \2550 \2550 \2550  Class Insights + per-pupil header (teacher) \2550 \2550 \2550  */
 .ins-host { margin-top: 8px; }
@@ -1424,6 +1472,56 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .jp-under { color: #1E5E45; border-color: #2F8F6B; background: #E9F4EF; }
 .jp-nudge { border-color: var(--foil-lo); color: #8A6A12; background: #FBF4E2; }
 .jp-nudge:hover { background: #F6EBCB; }
+
+/* \2550 \2550 \2550  Jotter Page v2 \2014  flick the pile, mark in pencil/ink \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550  */
+/* the flick bar \2014  turn to the next jotter, with an always-visible axis label */
+.flick-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--sq);
+  margin-bottom: calc(var(--sq) * 0.6); padding-bottom: calc(var(--sq) * 0.4); border-bottom: 1px dashed var(--page-edge); }
+.flick-btn { font-family: var(--f-stationery); font-size: 0.92rem; color: var(--navy);
+  background: #FFFEFA; border: 1.5px solid rgba(26,58,107,0.35); border-radius: 6px; padding: 7px 16px;
+  box-shadow: 0 1.5px 0 rgba(26,58,107,0.18); }
+.flick-btn:hover { background: var(--cream); }
+.flick-btn.is-off { opacity: 0.35; pointer-events: none; box-shadow: none; }
+.flick-label { font-family: var(--f-stationery); font-size: 0.86rem; color: var(--pencil); text-align: center; }
+
+/* the once-only posture line + the composed plain-English read */
+.jp-posture { font-family: var(--f-stationery); font-size: 0.86rem; color: var(--pencil);
+  border-left: 3px solid var(--foil); padding: 6px 0 6px 12px; margin: 0 0 calc(var(--sq) * 0.8); }
+.jp-read { font-family: var(--f-maths); font-size: 1.06rem; color: var(--ink); line-height: 1.4; margin: 2px 0 14px; }
+
+/* the verdict, marked in pencil until she inks it in pen */
+.verdict-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: calc(var(--sq) * 0.6); }
+.verdict-mark { background: transparent; border: none; padding: 4px 8px; font-size: 22px; line-height: 1; position: relative; border-radius: 6px; }
+.verdict-mark:hover { background: rgba(26,58,107,0.06); }
+.verdict-mark.is-pencil { opacity: 0.72; }                         /* the app's provisional first pass */
+.verdict-mark.is-pencil::after { content: 'tap to ink'; position: absolute; left: 0; right: 0; bottom: -13px;
+  font-family: var(--f-stationery); font-size: 9px; color: var(--pencil); text-align: center; white-space: nowrap; }
+.verdict-mark.is-inked { opacity: 1; }
+.verdict-mark.is-inked::before { content: ''; position: absolute; inset: -2px -3px; border: 2px solid var(--ink);
+  border-radius: 60% 70% 62% 72%; transform: rotate(-3deg); opacity: 0.8; }   /* the teacher's hand-drawn ink ring */
+
+/* the ink control \2014  opens AT the mark, one tap to choose */
+.ink-control { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 8px;
+  padding: 8px 10px; background: #FFFEFA; border: 1px solid var(--page-edge); border-radius: 8px; }
+.ink-control[hidden] { display: none; }   /* a class selector beats the UA [hidden] rule, so restore it */
+.ic-label { font-family: var(--f-stationery); font-size: 0.82rem; color: var(--pencil); }
+.ink-control button { font-family: var(--f-stationery); font-size: 0.9rem; padding: 6px 13px; border-radius: 6px; border: 1.5px solid; }
+.ic-tick { color: var(--marking-green); border-color: var(--marking-green); background: #EAF4EC; }
+.ic-cross { color: var(--marking-red); border-color: var(--marking-red); background: #FBEDEF; }
+.ic-auto { color: var(--pencil); border-color: rgba(26,58,107,0.3); background: #FFFEFA; }
+.ink-msg { font-family: var(--f-stationery); font-size: 0.82rem; color: var(--pencil); min-height: 0; }
+
+/* the standing teaching move \2014  warm, primary, intent-named */
+.jp-reteach { font-family: var(--f-stationery); font-size: 0.9rem; color: var(--navy-deep);
+  background: var(--foil); border: 1.5px solid var(--foil-lo); border-radius: 6px; padding: 7px 15px; font-weight: 700; }
+.jp-reteach:hover { background: var(--foil-hi); }
+.jp-reteach.is-sent { background: #E9F4EF; color: #1E5E45; border-color: var(--stretch-sage); }
+
+/* "worth a look" \2014  the advisory folded corner where the engine was unsure */
+.jotter-q.worth-look { position: relative; }
+.jotter-q.worth-look::after { content: 'worth a look'; position: absolute; top: 0; right: 0;
+  font-family: var(--f-stationery); font-size: 10px; color: #8A6A12; background: #FBF4E2;
+  border: 1px solid var(--foil-lo); border-top: none; border-right: none; border-bottom-left-radius: 9px; padding: 3px 9px; }
 
 </style>
 </head>
@@ -4727,7 +4825,7 @@ window.OLS_TRANSPORT = {
     body.appendChild(cards);
     var feedback = el('div', 'jq-feedback');
     var checkRow = el('div', 'check-row');
-    var checkBtn = el('button', 'btn-stamp', 'Check my answer');
+    var checkBtn = el('button', 'btn-stamp', 'Mark my answer');
     checkBtn.type = 'button';
     checkBtn.disabled = true;
     checkRow.appendChild(checkBtn);
@@ -4953,7 +5051,7 @@ window.OLS_TRANSPORT = {
     var msgEl = el('p', 'ui-msg');
     body.appendChild(msgEl);
     var checkRow = el('div', 'check-row');
-    var checkBtn = el('button', 'btn-stamp', 'Check my measurement');
+    var checkBtn = el('button', 'btn-stamp', 'Mark my measurement');
     checkBtn.type = 'button';
     checkRow.appendChild(checkBtn);
     body.appendChild(checkRow);
@@ -5040,13 +5138,20 @@ window.OLS_TRANSPORT = {
     }
 
     var ui = el('div', 'jq-ui');
-    body.appendChild(ui);
+    // THE DOCK \u2014 the writing line, the keys and the commit kept together and (on a tall
+    // viewport) docked to the bottom, so the pupil can always see what they're writing and
+    // the keys at once. Sticky degrades to inline where unsupported; a locked question's
+    // dock is empty (ui wiped, checkRow hidden) so docks never stack.
+    var dock = el('div', 'dock');
+    dock.hidden = true;                 // shown only while a question is active (a builder reveals it)
+    dock.appendChild(ui);
     var checkRow = el('div', 'check-row');
-    var checkBtn = el('button', 'btn-stamp', 'Check my working');
+    var checkBtn = el('button', 'btn-stamp', 'Mark my working');
     checkBtn.type = 'button';
     var attemptNote = el('span', 'attempt-note', '');
     checkRow.appendChild(checkBtn); checkRow.appendChild(attemptNote);
-    body.appendChild(checkRow);
+    dock.appendChild(checkRow);
+    body.appendChild(dock);
     var feedback = el('div', 'jq-feedback');
     body.appendChild(feedback);
 
@@ -5088,11 +5193,25 @@ window.OLS_TRANSPORT = {
 
     function buildAlgebraUI() {
       ui.innerHTML = '';
+      dock.hidden = false;
       // "both sides" only makes sense for equations; substitute/simplify/expand
       // have a single expression, so ask a neutral "next step" there instead.
       var isEquation = q.type === 'solve' || q.type === 'form';
-      var ask = el('p', 'ui-msg', isEquation ? 'What are you doing to both sides?' : 'What\u2019s your next step?');
-      ui.appendChild(ask);
+
+      // LINE FIRST \u2014 the line is the primary act; the move is an optional annotation.
+      ui.appendChild(el('p', 'ui-msg', 'Write your next line of working:'));
+      var compHost = el('div', 'dock-line');
+      ui.appendChild(compHost);
+      composer = makeComposer(compHost, {
+        placeholder: 'your next line, then \u201cadd line\u201d',
+        commitLabel: 'add line',
+        onCommit: commitAlgebraLine
+      });
+
+      // THE MOVE \u2014 an optional tag for the margin, secondary to the line above.
+      var moveWrap = el('div', 'move-annot');
+      moveWrap.appendChild(el('div', 'ui-msg msg-status',
+        (isEquation ? 'What are you doing to both sides?' : 'What\u2019s your next step?') + ' \u2014 tag the move (optional)'));
       var strip = el('div', 'chip-strip');
       var CHIPS = [
         { id: '+', label: '+ add' }, { id: '-', label: '\u2212 subtract' },
@@ -5114,28 +5233,22 @@ window.OLS_TRANSPORT = {
             pendingOp = { kind: c.id, operand: '' };
             var opc = makeComposer(operandHost, {
               label: 'How much?', placeholder: 'how much? e.g. 15 or 3x', commitLabel: 'next \u2192',
-              onCommit: function () { composer.focus(); }   // "next" on the operand jumps to the new-line field
+              onCommit: function () { composer.focus(); }   // "next" on the operand jumps back to the line field
             });
             opc.root.classList.add('compose-mini');
             pendingOp.reader = opc;
             opc.focus();                                     // focus the operand straight away
           } else {
             pendingOp = { kind: c.id };
-            composer.focus();                                // no operand needed \u2014 go write the line
+            composer.focus();                                // no operand needed \u2014 back to the line
           }
         });
         strip.appendChild(b);
       });
-      ui.appendChild(strip);
-      ui.appendChild(operandHost);
-      ui.appendChild(el('p', 'ui-msg', 'Write your next line of working:'));
-      var compHost = el('div', '');
-      ui.appendChild(compHost);
-      composer = makeComposer(compHost, {
-        placeholder: 'your next line, then \u201cadd line\u201d',
-        commitLabel: 'add line',
-        onCommit: commitAlgebraLine
-      });
+      moveWrap.appendChild(strip);
+      moveWrap.appendChild(operandHost);
+      ui.appendChild(moveWrap);
+
       undoBtn = el('button', 'btn-pencil', '\u21b6 remove last line');
       undoBtn.type = 'button';
       undoBtn.style.marginTop = '8px';
@@ -5190,6 +5303,7 @@ window.OLS_TRANSPORT = {
 
     function buildAnglesUI() {
       ui.innerHTML = '';
+      dock.hidden = false;
       // instruction matches reality: point straight at the one tappable arc, or to the target
       var openCount = unknownAngles().length;
       ui.appendChild(el('p', 'ui-msg', openCount === 1
@@ -5321,7 +5435,7 @@ window.OLS_TRANSPORT = {
       }
 
       var doRow = el('div', 'check-row');
-      var add = el('button', 'btn-stamp', isFinalStep ? 'Check my answer' : 'Add to my working');
+      var add = el('button', 'btn-stamp', isFinalStep ? 'Mark my working' : 'Add to my working');
       add.type = 'button';
       add.addEventListener('click', commitStep);
       doRow.appendChild(add);
@@ -5334,12 +5448,14 @@ window.OLS_TRANSPORT = {
     }
 
     /* \u2500\u2500 shared render / save / check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
-    var msgEl = el('p', 'ui-msg');
-    body.insertBefore(msgEl, checkRow);
+    var msgEl = el('div', 'ui-msg');
+    checkRow.parentNode.insertBefore(msgEl, checkRow);   // into the dock, above the commit (validation can't scroll off)
     var msgTimer = null;
+    // ok=true -> positive sage flash; ok=false -> a validation prompt (amber "needs action",
+    // never marking-red: a pupil being asked to add a line is not wrong).
     function flashMsg(t, ok) {
       msgEl.textContent = t;
-      msgEl.className = 'ui-msg' + (ok ? ' flash-ok' : '');
+      msgEl.className = 'ui-msg' + (ok ? ' flash-ok' : ' msg-validation');
       clearTimeout(msgTimer);
       msgTimer = setTimeout(function () { msgEl.textContent = ''; msgEl.className = 'ui-msg'; }, ok ? 2600 : 5000);
     }
@@ -5461,6 +5577,7 @@ window.OLS_TRANSPORT = {
           rec.mk = mk;
           ui.innerHTML = '';
           checkRow.hidden = true;
+          dock.hidden = true;            // the question is marked; the dock retires
           margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally' + mkState + '" style="font-size:18px">' + (mk[0] + mk[1]) + '/' + (mkMax[0] + mkMax[1]) + '</div>';
         } else {
           // one more attempt: keep attempt 1 on the page, struck through
@@ -6293,6 +6410,18 @@ window.OLS_TRANSPORT = {
       insTile(st.avgTime ? Math.round(st.avgTime) + 's' : '\u2014', 'avg per question') +
       insTile(st.avgConf != null ? st.avgConf.toFixed(1) : '\u2014', 'self-confidence /3');
     out.appendChild(wrap);
+    // the gift a paper jotter can't give: the method-vs-answer split, read back as one plain sentence
+    var first = esc(String(name || '').split(' ')[0]) || 'This pupil';
+    var mPct = st.methodRate != null ? Math.round(100 * st.methodRate) : null;
+    var aPct = st.accMax ? Math.round(100 * st.accGot / st.accMax) : null;
+    var read;
+    if (!st.finished) read = first + ' is just getting started \u2014 not much marked yet.';
+    else if (mPct != null && aPct != null && mPct >= 75 && aPct >= 75) read = first + '\u2019s method is sound and the answers are landing \u2014 strong all round.';
+    else if (mPct != null && aPct != null && mPct >= 70 && aPct < 60) read = first + '\u2019s method is sound, but the final answers keep slipping \u2014 it\u2019s arithmetic, not understanding.';
+    else if (mPct != null && mPct < 55) read = 'The method itself is where ' + first + ' needs a hand \u2014 worth reteaching, not just re-checking.';
+    else if (st.firstTry / st.finished >= 0.8) read = first + ' is getting most right first time \u2014 ready for a stretch.';
+    else read = first + ' is coming along \u2014 a few slips to tidy up.';
+    out.appendChild(el('div', 'jp-read', read));
     var fl = el('div', 'jp-flags');
     if (flag) fl.appendChild(el('span', 'jp-flag jp-' + flag.kind, (flag.kind === 'support' ? 'Needs support' : 'Ready for stretch') + ' \u00b7 ' + esc(flag.reasons.join(' \u00b7 '))));
     if (conf === 'over') fl.appendChild(el('span', 'jp-flag jp-over', 'Over-confident \u2014 confidence high, working weaker'));
@@ -6353,7 +6482,7 @@ window.OLS_TRANSPORT = {
             }
             if (cell.ovr != null) title += ' \u00b7 teacher override';
           }
-          t.push('<td class="cell" data-email="' + esc(p.email) + '" title="' + esc(title) + '">' + glyph + '</td>');
+          t.push('<td class="cell" data-email="' + esc(p.email) + '" data-qlabel="' + esc(item.label) + '" title="' + esc(title) + '">' + glyph + '</td>');
         });
         t.push('</tr>');
       });
@@ -6380,7 +6509,7 @@ window.OLS_TRANSPORT = {
       totals += '</tr>';
       wall.innerHTML = t.join('').replace('</tbody>', totals + '</tbody>');
       wall.querySelectorAll('.cell').forEach(function (td) {
-        td.addEventListener('click', function () { showJotterPage(td.getAttribute('data-email')); });
+        td.addEventListener('click', function () { showJotterPage(td.getAttribute('data-email'), { qlabel: td.getAttribute('data-qlabel') }); });
       });
       clearBusy(msg, pupils.length + ' pupils \u00b7 updates every 20 seconds while this page is open \u00b7 tap any cell to open that pupil\u2019s jotter.');
     }
@@ -6391,6 +6520,7 @@ window.OLS_TRANSPORT = {
         if (token !== view.wallSeq) return;
         if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load the wall.'); return; }
         view.wallData = r.pupils || [];
+        view.jotterCache = {};               // fresh wall data invalidates any pre-fetched jotters
         paint(view.wallData);
       }).catch(function () { if (token === view.wallSeq) clearBusy(msg, 'Could not reach the server \u2014 will retry.'); });
     }
@@ -6400,17 +6530,54 @@ window.OLS_TRANSPORT = {
     view.wallTimer = setInterval(load, 20000);
   }
 
-  /* \u2550\u2550\u2550 Jotter Page drill-down + override \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
-  function showJotterPage(email) {
+  /* \u2550\u2550\u2550 Jotter Page drill-down + pencil/ink marking \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+     The app marks in pencil; the teacher marks in pen. No three-button panel:
+     each verdict is a tappable pencil mark she inks with one tap. She flicks
+     through the pile (prev/next pupil) instead of Wall->cell->Back->reselect. */
+
+  // one round-trip per pupil is slow, so cache fetched jotters and pre-fetch the
+  // next pupil while she reads the current one. Cleared whenever the Wall reloads.
+  function fetchJotter(email) {
+    view.jotterCache = view.jotterCache || {};
+    if (view.jotterCache[email]) return Promise.resolve(view.jotterCache[email]);
+    return call('jotter', { className: view.cls, act: view.act, email: email }).then(function (r) {
+      if (r && r.ok) { view.jotterCache = view.jotterCache || {}; view.jotterCache[email] = r; }
+      return r;
+    });
+  }
+  function jotterRoster() {
+    return (view.wallData || []).slice()
+      .sort(function (a, b) { return (a.name || '').localeCompare(b.name || ''); })
+      .map(function (p) { return { email: p.email, name: p.name || p.email }; });
+  }
+
+  function showJotterPage(email, ctx) {
+    ctx = ctx || {};
+    stopPolling();                         // the 20s Wall poll suspends while she flicks the pile
+    var roster = jotterRoster();
+    var idx = roster.map(function (p) { return p.email; }).indexOf(email);
+    var prevP = idx > 0 ? roster[idx - 1] : null;
+    var nextP = (idx >= 0 && idx < roster.length - 1) ? roster[idx + 1] : null;
+
     var body = el('div', '');
+    // the flick bar \u2014 physical "turn to the next jotter", with an always-visible axis label
+    var flick = el('div', 'flick-bar');
+    var bPrev = el('button', 'flick-btn' + (prevP ? '' : ' is-off'), '\u2039 ' + (prevP ? esc(prevP.name.split(' ')[0]) : 'first'));
+    var axis = ctx.qlabel ? (esc(ctx.qlabel) + ' \u00b7 across the class') : ((roster[idx] ? esc(roster[idx].name.split(' ')[0]) : 'this pupil') + '\u2019s book');
+    var lbl = el('span', 'flick-label', axis + (idx >= 0 ? ' \u00b7 ' + (idx + 1) + ' of ' + roster.length : ''));
+    var bNext = el('button', 'flick-btn' + (nextP ? '' : ' is-off'), (nextP ? esc(nextP.name.split(' ')[0]) : 'last') + ' \u203a');
+    if (prevP) bPrev.addEventListener('click', function () { showJotterPage(prevP.email, ctx); });
+    if (nextP) bNext.addEventListener('click', function () { showJotterPage(nextP.email, ctx); });
+    flick.appendChild(bPrev); flick.appendChild(lbl); flick.appendChild(bNext);
+
     var msg = el('p', 'ui-msg', 'Fetching the jotter\u2026');
-    body.appendChild(msg);
     var page = el('div', 'jotter');
-    body.appendChild(page);
+    body.appendChild(flick); body.appendChild(msg); body.appendChild(page);
     shell(view.cls + ' \u00b7 Jotter Page', body, function () { showWall(); });
 
     busyCard(msg, 'Fetching the jotter&hellip; this can take a moment');
-    call('jotter', { className: view.cls, act: view.act, email: email }).then(function (r) {
+    fetchJotter(email).then(function (r) {
+      if (nextP) fetchJotter(nextP.email);    // pre-fetch one ahead so the next flick is instant
       if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load.'); return; }
       var state = null;
       try { state = JSON.parse(r.state); } catch (e) {}
@@ -6419,6 +6586,8 @@ window.OLS_TRANSPORT = {
       if (!state) { page.innerHTML = '<div class="jotter-q"><div class="jq-margin"></div><div class="jq-body ui-msg">Nothing saved yet.</div></div>'; return; }
 
       page.appendChild(jotterHeader(state, r.name));
+      // the posture line, shown once at the top: the whole pencil/ink model in one sentence
+      page.appendChild(el('div', 'jp-posture', 'These are the app\u2019s first-pass marks, in pencil. Tap any mark to ink your own \u2014 your mark always wins.'));
 
       questionList(view.act).forEach(function (item) {
         var q = item.q;
@@ -6479,49 +6648,88 @@ window.OLS_TRANSPORT = {
           if (v.dx) bodyEl.appendChild(el('p', 'ui-msg', esc(DX_NAMES[v.dx] || v.dx)));
         });
 
-        if (res.verdict) {
-          var mkMax = res.verdict.mkMax || q.marks;
-          bodyEl.appendChild(el('p', 'mk-tally', 'Working ' + res.verdict.mk[0] + '/' + mkMax[0] + ' \u00b7 Answer ' + res.verdict.mk[1] + '/' + mkMax[1] +
-            (last.dur ? ' \u00b7 ' + last.dur + 's \u00b7 ' + (rec.att.length) + ' attempt' + (rec.att.length > 1 ? 's' : '') : '')));
-        }
         if (state.help && state.help[q.id]) bodyEl.appendChild(el('p', 'jp-help', 'Opened the worked example after getting stuck'));
 
-        /* the override \u2014 the teacher's judgement wins everywhere */
-        var ovRow = el('div', 'check-row');
-        var ovMsg = el('span', 'ui-msg', rec.ovr ? 'Teacher override applied.' : '');
+        // \u2500\u2500 send my eye to what needs it: a folded "worth a look" corner where the
+        //    engine was unsure (answer-only, or a wrong route it couldn't name). Advisory only. \u2500\u2500
+        var worthLook = (res.st === 'amber') || (res.st === 'err' && !res.dx);
+        if (worthLook && rec.ovr == null) wrap.classList.add('worth-look');
+
+        // \u2500\u2500 the verdict as a PENCIL mark she inks in PEN \u2014 no three-button panel \u2500\u2500
+        function vGlyph(s) {
+          return s === 'ok' ? '<span class="glyph-ok">\u2713</span>' : s === 'amber' ? '<span class="glyph-amber">\u25d0</span>'
+            : s === 'open' ? '<span class="glyph-live">\u25cf</span>' : '<span class="glyph-err">\u2717</span>';
+        }
+        var mkMax = (res.verdict && res.verdict.mkMax) || q.marks;
+        var tallyTail = last.dur ? ' \u00b7 ' + last.dur + 's \u00b7 ' + rec.att.length + ' attempt' + (rec.att.length > 1 ? 's' : '') : '';
+        var vrow = el('div', 'verdict-row');
+        var vmark = el('button', 'verdict-mark');
+        var tallyEl = res.verdict ? el('div', 'staff-tally') : null;
+        var inkMsg = el('span', 'ink-msg ui-msg', rec.ovr ? 'Your mark.' : '');
+
+        function paintVerdict() {
+          var inked = rec.ovr != null;
+          var effSt = inked ? (rec.ovr.q === 1 ? 'ok' : 'err') : res.st;
+          vmark.className = 'verdict-mark ' + (inked ? 'is-inked' : 'is-pencil');
+          vmark.innerHTML = vGlyph(effSt);
+          vmark.setAttribute('aria-label', 'Marked ' + (effSt === 'ok' ? 'correct' : effSt === 'amber' ? 'answer only' : effSt === 'err' ? 'wrong' : 'in progress') + (inked ? ' by you' : ' by the app \u2014 tap to make it yours'));
+          if (tallyEl) {
+            var m0 = res.verdict.mk[0], m1 = res.verdict.mk[1];
+            if (inked && rec.ovr.q === 1) { m0 = mkMax[0]; m1 = mkMax[1]; }      // right = full working + answer marks
+            else if (inked && rec.ovr.q === 0) { m0 = 0; m1 = 0; }
+            tallyEl.className = 'staff-tally ' + (effSt === 'ok' ? 'mk-correct' : effSt === 'amber' ? 'mk-amber' : effSt === 'err' ? 'mk-wrong' : 'mk-open');
+            tallyEl.textContent = 'Working ' + m0 + '/' + mkMax[0] + ' \u00b7 Answer ' + m1 + '/' + mkMax[1] + tallyTail;
+          }
+        }
+        paintVerdict();
+        vrow.appendChild(vmark);
+        if (tallyEl) vrow.appendChild(tallyEl);
+
+        // the one genuinely pedagogical action, promoted to a standing intent-named move
+        if (item.secId && item.secHasMovie && (res.st === 'err' || res.st === 'amber')) {
+          var reteach = el('button', 'jp-reteach', 'Show them this method again \u2192');
+          reteach.title = 'Sends this exercise\u2019s worked example (' + esc(String(item.label).split('\u00b7')[0].trim()) + ') to the pupil the next time they open their book.';
+          reteach.addEventListener('click', function () {
+            if (reteach.disabled) return; reteach.disabled = true;
+            call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId }).then(function (r3) {
+              reteach.disabled = false;
+              if (r3 && r3.ok) { reteach.textContent = 'Sent \u2713 \u2014 they\u2019ll see it next time'; reteach.classList.add('is-sent'); }
+              else { reteach.disabled = false; inkMsg.textContent = (r3 && r3.error) || 'Could not send.'; }
+            }).catch(function () { reteach.disabled = false; inkMsg.textContent = 'Could not send.'; });
+          });
+          vrow.appendChild(reteach);
+        }
+        bodyEl.appendChild(vrow);
+
+        // the ink control \u2014 opens AT the mark on tap (one tap to open, one to choose).
+        // it also carries the "couldn't save" slot so a network hiccup has somewhere to land.
+        var ink = el('div', 'ink-control'); ink.hidden = true;
         function setOvr(val, btn) {
-          if (btn.disabled) return;
-          btn.disabled = true;
+          if (btn.disabled) return; btn.disabled = true; inkMsg.textContent = 'Saving\u2026';
           call('override', { className: view.cls, act: view.act, email: email, q: q.id, idx: 'q', val: val }).then(function (r2) {
             btn.disabled = false;
-            if (r2 && r2.ok) { rec.ovr = (val == null) ? null : { q: val }; ovMsg.textContent = (val === 1) ? 'Marked right \u2014 full working and answer marks. The Wall now shows your judgement.' : (val === 0) ? 'Marked wrong \u2014 the Wall now shows your judgement.' : 'Back to the automatic mark.'; }
-            else ovMsg.textContent = (r2 && r2.error) || 'Could not save.';
-          }).catch(function () { btn.disabled = false; ovMsg.textContent = 'Could not save.'; });
+            if (r2 && r2.ok) {
+              rec.ovr = (val == null) ? null : { q: val };
+              if (view.jotterCache) delete view.jotterCache[email];   // the cached jotter is now stale; re-fetch on flick-back
+              if (rec.ovr == null && worthLook) wrap.classList.add('worth-look'); else wrap.classList.remove('worth-look');
+              paintVerdict();
+              inkMsg.textContent = (val === 1) ? 'Inked right \u2014 full marks. Your mark wins on the Wall.' : (val === 0) ? 'Inked wrong. Your mark wins on the Wall.' : 'Back to the app\u2019s mark.';
+              ink.hidden = true; vmark.setAttribute('aria-expanded', 'false');
+            } else inkMsg.textContent = (r2 && r2.error) || 'Couldn\u2019t save \u2014 tap the mark to try again.';
+          }).catch(function () { btn.disabled = false; inkMsg.textContent = 'Couldn\u2019t save \u2014 tap the mark to try again.'; });
         }
-        [['Mark it right', 1], ['Mark it wrong', 0], ['Use the automatic mark', null]].forEach(function (o) {
-          var b = el('button', 'btn-pencil', o[0]);
-          b.addEventListener('click', function () { setOvr(o[1], b); });
-          ovRow.appendChild(b);
-        });
-        // content-safe support: nudge this pupil toward the section's existing method
-        // movie. Offered only where they struggled \u2014 the natural moment to suggest it.
-        if (item.secId && item.secHasMovie && (res.st === 'err' || res.st === 'amber')) {   // only nudge to a section that actually has a method movie
-          var exPart = String(item.label).split('\u00b7')[0].trim();   // "Ex 2 \u00b7 Q1" -> "Ex 2" (the nudge opens the whole exercise's worked example)
-          var nudgeB = el('button', 'btn-pencil jp-nudge', 'Send the worked example for ' + exPart + ' \u2192');
-          nudgeB.title = 'Opens this exercise\u2019s worked example for the pupil \u2014 the whole of ' + exPart + ', not just this question \u2014 the next time they open their book.';
-          nudgeB.addEventListener('click', function () {
-            if (nudgeB.disabled) return; nudgeB.disabled = true;
-            call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId }).then(function (r3) {
-              nudgeB.disabled = false;
-              if (r3 && r3.ok) { nudgeB.textContent = 'Worked example sent \u2713'; ovMsg.textContent = 'They\u2019ll be shown the ' + exPart + ' worked example the next time they open the book.'; }
-              else ovMsg.textContent = (r3 && r3.error) || 'Could not send the nudge.';
-            }).catch(function () { nudgeB.disabled = false; ovMsg.textContent = 'Could not send the nudge.'; });
-          });
-          ovRow.appendChild(nudgeB);
-        }
-        ovRow.appendChild(ovMsg);
-        bodyEl.appendChild(el('p', 'ui-msg ov-why', 'The app marks the working automatically. If its verdict looks wrong \u2014 say a pupil used a valid method it didn\u2019t recognise \u2014 set your own mark here. Your judgement shows on the Wall straight away.'));
-        bodyEl.appendChild(ovRow);
+        var icTick = el('button', 'ic-tick', '\u2713 mine');
+        var icCross = el('button', 'ic-cross', '\u2717 mine');
+        var icAuto = el('button', 'ic-auto btn-pencil', 'use the app\u2019s mark');
+        icTick.addEventListener('click', function () { setOvr(1, icTick); });
+        icCross.addEventListener('click', function () { setOvr(0, icCross); });
+        icAuto.addEventListener('click', function () { setOvr(null, icAuto); });
+        ink.appendChild(el('span', 'ic-label', 'Your mark:'));
+        ink.appendChild(icTick); ink.appendChild(icCross); ink.appendChild(icAuto); ink.appendChild(inkMsg);
+        bodyEl.appendChild(ink);
+        vmark.setAttribute('aria-expanded', 'false');
+        vmark.addEventListener('click', function () { ink.hidden = !ink.hidden; vmark.setAttribute('aria-expanded', String(!ink.hidden)); });
+
         page.appendChild(wrap);
       });
     });
@@ -7345,6 +7553,7 @@ window.OLS_TRANSPORT = {
     /* \u2500\u2500 PUPIL COVER (a real class link) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
     document.getElementById('cover-class').textContent = BOOT.classCode;
     staffOval.hidden = true;
+    var coverConsentUrl = '', coverNeedsConsent = false;
     /* Guard: the cover book shows at once, but hold the "open" button and show a
        spinner until whoami+hello resolve, so the name label is prefilled before
        she can submit (never a flash of the empty label). */
@@ -7361,6 +7570,13 @@ window.OLS_TRANSPORT = {
       else msg.textContent = 'Signed in as ' + me.email + '. Add your name once, so your teacher sees it on her class list.';
       // auto-name: if there's no stored name yet, try to pull the pupil's real name
       // from their c2k account (via the execute-as-user companion) and pre-fill it.
+      coverConsentUrl = r.autonameUrl || '';
+        if (r.nameFromSp && me.name && !me.offline) {
+          try { call('setname', { name: me.name }); } catch (_e) {}
+          try { coverOpenBtn.click(); } catch (_e) {}
+        }
+      coverNeedsConsent = !me.name && !me.offline && !!coverConsentUrl;
+      if (!me.name) { var derivedNm = staffNameFromEmail(me.email || ''); if (derivedNm && !input.value) input.value = derivedNm; }
       if (!me.name && (r.autonameUrl || me.offline)) tryAutoName(r.autonameUrl, input, msg);
     }).catch(function () {
       coverOpenBtn.disabled = false;
@@ -7368,6 +7584,14 @@ window.OLS_TRANSPORT = {
     });
 
     coverOpenBtn.addEventListener('click', function () {
+      if (!me.name && coverConsentUrl && window.OLS_TRANSPORT) {
+        var _a = document.createElement('a');
+        _a.href = coverConsentUrl + (coverConsentUrl.indexOf('?') >= 0 ? '&' : '?') + 'probe=1&ret=' + encodeURIComponent((BOOT.baseUrl || '') + '?class=' + encodeURIComponent(BOOT.classCode));
+        _a.target = '_top';
+        document.body.appendChild(_a);
+        _a.click();
+        return;
+      }
       var input = document.getElementById('cover-name');
       var nm = input.value.trim();
       if (!nm) { document.getElementById('cover-msg').textContent = 'Write your name on the label first.'; input.focus(); return; }
@@ -7387,72 +7611,34 @@ window.OLS_TRANSPORT = {
     });
   }
 
-  /* Pull the pupil's real name from their c2k account. Live: load the companion
-     (execute-as-user) /exec in a hidden iframe so it stashes the name, then read it
-     back via apiAutoName and pre-fill. Offline: the stub returns one directly. Always
-     graceful \u2014 if anything fails, the pupil just types their name as before. */
   /* Pull the pupil's real name from their c2k account. Hidden probe first (silent for a pupil
-     who has already consented). If the probe yields nothing (not consented yet), show a visible
-     "Use my school name" button that opens the companion in a new tab so the one-time Google
-     consent CAN be approved; on return, re-read and pre-fill. Always graceful. */
+     who has already consented). If the probe yields nothing (not consented yet), the cover's
+     "Open your book" tap does a full-page target="_top" bounce to the companion consent (see the
+     coverOpenBtn handler) \u2014 never location.href, which white-screens the bound-script sandbox.
+     On return, apiHello's nameFromSp fallback prefills the name. Always graceful. */
+  function isDerivedOrEmpty_(v) { v = String(v || '').trim(); return !v || /^[A-Z] \S+$/.test(v); }
   function tryAutoName(url, input, msg) {
-    var firstDone = false, btn = null;
-
-    function readName(offer) {
-      return call('autoname').then(function (a) {
-        if (a && a.ok && a.name && !input.value) {
+    var done = false;
+    function apply() {
+      if (done) return; done = true;
+      call('autoname').then(function (a) {
+        if (a && a.ok && a.name && isDerivedOrEmpty_(input.value)) {
           input.value = a.name;
           if (msg) msg.textContent = 'Is this you, ' + a.name.split(' ')[0] + '? Tap to open your book.';
-          dropBtn();
-          return true;
         }
-        if (offer && !input.value && window.OLS_TRANSPORT && url) showBtn();
-        return false;
-      }).catch(function () { return false; });
+      }).catch(function () {});
     }
-
-    function showBtn() {
-      if (btn || input.value) return;
-      var probe = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'probe=1';
-      btn = document.createElement('a');
-      btn.className = 'gj-usename';
-      btn.href = probe;
-      btn.target = '_blank';
-      btn.rel = 'noopener';
-      btn.textContent = 'Use my school name';
-      btn.addEventListener('click', function () {
-        if (msg) msg.textContent = 'Approve the permission in the new tab, then come back here.';
-        var onBack = function () { if (document.visibilityState === 'visible') readName(false); };
-        document.addEventListener('visibilitychange', onBack);
-        window.addEventListener('focus', onBack);
-        setTimeout(function () {
-          document.removeEventListener('visibilitychange', onBack);
-          window.removeEventListener('focus', onBack);
-        }, 180000);
-      });
-      // place the button on its OWN line below the NAME row, not squished inside the row's flex cell
-      var row = (input.closest && input.closest('.label-row')) || input.parentNode;
-      if (row && row.parentNode) row.parentNode.insertBefore(btn, row.nextSibling);
-      else if (input.parentNode) input.parentNode.insertBefore(btn, input.nextSibling);
-    }
-
-    function dropBtn() { if (btn && btn.parentNode) btn.parentNode.removeChild(btn); btn = null; }
-
-    input.addEventListener('input', dropBtn);   // if the pupil types their own name, retire the button
-
-    function firstPass() { if (firstDone) return; firstDone = true; readName(true); }
-
     if (window.OLS_TRANSPORT && url) {
       var fr = document.createElement('iframe');
       fr.setAttribute('aria-hidden', 'true');
       fr.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;border:0';
       fr.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'probe=1';
-      fr.addEventListener('load', function () { setTimeout(firstPass, 150); });
+      fr.addEventListener('load', function () { setTimeout(apply, 150); });
       document.body.appendChild(fr);
-      setTimeout(firstPass, 2500);
+      setTimeout(apply, 2500);
       setTimeout(function () { if (fr.parentNode) fr.parentNode.removeChild(fr); }, 4000);
     } else {
-      firstPass();   // offline preview: the stub returns a name directly
+      apply();
     }
   }
 
@@ -7892,14 +8078,25 @@ window.OLS_TRANSPORT = {
       card.appendChild(row);
     });
 
+    // tap cards instead of a typed note \u2014 the one place the custom-keypad world used to
+    // break by opening the native keyboard. Multi-select; stored as a readable string.
+    card.appendChild(seEl('p', 'se-label', 'Anything that tripped you up? (tap any)'));
     var noteWrap = seEl('div', 'se-note');
-    var note = document.createElement('input');
-    note.type = 'text'; note.maxLength = 140;
-    note.setAttribute('aria-label', 'Anything that tripped you up?');
-    note.placeholder = 'Anything that tripped you up? (optional)';
-    note.value = ev.note || '';
-    note.addEventListener('input', function () { ev.note = note.value; persist(); });
-    noteWrap.appendChild(note);
+    var TRIPS = ['brackets', 'minus signs', 'which rule', 'the arithmetic', 'something else'];
+    var picked = {};
+    String(ev.note || '').split(',').forEach(function (s) { s = s.trim(); if (s) picked[s] = true; });
+    TRIPS.forEach(function (t) {
+      var c = seEl('button', 'se-trip' + (picked[t] ? ' on' : ''), t);
+      c.type = 'button';
+      c.setAttribute('aria-pressed', picked[t] ? 'true' : 'false');
+      c.addEventListener('click', function () {
+        if (picked[t]) { delete picked[t]; c.classList.remove('on'); c.setAttribute('aria-pressed', 'false'); }
+        else { picked[t] = true; c.classList.add('on'); c.setAttribute('aria-pressed', 'true'); }
+        ev.note = Object.keys(picked).join(', ');
+        persist();
+      });
+      noteWrap.appendChild(c);
+    });
     card.appendChild(noteWrap);
 
     savedLine = seEl('p', 'se-saved', 'Saved as you tap \u2014 your teacher sees this on her class list.');
