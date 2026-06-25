@@ -23,12 +23,20 @@
   --grid-line: rgba(27, 90, 135, 0.10);
   --grid-bold: rgba(27, 90, 135, 0.16);
   --margin-rose: #E8A0A8;
-  --marking-red: #C8102E;
+  /* ── the closed marking set: each colour means ONE thing, only on the jotter ── */
+  --marking-red: #C8102E;     /* a WRONG step/answer — never UI chrome, box-draw or tally default */
+  --marking-green: #1F7A33;   /* a CORRECT mark — the one green, was a hardcoded hex in 6 places */
+  --amber-flag: #B07D10;      /* ANSWER ONLY — no working shown */
+  --debug-tint: #B500C8;      /* a verdict with NO outcome modifier: a loud magenta that appears
+                                 nowhere else, so a forgotten verdict shows as a BUG, not a red lie */
   --pencil: #474D57;
   --teal: #0F6B66;          /* Angles — The Geometry Set */
   --plum: #7A3B5E;          /* Algebra — Ink & Balance  */
   --page-edge: #EFE9DC;
-  --amber-flag: #B07D10;
+  /* pastoral / positive-UI tones — deliberately NOT the marking three, so a self-rating or a
+     "saved" flash can never be misread as a mark (proposal §5a) */
+  --support-rose: #A8507A;    /* "needs a word" — mauve, pushed away from marking red */
+  --stretch-sage: #2F8F6B;    /* "ready for stretch" + positive UI confirmation flash */
 
   --f-display: 'Fraunces', Georgia, 'Times New Roman', serif;
   --f-maths: 'STIX Two Text', 'Cambria', Georgia, serif;
@@ -52,8 +60,18 @@ body.gj {
   -webkit-font-smoothing: antialiased;
 }
 body.gj * { box-sizing: border-box; }
-body.gj h1, body.gj h2, body.gj h3 { margin: 0; font-family: var(--f-display); color: var(--navy); }
-body.gj p { margin: 0; }
+body.gj h1, body.gj h2, body.gj h3 { font-family: var(--f-display); color: var(--navy); }
+/* ── THE MARGIN RESET, now in a low cascade layer ──────────────────────────────
+   `body.gj p { margin:0 }` used to silently zero ANY single-class <p> margin (it
+   out-specifies a plain `.foo { margin-bottom: X }`), which spawned eight scoping
+   workarounds. Putting ONLY the reset in @layer reset fixes it at the root: an
+   unlayered rule — even a low-specificity single class — always beats a layered one,
+   so component margins now win with no `body.gj`/`#id` prefix tricks. An unstyled <p>
+   still gets margin:0 (nothing competes). DO NOT add a margin rule inside this layer. */
+@layer reset {
+  body.gj h1, body.gj h2, body.gj h3 { margin: 0; }
+  body.gj p { margin: 0; }
+}
 body.gj button { font: inherit; cursor: pointer; }
 body.gj :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
 
@@ -119,6 +137,10 @@ body.gj :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
 
 /* UI problems are pencil-and-Courier — marking red is for marking only */
 .ui-msg { font-family: var(--f-stationery); font-size: 14px; color: var(--pencil); min-height: var(--sq); }
+/* the three message voices (proposal §5c) — none of them is marking-red: a message is
+   never a wrong mark. info = neutral; validation = needs action (amber left-rule); status = quiet italic. */
+.ui-msg.msg-validation { color: var(--amber-flag); border-left: 3px solid var(--amber-flag); padding-left: 8px; }
+.ui-msg.msg-status { font-style: italic; }
 
 /* ═══ SCREEN · THE COVER ═══════════════════════════════════════════ */
 .scr-cover {
@@ -753,6 +775,20 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 .ang-established { font-style: italic; }
 
 /* step cards (committed angle steps render as jotter lines too) */
+/* ═══ THE DOCK — the writing zone (line + keys + commit), Phase 3 ═══════════════
+   Two zones: the Page (committed lines, above) and the Dock (the line you're writing,
+   the keys and the commit, kept together below a clear rule). Only the active question
+   has a dock — a locked question's dock is hidden — so the writing zone is unambiguous.
+   (Kept in normal flow rather than viewport-pinned: with the full algebra keypad a pinned
+   dock would cover most of a Chromebook/iPad screen — the proposal's conservative fallback.) */
+.dock { margin-top: calc(var(--sq) * 0.7); padding-top: calc(var(--sq) * 0.5);
+  border-top: 2px solid var(--page-edge); }
+.dock[hidden] { display: none; }
+.dock-line { margin-bottom: 2px; }
+/* the move tag — optional, secondary to the line above it */
+.move-annot { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--page-edge); }
+.move-annot .chip-strip { margin-top: 4px; }
+
 .step-card {
   border: 1.5px solid var(--navy);
   border-radius: 6px;
@@ -798,27 +834,37 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 /* check button + marking sequence */
 .check-row { display: flex; align-items: center; gap: var(--sq); margin-top: calc(var(--sq) * 0.75); }
 .attempt-note { font-family: var(--f-stationery); font-size: 12px; color: var(--pencil); }
+/* The tally/comment carry NO outcome colour of their own: the base is the loud
+   debug tint, so a mark rendered without an outcome modifier shows as a visible BUG
+   rather than a red lie. The real colour comes ONLY from .mk-correct/.mk-amber/.mk-wrong. */
 .mk-tally {
   font-family: var(--f-hand);
   font-size: 24px;
-  color: var(--marking-red);
+  color: var(--debug-tint);
 }
 .mk-comment {
   font-family: var(--f-hand);
   font-size: 21px;
-  color: var(--marking-red);
+  color: var(--debug-tint);
   margin-top: calc(var(--sq) * 0.25);
 }
 .amber-note { font-family: var(--f-stationery); font-size: 12px; color: var(--amber-flag); }
 /* colour the score + comment by outcome: green correct, amber answer-only, red wrong */
-.mk-tally.mk-correct, .mk-comment.mk-correct { color: #1F7A33; }
+.mk-tally.mk-correct, .mk-comment.mk-correct { color: var(--marking-green); }
 .mk-tally.mk-amber, .mk-comment.mk-amber { color: var(--amber-flag); }
 .mk-tally.mk-wrong, .mk-comment.mk-wrong { color: var(--marking-red); }
+/* the STAFF markbook's own tally is her DATA, not simulated handwriting — Courier, not Caveat
+   (proposal §5c). Same neutral-base + outcome-modifier discipline so a correct pupil never reads red. */
+.staff-tally { font-family: var(--f-stationery); font-size: 15px; color: var(--debug-tint); }
+.staff-tally.mk-correct { color: var(--marking-green); }
+.staff-tally.mk-amber { color: var(--amber-flag); }
+.staff-tally.mk-wrong { color: var(--marking-red); }
+.staff-tally.mk-open { color: var(--pencil); }   /* in-progress: neutral, never red */
 body.gj .jq-feedback { margin-top: calc(var(--sq) * 0.9); }
-/* a freshly written step: positive flash + brief line highlight */
-.ui-msg.flash-ok { color: #1F7A33; font-weight: 600; }
+/* a freshly written step: positive UI flash (sage, NOT marking-green — it isn't a mark) */
+.ui-msg.flash-ok { color: var(--stretch-sage); font-weight: 600; }
 .wline.just-added { animation: step-land 1.3s ease-out; }
-@keyframes step-land { 0% { background: rgba(31, 122, 51, 0.18); } 100% { background: transparent; } }
+@keyframes step-land { 0% { background: rgba(47, 143, 107, 0.18); } 100% { background: transparent; } }
 
 /* tick / cross marks are SVG paths drawn at pen speed */
 .mark-tick path, .mark-cross path, .box-draw rect, .box-draw path {
@@ -827,10 +873,10 @@ body.gj .jq-feedback { margin-top: calc(var(--sq) * 0.9); }
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.mark-tick path { stroke: #1F7A33; }                            /* correct = green tick */
+.mark-tick path { stroke: var(--marking-green); }               /* correct = green tick */
 .mark-cross path { stroke: var(--marking-red); }                /* wrong = red cross */
-.box-draw rect, .box-draw path { stroke: var(--marking-red); }  /* the boxed final answer, in red pen */
-.mark-tick.hollow path { stroke: #1F7A33; stroke-width: 1.6; opacity: 0.7; }  /* follow-through credit = faded green */
+.box-draw rect, .box-draw path { stroke: var(--foil); stroke-width: 3; }  /* correct answer = GOLD celebration box, never red */
+.mark-tick.hollow path { stroke: var(--marking-green); stroke-width: 1.6; opacity: 0.7; }  /* follow-through credit = faded green */
 .mark-tick.amber path { stroke: var(--amber-flag); }            /* right value, missing/!wrong reason = amber */
 
 /* progress instruments */
@@ -888,7 +934,7 @@ body.gj .staff-head h1 { color: var(--cream); font-size: 22px; }
 .wall td.pupil-name { text-align: left; font-family: var(--f-maths); font-size: 13.5px; white-space: nowrap; }
 .wall .cell { min-width: 38px; height: 34px; cursor: pointer; font-size: 15px; }
 .wall .cell:hover { background: rgba(26, 58, 107, 0.07); }
-.glyph-ok { color: #1F7A33; font-weight: 700; }
+.glyph-ok { color: var(--marking-green); font-weight: 700; }
 .glyph-amber { color: var(--amber-flag); font-weight: 700; }
 .glyph-err { color: var(--marking-red); font-weight: 700; font-family: var(--f-stationery); font-size: 12px; }
 .glyph-live { color: #1B5A87; animation: live-blink 2s ease-in-out infinite; }
@@ -1117,11 +1163,13 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .se-rate-g.on { background: #2F8F6B; color: #FFFEFA; border-color: #2F8F6B; }
 .se-rate-y.on { background: #C9971C; color: #FFFEFA; border-color: #C9971C; }
 .se-rate-r.on { background: #C0506A; color: #FFFEFA; border-color: #C0506A; }
-.se-note { margin-top: 12px; }
-.se-note input { width: 100%; max-width: 440px; font-family: var(--f-stationery); font-size: 0.9rem;
-  padding: 8px 10px; border: 1.5px solid var(--page-edge); border-radius: 6px; background: #FAF7F0; color: var(--ink); }
+.se-note { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+.se-trip { cursor: pointer; font-family: var(--f-stationery); font-size: 0.82rem; color: var(--ink);
+  padding: 7px 13px; border: 1.5px solid var(--page-edge); border-radius: 999px; background: #FFFEFA; }
+.se-trip:hover { border-color: var(--pencil); }
+.se-trip.on { background: var(--navy); color: var(--cream); border-color: var(--navy); }
 .se-saved { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); margin: 8px 0 0; font-style: italic; transition: color 0.2s; }
-.se-saved.se-saved-flash { color: #1F7A33; font-style: normal; font-weight: 600; }
+.se-saved.se-saved-flash { color: var(--stretch-sage); font-style: normal; font-weight: 600; }
 
 /* ═══ Class Insights + per-pupil header (teacher) ═══ */
 .ins-host { margin-top: 8px; }
@@ -1196,3 +1244,53 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .jp-under { color: #1E5E45; border-color: #2F8F6B; background: #E9F4EF; }
 .jp-nudge { border-color: var(--foil-lo); color: #8A6A12; background: #FBF4E2; }
 .jp-nudge:hover { background: #F6EBCB; }
+
+/* ═══ Jotter Page v2 — flick the pile, mark in pencil/ink ═══════════════════ */
+/* the flick bar — turn to the next jotter, with an always-visible axis label */
+.flick-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--sq);
+  margin-bottom: calc(var(--sq) * 0.6); padding-bottom: calc(var(--sq) * 0.4); border-bottom: 1px dashed var(--page-edge); }
+.flick-btn { font-family: var(--f-stationery); font-size: 0.92rem; color: var(--navy);
+  background: #FFFEFA; border: 1.5px solid rgba(26,58,107,0.35); border-radius: 6px; padding: 7px 16px;
+  box-shadow: 0 1.5px 0 rgba(26,58,107,0.18); }
+.flick-btn:hover { background: var(--cream); }
+.flick-btn.is-off { opacity: 0.35; pointer-events: none; box-shadow: none; }
+.flick-label { font-family: var(--f-stationery); font-size: 0.86rem; color: var(--pencil); text-align: center; }
+
+/* the once-only posture line + the composed plain-English read */
+.jp-posture { font-family: var(--f-stationery); font-size: 0.86rem; color: var(--pencil);
+  border-left: 3px solid var(--foil); padding: 6px 0 6px 12px; margin: 0 0 calc(var(--sq) * 0.8); }
+.jp-read { font-family: var(--f-maths); font-size: 1.06rem; color: var(--ink); line-height: 1.4; margin: 2px 0 14px; }
+
+/* the verdict, marked in pencil until she inks it in pen */
+.verdict-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: calc(var(--sq) * 0.6); }
+.verdict-mark { background: transparent; border: none; padding: 4px 8px; font-size: 22px; line-height: 1; position: relative; border-radius: 6px; }
+.verdict-mark:hover { background: rgba(26,58,107,0.06); }
+.verdict-mark.is-pencil { opacity: 0.72; }                         /* the app's provisional first pass */
+.verdict-mark.is-pencil::after { content: 'tap to ink'; position: absolute; left: 0; right: 0; bottom: -13px;
+  font-family: var(--f-stationery); font-size: 9px; color: var(--pencil); text-align: center; white-space: nowrap; }
+.verdict-mark.is-inked { opacity: 1; }
+.verdict-mark.is-inked::before { content: ''; position: absolute; inset: -2px -3px; border: 2px solid var(--ink);
+  border-radius: 60% 70% 62% 72%; transform: rotate(-3deg); opacity: 0.8; }   /* the teacher's hand-drawn ink ring */
+
+/* the ink control — opens AT the mark, one tap to choose */
+.ink-control { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 8px;
+  padding: 8px 10px; background: #FFFEFA; border: 1px solid var(--page-edge); border-radius: 8px; }
+.ink-control[hidden] { display: none; }   /* a class selector beats the UA [hidden] rule, so restore it */
+.ic-label { font-family: var(--f-stationery); font-size: 0.82rem; color: var(--pencil); }
+.ink-control button { font-family: var(--f-stationery); font-size: 0.9rem; padding: 6px 13px; border-radius: 6px; border: 1.5px solid; }
+.ic-tick { color: var(--marking-green); border-color: var(--marking-green); background: #EAF4EC; }
+.ic-cross { color: var(--marking-red); border-color: var(--marking-red); background: #FBEDEF; }
+.ic-auto { color: var(--pencil); border-color: rgba(26,58,107,0.3); background: #FFFEFA; }
+.ink-msg { font-family: var(--f-stationery); font-size: 0.82rem; color: var(--pencil); min-height: 0; }
+
+/* the standing teaching move — warm, primary, intent-named */
+.jp-reteach { font-family: var(--f-stationery); font-size: 0.9rem; color: var(--navy-deep);
+  background: var(--foil); border: 1.5px solid var(--foil-lo); border-radius: 6px; padding: 7px 15px; font-weight: 700; }
+.jp-reteach:hover { background: var(--foil-hi); }
+.jp-reteach.is-sent { background: #E9F4EF; color: #1E5E45; border-color: var(--stretch-sage); }
+
+/* "worth a look" — the advisory folded corner where the engine was unsure */
+.jotter-q.worth-look { position: relative; }
+.jotter-q.worth-look::after { content: 'worth a look'; position: absolute; top: 0; right: 0;
+  font-family: var(--f-stationery); font-size: 10px; color: #8A6A12; background: #FBF4E2;
+  border: 1px solid var(--foil-lo); border-top: none; border-right: none; border-bottom-left-radius: 9px; padding: 3px 9px; }

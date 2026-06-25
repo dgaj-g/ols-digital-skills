@@ -753,6 +753,18 @@
       insTile(st.avgTime ? Math.round(st.avgTime) + 's' : '—', 'avg per question') +
       insTile(st.avgConf != null ? st.avgConf.toFixed(1) : '—', 'self-confidence /3');
     out.appendChild(wrap);
+    // the gift a paper jotter can't give: the method-vs-answer split, read back as one plain sentence
+    var first = esc(String(name || '').split(' ')[0]) || 'This pupil';
+    var mPct = st.methodRate != null ? Math.round(100 * st.methodRate) : null;
+    var aPct = st.accMax ? Math.round(100 * st.accGot / st.accMax) : null;
+    var read;
+    if (!st.finished) read = first + ' is just getting started — not much marked yet.';
+    else if (mPct != null && aPct != null && mPct >= 75 && aPct >= 75) read = first + '’s method is sound and the answers are landing — strong all round.';
+    else if (mPct != null && aPct != null && mPct >= 70 && aPct < 60) read = first + '’s method is sound, but the final answers keep slipping — it’s arithmetic, not understanding.';
+    else if (mPct != null && mPct < 55) read = 'The method itself is where ' + first + ' needs a hand — worth reteaching, not just re-checking.';
+    else if (st.firstTry / st.finished >= 0.8) read = first + ' is getting most right first time — ready for a stretch.';
+    else read = first + ' is coming along — a few slips to tidy up.';
+    out.appendChild(el('div', 'jp-read', read));
     var fl = el('div', 'jp-flags');
     if (flag) fl.appendChild(el('span', 'jp-flag jp-' + flag.kind, (flag.kind === 'support' ? 'Needs support' : 'Ready for stretch') + ' · ' + esc(flag.reasons.join(' · '))));
     if (conf === 'over') fl.appendChild(el('span', 'jp-flag jp-over', 'Over-confident — confidence high, working weaker'));
@@ -813,7 +825,7 @@
             }
             if (cell.ovr != null) title += ' · teacher override';
           }
-          t.push('<td class="cell" data-email="' + esc(p.email) + '" title="' + esc(title) + '">' + glyph + '</td>');
+          t.push('<td class="cell" data-email="' + esc(p.email) + '" data-qlabel="' + esc(item.label) + '" title="' + esc(title) + '">' + glyph + '</td>');
         });
         t.push('</tr>');
       });
@@ -840,7 +852,7 @@
       totals += '</tr>';
       wall.innerHTML = t.join('').replace('</tbody>', totals + '</tbody>');
       wall.querySelectorAll('.cell').forEach(function (td) {
-        td.addEventListener('click', function () { showJotterPage(td.getAttribute('data-email')); });
+        td.addEventListener('click', function () { showJotterPage(td.getAttribute('data-email'), { qlabel: td.getAttribute('data-qlabel') }); });
       });
       clearBusy(msg, pupils.length + ' pupils · updates every 20 seconds while this page is open · tap any cell to open that pupil’s jotter.');
     }
@@ -851,6 +863,7 @@
         if (token !== view.wallSeq) return;
         if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load the wall.'); return; }
         view.wallData = r.pupils || [];
+        view.jotterCache = {};               // fresh wall data invalidates any pre-fetched jotters
         paint(view.wallData);
       }).catch(function () { if (token === view.wallSeq) clearBusy(msg, 'Could not reach the server — will retry.'); });
     }
@@ -860,17 +873,54 @@
     view.wallTimer = setInterval(load, 20000);
   }
 
-  /* ═══ Jotter Page drill-down + override ═══════════════════════════ */
-  function showJotterPage(email) {
+  /* ═══ Jotter Page drill-down + pencil/ink marking ════════════════════
+     The app marks in pencil; the teacher marks in pen. No three-button panel:
+     each verdict is a tappable pencil mark she inks with one tap. She flicks
+     through the pile (prev/next pupil) instead of Wall->cell->Back->reselect. */
+
+  // one round-trip per pupil is slow, so cache fetched jotters and pre-fetch the
+  // next pupil while she reads the current one. Cleared whenever the Wall reloads.
+  function fetchJotter(email) {
+    view.jotterCache = view.jotterCache || {};
+    if (view.jotterCache[email]) return Promise.resolve(view.jotterCache[email]);
+    return call('jotter', { className: view.cls, act: view.act, email: email }).then(function (r) {
+      if (r && r.ok) { view.jotterCache = view.jotterCache || {}; view.jotterCache[email] = r; }
+      return r;
+    });
+  }
+  function jotterRoster() {
+    return (view.wallData || []).slice()
+      .sort(function (a, b) { return (a.name || '').localeCompare(b.name || ''); })
+      .map(function (p) { return { email: p.email, name: p.name || p.email }; });
+  }
+
+  function showJotterPage(email, ctx) {
+    ctx = ctx || {};
+    stopPolling();                         // the 20s Wall poll suspends while she flicks the pile
+    var roster = jotterRoster();
+    var idx = roster.map(function (p) { return p.email; }).indexOf(email);
+    var prevP = idx > 0 ? roster[idx - 1] : null;
+    var nextP = (idx >= 0 && idx < roster.length - 1) ? roster[idx + 1] : null;
+
     var body = el('div', '');
+    // the flick bar — physical "turn to the next jotter", with an always-visible axis label
+    var flick = el('div', 'flick-bar');
+    var bPrev = el('button', 'flick-btn' + (prevP ? '' : ' is-off'), '‹ ' + (prevP ? esc(prevP.name.split(' ')[0]) : 'first'));
+    var axis = ctx.qlabel ? (esc(ctx.qlabel) + ' · across the class') : ((roster[idx] ? esc(roster[idx].name.split(' ')[0]) : 'this pupil') + '’s book');
+    var lbl = el('span', 'flick-label', axis + (idx >= 0 ? ' · ' + (idx + 1) + ' of ' + roster.length : ''));
+    var bNext = el('button', 'flick-btn' + (nextP ? '' : ' is-off'), (nextP ? esc(nextP.name.split(' ')[0]) : 'last') + ' ›');
+    if (prevP) bPrev.addEventListener('click', function () { showJotterPage(prevP.email, ctx); });
+    if (nextP) bNext.addEventListener('click', function () { showJotterPage(nextP.email, ctx); });
+    flick.appendChild(bPrev); flick.appendChild(lbl); flick.appendChild(bNext);
+
     var msg = el('p', 'ui-msg', 'Fetching the jotter…');
-    body.appendChild(msg);
     var page = el('div', 'jotter');
-    body.appendChild(page);
+    body.appendChild(flick); body.appendChild(msg); body.appendChild(page);
     shell(view.cls + ' · Jotter Page', body, function () { showWall(); });
 
     busyCard(msg, 'Fetching the jotter&hellip; this can take a moment');
-    call('jotter', { className: view.cls, act: view.act, email: email }).then(function (r) {
+    fetchJotter(email).then(function (r) {
+      if (nextP) fetchJotter(nextP.email);    // pre-fetch one ahead so the next flick is instant
       if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load.'); return; }
       var state = null;
       try { state = JSON.parse(r.state); } catch (e) {}
@@ -879,6 +929,8 @@
       if (!state) { page.innerHTML = '<div class="jotter-q"><div class="jq-margin"></div><div class="jq-body ui-msg">Nothing saved yet.</div></div>'; return; }
 
       page.appendChild(jotterHeader(state, r.name));
+      // the posture line, shown once at the top: the whole pencil/ink model in one sentence
+      page.appendChild(el('div', 'jp-posture', 'These are the app’s first-pass marks, in pencil. Tap any mark to ink your own — your mark always wins.'));
 
       questionList(view.act).forEach(function (item) {
         var q = item.q;
@@ -939,49 +991,88 @@
           if (v.dx) bodyEl.appendChild(el('p', 'ui-msg', esc(DX_NAMES[v.dx] || v.dx)));
         });
 
-        if (res.verdict) {
-          var mkMax = res.verdict.mkMax || q.marks;
-          bodyEl.appendChild(el('p', 'mk-tally', 'Working ' + res.verdict.mk[0] + '/' + mkMax[0] + ' · Answer ' + res.verdict.mk[1] + '/' + mkMax[1] +
-            (last.dur ? ' · ' + last.dur + 's · ' + (rec.att.length) + ' attempt' + (rec.att.length > 1 ? 's' : '') : '')));
-        }
         if (state.help && state.help[q.id]) bodyEl.appendChild(el('p', 'jp-help', 'Opened the worked example after getting stuck'));
 
-        /* the override — the teacher's judgement wins everywhere */
-        var ovRow = el('div', 'check-row');
-        var ovMsg = el('span', 'ui-msg', rec.ovr ? 'Teacher override applied.' : '');
+        // ── send my eye to what needs it: a folded "worth a look" corner where the
+        //    engine was unsure (answer-only, or a wrong route it couldn't name). Advisory only. ──
+        var worthLook = (res.st === 'amber') || (res.st === 'err' && !res.dx);
+        if (worthLook && rec.ovr == null) wrap.classList.add('worth-look');
+
+        // ── the verdict as a PENCIL mark she inks in PEN — no three-button panel ──
+        function vGlyph(s) {
+          return s === 'ok' ? '<span class="glyph-ok">✓</span>' : s === 'amber' ? '<span class="glyph-amber">◐</span>'
+            : s === 'open' ? '<span class="glyph-live">●</span>' : '<span class="glyph-err">✗</span>';
+        }
+        var mkMax = (res.verdict && res.verdict.mkMax) || q.marks;
+        var tallyTail = last.dur ? ' · ' + last.dur + 's · ' + rec.att.length + ' attempt' + (rec.att.length > 1 ? 's' : '') : '';
+        var vrow = el('div', 'verdict-row');
+        var vmark = el('button', 'verdict-mark');
+        var tallyEl = res.verdict ? el('div', 'staff-tally') : null;
+        var inkMsg = el('span', 'ink-msg ui-msg', rec.ovr ? 'Your mark.' : '');
+
+        function paintVerdict() {
+          var inked = rec.ovr != null;
+          var effSt = inked ? (rec.ovr.q === 1 ? 'ok' : 'err') : res.st;
+          vmark.className = 'verdict-mark ' + (inked ? 'is-inked' : 'is-pencil');
+          vmark.innerHTML = vGlyph(effSt);
+          vmark.setAttribute('aria-label', 'Marked ' + (effSt === 'ok' ? 'correct' : effSt === 'amber' ? 'answer only' : effSt === 'err' ? 'wrong' : 'in progress') + (inked ? ' by you' : ' by the app — tap to make it yours'));
+          if (tallyEl) {
+            var m0 = res.verdict.mk[0], m1 = res.verdict.mk[1];
+            if (inked && rec.ovr.q === 1) { m0 = mkMax[0]; m1 = mkMax[1]; }      // right = full working + answer marks
+            else if (inked && rec.ovr.q === 0) { m0 = 0; m1 = 0; }
+            tallyEl.className = 'staff-tally ' + (effSt === 'ok' ? 'mk-correct' : effSt === 'amber' ? 'mk-amber' : effSt === 'err' ? 'mk-wrong' : 'mk-open');
+            tallyEl.textContent = 'Working ' + m0 + '/' + mkMax[0] + ' · Answer ' + m1 + '/' + mkMax[1] + tallyTail;
+          }
+        }
+        paintVerdict();
+        vrow.appendChild(vmark);
+        if (tallyEl) vrow.appendChild(tallyEl);
+
+        // the one genuinely pedagogical action, promoted to a standing intent-named move
+        if (item.secId && item.secHasMovie && (res.st === 'err' || res.st === 'amber')) {
+          var reteach = el('button', 'jp-reteach', 'Show them this method again →');
+          reteach.title = 'Sends this exercise’s worked example (' + esc(String(item.label).split('·')[0].trim()) + ') to the pupil the next time they open their book.';
+          reteach.addEventListener('click', function () {
+            if (reteach.disabled) return; reteach.disabled = true;
+            call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId }).then(function (r3) {
+              reteach.disabled = false;
+              if (r3 && r3.ok) { reteach.textContent = 'Sent ✓ — they’ll see it next time'; reteach.classList.add('is-sent'); }
+              else { reteach.disabled = false; inkMsg.textContent = (r3 && r3.error) || 'Could not send.'; }
+            }).catch(function () { reteach.disabled = false; inkMsg.textContent = 'Could not send.'; });
+          });
+          vrow.appendChild(reteach);
+        }
+        bodyEl.appendChild(vrow);
+
+        // the ink control — opens AT the mark on tap (one tap to open, one to choose).
+        // it also carries the "couldn't save" slot so a network hiccup has somewhere to land.
+        var ink = el('div', 'ink-control'); ink.hidden = true;
         function setOvr(val, btn) {
-          if (btn.disabled) return;
-          btn.disabled = true;
+          if (btn.disabled) return; btn.disabled = true; inkMsg.textContent = 'Saving…';
           call('override', { className: view.cls, act: view.act, email: email, q: q.id, idx: 'q', val: val }).then(function (r2) {
             btn.disabled = false;
-            if (r2 && r2.ok) { rec.ovr = (val == null) ? null : { q: val }; ovMsg.textContent = (val === 1) ? 'Marked right — full working and answer marks. The Wall now shows your judgement.' : (val === 0) ? 'Marked wrong — the Wall now shows your judgement.' : 'Back to the automatic mark.'; }
-            else ovMsg.textContent = (r2 && r2.error) || 'Could not save.';
-          }).catch(function () { btn.disabled = false; ovMsg.textContent = 'Could not save.'; });
+            if (r2 && r2.ok) {
+              rec.ovr = (val == null) ? null : { q: val };
+              if (view.jotterCache) delete view.jotterCache[email];   // the cached jotter is now stale; re-fetch on flick-back
+              if (rec.ovr == null && worthLook) wrap.classList.add('worth-look'); else wrap.classList.remove('worth-look');
+              paintVerdict();
+              inkMsg.textContent = (val === 1) ? 'Inked right — full marks. Your mark wins on the Wall.' : (val === 0) ? 'Inked wrong. Your mark wins on the Wall.' : 'Back to the app’s mark.';
+              ink.hidden = true; vmark.setAttribute('aria-expanded', 'false');
+            } else inkMsg.textContent = (r2 && r2.error) || 'Couldn’t save — tap the mark to try again.';
+          }).catch(function () { btn.disabled = false; inkMsg.textContent = 'Couldn’t save — tap the mark to try again.'; });
         }
-        [['Mark it right', 1], ['Mark it wrong', 0], ['Use the automatic mark', null]].forEach(function (o) {
-          var b = el('button', 'btn-pencil', o[0]);
-          b.addEventListener('click', function () { setOvr(o[1], b); });
-          ovRow.appendChild(b);
-        });
-        // content-safe support: nudge this pupil toward the section's existing method
-        // movie. Offered only where they struggled — the natural moment to suggest it.
-        if (item.secId && item.secHasMovie && (res.st === 'err' || res.st === 'amber')) {   // only nudge to a section that actually has a method movie
-          var exPart = String(item.label).split('·')[0].trim();   // "Ex 2 · Q1" -> "Ex 2" (the nudge opens the whole exercise's worked example)
-          var nudgeB = el('button', 'btn-pencil jp-nudge', 'Send the worked example for ' + exPart + ' →');
-          nudgeB.title = 'Opens this exercise’s worked example for the pupil — the whole of ' + exPart + ', not just this question — the next time they open their book.';
-          nudgeB.addEventListener('click', function () {
-            if (nudgeB.disabled) return; nudgeB.disabled = true;
-            call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId }).then(function (r3) {
-              nudgeB.disabled = false;
-              if (r3 && r3.ok) { nudgeB.textContent = 'Worked example sent ✓'; ovMsg.textContent = 'They’ll be shown the ' + exPart + ' worked example the next time they open the book.'; }
-              else ovMsg.textContent = (r3 && r3.error) || 'Could not send the nudge.';
-            }).catch(function () { nudgeB.disabled = false; ovMsg.textContent = 'Could not send the nudge.'; });
-          });
-          ovRow.appendChild(nudgeB);
-        }
-        ovRow.appendChild(ovMsg);
-        bodyEl.appendChild(el('p', 'ui-msg ov-why', 'The app marks the working automatically. If its verdict looks wrong — say a pupil used a valid method it didn’t recognise — set your own mark here. Your judgement shows on the Wall straight away.'));
-        bodyEl.appendChild(ovRow);
+        var icTick = el('button', 'ic-tick', '✓ mine');
+        var icCross = el('button', 'ic-cross', '✗ mine');
+        var icAuto = el('button', 'ic-auto btn-pencil', 'use the app’s mark');
+        icTick.addEventListener('click', function () { setOvr(1, icTick); });
+        icCross.addEventListener('click', function () { setOvr(0, icCross); });
+        icAuto.addEventListener('click', function () { setOvr(null, icAuto); });
+        ink.appendChild(el('span', 'ic-label', 'Your mark:'));
+        ink.appendChild(icTick); ink.appendChild(icCross); ink.appendChild(icAuto); ink.appendChild(inkMsg);
+        bodyEl.appendChild(ink);
+        vmark.setAttribute('aria-expanded', 'false');
+        vmark.addEventListener('click', function () { ink.hidden = !ink.hidden; vmark.setAttribute('aria-expanded', String(!ink.hidden)); });
+
         page.appendChild(wrap);
       });
     });
