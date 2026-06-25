@@ -2,6 +2,64 @@
 
 # The Glass Jotter — Redesign Proposal
 
+## 0. CURRENT STATE - read this first (added 25 Jun 2026, after the auto-name + UX work shipped)
+
+This proposal was written 23 Jun 2026; a lot has shipped since. The v2 redesign must BUILD ON the LIVE app
+(not the bare git source) and PRESERVE everything below. Live now: **MAIN deployment Version 22 (execute-as-ME),
+COMPANION Version 21 (execute-as-USER)**. Apps Script project `1otJG5454zR6a0WKZW23czKnehxtQ3Oj6CrrRWYys1H4bPxZOoaZ3qPmC`,
+bound Sheet `164nmiqGLLr2SktTuPnZy70KQZL9Us4CItMW5VnbCyMY`, staff passcode `0lsMaths26*`, classes 10A-26 / 10B-26.
+Main /exec = `AKfycbwSIyls...PAoE6hA`; companion /exec = `AKfycbzCrtb4...PkiEAz` (Config row `autonameUrl` points at it).
+
+**ALREADY DONE - PRESERVE, do NOT redo or regress:**
+- **AUTO-NAME (the most fragile - its live code is NOT in git).** Pupils auto-get their real full name via a
+  popup-FREE full-page `target="_top"` consent flow (companion `?probe=1&ret=<classlink>` bounce) + a shared
+  ScriptProperties bridge + an `apiHello` ScriptProperties fallback (`nameFromSp` flag) + an auto-open on return
+  (about 2 taps first time, 1 tap forever after). FULL implementation, exact code, and deploy facts are in the
+  memory note `project_maths_glass_jotter.md`. Server (`autoName_`, `autoNameProbe_(e)` with the target=_top
+  bounce, `apiAutoName`, `apiHello` SP-fallback, `apiSetName`) and the client cover-handler logic MUST carry over
+  verbatim. Manifest `webapp.executeAs = USER_DEPLOYING`; MAIN stays execute-as-ME (pupil ~45KB states live in the
+  owner's private Sheet); COMPANION stays execute-as-USER. The redesign is client-only EXCEPT this Code.gs, which
+  stays as-is. NEVER use `location.href`/`location.replace` for the consent nav (it white-screens) - only a
+  user-tapped `target="_top"` anchor works for this bound script.
+- **Phase 1 translation (DONE, live):** M/A -> Working/Answer everywhere; AMBER -> "Answer only - no working";
+  plain-English CSV status; "line" -> "step". **WALT is KEPT** (the dept uses WALT with pupils - do NOT change it
+  to "In this exercise" as Section 4 suggests). The Working-Wall permanent legend is in.
+- **Phase 2 concrete bugs (DONE, live):** correct = GREEN tick/tally (never red); protractor reading-aid lights
+  BOTH flanking tens; `[1 mark]` enlarged; faded text darkened; PVQ shows P/Q labels; the method-leak placeholder
+  `e.g. 180-38` neutralised to `e.g. 65`; confirmation flashes for jotter-step / nudge / self-eval.
+- **Phase 3 on-ramp (DONE, live):** teacher orientation line; split "N need support" / "N ready for stretch"
+  tiles; nudge reworded "Send the worked example for Ex N"; AMBER-aware Marking-Pile empty state; locked-book
+  padlock; the "both sides" prompt gated to solve/form.
+- Per-teacher scoping; the markbook (Working Wall / Jotter Page / Marking Pile / Sweep / CSV / Class Insights);
+  the 12 method movies; the draggable protractor + reading aid; phone optimisation; the FAIR-COPY identity; the
+  marking engine (mathcore/anglecore, 48/48). KEEP all of it (matches Section 6 "KEEP").
+
+**STILL TO BUILD = the actual v2 work (all client-only per Section 7):**
+- **Section 5 STRUCTURAL LAWS (none shipped yet):** the closed colour-token set + `.mark` base-class enforcement
+  + neutral debug-tint; the three-slot in-view feedback law; typography discipline (`.staff-tally` in Courier,
+  the `.ui-msg` -> `.msg-info`/`.msg-validation`/`.msg-status` split); the `body.gj p { margin:0 }` cascade-layers
+  trap kill + `<p>`->`<div>` sweep. HIGH value, near-zero risk - kills the clunky/red-on-correct/off-screen class.
+- **Section 3 DEATH OF THE OVERRIDE:** the 3-button panel is STILL live (it was only reworded "Use the automatic
+  mark" + a why-line, NOT replaced). Delete it; build pencil/ink tap-at-the-mark; the "worth a look" advisory fold;
+  the once-only posture line; flick-through prev/next pupil with one-ahead pre-fetch; the composed plain-English
+  per-pupil read; the promoted intent-named "Show them this method again ->".
+- **Section 4 PUPIL DOCK:** two-zone Page/Dock; behaviour-based keypad trimmed per type; line-first algebra with
+  optional inline annotation; angles bottom-sheet with section-ordered reasons; "Mark my working" commit with
+  results scrolled into view; tap-card self-eval. (Pilot algebra first; test the bottom-sheet on a real Chromebook.)
+
+**CRITICAL CONTENT ISSUE (the trigger for v2):** a substitution WORKED EXAMPLE renders `6 + b = 6 + 7 = 13`
+while the given values are `a=4, b=7, c=3` - the `6` has no origin in the givens (it should almost certainly be
+`a + b = 4 + 7 = 11`). A wrong/confusing worked example makes pupils fail every question after it. **EVERY worked
+example AND question in `content-algebra.js` and `content-angles.js` must be independently re-derived AND
+re-verified against the teacher (Mary's) ORIGINAL submission** - GitHub issues #24 (Angles) + #25 (Algebra) in
+`dgaj-g/ols-digital-skills` (`gh issue view`). Honour Mary's intent; fix transcription errors; invent nothing.
+
+**SOURCE-vs-LIVE DIVERGENCE (must reconcile):** the live Apps Script editor holds uncommitted edits (the entire
+auto-name target=_top flow, the execute-as fix, the manifest) that are NOT on the branch. Capture the live
+editor's `Code.gs` + `Index.html` as the true baseline before rebuilding (or re-derive auto-name from
+`project_maths_glass_jotter.md`). After the v2 build, COMMIT everything to `draft/issue-24-25-maths-m2-revision`
+so the repo is once again a faithful copy of production.
+
 ## 1. What's not right (the diagnosis)
 
 The build is not broken — it is *mis-cast*. The Glass Jotter was written in examiner voice and given an algorithm's posture, and you are feeling both before you can name either. Every label speaks mark-scheme dialect ("M 2/2 · A 1/1", "AMBER", "WALT", "Ex 3 · Q1"), so the product reads as *built for someone else*. And the marking model puts the machine first: the engine rules, then asks you to approve or appeal its ruling on every question of every pupil — a three-button committee meeting rendered four hundred times for one class. That inverts your actual role. You are the marker. The app should be doing a quiet first pass in pencil, ready for your red pen — not convening a tribunal you must chair.
