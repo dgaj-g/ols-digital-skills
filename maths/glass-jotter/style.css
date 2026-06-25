@@ -995,7 +995,9 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
   padding: calc(var(--sq) * 2);
 }
 .starter-card { max-width: 900px; text-align: center; }
-.starter-line { font-family: var(--f-maths); font-size: clamp(28px, 5vw, 54px); }
+.starter-h { font-family: var(--f-stationery); font-size: 1.05rem; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--foil-lo); margin: 0 0 calc(var(--sq) * 1.1); }
+.starter-line { font-family: var(--f-maths); font-size: clamp(28px, 5vw, 54px); line-height: 1.15; margin: 0; }
 .starter-q { font-family: var(--f-hand); font-size: clamp(22px, 3vw, 34px); color: var(--marking-red); margin-top: var(--sq); }
 
 /* mini jotter pages for Sweep view */

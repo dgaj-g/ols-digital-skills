@@ -780,7 +780,8 @@
       // method movie: open that section so the support is right where they land.
       var startSec = firstOpenSection(pack);
       if (r && r.nudge) {
-        current.nudge = { sec: String(r.nudge) };
+        var np = String(r.nudge).split('::');   // server stores "<secId>" or "<secId>::<qid>"
+        current.nudge = { sec: np[0], q: np[1] || null };
         var ni = -1;
         pack.sections.forEach(function (s, k) { if (s.id === current.nudge.sec) ni = k; });
         if (ni >= 0) startSec = ni;
@@ -921,22 +922,25 @@
         }
       });
       if (strip) {
+        strip._qid = q.id;                                            // so a nudge can open the RIGHT question's strip
         jotter.appendChild(strip);
         strips.push(strip);
         if (supportEarned(current.state.qs[q.id])) strip._reveal();   // already earned on re-entry
       }
     });
 
-    // a teacher "nudge" (set on load) reveals + gently opens the support for this
-    // section once, regardless of attempts.
+    // a teacher "nudge" (set on load) reveals + gently opens the support for the
+    // question the teacher sent it from (falls back to the first question), once.
     if (strips.length && current.nudge && current.nudge.sec === sec.id) {
-      strips[0].classList.add('nudged');
-      if (strips[0]._openSupport) strips[0]._openSupport(true);
+      var target = (current.nudge.q && strips.filter(function (s) { return s._qid === current.nudge.q; })[0]) || strips[0];
+      target.classList.add('nudged');
+      if (target._openSupport) target._openSupport(true);
       current.nudge = null;   // one-shot: don't re-open every time the pupil revisits
     }
 
     refreshFooter();
     renderContents();
+    window.scrollTo(0, 0);    // a freshly opened/navigated exercise starts at the top (movie first), never mid-page
   }
 
   /* "Want to see how?" — lazily mounts the section's existing method movie under a
@@ -1062,6 +1066,33 @@
     return d;
   }
 
+  /* "What tripped you up?" tap-chips, written to fit EACH exercise (not generic). Keyed by
+     activity + section id; falls back to a topic-appropriate default so a new topic still works. */
+  var SELF_EVAL_TRIPS = {
+    angles: {
+      s1: ['naming the type', 'reading the protractor', 'which scale to read', 'something else'],
+      s2: ['angles on a line (180°)', 'angles at a point (360°)', 'the arithmetic', 'something else'],
+      s3: ['vertically opposite angles', 'angles on a line', 'the arithmetic', 'something else'],
+      s4: ['triangle = 180°', 'quadrilateral = 360°', 'isosceles / equilateral', 'something else'],
+      s5: ['F, Z and U shapes', 'which rule to use', 'the arithmetic', 'something else'],
+      s6: ['which rule to use', 'working step by step', 'the arithmetic', 'something else'],
+      _: ['which rule to use', 'the arithmetic', 'something else']
+    },
+    algebra: {
+      s1: ['negative numbers', 'order of operations', 'reading the letters', 'something else'],
+      s2: ['which terms are alike', 'the + and − signs', 'the arithmetic', 'something else'],
+      s3: ['multiplying every term', 'a negative outside the bracket', 'the arithmetic', 'something else'],
+      s4: ['doing the same to both sides', 'moving a term (the signs)', 'dividing at the end', 'something else'],
+      s5: ['gathering the letters', 'the signs when moving a term', 'the arithmetic', 'something else'],
+      s6: ['expanding the brackets first', 'doing the same to both sides', 'the signs', 'something else'],
+      _: ['the method', 'the signs', 'the arithmetic', 'something else']
+    }
+  };
+  function tripsFor(sec) {
+    var byAct = SELF_EVAL_TRIPS[current.act.id] || {};
+    return byAct[sec.id] || byAct._ || ['the method', 'the arithmetic', 'something else'];
+  }
+
   /* End-of-exercise self-evaluation. Auto-saves on every tap (no submit friction);
      keyed by section id; surfaced to the teacher via summary.evals. Measurable:
      a 1-3 confidence, a per-"I can…" 1-3 rating, and an optional note. */
@@ -1136,7 +1167,7 @@
     // break by opening the native keyboard. Multi-select; stored as a readable string.
     card.appendChild(seEl('p', 'se-label', 'Anything that tripped you up? (tap any)'));
     var noteWrap = seEl('div', 'se-note');
-    var TRIPS = ['brackets', 'minus signs', 'which rule', 'the arithmetic', 'something else'];
+    var TRIPS = tripsFor(sec);
     var picked = {};
     String(ev.note || '').split(',').forEach(function (s) { s = s.trim(); if (s) picked[s] = true; });
     TRIPS.forEach(function (t) {

@@ -1034,7 +1034,7 @@
           reteach.title = 'Sends this exercise’s worked example (' + esc(String(item.label).split('·')[0].trim()) + ') to the pupil the next time they open their book.';
           reteach.addEventListener('click', function () {
             if (reteach.disabled) return; reteach.disabled = true;
-            call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId }).then(function (r3) {
+            call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId + '::' + q.id }).then(function (r3) {
               reteach.disabled = false;
               if (r3 && r3.ok) { reteach.textContent = 'Sent ✓ — they’ll see it next time'; reteach.classList.add('is-sent'); }
               else { reteach.disabled = false; inkMsg.textContent = (r3 && r3.error) || 'Could not send.'; }
@@ -1147,7 +1147,7 @@
     function paint() {
       var p = piles[idx];
       over.innerHTML = '<div class="starter-card">' +
-        '<p class="sec-walt">Spot the slip · starter ' + (idx + 1) + ' of ' + piles.length + '</p>' +
+        '<p class="starter-h">Spot the slip · starter ' + (idx + 1) + ' of ' + piles.length + '</p>' +
         '<div class="starter-line">' + esc(p.example || p.label) + '</div>' +
         '<p class="starter-q">' + (p.revealed ? esc(p.label) : 'Where has this gone wrong — and what should the line say?') + '</p>' +
         '<div class="check-row" style="justify-content:center">' +
