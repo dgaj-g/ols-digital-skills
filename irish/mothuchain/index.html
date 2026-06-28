@@ -28,11 +28,11 @@
     <div class="start-card">
       <div class="start-badge" aria-hidden="true">🛣️</div>
       <h2 id="start-h">Fáilte chuig Bóthar na Mothúchán!</h2>
-      <p class="start-lead">Tá tú ag siúl síos an bóthar. Ag gach stad, casfaidh cara ort agus iad <strong>lán le mothúchán</strong>. Fiafróidh siad díot <em>"Cad é atá ort?"</em> Éist le guth an mhúinteora, <strong>féach ar an radharc</strong>, agus freagair leis an gceann ceart: <em>"Tá ___ orm."</em></p>
-      <p class="start-lead-en">You are walking down a road. At each stop a friend appears, full of a feeling, and asks "How are you feeling?" Listen to your teacher's voice, read the scene, and reply with the right "Tá ___ orm." Get it right and the friend cheers up and you walk on. You have three hearts — choose carefully!</p>
+      <p class="start-lead">Tá tú ag siúl síos an bóthar. Ag gach stad, casfaidh cara ort agus iad <strong>lán le mothúchán</strong>. Fiafróidh siad díot <em>"Cad é atá ort?"</em> <strong>Féach ar an radharc</strong> chun an mothúchán a oibriú amach, agus freagair leis an gceann ceart: <em>"Tá ___ orm."</em></p>
+      <p class="start-lead-en">You are walking down a road. At each stop a friend appears, full of a feeling, and asks "How are you feeling?" Read the scene to work out the feeling, and reply with the right "Tá ___ orm." Each stop is worth two points — but if you get stuck you can use a Hint to hear the word, and that costs you a point. Get it right and the friend cheers up. You have three hearts, so choose carefully!</p>
       <ul class="start-tips">
-        <li><span aria-hidden="true">👂</span> Brúigh an <strong>cnaipe athsheinm</strong> chun an focal a chloisteáil arís &middot; tap to hear the word again.</li>
-        <li><span aria-hidden="true">🖼️</span> Inseoidh an <strong>pictiúr</strong> duit cén mothúchán atá i gceist &middot; the picture shows you which feeling it is.</li>
+        <li><span aria-hidden="true">🖼️</span> Inseoidh an <strong>pictiúr</strong> duit cén mothúchán atá ann &mdash; <strong>2 phointe</strong> an ceann! &middot; the picture tells you the feeling — 2 points each!</li>
+        <li><span aria-hidden="true">🔊</span> I bponc? Úsáid <strong>Leid</strong> chun an focal a chloisteáil &mdash; ach caillfidh tú pointe &middot; stuck? use a <strong>Hint</strong> to hear the word, but you lose a point.</li>
         <li><span aria-hidden="true">💛</span> Roghnaigh, ansin brúigh <strong>Abair é!</strong> &middot; choose, then press "Say it!" to answer.</li>
       </ul>
       <button class="btn-primary" id="start-btn" type="button">Tosaigh ag siúl &middot; Start walking</button>
@@ -57,7 +57,7 @@
     <div class="hud">
       <div class="hearts" id="hearts" aria-label="Croíthe · lives"></div>
       <div class="hud-progress"><span id="stop-num">1</span> / 15 <span class="hud-progress-lbl">stad · stops</span></div>
-      <div class="streak" id="streak" aria-live="polite" hidden><span aria-hidden="true">🔥</span> <span id="streak-n">0</span></div>
+      <div class="score" id="score" aria-live="polite"><span class="score-n" id="score-n">0</span><span class="score-lbl">/30 pointe</span></div>
     </div>
 
     <!-- character + walker -->
@@ -66,9 +66,13 @@
         <div class="char-art" id="char-art"><!-- face + props injected --></div>
         <div class="speech" id="speech">
           <span class="speech-q">Cad é atá ort?</span>
-          <button class="replay-orb" id="replay-btn" type="button" aria-label="Seinn an focal arís · play the word again"><span aria-hidden="true">🔊</span></button>
         </div>
         <p class="char-cap" id="char-cap"></p>
+        <button class="hint-btn" id="hint-btn" type="button" aria-label="Leid: cloisfidh tú an focal ach caillfidh tú pointe · Hint: hear the word, but you lose a point">
+          <span class="hint-spk" aria-hidden="true">🔊</span>
+          <span class="hint-lbl">Leid · Hint</span>
+          <span class="hint-cost" id="hint-cost" aria-hidden="true">−1</span>
+        </button>
       </div>
     </div>
 

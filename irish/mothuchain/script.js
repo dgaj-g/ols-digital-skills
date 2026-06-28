@@ -44,13 +44,13 @@
   /* ---------- refs ---------- */
   const startPanel = byId('start-panel'), play = byId('play'), endPanel = byId('end-panel');
   const sceneEl = byId('scene'), sceneryEl = byId('scenery');
-  const heartsEl = byId('hearts'), stopNumEl = byId('stop-num'), streakEl = byId('streak'), streakNEl = byId('streak-n');
+  const heartsEl = byId('hearts'), stopNumEl = byId('stop-num'), scoreEl = byId('score'), scoreNEl = byId('score-n');
   const charCard = byId('char-card'), charArt = byId('char-art'), charCap = byId('char-cap');
-  const chipsEl = byId('chips'), commitBtn = byId('commit-btn'), replayBtn = byId('replay-btn');
+  const chipsEl = byId('chips'), commitBtn = byId('commit-btn'), hintBtn = byId('hint-btn'), hintCost = byId('hint-cost');
   const feedbackEl = byId('feedback'), speechEl = byId('speech');
 
-  const N = FEELINGS.length;
-  const state = { order: [], idx: 0, hearts: START_HEARTS, streak: 0, selected: null, locked: false, checkpoint: 0, firstTry: {}, attempt: 0 };
+  const N = FEELINGS.length, MAX_PTS = N * 2;
+  const state = { order: [], idx: 0, hearts: START_HEARTS, streak: 0, selected: null, locked: false, checkpoint: 0, stopPoints: {}, hintUsed: false, attempt: 0 };
   let gameGen = 0, confettiRAF = null;
 
   /* ---------- scene helpers ---------- */
@@ -65,10 +65,10 @@
     heartsEl.innerHTML = '';
     for (let i = 0; i < START_HEARTS; i++) { const im = el('img'); im.src = IMG + 'scene-heart.png'; im.alt = i === 0 ? 'croíthe' : ''; if (i >= state.hearts) im.className = 'lost'; heartsEl.appendChild(im); }
   }
-  function setStreak() {
-    // populate before un-hiding so the aria-live announcement isn't dropped
-    if (state.streak >= 2) { streakNEl.textContent = String(state.streak); streakEl.hidden = false; }
-    else streakEl.hidden = true;
+  function setScore() {
+    var total = Object.keys(state.stopPoints).reduce(function (a, k) { return a + state.stopPoints[k]; }, 0);
+    scoreNEl.textContent = String(total);
+    return total;
   }
 
   /* ---------- feedback ---------- */
@@ -91,10 +91,10 @@
     gameGen++;
     if (confettiRAF) { cancelAnimationFrame(confettiRAF); confettiRAF = null; }
     state.order = shuffle(FEELINGS);
-    state.idx = 0; state.hearts = START_HEARTS; state.streak = 0; state.checkpoint = 0; state.firstTry = {};
+    state.idx = 0; state.hearts = START_HEARTS; state.streak = 0; state.checkpoint = 0; state.stopPoints = {}; state.hintUsed = false;
     startPanel.hidden = true; endPanel.hidden = true; play.hidden = false;
     buildScenery();
-    renderHearts(); setStreak();
+    renderHearts(); setScore();
     renderStop();
   }
 
@@ -107,7 +107,7 @@
     charCap.textContent = f.cap.ga + ' · ' + f.cap.en;
     stopNumEl.textContent = String(state.idx + 1);
     setSky(state.idx); setScroll(state.idx);
-    renderHearts(); setStreak();
+    renderHearts(); setScore();
     // walk-in animation
     charCard.classList.remove('leave'); charCard.classList.add('enter');
     byId('walker').classList.remove('stride'); void byId('walker').offsetWidth; byId('walker').classList.add('stride');
@@ -128,10 +128,12 @@
       chipsEl.appendChild(b);
     });
     commitBtn.disabled = true;
+    // reset the hint for this stop — the word does NOT auto-play any more; it is an
+    // opt-in hint (costs a point) and is replayed free on a correct answer.
+    state.hintUsed = false;
+    hintBtn.classList.remove('used', 'playing'); hintBtn.disabled = false; hintCost.textContent = '−1';
     const gen = gameGen;
-    setTimeout(() => { if (gen === gameGen) playWord(f.slug); }, 360);
-    // focus the speech/replay so keyboard users land in the round
-    setTimeout(() => { if (gen === gameGen) chipsEl.querySelector('.chip') && chipsEl.querySelector('.chip').focus(); }, 380);
+    setTimeout(() => { if (gen === gameGen) { var c = chipsEl.querySelector('.chip'); if (c) c.focus(); } }, 360);
   }
 
   function selectChip(btn) {
@@ -159,19 +161,23 @@
       charArt.querySelectorAll('.prop').forEach((p) => p.classList.add('gone'));
       const face = charArt.querySelector('.face'); if (face) { face.src = IMG + RESOLVED_FACE; face.classList.add('swap'); }
       confetti(f.tint);
-      const firstTry = state.attempt === 1;
-      state.firstTry[f.slug] = firstTry;
-      if (firstTry) { state.streak++; } else { state.streak = 0; }
-      setStreak();
+      hintBtn.disabled = true;
+      var awarded = state.hintUsed ? 1 : 2;          // 2 pts solved from the picture, 1 if the hint was used
+      state.stopPoints[f.slug] = awarded;
+      var clean = !state.hintUsed && state.attempt === 1;
+      state.streak = clean ? state.streak + 1 : 0;
+      setScore();
       const gen = gameGen;
-      setTimeout(() => { if (gen === gameGen) playWord(f.slug); }, 280); // echo (pulses the bubble too)
-      feedback('✅ Tá an ceart agat! ' + f.ga, 'Yes — that’s "' + f.en + '". Walk on!', 'good');
+      setTimeout(() => { if (gen === gameGen) playWord(f.slug); }, 280); // reinforce: the word ALWAYS plays on a correct answer
+      var streakTxt = state.streak >= 3 ? ' 🔥' + state.streak : '';
+      feedback('✅ Tá an ceart agat! ' + f.ga + ' (+' + awarded + ')' + streakTxt,
+        awarded === 2 ? 'Yes — that’s "' + f.en + '". Two points!' : 'Yes — that’s "' + f.en + '". One point — you used a hint. Walk on!', 'good');
       advance();
     } else {
       // wrong: lose a heart, stay on the stop, must re-listen
       if (btn) { btn.classList.add('wrong'); btn.disabled = true; }
       chimeWrong();
-      state.hearts--; state.streak = 0; setStreak(); renderHearts();
+      state.hearts--; state.streak = 0; renderHearts();
       setTimeout(chimeHeart, 120);
       state.selected = null; commitBtn.disabled = true;
       if (state.hearts <= 0) { toCheckpoint(); return; }
@@ -197,9 +203,10 @@
     const gen = gameGen;
     setTimeout(() => {
       if (gen !== gameGen) return;
-      // clear first-try flags for the stops being replayed, so the cert score can't inflate
-      state.order.slice(state.checkpoint).forEach((f) => { delete state.firstTry[f.slug]; });
+      // clear points for the stops being replayed, so the score can't inflate
+      state.order.slice(state.checkpoint).forEach((f) => { delete state.stopPoints[f.slug]; });
       state.idx = state.checkpoint; state.hearts = START_HEARTS; state.streak = 0;
+      setScore();
       renderStop();
     }, 1700);
   }
@@ -207,11 +214,13 @@
   /* ---------- end ---------- */
   function endGame() {
     play.hidden = true; endPanel.hidden = false;
-    const firstTry = Object.values(state.firstTry).filter(Boolean).length;
-    byId('cert-score').textContent = firstTry + ' / ' + N + ' ceart ón gcéad iarracht · right first time';
-    const pct = firstTry / N, stars = pct >= 0.9 ? 3 : pct >= 0.6 ? 2 : 1;
+    const total = setScore();
+    const noHint = Object.keys(state.stopPoints).filter((k) => state.stopPoints[k] === 2).length;
+    byId('cert-score').textContent = total + ' / ' + MAX_PTS + ' pointe · points';
+    const pct = total / MAX_PTS, stars = pct >= 0.9 ? 3 : pct >= 0.6 ? 2 : 1;
     byId('cert-stars').textContent = '★★★'.slice(0, stars) + '☆☆☆'.slice(0, 3 - stars);
     byId('end-h').textContent = stars === 3 ? 'Sármhaith! 🌟' : 'Maith thú!';
+    byId('cert-sub').textContent = 'Gan leid ar bith ar ' + noHint + ' as ' + N + ' · solved ' + noHint + ' of ' + N + ' with no hint.';
     // review board: all 15 feelings, tap to replay the teacher
     const list = byId('review-list'); list.innerHTML = '';
     FEELINGS.slice().sort((a, b) => a.en.localeCompare(b.en)).forEach((f) => {
@@ -247,7 +256,13 @@
   byId('start-btn').addEventListener('click', startGame);
   byId('again-btn').addEventListener('click', startGame);
   commitBtn.addEventListener('click', commit);
-  replayBtn.addEventListener('click', () => { const f = state.order[state.idx]; if (f) { playWord(f.slug); replayBtn.classList.add('playing'); setTimeout(() => replayBtn.classList.remove('playing'), 700); } });
+  hintBtn.addEventListener('click', () => {
+    const f = state.order[state.idx];
+    if (!f || state.locked) return;
+    if (!state.hintUsed) { state.hintUsed = true; hintBtn.classList.add('used'); hintCost.textContent = '✓'; } // first use spends the point; later taps replay free
+    playWord(f.slug);
+    hintBtn.classList.add('playing'); setTimeout(() => hintBtn.classList.remove('playing'), 700);
+  });
   window.addEventListener('resize', () => { const cv = byId('confetti'); if (cv) { cv.width = innerWidth; cv.height = innerHeight; } });
 
   // codec probe at load (audio-led activity)

@@ -77,7 +77,9 @@ body.bmm {
 .hearts img.lost { opacity: 0.25; filter: grayscale(1); transform: scale(0.8); }
 .hud-progress { font-weight: 800; color: var(--ols-blue); font-size: 1rem; }
 .hud-progress-lbl { font-weight: 500; font-size: 0.7rem; color: var(--muted); }
-.streak { font-weight: 800; color: #E0681A; background: #FFF1DC; border-radius: 999px; padding: 3px 10px; font-size: 0.9rem; }
+.score { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.score-n { font-weight: 900; color: var(--ols-blue); font-size: 1.35rem; }
+.score-lbl { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
 
 /* ---------- character card ---------- */
 .road-stage { position: relative; background: var(--card-bg); border: 1px solid #E7ECF5; border-top: none; border-radius: 0 0 20px 20px; box-shadow: var(--shadow-md); padding: 14px 12px 18px; margin-bottom: 14px; }
@@ -105,11 +107,20 @@ body.bmm {
 .speech { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 2px; }
 .speech-q { background: #fff; color: var(--ols-blue); font-weight: 800; padding: 7px 16px; border-radius: 16px; position: relative; font-size: 1.02rem;
   border: 2px solid var(--tint); border: 2px solid color-mix(in srgb, var(--tint) 50%, #ccc); }
-.replay-orb { appearance: none; border: none; cursor: pointer; width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--ols-gold), #D6A916); color: #2A2206; font-size: 1.2rem; box-shadow: 0 5px 14px rgba(214,169,22,0.45); flex-shrink: 0; }
-.replay-orb.playing { animation: orbPulse 0.8s ease-in-out infinite; }
-@keyframes orbPulse { 0%,100% { box-shadow: 0 5px 14px rgba(214,169,22,0.45);} 50% { box-shadow: 0 5px 26px rgba(214,169,22,0.9);} }
-.replay-orb:focus-visible { outline: 3px solid var(--ols-blue); outline-offset: 2px; }
 .char-cap { margin: 8px 0 0; font-size: 0.86rem; color: #5a4a2a; font-style: italic; }
+/* Hint button — optional "hear the word", costs a point */
+.hint-btn { display: flex; align-items: center; gap: 8px; width: fit-content; margin: 10px auto 0; cursor: pointer;
+  border: 2px solid #E6C36B; background: #FFF6E0; color: #7a5a14; font-weight: 800; font-size: 0.95rem;
+  padding: 8px 14px; border-radius: 999px; box-shadow: var(--shadow-sm); transition: transform 0.12s, background 0.12s, opacity 0.12s; }
+.hint-btn:hover:not(.used) { transform: translateY(-2px); }
+.hint-btn:active { transform: translateY(0); }
+.hint-btn:focus-visible { outline: 3px solid var(--ols-blue); outline-offset: 2px; }
+.hint-spk { font-size: 1.1rem; }
+.hint-cost { background: #E0681A; color: #fff; border-radius: 999px; font-size: 0.72rem; padding: 1px 7px; font-weight: 900; }
+.hint-btn.used { background: #ECECEC; border-color: #ccc; color: #888; }
+.hint-btn.used .hint-cost { background: #999; }
+.hint-btn.playing { animation: hintPulse 0.8s ease-in-out infinite; }
+@keyframes hintPulse { 0%,100% { box-shadow: var(--shadow-sm); } 50% { box-shadow: 0 4px 18px rgba(224,104,26,0.55); } }
 .speech.pulse .speech-q { animation: speechPop 0.5s ease; }
 @keyframes speechPop { 0% { transform: scale(0.92); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
