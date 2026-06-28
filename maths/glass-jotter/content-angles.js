@@ -529,7 +529,7 @@
           { say: 'c is vertically opposite b — equal. c = 30°.', do: [{ arc: { ang: 'c' } }, { stamp: { reason: 'VOP' } }, { value: { ang: 'c', to: 30 } }] },
           { say: 'd CORRESPONDS to a — same position at the next crossing. Trace the F shape.', do: [{ arc: { ang: 'd' } }, { zshape: { pts: ['_T', 'E', '_EL'], colour: '#E4B824' } }, { zshape: { pts: ['F', '_FL'], colour: '#E4B824' } }] },
           { say: 'Corresponding angles are equal: d = 150°.', do: [{ stamp: { reason: 'COR' } }, { value: { ang: 'd', to: 150 } }] },
-          { say: 'e and c are ALTERNATE — the Z shape between the lines. e = 30°.', do: [{ arc: { ang: 'e' } }, { zshape: { pts: ['_ER', 'E', 'F', '_FL'], colour: '#0F6B66' } }, { stamp: { reason: 'ALT' } }, { value: { ang: 'e', to: 30 } }] },
+          { say: 'e and c are ALTERNATE — the Z shape between the lines. e = 30°.', do: [{ arc: { ang: 'e' } }, { zshape: { pts: ['_EL', 'E', 'F', '_FR'], colour: '#0F6B66' } }, { stamp: { reason: 'ALT' } }, { value: { ang: 'e', to: 30 } }] },
           { say: 'And c with d make the U shape: INTERIOR angles, adding to 180°. (The book calls these allied or co-interior.)', do: [{ zshape: { pts: ['_EL', 'E', 'F', '_FL'], colour: '#7A3B5E' } }, { stamp: { reason: 'INT' } }] },
           { say: 'Five angles from one given — and every step had a NAMED reason. That is what earns the marks.', do: [{ note: { text: 'Z = alternate · F = corresponding · U = interior', red: true } }] }
         ]

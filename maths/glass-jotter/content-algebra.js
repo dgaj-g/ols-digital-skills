@@ -182,22 +182,27 @@
             prompt: 'Expand 4(x + 6).',
             start: '4(x + 6)',
             answer: { canon: { c2: r(0), c1: r(4), c0: r(24) } },
-            dx: { '4x + 6': 'EXPAND_PARTIAL' } },
+            dx: { '4x + 6': 'EXPAND_PARTIAL' },
+            // fc = render-only grid tiles (the dx map has whole-line wrongs; these are per-cell)
+            fc: { a: '4', terms: ['x', '6'], cells: [{ answer: '4x', tiles: ['4x', 'x', '4'] }, { answer: '24', tiles: ['24', '6', '10'] }] } },
           { id: 'q10', type: 'expand', marks: [1, 1],
             prompt: 'Expand 7(3x − 4).',
             start: '7(3x − 4)',
             answer: { canon: { c2: r(0), c1: r(21), c0: r(-28) } },
-            dx: { '21x − 4': 'EXPAND_PARTIAL', '21x + 28': 'EXPAND_SIGN' } },
+            dx: { '21x − 4': 'EXPAND_PARTIAL', '21x + 28': 'EXPAND_SIGN' },
+            fc: { a: '7', terms: ['3x', '−4'], cells: [{ answer: '21x', tiles: ['21x', '3x', '10x'] }, { answer: '−28', tiles: ['−28', '−4', '+28'] }] } },
           { id: 'q11', type: 'expand', marks: [1, 1],
             prompt: 'Expand (−3)(8 − 2x).',
             start: '(−3)(8 − 2x)',
             answer: { canon: { c2: r(0), c1: r(6), c0: r(-24) } },
-            dx: { '−24 − 6x': 'EXPAND_SIGN', '−24 − 2x': 'EXPAND_PARTIAL' } },
+            dx: { '−24 − 6x': 'EXPAND_SIGN', '−24 − 2x': 'EXPAND_PARTIAL' },
+            fc: { a: '(−3)', terms: ['8', '−2x'], cells: [{ answer: '−24', tiles: ['−24', '24', '−11'] }, { answer: '6x', tiles: ['6x', '−2x', '−6x'] }] } },
           { id: 'q12', type: 'expand', marks: [1, 1],
             prompt: 'Expand x(8 − 2x).',
             start: 'x(8 − 2x)',
             answer: { canon: { c2: r(-2), c1: r(8), c0: r(0) } },
-            dx: { '8x': 'EXPAND_PARTIAL', '8x + 2x²': 'EXPAND_SIGN' } }
+            dx: { '8x': 'EXPAND_PARTIAL', '8x + 2x²': 'EXPAND_SIGN' },
+            fc: { a: 'x', terms: ['8', '−2x'], cells: [{ answer: '8x', tiles: ['8x', '8', '16x'] }, { answer: '−2x²', tiles: ['−2x²', '0', '+2x²'] }] } }
         ]
       },
 
@@ -388,14 +393,16 @@
             // accept entries are canonically equivalent — any of them earns the forming mark
             form: { accept: ['2x + 36 = 48', '2(x + 18) = 48', 'x + 18 + x + 18 = 48'] },
             answer: { x: r(6) },
-            dx: { '2x = 84': 'SIGN_FLIP_MOVE' } },
+            dx: { '2x = 84': 'SIGN_FLIP_MOVE' },
+            fc: { choices: ['2x + 36 = 48', '2x + 18 = 48', 'x + 36 = 48'] } },
           { id: 'q24', type: 'form', marks: [2, 1],
             prompt: 'Three angles together make a straight line. They measure 3x°, 80° and 2x°. This is your Angles knowledge meeting your Algebra: form an equation in x and solve it. You must show your working.',
             form: { accept: ['3x + 80 + 2x = 180', '5x + 80 = 180'] },
             answer: { x: r(20) },
             dx: { '3x + 80 + 2x = 360': 'STRAIGHT_360',
                   '85x = 180': 'COLLECT_X_NUM',                 // 3 + 80 + 2 collected as x terms
-                  '5x = 260': 'SIGN_FLIP_MOVE' } }
+                  '5x = 260': 'SIGN_FLIP_MOVE' },
+            fc: { choices: ['3x + 80 + 2x = 180', '3x + 80 + 2x = 360', '5x + 80 = 90'] } }
         ]
       }
     ]

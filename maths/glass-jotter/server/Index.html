@@ -3513,7 +3513,7 @@ window.OLS_TRANSPORT = {
           { say: 'c is vertically opposite b \u2014 equal. c = 30\u00b0.', do: [{ arc: { ang: 'c' } }, { stamp: { reason: 'VOP' } }, { value: { ang: 'c', to: 30 } }] },
           { say: 'd CORRESPONDS to a \u2014 same position at the next crossing. Trace the F shape.', do: [{ arc: { ang: 'd' } }, { zshape: { pts: ['_T', 'E', '_EL'], colour: '#E4B824' } }, { zshape: { pts: ['F', '_FL'], colour: '#E4B824' } }] },
           { say: 'Corresponding angles are equal: d = 150\u00b0.', do: [{ stamp: { reason: 'COR' } }, { value: { ang: 'd', to: 150 } }] },
-          { say: 'e and c are ALTERNATE \u2014 the Z shape between the lines. e = 30\u00b0.', do: [{ arc: { ang: 'e' } }, { zshape: { pts: ['_ER', 'E', 'F', '_FL'], colour: '#0F6B66' } }, { stamp: { reason: 'ALT' } }, { value: { ang: 'e', to: 30 } }] },
+          { say: 'e and c are ALTERNATE \u2014 the Z shape between the lines. e = 30\u00b0.', do: [{ arc: { ang: 'e' } }, { zshape: { pts: ['_EL', 'E', 'F', '_FR'], colour: '#0F6B66' } }, { stamp: { reason: 'ALT' } }, { value: { ang: 'e', to: 30 } }] },
           { say: 'And c with d make the U shape: INTERIOR angles, adding to 180\u00b0. (The book calls these allied or co-interior.)', do: [{ zshape: { pts: ['_EL', 'E', 'F', '_FL'], colour: '#7A3B5E' } }, { stamp: { reason: 'INT' } }] },
           { say: 'Five angles from one given \u2014 and every step had a NAMED reason. That is what earns the marks.', do: [{ note: { text: 'Z = alternate \u00b7 F = corresponding \u00b7 U = interior', red: true } }] }
         ]
@@ -3849,22 +3849,27 @@ window.OLS_TRANSPORT = {
             prompt: 'Expand 4(x + 6).',
             start: '4(x + 6)',
             answer: { canon: { c2: r(0), c1: r(4), c0: r(24) } },
-            dx: { '4x + 6': 'EXPAND_PARTIAL' } },
+            dx: { '4x + 6': 'EXPAND_PARTIAL' },
+            // fc = render-only grid tiles (the dx map has whole-line wrongs; these are per-cell)
+            fc: { a: '4', terms: ['x', '6'], cells: [{ answer: '4x', tiles: ['4x', 'x', '4'] }, { answer: '24', tiles: ['24', '6', '10'] }] } },
           { id: 'q10', type: 'expand', marks: [1, 1],
             prompt: 'Expand 7(3x \u2212 4).',
             start: '7(3x \u2212 4)',
             answer: { canon: { c2: r(0), c1: r(21), c0: r(-28) } },
-            dx: { '21x \u2212 4': 'EXPAND_PARTIAL', '21x + 28': 'EXPAND_SIGN' } },
+            dx: { '21x \u2212 4': 'EXPAND_PARTIAL', '21x + 28': 'EXPAND_SIGN' },
+            fc: { a: '7', terms: ['3x', '\u22124'], cells: [{ answer: '21x', tiles: ['21x', '3x', '10x'] }, { answer: '\u221228', tiles: ['\u221228', '\u22124', '+28'] }] } },
           { id: 'q11', type: 'expand', marks: [1, 1],
             prompt: 'Expand (\u22123)(8 \u2212 2x).',
             start: '(\u22123)(8 \u2212 2x)',
             answer: { canon: { c2: r(0), c1: r(6), c0: r(-24) } },
-            dx: { '\u221224 \u2212 6x': 'EXPAND_SIGN', '\u221224 \u2212 2x': 'EXPAND_PARTIAL' } },
+            dx: { '\u221224 \u2212 6x': 'EXPAND_SIGN', '\u221224 \u2212 2x': 'EXPAND_PARTIAL' },
+            fc: { a: '(\u22123)', terms: ['8', '\u22122x'], cells: [{ answer: '\u221224', tiles: ['\u221224', '24', '\u221211'] }, { answer: '6x', tiles: ['6x', '\u22122x', '\u22126x'] }] } },
           { id: 'q12', type: 'expand', marks: [1, 1],
             prompt: 'Expand x(8 \u2212 2x).',
             start: 'x(8 \u2212 2x)',
             answer: { canon: { c2: r(-2), c1: r(8), c0: r(0) } },
-            dx: { '8x': 'EXPAND_PARTIAL', '8x + 2x\u00b2': 'EXPAND_SIGN' } }
+            dx: { '8x': 'EXPAND_PARTIAL', '8x + 2x\u00b2': 'EXPAND_SIGN' },
+            fc: { a: 'x', terms: ['8', '\u22122x'], cells: [{ answer: '8x', tiles: ['8x', '8', '16x'] }, { answer: '\u22122x\u00b2', tiles: ['\u22122x\u00b2', '0', '+2x\u00b2'] }] } }
         ]
       },
 
@@ -4055,14 +4060,16 @@ window.OLS_TRANSPORT = {
             // accept entries are canonically equivalent \u2014 any of them earns the forming mark
             form: { accept: ['2x + 36 = 48', '2(x + 18) = 48', 'x + 18 + x + 18 = 48'] },
             answer: { x: r(6) },
-            dx: { '2x = 84': 'SIGN_FLIP_MOVE' } },
+            dx: { '2x = 84': 'SIGN_FLIP_MOVE' },
+            fc: { choices: ['2x + 36 = 48', '2x + 18 = 48', 'x + 36 = 48'] } },
           { id: 'q24', type: 'form', marks: [2, 1],
             prompt: 'Three angles together make a straight line. They measure 3x\u00b0, 80\u00b0 and 2x\u00b0. This is your Angles knowledge meeting your Algebra: form an equation in x and solve it. You must show your working.',
             form: { accept: ['3x + 80 + 2x = 180', '5x + 80 = 180'] },
             answer: { x: r(20) },
             dx: { '3x + 80 + 2x = 360': 'STRAIGHT_360',
                   '85x = 180': 'COLLECT_X_NUM',                 // 3 + 80 + 2 collected as x terms
-                  '5x = 260': 'SIGN_FLIP_MOVE' } }
+                  '5x = 260': 'SIGN_FLIP_MOVE' },
+            fc: { choices: ['3x + 80 + 2x = 180', '3x + 80 + 2x = 360', '5x + 80 = 90'] } }
         ]
       }
     ]
@@ -4806,6 +4813,176 @@ window.OLS_TRANSPORT = {
     };
   }
 
+  /* \u2500\u2500 substitution helpers (subst questions) \u2014 the pupil substitutes onto the
+       question's own expression: tap each letter to drop its given value in;
+       the app inserts the \u00d7 and brackets a negative so the sign can't be lost.
+       Pure string-builders; the marking is the existing GJ_MATH engine. \u2500\u2500\u2500\u2500 */
+  function gjRtostr(r) { return (window.GJ_MATH && window.GJ_MATH.rtostr) ? window.GJ_MATH.rtostr(r) : String(r && r.n != null ? r.n : r); }
+  function substValStr(r) { var s = gjRtostr(r); return (String(s).charAt(0) === '-') ? '(' + s + ')' : s; }
+  function substTokens(start, given) {
+    var toks = [], i = 0, s = String(start || '');
+    while (i < s.length) {
+      var ch = s[i];
+      if (ch === ' ') { i++; continue; }
+      if (/[0-9.]/.test(ch)) { var n = ''; while (i < s.length && /[0-9.]/.test(s[i])) n += s[i++]; toks.push({ k: 'v', s: n }); continue; }
+      if (/[a-z]/i.test(ch)) { var L = s[i++]; toks.push(given[L] != null ? { k: 'v', s: L, letter: L } : { k: 'v', s: L }); continue; }
+      if (ch === '(') { toks.push({ k: '(', s: '(' }); i++; continue; }
+      if (ch === ')') { toks.push({ k: ')', s: ')' }); i++; continue; }
+      var m = { '-': '\u2212', '*': '\u00d7', '/': '\u00f7' }; toks.push({ k: 'o', s: m[ch] || ch }); i++;
+    }
+    return toks;
+  }
+  function substLineStr(toks, given, placed) {
+    var out = '';
+    for (var j = 0; j < toks.length; j++) {
+      var t = toks[j], p = toks[j - 1];
+      var cur = (t.letter && placed[t.letter]) ? substValStr(given[t.letter]) : t.s;
+      if (p) {
+        var prevV = (p.k === 'v' || p.k === ')'), nextV = (t.k === 'v' || t.k === '(');
+        if (prevV && nextV) out += ' \u00d7 ';
+        else if (p.k === 'o' || t.k === 'o') out += ' ';
+      }
+      out += cur;
+    }
+    return out;
+  }
+
+  /* \u2500\u2500 clean number entry \u2014 a result slot that fills as you tap big keys.
+       No fiddly "click into the box": tapping the keys works without focus,
+       and it auto-focuses so a keyboard user types straight away (no click).
+       Reused for the substitution value and, later, solve operands/answers. \u2500\u2500 */
+  function makeNumPad(host, opts) {
+    opts = opts || {};
+    var buf = '', locked = false;
+    var wrap = el('div', 'numpad');
+    wrap.setAttribute('tabindex', '0');
+    wrap.setAttribute('role', 'group');
+    wrap.setAttribute('aria-label', opts.label || 'Enter a number');
+    wrap.style.cssText = 'margin-top:6px;outline:none';
+    var slot = el('div', 'numpad-slot');
+    slot.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;min-width:84px;min-height:46px;padding:2px 14px;font-family:Georgia,serif;font-size:1.7rem;color:#14213A;border:2px solid #7A3B5E;border-radius:10px;background:#fff;box-shadow:0 0 0 4px rgba(122,59,94,.10)';
+    wrap.appendChild(slot);
+    var pad = el('div', 'keypad keypad-num');
+    pad.style.cssText = 'margin-top:8px';
+    var KEYS = opts.fraction ? ['7', '8', '9', '4', '5', '6', '1', '2', '3', '\u2212', '0', '/', '\u232b']
+      : ['7', '8', '9', '4', '5', '6', '1', '2', '3', '\u2212', '0', '\u232b'];
+    function render() { slot.textContent = buf; }
+    function change() { render(); if (opts.onChange) opts.onChange(buf); }
+    function press(k) {
+      if (locked) return;
+      if (k === '\u232b') buf = buf.slice(0, -1);
+      else if (k === '\u2212') buf = (buf.charAt(0) === '\u2212') ? buf.slice(1) : ('\u2212' + buf);
+      else buf += k;
+      change();
+    }
+    KEYS.forEach(function (k) {
+      var btn = el('button', 'key' + (k === '\u232b' ? ' key-del' : ''));
+      btn.type = 'button'; btn.tabIndex = -1; btn.textContent = k;
+      btn.addEventListener('click', function () { press(k); try { wrap.focus({ preventScroll: true }); } catch (e) {} });
+      pad.appendChild(btn);
+    });
+    wrap.appendChild(pad);
+    wrap.addEventListener('keydown', function (e) {
+      if (locked) return;
+      var k = e.key;
+      if (k === 'Enter') { e.preventDefault(); if (opts.onCommit) opts.onCommit(buf); return; }
+      if (k === 'Backspace') { e.preventDefault(); press('\u232b'); return; }
+      if (/^[0-9]$/.test(k)) { e.preventDefault(); press(k); return; }
+      if (k === '-') { e.preventDefault(); press('\u2212'); return; }
+      if (k === '/' && opts.fraction) { e.preventDefault(); press('/'); return; }
+    });
+    host.appendChild(wrap);
+    render();
+    setTimeout(function () { try { wrap.focus({ preventScroll: true }); } catch (e) {} }, 30);
+    return {
+      value: function () { return buf; }, set: function (v) { buf = v || ''; render(); },
+      lock: function () { locked = true; wrap.style.opacity = '0.6'; },
+      focus: function () { try { wrap.focus({ preventScroll: true }); } catch (e) {} }, root: wrap
+    };
+  }
+
+  /* \u2500\u2500 simplify helpers: split the expression into signed term-tiles, and
+       rebuild a single fully-collected line from the bin coefficients. \u2500\u2500\u2500\u2500 */
+  function parseTerms(start) {
+    var s = String(start || '').replace(/\s+/g, ''), terms = [], i = 0, sign = 1;
+    while (i < s.length) {
+      var ch = s[i];
+      if (ch === '+') { sign = 1; i++; continue; }
+      if (ch === '\u2212' || ch === '-') { sign = -1; i++; continue; }
+      var num = ''; while (i < s.length && /[0-9]/.test(s[i])) num += s[i++];
+      var fam = 'num';
+      if (s[i] === 'x') { i++; fam = 'x'; if (s[i] === '\u00b2') { fam = 'x2'; i++; } else if (s[i] === '^' && s[i + 1] === '2') { fam = 'x2'; i += 2; } }
+      var coef = (num === '') ? 1 : parseInt(num, 10);
+      var value = sign * coef, a = Math.abs(value);
+      var suf = fam === 'x2' ? 'x\u00b2' : fam === 'x' ? 'x' : '';
+      var tile = (value < 0 ? '\u2212' : '') + ((a === 1 && fam !== 'num') ? '' : String(a)) + suf;
+      terms.push({ value: value, fam: fam, tile: tile });
+      sign = 1;
+    }
+    return terms;
+  }
+  function buildCollected(c2, c1, c0) {
+    function piece(c, suf) { var a = Math.abs(c); return ((a === 1 && suf) ? '' : String(a)) + suf; }
+    var parts = [];
+    if (c2) parts.push({ c: c2, suf: 'x\u00b2' });
+    if (c1) parts.push({ c: c1, suf: 'x' });
+    if (c0) parts.push({ c: c0, suf: '' });
+    if (!parts.length) return '0';
+    var out = '';
+    parts.forEach(function (p, idx) {
+      out += (idx === 0) ? ((p.c < 0 ? '\u2212' : '') + piece(p.c, p.suf)) : ((p.c < 0 ? ' \u2212 ' : ' + ') + piece(p.c, p.suf));
+    });
+    return out;
+  }
+
+  /* \u2500\u2500 expand helpers: join two chosen grid products into one line; shuffle. \u2500\u2500 */
+  function joinExpand(c0, c1) {
+    var b = String(c1), f = b.charAt(0);
+    if (f === '\u2212' || f === '-') return c0 + ' \u2212 ' + b.slice(1);
+    if (f === '+') return c0 + ' + ' + b.slice(1);
+    return c0 + ' + ' + b;
+  }
+  function shuffleArr(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+  /* \u2500\u2500 solve helpers: serialise a side's {c2,c1,c0} to a string, and build the
+       next equation line for a chosen move using the engine's exported rational
+       helpers. Every built line is re-checked with GJ_MATH.eqStep before it inks,
+       so the move-chip rail can never produce a line the marker would reject. \u2500\u2500 */
+  function polyToStr(c) {
+    var M = window.GJ_MATH;
+    function piece(r, suf) { var s = String(M.rtostr(r)), neg = s.charAt(0) === '-', a = neg ? s.slice(1) : s; return { neg: neg, txt: ((a === '1' && suf) ? '' : a) + suf }; }
+    var terms = [];
+    if (c.c2 && c.c2.n !== 0) terms.push(piece(c.c2, 'x\u00b2'));
+    if (c.c1 && c.c1.n !== 0) terms.push(piece(c.c1, 'x'));
+    if (c.c0 && c.c0.n !== 0) terms.push(piece(c.c0, ''));
+    if (!terms.length) return '0';
+    var out = '';
+    terms.forEach(function (t, i) { out += (i === 0) ? ((t.neg ? '\u2212' : '') + t.txt) : ((t.neg ? ' \u2212 ' : ' + ') + t.txt); });
+    return out;
+  }
+  function solveStep(prev, kind, operandStr) {
+    var M = window.GJ_MATH, sides = String(prev).split('=');
+    if (sides.length !== 2) return null;
+    var Lp = M.parse(sides[0]), Rp = M.parse(sides[1]);
+    if (!Lp.ok || !Rp.ok || !Lp.ast.lhs || !Rp.ast.lhs) return null;
+    var Lc = Lp.ast.lhs.poly, Rc = Rp.ast.lhs.poly;   // each side parses as an expression \u2192 lhs.poly
+    if (!Lc || !Rc) return null;
+    function norm(c) { return { c2: c.c2 || M.rat(0, 1), c1: c.c1 || M.rat(0, 1), c0: c.c0 || M.rat(0, 1) }; }
+    Lc = norm(Lc); Rc = norm(Rc);
+    var n = (operandStr != null && operandStr !== '') ? M.rfromstr(operandStr) : null;
+    if ((kind === '-' || kind === '+' || kind === '*' || kind === '/' || kind === 'subx') && (!n || n.n == null)) return null;
+    if ((kind === '*' || kind === '/') && n.n === 0) return null;
+    function apply(c) {
+      if (kind === '-') return { c2: c.c2, c1: c.c1, c0: M.rsub(c.c0, n) };
+      if (kind === '+') return { c2: c.c2, c1: c.c1, c0: M.radd(c.c0, n) };
+      if (kind === '*') return { c2: M.rmul(c.c2, n), c1: M.rmul(c.c1, n), c0: M.rmul(c.c0, n) };
+      if (kind === '/') return { c2: M.rdiv(c.c2, n), c1: M.rdiv(c.c1, n), c0: M.rdiv(c.c0, n) };
+      if (kind === 'subx') return { c2: c.c2, c1: M.rsub(c.c1, n), c0: c.c0 };
+      return c;   // 'expand' / 'collect' \u2014 canonSide already collected/expanded the side
+    }
+    return polyToStr(apply(Lc)) + ' = ' + polyToStr(apply(Rc));
+  }
+
   /* \u2500\u2500 classify questions (s1 "Know your angles"): judge the drawn
        angle by eye \u2014 options always the full set, shuffled, two attempts,
        nothing marked until Check. \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
@@ -5129,6 +5306,7 @@ window.OLS_TRANSPORT = {
 
     /* current (open) attempt working state */
     var cur = { L: [], steps: [], t0: Date.now() };
+    var structuredBuilder = null;   // the per-type renderer (subst/simplify/\u2026) \u2014 re-opened fresh on a retry
     var linesEl = el('div', 'wlines');
     body.appendChild(linesEl);
 
@@ -5175,6 +5353,7 @@ window.OLS_TRANSPORT = {
       if (op === 'col') return '(collect)';
       if (op === 'rw') return '';
       if (op === 'start') return '';
+      if (op === 'sub' || op === 'ans' || op === 'form') return '';   // self-evident; no margin tag
       return '(' + pretty(op) + ')';
     }
     function renderStepLine(st, opts2) {
@@ -5286,6 +5465,278 @@ window.OLS_TRANSPORT = {
       redrawCurrent();
       confirmStepAdded();
       save();
+    }
+
+    /* \u2500\u2500 SUBSTITUTION (subst): tap each letter \u2192 its value drops in (\u00d7 inserted,
+         negatives bracketed); the substituted line is one entry, the value the
+         other \u2014 the two-entry model the engine marks as method + answer. \u2500\u2500\u2500\u2500 */
+    function buildSubstUI() {
+      ui.innerHTML = '';
+      dock.hidden = false;
+      var given = q.given || {};
+      var toks = substTokens(q.start, given);
+      var uniq = [];
+      toks.forEach(function (t) { if (t.letter && uniq.indexOf(t.letter) < 0) uniq.push(t.letter); });
+      var placed = {};
+      var hasSub = cur.L.some(function (l) { return l.op === 'sub'; });
+      var hasAns = cur.L.some(function (l) { return l.op === 'ans'; });
+
+      var instr = el('p', 'ui-msg', 'Substitute: tap each letter to put its number in.');
+      ui.appendChild(instr);
+      var exprBox = el('div', 'subst-expr');
+      exprBox.style.cssText = 'font-family:Georgia,serif;font-size:1.55rem;color:#14213A;margin:6px 0 12px;line-height:2';
+      ui.appendChild(exprBox);
+      var givenRow = el('div', 'subst-givens');
+      givenRow.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px';
+      ui.appendChild(givenRow);
+      var answerHost = el('div', 'subst-answer');
+      ui.appendChild(answerHost);
+
+      function renderExpr() {
+        exprBox.innerHTML = '';
+        var prev = null;
+        toks.forEach(function (t) {
+          if (prev) {
+            var prevV = (prev.k === 'v' || prev.k === ')'), nextV = (t.k === 'v' || t.k === '(');
+            if (prevV && nextV) exprBox.appendChild(el('span', '', ' \u00d7 '));
+            else if (prev.k === 'o' || t.k === 'o') exprBox.appendChild(document.createTextNode(' '));
+          }
+          if (t.letter) {
+            var done = !!placed[t.letter];
+            var sp = el('span', 'subst-tok', done ? substValStr(given[t.letter]) : t.letter);
+            sp.style.cssText = done ? 'color:#14213A;font-weight:600'
+              : 'color:#7A3B5E;border-bottom:2px dashed #C58CA0;cursor:pointer;padding:0 3px';
+            if (!done) sp.addEventListener('click', function () {
+              placed[t.letter] = true; renderExpr();
+              if (uniq.every(function (u) { return placed[u]; })) commitMethod();
+            });
+            exprBox.appendChild(sp);
+          } else {
+            exprBox.appendChild(el('span', '', t.s));
+          }
+          prev = t;
+        });
+      }
+      function renderGivens() {
+        givenRow.innerHTML = '';
+        var gl = el('span', '', 'given:'); gl.style.cssText = 'font-family:monospace;font-size:.72rem;color:#7d7a72';
+        givenRow.appendChild(gl);
+        uniq.forEach(function (L) {
+          var c = el('span', '', L + ' = ' + gjRtostr(given[L]));
+          c.style.cssText = 'font-family:Georgia,serif;font-size:1rem;color:#5b2c46;background:#F3E6EC;border:1px solid #C58CA0;border-radius:999px;padding:2px 11px';
+          givenRow.appendChild(c);
+        });
+      }
+      function commitMethod() {
+        cur.L.push({ op: 'sub', t: substLineStr(toks, given, placed), s: Math.round((Date.now() - cur.t0) / 1000) });
+        redrawCurrent();
+        checkBtn.disabled = true;                       // not ready until the value is keyed
+        instr.textContent = 'Now work it out, then write the value:';
+        exprBox.style.display = 'none'; givenRow.style.display = 'none';
+        showAnswer();
+        save();
+      }
+      function syncAns(v) {                             // the value updates live on the page as it's tapped
+        cur.L = cur.L.filter(function (l) { return l.op !== 'ans'; });
+        if (v) cur.L.push({ op: 'ans', t: v, s: Math.round((Date.now() - cur.t0) / 1000) });
+        redrawCurrent();
+        checkBtn.disabled = !v;                         // "Mark my working" lights up once a value is written
+        save();
+      }
+      function showAnswer() {
+        answerHost.innerHTML = '';
+        answerHost.appendChild(el('p', 'ui-msg', 'Now work it out, then tap the value:'));
+        makeNumPad(answerHost, { label: 'The value', onChange: syncAns });
+      }
+
+      renderExpr(); renderGivens();
+      if (hasSub) {                                     // resume: method already committed
+        instr.textContent = 'Now work it out, then write the value:';
+        exprBox.style.display = 'none'; givenRow.style.display = 'none';
+        if (!hasAns) showAnswer();
+      }
+    }
+
+    /* \u2500\u2500 SIMPLIFY (collect like terms): sort each term-tile into its family
+         bin, then "combine" emits one fully-collected line. The separate
+         number bin makes the lone constant impossible to swallow by accident
+         into the x-family unless the pupil truly mis-sorts it (caught + dx). \u2500\u2500 */
+    function buildSimplifyUI() {
+      ui.innerHTML = '';
+      dock.hidden = false;
+      var terms = parseTerms(q.start);
+      var order = ['x2', 'x', 'num'], fams = [];
+      terms.forEach(function (t) { if (fams.indexOf(t.fam) < 0) fams.push(t.fam); });
+      fams.sort(function (a, b) { return order.indexOf(a) - order.indexOf(b); });
+      var famLabel = { x2: 'x\u00b2 terms', x: 'x terms', num: 'numbers' };
+      var bins = {}; fams.forEach(function (f) { bins[f] = []; });
+      var placed = {}, sel = null;
+
+      ui.appendChild(el('p', 'ui-msg', 'Sort each term into its family, then combine.'));
+      var tilesRow = el('div', 'simp-tiles'); tilesRow.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px;min-height:44px';
+      ui.appendChild(tilesRow);
+      var binsRow = el('div', 'simp-bins'); binsRow.style.cssText = 'display:flex;gap:12px;flex-wrap:wrap';
+      ui.appendChild(binsRow);
+      var combineWrap = el('div', ''); combineWrap.style.marginTop = '10px'; ui.appendChild(combineWrap);
+
+      function renderTiles() {
+        tilesRow.innerHTML = '';
+        var any = false;
+        terms.forEach(function (t, idx) {
+          if (placed[idx] != null) return;
+          any = true;
+          var b = el('button', '', t.tile); b.type = 'button';
+          b.style.cssText = 'font-family:Georgia,serif;font-size:1.3rem;padding:6px 15px;border-radius:8px;cursor:pointer;color:#5b2c46;border:2px solid ' + (sel === idx ? '#7A3B5E' : '#C58CA0') + ';background:' + (sel === idx ? '#F3E6EC' : '#fff');
+          b.addEventListener('click', function () { sel = (sel === idx ? null : idx); renderTiles(); });
+          tilesRow.appendChild(b);
+        });
+        if (!any) tilesRow.appendChild(el('span', 'ui-msg', sel == null ? 'All sorted \u2014 now combine.' : ''));
+      }
+      function renderBins() {
+        binsRow.innerHTML = '';
+        fams.forEach(function (f) {
+          var bin = el('div', ''); bin.style.cssText = 'min-width:118px;border:2px dashed ' + (sel != null ? '#7A3B5E' : '#C58CA0') + ';border-radius:10px;padding:8px 10px;background:#FBF7F9;cursor:' + (sel != null ? 'pointer' : 'default');
+          var lab = el('div', '', famLabel[f]); lab.style.cssText = 'font-family:monospace;font-size:.68rem;color:#7d7a72;margin-bottom:6px;text-transform:uppercase'; bin.appendChild(lab);
+          var row = el('div', ''); row.style.cssText = 'min-height:26px;font-family:Georgia,serif;font-size:1.15rem;color:#14213A';
+          bins[f].forEach(function (idx, k) { row.appendChild(document.createTextNode((k ? '  ' : '') + terms[idx].tile)); });
+          bin.appendChild(row);
+          bin.addEventListener('click', function () { if (sel != null) { bins[f].push(sel); placed[sel] = f; sel = null; renderTiles(); renderBins(); renderCombine(); } });
+          binsRow.appendChild(bin);
+        });
+      }
+      function renderCombine() {
+        combineWrap.innerHTML = '';
+        if (!terms.every(function (t, idx) { return placed[idx] != null; })) return;
+        var cb = el('button', 'btn-stamp', 'Combine these terms'); cb.type = 'button';
+        cb.addEventListener('click', function () {
+          var c2 = 0, c1 = 0, c0 = 0;
+          (bins.x2 || []).forEach(function (idx) { c2 += terms[idx].value; });
+          (bins.x || []).forEach(function (idx) { c1 += terms[idx].value; });
+          (bins.num || []).forEach(function (idx) { c0 += terms[idx].value; });
+          cur.L = cur.L.filter(function (l) { return l.op !== 'col'; });
+          cur.L.push({ op: 'col', t: buildCollected(c2, c1, c0), s: Math.round((Date.now() - cur.t0) / 1000) });
+          redrawCurrent(); confirmStepAdded(); save(); cb.disabled = true;
+        });
+        combineWrap.appendChild(cb);
+      }
+      renderTiles(); renderBins(); renderCombine();
+    }
+
+    /* \u2500\u2500 EXPAND (single brackets): the multiplication grid \u2014 one product per
+         cell, picked from a tile palette (correct product + the partial/sign
+         distractors). Both cells join into one expanded line. \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+    function buildExpandUI() {
+      ui.innerHTML = '';
+      dock.hidden = false;
+      var fc = q.fc;
+      if (!fc || !fc.cells) { buildAlgebraUI(); return; }   // safety: fall back if unscaffolded
+      var chosen = [null, null];
+      ui.appendChild(el('p', 'ui-msg', 'Multiply every term \u2014 tap the right product for each box.'));
+      var grid = el('div', 'exp-grid'); grid.style.cssText = 'display:flex;flex-direction:column;gap:16px;margin:8px 0';
+      ui.appendChild(grid);
+      function maybeCommit() {
+        if (chosen[0] == null || chosen[1] == null) return;
+        cur.L = cur.L.filter(function (l) { return l.op !== 'exp'; });
+        cur.L.push({ op: 'exp', t: joinExpand(chosen[0], chosen[1]), s: Math.round((Date.now() - cur.t0) / 1000) });
+        redrawCurrent(); save();
+      }
+      fc.cells.forEach(function (cell, ci) {
+        var row = el('div', ''); row.style.cssText = 'display:flex;flex-direction:column;gap:6px';
+        var head = el('div', ''); head.style.cssText = 'font-family:Georgia,serif;font-size:1.3rem;color:#14213A;display:flex;align-items:center;gap:10px';
+        head.appendChild(el('span', '', fc.a + ' \u00d7 ' + fc.terms[ci] + ' ='));
+        var slot = el('span', ''); slot.style.cssText = 'min-width:54px;min-height:38px;display:inline-flex;align-items:center;justify-content:center;border:2px dashed #C58CA0;border-radius:8px;padding:0 10px;color:#B07D10';
+        head.appendChild(slot); row.appendChild(head);
+        var tray = el('div', ''); tray.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap';
+        shuffleArr(cell.tiles).forEach(function (tt) {
+          var b = el('button', '', tt); b.type = 'button';
+          b.style.cssText = 'font-family:Georgia,serif;font-size:1.15rem;padding:6px 14px;border-radius:8px;border:2px solid #1A3A6B;background:#fff;color:#1A3A6B;cursor:pointer';
+          b.addEventListener('click', function () {
+            chosen[ci] = tt;
+            slot.textContent = tt; slot.style.borderStyle = 'solid'; slot.style.color = '#14213A';
+            tray.querySelectorAll('button').forEach(function (x) { x.style.background = '#fff'; x.style.color = '#1A3A6B'; });
+            b.style.background = '#1A3A6B'; b.style.color = '#fff';
+            maybeCommit();
+          });
+          tray.appendChild(b);
+        });
+        row.appendChild(tray); grid.appendChild(row);
+      });
+    }
+
+    /* \u2500\u2500 SOLVE / FORM: the move-chip rail. The pupil picks an operation (and its
+         number); the app builds the next line, validates it keeps the balance,
+         and inks it. Any valid route is accepted (subtract-first or divide-first,
+         either side). FORM first picks the equation, then solves it. \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+    function buildFormScaffold() {
+      ui.innerHTML = ''; dock.hidden = false;
+      var fc = q.fc;
+      if (!fc || !fc.choices) { buildAlgebraUI(); return; }
+      ui.appendChild(el('p', 'ui-msg', 'Form the equation \u2014 which one matches the situation?'));
+      var row = el('div', ''); row.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin:6px 0';
+      shuffleArr(fc.choices).forEach(function (ch) {
+        var b = el('button', '', ch); b.type = 'button';
+        b.style.cssText = 'font-family:Georgia,serif;font-size:1.2rem;padding:9px 15px;border-radius:8px;border:2px solid #1A3A6B;background:#fff;color:#14213A;cursor:pointer;text-align:left';
+        b.addEventListener('click', function () {
+          cur.L = cur.L.filter(function (l) { return l.op !== 'form'; });
+          cur.L.push({ op: 'form', t: ch, s: Math.round((Date.now() - cur.t0) / 1000) });
+          redrawCurrent(); confirmStepAdded(); save();
+          buildSolveUI();
+        });
+        row.appendChild(b);
+      });
+      ui.appendChild(row);
+    }
+    function buildSolveUI() {
+      var M = window.GJ_MATH;
+      if (q.type === 'form' && !cur.L.some(function (l) { return l.op === 'form'; })) { buildFormScaffold(); return; }
+      ui.innerHTML = ''; dock.hidden = false;
+      ui.appendChild(el('p', 'ui-msg', 'Choose a move \u2014 the app writes the next line and checks it balances.'));
+      var chipRow = el('div', 'solve-chips'); chipRow.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin:6px 0'; ui.appendChild(chipRow);
+      var opHost = el('div', 'solve-op'); ui.appendChild(opHost);
+      function lastLine() { for (var i = cur.L.length - 1; i >= 0; i--) { if (cur.L[i].t) return cur.L[i].t; } return q.start || ''; }
+      function applyMove(kind, operandStr) {
+        var prev = lastLine();
+        var candidate = solveStep(prev, kind, operandStr);
+        if (!candidate) { flashMsg('Tap a number for that move first.'); return; }
+        var gate = M.eqStep(prev, candidate);
+        if (!gate || (gate.ok !== 'sound' && gate.ok !== 'identity')) { flashMsg('That move doesn\u2019t keep it balanced \u2014 try another.'); return; }
+        var opLabel = kind === 'expand' ? 'exp' : kind === 'subx' ? ('\u2212' + (operandStr || '') + 'x')
+          : (({ '-': '\u2212', '+': '+', '*': '\u00d7', '/': '\u00f7' }[kind]) + (operandStr || ''));
+        cur.L.push({ op: opLabel, t: candidate, s: Math.round((Date.now() - cur.t0) / 1000) });
+        redrawCurrent(); confirmStepAdded(); save();
+        renderChips();
+      }
+      function pickOp(c) {
+        opHost.innerHTML = '';
+        if (c.noOperand) { applyMove(c.kind, null); return; }
+        opHost.appendChild(el('p', 'ui-msg', c.prompt));
+        var pad = makeNumPad(opHost, { fraction: true, onCommit: function (v) { applyMove(c.kind, v); } });
+        var go = el('button', 'btn-stamp', 'Apply'); go.type = 'button'; go.style.marginTop = '8px';
+        go.addEventListener('click', function () { applyMove(c.kind, pad.value()); });
+        opHost.appendChild(go);
+      }
+      function renderChips() {
+        chipRow.innerHTML = ''; opHost.innerHTML = '';
+        var line = lastLine();
+        if (!line || line.indexOf('=') < 0) return;
+        var bothX = false, sides = line.split('=');
+        var Lp = M.parse(sides[0]), Rp = M.parse(sides[1]);
+        if (Lp.ok && Rp.ok && Lp.ast.lhs && Rp.ast.lhs) { var Lc = Lp.ast.lhs.poly, Rc = Rp.ast.lhs.poly; if (Lc && Rc && Lc.c1 && Rc.c1 && Lc.c1.n !== 0 && Rc.c1.n !== 0) bothX = true; }
+        var chips = [];
+        if (line.indexOf('(') >= 0) chips.push({ label: 'Expand brackets', kind: 'expand', noOperand: true });
+        if (bothX) chips.push({ label: 'Take \u25a1x off both sides', kind: 'subx', prompt: 'Take how many x off both sides?' });
+        chips.push({ label: '\u2212 subtract', kind: '-', prompt: 'Subtract how much from both sides?' });
+        chips.push({ label: '+ add', kind: '+', prompt: 'Add how much to both sides?' });
+        chips.push({ label: '\u00f7 divide', kind: '/', prompt: 'Divide both sides by?' });
+        chips.push({ label: '\u00d7 multiply', kind: '*', prompt: 'Multiply both sides by?' });
+        chips.forEach(function (c) {
+          var btn = el('button', 'chip', c.label); btn.type = 'button';
+          btn.style.cssText = 'font-family:Georgia,serif;font-size:1rem;padding:7px 13px;border-radius:8px;border:1.5px solid #1A3A6B;background:#fff;color:#1A3A6B;cursor:pointer';
+          btn.addEventListener('click', function () { pickOp(c); });
+          chipRow.appendChild(btn);
+        });
+      }
+      renderChips();
     }
 
     /* \u2500\u2500 ANGLES composer (tap angle \u2192 value \u2192 reason) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
@@ -5592,7 +6043,7 @@ window.OLS_TRANSPORT = {
               if (!d.given) { dgm.setText(nm, d.label || ''); var lb = dgm.svg.querySelector('[data-anglabel="' + nm + '"]'); if (lb) { lb.style.fill = '#14213A'; lb.style.fontStyle = d.label ? 'italic' : ''; } }
             });
           }
-          setTimeout(function () { redrawCurrent(); checkBtn.disabled = true; }, REDUCED ? 0 : 600);
+          setTimeout(function () { if (structuredBuilder) structuredBuilder(); redrawCurrent(); checkBtn.disabled = true; }, REDUCED ? 0 : 600);
         }
         var fr = feedback.getBoundingClientRect();   // bring the verdict on-screen only if it isn't already (works on tall + short questions)
         if (fr.bottom > window.innerHeight || fr.top < 0) feedback.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
@@ -5645,7 +6096,11 @@ window.OLS_TRANSPORT = {
           if (dgm) { dgm.setText(s.ang, s.val + '\u00b0'); }
         });
       }
-      if (isAngles) buildAnglesUI(); else buildAlgebraUI();
+      if (isAngles) buildAnglesUI();
+      else {
+        structuredBuilder = ({ subst: buildSubstUI, simplify: buildSimplifyUI, expand: buildExpandUI, solve: buildSolveUI, form: buildSolveUI })[q.type] || null;
+        if (structuredBuilder) structuredBuilder(); else buildAlgebraUI();
+      }
       redrawCurrent();
     }
 

@@ -8,6 +8,10 @@
    - classify questions: the drawn angle's true class matches the answer
    - structure: unique ids, marks shape, reason bank ids/groups, movie ops
      reference real segs/angles/points
+   - OVERLAY GEOMETRY: every zshape elbow is re-measured from the authored
+     coordinates and must subtend an angle this step is actually about (i.e.
+     match the value of an angle the same step arc/value/pulses) — stops a
+     Z/F/U trace from bracketing the wrong pair while the caption names another
    Exit 0 = ship; non-zero = fix first. */
 'use strict';
 
@@ -79,6 +83,27 @@ function lintMovie(tag, movie) {
       });
       if (op.stamp && op.stamp.reason && !bankIds[op.stamp.reason])
         problems.push(tag + ' step ' + i + ': stamp reason ' + op.stamp.reason + ' not in bank');
+    });
+    // overlay geometry: a zshape (Z/F/U trace) must bracket the angle the step
+    // is about. Collect the values of angles this step arc/value/pulses, then
+    // re-measure each zshape elbow and require it to match one of them. Steps
+    // with no angle reference (e.g. a pure stamp) can't be checked → skipped.
+    var refVals = [];
+    (st.do || []).forEach(function (op) {
+      ['arc', 'value', 'pulse'].forEach(function (k) {
+        if (op[k] && (dg.angles || {})[op[k].ang]) refVals.push(dg.angles[op[k].ang].value);
+      });
+    });
+    if (refVals.length) (st.do || []).forEach(function (op) {
+      if (!op.zshape || !op.zshape.pts || op.zshape.pts.length < 3) return;
+      var p = op.zshape.pts;
+      for (var j = 1; j < p.length - 1; j++) {
+        var m = measure(dg, { at: p[j], from: p[j - 1], to: p[j + 1] });
+        if (m == null) continue; // missing-point already reported above
+        if (!refVals.some(function (v) { return Math.abs(m - v) <= 1.2; }))
+          problems.push(tag + ' step ' + i + ': zshape elbow at ' + p[j] + ' subtends ' +
+            m.toFixed(1) + '° but the step names angle(s) of ' + refVals.join('/') + '°');
+      }
     });
   });
   if (movie.mode === 'diagram') lintDiagramGeometry(tag + ' movie-diagram', dg);
