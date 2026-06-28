@@ -10,27 +10,27 @@
 const GAMES = [
   {
     slug: 'camogaiocht', irish: 'Camógaíocht', english: 'Camogie', pron: 'kam-OHG-ee-okht',
-    descriptor: 'Camogie is hurling played by women, with a camán (stick) and a sliotar (ball).',
+    descriptor: 'Camogie is hurling played by women, with a camán and a sliotar.',
     img: 'assets/img/camogaiocht.jpg', audio: 'assets/audio/camogaiocht.m4a'
   },
   {
     slug: 'cluiche-corr', irish: 'Cluiche Corr', english: 'Rounders', pron: 'KLIH-heh KORR',
-    descriptor: 'Rounders is a bat-and-ball game where you hit the ball and run round the bases to score.',
+    descriptor: 'Rounders: hit the ball with a bat and run round the bases to score.',
     img: 'assets/img/cluiche-corr.jpg', audio: 'assets/audio/cluiche-corr.m4a'
   },
   {
     slug: 'iomanaiocht', irish: 'Iománaíocht', english: 'Hurling', pron: 'um-AWN-ee-okht',
-    descriptor: 'Hurling is a fast outdoor stick-and-ball game, played with a camán and a sliotar.',
+    descriptor: 'Hurling is a fast stick-and-ball game, played with a camán and a sliotar.',
     img: 'assets/img/iomanaiocht.jpg', audio: 'assets/audio/iomanaiocht.m4a'
   },
   {
     slug: 'liathroid-laimhe', irish: 'Liathróid láimhe', english: 'Handball', pron: 'LEE-uh-rohj LAW-iv-eh',
-    descriptor: 'Gaelic handball is striking a small ball against a wall with a gloved hand, so your opponent cannot return it.',
+    descriptor: 'Gaelic handball: hitting a small ball off a wall with a gloved hand.',
     img: 'assets/img/liathroid-laimhe.jpg', audio: 'assets/audio/liathroid-laimhe.m4a'
   },
   {
     slug: 'peil-ghaelach', irish: 'Peil Ghaelach', english: 'Gaelic football', pron: 'pell GHAY-lokh',
-    descriptor: 'Gaelic football is a field game where teams kick and hand-pass a round ball into the goals and over the bar.',
+    descriptor: 'Gaelic football: kick and hand-pass a round ball into the goal or over the bar.',
     img: 'assets/img/peil-ghaelach.jpg', audio: 'assets/audio/peil-ghaelach.m4a'
   }
 ];

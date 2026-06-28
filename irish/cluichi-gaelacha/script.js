@@ -119,9 +119,11 @@
       const sp2 = el('button', 'fb-speaker'); sp2.type = 'button'; sp2.setAttribute('aria-label', 'Éist le ' + v.irish); sp2.innerHTML = '&#9658;'; back.appendChild(sp2);
 
       inner.appendChild(front); inner.appendChild(back); card.appendChild(inner);
-      function flip() { card.classList.toggle('flipped'); }
-      card.addEventListener('click', (e) => { if (e.target.closest('.fc-speaker, .fb-speaker')) return; flip(); });
-      card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
+      // Tapping the card flips it AND plays the word (so tapping the picture plays the
+      // sound, like the previous activity); the speaker buttons play without flipping.
+      function flipAndPlay() { card.classList.toggle('flipped'); playWord(v.slug, card.classList.contains('flipped') ? sp2 : sp1); }
+      card.addEventListener('click', (e) => { if (e.target.closest('.fc-speaker, .fb-speaker')) return; flipAndPlay(); });
+      card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipAndPlay(); } });
       sp1.addEventListener('click', (e) => { e.stopPropagation(); playWord(v.slug, sp1); });
       sp2.addEventListener('click', (e) => { e.stopPropagation(); playWord(v.slug, sp2); });
       grid.appendChild(card);
