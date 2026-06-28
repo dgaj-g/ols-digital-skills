@@ -34,7 +34,7 @@ const FEELINGS = [
 
   { slug: 'luchair', ga: 'lúchair', en: 'delighted',   tint: '#E0489E',
     face: 'face-luchair.png', props: [{ n: 'prop-party', cls: 'p-side' }, { n: 'prop-confetti', cls: 'p-top' }],
-    cap: { ga: 'Hóra! Cóisir!', en: 'Hooray! A party!' },
+    cap: { ga: 'Hurá! Cóisir!', en: 'Hooray! A party!' },
     decoys: ['athas', 'brod', 'iontas', 'naire'] },
 
   { slug: 'brod',   ga: 'bród',    en: 'proud',         tint: '#E4B824',
@@ -69,7 +69,7 @@ const FEELINGS = [
 
   { slug: 'fearg',  ga: 'fearg',   en: 'angry',         tint: '#E0492F',
     face: 'face-fearg.png',   props: [{ n: 'prop-anger', cls: 'p-top' }],
-    cap: { ga: 'Níl sé cóir!', en: "It's not fair!" },
+    cap: { ga: 'Níl sé cothrom!', en: "It's not fair!" },
     decoys: ['ead', 'dioma', 'bron', 'imni'] },
 
   { slug: 'imni',   ga: 'imní',    en: 'worried',       tint: '#D9A21B',
