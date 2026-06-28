@@ -129,6 +129,7 @@ Then read, in order:
 - Node global packages: `react`, `sharp`, `puppeteer`, `mermaid-cli`, `qrcode`, `highlight.js`. `ffmpeg` and `pdftoppm` are installed.
 - `python3` is available; `NODE_PATH=$(npm root -g)` lets node scripts find global packages.
 - **Clipboard handoffs (standing preference).** Whenever Damien needs to paste something — code, a config file, a big `Code.gs`/`Index.html` for an Apps Script deploy — put it **straight on the macOS clipboard** with `pbcopy < "<file>"` and tell him it's ready to ⌘V. Never dump code in chat for him to copy by hand. For multi-file handoffs, copy one, let him paste it, then copy the next when he's ready.
+  - **ALWAYS run `pbcopy` (and `pbpaste`) under a UTF-8 locale — MANDATORY: prefix every call with `LC_CTYPE=en_US.UTF-8` (or `LC_ALL=en_US.UTF-8`).** Damien's Mac shell has **no `LANG`/`LC_CTYPE` set** (they're empty), so bare `pbcopy` falls back to **Mac Roman** and corrupts every non-ASCII character when pasted into a GUI app (Outlook/Word): `Roisín` → `Rois√≠n`, and the same for other fadas, `é`/`ü`/accents, curly quotes and em-dashes. **The terminal round-trip hides it** — `pbpaste` reverses the same bad mapping so the bytes look fine in the shell, but the *pasteboard* literally holds `√≠`; verify the real stored text with `osascript -e 'get the clipboard'` (the `í` must be bytes `c3 ad`, never `e2 88 9a`). Shell env does **not** persist between Bash tool calls, so the prefix must be on **every** `pbcopy`. **Never "fix" this by stripping the accents from a person's name** (e.g. Roisín → Roisin) — that's wrong and disrespectful; fix the locale instead.
 
 **Who this is for:** Our Lady's Grammar School, Newry — an all-girls Catholic grammar school. Activities are used by pupils on phones, Chromebooks, and Promethean boards, and double as ETI inspection evidence. Tone: polished, professional, age-appropriate, never childish.
 
@@ -706,10 +707,10 @@ Save as a `.md` file with:
 **Put the whole email on the clipboard in one go — standing handoff (do this on every `/publish`).** Copy the entire email to the macOS clipboard as a single block, with the `Subject: ` **label stripped** so the subject text sits as the **first line above the body**. Damien pastes once and splits the subject off into Outlook's subject field himself. Do **not** include the literal word `Subject:` (he doesn't want to delete it), and do **not** hand the subject and body over as two separate copies.
 
 ```bash
-s=$(head -1 "…/<Activity_Slug>_email.md"); { printf '%s\n' "${s#Subject: }"; tail -n +2 "…/<Activity_Slug>_email.md"; } | pbcopy
+s=$(head -1 "…/<Activity_Slug>_email.md"); { printf '%s\n' "${s#Subject: }"; tail -n +2 "…/<Activity_Slug>_email.md"; } | LC_CTYPE=en_US.UTF-8 pbcopy
 ```
 
-That places: the subject text, a blank line, then the body — all on the clipboard in one paste. Tell him it's ready to ⌘V. Never make him copy the email by hand. (Standing clipboard-handoff preference.)
+That places: the subject text, a blank line, then the body — all on the clipboard in one paste. Tell him it's ready to ⌘V. Never make him copy the email by hand. (Standing clipboard-handoff preference.) **The `LC_CTYPE=en_US.UTF-8` prefix is mandatory** — teacher emails routinely contain accented names (Roisín) and fadas; without it they paste into Outlook as mojibake (`Rois√≠n`). See the clipboard-handoffs note in Step 0.
 
 **Don't use:** "Best wishes", "Please find attached", "I hope this email finds you well", em-dashes, exclamation marks (one is OK in the opener if it lands naturally — never more than one), emojis.
 
