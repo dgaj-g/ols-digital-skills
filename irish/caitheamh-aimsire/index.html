@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ga">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Caitheamh Aimsire &middot; Gaeilge &middot; OLS Digital Skills</title>
+<meta name="description" content="An audio Irish-language activity on Caitheamh Aimsire (pastimes) for Year 9 — listen, learn and play a listening quiz." />
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity gael">
+
+<header class="act-header">
+  <div class="header-deco" aria-hidden="true"></div>
+  <div class="act-titles">
+    <p class="eyebrow">Gaeilge &middot; Bliain 9 &middot; Year 9</p>
+    <h1 class="act-h1">
+      <span>Caitheamh Aimsire</span>
+      <button id="title-audio" class="title-speaker" type="button" aria-label="Éist leis an teideal — listen to the title">
+        <span aria-hidden="true">&#9658;</span>
+      </button>
+    </h1>
+    <p class="lede">Éist, foghlaim agus aimsigh &mdash; <span class="lede-en">Listen, learn and find the Irish for your favourite pastimes.</span></p>
+  </div>
+</header>
+
+<div class="knot-divider" aria-hidden="true"></div>
+
+<nav class="mode-bar" role="tablist" aria-label="Modhanna — modes">
+  <button class="mode-tab active" role="tab" data-mode="learn" id="tab-learn" aria-selected="true" aria-controls="panel-learn" type="button">
+    <span class="mt-ga">Foghlaim</span><span class="mt-en">Learn</span>
+  </button>
+  <button class="mode-tab" role="tab" data-mode="match" id="tab-match" aria-selected="false" aria-controls="panel-match" type="button">
+    <span class="mt-ga">Meaitseáil</span><span class="mt-en">Match</span>
+  </button>
+  <button class="mode-tab" role="tab" data-mode="quiz" id="tab-quiz" aria-selected="false" aria-controls="panel-quiz" type="button">
+    <span class="mt-ga">Triail Éisteachta</span><span class="mt-en">Listening quiz</span>
+  </button>
+</nav>
+
+<main class="act-main">
+
+  <!-- ============ LEARN ============ -->
+  <section id="panel-learn" class="mode-panel" role="tabpanel" aria-labelledby="tab-learn">
+    <p class="panel-hint"><span class="ga">Tapáil cárta le héisteacht.</span> <span class="en">Tap any card to hear the Irish word spoken by your teacher.</span></p>
+    <div id="learn-grid" class="learn-grid"></div>
+  </section>
+
+  <!-- ============ MATCH ============ -->
+  <section id="panel-match" class="mode-panel" role="tabpanel" aria-labelledby="tab-match" hidden>
+    <div class="match-toolbar">
+      <p class="panel-hint"><span class="ga">Tarraing gach focal go dtí an pictiúr ceart.</span> <span class="en">Drag each Irish word onto the matching picture, then press Check.</span></p>
+      <div class="match-actions">
+        <span class="score-pill" aria-label="Pictiúir meaitseáilte — pictures matched"><span id="match-placed">0</span>&nbsp;/&nbsp;<span id="match-total">13</span></span>
+        <button id="match-check" class="btn-primary" type="button" disabled>Seiceáil &middot; Check</button>
+        <button id="match-reset" class="btn-ghost" type="button">Arís &middot; Reset</button>
+      </div>
+    </div>
+    <div id="match-live" class="sr-only" aria-live="polite"></div>
+    <div id="match-result" class="match-result" role="status" hidden></div>
+    <div id="match-board" class="match-board"></div>
+    <p class="tray-label"><span class="ga">Banc focal</span> <span class="en">Word bank</span></p>
+    <div id="match-tray" class="match-tray" aria-label="Word bank"></div>
+  </section>
+
+  <!-- ============ LISTENING QUIZ ============ -->
+  <section id="panel-quiz" class="mode-panel" role="tabpanel" aria-labelledby="tab-quiz" hidden>
+
+    <div id="quiz-start" class="quiz-start">
+      <div class="quiz-start-card">
+        <div class="ear" aria-hidden="true">&#127911;</div>
+        <h2>Triail Éisteachta</h2>
+        <p>You will hear an Irish word for a pastime. Tap the picture it matches. There are <span id="quiz-q-total">13</span> questions &mdash; listen carefully!</p>
+        <button id="quiz-begin" class="btn-primary big" type="button">Tosaigh &middot; Start</button>
+      </div>
+    </div>
+
+    <div id="quiz-play" class="quiz-play" hidden>
+      <div class="quiz-top">
+        <div id="quiz-progress-bar" class="progress" role="progressbar" aria-label="Dul chun cinn — progress" aria-valuemin="0" aria-valuemax="13" aria-valuenow="0"><div id="quiz-progress" class="progress-fill"></div></div>
+        <span class="score-pill" aria-live="polite"><span id="quiz-score">0</span>&nbsp;ceart</span>
+      </div>
+
+      <div class="listen-zone">
+        <button id="quiz-play-btn" class="play-orb" type="button" aria-label="Seinn an focal — play the word">
+          <span class="play-icon" aria-hidden="true">&#9658;</span>
+        </button>
+        <div class="listen-controls">
+          <button id="quiz-replay" class="btn-ghost small" type="button"><span aria-hidden="true">&#8635;</span> Arís &middot; Replay</button>
+          <button id="quiz-show-word" class="btn-ghost small" type="button" aria-pressed="false">Taispeáin an focal &middot; Show the word</button>
+        </div>
+        <p id="quiz-word-text" class="quiz-word-text" hidden></p>
+        <p class="listen-help"><span class="ga">Cén caitheamh aimsire é seo?</span> <span class="en">Which pastime did you hear?</span></p>
+      </div>
+
+      <div id="quiz-options" class="quiz-options" role="group" aria-label="Roghanna — options"></div>
+
+      <div id="quiz-feedback" class="quiz-feedback" role="status" hidden>
+        <p id="quiz-fb-word" class="fb-word"></p>
+        <button id="quiz-next" class="btn-primary" type="button">Ar aghaidh &middot; Next &rsaquo;</button>
+      </div>
+    </div>
+
+    <div id="quiz-end" class="quiz-end" hidden>
+      <div class="quiz-end-card">
+        <div class="end-crest" aria-hidden="true">&#9752;</div>
+        <h2 id="quiz-end-title"></h2>
+        <p class="quiz-end-score"><span id="quiz-end-num"></span>&nbsp;/&nbsp;<span id="quiz-end-total">13</span></p>
+        <p id="quiz-end-msg"></p>
+        <div id="quiz-review" class="quiz-review" hidden>
+          <h3><span class="ga">Éist arís le</span> &middot; <span class="en">Listen again to</span></h3>
+          <ul id="quiz-review-list"></ul>
+        </div>
+        <button id="quiz-again" class="btn-primary" type="button">Imir arís &middot; Play again</button>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<div class="knot-divider" aria-hidden="true"></div>
+
+<section class="credits-wrap">
+  <button id="credits-toggle" class="credits-toggle" type="button" aria-expanded="false">&#9432; Íomhánna &amp; ceadúnais &middot; Image credits</button>
+  <div id="credits-list" class="credits-list" hidden></div>
+</section>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
