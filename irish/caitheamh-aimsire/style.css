@@ -275,10 +275,12 @@ body.gael {
 
 .match-board {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 12px;
   margin-bottom: 8px;
 }
+.photo-slot.drop-hover { outline: 3px solid var(--gael-green); outline-offset: -3px; border-radius: var(--r-md); }
+.photo-slot.drop-hover .ps-drop { background: var(--gael-mist); border-color: var(--gael-green); }
 .photo-slot {
   border: 1px solid var(--cream-edge);
   background: var(--card-bg);
@@ -314,25 +316,38 @@ body.gael {
 .ps-drop.correct .ps-reveal { display: block; }
 .ps-drop.wrong { background: var(--no-bg); border-color: var(--no); border-style: solid; }
 
+/* The word bank stays pinned in view as the pictures scroll, so a word is always
+   a short drag from whatever picture is on screen. */
+.match-bank {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  margin-top: 12px;
+  padding: 4px 0 8px;
+  background: linear-gradient(180deg, rgba(251,247,236,0.6), var(--cream) 38%);
+  border-top: 2px solid var(--parch-line);
+  box-shadow: 0 -7px 20px rgba(8,42,28,0.12);
+}
 .tray-label {
   text-align: center;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   color: var(--muted);
-  margin: 18px 0 8px;
+  margin: 4px 0 6px;
 }
 .tray-label .ga { font-weight: 700; color: var(--gael-green-dk); }
 .match-tray {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
-  min-height: 56px;
-  padding: 12px;
+  align-items: center;
+  min-height: 50px;
+  max-height: 32vh;
+  overflow-y: auto;
+  padding: 6px 8px;
   border-radius: var(--r-md);
-  background: rgba(28,107,71,0.05);
-  border: 1px dashed var(--parch-line);
 }
 .word-chip {
   appearance: none;
@@ -365,7 +380,9 @@ body.gael {
   padding-left: 2px;
   flex-shrink: 0;
 }
-.word-chip.dragging { cursor: grabbing; box-shadow: var(--shadow-lg); }
+/* While dragging: NO transition on transform (a transition makes the chip
+   animate toward — i.e. lag behind — the pointer) and promote to its own layer. */
+.word-chip.dragging { cursor: grabbing; box-shadow: var(--shadow-lg); transition: none; will-change: transform; }
 .word-chip.snap-in { animation: snap-in 0.34s cubic-bezier(0.34,1.56,0.64,1); }
 .word-chip.locked { cursor: default; opacity: 0.96; border-color: var(--ok); background: var(--ok); }
 .word-chip.shake { animation: shake 0.34s ease; }

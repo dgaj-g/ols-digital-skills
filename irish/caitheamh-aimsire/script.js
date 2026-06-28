@@ -182,6 +182,7 @@
   const matchResult = $('match-result');
   const matchLive = $('match-live');
   let zones = [];
+  let slots = [];
   let kbPick = null;
   function announce(msg) { if (matchLive) matchLive.textContent = msg; }
 
@@ -192,16 +193,18 @@
     stop() { this.vel = 0; if (this.raf) cancelAnimationFrame(this.raf); this.raf = null; }
   };
 
+  // The WHOLE picture tile is the drop target — releasing anywhere over the photo
+  // (not just the small slot strip) drops the word into that picture's slot.
   function zoneUnder(x, y, chip) {
     const stack = document.elementsFromPoint(x, y);
     for (const e of stack) {
       if (e === chip || chip.contains(e)) continue;
-      const z = e.closest ? e.closest('.ps-drop') : null;
-      if (z) return z;
+      const slot = e.closest ? e.closest('.photo-slot') : null;
+      if (slot) return slot.querySelector('.ps-drop');
     }
     return null;
   }
-  function clearHover() { zones.forEach((z) => z.classList.remove('drop-hover')); }
+  function clearHover() { slots.forEach((s) => s.classList.remove('drop-hover')); }
 
   function returnChipToTray(chip) { matchTray.appendChild(chip); }
   function placeChipInZone(chip, zone) {
@@ -217,15 +220,26 @@
 
   function enableChipDrag(chip) {
     chip.style.touchAction = 'none';
-    const ptr = { id: null, sx: 0, sy: 0, moved: false };
+    const ptr = { id: null, sx: 0, sy: 0, moved: false, lastX: 0, lastY: 0 };
+    let raf = null;
 
     function teardown() {
       document.removeEventListener('pointermove', onMove);
       document.removeEventListener('pointerup', onUp);
       document.removeEventListener('pointercancel', onUp);
+      if (raf) { cancelAnimationFrame(raf); raf = null; }
       autoScroll.stop();
       clearHover();
       document.body.classList.remove('dragging-active');
+    }
+    // Hit-testing (elementsFromPoint) is expensive; run it at most once per frame
+    // so it never blocks the chip's 1:1 visual tracking.
+    function hitTest() {
+      raf = null;
+      autoScroll.update(ptr.lastY);
+      clearHover();
+      const z = zoneUnder(ptr.lastX, ptr.lastY, chip);
+      if (z) z.closest('.photo-slot').classList.add('drop-hover');
     }
     function onMove(e) {
       if (ptr.id !== e.pointerId) return;
@@ -243,13 +257,14 @@
         try { chip.setPointerCapture(e.pointerId); } catch (_) {}
         autoScroll.start();
         ptr.sx = e.clientX; ptr.sy = e.clientY;
+        ptr.lastX = e.clientX; ptr.lastY = e.clientY;
         return;
       }
-      chip.style.transform = 'translate(' + (e.clientX - ptr.sx) + 'px,' + (e.clientY - ptr.sy) + 'px) scale(1.05) rotate(-1.5deg)';
-      autoScroll.update(e.clientY);
-      clearHover();
-      const z = zoneUnder(e.clientX, e.clientY, chip);
-      if (z) z.classList.add('drop-hover');
+      ptr.lastX = e.clientX; ptr.lastY = e.clientY;
+      // Instant, GPU-composited 1:1 tracking — applied synchronously every move,
+      // with no transition (see .word-chip.dragging) so it never lags the pointer.
+      chip.style.transform = 'translate3d(' + (e.clientX - ptr.sx) + 'px,' + (e.clientY - ptr.sy) + 'px,0) scale(1.04) rotate(-1.5deg)';
+      if (raf == null) raf = requestAnimationFrame(hitTest);
     }
     function onUp(e) {
       if (ptr.id !== e.pointerId) return;
@@ -376,6 +391,7 @@
       matchBoard.appendChild(slot);
     });
     zones = Array.prototype.slice.call(matchBoard.querySelectorAll('.ps-drop'));
+    slots = Array.prototype.slice.call(matchBoard.querySelectorAll('.photo-slot'));
 
     function dropHere(z) {
       if (!kbPick) return;
