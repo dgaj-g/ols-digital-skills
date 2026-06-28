@@ -468,9 +468,10 @@
     quizFeedback.hidden = true;
     quizOptions.innerHTML = '';
     syncWordText();
-    // Blind/keyboard users get the prompt word as the orb's accessible name; this is
-    // the spoken word as text, so it is the equivalent of hearing it, never the answer.
-    quizPlayBtn.setAttribute('aria-label', 'Seinn an focal: ' + v.irish + ' · play the word');
+    // The orb keeps its generic, answer-free accessible name (set in index.html). The
+    // spoken audio is the ONLY per-question signal; the Irish word is revealed only via
+    // the explicit "Taispeáin an focal / Show the word" toggle or post-answer feedback —
+    // never write the answer into a per-question accessible name/title/alt.
 
     const decoys = shuffle(VOCAB.filter((x) => x.slug !== v.slug)).slice(0, 3);
     shuffle([v].concat(decoys)).forEach((o) => {
