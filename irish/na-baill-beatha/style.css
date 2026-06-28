@@ -134,15 +134,33 @@ body.nbb {
   position: relative; background: var(--card-bg); border: 1px solid #E7ECF5;
   border-radius: 20px; box-shadow: var(--shadow-md); padding: 12px 12px 16px; overflow: hidden;
 }
-.clinic-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.cl-window {
-  position: absolute; top: 14px; right: 16px; width: 70px; height: 56px; border-radius: 10px;
-  background: linear-gradient(160deg, #BFE6FF, #E9F7FF); border: 4px solid #fff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+/* the clinic "room" — a fixed backdrop layer behind the (transparent) figure svg,
+   so the patient size never changes but the scene reads as a clinic throughout */
+.clinic-bg {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  background: linear-gradient(180deg, #EAF7F3 0%, #E7F5F1 60%, #DCEDE8 60.2%, #D6E9E3 100%);
 }
-.cl-window::after { content: ""; position: absolute; inset: 0; border-left: 3px solid #fff; left: 50%; }
-.cl-plant { position: absolute; bottom: 8px; left: 12px; font-size: 2rem; opacity: 0.9; }
-.cl-cross { position: absolute; top: 16px; left: 18px; font-size: 1.7rem; color: var(--coral); font-weight: 900; opacity: 0.85; }
+.cl-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 40%; border-top: 2px solid rgba(26,58,107,0.07); }
+.cl-sign {
+  position: absolute; top: 12px; left: 14px; background: var(--ols-blue); color: #fff;
+  font-weight: 800; font-size: 0.78rem; letter-spacing: 0.02em; padding: 5px 11px;
+  border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.14);
+}
+.cl-sign::before { content: ""; position: absolute; top: -8px; left: 50%; width: 2px; height: 8px; background: #aab4c2; transform: translateX(-50%); }
+.cl-cross { color: var(--ols-gold); font-size: 0.92rem; line-height: 1; }
+.cl-clock { position: absolute; top: 12px; right: 16px; width: 34px; height: 34px; border-radius: 50%; background: #fff; border: 3px solid #cdd9e6; box-shadow: var(--shadow-sm); }
+.cl-hand { position: absolute; left: 50%; top: 50%; background: #5b6b80; transform-origin: bottom center; border-radius: 2px; }
+.cl-h { width: 3px; height: 8px; transform: translate(-50%, -100%) rotate(42deg); }
+.cl-m { width: 2px; height: 12px; transform: translate(-50%, -100%) rotate(-66deg); }
+.cl-pin { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; background: #5b6b80; border-radius: 50%; transform: translate(-50%, -50%); }
+.cl-poster {
+  position: absolute; right: 18px; top: 40%; width: 62px; height: 44px; background: #fff;
+  border: 3px solid #d9e2ec; border-radius: 4px; padding: 5px; box-shadow: var(--shadow-sm); opacity: 0.95;
+}
+.cl-poster svg { width: 100%; height: 100%; display: block; }
+.cl-poster polyline { fill: none; stroke: var(--coral); stroke-width: 2.6; stroke-linejoin: round; stroke-linecap: round; }
+.cl-plant { position: absolute; bottom: 6px; left: 16px; font-size: 1.9rem; }
 
 /* Prompt bubble — patient "speaks", never shows the word */
 .prompt { position: relative; z-index: 2; text-align: center; margin: 4px 0 2px; }
