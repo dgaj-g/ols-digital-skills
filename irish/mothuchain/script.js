@@ -21,7 +21,7 @@
   function audioNotice() {
     if (audioWarned) return; audioWarned = true;
     const b = el('div', 'audio-banner'); b.setAttribute('role', 'alert');
-    b.innerHTML = 'Ní féidir an fhuaim a sheinm ar an ngléas seo &mdash; bain triail as Chrome nó Edge. &middot; Audio will not play on this device — try Chrome or Edge.';
+    b.innerHTML = 'Ní féidir an fhuaim a sheinm ar an ghléas seo &mdash; bain triail as Chrome nó Edge. &middot; Audio will not play on this device — try Chrome or Edge.';
     document.body.appendChild(b);
   }
   function playFile(src) { resumeCtx(); try { audioEl.pause(); audioEl.currentTime = 0; } catch (_) {} audioEl.src = src; const p = audioEl.play(); if (p && p.catch) p.catch(() => {}); }
