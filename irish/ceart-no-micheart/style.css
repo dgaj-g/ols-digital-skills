@@ -204,10 +204,12 @@ html, body {
   user-select: none;
   cursor: grab;
   border: 1px solid #e6ebf3;
-  animation: cardIn .42s cubic-bezier(.2,1.2,.4,1) both;
+  animation: cardIn .42s cubic-bezier(.2,1.2,.4,1);   /* no fill-mode: a filled value would linger in the animation origin and override the drag transform */
 }
 @keyframes cardIn { 0% { opacity: 0; transform: translateY(18px) scale(.94) rotate(-1deg);} 100% { opacity:1; transform:none; } }
-.cm-card.dragging { transition: none; cursor: grabbing; box-shadow: 0 24px 50px rgba(0,0,0,0.4); will-change: transform; }
+/* while dragging: no transition AND no running animation (a running CSS animation
+   overrides the inline transform, so the card would stop tracking the pointer) */
+.cm-card.dragging { transition: none !important; animation: none !important; cursor: grabbing; box-shadow: 0 16px 30px rgba(0,0,0,0.32); will-change: transform; contain: paint; }
 .cm-card.shake { animation: shake .45s cubic-bezier(.36,.07,.19,.97) both; }
 .cm-card.snap-back { animation: snapBack .3s ease both; }
 @keyframes snapBack { 0% { transform: scale(1.03); } 100% { transform: none; } }

@@ -343,18 +343,19 @@
     card.classList.remove('dragging');
     card.style.position = ''; card.style.left = ''; card.style.top = '';
     card.style.width = ''; card.style.margin = ''; card.style.zIndex = '';
-    card.style.transform = ''; card.style.pointerEvents = '';
+    card.style.transform = ''; card.style.pointerEvents = ''; card.style.willChange = '';
     stage.style.minHeight = '';
   }
 
   function attachDrag(card, model) {
-    var st = { id: null, sx: 0, sy: 0, moved: false, lastX: 0, lastY: 0, raf: 0 };
+    var st = { id: null, sx: 0, sy: 0, moved: false, lastX: 0, lastY: 0, raf: 0, armed: null };
 
     card.addEventListener('pointerdown', function (e) {
       if (S.locked || st.id !== null) return;
       if (e.target.closest('.cm-speaker')) return;          /* let the speaker button work */
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       st.id = e.pointerId; st.moved = false; st.sx = e.clientX; st.sy = e.clientY;
+      card.style.willChange = 'transform';                  /* hint a GPU layer a frame before the first move */
       document.addEventListener('pointermove', onMove);
       document.addEventListener('pointerup', onUp);
       document.addEventListener('pointercancel', onUp);
@@ -377,16 +378,19 @@
            event stream — no setPointerCapture needed (and capture + pointer-events:none
            can fire a spurious lostpointercapture that would strand the card). */
         st.sx = e.clientX; st.sy = e.clientY;
+        st.raf = requestAnimationFrame(loop);   /* persistent loop: hit-test + auto-scroll, so a held finger near an edge still scrolls */
       }
       st.lastX = e.clientX; st.lastY = e.clientY;
-      card.style.transform = 'translate3d(' + (e.clientX - st.sx) + 'px,' + (e.clientY - st.sy) + 'px,0) rotate(' +
-        Math.max(-7, Math.min(7, (e.clientX - st.sx) / 22)) + 'deg)';
-      if (!st.raf) st.raf = requestAnimationFrame(frame);
+      /* transform applied SYNCHRONOUSLY every move so the card never waits on a frame */
+      var dx = e.clientX - st.sx, dy = e.clientY - st.sy;
+      card.style.transform = 'translate3d(' + dx + 'px,' + dy + 'px,0) rotate(' + Math.max(-7, Math.min(7, dx / 22)) + 'deg)';
     }
-    function frame() {
-      st.raf = 0;
-      armZone(zoneUnder(st.lastX, st.lastY));
+    /* runs every frame for the whole drag (not just on move) */
+    function loop() {
+      var z = zoneUnder(st.lastX, st.lastY);
+      if (z !== st.armed) { armZone(z); st.armed = z; }   /* only touch the DOM when the hovered zone actually changes */
       autoEdgeScroll(st.lastY);
+      st.raf = requestAnimationFrame(loop);
     }
 
     function onUp(e) {
@@ -396,8 +400,10 @@
       document.removeEventListener('pointerup', onUp);
       document.removeEventListener('pointercancel', onUp);
       if (st.raf) { cancelAnimationFrame(st.raf); st.raf = 0; }
+      st.armed = null;
       document.body.classList.remove('dragging-active');
       if (!st.moved) {                      /* a tap — replay the name */
+        card.style.willChange = '';         /* clear the hint set on pointerdown */
         playName(model.subject.slug, card.querySelector('.cm-speaker'));
         return;
       }
