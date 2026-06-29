@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ga">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Clár Ama Beo &middot; Ábhair scoile &middot; OLS Digital Skills</title>
+<meta name="description" content="Cluiche Gaeilge do Bhliain 10: éist leis an fhógra agus tóg an clár ama. Cuir gach ábhar scoile sa rang cheart — bratacha agus íomhánna daite." />
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="ca-head">
+  <div class="ca-head-inner">
+    <img src="../../assets/crest.png" alt="" class="ca-head-crest" aria-hidden="true" />
+    <div class="ca-head-text">
+      <h1>Clár Ama Beo</h1>
+      <p class="ca-head-sub">Tóg an clár ama &middot; build the timetable</p>
+    </div>
+  </div>
+</header>
+
+<main class="ca-main">
+
+  <!-- ===================== START ===================== -->
+  <section id="start" class="ca-screen ca-start" aria-label="Tús an chluiche">
+    <div class="ca-start-card">
+      <p class="ca-start-lead">Tá clár ama na scoile bán! Éist leis an fhógra i ngach rang,
+        agus <strong>tarraing an t-ábhar ceart</strong> isteach sa rang sin.</p>
+      <p class="ca-start-lead-en">The school timetable is empty! Listen to the announcement in each
+        class, and drag the right subject into that lesson.</p>
+      <ul class="ca-start-steps">
+        <li><span class="ca-step-n" aria-hidden="true">1</span> Brúigh <span class="ca-tag">🔊 Seinn an Fógra</span> i rang chun an t-ábhar a chloisteáil.
+          <span class="ca-en">&middot; Press play in a lesson to hear the subject.</span></li>
+        <li><span class="ca-step-n" aria-hidden="true">2</span> Tarraing an íomhá cheart ón bhanc isteach sa rang.
+          <span class="ca-en">&middot; Drag the right picture from the bank into the lesson.</span></li>
+        <li><span class="ca-step-n" aria-hidden="true">3</span> Líon an lá, ansin brúigh <span class="ca-tag ca-tag-go">Cuir an Clár Ama Beo!</span>
+          <span class="ca-en">&middot; Fill the day, then make the timetable live.</span></li>
+      </ul>
+      <button id="btn-start" class="ca-btn ca-btn-primary" type="button">Tosaigh &middot; Start</button>
+    </div>
+  </section>
+
+  <!-- ===================== GAME ===================== -->
+  <section id="game" class="ca-screen" aria-label="An cluiche" hidden>
+
+    <div class="ca-hud">
+      <button id="btn-home" class="ca-hud-home" type="button" aria-label="Ar ais go dtí an tús">‹ Tús</button>
+      <div class="ca-hud-stat ca-lives" id="lives" aria-label="Croíthe atá fágtha"></div>
+      <div class="ca-hud-stat ca-score" aria-label="Scór">Scór <strong id="score">0</strong></div>
+      <div class="ca-hud-day" id="hud-day">Lá 1/5</div>
+    </div>
+
+    <!-- week progress strip (day chips) -->
+    <div class="ca-weekstrip" id="weekstrip" aria-label="Laethanta na seachtaine"></div>
+
+    <!-- the timetable (week of day-columns; mobile shows the active day only) -->
+    <div class="ca-tt-wrap">
+      <div class="ca-tt" id="tt"></div>
+    </div>
+
+    <p class="ca-instruction" id="instruction"></p>
+
+    <button id="btn-golive" class="ca-btn ca-btn-go" type="button" disabled>Cuir an Clár Ama Beo!</button>
+
+    <!-- sticky subject bank (palette of all 21 — no text, so the heard Irish must be known) -->
+    <div class="ca-bank" id="bank" aria-label="Banc na n-ábhar — subject bank"></div>
+
+    <div class="ca-toast" id="toast" aria-hidden="true" hidden></div>
+    <div id="sr-status" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+  </section>
+
+  <!-- ===================== END ===================== -->
+  <section id="end" class="ca-screen ca-end" aria-label="Críoch" hidden>
+    <div class="ca-end-card">
+      <div class="ca-end-stars" id="end-stars" aria-hidden="true"></div>
+      <h2 id="end-title">Maith thú!</h2>
+      <p class="ca-end-score">Scór: <strong id="end-score">0</strong></p>
+      <div class="ca-end-recap" id="end-recap"></div>
+      <div class="ca-end-actions">
+        <button id="btn-again" class="ca-btn ca-btn-primary" type="button">Arís</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
