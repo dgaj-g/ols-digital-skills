@@ -72,10 +72,15 @@ html, body {
   padding: clamp(18px, 4vw, 34px);
   margin-top: 14px;
 }
-.cm-start-lead { font-size: clamp(1.02rem, 2.4vw, 1.22rem); line-height: 1.5; margin: 0 0 14px; color: var(--ols-blue-dark); }
+.cm-start-lead { font-size: clamp(1.02rem, 2.4vw, 1.22rem); line-height: 1.5; margin: 0 0 6px; color: var(--ols-blue-dark); }
 .cm-start-lead strong { color: var(--ols-blue); }
+.cm-start-lead-en { font-size: clamp(0.9rem, 2.1vw, 1rem); line-height: 1.5; margin: 0 0 16px; color: var(--muted); }
+.cm-start-lead-en strong { color: var(--ols-blue-soft); }
+/* inline English gloss (used in steps, the round picker, and the in-game hint) */
+.cm-en { color: var(--muted); font-weight: 400; font-style: italic; }
 .cm-start-steps { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 10px; }
-.cm-start-steps li { display: flex; align-items: center; gap: 10px; font-size: clamp(0.95rem, 2.2vw, 1.08rem); color: var(--text); }
+.cm-start-steps li { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; font-size: clamp(0.95rem, 2.2vw, 1.08rem); color: var(--text); }
+.cm-start-steps .cm-en { flex-basis: 100%; padding-left: 2px; font-size: 0.9rem; }
 .cm-pill { font-weight: 800; color: #fff; padding: 3px 12px; border-radius: 999px; font-size: 0.9rem; flex-shrink: 0; }
 .cm-pill-ceart { background: var(--cm-ceart-dk); }   /* darker for white-text contrast (WCAG AA) */
 .cm-pill-mi { background: #A85510; }                  /* darker amber for white-text contrast (WCAG AA) */
@@ -174,7 +179,9 @@ html, body {
   transition: transform .12s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
 }
 .cm-zone-mark { font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1; font-weight: 900; }
+.cm-zone-text { display: flex; flex-direction: column; align-items: center; gap: 1px; }
 .cm-zone-label { font-size: clamp(1rem, 2.6vw, 1.3rem); font-weight: 800; letter-spacing: 0.02em; }
+.cm-zone-en { font-size: clamp(0.66rem, 1.6vw, 0.82rem); font-weight: 600; opacity: 0.85; }
 .cm-zone-ceart { background: linear-gradient(180deg, rgba(31,157,85,0.22), rgba(31,157,85,0.38)); border-color: rgba(120,235,170,0.6); }
 .cm-zone-mi { background: linear-gradient(180deg, rgba(224,122,31,0.22), rgba(224,122,31,0.40)); border-color: rgba(255,200,140,0.65); }
 .cm-zone:hover, .cm-zone:focus-visible { transform: translateY(-2px); outline: none; }
