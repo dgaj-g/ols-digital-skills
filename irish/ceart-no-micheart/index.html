@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ga">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Ceart nó Mícheart? &middot; Bratacha agus Dathanna &middot; OLS Digital Skills</title>
+<meta name="description" content="Cluiche Gaeilge do Bhliain 10: socraigh an taispeántas. An bhfuil an t-ainm Gaeilge ag teacht leis an mbratach nó le dathanna an chontae? Ceart nó Mícheart!" />
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="cm-head">
+  <div class="cm-head-inner">
+    <img src="../../assets/crest.png" alt="" class="cm-head-crest" aria-hidden="true" />
+    <div class="cm-head-text">
+      <h1>Ceart nó Mícheart?</h1>
+      <p class="cm-head-sub">Bratacha na dtíortha &amp; dathanna na gcontaetha</p>
+    </div>
+  </div>
+</header>
+
+<main class="cm-main">
+
+  <!-- ===================== START ===================== -->
+  <section id="start" class="cm-screen cm-start" aria-label="Tús an chluiche">
+    <div class="cm-start-card">
+      <p class="cm-start-lead">Tá lipéid an taispeántais trína chéile! Amharc ar gach cárta:
+        an bhfuil <strong>an t-ainm Gaeilge</strong> ag teacht leis <strong>an bhratach</strong> nó le
+        <strong>dathanna an chontae</strong>?</p>
+      <p class="cm-start-lead-en">The display's labels are all mixed up! Look at each card: does the
+        <strong>Irish name</strong> match the <strong>flag</strong>, or the <strong>county's colours</strong>?</p>
+      <ul class="cm-start-steps">
+        <li><span class="cm-pill cm-pill-ceart">Ceart</span> má tá siad ag teacht le chéile.
+          <span class="cm-en">&middot; Ceart (Correct) if they match.</span></li>
+        <li><span class="cm-pill cm-pill-mi">Mícheart</span> mura bhfuil.
+          <span class="cm-en">&middot; Mícheart (Wrong) if they don't.</span></li>
+        <li>Tarraing an cárta, nó brúigh cnaipe. Éist le Róisín á rá am ar bith.
+          <span class="cm-en">&middot; Drag the card or press a button. Tap 🔊 to hear it any time.</span></li>
+      </ul>
+      <p class="cm-start-pick">Roghnaigh babhta: <span class="cm-en">&middot; Choose a round</span></p>
+      <div class="cm-deck-pick">
+        <button class="cm-deck-btn" data-deck="tiortha" type="button">
+          <span class="cm-deck-emoji" aria-hidden="true">🚩</span>
+          <span class="cm-deck-name">Tíortha</span>
+          <span class="cm-deck-meta">16 bratach &middot; Countries</span>
+        </button>
+        <button class="cm-deck-btn" data-deck="contaetha" type="button">
+          <span class="cm-deck-emoji" aria-hidden="true">🎽</span>
+          <span class="cm-deck-name">Contaetha</span>
+          <span class="cm-deck-meta">19 ndath &middot; Counties</span>
+        </button>
+        <button class="cm-deck-btn cm-deck-btn-mix" data-deck="measctha" type="button">
+          <span class="cm-deck-emoji" aria-hidden="true">🌈</span>
+          <span class="cm-deck-name">Measctha</span>
+          <span class="cm-deck-meta">an dúshlán mór &middot; Mixed</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== GAME ===================== -->
+  <section id="game" class="cm-screen" aria-label="An cluiche" hidden>
+
+    <div class="cm-hud">
+      <button id="btn-home" class="cm-hud-home" type="button" aria-label="Ar ais go dtí an tús">‹ Tús</button>
+      <div class="cm-hud-stat cm-lives" id="lives" aria-live="polite" aria-label="Croíthe atá fágtha"></div>
+      <div class="cm-hud-stat cm-streak" id="streak" aria-live="polite"><span class="cm-streak-flame" aria-hidden="true">🔥</span><span id="streak-n">0</span></div>
+      <div class="cm-hud-stat cm-score" aria-label="Scór">Scór <strong id="score">0</strong></div>
+      <div class="cm-hud-progress"><span id="prog-now">0</span>/<span id="prog-tot">0</span></div>
+    </div>
+
+    <!-- the display wall fills with colour as places are correctly sorted -->
+    <div class="cm-wall" id="wall" aria-label="An taispeántas"></div>
+
+    <!-- play area: two verdict zones flanking the live card -->
+    <div class="cm-play">
+      <button class="cm-zone cm-zone-mi" id="zone-mi" type="button" aria-keyshortcuts="ArrowLeft" aria-label="Mícheart — wrong, they don't match">
+        <span class="cm-zone-mark" aria-hidden="true">✗</span>
+        <span class="cm-zone-text"><span class="cm-zone-label">Mícheart</span><span class="cm-zone-en">Wrong</span></span>
+      </button>
+
+      <div class="cm-stage" id="stage" aria-live="polite">
+        <!-- JS injects the live .cm-card here -->
+      </div>
+
+      <button class="cm-zone cm-zone-ceart" id="zone-ceart" type="button" aria-keyshortcuts="ArrowRight" aria-label="Ceart — correct, they match">
+        <span class="cm-zone-mark" aria-hidden="true">✓</span>
+        <span class="cm-zone-text"><span class="cm-zone-label">Ceart</span><span class="cm-zone-en">Correct</span></span>
+      </button>
+    </div>
+
+    <p class="cm-hint" id="hint">Tarraing an cárta chuig <b>Ceart</b> nó <b>Mícheart</b>, nó úsáid na cnaipí / na saigheada. <span class="cm-en">&middot; Drag the card to Ceart (Correct) or Mícheart (Wrong), or use the buttons / arrow keys.</span></p>
+
+    <!-- feedback toast (visual only — screen readers use #sr-status below) -->
+    <div class="cm-toast" id="toast" aria-hidden="true" hidden></div>
+    <!-- single assertive live region: announces the full verdict to screen readers -->
+    <div id="sr-status" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+  </section>
+
+  <!-- ===================== END ===================== -->
+  <section id="end" class="cm-screen cm-end" aria-label="Críoch" hidden>
+    <div class="cm-end-card">
+      <div class="cm-end-stars" id="end-stars" aria-hidden="true"></div>
+      <h2 id="end-title">Maith thú!</h2>
+      <p class="cm-end-score">Scór: <strong id="end-score">0</strong> &middot; Sraith is faide: <strong id="end-streak">0</strong></p>
+      <div class="cm-end-recap" id="end-recap"></div>
+      <div class="cm-end-actions">
+        <button id="btn-again" class="cm-btn cm-btn-primary" type="button">Arís</button>
+        <button id="btn-menu" class="cm-btn" type="button">Roghnaigh babhta eile</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
