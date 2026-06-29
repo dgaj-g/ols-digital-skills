@@ -41,29 +41,39 @@ window.COUNTRIES = [
   { slug: 'sasana',            irish: 'Sasana',              english: 'England',     flag: 'england.svg',     confuse: ['an-eilveis'] }
 ];
 
-/* ---- COUNTIES: Irish name <-> GAA county colours ----
- * c1 = primary colour, c2 = secondary colour (primary rendered as the dominant band).
- * cluster = counties sharing the SAME colour pair; a "wrong" county card NEVER pairs a
- * county with a colour-twin from its own cluster (that would be ambiguous / unfair).
+/* ---- COUNTIES: Irish name <-> authentic GAA county flag ----
+ * Each county is the real "county colours" flag, verified against Wikipedia / Wikimedia
+ * Commons / Flags-of-the-World. The GAA norm is a VERTICAL bicolour with the primary
+ * colour at the hoist (left); a few counties fly a horizontal flag.
+ *   c1 = hoist (left) colour, or TOP colour for horizontal flags
+ *   c2 = fly (right) colour, or BOTTOM colour for horizontal flags
+ *   orient: 'v' = vertical halves (default GAA layout) · 'h' = horizontal halves
+ *   cluster = counties sharing the SAME colour pair; a "wrong" county card NEVER pairs a
+ *             county with a colour-twin from its own cluster (that would be unfair).
+ * Notes: Dublin (navy over sky) and Mayo (green over red) are flown horizontally — the
+ * most commonly flown layout is used. Derry's hoist colour is debated (vexillology says
+ * white-hoist, supporters' flags red-hoist); red-hoist used here. Kerry & Donegal are
+ * both green-hoist/gold-fly, so their flags are genuinely near-identical (their cluster
+ * keeps them from ever being paired as a "wrong" answer).
  */
 window.COUNTIES = [
-  { slug: 'an-cabhan',        irish: 'An Cabhán',         english: 'Cavan',     c1: '#1B449C', c2: '#FFFFFF', cluster: 'blue-white' },
-  { slug: 'an-dun',           irish: 'An Dún',            english: 'Down',      c1: '#C8102E', c2: '#111111', cluster: 'red-black' },
-  { slug: 'aontroim',         irish: 'Aontroim',          english: 'Antrim',    c1: '#F4C430', c2: '#FFFFFF', cluster: 'saffron-white' },
-  { slug: 'ard-mhacha',       irish: 'Ard Mhacha',        english: 'Armagh',    c1: '#FF6600', c2: '#FFFFFF', cluster: 'orange-white' },
-  { slug: 'baile-atha-cliath',irish: 'Baile Átha Cliath', english: 'Dublin',    c1: '#6CADDF', c2: '#0A1F44', cluster: 'skyblue-navy' },
-  { slug: 'ciarrai',          irish: 'Ciarraí',           english: 'Kerry',     c1: '#006B3C', c2: '#FFD200', cluster: 'green-gold' },
-  { slug: 'cill-mhantain',    irish: 'Cill Mhantáin',     english: 'Wicklow',   c1: '#1B449C', c2: '#FFD200', cluster: 'blue-gold' },
-  { slug: 'corcaigh',         irish: 'Corcaigh',          english: 'Cork',      c1: '#C8102E', c2: '#FFFFFF', cluster: 'red-white' },
-  { slug: 'doire',            irish: 'Doire',             english: 'Derry',     c1: '#C8102E', c2: '#FFFFFF', cluster: 'red-white' },
-  { slug: 'dun-na-ngall',     irish: 'Dún na nGall',      english: 'Donegal',   c1: '#FFD200', c2: '#006B3C', cluster: 'green-gold' },
-  { slug: 'fear-manach',      irish: 'Fear Manach',       english: 'Fermanagh', c1: '#006B3C', c2: '#FFFFFF', cluster: 'green-white' },
-  { slug: 'gaillimh',         irish: 'Gaillimh',          english: 'Galway',    c1: '#7A1F2B', c2: '#FFFFFF', cluster: 'maroon-white' },
-  { slug: 'loch-gorman',      irish: 'Loch Garman',       english: 'Wexford',   c1: '#582C83', c2: '#FFD200', cluster: 'purple-gold' },
-  { slug: 'luimneach',        irish: 'Luimneach',         english: 'Limerick',  c1: '#006B3C', c2: '#FFFFFF', cluster: 'green-white' },
-  { slug: 'maigh-eo',         irish: 'Maigh Eo',          english: 'Mayo',      c1: '#006B3C', c2: '#C8102E', cluster: 'green-red' },
-  { slug: 'muineachan',       irish: 'Muineachán',        english: 'Monaghan',  c1: '#FFFFFF', c2: '#1B449C', cluster: 'blue-white' },
-  { slug: 'port-lairge',      irish: 'Port Láirge',       english: 'Waterford', c1: '#FFFFFF', c2: '#1B449C', cluster: 'blue-white' },
-  { slug: 'sligeach',         irish: 'Sligeach',          english: 'Sligo',     c1: '#111111', c2: '#FFFFFF', cluster: 'black-white' },
-  { slug: 'tiobraid-arainn',  irish: 'Tiobraid Árann',    english: 'Tipperary', c1: '#1B449C', c2: '#FFD200', cluster: 'blue-gold' }
+  { slug: 'an-cabhan',        irish: 'An Cabhán',         english: 'Cavan',     c1: '#1B449C', c2: '#FFFFFF', orient: 'v', cluster: 'blue-white' },
+  { slug: 'an-dun',           irish: 'An Dún',            english: 'Down',      c1: '#C8102E', c2: '#111111', orient: 'v', cluster: 'red-black' },
+  { slug: 'aontroim',         irish: 'Aontroim',          english: 'Antrim',    c1: '#F4C430', c2: '#FFFFFF', orient: 'v', cluster: 'saffron-white' },
+  { slug: 'ard-mhacha',       irish: 'Ard Mhacha',        english: 'Armagh',    c1: '#FF6600', c2: '#FFFFFF', orient: 'v', cluster: 'orange-white' },
+  { slug: 'baile-atha-cliath',irish: 'Baile Átha Cliath', english: 'Dublin',    c1: '#0A1F44', c2: '#6CADDF', orient: 'h', cluster: 'skyblue-navy' },
+  { slug: 'ciarrai',          irish: 'Ciarraí',           english: 'Kerry',     c1: '#006B3C', c2: '#FFD200', orient: 'v', cluster: 'green-gold' },
+  { slug: 'cill-mhantain',    irish: 'Cill Mhantáin',     english: 'Wicklow',   c1: '#1B449C', c2: '#FFD200', orient: 'v', cluster: 'blue-gold' },
+  { slug: 'corcaigh',         irish: 'Corcaigh',          english: 'Cork',      c1: '#C8102E', c2: '#FFFFFF', orient: 'v', cluster: 'red-white' },
+  { slug: 'doire',            irish: 'Doire',             english: 'Derry',     c1: '#C8102E', c2: '#FFFFFF', orient: 'v', cluster: 'red-white' },
+  { slug: 'dun-na-ngall',     irish: 'Dún na nGall',      english: 'Donegal',   c1: '#006B3C', c2: '#FFD200', orient: 'v', cluster: 'green-gold' },
+  { slug: 'fear-manach',      irish: 'Fear Manach',       english: 'Fermanagh', c1: '#006B3C', c2: '#FFFFFF', orient: 'v', cluster: 'green-white' },
+  { slug: 'gaillimh',         irish: 'Gaillimh',          english: 'Galway',    c1: '#7A1F2B', c2: '#FFFFFF', orient: 'v', cluster: 'maroon-white' },
+  { slug: 'loch-gorman',      irish: 'Loch Garman',       english: 'Wexford',   c1: '#582C83', c2: '#FFD200', orient: 'v', cluster: 'purple-gold' },
+  { slug: 'luimneach',        irish: 'Luimneach',         english: 'Limerick',  c1: '#006B3C', c2: '#FFFFFF', orient: 'v', cluster: 'green-white' },
+  { slug: 'maigh-eo',         irish: 'Maigh Eo',          english: 'Mayo',      c1: '#006B3C', c2: '#C8102E', orient: 'h', cluster: 'green-red' },
+  { slug: 'muineachan',       irish: 'Muineachán',        english: 'Monaghan',  c1: '#1B449C', c2: '#FFFFFF', orient: 'v', cluster: 'blue-white' },
+  { slug: 'port-lairge',      irish: 'Port Láirge',       english: 'Waterford', c1: '#FFFFFF', c2: '#1B449C', orient: 'v', cluster: 'blue-white' },
+  { slug: 'sligeach',         irish: 'Sligeach',          english: 'Sligo',     c1: '#111111', c2: '#FFFFFF', orient: 'v', cluster: 'black-white' },
+  { slug: 'tiobraid-arainn',  irish: 'Tiobraid Árann',    english: 'Tipperary', c1: '#1B449C', c2: '#FFD200', orient: 'v', cluster: 'blue-gold' }
 ];

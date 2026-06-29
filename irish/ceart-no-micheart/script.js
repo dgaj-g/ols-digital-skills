@@ -69,8 +69,10 @@
     return '<img src="' + FLAG_DIR + place.flag + '" alt="' + (alt || '') + '" draggable="false" />';
   }
   function coloursDiv(place) {
-    return '<div class="cm-emblem-colours" style="background:linear-gradient(180deg,' +
-      place.c1 + ' 0 58%,' + place.c2 + ' 58% 100%)"></div>';
+    /* 'v' = vertical halves (90deg → c1 hoist/left, c2 fly/right); 'h' = horizontal (c1 top, c2 bottom) */
+    var angle = place.orient === 'h' ? '180deg' : '90deg';
+    return '<div class="cm-emblem-colours" style="background:linear-gradient(' +
+      angle + ',' + place.c1 + ' 0 50%,' + place.c2 + ' 50% 100%)"></div>';
   }
   /* the native emblem of a place (used on the wall + recap, which are post-answer so it is
      safe to name them; the LIVE card proof stays unlabelled so it can't leak the verdict) */
