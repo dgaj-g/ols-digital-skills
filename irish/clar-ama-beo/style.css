@@ -186,6 +186,7 @@ body.dragging-active, body.dragging-active * {
   .ca-daycol:not(.is-active) { display: none; }   /* phone: show only the active day column */
   :root { --label-w: clamp(96px, 30vw, 124px); }
   .ca-bank { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; -webkit-overflow-scrolling: touch; }
+  .ca-main { padding-bottom: 96px; }   /* so the instruction line can scroll clear of the sticky bank */
 }
 @media (min-width: 1300px) { .ca-main, .ca-head-inner { max-width: 1240px; } }
 

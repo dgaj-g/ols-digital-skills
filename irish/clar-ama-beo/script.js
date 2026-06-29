@@ -85,6 +85,7 @@
 
   function lockCell(cell, subject) {
     cell.classList.remove('wrong', 'droppable'); cell.classList.add('correct');
+    cell.removeAttribute('tabindex'); cell.removeAttribute('role'); cell.removeAttribute('aria-label'); /* a locked cell is no longer an interactive target */
     cell.style.setProperty('--cell-dept', DEPT_COLOURS[subject.dept] || 'var(--ca-ok)');
     cell.innerHTML = '';
     cell.appendChild(imgWrap(subject));
@@ -169,7 +170,11 @@
   function onCellClick(cell) {
     var pk = cell.dataset.pk;
     if (S.locked[pk]) return;
-    if (S.selected) { place(pk, S.selected); S.selected = null; Array.prototype.forEach.call(bank.children, function (t) { t.classList.remove('lifted', 'sel'); }); }
+    if (S.selected) { place(pk, S.selected); clearSelection(); }
+  }
+  function clearSelection() {
+    S.selected = null;
+    Array.prototype.forEach.call(bank.children, function (t) { t.classList.remove('lifted', 'sel'); t.setAttribute('aria-pressed', 'false'); });
   }
   function place(pk, slug) {
     if (S.locked[pk]) return;
@@ -212,7 +217,6 @@
     });
     S.dirtySinceCheck = false;   /* nothing changed yet since this check -> "go live" stays disabled until a wrong cell is re-placed */
     renderHud();
-    var allLocked = PTEACH.every(function (pk) { return S.locked[pk]; });
     if (anyWrong) {
       S.lives--; renderHud(); chimeWrong();
       showToast(UI.wrong + ' — féach ar na cinn dhearga', 'bad');
@@ -348,7 +352,7 @@
       var z = (e.type === 'pointercancel') ? null : cellUnder(st.lastX, st.lastY);
       armCell(null); st.armed = null;
       if (st.clone) { st.clone.remove(); st.clone = null; }
-      if (z) { place(z.dataset.pk, subject.slug); }
+      if (z) { place(z.dataset.pk, subject.slug); clearSelection(); }
     }
   }
 
