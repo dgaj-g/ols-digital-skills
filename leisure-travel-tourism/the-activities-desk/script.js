@@ -170,7 +170,7 @@ const state = {
   deck: [], i: 0, filed: 0, firstTry: 0, score: 0, corrections: 0,
   picked: { energy: null, location: null, environment: null },
   attempts: 0, solved: false,
-  audioCtx: null, reduceMotion: false, lbOpener: null,
+  audioCtx: null, lbOpener: null,
   bDeck: [], bi: 0, bPicked: { side: null, type: null }, bAttempts: 0, bSolved: false
 };
 
@@ -547,12 +547,9 @@ function loadCredits() {
 /* ============================================================
    12. Wiring
    ============================================================ */
-function applyReduceMotion(on) { state.reduceMotion = on; document.body.classList.toggle('reduce-motion', on); }
 function init() {
-  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (mq.matches) { applyReduceMotion(true); $('#motion-toggle-input').checked = true; }
-  $('#motion-toggle-input').addEventListener('change', e => applyReduceMotion(e.target.checked));
-
+  // The OS "reduce motion" setting is honoured automatically in CSS
+  // (@media prefers-reduced-motion) — no manual toggle needed.
   $('#start-btn').addEventListener('click', startGame);
   $('#playagain-btn').addEventListener('click', startGame);
 
