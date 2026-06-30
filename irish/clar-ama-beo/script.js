@@ -21,18 +21,35 @@
   function chimeWrong() { tone(196, 0.20, 'triangle', 0.10); }
   function fanfare() { [523.25, 659.25, 783.99, 1046.5].forEach(function (f, i) { setTimeout(function () { tone(f, 0.5, 'sine', 0.12); }, i * 120); }); }
 
-  var audioEl = new Audio(); audioEl.preload = 'auto';
-  var curBtn = null;
+  /* One PRELOADED <audio> per subject (not a single src-swapped element) so a tap plays a
+     warmed clip first-time. They are also "unlocked" once on the Start gesture (played
+     muted, then paused) so the very first real tap is never silent — fixes "tap twice". */
+  var AUDIO_CACHE = {}, curAudio = null, curBtn = null;
+  function makeClip(slug) {
+    var a = new Audio(AUDIO_DIR + slug + '.m4a'); a.preload = 'auto';
+    a.addEventListener('ended', function () { if (a === curAudio && curBtn) curBtn.classList.remove('playing'); });
+    a.addEventListener('error', function () { if (a === curAudio && curBtn) curBtn.classList.remove('playing'); });
+    AUDIO_CACHE[slug] = a; return a;
+  }
+  function preloadAudio() { SUBJECTS.forEach(function (s) { if (!AUDIO_CACHE[s.slug]) makeClip(s.slug); }); }
+  function unlockAudio() {
+    SUBJECTS.forEach(function (s) {
+      var a = AUDIO_CACHE[s.slug]; if (!a) return;
+      a.muted = true;
+      var p = a.play();
+      if (p && p.then) p.then(function () { a.pause(); a.currentTime = 0; a.muted = false; }).catch(function () { a.muted = false; });
+      else { try { a.pause(); } catch (e) {} a.muted = false; }
+    });
+  }
   function playAnnouncement(slug, btn) {
     resumeCtx();
-    if (curBtn) curBtn.classList.remove('playing');
-    curBtn = btn || null; if (curBtn) curBtn.classList.add('playing');
-    try { audioEl.pause(); audioEl.currentTime = 0; } catch (e) {}
-    audioEl.src = AUDIO_DIR + slug + '.m4a';
-    var p = audioEl.play(); if (p && p.catch) p.catch(function () { if (curBtn) curBtn.classList.remove('playing'); });
+    var a = AUDIO_CACHE[slug] || makeClip(slug);
+    if (curAudio && curAudio !== a) { try { curAudio.pause(); curAudio.currentTime = 0; } catch (e) {} }
+    if (curBtn && curBtn !== btn) curBtn.classList.remove('playing');
+    curAudio = a; curBtn = btn || null; if (curBtn) curBtn.classList.add('playing');
+    try { a.currentTime = 0; } catch (e) {}
+    var p = a.play(); if (p && p.catch) p.catch(function () { if (curBtn) curBtn.classList.remove('playing'); });
   }
-  audioEl.addEventListener('ended', function () { if (curBtn) curBtn.classList.remove('playing'); });
-  audioEl.addEventListener('error', function () { if (curBtn) curBtn.classList.remove('playing'); });
 
   /* ---------- helpers ---------- */
   function $(id) { return document.getElementById(id); }
@@ -375,6 +392,7 @@
   /* ---------- wiring ---------- */
   function startGame() {
     resumeCtx();
+    preloadAudio(); unlockAudio();   /* warm + unlock every clip on this gesture so the first tap is never silent */
     S = newGame(); resetDay();
     show(scrGame);
     buildWeekStrip(); buildTimetable(); buildBank(); renderHud(); updateGoLive(); instruction();
