@@ -1,0 +1,44 @@
+[
+  {
+    "id": "reading-bedroom",
+    "file": "reading-bedroom.jpg",
+    "status": "ok",
+    "alt": "A girl lying on a bed in a cosy bedroom, reading a book by a lamp.",
+    "credit": { "author": "Shixart1985", "licence": "CC BY 2.0", "fileUrl": "https://commons.wikimedia.org/wiki/File:Person_reading_a_book_while_lying_on_a_bed_next_to_a_window_during_a_rainy_day.jpg" }
+  },
+  {
+    "id": "football-pitch",
+    "file": "football-pitch.jpg",
+    "status": "ok",
+    "alt": "Players in kit during a football match on a large grass pitch.",
+    "credit": { "author": "Rick Dikeman", "licence": "CC BY-SA 3.0", "fileUrl": "https://commons.wikimedia.org/wiki/File:Football_in_Bloomington,_Indiana,_1995.jpg" }
+  },
+  {
+    "id": "indoor-pool",
+    "file": "indoor-pool.jpg",
+    "status": "ok",
+    "alt": "A large public swimming pool inside a leisure centre, with swimmers in the water.",
+    "credit": { "author": "Brisbane City Council", "licence": "CC BY 2.0", "fileUrl": "https://commons.wikimedia.org/wiki/File:Colmslie_Pool_-_indoor_pool_(6983893595).jpg" }
+  },
+  {
+    "id": "sailing-dinghy",
+    "file": "sailing-dinghy.jpg",
+    "status": "ok",
+    "alt": "Small sailing dinghies with colourful sails out on open water, with green hills behind.",
+    "credit": { "author": "Rob Noble", "licence": "CC BY-SA 2.0", "fileUrl": "https://commons.wikimedia.org/wiki/File:Sailing_dinghies,_Rutland_Water_-_geograph.org.uk_-_3119153.jpg" }
+  },
+  {
+    "id": "surfing",
+    "file": "surfing.jpg",
+    "status": "ok",
+    "alt": "A surfer in a wetsuit riding inside a large breaking wave in the sea.",
+    "credit": { "author": "Ben Warren", "licence": "CC0", "fileUrl": "https://commons.wikimedia.org/wiki/File:A_surfer_surfing_on_the_ocean_(Unsplash).jpg" }
+  },
+  {
+    "id": "dog-walk-park",
+    "file": "dog-walk-park.jpg",
+    "status": "ok",
+    "alt": "A person walking a dog across grassy parkland with trees and wildflowers.",
+    "credit": { "author": "Maurice Pullin", "licence": "CC BY-SA 2.0", "fileUrl": "https://commons.wikimedia.org/wiki/File:2011_,_Walking_the_dog_on_Rodway_Hill_-_geograph.org.uk_-_2602785.jpg" }
+  }
+]
