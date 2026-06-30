@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Fluency Sprints &middot; Chemistry &middot; OLS Digital Skills</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity">
+
+<!-- ===================== HEADER ===================== -->
+<header class="act-header" id="app-header">
+  <div class="brand-row">
+    <img src="../../assets/crest.png" alt="" class="brand-crest" aria-hidden="true" />
+    <div class="act-titles">
+      <p class="eyebrow">OLS Digital Skills &middot; Chemistry &middot; KS3</p>
+      <h1>Fluency Sprints</h1>
+    </div>
+    <button id="mute-btn" class="icon-btn" type="button" aria-pressed="false" aria-label="Mute sound" title="Sound on">
+      <span class="ic-sound" aria-hidden="true">&#128266;</span>
+      <span class="ic-mute" aria-hidden="true">&#128263;</span>
+    </button>
+  </div>
+</header>
+
+<main class="act-main">
+
+  <!-- ===================== HUB ===================== -->
+  <section id="screen-hub" class="screen" aria-label="Choose a sprint">
+    <div class="hub-intro">
+      <div class="hub-coach" id="hub-coach" aria-hidden="true"></div>
+      <div class="hub-bubble">
+        <p class="hub-lede">Beat the clock. Pick the <strong>precise</strong> definition &mdash; not the one that just <em>looks</em> right.</p>
+        <p class="hub-sub">Choose a set. Each run is three sprints that get longer and trickier, with a few sneaky distractors hiding among the answers.</p>
+      </div>
+    </div>
+
+    <div class="hub-grid" id="hub-grid"><!-- set cards injected --></div>
+
+    <p class="hub-howto">
+      <span class="howto-step"><b>1</b> Drag a wire from a term to its definition</span>
+      <span class="howto-step"><b>2</b> Tap a wire to snip it (or Backspace on the term)</span>
+      <span class="howto-step"><b>3</b> Hit the lab pair when every term is linked</span>
+    </p>
+  </section>
+
+  <!-- ===================== GAME ===================== -->
+  <section id="screen-game" class="screen" hidden aria-label="Matching board">
+
+    <div class="game-bar">
+      <button class="ghost-btn back-btn" id="to-hub" type="button"><span aria-hidden="true">&larr;</span> Hub</button>
+      <div class="game-title">
+        <span class="set-name" id="game-set-name">Set</span>
+        <span class="sprint-pill" id="sprint-pill">Sprint 1 of 3</span>
+      </div>
+
+      <!-- The clock character + live timer -->
+      <div class="clock-wrap" id="clock-wrap" data-state="calm">
+        <div class="clock-char" id="clock-char" aria-hidden="true">
+          <svg viewBox="0 0 120 132" class="clock-svg">
+            <!-- legs -->
+            <g class="clk-legs">
+              <path class="clk-leg" d="M46 116 q-4 9 -10 12" />
+              <path class="clk-leg" d="M74 116 q4 9 10 12" />
+              <ellipse class="clk-foot" cx="34" cy="129" rx="7" ry="3.4"/>
+              <ellipse class="clk-foot" cx="86" cy="129" rx="7" ry="3.4"/>
+            </g>
+            <!-- arms -->
+            <g class="clk-arms">
+              <path class="clk-arm clk-arm-l" d="M28 70 q-13 4 -18 16" />
+              <path class="clk-arm clk-arm-r" d="M92 70 q13 4 18 16" />
+              <circle class="clk-hand" cx="9" cy="87" r="5"/>
+              <circle class="clk-hand" cx="111" cy="87" r="5"/>
+            </g>
+            <!-- bells -->
+            <g class="clk-bells">
+              <path class="clk-bell" d="M30 18 a13 13 0 0 1 22 -6"/>
+              <path class="clk-bell" d="M90 18 a13 13 0 0 0 -22 -6"/>
+              <rect class="clk-hammer" x="57" y="2" width="6" height="12" rx="3"/>
+            </g>
+            <!-- body / face -->
+            <circle class="clk-rim" cx="60" cy="68" r="46"/>
+            <circle class="clk-face" cx="60" cy="68" r="39"/>
+            <g class="clk-ticks">
+              <line x1="60" y1="32" x2="60" y2="38"/>
+              <line x1="60" y1="98" x2="60" y2="104"/>
+              <line x1="24" y1="68" x2="30" y2="68"/>
+              <line x1="90" y1="68" x2="96" y2="68"/>
+            </g>
+            <!-- eyes -->
+            <g class="clk-eyes">
+              <circle class="clk-eye-white" cx="47" cy="60" r="10"/>
+              <circle class="clk-eye-white" cx="73" cy="60" r="10"/>
+              <circle class="clk-pupil" cx="47" cy="62" r="4.4"/>
+              <circle class="clk-pupil" cx="73" cy="62" r="4.4"/>
+              <path class="clk-brow clk-brow-l" d="M39 50 q8 -4 16 -1"/>
+              <path class="clk-brow clk-brow-r" d="M81 50 q-8 -4 -16 -1"/>
+            </g>
+            <!-- mouth -->
+            <path class="clk-mouth" d="M50 84 q10 6 20 0"/>
+            <!-- sweat -->
+            <path class="clk-sweat" d="M92 52 q4 7 0 11 a4 4 0 0 1 -6 -4 z"/>
+            <!-- clock hands -->
+            <g class="clk-hands">
+              <line class="clk-hand-hour" x1="60" y1="68" x2="60" y2="48"/>
+              <line class="clk-hand-min" x1="60" y1="68" x2="76" y2="68"/>
+            </g>
+            <line class="clk-hand-sec" x1="60" y1="74" x2="60" y2="38"/>
+            <circle class="clk-pin" cx="60" cy="68" r="3.2"/>
+          </svg>
+        </div>
+        <div class="timer" id="timer" role="timer" aria-live="off">0:00</div>
+      </div>
+    </div>
+
+    <!-- sprint progress track with a runner -->
+    <div class="track" id="track" aria-hidden="true">
+      <div class="track-line"></div>
+      <div class="track-runner" id="track-runner">
+        <svg viewBox="0 0 32 32"><path d="M19 6.5a3 3 0 1 0 0-.1ZM8 28l4-9 4 2 1 7M22 27l-3-8-4-4 2-6 5 4 5 1" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="track-flags">
+        <span class="track-flag" data-i="0">1</span>
+        <span class="track-flag" data-i="1">2</span>
+        <span class="track-flag" data-i="2">3</span>
+        <span class="track-flag track-finish" data-i="3">&#127937;</span>
+      </div>
+    </div>
+
+    <!-- the matching board -->
+    <div class="board-scroll" id="board-scroll">
+      <div class="board" id="board">
+        <div class="col col-left" id="col-left" role="group" aria-label="Terms">
+          <p class="col-head" id="left-head">Term</p>
+          <div class="col-items" id="left-items"></div>
+        </div>
+        <div class="col col-right" id="col-right" role="group" aria-label="Definitions">
+          <p class="col-head">Definition</p>
+          <div class="col-items" id="right-items"></div>
+        </div>
+        <!-- wires drawn here, above the columns -->
+        <svg class="wire-layer" id="wire-layer" aria-hidden="true"></svg>
+      </div>
+    </div>
+
+    <!-- the response button: the OLS crest with a speech bubble -->
+    <div class="respond-zone">
+      <div class="respond-hint" id="respond-hint">Link every term to check your answers</div>
+      <button class="crest-btn" id="check-btn" type="button" disabled aria-label="Check my answers" aria-describedby="respond-hint">
+        <span class="crest-bubble" id="crest-bubble">How did you fare?</span>
+        <img src="assets/characters/both_wink.webp" alt="" class="char-img" aria-hidden="true" draggable="false" />
+      </button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== RESULTS OVERLAY ===================== -->
+<div class="overlay" id="results-overlay" hidden>
+  <div class="overlay-card results-card" role="dialog" aria-modal="true" aria-labelledby="res-title">
+    <div class="res-head">
+      <div class="res-crest"><img src="assets/characters/both_wink.png" alt="" aria-hidden="true" id="res-crest-img" class="res-char" /></div>
+      <h2 id="res-title" class="res-title" tabindex="-1">How did you fare?</h2>
+      <div class="res-stats">
+        <span class="res-stat"><b id="res-score">0/0</b><small>correct</small></span>
+        <span class="res-stat"><b id="res-time">0:00</b><small>time</small></span>
+        <span class="res-stat res-stat-stars"><b id="res-stars" aria-hidden="true">&#9733;</b><small>rating</small></span>
+      </div>
+    </div>
+    <div class="res-body" id="res-body"><!-- per-link feedback --></div>
+    <div class="res-actions" id="res-actions"><!-- buttons injected --></div>
+  </div>
+</div>
+
+<!-- confetti for the celebration -->
+<canvas id="confetti" class="confetti-canvas" aria-hidden="true"></canvas>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<!-- aria live region for announcements -->
+<p class="visually-hidden" id="live-region" aria-live="polite"></p>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
