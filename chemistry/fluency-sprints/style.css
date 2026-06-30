@@ -91,10 +91,16 @@ body.activity::before {
   border: 1px solid rgba(255,255,255,.18);
   border-radius: var(--radius); padding: 14px 18px;
 }
-.hub-coach { flex: 0 0 auto; width: 100px; height: 108px; }
+.hub-coach {
+  flex: 0 0 auto; width: 108px; height: 112px; padding: 7px;
+  display: grid; place-items: center;
+  background: linear-gradient(180deg, #ffffff 0%, #e9edf4 100%);
+  border-radius: 20px;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35), inset 0 0 0 2px rgba(228,184,36,.5);
+}
 .hub-coach .hub-duo {
   width: 100%; height: 100%; object-fit: contain; -webkit-user-drag: none; user-select: none;
-  filter: drop-shadow(0 0 5px rgba(170,210,255,.55)) drop-shadow(0 5px 9px rgba(0,0,0,.38));
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,.2));
 }
 .hub-bubble { flex: 1; min-width: 0; }
 .hub-lede { margin: 0; font-size: clamp(1.1rem, 2.7vw, 1.42rem); font-weight: 700; line-height: 1.3; }
@@ -363,19 +369,25 @@ body.activity::before {
 .respond-zone { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 22px 0 8px; }
 .respond-hint { font-size: .88rem; color: rgba(255,255,255,.72); font-weight: 600; transition: opacity .2s; }
 .crest-btn {
-  position: relative; border: none; cursor: not-allowed; padding: 8px 16px;
-  /* soft "lab spotlight" so the character's dark outlines aren't lost in the navy */
-  background: radial-gradient(ellipse 72% 72% at 50% 56%, rgba(95,155,230,.34), rgba(30,70,140,.10) 56%, transparent 100%);
-  opacity: .6; filter: brightness(.72); transition: opacity .3s, filter .3s, transform .15s;
+  position: relative; border: none; cursor: not-allowed; padding: 10px 16px 6px;
+  /* the duo was drawn for a LIGHT background — give it one (like the results card) so its
+     dark outlines and grey burner read brightly instead of merging into the navy */
+  background: linear-gradient(180deg, #ffffff 0%, #e9edf4 100%);
+  border-radius: 24px;
+  box-shadow: 0 12px 26px rgba(0,0,0,.45), inset 0 0 0 2px rgba(228,184,36,.5);
+  opacity: .92; transition: opacity .3s, transform .15s, box-shadow .3s;
 }
-/* the duo brightens as the pupil links more terms (encouragement, not tension) */
-.crest-btn[data-progress="some"] { opacity: .9; filter: brightness(.95); }
+/* brighten the panel as the pupil links more terms (encouragement, not tension) */
+.crest-btn[data-progress="some"] { opacity: .97; }
 .crest-btn .char-img {
-  width: 122px; height: auto; -webkit-user-drag: none; user-select: none;
-  /* periwinkle rim-light traces the outlines + a soft glow so the duo pops off the dark bg */
-  filter: drop-shadow(0 0 6px rgba(175,212,255,.82)) drop-shadow(0 0 16px rgba(100,160,240,.5)) drop-shadow(0 8px 10px rgba(0,0,0,.4));
+  width: 118px; height: auto; -webkit-user-drag: none; user-select: none;
+  filter: drop-shadow(0 5px 6px rgba(0,0,0,.22));
 }
-.crest-btn.ready { cursor: pointer; opacity: 1; filter: none; animation: crest-invite 1.8s ease-in-out infinite; }
+.crest-btn.ready {
+  cursor: pointer; opacity: 1;
+  box-shadow: 0 14px 32px rgba(0,0,0,.5), 0 0 22px rgba(228,184,36,.45), inset 0 0 0 2px var(--ols-gold);
+  animation: crest-invite 1.8s ease-in-out infinite;
+}
 .crest-btn.react .char-img { animation: peek .4s ease; }
 @keyframes peek { 0% { transform: none; } 42% { transform: translateY(-6px) scale(1.07); } 100% { transform: none; } }
 .crest-btn.ready:hover { transform: translateY(-3px) scale(1.04); }
