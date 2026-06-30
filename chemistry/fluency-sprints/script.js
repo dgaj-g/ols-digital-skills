@@ -7,7 +7,6 @@
   'use strict';
 
   var DATA = window.FLUENCY_DATA;
-  var PICTOS = window.FLUENCY_PICTOGRAMS;
 
   /* ---------------------------------------------------------------- state */
   var state = {
@@ -244,7 +243,7 @@
       node.dataset.termId = t.id;
       node.tabIndex = 0; node.setAttribute('role', 'button');
       if (t.pictogramId) {
-        node.innerHTML = (PICTOS[t.pictogramId] || '') ;
+        node.innerHTML = '<img class="ghs" src="assets/ghs/' + t.pictogramId + '.svg" alt="" draggable="false" />';
         node.setAttribute('aria-label', t.term.charAt(0).toUpperCase() + t.term.slice(1) + ' hazard symbol — link it to a definition');
       } else {
         node.innerHTML = '<span class="term-word">' + t.term + '</span>';
@@ -691,6 +690,12 @@
     var total = results.length;
     resScore.textContent = correct + '/' + total;
     resTime.textContent = fmtTime(state.timer.elapsed);
+
+    var resCrestImg = document.getElementById('res-crest-img');
+    if (resCrestImg) {
+      resCrestImg.src = allRight ? 'assets/characters/thumbs_up.png' : 'assets/characters/both_wink.png';
+      resCrestImg.classList.add('res-char');
+    }
 
     // star rating: accuracy first, then speed
     var stars = 1;

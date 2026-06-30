@@ -303,7 +303,7 @@ body.activity::before {
   color: var(--ols-blue);
 }
 .term-node.is-pic { justify-content: center; padding: 10px; }
-.term-node .ghs { width: clamp(60px, 16vw, 84px); height: auto; display: block; }
+.term-node .ghs { width: clamp(60px, 16vw, 84px); height: auto; display: block; pointer-events: none; -webkit-user-drag: none; user-select: none; }
 .term-word { line-height: 1.15; }
 
 /* right definition nodes */
@@ -355,7 +355,7 @@ body.activity::before {
   position: relative; border: none; background: none; cursor: not-allowed; padding: 6px;
   opacity: .5; filter: grayscale(.6); transition: opacity .25s, filter .25s, transform .15s;
 }
-.crest-btn .crest-img { width: 78px; height: auto; filter: drop-shadow(0 8px 18px rgba(0,0,0,.45)); }
+.crest-btn .char-img { width: 122px; height: auto; filter: drop-shadow(0 10px 16px rgba(0,0,0,.5)); -webkit-user-drag: none; user-select: none; }
 .crest-btn.ready { cursor: pointer; opacity: 1; filter: none; animation: crest-invite 1.8s ease-in-out infinite; }
 .crest-btn.ready:hover { transform: translateY(-3px) scale(1.04); }
 @keyframes crest-invite { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-5px);} }
@@ -388,6 +388,7 @@ body.activity::before {
 @keyframes pop-in { from { opacity: 0; transform: translateY(24px) scale(.96); } to { opacity: 1; transform: none; } }
 .res-head { text-align: center; padding: 22px 22px 14px; border-bottom: 1px solid #eef0f4; }
 .res-crest img { width: 54px; height: auto; }
+.res-crest img.res-char { width: 104px; }
 .res-title { margin: 6px 0 12px; font-size: 1.5rem; color: var(--ols-blue); font-weight: 800; }
 .res-title:focus { outline: none; }  /* focus lands here for AT, but no input-like ring on a heading */
 .res-stats { display: flex; justify-content: center; gap: 14px; }
@@ -441,7 +442,7 @@ body.dragging-active, body.dragging-active * {
   .clock-char { width: 64px; height: 70px; }
   .board { gap: clamp(26px, 12vw, 60px); grid-template-columns: minmax(78px, .72fr) 1.5fr; }
   .hub-coach { width: 74px; height: 80px; }
-  .crest-btn .crest-img { width: 66px; }
+  .crest-btn .char-img { width: 98px; }
   .term-node { padding: 11px; font-size: 1rem; }
   .def-node { padding: 11px 12px; }
   .res-stats { gap: 8px; }
