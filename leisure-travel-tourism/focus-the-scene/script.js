@@ -57,10 +57,10 @@ const SCENES = [
       location: 'On her own sofa in the living room — this is at home.',
       environment: 'Indoors under a roof — indoor.'
     } },
-  { id: 'stadium', mode: 'text', img: null, flip: 'watch-football',
+  { id: 'stadium', mode: 'photo', img: 'stadium-crowd.jpg', flip: 'watch-football',
     activity: 'Watching the football',
     place: 'In the crowd at a packed stadium, watching the match live.',
-    alt: 'A large crowd of supporters in the open stands of a football stadium watching a match.',
+    alt: 'A huge crowd fills the open stands of a football stadium, many holding coloured cards forming a mosaic, with sky and hills beyond.',
     energy: 'passive', location: 'away', environment: 'outdoor',
     why: 'Same activity, different place. Watching is still <b>passive</b>, but a stadium is <b>away from home</b>, and the open stands are out in the air, so <b>outdoor</b>.',
     hints: {
@@ -70,10 +70,10 @@ const SCENES = [
     } },
 
   // ---- Flip pair C: cycling (the CCEA factfile signature pair) ----
-  { id: 'cycling-club', mode: 'text', img: null, flip: 'cycling',
+  { id: 'cycling-club', mode: 'photo', img: 'cycling-club.jpg', flip: 'cycling',
     activity: 'Cycling with the club',
     place: 'You head out on your bike with the local cycling club, along the country roads.',
-    alt: '',
+    alt: 'A group of cyclists in helmets and kit riding road bikes together along a road.',
     energy: 'active', location: 'away', environment: 'outdoor',
     why: 'Cycling with the club means pedalling and taking part, so <b>active</b>. You are out on the roads, so <b>away from home</b> and <b>outdoor</b>.',
     hints: {
@@ -105,10 +105,10 @@ const SCENES = [
       location: 'The leisure centre is away from her own home.',
       environment: 'She is in the water. In LTT, on or in water is always water‑based — even an indoor pool.'
     } },
-  { id: 'hot-tub', mode: 'text', img: null,
+  { id: 'hot-tub', mode: 'photo', img: 'hot-tub.jpg',
     activity: 'Relaxing in the hot tub',
     place: 'You unwind in the hot tub out in the back garden.',
-    alt: '',
+    alt: 'A round wood-fired hot tub on a brick patio in a back garden, with a fence and hills behind.',
     energy: 'passive', location: 'home', environment: 'water',
     why: 'You are relaxing, not doing anything energetic, so <b>passive</b>; it is your own garden, so <b>home‑based</b>; and because you are sitting in the water it is <b>water‑based</b> — water beats indoor or outdoor again.',
     hints: {
@@ -151,10 +151,10 @@ const SCENES = [
       location: 'The beach is away from home.',
       environment: 'Out on the waves — water‑based.'
     } },
-  { id: 'dance', mode: 'text', img: null,
+  { id: 'dance', mode: 'photo', img: 'dance-class.jpg',
     activity: 'A dance &amp; fitness class',
     place: 'A group dance and fitness class in a studio in town.',
-    alt: 'A group of people in an exercise class following an instructor in a fitness studio.',
+    alt: 'People in a bright fitness studio taking a step-aerobics class with small dumbbells, exercise balls on a rack behind.',
     energy: 'active', location: 'away', environment: 'indoor',
     why: 'Dancing means taking part, so <b>active</b>; a studio in town is <b>away from home</b>; and it is inside, so <b>indoor</b>.',
     hints: {
@@ -162,10 +162,10 @@ const SCENES = [
       location: 'A studio in town is away from home.',
       environment: 'Inside a studio under a roof — indoor.'
     } },
-  { id: 'gardening', mode: 'text', img: null,
+  { id: 'gardening', mode: 'photo', img: 'gardening.jpg',
     activity: 'Gardening',
     place: 'Planting and digging in the back garden at home.',
-    alt: 'A person kneeling in a back garden, planting flowers in a flower bed.',
+    alt: 'A person using a hoe to dig over a garden bed in a back garden, with a house and greenery behind.',
     energy: 'active', location: 'home', environment: 'outdoor',
     why: 'Gardening keeps you busy and on your feet, so <b>active</b>. It is your own garden, so <b>home‑based</b>, but out in the open, so <b>outdoor</b> — you can be active without leaving home.',
     hints: {
@@ -184,10 +184,10 @@ const SCENES = [
       location: 'The local park is away from home.',
       environment: 'Out in the park under the sky — outdoor.'
     } },
-  { id: 'computer-games', mode: 'text', img: null,
+  { id: 'computer-games', mode: 'photo', img: 'computer-games.jpg',
     activity: 'Playing computer games',
-    place: 'After school you play computer games in your bedroom for a while.',
-    alt: '',
+    place: 'You settle in on the sofa at home to play computer games for a while.',
+    alt: 'People relaxing on a sofa in a living room, one holding a games controller, with snacks on the table.',
     energy: 'passive', location: 'home', environment: 'indoor',
     why: 'The game reacts to you, but you are sitting at a screen rather than being physically active, so it counts as <b>passive</b>; you are in your own room, so <b>home‑based</b> and <b>indoor</b>.',
     hints: {
@@ -362,7 +362,8 @@ function loadScene() {
     inspectBtn.hidden = true;
   }
 
-  $('#vf-status').textContent = 'OUT OF FOCUS';
+  // A photo "comes into focus"; a text scene card "develops" like a film negative
+  $('#vf-status').textContent = (sc.mode === 'photo' && sc.img) ? 'OUT OF FOCUS' : 'UNDEVELOPED';
 
   // Reset dials (and re-enable them — the previous scene's correct commit disabled them)
   resetDials('#screen-game');
@@ -466,7 +467,7 @@ function commitFocus() {
     const media = $('#vf-media');
     media.classList.remove('set-0', 'set-1', 'set-2', 'set-3');
     media.classList.add('focused');
-    $('#vf-status').textContent = 'IN FOCUS';
+    $('#vf-status').textContent = (sc.mode === 'photo' && sc.img) ? 'IN FOCUS' : 'DEVELOPED';
     $$('#screen-game .seg.selected').forEach(s => s.classList.add('axis-correct'));
     $$('#screen-game .seg').forEach(s => s.disabled = true);
     $('#focus-btn').hidden = true;
