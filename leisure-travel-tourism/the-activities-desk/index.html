@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>The Activities Desk — Classifying Leisure Activities</title>
+  <meta name="description" content="CCEA GCSE Leisure, Travel & Tourism — classify each leisure activity into the seven types and build the resort brochure." />
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="ad-body">
+
+  <!-- ============ TITLE ============ -->
+  <section id="screen-title" class="ad-screen is-active" aria-labelledby="title-h1">
+    <div class="title-card">
+      <div class="title-badge" aria-hidden="true">
+        <span class="tb-stamp">★</span>
+      </div>
+      <p class="title-kicker">CCEA GCSE Leisure, Travel &amp; Tourism · Unit 1</p>
+      <h1 id="title-h1" tabindex="-1">The Activities Desk</h1>
+      <p class="title-sub">You are the <strong>activities coordinator</strong> at a tourist‑information desk. Guests keep asking what's on, so your job is to <strong>classify each activity</strong> — and the same activity changes its type depending on <em>where</em> it happens. Read the card, set the three tags, and file it into the resort brochure.</p>
+
+      <div class="title-how">
+        <div class="how-step"><span class="how-num">1</span><p><strong>Read the enquiry.</strong> Look at the activity and, above all, <em>where</em> it is happening.</p></div>
+        <div class="how-step"><span class="how-num">2</span><p><strong>Set the three tags</strong> — Energy, Location and Environment.</p></div>
+        <div class="how-step"><span class="how-num">3</span><p><strong>File it.</strong> Get all three right and the card joins the brochure; get one wrong and it goes to the corrections pile.</p></div>
+      </div>
+
+      <div class="title-axes">
+        <p class="axes-lead">Every activity gets three tags, one from each:</p>
+        <ul class="axes-list">
+          <li><span class="ax-name">Energy</span><span class="ax-vals">Active · Passive</span></li>
+          <li><span class="ax-name">Location</span><span class="ax-vals">Home&#8209;based · Away from home</span></li>
+          <li><span class="ax-name">Environment</span><span class="ax-vals">Indoor · Outdoor · Water&#8209;based</span></li>
+        </ul>
+      </div>
+
+      <button id="start-btn" class="ad-btn ad-btn-primary">Start your shift</button>
+      <label class="motion-toggle"><input type="checkbox" id="motion-toggle-input" /><span>Reduce animation</span></label>
+    </div>
+  </section>
+
+  <!-- ============ GAME (the desk) ============ -->
+  <section id="screen-game" class="ad-screen" aria-labelledby="game-h" hidden>
+    <header class="hud">
+      <span class="hud-progress" id="hud-progress" aria-live="polite">Enquiry 1 of 16</span>
+      <span class="hud-corrections" id="hud-corrections" aria-live="polite" aria-atomic="true"><span aria-hidden="true">↩</span> Corrections <strong id="corrections-count">0</strong></span>
+      <span class="hud-score">Score <strong id="hud-score">0</strong></span>
+    </header>
+
+    <h2 id="game-h" class="visually-hidden" tabindex="-1">Classify the leisure activity and file it</h2>
+
+    <div class="desk">
+      <!-- The card + controls -->
+      <div class="desk-main">
+        <div class="card-stage">
+          <div class="card is-slip" id="card"></div>
+          <div class="stamp" id="stamp" hidden></div>
+        </div>
+
+        <p class="desk-prompt">Where is this happening? Set the three tags, then file it.</p>
+
+        <div class="dials" id="dials">
+          <fieldset class="dial" data-axis="energy">
+            <legend class="dial-legend"><span class="dial-icon" aria-hidden="true">⚡</span> Energy</legend>
+            <div class="dial-track" role="radiogroup" aria-label="Energy">
+              <button type="button" class="seg" data-axis="energy" data-val="active" role="radio" aria-checked="false">Active</button>
+              <button type="button" class="seg" data-axis="energy" data-val="passive" role="radio" aria-checked="false">Passive</button>
+            </div>
+          </fieldset>
+          <fieldset class="dial" data-axis="location">
+            <legend class="dial-legend"><span class="dial-icon" aria-hidden="true">📍</span> Location</legend>
+            <div class="dial-track" role="radiogroup" aria-label="Location">
+              <button type="button" class="seg" data-axis="location" data-val="home" role="radio" aria-checked="false">Home&#8209;based</button>
+              <button type="button" class="seg" data-axis="location" data-val="away" role="radio" aria-checked="false">Away from home</button>
+            </div>
+          </fieldset>
+          <fieldset class="dial" data-axis="environment">
+            <legend class="dial-legend"><span class="dial-icon" aria-hidden="true">🌍</span> Environment</legend>
+            <div class="dial-track three" role="radiogroup" aria-label="Environment">
+              <button type="button" class="seg" data-axis="environment" data-val="indoor" role="radio" aria-checked="false">Indoor</button>
+              <button type="button" class="seg" data-axis="environment" data-val="outdoor" role="radio" aria-checked="false">Outdoor</button>
+              <button type="button" class="seg" data-axis="environment" data-val="water" role="radio" aria-checked="false">Water&#8209;based</button>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="desk-feedback" id="desk-feedback" aria-live="polite"></div>
+
+        <div class="commit-row">
+          <button id="file-btn" class="ad-btn ad-btn-primary" disabled>File it</button>
+          <button id="next-btn" class="ad-btn ad-btn-go" hidden>Next enquiry →</button>
+        </div>
+      </div>
+
+      <!-- The brochure (fills up) -->
+      <aside class="brochure" id="brochure" aria-label="Resort brochure">
+        <div class="bro-head">
+          <span class="bro-title">Resort brochure</span>
+          <span class="bro-count"><strong id="filed-count">0</strong> / 16 filed</span>
+        </div>
+        <div class="bro-section">
+          <h3 class="bro-sec-h"><span aria-hidden="true">🏠</span> At home</h3>
+          <ul class="bro-list" id="bro-home"></ul>
+        </div>
+        <div class="bro-section">
+          <h3 class="bro-sec-h"><span aria-hidden="true">✈️</span> Away — our resort</h3>
+          <ul class="bro-list" id="bro-away"></ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ BONUS (client briefing) ============ -->
+  <section id="screen-bonus" class="ad-screen" aria-labelledby="bonus-h" hidden>
+    <div class="bonus-wrap">
+      <header class="bonus-head">
+        <p class="title-kicker">Client briefing · home or away?</p>
+        <h2 id="bonus-h" tabindex="-1">The pros and cons of home vs away</h2>
+        <p class="bonus-runline" id="bonus-runline"></p>
+        <p class="bonus-intro">A guest asks for advice. For each point below, set both tags: which side it is about — <strong>at home</strong> or <strong>away from home</strong> — and whether it is a <strong>strength</strong> or a <strong>drawback</strong> of that side.</p>
+      </header>
+
+      <div class="bonus-stage">
+        <div class="chip-counter" id="chip-counter">Point 1 of 8</div>
+        <div class="bonus-chip" id="bonus-chip">&nbsp;</div>
+        <div class="dials bonus-dials">
+          <fieldset class="dial" data-axis="side">
+            <legend class="dial-legend"><span class="dial-icon" aria-hidden="true">📍</span> Which side?</legend>
+            <div class="dial-track" role="radiogroup" aria-label="Which side">
+              <button type="button" class="seg" data-axis="side" data-val="home" role="radio" aria-checked="false">At home</button>
+              <button type="button" class="seg" data-axis="side" data-val="away" role="radio" aria-checked="false">Away from home</button>
+            </div>
+          </fieldset>
+          <fieldset class="dial" data-axis="type">
+            <legend class="dial-legend"><span class="dial-icon" aria-hidden="true">⚖️</span> Strength or drawback?</legend>
+            <div class="dial-track" role="radiogroup" aria-label="Strength or drawback">
+              <button type="button" class="seg good" data-axis="type" data-val="pro" role="radio" aria-checked="false">Strength</button>
+              <button type="button" class="seg bad" data-axis="type" data-val="con" role="radio" aria-checked="false">Drawback</button>
+            </div>
+          </fieldset>
+        </div>
+        <div class="desk-feedback" id="bonus-feedback" aria-live="polite"></div>
+        <div class="commit-row">
+          <button id="develop-btn" class="ad-btn ad-btn-primary" disabled>Add to advice</button>
+          <button id="bonus-next-btn" class="ad-btn ad-btn-go" hidden>Next →</button>
+        </div>
+      </div>
+
+      <div class="balance-board">
+        <div class="bb-col"><h3 class="bb-col-h">At home</h3>
+          <div class="bb-tray"><span class="bb-tag pro">Strengths</span><ul id="bb-home-pro"></ul></div>
+          <div class="bb-tray"><span class="bb-tag con">Drawbacks</span><ul id="bb-home-con"></ul></div>
+        </div>
+        <div class="bb-col"><h3 class="bb-col-h">Away from home</h3>
+          <div class="bb-tray"><span class="bb-tag pro">Strengths</span><ul id="bb-away-pro"></ul></div>
+          <div class="bb-tray"><span class="bb-tag con">Drawbacks</span><ul id="bb-away-con"></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section id="screen-results" class="ad-screen" aria-labelledby="res-h" hidden>
+    <div class="results-wrap">
+      <div class="end-card">
+        <div class="end-emoji" id="res-emoji" aria-hidden="true">📘</div>
+        <h2 id="res-h" tabindex="-1">Brochure printed</h2>
+        <div class="res-stars" id="res-stars" aria-hidden="true">★★★★★</div>
+        <div class="badge" id="res-badge" hidden><span class="badge-star">★</span> Clean Brochure — every activity filed right first time!</div>
+        <div class="end-stats">
+          <div class="stat"><span class="stat-n" id="res-filed">16</span><span class="stat-l">activities filed</span></div>
+          <div class="stat"><span class="stat-n" id="res-firsttry">0 / 16</span><span class="stat-l">right first time</span></div>
+          <div class="stat"><span class="stat-n" id="res-score">0</span><span class="stat-l">score</span></div>
+        </div>
+      </div>
+
+      <div class="board-card">
+        <h3 class="board-h">Same activity — different place = different classification</h3>
+        <p class="board-sub">The trick of this topic: where it happens changes the tags. Look how each pair splits.</p>
+        <div class="string-board" id="string-board"></div>
+      </div>
+
+      <div class="end-card">
+        <div class="reflect">
+          <h3>One last thought for your guests</h3>
+          <p class="reflect-q">On balance, would you rather spend your leisure time <strong>at home</strong> or <strong>away from home</strong> — and why? Finish the sentence in your own words.</p>
+          <p class="reflect-start">I would rather spend my leisure time&hellip; <strong>because&hellip;</strong></p>
+          <textarea id="reflect-box" rows="3" placeholder="Type your answer here. Give at least one reason."></textarea>
+          <button id="reflect-reveal" class="ad-btn ad-btn-ghost">See an example answer</button>
+          <div class="reflect-model" id="reflect-model" hidden></div>
+        </div>
+        <button id="playagain-btn" class="ad-btn ad-btn-primary">Take another shift</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LOOK-CLOSER LIGHTBOX ============ -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lb-cap" hidden>
+    <button class="lb-close" id="lb-close" aria-label="Close">✕</button>
+    <div class="lb-inner" id="lb-inner"></div>
+  </div>
+
+  <!-- ============ CREDITS + FOOTER ============ -->
+  <div class="ad-credits">
+    <button class="credits-toggle" id="credits-toggle" type="button" aria-expanded="false">ⓘ Image credits</button>
+    <div class="credits-list" id="credits-list" hidden></div>
+  </div>
+  <footer class="act-footer">
+    <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+    <span>OLS Digital Skills</span>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
