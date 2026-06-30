@@ -27,6 +27,10 @@
     runTime: 0            // cumulative across sprints in a run
   };
 
+  // A sprint stops after this long, so the ticking/jeopardy never grates indefinitely.
+  // (The teacher's brief asked for escalating tension but did not specify a limit — tunable.)
+  var TIME_LIMIT_MS = 180000; // 3 minutes
+
   /* ------------------------------------------------------------- elements */
   var $ = function (id) { return document.getElementById(id); };
   var screenHub = $('screen-hub'), screenGame = $('screen-game');
@@ -612,11 +616,17 @@
   function tickTimer() {
     if (!state.timer.running) return;
     state.timer.elapsed = performance.now() - state.timer.start;
+    if (state.timer.elapsed >= TIME_LIMIT_MS) { timeUp(); return; }   // stop after the time limit
     timerEl.textContent = fmtTime(state.timer.elapsed);
     var s = state.timer.elapsed / 1000;
     var st = s < 15 ? 'calm' : s < 35 ? 'worried' : s < 60 ? 'anxious' : 'panic';
     if (st !== state.clockState) setClockState(st);
     state.timer.raf = requestAnimationFrame(tickTimer);
+  }
+  function timeUp() {
+    state.timer.elapsed = TIME_LIMIT_MS;
+    timerEl.textContent = fmtTime(TIME_LIMIT_MS);
+    gradeSprint(true);   // auto-finish with whatever is linked
   }
   function stopTimer() {
     state.timer.running = false;
@@ -633,12 +643,11 @@
   function scheduleTick() {
     clearTimeout(state.tickTimer);
     if (!state.timer.running) return;
-    var rates = { calm: 1000, worried: 640, anxious: 420, panic: 250 };
-    var vols = { calm: 0.04, worried: 0.05, anxious: 0.06, panic: 0.075 };
+    var rates = { calm: 1000, worried: 700, anxious: 500, panic: 360 };
+    var vols = { calm: 0.03, worried: 0.038, anxious: 0.045, panic: 0.052 };
     var st = state.clockState;
     state.tickTimer = setTimeout(function () {
-      audio.tick(vols[st]);
-      if (st === 'anxious' || st === 'panic') audio.thump();
+      audio.tick(vols[st]);   // accelerating tick only — the bass "thump" was the grating part
       scheduleTick();
     }, rates[st]);
   }
@@ -648,9 +657,10 @@
      ===================================================================== */
   function cardByCid(cid) { for (var i = 0; i < state.cards.length; i++) if (state.cards[i].cid === cid) return state.cards[i]; return null; }
 
-  function gradeSprint() {
-    if (checkBtn.disabled) return;
-    state.timer.elapsed = performance.now() - state.timer.start;
+  function gradeSprint(timedOut) {
+    if (state.graded) return;
+    if (!timedOut && checkBtn.disabled) return;
+    if (!timedOut) state.timer.elapsed = performance.now() - state.timer.start;
     stopTimer();
     state.graded = true;
     state.runTime += state.timer.elapsed;
@@ -658,18 +668,19 @@
 
     var results = [], correct = 0;
     state.terms.forEach(function (t) {
-      var chosenCid = state.connections.get(t.id);
-      var card = cardByCid(chosenCid);
-      var isCorrect = isLinkCorrect(t.id, chosenCid);
+      var chosenCid = state.connections.get(t.id);     // may be undefined if time ran out
+      var card = chosenCid ? cardByCid(chosenCid) : null;
+      var isCorrect = chosenCid ? isLinkCorrect(t.id, chosenCid) : false;
       if (isCorrect) correct++;
       var reason = null, chose = card ? card.text : '';
-      if (!isCorrect && card) {
+      if (chosenCid && !isCorrect && card) {
         if (card.kind === 'distractor') reason = card.reason;
         else reason = 'That is the definition of ' + (termById(card.termId) ? termById(card.termId).term : 'another term') + '.';
       }
       results.push({ term: t, isCorrect: isCorrect, chose: chose, reason: reason,
+        unlinked: !chosenCid,
         correctText: isCorrect ? chose : cardByCid(t.correctCid).text });
-      var tn = termNode(t.id), dn = defNode(chosenCid);
+      var tn = termNode(t.id), dn = chosenCid ? defNode(chosenCid) : null;
       if (tn) tn.classList.add(isCorrect ? 'correct' : 'wrong', 'locked');
       if (dn) dn.classList.add(isCorrect ? 'correct' : 'wrong');
     });
@@ -682,10 +693,10 @@
     if (allRight) { audio.correctPing(); setTimeout(function () { audio.fanfare(); }, 220); }
     else { audio.wrong(); }
 
-    announce(correct + ' out of ' + state.terms.length + ' correct.' + (allRight ? ' Brilliant! Results loading.' : ' Results loading.'));
+    announce((timedOut ? "Time's up. " : '') + correct + ' out of ' + state.terms.length + ' correct. Results loading.');
 
     // let the board flash, then present the results
-    setTimeout(function () { showResults(results, correct, allRight); }, allRight ? 700 : 950);
+    setTimeout(function () { showResults(results, correct, allRight, timedOut); }, allRight ? 700 : 950);
   }
   function disableHitPaths() {
     wireLayer.querySelectorAll('.wire-hit').forEach(function (h) { h.style.pointerEvents = 'none'; });
@@ -694,7 +705,7 @@
   /* =====================================================================
      RESULTS
      ===================================================================== */
-  function showResults(results, correct, allRight) {
+  function showResults(results, correct, allRight, timedOut) {
     var total = results.length;
     resScore.textContent = correct + '/' + total;
     resTime.textContent = fmtTime(state.timer.elapsed);
@@ -721,7 +732,8 @@
     resStars.setAttribute('aria-label', stars + ' out of 3 stars');
     resStars.removeAttribute('aria-hidden');
 
-    resTitle.textContent = allRight ? 'Brilliant — every one precise!' : 'How did you fare?';
+    resTitle.textContent = allRight ? 'Brilliant — every one precise!'
+      : (timedOut ? "Time's up!" : 'How did you fare?');
 
     resBody.innerHTML = '';
     results.forEach(function (r) {
@@ -733,8 +745,12 @@
         html += '<span class="fb-tick">&#10003; precise</span>' +
           '<p class="fb-line fb-chose">' + r.correctText + '</p>';
       } else {
-        html += '<p class="fb-line fb-chose">You chose: <b>' + r.chose + '</b></p>';
-        if (r.reason) html += '<p class="fb-reason">' + r.reason + '</p>';
+        if (r.unlinked) {
+          html += '<p class="fb-line fb-chose">Ran out of time on this one.</p>';
+        } else {
+          html += '<p class="fb-line fb-chose">You chose: <b>' + r.chose + '</b></p>';
+          if (r.reason) html += '<p class="fb-reason">' + r.reason + '</p>';
+        }
         html += '<p class="fb-line"><span class="fb-tick">&#10003; Precise answer:</span> ' + r.correctText + '</p>';
       }
       fb.innerHTML = html;
