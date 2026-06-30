@@ -643,11 +643,12 @@
   function scheduleTick() {
     clearTimeout(state.tickTimer);
     if (!state.timer.running) return;
-    var rates = { calm: 1000, worried: 700, anxious: 500, panic: 360 };
-    var vols = { calm: 0.03, worried: 0.038, anxious: 0.045, panic: 0.052 };
+    var rates = { calm: 1000, worried: 640, anxious: 420, panic: 250 };
+    var vols = { calm: 0.04, worried: 0.05, anxious: 0.06, panic: 0.075 };
     var st = state.clockState;
     state.tickTimer = setTimeout(function () {
-      audio.tick(vols[st]);   // accelerating tick only — the bass "thump" was the grating part
+      audio.tick(vols[st]);
+      if (st === 'anxious' || st === 'panic') audio.thump();   // the jeopardy build Damien likes
       scheduleTick();
     }, rates[st]);
   }
