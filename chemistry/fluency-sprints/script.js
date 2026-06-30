@@ -126,7 +126,8 @@
      HUB
      ===================================================================== */
   function renderHub() {
-    hubCoach.innerHTML = clockChar.innerHTML; // reuse the clock SVG as a friendly coach
+    // the Bunsen duo greets on the hub (the clock is reserved for in-game tension)
+    hubCoach.innerHTML = '<img src="assets/characters/both_wink.webp" alt="" class="hub-duo" draggable="false" />';
     hubGrid.innerHTML = '';
     DATA.forEach(function (set) {
       var best = getBest(set.id);
@@ -361,6 +362,7 @@
     }
     state.connections.set(termId, defCid);
     audio.connect();
+    reactPeek();
     redrawWires();
     afterConnectionChange();
   }
@@ -373,11 +375,17 @@
     announce('Wire removed.');
   }
   function afterConnectionChange() {
-    var all = state.connections.size === state.terms.length;
+    var done = state.connections.size, total = state.terms.length, all = done === total;
     setCheckEnabled(all);
-    respondHint.textContent = all ? 'Ready! Tap the crest.'
-      : (state.terms.length - state.connections.size) + ' term' +
-        ((state.terms.length - state.connections.size) === 1 ? '' : 's') + ' still to link';
+    // the duo cheers you on: dim → brightening → fully ready as you link more terms
+    checkBtn.dataset.progress = done === 0 ? 'none' : (all ? 'all' : 'some');
+    // when ready, the speech bubble is the call-to-action — clear the hint so they don't overlap
+    respondHint.textContent = all ? ''
+      : (total - done) + ' term' + ((total - done) === 1 ? '' : 's') + ' still to link';
+  }
+  function reactPeek() {
+    checkBtn.classList.remove('react'); void checkBtn.offsetWidth; checkBtn.classList.add('react');
+    setTimeout(function () { checkBtn.classList.remove('react'); }, 420);
   }
   function setCheckEnabled(on) {
     checkBtn.disabled = !on;
@@ -695,6 +703,10 @@
     if (resCrestImg) {
       resCrestImg.src = allRight ? 'assets/characters/thumbs_up.png' : 'assets/characters/both_wink.png';
       resCrestImg.classList.add('res-char');
+      // the duo "arrives" to present the verdict (replays on repeat results)
+      resCrestImg.classList.remove('reveal-win', 'reveal-try');
+      void resCrestImg.offsetWidth;
+      resCrestImg.classList.add(allRight ? 'reveal-win' : 'reveal-try');
     }
 
     // star rating: accuracy first, then speed
@@ -777,6 +789,8 @@
   function closeResults() {
     resultsOverlay.hidden = true;
     try { screenGame.removeAttribute('inert'); } catch (e) {}
+    if (confetti.raf) { cancelAnimationFrame(confetti.raf); confetti.raf = 0; }
+    if (confetti.ctx) confetti.ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
     if (!screenGame.hidden && !checkBtn.disabled) { try { checkBtn.focus(); } catch (e) {} }
   }
 
@@ -790,7 +804,7 @@
       f.classList.toggle('done', i < state.sprintIdx);
       f.classList.toggle('current', i === state.sprintIdx);
     });
-    var pct = [4, 36.7, 69.3, 96][state.sprintIdx] || 4;
+    var pct = [4, 34.7, 65.3, 96][state.sprintIdx] || 4;
     trackRunner.style.left = pct + '%';
     trackRunner.classList.add('running');
     setTimeout(function () { trackRunner.classList.remove('running'); }, 700);
