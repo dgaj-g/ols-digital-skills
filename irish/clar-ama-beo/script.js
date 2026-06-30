@@ -32,15 +32,6 @@
     AUDIO_CACHE[slug] = a; return a;
   }
   function preloadAudio() { SUBJECTS.forEach(function (s) { if (!AUDIO_CACHE[s.slug]) makeClip(s.slug); }); }
-  function unlockAudio() {
-    SUBJECTS.forEach(function (s) {
-      var a = AUDIO_CACHE[s.slug]; if (!a) return;
-      a.muted = true;
-      var p = a.play();
-      if (p && p.then) p.then(function () { a.pause(); a.currentTime = 0; a.muted = false; }).catch(function () { a.muted = false; });
-      else { try { a.pause(); } catch (e) {} a.muted = false; }
-    });
-  }
   function playAnnouncement(slug, btn) {
     resumeCtx();
     var a = AUDIO_CACHE[slug] || makeClip(slug);
@@ -392,7 +383,7 @@
   /* ---------- wiring ---------- */
   function startGame() {
     resumeCtx();
-    preloadAudio(); unlockAudio();   /* warm + unlock every clip on this gesture so the first tap is never silent */
+    preloadAudio();   /* warm each clip (own preloaded element) so the first tap plays first-time; the Start tap itself is the gesture that unlocks audio */
     S = newGame(); resetDay();
     show(scrGame);
     buildWeekStrip(); buildTimetable(); buildBank(); renderHud(); updateGoLive(); instruction();
