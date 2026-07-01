@@ -13,6 +13,13 @@
   function shuffle(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
   function el(tag, cls, html) { const n = document.createElement(tag); if (cls) n.className = cls; if (html !== undefined) n.innerHTML = html; return n; }
   const MAP = window.UK_MAP || { width: 644, height: 820, paths: [], markers: {} };
+  /* Redesign helpers: GSAP is vendored locally; DECOR provides the ambient
+     scenery. Both are optional — every animation has a no-GSAP fallback so
+     the activity still works if a script fails to load. */
+  const G = window.gsap || null;
+  const DECOR = window.OLS_DECOR || null;
+  const REDUCED = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const FANCY = G && !REDUCED;
 
   /* =====================  Audio (Web Audio, lazy)  ===================== */
   let audioCtx = null;
@@ -237,7 +244,8 @@
   let currentStop = null;
   function heroBlock(s) {
     const wrap = el('div', 'stop-hero');
-    wrap.innerHTML = '<img src="' + s.hero.img + '" alt="' + s.hero.alt + '" />' +
+    // alternate the Ken Burns drift direction stop by stop
+    wrap.innerHTML = '<img class="' + (s.num % 2 ? 'kb-a' : 'kb-b') + '" src="' + s.hero.img + '" alt="' + s.hero.alt + '" />' +
       '<div class="stop-hero-tag">' +
         '<span class="htag">📍 ' + s.region + '</span>' +
         '<span class="htag proc-' + s.process.toLowerCase() + '">' + s.landform + '</span>' +
@@ -260,13 +268,20 @@
     $('#stop-kicker').textContent = 'Stop ' + s.num + ' of 6 · ' + s.process;
     $('#stop-title').textContent = s.icon + ' ' + s.name;
     if (keyboardPick) { keyboardPick.chip.style.outline = ''; keyboardPick = null; } // drop any in-flight keyboard pick from a previous stop
-    const body = $('#stop-body'); body.innerHTML = '';
+    const body = $('#stop-body');
+    if (G) G.killTweensOf('#stop-body *'); // stop any in-flight tweens (e.g. a mid-fall Holderness building) before the teardown
+    body.innerHTML = '';
     $('#btn-stop-next').hidden = true; configureCheck(false, false); checkHandler = null;
     updateScoreBadge(); show('stop');
     body.appendChild(heroBlock(s));
     body.appendChild(el('p', 'stop-summary', s.summary));
     body.appendChild(el('div', 'fact-card', '<span class="fact-ico">' + s.fact.icon + '</span><span class="fact-text">' + s.fact.text + '</span>'));
     BUILDERS[id](s, body);
+    // Staggered entrance for the top-level blocks. Opacity ONLY — a transform
+    // on these containers would turn them into containing blocks for the
+    // drag engine's position:fixed chip lift and mis-anchor any drag started
+    // mid-entrance. clearProps removes the inline opacity afterwards.
+    if (FANCY) G.from('#stop-body > *', { opacity: 0, duration: 0.45, stagger: 0.09, ease: 'power1.out', clearProps: 'opacity' });
   }
   function enableStampButton(s, doneText) {
     const btn = $('#btn-stop-next');
@@ -299,44 +314,56 @@
   const CENTER = [322, 410];
 
   function routeD() {
-    // dotted voyage line through display positions, bowing outward into the sea
-    const pts = ORDER.map(k => DISPLAY[k]);
-    let d = 'M' + pts[0][0] + ',' + pts[0][1];
-    for (let i = 1; i < pts.length; i++) {
-      const a = pts[i - 1], b = pts[i];
-      const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
-      let nx = mx - CENTER[0], ny = my - CENTER[1];
-      const len = Math.hypot(nx, ny) || 1; nx /= len; ny /= len;
-      let bow = 70;
-      // the long NI crossing bows strongly south (through the Irish Sea) instead of over land
-      if (ORDER[i] === 'giants-causeway') { nx = -0.25; ny = 1; bow = 150; }
-      const cx = mx + nx * bow, cy = my + ny * bow;
-      d += ' Q' + cx.toFixed(0) + ',' + cy.toFixed(0) + ' ' + b[0] + ',' + b[1];
-    }
-    return d;
+    // The voyage line, hand-tuned against the actual land polygons so the
+    // ship stays in open water the whole way: along the Channel, around Kent
+    // and up the North Sea to Holderness, back south around Cornwall, up
+    // St George's Channel and through the North Channel to the Causeway.
+    // (Verified by sampling 240 points against every land path's
+    // isPointInFill — the sole remaining contact is a 1-sample graze
+    // rounding the Torr Head tip.) CENTER kept for reference only.
+    return 'M566,772 Q510,844 438,812 Q368,848 300,792' +
+      ' Q420,852 580,824 Q718,790 714,640 Q708,520 624,452' +
+      ' Q704,495 648,548' +
+      ' Q734,650 640,790 Q480,852 300,840 Q130,824 100,720' +
+      ' Q190,655 300,560 Q316,470 268,380 Q274,342 288,316 Q248,310 196,312 Q140,312 110,322';
   }
 
   let mapUid = 0;
   function buildMapSVG(interactive) {
     const vb = '-96 -26 836 884';
-    const uid = 'landGrad' + (++mapUid);
+    const n = ++mapUid;
+    const uid = 'landGrad' + n, halo = 'haloG' + n;
     const svg = document.createElementNS(SVG_NS, 'svg');
     svg.setAttribute('viewBox', vb);
     svg.setAttribute('role', 'img');
     let inner =
-      '<defs><linearGradient id="' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0" stop-color="#2f5a8c"/><stop offset="1" stop-color="#1a3a6b"/></linearGradient></defs>';
-    // land
+      '<defs>' +
+      '<linearGradient id="' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#3a679c"/><stop offset="0.55" stop-color="#24497f"/><stop offset="1" stop-color="#16305a"/></linearGradient>' +
+      '<radialGradient id="' + halo + '" cx="0.5" cy="0.5" r="0.5">' +
+      '<stop offset="0" stop-color="#E4B824" stop-opacity="0.55"/><stop offset="0.7" stop-color="#E4B824" stop-opacity="0.18"/>' +
+      '<stop offset="1" stop-color="#E4B824" stop-opacity="0"/></radialGradient>' +
+      '</defs>';
+    // atlas ornaments behind everything: faint graticule
+    if (DECOR) inner += DECOR.mapGraticule();
+    // coastal-shelf banding (wide pale strokes under the land = shallow water)
+    MAP.paths.forEach(p => { inner += '<path class="uk-shelf" d="' + p.path + '"/>'; });
+    MAP.paths.forEach(p => { inner += '<path class="uk-shelf-inner" d="' + p.path + '"/>'; });
+    // land + a gold coastline hairline
     MAP.paths.forEach(p => { inner += '<path class="uk-land" fill="url(#' + uid + ')" d="' + p.path + '"/>'; });
+    MAP.paths.forEach(p => { inner += '<path class="uk-coast-gold" d="' + p.path + '"/>'; });
     // sea labels
     inner += '<text class="uk-region-label" x="150" y="640" opacity="0.55">IRISH</text>' +
              '<text class="uk-region-label" x="150" y="662" opacity="0.55">SEA</text>' +
              '<text class="uk-region-label" x="640" y="360">NORTH</text>' +
              '<text class="uk-region-label" x="656" y="382">SEA</text>' +
              '<text class="uk-region-label" x="330" y="838">ENGLISH CHANNEL</text>';
-    // route
+    // compass rose in the open North Sea corner
+    if (DECOR) inner += DECOR.compassRose(654, 148, 46);
+    // route (the faint planned course; the voyage draws a golden travelled line over it)
     inner += '<path id="uk-route" class="uk-route" d="' + routeD() + '"/>';
     svg.innerHTML = inner;
+    svg.dataset.halo = halo;
 
     // leaders + stop markers (added as nodes so we can wire events)
     ORDER.forEach((k, i) => {
@@ -357,7 +384,9 @@
       const g = document.createElementNS(SVG_NS, 'g');
       g.setAttribute('class', 'uk-stop'); g.dataset.stop = k;
       g.innerHTML =
+        '<circle class="stop-halo" cx="' + dp[0] + '" cy="' + dp[1] + '" r="30" fill="url(#' + svg.dataset.halo + ')"/>' +
         '<circle class="stop-ring" cx="' + dp[0] + '" cy="' + dp[1] + '" r="15"/>' +
+        '<circle class="stop-orbit" cx="' + dp[0] + '" cy="' + dp[1] + '" r="22"/>' +
         '<circle class="stop-dot" cx="' + dp[0] + '" cy="' + dp[1] + '" r="16"/>' +
         '<text class="stop-num" x="' + dp[0] + '" y="' + (dp[1] + 5) + '">' + s.num + '</text>';
       svg.appendChild(g);
@@ -386,43 +415,124 @@
   }
 
   /* =====================  Voyage animation  ===================== */
-  let voyageRAF = null, voyageDone = false;
+  let voyageRAF = null, voyageDone = false, wakeTimer = null;
+  function revealStop(svg, k) {
+    const g = svg.querySelector('.uk-stop[data-stop="' + k + '"]');
+    if (!g) return;
+    g.classList.add('seen'); // gold "discovered" styling on the voyage map
+    const dp = DISPLAY[k];
+    // gold ripple where the marker appears
+    const ripple = document.createElementNS(SVG_NS, 'circle');
+    ripple.setAttribute('cx', dp[0]); ripple.setAttribute('cy', dp[1]); ripple.setAttribute('r', '10');
+    ripple.setAttribute('fill', 'none'); ripple.setAttribute('stroke', '#E4B824'); ripple.setAttribute('stroke-width', '3');
+    svg.insertBefore(ripple, g);
+    if (FANCY) {
+      g.style.transformBox = 'fill-box'; g.style.transformOrigin = 'center';
+      G.fromTo(g, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.65, ease: 'back.out(2.4)' });
+      G.fromTo(ripple, { attr: { r: 10 }, opacity: 0.9 }, { attr: { r: 40 }, opacity: 0, duration: 0.9, ease: 'power1.out', onComplete: () => ripple.remove() });
+    } else {
+      g.style.transition = 'opacity .4s'; g.style.opacity = '1';
+      setTimeout(() => ripple.remove(), 60);
+    }
+  }
+  function setCaption(caption, text) {
+    if (caption.textContent === text) return;
+    caption.textContent = text;
+    if (FANCY) G.fromTo(caption, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' });
+  }
   function runVoyage() {
     voyageDone = false; show('voyage');
     const wrap = $('#voyage-map'); wrap.innerHTML = '';
     const svg = buildMapSVG(false);
-    // hide all stop groups initially; boat reveals them
+    // hide all stop groups initially; the boat reveals them as it passes
     $$('.uk-stop', svg).forEach(g => { g.style.opacity = '0'; });
-    // boat
-    const boat = document.createElementNS(SVG_NS, 'text');
-    boat.setAttribute('class', 'uk-boat'); boat.setAttribute('text-anchor', 'middle'); boat.textContent = '⛵';
-    svg.appendChild(boat);
-    wrap.appendChild(svg);
 
     const route = svg.querySelector('#uk-route');
     const L = route.getTotalLength();
+    // the golden "travelled" line draws itself behind the boat
+    const travelled = document.createElementNS(SVG_NS, 'path');
+    travelled.setAttribute('class', 'uk-route-travelled');
+    travelled.setAttribute('d', routeD());
+    travelled.style.strokeDasharray = L + ' ' + L;
+    travelled.style.strokeDashoffset = L;
+    svg.insertBefore(travelled, route.nextSibling);
+    // wake foam sits under the boat
+    const wakeG = document.createElementNS(SVG_NS, 'g');
+    svg.appendChild(wakeG);
+    // the illustrated boat
+    const boatWrap = document.createElementNS(SVG_NS, 'g');
+    boatWrap.innerHTML = DECOR ? DECOR.boatMarkup('uk-boat') : '<text class="uk-boat" text-anchor="middle" font-size="22">⛵</text>';
+    svg.appendChild(boatWrap);
+    const boat = boatWrap.firstChild;
+    wrap.appendChild(svg);
+
     const caption = $('#voyage-caption');
-    const captions = ['Casting off from Dorset…', 'Along the Jurassic Coast…', 'North to Yorkshire…', 'Across to Northern Ireland…'];
-    // fraction of route length at each stop (approx by cumulative segment share)
-    const stopFrac = ORDER.map((k, i) => i / (ORDER.length - 1));
+    // one caption per sailing leg (shown while heading to stop i+1)
+    const LEGCAPS = [
+      'Casting off along the Jurassic Coast…',
+      'West to the great shingle beach…',
+      'Around Kent and north to Yorkshire…',
+      'South to the villages fighting the sea…',
+      'The long voyage west to Northern Ireland…'
+    ];
+    // measure where the route actually passes each pin (the legs are very
+    // different lengths, so even fractions would mistime the reveals)
+    const stopFrac = (() => {
+      const N = 320, best = ORDER.map(() => ({ d: Infinity, t: 0 }));
+      for (let i = 0; i <= N; i++) {
+        const p = route.getPointAtLength(L * i / N);
+        ORDER.forEach((k, s) => {
+          const dp = DISPLAY[k], d = Math.hypot(p.x - dp[0], p.y - dp[1]);
+          if (d < best[s].d) { best[s].d = d; best[s].t = i / N; }
+        });
+      }
+      best[0].t = 0; best[ORDER.length - 1].t = 1;
+      return best.map(b => b.t);
+    })();
     let revealed = new Set();
-    const DUR = 5200; let t0 = performance.now();
-    caption.textContent = captions[0];
+    const DUR = 7200; let t0 = performance.now();
+    setCaption(caption, LEGCAPS[0]);
+
+    // foam dots dropped behind the boat while it sails
+    let lastFlip = 1;
+    if (!REDUCED) {
+      wakeTimer = setInterval(() => {
+        if (voyageDone) return;
+        const t = Math.min(1, (performance.now() - t0) / DUR);
+        const p = route.getPointAtLength(L * t);
+        const dot = document.createElementNS(SVG_NS, 'circle');
+        dot.setAttribute('class', 'wake-dot');
+        dot.setAttribute('cx', p.x - lastFlip * 16 + (Math.random() * 8 - 4));
+        dot.setAttribute('cy', p.y + 1 + (Math.random() * 5 - 2));
+        dot.setAttribute('r', '2.5'); dot.setAttribute('fill', '#f7fbff'); dot.setAttribute('opacity', '0.9');
+        wakeG.appendChild(dot);
+        if (G) G.to(dot, { attr: { r: 8 }, opacity: 0, duration: 1.6, ease: 'power1.out', onComplete: () => dot.remove() });
+        else setTimeout(() => dot.remove(), 500);
+      }, 120);
+    }
 
     function frame(now) {
       if (voyageDone) return;
       const t = Math.min(1, (now - t0) / DUR);
       const p = route.getPointAtLength(L * t);
-      boat.setAttribute('x', p.x); boat.setAttribute('y', p.y - 4);
-      caption.textContent = captions[Math.min(captions.length - 1, Math.floor(t * captions.length))];
+      const p2 = route.getPointAtLength(Math.min(L, L * t + 6));
+      const dx = p2.x - p.x, dy = p2.y - p.y;
+      // face the direction of travel (mirror rather than rotate through 180°)
+      const flip = dx < -0.4 ? -1 : dx > 0.4 ? 1 : lastFlip; lastFlip = flip;
+      const tilt = Math.max(-11, Math.min(11, dy * flip * 1.6));
+      const bob = REDUCED ? 0 : Math.sin(now / 240) * 2.2;
+      // 1.8× so the ship reads clearly at map scale (~40px on a phone map)
+      boat.setAttribute('transform',
+        'translate(' + p.x.toFixed(1) + ',' + (p.y + bob).toFixed(1) + ') scale(' + (flip * 1.8) + ',1.8) rotate(' + tilt.toFixed(1) + ')');
+      travelled.style.strokeDashoffset = L * (1 - t);
       ORDER.forEach((k, i) => {
-        if (!revealed.has(k) && t >= stopFrac[i] - 0.02) {
+        if (!revealed.has(k) && t >= stopFrac[i] - 0.012) {
           revealed.add(k);
-          const g = svg.querySelector('.uk-stop[data-stop="' + k + '"]');
-          if (g) { g.style.transition = 'opacity .4s'; g.style.opacity = '1'; }
+          revealStop(svg, k);
           sfx.arrive();
         }
       });
+      setCaption(caption, LEGCAPS[Math.min(LEGCAPS.length - 1, Math.max(0, revealed.size - 1))]);
       if (t >= 1) { endVoyage(); return; }
       voyageRAF = requestAnimationFrame(frame);
     }
@@ -431,6 +541,7 @@
   function endVoyage() {
     if (voyageDone) return; voyageDone = true;
     if (voyageRAF) cancelAnimationFrame(voyageRAF);
+    if (wakeTimer) { clearInterval(wakeTimer); wakeTimer = null; }
     state.seenVoyage = true; save();
     setTimeout(() => { $('#voyage-map').innerHTML = ''; renderHub(); show('map'); }, 300);
   }
@@ -441,6 +552,16 @@
     const svg = buildMapSVG(true);
     mapWrap.appendChild(svg);
     const activeIdx = markMapStates(svg);
+
+    // park the boat just offshore of the next stop, gently bobbing
+    if (activeIdx >= 0 && DECOR) {
+      const dp = DISPLAY[ORDER[activeIdx]];
+      const moor = document.createElementNS(SVG_NS, 'g');
+      moor.setAttribute('transform', 'translate(' + (dp[0] - 46) + ',' + (dp[1] + 4) + ') scale(1.35)');
+      moor.setAttribute('aria-hidden', 'true');
+      moor.innerHTML = DECOR.boatMarkup('uk-boat uk-boat-hub');
+      svg.appendChild(moor);
+    }
 
     const list = $('#itinerary-list'); list.innerHTML = '';
     ORDER.forEach((k, i) => {
@@ -658,23 +779,42 @@
     const pa = taskPanel('Part 1', 'Run the waves', s.driftIntro);
     // simulation SVG
     const simWrap = el('div', 'drift-sim');
+    // Beach pebble texture: fixed positions, sizes deliberately UNMIXED with
+    // position — Part B asks where the big pebbles end up, so the scene must
+    // not leak a size gradient along the beach.
+    const pebbleField = [
+      [40,232,3,2.2],[95,246,2.2,1.7],[150,228,3.4,2.5],[210,242,2.4,1.8],[262,230,3,2.2],
+      [318,247,2.2,1.6],[372,233,3.3,2.4],[428,244,2.5,1.9],[485,229,3.1,2.3],[545,241,2.3,1.7],
+      [70,218,2.5,1.9],[185,216,2.2,1.6],[298,219,2.8,2.1],[410,216,2.3,1.7],[520,220,2.9,2.1],
+      [130,252,2.7,2],[350,256,2.6,1.9],[560,254,2.8,2]
+    ].map(p => '<ellipse cx="' + p[0] + '" cy="' + p[1] + '" rx="' + p[2] + '" ry="' + p[3] + '" fill="#c9b183" stroke="#a98f5e" stroke-width="0.5"/>').join('');
     simWrap.innerHTML =
       '<svg viewBox="0 0 600 260" xmlns="' + SVG_NS + '" aria-label="Longshore drift simulation showing a pebble moving along a beach">' +
-      '<defs><linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b6ea3"/><stop offset="1" stop-color="#5aa0cf"/></linearGradient>' +
-      '<linearGradient id="sandG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0e0b6"/><stop offset="1" stop-color="#e2cd93"/></linearGradient></defs>' +
+      '<defs>' +
+      '<linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e5a8e"/><stop offset="0.7" stop-color="#3d83b6"/><stop offset="1" stop-color="#5aa0cf"/></linearGradient>' +
+      '<linearGradient id="sandG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e7c2"/><stop offset="1" stop-color="#dcc78e"/></linearGradient>' +
+      '<radialGradient id="pebG" cx="0.35" cy="0.3" r="0.85"><stop offset="0" stop-color="#9a8058"/><stop offset="0.6" stop-color="#6b5636"/><stop offset="1" stop-color="#4a3a20"/></radialGradient>' +
+      '<linearGradient id="glintG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity="0"/><stop offset="0.5" stop-color="#ffffff" stop-opacity="0.35"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>' +
+      '</defs>' +
       '<rect x="0" y="0" width="600" height="150" fill="url(#seaG)"/>' +
+      '<rect x="120" y="18" width="330" height="7" rx="3.5" fill="url(#glintG)"/>' +
+      '<rect x="60" y="42" width="260" height="5" rx="2.5" fill="url(#glintG)" opacity="0.7"/>' +
+      '<g class="sim-wave-line"><path d="M-120,66 q30,-8 60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0" stroke="#bcd9ec" stroke-width="2.2" fill="none" opacity="0.6"/></g>' +
+      '<g class="sim-wave-line slow"><path d="M-120,102 q30,-7 60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0" stroke="#cfe4f2" stroke-width="2" fill="none" opacity="0.5"/></g>' +
       '<rect x="0" y="120" width="600" height="140" fill="url(#sandG)"/>' +
-      '<path d="M0,150 Q150,120 300,150 T600,150 L600,120 L0,120 Z" fill="#cfe0ee" opacity="0.6"/>' +
-      '<g id="wave-front" opacity="0"><path d="M-40,150 Q150,118 340,150" stroke="#eaf5ff" stroke-width="5" fill="none" opacity="0.9"/></g>' +
-      '<line x1="20" y1="150" x2="580" y2="150" stroke="#fff" stroke-dasharray="4 6" stroke-width="1.5" opacity="0.5"/>' +
-      '<text x="12" y="30" fill="#eaf5ff" font-size="13" font-weight="700">SEA</text>' +
-      '<text x="12" y="245" fill="#8a6f34" font-size="13" font-weight="700">BEACH</text>' +
-      '<text x="470" y="30" fill="#eaf5ff" font-size="12">prevailing wind →</text>' +
-      '<g id="pebble"><circle cx="70" cy="200" r="9" fill="#6b5636" stroke="#3f3016" stroke-width="2"/></g>' +
-      '<g id="arrow-swash" opacity="0"><line x1="0" y1="0" x2="0" y2="0" stroke="#e4b824" stroke-width="4" marker-end="url(#ah)"/></g>' +
-      '<g id="arrow-back" opacity="0"><line x1="0" y1="0" x2="0" y2="0" stroke="#c0603a" stroke-width="4" marker-end="url(#ah2)"/></g>' +
-      '<defs><marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#e4b824"/></marker>' +
-      '<marker id="ah2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#c0603a"/></marker></defs>' +
+      '<path d="M0,150 Q150,128 300,150 T600,150 L600,120 L0,120 Z" fill="#bfd8ea" opacity="0.65"/>' +
+      '<g id="wave-front" opacity="0"><path d="M-40,150 Q150,118 340,150" stroke="#eaf5ff" stroke-width="6" fill="none" opacity="0.9" stroke-linecap="round"/>' +
+      '<path d="M-40,156 Q150,126 340,156" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.6" stroke-dasharray="3 8"/></g>' +
+      '<path class="sim-foam-edge" d="M0,150 Q150,132 300,150 T600,150" stroke="#f7fbff" stroke-width="2.5" fill="none" opacity="0.9" stroke-linecap="round"/>' +
+      '<g opacity="0.75">' + pebbleField + '</g>' +
+      '<text x="12" y="30" fill="#eaf5ff" font-size="13" font-weight="700" letter-spacing="2">SEA</text>' +
+      '<text x="12" y="245" fill="#8a6f34" font-size="13" font-weight="700" letter-spacing="2">BEACH</text>' +
+      '<g transform="translate(455,16)"><rect x="-8" y="-2" width="140" height="22" rx="11" fill="#10395f" opacity="0.55"/>' +
+      '<text x="8" y="13" fill="#eaf5ff" font-size="11.5" font-weight="600">prevailing wind ⟶</text></g>' +
+      '<g id="trail"></g>' +
+      '<g id="pebble"><ellipse cx="70" cy="207" rx="11" ry="3" fill="#4a3a20" opacity="0.25"/>' +
+      '<ellipse cx="70" cy="200" rx="10" ry="8.6" fill="url(#pebG)" stroke="#3f3016" stroke-width="1.4"/>' +
+      '<ellipse cx="66.5" cy="196.5" rx="3.4" ry="2.4" fill="#ffffff" opacity="0.35"/></g>' +
       '</svg>';
     pa.appendChild(simWrap);
 
@@ -708,18 +848,28 @@
     const svg = simWrap.querySelector('svg');
     const peb = svg.querySelector('#pebble');
     const waveFront = svg.querySelector('#wave-front');
+    const trailG = svg.querySelector('#trail');
     let animating = false, solved = false;
 
     function setPeb(x, y) { peb.setAttribute('transform', 'translate(' + (x - 70) + ',' + (y - 200) + ')'); }
+    function dropTrailDot(x, y) {
+      const d = document.createElementNS(SVG_NS, 'circle');
+      d.setAttribute('cx', x); d.setAttribute('cy', y); d.setAttribute('r', '3');
+      d.setAttribute('fill', '#E4B824'); d.setAttribute('stroke', '#8a6f34'); d.setAttribute('stroke-width', '0.8'); d.setAttribute('opacity', '0.85');
+      trailG.appendChild(d);
+      if (FANCY) G.from(d, { attr: { r: 0 }, duration: 0.3, ease: 'back.out(2)' });
+    }
 
     runBtn.addEventListener('click', () => {
       if (animating) return;
       const swashRight = state2.swash.correct, backRight = state2.back.correct;
       animating = true; runBtn.disabled = true; verdict.textContent = ''; verdict.className = 'sim-verdict';
+      trailG.innerHTML = '';
       // vectors
       const swashVec = swashRight ? [34, -22] : [0, -26];
       const backVec = backRight ? [0, 24] : [-34, 20];
       let base = [70, 210]; setPeb(base[0], base[1]);
+      dropTrailDot(base[0], 205);
       let cycle = 0; const cycles = 6;
       function doCycle() {
         if (cycle >= cycles) { finishSim(swashRight && backRight, base[0]); return; }
@@ -729,7 +879,9 @@
           // backwash down
           animateVec(mid, [mid[0] + backVec[0], mid[1] + backVec[1]], 420, false, down => {
             base = [down[0], Math.min(212, Math.max(196, down[1]))]; // keep on beach band
-            base[1] = 205; cycle++; doCycle();
+            base[1] = 205; cycle++;
+            dropTrailDot(base[0], 205);
+            doCycle();
           });
         });
       }
@@ -755,6 +907,12 @@
       if (correct && drifted > 80) {
         verdict.textContent = '✓ The pebble travelled ' + Math.round(drifted / 3) + ' “steps” along the beach — that is longshore drift!';
         verdict.className = 'sim-verdict ok';
+        // gold sparkle along the drift path it just made
+        if (FANCY) {
+          $$('#trail circle', svg).forEach((d, i) => {
+            G.fromTo(d, { attr: { r: 3 } }, { attr: { r: 5.5 }, yoyo: true, repeat: 1, duration: 0.22, delay: i * 0.07, ease: 'power1.inOut' });
+          });
+        }
         // mark option buttons
         $$('.opt-btn', pa).forEach(b => { if (b.dataset.correct) b.classList.add('good'); });
         if (!solved) {
@@ -766,7 +924,8 @@
         verdict.textContent = '✗ The pebble just went up and down and ended where it started — no drift. Try the arrows again.';
         verdict.className = 'sim-verdict no'; sfx.err();
         // reset for retry
-        setPeb(70, 205); $$('.opt-btn', pa).forEach(b => b.classList.remove('good', 'bad'));
+        setPeb(70, 205); trailG.innerHTML = '';
+        $$('.opt-btn', pa).forEach(b => b.classList.remove('good', 'bad'));
         runBtn.disabled = !(state2.swash && state2.back);
       }
     }
@@ -796,14 +955,56 @@
     // cross-section
     const START_FACE = 210, PX_PER_M = 3.2;
     const houses = [ { x: 300, label: 'road' }, { x: 372, label: 'house' }, { x: 452, label: 'house' }, { x: 540, label: 'farm' } ];
+    // mini SVG buildings (drawn, not emoji) — baseline sits on the grass at y=0
+    const PROP_ART = {
+      road: '<rect x="-17" y="-6" width="34" height="6.5" rx="1.5" fill="#525d68"/>' +
+            '<line x1="-13" y1="-2.8" x2="13" y2="-2.8" stroke="#f4f6fa" stroke-width="1.1" stroke-dasharray="4 4"/>',
+      house: '<rect x="-9" y="-12" width="18" height="12" fill="#e8eef5" stroke="#7d8b9d" stroke-width="0.8"/>' +
+             '<path d="M-11.5,-12 L0,-21.5 L11.5,-12 Z" fill="#b04a3a" stroke="#8c392c" stroke-width="0.8"/>' +
+             '<rect x="-2" y="-6" width="4" height="6" fill="#5c4326"/>' +
+             '<rect x="3" y="-10" width="4" height="3.4" fill="#9ec2e0" stroke="#7d8b9d" stroke-width="0.5"/>' +
+             '<rect x="-7" y="-10" width="4" height="3.4" fill="#9ec2e0" stroke="#7d8b9d" stroke-width="0.5"/>',
+      farm: '<rect x="-13" y="-11" width="19" height="11" fill="#a8422f" stroke="#7e2f22" stroke-width="0.8"/>' +
+            '<path d="M-14.5,-11 Q-3.5,-20 7.5,-11 Z" fill="#c96a4a" stroke="#7e2f22" stroke-width="0.8"/>' +
+            '<rect x="-5" y="-6.5" width="5" height="6.5" fill="#5c4326"/>' +
+            '<rect x="9" y="-14" width="6" height="14" rx="1" fill="#c2cbd6" stroke="#8b98a6" stroke-width="0.7"/>' +
+            '<ellipse cx="12" cy="-14" rx="3" ry="1.8" fill="#98a4b1"/>'
+    };
     simWrap.innerHTML =
       '<svg viewBox="0 0 600 300" xmlns="' + SVG_NS + '" aria-label="Cross-section of the Holderness cliff retreating as years pass">' +
-      '<defs><linearGradient id="seaH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b74a4"/><stop offset="1" stop-color="#5f9ec6"/></linearGradient></defs>' +
-      '<rect x="0" y="0" width="600" height="300" fill="#cfe6f5"/>' +
+      '<defs>' +
+      '<linearGradient id="skyH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bcdcf0"/><stop offset="1" stop-color="#e8f4fc"/></linearGradient>' +
+      '<linearGradient id="seaH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2e6796"/><stop offset="0.6" stop-color="#4586b4"/><stop offset="1" stop-color="#5f9ec6"/></linearGradient>' +
+      '<clipPath id="landClipH"><path id="land-shape" d=""/></clipPath>' +
+      '</defs>' +
+      '<rect x="0" y="0" width="600" height="300" fill="url(#skyH)"/>' +
+      '<g fill="#ffffff" opacity="0.75"><ellipse cx="110" cy="46" rx="34" ry="10"/><ellipse cx="132" cy="40" rx="20" ry="8"/>' +
+      '<ellipse cx="330" cy="70" rx="26" ry="8"/><ellipse cx="346" cy="65" rx="15" ry="6"/></g>' +
       '<rect x="0" y="150" width="600" height="150" fill="url(#seaH)"/>' +
-      '<g id="land"></g>' +
+      '<g class="sim-wave-line"><path d="M-120,192 q30,-7 60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0" stroke="#a8cde5" stroke-width="2.2" fill="none" opacity="0.5"/></g>' +
+      '<g class="sim-wave-line slow"><path d="M-120,238 q30,-6 60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0" stroke="#bcd9ec" stroke-width="2" fill="none" opacity="0.4"/></g>' +
+      '<path class="sim-foam-edge" d="M0,151 L600,151" stroke="#f7fbff" stroke-width="2.5" fill="none" opacity="0.85" stroke-linecap="round"/>' +
+      // the land: strata bands clipped by the (redrawn) cliff shape
+      '<g clip-path="url(#landClipH)">' +
+      '<rect x="0" y="100" width="600" height="200" fill="#8a6a3f"/>' +
+      '<rect x="0" y="132" width="600" height="16" fill="#9a774a" opacity="0.9"/>' +
+      '<rect x="0" y="148" width="600" height="3" fill="#c9b183" opacity="0.7"/>' +
+      '<rect x="0" y="168" width="600" height="20" fill="#7d5f38" opacity="0.9"/>' +
+      '<rect x="0" y="188" width="600" height="3" fill="#c9b183" opacity="0.55"/>' +
+      '<rect x="0" y="214" width="600" height="18" fill="#96744a" opacity="0.85"/>' +
+      '<rect x="0" y="232" width="600" height="3" fill="#c9b183" opacity="0.5"/>' +
+      '<rect x="0" y="258" width="600" height="16" fill="#7d5f38" opacity="0.8"/>' +
+      // geological label lives INSIDE the clip, so the sea erodes it away too
+      '<text x="592" y="146" font-size="11" font-weight="700" fill="#e8d9b8" text-anchor="end" letter-spacing="1">BOULDER CLAY</text>' +
+      '</g>' +
+      '<path id="land-outline" d="" fill="none" stroke="#5e4526" stroke-width="1.4"/>' +
+      '<rect id="grass-strip" x="210" y="102" width="390" height="9" rx="2" fill="#6f9a4e"/>' +
+      '<rect id="grass-edge" x="210" y="109" width="390" height="2.5" fill="#4f7336"/>' +
+      '<g id="debris"></g>' +
+      '<g id="basefoam" opacity="0.9"><ellipse cx="0" cy="152" rx="10" ry="3.2" fill="#f7fbff" opacity="0.75"/>' +
+      '<ellipse cx="-9" cy="154" rx="5" ry="2" fill="#f7fbff" opacity="0.5"/></g>' +
       '<g id="props"></g>' +
-      '<text x="14" y="26" font-size="13" font-weight="700" fill="#3a6d99">NORTH SEA</text>' +
+      '<text x="14" y="26" font-size="13" font-weight="700" fill="#3a6d99" letter-spacing="2">NORTH SEA</text>' +
       '</svg>';
     pa.appendChild(simWrap);
     const controls = el('div', 'retreat-controls');
@@ -815,32 +1016,79 @@
     body.appendChild(pa);
 
     const svg = simWrap.querySelector('svg');
-    const landG = svg.querySelector('#land');
+    const landShape = svg.querySelector('#land-shape');
+    const landOutline = svg.querySelector('#land-outline');
+    const grass = svg.querySelector('#grass-strip');
+    const grassEdge = svg.querySelector('#grass-edge');
+    const debrisG = svg.querySelector('#debris');
+    const baseFoam = svg.querySelector('#basefoam');
     const propsG = svg.querySelector('#props');
+
+    // persistent building nodes: outer g fixes position, inner g animates the fall
+    houses.forEach(h => {
+      const outer = document.createElementNS(SVG_NS, 'g');
+      outer.setAttribute('transform', 'translate(' + h.x + ',106)');
+      const inner = document.createElementNS(SVG_NS, 'g');
+      inner.innerHTML = PROP_ART[h.label] || PROP_ART.house;
+      outer.appendChild(inner); propsG.appendChild(outer);
+      h.node = inner; h.fallen = false;
+    });
+
+    function fallProp(h, i) {
+      h.fallen = true;
+      if (FANCY) {
+        G.killTweensOf(h.node);
+        // origin 0,0 = the building's own baseline centre (local coords)
+        G.to(h.node, { x: -30, y: 106, rotation: 36 + i * 9, opacity: 0.8, duration: 0.9, ease: 'power2.in', svgOrigin: '0 0' });
+        // crumble debris tumbling down the face
+        for (let d = 0; d < 5; d++) {
+          const bit = document.createElementNS(SVG_NS, 'circle');
+          bit.setAttribute('cx', h.x - 4 + Math.random() * 8); bit.setAttribute('cy', 112);
+          bit.setAttribute('r', (1.5 + Math.random() * 2.2).toFixed(1)); bit.setAttribute('fill', '#7d5f38');
+          debrisG.appendChild(bit);
+          G.to(bit, { x: -22 - Math.random() * 16, y: 106 + Math.random() * 26, opacity: 0, duration: 0.9 + Math.random() * 0.5, ease: 'power2.in', delay: Math.random() * 0.2, onComplete: () => bit.remove() });
+        }
+      } else {
+        h.node.setAttribute('transform', 'translate(-30,106) rotate(38)');
+        h.node.setAttribute('opacity', '0.8');
+      }
+      sfx.stamp();
+    }
+    function restoreProp(h) {
+      h.fallen = false;
+      if (G) { G.killTweensOf(h.node); G.set(h.node, { x: 0, y: 0, rotation: 0, opacity: 1 }); }
+      else { h.node.removeAttribute('transform'); h.node.removeAttribute('opacity'); }
+    }
+
     let moved = false;
     function draw(years) {
       const metres = years * s.retreatRate;
       const faceX = START_FACE + metres * PX_PER_M;
-      // land: cliff block from faceX to 600, clifftop at y=110, slope to beach
-      landG.innerHTML =
-        '<path d="M' + faceX + ',110 L600,110 L600,300 L' + faceX + ',300 ' +
-        'C' + (faceX - 6) + ',210 ' + (faceX + 10) + ',170 ' + faceX + ',150 Z" fill="#8a6a3f"/>' +
-        '<rect x="' + faceX + '" y="106" width="' + Math.max(0, 600 - faceX) + '" height="10" fill="#6f9a4e"/>';
-      // props (road/houses) fall in when the face passes them
-      propsG.innerHTML = '';
-      houses.forEach(h => {
-        const gone = faceX >= h.x;
-        const icon = h.label === 'road' ? '🛣️' : h.label === 'farm' ? '🚜' : '🏠';
-        const t = document.createElementNS(SVG_NS, 'text');
-        t.setAttribute('font-size', '22'); t.setAttribute('text-anchor', 'middle');
-        if (gone) { t.setAttribute('x', h.x - 30); t.setAttribute('y', 220); t.setAttribute('transform', 'rotate(35 ' + (h.x - 30) + ' 220)'); t.setAttribute('opacity', '0.85'); }
-        else { t.setAttribute('x', h.x); t.setAttribute('y', 100); }
-        t.textContent = icon; propsG.appendChild(t);
+      // jagged cliff face profile, closed along the clifftop to the right edge
+      const face =
+        'M600,111 L600,300 L' + (faceX - 13) + ',300' +
+        ' L' + (faceX - 4) + ',266 L' + (faceX - 12) + ',238 L' + (faceX - 2) + ',209' +
+        ' L' + (faceX - 9) + ',181 L' + (faceX - 3) + ',153 L' + (faceX - 7) + ',128 L' + faceX + ',111 Z';
+      landShape.setAttribute('d', face);
+      landOutline.setAttribute('d', face);
+      grass.setAttribute('x', faceX - 2); grass.setAttribute('width', Math.max(0, 602 - faceX));
+      grassEdge.setAttribute('x', faceX - 2); grassEdge.setAttribute('width', Math.max(0, 602 - faceX));
+      baseFoam.setAttribute('transform', 'translate(' + (faceX - 9) + ',0)');
+      houses.forEach((h, i) => {
+        if (faceX >= h.x && !h.fallen) fallProp(h, i);
+        else if (faceX < h.x && h.fallen) restoreProp(h);
       });
-      readout.textContent = years + ' years · ' + metres.toFixed(1) + ' m of coast lost';
+      readout.textContent = Math.round(years) + ' years · ' + metres.toFixed(1) + ' m of coast lost';
     }
     draw(0);
-    slider.addEventListener('input', () => { draw(+slider.value); if (!moved && +slider.value >= s.retreatYears * 0.6) { moved = true; sfx.err(); setTimeout(partB, 300); } });
+    // ease the redraw between slider positions so retreat flows, never jump-cuts
+    const proxy = { v: 0 };
+    slider.addEventListener('input', () => {
+      const target = +slider.value;
+      if (FANCY) G.to(proxy, { v: target, duration: 0.5, ease: 'power2.out', overwrite: true, onUpdate: () => draw(proxy.v) });
+      else { proxy.v = target; draw(target); }
+      if (!moved && target >= s.retreatYears * 0.6) { moved = true; sfx.err(); setTimeout(partB, 300); }
+    });
 
     let partBshown = false;
     function partB() {
@@ -1016,8 +1264,10 @@
     sfx.chord();
     const conf = el('div', 'sea-confetti');
     const glyphs = ['🌊', '⚓', '🧭', '🐚', '⛵', '🗺️'];
-    for (let i = 0; i < 34; i++) {
-      const b = el('span', 'bit', glyphs[i % glyphs.length]);
+    for (let i = 0; i < 46; i++) {
+      // every other bit is a golden paper fleck; the rest are voyage glyphs
+      const fleck = i % 2 === 0;
+      const b = el('span', 'bit' + (fleck ? ' fleck' : ''), fleck ? '' : glyphs[(i >> 1) % glyphs.length]);
       b.style.left = (Math.random() * 100) + 'vw';
       b.style.setProperty('--d', (3 + Math.random() * 3) + 's');
       b.style.setProperty('--dl', (Math.random() * 1.4) + 's');
@@ -1053,7 +1303,23 @@
       const actions = $('.results-actions'); actions.parentNode.insertBefore(ext, actions);
     }
     show('results'); celebrate();
-    setTimeout(() => { $$('.rb-bar', bd).forEach(b => { b.style.width = b.dataset.w + '%'; }); }, 350);
+    // bars sweep in one after another while their percentages count up
+    setTimeout(() => {
+      $$('.rb-bar', bd).forEach((b, i) => {
+        b.style.transitionDelay = (i * 140) + 'ms';
+        b.style.width = b.dataset.w + '%';
+        const pctEl = b.closest('.rb-row').querySelector('.rb-pct');
+        const target = +b.dataset.w;
+        if (REDUCED) { pctEl.textContent = target + '%'; return; }
+        const t0 = performance.now(), delay = i * 140, dur = 800;
+        pctEl.textContent = '0%';
+        (function tick(now) {
+          const t = Math.min(1, Math.max(0, (now - t0 - delay) / dur));
+          pctEl.textContent = Math.round(target * (1 - (1 - t) * (1 - t))) + '%';
+          if (t < 1) requestAnimationFrame(tick);
+        })(t0);
+      });
+    }, 350);
   }
 
   /* =====================  Briefing  ===================== */
@@ -1071,6 +1337,12 @@
   /* =====================  Init  ===================== */
   function init() {
     load(); renderBriefing(); renderPassport(); setupPassport(); updateScoreBadge();
+    if (DECOR) {
+      DECOR.seaScene($('#screen-briefing'), 'shore');
+      DECOR.seaScene($('#screen-voyage'), 'sky');
+      DECOR.seaScene($('#screen-map'), 'full');
+      DECOR.seaScene($('#screen-results'), 'full');
+    }
     $('#btn-begin').addEventListener('click', () => { if (state.completed.length > 0) resetAll(); runVoyage(); });
     $('#btn-resume').addEventListener('click', () => { renderHub(); show('map'); });
     $('#btn-skip-voyage').addEventListener('click', endVoyage);
