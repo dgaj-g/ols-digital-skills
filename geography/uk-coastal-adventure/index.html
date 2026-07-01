@@ -27,8 +27,6 @@
   <!-- ============ SCREEN: BRIEFING (passport) ============ -->
   <section id="screen-briefing" class="screen sea-bg has-hero" >
     <div class="hero-photo" aria-hidden="true"></div>
-    <div class="waves" aria-hidden="true"><span></span><span></span><span></span></div>
-    <div class="gulls" aria-hidden="true"></div>
     <div class="briefing-card">
       <div class="passport-badge" aria-hidden="true">
         <span class="passport-badge-crown">★</span>
@@ -96,7 +94,6 @@
 
   <!-- ============ SCREEN: RESULTS (completed passport) ============ -->
   <section id="screen-results" class="screen sea-bg" hidden>
-    <div class="waves" aria-hidden="true"><span></span><span></span><span></span></div>
     <div class="results-card">
       <div class="results-stamp" id="results-stamp" aria-hidden="true">VOYAGE<br>COMPLETE</div>
       <p class="briefing-kicker">COASTAL EXPLORER · FINAL PASSPORT</p>
@@ -135,7 +132,11 @@
 <!-- ============ STOP COMPLETE OVERLAY ============ -->
 <div id="stop-done" class="stop-done" hidden>
   <div class="stop-done-card">
-    <div class="stamp-anim" id="stamp-anim" aria-hidden="true">⚓</div>
+    <div class="stamp-stage" aria-hidden="true">
+      <div class="stamp-burst"></div>
+      <div class="stamp-ring"></div>
+      <div class="stamp-anim" id="stamp-anim">⚓</div>
+    </div>
     <h3 id="stop-done-title">Stamp earned</h3>
     <p id="stop-done-text"></p>
     <button id="btn-done-continue" class="primary-btn">Back to the map →</button>
@@ -150,8 +151,10 @@
   <span>OLS Digital Skills</span>
 </footer>
 
+<script src="assets/vendor/gsap.min.js"></script>
 <script src="assets/map-data.js"></script>
 <script src="data.js"></script>
+<script src="decor.js"></script>
 <script src="script.js"></script>
 <script src="../../assets/intro-loader.js"></script>
 </body>
