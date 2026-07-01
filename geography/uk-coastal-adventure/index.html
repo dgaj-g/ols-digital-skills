@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UK Coastal Adventure — A Journey Around Britain's Coastline</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity">
+
+<header class="act-header">
+  <div class="act-header-inner">
+    <div class="act-title-block">
+      <h1>UK Coastal Adventure</h1>
+      <p class="act-sub">A journey around Britain’s coastline</p>
+    </div>
+    <div class="act-badges">
+      <span class="badge badge-exam">Year 9 Geography</span>
+      <span class="badge badge-unit">Coasts</span>
+    </div>
+  </div>
+</header>
+
+<main id="stage">
+
+  <!-- ============ SCREEN: BRIEFING (passport) ============ -->
+  <section id="screen-briefing" class="screen sea-bg has-hero" >
+    <div class="hero-photo" aria-hidden="true"></div>
+    <div class="waves" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="gulls" aria-hidden="true"></div>
+    <div class="briefing-card">
+      <div class="passport-badge" aria-hidden="true">
+        <span class="passport-badge-crown">★</span>
+        COASTAL<br>EXPLORER<br>PASSPORT
+      </div>
+      <p class="briefing-kicker">MISSION BRIEFING · COASTAL EXPLORER</p>
+      <h2>Sail around the coast of the UK</h2>
+      <p id="briefing-mission" class="briefing-mission"></p>
+
+      <div class="forces-row" id="forces-row"></div>
+
+      <details class="primer">
+        <summary>Before you set sail: how the sea shapes a coast ⛵</summary>
+        <div class="primer-body">
+          <p>Erosion works in <strong>four</strong> ways. You’ll meet them all on the journey — here they are up front:</p>
+          <div id="primer-processes" class="primer-processes"></div>
+        </div>
+      </details>
+
+      <button id="btn-begin" class="primary-btn big-btn">Set sail ⛵</button>
+      <button id="btn-resume" class="ghost-btn" hidden>Resume my voyage →</button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN: VOYAGE (animated UK map intro) ============ -->
+  <section id="screen-voyage" class="screen sky-bg" hidden>
+    <div class="voyage-caption" id="voyage-caption">Casting off…</div>
+    <div id="voyage-map" class="voyage-map" role="img"
+         aria-label="Map of the United Kingdom showing the voyage route around the coast to six landform stops"></div>
+    <button id="btn-skip-voyage" class="ghost-btn skip-btn">Skip ⏭</button>
+  </section>
+
+  <!-- ============ SCREEN: MAP HUB ============ -->
+  <section id="screen-map" class="screen sea-bg" hidden>
+    <div class="hub-head">
+      <h2>Your voyage around the UK</h2>
+      <p>Tap the next glowing stop on the map — or choose it from your itinerary.</p>
+    </div>
+    <div class="hub-layout">
+      <div id="hub-map" class="hub-map"></div>
+      <aside class="itinerary" aria-label="Voyage itinerary">
+        <h3>The itinerary</h3>
+        <ol id="itinerary-list" class="itinerary-list"></ol>
+        <button id="btn-restart" class="ghost-btn tiny-btn">↺ Restart voyage</button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN: STOP ============ -->
+  <section id="screen-stop" class="screen stop-screen" hidden>
+    <div class="stop-head">
+      <button id="btn-back-map" class="ghost-btn tiny-btn">🗺 Map</button>
+      <div class="stop-title-block">
+        <p class="stop-kicker" id="stop-kicker"></p>
+        <h2 id="stop-title"></h2>
+      </div>
+      <div class="stop-score" id="stop-score" aria-live="polite"></div>
+    </div>
+    <div id="stop-body" class="stop-body"></div>
+    <div class="stop-foot">
+      <button id="btn-check" class="primary-btn" hidden disabled>Check my answers</button>
+      <button id="btn-stop-next" class="primary-btn" hidden>Continue →</button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN: RESULTS (completed passport) ============ -->
+  <section id="screen-results" class="screen sea-bg" hidden>
+    <div class="waves" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="results-card">
+      <div class="results-stamp" id="results-stamp" aria-hidden="true">VOYAGE<br>COMPLETE</div>
+      <p class="briefing-kicker">COASTAL EXPLORER · FINAL PASSPORT</p>
+      <h2 id="results-rank"></h2>
+      <p id="results-scoreline" class="results-scoreline"></p>
+      <div id="results-breakdown" class="results-breakdown"></div>
+      <div class="results-actions">
+        <button id="btn-open-passport-end" class="primary-btn">📕 Open my full passport</button>
+        <button id="btn-print" class="ghost-btn">🖨 Print / save my passport</button>
+        <button id="btn-play-again" class="ghost-btn">↺ Start a fresh voyage</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ PASSPORT (drawer) ============ -->
+<button id="passport-fab" class="passport-fab" aria-label="Open my Coastal Explorer Passport" hidden>
+  📕<span id="passport-count" class="passport-count" aria-hidden="true">0</span>
+</button>
+<div id="passport-drawer" class="passport-drawer" hidden>
+  <div class="passport-inner">
+    <div class="passport-head">
+      <h3>📕 My Coastal Explorer Passport</h3>
+      <button id="btn-close-passport" class="ghost-btn tiny-btn" aria-label="Close passport">✕</button>
+    </div>
+    <p class="passport-sub">Every stamp you earn and every note you write is saved here — your own record of the journey.</p>
+    <div class="passport-toolbar">
+      <button id="btn-print-drawer" class="ghost-btn tiny-btn">🖨 Print / save</button>
+    </div>
+    <div id="passport-body" class="passport-body"></div>
+  </div>
+</div>
+<div id="passport-scrim" class="passport-scrim" hidden></div>
+
+<!-- ============ STOP COMPLETE OVERLAY ============ -->
+<div id="stop-done" class="stop-done" hidden>
+  <div class="stop-done-card">
+    <div class="stamp-anim" id="stamp-anim" aria-hidden="true">⚓</div>
+    <h3 id="stop-done-title">Stamp earned</h3>
+    <p id="stop-done-text"></p>
+    <button id="btn-done-continue" class="primary-btn">Back to the map →</button>
+  </div>
+</div>
+
+<!-- ============ PRINTABLE PASSPORT (built on demand) ============ -->
+<div id="print-root" aria-hidden="true"></div>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<script src="assets/map-data.js"></script>
+<script src="data.js"></script>
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
