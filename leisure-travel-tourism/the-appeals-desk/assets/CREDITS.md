@@ -1,4 +1,4 @@
-# Image credits — Focus the Scene
+# Image credits — The Appeals Desk
 
 All photographs are from Wikimedia Commons and used under their stated licences. Each was downsized to ~1000 px on the long edge and re-encoded as JPEG for web delivery; no other modifications were made. The remaining scenes in the activity use no photographs (they are typeset scene cards).
 

@@ -1,6 +1,7 @@
 /* ============================================================
-   The Activities Desk — Classifying Leisure Activities (CCEA LTT)
-   A warm tourist-information desk on the OLS brand palette.
+   The Appeals Desk — Classifying Leisure Activities (CCEA LTT)
+   An adjudicator's desk on the OLS brand palette: uphold/overrule
+   a junior clerk's classification, name the deciding factor.
    ============================================================ */
 
 :root {
@@ -85,7 +86,7 @@
 
 .card.is-photo .card-photo-wrap { position: relative; aspect-ratio: 16 / 10; max-height: 440px; background: #0b1626; }
 .card.is-photo .card-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
-.card-inspect { position: absolute; bottom: 12px; right: 12px; background: rgba(11,22,38,.82); color: #fff; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 7px 14px; font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; }
+.card-inspect { position: absolute; bottom: 12px; right: 12px; background: rgba(11,22,38,.82); color: #fff; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 7px 14px; min-height: 44px; font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; }
 .card-inspect:hover { background: var(--ols-blue); }
 .card-body { padding: 14px 18px 16px; }
 .card-activity { font-family: Georgia, serif; font-size: clamp(1.3rem, 3.4vw, 1.7rem); font-weight: 600; color: var(--ols-blue); margin: 0 0 4px; }
@@ -254,7 +255,7 @@
 
 /* ============================================================ CREDITS + FOOTER ============================================================ */
 .ad-credits { text-align: center; margin: 12px auto 0; max-width: 680px; }
-.credits-toggle { background: none; border: none; color: var(--muted); font: inherit; font-size: .84rem; cursor: pointer; text-decoration: underline; padding: 6px; }
+.credits-toggle { background: none; border: none; color: var(--muted); font: inherit; font-size: .84rem; cursor: pointer; text-decoration: underline; padding: 6px 12px; min-height: 44px; display: inline-flex; align-items: center; }
 .credits-list { background: var(--card-bg); border: 1px solid #e1e6f0; border-radius: var(--r-sm); padding: 12px 16px; margin: 8px auto 0; max-width: 560px; text-align: left; font-size: .84rem; color: var(--muted); }
 .credits-list ul { margin: 6px 0 0; padding-left: 18px; }
 .credits-list li { margin-bottom: 4px; }
@@ -273,4 +274,79 @@
   .desk, .hud { max-width: 1200px; }
   .desk { grid-template-columns: minmax(0, 1fr) 380px; }
   .seg { font-size: 1.02rem; min-height: 52px; }
+}
+
+/* ============================================================
+   THE APPEALS DESK — clerk ruling, uphold/overrule, factors, log
+   ============================================================ */
+
+/* title axis note (darker amber #8a5a12 for AA text contrast) */
+.ax-note { display: block; font-style: italic; font-weight: 600; color: #8a5a12; font-size: .82rem; margin-top: 1px; }
+
+/* stamp: fit longer words like OVERRULED */
+.stamp { font-size: clamp(1rem, 3.4vw, 1.4rem); letter-spacing: .06em; padding: 6px 13px; }
+
+/* clerk note bar */
+.clerk-note { display: flex; align-items: center; gap: 11px; background: #eef3fc; border: 1px solid #cfe0fb; border-radius: var(--r-md); padding: 10px 14px; }
+.clerk-note p { margin: 0; font-size: .92rem; color: #234a86; line-height: 1.45; }
+.clerk-avatar { font-size: 1.5rem; flex-shrink: 0; line-height: 1; }
+
+/* "clerk: X" label in each dial legend + overruled flag */
+.clerk-said { font-weight: 700; font-size: .74rem; text-transform: none; letter-spacing: 0; color: var(--muted); background: #eef1f8; border: 1px solid #dde3ef; border-radius: 999px; padding: 1px 9px; margin-left: 2px; }
+.dial.is-overruled .dial-legend { color: #8a5a12; }   /* darker amber for AA text contrast (ring below stays --amber) */
+.dial.is-overruled .clerk-said { color: #8a5a12; background: #fbeee0; border-color: #f1d9a6; }
+.dial.is-overruled .clerk-said::after { content: ' · overruled'; }
+.dial.is-overruled .dial-track { box-shadow: 0 0 0 2px rgba(201,136,26,.35); border-color: var(--amber); }
+
+/* the seg the clerk originally chose */
+.seg.clerk-pick { position: relative; }
+.seg.clerk-pick::before {
+  content: '§'; position: absolute; top: 2px; right: 6px; font-size: .62rem; font-weight: 900;
+  color: var(--ols-blue-soft); opacity: .55; line-height: 1;
+}
+.seg.selected.clerk-pick::before { color: rgba(255,255,255,.75); opacity: .9; }
+/* the clerk's pick once you've overruled it: show it was moved-from */
+.seg.clerk-pick:not(.selected):not(:disabled) { outline: 2px dashed #c0a86e; outline-offset: -3px; color: #9a8043; }
+.seg.clerk-pick.axis-correct::before, .seg.clerk-pick.axis-wrong::before { content: none; }
+
+/* ---------- Deciding-factor chips ---------- */
+.factors { border: none; margin: 0; padding: 0; min-width: 0; }
+.factors-legend { display: flex; align-items: center; gap: 7px; font-weight: 800; color: var(--ols-blue); font-size: .96rem; margin-bottom: 8px; padding: 0; }
+.factor-list { display: grid; gap: 8px; }
+.factor {
+  display: flex; align-items: flex-start; gap: 11px; text-align: left; width: 100%;
+  font: inherit; font-size: clamp(.9rem, 2.1vw, .98rem); line-height: 1.4; font-weight: 600;
+  background: #fff; color: var(--text); border: 1.5px solid #d8deea; border-radius: var(--r-md);
+  padding: 12px 14px; cursor: pointer; transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.factor:hover:not(:disabled):not(.selected) { border-color: var(--ols-blue-soft); background: #f7f9fd; }
+.factor:focus-visible { outline: 3px solid var(--ols-blue); outline-offset: 2px; }
+.factor-dot { flex-shrink: 0; width: 18px; height: 18px; margin-top: 1px; border-radius: 50%; border: 2px solid #c2cbdc; background: #fff; transition: border-color .15s ease, background .15s ease; }
+.factor.selected { border-color: var(--ols-blue); background: #eef3fc; box-shadow: 0 2px 8px rgba(26,58,107,.14); }
+.factor.selected .factor-dot { border-color: var(--ols-blue); background: radial-gradient(circle, var(--ols-blue) 0 45%, #fff 55%); }
+.factor:disabled { cursor: default; }
+.factor.factor-correct { border-color: var(--green); background: var(--green-soft); }
+.factor.factor-correct .factor-dot { border-color: var(--green); background: radial-gradient(circle, var(--green) 0 45%, #fff 55%); }
+.factor.axis-wrong { border-color: var(--red); background: #fbeaea; }
+.factor.axis-wrong .factor-dot { border-color: var(--red); background: radial-gradient(circle, var(--red) 0 45%, #fff 55%); }
+.factors.needs-attention .factors-legend { color: var(--red); }
+.factors.needs-attention .factor-list { outline: 2px solid rgba(192,57,43,.28); outline-offset: 4px; border-radius: var(--r-md); }
+
+/* ---------- Case log (right column) ---------- */
+.bro-scoreline { display: flex; gap: 8px; padding: 9px 12px; background: #f5f7fc; border-bottom: 1px solid #eef1f8; }
+.bsl-item { flex: 1; text-align: center; font-size: .72rem; color: var(--muted); font-weight: 600; line-height: 1.3; }
+.bsl-item strong { display: block; font-size: 1.15rem; color: var(--ols-blue); }
+.bro-empty { margin: 6px 4px; color: var(--muted); font-size: .84rem; font-style: italic; text-align: center; }
+.log-card { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid #e6eaf3; border-radius: var(--r-sm); padding: 6px 9px; }
+.log-card.clean { border-left: 3px solid var(--ols-gold); }
+.log-card.just-in { animation: fileIn .55s cubic-bezier(.2,1,.3,1); }
+.log-meta { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.log-name { font-weight: 700; font-size: .82rem; color: var(--ols-blue); line-height: 1.25; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.log-verdict { font-size: .64rem; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; padding: 1px 7px; border-radius: 999px; }
+.log-verdict.upheld { background: var(--green-soft); color: #1d5e3a; }
+.log-verdict.overruled { background: #fbeee0; color: #8a5a12; }
+.pip.l { background: #e9eef6; color: #3a4a63; }
+
+@media (max-width: 460px) {
+  .clerk-said { display: none; }   /* keep legends tidy on the smallest screens */
 }
