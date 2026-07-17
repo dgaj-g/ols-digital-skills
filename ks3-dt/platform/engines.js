@@ -147,8 +147,12 @@
         } else {
           (cfg.lines || []).forEach(function (l, i) {
             timers.push(setTimeout(function () {
-              linesBox.insertAdjacentHTML('beforeend', '<p class="dossier-line">' + esc(l) + '</p>');
-              requestAnimationFrame(function () { linesBox.lastChild.classList.add('show'); });
+              var p = document.createElement('p');
+              p.className = 'dossier-line'; p.textContent = l;
+              linesBox.appendChild(p);
+              /* capture p, never lastChild — throttled tabs batch rAF callbacks
+                 and lastChild would point at the newest line for all of them */
+              requestAnimationFrame(function () { p.classList.add('show'); });
               if (i === cfg.lines.length - 1) timers.push(setTimeout(function () { cta.hidden = false; }, 700));
             }, 900 * i));
           });
@@ -519,8 +523,10 @@
         var signBtn = c.querySelector('.oath-sign');
         (cfg.oath || []).forEach(function (l, i) {
           setTimeout(function () {
-            box.insertAdjacentHTML('beforeend', '<p class="oath-line">' + esc(l) + '</p>');
-            requestAnimationFrame(function () { box.lastChild.classList.add('show'); });
+            var p = document.createElement('p');
+            p.className = 'oath-line'; p.textContent = l;
+            box.appendChild(p);
+            requestAnimationFrame(function () { p.classList.add('show'); });
             if (i === cfg.oath.length - 1) signBtn.disabled = false;
           }, 700 * i);
         });
@@ -552,8 +558,10 @@
         var btn = c.querySelector('button');
         (b.lines || []).forEach(function (l, i) {
           setTimeout(function () {
-            box.insertAdjacentHTML('beforeend', '<p class="belonging-line">' + esc(l) + '</p>');
-            requestAnimationFrame(function () { box.lastChild.classList.add('show'); });
+            var p = document.createElement('p');
+            p.className = 'belonging-line'; p.textContent = l;
+            box.appendChild(p);
+            requestAnimationFrame(function () { p.classList.add('show'); });
             if (i === b.lines.length - 1) btn.hidden = false;
           }, 1100 * i);
         });

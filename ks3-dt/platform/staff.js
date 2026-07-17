@@ -893,8 +893,13 @@
   function renderCoverPane(man) {
     var coverOn = Number(dashData.cfg.cover) === 1;
     if (coverOn) {
+      if (!coverActiveLesson && dashData.cfg.coverLesson) {
+        // server records the cover lesson (cfg.coverLesson) so the sheet survives reloads
+        var storedLe = (man.lessons || []).filter(function (le) { return le.id === dashData.cfg.coverLesson; })[0];
+        if (storedLe) coverActiveLesson = storedLe;
+      }
       if (coverActiveLesson) { renderCoverSheet(coverActiveLesson); return; }
-      setPane('<p class="staff-status">Cover Mode is currently ON for this class. (Which lesson it was started for was not recorded by the server across sessions -- see the design note in the build report.)</p>' +
+      setPane('<p class="staff-status">Cover Mode is currently ON for this class.</p>' +
         '<div class="confirm-actions" style="justify-content:flex-start">' +
           '<button type="button" class="ghost-btn danger" data-action="cover-end">End Cover Mode</button>' +
         '</div><p class="staff-status" id="cover-status"></p>');
