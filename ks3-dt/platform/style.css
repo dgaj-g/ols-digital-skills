@@ -414,8 +414,11 @@ h1, h2, h3 { line-height: 1.2; margin: 0 0 10px; color: var(--ols-blue); }
 .vault-folders { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
 .vault-folder {
   position: relative; border-radius: var(--radius); min-height: 128px;
+  /* fallback first: color-mix needs Chrome 111+; older C2k builds get plain white */
+  background: #FBFCFE;
   background: color-mix(in srgb, var(--fc) 10%, #fff);
-  border: 2px solid color-mix(in srgb, var(--fc) 45%, #fff);
+  border: 2px solid #D5DCE8;
+  border-color: color-mix(in srgb, var(--fc) 45%, #fff);
   padding: 20px 12px 12px; transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .vault-folder .folder-tab {
