@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OLS KS3 Digital Technology</title>
+<base target="_top">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Sign-in guard: never flash an empty form while whoami resolves -->
+<div id="guard" class="guard">
+  <div class="guard-card">
+    <img class="guard-crest" src="../../assets/crest.png" alt="Our Lady's Grammar School">
+    <div class="guard-spinner"></div>
+    <p class="guard-text">Getting your details&hellip;</p>
+  </div>
+</div>
+
+<!-- Bare-link landing (no class in the link) -->
+<div id="join" class="guard" hidden>
+  <div class="guard-card">
+    <img class="guard-crest" src="../../assets/crest.png" alt="Our Lady's Grammar School">
+    <h1 class="join-title">KS3 Digital Technology</h1>
+    <p class="join-lead">This platform opens through your <strong>class link</strong> &mdash; ask your teacher for it (it usually lives in Google Classroom).</p>
+    <p class="join-fallback" id="join-fallback" hidden></p>
+    <button id="join-staff" class="ghost-btn" type="button">Staff</button>
+  </div>
+</div>
+
+<!-- Name fallback (only if auto-name returns blank) -->
+<div id="nameform" class="guard" hidden>
+  <div class="guard-card">
+    <h2>Nearly there</h2>
+    <p>Type your first name and surname &mdash; once, and the platform remembers you.</p>
+    <input id="name-input" class="text-input" maxlength="40" autocomplete="off" placeholder="e.g. Anya Murphy">
+    <button id="name-go" class="primary-btn" type="button">That's me</button>
+    <p class="form-msg" id="name-msg"></p>
+  </div>
+</div>
+
+<!-- Top bar -->
+<header id="topbar" class="topbar" hidden>
+  <div class="topbar-left">
+    <img class="topbar-crest" src="../../assets/crest.png" alt="">
+    <div class="topbar-title">
+      <span class="topbar-sub">KS3 Digital Technology</span>
+      <span class="topbar-year" id="topbar-year">Your Digital World</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="agent-chip" id="agent-chip" data-tour="progress">
+      <span class="agent-name" id="agent-name"></span>
+      <span class="agent-xp" id="agent-xp">0 XP</span>
+    </div>
+    <button id="staff-open" class="topbar-staff" type="button">Staff</button>
+  </div>
+</header>
+
+<!-- HUB: the mission board -->
+<main id="hub" class="hub" hidden>
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="hero-kicker" id="hero-kicker">Season One</p>
+      <h1 class="hero-title" id="hero-title">Your Digital World</h1>
+      <p class="hero-welcome" id="hero-welcome"></p>
+      <div class="hero-progress">
+        <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+          <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52"></circle>
+        </svg>
+        <div class="ring-label"><span id="ring-count">0</span><small>of 17</small></div>
+        <div class="hero-team" id="hero-team" hidden></div>
+      </div>
+      <button class="primary-btn hero-cta" id="hero-cta" hidden>Continue your mission</button>
+    </div>
+  </section>
+  <section class="board" id="board" data-tour="grid"></section>
+  <p class="hub-footnote">Our Lady's Grammar School &middot; Digital Skills &middot; your progress is private to you and your teacher</p>
+</main>
+
+<!-- LESSON PLAYER -->
+<main id="player" class="player" hidden>
+  <div class="player-top">
+    <button id="player-back" class="ghost-btn player-back" type="button">&larr; Mission Control</button>
+    <div class="player-lesson">
+      <span class="player-num" id="player-num"></span>
+      <span class="player-title" id="player-title"></span>
+    </div>
+    <div class="player-right">
+      <div class="outbox-dot" id="outbox-dot" title="Saving&hellip;" hidden></div>
+      <div class="agent-chip small"><span class="agent-xp" id="player-xp">0 XP</span></div>
+    </div>
+  </div>
+  <div class="chunk-rail" id="chunk-rail"></div>
+  <div class="chunk-host" id="chunk-host"></div>
+</main>
+
+<!-- Help beacon -->
+<button id="help-beacon" class="help-beacon" type="button" data-tour="help" hidden aria-label="Help">?</button>
+<div class="ols-modal" id="help-modal" hidden>
+  <div class="ols-modal-card ols-modal-sm">
+    <h2>Stuck, Agent?</h2>
+    <ol class="help-list">
+      <li>Re-read the instruction card &mdash; slowly. Most answers hide there.</li>
+      <li>Ask your partner what they can see.</li>
+      <li>Still stuck? Put your hand up &mdash; that's what your teacher is for.</li>
+    </ol>
+    <div class="confirm-actions"><button class="primary-btn" id="help-close" type="button">Back to the mission</button></div>
+  </div>
+</div>
+
+<!-- Generic confirm (never native confirm() in the sandboxed iframe) -->
+<div class="ols-modal" id="confirm-modal" hidden>
+  <div class="ols-modal-card ols-modal-sm">
+    <h2 id="confirm-title">Are you sure?</h2>
+    <p id="confirm-body"></p>
+    <div class="confirm-actions">
+      <button id="confirm-cancel" class="ghost-btn" type="button">Cancel</button>
+      <button id="confirm-ok" class="primary-btn danger" type="button">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- QR modal -->
+<div class="ols-modal" id="qr-modal" hidden>
+  <div class="ols-modal-card ols-modal-sm">
+    <div class="ols-modal-head"><h2 id="qr-title">Class link</h2><button class="modal-close" data-close="qr-modal" type="button">&times;</button></div>
+    <canvas id="qr-canvas" class="qr-canvas"></canvas>
+    <p class="qr-link" id="qr-link"></p>
+    <div class="confirm-actions"><button id="qr-copy" class="ghost-btn" type="button">Copy link</button></div>
+  </div>
+</div>
+
+<!-- Staff panel shell (staff.js renders the tabs inside) -->
+<div class="ols-modal staff-modal" id="staff-modal" hidden>
+  <div class="ols-modal-card staff-card">
+    <div class="ols-modal-head"><h2>Staff panel</h2><button class="modal-close" data-close="staff-modal" type="button">&times;</button></div>
+    <div id="staff-body"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="qrcode.min.js"></script>
+<script src="dev-server.js"></script>
+<script src="app.js"></script>
+<script src="engines.js"></script>
+<script src="staff.js"></script>
+<script>window.addEventListener('DOMContentLoaded', function () { App.boot(); });</script>
+</body>
+</html>
