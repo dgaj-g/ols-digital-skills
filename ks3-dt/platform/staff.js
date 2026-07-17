@@ -238,7 +238,7 @@
   function baselineDisplay(rec) {
     var a1 = rec.L && rec.L['1'];
     if (!a1) return '';
-    var m = /^BL(\d+)\/(\d+)/.exec(String(a1[2] || ''));
+    var m = /(?:^|;)bl=(\d+)\/(\d+)/.exec(String(a1[2] || ''));
     return m ? (m[1] + '/' + m[2]) : '';
   }
 

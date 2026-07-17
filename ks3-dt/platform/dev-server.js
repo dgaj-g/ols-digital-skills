@@ -34,6 +34,13 @@
 
   /* ---------- tiny helpers (mirrors Code.gs.template) ---------- */
   function str_(v) { return String(v == null ? '' : v); }
+  function mergeDetail_(existing, addition) {
+    var map = {}, order = [];
+    function take(seg) { if (!seg) return; var k = seg.split('=')[0]; if (!(k in map)) order.push(k); map[k] = seg; }
+    String(existing || '').split(';').forEach(take);
+    String(addition || '').split(';').forEach(take);
+    return order.map(function (k) { return map[k]; }).join(';').slice(0, 220);
+  }
   function num_(v) { var n = Number(v); return isNaN(n) ? 0 : n; }
   function tmin_() { return Math.floor((Date.now() - EPOCH) / 60000); }
   function tminToDate_(m) { return new Date(EPOCH + m * 60000); }
@@ -84,14 +91,14 @@
     s.pupils['Demo-8A:cara.devlin@demo'] = {
       n: 'Cara Devlin', cn: 'Copper Falcon', j: tenDaysAgo, xp: 105, g: '',
       L: {
-        '1': [2, 105, 'BL11/16|0121000000010000', '1', '222|1', now - 9 * 1440, 42, 0, 'Loved the Vault bit!', 0, 0],
+        '1': [2, 105, 'bl=11/16|0121000000010000', '1', '222|1', now - 9 * 1440, 42, 0, 'Loved the Vault bit!', 0, 0],
         '2': [0, 0, '', '', '', 0, 5, 0, '', 0, 0]
       }
     };
     s.pupils['Demo-8A:ryan.fitzsimons@demo'] = {
       n: 'Ryan Fitzsimons', cn: 'Silver Comet', j: tenDaysAgo, xp: 92, g: '',
       L: {
-        '1': [2, 92, 'BL8/16|1032000001000010', '1', '211|2', now - 8 * 1440, 38, 0, '', 0, 0],
+        '1': [2, 92, 'bl=8/16|1032000001000010', '1', '211|2', now - 8 * 1440, 38, 0, '', 0, 0],
         '2': [0, 0, '', '', '', 0, 4, 0, '', 0, 0]
       }
     };
@@ -523,7 +530,7 @@
     if (num_(a[0]) < 1) a[0] = 1;
     var xpDelta = Math.max(0, Math.min(40, num_(p.xp))); // server-side cap per event
     if (xpDelta) { a[1] = num_(a[1]) + xpDelta; rec.xp = num_(rec.xp) + xpDelta; }
-    if (p.detail != null) a[2] = str_(p.detail).slice(0, 120);
+    if (p.detail != null) a[2] = mergeDetail_(a[2], str_(p.detail).slice(0, 120));
     if (p.minDelta) a[6] = num_(a[6]) + Math.max(0, Math.min(10, num_(p.minDelta)));
     if (p.codename != null) rec.cn = str_(p.codename).slice(0, 40);
     a[5] = tmin_();
@@ -628,7 +635,7 @@
         var rec = readPupil_(s, cls, PUPIL_EMAIL);
         if (!rec) return { ok: false, error: 'not-joined' };
         var a = larr_(rec, numStr);
-        a[2] = 'BL' + right + '/' + ids.length + '|' + chosen;
+        a[2] = mergeDetail_(a[2], 'bl=' + right + '/' + ids.length + '|' + chosen);
         a[5] = tmin_();
         if (num_(a[0]) < 1) a[0] = 1;
         writePupil_(s, cls, PUPIL_EMAIL, rec);

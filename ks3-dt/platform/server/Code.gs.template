@@ -499,6 +499,23 @@ function apiVaultInfo(req) {
   return { ok: true, map: v.map || {}, explain: v.explain || {} };
 }
 
+/* Lesson detail (Larr[2]) holds MULTIPLE engines' results as 'key=value' pairs
+   joined by ';' (e.g. 'rules=3/3;vault=5/6;bl=11/16|0121...;cn=Pearl Breeze').
+   Writes MERGE by key — without this, each badge stomped the previous one's
+   result and the codename write erased the baseline (found in browser verify). */
+function mergeDetail_(existing, addition) {
+  var map = {}, order = [];
+  function take(seg) {
+    if (!seg) return;
+    var k = seg.split('=')[0];
+    if (!(k in map)) order.push(k);
+    map[k] = seg;
+  }
+  String(existing || '').split(';').forEach(take);
+  String(addition || '').split(';').forEach(take);
+  return order.map(function (k) { return map[k]; }).join(';').slice(0, 220);
+}
+
 /* ---------- progress events (badges, XP, drafts, active time) ---------- */
 function apiSaveEvent(req) {
   req = req || {};
@@ -514,7 +531,7 @@ function apiSaveEvent(req) {
   if (num_(a[0]) < 1) a[0] = 1;
   var xpDelta = Math.max(0, Math.min(40, num_(req.xp)));   // server-side cap per event
   if (xpDelta) { a[1] = num_(a[1]) + xpDelta; rec.xp = num_(rec.xp) + xpDelta; }
-  if (req.detail != null) a[2] = str_(req.detail).slice(0, 120);
+  if (req.detail != null) a[2] = mergeDetail_(a[2], str_(req.detail).slice(0, 120));
   if (req.minDelta) a[6] = num_(a[6]) + Math.max(0, Math.min(10, num_(req.minDelta)));
   if (req.codename != null) rec.cn = str_(req.codename).slice(0, 40);
   a[5] = tmin_();
@@ -607,7 +624,7 @@ function apiSubmitBaseline(req) {
   var rec = readPupil_(cls, email);
   if (!rec) return { ok: false, error: 'not-joined' };
   var a = larr_(rec, numStr);
-  a[2] = 'BL' + right + '/' + ids.length + '|' + chosen;
+  a[2] = mergeDetail_(a[2], 'bl=' + right + '/' + ids.length + '|' + chosen);
   a[5] = tmin_();
   if (num_(a[0]) < 1) a[0] = 1;
   writePupil_(cls, email, rec);
