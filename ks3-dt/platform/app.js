@@ -147,7 +147,33 @@
   }
 
   /* ---------------- boot ---------------- */
+  /* static starfield: drawn once (no animation loop — old C2k machines), the
+     aurora's slow CSS drift supplies the life */
+  function initStars() {
+    var c = document.getElementById('stars');
+    if (!c || !c.getContext) return;
+    function draw() {
+      var w = c.width = global.innerWidth, h = c.height = global.innerHeight;
+      var ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, w, h);
+      var n = Math.floor((w * h) / 9000);
+      for (var i = 0; i < n; i++) {
+        var r = Math.random() * 1.3 + 0.3;
+        ctx.globalAlpha = 0.2 + Math.random() * 0.55;
+        ctx.fillStyle = Math.random() < 0.12 ? '#FFD84D' : '#CFE0FF';
+        ctx.beginPath();
+        ctx.arc(Math.random() * w, Math.random() * h, r, 0, 6.2832);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    draw();
+    var t;
+    global.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(draw, 200); });
+  }
+
   App.boot = function () {
+    initStars();
     App.state.classCode = App.classCode();
     wireChrome();
     if (!App.state.classCode) { showJoinLanding(); return; }
@@ -403,15 +429,18 @@
     if (st.flagged) cls += ' is-flagged';
     el.className = cls;
     el.style.setProperty('--blk', blockMeta.color || '#4FA3D9');
+    // journey markup: a glowing node on the spine + a glass mission card
     el.innerHTML =
       '<span class="tile-icon">' + esc(le.icon || '📘') + '</span>' +
-      '<span class="tile-num">' + esc('Lesson ' + le.num) + '</span>' +
-      '<span class="tile-title">' + esc(le.title) + '</span>' +
-      '<span class="tile-tag">' + esc(le.tagline || '') + '</span>' +
-      (st.done ? '<span class="tile-state done">&#10003; Complete</span>'
-        : st.flagged ? '<span class="tile-state flag">Absent? Catch up</span>'
-        : (st.delivered && st.ready) ? '<span class="tile-state open">Ready</span>'
-        : '<span class="tile-state lock">&#128274;</span>');
+      '<span class="tile-card">' +
+        '<span class="tile-num">' + esc('Lesson ' + le.num) + '</span>' +
+        '<span class="tile-title">' + esc(le.title) + '</span>' +
+        '<span class="tile-tag">' + esc(le.tagline || '') + '</span>' +
+        (st.done ? '<span class="tile-state done">&#10003; Complete</span>'
+          : st.flagged ? '<span class="tile-state flag">Absent? Catch up</span>'
+          : (st.delivered && st.ready) ? '<span class="tile-state open">Ready</span>'
+          : '<span class="tile-state lock">&#128274;</span>') +
+      '</span>';
     el.onclick = function () {
       if (st.flagged && !st.done) { App.openLesson(le.id, { catchup: true }); return; }
       if (st.delivered && st.ready) { App.openLesson(le.id, {}); return; }

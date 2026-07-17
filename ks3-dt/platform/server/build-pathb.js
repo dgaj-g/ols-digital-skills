@@ -87,7 +87,10 @@ const indexHtml    = fs.readFileSync(P_INDEX, 'utf8');
 const appJs        = fs.readFileSync(P_APP, 'utf8');
 const enginesJs    = fs.readFileSync(P_ENGINES, 'utf8');
 const staffJs      = fs.readFileSync(P_STAFF, 'utf8');
-const styleCss     = fs.readFileSync(P_STYLE, 'utf8');
+const styleCss     = fs.readFileSync(P_STYLE, 'utf8')
+  // relative asset URLs inside the inlined CSS (the vendored font) cannot
+  // resolve under the googleusercontent origin — rewrite to absolute github.io
+  .replace(/url\('assets\//g, "url('" + PLATFORM_BASE + "assets/");
 const qrcodeJs     = fs.readFileSync(P_QRCODE, 'utf8');
 const codeTemplate = fs.readFileSync(P_CODETPL, 'utf8');
 
