@@ -9,6 +9,10 @@
 </head>
 <body>
 
+<!-- ambient shell: static starfield + drifting aurora, content sits above -->
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="aurora" aria-hidden="true"></div>
+
 <!-- Sign-in guard: never flash an empty form while whoami resolves -->
 <div id="guard" class="guard">
   <div class="guard-card">
@@ -67,6 +71,12 @@
       <p class="hero-welcome" id="hero-welcome"></p>
       <div class="hero-progress">
         <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FFD84D"/>
+              <stop offset="100%" stop-color="#E4B824"/>
+            </linearGradient>
+          </defs>
           <circle class="ring-track" cx="60" cy="60" r="52"></circle>
           <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52"></circle>
         </svg>
