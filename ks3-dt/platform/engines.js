@@ -604,6 +604,12 @@
           onDone: function (res) {
             App.state._exitAnswers = cfg.items.map(function (it) { return res.answers[it.id]; });
             App.state._exitItems = cfg.items;
+            // survive a refresh between exit check and self-eval
+            if (!ctx.review) {
+              App.state.draft = App.state.draft || {};
+              App.state.draft.exitAnswers = App.state._exitAnswers;
+              ctx.saveEvent({ draft: App.state.draft });
+            }
             ctx.next();
           }
         });
@@ -658,7 +664,7 @@
         }
         var commentEl = c.querySelector('.se-comment');
         var payload = {
-          answers: App.state._exitAnswers || [],
+          answers: App.state._exitAnswers || (App.state.draft && App.state.draft.exitAnswers) || [],
           selfEval: { conf: conf.join(''), diff: diff, comment: commentEl ? commentEl.value.trim() : '' }
         };
         host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Filing your report&hellip; this can take a moment</span></div>';
