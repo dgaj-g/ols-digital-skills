@@ -42,6 +42,16 @@
     return order.map(function (k) { return map[k]; }).join(';').slice(0, 220);
   }
   function num_(v) { var n = Number(v); return isNaN(n) ? 0 : n; }
+  function vhash_(x) {
+    var h = 5381;
+    for (var i = 0; i < x.length; i++) h = ((h * 33) ^ x.charCodeAt(i)) >>> 0;
+    return h.toString(16);
+  }
+  function detailKeys_(d) { return String(d || '').split(';').filter(Boolean).map(function (seg) { return seg.split('=')[0]; }); }
+  function detailAddsNew_(existing, addition) {
+    var have = detailKeys_(existing);
+    return detailKeys_(addition).some(function (k) { return have.indexOf(k) === -1; });
+  }
   function tmin_() { return Math.floor((Date.now() - EPOCH) / 60000); }
   function tminToDate_(m) { return new Date(EPOCH + m * 60000); }
   function today_() { return Math.floor(tmin_() / 1440); }
@@ -216,13 +226,14 @@
     }
     return Math.max(0, days - 1);
   }
-  function meaningful_(a) { return !!a && (str_(a[3]) !== '' || str_(a[2]) !== '' || num_(a[6]) >= 3); }
+  function meaningful_(a) { return !!a && (str_(a[3]) !== '' || str_(a[2]) !== '' || num_(a[6]) >= 3 || num_(a[10]) > 0); }
   function absenceFor_(cls, rec, locks, manifest, absDays) {
     var flags = [];
     var lessons = (manifest && manifest.lessons) || [];
     for (var i = 0; i < lessons.length; i++) {
       var le = lessons[i];
       if (le.absenceInferenceEligible === false) continue;
+      if (str_(le.status) !== 'ready') continue; // parity: never flag unauthored lessons
       var lk = locks[str_(le.num)];
       if (!lk || !num_(lk.u)) continue;
       if (schoolDaysSince_(num_(lk.u)) < absDays) continue;
@@ -512,8 +523,20 @@
         if (!allKeys) return { ok: false, error: 'no-key' };
         var keys = allKeys[fileIdOf_(entry)];
         var v = keys ? keys[str_(p.keyId || 'vault')] : null;
-        if (!v) return { ok: false, error: 'no-key' };
-        return { ok: true, map: v.map || {}, explain: v.explain || {} };
+        if (!v || !v.map) return { ok: false, error: 'no-key' };
+        if (str_(p.mode) === 'explain') {
+          var rec = readPupil_(s, cls, PUPIL_EMAIL);
+          var a = rec ? larr_(rec, numStr) : null;
+          var done = a && (detailKeys_(a[2]).indexOf('vp') !== -1 || detailKeys_(a[2]).indexOf(str_(p.keyId || 'vault')) !== -1);
+          if (!done) return { ok: false, error: 'not-finished' };
+          return { ok: true, explain: v.explain || {} };
+        }
+        var salt = Math.random().toString(36).slice(2, 10);
+        var check = {};
+        Object.keys(v.map).forEach(function (fileId) {
+          check[fileId] = vhash_(salt + '|' + fileId + '|' + str_(v.map[fileId]));
+        });
+        return { ok: true, salt: str_(salt), check: check };
       });
     });
   }
@@ -524,12 +547,17 @@
     if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
     var numStr = str_(p.lessonNum || '');
     if (!numStr) return Promise.resolve({ ok: false, error: 'no-lesson' });
+    if (!lessonAccessible_(s, cls, numStr)) return Promise.resolve({ ok: false, error: 'locked' });
     var rec = readPupil_(s, cls, PUPIL_EMAIL);
     if (!rec) return Promise.resolve({ ok: false, error: 'not-joined' });
     var a = larr_(rec, numStr);
     if (num_(a[0]) < 1) a[0] = 1;
-    var xpDelta = Math.max(0, Math.min(40, num_(p.xp))); // server-side cap per event
-    if (xpDelta) { a[1] = num_(a[1]) + xpDelta; rec.xp = num_(rec.xp) + xpDelta; }
+    var xpDelta = Math.max(0, Math.min(40, num_(p.xp)));
+    var isNew = p.detail != null && detailAddsNew_(a[2], str_(p.detail));
+    if (xpDelta && isNew) {
+      xpDelta = Math.min(xpDelta, Math.max(0, 150 - num_(a[1])));
+      a[1] = num_(a[1]) + xpDelta; rec.xp = num_(rec.xp) + xpDelta;
+    }
     if (p.detail != null) a[2] = mergeDetail_(a[2], str_(p.detail).slice(0, 120));
     if (p.minDelta) a[6] = num_(a[6]) + Math.max(0, Math.min(10, num_(p.minDelta)));
     if (p.codename != null) rec.cn = str_(p.codename).slice(0, 40);
@@ -593,12 +621,15 @@
           var rec = readPupil_(s, cls, PUPIL_EMAIL);
           if (!rec) return { ok: false, error: 'not-joined' };
           var a = larr_(rec, numStr);
+          if (str_(a[3]) !== '') {
+            return { ok: true, already: true, right: num_(right), total: num_(exitItems.length), feedback: fb, xp: num_(rec.xp) };
+          }
           a[0] = 2;
           a[3] = chosenStr;
           a[4] = str_(se.conf || '').slice(0, 6) + '|' + str_(se.diff || '');
-          a[8] = str_(se.comment || '').slice(0, 80);
+          a[8] = str_(se.comment || '').slice(0, 60);
           a[5] = tmin_();
-          var xpDelta = 10;
+          var xpDelta = Math.min(10, Math.max(0, 150 - num_(a[1])));
           a[1] = num_(a[1]) + xpDelta; rec.xp = num_(rec.xp) + xpDelta;
           writePupil_(s, cls, PUPIL_EMAIL, rec);
           save_(s);
@@ -635,6 +666,7 @@
         var rec = readPupil_(s, cls, PUPIL_EMAIL);
         if (!rec) return { ok: false, error: 'not-joined' };
         var a = larr_(rec, numStr);
+        if (detailKeys_(a[2]).indexOf('bl') !== -1) return { ok: true, already: true };
         a[2] = mergeDetail_(a[2], 'bl=' + right + '/' + ids.length + '|' + chosen);
         a[5] = tmin_();
         if (num_(a[0]) < 1) a[0] = 1;
@@ -643,6 +675,29 @@
         return { ok: true };
       });
     });
+  }
+
+
+  /* Public class board (decision #8) - mirrors apiBoard */
+  function doBoard(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    var cfg = getCfg_(s, cls);
+    if (str_(cfg.lb.mode) !== 'public') return Promise.resolve({ ok: true, mode: str_(cfg.lb.mode), rows: [] });
+    var rows = allPupils_(s, cls).filter(function (r) { return str_(r.n); }).map(function (r) {
+      var doneCount = 0;
+      Object.keys(r.L || {}).forEach(function (k) { if (num_((r.L[k] || [])[0]) === 2) doneCount++; });
+      return {
+        label: str_(cfg.lb.names) === 'real' ? str_(r.n).split(' ')[0] : ('Agent ' + (str_(r.cn) || 'Unnamed')),
+        v: str_(cfg.lb.basis) === 'completion' ? num_(doneCount) : num_(r.xp),
+        me: str_(r.email) === PUPIL_EMAIL
+      };
+    });
+    rows.sort(function (a, b) { return b.v - a.v; });
+    var topN = num_(cfg.lb.topN);
+    if (topN > 0) rows = rows.slice(0, topN);
+    return Promise.resolve({ ok: true, mode: 'public', basis: str_(cfg.lb.basis), rows: rows });
   }
 
   function doCatchup(p) {
@@ -681,12 +736,22 @@
         var c = k.split(':')[0];
         counts[c] = (counts[c] || 0) + 1;
       });
+      var bytes = 0, pupilCount = 0;
+      Object.keys(s.pupils).forEach(function (k) { bytes += k.length + JSON.stringify(s.pupils[k]).length; pupilCount++; });
       return Promise.resolve({
         ok: true, me: str_(me),
         classes: reg.map(function (c) {
           return { name: str_(c.name), owner: str_(c.owner), year: str_(c.year), created: str_(c.created), pupils: num_(counts[c.name] || 0) };
-        })
+        }),
+        store: { bytes: num_(bytes), limit: 500000, pupils: num_(pupilCount) }
       });
+    }
+
+    if (sub === 'removePupil') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      delete s.pupils[pKey_(cls, str_(p.email).toLowerCase())];
+      save_(s);
+      return Promise.resolve({ ok: true });
     }
 
     if (sub === 'addClass') {
@@ -893,6 +958,7 @@
       case 'recapAnswer': return doRecapAnswer(p);
       case 'mark': return doMark(p);
       case 'vaultInfo': return doVaultInfo(p);
+      case 'board': return doBoard(p);
       case 'saveEvent': return doSaveEvent(p);
       case 'loadDraft': return doLoadDraft(p);
       case 'submitExit': return doSubmitExit(p);

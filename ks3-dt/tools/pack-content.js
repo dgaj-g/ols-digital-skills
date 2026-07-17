@@ -83,9 +83,11 @@ function main() {
     const outPath = path.join(OUT, rel);
     fs.mkdirSync(path.dirname(outPath), { recursive: true });
     fs.writeFileSync(outPath, JSON.stringify(pub, null, 1));
-    // Plaintext-leak guard: no correct-answer field may survive in the public file.
+    // Plaintext-leak guard: no correct-answer field may survive in the public
+    // file. Covers every answer-shaped field the schema actually uses (review
+    // finding: 'map' and 'mis' were missing from the original list).
     const pubText = fs.readFileSync(outPath, 'utf8');
-    if (/"(a|correct|answer|explain)"\s*:/.test(pubText) && src.keys) {
+    if (/"(a|correct|answer|explain|map|mis|keys)"\s*:/.test(pubText) && src.keys) {
       problems.push(rel + ': public output still contains a key-like field name - check the source layout');
     }
     console.log('packed ' + rel + (src.keys ? ' (+' + Object.keys(src.keys).length + ' keys)' : ''));

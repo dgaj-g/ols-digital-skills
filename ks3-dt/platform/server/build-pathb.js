@@ -202,6 +202,7 @@ window.OLS_TRANSPORT = {
         case 'recapAnswer':    g.apiRecapAnswer(p); break;
         case 'mark':           g.apiMark(p); break;
         case 'vaultInfo':      g.apiVaultInfo(p); break;
+        case 'board':          g.apiBoard(p); break;
         case 'saveEvent':      g.apiSaveEvent(p); break;
         case 'loadDraft':      g.apiLoadDraft(p); break;
         case 'submitExit':     g.apiSubmitExit(p); break;

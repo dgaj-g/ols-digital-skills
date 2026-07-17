@@ -282,8 +282,20 @@
         '<select id="cls-year" class="staff-select"><option value="j1">J1</option><option value="j2">J2</option><option value="j3">J3</option></select>' +
         '<button type="button" class="primary-btn" data-action="add-class">Add class</button>' +
       '</div>' +
-      '<p class="staff-status" id="cls-status"></p>';
+      '<p class="staff-status" id="cls-status"></p>' +
+      storeHealthHtml();
     setPane(html);
+  }
+
+
+  function storeHealthHtml() {
+    var st = classesData && classesData.store;
+    if (!st || !st.limit) return '';
+    var pct = Math.round((st.bytes / st.limit) * 100);
+    var warn = pct >= 70;
+    return '<p class="staff-row-meta" style="margin-top:10px' + (warn ? ';color:var(--bad);font-weight:700' : '') + '">' +
+      'Platform storage: ' + Math.round(st.bytes / 1024) + ' KB of ' + Math.round(st.limit / 1024) + ' KB used (' + pct + '%) &middot; ' + st.pupils + ' pupil records' +
+      (warn ? ' &mdash; getting full: tell Damien so the archive sweep can run.' : '') + '</p>';
   }
 
   function addClass() {
@@ -365,7 +377,7 @@
       var on = !!(lk && Number(lk.on));
       var delivered = !!(lk && Number(lk.u));
       var stateText = on ? ('Unlocked since ' + fmtDate(lk.u)) : (delivered ? ('Locked (delivered ' + fmtDate(lk.u) + ')') : 'Locked');
-      return '<button type="button" class="lock-cell' + (on ? ' is-on' : '') + '" data-action="toggle-lock" data-num="' + le.num + '">' +
+      return '<button type="button" class="lock-cell' + (on ? ' is-on' : '') + '" data-action="toggle-lock" data-num="' + le.num + '" data-ready="' + (le.status === 'ready' ? '1' : '0') + '">' +
         '<span class="lc-num">Lesson ' + le.num + '</span>' +
         '<span class="lc-title">' + App.esc(le.title) + '</span>' +
         '<span class="lc-state">' + App.esc(stateText) + '</span>' +
@@ -381,6 +393,16 @@
     if (btn.disabled) return;
     var num = btn.getAttribute('data-num');
     var wasOn = btn.classList.contains('is-on'), willOn = !wasOn;
+    if (willOn && btn.getAttribute('data-ready') === '0') {
+      App.confirm('Unlock an unfinished lesson?',
+        'This lesson\'s content is still being authored. Pupils who open it will only see "being prepared", and it will not count for absence flags. Usually you want to wait until it says Ready.',
+        'Unlock anyway', function (yes) { if (yes) doToggle(btn, num, wasOn, true); });
+      return;
+    }
+    doToggle(btn, num, wasOn, willOn);
+  }
+
+  function doToggle(btn, num, wasOn, willOn) {
     btn.disabled = true;
     btn.classList.toggle('is-on', willOn);
     var stateEl = btn.querySelector('.lc-state');
@@ -481,7 +503,8 @@
       var bl = baselineDisplay(r);
       var cells = deliveredNums.map(function (n) { return '<td>' + lessonCell(r.L[n]) + '</td>'; }).join('');
       return '<tr' + (stuck ? ' class="is-stuck"' : '') + '>' +
-        '<td>' + App.esc(r.name) + (stuck ? ' <span class="pill flag">needs you</span>' : '') + '</td>' +
+        '<td><button type="button" class="modal-close" style="font-size:1rem" title="Remove this pupil from the class (her own work is untouched)" data-action="remove-pupil" data-email="' + App.esc(r.email) + '" data-name="' + App.esc(r.name) + '">&times;</button> ' +
+        App.esc(r.name) + (stuck ? ' <span class="pill flag">needs you</span>' : '') + '</td>' +
         '<td>' + App.esc(r.codename) + '</td>' +
         '<td>' + Number(r.xp || 0) + '</td>' +
         '<td>' + (bl || '&mdash;') + '</td>' +
@@ -879,15 +902,29 @@
     });
   }
 
+
+  function removePupil(btn) {
+    var email = btn.getAttribute('data-email'), name = btn.getAttribute('data-name');
+    App.confirm('Remove ' + name + ' from this class?',
+      'Her shared class record (progress the dashboard shows) is deleted. Her own private work is untouched, and she can rejoin from the class link.',
+      'Remove', function (yes) {
+        if (!yes) return;
+        adminCall('removePupil', { className: cls, email: email }).then(function (r) {
+          if (r && r.ok) renderLive(); else plainStatus(q('#live-status'), 'Could not remove -- please try again.');
+        });
+      });
+  }
+
   function undeliveredLessons(man) {
     var locks = dashData.locks || {};
     return (man.lessons || []).filter(function (le) { var lk = locks[String(le.num)]; return !(lk && Number(lk.u)); })
       .sort(function (a, b) { return a.num - b.num; });
   }
   function pickSuggestion(list) {
+    // Cover Mode only ever offers READY lessons (review finding: delivering an
+    // unauthored lesson creates a dead-end for pupils under cover).
     var ready = list.filter(function (le) { return le.status === 'ready'; });
-    if (ready.length) return ready[0];
-    return list.length ? list[0] : null;
+    return ready.length ? ready[0] : null;
   }
 
   function renderCoverPane(man) {
@@ -917,6 +954,8 @@
         (alt ? (' Suggesting Lesson ' + alt.num + ' instead.') : ' No other lesson is ready to suggest yet.') + '</div>';
       suggestion = alt;
     }
+    undelivered = undelivered.filter(function (le) { return le.status === 'ready'; });
+    if (!undelivered.length) { setPane('<p class="staff-status">No cover-ready lessons are left undelivered for this class. Cover can revisit an already-delivered lesson from the pupils&rsquo; Mission Control instead.</p>'); return; }
     if (!coverPick || !undelivered.some(function (le) { return le.id === coverPick; })) coverPick = suggestion ? suggestion.id : undelivered[0].id;
 
     var options = undelivered.map(function (le) {
@@ -1003,7 +1042,13 @@
     });
   }
 
-  function coverPrint() { global.print(); }
+  function coverPrint() {
+    // window.print can silently no-op inside the sandboxed iframe (review
+    // finding) - always leave the teacher a fallback route.
+    try { global.print(); } catch (e) {}
+    var st = q('#cover-status');
+    if (st) plainStatus(st, 'If no print dialog appeared (some school browsers block it here), take a screenshot of the sheet or keep this tab open for the cover teacher.');
+  }
 
   function coverEnd(btn) {
     if (btn.disabled) return;
@@ -1044,6 +1089,7 @@
       case 'options-save': optionsSave(btn); break;
       case 'cover-start': coverStart(btn); break;
       case 'cover-print': coverPrint(); break;
+      case 'remove-pupil': removePupil(btn); break;
       case 'cover-end': coverEnd(btn); break;
     }
   }

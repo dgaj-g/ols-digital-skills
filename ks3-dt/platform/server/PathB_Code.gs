@@ -167,6 +167,24 @@ function sanitizeClass_(name) {
 function pKey_(cls, email) { return 'p:' + cls + ':' + email; }
 function readPupil_(cls, email) { return jget_(sp_(), pKey_(cls, email), null); }
 function writePupil_(cls, email, rec) { jset_(sp_(), pKey_(cls, email), rec); }
+/* Store-full guard (review finding: the 500KB script-wide Properties quota is a
+   real ceiling at whole-school scale). Callers return {ok:false, error:'store-full'}
+   so the client can stop retrying and tell the pupil to flag the teacher. */
+function tryWritePupil_(cls, email, rec) {
+  try { writePupil_(cls, email, rec); return true; } catch (e) { return false; }
+}
+var STORE_FULL_ = { ok: false, error: 'store-full' };
+/* Rough bytes used across the shared store - surfaced in the staff panel so the
+   quota is monitored, never a surprise. (Nightly archival trigger = Session B.) */
+function storeHealth_() {
+  var all = sp_().getProperties();
+  var total = 0, pupils = 0;
+  Object.keys(all).forEach(function (k) {
+    total += k.length + String(all[k]).length;
+    if (k.indexOf('p:') === 0) pupils++;
+  });
+  return { bytes: num_(total), limit: 500000, pupils: num_(pupils) };
+}
 function allPupils_(cls) {
   // Lock-free bulk read (red team: dashboard reads must never take the lock).
   var all = sp_().getProperties();
@@ -227,13 +245,22 @@ function schoolDaysSince_(tminVal) {
   }
   return Math.max(0, days - 1);
 }
-function meaningful_(a) { return !!a && (str_(a[3]) !== '' || str_(a[2]) !== '' || num_(a[6]) >= 3); }
+/* Meaningful work = exit attempted OR activity detail OR >=3 active min OR any
+   recap answers (a pupil who answered the Do-Now was demonstrably present -
+   review finding: without this, the dashboard could show 'started, 80% recap'
+   while the absence tab flagged the same pupil as absent). */
+function meaningful_(a) {
+  return !!a && (str_(a[3]) !== '' || str_(a[2]) !== '' || num_(a[6]) >= 3 || num_(a[10]) > 0);
+}
 function absenceFor_(cls, rec, locks, manifest, absDays) {
   var flags = [];
   var lessons = (manifest && manifest.lessons) || [];
   for (var i = 0; i < lessons.length; i++) {
     var le = lessons[i];
     if (le.absenceInferenceEligible === false) continue;
+    // Never flag a lesson whose content isn't authored yet - an eager unlock of
+    // a 'soon' lesson must not flood the class with false absence flags.
+    if (str_(le.status) !== 'ready') continue;
     var lk = locks[str_(le.num)];
     if (!lk || !num_(lk.u)) continue;
     if (schoolDaysSince_(num_(lk.u)) < absDays) continue;
@@ -353,7 +380,7 @@ function apiRecapStart(req) {
   });
   if (!items.length) return { ok: true, items: [] };
 
-  var hist = jget_(up_(), 'recap', { threads: {}, seen: {} });
+  var hist = jget_(up_(), 'recap:' + year, { threads: {}, seen: {} });
   var day = today_();
 
   // 1) Due keystone threads first (successive relearning: retire after 3 correct
@@ -391,18 +418,19 @@ function apiRecapStart(req) {
     pools[band(it)].push(it);
   });
   shuffle_(pools.a); shuffle_(pools.b); shuffle_(pools.c);
-  var want = [['a', 2], ['b', 2], ['c', 1]];
-  for (var w = 0; w < want.length && chosen.length < 5; w++) {
-    var take = pools[want[w][0]].splice(0, want[w][1]);
-    for (var t2 = 0; t2 < take.length && chosen.length < 5; t2++) chosen.push(take[t2]);
+  // Round-robin the recency bands (review finding: a fixed a,a,b,b,c order let
+  // due keystones starve band 'c' entirely, so the oldest material never
+  // resurfaced). Order a,b,c,a,b keeps the 40/40/20 shape at every budget.
+  var order = ['a', 'b', 'c', 'a', 'b'];
+  for (var w = 0; w < order.length && chosen.length < 5; w++) {
+    var take1 = pools[order[w]].splice(0, 1);
+    if (take1.length) chosen.push(take1[0]);
   }
   var rest = pools.a.concat(pools.b, pools.c);
   for (var r2 = 0; r2 < rest.length && chosen.length < Math.min(5, items.length); r2++) chosen.push(rest[r2]);
-  if (chosen.length < 3) { // never a 1-2 question recap if more exist
-    for (var r3 = 0; r3 < items.length && chosen.length < Math.min(3, items.length); r3++) {
-      if (chosen.indexOf(items[r3]) === -1) chosen.push(items[r3]);
-    }
-  }
+  // If seen-today rotation leaves fewer than 3, serve what's left rather than
+  // re-serving items answered today (review finding) - the client handles a
+  // short or empty Do-Now gracefully.
 
   // Shuffle each item's options server-side; remember the order for marking.
   var session = { day: day, items: [] };
@@ -414,7 +442,7 @@ function apiRecapStart(req) {
     out.push({ id: str_(it.id), topic: str_(it.topic), stem: str_(it.stem),
       options: ord.map(function (oi) { return str_(it.options[oi]); }) });
   });
-  jset_(up_(), 'rs:' + curNum, session);
+  jset_(up_(), 'rs:' + year + ':' + curNum, session);
   return { ok: true, items: out };
 }
 
@@ -426,7 +454,7 @@ function apiRecapAnswer(req) {
   if (!cls) return { ok: false, error: 'unknown-class' };
   var year = classYear_(cls);
   var curNum = str_(req.lessonNum || '');
-  var session = jget_(up_(), 'rs:' + curNum, null);
+  var session = jget_(up_(), 'rs:' + year + ':' + curNum, null);
   if (!session) return { ok: false, error: 'no-session' };
   var entry = null;
   for (var i = 0; i < session.items.length; i++) if (session.items[i].id === str_(req.itemId)) entry = session.items[i];
@@ -440,7 +468,7 @@ function apiRecapAnswer(req) {
   var correctShuffled = entry.ord.indexOf(num_(key.a));
 
   // Update private history (threads: successive relearning; seen: daily rotation).
-  var hist = jget_(up_(), 'recap', { threads: {}, seen: {} });
+  var hist = jget_(up_(), 'recap:' + year, { threads: {}, seen: {} });
   var day = today_();
   hist.seen[str_(req.itemId)] = day;
   if (entry.thread) {
@@ -449,18 +477,22 @@ function apiRecapAnswer(req) {
     else { t.s = 0; t.d = day; t.r = false; }
     hist.threads[entry.thread] = t;
   }
-  jset_(up_(), 'recap', hist);
+  jset_(up_(), 'recap:' + year, hist);
 
-  // Roll accuracy into the lean record (dashboard stuck-pupil signal).
-  var rec = readPupil_(cls, email);
-  if (rec) {
-    var a = larr_(rec, curNum);
-    a[9] = num_(a[9]) + (correct ? 1 : 0);
-    a[10] = num_(a[10]) + 1;
-    if (num_(a[0]) < 1) a[0] = 1;
-    a[5] = tmin_();
-    writePupil_(cls, email, rec);
-  }
+  // Roll accuracy into the lean record (dashboard stuck-pupil signal), under
+  // the lock so a concurrent heartbeat save can't clobber the counters.
+  withLock_(function () {
+    var rec = readPupil_(cls, email);
+    if (rec) {
+      var a = larr_(rec, curNum);
+      a[9] = num_(a[9]) + (correct ? 1 : 0);
+      a[10] = num_(a[10]) + 1;
+      if (num_(a[0]) < 1) a[0] = 1;
+      a[5] = tmin_();
+      tryWritePupil_(cls, email, rec);
+    }
+    return true;
+  });
   return { ok: true, correct: !!correct, correctIdx: num_(correctShuffled), explain: str_(key.explain || '') };
 }
 
@@ -482,8 +514,11 @@ function apiMark(req) {
   return { ok: true, correct: choice === num_(key.a), correctIdx: num_(key.a), explain: str_(key.explain || '') };
 }
 
-/* Vault map served at runtime (never in the public repo); drag stays lag-free
-   because the client holds it in memory after one fetch. */
+/* Vault check served at runtime as SALTED HASHES, never the plaintext map
+   (review finding: returning the map handed a DevTools pupil the full solution
+   for zero effort). The client hashes each candidate drop and compares - drag
+   stays lag-free, casual console cheating doesn't work. Explanations are only
+   released AFTER the placement result has been recorded (mode:'explain'). */
 function apiVaultInfo(req) {
   req = req || {};
   var email = userEmail_();
@@ -492,11 +527,25 @@ function apiVaultInfo(req) {
   if (!cls) return { ok: false, error: 'unknown-class' };
   var year = classYear_(cls);
   var lessonId = str_(req.lessonId);
-  if (!lessonAccessible_(cls, lessonNum_(year, lessonId))) return { ok: false, error: 'locked' };
+  var numStr = lessonNum_(year, lessonId);
+  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
   var keys = lessonKeys_(year, lessonId);
-  var v = keys[str_(req.keyId || 'vault')];
-  if (!v) return { ok: false, error: 'no-key' };
-  return { ok: true, map: v.map || {}, explain: v.explain || {} };
+  var keyId = str_(req.keyId || 'vault');
+  var v = keys[keyId];
+  if (!v || !v.map) return { ok: false, error: 'no-key' };
+  if (str_(req.mode) === 'explain') {
+    var rec = readPupil_(cls, email);
+    var a = rec ? larr_(rec, numStr) : null;
+    var done = a && (detailKeys_(a[2]).indexOf('vp') !== -1 || detailKeys_(a[2]).indexOf(keyId) !== -1);
+    if (!done) return { ok: false, error: 'not-finished' };
+    return { ok: true, explain: v.explain || {} };
+  }
+  var salt = Utilities.getUuid().slice(0, 8);
+  var check = {};
+  Object.keys(v.map).forEach(function (fileId) {
+    check[fileId] = vhash_(salt + '|' + fileId + '|' + str_(v.map[fileId]));
+  });
+  return { ok: true, salt: str_(salt), check: check };
 }
 
 /* Lesson detail (Larr[2]) holds MULTIPLE engines' results as 'key=value' pairs
@@ -513,7 +562,23 @@ function mergeDetail_(existing, addition) {
   }
   String(existing || '').split(';').forEach(take);
   String(addition || '').split(';').forEach(take);
-  return order.map(function (k) { return map[k]; }).join(';').slice(0, 220);
+  return order.map(function (k) { return map[k]; }).join(';').slice(0, 180);
+}
+function detailKeys_(s) {
+  return String(s || '').split(';').filter(Boolean).map(function (seg) { return seg.split('=')[0]; });
+}
+/* True when `addition` introduces at least one detail key not already stored -
+   the idempotency test for XP grants (a replayed/retried event adds no new key). */
+function detailAddsNew_(existing, addition) {
+  var have = detailKeys_(existing);
+  return detailKeys_(addition).some(function (k) { return have.indexOf(k) === -1; });
+}
+/* Tiny non-crypto hash for the vault placement check (client-side drag needs an
+   instant verdict; hashing beats a zero-effort DevTools dump of the map). */
+function vhash_(s) {
+  var h = 5381;
+  for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+  return h.toString(16);
 }
 
 /* ---------- progress events (badges, XP, drafts, active time) ---------- */
@@ -525,28 +590,44 @@ function apiSaveEvent(req) {
   if (!cls) return { ok: false, error: 'unknown-class' };
   var numStr = str_(req.lessonNum || '');
   if (!numStr) return { ok: false, error: 'no-lesson' };
-  var rec = readPupil_(cls, email);
-  if (!rec) return { ok: false, error: 'not-joined' };
-  var a = larr_(rec, numStr);
-  if (num_(a[0]) < 1) a[0] = 1;
-  var xpDelta = Math.max(0, Math.min(40, num_(req.xp)));   // server-side cap per event
-  if (xpDelta) { a[1] = num_(a[1]) + xpDelta; rec.xp = num_(rec.xp) + xpDelta; }
-  if (req.detail != null) a[2] = mergeDetail_(a[2], str_(req.detail).slice(0, 120));
-  if (req.minDelta) a[6] = num_(a[6]) + Math.max(0, Math.min(10, num_(req.minDelta)));
-  if (req.codename != null) rec.cn = str_(req.codename).slice(0, 40);
-  a[5] = tmin_();
-  writePupil_(cls, email, rec);
-  if (req.draft != null) {
+  // Review findings: gate on delivered lessons; XP is granted ONLY when the
+  // event's detail introduces a NEW key (idempotent under outbox retries and
+  // console replays), capped per event AND per lesson. Same-pupil concurrent
+  // RPCs (two tabs, heartbeat + badge) serialise under the lock.
+  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  var out = withLock_(function () {
+    var rec = readPupil_(cls, email);
+    if (!rec) return { ok: false, error: 'not-joined' };
+    var a = larr_(rec, numStr);
+    if (num_(a[0]) < 1) a[0] = 1;
+    var xpDelta = Math.max(0, Math.min(40, num_(req.xp)));
+    var isNew = req.detail != null && detailAddsNew_(a[2], str_(req.detail));
+    if (xpDelta && isNew) {
+      xpDelta = Math.min(xpDelta, Math.max(0, 150 - num_(a[1]))); // per-lesson ceiling
+      a[1] = num_(a[1]) + xpDelta;
+      rec.xp = num_(rec.xp) + xpDelta;
+    }
+    if (req.detail != null) a[2] = mergeDetail_(a[2], str_(req.detail).slice(0, 120));
+    if (req.minDelta) a[6] = num_(a[6]) + Math.max(0, Math.min(10, num_(req.minDelta)));
+    if (req.codename != null) rec.cn = str_(req.codename).slice(0, 40);
+    a[5] = tmin_();
+    if (!tryWritePupil_(cls, email, rec)) return STORE_FULL_;
+    return { ok: true, xp: num_(rec.xp) };
+  });
+  if (out.ok && req.draft != null) {
     var draft = str_(JSON.stringify(req.draft));
-    if (draft.length < 8000) up_().setProperty('draft:' + numStr, draft);
+    if (draft.length < 8000) up_().setProperty('draft:' + classYear_(cls) + ':' + numStr, draft);
   }
-  return { ok: true, xp: num_(rec.xp) };
+  return out;
 }
 
 function apiLoadDraft(req) {
   req = req || {};
-  var numStr = str_((req || {}).lessonNum || '');
-  var raw = up_().getProperty('draft:' + numStr);
+  var numStr = str_(req.lessonNum || '');
+  var cls = realClass_(req.classCode);
+  // Year-qualified key (review finding: bare lessonNum collides across years -
+  // a J2 pupil would inherit her own J1 drafts for the same lesson numbers).
+  var raw = up_().getProperty('draft:' + (cls ? classYear_(cls) : 'j1') + ':' + numStr);
   var draft = null;
   try { draft = raw ? JSON.parse(raw) : null; } catch (e) {}
   return { ok: true, draft: draft };
@@ -586,18 +667,26 @@ function apiSubmitExit(req) {
     fb.push({ id: str_(it.id), correct: !!ok, correctIdx: num_(key.a), explain: str_(key.explain || '') });
   }
   var se = req.selfEval || {};
-  var rec = readPupil_(cls, email);
-  if (!rec) return { ok: false, error: 'not-joined' };
-  var a = larr_(rec, numStr);
-  a[0] = 2;
-  a[3] = chosenStr;
-  a[4] = str_(se.conf || '').slice(0, 6) + '|' + str_(se.diff || '');
-  a[8] = str_(se.comment || '').slice(0, 80);
-  a[5] = tmin_();
-  var xpDelta = 10;
-  a[1] = num_(a[1]) + xpDelta; rec.xp = num_(rec.xp) + xpDelta;
-  writePupil_(cls, email, rec);
-  return { ok: true, right: num_(right), total: num_(exitItems.length), feedback: fb, xp: num_(rec.xp) };
+  return withLock_(function () {
+    var rec = readPupil_(cls, email);
+    if (!rec) return { ok: false, error: 'not-joined' };
+    var a = larr_(rec, numStr);
+    // First submission wins (review finding: resubmission farmed XP and let a
+    // pupil overwrite her real result). A retry of a LOST response gets the
+    // same feedback back, no double-write, no double-XP.
+    if (str_(a[3]) !== '') {
+      return { ok: true, already: true, right: num_(right), total: num_(exitItems.length), feedback: fb, xp: num_(rec.xp) };
+    }
+    a[0] = 2;
+    a[3] = chosenStr;
+    a[4] = str_(se.conf || '').slice(0, 6) + '|' + str_(se.diff || '');
+    a[8] = str_(se.comment || '').slice(0, 60);
+    a[5] = tmin_();
+    var xpDelta = Math.min(10, Math.max(0, 150 - num_(a[1])));
+    a[1] = num_(a[1]) + xpDelta; rec.xp = num_(rec.xp) + xpDelta;
+    if (!tryWritePupil_(cls, email, rec)) return STORE_FULL_;
+    return { ok: true, right: num_(right), total: num_(exitItems.length), feedback: fb, xp: num_(rec.xp) };
+  });
 }
 
 /* Baseline (L1 Licence Exam): marked + stored, NEVER fed back (doc 07: neutral ack). */
@@ -621,14 +710,18 @@ function apiSubmitBaseline(req) {
     if (key && ch === num_(key.a)) right++;
     chosen += (ch >= 0 && ch <= 9) ? String(ch) : 'x';
   });
-  var rec = readPupil_(cls, email);
-  if (!rec) return { ok: false, error: 'not-joined' };
-  var a = larr_(rec, numStr);
-  a[2] = mergeDetail_(a[2], 'bl=' + right + '/' + ids.length + '|' + chosen);
-  a[5] = tmin_();
-  if (num_(a[0]) < 1) a[0] = 1;
-  writePupil_(cls, email, rec);
-  return { ok: true }; // deliberately no marks: a diagnostic, not a quiz
+  return withLock_(function () {
+    var rec = readPupil_(cls, email);
+    if (!rec) return { ok: false, error: 'not-joined' };
+    var a = larr_(rec, numStr);
+    // The baseline is a one-off diagnostic: first submission is the record.
+    if (detailKeys_(a[2]).indexOf('bl') !== -1) return { ok: true, already: true };
+    a[2] = mergeDetail_(a[2], 'bl=' + right + '/' + ids.length + '|' + chosen);
+    a[5] = tmin_();
+    if (num_(a[0]) < 1) a[0] = 1;
+    if (!tryWritePupil_(cls, email, rec)) return STORE_FULL_;
+    return { ok: true }; // deliberately no marks: a diagnostic, not a quiz
+  });
 }
 
 function apiCatchup(req) {
@@ -638,13 +731,41 @@ function apiCatchup(req) {
   var cls = realClass_(req.classCode);
   if (!cls) return { ok: false, error: 'unknown-class' };
   var numStr = str_(req.lessonNum || '');
-  var rec = readPupil_(cls, email);
-  if (!rec) return { ok: false, error: 'not-joined' };
-  var a = larr_(rec, numStr);
-  a[7] = num_(a[7]) | 2;
-  a[5] = tmin_();
-  writePupil_(cls, email, rec);
-  return { ok: true };
+  return withLock_(function () {
+    var rec = readPupil_(cls, email);
+    if (!rec) return { ok: false, error: 'not-joined' };
+    var a = larr_(rec, numStr);
+    a[7] = num_(a[7]) | 2;
+    a[5] = tmin_();
+    if (!tryWritePupil_(cls, email, rec)) return STORE_FULL_;
+    return { ok: true };
+  });
+}
+
+/* Public class board (decision #8): pupil-readable ONLY when the teacher has
+   deliberately switched the class to 'public'. Names honour the codename/real
+   config; basis honours xp/completion; topN 0 = whole class. */
+function apiBoard(req) {
+  req = req || {};
+  var email = userEmail_();
+  if (!email) return { ok: false, error: 'not-signed-in' };
+  var cls = realClass_(req.classCode);
+  if (!cls) return { ok: false, error: 'unknown-class' };
+  var cfg = getCfg_(cls);
+  if (str_(cfg.lb.mode) !== 'public') return { ok: true, mode: str_(cfg.lb.mode), rows: [] };
+  var rows = allPupils_(cls).filter(function (r) { return str_(r.n); }).map(function (r) {
+    var doneCount = 0;
+    Object.keys(r.L || {}).forEach(function (k) { if (num_((r.L[k] || [])[0]) === 2) doneCount++; });
+    return {
+      label: str_(cfg.lb.names) === 'real' ? str_(r.n).split(' ')[0] : ('Agent ' + (str_(r.cn) || 'Unnamed')),
+      v: str_(cfg.lb.basis) === 'completion' ? num_(doneCount) : num_(r.xp),
+      me: str_(r.email) === email
+    };
+  });
+  rows.sort(function (a, b) { return b.v - a.v; });
+  var topN = num_(cfg.lb.topN);
+  if (topN > 0) rows = rows.slice(0, topN);
+  return { ok: true, mode: 'public', basis: str_(cfg.lb.basis), rows: rows };
 }
 
 /* ==================== STAFF API ==================== */
@@ -671,12 +792,25 @@ function apiAdmin(req) {
         counts[c] = (counts[c] || 0) + 1;
       }
     });
+    var health = storeHealth_();
     return {
       ok: true, me: str_(me),
       classes: reg.map(function (c) {
         return { name: str_(c.name), owner: str_(c.owner), year: str_(c.year), created: str_(c.created), pupils: num_(counts[c.name] || 0) };
-      })
+      }),
+      store: { bytes: num_(health.bytes), limit: num_(health.limit), pupils: num_(health.pupils) }
     };
+  }
+
+  /* Remove one pupil's shared record from a class (wrong-class joins happen -
+     the class link is the only gate by design). Her private UserProperties and
+     Drive work are untouched; rejoining recreates a fresh record. */
+  if (sub === 'removePupil') {
+    if (!cls) return { ok: false, error: 'unknown-class' };
+    var rpEmail = str_(req.email).toLowerCase();
+    if (!rpEmail) return { ok: false, error: 'no-email' };
+    sp_().deleteProperty(pKey_(cls, rpEmail));
+    return { ok: true };
   }
 
   if (sub === 'addClass') {
