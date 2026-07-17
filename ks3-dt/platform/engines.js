@@ -460,8 +460,10 @@
           onDone: function (res) {
             host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Sealing your Agent File&hellip;</span></div>';
             var payload = { lessonId: ctx.lesson.id, answers: res.answers };
-            ctx.call('submitBaseline', payload).then(function (r) {
-              if (!r || !r.ok) App.enqueue('submitBaseline', payload);
+            // review mode: never overwrite the original baseline record
+            var submit = ctx.review ? Promise.resolve({ ok: true }) : ctx.call('submitBaseline', payload);
+            submit.then(function (r) {
+              if (!ctx.review && (!r || !r.ok)) App.enqueue('submitBaseline', payload);
               host.innerHTML = '';
               var seal = el('<div class="card seal-card"><div class="seal">&#128736;</div>' +
                 '<h2>Agent File sealed</h2><p>Sixteen answers, logged for the record. At the end of the year you’ll open this file again — and see how far you’ve come.</p>' +
@@ -646,6 +648,14 @@
         c.querySelector('.se-submit').disabled = !all;
       });
       c.querySelector('.se-submit').onclick = function () {
+        if (ctx.review) {
+          host.innerHTML = '';
+          var rv = el('<div class="card"><h2>Already filed</h2><p>This mission report went to your teacher the first time — a review visit never overwrites it.</p>' +
+            '<button class="primary-btn" type="button">Finish reviewing</button></div>');
+          host.appendChild(rv);
+          rv.querySelector('button').onclick = function () { ctx.next(); };
+          return;
+        }
         var commentEl = c.querySelector('.se-comment');
         var payload = {
           answers: App.state._exitAnswers || [],

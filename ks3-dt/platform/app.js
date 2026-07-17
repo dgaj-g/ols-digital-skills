@@ -15,6 +15,10 @@
     });
   }
   App.$ = $; App.esc = esc;
+  /* Resolve a repo-relative asset path. On the Apps-Script-served page the
+     assembler injects OLS_ASSET_BASE (absolute github.io) because relative
+     paths break under the googleusercontent origin. */
+  App.asset = function (path) { return (global.OLS_ASSET_BASE || '') + path; };
 
   App.state = {
     email: '', name: '', codename: '', classCode: '', year: 'j1',
@@ -49,6 +53,10 @@
   }
   App.call = function (action, params) {
     if (!_T) _T = pickTransport();
+    if (!_T || typeof _T.call !== 'function') {
+      console.error('[App.call] no transport available');
+      return Promise.resolve({ ok: false, error: 'no-transport' });
+    }
     var p = Object.assign({ action: action, classCode: App.state.classCode }, params || {});
     return _T.call(p).catch(function (err) {
       console.error('[App.call ' + action + ']', err);
@@ -399,8 +407,14 @@
       App.state.lesson = lesson;
       App.state.lessonEntry = le;
       App.state.catchup = !!(opts && opts.catchup);
+      // Completed lessons re-open in REVIEW mode: everything is explorable again
+      // (decision #10: pupils can always revisit) but nothing is re-recorded —
+      // no XP re-awards, no exit/baseline overwrites.
+      var recArr = (App.state.me && App.state.me.L) ? App.state.me.L[String(le.num)] : null;
+      App.state.review = !!(recArr && Number(recArr[0]) === 2 && !App.state.catchup);
       App.state.chunkIdx = 0;
       App.state.chunks = buildChunks(lesson, App.state.catchup);
+      if (App.state.review) App.toast('Reviewing a completed mission — nothing will be overwritten.', 3200);
       $('#hub').hidden = true;
       $('#player').hidden = false;
       $('#player-num').textContent = 'Lesson ' + le.num;
@@ -408,7 +422,8 @@
       $('#player-xp').textContent = App.state.xp + ' XP';
       loadDraftThen(function () {
         // resume: skip chunks already completed on a previous visit/refresh
-        var done = (App.state.draft && App.state.draft.done) || [];
+        // (review mode starts from the top instead — it's a re-read, not a resume)
+        var done = (App.state.review || !App.state.draft) ? [] : (App.state.draft.done || []);
         var idx = 0;
         while (idx < App.state.chunks.length - 1 && done.indexOf(App.state.chunks[idx].id) !== -1) idx++;
         App.state.chunkIdx = idx;
@@ -480,7 +495,9 @@
       markItem: function (itemId, choice) {
         return App.call('mark', { lessonId: s.lesson.id, itemId: itemId, choice: choice });
       },
+      review: s.review,
       saveEvent: function (payload) {
+        if (s.review) return Promise.resolve({ ok: true, xp: s.xp });
         payload = payload || {};
         payload.lessonNum = String(s.lessonEntry.num);
         if (s.pendingMin >= 1) { payload.minDelta = Math.round(s.pendingMin); s.pendingMin = 0; }
@@ -495,6 +512,7 @@
         return App.call('saveEvent', { lessonNum: String(s.lessonEntry.num), draft: data });
       },
       awardBadge: function (badge, detail) {
+        if (s.review) return App.badgeCelebration(Object.assign({}, badge, { xp: 0 }));
         return App.badgeCelebration(badge).then(function () {
           return App.engineCtx(ch).saveEvent({ xp: badge.xp || 0, detail: detail || undefined });
         });
@@ -515,9 +533,9 @@
       var ov = document.createElement('div');
       ov.className = 'badge-pop';
       ov.innerHTML = '<div class="badge-pop-card">' +
-        '<img src="' + esc(badge.icon) + '" alt="">' +
+        '<img src="' + esc(App.asset(badge.icon)) + '" alt="">' +
         '<h2>Badge earned</h2><p class="badge-pop-name">' + esc(badge.name) + '</p>' +
-        '<p class="badge-pop-xp">+' + Number(badge.xp || 0) + ' XP</p>' +
+        (Number(badge.xp || 0) > 0 ? '<p class="badge-pop-xp">+' + Number(badge.xp) + ' XP</p>' : '') +
         '<button class="primary-btn" type="button">Onward</button></div>';
       document.body.appendChild(ov);
       requestAnimationFrame(function () { ov.classList.add('show'); });
@@ -531,7 +549,7 @@
   App.nextChunk = function () {
     var s = App.state;
     // record completion for refresh-resume (fire-and-forget draft save)
-    var doneId = s.chunks[s.chunkIdx] && s.chunks[s.chunkIdx].id;
+    var doneId = !s.review && s.chunks[s.chunkIdx] && s.chunks[s.chunkIdx].id;
     if (doneId) {
       s.draft = s.draft || {};
       s.draft.done = s.draft.done || [];
