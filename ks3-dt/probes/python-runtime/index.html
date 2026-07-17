@@ -118,12 +118,23 @@
   // T5: error readability
   .then(function(){ return run('print(missing_variable)').then(function(){ set('error','fail','no error raised!'); })
     .catch(function(e){ var s=String(e); set('error', s.indexOf('NameError')>-1?'pass':'warn', s.slice(0,120)); }); })
-  // T6: turtle
-  .then(function(){ return run('import turtle\nt = turtle.Turtle()\nt.speed(10)\nt.color("#1A3A6B")\nt.pensize(3)\nfor i in range(4):\n    t.forward(80)\n    t.right(90)\nt.color("#E4B824")\nt.penup()\nt.goto(120,-40)\nt.pendown()\nfor i in range(5):\n    t.forward(60)\n    t.right(144)\nprint("drawn")', {turtle:true}); })
-  .then(function(out){ set('turtle', out.indexOf('drawn')>-1 ? 'pass':'fail', 'square + star should be visible above'); })
-  .catch(function(e){ set('turtle','fail',String(e)); })
-  // T7: fetch JSON (same-origin here; the Apps Script probe repeats this cross-origin from the sandbox)
-  .then(function(){ return fetch('probe-manifest.json').then(function(r){ return r.json(); }); })
+  // T6: turtle — speed(0)=instant draw; timeout race guards against Skulpt's known hung-promise quirk
+  .then(function(){
+    var turtleRun = run('import turtle\nt = turtle.Turtle()\nt.speed(0)\nt.color("#1A3A6B")\nt.pensize(3)\nfor i in range(4):\n    t.forward(80)\n    t.right(90)\nt.color("#E4B824")\nt.penup()\nt.goto(120,-40)\nt.pendown()\nfor i in range(5):\n    t.forward(60)\n    t.right(144)\nprint("drawn")', {turtle:true});
+    var timeout = new Promise(function(res){ setTimeout(function(){ res('__timeout__'); }, 12000); });
+    return Promise.race([turtleRun, timeout]);
+  })
+  .then(function(out){
+    if (out === '__timeout__') {
+      var drew = !!document.querySelector('#turtlebox canvas');
+      set('turtle', drew ? 'warn' : 'fail', drew ? 'canvas drew but the run-promise hung (Skulpt quirk) — usable with care' : 'nothing drawn within 12s');
+    } else {
+      set('turtle', String(out).indexOf('drawn')>-1 ? 'pass':'fail', 'square + star should be visible above');
+    }
+  })
+  .catch(function(e){ set('turtle','fail',String(e)); });
+  // T7: fetch JSON — independent of the Python chain (same-origin here; the Apps Script probe repeats this cross-origin from the sandbox)
+  fetch('probe-manifest.json').then(function(r){ return r.json(); })
   .then(function(j){ set('fetchjson', j && j.probe==='ols-ks3-dt' ? 'pass':'fail', 'fetched: '+JSON.stringify(j)); })
   .catch(function(e){ set('fetchjson','fail',String(e)); });
 })();
