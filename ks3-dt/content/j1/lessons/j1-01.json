@@ -1,0 +1,604 @@
+{
+ "id": "j1-01",
+ "year": "j1",
+ "num": 1,
+ "title": "Mission Control",
+ "tagline": "Your induction. Your codename. Your first badges.",
+ "mode": "quest",
+ "durationMin": 60,
+ "objectives": [
+  "I can log in to my C2k account, find my way around the DT platform, and locate my saved work.",
+  "I can explain what locked and unlocked lessons mean and where to go if I get stuck.",
+  "I know at least one way to keep my account safe and what happens to files saved in the wrong place."
+ ],
+ "chunks": [
+  {
+   "id": "briefing",
+   "engine": "briefing",
+   "title": "Mission Briefing",
+   "minutes": 3,
+   "config": {
+    "clearance": "CLEARANCE LEVEL: J1",
+    "headline": "You have been recruited.",
+    "lines": [
+     "Our Lady's needs a new generation of Digital Agents.",
+     "Your mission spans one year: seventeen operations across Your Digital World.",
+     "Machines. Code. Networks. Design. You will master all of them.",
+     "This is Mission Control. Every operation you complete unlocks the next badge in your Agent File.",
+     "Your induction starts now."
+    ],
+    "video": null,
+    "cta": "Begin induction"
+   }
+  },
+  {
+   "id": "calibration",
+   "engine": "items",
+   "title": "Calibration Ping",
+   "minutes": 3,
+   "config": {
+    "variant": "calibration",
+    "intro": "Three warm-up pings to calibrate your Agent console. These are practice taps — nothing is scored. Tap what you think, see what happens.",
+    "items": [
+     {
+      "id": "cal-1",
+      "stem": "Which of these is the STRONGEST password?",
+      "options": [
+       "password123",
+       "Newry2013",
+       "Otter!Cloud9rain",
+       "qwerty"
+      ]
+     },
+     {
+      "id": "cal-2",
+      "stem": "What does a padlock on a lesson tile mean?",
+      "options": [
+       "The lesson is broken",
+       "It isn't unlocked yet — your teacher opens it",
+       "You did badly on it",
+       "It's a bonus lesson"
+      ]
+     },
+     {
+      "id": "cal-3",
+      "stem": "Where should your DT work live so it follows you to any computer?",
+      "options": [
+       "The computer's desktop",
+       "A USB stick",
+       "Your Google Drive",
+       "Printed out at home"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "b1-login",
+   "engine": "steps",
+   "title": "Badge 1 — Login & Ground Rules",
+   "minutes": 8,
+   "badge": {
+    "id": "login",
+    "name": "Login & Ground Rules",
+    "icon": "assets/badges/shield.png",
+    "xp": 15
+   },
+   "config": {
+    "intro": "Every agent must get into HQ unaided. Prove you can handle your C2k identity — then lock in the ground rules.",
+    "steps": [
+     {
+      "icon": "🎫",
+      "title": "Find your credential slip",
+      "text": "Your teacher has given you a slip with your C2k username. It looks like: jbloggs123. Your username plus @c2ken.net is your school identity — it works on EVERY school computer.",
+      "confirm": "I can see my username on my slip"
+     },
+     {
+      "icon": "⌨️",
+      "title": "Type your username — practice run",
+      "text": "Type your username into the practice console below, exactly as it appears on your slip. Watch for sneaky spaces and Caps Lock!",
+      "sim": "username"
+     },
+     {
+      "icon": "🔒",
+      "title": "Your password stays YOURS",
+      "text": "Your password is the one thing you never type where anyone can see, never share — not even with your best friend — and never save in a file. If you think someone knows it, tell a teacher and change it.",
+      "confirm": "I understand my password is only for me"
+     }
+    ],
+    "itemsIntro": "Three quick ground-rule checks to seal the badge:",
+    "items": [
+     {
+      "id": "b1-r1",
+      "stem": "A classmate is upset by something she's seen online. What do you do?",
+      "options": [
+       "Tell a teacher or trusted adult straight away",
+       "Ignore it — not your problem",
+       "Screenshot it and share it around",
+       "Tell her to log off and forget it"
+      ]
+     },
+     {
+      "id": "b1-r2",
+      "stem": "Your C2k login belongs to…",
+      "options": [
+       "Just you — no one else, ever",
+       "You and your close friends",
+       "Your whole class",
+       "Anyone who can guess it"
+      ]
+     },
+     {
+      "id": "b1-r3",
+      "stem": "Something strange pops up on your screen. What's the agent move?",
+      "options": [
+       "Ask the teacher before touching anything",
+       "Click it quickly to make it go away",
+       "Turn the monitor off and say nothing",
+       "Unplug the computer"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "b2-navigator",
+   "engine": "tour",
+   "title": "Badge 2 — Navigator",
+   "minutes": 10,
+   "badge": {
+    "id": "navigator",
+    "name": "Navigator",
+    "icon": "assets/badges/compass.png",
+    "xp": 15
+   },
+   "config": {
+    "intro": "Time to learn your way around Mission Control itself. Follow the beacon — it will light up each part of your console.",
+    "stops": [
+     {
+      "target": "grid",
+      "title": "The Mission Board",
+      "text": "Seventeen operations. This is your whole year at a glance — every lesson you'll ever do in DT lives on this board."
+     },
+     {
+      "target": "locks",
+      "title": "Locked & Unlocked",
+      "text": "A padlock means 'not yet' — your teacher unlocks each operation when it's time. Finished ones stay open forever, so you can always go back."
+     },
+     {
+      "target": "progress",
+      "title": "Your Agent File",
+      "text": "Your badges, your XP, your progress ring. This is private — only you and your teacher can see it. No public scoreboards here."
+     },
+     {
+      "target": "help",
+      "title": "The Help Beacon",
+      "text": "Stuck? The beacon is always in the corner. It never gives you the answer — but it always gives you a way forward. And your teacher is beacon number two."
+     }
+    ],
+    "itemsIntro": "Navigator check — three questions, then the badge is yours:",
+    "items": [
+     {
+      "id": "b2-r1",
+      "stem": "Why do we take screen breaks and sit properly at a computer?",
+      "options": [
+       "It protects your eyes and posture over long stretches",
+       "Because the teacher says so",
+       "To save electricity",
+       "Screens stop working if you stare too long"
+      ]
+     },
+     {
+      "id": "b2-r2",
+      "stem": "A lesson tile shows a padlock. What does that tell you?",
+      "options": [
+       "Your teacher hasn't unlocked it yet",
+       "The lesson is broken",
+       "You're banned from it",
+       "It costs XP to open"
+      ]
+     },
+     {
+      "id": "b2-r3",
+      "stem": "You finish a lesson. Next fortnight, can you still open it?",
+      "options": [
+       "Yes — completed operations stay open forever",
+       "No — lessons lock again behind you",
+       "Only if the teacher re-unlocks it",
+       "Only at home"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "b3-vault",
+   "engine": "vault",
+   "title": "Badge 3 — The Vault",
+   "minutes": 10,
+   "badge": {
+    "id": "vault",
+    "name": "The Vault",
+    "icon": "assets/badges/vault.png",
+    "xp": 30
+   },
+   "config": {
+    "intro": "Six files have landed in your Inbox. File each one where it truly belongs. Choose wrong and the Vault returns it — no hints, no answers. Reason it out from the labels.",
+    "pairPrompt": "Work as a PAIR on this one: agree together before you release each file. Say your reason out loud — 'it goes there because…' — then drop.",
+    "files": [
+     {
+      "id": "f-homework",
+      "label": "English Homework.docx",
+      "icon": "📄"
+     },
+     {
+      "id": "f-pekit",
+      "label": "PE Kit List.pdf",
+      "icon": "👟"
+     },
+     {
+      "id": "f-dtproject",
+      "label": "DT Project.sb3",
+      "icon": "🎮"
+     },
+     {
+      "id": "f-photo",
+      "label": "My Birthday Photo.jpg",
+      "icon": "📸"
+     },
+     {
+      "id": "f-password",
+      "label": "my passwords.txt",
+      "icon": "🔑"
+     },
+     {
+      "id": "f-meme",
+      "label": "funny meme.png",
+      "icon": "😂"
+     }
+    ],
+    "folders": [
+     {
+      "id": "d-dt",
+      "label": "DT Work",
+      "color": "#E4B824"
+     },
+     {
+      "id": "d-school",
+      "label": "School",
+      "color": "#4FA3D9"
+     },
+     {
+      "id": "d-personal",
+      "label": "Personal",
+      "color": "#3BAF7E"
+     },
+     {
+      "id": "d-never",
+      "label": "Do Not Save Here",
+      "color": "#C94F6D"
+     }
+    ],
+    "scoreLabel": "Vault Integrity",
+    "debrief": {
+     "sync": "Freeze. Look at what just happened: you and your partner worked on the SAME view, at the SAME time, agreeing before every move. That's called SYNCHRONOUS collaboration — together, live.",
+     "async": "But your Drive folders don't need anyone else there. You can open them alone, hours later, from any machine. That's ASYNCHRONOUS — same shared place, different times. You'll use both all year."
+    }
+   }
+  },
+  {
+   "id": "b4-exam",
+   "engine": "diagnostic",
+   "title": "Badge 4 — The Licence Exam",
+   "minutes": 16,
+   "badge": {
+    "id": "licence",
+    "name": "Licence Exam",
+    "icon": "assets/badges/licence.png",
+    "xp": 25
+   },
+   "config": {
+    "intro": "Every agent's file opens with a baseline scan — sixteen questions about the digital world as you find it TODAY. This is not a test you can fail: it simply seals your Agent File so future-you can see how far you've come. Answer on your own, no conferring. Each answer is logged, not marked.",
+    "ackText": "Logged to your Agent File",
+    "solo": true,
+    "items": [
+     {
+      "id": "bl-01",
+      "stem": "Which of these is a piece of HARDWARE?",
+      "options": [
+       "Google Docs",
+       "The keyboard",
+       "A website",
+       "A password"
+      ]
+     },
+     {
+      "id": "bl-02",
+      "stem": "What does 'logging in' actually do?",
+      "options": [
+       "Proves who you are so the computer opens YOUR account",
+       "Turns the computer on",
+       "Connects the school to the internet",
+       "Saves your work automatically"
+      ]
+     },
+     {
+      "id": "bl-03",
+      "stem": "Which part of a computer keeps your files safe when the power is off?",
+      "options": [
+       "The screen",
+       "The storage drive",
+       "The mouse",
+       "The Wi-Fi"
+      ]
+     },
+     {
+      "id": "bl-04",
+      "stem": "A printer is an example of an…",
+      "options": [
+       "Input device",
+       "Output device",
+       "Storage device",
+       "Operating system"
+      ]
+     },
+     {
+      "id": "bl-05",
+      "stem": "Which of these connects a laptop to the internet WITHOUT a cable?",
+      "options": [
+       "Wi-Fi",
+       "USB",
+       "HDMI",
+       "The power button"
+      ]
+     },
+     {
+      "id": "bl-06",
+      "stem": "A website offers a free prize if you type in your home address. What should you do?",
+      "options": [
+       "Don't enter it — and check with a trusted adult first",
+       "Enter it quickly before the prize runs out",
+       "Enter a friend's address instead",
+       "Only give it to the website's chat helper"
+      ]
+     },
+     {
+      "id": "bl-07",
+      "stem": "Which of these is the strongest password?",
+      "options": [
+       "Newry2013",
+       "password1",
+       "Heron!Maple7sky",
+       "12345678"
+      ]
+     },
+     {
+      "id": "bl-08",
+      "stem": "A stranger in an online game asks which school you go to. Best response?",
+      "options": [
+       "Don't say — and tell a trusted adult if they keep asking",
+       "Tell them — it's just being friendly",
+       "Make up a different school",
+       "Ask which school THEY go to first"
+      ]
+     },
+     {
+      "id": "bl-09",
+      "stem": "You need a piece of work you saved last week. Where do you look?",
+      "options": [
+       "Your Drive / documents folder",
+       "The recycle bin",
+       "The keyboard settings",
+       "You'd have to redo it"
+      ]
+     },
+     {
+      "id": "bl-10",
+      "stem": "Which key gives you a CAPITAL letter while you hold it down?",
+      "options": [
+       "Shift",
+       "Tab",
+       "Ctrl",
+       "Esc"
+      ]
+     },
+     {
+      "id": "bl-11",
+      "stem": "To COPY something you've selected, you press…",
+      "options": [
+       "Ctrl + C",
+       "Ctrl + V",
+       "Ctrl + Z",
+       "Alt + F4"
+      ]
+     },
+     {
+      "id": "bl-12",
+      "stem": "A robot is making toast: 1) Plug in toaster… 2) ??? … 3) Press the lever down. What's the missing step?",
+      "options": [
+       "Put the bread in",
+       "Butter the toast",
+       "Unplug the toaster",
+       "Eat the toast"
+      ]
+     },
+     {
+      "id": "bl-13",
+      "stem": "What comes next in the pattern? 2, 4, 6, 8, …",
+      "options": [
+       "10",
+       "9",
+       "12",
+       "16"
+      ]
+     },
+     {
+      "id": "bl-14",
+      "stem": "A friend follows your instructions EXACTLY and still gets the wrong result. The most likely reason?",
+      "options": [
+       "Your instructions missed a step or weren't exact enough",
+       "Your friend wasn't listening properly",
+       "Instructions don't really matter",
+       "It's impossible to say"
+      ]
+     },
+     {
+      "id": "bl-15",
+      "stem": "What IS the internet, mainly?",
+      "options": [
+       "Millions of computers connected together, sharing information",
+       "One giant computer in America",
+       "An app you install",
+       "Another name for Wi-Fi"
+      ]
+     },
+     {
+      "id": "bl-16",
+      "stem": "Your best friend asks for your C2k password 'just to check something'. What do you do?",
+      "options": [
+       "Never share it — passwords are only for you",
+       "Give it to her — she's your best friend",
+       "Write it on a note so you're not saying it out loud",
+       "Change it to something she already knows"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "b5-codename",
+   "engine": "codename",
+   "title": "Badge 5 — Codename",
+   "minutes": 5,
+   "badge": {
+    "id": "codename",
+    "name": "Codename & Oath",
+    "icon": "assets/badges/id.png",
+    "xp": 15
+   },
+   "config": {
+    "intro": "Your Agent File is sealed. One thing remains: choose your codename and take the oath.",
+    "adjectives": [
+     "Amber",
+     "Copper",
+     "Velvet",
+     "Scarlet",
+     "Silver",
+     "Golden",
+     "Midnight",
+     "Crimson",
+     "Emerald",
+     "Ivory",
+     "Cobalt",
+     "Coral",
+     "Hazel",
+     "Indigo",
+     "Jade",
+     "Luna",
+     "Maple",
+     "Nova",
+     "Opal",
+     "Pearl",
+     "Ruby",
+     "Sable",
+     "Topaz",
+     "Willow"
+    ],
+    "nouns": [
+     "Falcon",
+     "Fox",
+     "Heron",
+     "Otter",
+     "Swift",
+     "Wren",
+     "Comet",
+     "Ember",
+     "Harbour",
+     "Compass",
+     "Beacon",
+     "Meadow",
+     "River",
+     "Storm",
+     "Summit",
+     "Tide",
+     "Aurora",
+     "Breeze",
+     "Cascade",
+     "Glacier",
+     "Horizon",
+     "Lantern",
+     "Meteor",
+     "Quill"
+    ],
+    "oath": [
+     "I look after my own login, and only mine.",
+     "I save my work where it can follow me.",
+     "I ask for help when I'm stuck — and help others when they are.",
+     "I am patient with myself while I learn."
+    ],
+    "belonging": {
+     "video": null,
+     "title": "A message from Mission Command",
+     "lines": [
+      "Before you go — one thing every new agent needs to hear.",
+      "In your first weeks here, some things will feel hard. Logins will fail. Code will break. Files will hide. That is not a sign you're bad at this — it's what learning technology feels like for EVERYONE, including every agent who came before you and every adult in this building.",
+      "The feeling is normal, and it is temporary. Agents who keep going find that the thing that felt impossible in September feels easy by June.",
+      "You belong in this room, you belong in this subject, and your Agent File is open.",
+      "Welcome to the mission."
+     ]
+    }
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit Check",
+   "minutes": 3,
+   "config": {
+    "intro": "One final scenario before you clock off, Agent.",
+    "items": [
+     {
+      "id": "ex-1",
+      "stem": "You saved a file to the DESKTOP on one school computer by mistake. Next lesson you log in on a DIFFERENT machine. What happens to that file?",
+      "options": [
+       "It automatically appears anyway — school computers share one hard drive",
+       "It won't be there — Desktop saves don't follow you between machines, only Drive does",
+       "The teacher can pull it up from any machine instantly",
+       "It syncs across by itself within a few hours"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "selfeval",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "statements": [
+     "I can log into my C2k account and find my saved work.",
+     "I can explain what a locked lesson tile means.",
+     "I know one way to make a strong password."
+    ],
+    "difficulty": true,
+    "comment": true
+   }
+  }
+ ],
+ "teacherBrief": {
+  "why": "The login/rules/file-management admin becomes a story with a payoff (badges), and the baseline assessment hides inside 'sealing your Agent File' rather than announcing itself as a test — lowering anxiety while still giving you real diagnostic data on the dashboard.",
+  "minuteByMinute": [
+   "Play the Mission Briefing to the whole room, then don't rush — make sure everyone is actually logged in before moving on.",
+   "Circulate constantly during Badge 1: this is where 90% of first-lesson problems live (forgotten usernames, Caps Lock, wrong slip). Later badges are self-explanatory.",
+   "During the Vault, listen for pairs actually discussing folder choices — not one pupil driving.",
+   "Keep Badge 4 (Licence Exam) silent and individual — it's your baseline data, not a group task.",
+   "Close by playing the Mission Command message to the whole room together, not on headphones — it lands as a shared moment."
+  ],
+  "pitfalls": [
+   "A login storm of 30 simultaneous first-time C2k logins can be slow — have the printed credential slips ready BEFORE the lesson starts. A cover teacher cannot improvise Badge 1 without them.",
+   "If Badge 1 overruns past ~12 minutes, do NOT claw time back from Badge 4 (it's your only Y8 baseline). Instead: run Badge 2 as a whole-class demo on the projector, and shorten Badge 5 to just the Mission Command message."
+  ]
+ },
+ "keysEnc": "LSxNEuN9lhInRwGzIt0LohMyCw4MjtwioaVJRTKTCx9hOLmzWHb8vXIc+3iJ5oayZgg4/FO6wchUxYbSWt7QysckXC7jkqD/MrXydehCDvnqWhQiADyHMfVg3k1F7V4h/Gbsugn0UthTZOUQ2otu3Ctjmfqm/RWLhtKWIhyeZ8oPBwqM0PQh60GjI8URkVvCSNZJrKC5AcKgdaLqV9PCTDuZtWU1RvkY/zBzHVMZUrCsFhRSCqhsYZT2XKKXHdWSGhWqG9os39sQhQvdI3lDHLSCj/dFaBuyeFe86Mq14Barmxj3wdM6nDF28fcrdvyXqQzKBhbQOs1MRZmdLPopVa8128X2ymINwZ0xGkq3msIxvaYr79XdBfCyF8gK/MskW+I+lyqC9/4y89xjgyikc/O+r+iO7JTiK5/4+BLXjqeOP4nsFOyyq5UZjIMiSp+ZKYObZ+aB7qVS5P4Zg5rfyDHMQ7qphOTL1KSRfZIaFHXvzBQ2ZLzN2g5q3yf3TUdx2b4yZ/D6OnULrGTzmL9/QjfX3UskRFDF/CsfJkqRNN9pxb/E4fUCjW2mDRmner1rXtdXIGp87fbZdIXy4hDyPY3+fgIJr+4P1GIsq99dxosVh7jkJJhgaxq+I044Frya8viKefVRr0NYYAaIOlVN3wIt955W5iHCsxQmnWZkDqSxHWYlRpAv/zkqLsm/tRlUWPFt7oVJLi83Yf92wnnhGgk6NvCRy4BSmge3CoujuB2Vfy78L1BWFhGJoT0CaKyXF164Mk5GtZ5gSOPIyquEqS5GDNbSnFcqi5LhCZwRuh9kelTLGRQrU2ERRT+EUBzFZjG1DlLfq5Dkh2d9RpsLAKndjsLcW+PpQ8mp70x0o89CTIZiaD1LJ3J2Gh0xo8l8u9AHitV6pJYpsOxhgSjoEBrccp2/tBcrmjIuBuX0LVEuH6ubzUJIm/cjcNPypaT08wHSTndXmsrwTGzF4k1m1Z3DUGdj2RcOy1k+rvAJrSEXrPoLyTET0c5Jf227rjhzlOCWTUYYSs5RmkVQWccOnU9WqT7foOxcmG+D4wpFnUhHuS+FCuAyp+hNGLABlbtHvgyOsVZ3dUPG3Uk67jM5XRdKYNayqDb55gokmxuJR4KeV3S3gPnORa0S3SHmQZxc8ZRy0o94ypLmvUb1vfkK8u5y3NTgjUXMyny6Wm0iCJfoZzHLNylCxfHpngEkCTbYiavfz1co9yBdoC9bDfifDrnaZxgH+wtXvwekB1BXcaR6wmkzJ20JmOjNQuuGvM3kYzuv1/NoV0bfb2h4pTEYiReiGBotbKSTWPgjTFyNms6/a2qsIrvS1jzKCC0kn/v6exxOu8yv3jW47b2WJihEMKlaSghJMTpob8qZY4mgHiMWvpa7lCRvU1cXrISYtYq+mp12VUNm2Af8ZoHG71LOwokn9nRdyBkgvlaB/PeX/96mFheiVWIAev7f7PxMJcC3fXLwf9g3L2maRLNzlQU4iQ89wfS0ilo2+ASh5T+nNljsq0uu95E5fyl/0uIWV9kRkHHEC6jjTPiSGbn9ZvO7hGgc/yaeZ43Y2mBhSuZTTZ9h174WPDlfWBeXeOY6u7JTSHaunOUmFXNC89O6Xl+hyeqof4SbbsgSsb+VYSLMpLxVEKOdVUxHWHS/N7fH5xjDZwhBcq+oZKwSWQ3FqlzLxjl2Fi5A86SOC7RC5JkpmIVJ7A0qbw6C2GZGne38UexmFsPojJ2BSRGReCHsxtaZ8ckp2q3N8Pw7XxPALT4Kk698hLGGwxU0bD4rRMYixqH3xv39wiH43iRFIttnvtRxdWbrXAA1zpg/4boUUZXRODP8U6fAwEMULMOOn8rjgZkw/B+hj8bD3172Y6emaRidBNyl4NH3bW72dKlPkL1ehpYL2/bAap/lAobbPG8FUsw1ct3al3obO6KRTSqEsniD+Glmb2KkXN4+TSxEM46XPdTt6O+5hoqZdSrhy2mchCe5C+ljddWOq9u1mxrZjalFXvorwgb/FHV9w+bW/Ujpsa5e1fWrSRnsCrMfN1SJwutpi/Ji/U8v6MxxjnETR7JeZAUInAEMGXB4a2FH2MwNtRWYA/VWdnWxWzrlzWfW3MshEXnswMO3ZF52/tPbq+ZCOC6MHj+OvX68ltRh+eaRjNMXICAC6V8cAFhsBrB31k7tqBL6MvQEJZH1/Yk1NTdSZ2I8xzoAy0pKe1q/5JHMCALknAFlzyU8OJN3kFt1gO9CJ0yLOLSB/Fw2vmkIQrzd//410TIsDkyWAKtKC1ThLLg+SGaSJEZ3Id8gQkGb74uRA3M7A83S9T6SPt5NigmwCsCUcBrWDJNlT0Bn2Z87DQeSeoftp+VXaAYFge6/yBWiVNjChg6IeUzwEbfCzgmuxAU4uGlF88LRjSnpS4L48XRhD9crCtp+B7AoXVcv1gTZ81U88gW6QFAd4Ey5jL8QT34Lf43uPuNQSyVZSrVa+gQeXxvhJLEfzvVxAG2U03smRvcjZWp0JB3WoWUGnXY5wnS69PH1tuLMMIvEXx1tVA5LxH8nqFPcYZ/d5YBGiMtIdHckxU4OuGXaNhC9xEv1H6pVn/dpTeNcqfIxqbRtb/Y6Uo8M5Mag/punxFJgKVz6r8nJjobWf+oaMUPwRTbXDtNbQKsk8F3wPrd+O/BFzCgPE2PxFl13i1V+3fs5Hj6T+c6LzRvsHfyxuFAj8nFiPoJkAbTVcm5Ux47KHlVMWFmoShBC/g4oZknFJdv4kfq9hg3zTPIeJvfhol6LOOLQiX/IZA4ZbZCcHCyZxhI2X3kAbGS384KAf1WjoiD2Q3cexG6HyVwemnnS6yv7mW+um3Rb0Amz8NxvTuRTF7/DVoButEk5L23gZQRayoC2CxjoE3MDrx4iFgoCpZhZTChy+F411eZ337PyW3Ne+HE53KSh9f9LVV3keFWC9ABtWR//H78bUEBC2DtgZuNKuc6k7Ej+W+fF0gkYxvP3+E5gZm4eBXK+ABhRigI1jG/l5bz2sfIfBor2pmb7PzExPD58SxMUsigbJHoN2Nqd3DWgEjBt59AaZ667hN7VG4DYY+mRvHEEHBWXgKYurGR6ch1a5VM1r1584i0WXK/lLDvN4iJZmUJ6X0wnXNSfEdHKoi7Ap8k/M5keZL+9AoPzyAbSbmZVbMLl3kV+pJWnOUqTo1wfmWeNPzaVQKoPPVtvhA+btMWK3gIgV0pNSfvJhzrWouedMUmqu3eTbNo9f+4y1CTV1vNLfeiVyqPvevg0/MUdOXLU0sNBzslbmmX6t0ZXh5wX++HUUQCcYhTdFWsgDJGGpAOJxago4b39TCW3U0Dhmf+MTz8U0g3DmfVVM4bRv8ROW+NQ7xCmWW5HM/xbu/1jwYLVWfggotNDzUze4i3GLRVHxBds23FwwHSNOR6cuyl1TmgVCsPIwyh824Y8hcDwSdLF2iACmgZQbAx1KXTNnRn7gw4kFy5yPMu+I3hXmq4k7NFhTQKRVXfbPq1h2UxCIOC7sBQHpH/vsqtREyJwnWh2voiWsCzgQtAW7kmvzwg4tRYR4kEhM2bvTJXoSr28XOLV4iW1wmmsiz/8Im8X8z67fI4cJwwbJ8q+yKvqLtEjf5ABy3qtVYVTcU1HnPFnJ32l1fHqDJHCg1zNWbDer5qenJ5zidOvbTfAtHkuPsf3xyEs6dKuUHi1M7bS6dfr0Wn0VG0a1Keeex2tP2SQRc90Mtaqc+xKG3G2WF1gjYIP8m3c0HLua/ZFQg6/0JkMplleygSWrMimPqLy3/tsGZuVRydGNLD43eOzeCWH/NYrlmZUV+C5q1cXtwCVM8QSFtFU6YgiYXb7xK+z5A+Le3YUVn+CDmJBONhUBVTlNmbhWu7d+jUUWNGpLKh1GaY9fohShVBIHQUKQJIh2liaN0n+Hi01AF/4cQeB+DyTmeIxrxDQIpo2RuJuCgFfLW9693gmnqvotH2lFbWq+Pki/cmmY/aUAZNt3wvsU0HeWfbISwVB2EY2P1q7sRbovTey+g=="
+}

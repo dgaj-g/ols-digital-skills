@@ -1,0 +1,370 @@
+{
+ "year": "j1",
+ "threads": {
+  "kp-password": {
+   "label": "Strong passwords",
+   "note": "Merged chain with L12 Fortress"
+  },
+  "kp-drive": {
+   "label": "Locked/unlocked + Drive",
+   "note": "One merged thread covering saving + the lock grid"
+  },
+  "kp-io": {
+   "label": "Input / output",
+   "note": "Reused through J1-J3 physical computing + GCSE Unit 1"
+  },
+  "kp-event": {
+   "label": "Event trigger (on X, do Y)",
+   "note": "Established L2, reinforced L4 hat blocks — ONE thread"
+  },
+  "kp-variable": {
+   "label": "Variable",
+   "note": "Most-reused vocabulary on the whole programming spine"
+  },
+  "kp-ifelse": {
+   "label": "If/else selection",
+   "note": "Feeds J2 Python selection + GCSE Unit 4"
+  }
+ },
+ "items": [
+  {
+   "id": "r-101",
+   "lesson": "j1-01",
+   "topic": "Passwords",
+   "thread": "kp-password",
+   "stem": "Which of these is the STRONGEST password?",
+   "options": [
+    "password123",
+    "QWERTY",
+    "07/09/2013",
+    "Maple!Harbour6sky"
+   ]
+  },
+  {
+   "id": "r-102",
+   "lesson": "j1-01",
+   "topic": "File saving",
+   "thread": "kp-drive",
+   "stem": "Where does your DT work save automatically?",
+   "options": [
+    "My computer's desktop",
+    "A USB stick",
+    "It doesn't save automatically",
+    "My Google Drive"
+   ]
+  },
+  {
+   "id": "r-103",
+   "lesson": "j1-01",
+   "topic": "Locked lessons",
+   "thread": "kp-drive",
+   "stem": "What does a padlock on a lesson tile mean?",
+   "options": [
+    "The lesson is broken",
+    "You did badly on it",
+    "It's a bonus lesson",
+    "Not unlocked yet — your teacher controls it"
+   ]
+  },
+  {
+   "id": "r-104",
+   "lesson": "j1-01",
+   "topic": "C2k identity",
+   "thread": null,
+   "stem": "Your C2k username and password let you…",
+   "options": [
+    "Only work on one specific computer",
+    "Log into any school machine and reach your own files",
+    "Use your home email at school",
+    "Share your account safely"
+   ]
+  },
+  {
+   "id": "r-105",
+   "lesson": "j1-01",
+   "topic": "Digital Citizen",
+   "thread": null,
+   "stem": "A 'Digital Citizen' is someone who mainly…",
+   "options": [
+    "Builds apps for a living",
+    "Codes professionally",
+    "Uses digital tech safely and responsibly in everyday life",
+    "Never uses the internet"
+   ]
+  },
+  {
+   "id": "r-106",
+   "lesson": "j1-01",
+   "topic": "Room rules",
+   "thread": null,
+   "stem": "Your account gets logged in on the wrong machine by accident. What should you do?",
+   "options": [
+    "Ignore it and walk away",
+    "Blame whoever sat there last",
+    "Tell a teacher straight away",
+    "Keep it to yourself"
+   ]
+  },
+  {
+   "id": "r-107",
+   "lesson": "j1-01",
+   "topic": "Private progress",
+   "thread": null,
+   "stem": "Who can see your Mission Control badge scores?",
+   "options": [
+    "The whole class on a leaderboard",
+    "Nobody, not even you",
+    "Only pupils in other classes",
+    "You and your teacher"
+   ]
+  },
+  {
+   "id": "r-201",
+   "lesson": "j1-02",
+   "topic": "Input vs output",
+   "thread": "kp-io",
+   "stem": "Which of these is an INPUT?",
+   "options": [
+    "The micro:bit LED display",
+    "The micro:bit button",
+    "The speaker",
+    "The buzzer"
+   ]
+  },
+  {
+   "id": "r-202",
+   "lesson": "j1-02",
+   "topic": "Event triggers",
+   "thread": "kp-event",
+   "stem": "What do you need before 'show icon' will ever run?",
+   "options": [
+    "Nothing — it runs automatically like a slideshow",
+    "A trigger event, like 'on button A pressed'",
+    "A bigger screen",
+    "A forever block on its own"
+   ]
+  },
+  {
+   "id": "r-203",
+   "lesson": "j1-02",
+   "topic": "Forever loops",
+   "thread": null,
+   "stem": "WITHOUT a forever loop around 'scroll message', what happens?",
+   "options": [
+    "It scrolls forever anyway",
+    "It shows once, then vanishes",
+    "The micro:bit crashes",
+    "Nothing changes either way"
+   ]
+  },
+  {
+   "id": "r-204",
+   "lesson": "j1-02",
+   "topic": "Events pair up",
+   "thread": null,
+   "stem": "Button A is wired to a heart icon. What happens if you press button B instead?",
+   "options": [
+    "The heart still shows",
+    "Nothing — B has no code attached to it",
+    "Both icons show at once",
+    "The device switches off"
+   ]
+  },
+  {
+   "id": "r-301",
+   "lesson": "j1-03",
+   "topic": "What a variable stores",
+   "thread": "kp-variable",
+   "stem": "score = 3. What does this actually mean?",
+   "options": [
+    "The word 'score' always equals 3, forever",
+    "A box named 'score' currently holds 3 — and it can change",
+    "The program has three scores",
+    "Score must be spelled with 3 letters"
+   ]
+  },
+  {
+   "id": "r-302",
+   "lesson": "j1-03",
+   "topic": "Change vs set",
+   "thread": null,
+   "stem": "What does 'change score by 1' do to a score that's currently 4?",
+   "options": [
+    "It becomes 1",
+    "It becomes 5",
+    "It stays at 4",
+    "It doubles to 8"
+   ]
+  },
+  {
+   "id": "r-303",
+   "lesson": "j1-03",
+   "topic": "Reset to zero",
+   "thread": null,
+   "stem": "Why does the program set score to 0 at the very start?",
+   "options": [
+    "So the display looks nicer",
+    "So counting starts fresh — last round's result can't leak in",
+    "Because zero is the default colour",
+    "The micro:bit won't start without it"
+   ]
+  },
+  {
+   "id": "r-304",
+   "lesson": "j1-03",
+   "topic": "Data types",
+   "thread": null,
+   "stem": "Is a score variable storing a number or a word?",
+   "options": [
+    "A word, because it's called 'score'",
+    "A number — it's counting things",
+    "Both at the same time",
+    "Neither — variables store colours"
+   ]
+  },
+  {
+   "id": "r-305",
+   "lesson": "j1-03",
+   "topic": "Comparison seed",
+   "thread": null,
+   "stem": "What does 'if score > highScore' actually check?",
+   "options": [
+    "It always makes highScore bigger",
+    "It asks a question: is score bigger than highScore right now?",
+    "It adds the two together",
+    "It swaps the two values"
+   ]
+  },
+  {
+   "id": "r-401",
+   "lesson": "j1-04",
+   "topic": "Hat blocks",
+   "thread": "kp-event",
+   "stem": "A sprite's script never runs when the green flag is clicked. What's the MOST likely reason?",
+   "options": [
+    "The sprite is too small",
+    "The costume hasn't been chosen",
+    "There's no green-flag hat block on that script",
+    "The code is at the bottom of the workspace"
+   ]
+  },
+  {
+   "id": "r-402",
+   "lesson": "j1-04",
+   "topic": "Script vs sprite",
+   "thread": null,
+   "stem": "Two sprites both need to react to the same key press. What do you need?",
+   "options": [
+    "Just one script — sprites share code automatically",
+    "A script on EACH sprite",
+    "A bigger stage",
+    "To press the key twice as hard"
+   ]
+  },
+  {
+   "id": "r-403",
+   "lesson": "j1-04",
+   "topic": "Forever loops",
+   "thread": null,
+   "stem": "A block inside a forever loop runs…",
+   "options": [
+    "Only once, then stops",
+    "Again and again until the program stops",
+    "Only when you click it",
+    "Exactly twice"
+   ]
+  },
+  {
+   "id": "r-404",
+   "lesson": "j1-04",
+   "topic": "Change by zero",
+   "thread": null,
+   "stem": "'Change score by 0' vs 'change score by 1' — what's the real-world difference?",
+   "options": [
+    "No difference — both count as scoring",
+    "By 0 the score sits stuck; by 1 it actually counts",
+    "By 0 the score goes negative",
+    "By 1 the score resets"
+   ]
+  },
+  {
+   "id": "r-405",
+   "lesson": "j1-04",
+   "topic": "Order matters",
+   "thread": null,
+   "stem": "Does the order of blocks matter in Scratch?",
+   "options": [
+    "No — order never matters in Scratch",
+    "Yes — within a script, steps run top to bottom, so order changes what happens",
+    "Only the first block matters",
+    "Scratch sorts the blocks automatically"
+   ]
+  },
+  {
+   "id": "r-501",
+   "lesson": "j1-05",
+   "topic": "If/else",
+   "thread": "kp-ifelse",
+   "stem": "In an if/else block, what happens when the condition is FALSE?",
+   "options": [
+    "Nothing happens at all",
+    "The ELSE branch runs instead",
+    "The program stops",
+    "Both branches run together"
+   ]
+  },
+  {
+   "id": "r-502",
+   "lesson": "j1-05",
+   "topic": "Ask vs make",
+   "thread": null,
+   "stem": "'if score = 10' compared with 'set score to 10' — what's the difference?",
+   "options": [
+    "They do the same thing",
+    "One ASKS whether score is 10; the other MAKES it 10",
+    "Both delete the score",
+    "'if' is just the faster version"
+   ]
+  },
+  {
+   "id": "r-503",
+   "lesson": "j1-05",
+   "topic": "Branch outcomes",
+   "thread": null,
+   "stem": "In Catch It, what should happen when the falling object is MISSED?",
+   "options": [
+    "The score still goes up, just more slowly",
+    "The ELSE branch runs — lives go down instead of score going up",
+    "Nothing — misses don't matter",
+    "The game speeds up automatically"
+   ]
+  },
+  {
+   "id": "r-504",
+   "lesson": "j1-05",
+   "topic": "Why test three times",
+   "thread": null,
+   "stem": "Why test your game 3 times before submitting, not just once?",
+   "options": [
+    "Once is enough if it worked that time",
+    "Some bugs only appear on certain runs — repeated tests catch them",
+    "Testing makes the game run faster",
+    "Submitting after three tests earns extra XP"
+   ]
+  },
+  {
+   "id": "r-505",
+   "lesson": "j1-05",
+   "topic": "Looks vs works",
+   "thread": null,
+   "stem": "You changed the backdrop and sprites but forgot the lives variable. Have you met the design brief?",
+   "options": [
+    "Yes — the game looks finished",
+    "No — looking finished isn't the same as working; the brief lists required features",
+    "Yes — briefs are only suggestions",
+    "Only if the teacher notices"
+   ]
+  }
+ ],
+ "keysEnc": "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"
+}
