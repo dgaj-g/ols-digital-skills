@@ -29,6 +29,9 @@
 }
 
 * { box-sizing: border-box; }
+/* class display rules (e.g. .ols-modal { display:grid }) must never beat the
+   hidden attribute — without this, every modal is visible at boot */
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
