@@ -231,7 +231,7 @@
           itemRunner(host, {
             items: cfg.items, mode: 'feedback',
             markFn: function (it, ii) { return ctx.markItem(it.id, ii); },
-            onDone: function (res) { finishChunk(ctx, 'rules:' + res.right + '/' + res.total); }
+            onDone: function (res) { finishChunk(ctx, 'rules=' + res.right + '/' + res.total); }
           });
         });
       }
@@ -279,7 +279,7 @@
           itemRunner(host, {
             items: cfg.items, mode: 'feedback',
             markFn: function (it, i) { return ctx.markItem(it.id, i); },
-            onDone: function (res) { finishChunk(ctx, 'nav:' + res.right + '/' + res.total); }
+            onDone: function (res) { finishChunk(ctx, 'nav=' + res.right + '/' + res.total); }
           });
         });
       }
@@ -440,7 +440,7 @@
               host.appendChild(s2);
               s2.querySelector('button').onclick = function () {
                 var badge = Object.assign({}, ctx.chunk.badge, { xp: xp });
-                ctx.awardBadge(badge, 'vault:' + firstTryRight + '/' + cfg.files.length).then(function () { ctx.next(); });
+                ctx.awardBadge(badge, 'vault=' + firstTryRight + '/' + cfg.files.length).then(function () { ctx.next(); });
               };
             };
           };
@@ -567,7 +567,7 @@
         });
         btn.onclick = function () {
           ctx.saveEvent({ codename: current });
-          finishChunk(ctx, 'cn:' + current);
+          finishChunk(ctx, 'cn=' + current);
         };
       }
     }
