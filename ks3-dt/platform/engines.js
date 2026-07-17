@@ -19,6 +19,13 @@
       ctx.awardBadge(ctx.chunk.badge, detail).then(function () { ctx.next(); });
     } else ctx.next();
   }
+  /* mirror of the server's vhash_ - the vault placement check compares salted
+     hashes so the answer map never reaches the client in plaintext */
+  function vhash(s) {
+    var h = 5381;
+    for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+    return h.toString(16);
+  }
 
   /* ================= shared item runner =================
      modes: 'feedback' (mark each tap, show why), 'neutral' (log + move on),
@@ -290,10 +297,11 @@
   Engines.vault = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
-      var map = null, explains = {};
-      // Fetch the filing map ONCE at mount (runtime-only; never in the public repo).
-      ctx.call('vaultInfo', { lessonId: ctx.lesson.id }).then(function (r) {
-        if (r && r.ok) { map = r.map; explains = r.explain || {}; }
+      var keyId = (cfg && cfg.keyId) || 'vault';
+      var salt = null, check = null;
+      // Fetch the SALTED placement hashes once at mount (never the plaintext map).
+      ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId }).then(function (r) {
+        if (r && r.ok) { salt = r.salt; check = r.check; }
       });
       introCard(host, {
         kicker: chunk.title, title: 'The Vault',
@@ -302,16 +310,16 @@
       }, 'Open the Vault', begin);
 
       function begin() {
-        if (!map) { // map still loading: brief gold pulse, then retry
+        if (!check) { // hashes still loading: brief gold pulse, then retry
           host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Opening the Vault&hellip; this can take a moment</span></div>';
           var tries = 0;
           var t = setInterval(function () {
             tries++;
-            if (map) { clearInterval(t); host.innerHTML = ''; begin(); }
+            if (check) { clearInterval(t); host.innerHTML = ''; begin(); }
             else if (tries > 40) {
               clearInterval(t);
-              ctx.call('vaultInfo', { lessonId: ctx.lesson.id }).then(function (r) {
-                if (r && r.ok) { map = r.map; explains = r.explain || {}; host.innerHTML = ''; begin(); }
+              ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId }).then(function (r) {
+                if (r && r.ok) { salt = r.salt; check = r.check; host.innerHTML = ''; begin(); }
                 else host.innerHTML = '<div class="card"><p>The Vault door is stuck (wifi?). Ask your teacher, then try again.</p></div>';
               });
             }
@@ -395,7 +403,7 @@
         function drop(node, f, folderEl) {
           var fid = folderEl.getAttribute('data-id');
           attempts[f.id] = (attempts[f.id] || 0) + 1;
-          if (map[f.id] === fid) {
+          if (vhash(salt + '|' + f.id + '|' + fid) === check[f.id]) {
             placed[f.id] = true;
             if (attempts[f.id] === 1) firstTryRight++;
             node.style.transform = '';
@@ -421,6 +429,20 @@
 
         function debrief() {
           var xp = 12 + firstTryRight * 3;
+          // Record the placement result FIRST ('vp' key, no XP), which unlocks
+          // the explanations server-side; explains are never sent pre-attempt.
+          host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Sealing the Vault&hellip;</span></div>';
+          var pre = ctx.review ? Promise.resolve({ ok: true })
+            : ctx.saveEvent({ detail: 'vp=' + firstTryRight + '/' + cfg.files.length });
+          pre.then(function () {
+            return ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId, mode: 'explain' });
+          }).then(function (er) {
+            var explains = (er && er.ok && er.explain) || {};
+            renderDebrief(explains, xp);
+          });
+        }
+
+        function renderDebrief(explains, xp) {
           var why = cfg.files.map(function (f) {
             return '<li><span class="vf-icon">' + esc(f.icon) + '</span> ' + esc(explains[f.id] || '') + '</li>';
           }).join('');
@@ -576,6 +598,7 @@
   /* ================= recap (Do-Now engine, lessons 2+) ================= */
   Engines.recap = {
     mount: function (host, chunk, ctx) {
+      if (ctx.review) { ctx.next(); return; } // a re-read never re-records recap data
       host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Warming up your brain&hellip;</span></div>';
       ctx.call('recapStart', { lessonNum: String(ctx.lessonEntry.num) }).then(function (r) {
         host.innerHTML = '';

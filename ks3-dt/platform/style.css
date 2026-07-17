@@ -221,6 +221,22 @@ h1, h2, h3 { line-height: 1.2; margin: 0 0 10px; color: var(--ols-blue); }
 .tile.wobble { animation: wobble 0.4s ease; }
 .hub-footnote { text-align: center; color: #9AA5B5; font-size: 0.78rem; padding: 0 20px 26px; }
 
+/* ============ public class board (teacher-enabled only) ============ */
+.board-card-list {
+  background: var(--card); border: 1px solid #E3E8F2; border-radius: var(--radius);
+  box-shadow: var(--shadow-sm); padding: 8px 14px;
+}
+.board-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 4px; border-bottom: 1px solid #EDF0F6; font-size: 0.94rem;
+}
+.board-row:last-child { border-bottom: none; }
+.board-row.me { background: rgba(228, 184, 36, 0.12); border-radius: 8px; }
+.board-rank { flex: 0 0 26px; font-weight: 800; color: var(--muted); text-align: center; }
+.board-row:nth-child(1) .board-rank { color: var(--ols-gold); }
+.board-name { flex: 1; font-weight: 700; color: var(--ols-blue); }
+.board-v { font-weight: 800; color: var(--muted); }
+
 /* ============ player ============ */
 .player { max-width: 860px; margin: 0 auto; padding: 14px 16px 60px; }
 .player-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }

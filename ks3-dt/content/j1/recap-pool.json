@@ -71,12 +71,12 @@
    "lesson": "j1-01",
    "topic": "C2k identity",
    "thread": null,
-   "stem": "Your C2k username and password let you…",
+   "stem": "What do your C2k username and password actually let you do?",
    "options": [
-    "Only work on one specific computer",
+    "Use one specific computer only — yours",
     "Log into any school machine and reach your own files",
-    "Use your home email at school",
-    "Share your account safely"
+    "They're the same as a home email account",
+    "Share your login safely, since it's just for school"
    ]
   },
   {

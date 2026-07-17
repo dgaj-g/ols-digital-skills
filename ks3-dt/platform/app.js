@@ -88,6 +88,13 @@
         var q2 = outboxRead(); q2.shift(); outboxWrite(q2);
         backoff = 1000;
         App.flushOutbox();
+      } else if (r && r.error && r.error !== 'transport') {
+        // definitive server rejection: retrying can never succeed - drop it
+        // rather than hammering forever (esp. 'store-full', review finding)
+        var q3 = outboxRead(); q3.shift(); outboxWrite(q3);
+        if (r.error === 'store-full') App.toast('Saving is full — tell your teacher to check the platform storage.', 5000);
+        backoff = 1000;
+        App.flushOutbox();
       } else {
         backoff = Math.min(backoff * 2, 30000);
         setTimeout(App.flushOutbox, backoff);
@@ -345,6 +352,26 @@
       cta.onclick = function () { App.openLesson(continueTarget.id, {}); };
     } else cta.hidden = true;
 
+    // public class board (only when the teacher deliberately enabled it)
+    if (s.lb && s.lb.mode === 'public') {
+      App.call('board').then(function (r) {
+        if (!r || !r.ok || r.mode !== 'public' || !r.rows || !r.rows.length) return;
+        if (App.state.lesson) return; // pupil moved on while we fetched
+        var old = document.getElementById('class-board');
+        if (old) old.remove();
+        var rowsHtml = r.rows.map(function (row, i) {
+          return '<div class="board-row' + (row.me ? ' me' : '') + '"><span class="board-rank">' + (i + 1) + '</span>' +
+            '<span class="board-name">' + esc(row.label) + (row.me ? ' (you)' : '') + '</span>' +
+            '<span class="board-v">' + Number(row.v) + (r.basis === 'completion' ? ' done' : ' XP') + '</span></div>';
+        }).join('');
+        var sec = document.createElement('section');
+        sec.className = 'block'; sec.id = 'class-board';
+        sec.innerHTML = '<h2 class="block-name" style="--blk:#E4B824">Class board</h2><div class="board-card-list">' + rowsHtml + '</div>';
+        var boardEl = $('#board');
+        boardEl.insertBefore(sec, boardEl.firstChild);
+      });
+    }
+
     // board grouped by block
     var blocks = {};
     (man.blocks || []).forEach(function (b) { blocks[b.id] = { meta: b, lessons: [] }; });
@@ -413,7 +440,7 @@
       var recArr = (App.state.me && App.state.me.L) ? App.state.me.L[String(le.num)] : null;
       App.state.review = !!(recArr && Number(recArr[0]) === 2 && !App.state.catchup);
       App.state.chunkIdx = 0;
-      App.state.chunks = buildChunks(lesson, App.state.catchup);
+      App.state.chunks = buildChunks(lesson, App.state.catchup, App.state.review);
       if (App.state.review) App.toast('Reviewing a completed mission — nothing will be overwritten.', 3200);
       $('#hub').hidden = true;
       $('#player').hidden = false;
@@ -435,12 +462,14 @@
     });
   };
 
-  function buildChunks(lesson, catchup) {
+  function buildChunks(lesson, catchup, review) {
     var chunks = [];
     if (catchup) {
       chunks.push({ id: '_catchup', engine: 'catchupintro', title: 'You missed this one', minutes: 1, config: {} });
     }
-    if (Number(lesson.num) > 1) {
+    // review = a re-read of a completed lesson: no Do-Now (it would re-record
+    // live retrieval data against the pupil's spacing history)
+    if (Number(lesson.num) > 1 && !review) {
       chunks.push({ id: '_recap', engine: 'recap', title: 'Do-Now', minutes: 3, config: {} });
     }
     return chunks.concat(lesson.chunks || []);
@@ -513,8 +542,11 @@
       },
       awardBadge: function (badge, detail) {
         if (s.review) return App.badgeCelebration(Object.assign({}, badge, { xp: 0 }));
+        // every badge carries a detail key: the server's XP idempotency rule
+        // only grants XP when the event introduces a NEW key
+        var d = detail || ('b' + String(badge.id || 'x') + '=1');
         return App.badgeCelebration(badge).then(function () {
-          return App.engineCtx(ch).saveEvent({ xp: badge.xp || 0, detail: detail || undefined });
+          return App.engineCtx(ch).saveEvent({ xp: badge.xp || 0, detail: d });
         });
       },
       toast: App.toast,
@@ -554,7 +586,11 @@
       s.draft = s.draft || {};
       s.draft.done = s.draft.done || [];
       if (s.draft.done.indexOf(doneId) === -1) s.draft.done.push(doneId);
-      App.call('saveEvent', { lessonNum: String(s.lessonEntry.num), draft: s.draft });
+      var payload = { lessonNum: String(s.lessonEntry.num), draft: s.draft };
+      // flush accumulated active minutes with the chunk-advance save (review
+      // finding: minutes were silently dropped unless a badge happened to fire)
+      if (s.pendingMin >= 1) { payload.minDelta = Math.round(s.pendingMin); s.pendingMin = 0; }
+      App.call('saveEvent', payload);
     }
     if (s.chunkIdx < s.chunks.length - 1) { s.chunkIdx++; mountChunk(); }
     else finishLesson();
@@ -583,6 +619,12 @@
   App.confirmLeaveLesson = function () {
     App.confirm('Leave the lesson?', 'Your progress so far is saved — you can come back to where you left off.', 'Leave', function (yes) {
       if (!yes) return;
+      // flush active minutes so a pupil who worked but didn't finish a badge
+      // still counts as present for absence inference
+      if (App.state.lesson && !App.state.review && App.state.pendingMin >= 1) {
+        App.call('saveEvent', { lessonNum: String(App.state.lessonEntry.num), minDelta: Math.round(App.state.pendingMin) });
+        App.state.pendingMin = 0;
+      }
       $('#guard').hidden = false;
       App.refreshState().then(function () { $('#guard').hidden = true; showHub(); });
     });

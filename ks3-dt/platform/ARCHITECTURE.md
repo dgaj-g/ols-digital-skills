@@ -127,3 +127,27 @@ localhost/github.io before any deploy round-trip (Mon Carnet parity rule).
 - School-days arithmetic for absence = weekdays only (no term calendar in v1; N configurable).
 - L1 pairing is social (partners at one machine, "confer before you drop"); the synchronous-
   collaboration debrief visual is simulated, not real-time networking (doc 07 intent, zero risk).
+
+## 9. Post-review hardening (adversarial review, 17 Jul 2026)
+
+- **XP idempotency**: XP is granted only when an event's `detail` introduces a NEW `k=v` key into
+  the lesson record (outbox retries and console replays add nothing), capped 40/event + 150/lesson.
+  Exit submissions are first-wins; the baseline is write-once. Same-pupil record writes serialise
+  under the script lock (fetch/mark stays outside it).
+- **Vault check = salted hashes** (`vhash_`), never the plaintext map; explanations only released
+  after the placement result is recorded. Beats zero-effort DevTools dumps while keeping drag instant.
+- **Storage quota is monitored, and bounded work remains**: the shared ScriptProperties store has a
+  hard 500 KB script-wide cap. Realistic full-year whole-school data exceeds it, so (a) every write
+  is guarded (`store-full` surfaces to pupils + teacher instead of silent loss), (b) the staff panel
+  shows live usage %, and (c) **REQUIRED BEFORE WHOLE-SCHOOL SCALE (Session B): the nightly archival
+  trigger** — runs as the owner, sweeps verbose fields of completed lessons to the Archive Sheet and
+  prunes live records lean. Growth is gradual (~3 lessons/class by Oct half-term), so launch is safe
+  with monitoring; the trigger must land before the store passes ~60%.
+- Absence inference skips lessons whose manifest `status` isn't `ready` (an eager unlock of an
+  unauthored lesson can't flood a class with false flags); Cover Mode only offers ready lessons.
+- Recap: review-mode re-reads never re-record; the 40/40/20 bands fill round-robin so due keystones
+  can't starve the oldest band; short/empty Do-Nows are served rather than repeating same-day items.
+- UserProperties keys are year-qualified (`draft:<year>:<num>`, `recap:<year>`) so a pupil's J1
+  state can't leak into her J2 year.
+- Public leaderboard (teacher opt-in) is rendered pupil-side via `apiBoard`, codenames by default.
+- Teachers can remove a wrong-class join from the Live roster (`removePupil`).

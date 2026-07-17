@@ -229,6 +229,22 @@ h1, h2, h3 { line-height: 1.2; margin: 0 0 10px; color: var(--ols-blue); }
 .tile.wobble { animation: wobble 0.4s ease; }
 .hub-footnote { text-align: center; color: #9AA5B5; font-size: 0.78rem; padding: 0 20px 26px; }
 
+/* ============ public class board (teacher-enabled only) ============ */
+.board-card-list {
+  background: var(--card); border: 1px solid #E3E8F2; border-radius: var(--radius);
+  box-shadow: var(--shadow-sm); padding: 8px 14px;
+}
+.board-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 4px; border-bottom: 1px solid #EDF0F6; font-size: 0.94rem;
+}
+.board-row:last-child { border-bottom: none; }
+.board-row.me { background: rgba(228, 184, 36, 0.12); border-radius: 8px; }
+.board-rank { flex: 0 0 26px; font-weight: 800; color: var(--muted); text-align: center; }
+.board-row:nth-child(1) .board-rank { color: var(--ols-gold); }
+.board-name { flex: 1; font-weight: 700; color: var(--ols-blue); }
+.board-v { font-weight: 800; color: var(--muted); }
+
 /* ============ player ============ */
 .player { max-width: 860px; margin: 0 auto; padding: 14px 16px 60px; }
 .player-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
@@ -886,6 +902,7 @@ window.OLS_TRANSPORT = {
         case 'recapAnswer':    g.apiRecapAnswer(p); break;
         case 'mark':           g.apiMark(p); break;
         case 'vaultInfo':      g.apiVaultInfo(p); break;
+        case 'board':          g.apiBoard(p); break;
         case 'saveEvent':      g.apiSaveEvent(p); break;
         case 'loadDraft':      g.apiLoadDraft(p); break;
         case 'submitExit':     g.apiSubmitExit(p); break;
@@ -987,6 +1004,13 @@ window.OLS_TRANSPORT = {
       flushing = false;
       if (r && r.ok) {
         var q2 = outboxRead(); q2.shift(); outboxWrite(q2);
+        backoff = 1000;
+        App.flushOutbox();
+      } else if (r && r.error && r.error !== 'transport') {
+        // definitive server rejection: retrying can never succeed - drop it
+        // rather than hammering forever (esp. 'store-full', review finding)
+        var q3 = outboxRead(); q3.shift(); outboxWrite(q3);
+        if (r.error === 'store-full') App.toast('Saving is full \u2014 tell your teacher to check the platform storage.', 5000);
         backoff = 1000;
         App.flushOutbox();
       } else {
@@ -1246,6 +1270,26 @@ window.OLS_TRANSPORT = {
       cta.onclick = function () { App.openLesson(continueTarget.id, {}); };
     } else cta.hidden = true;
 
+    // public class board (only when the teacher deliberately enabled it)
+    if (s.lb && s.lb.mode === 'public') {
+      App.call('board').then(function (r) {
+        if (!r || !r.ok || r.mode !== 'public' || !r.rows || !r.rows.length) return;
+        if (App.state.lesson) return; // pupil moved on while we fetched
+        var old = document.getElementById('class-board');
+        if (old) old.remove();
+        var rowsHtml = r.rows.map(function (row, i) {
+          return '<div class="board-row' + (row.me ? ' me' : '') + '"><span class="board-rank">' + (i + 1) + '</span>' +
+            '<span class="board-name">' + esc(row.label) + (row.me ? ' (you)' : '') + '</span>' +
+            '<span class="board-v">' + Number(row.v) + (r.basis === 'completion' ? ' done' : ' XP') + '</span></div>';
+        }).join('');
+        var sec = document.createElement('section');
+        sec.className = 'block'; sec.id = 'class-board';
+        sec.innerHTML = '<h2 class="block-name" style="--blk:#E4B824">Class board</h2><div class="board-card-list">' + rowsHtml + '</div>';
+        var boardEl = $('#board');
+        boardEl.insertBefore(sec, boardEl.firstChild);
+      });
+    }
+
     // board grouped by block
     var blocks = {};
     (man.blocks || []).forEach(function (b) { blocks[b.id] = { meta: b, lessons: [] }; });
@@ -1314,7 +1358,7 @@ window.OLS_TRANSPORT = {
       var recArr = (App.state.me && App.state.me.L) ? App.state.me.L[String(le.num)] : null;
       App.state.review = !!(recArr && Number(recArr[0]) === 2 && !App.state.catchup);
       App.state.chunkIdx = 0;
-      App.state.chunks = buildChunks(lesson, App.state.catchup);
+      App.state.chunks = buildChunks(lesson, App.state.catchup, App.state.review);
       if (App.state.review) App.toast('Reviewing a completed mission \u2014 nothing will be overwritten.', 3200);
       $('#hub').hidden = true;
       $('#player').hidden = false;
@@ -1336,12 +1380,14 @@ window.OLS_TRANSPORT = {
     });
   };
 
-  function buildChunks(lesson, catchup) {
+  function buildChunks(lesson, catchup, review) {
     var chunks = [];
     if (catchup) {
       chunks.push({ id: '_catchup', engine: 'catchupintro', title: 'You missed this one', minutes: 1, config: {} });
     }
-    if (Number(lesson.num) > 1) {
+    // review = a re-read of a completed lesson: no Do-Now (it would re-record
+    // live retrieval data against the pupil's spacing history)
+    if (Number(lesson.num) > 1 && !review) {
       chunks.push({ id: '_recap', engine: 'recap', title: 'Do-Now', minutes: 3, config: {} });
     }
     return chunks.concat(lesson.chunks || []);
@@ -1414,8 +1460,11 @@ window.OLS_TRANSPORT = {
       },
       awardBadge: function (badge, detail) {
         if (s.review) return App.badgeCelebration(Object.assign({}, badge, { xp: 0 }));
+        // every badge carries a detail key: the server's XP idempotency rule
+        // only grants XP when the event introduces a NEW key
+        var d = detail || ('b' + String(badge.id || 'x') + '=1');
         return App.badgeCelebration(badge).then(function () {
-          return App.engineCtx(ch).saveEvent({ xp: badge.xp || 0, detail: detail || undefined });
+          return App.engineCtx(ch).saveEvent({ xp: badge.xp || 0, detail: d });
         });
       },
       toast: App.toast,
@@ -1455,7 +1504,11 @@ window.OLS_TRANSPORT = {
       s.draft = s.draft || {};
       s.draft.done = s.draft.done || [];
       if (s.draft.done.indexOf(doneId) === -1) s.draft.done.push(doneId);
-      App.call('saveEvent', { lessonNum: String(s.lessonEntry.num), draft: s.draft });
+      var payload = { lessonNum: String(s.lessonEntry.num), draft: s.draft };
+      // flush accumulated active minutes with the chunk-advance save (review
+      // finding: minutes were silently dropped unless a badge happened to fire)
+      if (s.pendingMin >= 1) { payload.minDelta = Math.round(s.pendingMin); s.pendingMin = 0; }
+      App.call('saveEvent', payload);
     }
     if (s.chunkIdx < s.chunks.length - 1) { s.chunkIdx++; mountChunk(); }
     else finishLesson();
@@ -1484,6 +1537,12 @@ window.OLS_TRANSPORT = {
   App.confirmLeaveLesson = function () {
     App.confirm('Leave the lesson?', 'Your progress so far is saved \u2014 you can come back to where you left off.', 'Leave', function (yes) {
       if (!yes) return;
+      // flush active minutes so a pupil who worked but didn't finish a badge
+      // still counts as present for absence inference
+      if (App.state.lesson && !App.state.review && App.state.pendingMin >= 1) {
+        App.call('saveEvent', { lessonNum: String(App.state.lessonEntry.num), minDelta: Math.round(App.state.pendingMin) });
+        App.state.pendingMin = 0;
+      }
       $('#guard').hidden = false;
       App.refreshState().then(function () { $('#guard').hidden = true; showHub(); });
     });
@@ -1532,6 +1591,13 @@ window.OLS_TRANSPORT = {
     if (ctx.chunk.badge) {
       ctx.awardBadge(ctx.chunk.badge, detail).then(function () { ctx.next(); });
     } else ctx.next();
+  }
+  /* mirror of the server's vhash_ - the vault placement check compares salted
+     hashes so the answer map never reaches the client in plaintext */
+  function vhash(s) {
+    var h = 5381;
+    for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+    return h.toString(16);
   }
 
   /* ================= shared item runner =================
@@ -1804,10 +1870,11 @@ window.OLS_TRANSPORT = {
   Engines.vault = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
-      var map = null, explains = {};
-      // Fetch the filing map ONCE at mount (runtime-only; never in the public repo).
-      ctx.call('vaultInfo', { lessonId: ctx.lesson.id }).then(function (r) {
-        if (r && r.ok) { map = r.map; explains = r.explain || {}; }
+      var keyId = (cfg && cfg.keyId) || 'vault';
+      var salt = null, check = null;
+      // Fetch the SALTED placement hashes once at mount (never the plaintext map).
+      ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId }).then(function (r) {
+        if (r && r.ok) { salt = r.salt; check = r.check; }
       });
       introCard(host, {
         kicker: chunk.title, title: 'The Vault',
@@ -1816,16 +1883,16 @@ window.OLS_TRANSPORT = {
       }, 'Open the Vault', begin);
 
       function begin() {
-        if (!map) { // map still loading: brief gold pulse, then retry
+        if (!check) { // hashes still loading: brief gold pulse, then retry
           host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Opening the Vault&hellip; this can take a moment</span></div>';
           var tries = 0;
           var t = setInterval(function () {
             tries++;
-            if (map) { clearInterval(t); host.innerHTML = ''; begin(); }
+            if (check) { clearInterval(t); host.innerHTML = ''; begin(); }
             else if (tries > 40) {
               clearInterval(t);
-              ctx.call('vaultInfo', { lessonId: ctx.lesson.id }).then(function (r) {
-                if (r && r.ok) { map = r.map; explains = r.explain || {}; host.innerHTML = ''; begin(); }
+              ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId }).then(function (r) {
+                if (r && r.ok) { salt = r.salt; check = r.check; host.innerHTML = ''; begin(); }
                 else host.innerHTML = '<div class="card"><p>The Vault door is stuck (wifi?). Ask your teacher, then try again.</p></div>';
               });
             }
@@ -1909,7 +1976,7 @@ window.OLS_TRANSPORT = {
         function drop(node, f, folderEl) {
           var fid = folderEl.getAttribute('data-id');
           attempts[f.id] = (attempts[f.id] || 0) + 1;
-          if (map[f.id] === fid) {
+          if (vhash(salt + '|' + f.id + '|' + fid) === check[f.id]) {
             placed[f.id] = true;
             if (attempts[f.id] === 1) firstTryRight++;
             node.style.transform = '';
@@ -1935,6 +2002,20 @@ window.OLS_TRANSPORT = {
 
         function debrief() {
           var xp = 12 + firstTryRight * 3;
+          // Record the placement result FIRST ('vp' key, no XP), which unlocks
+          // the explanations server-side; explains are never sent pre-attempt.
+          host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Sealing the Vault&hellip;</span></div>';
+          var pre = ctx.review ? Promise.resolve({ ok: true })
+            : ctx.saveEvent({ detail: 'vp=' + firstTryRight + '/' + cfg.files.length });
+          pre.then(function () {
+            return ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId, mode: 'explain' });
+          }).then(function (er) {
+            var explains = (er && er.ok && er.explain) || {};
+            renderDebrief(explains, xp);
+          });
+        }
+
+        function renderDebrief(explains, xp) {
           var why = cfg.files.map(function (f) {
             return '<li><span class="vf-icon">' + esc(f.icon) + '</span> ' + esc(explains[f.id] || '') + '</li>';
           }).join('');
@@ -2090,6 +2171,7 @@ window.OLS_TRANSPORT = {
   /* ================= recap (Do-Now engine, lessons 2+) ================= */
   Engines.recap = {
     mount: function (host, chunk, ctx) {
+      if (ctx.review) { ctx.next(); return; } // a re-read never re-records recap data
       host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Warming up your brain&hellip;</span></div>';
       ctx.call('recapStart', { lessonNum: String(ctx.lessonEntry.num) }).then(function (r) {
         host.innerHTML = '';
@@ -2544,8 +2626,20 @@ window.OLS_TRANSPORT = {
         '<select id="cls-year" class="staff-select"><option value="j1">J1</option><option value="j2">J2</option><option value="j3">J3</option></select>' +
         '<button type="button" class="primary-btn" data-action="add-class">Add class</button>' +
       '</div>' +
-      '<p class="staff-status" id="cls-status"></p>';
+      '<p class="staff-status" id="cls-status"></p>' +
+      storeHealthHtml();
     setPane(html);
+  }
+
+
+  function storeHealthHtml() {
+    var st = classesData && classesData.store;
+    if (!st || !st.limit) return '';
+    var pct = Math.round((st.bytes / st.limit) * 100);
+    var warn = pct >= 70;
+    return '<p class="staff-row-meta" style="margin-top:10px' + (warn ? ';color:var(--bad);font-weight:700' : '') + '">' +
+      'Platform storage: ' + Math.round(st.bytes / 1024) + ' KB of ' + Math.round(st.limit / 1024) + ' KB used (' + pct + '%) &middot; ' + st.pupils + ' pupil records' +
+      (warn ? ' &mdash; getting full: tell Damien so the archive sweep can run.' : '') + '</p>';
   }
 
   function addClass() {
@@ -2627,7 +2721,7 @@ window.OLS_TRANSPORT = {
       var on = !!(lk && Number(lk.on));
       var delivered = !!(lk && Number(lk.u));
       var stateText = on ? ('Unlocked since ' + fmtDate(lk.u)) : (delivered ? ('Locked (delivered ' + fmtDate(lk.u) + ')') : 'Locked');
-      return '<button type="button" class="lock-cell' + (on ? ' is-on' : '') + '" data-action="toggle-lock" data-num="' + le.num + '">' +
+      return '<button type="button" class="lock-cell' + (on ? ' is-on' : '') + '" data-action="toggle-lock" data-num="' + le.num + '" data-ready="' + (le.status === 'ready' ? '1' : '0') + '">' +
         '<span class="lc-num">Lesson ' + le.num + '</span>' +
         '<span class="lc-title">' + App.esc(le.title) + '</span>' +
         '<span class="lc-state">' + App.esc(stateText) + '</span>' +
@@ -2643,6 +2737,16 @@ window.OLS_TRANSPORT = {
     if (btn.disabled) return;
     var num = btn.getAttribute('data-num');
     var wasOn = btn.classList.contains('is-on'), willOn = !wasOn;
+    if (willOn && btn.getAttribute('data-ready') === '0') {
+      App.confirm('Unlock an unfinished lesson?',
+        'This lesson\'s content is still being authored. Pupils who open it will only see "being prepared", and it will not count for absence flags. Usually you want to wait until it says Ready.',
+        'Unlock anyway', function (yes) { if (yes) doToggle(btn, num, wasOn, true); });
+      return;
+    }
+    doToggle(btn, num, wasOn, willOn);
+  }
+
+  function doToggle(btn, num, wasOn, willOn) {
     btn.disabled = true;
     btn.classList.toggle('is-on', willOn);
     var stateEl = btn.querySelector('.lc-state');
@@ -2743,7 +2847,8 @@ window.OLS_TRANSPORT = {
       var bl = baselineDisplay(r);
       var cells = deliveredNums.map(function (n) { return '<td>' + lessonCell(r.L[n]) + '</td>'; }).join('');
       return '<tr' + (stuck ? ' class="is-stuck"' : '') + '>' +
-        '<td>' + App.esc(r.name) + (stuck ? ' <span class="pill flag">needs you</span>' : '') + '</td>' +
+        '<td><button type="button" class="modal-close" style="font-size:1rem" title="Remove this pupil from the class (her own work is untouched)" data-action="remove-pupil" data-email="' + App.esc(r.email) + '" data-name="' + App.esc(r.name) + '">&times;</button> ' +
+        App.esc(r.name) + (stuck ? ' <span class="pill flag">needs you</span>' : '') + '</td>' +
         '<td>' + App.esc(r.codename) + '</td>' +
         '<td>' + Number(r.xp || 0) + '</td>' +
         '<td>' + (bl || '&mdash;') + '</td>' +
@@ -3141,15 +3246,29 @@ window.OLS_TRANSPORT = {
     });
   }
 
+
+  function removePupil(btn) {
+    var email = btn.getAttribute('data-email'), name = btn.getAttribute('data-name');
+    App.confirm('Remove ' + name + ' from this class?',
+      'Her shared class record (progress the dashboard shows) is deleted. Her own private work is untouched, and she can rejoin from the class link.',
+      'Remove', function (yes) {
+        if (!yes) return;
+        adminCall('removePupil', { className: cls, email: email }).then(function (r) {
+          if (r && r.ok) renderLive(); else plainStatus(q('#live-status'), 'Could not remove -- please try again.');
+        });
+      });
+  }
+
   function undeliveredLessons(man) {
     var locks = dashData.locks || {};
     return (man.lessons || []).filter(function (le) { var lk = locks[String(le.num)]; return !(lk && Number(lk.u)); })
       .sort(function (a, b) { return a.num - b.num; });
   }
   function pickSuggestion(list) {
+    // Cover Mode only ever offers READY lessons (review finding: delivering an
+    // unauthored lesson creates a dead-end for pupils under cover).
     var ready = list.filter(function (le) { return le.status === 'ready'; });
-    if (ready.length) return ready[0];
-    return list.length ? list[0] : null;
+    return ready.length ? ready[0] : null;
   }
 
   function renderCoverPane(man) {
@@ -3179,6 +3298,8 @@ window.OLS_TRANSPORT = {
         (alt ? (' Suggesting Lesson ' + alt.num + ' instead.') : ' No other lesson is ready to suggest yet.') + '</div>';
       suggestion = alt;
     }
+    undelivered = undelivered.filter(function (le) { return le.status === 'ready'; });
+    if (!undelivered.length) { setPane('<p class="staff-status">No cover-ready lessons are left undelivered for this class. Cover can revisit an already-delivered lesson from the pupils&rsquo; Mission Control instead.</p>'); return; }
     if (!coverPick || !undelivered.some(function (le) { return le.id === coverPick; })) coverPick = suggestion ? suggestion.id : undelivered[0].id;
 
     var options = undelivered.map(function (le) {
@@ -3265,7 +3386,13 @@ window.OLS_TRANSPORT = {
     });
   }
 
-  function coverPrint() { global.print(); }
+  function coverPrint() {
+    // window.print can silently no-op inside the sandboxed iframe (review
+    // finding) - always leave the teacher a fallback route.
+    try { global.print(); } catch (e) {}
+    var st = q('#cover-status');
+    if (st) plainStatus(st, 'If no print dialog appeared (some school browsers block it here), take a screenshot of the sheet or keep this tab open for the cover teacher.');
+  }
 
   function coverEnd(btn) {
     if (btn.disabled) return;
@@ -3306,6 +3433,7 @@ window.OLS_TRANSPORT = {
       case 'options-save': optionsSave(btn); break;
       case 'cover-start': coverStart(btn); break;
       case 'cover-print': coverPrint(); break;
+      case 'remove-pupil': removePupil(btn); break;
       case 'cover-end': coverEnd(btn); break;
     }
   }
