@@ -78,7 +78,8 @@ Pupil: `whoami` · `joinClass` · `getState(class)` (locks+cfg+my record+absence
 options shuffled server-side) · `recapAnswer(item, choice)` → `{correct, correctIdx, explain}`
 · `saveEvent(class, lesson, evt)` (badge/score/draft/activeMin — debounced, outbox-buffered)
 · `submitExit(class, lesson, payload)` (client waits 0–5 s jitter first — red team #3)
-· `submitBaseline(class, answers)` · `markCatchup(class, lesson)`.
+· `submitBaseline(class, answers)` · `markCatchup(class, lesson)` ·
+`setKit(class, themeId?/insigniaId?)` (Agent Kit equip — server re-validates clearance vs XP, §10).
 
 Staff (every call carries the passcode; validated server-side, trim/lowercase): `staffCheck` ·
 `classList/Create/Delete` (owner-only delete, two-tap client confirm) · `setLock(class, lesson, on)`
@@ -151,3 +152,25 @@ localhost/github.io before any deploy round-trip (Mon Carnet parity rule).
   state can't leak into her J2 year.
 - Public leaderboard (teacher opt-in) is rendered pupil-side via `apiBoard`, codenames by default.
 - Teachers can remove a wrong-class join from the Live roster (`removePupil`).
+
+## 10. Agent Kit (Session B — pupil customisation, Damien's requirement 21 Jul 2026)
+
+Pupils personalise the SHELL (never lesson reading surfaces) and earn unlocks with the
+existing XP economy. Rules:
+
+- **Registry = `content/themes.json`** (packed via content-src, no keys): 6 Clearance
+  Levels (0/100/300/600/1000/1500 XP — L1's ~107 XP guarantees the first unlock), 12
+  curated themes, 11 insignia. Adding kit = a git push, no redeploy.
+- **Curated, never free-form**: each theme is an art-directed variant of Mission Control
+  v2 expressed as CSS custom-property overrides (`:root` THEME KNOB block in style.css)
+  + starfield params + optional fx layer. All keep AA contrast; none use
+  `background-attachment:fixed` or per-card `backdrop-filter` (compositor rule); fx
+  layers animate transform/opacity only.
+- **Cosmetic only — no XP surface**: `setKit` never grants/touches XP; the server
+  re-fetches the registry and enforces `xp >= clearance.xp` (DevTools equip of locked
+  kit is refused: `kit-locked`). Equipped ids live on the lean record as `th`/`fx`
+  (~24 bytes); store-full guarded.
+- **Client**: equip is optimistic (instant restyle) with revert-on-refusal; clearance-up
+  celebration fires on the HUB only (never mid-lesson), tracked per device; the staff
+  modal pins brand gold (`.staff-modal` var reset) so teacher tools are theme-immune.
+- Default theme = Midnight Command (stored as `''`; the approved v2 look is untouched).
