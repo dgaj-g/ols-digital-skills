@@ -25,6 +25,7 @@
   var liveByNum = {};             // lessonNum -> manifest lesson entry, refreshed each Live render
   var misLessonNum = '';          // Live tab: lesson chosen in the misconception dropdown
   var coverPick = '';             // Cover tab: lessonId chosen in the override dropdown
+  var briefByNum = {};            // Lessons tab: lessonNum -> manifest entry (for the Brief view)
   var coverActiveLesson = null;   // Cover tab: lesson we personally started cover for this session
   var wired = false;
 
@@ -91,8 +92,20 @@
       '.staff-chip-menu button:hover{background:#F0F4FB}' +
       '.staff-chip-menu button.current{color:var(--ols-blue);font-weight:800}' +
       '.staff-warn{background:var(--bad-soft);color:var(--bad);padding:12px 14px;border-radius:10px;margin-bottom:12px}' +
-      '@media print{body *{visibility:hidden}.cover-sheet,.cover-sheet *{visibility:visible}' +
-        '.cover-sheet{position:absolute;left:0;top:0;width:100%}}';
+      '.lc-brief{align-self:flex-start;margin-top:2px;font-size:0.72rem;font-weight:800;' +
+        'color:var(--ols-blue);background:rgba(26,58,107,0.08);border:1px solid rgba(26,58,107,0.25);' +
+        'border-radius:999px;padding:2px 9px;cursor:pointer}' +
+      '.lc-brief:hover{background:rgba(228,184,36,0.18);border-color:var(--gold)}' +
+      '.brief-sheet{background:#fff;border:1px solid var(--line-l);border-radius:10px;padding:18px;color:var(--ink)}' +
+      '.brief-sheet h3{margin-top:0;color:var(--ols-blue)}' +
+      '.brief-sheet h4{margin:14px 0 6px;color:var(--ols-blue)}' +
+      '.brief-sheet ol,.brief-sheet ul{padding-left:20px;margin:0}' +
+      '.brief-sheet li{margin-bottom:7px}' +
+      '.brief-pitfalls li{background:#FFF6E8;border-left:3px solid var(--gold);' +
+        'padding:7px 10px;border-radius:6px;list-style-position:inside}' +
+      '@media print{body *{visibility:hidden}' +
+        '.cover-sheet,.cover-sheet *,.brief-sheet,.brief-sheet *{visibility:visible}' +
+        '.cover-sheet,.brief-sheet{position:absolute;left:0;top:0;width:100%}}';
     var style = document.createElement('style');
     style.id = 'staff-extra-style';
     style.textContent = css;
@@ -372,21 +385,67 @@
   }
 
   function renderLockGrid(man) {
+    briefByNum = {};
     var cells = (man.lessons || []).map(function (le) {
+      briefByNum[String(le.num)] = le;
       var lk = locksData[String(le.num)];
       var on = !!(lk && Number(lk.on));
       var delivered = !!(lk && Number(lk.u));
       var stateText = on ? ('Unlocked since ' + fmtDate(lk.u)) : (delivered ? ('Locked (delivered ' + fmtDate(lk.u) + ')') : 'Locked');
+      // The Brief chip is a data-action SPAN inside the toggle button: the click
+      // dispatcher resolves closest([data-action]), so it wins without ever
+      // toggling the lock (nested <button> would be invalid HTML).
       return '<button type="button" class="lock-cell' + (on ? ' is-on' : '') + '" data-action="toggle-lock" data-num="' + le.num + '" data-ready="' + (le.status === 'ready' ? '1' : '0') + '">' +
         '<span class="lc-num">Lesson ' + le.num + '</span>' +
         '<span class="lc-title">' + App.esc(le.title) + '</span>' +
         '<span class="lc-state">' + App.esc(stateText) + '</span>' +
-        (le.status !== 'ready' ? '<span class="lc-date">(content coming)</span>' : '') +
+        (le.status !== 'ready' ? '<span class="lc-date">(content coming)</span>'
+          : '<span class="lc-brief" data-action="show-brief" data-num="' + le.num + '">&#128203; Brief</span>') +
         '</button>';
     }).join('');
     setPane('<div class="lock-grid">' + cells + '</div>' +
-      '<p class="staff-row-meta" style="margin-top:12px">Pupils who already opened a lesson are never kicked out; its delivered date is kept even after a relock.</p>' +
+      '<p class="staff-row-meta" style="margin-top:12px">Pupils who already opened a lesson are never kicked out; its delivered date is kept even after a relock. <b>Brief</b> opens the lesson&rsquo;s teacher run sheet.</p>' +
       '<p class="staff-status" id="lock-status"></p>');
+  }
+
+  /* ---- Lesson brief view (teacher run sheet, decrypted server-side) ---- */
+  function showBrief(el) {
+    var num = el.getAttribute('data-num');
+    var le = briefByNum[num];
+    if (!le) return;
+    setPane(busyHtml('Fetching the lesson brief'));
+    adminCall('brief', { className: cls, lessonId: le.id }).then(function (r) {
+      if (!r || !r.ok) {
+        var msg = (r && r.error === 'no-brief') ? 'No teacher brief is authored for this lesson yet.'
+          : (r && r.error === 'preview-no-keys') ? 'Briefs are not available on this hosted preview -- use the local preview or the live app.'
+          : 'Could not fetch the brief -- please try again.';
+        setPane('<p class="staff-status">' + App.esc(msg) + '</p>' +
+          '<button type="button" class="ghost-btn" data-action="brief-back">&larr; Back to the lessons</button>');
+        return;
+      }
+      var mm = (r.minuteByMinute || []).map(function (line) { return '<li>' + App.esc(line) + '</li>'; }).join('');
+      var pf = (r.pitfalls || []).map(function (line) { return '<li>' + App.esc(line) + '</li>'; }).join('');
+      setPane(
+        '<div class="brief-sheet">' +
+          '<h3>Lesson ' + App.esc(r.num) + ' &middot; ' + App.esc(r.title) + ' &mdash; teacher brief</h3>' +
+          (r.why ? '<h4>Why the lesson is built this way</h4><p>' + App.esc(r.why) + '</p>' : '') +
+          (mm ? '<h4>Running the hour</h4><ol>' + mm + '</ol>' : '') +
+          (pf ? '<h4>Pitfalls</h4><ul class="brief-pitfalls">' + pf + '</ul>' : '') +
+        '</div>' +
+        '<div class="confirm-actions" style="justify-content:flex-start;margin-top:12px">' +
+          '<button type="button" class="ghost-btn" data-action="brief-back">&larr; Back to the lessons</button>' +
+          '<button type="button" class="primary-btn" data-action="brief-print">Print this brief</button>' +
+        '</div>' +
+        '<p class="staff-status" id="brief-status"></p>');
+    });
+  }
+
+  function briefPrint() {
+    // Same sandbox caveat as coverPrint: window.print can silently no-op in the
+    // sandboxed iframe - always leave the teacher a fallback route.
+    try { global.print(); } catch (e) {}
+    var st = q('#brief-status');
+    if (st) plainStatus(st, 'If no print dialog appeared (some school browsers block it here), take a screenshot or keep this tab open.');
   }
 
   function toggleLock(btn) {
@@ -1079,6 +1138,9 @@
       case 'delete-class': deleteClass(btn); break;
       case 'add-class': addClass(); break;
       case 'toggle-lock': toggleLock(btn); break;
+      case 'show-brief': showBrief(btn); break;
+      case 'brief-back': renderLessons(); break;
+      case 'brief-print': briefPrint(); break;
       case 'live-refresh': renderLive(); break;
       case 'live-csv': liveCsv(); break;
       case 'absence-dismiss': absenceDismiss(btn); break;

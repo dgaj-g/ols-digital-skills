@@ -75,6 +75,13 @@ function main() {
     const fileId = rel.replace(/\\/g, '/').replace(/\.json$/, '');
     const pub = { ...src };
     delete pub.keys;
+    // Teacher brief is staff-only: fold it into the encrypted keys blob (reserved
+    // id "_brief", returned only via the passcode-gated admin 'brief' call) and
+    // strip it from the public JSON so pupils can't read the run sheet in DevTools.
+    if (src.keys && src.teacherBrief) {
+      src.keys._brief = src.teacherBrief;
+      delete pub.teacherBrief;
+    }
     if (src.keys) {
       pub.keysEnc = encryptKeys(src.keys, fileId, sec);
       devKeys[fileId] = src.keys;
