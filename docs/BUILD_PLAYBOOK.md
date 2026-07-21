@@ -111,6 +111,18 @@ Quality rules above are untouchable; the savings come from *how* you work, not w
 
 ---
 
+## Checkpoint every 5 minutes — survive usage limits (MANDATORY, every session)
+
+Damien's plan hits hard usage caps mid-session. Anything that lives only in the conversation context — agent findings, extracted source content, design decisions, half-built plans — is lost at cutoff and has to be redone at full cost. Files on disk and pushed branches survive; context does not. So, on **every** build session (added 21 Jul 2026 at Damien's request):
+
+1. **At build start**, create `Digital Skills Roadmap/0. Digital Skills Web Activities/<Department>/BUILD_<N>_PROGRESS.md` in Claude Work (create the department folder if needed). It always holds: current state, decisions made so far, the requirements checklist with status, and **numbered next actions** precise enough that a fresh session resumes without re-deriving anything.
+2. **Update it at least every 5 minutes** of working time, or after every completed sub-step — whichever comes first.
+3. **Write agent/workflow outputs to files the moment they arrive** (bulk extracts under `/tmp/ols-build-<N>/`, with the conclusions mirrored into the progress file — `/tmp` survives a dead session but not a reboot, so anything essential is summarised in the progress file too). Never let a subagent's result live only in the conversation.
+4. **Commit and push WIP to the draft branch at the same cadence.** A pushed branch is the strongest checkpoint; WIP commits are fine because the PR is squash-merged, so `main` history stays tidy.
+5. **On resume**, a fresh session reads the progress file first and continues from its next-actions list. When the build finishes, the progress file's final state is a build log — leave it in place.
+
+---
+
 ## Step 0 — Orient yourself
 
 A fresh session has no context. Before touching the request, sync the repo so this playbook itself is up to date — Damien works across two Macs and the playbook evolves between builds — and then read the orient files:
@@ -440,6 +452,16 @@ the PR. If you considered one and rejected it, that's worth a line too.
 ---
 
 ## Step 7 — Build
+
+**Check for a concurrent session FIRST — and if in any doubt, build in a worktree.** Damien runs several Claude sessions at once on the same Mac, and two sessions sharing `~/Sites/ols-digital-skills` will switch branches under each other and commit each other's edits (this actually happened 21 Jul 2026: a `/build` session's `git checkout main` was silently undone by the KS3 session checking its own branch back out, and the build session's commit landed inside the KS3 branch). An isolated worktree makes the clash impossible:
+
+```bash
+cd ~/Sites/ols-digital-skills && git fetch origin main
+git worktree add ~/Sites/ols-wt-issue-<N> -b draft/issue-<N>-<dept-slug>-<topic-slug> origin/main
+cd ~/Sites/ols-wt-issue-<N>   # do ALL build work here
+```
+
+Preview it by adding a second server entry to `Claude Work/.claude/launch.json` pointing at the worktree on a spare port (e.g. 8099) — don't repurpose the main clone's `digital-skills` server. After the PR is opened (or merged), clean up with `git worktree remove ~/Sites/ols-wt-issue-<N>`. Only if you have positively confirmed no other session is running (e.g. `git log` shows nothing newer than your own actions across several minutes) is the classic single-clone flow safe:
 
 ```bash
 cd ~/Sites/ols-digital-skills
