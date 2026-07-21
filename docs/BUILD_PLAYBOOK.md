@@ -111,6 +111,18 @@ Quality rules above are untouchable; the savings come from *how* you work, not w
 
 ---
 
+## Checkpoint every 5 minutes — survive usage limits (MANDATORY, every session)
+
+Damien's plan hits hard usage caps mid-session. Anything that lives only in the conversation context — agent findings, extracted source content, design decisions, half-built plans — is lost at cutoff and has to be redone at full cost. Files on disk and pushed branches survive; context does not. So, on **every** build session (added 21 Jul 2026 at Damien's request):
+
+1. **At build start**, create `Digital Skills Roadmap/0. Digital Skills Web Activities/<Department>/BUILD_<N>_PROGRESS.md` in Claude Work (create the department folder if needed). It always holds: current state, decisions made so far, the requirements checklist with status, and **numbered next actions** precise enough that a fresh session resumes without re-deriving anything.
+2. **Update it at least every 5 minutes** of working time, or after every completed sub-step — whichever comes first.
+3. **Write agent/workflow outputs to files the moment they arrive** (bulk extracts under `/tmp/ols-build-<N>/`, with the conclusions mirrored into the progress file — `/tmp` survives a dead session but not a reboot, so anything essential is summarised in the progress file too). Never let a subagent's result live only in the conversation.
+4. **Commit and push WIP to the draft branch at the same cadence.** A pushed branch is the strongest checkpoint; WIP commits are fine because the PR is squash-merged, so `main` history stays tidy.
+5. **On resume**, a fresh session reads the progress file first and continues from its next-actions list. When the build finishes, the progress file's final state is a build log — leave it in place.
+
+---
+
 ## Step 0 — Orient yourself
 
 A fresh session has no context. Before touching the request, sync the repo so this playbook itself is up to date — Damien works across two Macs and the playbook evolves between builds — and then read the orient files:
