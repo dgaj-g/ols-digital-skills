@@ -22,7 +22,7 @@
 
   App.state = {
     email: '', name: '', codename: '', classCode: '', year: 'j1',
-    man: null, me: null, locks: {}, lb: null, team: null, absence: [],
+    man: null, me: null, locks: {}, lb: null, team: null, absence: [], kit: null,
     xp: 0, contentVersion: '', preview: false,
     lesson: null, chunkIdx: 0, catchup: false, pendingMin: 0
   };
@@ -148,29 +148,96 @@
 
   /* ---------------- boot ---------------- */
   /* static starfield: drawn once (no animation loop — old C2k machines), the
-     aurora's slow CSS drift supplies the life */
+     aurora's slow CSS drift supplies the life. Parameterised so Agent Kit
+     themes can restyle it (density / base colour / accent colour / ratio). */
+  var STAR_DEFAULTS = { density: 9000, base: '#CFE0FF', accent: '#FFD84D', ratio: 0.12 };
+  var starParams = Object.assign({}, STAR_DEFAULTS);
+  var drawStars = null;
   function initStars() {
     var c = document.getElementById('stars');
     if (!c || !c.getContext) return;
-    function draw() {
+    drawStars = function () {
       var w = c.width = global.innerWidth, h = c.height = global.innerHeight;
       var ctx = c.getContext('2d');
       ctx.clearRect(0, 0, w, h);
-      var n = Math.floor((w * h) / 9000);
+      var n = Math.floor((w * h) / starParams.density);
       for (var i = 0; i < n; i++) {
         var r = Math.random() * 1.3 + 0.3;
         ctx.globalAlpha = 0.2 + Math.random() * 0.55;
-        ctx.fillStyle = Math.random() < 0.12 ? '#FFD84D' : '#CFE0FF';
+        ctx.fillStyle = Math.random() < starParams.ratio ? starParams.accent : starParams.base;
         ctx.beginPath();
         ctx.arc(Math.random() * w, Math.random() * h, r, 0, 6.2832);
         ctx.fill();
       }
       ctx.globalAlpha = 1;
-    }
-    draw();
+    };
+    drawStars();
     var t;
-    global.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(draw, 200); });
+    global.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(drawStars, 200); });
   }
+  App.setStars = function (p) {
+    starParams = Object.assign({}, STAR_DEFAULTS, p || {});
+    if (drawStars) drawStars();
+  };
+
+  /* ---------------- Agent Kit: apply equipped theme + insignia --------------
+     Cosmetic layer over the SHELL only — lesson reading surfaces are untouched
+     (they use the fixed light-card palette). Vars come from content/themes.json
+     and land as custom-property overrides on :root; the previous theme's
+     overrides are removed first so switching back to default is exact. */
+  var appliedVars = [];
+  function kitTheme_(id) {
+    var reg = App.state.kit;
+    var th = null;
+    if (reg && id) (reg.themes || []).forEach(function (t) { if (String(t.id) === String(id)) th = t; });
+    return th;
+  }
+  function kitInsignia_(id) {
+    var reg = App.state.kit;
+    var g = null;
+    if (reg && id) (reg.insignia || []).forEach(function (x) { if (String(x.id) === String(id)) g = x; });
+    return g;
+  }
+  function syncFxLayer(fx) {
+    var old = document.getElementById('fx-layer');
+    if (old) old.remove();
+    if (!fx) return;
+    var d = document.createElement('div');
+    d.id = 'fx-layer';
+    d.className = 'fx-' + fx;
+    d.setAttribute('aria-hidden', 'true');
+    if (fx === 'comets') d.innerHTML = '<span class="fx-comet c1"></span><span class="fx-comet c2"></span><span class="fx-comet c3"></span>';
+    else if (fx === 'aurora') d.innerHTML = '<span class="fx-band"></span>';
+    document.body.appendChild(d);
+  }
+  App.applyKit = function () {
+    var s = App.state;
+    var root = document.documentElement;
+    appliedVars.forEach(function (v) { root.style.removeProperty(v); });
+    appliedVars = [];
+    var theme = kitTheme_(s.me && s.me.th);
+    var vars = (theme && theme.vars) || {};
+    Object.keys(vars).forEach(function (k) {
+      if (k.indexOf('--') !== 0) return; // custom properties only
+      root.style.setProperty(k, String(vars[k]));
+      appliedVars.push(k);
+    });
+    App.setStars(theme && theme.stars);
+    syncFxLayer(theme && theme.fx ? String(theme.fx) : '');
+    var ins = kitInsignia_(s.me && s.me.fx);
+    var el = $('#agent-insignia');
+    if (el) { el.hidden = !ins; el.textContent = ins ? String(ins.glyph) : ''; }
+  };
+  /* Clearance ladder position for a given XP (clearances are ascending). */
+  App.clearanceFor = function (xp) {
+    var cs = (App.state.kit && App.state.kit.clearances) || [];
+    var cur = { level: 1, xp: 0, name: 'Recruit' }, next = null;
+    for (var i = 0; i < cs.length; i++) {
+      if (Number(xp) >= Number(cs[i].xp)) cur = cs[i];
+      else { next = cs[i]; break; }
+    }
+    return { cur: cur, next: next };
+  };
 
   App.boot = function () {
     initStars();
@@ -234,7 +301,15 @@
       s.codename = r.me ? String(r.me.cn || '') : '';
       purgeOldContent();
       return App.fetchContent(s.year + '/manifest.json').then(function (man) {
-        s.man = man; return true;
+        s.man = man;
+        // Kit registry rides along; its absence never blocks the platform
+        return App.fetchContent('themes.json').then(
+          function (reg) { s.kit = reg; },
+          function () { s.kit = null; }
+        );
+      }).then(function () {
+        App.applyKit();
+        return true;
       }).catch(function () { return false; });
     });
   };
@@ -265,6 +340,7 @@
   function wireChrome() {
     $('#help-beacon').onclick = function () { App.openModal('help-modal'); };
     $('#help-close').onclick = function () { App.closeModal('help-modal'); };
+    $('#agent-chip').onclick = function () { App.openKit(); };
     $('#join-staff').onclick = function () { if (global.Staff) global.Staff.open(); };
     $('#staff-open').onclick = function () { if (global.Staff) global.Staff.open(); };
     $('#player-back').onclick = function () { App.confirmLeaveLesson(); };
@@ -272,7 +348,7 @@
       b.onclick = function () { App.closeModal(b.getAttribute('data-close')); };
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') ['help-modal', 'qr-modal', 'confirm-modal'].forEach(App.closeModal);
+      if (e.key === 'Escape') ['help-modal', 'qr-modal', 'confirm-modal', 'kit-modal'].forEach(App.closeModal);
     });
     // active-time heartbeat: visible + recently-interacting minutes count
     var lastInteract = Date.now();
@@ -339,8 +415,190 @@
     $('#help-beacon').hidden = false;
     $('#hub').hidden = false;
     renderHub();
+    maybeClearancePop();
   }
   App.showHub = showHub;
+
+  /* Clearance-up celebration: fires on the hub (never mid-lesson) when this
+     device last saw a lower clearance than the pupil now holds. First run on a
+     device just records the current level quietly — no false fanfare. */
+  function maybeClearancePop() {
+    var s = App.state;
+    if (!s.kit || !s.me) return;
+    var lvl = Number(App.clearanceFor(s.xp).cur.level) || 1;
+    var key = 'ks3dt-clearance:' + (s.email || 'x');
+    var seen = null;
+    try { seen = localStorage.getItem(key); } catch (e) {}
+    if (seen == null || seen === '') {
+      try { localStorage.setItem(key, String(lvl)); } catch (e) {}
+      return;
+    }
+    if (lvl <= Number(seen)) {
+      if (lvl < Number(seen)) { try { localStorage.setItem(key, String(lvl)); } catch (e) {} }
+      return;
+    }
+    try { localStorage.setItem(key, String(lvl)); } catch (e) {}
+    var rank = App.clearanceFor(s.xp).cur;
+    var ov = document.createElement('div');
+    ov.className = 'badge-pop';
+    ov.innerHTML = '<div class="badge-pop-card">' +
+      '<div class="finish-glyph">&#127894;</div>' +
+      '<h2>Clearance upgraded</h2>' +
+      '<p class="badge-pop-name">Clearance ' + Number(rank.level) + ' &mdash; ' + esc(rank.name) + '</p>' +
+      '<p class="clearance-sub">HQ has released new kit. It’s waiting in your Agent Kit.</p>' +
+      '<div class="confirm-actions">' +
+      '<button class="ghost-btn" data-act="later" type="button">Later</button>' +
+      '<button class="primary-btn" data-act="open" type="button">Open Agent Kit</button>' +
+      '</div></div>';
+    document.body.appendChild(ov);
+    requestAnimationFrame(function () { ov.classList.add('show'); });
+    function close(thenOpen) {
+      ov.classList.remove('show');
+      setTimeout(function () { ov.remove(); if (thenOpen) App.openKit(); }, 250);
+    }
+    ov.querySelector('[data-act=later]').onclick = function () { close(false); };
+    ov.querySelector('[data-act=open]').onclick = function () { close(true); };
+  }
+
+  /* ---------------- Agent Kit modal (pupil customisation) ---------------- */
+  App.openKit = function () {
+    var s = App.state;
+    if (!s.me) return; // not joined yet (staff preview of the join screen etc.)
+    if (!s.kit) { App.toast('Your Agent Kit could not load — check the wifi and refresh.'); return; }
+    renderKit();
+    App.openModal('kit-modal');
+  };
+
+  function kitClearanceXp_(level) {
+    var cs = (App.state.kit && App.state.kit.clearances) || [];
+    for (var i = 0; i < cs.length; i++) if (Number(cs[i].level) === Number(level)) return Number(cs[i].xp);
+    return 0;
+  }
+
+  function renderKit() {
+    var s = App.state;
+    var reg = s.kit;
+    var body = $('#kit-body');
+    if (!reg || !body) return;
+    var pos = App.clearanceFor(s.xp);
+    var curTh = (s.me && s.me.th) || '';
+    var curFx = (s.me && s.me.fx) || '';
+
+    // clearance header: rank, XP, progress to the next rank
+    var head = '<div class="kit-rank">' +
+      '<div class="kit-rank-badge">' + Number(pos.cur.level) + '</div>' +
+      '<div class="kit-rank-text">' +
+      '<span class="kit-rank-name">Clearance ' + Number(pos.cur.level) + ' &mdash; ' + esc(pos.cur.name) + '</span>' +
+      '<span class="kit-rank-xp">' + Number(s.xp) + ' XP</span>' +
+      '</div></div>';
+    if (pos.next) {
+      var span = Number(pos.next.xp) - Number(pos.cur.xp);
+      var into = Math.max(0, Number(s.xp) - Number(pos.cur.xp));
+      var pct = span > 0 ? Math.min(100, Math.round(100 * into / span)) : 0;
+      head += '<div class="kit-next"><div class="kit-next-track"><div class="kit-next-fill" style="width:' + pct + '%"></div></div>' +
+        '<span class="kit-next-label">' + Math.max(0, Number(pos.next.xp) - Number(s.xp)) + ' XP to Clearance ' +
+        Number(pos.next.level) + ' &mdash; ' + esc(pos.next.name) + '</span></div>';
+    } else {
+      head += '<div class="kit-next"><span class="kit-next-label maxed">Top clearance reached. Legend.</span></div>';
+    }
+
+    // interface themes
+    var themes = (reg.themes || []).map(function (t) {
+      var needXp = kitClearanceXp_(t.clearance);
+      var unlocked = Number(s.xp) >= needXp;
+      var equipped = curTh ? String(t.id) === curTh : String(t.id) === 'midnight';
+      var v = t.vars || {};
+      var pv = '--pv0:' + (v['--space-0'] || '#060D1F') + ';--pv2:' + (v['--space-2'] || '#102040') + ';--pva:' + (v['--gold-hi'] || '#FFD84D');
+      return '<button type="button" class="kit-theme' + (unlocked ? '' : ' is-locked') + (equipped ? ' is-equipped' : '') + '"' +
+        ' data-theme="' + esc(t.id) + '" style="' + pv + '">' +
+        '<span class="kit-swatch"><span class="kit-swatch-node"></span><i></i><i></i><i></i></span>' +
+        '<span class="kit-theme-name">' + esc(t.name) + '</span>' +
+        '<span class="kit-theme-tag">' + esc(t.tag || '') + '</span>' +
+        (equipped ? '<span class="kit-state on">Equipped</span>'
+          : unlocked ? '<span class="kit-state go">Tap to equip</span>'
+          : '<span class="kit-state lock">&#128274; Clearance ' + Number(t.clearance) + ' &middot; ' + needXp + ' XP</span>') +
+        '</button>';
+    }).join('');
+
+    // insignia (incl. explicit None)
+    var noneOn = !curFx;
+    var chips = '<button type="button" class="kit-chip' + (noneOn ? ' is-equipped' : '') + '" data-insignia="">' +
+      '<span class="kit-chip-glyph">&mdash;</span><span class="kit-chip-name">None</span></button>';
+    chips += (reg.insignia || []).map(function (g) {
+      var needXp = kitClearanceXp_(g.clearance);
+      var unlocked = Number(s.xp) >= needXp;
+      var equipped = curFx === String(g.id);
+      return '<button type="button" class="kit-chip' + (unlocked ? '' : ' is-locked') + (equipped ? ' is-equipped' : '') + '"' +
+        ' data-insignia="' + esc(g.id) + '" data-clearance="' + Number(g.clearance) + '" data-need="' + needXp + '">' +
+        '<span class="kit-chip-glyph">' + esc(g.glyph) + '</span>' +
+        '<span class="kit-chip-name">' + esc(g.name) + '</span>' +
+        (unlocked ? '' : '<span class="kit-chip-lock">&#128274;</span>') +
+        '</button>';
+    }).join('');
+
+    body.innerHTML = head +
+      '<h3 class="kit-section">Interface</h3><div class="kit-themes">' + themes + '</div>' +
+      '<h3 class="kit-section">Insignia <small>shows beside your codename</small></h3><div class="kit-chips">' + chips + '</div>' +
+      '<p class="kit-foot">Earn XP by completing missions and nailing your checks &mdash; higher clearance unlocks more kit.</p>';
+
+    body.querySelectorAll('.kit-theme').forEach(function (el) {
+      el.onclick = function () { pickTheme(el, String(el.getAttribute('data-theme'))); };
+    });
+    body.querySelectorAll('.kit-chip').forEach(function (el) {
+      el.onclick = function () { pickInsignia(el, String(el.getAttribute('data-insignia'))); };
+    });
+  }
+
+  function lockedNudge_(el, clearance, needXp) {
+    el.classList.remove('wobble'); void el.offsetWidth; el.classList.add('wobble');
+    var short = Math.max(0, needXp - Number(App.state.xp));
+    App.toast('Locked — Clearance ' + clearance + ' kit. ' + short + ' XP to go, Agent.', 3200);
+  }
+
+  /* Equip = optimistic apply (instant, feels great) + server save; on a server
+     refusal the previous kit is restored. The server re-checks clearance, so a
+     DevTools call can't equip locked kit (cosmetic, but the rule is the rule). */
+  function pickTheme(el, id) {
+    var s = App.state;
+    var th = kitTheme_(id);
+    if (!th) return;
+    if (el.classList.contains('is-locked')) { lockedNudge_(el, Number(th.clearance), kitClearanceXp_(th.clearance)); return; }
+    var prev = (s.me && s.me.th) || '';
+    var next = (id === 'midnight') ? '' : id; // default stored as '' (record stays lean)
+    if (prev === next) return;
+    s.me.th = next;
+    App.applyKit();
+    renderKit();
+    App.call('setKit', { themeId: next }).then(function (r) {
+      if (!r || !r.ok) {
+        s.me.th = prev;
+        App.applyKit();
+        renderKit();
+        App.toast(r && r.error === 'kit-locked' ? 'That kit is above your clearance.' : 'Could not save your kit — try again.');
+      }
+    });
+  }
+
+  function pickInsignia(el, id) {
+    var s = App.state;
+    if (el.classList.contains('is-locked')) {
+      lockedNudge_(el, Number(el.getAttribute('data-clearance')), Number(el.getAttribute('data-need')));
+      return;
+    }
+    var prev = (s.me && s.me.fx) || '';
+    if (prev === id) return;
+    s.me.fx = id;
+    App.applyKit();
+    renderKit();
+    App.call('setKit', { insigniaId: id }).then(function (r) {
+      if (!r || !r.ok) {
+        s.me.fx = prev;
+        App.applyKit();
+        renderKit();
+        App.toast(r && r.error === 'kit-locked' ? 'That insignia is above your clearance.' : 'Could not save your kit — try again.');
+      }
+    });
+  }
 
   function renderHub() {
     var s = App.state, man = s.man;

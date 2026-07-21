@@ -54,10 +54,12 @@
     </div>
   </div>
   <div class="topbar-right">
-    <div class="agent-chip" id="agent-chip" data-tour="progress">
+    <button class="agent-chip" id="agent-chip" data-tour="progress" type="button" title="Open your Agent Kit">
+      <span class="agent-insignia" id="agent-insignia" hidden></span>
       <span class="agent-name" id="agent-name"></span>
       <span class="agent-xp" id="agent-xp">0 XP</span>
-    </div>
+      <span class="kit-hint" aria-hidden="true">&#9662;</span>
+    </button>
     <button id="staff-open" class="topbar-staff" type="button">Staff</button>
   </div>
 </header>
@@ -148,6 +150,17 @@
   <div class="ols-modal-card staff-card">
     <div class="ols-modal-head"><h2>Staff panel</h2><button class="modal-close" data-close="staff-modal" type="button">&times;</button></div>
     <div id="staff-body"></div>
+  </div>
+</div>
+
+<!-- Agent Kit: pupil customisation (dark glass surface, matches the shell) -->
+<div class="ols-modal" id="kit-modal" hidden>
+  <div class="ols-modal-card kit-card">
+    <div class="ols-modal-head kit-head">
+      <h2>Agent Kit</h2>
+      <button class="modal-close" data-close="kit-modal" type="button">&times;</button>
+    </div>
+    <div id="kit-body"></div>
   </div>
 </div>
 
