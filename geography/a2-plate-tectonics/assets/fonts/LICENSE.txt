@@ -1,0 +1,4 @@
+Vendored fonts (Google Fonts, SIL Open Font License 1.1):
+- Anton (anton-400-latin.woff2) — Copyright the Anton Project Authors
+- Caveat variable wght 400-700 (caveat-latin.woff2) — Copyright the Caveat Project Authors
+License: https://openfontlicense.org
