@@ -678,6 +678,49 @@
   }
 
 
+  /* Agent Kit - mirrors apiSetKit (clearance-gated cosmetic equip; no XP). */
+  function doSetKit(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    return fetchContent_('themes.json').catch(function () { return null; }).then(function (reg) {
+      if (!reg) return { ok: false, error: 'no-registry' };
+      function clearanceXp(level) {
+        var cs = reg.clearances || [];
+        for (var i = 0; i < cs.length; i++) if (num_(cs[i].level) === num_(level)) return num_(cs[i].xp);
+        return 0;
+      }
+      var rec = readPupil_(s, cls, PUPIL_EMAIL);
+      if (!rec) return { ok: false, error: 'not-joined' };
+      var xp = num_(rec.xp);
+      var themeId = p.themeId != null ? str_(p.themeId) : null;
+      var insigniaId = p.insigniaId != null ? str_(p.insigniaId) : null;
+      if (themeId != null) {
+        if (themeId === '') { rec.th = ''; }
+        else {
+          var th = null;
+          (reg.themes || []).forEach(function (t) { if (str_(t.id) === themeId) th = t; });
+          if (!th) return { ok: false, error: 'unknown-theme' };
+          if (xp < clearanceXp(th.clearance)) return { ok: false, error: 'kit-locked' };
+          rec.th = themeId;
+        }
+      }
+      if (insigniaId != null) {
+        if (insigniaId === '') { rec.fx = ''; }
+        else {
+          var ins = null;
+          (reg.insignia || []).forEach(function (g) { if (str_(g.id) === insigniaId) ins = g; });
+          if (!ins) return { ok: false, error: 'unknown-insignia' };
+          if (xp < clearanceXp(ins.clearance)) return { ok: false, error: 'kit-locked' };
+          rec.fx = insigniaId;
+        }
+      }
+      writePupil_(s, cls, PUPIL_EMAIL, rec);
+      save_(s);
+      return { ok: true, th: str_(rec.th || ''), fx: str_(rec.fx || '') };
+    });
+  }
+
   /* Public class board (decision #8) - mirrors apiBoard */
   function doBoard(p) {
     var s = load_();
@@ -964,6 +1007,7 @@
       case 'submitExit': return doSubmitExit(p);
       case 'submitBaseline': return doSubmitBaseline(p);
       case 'catchup': return doCatchup(p);
+      case 'setKit': return doSetKit(p);
       case 'admin': return doAdmin(p);
       default: return Promise.resolve({ ok: false, error: 'unknown-action' });
     }
