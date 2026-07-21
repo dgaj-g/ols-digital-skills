@@ -91,7 +91,9 @@ activity submitted OR ≥3 active min) · `absenceDismiss` (override bit — nev
 with the manifest's alternative, returns a printable cover sheet payload) · `teamSet/Shuffle/Reveal` ·
 `setConfig(class, cfg)` (leaderboard modes: off → hidden-team → public-with-options; risky configs are
 a deliberate choice, never the default — decision #8) · `lessonKeyInfo(lesson)` (decrypted
-misconception labels for the dashboard).
+misconception labels for the dashboard) · `brief(class, lesson)` (the lesson's teacher run sheet —
+authored as content-src `teacherBrief`, packed INSIDE the encrypted keys blob as `_brief` so the
+public JSON never carries it; rendered from the lock grid's Brief chip, printable).
 
 ## 6. Client shell
 

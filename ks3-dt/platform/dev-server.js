@@ -877,6 +877,30 @@
       });
     }
 
+    /* Teacher brief - mirrors apiAdmin sub 'brief' (reads _brief from dev keys;
+       on github.io dev-keys 404s, so the panel explains briefs need the real app). */
+    if (sub === 'brief') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      var briefLessonId = str_(p.lessonId);
+      var briefYear = classYear_(s, cls);
+      return yearManifest_(briefYear).then(function (briefMan) {
+        var briefEntry = lessonEntry_(briefMan, briefLessonId);
+        if (!briefEntry || !briefEntry.file) return { ok: false, error: 'unknown-lesson' };
+        return devKeysAll_().then(function (allKeys) {
+          if (!allKeys) return { ok: false, error: 'preview-no-keys' };
+          var briefKeys = allKeys[fileIdOf_(briefEntry)];
+          var brief = briefKeys ? briefKeys._brief : null;
+          if (!brief) return { ok: false, error: 'no-brief' };
+          return {
+            ok: true, num: str_(briefEntry.num), title: str_(briefEntry.title),
+            why: str_(brief.why || ''),
+            minuteByMinute: (brief.minuteByMinute || []).map(str_),
+            pitfalls: (brief.pitfalls || []).map(str_)
+          };
+        });
+      });
+    }
+
     if (sub === 'keyinfo') {
       if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
       var lessonId2 = str_(p.lessonId);

@@ -948,6 +948,27 @@ function apiAdmin(req) {
       reveal: !!team2.reveal };
   }
 
+  /* Teacher brief for a lesson (staff-only by passcode). Authored as
+     content-src teacherBrief, packed INSIDE the encrypted keys blob as
+     "_brief" so the public JSON never carries the run sheet. */
+  if (sub === 'brief') {
+    if (!cls) return { ok: false, error: 'unknown-class' };
+    var briefYear = classYear_(cls);
+    var briefLessonId = str_(req.lessonId);
+    var briefEntry = lessonEntry_(briefYear, briefLessonId);
+    if (!briefEntry || !briefEntry.file) return { ok: false, error: 'unknown-lesson' };
+    var briefKeys;
+    try { briefKeys = lessonKeys_(briefYear, briefLessonId); } catch (e) { return { ok: false, error: 'no-brief' }; }
+    var brief = briefKeys._brief;
+    if (!brief) return { ok: false, error: 'no-brief' };
+    return {
+      ok: true, num: str_(briefEntry.num), title: str_(briefEntry.title),
+      why: str_(brief.why || ''),
+      minuteByMinute: (brief.minuteByMinute || []).map(str_),
+      pitfalls: (brief.pitfalls || []).map(str_)
+    };
+  }
+
   /* Decrypted key info for the misconception dashboard (staff-only by passcode). */
   if (sub === 'keyinfo') {
     if (!cls) return { ok: false, error: 'unknown-class' };
