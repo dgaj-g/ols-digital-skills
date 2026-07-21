@@ -1021,3 +1021,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   .kit-themes { grid-template-columns: 1fr 1fr; }
   .kit-theme-tag { display: none; }
 }
+
+/* Staff panel is a TEACHER surface: pin it to brand gold so a pupil's equipped
+   Agent Kit theme never restyles the admin tools (projector consistency). */
+.staff-modal {
+  --gold: #E4B824; --gold-hi: #FFD84D; --gold-deep: #A8830F;
+  --gold-rgb: 228, 184, 36; --gold-hi-rgb: 255, 216, 77; --accent-ink: #231A02;
+}

@@ -442,7 +442,7 @@
     var ov = document.createElement('div');
     ov.className = 'badge-pop';
     ov.innerHTML = '<div class="badge-pop-card">' +
-      '<div class="finish-glyph">&#127894;</div>' +
+      '<div class="finish-glyph">&#127894;&#65039;</div>' +
       '<h2>Clearance upgraded</h2>' +
       '<p class="badge-pop-name">Clearance ' + Number(rank.level) + ' &mdash; ' + esc(rank.name) + '</p>' +
       '<p class="clearance-sub">HQ has released new kit. It’s waiting in your Agent Kit.</p>' +

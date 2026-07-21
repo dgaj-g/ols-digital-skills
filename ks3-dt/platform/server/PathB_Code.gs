@@ -9,7 +9,8 @@
  *    lock:<class>       {"<lessonNum>": {u: firstUnlockMin, on: 0|1}}   u = delivered date
  *    cfg:<class>        {lb:{mode,basis,names,topN}, absDays, cover:{on,lesson,ts}}
  *    team:<class>       {groups:[{id,name}], reveal: bool}
- *    p:<class>:<email>  lean pupil record {n, cn, j, xp, g, L:{"<num>": Larr}}
+ *    p:<class>:<email>  lean pupil record {n, cn, j, xp, g, th, fx, L:{"<num>": Larr}}
+ *      th/fx = equipped Agent Kit theme/insignia ids (cosmetic, clearance-gated)
  *      Larr positions: 0 status(0/1/2)  1 xp  2 detail  3 exitChosen  4 selfEval
  *                      5 lastTmin  6 activeMin  7 flags(1=absDismiss 2=catchup)
  *                      8 comment  9 recapRight  10 recapTotal
@@ -739,6 +740,56 @@ function apiCatchup(req) {
     a[5] = tmin_();
     if (!tryWritePupil_(cls, email, rec)) return STORE_FULL_;
     return { ok: true };
+  });
+}
+
+/* ---------- Agent Kit (cosmetic themes + insignia, clearance-gated) ----------
+   Cosmetic ONLY: never grants or touches XP, so it adds no farming surface.
+   The registry is public content/themes.json (adding a theme = a git push, no
+   redeploy); the server re-reads it here so a DevTools call cannot equip kit
+   above the pupil's clearance. Clearance = total XP vs the registry ladder. */
+function kitRegistry_() { return fetchContent_('themes.json'); }
+function kitClearanceXp_(reg, level) {
+  var cs = (reg && reg.clearances) || [];
+  for (var i = 0; i < cs.length; i++) if (num_(cs[i].level) === num_(level)) return num_(cs[i].xp);
+  return 0;
+}
+function apiSetKit(req) {
+  req = req || {};
+  var email = userEmail_();
+  if (!email) return { ok: false, error: 'not-signed-in' };
+  var cls = realClass_(req.classCode);
+  if (!cls) return { ok: false, error: 'unknown-class' };
+  var reg;
+  try { reg = kitRegistry_(); } catch (e) { return { ok: false, error: 'no-registry' }; }
+  var themeId = req.themeId != null ? str_(req.themeId) : null;
+  var insigniaId = req.insigniaId != null ? str_(req.insigniaId) : null;
+  return withLock_(function () {
+    var rec = readPupil_(cls, email);
+    if (!rec) return { ok: false, error: 'not-joined' };
+    var xp = num_(rec.xp);
+    if (themeId != null) {
+      if (themeId === '') { rec.th = ''; }
+      else {
+        var th = null;
+        (reg.themes || []).forEach(function (t) { if (str_(t.id) === themeId) th = t; });
+        if (!th) return { ok: false, error: 'unknown-theme' };
+        if (xp < kitClearanceXp_(reg, th.clearance)) return { ok: false, error: 'kit-locked' };
+        rec.th = themeId;
+      }
+    }
+    if (insigniaId != null) {
+      if (insigniaId === '') { rec.fx = ''; }
+      else {
+        var ins = null;
+        (reg.insignia || []).forEach(function (g) { if (str_(g.id) === insigniaId) ins = g; });
+        if (!ins) return { ok: false, error: 'unknown-insignia' };
+        if (xp < kitClearanceXp_(reg, ins.clearance)) return { ok: false, error: 'kit-locked' };
+        rec.fx = insigniaId;
+      }
+    }
+    if (!tryWritePupil_(cls, email, rec)) return STORE_FULL_;
+    return { ok: true, th: str_(rec.th || ''), fx: str_(rec.fx || '') };
   });
 }
 
