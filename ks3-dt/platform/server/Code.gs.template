@@ -884,6 +884,16 @@ var PAIR_MSG_MAX = 240;        // chars per chat message
 var PAIR_EV_KEEP = 150;        // channel events kept in cache
 var PAIR_TX_MAX = 500;         // chars of compact stored transcript per pair
 var CHAT_ARCHIVE_AFTER_DAYS = 7;
+/* L1 pairs form BEFORE the codename badge exists, so members without a
+   codename get a mission call sign - the identity-reveal fiction holds from
+   the very first lesson. */
+var PAIR_CALLSIGNS = ['Kestrel', 'Osprey', 'Merlin', 'Harrier', 'Nightjar', 'Skylark'];
+function callsignFill_(formed) {
+  var seed = Math.floor(Math.random() * PAIR_CALLSIGNS.length);
+  return formed.map(function (w, i) {
+    return str_(w.cn) || PAIR_CALLSIGNS[(seed + i) % PAIR_CALLSIGNS.length];
+  });
+}
 
 function tsec_() { return Math.floor(Date.now() / 1000); }
 function cache_() { return CacheService.getScriptCache(); }
@@ -986,7 +996,7 @@ function pairMatch_(cls, lessonId, numStr, stageIdx, reg, q) {
     var pid = 'p' + tmin_() + '-' + Math.floor(Math.random() * 10000);
     reg.P[pid] = {
       m: formed.map(function (w) { return str_(w.e); }),
-      cn: formed.map(function (w) { return str_(w.cn); }),
+      cn: callsignFill_(formed),
       t: tmin_(), trio: formed.length === 3 ? 1 : 0, done: 0, rv: 0
     };
     cPut_(chCacheKey_(pid), { seq: 0, ev: [], ls: [] }, 21600);
@@ -1528,7 +1538,7 @@ function apiAdmin(req) {
         var pid2 = 'p' + tmin_() + '-' + Math.floor(Math.random() * 10000);
         pfReg.P[pid2] = {
           m: formed.map(function (w) { return str_(w.e); }),
-          cn: formed.map(function (w) { return str_(w.cn); }),
+          cn: callsignFill_(formed),
           t: tmin_(), trio: take === 3 ? 1 : 0, done: 0, rv: 0
         };
         cPut_(chCacheKey_(pid2), { seq: 0, ev: [], ls: [] }, 21600);
