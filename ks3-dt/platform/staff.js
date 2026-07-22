@@ -29,6 +29,11 @@
   var coverActiveLesson = null;   // Cover tab: lesson we personally started cover for this session
   var wired = false;
 
+  /* pairing lens state (section 12) */
+  var pairLensLesson = '', pairLensTimer = null, pairAlerted = {}, pairedLessonCache = {}, pairResetArm = 0;
+  var audioCtx = null, chimeMuted = false;
+  try { chimeMuted = localStorage.getItem('ks3dt-staff-mute') === '1'; } catch (e) {}
+
   var TABS = [
     { id: 'classes', label: 'Classes' },
     { id: 'lessons', label: 'Lessons' },
@@ -607,6 +612,7 @@
         '<button type="button" class="ghost-btn" data-action="live-refresh">Refresh</button>' +
         '<button type="button" class="ghost-btn" data-action="live-csv">Copy CSV</button>' +
       '</div>' +
+      '<div id="pair-lens"></div>' +
       '<div class="dash-scroll"><table class="dash-table">' + head + (body || '<tr><td colspan="99">No pupils have joined this class yet.</td></tr>') + '</table></div>' +
       '<h3 style="margin-top:20px">Misconception patterns</h3>' +
       '<select id="live-mis-select" class="staff-select">' + misSelect + '</select>' +
@@ -614,6 +620,193 @@
       '<p class="staff-status" id="live-status"></p>';
     setPane(html);
     if (misLessonNum && liveByNum[misLessonNum]) loadMisconceptions(liveByNum[misLessonNum]);
+    initPairLens(deliveredNums);
+  }
+
+  /* ============================================================
+     Pairing lens (ARCHITECTURE section 12): live queue / pairs / laggards,
+     channel transcripts, release + force controls, chime on stuck waiters.
+     Auto-polls every 5s while visible; the interval self-clears the moment
+     the lens leaves the DOM (tab switch / modal close / refresh).
+     ============================================================ */
+  function staffChime() {
+    if (chimeMuted) return;
+    try {
+      if (!audioCtx) audioCtx = new (global.AudioContext || global.webkitAudioContext)();
+      var t0 = audioCtx.currentTime;
+      [[880, 0, 0.14], [1174.7, 0.16, 0.2]].forEach(function (n) {
+        var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = 'sine'; o.frequency.value = n[0];
+        g.gain.setValueAtTime(0.0001, t0 + n[1]);
+        g.gain.exponentialRampToValueAtTime(0.18, t0 + n[1] + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + n[1] + n[2]);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(t0 + n[1]); o.stop(t0 + n[1] + n[2] + 0.05);
+      });
+    } catch (e) {}
+  }
+
+  function injectPairStyles() {
+    if (document.getElementById('pair-lens-style')) return;
+    var st = document.createElement('style');
+    st.id = 'pair-lens-style';
+    st.textContent =
+      '.pair-lens-box{background:#F8FAFD;border:1px solid #E3E8F2;border-radius:12px;padding:14px 16px;margin:0 0 16px}' +
+      '.pl-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}' +
+      '.pl-head h3{margin:0}' +
+      '.pl-mute{margin-left:auto;font-size:0.8rem;color:var(--muted);display:flex;gap:6px;align-items:center}' +
+      '.pl-chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}' +
+      '.pl-chip{background:#fff;border:1px solid #E3E8F2;border-radius:999px;padding:5px 12px;font-size:0.8rem;font-weight:600}' +
+      '.pl-chip.alert{background:var(--bad-soft);border-color:var(--bad);color:var(--bad);animation:plPulse 1.1s ease-in-out infinite}' +
+      '.pl-chip.lag{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}' +
+      '.pl-chip .ghost-btn{padding:1px 8px;font-size:0.72rem;margin-left:6px}' +
+      '@keyframes plPulse{0%,100%{opacity:1}50%{opacity:0.55}}' +
+      '.pl-pair{background:#fff;border:1px solid #E3E8F2;border-radius:10px;padding:9px 12px;margin:6px 0;font-size:0.85rem}' +
+      '.pl-pair b{color:var(--ols-blue)}' +
+      '.pl-last{color:var(--muted);font-style:italic}' +
+      '.pl-tx{margin-top:8px;border-top:1px dashed #E3E8F2;padding-top:8px;max-height:220px;overflow-y:auto}' +
+      '.pl-tx-line{margin:3px 0;font-size:0.82rem}' +
+      '.pl-tx-line b{font-weight:700;color:var(--ols-blue)}' +
+      '.pl-note{color:var(--muted);font-size:0.83rem;margin:6px 0}';
+    document.head.appendChild(st);
+  }
+
+  function pairedInfoFor(le) {
+    var id = String(le.id);
+    if (!pairedLessonCache[id]) {
+      pairedLessonCache[id] = App.fetchContent(le.file).then(function (lesson) {
+        return (lesson.chunks || []).some(function (ch) { return ch.config && ch.config.paired; }) || null;
+      }).catch(function () { return null; });
+    }
+    return pairedLessonCache[id];
+  }
+
+  function initPairLens(deliveredNums) {
+    var slot = q('#pair-lens');
+    if (!slot) return;
+    injectPairStyles();
+    var candidates = deliveredNums.map(function (n) { return liveByNum[n]; }).filter(Boolean);
+    Promise.all(candidates.map(pairedInfoFor)).then(function (infos) {
+      if (!q('#pair-lens')) return;
+      var paired = [];
+      infos.forEach(function (inf, i) { if (inf) paired.push(candidates[i]); });
+      if (!paired.length) return; // no delivered lesson has a paired stage
+      var ids = paired.map(function (le) { return String(le.id); });
+      if (ids.indexOf(pairLensLesson) === -1) pairLensLesson = ids[ids.length - 1];
+      var sel = paired.map(function (le) {
+        return '<option value="' + App.esc(String(le.id)) + '"' + (String(le.id) === pairLensLesson ? ' selected' : '') + '>Lesson ' + App.esc(String(le.num)) + ' -- ' + App.esc(String(le.title || '')) + '</option>';
+      }).join('');
+      slot.innerHTML =
+        '<div class="pair-lens-box">' +
+        '<div class="pl-head"><h3>Pairing &mdash; live</h3>' +
+        '<select id="pair-lesson-sel" class="staff-select" style="margin:0;max-width:280px">' + sel + '</select>' +
+        '<label class="pl-mute"><input type="checkbox" id="pair-mute"' + (chimeMuted ? ' checked' : '') + '> mute chime</label></div>' +
+        '<div id="pair-lens-body">' + busyHtml('Listening to the room') + '</div></div>';
+      pairAlerted = {};
+      pairLensTick();
+      if (pairLensTimer) clearInterval(pairLensTimer);
+      pairLensTimer = setInterval(function () {
+        if (!document.getElementById('pair-lens-body')) { clearInterval(pairLensTimer); pairLensTimer = null; return; }
+        pairLensTick();
+      }, 5000);
+    });
+  }
+
+  function pairLensTick() {
+    adminCall('pairs', { className: cls, lessonId: pairLensLesson }).then(function (r) {
+      var bodyEl = q('#pair-lens-body');
+      if (!bodyEl || !r || !r.ok) return;
+      var openTx = {};
+      bodyEl.querySelectorAll('.pl-tx').forEach(function (n) { openTx[n.getAttribute('data-pid')] = n.innerHTML; });
+      if (!Number(r.on)) {
+        bodyEl.innerHTML = '<p class="pl-note">Auto-pairing is switched OFF for this class (Options tab) &mdash; the activity runs as shoulder-partners at one machine.</p>';
+        return;
+      }
+      var chime = false;
+      var queueHtml = (r.queue || []).map(function (w) {
+        var alert = Number(w.wait) > 90;
+        if (alert && !pairAlerted['w:' + w.email]) { pairAlerted['w:' + w.email] = 1; chime = true; }
+        return '<span class="pl-chip' + (alert ? ' alert' : '') + '">' + App.esc(w.name || w.cn) +
+          ' &middot; waiting ' + Number(w.wait) + 's' +
+          '<button type="button" class="ghost-btn" data-action="pair-release" data-email="' + App.esc(w.email) + '">Solo run</button></span>';
+      }).join('');
+      var lagHtml = '';
+      if ((r.queue || []).length && (r.laggards || []).length) {
+        lagHtml = '<p class="pl-note" style="margin-bottom:4px"><b>The room is waiting on:</b></p><div class="pl-chips">' +
+          r.laggards.map(function (l) {
+            if (!pairAlerted['l:' + l.email]) { pairAlerted['l:' + l.email] = 1; chime = true; }
+            return '<span class="pl-chip lag">' + App.esc(l.name) + ' &middot; part ' + (Number(l.ci) + 1) + ' of ' + Number(l.cc) + '</span>';
+          }).join('') + '</div>';
+      }
+      var pairsHtml = (r.pairs || []).map(function (pr) {
+        var tx = openTx[pr.pid] ? '<div class="pl-tx" data-pid="' + App.esc(pr.pid) + '">' + openTx[pr.pid] + '</div>' : '';
+        return '<div class="pl-pair"><b>' + pr.cn.map(function (c) { return 'Agent ' + App.esc(c); }).join(' + ') + '</b>' +
+          (Number(pr.trio) ? ' <span class="pill none">trio</span>' : '') +
+          ' <span class="pl-note" style="display:inline">(' + pr.names.map(App.esc).join(' &amp; ') + ')</span>' +
+          ' &middot; ' + Number(pr.msgs) + ' msgs' +
+          (Number(pr.done) ? ' &middot; <span class="pill done">done</span>' : '') +
+          ' <button type="button" class="ghost-btn" style="padding:1px 10px;font-size:0.74rem" data-action="pair-view" data-pid="' + App.esc(pr.pid) + '">Channel</button>' +
+          (pr.last ? '<div class="pl-last">' + App.esc(pr.last) + '</div>' : '') +
+          tx + '</div>';
+      }).join('');
+      var soloHtml = (r.solo || []).length
+        ? '<p class="pl-note">Solo runs: ' + r.solo.map(function (sd) { return App.esc(sd.name); }).join(', ') + '</p>' : '';
+      bodyEl.innerHTML =
+        '<div class="pl-chips">' +
+        '<span class="pl-chip">' + Number(r.present) + ' live on this lesson</span>' +
+        '<span class="pl-chip">' + (r.queue || []).length + ' waiting</span>' +
+        '<span class="pl-chip">' + (r.pairs || []).length + ' pairs</span>' +
+        ((r.queue || []).length ? '<button type="button" class="ghost-btn" data-action="pair-force">Match everyone waiting now</button>' : '') +
+        '<button type="button" class="ghost-btn danger" data-action="pair-reset">' + (pairResetArm ? 'Sure? This dissolves every pair' : 'Reset pairing') + '</button>' +
+        '</div>' +
+        (queueHtml ? '<div class="pl-chips">' + queueHtml + '</div>' : '') +
+        lagHtml + pairsHtml + soloHtml +
+        (!(r.queue || []).length && !(r.pairs || []).length ? '<p class="pl-note">No one has reached the pairing stage yet &mdash; this panel wakes up the moment the first agent arrives.</p>' : '');
+      if (chime) staffChime();
+    });
+  }
+
+  function pairRelease(btn) {
+    btn.disabled = true;
+    adminCall('pairRelease', { className: cls, lessonId: pairLensLesson, email: btn.getAttribute('data-email') })
+      .then(function () { pairLensTick(); });
+  }
+  function pairForce(btn) {
+    btn.disabled = true;
+    adminCall('pairForce', { className: cls, lessonId: pairLensLesson }).then(function () { pairLensTick(); });
+  }
+  function pairReset(btn) {
+    if (!pairResetArm) {
+      pairResetArm = 1;
+      btn.textContent = 'Sure? This dissolves every pair';
+      setTimeout(function () { pairResetArm = 0; var b = q('[data-action="pair-reset"]'); if (b) b.textContent = 'Reset pairing'; }, 4000);
+      return;
+    }
+    pairResetArm = 0;
+    adminCall('pairReset', { className: cls, lessonId: pairLensLesson }).then(function () { pairLensTick(); });
+  }
+  function pairView(btn) {
+    var pid = btn.getAttribute('data-pid');
+    var pairEl = btn.closest('.pl-pair');
+    if (!pairEl) return;
+    var existing = pairEl.querySelector('.pl-tx');
+    if (existing) { existing.remove(); return; }
+    adminCall('pairTranscript', { className: cls, lessonId: pairLensLesson, pid: pid }).then(function (r) {
+      if (!r || !r.ok) return;
+      var el2 = document.createElement('div');
+      el2.className = 'pl-tx';
+      el2.setAttribute('data-pid', pid);
+      if (r.lines && r.lines.length) {
+        el2.innerHTML = r.lines.map(function (ln) {
+          return '<div class="pl-tx-line"><b>' + App.esc(ln.who) + ':</b> ' + App.esc(ln.text) + '</div>';
+        }).join('');
+      } else if (r.tx) {
+        el2.innerHTML = '<div class="pl-tx-line">' + App.esc(r.tx) + '</div>';
+      } else el2.innerHTML = '<div class="pl-tx-line">No messages yet.</div>';
+      var cur = pairEl.querySelector('.pl-tx');
+      if (cur) cur.remove();
+      pairEl.appendChild(el2);
+    });
   }
 
   function loadMisconceptions(le) {
@@ -936,6 +1129,9 @@
         optRadio('lb-names', 'real', lb.names, 'Show real first names') +
         '<label style="display:block;margin-top:8px">Show top <input type="number" id="opt-topn" class="text-input" style="max-width:90px;display:inline-block" min="0" max="50" value="' + Number(lb.topN || 0) + '"> (0 = everyone)</label>' +
       '</div>' +
+      '<h3 style="margin-top:20px">Auto-pairing</h3>' +
+      optRadio('pair-on', '1', String((cfg.pairing || { on: 1 }).on || 0), '<b>On (default):</b> paired activities match pupils across machines with the monitored chat channel.') +
+      optRadio('pair-on', '0', String((cfg.pairing || { on: 1 }).on || 0), '<b>Off:</b> paired activities run as shoulder-partners at one machine (no chat).') +
       '<h3 style="margin-top:20px">Absence window</h3>' +
       '<label>Flag after <input type="number" id="opt-absdays" class="text-input" style="max-width:90px;display:inline-block" min="1" max="20" value="' + Number(cfg.absDays || 5) + '"> school days with no meaningful work</label>' +
       '<div class="confirm-actions" style="justify-content:flex-start;margin-top:16px">' +
@@ -957,7 +1153,8 @@
         names: namesEl ? namesEl.value : 'codename',
         topN: parseInt(topNEl ? topNEl.value : '0', 10) || 0
       },
-      absDays: parseInt(absDaysEl.value, 10) || 5
+      absDays: parseInt(absDaysEl.value, 10) || 5,
+      pairing: { on: (function () { var el3 = q('input[name="pair-on"]:checked'); return el3 ? Number(el3.value) : 1; })() }
     };
     btn.disabled = true;
     var status = q('#options-status');
@@ -1179,6 +1376,10 @@
       case 'cover-print': coverPrint(); break;
       case 'remove-pupil': removePupil(btn); break;
       case 'cover-end': coverEnd(btn); break;
+      case 'pair-release': pairRelease(btn); break;
+      case 'pair-force': pairForce(btn); break;
+      case 'pair-reset': pairReset(btn); break;
+      case 'pair-view': pairView(btn); break;
     }
   }
 
@@ -1189,6 +1390,12 @@
     if (t.name === 'lb-mode') { var pub = q('#opt-public'); if (pub) pub.hidden = (t.value !== 'public'); return; }
     if (t.id === 'team-reveal') { teamReveal(t); return; }
     if (t.id === 'cover-pick') { coverPick = t.value; renderCoverPane(manifestCache[year]); return; }
+    if (t.id === 'pair-lesson-sel') { pairLensLesson = t.value; pairAlerted = {}; pairLensTick(); return; }
+    if (t.id === 'pair-mute') {
+      chimeMuted = t.checked;
+      try { localStorage.setItem('ks3dt-staff-mute', chimeMuted ? '1' : '0'); } catch (e2) {}
+      return;
+    }
   }
 
   function onKeydown(e) {
