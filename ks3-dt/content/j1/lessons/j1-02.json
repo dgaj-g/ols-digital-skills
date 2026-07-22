@@ -101,7 +101,14 @@
       "Swap roles and run both signals again.",
       "Now say it out loud together: the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT."
      ],
-     "confirm": "We both played Sensor and Actuator — and said the magic sentence"
+     "confirm": "We both played Sensor and Actuator — and said the magic sentence",
+     "soloLines": [
+      "No screens for this rung — and no partner needed on a catch-up: YOU are the whole machine.",
+      "With one hand, mime pressing an invisible button. The instant you do, throw your other arm up — that's your LED heart lighting.",
+      "New input: mime shaking a device with one hand — wave the other — that's your scrolling message.",
+      "Now say it out loud (quietly counts): the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT."
+     ],
+     "soloConfirm": "I ran both signals — and said the magic sentence"
     },
     "rungs": [
      {
@@ -133,7 +140,8 @@
      "title": "Stretch — Compound Signal",
      "target": "Press A + B TOGETHER → heart, a half-second pause, then a happy face. One input, a whole light sequence.",
      "img": "assets/img/l2/stretch.png"
-    }
+    },
+    "introSolo": "Four rungs. Each is a target behaviour YOU make real on a micro:bit (or the on-screen simulator) — catch-up solo mission, so you're driver AND navigator today. Nobody marks this: the device itself is the judge."
    }
   },
   {

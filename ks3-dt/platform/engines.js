@@ -1185,9 +1185,12 @@
           : '';
       }
 
+      // Catch-up runs are SOLO: swap the pair framing out (Session B rule -
+      // an absent pupil is never told to confer with a partner who isn't there)
+      var solo = !!ctx.catchup;
       introCard(host, {
         kicker: chunk.title, title: cfg.title || 'The Challenge Ladder',
-        text: cfg.intro || '',
+        text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
         extra: pointsBar() + openerRow()
       }, unpluggedDone ? 'Back to the ladder' : 'Start climbing', function () {
         if (!unpluggedDone && cfg.unplugged) unplugged(); else showRung();
@@ -1195,11 +1198,13 @@
 
       function unplugged() {
         var up = cfg.unplugged;
-        var lines = (up.lines || []).map(function (l) { return '<li>' + esc(l) + '</li>'; }).join('');
+        var upLines = (solo && up.soloLines) ? up.soloLines : (up.lines || []);
+        var upConfirm = (solo && up.soloConfirm) ? up.soloConfirm : (up.confirm || 'We both took a turn');
+        var lines = upLines.map(function (l) { return '<li>' + esc(l) + '</li>'; }).join('');
         var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(up.title || 'Rung 1') + '</span>' +
           '<h2>&#128268; No screens yet &mdash; you two ARE the circuit</h2>' +
           '<ol class="ladder-script">' + lines + '</ol>' +
-          '<button class="confirm-step" type="button"><span class="confirm-box"></span><span>' + esc(up.confirm || 'We both took a turn') + '</span></button></div>');
+          '<button class="confirm-step" type="button"><span class="confirm-box"></span><span>' + esc(upConfirm) + '</span></button></div>');
         host.appendChild(c);
         c.querySelector('.confirm-step').onclick = function () {
           this.classList.add('ticked');
@@ -1311,7 +1316,7 @@
       var cfg = chunk.config;
       var it = cfg.item;
       var placed = []; // source indices in the pupil's chosen order
-      introCard(host, { kicker: 'Exit check &middot; part 2', title: cfg.title || 'Build the program', text: cfg.intro || '' }, 'Ready', build);
+      introCard(host, { kicker: 'Exit check — part 2', title: cfg.title || 'Build the program', text: cfg.intro || '' }, 'Ready', build);
 
       function build() {
         var c = el('<div class="card parsons-card">' +
