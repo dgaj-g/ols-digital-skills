@@ -79,7 +79,10 @@ options shuffled server-side) · `recapAnswer(item, choice)` → `{correct, corr
 · `saveEvent(class, lesson, evt)` (badge/score/draft/activeMin — debounced, outbox-buffered)
 · `submitExit(class, lesson, payload)` (client waits 0–5 s jitter first — red team #3)
 · `submitBaseline(class, answers)` · `markCatchup(class, lesson)` ·
-`setKit(class, themeId?/insigniaId?)` (Agent Kit equip — server re-validates clearance vs XP, §10).
+`setKit(class, themeId?/insigniaId?)` (Agent Kit equip — server re-validates clearance vs XP, §10) ·
+`ping(class, lessonNum, ci, cc)` (presence beacon, §12) · `pairJoin(class, lessonId, stageIdx)` ·
+`pairSend(class, lessonId, pid, kind, text)` · `pairChannel(class, lessonId, pid, since)` ·
+`pairComplete(class, lessonId, pid)` (§12 auto-pairing + monitored chat).
 
 Staff (every call carries the passcode; validated server-side, trim/lowercase): `staffCheck` ·
 `classList/Create/Delete` (owner-only delete, two-tap client confirm) · `setLock(class, lesson, on)`
@@ -93,7 +96,9 @@ with the manifest's alternative, returns a printable cover sheet payload) · `te
 a deliberate choice, never the default — decision #8) · `lessonKeyInfo(lesson)` (decrypted
 misconception labels for the dashboard) · `brief(class, lesson)` (the lesson's teacher run sheet —
 authored as content-src `teacherBrief`, packed INSIDE the encrypted keys blob as `_brief` so the
-public JSON never carries it; rendered from the lock grid's Brief chip, printable).
+public JSON never carries it; rendered from the lock grid's Brief chip, printable) ·
+`pairs(class, lessonId)` / `pairTranscript` / `pairRelease` / `pairForce` / `pairReset`
+(§12 Pairing lens: live queue + pairs + laggards, channel reading, teacher overrides).
 
 ## 6. Client shell
 

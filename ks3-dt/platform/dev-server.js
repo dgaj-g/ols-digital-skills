@@ -1437,7 +1437,7 @@
         appendEvD_(ch, 1, 'drop', plan.f + '|' + plan.d + '|' + (plan.ok ? 1 : 0) + '|' + att);
         if (!plan.ok) {
           ch.bot.wrongUsed = 1;
-          appendEvD_(ch, 1, 'msg', 'Ouch - the Vault said NO. Okay, some things should not be saved at all... your go!');
+          appendEvD_(ch, 1, 'msg', 'Ouch - the Vault said NO. Wrong shelf! Okay - read the label again... your go, Agent.');
         }
         return true;
       }
