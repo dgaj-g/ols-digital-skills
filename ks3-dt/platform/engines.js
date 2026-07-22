@@ -27,6 +27,205 @@
     return h.toString(16);
   }
 
+  /* ================= PairKit (ARCHITECTURE section 12) ======================
+     Auto-pairing + the monitored "Comms Channel". Any engine can gate its
+     activity on PairKit.ensure(): the callback gets 'social' (auto-pairing
+     switched off for the class - one machine, the original prompts), 'solo'
+     (catch-up / review / teacher release / last agent standing) or 'paired'
+     (live pair or trio + a ~2s polled channel). The waiting room, chat dock
+     and identity-reveal card all live here so every future paired engine
+     reuses them wholesale. */
+  var PairKit = global.PairKit = {
+    st: null, _pollT: null, _chT: null, _handler: null, _onPoll: null, _dock: null, _seen: null,
+
+    stop: function () {
+      if (PairKit._pollT) { clearTimeout(PairKit._pollT); PairKit._pollT = null; }
+      if (PairKit._chT) { clearTimeout(PairKit._chT); PairKit._chT = null; }
+      PairKit._handler = null; PairKit._onPoll = null; PairKit._dock = null;
+    },
+
+    ensure: function (ctx, host, cb) {
+      PairKit.stop();
+      PairKit.st = null; PairKit._seen = {};
+      if (ctx.review || ctx.catchup) { cb('solo'); return; }
+      if (!Number(App.state.pairing)) { cb('social'); return; }
+      var stageIdx = Number(App.state.chunkIdx);
+      var began = Date.now();
+      var box = null;
+      function waitUi(r) {
+        if (!box) {
+          box = el('<div class="card pair-wait">' +
+            '<div class="pw-radar"><span></span><span></span><span></span><i></i></div>' +
+            '<h2>Opening a channel&hellip;</h2>' +
+            '<p class="pw-status">HQ is matching you with a partner agent.</p>' +
+            '<p class="pw-hint" hidden></p></div>');
+          host.appendChild(box);
+        }
+        var stat = box.querySelector('.pw-status');
+        if (Number(r.trioHold)) stat.textContent = 'The last three agents on a mission finish it together — holding this frequency for one more…';
+        else if (Number(r.waiting) > 1) stat.textContent = 'Signal found — locking frequencies…';
+        else stat.textContent = 'HQ is matching you with a partner agent…';
+        var hint = box.querySelector('.pw-hint');
+        if (Date.now() - began > 180000) {
+          hint.hidden = false;
+          hint.textContent = 'Waiting a while? Wave your teacher over — they can clear you for a solo run.';
+        }
+      }
+      function poll() {
+        ctx.call('pairJoin', { lessonId: ctx.lesson.id, stageIdx: stageIdx }).then(function (r) {
+          if (!r || !r.ok) {
+            // hard refusal degrades to the one-machine social mode; a wifi blip keeps listening
+            if (r && r.error && r.error !== 'transport') { if (box) box.remove(); cb('social'); return; }
+            PairKit._pollT = setTimeout(poll, 2500); return;
+          }
+          if (r.state === 'off') { if (box) box.remove(); cb('social'); return; }
+          if (r.state === 'solo') { if (box) box.remove(); cb('solo'); return; }
+          if (r.state === 'paired') {
+            PairKit.st = {
+              pid: String(r.pid), mi: Number(r.mi), members: (r.members || []).map(String),
+              trio: !!Number(r.trio), seq: 0,
+              live: (r.members || []).map(function () { return 1; }),
+              done: Number(r.done), rv: Number(r.rv), names: r.names || null
+            };
+            if (box) box.remove();
+            PairKit._loop(ctx);
+            cb('paired');
+            return;
+          }
+          waitUi(r);
+          PairKit._pollT = setTimeout(poll, 2000);
+        });
+      }
+      poll();
+    },
+
+    onEvent: function (fn) { PairKit._handler = fn; },
+    onPoll: function (fn) { PairKit._onPoll = fn; },
+
+    _loop: function (ctx) {
+      var st = PairKit.st;
+      if (!st) return;
+      ctx.call('pairChannel', { lessonId: ctx.lesson.id, pid: st.pid, since: st.seq }).then(function (r) {
+        if (r && r.ok && PairKit.st === st) {
+          st.seq = Math.max(Number(st.seq), Number(r.seq));
+          st.live = r.live || st.live;
+          st.done = Number(r.done); st.rv = Number(r.rv);
+          if (r.names) st.names = r.names;
+          (r.ev || []).forEach(function (e) { PairKit._dispatch(e); });
+          if (PairKit._onPoll) PairKit._onPoll();
+        }
+        if (PairKit.st === st) PairKit._chT = setTimeout(function () { PairKit._loop(ctx); }, 2000);
+      });
+    },
+
+    _dispatch: function (e) {
+      var seq = Number(e[0]);
+      if (PairKit._seen[seq]) return;
+      PairKit._seen[seq] = 1;
+      if (PairKit._dock) PairKit._dock(e);
+      if (PairKit._handler) PairKit._handler(e);
+    },
+
+    send: function (ctx, kind, text) {
+      var st = PairKit.st;
+      if (!st) return Promise.resolve({ ok: false, error: 'no-pair' });
+      return ctx.call('pairSend', { lessonId: ctx.lesson.id, pid: st.pid, kind: kind, text: String(text || '') });
+    },
+
+    complete: function (ctx) {
+      var st = PairKit.st;
+      if (!st) return Promise.resolve({ ok: false });
+      return ctx.call('pairComplete', { lessonId: ctx.lesson.id, pid: st.pid }).then(function (r) {
+        if (r && r.ok && PairKit.st === st) { st.done = 1; st.rv = 1; st.names = r.names || st.names; }
+        return r;
+      });
+    },
+
+    /* ---- chat dock: the monitored channel UI ---- */
+    dock: function (mountEl, ctx) {
+      var st = PairKit.st;
+      var d = el('<div class="chat-dock">' +
+        '<div class="monitor-banner">&#128737;&#65039; MONITORED CHANNEL &mdash; Mission Command (your teacher) can read every message.</div>' +
+        '<div class="turn-chip" hidden></div>' +
+        '<div class="chat-log" aria-live="polite"></div>' +
+        '<form class="chat-form">' +
+        '<input class="chat-input" type="text" maxlength="240" autocomplete="off" placeholder="Message your partner agent&hellip;">' +
+        '<button class="chat-send" type="submit">Send</button></form></div>');
+      mountEl.appendChild(d);
+      var log = d.querySelector('.chat-log');
+      var input = d.querySelector('.chat-input');
+      var sendBtn = d.querySelector('.chat-send');
+      var renderedSeq = {};
+      function bubble(mi, text, seq) {
+        if (seq != null) { if (renderedSeq[seq]) return; renderedSeq[seq] = 1; }
+        var mine = mi === st.mi;
+        log.insertAdjacentHTML('beforeend',
+          '<div class="chat-msg' + (mine ? ' mine' : '') + '">' +
+          '<span class="cm-who">' + esc(mine ? 'You' : 'Agent ' + (st.members[mi] || '?')) + '</span>' +
+          '<span class="cm-text">' + esc(text) + '</span></div>');
+        log.scrollTop = log.scrollHeight;
+      }
+      function sys(html) {
+        log.insertAdjacentHTML('beforeend', '<div class="chat-sys">' + html + '</div>');
+        log.scrollTop = log.scrollHeight;
+      }
+      PairKit._dock = function (e) {
+        if (String(e[2]) === 'msg') bubble(Number(e[1]), String(e[3]), Number(e[0]));
+      };
+      d.querySelector('.chat-form').onsubmit = function (ev) {
+        ev.preventDefault();
+        var text = input.value.trim();
+        if (!text) return;
+        input.disabled = true; sendBtn.disabled = true;
+        PairKit.send(ctx, 'msg', text).then(function (r) {
+          input.disabled = false; sendBtn.disabled = false;
+          if (r && r.ok) {
+            bubble(st.mi, text, Number(r.seq));
+            input.value = '';
+          } else if (r && r.error === 'too-fast') App.toast('Easy, Agent — one message a second.');
+          else App.toast('Message did not send (wifi?) — try again.');
+          input.focus();
+        });
+      };
+      sys('Channel open. Say hello — and remember Mission Command can see this.');
+      return {
+        sys: sys,
+        setTurn: function (html, mine) {
+          var chip = d.querySelector('.turn-chip');
+          chip.hidden = false;
+          chip.className = 'turn-chip' + (mine ? ' mine' : '');
+          chip.innerHTML = html;
+        }
+      };
+    },
+
+    /* identity reveal - the badge-pop pattern from app.js */
+    revealCard: function (cb) {
+      var st = PairKit.st;
+      var others = [];
+      if (st) for (var i = 0; i < st.members.length; i++) {
+        if (i === st.mi) continue;
+        others.push({ cn: st.members[i], n: (st.names || [])[i] || '' });
+      }
+      var rows = others.map(function (o) {
+        return '<p class="reveal-row"><span class="reveal-cn">Agent ' + esc(o.cn) + '</span>' +
+          '<span class="reveal-arrow">&#9654;</span><span class="reveal-name">' + esc(o.n || 'a classmate') + '</span></p>';
+      }).join('');
+      var pop = el('<div class="badge-pop reveal-pop"><div class="badge-pop-card">' +
+        '<span class="reveal-kicker">IDENTITY DECLASSIFIED</span>' +
+        '<h2>Your partner ' + (others.length > 1 ? 'agents were' : 'agent was') + '&hellip;</h2>' +
+        rows +
+        '<button class="primary-btn" type="button">Debrief</button></div></div>');
+      document.body.appendChild(pop);
+      requestAnimationFrame(function () { pop.classList.add('show'); });
+      pop.querySelector('button').onclick = function () {
+        pop.classList.remove('show');
+        setTimeout(function () { pop.remove(); }, 250);
+        cb();
+      };
+    }
+  };
+
   /* ================= shared item runner =================
      modes: 'feedback' (mark each tap, show why), 'neutral' (log + move on),
      'collect' (record silently).
@@ -320,16 +519,28 @@
       ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId }).then(function (r) {
         if (r && r.ok) { salt = r.salt; check = r.check; }
       });
+      // Crew resolution (section 12): 'social' = auto-pairing off (one machine,
+      // original prompts), 'solo' = catch-up/review/teacher release/last agent,
+      // 'paired' = live pair or trio over the Comms Channel.
+      var autoPair = !!(cfg.paired) && !ctx.catchup && !ctx.review && Number(App.state.pairing) !== 0;
+      var mode = 'social';
       // Catch-up runs are SOLO by definition — swap the pair prompts out so an
       // absent pupil is never told to confer with a partner who isn't there.
       var pairBanner = ctx.catchup
         ? '<div class="pair-banner">&#127919; Catch-up solo mission: no partner needed. Before each drop, say your reason in your head — "it goes there because&hellip;"</div>'
-        : '<div class="pair-banner">&#129309; ' + esc(cfg.pairPrompt || '') + '</div>';
+        : autoPair
+          ? '<div class="pair-banner">&#128225; ' + esc(cfg.channelPrompt || cfg.pairPrompt || '') + '</div>'
+          : '<div class="pair-banner">&#129309; ' + esc(cfg.pairPrompt || '') + '</div>';
       introCard(host, {
         kicker: chunk.title, title: 'The Vault',
         text: cfg.intro || '',
         extra: pairBanner
-      }, 'Open the Vault', begin);
+      }, 'Open the Vault', gate);
+
+      function gate() {
+        if (!autoPair) { mode = (ctx.catchup || ctx.review) ? 'solo' : 'social'; begin(); return; }
+        PairKit.ensure(ctx, host, function (m) { mode = m; begin(); });
+      }
 
       function begin() {
         if (!check) { // hashes still loading: brief gold pulse, then retry
@@ -349,13 +560,28 @@
           return;
         }
         var placed = {}, firstTryRight = 0, attempts = {};
+        var seenDrop = {};   // "fileId|attempt" - applies each shared drop exactly once
+        var dropCount = 0;   // shared attempt counter - drives the turn rotation
+        var finished = false;
+        var dock = null;
+        var pst = PairKit.st;
+        var slimBanner =
+          ctx.catchup ? '&#127919; Solo run &mdash; reason each drop out in your head first.' :
+          mode === 'solo' ? '&#127919; Solo run cleared by HQ &mdash; reason each drop out in your head first.' :
+          mode === 'paired' ? '&#128225; Agree in the channel first &mdash; then whoever is at the controls releases the file.' :
+          '&#129309; Agree together before you release each file.';
         var stage = el('<div class="vault-stage">' +
-          '<div class="pair-banner slim">' + (ctx.catchup ? '&#127919; Solo run &mdash; reason each drop out in your head first.' : '&#129309; Agree together before you release each file.') + '</div>' +
+          '<div class="pair-banner slim">' + slimBanner + '</div>' +
           '<div class="vault-score">' + esc(cfg.scoreLabel || 'Vault Integrity') + ': <b id="vault-score">&mdash;</b></div>' +
           '<div class="vault-inbox"><h3>Inbox</h3><div class="vault-tray"></div></div>' +
           '<div class="vault-folders"></div>' +
           '</div>');
-        host.appendChild(stage);
+        if (mode === 'paired') {
+          var wrap = el('<div class="vault-wrap paired"><div class="vault-side"></div></div>');
+          wrap.insertBefore(stage, wrap.firstChild);
+          host.appendChild(wrap);
+          dock = PairKit.dock(wrap.querySelector('.vault-side'), ctx);
+        } else host.appendChild(stage);
         var tray = stage.querySelector('.vault-tray');
         var foldersBox = stage.querySelector('.vault-folders');
         cfg.folders.forEach(function (f) {
@@ -377,6 +603,10 @@
           var startX, startY, dx, dy, dragging = false;
           node.addEventListener('pointerdown', function (e) {
             if (placed[f.id]) return;
+            if (mode === 'paired' && !myTurn()) {
+              App.toast('Not your drop — Agent ' + driverCn() + ' is at the controls.');
+              return;
+            }
             dragging = true;
             node.setPointerCapture(e.pointerId);
             node.classList.add('dragging');
@@ -422,29 +652,109 @@
           node.style.transform = '';
           setTimeout(function () { node.classList.remove('snapback'); }, 300);
         }
+        /* ---- turn rotation (paired): the controls change hands every ATTEMPT,
+           round-robin among members whose channel signal is live, so both (or
+           all three) hands touch the mouse and a wrong drop forces a handover
+           and a real conversation. All clients derive the same driver from the
+           shared drop count. ---- */
+        function activeIdxs() {
+          var act = [];
+          for (var i = 0; i < pst.members.length; i++) {
+            if (i === pst.mi || Number((pst.live || [])[i])) act.push(i);
+          }
+          return act.length ? act : [pst.mi];
+        }
+        function driverIdx() { var act = activeIdxs(); return act[dropCount % act.length]; }
+        function myTurn() { return mode !== 'paired' || driverIdx() === pst.mi; }
+        function driverCn() { return String(pst.members[driverIdx()] || '?'); }
+        var lastLiveKey = '';
+        function refreshTurn() {
+          if (mode !== 'paired' || !dock || finished) return;
+          stage.classList.toggle('not-my-turn', !myTurn());
+          if (myTurn()) dock.setTurn('&#127918; YOU are at the controls &mdash; agree in the channel, then drag.', true);
+          else dock.setTurn('&#128360; Agent ' + esc(driverCn()) + ' is at the controls &mdash; advise in the channel.', false);
+          var key = (pst.live || []).join('');
+          if (lastLiveKey && key !== lastLiveKey) {
+            for (var i = 0; i < pst.members.length; i++) {
+              if (i === pst.mi) continue;
+              var was = lastLiveKey.charAt(i) === '1', is = key.charAt(i) === '1';
+              if (was && !is) dock.sys('&#128246; Agent ' + esc(pst.members[i]) + '’s signal is weak &mdash; the controls pass on.');
+              if (!was && is) dock.sys('Agent ' + esc(pst.members[i]) + ' is back on the channel.');
+            }
+          }
+          lastLiveKey = key;
+        }
+
+        /* Apply one shared drop exactly once - locally-made or replayed from the
+           channel. Score, rotation and completion all derive from this stream,
+           so every member's screen and XP arithmetic agree.
+           byMi = member index of the dropper, or null for a local drop. */
+        function applyShared(fileId, folderId, ok, att, byMi) {
+          var dk = fileId + '|' + att;
+          if (seenDrop[dk]) return;
+          seenDrop[dk] = 1;
+          dropCount++;
+          attempts[fileId] = Math.max(num(attempts[fileId]), att);
+          var node = stage.querySelector('.vault-file[data-id="' + fileId + '"]');
+          var folderEl = stage.querySelector('.vault-folder[data-id="' + folderId + '"]');
+          var f = null;
+          for (var i = 0; i < cfg.files.length; i++) if (String(cfg.files[i].id) === fileId) f = cfg.files[i];
+          var who = byMi == null ? 'You' : 'Agent ' + String(pst.members[byMi] || '?');
+          if (ok) {
+            if (!placed[fileId]) {
+              placed[fileId] = true;
+              if (att === 1) firstTryRight++;
+              if (node && folderEl) {
+                node.style.transform = '';
+                node.classList.add('filed');
+                folderEl.querySelector('.folder-files').appendChild(node);
+                folderEl.classList.add('accept');
+                setTimeout(function () { folderEl.classList.remove('accept'); }, 500);
+              }
+            }
+            updateScore();
+            if (dock && f) dock.sys('&#128193; ' + esc(who) + ' filed “' + esc(f.label) + '”' + (att > 1 ? ' (attempt ' + att + ')' : '') + '.');
+            if (Object.keys(placed).length === cfg.files.length) finishStage();
+          } else {
+            if (folderEl) {
+              folderEl.classList.add('reject');
+              setTimeout(function () { folderEl.classList.remove('reject'); }, 450);
+            }
+            if (node) {
+              node.style.transform = '';
+              node.classList.add('returned');
+              setTimeout(function () { node.classList.remove('returned'); }, 700);
+            }
+            if (byMi == null) App.toast('Returned — the Vault disagrees. Talk it through and try again.');
+            if (dock && f) dock.sys('&#8617;&#65039; The Vault returned “' + esc(f.label) + '” &mdash; talk it through, the controls change hands.');
+          }
+          refreshTurn();
+        }
+        function num(v) { var n = Number(v); return isNaN(n) ? 0 : n; }
+
         function drop(node, f, folderEl) {
           var fid = folderEl.getAttribute('data-id');
-          attempts[f.id] = (attempts[f.id] || 0) + 1;
-          if (vhash(salt + '|' + f.id + '|' + fid) === check[f.id]) {
-            placed[f.id] = true;
-            if (attempts[f.id] === 1) firstTryRight++;
-            node.style.transform = '';
-            node.classList.add('filed');
-            folderEl.querySelector('.folder-files').appendChild(node);
-            folderEl.classList.add('accept');
-            setTimeout(function () { folderEl.classList.remove('accept'); }, 500);
-            updateScore();
-            if (Object.keys(placed).length === cfg.files.length) setTimeout(debrief, 700);
-          } else {
-            // Genuine fail state: returned, no reveal, no hint — reason it out.
-            folderEl.classList.add('reject');
-            setTimeout(function () { folderEl.classList.remove('reject'); }, 450);
-            node.style.transform = '';
-            node.classList.add('returned');
-            App.toast('Returned — the Vault disagrees. Talk it through and try again.');
-            setTimeout(function () { node.classList.remove('returned'); }, 700);
-          }
+          var att = num(attempts[f.id]) + 1;
+          var ok = vhash(salt + '|' + f.id + '|' + fid) === check[f.id];
+          if (mode === 'paired') PairKit.send(ctx, 'drop', f.id + '|' + fid + '|' + (ok ? 1 : 0) + '|' + att);
+          applyShared(String(f.id), fid, ok, att, null);
         }
+
+        function finishStage() {
+          if (finished) return;
+          finished = true;
+          if (mode === 'paired') {
+            stage.classList.remove('not-my-turn');
+            if (dock) dock.setTurn('&#128274; Vault sealed &mdash; stand by for the debrief.', true);
+            PairKit.send(ctx, 'done', '');
+            setTimeout(function () {
+              PairKit.complete(ctx).then(function () {
+                PairKit.revealCard(function () { PairKit.stop(); debrief(); });
+              });
+            }, 700);
+          } else setTimeout(debrief, 700);
+        }
+
         function updateScore() {
           stage.querySelector('#vault-score').textContent = firstTryRight + '/' + cfg.files.length + ' first try';
         }
@@ -476,7 +786,13 @@
           host.appendChild(d);
           d.querySelector('button').onclick = function () {
             host.innerHTML = '';
-            var syncText = (ctx.catchup && cfg.debrief.syncCatchup) ? cfg.debrief.syncCatchup : cfg.debrief.sync;
+            // the debrief must narrate what ACTUALLY happened this run:
+            // a live channel pair, a one-machine pair, or a solo mission
+            var syncText =
+              (ctx.catchup && cfg.debrief.syncCatchup) ? cfg.debrief.syncCatchup :
+              (mode === 'paired' && cfg.debrief.syncLive) ? cfg.debrief.syncLive :
+              (mode === 'solo' && cfg.debrief.syncCatchup) ? cfg.debrief.syncCatchup :
+              cfg.debrief.sync;
             var s1 = el('<div class="card sync-card"><span class="sync-badge">SYNCHRONOUS</span><p>' + esc(syncText) + '</p><button class="primary-btn" type="button">And the flip side&hellip;</button></div>');
             host.appendChild(s1);
             s1.querySelector('button').onclick = function () {
@@ -489,6 +805,19 @@
               };
             };
           };
+        }
+        if (mode === 'paired') {
+          // replay + live application of the shared stream; a partner's 'done'
+          // is belt-and-braces (their final drop event already completes us)
+          PairKit.onEvent(function (e) {
+            var kind = String(e[2]);
+            if (kind === 'drop') {
+              var p = String(e[3]).split('|');
+              applyShared(String(p[0]), String(p[1]), Number(p[2]) === 1, Number(p[3]), Number(e[1]));
+            } else if (kind === 'done' && Object.keys(placed).length === cfg.files.length) finishStage();
+          });
+          PairKit.onPoll(refreshTurn);
+          refreshTurn();
         }
         updateScore();
       }
