@@ -26,8 +26,30 @@
   'use strict';
 
   var STORE_KEY = 'ks3dt-dev';
-  var PUPIL_EMAIL = 'anya.murphy@demo';
+  /* Per-TAB pupil identity (section 12 two-tab pairing): ?as=cara picks a
+     persona, remembered in sessionStorage so each tab keeps its identity
+     across reloads while every tab still shares the one localStorage store.
+     Default stays Anya — existing preview flows are untouched. */
+  var PERSONAS = {
+    anya: { email: 'anya.murphy@demo', name: 'Anya Murphy' },
+    cara: { email: 'cara.devlin@demo', name: 'Cara Devlin' },
+    ryan: { email: 'ryan.fitzsimons@demo', name: 'Ryan Fitzsimons' },
+    niamh: { email: 'niamh.quinn@demo', name: 'Niamh Quinn' },
+    sean: { email: 'sean.ohagan@demo', name: "Sean O'Hagan" },
+    erin: { email: 'erin.mallon@demo', name: 'Erin Mallon' }
+  };
+  function personaKey_() {
+    var as = '';
+    try { as = new URLSearchParams(global.location.search).get('as') || ''; } catch (e) {}
+    try { if (!as) as = sessionStorage.getItem('ks3dt-dev-as') || ''; } catch (e) {}
+    as = str_(as).toLowerCase();
+    if (!PERSONAS[as]) as = 'anya';
+    try { sessionStorage.setItem('ks3dt-dev-as', as); } catch (e) {}
+    return as;
+  }
+  var PUPIL_EMAIL, PUPIL_NAME; // set at load (personaKey_ needs str_ below)
   var STAFF_EMAIL = 'teacher@demo';
+  var BOT_EMAIL = 'bot@demo';  // the simulated partner (single-tab pairing demo)
   var EPOCH = 1767225600000; // 2026-01-01 UTC — same epoch as Code.gs.template's tmin_()
   var LATENCY = 180;         // simulated round-trip, ms
   var FALLBACK_EXPLAIN = '(preview marking unavailable on this host — run locally)';
@@ -61,6 +83,10 @@
       var t = a[i]; a[i] = a[j]; a[j] = t;
     }
   }
+
+  var PERSONA_KEY = personaKey_();
+  PUPIL_EMAIL = PERSONAS[PERSONA_KEY].email;
+  PUPIL_NAME = PERSONAS[PERSONA_KEY].name;
 
   /* ---------- persistent store ---------- */
   function load_() {
@@ -193,6 +219,7 @@
     if (!c.lb) c.lb = { mode: 'off', basis: 'xp', names: 'codename', topN: 0 };
     if (!c.absDays) c.absDays = 5;
     if (!c.cover) c.cover = { on: 0, lesson: '', ts: 0 };
+    if (!c.pairing) c.pairing = { on: 1 }; // auto-pairing default ON (section 12)
     return c;
   }
   function getTeam_(s, cls) {
@@ -288,7 +315,7 @@
   /* ==================== PUPIL API ==================== */
 
   function doWhoAmI() {
-    return Promise.resolve({ ok: true, email: PUPIL_EMAIL, name: 'Anya Murphy' });
+    return Promise.resolve({ ok: true, email: PUPIL_EMAIL, name: PUPIL_NAME });
   }
 
   function doJoin(p) {
@@ -296,7 +323,7 @@
     var cls = realClass_(s, p.classCode);
     if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
     var rec = readPupil_(s, cls, PUPIL_EMAIL) || { n: '', cn: '', j: tmin_(), xp: 0, g: '', L: {} };
-    if (!rec.n) rec.n = str_(p.name || 'Anya Murphy');
+    if (!rec.n) rec.n = str_(p.name || PUPIL_NAME);
     writePupil_(s, cls, PUPIL_EMAIL, rec);
     save_(s);
     return Promise.resolve({ ok: true, name: str_(rec.n) });
@@ -336,6 +363,7 @@
         me: rec ? JSON.parse(JSON.stringify(rec)) : null,
         locks: locksOut,
         lb: { mode: str_(cfg.lb.mode), basis: str_(cfg.lb.basis), names: str_(cfg.lb.names), topN: num_(cfg.lb.topN) },
+        pairing: num_(cfg.pairing.on),
         cover: num_(cfg.cover.on),
         absence: absence,
         team: myTeam,
@@ -990,6 +1018,7 @@
         cfg3.lb.topN = Math.max(0, Math.min(50, num_(p.lb.topN)));
       }
       if (p.absDays != null) cfg3.absDays = Math.max(1, Math.min(20, num_(p.absDays)));
+      if (p.pairing != null) cfg3.pairing = { on: num_(p.pairing.on) ? 1 : 0 };
       save_(s);
       return Promise.resolve({ ok: true });
     }
@@ -1055,7 +1084,442 @@
       return Promise.resolve({ ok: true });
     }
 
+    /* ---------- pairing lens mirror (section 12) ---------- */
+    if (sub === 'pairs') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      var plLessonId = str_(p.lessonId);
+      var plYear = classYear_(s, cls);
+      return yearManifest_(plYear).then(function (man) {
+        var entry = lessonEntry_(man, plLessonId);
+        var plNum = entry ? str_(entry.num) : '';
+        var plCfg = getCfg_(s, cls);
+        var plReg = pairRegD_(s, cls, plLessonId);
+        var plQ = pqD_(s, cls, plLessonId);
+        var nameOf = {};
+        allPupils_(s, cls).forEach(function (r) { nameOf[str_(r.email)] = str_(r.n); });
+        nameOf[BOT_EMAIL] = 'the Simulation';
+        var plNow = tsecD_();
+        var plAssigned = {};
+        var pairsOut = Object.keys(plReg.P).map(function (pid) {
+          var P = plReg.P[pid];
+          (P.m || []).forEach(function (e) { plAssigned[str_(e)] = 1; });
+          var ch = chD_(s, pid);
+          var msgs = 0, lastMsg = '';
+          (ch.ev || []).forEach(function (e2) {
+            if (str_(e2[2]) === 'msg') { msgs++; lastMsg = str_(P.cn[num_(e2[1])]) + ': ' + str_(e2[3]); }
+          });
+          return {
+            pid: str_(pid), trio: num_(P.trio), done: num_(P.done), t: num_(P.t),
+            cn: (P.cn || []).map(str_),
+            names: (P.m || []).map(function (e) { return str_(nameOf[str_(e)] || e); }),
+            msgs: num_(msgs), last: str_(lastMsg).slice(0, 80)
+          };
+        });
+        (plReg.solo || []).forEach(function (e) { plAssigned[str_(e)] = 1; });
+        var queueOut = (plQ.q || []).filter(function (w) { return plNow - num_(w.p) <= PAIR_QUEUE_STALE_S; })
+          .map(function (w) {
+            plAssigned[str_(w.e)] = 1;
+            return { name: str_(nameOf[str_(w.e)] || w.e), cn: str_(w.cn), wait: num_(plNow - num_(w.t)), email: str_(w.e) };
+          });
+        var plPresent = presentOnD_(s, cls, plNum);
+        var laggards = [];
+        Object.keys(plPresent).forEach(function (e) {
+          if (plAssigned[str_(e)]) return;
+          if (plPresent[e].ci > num_(plQ.stage)) return;
+          laggards.push({ name: str_(nameOf[str_(e)] || e), email: str_(e), ci: num_(plPresent[e].ci), cc: num_(plPresent[e].cc) });
+        });
+        laggards.sort(function (a, b) { return a.ci - b.ci; });
+        save_(s);
+        return {
+          ok: true, on: num_(plCfg.pairing.on), stage: num_(plQ.stage),
+          present: num_(Object.keys(plPresent).length),
+          queue: queueOut, pairs: pairsOut, laggards: laggards,
+          solo: (plReg.solo || []).map(function (e) { return { name: str_(nameOf[str_(e)] || e), email: str_(e) }; })
+        };
+      });
+    }
+
+    if (sub === 'pairTranscript') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      var ptPid = str_(p.pid);
+      var ptReg = pairRegD_(s, cls, str_(p.lessonId));
+      var ptP = ptReg.P[ptPid];
+      if (!ptP) return Promise.resolve({ ok: false, error: 'unknown-pair' });
+      var ptCh = chD_(s, ptPid);
+      if ((ptCh.ev || []).length) {
+        var lines = ptCh.ev.filter(function (e) { return str_(e[2]) === 'msg'; }).map(function (e) {
+          return { who: str_(ptP.cn[num_(e[1])]), text: str_(e[3]), t: num_(e[4]) };
+        });
+        return Promise.resolve({ ok: true, live: true, cn: ptP.cn, names: (ptP.m || []).map(str_), lines: lines });
+      }
+      var ptChat = (s.chat || {})[plKey_(cls, str_(p.lessonId))] || {};
+      var ptStored = ptChat[ptPid];
+      if (ptStored) return Promise.resolve({ ok: true, live: false, cn: ptStored.cn, names: ptStored.n, tx: str_(ptStored.tx) });
+      return Promise.resolve({ ok: true, live: false, cn: ptP.cn, names: [], tx: '' });
+    }
+
+    if (sub === 'pairRelease') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      var prReg = pairRegD_(s, cls, str_(p.lessonId));
+      var prEmail = str_(p.email).toLowerCase();
+      if (pairOfD_(prReg, prEmail)) return Promise.resolve({ ok: false, error: 'already-paired' });
+      if (prReg.solo.indexOf(prEmail) === -1) prReg.solo.push(prEmail);
+      var prQ = pqD_(s, cls, str_(p.lessonId));
+      prQ.q = (prQ.q || []).filter(function (w) { return str_(w.e) !== prEmail; });
+      save_(s);
+      return Promise.resolve({ ok: true });
+    }
+
+    if (sub === 'pairForce') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      var pfReg = pairRegD_(s, cls, str_(p.lessonId));
+      var pfQ = pqD_(s, cls, str_(p.lessonId));
+      var pfNow = tsecD_();
+      pfQ.q = (pfQ.q || []).filter(function (w) { return pfNow - num_(w.p) <= PAIR_QUEUE_STALE_S; });
+      var made = 0;
+      while (pfQ.q.length >= 2) {
+        var take = pfQ.q.length === 3 ? 3 : 2;
+        var formed = pfQ.q.splice(0, take);
+        newPairD_(s, pfReg, formed.map(function (w) { return str_(w.e); }), callsignFillD_(formed), take === 3, false);
+        made++;
+      }
+      if (pfQ.q.length === 1) {
+        var lone = pfQ.q.splice(0, 1)[0];
+        if (pfReg.solo.indexOf(str_(lone.e)) === -1) pfReg.solo.push(str_(lone.e));
+      }
+      save_(s);
+      return Promise.resolve({ ok: true, made: num_(made) });
+    }
+
+    if (sub === 'pairReset') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      if (s.pairing) delete s.pairing[plKey_(cls, str_(p.lessonId))];
+      if (s.pq) delete s.pq[plKey_(cls, str_(p.lessonId))];
+      save_(s);
+      return Promise.resolve({ ok: true });
+    }
+
     return Promise.resolve({ ok: false, error: 'unknown-sub' });
+  }
+
+  /* ==================== auto-pairing + Comms Channel mirror (section 12) ====
+     Mirrors Code.gs.template's pairing surface against the shared localStorage
+     blob, so two same-origin tabs (?as=anya / ?as=cara) are two REAL paired
+     pupils. Waiting alone > 8s spawns a simulated partner bot ("Pixel") that
+     chats, takes its turns via dev-keys, and fumbles one drop on purpose so
+     the return path shows - single-tab demos stay complete. */
+  var PAIR_PRESENT_MIN = 10, PAIR_QUEUE_STALE_S = 45, PAIR_MSG_MAX = 240, PAIR_EV_KEEP = 150, PAIR_TX_MAX = 500;
+  var BOT_WAIT_S = 8;
+  var PAIR_CALLSIGNS = ['Kestrel', 'Osprey', 'Merlin', 'Harrier', 'Nightjar', 'Skylark'];
+  function tsecD_() { return Math.floor(Date.now() / 1000); }
+  function plKey_(cls, lessonId) { return cls + '|' + lessonId; }
+  function pairRegD_(s, cls, lessonId) {
+    if (!s.pairing) s.pairing = {};
+    var k = plKey_(cls, lessonId);
+    if (!s.pairing[k]) s.pairing[k] = { P: {}, solo: [] };
+    if (!s.pairing[k].P) s.pairing[k].P = {};
+    if (!s.pairing[k].solo) s.pairing[k].solo = [];
+    return s.pairing[k];
+  }
+  function pqD_(s, cls, lessonId) {
+    if (!s.pq) s.pq = {};
+    var k = plKey_(cls, lessonId);
+    if (!s.pq[k]) s.pq[k] = { q: [], stage: 0 };
+    return s.pq[k];
+  }
+  function chD_(s, pid) {
+    if (!s.pch) s.pch = {};
+    if (!s.pch[pid]) s.pch[pid] = { seq: 0, ev: [], ls: {}, bot: null };
+    return s.pch[pid];
+  }
+  function presD_(s, cls) {
+    if (!s.pres) s.pres = {};
+    if (!s.pres[cls]) s.pres[cls] = {};
+    return s.pres[cls];
+  }
+  function pairOfD_(reg, email) {
+    var pids = Object.keys(reg.P);
+    for (var i = 0; i < pids.length; i++) {
+      var m = reg.P[pids[i]].m || [];
+      for (var j = 0; j < m.length; j++) if (str_(m[j]) === email) return { pid: pids[i], mi: j };
+    }
+    return null;
+  }
+  function presentOnD_(s, cls, numStr) {
+    var pres = presD_(s, cls);
+    var floor = tmin_() - PAIR_PRESENT_MIN;
+    var out = {};
+    Object.keys(pres).forEach(function (e) {
+      var pr = pres[e];
+      if (pr && num_(pr[0]) >= floor && str_(pr[1]) === numStr) out[e] = { ci: num_(pr[2]), cc: num_(pr[3]) };
+    });
+    return out;
+  }
+  function pairStateD_(reg, hit) {
+    var P = reg.P[hit.pid];
+    return {
+      ok: true, state: 'paired', pid: str_(hit.pid), mi: num_(hit.mi),
+      trio: num_(P.trio), done: num_(P.done), rv: num_(P.rv),
+      members: (P.cn || []).map(str_),
+      names: num_(P.rv) ? (P.n || []).map(str_) : null
+    };
+  }
+  function callsignFillD_(formed) {
+    var seed = Math.floor(Math.random() * PAIR_CALLSIGNS.length);
+    return formed.map(function (w, i) { return str_(w.cn) || PAIR_CALLSIGNS[(seed + i) % PAIR_CALLSIGNS.length]; });
+  }
+  function newPairD_(s, reg, members, cns, trio, bot) {
+    var pid = 'p' + tmin_() + '-' + Math.floor(Math.random() * 10000);
+    reg.P[pid] = { m: members, cn: cns, t: tmin_(), trio: trio ? 1 : 0, done: 0, rv: 0, bot: bot ? 1 : 0 };
+    var ch = chD_(s, pid);
+    if (bot) ch.bot = { startS: tsecD_(), greeted: 0, wrongUsed: 0, msgKey: -1, msgAtS: 0, reactKey: -1, plan: null };
+    return pid;
+  }
+
+  function doPing(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    presD_(s, cls)[PUPIL_EMAIL] = [tmin_(), str_(p.lessonNum || ''), num_(p.ci), num_(p.cc)];
+    save_(s);
+    return Promise.resolve({ ok: true });
+  }
+
+  function doPairJoin(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    var cfg = getCfg_(s, cls);
+    if (!num_(cfg.pairing.on)) { return Promise.resolve({ ok: true, state: 'off' }); }
+    var lessonId = str_(p.lessonId);
+    var year = classYear_(s, cls);
+    return yearManifest_(year).then(function (man) {
+      var entry = lessonEntry_(man, lessonId);
+      var numStr = entry ? str_(entry.num) : '';
+      if (!numStr || !lessonAccessible_(s, cls, numStr)) return { ok: false, error: 'locked' };
+      var reg = pairRegD_(s, cls, lessonId);
+      var hit = pairOfD_(reg, PUPIL_EMAIL);
+      if (hit) { save_(s); return pairStateD_(reg, hit); }
+      if (reg.solo.indexOf(PUPIL_EMAIL) !== -1) { save_(s); return { ok: true, state: 'solo' }; }
+      var q = pqD_(s, cls, lessonId);
+      q.stage = num_(p.stageIdx);
+      var nowS = tsecD_();
+      q.q = (q.q || []).filter(function (w) { return nowS - num_(w.p) <= PAIR_QUEUE_STALE_S; });
+      var mine = null;
+      q.q.forEach(function (w) { if (str_(w.e) === PUPIL_EMAIL) mine = w; });
+      if (mine) mine.p = nowS;
+      else {
+        var rec = readPupil_(s, cls, PUPIL_EMAIL);
+        mine = { e: PUPIL_EMAIL, cn: str_(rec && rec.cn || ''), t: nowS, p: nowS };
+        q.q.push(mine);
+      }
+      // expected = queued + live-present pupils still short of the stage
+      var assigned = {};
+      Object.keys(reg.P).forEach(function (pid) { (reg.P[pid].m || []).forEach(function (e) { assigned[str_(e)] = 1; }); });
+      reg.solo.forEach(function (e) { assigned[str_(e)] = 1; });
+      var expected = {};
+      q.q.forEach(function (w) { expected[str_(w.e)] = 1; });
+      var present = presentOnD_(s, cls, numStr);
+      Object.keys(present).forEach(function (e) {
+        if (assigned[e]) return;
+        if (present[e].ci > num_(q.stage)) return;
+        expected[e] = 1;
+      });
+      var E = Object.keys(expected).length;
+      if (q.q.length >= 3 && E === 3) {
+        var trioF = q.q.splice(0, 3);
+        newPairD_(s, reg, trioF.map(function (w) { return str_(w.e); }), callsignFillD_(trioF), true, false);
+      } else if (q.q.length >= 2 && E !== 3) {
+        var pairF = q.q.splice(0, 2);
+        newPairD_(s, reg, pairF.map(function (w) { return str_(w.e); }), callsignFillD_(pairF), false, false);
+      } else if (q.q.length === 1 && E <= 1 && nowS - num_(mine.t) >= BOT_WAIT_S) {
+        // preview twist: a lone agent gets the simulated partner, never insta-solo
+        q.q.splice(0, 1);
+        newPairD_(s, reg, [PUPIL_EMAIL, BOT_EMAIL], [callsignFillD_([mine])[0], 'Pixel (simulated)'], false, true);
+      }
+      save_(s);
+      var hit2 = pairOfD_(reg, PUPIL_EMAIL);
+      if (hit2) return pairStateD_(reg, hit2);
+      var pos = 0;
+      q.q.forEach(function (w, i) { if (str_(w.e) === PUPIL_EMAIL) pos = i + 1; });
+      return { ok: true, state: 'wait', pos: num_(pos), waiting: num_(q.q.length), expected: num_(E), trioHold: E === 3 ? 1 : 0 };
+    });
+  }
+
+  function appendEvD_(ch, mi, kind, text) {
+    ch.seq = num_(ch.seq) + 1;
+    ch.ev.push([ch.seq, num_(mi), str_(kind), str_(text), tsecD_()]);
+    if (ch.ev.length > PAIR_EV_KEEP) ch.ev = ch.ev.slice(ch.ev.length - PAIR_EV_KEEP);
+    return ch.seq;
+  }
+
+  function doPairSend(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    var kind = str_(p.kind);
+    if (kind !== 'msg' && kind !== 'drop' && kind !== 'done') return Promise.resolve({ ok: false, error: 'bad-kind' });
+    var text = str_(p.text).replace(/[\u0000-\u001f]/g, ' ').slice(0, PAIR_MSG_MAX);
+    if (kind === 'msg' && !text.trim()) return Promise.resolve({ ok: false, error: 'empty' });
+    var reg = pairRegD_(s, cls, str_(p.lessonId));
+    var hit = pairOfD_(reg, PUPIL_EMAIL);
+    if (!hit || str_(hit.pid) !== str_(p.pid)) return Promise.resolve({ ok: false, error: 'not-your-pair' });
+    var ch = chD_(s, str_(p.pid));
+    if (kind === 'msg') {
+      var last = num_(ch.ls[hit.mi]);
+      if (last && tsecD_() - last < 1) return Promise.resolve({ ok: false, error: 'too-fast' });
+      ch.ls[hit.mi] = tsecD_();
+    }
+    var seq = appendEvD_(ch, hit.mi, kind, text);
+    save_(s);
+    return Promise.resolve({ ok: true, seq: num_(seq) });
+  }
+
+  /* ---- the simulated partner's brain: runs inside the pupil's channel polls ---- */
+  function botThink_(s, cls, lessonId, pid, P, ch, year) {
+    if (!ch.bot) return Promise.resolve();
+    var nowS = tsecD_();
+    if (!ch.bot.greeted && nowS - num_(ch.bot.startS) >= 2) {
+      ch.bot.greeted = 1;
+      appendEvD_(ch, 1, 'msg', 'Pixel here. HQ says we crack this Vault together - you take the first drop, talk me through it!');
+    }
+    var drops = ch.ev.filter(function (e) { return str_(e[2]) === 'drop'; });
+    var dropCount = drops.length;
+    var placed = {};
+    drops.forEach(function (e) {
+      var seg = str_(e[3]).split('|');
+      if (num_(seg[2]) === 1) placed[str_(seg[0])] = true;
+    });
+    var lastDrop = drops[drops.length - 1] || null;
+    // sympathy when the pupil's drop bounces
+    if (lastDrop && num_(lastDrop[1]) === 0 && str_(lastDrop[3]).split('|')[2] === '0' && ch.bot.reactKey !== dropCount) {
+      ch.bot.reactKey = dropCount;
+      appendEvD_(ch, 1, 'msg', 'The Vault bounced it! Hmm - read the label again, where else could it live?');
+    }
+    var botsTurn = dropCount % 2 === 1; // members: [pupil 0, bot 1]
+    if (!botsTurn || !Object.keys(placed).length && dropCount === 0) {
+      if (!botsTurn) { ch.bot.msgKey = -1; ch.bot.plan = null; }
+      return Promise.resolve();
+    }
+    return vaultBotInfo_(s, year, lessonId).then(function (info) {
+      if (!info || !info.map || !info.cfg) return;
+      var files = info.cfg.files || [], folders = info.cfg.folders || [];
+      var target = null;
+      for (var i = 0; i < files.length; i++) if (!placed[str_(files[i].id)]) { target = files[i]; break; }
+      if (!target) return;
+      var correct = str_(info.map[str_(target.id)]);
+      var wrongFolder = null;
+      for (var j = 0; j < folders.length; j++) if (str_(folders[j].id) !== correct) { wrongFolder = folders[j]; break; }
+      var goWrong = !ch.bot.wrongUsed && wrongFolder;
+      var destId = goWrong ? str_(wrongFolder.id) : correct;
+      var destLabel = '';
+      folders.forEach(function (fo) { if (str_(fo.id) === destId) destLabel = str_(fo.label); });
+      if (ch.bot.msgKey !== dropCount) {
+        ch.bot.msgKey = dropCount;
+        ch.bot.msgAtS = nowS;
+        ch.bot.plan = { f: str_(target.id), d: destId, ok: !goWrong };
+        appendEvD_(ch, 1, 'msg', (goWrong
+          ? 'My turn! Maybe "' + str_(target.label) + '" goes in ' + destLabel + '? Dropping it - shout if you disagree!'
+          : 'My turn. I reckon "' + str_(target.label) + '" belongs in ' + destLabel + ' - agree? Dropping it now.'));
+        return;
+      }
+      if (ch.bot.plan && nowS - num_(ch.bot.msgAtS) >= 3) {
+        var plan = ch.bot.plan;
+        ch.bot.plan = null;
+        var att = 1;
+        drops.forEach(function (e) {
+          var seg = str_(e[3]).split('|');
+          if (str_(seg[0]) === plan.f) att = Math.max(att, num_(seg[3]) + 1);
+        });
+        appendEvD_(ch, 1, 'drop', plan.f + '|' + plan.d + '|' + (plan.ok ? 1 : 0) + '|' + att);
+        if (!plan.ok) {
+          ch.bot.wrongUsed = 1;
+          appendEvD_(ch, 1, 'msg', 'Ouch - the Vault said NO. Okay, some things should not be saved at all... your go!');
+        }
+      }
+    });
+  }
+  var botInfoCache = null;
+  function vaultBotInfo_(s, year, lessonId) {
+    if (botInfoCache) return Promise.resolve(botInfoCache);
+    return yearManifest_(year).then(function (man) {
+      var entry = lessonEntry_(man, lessonId);
+      if (!entry) return null;
+      return fetchContent_(str_(entry.file)).then(function (lesson) {
+        var vcfg = null;
+        (lesson.chunks || []).forEach(function (chk) { if (str_(chk.engine) === 'vault') vcfg = chk.config; });
+        return devKeysAll_().then(function (allKeys) {
+          var keys = allKeys && allKeys[fileIdOf_(entry)];
+          var map = keys && keys.vault && keys.vault.map || null;
+          botInfoCache = { cfg: vcfg, map: map };
+          return botInfoCache;
+        });
+      });
+    }).catch(function () { return null; });
+  }
+
+  function doPairChannel(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    var lessonId = str_(p.lessonId);
+    var reg = pairRegD_(s, cls, lessonId);
+    var hit = pairOfD_(reg, PUPIL_EMAIL);
+    if (!hit || str_(hit.pid) !== str_(p.pid)) return Promise.resolve({ ok: false, error: 'not-your-pair' });
+    var P = reg.P[hit.pid];
+    var pid = str_(hit.pid);
+    var ch = chD_(s, pid);
+    if (!s.pls) s.pls = {};
+    s.pls[pid + ':' + hit.mi] = tsecD_();
+    var year = classYear_(s, cls);
+    return botThink_(s, cls, lessonId, pid, P, ch, year).then(function () {
+      var since = num_(p.since);
+      var ev = ch.ev.filter(function (e) { return num_(e[0]) > since; });
+      var live = (P.m || []).map(function (m, mi2) {
+        if (mi2 === hit.mi) return 1;
+        if (num_(P.bot)) return 1; // the simulation never loses signal
+        var b = num_(s.pls[pid + ':' + mi2]);
+        return b && tsecD_() - b <= 45 ? 1 : 0;
+      });
+      save_(s);
+      return {
+        ok: true, seq: num_(ch.seq), ev: ev, live: live,
+        done: num_(P.done), rv: num_(P.rv),
+        names: num_(P.rv) ? (P.n || []).map(str_) : null
+      };
+    });
+  }
+
+  function doPairComplete(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    var lessonId = str_(p.lessonId);
+    var reg = pairRegD_(s, cls, lessonId);
+    var hit = pairOfD_(reg, PUPIL_EMAIL);
+    if (!hit || str_(hit.pid) !== str_(p.pid)) return Promise.resolve({ ok: false, error: 'not-your-pair' });
+    var P = reg.P[hit.pid];
+    if (num_(P.done)) return Promise.resolve({ ok: true, names: (P.n || []).map(str_) });
+    var names = (P.m || []).map(function (e) {
+      if (str_(e) === BOT_EMAIL) return 'the Simulation';
+      var r = readPupil_(s, cls, str_(e));
+      return str_(r && r.n || '').split(' ')[0] || 'Agent';
+    });
+    P.done = 1; P.rv = 1; P.n = names;
+    var ch = chD_(s, str_(hit.pid));
+    var msgs = ch.ev.filter(function (e) { return str_(e[2]) === 'msg'; });
+    var counts = (P.m || []).map(function () { return 0; });
+    msgs.forEach(function (e) { counts[num_(e[1])] = num_(counts[num_(e[1])]) + 1; });
+    var tx = msgs.map(function (e) { return str_(P.cn[num_(e[1])]) + ': ' + str_(e[3]); }).join(' / ');
+    if (tx.length > PAIR_TX_MAX) tx = tx.slice(0, Math.floor(PAIR_TX_MAX * 0.6)) + ' [...] ' + tx.slice(tx.length - Math.floor(PAIR_TX_MAX * 0.35));
+    if (!s.chat) s.chat = {};
+    var ck = plKey_(cls, lessonId);
+    if (!s.chat[ck]) s.chat[ck] = {};
+    if (!s.chat[ck][str_(hit.pid)]) {
+      s.chat[ck][str_(hit.pid)] = { m: (P.m || []).map(str_), cn: (P.cn || []).map(str_), n: names, t: num_(P.t), c: counts, tx: tx };
+    }
+    save_(s);
+    return Promise.resolve({ ok: true, names: names });
   }
 
   /* ---------- dispatcher ---------- */
@@ -1076,6 +1540,11 @@
       case 'catchup': return doCatchup(p);
       case 'setKit': return doSetKit(p);
       case 'driveCheck': return doDriveCheck(p);
+      case 'ping': return doPing(p);
+      case 'pairJoin': return doPairJoin(p);
+      case 'pairSend': return doPairSend(p);
+      case 'pairChannel': return doPairChannel(p);
+      case 'pairComplete': return doPairComplete(p);
       case 'admin': return doAdmin(p);
       default: return Promise.resolve({ ok: false, error: 'unknown-action' });
     }
@@ -1101,7 +1570,7 @@
   function injectPreviewPill_() {
     if (global.OLS_TRANSPORT && typeof global.OLS_TRANSPORT.call === 'function') return; // real transport present
     var pill = document.createElement('div');
-    pill.textContent = 'PREVIEW';
+    pill.textContent = 'PREVIEW \u00b7 ' + str_(PUPIL_NAME).split(' ')[0];
     pill.setAttribute('style',
       'position:fixed;left:12px;bottom:12px;z-index:99999;' +
       'background:#1A3A6B;color:#F4F6FA;font:600 11px/1 -apple-system,system-ui,sans-serif;' +
