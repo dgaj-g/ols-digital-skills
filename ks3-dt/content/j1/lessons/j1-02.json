@@ -1,0 +1,235 @@
+{
+ "id": "j1-02",
+ "year": "j1",
+ "num": 2,
+ "title": "Make It Move",
+ "tagline": "Your first physical computer reacts to you.",
+ "mode": "quest",
+ "durationMin": 60,
+ "objectives": [
+  "I can explain the difference between an input and an output using real examples.",
+  "I can build a working program on a real micro:bit that reacts to an input.",
+  "I can test my program and use what happens (or doesn't) to find and fix problems myself."
+ ],
+ "chunks": [
+  {
+   "id": "hook",
+   "engine": "briefing",
+   "title": "Mission Briefing",
+   "minutes": 2,
+   "config": {
+    "clearance": "OPERATION: MAKE IT MOVE",
+    "headline": "Something happens. Something reacts.",
+    "lines": [
+     "Every lift button, every pedestrian crossing, every step-counter on a wrist runs on one single idea: an INPUT triggers an OUTPUT.",
+     "Today you build your first physical computer — a real device, in your real hands, that reacts when you tell it to.",
+     "By the end of the hour it will answer your button press, and even your shake, with light signals of its own."
+    ],
+    "images": [
+     {
+      "src": "assets/img/l2/l2-lift.jpg",
+      "alt": "A lift control panel of buttons",
+      "caption": "A lift's buttons — pure input"
+     },
+     {
+      "src": "assets/img/l2/l2-crossing.jpg",
+      "alt": "A UK pedestrian crossing button unit",
+      "caption": "Press (input) → green man (output)"
+     },
+     {
+      "src": "assets/img/l2/l2-tracker.jpg",
+      "alt": "Fitness tracker devices",
+      "caption": "Trackers sensing every step you take"
+     }
+    ],
+    "video": null,
+    "cta": "Begin the mission"
+   }
+  },
+  {
+   "id": "howto",
+   "engine": "video",
+   "title": "How to Speak micro:bit",
+   "minutes": 4,
+   "config": {
+    "src": null,
+    "fallback": "The tutorial video for this mission is being filmed. For now your teacher will show the first blocks on the projector — everything you need is also on each rung card.",
+    "chapters": [
+     {
+      "t": 0,
+      "label": "What's input / output?"
+     },
+     {
+      "t": 60,
+      "label": "MakeCode blocks basics"
+     },
+     {
+      "t": 150,
+      "label": "Flashing to a real device"
+     },
+     {
+      "t": 240,
+      "label": "Testing & debug tips"
+     }
+    ]
+   }
+  },
+  {
+   "id": "ladder",
+   "engine": "ladder",
+   "title": "The Signal Relay Ladder",
+   "minutes": 36,
+   "badge": {
+    "id": "signal",
+    "name": "Signal Relay",
+    "icon": "assets/badges/bolt.png",
+    "xp": 15
+   },
+   "config": {
+    "title": "The Signal Relay Ladder",
+    "intro": "Four rungs. Each one is a target behaviour your pair must make REAL on the micro:bit in your hands. Nobody marks this — the device itself is the judge. Take turns: one of you builds the blocks, the other holds the card and presses the button to test. Swap every rung.",
+    "makecode": {
+     "url": "https://makecode.microbit.org/",
+     "label": "Open MakeCode"
+    },
+    "unplugged": {
+     "title": "Rung 1 — The Human Circuit",
+     "lines": [
+      "Stand up with your partner. One of you is the SENSOR, the other is the ACTUATOR. No screens for this rung — you two ARE the machine.",
+      "SENSOR: mime pressing an invisible button. ACTUATOR: the instant you see it, throw your arms up — that's your LED heart lighting.",
+      "New input: SENSOR mimes shaking a device. ACTUATOR: wave both hands — that's your scrolling message.",
+      "Swap roles and run both signals again.",
+      "Now say it out loud together: the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT."
+     ],
+     "confirm": "We both played Sensor and Actuator — and said the magic sentence"
+    },
+    "rungs": [
+     {
+      "id": "r2",
+      "title": "Rung 2 — First Signal",
+      "target": "On button A pressed → show a HEART icon.",
+      "img": "assets/img/l2/rung2.png",
+      "test": "Flash it to the micro:bit, then press the REAL button A (or the on-screen simulator if your device is sulking). Did the heart appear?",
+      "hint": "Is your 'show icon' block sitting INSIDE the 'on button A pressed' block? A block floating on its own never runs."
+     },
+     {
+      "id": "r3",
+      "title": "Rung 3 — Two Signals",
+      "target": "Button A shows a HEART. Button B shows a HAPPY face. Two inputs, two different outputs.",
+      "img": "assets/img/l2/rung3.png",
+      "test": "Press A, then B, on the device. Do you get two DIFFERENT icons?",
+      "hint": "You need TWO separate 'on button pressed' blocks — one set to A, one set to B. Check the little dropdown on each one."
+     },
+     {
+      "id": "r4",
+      "title": "Rung 4 — The Vanishing Message",
+      "target": "On shake → scroll the message MOVE IT!, hold for a second, then clear the screen.",
+      "img": "assets/img/l2/rung4.png",
+      "test": "Give it a real shake. Does the message scroll, hold, then vanish cleanly — every single time?",
+      "hint": "The ORDER inside 'on shake' matters: show string, THEN pause (ms) 1000, THEN clear screen. Without the pause, the words wipe the instant they finish."
+     }
+    ],
+    "stretch": {
+     "title": "Stretch — Compound Signal",
+     "target": "Press A + B TOGETHER → heart, a half-second pause, then a happy face. One input, a whole light sequence.",
+     "img": "assets/img/l2/stretch.png"
+    }
+   }
+  },
+  {
+   "id": "bank",
+   "engine": "artifact",
+   "title": "Bank Your Build",
+   "minutes": 6,
+   "badge": {
+    "id": "bank",
+    "name": "Vault Keeper",
+    "icon": "assets/badges/disk.png",
+    "xp": 6
+   },
+   "config": {
+    "title": "Bank your build",
+    "intro": "A build that lives on one computer is a build you can lose. Agents bank their work in the Vault — then it follows your login to ANY machine, even at home.",
+    "kinds": [
+     "hex"
+    ],
+    "hours": 3,
+    "steps": [
+     {
+      "icon": "💾",
+      "title": "Download your build",
+      "text": "In MakeCode press the purple Download button. A file ending in .hex lands in the computer's Downloads folder — that file IS your program."
+     },
+     {
+      "icon": "🗄️",
+      "title": "Open your Vault",
+      "text": "New tab → drive.google.com → open School → DT Work. (You built those folders in the Files That Follow You side quest.)"
+     },
+     {
+      "icon": "🎯",
+      "title": "Drag it in",
+      "text": "Drag the .hex file from Downloads into DT Work. Done — HQ can now verify it's really there."
+     }
+    ],
+    "passText": "Your build now follows your login anywhere — that's the whole point of the Vault. Next lesson you can pick up exactly where you left off, on any machine.",
+    "failText": "Not there yet. Check each step above — especially that the file went INTO the DT Work folder, not just onto the desktop — then run the inspection again."
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit Check",
+   "minutes": 2,
+   "config": {
+    "intro": "One scenario before you clock off, Agent — think like a debugger.",
+    "items": [
+     {
+      "id": "ex2-1",
+      "stem": "You build 'on button A pressed → show heart'. You press button A on the micro:bit but nothing appears. What is the MOST likely reason?",
+      "options": [
+       "The battery is flat",
+       "You forgot to flash the code onto the device",
+       "The heart icon doesn't exist",
+       "Button A only works if you press button B at the same time"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "exitp",
+   "engine": "parsons",
+   "title": "Build the Program",
+   "minutes": 2,
+   "config": {
+    "intro": "Last one: four real blocks, one working program. Put them in the order that matches the mission.",
+    "item": {
+     "id": "ex2-p",
+     "prompt": "When you shake it, MOVE IT! scrolls across the screen, holds for one second, then the screen clears.",
+     "blocks": [
+      "pause (ms) 1000",
+      "on shake",
+      "clear screen",
+      "show string \"MOVE IT!\""
+     ]
+    }
+   }
+  },
+  {
+   "id": "selfeval",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "statements": [
+     "I can tell the difference between an input and an output.",
+     "I can build code that reacts when something happens.",
+     "I can test my code and notice when it's not working."
+    ],
+    "difficulty": true,
+    "comment": true
+   }
+  }
+ ],
+ "keysEnc": "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"
+}

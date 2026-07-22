@@ -62,10 +62,11 @@
    "tagline": "Your first physical computer reacts to you.",
    "block": "b1",
    "icon": "⚡",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
    "absenceInferenceEligible": true,
-   "unplugged": true
+   "unplugged": true,
+   "file": "j1/lessons/j1-02.json"
   },
   {
    "id": "j1-03",
