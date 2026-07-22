@@ -51,14 +51,32 @@
     App.state.preview = true;
     return global.OLS_DEV_SERVER;
   }
+  /* Progress-save indicator (Damien, 22 Jul): pupils must SEE saving happen.
+     Amber "Saving…" while any progress write is in flight or queued; green
+     "Saved" once the server has acked and the outbox is empty. */
+  var SAVE_ACTIONS = { saveEvent: 1, submitExit: 1, submitBaseline: 1, catchup: 1 };
+  App.saveStatus = function (state) {
+    var chip = $('#save-chip');
+    if (!chip) return;
+    chip.hidden = false;
+    chip.className = 'save-chip ' + state;
+    chip.innerHTML = state === 'saving' ? 'Saving&hellip;' : 'Saved &#10003;';
+  };
+
   App.call = function (action, params) {
     if (!_T) _T = pickTransport();
     if (!_T || typeof _T.call !== 'function') {
       console.error('[App.call] no transport available');
       return Promise.resolve({ ok: false, error: 'no-transport' });
     }
+    var isSave = SAVE_ACTIONS[action] === 1;
+    if (isSave) App.saveStatus('saving');
     var p = Object.assign({ action: action, classCode: App.state.classCode }, params || {});
-    return _T.call(p).catch(function (err) {
+    return _T.call(p).then(function (r) {
+      // green only when THIS write succeeded and nothing is still queued
+      if (isSave && r && r.ok && outboxRead().length === 0) App.saveStatus('saved');
+      return r;
+    }).catch(function (err) {
       console.error('[App.call ' + action + ']', err);
       return { ok: false, error: 'transport', message: String(err && err.message || err) };
     });
@@ -103,8 +121,10 @@
     });
   };
   function updateOutboxDot() {
-    var dot = $('#outbox-dot');
-    if (dot) dot.hidden = outboxRead().length === 0;
+    // queued writes keep the chip amber; an emptied queue means all saved
+    var chip = $('#save-chip');
+    if (!chip || chip.hidden) return;
+    App.saveStatus(outboxRead().length > 0 ? 'saving' : 'saved');
   }
   global.addEventListener('online', function () { backoff = 1000; App.flushOutbox(); });
 
@@ -738,6 +758,7 @@
       if (App.state.review) App.toast('Reviewing a completed mission — nothing will be overwritten.', 3200);
       $('#hub').hidden = true;
       $('#player').hidden = false;
+      $('#save-chip').hidden = true; // fresh lesson: chip appears on the first save
       $('#player-num').textContent = 'Lesson ' + le.num;
       $('#player-title').textContent = lesson.title;
       $('#player-xp').textContent = App.state.xp + ' XP';
@@ -819,6 +840,7 @@
         return App.call('mark', { lessonId: s.lesson.id, itemId: itemId, choice: choice });
       },
       review: s.review,
+      catchup: s.catchup,
       saveEvent: function (payload) {
         if (s.review) return Promise.resolve({ ok: true, xp: s.xp });
         payload = payload || {};

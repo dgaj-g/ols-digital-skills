@@ -382,7 +382,6 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .player-num { color: var(--muted-d); font-family: var(--font-display); font-size: 0.64rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; }
 .player-title { font-family: var(--font-display); font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 44vw; }
 .player-right { display: flex; align-items: center; gap: 8px; }
-.outbox-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold-hi); box-shadow: var(--glow-gold); animation: panelPulse 1.2s infinite; }
 .chunk-rail { display: flex; justify-content: center; gap: 8px; padding: 12px 0 18px; }
 .rail-dot {
   width: 8px; height: 8px; border-radius: 50%; background: rgba(148, 178, 230, 0.25);
@@ -1038,6 +1037,22 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   --gold-rgb: 228, 184, 36; --gold-hi-rgb: 255, 216, 77; --accent-ink: #231A02;
 }
 
+/* ============ progress-save chip (pupil-visible save state) ============ */
+.save-chip {
+  font-family: var(--font-display); font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.05em; border-radius: 999px; padding: 5px 12px; white-space: nowrap;
+}
+.save-chip.saving {
+  color: #FFC46B; background: rgba(255, 158, 61, 0.12);
+  border: 1px solid rgba(255, 158, 61, 0.55);
+  animation: panelPulse 1.2s ease-in-out infinite;
+}
+.save-chip.saved {
+  color: #7BE8A8; background: rgba(47, 191, 116, 0.12);
+  border: 1px solid rgba(47, 191, 116, 0.55);
+}
+@media (max-width: 640px) { .save-chip { padding: 4px 9px; font-size: 0.66rem; } }
+
 </style>
 </head>
 <body>
@@ -1138,7 +1153,7 @@ window.OLS_ASSET_BASE = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/plat
       <span class="player-title" id="player-title"></span>
     </div>
     <div class="player-right">
-      <div class="outbox-dot" id="outbox-dot" title="Saving&hellip;" hidden></div>
+      <span class="save-chip" id="save-chip" hidden></span>
       <div class="agent-chip small"><span class="agent-xp" id="player-xp">0 XP</span></div>
     </div>
   </div>
@@ -1304,14 +1319,32 @@ window.OLS_TRANSPORT = {
     App.state.preview = true;
     return global.OLS_DEV_SERVER;
   }
+  /* Progress-save indicator (Damien, 22 Jul): pupils must SEE saving happen.
+     Amber "Saving\u2026" while any progress write is in flight or queued; green
+     "Saved" once the server has acked and the outbox is empty. */
+  var SAVE_ACTIONS = { saveEvent: 1, submitExit: 1, submitBaseline: 1, catchup: 1 };
+  App.saveStatus = function (state) {
+    var chip = $('#save-chip');
+    if (!chip) return;
+    chip.hidden = false;
+    chip.className = 'save-chip ' + state;
+    chip.innerHTML = state === 'saving' ? 'Saving&hellip;' : 'Saved &#10003;';
+  };
+
   App.call = function (action, params) {
     if (!_T) _T = pickTransport();
     if (!_T || typeof _T.call !== 'function') {
       console.error('[App.call] no transport available');
       return Promise.resolve({ ok: false, error: 'no-transport' });
     }
+    var isSave = SAVE_ACTIONS[action] === 1;
+    if (isSave) App.saveStatus('saving');
     var p = Object.assign({ action: action, classCode: App.state.classCode }, params || {});
-    return _T.call(p).catch(function (err) {
+    return _T.call(p).then(function (r) {
+      // green only when THIS write succeeded and nothing is still queued
+      if (isSave && r && r.ok && outboxRead().length === 0) App.saveStatus('saved');
+      return r;
+    }).catch(function (err) {
       console.error('[App.call ' + action + ']', err);
       return { ok: false, error: 'transport', message: String(err && err.message || err) };
     });
@@ -1356,8 +1389,10 @@ window.OLS_TRANSPORT = {
     });
   };
   function updateOutboxDot() {
-    var dot = $('#outbox-dot');
-    if (dot) dot.hidden = outboxRead().length === 0;
+    // queued writes keep the chip amber; an emptied queue means all saved
+    var chip = $('#save-chip');
+    if (!chip || chip.hidden) return;
+    App.saveStatus(outboxRead().length > 0 ? 'saving' : 'saved');
   }
   global.addEventListener('online', function () { backoff = 1000; App.flushOutbox(); });
 
@@ -1991,6 +2026,7 @@ window.OLS_TRANSPORT = {
       if (App.state.review) App.toast('Reviewing a completed mission \u2014 nothing will be overwritten.', 3200);
       $('#hub').hidden = true;
       $('#player').hidden = false;
+      $('#save-chip').hidden = true; // fresh lesson: chip appears on the first save
       $('#player-num').textContent = 'Lesson ' + le.num;
       $('#player-title').textContent = lesson.title;
       $('#player-xp').textContent = App.state.xp + ' XP';
@@ -2072,6 +2108,7 @@ window.OLS_TRANSPORT = {
         return App.call('mark', { lessonId: s.lesson.id, itemId: itemId, choice: choice });
       },
       review: s.review,
+      catchup: s.catchup,
       saveEvent: function (payload) {
         if (s.review) return Promise.resolve({ ok: true, xp: s.xp });
         payload = payload || {};
@@ -2522,10 +2559,15 @@ window.OLS_TRANSPORT = {
       ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId }).then(function (r) {
         if (r && r.ok) { salt = r.salt; check = r.check; }
       });
+      // Catch-up runs are SOLO by definition \u2014 swap the pair prompts out so an
+      // absent pupil is never told to confer with a partner who isn't there.
+      var pairBanner = ctx.catchup
+        ? '<div class="pair-banner">&#127919; Catch-up solo mission: no partner needed. Before each drop, say your reason in your head \u2014 "it goes there because&hellip;"</div>'
+        : '<div class="pair-banner">&#129309; ' + esc(cfg.pairPrompt || '') + '</div>';
       introCard(host, {
         kicker: chunk.title, title: 'The Vault',
         text: cfg.intro || '',
-        extra: '<div class="pair-banner">&#129309; ' + esc(cfg.pairPrompt || '') + '</div>'
+        extra: pairBanner
       }, 'Open the Vault', begin);
 
       function begin() {
@@ -2547,7 +2589,7 @@ window.OLS_TRANSPORT = {
         }
         var placed = {}, firstTryRight = 0, attempts = {};
         var stage = el('<div class="vault-stage">' +
-          '<div class="pair-banner slim">&#129309; Agree together before you release each file.</div>' +
+          '<div class="pair-banner slim">' + (ctx.catchup ? '&#127919; Solo run &mdash; reason each drop out in your head first.' : '&#129309; Agree together before you release each file.') + '</div>' +
           '<div class="vault-score">' + esc(cfg.scoreLabel || 'Vault Integrity') + ': <b id="vault-score">&mdash;</b></div>' +
           '<div class="vault-inbox"><h3>Inbox</h3><div class="vault-tray"></div></div>' +
           '<div class="vault-folders"></div>' +
@@ -2673,7 +2715,8 @@ window.OLS_TRANSPORT = {
           host.appendChild(d);
           d.querySelector('button').onclick = function () {
             host.innerHTML = '';
-            var s1 = el('<div class="card sync-card"><span class="sync-badge">SYNCHRONOUS</span><p>' + esc(cfg.debrief.sync) + '</p><button class="primary-btn" type="button">And the flip side&hellip;</button></div>');
+            var syncText = (ctx.catchup && cfg.debrief.syncCatchup) ? cfg.debrief.syncCatchup : cfg.debrief.sync;
+            var s1 = el('<div class="card sync-card"><span class="sync-badge">SYNCHRONOUS</span><p>' + esc(syncText) + '</p><button class="primary-btn" type="button">And the flip side&hellip;</button></div>');
             host.appendChild(s1);
             s1.querySelector('button').onclick = function () {
               host.innerHTML = '';
