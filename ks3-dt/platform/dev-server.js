@@ -941,7 +941,7 @@
         Object.keys(locks2).forEach(function (k) { locksOut2[k] = { on: num_(locks2[k].on), u: num_(locks2[k].u) }; });
         return {
           ok: true, year: str_(year2), rows: rows, locks: locksOut2,
-          cfg: { lb: cfg2.lb, absDays: num_(cfg2.absDays), cover: num_(cfg2.cover.on), coverLesson: str_(cfg2.cover.lesson) },
+          cfg: { lb: cfg2.lb, absDays: num_(cfg2.absDays), cover: num_(cfg2.cover.on), coverLesson: str_(cfg2.cover.lesson), pairing: { on: num_(cfg2.pairing.on) } },
           groups: team2.groups.map(function (g) { return { id: str_(g.id), name: str_(g.name) }; }),
           reveal: !!team2.reveal
         };
