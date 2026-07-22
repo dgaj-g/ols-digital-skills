@@ -315,6 +315,7 @@
       if (!r || !r.ok) return false;
       var s = App.state;
       s.me = r.me; s.locks = r.locks || {}; s.lb = r.lb; s.team = r.team;
+      s.pairing = Number(r.pairing == null ? 1 : r.pairing);
       s.absence = r.absence || []; s.year = r.year || 'j1';
       s.contentVersion = String(r.contentVersion || 'v0');
       s.xp = r.me ? Number(r.me.xp || 0) : 0;
@@ -375,13 +376,28 @@
     ['pointerdown', 'keydown', 'scroll'].forEach(function (evt) {
       document.addEventListener(evt, function () { lastInteract = Date.now(); }, { passive: true });
     });
+    var beatN = 0;
     setInterval(function () {
       if (document.hidden) return;
       if (Date.now() - lastInteract > 90000) return;
       if (App.state.lesson) App.state.pendingMin += 0.5;
+      // presence beacon every other beat (~60s) — feeds pairing + the staff
+      // Pairing lens (section 12); review/catch-up runs never count as present
+      beatN++;
+      if (beatN % 2 === 0) App.ping();
     }, 30000);
     App.flushOutbox();
   }
+
+  /* Presence beacon (fire-and-forget; cache-only server-side). */
+  App.ping = function () {
+    var s = App.state;
+    if (!s.lesson || s.review || s.catchup || !s.lessonEntry) return;
+    App.call('ping', {
+      lessonNum: String(s.lessonEntry.num),
+      ci: Number(s.chunkIdx), cc: (s.chunks || []).length
+    });
+  };
 
   App.openModal = function (id) { var m = $('#' + id); if (m) m.hidden = false; };
   App.closeModal = function (id) { var m = $('#' + id); if (m) m.hidden = true; };
@@ -821,6 +837,7 @@
     host.className = 'chunk-host engine-' + ch.engine;
     global.scrollTo(0, 0);
     renderRail();
+    App.ping(); // fresh chunk position for the pairing/laggard picture
     var engine = global.Engines && global.Engines[ch.engine];
     if (!engine) {
       host.innerHTML = '<div class="card"><h2>' + esc(ch.title || '') + '</h2><p>This part is being prepared.</p>' +
@@ -918,6 +935,7 @@
 
   function finishLesson() {
     var s = App.state;
+    if (global.PairKit) global.PairKit.stop();
     var wasCatchup = s.catchup;
     var num = String(s.lessonEntry.num);
     if (wasCatchup) App.call('catchup', { lessonNum: num }).then(function (r) { if (!r || !r.ok) App.enqueue('catchup', { lessonNum: num }); });
@@ -939,6 +957,7 @@
   App.confirmLeaveLesson = function () {
     App.confirm('Leave the lesson?', 'Your progress so far is saved — you can come back to where you left off.', 'Leave', function (yes) {
       if (!yes) return;
+      if (global.PairKit) global.PairKit.stop(); // never poll a channel from the hub
       // flush active minutes so a pupil who worked but didn't finish a badge
       // still counts as present for absence inference
       if (App.state.lesson && !App.state.review && App.state.pendingMin >= 1) {
