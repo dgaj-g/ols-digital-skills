@@ -188,3 +188,75 @@ and dashboard plumbing as core lessons. First instance: `j1-sq1` "Files That Fol
 read-only, capped iteration, badge granted via the normal idempotent saveEvent path;
 OneDrive half is confirm-only, no API exists). Preview simulates the inspection and
 says so on screen.
+
+## 12. Auto-pairing + monitored chat (Session C — spec agreed with Damien 22 Jul 2026)
+
+Any chunk may declare `config.paired: true` (first instance: L1 `b3-vault`). The activity
+becomes a genuinely SHARED, turn-based experience between platform-matched pupils on
+separate machines, with a monitored "Comms Channel" chat. Catch-up and review runs stay
+solo (existing `ctx.catchup`/`ctx.review` behaviour unchanged). Teacher can switch the
+whole feature off per class (`cfg.pairing.on`, default ON) — off = the Session-B
+one-machine social pairing, verbatim.
+
+**Matching (FIFO, stage-matched, agreed spec):**
+- Presence: every active client pings `apiPing` (~60 s, piggybacked on the existing
+  heartbeat) → CacheService map `pres:<class>` `{email: [tmin, lessonNum, chunkIdx,
+  chunkCount]}`. "Live-present" = pinged within 10 min on this lesson. Lock-free
+  (self-healing); queue/pair mutations run under `withLock_`.
+- On reaching a paired chunk the client calls `apiPairJoin` (idempotent; doubles as the
+  waiting poll, ~2 s). Under the lock the server computes `expected` = live-present
+  pupils not yet paired/solo/past-stage. Rules: pair the two longest-waiting whenever
+  `expected > 3`; when `expected == 3` HOLD everyone until all three are queued, then
+  form the TRIO (the last three always finish together); `expected == 2` pairs the final
+  two; `expected == 1` releases that pupil SOLO. A formed pair/trio is sealed — a
+  late-joiner never joins a started pair; they queue for the next match.
+- Registry: queue + pairs live in cache `pq:<class>:<lessonId>`; formed pairs are ALSO
+  mirrored to ScriptProperties `pair:<class>:<lessonId>` (tiny: members + ts) so a cache
+  eviction can never orphan a mid-activity pair.
+- Staff overrides (Live tab): release a waiter to solo, force-pair the current queue.
+
+**Channel (CacheService transport, agreed spec):**
+- `pch:<pairId>` holds `{seq, ev:[...]}` — typed events `msg` / `drop` / `done`, appended
+  by `apiPairSend` under the lock (atomic append), read by `apiPairChannel` (~2 s poll,
+  `since` cursor). Last ~150 events kept; messages ≤ 240 chars, HTML-escaped at render,
+  server rate-limited (~1.2 s/sender). TTLs 6 h.
+- Pupils see each other as CODENAME + insignia only; `apiPairComplete` flips the reveal —
+  first names are returned only after completion ("Identity declassified" card).
+- A pinned banner on the chat dock: monitored channel — the teacher can read every
+  message. Transcript: on completion the server flushes a compact transcript
+  (≤ ~500 chars head+tail + message counts) to store key `chat:<class>:<lessonId>`;
+  live monitoring reads the CACHE (full recent events), the store copy is the durable
+  audit record. `archiveSweep_` gains a chat pass: transcripts ≥ 7 days old move to a
+  second "Chat Archive" tab of the Archive Sheet (write-verify-then-delete), keeping the
+  store lean (§9 quota discipline).
+- Partner-stale rule: a member silent > 45 s on the channel is marked stale; driving
+  falls to the active member(s), with a calm banner. Rejoining replays events from seq 0
+  (placements are derived state — reload-safe with no extra draft machinery).
+
+**Shared vault protocol (turn-based):** driver rotates on every ATTEMPT (drop right or
+wrong) among active members, round-robin in trios — both/all hands touch the controls and
+the wrong-drop handover forces real discussion. Only the driver can drag; others watch
+live (drop events animate in) and advise on the channel. Score (`firstTryRight`) derives
+from the shared event stream; each member records her own result through the normal
+idempotent saveEvent/awardBadge path (XP economy untouched). The sync/async debrief now
+narrates an experience that genuinely happened over the school network.
+
+**Laggard alert (agreed spec):** staff Live tab gains a Pairing lens (visible when a
+delivered lesson has a paired chunk): live queue with wait times, formed pairs with
+message counts + last line, transcript viewer, laggard chips = live-present pupils far
+behind the pairing stage while classmates wait. While open it auto-polls (~5 s) and a
+waiter stuck > 90 s triggers the alert row + a WebAudio chime (no asset; mute toggle
+persisted per device). Alerts exist to unblock waiters — the chips name exactly who the
+class is waiting for.
+
+**Quota/consent:** CacheService + LockService need no OAuth scope — zero consent-screen
+change, nothing new for the DPO beyond the monitored-chat retention note (7-day live
+store window → yearly Archive Sheet). Store cost is bounded: pair registry ~1 KB +
+transcripts ~7 KB per class-lesson, swept weekly.
+
+**Dev parity:** FakeServer mirrors all five APIs + admin subs against the shared
+localStorage blob — two same-origin tabs are two REAL paired pupils (per-tab identity
+via `?as=<seeded-pupil>`, sessionStorage-sticky, preview only). Waiting alone > 8 s in
+preview spawns a simulated partner bot (flagged on screen) that chats scripted lines,
+takes its turns via dev-keys, and fumbles one drop so the return path shows — the
+single-tab demo stays complete.
