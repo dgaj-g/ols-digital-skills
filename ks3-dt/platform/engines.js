@@ -342,10 +342,18 @@
   Engines.briefing = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
+      // optional hook-photo strip (real images, credited in assets/img/CREDITS.md)
+      var photoStrip = (cfg.images && cfg.images.length)
+        ? '<div class="dossier-photos">' + cfg.images.map(function (im) {
+            return '<figure><img src="' + esc(im.src) + '" alt="' + esc(im.alt || '') + '" loading="lazy">' +
+              (im.caption ? '<figcaption>' + esc(im.caption) + '</figcaption>' : '') + '</figure>';
+          }).join('') + '</div>'
+        : '';
       var d = el('<div class="dossier">' +
         '<div class="dossier-top"><span class="dossier-stamp">CLASSIFIED</span><span class="dossier-clearance">' + esc(cfg.clearance || '') + '</span></div>' +
         '<h1 class="dossier-headline"></h1>' +
         '<div class="dossier-lines"></div>' +
+        photoStrip +
         '<button class="primary-btn dossier-cta" type="button" hidden>' + esc(cfg.cta || 'Continue') + '</button>' +
         '<button class="dossier-skip" type="button">Skip &raquo;</button>' +
         '</div>');
@@ -1133,6 +1141,296 @@
         '<button class="primary-btn" type="button">Start the catch-up</button></div>');
       host.appendChild(c);
       c.querySelector('button').onclick = function () { ctx.next(); };
+    }
+  };
+
+  /* ================= ladder (L2+: physical-first challenge ladder) =========
+     Rung cards for out-of-platform building (MakeCode/Scratch in another tab):
+     each rung is a target behaviour the pair makes REAL, tested on the actual
+     device - the platform never marks it, the physical result is the test
+     (doc 07 L2). Debug Hints cost a signal point; the badge XP honours clean
+     rungs. Progress survives refresh via the draft. */
+  Engines.ladder = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var rungs = cfg.rungs || [];
+      var draft = (ctx.draft && ctx.draft.ladder) || {};
+      var done = draft.done || [];      // rung ids cleared
+      var hinted = draft.hinted || [];  // rung ids where the hint was bought
+      var stretchDone = !!draft.stretch;
+      var idx = 0;
+      while (idx < rungs.length && done.indexOf(String(rungs[idx].id)) !== -1) idx++;
+      var unpluggedDone = !!draft.unplugged || idx > 0;
+
+      function saveLadder() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        App.state.draft.ladder = { done: done, hinted: hinted, unplugged: unpluggedDone ? 1 : 0, stretch: stretchDone ? 1 : 0 };
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+
+      function pointsBar() {
+        var lit = rungs.map(function (r) {
+          var isDone = done.indexOf(String(r.id)) !== -1;
+          var isHint = hinted.indexOf(String(r.id)) !== -1;
+          return '<span class="rung-dot' + (isDone ? ' lit' : '') + (isHint ? ' hinted' : '') + '" title="' + esc(r.title) + '">&#9889;</span>';
+        }).join('');
+        return '<div class="rung-bar">' + lit + (cfg.stretch ? '<span class="rung-dot stretch' + (stretchDone ? ' lit' : '') + '">&#11088;</span>' : '') + '</div>';
+      }
+
+      function openerRow() {
+        return cfg.makecode
+          ? '<p class="ladder-open"><a class="ghost-btn" href="' + esc(cfg.makecode.url) + '" target="_blank" rel="noopener">' + esc(cfg.makecode.label || 'Open MakeCode') + ' &#8599;</a>' +
+            '<span class="ladder-open-note">keep it open in its own tab &mdash; you will hop between it and this ladder</span></p>'
+          : '';
+      }
+
+      introCard(host, {
+        kicker: chunk.title, title: cfg.title || 'The Challenge Ladder',
+        text: cfg.intro || '',
+        extra: pointsBar() + openerRow()
+      }, unpluggedDone ? 'Back to the ladder' : 'Start climbing', function () {
+        if (!unpluggedDone && cfg.unplugged) unplugged(); else showRung();
+      });
+
+      function unplugged() {
+        var up = cfg.unplugged;
+        var lines = (up.lines || []).map(function (l) { return '<li>' + esc(l) + '</li>'; }).join('');
+        var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(up.title || 'Rung 1') + '</span>' +
+          '<h2>&#128268; No screens yet &mdash; you two ARE the circuit</h2>' +
+          '<ol class="ladder-script">' + lines + '</ol>' +
+          '<button class="confirm-step" type="button"><span class="confirm-box"></span><span>' + esc(up.confirm || 'We both took a turn') + '</span></button></div>');
+        host.appendChild(c);
+        c.querySelector('.confirm-step').onclick = function () {
+          this.classList.add('ticked');
+          unpluggedDone = true;
+          saveLadder();
+          setTimeout(function () { host.innerHTML = ''; showRung(); }, 550);
+        };
+      }
+
+      function showRung() {
+        if (idx >= rungs.length) { stretchOrFinish(); return; }
+        var r = rungs[idx];
+        var hintUsed = hinted.indexOf(String(r.id)) !== -1;
+        var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(r.title) + '</span>' +
+          pointsBar() +
+          '<h2 class="rung-target">' + esc(r.target) + '</h2>' +
+          (r.img ? '<img class="rung-img" src="' + esc(r.img) + '" alt="The blocks for this rung">' : '') +
+          '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(r.test || 'Flash it to the device and make it happen for real.') + '</p></div>' +
+          '<div class="rung-hint" hidden><p>&#128161; ' + esc(r.hint || '') + '</p></div>' +
+          '<div class="rung-actions">' +
+          '<button class="primary-btn rung-worked" type="button">It worked on the device! &#9889;</button>' +
+          (r.hint && !hintUsed ? '<button class="ghost-btn rung-hint-btn" type="button">Debug Hint (costs a signal point)</button>' : '') +
+          '</div></div>');
+        host.innerHTML = '';
+        host.appendChild(c);
+        if (hintUsed) { c.querySelector('.rung-hint').hidden = false; }
+        var hb = c.querySelector('.rung-hint-btn');
+        if (hb) hb.onclick = function () {
+          hinted.push(String(r.id));
+          saveLadder();
+          c.querySelector('.rung-hint').hidden = false;
+          hb.remove();
+        };
+        c.querySelector('.rung-worked').onclick = function () {
+          done.push(String(r.id));
+          saveLadder();
+          App.toast('Rung cleared &mdash; signal locked in.');
+          idx++;
+          showRung();
+        };
+      }
+
+      function stretchOrFinish() {
+        if (!cfg.stretch || stretchDone) { finishLadder(); return; }
+        var s = cfg.stretch;
+        var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(s.title || 'Stretch') + '</span>' +
+          pointsBar() +
+          '<h2 class="rung-target">' + esc(s.target) + '</h2>' +
+          (s.img ? '<img class="rung-img" src="' + esc(s.img) + '" alt="Stretch blocks">' : '') +
+          '<div class="rung-actions">' +
+          '<button class="primary-btn" type="button">We built it! &#11088;</button>' +
+          '<button class="ghost-btn" type="button">Finish the ladder without it</button>' +
+          '</div></div>');
+        host.innerHTML = '';
+        host.appendChild(c);
+        var btns = c.querySelectorAll('button');
+        btns[0].onclick = function () { stretchDone = true; saveLadder(); finishLadder(); };
+        btns[1].onclick = function () { finishLadder(); };
+      }
+
+      function finishLadder() {
+        var clean = 0;
+        rungs.forEach(function (r) {
+          if (done.indexOf(String(r.id)) !== -1 && hinted.indexOf(String(r.id)) === -1) clean++;
+        });
+        var cleared = done.length;
+        var xp = 7 + clean * 5 + (cleared - clean) * 3 + (stretchDone ? 5 : 0);
+        var badge = Object.assign({}, ctx.chunk.badge, { xp: xp });
+        var detail = 'ladder=' + cleared + '/' + rungs.length + (stretchDone ? '+s' : '');
+        ctx.awardBadge(badge, detail).then(function () { ctx.next(); });
+      }
+    }
+  };
+
+  /* ================= parsons (distractor-free ordering, exit part 2) =======
+     Tap-to-build: blocks are AUTHORED scrambled; the answer key is the
+     lexicographic index of the correct permutation, marked server-side via
+     the ordinary apiMark call - no readable key ever reaches the client
+     (red team #1 holds). One attempt, honest feedback, correct order revealed
+     after, result recorded as a detail key (never blocks completion). */
+  function permIndex(perm) {
+    var n = perm.length, idx = 0, used = [];
+    for (var i = 0; i < n; i++) {
+      var smaller = 0;
+      for (var j = 0; j < perm[i]; j++) if (used.indexOf(j) === -1) smaller++;
+      var f = 1;
+      for (var k = 2; k <= n - 1 - i; k++) f *= k;
+      idx += smaller * f;
+      used.push(perm[i]);
+    }
+    return idx;
+  }
+  function permFromIndex(idx, n) {
+    var pool = [], out = [];
+    for (var i = 0; i < n; i++) pool.push(i);
+    for (var p = n - 1; p >= 1; p--) {
+      var f = 1;
+      for (var k = 2; k <= p; k++) f *= k;
+      var d = Math.floor(idx / f);
+      idx = idx % f;
+      out.push(pool.splice(d, 1)[0]);
+    }
+    out.push(pool[0]);
+    return out;
+  }
+
+  Engines.parsons = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var it = cfg.item;
+      var placed = []; // source indices in the pupil's chosen order
+      introCard(host, { kicker: 'Exit check &middot; part 2', title: cfg.title || 'Build the program', text: cfg.intro || '' }, 'Ready', build);
+
+      function build() {
+        var c = el('<div class="card parsons-card">' +
+          '<p class="parsons-goal">&#127919; ' + esc(it.prompt) + '</p>' +
+          '<div class="parsons-cols">' +
+          '<div class="parsons-tray"><h3>Blocks</h3><div class="pt-list"></div></div>' +
+          '<div class="parsons-prog"><h3>Your program</h3><ol class="pp-list"></ol></div>' +
+          '</div>' +
+          '<p class="parsons-note">Tap a block to add it &mdash; tap it again in your program to send it back.</p>' +
+          '<button class="primary-btn parsons-check" type="button" disabled>Check my program</button>' +
+          '<div class="q-feedback" hidden></div></div>');
+        host.appendChild(c);
+        var tray = c.querySelector('.pt-list'), prog = c.querySelector('.pp-list');
+        var checkBtn = c.querySelector('.parsons-check');
+
+        function render() {
+          tray.innerHTML = '';
+          prog.innerHTML = '';
+          it.blocks.forEach(function (b, si) {
+            if (placed.indexOf(si) !== -1) return;
+            var n = el('<button class="parsons-block" type="button">' + esc(b) + '</button>');
+            n.onclick = function () { placed.push(si); render(); };
+            tray.appendChild(n);
+          });
+          placed.forEach(function (si) {
+            var n = el('<li><button class="parsons-block placed" type="button">' + esc(it.blocks[si]) + '</button></li>');
+            n.querySelector('button').onclick = function () {
+              placed.splice(placed.indexOf(si), 1);
+              render();
+            };
+            prog.appendChild(n);
+          });
+          checkBtn.disabled = placed.length !== it.blocks.length;
+        }
+        render();
+
+        checkBtn.onclick = function () {
+          checkBtn.disabled = true;
+          c.querySelectorAll('.parsons-block').forEach(function (b) { b.disabled = true; });
+          ctx.markItem(it.id, permIndex(placed)).then(function (r) {
+            var fb = c.querySelector('.q-feedback');
+            fb.hidden = false;
+            if (!r || !r.ok) {
+              fb.className = 'q-feedback neutral';
+              fb.innerHTML = '<p>Hmm &mdash; could not check that one (wifi?). Moving on.</p><button class="primary-btn" type="button">Continue</button>';
+            } else if (r.correct) {
+              fb.className = 'q-feedback good';
+              fb.innerHTML = '<p class="q-verdict">Correct &mdash; that program does exactly what the mission asked.</p>' +
+                (r.explain ? '<p class="q-explain">' + esc(r.explain) + '</p>' : '') +
+                '<button class="primary-btn" type="button">Continue</button>';
+            } else {
+              var order = permFromIndex(Number(r.correctIdx), it.blocks.length);
+              fb.className = 'q-feedback bad';
+              fb.innerHTML = '<p class="q-verdict">Not quite &mdash; here is the working order:</p>' +
+                '<ol class="parsons-answer">' + order.map(function (si) { return '<li>' + esc(it.blocks[si]) + '</li>'; }).join('') + '</ol>' +
+                (r.explain ? '<p class="q-explain">' + esc(r.explain) + '</p>' : '') +
+                '<button class="primary-btn" type="button">Continue</button>';
+            }
+            if (!ctx.review && r && r.ok) ctx.saveEvent({ detail: 'ep=' + (r.correct ? 1 : 0) });
+            fb.querySelector('button').onclick = function () { ctx.next(); };
+            fb.querySelector('button').focus();
+          });
+        };
+      }
+    }
+  };
+
+  /* ================= artifact (bank your build: HQ checks the REAL Drive) ==
+     Teaches the save-to-Drive flow for external tools (Damien's condition:
+     pupils are SHOWN how), then genuinely verifies a fresh file of the right
+     kind is inside School > DT Work. Never blocks the lesson - the badge is
+     the honest reward; the fallback path continues without it. */
+  Engines.artifact = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var steps = (cfg.steps || []).map(function (s, i) {
+        return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p></div></li>';
+      }).join('');
+      var c = el('<div class="card af-card"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+        '<h2>' + esc(cfg.title || 'Bank your build') + '</h2>' +
+        '<p class="intro-lead">' + esc(cfg.intro || '') + '</p>' +
+        '<ol class="af-steps">' + steps + '</ol>' +
+        '<div class="rung-actions">' +
+        '<button class="primary-btn" type="button">Run the HQ Inspection</button>' +
+        '<button class="ghost-btn" type="button" hidden>Continue without banking (ask your teacher)</button>' +
+        '</div><div class="af-result"></div></div>');
+      host.appendChild(c);
+      var runBtn = c.querySelectorAll('button')[0];
+      var skipBtn = c.querySelectorAll('button')[1];
+      var box = c.querySelector('.af-result');
+      var tries = 0;
+      skipBtn.onclick = function () { ctx.next(); };
+      runBtn.onclick = function () {
+        runBtn.disabled = true;
+        box.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>HQ is looking inside your Vault&hellip;</span></div>';
+        ctx.call('artifactCheck', { lessonNum: String(ctx.lessonEntry.num), kinds: cfg.kinds || ['hex'], hours: cfg.hours || 3 }).then(function (r) {
+          runBtn.disabled = false;
+          tries++;
+          if (!r || !r.ok) {
+            box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>The line to HQ dropped (wifi?) &mdash; try again in a moment.</span></div>';
+            return;
+          }
+          if (r.found) {
+            box.innerHTML = '<div class="dc-row ok"><span class="dc-mark">&#10003;</span><span>HQ found <b>' + esc(r.name) + '</b> in your DT Work vault' +
+              (r.ageMin != null ? ' (saved ' + Number(r.ageMin) + ' min ago)' : '') + '.</span></div>' +
+              (r.simulated ? '<p class="dc-sim">(Preview mode: this inspection is simulated &mdash; the live platform checks your real Drive.)</p>' : '') +
+              '<p>' + esc(cfg.passText || 'Your build now follows your login anywhere. That is the whole point of the Vault.') + '</p>';
+            runBtn.textContent = 'Claim the badge';
+            runBtn.onclick = function () { finishChunk(ctx, 'bank=1'); };
+            skipBtn.hidden = true;
+          } else {
+            box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
+              (r.noFolder ? 'HQ could not find your School &gt; DT Work folder &mdash; it is built in the Files That Follow You side quest.'
+                : 'No freshly-saved build found in DT Work yet.') + '</span></div>' +
+              '<p>' + esc(cfg.failText || 'Check each step above, then run the inspection again.') + '</p>';
+            if (tries >= 2) skipBtn.hidden = false;
+          }
+        });
+      };
     }
   };
 
