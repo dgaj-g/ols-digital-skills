@@ -1151,3 +1151,77 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .reveal-cn { font-weight: 700; color: var(--muted); }
 .reveal-arrow { color: var(--gold-deep); font-size: 0.8rem; }
 .reveal-name { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: var(--ink); }
+
+/* ============ Lesson 2+: challenge ladder / parsons / bank-your-build ============ */
+.ladder-card { max-width: 640px; }
+.rung-bar { display: flex; gap: 6px; margin: 10px 0 14px; }
+.rung-dot {
+  font-size: 1.15rem; filter: grayscale(1); opacity: 0.35;
+  transition: filter 0.3s, opacity 0.3s, transform 0.3s;
+}
+.rung-dot.lit { filter: none; opacity: 1; transform: scale(1.12); }
+.rung-dot.lit.hinted { opacity: 0.75; }
+.ladder-open { margin: 12px 0 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ladder-open-note { color: var(--muted); font-size: 0.8rem; }
+.ladder-script { margin: 14px 0 18px; padding-left: 22px; color: var(--ink); }
+.ladder-script li { margin: 8px 0; line-height: 1.5; }
+.rung-target { font-size: 1.25rem; line-height: 1.4; margin: 6px 0 12px; }
+.rung-img {
+  display: block; max-width: 100%; border: 1px solid var(--line-l); border-radius: 12px;
+  margin: 0 0 14px; background: #fff;
+}
+.rung-test {
+  background: rgba(var(--gold-rgb), 0.1); border: 1px solid rgba(var(--gold-rgb), 0.45);
+  border-radius: 10px; padding: 10px 14px; margin: 0 0 12px;
+}
+.rung-test p { margin: 0; line-height: 1.45; }
+.rung-hint {
+  background: var(--field); border: 1px dashed var(--line-l); border-radius: 10px;
+  padding: 10px 14px; margin: 0 0 12px; color: var(--muted);
+}
+.rung-hint p { margin: 0; line-height: 1.45; }
+.rung-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+.parsons-card { max-width: 680px; }
+.parsons-goal { font-weight: 700; font-size: 1.05rem; line-height: 1.45; margin: 4px 0 14px; }
+.parsons-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 640px) { .parsons-cols { grid-template-columns: 1fr; } }
+.parsons-tray, .parsons-prog {
+  background: var(--field); border: 1px solid var(--line-l); border-radius: 12px; padding: 10px 12px;
+  min-height: 150px;
+}
+.parsons-tray h3, .parsons-prog h3 { margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.pt-list { display: flex; flex-direction: column; gap: 8px; }
+.pp-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+.parsons-block {
+  display: block; width: 100%; text-align: left; cursor: pointer; font: inherit; font-size: 0.92rem;
+  background: #fff; color: var(--ink); border: 1.5px solid var(--line-l); border-radius: 10px;
+  padding: 9px 12px; transition: border-color 0.15s, transform 0.15s;
+}
+.parsons-block:hover { border-color: var(--gold); }
+.parsons-block.placed { background: rgba(var(--gold-rgb), 0.1); border-color: rgba(var(--gold-rgb), 0.55); }
+.parsons-block:disabled { cursor: default; opacity: 0.75; }
+.parsons-note { color: var(--muted); font-size: 0.82rem; margin: 10px 0 12px; }
+.parsons-answer { margin: 8px 0; padding-left: 22px; }
+.parsons-answer li { margin: 4px 0; }
+
+.af-card { max-width: 640px; }
+.af-steps { list-style: none; margin: 14px 0 16px; padding: 0; display: grid; gap: 10px; counter-reset: af; }
+.af-steps li {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--field); border: 1px solid var(--line-l); border-radius: 12px; padding: 11px 14px;
+}
+.af-icon { font-size: 1.3rem; line-height: 1.2; }
+.af-steps b { display: block; margin-bottom: 2px; }
+.af-steps p { margin: 0; color: var(--muted); line-height: 1.45; font-size: 0.9rem; }
+.af-result { margin-top: 12px; }
+.af-result .dc-row { margin: 8px 0; }
+
+/* hook-photo strip on the dossier */
+.dossier-photos { display: flex; gap: 12px; margin: 18px 0 6px; flex-wrap: wrap; }
+.dossier-photos figure { margin: 0; flex: 1 1 150px; max-width: 220px; }
+.dossier-photos img {
+  width: 100%; height: 120px; object-fit: cover; border-radius: 10px;
+  border: 1px solid var(--line-d); display: block;
+}
+.dossier-photos figcaption { color: var(--muted-d); font-size: 0.72rem; margin-top: 5px; line-height: 1.35; }
