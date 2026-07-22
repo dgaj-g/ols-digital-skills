@@ -537,7 +537,8 @@ function apiVaultInfo(req) {
   if (str_(req.mode) === 'explain') {
     var rec = readPupil_(cls, email);
     var a = rec ? larr_(rec, numStr) : null;
-    var done = a && (detailKeys_(a[2]).indexOf('vp') !== -1 || detailKeys_(a[2]).indexOf(keyId) !== -1);
+    var done = a && (detailKeys_(a[2]).indexOf('vp') !== -1 || detailKeys_(a[2]).indexOf(keyId) !== -1 ||
+      ((num_(a[7]) & 4) && num_(a[0]) === 2)); // archived completed lesson: ledger swept, review keeps its explains
     if (!done) return { ok: false, error: 'not-finished' };
     return { ok: true, explain: v.explain || {} };
   }
@@ -600,6 +601,9 @@ function apiSaveEvent(req) {
     var rec = readPupil_(cls, email);
     if (!rec) return { ok: false, error: 'not-joined' };
     var a = larr_(rec, numStr);
+    // Archived lessons are SEALED: their detail ledger (the XP idempotency
+    // record) now lives in the year archive, so no further grants or writes.
+    if ((num_(a[7]) & 4) && num_(a[0]) === 2) return { ok: true, xp: num_(rec.xp), sealed: true };
     if (num_(a[0]) < 1) a[0] = 1;
     var xpDelta = Math.max(0, Math.min(40, num_(req.xp)));
     var isNew = req.detail != null && detailAddsNew_(a[2], str_(req.detail));
@@ -716,7 +720,8 @@ function apiSubmitBaseline(req) {
     if (!rec) return { ok: false, error: 'not-joined' };
     var a = larr_(rec, numStr);
     // The baseline is a one-off diagnostic: first submission is the record.
-    if (detailKeys_(a[2]).indexOf('bl') !== -1) return { ok: true, already: true };
+    // (An archived lesson's ledger is swept, so the archived bit also gates.)
+    if (detailKeys_(a[2]).indexOf('bl') !== -1 || (num_(a[7]) & 4)) return { ok: true, already: true };
     a[2] = mergeDetail_(a[2], 'bl=' + right + '/' + ids.length + '|' + chosen);
     a[5] = tmin_();
     if (num_(a[0]) < 1) a[0] = 1;
@@ -888,8 +893,17 @@ function apiAdmin(req) {
       classes: reg.map(function (c) {
         return { name: str_(c.name), owner: str_(c.owner), year: str_(c.year), created: str_(c.created), pupils: num_(counts[c.name] || 0) };
       }),
-      store: { bytes: num_(health.bytes), limit: num_(health.limit), pupils: num_(health.pupils) }
+      store: { bytes: num_(health.bytes), limit: num_(health.limit), pupils: num_(health.pupils) },
+      archive: jget_(sp_(), 'archiveMeta', null)
     };
+  }
+
+  /* Manual archive sweep (same routine the nightly trigger runs). Only the
+     platform owner's account can open the archive Sheet, so anyone else gets
+     a clear error back instead of a half-run. */
+  if (sub === 'archiveNow') {
+    var sweep = archiveSweep_();
+    return { ok: true, ran: true, rows: num_(sweep.rows), pupils: num_(sweep.pupils), okRun: !!sweep.ok, error: str_(sweep.error || '') };
   }
 
   /* Remove one pupil's shared record from a class (wrong-class joins happen -
@@ -1121,6 +1135,103 @@ function apiAdmin(req) {
   }
 
   return { ok: false, error: 'unknown-sub' };
+}
+
+/* ==================== NIGHTLY ARCHIVAL (the pre-scale housekeeping robot) ====================
+   The shared ScriptProperties store is capped at 500KB script-wide (review
+   finding, CRITICAL). This sweep keeps it lean forever: once a lesson is
+   COMPLETED and ARCHIVE_AFTER_DAYS old, its verbose fields (detail ledger,
+   comment) move to the "KS3 DT - Yearly Archive" Google Sheet in the owner's
+   Drive - same Workspace tenancy, write-VERIFY-then-trim per class (red team
+   #6). Runs as the OWNER via a time-driven trigger added in the editor UI
+   (no scriptapp scope in the manifest; pupils never see a standing-access
+   consent line). Google emails the owner automatically if a trigger run
+   throws; the staff Classes tab shows the last-run summary either way.
+
+   Owner one-time setup: run setupArchive() in the editor, then add the
+   trigger: archiveSweep / time-driven / day timer / 2-3am (see recipe). */
+var ARCHIVE_AFTER_DAYS = 28; // completed lessons keep full live detail this long
+var ARCHIVE_HEADERS = ['archivedAt', 'class', 'email', 'name', 'codename', 'lesson', 'xp',
+  'detail', 'exitChosen', 'selfEval', 'comment', 'activeMin', 'recapRight', 'recapTotal', 'lastActive'];
+
+function setupArchive() {
+  var sp = sp_();
+  var id = sp.getProperty('ARCHIVE_SHEET_ID');
+  if (id) { Logger.log('Archive already set up: sheet ' + id); return; }
+  var ss = SpreadsheetApp.create('KS3 DT - Yearly Archive');
+  ss.getSheets()[0].setName('Archive');
+  ss.getSheets()[0].appendRow(ARCHIVE_HEADERS);
+  sp.setProperty('ARCHIVE_SHEET_ID', ss.getId());
+  Logger.log('Archive sheet created: ' + ss.getUrl());
+  Logger.log('NOW add the nightly trigger: Triggers > Add Trigger > archiveSweep > time-driven > day timer > 2am-3am.');
+}
+
+function archiveSweep() {
+  var meta = archiveSweep_();
+  // throwing makes Google's own trigger-failure email fire for the owner
+  if (!meta.ok) throw new Error('KS3 DT archive sweep failed: ' + meta.error);
+}
+
+function archiveSweep_() {
+  var sp = sp_();
+  var meta = { t: tmin_(), rows: 0, pupils: 0, ok: true, error: '' };
+  try {
+    var id = sp.getProperty('ARCHIVE_SHEET_ID');
+    if (!id) throw new Error('ARCHIVE_SHEET_ID not set - run setupArchive() once in the editor');
+    var sheet = SpreadsheetApp.openById(id).getSheets()[0];
+    var cutoff = tmin_() - ARCHIVE_AFTER_DAYS * 1440;
+    var classes = getClasses_();
+    for (var ci = 0; ci < classes.length; ci++) {
+      var cls = classes[ci].name;
+      var pupils = allPupils_(cls); // lock-free snapshot
+      var rows = [];
+      var emails = [];
+      for (var pi = 0; pi < pupils.length; pi++) {
+        var rec = pupils[pi];
+        var any = false;
+        Object.keys(rec.L || {}).forEach(function (numStr) {
+          var a = rec.L[numStr];
+          if (!a || num_(a[0]) !== 2) return;   // completed lessons only
+          if (num_(a[5]) > cutoff) return;      // too recent - teacher still reviewing detail
+          if (num_(a[7]) & 4) return;           // already archived
+          rows.push([new Date(), cls, str_(rec.email), str_(rec.n), str_(rec.cn), str_(numStr),
+            num_(a[1]), str_(a[2]), str_(a[3]), str_(a[4]), str_(a[8]),
+            num_(a[6]), num_(a[9]), num_(a[10]), tminToDate_(num_(a[5]))]);
+          any = true;
+        });
+        if (any) emails.push(str_(rec.email));
+      }
+      if (!rows.length) continue;
+      // WRITE - VERIFY - only then TRIM (never delete before a confirmed copy)
+      var before = sheet.getLastRow();
+      sheet.getRange(before + 1, 1, rows.length, ARCHIVE_HEADERS.length).setValues(rows);
+      SpreadsheetApp.flush();
+      if (sheet.getLastRow() !== before + rows.length) throw new Error('write verify failed for class ' + cls);
+      meta.rows += rows.length;
+      withLock_(function () {
+        for (var ei = 0; ei < emails.length; ei++) {
+          var fresh = readPupil_(cls, emails[ei]); // re-read: never clobber tonight's live activity
+          if (!fresh) continue;
+          Object.keys(fresh.L || {}).forEach(function (numStr) {
+            var a = fresh.L[numStr];
+            if (!a || num_(a[0]) !== 2) return;
+            if (num_(a[5]) > cutoff) return;
+            if (num_(a[7]) & 4) return;
+            a[2] = 'arch';           // ledger swept (apiSaveEvent seals archived lessons)
+            a[8] = '';               // comment swept
+            a[7] = num_(a[7]) | 4;   // archived bit
+          });
+          if (tryWritePupil_(cls, emails[ei], fresh)) meta.pupils++;
+        }
+        return true;
+      });
+    }
+  } catch (e) {
+    meta.ok = false;
+    meta.error = str_(e && e.message || e);
+  }
+  jset_(sp, 'archiveMeta', meta);
+  return meta;
 }
 
 /* ---------- shared shuffle ---------- */
