@@ -527,7 +527,8 @@
         if (str_(p.mode) === 'explain') {
           var rec = readPupil_(s, cls, PUPIL_EMAIL);
           var a = rec ? larr_(rec, numStr) : null;
-          var done = a && (detailKeys_(a[2]).indexOf('vp') !== -1 || detailKeys_(a[2]).indexOf(str_(p.keyId || 'vault')) !== -1);
+          var done = a && (detailKeys_(a[2]).indexOf('vp') !== -1 || detailKeys_(a[2]).indexOf(str_(p.keyId || 'vault')) !== -1 ||
+            ((num_(a[7]) & 4) && num_(a[0]) === 2));
           if (!done) return { ok: false, error: 'not-finished' };
           return { ok: true, explain: v.explain || {} };
         }
@@ -551,6 +552,8 @@
     var rec = readPupil_(s, cls, PUPIL_EMAIL);
     if (!rec) return Promise.resolve({ ok: false, error: 'not-joined' });
     var a = larr_(rec, numStr);
+    // parity: archived lessons are sealed (ledger lives in the year archive)
+    if ((num_(a[7]) & 4) && num_(a[0]) === 2) return Promise.resolve({ ok: true, xp: num_(rec.xp), sealed: true });
     if (num_(a[0]) < 1) a[0] = 1;
     var xpDelta = Math.max(0, Math.min(40, num_(p.xp)));
     var isNew = p.detail != null && detailAddsNew_(a[2], str_(p.detail));
@@ -666,7 +669,7 @@
         var rec = readPupil_(s, cls, PUPIL_EMAIL);
         if (!rec) return { ok: false, error: 'not-joined' };
         var a = larr_(rec, numStr);
-        if (detailKeys_(a[2]).indexOf('bl') !== -1) return { ok: true, already: true };
+        if (detailKeys_(a[2]).indexOf('bl') !== -1 || (num_(a[7]) & 4)) return { ok: true, already: true };
         a[2] = mergeDetail_(a[2], 'bl=' + right + '/' + ids.length + '|' + chosen);
         a[5] = tmin_();
         if (num_(a[0]) < 1) a[0] = 1;
@@ -797,8 +800,37 @@
         classes: reg.map(function (c) {
           return { name: str_(c.name), owner: str_(c.owner), year: str_(c.year), created: str_(c.created), pupils: num_(counts[c.name] || 0) };
         }),
-        store: { bytes: num_(bytes), limit: 500000, pupils: num_(pupilCount) }
+        store: { bytes: num_(bytes), limit: 500000, pupils: num_(pupilCount) },
+        archive: s.archiveMeta || null
       });
+    }
+
+    /* Manual archive sweep - mirrors archiveSweep_ (archive "sheet" = an array
+       in the dev blob; same completed + 28-day-old + not-yet-archived rules,
+       same trim: detail -> 'arch', comment cleared, bit 4 set). */
+    if (sub === 'archiveNow') {
+      var ARCHIVE_AFTER_DAYS = 28;
+      var cutoff = tmin_() - ARCHIVE_AFTER_DAYS * 1440;
+      var meta = { t: tmin_(), rows: 0, pupils: 0, ok: true, error: '' };
+      if (!s.archive) s.archive = [];
+      Object.keys(s.pupils).forEach(function (k) {
+        var rec = s.pupils[k];
+        var any = false;
+        Object.keys(rec.L || {}).forEach(function (numStr) {
+          var a = rec.L[numStr];
+          if (!a || num_(a[0]) !== 2) return;
+          if (num_(a[5]) > cutoff) return;
+          if (num_(a[7]) & 4) return;
+          s.archive.push([tminToDate_(tmin_()).toISOString(), k.split(':')[0], k.split(':')[1], str_(rec.n), str_(rec.cn),
+            str_(numStr), num_(a[1]), str_(a[2]), str_(a[3]), str_(a[4]), str_(a[8]), num_(a[6]), num_(a[9]), num_(a[10])]);
+          a[2] = 'arch'; a[8] = ''; a[7] = num_(a[7]) | 4;
+          meta.rows++; any = true;
+        });
+        if (any) meta.pupils++;
+      });
+      s.archiveMeta = meta;
+      save_(s);
+      return Promise.resolve({ ok: true, ran: true, rows: num_(meta.rows), pupils: num_(meta.pupils), okRun: true, error: '' });
     }
 
     if (sub === 'removePupil') {

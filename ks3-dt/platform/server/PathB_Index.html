@@ -3406,9 +3406,33 @@ window.OLS_TRANSPORT = {
     if (!st || !st.limit) return '';
     var pct = Math.round((st.bytes / st.limit) * 100);
     var warn = pct >= 70;
-    return '<p class="staff-row-meta" style="margin-top:10px' + (warn ? ';color:var(--bad);font-weight:700' : '') + '">' +
+    var html = '<p class="staff-row-meta" style="margin-top:10px' + (warn ? ';color:var(--bad);font-weight:700' : '') + '">' +
       'Platform storage: ' + Math.round(st.bytes / 1024) + ' KB of ' + Math.round(st.limit / 1024) + ' KB used (' + pct + '%) &middot; ' + st.pupils + ' pupil records' +
-      (warn ? ' &mdash; getting full: tell Damien so the archive sweep can run.' : '') + '</p>';
+      (warn ? ' &mdash; getting full: run the archive sweep below.' : '') + '</p>';
+    // nightly archive status + manual run (the sweep itself is owner-only)
+    var am = classesData && classesData.archive;
+    var amLine;
+    if (!am) amLine = 'Nightly archive: not yet run.';
+    else if (am.ok) amLine = 'Nightly archive: last run ' + fmtDate(am.t) + ' &middot; ' + num(am.rows) + ' lesson record(s) swept to the Archive Sheet.';
+    else amLine = '<span style="color:var(--bad);font-weight:700">Nightly archive FAILED at ' + fmtDate(am.t) + ': ' + App.esc(am.error || 'unknown error') + '</span>';
+    html += '<p class="staff-row-meta">' + amLine + ' <button type="button" class="ghost-btn" data-action="archive-now">Run archive sweep now</button></p>' +
+      '<p class="staff-status" id="archive-status"></p>';
+    return html;
+  }
+  function num(v) { var n = Number(v); return isNaN(n) ? 0 : n; }
+
+  function archiveNow(btn) {
+    if (btn.disabled) return;
+    btn.disabled = true;
+    busyStatus(q('#archive-status'), 'Sweeping completed lessons to the Archive Sheet');
+    adminCall('archiveNow', {}).then(function (r) {
+      btn.disabled = false;
+      var st = q('#archive-status');
+      if (!r || !r.ok) { plainStatus(st, 'Could not run the sweep -- please try again.'); return; }
+      if (!r.okRun) { plainStatus(st, 'Sweep failed: ' + (r.error || 'unknown error') + ' (only the platform owner\u2019s account can open the Archive Sheet).'); return; }
+      plainStatus(st, 'Done -- ' + r.rows + ' lesson record(s) archived across ' + r.pupils + ' pupil(s).');
+      renderClasses(); // refresh the storage % + last-run line
+    });
   }
 
   function addClass() {
@@ -4242,6 +4266,7 @@ window.OLS_TRANSPORT = {
       case 'show-brief': showBrief(btn); break;
       case 'brief-back': renderLessons(); break;
       case 'brief-print': briefPrint(); break;
+      case 'archive-now': archiveNow(btn); break;
       case 'live-refresh': renderLive(); break;
       case 'live-csv': liveCsv(); break;
       case 'absence-dismiss': absenceDismiss(btn); break;
