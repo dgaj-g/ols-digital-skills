@@ -1377,10 +1377,12 @@
 
   /* ---- the simulated partner's brain: runs inside the pupil's channel polls ---- */
   function botThink_(s, cls, lessonId, pid, P, ch, year) {
-    if (!ch.bot) return Promise.resolve();
+    if (!ch.bot) return Promise.resolve(false);
+    var acted = false;
     var nowS = tsecD_();
     if (!ch.bot.greeted && nowS - num_(ch.bot.startS) >= 2) {
       ch.bot.greeted = 1;
+      acted = true;
       appendEvD_(ch, 1, 'msg', 'Pixel here. HQ says we crack this Vault together - you take the first drop, talk me through it!');
     }
     var drops = ch.ev.filter(function (e) { return str_(e[2]) === 'drop'; });
@@ -1394,19 +1396,20 @@
     // sympathy when the pupil's drop bounces
     if (lastDrop && num_(lastDrop[1]) === 0 && str_(lastDrop[3]).split('|')[2] === '0' && ch.bot.reactKey !== dropCount) {
       ch.bot.reactKey = dropCount;
+      acted = true;
       appendEvD_(ch, 1, 'msg', 'The Vault bounced it! Hmm - read the label again, where else could it live?');
     }
     var botsTurn = dropCount % 2 === 1; // members: [pupil 0, bot 1]
-    if (!botsTurn || !Object.keys(placed).length && dropCount === 0) {
-      if (!botsTurn) { ch.bot.msgKey = -1; ch.bot.plan = null; }
-      return Promise.resolve();
+    if (!botsTurn) {
+      if (ch.bot.msgKey !== -1 || ch.bot.plan) { ch.bot.msgKey = -1; ch.bot.plan = null; acted = true; }
+      return Promise.resolve(acted);
     }
     return vaultBotInfo_(s, year, lessonId).then(function (info) {
-      if (!info || !info.map || !info.cfg) return;
+      if (!info || !info.map || !info.cfg) return acted;
       var files = info.cfg.files || [], folders = info.cfg.folders || [];
       var target = null;
       for (var i = 0; i < files.length; i++) if (!placed[str_(files[i].id)]) { target = files[i]; break; }
-      if (!target) return;
+      if (!target) return acted;
       var correct = str_(info.map[str_(target.id)]);
       var wrongFolder = null;
       for (var j = 0; j < folders.length; j++) if (str_(folders[j].id) !== correct) { wrongFolder = folders[j]; break; }
@@ -1421,7 +1424,7 @@
         appendEvD_(ch, 1, 'msg', (goWrong
           ? 'My turn! Maybe "' + str_(target.label) + '" goes in ' + destLabel + '? Dropping it - shout if you disagree!'
           : 'My turn. I reckon "' + str_(target.label) + '" belongs in ' + destLabel + ' - agree? Dropping it now.'));
-        return;
+        return true;
       }
       if (ch.bot.plan && nowS - num_(ch.bot.msgAtS) >= 3) {
         var plan = ch.bot.plan;
@@ -1436,7 +1439,9 @@
           ch.bot.wrongUsed = 1;
           appendEvD_(ch, 1, 'msg', 'Ouch - the Vault said NO. Okay, some things should not be saved at all... your go!');
         }
+        return true;
       }
+      return acted;
     });
   }
   var botInfoCache = null;
@@ -1469,19 +1474,23 @@
     var P = reg.P[hit.pid];
     var pid = str_(hit.pid);
     var ch = chD_(s, pid);
-    if (!s.pls) s.pls = {};
-    s.pls[pid + ':' + hit.mi] = tsecD_();
+    // liveness beacons live OUTSIDE the blob: two tabs each rewrite the whole
+    // blob on every poll, so in-blob beacons clobber each other (last-write-
+    // wins) and partners flap "stale". Per-key writes never collide.
+    try { localStorage.setItem('ks3dt-dev-pls:' + pid + ':' + hit.mi, String(tsecD_())); } catch (e) {}
     var year = classYear_(s, cls);
-    return botThink_(s, cls, lessonId, pid, P, ch, year).then(function () {
+    return botThink_(s, cls, lessonId, pid, P, ch, year).then(function (botActed) {
       var since = num_(p.since);
       var ev = ch.ev.filter(function (e) { return num_(e[0]) > since; });
       var live = (P.m || []).map(function (m, mi2) {
         if (mi2 === hit.mi) return 1;
         if (num_(P.bot)) return 1; // the simulation never loses signal
-        var b = num_(s.pls[pid + ':' + mi2]);
-        return b && tsecD_() - b <= 45 ? 1 : 0;
+        var b = 0;
+        try { b = num_(localStorage.getItem('ks3dt-dev-pls:' + pid + ':' + mi2)); } catch (e) {}
+        if (!b) return tmin_() - num_(P.t) <= 2 ? 1 : 0; // formation grace
+        return tsecD_() - b <= 45 ? 1 : 0;
       });
-      save_(s);
+      if (botActed) save_(s); // plain polls stay read-only on the shared blob
       return {
         ok: true, seq: num_(ch.seq), ev: ev, live: live,
         done: num_(P.done), rv: num_(P.rv),

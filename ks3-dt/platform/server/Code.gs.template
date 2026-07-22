@@ -1101,7 +1101,8 @@ function apiPairChannel(req) {
   for (var mi = 0; mi < (P.m || []).length; mi++) {
     if (mi === hit.mi) { live.push(1); continue; }
     var b = cGet_('ks3dt:pls:' + pid + ':' + mi, null);
-    live.push(b && tsec_() - num_(b.t) <= 45 ? 1 : 0);
+    if (!b) live.push(tmin_() - num_(P.t) <= 2 ? 1 : 0); // formation grace: no beacon until their first poll
+    else live.push(tsec_() - num_(b.t) <= 45 ? 1 : 0);
   }
   return {
     ok: true, seq: num_(ch.seq), ev: ev, live: live,
