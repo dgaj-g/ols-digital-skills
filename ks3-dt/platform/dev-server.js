@@ -1202,6 +1202,16 @@
     return Promise.resolve({ ok: false, error: 'unknown-sub' });
   }
 
+  /* Artifact inspection mirror: the preview has no real Drive, so the check is
+     SIMULATED (always finds a plausible file, flagged so the engine says so). */
+  function doArtifactCheck(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    var kind = (Array.isArray(p.kinds) && p.kinds.length) ? str_(p.kinds[0]) : 'hex';
+    return Promise.resolve({ ok: true, found: true, name: 'my-first-build.' + kind, ageMin: 2, simulated: true });
+  }
+
   /* ==================== auto-pairing + Comms Channel mirror (section 12) ====
      Mirrors Code.gs.template's pairing surface against the shared localStorage
      blob, so two same-origin tabs (?as=anya / ?as=cara) are two REAL paired
@@ -1549,6 +1559,7 @@
       case 'catchup': return doCatchup(p);
       case 'setKit': return doSetKit(p);
       case 'driveCheck': return doDriveCheck(p);
+      case 'artifactCheck': return doArtifactCheck(p);
       case 'ping': return doPing(p);
       case 'pairJoin': return doPairJoin(p);
       case 'pairSend': return doPairSend(p);
