@@ -678,6 +678,17 @@
   }
 
 
+  /* Side-quest Drive inspection - the preview has no real Drive, so the check
+     is SIMULATED (always passes, flagged so the engine says so on screen). */
+  function doDriveCheck(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    var numStr = str_(p.lessonNum || '');
+    if (!lessonAccessible_(s, cls, numStr)) return Promise.resolve({ ok: false, error: 'locked' });
+    return Promise.resolve({ ok: true, school: true, dtwork: true, simulated: true });
+  }
+
   /* Agent Kit - mirrors apiSetKit (clearance-gated cosmetic equip; no XP). */
   function doSetKit(p) {
     var s = load_();
@@ -1032,6 +1043,7 @@
       case 'submitBaseline': return doSubmitBaseline(p);
       case 'catchup': return doCatchup(p);
       case 'setKit': return doSetKit(p);
+      case 'driveCheck': return doDriveCheck(p);
       case 'admin': return doAdmin(p);
       default: return Promise.resolve({ ok: false, error: 'unknown-action' });
     }

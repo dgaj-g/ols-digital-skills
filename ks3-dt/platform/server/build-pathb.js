@@ -212,6 +212,7 @@ window.OLS_TRANSPORT = {
         case 'submitBaseline': g.apiSubmitBaseline(p); break;
         case 'catchup':        g.apiCatchup(p); break;
         case 'setKit':         g.apiSetKit(p); break;
+        case 'driveCheck':     g.apiDriveCheck(p); break;
         case 'admin':          g.apiAdmin(p); break;
         default: reject(new Error('unknown action: ' + p.action));
       }

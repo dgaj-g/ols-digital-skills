@@ -396,7 +396,7 @@
       // dispatcher resolves closest([data-action]), so it wins without ever
       // toggling the lock (nested <button> would be invalid HTML).
       return '<button type="button" class="lock-cell' + (on ? ' is-on' : '') + '" data-action="toggle-lock" data-num="' + le.num + '" data-ready="' + (le.status === 'ready' ? '1' : '0') + '">' +
-        '<span class="lc-num">Lesson ' + le.num + '</span>' +
+        '<span class="lc-num">' + (le.side ? 'Side Quest' : 'Lesson ' + le.num) + '</span>' +
         '<span class="lc-title">' + App.esc(le.title) + '</span>' +
         '<span class="lc-state">' + App.esc(stateText) + '</span>' +
         (le.status !== 'ready' ? '<span class="lc-date">(content coming)</span>'
@@ -976,7 +976,8 @@
 
   function undeliveredLessons(man) {
     var locks = dashData.locks || {};
-    return (man.lessons || []).filter(function (le) { var lk = locks[String(le.num)]; return !(lk && Number(lk.u)); })
+    // side quests are self-paced extras, never a cover lesson
+    return (man.lessons || []).filter(function (le) { var lk = locks[String(le.num)]; return !le.side && !(lk && Number(lk.u)); })
       .sort(function (a, b) { return a.num - b.num; });
   }
   function pickSuggestion(list) {

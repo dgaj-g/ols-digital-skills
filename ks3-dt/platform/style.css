@@ -1044,3 +1044,18 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   border: 1px solid rgba(47, 191, 116, 0.55);
 }
 @media (max-width: 640px) { .save-chip { padding: 4px 9px; font-size: 0.66rem; } }
+
+/* ============ side-quest drivecheck (HQ Inspection results) ============ */
+.dc-list { list-style: none; margin: 12px 0 14px; padding: 0; display: grid; gap: 8px; }
+.dc-row {
+  display: flex; align-items: center; gap: 10px;
+  border-radius: var(--r-md); padding: 11px 14px; font-weight: 600; color: var(--ink);
+}
+.dc-row.ok { background: var(--good-soft); }
+.dc-row.miss { background: var(--bad-soft); }
+.dc-mark { font-weight: 800; width: 20px; text-align: center; }
+.dc-row.ok .dc-mark { color: #1E9459; }
+.dc-row.miss .dc-mark { color: var(--bad); }
+.dc-sim { color: var(--muted); font-size: 0.85rem; font-style: italic; margin: 0 0 6px; }
+/* side-quest tiles: violet identity on the spine */
+.tile.is-side .tile-icon { border-style: dashed; }
