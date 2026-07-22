@@ -794,6 +794,66 @@ function apiDriveCheck(req) {
   }
 }
 
+/* Artifact inspection (L2+ "bank your build"): genuinely looks inside the
+   pupil's School > DT Work folder for a recently-modified file of the given
+   kind (.hex, .sb3, ...). Read-only, capped iteration, execute-as-user - the
+   same honesty contract as apiDriveCheck: the badge step only passes when the
+   file is really there. Damien's condition (22 Jul): pupils save external-tool
+   work to Drive PROVIDED the platform shows them how - this is the "show them
+   how, then verify" half. */
+function apiArtifactCheck(req) {
+  req = req || {};
+  var email = userEmail_();
+  if (!email) return { ok: false, error: 'not-signed-in' };
+  var cls = realClass_(req.classCode);
+  if (!cls) return { ok: false, error: 'unknown-class' };
+  var numStr = str_(req.lessonNum || '');
+  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  var kinds = [];
+  (Array.isArray(req.kinds) ? req.kinds : []).slice(0, 4).forEach(function (k) {
+    k = str_(k).toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (k) kinds.push('.' + k);
+  });
+  if (!kinds.length) return { ok: false, error: 'no-kinds' };
+  var hours = Math.max(1, Math.min(24, num_(req.hours) || 3));
+  try {
+    var dtFolder = null;
+    var roots = DriveApp.getRootFolder().getFolders();
+    var guard = 0;
+    while (roots.hasNext() && guard < 800 && !dtFolder) {
+      guard++;
+      var f = roots.next();
+      if (str_(f.getName()).trim().toLowerCase() !== 'school') continue;
+      var subs = f.getFolders();
+      var g2 = 0;
+      while (subs.hasNext() && g2 < 400) {
+        g2++;
+        var sub = subs.next();
+        if (str_(sub.getName()).trim().toLowerCase() === 'dt work') { dtFolder = sub; break; }
+      }
+    }
+    if (!dtFolder) return { ok: true, found: false, noFolder: true };
+    var cutoffMs = Date.now() - hours * 3600000;
+    var files = dtFolder.getFiles();
+    var g3 = 0, best = null, bestMs = 0;
+    while (files.hasNext() && g3 < 200) {
+      g3++;
+      var file = files.next();
+      var name = str_(file.getName());
+      var lower = name.toLowerCase();
+      var hit = false;
+      for (var ki = 0; ki < kinds.length; ki++) if (lower.slice(-kinds[ki].length) === kinds[ki]) hit = true;
+      if (!hit) continue;
+      var ms = file.getLastUpdated().getTime();
+      if (ms >= cutoffMs && ms > bestMs) { bestMs = ms; best = name; }
+    }
+    if (!best) return { ok: true, found: false, noFolder: false };
+    return { ok: true, found: true, name: best.slice(0, 60), ageMin: num_(Math.round((Date.now() - bestMs) / 60000)) };
+  } catch (e) {
+    return { ok: false, error: 'drive-error' };
+  }
+}
+
 /* ---------- Agent Kit (cosmetic themes + insignia, clearance-gated) ----------
    Cosmetic ONLY: never grants or touches XP, so it adds no farming surface.
    The registry is public content/themes.json (adding a theme = a git push, no
