@@ -320,10 +320,15 @@
       ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId }).then(function (r) {
         if (r && r.ok) { salt = r.salt; check = r.check; }
       });
+      // Catch-up runs are SOLO by definition — swap the pair prompts out so an
+      // absent pupil is never told to confer with a partner who isn't there.
+      var pairBanner = ctx.catchup
+        ? '<div class="pair-banner">&#127919; Catch-up solo mission: no partner needed. Before each drop, say your reason in your head — "it goes there because&hellip;"</div>'
+        : '<div class="pair-banner">&#129309; ' + esc(cfg.pairPrompt || '') + '</div>';
       introCard(host, {
         kicker: chunk.title, title: 'The Vault',
         text: cfg.intro || '',
-        extra: '<div class="pair-banner">&#129309; ' + esc(cfg.pairPrompt || '') + '</div>'
+        extra: pairBanner
       }, 'Open the Vault', begin);
 
       function begin() {
@@ -345,7 +350,7 @@
         }
         var placed = {}, firstTryRight = 0, attempts = {};
         var stage = el('<div class="vault-stage">' +
-          '<div class="pair-banner slim">&#129309; Agree together before you release each file.</div>' +
+          '<div class="pair-banner slim">' + (ctx.catchup ? '&#127919; Solo run &mdash; reason each drop out in your head first.' : '&#129309; Agree together before you release each file.') + '</div>' +
           '<div class="vault-score">' + esc(cfg.scoreLabel || 'Vault Integrity') + ': <b id="vault-score">&mdash;</b></div>' +
           '<div class="vault-inbox"><h3>Inbox</h3><div class="vault-tray"></div></div>' +
           '<div class="vault-folders"></div>' +
@@ -471,7 +476,8 @@
           host.appendChild(d);
           d.querySelector('button').onclick = function () {
             host.innerHTML = '';
-            var s1 = el('<div class="card sync-card"><span class="sync-badge">SYNCHRONOUS</span><p>' + esc(cfg.debrief.sync) + '</p><button class="primary-btn" type="button">And the flip side&hellip;</button></div>');
+            var syncText = (ctx.catchup && cfg.debrief.syncCatchup) ? cfg.debrief.syncCatchup : cfg.debrief.sync;
+            var s1 = el('<div class="card sync-card"><span class="sync-badge">SYNCHRONOUS</span><p>' + esc(syncText) + '</p><button class="primary-btn" type="button">And the flip side&hellip;</button></div>');
             host.appendChild(s1);
             s1.querySelector('button').onclick = function () {
               host.innerHTML = '';
