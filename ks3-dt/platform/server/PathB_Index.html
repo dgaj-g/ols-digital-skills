@@ -137,10 +137,10 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .ghost-btn:hover { background: rgba(var(--gold-hi-rgb), 0.12); border-color: var(--gold); color: #fff; }
 .ghost-btn.danger { color: #FFB3A6; border-color: rgba(232, 90, 72, 0.5); }
 /* on light surfaces (cards, staff panel) ghost buttons flip dark-on-light */
-.card .ghost-btn, .ols-modal-card .ghost-btn {
+.card .ghost-btn, .ols-modal-card .ghost-btn, .badge-pop-card .ghost-btn {
   color: var(--ols-blue); border-color: rgba(26, 58, 107, 0.4); background: rgba(26, 58, 107, 0.05);
 }
-.card .ghost-btn:hover, .ols-modal-card .ghost-btn:hover { background: rgba(var(--gold-rgb), 0.14); border-color: var(--gold); color: var(--ols-blue); }
+.card .ghost-btn:hover, .ols-modal-card .ghost-btn:hover, .badge-pop-card .ghost-btn:hover { background: rgba(var(--gold-rgb), 0.14); border-color: var(--gold); color: var(--ols-blue); }
 .card .ghost-btn.danger, .ols-modal-card .ghost-btn.danger { color: var(--bad); border-color: rgba(232, 90, 72, 0.45); background: rgba(232, 90, 72, 0.05); }
 
 .text-input {
@@ -645,6 +645,7 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .oath-line.show { opacity: 1; transform: none; }
 .oath-sign {
   position: relative; margin-top: 18px; width: 100%;
+  touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
   background: var(--ols-blue); color: #fff; border: none; border-radius: var(--r-md);
   font-family: var(--font-display); font-weight: 700; font-size: 1rem; padding: 16px; cursor: pointer; overflow: hidden;
   transition: background 0.2s ease;
@@ -1791,7 +1792,8 @@ window.OLS_TRANSPORT = {
     body.innerHTML = head +
       '<h3 class="kit-section">Interface</h3><div class="kit-themes">' + themes + '</div>' +
       '<h3 class="kit-section">Insignia <small>shows beside your codename</small></h3><div class="kit-chips">' + chips + '</div>' +
-      '<p class="kit-foot">Earn XP by completing missions and nailing your checks &mdash; higher clearance unlocks more kit.</p>';
+      '<p class="kit-foot">Tap to equip &mdash; every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks more kit.</p>' +
+      '<div class="confirm-actions" style="margin-top:6px"><button type="button" class="primary-btn" id="kit-done">Done</button></div>';
 
     body.querySelectorAll('.kit-theme').forEach(function (el) {
       el.onclick = function () { pickTheme(el, String(el.getAttribute('data-theme'))); };
@@ -1799,6 +1801,8 @@ window.OLS_TRANSPORT = {
     body.querySelectorAll('.kit-chip').forEach(function (el) {
       el.onclick = function () { pickInsignia(el, String(el.getAttribute('data-insignia'))); };
     });
+    var doneBtn = body.querySelector('#kit-done');
+    if (doneBtn) doneBtn.onclick = function () { App.closeModal('kit-modal'); };
   }
 
   function lockedNudge_(el, clearance, needXp) {
@@ -1827,6 +1831,8 @@ window.OLS_TRANSPORT = {
         App.applyKit();
         renderKit();
         App.toast(r && r.error === 'kit-locked' ? 'That kit is above your clearance.' : 'Could not save your kit \u2014 try again.');
+      } else {
+        App.toast('Equipped \u2014 saved to your Agent File.', 2000);
       }
     });
   }
@@ -1848,6 +1854,8 @@ window.OLS_TRANSPORT = {
         App.applyKit();
         renderKit();
         App.toast(r && r.error === 'kit-locked' ? 'That insignia is above your clearance.' : 'Could not save your kit \u2014 try again.');
+      } else {
+        App.toast('Equipped \u2014 saved to your Agent File.', 2000);
       }
     });
   }
@@ -2223,9 +2231,15 @@ window.OLS_TRANSPORT = {
 
   /* ================= shared item runner =================
      modes: 'feedback' (mark each tap, show why), 'neutral' (log + move on),
-     'collect' (record silently). */
+     'collect' (record silently).
+     Options are ALWAYS shuffled at render (Damien, 22 Jul: authored keys
+     clustered on A). curOrd maps display position -> source index, so every
+     submit sends SOURCE indexes and the server contract is unchanged. This
+     composes safely with the recap engine's server-side shuffle too: there the
+     "source" is the server-sent order, and choices/correctIdx are mapped the
+     same way. */
   function itemRunner(host, opts) {
-    var idx = 0, right = 0, answers = {};
+    var idx = 0, right = 0, answers = {}, curOrd = [];
     var wrap = el('<div class="runner"></div>');
     host.appendChild(wrap);
 
@@ -2234,16 +2248,24 @@ window.OLS_TRANSPORT = {
         ? '<span class="runner-progress">' + (idx + 1) + ' of ' + opts.items.length + '</span>' : '';
     }
 
+    /* stems may carry \n line breaks (e.g. numbered algorithm steps) */
+    function stemHtml(s) { return esc(s).replace(/\n/g, '<br>'); }
+
     function show() {
       var it = opts.items[idx];
+      curOrd = it.options.map(function (_, i) { return i; });
+      for (var s = curOrd.length - 1; s > 0; s--) {
+        var j = Math.floor(Math.random() * (s + 1));
+        var t = curOrd[s]; curOrd[s] = curOrd[j]; curOrd[j] = t;
+      }
       wrap.innerHTML =
         '<div class="card q-card">' +
         progress() +
         (it.topic ? '<span class="q-topic">' + esc(it.topic) + '</span>' : '') +
-        '<h2 class="q-stem">' + esc(it.stem) + '</h2>' +
-        '<div class="q-options">' + it.options.map(function (o, i) {
+        '<h2 class="q-stem">' + stemHtml(it.stem) + '</h2>' +
+        '<div class="q-options">' + curOrd.map(function (oi, i) {
           return '<button class="q-opt" type="button" data-i="' + i + '"><span class="q-letter">' +
-            'ABCD'.charAt(i) + '</span><span>' + esc(o) + '</span></button>';
+            'ABCD'.charAt(i) + '</span><span>' + esc(it.options[oi]) + '</span></button>';
         }).join('') + '</div>' +
         '<div class="q-feedback" hidden></div>' +
         '</div>';
@@ -2264,7 +2286,9 @@ window.OLS_TRANSPORT = {
 
     function pick(i, btn) {
       var it = opts.items[idx];
-      answers[it.id] = i;
+      var srcIdx = curOrd[i]; // display position -> source index (contract unchanged)
+      var ord = curOrd;       // capture: async marking must not race the next show()
+      answers[it.id] = srcIdx;
       lockOptions();
       if (opts.mode === 'collect') { nextOrDone(); return; }
       if (opts.mode === 'neutral') {
@@ -2273,9 +2297,9 @@ window.OLS_TRANSPORT = {
         setTimeout(nextOrDone, 650);
         return;
       }
-      // feedback mode: server marks
+      // feedback mode: server marks (against the SOURCE index)
       btn.classList.add('checking');
-      opts.markFn(it, i).then(function (r) {
+      opts.markFn(it, srcIdx).then(function (r) {
         btn.classList.remove('checking');
         var fb = wrap.querySelector('.q-feedback');
         if (!r || !r.ok) {
@@ -2290,7 +2314,8 @@ window.OLS_TRANSPORT = {
         if (r.correct) { right++; btn.classList.add('right'); }
         else {
           btn.classList.add('wrong');
-          if (opts_[r.correctIdx]) opts_[r.correctIdx].classList.add('reveal');
+          var revealPos = ord.indexOf(Number(r.correctIdx)); // source -> display position
+          if (revealPos !== -1 && opts_[revealPos]) opts_[revealPos].classList.add('reveal');
         }
         fb.hidden = false;
         fb.className = 'q-feedback ' + (r.correct ? 'good' : 'bad');
@@ -2760,9 +2785,14 @@ window.OLS_TRANSPORT = {
           signBtn.classList.remove('holding');
           clearTimeout(holdTimer);
         }
-        signBtn.addEventListener('pointerdown', startHold);
+        // pointer events cover mouse AND touch (tap-and-hold on tablets);
+        // pointercancel matters there \u2014 a stray scroll/rotate mustn't leave the
+        // ring stuck; contextmenu is suppressed so a long-press can't interrupt.
+        signBtn.addEventListener('pointerdown', function (e) { e.preventDefault(); startHold(); });
         signBtn.addEventListener('pointerup', endHold);
         signBtn.addEventListener('pointerleave', endHold);
+        signBtn.addEventListener('pointercancel', endHold);
+        signBtn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
       }
 
       function belonging() {

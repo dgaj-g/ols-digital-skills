@@ -539,7 +539,8 @@
     body.innerHTML = head +
       '<h3 class="kit-section">Interface</h3><div class="kit-themes">' + themes + '</div>' +
       '<h3 class="kit-section">Insignia <small>shows beside your codename</small></h3><div class="kit-chips">' + chips + '</div>' +
-      '<p class="kit-foot">Earn XP by completing missions and nailing your checks &mdash; higher clearance unlocks more kit.</p>';
+      '<p class="kit-foot">Tap to equip &mdash; every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks more kit.</p>' +
+      '<div class="confirm-actions" style="margin-top:6px"><button type="button" class="primary-btn" id="kit-done">Done</button></div>';
 
     body.querySelectorAll('.kit-theme').forEach(function (el) {
       el.onclick = function () { pickTheme(el, String(el.getAttribute('data-theme'))); };
@@ -547,6 +548,8 @@
     body.querySelectorAll('.kit-chip').forEach(function (el) {
       el.onclick = function () { pickInsignia(el, String(el.getAttribute('data-insignia'))); };
     });
+    var doneBtn = body.querySelector('#kit-done');
+    if (doneBtn) doneBtn.onclick = function () { App.closeModal('kit-modal'); };
   }
 
   function lockedNudge_(el, clearance, needXp) {
@@ -575,6 +578,8 @@
         App.applyKit();
         renderKit();
         App.toast(r && r.error === 'kit-locked' ? 'That kit is above your clearance.' : 'Could not save your kit — try again.');
+      } else {
+        App.toast('Equipped — saved to your Agent File.', 2000);
       }
     });
   }
@@ -596,6 +601,8 @@
         App.applyKit();
         renderKit();
         App.toast(r && r.error === 'kit-locked' ? 'That insignia is above your clearance.' : 'Could not save your kit — try again.');
+      } else {
+        App.toast('Equipped — saved to your Agent File.', 2000);
       }
     });
   }

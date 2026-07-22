@@ -29,9 +29,15 @@
 
   /* ================= shared item runner =================
      modes: 'feedback' (mark each tap, show why), 'neutral' (log + move on),
-     'collect' (record silently). */
+     'collect' (record silently).
+     Options are ALWAYS shuffled at render (Damien, 22 Jul: authored keys
+     clustered on A). curOrd maps display position -> source index, so every
+     submit sends SOURCE indexes and the server contract is unchanged. This
+     composes safely with the recap engine's server-side shuffle too: there the
+     "source" is the server-sent order, and choices/correctIdx are mapped the
+     same way. */
   function itemRunner(host, opts) {
-    var idx = 0, right = 0, answers = {};
+    var idx = 0, right = 0, answers = {}, curOrd = [];
     var wrap = el('<div class="runner"></div>');
     host.appendChild(wrap);
 
@@ -40,16 +46,24 @@
         ? '<span class="runner-progress">' + (idx + 1) + ' of ' + opts.items.length + '</span>' : '';
     }
 
+    /* stems may carry \n line breaks (e.g. numbered algorithm steps) */
+    function stemHtml(s) { return esc(s).replace(/\n/g, '<br>'); }
+
     function show() {
       var it = opts.items[idx];
+      curOrd = it.options.map(function (_, i) { return i; });
+      for (var s = curOrd.length - 1; s > 0; s--) {
+        var j = Math.floor(Math.random() * (s + 1));
+        var t = curOrd[s]; curOrd[s] = curOrd[j]; curOrd[j] = t;
+      }
       wrap.innerHTML =
         '<div class="card q-card">' +
         progress() +
         (it.topic ? '<span class="q-topic">' + esc(it.topic) + '</span>' : '') +
-        '<h2 class="q-stem">' + esc(it.stem) + '</h2>' +
-        '<div class="q-options">' + it.options.map(function (o, i) {
+        '<h2 class="q-stem">' + stemHtml(it.stem) + '</h2>' +
+        '<div class="q-options">' + curOrd.map(function (oi, i) {
           return '<button class="q-opt" type="button" data-i="' + i + '"><span class="q-letter">' +
-            'ABCD'.charAt(i) + '</span><span>' + esc(o) + '</span></button>';
+            'ABCD'.charAt(i) + '</span><span>' + esc(it.options[oi]) + '</span></button>';
         }).join('') + '</div>' +
         '<div class="q-feedback" hidden></div>' +
         '</div>';
@@ -70,7 +84,9 @@
 
     function pick(i, btn) {
       var it = opts.items[idx];
-      answers[it.id] = i;
+      var srcIdx = curOrd[i]; // display position -> source index (contract unchanged)
+      var ord = curOrd;       // capture: async marking must not race the next show()
+      answers[it.id] = srcIdx;
       lockOptions();
       if (opts.mode === 'collect') { nextOrDone(); return; }
       if (opts.mode === 'neutral') {
@@ -79,9 +95,9 @@
         setTimeout(nextOrDone, 650);
         return;
       }
-      // feedback mode: server marks
+      // feedback mode: server marks (against the SOURCE index)
       btn.classList.add('checking');
-      opts.markFn(it, i).then(function (r) {
+      opts.markFn(it, srcIdx).then(function (r) {
         btn.classList.remove('checking');
         var fb = wrap.querySelector('.q-feedback');
         if (!r || !r.ok) {
@@ -96,7 +112,8 @@
         if (r.correct) { right++; btn.classList.add('right'); }
         else {
           btn.classList.add('wrong');
-          if (opts_[r.correctIdx]) opts_[r.correctIdx].classList.add('reveal');
+          var revealPos = ord.indexOf(Number(r.correctIdx)); // source -> display position
+          if (revealPos !== -1 && opts_[revealPos]) opts_[revealPos].classList.add('reveal');
         }
         fb.hidden = false;
         fb.className = 'q-feedback ' + (r.correct ? 'good' : 'bad');
@@ -566,9 +583,14 @@
           signBtn.classList.remove('holding');
           clearTimeout(holdTimer);
         }
-        signBtn.addEventListener('pointerdown', startHold);
+        // pointer events cover mouse AND touch (tap-and-hold on tablets);
+        // pointercancel matters there — a stray scroll/rotate mustn't leave the
+        // ring stuck; contextmenu is suppressed so a long-press can't interrupt.
+        signBtn.addEventListener('pointerdown', function (e) { e.preventDefault(); startHold(); });
         signBtn.addEventListener('pointerup', endHold);
         signBtn.addEventListener('pointerleave', endHold);
+        signBtn.addEventListener('pointercancel', endHold);
+        signBtn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
       }
 
       function belonging() {

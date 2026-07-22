@@ -129,10 +129,10 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .ghost-btn:hover { background: rgba(var(--gold-hi-rgb), 0.12); border-color: var(--gold); color: #fff; }
 .ghost-btn.danger { color: #FFB3A6; border-color: rgba(232, 90, 72, 0.5); }
 /* on light surfaces (cards, staff panel) ghost buttons flip dark-on-light */
-.card .ghost-btn, .ols-modal-card .ghost-btn {
+.card .ghost-btn, .ols-modal-card .ghost-btn, .badge-pop-card .ghost-btn {
   color: var(--ols-blue); border-color: rgba(26, 58, 107, 0.4); background: rgba(26, 58, 107, 0.05);
 }
-.card .ghost-btn:hover, .ols-modal-card .ghost-btn:hover { background: rgba(var(--gold-rgb), 0.14); border-color: var(--gold); color: var(--ols-blue); }
+.card .ghost-btn:hover, .ols-modal-card .ghost-btn:hover, .badge-pop-card .ghost-btn:hover { background: rgba(var(--gold-rgb), 0.14); border-color: var(--gold); color: var(--ols-blue); }
 .card .ghost-btn.danger, .ols-modal-card .ghost-btn.danger { color: var(--bad); border-color: rgba(232, 90, 72, 0.45); background: rgba(232, 90, 72, 0.05); }
 
 .text-input {
@@ -637,6 +637,7 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .oath-line.show { opacity: 1; transform: none; }
 .oath-sign {
   position: relative; margin-top: 18px; width: 100%;
+  touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
   background: var(--ols-blue); color: #fff; border: none; border-radius: var(--r-md);
   font-family: var(--font-display); font-weight: 700; font-size: 1rem; padding: 16px; cursor: pointer; overflow: hidden;
   transition: background 0.2s ease;
