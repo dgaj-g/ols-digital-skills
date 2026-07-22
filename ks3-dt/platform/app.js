@@ -637,8 +637,11 @@
     $('#agent-name').textContent = who;
     $('#agent-xp').textContent = s.xp + ' XP';
 
+    // Side quests never count toward the year ring or steal the hero CTA —
+    // the 17-mission spine is the progress story; side quests are extras.
+    var coreLessons = (man.lessons || []).filter(function (le) { return !le.side; });
     var doneCount = 0, continueTarget = null;
-    (man.lessons || []).forEach(function (le) {
+    coreLessons.forEach(function (le) {
       var st = lessonState(le);
       if (st.done) doneCount++;
       else if (!continueTarget && st.delivered && st.ready) continueTarget = le;
@@ -647,7 +650,7 @@
     var circ = 2 * Math.PI * 52;
     var fill = $('#ring-fill');
     fill.style.strokeDasharray = circ;
-    fill.style.strokeDashoffset = circ * (1 - doneCount / (man.lessons || []).length);
+    fill.style.strokeDashoffset = circ * (1 - doneCount / (coreLessons.length || 1));
 
     var team = $('#hero-team');
     if (s.team && s.lb && s.lb.mode !== 'off') {
@@ -712,13 +715,14 @@
     else if (st.delivered && st.ready) cls += ' is-open';
     else cls += ' is-locked';
     if (st.flagged) cls += ' is-flagged';
+    if (le.side) cls += ' is-side';
     el.className = cls;
     el.style.setProperty('--blk', blockMeta.color || '#4FA3D9');
     // journey markup: a glowing node on the spine + a glass mission card
     el.innerHTML =
       '<span class="tile-icon">' + esc(le.icon || '📘') + '</span>' +
       '<span class="tile-card">' +
-        '<span class="tile-num">' + esc('Lesson ' + le.num) + '</span>' +
+        '<span class="tile-num">' + esc(le.side ? 'Side Quest' : 'Lesson ' + le.num) + '</span>' +
         '<span class="tile-title">' + esc(le.title) + '</span>' +
         '<span class="tile-tag">' + esc(le.tagline || '') + '</span>' +
         (st.done ? '<span class="tile-state done">&#10003; Complete</span>'
@@ -759,7 +763,7 @@
       $('#hub').hidden = true;
       $('#player').hidden = false;
       $('#save-chip').hidden = true; // fresh lesson: chip appears on the first save
-      $('#player-num').textContent = 'Lesson ' + le.num;
+      $('#player-num').textContent = le.side ? 'Side Quest' : 'Lesson ' + le.num;
       $('#player-title').textContent = lesson.title;
       $('#player-xp').textContent = App.state.xp + ' XP';
       loadDraftThen(function () {

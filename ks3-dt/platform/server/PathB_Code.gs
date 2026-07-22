@@ -743,6 +743,45 @@ function apiCatchup(req) {
   });
 }
 
+/* ---------- Side-quest Drive inspection (execute-as-user, real folders) ----
+   The "Files That Follow You" side quest asks the pupil to build School /
+   DT Work in her REAL Google Drive; this call looks inside it (her own
+   Drive, her own quota, drive scope already consented) and reports what
+   exists. Read-only, no lock, no store writes - the badge itself is granted
+   through the normal idempotent saveEvent path. Name matching is
+   case-insensitive and trimmed; iteration is capped so a pathological
+   root folder can't run away. */
+function apiDriveCheck(req) {
+  req = req || {};
+  var email = userEmail_();
+  if (!email) return { ok: false, error: 'not-signed-in' };
+  var cls = realClass_(req.classCode);
+  if (!cls) return { ok: false, error: 'unknown-class' };
+  var numStr = str_(req.lessonNum || '');
+  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  try {
+    var school = false, dtwork = false;
+    var roots = DriveApp.getRootFolder().getFolders();
+    var guard = 0;
+    while (roots.hasNext() && guard < 800) {
+      guard++;
+      var f = roots.next();
+      if (str_(f.getName()).trim().toLowerCase() !== 'school') continue;
+      school = true;
+      var subs = f.getFolders();
+      var g2 = 0;
+      while (subs.hasNext() && g2 < 400) {
+        g2++;
+        if (str_(subs.next().getName()).trim().toLowerCase() === 'dt work') { dtwork = true; break; }
+      }
+      if (dtwork) break;
+    }
+    return { ok: true, school: school, dtwork: dtwork };
+  } catch (e) {
+    return { ok: false, error: 'drive-error' };
+  }
+}
+
 /* ---------- Agent Kit (cosmetic themes + insignia, clearance-gated) ----------
    Cosmetic ONLY: never grants or touches XP, so it adds no farming surface.
    The registry is public content/themes.json (adding a theme = a git push, no

@@ -1053,6 +1053,21 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 @media (max-width: 640px) { .save-chip { padding: 4px 9px; font-size: 0.66rem; } }
 
+/* ============ side-quest drivecheck (HQ Inspection results) ============ */
+.dc-list { list-style: none; margin: 12px 0 14px; padding: 0; display: grid; gap: 8px; }
+.dc-row {
+  display: flex; align-items: center; gap: 10px;
+  border-radius: var(--r-md); padding: 11px 14px; font-weight: 600; color: var(--ink);
+}
+.dc-row.ok { background: var(--good-soft); }
+.dc-row.miss { background: var(--bad-soft); }
+.dc-mark { font-weight: 800; width: 20px; text-align: center; }
+.dc-row.ok .dc-mark { color: #1E9459; }
+.dc-row.miss .dc-mark { color: var(--bad); }
+.dc-sim { color: var(--muted); font-size: 0.85rem; font-style: italic; margin: 0 0 6px; }
+/* side-quest tiles: violet identity on the spine */
+.tile.is-side .tile-icon { border-style: dashed; }
+
 </style>
 </head>
 <body>
@@ -1258,6 +1273,7 @@ window.OLS_TRANSPORT = {
         case 'submitBaseline': g.apiSubmitBaseline(p); break;
         case 'catchup':        g.apiCatchup(p); break;
         case 'setKit':         g.apiSetKit(p); break;
+        case 'driveCheck':     g.apiDriveCheck(p); break;
         case 'admin':          g.apiAdmin(p); break;
         default: reject(new Error('unknown action: ' + p.action));
       }
@@ -1905,8 +1921,11 @@ window.OLS_TRANSPORT = {
     $('#agent-name').textContent = who;
     $('#agent-xp').textContent = s.xp + ' XP';
 
+    // Side quests never count toward the year ring or steal the hero CTA \u2014
+    // the 17-mission spine is the progress story; side quests are extras.
+    var coreLessons = (man.lessons || []).filter(function (le) { return !le.side; });
     var doneCount = 0, continueTarget = null;
-    (man.lessons || []).forEach(function (le) {
+    coreLessons.forEach(function (le) {
       var st = lessonState(le);
       if (st.done) doneCount++;
       else if (!continueTarget && st.delivered && st.ready) continueTarget = le;
@@ -1915,7 +1934,7 @@ window.OLS_TRANSPORT = {
     var circ = 2 * Math.PI * 52;
     var fill = $('#ring-fill');
     fill.style.strokeDasharray = circ;
-    fill.style.strokeDashoffset = circ * (1 - doneCount / (man.lessons || []).length);
+    fill.style.strokeDashoffset = circ * (1 - doneCount / (coreLessons.length || 1));
 
     var team = $('#hero-team');
     if (s.team && s.lb && s.lb.mode !== 'off') {
@@ -1980,13 +1999,14 @@ window.OLS_TRANSPORT = {
     else if (st.delivered && st.ready) cls += ' is-open';
     else cls += ' is-locked';
     if (st.flagged) cls += ' is-flagged';
+    if (le.side) cls += ' is-side';
     el.className = cls;
     el.style.setProperty('--blk', blockMeta.color || '#4FA3D9');
     // journey markup: a glowing node on the spine + a glass mission card
     el.innerHTML =
       '<span class="tile-icon">' + esc(le.icon || '\ud83d\udcd8') + '</span>' +
       '<span class="tile-card">' +
-        '<span class="tile-num">' + esc('Lesson ' + le.num) + '</span>' +
+        '<span class="tile-num">' + esc(le.side ? 'Side Quest' : 'Lesson ' + le.num) + '</span>' +
         '<span class="tile-title">' + esc(le.title) + '</span>' +
         '<span class="tile-tag">' + esc(le.tagline || '') + '</span>' +
         (st.done ? '<span class="tile-state done">&#10003; Complete</span>'
@@ -2027,7 +2047,7 @@ window.OLS_TRANSPORT = {
       $('#hub').hidden = true;
       $('#player').hidden = false;
       $('#save-chip').hidden = true; // fresh lesson: chip appears on the first save
-      $('#player-num').textContent = 'Lesson ' + le.num;
+      $('#player-num').textContent = le.side ? 'Side Quest' : 'Lesson ' + le.num;
       $('#player-title').textContent = lesson.title;
       $('#player-xp').textContent = App.state.xp + ' XP';
       loadDraftThen(function () {
@@ -2862,6 +2882,48 @@ window.OLS_TRANSPORT = {
     }
   };
 
+  /* ================= drivecheck (side quest: HQ inspects the REAL Drive) ==
+     Genuine consequence: the badge is only claimable after the server has
+     actually found the folders in the pupil's own Google Drive. In preview
+     the FakeServer simulates a pass and says so on screen. */
+  Engines.drivecheck = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      introCard(host, { kicker: chunk.title, title: 'HQ Inspection', text: cfg.intro || '' }, 'Run the inspection', run);
+
+      function run() {
+        host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>HQ is looking inside your Drive&hellip;</span></div>';
+        ctx.call('driveCheck', { lessonNum: String(ctx.lessonEntry.num) }).then(function (r) {
+          host.innerHTML = '';
+          if (!r || !r.ok) {
+            var errC = el('<div class="card"><h2>The inspection could not run</h2><p>' +
+              (r && r.error === 'locked' ? 'This side quest is not unlocked for your class yet \u2014 check with your teacher.'
+                : 'The line to HQ dropped (wifi?). Nothing is lost \u2014 try again in a moment.') +
+              '</p><button class="primary-btn" type="button">Try again</button></div>');
+            host.appendChild(errC);
+            errC.querySelector('button').onclick = function () { host.innerHTML = ''; run(); };
+            return;
+          }
+          var results = { school: !!r.school, dtwork: !!r.dtwork };
+          var pass = results.school && results.dtwork;
+          var rows = (cfg.checks || []).map(function (c) {
+            var okc = !!results[c.id];
+            return '<li class="dc-row ' + (okc ? 'ok' : 'miss') + '"><span class="dc-mark">' + (okc ? '&#10003;' : '&#10007;') + '</span><span>' + esc(c.label) + '</span></li>';
+          }).join('');
+          var c2 = el('<div class="card dc-card"><h2>' + (pass ? 'Inspection passed' : 'Not quite there yet') + '</h2>' +
+            (r.simulated ? '<p class="dc-sim">(Preview mode: this inspection is simulated \u2014 the live platform checks your real Drive.)</p>' : '') +
+            '<ul class="dc-list">' + rows + '</ul>' +
+            '<p>' + esc(pass ? (cfg.passText || '') : (cfg.failText || '')) + '</p>' +
+            '<button class="primary-btn" type="button">' + (pass ? 'Claim the badge' : 'Run the inspection again') + '</button></div>');
+          host.appendChild(c2);
+          c2.querySelector('button').onclick = pass
+            ? function () { finishChunk(ctx, 'sqdrive=pass'); }
+            : function () { host.innerHTML = ''; run(); };
+        });
+      }
+    }
+  };
+
   /* ================= recap (Do-Now engine, lessons 2+) ================= */
   Engines.recap = {
     mount: function (host, chunk, ctx) {
@@ -3434,7 +3496,7 @@ window.OLS_TRANSPORT = {
       // dispatcher resolves closest([data-action]), so it wins without ever
       // toggling the lock (nested <button> would be invalid HTML).
       return '<button type="button" class="lock-cell' + (on ? ' is-on' : '') + '" data-action="toggle-lock" data-num="' + le.num + '" data-ready="' + (le.status === 'ready' ? '1' : '0') + '">' +
-        '<span class="lc-num">Lesson ' + le.num + '</span>' +
+        '<span class="lc-num">' + (le.side ? 'Side Quest' : 'Lesson ' + le.num) + '</span>' +
         '<span class="lc-title">' + App.esc(le.title) + '</span>' +
         '<span class="lc-state">' + App.esc(stateText) + '</span>' +
         (le.status !== 'ready' ? '<span class="lc-date">(content coming)</span>'
@@ -4014,7 +4076,8 @@ window.OLS_TRANSPORT = {
 
   function undeliveredLessons(man) {
     var locks = dashData.locks || {};
-    return (man.lessons || []).filter(function (le) { var lk = locks[String(le.num)]; return !(lk && Number(lk.u)); })
+    // side quests are self-paced extras, never a cover lesson
+    return (man.lessons || []).filter(function (le) { var lk = locks[String(le.num)]; return !le.side && !(lk && Number(lk.u)); })
       .sort(function (a, b) { return a.num - b.num; });
   }
   function pickSuggestion(list) {

@@ -176,3 +176,15 @@ existing XP economy. Rules:
   celebration fires on the HUB only (never mid-lesson), tracked per device; the staff
   modal pins brand gold (`.staff-modal` var reset) so teacher tools are theme-immune.
 - Default theme = Midnight Command (stored as `''`; the approved v2 look is untouched).
+
+## 11. Side Quests (Session B — decision A, 22 Jul 2026)
+
+Optional self-paced skills missions alongside the 17-lesson spine. Manifest entries carry
+`side: true` (+ `num` like `"S1"`, block `side`): excluded from the year ring, hero CTA,
+absence inference and Cover Mode; rendered under a "Side Quests" header; labelled
+"Side Quest" everywhere instead of "Lesson N". Same lock grid, records, XP, recap-pool
+and dashboard plumbing as core lessons. First instance: `j1-sq1` "Files That Follow You"
+(real Drive folder build verified server-side by `apiDriveCheck` — execute-as-user,
+read-only, capped iteration, badge granted via the normal idempotent saveEvent path;
+OneDrive half is confirm-only, no API exists). Preview simulates the inspection and
+says so on screen.

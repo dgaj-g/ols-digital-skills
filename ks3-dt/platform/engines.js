@@ -623,6 +623,48 @@
     }
   };
 
+  /* ================= drivecheck (side quest: HQ inspects the REAL Drive) ==
+     Genuine consequence: the badge is only claimable after the server has
+     actually found the folders in the pupil's own Google Drive. In preview
+     the FakeServer simulates a pass and says so on screen. */
+  Engines.drivecheck = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      introCard(host, { kicker: chunk.title, title: 'HQ Inspection', text: cfg.intro || '' }, 'Run the inspection', run);
+
+      function run() {
+        host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>HQ is looking inside your Drive&hellip;</span></div>';
+        ctx.call('driveCheck', { lessonNum: String(ctx.lessonEntry.num) }).then(function (r) {
+          host.innerHTML = '';
+          if (!r || !r.ok) {
+            var errC = el('<div class="card"><h2>The inspection could not run</h2><p>' +
+              (r && r.error === 'locked' ? 'This side quest is not unlocked for your class yet — check with your teacher.'
+                : 'The line to HQ dropped (wifi?). Nothing is lost — try again in a moment.') +
+              '</p><button class="primary-btn" type="button">Try again</button></div>');
+            host.appendChild(errC);
+            errC.querySelector('button').onclick = function () { host.innerHTML = ''; run(); };
+            return;
+          }
+          var results = { school: !!r.school, dtwork: !!r.dtwork };
+          var pass = results.school && results.dtwork;
+          var rows = (cfg.checks || []).map(function (c) {
+            var okc = !!results[c.id];
+            return '<li class="dc-row ' + (okc ? 'ok' : 'miss') + '"><span class="dc-mark">' + (okc ? '&#10003;' : '&#10007;') + '</span><span>' + esc(c.label) + '</span></li>';
+          }).join('');
+          var c2 = el('<div class="card dc-card"><h2>' + (pass ? 'Inspection passed' : 'Not quite there yet') + '</h2>' +
+            (r.simulated ? '<p class="dc-sim">(Preview mode: this inspection is simulated — the live platform checks your real Drive.)</p>' : '') +
+            '<ul class="dc-list">' + rows + '</ul>' +
+            '<p>' + esc(pass ? (cfg.passText || '') : (cfg.failText || '')) + '</p>' +
+            '<button class="primary-btn" type="button">' + (pass ? 'Claim the badge' : 'Run the inspection again') + '</button></div>');
+          host.appendChild(c2);
+          c2.querySelector('button').onclick = pass
+            ? function () { finishChunk(ctx, 'sqdrive=pass'); }
+            : function () { host.innerHTML = ''; run(); };
+        });
+      }
+    }
+  };
+
   /* ================= recap (Do-Now engine, lessons 2+) ================= */
   Engines.recap = {
     mount: function (host, chunk, ctx) {

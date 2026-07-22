@@ -33,6 +33,11 @@
    "id": "b6",
    "name": "The Big Picture",
    "color": "#C94F6D"
+  },
+  {
+   "id": "side",
+   "name": "Side Quests",
+   "color": "#9B8CFF"
   }
  ],
  "lessons": [
@@ -228,6 +233,21 @@
    "status": "soon",
    "coverSuitability": "ok",
    "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-sq1",
+   "num": "S1",
+   "side": true,
+   "title": "Files That Follow You",
+   "tagline": "Build your real cloud vault — done before Lesson 3.",
+   "block": "side",
+   "icon": "🗂️",
+   "status": "ready",
+   "file": "j1/lessons/j1-sq1.json",
+   "coverSuitability": "ok",
+   "coverNote": "Self-paced skills mission — safe under cover as early-finisher work.",
+   "absenceInferenceEligible": false,
+   "absenceNote": "Side quests never trigger absence flags — completion shows on the dashboard instead."
   }
  ]
 }
