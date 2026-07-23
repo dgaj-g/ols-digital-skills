@@ -38,7 +38,7 @@ const scenes = [
       await cine.install();
       await cine.curtain({
         crest: CREST, kicker: 'MAKE IT MOVE ' + DASH + ' TUTORIAL',
-        title: 'Getting Started with MakeCode',
+        title: 'Getting Started with\nMakeCode for micro:bit',
         sub: 'Chapter 1 ' + DASH + ' Find MakeCode'
       });
       await cine.pause(2900);
