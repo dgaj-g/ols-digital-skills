@@ -8,6 +8,9 @@
 
   var Engines = global.Engines = {};
   var esc = function (s) { return App.esc(s); };
+  /* Resolve repo-relative asset paths through App.asset so engine-rendered media
+     works under the hosted (googleusercontent) origin too. Absolute URLs pass through. */
+  var asset = function (p) { return /^https?:/i.test(String(p)) ? p : App.asset(p); };
 
   function el(html) {
     var d = document.createElement('div');
@@ -345,7 +348,7 @@
       // optional hook-photo strip (real images, credited in assets/img/CREDITS.md)
       var photoStrip = (cfg.images && cfg.images.length)
         ? '<div class="dossier-photos">' + cfg.images.map(function (im) {
-            return '<figure><img src="' + esc(im.src) + '" alt="' + esc(im.alt || '') + '" loading="lazy">' +
+            return '<figure><img src="' + esc(asset(im.src)) + '" alt="' + esc(im.alt || '') + '" loading="lazy">' +
               (im.caption ? '<figcaption>' + esc(im.caption) + '</figcaption>' : '') + '</figure>';
           }).join('') + '</div>'
         : '';
@@ -1020,6 +1023,7 @@
               return ctx.call('recapAnswer', { lessonNum: String(ctx.lessonEntry.num), itemId: it.id, choice: i });
             },
             onDone: function (res) {
+              host.innerHTML = ''; // replace the last item card - the done card must never hide below the fold
               var c = el('<div class="card recap-done"><h2>Brain warmed up</h2><p class="recap-score">' + res.right + ' of ' + res.total + '</p>' +
                 '<p>' + (res.right === res.total ? 'Perfect recall, Agent.' : 'The ones you missed will come back around — that’s how remembering works.') + '</p>' +
                 '<button class="primary-btn" type="button">Start today’s mission</button></div>');
@@ -1221,7 +1225,7 @@
         var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(r.title) + '</span>' +
           pointsBar() +
           '<h2 class="rung-target">' + esc(r.target) + '</h2>' +
-          (r.img ? '<img class="rung-img" src="' + esc(r.img) + '" alt="The blocks for this rung">' : '') +
+          (r.img ? '<img class="rung-img" src="' + esc(asset(r.img)) + '" alt="The blocks for this rung">' : '') +
           '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(r.test || 'Flash it to the device and make it happen for real.') + '</p></div>' +
           '<div class="rung-hint" hidden><p>&#128161; ' + esc(r.hint || '') + '</p></div>' +
           '<div class="rung-actions">' +
@@ -1253,7 +1257,7 @@
         var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(s.title || 'Stretch') + '</span>' +
           pointsBar() +
           '<h2 class="rung-target">' + esc(s.target) + '</h2>' +
-          (s.img ? '<img class="rung-img" src="' + esc(s.img) + '" alt="Stretch blocks">' : '') +
+          (s.img ? '<img class="rung-img" src="' + esc(asset(s.img)) + '" alt="Stretch blocks">' : '') +
           '<div class="rung-actions">' +
           '<button class="primary-btn" type="button">We built it! &#11088;</button>' +
           '<button class="ghost-btn" type="button">Finish the ladder without it</button>' +
@@ -1455,7 +1459,7 @@
         return '<button class="vid-chapter" data-t="' + Number(ch.t) + '" type="button">' + esc(ch.label) + '</button>';
       }).join('');
       var c2 = el('<div class="card video-card"><h2>' + esc(chunk.title) + '</h2>' +
-        '<video controls preload="metadata" playsinline ' + (cfg.poster ? 'poster="' + esc(cfg.poster) + '"' : '') + ' src="' + esc(cfg.src) + '"></video>' +
+        '<video controls preload="metadata" playsinline ' + (cfg.poster ? 'poster="' + esc(asset(cfg.poster)) + '"' : '') + ' src="' + esc(asset(cfg.src)) + '"></video>' +
         (chapters ? '<div class="vid-chapters">' + chapters + '</div>' : '') +
         '<button class="primary-btn" type="button">Done watching</button></div>');
       host.appendChild(c2);
