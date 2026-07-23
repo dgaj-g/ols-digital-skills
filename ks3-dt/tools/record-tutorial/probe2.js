@@ -12,7 +12,7 @@ const CLEAN = '.replace(/[\\u200B-\\u200D\\uFEFF\\u00A0]/g, " ").replace(/\\s+/g
 async function catRect(page, name) {
   return page.evaluate((name) => {
     const rows = Array.from(document.querySelectorAll('[role="treeitem"], .blocklyTreeRow'));
-    const r = rows.find(el => el.textContent.replace(/[​-‍﻿ ]/g, ' ').indexOf(name) !== -1 && el.getBoundingClientRect().width > 50);
+    const r = rows.find(el => el.textContent.replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').indexOf(name) !== -1 && el.getBoundingClientRect().width > 50);
     if (!r) return null;
     const b = r.getBoundingClientRect();
     return { x: b.x + b.width / 2, y: b.y + b.height / 2 };
@@ -24,7 +24,7 @@ async function flyoutBlock(page, rx) {
     const g = Array.from(document.querySelectorAll('.blocklyFlyout g.blocklyDraggable[data-id]'));
     for (const el of g) {
       const text = Array.from(el.querySelectorAll('.blocklyText')).map(t => t.textContent).join(' ')
-        .replace(/[​-‍﻿ ]/g, ' ').replace(/\s+/g, ' ').trim();
+        .replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').replace(/\s+/g, ' ').trim();
       if (rx.test(text)) {
         const b = el.getBoundingClientRect();
         return { text, x: b.x, y: b.y, w: b.width, h: b.height };
@@ -39,7 +39,7 @@ async function canvasBlocks(page) {
     return c.map(el => {
       const b = el.getBoundingClientRect();
       const text = Array.from(el.querySelectorAll('.blocklyText')).map(t => t.textContent).join(' ')
-        .replace(/[​-‍﻿ ]/g, ' ').replace(/\s+/g, ' ').trim();
+        .replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').replace(/\s+/g, ' ').trim();
       return { text: text.slice(0, 60), x: Math.round(b.x), y: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height) };
     }).filter(b => b.w > 10);
   });
