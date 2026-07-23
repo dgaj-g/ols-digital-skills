@@ -34,20 +34,25 @@ const scenes = [
     id: 'ch1',
     label: 'Find MakeCode',
     run: async ({ cine, drv, log }) => {
+      await drv.openHome();
       await cine.install();
       await cine.curtain({
         crest: CREST, kicker: 'MAKE IT MOVE ' + DASH + ' TUTORIAL',
         title: 'Getting Started with MakeCode',
         sub: 'Chapter 1 ' + DASH + ' Find MakeCode'
       });
-      await drv.openHome();
-      await cine.pause(600);
+      await cine.pause(2900);
       await cine.lift();
       await cine.ensureCursor(640, 430);
 
       await cine.caption('This is <b>makecode.microbit.org</b> &mdash; type that into your browser.');
-      const np = await drv.button('New Project', 80);
-      if (!np) throw new Error('New Project button not found');
+      const np = await drv.page.evaluate(() => {
+        const el = document.querySelector('.newprojectcard');
+        if (!el) return null;
+        const b = el.getBoundingClientRect();
+        return { cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+      });
+      if (!np) throw new Error('New Project card not found');
       await cine.captionShow('Click <b>New Project</b>.');
       await cine.click(np.cx, np.cy, { after: 900 });
       await cine.captionHide();
@@ -94,14 +99,14 @@ const scenes = [
     id: 'ch2',
     label: 'First blocks',
     run: async ({ cine, drv, log }) => {
+      await drv.openEditor();
       await cine.install();
       await cine.curtain({
         kicker: 'CHAPTER 2', title: 'First blocks',
         sub: 'Press button A ' + DASH + ' show a heart'
       });
-      await drv.openEditor();
       await drv.setProjectName('make-it-move');
-      await cine.pause(400);
+      await cine.pause(2900);
       await cine.lift();
       await cine.ensureCursor(760, 500);
 
@@ -157,15 +162,15 @@ const scenes = [
     id: 'ch3',
     label: 'Onto the real micro:bit',
     run: async ({ cine, drv, log }) => {
+      await drv.openEditor();
       await cine.install();
       await cine.curtain({
         kicker: 'CHAPTER 3', title: 'Onto the real micro:bit',
         sub: 'Download ' + DASH + ' connect ' + DASH + ' copy across'
       });
-      await drv.openEditor();
       await drv.setProgram(HEART_PROGRAM);
       await drv.setProjectName('make-it-move');
-      await cine.pause(400);
+      await cine.pause(1200);
       await cine.lift();
       await cine.ensureCursor(500, 450);
 
@@ -231,15 +236,15 @@ const scenes = [
     label: 'Test like an agent',
     tailMs: 4200,
     run: async ({ cine, drv, log }) => {
+      await drv.openEditor();
       await cine.install();
       await cine.curtain({
         kicker: 'CHAPTER 4', title: 'Test like an agent',
         sub: 'Break it on purpose ' + DASH + ' watch it fail ' + DASH + ' fix it'
       });
-      await drv.openEditor();
       await drv.setProgram(HEART_PROGRAM);
       await drv.setProjectName('make-it-move');
-      await cine.pause(400);
+      await cine.pause(1200);
       await cine.lift();
       await cine.ensureCursor(700, 480);
 

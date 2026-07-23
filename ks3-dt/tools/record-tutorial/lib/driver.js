@@ -115,6 +115,23 @@ class MakeCode {
       return null;
     }, [rxSrc, minW || 20]);
   }
+  /* any visible element whose own text matches - smallest match wins (most specific) */
+  anyByText(rxSrc, minW) {
+    return this.page.evaluate(([rxSrc, minW]) => {
+      const rx = new RegExp(rxSrc, 'i');
+      const out = [];
+      for (const el of Array.from(document.querySelectorAll('body *'))) {
+        if (el.offsetParent === null) continue;
+        const t = (el.textContent || '').replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').replace(/\s+/g, ' ').trim();
+        if (!rx.test(t) || t.length > 60) continue;
+        const b = el.getBoundingClientRect();
+        if (b.width < (minW || 20) || b.height < 10) continue;
+        out.push({ text: t.slice(0, 50), x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2, area: b.width * b.height });
+      }
+      out.sort((a, b) => a.area - b.area);
+      return out[0] || null;
+    }, [rxSrc, minW || 20]);
+  }
   modalButton(rxSrc) {
     return this.page.evaluate((rxSrc) => {
       const rx = new RegExp(rxSrc, 'i');
@@ -211,7 +228,7 @@ class MakeCode {
 
   async setProjectName(name) {
     const done = await this.page.evaluate((name) => {
-      const inp = document.querySelector('input.projectname, .projectname input, input[aria-label*="project" i]');
+      const inp = document.querySelector('#fileNameInput2, input[id^="fileNameInput"], input.projectname, .projectname input');
       if (!inp) return false;
       const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
       setter.call(inp, name);
