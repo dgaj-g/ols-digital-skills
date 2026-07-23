@@ -158,16 +158,18 @@ function pageRuntime() {
       background: 'linear-gradient(150deg,' + NAVY + ' 0%,' + NAVY_DEEP + ' 78%)',
       fontFamily: FONT, color: '#fff', opacity: '1', pointerEvents: 'none'
     });
-    // gold baseline rule, bottom brand strip
-    el('div', {
-      position: 'absolute', left: '0', right: '0', bottom: '64px', height: '3px',
-      background: 'linear-gradient(90deg, transparent, ' + GOLD + ' 22%, ' + GOLD + ' 78%, transparent)'
-    }, cov);
-    const brand = el('div', {
-      position: 'absolute', bottom: '26px', fontSize: '17px', letterSpacing: '3.5px',
-      color: 'rgba(255,255,255,0.78)', fontWeight: '600'
-    }, cov);
-    brand.textContent = spec.brand || 'OLS DIGITAL TECHNOLOGY';
+    // gold baseline rule, bottom brand strip (skipped on bare cards)
+    if (!spec.bare) {
+      el('div', {
+        position: 'absolute', left: '0', right: '0', bottom: '64px', height: '3px',
+        background: 'linear-gradient(90deg, transparent, ' + GOLD + ' 22%, ' + GOLD + ' 78%, transparent)'
+      }, cov);
+      const brand = el('div', {
+        position: 'absolute', bottom: '26px', fontSize: '17px', letterSpacing: '3.5px',
+        color: 'rgba(255,255,255,0.78)', fontWeight: '600'
+      }, cov);
+      brand.textContent = spec.brand || 'OLS DIGITAL TECHNOLOGY';
+    }
     if (spec.crest) {
       const img = el('img', { width: '108px', marginBottom: '26px', filter: 'drop-shadow(0 6px 18px rgba(0,0,0,0.4))' }, cov);
       img.src = spec.crest;
@@ -211,7 +213,7 @@ function pageRuntime() {
 
   /* ---- full-screen instruction card (physical steps: photos + big text) ---- */
   C.card = function (spec) {
-    C.curtain({ brand: spec.brand });
+    C.curtain({ bare: true });
     const cov = C.cover;
     cov.style.opacity = '0';
     if (spec.kicker) {
@@ -235,16 +237,25 @@ function pageRuntime() {
       }
     }
     if (spec.lines && spec.lines.length) {
-      const box = el('div', { marginTop: '26px', display: 'flex', flexDirection: 'column', gap: '13px', alignItems: 'flex-start' }, cov);
+      const numbered = spec.lines.length > 1;
+      const box = el('div', {
+        marginTop: '26px', display: 'flex', flexDirection: 'column', gap: '13px',
+        alignItems: numbered ? 'flex-start' : 'center'
+      }, cov);
       spec.lines.forEach(function (ln, i) {
         const row = el('div', { display: 'flex', alignItems: 'center', gap: '16px' }, box);
-        const n = el('div', {
-          width: '38px', height: '38px', borderRadius: '50%', background: GOLD, color: NAVY_DEEP,
-          fontWeight: '800', fontSize: '21px', display: 'flex', alignItems: 'center',
-          justifyContent: 'center', flexShrink: '0'
+        if (numbered) {
+          const n = el('div', {
+            width: '38px', height: '38px', borderRadius: '50%', background: GOLD, color: NAVY_DEEP,
+            fontWeight: '800', fontSize: '21px', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', flexShrink: '0'
+          }, row);
+          n.textContent = String(i + 1);
+        }
+        const tx = el('div', {
+          fontSize: '25px', lineHeight: '1.4', maxWidth: '820px', fontWeight: '450',
+          textAlign: numbered ? 'left' : 'center'
         }, row);
-        n.textContent = String(i + 1);
-        const tx = el('div', { fontSize: '25px', lineHeight: '1.4', maxWidth: '820px', fontWeight: '450' }, row);
         tx.innerHTML = ln;
         Array.from(tx.querySelectorAll('b')).forEach(b => { b.style.color = GOLD; b.style.fontWeight = '700'; });
       });
