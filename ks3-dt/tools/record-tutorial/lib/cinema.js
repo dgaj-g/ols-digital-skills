@@ -183,7 +183,8 @@ function pageRuntime() {
     if (spec.title) {
       const t = el('div', {
         fontSize: '54px', fontWeight: '700', letterSpacing: '0.5px', textAlign: 'center',
-        maxWidth: '980px', lineHeight: '1.14', textShadow: '0 3px 14px rgba(0,0,0,0.35)'
+        maxWidth: '980px', lineHeight: '1.14', textShadow: '0 3px 14px rgba(0,0,0,0.35)',
+        whiteSpace: 'pre-line' // authored \n = controlled break (no dangling words)
       }, cov);
       t.textContent = spec.title;
     }
