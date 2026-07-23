@@ -79,9 +79,31 @@ const scenes = [
       await cine.captionShow('MakeCode is building your empty project&hellip;');
       await drv.waitFor(() => drv.page.evaluate(() =>
         !!document.querySelector('.blocklyToolboxDiv, [role="treeitem"]')), 45000, 'editor after create');
-      await drv.page.waitForTimeout(3500);
-      await drv.dismissDialogs();
+      await drv.page.waitForTimeout(2500);
       await cine.captionHide();
+
+      // MakeCode's welcome-tour toast: close it ON CAMERA (pupils meet it too)
+      const tourClose = await drv.page.evaluate(() => {
+        for (const el of Array.from(document.querySelectorAll('body *'))) {
+          if (el.offsetParent === null || el.children.length > 12) continue;
+          if (!/take a tour/i.test(el.textContent || '')) continue;
+          const btn = el.closest('div').parentElement.querySelector('[aria-label="Close"], .closeIcon, .close.icon') ||
+            el.querySelector('[aria-label="Close"], .closeIcon, .close.icon');
+          if (btn) {
+            const b = btn.getBoundingClientRect();
+            if (b.width > 4) return { cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+          }
+        }
+        return null;
+      });
+      if (tourClose) {
+        await cine.captionShow('MakeCode offers a tour &mdash; close it. <b>This video is your tour.</b>');
+        await cine.pause(1600);
+        await cine.click(tourClose.cx, tourClose.cy, { after: 500 });
+        await cine.captionHide();
+      }
+      await drv.dismissDialogs();
+      await drv.page.waitForTimeout(2200); // let the simulator finish booting
 
       // 10-second tour
       await cine.callout(RECT_SIM, 'The simulator ' + DASH + ' a practice micro:bit', { side: 'below' });
