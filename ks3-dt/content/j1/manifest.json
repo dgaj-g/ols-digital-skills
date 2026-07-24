@@ -75,9 +75,10 @@
    "tagline": "Build the invisible scorekeeper.",
    "block": "b1",
    "icon": "🎯",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j1/lessons/j1-03.json"
   },
   {
    "id": "j1-04",
