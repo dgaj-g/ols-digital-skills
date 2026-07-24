@@ -1670,6 +1670,7 @@
                  : '<h3>The teams stand revealed</h3>') +
           bars + '</div>';
         requestAnimationFrame(function () { box.classList.add('show'); });
+        setTimeout(function () { box.classList.add('show'); }, 120); // hidden-tab rAF fallback
       }
 
       /* resume: a reloaded pupil who already transmitted lands back in the

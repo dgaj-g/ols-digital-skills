@@ -774,14 +774,18 @@
       board.querySelector('[data-t="done"]').onclick = close;
 
       function countUp(el, target, ms) {
-        var t0 = null;
+        var t0 = null, landed = false;
         function step(ts) {
           if (!t0) t0 = ts;
           var p = Math.min(1, (ts - t0) / ms);
           el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+          if (p >= 1) landed = true;
           if (p < 1 && document.body.contains(el)) requestAnimationFrame(step);
         }
         requestAnimationFrame(step);
+        /* rAF never fires in a hidden/backgrounded tab - snap to the real total
+           so the board is never left reading 0 */
+        setTimeout(function () { if (!landed && document.body.contains(el)) el.textContent = target; }, ms + 400);
       }
 
       /* last place first; the winner lands last, then shimmers */
@@ -804,6 +808,7 @@
                 wl.hidden = false;
                 wl.textContent = 'Team ' + standings[0].name + ' takes the Rally!';
                 requestAnimationFrame(function () { wl.classList.add('in'); });
+                setTimeout(function () { wl.classList.add('in'); }, 120); // hidden-tab rAF fallback
               }
               var pub = board.querySelector('.tourney-public');
               if (pub) setTimeout(function () { pub.classList.add('in'); }, 900);
