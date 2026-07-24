@@ -220,6 +220,7 @@
     if (!c.absDays) c.absDays = 5;
     if (!c.cover) c.cover = { on: 0, lesson: '', ts: 0 };
     if (!c.pairing) c.pairing = { on: 1 }; // auto-pairing default ON (section 12)
+    if (!c.tn) c.tn = { mode: 'team' }; // tournament reveal mode (section 13)
     return c;
   }
   function getTeam_(s, cls) {
@@ -785,6 +786,50 @@
     return Promise.resolve({ ok: true, mode: 'public', basis: str_(cfg.lb.basis), rows: rows });
   }
 
+  /* ---- Reaction Rally tournament (section 13) - mirrors tnAgg_/apiTournament ---- */
+  function tnAggD_(s, cls, numStr) {
+    var team = getTeam_(s, cls);
+    var totals = {}, submitted = 0, roster = 0, rows = [];
+    (team.groups || []).forEach(function (g) { totals[str_(g.id)] = 0; });
+    allPupils_(s, cls).forEach(function (r) {
+      if (!str_(r.n)) return;
+      roster++;
+      var a = (r.L || {})[numStr];
+      if (!a) return;
+      var m = /(?:^|;)rt=(\d+)/.exec(str_(a[2]));
+      if (!m) return;
+      var v = Math.max(0, Math.min(99, num_(m[1])));
+      submitted++;
+      var g = str_(r.g || '');
+      if (totals[g] != null) totals[g] += v;
+      rows.push({ n: str_(r.n), v: v, g: g });
+    });
+    return { team: team, totals: totals, submitted: submitted, roster: roster, rows: rows };
+  }
+  function tnNumFor_(s, cls, lessonId) {
+    return yearManifest_(classYear_(s, cls)).then(function (man) {
+      var entry = lessonEntry_(man, str_(lessonId));
+      return entry ? str_(entry.num) : '';
+    });
+  }
+  function doTournament(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    return tnNumFor_(s, cls, p.lessonId).then(function (numStr) {
+      if (!numStr) return { ok: false, error: 'unknown-lesson' };
+      var agg = tnAggD_(s, cls, numStr);
+      var out = { ok: true, n: num_(agg.submitted), revealed: !!agg.team.reveal };
+      if (agg.team.reveal && (agg.team.groups || []).length) {
+        var me = readPupil_(s, cls, PUPIL_EMAIL) || {};
+        out.teams = agg.team.groups.map(function (g) {
+          return { name: str_(g.name), total: num_(agg.totals[str_(g.id)]), mine: str_(me.g || '') === str_(g.id) ? 1 : 0 };
+        });
+      }
+      return out;
+    });
+  }
+
   function doCatchup(p) {
     var s = load_();
     var cls = realClass_(s, p.classCode);
@@ -941,7 +986,7 @@
         Object.keys(locks2).forEach(function (k) { locksOut2[k] = { on: num_(locks2[k].on), u: num_(locks2[k].u) }; });
         return {
           ok: true, year: str_(year2), rows: rows, locks: locksOut2,
-          cfg: { lb: cfg2.lb, absDays: num_(cfg2.absDays), cover: num_(cfg2.cover.on), coverLesson: str_(cfg2.cover.lesson), pairing: { on: num_(cfg2.pairing.on) } },
+          cfg: { lb: cfg2.lb, absDays: num_(cfg2.absDays), cover: num_(cfg2.cover.on), coverLesson: str_(cfg2.cover.lesson), pairing: { on: num_(cfg2.pairing.on) }, tn: { mode: str_(cfg2.tn.mode) } },
           groups: team2.groups.map(function (g) { return { id: str_(g.id), name: str_(g.name) }; }),
           reveal: !!team2.reveal
         };
@@ -1019,6 +1064,10 @@
       }
       if (p.absDays != null) cfg3.absDays = Math.max(1, Math.min(20, num_(p.absDays)));
       if (p.pairing != null) cfg3.pairing = { on: num_(p.pairing.on) ? 1 : 0 };
+      if (p.tn) {
+        var tnMode = str_(p.tn.mode);
+        if (['team', 'public'].indexOf(tnMode) !== -1) cfg3.tn.mode = tnMode;
+      }
       save_(s);
       return Promise.resolve({ ok: true });
     }
@@ -1197,6 +1246,52 @@
       if (s.pq) delete s.pq[plKey_(cls, str_(p.lessonId))];
       save_(s);
       return Promise.resolve({ ok: true });
+    }
+
+    /* Reaction Rally projector feed - mirrors apiAdmin sub 'tournament'.
+       Preview extra: p.seed writes plausible rt scores onto every seeded
+       persona missing one (single-machine demo of a full-class reveal); the
+       staff overlay only offers that button when FakeServer is the transport. */
+    if (sub === 'tournament') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      return tnNumFor_(s, cls, p.lessonId).then(function (numStr) {
+        if (!numStr) return { ok: false, error: 'unknown-lesson' };
+        if (p.seed) {
+          var seedScores = [7, 9, 5, 8, 6, 4];
+          allPupils_(s, cls).forEach(function (r, i) {
+            if (!str_(r.n) || r.email === PUPIL_EMAIL) return;
+            var rec = readPupil_(s, cls, r.email);
+            var a = larr_(rec, numStr);
+            if (/(?:^|;)rt=/.test(str_(a[2]))) return;
+            var v = seedScores[i % seedScores.length];
+            a[2] = mergeDetail_(a[2], 'rt=' + v + ';rr=' + Math.max(0, v - 2) + '.' + v + '.' + Math.max(0, v - 1));
+            if (num_(a[0]) < 1) a[0] = 1;
+            a[5] = tmin_();
+            writePupil_(s, cls, r.email, rec);
+          });
+          save_(s);
+        }
+        var agg = tnAggD_(s, cls, numStr);
+        var cfgT = getCfg_(s, cls);
+        var out = {
+          ok: true,
+          revealed: !!agg.team.reveal,
+          submitted: num_(agg.submitted),
+          roster: num_(agg.roster),
+          mode: str_(cfgT.tn.mode),
+          unassigned: agg.rows.filter(function (r) { return agg.totals[r.g] == null; }).length,
+          teams: (agg.team.groups || []).map(function (g) {
+            var subCount = 0;
+            agg.rows.forEach(function (r) { if (r.g === str_(g.id)) subCount++; });
+            return { id: str_(g.id), name: str_(g.name), total: num_(agg.totals[str_(g.id)]), submitted: subCount };
+          })
+        };
+        if (str_(cfgT.tn.mode) === 'public') {
+          out.rows = agg.rows.map(function (r) { return { n: r.n, v: num_(r.v) }; })
+            .sort(function (a, b) { return b.v - a.v; });
+        }
+        return out;
+      });
     }
 
     return Promise.resolve({ ok: false, error: 'unknown-sub' });
@@ -1552,6 +1647,7 @@
       case 'mark': return doMark(p);
       case 'vaultInfo': return doVaultInfo(p);
       case 'board': return doBoard(p);
+      case 'tournament': return doTournament(p);
       case 'saveEvent': return doSaveEvent(p);
       case 'loadDraft': return doLoadDraft(p);
       case 'submitExit': return doSubmitExit(p);

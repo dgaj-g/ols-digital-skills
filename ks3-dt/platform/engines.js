@@ -1472,4 +1472,211 @@
     }
   };
 
+  /* ================= tournament (the Reaction Rally console) ===============
+     L3's whole-class event. Pairs play the physical rally (referee + player,
+     the micro:bit scoreboard THEY built keeps count), key each round's score
+     into an arcade-style LED console, tick the tested-3-times gate, and
+     TRANSMIT their best round to HQ. Scores land on the pupil record as
+     detail keys (rt=best, rr=r1.r2.r3); teams stay SEALED until the teacher
+     fires the projector reveal (staff Live tab), at which point the pupil
+     console flips to team colours live. Never blocks: Continue is available
+     from the moment the score is transmitted. */
+  Engines.tournament = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var max = Number(cfg.maxScore) || 10;
+      var solo = !!ctx.catchup;
+      var draft = (ctx.draft && ctx.draft.rally) || {};
+      var rounds = (draft.r && draft.r.slice(0, 3)) || [null, null, null];
+      var ticked = !!draft.c;
+      var submitted = !!draft.sub;
+      var pollTimer = null;
+
+      /* 3x5 dot-matrix digit font - the console displays scores the way the
+         micro:bit's own LED grid would */
+      var FONT = {
+        '0': '111101101101111', '1': '010110010010111', '2': '111001111100111',
+        '3': '111001111001111', '4': '101101111001001', '5': '111100111001111',
+        '6': '111100111101111', '7': '111001010010010', '8': '111101111101111',
+        '9': '111101111001111', '-': '000000111000000'
+      };
+      function ledHtml(val) {
+        var s = (val == null) ? '-' : String(val);
+        var out = '';
+        for (var d = 0; d < s.length; d++) {
+          var bits = FONT[s[d]] || FONT['-'];
+          var dots = '';
+          for (var i = 0; i < 15; i++) dots += '<i class="' + (bits[i] === '1' ? 'on' : '') + '"></i>';
+          out += '<span class="led-digit">' + dots + '</span>';
+        }
+        return out;
+      }
+      function best() {
+        var b = null;
+        rounds.forEach(function (v) { if (v != null && (b == null || v > b)) b = v; });
+        return b;
+      }
+      function saveDraft() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        App.state.draft.rally = { r: rounds, c: ticked ? 1 : 0, sub: submitted ? 1 : 0 };
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+
+      /* review = a re-read: static summary, zero network */
+      if (ctx.review) {
+        var b0 = best();
+        host.appendChild(el('<div class="card rally-card"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+          '<h2>' + esc(cfg.title || 'The Reaction Rally') + '</h2>' +
+          '<p class="intro-lead">' + (draft.sub ? 'Rally logged — your pair’s best round was <b>' + b0 + '</b>. The reveal happened live in class.' : 'The Rally runs live, in class — nothing to replay here.') + '</p>' +
+          '<button class="primary-btn" type="button">Continue</button></div>'));
+        host.querySelector('button').onclick = function () { ctx.next(); };
+        return;
+      }
+
+      var intro = solo ? (cfg.soloIntro || cfg.intro) : cfg.intro;
+      var rules = solo ? (cfg.soloRules || cfg.rules) : cfg.rules;
+      var confirmLabel = solo ? (cfg.soloConfirm || cfg.confirm) : cfg.confirm;
+      var ruleRows = (rules || []).map(function (r, i) {
+        return '<li><span class="rally-rule-n">' + (i + 1) + '</span><span>' + esc(r) + '</span></li>';
+      }).join('');
+      var labels = cfg.roundsLabel || ['Round 1', 'Round 2', 'Round 3'];
+      var slots = labels.map(function (lab, i) {
+        return '<div class="rally-round" data-i="' + i + '">' +
+          '<span class="rally-round-label">' + esc(lab) + '</span>' +
+          '<div class="led-display"></div>' +
+          '<div class="rally-steps">' +
+          '<button class="rally-step" data-d="-1" type="button" aria-label="Down">&minus;</button>' +
+          '<button class="rally-step" data-d="1" type="button" aria-label="Up">+</button>' +
+          '</div><span class="rally-best-tag">BEST</span></div>';
+      }).join('');
+
+      var c = el('<div class="card rally-card"><span class="intro-kicker">' + esc(cfg.kicker || chunk.title) + '</span>' +
+        '<h2>' + esc(cfg.title || 'The Reaction Rally') + '</h2>' +
+        '<p class="intro-lead">' + esc(intro || '') + '</p>' +
+        '<ol class="rally-rules">' + ruleRows + '</ol>' +
+        '<div class="rally-console">' + slots + '</div>' +
+        '<button class="confirm-step rally-confirm" type="button"><span class="confirm-box"></span>' + esc(confirmLabel || 'We tested it three times') + '</button>' +
+        '<div class="rung-actions"><button class="primary-btn rally-transmit" type="button" disabled>Transmit to HQ</button></div>' +
+        '<div class="rally-after"></div></div>');
+      host.appendChild(c);
+      var confirmBtn = c.querySelector('.rally-confirm');
+      var transmitBtn = c.querySelector('.rally-transmit');
+      var afterBox = c.querySelector('.rally-after');
+
+      function paint() {
+        var b = best();
+        c.querySelectorAll('.rally-round').forEach(function (slot) {
+          var i = Number(slot.getAttribute('data-i'));
+          slot.querySelector('.led-display').innerHTML = ledHtml(rounds[i]);
+          slot.classList.toggle('is-best', rounds[i] != null && rounds[i] === b && b != null);
+        });
+        if (ticked) confirmBtn.classList.add('ticked');
+        var ready = ticked && rounds.every(function (v) { return v != null; });
+        transmitBtn.disabled = !ready || submitted;
+      }
+      c.querySelectorAll('.rally-step').forEach(function (btn) {
+        btn.onclick = function () {
+          if (submitted) return;
+          var i = Number(btn.closest('.rally-round').getAttribute('data-i'));
+          var v = rounds[i] == null ? 0 : rounds[i] + Number(btn.getAttribute('data-d'));
+          rounds[i] = Math.max(0, Math.min(max, v));
+          paint(); saveDraft();
+        };
+      });
+      confirmBtn.onclick = function () {
+        if (submitted) return;
+        ticked = !ticked;
+        confirmBtn.classList.toggle('ticked', ticked);
+        paint(); saveDraft();
+      };
+      transmitBtn.onclick = function () {
+        if (submitted) return;
+        submitted = true;
+        paint(); saveDraft();
+        var detail = 'rt=' + best() + ';rr=' + rounds.join('.');
+        ctx.awardBadge(ctx.chunk.badge, detail).then(function () { afterTransmit(); });
+      };
+
+      function lockConsole() {
+        c.querySelector('.rally-rules').hidden = true;
+        c.querySelector('.rally-console').classList.add('is-locked');
+        confirmBtn.hidden = true;
+        transmitBtn.parentNode.hidden = true;
+      }
+
+      /* post-transmit: solo logs and moves on; a live run holds the suspense */
+      function afterTransmit() {
+        lockConsole();
+        if (solo) {
+          afterBox.innerHTML = '<div class="rally-sealed"><p class="rally-sealed-line">Score banked. ' + esc((cfg.suspense && cfg.suspense.sealed) || 'Teams are SEALED.') + '</p>' +
+            '<p class="rally-sub">The live reveal happened in class — your points still count for your hidden team.</p></div>' +
+            '<div class="rally-reveal"></div>' +
+            '<div class="rung-actions"><button class="primary-btn" type="button">Continue</button></div>';
+          afterBox.querySelector('.primary-btn').onclick = function () { ctx.next(); };
+          ctx.call('tournament', { lessonId: ctx.lesson.id }).then(function (r) {
+            if (r && r.ok && r.revealed) paintReveal(afterBox.querySelector('.rally-reveal'), r);
+          });
+          return;
+        }
+        afterBox.innerHTML = '<div class="rally-sealed">' +
+          '<p class="rally-sealed-line">' + esc((cfg.suspense && cfg.suspense.sealed) || 'Teams are SEALED.') + '</p>' +
+          '<div class="rally-counter"><span class="panel-spinner"></span><span class="rally-counter-text">' + esc((cfg.suspense && cfg.suspense.waiting) || 'Scores are landing at HQ…') + '</span></div>' +
+          '<p class="rally-sub">' + esc((cfg.suspense && cfg.suspense.revealTease) || 'Eyes on the big screen.') + '</p></div>' +
+          '<div class="rally-reveal"></div>' +
+          '<div class="rung-actions"><button class="primary-btn" type="button">Continue</button></div>';
+        afterBox.querySelector('.primary-btn').onclick = function () { stopPoll(); ctx.next(); };
+        startPoll();
+      }
+
+      function stopPoll() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+      function startPoll() {
+        var tick = function () {
+          if (!document.body.contains(afterBox)) { stopPoll(); return; }
+          ctx.call('tournament', { lessonId: ctx.lesson.id }).then(function (r) {
+            if (!r || !r.ok || !document.body.contains(afterBox)) return;
+            var t = afterBox.querySelector('.rally-counter-text');
+            if (t) t.textContent = Number(r.n) === 1 ? '1 rig reporting in…' : Number(r.n || 0) + ' rigs reporting in…';
+            if (r.revealed) {
+              stopPoll();
+              var sealed = afterBox.querySelector('.rally-sealed');
+              if (sealed) sealed.hidden = true;
+              paintReveal(afterBox.querySelector('.rally-reveal'), r);
+            }
+          });
+        };
+        tick();
+        pollTimer = setInterval(tick, 5000);
+      }
+
+      /* the pupil-side echo of the projector reveal: my team, my colours */
+      function paintReveal(box, r) {
+        if (!box || box.childNodes.length) return;
+        var teams = (r.teams || []).slice().sort(function (a, b) { return Number(b.total) - Number(a.total); });
+        var top = teams.length ? Number(teams[0].total) || 1 : 1;
+        var place = 0, myRow = null;
+        teams.forEach(function (t, i) { if (t.mine) { place = i + 1; myRow = t; } });
+        var suffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
+        var bars = teams.map(function (t, i) {
+          var w = Math.max(6, Math.round((Number(t.total) / (top || 1)) * 100));
+          return '<div class="rally-team' + (t.mine ? ' is-mine' : '') + '">' +
+            '<span class="rally-team-name">' + esc(t.name) + (t.mine ? ' — YOU' : '') + '</span>' +
+            '<span class="rally-team-track"><span class="rally-team-fill" style="width:' + w + '%"></span></span>' +
+            '<span class="rally-team-total">' + Number(t.total) + '</span></div>';
+        }).join('');
+        box.innerHTML = '<div class="rally-declass">' +
+          '<span class="reveal-kicker">TEAMS DECLASSIFIED</span>' +
+          (myRow ? '<h3>You were on Team ' + esc(myRow.name) + ' — ' + place + suffix + ' place</h3>'
+                 : '<h3>The teams stand revealed</h3>') +
+          bars + '</div>';
+        requestAnimationFrame(function () { box.classList.add('show'); });
+      }
+
+      /* resume: a reloaded pupil who already transmitted lands back in the
+         suspense room, not on a dead console */
+      paint();
+      if (submitted) { transmitBtn.disabled = true; afterTransmit(); }
+    }
+  };
+
 })(window);

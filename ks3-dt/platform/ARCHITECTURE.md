@@ -82,7 +82,9 @@ options shuffled server-side) · `recapAnswer(item, choice)` → `{correct, corr
 `setKit(class, themeId?/insigniaId?)` (Agent Kit equip — server re-validates clearance vs XP, §10) ·
 `ping(class, lessonNum, ci, cc)` (presence beacon, §12) · `pairJoin(class, lessonId, stageIdx)` ·
 `pairSend(class, lessonId, pid, kind, text)` · `pairChannel(class, lessonId, pid, since)` ·
-`pairComplete(class, lessonId, pid)` (§12 auto-pairing + monitored chat).
+`pairComplete(class, lessonId, pid)` (§12 auto-pairing + monitored chat) ·
+`tournament(class, lessonId)` (§13: live submit count while teams stay sealed; team totals +
+my-team once revealed — never individual scores).
 
 Staff (every call carries the passcode; validated server-side, trim/lowercase): `staffCheck` ·
 `classList/Create/Delete` (owner-only delete, two-tap client confirm) · `setLock(class, lesson, on)`
@@ -98,7 +100,9 @@ misconception labels for the dashboard) · `brief(class, lesson)` (the lesson's 
 authored as content-src `teacherBrief`, packed INSIDE the encrypted keys blob as `_brief` so the
 public JSON never carries it; rendered from the lock grid's Brief chip, printable) ·
 `pairs(class, lessonId)` / `pairTranscript` / `pairRelease` / `pairForce` / `pairReset`
-(§12 Pairing lens: live queue + pairs + laggards, channel reading, teacher overrides).
+(§12 Pairing lens: live queue + pairs + laggards, channel reading, teacher overrides) ·
+`tournament(class, lessonId)` (§13 projector feed: submitted/roster counts, per-team totals,
+unassigned warning, ranked pair scores only when `cfg.tn.mode === 'public'`).
 
 ## 6. Client shell
 
@@ -265,3 +269,27 @@ via `?as=<seeded-pupil>`, sessionStorage-sticky, preview only). Waiting alone > 
 preview spawns a simulated partner bot (flagged on screen) that chats scripted lines,
 takes its turns via dev-keys, and fumbles one drop so the return path shows — the
 single-tab demo stays complete.
+
+## 13. Reaction Rally tournament (Session 9 — L3's whole-class event)
+
+Zero new storage. A lesson chunk with `engine: "tournament"` gives pupils the Rally console
+(arcade LED round slots, tested-3-times confirm gate, TRANSMIT). Submitting writes the pair's
+best round onto the pupil's own lesson `detail` as `rt=<best>` (+ `rr=r1.r2.r3`) through the
+normal idempotent `saveEvent`/badge path — XP once, resubmits harmless, dashboard-readable.
+Teams are the EXISTING hidden-groups infra (`team:<class>` + `rec.g` + reveal flag; autoGroup
+balances). Aggregation is on-demand and lock-free (`tnAgg_`): every named pupil's `rt` counts
+for her team, so both members of a pair bank the same best round for their (possibly different)
+hidden teams.
+
+Reveal choreography: staff Live tab grows a launch row for any delivered lesson with a
+tournament chunk → full-screen `.tourney-overlay` (z-index 900, appended to body, SCOPED gold
+literals — Agent Kit themes re-point the global `--gold` knobs, the projector must not follow
+them). Lobby polls the passcode-gated `tournament` sub (~2.5 s): big submitted counter, sealed
+team chips, one-tap autoGroup if no teams, preview-only demo-score seeding. REVEAL flips the
+class's existing team-reveal flag (single source of truth) then animates bars last-place-first
+with eased count-ups; the winner lands last with a gold shimmer. Pupil consoles poll
+`apiTournament` (~5 s) in their post-transmit suspense room and flip to team colours + placing
+at the same moment. `cfg.tn.mode` (`team` default | `public`) adds a ranked pair-score list to
+the projector only as a deliberate Options choice — pupil responses never carry individual
+scores either way. Catch-up = solo rally variant (records `rt`, skips the wait); review = a
+static no-network summary.

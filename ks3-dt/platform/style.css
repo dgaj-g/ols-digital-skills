@@ -1225,3 +1225,152 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   border: 1px solid var(--line-d); display: block;
 }
 .dossier-photos figcaption { color: var(--muted-d); font-size: 0.72rem; margin-top: 5px; line-height: 1.35; }
+
+/* ===================== section 13: the Reaction Rally ======================
+   Pupil console (light card, arcade LED inset) + the staff projector reveal
+   (full-screen overlay). The overlay + reveal accents use SCOPED literal gold
+   (--tgold), never var(--gold): Agent Kit themes re-point the global gold
+   knobs per pupil, and the projector must read as OLS gold on every machine. */
+
+.rally-card { max-width: 680px; }
+.rally-rules { list-style: none; margin: 14px 0 16px; padding: 0; display: grid; gap: 8px; }
+.rally-rules li {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--field); border: 1px solid var(--line-l); border-radius: 12px;
+  padding: 9px 12px; line-height: 1.45; font-size: 0.92rem;
+}
+.rally-rule-n {
+  flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--ols-blue); color: #fff; font-weight: 700; font-size: 0.78rem;
+  display: grid; place-items: center; margin-top: 1px;
+}
+
+.rally-console { display: flex; gap: 12px; margin: 16px 0 4px; flex-wrap: wrap; }
+.rally-console.is-locked .rally-step { display: none; }
+.rally-round {
+  position: relative; flex: 1 1 140px; max-width: 200px; text-align: center;
+  background: #0B1733; border: 1.5px solid #1E3560; border-radius: 14px;
+  padding: 12px 10px 10px; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.rally-round-label {
+  display: block; color: #8FA5CE; font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;
+}
+.rally-round.is-best { border-color: #FFD84D; box-shadow: 0 0 18px rgba(255, 216, 77, 0.28); }
+.rally-best-tag {
+  position: absolute; top: -9px; right: 10px; display: none;
+  background: linear-gradient(180deg, #FFD84D, #E4B824); color: #231A02;
+  font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em;
+  border-radius: 999px; padding: 2px 8px;
+}
+.rally-round.is-best .rally-best-tag { display: inline-block; }
+.led-display { display: flex; justify-content: center; gap: 6px; min-height: 46px; align-items: center; }
+.led-digit { display: grid; grid-template-columns: repeat(3, 10px); grid-auto-rows: 8px; gap: 2px; }
+.led-digit i { border-radius: 2px; background: #16274A; }
+.led-digit i.on { background: #FFD84D; box-shadow: 0 0 6px rgba(255, 216, 77, 0.75); }
+.rally-steps { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+.rally-step {
+  width: 40px; height: 34px; border-radius: 10px; border: 1.5px solid #2A4373;
+  background: #12224544; color: #EAF0FC; font-size: 1.15rem; font-weight: 700;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+}
+.rally-step:hover { border-color: #FFD84D; background: #1A2E58; }
+.rally-confirm { margin-top: 14px; }
+
+.rally-sealed { text-align: center; padding: 6px 0 2px; }
+.rally-sealed-line { font-weight: 700; color: var(--ink); margin: 10px 0 6px; }
+.rally-counter {
+  display: inline-flex; align-items: center; gap: 10px; margin: 6px 0;
+  background: var(--field); border: 1px solid var(--line-l); border-radius: 999px;
+  padding: 7px 16px; color: var(--muted); font-size: 0.9rem;
+}
+.rally-sub { color: var(--muted); font-size: 0.86rem; margin: 6px 0 0; }
+
+.rally-reveal { opacity: 0; transform: translateY(8px); transition: opacity 0.45s ease, transform 0.45s ease; }
+.rally-reveal.show { opacity: 1; transform: none; }
+.rally-declass { --tgold: #E4B824; --tgold-hi: #FFD84D; margin-top: 10px; }
+.rally-declass .reveal-kicker { display: block; text-align: center; }
+.rally-declass h3 { text-align: center; margin: 8px 0 14px; color: var(--ink); }
+.rally-team { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+.rally-team-name { flex: 0 0 128px; text-align: right; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
+.rally-team.is-mine .rally-team-name { color: var(--ols-blue); }
+.rally-team-track { flex: 1; height: 16px; border-radius: 999px; background: var(--field); border: 1px solid var(--line-l); overflow: hidden; }
+.rally-team-fill { display: block; height: 100%; border-radius: 999px; background: #B9C6DE; transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.rally-team.is-mine .rally-team-fill { background: linear-gradient(90deg, var(--tgold), var(--tgold-hi)); }
+.rally-team-total { flex: 0 0 34px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* ---- staff projector overlay (theme-immune: scoped gold literals) ---- */
+.tourney-overlay {
+  --tgold: #E4B824; --tgold-hi: #FFD84D; --tnavy: #060D1F;
+  position: fixed; inset: 0; z-index: 900; overflow-y: auto;
+  background: radial-gradient(1200px 800px at 50% -20%, #14264A, var(--tnavy) 70%);
+  color: #EAF0FC; opacity: 0; transition: opacity 0.3s ease;
+  display: flex; flex-direction: column; align-items: center; padding: 4vh 24px 6vh;
+  font-family: var(--font-display);
+}
+.tourney-overlay.show { opacity: 1; }
+.tourney-close {
+  position: absolute; top: 18px; right: 22px; background: none; border: 1.5px solid rgba(255,255,255,0.25);
+  color: #EAF0FC; border-radius: 999px; width: 40px; height: 40px; font-size: 1.1rem; cursor: pointer;
+}
+.tourney-close:hover { border-color: var(--tgold-hi); color: var(--tgold-hi); }
+.tourney-kicker {
+  color: var(--tgold-hi); font-weight: 700; letter-spacing: 0.32em; font-size: 0.85rem;
+  text-transform: uppercase; margin-top: 3vh;
+}
+.tourney-title { font-size: clamp(2rem, 5vw, 3.6rem); margin: 10px 0 4px; text-align: center; }
+.tourney-sub { color: #92A4C7; font-size: clamp(0.95rem, 1.8vw, 1.2rem); margin: 0 0 4vh; text-align: center; }
+.tourney-lobby { text-align: center; }
+.tourney-count { font-size: clamp(3rem, 9vw, 6rem); font-weight: 700; color: var(--tgold-hi); line-height: 1; font-variant-numeric: tabular-nums; }
+.tourney-count-label { color: #92A4C7; margin: 6px 0 4vh; font-size: 1rem; }
+.tourney-chips { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 4vh; }
+.tourney-chip {
+  border: 1.5px solid rgba(255, 216, 77, 0.4); color: var(--tgold-hi); border-radius: 999px;
+  padding: 8px 18px; font-weight: 700; letter-spacing: 0.06em; font-size: 0.95rem;
+}
+.tourney-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.tourney-reveal-btn {
+  background: linear-gradient(180deg, var(--tgold-hi), var(--tgold)); color: #231A02;
+  border: none; border-radius: 999px; padding: 16px 44px; font-size: 1.25rem; font-weight: 800;
+  letter-spacing: 0.04em; cursor: pointer; font-family: var(--font-display);
+  box-shadow: 0 12px 40px rgba(228, 184, 36, 0.45);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.tourney-reveal-btn:hover { transform: translateY(-2px); box-shadow: 0 16px 50px rgba(228, 184, 36, 0.6); }
+.tourney-reveal-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+.tourney-ghost-btn {
+  background: none; border: 1.5px solid rgba(255,255,255,0.28); color: #EAF0FC; border-radius: 999px;
+  padding: 14px 26px; font-size: 1rem; cursor: pointer; font-family: var(--font-display);
+}
+.tourney-ghost-btn:hover { border-color: var(--tgold-hi); color: var(--tgold-hi); }
+.tourney-note { color: #92A4C7; font-size: 0.9rem; margin-top: 3vh; max-width: 560px; text-align: center; line-height: 1.5; }
+
+.tourney-board { width: min(920px, 92vw); margin-top: 2vh; }
+.tourney-row { display: flex; align-items: center; gap: 18px; margin: 22px 0; opacity: 0; transform: translateX(-24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.tourney-row.in { opacity: 1; transform: none; }
+.tourney-row-place { flex: 0 0 56px; text-align: center; font-size: 1.5rem; font-weight: 700; color: #92A4C7; }
+.tourney-row.is-first .tourney-row-place { color: var(--tgold-hi); }
+.tourney-row-name { flex: 0 0 clamp(120px, 18vw, 210px); font-size: clamp(1.1rem, 2.4vw, 1.7rem); font-weight: 700; }
+.tourney-row-track { flex: 1; height: clamp(22px, 4vh, 36px); border-radius: 999px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); overflow: hidden; }
+.tourney-row-fill {
+  display: block; height: 100%; width: 0; border-radius: 999px;
+  background: linear-gradient(90deg, #37518A, #5B7BC4);
+  transition: width 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tourney-row.is-first .tourney-row-fill {
+  background: linear-gradient(90deg, var(--tgold), var(--tgold-hi));
+  box-shadow: 0 0 26px rgba(255, 216, 77, 0.5);
+}
+.tourney-row-total { flex: 0 0 84px; font-size: clamp(1.3rem, 3vw, 2.2rem); font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
+.tourney-row.is-first .tourney-row-total { color: var(--tgold-hi); }
+@keyframes tourneyShimmer {
+  0% { filter: brightness(1); } 50% { filter: brightness(1.35); } 100% { filter: brightness(1); }
+}
+.tourney-row.is-first.done .tourney-row-fill { animation: tourneyShimmer 1.6s ease 2; }
+.tourney-winner-line { text-align: center; color: var(--tgold-hi); font-size: clamp(1.2rem, 2.8vw, 1.9rem); font-weight: 700; margin-top: 3vh; opacity: 0; transition: opacity 0.6s ease; }
+.tourney-winner-line.in { opacity: 1; }
+.tourney-public { width: min(760px, 90vw); margin-top: 4vh; opacity: 0; transition: opacity 0.6s ease; }
+.tourney-public.in { opacity: 1; }
+.tourney-public h3 { color: #92A4C7; text-align: center; font-size: 1rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px; }
+.tourney-public-row { display: flex; justify-content: space-between; gap: 14px; padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 1.05rem; }
+.tourney-public-row b { font-variant-numeric: tabular-nums; color: var(--tgold-hi); }
