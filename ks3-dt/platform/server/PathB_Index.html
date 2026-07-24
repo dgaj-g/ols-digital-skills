@@ -3877,7 +3877,7 @@ window.OLS_TRANSPORT = {
             skipBtn.hidden = true;
           } else {
             box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
-              (r.noFolder ? 'HQ could not find your School &gt; DT Work folder &mdash; it is built in the Files That Follow You side quest.'
+              (r.noFolder ? 'HQ could not find your School &gt; DT Work folder. Build it right now in Drive &mdash; + New &rarr; Folder &rarr; "School", then "DT Work" inside it &mdash; and run the inspection again. (The Files That Follow You side quest walks you through it too.)'
                 : 'No freshly-saved build found in DT Work yet.') + '</span></div>' +
               '<p>' + esc(cfg.failText || 'Check each step above, then run the inspection again.') + '</p>';
             if (tries >= 2) skipBtn.hidden = false;
