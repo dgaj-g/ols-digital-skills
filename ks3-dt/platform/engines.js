@@ -1258,6 +1258,7 @@
           pointsBar() +
           '<h2 class="rung-target">' + esc(s.target) + '</h2>' +
           (s.img ? '<img class="rung-img" src="' + esc(asset(s.img)) + '" alt="Stretch blocks">' : '') +
+          (s.test ? '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(s.test) + '</p></div>' : '') +
           '<div class="rung-actions">' +
           '<button class="primary-btn" type="button">We built it! &#11088;</button>' +
           '<button class="ghost-btn" type="button">Finish the ladder without it</button>' +
