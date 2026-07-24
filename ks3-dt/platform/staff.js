@@ -31,6 +31,8 @@
 
   /* pairing lens state (section 12) */
   var pairLensLesson = '', pairLensTimer = null, pairAlerted = {}, pairedLessonCache = {}, pairResetArm = 0;
+  /* tournament state (section 13) */
+  var tourneyLessonCache = {};    // lessonId -> promise -> true|null ("has a tournament chunk")
   var audioCtx = null, chimeMuted = false;
   try { chimeMuted = localStorage.getItem('ks3dt-staff-mute') === '1'; } catch (e) {}
 
@@ -613,6 +615,7 @@
         '<button type="button" class="ghost-btn" data-action="live-csv">Copy CSV</button>' +
       '</div>' +
       '<div id="pair-lens"></div>' +
+      '<div id="tourney-slot"></div>' +
       '<div class="dash-scroll"><table class="dash-table">' + head + (body || '<tr><td colspan="99">No pupils have joined this class yet.</td></tr>') + '</table></div>' +
       '<h3 style="margin-top:20px">Misconception patterns</h3>' +
       '<select id="live-mis-select" class="staff-select">' + misSelect + '</select>' +
@@ -621,6 +624,194 @@
     setPane(html);
     if (misLessonNum && liveByNum[misLessonNum]) loadMisconceptions(liveByNum[misLessonNum]);
     initPairLens(deliveredNums);
+    initTourneySlot(deliveredNums);
+  }
+
+  /* ============================================================
+     Tournament (section 13): the Reaction Rally projector view.
+     A delivered lesson with a 'tournament' chunk grows a launch row on the
+     Live tab; the button opens a full-screen overlay (appended to body, above
+     the staff modal) with a live submitted counter, sealed-team chips, and
+     the animated bar reveal - last place first, winner last, gold shimmer.
+     The REVEAL button flips the class's existing team-reveal flag (one source
+     of truth), so pupil consoles flip to team colours at the same moment.
+     ============================================================ */
+  function tourneyInfoFor(le) {
+    var id = String(le.id);
+    if (!tourneyLessonCache[id]) {
+      tourneyLessonCache[id] = App.fetchContent(le.file).then(function (lesson) {
+        var ch = (lesson.chunks || []).filter(function (c) { return c.engine === 'tournament'; })[0];
+        return ch ? { title: String((ch.config && ch.config.title) || ch.title || 'Tournament') } : null;
+      }).catch(function () { return null; });
+    }
+    return tourneyLessonCache[id];
+  }
+
+  function initTourneySlot(deliveredNums) {
+    var slot = q('#tourney-slot');
+    if (!slot) return;
+    var candidates = deliveredNums.map(function (n) { return liveByNum[n]; }).filter(Boolean);
+    Promise.all(candidates.map(tourneyInfoFor)).then(function (infos) {
+      if (!q('#tourney-slot')) return;
+      var rows = [];
+      infos.forEach(function (inf, i) { if (inf) rows.push({ le: candidates[i], title: inf.title }); });
+      if (!rows.length) return;
+      slot.innerHTML = rows.map(function (row) {
+        return '<div class="pair-lens-box" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
+          '<h3 style="margin:0">&#127942; ' + App.esc(row.title) + ' &mdash; Lesson ' + App.esc(String(row.le.num)) + '</h3>' +
+          '<span class="pl-note" style="margin:0">hidden teams &middot; projector reveal</span>' +
+          '<button type="button" class="primary-btn" style="margin-left:auto" data-action="tourney-open" data-lesson="' + App.esc(String(row.le.id)) + '">Tournament view</button>' +
+          '</div>';
+      }).join('');
+    });
+  }
+
+  function tourneyOpen(lessonId) {
+    var ov = document.createElement('div');
+    ov.className = 'tourney-overlay';
+    ov.innerHTML =
+      '<button type="button" class="tourney-close" title="Close">&times;</button>' +
+      '<span class="tourney-kicker">OLS Digital Technology</span>' +
+      '<h1 class="tourney-title">The Reaction Rally</h1>' +
+      '<p class="tourney-sub">Hidden-team tournament &mdash; scored on scoreboards the agents built themselves</p>' +
+      '<div class="tourney-lobby">' + busyHtml('Contacting HQ') + '</div>' +
+      '<div class="tourney-board" hidden></div>';
+    document.body.appendChild(ov);
+    requestAnimationFrame(function () { ov.classList.add('show'); });
+
+    var lobby = ov.querySelector('.tourney-lobby');
+    var board = ov.querySelector('.tourney-board');
+    var pollTimer = null, revealing = false, lastData = null;
+
+    function close() {
+      if (pollTimer) clearInterval(pollTimer);
+      ov.classList.remove('show');
+      setTimeout(function () { ov.remove(); }, 300);
+    }
+    ov.querySelector('.tourney-close').onclick = close;
+
+    function paintLobby(r) {
+      if (revealing) return;
+      lastData = r;
+      var teams = r.teams || [];
+      var chips = teams.map(function (t) {
+        return '<span class="tourney-chip">' + App.esc(t.name) + ' &middot; ' + Number(t.submitted) + ' in</span>';
+      }).join('');
+      var noTeams = !teams.length;
+      var canReveal = !noTeams && Number(r.submitted) > 0;
+      lobby.innerHTML =
+        '<div class="tourney-count">' + Number(r.submitted) + '</div>' +
+        '<p class="tourney-count-label">of ' + Number(r.roster) + ' agents\' scores received</p>' +
+        (noTeams
+          ? '<p class="tourney-note" style="margin-bottom:3vh">No hidden teams exist yet &mdash; assign them before the countdown.</p>'
+          : '<div class="tourney-chips">' + chips + '</div>') +
+        (Number(r.unassigned) > 0 ? '<p class="tourney-note" style="margin:0 0 2vh">' + Number(r.unassigned) + ' scored agent(s) have no team &mdash; their points only count once assigned (Teams tab).</p>' : '') +
+        '<div class="tourney-actions">' +
+        (noTeams
+          ? '<button type="button" class="tourney-reveal-btn" data-t="assign">Auto-assign 4 hidden teams</button>'
+          : '<button type="button" class="tourney-reveal-btn" data-t="reveal"' + (canReveal ? '' : ' disabled') + '>' + (r.revealed ? 'Replay the reveal' : 'REVEAL THE TEAMS') + '</button>') +
+        (App.state.preview ? '<button type="button" class="tourney-ghost-btn" data-t="seed">Seed demo scores (preview)</button>' : '') +
+        '</div>' +
+        '<p class="tourney-note">Keep this for the very end &mdash; the suspense is the point. Revealing also shows every agent her own team on her screen.</p>';
+      var btn = lobby.querySelector('[data-t="reveal"]');
+      if (btn) btn.onclick = function () { startReveal(r.revealed); };
+      var ab = lobby.querySelector('[data-t="assign"]');
+      if (ab) ab.onclick = function () {
+        ab.disabled = true;
+        adminCall('autoGroup', { className: cls, n: 4 }).then(function () { tick(); });
+      };
+      var sb2 = lobby.querySelector('[data-t="seed"]');
+      if (sb2) sb2.onclick = function () {
+        sb2.disabled = true;
+        adminCall('tournament', { className: cls, lessonId: lessonId, seed: 1 }).then(function () { tick(); });
+      };
+    }
+
+    function tick() {
+      if (!document.body.contains(ov)) { if (pollTimer) clearInterval(pollTimer); return; }
+      if (revealing) return;
+      adminCall('tournament', { className: cls, lessonId: lessonId }).then(function (r) {
+        if (!r || !r.ok || revealing || !document.body.contains(ov)) return;
+        paintLobby(r);
+      });
+    }
+    tick();
+    pollTimer = setInterval(tick, 2500);
+
+    function startReveal(alreadyRevealed) {
+      if (revealing) return;
+      revealing = true;
+      if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+      var go = alreadyRevealed
+        ? Promise.resolve({ ok: true })
+        : adminCall('setReveal', { className: cls, revealed: true });
+      go.then(function () {
+        return adminCall('tournament', { className: cls, lessonId: lessonId });
+      }).then(function (r) {
+        if (!r || !r.ok) { revealing = false; tick(); pollTimer = setInterval(tick, 2500); return; }
+        animateReveal(r);
+      });
+    }
+
+    function animateReveal(r) {
+      lobby.hidden = true;
+      board.hidden = false;
+      var standings = (r.teams || []).slice().sort(function (a, b) { return Number(b.total) - Number(a.total); });
+      var top = standings.length ? Math.max(1, Number(standings[0].total)) : 1;
+      board.innerHTML = standings.map(function (t, i) {
+        return '<div class="tourney-row' + (i === 0 ? ' is-first' : '') + '" data-i="' + i + '">' +
+          '<span class="tourney-row-place">' + (i + 1) + '</span>' +
+          '<span class="tourney-row-name">' + App.esc(t.name) + '</span>' +
+          '<span class="tourney-row-track"><span class="tourney-row-fill"></span></span>' +
+          '<span class="tourney-row-total">0</span></div>';
+      }).join('') +
+        '<p class="tourney-winner-line" hidden></p>' +
+        ((r.mode === 'public' && r.rows && r.rows.length)
+          ? '<div class="tourney-public"><h3>Pair scores (public mode)</h3>' +
+            r.rows.map(function (p2) { return '<div class="tourney-public-row"><span>' + App.esc(p2.n) + '</span><b>' + Number(p2.v) + '</b></div>'; }).join('') + '</div>'
+          : '') +
+        '<div class="tourney-actions" style="margin-top:4vh"><button type="button" class="tourney-ghost-btn" data-t="done">Done</button></div>';
+      board.querySelector('[data-t="done"]').onclick = close;
+
+      function countUp(el, target, ms) {
+        var t0 = null;
+        function step(ts) {
+          if (!t0) t0 = ts;
+          var p = Math.min(1, (ts - t0) / ms);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+          if (p < 1 && document.body.contains(el)) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      /* last place first; the winner lands last, then shimmers */
+      var order = [];
+      for (var i = standings.length - 1; i >= 0; i--) order.push(i);
+      order.forEach(function (idx, step) {
+        setTimeout(function () {
+          var row = board.querySelector('.tourney-row[data-i="' + idx + '"]');
+          if (!row) return;
+          row.classList.add('in');
+          var t = standings[idx];
+          var w = Math.max(7, Math.round((Number(t.total) / top) * 100));
+          setTimeout(function () { row.querySelector('.tourney-row-fill').style.width = w + '%'; }, 180);
+          countUp(row.querySelector('.tourney-row-total'), Number(t.total), 1500);
+          if (idx === 0) {
+            setTimeout(function () {
+              row.classList.add('done');
+              var wl = board.querySelector('.tourney-winner-line');
+              if (wl) {
+                wl.hidden = false;
+                wl.textContent = 'Team ' + standings[0].name + ' takes the Rally!';
+                requestAnimationFrame(function () { wl.classList.add('in'); });
+              }
+              var pub = board.querySelector('.tourney-public');
+              if (pub) setTimeout(function () { pub.classList.add('in'); }, 900);
+            }, 1750);
+          }
+        }, 600 + step * 1400);
+      });
+    }
   }
 
   /* ============================================================
@@ -1132,6 +1323,9 @@
       '<h3 style="margin-top:20px">Auto-pairing</h3>' +
       optRadio('pair-on', '1', String((cfg.pairing || { on: 1 }).on || 0), '<b>On (default):</b> paired activities match pupils across machines with the monitored chat channel.') +
       optRadio('pair-on', '0', String((cfg.pairing || { on: 1 }).on || 0), '<b>Off:</b> paired activities run as shoulder-partners at one machine (no chat).') +
+      '<h3 style="margin-top:20px">Tournament reveal</h3>' +
+      optRadio('tn-mode', 'team', String((cfg.tn || { mode: 'team' }).mode), '<b>Team totals only (default):</b> the projector reveal shows hidden-team totals &mdash; no individual pupil is named.') +
+      optRadio('tn-mode', 'public', String((cfg.tn || { mode: 'team' }).mode), '<b>Also show pair scores (deliberate choice):</b> after the team bars, a ranked list of pair scores with first names appears on the projector.') +
       '<h3 style="margin-top:20px">Absence window</h3>' +
       '<label>Flag after <input type="number" id="opt-absdays" class="text-input" style="max-width:90px;display:inline-block" min="1" max="20" value="' + Number(cfg.absDays || 5) + '"> school days with no meaningful work</label>' +
       '<div class="confirm-actions" style="justify-content:flex-start;margin-top:16px">' +
@@ -1154,7 +1348,8 @@
         topN: parseInt(topNEl ? topNEl.value : '0', 10) || 0
       },
       absDays: parseInt(absDaysEl.value, 10) || 5,
-      pairing: { on: (function () { var el3 = q('input[name="pair-on"]:checked'); return el3 ? Number(el3.value) : 1; })() }
+      pairing: { on: (function () { var el3 = q('input[name="pair-on"]:checked'); return el3 ? Number(el3.value) : 1; })() },
+      tn: { mode: (function () { var el4 = q('input[name="tn-mode"]:checked'); return el4 ? el4.value : 'team'; })() }
     };
     btn.disabled = true;
     var status = q('#options-status');
@@ -1380,6 +1575,7 @@
       case 'pair-force': pairForce(btn); break;
       case 'pair-reset': pairReset(btn); break;
       case 'pair-view': pairView(btn); break;
+      case 'tourney-open': tourneyOpen(btn.getAttribute('data-lesson')); break;
     }
   }
 
