@@ -1,0 +1,261 @@
+{
+ "id": "j1-03",
+ "year": "j1",
+ "num": 3,
+ "title": "Scoreboard Engineer",
+ "tagline": "Build the invisible scorekeeper.",
+ "mode": "quest",
+ "durationMin": 60,
+ "objectives": [
+  "I can create a variable and explain that it stores a value that can change.",
+  "I can use a variable to build a working score counter.",
+  "I can test my scoring code across several rounds to check it is actually right."
+ ],
+ "chunks": [
+  {
+   "id": "hook",
+   "engine": "briefing",
+   "title": "Mission Briefing",
+   "minutes": 2,
+   "config": {
+    "clearance": "OPERATION: SCOREBOARD ENGINEER",
+    "headline": "Every game keeps score somewhere invisible.",
+    "lines": [
+     "Arcade machines. GAA scoreboards. The step count on a wrist. Behind every one of them sits the same secret machine: a VARIABLE — a named box holding a number that can change.",
+     "Today you engineer your own: a real scoreboard, on a real micro:bit, counting real points in your hands.",
+     "And at the end of the hour your scoreboard goes to work — a whole-class Reaction Rally, scored on the machines you built. Teams are secret until the final reveal."
+    ],
+    "images": [
+     {
+      "src": "assets/img/l3/l3-arcade.jpg",
+      "alt": "An arcade machine's glowing high-scores table",
+      "caption": "An arcade's HIGH SCORES — variables with fame attached"
+     },
+     {
+      "src": "assets/img/l3/l3-gaa.jpg",
+      "alt": "An electronic GAA scoreboard showing HARPS 5-07 PORT 3-11",
+      "caption": "A GAA scoreboard — four numbers, all variables"
+     },
+     {
+      "src": "assets/img/l2/l2-tracker.jpg",
+      "alt": "Fitness tracker devices",
+      "caption": "Last mission's trackers? Each step = change steps by 1"
+     }
+    ],
+    "video": null,
+    "cta": "Begin the mission"
+   }
+  },
+  {
+   "id": "howto",
+   "engine": "video",
+   "title": "Keeping Score with Variables",
+   "minutes": 5,
+   "config": {
+    "src": "",
+    "fallback": "If the video won't load (wifi?), no drama — your teacher's demo covers everything, and every rung card repeats the steps you need.",
+    "chapters": []
+   }
+  },
+  {
+   "id": "ladder",
+   "engine": "ladder",
+   "title": "The Scoreboard Ladder",
+   "minutes": 26,
+   "badge": {
+    "id": "score",
+    "name": "Scorekeeper",
+    "icon": "assets/badges/numbers.png",
+    "xp": 15
+   },
+   "config": {
+    "title": "The Scoreboard Ladder",
+    "intro": "Three rungs. Each one upgrades your scoreboard — and the DEVICE is the judge: the number on the LED grid is either right or it's lying. Take turns: one of you builds the blocks, the other reads the rung card and runs the test. Swap every rung.",
+    "makecode": {
+     "url": "https://makecode.microbit.org/",
+     "label": "Open MakeCode"
+    },
+    "rungs": [
+     {
+      "id": "s1",
+      "title": "Rung 1 — Force the Score",
+      "target": "Make a variable called score. Then: on button A pressed → set score to 1 → show number score.",
+      "img": "assets/img/l3/rung1.png",
+      "test": "Press A five times in a row. The display should say 1 every single time. Weird? That's the point: 'set' FORCES the value into the box — no matter what was there before.",
+      "hint": "In the Variables category click 'Make a Variable...', name it score. Then check BOTH blocks sit inside 'on button A pressed' — 'set score to 1' first, 'show number score' underneath it."
+     },
+     {
+      "id": "s2",
+      "title": "Rung 2 — Make It Count",
+      "target": "Swap 'set score to 1' for 'change score by 1'. Now every press should climb the number: 1, 2, 3...",
+      "img": "assets/img/l3/rung2.png",
+      "test": "Press A three times from a fresh start — does it say 3? Press twice more — 5? If it's stuck on 1, your scoreboard is lying to you. Find out why.",
+      "hint": "'change score by 1' ADDS one to whatever is in the box. If your number is stuck at 1, the old 'set score to 1' block is still in there — swap it out, don't stack them."
+     },
+     {
+      "id": "s3",
+      "title": "Rung 3 — The Reset Button",
+      "target": "Add a second event: on button B pressed → set score to 0 → show number score. B starts a fresh game. A still counts.",
+      "img": "assets/img/l3/rung3.png",
+      "test": "THE MULTI-ROUND TEST: press B (says 0), press A three times (says 3), press B (back to 0). Now run that whole cycle three times over. A scoreboard that's right once can still be wrong — three clean rounds is proof.",
+      "hint": "Reset lives on its OWN event: a separate 'on button B pressed' block with 'set score to 0' and 'show number score' inside. Leave your button A blocks alone."
+     }
+    ],
+    "stretch": {
+     "title": "Stretch — The High-Score Keeper",
+     "target": "Make a SECOND variable, highScore. Then: on shake → if score > highScore then set highScore to score. After the if block, show number highScore.",
+     "img": "assets/img/l3/stretch.png",
+     "test": "Score 3, shake — shows 3. Score 5, shake — shows 5. Score 2, shake — STILL shows 5? Then your micro:bit officially remembers the best. That 'if' block is asking a question — next mission runs on them."
+    },
+    "introSolo": "Three rungs. Each one upgrades a scoreboard YOU build on a micro:bit (or the on-screen simulator) — catch-up solo mission, so you do every job yourself: build the blocks AND run the multi-round test. The device is the judge, not the platform."
+   }
+  },
+  {
+   "id": "rig",
+   "engine": "artifact",
+   "title": "Register Your Rig",
+   "minutes": 4,
+   "badge": {
+    "id": "rig",
+    "name": "Rig Registered",
+    "icon": "assets/badges/licence.png",
+    "xp": 6
+   },
+   "config": {
+    "title": "Register your rig",
+    "intro": "TOURNAMENT REGULATIONS, Rule 1: no unregistered rigs. Before your scoreboard can compete in the Reaction Rally, its program must be lodged with HQ — so if a cable gets yanked mid-rally, your build survives.",
+    "kinds": [
+     "hex"
+    ],
+    "hours": 3,
+    "steps": [
+     {
+      "icon": "💾",
+      "title": "Download your program",
+      "text": "In MakeCode press the purple Download button. A file ending in .hex lands in Downloads — that file IS your scoreboard."
+     },
+     {
+      "icon": "🗄️",
+      "title": "Open your Vault",
+      "text": "New tab → drive.google.com → School → DT Work. (Built them last mission — thirty seconds with + New → Folder if they've gone missing.)"
+     },
+     {
+      "icon": "🏁",
+      "title": "Lodge it with HQ",
+      "text": "Drag the .hex file into DT Work. That's your rig officially registered — HQ will verify it's really there."
+     }
+    ],
+    "passText": "Rig registered. Your scoreboard now follows your login to any machine — and you're cleared to compete. Eyes up: the Rally is next.",
+    "failText": "Not registered yet. Check each step — especially that the .hex went INTO DT Work, not just onto the desktop — then run the check again."
+   }
+  },
+  {
+   "id": "rally",
+   "engine": "tournament",
+   "title": "The Reaction Rally",
+   "minutes": 14,
+   "badge": {
+    "id": "rally",
+    "name": "Rally Contender",
+    "icon": "assets/badges/trophy.png",
+    "xp": 8
+   },
+   "config": {
+    "kicker": "WHOLE-CLASS EVENT",
+    "title": "The Reaction Rally",
+    "intro": "Your scoreboard's first real job. You are secretly on a team — nobody knows who's with who until the final reveal. Every point you bank is banked for your hidden team.",
+    "rules": [
+     "A rally round: the REFEREE holds the micro:bit and gives 10 surprise signals — a sharp \"NOW!\" whenever they like.",
+     "The PLAYER's hand hovers over button A. Catch the signal fast? The referee calls it: clean catch — press A. The scoreboard counts it.",
+     "Too slow? No press. The referee's word is final — that's what referees are for.",
+     "Press B, swap referee and player, and that's one round each. Play three rounds total.",
+     "Enter each round's score below. HQ takes your pair's BEST round into the tournament."
+    ],
+    "roundsLabel": [
+     "Round 1",
+     "Round 2",
+     "Round 3"
+    ],
+    "maxScore": 10,
+    "confirm": "We ran the multi-round test first — B to zero, count up, B to zero, three times, no lies",
+    "soloIntro": "The live Rally happened in class — but your scoreboard still gets its moment. Catch-up mission: prove the rig is tournament-grade, then log your best solo round.",
+    "soloRules": [
+     "Run the multi-round test: B to zero, three presses, B to zero — three full cycles, no lies on the display.",
+     "Now a solo round: 10 self-signals — say \"now\" in your head at random moments, press A only on a clean reaction.",
+     "Play three rounds. Enter each score below. Your best round still counts for your hidden team."
+    ],
+    "soloConfirm": "I ran the multi-round test three times — the scoreboard never lied",
+    "suspense": {
+     "sealed": "Teams are SEALED. Nobody in this room knows who they're carrying points for.",
+     "waiting": "Scores are landing at HQ...",
+     "revealTease": "Eyes on the big screen when Mission Command calls it."
+    }
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit Check",
+   "minutes": 2,
+   "config": {
+    "intro": "Two scenarios before you clock off, Agent — think like a scoreboard engineer.",
+    "items": [
+     {
+      "id": "ex3-1",
+      "stem": "In the Rally, a pair press button A five times — clean catches — but their scoreboard ends on 3. What's the MOST likely cause?",
+      "options": [
+       "The micro:bit is broken",
+       "A block inside 'on button A pressed' is missing or in the wrong place",
+       "The LED display can only show odd numbers",
+       "They pressed the button too fast"
+      ]
+     },
+     {
+      "id": "ex3-2",
+      "stem": "A program runs 'set score to 0'. Then 'change score by 1' runs twice. What does 'show number score' display?",
+      "options": [
+       "2",
+       "1",
+       "0",
+       "12"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "exitp",
+   "engine": "parsons",
+   "title": "Build the Scoreboard",
+   "minutes": 2,
+   "config": {
+    "intro": "Last one: three real blocks, one working scoreboard. Put them in the order that matches the mission.",
+    "item": {
+     "id": "ex3-p",
+     "prompt": "Every time you press the button, the score goes up by one and the new total is shown straight away.",
+     "blocks": [
+      "show number score",
+      "on button A pressed",
+      "change score by 1"
+     ]
+    }
+   }
+  },
+  {
+   "id": "selfeval",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "statements": [
+     "I can create a variable and change its value.",
+     "I can test my code over several rounds to check the score is right.",
+     "I can explain what my score variable is doing in my own words."
+    ],
+    "difficulty": true,
+    "comment": true
+   }
+  }
+ ],
+ "keysEnc": "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"
+}
