@@ -130,15 +130,21 @@ function pageRuntime() {
       border: '3.5px solid ' + GOLD, boxShadow: '0 0 0 6px rgba(228,184,36,0.25), 0 0 30px rgba(228,184,36,0.35)',
       zIndex: Z + 30, pointerEvents: 'none', opacity: '0'
     });
-    const pillTop = opts.side === 'above' ? (y - 74) : (y + h + 18);
+    /* long labels wrap inside a max-width pill rather than running off the
+       frame; text is recorder-authored HTML (gold <b>), same as captions */
+    const PILL_MAX = 620;
+    const pillW = Math.min(PILL_MAX, Math.max(240, text.replace(/<[^>]+>/g, '').length * 12));
+    const pillTop = opts.side === 'above' ? (y - 84) : (y + h + 18);
     const pill = el('div', {
-      position: 'fixed', left: Math.max(14, Math.min(innerWidth - 380, x + w / 2 - 180)) + 'px',
+      position: 'fixed', left: Math.max(14, Math.min(innerWidth - pillW - 14, x + w / 2 - pillW / 2)) + 'px',
       top: pillTop + 'px', zIndex: Z + 31, pointerEvents: 'none', opacity: '0',
       background: NAVY_DEEP, color: '#fff', fontFamily: FONT, fontSize: '22px', fontWeight: '600',
-      padding: '12px 22px', borderRadius: '999px', border: '2.5px solid ' + GOLD,
-      boxShadow: '0 8px 26px rgba(9,20,40,0.5)', whiteSpace: 'nowrap'
+      lineHeight: '1.35', maxWidth: PILL_MAX + 'px', textAlign: 'center',
+      padding: '12px 22px', borderRadius: '22px', border: '2.5px solid ' + GOLD,
+      boxShadow: '0 8px 26px rgba(9,20,40,0.5)'
     });
-    pill.textContent = text;
+    pill.innerHTML = text;
+    Array.from(pill.querySelectorAll('b')).forEach(b => { b.style.color = GOLD; b.style.fontWeight = '800'; });
     C.animate(280, e => { ring.style.opacity = String(e); pill.style.opacity = String(e); });
     return {
       remove: () => C.animate(240, e => {

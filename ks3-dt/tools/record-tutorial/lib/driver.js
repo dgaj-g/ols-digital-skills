@@ -247,4 +247,235 @@ class MakeCode {
   }
 }
 
-module.exports = { MakeCode, sleep };
+
+/* =========================================================================
+   ScratchDriver - the online scratch.mit.edu editor (Scratch Blocks is a
+   Blockly fork, so the .blocklyText / .blocklyDraggable text-join techniques
+   from the MakeCode driver carry over; everything else is Scratch-specific).
+   Probe-proven (Session 10, scratchpad/sb3-build/probe-scratch.js):
+   - editor URL https://scratch.mit.edu/projects/editor/ needs NO login;
+     ready signal = [class*="stage-wrapper"], then ~3s settle
+   - cookie banner: #onetrust-reject-all-handler (reject-all preferred)
+   - File menu item = [class*="menu-bar_menu-bar-item"]:has-text("File");
+     "Load from your computer" fires a real filechooser event - drive it with
+     page.waitForEvent('filechooser') + chooser.setFiles(sb3Path); an
+     "OK to replace" confirm may follow (button:has-text("OK"))
+   - sprite tiles: [class*="sprite-selector-item_sprite-name"]
+   - green flag [class*="green-flag"], stop [class*="stop-all"]
+   - stage canvas: [class*="stage_stage"] canvas; monitors:
+     [class*="monitor_monitor-container"]
+   - OFF-CAMERA STATE SETUP: no Monaco here - load a pre-authored .sb3
+     variant behind a curtain instead (the generator in Claude Work makes
+     any state authorable). Dropdown FIELD clicks are refused under the
+     recorder exactly like MakeCode Blockly - use callout + curtain dip. */
+class ScratchDriver {
+  constructor(page, log) {
+    this.page = page;
+    this.log = log || (() => {});
+  }
+
+  async openEditor() {
+    /* Scratch fires a NATIVE confirm() before replacing a MODIFIED project.
+       Playwright auto-dismisses native dialogs, which silently cancels the
+       load (the old sprites stay, so nothing throws) - accept them instead.
+       Cost this session's ch2 three failed takes; keep this handler. */
+    this.page.on('dialog', d => d.accept().catch(() => {}));
+    await this.page.goto('https://scratch.mit.edu/projects/editor/', { waitUntil: 'domcontentloaded', timeout: 120000 }).catch(() => {});
+    await this.page.waitForSelector('[class*="stage-wrapper"]', { timeout: 60000 });
+    await sleep(3200);
+    await this.dismissDialogs();
+  }
+
+  async dismissDialogs() {
+    const hits = [];
+    for (let i = 0; i < 5; i++) {
+      const hit = await this.page.evaluate(() => {
+        const sels = [
+          '#onetrust-reject-all-handler',
+          '#onetrust-accept-btn-handler',
+          '[class*="modal_close"]',
+          '[aria-label="Close"]',
+          '[class*="close-button"]'
+        ];
+        for (const s of sels) {
+          const el = Array.from(document.querySelectorAll(s)).find(e => e.offsetParent !== null);
+          if (el) { el.click(); return s; }
+        }
+        return null;
+      }).catch(() => null);
+      if (!hit) break;
+      hits.push(hit);
+      this.log('dismissed ' + hit);
+      await sleep(700);
+    }
+    return hits;
+  }
+
+  /* load an .sb3 from disk via the real File menu flow (filechooser event).
+     All clicks are DOM el.click() via evaluate, NOT page.mouse - so this works
+     with the cinema curtain up (the overlay would swallow hit-tested clicks). */
+  async loadProject(sb3Path) {
+    await this.page.evaluate(() => {
+      const fm = Array.from(document.querySelectorAll('[class*="menu-bar_menu-bar-item"]')).find(e => /^File/.test((e.textContent || '').trim()));
+      if (fm) fm.click();
+    });
+    await sleep(500);
+    const [chooser] = await Promise.all([
+      this.page.waitForEvent('filechooser', { timeout: 8000 }),
+      this.page.evaluate(() => {
+        const it = Array.from(document.querySelectorAll('li')).find(e => e.offsetParent !== null && /Load from your computer/i.test(e.textContent || ''));
+        if (!it) throw new Error('Load item not visible');
+        it.click();
+      })
+    ]);
+    await chooser.setFiles(sb3Path);
+    await sleep(1200);
+    await this.page.evaluate(() => {
+      const ok = Array.from(document.querySelectorAll('button')).find(b => b.offsetParent !== null && /^OK$/.test((b.textContent || '').trim()));
+      if (ok) ok.click();
+    });
+    await this.page.waitForSelector('[class*="sprite-selector-item_sprite-name"]', { timeout: 30000 });
+    await sleep(1800);
+  }
+
+  /* geometry helpers - all return {x,y,w,h,cx,cy}|null in viewport px */
+  _rect(elInfo) { return elInfo; }
+
+  async fileMenu() {
+    return this.page.evaluate(() => {
+      const el = Array.from(document.querySelectorAll('[class*="menu-bar_menu-bar-item"]')).find(e => /^File/.test((e.textContent || '').trim()));
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      return { x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+    });
+  }
+
+  async menuItem(rxSrc) {
+    return this.page.evaluate((rx) => {
+      const re = new RegExp(rx, 'i');
+      const el = Array.from(document.querySelectorAll('li')).find(e => e.offsetParent !== null && re.test((e.textContent || '').trim()));
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      return { x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+    }, rxSrc);
+  }
+
+  async spriteTile(name) {
+    return this.page.evaluate((nm) => {
+      const el = Array.from(document.querySelectorAll('[class*="sprite-selector-item_sprite-name"]')).find(e => (e.textContent || '').trim() === nm);
+      if (!el) return null;
+      const tile = el.closest('[class*="sprite-selector-item"]') || el;
+      const b = tile.getBoundingClientRect();
+      return { x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+    }, name);
+  }
+
+  async selectSprite(name) {
+    // DOM click (curtain-safe); React catches the bubbled click event
+    const ok = await this.page.evaluate((nm) => {
+      const el = Array.from(document.querySelectorAll('[class*="sprite-selector-item_sprite-name"]')).find(e => (e.textContent || '').trim() === nm);
+      if (!el) return false;
+      (el.closest('[class*="sprite-selector-item"]') || el).click();
+      return true;
+    }, name);
+    if (!ok) throw new Error('sprite tile not found: ' + name);
+    await sleep(900);
+    return this.spriteTile(name);
+  }
+
+  async stageArea() {
+    return this.page.evaluate(() => {
+      const el = document.querySelector('[class*="stage_stage"] canvas');
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      return { x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+    });
+  }
+
+  async greenFlag() {
+    return this.page.evaluate(() => {
+      const el = document.querySelector('[class*="green-flag"]');
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      return { x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+    });
+  }
+
+  async monitorText() {
+    return this.page.evaluate(() =>
+      Array.from(document.querySelectorAll('[class*="monitor_monitor-container"]')).map(e => (e.textContent || '').trim()).join('|'));
+  }
+
+  async monitorRect() {
+    return this.page.evaluate(() => {
+      const el = document.querySelector('[class*="monitor_monitor-container"]');
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      return { x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+    });
+  }
+
+  /* Scratch Blocks canvas block lookup - same .blocklyText join technique
+     as MakeCode (proven selector family across Blockly builds). */
+  async canvasBlock(rxSrc, deep) {
+    return this.page.evaluate(({ rx, deep }) => {
+      const norm = (s) => (s || '').replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').replace(/\s+/g, ' ').trim();
+      const sel = deep ? '.blocklyBlockCanvas g.blocklyDraggable' : '.blocklyBlockCanvas > g.blocklyDraggable';
+      const re = new RegExp(rx, 'i');
+      const out = [];
+      for (const g of document.querySelectorAll(sel)) {
+        if (g.closest('.blocklyFlyout')) continue;
+        const txt = norm(Array.from(g.querySelectorAll('.blocklyText')).map(t => t.textContent).join(' '));
+        if (!re.test(txt)) continue;
+        const b = g.getBoundingClientRect();
+        if (b.width < 10) continue;
+        out.push({ x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2, area: b.width * b.height, text: txt.slice(0, 80) });
+      }
+      out.sort((a, b) => a.area - b.area);
+      return out[0] || null;
+    }, { rx: rxSrc, deep: !!deep });
+  }
+
+  async flyoutBlock(rxSrc) {
+    return this.page.evaluate((rx) => {
+      const norm = (s) => (s || '').replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').replace(/\s+/g, ' ').trim();
+      const re = new RegExp(rx, 'i');
+      for (const g of document.querySelectorAll('.blocklyFlyout g.blocklyDraggable')) {
+        const txt = norm(Array.from(g.querySelectorAll('.blocklyText')).map(t => t.textContent).join(' '));
+        if (!re.test(txt)) continue;
+        const b = g.getBoundingClientRect();
+        if (b.width < 12) continue;
+        return { x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2, text: txt.slice(0, 80) };
+      }
+      return null;
+    }, rxSrc);
+  }
+
+  /* palette category circle (Events, Motion, ...) in the vertical strip -
+     modern Blockly toolbox classes (probe-proven: .blocklyToolboxCategory) */
+  async category(name) {
+    return this.page.evaluate((nm) => {
+      const el = Array.from(document.querySelectorAll('.blocklyToolboxCategory')).find(e => (e.textContent || '').trim() === nm);
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      return { x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+    }, name);
+  }
+
+  /* count key-pressed hats on the selected sprite's visible canvas */
+  async countCanvasBlocks(rxSrc) {
+    return this.page.evaluate((rx) => {
+      const norm = (s) => (s || '').replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').replace(/\s+/g, ' ').trim();
+      const re = new RegExp(rx, 'i');
+      let n = 0;
+      for (const g of document.querySelectorAll('.blocklyBlockCanvas > g.blocklyDraggable')) {
+        if (g.closest('.blocklyFlyout')) continue;
+        const txt = norm(Array.from(g.querySelectorAll('.blocklyText')).map(t => t.textContent).join(' '));
+        if (re.test(txt)) n++;
+      }
+      return n;
+    }, rxSrc);
+  }
+}
+
+module.exports = { MakeCode, ScratchDriver, sleep };

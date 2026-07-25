@@ -6,7 +6,7 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
 const { Cinema, dataUri } = require('./cinema');
-const { MakeCode, sleep } = require('./driver');
+const { MakeCode, ScratchDriver, sleep } = require('./driver');
 
 async function runSet(setName, only) {
   const scenesMod = require(path.join(__dirname, '..', 'scenes', setName + '.js'));
@@ -29,7 +29,8 @@ async function runSet(setName, only) {
       });
       const page = await context.newPage();
       const cine = new Cinema(page, log);
-      const drv = new MakeCode(page, log);
+      const DriverClass = scenesMod.driver === 'scratch' ? ScratchDriver : MakeCode;
+      const drv = new DriverClass(page, log);
       try {
         await scene.run({ page, cine, drv, log, dataUri, sleep });
         if (scene.verify) await scene.verify({ page, drv, log });
