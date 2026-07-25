@@ -1709,17 +1709,19 @@
       var logs = Object.assign({}, draft.logs || {});
       var gg = !!draft.gg;          // evidence intake confirmed
       var rcDone = !!draft.rc;      // release-candidate full run done
+      var rcScoreVal = Number(draft.rcs || 0); // score the RC run finished on
       var shipped = !!draft.ship;   // .sb3 landed in Drive (HQ-verified)
       var shipSkipped = !!draft.sk; // teacher-sanctioned skip
       var stretchDone = !!draft.stretch;
+      var stretchNote = String(draft.sn || '');
 
       function saveBoard() {
         if (ctx.review) return;
         App.state.draft = App.state.draft || {};
         App.state.draft.casework = {
           closed: closed, silver: silver, logs: logs, gg: gg ? 1 : 0,
-          rc: rcDone ? 1 : 0, ship: shipped ? 1 : 0, sk: shipSkipped ? 1 : 0,
-          stretch: stretchDone ? 1 : 0
+          rc: rcDone ? 1 : 0, rcs: rcScoreVal, ship: shipped ? 1 : 0,
+          sk: shipSkipped ? 1 : 0, stretch: stretchDone ? 1 : 0, sn: stretchNote
         };
         ctx.saveEvent({ draft: App.state.draft });
       }
@@ -1761,7 +1763,7 @@
         }).join('');
         host.appendChild(el('<div class="card case-review"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
           '<h2>Your case files, on record</h2>' + rows +
-          (stretchDone ? '<p class="case-review-extra">&#11088; The Jellyfish Job: taken and closed.</p>' : '') +
+          (stretchDone ? '<p class="case-review-extra">&#11088; The Jellyfish Job: taken and closed.' + (draft.sn ? ' &ldquo;' + esc(String(draft.sn)) + '&rdquo;' : '') + '</p>' : '') +
           '<p class="case-review-extra">' + (draft.ship ? 'Fixed build shipped to your Drive vault.' : 'The fixed build lives on in Scratch.') + '</p>' +
           '<button class="primary-btn" type="button">Continue</button></div>'));
         host.querySelector('button').onclick = function () { ctx.next(); };
@@ -1819,7 +1821,9 @@
           '<b class="case-name">Ship the fixed game</b>' +
           (releaseOpen ? '<span class="case-open-chip">' + (shipped || shipSkipped ? 'signed off' : 'ALL CASES CLOSED &mdash; GO') + '</span>' : '<span class="case-sealed-ribbon">SEALED UNTIL ALL 4 CLOSE</span>') +
           '</button>' +
-          '</div></div>');
+          '</div>' +
+          (cfg.boardTip ? '<p class="case-board-tip">' + cfg.boardTip + '</p>' : '') +
+          '</div>');
         host.appendChild(b);
         b.querySelectorAll('.case-file[data-case]').forEach(function (btn) {
           btn.onclick = function () {
@@ -1932,7 +1936,9 @@
           '<div class="case-clue"></div></div>' +
           '<div class="case-step"><span class="case-step-tag">3 &middot; FIX IT &amp; FILE THE LOG</span>' +
           '<p>Make your fix in Scratch, then log it like a real QA tester &mdash; one sentence: <b>what was wrong, and what you changed</b>.</p>' +
-          '<textarea class="case-log-input" maxlength="200" placeholder="' + esc(cs.logHint || 'The bug was... so I...') + '">' + esc(logText) + '</textarea></div>' +
+          (cs.mechanic ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b> ' + esc(cs.mechanic) + '</p>' : '') +
+          '<textarea class="case-log-input" maxlength="200" placeholder="' + esc(cs.logHint || 'The bug was... so I...') + '">' + esc(logText) + '</textarea>' +
+          '<p class="case-log-nudge"></p></div>' +
           '<div class="case-step"><span class="case-step-tag">4 &middot; RE-PLAY TO PROVE IT</span>' +
           '<p>' + esc(cs.replay) + '</p>' +
           '<p class="case-honesty">HQ accepts only one kind of proof: you watched the bug NOT happen.</p>' +
@@ -1957,20 +1963,43 @@
               '<p><b>Step 2 &mdash; detective protocol:</b> ' + esc(solo ? (clue.consultSolo || 'No other agencies on shift right now — go straight to Step 3 if Step 1 didn’t crack it.') : (clue.consult || 'Consult another agency that has CLOSED this case. One question, detective to detective.')) + '</p>' +
               '<button class="ghost-btn case-hq-btn" type="button">Still stuck &mdash; open HQ&rsquo;s clue (this case stamps SILVER, not gold)</button></div>';
             clueBox.querySelector('.case-hq-btn').onclick = function () {
-              silver.push(String(cs.id));
-              saveBoard();
+              if (!isSilver(cs.id)) { silver.push(String(cs.id)); saveBoard(); }
               paintClue();
             };
           };
         }
         paintClue();
 
-        /* the log gates the close button - a case without a log isn't casework */
+        /* The log gates the close button - a case without a log isn't casework.
+           A raw length check was gameable (the hint stem itself cleared it, and
+           ONE generic sentence closed all four cases), so the gate asks the log
+           to NAME the thing that was wrong: >=6 words, not a near-copy of the
+           hint stem, and at least one of that case's own terms (authored
+           generously, with synonyms - a genuine answer in a pupil's own words
+           passes). The nudge says which part is missing, so it never reads as
+           arbitrary. Terms sit in public config deliberately: they name the
+           SUBJECT of the bug, never the fix, and the platform still marks
+           nothing - the proof is the re-play. */
         var ta = c.querySelector('.case-log-input');
         var closeBtn = c.querySelector('.case-close-btn');
+        var nudge = c.querySelector('.case-log-nudge');
+        var terms = (cs.logTerms || []).map(function (t) { return String(t).toLowerCase(); });
+        var stemWords = String(cs.logHint || '').toLowerCase().replace(/[^a-z ]/g, ' ').split(/\s+/).filter(Boolean);
+        function logProblem() {
+          var raw = ta.value.trim();
+          var low = raw.toLowerCase();
+          var words = low.replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(Boolean);
+          if (words.length < 6) return 'Two halves, remember: what was wrong, and what you changed.';
+          var own = words.filter(function (w) { return stemWords.indexOf(w) === -1; });
+          if (own.length < 3) return 'In your OWN words - the hint is a starter, not the log.';
+          if (terms.length && !terms.some(function (t) { return low.indexOf(t) !== -1; }))
+            return 'Name the block or script you changed - a log HQ can act on.';
+          return '';
+        }
         function gateClose() {
-          var t = ta.value.trim();
-          closeBtn.disabled = !(t.length >= 12 && t.indexOf(' ') !== -1);
+          var p = logProblem();
+          closeBtn.disabled = !!p;
+          nudge.textContent = ta.value.trim() ? p : '';
         }
         ta.oninput = function () {
           logs[cs.id] = ta.value.trim();
@@ -1980,6 +2009,8 @@
         gateClose();
 
         closeBtn.onclick = function () {
+          if (isClosed(cs.id)) return;          // double-tap / stale view guard
+          closeBtn.disabled = true;
           logs[cs.id] = ta.value.trim();
           closed.push(String(cs.id));
           saveBoard();
@@ -2009,10 +2040,21 @@
           '<div class="case-step"><span class="case-step-tag">THE JOB</span><p>' + esc(s.job) + '</p>' +
           (s.img ? '<img class="rung-img" src="' + esc(asset(s.img)) + '" alt="Starter blocks for the jellyfish">' : '') + '</div>' +
           '<div class="case-step"><span class="case-step-tag">PROVE IT</span><p>' + esc(s.test) + '</p>' +
-          '<button class="confirm-step" type="button"' + (stretchDone ? ' disabled' : '') + '><span class="confirm-box' + (stretchDone ? ' done' : '') + '"></span><span>' + esc(s.confirm) + '</span></button></div>' +
+          '<p class="case-rc-ask">' + esc(s.ask || 'One line for the release notes: what did you add, and what does it do to the player?') + '</p>' +
+          '<textarea class="case-log-input case-stretch-note" maxlength="200" placeholder="' + esc(s.notePlaceholder || 'I added... and now...') + '"' + (stretchDone ? ' disabled' : '') + '>' + esc(stretchNote) + '</textarea>' +
+          '<button class="confirm-step" type="button" disabled><span class="confirm-box' + (stretchDone ? ' done' : '') + '"></span><span>' + esc(s.confirm) + '</span></button></div>' +
           backRow() + '</div>');
         host.appendChild(c);
         wireBack(c);
+        var snBox = c.querySelector('.case-stretch-note');
+        var snBtn = c.querySelector('.confirm-step');
+        if (!stretchDone) {
+          snBox.oninput = function () {
+            stretchNote = snBox.value.trim();
+            snBtn.disabled = stretchNote.replace(/[^a-z0-9 ]/gi, ' ').split(/\s+/).filter(Boolean).length < 6;
+          };
+          snBox.oninput();
+        }
         if (!stretchDone) c.querySelector('.confirm-step').onclick = function () {
           this.classList.add('ticked');
           stretchDone = true;
@@ -2036,7 +2078,11 @@
           '<div class="case-step"><span class="case-step-tag">THE FULL RUN</span>' +
           '<p>' + esc(r.text || '') + '</p>' +
           '<ul class="case-rc-list">' + (r.watch || []).map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul>' +
-          '<button class="confirm-step case-rc-btn" type="button"' + (rcDone ? ' disabled' : '') + '><span class="confirm-box' + (rcDone ? ' done' : '') + '"></span><span>' + esc(r.confirm || 'Full run clean — every fix held') + '</span></button></div>' +
+          /* the backstop must not be the easiest tap on the board (gate run):
+             the score you finished on can only be known by actually running it */
+          '<p class="case-rc-ask">' + esc(r.ask || 'What score did you finish the full run on?') + '</p>' +
+          '<input class="case-rc-score" type="number" min="1" max="999" inputmode="numeric" placeholder="fish caught"' + (rcDone ? ' disabled value="' + Number(draft.rcs || 0) + '"' : '') + '>' +
+          '<button class="confirm-step case-rc-btn" type="button" disabled><span class="confirm-box' + (rcDone ? ' done' : '') + '"></span><span>' + esc(r.confirm || 'Full run clean — every fix held') + '</span></button></div>' +
           '<div class="case-ship" ' + (rcDone ? '' : 'hidden') + '></div>' +
           backRow() + '</div>');
         host.appendChild(c);
@@ -2094,14 +2140,24 @@
         }
 
         var rcBtn = c.querySelector('.case-rc-btn');
-        if (!rcDone) rcBtn.onclick = function () {
-          rcBtn.classList.add('ticked');
-          rcDone = true;
-          saveBoard();
-          shipBox.hidden = false;
-          paintShip();
-        };
-        if (rcDone) paintShip();
+        var rcScore = c.querySelector('.case-rc-score');
+        if (rcDone) { rcBtn.disabled = true; paintShip(); }
+        else {
+          rcScore.oninput = function () {
+            var v = Number(rcScore.value);
+            rcBtn.disabled = !(v >= 1 && v <= 999);
+          };
+          rcBtn.onclick = function () {
+            rcBtn.classList.add('ticked');
+            rcBtn.disabled = true;
+            rcScore.disabled = true;
+            rcDone = true;
+            rcScoreVal = Number(rcScore.value) || 0;
+            saveBoard();
+            shipBox.hidden = false;
+            paintShip();
+          };
+        }
       }
 
       /* stretch nudge on the way out, then the badge */
@@ -2124,11 +2180,17 @@
       }
 
       function finishBoard() {
-        var gold = 0;
-        cases.forEach(function (cs) { if (isClosed(cs.id) && !isSilver(cs.id)) gold++; });
-        var xp = 4 + closed.length * 4 + gold + (rcDone ? 2 : 0) + (shipped ? 3 : 0) + (stretchDone ? 3 : 0);
+        /* count from the CASE LIST, never from the closed array's length -
+           a replayed/duplicated entry must never inflate the award */
+        var gold = 0, closedCount = 0;
+        cases.forEach(function (cs) {
+          if (!isClosed(cs.id)) return;
+          closedCount++;
+          if (!isSilver(cs.id)) gold++;
+        });
+        var xp = 4 + closedCount * 4 + gold + (rcDone ? 2 : 0) + (shipped ? 3 : 0) + (stretchDone ? 3 : 0);
         var badge = Object.assign({}, ctx.chunk.badge, { xp: xp });
-        var detail = 'cw=' + cases.filter(function (cs) { return isClosed(cs.id); }).length + '/' + cases.length +
+        var detail = 'cw=' + closedCount + '/' + cases.length +
           ';g=' + gold + ';rc=' + (rcDone ? 1 : 0) + ';ship=' + (shipped ? 1 : 0) + (stretchDone ? ';s=1' : '');
         ctx.awardBadge(badge, detail).then(function () { ctx.next(); });
       }

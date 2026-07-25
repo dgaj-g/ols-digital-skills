@@ -1487,3 +1487,13 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   .case-board { padding: 14px 10px 20px; }
   .case-board-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
 }
+.case-mechanic { background: var(--field); border: 1px solid var(--line-l); border-radius: var(--r-sm);
+  padding: 8px 12px; font-size: 0.93rem; color: var(--ink); }
+.case-log-nudge { min-height: 18px; margin: 4px 0 0; color: #8C6D1F; font-size: 0.88rem; font-weight: 600; }
+.case-rc-ask { margin-top: 10px; font-weight: 600; }
+.case-rc-score { width: 140px; font: inherit; font-size: 1.05rem; text-align: center;
+  border: 1px solid var(--line-l); border-radius: var(--r-sm); background: var(--field);
+  padding: 8px 10px; margin: 6px 0 10px; color: var(--ink); }
+.case-rc-score:focus { outline: 2px solid var(--gold); border-color: var(--gold); background: #fff; }
+.case-board-tip { text-align: center; color: #92A4C7; font-size: 0.85rem; margin-top: 16px; }
+.case-board-tip b { color: var(--gold-hi); }
