@@ -213,6 +213,16 @@ window.OLS_TRANSPORT = {
         case 'catchup':        g.apiCatchup(p); break;
         case 'setKit':         g.apiSetKit(p); break;
         case 'driveCheck':     g.apiDriveCheck(p); break;
+        case 'artifactCheck':  g.apiArtifactCheck(p); break;
+        case 'tournament':     g.apiTournament(p); break;
+        case 'ping':           g.apiPing(p); break;
+        case 'pairJoin':       g.apiPairJoin(p); break;
+        case 'pairSend':       g.apiPairSend(p); break;
+        case 'pairChannel':    g.apiPairChannel(p); break;
+        case 'pairComplete':   g.apiPairComplete(p); break;
+        case 'galleryOpen':    g.apiGalleryOpen(p); break;
+        case 'galleryPost':    g.apiGalleryPost(p); break;
+        case 'galleryFeed':    g.apiGalleryFeed(p); break;
         case 'admin':          g.apiAdmin(p); break;
         default: reject(new Error('unknown action: ' + p.action));
       }

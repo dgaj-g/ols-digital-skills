@@ -1294,6 +1294,40 @@
       });
     }
 
+    /* Press Night lens mirror (section 14): full gallery with real names */
+    if (sub === 'gallery') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      var gg = galD_(s, cls, str_(p.lessonId));
+      var nameFor = function (e) {
+        if (str_(e) === BOT_EMAIL || str_(e).indexOf('botsim') === 0) return 'the Simulation';
+        var r = readPupil_(s, cls, str_(e));
+        return str_(r && r.n || e);
+      };
+      var bySid = {};
+      var gStudios = Object.keys(gg.studios).map(function (e) {
+        var st = gg.studios[e];
+        bySid[str_(st.sid)] = nameFor(e);
+        return { sid: str_(st.sid), name: nameFor(e), cn: str_(st.cn),
+          gt: str_(st.gt), gh: str_(st.gh), tpl: str_(st.tpl), rn: num_(st.rn) };
+      });
+      var gReviews = gg.reviews.map(function (r) {
+        return { i: num_(r.i), byName: nameFor(str_(r.by)), bcn: str_(r.bcn),
+          toName: str_(bySid[str_(r.to)] || r.to), toSid: str_(r.to),
+          l: str_(r.l), w: str_(r.w), t: num_(r.t), rm: num_(r.rm) || 0, sim: num_(r.sim) || 0 };
+      });
+      return Promise.resolve({ ok: true, studios: gStudios, reviews: gReviews });
+    }
+    if (sub === 'galleryRemove') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      var grm = galD_(s, cls, str_(p.lessonId));
+      var hitRv = null;
+      grm.reviews.forEach(function (r) { if (num_(r.i) === num_(p.i)) hitRv = r; });
+      if (!hitRv) return Promise.resolve({ ok: false, error: 'no-review' });
+      hitRv.rm = 1;
+      save_(s);
+      return Promise.resolve({ ok: true });
+    }
+
     return Promise.resolve({ ok: false, error: 'unknown-sub' });
   }
 
@@ -1636,6 +1670,162 @@
     return Promise.resolve({ ok: true, names: names });
   }
 
+  /* ---------- section 14: Press Night gallery (mirrors Code.gs.template) ----------
+     Two same-origin tabs (?as=anya / ?as=cara) are a REAL exhibitor + critic.
+     Single-tab preview stays complete via SIMULATED studios (something to
+     review) and a simulated critic that files kind/specific/helpful reviews
+     against YOUR listing after a short delay - both flagged sim:1 on the wire
+     and labelled on screen, same honesty rule as the section-12 partner bot. */
+  var GAL_TITLE_MAX = 28, GAL_HOW_MAX = 90, GAL_REVIEW_MAX = 200, GAL_REVIEWS_PER_CRITIC = 3;
+  function galD_(s, cls, lessonId) {
+    if (!s.gal) s.gal = {};
+    var k = plKey_(cls, lessonId);
+    if (!s.gal[k]) s.gal[k] = { seq: 0, studios: {}, reviews: [] };
+    var g = s.gal[k];
+    if (!g.seq) g.seq = 0;
+    if (!g.studios) g.studios = {};
+    if (!g.reviews) g.reviews = [];
+    return g;
+  }
+  function galCleanD_(v, max) {
+    return str_(v).replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
+  }
+  function galSigD_(s, cls, email) {
+    var rec = readPupil_(s, cls, email);
+    var cn = str_(rec && rec.cn || '');
+    return cn ? ('Agent ' + cn) : (str_(rec && rec.n || '').split(' ')[0] || 'A critic');
+  }
+  var GAL_BOT_STUDIOS = [
+    { sid: 'simA', cn: 'Simulated studio', gt: 'Comet Catch', gh: 'Arrow keys move the tray. Catch comets, dodge nothing - yet.', tpl: 'catch' },
+    { sid: 'simB', cn: 'Simulated studio', gt: 'Hedge Havoc', gh: 'Guide the snail out. Walls bite. Three dewdrops open the gate.', tpl: 'maze' },
+    { sid: 'simC', cn: 'Simulated studio', gt: 'True Colours', gh: 'Read the claim, tap T or F. Three rounds, no second guesses.', tpl: 'quiz' }
+  ];
+  function galBotReviewsFor_(stu) {
+    var tpl = str_(stu.tpl), gt = str_(stu.gt) || 'your game';
+    if (tpl === 'maze') return [
+      { l: 'how ' + gt + ' makes you plan a route instead of just wandering - the last star is hidden really cleverly', w: 'whether a timer would make escaping feel even more daring' },
+      { l: 'that the door actually checks your stars before it opens - it feels like a real rule, not decoration', w: 'what a level 2 maze with a moving guard would be like' }
+    ];
+    if (tpl === 'quiz') return [
+      { l: 'that the questions in ' + gt + ' sound like the maker wrote them - the wrong-answer reply made me laugh', w: 'what a super-hard final question would look like' },
+      { l: 'how the score keeps up with every answer so you always know how you are doing', w: 'whether a two-player mode could work with a second set of tiles' }
+    ];
+    return [
+      { l: 'how ' + gt + ' makes every drop feel urgent - losing a life for a miss is a real consequence', w: 'what a golden apple worth three points would do to the game' },
+      { l: 'that the game actually ends when your lives run out instead of just going on forever', w: 'whether the falling could speed up as your score grows' }
+    ];
+  }
+  /* the simulated room: bot studios appear once the gallery is first polled;
+     two bot reviews land on YOUR studio ~10s and ~22s after you open it */
+  function galBotThink_(s, g) {
+    var changed = false;
+    if (!g.bots) {
+      GAL_BOT_STUDIOS.forEach(function (b) {
+        g.seq = num_(g.seq) + 1;
+        g.studios['bot' + b.sid + '@demo'] = {
+          sid: b.sid, cn: b.cn, gt: b.gt, gh: b.gh, tpl: b.tpl,
+          ts: tmin_(), rn: 0, sim: 1
+        };
+      });
+      g.bots = 1;
+      changed = true;
+    }
+    var mine = g.studios[PUPIL_EMAIL];
+    if (mine) {
+      if (!mine.openedS) { mine.openedS = tsecD_(); changed = true; }
+      var elapsed = tsecD_() - num_(mine.openedS);
+      var botRevs = g.reviews.filter(function (r) { return num_(r.sim) && str_(r.to) === str_(mine.sid); });
+      var wanted = galBotReviewsFor_(mine);
+      var due = (elapsed >= 22 ? 2 : (elapsed >= 10 ? 1 : 0));
+      for (var i = botRevs.length; i < due && i < wanted.length; i++) {
+        g.seq = num_(g.seq) + 1;
+        g.reviews.push({
+          i: num_(g.seq), by: BOT_EMAIL, bcn: 'Press Bot (simulated)', to: str_(mine.sid),
+          l: wanted[i].l, w: wanted[i].w, t: tmin_(), rm: 0, sim: 1
+        });
+        mine.rn = num_(mine.rn) + 1;
+        changed = true;
+      }
+    }
+    return changed;
+  }
+  function doGalleryOpen(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    var lessonId = str_(p.lessonId);
+    return tnNumFor_(s, cls, lessonId).then(function (numStr) {
+      if (!numStr || !lessonAccessible_(s, cls, numStr)) return { ok: false, error: 'locked' };
+      var gt = galCleanD_(p.gt, GAL_TITLE_MAX);
+      var gh = galCleanD_(p.gh, GAL_HOW_MAX);
+      if (!gt) return { ok: false, error: 'no-title' };
+      var g = galD_(s, cls, lessonId);
+      var mine = g.studios[PUPIL_EMAIL];
+      g.seq = num_(g.seq) + 1;
+      g.studios[PUPIL_EMAIL] = {
+        sid: str_(mine && mine.sid) || ('s' + num_(g.seq)),
+        cn: galSigD_(s, cls, PUPIL_EMAIL),
+        gt: gt, gh: gh, tpl: str_(p.tpl).slice(0, 8),
+        ts: num_(mine && mine.ts) || tmin_(),
+        rn: num_(mine && mine.rn),
+        openedS: num_(mine && mine.openedS)
+      };
+      save_(s);
+      return { ok: true, sid: str_(g.studios[PUPIL_EMAIL].sid) };
+    });
+  }
+  function doGalleryPost(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    var lessonId = str_(p.lessonId);
+    var like = galCleanD_(p.like, GAL_REVIEW_MAX);
+    var wonder = galCleanD_(p.wonder, GAL_REVIEW_MAX);
+    if (like.length < 8 || wonder.length < 8) return Promise.resolve({ ok: false, error: 'too-thin' });
+    var g = galD_(s, cls, lessonId);
+    var toSid = str_(p.to);
+    var toEmail = '';
+    Object.keys(g.studios).forEach(function (e) { if (str_(g.studios[e].sid) === toSid) toEmail = e; });
+    if (!toEmail) return Promise.resolve({ ok: false, error: 'no-studio' });
+    if (toEmail === PUPIL_EMAIL) return Promise.resolve({ ok: false, error: 'own-studio' });
+    var mine = g.reviews.filter(function (r) { return str_(r.by) === PUPIL_EMAIL; });
+    if (mine.length >= GAL_REVIEWS_PER_CRITIC) return Promise.resolve({ ok: false, error: 'passes-spent' });
+    if (mine.some(function (r) { return str_(r.to) === toSid; })) return Promise.resolve({ ok: false, error: 'already-reviewed' });
+    g.seq = num_(g.seq) + 1;
+    g.reviews.push({
+      i: num_(g.seq), by: PUPIL_EMAIL, bcn: galSigD_(s, cls, PUPIL_EMAIL),
+      to: toSid, l: like, w: wonder, t: tmin_(), rm: 0
+    });
+    g.studios[toEmail].rn = num_(g.studios[toEmail].rn) + 1;
+    save_(s);
+    return Promise.resolve({ ok: true, given: mine.length + 1 });
+  }
+  function doGalleryFeed(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    var g = galD_(s, cls, str_(p.lessonId));
+    if (galBotThink_(s, g)) save_(s);
+    var mySid = str_(g.studios[PUPIL_EMAIL] && g.studios[PUPIL_EMAIL].sid || '');
+    var studios = Object.keys(g.studios).map(function (e) {
+      var st = g.studios[e];
+      return { sid: str_(st.sid), cn: str_(st.cn), gt: str_(st.gt), gh: str_(st.gh),
+        tpl: str_(st.tpl), rn: num_(st.rn), mine: e === PUPIL_EMAIL ? 1 : 0, sim: num_(st.sim) || 0 };
+    });
+    var myReviews = [];
+    var total = 0, given = 0;
+    g.reviews.forEach(function (r) {
+      if (num_(r.rm)) return;
+      total++;
+      if (str_(r.by) === PUPIL_EMAIL) given++;
+      if (mySid && str_(r.to) === mySid) {
+        myReviews.push({ i: num_(r.i), bcn: str_(r.bcn), l: str_(r.l), w: str_(r.w), t: num_(r.t), sim: num_(r.sim) || 0 });
+      }
+    });
+    return Promise.resolve({ ok: true, seq: num_(g.seq), open: mySid ? 1 : 0, studios: studios,
+      myReviews: myReviews, total: total, given: given, studioCount: studios.length });
+  }
+
   /* ---------- dispatcher ---------- */
   function route_(p) {
     switch (str_(p.action)) {
@@ -1661,6 +1851,9 @@
       case 'pairSend': return doPairSend(p);
       case 'pairChannel': return doPairChannel(p);
       case 'pairComplete': return doPairComplete(p);
+      case 'galleryOpen': return doGalleryOpen(p);
+      case 'galleryPost': return doGalleryPost(p);
+      case 'galleryFeed': return doGalleryFeed(p);
       case 'admin': return doAdmin(p);
       default: return Promise.resolve({ ok: false, error: 'unknown-action' });
     }
