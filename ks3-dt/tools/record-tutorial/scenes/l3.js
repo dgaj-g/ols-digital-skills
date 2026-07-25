@@ -77,20 +77,24 @@ function nestedBlockRect(drv, containerRx, subRx) {
   }, [containerRx, subRx]);
 }
 
-/* rect of a dropdown field (by its current text) inside a canvas block matching blockRx */
+/* rect of a dropdown field (by its current text) - returns the LAST matching
+   block's field (the most recently added copy), via the field GROUP rect,
+   matching the proven probe behaviour. */
 function dropdownRect(drv, blockRx, fieldText) {
   return drv.page.evaluate(([blockRx, fieldText]) => {
     const rx = new RegExp(blockRx, 'i');
-    for (const el of Array.from(document.querySelectorAll('.blocklyBlockCanvas g.blocklyDraggable'))) {
-      const text = Array.from(el.querySelectorAll('.blocklyText')).map(t => t.textContent).join(' ')
-        .replace(/[​-‍﻿ ]/g, ' ').replace(/\s+/g, ' ').trim();
+    const clean = (x) => (x || '').replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').trim();
+    const out = [];
+    for (const el of Array.from(document.querySelectorAll('.blocklyBlockCanvas > g.blocklyDraggable'))) {
+      const text = clean(Array.from(el.querySelectorAll('.blocklyText')).map(t => t.textContent).join(' ')).replace(/\s+/g, ' ');
       if (!rx.test(text)) continue;
-      const f = Array.from(el.querySelectorAll('.blocklyEditableText, .blocklyDropdownText')).find(s => (s.textContent || '').trim() === fieldText);
+      const f = Array.from(el.querySelectorAll('.blocklyEditableText, .blocklyDropdownText, text')).find(t => clean(t.textContent) === fieldText);
       if (!f) continue;
-      const b = f.getBoundingClientRect();
-      return { cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+      const g = f.closest('g') || f;
+      const b = g.getBoundingClientRect();
+      if (b.width > 4) out.push({ cx: b.x + b.width / 2, cy: b.y + b.height / 2 });
     }
-    return null;
+    return out.length ? out[out.length - 1] : null;
   }, [blockRx, fieldText]);
 }
 
@@ -380,19 +384,22 @@ const scenes = [
       const onBtn = await drv.flyoutBlock('on button A pressed');
       if (!onBtn) throw new Error('on button A pressed not in flyout');
       await cine.drag(onBtn.x + 60, onBtn.y + 22, 900, 520, { ms: 1500 });
-      await cine.captionHide();
-      await cine.caption('Two “button A” events can’t both run &mdash; MakeCode fades the copy out.');
 
-      // flip the dropdown A -> B on camera
-      await cine.captionShow('The little dropdown fixes it: click the <b>A</b>&hellip;', { pos: 'top' });
+      /* the flip: the live editor refuses synthetic field clicks while the
+         recorder runs (pupils click it for real, no problem) - so the video
+         SHOWS the dropdown with a callout + instruction, then a clean curtain
+         dip lands the exact state a real click produces */
       const dd = await dropdownRect(drv, 'on button A pressed', 'A');
       if (!dd) throw new Error('A dropdown field not found');
-      await cine.click(dd.cx, dd.cy, { after: 1000 });
-      const itemB = await dropdownItemRect(drv, 'B');
-      if (!itemB) throw new Error('dropdown item B not found');
-      await cine.click(itemB.cx, itemB.cy, { after: 900 });
       await cine.captionHide();
-      await cine.caption('<b>on button B pressed</b> &mdash; awake, and all yours.');
+      await cine.caption('It landed FADED \u2014 two \u201cbutton A\u201d events can\u2019t both run.');
+      await cine.callout({ x: dd.cx - 30, y: dd.cy - 18, w: 60, h: 36 }, 'This little dropdown picks the button \u2014 click it, choose B', { side: 'below' });
+      await cine.curtain({ kicker: 'ONE CLICK', title: 'A \u2192 B', sub: 'pick B from the little menu' });
+      await drv.setProgram('input.onButtonPressed(Button.A, function () {\n    score += 1\n    basic.showNumber(score)\n})\ninput.onButtonPressed(Button.B, function () {\n\t\n})\nlet score = 0\n');
+      await drv.setProjectName('scoreboard');
+      await cine.pause(600);
+      await cine.lift();
+      await cine.pause(400);
 
       const varCat = await drv.category('Variables');
       await cine.captionShow('From <b>Variables</b>: <b>set score to 0</b> goes INSIDE button B.', { pos: 'top' });

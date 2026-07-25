@@ -10,3 +10,8 @@
 - `rung1.png` / `rung2.png` / `rung3.png` / `stretch.png` — original MakeCode
   (makecode.microbit.org) editor screenshots taken for this lesson.
 - The briefing also reuses `assets/img/l2/l2-tracker.jpg` (see l2/CREDITS.md).
+
+## Video (assets/video/l3/l3-tutorial.mp4)
+- Chapter 1's "big idea" card uses the same cropped "MISSILE COMMAND" photo by
+  Brett L. (CC BY-SA 2.0, Wikimedia Commons) with an in-frame credit line.
+- All other footage: original MakeCode (makecode.microbit.org) screen recording.
