@@ -1619,13 +1619,15 @@
           });
           return;
         }
+        /* Continue stays a GHOST during the wait - the reveal is the star of
+           this screen, not the exit door (gate finding, engagement lens) */
         afterBox.innerHTML = '<div class="rally-sealed">' +
           '<p class="rally-sealed-line">' + esc((cfg.suspense && cfg.suspense.sealed) || 'Teams are SEALED.') + '</p>' +
           '<div class="rally-counter"><span class="panel-spinner"></span><span class="rally-counter-text">' + esc((cfg.suspense && cfg.suspense.waiting) || 'Scores are landing at HQ…') + '</span></div>' +
           '<p class="rally-sub">' + esc((cfg.suspense && cfg.suspense.revealTease) || 'Eyes on the big screen.') + '</p></div>' +
           '<div class="rally-reveal"></div>' +
-          '<div class="rung-actions"><button class="primary-btn" type="button">Continue</button></div>';
-        afterBox.querySelector('.primary-btn').onclick = function () { stopPoll(); ctx.next(); };
+          '<div class="rung-actions"><button class="ghost-btn rally-continue" type="button">Continue to the exit check</button></div>';
+        afterBox.querySelector('.rally-continue').onclick = function () { stopPoll(); ctx.next(); };
         startPoll();
       }
 
@@ -1671,6 +1673,9 @@
           bars + '</div>';
         requestAnimationFrame(function () { box.classList.add('show'); });
         setTimeout(function () { box.classList.add('show'); }, 120); // hidden-tab rAF fallback
+        /* the payoff has landed - Continue steps back into the spotlight */
+        var contBtn = host.querySelector('.rally-continue');
+        if (contBtn) { contBtn.classList.remove('ghost-btn'); contBtn.classList.add('primary-btn'); }
       }
 
       /* resume: a reloaded pupil who already transmitted lands back in the
