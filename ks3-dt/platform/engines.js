@@ -2688,7 +2688,7 @@
           gh = hi.value.trim().slice(0, 80);
           saveDesk(); // the listing text survives a failed call
           status.textContent = 'Raising the marquee...';
-          ctx.call('galleryOpen', { lessonId: ctx.lesson.id, gt: gt, gh: gh, tpl: tpl }).then(function (r) {
+          ctx.call('galleryOpen', { lessonId: ctx.lesson.id, gt: gt, gh: gh, tpl: tpl, sn: sn }).then(function (r) {
             if (!r || !r.ok) {
               status.textContent = 'The marquee did not answer (' + esc((r && r.error) || 'no reply') + ') - try again.';
               doors.disabled = false;
@@ -2848,7 +2848,7 @@
       function marqueeCardHtml(s, clickable) {
         var needy = feed && !s.mine && s.rn === Math.min.apply(null, feed.studios.filter(function (x) { return !x.mine; }).map(function (x) { return x.rn; }));
         return '<' + (clickable ? 'button type="button"' : 'div') + ' class="gal-marquee-card' + (s.mine ? ' mine' : '') + (clickable ? ' clickable' : '') + '" data-sid="' + esc(s.sid) + '">' +
-          '<span class="gal-mq-studio">' + esc(s.cn) + (s.sim ? ' <em class="gal-sim">simulated</em>' : '') + '</span>' +
+          '<span class="gal-mq-studio">' + esc(s.sn || s.cn) + (s.sim ? ' <em class="gal-sim">simulated</em>' : '') + '</span>' +
           '<b class="gal-mq-title">' + esc(s.gt) + '</b>' +
           '<p class="gal-mq-how">' + esc(s.gh) + '</p>' +
           '<span class="gal-mq-meta">' + (s.mine ? 'YOUR STUDIO' : (s.rn + ' review' + (s.rn === 1 ? '' : 's')) + (needy && clickable ? ' &middot; NEEDS A CRITIC' : '')) + '</span>' +

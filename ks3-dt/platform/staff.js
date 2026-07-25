@@ -33,6 +33,8 @@
   var pairLensLesson = '', pairLensTimer = null, pairAlerted = {}, pairedLessonCache = {}, pairResetArm = 0;
   /* tournament state (section 13) */
   var tourneyLessonCache = {};    // lessonId -> promise -> true|null ("has a tournament chunk")
+  var galleryLessonCache = {};    // lessonId -> promise -> true|null ("has a gallery chunk")
+  var galleryLensLesson = '', galleryLensTimer = null;
   var audioCtx = null, chimeMuted = false;
   try { chimeMuted = localStorage.getItem('ks3dt-staff-mute') === '1'; } catch (e) {}
 
@@ -616,6 +618,7 @@
       '</div>' +
       '<div id="pair-lens"></div>' +
       '<div id="tourney-slot"></div>' +
+      '<div id="gallery-lens"></div>' +
       '<div class="dash-scroll"><table class="dash-table">' + head + (body || '<tr><td colspan="99">No pupils have joined this class yet.</td></tr>') + '</table></div>' +
       '<h3 style="margin-top:20px">Misconception patterns</h3>' +
       '<select id="live-mis-select" class="staff-select">' + misSelect + '</select>' +
@@ -625,6 +628,7 @@
     if (misLessonNum && liveByNum[misLessonNum]) loadMisconceptions(liveByNum[misLessonNum]);
     initPairLens(deliveredNums);
     initTourneySlot(deliveredNums);
+    initGalleryLens(deliveredNums);
   }
 
   /* ============================================================
@@ -664,6 +668,99 @@
           '</div>';
       }).join('');
     });
+  }
+
+
+  /* ---------- Press Night lens (L5 gallery): the duty-of-care view ----------
+     Detection mirrors tourneyInfoFor (content chunk scan). The lens shows the
+     live marquee + every signed review with REAL names, and a one-tap Remove:
+     a removed review vanishes from the maker's screen on their next ~4s poll.
+     Removed reviews stay listed struck-through (audit trail, rm flag). */
+  function galleryInfoFor(le) {
+    var id = String(le.id);
+    if (!galleryLessonCache[id]) {
+      galleryLessonCache[id] = App.fetchContent(le.file).then(function (lesson) {
+        var ch = (lesson.chunks || []).filter(function (c) { return c.engine === 'gallery'; })[0];
+        return ch ? { title: String(ch.title || 'Press Night') } : null;
+      }).catch(function () { return null; });
+    }
+    return galleryLessonCache[id];
+  }
+
+  function initGalleryLens(deliveredNums) {
+    var slot = q('#gallery-lens');
+    if (!slot) return;
+    var candidates = deliveredNums.map(function (n) { return liveByNum[n]; }).filter(Boolean);
+    Promise.all(candidates.map(galleryInfoFor)).then(function (infos) {
+      if (!q('#gallery-lens')) return;
+      var rows = [];
+      infos.forEach(function (inf, i) { if (inf) rows.push({ le: candidates[i], title: inf.title }); });
+      if (!rows.length) return;
+      if (!galleryLensLesson || !rows.some(function (r) { return String(r.le.id) === galleryLensLesson; })) {
+        galleryLensLesson = String(rows[rows.length - 1].le.id);
+      }
+      var sel = rows.map(function (r) {
+        return '<option value="' + App.esc(String(r.le.id)) + '"' + (String(r.le.id) === galleryLensLesson ? ' selected' : '') + '>' +
+          App.esc(r.title) + ' &mdash; Lesson ' + App.esc(String(r.le.num)) + '</option>';
+      }).join('');
+      slot.innerHTML = '<div class="pair-lens-box">' +
+        '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
+        '<h3 style="margin:0">&#127914; Press Night</h3>' +
+        (rows.length > 1 ? '<select id="gallery-lesson-sel" class="staff-select" style="margin:0;max-width:280px">' + sel + '</select>'
+          : '<span class="pl-note" style="margin:0">' + App.esc(rows[0].title) + ' &mdash; Lesson ' + App.esc(String(rows[0].le.num)) + '</span>') +
+        '<span class="pl-note gal-lens-stat" style="margin:0 0 0 auto"></span></div>' +
+        '<div id="gallery-lens-body">' + busyHtml('Raising the marquee') + '</div></div>';
+      galleryLensTick();
+      if (!galleryLensTimer) galleryLensTimer = setInterval(galleryLensTick, 5000);
+    });
+  }
+
+  function galleryLensTick() {
+    if (!document.getElementById('gallery-lens-body')) {
+      if (galleryLensTimer) { clearInterval(galleryLensTimer); galleryLensTimer = null; }
+      return;
+    }
+    adminCall('gallery', { className: cls, lessonId: galleryLensLesson }).then(function (r) {
+      var body = document.getElementById('gallery-lens-body');
+      if (!body || !r || !r.ok) return;
+      var stat = q('.gal-lens-stat');
+      var live = (r.reviews || []).filter(function (x) { return !x.rm; });
+      if (stat) stat.textContent = (r.studios || []).length + ' studios open - ' + live.length + ' reviews live';
+      var studios = (r.studios || []).map(function (s) {
+        return '<span class="gal-lens-chip"><b>' + App.esc(s.sn || s.cn) + '</b> (' + App.esc(s.name) + ') &middot; &ldquo;' + App.esc(s.gt) + '&rdquo; &middot; ' + Number(s.rn) + '</span>';
+      }).join('');
+      var reviews = (r.reviews || []).slice().reverse().map(function (x) {
+        return '<div class="gal-lens-review' + (x.rm ? ' removed' : '') + '">' +
+          '<b>' + App.esc(x.byName) + '</b> <span class="pl-note" style="margin:0">(signed ' + App.esc(x.bcn) + (x.sim ? ' &middot; simulated' : '') + ')</span> &rarr; <b>' + App.esc(x.toName) + '</b>' +
+          '<p style="margin:2px 0 0">I like ' + App.esc(x.l) + '<br>I wonder ' + App.esc(x.w) + '</p>' +
+          (x.rm ? '<span class="gal-lens-rm-note">removed</span>'
+            : '<button type="button" class="ghost-btn gal-lens-rm" data-action="gallery-remove" data-i="' + Number(x.i) + '">Remove</button>') +
+          '</div>';
+      }).join('');
+      body.innerHTML = (studios ? '<div class="gal-lens-chips">' + studios + '</div>' : '') +
+        (reviews || '<p class="pl-note">No reviews filed yet.</p>');
+      injectGalleryStyles();
+    }).catch(function () {});
+  }
+
+  function galleryRemove(btn) {
+    btn.disabled = true;
+    adminCall('galleryRemove', { className: cls, lessonId: galleryLensLesson, i: Number(btn.getAttribute('data-i')) })
+      .then(function () { galleryLensTick(); });
+  }
+
+  function injectGalleryStyles() {
+    if (document.getElementById('gallery-lens-style')) return;
+    var st = document.createElement('style');
+    st.id = 'gallery-lens-style';
+    st.textContent =
+      '.gal-lens-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}' +
+      '.gal-lens-chip{background:#F0F3FA;border:1px solid #E3E8F2;border-radius:999px;padding:3px 10px;font-size:0.78rem}' +
+      '.gal-lens-review{border-top:1px solid #E3E8F2;padding:8px 0;font-size:0.86rem;position:relative}' +
+      '.gal-lens-review.removed p{text-decoration:line-through;color:#9AA5BC}' +
+      '.gal-lens-rm{position:absolute;right:0;top:8px;padding:2px 10px;font-size:0.76rem}' +
+      '.gal-lens-rm-note{position:absolute;right:0;top:10px;font-size:0.74rem;color:#B4262A;font-weight:700}';
+    document.head.appendChild(st);
   }
 
   function tourneyOpen(lessonId) {
@@ -1581,6 +1678,7 @@
       case 'pair-reset': pairReset(btn); break;
       case 'pair-view': pairView(btn); break;
       case 'tourney-open': tourneyOpen(btn.getAttribute('data-lesson')); break;
+      case 'gallery-remove': galleryRemove(btn); break;
     }
   }
 
@@ -1592,6 +1690,7 @@
     if (t.id === 'team-reveal') { teamReveal(t); return; }
     if (t.id === 'cover-pick') { coverPick = t.value; renderCoverPane(manifestCache[year]); return; }
     if (t.id === 'pair-lesson-sel') { pairLensLesson = t.value; pairAlerted = {}; pairLensTick(); return; }
+    if (t.id === 'gallery-lesson-sel') { galleryLensLesson = t.value; galleryLensTick(); return; }
     if (t.id === 'pair-mute') {
       chimeMuted = t.checked;
       try { localStorage.setItem('ks3dt-staff-mute', chimeMuted ? '1' : '0'); } catch (e2) {}

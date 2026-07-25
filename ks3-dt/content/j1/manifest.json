@@ -99,9 +99,10 @@
    "tagline": "Your game. Your rules. Real quality control.",
    "block": "b1",
    "icon": "🎮",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j1/lessons/j1-05.json"
   },
   {
    "id": "j1-06",

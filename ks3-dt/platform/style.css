@@ -1702,3 +1702,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   .std-toolrow, .std-contract-cols, .gal-mine-zone { grid-template-columns: 1fr; }
   .std-ready-btn { width: 100%; padding: 16px 10px; }
 }
+
+/* persisted confirm-step state (re-render after reload): same tick as .ticked */
+.confirm-box.done { background: var(--good); border-color: var(--good); }
+.confirm-box.done::after { content: "\2713"; color: #fff; font-weight: 800; font-size: 0.9rem; }

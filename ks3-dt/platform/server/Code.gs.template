@@ -1315,6 +1315,7 @@ function apiGalleryOpen(req) {
   if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
   var gt = galClean_(req.gt, GAL_TITLE_MAX);
   var gh = galClean_(req.gh, GAL_HOW_MAX);
+  var sn = galClean_(req.sn, 24);
   var tpl = str_(req.tpl).slice(0, 8);
   if (!gt) return { ok: false, error: 'no-title' };
   return withLock_(function () {
@@ -1323,6 +1324,7 @@ function apiGalleryOpen(req) {
     g.seq = num_(g.seq) + 1;
     g.studios[email] = {
       sid: str_(mine && mine.sid) || ('s' + num_(g.seq)),
+      sn: sn || galSignatureFor_(cls, email),
       cn: galSignatureFor_(cls, email),
       gt: gt, gh: gh, tpl: tpl,
       ts: num_(mine && mine.ts) || tmin_(),
@@ -1382,8 +1384,8 @@ function apiGalleryFeed(req) {
   var studios = Object.keys(g.studios).map(function (e) {
     var s = g.studios[e];
     return {
-      sid: str_(s.sid), cn: str_(s.cn), gt: str_(s.gt), gh: str_(s.gh),
-      tpl: str_(s.tpl), rn: num_(s.rn), mine: e === email ? 1 : 0
+      sid: str_(s.sid), sn: str_(s.sn || s.cn), cn: str_(s.cn), gt: str_(s.gt),
+      gh: str_(s.gh), tpl: str_(s.tpl), rn: num_(s.rn), mine: e === email ? 1 : 0
     };
   });
   var myReviews = [];
@@ -1852,7 +1854,7 @@ function apiAdmin(req) {
       var s = gg.studios[e];
       var r = readPupil_(cls, e);
       bySid[str_(s.sid)] = str_(r && r.n || e);
-      return { sid: str_(s.sid), name: str_(r && r.n || e), cn: str_(s.cn),
+      return { sid: str_(s.sid), sn: str_(s.sn || s.cn), name: str_(r && r.n || e), cn: str_(s.cn),
         gt: str_(s.gt), gh: str_(s.gh), tpl: str_(s.tpl), rn: num_(s.rn) };
     });
     var byEmail = {};
@@ -1904,7 +1906,7 @@ var ARCHIVE_HEADERS = ['archivedAt', 'class', 'email', 'name', 'codename', 'less
   'detail', 'exitChosen', 'selfEval', 'comment', 'activeMin', 'recapRight', 'recapTotal', 'lastActive'];
 var CHAT_HEADERS = ['archivedAt', 'class', 'lesson', 'pair', 'members', 'names',
   'codenames', 'messages', 'transcript', 'formedAt'];
-var GAL_HEADERS = ['archivedAt', 'class', 'lesson', 'email', 'name', 'signedAs',
+var GAL_HEADERS = ['archivedAt', 'class', 'lesson', 'email', 'name', 'studio',
   'gameTitle', 'howToPlay', 'template', 'reviewsReceived', 'reviewsText', 'openedAt'];
 
 /* The pairing chat's audit tab (section 12). Self-heals: created on first use
@@ -2070,7 +2072,7 @@ function archiveSweep_() {
         var revs = (gal.reviews || []).filter(function (r) { return str_(r.to) === str_(s.sid) && !num_(r.rm); })
           .map(function (r) { return str_(r.bcn) + ': I like ' + str_(r.l) + ' / I wonder ' + str_(r.w); })
           .join(' || ').slice(0, 900);
-        return [new Date(), gCls, gLesson, str_(e), str_(r2 && r2.n || ''), str_(s.cn),
+        return [new Date(), gCls, gLesson, str_(e), str_(r2 && r2.n || ''), str_(s.sn || s.cn),
           str_(s.gt), str_(s.gh), str_(s.tpl), num_(s.rn), revs, tminToDate_(num_(s.ts))];
       });
       if (galRows.length) {
