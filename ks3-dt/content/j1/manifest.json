@@ -87,9 +87,10 @@
    "tagline": "Four bugs. One shipped game. You're QA.",
    "block": "b1",
    "icon": "🔍",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j1/lessons/j1-04.json"
   },
   {
    "id": "j1-05",
