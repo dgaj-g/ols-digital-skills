@@ -1234,6 +1234,155 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 .dossier-photos figcaption { color: var(--muted-d); font-size: 0.72rem; margin-top: 5px; line-height: 1.35; }
 
+/* ===================== section 13: the Reaction Rally ======================
+   Pupil console (light card, arcade LED inset) + the staff projector reveal
+   (full-screen overlay). The overlay + reveal accents use SCOPED literal gold
+   (--tgold), never var(--gold): Agent Kit themes re-point the global gold
+   knobs per pupil, and the projector must read as OLS gold on every machine. */
+
+.rally-card { max-width: 680px; }
+.rally-rules { list-style: none; margin: 14px 0 16px; padding: 0; display: grid; gap: 8px; }
+.rally-rules li {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--field); border: 1px solid var(--line-l); border-radius: 12px;
+  padding: 9px 12px; line-height: 1.45; font-size: 0.92rem;
+}
+.rally-rule-n {
+  flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--ols-blue); color: #fff; font-weight: 700; font-size: 0.78rem;
+  display: grid; place-items: center; margin-top: 1px;
+}
+
+.rally-console { display: flex; gap: 12px; margin: 16px 0 4px; flex-wrap: wrap; }
+.rally-console.is-locked .rally-step { display: none; }
+.rally-round {
+  position: relative; flex: 1 1 140px; max-width: 200px; text-align: center;
+  background: #0B1733; border: 1.5px solid #1E3560; border-radius: 14px;
+  padding: 12px 10px 10px; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.rally-round-label {
+  display: block; color: #8FA5CE; font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;
+}
+.rally-round.is-best { border-color: #FFD84D; box-shadow: 0 0 18px rgba(255, 216, 77, 0.28); }
+.rally-best-tag {
+  position: absolute; top: -9px; right: 10px; display: none;
+  background: linear-gradient(180deg, #FFD84D, #E4B824); color: #231A02;
+  font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em;
+  border-radius: 999px; padding: 2px 8px;
+}
+.rally-round.is-best .rally-best-tag { display: inline-block; }
+.led-display { display: flex; justify-content: center; gap: 6px; min-height: 46px; align-items: center; }
+.led-digit { display: grid; grid-template-columns: repeat(3, 10px); grid-auto-rows: 8px; gap: 2px; }
+.led-digit i { border-radius: 2px; background: #16274A; }
+.led-digit i.on { background: #FFD84D; box-shadow: 0 0 6px rgba(255, 216, 77, 0.75); }
+.rally-steps { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+.rally-step {
+  width: 40px; height: 34px; border-radius: 10px; border: 1.5px solid #2A4373;
+  background: #12224544; color: #EAF0FC; font-size: 1.15rem; font-weight: 700;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+}
+.rally-step:hover { border-color: #FFD84D; background: #1A2E58; }
+.rally-confirm { margin-top: 14px; }
+
+.rally-sealed { text-align: center; padding: 6px 0 2px; }
+.rally-sealed-line { font-weight: 700; color: var(--ink); margin: 10px 0 6px; }
+.rally-counter {
+  display: inline-flex; align-items: center; gap: 10px; margin: 6px 0;
+  background: var(--field); border: 1px solid var(--line-l); border-radius: 999px;
+  padding: 7px 16px; color: var(--muted); font-size: 0.9rem;
+}
+.rally-sub { color: var(--muted); font-size: 0.86rem; margin: 6px 0 0; }
+
+.rally-reveal { opacity: 0; transform: translateY(8px); transition: opacity 0.45s ease, transform 0.45s ease; }
+.rally-reveal.show { opacity: 1; transform: none; }
+.rally-declass { --tgold: #E4B824; --tgold-hi: #FFD84D; margin-top: 10px; }
+.rally-declass .reveal-kicker { display: block; text-align: center; }
+.rally-declass h3 { text-align: center; margin: 8px 0 14px; color: var(--ink); }
+.rally-team { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+.rally-team-name { flex: 0 0 128px; text-align: right; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
+.rally-team.is-mine .rally-team-name { color: var(--ols-blue); }
+.rally-team-track { flex: 1; height: 16px; border-radius: 999px; background: var(--field); border: 1px solid var(--line-l); overflow: hidden; }
+.rally-team-fill { display: block; height: 100%; border-radius: 999px; background: #B9C6DE; transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.rally-team.is-mine .rally-team-fill { background: linear-gradient(90deg, var(--tgold), var(--tgold-hi)); }
+.rally-team-total { flex: 0 0 34px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* ---- staff projector overlay (theme-immune: scoped gold literals) ---- */
+.tourney-overlay {
+  --tgold: #E4B824; --tgold-hi: #FFD84D; --tnavy: #060D1F;
+  position: fixed; inset: 0; z-index: 900; overflow-y: auto;
+  background: radial-gradient(1200px 800px at 50% -20%, #14264A, var(--tnavy) 70%);
+  color: #EAF0FC; opacity: 0; transition: opacity 0.3s ease;
+  display: flex; flex-direction: column; align-items: center; padding: 4vh 24px 6vh;
+  font-family: var(--font-display);
+}
+.tourney-overlay.show { opacity: 1; }
+.tourney-close {
+  position: absolute; top: 18px; right: 22px; background: none; border: 1.5px solid rgba(255,255,255,0.25);
+  color: #EAF0FC; border-radius: 999px; width: 40px; height: 40px; font-size: 1.1rem; cursor: pointer;
+}
+.tourney-close:hover { border-color: var(--tgold-hi); color: var(--tgold-hi); }
+.tourney-kicker {
+  color: var(--tgold-hi); font-weight: 700; letter-spacing: 0.32em; font-size: 0.85rem;
+  text-transform: uppercase; margin-top: 3vh;
+}
+.tourney-title { font-size: clamp(2rem, 5vw, 3.6rem); margin: 10px 0 4px; text-align: center; }
+.tourney-sub { color: #92A4C7; font-size: clamp(0.95rem, 1.8vw, 1.2rem); margin: 0 0 4vh; text-align: center; }
+.tourney-lobby { text-align: center; }
+.tourney-count { font-size: clamp(3rem, 9vw, 6rem); font-weight: 700; color: var(--tgold-hi); line-height: 1; font-variant-numeric: tabular-nums; }
+.tourney-count-label { color: #92A4C7; margin: 6px 0 4vh; font-size: 1rem; }
+.tourney-chips { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 4vh; }
+.tourney-chip {
+  border: 1.5px solid rgba(255, 216, 77, 0.4); color: var(--tgold-hi); border-radius: 999px;
+  padding: 8px 18px; font-weight: 700; letter-spacing: 0.06em; font-size: 0.95rem;
+}
+.tourney-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.tourney-reveal-btn {
+  background: linear-gradient(180deg, var(--tgold-hi), var(--tgold)); color: #231A02;
+  border: none; border-radius: 999px; padding: 16px 44px; font-size: 1.25rem; font-weight: 800;
+  letter-spacing: 0.04em; cursor: pointer; font-family: var(--font-display);
+  box-shadow: 0 12px 40px rgba(228, 184, 36, 0.45);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.tourney-reveal-btn:hover { transform: translateY(-2px); box-shadow: 0 16px 50px rgba(228, 184, 36, 0.6); }
+.tourney-reveal-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+.tourney-ghost-btn {
+  background: none; border: 1.5px solid rgba(255,255,255,0.28); color: #EAF0FC; border-radius: 999px;
+  padding: 14px 26px; font-size: 1rem; cursor: pointer; font-family: var(--font-display);
+}
+.tourney-ghost-btn:hover { border-color: var(--tgold-hi); color: var(--tgold-hi); }
+.tourney-note { color: #92A4C7; font-size: 0.9rem; margin-top: 3vh; max-width: 560px; text-align: center; line-height: 1.5; }
+
+.tourney-board { width: min(920px, 92vw); margin-top: 2vh; }
+.tourney-row { display: flex; align-items: center; gap: 18px; margin: 22px 0; opacity: 0; transform: translateX(-24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.tourney-row.in { opacity: 1; transform: none; }
+.tourney-row-place { flex: 0 0 56px; text-align: center; font-size: 1.5rem; font-weight: 700; color: #92A4C7; }
+.tourney-row.is-first .tourney-row-place { color: var(--tgold-hi); }
+.tourney-row-name { flex: 0 0 clamp(120px, 18vw, 210px); font-size: clamp(1.1rem, 2.4vw, 1.7rem); font-weight: 700; }
+.tourney-row-track { flex: 1; height: clamp(22px, 4vh, 36px); border-radius: 999px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); overflow: hidden; }
+.tourney-row-fill {
+  display: block; height: 100%; width: 0; border-radius: 999px;
+  background: linear-gradient(90deg, #37518A, #5B7BC4);
+  transition: width 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tourney-row.is-first .tourney-row-fill {
+  background: linear-gradient(90deg, var(--tgold), var(--tgold-hi));
+  box-shadow: 0 0 26px rgba(255, 216, 77, 0.5);
+}
+.tourney-row-total { flex: 0 0 84px; font-size: clamp(1.3rem, 3vw, 2.2rem); font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
+.tourney-row.is-first .tourney-row-total { color: var(--tgold-hi); }
+@keyframes tourneyShimmer {
+  0% { filter: brightness(1); } 50% { filter: brightness(1.35); } 100% { filter: brightness(1); }
+}
+.tourney-row.is-first.done .tourney-row-fill { animation: tourneyShimmer 1.6s ease 2; }
+.tourney-winner-line { text-align: center; color: var(--tgold-hi); font-size: clamp(1.2rem, 2.8vw, 1.9rem); font-weight: 700; margin-top: 3vh; opacity: 0; transition: opacity 0.6s ease; }
+.tourney-winner-line.in { opacity: 1; }
+.tourney-public { width: min(760px, 90vw); margin-top: 4vh; opacity: 0; transition: opacity 0.6s ease; }
+.tourney-public.in { opacity: 1; }
+.tourney-public h3 { color: #92A4C7; text-align: center; font-size: 1rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px; }
+.tourney-public-row { display: flex; justify-content: space-between; gap: 14px; padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 1.05rem; }
+.tourney-public-row b { font-variant-numeric: tabular-nums; color: var(--tgold-hi); }
+
 </style>
 </head>
 <body>
@@ -3916,6 +4065,219 @@ window.OLS_TRANSPORT = {
     }
   };
 
+  /* ================= tournament (the Reaction Rally console) ===============
+     L3's whole-class event. Pairs play the physical rally (referee + player,
+     the micro:bit scoreboard THEY built keeps count), key each round's score
+     into an arcade-style LED console, tick the tested-3-times gate, and
+     TRANSMIT their best round to HQ. Scores land on the pupil record as
+     detail keys (rt=best, rr=r1.r2.r3); teams stay SEALED until the teacher
+     fires the projector reveal (staff Live tab), at which point the pupil
+     console flips to team colours live. Never blocks: Continue is available
+     from the moment the score is transmitted. */
+  Engines.tournament = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var max = Number(cfg.maxScore) || 10;
+      var solo = !!ctx.catchup;
+      var draft = (ctx.draft && ctx.draft.rally) || {};
+      var rounds = (draft.r && draft.r.slice(0, 3)) || [null, null, null];
+      var ticked = !!draft.c;
+      var submitted = !!draft.sub;
+      var pollTimer = null;
+
+      /* 3x5 dot-matrix digit font - the console displays scores the way the
+         micro:bit's own LED grid would */
+      var FONT = {
+        '0': '111101101101111', '1': '010110010010111', '2': '111001111100111',
+        '3': '111001111001111', '4': '101101111001001', '5': '111100111001111',
+        '6': '111100111101111', '7': '111001010010010', '8': '111101111101111',
+        '9': '111101111001111', '-': '000000111000000'
+      };
+      function ledHtml(val) {
+        var s = (val == null) ? '-' : String(val);
+        var out = '';
+        for (var d = 0; d < s.length; d++) {
+          var bits = FONT[s[d]] || FONT['-'];
+          var dots = '';
+          for (var i = 0; i < 15; i++) dots += '<i class="' + (bits[i] === '1' ? 'on' : '') + '"></i>';
+          out += '<span class="led-digit">' + dots + '</span>';
+        }
+        return out;
+      }
+      function best() {
+        var b = null;
+        rounds.forEach(function (v) { if (v != null && (b == null || v > b)) b = v; });
+        return b;
+      }
+      function saveDraft() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        App.state.draft.rally = { r: rounds, c: ticked ? 1 : 0, sub: submitted ? 1 : 0 };
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+
+      /* review = a re-read: static summary, zero network */
+      if (ctx.review) {
+        var b0 = best();
+        host.appendChild(el('<div class="card rally-card"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+          '<h2>' + esc(cfg.title || 'The Reaction Rally') + '</h2>' +
+          '<p class="intro-lead">' + (draft.sub ? 'Rally logged \u2014 your pair\u2019s best round was <b>' + b0 + '</b>. The reveal happened live in class.' : 'The Rally runs live, in class \u2014 nothing to replay here.') + '</p>' +
+          '<button class="primary-btn" type="button">Continue</button></div>'));
+        host.querySelector('button').onclick = function () { ctx.next(); };
+        return;
+      }
+
+      var intro = solo ? (cfg.soloIntro || cfg.intro) : cfg.intro;
+      var rules = solo ? (cfg.soloRules || cfg.rules) : cfg.rules;
+      var confirmLabel = solo ? (cfg.soloConfirm || cfg.confirm) : cfg.confirm;
+      var ruleRows = (rules || []).map(function (r, i) {
+        return '<li><span class="rally-rule-n">' + (i + 1) + '</span><span>' + esc(r) + '</span></li>';
+      }).join('');
+      var labels = cfg.roundsLabel || ['Round 1', 'Round 2', 'Round 3'];
+      var slots = labels.map(function (lab, i) {
+        return '<div class="rally-round" data-i="' + i + '">' +
+          '<span class="rally-round-label">' + esc(lab) + '</span>' +
+          '<div class="led-display"></div>' +
+          '<div class="rally-steps">' +
+          '<button class="rally-step" data-d="-1" type="button" aria-label="Down">&minus;</button>' +
+          '<button class="rally-step" data-d="1" type="button" aria-label="Up">+</button>' +
+          '</div><span class="rally-best-tag">BEST</span></div>';
+      }).join('');
+
+      var c = el('<div class="card rally-card"><span class="intro-kicker">' + esc(cfg.kicker || chunk.title) + '</span>' +
+        '<h2>' + esc(cfg.title || 'The Reaction Rally') + '</h2>' +
+        '<p class="intro-lead">' + esc(intro || '') + '</p>' +
+        '<ol class="rally-rules">' + ruleRows + '</ol>' +
+        '<div class="rally-console">' + slots + '</div>' +
+        '<button class="confirm-step rally-confirm" type="button"><span class="confirm-box"></span>' + esc(confirmLabel || 'We tested it three times') + '</button>' +
+        '<div class="rung-actions"><button class="primary-btn rally-transmit" type="button" disabled>Transmit to HQ</button></div>' +
+        '<div class="rally-after"></div></div>');
+      host.appendChild(c);
+      var confirmBtn = c.querySelector('.rally-confirm');
+      var transmitBtn = c.querySelector('.rally-transmit');
+      var afterBox = c.querySelector('.rally-after');
+
+      function paint() {
+        var b = best();
+        c.querySelectorAll('.rally-round').forEach(function (slot) {
+          var i = Number(slot.getAttribute('data-i'));
+          slot.querySelector('.led-display').innerHTML = ledHtml(rounds[i]);
+          slot.classList.toggle('is-best', rounds[i] != null && rounds[i] === b && b != null);
+        });
+        if (ticked) confirmBtn.classList.add('ticked');
+        var ready = ticked && rounds.every(function (v) { return v != null; });
+        transmitBtn.disabled = !ready || submitted;
+      }
+      c.querySelectorAll('.rally-step').forEach(function (btn) {
+        btn.onclick = function () {
+          if (submitted) return;
+          var i = Number(btn.closest('.rally-round').getAttribute('data-i'));
+          var v = rounds[i] == null ? 0 : rounds[i] + Number(btn.getAttribute('data-d'));
+          rounds[i] = Math.max(0, Math.min(max, v));
+          paint(); saveDraft();
+        };
+      });
+      confirmBtn.onclick = function () {
+        if (submitted) return;
+        ticked = !ticked;
+        confirmBtn.classList.toggle('ticked', ticked);
+        paint(); saveDraft();
+      };
+      transmitBtn.onclick = function () {
+        if (submitted) return;
+        submitted = true;
+        paint(); saveDraft();
+        var detail = 'rt=' + best() + ';rr=' + rounds.join('.');
+        ctx.awardBadge(ctx.chunk.badge, detail).then(function () { afterTransmit(); });
+      };
+
+      function lockConsole() {
+        c.querySelector('.rally-rules').hidden = true;
+        c.querySelector('.rally-console').classList.add('is-locked');
+        confirmBtn.hidden = true;
+        transmitBtn.parentNode.hidden = true;
+      }
+
+      /* post-transmit: solo logs and moves on; a live run holds the suspense */
+      function afterTransmit() {
+        lockConsole();
+        if (solo) {
+          afterBox.innerHTML = '<div class="rally-sealed"><p class="rally-sealed-line">Score banked. ' + esc((cfg.suspense && cfg.suspense.sealed) || 'Teams are SEALED.') + '</p>' +
+            '<p class="rally-sub">The live reveal happened in class \u2014 your points still count for your hidden team.</p></div>' +
+            '<div class="rally-reveal"></div>' +
+            '<div class="rung-actions"><button class="primary-btn" type="button">Continue</button></div>';
+          afterBox.querySelector('.primary-btn').onclick = function () { ctx.next(); };
+          ctx.call('tournament', { lessonId: ctx.lesson.id }).then(function (r) {
+            if (r && r.ok && r.revealed) paintReveal(afterBox.querySelector('.rally-reveal'), r);
+          });
+          return;
+        }
+        /* Continue stays a GHOST during the wait - the reveal is the star of
+           this screen, not the exit door (gate finding, engagement lens) */
+        afterBox.innerHTML = '<div class="rally-sealed">' +
+          '<p class="rally-sealed-line">' + esc((cfg.suspense && cfg.suspense.sealed) || 'Teams are SEALED.') + '</p>' +
+          '<div class="rally-counter"><span class="panel-spinner"></span><span class="rally-counter-text">' + esc((cfg.suspense && cfg.suspense.waiting) || 'Scores are landing at HQ\u2026') + '</span></div>' +
+          '<p class="rally-sub">' + esc((cfg.suspense && cfg.suspense.revealTease) || 'Eyes on the big screen.') + '</p></div>' +
+          '<div class="rally-reveal"></div>' +
+          '<div class="rung-actions"><button class="ghost-btn rally-continue" type="button">Continue to the exit check</button></div>';
+        afterBox.querySelector('.rally-continue').onclick = function () { stopPoll(); ctx.next(); };
+        startPoll();
+      }
+
+      function stopPoll() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+      function startPoll() {
+        var tick = function () {
+          if (!document.body.contains(afterBox)) { stopPoll(); return; }
+          ctx.call('tournament', { lessonId: ctx.lesson.id }).then(function (r) {
+            if (!r || !r.ok || !document.body.contains(afterBox)) return;
+            var t = afterBox.querySelector('.rally-counter-text');
+            if (t) t.textContent = Number(r.n) === 1 ? '1 rig reporting in\u2026' : Number(r.n || 0) + ' rigs reporting in\u2026';
+            if (r.revealed) {
+              stopPoll();
+              var sealed = afterBox.querySelector('.rally-sealed');
+              if (sealed) sealed.hidden = true;
+              paintReveal(afterBox.querySelector('.rally-reveal'), r);
+            }
+          });
+        };
+        tick();
+        pollTimer = setInterval(tick, 5000);
+      }
+
+      /* the pupil-side echo of the projector reveal: my team, my colours */
+      function paintReveal(box, r) {
+        if (!box || box.childNodes.length) return;
+        var teams = (r.teams || []).slice().sort(function (a, b) { return Number(b.total) - Number(a.total); });
+        var top = teams.length ? Number(teams[0].total) || 1 : 1;
+        var place = 0, myRow = null;
+        teams.forEach(function (t, i) { if (t.mine) { place = i + 1; myRow = t; } });
+        var suffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
+        var bars = teams.map(function (t, i) {
+          var w = Math.max(6, Math.round((Number(t.total) / (top || 1)) * 100));
+          return '<div class="rally-team' + (t.mine ? ' is-mine' : '') + '">' +
+            '<span class="rally-team-name">' + esc(t.name) + (t.mine ? ' \u2014 YOU' : '') + '</span>' +
+            '<span class="rally-team-track"><span class="rally-team-fill" style="width:' + w + '%"></span></span>' +
+            '<span class="rally-team-total">' + Number(t.total) + '</span></div>';
+        }).join('');
+        box.innerHTML = '<div class="rally-declass">' +
+          '<span class="reveal-kicker">TEAMS DECLASSIFIED</span>' +
+          (myRow ? '<h3>You were on Team ' + esc(myRow.name) + ' \u2014 ' + place + suffix + ' place</h3>'
+                 : '<h3>The teams stand revealed</h3>') +
+          bars + '</div>';
+        requestAnimationFrame(function () { box.classList.add('show'); });
+        setTimeout(function () { box.classList.add('show'); }, 120); // hidden-tab rAF fallback
+        /* the payoff has landed - Continue steps back into the spotlight */
+        var contBtn = host.querySelector('.rally-continue');
+        if (contBtn) { contBtn.classList.remove('ghost-btn'); contBtn.classList.add('primary-btn'); }
+      }
+
+      /* resume: a reloaded pupil who already transmitted lands back in the
+         suspense room, not on a dead console */
+      paint();
+      if (submitted) { transmitBtn.disabled = true; afterTransmit(); }
+    }
+  };
+
 })(window);
 
 </script>
@@ -3953,6 +4315,8 @@ window.OLS_TRANSPORT = {
 
   /* pairing lens state (section 12) */
   var pairLensLesson = '', pairLensTimer = null, pairAlerted = {}, pairedLessonCache = {}, pairResetArm = 0;
+  /* tournament state (section 13) */
+  var tourneyLessonCache = {};    // lessonId -> promise -> true|null ("has a tournament chunk")
   var audioCtx = null, chimeMuted = false;
   try { chimeMuted = localStorage.getItem('ks3dt-staff-mute') === '1'; } catch (e) {}
 
@@ -4535,6 +4899,7 @@ window.OLS_TRANSPORT = {
         '<button type="button" class="ghost-btn" data-action="live-csv">Copy CSV</button>' +
       '</div>' +
       '<div id="pair-lens"></div>' +
+      '<div id="tourney-slot"></div>' +
       '<div class="dash-scroll"><table class="dash-table">' + head + (body || '<tr><td colspan="99">No pupils have joined this class yet.</td></tr>') + '</table></div>' +
       '<h3 style="margin-top:20px">Misconception patterns</h3>' +
       '<select id="live-mis-select" class="staff-select">' + misSelect + '</select>' +
@@ -4543,6 +4908,199 @@ window.OLS_TRANSPORT = {
     setPane(html);
     if (misLessonNum && liveByNum[misLessonNum]) loadMisconceptions(liveByNum[misLessonNum]);
     initPairLens(deliveredNums);
+    initTourneySlot(deliveredNums);
+  }
+
+  /* ============================================================
+     Tournament (section 13): the Reaction Rally projector view.
+     A delivered lesson with a 'tournament' chunk grows a launch row on the
+     Live tab; the button opens a full-screen overlay (appended to body, above
+     the staff modal) with a live submitted counter, sealed-team chips, and
+     the animated bar reveal - last place first, winner last, gold shimmer.
+     The REVEAL button flips the class's existing team-reveal flag (one source
+     of truth), so pupil consoles flip to team colours at the same moment.
+     ============================================================ */
+  function tourneyInfoFor(le) {
+    var id = String(le.id);
+    if (!tourneyLessonCache[id]) {
+      tourneyLessonCache[id] = App.fetchContent(le.file).then(function (lesson) {
+        var ch = (lesson.chunks || []).filter(function (c) { return c.engine === 'tournament'; })[0];
+        return ch ? { title: String((ch.config && ch.config.title) || ch.title || 'Tournament') } : null;
+      }).catch(function () { return null; });
+    }
+    return tourneyLessonCache[id];
+  }
+
+  function initTourneySlot(deliveredNums) {
+    var slot = q('#tourney-slot');
+    if (!slot) return;
+    var candidates = deliveredNums.map(function (n) { return liveByNum[n]; }).filter(Boolean);
+    Promise.all(candidates.map(tourneyInfoFor)).then(function (infos) {
+      if (!q('#tourney-slot')) return;
+      var rows = [];
+      infos.forEach(function (inf, i) { if (inf) rows.push({ le: candidates[i], title: inf.title }); });
+      if (!rows.length) return;
+      slot.innerHTML = rows.map(function (row) {
+        return '<div class="pair-lens-box" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
+          '<h3 style="margin:0">&#127942; ' + App.esc(row.title) + ' &mdash; Lesson ' + App.esc(String(row.le.num)) + '</h3>' +
+          '<span class="pl-note" style="margin:0">hidden teams &middot; projector reveal</span>' +
+          '<button type="button" class="primary-btn" style="margin-left:auto" data-action="tourney-open" data-lesson="' + App.esc(String(row.le.id)) + '">Tournament view</button>' +
+          '</div>';
+      }).join('');
+    });
+  }
+
+  function tourneyOpen(lessonId) {
+    var ov = document.createElement('div');
+    ov.className = 'tourney-overlay';
+    ov.innerHTML =
+      '<button type="button" class="tourney-close" title="Close">&times;</button>' +
+      '<span class="tourney-kicker">OLS Digital Technology</span>' +
+      '<h1 class="tourney-title">The Reaction Rally</h1>' +
+      '<p class="tourney-sub">Hidden-team tournament &mdash; scored on scoreboards the agents built themselves</p>' +
+      '<div class="tourney-lobby">' + busyHtml('Contacting HQ') + '</div>' +
+      '<div class="tourney-board" hidden></div>';
+    document.body.appendChild(ov);
+    requestAnimationFrame(function () { ov.classList.add('show'); });
+
+    var lobby = ov.querySelector('.tourney-lobby');
+    var board = ov.querySelector('.tourney-board');
+    var pollTimer = null, revealing = false, lastData = null;
+
+    function close() {
+      if (pollTimer) clearInterval(pollTimer);
+      ov.classList.remove('show');
+      setTimeout(function () { ov.remove(); }, 300);
+    }
+    ov.querySelector('.tourney-close').onclick = close;
+
+    function paintLobby(r) {
+      if (revealing) return;
+      lastData = r;
+      var teams = r.teams || [];
+      var chips = teams.map(function (t) {
+        return '<span class="tourney-chip">' + App.esc(t.name) + ' &middot; ' + Number(t.submitted) + ' in</span>';
+      }).join('');
+      var noTeams = !teams.length;
+      var canReveal = !noTeams && Number(r.submitted) > 0;
+      lobby.innerHTML =
+        '<div class="tourney-count">' + Number(r.submitted) + '</div>' +
+        '<p class="tourney-count-label">of ' + Number(r.roster) + ' agents\' scores received</p>' +
+        (noTeams
+          ? '<p class="tourney-note" style="margin-bottom:3vh">No hidden teams exist yet &mdash; assign them before the countdown.</p>'
+          : '<div class="tourney-chips">' + chips + '</div>') +
+        (Number(r.unassigned) > 0 ? '<p class="tourney-note" style="margin:0 0 2vh">' + Number(r.unassigned) + ' scored agent(s) have no team &mdash; their points only count once assigned (Teams tab).</p>' : '') +
+        '<div class="tourney-actions">' +
+        (noTeams
+          ? '<button type="button" class="tourney-reveal-btn" data-t="assign">Auto-assign 4 hidden teams</button>'
+          : '<button type="button" class="tourney-reveal-btn" data-t="reveal"' + (canReveal ? '' : ' disabled') + '>' + (r.revealed ? 'Replay the reveal' : 'REVEAL THE TEAMS') + '</button>') +
+        (App.state.preview ? '<button type="button" class="tourney-ghost-btn" data-t="seed">Seed demo scores (preview)</button>' : '') +
+        '</div>' +
+        '<p class="tourney-note">Keep this for the very end &mdash; the suspense is the point. Revealing also shows every agent her own team on her screen.</p>';
+      var btn = lobby.querySelector('[data-t="reveal"]');
+      if (btn) btn.onclick = function () { startReveal(r.revealed); };
+      var ab = lobby.querySelector('[data-t="assign"]');
+      if (ab) ab.onclick = function () {
+        ab.disabled = true;
+        adminCall('autoGroup', { className: cls, n: 4 }).then(function () { tick(); });
+      };
+      var sb2 = lobby.querySelector('[data-t="seed"]');
+      if (sb2) sb2.onclick = function () {
+        sb2.disabled = true;
+        adminCall('tournament', { className: cls, lessonId: lessonId, seed: 1 }).then(function () { tick(); });
+      };
+    }
+
+    function tick() {
+      if (!document.body.contains(ov)) { if (pollTimer) clearInterval(pollTimer); return; }
+      if (revealing) return;
+      adminCall('tournament', { className: cls, lessonId: lessonId }).then(function (r) {
+        if (!r || !r.ok || revealing || !document.body.contains(ov)) return;
+        paintLobby(r);
+      });
+    }
+    tick();
+    pollTimer = setInterval(tick, 2500);
+
+    function startReveal(alreadyRevealed) {
+      if (revealing) return;
+      revealing = true;
+      if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+      var go = alreadyRevealed
+        ? Promise.resolve({ ok: true })
+        : adminCall('setReveal', { className: cls, revealed: true });
+      go.then(function () {
+        return adminCall('tournament', { className: cls, lessonId: lessonId });
+      }).then(function (r) {
+        if (!r || !r.ok) { revealing = false; tick(); pollTimer = setInterval(tick, 2500); return; }
+        animateReveal(r);
+      });
+    }
+
+    function animateReveal(r) {
+      lobby.hidden = true;
+      board.hidden = false;
+      var standings = (r.teams || []).slice().sort(function (a, b) { return Number(b.total) - Number(a.total); });
+      var top = standings.length ? Math.max(1, Number(standings[0].total)) : 1;
+      board.innerHTML = standings.map(function (t, i) {
+        return '<div class="tourney-row' + (i === 0 ? ' is-first' : '') + '" data-i="' + i + '">' +
+          '<span class="tourney-row-place">' + (i + 1) + '</span>' +
+          '<span class="tourney-row-name">' + App.esc(t.name) + '</span>' +
+          '<span class="tourney-row-track"><span class="tourney-row-fill"></span></span>' +
+          '<span class="tourney-row-total">0</span></div>';
+      }).join('') +
+        '<p class="tourney-winner-line" hidden></p>' +
+        ((r.mode === 'public' && r.rows && r.rows.length)
+          ? '<div class="tourney-public"><h3>Pair scores (public mode)</h3>' +
+            r.rows.map(function (p2) { return '<div class="tourney-public-row"><span>' + App.esc(p2.n) + '</span><b>' + Number(p2.v) + '</b></div>'; }).join('') + '</div>'
+          : '') +
+        '<div class="tourney-actions" style="margin-top:4vh"><button type="button" class="tourney-ghost-btn" data-t="done">Done</button></div>';
+      board.querySelector('[data-t="done"]').onclick = close;
+
+      function countUp(el, target, ms) {
+        var t0 = null, landed = false;
+        function step(ts) {
+          if (!t0) t0 = ts;
+          var p = Math.min(1, (ts - t0) / ms);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+          if (p >= 1) landed = true;
+          if (p < 1 && document.body.contains(el)) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+        /* rAF never fires in a hidden/backgrounded tab - snap to the real total
+           so the board is never left reading 0 */
+        setTimeout(function () { if (!landed && document.body.contains(el)) el.textContent = target; }, ms + 400);
+      }
+
+      /* last place first; the winner lands last, then shimmers */
+      var order = [];
+      for (var i = standings.length - 1; i >= 0; i--) order.push(i);
+      order.forEach(function (idx, step) {
+        setTimeout(function () {
+          var row = board.querySelector('.tourney-row[data-i="' + idx + '"]');
+          if (!row) return;
+          row.classList.add('in');
+          var t = standings[idx];
+          var w = Math.max(7, Math.round((Number(t.total) / top) * 100));
+          setTimeout(function () { row.querySelector('.tourney-row-fill').style.width = w + '%'; }, 180);
+          countUp(row.querySelector('.tourney-row-total'), Number(t.total), 1500);
+          if (idx === 0) {
+            setTimeout(function () {
+              row.classList.add('done');
+              var wl = board.querySelector('.tourney-winner-line');
+              if (wl) {
+                wl.hidden = false;
+                wl.textContent = 'Team ' + standings[0].name + ' takes the Rally!';
+                requestAnimationFrame(function () { wl.classList.add('in'); });
+                setTimeout(function () { wl.classList.add('in'); }, 120); // hidden-tab rAF fallback
+              }
+              var pub = board.querySelector('.tourney-public');
+              if (pub) setTimeout(function () { pub.classList.add('in'); }, 900);
+            }, 1750);
+          }
+        }, 600 + step * 1400);
+      });
+    }
   }
 
   /* ============================================================
@@ -5054,6 +5612,9 @@ window.OLS_TRANSPORT = {
       '<h3 style="margin-top:20px">Auto-pairing</h3>' +
       optRadio('pair-on', '1', String((cfg.pairing || { on: 1 }).on || 0), '<b>On (default):</b> paired activities match pupils across machines with the monitored chat channel.') +
       optRadio('pair-on', '0', String((cfg.pairing || { on: 1 }).on || 0), '<b>Off:</b> paired activities run as shoulder-partners at one machine (no chat).') +
+      '<h3 style="margin-top:20px">Tournament reveal</h3>' +
+      optRadio('tn-mode', 'team', String((cfg.tn || { mode: 'team' }).mode), '<b>Team totals only (default):</b> the projector reveal shows hidden-team totals &mdash; no individual pupil is named.') +
+      optRadio('tn-mode', 'public', String((cfg.tn || { mode: 'team' }).mode), '<b>Also show pair scores (deliberate choice):</b> after the team bars, a ranked list of pair scores with first names appears on the projector.') +
       '<h3 style="margin-top:20px">Absence window</h3>' +
       '<label>Flag after <input type="number" id="opt-absdays" class="text-input" style="max-width:90px;display:inline-block" min="1" max="20" value="' + Number(cfg.absDays || 5) + '"> school days with no meaningful work</label>' +
       '<div class="confirm-actions" style="justify-content:flex-start;margin-top:16px">' +
@@ -5076,7 +5637,8 @@ window.OLS_TRANSPORT = {
         topN: parseInt(topNEl ? topNEl.value : '0', 10) || 0
       },
       absDays: parseInt(absDaysEl.value, 10) || 5,
-      pairing: { on: (function () { var el3 = q('input[name="pair-on"]:checked'); return el3 ? Number(el3.value) : 1; })() }
+      pairing: { on: (function () { var el3 = q('input[name="pair-on"]:checked'); return el3 ? Number(el3.value) : 1; })() },
+      tn: { mode: (function () { var el4 = q('input[name="tn-mode"]:checked'); return el4 ? el4.value : 'team'; })() }
     };
     btn.disabled = true;
     var status = q('#options-status');
@@ -5302,6 +5864,7 @@ window.OLS_TRANSPORT = {
       case 'pair-force': pairForce(btn); break;
       case 'pair-reset': pairReset(btn); break;
       case 'pair-view': pairView(btn); break;
+      case 'tourney-open': tourneyOpen(btn.getAttribute('data-lesson')); break;
     }
   }
 

@@ -226,6 +226,7 @@ function getCfg_(cls) {
   if (!c.absDays) c.absDays = 5;
   if (!c.cover) c.cover = { on: 0, lesson: '', ts: 0 };
   if (!c.pairing) c.pairing = { on: 1 }; // auto-pairing default ON (section 12)
+  if (!c.tn) c.tn = { mode: 'team' }; // tournament reveal: 'team' totals only (default) | 'public' adds pair scores
   return c;
 }
 function getTeam_(cls) { return jget_(sp_(), 'team:' + cls, { groups: [], reveal: false }); }
@@ -930,6 +931,55 @@ function apiBoard(req) {
   return { ok: true, mode: 'public', basis: str_(cfg.lb.basis), rows: rows };
 }
 
+/* ==================== REACTION RALLY TOURNAMENT (section 13, L3+) ====================
+   Zero new storage: pair scores live on each pupil's lesson detail as rt=<best>
+   (written through the normal idempotent apiSaveEvent path when the tournament
+   chunk's badge lands), and teams are the existing hidden-groups infra
+   (team:<cls> + rec.g + the reveal flag). Aggregation is computed on demand,
+   lock-free (dashboard convention): every named pupil's rt counts for HER team. */
+function tnAgg_(cls, numStr) {
+  var team = getTeam_(cls);
+  var totals = {}, submitted = 0, roster = 0, rows = [];
+  (team.groups || []).forEach(function (g) { totals[str_(g.id)] = 0; });
+  allPupils_(cls).forEach(function (r) {
+    if (!str_(r.n)) return;
+    roster++;
+    var a = (r.L || {})[numStr];
+    if (!a) return;
+    var m = /(?:^|;)rt=(\d+)/.exec(str_(a[2]));
+    if (!m) return;
+    var v = Math.max(0, Math.min(99, num_(m[1])));
+    submitted++;
+    var g = str_(r.g || '');
+    if (totals[g] != null) totals[g] += v;
+    rows.push({ n: str_(r.n), v: v, g: g });
+  });
+  return { team: team, totals: totals, submitted: submitted, roster: roster, rows: rows };
+}
+
+/* Pupil read: live submit count while teams stay SEALED; team totals (never
+   individual scores) once the teacher fires the reveal. Deliberately NOT gated
+   on cfg.lb.mode - the tournament reveal is its own moment, the leaderboard is
+   a separate feature. */
+function apiTournament(req) {
+  req = req || {};
+  var email = userEmail_();
+  if (!email) return { ok: false, error: 'not-signed-in' };
+  var cls = realClass_(req.classCode);
+  if (!cls) return { ok: false, error: 'unknown-class' };
+  var numStr = lessonNum_(classYear_(cls), str_(req.lessonId));
+  if (!numStr) return { ok: false, error: 'unknown-lesson' };
+  var agg = tnAgg_(cls, numStr);
+  var out = { ok: true, n: num_(agg.submitted), revealed: !!agg.team.reveal };
+  if (agg.team.reveal && (agg.team.groups || []).length) {
+    var me = readPupil_(cls, email) || {};
+    out.teams = agg.team.groups.map(function (g) {
+      return { name: str_(g.name), total: num_(agg.totals[str_(g.id)]), mine: str_(me.g || '') === str_(g.id) ? 1 : 0 };
+    });
+  }
+  return out;
+}
+
 /* ==================== AUTO-PAIRING + MONITORED CHAT (ARCHITECTURE.md section 12) ====================
    FIFO stage-matched pairing with a last-three trio, plus a CacheService
    "Comms Channel" between partners. Queue + channel are ephemeral cache;
@@ -1352,7 +1402,7 @@ function apiAdmin(req) {
     var locksOut2 = {};
     Object.keys(locks2).forEach(function (k) { locksOut2[k] = { on: num_(locks2[k].on), u: num_(locks2[k].u) }; });
     return { ok: true, year: str_(year2), rows: rows, locks: locksOut2,
-      cfg: { lb: cfg2.lb, absDays: num_(cfg2.absDays), cover: num_(cfg2.cover.on), coverLesson: str_(cfg2.cover.lesson), pairing: { on: num_(cfg2.pairing.on) } },
+      cfg: { lb: cfg2.lb, absDays: num_(cfg2.absDays), cover: num_(cfg2.cover.on), coverLesson: str_(cfg2.cover.lesson), pairing: { on: num_(cfg2.pairing.on) }, tn: { mode: str_(cfg2.tn.mode) } },
       groups: team2.groups.map(function (g) { return { id: str_(g.id), name: str_(g.name) }; }),
       reveal: !!team2.reveal };
   }
@@ -1418,6 +1468,10 @@ function apiAdmin(req) {
       }
       if (req.absDays != null) cfg3.absDays = Math.max(1, Math.min(20, num_(req.absDays)));
       if (req.pairing != null) cfg3.pairing = { on: num_(req.pairing.on) ? 1 : 0 };
+      if (req.tn) {
+        var tnMode = str_(req.tn.mode);
+        if (['team', 'public'].indexOf(tnMode) !== -1) cfg3.tn.mode = tnMode;
+      }
       jset_(sp_(), 'cfg:' + cls, cfg3);
       return { ok: true };
     });
@@ -1624,6 +1678,36 @@ function apiAdmin(req) {
       cPut_(pqCacheKey_(cls, str_(req.lessonId)), { q: [], stage: 0 }, 60);
       return { ok: true };
     });
+  }
+
+  /* Reaction Rally projector feed (section 13): full aggregation for the staff
+     Tournament overlay - live submit counter, per-team totals, and (only when
+     cfg.tn.mode === 'public') the ranked individual scores. The reveal itself
+     is the existing 'setReveal' sub - one reveal flag, one source of truth. */
+  if (sub === 'tournament') {
+    if (!cls) return { ok: false, error: 'unknown-class' };
+    var tnNum = lessonNum_(classYear_(cls), str_(req.lessonId));
+    if (!tnNum) return { ok: false, error: 'unknown-lesson' };
+    var tnAgg = tnAgg_(cls, tnNum);
+    var tnCfg = getCfg_(cls);
+    var tnOut = {
+      ok: true,
+      revealed: !!tnAgg.team.reveal,
+      submitted: num_(tnAgg.submitted),
+      roster: num_(tnAgg.roster),
+      mode: str_(tnCfg.tn.mode),
+      unassigned: tnAgg.rows.filter(function (r) { return tnAgg.totals[r.g] == null; }).length,
+      teams: (tnAgg.team.groups || []).map(function (g) {
+        var subCount = 0;
+        tnAgg.rows.forEach(function (r) { if (r.g === str_(g.id)) subCount++; });
+        return { id: str_(g.id), name: str_(g.name), total: num_(tnAgg.totals[str_(g.id)]), submitted: subCount };
+      })
+    };
+    if (str_(tnCfg.tn.mode) === 'public') {
+      tnOut.rows = tnAgg.rows.map(function (r) { return { n: r.n, v: num_(r.v) }; })
+        .sort(function (a, b) { return b.v - a.v; });
+    }
+    return tnOut;
   }
 
   return { ok: false, error: 'unknown-sub' };
