@@ -1506,6 +1506,215 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .case-board-tip { text-align: center; color: #92A4C7; font-size: 0.85rem; margin-top: 16px; }
 .case-board-tip b { color: var(--gold-hi); }
 
+/* ===================== Lesson 5: Game Studio ================================
+   Two surfaces, two moods, one house palette.
+   THE STUDIO DESK is a cyanotype BLUEPRINT: cool drafting-paper blues, faint
+   grid, cream tool cards - deliberately NOT the case board's manila-detective
+   warmth (L4) and NOT the rally arcade (L3). The QA Desk rows are a literal
+   per-criterion checklist: big circular state lamps (number -> tick/cross),
+   and the READY FOR GALLERY button is physically dim until the fourth lamp
+   goes green, then LIGHTS with a gold surge (the L5 verification gate).
+   PRESS NIGHT is a theatre marquee: bulb-edged listing cards, signed reviews
+   sliding in live. No bars, no ranks, no reveal - warmth, not competition. */
+
+/* ---- contracts (sign phase) ---- */
+.std-contracts { width: min(920px, 96vw); margin: 0 auto; }
+.std-head { text-align: center; margin-bottom: 16px; }
+.std-brand { display: block; color: #92A4C7; font-size: 0.72rem; letter-spacing: 0.22em; }
+.std-head h2 { font-family: var(--font-display); color: #fff; font-size: clamp(1.35rem, 3vw, 1.8rem); margin: 4px 0 2px; }
+.std-count { color: var(--gold-hi); font-size: 0.85rem; letter-spacing: 0.08em; }
+.std-brief { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  padding: 0; margin: 10px 0 0; }
+.std-brief li { background: rgba(228,184,36,0.12); border: 1px solid rgba(228,184,36,0.4);
+  color: #F4E9C8; border-radius: 999px; padding: 5px 14px; font-size: 0.82rem; }
+.std-contract-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+.std-contract { position: relative; border: none; cursor: pointer; text-align: left; font: inherit;
+  border-radius: 10px; overflow: hidden; padding: 0 0 14px; color: var(--ink);
+  background: linear-gradient(178deg, #FDFBF4 0%, #F2EEE0 100%);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.4);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  display: flex; flex-direction: column; gap: 8px; }
+.std-contract:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(0,0,0,0.5); }
+.std-contract.signed { outline: 3px solid var(--gold); outline-offset: -3px; }
+.std-contract-shot { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block;
+  border-bottom: 3px solid var(--ols-blue); }
+.std-contract-name { font-family: var(--font-display); font-size: 1.1rem; padding: 0 14px; }
+.std-contract-pitch { padding: 0 14px; font-size: 0.86rem; color: #4A5670; line-height: 1.45; }
+.std-open-chip, .std-signed-chip { margin: 2px 14px 0; align-self: flex-start; font-size: 0.68rem;
+  font-weight: 800; letter-spacing: 0.14em; border-radius: 4px; padding: 3px 9px; }
+.std-open-chip { background: rgba(26,58,107,0.1); color: var(--ols-blue); }
+.std-signed-chip { background: var(--gold); color: #241A02; }
+.std-note { color: #93A3C4; font-size: 0.86rem; text-align: center; margin-top: 14px; }
+.card .std-note { color: #4A5670; text-align: left; }
+
+.std-contract-full { max-width: 660px; }
+.std-contract-hero { width: 100%; border-radius: 8px; border: 1px solid #D8DCE8; margin: 10px 0 4px; }
+.std-contract-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0; }
+.std-contract-cols b { display: block; margin-bottom: 6px; color: var(--ols-blue); }
+.std-contract-cols ul { margin: 0; padding-left: 18px; font-size: 0.9rem; line-height: 1.5; }
+.std-theme { background: #F4F6FA; border-left: 3px solid var(--gold); padding: 8px 12px;
+  border-radius: 0 6px 6px 0; font-size: 0.9rem; }
+.std-signature { margin-top: 14px; border-top: 2px dashed #C9CFDD; padding-top: 14px; }
+.std-sig-label { display: block; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+  color: #5A6784; margin-bottom: 4px; text-transform: uppercase; }
+.std-sig-input { width: 100%; box-sizing: border-box; font: inherit; font-size: 1.05rem;
+  padding: 10px 12px; border: 2px solid #C9CFDD; border-radius: 8px; margin-bottom: 10px;
+  background: #FDFCF8; }
+.std-sig-input:focus { outline: none; border-color: var(--ols-blue); }
+.std-signature.done .std-sig-name { font-family: var(--font-display); font-style: italic;
+  font-size: 1.5rem; color: var(--ols-blue); display: block; }
+.std-sig-line { display: block; border-bottom: 2px solid var(--ink); width: min(300px, 80%); margin: 2px 0 6px; }
+.std-sig-note { font-size: 0.84rem; color: #5A6784; margin: 6px 0 10px; }
+.std-tearup { margin-right: 10px; }
+.std-tearup.arm { color: #B4262A; border-color: #B4262A; }
+
+/* ---- the Studio Desk (build phase): cyanotype blueprint ---- */
+.std-desk { width: min(920px, 96vw); margin: 0 auto; padding: 22px 22px 30px;
+  border-radius: var(--r-lg); position: relative;
+  background:
+    linear-gradient(rgba(120,170,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120,170,255,0.05) 1px, transparent 1px),
+    linear-gradient(165deg, #0D1B36 0%, #0A1730 55%, #081226 100%);
+  background-size: 28px 28px, 28px 28px, 100% 100%;
+  border: 1px solid rgba(120,170,255,0.3);
+  box-shadow: inset 0 0 0 6px rgba(120,170,255,0.05), 0 18px 50px rgba(0,0,0,0.45); }
+.std-toolrow { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+.std-tool { margin: 0; }
+.std-tool.done { outline: 2px solid var(--good); outline-offset: -2px; }
+.std-qa-tag { display: inline-block; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.14em;
+  color: #2E4E86; background: rgba(90,140,220,0.14); border-radius: 4px; padding: 2px 8px; margin-bottom: 6px; }
+.std-qa-tag.fail { color: #8C2F1F; background: rgba(197,90,60,0.14); }
+
+.std-qadesk { border: 1px dashed rgba(120,170,255,0.45); border-radius: 12px; padding: 14px; margin-bottom: 18px; }
+.std-qadesk.locked { opacity: 0.55; }
+.std-qadesk-head { color: #C7D6F2; margin-bottom: 10px; position: relative; }
+.std-qadesk-head p { margin: 4px 0 0; font-size: 0.9rem; }
+.std-sealed-ribbon { position: absolute; right: 0; top: 0; background: #24355C; color: #93A3C4;
+  font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; padding: 4px 10px; border-radius: 4px; }
+.std-qa-row { background: linear-gradient(178deg, #FDFBF4 0%, #F3EFE2 100%); border-radius: 10px;
+  margin-bottom: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.std-qa-row.locked { opacity: 0.6; }
+.std-qa-head { display: flex; align-items: center; gap: 12px; width: 100%; border: none;
+  background: none; font: inherit; text-align: left; padding: 12px 14px; cursor: pointer; color: var(--ink); }
+.std-qa-head:disabled { cursor: default; }
+.std-qa-head b { flex: 1; font-size: 0.98rem; }
+.std-qa-state { width: 34px; height: 34px; border-radius: 50%; flex: none; display: inline-flex;
+  align-items: center; justify-content: center; font-weight: 800; font-size: 1rem;
+  background: #E4E8F2; color: #5A6784; border: 2px solid #C9CFDD; }
+.std-qa-state.pass { background: var(--good); border-color: var(--good); color: #fff; }
+.std-qa-state.fail { background: #C5573A; border-color: #C5573A; color: #fff; }
+.std-qa-row.pass { outline: 2px solid var(--good); outline-offset: -2px; }
+.std-qa-row.fail { outline: 2px solid #C5573A; outline-offset: -2px; }
+.std-fq-chip { font-size: 0.64rem; font-weight: 800; letter-spacing: 0.1em; background: #F6E7C8;
+  color: #7A5A12; border-radius: 4px; padding: 3px 8px; flex: none; }
+.std-qa-arrow { color: #93A3C4; font-size: 0.7rem; flex: none; }
+.std-qa-body { padding: 0 14px 14px; border-top: 1px dashed #D8DCE8; }
+.std-qa-test { background: #F4F6FA; border-left: 3px solid var(--ols-blue); border-radius: 0 6px 6px 0;
+  padding: 8px 12px; margin: 12px 0; }
+.std-qa-test p { margin: 4px 0 0; font-size: 0.92rem; }
+.std-qa-q { font-weight: 700; margin: 12px 0 8px; }
+.std-outcome { display: block; width: 100%; text-align: left; font: inherit; font-size: 0.92rem;
+  background: #fff; border: 2px solid #C9CFDD; border-radius: 8px; padding: 10px 12px;
+  margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s ease, transform 0.15s ease; }
+.std-outcome:hover { border-color: var(--ols-blue); transform: translateX(3px); }
+.std-fix-card { background: #FCF1EC; border: 1px solid #E7C2B4; border-radius: 8px; padding: 10px 12px; margin: 12px 0; }
+.std-fix-card p { margin: 4px 0 0; font-size: 0.92rem; }
+
+.std-ready-zone { text-align: center; margin: 20px 0; }
+.std-ready-btn { font: inherit; font-family: var(--font-display); font-size: 1.15rem; letter-spacing: 0.06em;
+  border: none; border-radius: 999px; padding: 16px 38px; cursor: pointer; transition: all 0.25s ease; }
+.std-ready-btn.dim { background: #1C2A4A; color: #55688F; box-shadow: inset 0 0 0 2px #2A3B63; cursor: default; }
+.std-ready-btn.lit { background: linear-gradient(170deg, var(--gold-hi), var(--gold-deep));
+  color: #241A02; box-shadow: 0 0 28px rgba(228,184,36,0.55), 0 6px 18px rgba(0,0,0,0.4);
+  animation: stdReadyPulse 1.6s ease-in-out infinite; }
+.std-ready-btn.just-lit { animation: stdReadySurge 0.7s ease, stdReadyPulse 1.6s ease-in-out 0.7s infinite; }
+.std-ready-btn.shipped { background: #16391F; color: #7BC98B; box-shadow: inset 0 0 0 2px #2E6B3E; cursor: default; }
+.std-ready-note { color: #93A3C4; font-size: 0.84rem; margin-top: 8px; }
+@keyframes stdReadyPulse { 0%, 100% { box-shadow: 0 0 20px rgba(228,184,36,0.4), 0 6px 18px rgba(0,0,0,0.4); }
+  50% { box-shadow: 0 0 40px rgba(228,184,36,0.75), 0 6px 18px rgba(0,0,0,0.4); } }
+@keyframes stdReadySurge { 0% { transform: scale(0.94); filter: brightness(2); } 100% { transform: scale(1); filter: brightness(1); } }
+
+.std-stretch { margin: 0 0 14px; }
+.std-stretch.done { outline: 2px solid var(--gold); outline-offset: -2px; }
+.std-stretch-note, .gal-v2-input, .gal-stem-input { width: 100%; box-sizing: border-box; font: inherit;
+  font-size: 0.94rem; min-height: 64px; padding: 10px 12px; border: 2px solid #C9CFDD;
+  border-radius: 8px; background: #FDFCF8; resize: vertical; }
+.std-stretch-note:focus, .gal-v2-input:focus, .gal-stem-input:focus { outline: none; border-color: var(--ols-blue); }
+.std-stretch-nudge, .gal-v2-nudge { color: #B4262A; font-size: 0.85rem; min-height: 1.2em; margin: 6px 0; }
+.std-continue { display: block; margin: 0 auto; font-size: 1.05rem; }
+.std-blueprint { max-width: 680px; }
+.std-blueprint-fig { margin: 14px 0 6px; text-align: center; }
+.std-blueprint-fig img { max-width: min(320px, 90%); border-radius: 10px; border: 1px solid #D8DCE8;
+  box-shadow: var(--shadow-md); }
+.std-blueprint-fig figcaption { font-size: 0.8rem; color: #5A6784; margin-top: 6px; }
+.std-marquee-form { max-width: 560px; }
+.std-marquee-status { color: #5A6784; font-size: 0.88rem; min-height: 1.2em; }
+.std-review-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px dashed #E0E4EE; }
+
+/* ---- Press Night: the marquee ---- */
+.gal-floor .std-brand { color: #C9A44A; }
+.gal-rounds { background: rgba(228,184,36,0.08); border: 1px solid rgba(228,184,36,0.3);
+  border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; color: #EFE3BC; font-size: 0.9rem; }
+.gal-rounds p { margin: 4px 0; }
+.gal-round-tip b { color: var(--gold-hi); }
+.gal-mine-zone { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 14px; margin-bottom: 20px; }
+.gal-marquee-card { position: relative; border-radius: 12px; padding: 18px 16px 14px; text-align: left;
+  background: linear-gradient(170deg, #17264A 0%, #101B38 100%); color: #EAF0FB; font: inherit;
+  border: 3px solid transparent;
+  background-clip: padding-box; box-shadow: 0 8px 20px rgba(0,0,0,0.45); }
+.gal-marquee-card::before { content: ""; position: absolute; inset: -3px; z-index: -1; border-radius: 14px;
+  background: repeating-conic-gradient(var(--gold-hi) 0 8deg, #6B5A1E 8deg 20deg); opacity: 0.8; }
+.gal-marquee-card.mine::before { background: repeating-conic-gradient(#FFE9A0 0 8deg, var(--gold-deep) 8deg 20deg); opacity: 1; }
+.gal-marquee-card.clickable { cursor: pointer; transition: transform 0.16s ease; width: 100%; }
+.gal-marquee-card.clickable:hover { transform: translateY(-3px); }
+.gal-mq-studio { display: block; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.18em;
+  color: #C9A44A; text-transform: uppercase; }
+.gal-mq-title { display: block; font-family: var(--font-display); font-size: 1.2rem; color: #fff; margin: 3px 0; }
+.gal-mq-how { margin: 0 0 8px; font-size: 0.86rem; color: #B9C6E0; line-height: 1.45; }
+.gal-mq-meta { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; color: var(--gold-hi); }
+.gal-marquee-card.mini, .gal-marquee-card.preview { margin: 12px 0; }
+.gal-sim { font-style: normal; font-size: 0.62rem; letter-spacing: 0.08em; background: #24355C;
+  color: #93A3C4; border-radius: 3px; padding: 1px 5px; vertical-align: middle; }
+.gal-marquee-head { display: block; color: #C7D6F2; margin: 6px 0 10px; font-size: 0.95rem; }
+.gal-marquee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.gal-incoming { background: rgba(255,255,255,0.04); border: 1px dashed rgba(120,170,255,0.35);
+  border-radius: 12px; padding: 12px 14px; min-height: 120px; }
+.gal-incoming-head { color: #C7D6F2; font-size: 0.85rem; letter-spacing: 0.04em; }
+.gal-waiting { color: #7C8CB0; font-size: 0.88rem; font-style: italic; }
+.gal-review-item { background: #FDFBF4; color: var(--ink); border-radius: 10px; padding: 10px 12px;
+  margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+.gal-review-item p { margin: 4px 0 0; font-size: 0.9rem; line-height: 1.45; }
+.gal-review-item .gal-rev-by { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; color: #7A5A12; }
+.gal-review-item.fresh { opacity: 0; transform: translateY(-10px); }
+.gal-review-item.fresh.landed { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+.gal-code { text-align: left; background: #F4F6FA; border-radius: 10px; padding: 12px 14px; margin-top: 12px; }
+.gal-code-head { color: var(--ols-blue); }
+.gal-code-rules { margin: 8px 0; padding-left: 20px; font-size: 0.9rem; line-height: 1.5; }
+.gal-code-eg { font-size: 0.88rem; margin: 8px 0; }
+.gal-eg-bad { color: #B4262A; }
+.gal-eg-good { color: #1F7A3D; }
+.gal-banner { background: rgba(26,58,107,0.08); border-left: 3px solid var(--ols-blue);
+  padding: 6px 10px; border-radius: 0 6px 6px 0; font-size: 0.84rem; margin: 8px 0 0; }
+.gal-desk { max-width: 620px; }
+.gal-desk-note { font-size: 0.9rem; color: #4A5670; }
+.gal-v2-zone .gal-v2-card, .gal-v2-card { margin: 0 0 14px; }
+.gal-v2-card.locked { opacity: 0.65; }
+.gal-v2-card.done { outline: 2px solid var(--gold); outline-offset: -2px; }
+.gal-v2-final { background: #F4F6FA; border-radius: 8px; padding: 10px 12px; margin: 10px 0; }
+.gal-wrap { display: block; margin: 0 auto; }
+.gal-wrapcard { max-width: 560px; text-align: center; }
+.gal-wrap-stat { font-size: 1.02rem; color: var(--ols-blue); }
+.gal-review .gal-review-item { box-shadow: var(--shadow-sm); border: 1px solid #E0E4EE; }
+
+@media (max-width: 700px) {
+  .std-toolrow, .std-contract-cols, .gal-mine-zone { grid-template-columns: 1fr; }
+  .std-ready-btn { width: 100%; padding: 16px 10px; }
+}
+
+/* persisted confirm-step state (re-render after reload): same tick as .ticked */
+.confirm-box.done { background: var(--good); border-color: var(--good); }
+.confirm-box.done::after { content: "\2713"; color: #fff; font-weight: 800; font-size: 0.9rem; }
+
 </style>
 </head>
 <body>
@@ -1712,6 +1921,16 @@ window.OLS_TRANSPORT = {
         case 'catchup':        g.apiCatchup(p); break;
         case 'setKit':         g.apiSetKit(p); break;
         case 'driveCheck':     g.apiDriveCheck(p); break;
+        case 'artifactCheck':  g.apiArtifactCheck(p); break;
+        case 'tournament':     g.apiTournament(p); break;
+        case 'ping':           g.apiPing(p); break;
+        case 'pairJoin':       g.apiPairJoin(p); break;
+        case 'pairSend':       g.apiPairSend(p); break;
+        case 'pairChannel':    g.apiPairChannel(p); break;
+        case 'pairComplete':   g.apiPairComplete(p); break;
+        case 'galleryOpen':    g.apiGalleryOpen(p); break;
+        case 'galleryPost':    g.apiGalleryPost(p); break;
+        case 'galleryFeed':    g.apiGalleryFeed(p); break;
         case 'admin':          g.apiAdmin(p); break;
         default: reject(new Error('unknown action: ' + p.action));
       }
@@ -4913,6 +5132,860 @@ window.OLS_TRANSPORT = {
     }
   };
 
+  /* ================= studio (L5 Game Studio: contracts + the QA Desk) =======
+     Two chunks share this engine via config.phase.
+     'sign'  - a genuine CHOICE with commitment: three contract cards, one
+               studio founded and NAMED before any teaching lands (media-
+               computation: "a programme about something you chose"). Re-sign
+               is allowed only until QA work exists; the badge detail is
+               phase-stable ('sign=1') so tearing up a contract can never
+               re-award XP.
+     'build' - the Studio Desk: get the kit, read the blueprint, build in
+               Scratch, then THE QA DESK - the block's distinct verification
+               UI (L4 gate binding): four brief criteria, each a concrete
+               observable TEST + an observed-OUTCOME question whose
+               distractors are the real failure states. A pass lights the
+               tick; a fail sets the cross AND reveals that failure's fix
+               card - crosses are the job ("FOUND BY QA"), not shame. The
+               READY FOR GALLERY button physically lights on the 4th tick.
+               Submission = publishing the marquee listing (galleryOpen) -
+               deliberately NOT a Drive/artifactCheck step (L2/L3/L4 spent
+               that interaction; gate binding).
+     Honesty envelope (accepted, as L4): a pupil can lie-pick the pass
+     outcome - mitigations are the QA-partner protocol (brief), teacher
+     circulation, and Press Night itself: the class plays what you shipped. */
+  function stdShuffle(a) {
+    var out = a.slice();
+    for (var i = out.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = out[i]; out[i] = out[j]; out[j] = t;
+    }
+    return out;
+  }
+  Engines.studio = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      if (cfg.phase === 'build') return Engines.studio._build(host, chunk, ctx);
+      return Engines.studio._sign(host, chunk, ctx);
+    },
+
+    /* ---------- phase 1: the contracts ---------- */
+    _sign: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var solo = !!ctx.catchup;
+      var draft = (ctx.draft && ctx.draft.studio) || {};
+      var tpl = String(draft.tpl || '');
+      var sn = String(draft.sn || '');
+      var qaStarted = draft.qa && Object.keys(draft.qa).length;
+
+      function saveStudio() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        var d = App.state.draft.studio = App.state.draft.studio || {};
+        d.tpl = tpl; d.sn = sn;
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+      function contractOf(id) {
+        return (cfg.contracts || []).filter(function (c) { return String(c.id) === String(id); })[0] || null;
+      }
+
+      /* review reopen: the signed contract on record, zero writes */
+      if (ctx.review) {
+        var rc = contractOf(tpl);
+        host.appendChild(el('<div class="card std-review"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+          '<h2>Contract on record</h2>' +
+          (rc ? '<p class="intro-lead"><b>' + esc(sn || 'Your studio') + '</b> signed the <b>' + esc(rc.name) + '</b> contract.</p>'
+              : '<p class="intro-lead">No contract was signed.</p>') +
+          '<button class="primary-btn" type="button">Continue</button></div>'));
+        host.querySelector('button').onclick = function () { ctx.next(); };
+        return;
+      }
+
+      introCard(host, {
+        kicker: chunk.title,
+        title: cfg.title || 'Three contracts on the desk',
+        text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || '')
+      }, tpl ? 'Back to the contracts' : 'See the contracts', pickView);
+
+      function pickView() {
+        host.innerHTML = '';
+        var cards = (cfg.contracts || []).map(function (c) {
+          var signed = tpl === String(c.id);
+          return '<button class="std-contract' + (signed ? ' signed' : '') + '" data-c="' + esc(c.id) + '" type="button">' +
+            (c.img ? '<img class="std-contract-shot" src="' + esc(asset(c.img)) + '" alt="' + esc(c.imgAlt || c.name) + '" loading="lazy">' : '') +
+            '<b class="std-contract-name">' + esc(c.name) + '</b>' +
+            '<span class="std-contract-pitch">' + esc(c.pitch || '') + '</span>' +
+            (signed ? '<span class="std-signed-chip">SIGNED' + (sn ? ' &middot; ' + esc(sn) : '') + '</span>' : '<span class="std-open-chip">OPEN</span>') +
+            '</button>';
+        }).join('');
+        var briefItems = ((cfg.brief && cfg.brief.items) || []).map(function (it) {
+          return '<li>' + esc(it) + '</li>';
+        }).join('');
+        var b = el('<div class="std-contracts">' +
+          '<div class="std-head"><span class="std-brand">OLS GAMES &middot; COMMISSIONS</span>' +
+          '<h2>' + esc((cfg.brief && cfg.brief.title) || 'Every contract carries the same brief') + '</h2>' +
+          '<ul class="std-brief">' + briefItems + '</ul></div>' +
+          '<div class="std-contract-row">' + cards + '</div>' +
+          (cfg.signNote ? '<p class="std-note">' + esc(cfg.signNote) + '</p>' : '') +
+          '</div>');
+        host.appendChild(b);
+        b.querySelectorAll('.std-contract').forEach(function (btn) {
+          btn.onclick = function () { contractView(contractOf(btn.getAttribute('data-c'))); };
+        });
+      }
+
+      function contractView(c) {
+        if (!c) return;
+        host.innerHTML = '';
+        var mine = tpl === String(c.id);
+        var ships = (c.ships || []).map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('');
+        var adds = (c.adds || []).map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('');
+        var signBlock;
+        if (mine) {
+          signBlock = '<div class="std-signature done"><span class="std-sig-name">' + esc(sn) + '</span><span class="std-sig-line"></span>' +
+            '<p class="std-sig-note">Contract signed.</p>' +
+            (qaStarted ? '' : '<button class="ghost-btn std-tearup" type="button">Tear it up &amp; choose again</button>') +
+            '<button class="primary-btn std-enter" type="button">' + (chunk.badge ? 'Found the studio' : 'Continue') + '</button></div>';
+        } else if (tpl && qaStarted) {
+          signBlock = '<p class="std-note">Your studio already has QA work on the ' + esc((contractOf(tpl) || {}).name || 'other') + ' contract &mdash; finish that one.</p>';
+        } else {
+          signBlock = '<div class="std-signature">' +
+            '<label class="std-sig-label" for="std-name">Sign with your studio name</label>' +
+            '<input id="std-name" class="std-sig-input" maxlength="24" autocomplete="off" placeholder="' + esc(cfg.namePlaceholder || 'e.g. Golden Otter Games') + '" value="' + esc(sn) + '">' +
+            '<button class="primary-btn std-sign" type="button" disabled>Sign the contract</button>' +
+            (tpl ? '<p class="std-sig-note">Signing this tears up your ' + esc((contractOf(tpl) || {}).name || 'other') + ' contract.</p>' : '') +
+            '</div>';
+        }
+        var card = el('<div class="card std-contract-full"><span class="intro-kicker">CONTRACT &middot; ' + esc(c.name) + '</span>' +
+          '<h2>' + esc(c.headline || c.name) + '</h2>' +
+          (c.img ? '<img class="std-contract-hero" src="' + esc(asset(c.img)) + '" alt="' + esc(c.imgAlt || c.name) + '" loading="lazy">' : '') +
+          '<p class="intro-lead">' + esc(c.pitch || '') + '</p>' +
+          '<div class="std-contract-cols"><div><b>The kit already does</b><ul>' + ships + '</ul></div>' +
+          '<div><b>Your studio adds</b><ul>' + adds + '</ul></div></div>' +
+          (c.theme ? '<p class="std-theme">&#127912; ' + esc(c.theme) + '</p>' : '') +
+          signBlock +
+          '<button class="ghost-btn std-back" type="button">&larr; Back to the desk</button></div>');
+        host.appendChild(card);
+        card.querySelector('.std-back').onclick = function () { host.innerHTML = ''; pickView(); };
+        var input = card.querySelector('.std-sig-input');
+        var signBtn = card.querySelector('.std-sign');
+        if (input && signBtn) {
+          input.oninput = function () { signBtn.disabled = input.value.trim().length < 3; };
+          input.oninput();
+          signBtn.onclick = function () {
+            tpl = String(c.id);
+            sn = input.value.trim().slice(0, 24);
+            saveStudio();
+            host.innerHTML = '';
+            contractView(c);
+          };
+        }
+        var tear = card.querySelector('.std-tearup');
+        if (tear) tear.onclick = function () {
+          if (!tear.classList.contains('arm')) {
+            tear.classList.add('arm');
+            tear.textContent = 'Sure? The contract is shredded';
+            setTimeout(function () { tear.classList.remove('arm'); tear.innerHTML = 'Tear it up &amp; choose again'; }, 4000);
+            return;
+          }
+          tpl = ''; sn = '';
+          saveStudio();
+          host.innerHTML = '';
+          pickView();
+        };
+        var enter = card.querySelector('.std-enter');
+        if (enter) enter.onclick = function () {
+          /* phase-stable detail: re-signing can never mint a second award */
+          finishChunk(ctx, 'sign=1');
+        };
+      }
+    },
+
+    /* ---------- phase 2: the Studio Desk + QA Desk ---------- */
+    _build: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var solo = !!ctx.catchup;
+      var draft = (ctx.draft && ctx.draft.studio) || {};
+      var tpl = String(draft.tpl || '');
+      var sn = String(draft.sn || '');
+      var t = (cfg.templates || {})[tpl] || null;
+      var kit = !!draft.kit;
+      var qa = Object.assign({}, draft.qa || {});      // {cId: 'p'|'f'}
+      var fq = Object.assign({}, draft.fq || {});      // found-by-QA tags
+      var shipped = !!draft.ship;
+      var gt = String(draft.gt || '');
+      var gh = String(draft.gh || '');
+      var stretchDone = !!draft.stretch;
+      var stretchNote = String(draft.stn || '');
+      var crits = (t && t.criteria) || [];
+
+      function saveDesk() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        var d = App.state.draft.studio = App.state.draft.studio || {};
+        d.tpl = tpl; d.sn = sn; d.kit = kit ? 1 : 0; d.qa = qa; d.fq = fq;
+        d.ship = shipped ? 1 : 0; d.gt = gt; d.gh = gh;
+        d.stretch = stretchDone ? 1 : 0; d.stn = stretchNote;
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+      var passCount = function () {
+        return crits.filter(function (c) { return qa[c.id] === 'p'; }).length;
+      };
+      var fqCount = function () {
+        return crits.filter(function (c) { return fq[c.id]; }).length;
+      };
+      var allPass = function () { return crits.length && passCount() === crits.length; };
+      function buildXp() {
+        /* XP from the AUTHORED criteria list, never array lengths (L4 law) */
+        return passCount() * 4 + (shipped ? 3 : 0) + (stretchDone ? 3 : 0);
+      }
+
+      /* ---------- review reopen: the desk on record, zero writes ---------- */
+      if (ctx.review) {
+        var rows = crits.map(function (c) {
+          var st = qa[c.id];
+          return '<div class="std-review-row">' +
+            '<span class="std-qa-state ' + (st === 'p' ? 'pass' : (st === 'f' ? 'fail' : '')) + '">' + (st === 'p' ? '&#10003;' : (st === 'f' ? '&#10007;' : '&middot;')) + '</span>' +
+            '<b>' + esc(c.name) + '</b>' + (fq[c.id] ? '<span class="std-fq-chip">FOUND BY QA</span>' : '') + '</div>';
+        }).join('');
+        host.appendChild(el('<div class="card std-review"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+          '<h2>' + esc(sn || 'Your studio') + ' &mdash; on record</h2>' + rows +
+          (shipped ? '<div class="gal-marquee-card mini"><span class="gal-mq-studio">' + esc(sn) + '</span><b class="gal-mq-title">' + esc(gt) + '</b><p class="gal-mq-how">' + esc(gh) + '</p></div>' : '<p class="intro-lead">The doors never opened.</p>') +
+          (stretchDone ? '<p class="std-note">&#11088; Studio Note taken: &ldquo;' + esc(stretchNote) + '&rdquo;</p>' : '') +
+          '<button class="primary-btn" type="button">Continue</button></div>'));
+        host.querySelector('button').onclick = function () { ctx.next(); };
+        return;
+      }
+
+      /* no contract on file (shouldn't happen on the normal rail): fall back
+         to a plain template pick so nobody is ever stuck */
+      if (!t) {
+        var fallback = Object.keys(cfg.templates || {});
+        var picks = fallback.map(function (k) {
+          return '<button class="primary-btn std-fallback-pick" data-t="' + esc(k) + '" type="button">' + esc(cfg.templates[k].name) + '</button>';
+        }).join(' ');
+        host.appendChild(el('<div class="card"><h2>Pick your kit</h2><p class="intro-lead">Your contract went missing &mdash; choose the template you are building.</p><p>' + picks + '</p></div>'));
+        host.querySelectorAll('.std-fallback-pick').forEach(function (btn) {
+          btn.onclick = function () {
+            tpl = btn.getAttribute('data-t');
+            t = cfg.templates[tpl];
+            crits = t.criteria || [];
+            saveDesk();
+            host.innerHTML = '';
+            deskView();
+          };
+        });
+        return;
+      }
+
+      var began = kit || Object.keys(qa).length;
+      introCard(host, {
+        kicker: chunk.title,
+        title: (cfg.introTitle || 'The Studio Sprint'),
+        text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
+        extra: (solo || !cfg.pairNote) ? '' : '<p class="case-pair-note">&#128101; ' + esc(cfg.pairNote) + '</p>'
+      }, began ? 'Back to the desk' : 'Open the studio', deskView);
+
+      /* one expanded QA row at a time; remembered across re-renders,
+         never persisted (reload folds the desk tidy again) */
+      var openCrit = null;
+      var lastOutcome = {};
+
+      function deskView() {
+        host.innerHTML = '';
+        var ticks = passCount();
+        var qaRows = crits.map(function (c, i) {
+          var st = qa[c.id] || '';
+          var open = openCrit === c.id;
+          var stateIcon = st === 'p' ? '&#10003;' : (st === 'f' ? '&#10007;' : String(i + 1));
+          var row = '<div class="std-qa-row' + (open ? ' open' : '') + (st ? ' ' + (st === 'p' ? 'pass' : 'fail') : '') + (kit ? '' : ' locked') + '" data-crit="' + esc(c.id) + '">' +
+            '<button class="std-qa-head" type="button"' + (kit ? '' : ' disabled') + '>' +
+            '<span class="std-qa-state' + (st ? ' ' + (st === 'p' ? 'pass' : 'fail') : '') + '">' + stateIcon + '</span>' +
+            '<b>' + esc(c.name) + '</b>' +
+            (fq[c.id] && st === 'p' ? '<span class="std-fq-chip" title="a test failed, you fixed it, and it passed - that is QA working">FOUND BY QA</span>' : '') +
+            '<span class="std-qa-arrow">' + (open ? '&#9650;' : '&#9660;') + '</span></button>';
+          if (open) {
+            row += '<div class="std-qa-body"><div class="std-qa-test"><span class="std-qa-tag">THE TEST</span><p>' + esc(c.test) + '</p></div>';
+            if (st === 'f') {
+              var lastIdx = lastOutcome[c.id];
+              var oc = (typeof lastIdx === 'number') ? c.outcomes[lastIdx] : null;
+              row += '<div class="std-fix-card"><span class="std-qa-tag fail">FOUND BY QA &mdash; THE FIX</span>' +
+                '<p>' + esc(oc && oc.fix ? oc.fix : (c.retryFix || 'Make your fix in Scratch, then run the test again.')) + '</p>' +
+                (oc && oc.mech ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b> ' + esc(oc.mech) + '</p>' : '') +
+                '</div>';
+            }
+            row += '<button class="primary-btn std-qa-run" type="button">' + (st === 'f' ? 'I made the fix &mdash; run the test again' : 'I ran the test &mdash; record what happened') + '</button>' +
+              '<div class="std-qa-outcomes" hidden></div></div>';
+          }
+          row += '</div>';
+          return row;
+        }).join('');
+
+        var readyState = shipped ? 'shipped' : (allPass() ? 'lit' : 'dim');
+        var d = el('<div class="std-desk">' +
+          '<div class="std-head"><span class="std-brand">' + esc(sn || 'YOUR STUDIO') + ' &middot; ' + esc(t.name).toUpperCase() + ' CONTRACT</span>' +
+          '<h2>The Studio Desk</h2>' +
+          '<span class="std-count">' + ticks + ' of ' + crits.length + ' QA checks passed</span></div>' +
+
+          '<div class="std-toolrow">' +
+          '<div class="card std-tool' + (kit ? ' done' : '') + '"><span class="std-qa-tag">1 &middot; THE KIT</span>' +
+          '<p>' + esc((cfg.kit && cfg.kit.intro) || 'Download your starter kit and load it at scratch.mit.edu.') + '</p>' +
+          '<p class="case-getgame-btns"><a class="primary-btn" href="' + esc(asset(t.file)) + '" download>&#11015;&#65039; Download the ' + esc(t.name) + ' kit</a> ' +
+          '<a class="ghost-btn" href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener">Open the Scratch editor &#8599;</a></p>' +
+          '<button class="confirm-step std-kit-confirm" type="button"' + (kit ? ' disabled' : '') + '><span class="confirm-box' + (kit ? ' done' : '') + '"></span><span>' + esc((cfg.kit && cfg.kit.confirm) || 'The kit is open in Scratch and I can see its code') + '</span></button></div>' +
+
+          '<div class="card std-tool"><span class="std-qa-tag">2 &middot; THE BLUEPRINT</span>' +
+          '<p>' + esc((t.blueprint && t.blueprint.intro) || 'Exactly what your studio adds - in order.') + '</p>' +
+          '<button class="ghost-btn std-blueprint-btn" type="button">&#128506;&#65039; Open the blueprint</button> ' +
+          (cfg.masterclass && cfg.masterclass.src ? '<button class="ghost-btn std-rewatch" type="button">&#127909; Re-watch the masterclass</button>' : '') +
+          '</div></div>' +
+
+          '<div class="std-qadesk' + (kit ? '' : ' locked') + '"><div class="std-qadesk-head"><span class="std-qa-tag">3 &middot; THE QA DESK</span>' +
+          '<p>' + esc(cfg.qaIntro || 'Four checks stand between your build and the gallery. Run each test in Scratch, then record what actually happened - crosses are QA doing its job.') + '</p>' +
+          (kit ? '' : '<span class="std-sealed-ribbon">SECURE THE KIT FIRST</span>') + '</div>' +
+          qaRows + '</div>' +
+
+          '<div class="std-ready-zone">' +
+          '<button class="std-ready-btn ' + readyState + '" type="button"' + (readyState === 'lit' ? '' : ' disabled') + '>' +
+          (shipped ? 'DOORS OPEN &mdash; SEE YOU AT PRESS NIGHT' : 'READY FOR GALLERY') + '</button>' +
+          (shipped ? '' : '<p class="std-ready-note">' + (allPass() ? 'All four checks passed &mdash; open your doors.' : 'Lights up when all four QA checks pass.') + '</p>') +
+          '</div>' +
+
+          '<div class="card std-stretch' + (stretchDone ? ' done' : '') + '"><span class="std-qa-tag">&#11088; STUDIO NOTE &middot; STRETCH</span>' +
+          '<b>' + esc((t.stretch && t.stretch.title) || 'The second variable') + '</b>' +
+          '<p>' + esc((t.stretch && t.stretch.text) || '') + '</p>' +
+          (stretchDone ? '<p class="std-note">&#10003; Noted: &ldquo;' + esc(stretchNote) + '&rdquo;</p>' :
+            '<textarea class="std-stretch-note" maxlength="140" placeholder="' + esc((t.stretch && t.stretch.placeholder) || 'What did you add, and what does it change?') + '"></textarea>' +
+            '<p class="std-stretch-nudge"></p>' +
+            '<button class="confirm-step std-stretch-confirm" type="button"><span class="confirm-box"></span><span>It works &mdash; I tested it</span></button>') +
+          '</div>' +
+
+          (shipped ? '<button class="primary-btn std-continue" type="button">Head to Press Night &rarr;</button>' : '') +
+          '</div>');
+        host.appendChild(d);
+
+        if (!kit) {
+          var kc = d.querySelector('.std-kit-confirm');
+          kc.onclick = function () {
+            this.classList.add('ticked');
+            kit = true;
+            saveDesk();
+            App.toast('Kit secured &mdash; the QA Desk is open.');
+            setTimeout(function () { host.innerHTML = ''; deskView(); }, 600);
+          };
+        }
+        d.querySelector('.std-blueprint-btn').onclick = function () { blueprintView(); };
+        var rw = d.querySelector('.std-rewatch');
+        if (rw) rw.onclick = function () { masterclassView(); };
+
+        d.querySelectorAll('.std-qa-row').forEach(function (row) {
+          var cid = row.getAttribute('data-crit');
+          var head = row.querySelector('.std-qa-head');
+          head.onclick = function () {
+            openCrit = (openCrit === cid) ? null : cid;
+            host.innerHTML = '';
+            deskView();
+          };
+          var run = row.querySelector('.std-qa-run');
+          if (run) run.onclick = function () {
+            var c = crits.filter(function (x) { return x.id === cid; })[0];
+            var box = row.querySelector('.std-qa-outcomes');
+            var order = stdShuffle(c.outcomes.map(function (_, i) { return i; }));
+            box.innerHTML = '<p class="std-qa-q">' + esc(c.ask || 'What did you actually see?') + '</p>' +
+              order.map(function (oi) {
+                return '<button class="std-outcome" data-oi="' + oi + '" type="button">' + esc(c.outcomes[oi].t) + '</button>';
+              }).join('');
+            box.hidden = false;
+            run.hidden = true;
+            box.querySelectorAll('.std-outcome').forEach(function (ob) {
+              ob.onclick = function () {
+                var oi = Number(ob.getAttribute('data-oi'));
+                var oc = c.outcomes[oi];
+                lastOutcome[cid] = oi;
+                if (oc.pass) {
+                  if (qa[cid] === 'f') fq[cid] = 1;
+                  qa[cid] = 'p';
+                  openCrit = null;
+                } else {
+                  qa[cid] = 'f';
+                }
+                saveDesk();
+                host.innerHTML = '';
+                deskView();
+                if (oc.pass && allPass()) {
+                  var btn = host.querySelector('.std-ready-btn');
+                  if (btn) {
+                    requestAnimationFrame(function () { btn.classList.add('just-lit'); });
+                    setTimeout(function () { btn.classList.add('just-lit'); }, 150); // hidden-tab rAF fallback
+                  }
+                }
+              };
+            });
+          };
+        });
+
+        var ready = d.querySelector('.std-ready-btn');
+        if (!shipped && allPass()) ready.onclick = function () { marqueeView(); };
+
+        var sc = d.querySelector('.std-stretch-confirm');
+        if (sc) sc.onclick = function () {
+          var ta = d.querySelector('.std-stretch-note');
+          var nudge = d.querySelector('.std-stretch-nudge');
+          var words = ta.value.trim().split(/\s+/).filter(Boolean);
+          if (words.length < 5) {
+            nudge.textContent = 'Say what you added AND what it changes - a real release note (5+ words).';
+            return;
+          }
+          stretchNote = ta.value.trim().slice(0, 140);
+          stretchDone = true;
+          saveDesk();
+          host.innerHTML = '';
+          deskView();
+        };
+
+        var cont = d.querySelector('.std-continue');
+        if (cont) cont.onclick = function () {
+          var xp = buildXp();
+          var badge = Object.assign({}, ctx.chunk.badge, { xp: xp });
+          var detail = 'qa=' + passCount() + '/' + crits.length + ';ship=1' +
+            (fqCount() ? ';fq=' + fqCount() : '') + (stretchDone ? ';s=1' : '');
+          ctx.awardBadge(badge, detail).then(function () { ctx.next(); });
+        };
+      }
+
+      function blueprintView() {
+        host.innerHTML = '';
+        var bp = t.blueprint || {};
+        var steps = (bp.steps || []).map(function (s) {
+          return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p></div></li>';
+        }).join('');
+        var c = el('<div class="card std-blueprint"><span class="intro-kicker">BLUEPRINT &middot; ' + esc(t.name) + '</span>' +
+          '<h2>' + esc(bp.title || 'What your studio adds') + '</h2>' +
+          '<ol class="af-steps">' + steps + '</ol>' +
+          (bp.img ? '<figure class="std-blueprint-fig"><img src="' + esc(asset(bp.img)) + '" alt="' + esc(bp.imgAlt || 'The finished blocks') + '" loading="lazy">' +
+            '<figcaption>' + esc(bp.imgCaption || 'The finished blocks - yours should read like this.') + '</figcaption></figure>' : '') +
+          (bp.note ? '<p class="std-note">' + esc(bp.note) + '</p>' : '') +
+          '<button class="ghost-btn std-back" type="button">&larr; Back to the desk</button></div>');
+        host.appendChild(c);
+        c.querySelector('.std-back').onclick = function () { host.innerHTML = ''; deskView(); };
+      }
+
+      function masterclassView() {
+        host.innerHTML = '';
+        var v = cfg.masterclass || {};
+        var chapters = (v.chapters || []).map(function (ch) {
+          return '<button class="vid-chapter" data-t="' + Number(ch.t) + '" type="button">' + esc(ch.label) + '</button>';
+        }).join('');
+        var c = el('<div class="card video-card std-blueprint"><span class="intro-kicker">THE MASTERCLASS &middot; ANY TIME</span>' +
+          '<h2>' + esc(v.title || 'Making your game react') + '</h2>' +
+          '<video controls preload="metadata" playsinline ' + (v.poster ? 'poster="' + esc(asset(v.poster)) + '"' : '') + ' src="' + esc(asset(v.src)) + '"></video>' +
+          (chapters ? '<div class="vid-chapters">' + chapters + '</div>' : '') +
+          '<button class="ghost-btn std-back" type="button">&larr; Back to the desk</button></div>');
+        host.appendChild(c);
+        var vid = c.querySelector('video');
+        c.querySelectorAll('.vid-chapter').forEach(function (bch) {
+          bch.onclick = function () { vid.currentTime = Number(bch.getAttribute('data-t')); vid.play(); };
+        });
+        c.querySelector('.std-back').onclick = function () { host.innerHTML = ''; deskView(); };
+      }
+
+      /* opening the doors = publishing the LISTING (never a file anywhere) */
+      function marqueeView() {
+        host.innerHTML = '';
+        var m = cfg.marquee || {};
+        var c = el('<div class="card std-marquee-form"><span class="intro-kicker">READY FOR GALLERY</span>' +
+          '<h2>' + esc(m.title || 'Open the doors') + '</h2>' +
+          '<p class="intro-lead">' + esc(m.intro || 'Your listing goes up on the class marquee. Make it worth a visit.') + '</p>' +
+          '<label class="std-sig-label" for="std-gt">Game title</label>' +
+          '<input id="std-gt" class="std-sig-input" maxlength="28" autocomplete="off" placeholder="' + esc(m.titlePlaceholder || 'e.g. Sushi Drop') + '" value="' + esc(gt) + '">' +
+          '<label class="std-sig-label" for="std-gh">How to play &mdash; one line</label>' +
+          '<input id="std-gh" class="std-sig-input" maxlength="80" autocomplete="off" placeholder="' + esc(m.howPlaceholder || 'e.g. Arrow keys to move. Catch sushi, dodge wasabi!') + '" value="' + esc(gh) + '">' +
+          '<div class="gal-marquee-card preview"><span class="gal-mq-studio"></span><b class="gal-mq-title"></b><p class="gal-mq-how"></p></div>' +
+          '<p class="std-marquee-status"></p>' +
+          '<button class="primary-btn std-doors" type="button" disabled>' + esc(m.confirmLabel || 'OPEN THE DOORS') + '</button>' +
+          '<button class="ghost-btn std-back" type="button">&larr; Back to the desk</button></div>');
+        host.appendChild(c);
+        c.querySelector('.std-back').onclick = function () { host.innerHTML = ''; deskView(); };
+        var ti = c.querySelector('#std-gt'), hi = c.querySelector('#std-gh');
+        var doors = c.querySelector('.std-doors');
+        var status = c.querySelector('.std-marquee-status');
+        function paintPreview() {
+          c.querySelector('.gal-mq-studio').textContent = sn || 'Your studio';
+          c.querySelector('.gal-mq-title').textContent = ti.value.trim() || 'Your game';
+          c.querySelector('.gal-mq-how').textContent = hi.value.trim() || 'How to play...';
+          doors.disabled = ti.value.trim().length < 2 || hi.value.trim().length < 8;
+        }
+        ti.oninput = paintPreview; hi.oninput = paintPreview;
+        paintPreview();
+        doors.onclick = function () {
+          doors.disabled = true;
+          gt = ti.value.trim().slice(0, 28);
+          gh = hi.value.trim().slice(0, 80);
+          saveDesk(); // the listing text survives a failed call
+          status.textContent = 'Raising the marquee...';
+          ctx.call('galleryOpen', { lessonId: ctx.lesson.id, gt: gt, gh: gh, tpl: tpl, sn: sn }).then(function (r) {
+            if (!r || !r.ok) {
+              status.textContent = 'The marquee did not answer (' + esc((r && r.error) || 'no reply') + ') - try again.';
+              doors.disabled = false;
+              return;
+            }
+            shipped = true;
+            saveDesk();
+            App.toast('&#127914; Doors open - your game is on the marquee.');
+            host.innerHTML = '';
+            deskView();
+          }).catch(function () {
+            status.textContent = 'No connection - try again.';
+            doors.disabled = false;
+          });
+        };
+      }
+    }
+  };
+
+  /* ================= gallery (L5 Press Night: peer critique) ================
+     Designed from PEER-CRITIQUE references, deliberately NOT L3's reveal
+     (gate binding): Berger/EL Education gallery-critique norms (KIND -
+     SPECIFIC - HELPFUL, modelled before anyone writes), d.school "I like /
+     I wonder" stems, a Two-Stars-and-a-Wish style QUOTA (exactly 2 press
+     passes required, a 3rd allowed) so attention can't pile onto one
+     popular studio - and the marquee surfaces "needs a critic" studios
+     first. Reviews are SIGNED with the critic's codename (accountability,
+     Berger), teacher-readable in the staff lens with one-tap removal, and
+     the banner says so. The mandatory receive-and-respond step (the V2
+     note) is what stops gallery feedback being write-only. No scores, no
+     ranking, no bars - the class-level beat is collective. */
+  Engines.gallery = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var solo = !!ctx.catchup;
+      var quota = Number(cfg.quota) || 2;
+      var stems = cfg.stems || {};
+      var stemLike = stems.like || 'I like...';
+      var stemWonder = stems.wonder || 'I wonder...';
+      var draftAll = ctx.draft || {};
+      var draft = draftAll.gallery || {};
+      var studioDraft = draftAll.studio || {};
+      var v2 = String(draft.v2 || '');
+      var v2ok = !!draft.v2ok;
+      var feed = null;         // latest galleryFeed reply
+      var seenReviews = {};    // for arrival animations + chime
+      var firstPaint = true;
+      var pollT = null;
+
+      function saveGal() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        App.state.draft.gallery = { v2: v2, v2ok: v2ok ? 1 : 0 };
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+      function chime() {
+        try {
+          var A = window.AudioContext || window.webkitAudioContext;
+          if (!A) return;
+          var ac = chime._ac = chime._ac || new A();
+          var t0 = ac.currentTime;
+          [660, 880].forEach(function (f, i) {
+            var o = ac.createOscillator(), g = ac.createGain();
+            o.frequency.value = f;
+            g.gain.setValueAtTime(0.0001, t0 + i * 0.09);
+            g.gain.exponentialRampToValueAtTime(0.05, t0 + i * 0.09 + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, t0 + i * 0.09 + 0.35);
+            o.connect(g); g.connect(ac.destination);
+            o.start(t0 + i * 0.09); o.stop(t0 + i * 0.09 + 0.4);
+          });
+        } catch (e) {}
+      }
+
+      /* ---------- review reopen: read-only (feed reads are safe; no writes) ---------- */
+      if (ctx.review) {
+        var rv = el('<div class="card gal-review"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+          '<h2>Your Press Night, on record</h2><p class="intro-lead gal-review-status">Fetching your reviews&hellip;</p>' +
+          (v2 ? '<div class="gal-v2-final"><b>Your V2 note:</b><p>&ldquo;' + esc(v2) + '&rdquo;</p></div>' : '') +
+          '<div class="gal-review-list"></div>' +
+          '<button class="primary-btn" type="button">Continue</button></div>');
+        host.appendChild(rv);
+        rv.querySelector('button').onclick = function () { ctx.next(); };
+        ctx.call('galleryFeed', { lessonId: ctx.lesson.id }).then(function (r) {
+          var statusEl = rv.querySelector('.gal-review-status');
+          var list = rv.querySelector('.gal-review-list');
+          if (!r || !r.ok || !r.myReviews || !r.myReviews.length) {
+            statusEl.innerHTML = 'The gallery has been archived &mdash; your reviews live in the class record now.';
+            return;
+          }
+          statusEl.textContent = 'The reviews your game received:';
+          list.innerHTML = r.myReviews.map(function (x) {
+            return '<div class="gal-review-item"><span class="gal-rev-by">' + esc(x.bcn) + (x.sim ? ' <em class="gal-sim">simulated</em>' : '') + '</span>' +
+              '<p><b>' + esc(stemLike) + '</b> ' + esc(x.l) + '</p><p><b>' + esc(stemWonder) + '</b> ' + esc(x.w) + '</p></div>';
+          }).join('');
+        }).catch(function () {});
+        return;
+      }
+
+      /* ---------- solo catch-up: the gallery has closed ---------- */
+      if (solo) {
+        var closed = cfg.closed || {};
+        introCard(host, {
+          kicker: chunk.title,
+          title: closed.title || 'Press Night has closed',
+          text: closed.note || 'The gallery ran live in class. You can still browse the marquee - and every studio still files a V2 note.'
+        }, 'Browse the marquee', function () { soloView(); });
+        function soloView() {
+          host.innerHTML = '';
+          var c = el('<div class="std-desk gal-floor"><div class="std-head"><span class="std-brand">PRESS NIGHT &middot; LATE EDITION</span>' +
+            '<h2>The marquee</h2><span class="std-count gal-total"></span></div>' +
+            '<div class="gal-marquee-grid"></div>' +
+            '<div class="card gal-v2-card"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
+            '<p>' + esc((cfg.v2 && cfg.v2.promptNoReviews) || 'Every studio plans a version 2. What is the ONE thing yours would change, and why?') + '</p>' +
+            '<textarea class="gal-v2-input" maxlength="200" placeholder="' + esc((cfg.v2 && cfg.v2.placeholder) || 'In version 2 I would... because...') + '">' + esc(v2) + '</textarea>' +
+            '<p class="gal-v2-nudge"></p>' +
+            '<button class="primary-btn gal-v2-save" type="button">File the note &amp; wrap up</button></div></div>');
+          host.appendChild(c);
+          ctx.call('galleryFeed', { lessonId: ctx.lesson.id }).then(function (r) {
+            if (!r || !r.ok) return;
+            c.querySelector('.gal-total').textContent = r.total + ' reviews were filed on the night';
+            c.querySelector('.gal-marquee-grid').innerHTML = (r.studios || []).map(function (s) {
+              return marqueeCardHtml(s, false);
+            }).join('') || '<p class="std-note">The marquee is empty now.</p>';
+          }).catch(function () {});
+          c.querySelector('.gal-v2-save').onclick = function () {
+            var ta = c.querySelector('.gal-v2-input');
+            var nudge = c.querySelector('.gal-v2-nudge');
+            var words = ta.value.trim().split(/\s+/).filter(Boolean);
+            if (words.length < 6) {
+              nudge.textContent = 'A real design note names the change AND the reason (6+ words).';
+              return;
+            }
+            v2 = ta.value.trim().slice(0, 200);
+            v2ok = true;
+            saveGal();
+            var badge = Object.assign({}, ctx.chunk.badge, { xp: 7 });
+            ctx.awardBadge(badge, 'rv=0;v2=1;sol=1').then(function () { ctx.next(); });
+          };
+        }
+        return;
+      }
+
+      /* ---------- the Reviewer's Code, then the floor ---------- */
+      var code = cfg.code || {};
+      var rules = (code.rules || []).map(function (r2) { return '<li>' + esc(r2) + '</li>'; }).join('');
+      introCard(host, {
+        kicker: chunk.title,
+        title: cfg.introTitle || 'Press Night',
+        text: cfg.intro || '',
+        extra: '<div class="gal-code"><b class="gal-code-head">The Reviewer&rsquo;s Code &mdash; kind &middot; specific &middot; helpful</b>' +
+          '<ul class="gal-code-rules">' + rules + '</ul>' +
+          (code.badExample ? '<p class="gal-code-eg"><span class="gal-eg-bad">&#10007; ' + esc(code.badExample) + '</span><br>' +
+            '<span class="gal-eg-good">&#10003; ' + esc(code.goodExample || '') + '</span></p>' : '') +
+          '<p class="gal-banner">&#128065;&#65039; Reviews are signed, and your teacher reads every one.</p></div>'
+      }, 'Onto the floor', floorView);
+
+      function marqueeCardHtml(s, clickable) {
+        var needy = feed && !s.mine && s.rn === Math.min.apply(null, feed.studios.filter(function (x) { return !x.mine; }).map(function (x) { return x.rn; }));
+        return '<' + (clickable ? 'button type="button"' : 'div') + ' class="gal-marquee-card' + (s.mine ? ' mine' : '') + (clickable ? ' clickable' : '') + '" data-sid="' + esc(s.sid) + '">' +
+          '<span class="gal-mq-studio">' + esc(s.sn || s.cn) + (s.sim ? ' <em class="gal-sim">simulated</em>' : '') + '</span>' +
+          '<b class="gal-mq-title">' + esc(s.gt) + '</b>' +
+          '<p class="gal-mq-how">' + esc(s.gh) + '</p>' +
+          '<span class="gal-mq-meta">' + (s.mine ? 'YOUR STUDIO' : (s.rn + ' review' + (s.rn === 1 ? '' : 's')) + (needy && clickable ? ' &middot; NEEDS A CRITIC' : '')) + '</span>' +
+          '</' + (clickable ? 'button' : 'div') + '>';
+      }
+
+      function floorView() {
+        host.innerHTML = '';
+        var rounds = cfg.rounds || {};
+        var c = el('<div class="std-desk gal-floor">' +
+          '<div class="std-head"><span class="std-brand">OLS GAMES &middot; PRESS NIGHT</span>' +
+          '<h2>The gallery floor</h2><span class="std-count gal-passes"></span></div>' +
+          (rounds.note ? '<div class="gal-rounds"><p>' + esc(rounds.note) + '</p>' +
+            (rounds.exhibitTip ? '<p class="gal-round-tip">&#127914; <b>Exhibiting?</b> ' + esc(rounds.exhibitTip) + '</p>' : '') +
+            (rounds.tourTip ? '<p class="gal-round-tip">&#128584; <b>Touring?</b> ' + esc(rounds.tourTip) + '</p>' : '') + '</div>' : '') +
+          '<div class="gal-mine-zone"><div class="gal-mine-card"></div><div class="gal-incoming"><b class="gal-incoming-head">Your reviews land here, live</b><div class="gal-incoming-list"></div></div></div>' +
+          '<b class="gal-marquee-head">The marquee &mdash; pick a studio, play it at their desk, then review it here</b>' +
+          '<div class="gal-marquee-grid"><p class="std-note">Raising the marquee&hellip;</p></div>' +
+          '<div class="gal-v2-zone"></div>' +
+          '</div>');
+        host.appendChild(c);
+        paintFeed();
+        poll();
+      }
+
+      function applyFeed(r) {
+        feed = r;
+        if (!document.body.contains(host) || !host.querySelector('.gal-floor')) return;
+        paintFeed();
+      }
+
+      function paintFeed() {
+        var floor = host.querySelector('.gal-floor');
+        if (!floor) return;
+        var passes = floor.querySelector('.gal-passes');
+        var given = feed ? feed.given : 0;
+        passes.innerHTML = 'Press passes: <b>' + Math.max(0, quota - given) + '</b> to spend' + (given >= quota ? ' &#10003;' : '');
+        var mine = feed && feed.studios.filter(function (s) { return s.mine; })[0];
+        floor.querySelector('.gal-mine-card').innerHTML = mine ? marqueeCardHtml(mine, false)
+          : '<p class="std-note">Your doors are not open yet &mdash; finish the Studio Desk first.</p>';
+        var list = floor.querySelector('.gal-incoming-list');
+        var myReviews = (feed && feed.myReviews) || [];
+        if (!myReviews.length) {
+          list.innerHTML = '<p class="gal-waiting">No reviews yet &mdash; critics are still playing&hellip;</p>';
+        } else {
+          var anyNew = false;
+          list.innerHTML = myReviews.slice().reverse().map(function (x) {
+            var isNew = !seenReviews[x.i] && !firstPaint;
+            if (!seenReviews[x.i]) { if (!firstPaint) anyNew = true; }
+            return '<div class="gal-review-item' + (isNew ? ' fresh' : '') + '"><span class="gal-rev-by">' + esc(x.bcn) + (x.sim ? ' <em class="gal-sim">simulated</em>' : '') + '</span>' +
+              '<p><b>' + esc(stemLike) + '</b> ' + esc(x.l) + '</p><p><b>' + esc(stemWonder) + '</b> ' + esc(x.w) + '</p></div>';
+          }).join('');
+          myReviews.forEach(function (x) { seenReviews[x.i] = 1; });
+          if (anyNew) {
+            chime();
+            list.querySelectorAll('.gal-review-item.fresh').forEach(function (n) {
+              requestAnimationFrame(function () { n.classList.add('landed'); });
+              setTimeout(function () { n.classList.add('landed'); }, 150); // hidden-tab rAF fallback
+            });
+          }
+        }
+        var grid = floor.querySelector('.gal-marquee-grid');
+        var others = feed ? feed.studios.filter(function (s) { return !s.mine; }) : [];
+        others.sort(function (a, b) { return (a.rn - b.rn) || String(a.gt).localeCompare(String(b.gt)); });
+        grid.innerHTML = others.length ? others.map(function (s) { return marqueeCardHtml(s, true); }).join('')
+          : '<p class="std-note">No other studios have opened yet &mdash; watch the marquee light up.</p>';
+        grid.querySelectorAll('.gal-marquee-card.clickable').forEach(function (btn) {
+          btn.onclick = function () {
+            var s = others.filter(function (x) { return String(x.sid) === btn.getAttribute('data-sid'); })[0];
+            if (s) reviewDesk(s);
+          };
+        });
+        paintV2Zone(floor);
+        if (feed) firstPaint = false; // reviews already waiting on arrival never chime
+      }
+
+      function paintV2Zone(floor) {
+        var zone = floor.querySelector('.gal-v2-zone');
+        var given = feed ? feed.given : 0;
+        var received = (feed && feed.myReviews) || [];
+        if (v2ok) {
+          zone.innerHTML = '<div class="card gal-v2-card done"><span class="std-qa-tag">YOUR V2 NOTE &#10003;</span>' +
+            '<p>&ldquo;' + esc(v2) + '&rdquo;</p></div>' +
+            '<button class="primary-btn gal-wrap" type="button">Wrap Press Night &rarr;</button>';
+          zone.querySelector('.gal-wrap').onclick = wrapView;
+          return;
+        }
+        if (given < quota) {
+          zone.innerHTML = '<div class="card gal-v2-card locked"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
+            '<p>Unlocks when both press passes are spent &mdash; critics first, designers second.</p></div>';
+          return;
+        }
+        var prompt = received.length
+          ? ((cfg.v2 && cfg.v2.prompt) || 'Read your reviews. Pick ONE that sparked something - what will version 2 change, and why?')
+          : ((cfg.v2 && cfg.v2.promptNoReviews) || 'While reviews come in: what is the ONE thing version 2 of your game would change, and why?');
+        zone.innerHTML = '<div class="card gal-v2-card"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
+          '<p>' + esc(prompt) + '</p>' +
+          '<textarea class="gal-v2-input" maxlength="200" placeholder="' + esc((cfg.v2 && cfg.v2.placeholder) || 'In version 2 I would... because a review said...') + '">' + esc(v2) + '</textarea>' +
+          '<p class="gal-v2-nudge"></p>' +
+          '<button class="primary-btn gal-v2-save" type="button">File the V2 note</button></div>';
+        zone.querySelector('.gal-v2-save').onclick = function () {
+          var ta = zone.querySelector('.gal-v2-input');
+          var nudge = zone.querySelector('.gal-v2-nudge');
+          var words = ta.value.trim().split(/\s+/).filter(Boolean);
+          if (words.length < 6) {
+            nudge.textContent = 'A real design note names the change AND the reason (6+ words).';
+            return;
+          }
+          v2 = ta.value.trim().slice(0, 200);
+          v2ok = true;
+          saveGal();
+          paintFeed();
+        };
+      }
+
+      function reviewDesk(s) {
+        host.innerHTML = '';
+        var given = feed ? feed.given : 0;
+        var spent = given >= 3;
+        var c = el('<div class="card gal-desk"><span class="intro-kicker">REVIEW DESK</span>' +
+          marqueeCardHtml(s, false) +
+          (spent ? '<p class="std-note">All three press passes are spent &mdash; head back to the floor.</p>' :
+            '<p class="gal-desk-note">' + esc(cfg.deskNote || 'Play it at their desk first. Then write like a critic: kind, specific, helpful.') + '</p>' +
+            '<label class="std-sig-label">' + esc(stemLike) + '</label>' +
+            '<textarea class="gal-stem-input" data-stem="like" maxlength="200" placeholder="' + esc(cfg.likePlaceholder || 'name the exact bit you liked, and why it works') + '"></textarea>' +
+            '<label class="std-sig-label">' + esc(stemWonder) + '</label>' +
+            '<textarea class="gal-stem-input" data-stem="wonder" maxlength="200" placeholder="' + esc(cfg.wonderPlaceholder || 'a question or idea that could make version 2 even better') + '"></textarea>' +
+            '<p class="gal-v2-nudge"></p>' +
+            '<button class="primary-btn gal-file-btn" type="button">File the review &middot; signed</button>') +
+          '<button class="ghost-btn std-back" type="button">&larr; Back to the floor</button></div>');
+        host.appendChild(c);
+        c.querySelector('.std-back').onclick = function () { host.innerHTML = ''; floorView(); };
+        var fileBtn = c.querySelector('.gal-file-btn');
+        if (fileBtn) fileBtn.onclick = function () {
+          var likeTa = c.querySelector('[data-stem="like"]');
+          var wonderTa = c.querySelector('[data-stem="wonder"]');
+          var nudge = c.querySelector('.gal-v2-nudge');
+          var lw = likeTa.value.trim().split(/\s+/).filter(Boolean);
+          var ww = wonderTa.value.trim().split(/\s+/).filter(Boolean);
+          if (lw.length < 5 || ww.length < 5) {
+            nudge.textContent = 'Specific means at least 5 real words in each line - name the exact thing.';
+            return;
+          }
+          fileBtn.disabled = true;
+          ctx.call('galleryPost', {
+            lessonId: ctx.lesson.id, to: s.sid,
+            like: likeTa.value.trim().slice(0, 200), wonder: wonderTa.value.trim().slice(0, 200)
+          }).then(function (r) {
+            if (!r || !r.ok) {
+              fileBtn.disabled = false;
+              var msg = {
+                'passes-spent': 'All three press passes are spent.',
+                'already-reviewed': 'You already reviewed this studio - spread the passes around.',
+                'too-thin': 'Too thin for print - name the exact thing.',
+                'own-studio': 'Nice try - critics cannot review their own studio.'
+              }[(r && r.error) || ''] || 'The review did not file - try again.';
+              nudge.textContent = msg;
+              return;
+            }
+            App.toast('&#128240; Review filed - signed and delivered.');
+            host.innerHTML = '';
+            floorView();
+          }).catch(function () {
+            fileBtn.disabled = false;
+            nudge.textContent = 'No connection - try again.';
+          });
+        };
+      }
+
+      function wrapView() {
+        if (pollT) { clearTimeout(pollT); pollT = null; }
+        host.innerHTML = '';
+        var total = feed ? feed.total : 0;
+        var studios = feed ? feed.studioCount : 0;
+        var given = feed ? Math.min(feed.given, quota) : 0;
+        var wrap = cfg.wrap || {};
+        var c = el('<div class="card gal-wrapcard"><span class="intro-kicker">PRESS NIGHT &middot; CLOSING</span>' +
+          '<h2>' + esc(wrap.title || 'The presses roll') + '</h2>' +
+          '<p class="gal-wrap-stat"><b>' + total + '</b> reviews filed across the class tonight &middot; <b>' + studios + '</b> studios opened their doors.</p>' +
+          '<p class="intro-lead">' + esc(wrap.note || 'No scores. No rankings. Real games, real critics, real notes for version 2 - that is how studios grow.') + '</p>' +
+          '<button class="primary-btn" type="button">Collect your press badge</button></div>');
+        host.appendChild(c);
+        c.querySelector('button').onclick = function () {
+          var xp = 3 * given + (v2ok ? 1 : 0);
+          var badge = Object.assign({}, ctx.chunk.badge, { xp: xp });
+          ctx.awardBadge(badge, 'rv=' + (feed ? feed.given : 0) + ';v2=' + (v2ok ? 1 : 0)).then(function () { ctx.next(); });
+        };
+      }
+
+      function poll() {
+        /* single chain: re-entering the floor never stacks a second poller */
+        if (pollT) { clearTimeout(pollT); pollT = null; }
+        if (!document.body.contains(host) || !host.querySelector('.gal-floor')) return;
+        ctx.call('galleryFeed', { lessonId: ctx.lesson.id }).then(function (r) {
+          if (r && r.ok) applyFeed(r);
+        }).catch(function () {}).then(function () {
+          if (document.body.contains(host)) pollT = setTimeout(poll, 4000);
+        });
+      }
+    }
+  };
+
 })(window);
 
 </script>
@@ -4952,6 +6025,8 @@ window.OLS_TRANSPORT = {
   var pairLensLesson = '', pairLensTimer = null, pairAlerted = {}, pairedLessonCache = {}, pairResetArm = 0;
   /* tournament state (section 13) */
   var tourneyLessonCache = {};    // lessonId -> promise -> true|null ("has a tournament chunk")
+  var galleryLessonCache = {};    // lessonId -> promise -> true|null ("has a gallery chunk")
+  var galleryLensLesson = '', galleryLensTimer = null;
   var audioCtx = null, chimeMuted = false;
   try { chimeMuted = localStorage.getItem('ks3dt-staff-mute') === '1'; } catch (e) {}
 
@@ -5535,6 +6610,7 @@ window.OLS_TRANSPORT = {
       '</div>' +
       '<div id="pair-lens"></div>' +
       '<div id="tourney-slot"></div>' +
+      '<div id="gallery-lens"></div>' +
       '<div class="dash-scroll"><table class="dash-table">' + head + (body || '<tr><td colspan="99">No pupils have joined this class yet.</td></tr>') + '</table></div>' +
       '<h3 style="margin-top:20px">Misconception patterns</h3>' +
       '<select id="live-mis-select" class="staff-select">' + misSelect + '</select>' +
@@ -5544,6 +6620,7 @@ window.OLS_TRANSPORT = {
     if (misLessonNum && liveByNum[misLessonNum]) loadMisconceptions(liveByNum[misLessonNum]);
     initPairLens(deliveredNums);
     initTourneySlot(deliveredNums);
+    initGalleryLens(deliveredNums);
   }
 
   /* ============================================================
@@ -5583,6 +6660,99 @@ window.OLS_TRANSPORT = {
           '</div>';
       }).join('');
     });
+  }
+
+
+  /* ---------- Press Night lens (L5 gallery): the duty-of-care view ----------
+     Detection mirrors tourneyInfoFor (content chunk scan). The lens shows the
+     live marquee + every signed review with REAL names, and a one-tap Remove:
+     a removed review vanishes from the maker's screen on their next ~4s poll.
+     Removed reviews stay listed struck-through (audit trail, rm flag). */
+  function galleryInfoFor(le) {
+    var id = String(le.id);
+    if (!galleryLessonCache[id]) {
+      galleryLessonCache[id] = App.fetchContent(le.file).then(function (lesson) {
+        var ch = (lesson.chunks || []).filter(function (c) { return c.engine === 'gallery'; })[0];
+        return ch ? { title: String(ch.title || 'Press Night') } : null;
+      }).catch(function () { return null; });
+    }
+    return galleryLessonCache[id];
+  }
+
+  function initGalleryLens(deliveredNums) {
+    var slot = q('#gallery-lens');
+    if (!slot) return;
+    var candidates = deliveredNums.map(function (n) { return liveByNum[n]; }).filter(Boolean);
+    Promise.all(candidates.map(galleryInfoFor)).then(function (infos) {
+      if (!q('#gallery-lens')) return;
+      var rows = [];
+      infos.forEach(function (inf, i) { if (inf) rows.push({ le: candidates[i], title: inf.title }); });
+      if (!rows.length) return;
+      if (!galleryLensLesson || !rows.some(function (r) { return String(r.le.id) === galleryLensLesson; })) {
+        galleryLensLesson = String(rows[rows.length - 1].le.id);
+      }
+      var sel = rows.map(function (r) {
+        return '<option value="' + App.esc(String(r.le.id)) + '"' + (String(r.le.id) === galleryLensLesson ? ' selected' : '') + '>' +
+          App.esc(r.title) + ' &mdash; Lesson ' + App.esc(String(r.le.num)) + '</option>';
+      }).join('');
+      slot.innerHTML = '<div class="pair-lens-box">' +
+        '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
+        '<h3 style="margin:0">&#127914; Press Night</h3>' +
+        (rows.length > 1 ? '<select id="gallery-lesson-sel" class="staff-select" style="margin:0;max-width:280px">' + sel + '</select>'
+          : '<span class="pl-note" style="margin:0">' + App.esc(rows[0].title) + ' &mdash; Lesson ' + App.esc(String(rows[0].le.num)) + '</span>') +
+        '<span class="pl-note gal-lens-stat" style="margin:0 0 0 auto"></span></div>' +
+        '<div id="gallery-lens-body">' + busyHtml('Raising the marquee') + '</div></div>';
+      galleryLensTick();
+      if (!galleryLensTimer) galleryLensTimer = setInterval(galleryLensTick, 5000);
+    });
+  }
+
+  function galleryLensTick() {
+    if (!document.getElementById('gallery-lens-body')) {
+      if (galleryLensTimer) { clearInterval(galleryLensTimer); galleryLensTimer = null; }
+      return;
+    }
+    adminCall('gallery', { className: cls, lessonId: galleryLensLesson }).then(function (r) {
+      var body = document.getElementById('gallery-lens-body');
+      if (!body || !r || !r.ok) return;
+      var stat = q('.gal-lens-stat');
+      var live = (r.reviews || []).filter(function (x) { return !x.rm; });
+      if (stat) stat.textContent = (r.studios || []).length + ' studios open - ' + live.length + ' reviews live';
+      var studios = (r.studios || []).map(function (s) {
+        return '<span class="gal-lens-chip"><b>' + App.esc(s.sn || s.cn) + '</b> (' + App.esc(s.name) + ') &middot; &ldquo;' + App.esc(s.gt) + '&rdquo; &middot; ' + Number(s.rn) + '</span>';
+      }).join('');
+      var reviews = (r.reviews || []).slice().reverse().map(function (x) {
+        return '<div class="gal-lens-review' + (x.rm ? ' removed' : '') + '">' +
+          '<b>' + App.esc(x.byName) + '</b> <span class="pl-note" style="margin:0">(signed ' + App.esc(x.bcn) + (x.sim ? ' &middot; simulated' : '') + ')</span> &rarr; <b>' + App.esc(x.toName) + '</b>' +
+          '<p style="margin:2px 0 0">I like ' + App.esc(x.l) + '<br>I wonder ' + App.esc(x.w) + '</p>' +
+          (x.rm ? '<span class="gal-lens-rm-note">removed</span>'
+            : '<button type="button" class="ghost-btn gal-lens-rm" data-action="gallery-remove" data-i="' + Number(x.i) + '">Remove</button>') +
+          '</div>';
+      }).join('');
+      body.innerHTML = (studios ? '<div class="gal-lens-chips">' + studios + '</div>' : '') +
+        (reviews || '<p class="pl-note">No reviews filed yet.</p>');
+      injectGalleryStyles();
+    }).catch(function () {});
+  }
+
+  function galleryRemove(btn) {
+    btn.disabled = true;
+    adminCall('galleryRemove', { className: cls, lessonId: galleryLensLesson, i: Number(btn.getAttribute('data-i')) })
+      .then(function () { galleryLensTick(); });
+  }
+
+  function injectGalleryStyles() {
+    if (document.getElementById('gallery-lens-style')) return;
+    var st = document.createElement('style');
+    st.id = 'gallery-lens-style';
+    st.textContent =
+      '.gal-lens-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}' +
+      '.gal-lens-chip{background:#F0F3FA;border:1px solid #E3E8F2;border-radius:999px;padding:3px 10px;font-size:0.78rem}' +
+      '.gal-lens-review{border-top:1px solid #E3E8F2;padding:8px 0;font-size:0.86rem;position:relative}' +
+      '.gal-lens-review.removed p{text-decoration:line-through;color:#9AA5BC}' +
+      '.gal-lens-rm{position:absolute;right:0;top:8px;padding:2px 10px;font-size:0.76rem}' +
+      '.gal-lens-rm-note{position:absolute;right:0;top:10px;font-size:0.74rem;color:#B4262A;font-weight:700}';
+    document.head.appendChild(st);
   }
 
   function tourneyOpen(lessonId) {
@@ -6500,6 +7670,7 @@ window.OLS_TRANSPORT = {
       case 'pair-reset': pairReset(btn); break;
       case 'pair-view': pairView(btn); break;
       case 'tourney-open': tourneyOpen(btn.getAttribute('data-lesson')); break;
+      case 'gallery-remove': galleryRemove(btn); break;
     }
   }
 
@@ -6511,6 +7682,7 @@ window.OLS_TRANSPORT = {
     if (t.id === 'team-reveal') { teamReveal(t); return; }
     if (t.id === 'cover-pick') { coverPick = t.value; renderCoverPane(manifestCache[year]); return; }
     if (t.id === 'pair-lesson-sel') { pairLensLesson = t.value; pairAlerted = {}; pairLensTick(); return; }
+    if (t.id === 'gallery-lesson-sel') { galleryLensLesson = t.value; galleryLensTick(); return; }
     if (t.id === 'pair-mute') {
       chimeMuted = t.checked;
       try { localStorage.setItem('ks3dt-staff-mute', chimeMuted ? '1' : '0'); } catch (e2) {}
