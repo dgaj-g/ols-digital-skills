@@ -135,15 +135,15 @@
       "label": "From sequence to selection"
      },
      {
-      "t": 60,
+      "t": 76,
       "label": "The if/else block"
      },
      {
-      "t": 150,
+      "t": 174,
       "label": "Worked example: Catch It"
      },
      {
-      "t": 255,
+      "t": 279,
       "label": "Test like a studio"
      }
     ]
@@ -181,15 +181,15 @@
        "label": "From sequence to selection"
       },
       {
-       "t": 60,
+       "t": 76,
        "label": "The if/else block"
       },
       {
-       "t": 150,
+       "t": 174,
        "label": "Worked example: Catch It"
       },
       {
-       "t": 255,
+       "t": 279,
        "label": "Test like a studio"
       }
      ]
