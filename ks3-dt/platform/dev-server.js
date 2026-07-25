@@ -1307,7 +1307,7 @@
       var gStudios = Object.keys(gg.studios).map(function (e) {
         var st = gg.studios[e];
         bySid[str_(st.sid)] = nameFor(e);
-        return { sid: str_(st.sid), name: nameFor(e), cn: str_(st.cn),
+        return { sid: str_(st.sid), sn: str_(st.sn || st.cn), name: nameFor(e), cn: str_(st.cn),
           gt: str_(st.gt), gh: str_(st.gh), tpl: str_(st.tpl), rn: num_(st.rn) };
       });
       var gReviews = gg.reviews.map(function (r) {
@@ -1696,9 +1696,9 @@
     return cn ? ('Agent ' + cn) : (str_(rec && rec.n || '').split(' ')[0] || 'A critic');
   }
   var GAL_BOT_STUDIOS = [
-    { sid: 'simA', cn: 'Simulated studio', gt: 'Comet Catch', gh: 'Arrow keys move the tray. Catch comets, dodge nothing - yet.', tpl: 'catch' },
-    { sid: 'simB', cn: 'Simulated studio', gt: 'Hedge Havoc', gh: 'Guide the snail out. Walls bite. Three dewdrops open the gate.', tpl: 'maze' },
-    { sid: 'simC', cn: 'Simulated studio', gt: 'True Colours', gh: 'Read the claim, tap T or F. Three rounds, no second guesses.', tpl: 'quiz' }
+    { sid: 'simA', sn: 'Comet Collective', cn: 'Simulated studio', gt: 'Comet Catch', gh: 'Arrow keys move the tray. Catch comets, dodge nothing - yet.', tpl: 'catch' },
+    { sid: 'simB', sn: 'Bramble Interactive', cn: 'Simulated studio', gt: 'Hedge Havoc', gh: 'Guide the snail out. Walls bite. Three dewdrops open the gate.', tpl: 'maze' },
+    { sid: 'simC', sn: 'Quizzical Fox', cn: 'Simulated studio', gt: 'True Colours', gh: 'Read the claim, tap T or F. Three rounds, no second guesses.', tpl: 'quiz' }
   ];
   function galBotReviewsFor_(stu) {
     var tpl = str_(stu.tpl), gt = str_(stu.gt) || 'your game';
@@ -1723,7 +1723,7 @@
       GAL_BOT_STUDIOS.forEach(function (b) {
         g.seq = num_(g.seq) + 1;
         g.studios['bot' + b.sid + '@demo'] = {
-          sid: b.sid, cn: b.cn, gt: b.gt, gh: b.gh, tpl: b.tpl,
+          sid: b.sid, sn: b.sn, cn: b.cn, gt: b.gt, gh: b.gh, tpl: b.tpl,
           ts: tmin_(), rn: 0, sim: 1
         };
       });
@@ -1758,12 +1758,14 @@
       if (!numStr || !lessonAccessible_(s, cls, numStr)) return { ok: false, error: 'locked' };
       var gt = galCleanD_(p.gt, GAL_TITLE_MAX);
       var gh = galCleanD_(p.gh, GAL_HOW_MAX);
+      var snIn = galCleanD_(p.sn, 24);
       if (!gt) return { ok: false, error: 'no-title' };
       var g = galD_(s, cls, lessonId);
       var mine = g.studios[PUPIL_EMAIL];
       g.seq = num_(g.seq) + 1;
       g.studios[PUPIL_EMAIL] = {
         sid: str_(mine && mine.sid) || ('s' + num_(g.seq)),
+        sn: snIn || galSigD_(s, cls, PUPIL_EMAIL),
         cn: galSigD_(s, cls, PUPIL_EMAIL),
         gt: gt, gh: gh, tpl: str_(p.tpl).slice(0, 8),
         ts: num_(mine && mine.ts) || tmin_(),
@@ -1809,7 +1811,7 @@
     var mySid = str_(g.studios[PUPIL_EMAIL] && g.studios[PUPIL_EMAIL].sid || '');
     var studios = Object.keys(g.studios).map(function (e) {
       var st = g.studios[e];
-      return { sid: str_(st.sid), cn: str_(st.cn), gt: str_(st.gt), gh: str_(st.gh),
+      return { sid: str_(st.sid), sn: str_(st.sn || st.cn), cn: str_(st.cn), gt: str_(st.gt), gh: str_(st.gh),
         tpl: str_(st.tpl), rn: num_(st.rn), mine: e === PUPIL_EMAIL ? 1 : 0, sim: num_(st.sim) || 0 };
     });
     var myReviews = [];
