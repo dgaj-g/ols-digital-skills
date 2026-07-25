@@ -727,7 +727,9 @@
       var live = (r.reviews || []).filter(function (x) { return !x.rm; });
       if (stat) stat.textContent = (r.studios || []).length + ' studios open - ' + live.length + ' reviews live';
       var studios = (r.studios || []).map(function (s) {
-        return '<span class="gal-lens-chip"><b>' + App.esc(s.sn || s.cn) + '</b> (' + App.esc(s.name) + ') &middot; &ldquo;' + App.esc(s.gt) + '&rdquo; &middot; ' + Number(s.rn) + '</span>';
+        return '<span class="gal-lens-chip' + (s.h ? ' hidden-listing' : '') + '"><b>' + App.esc(s.sn || s.cn) + '</b> (' + App.esc(s.name) + ') &middot; &ldquo;' + App.esc(s.gt) + '&rdquo; &middot; ' + Number(s.rn) +
+          (s.h ? ' &middot; <em>hidden</em>' : ' <button type="button" class="gal-lens-hide" data-action="gallery-hide-studio" data-sid="' + App.esc(String(s.sid)) + '" title="Hide this listing from the class marquee">Hide</button>') +
+          '</span>';
       }).join('');
       var reviews = (r.reviews || []).slice().reverse().map(function (x) {
         return '<div class="gal-lens-review' + (x.rm ? ' removed' : '') + '">' +
@@ -743,6 +745,12 @@
     }).catch(function () {});
   }
 
+  function galleryHideStudio(btn) {
+    btn.disabled = true;
+    adminCall('galleryHideStudio', { className: cls, lessonId: galleryLensLesson, sid: btn.getAttribute('data-sid') })
+      .then(function () { galleryLensTick(); });
+  }
+
   function galleryRemove(btn) {
     btn.disabled = true;
     adminCall('galleryRemove', { className: cls, lessonId: galleryLensLesson, i: Number(btn.getAttribute('data-i')) })
@@ -756,6 +764,8 @@
     st.textContent =
       '.gal-lens-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}' +
       '.gal-lens-chip{background:#F0F3FA;border:1px solid #E3E8F2;border-radius:999px;padding:3px 10px;font-size:0.78rem}' +
+      '.gal-lens-chip.hidden-listing{opacity:0.55;text-decoration:line-through}' +
+      '.gal-lens-hide{margin-left:6px;font-size:0.72rem;padding:1px 8px;border:1px solid #C9CFDD;border-radius:999px;background:#fff;cursor:pointer}' +
       '.gal-lens-review{border-top:1px solid #E3E8F2;padding:8px 0;font-size:0.86rem;position:relative}' +
       '.gal-lens-review.removed p{text-decoration:line-through;color:#9AA5BC}' +
       '.gal-lens-rm{position:absolute;right:0;top:8px;padding:2px 10px;font-size:0.76rem}' +
@@ -1679,6 +1689,7 @@
       case 'pair-view': pairView(btn); break;
       case 'tourney-open': tourneyOpen(btn.getAttribute('data-lesson')); break;
       case 'gallery-remove': galleryRemove(btn); break;
+      case 'gallery-hide-studio': galleryHideStudio(btn); break;
     }
   }
 

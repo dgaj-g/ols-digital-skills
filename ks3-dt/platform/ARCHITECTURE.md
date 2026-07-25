@@ -293,3 +293,30 @@ at the same moment. `cfg.tn.mode` (`team` default | `public`) adds a ranked pair
 the projector only as a deliberate Options choice — pupil responses never carry individual
 scores either way. Catch-up = solo rally variant (records `rt`, skips the wait); review = a
 static no-network summary.
+
+## 14. Press Night gallery (Session 11 — L5's peer-critique finale)
+
+The platform's first pupil-to-pupil CONTENT since pairing. A lesson chunk with
+`engine: "studio"` (phases `sign` → `build`) runs the contracts + Studio Desk; the QA Desk
+is the block's distinct verification UI (per-criterion test → observed-outcome question
+whose distractors are real misconception states → tick/cross + per-failure fix cards →
+the READY FOR GALLERY button lights on the 4th tick). Submission = publishing a marquee
+LISTING (`galleryOpen`: studio name + game title + how-to-play) — deliberately no
+Drive/artifactCheck (L4 gate binding). A chunk with `engine: "gallery"` runs Press Night:
+a live marquee (fewest-reviews-first, "needs a critic"), signed "I like… / I wonder…"
+reviews (`galleryPost`: 2 press passes required, 3 max, one per studio, self-review
+refused), reviews landing on the maker's screen via ~4s `galleryFeed` polls, and a
+mandatory V2 receive-and-respond note. Storage = one compact store key per class-lesson
+`gal:<cls>:<lessonId>` (chat-digest discipline: withLock_ appends, lock-free reads,
+Gallery Archive sweep on the 7-day horizon; no pupil email on the wire — opaque sids).
+Staff Live tab grows a Press Night lens (real names + one-tap review Remove AND listing
+Hide — studio names/titles/how-to-plays are pupil-authored free text too; hidden listings
+vanish from classmates' marquees while the maker sees hers flagged "talk to your teacher").
+Pupils never see review counts or a needs-a-critic tag (silent fewest-first sort carries
+the fairness; counts live in the teacher's lens only). An "Open in beta" door (arm-confirm,
+>=2 QA checks attempted) lets an unfinished game exhibit with an IN BETA tag — nobody sits
+out Press Night.
+Preview parity: FakeServer mirrors all three verbs; single-tab preview seeds labelled
+SIMULATED studios + a Press Bot critic so the solo demo shows the whole flow; two
+same-origin tabs are a real exhibitor + critic. Catch-up solo = "Late Edition" (browse
+marquee + V2 note, review quota waived). No new OAuth scopes.

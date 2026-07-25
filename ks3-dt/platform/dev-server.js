@@ -1308,7 +1308,8 @@
         var st = gg.studios[e];
         bySid[str_(st.sid)] = nameFor(e);
         return { sid: str_(st.sid), sn: str_(st.sn || st.cn), name: nameFor(e), cn: str_(st.cn),
-          gt: str_(st.gt), gh: str_(st.gh), tpl: str_(st.tpl), rn: num_(st.rn) };
+          gt: str_(st.gt), gh: str_(st.gh), tpl: str_(st.tpl), rn: num_(st.rn),
+          b: num_(st.b) || 0, h: num_(st.h) || 0 };
       });
       var gReviews = gg.reviews.map(function (r) {
         return { i: num_(r.i), byName: nameFor(str_(r.by)), bcn: str_(r.bcn),
@@ -1316,6 +1317,16 @@
           l: str_(r.l), w: str_(r.w), t: num_(r.t), rm: num_(r.rm) || 0, sim: num_(r.sim) || 0 };
       });
       return Promise.resolve({ ok: true, studios: gStudios, reviews: gReviews });
+    }
+    if (sub === 'galleryHideStudio') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      var ghs = galD_(s, cls, str_(p.lessonId));
+      var hitEmail = '';
+      Object.keys(ghs.studios).forEach(function (e) { if (str_(ghs.studios[e].sid) === str_(p.sid)) hitEmail = e; });
+      if (!hitEmail) return Promise.resolve({ ok: false, error: 'no-studio' });
+      ghs.studios[hitEmail].h = 1;
+      save_(s);
+      return Promise.resolve({ ok: true });
     }
     if (sub === 'galleryRemove') {
       if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
@@ -1768,6 +1779,8 @@
         sn: snIn || galSigD_(s, cls, PUPIL_EMAIL),
         cn: galSigD_(s, cls, PUPIL_EMAIL),
         gt: gt, gh: gh, tpl: str_(p.tpl).slice(0, 8),
+        b: num_(p.beta) ? 1 : 0,
+        h: num_(mine && mine.h),
         ts: num_(mine && mine.ts) || tmin_(),
         rn: num_(mine && mine.rn),
         openedS: num_(mine && mine.openedS)
@@ -1809,10 +1822,14 @@
     var g = galD_(s, cls, str_(p.lessonId));
     if (galBotThink_(s, g)) save_(s);
     var mySid = str_(g.studios[PUPIL_EMAIL] && g.studios[PUPIL_EMAIL].sid || '');
-    var studios = Object.keys(g.studios).map(function (e) {
+    var studios = [];
+    Object.keys(g.studios).forEach(function (e) {
       var st = g.studios[e];
-      return { sid: str_(st.sid), sn: str_(st.sn || st.cn), cn: str_(st.cn), gt: str_(st.gt), gh: str_(st.gh),
-        tpl: str_(st.tpl), rn: num_(st.rn), mine: e === PUPIL_EMAIL ? 1 : 0, sim: num_(st.sim) || 0 };
+      var mine = e === PUPIL_EMAIL ? 1 : 0;
+      if (num_(st.h) && !mine) return;
+      studios.push({ sid: str_(st.sid), sn: str_(st.sn || st.cn), cn: str_(st.cn), gt: str_(st.gt), gh: str_(st.gh),
+        tpl: str_(st.tpl), rn: num_(st.rn), mine: mine, sim: num_(st.sim) || 0,
+        b: num_(st.b) || 0, hd: mine ? (num_(st.h) || 0) : 0 });
     });
     var myReviews = [];
     var total = 0, given = 0;
