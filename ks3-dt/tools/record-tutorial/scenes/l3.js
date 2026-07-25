@@ -53,25 +53,24 @@ async function makeVariableSilently(drv, name) {
   await drv.page.keyboard.press('Escape').catch(() => {});
 }
 
-/* rect of the editable number slot ("0") inside the SUB-BLOCK (e.g. show number)
-   of a top-level canvas block matching containerRx. Scoped to the sub-block so
-   the finder can never hit a sibling's slot (change score by 1 also has one). */
-function numberSlotRect(drv, containerRx, subRx) {
+/* rect (+ joined text) of the smallest nested sub-block matching subRx inside a
+   canvas block matching containerRx. Text-only detection via .blocklyText - the
+   proven selector; field-class selectors differ between Blockly builds. */
+function nestedBlockRect(drv, containerRx, subRx) {
   return drv.page.evaluate(([containerRx, subRx]) => {
     const crx = new RegExp(containerRx, 'i');
     const srx = new RegExp(subRx, 'i');
-    const clean = (s) => s.replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').replace(/\s+/g, ' ').trim();
-    for (const el of Array.from(document.querySelectorAll('.blocklyBlockCanvas > g.blocklyDraggable'))) {
+    const clean = (x) => x.replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').replace(/\s+/g, ' ').trim();
+    for (const el of Array.from(document.querySelectorAll('.blocklyBlockCanvas g.blocklyDraggable'))) {
       const text = clean(Array.from(el.querySelectorAll('.blocklyText')).map(t => t.textContent).join(' '));
       if (!crx.test(text)) continue;
-      const subs = Array.from(el.querySelectorAll('g.blocklyDraggable')).filter(s =>
-        srx.test(clean(Array.from(s.querySelectorAll('.blocklyText')).map(t => t.textContent).join(' '))));
+      const subs = Array.from(el.querySelectorAll('g.blocklyDraggable')).filter(g =>
+        srx.test(clean(Array.from(g.querySelectorAll('.blocklyText')).map(t => t.textContent).join(' '))));
       subs.sort((a, b) => { const ba = a.getBoundingClientRect(), bb = b.getBoundingClientRect(); return ba.width * ba.height - bb.width * bb.height; });
-      for (const sub of subs) {
-        const slot = Array.from(sub.querySelectorAll('.blocklyEditableText')).find(s => /^[0-9]+$/.test((s.textContent || '').trim()));
-        if (!slot) continue;
-        const b = slot.getBoundingClientRect();
-        return { cx: b.x + b.width / 2, cy: b.y + b.height / 2, w: b.width, h: b.height };
+      if (subs.length) {
+        const b = subs[0].getBoundingClientRect();
+        const t2 = clean(Array.from(subs[0].querySelectorAll('.blocklyText')).map(t => t.textContent).join(' '));
+        return { x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2, text: t2 };
       }
     }
     return null;
@@ -110,28 +109,37 @@ function dropdownItemRect(drv, itemText) {
   }, itemText);
 }
 
-/* drag `show number` to sit under a nested sibling block; one corrective
-   re-drag if the first drop failed to snap into the container */
+/* drag `show number` to sit under a nested sibling block. Blockly's flyout
+   click-vs-drag detection is flaky under the eased cursor, so: fresh rects per
+   attempt, varied grab points, stray-block recovery, and a program dump in the
+   failure message so a failed take is diagnosable from the log alone. */
 async function dragShowNumberUnder(cine, drv, siblingRx, containerRx) {
-  const sib = await drv.canvasBlock(siblingRx, true);
-  if (!sib) throw new Error(siblingRx + ' not on canvas');
-  const fly = await drv.flyoutBlock('show number');
-  if (!fly) throw new Error('show number not in flyout');
-  await cine.drag(fly.x + 30, fly.y + 12, sib.x + 46, sib.y + sib.h + 8, { ms: 1500 }); // grab the label edge - +50/+20 lands on the slot region and the drag never starts
-  for (let i = 0; i < 5; i++) {
-    if (await numberSlotRect(drv, containerRx, 'show number')) return;
-    await drv.page.waitForTimeout(400);
-  }
-  const stray = await drv.canvasBlock('show number', true);
-  const sib2 = await drv.canvasBlock(siblingRx, true);
-  if (stray && sib2) {
-    await cine.drag(stray.cx, stray.cy, sib2.x + 46, sib2.y + sib2.h + 6, { ms: 1100 });
-    for (let i = 0; i < 5; i++) {
-      if (await numberSlotRect(drv, containerRx, 'show number')) return;
-      await drv.page.waitForTimeout(400);
+  await drv.page.waitForTimeout(800); // let the flyout fully settle
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const sib = await drv.canvasBlock(siblingRx, true);
+    if (!sib) throw new Error(siblingRx + ' not on canvas');
+    const fly = await drv.flyoutBlock('show number');
+    if (!fly) throw new Error('show number not in flyout');
+    const gx = fly.x + 24 + attempt * 20;
+    const gy = fly.y + 10 + attempt * 8;
+    await cine.drag(gx, gy, sib.x + 46, sib.y + sib.h + 8, { ms: 1400 });
+    for (let i = 0; i < 6; i++) {
+      if (await nestedBlockRect(drv, containerRx, 'show number')) return;
+      await drv.page.waitForTimeout(350);
+    }
+    const stray = await drv.canvasBlock('show number', true);
+    const sib2 = await drv.canvasBlock(siblingRx, true);
+    if (stray && sib2) {
+      await cine.drag(stray.cx, stray.cy, sib2.x + 46, sib2.y + sib2.h + 6, { ms: 1000 });
+      for (let i = 0; i < 6; i++) {
+        if (await nestedBlockRect(drv, containerRx, 'show number')) return;
+        await drv.page.waitForTimeout(350);
+      }
     }
   }
-  throw new Error('show number never nested under ' + siblingRx);
+  let prog = '';
+  try { prog = (await drv.readProgram()).replace(/\s+/g, ' ').slice(0, 160); } catch (e) {}
+  throw new Error('show number never nested under ' + siblingRx + ' - program: ' + prog);
 }
 
 const scenes = [
@@ -317,9 +325,15 @@ const scenes = [
       await cine.click(varCat2.cx, varCat2.cy, { after: 1100 });
       const oval = await drv.flyoutBlock('^score$');
       if (!oval) throw new Error('score oval not in flyout');
-      const slot = await numberSlotRect(drv, 'on button A pressed', 'show number');
-      if (!slot) throw new Error('show number 0 slot not found');
-      await cine.drag(oval.cx, oval.cy, slot.cx, slot.cy, { ms: 1600 });
+      const sn = await nestedBlockRect(drv, 'on button A pressed', 'show number');
+      if (!sn) throw new Error('nested show number not found');
+      await cine.drag(oval.cx, oval.cy, sn.x + sn.w - 18, sn.cy, { ms: 1600 });
+      for (let i = 0; i < 8; i++) {
+        const now = await nestedBlockRect(drv, 'on button A pressed', 'show number');
+        if (now && /score/.test(now.text)) break;
+        await drv.page.waitForTimeout(350);
+        if (i === 7) throw new Error('score oval never landed in the slot: ' + (now && now.text));
+      }
       await cine.captionHide();
       await cine.caption('<b>show number score</b> &mdash; show whatever is in the box, every time.');
 
@@ -400,9 +414,15 @@ const scenes = [
       await cine.captionShow('Same trick as before: the <b>score</b> oval into the 0 slot.', { pos: 'top' });
       await cine.click(varCat2.cx, varCat2.cy, { after: 1100 });
       const oval = await drv.flyoutBlock('^score$');
-      const slot = await numberSlotRect(drv, 'on button B pressed', 'show number');
-      if (!slot) throw new Error('B-handler number slot not found');
-      await cine.drag(oval.cx, oval.cy, slot.cx, slot.cy, { ms: 1600 });
+      const snB = await nestedBlockRect(drv, 'on button B pressed', 'show number');
+      if (!snB) throw new Error('B-handler nested show number not found');
+      await cine.drag(oval.cx, oval.cy, snB.x + snB.w - 18, snB.cy, { ms: 1600 });
+      for (let i = 0; i < 8; i++) {
+        const now = await nestedBlockRect(drv, 'on button B pressed', 'show number');
+        if (now && /score/.test(now.text)) break;
+        await drv.page.waitForTimeout(350);
+        if (i === 7) throw new Error('B oval never landed: ' + (now && now.text));
+      }
       await cine.captionHide();
 
       // the multi-round test habit - the whole point of the lesson
