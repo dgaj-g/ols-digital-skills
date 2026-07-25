@@ -1327,6 +1327,8 @@ function apiGalleryOpen(req) {
       sn: sn || galSignatureFor_(cls, email),
       cn: galSignatureFor_(cls, email),
       gt: gt, gh: gh, tpl: tpl,
+      b: num_(req.beta) ? 1 : 0,
+      h: num_(mine && mine.h),
       ts: num_(mine && mine.ts) || tmin_(),
       rn: num_(mine && mine.rn)
     };
@@ -1381,12 +1383,18 @@ function apiGalleryFeed(req) {
   if (!cls) return { ok: false, error: 'unknown-class' };
   var g = galGet_(cls, str_(req.lessonId));
   var mySid = str_(g.studios[email] && g.studios[email].sid || '');
-  var studios = Object.keys(g.studios).map(function (e) {
+  /* hidden listings (teacher moderation) never reach other pupils; the maker
+     still sees her own card, flagged, so the quiet word has a shared anchor */
+  var studios = [];
+  Object.keys(g.studios).forEach(function (e) {
     var s = g.studios[e];
-    return {
+    var mine = e === email ? 1 : 0;
+    if (num_(s.h) && !mine) return;
+    studios.push({
       sid: str_(s.sid), sn: str_(s.sn || s.cn), cn: str_(s.cn), gt: str_(s.gt),
-      gh: str_(s.gh), tpl: str_(s.tpl), rn: num_(s.rn), mine: e === email ? 1 : 0
-    };
+      gh: str_(s.gh), tpl: str_(s.tpl), rn: num_(s.rn), mine: mine,
+      b: num_(s.b) || 0, hd: mine ? (num_(s.h) || 0) : 0
+    });
   });
   var myReviews = [];
   var total = 0, given = 0;
@@ -1855,7 +1863,8 @@ function apiAdmin(req) {
       var r = readPupil_(cls, e);
       bySid[str_(s.sid)] = str_(r && r.n || e);
       return { sid: str_(s.sid), sn: str_(s.sn || s.cn), name: str_(r && r.n || e), cn: str_(s.cn),
-        gt: str_(s.gt), gh: str_(s.gh), tpl: str_(s.tpl), rn: num_(s.rn) };
+        gt: str_(s.gt), gh: str_(s.gh), tpl: str_(s.tpl), rn: num_(s.rn),
+        b: num_(s.b) || 0, h: num_(s.h) || 0 };
     });
     var byEmail = {};
     var gReviews = gg.reviews.map(function (r) {
@@ -1868,6 +1877,25 @@ function apiAdmin(req) {
         l: str_(r.l), w: str_(r.w), t: num_(r.t), rm: num_(r.rm) || 0, sim: num_(r.sim) || 0 };
     });
     return { ok: true, studios: gStudios, reviews: gReviews };
+  }
+
+  /* Hide a LISTING (studio name / game title / how-to-play are pupil-authored
+     free text too - safety gate finding): the listing vanishes from every
+     other pupil's marquee on their next poll; the maker sees her own card
+     flagged "hidden - talk to your teacher". Hide, never delete. */
+  if (sub === 'galleryHideStudio') {
+    if (!cls) return { ok: false, error: 'unknown-class' };
+    return withLock_(function () {
+      var gh2 = galGet_(cls, str_(req.lessonId));
+      var hitEmail = '';
+      Object.keys(gh2.studios).forEach(function (e) {
+        if (str_(gh2.studios[e].sid) === str_(req.sid)) hitEmail = e;
+      });
+      if (!hitEmail) return { ok: false, error: 'no-studio' };
+      gh2.studios[hitEmail].h = 1;
+      try { jset_(sp_(), galKey_(cls, str_(req.lessonId)), gh2); } catch (e) { return STORE_FULL_; }
+      return { ok: true };
+    });
   }
 
   /* One-tap removal: the review vanishes from the maker's screen on their

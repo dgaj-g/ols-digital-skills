@@ -2378,6 +2378,7 @@
       var qa = Object.assign({}, draft.qa || {});      // {cId: 'p'|'f'}
       var fq = Object.assign({}, draft.fq || {});      // found-by-QA tags
       var shipped = !!draft.ship;
+      var beta = !!draft.beta;   // doors opened via the in-beta door (not all 4 ticks)
       var gt = String(draft.gt || '');
       var gh = String(draft.gh || '');
       var stretchDone = !!draft.stretch;
@@ -2389,7 +2390,7 @@
         App.state.draft = App.state.draft || {};
         var d = App.state.draft.studio = App.state.draft.studio || {};
         d.tpl = tpl; d.sn = sn; d.kit = kit ? 1 : 0; d.qa = qa; d.fq = fq;
-        d.ship = shipped ? 1 : 0; d.gt = gt; d.gh = gh;
+        d.ship = shipped ? 1 : 0; d.beta = beta ? 1 : 0; d.gt = gt; d.gh = gh;
         d.stretch = stretchDone ? 1 : 0; d.stn = stretchNote;
         ctx.saveEvent({ draft: App.state.draft });
       }
@@ -2512,8 +2513,9 @@
 
           '<div class="std-ready-zone">' +
           '<button class="std-ready-btn ' + readyState + '" type="button"' + (readyState === 'lit' ? '' : ' disabled') + '>' +
-          (shipped ? 'DOORS OPEN &mdash; SEE YOU AT PRESS NIGHT' : 'READY FOR GALLERY') + '</button>' +
+          (shipped ? (beta ? 'DOORS OPEN &mdash; IN BETA' : 'DOORS OPEN &mdash; SEE YOU AT PRESS NIGHT') : 'READY FOR GALLERY') + '</button>' +
           (shipped ? '' : '<p class="std-ready-note">' + (allPass() ? 'All four checks passed &mdash; open your doors.' : 'Lights up when all four QA checks pass.') + '</p>') +
+          (!shipped && !allPass() && Object.keys(qa).length >= 2 ? '<button class="ghost-btn std-beta-door" type="button">Out of time? Open in beta &mdash; ask your teacher first</button>' : '') +
           '</div>' +
 
           '<div class="card std-stretch' + (stretchDone ? ' done' : '') + '"><span class="std-qa-tag">&#11088; STUDIO NOTE &middot; STRETCH</span>' +
@@ -2590,7 +2592,17 @@
         });
 
         var ready = d.querySelector('.std-ready-btn');
-        if (!shipped && allPass()) ready.onclick = function () { marqueeView(); };
+        if (!shipped && allPass()) ready.onclick = function () { marqueeView(false); };
+        var betaDoor = d.querySelector('.std-beta-door');
+        if (betaDoor) betaDoor.onclick = function () {
+          if (!betaDoor.classList.contains('arm')) {
+            betaDoor.classList.add('arm');
+            betaDoor.innerHTML = 'Sure? Critics will see IN BETA on your listing';
+            setTimeout(function () { betaDoor.classList.remove('arm'); betaDoor.innerHTML = 'Out of time? Open in beta &mdash; ask your teacher first'; }, 4000);
+            return;
+          }
+          marqueeView(true);
+        };
 
         var sc = d.querySelector('.std-stretch-confirm');
         if (sc) sc.onclick = function () {
@@ -2613,7 +2625,7 @@
           var xp = buildXp();
           var badge = Object.assign({}, ctx.chunk.badge, { xp: xp });
           var detail = 'qa=' + passCount() + '/' + crits.length + ';ship=1' +
-            (fqCount() ? ';fq=' + fqCount() : '') + (stretchDone ? ';s=1' : '');
+            (beta ? ';b=1' : '') + (fqCount() ? ';fq=' + fqCount() : '') + (stretchDone ? ';s=1' : '');
           ctx.awardBadge(badge, detail).then(function () { ctx.next(); });
         };
       }
@@ -2654,13 +2666,15 @@
         c.querySelector('.std-back').onclick = function () { host.innerHTML = ''; deskView(); };
       }
 
-      /* opening the doors = publishing the LISTING (never a file anywhere) */
-      function marqueeView() {
+      /* opening the doors = publishing the LISTING (never a file anywhere).
+         asBeta = the in-beta door: an unfinished game still exhibits ("in
+         beta" is a real studio state) - critics see the tag, honesty holds */
+      function marqueeView(asBeta) {
         host.innerHTML = '';
         var m = cfg.marquee || {};
-        var c = el('<div class="card std-marquee-form"><span class="intro-kicker">READY FOR GALLERY</span>' +
+        var c = el('<div class="card std-marquee-form"><span class="intro-kicker">' + (asBeta ? 'OPENING IN BETA' : 'READY FOR GALLERY') + '</span>' +
           '<h2>' + esc(m.title || 'Open the doors') + '</h2>' +
-          '<p class="intro-lead">' + esc(m.intro || 'Your listing goes up on the class marquee. Make it worth a visit.') + '</p>' +
+          '<p class="intro-lead">' + esc(asBeta ? (m.betaIntro || 'In beta is a real studio state. Your listing goes up with an IN BETA tag - critics review what is there.') : (m.intro || 'Your listing goes up on the class marquee. Make it worth a visit.')) + '</p>' +
           '<label class="std-sig-label" for="std-gt">Game title</label>' +
           '<input id="std-gt" class="std-sig-input" maxlength="28" autocomplete="off" placeholder="' + esc(m.titlePlaceholder || 'e.g. Sushi Drop') + '" value="' + esc(gt) + '">' +
           '<label class="std-sig-label" for="std-gh">How to play &mdash; one line</label>' +
@@ -2688,13 +2702,14 @@
           gh = hi.value.trim().slice(0, 80);
           saveDesk(); // the listing text survives a failed call
           status.textContent = 'Raising the marquee...';
-          ctx.call('galleryOpen', { lessonId: ctx.lesson.id, gt: gt, gh: gh, tpl: tpl, sn: sn }).then(function (r) {
+          ctx.call('galleryOpen', { lessonId: ctx.lesson.id, gt: gt, gh: gh, tpl: tpl, sn: sn, beta: asBeta ? 1 : 0 }).then(function (r) {
             if (!r || !r.ok) {
               status.textContent = 'The marquee did not answer (' + esc((r && r.error) || 'no reply') + ') - try again.';
               doors.disabled = false;
               return;
             }
             shipped = true;
+            beta = !!asBeta;
             saveDesk();
             App.toast('&#127914; Doors open - your game is on the marquee.');
             host.innerHTML = '';
@@ -2845,13 +2860,16 @@
           '<p class="gal-banner">&#128065;&#65039; Reviews are signed, and your teacher reads every one.</p></div>'
       }, 'Onto the floor', floorView);
 
+      /* pupils never see review counts or a needs-a-critic tag (that would be
+         a live popularity ranking - safety gate finding); the fairness lives
+         in the SILENT fewest-first sort, and the teacher's lens keeps counts */
       function marqueeCardHtml(s, clickable) {
-        var needy = feed && !s.mine && s.rn === Math.min.apply(null, feed.studios.filter(function (x) { return !x.mine; }).map(function (x) { return x.rn; }));
+        var meta = s.mine ? ('YOUR STUDIO' + (s.b ? ' &middot; IN BETA' : '')) : (s.b ? 'IN BETA' : (s.tpl ? { catch: 'A CATCHING GAME', maze: 'A MAZE ESCAPE', quiz: 'A QUIZ SHOW' }[s.tpl] || 'ON SHOW' : 'ON SHOW'));
         return '<' + (clickable ? 'button type="button"' : 'div') + ' class="gal-marquee-card' + (s.mine ? ' mine' : '') + (clickable ? ' clickable' : '') + '" data-sid="' + esc(s.sid) + '">' +
           '<span class="gal-mq-studio">' + esc(s.sn || s.cn) + (s.sim ? ' <em class="gal-sim">simulated</em>' : '') + '</span>' +
           '<b class="gal-mq-title">' + esc(s.gt) + '</b>' +
           '<p class="gal-mq-how">' + esc(s.gh) + '</p>' +
-          '<span class="gal-mq-meta">' + (s.mine ? 'YOUR STUDIO' : (s.rn + ' review' + (s.rn === 1 ? '' : 's')) + (needy && clickable ? ' &middot; NEEDS A CRITIC' : '')) + '</span>' +
+          '<span class="gal-mq-meta">' + meta + '</span>' +
           '</' + (clickable ? 'button' : 'div') + '>';
       }
 
@@ -2887,7 +2905,8 @@
         var given = feed ? feed.given : 0;
         passes.innerHTML = 'Press passes: <b>' + Math.max(0, quota - given) + '</b> to spend' + (given >= quota ? ' &#10003;' : '');
         var mine = feed && feed.studios.filter(function (s) { return s.mine; })[0];
-        floor.querySelector('.gal-mine-card').innerHTML = mine ? marqueeCardHtml(mine, false)
+        floor.querySelector('.gal-mine-card').innerHTML = mine
+          ? (marqueeCardHtml(mine, false) + (mine.hd ? '<p class="std-note">Your listing is hidden just now &mdash; have a word with your teacher.</p>' : ''))
           : '<p class="std-note">Your doors are not open yet &mdash; finish the Studio Desk first.</p>';
         var list = floor.querySelector('.gal-incoming-list');
         var myReviews = (feed && feed.myReviews) || [];
