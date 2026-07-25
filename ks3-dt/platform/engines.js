@@ -1685,4 +1685,454 @@
     }
   };
 
+  /* ================= casework (L4's Case Board) ============================
+     Bug Detective, staged as an evidence board — NOT a ladder (Session 9 gate
+     binding: L4 breaks the ladder+costed-hint+retest rhythm). Four case files
+     pinned to a board; the training case (c1) unseals the rest IN ANY ORDER.
+     The clue routine is a peer-consult protocol, not a point cost: HQ's clue
+     (sprite only, never the fix) downgrades that case's stamp GOLD -> SILVER.
+     Verification is the binding one: every case closes ONLY by re-playing the
+     actual fixed Scratch game against a case-specific re-play script + a one
+     sentence case log. No confirm-card marking exists anywhere in this engine.
+     The tutorial video lives ON the board (Detective's Handbook), and the
+     Release Desk (full-game RC check + ship-the-build to Drive via the generic
+     artifactCheck, kinds:['sb3']) is a coda INSIDE the chunk — deliberately
+     not a separate bank chunk (L2's Drive-drag gate stays unique). */
+  Engines.casework = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var cases = cfg.cases || [];
+      var solo = !!ctx.catchup;
+      var draft = (ctx.draft && ctx.draft.casework) || {};
+      var closed = (draft.closed || []).slice();
+      var silver = (draft.silver || []).slice();
+      var logs = Object.assign({}, draft.logs || {});
+      var gg = !!draft.gg;          // evidence intake confirmed
+      var rcDone = !!draft.rc;      // release-candidate full run done
+      var shipped = !!draft.ship;   // .sb3 landed in Drive (HQ-verified)
+      var shipSkipped = !!draft.sk; // teacher-sanctioned skip
+      var stretchDone = !!draft.stretch;
+
+      function saveBoard() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        App.state.draft.casework = {
+          closed: closed, silver: silver, logs: logs, gg: gg ? 1 : 0,
+          rc: rcDone ? 1 : 0, ship: shipped ? 1 : 0, sk: shipSkipped ? 1 : 0,
+          stretch: stretchDone ? 1 : 0
+        };
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+
+      var isClosed = function (id) { return closed.indexOf(String(id)) !== -1; };
+      var isSilver = function (id) { return silver.indexOf(String(id)) !== -1; };
+      var allClosed = function () {
+        return cases.length && cases.every(function (cs) { return isClosed(cs.id); });
+      };
+      var caseUnsealed = function (cs) {
+        if (!gg) return false;
+        if (cs.training) return true;
+        var trainingId = (cases.filter(function (c) { return c.training; })[0] || cases[0]).id;
+        return isClosed(trainingId);
+      };
+
+      function starsHtml(n) {
+        var out = '';
+        for (var i = 0; i < 5; i++) out += '<span class="case-star' + (i < n ? ' lit' : '') + '">&#9733;</span>';
+        return out;
+      }
+      function spannersHtml(n) {
+        var out = '';
+        for (var i = 0; i < n; i++) out += '&#128295;';
+        return '<span class="case-spanners" title="difficulty">' + out + '</span>';
+      }
+      function stampHtml(id, mini) {
+        return '<span class="case-stamp ' + (isSilver(id) ? 'silver' : 'gold') + (mini ? ' mini' : '') + '">CASE CLOSED</span>';
+      }
+
+      /* ---------- review reopen: static stamped board + logs, zero writes ---------- */
+      if (ctx.review) {
+        var rows = cases.map(function (cs) {
+          return '<div class="case-review-row">' +
+            '<span class="case-tab">' + esc(cs.num) + '</span><b>' + esc(cs.name) + '</b>' +
+            (isClosed(cs.id) ? stampHtml(cs.id, true) : '<span class="case-open-note">left open</span>') +
+            (logs[cs.id] ? '<p class="case-log-quote">&ldquo;' + esc(logs[cs.id]) + '&rdquo;</p>' : '') +
+            '</div>';
+        }).join('');
+        host.appendChild(el('<div class="card case-review"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+          '<h2>Your case files, on record</h2>' + rows +
+          (stretchDone ? '<p class="case-review-extra">&#11088; The Jellyfish Job: taken and closed.</p>' : '') +
+          '<p class="case-review-extra">' + (draft.ship ? 'Fixed build shipped to your Drive vault.' : 'The fixed build lives on in Scratch.') + '</p>' +
+          '<button class="primary-btn" type="button">Continue</button></div>'));
+        host.querySelector('button').onclick = function () { ctx.next(); };
+        return;
+      }
+
+      /* ---------- intro ---------- */
+      var began = gg || closed.length;
+      introCard(host, {
+        kicker: chunk.title,
+        title: cfg.title || 'The Case Board',
+        text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
+        extra: (solo ? '' : (cfg.pairNote ? '<p class="case-pair-note">&#128101; ' + esc(cfg.pairNote) + '</p>' : ''))
+      }, began ? 'Back to the board' : 'Open the case board', boardView);
+
+      /* ---------- the board ---------- */
+      function boardView() {
+        host.innerHTML = '';
+        var closedCount = cases.filter(function (cs) { return isClosed(cs.id); }).length;
+        var releaseOpen = allClosed();
+        var caseCards = cases.map(function (cs, i) {
+          var sealed = !caseUnsealed(cs);
+          var done = isClosed(cs.id);
+          return '<button class="case-pin case-file tilt' + (i % 4) + (sealed ? ' sealed' : '') + (done ? ' closed' : '') + '" data-case="' + esc(cs.id) + '" type="button"' + (sealed ? ' disabled' : '') + '>' +
+            '<span class="case-pin-dot"></span>' +
+            '<span class="case-tab">' + esc(cs.num) + (cs.training ? ' &middot; TRAINING' : '') + '</span>' +
+            '<b class="case-name">' + esc(cs.name) + '</b>' +
+            '<span class="case-stars">' + starsHtml(cs.stars) + '</span>' +
+            spannersHtml(cs.spanners) +
+            (done ? stampHtml(cs.id, true) : (sealed ? '<span class="case-sealed-ribbon">SEALED</span>' : '<span class="case-open-chip">OPEN</span>')) +
+            '</button>';
+        }).join('');
+        var stretchSealed = !gg || !caseUnsealed({ training: false });
+        var stretchCard = cfg.stretchCase
+          ? '<button class="case-pin case-file case-stretch tilt2' + (stretchSealed ? ' sealed' : '') + (stretchDone ? ' closed' : '') + '" type="button"' + (stretchSealed ? ' disabled' : '') + '>' +
+            '<span class="case-pin-dot"></span>' +
+            '<span class="case-tab">' + esc(cfg.stretchCase.num) + ' &middot; STRETCH</span>' +
+            '<b class="case-name">' + esc(cfg.stretchCase.name) + '</b>' +
+            '<span class="case-stars">' + starsHtml(cfg.stretchCase.stars) + '</span>' +
+            (stretchDone ? '<span class="case-stamp gold mini">JOB DONE</span>' : (stretchSealed ? '<span class="case-sealed-ribbon">SEALED</span>' : '<span class="case-open-chip">FEATURE REQUEST</span>')) +
+            '</button>'
+          : '';
+        var b = el('<div class="case-board">' +
+          '<div class="case-board-head"><span class="case-board-brand">OLS GAMES &middot; QA DIVISION</span>' +
+          '<h2>The Case Board</h2>' +
+          '<span class="case-board-count">' + closedCount + ' of ' + cases.length + ' cases closed</span></div>' +
+          '<div class="case-board-grid">' +
+          '<button class="case-pin case-tool tilt1" data-view="handbook" type="button"><span class="case-pin-dot"></span>' +
+          '<span class="case-tool-icon">&#127909;</span><b>Detective&rsquo;s Handbook</b><span class="case-tool-note">training film &middot; watch any time</span></button>' +
+          '<button class="case-pin case-tool tilt3' + (gg ? ' done' : '') + '" data-view="intake" type="button"><span class="case-pin-dot"></span>' +
+          '<span class="case-tool-icon">&#128229;</span><b>Evidence Intake</b><span class="case-tool-note">' + (gg ? 'broken game secured &#10003;' : 'START HERE &middot; get the broken game') + '</span></button>' +
+          caseCards + stretchCard +
+          '<button class="case-pin case-release tilt0' + (releaseOpen ? '' : ' sealed') + '" data-view="release" type="button"' + (releaseOpen ? '' : ' disabled') + '>' +
+          '<span class="case-pin-dot"></span><span class="case-tab">RELEASE DESK</span>' +
+          '<b class="case-name">Ship the fixed game</b>' +
+          (releaseOpen ? '<span class="case-open-chip">' + (shipped || shipSkipped ? 'signed off' : 'ALL CASES CLOSED &mdash; GO') + '</span>' : '<span class="case-sealed-ribbon">SEALED UNTIL ALL 4 CLOSE</span>') +
+          '</button>' +
+          '</div></div>');
+        host.appendChild(b);
+        b.querySelectorAll('.case-file[data-case]').forEach(function (btn) {
+          btn.onclick = function () {
+            var cs = cases.filter(function (c) { return String(c.id) === btn.getAttribute('data-case'); })[0];
+            caseView(cs);
+          };
+        });
+        var hb = b.querySelector('[data-view="handbook"]');
+        hb.onclick = function () { handbookView(); };
+        b.querySelector('[data-view="intake"]').onclick = function () { intakeView(); };
+        var rel = b.querySelector('[data-view="release"]');
+        if (releaseOpen) rel.onclick = function () { releaseView(); };
+        var st = b.querySelector('.case-stretch');
+        if (st && !stretchSealed) st.onclick = function () { stretchView(); };
+      }
+
+      function backRow(label) {
+        return '<button class="ghost-btn case-back" type="button">&larr; ' + esc(label || 'Pin it back on the board') + '</button>';
+      }
+      function wireBack(card) {
+        card.querySelector('.case-back').onclick = function () { host.innerHTML = ''; boardView(); };
+      }
+
+      /* ---------- evidence intake (get the broken game) ---------- */
+      function intakeView() {
+        host.innerHTML = '';
+        var g = cfg.getgame || {};
+        var steps = (g.steps || []).map(function (s) {
+          return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p></div></li>';
+        }).join('');
+        var c = el('<div class="card case-filecard"><span class="intro-kicker">EVIDENCE INTAKE</span>' +
+          '<h2>Secure the broken build</h2>' +
+          '<p class="intro-lead">' + esc(g.intro || '') + '</p>' +
+          '<p class="case-getgame-btns">' +
+          '<a class="primary-btn case-dl" href="' + esc(asset(g.file || '')) + '" download>&#11015;&#65039; Download the broken game</a> ' +
+          '<a class="ghost-btn" href="' + esc(g.url || 'https://scratch.mit.edu/projects/editor/') + '" target="_blank" rel="noopener">Open the Scratch editor &#8599;</a></p>' +
+          '<ol class="af-steps">' + steps + '</ol>' +
+          '<button class="confirm-step" type="button"' + (gg ? ' disabled' : '') + '><span class="confirm-box' + (gg ? ' done' : '') + '"></span><span>' + esc(g.confirm || 'The broken game is open in Scratch and I can see its code') + '</span></button>' +
+          backRow() + '</div>');
+        host.appendChild(c);
+        wireBack(c);
+        if (!gg) c.querySelector('.confirm-step').onclick = function () {
+          this.classList.add('ticked');
+          gg = true;
+          saveBoard();
+          App.toast('Evidence secured &mdash; Case 01 is unsealed.');
+          setTimeout(function () { host.innerHTML = ''; boardView(); }, 650);
+        };
+      }
+
+      /* ---------- the handbook (tutorial video, pinned to the board) ---------- */
+      function handbookView() {
+        host.innerHTML = '';
+        var v = cfg.handbook || {};
+        if (!v.src) {
+          var c0 = el('<div class="card case-filecard"><span class="intro-kicker">DETECTIVE&rsquo;S HANDBOOK</span>' +
+            '<h2>&#127909; Training film on its way</h2><p>' + esc(v.fallback || 'The handbook film is being made. Your teacher’s demo covers everything it will show.') + '</p>' +
+            backRow() + '</div>');
+          host.appendChild(c0);
+          wireBack(c0);
+          return;
+        }
+        var chapters = (v.chapters || []).map(function (ch) {
+          return '<button class="vid-chapter" data-t="' + Number(ch.t) + '" type="button">' + esc(ch.label) + '</button>';
+        }).join('');
+        var c = el('<div class="card video-card case-filecard"><span class="intro-kicker">DETECTIVE&rsquo;S HANDBOOK</span>' +
+          '<h2>' + esc(v.title || 'How to read someone else’s code') + '</h2>' +
+          '<video controls preload="metadata" playsinline ' + (v.poster ? 'poster="' + esc(asset(v.poster)) + '"' : '') + ' src="' + esc(asset(v.src)) + '"></video>' +
+          (chapters ? '<div class="vid-chapters">' + chapters + '</div>' : '') +
+          '<p class="case-handbook-note">Dip back in any time &mdash; chapter 3 is most useful when you&rsquo;re mid-case.</p>' +
+          backRow() + '</div>');
+        host.appendChild(c);
+        var vid = c.querySelector('video');
+        c.querySelectorAll('.vid-chapter').forEach(function (bch) {
+          bch.onclick = function () { vid.currentTime = Number(bch.getAttribute('data-t')); vid.play(); };
+        });
+        wireBack(c);
+      }
+
+      /* ---------- a case file ---------- */
+      function caseView(cs) {
+        host.innerHTML = '';
+        var done = isClosed(cs.id);
+        var wasSilver = isSilver(cs.id);
+        var clue = cs.clue || {};
+
+        if (done) {
+          var cDone = el('<div class="card case-filecard closed-file"><span class="intro-kicker">' + esc(cs.num) + '</span>' +
+            '<h2>' + esc(cs.name) + '</h2>' +
+            stampHtml(cs.id) +
+            '<div class="case-ticket"><span class="case-stars">' + starsHtml(cs.stars) + '</span>' +
+            '<p>&ldquo;' + esc(cs.ticket) + '&rdquo;</p><span class="case-player">&mdash; ' + esc(cs.player) + '</span></div>' +
+            (logs[cs.id] ? '<div class="case-log-final"><b>Your case log:</b><p>&ldquo;' + esc(logs[cs.id]) + '&rdquo;</p></div>' : '') +
+            backRow() + '</div>');
+          host.appendChild(cDone);
+          wireBack(cDone);
+          return;
+        }
+
+        var logText = logs[cs.id] || '';
+        var c = el('<div class="card case-filecard"><span class="intro-kicker">' + esc(cs.num) + (cs.training ? ' &middot; TRAINING CASE' : '') + '</span>' +
+          '<h2>' + esc(cs.name) + '</h2>' +
+          '<div class="case-ticket"><span class="case-stars">' + starsHtml(cs.stars) + '</span>' +
+          '<p>&ldquo;' + esc(cs.ticket) + '&rdquo;</p><span class="case-player">&mdash; ' + esc(cs.player) + '</span></div>' +
+          (cs.img ? '<figure class="case-evidence"><img src="' + esc(asset(cs.img.src)) + '" alt="' + esc(cs.img.alt || '') + '" loading="lazy">' +
+            (cs.img.caption ? '<figcaption>' + esc(cs.img.caption) + '</figcaption>' : '') + '</figure>' : '') +
+          '<div class="case-step"><span class="case-step-tag">1 &middot; SEE IT HAPPEN</span><p>' + esc(cs.symptom) + '</p></div>' +
+          '<div class="case-step"><span class="case-step-tag">2 &middot; READ THE CODE</span><p>' + esc(cs.look) + '</p>' +
+          '<p class="case-one-thing">&#128269; Find the ONE thing wrong &mdash; don&rsquo;t rebuild the whole script.</p>' +
+          '<div class="case-clue"></div></div>' +
+          '<div class="case-step"><span class="case-step-tag">3 &middot; FIX IT &amp; FILE THE LOG</span>' +
+          '<p>Make your fix in Scratch, then log it like a real QA tester &mdash; one sentence: <b>what was wrong, and what you changed</b>.</p>' +
+          '<textarea class="case-log-input" maxlength="200" placeholder="' + esc(cs.logHint || 'The bug was... so I...') + '">' + esc(logText) + '</textarea></div>' +
+          '<div class="case-step"><span class="case-step-tag">4 &middot; RE-PLAY TO PROVE IT</span>' +
+          '<p>' + esc(cs.replay) + '</p>' +
+          '<p class="case-honesty">HQ accepts only one kind of proof: you watched the bug NOT happen.</p>' +
+          '<button class="confirm-step case-close-btn" type="button" disabled><span class="confirm-box"></span><span>' + esc(cs.replayConfirm) + '</span></button></div>' +
+          '<div class="case-stampzone"></div>' +
+          backRow() + '</div>');
+        host.appendChild(c);
+        wireBack(c);
+
+        /* clue routine: free re-read -> peer consult -> HQ clue (stamp goes silver) */
+        var clueBox = c.querySelector('.case-clue');
+        function paintClue() {
+          if (wasSilver || isSilver(cs.id)) {
+            clueBox.innerHTML = '<div class="case-clue-open"><p><b>HQ&rsquo;s clue:</b> ' + esc(clue.hq || '') + '</p>' +
+              '<p class="case-clue-cost">This case now stamps <b class="silver-word">SILVER</b>. Solve the rest unaided for gold.</p></div>';
+            return;
+          }
+          clueBox.innerHTML = '<button class="ghost-btn case-clue-btn" type="button">Stuck? Start the clue routine</button>';
+          clueBox.querySelector('.case-clue-btn').onclick = function () {
+            clueBox.innerHTML = '<div class="case-clue-open">' +
+              '<p><b>Step 1 &mdash; free:</b> ' + esc(clue.free || 'Re-read the ticket. What EXACTLY does the player say happens?') + '</p>' +
+              '<p><b>Step 2 &mdash; detective protocol:</b> ' + esc(solo ? (clue.consultSolo || 'No other agencies on shift right now — go straight to Step 3 if Step 1 didn’t crack it.') : (clue.consult || 'Consult another agency that has CLOSED this case. One question, detective to detective.')) + '</p>' +
+              '<button class="ghost-btn case-hq-btn" type="button">Still stuck &mdash; open HQ&rsquo;s clue (this case stamps SILVER, not gold)</button></div>';
+            clueBox.querySelector('.case-hq-btn').onclick = function () {
+              silver.push(String(cs.id));
+              saveBoard();
+              paintClue();
+            };
+          };
+        }
+        paintClue();
+
+        /* the log gates the close button - a case without a log isn't casework */
+        var ta = c.querySelector('.case-log-input');
+        var closeBtn = c.querySelector('.case-close-btn');
+        function gateClose() {
+          var t = ta.value.trim();
+          closeBtn.disabled = !(t.length >= 12 && t.indexOf(' ') !== -1);
+        }
+        ta.oninput = function () {
+          logs[cs.id] = ta.value.trim();
+          gateClose();
+        };
+        ta.onblur = function () { saveBoard(); };
+        gateClose();
+
+        closeBtn.onclick = function () {
+          logs[cs.id] = ta.value.trim();
+          closed.push(String(cs.id));
+          saveBoard();
+          closeBtn.classList.add('ticked');
+          var zone = c.querySelector('.case-stampzone');
+          zone.innerHTML = '<span class="case-stamp big ' + (isSilver(cs.id) ? 'silver' : 'gold') + '">CASE CLOSED</span>';
+          var stamp = zone.firstChild;
+          requestAnimationFrame(function () { stamp.classList.add('land'); });
+          setTimeout(function () { stamp.classList.add('land'); }, 150); // hidden-tab rAF fallback
+          var left = cases.filter(function (x) { return !isClosed(x.id); }).length;
+          setTimeout(function () {
+            App.toast(left ? (cs.training ? 'Training case closed &mdash; Cases 02&ndash;04 are UNSEALED. Take them in any order.' : left + ' case' + (left > 1 ? 's' : '') + ' still open.') : 'All four cases closed &mdash; the RELEASE DESK is open.');
+            host.innerHTML = '';
+            boardView();
+          }, 1500);
+        };
+      }
+
+      /* ---------- stretch: the feature-request job ---------- */
+      function stretchView() {
+        host.innerHTML = '';
+        var s = cfg.stretchCase;
+        var c = el('<div class="card case-filecard"><span class="intro-kicker">' + esc(s.num) + ' &middot; STRETCH &middot; FEATURE REQUEST</span>' +
+          '<h2>' + esc(s.name) + '</h2>' +
+          '<div class="case-ticket feature"><span class="case-stars">' + starsHtml(s.stars) + '</span>' +
+          '<p>&ldquo;' + esc(s.ticket) + '&rdquo;</p><span class="case-player">&mdash; ' + esc(s.player) + '</span></div>' +
+          '<div class="case-step"><span class="case-step-tag">THE JOB</span><p>' + esc(s.job) + '</p>' +
+          (s.img ? '<img class="rung-img" src="' + esc(asset(s.img)) + '" alt="Starter blocks for the jellyfish">' : '') + '</div>' +
+          '<div class="case-step"><span class="case-step-tag">PROVE IT</span><p>' + esc(s.test) + '</p>' +
+          '<button class="confirm-step" type="button"' + (stretchDone ? ' disabled' : '') + '><span class="confirm-box' + (stretchDone ? ' done' : '') + '"></span><span>' + esc(s.confirm) + '</span></button></div>' +
+          backRow() + '</div>');
+        host.appendChild(c);
+        wireBack(c);
+        if (!stretchDone) c.querySelector('.confirm-step').onclick = function () {
+          this.classList.add('ticked');
+          stretchDone = true;
+          saveBoard();
+          App.toast('Feature shipped. The players are thrilled (and in danger).');
+          // if the build already shipped, the job was the last open file - clock off
+          setTimeout(function () {
+            host.innerHTML = '';
+            if (shipped || shipSkipped) finishBoard(); else boardView();
+          }, 700);
+        };
+      }
+
+      /* ---------- release desk: RC check then ship-to-Drive ---------- */
+      function releaseView() {
+        host.innerHTML = '';
+        var r = cfg.rc || {};
+        var sh = cfg.ship || {};
+        var c = el('<div class="card case-filecard"><span class="intro-kicker">RELEASE DESK</span>' +
+          '<h2>' + esc(r.title || 'Release Candidate check') + '</h2>' +
+          '<div class="case-step"><span class="case-step-tag">THE FULL RUN</span>' +
+          '<p>' + esc(r.text || '') + '</p>' +
+          '<ul class="case-rc-list">' + (r.watch || []).map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul>' +
+          '<button class="confirm-step case-rc-btn" type="button"' + (rcDone ? ' disabled' : '') + '><span class="confirm-box' + (rcDone ? ' done' : '') + '"></span><span>' + esc(r.confirm || 'Full run clean — every fix held') + '</span></button></div>' +
+          '<div class="case-ship" ' + (rcDone ? '' : 'hidden') + '></div>' +
+          backRow() + '</div>');
+        host.appendChild(c);
+        wireBack(c);
+        var shipBox = c.querySelector('.case-ship');
+
+        function paintShip() {
+          if (shipped || shipSkipped) {
+            shipBox.innerHTML = '<div class="dc-row ok"><span class="dc-mark">&#10003;</span><span>' +
+              (shipped ? 'Build shipped &mdash; the fixed game is in your Drive vault.' : 'Signed off without the vault copy.') + '</span></div>' +
+              '<button class="primary-btn case-finish-btn" type="button">Wrap up the board</button>';
+            var fb = shipBox.querySelector('.case-finish-btn');
+            fb.onclick = function () { maybeFinish(); };
+            return;
+          }
+          var steps = (sh.steps || []).map(function (s) {
+            return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p></div></li>';
+          }).join('');
+          shipBox.innerHTML = '<span class="case-step-tag">SHIP IT</span>' +
+            '<p>' + esc(sh.intro || '') + '</p>' +
+            '<ol class="af-steps">' + steps + '</ol>' +
+            '<div class="rung-actions">' +
+            '<button class="primary-btn case-ship-btn" type="button">Run the HQ Inspection</button>' +
+            '<button class="ghost-btn case-ship-skip" type="button" hidden>Sign off without the vault copy (ask your teacher)</button>' +
+            '</div><div class="af-result"></div>';
+          var runBtn = shipBox.querySelector('.case-ship-btn');
+          var skipBtn = shipBox.querySelector('.case-ship-skip');
+          var box = shipBox.querySelector('.af-result');
+          var tries = 0;
+          skipBtn.onclick = function () { shipSkipped = true; saveBoard(); paintShip(); };
+          runBtn.onclick = function () {
+            runBtn.disabled = true;
+            box.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>HQ is looking inside your Vault&hellip;</span></div>';
+            ctx.call('artifactCheck', { lessonNum: String(ctx.lessonEntry.num), kinds: sh.kinds || ['sb3'], hours: sh.hours || 3 }).then(function (res) {
+              runBtn.disabled = false;
+              tries++;
+              if (!res || !res.ok) {
+                box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>The line to HQ dropped (wifi?) &mdash; try again in a moment.</span></div>';
+                return;
+              }
+              if (res.found) {
+                shipped = true;
+                saveBoard();
+                box.innerHTML = '<div class="dc-row ok"><span class="dc-mark">&#10003;</span><span>HQ found <b>' + esc(res.name) + '</b> in your DT Work vault.</span></div>' +
+                  (res.simulated ? '<p class="dc-sim">(Preview mode: this inspection is simulated &mdash; the live platform checks your real Drive.)</p>' : '');
+                setTimeout(paintShip, 900);
+              } else {
+                box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
+                  (res.noFolder ? 'HQ could not find your School &gt; DT Work folder in Drive &mdash; build it (+ New &rarr; Folder), then inspect again.'
+                    : 'No freshly-saved .sb3 found in DT Work yet &mdash; check the save and the drag, then inspect again.') + '</span></div>';
+                if (tries >= 2) skipBtn.hidden = false;
+              }
+            });
+          };
+        }
+
+        var rcBtn = c.querySelector('.case-rc-btn');
+        if (!rcDone) rcBtn.onclick = function () {
+          rcBtn.classList.add('ticked');
+          rcDone = true;
+          saveBoard();
+          shipBox.hidden = false;
+          paintShip();
+        };
+        if (rcDone) paintShip();
+      }
+
+      /* stretch nudge on the way out, then the badge */
+      function maybeFinish() {
+        if (cfg.stretchCase && !stretchDone) {
+          host.innerHTML = '';
+          var c = el('<div class="card case-filecard"><span class="intro-kicker">ONE FILE LEFT</span>' +
+            '<h2>The Jellyfish Job is still pinned open</h2>' +
+            '<p class="intro-lead">' + esc(cfg.stretchNudge || 'The build has shipped — but a five-star feature request is still on the board. Take the job, or clock off?') + '</p>' +
+            '<div class="rung-actions">' +
+            '<button class="primary-btn" type="button">Take the job &#11088;</button>' +
+            '<button class="ghost-btn" type="button">Clock off</button></div></div>');
+          host.appendChild(c);
+          var btns = c.querySelectorAll('button');
+          btns[0].onclick = function () { host.innerHTML = ''; stretchView(); };
+          btns[1].onclick = function () { finishBoard(); };
+          return;
+        }
+        finishBoard();
+      }
+
+      function finishBoard() {
+        var gold = 0;
+        cases.forEach(function (cs) { if (isClosed(cs.id) && !isSilver(cs.id)) gold++; });
+        var xp = 4 + closed.length * 4 + gold + (rcDone ? 2 : 0) + (shipped ? 3 : 0) + (stretchDone ? 3 : 0);
+        var badge = Object.assign({}, ctx.chunk.badge, { xp: xp });
+        var detail = 'cw=' + cases.filter(function (cs) { return isClosed(cs.id); }).length + '/' + cases.length +
+          ';g=' + gold + ';rc=' + (rcDone ? 1 : 0) + ';ship=' + (shipped ? 1 : 0) + (stretchDone ? ';s=1' : '');
+        ctx.awardBadge(badge, detail).then(function () { ctx.next(); });
+      }
+    }
+  };
+
 })(window);

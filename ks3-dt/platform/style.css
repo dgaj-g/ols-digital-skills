@@ -1374,3 +1374,116 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .tourney-public h3 { color: #92A4C7; text-align: center; font-size: 1rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px; }
 .tourney-public-row { display: flex; justify-content: space-between; gap: 14px; padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 1.05rem; }
 .tourney-public-row b { font-variant-numeric: tabular-nums; color: var(--tgold-hi); }
+
+/* ============ Lesson 4: the Case Board (casework engine) ============
+   An evidence board, not a ladder: dark navy felt, gold pins, manila case
+   files with tilt, rubber CASE CLOSED stamps (gold = unaided, silver = HQ
+   clue taken). Files open into light reading-surface cards (.case-filecard)
+   so the working surfaces stay calm and high-contrast. */
+.case-board { width: min(880px, 96vw); margin: 0 auto; padding: 22px 22px 30px;
+  border-radius: var(--r-lg); position: relative;
+  background:
+    radial-gradient(120% 90% at 15% 0%, rgba(228,184,36,0.07), transparent 55%),
+    linear-gradient(160deg, #101A31 0%, #0C1426 55%, #0A1120 100%);
+  border: 1px solid rgba(228,184,36,0.35);
+  box-shadow: inset 0 0 0 6px rgba(228,184,36,0.06), 0 18px 50px rgba(0,0,0,0.45); }
+.case-board-head { text-align: center; margin-bottom: 18px; }
+.case-board-brand { display: block; color: #92A4C7; font-size: 0.72rem; letter-spacing: 0.22em; }
+.case-board-head h2 { font-family: var(--font-display); color: #fff; font-size: clamp(1.4rem, 3vw, 1.9rem); margin: 4px 0 2px; }
+.case-board-count { color: var(--gold-hi); font-size: 0.85rem; letter-spacing: 0.08em; }
+.case-board-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 18px; }
+
+.case-pin { position: relative; text-align: left; cursor: pointer; border: none;
+  border-radius: 6px; padding: 26px 14px 14px; font: inherit; color: var(--ink);
+  background: linear-gradient(175deg, #FDF8EC 0%, #F4EBD6 100%);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+  transition: transform 0.18s ease, box-shadow 0.18s ease; display: flex; flex-direction: column; gap: 6px; }
+.case-pin:hover:not(:disabled) { transform: translateY(-3px) rotate(0deg) !important; box-shadow: 0 12px 26px rgba(0,0,0,0.45); z-index: 2; }
+.case-pin:disabled { cursor: default; }
+.case-pin.tilt0 { transform: rotate(-1.4deg); }
+.case-pin.tilt1 { transform: rotate(1.1deg); }
+.case-pin.tilt2 { transform: rotate(-0.7deg); }
+.case-pin.tilt3 { transform: rotate(1.6deg); }
+.case-pin-dot { position: absolute; top: 8px; left: 50%; margin-left: -7px; width: 14px; height: 14px;
+  border-radius: 50%; background: radial-gradient(circle at 35% 30%, var(--gold-hi), var(--gold-deep) 70%);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+.case-tab { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.14em; color: #8C6D1F;
+  background: rgba(228,184,36,0.18); border-radius: 4px; padding: 2px 8px; align-self: flex-start; }
+.case-name { font-family: var(--font-display); font-size: 1.02rem; line-height: 1.25; }
+.case-stars .case-star { color: #C9BFA8; font-size: 0.85rem; }
+.case-stars .case-star.lit { color: #D98324; }
+.case-spanners { font-size: 0.8rem; letter-spacing: 0.1em; }
+.case-open-chip { align-self: flex-start; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em;
+  color: #1F6F45; background: #DCF3E6; border-radius: 4px; padding: 2px 8px; }
+.case-sealed-ribbon { align-self: flex-start; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em;
+  color: #7A2C2C; background: #F3DCDC; border-radius: 4px; padding: 2px 8px; }
+.case-pin.sealed { filter: saturate(0.35) brightness(0.82); }
+.case-pin.sealed::after { content: ""; position: absolute; inset: 0; border-radius: 6px;
+  background: repeating-linear-gradient(-35deg, transparent 0 14px, rgba(60,40,20,0.05) 14px 28px); }
+.case-pin.closed { background: linear-gradient(175deg, #F6FBF4 0%, #E8F2E4 100%); }
+.case-tool { background: linear-gradient(175deg, #F2F6FE 0%, #E2EAF8 100%); }
+.case-tool-icon { font-size: 1.5rem; }
+.case-tool-note { font-size: 0.78rem; color: var(--muted); }
+.case-tool.done { background: linear-gradient(175deg, #F6FBF4 0%, #E8F2E4 100%); }
+.case-release { background: linear-gradient(175deg, #FFF6E8 0%, #F7E7C8 100%); }
+
+/* the rubber stamp */
+.case-stamp { display: inline-block; font-family: var(--font-display); font-weight: 800;
+  letter-spacing: 0.14em; border: 3px solid; border-radius: 6px; padding: 2px 10px;
+  transform: rotate(-8deg); font-size: 0.8rem; }
+.case-stamp.gold { color: #A8830F; border-color: #A8830F; background: rgba(228,184,36,0.12); }
+.case-stamp.silver { color: #5E6B80; border-color: #8A96A8; background: rgba(138,150,168,0.14); }
+.case-stamp.mini { align-self: flex-end; font-size: 0.66rem; padding: 1px 7px; }
+.case-stamp.big { font-size: clamp(1.4rem, 4vw, 2rem); padding: 8px 22px; border-width: 5px;
+  opacity: 0; transform: rotate(-8deg) scale(2.1); }
+.case-stamp.big.land { opacity: 1; transform: rotate(-8deg) scale(1);
+  transition: transform 0.28s cubic-bezier(0.2, 1.6, 0.4, 1), opacity 0.18s ease; }
+.case-stampzone { text-align: center; min-height: 8px; margin-top: 6px; }
+
+/* the open case file (light reading surface) */
+.case-filecard { text-align: left; }
+.case-filecard > .intro-kicker { display: inline-block; margin-bottom: 4px; }
+.case-filecard h2 { font-family: var(--font-display); margin: 2px 0 12px; }
+.case-ticket { border: 1px solid var(--line-l); border-left: 5px solid #D98324; border-radius: var(--r-sm);
+  background: var(--field); padding: 12px 16px; margin-bottom: 14px; }
+.case-ticket.feature { border-left-color: var(--good); }
+.case-ticket p { margin: 6px 0 4px; font-size: 1.02rem; line-height: 1.45; }
+.case-player { color: var(--muted); font-size: 0.85rem; }
+.case-evidence { margin: 0 0 14px; }
+.case-evidence img { width: 100%; border-radius: var(--r-sm); border: 1px solid var(--line-l); }
+.case-evidence figcaption { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
+.case-step { border-top: 1px dashed var(--line-l); padding: 12px 0 10px; }
+.case-step-tag { display: inline-block; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.14em;
+  color: var(--ols-blue); background: #E8EEF9; border-radius: 4px; padding: 2px 8px; margin-bottom: 6px; }
+.case-step p { margin: 4px 0; line-height: 1.5; }
+.case-one-thing { color: #8C6D1F; font-weight: 600; font-size: 0.92rem; }
+.case-honesty { color: var(--muted); font-size: 0.88rem; font-style: italic; }
+.case-clue { margin-top: 8px; }
+.case-clue-open { border: 1px solid var(--line-l); border-radius: var(--r-sm); background: #FFFDF2; padding: 10px 14px; }
+.case-clue-open p { font-size: 0.95rem; }
+.case-clue-cost { color: #5E6B80; }
+.silver-word { color: #5E6B80; letter-spacing: 0.06em; }
+.case-log-input { width: 100%; min-height: 74px; resize: vertical; font: inherit; font-size: 1rem;
+  border: 1px solid var(--line-l); border-radius: var(--r-sm); background: var(--field);
+  padding: 10px 12px; margin-top: 6px; color: var(--ink); }
+.case-log-input:focus { outline: 2px solid var(--gold); border-color: var(--gold); background: #fff; }
+.case-log-final { border: 1px solid var(--line-l); border-radius: var(--r-sm); background: #FFFDF2;
+  padding: 10px 14px; margin: 12px 0; }
+.case-log-final p { margin: 4px 0 0; font-style: italic; }
+.case-back { margin-top: 14px; }
+.case-getgame-btns { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 4px; }
+.case-getgame-btns .primary-btn, .case-getgame-btns .ghost-btn { text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.case-handbook-note { color: var(--muted); font-size: 0.88rem; margin-top: 8px; }
+.case-pair-note { margin-top: 10px; color: var(--muted); font-size: 0.95rem; }
+.case-rc-list { margin: 8px 0 12px 20px; }
+.case-rc-list li { margin: 4px 0; line-height: 1.45; }
+.case-ship { border-top: 1px dashed var(--line-l); padding: 12px 0 4px; margin-top: 6px; }
+.case-review-row { border-top: 1px dashed var(--line-l); padding: 10px 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.case-review-row .case-tab { flex: none; }
+.case-log-quote { width: 100%; margin: 2px 0 0; color: var(--muted); font-style: italic; font-size: 0.92rem; }
+.case-open-note { color: var(--muted); font-size: 0.8rem; }
+.case-review-extra { margin-top: 10px; color: var(--muted); }
+@media (max-width: 640px) {
+  .case-board { padding: 14px 10px 20px; }
+  .case-board-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+}
