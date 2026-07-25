@@ -1269,6 +1269,137 @@ function apiPairComplete(req) {
   });
 }
 
+/* ==================== section 14: Press Night gallery (L5) ====================
+   The first cross-pupil CONTENT since pairing: pupils publish a marquee
+   listing (studio + game title + how-to-play) and file signed peer reviews
+   ("I like... / I wonder...") against other studios. One compact store key
+   per class-lesson, gal:<cls>:<lessonId> - appends under withLock_, reads
+   lock-free (chat-digest discipline, section 12). Reviews are quota-capped
+   per critic (anti-pile-on, Two-Stars-and-a-Wish lineage), rate-limited,
+   length-capped, signed with the critic's codename, and teacher-removable
+   (admin sub) - a removed review vanishes from the maker's screen on the
+   next poll. No pupil email ever crosses the wire: studios travel as opaque
+   sids. Swept to the Archive Sheet's Gallery Archive tab on the chat
+   horizon. No new OAuth scopes. */
+var GAL_TITLE_MAX = 28;        // game title chars
+var GAL_HOW_MAX = 90;          // how-to-play chars
+var GAL_REVIEW_MAX = 200;      // chars per stem ("I like" / "I wonder")
+var GAL_REVIEWS_PER_CRITIC = 3; // 2 press passes required, a 3rd allowed
+function galKey_(cls, lessonId) { return 'gal:' + cls + ':' + lessonId; }
+function galGet_(cls, lessonId) {
+  var g = jget_(sp_(), galKey_(cls, lessonId), null) || {};
+  if (!g.seq) g.seq = 0;
+  if (!g.studios) g.studios = {};
+  if (!g.reviews) g.reviews = [];
+  return g;
+}
+function galClean_(s, max) {
+  return str_(s).replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
+}
+function galSignatureFor_(cls, email) {
+  var rec = readPupil_(cls, email);
+  var cn = str_(rec && rec.cn || '');
+  return cn ? ('Agent ' + cn) : (str_(rec && rec.n || '').split(' ')[0] || 'A critic');
+}
+
+/* Publish (or refresh) my marquee listing. Idempotent: re-opening updates the
+   listing text but keeps the sid and the reviews already received. */
+function apiGalleryOpen(req) {
+  req = req || {};
+  var email = userEmail_();
+  if (!email) return { ok: false, error: 'not-signed-in' };
+  var cls = realClass_(req.classCode);
+  if (!cls) return { ok: false, error: 'unknown-class' };
+  var lessonId = str_(req.lessonId);
+  var numStr = lessonNum_(classYear_(cls), lessonId);
+  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  var gt = galClean_(req.gt, GAL_TITLE_MAX);
+  var gh = galClean_(req.gh, GAL_HOW_MAX);
+  var tpl = str_(req.tpl).slice(0, 8);
+  if (!gt) return { ok: false, error: 'no-title' };
+  return withLock_(function () {
+    var g = galGet_(cls, lessonId);
+    var mine = g.studios[email];
+    g.seq = num_(g.seq) + 1;
+    g.studios[email] = {
+      sid: str_(mine && mine.sid) || ('s' + num_(g.seq)),
+      cn: galSignatureFor_(cls, email),
+      gt: gt, gh: gh, tpl: tpl,
+      ts: num_(mine && mine.ts) || tmin_(),
+      rn: num_(mine && mine.rn)
+    };
+    try { jset_(sp_(), galKey_(cls, lessonId), g); } catch (e) { return STORE_FULL_; }
+    return { ok: true, sid: str_(g.studios[email].sid) };
+  });
+}
+
+/* File a signed review against another studio (by sid, never email). */
+function apiGalleryPost(req) {
+  req = req || {};
+  var email = userEmail_();
+  if (!email) return { ok: false, error: 'not-signed-in' };
+  var cls = realClass_(req.classCode);
+  if (!cls) return { ok: false, error: 'unknown-class' };
+  var lessonId = str_(req.lessonId);
+  var like = galClean_(req.like, GAL_REVIEW_MAX);
+  var wonder = galClean_(req.wonder, GAL_REVIEW_MAX);
+  if (like.length < 8 || wonder.length < 8) return { ok: false, error: 'too-thin' };
+  return withLock_(function () {
+    var g = galGet_(cls, lessonId);
+    var toSid = str_(req.to);
+    var toEmail = '';
+    Object.keys(g.studios).forEach(function (e) {
+      if (str_(g.studios[e].sid) === toSid) toEmail = e;
+    });
+    if (!toEmail) return { ok: false, error: 'no-studio' };
+    if (toEmail === email) return { ok: false, error: 'own-studio' };
+    // Spam brakes: hard per-critic cap (the quota IS the rate limit at 3 max)
+    // + one review per critic per studio.
+    var mine = g.reviews.filter(function (r) { return str_(r.by) === email; });
+    if (mine.length >= GAL_REVIEWS_PER_CRITIC) return { ok: false, error: 'passes-spent' };
+    if (mine.some(function (r) { return str_(r.to) === toSid; })) return { ok: false, error: 'already-reviewed' };
+    g.seq = num_(g.seq) + 1;
+    g.reviews.push({
+      i: num_(g.seq), by: email, bcn: galSignatureFor_(cls, email),
+      to: toSid, l: like, w: wonder, t: tmin_(), rm: 0
+    });
+    g.studios[toEmail].rn = num_(g.studios[toEmail].rn) + 1;
+    try { jset_(sp_(), galKey_(cls, lessonId), g); } catch (e) { return STORE_FULL_; }
+    return { ok: true, given: mine.length + 1 };
+  });
+}
+
+/* Poll the marquee + my own reviews. Lock-free derived read (tnAgg_
+   discipline): a racing append self-heals on the next poll. */
+function apiGalleryFeed(req) {
+  req = req || {};
+  var email = userEmail_();
+  if (!email) return { ok: false, error: 'not-signed-in' };
+  var cls = realClass_(req.classCode);
+  if (!cls) return { ok: false, error: 'unknown-class' };
+  var g = galGet_(cls, str_(req.lessonId));
+  var mySid = str_(g.studios[email] && g.studios[email].sid || '');
+  var studios = Object.keys(g.studios).map(function (e) {
+    var s = g.studios[e];
+    return {
+      sid: str_(s.sid), cn: str_(s.cn), gt: str_(s.gt), gh: str_(s.gh),
+      tpl: str_(s.tpl), rn: num_(s.rn), mine: e === email ? 1 : 0
+    };
+  });
+  var myReviews = [];
+  var total = 0, given = 0;
+  g.reviews.forEach(function (r) {
+    if (num_(r.rm)) return;
+    total++;
+    if (str_(r.by) === email) given++;
+    if (mySid && str_(r.to) === mySid) {
+      myReviews.push({ i: num_(r.i), bcn: str_(r.bcn), l: str_(r.l), w: str_(r.w), t: num_(r.t), sim: num_(r.sim) || 0 });
+    }
+  });
+  return { ok: true, seq: num_(g.seq), open: mySid ? 1 : 0, studios: studios,
+    myReviews: myReviews, total: total, given: given, studioCount: studios.length };
+}
+
 /* ==================== STAFF API ==================== */
 
 function apiAdmin(req) {
@@ -1710,6 +1841,48 @@ function apiAdmin(req) {
     return tnOut;
   }
 
+  /* Press Night lens (section 14): the full gallery with REAL names - the
+     duty-of-care view. Removed reviews stay listed (struck through client-
+     side) so the teacher can see what was removed and by implication why. */
+  if (sub === 'gallery') {
+    if (!cls) return { ok: false, error: 'unknown-class' };
+    var gg = galGet_(cls, str_(req.lessonId));
+    var bySid = {};
+    var gStudios = Object.keys(gg.studios).map(function (e) {
+      var s = gg.studios[e];
+      var r = readPupil_(cls, e);
+      bySid[str_(s.sid)] = str_(r && r.n || e);
+      return { sid: str_(s.sid), name: str_(r && r.n || e), cn: str_(s.cn),
+        gt: str_(s.gt), gh: str_(s.gh), tpl: str_(s.tpl), rn: num_(s.rn) };
+    });
+    var byEmail = {};
+    var gReviews = gg.reviews.map(function (r) {
+      if (!byEmail[str_(r.by)]) {
+        var rp = readPupil_(cls, str_(r.by));
+        byEmail[str_(r.by)] = str_(rp && rp.n || r.by);
+      }
+      return { i: num_(r.i), byName: byEmail[str_(r.by)], bcn: str_(r.bcn),
+        toName: str_(bySid[str_(r.to)] || r.to), toSid: str_(r.to),
+        l: str_(r.l), w: str_(r.w), t: num_(r.t), rm: num_(r.rm) || 0, sim: num_(r.sim) || 0 };
+    });
+    return { ok: true, studios: gStudios, reviews: gReviews };
+  }
+
+  /* One-tap removal: the review vanishes from the maker's screen on their
+     next feed poll (~4s). Never deleted - rm flags keep the audit trail. */
+  if (sub === 'galleryRemove') {
+    if (!cls) return { ok: false, error: 'unknown-class' };
+    return withLock_(function () {
+      var gr = galGet_(cls, str_(req.lessonId));
+      var hitRv = null;
+      gr.reviews.forEach(function (r) { if (num_(r.i) === num_(req.i)) hitRv = r; });
+      if (!hitRv) return { ok: false, error: 'no-review' };
+      hitRv.rm = 1;
+      try { jset_(sp_(), galKey_(cls, str_(req.lessonId)), gr); } catch (e) { return STORE_FULL_; }
+      return { ok: true };
+    });
+  }
+
   return { ok: false, error: 'unknown-sub' };
 }
 
@@ -1731,6 +1904,8 @@ var ARCHIVE_HEADERS = ['archivedAt', 'class', 'email', 'name', 'codename', 'less
   'detail', 'exitChosen', 'selfEval', 'comment', 'activeMin', 'recapRight', 'recapTotal', 'lastActive'];
 var CHAT_HEADERS = ['archivedAt', 'class', 'lesson', 'pair', 'members', 'names',
   'codenames', 'messages', 'transcript', 'formedAt'];
+var GAL_HEADERS = ['archivedAt', 'class', 'lesson', 'email', 'name', 'signedAs',
+  'gameTitle', 'howToPlay', 'template', 'reviewsReceived', 'reviewsText', 'openedAt'];
 
 /* The pairing chat's audit tab (section 12). Self-heals: created on first use
    so a sheet made before the chat feature existed upgrades itself. */
@@ -1739,6 +1914,16 @@ function chatSheet_(ss) {
   if (!sh) {
     sh = ss.insertSheet('Chat Archive');
     sh.appendRow(CHAT_HEADERS);
+  }
+  return sh;
+}
+
+/* Press Night's audit tab (section 14). Same self-healing pattern. */
+function galSheet_(ss) {
+  var sh = ss.getSheetByName('Gallery Archive');
+  if (!sh) {
+    sh = ss.insertSheet('Gallery Archive');
+    sh.appendRow(GAL_HEADERS);
   }
   return sh;
 }
@@ -1862,6 +2047,40 @@ function archiveSweep_() {
       if (!Object.keys((reg && reg.P) || {}).length && (reg.solo || []).length) newest2 = newest2 || 0;
       if (newest2 > chatCutoff) return;
       if (sp.getProperty('chat:' + k.slice(5))) return; // twin still live - swept together above
+      sp.deleteProperty(k);
+    });
+    /* ---------- Press Night sweep (section 14): same 7-day horizon ----------
+       One row per studio to the Gallery Archive tab, with its received
+       reviews joined compact. Write-VERIFY, then delete the gal: key. */
+    Object.keys(allProps).forEach(function (k) {
+      if (k.indexOf('gal:') !== 0) return;
+      var gal;
+      try { gal = JSON.parse(allProps[k]); } catch (e) { sp.deleteProperty(k); return; }
+      var emails2 = Object.keys((gal && gal.studios) || {});
+      if (!emails2.length && !((gal && gal.reviews) || []).length) { sp.deleteProperty(k); return; }
+      var newest3 = 0;
+      emails2.forEach(function (e) { if (num_(gal.studios[e].ts) > newest3) newest3 = num_(gal.studios[e].ts); });
+      (gal.reviews || []).forEach(function (r) { if (num_(r.t) > newest3) newest3 = num_(r.t); });
+      if (newest3 > chatCutoff) return;
+      var parts2 = k.split(':'); // gal:<cls>:<lessonId>
+      var gCls = str_(parts2[1]), gLesson = parts2.slice(2).join(':');
+      var galRows = emails2.map(function (e) {
+        var s = gal.studios[e];
+        var r2 = readPupil_(gCls, e);
+        var revs = (gal.reviews || []).filter(function (r) { return str_(r.to) === str_(s.sid) && !num_(r.rm); })
+          .map(function (r) { return str_(r.bcn) + ': I like ' + str_(r.l) + ' / I wonder ' + str_(r.w); })
+          .join(' || ').slice(0, 900);
+        return [new Date(), gCls, gLesson, str_(e), str_(r2 && r2.n || ''), str_(s.cn),
+          str_(s.gt), str_(s.gh), str_(s.tpl), num_(s.rn), revs, tminToDate_(num_(s.ts))];
+      });
+      if (galRows.length) {
+        var gSheet = galSheet_(ss);
+        var gBefore = gSheet.getLastRow();
+        gSheet.getRange(gBefore + 1, 1, galRows.length, GAL_HEADERS.length).setValues(galRows);
+        SpreadsheetApp.flush();
+        if (gSheet.getLastRow() !== gBefore + galRows.length) throw new Error('gallery write verify failed for ' + k);
+        meta.galRows = num_(meta.galRows) + galRows.length;
+      }
       sp.deleteProperty(k);
     });
   } catch (e) {
