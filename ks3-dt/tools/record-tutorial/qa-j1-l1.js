@@ -544,9 +544,16 @@ async function dragTo(page, fileId, folderId) {
     const idNow = await H.chunkId();
     check(idNow === 'b2-navigator', 'the double-clicked badge claim advanced exactly one chunk (now ' + idNow + ')');
 
-    /* server-side idempotency, measured against a badge that was really earned */
-    const xpReplay = await page.evaluate(() => window.App.call('saveEvent', { lessonNum: '1', xp: 40, detail: 'b1=1' }).then(r => Number(r.xp)));
-    check(xpReplay === xp1, 'replaying an ALREADY-BANKED detail key grants zero extra XP (' + xp1 + ' -> ' + xpReplay + ')');
+    /* Server-side XP idempotency, measured against the detail key the server
+       ACTUALLY stored - guessing the key tests nothing (a guessed key is a NEW
+       key, so it correctly grants XP and looks like a failure). */
+    const storedDetail = await page.evaluate(() => {
+      const db = JSON.parse(localStorage.getItem('ks3dt-dev'));
+      const rec = db.pupils['Demo-8A:erin.mallon@demo'];
+      return rec && rec.L && rec.L['1'] ? String(rec.L['1'][2] || '') : '';
+    });
+    const xpReplay = await page.evaluate((d) => window.App.call('saveEvent', { lessonNum: '1', xp: 40, detail: d }).then(r => Number(r.xp)), storedDetail);
+    check(xpReplay === xp1, 'replaying the ALREADY-BANKED detail key "' + storedDetail + '" grants zero extra XP (' + xp1 + ' -> ' + xpReplay + ')');
     const xpNew = await page.evaluate(() => window.App.call('saveEvent', { lessonNum: '1', xp: 999, detail: 'forged1=1' }).then(r => Number(r.xp)));
     check(xpNew - xpReplay <= 40, 'a forged 999-XP event is capped at 40 per event (delta ' + (xpNew - xpReplay) + ')');
     const xpNew2 = await page.evaluate(() => window.App.call('saveEvent', { lessonNum: '1', xp: 999, detail: 'forged2=1' }).then(r => Number(r.xp)));
@@ -558,76 +565,49 @@ async function dragTo(page, fileId, folderId) {
   /* ---------- 5b. AUDIT FIX PROOFS ---------- */
   console.log('\n== 5b. proofs for the fixes applied by this audit ==');
   {
+    /* B-02: a real double-click on a GRADED exit-check option must advance ONE
+       question. Mount the exit chunk directly rather than walking a whole lesson -
+       walking L3 end to end took minutes and told us nothing extra. */
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
     const page = await freshPupil(ctx, 'cara');
     const H = helpers(page);
-
-    /* FIX B-02: a double-click on a GRADED exit-check option must not skip the next question */
-    await openL1(page);
-    await driveLesson(page, H, {
-      selfEval: async () => { /* stop before submitting so we can inspect */ }
-    }, 200);
-    // the walker halts at the self-eval; rewind is not possible, so instead run the
-    // exit check directly on a second pupil below.
-    await ctx.close();
-  }
-  {
-    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-    const page = await freshPupil(ctx, 'niamh');
-    const H = helpers(page);
-    // L3 has a 3-item exit check - the best place to prove the skip is gone
-    await page.evaluate(() => {
-      const t = Array.from(document.querySelectorAll('.tile')).find(e => /Scoreboard Engineer/.test(e.textContent));
-      t.click();
-    });
-    await sleep(2400);
-    // jump the player straight to the exit chunk (the lesson body is L3's, tested elsewhere)
-    await page.evaluate(() => {
-      const s = window.App.state;
-      const i = s.chunks.findIndex(c => c.id === 'exit');
-      if (i > -1) { s.chunkIdx = i; }
-    });
-    await page.evaluate(() => { window.App.state.chunkIdx = window.App.state.chunks.findIndex(c => c.id === 'exit'); });
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await sleep(2600);
-    await page.evaluate(() => { const b = document.querySelector('.intro-skip'); if (b) b.click(); });
-    await sleep(600);
-    // walk L3 to its exit check with the generic walker, then double-click an option
     await page.evaluate(() => {
       const t = Array.from(document.querySelectorAll('.tile')).find(e => /Scoreboard Engineer/.test(e.textContent));
       if (t) t.click();
     });
     await sleep(2400);
-    let reached = false;
-    for (let i = 0; i < 260; i++) {
-      const id = await H.chunkId();
-      if (id === 'exit') {
-        const hasQ = await page.evaluate(() => !!document.querySelector('.q-opt:not(:disabled)'));
-        if (hasQ) { reached = true; break; }
-      }
-      await driveLesson(page, H, {}, 1);
-    }
-    if (!reached) {
-      console.log('   (could not reach L3 exit check in budget - skipping the double-click proof)');
-    } else {
-      const progBefore = await page.evaluate(() => (document.querySelector('.runner-progress') || {}).textContent || '');
-      const box = await page.evaluate(() => {
-        const o = document.querySelector('.q-opt:not(:disabled)');
-        const r = o.getBoundingClientRect();
-        return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
-      });
-      await page.mouse.dblclick(box.x, box.y, { delay: 40 });
-      await sleep(1200);
-      const progAfter = await page.evaluate(() => (document.querySelector('.runner-progress') || {}).textContent || '');
-      console.log('   exit-check progress: "' + progBefore + '" -> "' + progAfter + '"');
-      check(progBefore !== progAfter, 'the exit check advanced after a double-click (from "' + progBefore + '")');
-      check(/2 of|1 of/.test(progAfter), 'it advanced by exactly ONE question, not two: now "' + progAfter + '"');
-    }
+    const mounted = await page.evaluate(() => {
+      const s = window.App.state;
+      const i = s.chunks.findIndex(c => c.id === 'exit');
+      if (i < 0) return '';
+      s.chunkIdx = i;
+      const host = document.querySelector('.chunk-host');
+      host.innerHTML = '';
+      const ch = s.chunks[i];
+      window.Engines[ch.engine].mount(host, ch, window.App.engineCtx(ch));
+      return ch.id + ':' + (ch.config.items || []).length;
+    });
+    check(/^exit:3$/.test(mounted), 'L3 exit check mounted with 3 items (' + mounted + ')');
+    await sleep(1100);
+    await page.evaluate(() => { const b = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /Ready/i.test(x.textContent)); if (b) b.click(); });
+    await sleep(1200);
+    const before = await page.evaluate(() => (document.querySelector('.runner-progress') || {}).textContent || '');
+    const box = await page.evaluate(() => {
+      const o = document.querySelector('.q-opt:not(:disabled)');
+      const r = o.getBoundingClientRect();
+      return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+    });
+    await page.mouse.dblclick(box.x, box.y, { delay: 40 });
+    await sleep(1500);
+    const after = await page.evaluate(() => (document.querySelector('.runner-progress') || {}).textContent || '(chunk finished)');
+    check(before === '1 of 3' && after === '2 of 3',
+      'B-02 FIX: a real double-click on a graded exit option advances exactly ONE question ("' + before + '" -> "' + after + '"). ' +
+      'Pre-fix this jumped straight to "3 of 3" - question 2 was answered at random and never seen.');
     check(page._errs.length === 0, 'zero console errors in the exit-check proof: ' + JSON.stringify(page._errs.slice(0, 3)));
     await ctx.close();
   }
   {
-    /* FIX: the outbox is keyed per pupil */
+    /* C-02: the save outbox is keyed per pupil */
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
     const page = await freshPupil(ctx, 'anya');
     const keys = await page.evaluate(() => {
@@ -637,22 +617,27 @@ async function dragTo(page, fileId, folderId) {
       return { keys: out, email: window.App.state.email };
     });
     check(keys.keys.length > 0 && keys.keys.every(k => k.indexOf(keys.email) !== -1),
-      'the save outbox is keyed to the pupil (' + JSON.stringify(keys.keys) + ')');
+      'C-02 FIX: the save outbox is keyed to the pupil (' + JSON.stringify(keys.keys) + ')');
     await ctx.close();
   }
   {
-    /* FIX: reduced motion is honoured */
+    /* D-01: reduced motion is honoured */
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
     const page = await freshPupil(ctx, 'anya');
+    /* The aurora animates on its ::before/::after pseudo-elements, so the
+       element's own animationName is 'none' either way - read the pseudo. */
     const anim = await page.evaluate(() => {
       const a = document.querySelector('.aurora');
+      const t = document.querySelector('.tile.is-open .tile-icon');
       return {
-        aurora: a ? getComputedStyle(a).animationName : '(none)',
-        spinner: (function () { const s = document.querySelector('.panel-spinner, .guard-spinner'); return s ? getComputedStyle(s).animationName : '(no spinner on screen)'; })()
+        auroraMs: a ? parseFloat(getComputedStyle(a, '::before').animationDuration) : -1,
+        tile: t ? getComputedStyle(t).animationName : '(no ready tile)'
       };
     });
-    check(anim.aurora === 'none', 'with prefers-reduced-motion the ambient aurora stops animating (got "' + anim.aurora + '")');
-    console.log('   spinner animation under reduced motion:', anim.spinner);
+    check(anim.auroraMs >= 0 && anim.auroraMs < 0.01,
+      'D-01 FIX: under prefers-reduced-motion the ambient aurora is stilled (duration ' + anim.auroraMs + 's, 52s by default)');
+    check(anim.tile === 'none' || /no ready tile/.test(anim.tile),
+      'D-01 FIX: the pulsing ready-waypoint stops under reduced motion (got "' + anim.tile + '")');
     await ctx.close();
   }
 
