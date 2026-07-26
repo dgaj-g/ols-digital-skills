@@ -63,7 +63,8 @@
    "block": "b1",
    "icon": "⚡",
    "status": "ready",
-   "coverSuitability": "ok",
+   "coverSuitability": "caution",
+   "coverNote": "Needs the micro:bit class set (about 15 devices + USB leads) out on the desks BEFORE the bell, and a live 4-minute MakeCode demo from the front - see the teacher brief. A cover teacher can run this only if the kit is already out; otherwise choose a lesson the class has already had.",
    "absenceInferenceEligible": true,
    "unplugged": true,
    "file": "j1/lessons/j1-02.json"

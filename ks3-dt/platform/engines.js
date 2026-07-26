@@ -290,7 +290,15 @@
       var ord = curOrd;       // capture: async marking must not race the next show()
       answers[it.id] = srcIdx;
       lockOptions();
-      if (opts.mode === 'collect') { nextOrDone(); return; }
+      // AUDIT FIX (26 Jul 2026): 'collect' (the GRADED exit check) used to advance
+      // synchronously inside this click handler, so the next question's options
+      // were live at the same screen coordinates within milliseconds - the second
+      // half of an 11-year-old's double-click landed on a question she never saw
+      // and was recorded as her answer to it (options are shuffled, so effectively
+      // at random; submitExit is first-wins, so it could never be corrected).
+      // 'neutral' already waits 650ms and 'feedback' waits for the server; the
+      // graded path was the only unguarded one.
+      if (opts.mode === 'collect') { setTimeout(nextOrDone, 400); return; }
       if (opts.mode === 'neutral') {
         btn.classList.add('logged');
         btn.insertAdjacentHTML('beforeend', '<span class="q-logged">' + esc(opts.ackText || 'Logged') + ' &#10003;</span>');
@@ -2955,9 +2963,19 @@
           zone.querySelector('.gal-wrap').onclick = wrapView;
           return;
         }
-        if (given < quota) {
+        // AUDIT FIX (26 Jul 2026): the V2 note is the ONLY route out of Press
+        // Night, and it used to lock on the full quota regardless of how many
+        // other studios actually existed. If the lesson overran and only one
+        // other pair opened their doors - or if a catch-up pupil arrived after
+        // the 7-day archive sweep cleared the gallery - the chunk had no exit at
+        // all, with no teacher override. Lock on what is ACHIEVABLE instead.
+        // XP already scales with reviews given, so a short quota still scores honestly.
+        var others = (feed && feed.studios || []).filter(function (s) { return !s.mine; }).length;
+        var need = Math.min(quota, others);
+        if (given < need) {
           zone.innerHTML = '<div class="card gal-v2-card locked"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
-            '<p>Unlocks when both press passes are spent &mdash; critics first, designers second.</p></div>';
+            '<p>Unlocks when ' + (need === 1 ? 'your press pass is' : 'both press passes are') +
+            ' spent &mdash; critics first, designers second.</p></div>';
           return;
         }
         var prompt = received.length

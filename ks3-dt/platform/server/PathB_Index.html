@@ -1715,6 +1715,38 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .confirm-box.done { background: var(--good); border-color: var(--good); }
 .confirm-box.done::after { content: "\2713"; color: #fff; font-weight: 800; font-size: 0.9rem; }
 
+/* ============ save chip: work that could NOT be saved ============
+   AUDIT FIX (26 Jul 2026). An empty outbox used to flip the chip green even when
+   a write had been discarded, so a pupil was told her badge or exit ticket was
+   saved when it never reached the server. */
+.save-chip.lost {
+  color: #FFB4B4; background: rgba(214, 69, 69, 0.16);
+  border: 1px solid rgba(214, 69, 69, 0.6);
+}
+
+/* ============ reduced motion (accessibility) ============================
+   AUDIT FIX (26 Jul 2026): the shell animates continuously (aurora drift,
+   pulsing waypoint nodes, comet/aurora kit layers, badge pops, wobbles,
+   tournament count-ups, the Press Night marquee) and there was no way for a
+   pupil with vestibular sensitivity or migraine - or her teacher - to turn it
+   down. This stills the AMBIENT layers and shortens transitions; it never hides
+   information, and every state that was carried by motion is still carried by
+   colour and text. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* ambient layers: hold them still rather than flashing one frame */
+  .aurora, #fx-layer, .fx-comet, .fx-band { animation: none !important; opacity: 0.35 !important; }
+  /* the "ready" waypoint still needs to read as ready without pulsing */
+  .tile.is-open .tile-icon { animation: none !important; box-shadow: 0 0 0 3px var(--gold-hi) inset; }
+  /* keep the busy indicators legible - a frozen spinner reads as "hung" */
+  .guard-spinner, .panel-spinner { animation: spin 1.4s linear infinite !important; }
+}
+
 </style>
 </head>
 <body>
@@ -2025,10 +2057,20 @@ window.OLS_TRANSPORT = {
 
   /* ---------------- save-resilience outbox (red team #4) ---------------------
      Critical writes queue here; flushed with backoff; cleared only on server ok. */
-  var OUTBOX_KEY = 'ks3dt-outbox';
-  function outboxRead() { try { return JSON.parse(localStorage.getItem(OUTBOX_KEY) || '[]'); } catch (e) { return []; } }
-  function outboxWrite(q) { try { localStorage.setItem(OUTBOX_KEY, JSON.stringify(q)); } catch (e) {} }
-  var flushing = false, backoff = 1000;
+  /* AUDIT FIX (26 Jul 2026): the queue is keyed to the PUPIL. It used to be one
+     shared key, and the server attributes a flushed write to whoever is signed in
+     at flush time - so on any shared browser profile pupil A's queued badge, exit
+     answers and free-text comment could land on pupil B's record (and first-wins
+     would then lock B out of her own exit check). The clearance key below was
+     already email-scoped; this one was not. */
+  function outboxKey() { return 'ks3dt-outbox:' + (App.state.email || '_pending'); }
+  function outboxRead() { try { return JSON.parse(localStorage.getItem(outboxKey()) || '[]'); } catch (e) { return []; } }
+  function outboxWrite(q) { try { localStorage.setItem(outboxKey(), JSON.stringify(q)); } catch (e) {} }
+  /* Errors a retry can never fix. Everything else keeps retrying with backoff -
+     dropping on (say) a momentary 'locked' or 'not-joined' silently threw the
+     pupil's work away while the chip still went green. */
+  var PERMANENT_ERRORS = { 'store-full': 1, 'sealed': 1, 'unknown-class': 1, 'not-joined': 1, 'bad-request': 1 };
+  var flushing = false, backoff = 1000, lostWrite = false;
   App.enqueue = function (action, params) {
     var q = outboxRead();
     q.push({ action: action, params: params, t: Date.now() });
@@ -2047,11 +2089,19 @@ window.OLS_TRANSPORT = {
         var q2 = outboxRead(); q2.shift(); outboxWrite(q2);
         backoff = 1000;
         App.flushOutbox();
-      } else if (r && r.error && r.error !== 'transport') {
+      } else if (r && r.error && PERMANENT_ERRORS[r.error] === 1) {
         // definitive server rejection: retrying can never succeed - drop it
-        // rather than hammering forever (esp. 'store-full', review finding)
+        // rather than hammering forever. AUDIT FIX (26 Jul 2026): this branch
+        // used to catch EVERY non-transport error, so a transient state error
+        // (a lesson re-locked mid-save, a roster race) silently binned the
+        // pupil's work - and the chip still went green because the queue was
+        // empty. Now only genuinely permanent errors drop, and a drop is
+        // remembered so the chip cannot claim the work was saved.
         var q3 = outboxRead(); q3.shift(); outboxWrite(q3);
-        if (r.error === 'store-full') App.toast('Saving is full \u2014 tell your teacher to check the platform storage.', 5000);
+        lostWrite = true;
+        App.toast(r.error === 'store-full'
+          ? 'Saving is full \u2014 tell your teacher to check the platform storage.'
+          : 'One piece of work could not be saved \u2014 tell your teacher.', 6000);
         backoff = 1000;
         App.flushOutbox();
       } else {
@@ -2065,7 +2115,10 @@ window.OLS_TRANSPORT = {
     // queued writes keep the chip amber; an emptied queue means all saved
     var chip = $('#save-chip');
     if (!chip || chip.hidden) return;
-    App.saveStatus(outboxRead().length > 0 ? 'saving' : 'saved');
+    if (outboxRead().length > 0) { App.saveStatus('saving'); return; }
+    // AUDIT FIX: an empty queue is NOT proof of a save if something was dropped
+    if (lostWrite) { chip.hidden = false; chip.className = 'save-chip lost'; chip.innerHTML = 'Not saved &#9888;'; return; }
+    App.saveStatus('saved');
   }
   global.addEventListener('online', function () { backoff = 1000; App.flushOutbox(); });
 
@@ -2243,6 +2296,7 @@ window.OLS_TRANSPORT = {
         return;
       }
       if (r.name) App.state.name = String(r.name);
+      App.flushOutbox(); // identity is known: this pupil's queue only (AUDIT FIX)
       return App.refreshState().then(function (ok) {
         if (!ok) { showJoinLanding('The mission board did not load. Refresh to try again.'); return; }
         $('#guard').hidden = true;
@@ -2327,7 +2381,8 @@ window.OLS_TRANSPORT = {
       beatN++;
       if (beatN % 2 === 0) App.ping();
     }, 30000);
-    App.flushOutbox();
+    // NB: the outbox is NOT flushed here - App.state.email is not known yet and
+    // the queue is per-pupil (AUDIT FIX). joinAndLoad flushes once identity lands.
   }
 
   /* Presence beacon (fire-and-forget; cache-only server-side). */
@@ -2753,7 +2808,17 @@ window.OLS_TRANSPORT = {
 
   function loadDraftThen(done) {
     App.call('loadDraft', { lessonNum: String(App.state.lessonEntry.num) }).then(function (r) {
+      /* AUDIT FIX (26 Jul 2026): a FAILED call used to be indistinguishable from
+         "no saved work yet" - apiLoadDraft always returns ok, so the empty branch
+         was reachable only by transport failure. The pupil was then restarted at
+         chunk 0 and her first Continue OVERWROTE the real draft: a four-second
+         wifi blip destroyed a whole micro:bit build. Now a failure is remembered
+         and every draft write is suppressed until a good read succeeds. */
+      App.state.draftUnavailable = !(r && r.ok);
       App.state.draft = (r && r.ok && r.draft) ? r.draft : {};
+      if (App.state.draftUnavailable) {
+        App.toast('Could not load your saved work \u2014 nothing will be overwritten. Refresh when the wifi is back.', 6000);
+      }
       done();
     });
   }
@@ -2806,6 +2871,9 @@ window.OLS_TRANSPORT = {
       saveEvent: function (payload) {
         if (s.review) return Promise.resolve({ ok: true, xp: s.xp });
         payload = payload || {};
+        // AUDIT FIX: with the draft unread, an engine's own progress save would
+        // overwrite the stored draft with a blank one. Keep the XP/badge half.
+        if (s.draftUnavailable && payload.draft) delete payload.draft;
         payload.lessonNum = String(s.lessonEntry.num);
         if (s.pendingMin >= 1) { payload.minDelta = Math.round(s.pendingMin); s.pendingMin = 0; }
         return App.call('saveEvent', payload).then(function (r) {
@@ -2864,7 +2932,8 @@ window.OLS_TRANSPORT = {
       s.draft = s.draft || {};
       s.draft.done = s.draft.done || [];
       if (s.draft.done.indexOf(doneId) === -1) s.draft.done.push(doneId);
-      var payload = { lessonNum: String(s.lessonEntry.num), draft: s.draft };
+      var payload = { lessonNum: String(s.lessonEntry.num) };
+      if (!s.draftUnavailable) payload.draft = s.draft; // AUDIT FIX: never clobber an unread draft
       // flush accumulated active minutes with the chunk-advance save (review
       // finding: minutes were silently dropped unless a badge happened to fire)
       if (s.pendingMin >= 1) { payload.minDelta = Math.round(s.pendingMin); s.pendingMin = 0; }
@@ -3225,7 +3294,15 @@ window.OLS_TRANSPORT = {
       var ord = curOrd;       // capture: async marking must not race the next show()
       answers[it.id] = srcIdx;
       lockOptions();
-      if (opts.mode === 'collect') { nextOrDone(); return; }
+      // AUDIT FIX (26 Jul 2026): 'collect' (the GRADED exit check) used to advance
+      // synchronously inside this click handler, so the next question's options
+      // were live at the same screen coordinates within milliseconds - the second
+      // half of an 11-year-old's double-click landed on a question she never saw
+      // and was recorded as her answer to it (options are shuffled, so effectively
+      // at random; submitExit is first-wins, so it could never be corrected).
+      // 'neutral' already waits 650ms and 'feedback' waits for the server; the
+      // graded path was the only unguarded one.
+      if (opts.mode === 'collect') { setTimeout(nextOrDone, 400); return; }
       if (opts.mode === 'neutral') {
         btn.classList.add('logged');
         btn.insertAdjacentHTML('beforeend', '<span class="q-logged">' + esc(opts.ackText || 'Logged') + ' &#10003;</span>');
@@ -5890,9 +5967,19 @@ window.OLS_TRANSPORT = {
           zone.querySelector('.gal-wrap').onclick = wrapView;
           return;
         }
-        if (given < quota) {
+        // AUDIT FIX (26 Jul 2026): the V2 note is the ONLY route out of Press
+        // Night, and it used to lock on the full quota regardless of how many
+        // other studios actually existed. If the lesson overran and only one
+        // other pair opened their doors - or if a catch-up pupil arrived after
+        // the 7-day archive sweep cleared the gallery - the chunk had no exit at
+        // all, with no teacher override. Lock on what is ACHIEVABLE instead.
+        // XP already scales with reviews given, so a short quota still scores honestly.
+        var others = (feed && feed.studios || []).filter(function (s) { return !s.mine; }).length;
+        var need = Math.min(quota, others);
+        if (given < need) {
           zone.innerHTML = '<div class="card gal-v2-card locked"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
-            '<p>Unlocks when both press passes are spent &mdash; critics first, designers second.</p></div>';
+            '<p>Unlocks when ' + (need === 1 ? 'your press pass is' : 'both press passes are') +
+            ' spent &mdash; critics first, designers second.</p></div>';
           return;
         }
         var prompt = received.length

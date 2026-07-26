@@ -1706,3 +1706,35 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 /* persisted confirm-step state (re-render after reload): same tick as .ticked */
 .confirm-box.done { background: var(--good); border-color: var(--good); }
 .confirm-box.done::after { content: "\2713"; color: #fff; font-weight: 800; font-size: 0.9rem; }
+
+/* ============ save chip: work that could NOT be saved ============
+   AUDIT FIX (26 Jul 2026). An empty outbox used to flip the chip green even when
+   a write had been discarded, so a pupil was told her badge or exit ticket was
+   saved when it never reached the server. */
+.save-chip.lost {
+  color: #FFB4B4; background: rgba(214, 69, 69, 0.16);
+  border: 1px solid rgba(214, 69, 69, 0.6);
+}
+
+/* ============ reduced motion (accessibility) ============================
+   AUDIT FIX (26 Jul 2026): the shell animates continuously (aurora drift,
+   pulsing waypoint nodes, comet/aurora kit layers, badge pops, wobbles,
+   tournament count-ups, the Press Night marquee) and there was no way for a
+   pupil with vestibular sensitivity or migraine - or her teacher - to turn it
+   down. This stills the AMBIENT layers and shortens transitions; it never hides
+   information, and every state that was carried by motion is still carried by
+   colour and text. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* ambient layers: hold them still rather than flashing one frame */
+  .aurora, #fx-layer, .fx-comet, .fx-band { animation: none !important; opacity: 0.35 !important; }
+  /* the "ready" waypoint still needs to read as ready without pulsing */
+  .tile.is-open .tile-icon { animation: none !important; box-shadow: 0 0 0 3px var(--gold-hi) inset; }
+  /* keep the busy indicators legible - a frozen spinner reads as "hung" */
+  .guard-spinner, .panel-spinner { animation: spin 1.4s linear infinite !important; }
+}

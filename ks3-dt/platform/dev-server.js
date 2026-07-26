@@ -1803,7 +1803,9 @@
     Object.keys(g.studios).forEach(function (e) { if (str_(g.studios[e].sid) === toSid) toEmail = e; });
     if (!toEmail) return Promise.resolve({ ok: false, error: 'no-studio' });
     if (toEmail === PUPIL_EMAIL) return Promise.resolve({ ok: false, error: 'own-studio' });
-    var mine = g.reviews.filter(function (r) { return str_(r.by) === PUPIL_EMAIL; });
+    /* AUDIT FIX (26 Jul 2026): mirrors Code.gs.template - removed reviews must
+       not burn a press pass (they are already skipped by the feed's 'given'). */
+    var mine = g.reviews.filter(function (r) { return str_(r.by) === PUPIL_EMAIL && !num_(r.rm); });
     if (mine.length >= GAL_REVIEWS_PER_CRITIC) return Promise.resolve({ ok: false, error: 'passes-spent' });
     if (mine.some(function (r) { return str_(r.to) === toSid; })) return Promise.resolve({ ok: false, error: 'already-reviewed' });
     g.seq = num_(g.seq) + 1;
