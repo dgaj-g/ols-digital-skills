@@ -84,10 +84,20 @@
 
   /* ---------------- save-resilience outbox (red team #4) ---------------------
      Critical writes queue here; flushed with backoff; cleared only on server ok. */
-  var OUTBOX_KEY = 'ks3dt-outbox';
-  function outboxRead() { try { return JSON.parse(localStorage.getItem(OUTBOX_KEY) || '[]'); } catch (e) { return []; } }
-  function outboxWrite(q) { try { localStorage.setItem(OUTBOX_KEY, JSON.stringify(q)); } catch (e) {} }
-  var flushing = false, backoff = 1000;
+  /* AUDIT FIX (26 Jul 2026): the queue is keyed to the PUPIL. It used to be one
+     shared key, and the server attributes a flushed write to whoever is signed in
+     at flush time - so on any shared browser profile pupil A's queued badge, exit
+     answers and free-text comment could land on pupil B's record (and first-wins
+     would then lock B out of her own exit check). The clearance key below was
+     already email-scoped; this one was not. */
+  function outboxKey() { return 'ks3dt-outbox:' + (App.state.email || '_pending'); }
+  function outboxRead() { try { return JSON.parse(localStorage.getItem(outboxKey()) || '[]'); } catch (e) { return []; } }
+  function outboxWrite(q) { try { localStorage.setItem(outboxKey(), JSON.stringify(q)); } catch (e) {} }
+  /* Errors a retry can never fix. Everything else keeps retrying with backoff -
+     dropping on (say) a momentary 'locked' or 'not-joined' silently threw the
+     pupil's work away while the chip still went green. */
+  var PERMANENT_ERRORS = { 'store-full': 1, 'sealed': 1, 'unknown-class': 1, 'not-joined': 1, 'bad-request': 1 };
+  var flushing = false, backoff = 1000, lostWrite = false;
   App.enqueue = function (action, params) {
     var q = outboxRead();
     q.push({ action: action, params: params, t: Date.now() });
@@ -106,11 +116,19 @@
         var q2 = outboxRead(); q2.shift(); outboxWrite(q2);
         backoff = 1000;
         App.flushOutbox();
-      } else if (r && r.error && r.error !== 'transport') {
+      } else if (r && r.error && PERMANENT_ERRORS[r.error] === 1) {
         // definitive server rejection: retrying can never succeed - drop it
-        // rather than hammering forever (esp. 'store-full', review finding)
+        // rather than hammering forever. AUDIT FIX (26 Jul 2026): this branch
+        // used to catch EVERY non-transport error, so a transient state error
+        // (a lesson re-locked mid-save, a roster race) silently binned the
+        // pupil's work - and the chip still went green because the queue was
+        // empty. Now only genuinely permanent errors drop, and a drop is
+        // remembered so the chip cannot claim the work was saved.
         var q3 = outboxRead(); q3.shift(); outboxWrite(q3);
-        if (r.error === 'store-full') App.toast('Saving is full — tell your teacher to check the platform storage.', 5000);
+        lostWrite = true;
+        App.toast(r.error === 'store-full'
+          ? 'Saving is full — tell your teacher to check the platform storage.'
+          : 'One piece of work could not be saved — tell your teacher.', 6000);
         backoff = 1000;
         App.flushOutbox();
       } else {
@@ -124,7 +142,10 @@
     // queued writes keep the chip amber; an emptied queue means all saved
     var chip = $('#save-chip');
     if (!chip || chip.hidden) return;
-    App.saveStatus(outboxRead().length > 0 ? 'saving' : 'saved');
+    if (outboxRead().length > 0) { App.saveStatus('saving'); return; }
+    // AUDIT FIX: an empty queue is NOT proof of a save if something was dropped
+    if (lostWrite) { chip.hidden = false; chip.className = 'save-chip lost'; chip.innerHTML = 'Not saved &#9888;'; return; }
+    App.saveStatus('saved');
   }
   global.addEventListener('online', function () { backoff = 1000; App.flushOutbox(); });
 
@@ -302,6 +323,7 @@
         return;
       }
       if (r.name) App.state.name = String(r.name);
+      App.flushOutbox(); // identity is known: this pupil's queue only (AUDIT FIX)
       return App.refreshState().then(function (ok) {
         if (!ok) { showJoinLanding('The mission board did not load. Refresh to try again.'); return; }
         $('#guard').hidden = true;
@@ -386,7 +408,8 @@
       beatN++;
       if (beatN % 2 === 0) App.ping();
     }, 30000);
-    App.flushOutbox();
+    // NB: the outbox is NOT flushed here - App.state.email is not known yet and
+    // the queue is per-pupil (AUDIT FIX). joinAndLoad flushes once identity lands.
   }
 
   /* Presence beacon (fire-and-forget; cache-only server-side). */
@@ -812,7 +835,17 @@
 
   function loadDraftThen(done) {
     App.call('loadDraft', { lessonNum: String(App.state.lessonEntry.num) }).then(function (r) {
+      /* AUDIT FIX (26 Jul 2026): a FAILED call used to be indistinguishable from
+         "no saved work yet" - apiLoadDraft always returns ok, so the empty branch
+         was reachable only by transport failure. The pupil was then restarted at
+         chunk 0 and her first Continue OVERWROTE the real draft: a four-second
+         wifi blip destroyed a whole micro:bit build. Now a failure is remembered
+         and every draft write is suppressed until a good read succeeds. */
+      App.state.draftUnavailable = !(r && r.ok);
       App.state.draft = (r && r.ok && r.draft) ? r.draft : {};
+      if (App.state.draftUnavailable) {
+        App.toast('Could not load your saved work — nothing will be overwritten. Refresh when the wifi is back.', 6000);
+      }
       done();
     });
   }
@@ -865,6 +898,9 @@
       saveEvent: function (payload) {
         if (s.review) return Promise.resolve({ ok: true, xp: s.xp });
         payload = payload || {};
+        // AUDIT FIX: with the draft unread, an engine's own progress save would
+        // overwrite the stored draft with a blank one. Keep the XP/badge half.
+        if (s.draftUnavailable && payload.draft) delete payload.draft;
         payload.lessonNum = String(s.lessonEntry.num);
         if (s.pendingMin >= 1) { payload.minDelta = Math.round(s.pendingMin); s.pendingMin = 0; }
         return App.call('saveEvent', payload).then(function (r) {
@@ -923,7 +959,8 @@
       s.draft = s.draft || {};
       s.draft.done = s.draft.done || [];
       if (s.draft.done.indexOf(doneId) === -1) s.draft.done.push(doneId);
-      var payload = { lessonNum: String(s.lessonEntry.num), draft: s.draft };
+      var payload = { lessonNum: String(s.lessonEntry.num) };
+      if (!s.draftUnavailable) payload.draft = s.draft; // AUDIT FIX: never clobber an unread draft
       // flush accumulated active minutes with the chunk-advance save (review
       // finding: minutes were silently dropped unless a badge happened to fire)
       if (s.pendingMin >= 1) { payload.minDelta = Math.round(s.pendingMin); s.pendingMin = 0; }

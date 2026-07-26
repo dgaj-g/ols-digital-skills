@@ -1359,7 +1359,12 @@ function apiGalleryPost(req) {
     if (toEmail === email) return { ok: false, error: 'own-studio' };
     // Spam brakes: hard per-critic cap (the quota IS the rate limit at 3 max)
     // + one review per critic per studio.
-    var mine = g.reviews.filter(function (r) { return str_(r.by) === email; });
+    // AUDIT FIX (26 Jul 2026): count only LIVE reviews toward the 3-pass cap.
+    // Removed reviews were counted here but skipped by apiGalleryFeed's 'given',
+    // so a teacher moderating an unkind review took the pupil's press pass away
+    // AND re-locked her V2 note - permanently unable to finish Press Night, with
+    // an on-screen reason that was wrong.
+    var mine = g.reviews.filter(function (r) { return str_(r.by) === email && !num_(r.rm); });
     if (mine.length >= GAL_REVIEWS_PER_CRITIC) return { ok: false, error: 'passes-spent' };
     if (mine.some(function (r) { return str_(r.to) === toSid; })) return { ok: false, error: 'already-reviewed' };
     g.seq = num_(g.seq) + 1;
