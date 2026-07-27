@@ -52,7 +52,8 @@
   var BOT_EMAIL = 'bot@demo';  // the simulated partner (single-tab pairing demo)
   var EPOCH = 1767225600000; // 2026-01-01 UTC — same epoch as Code.gs.template's tmin_()
   var LATENCY = 180;         // simulated round-trip, ms
-  var FALLBACK_EXPLAIN = '(preview marking unavailable on this host — run locally)';
+  var FALLBACK_EXPLAIN = 'PREVIEW ONLY — this answer was NOT marked. Every answer is accepted here, ' +
+    'right or wrong. The live app would tell you the truth. (See the red banner at the top.)';
 
   /* ---------- tiny helpers (mirrors Code.gs.template) ---------- */
   function str_(v) { return String(v == null ? '' : v); }
@@ -2174,5 +2175,36 @@
     document.body.appendChild(pill);
   }
   global.addEventListener('DOMContentLoaded', injectPreviewPill_);
+
+  /* ---------- AUDIT FIX C-14: say it out loud when nothing is being marked ----------
+     dev-keys.json is git-ignored, so on the published github.io copy every
+     marking call falls back to "correct" (see devKeysAll_ / FALLBACK_EXPLAIN).
+     Until now that was SILENT: a teacher sent the github.io link instead of the
+     /exec one would rehearse a whole lesson in which nobody can be wrong, see no
+     fail states, and sign it off. The banner below is deliberately unmissable
+     and cannot be dismissed - the only cure is the real app. */
+  function injectNoKeysBanner_() {
+    if (document.getElementById('ks3dt-nokeys')) return;
+    var bar = document.createElement('div');
+    bar.id = 'ks3dt-nokeys';
+    bar.setAttribute('role', 'alert');
+    bar.textContent = 'PREVIEW — answers are not being marked here. Every answer is accepted, ' +
+      'right or wrong. This is NOT the live app.';
+    bar.setAttribute('style',
+      'position:fixed;top:0;left:0;right:0;z-index:100000;' +
+      'background:#B3123B;color:#fff;font:800 13px/1.35 -apple-system,system-ui,sans-serif;' +
+      'letter-spacing:.02em;text-align:center;padding:9px 14px;' +
+      'box-shadow:0 2px 8px rgba(0,0,0,.3)');
+    document.body.appendChild(bar);
+    /* push the whole page down so the banner never sits on top of the lesson */
+    var pad = document.createElement('style');
+    pad.textContent = 'body{padding-top:38px!important}';
+    document.head.appendChild(pad);
+  }
+  function checkKeys_() {
+    if (global.OLS_TRANSPORT && typeof global.OLS_TRANSPORT.call === 'function') return; // real server marks for real
+    devKeysAll_().then(function (keys) { if (!keys) injectNoKeysBanner_(); });
+  }
+  global.addEventListener('DOMContentLoaded', checkKeys_);
 
 })(window);
