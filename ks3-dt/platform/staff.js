@@ -72,8 +72,9 @@
     var payload = Object.assign({ passcode: pass, sub: sub }, extra || {});
     return App.call('admin', payload).then(function (r) {
       if (r && r.error === 'bad-passcode' && pass) {
-        pass = '';
-        renderGate('The staff passcode has changed -- enter it again.');
+        lockPanel('The staff passcode has changed -- enter it again.');
+        renderGate(lockMsg);
+        lockMsg = '';
       }
       return r;
     });
@@ -122,6 +123,53 @@
     document.head.appendChild(style);
   }
 
+  /* ================= re-locking (audit C-08) =================
+     `pass` used to live for the page's lifetime and the modal's x only HID the
+     panel, so re-opening walked straight back in to answer keys, misconception
+     labels, every pupil's name and email, every chat transcript and Delete
+     Class. Closing now clears the passcode AND empties the rendered body (so
+     none of that is left sitting in the DOM), and a panel left open on a
+     pupil's machine locks itself. Every close path funnels through
+     App.closeModal, which calls Staff.lock. */
+  var IDLE_LOCK_MS = 900000;      // 15 minutes with no touch inside the panel
+  var lastTouch = 0, idleTimer = null, lockMsg = '';
+
+  function stopLenses() {
+    if (pairLensTimer) { clearInterval(pairLensTimer); pairLensTimer = null; }
+    if (galleryLensTimer) { clearInterval(galleryLensTimer); galleryLensTimer = null; }
+  }
+
+  function lockPanel(msg) {
+    if (msg) lockMsg = msg;
+    else if (pass) lockMsg = '';   // a plain close starts the next visit clean
+    pass = '';
+    stopLenses();
+    if (idleTimer) { clearInterval(idleTimer); idleTimer = null; }
+    /* drop every cached payload that carries pupil identity or answer keys */
+    classesData = null; dashData = null; locksData = null;
+    keyinfoCache = {}; exitRightMap = {}; briefByNum = {}; liveByNum = {};
+    pairAlerted = {}; pairResetArm = 0; lockNotice = '';
+    curTab = 'classes';
+    var body = sb();
+    if (body) body.innerHTML = '';
+  }
+
+  function touch() { lastTouch = Date.now(); }
+
+  function startIdleWatch() {
+    touch();
+    if (idleTimer) clearInterval(idleTimer);
+    idleTimer = setInterval(function () {
+      if (!pass) { clearInterval(idleTimer); idleTimer = null; return; }
+      var m = document.getElementById('staff-modal');
+      if (!m || m.hidden) return;                       // closing already locked it
+      if (Date.now() - lastTouch < IDLE_LOCK_MS) return;
+      lockPanel('Locked after 15 minutes without use -- enter the passcode again.');
+      App.closeModal('staff-modal');
+      App.toast('Staff panel locked itself &mdash; nobody was using it.');
+    }, 30000);
+  }
+
   /* ================= passcode gate ================= */
   function renderGate(msg) {
     var body = sb();
@@ -145,7 +193,7 @@
     busyStatus(msg, 'Checking');
     App.call('admin', { passcode: val, sub: 'check' }).then(function (r) {
       btn.disabled = false;
-      if (r && r.ok) { pass = val; renderPanel(); return; }
+      if (r && r.ok) { pass = val; startIdleWatch(); renderPanel(); return; }
       plainStatus(msg, (r && r.error === 'bad-passcode') ? 'That passcode was not recognised.' : 'Could not check the passcode -- please try again.');
     });
   }
@@ -1698,6 +1746,7 @@
      event delegation (wired once; #staff-body's innerHTML is freely replaced)
      ============================================================ */
   function onClick(e) {
+    touch();
     var btn = e.target.closest('[data-action]');
     if (!btn) return;
     switch (btn.getAttribute('data-action')) {
@@ -1737,6 +1786,7 @@
   }
 
   function onChange(e) {
+    touch();
     var t = e.target;
     if (t.id === 'cls-showall') { showAllTeachers = t.checked; renderClassesFromCache(); return; }
     if (t.id === 'live-mis-select') { misLessonNum = t.value; if (misLessonNum && liveByNum[misLessonNum]) loadMisconceptions(liveByNum[misLessonNum]); return; }
@@ -1753,6 +1803,7 @@
   }
 
   function onKeydown(e) {
+    touch();
     if (e.key !== 'Enter') return;
     var t = e.target;
     if (t.id === 'sf-pass') { var btn = q('[data-action="gate-go"]'); if (btn) gateGo(btn); }
@@ -1767,6 +1818,11 @@
     body.addEventListener('click', onClick);
     body.addEventListener('change', onChange);
     body.addEventListener('keydown', onKeydown);
+    /* idle clock (C-08): reading a long brief is USE, so scrolling counts too */
+    var modal = document.getElementById('staff-modal');
+    if (modal) ['pointerdown', 'keydown', 'wheel', 'scroll'].forEach(function (ev) {
+      modal.addEventListener(ev, touch, true);
+    });
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
       var m = document.getElementById('staff-modal');
@@ -1779,8 +1835,13 @@
     open: function () {
       App.openModal('staff-modal');
       wireOnce();
-      if (pass) renderPanel(); else renderGate();
-    }
+      if (pass) { touch(); renderPanel(); return; }
+      renderGate(lockMsg);
+      lockMsg = '';
+    },
+    /* called by App.closeModal for EVERY close path (the x, Escape, the idle
+       clock), so the panel can never be re-opened without the passcode */
+    lock: function (msg) { lockPanel(msg); }
   };
 
 })(window);

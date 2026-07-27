@@ -423,7 +423,14 @@
   };
 
   App.openModal = function (id) { var m = $('#' + id); if (m) m.hidden = false; };
-  App.closeModal = function (id) { var m = $('#' + id); if (m) m.hidden = true; };
+  App.closeModal = function (id) {
+    var m = $('#' + id);
+    if (m) m.hidden = true;
+    /* AUDIT FIX C-08: closing the staff panel RE-LOCKS it, whichever path
+       closed it (the x, Escape, its own idle clock). Hiding is not closing:
+       the body still held answer keys, pupil emails and chat transcripts. */
+    if (id === 'staff-modal' && global.Staff && global.Staff.lock) global.Staff.lock();
+  };
   App.confirm = function (title, body, okLabel, cb) {
     $('#confirm-title').textContent = title;
     $('#confirm-body').textContent = body || '';
