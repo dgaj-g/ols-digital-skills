@@ -22,8 +22,21 @@ const OUT = path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/qa-
 fs.mkdirSync(OUT, { recursive: true });
 const HEADED = process.argv.includes('--headed');
 
+/* --set icon : the PROPOSED replacement for Rung 3 - is the pause
+   observably load-bearing when the display block is an ICON rather than a
+   scrolling string? (showIcon renders and returns; we need to know how long
+   the heart actually survives with and without the explicit pause.) */
+const ICON_VARIANTS = [
+  { id: 'E-icon-only', label: 'show icon heart only (nothing after it)',
+    code: 'basic.showIcon(IconNames.Heart)\n' },
+  { id: 'F-icon-pause-clear', label: 'show icon + pause 1000 + clear screen  <-- PROPOSED correct answer',
+    code: 'basic.showIcon(IconNames.Heart)\nbasic.pause(1000)\nbasic.clearScreen()\n' },
+  { id: 'G-icon-clear-nopause', label: 'show icon + clear screen (pause DELETED) <-- the fail state pupils must see',
+    code: 'basic.showIcon(IconNames.Heart)\nbasic.clearScreen()\n' }
+];
+
 /* the exact programs L2 Rung 3 distinguishes between */
-const VARIANTS = [
+const STRING_VARIANTS = [
   { id: 'A-showstring-only', label: 'show string only (no pause, no clear)',
     code: 'basic.showString("HELLO")\n' },
   { id: 'B-taught-answer', label: 'show string + pause 1000 + clear screen  <-- what L2 teaches as CORRECT',
@@ -34,8 +47,11 @@ const VARIANTS = [
     code: 'basic.showString("A")\n' }
 ];
 
+const VARIANTS = process.argv.includes('--set') && process.argv[process.argv.indexOf('--set') + 1] === 'icon'
+  ? ICON_VARIANTS : STRING_VARIANTS;
+
 const SAMPLE_MS = 100;
-const RUN_MS = 14000;
+const RUN_MS = process.argv.includes('--set') ? 8000 : 14000;
 
 async function readLeds(drv) {
   const f = drv.simFrame();
@@ -100,6 +116,8 @@ async function readLeds(drv) {
     const tailMaxLit = Math.max(...tail.map(s => s.lit));
     const tailMaxBright = Math.max(...tail.map(s => s.b));
 
+    const litSamples = series.filter(s => s.lit > 0).length;
+    const litMs = litSamples * SAMPLE_MS;
     const verdict = tailMaxLit === 0
       ? 'DISPLAY ENDS BLANK'
       : 'DISPLAY STILL SHOWING (' + tailMaxLit + ' LEDs)';
@@ -109,10 +127,11 @@ async function readLeds(drv) {
     log('  first lit at         :', firstLit ? firstLit.t + 'ms' : 'never');
     log('  last lit at          :', lastLit ? lastLit.t + 'ms' : 'never');
     log('  final 3s: max lit    :', tailMaxLit, '| max brightness', tailMaxBright);
+    log('  total time lit       : ~' + litMs + 'ms');
     log('  VERDICT              :', verdict);
 
     await page.screenshot({ path: path.join(OUT, 'microbit-' + v.id + '-end.png') });
-    results.push({ id: v.id, label: v.label, ledCount, peak,
+    results.push({ id: v.id, label: v.label, ledCount, peak, litMs,
       firstLitMs: firstLit ? firstLit.t : null, lastLitMs: lastLit ? lastLit.t : null,
       tailMaxLit, tailMaxBright, verdict, series });
   }
@@ -121,7 +140,8 @@ async function readLeds(drv) {
 
   console.log('\n================ SUMMARY ================');
   for (const r of results) {
-    console.log(r.id.padEnd(20), '| peak lit', String(r.peak).padStart(2),
+    console.log(r.id.padEnd(22), '| peak lit', String(r.peak).padStart(2),
+      '| lit for ~' + String(r.litMs).padStart(5) + 'ms',
       '| last lit', String(r.lastLitMs).padStart(6) + 'ms',
       '|', r.verdict);
   }
@@ -135,6 +155,13 @@ async function readLeds(drv) {
     console.log('So the pause+clear are     ', identical ? 'UNOBSERVABLE (audit blocker CONFIRMED)' : 'observable (audit blocker NOT confirmed)');
   }
   if (d) console.log('Single character "A"       ', d.tailMaxLit > 0 ? 'STAYS on the display (' + d.tailMaxLit + ' LEDs) - persists, unlike a scrolled string' : 'also ends blank');
+  const f2 = results.find(r => r.id === 'F-icon-pause-clear');
+  const g2 = results.find(r => r.id === 'G-icon-clear-nopause');
+  if (f2 && g2) {
+    const diff = f2.litMs - g2.litMs;
+    console.log('\nICON PROPOSAL: with pause the heart is lit ~' + f2.litMs + 'ms; with the pause DELETED ~' + g2.litMs + 'ms.');
+    console.log('Difference: ~' + diff + 'ms - ' + (diff >= 600 ? 'CLEARLY VISIBLE to a pupil. The pause is genuinely load-bearing.' : 'TOO SMALL - this replacement would have the same flaw.'));
+  }
   console.log('\nScreenshots + raw series in', OUT);
 
   await browser.close();
