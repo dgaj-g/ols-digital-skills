@@ -2404,7 +2404,14 @@ window.OLS_TRANSPORT = {
   };
 
   App.openModal = function (id) { var m = $('#' + id); if (m) m.hidden = false; };
-  App.closeModal = function (id) { var m = $('#' + id); if (m) m.hidden = true; };
+  App.closeModal = function (id) {
+    var m = $('#' + id);
+    if (m) m.hidden = true;
+    /* AUDIT FIX C-08: closing the staff panel RE-LOCKS it, whichever path
+       closed it (the x, Escape, its own idle clock). Hiding is not closing:
+       the body still held answer keys, pupil emails and chat transcripts. */
+    if (id === 'staff-modal' && global.Staff && global.Staff.lock) global.Staff.lock();
+  };
   App.confirm = function (title, body, okLabel, cb) {
     $('#confirm-title').textContent = title;
     $('#confirm-body').textContent = body || '';
@@ -3067,11 +3074,12 @@ window.OLS_TRANSPORT = {
      reuses them wholesale. */
   var PairKit = global.PairKit = {
     st: null, _pollT: null, _chT: null, _handler: null, _onPoll: null, _dock: null, _seen: null,
+    _onEnd: null,
 
     stop: function () {
       if (PairKit._pollT) { clearTimeout(PairKit._pollT); PairKit._pollT = null; }
       if (PairKit._chT) { clearTimeout(PairKit._chT); PairKit._chT = null; }
-      PairKit._handler = null; PairKit._onPoll = null; PairKit._dock = null;
+      PairKit._handler = null; PairKit._onPoll = null; PairKit._dock = null; PairKit._onEnd = null;
     },
 
     ensure: function (ctx, host, cb) {
@@ -3131,11 +3139,23 @@ window.OLS_TRANSPORT = {
 
     onEvent: function (fn) { PairKit._handler = fn; },
     onPoll: function (fn) { PairKit._onPoll = fn; },
+    /* AUDIT FIX C-11: the teacher's "Reset pairing" now DISSOLVES pairs instead
+       of deleting the registry, and says so on the channel (dis:1). Without this
+       the poll below just kept failing quietly and both agents sat on "not your
+       turn" until the page was reloaded. */
+    onEnd: function (fn) { PairKit._onEnd = fn; },
 
     _loop: function (ctx) {
       var st = PairKit.st;
       if (!st) return;
       ctx.call('pairChannel', { lessonId: ctx.lesson.id, pid: st.pid, since: st.seq }).then(function (r) {
+        if (r && r.ok && Number(r.dis) && PairKit.st === st) {
+          var end = PairKit._onEnd;
+          PairKit.st = null;
+          PairKit.stop();
+          if (end) end('reset');
+          return;
+        }
         if (r && r.ok && PairKit.st === st) {
           st.seq = Math.max(Number(st.seq), Number(r.seq));
           st.live = r.live || st.live;
@@ -3795,7 +3815,10 @@ window.OLS_TRANSPORT = {
             PairKit.send(ctx, 'done', '');
             setTimeout(function () {
               PairKit.complete(ctx).then(function () {
-                PairKit.revealCard(function () { PairKit.stop(); debrief(); });
+                // C-11: if the channel was dissolved in this exact window there
+                // is nobody left to declassify - never show an empty reveal
+                if (PairKit.st) PairKit.revealCard(function () { PairKit.stop(); debrief(); });
+                else { PairKit.stop(); debrief(); }
               });
             }, 700);
           } else setTimeout(debrief, 700);
@@ -3863,6 +3886,23 @@ window.OLS_TRANSPORT = {
             } else if (kind === 'done' && Object.keys(placed).length === cfg.files.length) finishStage();
           });
           PairKit.onPoll(refreshTurn);
+          /* AUDIT FIX C-11: the teacher dissolved this pair (Reset pairing).
+             Drop the channel and finish the Vault solo, in place: every file
+             already filed stays filed, the turn lock lifts, and nothing needs a
+             reload - which was the old bug's only escape route. */
+          PairKit.onEnd(function () {
+            if (finished) return;              // already sealed; the debrief owns the screen
+            mode = 'solo';
+            dock = null;
+            var side = host.querySelector('.vault-side');
+            if (side) side.remove();
+            var wrapEl = host.querySelector('.vault-wrap');
+            if (wrapEl) wrapEl.classList.remove('paired');
+            stage.classList.remove('not-my-turn');
+            var slim = stage.querySelector('.pair-banner.slim');
+            if (slim) slim.innerHTML = '&#127919; HQ closed the channel &mdash; finish the Vault on your own. Everything you have filed is safe.';
+            App.toast('HQ closed the channel &mdash; carry on solo, nothing is lost.', 4200);
+          });
           refreshTurn();
         }
         updateScore();
@@ -6193,8 +6233,9 @@ window.OLS_TRANSPORT = {
     var payload = Object.assign({ passcode: pass, sub: sub }, extra || {});
     return App.call('admin', payload).then(function (r) {
       if (r && r.error === 'bad-passcode' && pass) {
-        pass = '';
-        renderGate('The staff passcode has changed -- enter it again.');
+        lockPanel('The staff passcode has changed -- enter it again.');
+        renderGate(lockMsg);
+        lockMsg = '';
       }
       return r;
     });
@@ -6243,6 +6284,53 @@ window.OLS_TRANSPORT = {
     document.head.appendChild(style);
   }
 
+  /* ================= re-locking (audit C-08) =================
+     `pass` used to live for the page's lifetime and the modal's x only HID the
+     panel, so re-opening walked straight back in to answer keys, misconception
+     labels, every pupil's name and email, every chat transcript and Delete
+     Class. Closing now clears the passcode AND empties the rendered body (so
+     none of that is left sitting in the DOM), and a panel left open on a
+     pupil's machine locks itself. Every close path funnels through
+     App.closeModal, which calls Staff.lock. */
+  var IDLE_LOCK_MS = 900000;      // 15 minutes with no touch inside the panel
+  var lastTouch = 0, idleTimer = null, lockMsg = '';
+
+  function stopLenses() {
+    if (pairLensTimer) { clearInterval(pairLensTimer); pairLensTimer = null; }
+    if (galleryLensTimer) { clearInterval(galleryLensTimer); galleryLensTimer = null; }
+  }
+
+  function lockPanel(msg) {
+    if (msg) lockMsg = msg;
+    else if (pass) lockMsg = '';   // a plain close starts the next visit clean
+    pass = '';
+    stopLenses();
+    if (idleTimer) { clearInterval(idleTimer); idleTimer = null; }
+    /* drop every cached payload that carries pupil identity or answer keys */
+    classesData = null; dashData = null; locksData = null;
+    keyinfoCache = {}; exitRightMap = {}; briefByNum = {}; liveByNum = {};
+    pairAlerted = {}; pairResetArm = 0; lockNotice = '';
+    curTab = 'classes';
+    var body = sb();
+    if (body) body.innerHTML = '';
+  }
+
+  function touch() { lastTouch = Date.now(); }
+
+  function startIdleWatch() {
+    touch();
+    if (idleTimer) clearInterval(idleTimer);
+    idleTimer = setInterval(function () {
+      if (!pass) { clearInterval(idleTimer); idleTimer = null; return; }
+      var m = document.getElementById('staff-modal');
+      if (!m || m.hidden) return;                       // closing already locked it
+      if (Date.now() - lastTouch < IDLE_LOCK_MS) return;
+      lockPanel('Locked after 15 minutes without use -- enter the passcode again.');
+      App.closeModal('staff-modal');
+      App.toast('Staff panel locked itself &mdash; nobody was using it.');
+    }, 30000);
+  }
+
   /* ================= passcode gate ================= */
   function renderGate(msg) {
     var body = sb();
@@ -6266,7 +6354,7 @@ window.OLS_TRANSPORT = {
     busyStatus(msg, 'Checking');
     App.call('admin', { passcode: val, sub: 'check' }).then(function (r) {
       btn.disabled = false;
-      if (r && r.ok) { pass = val; renderPanel(); return; }
+      if (r && r.ok) { pass = val; startIdleWatch(); renderPanel(); return; }
       plainStatus(msg, (r && r.error === 'bad-passcode') ? 'That passcode was not recognised.' : 'Could not check the passcode -- please try again.');
     });
   }
@@ -7206,10 +7294,11 @@ window.OLS_TRANSPORT = {
       }
       var pairsHtml = (r.pairs || []).map(function (pr) {
         var tx = openTx[pr.pid] ? '<div class="pl-tx" data-pid="' + App.esc(pr.pid) + '">' + openTx[pr.pid] + '</div>' : '';
-        return '<div class="pl-pair"><b>' + pr.cn.map(function (c) { return 'Agent ' + App.esc(c); }).join(' + ') + '</b>' +
+        return '<div class="pl-pair"' + (Number(pr.dis) ? ' style="opacity:.65"' : '') + '><b>' + pr.cn.map(function (c) { return 'Agent ' + App.esc(c); }).join(' + ') + '</b>' +
           (Number(pr.trio) ? ' <span class="pill none">trio</span>' : '') +
           ' <span class="pl-note" style="display:inline">(' + pr.names.map(App.esc).join(' &amp; ') + ')</span>' +
           ' &middot; ' + Number(pr.msgs) + ' msgs' +
+          (Number(pr.dis) ? ' &middot; <span class="pill none">released &mdash; finishing solo</span>' : '') +
           (Number(pr.done) ? ' &middot; <span class="pill done">done</span>' : '') +
           ' <button type="button" class="ghost-btn" style="padding:1px 10px;font-size:0.74rem" data-action="pair-view" data-pid="' + App.esc(pr.pid) + '">Channel</button>' +
           (pr.last ? '<div class="pl-last">' + App.esc(pr.last) + '</div>' : '') +
@@ -7221,9 +7310,9 @@ window.OLS_TRANSPORT = {
         '<div class="pl-chips">' +
         '<span class="pl-chip">' + Number(r.present) + ' live on this lesson</span>' +
         '<span class="pl-chip">' + (r.queue || []).length + ' waiting</span>' +
-        '<span class="pl-chip">' + (r.pairs || []).length + ' pairs</span>' +
+        '<span class="pl-chip">' + (r.pairs || []).filter(function (pr) { return !Number(pr.dis); }).length + ' pairs</span>' +
         ((r.queue || []).length ? '<button type="button" class="ghost-btn" data-action="pair-force">Match everyone waiting now</button>' : '') +
-        '<button type="button" class="ghost-btn danger" data-action="pair-reset">' + (pairResetArm ? 'Sure? This dissolves every pair' : 'Reset pairing') + '</button>' +
+        '<button type="button" class="ghost-btn danger" data-action="pair-reset">' + (pairResetArm ? 'Sure? Every pair finishes solo' : 'Reset pairing') + '</button>' +
         '</div>' +
         (queueHtml ? '<div class="pl-chips">' + queueHtml + '</div>' : '') +
         lagHtml + pairsHtml + soloHtml +
@@ -7244,12 +7333,22 @@ window.OLS_TRANSPORT = {
   function pairReset(btn) {
     if (!pairResetArm) {
       pairResetArm = 1;
-      btn.textContent = 'Sure? This dissolves every pair';
+      btn.textContent = 'Sure? Every pair finishes solo';
       setTimeout(function () { pairResetArm = 0; var b = q('[data-action="pair-reset"]'); if (b) b.textContent = 'Reset pairing'; }, 4000);
       return;
     }
     pairResetArm = 0;
-    adminCall('pairReset', { className: cls, lessonId: pairLensLesson }).then(function () { pairLensTick(); });
+    /* C-11: this no longer deletes the registry. Every unfinished pair is
+       released to finish solo (their screens change by themselves within a
+       couple of seconds - no reload), and the waiting queue re-forms. */
+    adminCall('pairReset', { className: cls, lessonId: pairLensLesson }).then(function (r) {
+      if (r && r.ok) {
+        App.toast(Number(r.freed)
+          ? (Number(r.freed) + ' agent' + (Number(r.freed) === 1 ? '' : 's') + ' released &mdash; they carry on solo, nothing is lost.')
+          : 'Pairing queue cleared &mdash; anyone waiting will be matched again.');
+      }
+      pairLensTick();
+    });
   }
   function pairView(btn) {
     var pid = btn.getAttribute('data-pid');
@@ -7819,6 +7918,7 @@ window.OLS_TRANSPORT = {
      event delegation (wired once; #staff-body's innerHTML is freely replaced)
      ============================================================ */
   function onClick(e) {
+    touch();
     var btn = e.target.closest('[data-action]');
     if (!btn) return;
     switch (btn.getAttribute('data-action')) {
@@ -7858,6 +7958,7 @@ window.OLS_TRANSPORT = {
   }
 
   function onChange(e) {
+    touch();
     var t = e.target;
     if (t.id === 'cls-showall') { showAllTeachers = t.checked; renderClassesFromCache(); return; }
     if (t.id === 'live-mis-select') { misLessonNum = t.value; if (misLessonNum && liveByNum[misLessonNum]) loadMisconceptions(liveByNum[misLessonNum]); return; }
@@ -7874,6 +7975,7 @@ window.OLS_TRANSPORT = {
   }
 
   function onKeydown(e) {
+    touch();
     if (e.key !== 'Enter') return;
     var t = e.target;
     if (t.id === 'sf-pass') { var btn = q('[data-action="gate-go"]'); if (btn) gateGo(btn); }
@@ -7888,6 +7990,11 @@ window.OLS_TRANSPORT = {
     body.addEventListener('click', onClick);
     body.addEventListener('change', onChange);
     body.addEventListener('keydown', onKeydown);
+    /* idle clock (C-08): reading a long brief is USE, so scrolling counts too */
+    var modal = document.getElementById('staff-modal');
+    if (modal) ['pointerdown', 'keydown', 'wheel', 'scroll'].forEach(function (ev) {
+      modal.addEventListener(ev, touch, true);
+    });
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
       var m = document.getElementById('staff-modal');
@@ -7900,8 +8007,13 @@ window.OLS_TRANSPORT = {
     open: function () {
       App.openModal('staff-modal');
       wireOnce();
-      if (pass) renderPanel(); else renderGate();
-    }
+      if (pass) { touch(); renderPanel(); return; }
+      renderGate(lockMsg);
+      lockMsg = '';
+    },
+    /* called by App.closeModal for EVERY close path (the x, Escape, the idle
+       clock), so the panel can never be re-opened without the passcode */
+    lock: function (msg) { lockPanel(msg); }
   };
 
 })(window);
