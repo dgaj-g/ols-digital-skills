@@ -40,11 +40,12 @@
      reuses them wholesale. */
   var PairKit = global.PairKit = {
     st: null, _pollT: null, _chT: null, _handler: null, _onPoll: null, _dock: null, _seen: null,
+    _onEnd: null,
 
     stop: function () {
       if (PairKit._pollT) { clearTimeout(PairKit._pollT); PairKit._pollT = null; }
       if (PairKit._chT) { clearTimeout(PairKit._chT); PairKit._chT = null; }
-      PairKit._handler = null; PairKit._onPoll = null; PairKit._dock = null;
+      PairKit._handler = null; PairKit._onPoll = null; PairKit._dock = null; PairKit._onEnd = null;
     },
 
     ensure: function (ctx, host, cb) {
@@ -104,11 +105,23 @@
 
     onEvent: function (fn) { PairKit._handler = fn; },
     onPoll: function (fn) { PairKit._onPoll = fn; },
+    /* AUDIT FIX C-11: the teacher's "Reset pairing" now DISSOLVES pairs instead
+       of deleting the registry, and says so on the channel (dis:1). Without this
+       the poll below just kept failing quietly and both agents sat on "not your
+       turn" until the page was reloaded. */
+    onEnd: function (fn) { PairKit._onEnd = fn; },
 
     _loop: function (ctx) {
       var st = PairKit.st;
       if (!st) return;
       ctx.call('pairChannel', { lessonId: ctx.lesson.id, pid: st.pid, since: st.seq }).then(function (r) {
+        if (r && r.ok && Number(r.dis) && PairKit.st === st) {
+          var end = PairKit._onEnd;
+          PairKit.st = null;
+          PairKit.stop();
+          if (end) end('reset');
+          return;
+        }
         if (r && r.ok && PairKit.st === st) {
           st.seq = Math.max(Number(st.seq), Number(r.seq));
           st.live = r.live || st.live;
@@ -768,7 +781,10 @@
             PairKit.send(ctx, 'done', '');
             setTimeout(function () {
               PairKit.complete(ctx).then(function () {
-                PairKit.revealCard(function () { PairKit.stop(); debrief(); });
+                // C-11: if the channel was dissolved in this exact window there
+                // is nobody left to declassify - never show an empty reveal
+                if (PairKit.st) PairKit.revealCard(function () { PairKit.stop(); debrief(); });
+                else { PairKit.stop(); debrief(); }
               });
             }, 700);
           } else setTimeout(debrief, 700);
@@ -836,6 +852,23 @@
             } else if (kind === 'done' && Object.keys(placed).length === cfg.files.length) finishStage();
           });
           PairKit.onPoll(refreshTurn);
+          /* AUDIT FIX C-11: the teacher dissolved this pair (Reset pairing).
+             Drop the channel and finish the Vault solo, in place: every file
+             already filed stays filed, the turn lock lifts, and nothing needs a
+             reload - which was the old bug's only escape route. */
+          PairKit.onEnd(function () {
+            if (finished) return;              // already sealed; the debrief owns the screen
+            mode = 'solo';
+            dock = null;
+            var side = host.querySelector('.vault-side');
+            if (side) side.remove();
+            var wrapEl = host.querySelector('.vault-wrap');
+            if (wrapEl) wrapEl.classList.remove('paired');
+            stage.classList.remove('not-my-turn');
+            var slim = stage.querySelector('.pair-banner.slim');
+            if (slim) slim.innerHTML = '&#127919; HQ closed the channel &mdash; finish the Vault on your own. Everything you have filed is safe.';
+            App.toast('HQ closed the channel &mdash; carry on solo, nothing is lost.', 4200);
+          });
           refreshTurn();
         }
         updateScore();

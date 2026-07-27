@@ -1133,10 +1133,11 @@
       }
       var pairsHtml = (r.pairs || []).map(function (pr) {
         var tx = openTx[pr.pid] ? '<div class="pl-tx" data-pid="' + App.esc(pr.pid) + '">' + openTx[pr.pid] + '</div>' : '';
-        return '<div class="pl-pair"><b>' + pr.cn.map(function (c) { return 'Agent ' + App.esc(c); }).join(' + ') + '</b>' +
+        return '<div class="pl-pair"' + (Number(pr.dis) ? ' style="opacity:.65"' : '') + '><b>' + pr.cn.map(function (c) { return 'Agent ' + App.esc(c); }).join(' + ') + '</b>' +
           (Number(pr.trio) ? ' <span class="pill none">trio</span>' : '') +
           ' <span class="pl-note" style="display:inline">(' + pr.names.map(App.esc).join(' &amp; ') + ')</span>' +
           ' &middot; ' + Number(pr.msgs) + ' msgs' +
+          (Number(pr.dis) ? ' &middot; <span class="pill none">released &mdash; finishing solo</span>' : '') +
           (Number(pr.done) ? ' &middot; <span class="pill done">done</span>' : '') +
           ' <button type="button" class="ghost-btn" style="padding:1px 10px;font-size:0.74rem" data-action="pair-view" data-pid="' + App.esc(pr.pid) + '">Channel</button>' +
           (pr.last ? '<div class="pl-last">' + App.esc(pr.last) + '</div>' : '') +
@@ -1148,9 +1149,9 @@
         '<div class="pl-chips">' +
         '<span class="pl-chip">' + Number(r.present) + ' live on this lesson</span>' +
         '<span class="pl-chip">' + (r.queue || []).length + ' waiting</span>' +
-        '<span class="pl-chip">' + (r.pairs || []).length + ' pairs</span>' +
+        '<span class="pl-chip">' + (r.pairs || []).filter(function (pr) { return !Number(pr.dis); }).length + ' pairs</span>' +
         ((r.queue || []).length ? '<button type="button" class="ghost-btn" data-action="pair-force">Match everyone waiting now</button>' : '') +
-        '<button type="button" class="ghost-btn danger" data-action="pair-reset">' + (pairResetArm ? 'Sure? This dissolves every pair' : 'Reset pairing') + '</button>' +
+        '<button type="button" class="ghost-btn danger" data-action="pair-reset">' + (pairResetArm ? 'Sure? Every pair finishes solo' : 'Reset pairing') + '</button>' +
         '</div>' +
         (queueHtml ? '<div class="pl-chips">' + queueHtml + '</div>' : '') +
         lagHtml + pairsHtml + soloHtml +
@@ -1171,12 +1172,22 @@
   function pairReset(btn) {
     if (!pairResetArm) {
       pairResetArm = 1;
-      btn.textContent = 'Sure? This dissolves every pair';
+      btn.textContent = 'Sure? Every pair finishes solo';
       setTimeout(function () { pairResetArm = 0; var b = q('[data-action="pair-reset"]'); if (b) b.textContent = 'Reset pairing'; }, 4000);
       return;
     }
     pairResetArm = 0;
-    adminCall('pairReset', { className: cls, lessonId: pairLensLesson }).then(function () { pairLensTick(); });
+    /* C-11: this no longer deletes the registry. Every unfinished pair is
+       released to finish solo (their screens change by themselves within a
+       couple of seconds - no reload), and the waiting queue re-forms. */
+    adminCall('pairReset', { className: cls, lessonId: pairLensLesson }).then(function (r) {
+      if (r && r.ok) {
+        App.toast(Number(r.freed)
+          ? (Number(r.freed) + ' agent' + (Number(r.freed) === 1 ? '' : 's') + ' released &mdash; they carry on solo, nothing is lost.')
+          : 'Pairing queue cleared &mdash; anyone waiting will be matched again.');
+      }
+      pairLensTick();
+    });
   }
   function pairView(btn) {
     var pid = btn.getAttribute('data-pid');
