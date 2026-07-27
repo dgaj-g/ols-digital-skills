@@ -2409,7 +2409,14 @@ window.OLS_TRANSPORT = {
   };
   App.toast = function (msg, ms) {
     var t = $('#toast');
-    t.textContent = msg; t.hidden = false;
+    /* Engine sources are ASCII, so callers write copy as HTML entities
+       (&mdash;, &#127914;). textContent showed those raw on screen - pupils
+       literally read "Rung cleared &mdash; signal locked in." Decode via a
+       detached TEXTAREA: its content is raw text, so entities resolve but no
+       markup is ever built, and we still assign with textContent. */
+    var dec = document.createElement('textarea');
+    dec.innerHTML = String(msg == null ? '' : msg);
+    t.textContent = dec.value; t.hidden = false;
     clearTimeout(t._timer);
     t._timer = setTimeout(function () { t.hidden = true; }, ms || 2600);
   };
