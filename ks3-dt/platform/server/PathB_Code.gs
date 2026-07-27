@@ -180,6 +180,134 @@ function tryWritePupil_(cls, email, rec) {
   try { writePupil_(cls, email, rec); return true; } catch (e) { return false; }
 }
 var STORE_FULL_ = { ok: false, error: 'store-full' };
+
+/* ---------- sharded store values (audit blocker B-01, 27 Jul 2026) ----------
+   Apps Script caps a SINGLE ScriptProperties value at 9,216 bytes, and a write
+   that passes it THROWS. Two stores grow with class size: Press Night's gallery
+   (section 14) and the monitored-chat transcripts (section 12). Measured before
+   the fix: 30 studios alone were 6.3-8.2 KB, and the 60 reviews Lesson 5
+   requires took the single gal: value to 21-38 KB - 2.3x to 4.1x the ceiling.
+   Every write after about the fifth review failed, permanently, for the rest of
+   the class. The preview never showed it because localStorage has no per-value
+   cap (dev-server.js now enforces the real one).
+
+   Both stores are now SHARDED. A tiny HEAD key keeps the sequence counter and
+   the shard COUNTS; the payload lives in numbered shards under sibling
+   prefixes:
+
+     gal:<cls>:<lesson>       head    {v:2, seq, ns, nr}
+     gals:<cls>:<lesson>:<i>  studios {email: studio}
+     galr:<cls>:<lesson>:<i>  reviews [review, ...]
+     chat:<cls>:<lesson>      head    {v:2, nc}
+     chats:<cls>:<lesson>:<i> transcripts {pid: transcript}
+
+   The sibling prefixes deliberately do NOT match the head's own prefix test
+   ('gals:'.indexOf('gal:') !== 0), so the archive sweep's key scan still selects
+   exactly one key per class-lesson and shards are swept with their head.
+
+   Write order is always SHARD FIRST, then the head. A lock-free reader that
+   caught a stale head therefore misses at most the newest shard and can never
+   follow a dangling reference; readers also probe one shard PAST the head's
+   count, which closes even that window. Reads stay lock-free (tnAgg_
+   discipline); every write runs inside withLock_. */
+var PROP_VALUE_MAX_ = 9216;   // Apps Script's hard per-value ceiling
+var SHARD_BYTES_ = 7000;      // roll to a fresh shard once a value passes this
+var SHARD_INPLACE_MAX_ = 8600; // an in-place edit past this moves the entry out
+function shardKey_(base, i) { return base + ':' + i; }
+
+/* Read a sharded LIST back in shard order (0..n inclusive - see the probe note
+   above). Lock-free. */
+function shardList_(base, n) {
+  var out = [], i, v;
+  for (i = 0; i <= n; i++) {
+    v = jget_(sp_(), shardKey_(base, i), null);
+    if (v && v.length) out = out.concat(v);
+  }
+  return out;
+}
+
+/* Read a sharded MAP back as one object. Lock-free. */
+function shardMap_(base, n) {
+  var out = {}, i, v;
+  for (i = 0; i <= n; i++) {
+    v = jget_(sp_(), shardKey_(base, i), null);
+    if (!v) continue;
+    Object.keys(v).forEach(function (k) { out[k] = v[k]; });
+  }
+  return out;
+}
+
+/* Append one item to a sharded LIST; returns the new shard count. Under lock.
+   The over-budget body is never written: on a roll the fresh shard gets the new
+   item and the full shard is left exactly as it already was on disk. */
+function shardPush_(base, n, item) {
+  var idx = n > 0 ? n - 1 : 0;
+  var cur = jget_(sp_(), shardKey_(base, idx), null);
+  if (!(cur instanceof Array)) cur = [];
+  cur.push(item);
+  var body = JSON.stringify(cur);
+  if (body.length > SHARD_BYTES_ && cur.length > 1) {
+    idx += 1;
+    sp_().setProperty(shardKey_(base, idx), JSON.stringify([item]));
+  } else {
+    sp_().setProperty(shardKey_(base, idx), body);
+  }
+  return idx + 1;
+}
+
+/* Insert or update one entry of a sharded MAP; returns the new shard count.
+   Under lock. An existing entry is rewritten in its own shard unless that would
+   take the value near the ceiling, in which case it is lifted out and re-appended
+   (delete-then-append, never a duplicate). */
+function shardPut_(base, n, key, val) {
+  var sp = sp_(), i, v, body;
+  for (i = 0; i < n; i++) {
+    v = jget_(sp, shardKey_(base, i), null);
+    if (!v || v[key] === undefined) continue;
+    v[key] = val;
+    body = JSON.stringify(v);
+    if (body.length <= SHARD_INPLACE_MAX_) { sp.setProperty(shardKey_(base, i), body); return n; }
+    delete v[key];                                     // lift out, then fall through to append
+    sp.setProperty(shardKey_(base, i), JSON.stringify(v));
+    break;
+  }
+  var idx = n > 0 ? n - 1 : 0;
+  var obj = jget_(sp, shardKey_(base, idx), null) || {};
+  obj[key] = val;
+  body = JSON.stringify(obj);
+  if (body.length > SHARD_BYTES_ && Object.keys(obj).length > 1) {
+    idx += 1;
+    var fresh = {};
+    fresh[key] = val;
+    sp.setProperty(shardKey_(base, idx), JSON.stringify(fresh));
+  } else {
+    sp.setProperty(shardKey_(base, idx), body);
+  }
+  return idx + 1;
+}
+
+/* Edit items of a sharded LIST in place (moderation flags). Rewrites only the
+   shards that actually changed. Under lock. */
+function shardEdit_(base, n, matchFn, editFn) {
+  var sp = sp_(), i, j, v, hit = false;
+  for (i = 0; i <= n; i++) {
+    v = jget_(sp, shardKey_(base, i), null);
+    if (!(v instanceof Array)) continue;
+    var touched = false;
+    for (j = 0; j < v.length; j++) {
+      if (matchFn(v[j])) { editFn(v[j]); touched = true; hit = true; }
+    }
+    if (touched) sp.setProperty(shardKey_(base, i), JSON.stringify(v));
+  }
+  return hit;
+}
+
+/* Delete every shard of a base (plus a couple past the count, so an orphan left
+   by a head write that never landed is cleaned up too). */
+function shardDrop_(base, n) {
+  var sp = sp_();
+  for (var i = 0; i <= n + 2; i++) sp.deleteProperty(shardKey_(base, i));
+}
 /* Rough bytes used across the shared store - surfaced in the staff panel so the
    quota is monitored, never a surprise. (Nightly archival trigger = Session B.) */
 function storeHealth_() {
@@ -271,6 +399,19 @@ function absenceFor_(cls, rec, locks, manifest, absDays) {
     if (str_(le.status) !== 'ready') continue;
     var lk = locks[str_(le.num)];
     if (!lk || !num_(lk.u)) continue;
+    /* AUDIT FIX B-05: never infer absence from a lesson that is currently
+       LOCKED. The half of this bug that reached pupil records was a teacher
+       mis-tapping a cell, seeing it unlock, tapping again to re-lock - and five
+       school days later every girl who had (correctly) not opened it being
+       flagged absent from a lesson that never happened, with no undo short of
+       deleting the class.
+       This is coherent, not just defensive: an absence flag exists to ROUTE a
+       pupil into catch-up, and catch-up opens the lesson - which a locked lesson
+       refuses. Flagging her for a lesson she cannot then open would be an
+       instruction she has no way to follow. A delivered lesson's normal resting
+       state on this platform is unlocked (that is what makes catch-up work), so
+       this costs nothing in the ordinary case. */
+    if (!num_(lk.on)) continue;
     if (schoolDaysSince_(num_(lk.u)) < absDays) continue;
     var a = (rec.L || {})[str_(le.num)];
     if (meaningful_(a)) continue;
@@ -360,9 +501,26 @@ function apiState(req) {
 
 /* A lesson is accessible once DELIVERED (u set), even if currently re-locked:
    pupils can always revisit; a lock flip never kicks anyone out (decision #10). */
-function lessonAccessible_(cls, numStr) {
+/* AUDIT FIX B-05 (27 Jul 2026): access used to be granted on the delivered
+   timestamp ALONE - the lock's own `on` flag was computed and then never read,
+   so after the first unlock the toggle was decorative on both layers while the
+   staff grid still said "Locked". Reproduced live during the audit: setLock
+   on:0 returned ok and the pupil's very next saveEvent still succeeded.
+
+   Now the `on` flag decides, with one deliberate exception: a pupil who ALREADY
+   has a record for this lesson keeps her access. That is the standing "pupils
+   who already opened a lesson are never kicked out" rule the staff grid states
+   in so many words - a teacher locking up at the end of the hour must not strand
+   a girl mid-chunk. A re-lock therefore stops anyone NEW from starting, which is
+   what the mis-tap case needs, and undoing the delivery (setLock clear:1) is the
+   full undo. */
+function lessonAccessible_(cls, numStr, email) {
   var lk = getLocks_(cls)[numStr];
-  return !!(lk && num_(lk.u));
+  if (!lk || !num_(lk.u)) return false;
+  if (num_(lk.on)) return true;
+  if (!email) return false;
+  var rec = readPupil_(cls, str_(email));
+  return !!(rec && rec.L && rec.L[numStr]);
 }
 
 /* ---------- Do-Now recap engine (server-side selection + marking) ---------- */
@@ -515,7 +673,7 @@ function apiMark(req) {
   var year = classYear_(cls);
   var lessonId = str_(req.lessonId);
   var numStr = lessonNum_(year, lessonId);
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var keys = lessonKeys_(year, lessonId);
   var key = keys[str_(req.itemId)];
   if (!key) return { ok: false, error: 'no-key' };
@@ -537,7 +695,7 @@ function apiVaultInfo(req) {
   var year = classYear_(cls);
   var lessonId = str_(req.lessonId);
   var numStr = lessonNum_(year, lessonId);
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var keys = lessonKeys_(year, lessonId);
   var keyId = str_(req.keyId || 'vault');
   var v = keys[keyId];
@@ -604,7 +762,7 @@ function apiSaveEvent(req) {
   // event's detail introduces a NEW key (idempotent under outbox retries and
   // console replays), capped per event AND per lesson. Same-pupil concurrent
   // RPCs (two tabs, heartbeat + badge) serialise under the lock.
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var out = withLock_(function () {
     var rec = readPupil_(cls, email);
     if (!rec) return { ok: false, error: 'not-joined' };
@@ -656,7 +814,7 @@ function apiSubmitExit(req) {
   var year = classYear_(cls);
   var lessonId = str_(req.lessonId);
   var numStr = lessonNum_(year, lessonId);
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var entry = lessonEntry_(year, lessonId);
   var lesson = fetchContent_(str_(entry.file));
   var keys = lessonKeys_(year, lessonId);
@@ -712,7 +870,7 @@ function apiSubmitBaseline(req) {
   var year = classYear_(cls);
   var lessonId = str_(req.lessonId);
   var numStr = lessonNum_(year, lessonId);
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var keys = lessonKeys_(year, lessonId);
   var answers = req.answers || {}; // {itemId: choiceIdx}
   var ids = Object.keys(answers).sort();
@@ -771,7 +929,7 @@ function apiDriveCheck(req) {
   var cls = realClass_(req.classCode);
   if (!cls) return { ok: false, error: 'unknown-class' };
   var numStr = str_(req.lessonNum || '');
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   try {
     var school = false, dtwork = false;
     var roots = DriveApp.getRootFolder().getFolders();
@@ -809,7 +967,7 @@ function apiArtifactCheck(req) {
   var cls = realClass_(req.classCode);
   if (!cls) return { ok: false, error: 'unknown-class' };
   var numStr = str_(req.lessonNum || '');
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var kinds = [];
   (Array.isArray(req.kinds) ? req.kinds : []).slice(0, 4).forEach(function (k) {
     k = str_(k).toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -1016,6 +1174,37 @@ function cPut_(key, obj, ttl) {
 }
 function pairRegKey_(cls, lessonId) { return 'pair:' + cls + ':' + lessonId; }
 function chatKey_(cls, lessonId) { return 'chat:' + cls + ':' + lessonId; }
+function chatSBase_(cls, lessonId) { return 'chats:' + cls + ':' + lessonId; }
+/* Head + shards, same shape as the gallery (audit B-01). v1 heads held the
+   transcripts inline; they are read in place until the next write moves them. */
+function chatHead_(cls, lessonId) {
+  var h = jget_(sp_(), chatKey_(cls, lessonId), null) || {};
+  var inline = null;
+  if (!num_(h.v)) {
+    Object.keys(h).forEach(function (k) {
+      if (k === 'v' || k === 'nc') return;
+      if (!inline) inline = {};
+      inline[k] = h[k];
+    });
+  }
+  return { v: num_(h.v), nc: num_(h.nc), oldChat: inline };
+}
+function chatGet_(cls, lessonId) {
+  var h = chatHead_(cls, lessonId);
+  var out = shardMap_(chatSBase_(cls, lessonId), h.nc);
+  if (h.oldChat) {
+    Object.keys(h.oldChat).forEach(function (p) { if (out[p] === undefined) out[p] = h.oldChat[p]; });
+  }
+  return out;
+}
+function chatMigrate_(cls, lessonId) {
+  var h = chatHead_(cls, lessonId);
+  if (!h.oldChat) return h;
+  var base = chatSBase_(cls, lessonId), nc = h.nc;
+  Object.keys(h.oldChat).forEach(function (p) { nc = shardPut_(base, nc, p, h.oldChat[p]); });
+  jset_(sp_(), chatKey_(cls, lessonId), { v: 2, nc: nc });
+  return { v: 2, nc: nc, oldChat: null };
+}
 function pqCacheKey_(cls, lessonId) { return 'ks3dt:pq:' + cls + ':' + lessonId; }
 function chCacheKey_(pid) { return 'ks3dt:pch:' + pid; }
 function presCacheKey_(cls) { return 'ks3dt:pres:' + cls; }
@@ -1126,7 +1315,7 @@ function apiPairJoin(req) {
   var lessonId = str_(req.lessonId);
   var year = classYear_(cls);
   var numStr = lessonNum_(year, lessonId);
-  if (!numStr || !lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!numStr || !lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var stageIdx = num_(req.stageIdx);
   return withLock_(function () {
     var reg = pairReg_(cls, lessonId);
@@ -1255,14 +1444,21 @@ function apiPairComplete(req) {
         var tail = tx.slice(tx.length - Math.floor(PAIR_TX_MAX * 0.35));
         tx = head + ' [...] ' + tail;
       }
-      var chat = jget_(sp_(), chatKey_(cls, lessonId), {});
+      /* AUDIT FIX B-01 (27 Jul 2026): the transcript store is sharded exactly
+         like the gallery. It used to be one value per class-lesson that reached
+         ~10 KB at 15 chatty pairs, and its write is inside this swallowing
+         try/catch - so the LAST pairs' safeguarding records vanished silently,
+         with no error anywhere. */
+      var chHead = chatMigrate_(cls, lessonId);
+      var chBase = chatSBase_(cls, lessonId);
+      var chat = shardMap_(chBase, chHead.nc);
       if (!chat[str_(hit.pid)]) {
-        chat[str_(hit.pid)] = {
+        var nc = shardPut_(chBase, chHead.nc, str_(hit.pid), {
           m: (P.m || []).map(function (e) { return str_(e); }),
           cn: (P.cn || []).map(function (c) { return str_(c); }),
           n: names, t: num_(P.t), c: counts, tx: tx
-        };
-        jset_(sp_(), chatKey_(cls, lessonId), chat);
+        });
+        jset_(sp_(), chatKey_(cls, lessonId), { v: 2, nc: nc });
       }
     } catch (e) {} // transcript is best-effort; the reveal must never fail on it
     return { ok: true, names: names };
@@ -1286,12 +1482,47 @@ var GAL_HOW_MAX = 90;          // how-to-play chars
 var GAL_REVIEW_MAX = 200;      // chars per stem ("I like" / "I wonder")
 var GAL_REVIEWS_PER_CRITIC = 3; // 2 press passes required, a 3rd allowed
 function galKey_(cls, lessonId) { return 'gal:' + cls + ':' + lessonId; }
+function galSBase_(cls, lessonId) { return 'gals:' + cls + ':' + lessonId; }
+function galRBase_(cls, lessonId) { return 'galr:' + cls + ':' + lessonId; }
+
+/* The head only. v1 heads (pre-audit) carried studios/reviews inline; they are
+   read in place until the next write migrates them out. */
+function galHead_(cls, lessonId) {
+  var h = jget_(sp_(), galKey_(cls, lessonId), null) || {};
+  return {
+    v: num_(h.v), seq: num_(h.seq), ns: num_(h.ns), nr: num_(h.nr),
+    oldStudios: h.studios || null, oldReviews: h.reviews || null
+  };
+}
+
+/* The whole gallery, reassembled from head + shards. Lock-free. */
 function galGet_(cls, lessonId) {
-  var g = jget_(sp_(), galKey_(cls, lessonId), null) || {};
-  if (!g.seq) g.seq = 0;
-  if (!g.studios) g.studios = {};
-  if (!g.reviews) g.reviews = [];
-  return g;
+  var h = galHead_(cls, lessonId);
+  var studios = shardMap_(galSBase_(cls, lessonId), h.ns);
+  var reviews = shardList_(galRBase_(cls, lessonId), h.nr);
+  if (h.oldStudios) {
+    Object.keys(h.oldStudios).forEach(function (e) {
+      if (studios[e] === undefined) studios[e] = h.oldStudios[e];
+    });
+  }
+  if (h.oldReviews && h.oldReviews.length) reviews = h.oldReviews.concat(reviews);
+  return { seq: h.seq, ns: h.ns, nr: h.nr, studios: studios, reviews: reviews };
+}
+
+/* One-shot migration off the v1 inline shape. Returns the current head. Under
+   lock; a no-op (one cheap read) once a class-lesson is already v2. */
+function galMigrate_(cls, lessonId) {
+  var h = galHead_(cls, lessonId);
+  if (!h.oldStudios && !h.oldReviews) return h;
+  var sBase = galSBase_(cls, lessonId), rBase = galRBase_(cls, lessonId);
+  var ns = h.ns, nr = h.nr;
+  Object.keys(h.oldStudios || {}).forEach(function (e) { ns = shardPut_(sBase, ns, e, h.oldStudios[e]); });
+  (h.oldReviews || []).forEach(function (r) { nr = shardPush_(rBase, nr, r); });
+  jset_(sp_(), galKey_(cls, lessonId), { v: 2, seq: h.seq, ns: ns, nr: nr });
+  return { v: 2, seq: h.seq, ns: ns, nr: nr, oldStudios: null, oldReviews: null };
+}
+function galSaveHead_(cls, lessonId, seq, ns, nr) {
+  jset_(sp_(), galKey_(cls, lessonId), { v: 2, seq: num_(seq), ns: num_(ns), nr: num_(nr) });
 }
 function galClean_(s, max) {
   return str_(s).replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
@@ -1312,18 +1543,19 @@ function apiGalleryOpen(req) {
   if (!cls) return { ok: false, error: 'unknown-class' };
   var lessonId = str_(req.lessonId);
   var numStr = lessonNum_(classYear_(cls), lessonId);
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var gt = galClean_(req.gt, GAL_TITLE_MAX);
   var gh = galClean_(req.gh, GAL_HOW_MAX);
   var sn = galClean_(req.sn, 24);
   var tpl = str_(req.tpl).slice(0, 8);
   if (!gt) return { ok: false, error: 'no-title' };
   return withLock_(function () {
-    var g = galGet_(cls, lessonId);
-    var mine = g.studios[email];
-    g.seq = num_(g.seq) + 1;
-    g.studios[email] = {
-      sid: str_(mine && mine.sid) || ('s' + num_(g.seq)),
+    var h = galMigrate_(cls, lessonId);
+    var sBase = galSBase_(cls, lessonId);
+    var mine = shardMap_(sBase, h.ns)[email];
+    var seq = num_(h.seq) + 1;
+    var stu = {
+      sid: str_(mine && mine.sid) || ('s' + seq),
       sn: sn || galSignatureFor_(cls, email),
       cn: galSignatureFor_(cls, email),
       gt: gt, gh: gh, tpl: tpl,
@@ -1332,8 +1564,11 @@ function apiGalleryOpen(req) {
       ts: num_(mine && mine.ts) || tmin_(),
       rn: num_(mine && mine.rn)
     };
-    try { jset_(sp_(), galKey_(cls, lessonId), g); } catch (e) { return STORE_FULL_; }
-    return { ok: true, sid: str_(g.studios[email].sid) };
+    try {
+      var ns = shardPut_(sBase, h.ns, email, stu);   // shard first, then the head
+      galSaveHead_(cls, lessonId, seq, ns, h.nr);
+    } catch (e) { return STORE_FULL_; }
+    return { ok: true, sid: str_(stu.sid) };
   });
 }
 
@@ -1349,7 +1584,9 @@ function apiGalleryPost(req) {
   var wonder = galClean_(req.wonder, GAL_REVIEW_MAX);
   if (like.length < 8 || wonder.length < 8) return { ok: false, error: 'too-thin' };
   return withLock_(function () {
-    var g = galGet_(cls, lessonId);
+    var h = galMigrate_(cls, lessonId);
+    var sBase = galSBase_(cls, lessonId), rBase = galRBase_(cls, lessonId);
+    var g = { seq: h.seq, studios: shardMap_(sBase, h.ns), reviews: shardList_(rBase, h.nr) };
     var toSid = str_(req.to);
     var toEmail = '';
     Object.keys(g.studios).forEach(function (e) {
@@ -1367,13 +1604,18 @@ function apiGalleryPost(req) {
     var mine = g.reviews.filter(function (r) { return str_(r.by) === email && !num_(r.rm); });
     if (mine.length >= GAL_REVIEWS_PER_CRITIC) return { ok: false, error: 'passes-spent' };
     if (mine.some(function (r) { return str_(r.to) === toSid; })) return { ok: false, error: 'already-reviewed' };
-    g.seq = num_(g.seq) + 1;
-    g.reviews.push({
-      i: num_(g.seq), by: email, bcn: galSignatureFor_(cls, email),
+    var seq = num_(g.seq) + 1;
+    var review = {
+      i: seq, by: email, bcn: galSignatureFor_(cls, email),
       to: toSid, l: like, w: wonder, t: tmin_(), rm: 0
-    });
-    g.studios[toEmail].rn = num_(g.studios[toEmail].rn) + 1;
-    try { jset_(sp_(), galKey_(cls, lessonId), g); } catch (e) { return STORE_FULL_; }
+    };
+    var maker = g.studios[toEmail];
+    maker.rn = num_(maker.rn) + 1;
+    try {
+      var nr = shardPush_(rBase, h.nr, review);      // shards first, then the head
+      var ns = shardPut_(sBase, h.ns, toEmail, maker);
+      galSaveHead_(cls, lessonId, seq, ns, nr);
+    } catch (e) { return STORE_FULL_; }
     return { ok: true, given: mine.length + 1 };
   });
 }
@@ -1497,6 +1739,14 @@ function apiAdmin(req) {
       var removed = 0;
       Object.keys(props).forEach(function (k) { if (k.indexOf(pre) === 0) { spp.deleteProperty(k); removed++; } });
       ['lock:' + cls, 'cfg:' + cls, 'team:' + cls].forEach(function (k) { spp.deleteProperty(k); });
+      /* AUDIT B-01: the class's social stores are per-class-LESSON keys, so they
+         were never caught by the p: prefix and survived a deleted class. Now
+         that a gallery is a head PLUS shards, leaving them behind would leak
+         several KB per lesson against the 500 KB script-wide quota. */
+      ['gal:', 'gals:', 'galr:', 'chat:', 'chats:', 'pair:'].forEach(function (p) {
+        var pre2 = p + cls + ':';
+        Object.keys(props).forEach(function (k) { if (k.indexOf(pre2) === 0) spp.deleteProperty(k); });
+      });
       jset_(spp, 'classes', getClasses_().filter(function (c) { return c.name !== cls; }));
       return { ok: true, removed: num_(removed) };
     });
@@ -1509,8 +1759,14 @@ function apiAdmin(req) {
     return withLock_(function () {
       var locks = getLocks_(cls);
       var cur = locks[numStr] || { u: 0, on: 0 };
-      if (on && !num_(cur.u)) cur.u = tmin_();  // first unlock = delivered date (never reset)
+      if (on && !num_(cur.u)) cur.u = tmin_();  // first unlock = delivered date
       cur.on = on;
+      /* AUDIT FIX B-05: the teacher's UNDO. Before this there was no control
+         anywhere that could reset a delivered date, so one mis-tap on the lock
+         grid marked a lesson as taught forever. clear:1 (staff panel: "Undo
+         delivery") puts the cell back to never-delivered. Pupil work is never
+         touched - only the class-level claim that this lesson was taught. */
+      if (!on && num_(req.clear)) cur.u = 0;
       locks[numStr] = cur;
       jset_(sp_(), 'lock:' + cls, locks);
       return { ok: true, u: num_(cur.u), on: num_(cur.on) };
@@ -1762,7 +2018,7 @@ function apiAdmin(req) {
       });
       return { ok: true, live: true, cn: ptP.cn, names: (ptP.m || []).map(function (e) { return str_(e); }), lines: lines };
     }
-    var ptChat = jget_(sp_(), chatKey_(cls, str_(req.lessonId)), {});
+    var ptChat = chatGet_(cls, str_(req.lessonId));
     var ptStored = ptChat[ptPid];
     if (ptStored) return { ok: true, live: false, cn: ptStored.cn, names: ptStored.n, tx: str_(ptStored.tx) };
     return { ok: true, live: false, cn: ptP.cn, names: [], tx: '' };
@@ -1891,14 +2147,21 @@ function apiAdmin(req) {
   if (sub === 'galleryHideStudio') {
     if (!cls) return { ok: false, error: 'unknown-class' };
     return withLock_(function () {
-      var gh2 = galGet_(cls, str_(req.lessonId));
+      var hLes = str_(req.lessonId);
+      var hHead = galMigrate_(cls, hLes);
+      var hBase = galSBase_(cls, hLes);
+      var hStudios = shardMap_(hBase, hHead.ns);
       var hitEmail = '';
-      Object.keys(gh2.studios).forEach(function (e) {
-        if (str_(gh2.studios[e].sid) === str_(req.sid)) hitEmail = e;
+      Object.keys(hStudios).forEach(function (e) {
+        if (str_(hStudios[e].sid) === str_(req.sid)) hitEmail = e;
       });
       if (!hitEmail) return { ok: false, error: 'no-studio' };
-      gh2.studios[hitEmail].h = 1;
-      try { jset_(sp_(), galKey_(cls, str_(req.lessonId)), gh2); } catch (e) { return STORE_FULL_; }
+      var hStu = hStudios[hitEmail];
+      hStu.h = 1;
+      try {
+        var hNs = shardPut_(hBase, hHead.ns, hitEmail, hStu);
+        galSaveHead_(cls, hLes, hHead.seq, hNs, hHead.nr);
+      } catch (e) { return STORE_FULL_; }
       return { ok: true };
     });
   }
@@ -1908,12 +2171,16 @@ function apiAdmin(req) {
   if (sub === 'galleryRemove') {
     if (!cls) return { ok: false, error: 'unknown-class' };
     return withLock_(function () {
-      var gr = galGet_(cls, str_(req.lessonId));
-      var hitRv = null;
-      gr.reviews.forEach(function (r) { if (num_(r.i) === num_(req.i)) hitRv = r; });
+      var rLes = str_(req.lessonId);
+      var rHead = galMigrate_(cls, rLes);
+      var want = num_(req.i);
+      var hitRv = false;
+      try {
+        hitRv = shardEdit_(galRBase_(cls, rLes), rHead.nr,
+          function (r) { return num_(r.i) === want; },
+          function (r) { r.rm = 1; });
+      } catch (e) { return STORE_FULL_; }
       if (!hitRv) return { ok: false, error: 'no-review' };
-      hitRv.rm = 1;
-      try { jset_(sp_(), galKey_(cls, str_(req.lessonId)), gr); } catch (e) { return STORE_FULL_; }
       return { ok: true };
     });
   }
@@ -2046,15 +2313,16 @@ function archiveSweep_() {
     var allProps = sp.getProperties();
     Object.keys(allProps).forEach(function (k) {
       if (k.indexOf('chat:') !== 0) return;
-      var chat;
-      try { chat = JSON.parse(allProps[k]); } catch (e) { return; }
+      var parts0 = k.split(':'); // chat:<cls>:<lessonId>
+      var kCls = str_(parts0[1]), kLesson = parts0.slice(2).join(':');
+      var chatHd = chatHead_(kCls, kLesson);       // AUDIT B-01: transcripts are sharded now
+      var chat = chatGet_(kCls, kLesson);
       var pids = Object.keys(chat || {});
-      if (!pids.length) { sp.deleteProperty(k); return; }
+      if (!pids.length) { sp.deleteProperty(k); shardDrop_(chatSBase_(kCls, kLesson), chatHd.nc); return; }
       var newest = 0;
       pids.forEach(function (p) { if (num_(chat[p].t) > newest) newest = num_(chat[p].t); });
       if (newest > chatCutoff) return;
-      var parts = k.split(':'); // chat:<cls>:<lessonId>
-      var cCls = str_(parts[1]), cLesson = parts.slice(2).join(':');
+      var cCls = kCls, cLesson = kLesson;
       var chatRows = pids.map(function (p) {
         var d = chat[p];
         return [new Date(), cCls, cLesson, str_(p),
@@ -2068,6 +2336,7 @@ function archiveSweep_() {
       SpreadsheetApp.flush();
       if (chSheet.getLastRow() !== chBefore + chatRows.length) throw new Error('chat write verify failed for ' + k);
       sp.deleteProperty(k);
+      shardDrop_(chatSBase_(cCls, cLesson), chatHd.nc);  // head AND every shard, only after verify
       sp.deleteProperty('pair:' + cCls + ':' + cLesson);
       meta.chatRows = num_(meta.chatRows) + chatRows.length;
     });
@@ -2089,16 +2358,24 @@ function archiveSweep_() {
        reviews joined compact. Write-VERIFY, then delete the gal: key. */
     Object.keys(allProps).forEach(function (k) {
       if (k.indexOf('gal:') !== 0) return;
-      var gal;
-      try { gal = JSON.parse(allProps[k]); } catch (e) { sp.deleteProperty(k); return; }
-      var emails2 = Object.keys((gal && gal.studios) || {});
-      if (!emails2.length && !((gal && gal.reviews) || []).length) { sp.deleteProperty(k); return; }
+      var parts2 = k.split(':'); // gal:<cls>:<lessonId>
+      var gCls = str_(parts2[1]), gLesson = parts2.slice(2).join(':');
+      /* AUDIT B-01: the gallery is sharded, so the row data is reassembled from
+         head + shards and EVERY shard is dropped with the head - after the
+         write-verify, never before. */
+      var galHd = galHead_(gCls, gLesson);
+      var gal = galGet_(gCls, gLesson);
+      var dropGal = function () {
+        sp.deleteProperty(k);
+        shardDrop_(galSBase_(gCls, gLesson), galHd.ns);
+        shardDrop_(galRBase_(gCls, gLesson), galHd.nr);
+      };
+      var emails2 = Object.keys(gal.studios || {});
+      if (!emails2.length && !(gal.reviews || []).length) { dropGal(); return; }
       var newest3 = 0;
       emails2.forEach(function (e) { if (num_(gal.studios[e].ts) > newest3) newest3 = num_(gal.studios[e].ts); });
       (gal.reviews || []).forEach(function (r) { if (num_(r.t) > newest3) newest3 = num_(r.t); });
       if (newest3 > chatCutoff) return;
-      var parts2 = k.split(':'); // gal:<cls>:<lessonId>
-      var gCls = str_(parts2[1]), gLesson = parts2.slice(2).join(':');
       var galRows = emails2.map(function (e) {
         var s = gal.studios[e];
         var r2 = readPupil_(gCls, e);
@@ -2116,7 +2393,24 @@ function archiveSweep_() {
         if (gSheet.getLastRow() !== gBefore + galRows.length) throw new Error('gallery write verify failed for ' + k);
         meta.galRows = num_(meta.galRows) + galRows.length;
       }
+      dropGal();
+    });
+    /* Orphan pass: a shard whose head never landed (a crash between the two
+       writes) would otherwise sit in the store forever, and the store-wide
+       500 KB quota is the thing this whole sweep exists to protect. A shard is
+       an orphan only if its head key is gone. */
+    Object.keys(allProps).forEach(function (k) {
+      var pre = '';
+      if (k.indexOf('gals:') === 0 || k.indexOf('galr:') === 0) pre = 'gal:';
+      else if (k.indexOf('chats:') === 0) pre = 'chat:';
+      else return;
+      var rest = k.slice(k.indexOf(':') + 1);          // <cls>:<lessonId>:<i>
+      var cut = rest.lastIndexOf(':');
+      if (cut < 0) return;
+      if (sp.getProperty(pre + rest.slice(0, cut))) return;  // head still live
+      if (!sp.getProperty(k)) return;                        // already dropped with its head
       sp.deleteProperty(k);
+      meta.orphans = num_(meta.orphans) + 1;
     });
   } catch (e) {
     meta.ok = false;
