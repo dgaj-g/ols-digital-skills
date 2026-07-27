@@ -541,6 +541,94 @@ async function c11Browser(ctx) {
   }
   check(errs.length === 0, 'zero console errors: ' + JSON.stringify(errs));
   await page.close();
+  await c11Vault(ctx);
+}
+
+/* The half the pupil actually sees: a live paired VAULT, dissolved under her. */
+async function c11Vault(ctx) {
+  section('C-11 (vault) - the pupil\'s screen recovers itself, with her work intact');
+  const page = await ctx.newPage();
+  const errs = [];
+  page.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
+  page.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
+  await page.goto(BASE + 'anya', { waitUntil: 'domcontentloaded' });
+  await sleep(2400);
+  await page.evaluate(() => {
+    const db = JSON.parse(localStorage.getItem('ks3dt-dev') || '{}');
+    delete db.pairing; delete db.pq; delete db.pch; delete db.pres;
+    localStorage.setItem('ks3dt-dev', JSON.stringify(db));
+  });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await sleep(2600);
+  await page.evaluate(() => { const x = document.querySelector('.intro-skip, .intro-overlay button'); if (x) x.click(); });
+  await sleep(600);
+  await page.evaluate(() => window.App.openLesson('j1-01'));
+  await sleep(2500);
+  await page.evaluate(() => { window.App.state.chunkIdx = 3; window.App.nextChunk(); });  // -> the Vault
+  await sleep(1500);
+  for (let i = 0; i < 8; i++) {
+    const hit = await page.evaluate(() => {
+      const b = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /Open the Vault/i.test(x.textContent));
+      if (b) { b.click(); return true; }
+      return false;
+    });
+    if (hit) break;
+    await sleep(700);
+  }
+  let paired = false;
+  for (let i = 0; i < 40; i++) {
+    paired = await page.evaluate(() => !!document.querySelector('.vault-wrap.paired .chat-dock'));
+    if (paired) break;
+    await sleep(800);
+  }
+  check(paired, 'the pupil reaches a LIVE paired Vault with the chat dock open');
+  if (paired) {
+    // file one document first, so the dissolve has work it could destroy
+    const filedBefore = await page.evaluate(async () => {
+      const info = await window.App.call('vaultInfo', { lessonId: 'j1-01', keyId: 'vault' });
+      return document.querySelectorAll('.vault-folder .vault-file').length;
+    });
+    await page.evaluate(() => window.App.call('admin', { passcode: 'demo', sub: 'pairReset', className: 'Demo-8A', lessonId: 'j1-01' }));
+    await sleep(4200);
+    const after = await page.evaluate(() => ({
+      dock: !!document.querySelector('.chat-dock'),
+      wrap: !!document.querySelector('.vault-wrap.paired'),
+      banner: (document.querySelector('.pair-banner.slim') || {}).textContent || '',
+      stuck: !!document.querySelector('.vault-stage.not-my-turn'),
+      filed: document.querySelectorAll('.vault-folder .vault-file').length,
+      tray: document.querySelectorAll('.vault-tray .vault-file').length,
+      toast: (document.querySelector('#toast') || {}).textContent || ''
+    }));
+    check(after.dock === false && after.wrap === false,
+      'the chat dock and the paired layout come down BY THEMSELVES - no reload');
+    check(/on your own/i.test(after.banner), 'the banner tells her what happened: ' + after.banner);
+    check(/carry on solo/i.test(after.toast), 'and so does the toast: ' + after.toast);
+    check(after.stuck === false, 'the turn lock is lifted (no "not your turn" left on screen)');
+    check(after.filed >= filedBefore && after.tray > 0, 'nothing she had filed was lost');
+
+    // she can genuinely act alone now: a real drag reaches the Vault's judgement
+    const box = await page.evaluate(() => {
+      const f = document.querySelector('.vault-tray .vault-file');
+      const fo = document.querySelector('.vault-folder');
+      const a = f.getBoundingClientRect(), b2 = fo.getBoundingClientRect();
+      return { fx: a.x + a.width / 2, fy: a.y + a.height / 2, tx: b2.x + b2.width / 2, ty: b2.y + b2.height / 2 };
+    });
+    await page.mouse.move(box.fx, box.fy);
+    await page.mouse.down();
+    await page.mouse.move(box.tx, box.ty, { steps: 12 });
+    await page.mouse.up();
+    await sleep(1000);
+    const drag = await page.evaluate(() => ({
+      toast: (document.querySelector('#toast') || {}).textContent || '',
+      filed: document.querySelectorAll('.vault-folder .vault-file').length
+    }));
+    check(!/Not your drop/i.test(drag.toast),
+      'she is no longer told "Not your drop" by a partner who is gone: ' + drag.toast);
+    check(/Vault disagrees/i.test(drag.toast) || drag.filed > filedBefore,
+      'her drag reaches the Vault\'s real judgement - filed or returned, but ANSWERED: ' + drag.toast);
+  }
+  check(errs.length === 0, 'zero console errors through the whole recovery: ' + JSON.stringify(errs));
+  await page.close();
 }
 
 async function c14Browser(ctx) {
