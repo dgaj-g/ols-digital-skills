@@ -464,6 +464,33 @@ function runGallery(env, opts) {
   check(head.v === 2 && !head.studios && !head.reviews,
     'the head is now v2 and holds only counters: ' + JSON.stringify(head));
 
+  section('10. THE SHARD LIFT-OUT BRANCH (which section 1 never reaches)');
+  /* A studio is created near its maximum size, so the scale run only ever
+     APPENDS. The other branch - an existing entry updated in place until its
+     shard approaches the ceiling, forcing the entry to be lifted out and
+     re-appended - is correctness-critical and would otherwise ship untested. */
+  const env3 = makeEnv();
+  const S3 = env3.sandbox;
+  const BASE = 'gals:LiftOut:test';
+  let ns3 = 0;
+  for (let i = 0; i < 45; i++) ns3 = S3.shardPut_(BASE, ns3, 'e' + i + '@d', { sid: 's' + i, gt: 'x' });
+  check(ns3 === 1, '45 tiny entries fit in one shard (ns=' + ns3 + ')');
+  const BIG = 'Z'.repeat(240);
+  for (let i = 0; i < 45; i++) ns3 = S3.shardPut_(BASE, ns3, 'e' + i + '@d', { sid: 's' + i, gt: BIG });
+  const shardKeys = Array.from(env3.store.keys()).filter(k => k.indexOf(BASE) === 0).sort();
+  console.log('  shards after growing every entry in place: ' +
+    shardKeys.map(k => k + '=' + env3.store.get(k).length + 'B').join('  '));
+  check(ns3 > 1, 'growing them in place ROLLED to a second shard (ns=' + ns3 + ') - the lift-out fired');
+  const merged3 = S3.shardMap_(BASE, ns3);
+  check(Object.keys(merged3).length === 45, 'all 45 entries still readable (' + Object.keys(merged3).length + ')');
+  const counts3 = {};
+  shardKeys.forEach(k => Object.keys(JSON.parse(env3.store.get(k))).forEach(e => { counts3[e] = (counts3[e] || 0) + 1; }));
+  check(Object.keys(counts3).every(e => counts3[e] === 1), 'no entry was duplicated across shards by the lift-out');
+  check(Object.keys(merged3).every(e => merged3[e].gt === BIG), 'every entry carries its GROWN value, not the stale one');
+  check(shardKeys.every(k => env3.store.get(k).length <= PROP_VALUE_MAX),
+    'no shard passed the cap during the whole sequence');
+  check(env3.stats.rejected === 0, 'zero writes were refused (' + env3.stats.rejected + ')');
+
   /* ---------------- verdict ---------------- */
   console.log('\n=========================================');
   console.log('CHECKS RUN: ' + (PASS + FAILS.length) + '   PASSED: ' + PASS + '   FAILED: ' + FAILS.length);
