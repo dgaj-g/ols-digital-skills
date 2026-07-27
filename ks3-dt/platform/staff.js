@@ -26,6 +26,7 @@
   var misLessonNum = '';          // Live tab: lesson chosen in the misconception dropdown
   var coverPick = '';             // Cover tab: lessonId chosen in the override dropdown
   var briefByNum = {};            // Lessons tab: lessonNum -> manifest entry (for the Brief view)
+  var lockNotice = '';            // Lessons tab: message to show once the grid re-renders (B-05 undo)
   var coverActiveLesson = null;   // Cover tab: lesson we personally started cover for this session
   var wired = false;
 
@@ -434,11 +435,18 @@
         '<span class="lc-state">' + App.esc(stateText) + '</span>' +
         (le.status !== 'ready' ? '<span class="lc-date">(content coming)</span>'
           : '<span class="lc-brief" data-action="show-brief" data-num="' + le.num + '">&#128203; Brief</span>') +
+        /* AUDIT FIX B-05 (27 Jul 2026): the undo. A locked-but-delivered cell is
+           exactly the state a mis-tap leaves behind, and until now nothing
+           anywhere could reset a delivered date - so the class was recorded as
+           having been taught a lesson that never ran, and five school days later
+           every girl was flagged absent from it. */
+        ((!on && delivered) ? '<span class="lc-undo" data-action="undo-delivery" data-num="' + le.num + '">&#8634; Not taught</span>' : '') +
         '</button>';
     }).join('');
     setPane('<div class="lock-grid">' + cells + '</div>' +
-      '<p class="staff-row-meta" style="margin-top:12px">Pupils who already opened a lesson are never kicked out; its delivered date is kept even after a relock. <b>Brief</b> opens the lesson&rsquo;s teacher run sheet.</p>' +
+      '<p class="staff-row-meta" style="margin-top:12px">Pupils who already opened a lesson are never kicked out. Locking again stops anyone <b>new</b> starting it, and a locked lesson is never used for absence flags. If you unlocked one by mistake, tap <b>&#8634; Not taught</b> to clear its delivered date. <b>Brief</b> opens the lesson&rsquo;s teacher run sheet.</p>' +
       '<p class="staff-status" id="lock-status"></p>');
+    if (lockNotice) { plainStatus(q('#lock-status'), lockNotice); lockNotice = ''; }
   }
 
   /* ---- Lesson brief view (teacher run sheet, decrypted server-side) ---- */
@@ -491,7 +499,41 @@
         'Unlock anyway', function (yes) { if (yes) doToggle(btn, num, wasOn, true); });
       return;
     }
+    /* AUDIT FIX B-05: locking again is now a real change, so it asks first. The
+       lock cells sit right beside the Brief chip and a mis-tap used to be silent
+       AND irreversible. */
+    if (!willOn) {
+      var lk = locksData[num] || {};
+      App.confirm('Lock ' + (briefByNum[num] && briefByNum[num].side ? 'the Side Quest' : 'Lesson ' + num) + ' again?',
+        'Girls who have already opened it keep their place and can finish. Nobody new will be able to start it, and it will stop being used for absence flags.' +
+        (Number(lk.u) ? ' The delivered date is kept - if this lesson never actually ran, use "Not taught" on the cell afterwards to clear it.' : ''),
+        'Lock it', function (yes) { if (yes) doToggle(btn, num, wasOn, false); });
+      return;
+    }
     doToggle(btn, num, wasOn, willOn);
+  }
+
+  /* AUDIT FIX B-05: clear a delivered date set by a mis-tap. Pupil work is never
+     touched - this only withdraws the class-level claim that the lesson was
+     taught, which is what absence inference reads. */
+  function undoDelivery(el) {
+    var num = el.getAttribute('data-num');
+    var le = briefByNum[num];
+    var label = (le && le.side) ? 'the Side Quest' : 'Lesson ' + num;
+    App.confirm('Mark ' + label + ' as never taught?',
+      'Use this if you unlocked it by accident. It clears the delivered date, so nobody will be flagged absent from a lesson the class never had. Any work a pupil already saved is kept, and you can unlock it again for real whenever you like.',
+      'Clear it', function (yes) {
+        if (!yes) return;
+        adminCall('setLock', { className: cls, lessonNum: num, on: 0, clear: 1 }).then(function (r) {
+          var status = q('#lock-status');
+          if (!r || !r.ok) { plainStatus(status, 'Could not clear that date -- please try again.'); return; }
+          locksData[num] = { u: r.u, on: r.on };
+          // re-rendering the pane wipes #lock-status, so the confirmation rides
+          // on the shell's own toast instead of a line that is about to vanish
+          lockNotice = label + ' is back to never delivered - nobody will be flagged absent from it.';
+          renderLessons();
+        });
+      });
   }
 
   function doToggle(btn, num, wasOn, willOn) {
@@ -1667,6 +1709,7 @@
       case 'delete-class': deleteClass(btn); break;
       case 'add-class': addClass(); break;
       case 'toggle-lock': toggleLock(btn); break;
+      case 'undo-delivery': undoDelivery(btn); break;
       case 'show-brief': showBrief(btn); break;
       case 'brief-back': renderLessons(); break;
       case 'brief-print': briefPrint(); break;

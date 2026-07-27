@@ -399,6 +399,19 @@ function absenceFor_(cls, rec, locks, manifest, absDays) {
     if (str_(le.status) !== 'ready') continue;
     var lk = locks[str_(le.num)];
     if (!lk || !num_(lk.u)) continue;
+    /* AUDIT FIX B-05: never infer absence from a lesson that is currently
+       LOCKED. The half of this bug that reached pupil records was a teacher
+       mis-tapping a cell, seeing it unlock, tapping again to re-lock - and five
+       school days later every girl who had (correctly) not opened it being
+       flagged absent from a lesson that never happened, with no undo short of
+       deleting the class.
+       This is coherent, not just defensive: an absence flag exists to ROUTE a
+       pupil into catch-up, and catch-up opens the lesson - which a locked lesson
+       refuses. Flagging her for a lesson she cannot then open would be an
+       instruction she has no way to follow. A delivered lesson's normal resting
+       state on this platform is unlocked (that is what makes catch-up work), so
+       this costs nothing in the ordinary case. */
+    if (!num_(lk.on)) continue;
     if (schoolDaysSince_(num_(lk.u)) < absDays) continue;
     var a = (rec.L || {})[str_(le.num)];
     if (meaningful_(a)) continue;
@@ -488,9 +501,26 @@ function apiState(req) {
 
 /* A lesson is accessible once DELIVERED (u set), even if currently re-locked:
    pupils can always revisit; a lock flip never kicks anyone out (decision #10). */
-function lessonAccessible_(cls, numStr) {
+/* AUDIT FIX B-05 (27 Jul 2026): access used to be granted on the delivered
+   timestamp ALONE - the lock's own `on` flag was computed and then never read,
+   so after the first unlock the toggle was decorative on both layers while the
+   staff grid still said "Locked". Reproduced live during the audit: setLock
+   on:0 returned ok and the pupil's very next saveEvent still succeeded.
+
+   Now the `on` flag decides, with one deliberate exception: a pupil who ALREADY
+   has a record for this lesson keeps her access. That is the standing "pupils
+   who already opened a lesson are never kicked out" rule the staff grid states
+   in so many words - a teacher locking up at the end of the hour must not strand
+   a girl mid-chunk. A re-lock therefore stops anyone NEW from starting, which is
+   what the mis-tap case needs, and undoing the delivery (setLock clear:1) is the
+   full undo. */
+function lessonAccessible_(cls, numStr, email) {
   var lk = getLocks_(cls)[numStr];
-  return !!(lk && num_(lk.u));
+  if (!lk || !num_(lk.u)) return false;
+  if (num_(lk.on)) return true;
+  if (!email) return false;
+  var rec = readPupil_(cls, str_(email));
+  return !!(rec && rec.L && rec.L[numStr]);
 }
 
 /* ---------- Do-Now recap engine (server-side selection + marking) ---------- */
@@ -643,7 +673,7 @@ function apiMark(req) {
   var year = classYear_(cls);
   var lessonId = str_(req.lessonId);
   var numStr = lessonNum_(year, lessonId);
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var keys = lessonKeys_(year, lessonId);
   var key = keys[str_(req.itemId)];
   if (!key) return { ok: false, error: 'no-key' };
@@ -665,7 +695,7 @@ function apiVaultInfo(req) {
   var year = classYear_(cls);
   var lessonId = str_(req.lessonId);
   var numStr = lessonNum_(year, lessonId);
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var keys = lessonKeys_(year, lessonId);
   var keyId = str_(req.keyId || 'vault');
   var v = keys[keyId];
@@ -732,7 +762,7 @@ function apiSaveEvent(req) {
   // event's detail introduces a NEW key (idempotent under outbox retries and
   // console replays), capped per event AND per lesson. Same-pupil concurrent
   // RPCs (two tabs, heartbeat + badge) serialise under the lock.
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var out = withLock_(function () {
     var rec = readPupil_(cls, email);
     if (!rec) return { ok: false, error: 'not-joined' };
@@ -784,7 +814,7 @@ function apiSubmitExit(req) {
   var year = classYear_(cls);
   var lessonId = str_(req.lessonId);
   var numStr = lessonNum_(year, lessonId);
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var entry = lessonEntry_(year, lessonId);
   var lesson = fetchContent_(str_(entry.file));
   var keys = lessonKeys_(year, lessonId);
@@ -840,7 +870,7 @@ function apiSubmitBaseline(req) {
   var year = classYear_(cls);
   var lessonId = str_(req.lessonId);
   var numStr = lessonNum_(year, lessonId);
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var keys = lessonKeys_(year, lessonId);
   var answers = req.answers || {}; // {itemId: choiceIdx}
   var ids = Object.keys(answers).sort();
@@ -899,7 +929,7 @@ function apiDriveCheck(req) {
   var cls = realClass_(req.classCode);
   if (!cls) return { ok: false, error: 'unknown-class' };
   var numStr = str_(req.lessonNum || '');
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   try {
     var school = false, dtwork = false;
     var roots = DriveApp.getRootFolder().getFolders();
@@ -937,7 +967,7 @@ function apiArtifactCheck(req) {
   var cls = realClass_(req.classCode);
   if (!cls) return { ok: false, error: 'unknown-class' };
   var numStr = str_(req.lessonNum || '');
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var kinds = [];
   (Array.isArray(req.kinds) ? req.kinds : []).slice(0, 4).forEach(function (k) {
     k = str_(k).toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -1285,7 +1315,7 @@ function apiPairJoin(req) {
   var lessonId = str_(req.lessonId);
   var year = classYear_(cls);
   var numStr = lessonNum_(year, lessonId);
-  if (!numStr || !lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!numStr || !lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var stageIdx = num_(req.stageIdx);
   return withLock_(function () {
     var reg = pairReg_(cls, lessonId);
@@ -1513,7 +1543,7 @@ function apiGalleryOpen(req) {
   if (!cls) return { ok: false, error: 'unknown-class' };
   var lessonId = str_(req.lessonId);
   var numStr = lessonNum_(classYear_(cls), lessonId);
-  if (!lessonAccessible_(cls, numStr)) return { ok: false, error: 'locked' };
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
   var gt = galClean_(req.gt, GAL_TITLE_MAX);
   var gh = galClean_(req.gh, GAL_HOW_MAX);
   var sn = galClean_(req.sn, 24);
@@ -1729,8 +1759,14 @@ function apiAdmin(req) {
     return withLock_(function () {
       var locks = getLocks_(cls);
       var cur = locks[numStr] || { u: 0, on: 0 };
-      if (on && !num_(cur.u)) cur.u = tmin_();  // first unlock = delivered date (never reset)
+      if (on && !num_(cur.u)) cur.u = tmin_();  // first unlock = delivered date
       cur.on = on;
+      /* AUDIT FIX B-05: the teacher's UNDO. Before this there was no control
+         anywhere that could reset a delivered date, so one mis-tap on the lock
+         grid marked a lesson as taught forever. clear:1 (staff panel: "Undo
+         delivery") puts the cell back to never-delivered. Pupil work is never
+         touched - only the class-level claim that this lesson was taught. */
+      if (!on && num_(req.clear)) cur.u = 0;
       locks[numStr] = cur;
       jset_(sp_(), 'lock:' + cls, locks);
       return { ok: true, u: num_(cur.u), on: num_(cur.on) };

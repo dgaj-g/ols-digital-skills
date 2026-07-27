@@ -471,7 +471,15 @@
     var rec = (App.state.me && App.state.me.L) ? App.state.me.L[String(le.num)] : null;
     var done = rec && Number(rec[0]) === 2;
     var flagged = App.state.absence.indexOf(le.id) !== -1;
-    return { delivered: !!delivered, open: !!open, done: !!done, flagged: flagged, ready: le.status === 'ready' };
+    /* AUDIT FIX B-05 (27 Jul 2026): the tile used to open on the delivered date
+       alone, so a re-locked lesson still read "Ready" on every pupil's hub while
+       the staff grid said "Locked" - and opening it burned the first-wins exit
+       check on a lesson that never ran. Mirrors lessonAccessible_ exactly: the
+       lock's `on` flag decides, except that a pupil who already has a record
+       keeps her place (never kick anyone out mid-lesson). */
+    var accessible = !!delivered && (!!open || !!rec);
+    return { delivered: !!delivered, open: !!open, accessible: accessible,
+      done: !!done, flagged: flagged, ready: le.status === 'ready' };
   }
 
   function showHub() {
@@ -690,7 +698,7 @@
     coreLessons.forEach(function (le) {
       var st = lessonState(le);
       if (st.done) doneCount++;
-      else if (!continueTarget && st.delivered && st.ready) continueTarget = le;
+      else if (!continueTarget && st.accessible && st.ready) continueTarget = le;
     });
     $('#ring-count').textContent = doneCount;
     var circ = 2 * Math.PI * 52;
@@ -758,7 +766,7 @@
     el.type = 'button';
     var cls = 'tile';
     if (st.done) cls += ' is-done';
-    else if (st.delivered && st.ready) cls += ' is-open';
+    else if (st.accessible && st.ready) cls += ' is-open';
     else cls += ' is-locked';
     if (st.flagged) cls += ' is-flagged';
     if (le.side) cls += ' is-side';
@@ -773,13 +781,13 @@
         '<span class="tile-tag">' + esc(le.tagline || '') + '</span>' +
         (st.done ? '<span class="tile-state done">&#10003; Complete</span>'
           : st.flagged ? '<span class="tile-state flag">Absent? Catch up</span>'
-          : (st.delivered && st.ready) ? '<span class="tile-state open">Ready</span>'
+          : (st.accessible && st.ready) ? '<span class="tile-state open">Ready</span>'
           : '<span class="tile-state lock">&#128274;</span>') +
       '</span>';
     el.onclick = function () {
       if (st.flagged && !st.done) { App.openLesson(le.id, { catchup: true }); return; }
-      if (st.delivered && st.ready) { App.openLesson(le.id, {}); return; }
-      if (st.delivered && !st.ready) { App.toast('This lesson is being prepared — it will be ready before your class needs it.'); return; }
+      if (st.accessible && st.ready) { App.openLesson(le.id, {}); return; }
+      if (st.accessible && !st.ready) { App.toast('This lesson is being prepared — it will be ready before your class needs it.'); return; }
       el.classList.remove('wobble'); void el.offsetWidth; el.classList.add('wobble');
       App.toast('Locked — your teacher opens each lesson when it’s time.');
     };
