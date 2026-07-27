@@ -61,8 +61,8 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   console.log('  contentVersion reported by the app:', ver, '(preview always reports "dev-preview")');
   const packedVer = JSON.parse(fs.readFileSync(path.join(__dirname, '../../content/index.json'), 'utf8')).contentVersion;
   const srcVer = JSON.parse(fs.readFileSync(path.join(SRC, 'index.json'), 'utf8')).contentVersion;
-  check(packedVer === '2026-07-27a', 'packed content/index.json is at 2026-07-27a (got ' + packedVer + ')');
   check(packedVer === srcVer, 'packed contentVersion matches content-src (' + srcVer + ') - the pack is current');
+  check(packedVer >= '2026-07-27a', 'content is at or past the forever fix (' + packedVer + ')');
 
   await page.evaluate(() => Array.from(document.querySelectorAll('.tile')).find(e => /Scoreboard Engineer/i.test(e.textContent)).click());
   await sleep(2200);

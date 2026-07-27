@@ -32,6 +32,7 @@ const CLASS = 'Demo-8A';
 const LESSON = 'j1-05';
 const N_PUPILS = 30;
 const REVIEWS_EACH = 2;
+const PREFIX_REF = process.env.KS3DT_PREFIX_REF || '3341be0'; // last commit before the B-01 fix
 
 let PASS = 0;
 const FAILS = [];
@@ -235,10 +236,13 @@ function runGallery(env, opts) {
 
   /* ---------- the pre-fix server, for contrast (optional but the point) ---------- */
   if (wantPreFix) {
-    section('CONTROL: the PRE-FIX server (git HEAD) at the same scale');
+    section('CONTROL: the PRE-FIX server (pinned pre-fix commit) at the same scale');
     const tmp = path.join(require('os').tmpdir(), 'ks3dt-prefix-Code.gs.js');
     try {
-      execSync('git -C "' + ROOT + '" show HEAD:ks3-dt/platform/server/Code.gs.template > "' + tmp + '"');
+      /* PINNED to the commit that predates the B-01 fix. This used to say HEAD,
+         which silently stopped being the pre-fix code the moment the fix landed -
+         the control then "passed" by comparing the fix against itself. */
+      execSync('git -C "' + ROOT + '" show ' + PREFIX_REF + ':ks3-dt/platform/server/Code.gs.template > "' + tmp + '"');
       const envOld = makeEnv({ source: tmp });
       seedClass(envOld);
       const f = runGallery(envOld);

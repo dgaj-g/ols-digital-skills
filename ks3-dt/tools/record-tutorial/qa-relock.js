@@ -20,6 +20,7 @@ const SERVER = path.join(ROOT, 'ks3-dt/platform/server/Code.gs.template');
 const CONTENT = path.join(ROOT, 'ks3-dt/content');
 const BASE = 'http://localhost:8096/ks3-dt/platform/index.html?class=Demo-8A&as=';
 const CLASS = 'Demo-8A';
+const PREFIX_REF = process.env.KS3DT_PREFIX_REF || '3341be0'; // last commit before the B-05 fix
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 let PASS = 0;
@@ -149,7 +150,9 @@ function serverHalf() {
   const { execSync } = require('child_process');
   const tmp = path.join(require('os').tmpdir(), 'ks3dt-prefix-relock.js');
   try {
-    execSync('git -C "' + ROOT + '" show HEAD~1:ks3-dt/platform/server/Code.gs.template > "' + tmp + '"');
+    /* PINNED, for the same reason as qa-store-scale.js: a relative ref stops
+       being the pre-fix code as soon as more commits land on top. */
+    execSync('git -C "' + ROOT + '" show ' + PREFIX_REF + ':ks3-dt/platform/server/Code.gs.template > "' + tmp + '"');
     const old = makeEnv(tmp);
     const O = old.sandbox;
     const osp = O.PropertiesService.getScriptProperties();
