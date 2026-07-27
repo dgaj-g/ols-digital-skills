@@ -1286,14 +1286,14 @@
         var plAssigned = {};
         var pairsOut = Object.keys(plReg.P).map(function (pid) {
           var P = plReg.P[pid];
-          (P.m || []).forEach(function (e) { plAssigned[str_(e)] = 1; });
+          if (!num_(P.dis)) (P.m || []).forEach(function (e) { plAssigned[str_(e)] = 1; });
           var ch = chD_(s, pid);
           var msgs = 0, lastMsg = '';
           (ch.ev || []).forEach(function (e2) {
             if (str_(e2[2]) === 'msg') { msgs++; lastMsg = str_(P.cn[num_(e2[1])]) + ': ' + str_(e2[3]); }
           });
           return {
-            pid: str_(pid), trio: num_(P.trio), done: num_(P.done), t: num_(P.t),
+            pid: str_(pid), trio: num_(P.trio), done: num_(P.done), dis: num_(P.dis), t: num_(P.t),
             cn: (P.cn || []).map(str_),
             names: (P.m || []).map(function (e) { return str_(nameOf[str_(e)] || e); }),
             msgs: num_(msgs), last: str_(lastMsg).slice(0, 80)
@@ -1375,12 +1375,31 @@
       return Promise.resolve({ ok: true, made: num_(made) });
     }
 
+    /* AUDIT FIX C-11 - mirrors apiAdmin sub 'pairReset'. Deleting the registry
+       stranded every already-paired pupil on a channel that answered
+       'not-your-pair' forever; nothing on her screen changed and only a reload
+       recovered. Now each unfinished pair is DISSOLVED (P.dis) and its members
+       are released to a solo run they can carry straight on with, finished
+       pairs are left alone, and the queue is cleared so anyone stuck waiting
+       re-joins and is matched again. */
     if (sub === 'pairReset') {
       if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
-      if (s.pairing) delete s.pairing[plKey_(cls, str_(p.lessonId))];
-      if (s.pq) delete s.pq[plKey_(cls, str_(p.lessonId))];
+      var prReg2 = pairRegD_(s, cls, str_(p.lessonId));
+      var prFreed = 0, prSealed = 0;
+      Object.keys(prReg2.P).forEach(function (pid3) {
+        var P3 = prReg2.P[pid3];
+        if (num_(P3.done) || num_(P3.dis)) { prSealed++; return; }
+        P3.dis = tmin_() || 1;
+        (P3.m || []).forEach(function (e3) {
+          var em3 = str_(e3);
+          if (prReg2.solo.indexOf(em3) === -1) prReg2.solo.push(em3);
+          prFreed++;
+        });
+      });
+      var prQ2 = pqD_(s, cls, str_(p.lessonId));
+      prQ2.q = [];
       save_(s);
-      return Promise.resolve({ ok: true });
+      return Promise.resolve({ ok: true, freed: num_(prFreed), sealed: num_(prSealed) });
     }
 
     /* Reaction Rally projector feed - mirrors apiAdmin sub 'tournament'.
@@ -1528,13 +1547,21 @@
     if (!s.pres[cls]) s.pres[cls] = {};
     return s.pres[cls];
   }
-  function pairOfD_(reg, email) {
+  /* AUDIT FIX C-11: mirrors Code.gs.template. pairAnyD_ still finds a pair the
+     teacher has dissolved (the channel poll needs it, to TELL her); pairOfD_
+     skips dissolved pairs so she is free to run solo / be re-matched. */
+  function pairAnyD_(reg, email) {
     var pids = Object.keys(reg.P);
     for (var i = 0; i < pids.length; i++) {
       var m = reg.P[pids[i]].m || [];
       for (var j = 0; j < m.length; j++) if (str_(m[j]) === email) return { pid: pids[i], mi: j };
     }
     return null;
+  }
+  function pairOfD_(reg, email) {
+    var hit = pairAnyD_(reg, email);
+    if (hit && num_(reg.P[hit.pid].dis)) return null;
+    return hit;
   }
   function presentOnD_(s, cls, numStr) {
     var pres = presD_(s, cls);
@@ -1606,7 +1633,10 @@
       }
       // expected = queued + live-present pupils still short of the stage
       var assigned = {};
-      Object.keys(reg.P).forEach(function (pid) { (reg.P[pid].m || []).forEach(function (e) { assigned[str_(e)] = 1; }); });
+      Object.keys(reg.P).forEach(function (pid) {
+        if (num_(reg.P[pid].dis)) return;   // dissolved (C-11): free again
+        (reg.P[pid].m || []).forEach(function (e) { assigned[str_(e)] = 1; });
+      });
       reg.solo.forEach(function (e) { assigned[str_(e)] = 1; });
       var expected = {};
       q.q.forEach(function (w) { expected[str_(w.e)] = 1; });
@@ -1760,8 +1790,11 @@
     if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
     var lessonId = str_(p.lessonId);
     var reg = pairRegD_(s, cls, lessonId);
-    var hit = pairOfD_(reg, PUPIL_EMAIL);
+    var hit = pairAnyD_(reg, PUPIL_EMAIL);   // C-11: a dissolved pair must still answer
     if (!hit || str_(hit.pid) !== str_(p.pid)) return Promise.resolve({ ok: false, error: 'not-your-pair' });
+    if (num_(reg.P[hit.pid].dis)) {
+      return Promise.resolve({ ok: true, dis: 1, seq: num_(p.since), ev: [], live: [], done: 0, rv: 0 });
+    }
     var P = reg.P[hit.pid];
     var pid = str_(hit.pid);
     var ch = chD_(s, pid);

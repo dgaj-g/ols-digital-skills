@@ -1215,13 +1215,22 @@ function pairReg_(cls, lessonId) {
   if (!reg.solo) reg.solo = [];
   return reg;
 }
-function pairOf_(reg, email) {
+/* AUDIT FIX C-11 (27 Jul 2026): pairAny_ finds a pupil's pair EVEN IF it has
+   been dissolved by the teacher's Reset; pairOf_ (used by join/send/complete)
+   skips dissolved pairs so she is free to be re-matched. The channel poll uses
+   pairAny_, which is how a dissolved pupil is TOLD - see apiPairChannel. */
+function pairAny_(reg, email) {
   var pids = Object.keys(reg.P);
   for (var i = 0; i < pids.length; i++) {
     var m = reg.P[pids[i]].m || [];
     for (var j = 0; j < m.length; j++) if (str_(m[j]) === email) return { pid: pids[i], mi: j };
   }
   return null;
+}
+function pairOf_(reg, email) {
+  var hit = pairAny_(reg, email);
+  if (hit && num_(reg.P[hit.pid].dis)) return null;
+  return hit;
 }
 
 /* Presence beacon: piggybacked on the client heartbeat (~60s while a lesson is
@@ -1271,6 +1280,7 @@ function pairMatch_(cls, lessonId, numStr, stageIdx, reg, q) {
   q.q = (q.q || []).filter(function (w) { return nowS - num_(w.p) <= PAIR_QUEUE_STALE_S; });
   var assigned = {};
   Object.keys(reg.P).forEach(function (pid) {
+    if (num_(reg.P[pid].dis)) return;   // dissolved (C-11): its members are free again
     (reg.P[pid].m || []).forEach(function (e) { assigned[str_(e)] = 1; });
   });
   (reg.solo || []).forEach(function (e) { assigned[str_(e)] = 1; });
@@ -1387,8 +1397,12 @@ function apiPairChannel(req) {
   if (!cls) return { ok: false, error: 'unknown-class' };
   var lessonId = str_(req.lessonId);
   var reg = pairReg_(cls, lessonId);
-  var hit = pairOf_(reg, email);
+  /* pairAny_, not pairOf_ (C-11): a pupil whose pair the teacher just dissolved
+     is still polling this channel, and this response is the ONLY place she can
+     be told. Answering ok:false left her polling a dead channel forever. */
+  var hit = pairAny_(reg, email);
   if (!hit || str_(hit.pid) !== str_(req.pid)) return { ok: false, error: 'not-your-pair' };
+  if (num_(reg.P[hit.pid].dis)) return { ok: true, dis: 1, seq: num_(req.since), ev: [], live: [], done: 0, rv: 0 };
   var P = reg.P[hit.pid];
   var pid = str_(hit.pid);
   cPut_('ks3dt:pls:' + pid + ':' + hit.mi, { t: tsec_() }, 3600);
@@ -1965,7 +1979,9 @@ function apiAdmin(req) {
     try { chAll = cache_().getAll(pids2.map(function (p) { return chCacheKey_(p); })) || {}; } catch (e) {}
     var pairsOut = pids2.map(function (p) {
       var P = plReg.P[p];
-      (P.m || []).forEach(function (e) { plAssigned[str_(e)] = 1; });
+      /* dissolved pairs (C-11) stay listed so their transcript is still
+         reachable, but their members are free, not assigned */
+      if (!num_(P.dis)) (P.m || []).forEach(function (e) { plAssigned[str_(e)] = 1; });
       var msgs = 0, lastMsg = '';
       try {
         var chRaw = chAll[chCacheKey_(p)];
@@ -1977,7 +1993,7 @@ function apiAdmin(req) {
         }
       } catch (e) {}
       return {
-        pid: str_(p), trio: num_(P.trio), done: num_(P.done), t: num_(P.t),
+        pid: str_(p), trio: num_(P.trio), done: num_(P.done), dis: num_(P.dis), t: num_(P.t),
         cn: (P.cn || []).map(function (c) { return str_(c); }),
         names: (P.m || []).map(function (e) { return str_(nameOf[str_(e)] || e); }),
         msgs: num_(msgs), last: str_(lastMsg).slice(0, 80)
@@ -2071,14 +2087,42 @@ function apiAdmin(req) {
     });
   }
 
-  /* Panic button: dissolve all pairs + queue for the stage so it can re-run.
-     Stored transcripts are kept (audit); live channels simply expire. */
+  /* Panic button, rewritten for audit C-11 (27 Jul 2026).
+     It used to DELETE the registry. Pupils already paired had long left the join
+     loop, so nothing ever told them: their channel polls answered
+     'not-your-pair' forever, the turn counter froze, and both halves of every
+     pair sat on "not your turn" until someone reloaded the page - which no Year
+     8 works out. The button offered for unblocking a stuck room deadlocked
+     everyone who was working fine.
+     It now DISSOLVES instead:
+       - each unfinished pair is flagged (P.dis) and its members are released to
+         a solo run, exactly the state the per-pupil "Solo run" button produces.
+         They keep their work and carry on where they stand - no reload.
+       - the flag is observable: their very next channel poll (~2s) returns
+         dis:1, which is how the client knows to drop the dock and go solo.
+       - finished pairs are left alone. They are history, not a deadlock, and
+         their names/callsigns are what the staff transcript viewer reads.
+       - the QUEUE is cleared, so anyone stuck waiting re-joins within ~2s and is
+         matched again. That is the button's real purpose, preserved. */
   if (sub === 'pairReset') {
     if (!cls) return { ok: false, error: 'unknown-class' };
     return withLock_(function () {
-      sp_().deleteProperty(pairRegKey_(cls, str_(req.lessonId)));
-      cPut_(pqCacheKey_(cls, str_(req.lessonId)), { q: [], stage: 0 }, 60);
-      return { ok: true };
+      var prLesson = str_(req.lessonId);
+      var prReg2 = pairReg_(cls, prLesson);
+      var prFreed = 0, prSealed = 0;
+      Object.keys(prReg2.P).forEach(function (pid3) {
+        var P3 = prReg2.P[pid3];
+        if (num_(P3.done) || num_(P3.dis)) { prSealed++; return; }
+        P3.dis = tmin_() || 1;
+        (P3.m || []).forEach(function (e3) {
+          var em3 = str_(e3);
+          if (prReg2.solo.indexOf(em3) === -1) prReg2.solo.push(em3);
+          prFreed++;
+        });
+      });
+      jset_(sp_(), pairRegKey_(cls, prLesson), prReg2);
+      cPut_(pqCacheKey_(cls, prLesson), { q: [], stage: 0 }, 60);
+      return { ok: true, freed: num_(prFreed), sealed: num_(prSealed) };
     });
   }
 
