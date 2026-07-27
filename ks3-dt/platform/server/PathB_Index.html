@@ -819,6 +819,14 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .lock-cell.is-on .lc-state { color: #1E9459; }
 .lock-cell:not(.is-on) .lc-state { color: #9AA5B5; }
 .lock-cell .lc-date { font-size: 0.7rem; color: var(--muted); }
+/* AUDIT FIX B-05: the undo chip on a locked-but-delivered cell. Quiet enough not
+   to compete with Brief, clear enough to find when a mis-tap needs undoing. */
+.lock-cell .lc-undo {
+  display: inline-block; margin-top: 2px; align-self: flex-start;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em;
+  color: #8A6D00; background: #FFF3CF; border-radius: 999px; padding: 2px 9px;
+}
+.lock-cell .lc-undo:hover { background: #FFE9A8; }
 .dash-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; color: var(--ink); }
 .dash-table th {
   text-align: left; color: var(--muted); font-family: var(--font-display); font-size: 0.68rem; letter-spacing: 0.1em;
@@ -2444,7 +2452,15 @@ window.OLS_TRANSPORT = {
     var rec = (App.state.me && App.state.me.L) ? App.state.me.L[String(le.num)] : null;
     var done = rec && Number(rec[0]) === 2;
     var flagged = App.state.absence.indexOf(le.id) !== -1;
-    return { delivered: !!delivered, open: !!open, done: !!done, flagged: flagged, ready: le.status === 'ready' };
+    /* AUDIT FIX B-05 (27 Jul 2026): the tile used to open on the delivered date
+       alone, so a re-locked lesson still read "Ready" on every pupil's hub while
+       the staff grid said "Locked" - and opening it burned the first-wins exit
+       check on a lesson that never ran. Mirrors lessonAccessible_ exactly: the
+       lock's `on` flag decides, except that a pupil who already has a record
+       keeps her place (never kick anyone out mid-lesson). */
+    var accessible = !!delivered && (!!open || !!rec);
+    return { delivered: !!delivered, open: !!open, accessible: accessible,
+      done: !!done, flagged: flagged, ready: le.status === 'ready' };
   }
 
   function showHub() {
@@ -2663,7 +2679,7 @@ window.OLS_TRANSPORT = {
     coreLessons.forEach(function (le) {
       var st = lessonState(le);
       if (st.done) doneCount++;
-      else if (!continueTarget && st.delivered && st.ready) continueTarget = le;
+      else if (!continueTarget && st.accessible && st.ready) continueTarget = le;
     });
     $('#ring-count').textContent = doneCount;
     var circ = 2 * Math.PI * 52;
@@ -2731,7 +2747,7 @@ window.OLS_TRANSPORT = {
     el.type = 'button';
     var cls = 'tile';
     if (st.done) cls += ' is-done';
-    else if (st.delivered && st.ready) cls += ' is-open';
+    else if (st.accessible && st.ready) cls += ' is-open';
     else cls += ' is-locked';
     if (st.flagged) cls += ' is-flagged';
     if (le.side) cls += ' is-side';
@@ -2746,13 +2762,13 @@ window.OLS_TRANSPORT = {
         '<span class="tile-tag">' + esc(le.tagline || '') + '</span>' +
         (st.done ? '<span class="tile-state done">&#10003; Complete</span>'
           : st.flagged ? '<span class="tile-state flag">Absent? Catch up</span>'
-          : (st.delivered && st.ready) ? '<span class="tile-state open">Ready</span>'
+          : (st.accessible && st.ready) ? '<span class="tile-state open">Ready</span>'
           : '<span class="tile-state lock">&#128274;</span>') +
       '</span>';
     el.onclick = function () {
       if (st.flagged && !st.done) { App.openLesson(le.id, { catchup: true }); return; }
-      if (st.delivered && st.ready) { App.openLesson(le.id, {}); return; }
-      if (st.delivered && !st.ready) { App.toast('This lesson is being prepared \u2014 it will be ready before your class needs it.'); return; }
+      if (st.accessible && st.ready) { App.openLesson(le.id, {}); return; }
+      if (st.accessible && !st.ready) { App.toast('This lesson is being prepared \u2014 it will be ready before your class needs it.'); return; }
       el.classList.remove('wobble'); void el.offsetWidth; el.classList.add('wobble');
       App.toast('Locked \u2014 your teacher opens each lesson when it\u2019s time.');
     };
@@ -6131,6 +6147,7 @@ window.OLS_TRANSPORT = {
   var misLessonNum = '';          // Live tab: lesson chosen in the misconception dropdown
   var coverPick = '';             // Cover tab: lessonId chosen in the override dropdown
   var briefByNum = {};            // Lessons tab: lessonNum -> manifest entry (for the Brief view)
+  var lockNotice = '';            // Lessons tab: message to show once the grid re-renders (B-05 undo)
   var coverActiveLesson = null;   // Cover tab: lesson we personally started cover for this session
   var wired = false;
 
@@ -6539,11 +6556,18 @@ window.OLS_TRANSPORT = {
         '<span class="lc-state">' + App.esc(stateText) + '</span>' +
         (le.status !== 'ready' ? '<span class="lc-date">(content coming)</span>'
           : '<span class="lc-brief" data-action="show-brief" data-num="' + le.num + '">&#128203; Brief</span>') +
+        /* AUDIT FIX B-05 (27 Jul 2026): the undo. A locked-but-delivered cell is
+           exactly the state a mis-tap leaves behind, and until now nothing
+           anywhere could reset a delivered date - so the class was recorded as
+           having been taught a lesson that never ran, and five school days later
+           every girl was flagged absent from it. */
+        ((!on && delivered) ? '<span class="lc-undo" data-action="undo-delivery" data-num="' + le.num + '">&#8634; Not taught</span>' : '') +
         '</button>';
     }).join('');
     setPane('<div class="lock-grid">' + cells + '</div>' +
-      '<p class="staff-row-meta" style="margin-top:12px">Pupils who already opened a lesson are never kicked out; its delivered date is kept even after a relock. <b>Brief</b> opens the lesson&rsquo;s teacher run sheet.</p>' +
+      '<p class="staff-row-meta" style="margin-top:12px">Pupils who already opened a lesson are never kicked out. Locking again stops anyone <b>new</b> starting it, and a locked lesson is never used for absence flags. If you unlocked one by mistake, tap <b>&#8634; Not taught</b> to clear its delivered date. <b>Brief</b> opens the lesson&rsquo;s teacher run sheet.</p>' +
       '<p class="staff-status" id="lock-status"></p>');
+    if (lockNotice) { plainStatus(q('#lock-status'), lockNotice); lockNotice = ''; }
   }
 
   /* ---- Lesson brief view (teacher run sheet, decrypted server-side) ---- */
@@ -6596,7 +6620,41 @@ window.OLS_TRANSPORT = {
         'Unlock anyway', function (yes) { if (yes) doToggle(btn, num, wasOn, true); });
       return;
     }
+    /* AUDIT FIX B-05: locking again is now a real change, so it asks first. The
+       lock cells sit right beside the Brief chip and a mis-tap used to be silent
+       AND irreversible. */
+    if (!willOn) {
+      var lk = locksData[num] || {};
+      App.confirm('Lock ' + (briefByNum[num] && briefByNum[num].side ? 'the Side Quest' : 'Lesson ' + num) + ' again?',
+        'Girls who have already opened it keep their place and can finish. Nobody new will be able to start it, and it will stop being used for absence flags.' +
+        (Number(lk.u) ? ' The delivered date is kept - if this lesson never actually ran, use "Not taught" on the cell afterwards to clear it.' : ''),
+        'Lock it', function (yes) { if (yes) doToggle(btn, num, wasOn, false); });
+      return;
+    }
     doToggle(btn, num, wasOn, willOn);
+  }
+
+  /* AUDIT FIX B-05: clear a delivered date set by a mis-tap. Pupil work is never
+     touched - this only withdraws the class-level claim that the lesson was
+     taught, which is what absence inference reads. */
+  function undoDelivery(el) {
+    var num = el.getAttribute('data-num');
+    var le = briefByNum[num];
+    var label = (le && le.side) ? 'the Side Quest' : 'Lesson ' + num;
+    App.confirm('Mark ' + label + ' as never taught?',
+      'Use this if you unlocked it by accident. It clears the delivered date, so nobody will be flagged absent from a lesson the class never had. Any work a pupil already saved is kept, and you can unlock it again for real whenever you like.',
+      'Clear it', function (yes) {
+        if (!yes) return;
+        adminCall('setLock', { className: cls, lessonNum: num, on: 0, clear: 1 }).then(function (r) {
+          var status = q('#lock-status');
+          if (!r || !r.ok) { plainStatus(status, 'Could not clear that date -- please try again.'); return; }
+          locksData[num] = { u: r.u, on: r.on };
+          // re-rendering the pane wipes #lock-status, so the confirmation rides
+          // on the shell's own toast instead of a line that is about to vanish
+          lockNotice = label + ' is back to never delivered - nobody will be flagged absent from it.';
+          renderLessons();
+        });
+      });
   }
 
   function doToggle(btn, num, wasOn, willOn) {
@@ -7772,6 +7830,7 @@ window.OLS_TRANSPORT = {
       case 'delete-class': deleteClass(btn); break;
       case 'add-class': addClass(); break;
       case 'toggle-lock': toggleLock(btn); break;
+      case 'undo-delivery': undoDelivery(btn); break;
       case 'show-brief': showBrief(btn); break;
       case 'brief-back': renderLessons(); break;
       case 'brief-print': briefPrint(); break;
