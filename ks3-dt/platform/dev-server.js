@@ -100,6 +100,124 @@
   }
   function save_(s) { try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch (e) {} }
 
+  /* ---------- emulated ScriptProperties, with the REAL per-value cap ----------
+     AUDIT BLOCKER B-01 (27 Jul 2026). Everything in this FakeServer lives in one
+     localStorage blob, and localStorage has NO per-key size limit. Apps Script
+     caps a single ScriptProperties VALUE at 9,216 bytes and THROWS past it.
+     That single difference is why five quality-gate runs, a full verify sweep
+     and a nine-lens code audit all passed while Lesson 5's Press Night could
+     not physically complete for a class of 30 on the real server.
+
+     So: every store value that is one real ScriptProperties property on the
+     deployment now goes through pSet_, which enforces 9,216 bytes exactly as
+     Apps Script does. Preview is no longer more forgiving than production.
+
+     Sharding helpers below mirror Code.gs.template one-for-one (same budget,
+     same roll rule, same shard-first-then-head write order) so a bug in the
+     sharding shows up here too. */
+  var PROP_VALUE_MAX = 9216;    // Apps Script's hard per-value ceiling
+  var SHARD_BYTES = 7000;       // roll to a fresh shard once a value passes this
+  var SHARD_INPLACE_MAX = 8600; // an in-place edit past this moves the entry out
+  function props_(s) { if (!s.props) s.props = {}; return s.props; }
+  function storeFull_(key, len) {
+    var e = new Error('Argument too large: value (' + len + ' bytes, limit ' +
+      PROP_VALUE_MAX + ') for property "' + key + '"');
+    e.ks3dtStoreFull = 1;
+    return e;
+  }
+  function pGet_(s, key, fallback) {
+    try { var raw = props_(s)[key]; return raw ? JSON.parse(raw) : fallback; }
+    catch (e) { return fallback; }
+  }
+  function pSet_(s, key, obj) {
+    var body = JSON.stringify(obj);
+    if (body.length > PROP_VALUE_MAX) throw storeFull_(key, body.length);
+    props_(s)[key] = body;
+    return body.length;
+  }
+  function pDel_(s, key) { delete props_(s)[key]; }
+  function shKey_(base, i) { return base + ':' + i; }
+  function shList_(s, base, n) {
+    var out = [], i, v;
+    for (i = 0; i <= n; i++) { v = pGet_(s, shKey_(base, i), null); if (v && v.length) out = out.concat(v); }
+    return out;
+  }
+  function shMap_(s, base, n) {
+    var out = {}, i, v;
+    for (i = 0; i <= n; i++) {
+      v = pGet_(s, shKey_(base, i), null);
+      if (!v) continue;
+      Object.keys(v).forEach(function (k) { out[k] = v[k]; });
+    }
+    return out;
+  }
+  function shPush_(s, base, n, item) {
+    var idx = n > 0 ? n - 1 : 0;
+    var cur = pGet_(s, shKey_(base, idx), null);
+    if (!(cur instanceof Array)) cur = [];
+    cur.push(item);
+    if (JSON.stringify(cur).length > SHARD_BYTES && cur.length > 1) {
+      idx += 1;
+      pSet_(s, shKey_(base, idx), [item]);
+    } else {
+      pSet_(s, shKey_(base, idx), cur);
+    }
+    return idx + 1;
+  }
+  function shPut_(s, base, n, key, val) {
+    var i, v;
+    for (i = 0; i < n; i++) {
+      v = pGet_(s, shKey_(base, i), null);
+      if (!v || v[key] === undefined) continue;
+      v[key] = val;
+      if (JSON.stringify(v).length <= SHARD_INPLACE_MAX) { pSet_(s, shKey_(base, i), v); return n; }
+      delete v[key];
+      pSet_(s, shKey_(base, i), v);
+      break;
+    }
+    var idx = n > 0 ? n - 1 : 0;
+    var obj = pGet_(s, shKey_(base, idx), null) || {};
+    obj[key] = val;
+    if (JSON.stringify(obj).length > SHARD_BYTES && Object.keys(obj).length > 1) {
+      idx += 1;
+      var fresh = {};
+      fresh[key] = val;
+      pSet_(s, shKey_(base, idx), fresh);
+    } else {
+      pSet_(s, shKey_(base, idx), obj);
+    }
+    return idx + 1;
+  }
+  function shEdit_(s, base, n, matchFn, editFn) {
+    var i, j, v, hit = false;
+    for (i = 0; i <= n; i++) {
+      v = pGet_(s, shKey_(base, i), null);
+      if (!(v instanceof Array)) continue;
+      var touched = false;
+      for (j = 0; j < v.length; j++) { if (matchFn(v[j])) { editFn(v[j]); touched = true; hit = true; } }
+      if (touched) pSet_(s, shKey_(base, i), v);
+    }
+    return hit;
+  }
+  function shDrop_(s, base, n) { for (var i = 0; i <= n + 2; i++) pDel_(s, shKey_(base, i)); }
+
+  /* Evidence hook for the scale harness (and for anyone poking at the console):
+     every modelled property with its real byte size, so "does this fit on Apps
+     Script?" is a measurement in preview, not a guess. */
+  function storeReport_() {
+    var s = load_(), out = { limit: PROP_VALUE_MAX, values: {}, max: 0, over: [] };
+    Object.keys(props_(s)).forEach(function (k) { out.values[k] = props_(s)[k].length; });
+    Object.keys(s.pupils || {}).forEach(function (k) {
+      out.values['p:' + k] = JSON.stringify(s.pupils[k]).length;
+    });
+    Object.keys(out.values).forEach(function (k) {
+      if (out.values[k] > out.max) out.max = out.values[k];
+      if (out.values[k] > PROP_VALUE_MAX) out.over.push(k);
+    });
+    return out;
+  }
+  try { window.KS3DT_STORE_REPORT = storeReport_; } catch (e) {}
+
   /* Seed data: one demo class, the signed-in pupil (no record yet — she joins
      fresh through the normal boot flow) + five fake pupils that light up every
      dashboard row state: two completed, one started, one never-showed-up
@@ -180,7 +298,15 @@
 
   function pKey_(cls, email) { return cls + ':' + email; }
   function readPupil_(s, cls, email) { return s.pupils[pKey_(cls, email)] || null; }
-  function writePupil_(s, cls, email, rec) { s.pupils[pKey_(cls, email)] = rec; }
+  /* A pupil record is one real ScriptProperties value too, so it gets the same
+     9,216-byte ceiling (audit B-01). The dispatcher turns the throw into the
+     server's own {ok:false, error:'store-full'}, which app.js already treats as
+     permanent - so preview now reproduces that path instead of hiding it. */
+  function writePupil_(s, cls, email, rec) {
+    var body = JSON.stringify(rec);
+    if (body.length > PROP_VALUE_MAX) throw storeFull_(pKey_(cls, email), body.length);
+    s.pupils[pKey_(cls, email)] = rec;
+  }
   function allPupils_(s, cls) {
     var pre = cls + ':';
     var out = [];
@@ -1201,7 +1327,7 @@
         });
         return Promise.resolve({ ok: true, live: true, cn: ptP.cn, names: (ptP.m || []).map(str_), lines: lines });
       }
-      var ptChat = (s.chat || {})[plKey_(cls, str_(p.lessonId))] || {};
+      var ptChat = chatGetD_(s, cls, str_(p.lessonId));
       var ptStored = ptChat[ptPid];
       if (ptStored) return Promise.resolve({ ok: true, live: false, cn: ptStored.cn, names: ptStored.n, tx: str_(ptStored.tx) });
       return Promise.resolve({ ok: true, live: false, cn: ptP.cn, names: [], tx: '' });
@@ -1297,7 +1423,7 @@
     /* Press Night lens mirror (section 14): full gallery with real names */
     if (sub === 'gallery') {
       if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
-      var gg = galD_(s, cls, str_(p.lessonId));
+      var gg = galGetD_(s, cls, str_(p.lessonId));
       var nameFor = function (e) {
         if (str_(e) === BOT_EMAIL || str_(e).indexOf('botsim') === 0) return 'the Simulation';
         var r = readPupil_(s, cls, str_(e));
@@ -1320,21 +1446,27 @@
     }
     if (sub === 'galleryHideStudio') {
       if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
-      var ghs = galD_(s, cls, str_(p.lessonId));
+      galMigrateD_(s, cls, str_(p.lessonId));
+      var ghs = galGetD_(s, cls, str_(p.lessonId));
       var hitEmail = '';
       Object.keys(ghs.studios).forEach(function (e) { if (str_(ghs.studios[e].sid) === str_(p.sid)) hitEmail = e; });
       if (!hitEmail) return Promise.resolve({ ok: false, error: 'no-studio' });
-      ghs.studios[hitEmail].h = 1;
+      var hStu = ghs.studios[hitEmail];
+      hStu.h = 1;
+      var hNs = shPut_(s, galSBaseD_(cls, str_(p.lessonId)), ghs.ns, hitEmail, hStu);
+      galSaveHeadD_(s, cls, str_(p.lessonId), ghs.seq, hNs, ghs.nr, ghs.bots);
       save_(s);
       return Promise.resolve({ ok: true });
     }
     if (sub === 'galleryRemove') {
       if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
-      var grm = galD_(s, cls, str_(p.lessonId));
-      var hitRv = null;
-      grm.reviews.forEach(function (r) { if (num_(r.i) === num_(p.i)) hitRv = r; });
+      galMigrateD_(s, cls, str_(p.lessonId));
+      var grmH = galHeadD_(s, cls, str_(p.lessonId));
+      var wantI = num_(p.i);
+      var hitRv = shEdit_(s, galRBaseD_(cls, str_(p.lessonId)), grmH.nr,
+        function (r) { return num_(r.i) === wantI; },
+        function (r) { r.rm = 1; });
       if (!hitRv) return Promise.resolve({ ok: false, error: 'no-review' });
-      hitRv.rm = 1;
       save_(s);
       return Promise.resolve({ ok: true });
     }
@@ -1671,11 +1803,16 @@
     msgs.forEach(function (e) { counts[num_(e[1])] = num_(counts[num_(e[1])]) + 1; });
     var tx = msgs.map(function (e) { return str_(P.cn[num_(e[1])]) + ': ' + str_(e[3]); }).join(' / ');
     if (tx.length > PAIR_TX_MAX) tx = tx.slice(0, Math.floor(PAIR_TX_MAX * 0.6)) + ' [...] ' + tx.slice(tx.length - Math.floor(PAIR_TX_MAX * 0.35));
-    if (!s.chat) s.chat = {};
-    var ck = plKey_(cls, lessonId);
-    if (!s.chat[ck]) s.chat[ck] = {};
-    if (!s.chat[ck][str_(hit.pid)]) {
-      s.chat[ck][str_(hit.pid)] = { m: (P.m || []).map(str_), cn: (P.cn || []).map(str_), n: names, t: num_(P.t), c: counts, tx: tx };
+    /* AUDIT B-01: transcripts are sharded like the gallery - the old single
+       value reached ~10 KB at 15 chatty pairs and its real-server write sits in
+       a swallowing try/catch, so the last pairs' safeguarding records vanished
+       with no error anywhere. */
+    chatMigrateD_(s, cls, lessonId);
+    var chH = chatHeadD_(s, cls, lessonId);
+    if (shMap_(s, chatSBaseD_(cls, lessonId), chH.nc)[str_(hit.pid)] === undefined) {
+      var nc = shPut_(s, chatSBaseD_(cls, lessonId), chH.nc, str_(hit.pid),
+        { m: (P.m || []).map(str_), cn: (P.cn || []).map(str_), n: names, t: num_(P.t), c: counts, tx: tx });
+      pSet_(s, chatKeyD_(cls, lessonId), { v: 2, nc: nc });
     }
     save_(s);
     return Promise.resolve({ ok: true, names: names });
@@ -1688,15 +1825,73 @@
      against YOUR listing after a short delay - both flagged sim:1 on the wire
      and labelled on screen, same honesty rule as the section-12 partner bot. */
   var GAL_TITLE_MAX = 28, GAL_HOW_MAX = 90, GAL_REVIEW_MAX = 200, GAL_REVIEWS_PER_CRITIC = 3;
-  function galD_(s, cls, lessonId) {
-    if (!s.gal) s.gal = {};
-    var k = plKey_(cls, lessonId);
-    if (!s.gal[k]) s.gal[k] = { seq: 0, studios: {}, reviews: [] };
-    var g = s.gal[k];
-    if (!g.seq) g.seq = 0;
-    if (!g.studios) g.studios = {};
-    if (!g.reviews) g.reviews = [];
-    return g;
+  /* AUDIT B-01: sharded exactly as Code.gs.template shards it -
+       gal:<cls>:<lesson>      head    {v:2, seq, ns, nr, bots}
+       gals:<cls>:<lesson>:<i> studios {email: studio}
+       galr:<cls>:<lesson>:<i> reviews [review, ...]
+     Legacy s.gal blobs from a browser that ran the pre-fix preview are read once
+     and migrated into shards, so an open preview tab keeps its Press Night. */
+  function chatKeyD_(cls, lessonId) { return 'chat:' + plKey_(cls, lessonId); }
+  function chatSBaseD_(cls, lessonId) { return 'chats:' + plKey_(cls, lessonId); }
+  function chatHeadD_(s, cls, lessonId) {
+    var h = pGet_(s, chatKeyD_(cls, lessonId), null) || {};
+    return { v: num_(h.v), nc: num_(h.nc), legacy: (s.chat || {})[plKey_(cls, lessonId)] || null };
+  }
+  function chatGetD_(s, cls, lessonId) {
+    var h = chatHeadD_(s, cls, lessonId);
+    var out = shMap_(s, chatSBaseD_(cls, lessonId), h.nc);
+    if (h.legacy) Object.keys(h.legacy).forEach(function (p) { if (out[p] === undefined) out[p] = h.legacy[p]; });
+    return out;
+  }
+  function chatMigrateD_(s, cls, lessonId) {
+    var h = chatHeadD_(s, cls, lessonId);
+    if (!h.legacy) return h;
+    var base = chatSBaseD_(cls, lessonId), nc = h.nc;
+    Object.keys(h.legacy).forEach(function (p) { nc = shPut_(s, base, nc, p, h.legacy[p]); });
+    if (s.chat) delete s.chat[plKey_(cls, lessonId)];
+    pSet_(s, chatKeyD_(cls, lessonId), { v: 2, nc: nc });
+    return { v: 2, nc: nc, legacy: null };
+  }
+  function galKeyD_(cls, lessonId) { return 'gal:' + plKey_(cls, lessonId); }
+  function galSBaseD_(cls, lessonId) { return 'gals:' + plKey_(cls, lessonId); }
+  function galRBaseD_(cls, lessonId) { return 'galr:' + plKey_(cls, lessonId); }
+  function galHeadD_(s, cls, lessonId) {
+    var h = pGet_(s, galKeyD_(cls, lessonId), null) || {};
+    var legacy = (s.gal || {})[plKey_(cls, lessonId)] || null;
+    return {
+      v: num_(h.v), seq: num_(h.seq), ns: num_(h.ns), nr: num_(h.nr), bots: num_(h.bots),
+      legacy: legacy
+    };
+  }
+  function galGetD_(s, cls, lessonId) {
+    var h = galHeadD_(s, cls, lessonId);
+    var studios = shMap_(s, galSBaseD_(cls, lessonId), h.ns);
+    var reviews = shList_(s, galRBaseD_(cls, lessonId), h.nr);
+    if (h.legacy) {
+      Object.keys(h.legacy.studios || {}).forEach(function (e) {
+        if (studios[e] === undefined) studios[e] = h.legacy.studios[e];
+      });
+      if ((h.legacy.reviews || []).length) reviews = h.legacy.reviews.concat(reviews);
+      if (!h.seq) h.seq = num_(h.legacy.seq);
+      if (!h.bots) h.bots = num_(h.legacy.bots);
+    }
+    return { seq: num_(h.seq), ns: h.ns, nr: h.nr, bots: num_(h.bots), studios: studios, reviews: reviews };
+  }
+  function galSaveHeadD_(s, cls, lessonId, seq, ns, nr, bots) {
+    pSet_(s, galKeyD_(cls, lessonId), { v: 2, seq: num_(seq), ns: num_(ns), nr: num_(nr), bots: num_(bots) });
+  }
+  function galMigrateD_(s, cls, lessonId) {
+    var h = galHeadD_(s, cls, lessonId);
+    if (!h.legacy) return h;
+    var sBase = galSBaseD_(cls, lessonId), rBase = galRBaseD_(cls, lessonId);
+    var ns = h.ns, nr = h.nr;
+    Object.keys(h.legacy.studios || {}).forEach(function (e) { ns = shPut_(s, sBase, ns, e, h.legacy.studios[e]); });
+    (h.legacy.reviews || []).forEach(function (r) { nr = shPush_(s, rBase, nr, r); });
+    var seq = num_(h.seq) || num_(h.legacy.seq);
+    var bots = num_(h.bots) || num_(h.legacy.bots);
+    if (s.gal) delete s.gal[plKey_(cls, lessonId)];
+    galSaveHeadD_(s, cls, lessonId, seq, ns, nr, bots);
+    return { v: 2, seq: seq, ns: ns, nr: nr, bots: bots, legacy: null };
   }
   function galCleanD_(v, max) {
     return str_(v).replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
@@ -1728,17 +1923,19 @@
   }
   /* the simulated room: bot studios appear once the gallery is first polled;
      two bot reviews land on YOUR studio ~10s and ~22s after you open it */
-  function galBotThink_(s, g) {
+  function galBotThink_(s, cls, lessonId, g) {
     var changed = false;
-    if (!g.bots) {
+    var sBase = galSBaseD_(cls, lessonId), rBase = galRBaseD_(cls, lessonId);
+    var ns = g.ns, nr = g.nr, seq = num_(g.seq), bots = num_(g.bots);
+    if (!bots) {
       GAL_BOT_STUDIOS.forEach(function (b) {
-        g.seq = num_(g.seq) + 1;
-        g.studios['bot' + b.sid + '@demo'] = {
-          sid: b.sid, sn: b.sn, cn: b.cn, gt: b.gt, gh: b.gh, tpl: b.tpl,
-          ts: tmin_(), rn: 0, sim: 1
-        };
+        seq += 1;
+        var stu = { sid: b.sid, sn: b.sn, cn: b.cn, gt: b.gt, gh: b.gh, tpl: b.tpl,
+          ts: tmin_(), rn: 0, sim: 1 };
+        g.studios['bot' + b.sid + '@demo'] = stu;
+        ns = shPut_(s, sBase, ns, 'bot' + b.sid + '@demo', stu);
       });
-      g.bots = 1;
+      bots = 1;
       changed = true;
     }
     var mine = g.studios[PUPIL_EMAIL];
@@ -1749,14 +1946,21 @@
       var wanted = galBotReviewsFor_(mine);
       var due = (elapsed >= 22 ? 2 : (elapsed >= 10 ? 1 : 0));
       for (var i = botRevs.length; i < due && i < wanted.length; i++) {
-        g.seq = num_(g.seq) + 1;
-        g.reviews.push({
-          i: num_(g.seq), by: BOT_EMAIL, bcn: 'Press Bot (simulated)', to: str_(mine.sid),
+        seq += 1;
+        var rev = {
+          i: seq, by: BOT_EMAIL, bcn: 'Press Bot (simulated)', to: str_(mine.sid),
           l: wanted[i].l, w: wanted[i].w, t: tmin_(), rm: 0, sim: 1
-        });
+        };
+        g.reviews.push(rev);
+        nr = shPush_(s, rBase, nr, rev);
         mine.rn = num_(mine.rn) + 1;
         changed = true;
       }
+      if (changed) ns = shPut_(s, sBase, ns, PUPIL_EMAIL, mine);
+    }
+    if (changed) {
+      g.seq = seq; g.ns = ns; g.nr = nr; g.bots = bots;
+      galSaveHeadD_(s, cls, lessonId, seq, ns, nr, bots);
     }
     return changed;
   }
@@ -1771,11 +1975,13 @@
       var gh = galCleanD_(p.gh, GAL_HOW_MAX);
       var snIn = galCleanD_(p.sn, 24);
       if (!gt) return { ok: false, error: 'no-title' };
-      var g = galD_(s, cls, lessonId);
-      var mine = g.studios[PUPIL_EMAIL];
-      g.seq = num_(g.seq) + 1;
-      g.studios[PUPIL_EMAIL] = {
-        sid: str_(mine && mine.sid) || ('s' + num_(g.seq)),
+      galMigrateD_(s, cls, lessonId);
+      var h = galHeadD_(s, cls, lessonId);
+      var sBase = galSBaseD_(cls, lessonId);
+      var mine = shMap_(s, sBase, h.ns)[PUPIL_EMAIL];
+      var seq = num_(h.seq) + 1;
+      var stu = {
+        sid: str_(mine && mine.sid) || ('s' + seq),
         sn: snIn || galSigD_(s, cls, PUPIL_EMAIL),
         cn: galSigD_(s, cls, PUPIL_EMAIL),
         gt: gt, gh: gh, tpl: str_(p.tpl).slice(0, 8),
@@ -1785,8 +1991,10 @@
         rn: num_(mine && mine.rn),
         openedS: num_(mine && mine.openedS)
       };
+      var ns = shPut_(s, sBase, h.ns, PUPIL_EMAIL, stu);   // shard first, then head
+      galSaveHeadD_(s, cls, lessonId, seq, ns, h.nr, h.bots);
       save_(s);
-      return { ok: true, sid: str_(g.studios[PUPIL_EMAIL].sid) };
+      return { ok: true, sid: str_(stu.sid) };
     });
   }
   function doGalleryPost(p) {
@@ -1797,7 +2005,8 @@
     var like = galCleanD_(p.like, GAL_REVIEW_MAX);
     var wonder = galCleanD_(p.wonder, GAL_REVIEW_MAX);
     if (like.length < 8 || wonder.length < 8) return Promise.resolve({ ok: false, error: 'too-thin' });
-    var g = galD_(s, cls, lessonId);
+    galMigrateD_(s, cls, lessonId);
+    var g = galGetD_(s, cls, lessonId);
     var toSid = str_(p.to);
     var toEmail = '';
     Object.keys(g.studios).forEach(function (e) { if (str_(g.studios[e].sid) === toSid) toEmail = e; });
@@ -1808,12 +2017,16 @@
     var mine = g.reviews.filter(function (r) { return str_(r.by) === PUPIL_EMAIL && !num_(r.rm); });
     if (mine.length >= GAL_REVIEWS_PER_CRITIC) return Promise.resolve({ ok: false, error: 'passes-spent' });
     if (mine.some(function (r) { return str_(r.to) === toSid; })) return Promise.resolve({ ok: false, error: 'already-reviewed' });
-    g.seq = num_(g.seq) + 1;
-    g.reviews.push({
-      i: num_(g.seq), by: PUPIL_EMAIL, bcn: galSigD_(s, cls, PUPIL_EMAIL),
+    var seq = num_(g.seq) + 1;
+    var review = {
+      i: seq, by: PUPIL_EMAIL, bcn: galSigD_(s, cls, PUPIL_EMAIL),
       to: toSid, l: like, w: wonder, t: tmin_(), rm: 0
-    });
-    g.studios[toEmail].rn = num_(g.studios[toEmail].rn) + 1;
+    };
+    var maker = g.studios[toEmail];
+    maker.rn = num_(maker.rn) + 1;
+    var nrP = shPush_(s, galRBaseD_(cls, lessonId), g.nr, review);   // shards first
+    var nsP = shPut_(s, galSBaseD_(cls, lessonId), g.ns, toEmail, maker);
+    galSaveHeadD_(s, cls, lessonId, seq, nsP, nrP, g.bots);
     save_(s);
     return Promise.resolve({ ok: true, given: mine.length + 1 });
   }
@@ -1821,8 +2034,9 @@
     var s = load_();
     var cls = realClass_(s, p.classCode);
     if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
-    var g = galD_(s, cls, str_(p.lessonId));
-    if (galBotThink_(s, g)) save_(s);
+    galMigrateD_(s, cls, str_(p.lessonId));
+    var g = galGetD_(s, cls, str_(p.lessonId));
+    if (galBotThink_(s, cls, str_(p.lessonId), g)) save_(s);
     var mySid = str_(g.studios[PUPIL_EMAIL] && g.studios[PUPIL_EMAIL].sid || '');
     var studios = [];
     Object.keys(g.studios).forEach(function (e) {
@@ -1885,12 +2099,21 @@
       p = p || {};
       return new Promise(function (resolve) {
         function respond(r) { setTimeout(function () { resolve(r); }, LATENCY); }
-        try {
-          route_(p).then(respond, function (err) {
-            respond({ ok: false, error: 'dev-server-exception', message: String(err && err.message || err) });
-          });
-        } catch (err) {
+        /* AUDIT B-01: a value past the real 9,216-byte ScriptProperties ceiling
+           throws on Apps Script and the caller returns store-full. Preview now
+           does the same instead of accepting a write no real server would take -
+           so an over-cap bug fails HERE, in a QA run, and not in the room. */
+        function fail(err) {
+          if (err && err.ks3dtStoreFull) {
+            try { console.error('[FakeServer] ' + String(err.message)); } catch (e) {}
+            return respond({ ok: false, error: 'store-full' });
+          }
           respond({ ok: false, error: 'dev-server-exception', message: String(err && err.message || err) });
+        }
+        try {
+          route_(p).then(respond, fail);
+        } catch (err) {
+          fail(err);
         }
       });
     }
