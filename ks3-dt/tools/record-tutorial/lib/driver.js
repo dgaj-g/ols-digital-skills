@@ -176,14 +176,24 @@ class MakeCode {
     const box = await iframeEl.boundingBox();
     return { x: box.x + r.x, y: box.y + r.y, w: r.w, h: r.h, cx: box.x + r.x + r.w / 2, cy: box.y + r.y + r.h / 2 };
   }
+  /* Count LIT display LEDs (0-25).
+     Two traps, both of which made the 26 Jul audit's reading useless:
+     (1) '[class*="sim-led"]' also matches .sim-led-back, the dark 5x5 backing
+         grid - include those and the count barely moves between lit/unlit;
+     (2) the simulator animates the `opacity` ATTRIBUTE, which does not always
+         reach getComputedStyle - read the attribute first, style as fallback.
+     Sanity: a healthy read returns 25 total rects. See
+     probe-microbit-showstring.js for a worked use (LED time-series). */
   async ledsOn() {
     const f = this.simFrame();
     if (!f) return -1;
     return f.evaluate(() => {
-      const leds = Array.from(document.querySelectorAll('.sim-led, [class*="sim-led"]'));
+      const leds = Array.from(document.querySelectorAll('.sim-led'))
+        .filter(l => !/sim-led-back/.test(l.getAttribute('class') || ''));
       return leds.filter(l => {
-        const op = parseFloat(getComputedStyle(l).opacity || '0');
-        return op > 0.4;
+        const attr = parseFloat(l.getAttribute('opacity'));
+        const op = Number.isFinite(attr) ? attr : parseFloat(getComputedStyle(l).opacity || '0');
+        return op > 0.25;
       }).length;
     }).catch(() => -1);
   }
