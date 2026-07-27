@@ -363,9 +363,16 @@
     if (!up.draft) up.draft = {};
     return up;
   }
+  /* AUDIT FIX B-05 (27 Jul 2026) - verbatim mirror of Code.gs.template. The
+     `on` flag was computed and never read, so a re-lock was a no-op on BOTH
+     layers. A pupil who already has a record keeps her access ("never kick
+     anyone out"); a re-lock stops anyone NEW from starting. */
   function lessonAccessible_(s, cls, numStr) {
     var lk = getLocks_(s, cls)[numStr];
-    return !!(lk && num_(lk.u));
+    if (!lk || !num_(lk.u)) return false;
+    if (num_(lk.on)) return true;
+    var rec = readPupil_(s, cls, PUPIL_EMAIL);
+    return !!(rec && rec.L && rec.L[numStr]);
   }
 
   /* ---------- absence inference (verbatim mirror of Code.gs.template) ---------- */
@@ -390,6 +397,7 @@
       if (str_(le.status) !== 'ready') continue; // parity: never flag unauthored lessons
       var lk = locks[str_(le.num)];
       if (!lk || !num_(lk.u)) continue;
+      if (!num_(lk.on)) continue; // AUDIT FIX B-05: a locked lesson cannot be caught up on, so never flag it
       if (schoolDaysSince_(num_(lk.u)) < absDays) continue;
       var a = (rec.L || {})[str_(le.num)];
       if (meaningful_(a)) continue;
@@ -1074,8 +1082,9 @@
       var on = p.on ? 1 : 0;
       var locks = getLocks_(s, cls);
       var cur = locks[numStr] || { u: 0, on: 0 };
-      if (on && !num_(cur.u)) cur.u = tmin_(); // first unlock = delivered date (never reset)
+      if (on && !num_(cur.u)) cur.u = tmin_(); // first unlock = delivered date
       cur.on = on;
+      if (!on && num_(p.clear)) cur.u = 0;     // AUDIT FIX B-05: the teacher's undo
       locks[numStr] = cur;
       save_(s);
       return Promise.resolve({ ok: true, u: num_(cur.u), on: num_(cur.on) });

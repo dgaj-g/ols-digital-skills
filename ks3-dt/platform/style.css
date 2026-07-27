@@ -811,6 +811,14 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .lock-cell.is-on .lc-state { color: #1E9459; }
 .lock-cell:not(.is-on) .lc-state { color: #9AA5B5; }
 .lock-cell .lc-date { font-size: 0.7rem; color: var(--muted); }
+/* AUDIT FIX B-05: the undo chip on a locked-but-delivered cell. Quiet enough not
+   to compete with Brief, clear enough to find when a mis-tap needs undoing. */
+.lock-cell .lc-undo {
+  display: inline-block; margin-top: 2px; align-self: flex-start;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em;
+  color: #8A6D00; background: #FFF3CF; border-radius: 999px; padding: 2px 9px;
+}
+.lock-cell .lc-undo:hover { background: #FFE9A8; }
 .dash-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; color: var(--ink); }
 .dash-table th {
   text-align: left; color: var(--muted); font-family: var(--font-display); font-size: 0.68rem; letter-spacing: 0.1em;
