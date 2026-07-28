@@ -114,6 +114,21 @@
       '.brief-sheet li{margin-bottom:7px}' +
       '.brief-pitfalls li{background:#FFF6E8;border-left:3px solid var(--gold);' +
         'padding:7px 10px;border-radius:6px;list-style-position:inside}' +
+      /* TEACHER BRIEF STANDARD sections */
+      '.brief-sheet p{line-height:1.55;margin:0 0 10px}' +
+      '.brief-note{color:var(--muted);font-size:0.86rem;margin-bottom:8px}' +
+      '.brief-mins{display:inline-block;background:rgba(26,58,107,0.08);color:var(--ols-blue);' +
+        'border-radius:999px;padding:1px 8px;font-size:0.72rem;font-weight:800;margin-left:6px}' +
+      '.brief-glance li,.brief-run li{margin-bottom:11px;line-height:1.5}' +
+      '.brief-prep li{background:#F4F8FF;border-left:3px solid var(--ols-blue-soft);' +
+        'padding:8px 11px;border-radius:6px;margin-bottom:8px;list-style-position:inside;line-height:1.5}' +
+      '.brief-res li{background:#F3FBF6;border-left:3px solid var(--good);padding:8px 11px;' +
+        'border-radius:6px;margin-bottom:8px;list-style:none;line-height:1.5}' +
+      '.brief-res a{color:var(--ols-blue);font-weight:800}' +
+      '.brief-say{background:#fff;border:1px dashed #C9D4E8;border-radius:8px;' +
+        'padding:8px 11px;margin-top:6px;font-style:italic;color:var(--ink)}' +
+      '.brief-say-tag{display:block;font-style:normal;font-weight:800;font-size:0.7rem;' +
+        'letter-spacing:.06em;text-transform:uppercase;color:var(--ols-blue-soft);margin-bottom:3px}' +
       '@media print{body *{visibility:hidden}' +
         '.cover-sheet,.cover-sheet *,.brief-sheet,.brief-sheet *{visibility:visible}' +
         '.cover-sheet,.brief-sheet{position:absolute;left:0;top:0;width:100%}}';
@@ -497,6 +512,77 @@
     if (lockNotice) { plainStatus(q('#lock-status'), lockNotice); lockNotice = ''; }
   }
 
+  /* ---- Lesson brief body (TEACHER BRIEF STANDARD, LESSON_QUALITY_GATE.md) ----
+     Seven sections, in delivery order, written for a colleague who teaches
+     another subject and has never seen this platform. A lesson that has not
+     been rewritten to the standard yet still renders through the legacy
+     branch at the bottom, so nothing goes blank mid-migration. */
+  function briefHref(h) {
+    h = String(h || '');
+    if (!h) return '';
+    if (/^https?:\/\//i.test(h)) return h;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(h)) return '';   // never javascript:, data:, anything else
+    return App.asset(h);                              // repo-relative asset (github.io on Apps Script)
+  }
+  function briefBody(r) {
+    var out = '';
+    var isNew = (r.purpose || []).length || (r.runningTheHour || []).length;
+    if (!isNew) {
+      var mmL = (r.minuteByMinute || []).map(function (line) { return '<li>' + App.esc(line) + '</li>'; }).join('');
+      var pfL = (r.pitfalls || []).map(function (line) { return '<li>' + App.esc(line) + '</li>'; }).join('');
+      return (r.why ? '<h4>Why the lesson is built this way</h4><p>' + App.esc(r.why) + '</p>' : '') +
+        (mmL ? '<h4>Running the hour</h4><ol>' + mmL + '</ol>' : '') +
+        (pfL ? '<h4>Pitfalls</h4><ul class="brief-pitfalls">' + pfL + '</ul>' : '');
+    }
+    if ((r.purpose || []).length) {
+      out += '<h4>The purpose of this lesson</h4>' +
+        r.purpose.map(function (p) { return '<p>' + App.esc(p) + '</p>'; }).join('');
+    }
+    if ((r.atAGlance || []).length) {
+      out += '<h4>What the girls will actually do</h4>' +
+        '<p class="brief-note">Every part of the hour, in the order they meet it. The rest of this brief uses these names, so it is worth a read-through first.</p>' +
+        '<ol class="brief-glance">' + r.atAGlance.map(function (g) {
+          return '<li><b>' + App.esc(g.part) + '</b>' +
+            (Number(g.mins) ? ' <span class="brief-mins">' + Number(g.mins) + ' min</span>' : '') +
+            '<br>' + App.esc(g.what) + '</li>';
+        }).join('') + '</ol>';
+    }
+    if ((r.prepare || []).length) {
+      out += '<h4>Preparing for this lesson</h4><ul class="brief-prep">' +
+        r.prepare.map(function (p) {
+          return '<li><b>' + App.esc(p.title) + '</b><br>' + App.esc(p.text) + '</li>';
+        }).join('') + '</ul>';
+    }
+    if ((r.resources || []).length) {
+      out += '<h4>Resources for this lesson</h4><ul class="brief-res">' +
+        r.resources.map(function (res) {
+          var href = briefHref(res.href);
+          return '<li><b>' + App.esc(res.label) + '</b>' +
+            (href ? ' &mdash; <a href="' + App.esc(href) + '" target="_blank" rel="noopener">open it</a>' : '') +
+            '<br>' + App.esc(res.what) +
+            (res.where ? '<br><i>Where to find it: ' + App.esc(res.where) + '</i>' : '') + '</li>';
+        }).join('') + '</ul>';
+    }
+    if ((r.runningTheHour || []).length) {
+      out += '<h4>Running the hour</h4><ol class="brief-run">' +
+        r.runningTheHour.map(function (h) {
+          return '<li><b>' + App.esc(h.part) + '</b>' +
+            (Number(h.mins) ? ' <span class="brief-mins">' + Number(h.mins) + ' min</span>' : '') +
+            '<br>' + App.esc(h.text) +
+            (h.say ? '<div class="brief-say"><span class="brief-say-tag">You could say</span>' + App.esc(h.say) + '</div>' : '') +
+            '</li>';
+        }).join('') + '</ol>';
+    }
+    if ((r.goesWrong || []).length) {
+      out += '<h4>What commonly goes wrong, and what to do</h4><ul class="brief-pitfalls">' +
+        r.goesWrong.map(function (w) {
+          return '<li><b>' + App.esc(w.q) + '</b><br>' + App.esc(w.a) + '</li>';
+        }).join('') + '</ul>';
+    }
+    if (r.ifBehind) out += '<h4>If you fall behind</h4><p>' + App.esc(r.ifBehind) + '</p>';
+    return out;
+  }
+
   /* ---- Lesson brief view (teacher run sheet, decrypted server-side) ---- */
   function showBrief(el) {
     var num = el.getAttribute('data-num');
@@ -512,14 +598,10 @@
           '<button type="button" class="ghost-btn" data-action="brief-back">&larr; Back to the lessons</button>');
         return;
       }
-      var mm = (r.minuteByMinute || []).map(function (line) { return '<li>' + App.esc(line) + '</li>'; }).join('');
-      var pf = (r.pitfalls || []).map(function (line) { return '<li>' + App.esc(line) + '</li>'; }).join('');
       setPane(
         '<div class="brief-sheet">' +
           '<h3>Lesson ' + App.esc(r.num) + ' &middot; ' + App.esc(r.title) + ' &mdash; teacher brief</h3>' +
-          (r.why ? '<h4>Why the lesson is built this way</h4><p>' + App.esc(r.why) + '</p>' : '') +
-          (mm ? '<h4>Running the hour</h4><ol>' + mm + '</ol>' : '') +
-          (pf ? '<h4>Pitfalls</h4><ul class="brief-pitfalls">' + pf + '</ul>' : '') +
+          briefBody(r) +
         '</div>' +
         '<div class="confirm-actions" style="justify-content:flex-start;margin-top:12px">' +
           '<button type="button" class="ghost-btn" data-action="brief-back">&larr; Back to the lessons</button>' +
