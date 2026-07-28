@@ -1836,8 +1836,32 @@ function apiAdmin(req) {
     try { briefKeys = lessonKeys_(briefYear, briefLessonId); } catch (e) { return { ok: false, error: 'no-brief' }; }
     var brief = briefKeys._brief;
     if (!brief) return { ok: false, error: 'no-brief' };
+    /* TEACHER BRIEF STANDARD (28 Jul 2026, LESSON_QUALITY_GATE.md): a brief is
+       written for a colleague who teaches another subject and has never seen
+       this platform, so it carries a purpose, a plain-English tour of the
+       lesson's parts BEFORE any of them are named in instructions, a
+       preparation checklist, every resource with a route to it, the hour step
+       by step, and what to do when it goes wrong. The three old fields are
+       still returned so a lesson not yet rewritten keeps rendering. */
     return {
       ok: true, num: str_(briefEntry.num), title: str_(briefEntry.title),
+      purpose: (brief.purpose || []).map(str_),
+      atAGlance: (brief.atAGlance || []).map(function (g) {
+        return { part: str_(g.part), mins: num_(g.mins), what: str_(g.what) };
+      }),
+      prepare: (brief.prepare || []).map(function (p) {
+        return { title: str_(p.title), text: str_(p.text) };
+      }),
+      resources: (brief.resources || []).map(function (r) {
+        return { label: str_(r.label), what: str_(r.what), href: str_(r.href || ''), where: str_(r.where || '') };
+      }),
+      runningTheHour: (brief.runningTheHour || []).map(function (h) {
+        return { part: str_(h.part), mins: num_(h.mins), text: str_(h.text), say: str_(h.say || '') };
+      }),
+      goesWrong: (brief.goesWrong || []).map(function (w) {
+        return { q: str_(w.q), a: str_(w.a) };
+      }),
+      ifBehind: str_(brief.ifBehind || ''),
       why: str_(brief.why || ''),
       minuteByMinute: (brief.minuteByMinute || []).map(str_),
       pitfalls: (brief.pitfalls || []).map(str_)

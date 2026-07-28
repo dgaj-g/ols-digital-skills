@@ -1143,8 +1143,28 @@
           var briefKeys = allKeys[fileIdOf_(briefEntry)];
           var brief = briefKeys ? briefKeys._brief : null;
           if (!brief) return { ok: false, error: 'no-brief' };
+          /* mirrors apiAdmin sub 'brief' — TEACHER BRIEF STANDARD sections,
+             with the three legacy fields kept so a lesson not yet rewritten
+             still renders */
           return {
             ok: true, num: str_(briefEntry.num), title: str_(briefEntry.title),
+            purpose: (brief.purpose || []).map(str_),
+            atAGlance: (brief.atAGlance || []).map(function (g) {
+              return { part: str_(g.part), mins: num_(g.mins), what: str_(g.what) };
+            }),
+            prepare: (brief.prepare || []).map(function (pr) {
+              return { title: str_(pr.title), text: str_(pr.text) };
+            }),
+            resources: (brief.resources || []).map(function (rs) {
+              return { label: str_(rs.label), what: str_(rs.what), href: str_(rs.href || ''), where: str_(rs.where || '') };
+            }),
+            runningTheHour: (brief.runningTheHour || []).map(function (h) {
+              return { part: str_(h.part), mins: num_(h.mins), text: str_(h.text), say: str_(h.say || '') };
+            }),
+            goesWrong: (brief.goesWrong || []).map(function (w) {
+              return { q: str_(w.q), a: str_(w.a) };
+            }),
+            ifBehind: str_(brief.ifBehind || ''),
             why: str_(brief.why || ''),
             minuteByMinute: (brief.minuteByMinute || []).map(str_),
             pitfalls: (brief.pitfalls || []).map(str_)
