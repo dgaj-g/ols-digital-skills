@@ -1,0 +1,357 @@
+{
+ "id": "j1-04",
+ "year": "j1",
+ "num": 4,
+ "title": "The Broken Game",
+ "tagline": "Four bugs. One shipped game. You're QA.",
+ "mode": "quest",
+ "durationMin": 60,
+ "objectives": [
+  "I can read someone else's code and work out what it's supposed to do.",
+  "I can find a bug by testing, predicting and checking — not guessing randomly.",
+  "I can explain in my own words what was wrong and how I fixed it."
+ ],
+ "chunks": [
+  {
+   "id": "hook",
+   "engine": "briefing",
+   "title": "Mission Briefing",
+   "minutes": 3,
+   "config": {
+    "clearance": "OPERATION: BROKEN GAME",
+    "headline": "Every game ever shipped… shipped with bugs.",
+    "lines": [
+     "9 September 1947: Harvard's giant Mark II computer fails. Engineers hunt down the fault — an actual moth, jammed in Relay 70 — and tape it into the logbook: 'First actual case of bug being found.'",
+     "Bugs never left. Every game you've ever played shipped with hundreds, hunted down before launch by professional bug detectives: QA testers.",
+     "Last night, OLS GAMES shipped Shark Attack. The overnight reviews are a disaster — four separate bugs got past the old QA team.",
+     "The old team is gone. You're the new QA division. The player tickets are on the board. Save this game."
+    ],
+    "images": [
+     {
+      "src": "assets/img/l4/l4-moth.jpg",
+      "alt": "The 1947 Harvard Mark II logbook page with the actual moth taped onto it",
+      "caption": "The first computer 'bug' — a real moth, taped into Harvard's logbook, 1947. U.S. Navy photo (public domain)."
+     }
+    ],
+    "video": null,
+    "cta": "Clock in — QA division"
+   }
+  },
+  {
+   "id": "board",
+   "engine": "casework",
+   "title": "The Case Board",
+   "minutes": 40,
+   "badge": {
+    "id": "detective",
+    "name": "Bug Detective",
+    "icon": "assets/badges/magnifier.png",
+    "xp": 29
+   },
+   "config": {
+    "title": "The Case Board",
+    "intro": "Four player tickets, four open cases. Play the broken game, read its code, fix ONE thing per case — then prove every fix by re-playing the game and watching the bug NOT happen. HQ stamps nothing without that proof. Close the training case first; after that, take the board in any order you like.",
+    "introSolo": "Solo shift today, detective — you're PLAYER and ENGINEER in one. Four player tickets, four open cases: play the broken game, read its code, fix ONE thing per case, and prove every fix by re-playing. HQ stamps nothing without proof. Close the training case first; then take the board in any order.",
+    "pairNote": "Run a two-detective agency: the PLAYER runs the game, reads the ticket and calls out what they see; the ENGINEER drives the blocks. Swap jobs every case — both names go on every stamp.",
+    "getgame": {
+     "url": "https://scratch.mit.edu/projects/editor/",
+     "file": "assets/games/shark-attack-broken-edition.sb3",
+     "intro": "A detective examines the REAL broken thing, not a photo of it. Get the broken build onto your bench:",
+     "steps": [
+      {
+       "icon": "⬇️",
+       "title": "Download the evidence",
+       "text": "Tap the gold button — shark-attack-broken-edition.sb3 drops into your Downloads."
+      },
+      {
+       "icon": "🧪",
+       "title": "Open the Scratch editor",
+       "text": "Use the second button — scratch.mit.edu opens in a new tab. No login needed, ever. Keep BOTH tabs open: case board here, game there."
+      },
+      {
+       "icon": "📂",
+       "title": "Load the broken game",
+       "text": "In Scratch: File menu → Load from your computer → pick shark-attack-broken-edition.sb3 from Downloads → OK to replace."
+      },
+      {
+       "icon": "🕵️",
+       "title": "Walk the crime scene",
+       "text": "You should see a Shark, a Fish and a score stuck on 0. Click each sprite in turn and peek at its scripts: every sprite carries its OWN scripts and they are never shared - that is why a bug can hide on one sprite while everything else looks fine. Most of the bugs are hiding in there. Most."
+      }
+     ],
+     "confirm": "The broken game is open in Scratch and I can see its code"
+    },
+    "handbook": {
+     "title": "Reading Someone Else's Code",
+     "src": "assets/video/l4/l4-tutorial.mp4",
+     "poster": "assets/video/l4/l4-poster.jpg",
+     "fallback": "The Handbook film is on its way — your teacher's demo covers everything it will show, and the case files walk you through the rest.",
+     "chapters": [
+      {
+       "t": 0,
+       "label": "Load the game & read its code"
+      },
+      {
+       "t": 89,
+       "label": "Hat blocks: what starts a script"
+      },
+      {
+       "t": 192,
+       "label": "Test like a detective"
+      },
+      {
+       "t": 260,
+       "label": "The case log"
+      }
+     ]
+    },
+    "cases": [
+     {
+      "id": "c1",
+      "num": "CASE 01",
+      "name": "The Frozen Shark",
+      "training": true,
+      "stars": 1,
+      "spanners": 1,
+      "player": "FinnTastic_11",
+      "ticket": "The shark won't swim RIGHT. Left, up, down — all fine. Right? Nothing. My shark just stares at the wall while the fish laugh at it. One star.",
+      "symptom": "Green flag. Press the RIGHT arrow and count what happens. Now try the other three arrows. The player isn't making it up.",
+      "look": "Open the Shark's scripts and compare them with each other. Working code is your best evidence: what does every WORKING arrow script start with that the broken one is missing?",
+      "logHint": "The right-arrow script had no… so I…",
+      "replay": "Green flag. Fly a full lap: RIGHT along the bottom, UP the far wall, LEFT across the top, DOWN back home. All four arrows, no shortcuts.",
+      "replayConfirm": "Full lap flown — all four arrows work",
+      "clue": {
+       "free": "Re-read the ticket. Which arrows work? Which ONE doesn't? That tells you exactly which script to stare at.",
+       "consult": "Consult another agency that has CLOSED Case 01 - one question, detective to detective. (Your teacher cracked this one live, too.)",
+       "consultSolo": "No other agencies on shift — if the ticket re-read didn't crack it, go straight to HQ's clue.",
+       "hq": "The bug lives on the SHARK. Put the four arrow-key scripts side by side and look at the very TOP of each."
+      },
+      "logTerms": [
+       "hat",
+       "trigger",
+       "event",
+       "when",
+       "key",
+       "top",
+       "arrow",
+       "start"
+      ],
+      "mechanic": "To add a hat: Events (yellow) -> drag 'when space key pressed' so it sits ON TOP of the stack (a white shadow-line shows it is about to snap on), then click its little dropdown to pick the key you need."
+     },
+     {
+      "id": "c2",
+      "num": "CASE 02",
+      "name": "The Broken Scoreboard",
+      "stars": 2,
+      "spanners": 2,
+      "player": "ChompChamp07",
+      "ticket": "I ate SO many fish and the score just sits on 0. I can literally HEAR the bite happen. This game is eating my points as well as the fish.",
+      "symptom": "Green flag. Eat a fish. Listen for the bite… then look at the score. Eat another one. Still 0?",
+      "look": "Find the exact moment a fish gets eaten and read that script block by block, OUT LOUD. Every block will sound right — until one number isn't.",
+      "logHint": "The change-score block said… so I…",
+      "replay": "Green flag. Eat THREE fish and watch the score climb 1, 2, 3. Right once could be luck — right three times is proof.",
+      "replayConfirm": "Three catches, three points — the scoreboard tells the truth",
+      "clue": {
+       "free": "Re-read the ticket. The bite HAPPENS — the sound plays, the fish vanishes. So the eaten moment works. What's the one thing that doesn't move?",
+       "consult": "Consult an agency that has CLOSED Case 02 - one question only, detective to detective. Nobody near you has closed it yet? Then go straight to HQ.",
+       "consultSolo": "No other agencies on shift — if the ticket re-read didn't crack it, go straight to HQ's clue.",
+       "hq": "The bug lives on the FISH, in the script that starts 'when I start as a clone'."
+      },
+      "logTerms": [
+       "score",
+       "change",
+       "number",
+       "0",
+       "zero",
+       "one",
+       "1",
+       "point"
+      ]
+     },
+     {
+      "id": "c3",
+      "num": "CASE 03",
+      "name": "The Vanishing Fish",
+      "stars": 1,
+      "spanners": 3,
+      "player": "SharkSnackSara",
+      "ticket": "One fish. ONE. I ate it in ten seconds flat and then swam round an empty ocean for the rest of my life. Where did everybody GO??",
+      "symptom": "Green flag. Eat the first fish, then keep playing for a slow count of ten. Watch the water for new fish the whole time.",
+      "look": "One script's entire job is making new fish. Find it and read it top to bottom: exactly how many times does it actually make one?",
+      "logHint": "The fish-maker script only ran… so I…",
+      "replay": "Green flag. Play for twenty full seconds. Fish should KEEP arriving the whole time — count at least five newcomers before you even think about this stamp.",
+      "replayConfirm": "Fish kept coming the whole time",
+      "clue": {
+       "free": "Re-read the ticket. The FIRST fish was fine - it swam, it got eaten. It is everything AFTER that first fish the player never sees. So which script's whole job is making fish?",
+       "consult": "Ask an agency that has CLOSED Case 03 - one question, and make it a good one. If you are the first in the room to reach it, go straight to HQ instead.",
+       "consultSolo": "No other agencies on shift — if the ticket re-read didn't crack it, go straight to HQ's clue.",
+       "hq": "The bug lives on the FISH, in the script under 'when green flag clicked' (not the clone one)."
+      },
+      "logTerms": [
+       "forever",
+       "loop",
+       "repeat",
+       "spawn",
+       "clone",
+       "maker",
+       "again",
+       "once"
+      ],
+      "mechanic": "Wrapping blocks in a loop is the fiddliest drag of the day. Easiest way: drag the blocks you want to repeat OUT to an empty space first, drop a forever block under the hat, then drag your blocks back INSIDE its mouth. Scratch shows a white shadow-line when they are about to land inside."
+     },
+     {
+      "id": "c4",
+      "num": "CASE 04",
+      "name": "The White Void",
+      "stars": 2,
+      "spanners": 4,
+      "player": "OceanOlivia",
+      "ticket": "Every single time I press the green flag the sea DISAPPEARS. White screen, fish swimming in nothing, then the ocean strolls in a second late. It looks so broken I stopped playing.",
+      "symptom": "Click the green flag and watch ONLY the very first second. Now click it again. And again. Same wrongness every time?",
+      "look": "This one is not on a sprite at all - it is on the STAGE (click the Stage panel on the far right, beside the sprite list). Read its script IN ORDER, top to bottom, and at every single block ask: what is the player seeing RIGHT NOW?",
+      "logHint": "The script switched to… before… so I…",
+      "replay": "Green flag, three times in a row. The ocean must be on screen from the very first instant, every single time.",
+      "replayConfirm": "Three starts, three instant oceans",
+      "clue": {
+       "free": "Re-read the ticket. The sea is not missing - it 'strolls in a second late'. So it does arrive. Watch the very first second again and say exactly what you see, in order.",
+       "consult": "Consult an agency that has CLOSED Case 04 - one question, detective to detective. First one here? Take HQ's clue, no shame in it.",
+       "consultSolo": "No other agencies on shift — if the ticket re-read didn't crack it, go straight to HQ's clue.",
+       "hq": "Not a sprite at all — open the STAGE's scripts (click the Stage panel, bottom-right, beside the sprite list)."
+      },
+      "logTerms": [
+       "order",
+       "stage",
+       "backdrop",
+       "wait",
+       "first",
+       "before",
+       "swap",
+       "white",
+       "sea",
+       "ocean"
+      ]
+     }
+    ],
+    "stretchCase": {
+     "id": "c5",
+     "num": "JOB 05",
+     "name": "The Jellyfish Job",
+     "stars": 5,
+     "player": "DeepSeaDara",
+     "ticket": "Five stars, best shark game on the site — but NOTHING can hurt you! Where's the danger? Add something to dodge and it's perfect.",
+     "job": "Add a Jellyfish from Scratch's sprite library (Choose a Sprite → search 'Jellyfish') and wire it with the starter blocks below: it drifts to a new spot every couple of seconds — and if the Shark ever touches it, the whole game stops. That 'if touching' block is next lesson's superpower; consider this a sneak preview.",
+     "img": "assets/img/l4/stretch-jellyfish.png",
+     "test": "Green flag. Dodge the jellyfish for twenty seconds… then swim into it ON PURPOSE. The game should freeze the instant you touch it.",
+     "confirm": "Danger installed — touching the jellyfish ends the game",
+     "ask": "One line for the release notes: what did you add, and what does it do to the player?",
+     "notePlaceholder": "I added a jellyfish that... so now the player..."
+    },
+    "stretchNudge": "The build has shipped — but a five-star feature request is still pinned to the board. Take the job, or clock off?",
+    "rc": {
+     "title": "Release Candidate check",
+     "text": "Four fixes, one game — and bugs love to hide behind each other. Before anything ships, QA plays the WHOLE game like a real player. One full minute, green flag to glory. Watch for all four fixes holding at once:",
+     "watch": [
+      "All four arrows — fly a full lap.",
+      "Eat at least five fish — the score counts every single one.",
+      "Fish keep arriving for the whole minute.",
+      "Restart twice — the ocean is there from the first instant, every time."
+     ],
+     "confirm": "Full sixty-second run - every fix held",
+     "ask": "Only one number proves you actually ran it: how many fish did you catch in the full run?"
+    },
+    "ship": {
+     "intro": "A fix is only real once the build is safe. Ship tonight's build to your vault:",
+     "kinds": [
+      "sb3"
+     ],
+     "hours": 3,
+     "steps": [
+      {
+       "icon": "💾",
+       "title": "Save the fixed game",
+       "text": "In Scratch: File → Save to your computer. The .sb3 lands in Downloads — that file IS your fixed game."
+      },
+      {
+       "icon": "🗄️",
+       "title": "Vault it",
+       "text": "drive.google.com → School → DT Work → drag the .sb3 in. Same vault, same habit as your micro:bit builds."
+      },
+      {
+       "icon": "🏁",
+       "title": "Call the inspection",
+       "text": "HQ checks the vault for a freshly-saved .sb3 — then the release is signed and the players get their game back."
+      }
+     ]
+    },
+    "boardTip": "Lost your game? Nothing is broken - reload <b>scratch.mit.edu</b>, then File &rarr; Load from your computer, and pick the .sb3 again."
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit Check",
+   "minutes": 3,
+   "config": {
+    "intro": "Two QA scenarios before you clock off — think like a detective, not a guesser.",
+    "items": [
+     {
+      "id": "ex4-1",
+      "stem": "A sprite's script never runs when the green flag is clicked. What's the MOST likely reason?",
+      "options": [
+       "The sprite is too small",
+       "The costume hasn't been chosen",
+       "There's no green-flag hat block on that script",
+       "The code is at the bottom of the workspace"
+      ]
+     },
+     {
+      "id": "ex4-2",
+      "stem": "Your partner says: 'Fixed it! I saw one fish get eaten and the score moved.' What does a real QA tester do next?",
+      "options": [
+       "Stamp it CASE CLOSED — it worked once",
+       "Re-play it and watch the fix work at least three times before closing the case",
+       "Delete the whole script and rebuild it, just to be safe",
+       "Add a few extra blocks so it definitely works"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "exitp",
+   "engine": "parsons",
+   "title": "Rebuild the Opening",
+   "minutes": 2,
+   "config": {
+    "intro": "Last one: five real blocks, one clean opening. Put them in the order that matches the mission - you have spent an hour learning why order matters.",
+    "item": {
+     "id": "ex4-p",
+     "prompt": "When the flag is clicked, the sprite gets into position without the player seeing it move, then appears in the middle of the screen and animates by changing costume forever.",
+     "blocks": [
+      "forever [ next costume + wait 0.2 seconds ]",
+      "show",
+      "when green flag clicked",
+      "hide",
+      "go to x: 0  y: 0"
+     ]
+    }
+   }
+  },
+  {
+   "id": "selfeval",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "statements": [
+     "I can read code someone else wrote and work out what it should do.",
+     "I can find a bug by testing and checking — not by guessing.",
+     "I can explain what was wrong and what I changed, in my own words."
+    ],
+    "difficulty": true,
+    "comment": true
+   }
+  }
+ ],
+ "keysEnc": "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"
+}

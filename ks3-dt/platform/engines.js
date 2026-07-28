@@ -1,0 +1,3124 @@
+/* OLS KS3 DT — activity engines. Each engine mounts one lesson chunk:
+   Engines[type].mount(host, chunk, ctx). Engines call ctx.awardBadge(chunk.badge)
+   when the chunk carries a badge, then ctx.next().
+   Marking is ALWAYS server-side (ctx.markItem / recap / exit APIs) — no answer
+   keys exist client-side (red team #1). */
+(function (global) {
+  'use strict';
+
+  var Engines = global.Engines = {};
+  var esc = function (s) { return App.esc(s); };
+  /* Resolve repo-relative asset paths through App.asset so engine-rendered media
+     works under the hosted (googleusercontent) origin too. Absolute URLs pass through. */
+  var asset = function (p) { return /^https?:/i.test(String(p)) ? p : App.asset(p); };
+
+  function el(html) {
+    var d = document.createElement('div');
+    d.innerHTML = html.trim();
+    return d.firstChild;
+  }
+  function finishChunk(ctx, detail) {
+    if (ctx.chunk.badge) {
+      ctx.awardBadge(ctx.chunk.badge, detail).then(function () { ctx.next(); });
+    } else ctx.next();
+  }
+  /* mirror of the server's vhash_ - the vault placement check compares salted
+     hashes so the answer map never reaches the client in plaintext */
+  function vhash(s) {
+    var h = 5381;
+    for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+    return h.toString(16);
+  }
+
+  /* ================= PairKit (ARCHITECTURE section 12) ======================
+     Auto-pairing + the monitored "Comms Channel". Any engine can gate its
+     activity on PairKit.ensure(): the callback gets 'social' (auto-pairing
+     switched off for the class - one machine, the original prompts), 'solo'
+     (catch-up / review / teacher release / last agent standing) or 'paired'
+     (live pair or trio + a ~2s polled channel). The waiting room, chat dock
+     and identity-reveal card all live here so every future paired engine
+     reuses them wholesale. */
+  var PairKit = global.PairKit = {
+    st: null, _pollT: null, _chT: null, _handler: null, _onPoll: null, _dock: null, _seen: null,
+    _onEnd: null,
+
+    stop: function () {
+      if (PairKit._pollT) { clearTimeout(PairKit._pollT); PairKit._pollT = null; }
+      if (PairKit._chT) { clearTimeout(PairKit._chT); PairKit._chT = null; }
+      PairKit._handler = null; PairKit._onPoll = null; PairKit._dock = null; PairKit._onEnd = null;
+    },
+
+    ensure: function (ctx, host, cb) {
+      PairKit.stop();
+      PairKit.st = null; PairKit._seen = {};
+      if (ctx.review || ctx.catchup) { cb('solo'); return; }
+      if (!Number(App.state.pairing)) { cb('social'); return; }
+      var stageIdx = Number(App.state.chunkIdx);
+      var began = Date.now();
+      var box = null;
+      function waitUi(r) {
+        if (!box) {
+          box = el('<div class="card pair-wait">' +
+            '<div class="pw-radar"><span></span><span></span><span></span><i></i></div>' +
+            '<h2>Opening a channel&hellip;</h2>' +
+            '<p class="pw-status">HQ is matching you with a partner agent.</p>' +
+            '<p class="pw-hint" hidden></p></div>');
+          host.appendChild(box);
+        }
+        var stat = box.querySelector('.pw-status');
+        if (Number(r.trioHold)) stat.textContent = 'The last three agents on a mission finish it together — holding this frequency for one more…';
+        else if (Number(r.waiting) > 1) stat.textContent = 'Signal found — locking frequencies…';
+        else stat.textContent = 'HQ is matching you with a partner agent…';
+        var hint = box.querySelector('.pw-hint');
+        if (Date.now() - began > 180000) {
+          hint.hidden = false;
+          hint.textContent = 'Waiting a while? Wave your teacher over — they can clear you for a solo run.';
+        }
+      }
+      function poll() {
+        ctx.call('pairJoin', { lessonId: ctx.lesson.id, stageIdx: stageIdx }).then(function (r) {
+          if (!r || !r.ok) {
+            // hard refusal degrades to the one-machine social mode; a wifi blip keeps listening
+            if (r && r.error && r.error !== 'transport') { if (box) box.remove(); cb('social'); return; }
+            PairKit._pollT = setTimeout(poll, 2500); return;
+          }
+          if (r.state === 'off') { if (box) box.remove(); cb('social'); return; }
+          if (r.state === 'solo') { if (box) box.remove(); cb('solo'); return; }
+          if (r.state === 'paired') {
+            PairKit.st = {
+              pid: String(r.pid), mi: Number(r.mi), members: (r.members || []).map(String),
+              trio: !!Number(r.trio), seq: 0,
+              live: (r.members || []).map(function () { return 1; }),
+              done: Number(r.done), rv: Number(r.rv), names: r.names || null
+            };
+            if (box) box.remove();
+            PairKit._loop(ctx);
+            cb('paired');
+            return;
+          }
+          waitUi(r);
+          PairKit._pollT = setTimeout(poll, 2000);
+        });
+      }
+      poll();
+    },
+
+    onEvent: function (fn) { PairKit._handler = fn; },
+    onPoll: function (fn) { PairKit._onPoll = fn; },
+    /* AUDIT FIX C-11: the teacher's "Reset pairing" now DISSOLVES pairs instead
+       of deleting the registry, and says so on the channel (dis:1). Without this
+       the poll below just kept failing quietly and both agents sat on "not your
+       turn" until the page was reloaded. */
+    onEnd: function (fn) { PairKit._onEnd = fn; },
+
+    _loop: function (ctx) {
+      var st = PairKit.st;
+      if (!st) return;
+      ctx.call('pairChannel', { lessonId: ctx.lesson.id, pid: st.pid, since: st.seq }).then(function (r) {
+        if (r && r.ok && Number(r.dis) && PairKit.st === st) {
+          var end = PairKit._onEnd;
+          PairKit.st = null;
+          PairKit.stop();
+          if (end) end('reset');
+          return;
+        }
+        if (r && r.ok && PairKit.st === st) {
+          st.seq = Math.max(Number(st.seq), Number(r.seq));
+          st.live = r.live || st.live;
+          st.done = Number(r.done); st.rv = Number(r.rv);
+          if (r.names) st.names = r.names;
+          (r.ev || []).forEach(function (e) { PairKit._dispatch(e); });
+          if (PairKit._onPoll) PairKit._onPoll();
+        }
+        if (PairKit.st === st) PairKit._chT = setTimeout(function () { PairKit._loop(ctx); }, 2000);
+      });
+    },
+
+    _dispatch: function (e) {
+      var seq = Number(e[0]);
+      if (PairKit._seen[seq]) return;
+      PairKit._seen[seq] = 1;
+      if (PairKit._dock) PairKit._dock(e);
+      if (PairKit._handler) PairKit._handler(e);
+    },
+
+    send: function (ctx, kind, text) {
+      var st = PairKit.st;
+      if (!st) return Promise.resolve({ ok: false, error: 'no-pair' });
+      return ctx.call('pairSend', { lessonId: ctx.lesson.id, pid: st.pid, kind: kind, text: String(text || '') });
+    },
+
+    complete: function (ctx) {
+      var st = PairKit.st;
+      if (!st) return Promise.resolve({ ok: false });
+      return ctx.call('pairComplete', { lessonId: ctx.lesson.id, pid: st.pid }).then(function (r) {
+        if (r && r.ok && PairKit.st === st) { st.done = 1; st.rv = 1; st.names = r.names || st.names; }
+        return r;
+      });
+    },
+
+    /* ---- chat dock: the monitored channel UI ---- */
+    dock: function (mountEl, ctx) {
+      var st = PairKit.st;
+      var d = el('<div class="chat-dock">' +
+        '<div class="monitor-banner">&#128737;&#65039; MONITORED CHANNEL &mdash; Mission Command (your teacher) can read every message.</div>' +
+        '<div class="turn-chip" hidden></div>' +
+        '<div class="chat-log" aria-live="polite"></div>' +
+        '<form class="chat-form">' +
+        '<input class="chat-input" type="text" maxlength="240" autocomplete="off" placeholder="Message your partner agent&hellip;">' +
+        '<button class="chat-send" type="submit">Send</button></form></div>');
+      mountEl.appendChild(d);
+      var log = d.querySelector('.chat-log');
+      var input = d.querySelector('.chat-input');
+      var sendBtn = d.querySelector('.chat-send');
+      var renderedSeq = {};
+      function bubble(mi, text, seq) {
+        if (seq != null) { if (renderedSeq[seq]) return; renderedSeq[seq] = 1; }
+        var mine = mi === st.mi;
+        log.insertAdjacentHTML('beforeend',
+          '<div class="chat-msg' + (mine ? ' mine' : '') + '">' +
+          '<span class="cm-who">' + esc(mine ? 'You' : 'Agent ' + (st.members[mi] || '?')) + '</span>' +
+          '<span class="cm-text">' + esc(text) + '</span></div>');
+        log.scrollTop = log.scrollHeight;
+      }
+      function sys(html) {
+        log.insertAdjacentHTML('beforeend', '<div class="chat-sys">' + html + '</div>');
+        log.scrollTop = log.scrollHeight;
+      }
+      PairKit._dock = function (e) {
+        if (String(e[2]) === 'msg') bubble(Number(e[1]), String(e[3]), Number(e[0]));
+      };
+      d.querySelector('.chat-form').onsubmit = function (ev) {
+        ev.preventDefault();
+        var text = input.value.trim();
+        if (!text) return;
+        input.disabled = true; sendBtn.disabled = true;
+        PairKit.send(ctx, 'msg', text).then(function (r) {
+          input.disabled = false; sendBtn.disabled = false;
+          if (r && r.ok) {
+            bubble(st.mi, text, Number(r.seq));
+            input.value = '';
+          } else if (r && r.error === 'too-fast') App.toast('Easy, Agent — one message a second.');
+          else App.toast('Message did not send (wifi?) — try again.');
+          input.focus();
+        });
+      };
+      sys('Channel open. Say hello — and remember Mission Command can see this.');
+      return {
+        sys: sys,
+        setTurn: function (html, mine) {
+          var chip = d.querySelector('.turn-chip');
+          chip.hidden = false;
+          chip.className = 'turn-chip' + (mine ? ' mine' : '');
+          chip.innerHTML = html;
+        }
+      };
+    },
+
+    /* identity reveal - the badge-pop pattern from app.js */
+    revealCard: function (cb) {
+      var st = PairKit.st;
+      var others = [];
+      if (st) for (var i = 0; i < st.members.length; i++) {
+        if (i === st.mi) continue;
+        others.push({ cn: st.members[i], n: (st.names || [])[i] || '' });
+      }
+      var rows = others.map(function (o) {
+        return '<p class="reveal-row"><span class="reveal-cn">Agent ' + esc(o.cn) + '</span>' +
+          '<span class="reveal-arrow">&#9654;</span><span class="reveal-name">' + esc(o.n || 'a classmate') + '</span></p>';
+      }).join('');
+      var pop = el('<div class="badge-pop reveal-pop"><div class="badge-pop-card">' +
+        '<span class="reveal-kicker">IDENTITY DECLASSIFIED</span>' +
+        '<h2>Your partner ' + (others.length > 1 ? 'agents were' : 'agent was') + '&hellip;</h2>' +
+        rows +
+        '<button class="primary-btn" type="button">Debrief</button></div></div>');
+      document.body.appendChild(pop);
+      requestAnimationFrame(function () { pop.classList.add('show'); });
+      pop.querySelector('button').onclick = function () {
+        pop.classList.remove('show');
+        setTimeout(function () { pop.remove(); }, 250);
+        cb();
+      };
+    }
+  };
+
+  /* ================= shared item runner =================
+     modes: 'feedback' (mark each tap, show why), 'neutral' (log + move on),
+     'collect' (record silently).
+     Options are ALWAYS shuffled at render (Damien, 22 Jul: authored keys
+     clustered on A). curOrd maps display position -> source index, so every
+     submit sends SOURCE indexes and the server contract is unchanged. This
+     composes safely with the recap engine's server-side shuffle too: there the
+     "source" is the server-sent order, and choices/correctIdx are mapped the
+     same way. */
+  function itemRunner(host, opts) {
+    var idx = 0, right = 0, answers = {}, curOrd = [];
+    var wrap = el('<div class="runner"></div>');
+    host.appendChild(wrap);
+
+    function progress() {
+      return opts.items.length > 1
+        ? '<span class="runner-progress">' + (idx + 1) + ' of ' + opts.items.length + '</span>' : '';
+    }
+
+    /* stems may carry \n line breaks (e.g. numbered algorithm steps) */
+    function stemHtml(s) { return esc(s).replace(/\n/g, '<br>'); }
+
+    function show() {
+      var it = opts.items[idx];
+      curOrd = it.options.map(function (_, i) { return i; });
+      for (var s = curOrd.length - 1; s > 0; s--) {
+        var j = Math.floor(Math.random() * (s + 1));
+        var t = curOrd[s]; curOrd[s] = curOrd[j]; curOrd[j] = t;
+      }
+      wrap.innerHTML =
+        '<div class="card q-card">' +
+        progress() +
+        (it.topic ? '<span class="q-topic">' + esc(it.topic) + '</span>' : '') +
+        '<h2 class="q-stem">' + stemHtml(it.stem) + '</h2>' +
+        '<div class="q-options">' + curOrd.map(function (oi, i) {
+          return '<button class="q-opt" type="button" data-i="' + i + '"><span class="q-letter">' +
+            'ABCD'.charAt(i) + '</span><span>' + esc(it.options[oi]) + '</span></button>';
+        }).join('') + '</div>' +
+        '<div class="q-feedback" hidden></div>' +
+        '</div>';
+      wrap.querySelectorAll('.q-opt').forEach(function (btn) {
+        btn.onclick = function () { pick(Number(btn.getAttribute('data-i')), btn); };
+      });
+    }
+
+    function lockOptions() {
+      wrap.querySelectorAll('.q-opt').forEach(function (b) { b.disabled = true; });
+    }
+
+    function nextOrDone() {
+      idx++;
+      if (idx < opts.items.length) show();
+      else opts.onDone({ right: right, total: opts.items.length, answers: answers });
+    }
+
+    function pick(i, btn) {
+      var it = opts.items[idx];
+      var srcIdx = curOrd[i]; // display position -> source index (contract unchanged)
+      var ord = curOrd;       // capture: async marking must not race the next show()
+      answers[it.id] = srcIdx;
+      lockOptions();
+      // AUDIT FIX (26 Jul 2026): 'collect' (the GRADED exit check) used to advance
+      // synchronously inside this click handler, so the next question's options
+      // were live at the same screen coordinates within milliseconds - the second
+      // half of an 11-year-old's double-click landed on a question she never saw
+      // and was recorded as her answer to it (options are shuffled, so effectively
+      // at random; submitExit is first-wins, so it could never be corrected).
+      // 'neutral' already waits 650ms and 'feedback' waits for the server; the
+      // graded path was the only unguarded one.
+      if (opts.mode === 'collect') { setTimeout(nextOrDone, 400); return; }
+      if (opts.mode === 'neutral') {
+        btn.classList.add('logged');
+        btn.insertAdjacentHTML('beforeend', '<span class="q-logged">' + esc(opts.ackText || 'Logged') + ' &#10003;</span>');
+        setTimeout(nextOrDone, 650);
+        return;
+      }
+      // feedback mode: server marks (against the SOURCE index)
+      btn.classList.add('checking');
+      opts.markFn(it, srcIdx).then(function (r) {
+        btn.classList.remove('checking');
+        var fb = wrap.querySelector('.q-feedback');
+        if (!r || !r.ok) {
+          fb.hidden = false;
+          fb.className = 'q-feedback neutral';
+          fb.innerHTML = '<p>Hmm — could not check that one (wifi?). Moving on.</p>' +
+            '<button class="primary-btn" type="button">Next</button>';
+          fb.querySelector('button').onclick = nextOrDone;
+          return;
+        }
+        var opts_ = wrap.querySelectorAll('.q-opt');
+        if (r.correct) { right++; btn.classList.add('right'); }
+        else {
+          btn.classList.add('wrong');
+          var revealPos = ord.indexOf(Number(r.correctIdx)); // source -> display position
+          if (revealPos !== -1 && opts_[revealPos]) opts_[revealPos].classList.add('reveal');
+        }
+        fb.hidden = false;
+        fb.className = 'q-feedback ' + (r.correct ? 'good' : 'bad');
+        fb.innerHTML = '<p class="q-verdict">' + (r.correct ? 'Correct.' : 'Not this time.') + '</p>' +
+          (r.explain ? '<p class="q-explain">' + esc(r.explain) + '</p>' : '') +
+          '<button class="primary-btn" type="button">' + (idx === opts.items.length - 1 ? 'Finish' : 'Next') + '</button>';
+        fb.querySelector('button').onclick = nextOrDone;
+        fb.querySelector('button').focus();
+      });
+    }
+
+    show();
+  }
+
+  function introCard(host, opts, beginLabel, onBegin) {
+    var c = el('<div class="card intro-card">' +
+      (opts.kicker ? '<span class="intro-kicker">' + esc(opts.kicker) + '</span>' : '') +
+      '<h2>' + esc(opts.title) + '</h2>' +
+      '<p class="intro-lead">' + esc(opts.text) + '</p>' +
+      (opts.extra || '') +
+      '<button class="primary-btn" type="button">' + esc(beginLabel) + '</button></div>');
+    host.appendChild(c);
+    c.querySelector('button').onclick = function () { host.innerHTML = ''; onBegin(); };
+  }
+
+  /* ================= briefing (cinematic dossier) ================= */
+  Engines.briefing = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      // optional hook-photo strip (real images, credited in assets/img/CREDITS.md)
+      var photoStrip = (cfg.images && cfg.images.length)
+        ? '<div class="dossier-photos">' + cfg.images.map(function (im) {
+            return '<figure><img src="' + esc(asset(im.src)) + '" alt="' + esc(im.alt || '') + '" loading="lazy">' +
+              (im.caption ? '<figcaption>' + esc(im.caption) + '</figcaption>' : '') + '</figure>';
+          }).join('') + '</div>'
+        : '';
+      var d = el('<div class="dossier">' +
+        '<div class="dossier-top"><span class="dossier-stamp">CLASSIFIED</span><span class="dossier-clearance">' + esc(cfg.clearance || '') + '</span></div>' +
+        '<h1 class="dossier-headline"></h1>' +
+        '<div class="dossier-lines"></div>' +
+        photoStrip +
+        '<button class="primary-btn dossier-cta" type="button" hidden>' + esc(cfg.cta || 'Continue') + '</button>' +
+        '<button class="dossier-skip" type="button">Skip &raquo;</button>' +
+        '</div>');
+      host.appendChild(d);
+      var headline = d.querySelector('.dossier-headline');
+      var linesBox = d.querySelector('.dossier-lines');
+      var cta = d.querySelector('.dossier-cta');
+      var timers = [];
+      function reveal() {
+        timers.forEach(clearTimeout);
+        headline.textContent = cfg.headline;
+        linesBox.innerHTML = (cfg.lines || []).map(function (l) { return '<p class="dossier-line show">' + esc(l) + '</p>'; }).join('');
+        cta.hidden = false;
+      }
+      // typewriter headline
+      var hl = String(cfg.headline || ''), pos = 0;
+      (function type() {
+        if (pos <= hl.length) {
+          headline.textContent = hl.slice(0, pos) + (pos < hl.length ? '▍' : '');
+          pos++;
+          timers.push(setTimeout(type, 45));
+        } else {
+          (cfg.lines || []).forEach(function (l, i) {
+            timers.push(setTimeout(function () {
+              var p = document.createElement('p');
+              p.className = 'dossier-line'; p.textContent = l;
+              linesBox.appendChild(p);
+              /* capture p, never lastChild — throttled tabs batch rAF callbacks
+                 and lastChild would point at the newest line for all of them */
+              requestAnimationFrame(function () { p.classList.add('show'); });
+              if (i === cfg.lines.length - 1) timers.push(setTimeout(function () { cta.hidden = false; }, 700));
+            }, 900 * i));
+          });
+        }
+      })();
+      d.querySelector('.dossier-skip').onclick = reveal;
+      cta.onclick = function () { finishChunk(ctx); };
+    }
+  };
+
+  /* ================= items (calibration / rules checks) ================= */
+  Engines.items = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      introCard(host, {
+        kicker: chunk.title, title: cfg.variant === 'calibration' ? 'Console calibration' : 'Quick check',
+        text: cfg.intro || ''
+      }, 'Start', function () {
+        itemRunner(host, {
+          items: cfg.items, mode: 'feedback',
+          markFn: function (it, i) { return ctx.markItem(it.id, i); },
+          onDone: function () { finishChunk(ctx); }
+        });
+      });
+    }
+  };
+
+  /* ================= steps (guided ladder, with practice sims) ============ */
+  Engines.steps = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var i = 0;
+      introCard(host, { kicker: chunk.title, title: chunk.badge ? chunk.badge.name : chunk.title, text: cfg.intro || '' }, 'Start', showStep);
+
+      function showStep() {
+        if (i >= cfg.steps.length) { rulesCheck(); return; }
+        var st = cfg.steps[i];
+        var c = el('<div class="card step-card">' +
+          '<span class="runner-progress">Step ' + (i + 1) + ' of ' + cfg.steps.length + '</span>' +
+          '<div class="step-head"><span class="step-icon">' + esc(st.icon || '') + '</span><h2>' + esc(st.title) + '</h2></div>' +
+          '<p class="step-text">' + esc(st.text) + '</p>' +
+          '<div class="step-action"></div></div>');
+        host.innerHTML = '';
+        host.appendChild(c);
+        var action = c.querySelector('.step-action');
+        if (st.sim === 'username') {
+          action.innerHTML = '<div class="sim-login"><label>Practice console</label>' +
+            '<input class="text-input sim-user" maxlength="40" autocomplete="off" spellcheck="false" placeholder="type your username here">' +
+            '<p class="sim-msg"></p><button class="primary-btn" type="button">Check it</button></div>';
+          var input = action.querySelector('input'), msg = action.querySelector('.sim-msg');
+          action.querySelector('button').onclick = function () {
+            var v = input.value;
+            if (!v.trim()) { msg.textContent = 'Nothing typed yet — give it a go.'; return; }
+            if (/\s/.test(v.trim())) { msg.textContent = 'Sneaky SPACE spotted — usernames never have spaces. Try again.'; return; }
+            if (v === v.toUpperCase() && /[A-Z]/.test(v)) { msg.textContent = 'ALL CAPITALS? Check Caps Lock isn’t on — usernames are lowercase. Try again.'; return; }
+            msg.textContent = '';
+            input.disabled = true;
+            action.querySelector('button').disabled = true;
+            c.insertAdjacentHTML('beforeend', '<p class="step-done">&#10003; Smooth typing, Agent.</p>');
+            setTimeout(function () { i++; showStep(); }, 900);
+          };
+          input.value = '';
+        } else {
+          action.innerHTML = '<button class="confirm-step" type="button"><span class="confirm-box"></span>' + esc(st.confirm || 'Done') + '</button>';
+          action.querySelector('button').onclick = function () {
+            action.querySelector('button').classList.add('ticked');
+            setTimeout(function () { i++; showStep(); }, 550);
+          };
+        }
+      }
+
+      function rulesCheck() {
+        host.innerHTML = '';
+        if (!cfg.items || !cfg.items.length) { finishChunk(ctx); return; }
+        introCard(host, { kicker: 'Seal the badge', title: 'Ground rules check', text: cfg.itemsIntro || '' }, 'Go', function () {
+          itemRunner(host, {
+            items: cfg.items, mode: 'feedback',
+            markFn: function (it, ii) { return ctx.markItem(it.id, ii); },
+            onDone: function (res) { finishChunk(ctx, 'rules=' + res.right + '/' + res.total); }
+          });
+        });
+      }
+    }
+  };
+
+  /* ================= tour (mini mission board + spotlight) ================= */
+  Engines.tour = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      introCard(host, { kicker: chunk.title, title: 'Learn your console', text: cfg.intro || '' }, 'Follow the beacon', startTour);
+
+      function startTour() {
+        var stage = el('<div class="tour-stage">' +
+          '<div class="tour-board">' +
+          '  <div class="tour-chip" data-t="progress"><span>Agent You</span><span class="tour-xp">45 XP</span></div>' +
+          '  <div class="tour-tiles" data-t="grid">' +
+          '    <div class="tile mini is-done"><span class="tile-icon">🛰️</span><span class="tile-title">Mission Control</span><span class="tile-state done">&#10003;</span></div>' +
+          '    <div class="tile mini is-open"><span class="tile-icon">⚡</span><span class="tile-title">Make It Move</span><span class="tile-state open">Ready</span></div>' +
+          '    <div class="tile mini is-locked" data-t="locks"><span class="tile-icon">🎯</span><span class="tile-title">Scoreboard Engineer</span><span class="tile-state lock">&#128274;</span></div>' +
+          '  </div>' +
+          '  <div class="tour-beacon" data-t="help">?</div>' +
+          '</div>' +
+          '<div class="tour-callout"><h3></h3><p></p><button class="primary-btn" type="button">Next</button></div>' +
+          '</div>');
+        host.appendChild(stage);
+        var si = 0;
+        var callout = stage.querySelector('.tour-callout');
+        function showStop() {
+          stage.querySelectorAll('.tour-spot').forEach(function (n) { n.classList.remove('tour-spot'); });
+          if (si >= cfg.stops.length) { stage.remove(); rulesCheck(); return; }
+          var stop = cfg.stops[si];
+          var target = stage.querySelector('[data-t="' + stop.target + '"]') || stage.querySelector('.tour-tiles');
+          target.classList.add('tour-spot');
+          callout.querySelector('h3').textContent = stop.title;
+          callout.querySelector('p').textContent = stop.text;
+          callout.querySelector('button').textContent = si === cfg.stops.length - 1 ? 'Got it' : 'Next';
+        }
+        callout.querySelector('button').onclick = function () { si++; showStop(); };
+        showStop();
+      }
+
+      function rulesCheck() {
+        introCard(host, { kicker: 'Seal the badge', title: 'Navigator check', text: cfg.itemsIntro || '' }, 'Go', function () {
+          itemRunner(host, {
+            items: cfg.items, mode: 'feedback',
+            markFn: function (it, i) { return ctx.markItem(it.id, i); },
+            onDone: function (res) { finishChunk(ctx, 'nav=' + res.right + '/' + res.total); }
+          });
+        });
+      }
+    }
+  };
+
+  /* ================= vault (drag-drop filing, genuine fail state) ========== */
+  Engines.vault = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var keyId = (cfg && cfg.keyId) || 'vault';
+      var salt = null, check = null;
+      // Fetch the SALTED placement hashes once at mount (never the plaintext map).
+      ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId }).then(function (r) {
+        if (r && r.ok) { salt = r.salt; check = r.check; }
+      });
+      // Crew resolution (section 12): 'social' = auto-pairing off (one machine,
+      // original prompts), 'solo' = catch-up/review/teacher release/last agent,
+      // 'paired' = live pair or trio over the Comms Channel.
+      var autoPair = !!(cfg.paired) && !ctx.catchup && !ctx.review && Number(App.state.pairing) !== 0;
+      var mode = 'social';
+      // Catch-up runs are SOLO by definition — swap the pair prompts out so an
+      // absent pupil is never told to confer with a partner who isn't there.
+      var pairBanner = ctx.catchup
+        ? '<div class="pair-banner">&#127919; Catch-up solo mission: no partner needed. Before each drop, say your reason in your head — "it goes there because&hellip;"</div>'
+        : autoPair
+          ? '<div class="pair-banner">&#128225; ' + esc(cfg.channelPrompt || cfg.pairPrompt || '') + '</div>'
+          : '<div class="pair-banner">&#129309; ' + esc(cfg.pairPrompt || '') + '</div>';
+      introCard(host, {
+        kicker: chunk.title, title: 'The Vault',
+        text: cfg.intro || '',
+        extra: pairBanner
+      }, 'Open the Vault', gate);
+
+      function gate() {
+        if (!autoPair) { mode = (ctx.catchup || ctx.review) ? 'solo' : 'social'; begin(); return; }
+        PairKit.ensure(ctx, host, function (m) { mode = m; begin(); });
+      }
+
+      function begin() {
+        if (!check) { // hashes still loading: brief gold pulse, then retry
+          host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Opening the Vault&hellip; this can take a moment</span></div>';
+          var tries = 0;
+          var t = setInterval(function () {
+            tries++;
+            if (check) { clearInterval(t); host.innerHTML = ''; begin(); }
+            else if (tries > 40) {
+              clearInterval(t);
+              ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId }).then(function (r) {
+                if (r && r.ok) { salt = r.salt; check = r.check; host.innerHTML = ''; begin(); }
+                else host.innerHTML = '<div class="card"><p>The Vault door is stuck (wifi?). Ask your teacher, then try again.</p></div>';
+              });
+            }
+          }, 250);
+          return;
+        }
+        var placed = {}, firstTryRight = 0, attempts = {};
+        var seenDrop = {};   // "fileId|attempt" - applies each shared drop exactly once
+        var dropCount = 0;   // shared attempt counter - drives the turn rotation
+        var finished = false;
+        var dock = null;
+        var pst = PairKit.st;
+        var slimBanner =
+          ctx.catchup ? '&#127919; Solo run &mdash; reason each drop out in your head first.' :
+          mode === 'solo' ? '&#127919; Solo run cleared by HQ &mdash; reason each drop out in your head first.' :
+          mode === 'paired' ? '&#128225; Agree in the channel first &mdash; then whoever is at the controls releases the file.' :
+          '&#129309; Agree together before you release each file.';
+        var stage = el('<div class="vault-stage">' +
+          '<div class="pair-banner slim">' + slimBanner + '</div>' +
+          '<div class="vault-score">' + esc(cfg.scoreLabel || 'Vault Integrity') + ': <b id="vault-score">&mdash;</b></div>' +
+          '<div class="vault-inbox"><h3>Inbox</h3><div class="vault-tray"></div></div>' +
+          '<div class="vault-folders"></div>' +
+          '</div>');
+        if (mode === 'paired') {
+          var wrap = el('<div class="vault-wrap paired"><div class="vault-side"></div></div>');
+          wrap.insertBefore(stage, wrap.firstChild);
+          host.appendChild(wrap);
+          dock = PairKit.dock(wrap.querySelector('.vault-side'), ctx);
+        } else host.appendChild(stage);
+        var tray = stage.querySelector('.vault-tray');
+        var foldersBox = stage.querySelector('.vault-folders');
+        cfg.folders.forEach(function (f) {
+          foldersBox.insertAdjacentHTML('beforeend',
+            '<div class="vault-folder" data-id="' + esc(f.id) + '" style="--fc:' + esc(f.color) + '">' +
+            '<div class="folder-tab"></div><div class="folder-label">' + esc(f.label) + '</div><div class="folder-files"></div></div>');
+        });
+        cfg.files.forEach(function (f) { tray.appendChild(fileCard(f)); });
+
+        function fileCard(f) {
+          var c = el('<div class="vault-file" data-id="' + esc(f.id) + '">' +
+            '<span class="vf-icon">' + esc(f.icon) + '</span><span class="vf-label">' + esc(f.label) + '</span></div>');
+          makeDraggable(c, f);
+          return c;
+        }
+
+        /* Lag-free pointer drag: transform only, no transition while dragging. */
+        function makeDraggable(node, f) {
+          var startX, startY, dx, dy, dragging = false;
+          node.addEventListener('pointerdown', function (e) {
+            if (placed[f.id]) return;
+            if (mode === 'paired' && !myTurn()) {
+              App.toast('Not your drop — Agent ' + driverCn() + ' is at the controls.');
+              return;
+            }
+            dragging = true;
+            node.setPointerCapture(e.pointerId);
+            node.classList.add('dragging');
+            startX = e.clientX; startY = e.clientY; dx = 0; dy = 0;
+          });
+          node.addEventListener('pointermove', function (e) {
+            if (!dragging) return;
+            dx = e.clientX - startX; dy = e.clientY - startY;
+            node.style.transform = 'translate3d(' + dx + 'px,' + dy + 'px,0) scale(1.06)';
+            hoverFolder(e.clientX, e.clientY);
+          });
+          node.addEventListener('pointerup', function (e) {
+            if (!dragging) return;
+            dragging = false;
+            node.classList.remove('dragging');
+            var folder = folderAt(e.clientX, e.clientY);
+            clearHover();
+            if (folder) drop(node, f, folder);
+            else snapBack(node);
+          });
+          node.addEventListener('pointercancel', function () {
+            dragging = false; node.classList.remove('dragging'); snapBack(node); clearHover();
+          });
+        }
+        function folderAt(x, y) {
+          var els = document.elementsFromPoint(x, y);
+          for (var i = 0; i < els.length; i++) {
+            var fo = els[i].closest && els[i].closest('.vault-folder');
+            if (fo) return fo;
+          }
+          return null;
+        }
+        function hoverFolder(x, y) {
+          clearHover();
+          var fo = folderAt(x, y);
+          if (fo) fo.classList.add('hover');
+        }
+        function clearHover() {
+          stage.querySelectorAll('.vault-folder.hover').forEach(function (n) { n.classList.remove('hover'); });
+        }
+        function snapBack(node) {
+          node.classList.add('snapback');
+          node.style.transform = '';
+          setTimeout(function () { node.classList.remove('snapback'); }, 300);
+        }
+        /* ---- turn rotation (paired): the controls change hands every ATTEMPT,
+           round-robin among members whose channel signal is live, so both (or
+           all three) hands touch the mouse and a wrong drop forces a handover
+           and a real conversation. All clients derive the same driver from the
+           shared drop count. ---- */
+        function activeIdxs() {
+          var act = [];
+          for (var i = 0; i < pst.members.length; i++) {
+            if (i === pst.mi || Number((pst.live || [])[i])) act.push(i);
+          }
+          return act.length ? act : [pst.mi];
+        }
+        function driverIdx() { var act = activeIdxs(); return act[dropCount % act.length]; }
+        function myTurn() { return mode !== 'paired' || driverIdx() === pst.mi; }
+        function driverCn() { return String(pst.members[driverIdx()] || '?'); }
+        var lastLiveKey = '';
+        function refreshTurn() {
+          if (mode !== 'paired' || !dock || finished) return;
+          stage.classList.toggle('not-my-turn', !myTurn());
+          if (myTurn()) dock.setTurn('&#127918; YOU are at the controls &mdash; agree in the channel, then drag.', true);
+          else dock.setTurn('&#128360; Agent ' + esc(driverCn()) + ' is at the controls &mdash; advise in the channel.', false);
+          var key = (pst.live || []).join('');
+          if (lastLiveKey && key !== lastLiveKey) {
+            for (var i = 0; i < pst.members.length; i++) {
+              if (i === pst.mi) continue;
+              var was = lastLiveKey.charAt(i) === '1', is = key.charAt(i) === '1';
+              if (was && !is) dock.sys('&#128246; Agent ' + esc(pst.members[i]) + '’s signal is weak &mdash; the controls pass on.');
+              if (!was && is) dock.sys('Agent ' + esc(pst.members[i]) + ' is back on the channel.');
+            }
+          }
+          lastLiveKey = key;
+        }
+
+        /* Apply one shared drop exactly once - locally-made or replayed from the
+           channel. Score, rotation and completion all derive from this stream,
+           so every member's screen and XP arithmetic agree.
+           byMi = member index of the dropper, or null for a local drop. */
+        function applyShared(fileId, folderId, ok, att, byMi) {
+          var dk = fileId + '|' + att;
+          if (seenDrop[dk]) return;
+          seenDrop[dk] = 1;
+          dropCount++;
+          attempts[fileId] = Math.max(num(attempts[fileId]), att);
+          var node = stage.querySelector('.vault-file[data-id="' + fileId + '"]');
+          var folderEl = stage.querySelector('.vault-folder[data-id="' + folderId + '"]');
+          var f = null;
+          for (var i = 0; i < cfg.files.length; i++) if (String(cfg.files[i].id) === fileId) f = cfg.files[i];
+          var who = byMi == null ? 'You' : 'Agent ' + String(pst.members[byMi] || '?');
+          if (ok) {
+            if (!placed[fileId]) {
+              placed[fileId] = true;
+              if (att === 1) firstTryRight++;
+              if (node && folderEl) {
+                node.style.transform = '';
+                node.classList.add('filed');
+                folderEl.querySelector('.folder-files').appendChild(node);
+                folderEl.classList.add('accept');
+                setTimeout(function () { folderEl.classList.remove('accept'); }, 500);
+              }
+            }
+            updateScore();
+            if (dock && f) dock.sys('&#128193; ' + esc(who) + ' filed “' + esc(f.label) + '”' + (att > 1 ? ' (attempt ' + att + ')' : '') + '.');
+            if (Object.keys(placed).length === cfg.files.length) finishStage();
+          } else {
+            if (folderEl) {
+              folderEl.classList.add('reject');
+              setTimeout(function () { folderEl.classList.remove('reject'); }, 450);
+            }
+            if (node) {
+              node.style.transform = '';
+              node.classList.add('returned');
+              setTimeout(function () { node.classList.remove('returned'); }, 700);
+            }
+            if (byMi == null) App.toast('Returned — the Vault disagrees. Talk it through and try again.');
+            if (dock && f) dock.sys('&#8617;&#65039; The Vault returned “' + esc(f.label) + '” &mdash; talk it through, the controls change hands.');
+          }
+          refreshTurn();
+        }
+        function num(v) { var n = Number(v); return isNaN(n) ? 0 : n; }
+
+        function drop(node, f, folderEl) {
+          var fid = folderEl.getAttribute('data-id');
+          var att = num(attempts[f.id]) + 1;
+          var ok = vhash(salt + '|' + f.id + '|' + fid) === check[f.id];
+          if (mode === 'paired') PairKit.send(ctx, 'drop', f.id + '|' + fid + '|' + (ok ? 1 : 0) + '|' + att);
+          applyShared(String(f.id), fid, ok, att, null);
+        }
+
+        function finishStage() {
+          if (finished) return;
+          finished = true;
+          if (mode === 'paired') {
+            stage.classList.remove('not-my-turn');
+            if (dock) dock.setTurn('&#128274; Vault sealed &mdash; stand by for the debrief.', true);
+            PairKit.send(ctx, 'done', '');
+            setTimeout(function () {
+              PairKit.complete(ctx).then(function () {
+                // C-11: if the channel was dissolved in this exact window there
+                // is nobody left to declassify - never show an empty reveal
+                if (PairKit.st) PairKit.revealCard(function () { PairKit.stop(); debrief(); });
+                else { PairKit.stop(); debrief(); }
+              });
+            }, 700);
+          } else setTimeout(debrief, 700);
+        }
+
+        function updateScore() {
+          stage.querySelector('#vault-score').textContent = firstTryRight + '/' + cfg.files.length + ' first try';
+        }
+
+        function debrief() {
+          var xp = 12 + firstTryRight * 3;
+          // Record the placement result FIRST ('vp' key, no XP), which unlocks
+          // the explanations server-side; explains are never sent pre-attempt.
+          host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Sealing the Vault&hellip;</span></div>';
+          var pre = ctx.review ? Promise.resolve({ ok: true })
+            : ctx.saveEvent({ detail: 'vp=' + firstTryRight + '/' + cfg.files.length });
+          pre.then(function () {
+            return ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId, mode: 'explain' });
+          }).then(function (er) {
+            var explains = (er && er.ok && er.explain) || {};
+            renderDebrief(explains, xp);
+          });
+        }
+
+        function renderDebrief(explains, xp) {
+          var why = cfg.files.map(function (f) {
+            return '<li><span class="vf-icon">' + esc(f.icon) + '</span> ' + esc(explains[f.id] || '') + '</li>';
+          }).join('');
+          host.innerHTML = '';
+          var d = el('<div class="card debrief-card">' +
+            '<h2>Vault secured &middot; ' + esc(cfg.scoreLabel || 'Vault Integrity') + ': ' + firstTryRight + '/' + cfg.files.length + '</h2>' +
+            '<ul class="vault-why">' + why + '</ul>' +
+            '<button class="primary-btn" type="button">One more thing&hellip;</button></div>');
+          host.appendChild(d);
+          d.querySelector('button').onclick = function () {
+            host.innerHTML = '';
+            // the debrief must narrate what ACTUALLY happened this run:
+            // a live channel pair, a one-machine pair, or a solo mission
+            var syncText =
+              (ctx.catchup && cfg.debrief.syncCatchup) ? cfg.debrief.syncCatchup :
+              (mode === 'paired' && cfg.debrief.syncLive) ? cfg.debrief.syncLive :
+              (mode === 'solo' && cfg.debrief.syncCatchup) ? cfg.debrief.syncCatchup :
+              cfg.debrief.sync;
+            var s1 = el('<div class="card sync-card"><span class="sync-badge">SYNCHRONOUS</span><p>' + esc(syncText) + '</p><button class="primary-btn" type="button">And the flip side&hellip;</button></div>');
+            host.appendChild(s1);
+            s1.querySelector('button').onclick = function () {
+              host.innerHTML = '';
+              var s2 = el('<div class="card sync-card async"><span class="sync-badge">ASYNCHRONOUS</span><p>' + esc(cfg.debrief.async) + '</p><button class="primary-btn" type="button">Claim the badge</button></div>');
+              host.appendChild(s2);
+              s2.querySelector('button').onclick = function () {
+                var badge = Object.assign({}, ctx.chunk.badge, { xp: xp });
+                ctx.awardBadge(badge, 'vault=' + firstTryRight + '/' + cfg.files.length).then(function () { ctx.next(); });
+              };
+            };
+          };
+        }
+        if (mode === 'paired') {
+          // replay + live application of the shared stream; a partner's 'done'
+          // is belt-and-braces (their final drop event already completes us)
+          PairKit.onEvent(function (e) {
+            var kind = String(e[2]);
+            if (kind === 'drop') {
+              var p = String(e[3]).split('|');
+              applyShared(String(p[0]), String(p[1]), Number(p[2]) === 1, Number(p[3]), Number(e[1]));
+            } else if (kind === 'done' && Object.keys(placed).length === cfg.files.length) finishStage();
+          });
+          PairKit.onPoll(refreshTurn);
+          /* AUDIT FIX C-11: the teacher dissolved this pair (Reset pairing).
+             Drop the channel and finish the Vault solo, in place: every file
+             already filed stays filed, the turn lock lifts, and nothing needs a
+             reload - which was the old bug's only escape route. */
+          PairKit.onEnd(function () {
+            if (finished) return;              // already sealed; the debrief owns the screen
+            mode = 'solo';
+            dock = null;
+            var side = host.querySelector('.vault-side');
+            if (side) side.remove();
+            var wrapEl = host.querySelector('.vault-wrap');
+            if (wrapEl) wrapEl.classList.remove('paired');
+            stage.classList.remove('not-my-turn');
+            var slim = stage.querySelector('.pair-banner.slim');
+            if (slim) slim.innerHTML = '&#127919; HQ closed the channel &mdash; finish the Vault on your own. Everything you have filed is safe.';
+            App.toast('HQ closed the channel &mdash; carry on solo, nothing is lost.', 4200);
+          });
+          refreshTurn();
+        }
+        updateScore();
+      }
+    }
+  };
+
+  /* ================= diagnostic (baseline: neutral ack, never marked) ====== */
+  Engines.diagnostic = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      introCard(host, {
+        kicker: chunk.title, title: 'The Licence Exam',
+        text: cfg.intro || '',
+        extra: cfg.solo ? '<div class="solo-banner">&#129323; Solo mission — your own answers only.</div>' : ''
+      }, 'Open my Agent File', function () {
+        itemRunner(host, {
+          items: cfg.items, mode: 'neutral', ackText: cfg.ackText || 'Logged',
+          onDone: function (res) {
+            host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Sealing your Agent File&hellip;</span></div>';
+            var payload = { lessonId: ctx.lesson.id, answers: res.answers };
+            // review mode: never overwrite the original baseline record
+            var submit = ctx.review ? Promise.resolve({ ok: true }) : ctx.call('submitBaseline', payload);
+            submit.then(function (r) {
+              if (!ctx.review && (!r || !r.ok)) App.enqueue('submitBaseline', payload);
+              host.innerHTML = '';
+              var seal = el('<div class="card seal-card"><div class="seal">&#128736;</div>' +
+                '<h2>Agent File sealed</h2><p>Sixteen answers, logged for the record. At the end of the year you’ll open this file again — and see how far you’ve come.</p>' +
+                '<button class="primary-btn" type="button">Claim the badge</button></div>');
+              host.appendChild(seal);
+              seal.querySelector('button').onclick = function () { finishChunk(ctx, undefined); };
+            });
+          }
+        });
+      });
+    }
+  };
+
+  /* ================= codename (picker + oath + belonging) ================= */
+  Engines.codename = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var current = pickName();
+      function pickName() {
+        var a = cfg.adjectives[Math.floor(Math.random() * cfg.adjectives.length)];
+        var n = cfg.nouns[Math.floor(Math.random() * cfg.nouns.length)];
+        return a + ' ' + n;
+      }
+      introCard(host, { kicker: chunk.title, title: 'Choose your codename', text: cfg.intro || '' }, 'Show me', picker);
+
+      function picker() {
+        var c = el('<div class="card codename-card">' +
+          '<p class="codename-label">Your codename</p>' +
+          '<div class="codename-display">Agent <b id="cn-name"></b></div>' +
+          '<div class="codename-actions">' +
+          '<button class="ghost-btn" id="cn-shuffle" type="button">&#127922; Shuffle</button>' +
+          '<button class="primary-btn" id="cn-keep" type="button">Keep this name</button>' +
+          '</div></div>');
+        host.appendChild(c);
+        var nameEl = c.querySelector('#cn-name');
+        nameEl.textContent = current;
+        c.querySelector('#cn-shuffle').onclick = function () {
+          var spins = 7;
+          var t = setInterval(function () {
+            current = pickName();
+            nameEl.textContent = current;
+            if (--spins <= 0) clearInterval(t);
+          }, 70);
+        };
+        c.querySelector('#cn-keep').onclick = function () { host.innerHTML = ''; oath(); };
+      }
+
+      function oath() {
+        var c = el('<div class="card oath-card"><h2>The Agent Oath</h2><div class="oath-lines"></div>' +
+          '<button class="oath-sign" type="button" disabled><span class="oath-ring"></span>Hold to sign as Agent ' + esc(current) + '</button></div>');
+        host.appendChild(c);
+        var box = c.querySelector('.oath-lines');
+        var signBtn = c.querySelector('.oath-sign');
+        (cfg.oath || []).forEach(function (l, i) {
+          setTimeout(function () {
+            var p = document.createElement('p');
+            p.className = 'oath-line'; p.textContent = l;
+            box.appendChild(p);
+            requestAnimationFrame(function () { p.classList.add('show'); });
+            if (i === cfg.oath.length - 1) signBtn.disabled = false;
+          }, 700 * i);
+        });
+        var holdTimer = null;
+        function startHold() {
+          if (signBtn.disabled) return;
+          signBtn.classList.add('holding');
+          holdTimer = setTimeout(function () {
+            signBtn.classList.add('signed');
+            signBtn.textContent = 'Signed — Agent ' + current;
+            setTimeout(function () { host.innerHTML = ''; belonging(); }, 800);
+          }, 1200);
+        }
+        function endHold() {
+          signBtn.classList.remove('holding');
+          clearTimeout(holdTimer);
+        }
+        // pointer events cover mouse AND touch (tap-and-hold on tablets);
+        // pointercancel matters there — a stray scroll/rotate mustn't leave the
+        // ring stuck; contextmenu is suppressed so a long-press can't interrupt.
+        signBtn.addEventListener('pointerdown', function (e) { e.preventDefault(); startHold(); });
+        signBtn.addEventListener('pointerup', endHold);
+        signBtn.addEventListener('pointerleave', endHold);
+        signBtn.addEventListener('pointercancel', endHold);
+        signBtn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+      }
+
+      function belonging() {
+        var b = cfg.belonging || {};
+        var c = el('<div class="card belonging-card"><span class="belonging-kicker">' + esc(b.title || '') + '</span><div class="belonging-lines"></div>' +
+          '<button class="primary-btn" type="button" hidden>Claim the final badge</button></div>');
+        host.appendChild(c);
+        var box = c.querySelector('.belonging-lines');
+        var btn = c.querySelector('button');
+        (b.lines || []).forEach(function (l, i) {
+          setTimeout(function () {
+            var p = document.createElement('p');
+            p.className = 'belonging-line'; p.textContent = l;
+            box.appendChild(p);
+            requestAnimationFrame(function () { p.classList.add('show'); });
+            if (i === b.lines.length - 1) btn.hidden = false;
+          }, 1100 * i);
+        });
+        btn.onclick = function () {
+          ctx.saveEvent({ codename: current });
+          finishChunk(ctx, 'cn=' + current);
+        };
+      }
+    }
+  };
+
+  /* ================= drivecheck (side quest: HQ inspects the REAL Drive) ==
+     Genuine consequence: the badge is only claimable after the server has
+     actually found the folders in the pupil's own Google Drive. In preview
+     the FakeServer simulates a pass and says so on screen. */
+  Engines.drivecheck = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      introCard(host, { kicker: chunk.title, title: 'HQ Inspection', text: cfg.intro || '' }, 'Run the inspection', run);
+
+      function run() {
+        host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>HQ is looking inside your Drive&hellip;</span></div>';
+        ctx.call('driveCheck', { lessonNum: String(ctx.lessonEntry.num) }).then(function (r) {
+          host.innerHTML = '';
+          if (!r || !r.ok) {
+            var errC = el('<div class="card"><h2>The inspection could not run</h2><p>' +
+              (r && r.error === 'locked' ? 'This side quest is not unlocked for your class yet — check with your teacher.'
+                : 'The line to HQ dropped (wifi?). Nothing is lost — try again in a moment.') +
+              '</p><button class="primary-btn" type="button">Try again</button></div>');
+            host.appendChild(errC);
+            errC.querySelector('button').onclick = function () { host.innerHTML = ''; run(); };
+            return;
+          }
+          var results = { school: !!r.school, dtwork: !!r.dtwork };
+          var pass = results.school && results.dtwork;
+          var rows = (cfg.checks || []).map(function (c) {
+            var okc = !!results[c.id];
+            return '<li class="dc-row ' + (okc ? 'ok' : 'miss') + '"><span class="dc-mark">' + (okc ? '&#10003;' : '&#10007;') + '</span><span>' + esc(c.label) + '</span></li>';
+          }).join('');
+          var c2 = el('<div class="card dc-card"><h2>' + (pass ? 'Inspection passed' : 'Not quite there yet') + '</h2>' +
+            (r.simulated ? '<p class="dc-sim">(Preview mode: this inspection is simulated — the live platform checks your real Drive.)</p>' : '') +
+            '<ul class="dc-list">' + rows + '</ul>' +
+            '<p>' + esc(pass ? (cfg.passText || '') : (cfg.failText || '')) + '</p>' +
+            '<button class="primary-btn" type="button">' + (pass ? 'Claim the badge' : 'Run the inspection again') + '</button></div>');
+          host.appendChild(c2);
+          c2.querySelector('button').onclick = pass
+            ? function () { finishChunk(ctx, 'sqdrive=pass'); }
+            : function () { host.innerHTML = ''; run(); };
+        });
+      }
+    }
+  };
+
+  /* ================= recap (Do-Now engine, lessons 2+) ================= */
+  Engines.recap = {
+    mount: function (host, chunk, ctx) {
+      if (ctx.review) { ctx.next(); return; } // a re-read never re-records recap data
+      host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Warming up your brain&hellip;</span></div>';
+      ctx.call('recapStart', { lessonNum: String(ctx.lessonEntry.num) }).then(function (r) {
+        host.innerHTML = '';
+        if (!r || !r.ok || !r.items || !r.items.length) { ctx.next(); return; }
+        introCard(host, {
+          kicker: 'Do-Now', title: 'While everyone logs in…',
+          text: 'A quick brain warm-up from past missions. Answer each one, see why, move on. Never graded, never public.'
+        }, 'Warm up', function () {
+          itemRunner(host, {
+            items: r.items, mode: 'feedback',
+            markFn: function (it, i) {
+              return ctx.call('recapAnswer', { lessonNum: String(ctx.lessonEntry.num), itemId: it.id, choice: i });
+            },
+            onDone: function (res) {
+              host.innerHTML = ''; // replace the last item card - the done card must never hide below the fold
+              var c = el('<div class="card recap-done"><h2>Brain warmed up</h2><p class="recap-score">' + res.right + ' of ' + res.total + '</p>' +
+                '<p>' + (res.right === res.total ? 'Perfect recall, Agent.' : 'The ones you missed will come back around — that’s how remembering works.') + '</p>' +
+                '<button class="primary-btn" type="button">Start today’s mission</button></div>');
+              host.appendChild(c);
+              c.querySelector('button').onclick = function () { ctx.next(); };
+            }
+          });
+        });
+      });
+    }
+  };
+
+  /* ================= exit check + self-eval ================= */
+  Engines.exitcheck = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      introCard(host, { kicker: 'Exit check', title: 'Before you clock off…', text: cfg.intro || '' }, 'Ready', function () {
+        itemRunner(host, {
+          items: cfg.items, mode: 'collect',
+          onDone: function (res) {
+            App.state._exitAnswers = cfg.items.map(function (it) { return res.answers[it.id]; });
+            App.state._exitItems = cfg.items;
+            // survive a refresh between exit check and self-eval
+            if (!ctx.review) {
+              App.state.draft = App.state.draft || {};
+              App.state.draft.exitAnswers = App.state._exitAnswers;
+              ctx.saveEvent({ draft: App.state.draft });
+            }
+            ctx.next();
+          }
+        });
+      });
+    }
+  };
+
+  Engines.selfeval = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var conf = [], diff = '';
+      var c = el('<div class="card se-card"><h2>How did it go?</h2><div class="se-rows"></div>' +
+        (cfg.difficulty ? '<div class="se-diff"><p>How did today feel?</p><div class="se-diff-chips">' +
+          '<button class="se-chip" data-d="0" type="button">&#128994; Easy</button>' +
+          '<button class="se-chip" data-d="1" type="button">&#128993; Just right</button>' +
+          '<button class="se-chip" data-d="2" type="button">&#128308; Tricky</button></div></div>' : '') +
+        (cfg.comment ? '<textarea class="se-comment" maxlength="80" placeholder="Anything you want your teacher to know? (optional)"></textarea>' : '') +
+        '<button class="primary-btn se-submit" type="button" disabled>Send &amp; finish</button></div>');
+      host.appendChild(c);
+      var rows = c.querySelector('.se-rows');
+      cfg.statements.forEach(function (st, i) {
+        conf.push(null);
+        rows.insertAdjacentHTML('beforeend', '<div class="se-row"><p>' + esc(st) + '</p><div class="se-chips" data-row="' + i + '">' +
+          '<button class="se-chip" data-v="2" type="button">&#10003; I can</button>' +
+          '<button class="se-chip" data-v="1" type="button">&#8776; Getting there</button>' +
+          '<button class="se-chip" data-v="0" type="button">&#10007; Not yet</button></div></div>');
+      });
+      c.addEventListener('click', function (e) {
+        var chip = e.target.closest('.se-chip');
+        if (!chip) return;
+        var row = chip.closest('.se-chips');
+        if (row) {
+          row.querySelectorAll('.se-chip').forEach(function (x) { x.classList.remove('on'); });
+          chip.classList.add('on');
+          conf[Number(row.getAttribute('data-row'))] = chip.getAttribute('data-v');
+        } else if (chip.getAttribute('data-d') != null) {
+          c.querySelectorAll('.se-diff-chips .se-chip').forEach(function (x) { x.classList.remove('on'); });
+          chip.classList.add('on');
+          diff = chip.getAttribute('data-d');
+        }
+        var all = conf.every(function (v) { return v !== null; }) && (!cfg.difficulty || diff !== '');
+        c.querySelector('.se-submit').disabled = !all;
+      });
+      c.querySelector('.se-submit').onclick = function () {
+        if (ctx.review) {
+          host.innerHTML = '';
+          var rv = el('<div class="card"><h2>Already filed</h2><p>This mission report went to your teacher the first time — a review visit never overwrites it.</p>' +
+            '<button class="primary-btn" type="button">Finish reviewing</button></div>');
+          host.appendChild(rv);
+          rv.querySelector('button').onclick = function () { ctx.next(); };
+          return;
+        }
+        var commentEl = c.querySelector('.se-comment');
+        var payload = {
+          answers: App.state._exitAnswers || (App.state.draft && App.state.draft.exitAnswers) || [],
+          selfEval: { conf: conf.join(''), diff: diff, comment: commentEl ? commentEl.value.trim() : '' }
+        };
+        host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Filing your report&hellip; this can take a moment</span></div>';
+        App.submitExit(payload, function (r) {
+          host.innerHTML = '';
+          if (!r) {
+            var safe = el('<div class="card"><h2>Report saved on this machine</h2><p>The wifi is playing up, so your answers are safe here and will send automatically. Mission complete.</p>' +
+              '<button class="primary-btn" type="button">Finish</button></div>');
+            host.appendChild(safe);
+            safe.querySelector('button').onclick = function () { ctx.next(); };
+            return;
+          }
+          var items = App.state._exitItems || [];
+          var fbHtml = (r.feedback || []).map(function (f, i) {
+            var it = items[i] || { stem: '', options: [] };
+            return '<div class="exit-fb ' + (f.correct ? 'good' : 'bad') + '">' +
+              '<p class="exit-fb-verdict">' + (f.correct ? '&#10003; Correct' : '&#10007; Not quite') + '</p>' +
+              (!f.correct && it.options[f.correctIdx] ? '<p class="exit-fb-ans">The answer: ' + esc(it.options[f.correctIdx]) + '</p>' : '') +
+              (f.explain ? '<p class="exit-fb-why">' + esc(f.explain) + '</p>' : '') + '</div>';
+          }).join('');
+          var done = el('<div class="card exit-done"><h2>' + (r.right === r.total ? 'Nailed it.' : 'Report filed.') + '</h2>' + fbHtml +
+            '<button class="primary-btn" type="button">Finish the mission</button></div>');
+          host.appendChild(done);
+          done.querySelector('button').onclick = function () { ctx.next(); };
+        });
+      };
+    }
+  };
+
+  /* ================= catch-up intro ================= */
+  Engines.catchupintro = {
+    mount: function (host, chunk, ctx) {
+      var c = el('<div class="card catchup-card"><span class="intro-kicker">Absent for this lesson?</span>' +
+        '<h2>Here’s what you missed</h2>' +
+        '<p>No problem, Agent — the mission waited for you. Work through it at your own pace: the platform will guide you exactly like it guided the class. Ask your teacher if anything needs a real human.</p>' +
+        '<button class="primary-btn" type="button">Start the catch-up</button></div>');
+      host.appendChild(c);
+      c.querySelector('button').onclick = function () { ctx.next(); };
+    }
+  };
+
+  /* ================= ladder (L2+: physical-first challenge ladder) =========
+     Rung cards for out-of-platform building (MakeCode/Scratch in another tab):
+     each rung is a target behaviour the pair makes REAL, tested on the actual
+     device - the platform never marks it, the physical result is the test
+     (doc 07 L2). Debug Hints cost a signal point; the badge XP honours clean
+     rungs. Progress survives refresh via the draft. */
+  Engines.ladder = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var rungs = cfg.rungs || [];
+      var draft = (ctx.draft && ctx.draft.ladder) || {};
+      var done = draft.done || [];      // rung ids cleared
+      var hinted = draft.hinted || [];  // rung ids where the hint was bought
+      var stretchDone = !!draft.stretch;
+      var idx = 0;
+      while (idx < rungs.length && done.indexOf(String(rungs[idx].id)) !== -1) idx++;
+      var unpluggedDone = !!draft.unplugged || idx > 0;
+
+      function saveLadder() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        App.state.draft.ladder = { done: done, hinted: hinted, unplugged: unpluggedDone ? 1 : 0, stretch: stretchDone ? 1 : 0 };
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+
+      function pointsBar() {
+        var lit = rungs.map(function (r) {
+          var isDone = done.indexOf(String(r.id)) !== -1;
+          var isHint = hinted.indexOf(String(r.id)) !== -1;
+          return '<span class="rung-dot' + (isDone ? ' lit' : '') + (isHint ? ' hinted' : '') + '" title="' + esc(r.title) + '">&#9889;</span>';
+        }).join('');
+        return '<div class="rung-bar">' + lit + (cfg.stretch ? '<span class="rung-dot stretch' + (stretchDone ? ' lit' : '') + '">&#11088;</span>' : '') + '</div>';
+      }
+
+      function openerRow() {
+        return cfg.makecode
+          ? '<p class="ladder-open"><a class="ghost-btn" href="' + esc(cfg.makecode.url) + '" target="_blank" rel="noopener">' + esc(cfg.makecode.label || 'Open MakeCode') + ' &#8599;</a>' +
+            '<span class="ladder-open-note">keep it open in its own tab &mdash; you will hop between it and this ladder</span></p>'
+          : '';
+      }
+
+      // Catch-up runs are SOLO: swap the pair framing out (Session B rule -
+      // an absent pupil is never told to confer with a partner who isn't there)
+      var solo = !!ctx.catchup;
+      introCard(host, {
+        kicker: chunk.title, title: cfg.title || 'The Challenge Ladder',
+        text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
+        extra: pointsBar() + openerRow()
+      }, unpluggedDone ? 'Back to the ladder' : 'Start climbing', function () {
+        if (!unpluggedDone && cfg.unplugged) unplugged(); else showRung();
+      });
+
+      function unplugged() {
+        var up = cfg.unplugged;
+        var upLines = (solo && up.soloLines) ? up.soloLines : (up.lines || []);
+        var upConfirm = (solo && up.soloConfirm) ? up.soloConfirm : (up.confirm || 'We both took a turn');
+        var lines = upLines.map(function (l) { return '<li>' + esc(l) + '</li>'; }).join('');
+        var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(up.title || 'Rung 1') + '</span>' +
+          '<h2>&#128268; No screens yet &mdash; you two ARE the circuit</h2>' +
+          '<ol class="ladder-script">' + lines + '</ol>' +
+          '<button class="confirm-step" type="button"><span class="confirm-box"></span><span>' + esc(upConfirm) + '</span></button></div>');
+        host.appendChild(c);
+        c.querySelector('.confirm-step').onclick = function () {
+          this.classList.add('ticked');
+          unpluggedDone = true;
+          saveLadder();
+          setTimeout(function () { host.innerHTML = ''; showRung(); }, 550);
+        };
+      }
+
+      function showRung() {
+        if (idx >= rungs.length) { stretchOrFinish(); return; }
+        var r = rungs[idx];
+        var hintUsed = hinted.indexOf(String(r.id)) !== -1;
+        var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(r.title) + '</span>' +
+          pointsBar() +
+          '<h2 class="rung-target">' + esc(r.target) + '</h2>' +
+          (r.img ? '<img class="rung-img" src="' + esc(asset(r.img)) + '" alt="The blocks for this rung">' : '') +
+          '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(r.test || 'Flash it to the device and make it happen for real.') + '</p></div>' +
+          '<div class="rung-hint" hidden><p>&#128161; ' + esc(r.hint || '') + '</p></div>' +
+          '<div class="rung-actions">' +
+          '<button class="primary-btn rung-worked" type="button">It worked on the device! &#9889;</button>' +
+          (r.hint && !hintUsed ? '<button class="ghost-btn rung-hint-btn" type="button">Debug Hint (costs a signal point)</button>' : '') +
+          '</div></div>');
+        host.innerHTML = '';
+        host.appendChild(c);
+        if (hintUsed) { c.querySelector('.rung-hint').hidden = false; }
+        var hb = c.querySelector('.rung-hint-btn');
+        if (hb) hb.onclick = function () {
+          hinted.push(String(r.id));
+          saveLadder();
+          c.querySelector('.rung-hint').hidden = false;
+          hb.remove();
+        };
+        c.querySelector('.rung-worked').onclick = function () {
+          done.push(String(r.id));
+          saveLadder();
+          App.toast('Rung cleared &mdash; signal locked in.');
+          idx++;
+          showRung();
+        };
+      }
+
+      function stretchOrFinish() {
+        if (!cfg.stretch || stretchDone) { finishLadder(); return; }
+        var s = cfg.stretch;
+        var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(s.title || 'Stretch') + '</span>' +
+          pointsBar() +
+          '<h2 class="rung-target">' + esc(s.target) + '</h2>' +
+          (s.img ? '<img class="rung-img" src="' + esc(asset(s.img)) + '" alt="Stretch blocks">' : '') +
+          (s.test ? '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(s.test) + '</p></div>' : '') +
+          '<div class="rung-actions">' +
+          '<button class="primary-btn" type="button">We built it! &#11088;</button>' +
+          '<button class="ghost-btn" type="button">Finish the ladder without it</button>' +
+          '</div></div>');
+        host.innerHTML = '';
+        host.appendChild(c);
+        var btns = c.querySelectorAll('button');
+        btns[0].onclick = function () { stretchDone = true; saveLadder(); finishLadder(); };
+        btns[1].onclick = function () { finishLadder(); };
+      }
+
+      function finishLadder() {
+        var clean = 0;
+        rungs.forEach(function (r) {
+          if (done.indexOf(String(r.id)) !== -1 && hinted.indexOf(String(r.id)) === -1) clean++;
+        });
+        var cleared = done.length;
+        var xp = 7 + clean * 5 + (cleared - clean) * 3 + (stretchDone ? 5 : 0);
+        var badge = Object.assign({}, ctx.chunk.badge, { xp: xp });
+        var detail = 'ladder=' + cleared + '/' + rungs.length + (stretchDone ? '+s' : '');
+        ctx.awardBadge(badge, detail).then(function () { ctx.next(); });
+      }
+    }
+  };
+
+  /* ================= parsons (distractor-free ordering, exit part 2) =======
+     Tap-to-build: blocks are AUTHORED scrambled; the answer key is the
+     lexicographic index of the correct permutation, marked server-side via
+     the ordinary apiMark call - no readable key ever reaches the client
+     (red team #1 holds). One attempt, honest feedback, correct order revealed
+     after, result recorded as a detail key (never blocks completion). */
+  function permIndex(perm) {
+    var n = perm.length, idx = 0, used = [];
+    for (var i = 0; i < n; i++) {
+      var smaller = 0;
+      for (var j = 0; j < perm[i]; j++) if (used.indexOf(j) === -1) smaller++;
+      var f = 1;
+      for (var k = 2; k <= n - 1 - i; k++) f *= k;
+      idx += smaller * f;
+      used.push(perm[i]);
+    }
+    return idx;
+  }
+  function permFromIndex(idx, n) {
+    var pool = [], out = [];
+    for (var i = 0; i < n; i++) pool.push(i);
+    for (var p = n - 1; p >= 1; p--) {
+      var f = 1;
+      for (var k = 2; k <= p; k++) f *= k;
+      var d = Math.floor(idx / f);
+      idx = idx % f;
+      out.push(pool.splice(d, 1)[0]);
+    }
+    out.push(pool[0]);
+    return out;
+  }
+
+  Engines.parsons = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var it = cfg.item;
+      var placed = []; // source indices in the pupil's chosen order
+      introCard(host, { kicker: 'Exit check — part 2', title: cfg.title || 'Build the program', text: cfg.intro || '' }, 'Ready', build);
+
+      function build() {
+        var c = el('<div class="card parsons-card">' +
+          '<p class="parsons-goal">&#127919; ' + esc(it.prompt) + '</p>' +
+          '<div class="parsons-cols">' +
+          '<div class="parsons-tray"><h3>Blocks</h3><div class="pt-list"></div></div>' +
+          '<div class="parsons-prog"><h3>Your program</h3><ol class="pp-list"></ol></div>' +
+          '</div>' +
+          '<p class="parsons-note">Tap a block to add it &mdash; tap it again in your program to send it back.</p>' +
+          '<button class="primary-btn parsons-check" type="button" disabled>Check my program</button>' +
+          '<div class="q-feedback" hidden></div></div>');
+        host.appendChild(c);
+        var tray = c.querySelector('.pt-list'), prog = c.querySelector('.pp-list');
+        var checkBtn = c.querySelector('.parsons-check');
+
+        function render() {
+          tray.innerHTML = '';
+          prog.innerHTML = '';
+          it.blocks.forEach(function (b, si) {
+            if (placed.indexOf(si) !== -1) return;
+            var n = el('<button class="parsons-block" type="button">' + esc(b) + '</button>');
+            n.onclick = function () { placed.push(si); render(); };
+            tray.appendChild(n);
+          });
+          placed.forEach(function (si) {
+            var n = el('<li><button class="parsons-block placed" type="button">' + esc(it.blocks[si]) + '</button></li>');
+            n.querySelector('button').onclick = function () {
+              placed.splice(placed.indexOf(si), 1);
+              render();
+            };
+            prog.appendChild(n);
+          });
+          checkBtn.disabled = placed.length !== it.blocks.length;
+        }
+        render();
+
+        checkBtn.onclick = function () {
+          checkBtn.disabled = true;
+          c.querySelectorAll('.parsons-block').forEach(function (b) { b.disabled = true; });
+          ctx.markItem(it.id, permIndex(placed)).then(function (r) {
+            var fb = c.querySelector('.q-feedback');
+            fb.hidden = false;
+            if (!r || !r.ok) {
+              fb.className = 'q-feedback neutral';
+              fb.innerHTML = '<p>Hmm &mdash; could not check that one (wifi?). Moving on.</p><button class="primary-btn" type="button">Continue</button>';
+            } else if (r.correct) {
+              fb.className = 'q-feedback good';
+              fb.innerHTML = '<p class="q-verdict">Correct &mdash; that program does exactly what the mission asked.</p>' +
+                (r.explain ? '<p class="q-explain">' + esc(r.explain) + '</p>' : '') +
+                '<button class="primary-btn" type="button">Continue</button>';
+            } else {
+              var order = permFromIndex(Number(r.correctIdx), it.blocks.length);
+              fb.className = 'q-feedback bad';
+              fb.innerHTML = '<p class="q-verdict">Not quite &mdash; here is the working order:</p>' +
+                '<ol class="parsons-answer">' + order.map(function (si) { return '<li>' + esc(it.blocks[si]) + '</li>'; }).join('') + '</ol>' +
+                (r.explain ? '<p class="q-explain">' + esc(r.explain) + '</p>' : '') +
+                '<button class="primary-btn" type="button">Continue</button>';
+            }
+            if (!ctx.review && r && r.ok) ctx.saveEvent({ detail: 'ep=' + (r.correct ? 1 : 0) });
+            fb.querySelector('button').onclick = function () { ctx.next(); };
+            fb.querySelector('button').focus();
+          });
+        };
+      }
+    }
+  };
+
+  /* ================= artifact (bank your build: HQ checks the REAL Drive) ==
+     Teaches the save-to-Drive flow for external tools (Damien's condition:
+     pupils are SHOWN how), then genuinely verifies a fresh file of the right
+     kind is inside School > DT Work. Never blocks the lesson - the badge is
+     the honest reward; the fallback path continues without it. */
+  Engines.artifact = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var steps = (cfg.steps || []).map(function (s, i) {
+        return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p></div></li>';
+      }).join('');
+      var c = el('<div class="card af-card"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+        '<h2>' + esc(cfg.title || 'Bank your build') + '</h2>' +
+        '<p class="intro-lead">' + esc(cfg.intro || '') + '</p>' +
+        '<ol class="af-steps">' + steps + '</ol>' +
+        '<div class="rung-actions">' +
+        '<button class="primary-btn" type="button">Run the HQ Inspection</button>' +
+        '<button class="ghost-btn" type="button" hidden>Continue without banking (ask your teacher)</button>' +
+        '</div><div class="af-result"></div></div>');
+      host.appendChild(c);
+      var runBtn = c.querySelectorAll('button')[0];
+      var skipBtn = c.querySelectorAll('button')[1];
+      var box = c.querySelector('.af-result');
+      var tries = 0;
+      skipBtn.onclick = function () { ctx.next(); };
+      runBtn.onclick = function () {
+        runBtn.disabled = true;
+        box.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>HQ is looking inside your Vault&hellip;</span></div>';
+        ctx.call('artifactCheck', { lessonNum: String(ctx.lessonEntry.num), kinds: cfg.kinds || ['hex'], hours: cfg.hours || 3 }).then(function (r) {
+          runBtn.disabled = false;
+          tries++;
+          if (!r || !r.ok) {
+            box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>The line to HQ dropped (wifi?) &mdash; try again in a moment.</span></div>';
+            return;
+          }
+          if (r.found) {
+            box.innerHTML = '<div class="dc-row ok"><span class="dc-mark">&#10003;</span><span>HQ found <b>' + esc(r.name) + '</b> in your DT Work vault' +
+              (r.ageMin != null ? ' (saved ' + Number(r.ageMin) + ' min ago)' : '') + '.</span></div>' +
+              (r.simulated ? '<p class="dc-sim">(Preview mode: this inspection is simulated &mdash; the live platform checks your real Drive.)</p>' : '') +
+              '<p>' + esc(cfg.passText || 'Your build now follows your login anywhere. That is the whole point of the Vault.') + '</p>';
+            runBtn.textContent = 'Claim the badge';
+            runBtn.onclick = function () { finishChunk(ctx, 'bank=1'); };
+            skipBtn.hidden = true;
+          } else {
+            box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
+              (r.noFolder ? 'HQ could not find your School &gt; DT Work folder. Build it right now in Drive &mdash; + New &rarr; Folder &rarr; "School", then "DT Work" inside it &mdash; and run the inspection again. (The Files That Follow You side quest walks you through it too.)'
+                : 'No freshly-saved build found in DT Work yet.') + '</span></div>' +
+              '<p>' + esc(cfg.failText || 'Check each step above, then run the inspection again.') + '</p>';
+            if (tries >= 2) skipBtn.hidden = false;
+          }
+        });
+      };
+    }
+  };
+
+  /* ================= video (chaptered; graceful before filming) ============ */
+  Engines.video = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      if (!cfg.src) {
+        var c = el('<div class="card video-soon"><span class="intro-kicker">' + esc(chunk.title || 'Tutorial') + '</span>' +
+          '<h2>&#127909; Video on its way</h2><p>' + esc(cfg.fallback || 'This tutorial video is being filmed. For now, your teacher will talk you through this bit.') + '</p>' +
+          '<button class="primary-btn" type="button">Continue</button></div>');
+        host.appendChild(c);
+        c.querySelector('button').onclick = function () { finishChunk(ctx); };
+        return;
+      }
+      var chapters = (cfg.chapters || []).map(function (ch) {
+        return '<button class="vid-chapter" data-t="' + Number(ch.t) + '" type="button">' + esc(ch.label) + '</button>';
+      }).join('');
+      var c2 = el('<div class="card video-card"><h2>' + esc(chunk.title) + '</h2>' +
+        '<video controls preload="metadata" playsinline ' + (cfg.poster ? 'poster="' + esc(asset(cfg.poster)) + '"' : '') + ' src="' + esc(asset(cfg.src)) + '"></video>' +
+        (chapters ? '<div class="vid-chapters">' + chapters + '</div>' : '') +
+        '<button class="primary-btn" type="button">Done watching</button></div>');
+      host.appendChild(c2);
+      var vid = c2.querySelector('video');
+      c2.querySelectorAll('.vid-chapter').forEach(function (b) {
+        b.onclick = function () { vid.currentTime = Number(b.getAttribute('data-t')); vid.play(); };
+      });
+      c2.querySelector('.primary-btn').onclick = function () { vid.pause(); finishChunk(ctx); };
+    }
+  };
+
+  /* ================= tournament (the Reaction Rally console) ===============
+     L3's whole-class event. Pairs play the physical rally (referee + player,
+     the micro:bit scoreboard THEY built keeps count), key each round's score
+     into an arcade-style LED console, tick the tested-3-times gate, and
+     TRANSMIT their best round to HQ. Scores land on the pupil record as
+     detail keys (rt=best, rr=r1.r2.r3); teams stay SEALED until the teacher
+     fires the projector reveal (staff Live tab), at which point the pupil
+     console flips to team colours live. Never blocks: Continue is available
+     from the moment the score is transmitted. */
+  Engines.tournament = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var max = Number(cfg.maxScore) || 10;
+      var solo = !!ctx.catchup;
+      var draft = (ctx.draft && ctx.draft.rally) || {};
+      var rounds = (draft.r && draft.r.slice(0, 3)) || [null, null, null];
+      var ticked = !!draft.c;
+      var submitted = !!draft.sub;
+      var pollTimer = null;
+
+      /* 3x5 dot-matrix digit font - the console displays scores the way the
+         micro:bit's own LED grid would */
+      var FONT = {
+        '0': '111101101101111', '1': '010110010010111', '2': '111001111100111',
+        '3': '111001111001111', '4': '101101111001001', '5': '111100111001111',
+        '6': '111100111101111', '7': '111001010010010', '8': '111101111101111',
+        '9': '111101111001111', '-': '000000111000000'
+      };
+      function ledHtml(val) {
+        var s = (val == null) ? '-' : String(val);
+        var out = '';
+        for (var d = 0; d < s.length; d++) {
+          var bits = FONT[s[d]] || FONT['-'];
+          var dots = '';
+          for (var i = 0; i < 15; i++) dots += '<i class="' + (bits[i] === '1' ? 'on' : '') + '"></i>';
+          out += '<span class="led-digit">' + dots + '</span>';
+        }
+        return out;
+      }
+      function best() {
+        var b = null;
+        rounds.forEach(function (v) { if (v != null && (b == null || v > b)) b = v; });
+        return b;
+      }
+      function saveDraft() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        App.state.draft.rally = { r: rounds, c: ticked ? 1 : 0, sub: submitted ? 1 : 0 };
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+
+      /* review = a re-read: static summary, zero network */
+      if (ctx.review) {
+        var b0 = best();
+        host.appendChild(el('<div class="card rally-card"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+          '<h2>' + esc(cfg.title || 'The Reaction Rally') + '</h2>' +
+          '<p class="intro-lead">' + (draft.sub ? 'Rally logged — your pair’s best round was <b>' + b0 + '</b>. The reveal happened live in class.' : 'The Rally runs live, in class — nothing to replay here.') + '</p>' +
+          '<button class="primary-btn" type="button">Continue</button></div>'));
+        host.querySelector('button').onclick = function () { ctx.next(); };
+        return;
+      }
+
+      var intro = solo ? (cfg.soloIntro || cfg.intro) : cfg.intro;
+      var rules = solo ? (cfg.soloRules || cfg.rules) : cfg.rules;
+      var confirmLabel = solo ? (cfg.soloConfirm || cfg.confirm) : cfg.confirm;
+      var ruleRows = (rules || []).map(function (r, i) {
+        return '<li><span class="rally-rule-n">' + (i + 1) + '</span><span>' + esc(r) + '</span></li>';
+      }).join('');
+      var labels = cfg.roundsLabel || ['Round 1', 'Round 2', 'Round 3'];
+      var slots = labels.map(function (lab, i) {
+        return '<div class="rally-round" data-i="' + i + '">' +
+          '<span class="rally-round-label">' + esc(lab) + '</span>' +
+          '<div class="led-display"></div>' +
+          '<div class="rally-steps">' +
+          '<button class="rally-step" data-d="-1" type="button" aria-label="Down">&minus;</button>' +
+          '<button class="rally-step" data-d="1" type="button" aria-label="Up">+</button>' +
+          '</div><span class="rally-best-tag">BEST</span></div>';
+      }).join('');
+
+      var c = el('<div class="card rally-card"><span class="intro-kicker">' + esc(cfg.kicker || chunk.title) + '</span>' +
+        '<h2>' + esc(cfg.title || 'The Reaction Rally') + '</h2>' +
+        '<p class="intro-lead">' + esc(intro || '') + '</p>' +
+        '<ol class="rally-rules">' + ruleRows + '</ol>' +
+        '<div class="rally-console">' + slots + '</div>' +
+        '<button class="confirm-step rally-confirm" type="button"><span class="confirm-box"></span>' + esc(confirmLabel || 'We tested it three times') + '</button>' +
+        '<div class="rung-actions"><button class="primary-btn rally-transmit" type="button" disabled>Transmit to HQ</button></div>' +
+        '<div class="rally-after"></div></div>');
+      host.appendChild(c);
+      var confirmBtn = c.querySelector('.rally-confirm');
+      var transmitBtn = c.querySelector('.rally-transmit');
+      var afterBox = c.querySelector('.rally-after');
+
+      function paint() {
+        var b = best();
+        c.querySelectorAll('.rally-round').forEach(function (slot) {
+          var i = Number(slot.getAttribute('data-i'));
+          slot.querySelector('.led-display').innerHTML = ledHtml(rounds[i]);
+          slot.classList.toggle('is-best', rounds[i] != null && rounds[i] === b && b != null);
+        });
+        if (ticked) confirmBtn.classList.add('ticked');
+        var ready = ticked && rounds.every(function (v) { return v != null; });
+        transmitBtn.disabled = !ready || submitted;
+      }
+      c.querySelectorAll('.rally-step').forEach(function (btn) {
+        btn.onclick = function () {
+          if (submitted) return;
+          var i = Number(btn.closest('.rally-round').getAttribute('data-i'));
+          var v = rounds[i] == null ? 0 : rounds[i] + Number(btn.getAttribute('data-d'));
+          rounds[i] = Math.max(0, Math.min(max, v));
+          paint(); saveDraft();
+        };
+      });
+      confirmBtn.onclick = function () {
+        if (submitted) return;
+        ticked = !ticked;
+        confirmBtn.classList.toggle('ticked', ticked);
+        paint(); saveDraft();
+      };
+      transmitBtn.onclick = function () {
+        if (submitted) return;
+        submitted = true;
+        paint(); saveDraft();
+        var detail = 'rt=' + best() + ';rr=' + rounds.join('.');
+        ctx.awardBadge(ctx.chunk.badge, detail).then(function () { afterTransmit(); });
+      };
+
+      function lockConsole() {
+        c.querySelector('.rally-rules').hidden = true;
+        c.querySelector('.rally-console').classList.add('is-locked');
+        confirmBtn.hidden = true;
+        transmitBtn.parentNode.hidden = true;
+      }
+
+      /* post-transmit: solo logs and moves on; a live run holds the suspense */
+      function afterTransmit() {
+        lockConsole();
+        if (solo) {
+          afterBox.innerHTML = '<div class="rally-sealed"><p class="rally-sealed-line">Score banked. ' + esc((cfg.suspense && cfg.suspense.sealed) || 'Teams are SEALED.') + '</p>' +
+            '<p class="rally-sub">The live reveal happened in class — your points still count for your hidden team.</p></div>' +
+            '<div class="rally-reveal"></div>' +
+            '<div class="rung-actions"><button class="primary-btn" type="button">Continue</button></div>';
+          afterBox.querySelector('.primary-btn').onclick = function () { ctx.next(); };
+          ctx.call('tournament', { lessonId: ctx.lesson.id }).then(function (r) {
+            if (r && r.ok && r.revealed) paintReveal(afterBox.querySelector('.rally-reveal'), r);
+          });
+          return;
+        }
+        /* Continue stays a GHOST during the wait - the reveal is the star of
+           this screen, not the exit door (gate finding, engagement lens) */
+        afterBox.innerHTML = '<div class="rally-sealed">' +
+          '<p class="rally-sealed-line">' + esc((cfg.suspense && cfg.suspense.sealed) || 'Teams are SEALED.') + '</p>' +
+          '<div class="rally-counter"><span class="panel-spinner"></span><span class="rally-counter-text">' + esc((cfg.suspense && cfg.suspense.waiting) || 'Scores are landing at HQ…') + '</span></div>' +
+          '<p class="rally-sub">' + esc((cfg.suspense && cfg.suspense.revealTease) || 'Eyes on the big screen.') + '</p></div>' +
+          '<div class="rally-reveal"></div>' +
+          '<div class="rung-actions"><button class="ghost-btn rally-continue" type="button">Continue to the exit check</button></div>';
+        afterBox.querySelector('.rally-continue').onclick = function () { stopPoll(); ctx.next(); };
+        startPoll();
+      }
+
+      function stopPoll() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+      function startPoll() {
+        var tick = function () {
+          if (!document.body.contains(afterBox)) { stopPoll(); return; }
+          ctx.call('tournament', { lessonId: ctx.lesson.id }).then(function (r) {
+            if (!r || !r.ok || !document.body.contains(afterBox)) return;
+            var t = afterBox.querySelector('.rally-counter-text');
+            if (t) t.textContent = Number(r.n) === 1 ? '1 rig reporting in…' : Number(r.n || 0) + ' rigs reporting in…';
+            if (r.revealed) {
+              stopPoll();
+              var sealed = afterBox.querySelector('.rally-sealed');
+              if (sealed) sealed.hidden = true;
+              paintReveal(afterBox.querySelector('.rally-reveal'), r);
+            }
+          });
+        };
+        tick();
+        pollTimer = setInterval(tick, 5000);
+      }
+
+      /* the pupil-side echo of the projector reveal: my team, my colours */
+      function paintReveal(box, r) {
+        if (!box || box.childNodes.length) return;
+        var teams = (r.teams || []).slice().sort(function (a, b) { return Number(b.total) - Number(a.total); });
+        var top = teams.length ? Number(teams[0].total) || 1 : 1;
+        var place = 0, myRow = null;
+        teams.forEach(function (t, i) { if (t.mine) { place = i + 1; myRow = t; } });
+        var suffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
+        var bars = teams.map(function (t, i) {
+          var w = Math.max(6, Math.round((Number(t.total) / (top || 1)) * 100));
+          return '<div class="rally-team' + (t.mine ? ' is-mine' : '') + '">' +
+            '<span class="rally-team-name">' + esc(t.name) + (t.mine ? ' — YOU' : '') + '</span>' +
+            '<span class="rally-team-track"><span class="rally-team-fill" style="width:' + w + '%"></span></span>' +
+            '<span class="rally-team-total">' + Number(t.total) + '</span></div>';
+        }).join('');
+        box.innerHTML = '<div class="rally-declass">' +
+          '<span class="reveal-kicker">TEAMS DECLASSIFIED</span>' +
+          (myRow ? '<h3>You were on Team ' + esc(myRow.name) + ' — ' + place + suffix + ' place</h3>'
+                 : '<h3>The teams stand revealed</h3>') +
+          bars + '</div>';
+        requestAnimationFrame(function () { box.classList.add('show'); });
+        setTimeout(function () { box.classList.add('show'); }, 120); // hidden-tab rAF fallback
+        /* the payoff has landed - Continue steps back into the spotlight */
+        var contBtn = host.querySelector('.rally-continue');
+        if (contBtn) { contBtn.classList.remove('ghost-btn'); contBtn.classList.add('primary-btn'); }
+      }
+
+      /* resume: a reloaded pupil who already transmitted lands back in the
+         suspense room, not on a dead console */
+      paint();
+      if (submitted) { transmitBtn.disabled = true; afterTransmit(); }
+    }
+  };
+
+  /* ================= casework (L4's Case Board) ============================
+     Bug Detective, staged as an evidence board — NOT a ladder (Session 9 gate
+     binding: L4 breaks the ladder+costed-hint+retest rhythm). Four case files
+     pinned to a board; the training case (c1) unseals the rest IN ANY ORDER.
+     The clue routine is a peer-consult protocol, not a point cost: HQ's clue
+     (sprite only, never the fix) downgrades that case's stamp GOLD -> SILVER.
+     Verification is the binding one: every case closes ONLY by re-playing the
+     actual fixed Scratch game against a case-specific re-play script + a one
+     sentence case log. No confirm-card marking exists anywhere in this engine.
+     The tutorial video lives ON the board (Detective's Handbook), and the
+     Release Desk (full-game RC check + ship-the-build to Drive via the generic
+     artifactCheck, kinds:['sb3']) is a coda INSIDE the chunk — deliberately
+     not a separate bank chunk (L2's Drive-drag gate stays unique). */
+  Engines.casework = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var cases = cfg.cases || [];
+      var solo = !!ctx.catchup;
+      var draft = (ctx.draft && ctx.draft.casework) || {};
+      var closed = (draft.closed || []).slice();
+      var silver = (draft.silver || []).slice();
+      var logs = Object.assign({}, draft.logs || {});
+      var gg = !!draft.gg;          // evidence intake confirmed
+      var rcDone = !!draft.rc;      // release-candidate full run done
+      var rcScoreVal = Number(draft.rcs || 0); // score the RC run finished on
+      var shipped = !!draft.ship;   // .sb3 landed in Drive (HQ-verified)
+      var shipSkipped = !!draft.sk; // teacher-sanctioned skip
+      var stretchDone = !!draft.stretch;
+      var stretchNote = String(draft.sn || '');
+
+      function saveBoard() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        App.state.draft.casework = {
+          closed: closed, silver: silver, logs: logs, gg: gg ? 1 : 0,
+          rc: rcDone ? 1 : 0, rcs: rcScoreVal, ship: shipped ? 1 : 0,
+          sk: shipSkipped ? 1 : 0, stretch: stretchDone ? 1 : 0, sn: stretchNote
+        };
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+
+      var isClosed = function (id) { return closed.indexOf(String(id)) !== -1; };
+      var isSilver = function (id) { return silver.indexOf(String(id)) !== -1; };
+      var allClosed = function () {
+        return cases.length && cases.every(function (cs) { return isClosed(cs.id); });
+      };
+      var caseUnsealed = function (cs) {
+        if (!gg) return false;
+        if (cs.training) return true;
+        var trainingId = (cases.filter(function (c) { return c.training; })[0] || cases[0]).id;
+        return isClosed(trainingId);
+      };
+
+      function starsHtml(n) {
+        var out = '';
+        for (var i = 0; i < 5; i++) out += '<span class="case-star' + (i < n ? ' lit' : '') + '">&#9733;</span>';
+        return out;
+      }
+      function spannersHtml(n) {
+        var out = '';
+        for (var i = 0; i < n; i++) out += '&#128295;';
+        return '<span class="case-spanners" title="difficulty">' + out + '</span>';
+      }
+      function stampHtml(id, mini) {
+        return '<span class="case-stamp ' + (isSilver(id) ? 'silver' : 'gold') + (mini ? ' mini' : '') + '">CASE CLOSED</span>';
+      }
+
+      /* ---------- review reopen: static stamped board + logs, zero writes ---------- */
+      if (ctx.review) {
+        var rows = cases.map(function (cs) {
+          return '<div class="case-review-row">' +
+            '<span class="case-tab">' + esc(cs.num) + '</span><b>' + esc(cs.name) + '</b>' +
+            (isClosed(cs.id) ? stampHtml(cs.id, true) : '<span class="case-open-note">left open</span>') +
+            (logs[cs.id] ? '<p class="case-log-quote">&ldquo;' + esc(logs[cs.id]) + '&rdquo;</p>' : '') +
+            '</div>';
+        }).join('');
+        host.appendChild(el('<div class="card case-review"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+          '<h2>Your case files, on record</h2>' + rows +
+          (stretchDone ? '<p class="case-review-extra">&#11088; The Jellyfish Job: taken and closed.' + (draft.sn ? ' &ldquo;' + esc(String(draft.sn)) + '&rdquo;' : '') + '</p>' : '') +
+          '<p class="case-review-extra">' + (draft.ship ? 'Fixed build shipped to your Drive vault.' : 'The fixed build lives on in Scratch.') + '</p>' +
+          '<button class="primary-btn" type="button">Continue</button></div>'));
+        host.querySelector('button').onclick = function () { ctx.next(); };
+        return;
+      }
+
+      /* ---------- intro ---------- */
+      var began = gg || closed.length;
+      introCard(host, {
+        kicker: chunk.title,
+        title: cfg.title || 'The Case Board',
+        text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
+        extra: (solo ? '' : (cfg.pairNote ? '<p class="case-pair-note">&#128101; ' + esc(cfg.pairNote) + '</p>' : ''))
+      }, began ? 'Back to the board' : 'Open the case board', boardView);
+
+      /* ---------- the board ---------- */
+      function boardView() {
+        host.innerHTML = '';
+        var closedCount = cases.filter(function (cs) { return isClosed(cs.id); }).length;
+        var releaseOpen = allClosed();
+        var caseCards = cases.map(function (cs, i) {
+          var sealed = !caseUnsealed(cs);
+          var done = isClosed(cs.id);
+          return '<button class="case-pin case-file tilt' + (i % 4) + (sealed ? ' sealed' : '') + (done ? ' closed' : '') + '" data-case="' + esc(cs.id) + '" type="button"' + (sealed ? ' disabled' : '') + '>' +
+            '<span class="case-pin-dot"></span>' +
+            '<span class="case-tab">' + esc(cs.num) + (cs.training ? ' &middot; TRAINING' : '') + '</span>' +
+            '<b class="case-name">' + esc(cs.name) + '</b>' +
+            '<span class="case-stars">' + starsHtml(cs.stars) + '</span>' +
+            spannersHtml(cs.spanners) +
+            (done ? stampHtml(cs.id, true) : (sealed ? '<span class="case-sealed-ribbon">SEALED</span>' : '<span class="case-open-chip">OPEN</span>')) +
+            '</button>';
+        }).join('');
+        var stretchSealed = !gg || !caseUnsealed({ training: false });
+        var stretchCard = cfg.stretchCase
+          ? '<button class="case-pin case-file case-stretch tilt2' + (stretchSealed ? ' sealed' : '') + (stretchDone ? ' closed' : '') + '" type="button"' + (stretchSealed ? ' disabled' : '') + '>' +
+            '<span class="case-pin-dot"></span>' +
+            '<span class="case-tab">' + esc(cfg.stretchCase.num) + ' &middot; STRETCH</span>' +
+            '<b class="case-name">' + esc(cfg.stretchCase.name) + '</b>' +
+            '<span class="case-stars">' + starsHtml(cfg.stretchCase.stars) + '</span>' +
+            (stretchDone ? '<span class="case-stamp gold mini">JOB DONE</span>' : (stretchSealed ? '<span class="case-sealed-ribbon">SEALED</span>' : '<span class="case-open-chip">FEATURE REQUEST</span>')) +
+            '</button>'
+          : '';
+        var b = el('<div class="case-board">' +
+          '<div class="case-board-head"><span class="case-board-brand">OLS GAMES &middot; QA DIVISION</span>' +
+          '<h2>The Case Board</h2>' +
+          '<span class="case-board-count">' + closedCount + ' of ' + cases.length + ' cases closed</span></div>' +
+          '<div class="case-board-grid">' +
+          '<button class="case-pin case-tool tilt1" data-view="handbook" type="button"><span class="case-pin-dot"></span>' +
+          '<span class="case-tool-icon">&#127909;</span><b>Detective&rsquo;s Handbook</b><span class="case-tool-note">training film &middot; watch any time</span></button>' +
+          '<button class="case-pin case-tool tilt3' + (gg ? ' done' : '') + '" data-view="intake" type="button"><span class="case-pin-dot"></span>' +
+          '<span class="case-tool-icon">&#128229;</span><b>Evidence Intake</b><span class="case-tool-note">' + (gg ? 'broken game secured &#10003;' : 'START HERE &middot; get the broken game') + '</span></button>' +
+          caseCards + stretchCard +
+          '<button class="case-pin case-release tilt0' + (releaseOpen ? '' : ' sealed') + '" data-view="release" type="button"' + (releaseOpen ? '' : ' disabled') + '>' +
+          '<span class="case-pin-dot"></span><span class="case-tab">RELEASE DESK</span>' +
+          '<b class="case-name">Ship the fixed game</b>' +
+          (releaseOpen ? '<span class="case-open-chip">' + (shipped || shipSkipped ? 'signed off' : 'ALL CASES CLOSED &mdash; GO') + '</span>' : '<span class="case-sealed-ribbon">SEALED UNTIL ALL 4 CLOSE</span>') +
+          '</button>' +
+          '</div>' +
+          (cfg.boardTip ? '<p class="case-board-tip">' + cfg.boardTip + '</p>' : '') +
+          '</div>');
+        host.appendChild(b);
+        b.querySelectorAll('.case-file[data-case]').forEach(function (btn) {
+          btn.onclick = function () {
+            var cs = cases.filter(function (c) { return String(c.id) === btn.getAttribute('data-case'); })[0];
+            caseView(cs);
+          };
+        });
+        var hb = b.querySelector('[data-view="handbook"]');
+        hb.onclick = function () { handbookView(); };
+        b.querySelector('[data-view="intake"]').onclick = function () { intakeView(); };
+        var rel = b.querySelector('[data-view="release"]');
+        if (releaseOpen) rel.onclick = function () { releaseView(); };
+        var st = b.querySelector('.case-stretch');
+        if (st && !stretchSealed) st.onclick = function () { stretchView(); };
+      }
+
+      function backRow(label) {
+        return '<button class="ghost-btn case-back" type="button">&larr; ' + esc(label || 'Pin it back on the board') + '</button>';
+      }
+      function wireBack(card) {
+        card.querySelector('.case-back').onclick = function () { host.innerHTML = ''; boardView(); };
+      }
+
+      /* ---------- evidence intake (get the broken game) ---------- */
+      function intakeView() {
+        host.innerHTML = '';
+        var g = cfg.getgame || {};
+        var steps = (g.steps || []).map(function (s) {
+          return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p></div></li>';
+        }).join('');
+        var c = el('<div class="card case-filecard"><span class="intro-kicker">EVIDENCE INTAKE</span>' +
+          '<h2>Secure the broken build</h2>' +
+          '<p class="intro-lead">' + esc(g.intro || '') + '</p>' +
+          '<p class="case-getgame-btns">' +
+          '<a class="primary-btn case-dl" href="' + esc(asset(g.file || '')) + '" download>&#11015;&#65039; Download the broken game</a> ' +
+          '<a class="ghost-btn" href="' + esc(g.url || 'https://scratch.mit.edu/projects/editor/') + '" target="_blank" rel="noopener">Open the Scratch editor &#8599;</a></p>' +
+          '<ol class="af-steps">' + steps + '</ol>' +
+          '<button class="confirm-step" type="button"' + (gg ? ' disabled' : '') + '><span class="confirm-box' + (gg ? ' done' : '') + '"></span><span>' + esc(g.confirm || 'The broken game is open in Scratch and I can see its code') + '</span></button>' +
+          backRow() + '</div>');
+        host.appendChild(c);
+        wireBack(c);
+        if (!gg) c.querySelector('.confirm-step').onclick = function () {
+          this.classList.add('ticked');
+          gg = true;
+          saveBoard();
+          App.toast('Evidence secured &mdash; Case 01 is unsealed.');
+          setTimeout(function () { host.innerHTML = ''; boardView(); }, 650);
+        };
+      }
+
+      /* ---------- the handbook (tutorial video, pinned to the board) ---------- */
+      function handbookView() {
+        host.innerHTML = '';
+        var v = cfg.handbook || {};
+        if (!v.src) {
+          var c0 = el('<div class="card case-filecard"><span class="intro-kicker">DETECTIVE&rsquo;S HANDBOOK</span>' +
+            '<h2>&#127909; Training film on its way</h2><p>' + esc(v.fallback || 'The handbook film is being made. Your teacher’s demo covers everything it will show.') + '</p>' +
+            backRow() + '</div>');
+          host.appendChild(c0);
+          wireBack(c0);
+          return;
+        }
+        var chapters = (v.chapters || []).map(function (ch) {
+          return '<button class="vid-chapter" data-t="' + Number(ch.t) + '" type="button">' + esc(ch.label) + '</button>';
+        }).join('');
+        var c = el('<div class="card video-card case-filecard"><span class="intro-kicker">DETECTIVE&rsquo;S HANDBOOK</span>' +
+          '<h2>' + esc(v.title || 'How to read someone else’s code') + '</h2>' +
+          '<video controls preload="metadata" playsinline ' + (v.poster ? 'poster="' + esc(asset(v.poster)) + '"' : '') + ' src="' + esc(asset(v.src)) + '"></video>' +
+          (chapters ? '<div class="vid-chapters">' + chapters + '</div>' : '') +
+          '<p class="case-handbook-note">Dip back in any time &mdash; chapter 3 is most useful when you&rsquo;re mid-case.</p>' +
+          backRow() + '</div>');
+        host.appendChild(c);
+        var vid = c.querySelector('video');
+        c.querySelectorAll('.vid-chapter').forEach(function (bch) {
+          bch.onclick = function () { vid.currentTime = Number(bch.getAttribute('data-t')); vid.play(); };
+        });
+        wireBack(c);
+      }
+
+      /* ---------- a case file ---------- */
+      function caseView(cs) {
+        host.innerHTML = '';
+        var done = isClosed(cs.id);
+        var wasSilver = isSilver(cs.id);
+        var clue = cs.clue || {};
+
+        if (done) {
+          var cDone = el('<div class="card case-filecard closed-file"><span class="intro-kicker">' + esc(cs.num) + '</span>' +
+            '<h2>' + esc(cs.name) + '</h2>' +
+            stampHtml(cs.id) +
+            '<div class="case-ticket"><span class="case-stars">' + starsHtml(cs.stars) + '</span>' +
+            '<p>&ldquo;' + esc(cs.ticket) + '&rdquo;</p><span class="case-player">&mdash; ' + esc(cs.player) + '</span></div>' +
+            (logs[cs.id] ? '<div class="case-log-final"><b>Your case log:</b><p>&ldquo;' + esc(logs[cs.id]) + '&rdquo;</p></div>' : '') +
+            backRow() + '</div>');
+          host.appendChild(cDone);
+          wireBack(cDone);
+          return;
+        }
+
+        var logText = logs[cs.id] || '';
+        var c = el('<div class="card case-filecard"><span class="intro-kicker">' + esc(cs.num) + (cs.training ? ' &middot; TRAINING CASE' : '') + '</span>' +
+          '<h2>' + esc(cs.name) + '</h2>' +
+          '<div class="case-ticket"><span class="case-stars">' + starsHtml(cs.stars) + '</span>' +
+          '<p>&ldquo;' + esc(cs.ticket) + '&rdquo;</p><span class="case-player">&mdash; ' + esc(cs.player) + '</span></div>' +
+          (cs.img ? '<figure class="case-evidence"><img src="' + esc(asset(cs.img.src)) + '" alt="' + esc(cs.img.alt || '') + '" loading="lazy">' +
+            (cs.img.caption ? '<figcaption>' + esc(cs.img.caption) + '</figcaption>' : '') + '</figure>' : '') +
+          '<div class="case-step"><span class="case-step-tag">1 &middot; SEE IT HAPPEN</span><p>' + esc(cs.symptom) + '</p></div>' +
+          '<div class="case-step"><span class="case-step-tag">2 &middot; READ THE CODE</span><p>' + esc(cs.look) + '</p>' +
+          '<p class="case-one-thing">&#128269; Find the ONE thing wrong &mdash; don&rsquo;t rebuild the whole script.</p>' +
+          '<div class="case-clue"></div></div>' +
+          '<div class="case-step"><span class="case-step-tag">3 &middot; FIX IT &amp; FILE THE LOG</span>' +
+          '<p>Make your fix in Scratch, then log it like a real QA tester &mdash; one sentence: <b>what was wrong, and what you changed</b>.</p>' +
+          (cs.mechanic ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b> ' + esc(cs.mechanic) + '</p>' : '') +
+          '<textarea class="case-log-input" maxlength="200" placeholder="' + esc(cs.logHint || 'The bug was... so I...') + '">' + esc(logText) + '</textarea>' +
+          '<p class="case-log-nudge"></p></div>' +
+          '<div class="case-step"><span class="case-step-tag">4 &middot; RE-PLAY TO PROVE IT</span>' +
+          '<p>' + esc(cs.replay) + '</p>' +
+          '<p class="case-honesty">HQ accepts only one kind of proof: you watched the bug NOT happen.</p>' +
+          '<button class="confirm-step case-close-btn" type="button" disabled><span class="confirm-box"></span><span>' + esc(cs.replayConfirm) + '</span></button></div>' +
+          '<div class="case-stampzone"></div>' +
+          backRow() + '</div>');
+        host.appendChild(c);
+        wireBack(c);
+
+        /* clue routine: free re-read -> peer consult -> HQ clue (stamp goes silver) */
+        var clueBox = c.querySelector('.case-clue');
+        function paintClue() {
+          if (wasSilver || isSilver(cs.id)) {
+            clueBox.innerHTML = '<div class="case-clue-open"><p><b>HQ&rsquo;s clue:</b> ' + esc(clue.hq || '') + '</p>' +
+              '<p class="case-clue-cost">This case now stamps <b class="silver-word">SILVER</b>. Solve the rest unaided for gold.</p></div>';
+            return;
+          }
+          clueBox.innerHTML = '<button class="ghost-btn case-clue-btn" type="button">Stuck? Start the clue routine</button>';
+          clueBox.querySelector('.case-clue-btn').onclick = function () {
+            clueBox.innerHTML = '<div class="case-clue-open">' +
+              '<p><b>Step 1 &mdash; free:</b> ' + esc(clue.free || 'Re-read the ticket. What EXACTLY does the player say happens?') + '</p>' +
+              '<p><b>Step 2 &mdash; detective protocol:</b> ' + esc(solo ? (clue.consultSolo || 'No other agencies on shift right now — go straight to Step 3 if Step 1 didn’t crack it.') : (clue.consult || 'Consult another agency that has CLOSED this case. One question, detective to detective.')) + '</p>' +
+              '<button class="ghost-btn case-hq-btn" type="button">Still stuck &mdash; open HQ&rsquo;s clue (this case stamps SILVER, not gold)</button></div>';
+            clueBox.querySelector('.case-hq-btn').onclick = function () {
+              if (!isSilver(cs.id)) { silver.push(String(cs.id)); saveBoard(); }
+              paintClue();
+            };
+          };
+        }
+        paintClue();
+
+        /* The log gates the close button - a case without a log isn't casework.
+           A raw length check was gameable (the hint stem itself cleared it, and
+           ONE generic sentence closed all four cases), so the gate asks the log
+           to NAME the thing that was wrong: >=6 words, not a near-copy of the
+           hint stem, and at least one of that case's own terms (authored
+           generously, with synonyms - a genuine answer in a pupil's own words
+           passes). The nudge says which part is missing, so it never reads as
+           arbitrary. Terms sit in public config deliberately: they name the
+           SUBJECT of the bug, never the fix, and the platform still marks
+           nothing - the proof is the re-play. */
+        var ta = c.querySelector('.case-log-input');
+        var closeBtn = c.querySelector('.case-close-btn');
+        var nudge = c.querySelector('.case-log-nudge');
+        var terms = (cs.logTerms || []).map(function (t) { return String(t).toLowerCase(); });
+        var stemWords = String(cs.logHint || '').toLowerCase().replace(/[^a-z ]/g, ' ').split(/\s+/).filter(Boolean);
+        function logProblem() {
+          var raw = ta.value.trim();
+          var low = raw.toLowerCase();
+          var words = low.replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(Boolean);
+          if (words.length < 6) return 'Two halves, remember: what was wrong, and what you changed.';
+          var own = words.filter(function (w) { return stemWords.indexOf(w) === -1; });
+          if (own.length < 3) return 'In your OWN words - the hint is a starter, not the log.';
+          if (terms.length && !terms.some(function (t) { return low.indexOf(t) !== -1; }))
+            return 'Name the block or script you changed - a log HQ can act on.';
+          return '';
+        }
+        function gateClose() {
+          var p = logProblem();
+          closeBtn.disabled = !!p;
+          nudge.textContent = ta.value.trim() ? p : '';
+        }
+        ta.oninput = function () {
+          logs[cs.id] = ta.value.trim();
+          gateClose();
+        };
+        ta.onblur = function () { saveBoard(); };
+        gateClose();
+
+        closeBtn.onclick = function () {
+          if (isClosed(cs.id)) return;          // double-tap / stale view guard
+          closeBtn.disabled = true;
+          logs[cs.id] = ta.value.trim();
+          closed.push(String(cs.id));
+          saveBoard();
+          closeBtn.classList.add('ticked');
+          var zone = c.querySelector('.case-stampzone');
+          zone.innerHTML = '<span class="case-stamp big ' + (isSilver(cs.id) ? 'silver' : 'gold') + '">CASE CLOSED</span>';
+          var stamp = zone.firstChild;
+          requestAnimationFrame(function () { stamp.classList.add('land'); });
+          setTimeout(function () { stamp.classList.add('land'); }, 150); // hidden-tab rAF fallback
+          var left = cases.filter(function (x) { return !isClosed(x.id); }).length;
+          setTimeout(function () {
+            App.toast(left ? (cs.training ? 'Training case closed &mdash; Cases 02&ndash;04 are UNSEALED. Take them in any order.' : left + ' case' + (left > 1 ? 's' : '') + ' still open.') : 'All four cases closed &mdash; the RELEASE DESK is open.');
+            host.innerHTML = '';
+            boardView();
+          }, 1500);
+        };
+      }
+
+      /* ---------- stretch: the feature-request job ---------- */
+      function stretchView() {
+        host.innerHTML = '';
+        var s = cfg.stretchCase;
+        var c = el('<div class="card case-filecard"><span class="intro-kicker">' + esc(s.num) + ' &middot; STRETCH &middot; FEATURE REQUEST</span>' +
+          '<h2>' + esc(s.name) + '</h2>' +
+          '<div class="case-ticket feature"><span class="case-stars">' + starsHtml(s.stars) + '</span>' +
+          '<p>&ldquo;' + esc(s.ticket) + '&rdquo;</p><span class="case-player">&mdash; ' + esc(s.player) + '</span></div>' +
+          '<div class="case-step"><span class="case-step-tag">THE JOB</span><p>' + esc(s.job) + '</p>' +
+          (s.img ? '<img class="rung-img" src="' + esc(asset(s.img)) + '" alt="Starter blocks for the jellyfish">' : '') + '</div>' +
+          '<div class="case-step"><span class="case-step-tag">PROVE IT</span><p>' + esc(s.test) + '</p>' +
+          '<p class="case-rc-ask">' + esc(s.ask || 'One line for the release notes: what did you add, and what does it do to the player?') + '</p>' +
+          '<textarea class="case-log-input case-stretch-note" maxlength="200" placeholder="' + esc(s.notePlaceholder || 'I added... and now...') + '"' + (stretchDone ? ' disabled' : '') + '>' + esc(stretchNote) + '</textarea>' +
+          '<button class="confirm-step" type="button" disabled><span class="confirm-box' + (stretchDone ? ' done' : '') + '"></span><span>' + esc(s.confirm) + '</span></button></div>' +
+          backRow() + '</div>');
+        host.appendChild(c);
+        wireBack(c);
+        var snBox = c.querySelector('.case-stretch-note');
+        var snBtn = c.querySelector('.confirm-step');
+        if (!stretchDone) {
+          snBox.oninput = function () {
+            stretchNote = snBox.value.trim();
+            snBtn.disabled = stretchNote.replace(/[^a-z0-9 ]/gi, ' ').split(/\s+/).filter(Boolean).length < 6;
+          };
+          snBox.oninput();
+        }
+        if (!stretchDone) c.querySelector('.confirm-step').onclick = function () {
+          this.classList.add('ticked');
+          stretchDone = true;
+          saveBoard();
+          App.toast('Feature shipped. The players are thrilled (and in danger).');
+          // if the build already shipped, the job was the last open file - clock off
+          setTimeout(function () {
+            host.innerHTML = '';
+            if (shipped || shipSkipped) finishBoard(); else boardView();
+          }, 700);
+        };
+      }
+
+      /* ---------- release desk: RC check then ship-to-Drive ---------- */
+      function releaseView() {
+        host.innerHTML = '';
+        var r = cfg.rc || {};
+        var sh = cfg.ship || {};
+        var c = el('<div class="card case-filecard"><span class="intro-kicker">RELEASE DESK</span>' +
+          '<h2>' + esc(r.title || 'Release Candidate check') + '</h2>' +
+          '<div class="case-step"><span class="case-step-tag">THE FULL RUN</span>' +
+          '<p>' + esc(r.text || '') + '</p>' +
+          '<ul class="case-rc-list">' + (r.watch || []).map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul>' +
+          /* the backstop must not be the easiest tap on the board (gate run):
+             the score you finished on can only be known by actually running it */
+          '<p class="case-rc-ask">' + esc(r.ask || 'What score did you finish the full run on?') + '</p>' +
+          '<input class="case-rc-score" type="number" min="1" max="999" inputmode="numeric" placeholder="fish caught"' + (rcDone ? ' disabled value="' + Number(draft.rcs || 0) + '"' : '') + '>' +
+          '<button class="confirm-step case-rc-btn" type="button" disabled><span class="confirm-box' + (rcDone ? ' done' : '') + '"></span><span>' + esc(r.confirm || 'Full run clean — every fix held') + '</span></button></div>' +
+          '<div class="case-ship" ' + (rcDone ? '' : 'hidden') + '></div>' +
+          backRow() + '</div>');
+        host.appendChild(c);
+        wireBack(c);
+        var shipBox = c.querySelector('.case-ship');
+
+        function paintShip() {
+          if (shipped || shipSkipped) {
+            shipBox.innerHTML = '<div class="dc-row ok"><span class="dc-mark">&#10003;</span><span>' +
+              (shipped ? 'Build shipped &mdash; the fixed game is in your Drive vault.' : 'Signed off without the vault copy.') + '</span></div>' +
+              '<button class="primary-btn case-finish-btn" type="button">Wrap up the board</button>';
+            var fb = shipBox.querySelector('.case-finish-btn');
+            fb.onclick = function () { maybeFinish(); };
+            return;
+          }
+          var steps = (sh.steps || []).map(function (s) {
+            return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p></div></li>';
+          }).join('');
+          shipBox.innerHTML = '<span class="case-step-tag">SHIP IT</span>' +
+            '<p>' + esc(sh.intro || '') + '</p>' +
+            '<ol class="af-steps">' + steps + '</ol>' +
+            '<div class="rung-actions">' +
+            '<button class="primary-btn case-ship-btn" type="button">Run the HQ Inspection</button>' +
+            '<button class="ghost-btn case-ship-skip" type="button" hidden>Sign off without the vault copy (ask your teacher)</button>' +
+            '</div><div class="af-result"></div>';
+          var runBtn = shipBox.querySelector('.case-ship-btn');
+          var skipBtn = shipBox.querySelector('.case-ship-skip');
+          var box = shipBox.querySelector('.af-result');
+          var tries = 0;
+          skipBtn.onclick = function () { shipSkipped = true; saveBoard(); paintShip(); };
+          runBtn.onclick = function () {
+            runBtn.disabled = true;
+            box.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>HQ is looking inside your Vault&hellip;</span></div>';
+            ctx.call('artifactCheck', { lessonNum: String(ctx.lessonEntry.num), kinds: sh.kinds || ['sb3'], hours: sh.hours || 3 }).then(function (res) {
+              runBtn.disabled = false;
+              tries++;
+              if (!res || !res.ok) {
+                box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>The line to HQ dropped (wifi?) &mdash; try again in a moment.</span></div>';
+                return;
+              }
+              if (res.found) {
+                shipped = true;
+                saveBoard();
+                box.innerHTML = '<div class="dc-row ok"><span class="dc-mark">&#10003;</span><span>HQ found <b>' + esc(res.name) + '</b> in your DT Work vault.</span></div>' +
+                  (res.simulated ? '<p class="dc-sim">(Preview mode: this inspection is simulated &mdash; the live platform checks your real Drive.)</p>' : '');
+                setTimeout(paintShip, 900);
+              } else {
+                box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
+                  (res.noFolder ? 'HQ could not find your School &gt; DT Work folder in Drive &mdash; build it (+ New &rarr; Folder), then inspect again.'
+                    : 'No freshly-saved .sb3 found in DT Work yet &mdash; check the save and the drag, then inspect again.') + '</span></div>';
+                if (tries >= 2) skipBtn.hidden = false;
+              }
+            });
+          };
+        }
+
+        var rcBtn = c.querySelector('.case-rc-btn');
+        var rcScore = c.querySelector('.case-rc-score');
+        if (rcDone) { rcBtn.disabled = true; paintShip(); }
+        else {
+          rcScore.oninput = function () {
+            var v = Number(rcScore.value);
+            rcBtn.disabled = !(v >= 1 && v <= 999);
+          };
+          rcBtn.onclick = function () {
+            rcBtn.classList.add('ticked');
+            rcBtn.disabled = true;
+            rcScore.disabled = true;
+            rcDone = true;
+            rcScoreVal = Number(rcScore.value) || 0;
+            saveBoard();
+            shipBox.hidden = false;
+            paintShip();
+          };
+        }
+      }
+
+      /* stretch nudge on the way out, then the badge */
+      function maybeFinish() {
+        if (cfg.stretchCase && !stretchDone) {
+          host.innerHTML = '';
+          var c = el('<div class="card case-filecard"><span class="intro-kicker">ONE FILE LEFT</span>' +
+            '<h2>The Jellyfish Job is still pinned open</h2>' +
+            '<p class="intro-lead">' + esc(cfg.stretchNudge || 'The build has shipped — but a five-star feature request is still on the board. Take the job, or clock off?') + '</p>' +
+            '<div class="rung-actions">' +
+            '<button class="primary-btn" type="button">Take the job &#11088;</button>' +
+            '<button class="ghost-btn" type="button">Clock off</button></div></div>');
+          host.appendChild(c);
+          var btns = c.querySelectorAll('button');
+          btns[0].onclick = function () { host.innerHTML = ''; stretchView(); };
+          btns[1].onclick = function () { finishBoard(); };
+          return;
+        }
+        finishBoard();
+      }
+
+      function finishBoard() {
+        /* count from the CASE LIST, never from the closed array's length -
+           a replayed/duplicated entry must never inflate the award */
+        var gold = 0, closedCount = 0;
+        cases.forEach(function (cs) {
+          if (!isClosed(cs.id)) return;
+          closedCount++;
+          if (!isSilver(cs.id)) gold++;
+        });
+        var xp = 4 + closedCount * 4 + gold + (rcDone ? 2 : 0) + (shipped ? 3 : 0) + (stretchDone ? 3 : 0);
+        var badge = Object.assign({}, ctx.chunk.badge, { xp: xp });
+        var detail = 'cw=' + closedCount + '/' + cases.length +
+          ';g=' + gold + ';rc=' + (rcDone ? 1 : 0) + ';ship=' + (shipped ? 1 : 0) + (stretchDone ? ';s=1' : '');
+        ctx.awardBadge(badge, detail).then(function () { ctx.next(); });
+      }
+    }
+  };
+
+  /* ================= studio (L5 Game Studio: contracts + the QA Desk) =======
+     Two chunks share this engine via config.phase.
+     'sign'  - a genuine CHOICE with commitment: three contract cards, one
+               studio founded and NAMED before any teaching lands (media-
+               computation: "a programme about something you chose"). Re-sign
+               is allowed only until QA work exists; the badge detail is
+               phase-stable ('sign=1') so tearing up a contract can never
+               re-award XP.
+     'build' - the Studio Desk: get the kit, read the blueprint, build in
+               Scratch, then THE QA DESK - the block's distinct verification
+               UI (L4 gate binding): four brief criteria, each a concrete
+               observable TEST + an observed-OUTCOME question whose
+               distractors are the real failure states. A pass lights the
+               tick; a fail sets the cross AND reveals that failure's fix
+               card - crosses are the job ("FOUND BY QA"), not shame. The
+               READY FOR GALLERY button physically lights on the 4th tick.
+               Submission = publishing the marquee listing (galleryOpen) -
+               deliberately NOT a Drive/artifactCheck step (L2/L3/L4 spent
+               that interaction; gate binding).
+     Honesty envelope (accepted, as L4): a pupil can lie-pick the pass
+     outcome - mitigations are the QA-partner protocol (brief), teacher
+     circulation, and Press Night itself: the class plays what you shipped. */
+  function stdShuffle(a) {
+    var out = a.slice();
+    for (var i = out.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = out[i]; out[i] = out[j]; out[j] = t;
+    }
+    return out;
+  }
+  Engines.studio = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      if (cfg.phase === 'build') return Engines.studio._build(host, chunk, ctx);
+      return Engines.studio._sign(host, chunk, ctx);
+    },
+
+    /* ---------- phase 1: the contracts ---------- */
+    _sign: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var solo = !!ctx.catchup;
+      var draft = (ctx.draft && ctx.draft.studio) || {};
+      var tpl = String(draft.tpl || '');
+      var sn = String(draft.sn || '');
+      var qaStarted = draft.qa && Object.keys(draft.qa).length;
+
+      function saveStudio() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        var d = App.state.draft.studio = App.state.draft.studio || {};
+        d.tpl = tpl; d.sn = sn;
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+      function contractOf(id) {
+        return (cfg.contracts || []).filter(function (c) { return String(c.id) === String(id); })[0] || null;
+      }
+
+      /* review reopen: the signed contract on record, zero writes */
+      if (ctx.review) {
+        var rc = contractOf(tpl);
+        host.appendChild(el('<div class="card std-review"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+          '<h2>Contract on record</h2>' +
+          (rc ? '<p class="intro-lead"><b>' + esc(sn || 'Your studio') + '</b> signed the <b>' + esc(rc.name) + '</b> contract.</p>'
+              : '<p class="intro-lead">No contract was signed.</p>') +
+          '<button class="primary-btn" type="button">Continue</button></div>'));
+        host.querySelector('button').onclick = function () { ctx.next(); };
+        return;
+      }
+
+      introCard(host, {
+        kicker: chunk.title,
+        title: cfg.title || 'Three contracts on the desk',
+        text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || '')
+      }, tpl ? 'Back to the contracts' : 'See the contracts', pickView);
+
+      function pickView() {
+        host.innerHTML = '';
+        var cards = (cfg.contracts || []).map(function (c) {
+          var signed = tpl === String(c.id);
+          return '<button class="std-contract' + (signed ? ' signed' : '') + '" data-c="' + esc(c.id) + '" type="button">' +
+            (c.img ? '<img class="std-contract-shot" src="' + esc(asset(c.img)) + '" alt="' + esc(c.imgAlt || c.name) + '" loading="lazy">' : '') +
+            '<b class="std-contract-name">' + esc(c.name) + '</b>' +
+            '<span class="std-contract-pitch">' + esc(c.pitch || '') + '</span>' +
+            (signed ? '<span class="std-signed-chip">SIGNED' + (sn ? ' &middot; ' + esc(sn) : '') + '</span>' : '<span class="std-open-chip">OPEN</span>') +
+            '</button>';
+        }).join('');
+        var briefItems = ((cfg.brief && cfg.brief.items) || []).map(function (it) {
+          return '<li>' + esc(it) + '</li>';
+        }).join('');
+        var b = el('<div class="std-contracts">' +
+          '<div class="std-head"><span class="std-brand">OLS GAMES &middot; COMMISSIONS</span>' +
+          '<h2>' + esc((cfg.brief && cfg.brief.title) || 'Every contract carries the same brief') + '</h2>' +
+          '<ul class="std-brief">' + briefItems + '</ul></div>' +
+          '<div class="std-contract-row">' + cards + '</div>' +
+          (cfg.signNote ? '<p class="std-note">' + esc(cfg.signNote) + '</p>' : '') +
+          '</div>');
+        host.appendChild(b);
+        b.querySelectorAll('.std-contract').forEach(function (btn) {
+          btn.onclick = function () { contractView(contractOf(btn.getAttribute('data-c'))); };
+        });
+      }
+
+      function contractView(c) {
+        if (!c) return;
+        host.innerHTML = '';
+        var mine = tpl === String(c.id);
+        var ships = (c.ships || []).map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('');
+        var adds = (c.adds || []).map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('');
+        var signBlock;
+        if (mine) {
+          signBlock = '<div class="std-signature done"><span class="std-sig-name">' + esc(sn) + '</span><span class="std-sig-line"></span>' +
+            '<p class="std-sig-note">Contract signed.</p>' +
+            (qaStarted ? '' : '<button class="ghost-btn std-tearup" type="button">Tear it up &amp; choose again</button>') +
+            '<button class="primary-btn std-enter" type="button">' + (chunk.badge ? 'Found the studio' : 'Continue') + '</button></div>';
+        } else if (tpl && qaStarted) {
+          signBlock = '<p class="std-note">Your studio already has QA work on the ' + esc((contractOf(tpl) || {}).name || 'other') + ' contract &mdash; finish that one.</p>';
+        } else {
+          signBlock = '<div class="std-signature">' +
+            '<label class="std-sig-label" for="std-name">Sign with your studio name</label>' +
+            '<input id="std-name" class="std-sig-input" maxlength="24" autocomplete="off" placeholder="' + esc(cfg.namePlaceholder || 'e.g. Golden Otter Games') + '" value="' + esc(sn) + '">' +
+            '<button class="primary-btn std-sign" type="button" disabled>Sign the contract</button>' +
+            (tpl ? '<p class="std-sig-note">Signing this tears up your ' + esc((contractOf(tpl) || {}).name || 'other') + ' contract.</p>' : '') +
+            '</div>';
+        }
+        var card = el('<div class="card std-contract-full"><span class="intro-kicker">CONTRACT &middot; ' + esc(c.name) + '</span>' +
+          '<h2>' + esc(c.headline || c.name) + '</h2>' +
+          (c.img ? '<img class="std-contract-hero" src="' + esc(asset(c.img)) + '" alt="' + esc(c.imgAlt || c.name) + '" loading="lazy">' : '') +
+          '<p class="intro-lead">' + esc(c.pitch || '') + '</p>' +
+          '<div class="std-contract-cols"><div><b>The kit already does</b><ul>' + ships + '</ul></div>' +
+          '<div><b>Your studio adds</b><ul>' + adds + '</ul></div></div>' +
+          (c.theme ? '<p class="std-theme">&#127912; ' + esc(c.theme) + '</p>' : '') +
+          signBlock +
+          '<button class="ghost-btn std-back" type="button">&larr; Back to the desk</button></div>');
+        host.appendChild(card);
+        card.querySelector('.std-back').onclick = function () { host.innerHTML = ''; pickView(); };
+        var input = card.querySelector('.std-sig-input');
+        var signBtn = card.querySelector('.std-sign');
+        if (input && signBtn) {
+          input.oninput = function () { signBtn.disabled = input.value.trim().length < 3; };
+          input.oninput();
+          signBtn.onclick = function () {
+            tpl = String(c.id);
+            sn = input.value.trim().slice(0, 24);
+            saveStudio();
+            host.innerHTML = '';
+            contractView(c);
+          };
+        }
+        var tear = card.querySelector('.std-tearup');
+        if (tear) tear.onclick = function () {
+          if (!tear.classList.contains('arm')) {
+            tear.classList.add('arm');
+            tear.textContent = 'Sure? The contract is shredded';
+            setTimeout(function () { tear.classList.remove('arm'); tear.innerHTML = 'Tear it up &amp; choose again'; }, 4000);
+            return;
+          }
+          tpl = ''; sn = '';
+          saveStudio();
+          host.innerHTML = '';
+          pickView();
+        };
+        var enter = card.querySelector('.std-enter');
+        if (enter) enter.onclick = function () {
+          /* phase-stable detail: re-signing can never mint a second award */
+          finishChunk(ctx, 'sign=1');
+        };
+      }
+    },
+
+    /* ---------- phase 2: the Studio Desk + QA Desk ---------- */
+    _build: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var solo = !!ctx.catchup;
+      var draft = (ctx.draft && ctx.draft.studio) || {};
+      var tpl = String(draft.tpl || '');
+      var sn = String(draft.sn || '');
+      var t = (cfg.templates || {})[tpl] || null;
+      var kit = !!draft.kit;
+      var qa = Object.assign({}, draft.qa || {});      // {cId: 'p'|'f'}
+      var fq = Object.assign({}, draft.fq || {});      // found-by-QA tags
+      var shipped = !!draft.ship;
+      var beta = !!draft.beta;   // doors opened via the in-beta door (not all 4 ticks)
+      var gt = String(draft.gt || '');
+      var gh = String(draft.gh || '');
+      var stretchDone = !!draft.stretch;
+      var stretchNote = String(draft.stn || '');
+      var crits = (t && t.criteria) || [];
+
+      function saveDesk() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        var d = App.state.draft.studio = App.state.draft.studio || {};
+        d.tpl = tpl; d.sn = sn; d.kit = kit ? 1 : 0; d.qa = qa; d.fq = fq;
+        d.ship = shipped ? 1 : 0; d.beta = beta ? 1 : 0; d.gt = gt; d.gh = gh;
+        d.stretch = stretchDone ? 1 : 0; d.stn = stretchNote;
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+      var passCount = function () {
+        return crits.filter(function (c) { return qa[c.id] === 'p'; }).length;
+      };
+      var fqCount = function () {
+        return crits.filter(function (c) { return fq[c.id]; }).length;
+      };
+      var allPass = function () { return crits.length && passCount() === crits.length; };
+      function buildXp() {
+        /* XP from the AUTHORED criteria list, never array lengths (L4 law) */
+        return passCount() * 4 + (shipped ? 3 : 0) + (stretchDone ? 3 : 0);
+      }
+
+      /* ---------- review reopen: the desk on record, zero writes ---------- */
+      if (ctx.review) {
+        var rows = crits.map(function (c) {
+          var st = qa[c.id];
+          return '<div class="std-review-row">' +
+            '<span class="std-qa-state ' + (st === 'p' ? 'pass' : (st === 'f' ? 'fail' : '')) + '">' + (st === 'p' ? '&#10003;' : (st === 'f' ? '&#10007;' : '&middot;')) + '</span>' +
+            '<b>' + esc(c.name) + '</b>' + (fq[c.id] ? '<span class="std-fq-chip">FOUND BY QA</span>' : '') + '</div>';
+        }).join('');
+        host.appendChild(el('<div class="card std-review"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+          '<h2>' + esc(sn || 'Your studio') + ' &mdash; on record</h2>' + rows +
+          (shipped ? '<div class="gal-marquee-card mini"><span class="gal-mq-studio">' + esc(sn) + '</span><b class="gal-mq-title">' + esc(gt) + '</b><p class="gal-mq-how">' + esc(gh) + '</p></div>' : '<p class="intro-lead">The doors never opened.</p>') +
+          (stretchDone ? '<p class="std-note">&#11088; Studio Note taken: &ldquo;' + esc(stretchNote) + '&rdquo;</p>' : '') +
+          '<button class="primary-btn" type="button">Continue</button></div>'));
+        host.querySelector('button').onclick = function () { ctx.next(); };
+        return;
+      }
+
+      /* no contract on file (shouldn't happen on the normal rail): fall back
+         to a plain template pick so nobody is ever stuck */
+      if (!t) {
+        var fallback = Object.keys(cfg.templates || {});
+        var picks = fallback.map(function (k) {
+          return '<button class="primary-btn std-fallback-pick" data-t="' + esc(k) + '" type="button">' + esc(cfg.templates[k].name) + '</button>';
+        }).join(' ');
+        host.appendChild(el('<div class="card"><h2>Pick your kit</h2><p class="intro-lead">Your contract went missing &mdash; choose the template you are building.</p><p>' + picks + '</p></div>'));
+        host.querySelectorAll('.std-fallback-pick').forEach(function (btn) {
+          btn.onclick = function () {
+            tpl = btn.getAttribute('data-t');
+            t = cfg.templates[tpl];
+            crits = t.criteria || [];
+            saveDesk();
+            host.innerHTML = '';
+            deskView();
+          };
+        });
+        return;
+      }
+
+      var began = kit || Object.keys(qa).length;
+      introCard(host, {
+        kicker: chunk.title,
+        title: (cfg.introTitle || 'The Studio Sprint'),
+        text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
+        extra: (solo || !cfg.pairNote) ? '' : '<p class="case-pair-note">&#128101; ' + esc(cfg.pairNote) + '</p>'
+      }, began ? 'Back to the desk' : 'Open the studio', deskView);
+
+      /* one expanded QA row at a time; remembered across re-renders,
+         never persisted (reload folds the desk tidy again) */
+      var openCrit = null;
+      var lastOutcome = {};
+
+      function deskView() {
+        host.innerHTML = '';
+        var ticks = passCount();
+        var qaRows = crits.map(function (c, i) {
+          var st = qa[c.id] || '';
+          var open = openCrit === c.id;
+          var stateIcon = st === 'p' ? '&#10003;' : (st === 'f' ? '&#10007;' : String(i + 1));
+          var row = '<div class="std-qa-row' + (open ? ' open' : '') + (st ? ' ' + (st === 'p' ? 'pass' : 'fail') : '') + (kit ? '' : ' locked') + '" data-crit="' + esc(c.id) + '">' +
+            '<button class="std-qa-head" type="button"' + (kit ? '' : ' disabled') + '>' +
+            '<span class="std-qa-state' + (st ? ' ' + (st === 'p' ? 'pass' : 'fail') : '') + '">' + stateIcon + '</span>' +
+            '<b>' + esc(c.name) + '</b>' +
+            (fq[c.id] && st === 'p' ? '<span class="std-fq-chip" title="a test failed, you fixed it, and it passed - that is QA working">FOUND BY QA</span>' : '') +
+            '<span class="std-qa-arrow">' + (open ? '&#9650;' : '&#9660;') + '</span></button>';
+          if (open) {
+            row += '<div class="std-qa-body"><div class="std-qa-test"><span class="std-qa-tag">THE TEST</span><p>' + esc(c.test) + '</p></div>';
+            if (st === 'f') {
+              var lastIdx = lastOutcome[c.id];
+              var oc = (typeof lastIdx === 'number') ? c.outcomes[lastIdx] : null;
+              row += '<div class="std-fix-card"><span class="std-qa-tag fail">FOUND BY QA &mdash; THE FIX</span>' +
+                '<p>' + esc(oc && oc.fix ? oc.fix : (c.retryFix || 'Make your fix in Scratch, then run the test again.')) + '</p>' +
+                (oc && oc.mech ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b> ' + esc(oc.mech) + '</p>' : '') +
+                '</div>';
+            }
+            row += '<button class="primary-btn std-qa-run" type="button">' + (st === 'f' ? 'I made the fix &mdash; run the test again' : 'I ran the test &mdash; record what happened') + '</button>' +
+              '<div class="std-qa-outcomes" hidden></div></div>';
+          }
+          row += '</div>';
+          return row;
+        }).join('');
+
+        var readyState = shipped ? 'shipped' : (allPass() ? 'lit' : 'dim');
+        var d = el('<div class="std-desk">' +
+          '<div class="std-head"><span class="std-brand">' + esc(sn || 'YOUR STUDIO') + ' &middot; ' + esc(t.name).toUpperCase() + ' CONTRACT</span>' +
+          '<h2>The Studio Desk</h2>' +
+          '<span class="std-count">' + ticks + ' of ' + crits.length + ' QA checks passed</span></div>' +
+
+          '<div class="std-toolrow">' +
+          '<div class="card std-tool' + (kit ? ' done' : '') + '"><span class="std-qa-tag">1 &middot; THE KIT</span>' +
+          '<p>' + esc((cfg.kit && cfg.kit.intro) || 'Download your starter kit and load it at scratch.mit.edu.') + '</p>' +
+          '<p class="case-getgame-btns"><a class="primary-btn" href="' + esc(asset(t.file)) + '" download>&#11015;&#65039; Download the ' + esc(t.name) + ' kit</a> ' +
+          '<a class="ghost-btn" href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener">Open the Scratch editor &#8599;</a></p>' +
+          '<button class="confirm-step std-kit-confirm" type="button"' + (kit ? ' disabled' : '') + '><span class="confirm-box' + (kit ? ' done' : '') + '"></span><span>' + esc((cfg.kit && cfg.kit.confirm) || 'The kit is open in Scratch and I can see its code') + '</span></button></div>' +
+
+          '<div class="card std-tool"><span class="std-qa-tag">2 &middot; THE BLUEPRINT</span>' +
+          '<p>' + esc((t.blueprint && t.blueprint.intro) || 'Exactly what your studio adds - in order.') + '</p>' +
+          '<button class="ghost-btn std-blueprint-btn" type="button">&#128506;&#65039; Open the blueprint</button> ' +
+          (cfg.masterclass && cfg.masterclass.src ? '<button class="ghost-btn std-rewatch" type="button">&#127909; Re-watch the masterclass</button>' : '') +
+          '</div></div>' +
+
+          '<div class="std-qadesk' + (kit ? '' : ' locked') + '"><div class="std-qadesk-head"><span class="std-qa-tag">3 &middot; THE QA DESK</span>' +
+          '<p>' + esc(cfg.qaIntro || 'Four checks stand between your build and the gallery. Run each test in Scratch, then record what actually happened - crosses are QA doing its job.') + '</p>' +
+          (kit ? '' : '<span class="std-sealed-ribbon">SECURE THE KIT FIRST</span>') + '</div>' +
+          qaRows + '</div>' +
+
+          '<div class="std-ready-zone">' +
+          '<button class="std-ready-btn ' + readyState + '" type="button"' + (readyState === 'lit' ? '' : ' disabled') + '>' +
+          (shipped ? (beta ? 'DOORS OPEN &mdash; IN BETA' : 'DOORS OPEN &mdash; SEE YOU AT PRESS NIGHT') : 'READY FOR GALLERY') + '</button>' +
+          (shipped ? '' : '<p class="std-ready-note">' + (allPass() ? 'All four checks passed &mdash; open your doors.' : 'Lights up when all four QA checks pass.') + '</p>') +
+          (!shipped && !allPass() && Object.keys(qa).length >= 2 ? '<button class="ghost-btn std-beta-door" type="button">Out of time? Open in beta &mdash; ask your teacher first</button>' : '') +
+          '</div>' +
+
+          '<div class="card std-stretch' + (stretchDone ? ' done' : '') + '"><span class="std-qa-tag">&#11088; STUDIO NOTE &middot; STRETCH</span>' +
+          '<b>' + esc((t.stretch && t.stretch.title) || 'The second variable') + '</b>' +
+          '<p>' + esc((t.stretch && t.stretch.text) || '') + '</p>' +
+          (stretchDone ? '<p class="std-note">&#10003; Noted: &ldquo;' + esc(stretchNote) + '&rdquo;</p>' :
+            '<textarea class="std-stretch-note" maxlength="140" placeholder="' + esc((t.stretch && t.stretch.placeholder) || 'What did you add, and what does it change?') + '"></textarea>' +
+            '<p class="std-stretch-nudge"></p>' +
+            '<button class="confirm-step std-stretch-confirm" type="button"><span class="confirm-box"></span><span>It works &mdash; I tested it</span></button>') +
+          '</div>' +
+
+          (shipped ? '<button class="primary-btn std-continue" type="button">Head to Press Night &rarr;</button>' : '') +
+          '</div>');
+        host.appendChild(d);
+
+        if (!kit) {
+          var kc = d.querySelector('.std-kit-confirm');
+          kc.onclick = function () {
+            this.classList.add('ticked');
+            kit = true;
+            saveDesk();
+            App.toast('Kit secured &mdash; the QA Desk is open.');
+            setTimeout(function () { host.innerHTML = ''; deskView(); }, 600);
+          };
+        }
+        d.querySelector('.std-blueprint-btn').onclick = function () { blueprintView(); };
+        var rw = d.querySelector('.std-rewatch');
+        if (rw) rw.onclick = function () { masterclassView(); };
+
+        d.querySelectorAll('.std-qa-row').forEach(function (row) {
+          var cid = row.getAttribute('data-crit');
+          var head = row.querySelector('.std-qa-head');
+          head.onclick = function () {
+            openCrit = (openCrit === cid) ? null : cid;
+            host.innerHTML = '';
+            deskView();
+          };
+          var run = row.querySelector('.std-qa-run');
+          if (run) run.onclick = function () {
+            var c = crits.filter(function (x) { return x.id === cid; })[0];
+            var box = row.querySelector('.std-qa-outcomes');
+            var order = stdShuffle(c.outcomes.map(function (_, i) { return i; }));
+            box.innerHTML = '<p class="std-qa-q">' + esc(c.ask || 'What did you actually see?') + '</p>' +
+              order.map(function (oi) {
+                return '<button class="std-outcome" data-oi="' + oi + '" type="button">' + esc(c.outcomes[oi].t) + '</button>';
+              }).join('');
+            box.hidden = false;
+            run.hidden = true;
+            box.querySelectorAll('.std-outcome').forEach(function (ob) {
+              ob.onclick = function () {
+                var oi = Number(ob.getAttribute('data-oi'));
+                var oc = c.outcomes[oi];
+                lastOutcome[cid] = oi;
+                if (oc.pass) {
+                  if (qa[cid] === 'f') fq[cid] = 1;
+                  qa[cid] = 'p';
+                  openCrit = null;
+                } else {
+                  qa[cid] = 'f';
+                }
+                saveDesk();
+                host.innerHTML = '';
+                deskView();
+                if (oc.pass && allPass()) {
+                  var btn = host.querySelector('.std-ready-btn');
+                  if (btn) {
+                    requestAnimationFrame(function () { btn.classList.add('just-lit'); });
+                    setTimeout(function () { btn.classList.add('just-lit'); }, 150); // hidden-tab rAF fallback
+                  }
+                }
+              };
+            });
+          };
+        });
+
+        var ready = d.querySelector('.std-ready-btn');
+        if (!shipped && allPass()) ready.onclick = function () { marqueeView(false); };
+        var betaDoor = d.querySelector('.std-beta-door');
+        if (betaDoor) betaDoor.onclick = function () {
+          if (!betaDoor.classList.contains('arm')) {
+            betaDoor.classList.add('arm');
+            betaDoor.innerHTML = 'Sure? Critics will see IN BETA on your listing';
+            setTimeout(function () { betaDoor.classList.remove('arm'); betaDoor.innerHTML = 'Out of time? Open in beta &mdash; ask your teacher first'; }, 4000);
+            return;
+          }
+          marqueeView(true);
+        };
+
+        var sc = d.querySelector('.std-stretch-confirm');
+        if (sc) sc.onclick = function () {
+          var ta = d.querySelector('.std-stretch-note');
+          var nudge = d.querySelector('.std-stretch-nudge');
+          var words = ta.value.trim().split(/\s+/).filter(Boolean);
+          if (words.length < 5) {
+            nudge.textContent = 'Say what you added AND what it changes - a real release note (5+ words).';
+            return;
+          }
+          stretchNote = ta.value.trim().slice(0, 140);
+          stretchDone = true;
+          saveDesk();
+          host.innerHTML = '';
+          deskView();
+        };
+
+        var cont = d.querySelector('.std-continue');
+        if (cont) cont.onclick = function () {
+          var xp = buildXp();
+          var badge = Object.assign({}, ctx.chunk.badge, { xp: xp });
+          var detail = 'qa=' + passCount() + '/' + crits.length + ';ship=1' +
+            (beta ? ';b=1' : '') + (fqCount() ? ';fq=' + fqCount() : '') + (stretchDone ? ';s=1' : '');
+          ctx.awardBadge(badge, detail).then(function () { ctx.next(); });
+        };
+      }
+
+      function blueprintView() {
+        host.innerHTML = '';
+        var bp = t.blueprint || {};
+        var steps = (bp.steps || []).map(function (s) {
+          return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p></div></li>';
+        }).join('');
+        var c = el('<div class="card std-blueprint"><span class="intro-kicker">BLUEPRINT &middot; ' + esc(t.name) + '</span>' +
+          '<h2>' + esc(bp.title || 'What your studio adds') + '</h2>' +
+          '<ol class="af-steps">' + steps + '</ol>' +
+          (bp.img ? '<figure class="std-blueprint-fig"><img src="' + esc(asset(bp.img)) + '" alt="' + esc(bp.imgAlt || 'The finished blocks') + '" loading="lazy">' +
+            '<figcaption>' + esc(bp.imgCaption || 'The finished blocks - yours should read like this.') + '</figcaption></figure>' : '') +
+          (bp.note ? '<p class="std-note">' + esc(bp.note) + '</p>' : '') +
+          '<button class="ghost-btn std-back" type="button">&larr; Back to the desk</button></div>');
+        host.appendChild(c);
+        c.querySelector('.std-back').onclick = function () { host.innerHTML = ''; deskView(); };
+      }
+
+      function masterclassView() {
+        host.innerHTML = '';
+        var v = cfg.masterclass || {};
+        var chapters = (v.chapters || []).map(function (ch) {
+          return '<button class="vid-chapter" data-t="' + Number(ch.t) + '" type="button">' + esc(ch.label) + '</button>';
+        }).join('');
+        var c = el('<div class="card video-card std-blueprint"><span class="intro-kicker">THE MASTERCLASS &middot; ANY TIME</span>' +
+          '<h2>' + esc(v.title || 'Making your game react') + '</h2>' +
+          '<video controls preload="metadata" playsinline ' + (v.poster ? 'poster="' + esc(asset(v.poster)) + '"' : '') + ' src="' + esc(asset(v.src)) + '"></video>' +
+          (chapters ? '<div class="vid-chapters">' + chapters + '</div>' : '') +
+          '<button class="ghost-btn std-back" type="button">&larr; Back to the desk</button></div>');
+        host.appendChild(c);
+        var vid = c.querySelector('video');
+        c.querySelectorAll('.vid-chapter').forEach(function (bch) {
+          bch.onclick = function () { vid.currentTime = Number(bch.getAttribute('data-t')); vid.play(); };
+        });
+        c.querySelector('.std-back').onclick = function () { host.innerHTML = ''; deskView(); };
+      }
+
+      /* opening the doors = publishing the LISTING (never a file anywhere).
+         asBeta = the in-beta door: an unfinished game still exhibits ("in
+         beta" is a real studio state) - critics see the tag, honesty holds */
+      function marqueeView(asBeta) {
+        host.innerHTML = '';
+        var m = cfg.marquee || {};
+        var c = el('<div class="card std-marquee-form"><span class="intro-kicker">' + (asBeta ? 'OPENING IN BETA' : 'READY FOR GALLERY') + '</span>' +
+          '<h2>' + esc(m.title || 'Open the doors') + '</h2>' +
+          '<p class="intro-lead">' + esc(asBeta ? (m.betaIntro || 'In beta is a real studio state. Your listing goes up with an IN BETA tag - critics review what is there.') : (m.intro || 'Your listing goes up on the class marquee. Make it worth a visit.')) + '</p>' +
+          '<label class="std-sig-label" for="std-gt">Game title</label>' +
+          '<input id="std-gt" class="std-sig-input" maxlength="28" autocomplete="off" placeholder="' + esc(m.titlePlaceholder || 'e.g. Sushi Drop') + '" value="' + esc(gt) + '">' +
+          '<label class="std-sig-label" for="std-gh">How to play &mdash; one line</label>' +
+          '<input id="std-gh" class="std-sig-input" maxlength="80" autocomplete="off" placeholder="' + esc(m.howPlaceholder || 'e.g. Arrow keys to move. Catch sushi, dodge wasabi!') + '" value="' + esc(gh) + '">' +
+          '<div class="gal-marquee-card preview"><span class="gal-mq-studio"></span><b class="gal-mq-title"></b><p class="gal-mq-how"></p></div>' +
+          '<p class="std-marquee-status"></p>' +
+          '<button class="primary-btn std-doors" type="button" disabled>' + esc(m.confirmLabel || 'OPEN THE DOORS') + '</button>' +
+          '<button class="ghost-btn std-back" type="button">&larr; Back to the desk</button></div>');
+        host.appendChild(c);
+        c.querySelector('.std-back').onclick = function () { host.innerHTML = ''; deskView(); };
+        var ti = c.querySelector('#std-gt'), hi = c.querySelector('#std-gh');
+        var doors = c.querySelector('.std-doors');
+        var status = c.querySelector('.std-marquee-status');
+        function paintPreview() {
+          c.querySelector('.gal-mq-studio').textContent = sn || 'Your studio';
+          c.querySelector('.gal-mq-title').textContent = ti.value.trim() || 'Your game';
+          c.querySelector('.gal-mq-how').textContent = hi.value.trim() || 'How to play...';
+          doors.disabled = ti.value.trim().length < 2 || hi.value.trim().length < 8;
+        }
+        ti.oninput = paintPreview; hi.oninput = paintPreview;
+        paintPreview();
+        doors.onclick = function () {
+          doors.disabled = true;
+          gt = ti.value.trim().slice(0, 28);
+          gh = hi.value.trim().slice(0, 80);
+          saveDesk(); // the listing text survives a failed call
+          status.textContent = 'Raising the marquee...';
+          ctx.call('galleryOpen', { lessonId: ctx.lesson.id, gt: gt, gh: gh, tpl: tpl, sn: sn, beta: asBeta ? 1 : 0 }).then(function (r) {
+            if (!r || !r.ok) {
+              status.textContent = 'The marquee did not answer (' + esc((r && r.error) || 'no reply') + ') - try again.';
+              doors.disabled = false;
+              return;
+            }
+            shipped = true;
+            beta = !!asBeta;
+            saveDesk();
+            App.toast('&#127914; Doors open - your game is on the marquee.');
+            host.innerHTML = '';
+            deskView();
+          }).catch(function () {
+            status.textContent = 'No connection - try again.';
+            doors.disabled = false;
+          });
+        };
+      }
+    }
+  };
+
+  /* ================= gallery (L5 Press Night: peer critique) ================
+     Designed from PEER-CRITIQUE references, deliberately NOT L3's reveal
+     (gate binding): Berger/EL Education gallery-critique norms (KIND -
+     SPECIFIC - HELPFUL, modelled before anyone writes), d.school "I like /
+     I wonder" stems, a Two-Stars-and-a-Wish style QUOTA (exactly 2 press
+     passes required, a 3rd allowed) so attention can't pile onto one
+     popular studio - and the marquee surfaces "needs a critic" studios
+     first. Reviews are SIGNED with the critic's codename (accountability,
+     Berger), teacher-readable in the staff lens with one-tap removal, and
+     the banner says so. The mandatory receive-and-respond step (the V2
+     note) is what stops gallery feedback being write-only. No scores, no
+     ranking, no bars - the class-level beat is collective. */
+  Engines.gallery = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var solo = !!ctx.catchup;
+      var quota = Number(cfg.quota) || 2;
+      var stems = cfg.stems || {};
+      var stemLike = stems.like || 'I like...';
+      var stemWonder = stems.wonder || 'I wonder...';
+      var draftAll = ctx.draft || {};
+      var draft = draftAll.gallery || {};
+      var studioDraft = draftAll.studio || {};
+      var v2 = String(draft.v2 || '');
+      var v2ok = !!draft.v2ok;
+      var feed = null;         // latest galleryFeed reply
+      var seenReviews = {};    // for arrival animations + chime
+      var firstPaint = true;
+      var pollT = null;
+
+      function saveGal() {
+        if (ctx.review) return;
+        App.state.draft = App.state.draft || {};
+        App.state.draft.gallery = { v2: v2, v2ok: v2ok ? 1 : 0 };
+        ctx.saveEvent({ draft: App.state.draft });
+      }
+      function chime() {
+        try {
+          var A = window.AudioContext || window.webkitAudioContext;
+          if (!A) return;
+          var ac = chime._ac = chime._ac || new A();
+          var t0 = ac.currentTime;
+          [660, 880].forEach(function (f, i) {
+            var o = ac.createOscillator(), g = ac.createGain();
+            o.frequency.value = f;
+            g.gain.setValueAtTime(0.0001, t0 + i * 0.09);
+            g.gain.exponentialRampToValueAtTime(0.05, t0 + i * 0.09 + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, t0 + i * 0.09 + 0.35);
+            o.connect(g); g.connect(ac.destination);
+            o.start(t0 + i * 0.09); o.stop(t0 + i * 0.09 + 0.4);
+          });
+        } catch (e) {}
+      }
+
+      /* ---------- review reopen: read-only (feed reads are safe; no writes) ---------- */
+      if (ctx.review) {
+        var rv = el('<div class="card gal-review"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
+          '<h2>Your Press Night, on record</h2><p class="intro-lead gal-review-status">Fetching your reviews&hellip;</p>' +
+          (v2 ? '<div class="gal-v2-final"><b>Your V2 note:</b><p>&ldquo;' + esc(v2) + '&rdquo;</p></div>' : '') +
+          '<div class="gal-review-list"></div>' +
+          '<button class="primary-btn" type="button">Continue</button></div>');
+        host.appendChild(rv);
+        rv.querySelector('button').onclick = function () { ctx.next(); };
+        ctx.call('galleryFeed', { lessonId: ctx.lesson.id }).then(function (r) {
+          var statusEl = rv.querySelector('.gal-review-status');
+          var list = rv.querySelector('.gal-review-list');
+          if (!r || !r.ok || !r.myReviews || !r.myReviews.length) {
+            statusEl.innerHTML = 'The gallery has been archived &mdash; your reviews live in the class record now.';
+            return;
+          }
+          statusEl.textContent = 'The reviews your game received:';
+          list.innerHTML = r.myReviews.map(function (x) {
+            return '<div class="gal-review-item"><span class="gal-rev-by">' + esc(x.bcn) + (x.sim ? ' <em class="gal-sim">simulated</em>' : '') + '</span>' +
+              '<p><b>' + esc(stemLike) + '</b> ' + esc(x.l) + '</p><p><b>' + esc(stemWonder) + '</b> ' + esc(x.w) + '</p></div>';
+          }).join('');
+        }).catch(function () {});
+        return;
+      }
+
+      /* ---------- solo catch-up: the gallery has closed ---------- */
+      if (solo) {
+        var closed = cfg.closed || {};
+        introCard(host, {
+          kicker: chunk.title,
+          title: closed.title || 'Press Night has closed',
+          text: closed.note || 'The gallery ran live in class. You can still browse the marquee - and every studio still files a V2 note.'
+        }, 'Browse the marquee', function () { soloView(); });
+        function soloView() {
+          host.innerHTML = '';
+          var c = el('<div class="std-desk gal-floor"><div class="std-head"><span class="std-brand">PRESS NIGHT &middot; LATE EDITION</span>' +
+            '<h2>The marquee</h2><span class="std-count gal-total"></span></div>' +
+            '<div class="gal-marquee-grid"></div>' +
+            '<div class="card gal-v2-card"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
+            '<p>' + esc((cfg.v2 && cfg.v2.promptNoReviews) || 'Every studio plans a version 2. What is the ONE thing yours would change, and why?') + '</p>' +
+            '<textarea class="gal-v2-input" maxlength="200" placeholder="' + esc((cfg.v2 && cfg.v2.placeholder) || 'In version 2 I would... because...') + '">' + esc(v2) + '</textarea>' +
+            '<p class="gal-v2-nudge"></p>' +
+            '<button class="primary-btn gal-v2-save" type="button">File the note &amp; wrap up</button></div></div>');
+          host.appendChild(c);
+          ctx.call('galleryFeed', { lessonId: ctx.lesson.id }).then(function (r) {
+            if (!r || !r.ok) return;
+            c.querySelector('.gal-total').textContent = r.total + ' reviews were filed on the night';
+            c.querySelector('.gal-marquee-grid').innerHTML = (r.studios || []).map(function (s) {
+              return marqueeCardHtml(s, false);
+            }).join('') || '<p class="std-note">The marquee is empty now.</p>';
+          }).catch(function () {});
+          c.querySelector('.gal-v2-save').onclick = function () {
+            var ta = c.querySelector('.gal-v2-input');
+            var nudge = c.querySelector('.gal-v2-nudge');
+            var words = ta.value.trim().split(/\s+/).filter(Boolean);
+            if (words.length < 6) {
+              nudge.textContent = 'A real design note names the change AND the reason (6+ words).';
+              return;
+            }
+            v2 = ta.value.trim().slice(0, 200);
+            v2ok = true;
+            saveGal();
+            var badge = Object.assign({}, ctx.chunk.badge, { xp: 7 });
+            ctx.awardBadge(badge, 'rv=0;v2=1;sol=1').then(function () { ctx.next(); });
+          };
+        }
+        return;
+      }
+
+      /* ---------- the Reviewer's Code, then the floor ---------- */
+      var code = cfg.code || {};
+      var rules = (code.rules || []).map(function (r2) { return '<li>' + esc(r2) + '</li>'; }).join('');
+      introCard(host, {
+        kicker: chunk.title,
+        title: cfg.introTitle || 'Press Night',
+        text: cfg.intro || '',
+        extra: '<div class="gal-code"><b class="gal-code-head">The Reviewer&rsquo;s Code &mdash; kind &middot; specific &middot; helpful</b>' +
+          '<ul class="gal-code-rules">' + rules + '</ul>' +
+          (code.badExample ? '<p class="gal-code-eg"><span class="gal-eg-bad">&#10007; ' + esc(code.badExample) + '</span><br>' +
+            '<span class="gal-eg-good">&#10003; ' + esc(code.goodExample || '') + '</span></p>' : '') +
+          '<p class="gal-banner">&#128065;&#65039; Reviews are signed, and your teacher reads every one.</p></div>'
+      }, 'Onto the floor', floorView);
+
+      /* pupils never see review counts or a needs-a-critic tag (that would be
+         a live popularity ranking - safety gate finding); the fairness lives
+         in the SILENT fewest-first sort, and the teacher's lens keeps counts */
+      function marqueeCardHtml(s, clickable) {
+        var meta = s.mine ? ('YOUR STUDIO' + (s.b ? ' &middot; IN BETA' : '')) : (s.b ? 'IN BETA' : (s.tpl ? { catch: 'A CATCHING GAME', maze: 'A MAZE ESCAPE', quiz: 'A QUIZ SHOW' }[s.tpl] || 'ON SHOW' : 'ON SHOW'));
+        return '<' + (clickable ? 'button type="button"' : 'div') + ' class="gal-marquee-card' + (s.mine ? ' mine' : '') + (clickable ? ' clickable' : '') + '" data-sid="' + esc(s.sid) + '">' +
+          '<span class="gal-mq-studio">' + esc(s.sn || s.cn) + (s.sim ? ' <em class="gal-sim">simulated</em>' : '') + '</span>' +
+          '<b class="gal-mq-title">' + esc(s.gt) + '</b>' +
+          '<p class="gal-mq-how">' + esc(s.gh) + '</p>' +
+          '<span class="gal-mq-meta">' + meta + '</span>' +
+          '</' + (clickable ? 'button' : 'div') + '>';
+      }
+
+      function floorView() {
+        host.innerHTML = '';
+        var rounds = cfg.rounds || {};
+        var c = el('<div class="std-desk gal-floor">' +
+          '<div class="std-head"><span class="std-brand">OLS GAMES &middot; PRESS NIGHT</span>' +
+          '<h2>The gallery floor</h2><span class="std-count gal-passes"></span></div>' +
+          (rounds.note ? '<div class="gal-rounds"><p>' + esc(rounds.note) + '</p>' +
+            (rounds.exhibitTip ? '<p class="gal-round-tip">&#127914; <b>Exhibiting?</b> ' + esc(rounds.exhibitTip) + '</p>' : '') +
+            (rounds.tourTip ? '<p class="gal-round-tip">&#128584; <b>Touring?</b> ' + esc(rounds.tourTip) + '</p>' : '') + '</div>' : '') +
+          '<div class="gal-mine-zone"><div class="gal-mine-card"></div><div class="gal-incoming"><b class="gal-incoming-head">Your reviews land here, live</b><div class="gal-incoming-list"></div></div></div>' +
+          '<b class="gal-marquee-head">The marquee &mdash; pick a studio, play it at their desk, then review it here</b>' +
+          '<div class="gal-marquee-grid"><p class="std-note">Raising the marquee&hellip;</p></div>' +
+          '<div class="gal-v2-zone"></div>' +
+          '</div>');
+        host.appendChild(c);
+        paintFeed();
+        poll();
+      }
+
+      function applyFeed(r) {
+        feed = r;
+        if (!document.body.contains(host) || !host.querySelector('.gal-floor')) return;
+        paintFeed();
+      }
+
+      function paintFeed() {
+        var floor = host.querySelector('.gal-floor');
+        if (!floor) return;
+        var passes = floor.querySelector('.gal-passes');
+        var given = feed ? feed.given : 0;
+        passes.innerHTML = 'Press passes: <b>' + Math.max(0, quota - given) + '</b> to spend' + (given >= quota ? ' &#10003;' : '');
+        var mine = feed && feed.studios.filter(function (s) { return s.mine; })[0];
+        floor.querySelector('.gal-mine-card').innerHTML = mine
+          ? (marqueeCardHtml(mine, false) + (mine.hd ? '<p class="std-note">Your listing is hidden just now &mdash; have a word with your teacher.</p>' : ''))
+          : '<p class="std-note">Your doors are not open yet &mdash; finish the Studio Desk first.</p>';
+        var list = floor.querySelector('.gal-incoming-list');
+        var myReviews = (feed && feed.myReviews) || [];
+        if (!myReviews.length) {
+          list.innerHTML = '<p class="gal-waiting">No reviews yet &mdash; critics are still playing&hellip;</p>';
+        } else {
+          var anyNew = false;
+          list.innerHTML = myReviews.slice().reverse().map(function (x) {
+            var isNew = !seenReviews[x.i] && !firstPaint;
+            if (!seenReviews[x.i]) { if (!firstPaint) anyNew = true; }
+            return '<div class="gal-review-item' + (isNew ? ' fresh' : '') + '"><span class="gal-rev-by">' + esc(x.bcn) + (x.sim ? ' <em class="gal-sim">simulated</em>' : '') + '</span>' +
+              '<p><b>' + esc(stemLike) + '</b> ' + esc(x.l) + '</p><p><b>' + esc(stemWonder) + '</b> ' + esc(x.w) + '</p></div>';
+          }).join('');
+          myReviews.forEach(function (x) { seenReviews[x.i] = 1; });
+          if (anyNew) {
+            chime();
+            list.querySelectorAll('.gal-review-item.fresh').forEach(function (n) {
+              requestAnimationFrame(function () { n.classList.add('landed'); });
+              setTimeout(function () { n.classList.add('landed'); }, 150); // hidden-tab rAF fallback
+            });
+          }
+        }
+        var grid = floor.querySelector('.gal-marquee-grid');
+        var others = feed ? feed.studios.filter(function (s) { return !s.mine; }) : [];
+        others.sort(function (a, b) { return (a.rn - b.rn) || String(a.gt).localeCompare(String(b.gt)); });
+        grid.innerHTML = others.length ? others.map(function (s) { return marqueeCardHtml(s, true); }).join('')
+          : '<p class="std-note">No other studios have opened yet &mdash; watch the marquee light up.</p>';
+        grid.querySelectorAll('.gal-marquee-card.clickable').forEach(function (btn) {
+          btn.onclick = function () {
+            var s = others.filter(function (x) { return String(x.sid) === btn.getAttribute('data-sid'); })[0];
+            if (s) reviewDesk(s);
+          };
+        });
+        paintV2Zone(floor);
+        if (feed) firstPaint = false; // reviews already waiting on arrival never chime
+      }
+
+      function paintV2Zone(floor) {
+        var zone = floor.querySelector('.gal-v2-zone');
+        var given = feed ? feed.given : 0;
+        var received = (feed && feed.myReviews) || [];
+        if (v2ok) {
+          zone.innerHTML = '<div class="card gal-v2-card done"><span class="std-qa-tag">YOUR V2 NOTE &#10003;</span>' +
+            '<p>&ldquo;' + esc(v2) + '&rdquo;</p></div>' +
+            '<button class="primary-btn gal-wrap" type="button">Wrap Press Night &rarr;</button>';
+          zone.querySelector('.gal-wrap').onclick = wrapView;
+          return;
+        }
+        // AUDIT FIX (26 Jul 2026): the V2 note is the ONLY route out of Press
+        // Night, and it used to lock on the full quota regardless of how many
+        // other studios actually existed. If the lesson overran and only one
+        // other pair opened their doors - or if a catch-up pupil arrived after
+        // the 7-day archive sweep cleared the gallery - the chunk had no exit at
+        // all, with no teacher override. Lock on what is ACHIEVABLE instead.
+        // XP already scales with reviews given, so a short quota still scores honestly.
+        var others = (feed && feed.studios || []).filter(function (s) { return !s.mine; }).length;
+        var need = Math.min(quota, others);
+        if (given < need) {
+          zone.innerHTML = '<div class="card gal-v2-card locked"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
+            '<p>Unlocks when ' + (need === 1 ? 'your press pass is' : 'both press passes are') +
+            ' spent &mdash; critics first, designers second.</p></div>';
+          return;
+        }
+        var prompt = received.length
+          ? ((cfg.v2 && cfg.v2.prompt) || 'Read your reviews. Pick ONE that sparked something - what will version 2 change, and why?')
+          : ((cfg.v2 && cfg.v2.promptNoReviews) || 'While reviews come in: what is the ONE thing version 2 of your game would change, and why?');
+        zone.innerHTML = '<div class="card gal-v2-card"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
+          '<p>' + esc(prompt) + '</p>' +
+          '<textarea class="gal-v2-input" maxlength="200" placeholder="' + esc((cfg.v2 && cfg.v2.placeholder) || 'In version 2 I would... because a review said...') + '">' + esc(v2) + '</textarea>' +
+          '<p class="gal-v2-nudge"></p>' +
+          '<button class="primary-btn gal-v2-save" type="button">File the V2 note</button></div>';
+        zone.querySelector('.gal-v2-save').onclick = function () {
+          var ta = zone.querySelector('.gal-v2-input');
+          var nudge = zone.querySelector('.gal-v2-nudge');
+          var words = ta.value.trim().split(/\s+/).filter(Boolean);
+          if (words.length < 6) {
+            nudge.textContent = 'A real design note names the change AND the reason (6+ words).';
+            return;
+          }
+          v2 = ta.value.trim().slice(0, 200);
+          v2ok = true;
+          saveGal();
+          paintFeed();
+        };
+      }
+
+      function reviewDesk(s) {
+        host.innerHTML = '';
+        var given = feed ? feed.given : 0;
+        var spent = given >= 3;
+        var c = el('<div class="card gal-desk"><span class="intro-kicker">REVIEW DESK</span>' +
+          marqueeCardHtml(s, false) +
+          (spent ? '<p class="std-note">All three press passes are spent &mdash; head back to the floor.</p>' :
+            '<p class="gal-desk-note">' + esc(cfg.deskNote || 'Play it at their desk first. Then write like a critic: kind, specific, helpful.') + '</p>' +
+            '<label class="std-sig-label">' + esc(stemLike) + '</label>' +
+            '<textarea class="gal-stem-input" data-stem="like" maxlength="200" placeholder="' + esc(cfg.likePlaceholder || 'name the exact bit you liked, and why it works') + '"></textarea>' +
+            '<label class="std-sig-label">' + esc(stemWonder) + '</label>' +
+            '<textarea class="gal-stem-input" data-stem="wonder" maxlength="200" placeholder="' + esc(cfg.wonderPlaceholder || 'a question or idea that could make version 2 even better') + '"></textarea>' +
+            '<p class="gal-v2-nudge"></p>' +
+            '<button class="primary-btn gal-file-btn" type="button">File the review &middot; signed</button>') +
+          '<button class="ghost-btn std-back" type="button">&larr; Back to the floor</button></div>');
+        host.appendChild(c);
+        c.querySelector('.std-back').onclick = function () { host.innerHTML = ''; floorView(); };
+        var fileBtn = c.querySelector('.gal-file-btn');
+        if (fileBtn) fileBtn.onclick = function () {
+          var likeTa = c.querySelector('[data-stem="like"]');
+          var wonderTa = c.querySelector('[data-stem="wonder"]');
+          var nudge = c.querySelector('.gal-v2-nudge');
+          var lw = likeTa.value.trim().split(/\s+/).filter(Boolean);
+          var ww = wonderTa.value.trim().split(/\s+/).filter(Boolean);
+          if (lw.length < 5 || ww.length < 5) {
+            nudge.textContent = 'Specific means at least 5 real words in each line - name the exact thing.';
+            return;
+          }
+          fileBtn.disabled = true;
+          ctx.call('galleryPost', {
+            lessonId: ctx.lesson.id, to: s.sid,
+            like: likeTa.value.trim().slice(0, 200), wonder: wonderTa.value.trim().slice(0, 200)
+          }).then(function (r) {
+            if (!r || !r.ok) {
+              fileBtn.disabled = false;
+              var msg = {
+                'passes-spent': 'All three press passes are spent.',
+                'already-reviewed': 'You already reviewed this studio - spread the passes around.',
+                'too-thin': 'Too thin for print - name the exact thing.',
+                'own-studio': 'Nice try - critics cannot review their own studio.'
+              }[(r && r.error) || ''] || 'The review did not file - try again.';
+              nudge.textContent = msg;
+              return;
+            }
+            App.toast('&#128240; Review filed - signed and delivered.');
+            host.innerHTML = '';
+            floorView();
+          }).catch(function () {
+            fileBtn.disabled = false;
+            nudge.textContent = 'No connection - try again.';
+          });
+        };
+      }
+
+      function wrapView() {
+        if (pollT) { clearTimeout(pollT); pollT = null; }
+        host.innerHTML = '';
+        var total = feed ? feed.total : 0;
+        var studios = feed ? feed.studioCount : 0;
+        var given = feed ? Math.min(feed.given, quota) : 0;
+        var wrap = cfg.wrap || {};
+        var c = el('<div class="card gal-wrapcard"><span class="intro-kicker">PRESS NIGHT &middot; CLOSING</span>' +
+          '<h2>' + esc(wrap.title || 'The presses roll') + '</h2>' +
+          '<p class="gal-wrap-stat"><b>' + total + '</b> reviews filed across the class tonight &middot; <b>' + studios + '</b> studios opened their doors.</p>' +
+          '<p class="intro-lead">' + esc(wrap.note || 'No scores. No rankings. Real games, real critics, real notes for version 2 - that is how studios grow.') + '</p>' +
+          '<button class="primary-btn" type="button">Collect your press badge</button></div>');
+        host.appendChild(c);
+        c.querySelector('button').onclick = function () {
+          var xp = 3 * given + (v2ok ? 1 : 0);
+          var badge = Object.assign({}, ctx.chunk.badge, { xp: xp });
+          ctx.awardBadge(badge, 'rv=' + (feed ? feed.given : 0) + ';v2=' + (v2ok ? 1 : 0)).then(function () { ctx.next(); });
+        };
+      }
+
+      function poll() {
+        /* single chain: re-entering the floor never stacks a second poller */
+        if (pollT) { clearTimeout(pollT); pollT = null; }
+        if (!document.body.contains(host) || !host.querySelector('.gal-floor')) return;
+        ctx.call('galleryFeed', { lessonId: ctx.lesson.id }).then(function (r) {
+          if (r && r.ok) applyFeed(r);
+        }).catch(function () {}).then(function () {
+          if (document.body.contains(host)) pollT = setTimeout(poll, 4000);
+        });
+      }
+    }
+  };
+
+})(window);

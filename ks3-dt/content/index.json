@@ -1,0 +1,11 @@
+{
+ "contentVersion": "2026-07-27c",
+ "years": [
+  {
+   "id": "j1",
+   "title": "Your Digital World",
+   "subtitle": "J1 · Season One",
+   "manifest": "j1/manifest.json"
+  }
+ ]
+}

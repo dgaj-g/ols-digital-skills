@@ -1,0 +1,258 @@
+{
+ "year": "j1",
+ "title": "Your Digital World",
+ "tagline": "Season One — you've been recruited.",
+ "recapPool": "j1/recap-pool.json",
+ "blocks": [
+  {
+   "id": "b1",
+   "name": "Mission Start",
+   "color": "#E4B824"
+  },
+  {
+   "id": "b2",
+   "name": "Make It Real",
+   "color": "#4FA3D9"
+  },
+  {
+   "id": "b3",
+   "name": "Inside the Machine",
+   "color": "#7C6FD9"
+  },
+  {
+   "id": "b4",
+   "name": "Networks & You",
+   "color": "#3BAF7E"
+  },
+  {
+   "id": "b5",
+   "name": "Design Studio",
+   "color": "#D97C4F"
+  },
+  {
+   "id": "b6",
+   "name": "The Big Picture",
+   "color": "#C94F6D"
+  },
+  {
+   "id": "side",
+   "name": "Side Quests",
+   "color": "#9B8CFF"
+  }
+ ],
+ "lessons": [
+  {
+   "id": "j1-01",
+   "num": 1,
+   "title": "Mission Control",
+   "tagline": "Your induction. Your codename. Your first badges.",
+   "block": "b1",
+   "icon": "🛰️",
+   "status": "ready",
+   "file": "j1/lessons/j1-01.json",
+   "coverSuitability": "caution",
+   "coverNote": "First-ever C2k logins — a cover teacher can run it ONLY if printed credential slips are prepped. Otherwise defer.",
+   "absenceInferenceEligible": false,
+   "absenceNote": "A pupil who misses Lesson 1 needs a direct teacher catch-up (credential re-issue) — the platform's inference flow doesn't apply before first login."
+  },
+  {
+   "id": "j1-02",
+   "num": 2,
+   "title": "Make It Move",
+   "tagline": "Your first physical computer reacts to you.",
+   "block": "b1",
+   "icon": "⚡",
+   "status": "ready",
+   "coverSuitability": "caution",
+   "coverNote": "Needs the micro:bit class set (about 15 devices + USB leads) out on the desks BEFORE the bell, and a live 4-minute MakeCode demo from the front - see the teacher brief. A cover teacher can run this only if the kit is already out; otherwise choose a lesson the class has already had.",
+   "absenceInferenceEligible": true,
+   "unplugged": true,
+   "file": "j1/lessons/j1-02.json"
+  },
+  {
+   "id": "j1-03",
+   "num": 3,
+   "title": "Scoreboard Engineer",
+   "tagline": "Build the invisible scorekeeper.",
+   "block": "b1",
+   "icon": "🎯",
+   "status": "ready",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true,
+   "file": "j1/lessons/j1-03.json"
+  },
+  {
+   "id": "j1-04",
+   "num": 4,
+   "title": "The Broken Game",
+   "tagline": "Four bugs. One shipped game. You're QA.",
+   "block": "b1",
+   "icon": "🔍",
+   "status": "ready",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true,
+   "file": "j1/lessons/j1-04.json"
+  },
+  {
+   "id": "j1-05",
+   "num": 5,
+   "title": "Game Studio",
+   "tagline": "Your game. Your rules. Real quality control.",
+   "block": "b1",
+   "icon": "🎮",
+   "status": "ready",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true,
+   "file": "j1/lessons/j1-05.json"
+  },
+  {
+   "id": "j1-06",
+   "num": 6,
+   "title": "Inside the Machine",
+   "tagline": "What's actually in the box?",
+   "block": "b3",
+   "icon": "🖥️",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-07",
+   "num": 7,
+   "title": "Switches & Secrets",
+   "tagline": "Everything is 1s and 0s. Everything.",
+   "block": "b3",
+   "icon": "🔢",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-08",
+   "num": 8,
+   "title": "Pixel Factory",
+   "tagline": "Images are numbers wearing make-up.",
+   "block": "b3",
+   "icon": "🎨",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-09",
+   "num": 9,
+   "title": "Sound Booth",
+   "tagline": "Capture a wave. Keep the good bits.",
+   "block": "b3",
+   "icon": "🎵",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-10",
+   "num": 10,
+   "title": "The Packet Journey",
+   "tagline": "Your message breaks into pieces and races the world.",
+   "block": "b4",
+   "icon": "📡",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-11",
+   "num": 11,
+   "title": "The Profile Detectives",
+   "tagline": "What does a profile really give away?",
+   "block": "b4",
+   "icon": "🕵️",
+   "status": "soon",
+   "coverSuitability": "sensitive",
+   "coverNote": "Discussion-led e-safety — needs the class's own teacher. Cover Mode auto-suggests deferring this one.",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-12",
+   "num": 12,
+   "title": "Fortress",
+   "tagline": "Defend your account like a castle.",
+   "block": "b4",
+   "icon": "🏰",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-13",
+   "num": 13,
+   "title": "Group Chat",
+   "tagline": "The chat that went wrong — you decide where.",
+   "block": "b4",
+   "icon": "💬",
+   "status": "soon",
+   "coverSuitability": "sensitive",
+   "coverNote": "Discussion-led wellbeing lesson — defer under cover.",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-14",
+   "num": 14,
+   "title": "Poster Doctor",
+   "tagline": "Diagnose design crimes. Prescribe fixes.",
+   "block": "b5",
+   "icon": "🩺",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-15",
+   "num": 15,
+   "title": "The Brief",
+   "tagline": "A real client. A real deadline. Your design.",
+   "block": "b5",
+   "icon": "📋",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-16",
+   "num": 16,
+   "title": "The Gallery",
+   "tagline": "Ship it. Show it. Judge like a pro.",
+   "block": "b5",
+   "icon": "🖼️",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-17",
+   "num": 17,
+   "title": "The True Cost",
+   "tagline": "What does the digital world cost the real one?",
+   "block": "b6",
+   "icon": "🌍",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j1-sq1",
+   "num": "S1",
+   "side": true,
+   "title": "Files That Follow You",
+   "tagline": "Build your real cloud vault — done before Lesson 3.",
+   "block": "side",
+   "icon": "🗂️",
+   "status": "ready",
+   "file": "j1/lessons/j1-sq1.json",
+   "coverSuitability": "ok",
+   "coverNote": "Self-paced skills mission — safe under cover as early-finisher work.",
+   "absenceInferenceEligible": false,
+   "absenceNote": "Side quests never trigger absence flags — completion shows on the dashboard instead."
+  }
+ ]
+}

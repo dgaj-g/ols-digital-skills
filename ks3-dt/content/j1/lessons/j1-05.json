@@ -1,0 +1,762 @@
+{
+ "id": "j1-05",
+ "year": "j1",
+ "num": 5,
+ "title": "Game Studio",
+ "tagline": "Your game. Your rules. Real quality control.",
+ "mode": "quest",
+ "durationMin": 60,
+ "objectives": [
+  "I can use if/else so my game reacts differently to different situations.",
+  "I can personalise a game while still meeting a design brief's required features.",
+  "I can test my own game against a checklist before showing it to others."
+ ],
+ "chunks": [
+  {
+   "id": "hook",
+   "engine": "briefing",
+   "title": "Mission Briefing",
+   "minutes": 3,
+   "config": {
+    "clearance": "OPERATION: GAME STUDIO",
+    "headline": "You saved their game. Now ship your own.",
+    "lines": [
+     "Last mission, your QA division rescued Shark Attack — four bugs, four case files, one saved game. HQ noticed.",
+     "This morning, OLS GAMES is commissioning new studios. Three contracts are on the desk: a catching game, a maze escape, a quiz show. Every contract carries the SAME brief — the game must choose, count, and end — but the game itself will be yours: your name, your look, your rules.",
+     "One catch. Tonight is PRESS NIGHT. The class plays what you ship, and your studio gets its first signed reviews. Nothing hides on a gallery floor — which is why every studio runs its own QA desk before the doors open.",
+     "Designer and QA tester. Both badges are yours today. Time to open your doors."
+    ],
+    "images": [],
+    "video": null,
+    "cta": "Start your studio"
+   }
+  },
+  {
+   "id": "sign",
+   "engine": "studio",
+   "title": "The Contracts",
+   "minutes": 4,
+   "badge": {
+    "id": "founder",
+    "name": "Studio Founder",
+    "icon": "assets/badges/contract.png",
+    "xp": 2
+   },
+   "config": {
+    "phase": "sign",
+    "title": "Three contracts on the desk",
+    "intro": "Read all three before you sign — you're choosing the game you'll ship tonight, not the easiest one (there isn't one: same brief, same checks, same XP). When you sign, you sign with a STUDIO NAME. Make it one worth putting on a marquee.",
+    "introSolo": "Catch-up shift — the studios have been and gone, but the contracts are still on the desk. Read all three, pick the game you'll build, and sign with a studio name worth putting on a marquee. Same brief, same checks, same XP whichever you choose.",
+    "namePlaceholder": "e.g. Golden Otter Games",
+    "signNote": "Signed the wrong one? You can tear a contract up and re-sign — right up until your first QA test is recorded. (Re-signing means a fresh kit: anything you built in Scratch stays with the old contract.)",
+    "brief": {
+     "title": "Every contract carries the same brief",
+     "items": [
+      "REACT — an if/else that chooses",
+      "TRACK — a variable that changes in play",
+      "END — a game that can finish",
+      "WORKS — passes all four QA tests"
+     ]
+    },
+    "contracts": [
+     {
+      "id": "catch",
+      "name": "Catch It",
+      "headline": "The arcade classic",
+      "pitch": "Apples fall. One bowl. No second chances. Miss three and the game is over — if you build it that way.",
+      "img": "assets/img/l5/contract-catch.png",
+      "imgAlt": "The Catch It starter: an apple falling from a blue sky toward a bowl",
+      "ships": [
+       "A bowl that moves on the arrow keys",
+       "An apple that falls, lands, and falls again",
+       "Sky, ground and sounds, ready to go"
+      ],
+      "adds": [
+       "score and lives variables",
+       "THE if/else: caught… or dropped?",
+       "Game over the instant lives hit zero"
+      ],
+      "theme": "Re-skin everything: catch sushi, stars, or falling socks — if it falls, it plays."
+     },
+     {
+      "id": "maze",
+      "name": "Maze Escape",
+      "headline": "The escape room",
+      "pitch": "Walls bite. Three stars glitter in the corners. One locked door stands between your beetle and freedom.",
+      "img": "assets/img/l5/contract-maze.png",
+      "imgAlt": "The Maze Escape starter: a beetle in a walled maze with stars and a locked door",
+      "ships": [
+       "A beetle with full arrow-key controls",
+       "Walls that already bounce you back to the start",
+       "Three stars that vanish when touched — but nothing counts them",
+       "A door that senses you arrive… and does nothing about it"
+      ],
+      "adds": [
+       "the stars counter, wired to all three stars",
+       "THE if/else at the door: earned your escape, or not?",
+       "A proper ending when the door swings open"
+      ],
+      "theme": "Re-skin it: haunted house, space station, the school at midnight."
+     },
+     {
+      "id": "quiz",
+      "name": "Quiz Master",
+      "headline": "The quiz show",
+      "pitch": "Three questions, two tiles, one host who never blinks. The quickest quiz show on television — and you write the script.",
+      "img": "assets/img/l5/contract-quiz.png",
+      "imgAlt": "The Quiz Master starter: a host by a chalkboard with T and F answer tiles",
+      "ships": [
+       "A host who asks three questions in a row",
+       "T and F tiles that hear every click",
+       "A question flow that runs itself"
+      ],
+      "adds": [
+       "the score, displayed on stage for the audience",
+       "THE if/else inside each tile: right… or wrong?",
+       "A finale that announces the final score"
+      ],
+      "theme": "The questions are YOURS: football, K-pop, Minecraft, Irish — you're the quizmaster now."
+     }
+    ]
+   }
+  },
+  {
+   "id": "masterclass",
+   "engine": "video",
+   "title": "Masterclass: Making Your Game React",
+   "minutes": 5,
+   "config": {
+    "src": "assets/video/l5/l5-tutorial.mp4",
+    "poster": "assets/video/l5/l5-poster.jpg",
+    "fallback": "The masterclass film is on its way — your teacher will demo the if/else block, and your blueprint walks you through every block your contract needs.",
+    "chapters": [
+     {
+      "t": 0,
+      "label": "From sequence to selection"
+     },
+     {
+      "t": 76,
+      "label": "The if/else block"
+     },
+     {
+      "t": 174,
+      "label": "Worked example: Catch It"
+     },
+     {
+      "t": 279,
+      "label": "Test like a studio"
+     }
+    ]
+   }
+  },
+  {
+   "id": "build",
+   "engine": "studio",
+   "title": "The Studio Sprint",
+   "minutes": 25,
+   "badge": {
+    "id": "shipped",
+    "name": "Shipped It",
+    "icon": "assets/badges/rocket.png",
+    "xp": 22
+   },
+   "config": {
+    "phase": "build",
+    "introTitle": "The Studio Sprint",
+    "intro": "One sprint: kit on the bench, blueprint on the wall, four QA checks between you and the gallery. Personalise everything you like — but remember what QA taught you last mission: looking finished and working are two different things. The READY FOR GALLERY button only believes ticks.",
+    "introSolo": "Solo sprint, catch-up edition: kit on the bench, blueprint on the wall, four QA checks between you and shipping. You run your own tests today — the same rule stands: the READY button only believes ticks.",
+    "pairNote": "You each build your OWN game — but you're also your partner's QA tester. At the midpoint swap: run the four tests on THEIR machine while they run yours. A tester who didn't build it finds what the builder can't see.",
+    "qaIntro": "Four checks stand between your build and the gallery. Run each test in Scratch, then record what ACTUALLY happened — not what you hoped. A cross isn't failure: it's QA doing its job, and it hands you the exact fix.",
+    "kit": {
+     "intro": "Your starter kit is deliberately unfinished — it runs, but it can't choose, count or end. Get it on the bench:",
+     "confirm": "The kit is open in Scratch and I found the STUDIO NOTE comment in its code"
+    },
+    "masterclass": {
+     "title": "Making Your Game React",
+     "src": "assets/video/l5/l5-tutorial.mp4",
+     "poster": "assets/video/l5/l5-poster.jpg",
+     "chapters": [
+      {
+       "t": 0,
+       "label": "From sequence to selection"
+      },
+      {
+       "t": 76,
+       "label": "The if/else block"
+      },
+      {
+       "t": 174,
+       "label": "Worked example: Catch It"
+      },
+      {
+       "t": 279,
+       "label": "Test like a studio"
+      }
+     ]
+    },
+    "marquee": {
+     "title": "Open the doors",
+     "intro": "Your listing goes up on the class marquee — it's how tonight's critics choose where to play. Make it worth a visit.",
+     "titlePlaceholder": "e.g. Sushi Drop",
+     "howPlaceholder": "e.g. Arrow keys to move. Catch sushi, dodge the wasabi!",
+     "confirmLabel": "OPEN THE DOORS",
+     "betaIntro": "In beta is a real studio state — real studios exhibit unfinished builds all the time. Your listing goes up with an IN BETA tag, and critics review what's there."
+    },
+    "templates": {
+     "catch": {
+      "name": "Catch It",
+      "file": "assets/games/catch-it-starter.sb3",
+      "blueprint": {
+       "title": "The Catch It blueprint",
+       "intro": "Five moves, in order. The STUDIO NOTE comment in the Apple's code marks the exact spot for the big one.",
+       "steps": [
+        {
+         "icon": "🧮",
+         "title": "Make the variables",
+         "text": "Variables → Make a Variable → 'score'. Again → 'lives'. For all sprites, both times. New variables show on stage automatically — leave the ticks on."
+        },
+        {
+         "icon": "🚩",
+         "title": "Set them at the flag",
+         "text": "On the Apple's when-flag script, before the forever loop: set score to 0, set lives to 3. Variables remember between games — without this, every new game inherits the old numbers."
+        },
+        {
+         "icon": "🔀",
+         "title": "The if/else — the big one",
+         "text": "Control → if/else. It goes AFTER the fall loop, still INSIDE the forever (the STUDIO NOTE points at the spot). Condition: Sensing → touching Bowl?. Top mouth: change score by 1 + start sound pop. Bottom mouth (else): change lives by -1."
+        },
+        {
+         "icon": "🏁",
+         "title": "The ending",
+         "text": "Inside the else, under change lives by -1: an if with Operators' (=) — lives = 0 — holding say 'Game over!' for 2 seconds, then Control → stop all. You met stop all in the Jellyfish Job. Notice the difference: (=) ASKS a question — 'is lives 0?' — while 'set' MAKES it so. Asking never changes the number."
+        },
+        {
+         "icon": "🎨",
+         "title": "Make it yours",
+         "text": "New costumes for the apple and bowl, new backdrop, new sounds — from the Scratch libraries or draw your own. Re-skin everything; the brief only cares that it WORKS."
+        }
+       ],
+       "img": "assets/img/l5/blueprint-catch.png",
+       "imgAlt": "The finished Catch It if/else: touching Bowl scores and plays pop, else lives drops and game over fires at zero",
+       "imgCaption": "The finished landing check — yours should read like this."
+      },
+      "criteria": [
+       {
+        "id": "c1",
+        "name": "The catch scores",
+        "test": "Green flag. Catch ONE apple — just one — and watch the score before and after.",
+        "ask": "What did the score actually do?",
+        "outcomes": [
+         {
+          "t": "Up by exactly 1, exactly when I caught it.",
+          "pass": true
+         },
+         {
+          "t": "It kept climbing on its own, without me catching anything.",
+          "fix": "Your change-score block is loose inside the fall loop, so it fires every tick. It must live inside the if's TOP mouth — points only exist when 'touching Bowl?' is true.",
+          "mech": "Drag change score by 1 INTO the top mouth of the if/else, right under the touching Bowl condition."
+         },
+         {
+          "t": "Nothing — the score never moved.",
+          "fix": "Either the if/else isn't inside the forever (so it ran once, ages ago), or its condition isn't checking the Bowl. Both mean the catch is invisible to your code.",
+          "mech": "Check the if/else sits AFTER the fall loop, INSIDE the forever — and click its condition dropdown: it must say Bowl."
+         },
+         {
+          "t": "The score went up even when I MISSED.",
+          "fix": "Scoring is happening outside the choice. If change score sits outside the if/else, every apple pays out, caught or dropped — selection means the game must CHOOSE.",
+          "mech": "Move change score by 1 inside the if's top mouth so only a real catch counts."
+         }
+        ]
+       },
+       {
+        "id": "c2",
+        "name": "A miss costs a life",
+        "test": "Green flag. DODGE on purpose: steer the bowl away from each apple and let THREE miss, watching the lives counter.",
+        "ask": "What did lives do?",
+        "outcomes": [
+         {
+          "t": "Down by exactly 1 per dodge — 3, 2, 1 — and the score never moved.",
+          "pass": true
+         },
+         {
+          "t": "Lives never moved at all.",
+          "fix": "Nothing is handling the miss. That's exactly what ELSE is for: the bottom mouth runs when 'touching Bowl?' comes back false. Also check the flag sets lives to 3 — a variable that's never set can't count down.",
+          "mech": "Drag change lives by -1 into the BOTTOM mouth (else). Check set lives to 3 sits at the flag."
+         },
+         {
+          "t": "I lost a life even when I CAUGHT the apple.",
+          "fix": "Your lives block is running on both branches — it's sitting outside the else, or after the whole if/else. If/else picks exactly ONE mouth: catch = top, miss = bottom.",
+          "mech": "Move change lives by -1 so it sits INSIDE the else mouth and nowhere else."
+         },
+         {
+          "t": "Lives went UP, or dropped by more than 1 at a time.",
+          "fix": "The number on the block is wrong. A miss costs exactly one life: change lives by -1 — minus one, once, in the else mouth.",
+          "mech": "Click the number in change lives by and retype -1."
+         },
+         {
+          "t": "Lives behaved — but the SCORE also changed while I was dodging.",
+          "fix": "That's not a lives bug — your scoring is loose. If change score sits outside the if/else, every apple pays out, dodged or not. Check 1's fix is your fix.",
+          "mech": "Move change score by 1 INSIDE the if's top mouth (see QA check 1), then run this dodge test again."
+         }
+        ]
+       },
+       {
+        "id": "c3",
+        "name": "One fall, one outcome",
+        "test": "Catch one apple, then deliberately miss one — watching BOTH counters each time.",
+        "ask": "For a single apple, what happened?",
+        "outcomes": [
+         {
+          "t": "Exactly one thing each time: a catch moved only the score, a miss moved only lives.",
+          "pass": true
+         },
+         {
+          "t": "One apple changed BOTH — score up AND a life gone.",
+          "fix": "One of your blocks has escaped the if/else, so it runs no matter which branch fires. The whole point of selection: one situation, one branch, never both.",
+          "mech": "Both blocks live INSIDE the if/else — score in the top mouth, lives in the bottom. Nothing score-ish after it."
+         },
+         {
+          "t": "Sometimes an apple fell and NOTHING changed.",
+          "fix": "Your if/else probably runs once instead of every fall — it has slipped outside the forever loop. Every single apple needs its own landing check.",
+          "mech": "Drag the whole if/else INSIDE the forever, straight after the fall loop."
+         }
+        ]
+       },
+       {
+        "id": "c4",
+        "name": "Game over means over",
+        "test": "Lose all 3 lives on purpose. Then try to keep playing.",
+        "ask": "At zero lives, what did the game do?",
+        "outcomes": [
+         {
+          "t": "Said 'Game over!' and froze — no more falling, no more scoring.",
+          "pass": true
+         },
+         {
+          "t": "It said game over… but apples kept falling and scoring.",
+          "fix": "'Say' isn't 'stop'. After the message the game needs stop all — the block that ends every running script. You watched it end the Jellyfish Job the same way.",
+          "mech": "Inside if lives = 0, after the say block: Control → stop all."
+         },
+         {
+          "t": "Nothing happened — lives just kept going: -1, -2, -3…",
+          "fix": "Nothing is checking lives. The check belongs right where a life is lost: inside the else, straight after change lives by -1 — the only moment lives can hit zero.",
+          "mech": "Drag an if into the else under change lives by -1. Condition: Operators (=) with lives and 0."
+         },
+         {
+          "t": "The game ended too early, before my lives ran out.",
+          "fix": "Either lives never started at 3, or the condition isn't asking for exactly 0. Set lives to 3 at the flag; the check reads lives = 0.",
+          "mech": "Check the flag script sets lives to 3, and the if condition reads lives = 0 exactly."
+         }
+        ]
+       }
+      ],
+      "stretch": {
+       "title": "The second variable",
+       "text": "Real games ramp. Add a SECOND variable and make it matter: a timer counting down, a level that speeds the fall every 5 points, a streak that doubles the next catch. Your studio, your call — then test it like everything else.",
+       "placeholder": "I added a ... variable that ... — tested and working."
+      }
+     },
+     "maze": {
+      "name": "Maze Escape",
+      "file": "assets/games/maze-escape-starter.sb3",
+      "blueprint": {
+       "title": "The Maze Escape blueprint",
+       "intro": "Four moves. The kit already punishes wall-touches — READ that script first (it's a working if, your best evidence). The STUDIO NOTE on the Door marks where your if/else lands.",
+       "steps": [
+        {
+         "icon": "🧮",
+         "title": "Make the stars variable",
+         "text": "Variables → Make a Variable → 'stars', for all sprites. Its counter appears on stage — leave the tick on so players can see it climb."
+        },
+        {
+         "icon": "🚩",
+         "title": "Set it at the flag",
+         "text": "On the Beetle's when-flag script, after point in direction: set stars to 0. Variables remember between games — no reset, no fresh start."
+        },
+        {
+         "icon": "⭐",
+         "title": "Count on ALL THREE stars",
+         "text": "Open Star1: its pickup script already plays the sound and hides — drop change stars by 1 between them. Now do the same on Star2 and Star3. Every sprite owns its scripts (the Lesson 4 rule): one edited star leaves two that still can't count."
+        },
+        {
+         "icon": "🚪",
+         "title": "The door's if/else — the big one",
+         "text": "Open the Door. Between 'wait until touching Beetle' and 'wait until NOT touching Beetle' (the STUDIO NOTE points at the gap): if/else with Operators' (=) — stars = 3. Top mouth: switch costume to door-open, say 'You escaped!' for 2 seconds, stop all. Else: say 'Locked! Collect all 3 stars.' for 2 seconds. Notice the difference: (=) ASKS a question — 'is stars 3?' — while 'set' MAKES it so. Asking never changes the number."
+        },
+        {
+         "icon": "🎨",
+         "title": "Make it yours",
+         "text": "Re-skin the beetle, the stars, the backdrop — haunted house? space station? You can even redraw the Maze sprite's walls in the paint editor (keep them solid — the bounce needs something to touch)."
+        }
+       ],
+       "img": "assets/img/l5/blueprint-maze.png",
+       "imgAlt": "The finished Door if/else: stars = 3 opens the door and stops the game, else the door stays locked",
+       "imgCaption": "The finished door check — yours should read like this."
+      },
+      "criteria": [
+       {
+        "id": "c1",
+        "name": "Every star counts",
+        "test": "Green flag. Collect all three stars, watching the stars counter after each one.",
+        "ask": "What did the counter do?",
+        "outcomes": [
+         {
+          "t": "0 → 1 → 2 → 3. One per star, every star.",
+          "pass": true
+         },
+         {
+          "t": "Stars vanished, but the counter stayed on 0.",
+          "fix": "The pickups still aren't counting. Each star needs change stars by 1 inside its touching-Beetle if — and check the counter exists: did you make the variable and set it to 0 at the flag?",
+          "mech": "Open each Star sprite: drag change stars by 1 into the if, between the sound and the hide."
+         },
+         {
+          "t": "ONE star counted — the other two didn't.",
+          "fix": "You've edited one star and left its siblings unfinished. Every sprite owns its own scripts (the Lesson 4 rule) — the block you added to Star1 doesn't exist on Star2 or Star3 until you put it there.",
+          "mech": "Click Star2 in the sprite list, add change stars by 1 to its if. Repeat for Star3."
+         },
+         {
+          "t": "The counter jumped past 3, or double-counted a star.",
+          "fix": "Either stars never resets (set stars to 0 at the flag) or a star counts more than once — the hide must come straight after the count, so a collected star can't keep counting.",
+          "mech": "Check the Beetle's flag script sets stars to 0, and each star's script goes: sound → change stars → hide, in that order."
+         }
+        ]
+       },
+       {
+        "id": "c2",
+        "name": "The door refuses early guests",
+        "test": "Fresh green flag. Go STRAIGHT to the door with zero stars and touch it.",
+        "ask": "What did the door do?",
+        "outcomes": [
+         {
+          "t": "Called me out — 'Locked! Collect all 3 stars.' — and the game carried on.",
+          "pass": true
+         },
+         {
+          "t": "Nothing. The door ignored me completely.",
+          "fix": "The doorbell rings, but nobody answers: your if/else isn't in the door's script yet. The kit only SENSES the beetle — deciding what to do about it is your job.",
+          "mech": "Open the Door sprite: the if/else goes in the gap between the two wait-until blocks (the STUDIO NOTE marks it)."
+         },
+         {
+          "t": "It let me escape with ZERO stars!",
+          "fix": "The branches are swapped or the condition is wrong. 'You escaped!' belongs in the TOP mouth — the branch that runs when stars = 3 is TRUE. Else is the door saying no.",
+          "mech": "Check the condition reads stars = 3, with 'You escaped!' in the top mouth and 'Locked!' in the else."
+         }
+        ]
+       },
+       {
+        "id": "c3",
+        "name": "Three stars open the door",
+        "test": "Collect all three stars, then walk to the door and touch it.",
+        "ask": "What happened at the door?",
+        "outcomes": [
+         {
+          "t": "It went green, said 'You escaped!' — and the game stopped for good.",
+          "pass": true
+         },
+         {
+          "t": "Still locked, even with all 3 stars banked.",
+          "fix": "The condition can't see your stars. It must compare the round orange stars VARIABLE with 3 — a typed word 'stars' is just text. And if QA check 1 isn't green yet, the counter may never have reached 3 at all.",
+          "mech": "In the (=) block: left side is the orange stars oval dragged from Variables, right side is 3."
+         },
+         {
+          "t": "It said 'You escaped!' but the game kept running behind the message.",
+          "fix": "An escape should end the run — that's the END part of the brief. After the say, the top mouth needs stop all (the Jellyfish Job block).",
+          "mech": "Control → stop all, right after 'You escaped!' inside the top mouth."
+         }
+        ]
+       },
+       {
+        "id": "c4",
+        "name": "The walls still bite",
+        "test": "After ALL your changes: run into a wall on purpose. Twice.",
+        "ask": "What did the wall do?",
+        "outcomes": [
+         {
+          "t": "Bounced me back to the start, both times. My edits broke nothing.",
+          "pass": true
+         },
+         {
+          "t": "I walked straight through a wall like a ghost.",
+          "fix": "Somewhere in the sprint, the wall rule got broken — a studio re-tests EVERYTHING before shipping, because new code can break old code. Restore the Beetle's wall script: it's a working if you can read.",
+          "mech": "The Beetle's second flag script must read: forever → if touching Maze → go to x -165 y 0."
+         },
+         {
+          "t": "The wall bounced me somewhere strange, not the start.",
+          "fix": "The go-to inside the wall rule has drifted. It should send the beetle to the exact start position — the same x and y the flag script uses.",
+          "mech": "Compare the wall rule's go-to with the flag script's go-to: both read x -165, y 0."
+         }
+        ]
+       }
+      ],
+      "stretch": {
+       "title": "The countdown",
+       "text": "Escape rooms have clocks. Add a SECOND variable: a timer ticking down from 60 (escape before zero!), or a moves counter for a par score. Make it change something real — then test it like everything else.",
+       "placeholder": "I added a ... variable that ... — tested and working."
+      }
+     },
+     "quiz": {
+      "name": "Quiz Master",
+      "file": "assets/games/quiz-master-starter.sb3",
+      "blueprint": {
+       "title": "The Quiz Master blueprint",
+       "intro": "Five moves — then the best bit: the questions become YOURS. The STUDIO NOTE on each tile marks where your if/else lands. (The host's q and answer variables are studio WIRING — don't rebuild them; you WILL still set each question's answer value when you write your own questions in the final step. Your NEW variable is the score.)",
+       "steps": [
+        {
+         "icon": "🧮",
+         "title": "Make the score",
+         "text": "Variables → Make a Variable → 'score', for all sprites. Its counter appears on stage — the audience needs to see it, so leave the tick on."
+        },
+        {
+         "icon": "🚩",
+         "title": "Set it at the flag",
+         "text": "On the host's when-flag script, before question 1: set score to 0. Variables remember between games — skip this and every new contestant inherits the last one's points."
+        },
+        {
+         "icon": "🔀",
+         "title": "The True tile's if/else — the big one",
+         "text": "Open the True Tile. Your if/else REPLACES the grey say block (the STUDIO NOTE marks it): if answer = true → say 'Correct!' for 1 second + change score by 1; else → say 'Not this time!' for 1 second. Keep broadcast next underneath — it fetches the next question. Notice the difference: (=) ASKS a question — 'is the answer true?' — while 'set' MAKES it so. Asking never changes anything."
+        },
+        {
+         "icon": "🔁",
+         "title": "Now the False tile",
+         "text": "Same job, one twist: this tile is right when the answer is FALSE — its condition reads answer = false. Praise and point in the top mouth, 'Not this time!' in the else, broadcast next stays at the bottom."
+        },
+        {
+         "icon": "📣",
+         "title": "The finale",
+         "text": "In the host's final message, swap the plain say for Operators' join: first slot 'That's the quiz! You scored ', second slot the orange score variable. Now the show ends with YOUR contestant's number in lights."
+        },
+        {
+         "icon": "🎨",
+         "title": "Write YOUR quiz",
+         "text": "Rewrite the three questions in the host's scripts on any topic you like — and set each question's answer to true or false to match. Wrong answer settings are the quizmaster's own bug: QA will find it."
+        }
+       ],
+       "img": "assets/img/l5/blueprint-quiz.png",
+       "imgAlt": "The finished True Tile if/else: answer = true scores and praises, else Not this time",
+       "imgCaption": "The finished tile check — yours should read like this."
+      },
+      "criteria": [
+       {
+        "id": "c1",
+        "name": "Right answers score",
+        "test": "Green flag. Answer question 1 CORRECTLY and watch the score.",
+        "ask": "What happened?",
+        "outcomes": [
+         {
+          "t": "'Correct!' — and the score climbed by exactly 1.",
+          "pass": true
+         },
+         {
+          "t": "It said 'Correct!' but the score never moved.",
+          "fix": "The praise runs but the points don't — change score by 1 must sit in the SAME top mouth as the 'Correct!' say. If it's below the if/else, it never met the choice.",
+          "mech": "Drag change score by 1 into the if's top mouth, next to say 'Correct!'."
+         },
+         {
+          "t": "Nothing at all — no reply, no point.",
+          "fix": "The tile still can't check answers — the if/else hasn't replaced the grey say block yet, or the whole script lost its broadcast. The tile needs: check the answer, respond, THEN broadcast next.",
+          "mech": "Open the tile: if/else replaces the grey say (STUDIO NOTE marks it); broadcast next stays at the bottom."
+         },
+         {
+          "t": "It said 'Not this time!' to a RIGHT answer.",
+          "fix": "The tile is checking the wrong word. The True tile asks answer = true — a misspelling ('ture'), a stray space, or the False tile's word in the True tile breaks the match every time.",
+          "mech": "Click the (=) block's text slot and retype: true — no stray spaces or extra characters."
+         }
+        ]
+       },
+       {
+        "id": "c2",
+        "name": "Wrong answers don't",
+        "test": "Fresh green flag. Answer question 1 WRONGLY on purpose. Watch the score AND what happens next.",
+        "ask": "What happened?",
+        "outcomes": [
+         {
+          "t": "'Not this time!' — no point, and the next question arrived anyway.",
+          "pass": true
+         },
+         {
+          "t": "A wrong answer still scored a point!",
+          "fix": "Points are leaking through the choice. If change score sits outside the if/else — or in the else mouth — every click pays out. Points live ONLY in the top mouth. Check BOTH tiles.",
+          "mech": "On each tile: change score by 1 belongs inside the if's TOP mouth, nowhere else."
+         },
+         {
+          "t": "The quiz got stuck — no reply ever came, or no next question.",
+          "fix": "The broadcast has gone missing. Right or wrong, the tile must still fetch the next question — broadcast next runs AFTER the if/else, every click.",
+          "mech": "Put broadcast next back at the bottom of the tile's click script, below the if/else."
+         }
+        ]
+       },
+       {
+        "id": "c3",
+        "name": "The score keeps up",
+        "test": "Play the whole quiz. Watch the score display on stage the entire time.",
+        "ask": "How did the display behave?",
+        "outcomes": [
+         {
+          "t": "On stage the whole time — climbing on rights, holding still on wrongs.",
+          "pass": true
+         },
+         {
+          "t": "There's no score on the stage at all.",
+          "fix": "The variable exists, but it's invisible — and a quiz show without a scoreboard is just a chat. The checkbox beside the variable puts it on stage.",
+          "mech": "Variables → tick the checkbox beside score."
+         },
+         {
+          "t": "It started from last game's total instead of 0.",
+          "fix": "Variables remember! Without set score to 0 at the flag, every new game inherits the old points — the sneakiest bug in the studio. Our own QA found this exact one in the reference build.",
+          "mech": "Add set score to 0 to the host's when-flag script, before question 1."
+         }
+        ]
+       },
+       {
+        "id": "c4",
+        "name": "A proper finale",
+        "test": "Answer all three questions, then watch what happens after question 3 — and try one extra tap.",
+        "ask": "How did the show end?",
+        "outcomes": [
+         {
+          "t": "The host announced my actual score — and late taps couldn't change it.",
+          "pass": true
+         },
+         {
+          "t": "It ended with a plain 'That's the quiz!' — no score in sight.",
+          "fix": "The finale hasn't been upgraded. The join block glues your words and the live score into one announcement — that's the difference between an ending and a FINALE.",
+          "mech": "Operators → join. Slot 1: 'That's the quiz! You scored '. Slot 2: the orange score variable. Drop the join into the final say."
+         },
+         {
+          "t": "It announced 'You scored score' — the word, not the number!",
+          "fix": "The word 'score' got typed where the VARIABLE should sit. The typed word is just text; the orange oval from Variables is the live number.",
+          "mech": "Drag the round orange score block into join's second slot, replacing the typed word."
+         }
+        ]
+       }
+      ],
+      "stretch": {
+       "title": "The bonus round",
+       "text": "Add a SECOND variable and raise the stakes: a streak that doubles the next point after two rights in a row, or lives — two wrong answers and the show ends early. Test it like everything else.",
+       "placeholder": "I added a ... variable that ... — tested and working."
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "press",
+   "engine": "gallery",
+   "title": "Press Night",
+   "minutes": 14,
+   "badge": {
+    "id": "pressnight",
+    "name": "Press Badge",
+    "icon": "assets/badges/newspaper.png",
+    "xp": 7
+   },
+   "config": {
+    "introTitle": "Press Night",
+    "intro": "The doors are open across the studio floor. Half the room exhibits while half tours — then you swap. You're about to give, and get, your first real reviews. Reviews are written under the Reviewer's Code, and every one is signed.",
+    "quota": 2,
+    "stems": {
+     "like": "I like…",
+     "wonder": "I wonder…"
+    },
+    "code": {
+     "rules": [
+      "KIND — you're reviewing the game, never the maker. Reviews build studios up.",
+      "SPECIFIC — name the exact moment. 'The wasabi near the end got me twice' beats 'it's good' every time.",
+      "HELPFUL — your 'I wonder' should hand the studio a real idea for version 2."
+     ],
+     "badExample": "\"it was good i liked it\" — kind, but it tells the studio nothing.",
+     "goodExample": "\"I like how the lives counter makes every drop feel risky — I wonder what a golden apple worth 3 points would add.\""
+    },
+    "rounds": {
+     "note": "Two rounds — your teacher calls the swap.",
+     "exhibitTip": "Game running FULL SCREEN in Scratch, this marquee beside it. Host your desk: demo it, take a bow, watch your reviews land live below. Still in beta? Exhibit anyway — critics review what's there.",
+     "tourTip": "Play 2–3 games at their desks first. Remember the studio names — back here, you'll pick them off the marquee and file your reviews."
+    },
+    "deskNote": "Play it at their desk first — and as you play, ask like a critic: does it REACT? TRACK? END? Then write it kind, specific, helpful.",
+    "likePlaceholder": "name the exact bit you liked, and why it works",
+    "wonderPlaceholder": "a question or idea that could make version 2 even better",
+    "v2": {
+     "prompt": "Read your reviews. Pick ONE that sparked something — what will version 2 of your game change, and why?",
+     "promptNoReviews": "While the reviews come in: what's the ONE thing version 2 of your game would change, and why?",
+     "placeholder": "In version 2 I would... because a review said..."
+    },
+    "wrap": {
+     "title": "The presses roll",
+     "note": "No scores. No rankings. Real games, real critics, real notes for version 2 — that's how studios grow. (Reviews that arrive after you wrap won't ping live — they'll be waiting in your record.) Save your .sb3 from Scratch (File → Save to your computer) if you want to keep building at home."
+    },
+    "closed": {
+     "title": "Press Night has closed",
+     "note": "The gallery ran live in class — exhibits, critics, reviews landing in real time. The marquee below is what's left of the night. One thing every studio still files: the V2 note."
+    }
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit Check",
+   "minutes": 3,
+   "config": {
+    "intro": "Two studio scenarios before you clock off — think like a designer AND a tester.",
+    "items": [
+     {
+      "id": "ex5-1",
+      "stem": "In an if/else block, what happens when the condition turns out to be FALSE?",
+      "options": [
+       "Nothing happens at all",
+       "The blocks in the ELSE mouth run",
+       "Both sets of blocks run, one after the other",
+       "Scratch stops the script with an error"
+      ]
+     },
+     {
+      "id": "ex5-2",
+      "stem": "A studio spent the whole sprint on gorgeous costumes and a stunning backdrop — but never added the lives variable. The game LOOKS incredible. Have they met the brief?",
+      "options": [
+       "Yes — it looks finished, so it is finished",
+       "Yes — great decoration can stand in for one missing check",
+       "No — the brief tests what the game DOES, and looks can't pass a QA test",
+       "No — because changing costumes isn't allowed"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "exitp",
+   "engine": "parsons",
+   "title": "Rebuild the Score Check",
+   "minutes": 2,
+   "config": {
+    "intro": "Last job of the night: five real blocks, one clean scoring loop — the exact pattern your game shipped with.",
+    "item": {
+     "id": "ex5-p",
+     "prompt": "The score starts at zero. Every time the sprite touches the ball, the score goes up by one; otherwise the game just takes a breath — and keeps checking, forever.",
+     "blocks": [
+      "else → wait 0.1 seconds",
+      "when green flag clicked",
+      "forever",
+      "set score to 0",
+      "if <touching Ball?> then → change score by 1"
+     ]
+    }
+   }
+  },
+  {
+   "id": "selfeval",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "statements": [
+     "I can use if/else to make my game react differently in different situations.",
+     "I can test my own game against a checklist before sharing it.",
+     "I can tell the difference between a game that looks finished and one that actually works."
+    ],
+    "difficulty": true,
+    "comment": true
+   }
+  }
+ ],
+ "keysEnc": "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"
+}

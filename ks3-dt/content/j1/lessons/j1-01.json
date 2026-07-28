@@ -1,0 +1,664 @@
+{
+ "id": "j1-01",
+ "year": "j1",
+ "num": 1,
+ "title": "Mission Control",
+ "tagline": "Your induction. Your codename. Your first badges.",
+ "mode": "quest",
+ "durationMin": 60,
+ "objectives": [
+  "I can log in to my C2k account, find my way around the DT platform, and locate my saved work.",
+  "I can explain what locked and unlocked lessons mean and where to go if I get stuck.",
+  "I know the rules of the DT rooms, how to keep my account safe, and why my work lives where it can follow me."
+ ],
+ "chunks": [
+  {
+   "id": "briefing",
+   "engine": "briefing",
+   "title": "Mission Briefing",
+   "minutes": 3,
+   "config": {
+    "clearance": "CLEARANCE LEVEL: J1",
+    "headline": "You have been recruited.",
+    "lines": [
+     "Our Lady's needs a new generation of Digital Agents.",
+     "Your mission spans one year: seventeen operations across Your Digital World.",
+     "Machines. Code. Networks. Design. You will master all of them.",
+     "This is Mission Control. Every operation you complete unlocks the next badge in your Agent File.",
+     "Your induction starts now."
+    ],
+    "video": null,
+    "cta": "Begin induction"
+   }
+  },
+  {
+   "id": "calibration",
+   "engine": "items",
+   "title": "Calibration Ping",
+   "minutes": 3,
+   "config": {
+    "variant": "calibration",
+    "intro": "Three warm-up pings to calibrate your Agent console. These are practice taps - nothing here is scored, and none of it is a test. Tap what you think, and watch the console answer.",
+    "items": [
+     {
+      "id": "cal-1",
+      "stem": "This console answers back. What happens the SECOND you tap an option?",
+      "options": [
+       "Nothing until the whole lesson is finished",
+       "It tells you straight away whether you were right",
+       "You have to press a separate Check button first",
+       "Your teacher gets a message about it"
+      ]
+     },
+     {
+      "id": "cal-2",
+      "stem": "What does a padlock on a lesson tile mean?",
+      "options": [
+       "The lesson is broken",
+       "It isn't unlocked yet - your teacher opens it",
+       "You did badly on it",
+       "It's a bonus lesson"
+      ]
+     },
+     {
+      "id": "cal-3",
+      "stem": "See the round ? button in the corner? Tap-test: what does Mission Control give you when you're stuck?",
+      "options": [
+       "The answer to whatever you're stuck on",
+       "A way to skip the mission",
+       "The order to try things in: re-read the card, ask your partner, then hand up",
+       "A message straight to your teacher"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "b1-login",
+   "engine": "steps",
+   "title": "Badge 1 — Login & Ground Rules",
+   "minutes": 8,
+   "badge": {
+    "id": "login",
+    "name": "Login & Ground Rules",
+    "icon": "assets/badges/shield.png",
+    "xp": 15
+   },
+   "config": {
+    "intro": "Every agent must get into HQ unaided. Prove you can handle your C2k identity — then lock in the ground rules.",
+    "steps": [
+     {
+      "icon": "🎫",
+      "title": "Find your credential slip",
+      "text": "Your teacher has given you a slip with your C2k username. It looks like: jbloggs123. Your username plus @c2ken.net is your school identity — it works on EVERY school computer.",
+      "confirm": "I can see my username on my slip"
+     },
+     {
+      "icon": "⌨️",
+      "title": "Type your username — practice run",
+      "text": "Type your username into the practice console below, exactly as it appears on your slip. Watch for sneaky spaces and Caps Lock!",
+      "sim": "username"
+     },
+     {
+      "icon": "🔒",
+      "title": "Your password stays YOURS",
+      "text": "Your password is the one thing you never type where anyone can see, never share — not even with your best friend — and never save in a file. If you think someone knows it, tell a teacher and change it.",
+      "confirm": "I understand my password is only for me"
+     },
+     {
+      "icon": "🚪",
+      "title": "Sign out — every time",
+      "text": "When you finish on ANY school computer, sign out. It locks your files and your privacy behind you. Staying logged in is like walking off with your locker wide open — and anything done in your account looks like YOU did it.",
+      "confirm": "I'll sign out every time I finish"
+     }
+    ],
+    "itemsIntro": "Four quick ground-rule checks to seal the badge:",
+    "items": [
+     {
+      "id": "b1-r1",
+      "stem": "A classmate is upset by something she's seen online. What do you do?",
+      "options": [
+       "Tell a teacher or trusted adult straight away",
+       "Ignore it — not your problem",
+       "Screenshot it and share it around",
+       "Tell her to log off and forget it"
+      ]
+     },
+     {
+      "id": "b1-r2",
+      "stem": "Your C2k login belongs to…",
+      "options": [
+       "Just you — no one else, ever",
+       "You and your close friends",
+       "Your whole class",
+       "Anyone who can guess it"
+      ]
+     },
+     {
+      "id": "b1-r3",
+      "stem": "Something strange pops up on your screen. What's the agent move?",
+      "options": [
+       "Ask the teacher before touching anything",
+       "Click it quickly to make it go away",
+       "Turn the monitor off and say nothing",
+       "Unplug the computer"
+      ]
+     },
+     {
+      "id": "b1-r4",
+      "stem": "You've brought a drink with you to the DT room. What's the rule?",
+      "options": [
+       "It stays packed away — no food or drink near the machines",
+       "It's fine on the desk if the lid is on",
+       "Keep it on the floor so it can't hit the keyboard",
+       "Finish it fast before the lesson starts properly"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "b2-navigator",
+   "engine": "tour",
+   "title": "Badge 2 — Navigator",
+   "minutes": 9,
+   "badge": {
+    "id": "navigator",
+    "name": "Navigator",
+    "icon": "assets/badges/compass.png",
+    "xp": 15
+   },
+   "config": {
+    "intro": "Time to learn your way around Mission Control itself. Follow the beacon — it will light up each part of your console.",
+    "stops": [
+     {
+      "target": "grid",
+      "title": "The Mission Board",
+      "text": "Seventeen operations. This is your whole year at a glance — every lesson you'll ever do in DT lives on this board."
+     },
+     {
+      "target": "locks",
+      "title": "Locked & Unlocked",
+      "text": "A padlock means 'not yet' — your teacher unlocks each operation when it's time. Finished ones stay open forever, so you can always go back."
+     },
+     {
+      "target": "progress",
+      "title": "Your Agent File",
+      "text": "Your badges, your XP, your progress ring. This is private — only you and your teacher can see it. No public scoreboards here."
+     },
+     {
+      "target": "help",
+      "title": "The Help Beacon",
+      "text": "Stuck? The beacon is always in the corner. It never gives you the answer — but it always gives you a way forward. And your teacher is beacon number two."
+     }
+    ],
+    "itemsIntro": "Navigator check — six quick ones, then the badge is yours:",
+    "items": [
+     {
+      "id": "b2-r1",
+      "stem": "Why do we take screen breaks and sit properly at a computer?",
+      "options": [
+       "It protects your eyes and posture over long stretches",
+       "Because the teacher says so",
+       "To save electricity",
+       "Screens stop working if you stare too long"
+      ]
+     },
+     {
+      "id": "b2-r2",
+      "stem": "A lesson tile shows a padlock. What does that tell you?",
+      "options": [
+       "Your teacher hasn't unlocked it yet",
+       "The lesson is broken",
+       "You're banned from it",
+       "It costs XP to open"
+      ]
+     },
+     {
+      "id": "b2-r3",
+      "stem": "You finish a lesson. Next fortnight, can you still open it?",
+      "options": [
+       "Yes — completed operations stay open forever",
+       "No — lessons lock again behind you",
+       "Only if the teacher re-unlocks it",
+       "Only at home"
+      ]
+     },
+     {
+      "id": "b2-r4",
+      "stem": "You arrive at the DT room before your teacher. What do you do?",
+      "options": [
+       "Line up quietly outside, single file, until your teacher arrives",
+       "Go in and get a head start on logging in",
+       "Go in — but leave the door propped open",
+       "Send one person in to save seats"
+      ]
+     },
+     {
+      "id": "b2-r5",
+      "stem": "The mouse at your station is cracked and the buttons stick. Agent move?",
+      "options": [
+       "Report it to your teacher straight away",
+       "Quietly swap it with the one at the next desk",
+       "Press harder until it behaves",
+       "Say nothing in case you get the blame"
+      ]
+     },
+     {
+      "id": "b2-r6",
+      "stem": "The bell is about to go. Before you leave the DT room, you…",
+      "options": [
+       "Push your chair in, tidy your area and sign out",
+       "Just go — the next class will sort it",
+       "Stay logged in to save time next fortnight",
+       "Stack the keyboard on top of the monitor to be helpful"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "b3-vault",
+   "engine": "vault",
+   "title": "Badge 3 — The Vault",
+   "minutes": 9,
+   "badge": {
+    "id": "vault",
+    "name": "The Vault",
+    "icon": "assets/badges/vault.png",
+    "xp": 30
+   },
+   "config": {
+    "paired": true,
+    "intro": "Six files have landed in your Inbox. File each one where it truly belongs. Choose wrong and the Vault returns it — no hints, no answers. Reason it out from the labels.",
+    "pairPrompt": "Work as a PAIR on this one: agree together before you release each file. Say your reason out loud — 'it goes there because…' — then drop.",
+    "channelPrompt": "You're on this Vault TOGETHER, from different machines. Agree in the channel before whoever's at the controls drops a file — 'it goes there because…' — then release.",
+    "files": [
+     {
+      "id": "f-homework",
+      "label": "English Homework.docx",
+      "icon": "📄"
+     },
+     {
+      "id": "f-pekit",
+      "label": "PE Kit List (from school).pdf",
+      "icon": "👟"
+     },
+     {
+      "id": "f-dtproject",
+      "label": "DT Project.sb3",
+      "icon": "🎮"
+     },
+     {
+      "id": "f-photo",
+      "label": "My Birthday Photo.jpg",
+      "icon": "📸"
+     },
+     {
+      "id": "f-password",
+      "label": "my passwords.txt",
+      "icon": "🔑"
+     },
+     {
+      "id": "f-meme",
+      "label": "funny meme.png",
+      "icon": "😂"
+     }
+    ],
+    "folders": [
+     {
+      "id": "d-dt",
+      "label": "DT Work",
+      "color": "#E4B824"
+     },
+     {
+      "id": "d-school",
+      "label": "School",
+      "color": "#4FA3D9"
+     },
+     {
+      "id": "d-personal",
+      "label": "Personal",
+      "color": "#3BAF7E"
+     },
+     {
+      "id": "d-never",
+      "label": "Do Not Save Here",
+      "color": "#C94F6D"
+     }
+    ],
+    "scoreLabel": "Vault Integrity",
+    "debrief": {
+     "sync": "Freeze. You and your partner just worked on the SAME thing at the SAME moment, agreeing every move — like a video call: everyone there together, reacting live. Computing's name for working-together-live is SYNCHRONOUS (say: SINK-ron-us — 'at the same time').",
+     "syncLive": "Freeze. Think about what just happened: you and your partner were on DIFFERENT machines, yet you worked on the SAME Vault at the SAME moment — every message answered the second it was sent, every drop appearing on both screens at once. Computing's name for working-together-live is SYNCHRONOUS (say: SINK-ron-us — 'at the same time'). You didn't just learn the word — you just DID it, over the school network.",
+     "syncCatchup": "In class this was a pair job: two agents, two machines, one shared Vault — agreeing every move at the same moment over a live channel, like a video call. Computing's name for working-together-live is SYNCHRONOUS (say: SINK-ron-us — 'at the same time'). You've just proven the solo version works too.",
+     "async": "Now think of sending a message tonight that your friend doesn't read until tomorrow. You were never together — but the work still moved, because it waited in a shared place. That's ASYNCHRONOUS ('NOT at the same time'). Your Drive does both: work on something live with a classmate, or leave it waiting for future-you to open — even at home. You'll use both all year."
+    }
+   }
+  },
+  {
+   "id": "realvault",
+   "engine": "steps",
+   "title": "The Real Vault",
+   "minutes": 3,
+   "config": {
+    "intro": "The Vault you just filed was a simulation. Time to stand in the real one.",
+    "steps": [
+     {
+      "icon": "🗄️",
+      "title": "Open your real Drive",
+      "text": "Open a NEW tab and go to drive.google.com — on a school computer it signs you in by itself. That page is YOUR real Vault: it follows your login to any device, even at home.",
+      "confirm": "I can see my Google Drive"
+     },
+     {
+      "icon": "➕",
+      "title": "Spot the + New button",
+      "text": "Top-left: the + New button. That's how folders get made. Your next SIDE QUEST — Files That Follow You — has you build your real folder system right there: School, DT Work, the lot. For now, just know where it lives.",
+      "confirm": "I found the + New button"
+     }
+    ]
+   }
+  },
+  {
+   "id": "b4-exam",
+   "engine": "diagnostic",
+   "title": "Badge 4 — The Licence Exam",
+   "minutes": 15,
+   "badge": {
+    "id": "licence",
+    "name": "Licence Exam",
+    "icon": "assets/badges/licence.png",
+    "xp": 25
+   },
+   "config": {
+    "intro": "Every agent's file opens with a baseline scan — sixteen questions about the digital world as you find it TODAY. This is not a test you can fail: it simply seals your Agent File so future-you can see how far you've come. Answer on your own, no conferring. Each answer is logged, not marked.",
+    "ackText": "Logged to your Agent File",
+    "solo": true,
+    "items": [
+     {
+      "id": "bl-01",
+      "stem": "Which of these is a piece of HARDWARE?",
+      "options": [
+       "Google Docs",
+       "The keyboard",
+       "A website",
+       "A password"
+      ]
+     },
+     {
+      "id": "bl-02",
+      "stem": "What does 'logging in' actually do?",
+      "options": [
+       "Proves who you are so the computer opens YOUR account",
+       "Turns the computer on",
+       "Connects the school to the internet",
+       "Saves your work automatically"
+      ]
+     },
+     {
+      "id": "bl-03",
+      "stem": "Which part of a computer keeps your files safe when the power is off?",
+      "options": [
+       "The screen",
+       "The storage drive",
+       "The mouse",
+       "The Wi-Fi"
+      ]
+     },
+     {
+      "id": "bl-04",
+      "stem": "A printer is an example of an…",
+      "options": [
+       "Input device",
+       "Output device",
+       "Storage device",
+       "Operating system"
+      ]
+     },
+     {
+      "id": "bl-05",
+      "stem": "Which of these connects a laptop to the internet WITHOUT a cable?",
+      "options": [
+       "Wi-Fi",
+       "USB",
+       "HDMI",
+       "The power button"
+      ]
+     },
+     {
+      "id": "bl-06",
+      "stem": "A website offers a free prize if you type in your home address. What should you do?",
+      "options": [
+       "Don't enter it — and check with a trusted adult first",
+       "Enter it quickly before the prize runs out",
+       "Enter a friend's address instead",
+       "Only give it to the website's chat helper"
+      ]
+     },
+     {
+      "id": "bl-07",
+      "stem": "Which of these is the strongest password?",
+      "options": [
+       "Newry2013",
+       "password1",
+       "Heron!Maple7sky",
+       "12345678"
+      ]
+     },
+     {
+      "id": "bl-08",
+      "stem": "A stranger in an online game asks which school you go to. Best response?",
+      "options": [
+       "Don't say — and tell a trusted adult if they keep asking",
+       "Tell them — it's just being friendly",
+       "Make up a different school",
+       "Ask which school THEY go to first"
+      ]
+     },
+     {
+      "id": "bl-09",
+      "stem": "You need a piece of work you saved last week. Where do you look?",
+      "options": [
+       "Your Drive / documents folder",
+       "The recycle bin",
+       "The keyboard settings",
+       "You'd have to redo it"
+      ]
+     },
+     {
+      "id": "bl-10",
+      "stem": "Which key gives you a CAPITAL letter while you hold it down?",
+      "options": [
+       "Shift",
+       "Tab",
+       "Ctrl",
+       "Esc"
+      ]
+     },
+     {
+      "id": "bl-11",
+      "stem": "To COPY something you've selected, you press…",
+      "options": [
+       "Ctrl + C",
+       "Ctrl + V",
+       "Ctrl + Z",
+       "Alt + F4"
+      ]
+     },
+     {
+      "id": "bl-12",
+      "stem": "A robot is making toast. Its instructions so far:\n1) Plug in the toaster\n2) ???\n3) Press the lever down\nWhat is the missing step 2?",
+      "options": [
+       "Put the bread in",
+       "Butter the toast",
+       "Unplug the toaster",
+       "Eat the toast"
+      ]
+     },
+     {
+      "id": "bl-13",
+      "stem": "What comes next in the pattern? 2, 4, 6, 8, …",
+      "options": [
+       "10",
+       "9",
+       "12",
+       "16"
+      ]
+     },
+     {
+      "id": "bl-14",
+      "stem": "A friend follows your instructions EXACTLY and still gets the wrong result. The most likely reason?",
+      "options": [
+       "Your instructions missed a step or weren't exact enough",
+       "Your friend wasn't listening properly",
+       "Instructions don't really matter",
+       "It's impossible to say"
+      ]
+     },
+     {
+      "id": "bl-15",
+      "stem": "What IS the internet, mainly?",
+      "options": [
+       "Millions of computers connected together, sharing information",
+       "One giant computer in America",
+       "An app you install",
+       "Another name for Wi-Fi"
+      ]
+     },
+     {
+      "id": "bl-16",
+      "stem": "Your best friend asks for your C2k password 'just to check something'. What do you do?",
+      "options": [
+       "Never share it — passwords are only for you",
+       "Give it to her — she's your best friend",
+       "Write it on a note so you're not saying it out loud",
+       "Change it to something she already knows"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "b5-codename",
+   "engine": "codename",
+   "title": "Badge 5 — Codename",
+   "minutes": 5,
+   "badge": {
+    "id": "codename",
+    "name": "Codename & Oath",
+    "icon": "assets/badges/id.png",
+    "xp": 15
+   },
+   "config": {
+    "intro": "Your Agent File is sealed. One thing remains: choose your codename and take the oath.",
+    "adjectives": [
+     "Amber",
+     "Copper",
+     "Rowan",
+     "Scarlet",
+     "Silver",
+     "Auburn",
+     "Midnight",
+     "Crimson",
+     "Emerald",
+     "Ivory",
+     "Cobalt",
+     "Coral",
+     "Hazel",
+     "Indigo",
+     "Jade",
+     "Luna",
+     "Maple",
+     "Nova",
+     "Opal",
+     "Pearl",
+     "Ruby",
+     "Sable",
+     "Topaz",
+     "Willow"
+    ],
+    "nouns": [
+     "Falcon",
+     "Fox",
+     "Heron",
+     "Otter",
+     "Swift",
+     "Wren",
+     "Comet",
+     "Ember",
+     "Harbour",
+     "Compass",
+     "Beacon",
+     "Meadow",
+     "River",
+     "Storm",
+     "Summit",
+     "Haven",
+     "Aurora",
+     "Breeze",
+     "Cascade",
+     "Glacier",
+     "Horizon",
+     "Lantern",
+     "Meteor",
+     "Quill"
+    ],
+    "oath": [
+     "I look after my own login, and only mine.",
+     "I save my work where it can follow me.",
+     "I ask for help when I'm stuck — and help others when they are.",
+     "If I miss a mission, I catch it up before our next one.",
+     "I am patient with myself while I learn."
+    ],
+    "belonging": {
+     "video": null,
+     "title": "A message from Mission Command",
+     "lines": [
+      "Before you go — one thing every new agent needs to hear.",
+      "In your first weeks here, some things will feel hard. Logins will fail. Code will break. Files will hide. That is not a sign you're bad at this — it's what learning technology feels like for EVERYONE, including every agent who came before you and every adult in this building.",
+      "The feeling is normal, and it is temporary. Agents who keep going find that the thing that felt impossible in September feels easy by June.",
+      "You belong in this room, you belong in this subject, and your Agent File is open.",
+      "Welcome to the mission."
+     ]
+    }
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit Check",
+   "minutes": 3,
+   "config": {
+    "intro": "One final scenario before you clock off, Agent.",
+    "items": [
+     {
+      "id": "ex-1",
+      "stem": "It's Friday evening. You want to show your family the work you finished in school today. Where did it need to be saved for you to open it AT HOME?",
+      "options": [
+       "In my Google Drive — it follows my login on any device, anywhere",
+       "On the school computer I was using",
+       "It's impossible — school work can only be seen in school",
+       "On any school computer, as long as I remember which room"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "selfeval",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "statements": [
+     "I can log into my C2k account and find my saved work.",
+     "I know the rules of the DT rooms.",
+     "I know one way to make a strong password."
+    ],
+    "difficulty": true,
+    "comment": true
+   }
+  }
+ ],
+ "keysEnc": "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"
+}

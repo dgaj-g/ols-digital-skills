@@ -1,0 +1,162 @@
+{
+ "id": "j1-sq1",
+ "year": "j1",
+ "num": "S1",
+ "title": "Files That Follow You",
+ "tagline": "Build your real cloud vault — done before Lesson 3.",
+ "mode": "sidequest",
+ "durationMin": 20,
+ "objectives": [
+  "I can build my real folder system in Google Drive and find it from any device.",
+  "I know OneDrive and Google Drive are two separate cloud stores, and which kind of work lives in each.",
+  "I can create, save and re-open a file in the cloud."
+ ],
+ "chunks": [
+  {
+   "id": "sq-brief",
+   "engine": "briefing",
+   "title": "Side Quest Briefing",
+   "minutes": 1,
+   "config": {
+    "clearance": "SIDE QUEST · SELF-PACED",
+    "headline": "Files that follow you.",
+    "lines": [
+     "In Mission Control you filed pretend files into a pretend Vault.",
+     "This side quest is the real thing: you'll build your actual folders, in your actual cloud, and HQ will inspect the result.",
+     "Twenty minutes, any device, any time — but have it done before Lesson 3.",
+     "Two clouds, one agent. Let's set them both up."
+    ],
+    "video": null,
+    "cta": "Accept the side quest"
+   }
+  },
+  {
+   "id": "sq-drive",
+   "engine": "steps",
+   "title": "Build your Drive Vault",
+   "minutes": 7,
+   "config": {
+    "intro": "Google Drive is the cloud that follows your C2k login to ANY device — school, home, even a phone. Time to build your Vault in it, for real.",
+    "steps": [
+     {
+      "icon": "🗄️",
+      "title": "Open your real Drive",
+      "text": "Open a new tab and go to drive.google.com — on a school computer it signs you in by itself. At home, sign in with your C2k email (yourusername@c2ken.net).",
+      "confirm": "My Drive is open"
+     },
+     {
+      "icon": "📁",
+      "title": "Create your School folder",
+      "text": "Click + New (top-left) → New folder. Name it exactly: School — capital S, nothing else. This is the top of your filing system, just like the Vault.",
+      "confirm": "My School folder exists"
+     },
+     {
+      "icon": "🎮",
+      "title": "Create DT Work inside School",
+      "text": "Open your School folder (double-click it), then + New → New folder again. Name this one exactly: DT Work. Everything you make in DT lives here — and your DT teacher can find it when you share it.",
+      "confirm": "DT Work is inside School"
+     },
+     {
+      "icon": "📄",
+      "title": "Put your first real file in it",
+      "text": "Inside DT Work: + New → Google Docs. A blank document opens — type your codename, then close the tab. No save button needed: Google Docs saves to the cloud as you type.",
+      "confirm": "My first file is in DT Work"
+     }
+    ]
+   }
+  },
+  {
+   "id": "sq-inspect",
+   "engine": "drivecheck",
+   "title": "HQ Inspection",
+   "minutes": 3,
+   "badge": {
+    "id": "vaultbuilder",
+    "name": "Vault Builder",
+    "icon": "assets/badges/vault.png",
+    "xp": 20
+   },
+   "config": {
+    "intro": "Talk is cheap, Agent. HQ will now look inside your actual Google Drive and check the Vault is really there.",
+    "checks": [
+     {
+      "id": "school",
+      "label": "A folder named School in My Drive"
+     },
+     {
+      "id": "dtwork",
+      "label": "A folder named DT Work inside School"
+     }
+    ],
+    "passText": "Inspection PASSED. Your Vault is real, and it will follow you to every device you ever sign in on.",
+    "failText": "Not there yet — that's fixable in under a minute. Check the exact names and try the inspection again."
+   }
+  },
+  {
+   "id": "sq-onedrive",
+   "engine": "steps",
+   "title": "The other cloud: OneDrive",
+   "minutes": 6,
+   "config": {
+    "intro": "Here's the twist: your C2k login comes with TWO clouds. OneDrive is Microsoft's — it's where Word, Excel and PowerPoint work lives for lots of your other subjects. Same idea as Drive, different building.",
+    "steps": [
+     {
+      "icon": "☁️",
+      "title": "Open your OneDrive",
+      "text": "Log into My-School, the way you do every day. In the Launch panel, click Microsoft 365 Web Apps. When it opens, click the squares menu in the very top-left corner and choose OneDrive.",
+      "confirm": "My OneDrive is open"
+     },
+     {
+      "icon": "📁",
+      "title": "Build a School folder here too",
+      "text": "Click + New → Folder and name it exactly: School. Now both of your clouds have the same tidy top level — future-you will be very grateful.",
+      "confirm": "OneDrive has a School folder"
+     },
+     {
+      "icon": "🧭",
+      "title": "Know which cloud is which",
+      "text": "The rule of thumb: Word / Excel / PowerPoint work → OneDrive. Google Docs and everything you make in DT → Google Drive. They are two SEPARATE places — a file saved in one is not in the other.",
+      "confirm": "I know which cloud my work goes in"
+     }
+    ]
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit Check",
+   "minutes": 2,
+   "config": {
+    "intro": "One scenario before the side quest closes.",
+    "items": [
+     {
+      "id": "sq-ex1",
+      "stem": "You typed an essay in Word Online for English, and made a quiz in Google Docs for DT. Which is TRUE?",
+      "options": [
+       "The essay is in OneDrive and the quiz is in Google Drive — two separate clouds",
+       "Both files are in the same place, because it's the same login",
+       "The files copy themselves between the two clouds overnight",
+       "Neither is saved unless you clicked a save button"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "selfeval",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 1,
+   "config": {
+    "statements": [
+     "I can open my Google Drive from any device.",
+     "I built my School and DT Work folders for real.",
+     "I know OneDrive and Google Drive are two different clouds."
+    ],
+    "difficulty": true,
+    "comment": true
+   }
+  }
+ ],
+ "keysEnc": "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"
+}

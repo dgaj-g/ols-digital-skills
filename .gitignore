@@ -2,3 +2,4 @@
 node_modules/
 .vscode/
 *.log
+ks3-dt/content/dev-keys.json

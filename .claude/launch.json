@@ -4,8 +4,35 @@
     {
       "name": "ols-digital-skills",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "5173", "--directory", "/Users/damiengartland/Sites/ols-digital-skills"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5173",
+        "--directory",
+        "/Users/damiengartland/Sites/ols-digital-skills"
+      ],
       "port": 5173
+    },
+    {
+      "name": "ks3dt-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8917",
+        "--directory",
+        "/Users/damiengartland/Sites/ols-digital-skills"
+      ],
+      "port": 8917
+    },
+    {
+      "name": "digital-skills-l4",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "ks3-dt/tools/dev-static.js",
+        "8096"
+      ],
+      "port": 8096
     }
   ]
 }

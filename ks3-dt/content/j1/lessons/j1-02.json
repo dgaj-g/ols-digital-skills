@@ -1,0 +1,254 @@
+{
+ "id": "j1-02",
+ "year": "j1",
+ "num": 2,
+ "title": "Make It Move",
+ "tagline": "Your first physical computer reacts to you.",
+ "mode": "quest",
+ "durationMin": 60,
+ "objectives": [
+  "I can explain the difference between an input and an output using real examples.",
+  "I can build a working program on a real micro:bit that reacts to an input.",
+  "I can test my program and use what happens (or doesn't) to find and fix problems myself."
+ ],
+ "chunks": [
+  {
+   "id": "hook",
+   "engine": "briefing",
+   "title": "Mission Briefing",
+   "minutes": 2,
+   "config": {
+    "clearance": "OPERATION: MAKE IT MOVE",
+    "headline": "Something happens. Something reacts.",
+    "lines": [
+     "Every lift button, every pedestrian crossing, every step-counter on a wrist runs on one single idea: an INPUT triggers an OUTPUT.",
+     "Today you build your first physical computer — a real device, in your real hands, that reacts when you tell it to.",
+     "By the end of the hour it will answer your button press, and even your shake, with light signals of its own."
+    ],
+    "images": [
+     {
+      "src": "assets/img/l2/l2-lift.jpg",
+      "alt": "A lift control panel of buttons",
+      "caption": "A lift's buttons — pure input"
+     },
+     {
+      "src": "assets/img/l2/l2-crossing.jpg",
+      "alt": "A UK pedestrian crossing button unit",
+      "caption": "Press (input) → green man (output)"
+     },
+     {
+      "src": "assets/img/l2/l2-tracker.jpg",
+      "alt": "Fitness tracker devices",
+      "caption": "Trackers sensing every step you take"
+     }
+    ],
+    "video": null,
+    "cta": "Begin the mission"
+   }
+  },
+  {
+   "id": "howto",
+   "engine": "video",
+   "title": "Field Manual: MakeCode Basics",
+   "minutes": 5,
+   "config": {
+    "src": "assets/video/l2/l2-tutorial.mp4",
+    "fallback": "If the video won't load (wifi?), no drama — your teacher's demo covers everything, and every rung card repeats the steps you need.",
+    "chapters": [
+     {
+      "t": 0,
+      "label": "Find MakeCode"
+     },
+     {
+      "t": 52,
+      "label": "First blocks"
+     },
+     {
+      "t": 121,
+      "label": "Onto the real micro:bit"
+     },
+     {
+      "t": 197,
+      "label": "Test like an agent"
+     }
+    ]
+   }
+  },
+  {
+   "id": "ladder",
+   "engine": "ladder",
+   "title": "The Signal Relay Ladder",
+   "minutes": 36,
+   "badge": {
+    "id": "signal",
+    "name": "Signal Relay",
+    "icon": "assets/badges/bolt.png",
+    "xp": 15
+   },
+   "config": {
+    "title": "The Signal Relay Ladder",
+    "intro": "Four rungs. Each one is a target behaviour your pair must make REAL on the micro:bit in your hands. Nobody marks this — the device itself is the judge. Take turns: one of you builds the blocks, the other holds the card and presses the button to test. Swap every rung.",
+    "makecode": {
+     "url": "https://makecode.microbit.org/",
+     "label": "Open MakeCode"
+    },
+    "unplugged": {
+     "title": "Rung 1 — The Human Circuit",
+     "lines": [
+      "Stand up with your partner. One of you is the SENSOR, the other is the ACTUATOR. No screens for this rung — you two ARE the machine.",
+      "SENSOR: mime pressing an invisible button. ACTUATOR: the instant you see it, throw your arms up — that's your LED heart lighting.",
+      "New input: SENSOR mimes shaking a device. ACTUATOR: wave both hands — that's your scrolling message.",
+      "Swap roles and run both signals again.",
+      "Now say it out loud together: the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT."
+     ],
+     "confirm": "We both played Sensor and Actuator — and said the magic sentence",
+     "soloLines": [
+      "No screens for this rung — and no partner needed on a catch-up: YOU are the whole machine.",
+      "With one hand, mime pressing an invisible button. The instant you do, throw your other arm up — that's your LED heart lighting.",
+      "New input: mime shaking a device with one hand — wave the other — that's your scrolling message.",
+      "Now say it out loud (quietly counts): the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT."
+     ],
+     "soloConfirm": "I ran both signals — and said the magic sentence"
+    },
+    "rungs": [
+     {
+      "id": "r2",
+      "title": "Rung 2 — First Signal",
+      "target": "On button A pressed → show a HEART icon.",
+      "img": "assets/img/l2/rung2.png",
+      "test": "Flash it to the micro:bit, then press the REAL button A (or the on-screen simulator if your device is sulking). Did the heart appear?",
+      "hint": "Is your 'show icon' block sitting INSIDE the 'on button A pressed' block? A block floating on its own never runs."
+     },
+     {
+      "id": "r3",
+      "title": "Rung 3 — Two Signals",
+      "target": "Button A shows a HEART. Button B shows a HAPPY face. Two inputs, two different outputs.",
+      "img": "assets/img/l2/rung3.png",
+      "test": "Press A, then B, on the device. Do you get two DIFFERENT icons?",
+      "hint": "You need TWO separate 'on button pressed' blocks — one set to A, one set to B. Check the little dropdown on each one."
+     },
+     {
+      "id": "r4",
+      "title": "Rung 4 — The Vanishing Ghost",
+      "target": "On shake → show the ghost icon, hold it on screen for one second, then clear the screen.",
+      "img": "assets/img/l2/rung4.png",
+      "test": "Give it a real shake. Does the ghost appear, hold, then vanish cleanly — every single time? Now the proof it matters: DELETE the pause block and shake again. The ghost never gets a chance to appear at all. Put the pause back.",
+      "hint": "The ORDER inside 'on shake' matters: show icon, THEN pause (ms) 1000, THEN clear screen. The pause is the only thing giving the ghost time on screen — without it, 'clear screen' wipes it before your eyes can catch it and you see nothing at all. (Rung 2's heart stayed put because nothing came along to clear it.)"
+     }
+    ],
+    "stretch": {
+     "title": "Stretch — Compound Signal",
+     "target": "Press A + B TOGETHER → heart, a half-second pause, then a happy face. One input, a whole light sequence.",
+     "img": "assets/img/l2/stretch.png",
+     "test": "Press A + B together on the real device — heart, half-second pause, then happy face. Every single time?"
+    },
+    "introSolo": "Four rungs. Each is a target behaviour YOU make real on a micro:bit (or the on-screen simulator) — catch-up solo mission, so you do every job yourself: build the blocks AND run the real test. Nobody marks this: the device itself is the judge."
+   }
+  },
+  {
+   "id": "bank",
+   "engine": "artifact",
+   "title": "Bank Your Build",
+   "minutes": 6,
+   "badge": {
+    "id": "bank",
+    "name": "Vault Keeper",
+    "icon": "assets/badges/disk.png",
+    "xp": 6
+   },
+   "config": {
+    "title": "Bank your build",
+    "intro": "A build that lives on one computer is a build you can lose. Agents bank their work in the Vault — then it follows your login to ANY machine, even at home.",
+    "kinds": [
+     "hex"
+    ],
+    "hours": 3,
+    "steps": [
+     {
+      "icon": "💾",
+      "title": "Download your build",
+      "text": "In MakeCode press the purple Download button. A file ending in .hex lands in the computer's Downloads folder — that file IS your program."
+     },
+     {
+      "icon": "🗄️",
+      "title": "Open your Vault",
+      "text": "New tab → drive.google.com → open School → DT Work. Don't see those folders? Tap + New → Folder, make 'School', open it, make 'DT Work' inside — thirty seconds, then carry on."
+     },
+     {
+      "icon": "🎯",
+      "title": "Drag it in",
+      "text": "Drag the .hex file from Downloads into DT Work. Done — HQ can now verify it's really there."
+     }
+    ],
+    "passText": "Your build now follows your login anywhere — that's the whole point of the Vault. Next lesson you can pick up exactly where you left off, on any machine.",
+    "failText": "Not there yet. Check each step above — especially that the file went INTO the DT Work folder, not just onto the desktop — then run the inspection again."
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit Check",
+   "minutes": 2,
+   "config": {
+    "intro": "One scenario before you clock off, Agent — think like a debugger.",
+    "items": [
+     {
+      "id": "ex2-1",
+      "stem": "You build 'on button A pressed → show heart'. You press button A on the micro:bit but nothing appears. What is the MOST likely reason?",
+      "options": [
+       "The battery is flat",
+       "You forgot to flash the code onto the device",
+       "The heart icon doesn't exist",
+       "Button A only works if you press button B at the same time"
+      ]
+     },
+     {
+      "id": "ex2-2",
+      "stem": "Your finished program: press button A → a heart appears on the LED grid. Which part is the INPUT?",
+      "options": [
+       "Pressing button A",
+       "The heart appearing",
+       "The LED grid",
+       "The micro:bit itself"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "exitp",
+   "engine": "parsons",
+   "title": "Build the Program",
+   "minutes": 2,
+   "config": {
+    "intro": "Last one: four real blocks, one working program. Put them in the order that matches the mission.",
+    "item": {
+     "id": "ex2-p",
+     "prompt": "When you shake it, a ghost appears on the screen, holds for one second, then the screen clears.",
+     "blocks": [
+      "pause (ms) 1000",
+      "on shake",
+      "clear screen",
+      "show icon (ghost)"
+     ]
+    }
+   }
+  },
+  {
+   "id": "selfeval",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "statements": [
+     "I can tell the difference between an input and an output.",
+     "I can build code that reacts when something happens.",
+     "I can test my code and notice when it's not working."
+    ],
+    "difficulty": true,
+    "comment": true
+   }
+  }
+ ],
+ "keysEnc": "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"
+}
