@@ -1,0 +1,474 @@
+{
+ "comment": "Agent Kit registry. Cosmetic only - no keys, no marks. Every theme is a curated variant of the approved Mission Control v2 shell: lesson reading surfaces are never touched, contrast stays AA on the dark shell, and no theme may use background-attachment:fixed or per-card backdrop-filter (Chrome compositor rule). vars map to the THEME KNOB custom properties in style.css :root; stars feeds the starfield canvas; fx names an optional ambient effect layer (comets | aurora).",
+ "clearances": [
+  {
+   "level": 1,
+   "xp": 0,
+   "name": "Recruit"
+  },
+  {
+   "level": 2,
+   "xp": 100,
+   "name": "Field Agent"
+  },
+  {
+   "level": 3,
+   "xp": 300,
+   "name": "Specialist"
+  },
+  {
+   "level": 4,
+   "xp": 600,
+   "name": "Senior Agent"
+  },
+  {
+   "level": 5,
+   "xp": 1000,
+   "name": "Commander"
+  },
+  {
+   "level": 6,
+   "xp": 1500,
+   "name": "Star Commander"
+  }
+ ],
+ "themes": [
+  {
+   "id": "midnight",
+   "name": "Midnight Command",
+   "tag": "The classic HQ interface. Navy skies, gold signals.",
+   "clearance": 1,
+   "vars": {},
+   "stars": {
+    "density": 9000,
+    "base": "#CFE0FF",
+    "accent": "#FFD84D",
+    "ratio": 0.12
+   }
+  },
+  {
+   "id": "emerald",
+   "name": "Emerald Protocol",
+   "tag": "Forest-moon frequencies. Calm, green, encrypted.",
+   "clearance": 1,
+   "vars": {
+    "--gold": "#34C98E",
+    "--gold-hi": "#7FEBBB",
+    "--gold-deep": "#147A52",
+    "--gold-rgb": "52, 201, 142",
+    "--gold-hi-rgb": "127, 235, 187",
+    "--accent-ink": "#042417",
+    "--space-0": "#041610",
+    "--space-1": "#07241B",
+    "--space-2": "#0B3226",
+    "--space-3": "#114634",
+    "--glass-d": "rgba(10, 40, 30, 0.55)",
+    "--glass-d-solid": "rgba(8, 32, 24, 0.85)",
+    "--line-d": "rgba(140, 220, 190, 0.16)",
+    "--panel": "rgba(12, 44, 33, 0.72)",
+    "--panel-hover": "rgba(16, 58, 44, 0.72)",
+    "--topbar-bg": "rgba(5, 26, 19, 0.72)",
+    "--toast-bg": "rgba(8, 34, 26, 0.92)",
+    "--aurora-b-color": "rgba(64, 140, 255, 0.4)",
+    "--bg-glow-b": "rgba(40, 120, 220, 0.08)"
+   },
+   "stars": {
+    "density": 9000,
+    "base": "#CFF5E2",
+    "accent": "#7FEBBB",
+    "ratio": 0.12
+   }
+  },
+  {
+   "id": "coral",
+   "name": "Coral Dawn",
+   "tag": "Sunrise over the launch pad. Warm skies, bold signals.",
+   "clearance": 1,
+   "vars": {
+    "--gold": "#FF7A59",
+    "--gold-hi": "#FFAE96",
+    "--gold-deep": "#C24E2E",
+    "--gold-rgb": "255, 122, 89",
+    "--gold-hi-rgb": "255, 174, 150",
+    "--accent-ink": "#33100A",
+    "--space-0": "#170A0E",
+    "--space-1": "#241016",
+    "--space-2": "#331821",
+    "--space-3": "#45202C",
+    "--glass-d": "rgba(50, 24, 32, 0.55)",
+    "--glass-d-solid": "rgba(40, 18, 26, 0.85)",
+    "--line-d": "rgba(230, 170, 160, 0.16)",
+    "--panel": "rgba(56, 26, 34, 0.72)",
+    "--panel-hover": "rgba(72, 34, 44, 0.72)",
+    "--topbar-bg": "rgba(28, 12, 18, 0.72)",
+    "--toast-bg": "rgba(46, 20, 28, 0.92)",
+    "--aurora-b-color": "rgba(180, 80, 200, 0.35)",
+    "--bg-glow-b": "rgba(180, 80, 200, 0.08)"
+   },
+   "stars": {
+    "density": 9000,
+    "base": "#FFE3D6",
+    "accent": "#FFAE96",
+    "ratio": 0.12
+   }
+  },
+  {
+   "id": "violet",
+   "name": "Violet Nebula",
+   "tag": "Deep-space dust clouds. Mysterious. Purple.",
+   "clearance": 2,
+   "vars": {
+    "--gold": "#A78BFA",
+    "--gold-hi": "#CBB8FF",
+    "--gold-deep": "#6D48D6",
+    "--gold-rgb": "167, 139, 250",
+    "--gold-hi-rgb": "203, 184, 255",
+    "--accent-ink": "#1B0E3E",
+    "--space-0": "#0A0618",
+    "--space-1": "#120B28",
+    "--space-2": "#1B123C",
+    "--space-3": "#261A52",
+    "--glass-d": "rgba(28, 18, 58, 0.55)",
+    "--glass-d-solid": "rgba(22, 14, 46, 0.85)",
+    "--line-d": "rgba(180, 160, 240, 0.16)",
+    "--panel": "rgba(30, 20, 62, 0.72)",
+    "--panel-hover": "rgba(40, 28, 80, 0.72)",
+    "--topbar-bg": "rgba(14, 9, 30, 0.72)",
+    "--toast-bg": "rgba(24, 16, 50, 0.92)",
+    "--aurora-b-color": "rgba(80, 120, 255, 0.4)",
+    "--bg-glow-b": "rgba(80, 120, 255, 0.09)"
+   },
+   "stars": {
+    "density": 9000,
+    "base": "#DCD2FF",
+    "accent": "#CBB8FF",
+    "ratio": 0.12
+   }
+  },
+  {
+   "id": "arctic",
+   "name": "Arctic Ops",
+   "tag": "Cold, clear and razor sharp. Ice-station issue.",
+   "clearance": 2,
+   "vars": {
+    "--gold": "#4FD8EC",
+    "--gold-hi": "#9FEFFB",
+    "--gold-deep": "#1C8FA5",
+    "--gold-rgb": "79, 216, 236",
+    "--gold-hi-rgb": "159, 239, 251",
+    "--accent-ink": "#04262C",
+    "--space-0": "#030F1C",
+    "--space-1": "#06192E",
+    "--space-2": "#0A2440",
+    "--space-3": "#103254",
+    "--glass-d": "rgba(12, 34, 56, 0.55)",
+    "--glass-d-solid": "rgba(9, 27, 45, 0.85)",
+    "--line-d": "rgba(150, 210, 240, 0.18)",
+    "--panel": "rgba(13, 37, 60, 0.72)",
+    "--panel-hover": "rgba(18, 48, 76, 0.72)",
+    "--topbar-bg": "rgba(5, 17, 30, 0.72)",
+    "--toast-bg": "rgba(10, 28, 48, 0.92)",
+    "--aurora-b-color": "rgba(90, 130, 255, 0.4)",
+    "--bg-glow-b": "rgba(90, 130, 255, 0.09)"
+   },
+   "stars": {
+    "density": 8000,
+    "base": "#E6F6FF",
+    "accent": "#9FEFFB",
+    "ratio": 0.12
+   }
+  },
+  {
+   "id": "ember",
+   "name": "Ember Station",
+   "tag": "Forge-deck glow. For agents who run hot.",
+   "clearance": 3,
+   "vars": {
+    "--gold": "#FF9E3D",
+    "--gold-hi": "#FFC584",
+    "--gold-deep": "#BF6410",
+    "--gold-rgb": "255, 158, 61",
+    "--gold-hi-rgb": "255, 197, 132",
+    "--accent-ink": "#2B1502",
+    "--space-0": "#150B06",
+    "--space-1": "#22110A",
+    "--space-2": "#301810",
+    "--space-3": "#422216",
+    "--glass-d": "rgba(48, 26, 16, 0.55)",
+    "--glass-d-solid": "rgba(38, 20, 12, 0.85)",
+    "--line-d": "rgba(240, 190, 150, 0.16)",
+    "--panel": "rgba(53, 28, 17, 0.72)",
+    "--panel-hover": "rgba(68, 37, 23, 0.72)",
+    "--topbar-bg": "rgba(26, 13, 8, 0.72)",
+    "--toast-bg": "rgba(43, 23, 14, 0.92)",
+    "--aurora-b-color": "rgba(255, 80, 80, 0.3)",
+    "--bg-glow-b": "rgba(255, 80, 80, 0.07)"
+   },
+   "stars": {
+    "density": 9000,
+    "base": "#FFE9CF",
+    "accent": "#FFC584",
+    "ratio": 0.12
+   }
+  },
+  {
+   "id": "rose",
+   "name": "Rose Circuit",
+   "tag": "Neon-pink wiring on a midnight board.",
+   "clearance": 3,
+   "vars": {
+    "--gold": "#FF6FA5",
+    "--gold-hi": "#FFA9C9",
+    "--gold-deep": "#C23A72",
+    "--gold-rgb": "255, 111, 165",
+    "--gold-hi-rgb": "255, 169, 201",
+    "--accent-ink": "#300A1B",
+    "--space-0": "#150618",
+    "--space-1": "#220B26",
+    "--space-2": "#311236",
+    "--space-3": "#421A49",
+    "--glass-d": "rgba(46, 20, 52, 0.55)",
+    "--glass-d-solid": "rgba(37, 15, 42, 0.85)",
+    "--line-d": "rgba(235, 170, 220, 0.16)",
+    "--panel": "rgba(50, 22, 56, 0.72)",
+    "--panel-hover": "rgba(64, 30, 72, 0.72)",
+    "--topbar-bg": "rgba(24, 10, 28, 0.72)",
+    "--toast-bg": "rgba(41, 18, 47, 0.92)",
+    "--aurora-b-color": "rgba(150, 90, 255, 0.38)",
+    "--bg-glow-b": "rgba(150, 90, 255, 0.08)"
+   },
+   "stars": {
+    "density": 9000,
+    "base": "#FFDFF0",
+    "accent": "#FFA9C9",
+    "ratio": 0.12
+   }
+  },
+  {
+   "id": "lagoon",
+   "name": "Deep Lagoon",
+   "tag": "Submerged HQ. Bioluminescent systems online.",
+   "clearance": 4,
+   "vars": {
+    "--gold": "#2FD4B4",
+    "--gold-hi": "#82ECD8",
+    "--gold-deep": "#128271",
+    "--gold-rgb": "47, 212, 180",
+    "--gold-hi-rgb": "130, 236, 216",
+    "--accent-ink": "#032420",
+    "--space-0": "#02141A",
+    "--space-1": "#052029",
+    "--space-2": "#092E3A",
+    "--space-3": "#0E3E4D",
+    "--glass-d": "rgba(10, 42, 52, 0.55)",
+    "--glass-d-solid": "rgba(8, 33, 41, 0.85)",
+    "--line-d": "rgba(140, 220, 220, 0.16)",
+    "--panel": "rgba(11, 45, 55, 0.72)",
+    "--panel-hover": "rgba(15, 58, 71, 0.72)",
+    "--topbar-bg": "rgba(4, 20, 26, 0.72)",
+    "--toast-bg": "rgba(9, 36, 45, 0.92)",
+    "--aurora-b-color": "rgba(60, 180, 120, 0.35)",
+    "--bg-glow-b": "rgba(60, 180, 120, 0.08)"
+   },
+   "stars": {
+    "density": 9000,
+    "base": "#D8F4F2",
+    "accent": "#82ECD8",
+    "ratio": 0.12
+   }
+  },
+  {
+   "id": "nova",
+   "name": "Supernova",
+   "tag": "Near-black void, a thousand burning stars.",
+   "clearance": 4,
+   "vars": {
+    "--gold": "#F2E24A",
+    "--gold-hi": "#FFF6A0",
+    "--gold-deep": "#A89310",
+    "--gold-rgb": "242, 226, 74",
+    "--gold-hi-rgb": "255, 246, 160",
+    "--accent-ink": "#262102",
+    "--space-0": "#030308",
+    "--space-1": "#08080F",
+    "--space-2": "#0E0E18",
+    "--space-3": "#161624",
+    "--glass-d": "rgba(20, 20, 32, 0.55)",
+    "--glass-d-solid": "rgba(15, 15, 26, 0.85)",
+    "--line-d": "rgba(200, 200, 230, 0.16)",
+    "--panel": "rgba(22, 22, 35, 0.72)",
+    "--panel-hover": "rgba(30, 30, 46, 0.72)",
+    "--topbar-bg": "rgba(9, 9, 16, 0.72)",
+    "--toast-bg": "rgba(18, 18, 30, 0.92)",
+    "--aurora-b-color": "rgba(120, 120, 200, 0.3)",
+    "--bg-glow-b": "rgba(120, 120, 200, 0.07)"
+   },
+   "stars": {
+    "density": 5200,
+    "base": "#FFFFFF",
+    "accent": "#FFF6A0",
+    "ratio": 0.18
+   }
+  },
+  {
+   "id": "aurora",
+   "name": "Aurora Command",
+   "tag": "The northern lights, piped straight into HQ.",
+   "clearance": 5,
+   "vars": {
+    "--gold": "#5EE39C",
+    "--gold-hi": "#A5F5C8",
+    "--gold-deep": "#1F9A5B",
+    "--gold-rgb": "94, 227, 156",
+    "--gold-hi-rgb": "165, 245, 200",
+    "--accent-ink": "#04220F",
+    "--space-0": "#05101E",
+    "--space-1": "#081A30",
+    "--space-2": "#0D2745",
+    "--space-3": "#14345C",
+    "--panel": "rgba(15, 32, 58, 0.72)",
+    "--panel-hover": "rgba(20, 42, 74, 0.72)",
+    "--topbar-bg": "rgba(6, 14, 26, 0.72)",
+    "--toast-bg": "rgba(12, 26, 48, 0.92)",
+    "--aurora-b-color": "rgba(255, 110, 199, 0.4)",
+    "--bg-glow-b": "rgba(255, 110, 199, 0.07)"
+   },
+   "stars": {
+    "density": 8000,
+    "base": "#E8F6FF",
+    "accent": "#A5F5C8",
+    "ratio": 0.12
+   },
+   "fx": "aurora"
+  },
+  {
+   "id": "comet",
+   "name": "Comet Shower",
+   "tag": "Meteors on the viewport. Make a wish, Agent.",
+   "clearance": 5,
+   "vars": {
+    "--gold": "#6FB4FF",
+    "--gold-hi": "#A9D1FF",
+    "--gold-deep": "#2E6FC2",
+    "--gold-rgb": "111, 180, 255",
+    "--gold-hi-rgb": "169, 209, 255",
+    "--accent-ink": "#071A30",
+    "--space-0": "#04091C",
+    "--space-1": "#07102C",
+    "--space-2": "#0B183E",
+    "--space-3": "#112252",
+    "--glass-d": "rgba(14, 26, 58, 0.55)",
+    "--glass-d-solid": "rgba(11, 20, 46, 0.85)",
+    "--line-d": "rgba(160, 190, 240, 0.18)",
+    "--panel": "rgba(15, 28, 62, 0.72)",
+    "--panel-hover": "rgba(20, 37, 80, 0.72)",
+    "--topbar-bg": "rgba(6, 12, 28, 0.72)",
+    "--toast-bg": "rgba(12, 22, 50, 0.92)",
+    "--aurora-b-color": "rgba(140, 110, 255, 0.35)",
+    "--bg-glow-b": "rgba(140, 110, 255, 0.08)"
+   },
+   "stars": {
+    "density": 6800,
+    "base": "#E2ECFF",
+    "accent": "#A9D1FF",
+    "ratio": 0.12
+   },
+   "fx": "comets"
+  },
+  {
+   "id": "goldelite",
+   "name": "Gold Command",
+   "tag": "Reserved for the highest clearance. Everything gleams.",
+   "clearance": 6,
+   "vars": {
+    "--space-0": "#0C0A04",
+    "--space-1": "#171204",
+    "--space-2": "#241C08",
+    "--space-3": "#33280C",
+    "--glass-d": "rgba(40, 32, 10, 0.55)",
+    "--glass-d-solid": "rgba(32, 25, 8, 0.85)",
+    "--line-d": "rgba(240, 216, 120, 0.2)",
+    "--panel": "rgba(45, 36, 12, 0.72)",
+    "--panel-hover": "rgba(58, 47, 16, 0.72)",
+    "--topbar-bg": "rgba(20, 16, 5, 0.72)",
+    "--toast-bg": "rgba(36, 29, 10, 0.92)",
+    "--aurora-b-color": "rgba(228, 150, 36, 0.35)",
+    "--bg-glow-b": "rgba(228, 150, 36, 0.08)"
+   },
+   "stars": {
+    "density": 7000,
+    "base": "#FFE9A8",
+    "accent": "#FFD84D",
+    "ratio": 0.3
+   }
+  }
+ ],
+ "insignia": [
+  {
+   "id": "star",
+   "glyph": "⭐",
+   "name": "First Star",
+   "clearance": 1
+  },
+  {
+   "id": "sat",
+   "glyph": "🛰️",
+   "name": "Satellite",
+   "clearance": 1
+  },
+  {
+   "id": "rocket",
+   "glyph": "🚀",
+   "name": "Rocket",
+   "clearance": 2
+  },
+  {
+   "id": "compass",
+   "glyph": "🧭",
+   "name": "Navigator",
+   "clearance": 2
+  },
+  {
+   "id": "cometfx",
+   "glyph": "💫",
+   "name": "Comet Trail",
+   "clearance": 3
+  },
+  {
+   "id": "shield",
+   "glyph": "🛡️",
+   "name": "Shield",
+   "clearance": 3
+  },
+  {
+   "id": "bolt",
+   "glyph": "⚡",
+   "name": "Bolt",
+   "clearance": 4
+  },
+  {
+   "id": "invader",
+   "glyph": "👾",
+   "name": "Invader",
+   "clearance": 4
+  },
+  {
+   "id": "galaxy",
+   "glyph": "🌌",
+   "name": "Galaxy",
+   "clearance": 5
+  },
+  {
+   "id": "medal",
+   "glyph": "🏅",
+   "name": "Medal",
+   "clearance": 5
+  },
+  {
+   "id": "crown",
+   "glyph": "👑",
+   "name": "Crown",
+   "clearance": 6
+  }
+ ]
+}
