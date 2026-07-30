@@ -542,7 +542,7 @@ async function dragTo(page, fileId, folderId) {
       else break;
     }
     await H.clickText('Go'); await sleep(900);
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 12; i++) {   // Badge 1 re-authored 30 Jul: 9 questions now; loop breaks when they run out
       const ok = await page.evaluate(() => { const o = document.querySelector('.q-opt:not(:disabled)'); if (o) { o.click(); return true; } return false; });
       if (!ok) break;
       await sleep(1000);
