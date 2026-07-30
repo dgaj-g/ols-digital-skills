@@ -106,7 +106,7 @@ async function toBadge2Finish(page) {
   for (let i = 0; i < 30 && !(await page.evaluate(() => !!document.querySelector('.chunk-host .intro-card'))); i++) await sleep(400);
   await sleep(600);
   await page.evaluate(() => {
-    const b = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /Follow the beacon/i.test(x.textContent));
+    const b = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /Follow the (beacon|light)/i.test(x.textContent));
     if (b) b.click();
   });
   await sleep(900);
