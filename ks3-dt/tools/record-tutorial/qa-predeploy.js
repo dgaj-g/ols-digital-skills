@@ -83,38 +83,63 @@ function e08Section() {
   section('E-08 - Lesson 1\'s brief tells a cover teacher how to start the hour');
   const packed = JSON.parse(fs.readFileSync(path.join(CONTENT, 'j1/lessons/j1-01.json'), 'utf8'));
   const brief = briefOf(packed);
-  const t = (brief.minuteByMinute || [])[0] || '';
-  E08.forEach(c => check(c.ok(t), 'the packed brief\'s "Before the lesson" entry ' + c.what));
+  /* The brief was restructured on 30 Jul to the TEACHER BRIEF STANDARD, so the
+     four start steps now live in "Preparing for this lesson" and "Resources"
+     rather than in a minute-by-minute list. The FACTS being checked are the
+     same four - that is the point of scoring predicates rather than wording. */
+  const prep = (brief.prepare || []).map(p => p.title + ' ' + p.text).join('\n') +
+    '\n' + (brief.resources || []).map(r => r.label + ' ' + r.what + ' ' + (r.where || '')).join('\n');
+  E08.forEach(c => check(c.ok(prep), 'the packed brief\'s preparation section ' + c.what));
 
-  // the prep check that could not work: the Pairing panel only renders for a
-  // DELIVERED lesson, so "look for it" failed silently before the first unlock
-  const prep = (brief.minuteByMinute || [])[0] || '';
-  check(/^Before the lesson/i.test(prep), 'entry 0 is still the "Before the lesson" entry');
-  check(!/(check|look for|find)[^.]{0,60}pairing panel/i.test(prep),
+  check((brief.purpose || []).length > 0, 'it opens with a plain-English PURPOSE, not design rationale');
+  check(!/why the lesson is built/i.test(JSON.stringify(brief)), 'the old "why it is built this way" framing is gone');
+  check((brief.atAGlance || []).length >= 10,
+    'every part of the hour is introduced BEFORE the instructions use its name (' + (brief.atAGlance || []).length + ' entries)');
+  check((brief.runningTheHour || []).filter(h => h.say).length >= 8,
+    'the teacher is given words to say, not just things to do (' + (brief.runningTheHour || []).filter(h => h.say).length + ')');
+  check((brief.goesWrong || []).length >= 6, 'and a what-goes-wrong section (' + (brief.goesWrong || []).length + ')');
+
+  /* No preparation TIMINGS - Damien's rule: how long a teacher takes to feel
+     ready is her call, and "three minutes" undermined it. */
+  const prepText = (brief.prepare || []).map(p => p.title + ' ' + p.text).join(' ');
+  check(!/\b(one|two|three|four|five|\d+)\s*(minute|min)\b/i.test(prepText),
+    'no timing is put on PREPARATION: ' + (prepText.match(/\b\w+\s*minutes?\b/i) || ['none found'])[0]);
+
+  /* The Pairing panel could not be used as a prep check - it only renders for a
+     delivered lesson - and the brief must say when it DOES appear. */
+  check(!/(check|look for|find)[^.]{0,60}pairing panel/i.test(prepText),
     'the prep steps no longer send the teacher hunting for the Pairing panel');
-  check(/pairing panel/i.test(prep) && /(only appears|once a lesson has been unlocked)/i.test(prep),
+  check(/pairing panel/i.test(JSON.stringify(brief)) && /only appears/i.test(JSON.stringify(brief)),
     'and the brief says WHEN that panel appears instead');
-  check(/auto-pairing/i.test(prep) && /options/i.test(prep),
-    'the existing Options / Auto-pairing prep advice survived the rewrite');
-  check((brief.minuteByMinute || []).length === 10,
-    'no extra minute-by-minute entry was added - the hour is already tight (' +
-    (brief.minuteByMinute || []).length + ' entries)');
 
-  // E-07 is Damien's call and must NOT have been "helpfully" fixed
-  const pit = (brief.pitfalls || []).join(' ');
-  check(/projector/i.test(pit) && /shorten Badge 5/i.test(pit),
-    'Lesson 1\'s overrun plan (E-07) is untouched - that is Damien\'s teaching decision');
+  /* Two claims that were simply untrue and must never come back: there is no
+     Mission Briefing video to play, and no audio in the closing message. */
+  const all = JSON.stringify(brief);
+  check(!/play the mission briefing/i.test(all), 'it no longer tells the teacher to PLAY the Mission Briefing (there is no video)');
+  check(!/headphones/i.test(all), 'and no longer implies the closing message has audio');
+  check(/no video for this lesson/i.test(all), 'it says plainly that this lesson has no video, so nothing looks missing');
+
+  /* E-07: the old overrun plan named two levers the built platform cannot do.
+     It is gone; what replaced it must be achievable. */
+  check(!!brief.ifBehind, 'there is an "if you fall behind" section');
+  check(!/run badge 2 as a (whole-class )?(projector )?demo/i.test(all) && !/shorten badge 5/i.test(all),
+    'the two impossible overrun levers (E-07) are gone rather than repeated');
+  check(/licence exam/i.test(brief.ifBehind || ''), 'and it protects the Licence Exam, which is the one thing that cannot be rushed');
 
   section('E-08 CONTROL - the same checks against the pre-fix brief');
   try {
     const old = JSON.parse(gitShow(PREFIX_REF, 'ks3-dt/content/j1/lessons/j1-01.json'));
-    const ot = (briefOf(old).minuteByMinute || [])[0] || '';
+    const ob = briefOf(old);
+    const ot = (ob.minuteByMinute || [])[0] || '';
     const missed = E08.filter(c => !c.ok(ot)).map(c => c.id);
     check(missed.length === E08.length,
       'CONTROL: pre-fix, ALL FOUR start steps were missing (' + JSON.stringify(missed) + ')');
-    const oprep = (briefOf(old).minuteByMinute || [])[0] || '';
-    check(/pairing panel/i.test(oprep),
+    check(/pairing panel/i.test(ot),
       'CONTROL: pre-fix, the one prep check offered WAS the Pairing panel');
+    check(!ob.purpose && !ob.runningTheHour,
+      'CONTROL: pre-fix, the brief had none of the sections a teacher needs');
+    check(/play the mission briefing/i.test(JSON.stringify(ob)),
+      'CONTROL: pre-fix, it told the teacher to play a video that does not exist');
   } catch (e) {
     check(false, 'CONTROL could not read the pinned pre-fix content: ' + e.message);
   }

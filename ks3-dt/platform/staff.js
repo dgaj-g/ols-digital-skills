@@ -107,6 +107,8 @@
         'color:var(--ols-blue);background:rgba(26,58,107,0.08);border:1px solid rgba(26,58,107,0.25);' +
         'border-radius:999px;padding:2px 9px;cursor:pointer}' +
       '.lc-brief:hover{background:rgba(228,184,36,0.18);border-color:var(--gold)}' +
+      '.lc-reset{color:var(--bad);background:rgba(201,79,109,0.08);border-color:rgba(201,79,109,0.3)}' +
+      '.lc-reset:hover{background:rgba(201,79,109,0.16);border-color:var(--bad)}' +
       '.brief-sheet{background:#fff;border:1px solid var(--line-l);border-radius:10px;padding:18px;color:var(--ink)}' +
       '.brief-sheet h3{margin-top:0;color:var(--ols-blue)}' +
       '.brief-sheet h4{margin:14px 0 6px;color:var(--ols-blue)}' +
@@ -498,6 +500,7 @@
         '<span class="lc-state">' + App.esc(stateText) + '</span>' +
         (le.status !== 'ready' ? '<span class="lc-date">(content coming)</span>'
           : '<span class="lc-brief" data-action="show-brief" data-num="' + le.num + '">&#128203; Brief</span>') +
+        (delivered ? '<span class="lc-brief lc-reset" data-action="reset-lesson" data-num="' + le.num + '">&#8635; Start again</span>' : '') +
         /* AUDIT FIX B-05 (27 Jul 2026): the undo. A locked-but-delivered cell is
            exactly the state a mis-tap leaves behind, and until now nothing
            anywhere could reset a delivered date - so the class was recorded as
@@ -584,6 +587,31 @@
   }
 
   /* ---- Lesson brief view (teacher run sheet, decrypted server-side) ---- */
+  /* "Start again" (30 Jul 2026). Puts a lesson back to the beginning for the
+     whole class: clears their work for it, hands back the XP it earned, wipes
+     the lesson's pairing so the Vault can pair afresh, and stamps the lesson so
+     each pupil's own machine drops her saved place. Built because an accidental
+     click could skip a chunk with no way back, and because a teacher may simply
+     want to re-teach an hour. */
+  function resetLesson(btn) {
+    var num = btn.getAttribute('data-num');
+    App.confirm('Start Lesson ' + num + ' again for the whole class?',
+      'Everything the class did in this lesson is cleared, and the XP it earned is taken back with it. ' +
+      'Each girl starts from the beginning the next time she opens it. Other lessons are untouched. ' +
+      'There is no undo for this one.',
+      'Start it again', function (ok) {
+        if (!ok) return;
+        var st = q('#lock-status');
+        busyStatus(st, 'Putting Lesson ' + num + ' back to the start');
+        adminCall('resetLesson', { className: cls, lessonNum: num }).then(function (r) {
+          if (!r || !r.ok) { plainStatus(st, 'Could not reset that lesson -- please try again.'); return; }
+          lockNotice = 'Lesson ' + num + ' is back at the start (' + Number(r.cleared) + ' pupil record(s) cleared). ' +
+            'Anyone with it open should refresh.';
+          renderLessons();
+        });
+      });
+  }
+
   function showBrief(el) {
     var num = el.getAttribute('data-num');
     var le = briefByNum[num];
@@ -1852,6 +1880,7 @@
       case 'add-class': addClass(); break;
       case 'toggle-lock': toggleLock(btn); break;
       case 'undo-delivery': undoDelivery(btn); break;
+      case 'reset-lesson': resetLesson(btn); break;
       case 'show-brief': showBrief(btn); break;
       case 'brief-back': renderLessons(); break;
       case 'brief-print': briefPrint(); break;
