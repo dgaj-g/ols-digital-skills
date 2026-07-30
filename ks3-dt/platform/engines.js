@@ -17,7 +17,15 @@
     d.innerHTML = html.trim();
     return d.firstChild;
   }
+  /* LIVE BUG (30 Jul 2026): a chunk could be finished TWICE. On the real app a
+     save takes a second or two, so after the badge pop closed the pupil was
+     still looking at the old screen and its Finish button - and the second
+     click advanced her a SECOND time, marking the NEXT chunk complete without
+     ever showing it. Badge 2 and the whole Vault were lost that way, with no
+     route back. One finish per mounted chunk, always. */
   function finishChunk(ctx, detail) {
+    if (ctx._finished) return;
+    ctx._finished = true;
     if (ctx.chunk.badge) {
       ctx.awardBadge(ctx.chunk.badge, detail).then(function () { ctx.next(); });
     } else ctx.next();
@@ -291,9 +299,16 @@
       wrap.querySelectorAll('.q-opt').forEach(function (b) { b.disabled = true; });
     }
 
-    function nextOrDone() {
+    /* Same live bug: the Next/Finish button stayed live while the badge pop and
+       the save were in flight, so a second click ran this again. Guarded, and
+       the button is disabled the moment it is used. */
+    var advancing = false;
+    function nextOrDone(e) {
+      if (advancing) return;
+      advancing = true;
+      if (e && e.currentTarget && e.currentTarget.disabled !== undefined) e.currentTarget.disabled = true;
       idx++;
-      if (idx < opts.items.length) show();
+      if (idx < opts.items.length) { advancing = false; show(); }
       else opts.onDone({ right: right, total: opts.items.length, answers: answers });
     }
 
@@ -379,7 +394,6 @@
         '<div class="dossier-lines"></div>' +
         photoStrip +
         '<button class="primary-btn dossier-cta" type="button" hidden>' + esc(cfg.cta || 'Continue') + '</button>' +
-        '<button class="dossier-skip" type="button">Skip &raquo;</button>' +
         '</div>');
       host.appendChild(d);
       var headline = d.querySelector('.dossier-headline');
@@ -392,6 +406,10 @@
         linesBox.innerHTML = (cfg.lines || []).map(function (l) { return '<p class="dossier-line show">' + esc(l) + '</p>'; }).join('');
         cta.hidden = false;
       }
+      /* Safety net: a backgrounded tab throttles timers, so the animation can
+         stall and strand a pupil with no way on. Reveal everything regardless
+         after the animation's own worst case. */
+      timers.push(setTimeout(reveal, 900 * ((cfg.lines || []).length + 1) + 6000));
       // typewriter headline
       var hl = String(cfg.headline || ''), pos = 0;
       (function type() {
@@ -413,7 +431,10 @@
           });
         }
       })();
-      d.querySelector('.dossier-skip').onclick = reveal;
+      /* The Skip button is gone (Damien, live test 30 Jul): it only ever
+         fast-forwarded the typing, its label promised something else, and he
+         does not want pupils skipping the briefing at all. `reveal` still runs
+         if the animation is interrupted. */
       cta.onclick = function () { finishChunk(ctx); };
     }
   };

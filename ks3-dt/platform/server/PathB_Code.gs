@@ -348,6 +348,20 @@ function lessonNum_(year, lessonId) {
 
 /* ---------- locks / delivered dates ---------- */
 function getLocks_(cls) { return jget_(sp_(), 'lock:' + cls, {}); }
+/* Per-class lesson RESET stamps (30 Jul 2026). A pupil's resume position lives
+   in her OWN UserProperties, which no teacher can reach, so "put this lesson
+   back to the start" cannot be done by deleting anything server-side. Instead
+   the teacher stamps the lesson here; each pupil's own client sees a stamp
+   newer than her saved draft and starts the lesson fresh. Needed because a
+   chunk skipped by accident was otherwise unrecoverable, forever. */
+function getResets_(cls) { return jget_(sp_(), 'rst:' + cls, {}); }
+function stampReset_(cls, numStr) {
+  var r = getResets_(cls);
+  r[str_(numStr)] = tmin_();
+  jset_(sp_(), 'rst:' + cls, r);
+  return r;
+}
+
 function getCfg_(cls) {
   var c = jget_(sp_(), 'cfg:' + cls, {});
   if (!c.lb) c.lb = { mode: 'off', basis: 'xp', names: 'codename', topN: 0 };
@@ -495,6 +509,7 @@ function apiState(req) {
     cover: num_(getCfg_(cls).cover.on),
     absence: absence,
     team: myTeam,
+    resets: getResets_(cls),
     contentVersion: str_(contentVersion_())
   };
 }
@@ -1836,8 +1851,32 @@ function apiAdmin(req) {
     try { briefKeys = lessonKeys_(briefYear, briefLessonId); } catch (e) { return { ok: false, error: 'no-brief' }; }
     var brief = briefKeys._brief;
     if (!brief) return { ok: false, error: 'no-brief' };
+    /* TEACHER BRIEF STANDARD (28 Jul 2026, LESSON_QUALITY_GATE.md): a brief is
+       written for a colleague who teaches another subject and has never seen
+       this platform, so it carries a purpose, a plain-English tour of the
+       lesson's parts BEFORE any of them are named in instructions, a
+       preparation checklist, every resource with a route to it, the hour step
+       by step, and what to do when it goes wrong. The three old fields are
+       still returned so a lesson not yet rewritten keeps rendering. */
     return {
       ok: true, num: str_(briefEntry.num), title: str_(briefEntry.title),
+      purpose: (brief.purpose || []).map(str_),
+      atAGlance: (brief.atAGlance || []).map(function (g) {
+        return { part: str_(g.part), mins: num_(g.mins), what: str_(g.what) };
+      }),
+      prepare: (brief.prepare || []).map(function (p) {
+        return { title: str_(p.title), text: str_(p.text) };
+      }),
+      resources: (brief.resources || []).map(function (r) {
+        return { label: str_(r.label), what: str_(r.what), href: str_(r.href || ''), where: str_(r.where || '') };
+      }),
+      runningTheHour: (brief.runningTheHour || []).map(function (h) {
+        return { part: str_(h.part), mins: num_(h.mins), text: str_(h.text), say: str_(h.say || '') };
+      }),
+      goesWrong: (brief.goesWrong || []).map(function (w) {
+        return { q: str_(w.q), a: str_(w.a) };
+      }),
+      ifBehind: str_(brief.ifBehind || ''),
       why: str_(brief.why || ''),
       minuteByMinute: (brief.minuteByMinute || []).map(str_),
       pitfalls: (brief.pitfalls || []).map(str_)
@@ -1958,6 +1997,42 @@ function apiAdmin(req) {
         }
       });
       return { ok: true };
+    });
+  }
+
+  /* Put a lesson back to the start (30 Jul 2026). Two reasons this exists:
+     an accidental double-click used to skip a chunk permanently (fixed, but a
+     class can still need a re-run), and a teacher may simply want to re-teach.
+     Clearing the shared record is not enough on its own - a pupil's resume
+     position lives in her own UserProperties, out of reach - so this also
+     stamps the lesson, and each pupil's client starts fresh on her next visit.
+     Pairing state for the lesson is wiped too, so the Vault can pair again. */
+  if (sub === 'resetLesson') {
+    if (!cls) return { ok: false, error: 'unknown-class' };
+    var rsNum = str_(req.lessonNum);
+    if (!rsNum) return { ok: false, error: 'bad-request' };
+    var rsOne = str_(req.email || '').toLowerCase();
+    var rsCleared = 0;
+    return withLock_(function () {
+      var rsPupils = rsOne ? [{ email: rsOne }] : allPupils_(cls);
+      for (var ri = 0; ri < rsPupils.length; ri++) {
+        var rsRec = readPupil_(cls, str_(rsPupils[ri].email));
+        if (!rsRec || !rsRec.L || !rsRec.L[rsNum]) continue;
+        var rsXp = num_((rsRec.L[rsNum] || [])[1]);
+        delete rsRec.L[rsNum];
+        rsRec.xp = Math.max(0, num_(rsRec.xp) - rsXp);   // the XP came from work that no longer exists
+        writePupil_(cls, str_(rsPupils[ri].email), rsRec);
+        rsCleared++;
+      }
+      stampReset_(cls, rsNum);
+      var rsYear = classYear_(cls);
+      var rsMan = yearManifest_(rsYear);
+      (rsMan && rsMan.lessons || []).forEach(function (le) {
+        if (str_(le.num) !== rsNum) return;
+        sp_().deleteProperty(pairRegKey_(cls, str_(le.id)));
+        cPut_(pqCacheKey_(cls, str_(le.id)), { q: [], stage: 0 }, 60);
+      });
+      return { ok: true, cleared: num_(rsCleared) };
     });
   }
 

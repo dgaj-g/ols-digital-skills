@@ -334,6 +334,11 @@
   function fileIdOf_(entry) { return (entry && entry.file) ? str_(entry.file).replace(/\.json$/, '') : ''; }
 
   /* ---------- locks / cfg / team (auto-vivify defaults into the blob) ---------- */
+  function getResetsD_(s, cls) {
+    if (!s.rst) s.rst = {};
+    if (!s.rst[cls]) s.rst[cls] = {};
+    return s.rst[cls];
+  }
   function getLocks_(s, cls) {
     if (!s.locks) s.locks = {};
     if (!s.locks[cls]) s.locks[cls] = {};
@@ -503,6 +508,7 @@
         cover: num_(cfg.cover.on),
         absence: absence,
         team: myTeam,
+        resets: getResetsD_(s, cls),
         contentVersion: 'dev-preview'
       };
     });
@@ -1091,6 +1097,34 @@
       return Promise.resolve({ ok: true, u: num_(cur.u), on: num_(cur.on) });
     }
 
+    /* mirrors apiAdmin sub 'resetLesson' - see Code.gs.template for why a
+       stamp is needed rather than a straight delete */
+    if (sub === 'resetLesson') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      var rsNum = str_(p.lessonNum);
+      if (!rsNum) return Promise.resolve({ ok: false, error: 'bad-request' });
+      var rsOne = str_(p.email || '').toLowerCase();
+      var rsCleared = 0;
+      var rsList = rsOne ? [{ email: rsOne }] : allPupils_(s, cls);
+      rsList.forEach(function (row) {
+        var rec2 = readPupil_(s, cls, str_(row.email));
+        if (!rec2 || !rec2.L || !rec2.L[rsNum]) return;
+        var rsXp = num_((rec2.L[rsNum] || [])[1]);
+        delete rec2.L[rsNum];
+        rec2.xp = Math.max(0, num_(rec2.xp) - rsXp);
+        writePupil_(s, cls, str_(row.email), rec2);
+        rsCleared++;
+      });
+      var rsAll = getResetsD_(s, cls);
+      rsAll[rsNum] = tmin_();
+      if (!s.rst) s.rst = {};
+      s.rst[cls] = rsAll;
+      if (s.pairing) Object.keys(s.pairing).forEach(function (k) { if (k.indexOf(cls + ':') === 0) delete s.pairing[k]; });
+      if (s.pq) Object.keys(s.pq).forEach(function (k) { if (k.indexOf(cls + ':') === 0) delete s.pq[k]; });
+      save_(s);
+      return Promise.resolve({ ok: true, cleared: num_(rsCleared) });
+    }
+
     if (sub === 'locks') {
       if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
       var lk = getLocks_(s, cls);
@@ -1143,8 +1177,28 @@
           var briefKeys = allKeys[fileIdOf_(briefEntry)];
           var brief = briefKeys ? briefKeys._brief : null;
           if (!brief) return { ok: false, error: 'no-brief' };
+          /* mirrors apiAdmin sub 'brief' — TEACHER BRIEF STANDARD sections,
+             with the three legacy fields kept so a lesson not yet rewritten
+             still renders */
           return {
             ok: true, num: str_(briefEntry.num), title: str_(briefEntry.title),
+            purpose: (brief.purpose || []).map(str_),
+            atAGlance: (brief.atAGlance || []).map(function (g) {
+              return { part: str_(g.part), mins: num_(g.mins), what: str_(g.what) };
+            }),
+            prepare: (brief.prepare || []).map(function (pr) {
+              return { title: str_(pr.title), text: str_(pr.text) };
+            }),
+            resources: (brief.resources || []).map(function (rs) {
+              return { label: str_(rs.label), what: str_(rs.what), href: str_(rs.href || ''), where: str_(rs.where || '') };
+            }),
+            runningTheHour: (brief.runningTheHour || []).map(function (h) {
+              return { part: str_(h.part), mins: num_(h.mins), text: str_(h.text), say: str_(h.say || '') };
+            }),
+            goesWrong: (brief.goesWrong || []).map(function (w) {
+              return { q: str_(w.q), a: str_(w.a) };
+            }),
+            ifBehind: str_(brief.ifBehind || ''),
             why: str_(brief.why || ''),
             minuteByMinute: (brief.minuteByMinute || []).map(str_),
             pitfalls: (brief.pitfalls || []).map(str_)
