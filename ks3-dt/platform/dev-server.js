@@ -334,6 +334,11 @@
   function fileIdOf_(entry) { return (entry && entry.file) ? str_(entry.file).replace(/\.json$/, '') : ''; }
 
   /* ---------- locks / cfg / team (auto-vivify defaults into the blob) ---------- */
+  function getResetsD_(s, cls) {
+    if (!s.rst) s.rst = {};
+    if (!s.rst[cls]) s.rst[cls] = {};
+    return s.rst[cls];
+  }
   function getLocks_(s, cls) {
     if (!s.locks) s.locks = {};
     if (!s.locks[cls]) s.locks[cls] = {};
@@ -503,6 +508,7 @@
         cover: num_(cfg.cover.on),
         absence: absence,
         team: myTeam,
+        resets: getResetsD_(s, cls),
         contentVersion: 'dev-preview'
       };
     });
@@ -1089,6 +1095,34 @@
       locks[numStr] = cur;
       save_(s);
       return Promise.resolve({ ok: true, u: num_(cur.u), on: num_(cur.on) });
+    }
+
+    /* mirrors apiAdmin sub 'resetLesson' - see Code.gs.template for why a
+       stamp is needed rather than a straight delete */
+    if (sub === 'resetLesson') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      var rsNum = str_(p.lessonNum);
+      if (!rsNum) return Promise.resolve({ ok: false, error: 'bad-request' });
+      var rsOne = str_(p.email || '').toLowerCase();
+      var rsCleared = 0;
+      var rsList = rsOne ? [{ email: rsOne }] : allPupils_(s, cls);
+      rsList.forEach(function (row) {
+        var rec2 = readPupil_(s, cls, str_(row.email));
+        if (!rec2 || !rec2.L || !rec2.L[rsNum]) return;
+        var rsXp = num_((rec2.L[rsNum] || [])[1]);
+        delete rec2.L[rsNum];
+        rec2.xp = Math.max(0, num_(rec2.xp) - rsXp);
+        writePupil_(s, cls, str_(row.email), rec2);
+        rsCleared++;
+      });
+      var rsAll = getResetsD_(s, cls);
+      rsAll[rsNum] = tmin_();
+      if (!s.rst) s.rst = {};
+      s.rst[cls] = rsAll;
+      if (s.pairing) Object.keys(s.pairing).forEach(function (k) { if (k.indexOf(cls + ':') === 0) delete s.pairing[k]; });
+      if (s.pq) Object.keys(s.pq).forEach(function (k) { if (k.indexOf(cls + ':') === 0) delete s.pq[k]; });
+      save_(s);
+      return Promise.resolve({ ok: true, cleared: num_(rsCleared) });
     }
 
     if (sub === 'locks') {
