@@ -1955,23 +1955,26 @@ function apiAdmin(req) {
        preparation checklist, every resource with a route to it, the hour step
        by step, and what to do when it goes wrong. The three old fields are
        still returned so a lesson not yet rewritten keeps rendering. */
+    /* img/imgCap ride each section entry: the screenshots Damien asked for
+       three times (28 Jul) render inline, at the point in the brief they
+       illustrate. Paths are repo-relative; the shell resolves them. */
     return {
       ok: true, num: str_(briefEntry.num), title: str_(briefEntry.title),
       purpose: (brief.purpose || []).map(str_),
       atAGlance: (brief.atAGlance || []).map(function (g) {
-        return { part: str_(g.part), mins: num_(g.mins), what: str_(g.what) };
+        return { part: str_(g.part), mins: num_(g.mins), what: str_(g.what), img: str_(g.img || ''), imgCap: str_(g.imgCap || '') };
       }),
       prepare: (brief.prepare || []).map(function (p) {
-        return { title: str_(p.title), text: str_(p.text) };
+        return { title: str_(p.title), text: str_(p.text), img: str_(p.img || ''), imgCap: str_(p.imgCap || '') };
       }),
       resources: (brief.resources || []).map(function (r) {
-        return { label: str_(r.label), what: str_(r.what), href: str_(r.href || ''), where: str_(r.where || '') };
+        return { label: str_(r.label), what: str_(r.what), href: str_(r.href || ''), where: str_(r.where || ''), img: str_(r.img || ''), imgCap: str_(r.imgCap || '') };
       }),
       runningTheHour: (brief.runningTheHour || []).map(function (h) {
-        return { part: str_(h.part), mins: num_(h.mins), text: str_(h.text), say: str_(h.say || '') };
+        return { part: str_(h.part), mins: num_(h.mins), text: str_(h.text), say: str_(h.say || ''), img: str_(h.img || ''), imgCap: str_(h.imgCap || '') };
       }),
       goesWrong: (brief.goesWrong || []).map(function (w) {
-        return { q: str_(w.q), a: str_(w.a) };
+        return { q: str_(w.q), a: str_(w.a), img: str_(w.img || ''), imgCap: str_(w.imgCap || '') };
       }),
       ifBehind: str_(brief.ifBehind || ''),
       why: str_(brief.why || ''),
