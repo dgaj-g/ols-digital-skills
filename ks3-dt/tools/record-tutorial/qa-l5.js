@@ -92,9 +92,17 @@ function check(cond, msg) {
   await shot('02-recap-done');
 
   /* ---------- briefing ---------- */
-  await page.evaluate(() => { const s = document.querySelector('.dossier-skip'); if (s) s.click(); });
-  await sleep(900);
-  await page.evaluate(() => { const c = document.querySelector('.dossier-cta'); if (c && !c.hidden) c.click(); });
+  /* the briefing's Skip button was removed on 30 Jul - wait for its Continue to
+     appear, the way a pupil does, instead of assuming it is already there */
+  for (let i = 0; i < 40; i++) {
+    const clicked = await page.evaluate(() => {
+      const c = document.querySelector('.dossier-cta');
+      if (c && c.offsetParent !== null) { c.click(); return true; }
+      return false;
+    });
+    if (clicked) break;
+    await sleep(400);
+  }
   await sleep(1600);
 
   /* ---------- SIGN: contracts ---------- */
