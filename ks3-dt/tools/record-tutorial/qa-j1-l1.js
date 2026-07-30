@@ -25,6 +25,22 @@ function check(cond, msg) {
   else { console.log('  FAIL', msg); FAILS.push(msg); }
 }
 
+
+/* The briefing's Skip button was removed on 30 Jul (Damien: pupils must not skip
+   it). Waiting for the CTA to appear is what a pupil actually does. */
+async function waitBriefing(page, ms) {
+  const until = Date.now() + (ms || 25000);
+  while (Date.now() < until) {
+    const ready = await page.evaluate(() => {
+      const c = document.querySelector('.dossier-cta');
+      return !!(c && c.offsetParent !== null);
+    });
+    if (ready) return true;
+    await sleep(400);
+  }
+  return false;
+}
+
 /* ---------------- shared page helpers ---------------- */
 function helpers(page) {
   const H = {};
@@ -129,7 +145,6 @@ async function driveLesson(page, H, hooks, maxTurns) {
       const vis = e => e && e.offsetParent !== null && !e.disabled;
       if (q('.badge-pop button')) return { kind: 'badge' };
       if (vis(q('.dossier-cta'))) return { kind: 'dossier-cta' };
-      if (q('.dossier-skip')) return { kind: 'dossier-skip' };
       if (q('.se-card')) return { kind: 'selfeval' };
       if (q('.sim-user')) return { kind: 'sim' };
       if (q('.oath-sign') && !q('.oath-sign').disabled && !q('.oath-sign').classList.contains('signed')) return { kind: 'oath' };
@@ -158,7 +173,6 @@ async function driveLesson(page, H, hooks, maxTurns) {
 
     switch (st.kind) {
       case 'badge': await page.evaluate(() => document.querySelector('.badge-pop button').click()); await sleep(500); break;
-      case 'dossier-skip': await page.evaluate(() => document.querySelector('.dossier-skip').click()); await sleep(400); break;
       case 'dossier-cta': await page.evaluate(() => document.querySelector('.dossier-cta').click()); seen.push('briefing'); await sleep(1100); break;
       case 'sim':
         if (hooks.usernameSim) { await hooks.usernameSim(); hooks.usernameSim = null; }
@@ -498,7 +512,7 @@ async function dragTo(page, fileId, folderId) {
       return true;
     };
     await openL1(page);
-    await H.clickSel('.dossier-skip'); await sleep(500);
+    await waitBriefing(page);
     const idxBefore = await H.chunkIdx();
     await dblclick('.dossier-cta');
     await sleep(1600);
@@ -648,7 +662,7 @@ async function dragTo(page, fileId, folderId) {
     const page = await freshPupil(ctx, 'sean');
     const H = helpers(page);
     await openL1(page);
-    await H.clickSel('.dossier-skip'); await sleep(400);
+    await waitBriefing(page);
     await H.clickSel('.dossier-cta'); await sleep(1200);
     await H.clickText('Start'); await sleep(800);
     for (let i = 0; i < 3; i++) {
@@ -676,7 +690,7 @@ async function dragTo(page, fileId, folderId) {
     const p1 = await freshPupil(ctx, 'anya');
     const H1 = helpers(p1);
     await openL1(p1);
-    await H1.clickSel('.dossier-skip'); await sleep(400);
+    await waitBriefing(p1);
     await H1.clickSel('.dossier-cta'); await sleep(1200);
     const p2 = await ctx.newPage();
     p2._errs = [];
@@ -714,7 +728,7 @@ async function dragTo(page, fileId, folderId) {
     const page = await freshPupil(ctx, 'ryan');
     const H = helpers(page);
     await openL1(page);
-    await H.clickSel('.dossier-skip'); await sleep(400);
+    await waitBriefing(page);
     await H.clickSel('.dossier-cta'); await sleep(1200);
     // teacher relocks
     const lockRes = await page.evaluate(() => window.App.call('admin', { passcode: 'demo', sub: 'setLock', className: 'Demo-8A', lessonNum: '1', on: 0 }).then(r => JSON.stringify(r).slice(0, 120)));
@@ -742,7 +756,7 @@ async function dragTo(page, fileId, folderId) {
       const hubScroll = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
       check(!hubScroll, 'hub has no horizontal scroll at ' + w + 'px');
       await openL1(page);
-      await H.clickSel('.dossier-skip'); await sleep(400);
+      await waitBriefing(page);
       await H.clickSel('.dossier-cta'); await sleep(1000);
       await H.clickText('Start'); await sleep(900);
       const qScroll = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);

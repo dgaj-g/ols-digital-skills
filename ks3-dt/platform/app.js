@@ -339,6 +339,7 @@
       s.me = r.me; s.locks = r.locks || {}; s.lb = r.lb; s.team = r.team;
       s.pairing = Number(r.pairing == null ? 1 : r.pairing);
       s.absence = r.absence || []; s.year = r.year || 'j1';
+      s.resets = r.resets || {};   // teacher "start this lesson again" stamps
       s.contentVersion = String(r.contentVersion || 'v0');
       s.xp = r.me ? Number(r.me.xp || 0) : 0;
       s.codename = r.me ? String(r.me.cn || '') : '';
@@ -421,6 +422,10 @@
       ci: Number(s.chunkIdx), cc: (s.chunks || []).length
     });
   };
+
+  /* minutes since 2026-01-01 UTC - the server's tmin_() clock, for comparing a
+     saved draft against a teacher's reset stamp */
+  function clientTmin_() { return Math.floor((Date.now() - 1767225600000) / 60000); }
 
   App.openModal = function (id) { var m = $('#' + id); if (m) m.hidden = false; };
   App.closeModal = function (id) {
@@ -830,6 +835,16 @@
       loadDraftThen(function () {
         // resume: skip chunks already completed on a previous visit/refresh
         // (review mode starts from the top instead — it's a re-read, not a resume)
+        /* A teacher can send a lesson back to the start (30 Jul 2026). Her
+           stamp lives on the class; a pupil's resume position lives in her own
+           private storage, so the comparison has to happen here, on the
+           pupil's own machine - and the stale draft is thrown away rather than
+           left to resurrect on the next save. */
+        var rstAt = Number((App.state.resets || {})[String(le.num)] || 0);
+        if (rstAt && Number((App.state.draft || {}).t || 0) < rstAt) {
+          App.state.draft = {};
+          if (!App.state.draftUnavailable) App.call('saveEvent', { lessonNum: String(le.num), draft: { t: clientTmin_() } });
+        }
         var done = (App.state.review || !App.state.draft) ? [] : (App.state.draft.done || []);
         var idx = 0;
         while (idx < App.state.chunks.length - 1 && done.indexOf(App.state.chunks[idx].id) !== -1) idx++;
@@ -886,6 +901,7 @@
 
   function mountChunk() {
     var s = App.state;
+    s.advancing = false;          // a chunk is on screen again: advancing is allowed
     var ch = s.chunks[s.chunkIdx];
     var host = $('#chunk-host');
     host.innerHTML = '';
@@ -940,8 +956,18 @@
         // every badge carries a detail key: the server's XP idempotency rule
         // only grants XP when the event introduces a NEW key
         var d = detail || ('b' + String(badge.id || 'x') + '=1');
+        /* LIVE BUG (30 Jul 2026): the save used to start only AFTER the pupil
+           dismissed the badge, and the finished activity stayed on screen the
+           whole time. On the real app that is a two-second window in which the
+           old Finish button is still sitting there asking to be pressed - and
+           pressing it skipped the next chunk for good. So: start saving
+           immediately, and the moment the badge is dismissed put a plain
+           "saving" panel up, so there is never a stale control to click. */
+        var save = App.engineCtx(ch).saveEvent({ xp: badge.xp || 0, detail: d });
         return App.badgeCelebration(badge).then(function () {
-          return App.engineCtx(ch).saveEvent({ xp: badge.xp || 0, detail: d });
+          var host = $('#chunk-host');
+          if (host) host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Saving your badge&hellip;</span></div>';
+          return save;
         });
       },
       toast: App.toast,
@@ -975,6 +1001,11 @@
 
   App.nextChunk = function () {
     var s = App.state;
+    /* Belt and braces for the 30 Jul live bug: whatever calls this, one advance
+       per mounted chunk. Two calls in a row used to mark the NEXT chunk
+       complete without ever showing it, and saved progress made that permanent. */
+    if (s.advancing) return;
+    s.advancing = true;
     // record completion for refresh-resume (fire-and-forget draft save)
     var doneId = !s.review && s.chunks[s.chunkIdx] && s.chunks[s.chunkIdx].id;
     if (doneId) {
@@ -982,7 +1013,7 @@
       s.draft.done = s.draft.done || [];
       if (s.draft.done.indexOf(doneId) === -1) s.draft.done.push(doneId);
       var payload = { lessonNum: String(s.lessonEntry.num) };
-      if (!s.draftUnavailable) payload.draft = s.draft; // AUDIT FIX: never clobber an unread draft
+      if (!s.draftUnavailable) { s.draft.t = clientTmin_(); payload.draft = s.draft; } // AUDIT FIX: never clobber an unread draft
       // flush accumulated active minutes with the chunk-advance save (review
       // finding: minutes were silently dropped unless a badge happened to fire)
       if (s.pendingMin >= 1) { payload.minDelta = Math.round(s.pendingMin); s.pendingMin = 0; }
@@ -994,6 +1025,7 @@
 
   function finishLesson() {
     var s = App.state;
+    s.advancing = false;
     if (global.PairKit) global.PairKit.stop();
     var wasCatchup = s.catchup;
     var num = String(s.lessonEntry.num);
