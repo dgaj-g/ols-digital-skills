@@ -126,7 +126,7 @@ async function toBadge2Finish(page) {
   await sleep(1200);
   for (let i = 0; i < 30; i++) {   // answer every question, stop ON the Finish card (2 steps each)
     const state = await page.evaluate(() => {
-      const fin = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /Finish/i.test(x.textContent));
+      const fin = Array.from(document.querySelectorAll('.chunk-host button')).find(x => !x.classList.contains('q-opt') && /^Finish$/i.test(x.textContent.trim()));
       if (fin) return 'finish';
       const nxt = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /^Next$/i.test(x.textContent.trim()));
       if (nxt) { nxt.click(); return 'next'; }
@@ -147,7 +147,7 @@ async function toBadge2Finish(page) {
 /* The pupil's own double-click: Finish, then Finish again while the save runs. */
 async function doubleClickFinish(page) {
   await page.evaluate(() => {
-    const fin = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /Finish/i.test(x.textContent));
+    const fin = Array.from(document.querySelectorAll('.chunk-host button')).find(x => !x.classList.contains('q-opt') && /^Finish$/i.test(x.textContent.trim()));
     if (fin) fin.click();
   });
   await sleep(120);
@@ -157,7 +157,7 @@ async function doubleClickFinish(page) {
   });
   await sleep(150);
   await page.evaluate(() => {                       // ...and the old Finish is still there
-    const fin = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /Finish/i.test(x.textContent));
+    const fin = Array.from(document.querySelectorAll('.chunk-host button')).find(x => !x.classList.contains('q-opt') && /^Finish$/i.test(x.textContent.trim()));
     if (fin) fin.click();
   });
   /* a pupil clicks through whatever appears next, including a second badge pop
