@@ -389,8 +389,16 @@
     $('#staff-open').onclick = function () { if (global.Staff) global.Staff.open(); };
     /* FIX PACKAGE item 2 (Damien, 30 Jul): the pupil class link must not offer
        a Staff button at all - hidden, aria-hidden and out of the tab order, so
-       it is unreachable by mouse AND keyboard. Staff use the bare /exec URL. */
-    if (App.classCode()) {
+       it is unreachable by mouse AND keyboard. Staff use the bare /exec URL.
+       Deliberately keyed on the URL/boot class ONLY - never the localStorage
+       fallback - or a teacher's practice run as a pupil would hide Staff from
+       her own bare teacher link on that machine forever (audit finding 25). */
+    var urlClass = (function () {
+      var boot = global.OLS_BOOT;
+      if (boot && boot.classCode) return String(boot.classCode);
+      try { return new URLSearchParams(location.search).get('class') || ''; } catch (e) { return ''; }
+    })();
+    if (urlClass) {
       ['join-staff', 'staff-open'].forEach(function (id) {
         var b = $('#' + id);
         if (!b) return;

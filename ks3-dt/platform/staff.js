@@ -511,7 +511,7 @@
            exactly the state a mis-tap leaves behind, and until now nothing
            anywhere could reset a delivered date - so the class was recorded as
            having been taught a lesson that never ran, and five school days later
-           every girl was flagged absent from it. */
+           every pupil was flagged absent from it. */
         ((!on && delivered) ? '<span class="lc-undo" data-action="undo-delivery" data-num="' + le.num + '">&#8634; Not taught</span>' : '') +
         '</button>';
     }).join('');
@@ -529,6 +529,7 @@
   function briefHref(h) {
     h = String(h || '');
     if (!h) return '';
+    if (h.indexOf('_PENDING') !== -1) return '';   // deploy placeholder: never render a live-looking dead link
     if (/^https?:\/\//i.test(h)) return h;
     if (/^[a-z][a-z0-9+.-]*:/i.test(h)) return '';   // never javascript:, data:, anything else
     return App.asset(h);                              // repo-relative asset (github.io on Apps Script)
@@ -614,7 +615,7 @@
     var num = btn.getAttribute('data-num');
     App.confirm('Start Lesson ' + num + ' again for the whole class?',
       'Everything the class did in this lesson is cleared, and the XP it earned is taken back with it. ' +
-      'Each girl starts from the beginning the next time she opens it. Other lessons are untouched. ' +
+      'Each pupil starts from the beginning the next time she opens it. Other lessons are untouched. ' +
       'There is no undo for this one.',
       'Start it again', function (ok) {
         if (!ok) return;
@@ -680,7 +681,7 @@
     if (!willOn) {
       var lk = locksData[num] || {};
       App.confirm('Lock ' + (briefByNum[num] && briefByNum[num].side ? 'the Side Quest' : 'Lesson ' + num) + ' again?',
-        'Girls who have already opened it keep their place and can finish. Nobody new will be able to start it, and it will stop being used for absence flags.' +
+        'Pupils who have already opened it keep their place and can finish. Nobody new will be able to start it, and it will stop being used for absence flags.' +
         (Number(lk.u) ? ' The delivered date is kept - if this lesson never actually ran, use "Not taught" on the cell afterwards to clear it.' : ''),
         'Lock it', function (yes) { if (yes) doToggle(btn, num, wasOn, false); });
       return;
@@ -1820,7 +1821,7 @@
      lesson content, no chunk lists, no platform jargon. Under a minute aloud. */
   function renderCoverSheet(le) {
     var link = App.classLink(cls);
-    var label = le.side ? 'the side quest &ldquo;' + App.esc(le.title) + '&rdquo;' : 'Lesson ' + le.num + ' &mdash; ' + App.esc(le.title);
+    var label = le.side ? 'the short extra lesson called &ldquo;' + App.esc(le.title) + '&rdquo;' : 'Lesson ' + le.num + ' &mdash; ' + App.esc(le.title);
     var html = '<div class="cover-sheet">' +
       '<h3>' + App.esc(cls) + ' &middot; DT cover &middot; ' + label + '</h3>' +
       '<h4>Read this to the class</h4><ol>' +

@@ -199,8 +199,8 @@ var DECKS = {
         notes: 'Deliver these as OUR rules, not the website\u2019s. The website revisits them later in the hour — you are giving the answers first, on purpose.' },
       { type: 'bullets', heading: 'How the lessons work',
         bullets: [
-          'Everything lives on one screen called Mission Control — seventeen tiles, one per lesson, all year.',
-          'Each lesson is split into named sections called badges. Finish a section, earn its badge.',
+          'Everything lives on one screen called Mission Control — seventeen lessons on one board, all year (plus the occasional extra called a side quest).',
+          'The main parts of each lesson are named sections called badges. Finish one, earn its badge.',
           'Badges bring points called XP. XP unlocks new colours for the website later in the year — it is private to you and your teacher, and nobody is ranked.',
           'Tap an answer and the screen goes quiet for a few seconds before it replies. That is normal — tap once and wait.',
           'Stuck? The round ? button is on every screen — and your teacher is always the last step.'
@@ -220,8 +220,8 @@ var DECKS = {
         text: 'Just your name and your school email — so the website knows who you are.\n\nPress Continue.',
         notes: "The navy bars in the picture are where each pupil's own name and school email appear." },
       { type: 'step', heading: 'Step 3 · Tick Select all', img: 'c3',
-        text: 'Tick the Select all box — all three ticks appear together.',
-        notes: 'Ticking the three boxes one at a time works too.' },
+        text: 'These ticks let the website do its lesson jobs with your school account — like checking the folders you build in your own Drive later.\n\nTick the Select all box — all three ticks appear together.',
+        notes: 'Ticking the three boxes one at a time works too. If anyone asks what the ticks mean: they let the lesson website work with her school Google account — for example the side quest checks the folders she builds in her own Drive.' },
       { type: 'step', heading: 'Step 4 · Scroll down, press Continue', img: 'c4',
         text: 'That is it — you will never see these screens again.',
         notes: 'Anyone stuck here has usually missed the scroll: the Continue button hides below the fold.' },

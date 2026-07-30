@@ -109,8 +109,8 @@ function e08Section() {
      delivered lesson - and the brief must say when it DOES appear. */
   check(!/(check|look for|find)[^.]{0,60}pairing panel/i.test(prepText),
     'the prep steps no longer send the teacher hunting for the Pairing panel');
-  check(/pairing panel/i.test(JSON.stringify(brief)) && /only appears/i.test(JSON.stringify(brief)),
-    'and the brief says WHEN that panel appears instead');
+  check(/pairing panel/i.test(JSON.stringify(brief)) && /wakes up by itself|sits there saying/i.test(JSON.stringify(brief)),
+    'and the brief tells the truth about when that panel is there (from unlock, empty until the first pupil)');
 
   /* Two claims that were simply untrue and must never come back: there is no
      Mission Briefing video to play, and no audio in the closing message. */
