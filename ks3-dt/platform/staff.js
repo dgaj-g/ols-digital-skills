@@ -545,6 +545,12 @@
       App.esc(cap || 'Screenshot') + '">' +
       (cap ? '<figcaption>' + App.esc(cap) + '</figcaption>' : '') + '</figure>';
   }
+  /* Brief text may carry **bold** for the handful of lines Damien wants
+     emphasised (e.g. "Every pupil must finish this last screen"). Escaped
+     FIRST, so the markers can never smuggle markup in. */
+  function briefText(s) {
+    return App.esc(String(s || '')).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  }
   function briefBody(r) {
     var out = '';
     var isNew = (r.purpose || []).length || (r.runningTheHour || []).length;
@@ -565,13 +571,13 @@
         '<ol class="brief-glance">' + r.atAGlance.map(function (g) {
           return '<li><b>' + App.esc(g.part) + '</b>' +
             (Number(g.mins) ? ' <span class="brief-mins">' + Number(g.mins) + ' min</span>' : '') +
-            '<br>' + App.esc(g.what) + briefShot(g) + '</li>';
+            '<br>' + briefText(g.what) + briefShot(g) + '</li>';
         }).join('') + '</ol>';
     }
     if ((r.prepare || []).length) {
       out += '<h4>Preparing for this lesson</h4><ul class="brief-prep">' +
         r.prepare.map(function (p) {
-          return '<li><b>' + App.esc(p.title) + '</b><br>' + App.esc(p.text) + briefShot(p) + '</li>';
+          return '<li><b>' + App.esc(p.title) + '</b><br>' + briefText(p.text) + briefShot(p) + '</li>';
         }).join('') + '</ul>';
     }
     if ((r.resources || []).length) {
@@ -589,7 +595,7 @@
         r.runningTheHour.map(function (h) {
           return '<li><b>' + App.esc(h.part) + '</b>' +
             (Number(h.mins) ? ' <span class="brief-mins">' + Number(h.mins) + ' min</span>' : '') +
-            '<br>' + App.esc(h.text) + briefShot(h) +
+            '<br>' + briefText(h.text) + briefShot(h) +
             (h.say ? '<div class="brief-say"><span class="brief-say-tag">You could say</span>' + App.esc(h.say) + '</div>' : '') +
             '</li>';
         }).join('') + '</ol>';
@@ -597,7 +603,7 @@
     if ((r.goesWrong || []).length) {
       out += '<h4>What commonly goes wrong, and what to do</h4><ul class="brief-pitfalls">' +
         r.goesWrong.map(function (w) {
-          return '<li><b>' + App.esc(w.q) + '</b><br>' + App.esc(w.a) + briefShot(w) + '</li>';
+          return '<li><b>' + App.esc(w.q) + '</b><br>' + briefText(w.a) + briefShot(w) + '</li>';
         }).join('') + '</ul>';
     }
     if (r.ifBehind) out += '<h4>If you fall behind</h4><p>' + App.esc(r.ifBehind) + '</p>';
@@ -615,7 +621,7 @@
     var num = btn.getAttribute('data-num');
     App.confirm('Start Lesson ' + num + ' again for the whole class?',
       'Everything the class did in this lesson is cleared, and the XP it earned is taken back with it. ' +
-      'Each pupil starts from the beginning the next time she opens it. Other lessons are untouched. ' +
+      'Each pupil starts from the beginning the next time they open it. Other lessons are untouched. ' +
       'There is no undo for this one.',
       'Start it again', function (ok) {
         if (!ok) return;

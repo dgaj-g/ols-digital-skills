@@ -221,7 +221,7 @@ var DECKS = {
         notes: "The navy bars in the picture are where each pupil's own name and school email appear." },
       { type: 'step', heading: 'Step 3 · Tick Select all', img: 'c3',
         text: 'These ticks let the website do its lesson jobs with your school account — like checking the folders you build in your own Drive later.\n\nTick the Select all box — all three ticks appear together.',
-        notes: 'Ticking the three boxes one at a time works too. If anyone asks what the ticks mean: they let the lesson website work with her school Google account — for example the side quest checks the folders she builds in her own Drive.' },
+        notes: 'Ticking the three boxes one at a time works too. If anyone asks what the ticks mean: they let the lesson website work with the pupil\u2019s school Google account — for example the side quest checks the folders they build in their own Drive.' },
       { type: 'step', heading: 'Step 4 · Scroll down, press Continue', img: 'c4',
         text: 'That is it — you will never see these screens again.',
         notes: 'Anyone stuck here has usually missed the scroll: the Continue button hides below the fold.' },
