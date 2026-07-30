@@ -444,7 +444,11 @@
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
       introCard(host, {
-        kicker: chunk.title, title: cfg.variant === 'calibration' ? 'Console calibration' : 'Quick check',
+        /* The calibration card is named by the chunk itself ("Warm-up") - the old
+           hardcoded "Console calibration" reintroduced the console vocabulary the
+           Lesson 1 re-author removed (Damien, rule 25). */
+        kicker: cfg.variant === 'calibration' ? '' : chunk.title,
+        title: cfg.variant === 'calibration' ? chunk.title : 'Quick check',
         text: cfg.intro || ''
       }, 'Start', function () {
         itemRunner(host, {
@@ -503,7 +507,7 @@
       function rulesCheck() {
         host.innerHTML = '';
         if (!cfg.items || !cfg.items.length) { finishChunk(ctx); return; }
-        introCard(host, { kicker: 'Seal the badge', title: 'Ground rules check', text: cfg.itemsIntro || '' }, 'Go', function () {
+        introCard(host, { kicker: 'Nearly there', title: 'Check you have it', text: cfg.itemsIntro || '' }, 'Go', function () {
           itemRunner(host, {
             items: cfg.items, mode: 'feedback',
             markFn: function (it, ii) { return ctx.markItem(it.id, ii); },
@@ -518,7 +522,7 @@
   Engines.tour = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
-      introCard(host, { kicker: chunk.title, title: 'Learn your console', text: cfg.intro || '' }, 'Follow the beacon', startTour);
+      introCard(host, { kicker: chunk.title, title: 'Learn your way around', text: cfg.intro || '' }, 'Follow the light', startTour);
 
       function startTour() {
         var stage = el('<div class="tour-stage">' +
@@ -551,7 +555,7 @@
       }
 
       function rulesCheck() {
-        introCard(host, { kicker: 'Seal the badge', title: 'Navigator check', text: cfg.itemsIntro || '' }, 'Go', function () {
+        introCard(host, { kicker: 'Nearly there', title: 'Quick check', text: cfg.itemsIntro || '' }, 'Go', function () {
           itemRunner(host, {
             items: cfg.items, mode: 'feedback',
             markFn: function (it, i) { return ctx.markItem(it.id, i); },

@@ -165,6 +165,48 @@ function classYear_(cls) {
   for (var i = 0; i < reg.length; i++) if (reg[i].name === cls) return reg[i].year || 'j1';
   return 'j1';
 }
+/* CLASS OWNER (30 Jul 2026 - Damien's rule, supersedes the earlier "exclude all
+   staff" proposal). Anyone who joins a class can be paired EXCEPT the teacher
+   who OWNS it. She must be able to sit her own lesson as a pupil - the brief
+   tells her to, and it is the single most useful preparation there is - without
+   taking a real pupil's partner slot, without being paired WITH a pupil, and
+   without her own answers entering her class's roster, baseline or absence.
+   Staff who join somebody else's class are ordinary participants. */
+function classOwner_(cls) {
+  var reg = getClasses_();
+  for (var i = 0; i < reg.length; i++) if (reg[i].name === cls) return str_(reg[i].owner);
+  return '';
+}
+function isClassOwner_(cls, email) {
+  var ow = str_(classOwner_(cls)).toLowerCase();
+  var me = str_(email).toLowerCase();
+  return !!ow && !!me && ow === me;
+}
+/* HEAD OF DEPARTMENT (30 Jul 2026 - Damien's requirement, built to Claude's
+   recommended shape and agreed by him). He needs control of EVERY class so he
+   can unlock a lesson on behalf of a teacher who is off sick and could not
+   leave cover. Deliberately NOT modelled as co-ownership: `owner` must keep
+   meaning "the teacher of THIS class", because isClassOwner_ also decides who
+   is excluded from pairing and from class statistics. A HoD is therefore a
+   separate role that can MANAGE any class without being counted as anybody's
+   class teacher.
+   Set up: Script Property `hods` = JSON array of lower-case emails, e.g.
+   ["dgartland123@c2ken.net"]. Same place as `staffPasscode`. */
+function hodList_() {
+  var raw = jget_(sp_(), 'hods', []);
+  if (!raw || !raw.length) return [];
+  return raw.map(function (e) { return str_(e).trim().toLowerCase(); }).filter(function (e) { return !!e; });
+}
+function isHod_(email) {
+  var me = str_(email).trim().toLowerCase();
+  if (!me) return false;
+  return hodList_().indexOf(me) !== -1;
+}
+/* Who may MANAGE a class: unlock/re-lock its lessons, reset one, run cover,
+   and see it in the register. The class's own teacher, or a HoD. */
+function canManageClass_(cls, email) {
+  return isClassOwner_(cls, email) || isHod_(email);
+}
 function sanitizeClass_(name) {
   return str_(name).trim().replace(/[^A-Za-z0-9_\- ]/g, '').replace(/\s+/g, '-').slice(0, 40);
 }
@@ -318,6 +360,18 @@ function storeHealth_() {
     if (k.indexOf('p:') === 0) pupils++;
   });
   return { bytes: num_(total), limit: 500000, pupils: num_(pupils) };
+}
+/* Pupils for STATISTICS - roster counts, leaderboards, the class baseline and
+   absence inference (30 Jul 2026). Identical to allPupils_ but with the class
+   OWNER removed, so a teacher who sits her own lesson as a pupil (which the
+   brief tells her to do) never pollutes her own class's data. Deliberately NOT
+   used by reset or archive: her record still gets cleared and tidied like
+   anyone else's. See isClassOwner_. */
+function statsPupils_(cls) {
+  var ow = str_(classOwner_(cls)).toLowerCase();
+  var rows = allPupils_(cls);
+  if (!ow) return rows;
+  return rows.filter(function (r) { return str_(r.email).toLowerCase() !== ow; });
 }
 function allPupils_(cls) {
   // Lock-free bulk read (red team: dashboard reads must never take the lock).
@@ -484,7 +538,7 @@ function apiState(req) {
   var team = getTeam_(cls);
   var myTeam = null;
   if (rec && rec.g && cfg.lb.mode !== 'off') {
-    var pupils = allPupils_(cls);
+    var pupils = statsPupils_(cls);
     var teamXp = 0, memberNames = [];
     for (var i = 0; i < pupils.length; i++) {
       if (str_(pupils[i].g) === str_(rec.g)) {
@@ -1089,7 +1143,7 @@ function apiBoard(req) {
   if (!cls) return { ok: false, error: 'unknown-class' };
   var cfg = getCfg_(cls);
   if (str_(cfg.lb.mode) !== 'public') return { ok: true, mode: str_(cfg.lb.mode), rows: [] };
-  var rows = allPupils_(cls).filter(function (r) { return str_(r.n); }).map(function (r) {
+  var rows = statsPupils_(cls).filter(function (r) { return str_(r.n); }).map(function (r) {
     var doneCount = 0;
     Object.keys(r.L || {}).forEach(function (k) { if (num_((r.L[k] || [])[0]) === 2) doneCount++; });
     return {
@@ -1114,7 +1168,7 @@ function tnAgg_(cls, numStr) {
   var team = getTeam_(cls);
   var totals = {}, submitted = 0, roster = 0, rows = [];
   (team.groups || []).forEach(function (g) { totals[str_(g.id)] = 0; });
-  allPupils_(cls).forEach(function (r) {
+  statsPupils_(cls).forEach(function (r) {
     if (!str_(r.n)) return;
     roster++;
     var a = (r.L || {})[numStr];
@@ -1289,10 +1343,17 @@ function pairStateFor_(reg, hit) {
    E = pupils still expected to reach the stage (union of live-present pupils on
    this lesson who are not past the stage and not yet assigned, plus everyone
    actively queued). Pair FIFO while E > 3; hold for the TRIO when E == 3;
-   pair the last two when E == 2; release solo when E <= 1. */
+   pair the last two when E == 2; release solo when E <= 1.
+   The CLASS OWNER is excluded throughout (30 Jul 2026): she is never queued,
+   never counted in E, and never matched - see isClassOwner_. */
 function pairMatch_(cls, lessonId, numStr, stageIdx, reg, q) {
   var nowS = tsec_();
+  var owner = str_(classOwner_(cls)).toLowerCase();
   q.q = (q.q || []).filter(function (w) { return nowS - num_(w.p) <= PAIR_QUEUE_STALE_S; });
+  /* Defensive: apiPairJoin sends the owner straight to solo so she should never
+     reach the queue, but an older cached client could still have queued her.
+     Drop her here rather than risk pairing a teacher with a pupil. */
+  if (owner) q.q = q.q.filter(function (w) { return str_(w.e).toLowerCase() !== owner; });
   var assigned = {};
   Object.keys(reg.P).forEach(function (pid) {
     if (num_(reg.P[pid].dis)) return;   // dissolved (C-11): its members are free again
@@ -1304,6 +1365,7 @@ function pairMatch_(cls, lessonId, numStr, stageIdx, reg, q) {
   var present = presentOn_(cls, numStr);
   Object.keys(present).forEach(function (e) {
     if (assigned[e]) return;
+    if (owner && str_(e).toLowerCase() === owner) return; // the owner is never "expected" to pair
     if (present[e].ci > stageIdx) return; // already past the stage (never paired: solo path or old run)
     expected[e] = 1;
   });
@@ -1347,6 +1409,17 @@ function apiPairJoin(req) {
     var hit = pairOf_(reg, email);
     if (hit) return pairStateFor_(reg, hit);
     if (reg.solo.indexOf(email) !== -1) return { ok: true, state: 'solo' };
+    /* The CLASS OWNER never pairs (30 Jul 2026). She is encouraged to sit her
+       own lesson as a pupil, so she goes straight to a solo run: she can never
+       take a real pupil's partner slot, and no pupil is ever paired with her
+       teacher. Staff joining somebody ELSE's class pair normally. */
+    if (isClassOwner_(cls, email)) {
+      if (reg.solo.indexOf(email) === -1) {
+        reg.solo.push(email);
+        jset_(sp_(), pairRegKey_(cls, lessonId), reg);
+      }
+      return { ok: true, state: 'solo' };
+    }
     var q = cGet_(pqCacheKey_(cls, lessonId), { q: [], stage: stageIdx });
     q.stage = stageIdx;
     var mine = null;
@@ -1702,6 +1775,27 @@ function apiAdmin(req) {
 
   if (sub === 'classes') {
     var reg = getClasses_();
+    /* SECURITY (30 Jul 2026, finding NEW-18). The passcode alone used to return
+       EVERY class in the school plus each owner's email to anyone who typed it -
+       and a pupil account CAN reach this panel. "Show all teachers' classes" was
+       only ever a client-side filter, so the data had already left the server.
+       Now: you must actually own a class to see the register at all. A caller
+       who owns nothing gets an empty list, so a leaked passcode reveals no class
+       names, no owner addresses and no roster counts. */
+    var meLc = str_(me).toLowerCase();
+    var ownsAny = isHod_(me); // a HoD sees every class - that is the point of the role
+    if (!ownsAny) {
+      for (var oi = 0; oi < reg.length; oi++) {
+        if (str_(reg[oi].owner).toLowerCase() === meLc) { ownsAny = true; break; }
+      }
+    }
+    if (!ownsAny) {
+      return {
+        ok: true, me: str_(me), classes: [],
+        store: { bytes: 0, limit: 500000, pupils: 0 },
+        archive: null
+      };
+    }
     var all = sp_().getProperties();
     var counts = {};
     Object.keys(all).forEach(function (k) {
@@ -1760,7 +1854,10 @@ function apiAdmin(req) {
     if (!cls) return { ok: false, error: 'unknown-class' };
     var entry = null;
     getClasses_().forEach(function (c) { if (c.name === cls) entry = c; });
-    if (entry && entry.owner && entry.owner !== me) return { ok: false, error: 'not-owner' };
+    /* Deletion is owner-or-HoD (30 Jul 2026). Damien asked for FULL control of
+       every class as Head of Department, deletion included, and reaffirmed it
+       when told it was irreversible - so it is his call and it is settled. */
+    if (entry && entry.owner && !canManageClass_(cls, me)) return { ok: false, error: 'not-owner' };
     return withLock_(function () {
       var spp = sp_();
       var props = spp.getProperties();
@@ -1818,7 +1915,7 @@ function apiAdmin(req) {
     var cfg2 = getCfg_(cls);
     var locks2 = getLocks_(cls);
     var team2 = getTeam_(cls);
-    var rows = allPupils_(cls).map(function (r) {
+    var rows = statsPupils_(cls).map(function (r) {
       var L = {};
       Object.keys(r.L || {}).forEach(function (k) {
         L[k] = (r.L[k] || []).map(function (v, i) { return (i === 2 || i === 3 || i === 4 || i === 8) ? str_(v) : num_(v); });

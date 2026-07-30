@@ -387,6 +387,18 @@
     $('#agent-chip').onclick = function () { App.openKit(); };
     $('#join-staff').onclick = function () { if (global.Staff) global.Staff.open(); };
     $('#staff-open').onclick = function () { if (global.Staff) global.Staff.open(); };
+    /* FIX PACKAGE item 2 (Damien, 30 Jul): the pupil class link must not offer
+       a Staff button at all - hidden, aria-hidden and out of the tab order, so
+       it is unreachable by mouse AND keyboard. Staff use the bare /exec URL. */
+    if (App.classCode()) {
+      ['join-staff', 'staff-open'].forEach(function (id) {
+        var b = $('#' + id);
+        if (!b) return;
+        b.hidden = true;
+        b.setAttribute('aria-hidden', 'true');
+        b.tabIndex = -1;
+      });
+    }
     $('#player-back').onclick = function () { App.confirmLeaveLesson(); };
     document.querySelectorAll('.modal-close').forEach(function (b) {
       b.onclick = function () { App.closeModal(b.getAttribute('data-close')); };
