@@ -82,7 +82,13 @@
         }
         var head = box.querySelector('h2');
         var stat = box.querySelector('.pw-status');
-        if (Number(r.trioHold)) {
+        if (r.initial) {
+          /* DAMIEN, 31 Jul 2026 (rule 100): this card is up from the very first
+             moment - the old blank gap while the first reply travelled was
+             exactly the silent wait rule 42 forbids. */
+          head.textContent = 'Opening the Vault…';
+          stat.textContent = 'Checking who else is at the Vault right now…';
+        } else if (Number(r.trioHold)) {
           head.textContent = 'You are one of the last three.';
           stat.textContent = 'The last three pupils share one Vault as a three — waiting for your third partner to arrive…';
         } else {
@@ -134,6 +140,7 @@
           PairKit._pollT = setTimeout(poll, 2000);
         });
       }
+      waitUi({ initial: 1 });   // rule 100: on screen before the first reply, never a blank gate
       poll();
     },
 
