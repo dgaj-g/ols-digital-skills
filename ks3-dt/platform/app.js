@@ -387,6 +387,26 @@
     $('#agent-chip').onclick = function () { App.openKit(); };
     $('#join-staff').onclick = function () { if (global.Staff) global.Staff.open(); };
     $('#staff-open').onclick = function () { if (global.Staff) global.Staff.open(); };
+    /* FIX PACKAGE item 2 (Damien, 30 Jul): the pupil class link must not offer
+       a Staff button at all - hidden, aria-hidden and out of the tab order, so
+       it is unreachable by mouse AND keyboard. Staff use the bare /exec URL.
+       Deliberately keyed on the URL/boot class ONLY - never the localStorage
+       fallback - or a teacher's practice run as a pupil would hide Staff from
+       her own bare teacher link on that machine forever (audit finding 25). */
+    var urlClass = (function () {
+      var boot = global.OLS_BOOT;
+      if (boot && boot.classCode) return String(boot.classCode);
+      try { return new URLSearchParams(location.search).get('class') || ''; } catch (e) { return ''; }
+    })();
+    if (urlClass) {
+      ['join-staff', 'staff-open'].forEach(function (id) {
+        var b = $('#' + id);
+        if (!b) return;
+        b.hidden = true;
+        b.setAttribute('aria-hidden', 'true');
+        b.tabIndex = -1;
+      });
+    }
     $('#player-back').onclick = function () { App.confirmLeaveLesson(); };
     document.querySelectorAll('.modal-close').forEach(function (b) {
       b.onclick = function () { App.closeModal(b.getAttribute('data-close')); };

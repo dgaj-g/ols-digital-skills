@@ -131,6 +131,12 @@
         'padding:8px 11px;margin-top:6px;font-style:italic;color:var(--ink)}' +
       '.brief-say-tag{display:block;font-style:normal;font-weight:800;font-size:0.7rem;' +
         'letter-spacing:.06em;text-transform:uppercase;color:var(--ols-blue-soft);margin-bottom:3px}' +
+      /* screenshots inside the brief (Damien, 28 Jul: the teacher must SEE what
+         the pupils will see, and when) */
+      '.brief-shot{margin:8px 0 4px}' +
+      '.brief-shot img{display:block;max-width:100%;border:1px solid var(--line-l);' +
+        'border-radius:8px;box-shadow:0 2px 10px rgba(23,34,59,0.08)}' +
+      '.brief-shot figcaption{color:var(--muted);font-size:0.8rem;margin-top:4px;line-height:1.4}' +
       '@media print{body *{visibility:hidden}' +
         '.cover-sheet,.cover-sheet *,.brief-sheet,.brief-sheet *{visibility:visible}' +
         '.cover-sheet,.brief-sheet{position:absolute;left:0;top:0;width:100%}}';
@@ -505,7 +511,7 @@
            exactly the state a mis-tap leaves behind, and until now nothing
            anywhere could reset a delivered date - so the class was recorded as
            having been taught a lesson that never ran, and five school days later
-           every girl was flagged absent from it. */
+           every pupil was flagged absent from it. */
         ((!on && delivered) ? '<span class="lc-undo" data-action="undo-delivery" data-num="' + le.num + '">&#8634; Not taught</span>' : '') +
         '</button>';
     }).join('');
@@ -523,9 +529,27 @@
   function briefHref(h) {
     h = String(h || '');
     if (!h) return '';
+    if (h.indexOf('_PENDING') !== -1) return '';   // deploy placeholder: never render a live-looking dead link
     if (/^https?:\/\//i.test(h)) return h;
     if (/^[a-z][a-z0-9+.-]*:/i.test(h)) return '';   // never javascript:, data:, anything else
     return App.asset(h);                              // repo-relative asset (github.io on Apps Script)
+  }
+  /* A section entry may carry img (repo-relative or https) + imgCap: the
+     screenshot renders inline so the teacher sees the pupils' screen at the
+     exact point in the brief where it matters. */
+  function briefShot(entry) {
+    var src = briefHref(entry && entry.img);
+    if (!src) return '';
+    var cap = String((entry && entry.imgCap) || '');
+    return '<figure class="brief-shot"><img src="' + App.esc(src) + '" loading="lazy" alt="' +
+      App.esc(cap || 'Screenshot') + '">' +
+      (cap ? '<figcaption>' + App.esc(cap) + '</figcaption>' : '') + '</figure>';
+  }
+  /* Brief text may carry **bold** for the handful of lines Damien wants
+     emphasised (e.g. "Every pupil must finish this last screen"). Escaped
+     FIRST, so the markers can never smuggle markup in. */
+  function briefText(s) {
+    return App.esc(String(s || '')).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
   }
   function briefBody(r) {
     var out = '';
@@ -542,18 +566,18 @@
         r.purpose.map(function (p) { return '<p>' + App.esc(p) + '</p>'; }).join('');
     }
     if ((r.atAGlance || []).length) {
-      out += '<h4>What the girls will actually do</h4>' +
+      out += '<h4>What the pupils will actually do</h4>' +
         '<p class="brief-note">Every part of the hour, in the order they meet it. The rest of this brief uses these names, so it is worth a read-through first.</p>' +
         '<ol class="brief-glance">' + r.atAGlance.map(function (g) {
           return '<li><b>' + App.esc(g.part) + '</b>' +
             (Number(g.mins) ? ' <span class="brief-mins">' + Number(g.mins) + ' min</span>' : '') +
-            '<br>' + App.esc(g.what) + '</li>';
+            '<br>' + briefText(g.what) + briefShot(g) + '</li>';
         }).join('') + '</ol>';
     }
     if ((r.prepare || []).length) {
       out += '<h4>Preparing for this lesson</h4><ul class="brief-prep">' +
         r.prepare.map(function (p) {
-          return '<li><b>' + App.esc(p.title) + '</b><br>' + App.esc(p.text) + '</li>';
+          return '<li><b>' + App.esc(p.title) + '</b><br>' + briefText(p.text) + briefShot(p) + '</li>';
         }).join('') + '</ul>';
     }
     if ((r.resources || []).length) {
@@ -563,7 +587,7 @@
           return '<li><b>' + App.esc(res.label) + '</b>' +
             (href ? ' &mdash; <a href="' + App.esc(href) + '" target="_blank" rel="noopener">open it</a>' : '') +
             '<br>' + App.esc(res.what) +
-            (res.where ? '<br><i>Where to find it: ' + App.esc(res.where) + '</i>' : '') + '</li>';
+            (res.where ? '<br><i>Where to find it: ' + App.esc(res.where) + '</i>' : '') + briefShot(res) + '</li>';
         }).join('') + '</ul>';
     }
     if ((r.runningTheHour || []).length) {
@@ -571,7 +595,7 @@
         r.runningTheHour.map(function (h) {
           return '<li><b>' + App.esc(h.part) + '</b>' +
             (Number(h.mins) ? ' <span class="brief-mins">' + Number(h.mins) + ' min</span>' : '') +
-            '<br>' + App.esc(h.text) +
+            '<br>' + briefText(h.text) + briefShot(h) +
             (h.say ? '<div class="brief-say"><span class="brief-say-tag">You could say</span>' + App.esc(h.say) + '</div>' : '') +
             '</li>';
         }).join('') + '</ol>';
@@ -579,7 +603,7 @@
     if ((r.goesWrong || []).length) {
       out += '<h4>What commonly goes wrong, and what to do</h4><ul class="brief-pitfalls">' +
         r.goesWrong.map(function (w) {
-          return '<li><b>' + App.esc(w.q) + '</b><br>' + App.esc(w.a) + '</li>';
+          return '<li><b>' + App.esc(w.q) + '</b><br>' + briefText(w.a) + briefShot(w) + '</li>';
         }).join('') + '</ul>';
     }
     if (r.ifBehind) out += '<h4>If you fall behind</h4><p>' + App.esc(r.ifBehind) + '</p>';
@@ -597,7 +621,7 @@
     var num = btn.getAttribute('data-num');
     App.confirm('Start Lesson ' + num + ' again for the whole class?',
       'Everything the class did in this lesson is cleared, and the XP it earned is taken back with it. ' +
-      'Each girl starts from the beginning the next time she opens it. Other lessons are untouched. ' +
+      'Each pupil starts from the beginning the next time they open it. Other lessons are untouched. ' +
       'There is no undo for this one.',
       'Start it again', function (ok) {
         if (!ok) return;
@@ -663,7 +687,7 @@
     if (!willOn) {
       var lk = locksData[num] || {};
       App.confirm('Lock ' + (briefByNum[num] && briefByNum[num].side ? 'the Side Quest' : 'Lesson ' + num) + ' again?',
-        'Girls who have already opened it keep their place and can finish. Nobody new will be able to start it, and it will stop being used for absence flags.' +
+        'Pupils who have already opened it keep their place and can finish. Nobody new will be able to start it, and it will stop being used for absence flags.' +
         (Number(lk.u) ? ' The delivered date is kept - if this lesson never actually ran, use "Not taught" on the cell afterwards to clear it.' : ''),
         'Lock it', function (yes) { if (yes) doToggle(btn, num, wasOn, false); });
       return;
@@ -1796,21 +1820,29 @@
     });
   }
 
+  /* THE COVER SHEET STANDARD (Damien, 30 Jul 2026): a covering teacher is NOT
+     expected to teach. She reads a handful of lines aloud and gets back to her
+     own marking. Carry on with Lesson X, it has been unlocked, what to do if a
+     pupil is stuck, what to do if the room goes wrong - and nothing else. No
+     lesson content, no chunk lists, no platform jargon. Under a minute aloud. */
   function renderCoverSheet(le) {
     var link = App.classLink(cls);
+    var label = le.side ? 'the short extra lesson called &ldquo;' + App.esc(le.title) + '&rdquo;' : 'Lesson ' + le.num + ' &mdash; ' + App.esc(le.title);
     var html = '<div class="cover-sheet">' +
-      '<h3>' + App.esc(cls) + ' &middot; Lesson ' + le.num + ': ' + App.esc(le.title) + '</h3>' +
-      '<p>Class link: <a href="' + App.esc(link) + '" target="_blank" rel="noopener">' + App.esc(link) + '</a></p>' +
-      '<canvas id="cover-qr-canvas"></canvas>' +
-      '<div id="cover-what"><h4>What the class does</h4><p class="staff-status">Loading&hellip;</p></div>' +
-      (le.coverNote ? ('<p class="staff-lead">' + App.esc(le.coverNote) + '</p>') : '') +
-      '<h4>Running it (no DT knowledge needed)</h4><ol>' +
-        '<li>Pupils open the class link above, or scan the QR code, on their own device.</li>' +
-        '<li>They sign in with their usual school Google account -- the platform takes it from there.</li>' +
-        '<li>The platform delivers the whole lesson on screen; you do not need to teach any content.</li>' +
-        '<li>Circulate, keep pupils on task, and help with reading the instruction cards if asked.</li>' +
-        '<li>If wifi drops or a pupil cannot sign in: have them retry once, then sit them next to a working pair -- progress is saved centrally, so a later retry (even next lesson) picks up where they left off.</li>' +
+      '<h3>' + App.esc(cls) + ' &middot; DT cover &middot; ' + label + '</h3>' +
+      '<h4>Read this to the class</h4><ol>' +
+        '<li>&ldquo;Your DT lesson today is ' + label + '. It is unlocked and waiting for you, and it gives you every instruction on screen.&rdquo;</li>' +
+        '<li>&ldquo;Open the class link &mdash; it is on your bookmarks bar and on Google Classroom &mdash; and carry on from wherever you are.&rdquo;</li>' +
+        '<li>&ldquo;If you are stuck, press the round ? button on your screen, then quietly ask the person beside you.&rdquo;</li>' +
+        '<li>&ldquo;If your computer misbehaves, share with the person beside you &mdash; nothing is lost, the website keeps your place.&rdquo;</li>' +
       '</ol>' +
+      '<h4>For you</h4>' +
+      '<p>That is the whole job &mdash; the lesson runs itself and you are not expected to teach it. ' +
+      'If the room loses the internet, have them turn their screens off and get on with quiet work; nobody&rsquo;s progress is harmed. ' +
+      'Anything odd, jot it down for the class&rsquo;s own teacher.</p>' +
+      (le.coverNote ? ('<p class="staff-lead">' + App.esc(le.coverNote) + '</p>') : '') +
+      '<p>Class link (pupils normally use their bookmark): <a href="' + App.esc(link) + '" target="_blank" rel="noopener">' + App.esc(link) + '</a></p>' +
+      '<canvas id="cover-qr-canvas"></canvas>' +
       '<div class="confirm-actions">' +
         '<button type="button" class="ghost-btn" data-action="cover-print">Print this sheet</button>' +
         '<button type="button" class="ghost-btn danger" data-action="cover-end">End Cover Mode</button>' +
@@ -1821,24 +1853,6 @@
     if (global.QRCode && global.QRCode.toCanvas && canvas) {
       global.QRCode.toCanvas(canvas, link, { width: 200, margin: 2, color: { dark: '#1A3A6B', light: '#ffffff' } }, function () {});
     }
-    loadCoverWhat(le);
-  }
-
-  function loadCoverWhat(le) {
-    var host = q('#cover-what');
-    if (!host) return;
-    if (le.status !== 'ready' || !le.file) {
-      host.innerHTML = '<h4>What the class does</h4><p>' + (le.tagline ? App.esc(le.tagline) : 'Detailed content for this lesson is still being prepared -- check with the DT lead for how to run it.') + '</p>';
-      return;
-    }
-    App.fetchContent(le.file).then(function (lesson) {
-      var chunks = (lesson.chunks || []).map(function (ch) {
-        return '<li>' + App.esc(ch.title || ch.engine || 'Activity') + (ch.minutes ? (' (' + ch.minutes + ' min)') : '') + '</li>';
-      }).join('');
-      host.innerHTML = '<h4>What the class does</h4><ol>' + (chunks || '<li>See the lesson for details.</li>') + '</ol>';
-    }).catch(function () {
-      host.innerHTML = '<h4>What the class does</h4><p>Could not load the lesson outline -- the pupils&rsquo; view will still work fine.</p>';
-    });
   }
 
   function coverPrint() {

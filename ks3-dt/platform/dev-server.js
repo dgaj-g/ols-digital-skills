@@ -1184,19 +1184,19 @@
             ok: true, num: str_(briefEntry.num), title: str_(briefEntry.title),
             purpose: (brief.purpose || []).map(str_),
             atAGlance: (brief.atAGlance || []).map(function (g) {
-              return { part: str_(g.part), mins: num_(g.mins), what: str_(g.what) };
+              return { part: str_(g.part), mins: num_(g.mins), what: str_(g.what), img: str_(g.img || ''), imgCap: str_(g.imgCap || '') };
             }),
             prepare: (brief.prepare || []).map(function (pr) {
-              return { title: str_(pr.title), text: str_(pr.text) };
+              return { title: str_(pr.title), text: str_(pr.text), img: str_(pr.img || ''), imgCap: str_(pr.imgCap || '') };
             }),
             resources: (brief.resources || []).map(function (rs) {
-              return { label: str_(rs.label), what: str_(rs.what), href: str_(rs.href || ''), where: str_(rs.where || '') };
+              return { label: str_(rs.label), what: str_(rs.what), href: str_(rs.href || ''), where: str_(rs.where || ''), img: str_(rs.img || ''), imgCap: str_(rs.imgCap || '') };
             }),
             runningTheHour: (brief.runningTheHour || []).map(function (h) {
-              return { part: str_(h.part), mins: num_(h.mins), text: str_(h.text), say: str_(h.say || '') };
+              return { part: str_(h.part), mins: num_(h.mins), text: str_(h.text), say: str_(h.say || ''), img: str_(h.img || ''), imgCap: str_(h.imgCap || '') };
             }),
             goesWrong: (brief.goesWrong || []).map(function (w) {
-              return { q: str_(w.q), a: str_(w.a) };
+              return { q: str_(w.q), a: str_(w.a), img: str_(w.img || ''), imgCap: str_(w.imgCap || '') };
             }),
             ifBehind: str_(brief.ifBehind || ''),
             why: str_(brief.why || ''),
