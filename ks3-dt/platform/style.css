@@ -461,7 +461,20 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   background: var(--ols-blue); color: #fff; border-radius: 9px;
   font-family: var(--font-display); font-weight: 700; font-size: 0.85rem;
 }
+/* FIX PACKAGE item 3, pupil half: marking is a server round trip that cannot be
+   removed, so it must at least be visible. The tapped option says "Checking",
+   every other option fades back, and the card stops looking answerable. */
 .q-opt.checking { border-color: var(--gold); animation: panelPulse 0.9s infinite; }
+.q-card.is-checking .q-opt:not(.checking) { opacity: 0.4; }
+.q-checking {
+  display: inline-flex; align-items: center; gap: 7px; margin-left: auto;
+  color: var(--gold-deep); font-weight: 700; font-size: 0.85rem; white-space: nowrap;
+}
+.q-spin {
+  width: 13px; height: 13px; border-radius: 50%; flex: 0 0 auto;
+  border: 2px solid rgba(var(--gold-rgb), 0.3); border-top-color: var(--gold-deep);
+  animation: spin 0.7s linear infinite;
+}
 .q-opt.right { border-color: var(--good); background: var(--good-soft); opacity: 1; }
 .q-opt.right .q-letter { background: var(--good); }
 .q-opt.wrong { border-color: var(--bad); background: var(--bad-soft); opacity: 1; }
@@ -735,6 +748,7 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .help-beacon:hover { transform: scale(1.1); box-shadow: 0 14px 34px rgba(var(--gold-rgb), 0.6); }
 .help-list { text-align: left; color: var(--ink); padding-left: 20px; }
 .help-list li { margin-bottom: 8px; }
+.help-text { text-align: left; color: var(--ink); line-height: 1.55; margin: 0; }
 
 /* ============ modals / toast ============ */
 .ols-modal {
@@ -1144,6 +1158,13 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 /* whose-turn state: the tray politely locks for the advising partner */
 .vault-stage.not-my-turn .vault-tray .vault-file { opacity: 0.55; cursor: not-allowed; }
 .vault-stage.not-my-turn .vault-tray .vault-file:active { transform: none; }
+
+/* the pairing states: PAIRED / GROUP OF THREE / NO PARTNER (Damien, 31 Jul) */
+.pair-pop .badge-pop-card { text-align: center; max-width: 520px; }
+.pair-pop h2 { margin: 4px 0 12px; }
+.pair-pop-line { color: var(--ink); margin: 0 0 11px; line-height: 1.5; }
+.pair-pop-line b { color: var(--ols-blue); }
+.pair-pop .primary-btn { margin-top: 6px; }
 
 /* identity reveal ("declassified") */
 .reveal-pop .badge-pop-card { text-align: center; }

@@ -600,6 +600,27 @@ async function c11Vault(ctx) {
     if (hit) break;
     await sleep(700);
   }
+  /* DAMIEN, 31 Jul 2026: pairing must announce itself unmistakably before the
+     Vault opens - "the girls need to be clearly shown when they actually do enter
+     the vault, whether they are still waiting for someone to be matched with or
+     not." Pinned to the real text, including both of his standing warnings. */
+  let popText = '';
+  for (let i = 0; i < 40; i++) {
+    popText = await page.evaluate(() => {
+      const p = document.querySelector('.pair-pop');
+      return p ? p.textContent : '';
+    });
+    if (popText) break;
+    await sleep(800);
+  }
+  check(/PARTNER FOUND|GROUP OF THREE/.test(popText), 'pairing announces itself with a pop-up before the Vault opens');
+  check(/You[’']ve been paired!|You[’']re a three!/.test(popText), 'it says so in plain words: ' + popText.slice(0, 44));
+  check(/Agent \S/.test(popText), 'it names the partner call sign');
+  check(/stays secret until the Vault is sealed/.test(popText), 'it says the identity stays secret until the Vault is sealed');
+  check(/keep real names out of the message box, including your own/.test(popText), 'it warns to keep real names out of the channel');
+  check(/your teacher can read every message/.test(popText), 'it warns that the teacher reads every message');
+  await page.evaluate(() => { const b = document.querySelector('.pair-pop button'); if (b) b.click(); });
+  await sleep(700);
   let paired = false;
   for (let i = 0; i < 40; i++) {
     paired = await page.evaluate(() => !!document.querySelector('.vault-wrap.paired .chat-dock'));
