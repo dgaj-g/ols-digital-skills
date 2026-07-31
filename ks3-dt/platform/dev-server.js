@@ -596,7 +596,21 @@
         });
         up.rs[curNum] = session;
         save_(s);
-        return { ok: true, items: out };
+        /* rule 97 mirror: a/explain ride along so the Do-Now marks instantly. */
+        return devKeysAll_().then(function (allKeys) {
+          var poolId = recapPoolPath_(man, year).replace(/\.json$/, '');
+          var rk = allKeys && allKeys[poolId];
+          if (rk) {
+            out.forEach(function (o, ix) {
+              var key = rk[o.id];
+              if (key && typeof key.a === 'number') {
+                o.a = session.items[ix].ord.indexOf(num_(key.a));
+                o.explain = str_(key.explain || '');
+              }
+            });
+          }
+          return { ok: true, items: out };
+        });
       });
     });
   }
@@ -672,6 +686,38 @@
         var key = keys ? keys[str_(p.itemId)] : null;
         if (!key) return { ok: false, error: 'no-key' };
         return { ok: true, correct: choice === num_(key.a), correctIdx: num_(key.a), explain: str_(key.explain || '') };
+      });
+    });
+  }
+
+  /* Mirror of apiLessonKeys (rule 97, instant marking) with the same filter:
+     no _brief, no vault maps, no x-tagged keys (exit + baseline). On github.io
+     dev-keys 404s, so this returns no-keys, the client falls back to per-tap
+     doMark, and the C-14 "nothing is marked here" story is unchanged. */
+  function doLessonKeys(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    var year = classYear_(s, cls);
+    var lessonId = str_(p.lessonId);
+    return yearManifest_(year).then(function (man) {
+      var entry = lessonEntry_(man, lessonId);
+      var numStr = entry ? str_(entry.num) : '';
+      if (!lessonAccessible_(s, cls, numStr)) return { ok: false, error: 'locked' };
+      return devKeysAll_().then(function (allKeys) {
+        if (!allKeys) return { ok: false, error: 'no-keys' };
+        var keys = allKeys[fileIdOf_(entry)];
+        if (!keys) return { ok: false, error: 'no-keys' };
+        var out = {};
+        Object.keys(keys).forEach(function (id) {
+          var k = keys[id];
+          if (!k || id === '_brief') return;
+          if (k.map) return;
+          if (num_(k.x)) return;
+          if (typeof k.a !== 'number') return;
+          out[id] = { a: num_(k.a), explain: str_(k.explain || '') };
+        });
+        return { ok: true, keys: out };
       });
     });
   }
@@ -2167,6 +2213,7 @@
       case 'recapStart': return doRecapStart(p);
       case 'recapAnswer': return doRecapAnswer(p);
       case 'mark': return doMark(p);
+      case 'lessonKeys': return doLessonKeys(p);
       case 'vaultInfo': return doVaultInfo(p);
       case 'board': return doBoard(p);
       case 'tournament': return doTournament(p);

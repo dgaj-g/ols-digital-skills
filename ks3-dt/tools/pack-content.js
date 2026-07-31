@@ -82,6 +82,18 @@ function main() {
       src.keys._brief = src.teacherBrief;
       delete pub.teacherBrief;
     }
+    // Instant-marking filter (31 Jul 2026, master file rule 97): the exit check
+    // and the baseline exam deliberately withhold verdicts on screen, so their
+    // keys are tagged x here and apiLessonKeys never hands them to the pupil's
+    // page. Everything else marks locally and instantly.
+    if (src.keys && src.chunks) {
+      src.chunks.forEach(ch => {
+        if (ch.engine !== 'exitcheck' && ch.engine !== 'diagnostic') return;
+        (((ch.config || {}).items) || []).forEach(it => {
+          if (src.keys[it.id]) src.keys[it.id].x = 1;
+        });
+      });
+    }
     if (src.keys) {
       pub.keysEnc = encryptKeys(src.keys, fileId, sec);
       devKeys[fileId] = src.keys;
