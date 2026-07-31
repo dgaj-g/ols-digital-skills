@@ -380,9 +380,41 @@
     setTimeout(end, 15000); // hard cap
   }
 
+  /* The full-screen guard is shared by sign-in and by opening a lesson; this is
+     how its line is kept honest for whichever wait is actually happening. */
+  function guardSays(html) {
+    var t = $('#guard') && $('#guard').querySelector('.guard-text');
+    if (t) t.innerHTML = html;
+  }
+
+  /* FIX PACKAGE item 7 (DAMIEN, 31 Jul: "yes, you must do this"). The round ?
+     repeated the same three lines on every screen, so it never actually helped
+     anyone: "the round ? repeats the same text for every activity. It must give
+     proper, per-activity help." The text now comes from the chunk the pupil is
+     standing on (content-authored, so every future lesson supplies its own), and
+     the generic list survives only on the hub, where there is no activity to
+     explain. */
+  function renderHelp() {
+    var title = $('#help-title'), body = $('#help-body'), generic = $('#help-generic');
+    if (!title || !body || !generic) return;
+    var ch = (App.state.lesson && App.state.chunks) ? App.state.chunks[App.state.chunkIdx] : null;
+    var txt = (ch && ch.config && ch.config.help) ? String(ch.config.help) : '';
+    if (txt) {
+      title.textContent = ch.title ? ('Help with: ' + ch.title) : 'Help';
+      body.innerHTML = '<p class="help-text">' + esc(txt) + '</p>';
+      body.hidden = false;
+      generic.hidden = true;
+    } else {
+      title.textContent = 'Stuck?';
+      body.innerHTML = '';
+      body.hidden = true;
+      generic.hidden = false;
+    }
+  }
+
   /* ---------------- chrome ---------------- */
   function wireChrome() {
-    $('#help-beacon').onclick = function () { App.openModal('help-modal'); };
+    $('#help-beacon').onclick = function () { renderHelp(); App.openModal('help-modal'); };
     $('#help-close').onclick = function () { App.closeModal('help-modal'); };
     $('#agent-chip').onclick = function () { App.openKit(); };
     $('#join-staff').onclick = function () { if (global.Staff) global.Staff.open(); };
@@ -551,7 +583,14 @@
       '<div class="finish-glyph">&#127894;&#65039;</div>' +
       '<h2>Clearance upgraded</h2>' +
       '<p class="badge-pop-name">Clearance ' + Number(rank.level) + ' &mdash; ' + esc(rank.name) + '</p>' +
-      '<p class="clearance-sub">HQ has released new kit. It’s waiting in your Agent Kit.</p>' +
+      /* DAMIEN, 31 Jul 2026: a pupil has never met the term "Agent Kit", so the
+         old line explained nothing and the button asked her to open something she
+         could not picture. His wording, verbatim. The last sentence is true:
+         #agent-chip calls App.openKit (see wireChrome). */
+      '<p class="clearance-sub">Your Agent Kit is kind of like this website’s own wardrobe or ' +
+      'costumes! It holds the looks and badge designs your console can wear, unlocked as your XP ' +
+      'grows. This clearance has just unlocked new ones. Open it to try them on &mdash; you can ' +
+      'change your look any time from your name chip, top right.</p>' +
       '<div class="confirm-actions">' +
       '<button class="ghost-btn" data-act="later" type="button">Later</button>' +
       '<button class="primary-btn" data-act="open" type="button">Open Agent Kit</button>' +
@@ -832,9 +871,15 @@
     var le = null;
     (man.lessons || []).forEach(function (l) { if (l.id === lessonId) le = l; });
     if (!le || !le.file) { App.toast('This lesson is being prepared.'); return; }
+    /* Rule 42, no silent waits. The full-screen guard already covers the wait to
+       open a lesson, but it was still saying "Getting your details" - the sign-in
+       message - so the screen was telling her the wrong thing for five seconds.
+       Restored afterwards, because sign-in shares this overlay. */
+    guardSays('Opening your lesson&hellip;');
     $('#guard').hidden = false;
     App.fetchContent(le.file).then(function (lesson) {
       $('#guard').hidden = true;
+      guardSays('Getting your details&hellip;');
       App.state.lesson = lesson;
       App.state.lessonEntry = le;
       App.state.catchup = !!(opts && opts.catchup);
@@ -873,6 +918,7 @@
       });
     }).catch(function () {
       $('#guard').hidden = true;
+      guardSays('Getting your details&hellip;');
       App.toast('Could not load the lesson — check the wifi and try again.');
     });
   };

@@ -64,19 +64,31 @@
       var stageIdx = Number(App.state.chunkIdx);
       var began = Date.now();
       var box = null;
+      /* DAMIEN, 31 Jul 2026: "the girls need to be clearly shown when they actually
+         do enter the vault, whether they are still waiting for someone to be matched
+         with or not... very, very clear." Three states, each unmistakable and in
+         plain words: WAITING (here), PAIRED/TRIO (matchPop) and the rare SOLO
+         release. The matching rules themselves are untouched - pairs form while more
+         than three are expected, the last three are held back for a trio, the last
+         two pair, and only a genuinely last pupil is released alone. */
       function waitUi(r) {
         if (!box) {
           box = el('<div class="card pair-wait">' +
             '<div class="pw-radar"><span></span><span></span><span></span><i></i></div>' +
-            '<h2>Opening a channel&hellip;</h2>' +
-            '<p class="pw-status">HQ is matching you with a partner agent.</p>' +
+            '<h2>Waiting to be paired.</h2>' +
+            '<p class="pw-status"></p>' +
             '<p class="pw-hint" hidden></p></div>');
           host.appendChild(box);
         }
+        var head = box.querySelector('h2');
         var stat = box.querySelector('.pw-status');
-        if (Number(r.trioHold)) stat.textContent = 'The last three agents on a mission finish it together — holding this frequency for one more…';
-        else if (Number(r.waiting) > 1) stat.textContent = 'Signal found — locking frequencies…';
-        else stat.textContent = 'HQ is matching you with a partner agent…';
+        if (Number(r.trioHold)) {
+          head.textContent = 'You are one of the last three.';
+          stat.textContent = 'The last three pupils share one Vault as a three — waiting for your third partner to arrive…';
+        } else {
+          head.textContent = 'Waiting to be paired.';
+          stat.textContent = 'You are in the queue. The website is waiting for another pupil in your class to reach the Vault — the moment one does, you become partners and this screen changes by itself. Nothing is wrong: stay on this screen.';
+        }
         var hint = box.querySelector('.pw-hint');
         if (Date.now() - began > 180000) {
           hint.hidden = false;
@@ -91,7 +103,21 @@
             PairKit._pollT = setTimeout(poll, 2500); return;
           }
           if (r.state === 'off') { if (box) box.remove(); cb('social'); return; }
-          if (r.state === 'solo') { if (box) box.remove(); cb('solo'); return; }
+          if (r.state === 'solo') {
+            if (box) box.remove();
+            // The gate released her alone: she is the last one at the Vault with
+            // nobody left to match. Never silent - catch-up runs keep their own
+            // banner and never reach here.
+            PairKit._statePop({
+              kicker: 'NO PARTNER',
+              title: 'Nobody left to pair with.',
+              lines: ['Everyone else in your class has already been through the Vault, so you are ' +
+                      'doing this one solo &mdash; you make the calls yourself, and everything else ' +
+                      'works the same.'],
+              button: 'Open the Vault'
+            }, function () { cb('solo'); });
+            return;
+          }
           if (r.state === 'paired') {
             PairKit.st = {
               pid: String(r.pid), mi: Number(r.mi), members: (r.members || []).map(String),
@@ -100,8 +126,8 @@
               done: Number(r.done), rv: Number(r.rv), names: r.names || null
             };
             if (box) box.remove();
-            PairKit._loop(ctx);
-            cb('paired');
+            PairKit._loop(ctx);   // channel stays live under the pop-up
+            PairKit._matchPop(function () { cb('paired'); });
             return;
           }
           waitUi(r);
@@ -109,6 +135,55 @@
         });
       }
       poll();
+    },
+
+    /* The shared modal behind the PAIRED / TRIO / SOLO states. `lines` are HTML
+       so a call sign can be emphasised inside its own sentence - every call site
+       below escapes anything that came from the server. */
+    _statePop: function (o, cb) {
+      var pop = el('<div class="badge-pop pair-pop"><div class="badge-pop-card">' +
+        '<span class="reveal-kicker">' + esc(o.kicker) + '</span>' +
+        '<h2>' + esc(o.title) + '</h2>' +
+        o.lines.map(function (t) { return '<p class="pair-pop-line">' + t + '</p>'; }).join('') +
+        '<button class="primary-btn" type="button">' + esc(o.button) + '</button>' +
+        '</div></div>');
+      document.body.appendChild(pop);
+      requestAnimationFrame(function () { pop.classList.add('show'); });
+      var btn = pop.querySelector('button');
+      btn.onclick = function () {
+        btn.disabled = true;                       // one press only
+        pop.classList.remove('show');
+        setTimeout(function () { pop.remove(); }, 250);
+        cb();
+      };
+      btn.focus();
+    },
+
+    /* DAMIEN, 31 Jul 2026 (rule 94): the pop names the partner(s) and carries his
+       two standing warnings - the real identity stays secret until the Vault is
+       sealed, and real names stay out of a channel the teacher reads. */
+    _matchPop: function (cb) {
+      var st = PairKit.st;
+      if (!st) { cb(); return; }
+      var partners = st.members.filter(function (_, i) { return i !== Number(st.mi); });
+      var tags = partners.map(function (cn) { return '<b>Agent ' + esc(String(cn)) + '</b>'; });
+      var secret = 'Who ' + (tags.length > 1 ? 'they really are stays' : 'she really is stays') +
+        ' secret until the Vault is sealed &mdash; so keep real names out of the message box, ' +
+        'including your own. Remember: your teacher can read every message.';
+      PairKit._statePop({
+        kicker: tags.length > 1 ? 'GROUP OF THREE' : 'PARTNER FOUND',
+        title: tags.length > 1 ? 'You’re a three!' : 'You’ve been paired!',
+        lines: tags.length > 1
+          ? ['Your partners for this Vault are ' + tags.join(' and ') + '. Your class has an odd ' +
+             'number at the Vault, so the last three share one Vault together.',
+             secret,
+             'Talk it through, agree, and take turns at the controls.']
+          : ['Your partner for this Vault is ' + (tags[0] || '<b>another agent</b>') +
+             '. She is at another computer, looking at the same Vault as you.',
+             secret,
+             'Talk it through, agree, then whoever holds the controls drops the file.'],
+        button: 'Open the Vault together'
+      }, cb);
     },
 
     onEvent: function (fn) { PairKit._handler = fn; },
@@ -263,6 +338,15 @@
     var idx = 0, right = 0, answers = {}, curOrd = [];
     var wrap = el('<div class="runner"></div>');
     host.appendChild(wrap);
+    /* DAMIEN, 31 Jul 2026 (live run): opening the Licence Exam instantly answered
+       question 1 on BOTH pupil accounts. The intro card's button and the first
+       option render at the same screen position, so the tail of one click landed
+       on an option that had not been on screen when the press began. The 26 Jul
+       fix only guarded the graded exit check's question-to-question step; every
+       mount had the same hole. Guard the render itself: an activation within
+       GHOST_MS of a card appearing cannot have been aimed at it. */
+    var GHOST_MS = 350;
+    var shownAt = 0;
 
     function progress() {
       return opts.items.length > 1
@@ -290,6 +374,7 @@
         }).join('') + '</div>' +
         '<div class="q-feedback" hidden></div>' +
         '</div>';
+      shownAt = Date.now();
       wrap.querySelectorAll('.q-opt').forEach(function (btn) {
         btn.onclick = function () { pick(Number(btn.getAttribute('data-i')), btn); };
       });
@@ -313,6 +398,7 @@
     }
 
     function pick(i, btn) {
+      if (Date.now() - shownAt < GHOST_MS) return;   // ghost click from the previous screen
       var it = opts.items[idx];
       var srcIdx = curOrd[i]; // display position -> source index (contract unchanged)
       var ord = curOrd;       // capture: async marking must not race the next show()
@@ -329,38 +415,92 @@
       if (opts.mode === 'collect') { setTimeout(nextOrDone, 400); return; }
       if (opts.mode === 'neutral') {
         btn.classList.add('logged');
-        btn.insertAdjacentHTML('beforeend', '<span class="q-logged">' + esc(opts.ackText || 'Logged') + ' &#10003;</span>');
+        // DAMIEN, 31 Jul 2026: the words stay, the tick goes - a tick beside an
+        // answer reads as "you got it right" to a 12-year-old, and nothing on the
+        // baseline is marked at all.
+        btn.insertAdjacentHTML('beforeend', '<span class="q-logged">' + esc(opts.ackText || 'Logged') + '</span>');
         setTimeout(nextOrDone, 650);
         return;
       }
-      // feedback mode: server marks (against the SOURCE index)
+      /* feedback mode: server marks (against the SOURCE index).
+         FIX PACKAGE item 3, pupil half (DAMIEN, rule 42 - "no silent waits"):
+         marking is a server round trip of ~5s and must stay one (red-team #1:
+         keys never reach the client), so the wait cannot be removed - but it can
+         stop being silent. The tapped option says so immediately, the rest grey
+         out, and a stalled check offers its own way out instead of stranding her
+         (NEW-16: once seen hanging past 30s with no recovery but a reload). */
       btn.classList.add('checking');
-      opts.markFn(it, srcIdx).then(function (r) {
+      btn.insertAdjacentHTML('beforeend', '<span class="q-checking"><i class="q-spin"></i>Checking&hellip;</span>');
+      wrap.querySelector('.q-card').classList.add('is-checking');
+
+      var resolved = false, slowT = null, stuckT = null;
+
+      function saying(html) {
+        var s = btn.querySelector('.q-checking');
+        if (s) s.innerHTML = html;
+      }
+      function clearWaits() {
+        clearTimeout(slowT); clearTimeout(stuckT);
+        var s = btn.querySelector('.q-checking');
+        if (s) s.remove();
         btn.classList.remove('checking');
-        var fb = wrap.querySelector('.q-feedback');
-        if (!r || !r.ok) {
+        var card = wrap.querySelector('.q-card');
+        if (card) card.classList.remove('is-checking');
+      }
+      /* Each attempt arms its own timers, so a retry that also stalls offers the
+         way out again rather than leaving her on a spinner for ever. */
+      function sendMark() {
+        clearTimeout(slowT); clearTimeout(stuckT);
+        saying('<i class="q-spin"></i>Checking&hellip;');
+        slowT = setTimeout(function () {
+          if (resolved) return;
+          saying('<i class="q-spin"></i>Still checking &mdash; hold on&hellip;');
+        }, 8000);
+        stuckT = setTimeout(function () {
+          if (resolved) return;
+          var fbs = wrap.querySelector('.q-feedback');
+          fbs.hidden = false;
+          fbs.className = 'q-feedback neutral';
+          fbs.innerHTML = '<p>This is taking longer than it should &mdash; the wifi may have dropped. Your answer is safe.</p>' +
+            '<button class="primary-btn" type="button">Try again</button>';
+          fbs.querySelector('button').onclick = function () {
+            fbs.hidden = true; fbs.innerHTML = '';
+            sendMark();
+          };
+        }, 20000);
+
+        opts.markFn(it, srcIdx).then(function (r) {
+          // A retry can land while the stalled first attempt is still in flight.
+          // Only the first reply through renders, so `right` can never count twice.
+          if (resolved) return;
+          resolved = true;
+          clearWaits();
+          var fb = wrap.querySelector('.q-feedback');
+          if (!r || !r.ok) {
+            fb.hidden = false;
+            fb.className = 'q-feedback neutral';
+            fb.innerHTML = '<p>Hmm — could not check that one (wifi?). Moving on.</p>' +
+              '<button class="primary-btn" type="button">Next</button>';
+            fb.querySelector('button').onclick = nextOrDone;
+            return;
+          }
+          var opts_ = wrap.querySelectorAll('.q-opt');
+          if (r.correct) { right++; btn.classList.add('right'); }
+          else {
+            btn.classList.add('wrong');
+            var revealPos = ord.indexOf(Number(r.correctIdx)); // source -> display position
+            if (revealPos !== -1 && opts_[revealPos]) opts_[revealPos].classList.add('reveal');
+          }
           fb.hidden = false;
-          fb.className = 'q-feedback neutral';
-          fb.innerHTML = '<p>Hmm — could not check that one (wifi?). Moving on.</p>' +
-            '<button class="primary-btn" type="button">Next</button>';
+          fb.className = 'q-feedback ' + (r.correct ? 'good' : 'bad');
+          fb.innerHTML = '<p class="q-verdict">' + (r.correct ? 'Correct.' : 'Not this time.') + '</p>' +
+            (r.explain ? '<p class="q-explain">' + esc(r.explain) + '</p>' : '') +
+            '<button class="primary-btn" type="button">' + (idx === opts.items.length - 1 ? 'Finish' : 'Next') + '</button>';
           fb.querySelector('button').onclick = nextOrDone;
-          return;
-        }
-        var opts_ = wrap.querySelectorAll('.q-opt');
-        if (r.correct) { right++; btn.classList.add('right'); }
-        else {
-          btn.classList.add('wrong');
-          var revealPos = ord.indexOf(Number(r.correctIdx)); // source -> display position
-          if (revealPos !== -1 && opts_[revealPos]) opts_[revealPos].classList.add('reveal');
-        }
-        fb.hidden = false;
-        fb.className = 'q-feedback ' + (r.correct ? 'good' : 'bad');
-        fb.innerHTML = '<p class="q-verdict">' + (r.correct ? 'Correct.' : 'Not this time.') + '</p>' +
-          (r.explain ? '<p class="q-explain">' + esc(r.explain) + '</p>' : '') +
-          '<button class="primary-btn" type="button">' + (idx === opts.items.length - 1 ? 'Finish' : 'Next') + '</button>';
-        fb.querySelector('button').onclick = nextOrDone;
-        fb.querySelector('button').focus();
-      });
+          fb.querySelector('button').focus();
+        });
+      }
+      sendMark();
     }
 
     show();

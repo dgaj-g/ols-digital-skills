@@ -83,8 +83,14 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
     return { exists: true, open: open, txt: txt };
   });
   check(helpOk.exists && helpOk.open, 'the ? help beacon exists and opens');
-  check(/Re-read/i.test(helpOk.txt) && /partner/i.test(helpOk.txt) && /hand up/i.test(helpOk.txt),
-    'and it really gives re-read / ask your partner / hand up, exactly as ping 3 says');
+  /* RE-PINNED 31 Jul 2026: this is the HUB, where there is no activity to explain,
+     so the generic list is the right answer here - but it no longer says "ask your
+     partner", because outside the Vault there is no partner to ask. Inside a lesson
+     the ? now serves that activity's own help (fix package item 7). */
+  check(/Re-read/i.test(helpOk.txt) && /beside you/i.test(helpOk.txt) && /hand up/i.test(helpOk.txt),
+    'and on the hub it really gives re-read / ask the pupil beside you / hand up');
+  check(/Stuck\?/i.test(helpOk.txt) && !/Stuck, Agent/i.test(helpOk.txt),
+    'and it asks in plain words, not in agent vocabulary');
 
   await page.evaluate(() => Array.from(document.querySelectorAll('.tile')).find(e => /Mission Control|Agent Induction|Lesson 1/i.test(e.textContent)).click());
   await sleep(2200);
@@ -117,7 +123,9 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   const before = await page.evaluate(() => window.App.state.xp);
   const fb = await page.evaluate(async () => {
     const opts = Array.from(document.querySelectorAll('.chunk-host .q-opt'));
-    const wrong = opts.find(o => !/goes quiet for a few seconds/i.test(o.textContent));
+    // RE-PINNED 31 Jul 2026: the correct option now says the screen SHOWS IT IS
+    // CHECKING, because it does - the silent five seconds are gone (item 3).
+    const wrong = opts.find(o => !/shows it is checking for a few seconds/i.test(o.textContent));
     wrong.click();
     await new Promise(r => setTimeout(r, 900));
     const h = document.querySelector('.chunk-host');
@@ -126,8 +134,13 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   check(/Not this time|Correct/i.test(fb), 'a tap gets an immediate verdict on screen');
   check(/travels to the school system and back/i.test(fb), 'and the explanation lands with the verdict, as a warm-up should');
   const examIntro = lesson.chunks.find(c => c.id === 'b4-exam').config.intro;
-  check(/not be told right or wrong/i.test(examIntro) && /on purpose/i.test(examIntro),
+  /* RE-PINNED 31 Jul 2026: same guarantee, new words. Damien cut "that silence is
+     on purpose, and it is not the website being broken" as unclear; the intro now
+     tells her what she WILL see instead, which is the stronger warning. */
+  check(/not be told right or wrong/i.test(examIntro) && /Answer saved/i.test(examIntro),
     'the Exam pre-warns about its own silence IN ITS OWN INTRO - before the first unmarked answer, never after');
+  check(/nothing new to learn in it/i.test(examIntro) && /sixteen quick questions/i.test(examIntro),
+    'and it opens by saying what the badge IS, not with a cold count of questions');
   await page.screenshot({ path: path.join(OUT, 'l1-calibration-feedback.png'), fullPage: true });
 
   /* the warm-up must not be scored */
