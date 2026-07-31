@@ -2166,6 +2166,11 @@ function apiAdmin(req) {
         var rsXp = num_((rsRec.L[rsNum] || [])[1]);
         delete rsRec.L[rsNum];
         rsRec.xp = Math.max(0, num_(rsRec.xp) - rsXp);   // the XP came from work that no longer exists
+        /* DAMIEN, 31 Jul 2026 (rule 99): the codename is Lesson 1's own output,
+           so resetting Lesson 1 resets it too - otherwise a re-run greets the
+           pupil by a codename the reset was supposed to unmake. Other lessons
+           never touch it. */
+        if (rsNum === '1') rsRec.cn = '';
         writePupil_(cls, str_(rsPupils[ri].email), rsRec);
         rsCleared++;
       }
