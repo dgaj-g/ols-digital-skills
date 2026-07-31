@@ -422,13 +422,13 @@
         setTimeout(nextOrDone, 650);
         return;
       }
-      /* feedback mode: server marks (against the SOURCE index).
-         FIX PACKAGE item 3, pupil half (DAMIEN, rule 42 - "no silent waits"):
-         marking is a server round trip of ~5s and must stay one (red-team #1:
-         keys never reach the client), so the wait cannot be removed - but it can
-         stop being silent. The tapped option says so immediately, the rest grey
-         out, and a stalled check offers its own way out instead of stranding her
-         (NEW-16: once seen hanging past 30s with no recovery but a reload). */
+      /* feedback mode: the verdict for the SOURCE index. Since rule 97 the
+         normal path is LOCAL and instant (markFn resolves from keys fetched at
+         lesson open), and a resolved promise settles before the next paint, so
+         none of the Checking scaffolding below ever appears. It stays for the
+         fallback - a tap that beat the key fetch, or wifi that ate it - where
+         the old silent 5s wait and the NEW-16 hang (30s+, no way out but a
+         reload) would otherwise return. */
       btn.classList.add('checking');
       btn.insertAdjacentHTML('beforeend', '<span class="q-checking"><i class="q-spin"></i>Checking&hellip;</span>');
       wrap.querySelector('.q-card').classList.add('is-checking');
@@ -1226,7 +1226,18 @@
           itemRunner(host, {
             items: r.items, mode: 'feedback',
             markFn: function (it, i) {
-              return ctx.call('recapAnswer', { lessonNum: String(ctx.lessonEntry.num), itemId: it.id, choice: i });
+              /* rule 97: the verdict renders instantly from the answers that rode
+                 along with recapStart; the recording write still goes to the
+                 server, fire-and-forget. Deliberately NOT queued for retry - the
+                 recap tallies increment on the server, so a blind retry could
+                 count one answer twice. A lost blip costs one tally, never the
+                 verdict. */
+              var send = ctx.call('recapAnswer', { lessonNum: String(ctx.lessonEntry.num), itemId: it.id, choice: i });
+              if (it.a != null && Number(it.a) >= 0) {
+                return Promise.resolve({ ok: true, correct: Number(i) === Number(it.a),
+                  correctIdx: Number(it.a), explain: String(it.explain || ''), local: 1 });
+              }
+              return send;
             },
             onDone: function (res) {
               host.innerHTML = ''; // replace the last item card - the done card must never hide below the fold
@@ -1492,10 +1503,11 @@
 
   /* ================= parsons (distractor-free ordering, exit part 2) =======
      Tap-to-build: blocks are AUTHORED scrambled; the answer key is the
-     lexicographic index of the correct permutation, marked server-side via
-     the ordinary apiMark call - no readable key ever reaches the client
-     (red team #1 holds). One attempt, honest feedback, correct order revealed
-     after, result recorded as a detail key (never blocks completion). */
+     lexicographic index of the correct permutation, judged via the ordinary
+     markItem path - since rule 97 that is local and instant when the lesson's
+     keys arrived at open, with the apiMark round trip as the fallback. One
+     attempt, honest feedback, correct order revealed after, result recorded
+     as a detail key (never blocks completion). */
   function permIndex(perm) {
     var n = perm.length, idx = 0, used = [];
     for (var i = 0; i < n; i++) {

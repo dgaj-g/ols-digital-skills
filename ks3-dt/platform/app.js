@@ -24,7 +24,8 @@
     email: '', name: '', codename: '', classCode: '', year: 'j1',
     man: null, me: null, locks: {}, lb: null, team: null, absence: [], kit: null,
     xp: 0, contentVersion: '', preview: false,
-    lesson: null, chunkIdx: 0, catchup: false, pendingMin: 0
+    lesson: null, chunkIdx: 0, catchup: false, pendingMin: 0,
+    localKeys: null   // this lesson's answer key, fetched at open (rule 97: instant marking)
   };
 
   /* ---------------- boot params (sandboxed iframe: use OLS_BOOT, never location) */
@@ -548,6 +549,7 @@
 
   function showHub() {
     App.state.lesson = null;
+    App.state.localKeys = null;
     $('#player').hidden = true;
     $('#topbar').hidden = false;
     $('#help-beacon').hidden = false;
@@ -882,6 +884,13 @@
       guardSays('Getting your details&hellip;');
       App.state.lesson = lesson;
       App.state.lessonEntry = le;
+      /* rule 97: pull this lesson's answer key in the background so every tap
+         marks on this machine. Nothing waits on it - a tap that wins the race
+         simply falls back to the server for that one answer. */
+      App.state.localKeys = null;
+      App.call('lessonKeys', { lessonId: le.id }).then(function (kr) {
+        if (kr && kr.ok && kr.keys && App.state.lesson === lesson) App.state.localKeys = kr.keys;
+      });
       App.state.catchup = !!(opts && opts.catchup);
       // Completed lessons re-open in REVIEW mode: everything is explorable again
       // (decision #10: pupils can always revisit) but nothing is re-recorded —
@@ -995,6 +1004,16 @@
       preview: s.preview,
       call: App.call,
       markItem: function (itemId, choice) {
+        /* DAMIEN, 31 Jul 2026 (rule 97): marking is instant. The key arrived in
+           the background when the lesson opened; the server trip survives only
+           for a tap that beats the key fetch or a fetch the wifi ate. A resolved
+           promise settles before the next paint, so the Checking state never
+           even renders on this path. */
+        var k = s.localKeys && s.localKeys[itemId];
+        if (k && k.a != null) {
+          return Promise.resolve({ ok: true, correct: Number(choice) === Number(k.a),
+            correctIdx: Number(k.a), explain: String(k.explain || ''), local: 1 });
+        }
         return App.call('mark', { lessonId: s.lesson.id, itemId: itemId, choice: choice });
       },
       review: s.review,

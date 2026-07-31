@@ -1974,6 +1974,7 @@ window.OLS_TRANSPORT = {
         case 'recapStart':     g.apiRecapStart(p); break;
         case 'recapAnswer':    g.apiRecapAnswer(p); break;
         case 'mark':           g.apiMark(p); break;
+        case 'lessonKeys':     g.apiLessonKeys(p); break;
         case 'vaultInfo':      g.apiVaultInfo(p); break;
         case 'board':          g.apiBoard(p); break;
         case 'saveEvent':      g.apiSaveEvent(p); break;
@@ -2027,7 +2028,8 @@ window.OLS_TRANSPORT = {
     email: '', name: '', codename: '', classCode: '', year: 'j1',
     man: null, me: null, locks: {}, lb: null, team: null, absence: [], kit: null,
     xp: 0, contentVersion: '', preview: false,
-    lesson: null, chunkIdx: 0, catchup: false, pendingMin: 0
+    lesson: null, chunkIdx: 0, catchup: false, pendingMin: 0,
+    localKeys: null   // this lesson's answer key, fetched at open (rule 97: instant marking)
   };
 
   /* ---------------- boot params (sandboxed iframe: use OLS_BOOT, never location) */
@@ -2551,6 +2553,7 @@ window.OLS_TRANSPORT = {
 
   function showHub() {
     App.state.lesson = null;
+    App.state.localKeys = null;
     $('#player').hidden = true;
     $('#topbar').hidden = false;
     $('#help-beacon').hidden = false;
@@ -2885,6 +2888,13 @@ window.OLS_TRANSPORT = {
       guardSays('Getting your details&hellip;');
       App.state.lesson = lesson;
       App.state.lessonEntry = le;
+      /* rule 97: pull this lesson's answer key in the background so every tap
+         marks on this machine. Nothing waits on it - a tap that wins the race
+         simply falls back to the server for that one answer. */
+      App.state.localKeys = null;
+      App.call('lessonKeys', { lessonId: le.id }).then(function (kr) {
+        if (kr && kr.ok && kr.keys && App.state.lesson === lesson) App.state.localKeys = kr.keys;
+      });
       App.state.catchup = !!(opts && opts.catchup);
       // Completed lessons re-open in REVIEW mode: everything is explorable again
       // (decision #10: pupils can always revisit) but nothing is re-recorded \u2014
@@ -2998,6 +3008,16 @@ window.OLS_TRANSPORT = {
       preview: s.preview,
       call: App.call,
       markItem: function (itemId, choice) {
+        /* DAMIEN, 31 Jul 2026 (rule 97): marking is instant. The key arrived in
+           the background when the lesson opened; the server trip survives only
+           for a tap that beats the key fetch or a fetch the wifi ate. A resolved
+           promise settles before the next paint, so the Checking state never
+           even renders on this path. */
+        var k = s.localKeys && s.localKeys[itemId];
+        if (k && k.a != null) {
+          return Promise.resolve({ ok: true, correct: Number(choice) === Number(k.a),
+            correctIdx: Number(k.a), explain: String(k.explain || ''), local: 1 });
+        }
         return App.call('mark', { lessonId: s.lesson.id, itemId: itemId, choice: choice });
       },
       review: s.review,
@@ -3576,13 +3596,13 @@ window.OLS_TRANSPORT = {
         setTimeout(nextOrDone, 650);
         return;
       }
-      /* feedback mode: server marks (against the SOURCE index).
-         FIX PACKAGE item 3, pupil half (DAMIEN, rule 42 - "no silent waits"):
-         marking is a server round trip of ~5s and must stay one (red-team #1:
-         keys never reach the client), so the wait cannot be removed - but it can
-         stop being silent. The tapped option says so immediately, the rest grey
-         out, and a stalled check offers its own way out instead of stranding her
-         (NEW-16: once seen hanging past 30s with no recovery but a reload). */
+      /* feedback mode: the verdict for the SOURCE index. Since rule 97 the
+         normal path is LOCAL and instant (markFn resolves from keys fetched at
+         lesson open), and a resolved promise settles before the next paint, so
+         none of the Checking scaffolding below ever appears. It stays for the
+         fallback - a tap that beat the key fetch, or wifi that ate it - where
+         the old silent 5s wait and the NEW-16 hang (30s+, no way out but a
+         reload) would otherwise return. */
       btn.classList.add('checking');
       btn.insertAdjacentHTML('beforeend', '<span class="q-checking"><i class="q-spin"></i>Checking&hellip;</span>');
       wrap.querySelector('.q-card').classList.add('is-checking');
@@ -4380,7 +4400,18 @@ window.OLS_TRANSPORT = {
           itemRunner(host, {
             items: r.items, mode: 'feedback',
             markFn: function (it, i) {
-              return ctx.call('recapAnswer', { lessonNum: String(ctx.lessonEntry.num), itemId: it.id, choice: i });
+              /* rule 97: the verdict renders instantly from the answers that rode
+                 along with recapStart; the recording write still goes to the
+                 server, fire-and-forget. Deliberately NOT queued for retry - the
+                 recap tallies increment on the server, so a blind retry could
+                 count one answer twice. A lost blip costs one tally, never the
+                 verdict. */
+              var send = ctx.call('recapAnswer', { lessonNum: String(ctx.lessonEntry.num), itemId: it.id, choice: i });
+              if (it.a != null && Number(it.a) >= 0) {
+                return Promise.resolve({ ok: true, correct: Number(i) === Number(it.a),
+                  correctIdx: Number(it.a), explain: String(it.explain || ''), local: 1 });
+              }
+              return send;
             },
             onDone: function (res) {
               host.innerHTML = ''; // replace the last item card - the done card must never hide below the fold
@@ -4646,10 +4677,11 @@ window.OLS_TRANSPORT = {
 
   /* ================= parsons (distractor-free ordering, exit part 2) =======
      Tap-to-build: blocks are AUTHORED scrambled; the answer key is the
-     lexicographic index of the correct permutation, marked server-side via
-     the ordinary apiMark call - no readable key ever reaches the client
-     (red team #1 holds). One attempt, honest feedback, correct order revealed
-     after, result recorded as a detail key (never blocks completion). */
+     lexicographic index of the correct permutation, judged via the ordinary
+     markItem path - since rule 97 that is local and instant when the lesson's
+     keys arrived at open, with the apiMark round trip as the fallback. One
+     attempt, honest feedback, correct order revealed after, result recorded
+     as a detail key (never blocks completion). */
   function permIndex(perm) {
     var n = perm.length, idx = 0, used = [];
     for (var i = 0; i < n; i++) {

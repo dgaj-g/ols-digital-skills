@@ -123,16 +123,17 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   const before = await page.evaluate(() => window.App.state.xp);
   const fb = await page.evaluate(async () => {
     const opts = Array.from(document.querySelectorAll('.chunk-host .q-opt'));
-    // RE-PINNED 31 Jul 2026: the correct option now says the screen SHOWS IT IS
-    // CHECKING, because it does - the silent five seconds are gone (item 3).
-    const wrong = opts.find(o => !/shows it is checking for a few seconds/i.test(o.textContent));
+    // RE-PINNED twice on 31 Jul 2026, both times to the platform's truth: first
+    // the silent wait became a visible Checking state (item 3), then rule 97 made
+    // marking local and instant - so the correct option now says straight away.
+    const wrong = opts.find(o => !/told straight away whether you were right/i.test(o.textContent));
     wrong.click();
     await new Promise(r => setTimeout(r, 900));
     const h = document.querySelector('.chunk-host');
     return h ? h.textContent.replace(/\s+/g, ' ') : '';
   });
   check(/Not this time|Correct/i.test(fb), 'a tap gets an immediate verdict on screen');
-  check(/travels to the school system and back/i.test(fb), 'and the explanation lands with the verdict, as a warm-up should');
+  check(/checked right on your own computer/i.test(fb), 'and the explanation lands with the verdict, as a warm-up should');
   const examIntro = lesson.chunks.find(c => c.id === 'b4-exam').config.intro;
   /* RE-PINNED 31 Jul 2026: same guarantee, new words. Damien cut "that silence is
      on purpose, and it is not the website being broken" as unclear; the intro now

@@ -675,8 +675,18 @@ function apiRecapStart(req) {
     var ord = it.options.map(function (_, i) { return i; });
     shuffle_(ord);
     session.items.push({ id: str_(it.id), ord: ord, thread: str_(it.thread || '') });
-    out.push({ id: str_(it.id), topic: str_(it.topic), stem: str_(it.stem),
-      options: ord.map(function (oi) { return str_(it.options[oi]); }) });
+    /* a/explain ride along so the Do-Now marks instantly on the pupil's machine
+       (rule 97); apiRecapAnswer still records the result in the background. A
+       missing key attaches nothing, so the client falls back to the server for
+       that one item rather than judging against a made-up answer. */
+    var key = pk.keys[str_(it.id)];
+    var row = { id: str_(it.id), topic: str_(it.topic), stem: str_(it.stem),
+      options: ord.map(function (oi) { return str_(it.options[oi]); }) };
+    if (key && typeof key.a === 'number') {
+      row.a = ord.indexOf(num_(key.a));
+      row.explain = str_(key.explain || '');
+    }
+    out.push(row);
   });
   jset_(up_(), 'rs:' + year + ':' + curNum, session);
   return { ok: true, items: out };
@@ -748,6 +758,41 @@ function apiMark(req) {
   if (!key) return { ok: false, error: 'no-key' };
   var choice = num_(req.choice);
   return { ok: true, correct: choice === num_(key.a), correctIdx: num_(key.a), explain: str_(key.explain || '') };
+}
+
+/* INSTANT MARKING (Damien, 31 Jul 2026): "it needs fixed, on all lessons on the
+   entire platform. sort it out." The lesson's answer key is handed to the
+   signed-in pupil's page ONCE, in the background at lesson open, behind exactly
+   the gates apiMark applies per tap - so every tap is then checked on her own
+   machine with no round trip. His ruling on the trade: the DevTools read-ahead
+   risk is negligible for this population, and speed wins (master file rule 97,
+   superseding the earlier red-team stance). What still never ships: the teacher
+   brief (_brief), vault maps (served as salted hashes by apiVaultInfo), and
+   keys tagged x at pack time (the exit check and the baseline exam, whose
+   verdicts are deliberately withheld on screen - handing those out would gain
+   no speed, so they keep their integrity for free). apiMark stays: it is the
+   wifi-blip fallback and the path for pages loaded before this shipped. */
+function apiLessonKeys(req) {
+  req = req || {};
+  var email = userEmail_();
+  if (!email) return { ok: false, error: 'not-signed-in' };
+  var cls = realClass_(req.classCode);
+  if (!cls) return { ok: false, error: 'unknown-class' };
+  var year = classYear_(cls);
+  var lessonId = str_(req.lessonId);
+  var numStr = lessonNum_(year, lessonId);
+  if (!lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
+  var keys = lessonKeys_(year, lessonId);
+  var out = {};
+  Object.keys(keys).forEach(function (id) {
+    var k = keys[id];
+    if (!k || id === '_brief') return;
+    if (k.map) return;
+    if (num_(k.x)) return;
+    if (typeof k.a !== 'number') return;
+    out[id] = { a: num_(k.a), explain: str_(k.explain || '') };
+  });
+  return { ok: true, keys: out };
 }
 
 /* Vault check served at runtime as SALTED HASHES, never the plaintext map
