@@ -51,7 +51,7 @@
    "status": "ready",
    "file": "j1/lessons/j1-01.json",
    "coverSuitability": "caution",
-   "coverNote": "First-ever C2k logins — a cover teacher can run it ONLY if printed credential slips are prepped. Otherwise defer.",
+   "coverNote": "The class's first-ever visit: the one-off Google permission screens land in this hour, and they are far easier with the class's own teacher walking them through. If cover cannot be avoided, printed credential slips (school office) should be to hand as a backup for pupils whose logins fail.",
    "absenceInferenceEligible": false,
    "absenceNote": "A pupil who misses Lesson 1 needs a direct teacher catch-up (credential re-issue) — the platform's inference flow doesn't apply before first login."
   },

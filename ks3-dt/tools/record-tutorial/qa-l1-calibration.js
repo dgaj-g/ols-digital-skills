@@ -37,8 +37,8 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   const cal = lesson.chunks.find(c => c.id === 'calibration');
   check(cal.minutes === 3, 'the warm-up is still 3 minutes (the hour is unchanged)');
   check(cal.config.items.length === 3, 'still exactly 3 pings');
-  check(/nothing here is scored|nothing is scored/i.test(cal.config.intro),
-    'the intro still tells her nothing is scored');
+  check(/nothing here is (marked|scored)|nothing counts/i.test(cal.config.intro),
+    'the intro still tells her nothing is marked');
   check(cal.config.variant === 'calibration', 'still the feedback-mode calibration variant');
   const stems = cal.config.items.map(i => i.stem);
   check(stems.every(s => s.length < 120), 'every stem is short enough to read in seconds');
@@ -48,9 +48,9 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   check(cal.config.items.every(i => (lesson.keys[i.id].mis || []).filter(Boolean).length >= 3),
     'every ping still carries authored misconception labels for the teacher dashboard');
   /* the replacements point at the PLATFORM, which is what a warm-up is for */
-  check(/tap/i.test(stems[0]), 'ping 1 is about the console answering back (self-demonstrating)');
-  check(/padlock/i.test(stems[1]), 'ping 2 (the padlock) was safe and is kept');
-  check(/\?/.test(stems[2]) && /stuck/i.test(stems[2]), 'ping 3 points at the real ? help button');
+  check(/tap/i.test(stems[0]), 'ping 1 is about what happens when you tap (self-demonstrating)');
+  check(/wrong answer/i.test(stems[1]), 'ping 2 teaches that a wrong answer costs nothing (the padlock item moved to Badge 2, where it is taught first)');
+  check(/next to your name/i.test(stems[2]), 'ping 3 points at the XP number beside her name (the ?-button item moved to Badge 2, where the tour teaches it first)');
   check(!/password|drive|save/i.test(stems.join(' ')),
     'no ping touches passwords, Drive or saving - the three things the baseline measures');
 
@@ -93,7 +93,7 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   let onCal = false;
   for (let i = 0; i < 30; i++) {
     const txt = await page.evaluate(() => (document.querySelector('.chunk-host') || {}).textContent || '');
-    if (/Calibration|answers back/i.test(txt)) {
+    if (/Warm-up|You tap an answer/i.test(txt)) {
       const hasOpt = await page.evaluate(() => !!document.querySelector('.chunk-host .q-opt'));
       if (hasOpt) { onCal = true; break; }
     }
@@ -110,23 +110,24 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   await page.screenshot({ path: path.join(OUT, 'l1-calibration-ping.png'), fullPage: true });
 
   const shown = await page.evaluate(() => (document.querySelector('.chunk-host') || {}).textContent || '');
-  check(/answers back/i.test(shown), 'ping 1 is the new self-demonstrating item');
+  check(/You tap an answer/i.test(shown), 'ping 1 is the self-demonstrating item');
   check(!/STRONGEST password/i.test(shown), 'the old password ping is gone from the pupil\'s screen');
 
   /* answer WRONG on purpose: a warm-up must still give instant, kind feedback */
   const before = await page.evaluate(() => window.App.state.xp);
   const fb = await page.evaluate(async () => {
     const opts = Array.from(document.querySelectorAll('.chunk-host .q-opt'));
-    const wrong = opts.find(o => !/tells you straight away/i.test(o.textContent));
+    const wrong = opts.find(o => !/goes quiet for a few seconds/i.test(o.textContent));
     wrong.click();
     await new Promise(r => setTimeout(r, 900));
     const h = document.querySelector('.chunk-host');
     return h ? h.textContent.replace(/\s+/g, ' ') : '';
   });
   check(/Not this time|Correct/i.test(fb), 'a tap gets an immediate verdict on screen');
-  check(/tells you straight away/i.test(fb), 'and the right answer is revealed, as a warm-up should');
-  check(/Licence Exam later stays deliberately silent/i.test(fb),
-    'the explanation pre-warns her that the Exam gives no feedback - so its silence never reads as broken');
+  check(/travels to the school system and back/i.test(fb), 'and the explanation lands with the verdict, as a warm-up should');
+  const examIntro = lesson.chunks.find(c => c.id === 'b4-exam').config.intro;
+  check(/not be told right or wrong/i.test(examIntro) && /on purpose/i.test(examIntro),
+    'the Exam pre-warns about its own silence IN ITS OWN INTRO - before the first unmarked answer, never after');
   await page.screenshot({ path: path.join(OUT, 'l1-calibration-feedback.png'), fullPage: true });
 
   /* the warm-up must not be scored */
