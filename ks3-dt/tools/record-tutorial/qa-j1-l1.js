@@ -55,20 +55,34 @@ function helpers(page) {
     return h ? h.className + ' :: ' + (h.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 110) : '(none)';
   });
   H.shot = n => page.screenshot({ path: path.join(OUT, n + '.png'), fullPage: true });
-  H.clickText = rx => page.evaluate(r => {
-    const re = new RegExp(r, 'i');
-    const b = Array.from(document.querySelectorAll('.chunk-host button, .badge-pop button'))
-      .find(x => re.test(x.textContent) && !x.disabled && x.offsetParent);
-    if (b) { b.click(); return b.textContent.trim().slice(0, 30); }
-    return '';
-  }, rx);
-  H.clickSel = sel => page.evaluate(s => {
-    const e = document.querySelector(s);
-    if (e && !e.disabled) { e.click(); return true; }
-    return false;
-  }, sel);
+  /* DFM 104 (1 Aug 2026): card mounts ignore presses for 350ms, so that the
+     tail of the press that dismissed the previous card cannot activate the
+     button that lands under the finger. A driver clicks the instant an element
+     exists - faster than any hand - so every helper waits the window out
+     first. This does not weaken a single assertion: it makes the driver click
+     like a person, which is the only case the guard was ever meant to allow. */
+  const GHOST_WAIT = 420;
+  H.clickText = async rx => {
+    await sleep(GHOST_WAIT);
+    return page.evaluate(r => {
+      const re = new RegExp(r, 'i');
+      const b = Array.from(document.querySelectorAll('.chunk-host button, .badge-pop button'))
+        .find(x => re.test(x.textContent) && !x.disabled && x.offsetParent);
+      if (b) { b.click(); return b.textContent.trim().slice(0, 30); }
+      return '';
+    }, rx);
+  };
+  H.clickSel = async sel => {
+    await sleep(GHOST_WAIT);
+    return page.evaluate(s => {
+      const e = document.querySelector(s);
+      if (e && !e.disabled) { e.click(); return true; }
+      return false;
+    }, sel);
+  };
   H.dismissBadge = async () => {
     for (let i = 0; i < 20; i++) {
+      await sleep(GHOST_WAIT);
       const hit = await page.evaluate(() => {
         const b = document.querySelector('.badge-pop button');
         if (b) { b.click(); return true; }
@@ -500,6 +514,15 @@ async function dragTo(page, fileId, folderId) {
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
     const page = await freshPupil(ctx, 'erin');
     const H = helpers(page);
+    /* RE-PINNED 1 Aug 2026 (DFM 104). Every card mount now ignores presses for
+       350ms, because a press that lands that fast is the tail of the press that
+       dismissed the PREVIOUS card - the ghost click Damien reported. Playwright
+       clicks the instant an element exists, which no human can do, so it was
+       landing inside the guard window and being (correctly) swallowed. The test
+       these functions serve is unchanged and still the important one: a REAL
+       double-click must advance exactly ONE step, never two. So wait out the
+       guard first, then double-click - that is the human case. */
+    const GHOST_WAIT = 420;
     const dblclick = async (sel) => {
       const box = await page.evaluate(s2 => {
         const e = document.querySelector(s2);
@@ -508,6 +531,7 @@ async function dragTo(page, fileId, folderId) {
         return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
       }, sel);
       if (!box) return false;
+      await sleep(GHOST_WAIT);
       await page.mouse.dblclick(box.x, box.y, { delay: 40 });
       return true;
     };

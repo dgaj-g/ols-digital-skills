@@ -46,7 +46,8 @@
     { id: 'absence', label: 'Absence' },
     { id: 'teams', label: 'Teams' },
     { id: 'options', label: 'Options' },
-    { id: 'cover', label: 'Cover' }
+    { id: 'cover', label: 'Cover' },
+    { id: 'guide', label: 'Guide' }
   ];
 
   /* ---------------- DOM helpers scoped to the panel ---------------- */
@@ -242,6 +243,7 @@
     if (curTab === 'teams') { renderTeams(); return; }
     if (curTab === 'options') { renderOptions(); return; }
     if (curTab === 'cover') { renderCover(); return; }
+    if (curTab === 'guide') { renderGuide(); return; }
   }
 
   function setPane(html) {
@@ -515,10 +517,18 @@
         ((!on && delivered) ? '<span class="lc-undo" data-action="undo-delivery" data-num="' + le.num + '">&#8634; Not taught</span>' : '') +
         '</button>';
     }).join('');
-    setPane('<div class="lock-grid">' + cells + '</div>' +
-      '<p class="staff-row-meta" style="margin-top:12px">Pupils who already opened a lesson are never kicked out. Locking again stops anyone <b>new</b> starting it, and a locked lesson is never used for absence flags. If you unlocked one by mistake, tap <b>&#8634; Not taught</b> to clear its delivered date. <b>Brief</b> opens the lesson&rsquo;s teacher run sheet.</p>' +
-      '<p class="staff-status" id="lock-status"></p>');
-    if (lockNotice) { plainStatus(q('#lock-status'), lockNotice); lockNotice = ''; }
+    /* DFM 108 (1 Aug 2026), two visibility fixes in one place.
+       (a) The working banner and the confirmation used to render BELOW an
+       18-cell grid, i.e. off the bottom of his screen - rule 43 again, the
+       same family as the "Start again" message on 30 Jul. The status line now
+       sits ABOVE the grid, where the pane opens.
+       (b) The footer promised "tap Not taught" without saying the pill only
+       exists once the lesson is locked again, so following the sentence on an
+       unlocked lesson found nothing to tap. His wording. */
+    setPane('<p class="staff-status" id="lock-status"></p>' +
+      '<div class="lock-grid">' + cells + '</div>' +
+      '<p class="staff-row-meta" style="margin-top:12px">Pupils who already opened a lesson are never kicked out. Locking again stops anyone <b>new</b> starting it, and a locked lesson is never used for absence flags. If you unlocked one by mistake, lock it again, then tap <b>&#8634; Not taught</b> to clear its delivered date. <b>Brief</b> opens the lesson&rsquo;s teacher run sheet.</p>');
+    if (lockNotice) { plainStatus(q('#lock-status'), lockNotice); App.toast(lockNotice, 5200); lockNotice = ''; }
   }
 
   /* ---- Lesson brief body (TEACHER BRIEF STANDARD, LESSON_QUALITY_GATE.md) ----
@@ -736,6 +746,18 @@
       locksData[num] = { u: r.u, on: r.on };
       stateEl.textContent = r.on ? ('Unlocked since ' + fmtDate(r.u)) : (r.u ? ('Locked (delivered ' + fmtDate(r.u) + ')') : 'Locked');
       if (status) status.textContent = '';
+      /* THE REAL CAUSE OF DFM 114 (found 1 Aug 2026, evening, reproduced in the
+         preview while filming the Guide video). This updated the state TEXT in
+         place and nothing else - but "Start again" and "Not taught" are gated on
+         `delivered`, and they only exist if the cell is BUILT. So locking a
+         lesson you had just unlocked left the cell reading "Locked (delivered
+         ...)" with no pill beside it, exactly what Damien reported, and the pill
+         appeared later only because switching tabs or reloading forced a full
+         render. (My first explanation to him - a shell predating the v6 paste -
+         was wrong; a hard reload fixes it for the same reason a tab switch does.)
+         Re-render the grid from the cached manifest so the chips always match
+         the state the cell is claiming. */
+      loadManifestForActiveClass().then(function (man) { if (man) renderLockGrid(man); });
     });
   }
 
@@ -1289,7 +1311,7 @@
         '</div>' +
         (queueHtml ? '<div class="pl-chips">' + queueHtml + '</div>' : '') +
         lagHtml + pairsHtml + soloHtml +
-        (!(r.queue || []).length && !(r.pairs || []).length ? '<p class="pl-note">No one has reached the pairing stage yet &mdash; this panel wakes up the moment the first agent arrives.</p>' : '');
+        (!(r.queue || []).length && !(r.pairs || []).length ? '<p class="pl-note">No one has reached the pairing stage yet &mdash; this panel wakes up the moment the first pupil arrives.</p>' : '');
       if (chime) staffChime();
     });
   }
@@ -1317,7 +1339,7 @@
     adminCall('pairReset', { className: cls, lessonId: pairLensLesson }).then(function (r) {
       if (r && r.ok) {
         App.toast(Number(r.freed)
-          ? (Number(r.freed) + ' agent' + (Number(r.freed) === 1 ? '' : 's') + ' released &mdash; they carry on solo, nothing is lost.')
+          ? (Number(r.freed) + ' pupil' + (Number(r.freed) === 1 ? '' : 's') + ' released &mdash; they carry on solo, nothing is lost.')
           : 'Pairing queue cleared &mdash; anyone waiting will be matched again.');
       }
       pairLensTick();
@@ -1372,13 +1394,21 @@
         });
         var maxCount = 1;
         Object.keys(counts).forEach(function (k) { if (counts[k] > maxCount) maxCount = counts[k]; });
-        var optCount = Math.max(key.mis.length, key.a + 1, 2);
+        /* DFM 106 (1 Aug 2026): the correct row said "Option A (correct)",
+           which tells a teacher nothing at a glance - she then had to open the
+           lesson to find out what option A actually was. The item's own option
+           text is right here. Distractor rows keep their authored
+           misconception labels; that part he confirmed works. */
+        var optText = it.options || [];
+        var optCount = Math.max(key.mis.length, optText.length, key.a + 1, 2);
         var bars = '';
         for (var oi = 0; oi < optCount; oi++) {
           var n = counts[String(oi)] || 0;
           var isCorrect = oi === Number(key.a);
-          var label = key.mis[oi] || ('Option ' + 'ABCDEFGH'.charAt(oi));
-          bars += '<div class="mis-bar"><span class="mb-label">' + App.esc(isCorrect ? (label + ' (correct)') : label) + '</span>' +
+          var label = isCorrect
+            ? ((optText[oi] || ('Option ' + 'ABCDEFGH'.charAt(oi))) + ' (the correct answer)')
+            : (key.mis[oi] || ('Option ' + 'ABCDEFGH'.charAt(oi)));
+          bars += '<div class="mis-bar"><span class="mb-label">' + App.esc(label) + '</span>' +
             '<span class="mb-track"><span class="mb-fill' + (isCorrect ? ' correct' : '') + '" style="width:' + Math.round((n / maxCount) * 100) + '%"></span></span>' +
             '<span class="mb-n">' + n + '</span></div>';
         }
@@ -1878,6 +1908,193 @@
   }
 
   /* ============================================================
+     GUIDE tab (DFM 116, approved wording 1 Aug 2026)
+     The reference for the TOOLS. Lesson teaching stays in each lesson's Brief -
+     that separation is the whole reason the briefs stayed text (his ruling).
+     Every button name here is verbatim from the panel above, every number is
+     read from the code that enforces it (15-minute lock, 7-day chat sweep,
+     28-day detail sweep, 70% storage warning, 16-item baseline, 5 school days),
+     because rule 17 applies to staff-facing writing too.
+     ============================================================ */
+  var GUIDE_VIDEO = 'assets/video/guide/guide-tour.mp4';
+
+  function renderGuide() {
+    // the HoD flag rides on the classes register; fetch it once if unseen
+    if (!classesData) {
+      setPane(busyHtml('Loading the guide'));
+      adminCall('classes').then(function (r) {
+        if (r && r.ok) classesData = r;
+        renderGuideBody();
+      });
+      return;
+    }
+    renderGuideBody();
+  }
+
+  function renderGuideBody() {
+    var isHod = !!(classesData && Number(classesData.isHod));
+    var archiveUrl = (classesData && classesData.archiveUrl) || '';
+    var vid = App.asset(GUIDE_VIDEO);
+
+    var html =
+      '<p class="staff-lead">This tab is the reference for the teacher tools themselves &mdash; where ' +
+      'everything is and what each button does. Guidance for teaching a particular lesson lives with ' +
+      'that lesson: Lessons tab &rarr; Brief.</p>' +
+
+      /* The running time is measured from the finished file (chapters.json),
+         not estimated - rule 35 applies to the staff side too. */
+      '<h3>The tour &mdash; seven and a half minutes, no sound</h3>' +
+      '<p class="staff-row-meta">A silent walkthrough of every tab, filmed on a practice class of ' +
+      'made-up pupils. Captions on screen say what is happening; use the chapters to jump straight ' +
+      'to the tab you need.</p>' +
+      '<video class="guide-video" id="guide-video" controls preload="none" playsinline src="' + App.esc(vid) + '"></video>' +
+      /* The copy promises you can jump straight to the tab you need, so these
+         are real controls, not a list of names. Times come from the video's
+         own chapters.json, written by the assembler - so a re-cut film cannot
+         leave the buttons pointing at the wrong minute. */
+      '<p class="staff-row-meta guide-chapters" id="guide-chapters">Chapters: Classes &middot; Lessons &middot; ' +
+      'Live &middot; Absence &middot; Teams &middot; Options &middot; Cover &middot; Guide</p>' +
+
+      '<h3>Quick reference, tab by tab</h3>' +
+      '<div class="guide-ref">' +
+
+      '<h4>Classes</h4><p>Your classes, one row each. <b>Copy link</b> is the address pupils open &mdash; ' +
+      'post it on your class&rsquo;s Google Classroom. <b>QR</b> shows the same link as a code for the ' +
+      'projector. <b>Select</b> points every other tab at that class. <b>Add class</b> creates one: a name ' +
+      'pupils will recognise, the right year group, done. <b>Delete</b> asks twice, and only a class&rsquo;s ' +
+      'own teacher sees the button. The storage and archive lines at the bottom are explained under ' +
+      'Worth knowing, below.</p>' +
+
+      '<h4>Lessons</h4><p>One cell per lesson for the selected class. Tap a cell to unlock it (pupils see ' +
+      'a padlock until then) or to lock it again &mdash; locking never removes work, it only stops somebody ' +
+      'new starting. <b>Brief</b> opens that lesson&rsquo;s full run sheet. <b>Start again</b> puts the whole ' +
+      'class back to the start of a lesson &mdash; it asks first, and on Lesson 1 it also clears codenames, ' +
+      'because Lesson 1 is where codenames are made. <b>&#8634; Not taught</b> appears on a lesson that is ' +
+      'locked but has a delivered date: tap it if you unlocked something by accident, so nobody is later ' +
+      'flagged absent from a lesson that never ran.</p>' +
+
+      '<h4>Live</h4><p>The during-the-hour view. The table is one pupil per row: <b>XP</b> (the points badges ' +
+      'award &mdash; private, nobody is ranked), <b>Baseline</b> (the September Licence Exam score, out of ' +
+      'sixteen), then a column per delivered lesson showing not started, started or done, the recap score, ' +
+      'the pupil&rsquo;s three self-ratings and how the hour felt, and any private comment. A red <b>needs ' +
+      'you</b> flag marks a pupil the numbers say is stuck. <b>Refresh</b> re-reads the table &mdash; it does ' +
+      'not update by itself. <b>Copy CSV</b> puts the table on your clipboard, one row per pupil, ready for a ' +
+      'marksheet.</p>' +
+      '<p>During a paired activity a <b>Pairing &mdash; live</b> panel appears above the table and updates ' +
+      'itself every few seconds: who is waiting (<b>Solo run</b> releases that pupil to work alone), who is ' +
+      'paired with whom &mdash; codenames first, real names in brackets &mdash; each pair&rsquo;s message ' +
+      'count, and <b>Channel</b>, which opens the pair&rsquo;s chat. With an odd number the platform holds ' +
+      'the last three pupils and puts them in one Vault together, so nobody is left partnerless by accident. ' +
+      '<b>Match everyone waiting now</b> pairs the whole queue at once. <b>Reset pairing</b> asks twice, then ' +
+      'releases every pair to finish alone &mdash; released pairs cannot be re-paired.</p>' +
+      '<p><b>Misconception patterns</b>, at the bottom: pick a delivered lesson and see which wrong answers ' +
+      'the class actually chose, each labelled with the misunderstanding it usually signals.</p>' +
+
+      '<h4>Absence</h4><p>Usually an empty list. A pupil is flagged when a delivered lesson still has no ' +
+      'meaningful work five school days on &mdash; the number is yours to change in Options. It is a private ' +
+      'nudge for you: pupils never see it, and it is not an attendance record. <b>Dismiss flag</b> clears one ' +
+      'once you know the story.</p>' +
+
+      '<h4>Teams</h4><p>Optional groups for the tournament lessons and the team leaderboard. Tap a name chip ' +
+      'to move a pupil between teams; <b>Add team</b> and <b>Auto-make N teams</b> build the groups; each ' +
+      'team&rsquo;s XP total updates as pupils earn points. &ldquo;Pupils can see who is in their team&rdquo; ' +
+      'stays unticked until you decide otherwise &mdash; while it is off, team totals can be shown with the ' +
+      'members hidden.</p>' +
+
+      '<h4>Options</h4><p>Four choices per class, one <b>Save</b>. <b>Leaderboard</b> &mdash; private by ' +
+      'default; hidden teams; or a public board, and if public, ranked by what and naming pupils how. ' +
+      '<b>Auto-pairing</b> &mdash; on matches pupils across machines with the monitored chat; off runs paired ' +
+      'activities shoulder-to-shoulder at one machine. <b>Tournament reveal</b> &mdash; team totals only, or ' +
+      'pair scores as well. <b>Absence window</b> &mdash; how many school days before a flag.</p>' +
+
+      '<h4>Cover</h4><p>For the day you are absent. The tab suggests the next ready lesson &mdash; steering ' +
+      'around discussion-led ones, which wait for you &mdash; and <b>Start Cover Mode</b> unlocks it and ' +
+      'writes the cover sheet: a few lines the covering teacher reads aloud, because a covering teacher is ' +
+      'not expected to teach. The sheet waits on this tab for whoever opens the panel. <b>End Cover Mode</b> ' +
+      'when you are back.</p>' +
+      '</div>' +
+
+      '<h3>Worth knowing</h3>' +
+      '<div class="guide-ref">' +
+      '<h4>The pace</h4><p>Every button talks to Google&rsquo;s servers, so most presses take a second or ' +
+      'two, with a spinner naming what is happening. That is the tools working, not failing &mdash; pressing ' +
+      'again does not hurry it.</p>' +
+
+      '<h4>The panel locks itself</h4><p>Closing it, or fifteen minutes without use, means entering the ' +
+      'passcode again. That is protection, not nuisance: this panel shows answer keys, every pupil&rsquo;s ' +
+      'name and email, and every chat transcript, and it gets opened on pupils&rsquo; machines. The passcode ' +
+      'comes from the Head of Department.</p>' +
+
+      '<h4>Storage and the nightly archive</h4><p>The storage line at the bottom of Classes is the ' +
+      'platform&rsquo;s own filing space, shared by the whole school; it turns red past 70%. A sweep runs ' +
+      'nightly between 2 and 3am: chat transcripts older than a week, and the fine detail of lessons finished ' +
+      'more than four weeks ago, move into an archive spreadsheet &mdash; it copies, checks the copy, then ' +
+      'trims. <b>Run archive sweep now</b> does the same on demand: any teacher can press it, but only the ' +
+      'Head of Department&rsquo;s account can complete it, and anyone else simply gets a message saying so.</p>' +
+
+      '<h4>What lives where</h4><p>The live-presence counts on the pairing panel fade minutes after a pupil ' +
+      'closes the site. Progress, XP, baseline and exit results stay for the year. Pair chats are readable in ' +
+      'Channel for a week before they move to the archive.</p>' +
+
+      '<h4>Google&rsquo;s permission screens</h4><p>The first time anyone &mdash; teacher or pupil &mdash; ' +
+      'opens the site, Google asks once for permission, starting with a screen that says Unverified in red. ' +
+      'Expected: Google says that about anything a school builds for itself. The Lesson 1 slide deck walks a ' +
+      'class through the four presses with real pictures, and the Lesson 1 brief covers them under ' +
+      'Preparing.</p>' +
+
+      '<h4>The Head of Department</h4><p>can manage every class &mdash; including unlocking a lesson for an ' +
+      'absent colleague. If a lock changed and you did not change it, that is who.</p>' +
+      '</div>' +
+
+      (isHod ? guideHodHtml(archiveUrl) : '');
+
+    setPane(html);
+    wireGuideChapters();
+  }
+
+  /* Replaces the plain chapter line with seek buttons once the manifest loads.
+     If it cannot load (offline, or the file missing), the written list stays
+     exactly as it is - the tab never ends up with dead controls. */
+  function wireGuideChapters() {
+    var slot = q('#guide-chapters');
+    if (!slot) return;
+    fetch(App.asset('assets/video/guide/chapters.json'), { cache: 'default' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (man) {
+        var here = q('#guide-chapters');
+        if (!here || !man || !man.chapters || !man.chapters.length) return;
+        var jumps = man.chapters.filter(function (c) { return !/^opening$/i.test(c.label); });
+        here.innerHTML = 'Jump to: ' + jumps.map(function (c) {
+          return '<button type="button" class="guide-chip" data-action="guide-seek" data-t="' +
+            Number(c.t) + '">' + App.esc(c.label) + '</button>';
+        }).join('');
+      })
+      .catch(function () { /* keep the written list */ });
+  }
+
+  function guideSeek(btn) {
+    var v = q('#guide-video');
+    if (!v) return;
+    v.currentTime = Number(btn.getAttribute('data-t')) || 0;
+    var p = v.play();
+    if (p && p.catch) p.catch(function () { /* autoplay blocked: the seek still happened */ });
+  }
+
+  function guideHodHtml(archiveUrl) {
+    return '<div class="guide-hod">' +
+      '<h3>Head of Department</h3>' +
+      '<p class="staff-lead">Only members of the Head of Department register can see this section.</p>' +
+      '<p><b>Training-day presentation</b> &mdash; nothing here yet. When the presentation is built, its ' +
+      'link will live here.</p>' +
+      (archiveUrl
+        ? ('<p><b>The archive spreadsheet</b> &mdash; where the nightly sweep files older detail: ' +
+           '<a href="' + App.esc(archiveUrl) + '" target="_blank" rel="noopener">KS3 DT - Yearly Archive</a></p>')
+        : ('<p><b>The archive spreadsheet</b> &mdash; not set up yet. Run <b>setupArchive</b> once in the ' +
+           'Apps Script editor and its link will appear here.</p>')) +
+      '</div>';
+  }
+
+  /* ============================================================
      event delegation (wired once; #staff-body's innerHTML is freely replaced)
      ============================================================ */
   function onClick(e) {
@@ -1907,6 +2124,7 @@
       case 'team-auto': teamAuto(btn); break;
       case 'team-del-group': teamDelGroup(btn); break;
       case 'options-save': optionsSave(btn); break;
+      case 'guide-seek': guideSeek(btn); break;
       case 'cover-start': coverStart(btn); break;
       case 'cover-print': coverPrint(); break;
       case 'remove-pupil': removePupil(btn); break;

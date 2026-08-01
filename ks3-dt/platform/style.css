@@ -384,6 +384,19 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .rail-dot.now { background: var(--gold-hi); transform: scale(1.4); box-shadow: 0 0 0 5px rgba(var(--gold-hi-rgb), 0.15), 0 0 14px rgba(var(--gold-hi-rgb), 0.6); }
 
 /* ============ the reading card (light surface on the dark shell) ============ */
+/* DFM 105 (1 Aug 2026): dragging across a card turned the text blue and looked
+   broken (his oath-card screenshot). Pupils drag on these screens constantly -
+   the Vault is drag-and-drop - so a stray selection is the norm, not the
+   exception. Selection stays ON everywhere a pupil actually types. */
+.card, .vault-stage, .tour-stage, .badge-pop-card, .lock-cell {
+  -webkit-user-select: none; -moz-user-select: none; user-select: none;
+}
+.card input, .card textarea, .card [contenteditable],
+.vault-stage input, .vault-stage textarea,
+.badge-pop-card input, .badge-pop-card textarea,
+.se-comment, .chat-input, .case-log-input, .text-input, .copy-area {
+  -webkit-user-select: text; -moz-user-select: text; user-select: text;
+}
 .chunk-host { animation: rise 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
 .card {
   background: var(--card);
@@ -563,6 +576,18 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   font-weight: 600; font-size: 0.92rem; padding: 11px 15px; margin: 16px 0 4px;
 }
 .vault-stage { max-width: 780px; margin: 0 auto; }
+/* DFM 103: the pupil's OWN call sign, prominent, above everything else */
+.vault-me {
+  background: rgba(var(--gold-hi-rgb), 0.13);
+  border: 1.5px solid rgba(var(--gold-hi-rgb), 0.5);
+  border-radius: var(--r-md);
+  color: var(--text-d); font-size: 0.92rem; font-weight: 600;
+  padding: 11px 15px; margin: 0 0 10px; text-align: center;
+}
+.vault-me b {
+  font-family: var(--font-display); color: var(--gold-hi);
+  letter-spacing: 0.04em; white-space: nowrap;
+}
 .vault-stage .pair-banner.slim {
   margin: 0 0 12px; font-size: 0.84rem; padding: 9px 13px;
   background: rgba(var(--gold-hi-rgb), 0.07); border-color: rgba(var(--gold-hi-rgb), 0.45); color: var(--gold-hi);
@@ -719,6 +744,48 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .badge-pop.show .badge-pop-card { transform: scale(1); }
+
+/* ============ Guide tab (DFM 116) ============ */
+.guide-video {
+  display: block; width: 100%; max-width: 720px; margin: 4px 0 6px;
+  border-radius: var(--r-md); background: #000;
+  border: 1.5px solid var(--line-l);
+}
+.guide-chapters { margin-bottom: 18px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.guide-chip {
+  font: inherit; font-size: 0.78rem; font-weight: 700; color: var(--ols-blue);
+  background: rgba(var(--gold-rgb), 0.12); border: 1.5px solid rgba(var(--gold-rgb), 0.5);
+  border-radius: 999px; padding: 4px 12px; cursor: pointer;
+}
+.guide-chip:hover { background: rgba(var(--gold-rgb), 0.24); border-color: var(--gold); }
+.guide-ref h4 {
+  font-family: var(--font-display); color: var(--ols-blue);
+  font-size: 0.86rem; letter-spacing: 0.06em; text-transform: uppercase;
+  margin: 16px 0 4px; padding-top: 12px; border-top: 1px solid var(--line-l);
+}
+.guide-ref p { margin: 0 0 8px; font-size: 0.9rem; line-height: 1.55; color: var(--ink); }
+.guide-ref h4:first-child { border-top: none; padding-top: 0; margin-top: 4px; }
+.guide-hod {
+  margin-top: 22px; padding: 16px 18px;
+  background: rgba(var(--gold-rgb), 0.08);
+  border: 1.5px solid rgba(var(--gold-rgb), 0.45);
+  border-radius: var(--r-md);
+}
+.guide-hod h3 { margin-top: 0; }
+.guide-hod p { font-size: 0.9rem; line-height: 1.55; margin: 0 0 8px; }
+
+/* DFM 107: the honest copy fallback - the text, already selected, and the key */
+.copy-pop { z-index: 700; }            /* above the staff panel modal */
+.copy-card { width: min(560px, 100%); text-align: left; }
+.copy-card h2 { text-align: center; }
+.copy-lead { color: var(--muted); font-size: 0.92rem; margin: 0 0 12px; }
+.copy-area {
+  width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem; line-height: 1.45; color: var(--ink);
+  border: 1.5px solid var(--line-l); border-radius: var(--r-md);
+  padding: 10px 12px; background: #fff; resize: vertical;
+}
+.copy-card .primary-btn { display: block; margin: 14px auto 0; }
 .badge-pop-card h2 { color: var(--ols-blue); }
 .badge-pop-card img { width: 116px; height: 116px; filter: drop-shadow(0 6px 20px rgba(var(--gold-rgb), 0.4)); animation: badgeSpin 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .badge-pop-name { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; color: var(--ols-blue); margin: 2px 0; }

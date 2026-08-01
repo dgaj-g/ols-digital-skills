@@ -109,8 +109,18 @@ function e08Section() {
      delivered lesson - and the brief must say when it DOES appear. */
   check(!/(check|look for|find)[^.]{0,60}pairing panel/i.test(prepText),
     'the prep steps no longer send the teacher hunting for the Pairing panel');
-  check(/pairing panel/i.test(JSON.stringify(brief)) && /wakes up by itself|sits there saying/i.test(JSON.stringify(brief)),
-    'and the brief tells the truth about when that panel is there (from unlock, empty until the first pupil)');
+  /* RE-PINNED 1 Aug 2026 (DFM 116). The panel's button-by-button explanation
+     moved OUT of the brief and into the staff panel's new Guide tab, so the
+     brief no longer carries the "wakes up by itself" sentence. The truth it
+     must still tell is unchanged in substance: what the Live tab shows during
+     the Vault, and where the full explanation now lives. Checked here, and the
+     Guide's own copy is checked in qa-guide.js - between them the claim is
+     still pinned end to end, not dropped. */
+  const briefStr = JSON.stringify(brief);
+  check(/Live tab/i.test(briefStr) && /who is waiting/i.test(briefStr) && /pair'?.?s chat|each pair/i.test(briefStr),
+    'the brief still says what the Live tab shows during the Vault (waiting, pairings, chat)');
+  check(/Guide tab/i.test(briefStr),
+    'and it sends the teacher to the Guide tab for the button-by-button explanation');
 
   /* Two claims that were simply untrue and must never come back: there is no
      Mission Briefing video to play, and no audio in the closing message. */

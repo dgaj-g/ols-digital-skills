@@ -235,6 +235,12 @@
         { name: 'Demo-8A', owner: STAFF_EMAIL, year: 'j1', created: tminToDate_(tenDaysAgo).toISOString() }
       ],
       locks: { 'Demo-8A': { '1': { u: tenDaysAgo, on: 1 }, '2': { u: tenDaysAgo, on: 1 } } },
+      /* Head of Department register (Code.gs: Script Property `hods`). Empty by
+         default so preview behaves like an ordinary teacher's panel; the video
+         scene and the Guide harness put STAFF_EMAIL in here to film/assert the
+         HoD-only section. */
+      hods: [],
+      archiveSheetUrl: '',
       cfg: {},
       team: {},
       pupils: {},
@@ -1061,7 +1067,13 @@
           return { name: str_(c.name), owner: str_(c.owner), year: str_(c.year), created: str_(c.created), pupils: num_(counts[c.name] || 0) };
         }),
         store: { bytes: num_(bytes), limit: 500000, pupils: num_(pupilCount) },
-        archive: s.archiveMeta || null
+        archive: s.archiveMeta || null,
+        /* Mirrors Code.gs.template: the Guide tab's HoD-only section gates on
+           this. In preview the register is s.hods (seeded empty), so the panel
+           behaves like a normal teacher's until a scene/harness sets it. */
+        isHod: (s.hods || []).indexOf(str_(me).toLowerCase()) !== -1 ? 1 : 0,
+        archiveUrl: ((s.hods || []).indexOf(str_(me).toLowerCase()) !== -1 && s.archiveSheetUrl)
+          ? str_(s.archiveSheetUrl) : ''
       });
     }
 

@@ -1834,11 +1834,21 @@ function apiAdmin(req) {
         if (str_(reg[oi].owner).toLowerCase() === meLc) { ownsAny = true; break; }
       }
     }
+    /* The Guide tab's HoD-only section (DFM 116) gates on this flag, and the
+       archive Sheet's link goes with it: the sweep can only ever complete on
+       the platform owner's account, so the link is useless to anyone else and
+       is not sent to them. Both ride on the register call the panel already
+       makes - no extra round trip. */
+    var meIsHod = isHod_(me);
+    var hodExtras = meIsHod
+      ? { isHod: 1, archiveUrl: archiveSheetUrl_() }
+      : { isHod: 0, archiveUrl: '' };
     if (!ownsAny) {
       return {
         ok: true, me: str_(me), classes: [],
         store: { bytes: 0, limit: 500000, pupils: 0 },
-        archive: null
+        archive: null,
+        isHod: hodExtras.isHod, archiveUrl: hodExtras.archiveUrl
       };
     }
     var all = sp_().getProperties();
@@ -1856,7 +1866,8 @@ function apiAdmin(req) {
         return { name: str_(c.name), owner: str_(c.owner), year: str_(c.year), created: str_(c.created), pupils: num_(counts[c.name] || 0) };
       }),
       store: { bytes: num_(health.bytes), limit: num_(health.limit), pupils: num_(health.pupils) },
-      archive: jget_(sp_(), 'archiveMeta', null)
+      archive: jget_(sp_(), 'archiveMeta', null),
+      isHod: hodExtras.isHod, archiveUrl: hodExtras.archiveUrl
     };
   }
 
@@ -2497,6 +2508,13 @@ function galSheet_(ss) {
     sh.appendRow(GAL_HEADERS);
   }
   return sh;
+}
+
+/* The archive Sheet's own link, for the Guide tab's HoD-only section. Empty
+   until setupArchive() has run, and never sent to a non-HoD caller. */
+function archiveSheetUrl_() {
+  var id = str_(sp_().getProperty('ARCHIVE_SHEET_ID'));
+  return id ? ('https://docs.google.com/spreadsheets/d/' + id + '/edit') : '';
 }
 
 function setupArchive() {
