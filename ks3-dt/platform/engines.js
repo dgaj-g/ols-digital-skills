@@ -157,12 +157,12 @@
       document.body.appendChild(pop);
       requestAnimationFrame(function () { pop.classList.add('show'); });
       var btn = pop.querySelector('button');
-      btn.onclick = function () {
-        btn.disabled = true;                       // one press only
+      App.armButton(btn, function () {             // DFM 104 (one press only)
+        btn.disabled = true;
         pop.classList.remove('show');
         setTimeout(function () { pop.remove(); }, 250);
         cb();
-      };
+      });
       btn.focus();
     },
 
@@ -324,11 +324,11 @@
         '<button class="primary-btn" type="button">Debrief</button></div></div>');
       document.body.appendChild(pop);
       requestAnimationFrame(function () { pop.classList.add('show'); });
-      pop.querySelector('button').onclick = function () {
+      App.armButton(pop.querySelector('button'), function () {   // DFM 104
         pop.classList.remove('show');
         setTimeout(function () { pop.remove(); }, 250);
         cb();
-      };
+      });
     }
   };
 
@@ -470,10 +470,10 @@
           fbs.className = 'q-feedback neutral';
           fbs.innerHTML = '<p>This is taking longer than it should &mdash; the wifi may have dropped. Your answer is safe.</p>' +
             '<button class="primary-btn" type="button">Try again</button>';
-          fbs.querySelector('button').onclick = function () {
+          App.armButton(fbs.querySelector('button'), function () {   // DFM 104
             fbs.hidden = true; fbs.innerHTML = '';
             sendMark();
-          };
+          });
         }, 20000);
 
         opts.markFn(it, srcIdx).then(function (r) {
@@ -488,7 +488,7 @@
             fb.className = 'q-feedback neutral';
             fb.innerHTML = '<p>Hmm — could not check that one (wifi?). Moving on.</p>' +
               '<button class="primary-btn" type="button">Next</button>';
-            fb.querySelector('button').onclick = nextOrDone;
+            App.armButton(fb.querySelector('button'), nextOrDone);   // DFM 104
             return;
           }
           var opts_ = wrap.querySelectorAll('.q-opt');
@@ -503,7 +503,7 @@
           fb.innerHTML = '<p class="q-verdict">' + (r.correct ? 'Correct.' : 'Not this time.') + '</p>' +
             (r.explain ? '<p class="q-explain">' + esc(r.explain) + '</p>' : '') +
             '<button class="primary-btn" type="button">' + (idx === opts.items.length - 1 ? 'Finish' : 'Next') + '</button>';
-          fb.querySelector('button').onclick = nextOrDone;
+          App.armButton(fb.querySelector('button'), nextOrDone);   // DFM 104
           fb.querySelector('button').focus();
         });
       }
@@ -521,7 +521,8 @@
       (opts.extra || '') +
       '<button class="primary-btn" type="button">' + esc(beginLabel) + '</button></div>');
     host.appendChild(c);
-    c.querySelector('button').onclick = function () { host.innerHTML = ''; onBegin(); };
+    // DFM 104: every intro card replaces the screen under the pupil's finger
+    App.armButton(c.querySelector('button'), function () { host.innerHTML = ''; onBegin(); });
   }
 
   /* ================= briefing (cinematic dossier) ================= */
@@ -547,11 +548,18 @@
       var linesBox = d.querySelector('.dossier-lines');
       var cta = d.querySelector('.dossier-cta');
       var timers = [];
+      /* DFM 104: the button is built hidden and revealed later, so the guard
+         window has to start when it APPEARS, not when the card was built. */
+      function showCta() {
+        if (!cta.hidden) return;
+        cta.hidden = false;
+        App.armButton(cta, function () { finishChunk(ctx); });
+      }
       function reveal() {
         timers.forEach(clearTimeout);
         headline.textContent = cfg.headline;
         linesBox.innerHTML = (cfg.lines || []).map(function (l) { return '<p class="dossier-line show">' + esc(l) + '</p>'; }).join('');
-        cta.hidden = false;
+        showCta();
       }
       /* Safety net: a backgrounded tab throttles timers, so the animation can
          stall and strand a pupil with no way on. Reveal everything regardless
@@ -573,7 +581,7 @@
               /* capture p, never lastChild — throttled tabs batch rAF callbacks
                  and lastChild would point at the newest line for all of them */
               requestAnimationFrame(function () { p.classList.add('show'); });
-              if (i === cfg.lines.length - 1) timers.push(setTimeout(function () { cta.hidden = false; }, 700));
+              if (i === cfg.lines.length - 1) timers.push(setTimeout(showCta, 700));
             }, 900 * i));
           });
         }
@@ -582,7 +590,6 @@
          fast-forwarded the typing, its label promised something else, and he
          does not want pupils skipping the briefing at all. `reveal` still runs
          if the animation is interrupted. */
-      cta.onclick = function () { finishChunk(ctx); };
     }
   };
 
@@ -630,7 +637,7 @@
             '<input class="text-input sim-user" maxlength="40" autocomplete="off" spellcheck="false" placeholder="type your username here">' +
             '<p class="sim-msg"></p><button class="primary-btn" type="button">Check it</button></div>';
           var input = action.querySelector('input'), msg = action.querySelector('.sim-msg');
-          action.querySelector('button').onclick = function () {
+          App.armButton(action.querySelector('button'), function () {   // DFM 104
             var v = input.value;
             if (!v.trim()) { msg.textContent = 'Nothing typed yet — give it a go.'; return; }
             if (/\s/.test(v.trim())) { msg.textContent = 'Sneaky SPACE spotted — usernames never have spaces. Try again.'; return; }
@@ -640,14 +647,16 @@
             action.querySelector('button').disabled = true;
             c.insertAdjacentHTML('beforeend', '<p class="step-done">&#10003; Smooth typing, Agent.</p>');
             setTimeout(function () { i++; showStep(); }, 900);
-          };
+          }, { repeat: true });   // a failed check must allow another go
           input.value = '';
         } else {
           action.innerHTML = '<button class="confirm-step" type="button"><span class="confirm-box"></span>' + esc(st.confirm || 'Done') + '</button>';
-          action.querySelector('button').onclick = function () {
+          /* DFM 104: this is the confirm Damien watched fire the NEXT card's
+             button as well - the two sit at the same place on screen. */
+          App.armButton(action.querySelector('button'), function () {
             action.querySelector('button').classList.add('ticked');
             setTimeout(function () { i++; showStep(); }, 550);
-          };
+          });
         }
       }
 
@@ -696,8 +705,10 @@
           callout.querySelector('h3').textContent = stop.title;
           callout.querySelector('p').textContent = stop.text;
           callout.querySelector('button').textContent = si === cfg.stops.length - 1 ? 'Got it' : 'Next';
+          /* DFM 104: the button stays put while the words under it change, so
+             re-arm on every stop - a fresh guard window per stop is the point. */
+          App.armButton(callout.querySelector('button'), function () { si++; showStop(); });
         }
-        callout.querySelector('button').onclick = function () { si++; showStop(); };
         showStop();
       }
 
@@ -774,7 +785,20 @@
           mode === 'solo' ? '&#127919; Solo run cleared by HQ &mdash; reason each drop out in your head first.' :
           mode === 'paired' ? '&#128225; Agree in the channel first &mdash; then whoever is at the controls releases the file.' :
           '&#129309; Agree together before you release each file.';
+        /* DFM 103 (1 Aug 2026). Everything on this screen named the PARTNER -
+           the turn banner, the toast, the channel bubbles - and nothing ever
+           told a pupil her OWN call sign, so "Agent Copper Heron is at the
+           controls" was half a sentence and the reveal at the end landed
+           sideways. His wording direction, verbatim. Shown whenever she has a
+           call sign at all: pair, trio, and the released-solo run that keeps
+           one. */
+        var myCn = (pst && pst.members && pst.members[Number(pst.mi)]) ? String(pst.members[Number(pst.mi)]) : '';
+        var meLine = myCn
+          ? '<div class="vault-me">In this activity, your secret identity codename is ' +
+            '<b>Agent ' + esc(myCn) + '</b></div>'
+          : '';
         var stage = el('<div class="vault-stage">' +
+          meLine +
           '<div class="pair-banner slim">' + slimBanner + '</div>' +
           '<div class="vault-score">' + esc(cfg.scoreLabel || 'Vault Integrity') + ': <b id="vault-score">&mdash;</b></div>' +
           '<div class="vault-inbox"><h3>Inbox</h3><div class="vault-tray"></div></div>' +

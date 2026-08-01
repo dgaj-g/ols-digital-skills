@@ -1,0 +1,43 @@
+{
+ "file": "guide-tutorial.mp4",
+ "durationSec": 457,
+ "sizeMB": 13.59,
+ "chapters": [
+  {
+   "t": 0,
+   "label": "Opening"
+  },
+  {
+   "t": 8,
+   "label": "Classes"
+  },
+  {
+   "t": 59,
+   "label": "Lessons"
+  },
+  {
+   "t": 151,
+   "label": "Live"
+  },
+  {
+   "t": 267,
+   "label": "Absence"
+  },
+  {
+   "t": 306,
+   "label": "Teams"
+  },
+  {
+   "t": 340,
+   "label": "Options"
+  },
+  {
+   "t": 383,
+   "label": "Cover"
+  },
+  {
+   "t": 437,
+   "label": "Guide"
+  }
+ ]
+}

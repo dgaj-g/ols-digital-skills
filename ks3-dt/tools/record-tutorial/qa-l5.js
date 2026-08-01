@@ -29,15 +29,24 @@ function check(cond, msg) {
   });
   page.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
   const shot = n => page.screenshot({ path: path.join(OUT, n + '.png'), fullPage: true });
-  const clickText = (rx) => page.evaluate((r) => {
-    const re = new RegExp(r, 'i');
-    const b = Array.from(document.querySelectorAll('button, a.primary-btn')).find(x => re.test(x.textContent) && !x.disabled && x.offsetParent);
-    if (b) { b.click(); return true; }
-    return false;
-  }, rx);
+  /* DFM 104 (1 Aug 2026): card mounts ignore presses for 350ms so a ghost click
+     cannot activate the button that lands under the finger. A driver clicks the
+     instant an element exists - no hand is that fast - so wait the window out
+     and click like a person. Assertions unchanged. */
+  const GHOST_WAIT = 420;
+  const clickText = async (rx) => {
+    await sleep(GHOST_WAIT);
+    return page.evaluate((r) => {
+      const re = new RegExp(r, 'i');
+      const b = Array.from(document.querySelectorAll('button, a.primary-btn')).find(x => re.test(x.textContent) && !x.disabled && x.offsetParent);
+      if (b) { b.click(); return true; }
+      return false;
+    }, rx);
+  };
   const xp = () => page.evaluate(() => Number(window.App.state.xp));
   const dismissBadge = async () => {
     for (let i = 0; i < 14; i++) {
+      await sleep(GHOST_WAIT);
       const hit = await page.evaluate(() => {
         const b = document.querySelector('.badge-pop button');
         if (b) { b.click(); return true; }
@@ -94,13 +103,23 @@ function check(cond, msg) {
   /* ---------- briefing ---------- */
   /* the briefing's Skip button was removed on 30 Jul - wait for its Continue to
      appear, the way a pupil does, instead of assuming it is already there */
+  /* DFM 104: the CTA is revealed after the typing animation and armed at that
+     moment, so a click inside the next 350ms is a ghost and is ignored. This
+     used to click the instant it appeared and BREAK on "I clicked it", which
+     after the guard shipped meant walking on while the briefing was still up.
+     Now: wait the window out, click, and only stop once it has actually gone. */
   for (let i = 0; i < 40; i++) {
-    const clicked = await page.evaluate(() => {
+    const visible = await page.evaluate(() => {
       const c = document.querySelector('.dossier-cta');
-      if (c && c.offsetParent !== null) { c.click(); return true; }
-      return false;
+      return !!(c && c.offsetParent !== null);
     });
-    if (clicked) break;
+    if (visible) {
+      await sleep(GHOST_WAIT);
+      await page.evaluate(() => { const c = document.querySelector('.dossier-cta'); if (c) c.click(); });
+      await sleep(700);
+      const gone = await page.evaluate(() => !document.querySelector('.dossier-cta'));
+      if (gone) break;
+    }
     await sleep(400);
   }
   await sleep(1600);

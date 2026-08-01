@@ -512,20 +512,73 @@
     clearTimeout(t._timer);
     t._timer = setTimeout(function () { t.hidden = true; }, ms || 2600);
   };
+  /* DFM 107 (1 Aug 2026). Copy CSV said "CSV copied." on Safari with an empty
+     clipboard: this app runs inside a sandboxed cross-origin iframe, where
+     navigator.clipboard.writeText can RESOLVE without writing anything, and
+     nothing cross-origin can read the clipboard back to check. A promise that
+     cannot be verified must not be reported as success (rule 43: a
+     confirmation that isn't true is worse than none).
+     So: execCommand first - it is synchronous and it RETURNS whether the copy
+     happened - and when it says no, the text goes on screen in a selected box
+     for the one keystroke that always works. No path can lie now. */
   App.copyText = function (text, doneMsg) {
-    function done() { App.toast(doneMsg || 'Copied.'); }
-    function legacy() {
-      var ta = document.createElement('textarea');
-      ta.value = text; ta.setAttribute('readonly', '');
-      ta.style.position = 'fixed'; ta.style.left = '-9999px';
-      document.body.appendChild(ta); ta.select();
-      var ok = false;
-      try { ok = document.execCommand('copy'); } catch (e) {}
-      ta.remove();
-      if (ok) done(); else App.toast('Copy this by hand: ' + text, 6000);
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, legacy);
-    else legacy();
+    var str = String(text == null ? '' : text);
+    var ta = document.createElement('textarea');
+    ta.value = str; ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select(); ta.setSelectionRange(0, str.length);
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+    if (ok) { App.toast(doneMsg || 'Copied.'); return; }
+    App.copyBox(str);
+  };
+
+  /* The honest fallback: the text, already selected, and the keystroke. */
+  App.copyBox = function (str) {
+    var mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || '');
+    var keys = mac ? '&#8984;C' : 'Ctrl+C';
+    var ov = document.createElement('div');
+    ov.className = 'badge-pop show copy-pop';
+    ov.innerHTML = '<div class="badge-pop-card copy-card">' +
+      '<h2>Press ' + keys + ' to copy</h2>' +
+      '<p class="copy-lead">This browser would not let the page copy for you, so here is the text &mdash; ' +
+      'it is already selected. Press ' + keys + ', then close this.</p>' +
+      '<textarea class="copy-area" readonly rows="6"></textarea>' +
+      '<button class="primary-btn" type="button">Close</button></div>';
+    document.body.appendChild(ov);
+    var area = ov.querySelector('.copy-area');
+    area.value = str;
+    area.focus(); area.select(); area.setSelectionRange(0, str.length);
+    ov.querySelector('button').onclick = function () { ov.remove(); };
+  };
+
+  /* ---------------- ghost-click guard (DFM 104) ----------------
+     A press landing within GHOST_MS of a control appearing cannot have been
+     aimed at it: it is the tail of the press that dismissed the PREVIOUS card,
+     arriving wherever the new card happens to put a button. The question
+     runner has guarded its options since 31 Jul (rule 82); Damien then watched
+     a steps confirm apparently fire the next card's button too, so the guard
+     is one helper now and every card mount uses it. It also swallows the
+     second half of a genuine double-click: one press, one advance. Buttons
+     that are re-used across renders (the tour's Next) re-arm each render,
+     which restarts the window - that is the point.
+     Pass {repeat:true} for a control that is legitimately pressed more than
+     once from the same screen (the practice-typing "Check it", which answers a
+     validation message and waits for another go). Those keep the mount-time
+     guard and lose only the one-press lock. */
+  App.GHOST_MS = 350;
+  App.armButton = function (btn, fn, opts) {
+    if (!btn) return btn;
+    var armedAt = Date.now(), used = false;
+    var once = !(opts && opts.repeat);
+    btn.onclick = function (e) {
+      if (Date.now() - armedAt < App.GHOST_MS) return;
+      if (once) { if (used) return; used = true; }
+      fn.call(btn, e);
+    };
+    return btn;
   };
 
   /* ---------------- HUB ---------------- */
@@ -603,8 +656,8 @@
       ov.classList.remove('show');
       setTimeout(function () { ov.remove(); if (thenOpen) App.openKit(); }, 250);
     }
-    ov.querySelector('[data-act=later]').onclick = function () { close(false); };
-    ov.querySelector('[data-act=open]').onclick = function () { close(true); };
+    App.armButton(ov.querySelector('[data-act=later]'), function () { close(false); });  // DFM 104
+    App.armButton(ov.querySelector('[data-act=open]'), function () { close(true); });
   }
 
   /* ---------------- Agent Kit modal (pupil customisation) ---------------- */
@@ -1077,10 +1130,10 @@
         '<button class="primary-btn" type="button">Onward</button></div>';
       document.body.appendChild(ov);
       requestAnimationFrame(function () { ov.classList.add('show'); });
-      ov.querySelector('button').onclick = function () {
+      App.armButton(ov.querySelector('button'), function () {   // DFM 104
         ov.classList.remove('show');
         setTimeout(function () { ov.remove(); resolve(); }, 250);
-      };
+      });
     });
   };
 
@@ -1123,11 +1176,11 @@
       '<p class="badge-pop-xp">' + App.state.xp + ' XP total</p>' +
       '<button class="primary-btn" type="button">Back to Mission Control</button></div>';
     document.body.appendChild(ov);
-    ov.querySelector('button').onclick = function () {
+    App.armButton(ov.querySelector('button'), function () {   // DFM 104
       ov.remove();
       $('#guard').hidden = false;
       App.refreshState().then(function () { $('#guard').hidden = true; showHub(); });
-    };
+    });
   }
 
   App.confirmLeaveLesson = function () {
