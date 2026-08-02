@@ -72,14 +72,30 @@ const CASE_LOGS = {
   if (WHO === 'anya') await page.evaluate(() => localStorage.clear()); // cara keeps anya's world
   await page.reload({ waitUntil: 'domcontentloaded' });
   await sleep(2000);
-  await page.evaluate(() => {
+  await page.evaluate((TARGET_NUM) => {
     const db = JSON.parse(localStorage.getItem('ks3dt-dev'));
     const now = Math.floor((Date.now() - 1767225600000) / 60000);
     for (const n of ['1', '2', '3', '4', '5', 'S1']) db.locks['Demo-8A'][n] = { u: now, on: 1 };
     db.cfg['Demo-8A'] = db.cfg['Demo-8A'] || {};
     db.cfg['Demo-8A'].pairing = { on: 0 };
+    /* rule 134 (2 Aug 2026): the Do-Now serves only lessons this pupil has
+       COMPLETED, so a fresh persona would get no warm-up at all. Stage the
+       sitting pupil the way a real one arrives: every lesson BEFORE the one
+       being sat already complete (plus the side quest from L3 onward, which
+       is when it is due). Keeps the Do-Now on screen with honest content. */
+    const target = TARGET_NUM;
+    const done = {};
+    if (typeof target === 'number') {
+      for (let n = 1; n < target; n++) done[String(n)] = 1;
+      if (target >= 3) done['S1'] = 1;
+    } else if (target === 'S1') { done['1'] = 1; }
+    const L = {};
+    Object.keys(done).forEach((k, ix) => { L[k] = [2, 10, 'sit' + k + '=1', '1', '222|1', 100 + ix, 10, 0, '', 0, 0]; });
+    db.pupils = db.pupils || {};
+    db.pupils['Demo-8A:anya.murphy@demo'] = Object.assign(
+      db.pupils['Demo-8A:anya.murphy@demo'] || { n: 'Anya Murphy', cn: '', j: 1, xp: 0, g: '' }, { L });
     localStorage.setItem('ks3dt-dev', JSON.stringify(db));
-  });
+  }, NUM === 'S1' ? 'S1' : Number(NUM));
   await page.reload({ waitUntil: 'domcontentloaded' });
   await sleep(2400);
   await page.evaluate(() => { const b = document.querySelector('.intro-skip'); if (b) b.click(); });

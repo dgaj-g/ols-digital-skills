@@ -153,8 +153,20 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   check(!!packed306 && packed306.options.length === 4, 'r-306 survived the pack with 4 options');
   check(!/forever just goes/.test(JSON.stringify(packedPool.items)), 'the packed pool leaks no answer text into the items (guard holds)');
 
-  /* prove the new item can actually be SERVED to a pupil */
+  /* prove the new item can actually be SERVED to a pupil.
+     RE-STAGED 2 Aug 2026 (rule 134): the Do-Now now serves only lessons this
+     PUPIL has completed - the old draw leaned on class-wide unlocks, which was
+     the bug that put variables questions in front of a Lesson 2 pupil. Stage
+     her record as a real Lesson-4 pupil (L1-L3 + side quest complete); the
+     draw must then include the L3 material AND nothing she has not been
+     taught - the check got stricter, not weaker. */
   const served = await page.evaluate(async () => {
+    const db = JSON.parse(localStorage.getItem('ks3dt-dev'));
+    const L = (tag) => [2, 10, 'qa' + tag + '=1', '1', '222|1', 100, 10, 0, '', 0, 0];
+    db.pupils['Demo-8A:anya.murphy@demo'] = Object.assign(
+      db.pupils['Demo-8A:anya.murphy@demo'] || { n: 'Anya Murphy', cn: '', j: 1, xp: 0, g: '' },
+      { L: { '1': L(1), '2': L(2), '3': L(3), 'S1': L('S1') } });
+    localStorage.setItem('ks3dt-dev', JSON.stringify(db));
     const seen = {};
     for (let i = 0; i < 14; i++) {
       const r = await window.App.call('recapStart', { lessonNum: '4' });
@@ -162,9 +174,23 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
     }
     return Object.keys(seen);
   });
-  console.log('  recap ids offered across 14 Do-Now draws:', JSON.stringify(served));
+  console.log('  recap ids offered across 14 Do-Now draws (L1-L3+S1 complete):', JSON.stringify(served));
   check(served.indexOf('r-306') !== -1, 'r-306 is actually served by the Do-Now engine');
   check(served.indexOf('r-403') !== -1, 'r-403 is still served after being re-tagged to j1-03');
+  /* RULE 134: nothing untaught, ever */
+  const lessonOf = {};
+  (packedPool.items || []).forEach(i => { lessonOf[i.id] = i.lesson; });
+  const badLessons = served.map(id => id + ':' + lessonOf[id])
+    .filter(x => ['j1-01', 'j1-02', 'j1-03', 'j1-sq1'].indexOf(x.split(':')[1]) === -1);
+  check(badLessons.length === 0, 'RULE 134: every served item is from a lesson she completed (violations: ' + JSON.stringify(badLessons) + ')');
+  const empty = await page.evaluate(async () => {
+    const db = JSON.parse(localStorage.getItem('ks3dt-dev'));
+    db.pupils['Demo-8A:anya.murphy@demo'].L = {};
+    localStorage.setItem('ks3dt-dev', JSON.stringify(db));
+    const r = await window.App.call('recapStart', { lessonNum: '2' });
+    return ((r && r.items) || []).length;
+  });
+  check(empty === 0, 'RULE 134: a pupil with nothing completed gets no warm-up at all (' + empty + ' items served)');
 
   /* the item that USED to assume forever had been taught */
   const pool = JSON.parse(fs.readFileSync(path.join(SRC, 'j1/recap-pool.json'), 'utf8'));

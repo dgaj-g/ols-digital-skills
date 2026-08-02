@@ -1430,6 +1430,42 @@
         return '<div class="rung-bar">' + lit + (cfg.stretch ? '<span class="rung-dot stretch' + (stretchDone ? ' lit' : '') + '">&#11088;</span>' : '') + '</div>';
       }
 
+      /* DAMIEN, 2 Aug 2026 (rule 135c): "flash it to the device" pointed at a
+         film the pupil could no longer reach. Every rung card now carries a
+         button that replays the lesson's film in a popup - seeked to the
+         copy-it-across chapter by default - without touching her ladder place. */
+      function filmBtn() {
+        return (cfg.film && cfg.film.src)
+          ? '<button class="ghost-btn rung-film-btn" type="button">&#127909; Watch the film again</button>' : '';
+      }
+      function openFilm() {
+        var f = cfg.film; if (!f || !f.src) return;
+        var chips = (f.chapters || []).map(function (ch) {
+          return '<button class="vid-chapter" type="button" data-t="' + Number(ch.t) + '">' + esc(ch.label) + '</button>';
+        }).join('');
+        var ov = el('<div class="ols-modal film-modal">' +
+          '<div class="ols-modal-card ols-modal-film">' +
+          '<h2>&#127909; Watch the film again</h2>' +
+          '<video controls preload="metadata" playsinline src="' + esc(asset(f.src)) + '"></video>' +
+          '<div class="vid-chapters">' + chips + '</div>' +
+          '<div class="confirm-actions"><button class="primary-btn film-close" type="button">Back to the ladder</button></div>' +
+          '</div></div>');
+        document.body.appendChild(ov);
+        var vid = ov.querySelector('video');
+        vid.addEventListener('loadedmetadata', function () { try { vid.currentTime = Number(f.defaultT || 0); } catch (e) {} });
+        ov.querySelectorAll('.vid-chapter').forEach(function (b) {
+          b.onclick = function () { try { vid.currentTime = Number(b.getAttribute('data-t')) || 0; vid.play(); } catch (e) {} };
+        });
+        App.armButton(ov.querySelector('.film-close'), function () {   // DFM 104
+          try { vid.pause(); } catch (e) {}
+          ov.remove();
+        });
+      }
+      function wireFilmBtn(card) {
+        var fb = card.querySelector('.rung-film-btn');
+        if (fb) fb.onclick = openFilm;
+      }
+
       function openerRow() {
         return cfg.makecode
           ? '<p class="ladder-open"><a class="ghost-btn" href="' + esc(cfg.makecode.url) + '" target="_blank" rel="noopener">' + esc(cfg.makecode.label || 'Open MakeCode') + ' &#8599;</a>' +
@@ -1454,7 +1490,7 @@
         var upConfirm = (solo && up.soloConfirm) ? up.soloConfirm : (up.confirm || 'We both took a turn');
         var lines = upLines.map(function (l) { return '<li>' + esc(l) + '</li>'; }).join('');
         var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(up.title || 'Rung 1') + '</span>' +
-          '<h2>&#128268; No screens yet &mdash; you two ARE the circuit</h2>' +
+          '<h2>&#128268; ' + (solo ? 'No screens yet &mdash; today YOU are the whole circuit' : 'No screens yet &mdash; you two ARE the circuit') + '</h2>' +
           '<ol class="ladder-script">' + lines + '</ol>' +
           '<button class="confirm-step" type="button"><span class="confirm-box"></span><span>' + esc(upConfirm) + '</span></button></div>');
         host.appendChild(c);
@@ -1487,9 +1523,11 @@
           '<div class="rung-actions">' +
           '<button class="primary-btn rung-worked" type="button">It worked on the device! &#9889;</button>' +
           (r.hint && !hintUsed ? '<button class="ghost-btn rung-hint-btn" type="button">Debug Hint (costs a signal point)</button>' : '') +
+          filmBtn() +
           '</div></div>');
         host.innerHTML = '';
         host.appendChild(c);
+        wireFilmBtn(c);
         if (hintUsed) { c.querySelector('.rung-hint').hidden = false; }
         var hb = c.querySelector('.rung-hint-btn');
         if (hb) hb.onclick = function () {
@@ -1518,9 +1556,11 @@
           '<div class="rung-actions">' +
           '<button class="primary-btn" type="button">We built it! &#11088;</button>' +
           '<button class="ghost-btn" type="button">Finish the ladder without it</button>' +
+          filmBtn() +
           '</div></div>');
         host.innerHTML = '';
         host.appendChild(c);
+        wireFilmBtn(c);
         var btns = c.querySelectorAll('button');
         btns[0].onclick = function () { stretchDone = true; saveLadder(); finishLadder(); };
         btns[1].onclick = function () { finishLadder(); };

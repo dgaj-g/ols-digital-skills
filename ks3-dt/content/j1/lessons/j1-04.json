@@ -53,7 +53,7 @@
     "title": "The Case Board",
     "intro": "Four player tickets, four open cases. Play the broken game, read its code, fix ONE thing per case — then prove every fix by re-playing the game and watching the bug NOT happen. Nobody can check inside Scratch for you: the re-play is your proof, and the case log you write is your word. The board stamps nothing until both are done. Close the training case first; after that, take the board in any order you like.",
     "introSolo": "Solo shift today, detective — you're PLAYER and ENGINEER in one. Four player tickets, four open cases: play the broken game, read its code, fix ONE thing per case, and prove every fix by re-playing. Nobody can check inside Scratch for you: the re-play is your proof, and the case log you write is your word. The board stamps nothing until both are done. Close the training case first; then take the board in any order.",
-    "pairNote": "Run a two-detective agency: the PLAYER runs the game, reads the ticket and calls out what they see; the ENGINEER drives the blocks. Swap jobs every case — both names go on every stamp.",
+    "pairNote": "Run a two-detective agency with the person beside you: the PLAYER runs the game, reads the ticket and calls out what they see; the ENGINEER drives the blocks. Swap jobs every case — both names go on every stamp.",
     "getgame": {
      "url": "https://scratch.mit.edu/projects/editor/",
      "file": "assets/games/shark-attack-broken-edition.sb3",
@@ -116,10 +116,10 @@
       "spanners": 1,
       "player": "FinnTastic_11",
       "ticket": "The shark won't swim RIGHT. Left, up, down — all fine. Right? Nothing. My shark just stares at the wall while the fish laugh at it. One star.",
-      "symptom": "Green flag. Press the RIGHT arrow and count what happens. Now try the other three arrows. The player isn't making it up.",
+      "symptom": "Click the green flag to start the game, then press the RIGHT arrow and count what happens. Now try the other three arrows. The player isn't making it up.",
       "look": "Open the Shark's scripts and compare them with each other. Working code is your best evidence: what does every WORKING arrow script start with that the broken one is missing?",
       "logHint": "The right-arrow script had no… so I…",
-      "replay": "Green flag. Fly a full lap: RIGHT along the bottom, UP the far wall, LEFT across the top, DOWN back home. All four arrows, no shortcuts.",
+      "replay": "Click the green flag, then fly a full lap: RIGHT along the bottom, UP the far wall, LEFT across the top, DOWN back home. All four arrows, no shortcuts.",
       "replayConfirm": "Full lap flown — all four arrows work",
       "clue": {
        "free": "Re-read the ticket. Which arrows work? Which ONE doesn't? That tells you exactly which script to stare at.",
@@ -147,10 +147,10 @@
       "spanners": 2,
       "player": "ChompChamp07",
       "ticket": "I ate SO many fish and the score just sits on 0. I can literally HEAR the bite happen. This game is eating my points as well as the fish.",
-      "symptom": "Green flag. Eat a fish. Listen for the bite… then look at the score. Eat another one. Still 0?",
+      "symptom": "Click the green flag and eat a fish. Listen for the bite… then look at the score. Eat another one. Still 0?",
       "look": "Find the exact moment a fish gets eaten and read that script block by block, OUT LOUD. Every block will sound right — until one number isn't.",
       "logHint": "The change-score block said… so I…",
-      "replay": "Green flag. Eat THREE fish and watch the score climb 1, 2, 3. Right once could be luck — right three times is proof.",
+      "replay": "Click the green flag and eat THREE fish, watching the score climb 1, 2, 3. Right once could be luck — right three times is proof.",
       "replayConfirm": "Three catches, three points — the scoreboard tells the truth",
       "clue": {
        "free": "Re-read the ticket. The bite HAPPENS — the sound plays, the fish vanishes. So the eaten moment works. What's the one thing that doesn't move?",
@@ -177,10 +177,10 @@
       "spanners": 3,
       "player": "SharkSnackSara",
       "ticket": "One fish. ONE. I ate it in ten seconds flat and then swam round an empty ocean for the rest of my life. Where did everybody GO??",
-      "symptom": "Green flag. Eat the first fish, then keep playing for a slow count of ten. Watch the water for new fish the whole time.",
+      "symptom": "Click the green flag, eat the first fish, then keep playing for a slow count of ten. Watch the water for new fish the whole time.",
       "look": "One script's entire job is making new fish. Find it and read it top to bottom: exactly how many times does it actually make one?",
       "logHint": "The fish-maker script only ran… so I…",
-      "replay": "Green flag. Play for twenty full seconds. Fish should KEEP arriving the whole time — count at least five newcomers before you even think about this stamp.",
+      "replay": "Click the green flag and play for twenty full seconds. Fish should KEEP arriving the whole time — count at least five newcomers before you even think about this stamp.",
       "replayConfirm": "Fish kept coming the whole time",
       "clue": {
        "free": "Re-read the ticket. The FIRST fish was fine — it swam, it got eaten. It is everything AFTER that first fish the player never sees. So which script's whole job is making fish?",
@@ -211,7 +211,7 @@
       "symptom": "Click the green flag and watch ONLY the very first second. Now click it again. And again. Same wrongness every time?",
       "look": "This one is not on a sprite at all — it is on the STAGE (click the Stage panel on the far right, beside the sprite list). Read its script IN ORDER, top to bottom, and at every single block ask: what is the player seeing RIGHT NOW?",
       "logHint": "The script switched to… before… so I…",
-      "replay": "Green flag, three times in a row. The ocean must be on screen from the very first instant, every single time.",
+      "replay": "Click the green flag three times in a row. The ocean must be on screen from the very first instant, every single time.",
       "replayConfirm": "Three starts, three instant oceans",
       "clue": {
        "free": "Re-read the ticket. The sea is not missing — it 'strolls in a second late'. So it does arrive. Watch the very first second again and say exactly what you see, in order.",
@@ -242,7 +242,7 @@
      "ticket": "Five stars, best shark game on the site — but NOTHING can hurt you! Where's the danger? Add something to dodge and it's perfect.",
      "job": "Add a Jellyfish from Scratch's sprite library (Choose a Sprite → search 'Jellyfish') and wire it with the starter blocks below: it drifts to a new spot every couple of seconds — and if the Shark ever touches it, the whole game stops. That 'if touching' block is next lesson's superpower; consider this a sneak preview. Finished the jellyfish and still hungry? Add ONE more twist of your own design — a second danger, a speed-up, a power-up — and name it in your release note.",
      "img": "assets/img/l4/stretch-jellyfish.png",
-     "test": "Green flag. Dodge the jellyfish for twenty seconds… then swim into it ON PURPOSE. The game should freeze the instant you touch it.",
+     "test": "Click the green flag and dodge the jellyfish for twenty seconds… then swim into it ON PURPOSE. The game should freeze the instant you touch it.",
      "confirm": "Danger installed — touching the jellyfish ends the game",
      "ask": "One line for the release notes: what did you add, and what does it do to the player?",
      "notePlaceholder": "I added a jellyfish that... so now the player..."
@@ -250,7 +250,7 @@
     "stretchNudge": "The build has shipped — but a five-star feature request is still pinned to the board. Take the job, or clock off?",
     "rc": {
      "title": "Release Candidate check",
-     "text": "Four fixes, one game — and bugs love to hide behind each other. Before anything ships, QA plays the WHOLE game like a real player. One full minute, green flag to glory. Watch for all four fixes holding at once:",
+     "text": "Four fixes, one game — and bugs love to hide behind each other. Before anything ships, QA plays the WHOLE game like a real player: one full minute, from the green flag to the end. Watch for all four fixes holding at once:",
      "watch": [
       "All four arrows — fly a full lap.",
       "Eat at least five fish — the score counts every single one.",

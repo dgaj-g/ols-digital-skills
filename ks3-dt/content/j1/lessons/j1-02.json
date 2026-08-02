@@ -23,7 +23,7 @@
     "lines": [
      "In this lesson you will learn what an INPUT and an OUTPUT are — and you will prove you know, by building a tiny computer that reacts when you press it.",
      "Look at the three photos below. A lift button, a pedestrian crossing, a fitness tracker: something happens (the INPUT — a press, a step), and something reacts (the OUTPUT — the doors open, the green man lights, the step count goes up). Every machine you have ever used works on that one idea.",
-     "The computer in your hands today is called a micro:bit — a computer the size of a biscuit, with two buttons and a grid of 25 tiny lights. You and your partner will TELL it how to react: press a button, get a picture; shake it, get a ghost.",
+     "The computer in your hands today is called a micro:bit — a computer the size of a biscuit, with two buttons and a grid of 25 tiny lights. You will work in a pair with the person sitting beside you, one micro:bit between the two of you, and together you will TELL it how to react: press a button, get a picture; shake it, get a ghost.",
      "By the end of the hour you will have built a program on a real device, tested it with your own hands, and learned the first rule of every programmer's life: when it doesn't work, the code is trying to tell you something."
     ],
     "images": [
@@ -90,7 +90,7 @@
    },
    "config": {
     "title": "The Signal Relay Ladder",
-    "intro": "This is where you learn to BUILD. Four rungs. Each one is a target behaviour your pair must make REAL on the micro:bit in your hands. Nobody marks this — the device itself is the judge: the program either does what the card says, or it doesn't, and you can see which with your own eyes. Take turns: one of you builds the blocks, the other holds the card and presses the button to test. Swap every rung.",
+    "intro": "This is where you learn to BUILD — and you do it in your pair: you and the person beside you, one micro:bit between you. The ladder has four small challenges, called rungs, and you climb them in order. Each rung card tells you exactly what your program should do. You build it in MakeCode (in your other tab), copy it onto the micro:bit, and test it with your own hands. Nobody marks this — the device itself is the judge: either it does what the card says, or it doesn't, and you can both see which. Take turns: one of you builds the blocks, the other holds the card and runs the test. Swap jobs at every rung.",
     "makecode": {
      "url": "https://makecode.microbit.org/",
      "label": "Open MakeCode"
@@ -98,18 +98,20 @@
     "unplugged": {
      "title": "Rung 1 — The Human Circuit",
      "lines": [
-      "Stand up with your partner. One of you is the SENSOR, the other is the ACTUATOR. No screens for this rung — you two ARE the machine.",
-      "SENSOR: mime pressing an invisible button. ACTUATOR: the instant you see it, throw your arms up — that's your LED heart lighting.",
-      "New input: SENSOR mimes shaking a device. ACTUATOR: wave both hands — that's your scrolling message.",
-      "Swap roles and run both signals again.",
-      "Now say it out loud together: the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT."
+      "This first rung needs no computer at all: you and your partner are going to BE the machine. Stand up.",
+      "Every machine from the start of the lesson — the lift, the crossing, the step-counter — has a part that NOTICES something happen (computing calls it a SENSOR) and a part that REACTS (an ACTUATOR). Decide now: one of you is the sensor, the other is the actuator.",
+      "SENSOR: mime pressing an invisible button. ACTUATOR: the instant you see the press, throw both arms up — you are the heart appearing on the screen.",
+      "New signal! SENSOR: mime shaking a device. ACTUATOR: wave both hands — you are the message scrolling across the screen.",
+      "Swap jobs and run both signals again, so each of you has played both parts.",
+      "Finish by saying it out loud together: the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT. Those three words run the whole hour."
      ],
      "confirm": "We both played Sensor and Actuator — and said the magic sentence",
      "soloLines": [
-      "No screens for this rung — and no partner needed on a catch-up: YOU are the whole machine.",
-      "With one hand, mime pressing an invisible button. The instant you do, throw your other arm up — that's your LED heart lighting.",
-      "New input: mime shaking a device with one hand — wave the other — that's your scrolling message.",
-      "Now say it out loud (quietly counts): the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT."
+      "This first rung needs no computer at all — and no partner on a catch-up: YOU are the whole machine, both parts of it.",
+      "Every machine from the start of the lesson has a part that NOTICES something happen (a SENSOR) and a part that REACTS (an ACTUATOR). Today you play both.",
+      "With one hand, mime pressing an invisible button. The instant you do, throw your other arm up — that's the heart appearing on the screen.",
+      "New signal: mime shaking a device with one hand, and wave the other — that's the message scrolling across.",
+      "Finish by saying it out loud (quietly counts): the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT. Those three words run the whole hour."
      ],
      "soloConfirm": "I ran both signals — and said the magic sentence"
     },
@@ -117,35 +119,57 @@
      {
       "id": "r2",
       "title": "Rung 2 — First Signal",
-      "target": "On button A pressed → show a HEART icon.",
+      "target": "Your challenge: make the micro:bit show a HEART icon whenever button A is pressed.",
       "img": "assets/img/l2/rung2.png",
-      "test": "Flash it to the micro:bit, then press the REAL button A (or the on-screen simulator if your device is sulking). Did the heart appear?",
+      "test": "Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive — the film button below replays exactly how, if you need it. Then press the real button A. Did the heart appear? (If your device won't connect, the on-screen simulator counts while your teacher sorts it.)",
       "hint": "Is your 'show icon' block sitting INSIDE the 'on button A pressed' block? A block floating on its own never runs."
      },
      {
       "id": "r3",
       "title": "Rung 3 — Two Signals",
-      "target": "Button A shows a HEART. Button B shows a HAPPY face. Two inputs, two different outputs.",
-      "test": "Press A, then B, on the device. Do you get two DIFFERENT icons?",
+      "target": "Your challenge: give the micro:bit TWO different reactions — press button A and a HEART appears; press button B and a HAPPY FACE appears.",
+      "test": "Copy it across, then press A, then B. Do you get two DIFFERENT pictures — heart for A, happy face for B?",
       "hint": "You need TWO separate 'on button pressed' blocks — one set to A, one set to B. Check the little dropdown on each one.",
       "hintImg": "assets/img/l2/rung3.png"
      },
      {
       "id": "r4",
       "title": "Rung 4 — The Vanishing Ghost",
-      "target": "On shake → show the ghost icon, hold it on screen for one second, then clear the screen.",
-      "test": "Give it a real shake. Does the ghost appear, hold, then vanish cleanly — every single time? Now the proof it matters: DELETE the pause block and shake again. The ghost never gets a chance to appear at all. Put the pause back.",
+      "target": "Your challenge: when the micro:bit is SHAKEN, this is what should happen: 1. a GHOST icon appears — 2. it stays on screen for one second — 3. the screen clears itself.",
+      "test": "Copy it across and give it a real shake. Does the ghost appear, hold, then vanish cleanly — every single time? Now prove the pause is earning its place: take the pause block out, copy the program across again, and shake. The ghost seems never to appear at all — the clear wipes it before your eyes can catch it. Put the pause back.",
       "hint": "The ORDER inside 'on shake' matters: show icon, THEN pause (ms) 1000, THEN clear screen. The pause is the only thing giving the ghost time on screen — without it, 'clear screen' wipes it before your eyes can catch it and you see nothing at all. (Rung 2's heart stayed put because nothing came along to clear it.)",
       "hintImg": "assets/img/l2/rung4.png"
      }
     ],
     "stretch": {
-     "title": "Stretch — Compound Signal",
-     "target": "Press A + B TOGETHER → heart, a half-second pause, then a happy face. One input, a whole light sequence.",
-     "test": "Press A + B together on the real device — heart, half-second pause, then happy face. Every single time?"
+     "title": "Stretch — Two Buttons at Once",
+     "target": "Your stretch challenge: see if you can make one input trigger a whole SEQUENCE. When A and B are pressed at the SAME TIME, this is what should happen: 1. a heart appears — 2. it holds for half a second — 3. a happy face takes its place.",
+     "test": "Copy it across and press A + B together on the real device. Heart, half-second pause, then happy face — every single time?"
     },
-    "introSolo": "Four rungs. Each is a target behaviour YOU make real on a micro:bit (or the on-screen simulator). You are doing this one on your own — build the blocks AND run the real test yourself. The device is still the judge.",
-    "help": "Read the rung card, build exactly that behaviour in MakeCode (its tab), then TEST it for real — press the button, do the shake. If it worked, press the gold button and the next rung appears. Stuck? That's what the Debug Hint is for — it costs one signal point and nudges you toward the fix without giving it away."
+    "introSolo": "This is where you learn to BUILD — on your own today, so you play both parts yourself. The ladder has four small challenges, called rungs, and you climb them in order. Each rung card tells you exactly what your program should do: build it in MakeCode (in your other tab, or the on-screen simulator), then run the real test yourself. Nobody marks this — the device is still the judge.",
+    "help": "Read the rung card, build what it asks for in MakeCode (its own tab), then TEST it for real — press the button, do the shake. If it worked, press the gold button and the next rung appears. Stuck? That's what the Debug Hint is for — it costs one signal point and nudges you toward the fix without giving it away. The film button replays the MakeCode film without losing your place.",
+    "film": {
+     "src": "assets/video/l2/l2-tutorial.mp4",
+     "chapters": [
+      {
+       "t": 0,
+       "label": "Find MakeCode"
+      },
+      {
+       "t": 52,
+       "label": "First blocks"
+      },
+      {
+       "t": 121,
+       "label": "Onto the real micro:bit"
+      },
+      {
+       "t": 197,
+       "label": "Test it properly"
+      }
+     ],
+     "defaultT": 121
+    }
    }
   },
   {
