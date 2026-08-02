@@ -370,7 +370,7 @@
    "lesson": "j1-05",
    "topic": "Looks vs works",
    "thread": null,
-   "stem": "You changed the backdrop and sprites but forgot the lives variable. Have you met the design brief?",
+   "stem": "You changed the backdrop and sprites but forgot your tracking variable. Have you met the design brief?",
    "options": [
     "Yes — the game looks finished",
     "No — looking finished isn't the same as working; the brief lists required features",

@@ -208,7 +208,7 @@ function staticHalf() {
   check(!!pairEntry && !!pairEntry.img && !!pairEntry.say, 'while keeping its picture and its say-line');
   /* re-pinned per batch on purpose: an exact pin is what catches a repack
      that never happened. 2 Aug 2026 = the L2-L5 batch. */
-  check(idx.contentVersion === '2026-08-02a', 'contentVersion bumped to 2026-08-02a (is ' + idx.contentVersion + ')');
+  check(idx.contentVersion === '2026-08-02b', 'contentVersion bumped to 2026-08-02b (is ' + idx.contentVersion + ')');
 
   section('M. STAFF PANEL SAYS "PUPIL" (rule 26)');
   check(/the moment the first pupil arrives/.test(staff), 'the pairing panel\'s empty state says pupil');
