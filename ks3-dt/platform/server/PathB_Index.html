@@ -7280,10 +7280,12 @@ window.OLS_TRANSPORT = {
       });
   }
 
+  var briefOpenNum = '';
   function showBrief(el) {
     var num = el.getAttribute('data-num');
     var le = briefByNum[num];
     if (!le) return;
+    briefOpenNum = num;   // so Print this brief can name the file it makes
     setPane(busyHtml('Fetching the lesson brief'));
     adminCall('brief', { className: cls, lessonId: le.id }).then(function (r) {
       if (!r || !r.ok) {
@@ -7307,12 +7309,14 @@ window.OLS_TRANSPORT = {
     });
   }
 
+  /* The teacher brief had the SAME defect as the cover sheet - found by the
+     harness, not in the room: printing the app's own document inside the
+     sandboxed iframe blanks the panel behind the print box. Same cure. */
   function briefPrint() {
-    // Same sandbox caveat as coverPrint: window.print can silently no-op in the
-    // sandboxed iframe - always leave the teacher a fallback route.
-    try { global.print(); } catch (e) {}
-    var st = q('#brief-status');
-    if (st) plainStatus(st, 'If no print dialog appeared (some school browsers block it here), take a screenshot or keep this tab open.');
+    var body = q('.brief-body') || q('#staff-pane .staff-tabpane') || q('#staff-pane');
+    var le = briefByNum[briefOpenNum] || {};
+    var name = le.side ? String(le.title || 'Side Quest') : ('Lesson ' + (le.num || '') + ' ' + String(le.title || ''));
+    printStandalone(body, (cls ? cls + ' - ' : '') + 'DT teacher brief - ' + name.trim(), q('#brief-status'));
   }
 
   function toggleLock(btn) {
@@ -8527,12 +8531,81 @@ window.OLS_TRANSPORT = {
     }
   }
 
+  /* Print CSS for the standalone sheet. Deliberately plain: this page is not
+     the app, it is a document a covering teacher reads or a PDF that gets
+     emailed, so it wants black-on-white and nothing else. ASCII only - the
+     builder rejects anything else. */
+  var COVER_PRINT_CSS =
+    'body{font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;' +
+      'color:#17223B;margin:28px auto;max-width:720px;padding:0 18px}' +
+    'h3{color:#1A3A6B;font-size:1.25rem;margin:0 0 14px;border-bottom:3px solid #E4B824;padding-bottom:8px}' +
+    'h4{color:#1A3A6B;font-size:1rem;margin:20px 0 6px}' +
+    'ol{margin:0 0 4px 18px;padding:0}li{margin-bottom:7px}' +
+    'p{margin:0 0 10px}' +
+    'a{color:#1A3A6B;word-break:break-all}' +
+    'img.qr{display:block;margin:10px 0 0}' +
+    '@media print{body{margin:12mm auto;max-width:none}a{text-decoration:none}}';
+
+  /* DAMIEN, 1 Aug 2026 (live, v9): the print box opened but the app went BLANK
+     behind it, whichever button he chose. Cause: this called print() on the
+     app's OWN document, and that document lives inside Apps Script's sandboxed
+     iframe - Safari tears it down when the print job ends, taking the staff
+     panel with it. So the app is never printed now. The sheet is rebuilt as a
+     small standalone page in its own tab (the sandbox carries
+     allow-popups-to-escape-sandbox, which is how the brief's deck links already
+     open), which also prints far better: no panel chrome, no dark shell, and a
+     sensible filename when the teacher chooses Save as PDF. */
+  /* ONE printing path for both the cover sheet and the teacher brief.
+     Rebuilds the chosen part of the panel as a small standalone page in its own
+     tab, and prints THAT. The app is never printed. */
+  function printStandalone(sourceEl, title, statusEl) {
+    if (!sourceEl) return;
+    var clone = sourceEl.cloneNode(true);
+    Array.prototype.forEach.call(clone.querySelectorAll('.confirm-actions, button, .staff-status'), function (n) {
+      if (n.parentNode) n.parentNode.removeChild(n);
+    });
+    /* a cloned <canvas> is blank - carry the QR across as a real image */
+    var srcCanvases = sourceEl.querySelectorAll('canvas');
+    var dstCanvases = clone.querySelectorAll('canvas');
+    for (var i = 0; i < dstCanvases.length; i++) {
+      if (!srcCanvases[i] || !dstCanvases[i].parentNode) continue;
+      var img = document.createElement('img');
+      img.className = 'qr';
+      img.width = 200; img.height = 200;
+      try { img.src = srcCanvases[i].toDataURL('image/png'); } catch (e) {}
+      dstCanvases[i].parentNode.replaceChild(img, dstCanvases[i]);
+    }
+
+    var win = null;
+    try { win = global.open('', '_blank'); } catch (e) { win = null; }
+    if (!win || !win.document) {
+      plainStatus(statusEl, 'Your browser blocked the new tab. Allow pop-ups for this page and press the ' +
+        'print button again -- it opens in its own tab, and you print or save it as a PDF from there.');
+      return;
+    }
+    win.document.open();
+    win.document.write('<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8">' +
+      '<title>' + App.esc(title) + '</title><style>' + COVER_PRINT_CSS + '</style></head><body>' +
+      clone.innerHTML + '</body></html>');
+    win.document.close();
+    try { win.focus(); } catch (e) {}
+    /* let images decode before the print box freezes the page */
+    global.setTimeout(function () { try { win.print(); } catch (e) {} }, 600);
+    plainStatus(statusEl, 'It has opened in its own tab, with the print box ready -- choose your printer, ' +
+      'or Save as PDF to send it on. This panel stays exactly as it was.');
+  }
+
+  /* DAMIEN, 1 Aug 2026 (live, v9): the print box opened but the app went BLANK
+     behind it, whichever button he chose. Cause: this called print() on the
+     app's OWN document, and that document lives inside Apps Script's sandboxed
+     iframe - Safari tears it down when the print job ends, taking the staff
+     panel with it. The harness then found the teacher brief's Print button had
+     exactly the same fault, which he had not reached yet. */
   function coverPrint() {
-    // window.print can silently no-op inside the sandboxed iframe (review
-    // finding) - always leave the teacher a fallback route.
-    try { global.print(); } catch (e) {}
-    var st = q('#cover-status');
-    if (st) plainStatus(st, 'If no print dialog appeared (some school browsers block it here), take a screenshot of the sheet or keep this tab open for the cover teacher.');
+    var le = coverActiveLesson || {};
+    var name = le.side ? String(le.title || 'Side Quest')
+      : ('Lesson ' + (le.num || '') + ' ' + String(le.title || ''));
+    printStandalone(q('.cover-sheet'), cls + ' - DT cover - ' + name.trim(), q('#cover-status'));
   }
 
   function coverEnd(btn) {
@@ -8709,8 +8782,9 @@ window.OLS_TRANSPORT = {
       'wait for you &mdash; and <b>Start Cover Mode</b> does the rest in one press: it unlocks the chosen ' +
       'lesson and writes the cover sheet, a few lines the covering teacher reads aloud to the class. A ' +
       'covering teacher is not expected to teach the lesson; the sheet says so, and it waits on this tab ' +
-      'for whoever opens the panel. <b>Print this sheet</b>, on the sheet itself, prints it &mdash; choose ' +
-      'PDF in the print box if you want a copy to send digitally. <b>End Cover Mode</b> when you are ' +
+      'for whoever opens the panel. <b>Print this sheet</b>, on the sheet itself, opens the sheet in its own ' +
+      'tab with the print box already up &mdash; choose your printer, or Save as PDF for a copy you can ' +
+      'send digitally. The panel behind it is left exactly as it was. <b>End Cover Mode</b> when you are ' +
       'back.</p>' +
       '</div>' +
 

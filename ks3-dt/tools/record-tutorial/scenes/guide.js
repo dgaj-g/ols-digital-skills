@@ -477,8 +477,8 @@ const scenes = [
       await ring(cine, page, '.cover-sheet h4', 'Read this to the class',
         'A few lines for the covering teacher to read aloud &mdash; they are not expected to teach.');
       await ring(cine, page, '[data-action="cover-print"]', null,
-        '<b>Print this sheet</b> prints it &mdash; or choose PDF in the print box for a copy you can ' +
-        'send.');
+        '<b>Print this sheet</b> opens it in a clean tab with the print box ready &mdash; choose your ' +
+        'printer, or Save as PDF for a copy you can send.');
 
       await clickAt(cine, page, '[data-action="cover-end"]', null, { after: 2400 });
       await cine.caption('<b>End Cover Mode</b> when you are back.');
