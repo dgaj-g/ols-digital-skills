@@ -537,7 +537,7 @@
           }).join('') + '</div>'
         : '';
       var d = el('<div class="dossier">' +
-        '<div class="dossier-top"><span class="dossier-stamp">CLASSIFIED</span><span class="dossier-clearance">' + esc(cfg.clearance || '') + '</span></div>' +
+        '<div class="dossier-top"><span class="dossier-clearance">' + esc(cfg.clearance || '') + '</span></div>' +
         '<h1 class="dossier-headline"></h1>' +
         '<div class="dossier-lines"></div>' +
         photoStrip +
@@ -1252,7 +1252,7 @@
         if (!r || !r.ok || !r.items || !r.items.length) { ctx.next(); return; }
         introCard(host, {
           kicker: 'Do-Now', title: 'While everyone logs in…',
-          text: 'A quick brain warm-up from past missions. Answer each one, see why, move on. Never graded, never public.'
+          text: 'A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public.'
         }, 'Warm up', function () {
           itemRunner(host, {
             items: r.items, mode: 'feedback',
@@ -1273,8 +1273,8 @@
             onDone: function (res) {
               host.innerHTML = ''; // replace the last item card - the done card must never hide below the fold
               var c = el('<div class="card recap-done"><h2>Brain warmed up</h2><p class="recap-score">' + res.right + ' of ' + res.total + '</p>' +
-                '<p>' + (res.right === res.total ? 'Perfect recall, Agent.' : 'The ones you missed will come back around — that’s how remembering works.') + '</p>' +
-                '<button class="primary-btn" type="button">Start today’s mission</button></div>');
+                '<p>' + (res.right === res.total ? 'Perfect recall.' : 'The ones you missed will come back around — that’s how remembering works.') + '</p>' +
+                '<button class="primary-btn" type="button">Start today’s lesson</button></div>');
               host.appendChild(c);
               c.querySelector('button').onclick = function () { ctx.next(); };
             }
@@ -1376,7 +1376,7 @@
               (f.explain ? '<p class="exit-fb-why">' + esc(f.explain) + '</p>' : '') + '</div>';
           }).join('');
           var done = el('<div class="card exit-done"><h2>' + (r.right === r.total ? 'Nailed it.' : 'Report filed.') + '</h2>' + fbHtml +
-            '<button class="primary-btn" type="button">Finish the mission</button></div>');
+            '<button class="primary-btn" type="button">Finish the lesson</button></div>');
           host.appendChild(done);
           done.querySelector('button').onclick = function () { ctx.next(); };
         });
@@ -1389,7 +1389,7 @@
     mount: function (host, chunk, ctx) {
       var c = el('<div class="card catchup-card"><span class="intro-kicker">Absent for this lesson?</span>' +
         '<h2>Here’s what you missed</h2>' +
-        '<p>No problem, Agent — the mission waited for you. Work through it at your own pace: the platform will guide you exactly like it guided the class. Ask your teacher if anything needs a real human.</p>' +
+        '<p>No problem — the lesson waited for you. Work through it at your own pace: the platform will guide you exactly like it guided the class. Ask your teacher if anything needs a real human.</p>' +
         '<button class="primary-btn" type="button">Start the catch-up</button></div>');
       host.appendChild(c);
       c.querySelector('button').onclick = function () { ctx.next(); };
@@ -1475,7 +1475,15 @@
           '<h2 class="rung-target">' + esc(r.target) + '</h2>' +
           (r.img ? '<img class="rung-img" src="' + esc(asset(r.img)) + '" alt="The blocks for this rung">' : '') +
           '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(r.test || 'Flash it to the device and make it happen for real.') + '</p></div>' +
-          '<div class="rung-hint" hidden><p>&#128161; ' + esc(r.hint || '') + '</p></div>' +
+          /* C-04, approved 2 Aug 2026: the finished-blocks picture used to sit
+             on the card, above a hint that charged a signal point for less
+             than the picture gave away free - so the rung taught copying, not
+             debugging. The picture now lives INSIDE the hint, which is what
+             makes the hint worth its price. Cards that teach by example (L2
+             rung 2, L3 rung 1) keep theirs on the card via `img`. */
+          '<div class="rung-hint" hidden><p>&#128161; ' + esc(r.hint || '') + '</p>' +
+          (r.hintImg ? '<img class="rung-img" src="' + esc(asset(r.hintImg)) + '" alt="The finished blocks for this rung">' : '') +
+          '</div>' +
           '<div class="rung-actions">' +
           '<button class="primary-btn rung-worked" type="button">It worked on the device! &#9889;</button>' +
           (r.hint && !hintUsed ? '<button class="ghost-btn rung-hint-btn" type="button">Debug Hint (costs a signal point)</button>' : '') +
@@ -1806,7 +1814,7 @@
         '<ol class="rally-rules">' + ruleRows + '</ol>' +
         '<div class="rally-console">' + slots + '</div>' +
         '<button class="confirm-step rally-confirm" type="button"><span class="confirm-box"></span>' + esc(confirmLabel || 'We tested it three times') + '</button>' +
-        '<div class="rung-actions"><button class="primary-btn rally-transmit" type="button" disabled>Transmit to HQ</button></div>' +
+        '<div class="rung-actions"><button class="primary-btn rally-transmit" type="button" disabled>Send in our score</button></div>' +
         '<div class="rally-after"></div></div>');
       host.appendChild(c);
       var confirmBtn = c.querySelector('.rally-confirm');
@@ -1844,7 +1852,16 @@
         submitted = true;
         paint(); saveDraft();
         var detail = 'rt=' + best() + ';rr=' + rounds.join('.');
-        ctx.awardBadge(ctx.chunk.badge, detail).then(function () { afterTransmit(); });
+        ctx.awardBadge(ctx.chunk.badge, detail).then(function () {
+          /* S-1 (2 Aug 2026): awardBadge replaces the whole chunk host with the
+             "Saving your badge..." panel, so this card - and afterBox with it -
+             is already detached by the time we get here. Painting the suspense
+             room into it left every pupil on a spinner for ever. Rebuild the
+             screen the way a refresh does instead: the draft is saved above,
+             so the fresh mount walks straight into afterTransmit() against a
+             LIVE afterBox and startPoll() sees a box that is in the document. */
+          if (App.remountChunk) App.remountChunk(); else afterTransmit();
+        });
       };
 
       function lockConsole() {
@@ -2190,7 +2207,7 @@
           '<p class="case-log-nudge"></p></div>' +
           '<div class="case-step"><span class="case-step-tag">4 &middot; RE-PLAY TO PROVE IT</span>' +
           '<p>' + esc(cs.replay) + '</p>' +
-          '<p class="case-honesty">HQ accepts only one kind of proof: you watched the bug NOT happen.</p>' +
+          '<p class="case-honesty">Only one kind of proof counts: you watched the bug NOT happen.</p>' +
           '<button class="confirm-step case-close-btn" type="button" disabled><span class="confirm-box"></span><span>' + esc(cs.replayConfirm) + '</span></button></div>' +
           '<div class="case-stampzone"></div>' +
           backRow() + '</div>');

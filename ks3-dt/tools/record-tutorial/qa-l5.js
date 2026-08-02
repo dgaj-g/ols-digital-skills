@@ -318,6 +318,28 @@ function check(cond, msg) {
   await dismissBadge();
   check((await xp()) === 31, 'Press badge = +7 (total 31), got ' + (await xp()));
 
+  /* ---------- SHIP YOUR GAME (new chunk, approved 2 Aug 2026) ----------
+     The one lesson where a pupil authors something of her own had no save
+     step: thirty pupils closed a tab and their games were gone. It sits
+     between Press Night and the exit check, so the exit walk below now has to
+     come through it - and the harness ASSERTS it rather than stepping over
+     it. */
+  await sleep(1400);
+  const shipCard = await page.evaluate(() => {
+    const h = document.querySelector('.chunk-host');
+    return h ? (h.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 220) : '';
+  });
+  check(/Ship your game/i.test(shipCard), 'the Ship your game step is on screen after Press Night: ' + JSON.stringify(shipCard.slice(0, 60)));
+  check(/Drive|DT Work/i.test(shipCard), 'it names the Drive folder the .sb3 goes into');
+  await clickText('Run the HQ Inspection');
+  await sleep(1800);
+  await page.evaluate(() => {
+    const b = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /Claim the badge/i.test(x.textContent) && !x.disabled);
+    if (b) b.click();
+  });
+  await dismissBadge();
+  check((await xp()) === 35, 'Shipped Home badge = +4 (total 35), got ' + (await xp()));
+
   /* ---------- EXIT: 2 MCQs (collect mode), then reach the parsons tray ---------- */
   await sleep(1400);
   for (let i = 0; i < 16; i++) {
@@ -381,7 +403,7 @@ function check(cond, msg) {
     if (hubUp) break;
   }
   const finalXp = await xp();
-  check(finalXp === 41, 'FINAL XP = 41 EXACT (2+22+7+10), got ' + finalXp);
+  check(finalXp === 45, 'FINAL XP = 45 EXACT (2 contract + 22 sprint + 7 press + 4 ship + 10 exit report), got ' + finalXp);
   check(await page.evaluate(() => { const t = Array.from(document.querySelectorAll('.tile')).find(e => /Game Studio/.test(e.textContent)); return t && t.classList.contains('is-done'); }), 'Game Studio tile is-done');
   await shot('20-hub-done');
 

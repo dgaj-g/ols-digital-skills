@@ -27,8 +27,21 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   check(/loop/i.test(l3lad.intro) && /event/i.test(l3lad.intro), 'the ladder intro names both shapes: loop AND event');
   check(!/show number score/i.test(l3lad.rungs[1].target) && !/show number score/i.test(l3lad.rungs[2].target),
     'rungs 2 and 3 no longer put the display inside the button events');
-  /* L4's claim must be TRUE after the change, not merely reworded */
-  const claim = (JSON.parse(l4).teacherBrief.pitfalls || []).find(s => /forever/.test(s) && /Lesson 3|micro:bit/.test(s));
+  /* L4's claim must be TRUE after the change, not merely reworded.
+     RE-PINNED 2 Aug 2026: the brief was rebuilt to the seven-section standard,
+     so `pitfalls` no longer exists. The assertion is unchanged in strength -
+     it still demands a sentence that mentions forever AND names Lesson 3 - it
+     just reads every prose string in the brief, whichever shape it is in. */
+  const briefStrings = (function (b) {
+    const out = [];
+    (function walk(o) {
+      if (typeof o === 'string') out.push(o);
+      else if (Array.isArray(o)) o.forEach(walk);
+      else if (o && typeof o === 'object') Object.keys(o).forEach(k => walk(o[k]));
+    })(b);
+    return out;
+  })(JSON.parse(l4).teacherBrief);
+  const claim = briefStrings.find(s => /forever/.test(s) && /Lesson 3|micro:bit/.test(s));
   check(!!claim && /Lesson 3/.test(claim), 'L4 brief now points at Lesson 3 by name');
   check(!!claim && !/They met forever on the micro:bit/.test(claim), 'the old vague claim is gone');
   check((l2.match(/forever/gi) || []).length === 0, 'L2 is untouched (its hour is Damien\'s open blocker)');

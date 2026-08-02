@@ -33,6 +33,15 @@
         "8096"
       ],
       "port": 8096
+    },
+    {
+      "name": "ks3dt-review",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "ks3-dt/tools/dev-static.js",
+        "8121"
+      ],
+      "port": 8121
     }
   ]
 }

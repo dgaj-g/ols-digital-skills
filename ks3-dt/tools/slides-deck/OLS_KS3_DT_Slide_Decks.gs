@@ -12,6 +12,7 @@
  *      make-your-own-copy link.
  *
  * Scales to all 51 lessons: add a new entry to DECKS and run again.
+ * Lessons 2-5 (added 2 Aug 2026) build together via  runLessons2to5 .
  * Consent screenshots are embedded below with pupil name/email redacted.
  * ============================================================ */
 
@@ -29,6 +30,25 @@ function run() {
   Logger.log('Make-your-own-copy link:           ' + out.copyUrl);
   Logger.log('Sharing: ' + out.sharing);
   Logger.log('============================================');
+}
+
+/* Build the four Lesson 2-5 decks in ONE authorised run (added 2 Aug 2026).
+ * Pick  runLessons2to5  in the toolbar dropdown and press Run. The log prints
+ * a read-only link and a make-your-own-copy link for each deck - those two
+ * links go into each lesson's teacher brief, under Resources.
+ * Safe to run twice: buildDeck_ never overwrites a deck that already exists,
+ * it just reports the links of the one that is there. */
+function runLessons2to5() {
+  var ids = ['j1-02', 'j1-03', 'j1-04', 'j1-05'];
+  Logger.log('================ DECKS READY ================');
+  for (var i = 0; i < ids.length; i++) {
+    var out = buildDeck_(ids[i]);
+    Logger.log(ids[i] + '  view: ' + out.viewUrl);
+    Logger.log(ids[i] + '  copy: ' + out.copyUrl);
+    Logger.log(ids[i] + '  sharing: ' + out.sharing);
+    Logger.log('---------------------------------------------');
+  }
+  Logger.log('=============================================');
 }
 
 function buildDeck_(lessonId) {
@@ -58,6 +78,7 @@ function buildDeck_(lessonId) {
     if (s.type === 'title') titleSlide_(slide, s);
     if (s.type === 'bullets') bulletSlide_(slide, s);
     if (s.type === 'step') stepSlide_(slide, s);
+    if (s.type === 'photo') photoSlide_(slide, s);
     if (s.type === 'closer') closerSlide_(slide, s);
     if (s.notes) slide.getNotesPage().getSpeakerNotesShape().getText().setText(s.notes);
   });
@@ -150,6 +171,34 @@ function stepSlide_(slide, s) {
   text_(slide, s.text, 380, 120, W - 380 - 44, 200, { size: 19, spacing: 122, middle: false });
 }
 
+/* A slide carrying one to three photographs pulled from the public GitHub
+   Pages assets (added 2 Aug 2026 for the Lesson 2-5 decks). Every insert is
+   wrapped: if a fetch ever fails the slide still builds with its text, and the
+   log says which picture was missing - a deck generation run must never die
+   on a photograph. */
+var PAGES_IMG = 'https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/';
+
+function photoSlide_(slide, s) {
+  box_(slide, 0, 0, W, H, BRAND.tint);
+  chrome_(slide, s.heading);
+  var urls = s.imgs || [];
+  var gap = 16, top = 92;
+  var maxH = 170;
+  var cellW = (W - 88 - gap * (urls.length - 1)) / Math.max(1, urls.length);
+  for (var i = 0; i < urls.length; i++) {
+    try {
+      var img = slide.insertImage(PAGES_IMG + urls[i]);
+      var ratio = img.getWidth() / img.getHeight();
+      var h = maxH, w = h * ratio;
+      if (w > cellW) { w = cellW; h = w / ratio; }
+      img.setLeft(44 + i * (cellW + gap) + (cellW - w) / 2).setTop(top).setWidth(w).setHeight(h);
+    } catch (e) {
+      Logger.log('photo skipped (' + urls[i] + '): ' + e.message);
+    }
+  }
+  if (s.text) text_(slide, s.text, 44, top + maxH + 18, W - 88, H - (top + maxH + 18) - 30, { size: 18, spacing: 122 });
+}
+
 function closerSlide_(slide, s) {
   box_(slide, 0, 0, W, H, BRAND.navy);
   text_(slide, s.title, 0, 96, W, 56, { size: 40, color: BRAND.gold, bold: true, align: SlidesApp.ParagraphAlignment.CENTER });
@@ -233,6 +282,226 @@ var DECKS = {
         ],
         sub: 'See you at the first badge.',
         notes: 'From here the website leads. Your job is the room: walk it, watch faces, and get to the stuck before they sink.' }
+    ]
+  },
+
+  /* ---------------- Lessons 2-5 (added 2 Aug 2026) ---------------- */
+  /* Seven slides each, to the outlines approved in the L2-L5 review batch.
+     Deliberately NO quiz questions: the deck front-loads what the hour is and
+     what is expected, and the on-screen activities then reinforce it. */
+
+  'j1-02': {
+    name: 'KS3 DT \u00b7 J1 Lesson 2 \u2014 Make It Move (Teacher Deck)',
+    slides: [
+      { type: 'title',
+        kicker: "OUR LADY'S GRAMMAR SCHOOL \u00b7 DIGITAL TECHNOLOGY",
+        title: 'Lesson 2 \u00b7 Make It Move',
+        sub: 'Today you make a computer react. \u2014 Year 8 \u00b7 Lesson 2 of 17',
+        notes: 'Kit stays on the desk until slide 6. Start with you, not the devices.' },
+      { type: 'photo', heading: 'What is this?',
+        imgs: ['l2/l2-microbit.jpg'],
+        text: 'A computer the size of a biscuit: two buttons, 25 lights, and it does exactly what you tell it.',
+        notes: 'Hold one up as you say it. The size is the whole hook.' },
+      { type: 'photo', heading: 'Three words that run the hour',
+        imgs: ['l2/l2-lift.jpg', 'l2/l2-crossing.jpg', 'l2/l2-tracker.jpg'],
+        text: 'INPUT \u2014 something happens.   OUTPUT \u2014 something reacts.   EVENT \u2014 the rule connecting them.',
+        notes: 'Get them to name the input and the output in each photograph before you move on. These same three photographs appear on their own screens in a minute.' },
+      { type: 'bullets', heading: 'How the hour works',
+        bullets: [
+          'You climb a ladder of four small challenges, one rung at a time.',
+          'Every rung: build it, copy it onto the device, then TEST it with your hands.',
+          'Nobody marks this. The device is the judge \u2014 it either does what the card says, or it does not.',
+          'Stuck? The Debug Hint costs you a signal point and points you at the problem. It never gives you the answer.'
+        ],
+        notes: 'Say the "device is the judge" line out loud. It is the honesty the whole lesson rests on.' },
+      { type: 'bullets', heading: 'Working in pairs',
+        bullets: [
+          'One of you builds the blocks. The other holds the card and presses the button to test.',
+          'Swap every rung \u2014 both of you build, both of you test.',
+          'If it worked, the tester says so. Not the builder.'
+        ],
+        notes: 'Name the swap out loud at each rung; the pair that never swaps has one pupil learning and one watching.' },
+      { type: 'bullets', heading: 'Kit care',
+        bullets: [
+          'Carry it by the edges.',
+          'Cables in gently \u2014 the socket is the fragile part.',
+          'Nothing gets unplugged at the wall.',
+          'Back in the tray at the end, cables coiled.'
+        ],
+        notes: 'Thirty seconds here saves a term of broken sockets.' },
+      { type: 'closer', title: 'Go',
+        bullets: [
+          'Log in.',
+          'Open the class link from Google Classroom.',
+          'Lesson 2. The website takes it from here.'
+        ],
+        sub: 'Devices stay on the desk until your screen asks for them.',
+        notes: 'From here the website leads. Your job is the room.' }
+    ]
+  },
+
+  'j1-03': {
+    name: 'KS3 DT \u00b7 J1 Lesson 3 \u2014 Scoreboard Engineer (Teacher Deck)',
+    slides: [
+      { type: 'title',
+        kicker: "OUR LADY'S GRAMMAR SCHOOL \u00b7 DIGITAL TECHNOLOGY",
+        title: 'Lesson 3 \u00b7 Scoreboard Engineer',
+        sub: 'Every game keeps score. Today you build the scorekeeper. \u2014 Year 8 \u00b7 Lesson 3 of 17',
+        notes: 'Same pairs and same devices as Lesson 2 if you can \u2014 quiet ownership works.' },
+      { type: 'photo', heading: 'The invisible box',
+        imgs: ['l3/l3-arcade.jpg', 'l3/l3-gaa.jpg'],
+        text: 'A VARIABLE is a named box holding a number that can change. The name stays the same. The number inside moves.',
+        notes: 'Ask what the box would be called on each photograph \u2014 score, or points. Naming it is half the idea.' },
+      { type: 'bullets', heading: 'Two shapes of code',
+        bullets: [
+          'An EVENT waits. It sits there doing nothing until something triggers it \u2014 like a button press.',
+          'A LOOP never stops. Nobody starts it; it just runs, over and over, from the moment the device powers up.',
+          'Your scoreboard needs BOTH: the buttons change the number, the loop keeps it on the screen.'
+        ],
+        notes: 'This distinction is the real lesson, and it carries into Scratch next lesson and Python in Year 9.' },
+      { type: 'bullets', heading: 'How the hour works',
+        bullets: [
+          'Three rungs, each one an upgrade to the same scoreboard.',
+          'The device is the judge: the number on the grid is either right, or it is lying.',
+          'Every rung ends with a MULTI-ROUND test \u2014 reset, count, reset, three times over.',
+          'Right once could be luck. Right three rounds running is proof.'
+        ],
+        notes: 'The multi-round habit is deliberately over-taught. It is the most valuable testing idea on the whole programming spine.' },
+      { type: 'bullets', heading: 'The Reaction Rally',
+        bullets: [
+          'At the end of the hour, the whole class competes \u2014 scored on the scoreboards you built.',
+          'You are secretly on a team. Nobody finds out who is with who until the reveal.',
+          'The referee gives ten surprise signals; the referee\u2019s word is final.',
+          'Your pair\u2019s BEST round is the one that counts.'
+        ],
+        notes: 'Do not reveal early. The suspense is the payoff of the whole hour.' },
+      { type: 'bullets', heading: 'Kit care',
+        bullets: [
+          'Carry it by the edges.',
+          'Cables in gently.',
+          'Nothing gets unplugged at the wall.',
+          'Back in the tray at the end, cables coiled.'
+        ],
+        notes: 'Also: angle devices away from the windows before the Rally. LED digits wash out in direct sunlight.' },
+      { type: 'closer', title: 'Go',
+        bullets: [
+          'Log in.',
+          'Open the class link from Google Classroom.',
+          'Lesson 3. The website takes it from here.'
+        ],
+        sub: 'Scoreboards first. The Rally comes to you.',
+        notes: 'Open the Rally lobby on your own screen before you start \u2014 Staff, Live tab, Rally.' }
+    ]
+  },
+
+  'j1-04': {
+    name: 'KS3 DT \u00b7 J1 Lesson 4 \u2014 The Broken Game (Teacher Deck)',
+    slides: [
+      { type: 'title',
+        kicker: "OUR LADY'S GRAMMAR SCHOOL \u00b7 DIGITAL TECHNOLOGY",
+        title: 'Lesson 4 \u00b7 The Broken Game',
+        sub: "Four bugs shipped. You're QA. \u2014 Year 8 \u00b7 Lesson 4 of 17",
+        notes: 'Two tabs each today: the lesson, and Scratch. Set that up before anything else.' },
+      { type: 'photo', heading: 'The first bug',
+        imgs: ['l4/l4-moth.jpg'],
+        text: '9 September 1947: a moth jammed inside Harvard\u2019s Mark II computer. The engineers taped it into the logbook \u2014 "First actual case of bug being found."',
+        notes: 'Tell it, do not read it. It is true, and it is the best thirty seconds of the hour.' },
+      { type: 'bullets', heading: "Today's real job",
+        bullets: [
+          'Every game you have ever played shipped with hundreds of bugs, hunted down before launch by QA testers.',
+          'That is a real job, and today it is yours.',
+          'Read the code. Predict what it should do. Check what it actually does.',
+          'Never guess.'
+        ],
+        notes: 'Reading someone else\u2019s code is the most undertaught skill on the programming spine. Name it as a skill.' },
+      { type: 'bullets', heading: 'How the hour works',
+        bullets: [
+          'A case board: four player tickets, four open cases.',
+          'First, get the broken game open in Scratch. Then the TRAINING case, which we crack together.',
+          'After that, take cases 2, 3 and 4 in any order you like.',
+          'The release desk at the end plays the whole game through \u2014 one full minute, all four fixes at once.'
+        ],
+        notes: 'The room desynchronising is the design: it is what makes "ask an agency that has closed it" work.' },
+      { type: 'bullets', heading: 'The case rhythm',
+        bullets: [
+          'See it happen \u2014 reproduce the bug the player reported.',
+          'Read the code \u2014 what is it SUPPOSED to do?',
+          'Fix ONE thing.',
+          'Write the log \u2014 what was wrong, and what you changed.',
+          'Re-play to PROVE it \u2014 watch the bug not happen.'
+        ],
+        notes: 'The log sentence is the lesson. Type yours on the board during the training case.' },
+      { type: 'bullets', heading: 'The rules of the room',
+        bullets: [
+          'Two tabs, side by side: the lesson here, Scratch there.',
+          'Talk in your pair. Swap the engineer and player jobs at every case.',
+          'Stuck? Use the clue routine before your hand goes up: re-read the ticket, then ask a pair who has closed it.',
+          'A silver stamp is still a closed case. Taking the clue costs a gold stamp and nothing else.'
+        ],
+        notes: 'Say the silver line early. Otherwise the anxious pupils will not touch the clue routine even when they need it.' },
+      { type: 'closer', title: 'Go',
+        bullets: [
+          'Log in.',
+          'Open the class link from Google Classroom.',
+          'Lesson 4. Save this game.'
+        ],
+        sub: 'The player tickets are on the board.',
+        notes: 'Circulate on one question all hour: show me the re-play.' }
+    ]
+  },
+
+  'j1-05': {
+    name: 'KS3 DT \u00b7 J1 Lesson 5 \u2014 Game Studio (Teacher Deck)',
+    slides: [
+      { type: 'title',
+        kicker: "OUR LADY'S GRAMMAR SCHOOL \u00b7 DIGITAL TECHNOLOGY",
+        title: 'Lesson 5 \u00b7 Game Studio',
+        sub: 'You fixed their game. Now ship your own. \u2014 Year 8 \u00b7 Lesson 5 of 17',
+        notes: 'Pairs, but OWN games: the partner is the QA tester, not a co-author.' },
+      { type: 'bullets', heading: 'The block of the day',
+        bullets: [
+          'IF/ELSE asks one question and runs exactly one of two paths.',
+          'Touching the bowl? All three stars? Right answer?',
+          'One question. Two mouths. Only one of them ever runs.',
+          'Computing calls it SELECTION \u2014 and it is the difference between a slideshow and a game.'
+        ],
+        notes: 'Draw the two mouths on the board if it helps. The block is identical whichever contract they sign.' },
+      { type: 'photo', heading: 'Three contracts',
+        imgs: ['l5/contract-catch.png', 'l5/contract-maze.png', 'l5/contract-quiz.png'],
+        text: 'Catch It \u00b7 Maze Escape \u00b7 Quiz Master \u2014 same brief for all three: the game must CHOOSE, COUNT and END.',
+        notes: 'Nobody is picking an easier option: same brief, same checks, same XP. Say so, or they will spend five minutes deciding.' },
+      { type: 'bullets', heading: 'The QA Desk',
+        bullets: [
+          'Four checks stand between your game and the gallery.',
+          'Run each check\u2019s test in Scratch, then record what ACTUALLY happened \u2014 not what you hoped.',
+          'A cross is not a telling-off. It hands you the exact fix.',
+          'READY FOR GALLERY only lights when all four are green.'
+        ],
+        notes: 'The dim READY button does your nagging for you all sprint.' },
+      { type: 'bullets', heading: 'Press Night',
+        bullets: [
+          'Half the room exhibits, half tours. I call the swap.',
+          'Exhibiting: game running full screen, take a bow, watch the reviews land.',
+          'Touring: play two or three games, then file your reviews.',
+          'Every review is kind, specific, helpful \u2014 and signed with your name.'
+        ],
+        notes: 'I see every review as it lands, signed. Say that out loud before the doors open.' },
+      { type: 'bullets', heading: 'The rules of the room',
+        bullets: [
+          'Your own game. Your partner is your tester.',
+          'At the midpoint, testers run all four tests on their partner\u2019s machine.',
+          'Ticking a check you never ran shows up at Press Night, in writing, within minutes.',
+          'Before you leave: save your game to your Drive. It is yours, and it goes home with you.'
+        ],
+        notes: 'The tick-gaming warning lands far better up front than as a correction later.' },
+      { type: 'closer', title: 'Go',
+        bullets: [
+          'Log in.',
+          'Open the class link from Google Classroom.',
+          'Lesson 5. Open your studio.'
+        ],
+        sub: 'Doors open tonight.',
+        notes: 'Know the Press Night lens before you need it: Staff, Live tab, Press Night.' }
     ]
   }
 };

@@ -993,7 +993,12 @@
     // review = a re-read of a completed lesson: no Do-Now (it would re-record
     // live retrieval data against the pupil's spacing history)
     if (Number(lesson.num) > 1 && !review) {
-      chunks.push({ id: '_recap', engine: 'recap', title: 'Do-Now', minutes: 3, config: {} });
+      /* The Do-Now is built here rather than authored per lesson, so its round
+         "?" help is carried here too (review finding S-2: every lesson's help
+         must be about THAT screen). */
+      chunks.push({ id: '_recap', engine: 'recap', title: 'Do-Now', minutes: 3, config: {
+        help: 'Five quick questions from past lessons. Tap the answer you think is right, read the reason that comes back, move on. Never graded, never public — it is a warm-up, not a test.'
+      } });
     }
     return chunks.concat(lesson.chunks || []);
   }
@@ -1046,6 +1051,16 @@
     }
     engine.mount(host, ch, App.engineCtx(ch));
   }
+  /* Re-mount the chunk that is already on screen, from its saved draft.
+     Added 2 Aug 2026 for the Reaction Rally wedge (review finding S-1): every
+     other engine answers awardBadge with ctx.next(), so the "Saving your
+     badge..." panel is replaced by the NEXT chunk. The Rally is the one engine
+     that carries on in place - and it was painting its suspense room into a
+     host that had just been wiped, so no pupil ever saw the reveal. It now
+     rebuilds through this, which is exactly the route a refresh takes (draft
+     .sub is saved BEFORE the badge, so the fresh mount lands in the suspense
+     room). The resume path was already proven; nothing new is invented here. */
+  App.remountChunk = mountChunk;
 
   App.engineCtx = function (ch) {
     var s = App.state;

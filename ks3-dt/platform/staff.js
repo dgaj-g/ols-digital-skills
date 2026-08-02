@@ -1035,7 +1035,7 @@
       '<button type="button" class="tourney-close" title="Close">&times;</button>' +
       '<span class="tourney-kicker">OLS Digital Technology</span>' +
       '<h1 class="tourney-title">The Reaction Rally</h1>' +
-      '<p class="tourney-sub">Hidden-team tournament &mdash; scored on scoreboards the agents built themselves</p>' +
+      '<p class="tourney-sub">Hidden-team tournament &mdash; scored on scoreboards the pupils built themselves</p>' +
       '<div class="tourney-lobby">' + busyHtml('Contacting HQ') + '</div>' +
       '<div class="tourney-board" hidden></div>';
     document.body.appendChild(ov);
@@ -1063,18 +1063,18 @@
       var canReveal = !noTeams && Number(r.submitted) > 0;
       lobby.innerHTML =
         '<div class="tourney-count">' + Number(r.submitted) + '</div>' +
-        '<p class="tourney-count-label">of ' + Number(r.roster) + ' agents\' scores received</p>' +
+        '<p class="tourney-count-label">of ' + Number(r.roster) + ' pupils\' scores received</p>' +
         (noTeams
           ? '<p class="tourney-note" style="margin-bottom:3vh">No hidden teams exist yet &mdash; assign them before the countdown.</p>'
           : '<div class="tourney-chips">' + chips + '</div>') +
-        (Number(r.unassigned) > 0 ? '<p class="tourney-note" style="margin:0 0 2vh">' + Number(r.unassigned) + ' scored agent(s) have no team &mdash; their points only count once assigned (Teams tab).</p>' : '') +
+        (Number(r.unassigned) > 0 ? '<p class="tourney-note" style="margin:0 0 2vh">' + Number(r.unassigned) + ' scored pupil(s) have no team &mdash; their points only count once assigned (Teams tab).</p>' : '') +
         '<div class="tourney-actions">' +
         (noTeams
           ? '<button type="button" class="tourney-reveal-btn" data-t="assign">Auto-assign 4 hidden teams</button>'
           : '<button type="button" class="tourney-reveal-btn" data-t="reveal"' + (canReveal ? '' : ' disabled') + '>' + (r.revealed ? 'Replay the reveal' : 'REVEAL THE TEAMS') + '</button>') +
         (App.state.preview ? '<button type="button" class="tourney-ghost-btn" data-t="seed">Seed demo scores (preview)</button>' : '') +
         '</div>' +
-        '<p class="tourney-note">Keep this for the very end &mdash; the suspense is the point. Revealing also shows every agent her own team on her screen.</p>';
+        '<p class="tourney-note">Keep this for the very end &mdash; the suspense is the point. Revealing also shows every pupil her own team on her screen.</p>';
       var btn = lobby.querySelector('[data-t="reveal"]');
       if (btn) btn.onclick = function () { startReveal(r.revealed); };
       var ab = lobby.querySelector('[data-t="assign"]');
