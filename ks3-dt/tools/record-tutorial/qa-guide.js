@@ -108,8 +108,10 @@ function staticHalf() {
     'the end-of-lesson evaluations are explained (DFM 121g)');
   check(/quiet pupils often say there what they would not say in the room/.test(flat),
     'including why they matter');
-  check(/Print this sheet/.test(flat) && /choose PDF in the print box/.test(flat),
+  check(/Print this sheet/.test(flat) && /Save as PDF for a copy you can send digitally/.test(flat),
     'the Cover sheet says it can be printed or saved as a PDF (DFM 121d)');
+  check(/opens the sheet in its own tab/.test(flat) && /panel behind it is left exactly as it was/.test(flat),
+    'and the Guide describes what printing REALLY does now (own tab, panel untouched)');
   check(/pair scores with pupils&rsquo; full names/.test(flat),
     'the tournament list is described with FULL names, matching what the projector prints (DFM 124b)');
   check(/listed by her first name, so no two rows ever look the same/.test(flat),
@@ -131,6 +133,20 @@ function staticHalf() {
   check(/DFM 124a/.test(server) && /!str_\(r\.cn\)/.test(server),
     'the public board falls back to a first name when a pupil has no codename yet');
   check(/DFM 124a/.test(dev), 'and the preview mirrors it');
+
+  section('D5. COVER PRINTING (his v9 finding: the app went blank behind the print box)');
+  check(!/global\.print\(\)/.test(staff),
+    'the app NEVER prints its own document any more - that is what Safari tore down');
+  check(/COVER_PRINT_CSS/.test(staff) && /win\.document\.write/.test(staff),
+    'the sheet is rebuilt as a standalone page in its own tab');
+  check(/function printStandalone/.test(staff) &&
+        /printStandalone\(q\('\.cover-sheet'\)/.test(staff) &&
+        /DT teacher brief/.test(staff),
+    'the teacher brief prints through the SAME fixed path (it had the identical fault)');
+  check(/toDataURL\('image\/png'\)/.test(staff),
+    'and the QR canvas is carried across as an image (a cloned canvas is blank)');
+  check(/Your browser blocked the new tab/.test(staff),
+    'with an honest message if the browser blocks the pop-up');
 
   section('E. GHOST-CLICK GUARD EVERYWHERE (DFM 104)');
   check(/App\.GHOST_MS = 350/.test(app) && /App\.armButton = function/.test(app), 'one helper, 350ms, in app.js');
