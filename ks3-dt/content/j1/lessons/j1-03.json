@@ -91,7 +91,7 @@
    },
    "config": {
     "title": "The Scoreboard Ladder",
-    "intro": "This is where you build it. Three rungs, each one an upgrade — and the DEVICE is the judge: the number on the LED grid is either right or it's lying. You'll build TWO shapes of code today: an EVENT that sits and waits to be triggered, and a LOOP that just keeps going on its own. Take turns: one of you builds the blocks, the other reads the rung card and runs the test. Swap every rung.",
+    "intro": "This is where you build it — in your pair again: you and the person beside you, one micro:bit between you. Three rungs, each one an upgrade — and the DEVICE is the judge: the number on the LED grid is either right or it's lying. You'll build TWO shapes of code today: an EVENT that sits and waits to be triggered, and a LOOP that just keeps going on its own. Take turns: one of you builds the blocks, the other reads the rung card and runs the test. Swap jobs at every rung.",
     "makecode": {
      "url": "https://makecode.microbit.org/",
      "label": "Open MakeCode"
@@ -100,35 +100,57 @@
      {
       "id": "s1",
       "title": "Rung 1 — Wake the Scoreboard",
-      "target": "Make a variable called score. Put 'show number score' INSIDE the forever block that is already sitting on your canvas. Then add a separate event: on button A pressed → set score to 1.",
+      "target": "Your challenge: wake the scoreboard. Build exactly this: 1. make a variable called score — 2. put 'show number score' INSIDE the forever block that is already sitting on your canvas — 3. add a separate event: on button A pressed → set score to 1.",
       "img": "assets/img/l3/rung1.png",
-      "test": "Before you press ANYTHING, look at the display: it already reads 0. Nobody triggered that — the forever loop started on its own the second the micro:bit powered up, and it redraws the score over and over. Now press A five times: 1 every single time. 'Set' FORCES the value into the box, whatever was there before. Then prove the loop is doing the showing: drag 'show number score' back OUT of forever and drop it on empty canvas. The display goes dark and STAYS dark — even when you press A. Put it back.",
+      "test": "Copy it onto the micro:bit the same way as last lesson (Download, then drag the file across — the film button below replays it). Before you press anything, look at the display: it already reads 0. Nobody triggered that — the forever loop started on its own the second the micro:bit powered up, and it redraws the score over and over. Now press A five times: it says 1 every single time, because 'set' FORCES that value into the box. Last job — prove the loop is doing the showing: drag 'show number score' back OUT of forever and drop it on empty canvas. The display goes dark and STAYS dark, even when you press A. Put it back.",
       "hint": "Variables → 'Make a Variable...' → name it score. Do NOT drag a new forever block: every new project already has one (next to 'on start'). From Basic drag 'show number 0' into forever's mouth, then drop the round 'score' oval from Variables into the 0 slot. 'on button A pressed' is its own separate stack — the only thing inside forever is the show block."
      },
      {
       "id": "s2",
       "title": "Rung 2 — Make It Count",
-      "target": "Swap 'set score to 1' for 'change score by 1'. Your button A event now holds just that one block — the loop is still doing all the showing.",
-      "test": "Press A three times — does the number climb by exactly 3, one per press? Notice you never touched the display code once: the forever loop redraws the new total for you the instant it changes. It also keeps counting up from whatever it showed before. Annoying? Good — a fresh-start button is EXACTLY what Rung 3 builds.",
+      "target": "Your challenge: make the score CLIMB. Swap 'set score to 1' for 'change score by 1'. When you're done, your button A event holds just that one block — the loop is still doing all the showing.",
+      "test": "Press A three times. Does the number climb by exactly one per press — 1, 2, 3? Notice you never touched the display code: the forever loop redraws the new total the instant it changes. It also keeps counting up from whatever it showed before. Annoying? Good — a fresh-start button is exactly what Rung 3 builds.",
       "hint": "'change score by 1' ADDS one to whatever is in the box. If your number is stuck at 1, the old 'set score to 1' block is still in there — swap it out, don't stack them. Leave the forever loop exactly as it is.",
       "hintImg": "assets/img/l3/rung2.png"
      },
      {
       "id": "s3",
       "title": "Rung 3 — The Reset Button",
-      "target": "Add a second event: on button B pressed → set score to 0. B starts a fresh game, A still counts, and the loop still shows. Three stacks, three jobs.",
-      "test": "THE MULTI-ROUND TEST: press B (says 0), press A three times (says 3), press B (back to 0). Now run that whole cycle three times over. A scoreboard that's right once can still be wrong — three clean rounds is proof.",
+      "target": "Your challenge: give your scoreboard a fresh-start button. Add a second event: on button B pressed → set score to 0. When it works, this is what you'll have: 1. A still counts up — 2. B wipes the score back to 0 — 3. the loop keeps the number on screen the whole time.",
+      "test": "THE MULTI-ROUND TEST: press B (it says 0), press A three times (it says 3), press B (back to 0). Now run that whole cycle three times over. A scoreboard that's right once can still be wrong — three clean rounds is proof.",
       "hint": "Reset lives on its OWN event: a separate 'on button B pressed' block with 'set score to 0' inside it. You do NOT need another 'show number score' anywhere — the forever loop already shows every change the moment it happens. Leave your button A blocks alone.",
       "hintImg": "assets/img/l3/rung3.png"
      }
     ],
     "stretch": {
      "title": "Stretch — The High-Score Keeper",
-     "target": "Make a SECOND variable, highScore. Then: on shake → if score > highScore then set highScore to score. Now teach the loop to show both — inside forever, after 'show number score', add: pause (ms) 1000 → show string \"H\" → show number highScore → pause (ms) 1000.",
-     "test": "Your display now cycles: the score, then H, then your best. Score 3, shake — after the H you see 3. Score 5, shake — after the H you see 5. Score 2, shake — after the H it STILL says 5? Then your micro:bit officially remembers the best. That 'if' block is asking a question — next lesson runs on them."
+     "target": "Your stretch challenge: teach your micro:bit to REMEMBER the best score ever. Build it in three steps: 1. make a SECOND variable called highScore — 2. add: on shake → if score > highScore then set highScore to score — 3. teach the loop to show both: inside forever, after 'show number score', add pause (ms) 1000 → show string \"H\" → show number highScore → pause (ms) 1000.",
+     "test": "Score 3 and shake — after the H you see 3. Score 5, shake — after the H you see 5. Now score just 2 and shake — after the H it STILL says 5? Then your micro:bit officially remembers the best. That 'if' block is asking a question — next lesson runs on them."
     },
-    "introSolo": "Three rungs. Each one upgrades a scoreboard YOU build on a micro:bit (or the on-screen simulator) — you're on your own for this one, so you do every job yourself: build the blocks AND run the multi-round test. You'll build two shapes of code: an EVENT that waits to be triggered, and a LOOP that keeps going on its own. The device is the judge, not the platform.",
-    "help": "Build the rung card's behaviour in MakeCode, flash it, and run the test the card describes — including the break-it step: proving the display goes dark is part of the rung. The Debug Hint costs a signal point and narrows the search; it never gives the fix."
+    "introSolo": "This is where you build it — on your own today, so you do every job yourself: build the blocks AND run the multi-round test. Three rungs, each one an upgrade, and the DEVICE is the judge (or the on-screen simulator). You'll build two shapes of code: an EVENT that waits to be triggered, and a LOOP that keeps going on its own.",
+    "help": "Read the rung card, build what it asks for in MakeCode (its own tab), copy it onto the micro:bit, and run the test the card describes — including the break-it step: proving the display goes dark is part of the rung. The Debug Hint costs a signal point and narrows the search; it never gives the fix. The film button replays the film without losing your place.",
+    "film": {
+     "src": "assets/video/l3/l3-tutorial.mp4",
+     "chapters": [
+      {
+       "t": 0,
+       "label": "What's a variable?"
+      },
+      {
+       "t": 50,
+       "label": "Make the variable"
+      },
+      {
+       "t": 157,
+       "label": "Count it up"
+      },
+      {
+       "t": 343,
+       "label": "Reset for a fresh game"
+      }
+     ],
+     "defaultT": 50
+    }
    }
   },
   {

@@ -120,6 +120,36 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   });
   check(!!img && img.w > 0, 'rung4.png loads INSIDE the bought Debug Hint' + (img && img.w ? ' (' + img.w + 'x' + img.h + ')' : ' - got ' + JSON.stringify(img)));
   check(!!img && !!img.text, 'the hint still carries its written text as well as the picture');
+
+  /* RULE 135c (2 Aug 2026): every rung card carries a film-rewatch button that
+     replays the lesson's film in a popup without losing the pupil's place. */
+  const filmBtn = await page.evaluate(() => {
+    const b2 = document.querySelector('.rung-film-btn');
+    if (!b2) return null;
+    const label = (b2.textContent || '').trim();
+    b2.click();
+    return label;
+  });
+  check(!!filmBtn && /film/i.test(filmBtn), 'the film-rewatch button is on the rung card: ' + JSON.stringify(filmBtn));
+  await sleep(700);
+  const filmModal = await page.evaluate(() => {
+    const m = document.querySelector('.film-modal');
+    if (!m) return null;
+    const v = m.querySelector('video');
+    return { video: !!v, src: v ? v.getAttribute('src') : '', chips: m.querySelectorAll('.vid-chapter').length };
+  });
+  check(!!filmModal && filmModal.video, 'the popup opens with a video player');
+  check(!!filmModal && /l2-tutorial\.mp4$/.test(filmModal.src), 'it plays THIS lesson\'s film: ' + (filmModal ? filmModal.src : 'none'));
+  check(!!filmModal && filmModal.chips === 4, 'all four chapter buttons are inside the popup (' + (filmModal ? filmModal.chips : 0) + ')');
+  await sleep(500);  // DFM 104 arm delay on the close button
+  await page.evaluate(() => { const c2 = document.querySelector('.film-close'); if (c2) c2.click(); });
+  await sleep(600);
+  const afterClose = await page.evaluate(() => ({
+    modalGone: !document.querySelector('.film-modal'),
+    stillRung4: /Vanishing Ghost/.test((document.querySelector('.chunk-host') || {}).textContent || '')
+  }));
+  check(afterClose.modalGone, 'the popup closes cleanly');
+  check(afterClose.stillRung4, 'and the pupil is still exactly where she was - rung 4, ladder intact');
   await page.screenshot({ path: path.join(OUT, 'l2-rung4-fixed.png'), fullPage: true });
 
   /* Parsons: same key (a:10), new block text - build the correct order and expect Correct */

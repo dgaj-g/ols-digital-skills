@@ -531,12 +531,17 @@
         var poolItems = (pool && pool.items) || [];
         var idToNum = {};
         (man.lessons || []).forEach(function (l) { idToNum[str_(l.id)] = str_(l.num); });
-        var locks = getLocks_(s, cls);
-        var delivered = {};
-        Object.keys(locks).forEach(function (k) { if (num_(locks[k].u)) delivered[k] = num_(locks[k].u); });
+        /* rule 134 mirror (2 Aug 2026): eligible = lessons THIS PUPIL has
+           COMPLETED, never today's - the class-wide "delivered" filter let the
+           warm-up serve untaught content. Matches apiRecapStart exactly. */
+        var rec = readPupil_(s, cls, PUPIL_EMAIL);
+        var done = {};
+        if (rec && rec.L) Object.keys(rec.L).forEach(function (k) {
+          if (num_((rec.L[k] || [])[0]) === 2) done[k] = 1;
+        });
         var items = poolItems.filter(function (it) {
           var n = idToNum[str_(it.lesson)];
-          return n && delivered[n] && n !== curNum;
+          return n && done[n] && n !== curNum;
         });
         if (!items.length) return { ok: true, items: [] };
 
@@ -559,10 +564,11 @@
           chosen.push(due[d1]);
         }
 
-        // 2) Fill to 5 with the 40/40/20 recency mix over DELIVERED lesson numbers.
-        var nums = Object.keys(delivered).map(Number).sort(function (a, b) { return b - a; });
+        // 2) Fill to 5 with the 40/40/20 recency mix over COMPLETED lesson numbers.
+        var rank_ = function (n) { return str_(n) === 'S1' ? 1.5 : num_(n); };
+        var nums = Object.keys(done).map(rank_).sort(function (a, b) { return b - a; });
         var band = function (it) {
-          var n = num_(idToNum[str_(it.lesson)]);
+          var n = rank_(idToNum[str_(it.lesson)]);
           var back = 0;
           for (var i = 0; i < nums.length; i++) if (nums[i] === n) { back = i; break; }
           if (back === 0) return 'a';

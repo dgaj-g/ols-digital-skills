@@ -166,7 +166,7 @@
    "config": {
     "phase": "build",
     "introTitle": "The Studio Sprint",
-    "intro": "One sprint: kit on the bench, blueprint on the wall, four QA checks between you and the gallery. Personalise everything you like — but remember what QA taught you last lesson: looking finished and working are two different things. The READY FOR GALLERY button only believes ticks.",
+    "intro": "This is your sprint: one desk, three zones. The KIT gets your game open in Scratch, the BLUEPRINT lists the exact blocks your contract needs, and four QA CHECKS stand between you and the gallery. You build your OWN game — the person beside you is your QA tester, and when your teacher calls the midpoint swap, you run the four tests on each other's machines. Personalise everything you like, but remember what QA taught you last lesson: looking finished and working are two different things. The READY FOR GALLERY button only believes ticks.",
     "introSolo": "Solo sprint, catch-up edition: kit on the bench, blueprint on the wall, four QA checks between you and shipping. You run your own tests today — the same rule stands: the READY button only believes ticks.",
     "pairNote": "You each build your OWN game — but you're also your partner's QA tester. At the midpoint swap: run the four tests on THEIR machine while they run yours. A tester who didn't build it finds what the builder can't see.",
     "qaIntro": "Four checks stand between your build and the gallery. Run each test in Scratch, then record what ACTUALLY happened — not what you hoped. A cross isn't failure: it's QA doing its job, and it hands you the exact fix.",
@@ -247,7 +247,7 @@
        {
         "id": "c1",
         "name": "The catch scores",
-        "test": "Green flag. Catch ONE apple — just one — and watch the score before and after.",
+        "test": "Click the green flag. Catch ONE apple — just one — and watch the score before and after.",
         "ask": "What did the score actually do?",
         "outcomes": [
          {
@@ -274,7 +274,7 @@
        {
         "id": "c2",
         "name": "A miss costs a life",
-        "test": "Green flag. DODGE on purpose: steer the bowl away from each apple and let THREE miss, watching the lives counter.",
+        "test": "Click the green flag. DODGE on purpose: steer the bowl away from each apple and let THREE miss, watching the lives counter.",
         "ask": "What did lives do?",
         "outcomes": [
          {
@@ -400,7 +400,7 @@
        {
         "id": "c1",
         "name": "Every star counts",
-        "test": "Green flag. Collect all three stars, watching the stars counter after each one.",
+        "test": "Click the green flag. Collect all three stars, watching the stars counter after each one.",
         "ask": "What did the counter do?",
         "outcomes": [
          {
@@ -543,7 +543,7 @@
        {
         "id": "c1",
         "name": "Right answers score",
-        "test": "Green flag. Answer question 1 CORRECTLY and watch the score.",
+        "test": "Click the green flag. Answer question 1 CORRECTLY and watch the score.",
         "ask": "What happened?",
         "outcomes": [
          {

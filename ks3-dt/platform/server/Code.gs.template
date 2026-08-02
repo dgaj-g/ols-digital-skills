@@ -602,17 +602,26 @@ function apiRecapStart(req) {
   var year = classYear_(cls);
   var curNum = str_(req.lessonNum || '');
   var pk = poolAndKeys_(year);
-  var locks = getLocks_(cls);
   var man = yearManifest_(year);
   var idToNum = {};
   (man.lessons || []).forEach(function (l) { idToNum[str_(l.id)] = str_(l.num); });
 
-  // Eligible = items from DELIVERED lessons that are not today's lesson.
-  var delivered = {};
-  Object.keys(locks).forEach(function (k) { if (num_(locks[k].u)) delivered[k] = num_(locks[k].u); });
+  /* Eligible = items from lessons THIS PUPIL HAS COMPLETED - never today's
+     lesson, which cannot be complete while she is sitting it. DAMIEN, 2 Aug
+     2026 (rule 134): the old class-wide "delivered" filter let the warm-up
+     serve questions from lessons a pupil had never met - a teacher unlocking
+     ahead, or a pupil catching up behind the class, put UNTAUGHT content on
+     her screen while the intro said "from past lessons". Completed-by-her is
+     the only filter that keeps that sentence true for every pupil, and it
+     gates the side quest's questions on the side quest actually being done. */
+  var rec = readPupil_(cls, email);
+  var done = {};
+  if (rec && rec.L) Object.keys(rec.L).forEach(function (k) {
+    if (num_((rec.L[k] || [])[0]) === 2) done[k] = 1;
+  });
   var items = (pk.pool.items || []).filter(function (it) {
     var n = idToNum[str_(it.lesson)];
-    return n && delivered[n] && n !== curNum;
+    return n && done[n] && n !== curNum;
   });
   if (!items.length) return { ok: true, items: [] };
 
@@ -635,11 +644,12 @@ function apiRecapStart(req) {
     chosen.push(due[d1]);
   }
 
-  // 2) Fill to 5 with the 40/40/20 recency mix over DELIVERED lesson numbers.
-  var nums = Object.keys(delivered).map(Number).sort(function (a, b) { return b - a; });
-  var last = nums[0] || 0;
+  // 2) Fill to 5 with the 40/40/20 recency mix over COMPLETED lesson numbers.
+  // The side quest's "S1" slots between lessons 1 and 3 for recency purposes.
+  var rank_ = function (n) { return str_(n) === 'S1' ? 1.5 : num_(n); };
+  var nums = Object.keys(done).map(rank_).sort(function (a, b) { return b - a; });
   var band = function (it) {
-    var n = num_(idToNum[str_(it.lesson)]);
+    var n = rank_(idToNum[str_(it.lesson)]);
     var back = 0;
     for (var i = 0; i < nums.length; i++) if (nums[i] === n) { back = i; break; }
     if (back === 0) return 'a';            // last delivered lesson
