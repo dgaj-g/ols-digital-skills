@@ -206,7 +206,9 @@ function staticHalf() {
   const pairEntry = rth.filter(e => /pairing panel/i.test(e.part))[0];
   check(!!pairEntry && /Guide tab/.test(pairEntry.text), 'the pairing-panel entry now points at the Guide tab');
   check(!!pairEntry && !!pairEntry.img && !!pairEntry.say, 'while keeping its picture and its say-line');
-  check(idx.contentVersion === '2026-08-01a', 'contentVersion bumped to 2026-08-01a (is ' + idx.contentVersion + ')');
+  /* re-pinned per batch on purpose: an exact pin is what catches a repack
+     that never happened. 2 Aug 2026 = the L2-L5 batch. */
+  check(idx.contentVersion === '2026-08-02a', 'contentVersion bumped to 2026-08-02a (is ' + idx.contentVersion + ')');
 
   section('M. STAFF PANEL SAYS "PUPIL" (rule 26)');
   check(/the moment the first pupil arrives/.test(staff), 'the pairing panel\'s empty state says pupil');

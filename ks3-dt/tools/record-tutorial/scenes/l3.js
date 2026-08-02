@@ -11,7 +11,14 @@ const IMG_ARCADE = dataUri('arcade-highscores-950.jpg');
 const CREDIT_ARCADE = 'Photo: Brett L., CC BY-SA 2.0, Wikimedia Commons';
 const DASH = '—';
 
-const COUNT_PROGRAM = 'input.onButtonPressed(Button.A, function () {\n    score += 1\n    basic.showNumber(score)\n})\nlet score = 0\n';
+/* Program states used to jump a fresh scene straight to where the previous
+   chapter ended (off camera, behind the curtain). REBUILT 2 Aug 2026: the
+   display now lives in the forever loop, never inside a button event -
+   which is what the built rungs, the parsons key and the recap teach. */
+const LOOP_ONLY_PROGRAM = 'basic.forever(function () {\n    basic.showNumber(score)\n})\nlet score = 0\n';
+const SET_ONE_PROGRAM = 'input.onButtonPressed(Button.A, function () {\n    score = 1\n})\nbasic.forever(function () {\n    basic.showNumber(score)\n})\nlet score = 0\n';
+const COUNT_PROGRAM = 'input.onButtonPressed(Button.A, function () {\n    score += 1\n})\nbasic.forever(function () {\n    basic.showNumber(score)\n})\nlet score = 0\n';
+const COUNT_PLUS_EMPTY_B = 'input.onButtonPressed(Button.A, function () {\n    score += 1\n})\ninput.onButtonPressed(Button.B, function () {\n\t\n})\nbasic.forever(function () {\n    basic.showNumber(score)\n})\nlet score = 0\n';
 
 async function pressSim(cine, drv, label, settleMs) {
   await drv.page.waitForTimeout(settleMs || 2600); // let the sim recompile/restart
@@ -146,6 +153,64 @@ async function dragShowNumberUnder(cine, drv, siblingRx, containerRx) {
   throw new Error('show number never nested under ' + siblingRx + ' - program: ' + prog);
 }
 
+/* drop a flyout block INSIDE a C-block's mouth (forever, on button pressed...).
+   Blockly's snap radius is small and the eased recorder cursor makes the
+   flyout's click-vs-drag detection flaky, so: fresh rects every attempt,
+   several drop points down the mouth, and a program dump on failure so a bad
+   take is diagnosable from the log alone. */
+/* the same multi-spot retry, but moving a block ALREADY on the canvas back
+   into a C-block's mouth. A single fixed drop point missed the mouth of an
+   emptied forever block two takes running (2 Aug 2026), which is exactly what
+   dragIntoMouth's offset list exists to solve. */
+async function dragCanvasIntoMouth(cine, drv, blockRx, containerRx) {
+  const spots = [[78, -18], [70, -26], [90, -12], [62, -34], [84, -8]];
+  for (let attempt = 0; attempt < 5; attempt++) {
+    if (await nestedBlockRect(drv, containerRx, blockRx)) return;
+    const blk = await drv.canvasBlock(blockRx, true);
+    const box = await drv.canvasBlock(containerRx, true);
+    if (!blk || !box) throw new Error('cannot find ' + blockRx + ' / ' + containerRx + ' to restore');
+    const [dx, dy] = spots[attempt % spots.length];
+    /* grab the block by its LABEL, never its centre: the centre of
+       `show number score` sits on the score OVAL, and dragging that pulls the
+       oval out on its own (two failed takes, 2 Aug 2026). */
+    await cine.drag(blk.x + 26 + attempt * 6, blk.cy, box.x + dx, box.y + box.h + dy, { ms: 1300 });
+    for (let i = 0; i < 6; i++) {
+      if (await nestedBlockRect(drv, containerRx, blockRx)) return;
+      await drv.page.waitForTimeout(350);
+    }
+  }
+  throw new Error(blockRx + ' never restored into ' + containerRx);
+}
+
+async function dragIntoMouth(cine, drv, flyoutRx, containerRx) {
+  await drv.page.waitForTimeout(800);
+  const spots = [[78, -18], [70, -26], [90, -12], [62, -34]];
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const box = await drv.canvasBlock(containerRx, true);
+    if (!box) throw new Error(containerRx + ' not on canvas');
+    const fly = await drv.flyoutBlock(flyoutRx);
+    if (!fly) throw new Error(flyoutRx + ' not in flyout');
+    const [dx, dy] = spots[attempt % spots.length];
+    await cine.drag(fly.x + 40 + attempt * 14, fly.y + 18, box.x + dx, box.y + box.h + dy, { ms: 1400 });
+    for (let i = 0; i < 6; i++) {
+      if (await nestedBlockRect(drv, containerRx, flyoutRx)) return;
+      await drv.page.waitForTimeout(350);
+    }
+    const stray = await drv.canvasBlock(flyoutRx, true);
+    const box2 = await drv.canvasBlock(containerRx, true);
+    if (stray && box2) {
+      await cine.drag(stray.cx, stray.cy, box2.x + 78, box2.y + box2.h - 18, { ms: 1000 });
+      for (let i = 0; i < 6; i++) {
+        if (await nestedBlockRect(drv, containerRx, flyoutRx)) return;
+        await drv.page.waitForTimeout(350);
+      }
+    }
+  }
+  let prog = '';
+  try { prog = (await drv.readProgram()).replace(/\s+/g, ' ').slice(0, 160); } catch (e) {}
+  throw new Error(flyoutRx + ' never nested inside ' + containerRx + ' - program: ' + prog);
+}
+
 const scenes = [
 
   /* ================= CHAPTER 1 - What's a variable? ================= */
@@ -182,7 +247,7 @@ const scenes = [
         return { cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
       });
       if (!np) throw new Error('New Project card not found');
-      await cine.captionShow('<b>New Project</b> &mdash; just like last mission.');
+      await cine.captionShow('<b>New Project</b> &mdash; just like last lesson.');
       await cine.click(np.cx, np.cy, { after: 900 });
       await cine.captionHide();
 
@@ -219,6 +284,11 @@ const scenes = [
   },
 
   /* ================= CHAPTER 2 - Make the variable ================= */
+  /* REBUILT 2 Aug 2026 (review finding L3 F-2). The old chapters 2-4 taught the
+     PRE-rework program - show number inside the button events, forever left
+     empty on camera - which contradicts the built rungs, the parsons key and
+     recap items r-306/r-403. An absent pupil following the old film failed the
+     lesson around her. The display is the LOOP's job now, throughout. */
   {
     id: 'ch2',
     label: 'Make the variable',
@@ -227,7 +297,7 @@ const scenes = [
       await cine.install();
       await cine.curtain({
         kicker: 'CHAPTER 2', title: 'Make the variable',
-        sub: 'One box, named score'
+        sub: 'One box, named score ' + DASH + ' and a loop to show it'
       });
       await drv.setProjectName('scoreboard');
       await cine.pause(2900);
@@ -255,27 +325,59 @@ const scenes = [
       await cine.click(ok.cx, ok.cy, { after: 1200 });
       await cine.captionHide();
 
-      // the flyout now shows the score blocks - the teaching beat
       const setBlk = await drv.flyoutBlock('set score to');
       if (!setBlk) throw new Error('set score to not in flyout after create');
       await cine.caption('Three new blocks appeared. <b>set score to</b> &mdash; FORCE a number into the box.');
       await cine.caption('<b>change score by</b> &mdash; ADD to whatever is already inside.');
       await cine.caption('And the little <b>score</b> oval IS the box &mdash; drop it anywhere a number goes.');
-      await cine.caption('That is a variable made. <b>Now make it count.</b>');
+      await drv.page.keyboard.press('Escape').catch(() => {});
+      await drv.page.waitForTimeout(700);
+
+      /* the rework's teaching beat: the forever block was there all along */
+      const fv = await drv.canvasBlock('forever', true);
+      if (!fv) throw new Error('forever block not on canvas');
+      await cine.callout({ x: fv.x - 6, y: fv.y - 6, w: fv.w + 12, h: fv.h + 12 },
+        'Every new project comes with a forever block — free, and it never stops', { side: 'below' });
+      await cine.caption('Every new project comes with a <b>forever</b> block &mdash; free, and it never stops.');
+
+      const basicCat = await drv.category('Basic');
+      if (!basicCat) throw new Error('Basic category not found');
+      await cine.captionShow('From <b>Basic</b>: drop <b>show number</b> INSIDE forever.', { pos: 'top' });
+      await cine.click(basicCat.cx, basicCat.cy, { after: 1100 });
+      await dragIntoMouth(cine, drv, 'show number', 'forever');
+      await cine.captionHide();
+
+      const varCat2 = await drv.category('Variables');
+      await cine.captionShow('The clever bit: drag the <b>score</b> oval INTO the 0 slot.', { pos: 'top' });
+      await cine.click(varCat2.cx, varCat2.cy, { after: 1100 });
+      const oval = await drv.flyoutBlock('^score$');
+      if (!oval) throw new Error('score oval not in flyout');
+      const sn = await nestedBlockRect(drv, 'forever', 'show number');
+      if (!sn) throw new Error('nested show number not found');
+      await cine.drag(oval.cx, oval.cy, sn.x + sn.w - 18, sn.cy, { ms: 1600 });
+      for (let i = 0; i < 8; i++) {
+        const now = await nestedBlockRect(drv, 'forever', 'show number');
+        if (now && /score/.test(now.text)) break;
+        await drv.page.waitForTimeout(350);
+        if (i === 7) throw new Error('score oval never landed in the slot: ' + (now && now.text));
+      }
+      await cine.captionHide();
+      await drv.page.keyboard.press('Escape').catch(() => {});
+
+      await drv.page.waitForTimeout(3200); // let the simulator restart and draw
+      const leds = await drv.ledsOn();
+      log('LEDs with nothing pressed: ' + leds);
+      await cine.caption('The display is the <b>loop’s</b> job now. Before you press anything: the screen already reads <b>0</b> &mdash; nobody triggered that. <b>The loop started itself.</b>');
+      await cine.caption('That is a variable made, and a scoreboard already running. <b>Now make it count.</b>');
 
       await cine.drop({});
       await cine.pause(1200);
     },
     verify: async ({ drv, log }) => {
-      /* a created-but-unused variable emits no `let` in TS - verify via the
-         Variables flyout instead (runs behind the drop curtain) */
-      const cat = await drv.category('Variables');
-      if (!cat) throw new Error('Variables category missing');
-      await drv.page.mouse.click(cat.cx, cat.cy);
-      await drv.page.waitForTimeout(1400);
-      const blk = await drv.flyoutBlock('set score to');
-      if (!blk) throw new Error('score variable not in flyout after create');
-      log('verified score variable exists in flyout');
+      const code = await drv.readProgram();
+      if (!/forever\([\s\S]*showNumber\(score\)/.test(code)) throw new Error('show number not inside forever: ' + code.slice(0, 200));
+      if (/onButtonPressed/.test(code)) throw new Error('unexpected event block in ch2: ' + code.slice(0, 200));
+      log('verified forever-owns-the-display program');
     }
   },
 
@@ -290,13 +392,13 @@ const scenes = [
         kicker: 'CHAPTER 3', title: 'Count it up',
         sub: 'Press A ' + DASH + ' the number climbs'
       });
+      await drv.setProgram(LOOP_ONLY_PROGRAM);
       await drv.setProjectName('scoreboard');
-      await makeVariableSilently(drv, 'score'); // fresh scene: recreate the box off-camera
       await cine.pause(1400);
       await cine.lift();
       await cine.ensureCursor(700, 480);
 
-      await cine.caption('The mission: every press of <b>button A</b> adds one to the score.');
+      await cine.caption('The job: every press of <b>button A</b> changes the number in the box. The loop is already showing it.');
 
       const inputCat = await drv.category('Input');
       if (!inputCat) throw new Error('Input category not found');
@@ -304,57 +406,111 @@ const scenes = [
       await cine.click(inputCat.cx, inputCat.cy, { after: 1100 });
       const onBtn = await drv.flyoutBlock('on button A pressed');
       if (!onBtn) throw new Error('on button A pressed not in flyout');
-      await cine.drag(onBtn.x + 60, onBtn.y + 22, 780, 400, { ms: 1500 });
+      await cine.drag(onBtn.x + 60, onBtn.y + 22, 840, 300, { ms: 1500 });
       await cine.captionHide();
+      await cine.caption('Its <b>own</b> stack, beside the loop &mdash; not inside it.');
 
       const varCat = await drv.category('Variables');
-      await cine.captionShow('From <b>Variables</b>: drop <b>change score by 1</b> INSIDE the event.', { pos: 'top' });
+      await cine.captionShow('From <b>Variables</b>: drop <b>set score to</b> INSIDE the event.', { pos: 'top' });
       await cine.click(varCat.cx, varCat.cy, { after: 1100 });
-      const chg = await drv.flyoutBlock('change score by');
-      if (!chg) throw new Error('change score by not in flyout');
+      const setB = await drv.flyoutBlock('set score to');
+      if (!setB) throw new Error('set score to not in flyout');
       const evt = await drv.canvasBlock('on button A pressed');
-      await cine.drag(chg.x + 50, chg.y + 20, evt.x + 78, evt.y + evt.h - 18, { ms: 1500 });
+      if (!evt) throw new Error('button A event not on canvas');
+      await cine.drag(setB.x + 50, setB.y + 20, evt.x + 78, evt.y + evt.h - 18, { ms: 1500 });
       await cine.captionHide();
-      await cine.caption('Every press: <b>add 1 to the box</b>. But a scoreboard nobody can see is useless&hellip;');
+      await drv.page.keyboard.press('Escape').catch(() => {});
+      await drv.page.waitForTimeout(700);
 
-      const basicCat = await drv.category('Basic');
-      await cine.captionShow('From <b>Basic</b>: drop <b>show number</b> underneath it.', { pos: 'top' });
-      await cine.click(basicCat.cx, basicCat.cy, { after: 1100 });
-      await dragShowNumberUnder(cine, drv, 'change score by', 'on button A pressed');
+      /* the live editor refuses synthetic number-field clicks while the
+         recorder runs (pupils click it for real, no problem) - so the film
+         SHOWS the field with a callout, then a clean curtain dip lands the
+         exact state a real click and keystroke produce. Same proven trick as
+         the A-to-B dropdown below. */
+      const num = await nestedBlockRect(drv, 'on button A pressed', 'set score to');
+      if (num) {
+        await cine.callout({ x: num.x + num.w - 46, y: num.y - 4, w: 44, h: num.h + 8 },
+          'Click the 0 and type 1 — set FORCES that number into the box', { side: 'below' });
+      }
+      await cine.curtain({ kicker: 'ONE CLICK', title: '0 → 1', sub: 'type it straight into the block' });
+      await drv.setProgram(SET_ONE_PROGRAM);
+      await drv.setProjectName('scoreboard');
+      await cine.pause(600);
+      await cine.lift();
+      await cine.pause(400);
+
+      await cine.captionShow('Press <b>A</b>&hellip; then press it again.');
+      await pressSim(cine, drv, 'A', 3200);
+      await pressSim(cine, drv, 'A', 900);
       await cine.captionHide();
+      await cine.caption('<b>1</b>, every single time. <b>set</b> forces the same number in, over and over. Useful for a reset &mdash; useless for counting.');
 
-      // the key move: the score oval INTO the 0 slot
-      const varCat2 = await drv.category('Variables');
-      await cine.captionShow('The clever bit: drag the <b>score</b> oval INTO the 0 slot.', { pos: 'top' });
-      await cine.click(varCat2.cx, varCat2.cy, { after: 1100 });
-      const oval = await drv.flyoutBlock('^score$');
-      if (!oval) throw new Error('score oval not in flyout');
-      const sn = await nestedBlockRect(drv, 'on button A pressed', 'show number');
-      if (!sn) throw new Error('nested show number not found');
-      await cine.drag(oval.cx, oval.cy, sn.x + sn.w - 18, sn.cy, { ms: 1600 });
+      // swap set -> change: take the old block OUT first (never stack them)
+      const toolbox = await drv.category('Basic');
+      const oldSet = await nestedBlockRect(drv, 'on button A pressed', 'set score to');
+      if (!oldSet) throw new Error('set block missing before swap');
+      await cine.captionShow('Swap it: drag <b>set score to 1</b> out and drop it back on the toolbox to bin it.', { pos: 'top' });
+      await cine.drag(oldSet.cx, oldSet.cy, toolbox.cx, toolbox.cy, { ms: 1500 });
       for (let i = 0; i < 8; i++) {
-        const now = await nestedBlockRect(drv, 'on button A pressed', 'show number');
-        if (now && /score/.test(now.text)) break;
+        if (!(await drv.canvasBlock('set score to', true))) break;
         await drv.page.waitForTimeout(350);
-        if (i === 7) throw new Error('score oval never landed in the slot: ' + (now && now.text));
+        if (i === 7) throw new Error('set block never binned');
       }
       await cine.captionHide();
-      await cine.caption('<b>show number score</b> &mdash; show whatever is in the box, every time.');
 
-      await cine.captionShow('Test it: press <b>A</b>&hellip; then again&hellip; then again.');
-      await pressSim(cine, drv, 'A', 3000);
-      await pressSim(cine, drv, 'A', 800);
-      await pressSim(cine, drv, 'A', 800);
+      const varCat2 = await drv.category('Variables');
+      await cine.captionShow('And drop <b>change score by 1</b> in its place.', { pos: 'top' });
+      await cine.click(varCat2.cx, varCat2.cy, { after: 1100 });
+      const chg = await drv.flyoutBlock('change score by');
+      if (!chg) throw new Error('change score by not in flyout');
+      const evt2 = await drv.canvasBlock('on button A pressed');
+      await cine.drag(chg.x + 50, chg.y + 20, evt2.x + 78, evt2.y + evt2.h - 18, { ms: 1500 });
+      for (let i = 0; i < 8; i++) {
+        if (await nestedBlockRect(drv, 'on button A pressed', 'change score by')) break;
+        await drv.page.waitForTimeout(350);
+        if (i === 7) throw new Error('change block never nested');
+      }
       await cine.captionHide();
-      await cine.caption('1&hellip; 2&hellip; 3. The box remembers, the display shows it. <b>A real score counter.</b>');
+      await drv.page.keyboard.press('Escape').catch(() => {});
+
+      await cine.captionShow('Now press <b>A</b> three times.');
+      await pressSim(cine, drv, 'A', 3200);
+      await pressSim(cine, drv, 'A', 900);
+      await pressSim(cine, drv, 'A', 900);
+      await cine.captionHide();
+      await cine.caption('1&hellip; 2&hellip; 3. Notice what you never touched: <b>the display</b>. The loop redraws whatever is in the box, the instant it changes.');
+
+      /* the proof - and the exact move rung 1 asks a pupil to make */
+      await cine.caption('Do not take my word for it. <b>Prove</b> the loop is doing the showing.');
+      const snIn = await nestedBlockRect(drv, 'forever', 'show number');
+      if (!snIn) throw new Error('show number not inside forever at proof time');
+      await cine.captionShow('Drag <b>show number score</b> OUT of forever, onto empty canvas.', { pos: 'top' });
+      await cine.drag(snIn.x + 26, snIn.cy, 1040, 560, { ms: 1500 });
+      await cine.captionHide();
+      await drv.page.waitForTimeout(3200);
+      const dark = await drv.ledsOn();
+      log('LEDs with show number outside forever: ' + dark);
+      await cine.captionShow('Press <b>A</b>&hellip; and again&hellip;');
+      await pressSim(cine, drv, 'A', 2600);
+      await pressSim(cine, drv, 'A', 900);
+      await cine.captionHide();
+      const dark2 = await drv.ledsOn();
+      log('LEDs after presses with show number outside forever: ' + dark2);
+      await cine.caption('Dark. And it <b>stays</b> dark, even when you press. <b>No loop, no scoreboard. Put it back.</b>');
+
+      await dragCanvasIntoMouth(cine, drv, 'show number', 'forever');
+      await drv.page.waitForTimeout(2800);
+      await cine.caption('Back on. <b>A real score counter</b> &mdash; the event changes the number, the loop shows it.');
 
       await cine.drop({});
       await cine.pause(1200);
     },
     verify: async ({ drv, log }) => {
       const code = await drv.readProgram();
-      if (!/onButtonPressed[\s\S]*score \+= 1[\s\S]*showNumber\(score\)/.test(code)) throw new Error('program wrong: ' + code.slice(0, 160));
-      log('verified count program');
+      if (!/onButtonPressed\(Button\.A[\s\S]*score \+= 1/.test(code)) throw new Error('A handler wrong: ' + code.slice(0, 200));
+      if (!/forever\([\s\S]*showNumber\(score\)/.test(code)) throw new Error('show number not back inside forever: ' + code.slice(0, 200));
+      if (/onButtonPressed[\s\S]*showNumber/.test(code.replace(/basic\.forever\([\s\S]*?\n\}\)/, ''))) throw new Error('stray show number inside an event: ' + code.slice(0, 200));
+      log('verified count program with the loop owning the display');
     }
   },
 
@@ -392,10 +548,10 @@ const scenes = [
       const dd = await dropdownRect(drv, 'on button A pressed', 'A');
       if (!dd) throw new Error('A dropdown field not found');
       await cine.captionHide();
-      await cine.caption('It landed FADED \u2014 two \u201cbutton A\u201d events can\u2019t both run.');
-      await cine.callout({ x: dd.cx - 30, y: dd.cy - 18, w: 60, h: 36 }, 'This little dropdown picks the button \u2014 click it, choose B', { side: 'below' });
-      await cine.curtain({ kicker: 'ONE CLICK', title: 'A \u2192 B', sub: 'pick B from the little menu' });
-      await drv.setProgram('input.onButtonPressed(Button.A, function () {\n    score += 1\n    basic.showNumber(score)\n})\ninput.onButtonPressed(Button.B, function () {\n\t\n})\nlet score = 0\n');
+      await cine.caption('It landed FADED — two “button A” events can’t both run.');
+      await cine.callout({ x: dd.cx - 30, y: dd.cy - 18, w: 60, h: 36 }, 'This little dropdown picks the button — click it, choose B', { side: 'below' });
+      await cine.curtain({ kicker: 'ONE CLICK', title: 'A → B', sub: 'pick B from the little menu' });
+      await drv.setProgram(COUNT_PLUS_EMPTY_B);
       await drv.setProjectName('scoreboard');
       await cine.pause(600);
       await cine.lift();
@@ -409,53 +565,57 @@ const scenes = [
       const evtB = await drv.canvasBlock('on button B pressed');
       if (!evtB) throw new Error('button B event not on canvas');
       await cine.drag(setBlk.x + 50, setBlk.y + 20, evtB.x + 78, evtB.y + evtB.h - 18, { ms: 1500 });
-      await cine.captionHide();
-
-      const basicCat = await drv.category('Basic');
-      await cine.captionShow('And <b>show number</b> under it &mdash; so everyone SEES the fresh 0.', { pos: 'top' });
-      await cine.click(basicCat.cx, basicCat.cy, { after: 1100 });
-      await dragShowNumberUnder(cine, drv, 'set score to', 'on button B pressed');
-      await cine.captionHide();
-
-      const varCat2 = await drv.category('Variables');
-      await cine.captionShow('Same trick as before: the <b>score</b> oval into the 0 slot.', { pos: 'top' });
-      await cine.click(varCat2.cx, varCat2.cy, { after: 1100 });
-      const oval = await drv.flyoutBlock('^score$');
-      const snB = await nestedBlockRect(drv, 'on button B pressed', 'show number');
-      if (!snB) throw new Error('B-handler nested show number not found');
-      await cine.drag(oval.cx, oval.cy, snB.x + snB.w - 18, snB.cy, { ms: 1600 });
       for (let i = 0; i < 8; i++) {
-        const now = await nestedBlockRect(drv, 'on button B pressed', 'show number');
-        if (now && /score/.test(now.text)) break;
+        if (await nestedBlockRect(drv, 'on button B pressed', 'set score to')) break;
         await drv.page.waitForTimeout(350);
-        if (i === 7) throw new Error('B oval never landed: ' + (now && now.text));
+        if (i === 7) throw new Error('set score to never nested under button B');
       }
       await cine.captionHide();
+      await drv.page.keyboard.press('Escape').catch(() => {});
+      await cine.caption('And that is the whole reset. <b>No show block needed anywhere else</b> &mdash; the loop already shows every change.');
 
       // the multi-round test habit - the whole point of the lesson
-      await cine.captionShow('Now test like an engineer. Score three&hellip;');
-      await pressSim(cine, drv, 'A', 3200);
-      await pressSim(cine, drv, 'A', 800);
-      await pressSim(cine, drv, 'A', 800);
+      await cine.caption('Now test like an engineer. <b>Three full rounds</b>, not one.');
+      await cine.captionShow('Round 1: <b>B</b> for a fresh 0&hellip;');
+      await pressSim(cine, drv, 'B', 3200);
       await cine.captionHide();
-      await cine.captionShow('&hellip;and press <b>B</b>.');
-      await pressSim(cine, drv, 'B', 1000);
+      await cine.captionShow('&hellip;then <b>A</b> three times&hellip;');
+      await pressSim(cine, drv, 'A', 900);
+      await pressSim(cine, drv, 'A', 900);
+      await pressSim(cine, drv, 'A', 900);
       await cine.captionHide();
-      await cine.caption('Back to 0. That is <b>one round</b>. An engineer runs the cycle <b>three times</b> before trusting it.');
-      await cine.caption('Right once could be luck. <b>Right three rounds running is proof.</b>');
+      await cine.captionShow('&hellip;and <b>B</b> again. Back to 0.');
+      await pressSim(cine, drv, 'B', 900);
+      await cine.captionHide();
+
+      await cine.captionShow('Round 2. Same cycle, no shortcuts.');
+      await pressSim(cine, drv, 'A', 1200);
+      await pressSim(cine, drv, 'A', 900);
+      await pressSim(cine, drv, 'A', 900);
+      await pressSim(cine, drv, 'B', 900);
+      await cine.captionHide();
+
+      await cine.captionShow('Round 3.');
+      await pressSim(cine, drv, 'A', 1200);
+      await pressSim(cine, drv, 'A', 900);
+      await pressSim(cine, drv, 'A', 900);
+      await pressSim(cine, drv, 'B', 900);
+      await cine.captionHide();
+      await cine.caption('<b>Right once could be luck. Right three rounds running is proof.</b>');
 
       await cine.drop({
-        crest: CREST, kicker: 'MISSION IS GO',
+        crest: CREST, kicker: 'READY TO BUILD',
         title: 'Now build the ladder',
-        sub: 'Rung 1 is one block away. The Reaction Rally is waiting.'
+        sub: 'Rung 1 is the scoreboard you just watched. The Reaction Rally is waiting.'
       });
       await cine.pause(3800);
     },
     verify: async ({ drv, log }) => {
       const code = await drv.readProgram();
-      if (!/Button\.B[\s\S]*score = 0[\s\S]*showNumber\(score\)/.test(code)) throw new Error('B handler wrong: ' + code.slice(0, 200));
+      if (!/Button\.B[\s\S]*score = 0/.test(code)) throw new Error('B handler wrong: ' + code.slice(0, 200));
       if (!/Button\.A[\s\S]*score \+= 1/.test(code)) throw new Error('A handler lost: ' + code.slice(0, 200));
-      log('verified reset program');
+      if (!/forever\([\s\S]*showNumber\(score\)/.test(code)) throw new Error('forever display lost: ' + code.slice(0, 200));
+      log('verified reset program with the loop owning the display');
     }
   }
 ];

@@ -90,14 +90,36 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   check(/ghost icon/i.test(body), 'the rung asks for the GHOST icon (not Rung 2\'s heart)');
   check(!/the words wipe/i.test(body), 'the false "the words wipe" claim is gone');
 
-  /* the regenerated image is actually referenced and loads */
-  const img = await page.evaluate(async () => {
-    const el = Array.from(document.querySelectorAll('img')).find(i => /rung4\.png/.test(i.src));
-    if (!el) return null;
-    await new Promise(r => { if (el.complete) return r(); el.onload = r; el.onerror = r; });
-    return { src: el.src, w: el.naturalWidth, h: el.naturalHeight };
+  /* RE-PINNED 2 Aug 2026 (approved change C-04): the finished-blocks picture no
+     longer sits on the rung card, where it handed the answer away for free -
+     it moved INSIDE the Debug Hint, which costs a signal point. So the check
+     got STRONGER, not weaker: the card must NOT show it, and buying the hint
+     must produce it, loaded. */
+  const onCard = await page.evaluate(() =>
+    !!Array.from(document.querySelectorAll('.ladder-card img.rung-img'))
+      .filter(i => !i.closest('.rung-hint'))          // the hint's copy is the point of C-04
+      .find(i => /rung4\.png/.test(i.src)));
+  check(!onCard, 'the finished blocks are NOT printed on the rung card any more (C-04)');
+
+  const hintBtn = await page.evaluate(() => {
+    const b = document.querySelector('.rung-hint-btn');
+    if (!b) return null;
+    const label = (b.textContent || '').trim();
+    b.click();
+    return label;
   });
-  check(!!img && img.w > 0, 'rung4.png loads in the rung card' + (img ? ' (' + img.w + 'x' + img.h + ')' : ''));
+  check(!!hintBtn && /signal point/i.test(hintBtn), 'the Debug Hint is still the priced route: ' + JSON.stringify(hintBtn));
+  await sleep(600);
+  const img = await page.evaluate(async () => {
+    const box = document.querySelector('.rung-hint');
+    if (!box || box.hidden) return null;
+    const el = Array.from(box.querySelectorAll('img')).find(i => /rung4\.png/.test(i.src));
+    if (!el) return { missing: true, text: (box.innerText || '').trim().slice(0, 60) };
+    await new Promise(r => { if (el.complete) return r(); el.onload = r; el.onerror = r; });
+    return { src: el.src, w: el.naturalWidth, h: el.naturalHeight, text: (box.innerText || '').trim().slice(0, 60) };
+  });
+  check(!!img && img.w > 0, 'rung4.png loads INSIDE the bought Debug Hint' + (img && img.w ? ' (' + img.w + 'x' + img.h + ')' : ' - got ' + JSON.stringify(img)));
+  check(!!img && !!img.text, 'the hint still carries its written text as well as the picture');
   await page.screenshot({ path: path.join(OUT, 'l2-rung4-fixed.png'), fullPage: true });
 
   /* Parsons: same key (a:10), new block text - build the correct order and expect Correct */

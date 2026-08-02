@@ -24,10 +24,11 @@
      "In Mission Control you filed pretend files into a pretend Vault.",
      "This side quest is the real thing: you'll build your actual folders, in your actual cloud, and HQ will inspect the result.",
      "Twenty minutes, any device, any time — but have it done before Lesson 3.",
-     "Two clouds, one agent. Let's set them both up."
+     "Two clouds — and both of them yours. Let's set them up."
     ],
     "video": null,
-    "cta": "Accept the side quest"
+    "cta": "Accept the side quest",
+    "help": "This screen is only for reading — it tells you what today's lesson is about. When the writing finishes, press the button at the bottom to start."
    }
   },
   {
@@ -59,10 +60,17 @@
      {
       "icon": "📄",
       "title": "Put your first real file in it",
-      "text": "Inside DT Work: + New → Google Docs. A blank document opens — type your codename, then close the tab. No save button needed: Google Docs saves to the cloud as you type.",
+      "text": "Inside DT Work: + New → Google Docs. A blank document opens — type your codename (or your name, if Lesson 1 hasn't given you a codename yet), then close the tab. No save button needed: Google Docs saves to the cloud as you type.",
       "confirm": "My first file is in DT Work"
+     },
+     {
+      "icon": "🔁",
+      "title": "Prove the cloud kept it",
+      "text": "Close the Doc's tab, then open drive.google.com fresh and double-click your file inside DT Work. Your words are still there — nothing was ever \"saved\" by you, and nothing was lost. That is the whole point of the cloud.",
+      "confirm": "I re-opened my file and my words were there"
      }
-    ]
+    ],
+    "help": "Work through the steps in order in a second tab — this tab is your checklist. Names matter: School and DT Work, spelled exactly, capitals and all — the inspection checks the real names."
    }
   },
   {
@@ -77,7 +85,7 @@
     "xp": 20
    },
    "config": {
-    "intro": "Talk is cheap, Agent. HQ will now look inside your actual Google Drive and check the Vault is really there.",
+    "intro": "Now prove it. The website will look inside your actual Google Drive — with your permission, that is what the tick-boxes on your first day allowed — and check the folders are really there. Nothing else is looked at: just the two folder names.",
     "checks": [
      {
       "id": "school",
@@ -89,7 +97,8 @@
      }
     ],
     "passText": "Inspection PASSED. Your Vault is real, and it will follow you to every device you ever sign in on.",
-    "failText": "Not there yet — that's fixable in under a minute. Check the exact names and try the inspection again."
+    "failText": "Not there yet — that's fixable in under a minute. Check the exact names and try the inspection again.",
+    "help": "Press the button and the website checks your real Drive for the two folders. If it fails, the message names what's missing — fix it in the Drive tab and run it again. You can retry as often as you like."
    }
   },
   {
@@ -118,7 +127,8 @@
       "text": "The rule of thumb: Word / Excel / PowerPoint work → OneDrive. Google Docs and everything you make in DT → Google Drive. They are two SEPARATE places — a file saved in one is not in the other.",
       "confirm": "I know which cloud my work goes in"
      }
-    ]
+    ],
+    "help": "Follow the route exactly: My-School → Launch → Microsoft 365 Web Apps → the squares menu → OneDrive. If a sign-in appears at home, it is the normal school one."
    }
   },
   {
@@ -139,7 +149,8 @@
        "Neither is saved unless you clicked a save button"
       ]
      }
-    ]
+    ],
+    "help": "One marked question. Your verdict arrives when the report files."
    }
   },
   {
@@ -154,9 +165,10 @@
      "I know OneDrive and Google Drive are two different clouds."
     ],
     "difficulty": true,
-    "comment": true
+    "comment": true,
+    "help": "Tap the chip under each sentence that says how today really went, then the button that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving."
    }
   }
  ],
- "keysEnc": "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"
+ "keysEnc": "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"
 }

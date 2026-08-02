@@ -91,7 +91,7 @@ const scenes = [
       await cine.card({
         kicker: 'THE COMMISSION', title: 'Your game has to choose.',
         lines: [
-          'Last mission you read scripts that run <b>top to bottom</b> &mdash; a SEQUENCE, every block in order',
+          'Last lesson you read scripts that run <b>top to bottom</b> &mdash; a SEQUENCE, every block in order',
           'But a real game makes decisions: caught&hellip; <b>or</b> dropped? right&hellip; <b>or</b> wrong?',
           'Choosing has a name: <b>SELECTION</b>. One block does it &mdash; and it finishes your game'
         ]

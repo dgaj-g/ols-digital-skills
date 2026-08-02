@@ -794,6 +794,11 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 
 /* ============ catch-up / video ============ */
 .catchup-card, .video-soon { text-align: center; }
+/* DAMIEN, 1 Aug 2026 (DFM 127): "the pupil video player window should be a bit
+   bigger". Measured on the review: 600x338 inside the standard 660px card on a
+   1440x900 screen. The card is widened rather than the video, so the chapter
+   buttons and the fallback line widen with it. */
+.video-card { max-width: min(960px, 92vw); }
 .video-card video { width: 100%; border-radius: var(--r-md); background: #000; margin: 8px 0; }
 .vid-chapters { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 14px; }
 .vid-chapter {

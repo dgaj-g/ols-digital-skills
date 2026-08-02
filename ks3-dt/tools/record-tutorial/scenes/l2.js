@@ -252,16 +252,16 @@ const scenes = [
     }
   },
 
-  /* ================= CHAPTER 4 - Test like an agent ================= */
+  /* ================= CHAPTER 4 - Test it properly ================= */
   {
     id: 'ch4',
-    label: 'Test like an agent',
+    label: 'Test it properly',
     tailMs: 4200,
     run: async ({ cine, drv, log }) => {
       await drv.openEditor();
       await cine.install();
       await cine.curtain({
-        kicker: 'CHAPTER 4', title: 'Test like an agent',
+        kicker: 'CHAPTER 4', title: 'Test it properly',
         sub: 'Break it on purpose ' + DASH + ' watch it fail ' + DASH + ' fix it'
       });
       await drv.setProgram(HEART_PROGRAM);
@@ -273,7 +273,7 @@ const scenes = [
       await cine.captionShow('Your program works&hellip; <b>prove it</b>. Press A.');
       await pressSimA(cine, drv, 2400);
       await cine.captionHide();
-      await cine.caption('Works. But agents go further: <b>break it on purpose</b> to learn how it fails.');
+      await cine.caption('Works. But good programmers go further: <b>break it on purpose</b> to learn how it fails.');
 
       // pull the show icon block OUT of the event
       const icon = await drv.canvasBlock('show icon', true);
@@ -299,7 +299,7 @@ const scenes = [
       await cine.caption('Your rung cards work exactly like this: build, test on the device, <b>Debug Hint</b> only if stuck.');
 
       await cine.drop({
-        crest: CREST, kicker: 'MISSION IS GO',
+        crest: CREST, kicker: 'READY TO BUILD',
         title: 'Now build the ladder',
         sub: 'Rung 2 is the heart you just made. Rungs 3 and 4 are yours.'
       });

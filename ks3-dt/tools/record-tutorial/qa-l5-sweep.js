@@ -292,19 +292,27 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
   await sleep(1400);
   await pa.evaluate(() => { const b = document.querySelector('.badge-pop button'); if (b) b.click(); });
   await sleep(1200);
-  // exit MCQs + parsons + selfeval
-  for (let i = 0; i < 16; i++) {
+  // Ship your game (new chunk, 2 Aug 2026) -> exit MCQs + parsons + selfeval.
+  // The walker has to come THROUGH the ship step now, so it knows its two
+  // buttons and the badge pop; it is asserted properly in qa-l5.js.
+  for (let i = 0; i < 24; i++) {
     const st = await pa.evaluate(() => {
+      const pop = document.querySelector('.badge-pop button');
+      if (pop) { pop.click(); return 'badge'; }
       const h = document.querySelector('.chunk-host');
+      if (!h) return 'w';
       if (h.querySelector('.parsons-tray')) return 'parsons';
       const opt = h.querySelector('.q-opt:not(:disabled)');
       if (opt) { opt.click(); return 'a'; }
-      const nxt = Array.from(h.querySelectorAll('button')).find(b => /Next|Finish|Continue|Start|Ready|Begin/i.test(b.textContent) && !b.disabled && b.offsetParent);
+      const btns = Array.from(h.querySelectorAll('button')).filter(b => !b.disabled && b.offsetParent);
+      const ship = btns.find(b => /Run the HQ Inspection|Claim the badge/i.test(b.textContent));
+      if (ship) { ship.click(); return 's'; }
+      const nxt = btns.find(b => /Next|Finish|Continue|Start|Ready|Begin/i.test(b.textContent));
       if (nxt) { nxt.click(); return 'n'; }
       return 'w';
     });
     if (st === 'parsons') break;
-    await sleep(800);
+    await sleep(st === 's' ? 1800 : 800);
   }
   for (const frag of ['when green flag clicked', 'set score to 0', 'forever', 'if <touching Ball?>', 'else']) {
     await pa.evaluate((f) => {
@@ -336,7 +344,7 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
   }
   await sleep(1800);
   const anyaXp = await pa.evaluate(() => Number(window.App.state.xp));
-  check(anyaXp === 38, 'anya total = 38 (2+19 no stretch+7+10), got ' + anyaXp);
+  check(anyaXp === 42, 'anya total = 42 (2 contract + 19 sprint no-stretch + 7 press + 4 ship + 10 exit report), got ' + anyaXp);
 
   // misconception bars for L5
   await ps.evaluate(() => { const t = Array.from(document.querySelectorAll('button')).find(x => /Live/i.test(x.textContent) && x.offsetParent); if (t) t.click(); });
