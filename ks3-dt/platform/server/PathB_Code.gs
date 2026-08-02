@@ -1192,7 +1192,14 @@ function apiBoard(req) {
     var doneCount = 0;
     Object.keys(r.L || {}).forEach(function (k) { if (num_((r.L[k] || [])[0]) === 2) doneCount++; });
     return {
-      label: str_(cfg.lb.names) === 'real' ? str_(r.n).split(' ')[0] : ('Agent ' + (str_(r.cn) || 'Unnamed')),
+      /* DFM 124a (1 Aug 2026, found by driving the board as a pupil): codenames
+         are earned at the END of Lesson 1, so a board switched on before that
+         showed the whole class as an identical "Agent Unnamed" - and an absent
+         pupil stayed that way. A pupil with no codename has no pseudonym to
+         protect, so she is listed by her real first name until she earns one. */
+      label: (str_(cfg.lb.names) === 'real' || !str_(r.cn))
+        ? str_(r.n).split(' ')[0]
+        : ('Agent ' + str_(r.cn)),
       v: str_(cfg.lb.basis) === 'completion' ? num_(doneCount) : num_(r.xp),
       me: str_(r.email) === email
     };

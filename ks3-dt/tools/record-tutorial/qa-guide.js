@@ -42,23 +42,24 @@ function staticHalf() {
      these constants ever changes, this harness fails and the WORDING must be
      fixed - that is the point of pinning them together (rule 17). */
   section('B. THE GUIDE\'S FACTUAL CLAIMS vs the code that enforces them');
-  check(/fifteen minutes without use/.test(staff) && /IDLE_LOCK_MS = 900000/.test(staff),
-    'Guide says fifteen minutes; the idle lock really is 900000ms');
-  check(/turns red past 70%/.test(staff) && /pct >= 70/.test(staff),
-    'Guide says 70%; storeHealthHtml really warns at 70');
-  check(/older than a week/.test(staff) && /CHAT_ARCHIVE_AFTER_DAYS = 7/.test(server),
-    'Guide says chats sweep after a week; the server really uses 7 days');
-  check(/more than four weeks ago/.test(staff) && /ARCHIVE_AFTER_DAYS = 28/.test(server),
-    'Guide says detail sweeps after four weeks; the server really uses 28 days');
-  check(/five school days on/.test(staff) && /absDays\s*\|\|\s*5|absDays: 5|num_\(cfg\.absDays\) \|\| 5|Number\(cfg\.absDays\) : 5/.test(staff + server + dev),
-    'Guide says five school days; five is really the default absence window');
-  /* the Guide's copy is a concatenated string literal, so normalise the source's
-     own line breaks and quote joins before matching a sentence across them */
+  /* The Guide's copy is one long concatenated string literal, so sentences run
+     across '+' joins and quote boundaries. Flatten first, then match - checking
+     the raw source would pass or fail on where the lines happen to wrap. */
   const staffFlat = staff.replace(/'\s*\+\s*\n?\s*'/g, '').replace(/\s+/g, ' ');
+  check(/fifteen minutes/.test(staffFlat) && /IDLE_LOCK_MS = 900000/.test(staff),
+    'Guide says fifteen minutes; the idle lock really is 900000ms');
+  check(/turns red once it passes 70% full/.test(staffFlat) && /pct >= 70/.test(staff),
+    'Guide says 70%; storeHealthHtml really warns at 70');
+  check(/chat transcripts older than a week/.test(staffFlat) && /CHAT_ARCHIVE_AFTER_DAYS = 7/.test(server),
+    'Guide says chats sweep after a week; the server really uses 7 days');
+  check(/finished more than four weeks ago/.test(staffFlat) && /ARCHIVE_AFTER_DAYS = 28/.test(server),
+    'Guide says detail sweeps after four weeks; the server really uses 28 days');
+  check(/after five school days/.test(staffFlat) && /absDays\s*\|\|\s*5|absDays: 5|num_\(cfg\.absDays\) \|\| 5|Number\(cfg\.absDays\) : 5/.test(staff + server + dev),
+    'Guide says five school days; five is really the default absence window');
   check(/out of sixteen/.test(staffFlat), 'Guide says the baseline is out of sixteen');
-  check(/between 2 and 3am/.test(staff) && /2am-3am|2am to 3am/.test(server),
+  check(/every night between 2 and 3am/.test(staffFlat) && /2am-3am|2am to 3am/.test(server),
     'Guide says 2-3am; that is what setupArchive tells you to schedule');
-  check(/only the\s*'?\s*\+?\s*'?Head of Department&rsquo;s account can complete it/.test(staff.replace(/\s+/g, ' ')),
+  check(/only the Head of Department&rsquo;s account can complete it/.test(staffFlat),
     'Guide is honest that only the owner account can finish an archive sweep');
 
   section('C. THE HoD-ONLY SECTION (DFM 118) - gated on the server, not the client');
@@ -79,14 +80,57 @@ function staticHalf() {
   if (fs.existsSync(chapters)) {
     const man = JSON.parse(fs.readFileSync(chapters, 'utf8'));
     const mins = man.durationSec / 60;
-    check(/seven and a half minutes/.test(staff) && mins > 7.0 && mins < 8.0,
-      'the Guide\'s "seven and a half minutes" matches the finished file (' + man.durationSec + 's)');
+    /* the stated length is written once, in GUIDE_LENGTH, and must match the
+       finished file - a re-cut that changes the running time fails here */
+    const stated = (staff.match(/var GUIDE_LENGTH = '([^']+)'/) || [])[1] || '';
+    const words = { 'about eight minutes': [7.5, 8.5], 'about ten and a half minutes': [10.0, 11.0],
+                    'seven and a half minutes': [7.0, 8.0], 'about ten minutes': [9.5, 10.5],
+                    'about eleven minutes': [10.5, 11.5], 'about nine minutes': [8.5, 9.5] }[stated];
+    check(!!words && mins >= words[0] && mins <= words[1],
+      'the Guide says "' + stated + '" and the film really is ' + man.durationSec + 's');
     const labels = man.chapters.map(c => c.label).join(',');
     check(/Classes/.test(labels) && /Lessons/.test(labels) && /Live/.test(labels) && /Absence/.test(labels) &&
-          /Teams/.test(labels) && /Options/.test(labels) && /Cover/.test(labels) && /Guide/.test(labels),
+          /Teams/.test(labels) && /Options/.test(labels) && /Cover/.test(labels),
       'every tab named in the Guide\'s chapter list is really a chapter');
+    check(!/Guide/.test(labels), 'the Guide chapter is gone - the viewer is already on that tab (DFM 121e)');
   }
   check(/GUIDE_VIDEO = 'assets\/video\/guide\/guide-tour\.mp4'/.test(staff), 'the Guide points at that exact file');
+
+  section('D2. ROUND-2 CONTENT (DFM 121/122) - communicative register + the answers he asked for');
+  const flat = staffFlat;
+  check(/There are four choices you can make for each of your classes/.test(flat),
+    'Options opens with his own sentence, not "four choices per class, one Save"');
+  check(/it is not something you set per lesson/.test(flat),
+    'the Guide says the leaderboard is not a per-lesson setting');
+  check(/switch it on for the fortnight/.test(flat),
+    'and gives a worked example of when to use the public board');
+  check(/How did it go\?/.test(flat) && /comes to you and nobody else/.test(flat),
+    'the end-of-lesson evaluations are explained (DFM 121g)');
+  check(/quiet pupils often say there what they would not say in the room/.test(flat),
+    'including why they matter');
+  check(/Print this sheet/.test(flat) && /choose PDF in the print box/.test(flat),
+    'the Cover sheet says it can be printed or saved as a PDF (DFM 121d)');
+  check(/pair scores with pupils&rsquo; full names/.test(flat),
+    'the tournament list is described with FULL names, matching what the projector prints (DFM 124b)');
+  check(/listed by her first name, so no two rows ever look the same/.test(flat),
+    'and the no-codename-yet case is documented (DFM 124a)');
+
+  section('D3. THE OPTIONS TAB ITSELF (DFM 121c)');
+  check(/These options apply to the class you have selected on the Classes tab/.test(flat),
+    'the Options pane says WHICH class it is changing');
+  check(/one setting for the whole class, all year &mdash; not per lesson/.test(flat),
+    'and that it is not per lesson');
+  check(/a ranked class board appears at the top of every pupil&rsquo;s home page/.test(flat),
+    'the Public radio says what actually happens');
+  check(/full names appears on the projector/.test(flat),
+    'the tournament radio promises full names (what the code really does)');
+
+  section('D4. DEFECTS FOUND BY DRIVING IT (DFM 121b, 124a)');
+  check(/color:var\(--ink\)/.test(staff) && !/color:var\(--text\)/.test(staff),
+    'the Teams name-chip menu uses a colour that exists (it was var(--text), undefined)');
+  check(/DFM 124a/.test(server) && /!str_\(r\.cn\)/.test(server),
+    'the public board falls back to a first name when a pupil has no codename yet');
+  check(/DFM 124a/.test(dev), 'and the preview mirrors it');
 
   section('E. GHOST-CLICK GUARD EVERYWHERE (DFM 104)');
   check(/App\.GHOST_MS = 350/.test(app) && /App\.armButton = function/.test(app), 'one helper, 350ms, in app.js');
@@ -196,7 +240,10 @@ async function browserHalf() {
      seek - a list of words would make that sentence untrue (rule 35) */
   const chips = await pa.evaluate(() => Array.from(document.querySelectorAll('.guide-chip'))
     .map(c => c.textContent + ':' + c.getAttribute('data-t')));
-  check(chips.length >= 8, 'the chapter names are real seek buttons (' + chips.length + ')');
+  /* seven, not eight: the Guide chapter was cut (DFM 121e) and "Opening" is
+     deliberately not offered as a jump target */
+  check(chips.length === 7, 'the seven chapter names are real seek buttons (' + chips.length + ')');
+  check(!chips.some(c => /^Guide:/.test(c)), 'and there is no Guide chip, matching the re-cut film');
   if (chips.length) {
     await pa.evaluate(() => {
       const c = Array.from(document.querySelectorAll('.guide-chip')).filter(x => /Live/.test(x.textContent))[0];

@@ -99,10 +99,15 @@
         'display:flex;justify-content:space-between;gap:8px}' +
       '.staff-chip-menu{position:fixed;z-index:650;background:#fff;border:1px solid #E3E8F2;' +
         'border-radius:10px;box-shadow:var(--shadow-md);padding:6px;min-width:170px}' +
+      /* DFM 121b (1 Aug 2026): Damien could not read this menu in the video, and
+         he was right - it was styled with var(--text), which is not defined
+         anywhere in the stylesheet. The buttons therefore inherited the DARK
+         shell's near-white text onto a white menu. --ink is the light-surface
+         colour the rest of the panel uses. */
       '.staff-chip-menu button{display:block;width:100%;text-align:left;background:none;border:none;' +
-        'padding:8px 10px;font:inherit;color:var(--text);cursor:pointer;border-radius:6px}' +
-      '.staff-chip-menu button:hover{background:#F0F4FB}' +
-      '.staff-chip-menu button.current{color:var(--ols-blue);font-weight:800}' +
+        'padding:9px 11px;font:inherit;font-weight:600;color:var(--ink);cursor:pointer;border-radius:6px}' +
+      '.staff-chip-menu button:hover{background:#F0F4FB;color:var(--ols-blue)}' +
+      '.staff-chip-menu button.current{color:var(--ols-blue);font-weight:800;background:rgba(26,58,107,0.07)}' +
       '.staff-warn{background:var(--bad-soft);color:var(--bad);padding:12px 14px;border-radius:10px;margin-bottom:12px}' +
       '.lc-brief{align-self:flex-start;margin-top:2px;font-size:0.72rem;font-weight:800;' +
         'color:var(--ols-blue);background:rgba(26,58,107,0.08);border:1px solid rgba(26,58,107,0.25);' +
@@ -1685,10 +1690,15 @@
   function renderOptionsForm(cfg) {
     var lb = cfg.lb || { mode: 'off', basis: 'xp', names: 'codename', topN: 0 };
     var html =
+      /* DFM 121c/122: a teacher opening this tab could not tell WHICH class she
+         was changing, whether it applied per lesson, or when it took effect. */
+      '<p class="staff-lead">These options apply to the class you have selected on the Classes tab. ' +
+      'Each is one setting for the whole class, all year &mdash; not per lesson &mdash; and lasts until you ' +
+      'change it. <b>Save</b> stores all four at once.</p>' +
       '<h3>Leaderboard</h3>' +
       optRadio('lb-mode', 'off', lb.mode, '<b>Private (default):</b> each pupil sees only her own progress.') +
       optRadio('lb-mode', 'team', lb.mode, '<b>Hidden teams:</b> team totals are visible, members stay hidden until you reveal them.') +
-      optRadio('lb-mode', 'public', lb.mode, '<b>Public board (deliberate choice):</b> a class leaderboard is shown to everyone.') +
+      optRadio('lb-mode', 'public', lb.mode, '<b>Public board (deliberate choice):</b> a ranked class board appears at the top of every pupil&rsquo;s home page &mdash; whole-year totals &mdash; until you switch it back.') +
       '<div id="opt-public"' + (lb.mode === 'public' ? '' : ' hidden') + '>' +
         '<p class="staff-lead">Public board settings</p>' +
         optRadio('lb-basis', 'xp', lb.basis, 'Rank by XP') +
@@ -1702,7 +1712,10 @@
       optRadio('pair-on', '0', String((cfg.pairing || { on: 1 }).on || 0), '<b>Off:</b> paired activities run as shoulder-partners at one machine (no chat).') +
       '<h3 style="margin-top:20px">Tournament reveal</h3>' +
       optRadio('tn-mode', 'team', String((cfg.tn || { mode: 'team' }).mode), '<b>Team totals only (default):</b> the projector reveal shows hidden-team totals &mdash; no individual pupil is named.') +
-      optRadio('tn-mode', 'public', String((cfg.tn || { mode: 'team' }).mode), '<b>Also show pair scores (deliberate choice):</b> after the team bars, a ranked list of pair scores with first names appears on the projector.') +
+      /* DFM 124b: the label used to promise "first names"; the projector really
+         prints full names, and Damien wants it that way because a class can
+         hold two pupils with the same first name. The label follows the code. */
+      optRadio('tn-mode', 'public', String((cfg.tn || { mode: 'team' }).mode), '<b>Also show pair scores (deliberate choice):</b> after the team bars, a ranked list of pair scores with pupils&rsquo; full names appears on the projector.') +
       '<h3 style="margin-top:20px">Absence window</h3>' +
       '<label>Flag after <input type="number" id="opt-absdays" class="text-input" style="max-width:90px;display:inline-block" min="1" max="20" value="' + Number(cfg.absDays || 5) + '"> school days with no meaningful work</label>' +
       '<div class="confirm-actions" style="justify-content:flex-start;margin-top:16px">' +
@@ -1917,6 +1930,9 @@
      because rule 17 applies to staff-facing writing too.
      ============================================================ */
   var GUIDE_VIDEO = 'assets/video/guide/guide-tour.mp4';
+  /* Measured from the finished film after assembly; qa-guide fails the build if
+     this and chapters.json ever disagree (rule 35 - the claim must match). */
+  var GUIDE_LENGTH = 'about ten and a half minutes';
 
   function renderGuide() {
     // the HoD flag rides on the classes register; fetch it once if unseen
@@ -1943,107 +1959,165 @@
 
       /* The running time is measured from the finished file (chapters.json),
          not estimated - rule 35 applies to the staff side too. */
-      '<h3>The tour &mdash; seven and a half minutes, no sound</h3>' +
+      /* The running time is measured from the finished film (chapters.json) and
+         pinned by qa-guide, so the wording can never drift from the file. */
+      '<h3>The tour &mdash; ' + GUIDE_LENGTH + ', no sound</h3>' +
       '<p class="staff-row-meta">A silent walkthrough of every tab, filmed on a practice class of ' +
-      'made-up pupils. Captions on screen say what is happening; use the chapters to jump straight ' +
-      'to the tab you need.</p>' +
+      'made-up pupils, so what you see is exactly what the tools look like with a real class in them. ' +
+      'Captions on the film say what is happening as it happens, and the buttons underneath jump ' +
+      'straight to the chapter you need.</p>' +
       '<video class="guide-video" id="guide-video" controls preload="none" playsinline src="' + App.esc(vid) + '"></video>' +
-      /* The copy promises you can jump straight to the tab you need, so these
+      /* The copy promises you can jump straight to the chapter you need, so these
          are real controls, not a list of names. Times come from the video's
          own chapters.json, written by the assembler - so a re-cut film cannot
          leave the buttons pointing at the wrong minute. */
       '<p class="staff-row-meta guide-chapters" id="guide-chapters">Chapters: Classes &middot; Lessons &middot; ' +
-      'Live &middot; Absence &middot; Teams &middot; Options &middot; Cover &middot; Guide</p>' +
+      'Live &middot; Absence &middot; Teams &middot; Options &middot; Cover</p>' +
 
       '<h3>Quick reference, tab by tab</h3>' +
       '<div class="guide-ref">' +
 
-      '<h4>Classes</h4><p>Your classes, one row each. <b>Copy link</b> is the address pupils open &mdash; ' +
-      'post it on your class&rsquo;s Google Classroom. <b>QR</b> shows the same link as a code for the ' +
-      'projector. <b>Select</b> points every other tab at that class. <b>Add class</b> creates one: a name ' +
-      'pupils will recognise, the right year group, done. <b>Delete</b> asks twice, and only a class&rsquo;s ' +
-      'own teacher sees the button. The storage and archive lines at the bottom are explained under ' +
-      'Worth knowing, below.</p>' +
+      '<h4>Classes</h4><p>This is where classes are created and where their links live. Each class you ' +
+      'own has a row. <b>Copy link</b> copies the address your pupils open &mdash; post it on your ' +
+      'class&rsquo;s Google Classroom, and it will bring each pupil straight into your class with nothing ' +
+      'to type. <b>QR</b> shows the same link as a code you can put on the projector instead. ' +
+      '<b>Select</b> points every other tab at that class &mdash; Lessons, Live, Absence, Teams, Options ' +
+      'and Cover all work on whichever class you have selected here. To create a class, type a name your ' +
+      'pupils will recognise, choose the year group, and press <b>Add class</b>. <b>Delete</b> asks you ' +
+      'twice before it does anything, and only a class&rsquo;s own teacher sees the button. The storage ' +
+      'and archive lines at the bottom of this tab are explained under Worth knowing, below.</p>' +
 
-      '<h4>Lessons</h4><p>One cell per lesson for the selected class. Tap a cell to unlock it (pupils see ' +
-      'a padlock until then) or to lock it again &mdash; locking never removes work, it only stops somebody ' +
-      'new starting. <b>Brief</b> opens that lesson&rsquo;s full run sheet. <b>Start again</b> puts the whole ' +
-      'class back to the start of a lesson &mdash; it asks first, and on Lesson 1 it also clears codenames, ' +
-      'because Lesson 1 is where codenames are made. <b>&#8634; Not taught</b> appears on a lesson that is ' +
-      'locked but has a delivered date: tap it if you unlocked something by accident, so nobody is later ' +
-      'flagged absent from a lesson that never ran.</p>' +
+      '<h4>Lessons</h4><p>One cell for every lesson of the year, for the selected class. Tap a cell to ' +
+      'unlock that lesson &mdash; until you do, pupils see a padlock on it &mdash; and tap it again to ' +
+      'lock it; locking never removes anyone&rsquo;s work, it only stops somebody new from starting. ' +
+      '<b>Brief</b> opens that lesson&rsquo;s full run sheet: what the pupils will do, how to prepare, and ' +
+      'how to run the hour. <b>Start again</b> puts the whole class back to the start of a lesson &mdash; ' +
+      'it always asks before doing anything, and on Lesson 1 it also clears codenames, because Lesson 1 is ' +
+      'where codenames are made. <b>&#8634; Not taught</b> appears on a lesson that is locked but still ' +
+      'carries a delivered date: tap it if you unlocked something by accident, and nobody will later be ' +
+      'flagged absent from a lesson that never actually ran.</p>' +
 
-      '<h4>Live</h4><p>The during-the-hour view. The table is one pupil per row: <b>XP</b> (the points badges ' +
-      'award &mdash; private, nobody is ranked), <b>Baseline</b> (the September Licence Exam score, out of ' +
-      'sixteen), then a column per delivered lesson showing not started, started or done, the recap score, ' +
-      'the pupil&rsquo;s three self-ratings and how the hour felt, and any private comment. A red <b>needs ' +
-      'you</b> flag marks a pupil the numbers say is stuck. <b>Refresh</b> re-reads the table &mdash; it does ' +
-      'not update by itself. <b>Copy CSV</b> puts the table on your clipboard, one row per pupil, ready for a ' +
-      'marksheet.</p>' +
-      '<p>During a paired activity a <b>Pairing &mdash; live</b> panel appears above the table and updates ' +
-      'itself every few seconds: who is waiting (<b>Solo run</b> releases that pupil to work alone), who is ' +
-      'paired with whom &mdash; codenames first, real names in brackets &mdash; each pair&rsquo;s message ' +
-      'count, and <b>Channel</b>, which opens the pair&rsquo;s chat. With an odd number the platform holds ' +
-      'the last three pupils and puts them in one Vault together, so nobody is left partnerless by accident. ' +
-      '<b>Match everyone waiting now</b> pairs the whole queue at once. <b>Reset pairing</b> asks twice, then ' +
-      'releases every pair to finish alone &mdash; released pairs cannot be re-paired.</p>' +
-      '<p><b>Misconception patterns</b>, at the bottom: pick a delivered lesson and see which wrong answers ' +
-      'the class actually chose, each labelled with the misunderstanding it usually signals.</p>' +
+      '<h4>Live</h4><p>The during-the-hour view &mdash; this is the tab to keep open while your class ' +
+      'works. The table has one row per pupil. <b>XP</b> is the points pupils earn for finishing the ' +
+      'sections of each lesson (the badges); it is private &mdash; nobody is ranked unless you ' +
+      'deliberately choose that in Options. <b>Baseline</b> is the pupil&rsquo;s September Licence Exam ' +
+      'score, out of sixteen, kept so you can show progress by June. Then there is a column for each ' +
+      'delivered lesson, showing whether the pupil has not started, started or finished it, their score on ' +
+      'the recap questions (the quick retrieval quiz that later lessons open with), and their own ' +
+      'end-of-lesson answers. A red <b>needs you</b> flag appears beside any pupil whose numbers suggest ' +
+      'they are stuck &mdash; worth a quiet visit. <b>Refresh</b> re-reads the table; it does not update by ' +
+      'itself. <b>Copy CSV</b> puts the whole table on your clipboard, one row per pupil &mdash; paste it ' +
+      'straight into Excel or Google Sheets and it becomes your marksheet.</p>' +
+      '<p>Those end-of-lesson answers deserve a special mention, because they are one of the most useful ' +
+      'things the platform collects. Every pupil finishes every lesson with a short <b>How did it go?</b> ' +
+      'screen &mdash; three I-can self-ratings, an easy/just-right/tricky button, and a private comment ' +
+      'box. All of it lands in this table: the ratings and the difficulty appear under the lesson&rsquo;s ' +
+      'column, and the comment comes to you and nobody else. The quiet pupils often say there what they ' +
+      'would not say in the room. Hover over a clipped comment to read all of it, and Copy CSV keeps every ' +
+      'comment for your records.</p>' +
+      '<p>While a paired activity is running, a <b>Pairing &mdash; live</b> panel appears above the table ' +
+      'and updates itself every few seconds. It shows who is still waiting for a partner (<b>Solo run</b> ' +
+      'beside a name releases that pupil to work alone), who has been paired with whom &mdash; codenames ' +
+      'first, real names in brackets &mdash; how many messages each pair has sent, and <b>Channel</b>, ' +
+      'which opens that pair&rsquo;s chat so you can read every message. If the class has an odd number, ' +
+      'the platform holds the last three pupils and puts them in one Vault together, so nobody is left ' +
+      'partnerless by accident. <b>Match everyone waiting now</b> pairs the whole queue at once, and ' +
+      '<b>Reset pairing</b> &mdash; which asks twice &mdash; releases every pair to finish alone; released ' +
+      'pairs cannot be re-paired.</p>' +
+      '<p><b>Misconception patterns</b>, at the bottom of the tab: pick a delivered lesson and you will ' +
+      'see, for each closing question, which wrong answers the class actually chose &mdash; each one ' +
+      'labelled with the misunderstanding it usually signals, so you know what to re-teach and to whom.</p>' +
 
-      '<h4>Absence</h4><p>Usually an empty list. A pupil is flagged when a delivered lesson still has no ' +
-      'meaningful work five school days on &mdash; the number is yours to change in Options. It is a private ' +
-      'nudge for you: pupils never see it, and it is not an attendance record. <b>Dismiss flag</b> clears one ' +
-      'once you know the story.</p>' +
+      '<h4>Absence</h4><p>A short list that is usually empty &mdash; and that is the good news it is ' +
+      'designed to give you. A pupil appears here when a delivered lesson still has no meaningful work ' +
+      'from them after five school days (you can change the number of days in Options). It is a private ' +
+      'nudge for you to check in &mdash; perhaps the pupil was absent, perhaps stuck, perhaps avoiding it. ' +
+      'Pupils never see this list, and it is not an attendance record. Once you know the story, ' +
+      '<b>Dismiss flag</b> clears it.</p>' +
 
-      '<h4>Teams</h4><p>Optional groups for the tournament lessons and the team leaderboard. Tap a name chip ' +
-      'to move a pupil between teams; <b>Add team</b> and <b>Auto-make N teams</b> build the groups; each ' +
-      'team&rsquo;s XP total updates as pupils earn points. &ldquo;Pupils can see who is in their team&rdquo; ' +
-      'stays unticked until you decide otherwise &mdash; while it is off, team totals can be shown with the ' +
-      'members hidden.</p>' +
+      '<h4>Teams</h4><p>Optional groups, used by the tournament lessons and by the hidden-teams ' +
+      'leaderboard in Options. Tap any pupil&rsquo;s name chip and a small menu appears for moving them ' +
+      'into a team; <b>Add team</b> creates a team with a name you choose, and <b>Auto-make N teams</b> ' +
+      'splits the class into that many even teams in one press. Each team&rsquo;s XP total updates by ' +
+      'itself as its pupils earn points. The tick-box <b>&ldquo;Pupils can see who is in their team&rdquo;' +
+      '</b> stays unticked until you decide otherwise &mdash; while it is off, pupils can be shown their ' +
+      'team&rsquo;s total without knowing who else is in the team, which is exactly what the tournament ' +
+      'lessons use for their big reveal.</p>' +
 
-      '<h4>Options</h4><p>Four choices per class, one <b>Save</b>. <b>Leaderboard</b> &mdash; private by ' +
-      'default; hidden teams; or a public board, and if public, ranked by what and naming pupils how. ' +
-      '<b>Auto-pairing</b> &mdash; on matches pupils across machines with the monitored chat; off runs paired ' +
-      'activities shoulder-to-shoulder at one machine. <b>Tournament reveal</b> &mdash; team totals only, or ' +
-      'pair scores as well. <b>Absence window</b> &mdash; how many school days before a flag.</p>' +
+      '<h4>Options</h4><p>There are four choices you can make for each of your classes &mdash; these ' +
+      'options apply to the class you currently have selected on the Classes tab, they take effect as soon ' +
+      'as you save, and each lasts until you change it back. The <b>Save</b> button at the bottom saves all ' +
+      'of your choices at once.</p>' +
+      '<p><b>Leaderboard</b> decides who can see whose progress, and it is one setting for the whole class ' +
+      'across the whole year &mdash; it is not something you set per lesson. <i>Private</i>, the default, ' +
+      'means each pupil sees only their own progress; this is the right setting for most of the year, ' +
+      'because the platform&rsquo;s promise to pupils is that XP stays between them and their teacher. ' +
+      '<i>Hidden teams</i> is for competing as groups without exposing anybody: once you have made teams ' +
+      'on the Teams tab, each pupil&rsquo;s home page shows their team&rsquo;s name and total XP but not ' +
+      'who is in it &mdash; and the unmasking is yours to control, on the Teams tab or at a ' +
+      'tournament&rsquo;s reveal. <i>Public board</i> puts a ranked class board at the top of every ' +
+      'pupil&rsquo;s home page &mdash; whole-year totals, counted by XP or by lessons completed, named by ' +
+      'codename or by real first name, showing the top few or everyone; those choices appear underneath ' +
+      'when you pick it. Use it deliberately: if you know a class that would thrive on a fortnight of open ' +
+      'competition, switch it on for the fortnight &mdash; and when you switch it back, the board ' +
+      'disappears at once. (A pupil who has not earned a codename yet is listed by her first name, so no ' +
+      'two rows ever look the same.)</p>' +
+      '<p><b>Auto-pairing</b> decides how paired activities (like Lesson 1&rsquo;s Vault) find each pupil ' +
+      'a partner. On, the default, the platform matches pupils across different machines and gives each ' +
+      'pair the monitored chat channel. Off, paired activities run shoulder-to-shoulder instead: two ' +
+      'pupils share one machine and talk in person &mdash; useful if your room&rsquo;s layout suits it, or ' +
+      'you want a quieter hour.</p>' +
+      '<p><b>Tournament reveal</b> decides what the projector shows at the end of a tournament lesson ' +
+      '(Lesson 3&rsquo;s Reaction Rally is the first): team totals only, so no individual pupil is named ' +
+      'in front of the class &mdash; or, as a deliberate choice, the ranked pair scores with pupils&rsquo; ' +
+      'full names after the team bars.</p>' +
+      '<p><b>Absence window</b> is the number of school days before a pupil with no meaningful work on a ' +
+      'delivered lesson appears on the Absence tab. With the default of five, a pupil who missed ' +
+      'Tuesday&rsquo;s lesson and still has nothing a week later is flagged.</p>' +
 
-      '<h4>Cover</h4><p>For the day you are absent. The tab suggests the next ready lesson &mdash; steering ' +
-      'around discussion-led ones, which wait for you &mdash; and <b>Start Cover Mode</b> unlocks it and ' +
-      'writes the cover sheet: a few lines the covering teacher reads aloud, because a covering teacher is ' +
-      'not expected to teach. The sheet waits on this tab for whoever opens the panel. <b>End Cover Mode</b> ' +
-      'when you are back.</p>' +
+      '<h4>Cover</h4><p>For the day you are absent and a colleague is covering your class. The tab ' +
+      'suggests the next lesson that is ready to run &mdash; steering around discussion-led lessons, which ' +
+      'wait for you &mdash; and <b>Start Cover Mode</b> does the rest in one press: it unlocks the chosen ' +
+      'lesson and writes the cover sheet, a few lines the covering teacher reads aloud to the class. A ' +
+      'covering teacher is not expected to teach the lesson; the sheet says so, and it waits on this tab ' +
+      'for whoever opens the panel. <b>Print this sheet</b>, on the sheet itself, prints it &mdash; choose ' +
+      'PDF in the print box if you want a copy to send digitally. <b>End Cover Mode</b> when you are ' +
+      'back.</p>' +
       '</div>' +
 
       '<h3>Worth knowing</h3>' +
       '<div class="guide-ref">' +
-      '<h4>The pace</h4><p>Every button talks to Google&rsquo;s servers, so most presses take a second or ' +
-      'two, with a spinner naming what is happening. That is the tools working, not failing &mdash; pressing ' +
-      'again does not hurry it.</p>' +
+      '<h4>The pace</h4><p>Every button in these tools talks to Google&rsquo;s servers, so most presses ' +
+      'take a second or two, with a spinner naming what is happening (&ldquo;Loading the live ' +
+      'dashboard&rdquo;, for example). That is the tools working, not failing &mdash; pressing again does ' +
+      'not hurry it.</p>' +
 
-      '<h4>The panel locks itself</h4><p>Closing it, or fifteen minutes without use, means entering the ' +
-      'passcode again. That is protection, not nuisance: this panel shows answer keys, every pupil&rsquo;s ' +
-      'name and email, and every chat transcript, and it gets opened on pupils&rsquo; machines. The passcode ' +
-      'comes from the Head of Department.</p>' +
+      '<h4>The panel locks itself</h4><p>Closing this panel, or leaving it untouched for fifteen minutes, ' +
+      'locks it again &mdash; you will be asked for the passcode next time. That is protection rather than ' +
+      'nuisance: the panel shows answer keys, every pupil&rsquo;s name and email, and every chat ' +
+      'transcript, and it is often opened on a machine pupils use. The passcode comes from the Head of ' +
+      'Department.</p>' +
 
-      '<h4>Storage and the nightly archive</h4><p>The storage line at the bottom of Classes is the ' +
-      'platform&rsquo;s own filing space, shared by the whole school; it turns red past 70%. A sweep runs ' +
-      'nightly between 2 and 3am: chat transcripts older than a week, and the fine detail of lessons finished ' +
-      'more than four weeks ago, move into an archive spreadsheet &mdash; it copies, checks the copy, then ' +
-      'trims. <b>Run archive sweep now</b> does the same on demand: any teacher can press it, but only the ' +
-      'Head of Department&rsquo;s account can complete it, and anyone else simply gets a message saying so.</p>' +
+      '<h4>Storage and the nightly archive</h4><p>The storage line at the bottom of the Classes tab shows ' +
+      'the platform&rsquo;s own filing space, which the whole school shares; it turns red once it passes ' +
+      '70% full. A sweep runs automatically every night between 2 and 3am: chat transcripts older than a ' +
+      'week, and the fine detail of lessons finished more than four weeks ago, move into an archive ' +
+      'spreadsheet &mdash; it copies first, checks the copy, and only then trims. <b>Run archive sweep ' +
+      'now</b> does the same on demand. Any teacher can press it, but only the Head of Department&rsquo;s ' +
+      'account can complete it, and anyone else simply gets a message saying so.</p>' +
 
-      '<h4>What lives where</h4><p>The live-presence counts on the pairing panel fade minutes after a pupil ' +
-      'closes the site. Progress, XP, baseline and exit results stay for the year. Pair chats are readable in ' +
-      'Channel for a week before they move to the archive.</p>' +
+      '<h4>What lives where</h4><p>The live-presence counts on the pairing panel fade within minutes of a ' +
+      'pupil closing the site. Progress, XP, baseline and exit results stay for the whole year. Pair chats ' +
+      'stay readable in Channel for a week before they move to the archive.</p>' +
 
       '<h4>Google&rsquo;s permission screens</h4><p>The first time anyone &mdash; teacher or pupil &mdash; ' +
-      'opens the site, Google asks once for permission, starting with a screen that says Unverified in red. ' +
-      'Expected: Google says that about anything a school builds for itself. The Lesson 1 slide deck walks a ' +
-      'class through the four presses with real pictures, and the Lesson 1 brief covers them under ' +
-      'Preparing.</p>' +
+      'opens the site, Google asks once for permission, starting with a screen that says Unverified in ' +
+      'red. That is expected: Google says it about anything a school builds for itself. The Lesson 1 slide ' +
+      'deck walks a class through the four presses with real pictures, and the Lesson 1 brief covers them ' +
+      'under Preparing.</p>' +
 
-      '<h4>The Head of Department</h4><p>can manage every class &mdash; including unlocking a lesson for an ' +
-      'absent colleague. If a lock changed and you did not change it, that is who.</p>' +
+      '<h4>The Head of Department</h4><p>can manage every class, including unlocking a lesson on behalf of ' +
+      'a colleague who is off sick. So if a lock changed and you did not change it, that is who.</p>' +
       '</div>' +
 
       (isHod ? guideHodHtml(archiveUrl) : '');
