@@ -48,7 +48,18 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   check(cal.config.items.every(i => (lesson.keys[i.id].mis || []).filter(Boolean).length >= 3),
     'every ping still carries authored misconception labels for the teacher dashboard');
   /* the replacements point at the PLATFORM, which is what a warm-up is for */
-  check(/tap/i.test(stems[0]), 'ping 1 is about what happens when you tap (self-demonstrating)');
+  /* DAMIEN, 3 Aug 2026: "'you tap and answer' is without context" - the stem now
+     names the act she is performing WITH A MOUSE, on a C2k machine, and frames it
+     against the card in front of her. The assertion moves with the law (rule
+     138.1.6) instead of pinning the old wording, and is tightened: no pupil-facing
+     warm-up text may say "tap" again. */
+  check(/click an answer/i.test(stems[0]), 'ping 1 is about what happens when you CLICK an answer (self-demonstrating)');
+  check(/like this one/i.test(stems[0]), 'ping 1 gives the pupil the context he asked for - it points at the card she is on');
+  const calProse = [cal.config.intro, cal.config.help, ...stems,
+    ...cal.config.items.flatMap(i => i.options),
+    ...cal.config.items.map(i => lesson.keys[i.id].explain)].join(' ');
+  check(!/\btap(s|ped|ping)?\b/i.test(calProse),
+    'no warm-up text tells a pupil at a mouse to "tap" anything (rule 138.1.6)');
   check(/wrong answer/i.test(stems[1]), 'ping 2 teaches that a wrong answer costs nothing (the padlock item moved to Badge 2, where it is taught first)');
   check(/next to your name/i.test(stems[2]), 'ping 3 points at the XP number beside her name (the ?-button item moved to Badge 2, where the tour teaches it first)');
   check(!/password|drive|save/i.test(stems.join(' ')),
@@ -99,7 +110,7 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   let onCal = false;
   for (let i = 0; i < 30; i++) {
     const txt = await page.evaluate(() => (document.querySelector('.chunk-host') || {}).textContent || '');
-    if (/Warm-up|You tap an answer/i.test(txt)) {
+    if (/click an answer|Warm-up/i.test(txt)) {
       const hasOpt = await page.evaluate(() => !!document.querySelector('.chunk-host .q-opt'));
       if (hasOpt) { onCal = true; break; }
     }
@@ -116,7 +127,7 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   await page.screenshot({ path: path.join(OUT, 'l1-calibration-ping.png'), fullPage: true });
 
   const shown = await page.evaluate(() => (document.querySelector('.chunk-host') || {}).textContent || '');
-  check(/You tap an answer/i.test(shown), 'ping 1 is the self-demonstrating item');
+  check(/click an answer to a question like this one/i.test(shown), 'ping 1 is the self-demonstrating item, in his 3 Aug wording');
   check(!/STRONGEST password/i.test(shown), 'the old password ping is gone from the pupil\'s screen');
 
   /* answer WRONG on purpose: a warm-up must still give instant, kind feedback */

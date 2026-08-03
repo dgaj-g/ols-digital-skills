@@ -130,7 +130,7 @@
    "config": {
     "src": "assets/video/l5/l5-tutorial.mp4",
     "poster": "assets/video/l5/l5-poster.jpg",
-    "fallback": "If the film won't load (wifi?), no drama — your teacher's demo covers everything it shows, and the cards on this screen walk you through the rest.",
+    "fallback": "If the film won't load, don't worry — your teacher's demonstration covers everything it shows, and the cards on this screen walk you through the rest.",
     "chapters": [
      {
       "t": 0,

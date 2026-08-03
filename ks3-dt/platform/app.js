@@ -664,7 +664,7 @@
   App.openKit = function () {
     var s = App.state;
     if (!s.me) return; // not joined yet (staff preview of the join screen etc.)
-    if (!s.kit) { App.toast('Your Agent Kit could not load — check the wifi and refresh.'); return; }
+    if (!s.kit) { App.toast('Your Agent Kit could not load — check your connection and refresh.'); return; }
     renderKit();
     App.openModal('kit-modal');
   };
@@ -981,7 +981,7 @@
     }).catch(function () {
       $('#guard').hidden = true;
       guardSays('Getting your details&hellip;');
-      App.toast('Could not load the lesson — check the wifi and try again.');
+      App.toast('Could not load the lesson — check your connection and try again.');
     });
   };
 
@@ -997,7 +997,7 @@
          "?" help is carried here too (review finding S-2: every lesson's help
          must be about THAT screen). */
       chunks.push({ id: '_recap', engine: 'recap', title: 'Do-Now', minutes: 3, config: {
-        help: 'Five quick questions from past lessons. Tap the answer you think is right, read the reason that comes back, move on. Never graded, never public — it is a warm-up, not a test.'
+        help: 'Five quick questions from past lessons. Click the answer you think is right, read the reason that comes back, move on. Never graded, never public — it is a warm-up, not a test.'
       } });
     }
     return chunks.concat(lesson.chunks || []);
@@ -1014,7 +1014,7 @@
       App.state.draftUnavailable = !(r && r.ok);
       App.state.draft = (r && r.ok && r.draft) ? r.draft : {};
       if (App.state.draftUnavailable) {
-        App.toast('Could not load your saved work — nothing will be overwritten. Refresh when the wifi is back.', 6000);
+        App.toast('Could not load your saved work — nothing will be overwritten. Refresh when your connection is back.', 6000);
       }
       done();
     });

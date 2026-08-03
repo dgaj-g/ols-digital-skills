@@ -45,7 +45,9 @@ const scenes = [
       await cine.lift();
       await cine.ensureCursor(640, 430);
 
-      await cine.caption('This is <b>makecode.microbit.org</b> &mdash; type that into your browser.');
+      /* DAMIEN, 3 Aug 2026: a caption must teach the medium's own mechanics -
+         a pupil watching a film cannot type in another tab at the same time. */
+      await cine.caption('This is <b>makecode.microbit.org</b>. Pause this video, type that into a <b>new tab</b>, then come back to this tab and press play. <b>Keep doing that all the way through the film.</b>');
       const np = await drv.page.evaluate(() => {
         const el = document.querySelector('.newprojectcard');
         if (!el) return null;
@@ -203,47 +205,22 @@ const scenes = [
       await cine.click(dl.cx, dl.cy, { after: 1400 });
       await cine.captionHide();
 
-      // wizard step 1: connect
+      /* DAMIEN, 3 Aug 2026: the chapter now HANDS OVER here. He filmed the real
+         connect-download-drag journey on a school machine, and his footage
+         replaces everything the recorder used to mime between this point and
+         the payoff card (the pair wizard, the .hex explanation and the
+         ON THE DESK card). His instruction: the Step 1 caption gains "This is
+         how you do it..." and the film cuts to his footage on it.
+         The payoff card that follows his footage is lifted UNCHANGED from the
+         July take (seg/ch3b-payoff.mp4) - see assemble-l2-3aug.js. */
       const info1 = await drv.modalInfo();
       log('wizard1: ' + JSON.stringify(info1));
-      await cine.caption('Step 1: plug the micro:bit into the computer with its <b>USB cable</b>.');
-      const next = await drv.modalButton('Next');
-      if (next) await cine.click(next.cx, next.cy, { after: 1300 });
-
-      // wizard step 2: pair / download as file
-      const info2 = await drv.modalInfo();
-      log('wizard2: ' + JSON.stringify(info2));
-      await cine.caption('In school we use <b>Download as File</b>.');
-      const asFile = await drv.modalButton('Download as File');
-      if (asFile) {
-        await cine.click(asFile.cx, asFile.cy, { after: 2200 });
-        const info3 = await drv.modalInfo();
-        log('wizard3: ' + JSON.stringify(info3));
-        await cine.caption('MakeCode saves <b>make-it-move.hex</b> into the <b>Downloads</b> folder. That file IS your program.');
-        // close whatever remains
-        const done = await drv.modalButton('Done|Got it|Close|Ok');
-        if (done) await cine.click(done.cx, done.cy, { after: 700 });
-        await drv.dismissDialogs();
-      }
-
-      // the physical steps - full-screen cards with the real photos
-      await cine.card({
-        kicker: 'ON THE DESK', title: 'Copy your program across',
-        img: IMG_USB, credit: CREDIT_USB,
-        lines: [
-          'Your micro:bit shows up like a USB stick called <b>MICROBIT</b>',
-          'Drag <b>make-it-move.hex</b> from Downloads onto <b>MICROBIT</b>',
-          'The light on the back <b>blinks</b> while it copies &mdash; when it stops, your program lives on the device'
-        ]
-      }, 15500);
-      await cine.card({
-        kicker: 'THE PAYOFF', title: 'Press A on the real thing',
-        img: IMG_HEART, credit: CREDIT_HEART,
-        lines: ['No screen, no simulator &mdash; a real heart on real hardware. <b>You built that.</b>']
-      }, 8500);
+      await cine.caption('Step 1: plug the micro:bit into the computer with its <b>USB cable</b>. <b>This is how you do it&hellip;</b>',
+        { keep: true });
+      await cine.pause(500);
 
       await cine.drop({});
-      await cine.pause(1200);
+      await cine.pause(1000);
     },
     verify: async ({ drv, log }) => {
       const code = await drv.readProgram();
@@ -270,7 +247,11 @@ const scenes = [
       await cine.lift();
       await cine.ensureCursor(700, 480);
 
-      await cine.captionShow('Your program works&hellip; <b>prove it</b>. Press A.');
+      /* DAMIEN, 3 Aug 2026: "just make it clear in the pop ups that all of this
+         testing will be done on the simulator - pupils don't need to download
+         anything else to the micro:bit for the moment." */
+      await cine.caption('Everything in this chapter happens on the <b>simulator</b> &mdash; the practice micro:bit on your screen. You do <b>not</b> need to put anything else onto your real micro:bit for now.');
+      await cine.captionShow('Your program works&hellip; <b>prove it</b>. Press <b>A</b> on the simulator.');
       await pressSimA(cine, drv, 2400);
       await cine.captionHide();
       await cine.caption('Works. But good programmers go further: <b>break it on purpose</b> to learn how it fails.');
@@ -296,7 +277,12 @@ const scenes = [
       await cine.captionHide();
       await pressSimA(cine, drv, 3000);
       await cine.caption('Fixed. See it fail &rarr; find the cause &rarr; test again. That habit is called <b>debugging</b>.');
-      await cine.caption('Your rung cards work exactly like this: build, test on the device, <b>Debug Hint</b> only if stuck.');
+      /* DAMIEN, 3 Aug 2026: neither "rung" nor "Debug Hint" had ever been
+         explained when this caption used them (rule 138.1.3 - define before
+         use, on every surface, captions included). The hint really does cost a
+         signal point, so the caption says so (rule 35). */
+      await cine.caption('Back in the lesson, each challenge sits on its own card called a <b>rung</b> &mdash; four of them, climbed in order, like the rungs of a ladder.');
+      await cine.caption('Every rung card works exactly like this one: build it, then test it. If you get stuck, the card has a <b>Debug Hint</b> button that gives you a clue &mdash; it costs you one signal point.');
 
       await cine.drop({
         crest: CREST, kicker: 'READY TO BUILD',
