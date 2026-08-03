@@ -68,6 +68,16 @@ function check(cond, msg) {
     const db = JSON.parse(localStorage.getItem('ks3dt-dev'));
     const now = Math.floor((Date.now() - 1767225600000) / 60000);
     for (const n of ['1', '2', '3', '4', '5']) db.locks['Demo-8A'][n] = { u: now, on: 1 };
+    /* STALE SINCE 2 Aug 2026, fixed 3 Aug: rule 134 made the Do-Now serve only
+       lessons this pupil has COMPLETED, so a freshly-staged pupil correctly got
+       an empty warm-up and this harness asserted the impossible. sit-review.js
+       was updated in the same commit; this one was missed. Stage her the way a
+       real Lesson 5 pupil arrives - lessons 1-4 and the side quest behind her. */
+    db.pupils = db.pupils || {};
+    const L = {};
+    ['1', '2', '3', '4', 'S1'].forEach((n, ix) => { L[n] = [2, 10, 'sit' + n + '=1', '1', '222|1', 100 + ix, 10, 0, '', 0, 0]; });
+    db.pupils['Demo-8A:anya.murphy@demo'] = Object.assign(
+      db.pupils['Demo-8A:anya.murphy@demo'] || { n: 'Anya Murphy', cn: '', j: 1, xp: 0, g: '' }, { L: L });
     localStorage.setItem('ks3dt-dev', JSON.stringify(db));
   });
   await page.reload({ waitUntil: 'domcontentloaded' });
