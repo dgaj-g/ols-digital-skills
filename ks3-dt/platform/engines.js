@@ -1457,7 +1457,8 @@
      Rung cards for out-of-platform building (MakeCode/Scratch in another tab):
      each rung is a target behaviour the pair makes REAL, tested on the actual
      device - the platform never marks it, the physical result is the test
-     (doc 07 L2). Debug Hints cost a signal point; the badge XP honours clean
+     (doc 07 L2). A Debug Hint costs 2 XP (a rung cleared clean scores 5, a
+     hinted one 3); the badge XP honours clean
      rungs. Progress survives refresh via the draft. */
   Engines.ladder = {
     mount: function (host, chunk, ctx) {
@@ -1569,7 +1570,7 @@
           (r.img ? '<img class="rung-img" src="' + esc(asset(r.img)) + '" alt="The blocks for this rung">' : '') +
           '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(r.test || 'Flash it to the device and make it happen for real.') + '</p></div>' +
           /* C-04, approved 2 Aug 2026: the finished-blocks picture used to sit
-             on the card, above a hint that charged a signal point for less
+             on the card, above a hint that charged 2 XP for less
              than the picture gave away free - so the rung taught copying, not
              debugging. The picture now lives INSIDE the hint, which is what
              makes the hint worth its price. Cards that teach by example (L2
@@ -1579,7 +1580,7 @@
           '</div>' +
           '<div class="rung-actions">' +
           '<button class="primary-btn rung-worked" type="button">It worked on the device! &#9889;</button>' +
-          (r.hint && !hintUsed ? '<button class="ghost-btn rung-hint-btn" type="button">Debug Hint (costs a signal point)</button>' : '') +
+          (r.hint && !hintUsed ? '<button class="ghost-btn rung-hint-btn" type="button">Debug Hint (costs 2 XP)</button>' : '') +
           filmBtn() +
           '</div></div>');
         host.innerHTML = '';

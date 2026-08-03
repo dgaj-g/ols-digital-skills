@@ -37,18 +37,26 @@ async function renderCaptions(texts, outDir, opts) {
 
   const written = [];
   for (const t of texts) {
-    await page.evaluate(([html, gold, pos]) => {
+    await page.evaluate(([html, gold, pos, align]) => {
       document.body.innerHTML = '';
       const FONT = "'CineGrotesk','Trebuchet MS','Segoe UI',Calibri,'Helvetica Neue',Arial,sans-serif";
       const wrap = document.createElement('div');
+      /* DAMIEN, 3 Aug 2026: a caption must never sit on top of the thing it is
+         telling her to look at. The drag-to-MICROBIT pop-up covered the MICROBIT
+         drive in his own footage, so a caption can be pinned to one side. */
+      const side = align === 'right'
+        ? { right: '26px', left: 'auto', transform: 'none' }
+        : align === 'left'
+          ? { left: '26px', transform: 'none' }
+          : { left: '50%', transform: 'translateX(-50%)' };
       Object.assign(wrap.style, {
-        position: 'fixed', left: '50%', transform: 'translateX(-50%)',
+        position: 'fixed',
         bottom: pos === 'top' ? '' : '26px', top: pos === 'top' ? '22px' : '',
         maxWidth: '900px', minWidth: '340px',
         display: 'flex', alignItems: 'stretch',
         borderRadius: '16px', overflow: 'hidden',
         boxShadow: '0 10px 34px rgba(9,20,40,0.5)'
-      });
+      }, side);
       const bar = document.createElement('div');
       Object.assign(bar.style, { width: '9px', background: gold, flexShrink: '0' });
       wrap.appendChild(bar);
@@ -62,7 +70,7 @@ async function renderCaptions(texts, outDir, opts) {
       Array.from(body.querySelectorAll('b')).forEach(b => { b.style.color = gold; b.style.fontWeight = '700'; });
       wrap.appendChild(body);
       document.body.appendChild(wrap);
-    }, [t.html, GOLD, t.pos || 'bottom']);
+    }, [t.html, GOLD, t.pos || 'bottom', t.align || 'centre']);
     await page.waitForTimeout(60);
     const out = path.join(outDir, t.id + '.png');
     await page.screenshot({ path: out, omitBackground: true });
