@@ -810,6 +810,21 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   padding: 6px 13px; cursor: pointer;
 }
 .vid-chapter:hover { background: rgba(var(--gold-rgb), 0.14); border-color: var(--gold); }
+/* DAMIEN, 3 Aug 2026 (rule 138.1.11): the pair instruction sits ON the film
+   card, above the player, so it is read before the film starts. */
+.video-intro {
+  text-align: left; margin: 2px 0 12px; padding: 11px 14px;
+  background: rgba(26, 58, 107, 0.05); border-left: 3px solid var(--gold);
+  border-radius: var(--r-sm); line-height: 1.5;
+}
+/* (rule 138.2) the step-card "Show me how" clip, and the note his instruction
+   puts on screen once the clip has finished playing */
+.step-cliprow { margin: 10px 0 2px; }
+.clip-note {
+  margin: 4px 0 10px; padding: 11px 14px; line-height: 1.5;
+  background: rgba(var(--gold-rgb), 0.12); border-left: 3px solid var(--gold);
+  border-radius: var(--r-sm);
+}
 
 /* ============ help beacon ============ */
 .help-beacon {

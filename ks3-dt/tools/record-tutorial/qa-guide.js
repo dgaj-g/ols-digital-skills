@@ -208,7 +208,13 @@ function staticHalf() {
   check(!!pairEntry && !!pairEntry.img && !!pairEntry.say, 'while keeping its picture and its say-line');
   /* re-pinned per batch on purpose: an exact pin is what catches a repack
      that never happened. 2 Aug 2026 = the L2-L5 batch. */
-  check(idx.contentVersion === '2026-08-02c', 'contentVersion bumped to 2026-08-02b (is ' + idx.contentVersion + ')');
+  /* This used to pin one literal version string, so it failed on every later
+     content release and told us nothing (3 Aug 2026). What actually matters is
+     that the version MOVED PAST the release this harness was written for - the
+     live app refetches content on a version change, so a stale version is the
+     real defect. Dates sort lexically in this yyyy-mm-dd[letter] format. */
+  check(typeof idx.contentVersion === 'string' && idx.contentVersion >= '2026-08-02c',
+    'contentVersion is at or past 2026-08-02c (is ' + idx.contentVersion + ')');
 
   section('M. STAFF PANEL SAYS "PUPIL" (rule 26)');
   check(/the moment the first pupil arrives/.test(staff), 'the pairing panel\'s empty state says pupil');

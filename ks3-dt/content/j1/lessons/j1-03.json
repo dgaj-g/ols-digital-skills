@@ -56,7 +56,7 @@
    "minutes": 5,
    "config": {
     "src": "assets/video/l3/l3-tutorial.mp4",
-    "fallback": "If the video won't load (wifi?), no drama — your teacher's demo covers everything, and every rung card repeats the steps you need.",
+    "fallback": "If the video won't load, don't worry — your teacher's demonstration covers everything, and every rung card repeats the steps you need.",
     "chapters": [
      {
       "t": 0,

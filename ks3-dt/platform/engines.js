@@ -289,7 +289,7 @@
             bubble(st.mi, text, Number(r.seq));
             input.value = '';
           } else if (r && r.error === 'too-fast') App.toast('Easy, Agent — one message a second.');
-          else App.toast('Message did not send (wifi?) — try again.');
+          else App.toast('Message did not send — try again.');
           input.focus();
         });
       };
@@ -468,7 +468,7 @@
           var fbs = wrap.querySelector('.q-feedback');
           fbs.hidden = false;
           fbs.className = 'q-feedback neutral';
-          fbs.innerHTML = '<p>This is taking longer than it should &mdash; the wifi may have dropped. Your answer is safe.</p>' +
+          fbs.innerHTML = '<p>This is taking longer than it should &mdash; your connection may have dropped. Your answer is safe.</p>' +
             '<button class="primary-btn" type="button">Try again</button>';
           App.armButton(fbs.querySelector('button'), function () {   // DFM 104
             fbs.hidden = true; fbs.innerHTML = '';
@@ -486,7 +486,7 @@
           if (!r || !r.ok) {
             fb.hidden = false;
             fb.className = 'q-feedback neutral';
-            fb.innerHTML = '<p>Hmm — could not check that one (wifi?). Moving on.</p>' +
+            fb.innerHTML = '<p>Hmm — could not check that one. Moving on.</p>' +
               '<button class="primary-btn" type="button">Next</button>';
             App.armButton(fb.querySelector('button'), nextOrDone);   // DFM 104
             return;
@@ -621,6 +621,46 @@
       var i = 0;
       introCard(host, { kicker: chunk.title, title: chunk.badge ? chunk.badge.name : chunk.title, text: cfg.intro || '' }, 'Start', showStep);
 
+      /* DAMIEN, 3 Aug 2026 (rule 138.2): a step must never assume a digital
+         skill a pupil may simply not have. Where a step needs one - opening a
+         browser tab - the card carries a short clip that SHOWS it, and his
+         follow-up note appears once the clip has played. */
+      function openClip(clip) {
+        var ov = el('<div class="ols-modal film-modal">' +
+          '<div class="ols-modal-card ols-modal-film">' +
+          '<h2>&#127909; ' + esc(clip.title || clip.label || 'Show me how') + '</h2>' +
+          '<video controls autoplay muted playsinline src="' + esc(asset(clip.src)) + '"></video>' +
+          (clip.note ? '<p class="clip-note" hidden>' + esc(clip.note) + '</p>' : '') +
+          '<div class="confirm-actions"><button class="primary-btn clip-close" type="button">' + esc(clip.close || 'Back to the step') + '</button></div>' +
+          '</div></div>');
+        document.body.appendChild(ov);
+        var vid = ov.querySelector('video');
+        var note = ov.querySelector('.clip-note');
+        if (note) {
+          /* his note goes on screen "after it plays" - but it must not depend on
+             a clean `ended`. A pupil can pause, and a browser can refuse to play
+             at all (autoplay/power policies). So: on ended, on error, and as a
+             backstop once the clip's own running time has passed. Never before -
+             that would give the tip away ahead of the demonstration. */
+          var showNote = function () { note.hidden = false; };
+          vid.addEventListener('ended', showNote);
+          vid.addEventListener('error', showNote);
+          vid.addEventListener('loadedmetadata', function () {
+            var ms = ((vid.duration && isFinite(vid.duration)) ? vid.duration : 15) * 1000 + 1200;
+            setTimeout(showNote, ms);
+          });
+          setTimeout(showNote, 30000);   // last resort if metadata never arrives
+        }
+        App.armButton(ov.querySelector('.clip-close'), function () {   // DFM 104
+          try { vid.pause(); } catch (e) {}
+          ov.remove();
+        });
+      }
+      function wireClip(card, st) {
+        var b = card.querySelector('.step-clip-btn');
+        if (b) b.onclick = function () { openClip(st.clip); };
+      }
+
       function showStep() {
         if (i >= cfg.steps.length) { rulesCheck(); return; }
         var st = cfg.steps[i];
@@ -628,9 +668,11 @@
           '<span class="runner-progress">Step ' + (i + 1) + ' of ' + cfg.steps.length + '</span>' +
           '<div class="step-head"><span class="step-icon">' + esc(st.icon || '') + '</span><h2>' + esc(st.title) + '</h2></div>' +
           '<p class="step-text">' + esc(st.text) + '</p>' +
+          (st.clip && st.clip.src ? '<p class="step-cliprow"><button class="ghost-btn step-clip-btn" type="button">&#127909; ' + esc(st.clip.label || 'Show me how') + '</button></p>' : '') +
           '<div class="step-action"></div></div>');
         host.innerHTML = '';
         host.appendChild(c);
+        wireClip(c, st);
         var action = c.querySelector('.step-action');
         if (st.sim === 'username') {
           action.innerHTML = '<div class="sim-login"><label>Practice console</label>' +
@@ -768,7 +810,7 @@
               clearInterval(t);
               ctx.call('vaultInfo', { lessonId: ctx.lesson.id, keyId: keyId }).then(function (r) {
                 if (r && r.ok) { salt = r.salt; check = r.check; host.innerHTML = ''; begin(); }
-                else host.innerHTML = '<div class="card"><p>The Vault door is stuck (wifi?). Ask your teacher, then try again.</p></div>';
+                else host.innerHTML = '<div class="card"><p>The Vault door is stuck. Ask your teacher, then try again.</p></div>';
               });
             }
           }, 250);
@@ -1153,10 +1195,22 @@
           }, 700 * i);
         });
         var holdTimer = null;
+        /* DAMIEN, 3 Aug 2026: "in the card that begins 'one last thing, before
+           you go' ... when the text was loading, after a split second it
+           started loading again from the start."
+           Cause, reproduced: signing never took the button out of service. It
+           kept its pointerdown listener and was never disabled, so a second
+           press after signing started a SECOND hold, which 1200ms later ran
+           `host.innerHTML = ''; belonging()` a second time - wiping the card
+           mid-reveal and restarting the lines. Rule 104's family: one gesture
+           must arm exactly one transition. */
+        var signed = false;
         function startHold() {
-          if (signBtn.disabled) return;
+          if (signBtn.disabled || signed) return;
           signBtn.classList.add('holding');
           holdTimer = setTimeout(function () {
+            signed = true;
+            signBtn.disabled = true;
             signBtn.classList.add('signed');
             signBtn.textContent = 'Signed — Agent ' + current;
             setTimeout(function () { host.innerHTML = ''; belonging(); }, 800);
@@ -1176,7 +1230,10 @@
         signBtn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
       }
 
+      var belongingShown = false;
       function belonging() {
+        if (belongingShown) return;   // second guard: this card reveals ONCE
+        belongingShown = true;
         var b = cfg.belonging || {};
         var c = el('<div class="card belonging-card"><span class="belonging-kicker">' + esc(b.title || '') + '</span><div class="belonging-lines"></div>' +
           '<button class="primary-btn" type="button" hidden>Claim the final badge</button></div>');
@@ -1216,7 +1273,7 @@
           if (!r || !r.ok) {
             var errC = el('<div class="card"><h2>The inspection could not run</h2><p>' +
               (r && r.error === 'locked' ? 'This side quest is not unlocked for your class yet — check with your teacher.'
-                : 'The line to HQ dropped (wifi?). Nothing is lost — try again in a moment.') +
+                : 'The line to HQ dropped. Nothing is lost — try again in a moment.') +
               '</p><button class="primary-btn" type="button">Try again</button></div>');
             host.appendChild(errC);
             errC.querySelector('button').onclick = function () { host.innerHTML = ''; run(); };
@@ -1361,7 +1418,7 @@
         App.submitExit(payload, function (r) {
           host.innerHTML = '';
           if (!r) {
-            var safe = el('<div class="card"><h2>Report saved on this machine</h2><p>The wifi is playing up, so your answers are safe here and will send automatically. Mission complete.</p>' +
+            var safe = el('<div class="card"><h2>Report saved on this machine</h2><p>Your connection is playing up, so your answers are safe here and will send automatically. Mission complete.</p>' +
               '<button class="primary-btn" type="button">Finish</button></div>');
             host.appendChild(safe);
             safe.querySelector('button').onclick = function () { ctx.next(); };
@@ -1663,7 +1720,7 @@
             fb.hidden = false;
             if (!r || !r.ok) {
               fb.className = 'q-feedback neutral';
-              fb.innerHTML = '<p>Hmm &mdash; could not check that one (wifi?). Moving on.</p><button class="primary-btn" type="button">Continue</button>';
+              fb.innerHTML = '<p>Hmm &mdash; could not check that one. Moving on.</p><button class="primary-btn" type="button">Continue</button>';
             } else if (r.correct) {
               fb.className = 'q-feedback good';
               fb.innerHTML = '<p class="q-verdict">Correct &mdash; that program does exactly what the mission asked.</p>' +
@@ -1718,7 +1775,7 @@
           runBtn.disabled = false;
           tries++;
           if (!r || !r.ok) {
-            box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>The line to HQ dropped (wifi?) &mdash; try again in a moment.</span></div>';
+            box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>The line to HQ dropped &mdash; try again in a moment.</span></div>';
             return;
           }
           if (r.found) {
@@ -1756,7 +1813,11 @@
       var chapters = (cfg.chapters || []).map(function (ch) {
         return '<button class="vid-chapter" data-t="' + Number(ch.t) + '" type="button">' + esc(ch.label) + '</button>';
       }).join('');
+      /* DAMIEN, 3 Aug 2026 (rule 138.1.11): the pair logistics have to be said
+         ON the card where they change - who watches where, and whose computer
+         sends the program to the one micro:bit the pair shares. */
       var c2 = el('<div class="card video-card"><h2>' + esc(chunk.title) + '</h2>' +
+        (cfg.intro ? '<p class="video-intro">' + esc(cfg.intro) + '</p>' : '') +
         '<video controls preload="metadata" playsinline ' + (cfg.poster ? 'poster="' + esc(asset(cfg.poster)) + '"' : '') + ' src="' + esc(asset(cfg.src)) + '"></video>' +
         (chapters ? '<div class="vid-chapters">' + chapters + '</div>' : '') +
         '<button class="primary-btn" type="button">Done watching</button></div>');
@@ -2426,7 +2487,7 @@
               runBtn.disabled = false;
               tries++;
               if (!res || !res.ok) {
-                box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>The line to HQ dropped (wifi?) &mdash; try again in a moment.</span></div>';
+                box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>The line to HQ dropped &mdash; try again in a moment.</span></div>';
                 return;
               }
               if (res.found) {
