@@ -521,8 +521,12 @@
       (opts.extra || '') +
       '<button class="primary-btn" type="button">' + esc(beginLabel) + '</button></div>');
     host.appendChild(c);
-    // DFM 104: every intro card replaces the screen under the pupil's finger
-    App.armButton(c.querySelector('button'), function () { host.innerHTML = ''; onBegin(); });
+    /* DFM 104: every intro card replaces the screen under the pupil's finger.
+       Target the CTA by its own class, not "the first button in the card":
+       `extra` can now contain buttons of its own (the ladder intro carries the
+       film re-watch, 3 Aug 2026), and picking the first one armed the WRONG
+       button and left the real CTA dead. Caught by qa-film-reachable.js. */
+    App.armButton(c.querySelector('button.primary-btn'), function () { host.innerHTML = ''; onBegin(); });
   }
 
   /* ================= briefing (cinematic dossier) ================= */
@@ -1496,8 +1500,13 @@
         return (cfg.film && cfg.film.src)
           ? '<button class="ghost-btn rung-film-btn" type="button">&#127909; Watch the film again</button>' : '';
       }
-      function openFilm() {
+      /* startAt: rung cards want the copy-it-across chapter (that is the step
+         they are on). The ladder INTRO and rung 1 come straight after the film,
+         so a pupil who reached them by mis-clicking "Done watching" may not have
+         seen ANY of it - those open at the beginning. */
+      function openFilm(startAt) {
         var f = cfg.film; if (!f || !f.src) return;
+        var seek = (typeof startAt === 'number') ? startAt : Number(f.defaultT || 0);
         var chips = (f.chapters || []).map(function (ch) {
           return '<button class="vid-chapter" type="button" data-t="' + Number(ch.t) + '">' + esc(ch.label) + '</button>';
         }).join('');
@@ -1510,7 +1519,7 @@
           '</div></div>');
         document.body.appendChild(ov);
         var vid = ov.querySelector('video');
-        vid.addEventListener('loadedmetadata', function () { try { vid.currentTime = Number(f.defaultT || 0); } catch (e) {} });
+        vid.addEventListener('loadedmetadata', function () { try { vid.currentTime = seek; } catch (e) {} });
         ov.querySelectorAll('.vid-chapter').forEach(function (b) {
           b.onclick = function () { try { vid.currentTime = Number(b.getAttribute('data-t')) || 0; vid.play(); } catch (e) {} };
         });
@@ -1519,9 +1528,9 @@
           ov.remove();
         });
       }
-      function wireFilmBtn(card) {
+      function wireFilmBtn(card, startAt) {
         var fb = card.querySelector('.rung-film-btn');
-        if (fb) fb.onclick = openFilm;
+        if (fb) fb.onclick = function () { openFilm(startAt); };
       }
 
       function openerRow() {
@@ -1534,13 +1543,19 @@
       // Catch-up runs are SOLO: swap the pair framing out (Session B rule -
       // an absent pupil is never told to confer with a partner who isn't there)
       var solo = !!ctx.catchup;
+      /* DAMIEN, 3 Aug 2026: "the need to be able to watch the video again in case
+         'Done watching' was pressed by mistake". The film button was only ever on
+         the rung cards, so a mis-click on Done watching stranded her across the
+         ladder intro AND the whole of rung 1 with no route back. It is on every
+         ladder screen now, from the first one after the film. */
       introCard(host, {
         kicker: chunk.title, title: cfg.title || 'The Challenge Ladder',
         text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
-        extra: pointsBar() + openerRow()
+        extra: pointsBar() + openerRow() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
       }, unpluggedDone ? 'Back to the ladder' : 'Start climbing', function () {
         if (!unpluggedDone && cfg.unplugged) unplugged(); else showRung();
       });
+      wireFilmBtn(host, 0);
 
       function unplugged() {
         var up = cfg.unplugged;
@@ -1550,8 +1565,11 @@
         var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(up.title || 'Rung 1') + '</span>' +
           '<h2>&#128268; ' + (solo ? 'No screens yet &mdash; today YOU are the whole circuit' : 'No screens yet &mdash; you two ARE the circuit') + '</h2>' +
           '<ol class="ladder-script">' + lines + '</ol>' +
-          '<button class="confirm-step" type="button"><span class="confirm-box"></span><span>' + esc(upConfirm) + '</span></button></div>');
+          '<button class="confirm-step" type="button"><span class="confirm-box"></span><span>' + esc(upConfirm) + '</span></button>' +
+          (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '') +
+          '</div>');
         host.appendChild(c);
+        wireFilmBtn(c, 0);
         c.querySelector('.confirm-step').onclick = function () {
           this.classList.add('ticked');
           unpluggedDone = true;

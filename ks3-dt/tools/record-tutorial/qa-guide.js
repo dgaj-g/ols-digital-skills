@@ -152,8 +152,15 @@ function staticHalf() {
   check(/App\.GHOST_MS = 350/.test(app) && /App\.armButton = function/.test(app), 'one helper, 350ms, in app.js');
   const armCount = (engines.match(/App\.armButton\(/g) || []).length;
   check(armCount >= 8, 'engines.js arms at least 8 controls (found ' + armCount + ')');
-  check(/App\.armButton\(c\.querySelector\('button'\), function \(\) \{ host\.innerHTML/.test(engines),
-    'every intro card is guarded (introCard itself)');
+  /* 3 Aug 2026: this pinned introCard's exact source line, so it broke the moment
+     the CTA had to be selected by class (the ladder intro now carries a film
+     re-watch button, and "the first button in the card" armed the wrong one).
+     It asserts the RULE instead, plus the reason for the selector - arming the
+     first button again would leave a real CTA dead. */
+  check(/App\.armButton\(c\.querySelector\('button\.primary-btn'\), function \(\) \{ host\.innerHTML/.test(engines),
+    'every intro card is guarded, and it arms the CTA by class (introCard itself)');
+  check(!/App\.armButton\(c\.querySelector\('button'\)/.test(engines),
+    'introCard never arms merely "the first button" - `extra` can contain buttons of its own');
   check(/DFM 104: this is the confirm Damien watched/.test(engines), 'the steps confirm he reported is guarded');
   check(/re-arm on every stop/.test(engines), 'the tour Next re-arms per stop rather than guarding once');
   check((app.match(/App\.armButton\(/g) || []).length >= 4, 'the badge pop, finish and clearance pops are guarded too');
