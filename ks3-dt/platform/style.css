@@ -383,6 +383,26 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .rail-dot.past { background: rgba(var(--gold-hi-rgb), 0.55); }
 .rail-dot.now { background: var(--gold-hi); transform: scale(1.4); box-shadow: 0 0 0 5px rgba(var(--gold-hi-rgb), 0.15), 0 0 14px rgba(var(--gold-hi-rgb), 0.6); }
 
+/* DAMIEN, 3 Aug 2026: in REVIEW mode (a lesson she has already finished) the rail
+   becomes the way back to any part of it. The dots grow to a real hit target and
+   the line beneath names the part, because a row of identical dots means nothing
+   to a pupil on its own. */
+.chunk-rail.reviewable { gap: 12px; padding-bottom: 6px; }
+.rail-dot.rail-jump {
+  width: 14px; height: 14px; padding: 0; border: 0; cursor: pointer;
+  appearance: none; -webkit-appearance: none;
+}
+.rail-dot.rail-jump.badge-dot { width: 17px; height: 17px; }
+.rail-dot.rail-jump:hover, .rail-dot.rail-jump:focus-visible {
+  background: var(--gold-hi);
+  box-shadow: 0 0 0 4px rgba(var(--gold-hi-rgb), 0.25);
+  outline: none;
+}
+#rail-label {
+  text-align: center; margin: 0 0 14px; font-size: 0.82rem;
+  color: rgba(206, 222, 248, 0.78); min-height: 1.2em;
+}
+
 /* ============ the reading card (light surface on the dark shell) ============ */
 /* DFM 105 (1 Aug 2026): dragging across a card turned the text blue and looked
    broken (his oath-card screenshot). Pupils drag on these screens constantly -

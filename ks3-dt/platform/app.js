@@ -1020,16 +1020,69 @@
     });
   }
 
+  /* DAMIEN, 3 Aug 2026: "once they complete a lesson ... they can jump to any
+     part ... perhaps just check out a small section of it, example, the rules."
+     A finished lesson already re-opens in REVIEW mode, which writes nothing, but
+     the rail was decorative, so the only way back to the rules was to click
+     forward through the whole hour. In review mode ONLY, every dot becomes a
+     real button that jumps straight to that part, and a line under the rail
+     names the part - a row of identical dots tells a twelve-year-old nothing on
+     its own (rule 138.2). During a live run the rail stays exactly as it was:
+     badges are completed in turn (DFM 37/41) and nothing here may skip them. */
+  function railLabel(text) {
+    var el = document.getElementById('rail-label');
+    if (!el) return;
+    var cur = App.state.chunks[App.state.chunkIdx];
+    el.textContent = text
+      ? 'Go to: ' + text
+      : 'Finished — click any dot to look at that part again. You are on: ' + ((cur && cur.title) || '');
+  }
+
   function renderRail() {
     var rail = $('#chunk-rail');
+    var review = !!App.state.review;
     rail.innerHTML = '';
+    rail.classList.toggle('reviewable', review);
     App.state.chunks.forEach(function (ch, i) {
-      var d = document.createElement('span');
-      d.className = 'rail-dot' + (i < App.state.chunkIdx ? ' past' : i === App.state.chunkIdx ? ' now' : '');
+      var cls = 'rail-dot' + (i < App.state.chunkIdx ? ' past' : i === App.state.chunkIdx ? ' now' : '') +
+        (ch.badge ? ' badge-dot' : '');
+      var d;
+      if (review) {
+        d = document.createElement('button');
+        d.type = 'button';
+        d.className = cls + ' rail-jump';
+        d.setAttribute('aria-label', 'Go to ' + (ch.title || ('part ' + (i + 1))));
+        d.onclick = function () {
+          if (App.state.chunkIdx === i) return;
+          /* A celebration pop (badge earned / clearance upgraded) is dismissed by
+             its own buttons, which used to be the only way a chunk could change.
+             Jumping is a second way, so the pop has to come down with it -
+             otherwise it is left floating over the card she jumped to. */
+          Array.prototype.forEach.call(document.querySelectorAll('.badge-pop'), function (ov) {
+            ov.classList.remove('show');
+            setTimeout(function () { ov.remove(); }, 250);
+          });
+          App.state.chunkIdx = i;
+          mountChunk();          // re-renders the rail and its label
+        };
+        d.onmouseenter = d.onfocus = function () { railLabel(ch.title); };
+        d.onmouseleave = d.onblur = function () { railLabel(null); };
+      } else {
+        d = document.createElement('span');
+        d.className = cls;
+      }
       d.title = ch.title || '';
-      if (ch.badge) d.classList.add('badge-dot');
       rail.appendChild(d);
     });
+
+    var lab = document.getElementById('rail-label');
+    if (!review) { if (lab) lab.remove(); return; }
+    if (!lab) {
+      lab = document.createElement('p');
+      lab.id = 'rail-label';
+      rail.parentNode.insertBefore(lab, rail.nextSibling);
+    }
+    railLabel(null);
   }
 
   function mountChunk() {
