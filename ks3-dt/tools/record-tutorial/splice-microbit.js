@@ -37,7 +37,10 @@ const POPUPS = [
   { id: 'p-d', at: 42, his: 3, html: "Turn on <b>Don't show this again</b> and then click <b>Done</b>." },
   { id: 'p-e', at: 53, his: 3, html: "Click the <b>download icon</b> at the top of the screen." },
   { id: 'p-f', at: 59, his: 5, html: "Your most recently downloaded program files will always be at the top of the list &mdash; click on the <b>folder icon</b> beside the name." },
-  { id: 'p-g', at: 67, his: 7, html: "Now click and <b>HOLD</b> the left mouse button over the file (the most recent will always be the one at the top) and drag the file all the way over to <b>MICROBIT</b>, then let go. This puts the program you've created onto the actual micro:bit!" },
+  /* DAMIEN, 3 Aug 2026: right-aligned - centred, this one sat straight on top of
+     the MICROBIT drive in the Explorer sidebar, which is the exact thing it is
+     telling her to drag onto. */
+  { id: 'p-g', at: 67, his: 7, align: 'right', html: "Now click and <b>HOLD</b> the left mouse button over the file (the most recent will always be the one at the top) and drag the file all the way over to <b>MICROBIT</b>, then let go. This puts the program you've created onto the actual micro:bit!" },
   { id: 'p-h', at: 87, his: 4, html: "You'll see the yellow light flashing on the micro:bit. <b>When it stops, it's loaded!</b>" }
 ];
 
@@ -66,7 +69,7 @@ async function main() {
   console.log('   conformed: ' + dur.toFixed(2) + 's, no audio track');
 
   console.log('2. rendering his pop-ups in the film\'s own caption style');
-  await renderCaptions(POPUPS.map(p => ({ id: p.id, html: p.html })), PNG_DIR, { log: m => console.log('   ' + m) });
+  await renderCaptions(POPUPS.map(p => ({ id: p.id, html: p.html, align: p.align })), PNG_DIR, { log: m => console.log('   ' + m) });
 
   /* work out each hold: his start exactly, his duration unless it is too short
      to read, and never past the next pop-up (or the end of his clip) */

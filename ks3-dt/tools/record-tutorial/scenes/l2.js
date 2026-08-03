@@ -282,7 +282,7 @@ const scenes = [
          use, on every surface, captions included). The hint really does cost a
          signal point, so the caption says so (rule 35). */
       await cine.caption('Back in the lesson, each challenge sits on its own card called a <b>rung</b> &mdash; four of them, climbed in order, like the rungs of a ladder.');
-      await cine.caption('Every rung card works exactly like this one: build it, then test it. If you get stuck, the card has a <b>Debug Hint</b> button that gives you a clue &mdash; it costs you one signal point.');
+      await cine.caption('Every rung card works exactly like this one: build it, then test it. If you get stuck, the card has a <b>Debug Hint</b> button that gives you a clue &mdash; it costs you <b>2 XP</b>.');
 
       await cine.drop({
         crest: CREST, kicker: 'READY TO BUILD',

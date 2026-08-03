@@ -108,7 +108,14 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
     b.click();
     return label;
   });
-  check(!!hintBtn && /signal point/i.test(hintBtn), 'the Debug Hint is still the priced route: ' + JSON.stringify(hintBtn));
+  /* DAMIEN, 3 Aug 2026: the price is now named in the currency a pupil can
+     actually see on her own screen - 2 XP - instead of the invented "signal
+     point". What this check is FOR is that the hint is still a priced route,
+     and that the price it states is the price the engine really charges
+     (a clean rung scores 5, a hinted one 3). It asserts the RULE, not the old
+     wording, and would fail if the button ever stopped naming a price. */
+  check(!!hintBtn && /costs\s*2\s*XP/i.test(hintBtn), 'the Debug Hint is still the priced route, in real XP: ' + JSON.stringify(hintBtn));
+  check(!/signal point/i.test(hintBtn || ''), 'the hint no longer prices itself in an invented currency');
   await sleep(600);
   const img = await page.evaluate(async () => {
     const box = document.querySelector('.rung-hint');
