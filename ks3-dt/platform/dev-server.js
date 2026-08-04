@@ -310,10 +310,15 @@
      server's own {ok:false, error:'store-full'}, which app.js already treats as
      permanent - so preview now reproduces that path instead of hiding it. */
   function writePupil_(s, cls, email, rec) {
+    /* mirrors Code.gs writePupil_ (3 Aug 2026): `mx` is the highest XP she has
+       ever reached and only ever rises, so a reset that writes a LOWER xp leaves
+       it alone. The Agent Kit unlocks from it - once earned, always hers. */
+    if (rec && typeof rec === 'object' && num_(rec.xp) > num_(rec.mx)) rec.mx = num_(rec.xp);
     var body = JSON.stringify(rec);
     if (body.length > PROP_VALUE_MAX) throw storeFull_(pKey_(cls, email), body.length);
     s.pupils[pKey_(cls, email)] = rec;
   }
+  function everXp_(rec) { return Math.max(num_(rec && rec.xp), num_(rec && rec.mx)); }
   function allPupils_(s, cls) {
     var pre = cls + ':';
     var out = [];
@@ -934,7 +939,7 @@
       }
       var rec = readPupil_(s, cls, PUPIL_EMAIL);
       if (!rec) return { ok: false, error: 'not-joined' };
-      var xp = num_(rec.xp);
+      var xp = everXp_(rec);   // once earned, always hers - mirrors Code.gs
       var themeId = p.themeId != null ? str_(p.themeId) : null;
       var insigniaId = p.insigniaId != null ? str_(p.insigniaId) : null;
       if (themeId != null) {
