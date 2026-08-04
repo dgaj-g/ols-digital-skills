@@ -571,7 +571,7 @@
        unlocked lesson found nothing to tap. His wording. */
     setPane('<p class="staff-status" id="lock-status"></p>' +
       '<div class="lock-grid">' + cells + '</div>' +
-      '<p class="staff-row-meta" style="margin-top:12px">Pupils who already opened a lesson are never kicked out. Locking again stops anyone <b>new</b> starting it, and a locked lesson is never used for absence flags. If you unlocked one by mistake, lock it again, then tap <b>&#8634; Not taught</b> to clear its delivered date. <b>Brief</b> opens the lesson&rsquo;s teacher run sheet.</p>');
+      '<p class="staff-row-meta" style="margin-top:12px">Pupils who already opened a lesson are never kicked out. Locking again stops anyone <b>new</b> starting it, and a locked lesson is never used for absence flags. If you unlocked one by mistake, lock it again, then click <b>&#8634; Not taught</b> to clear its delivered date. <b>Brief</b> opens the lesson&rsquo;s teacher run sheet.</p>');
     if (lockNotice) { plainStatus(q('#lock-status'), lockNotice); App.toast(lockNotice, 5200); lockNotice = ''; }
   }
 
@@ -1595,7 +1595,7 @@
     }).join('') || '<p class="staff-status">No teams yet -- add one below, or auto-make some.</p>';
 
     var html =
-      '<p class="staff-lead">Unassigned pupils (tap a name to move it)</p>' +
+      '<p class="staff-lead">Unassigned pupils (click a name to move it)</p>' +
       '<div class="staff-chip-pool">' + pool + '</div>' +
       '<div class="staff-team-cols">' + cols + '</div>' +
       '<div class="staff-add-row">' +
@@ -2099,14 +2099,14 @@
       'twice before it does anything, and only a class&rsquo;s own teacher sees the button. The storage ' +
       'and archive lines at the bottom of this tab are explained under Worth knowing, below.</p>' +
 
-      '<h4>Lessons</h4><p>One cell for every lesson of the year, for the selected class. Tap a cell to ' +
-      'unlock that lesson &mdash; until you do, pupils see a padlock on it &mdash; and tap it again to ' +
+      '<h4>Lessons</h4><p>One cell for every lesson of the year, for the selected class. Click a cell to ' +
+      'unlock that lesson &mdash; until you do, pupils see a padlock on it &mdash; and click it again to ' +
       'lock it; locking never removes anyone&rsquo;s work, it only stops somebody new from starting. ' +
       '<b>Brief</b> opens that lesson&rsquo;s full run sheet: what the pupils will do, how to prepare, and ' +
       'how to run the hour. <b>Start again</b> puts the whole class back to the start of a lesson &mdash; ' +
       'it always asks before doing anything, and on Lesson 1 it also clears codenames, because Lesson 1 is ' +
       'where codenames are made. <b>&#8634; Not taught</b> appears on a lesson that is locked but still ' +
-      'carries a delivered date: tap it if you unlocked something by accident, and nobody will later be ' +
+      'carries a delivered date: click it if you unlocked something by accident, and nobody will later be ' +
       'flagged absent from a lesson that never actually ran.</p>' +
 
       '<h4>Live</h4><p>The during-the-hour view &mdash; this is the tab to keep open while your class ' +
@@ -2148,7 +2148,7 @@
       '<b>Dismiss flag</b> clears it.</p>' +
 
       '<h4>Teams</h4><p>Optional groups, used by the tournament lessons and by the hidden-teams ' +
-      'leaderboard in Options. Tap any pupil&rsquo;s name chip and a small menu appears for moving them ' +
+      'leaderboard in Options. Click any pupil&rsquo;s name chip and a small menu appears for moving them ' +
       'into a team; <b>Add team</b> creates a team with a name you choose, and <b>Auto-make N teams</b> ' +
       'splits the class into that many even teams in one press. Each team&rsquo;s XP total updates by ' +
       'itself as its pupils earn points. The tick-box <b>&ldquo;Pupils can see who is in their team&rdquo;' +

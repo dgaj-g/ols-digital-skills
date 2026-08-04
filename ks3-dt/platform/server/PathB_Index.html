@@ -1343,22 +1343,60 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 
 /* ============ Lesson 2+: challenge ladder / parsons / bank-your-build ============ */
 .ladder-card { max-width: 640px; }
-.rung-bar { display: flex; gap: 6px; margin: 10px 0 14px; align-items: center; }
-/* DAMIEN, 4 Aug 2026: "the star and lightening icons are very hard to make out."
-   He is right - greyscale(1) at 0.35 opacity left a pale smudge on a light card.
-   The not-yet-earned state stays clearly GREY (so earned/not-earned is still
-   obvious at a glance) but is now legible; earned goes full colour and larger.
-   Sizes up too, because these are 1.15rem emoji doing a job at a distance. */
-.rung-dot {
-  font-size: 1.35rem; filter: grayscale(1); opacity: 0.8;
-  transition: filter 0.3s, opacity 0.3s, transform 0.3s;
+/* ---- THE PROGRESS LADDER (Damien approved the drawing 4 Aug 2026, DFM 152a) ----
+   It replaces a row of lightning bolts and a star he could barely see and which
+   never said what it meant. A real ladder needs no key to be read: the rung she
+   is ON glows, cleared rungs are permanently gold, and the rails gild as she
+   climbs. Only the dashed stretch rung is named in words, on the intro card. */
+.lad-wrap { display: flex; justify-content: center; margin: 6px 0 12px; }
+.lad { display: block; overflow: visible; }
+.lad-rail {
+  stroke: var(--rail-idle, #C3CBD9); stroke-width: 7; stroke-linecap: round;
+  transition: stroke 0.5s;
 }
-.rung-dot.lit { filter: none; opacity: 1; transform: scale(1.12); }
-.rung-dot.lit.hinted { opacity: 0.75; }
-/* the line that says what the bolts and the star ARE (rule 13) - intro card only.
-   The negative top margin closes the gap to the bar it explains WITHOUT changing
-   .rung-bar itself, which also sits on rung cards where there is no key. */
-.rung-bar-key { margin: -10px 0 14px; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
+.lad.lit .lad-rail { stroke: var(--gold-deep); }
+.lad-rung {
+  stroke: var(--rail-idle, #C3CBD9); stroke-width: 9; stroke-linecap: round;
+  transition: stroke 0.55s;
+}
+/* the rung she is on */
+.lad-rung.active { stroke: var(--gold); animation: lad-pulse 1.25s ease-in-out infinite; }
+@keyframes lad-pulse {
+  0%, 100% { stroke: #D9CFA8; filter: none; }
+  50% { stroke: var(--gold-hi); filter: drop-shadow(0 0 6px rgba(var(--gold-rgb), 0.95)); }
+}
+/* cleared: gold for good */
+.lad-rung.done {
+  stroke: var(--gold); filter: drop-shadow(0 0 3px rgba(var(--gold-rgb), 0.45)); animation: none;
+}
+/* the moment it is cleared: one bright flash, then it settles */
+.lad-rung.landing { animation: lad-land 0.85s cubic-bezier(0.2, 0.8, 0.25, 1) 1; }
+@keyframes lad-land {
+  0% { stroke: var(--gold-hi); stroke-width: 9; }
+  45% { stroke: #FFF3C4; stroke-width: 15; filter: drop-shadow(0 0 18px rgba(var(--gold-hi-rgb), 1)); }
+  100% { stroke: var(--gold); stroke-width: 9; filter: drop-shadow(0 0 3px rgba(var(--gold-rgb), 0.45)); }
+}
+/* the EXTRA challenge: a dashed rung above the top, with a star */
+.lad-bonus {
+  stroke: var(--rail-idle, #C3CBD9); stroke-width: 6; stroke-linecap: round;
+  stroke-dasharray: 9 7; opacity: 0.55; transition: stroke 0.5s, opacity 0.5s;
+}
+.lad-bonus.offered { stroke: var(--gold); opacity: 1; animation: lad-pulse 1.6s ease-in-out infinite; }
+.lad-bonus.done {
+  stroke: var(--gold); opacity: 1; stroke-dasharray: none;
+  filter: drop-shadow(0 0 4px rgba(var(--gold-rgb), 0.5)); animation: none;
+}
+.lad-star { fill: #E3E7ED; transition: fill 0.5s; }
+.lad-star.offered { fill: var(--gold); animation: lad-twinkle 1.6s ease-in-out infinite; }
+.lad-star.done { fill: var(--gold); filter: drop-shadow(0 0 6px rgba(var(--gold-rgb), 0.8)); animation: none; }
+@keyframes lad-twinkle { 0%, 100% { fill: #EFE2AE; } 50% { fill: var(--gold-hi); } }
+/* the one thing the drawing cannot say for itself (rule 13) - intro card only */
+.lad-key { margin: 0 0 14px; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
+/* a pupil who has asked her machine to stop animating gets a still ladder */
+@media (prefers-reduced-motion: reduce) {
+  .lad-rung.active, .lad-rung.landing, .lad-bonus.offered, .lad-star.offered { animation: none; }
+  .lad-rung.active { stroke: var(--gold-hi); }
+}
 .ladder-open { margin: 12px 0 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .ladder-open-note { color: var(--muted); font-size: 0.8rem; }
 .ladder-script { margin: 14px 0 18px; padding-left: 22px; color: var(--ink); }
@@ -2899,7 +2937,7 @@ window.OLS_TRANSPORT = {
         '<span class="kit-theme-name">' + esc(t.name) + '</span>' +
         '<span class="kit-theme-tag">' + esc(t.tag || '') + '</span>' +
         (equipped ? '<span class="kit-state on">Equipped</span>'
-          : unlocked ? '<span class="kit-state go">Tap to equip</span>'
+          : unlocked ? '<span class="kit-state go">Click to equip</span>'
           : '<span class="kit-state lock">&#128274; Clearance ' + Number(t.clearance) + ' &middot; ' + needXp + ' XP</span>') +
         '</button>';
     }).join('');
@@ -2923,7 +2961,7 @@ window.OLS_TRANSPORT = {
     body.innerHTML = head +
       '<h3 class="kit-section">Interface</h3><div class="kit-themes">' + themes + '</div>' +
       '<h3 class="kit-section">Insignia <small>shows beside your codename</small></h3><div class="kit-chips">' + chips + '</div>' +
-      '<p class="kit-foot">Tap to equip &mdash; every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks more kit.</p>' +
+      '<p class="kit-foot">Click to equip &mdash; every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks more kit.</p>' +
       '<div class="confirm-actions" style="margin-top:6px"><button type="button" class="primary-btn" id="kit-done">Done</button></div>';
 
     body.querySelectorAll('.kit-theme').forEach(function (el) {
@@ -4969,6 +5007,9 @@ window.OLS_TRANSPORT = {
       var idx = 0;
       while (idx < rungs.length && done.indexOf(String(rungs[idx].id)) !== -1) idx++;
       var unpluggedDone = !!draft.unplugged || idx > 0;
+      /* the rung (or the stretch) cleared a heartbeat ago, so the ladder that
+         renders next can play the landing flash on it exactly once */
+      var justCleared = null;
 
       function saveLadder() {
         if (ctx.review) return;
@@ -4992,17 +5033,74 @@ window.OLS_TRANSPORT = {
          above three bolts. The key says "every rung you build on the micro:bit"
          precisely so those two agree (rule 35). Lesson 3 has three built rungs
          and says "Three rungs", so it was already consistent. */
-      function pointsBar(withKey) {
-        var lit = rungs.map(function (r) {
+      /* A DRAWN LADDER, approved by Damien 4 Aug 2026 (DFM 152a): "the ladder
+         image and animation are perfect ... build it into the cards (not the
+         buttons, they were just to let me see how the animation looked)".
+         It replaces the row of lightning bolts and a star (DFM 149), which he
+         could barely see and which told her nothing about where she was.
+         The rung she is ON pulses; a rung she has cleared is permanently gold;
+         the rails gild as she climbs. The STRETCH is a dashed rung with a star
+         ABOVE the top of the ladder - dashed and faded while it is out of
+         reach - which is also the answer to "I'm not sure which of the tasks
+         I've done was the extra challenge?" (DFM 152a). */
+      function ladderSvg(withKey) {
+        var n = rungs.length;
+        if (!n) return '';
+        var hasStretch = !!cfg.stretch;
+        var GAP = 32, X1 = 22, X2 = 74, W = 96;
+        /* laid out top-down: star, dashed stretch rung, then the real rungs */
+        var topRungY = hasStretch ? 62 : 24;
+        var railTop = topRungY - (hasStretch ? 40 : 14);
+        var bottomRungY = topRungY + (n - 1) * GAP;
+        var railBottom = bottomRungY + 14;
+        var H = railBottom + 8;
+
+        var parts = ['<g class="lad-rails">' +
+          '<line class="lad-rail" x1="' + X1 + '" y1="' + railTop + '" x2="' + X1 + '" y2="' + railBottom + '"/>' +
+          '<line class="lad-rail" x1="' + X2 + '" y1="' + railTop + '" x2="' + X2 + '" y2="' + railBottom + '"/></g>'];
+
+        if (hasStretch) {
+          var allDone = done.length >= n;
+          var bCls = 'lad-bonus' + (stretchDone ? ' done' : (allDone ? ' offered' : ''));
+          var sCls = 'lad-star' + (stretchDone ? ' done' : (allDone ? ' offered' : ''));
+          parts.push('<line class="' + bCls + '" x1="' + X1 + '" y1="' + (topRungY - 28) + '" x2="' + X2 + '" y2="' + (topRungY - 28) + '"/>');
+          parts.push('<polygon class="' + sCls + '" points="48,2 52,14 65,14 54,21 58,34 48,26 38,34 42,21 31,14 44,14"/>');
+        }
+
+        /* rungs are drawn top-first so rung 1 sits at the BOTTOM, the way a
+           real ladder is climbed */
+        for (var i = n - 1; i >= 0; i--) {
+          var r = rungs[i];
           var isDone = done.indexOf(String(r.id)) !== -1;
-          var isHint = hinted.indexOf(String(r.id)) !== -1;
-          return '<span class="rung-dot' + (isDone ? ' lit' : '') + (isHint ? ' hinted' : '') + '" title="' + esc(r.title) + '">&#9889;</span>';
-        }).join('');
+          var isNow = (i === idx) && !isDone;
+          var cls = 'lad-rung' + (isDone ? ' done' : (isNow ? ' active' : '')) +
+            (justCleared === String(r.id) ? ' landing' : '');
+          var y = topRungY + (n - 1 - i) * GAP;
+          /* NO per-rung <title>: an SVG <title> is real text content, so naming
+             each rung here put "Rung 4 - The Vanishing Ghost" into EVERY card's
+             textContent and made qa-l2-rung4 mistake the intro card for rung 4.
+             The whole ladder's aria-label carries the meaning instead. */
+          parts.push('<line class="' + cls + '" x1="' + X1 + '" y1="' + y + '" x2="' + X2 + '" y2="' + y + '"/>');
+        }
+
+        var svg = '<svg class="lad' + (done.length ? ' lit' : '') + '" width="' + W + '" height="' + H +
+          '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(ladderAria()) + '">' + parts.join('') + '</svg>';
+
+        /* rule 13: the ladder is readable at a glance, but the dashed rung is
+           not - so it is named where she first meets it, on the intro card */
         var key = withKey
-          ? '<p class="rung-bar-key">One &#9889; for every rung you build on the micro:bit. It lights up when yours works.'
-            + (cfg.stretch ? ' The &#11088; is the extra challenge at the end.' : '') + '</p>'
+          ? '<p class="lad-key">This ladder is your progress. The rung you are on glows, and it turns gold for good once your micro:bit does what the card asked.' +
+            (hasStretch ? ' The dashed rung with the star, above the top, is the extra challenge &mdash; it wakes up once all ' + n + ' rungs are gold.' : '') + '</p>'
           : '';
-        return '<div class="rung-bar">' + lit + (cfg.stretch ? '<span class="rung-dot stretch' + (stretchDone ? ' lit' : '') + '">&#11088;</span>' : '') + '</div>' + key;
+        return '<div class="lad-wrap">' + svg + '</div>' + key;
+      }
+
+      /* a screen reader gets the same information the drawing carries */
+      function ladderAria() {
+        var n = rungs.length, d = Math.min(done.length, n);
+        var s = 'Ladder progress: ' + d + ' of ' + n + ' rungs complete';
+        if (cfg.stretch) s += stretchDone ? ', extra challenge complete' : (d >= n ? ', extra challenge now available' : '');
+        return s;
       }
 
       /* DAMIEN, 2 Aug 2026 (rule 135c): "flash it to the device" pointed at a
@@ -5064,7 +5162,7 @@ window.OLS_TRANSPORT = {
       introCard(host, {
         kicker: chunk.title, title: cfg.title || 'The Challenge Ladder',
         text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
-        extra: pointsBar(true) + openerRow() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
+        extra: ladderSvg(true) + openerRow() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
       }, unpluggedDone ? 'Back to the ladder' : 'Start climbing', function () {
         if (!unpluggedDone && cfg.unplugged) unplugged(); else showRung();
       });
@@ -5096,7 +5194,7 @@ window.OLS_TRANSPORT = {
         var r = rungs[idx];
         var hintUsed = hinted.indexOf(String(r.id)) !== -1;
         var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(r.title) + '</span>' +
-          pointsBar() +
+          ladderSvg() +
           '<h2 class="rung-target">' + esc(r.target) + '</h2>' +
           (r.img ? '<img class="rung-img" src="' + esc(asset(r.img)) + '" alt="The blocks for this rung">' : '') +
           '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(r.test || 'Flash it to the device and make it happen for real.') + '</p></div>' +
@@ -5130,7 +5228,11 @@ window.OLS_TRANSPORT = {
           saveLadder();
           App.toast('Rung cleared &mdash; signal locked in.');
           idx++;
+          /* the next card's ladder plays the landing flash on the rung she just
+             cleared, then the flag is dropped so it fires exactly once */
+          justCleared = String(r.id);
           showRung();
+          justCleared = null;
         };
       }
 
@@ -5138,7 +5240,7 @@ window.OLS_TRANSPORT = {
         if (!cfg.stretch || stretchDone) { finishLadder(); return; }
         var s = cfg.stretch;
         var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(s.title || 'Stretch') + '</span>' +
-          pointsBar() +
+          ladderSvg() +
           '<h2 class="rung-target">' + esc(s.target) + '</h2>' +
           (s.img ? '<img class="rung-img" src="' + esc(asset(s.img)) + '" alt="Stretch blocks">' : '') +
           (s.test ? '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(s.test) + '</p></div>' : '') +
@@ -7556,7 +7658,7 @@ window.OLS_TRANSPORT = {
        unlocked lesson found nothing to tap. His wording. */
     setPane('<p class="staff-status" id="lock-status"></p>' +
       '<div class="lock-grid">' + cells + '</div>' +
-      '<p class="staff-row-meta" style="margin-top:12px">Pupils who already opened a lesson are never kicked out. Locking again stops anyone <b>new</b> starting it, and a locked lesson is never used for absence flags. If you unlocked one by mistake, lock it again, then tap <b>&#8634; Not taught</b> to clear its delivered date. <b>Brief</b> opens the lesson&rsquo;s teacher run sheet.</p>');
+      '<p class="staff-row-meta" style="margin-top:12px">Pupils who already opened a lesson are never kicked out. Locking again stops anyone <b>new</b> starting it, and a locked lesson is never used for absence flags. If you unlocked one by mistake, lock it again, then click <b>&#8634; Not taught</b> to clear its delivered date. <b>Brief</b> opens the lesson&rsquo;s teacher run sheet.</p>');
     if (lockNotice) { plainStatus(q('#lock-status'), lockNotice); App.toast(lockNotice, 5200); lockNotice = ''; }
   }
 
@@ -8580,7 +8682,7 @@ window.OLS_TRANSPORT = {
     }).join('') || '<p class="staff-status">No teams yet -- add one below, or auto-make some.</p>';
 
     var html =
-      '<p class="staff-lead">Unassigned pupils (tap a name to move it)</p>' +
+      '<p class="staff-lead">Unassigned pupils (click a name to move it)</p>' +
       '<div class="staff-chip-pool">' + pool + '</div>' +
       '<div class="staff-team-cols">' + cols + '</div>' +
       '<div class="staff-add-row">' +
@@ -9084,14 +9186,14 @@ window.OLS_TRANSPORT = {
       'twice before it does anything, and only a class&rsquo;s own teacher sees the button. The storage ' +
       'and archive lines at the bottom of this tab are explained under Worth knowing, below.</p>' +
 
-      '<h4>Lessons</h4><p>One cell for every lesson of the year, for the selected class. Tap a cell to ' +
-      'unlock that lesson &mdash; until you do, pupils see a padlock on it &mdash; and tap it again to ' +
+      '<h4>Lessons</h4><p>One cell for every lesson of the year, for the selected class. Click a cell to ' +
+      'unlock that lesson &mdash; until you do, pupils see a padlock on it &mdash; and click it again to ' +
       'lock it; locking never removes anyone&rsquo;s work, it only stops somebody new from starting. ' +
       '<b>Brief</b> opens that lesson&rsquo;s full run sheet: what the pupils will do, how to prepare, and ' +
       'how to run the hour. <b>Start again</b> puts the whole class back to the start of a lesson &mdash; ' +
       'it always asks before doing anything, and on Lesson 1 it also clears codenames, because Lesson 1 is ' +
       'where codenames are made. <b>&#8634; Not taught</b> appears on a lesson that is locked but still ' +
-      'carries a delivered date: tap it if you unlocked something by accident, and nobody will later be ' +
+      'carries a delivered date: click it if you unlocked something by accident, and nobody will later be ' +
       'flagged absent from a lesson that never actually ran.</p>' +
 
       '<h4>Live</h4><p>The during-the-hour view &mdash; this is the tab to keep open while your class ' +
@@ -9133,7 +9235,7 @@ window.OLS_TRANSPORT = {
       '<b>Dismiss flag</b> clears it.</p>' +
 
       '<h4>Teams</h4><p>Optional groups, used by the tournament lessons and by the hidden-teams ' +
-      'leaderboard in Options. Tap any pupil&rsquo;s name chip and a small menu appears for moving them ' +
+      'leaderboard in Options. Click any pupil&rsquo;s name chip and a small menu appears for moving them ' +
       'into a team; <b>Add team</b> creates a team with a name you choose, and <b>Auto-make N teams</b> ' +
       'splits the class into that many even teams in one press. Each team&rsquo;s XP total updates by ' +
       'itself as its pupils earn points. The tick-box <b>&ldquo;Pupils can see who is in their team&rdquo;' +

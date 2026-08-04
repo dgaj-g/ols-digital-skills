@@ -733,7 +733,7 @@
         '<span class="kit-theme-name">' + esc(t.name) + '</span>' +
         '<span class="kit-theme-tag">' + esc(t.tag || '') + '</span>' +
         (equipped ? '<span class="kit-state on">Equipped</span>'
-          : unlocked ? '<span class="kit-state go">Tap to equip</span>'
+          : unlocked ? '<span class="kit-state go">Click to equip</span>'
           : '<span class="kit-state lock">&#128274; Clearance ' + Number(t.clearance) + ' &middot; ' + needXp + ' XP</span>') +
         '</button>';
     }).join('');
@@ -757,7 +757,7 @@
     body.innerHTML = head +
       '<h3 class="kit-section">Interface</h3><div class="kit-themes">' + themes + '</div>' +
       '<h3 class="kit-section">Insignia <small>shows beside your codename</small></h3><div class="kit-chips">' + chips + '</div>' +
-      '<p class="kit-foot">Tap to equip &mdash; every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks more kit.</p>' +
+      '<p class="kit-foot">Click to equip &mdash; every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks more kit.</p>' +
       '<div class="confirm-actions" style="margin-top:6px"><button type="button" class="primary-btn" id="kit-done">Done</button></div>';
 
     body.querySelectorAll('.kit-theme').forEach(function (el) {

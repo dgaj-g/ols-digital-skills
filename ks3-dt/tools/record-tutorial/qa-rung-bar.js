@@ -1,22 +1,18 @@
-/* qa-rung-bar.js - the ladder's progress symbols must be legible AND explained.
+/* qa-rung-bar.js - the ladder progress drawing, and what it must never go back to.
  *
- * DAMIEN, 4 Aug 2026, mid Lesson-2 verification: "on the signal relay ladder
- * badge, the star and lightening icons are very hard to make out. is there a
- * purpose to them?"
+ * DAMIEN, 4 Aug 2026, sitting Lesson 2: "the star and lightening icons are very
+ * hard to make out. is there a purpose to them?" - then, on seeing the drawn
+ * ladder prototype: "the ladder image and animation are perfect (and your
+ * recommendation); build it into the cards".
  *
- * There is a purpose - one lightning bolt per rung she BUILDS, lit when it
- * works, plus a star for the stretch challenge - but two things were wrong:
- *   1. the not-yet-earned state was greyscale(1) at 0.35 opacity, i.e. a pale
- *      smudge on a light card. He could barely see them; a pupil had no chance.
- *   2. nothing on screen ever said what they MEAN. The only explanation was a
- *      title tooltip, which needs a hover a twelve-year-old will never find.
- *      A symbol she has to decode is rule 13 / 138.1.3 all over again.
+ * So the row of lightning bolts and a star is GONE and a drawn ladder replaces
+ * it: the rung she is on glows, a cleared rung is permanently gold, the rails
+ * gild as she climbs, and the stretch is a DASHED rung with a star above the
+ * top which only wakes when every rung is gold. That last part is also the fix
+ * for "I'm not sure which of the tasks I've done was the extra challenge?"
  *
- * This guard measures the REAL computed style in a real browser (rule 146b -
- * assert the rendered result, never the source; the re-watch width took three
- * attempts because two source "fixes" changed no pixels at all), and asserts
- * the key line is present where she first meets the symbols and absent where
- * it would be clutter. Both controls prove the assertions can actually fail.
+ * Measured in a real browser on real lesson content (rule 146b - assert the
+ * rendered result, never the source). Controls prove each assertion can fail.
  *
  * Needs the static server on 8096 (config digital-skills-l4).
  *   node qa-rung-bar.js
@@ -26,12 +22,7 @@ const { chromium } = require('playwright');
 const BASE = 'http://localhost:8096/ks3-dt/platform/index.html?class=Demo-8A&as=anya';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const VIEWPORTS = [{ w: 1440, h: 900 }, { w: 1280, h: 800 }];
-
-/* legibility floor. The pre-fix state was opacity 0.35 at 1.15rem (18.4px);
-   it now sits at 0.8 and 1.35rem (21.6px). These floors sit between the two,
-   so the old state fails and the new one passes with room to spare. */
-const MIN_OPACITY = 0.6;
-const MIN_PX = 20;
+const GOLD = 'rgb(228, 184, 36)';
 
 let PASS = 0;
 const FAILS = [];
@@ -40,13 +31,15 @@ function check(cond, msg) {
   else { FAILS.push(msg); console.log('  FAIL  ' + msg); }
 }
 
-/* Mount the ladder straight from real lesson content, on the INTRO card and
-   then on a RUNG card, and read back what actually rendered. */
-async function probe(page, lessonFile) {
-  return page.evaluate(async (file) => {
+/* Mount the ladder from real content at a given state and read back what
+   actually rendered - classes AND computed paint. */
+async function probe(page, file, state) {
+  return page.evaluate(async (args) => {
+    const [file, state] = args;
     const sleep = ms => new Promise(r => setTimeout(r, ms));
     const lesson = await (await fetch('/ks3-dt/content/j1/lessons/' + file)).json();
     const ladder = lesson.chunks.find(c => c.engine === 'ladder');
+    const ids = (ladder.config.rungs || []).map(r => String(r.id));
 
     document.body.innerHTML = '';
     const wrap = document.createElement('div');
@@ -55,114 +48,125 @@ async function probe(page, lessonFile) {
     host.className = 'chunk-host'; host.id = 'chunk-host';
     wrap.appendChild(host); document.body.appendChild(wrap);
 
-    /* the INTRO card, with the unplugged rung already behind her so the CTA
-       goes straight on to a rung card when we click it below */
-    const draft = { ladder: { done: [], hinted: [], unplugged: 1, stretch: 0 } };
-    window.Engines.ladder.mount(host, ladder, { draft: draft, catchup: false, review: true, chunk: ladder });
-    await sleep(400);
+    const draft = { ladder: { done: ids.slice(0, state), hinted: [], unplugged: 1, stretch: 0 } };
+    window.Engines.ladder.mount(host, ladder, { draft, catchup: false, review: true, chunk: ladder });
+    await sleep(420);
 
-    const dots = Array.from(host.querySelectorAll('.rung-dot'));
-    const unlit = dots.find(d => !d.classList.contains('lit'));
-    const cs = unlit ? getComputedStyle(unlit) : null;
-    const keyEl = host.querySelector('.rung-bar-key');
+    const svg = host.querySelector('svg.lad');
+    const rungEls = Array.from(host.querySelectorAll('.lad-rung'));
+    const bonusEl = host.querySelector('.lad-bonus');
+    const starEl = host.querySelector('.lad-star');
+    const railEl = host.querySelector('.lad-rail');
+    const paint = el => el ? { cls: el.getAttribute('class'), stroke: getComputedStyle(el).stroke,
+                               fill: getComputedStyle(el).fill, anim: getComputedStyle(el).animationName } : null;
+
+    /* rungs are drawn top-first, so reverse to get bottom-up = rung 1..n */
+    const bottomUp = rungEls.slice().reverse().map(paint);
 
     const intro = {
-      dots: dots.length,
-      bolts: dots.filter(d => !d.classList.contains('stretch')).length,
-      stars: dots.filter(d => d.classList.contains('stretch')).length,
-      opacity: cs ? Number(cs.opacity) : -1,
-      px: cs ? parseFloat(cs.fontSize) : -1,
-      keyText: keyEl ? (keyEl.textContent || '').trim() : '',
-      keyVisible: keyEl ? keyEl.getBoundingClientRect().width > 0 : false,
-      /* the rungs live under chunk.config, not on the chunk itself - reading
-         the wrong path printed "3 bolts for 0 rungs", which is exactly the kind
-         of untrue line rule 146a is about, even in my own harness output */
-      rungTitles: ((ladder.config || {}).rungs || []).map(r => r.title),
-      introText: String((ladder.config || {}).intro || '')
+      rungCount: rungEls.length,
+      contentRungs: ids.length,
+      bottomUp,
+      bonus: paint(bonusEl),
+      star: paint(starEl),
+      rail: paint(railEl),
+      aria: svg ? svg.getAttribute('aria-label') : '',
+      key: host.querySelector('.lad-key') ? host.querySelector('.lad-key').textContent.trim() : '',
+      /* the thing it replaced must be gone for good */
+      oldBolts: host.querySelectorAll('.rung-dot').length + host.querySelectorAll('.rung-bar').length
     };
 
-    /* now on to a RUNG card - the key must NOT repeat there */
+    /* on to a rung card - the ladder rides along, the key does not */
     const cta = host.querySelector('button.primary-btn');
     if (cta) cta.click();
     await sleep(450);
     const rung = {
-      hasBar: !!host.querySelector('.rung-bar'),
-      hasKey: !!host.querySelector('.rung-bar-key')
+      hasLadder: !!host.querySelector('svg.lad'),
+      hasKey: !!host.querySelector('.lad-key')
     };
-
     return { intro, rung };
-  }, lessonFile);
+  }, [file, state]);
 }
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
 
   for (const v of VIEWPORTS) {
-    for (const [file, label, expectBolts] of [['j1-02.json', 'Lesson 2 (Signal Relay)', 3], ['j1-03.json', 'Lesson 3 (Scoreboard)', 3]]) {
+    for (const [file, label] of [['j1-02.json', 'Lesson 2 (Signal Relay)'], ['j1-03.json', 'Lesson 3 (Scoreboard)']]) {
       const page = await browser.newPage({ viewport: { width: v.w, height: v.h } });
       await page.goto(BASE, { waitUntil: 'domcontentloaded' });
       await sleep(2200);
-      const r = await probe(page, file);
-      const i = r.intro;
-      console.log('\n== ' + label + ' at ' + v.w + 'x' + v.h + ' == ' + i.bolts + ' bolt(s) + ' + i.stars +
-        ' star | unlit opacity ' + i.opacity + ' at ' + i.px + 'px');
 
-      check(i.dots > 0, 'the progress bar rendered');
-      check(i.bolts === expectBolts, 'one bolt per built rung (' + i.bolts + ' bolts for ' + i.rungTitles.length + ' rungs)');
-      check(i.stars === 1, 'the stretch challenge has its own star');
+      /* --- state 0: nothing cleared. Rung 1 glows, the rest are dormant. --- */
+      const s0 = (await probe(page, file, 0)).intro;
+      console.log('\n== ' + label + ' at ' + v.w + 'x' + v.h + ' == ' + s0.rungCount + ' rungs drawn | ' + s0.aria);
+      check(s0.rungCount === s0.contentRungs,
+        'the ladder draws exactly one rung per rung in the content (' + s0.rungCount + ' of ' + s0.contentRungs + ')');
+      check(s0.oldBolts === 0, 'the old lightning-bolt bar is gone entirely');
+      check(/active/.test(s0.bottomUp[0].cls) && s0.bottomUp[0].anim !== 'none',
+        'the rung she is on is glowing (bottom rung, animation ' + s0.bottomUp[0].anim + ')');
+      check(s0.bottomUp.slice(1).every(r => !/active|done/.test(r.cls)),
+        'no rung above it is lit yet');
+      check(!/offered|done/.test(s0.bonus.cls), 'the extra challenge is still out of reach');
 
-      /* HIS COMPLAINT: legibility, measured in rendered pixels */
-      check(i.opacity >= MIN_OPACITY,
-        'a not-yet-earned symbol is legible: opacity ' + i.opacity + ' >= ' + MIN_OPACITY);
-      check(i.px >= MIN_PX,
-        'and big enough to read: ' + i.px + 'px >= ' + MIN_PX + 'px');
+      /* --- mid-climb: rung 1 cleared, rung 2 now glowing --- */
+      const s1 = (await probe(page, file, 1)).intro;
+      check(/done/.test(s1.bottomUp[0].cls) && s1.bottomUp[0].stroke === GOLD,
+        'a cleared rung is painted permanent gold (' + s1.bottomUp[0].stroke + ')');
+      check(s1.bottomUp[0].anim === 'none', 'and it has stopped glowing');
+      check(/active/.test(s1.bottomUp[1].cls), 'the NEXT rung has taken over the glow');
+      check(s1.rail.stroke !== s0.rail.stroke, 'the rails gild once she is climbing');
 
-      /* RULE 13: the symbols name themselves where she first meets them */
-      check(i.keyVisible, 'the intro card carries a visible line explaining the symbols');
-      check(/rung you build/i.test(i.keyText), 'the key says the bolts are the rungs she BUILDS');
-      check(/extra challenge/i.test(i.keyText), 'the key says the star is the extra challenge');
+      /* --- all rungs cleared: the extra challenge wakes up (DFM 152a) --- */
+      const sAll = (await probe(page, file, s0.contentRungs)).intro;
+      check(sAll.bottomUp.every(r => /done/.test(r.cls) && r.stroke === GOLD), 'every rung is gold at the top');
+      /* NB: assert the class and the running animation, NOT a static stroke -
+         while lad-pulse is running the computed stroke is a tween frame, so
+         comparing it to var(--gold) fails on a perfectly correct element.
+         (This harness caught exactly that mistake in its own first draft.) */
+      check(/offered/.test(sAll.bonus.cls) && sAll.bonus.anim !== 'none',
+        'the dashed extra-challenge rung wakes up only now (animation ' + sAll.bonus.anim + ')');
+      check(/offered/.test(sAll.star.cls) && sAll.star.anim !== 'none', 'and its star is lit and twinkling');
+      check(/extra challenge/i.test(sAll.aria), 'a screen reader is told the same thing: ' + JSON.stringify(sAll.aria));
 
-      /* RULE 35: the key must reconcile with what the intro promises. L2 says
-         "four ... rungs" over three bolts because Rung 1 is the unplugged Human
-         Circuit - so the key has to say "build", or the two contradict. */
-      if (/four small challenges/i.test(i.introText)) {
-        check(/build on the micro:bit/i.test(i.keyText),
-          'L2 promises FOUR rungs over three bolts, so the key names the built ones explicitly');
-      }
-
-      /* no clutter: the key is the intro card's job only */
-      check(r.rung.hasBar, 'a rung card still shows the bar');
-      check(!r.rung.hasKey, 'but does not repeat the key');
+      /* --- rule 13: the dashed rung is named where she first meets it --- */
+      check(/extra challenge/i.test(s0.key), 'the intro card explains what the dashed starred rung is');
+      check(/glow|gold/i.test(s0.key), 'and what the glowing rung means');
+      const onRung = (await probe(page, file, 1)).rung;
+      check(onRung.hasLadder, 'a rung card carries the ladder too');
+      check(!onRung.hasKey, 'but does not repeat the explanation');
 
       await page.close();
     }
   }
 
-  /* CONTROL 1: the pre-fix styling must FAIL the legibility floors, or those
-     two checks would pass against any stylesheet at all. */
-  console.log('\n== CONTROL 1: the pre-fix pale smudge must fail this ==');
+  /* CONTROL 1: kill the glow and the "she is on this one" check must fail. */
+  console.log('\n== CONTROL 1: with no glow, the current rung is unidentifiable ==');
   const c1 = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await c1.goto(BASE, { waitUntil: 'domcontentloaded' });
   await sleep(2200);
-  await c1.addStyleTag({ content: '.rung-dot { opacity: 0.35 !important; font-size: 1.15rem !important; }' });
-  const pre = await probe(c1, 'j1-02.json');
-  check(pre.intro.opacity < MIN_OPACITY && pre.intro.px < MIN_PX,
-    'pre-fix: opacity ' + pre.intro.opacity + ' and ' + pre.intro.px + 'px really were below the floors');
+  await c1.addStyleTag({ content: '.lad-rung.active { animation: none !important; }' });
+  const ctl1 = (await probe(c1, 'j1-02.json', 0)).intro;
+  check(ctl1.bottomUp[0].anim === 'none',
+    'control: the glow really is what marks her rung - without it the check fails');
   await c1.close();
 
-  /* CONTROL 2: strip the key and the rule-13 checks must fail, proving they
-     are reading the real element and not passing vacuously. */
-  console.log('\n== CONTROL 2: with the explaining line removed, the rule-13 checks must fail ==');
+  /* CONTROL 2: the pre-fix state - a stretch that looks identical to a rung is
+     exactly what left him asking which task had been the extra challenge. */
+  console.log('\n== CONTROL 2: an undistinguished stretch is what he could not identify ==');
   const c2 = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await c2.goto(BASE, { waitUntil: 'domcontentloaded' });
   await sleep(2200);
-  await c2.addStyleTag({ content: '.rung-bar-key { display: none !important; }' });
-  const nokey = await probe(c2, 'j1-02.json');
-  check(!nokey.intro.keyVisible,
-    'pre-fix: with no explaining line on screen, the symbols really were unexplained');
+  await c2.addStyleTag({ content: '.lad-bonus { stroke-dasharray: none !important; opacity: 1 !important; } .lad-star { display: none !important; }' });
+  const ctl2 = (await probe(c2, 'j1-02.json', 0)).intro;
+  const starHidden = await c2.evaluate(() => {
+    const s = document.querySelector('.lad-star');
+    return !s || getComputedStyle(s).display === 'none';
+  });
+  check(starHidden, 'control: with the star hidden and the dashes removed, nothing marks the stretch as extra');
   await c2.close();
 
   await browser.close();
-  console.log('\n' + (FAILS.length ? 'FAILED ' + FAILS.length : 'ALL RUNG-BAR CHECKS PASSED') + '  (' + PASS + ' checks)');
+  console.log('\n' + (FAILS.length ? 'FAILED ' + FAILS.length : 'ALL LADDER CHECKS PASSED') + '  (' + PASS + ' checks)');
   if (FAILS.length) { FAILS.forEach(f => console.log('   - ' + f)); process.exit(1); }
 })().catch(e => { console.error('FAILED: ' + e.message); process.exit(1); });
