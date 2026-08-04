@@ -406,9 +406,32 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   box-shadow: 0 0 0 4px rgba(var(--gold-hi-rgb), 0.25);
   outline: none;
 }
+/* DAMIEN, 3 Aug 2026: "should be in gold to stand out more and make it clear
+   that this lesson has already been completed... maybe slightly larger". */
 #rail-label {
-  text-align: center; margin: 0 0 14px; font-size: 0.82rem;
-  color: rgba(206, 222, 248, 0.78); min-height: 1.2em;
+  text-align: center; margin: 0 0 14px; font-size: 0.95rem; font-weight: 600;
+  color: var(--gold-hi); min-height: 1.2em; letter-spacing: 0.15px;
+}
+.review-banner {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 6px 12px; text-align: center;
+  max-width: min(920px, 92vw); margin: 4px auto 2px; padding: 11px 20px;
+  background: rgba(var(--gold-hi-rgb), 0.13);
+  border: 1.5px solid rgba(var(--gold-hi-rgb), 0.55);
+  border-radius: 999px;
+  box-shadow: 0 0 22px rgba(var(--gold-hi-rgb), 0.12);
+}
+.review-banner-tag {
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 1.1px;
+  color: var(--space-0); background: var(--gold-hi);
+  padding: 3px 10px; border-radius: 999px; white-space: nowrap;
+}
+.review-banner-text { font-size: 0.87rem; color: var(--gold-hi); line-height: 1.45; }
+@media (max-width: 640px) { .review-banner { border-radius: var(--r-md); } }
+/* a badge she already holds is not a badge she has just won */
+.badge-pop-card.already h2 { color: var(--ols-blue); }
+.badge-pop-already {
+  margin: 6px 0 2px; font-size: 0.9rem; line-height: 1.5; color: var(--muted);
 }
 
 /* ============ the reading card (light surface on the dark shell) ============ */
@@ -827,8 +850,21 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
    1440x900 screen. The card is widened rather than the video, so the chapter
    buttons and the fallback line widen with it. */
 .video-card { max-width: min(960px, 92vw); }
-/* the ladder's film-rewatch popup (DFM 135c, 2 Aug 2026) */
-.ols-modal-film { max-width: min(880px, 94vw); }
+/* the ladder's film-rewatch popup (DFM 135c, 2 Aug 2026)
+   DAMIEN, 3 Aug 2026: "the window playing the video is not as wide as it is the
+   first time it is played and it needs to be (on all cases of rewatching)... that
+   wider view we worked on for video tutorials needs to be in place across ALL
+   lessons, including ones that still need to be built."
+   The card gives its video 960 - 60 padding = 900px. This modal gave 880 - 56 =
+   824px, so every re-watch and every "Show me how" clip was SMALLER than the
+   first play. Sized so the modal's video is never the narrower of the two;
+   qa-video-width.js measures both in a real browser and fails if that reverses. */
+/* NOTE: .ols-modal-card sets `width: min(560px, 100%)` AND is declared LATER in
+   this file, so neither a max-width nor a same-specificity width overrides it.
+   Both classes sit on the same element, so the fix is the two-class selector.
+   qa-video-width.js caught both wrong attempts on 3 Aug - it measures the real
+   rendered <video>, which is why guessing at CSS could not slip past it. */
+.ols-modal-card.ols-modal-film { width: min(1040px, 94vw); max-width: min(1040px, 94vw); }
 .ols-modal-film video { width: 100%; border-radius: var(--r-md); background: #000; margin: 8px 0; }
 .video-card video { width: 100%; border-radius: var(--r-md); background: #000; margin: 8px 0; }
 .vid-chapters { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 14px; }
@@ -1990,6 +2026,7 @@ window.OLS_ASSET_BASE = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/plat
       <div class="agent-chip small"><span class="agent-xp" id="player-xp">0 XP</span></div>
     </div>
   </div>
+  <div class="review-banner" id="review-banner" hidden><span class="review-banner-tag">&#10003; ALREADY COMPLETED</span><span class="review-banner-text">You are looking back through a lesson you have finished. Nothing here is marked, nothing is saved, and nothing you already earned can change.</span></div>
   <div class="chunk-rail" id="chunk-rail"></div>
   <div class="chunk-host" id="chunk-host"></div>
 </main>
@@ -3066,7 +3103,11 @@ window.OLS_TRANSPORT = {
       App.state.review = !!(recArr && Number(recArr[0]) === 2 && !App.state.catchup);
       App.state.chunkIdx = 0;
       App.state.chunks = buildChunks(lesson, App.state.catchup, App.state.review);
-      if (App.state.review) App.toast('Reviewing a completed mission \u2014 nothing will be overwritten.', 3200);
+      /* DAMIEN, 3 Aug 2026: "needs to be more prominent on the screen and perhaps
+         in gold rather than the same background colour". A toast disappears after
+         three seconds; this stays up for the whole re-read. */
+      var rvB = $('#review-banner');
+      if (rvB) rvB.hidden = !App.state.review;
       $('#hub').hidden = true;
       $('#player').hidden = false;
       $('#save-chip').hidden = true; // fresh lesson: chip appears on the first save
@@ -3272,7 +3313,10 @@ window.OLS_TRANSPORT = {
         return App.call('saveEvent', { lessonNum: String(s.lessonEntry.num), draft: data });
       },
       awardBadge: function (badge, detail) {
-        if (s.review) return App.badgeCelebration(Object.assign({}, badge, { xp: 0 }));
+        /* DAMIEN, 3 Aug 2026: "the pupil is still able to claim badges, which is
+           misleading since they've already been claimed". Nothing was ever
+           re-awarded, but the card said "Badge earned" a second time. */
+        if (s.review) return App.badgeCelebration(Object.assign({}, badge, { xp: 0, already: true }));
         // every badge carries a detail key: the server's XP idempotency rule
         // only grants XP when the event introduces a NEW key
         var d = detail || ('b' + String(badge.id || 'x') + '=1');
@@ -3305,11 +3349,17 @@ window.OLS_TRANSPORT = {
     return new Promise(function (resolve) {
       var ov = document.createElement('div');
       ov.className = 'badge-pop';
-      ov.innerHTML = '<div class="badge-pop-card">' +
+      /* DAMIEN, 3 Aug 2026: on a re-read the badge was never re-awarded, but the
+         card still said "Badge earned" \u2014 so it read as though she had just won it
+         again. It now says plainly that she already has it (rule 35). */
+      ov.innerHTML = '<div class="badge-pop-card' + (badge.already ? ' already' : '') + '">' +
         '<img src="' + esc(App.asset(badge.icon)) + '" alt="">' +
-        '<h2>Badge earned</h2><p class="badge-pop-name">' + esc(badge.name) + '</p>' +
+        (badge.already
+          ? '<h2>You already have this badge</h2><p class="badge-pop-name">' + esc(badge.name) + '</p>' +
+            '<p class="badge-pop-already">You earned it the first time you did this lesson. Looking through it again does not change anything you have already done.</p>'
+          : '<h2>Badge earned</h2><p class="badge-pop-name">' + esc(badge.name) + '</p>') +
         (Number(badge.xp || 0) > 0 ? '<p class="badge-pop-xp">+' + Number(badge.xp) + ' XP</p>' : '') +
-        '<button class="primary-btn" type="button">Onward</button></div>';
+        '<button class="primary-btn" type="button">' + (badge.already ? 'Keep looking' : 'Onward') + '</button></div>';
       document.body.appendChild(ov);
       requestAnimationFrame(function () { ov.classList.add('show'); });
       App.armButton(ov.querySelector('button'), function () {   // DFM 104
@@ -3366,7 +3416,13 @@ window.OLS_TRANSPORT = {
   }
 
   App.confirmLeaveLesson = function () {
-    App.confirm('Leave the lesson?', 'Your progress so far is saved \u2014 you can come back to where you left off.', 'Leave', function (yes) {
+    /* DAMIEN, 3 Aug 2026: in REVIEW this claimed her progress was saved. Nothing
+       is written during a review (proven by qa-review-jump), so the message was
+       simply untrue - rule 35. It now says what is actually happening. */
+    var leaveBody = App.state.review
+      ? 'This lesson is already finished and nothing you do here is recorded, so there is nothing to save. You can come back and look through it any time.'
+      : 'Your progress so far is saved \u2014 you can come back to where you left off.';
+    App.confirm('Leave the lesson?', leaveBody, 'Leave', function (yes) {
       if (!yes) return;
       if (global.PairKit) global.PairKit.stop(); // never poll a channel from the hub
       // flush active minutes so a pupil who worked but didn't finish a badge

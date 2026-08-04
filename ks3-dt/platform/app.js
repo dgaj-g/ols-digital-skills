@@ -952,7 +952,11 @@
       App.state.review = !!(recArr && Number(recArr[0]) === 2 && !App.state.catchup);
       App.state.chunkIdx = 0;
       App.state.chunks = buildChunks(lesson, App.state.catchup, App.state.review);
-      if (App.state.review) App.toast('Reviewing a completed mission — nothing will be overwritten.', 3200);
+      /* DAMIEN, 3 Aug 2026: "needs to be more prominent on the screen and perhaps
+         in gold rather than the same background colour". A toast disappears after
+         three seconds; this stays up for the whole re-read. */
+      var rvB = $('#review-banner');
+      if (rvB) rvB.hidden = !App.state.review;
       $('#hub').hidden = true;
       $('#player').hidden = false;
       $('#save-chip').hidden = true; // fresh lesson: chip appears on the first save
@@ -1158,7 +1162,10 @@
         return App.call('saveEvent', { lessonNum: String(s.lessonEntry.num), draft: data });
       },
       awardBadge: function (badge, detail) {
-        if (s.review) return App.badgeCelebration(Object.assign({}, badge, { xp: 0 }));
+        /* DAMIEN, 3 Aug 2026: "the pupil is still able to claim badges, which is
+           misleading since they've already been claimed". Nothing was ever
+           re-awarded, but the card said "Badge earned" a second time. */
+        if (s.review) return App.badgeCelebration(Object.assign({}, badge, { xp: 0, already: true }));
         // every badge carries a detail key: the server's XP idempotency rule
         // only grants XP when the event introduces a NEW key
         var d = detail || ('b' + String(badge.id || 'x') + '=1');
@@ -1191,11 +1198,17 @@
     return new Promise(function (resolve) {
       var ov = document.createElement('div');
       ov.className = 'badge-pop';
-      ov.innerHTML = '<div class="badge-pop-card">' +
+      /* DAMIEN, 3 Aug 2026: on a re-read the badge was never re-awarded, but the
+         card still said "Badge earned" — so it read as though she had just won it
+         again. It now says plainly that she already has it (rule 35). */
+      ov.innerHTML = '<div class="badge-pop-card' + (badge.already ? ' already' : '') + '">' +
         '<img src="' + esc(App.asset(badge.icon)) + '" alt="">' +
-        '<h2>Badge earned</h2><p class="badge-pop-name">' + esc(badge.name) + '</p>' +
+        (badge.already
+          ? '<h2>You already have this badge</h2><p class="badge-pop-name">' + esc(badge.name) + '</p>' +
+            '<p class="badge-pop-already">You earned it the first time you did this lesson. Looking through it again does not change anything you have already done.</p>'
+          : '<h2>Badge earned</h2><p class="badge-pop-name">' + esc(badge.name) + '</p>') +
         (Number(badge.xp || 0) > 0 ? '<p class="badge-pop-xp">+' + Number(badge.xp) + ' XP</p>' : '') +
-        '<button class="primary-btn" type="button">Onward</button></div>';
+        '<button class="primary-btn" type="button">' + (badge.already ? 'Keep looking' : 'Onward') + '</button></div>';
       document.body.appendChild(ov);
       requestAnimationFrame(function () { ov.classList.add('show'); });
       App.armButton(ov.querySelector('button'), function () {   // DFM 104
@@ -1252,7 +1265,13 @@
   }
 
   App.confirmLeaveLesson = function () {
-    App.confirm('Leave the lesson?', 'Your progress so far is saved — you can come back to where you left off.', 'Leave', function (yes) {
+    /* DAMIEN, 3 Aug 2026: in REVIEW this claimed her progress was saved. Nothing
+       is written during a review (proven by qa-review-jump), so the message was
+       simply untrue - rule 35. It now says what is actually happening. */
+    var leaveBody = App.state.review
+      ? 'This lesson is already finished and nothing you do here is recorded, so there is nothing to save. You can come back and look through it any time.'
+      : 'Your progress so far is saved — you can come back to where you left off.';
+    App.confirm('Leave the lesson?', leaveBody, 'Leave', function (yes) {
       if (!yes) return;
       if (global.PairKit) global.PairKit.stop(); // never poll a channel from the hub
       // flush active minutes so a pupil who worked but didn't finish a badge

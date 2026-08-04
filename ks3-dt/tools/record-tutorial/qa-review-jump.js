@@ -112,6 +112,47 @@ const state = page => page.evaluate(() => {
   check(!(await page.evaluate(() => !!document.querySelector('.badge-pop'))),
     'jumping took the celebration pop down with it - nothing is orphaned over the new card');
 
+  /* DAMIEN, 3 Aug 2026: a re-read must LOOK like a re-read. Gold banner, gold
+     label, a badge she already holds saying so, and no claim that anything is
+     being saved (nothing is). */
+  const look = await page.evaluate(() => {
+    const b = document.getElementById('review-banner');
+    const l = document.getElementById('rail-label');
+    return {
+      bannerShown: !!(b && !b.hidden),
+      bannerSaysDone: !!(b && /ALREADY COMPLETED/i.test(b.textContent || '')),
+      bannerSaysNothingSaved: !!(b && /nothing is saved/i.test(b.textContent || '')),
+      bannerGold: b ? getComputedStyle(b.querySelector('.review-banner-text')).color : '',
+      labelGold: l ? getComputedStyle(l).color : '',
+      labelSize: l ? parseFloat(getComputedStyle(l).fontSize) : 0
+    };
+  });
+  const GOLD = 'rgb(255, 216, 77)';
+  check(look.bannerShown, 'a banner is on screen for the whole re-read, not a toast that vanishes');
+  check(look.bannerSaysDone, 'it says ALREADY COMPLETED');
+  check(look.bannerSaysNothingSaved, 'and that nothing is saved');
+  check(look.bannerGold === GOLD, 'the banner is gold, not shell-coloured (' + look.bannerGold + ')');
+  check(look.labelGold === GOLD, 'the rail label is gold too (' + look.labelGold + ')');
+  check(look.labelSize >= 14, 'and larger than it was (' + look.labelSize + 'px, was 13.1)');
+
+  const badge = await page.evaluate(async () => {
+    window.App.badgeCelebration({ name: 'Test', icon: 'assets/badges/shield.png', xp: 0, already: true });
+    await new Promise(r => setTimeout(r, 500));
+    const c = document.querySelector('.badge-pop-card');
+    const o = { h: c.querySelector('h2').textContent, xp: !!c.querySelector('.badge-pop-xp') };
+    const p = document.querySelector('.badge-pop'); if (p) p.remove();
+    return o;
+  });
+  check(/already have this badge/i.test(badge.h),
+    'a badge she already holds does NOT say "Badge earned" again (' + JSON.stringify(badge.h) + ')');
+  check(!badge.xp, 'and no XP is shown for it');
+
+  const leave = await page.evaluate(() => {
+    const src = window.App.leaveLesson ? String(window.App.leaveLesson) : '';
+    return { review: !!window.App.state.review };
+  });
+  check(leave.review, 'still in review mode after all of that');
+
   /* review must still write nothing - the whole reason jumping is safe */
   const before = await page.evaluate(() => JSON.stringify(localStorage.getItem('ks3dt-dev')).length);
   await page.evaluate(() => document.querySelectorAll('#chunk-rail .rail-jump')[3].click());
@@ -133,6 +174,11 @@ const state = page => page.evaluate(() => {
     return d ? d.tagName : '(none)';
   });
   check(tag === 'SPAN', 'the live dots are inert spans, not buttons (got ' + tag + ')');
+  const liveBanner = await p2.evaluate(() => {
+    const b = document.getElementById('review-banner');
+    return !!(b && !b.hidden);
+  });
+  check(!liveBanner, 'and the ALREADY COMPLETED banner is NOT shown on a first sitting');
   await p2.close();
 
   await browser.close();
