@@ -87,7 +87,14 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   const body = await page.evaluate(() => (document.querySelector('.chunk-host') || {}).textContent || '');
   check(/Vanishing Ghost/.test(body), 'Rung 4 is titled "The Vanishing Ghost"');
   check(!/MOVE IT!/.test(body), 'the old "MOVE IT!" string is gone from the ladder');
-  check(/ghost icon/i.test(body), 'the rung asks for the GHOST icon (not Rung 2\'s heart)');
+  /* RE-PINNED 4 Aug 2026 (DFM 152c): the ladder was reshaped after his sit-through
+     - rung 2 is now button B + happy face, rung 3 introduces the shake/ghost, and
+     rung 4 is the one that makes the ghost VANISH. So the old literal "ghost icon"
+     string is gone; what must hold is that rung 4 is about the ghost disappearing.
+     "heart" is not asserted absent: rung 4's hint deliberately refers back to the
+     button A heart, and textContent includes the hidden hint. */
+  check(/ghost/i.test(body) && /(vanish|clears itself|clear screen)/i.test(body),
+    'Rung 4 is the ghost that has to VANISH (shake -> ghost -> pause -> clear)');
   check(!/the words wipe/i.test(body), 'the false "the words wipe" claim is gone');
 
   /* RE-PINNED 2 Aug 2026 (approved change C-04): the finished-blocks picture no

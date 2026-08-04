@@ -48,7 +48,15 @@ async function probe(page, file, state) {
     host.className = 'chunk-host'; host.id = 'chunk-host';
     wrap.appendChild(host); document.body.appendChild(wrap);
 
-    const draft = { ladder: { done: ids.slice(0, state), hinted: [], unplugged: 1, stretch: 0 } };
+    /* `state` counts DRAWN rungs cleared, bottom up. Lesson 2's bottom rung is
+       the unplugged Human Circuit, which is stored apart from config.rungs but
+       IS a rung on the ladder and in the card's "four small challenges". */
+    const hasUnplugged = !!ladder.config.unplugged;
+    const builtCleared = hasUnplugged ? Math.max(0, state - 1) : state;
+    const draft = { ladder: {
+      done: ids.slice(0, builtCleared), hinted: [],
+      unplugged: hasUnplugged ? (state >= 1 ? 1 : 0) : 0, stretch: 0
+    } };
     window.Engines.ladder.mount(host, ladder, { draft, catchup: false, review: true, chunk: ladder });
     await sleep(420);
 
@@ -66,6 +74,9 @@ async function probe(page, file, state) {
     const intro = {
       rungCount: rungEls.length,
       contentRungs: ids.length,
+      hasUnplugged,
+      expectedRungs: ids.length + (hasUnplugged ? 1 : 0),
+      introText: String(ladder.config.intro || ''),
       bottomUp,
       bonus: paint(bonusEl),
       star: paint(starEl),
@@ -100,8 +111,15 @@ async function probe(page, file, state) {
       /* --- state 0: nothing cleared. Rung 1 glows, the rest are dormant. --- */
       const s0 = (await probe(page, file, 0)).intro;
       console.log('\n== ' + label + ' at ' + v.w + 'x' + v.h + ' == ' + s0.rungCount + ' rungs drawn | ' + s0.aria);
-      check(s0.rungCount === s0.contentRungs,
-        'the ladder draws exactly one rung per rung in the content (' + s0.rungCount + ' of ' + s0.contentRungs + ')');
+      check(s0.rungCount === s0.expectedRungs,
+        'the ladder draws every rung she climbs, unplugged included (' + s0.rungCount + ' drawn, ' +
+        s0.contentRungs + ' built' + (s0.hasUnplugged ? ' + 1 unplugged' : '') + ')');
+      /* RULE 35: the drawing must not contradict the card above it. L2 promises
+         "four small challenges, called rungs" - Rung 1 is the Human Circuit. */
+      if (/four small challenges/i.test(s0.introText)) {
+        check(s0.rungCount === 4,
+          'the card promises FOUR rungs and the ladder draws four (' + s0.rungCount + ')');
+      }
       check(s0.oldBolts === 0, 'the old lightning-bolt bar is gone entirely');
       check(/active/.test(s0.bottomUp[0].cls) && s0.bottomUp[0].anim !== 'none',
         'the rung she is on is glowing (bottom rung, animation ' + s0.bottomUp[0].anim + ')');
@@ -118,7 +136,7 @@ async function probe(page, file, state) {
       check(s1.rail.stroke !== s0.rail.stroke, 'the rails gild once she is climbing');
 
       /* --- all rungs cleared: the extra challenge wakes up (DFM 152a) --- */
-      const sAll = (await probe(page, file, s0.contentRungs)).intro;
+      const sAll = (await probe(page, file, s0.expectedRungs)).intro;
       check(sAll.bottomUp.every(r => /done/.test(r.cls) && r.stroke === GOLD), 'every rung is gold at the top');
       /* NB: assert the class and the running animation, NOT a static stroke -
          while lad-pulse is running the computed stroke is a tween frame, so

@@ -1384,6 +1384,36 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 @keyframes lad-twinkle { 0%, 100% { fill: #EFE2AE; } 50% { fill: var(--gold-hi); } }
 /* the one thing the drawing cannot say for itself (rule 13) - intro card only */
 .lad-key { margin: 0 0 14px; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
+
+/* A card picture with a caption saying what it IS. Added 4 Aug 2026 for his
+   item 5: a rung card can now show a single ICON she has to find, not only the
+   finished blocks, and an icon needs telling apart from an answer. */
+.rung-fig { margin: 12px 0 16px; text-align: center; }
+.rung-fig figcaption {
+  margin-top: 8px; color: var(--muted); font-size: 0.85rem; line-height: 1.45;
+}
+/* TWO classes on purpose: .rung-img is declared later in this file with
+   max-width:100%, and at equal specificity the later rule wins - a single
+   .rung-img-sm changed nothing in rendered pixels. Same trap as the re-watch
+   width (DFM 146b), so this is measured in the harness, not eyeballed. */
+/* margin auto as well as the cap: .rung-img is display:block with margin 0, so
+   text-align on the <figure> cannot centre it. */
+.rung-img.rung-img-sm { max-width: 132px; border-radius: 10px; margin-left: auto; margin-right: auto; }
+
+/* The MakeCode set-up steps, on the ladder intro card only. A sequence is a
+   numbered list, never prose (DFM 135/138.1.10). */
+.ladder-setup {
+  margin: 14px auto 4px; max-width: 520px; text-align: left;
+  background: var(--tint, rgba(26, 58, 107, 0.05));
+  border: 1px solid var(--line, rgba(23, 34, 59, 0.12));
+  border-radius: 12px; padding: 14px 18px 14px 6px;
+}
+.ladder-setup-lead {
+  margin: 0 0 8px 14px; font-weight: 700; color: var(--ols-blue);
+}
+.ladder-setup ol { margin: 0; padding-left: 26px; }
+.ladder-setup li { margin: 0 0 7px; line-height: 1.5; }
+.ladder-setup li:last-child { margin-bottom: 0; }
 /* a pupil who has asked her machine to stop animating gets a still ladder */
 @media (prefers-reduced-motion: reduce) {
   .lad-rung.active, .lad-rung.landing, .lad-bonus.offered, .lad-star.offered { animation: none; }

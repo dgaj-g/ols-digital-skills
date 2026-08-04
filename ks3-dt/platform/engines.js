@@ -517,7 +517,14 @@
     var c = el('<div class="card intro-card">' +
       (opts.kicker ? '<span class="intro-kicker">' + esc(opts.kicker) + '</span>' : '') +
       '<h2>' + esc(opts.title) + '</h2>' +
-      '<p class="intro-lead">' + esc(opts.text) + '</p>' +
+      /* A blank line in the authored text becomes a real paragraph break.
+         Added 4 Aug 2026: Lesson 2's rewritten ladder intro carries three
+         distinct ideas (what the ladder is / how the pair works / who judges),
+         and running them into one block is the wall of text rule 138.2 exists
+         to prevent. Still escaped - only the break is markup. */
+      String(opts.text || '').split(/\n\s*\n/).map(function (para) {
+        return '<p class="intro-lead">' + esc(para.trim()) + '</p>';
+      }).join('') +
       (opts.extra || '') +
       '<button class="primary-btn" type="button">' + esc(beginLabel) + '</button></div>');
     host.appendChild(c);
@@ -1486,41 +1493,49 @@
         ctx.saveEvent({ draft: App.state.draft });
       }
 
-      /* DAMIEN, 4 Aug 2026: "the star and lightening icons are very hard to make
-         out. is there a purpose to them?" There IS one - it is her progress
-         along the ladder - but nothing on screen ever said so, and a symbol a
-         pupil has to decode before she can read it is rule 13 / 138.1.3 all
-         over again. So the bar now NAMES itself where she first meets it, and
-         the not-yet-earned state is legible instead of a pale smudge
-         (style.css .rung-dot: it was greyscale at 0.35 opacity).
-         withKey is true on the ladder INTRO card only - by the rung cards she
-         has met the symbols, and repeating the key on every card is clutter.
-         Note the bolts are the rungs she BUILDS. Lesson 2's Rung 1 is the
-         unplugged Human Circuit, which is mimed and never built, so it has no
-         bolt of its own - which is why an intro promising "four rungs" sits
-         above three bolts. The key says "every rung you build on the micro:bit"
-         precisely so those two agree (rule 35). Lesson 3 has three built rungs
-         and says "Three rungs", so it was already consistent. */
-      /* A DRAWN LADDER, approved by Damien 4 Aug 2026 (DFM 152a): "the ladder
-         image and animation are perfect ... build it into the cards (not the
-         buttons, they were just to let me see how the animation looked)".
-         It replaces the row of lightning bolts and a star (DFM 149), which he
-         could barely see and which told her nothing about where she was.
-         The rung she is ON pulses; a rung she has cleared is permanently gold;
-         the rails gild as she climbs. The STRETCH is a dashed rung with a star
-         ABOVE the top of the ladder - dashed and faded while it is out of
-         reach - which is also the answer to "I'm not sure which of the tasks
-         I've done was the extra challenge?" (DFM 152a). */
+      /* THE PROGRESS LADDER. Damien, 4 Aug 2026, sitting Lesson 2: "the star and
+         lightening icons are very hard to make out. is there a purpose to
+         them?" - and then, on the prototype: "the ladder image and animation
+         are perfect (and your recommendation); build it into the cards".
+         So a drawn ladder replaces the row of bolts (DFM 149/152a). The rung
+         she is ON glows, a rung she has cleared is gold for good, the rails
+         gild as she climbs, and the STRETCH is a dashed rung with a star ABOVE
+         the top - dashed while out of reach - which is also the answer to
+         "I'm not sure which of the tasks I've done was the extra challenge?"
+
+         The UNPLUGGED rung is drawn too, at the bottom. Lesson 2 calls it
+         "Rung 1 - The Human Circuit" and the card promises "four small
+         challenges, called rungs"; leaving it off put a four-rung promise above
+         a three-rung drawing (rule 35). Lesson 3 has none and is unaffected. */
+      function drawnRungs() {
+        var list = rungs.map(function (r, i) {
+          var isDone = done.indexOf(String(r.id)) !== -1;
+          return { key: String(r.id), done: isDone, active: (i === idx) && !isDone };
+        });
+        if (cfg.unplugged) {
+          list.unshift({ key: '__unplugged', done: unpluggedDone, active: !unpluggedDone });
+        }
+        /* exactly one rung ever glows: the lowest one not yet cleared */
+        var seen = false;
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].done) { list[i].active = false; continue; }
+          list[i].active = !seen;
+          seen = true;
+        }
+        return list;
+      }
+
       function ladderSvg(withKey) {
-        var n = rungs.length;
+        var drawn = drawnRungs();
+        var n = drawn.length;
         if (!n) return '';
+        var cleared = drawn.filter(function (d) { return d.done; }).length;
         var hasStretch = !!cfg.stretch;
         var GAP = 32, X1 = 22, X2 = 74, W = 96;
         /* laid out top-down: star, dashed stretch rung, then the real rungs */
         var topRungY = hasStretch ? 62 : 24;
         var railTop = topRungY - (hasStretch ? 40 : 14);
-        var bottomRungY = topRungY + (n - 1) * GAP;
-        var railBottom = bottomRungY + 14;
+        var railBottom = topRungY + (n - 1) * GAP + 14;
         var H = railBottom + 8;
 
         var parts = ['<g class="lad-rails">' +
@@ -1528,44 +1543,41 @@
           '<line class="lad-rail" x1="' + X2 + '" y1="' + railTop + '" x2="' + X2 + '" y2="' + railBottom + '"/></g>'];
 
         if (hasStretch) {
-          var allDone = done.length >= n;
-          var bCls = 'lad-bonus' + (stretchDone ? ' done' : (allDone ? ' offered' : ''));
-          var sCls = 'lad-star' + (stretchDone ? ' done' : (allDone ? ' offered' : ''));
-          parts.push('<line class="' + bCls + '" x1="' + X1 + '" y1="' + (topRungY - 28) + '" x2="' + X2 + '" y2="' + (topRungY - 28) + '"/>');
-          parts.push('<polygon class="' + sCls + '" points="48,2 52,14 65,14 54,21 58,34 48,26 38,34 42,21 31,14 44,14"/>');
+          var allDone = cleared >= n;
+          var state = stretchDone ? ' done' : (allDone ? ' offered' : '');
+          parts.push('<line class="lad-bonus' + state + '" x1="' + X1 + '" y1="' + (topRungY - 28) +
+            '" x2="' + X2 + '" y2="' + (topRungY - 28) + '"/>');
+          parts.push('<polygon class="lad-star' + state + '" points="48,2 52,14 65,14 54,21 58,34 48,26 38,34 42,21 31,14 44,14"/>');
         }
 
-        /* rungs are drawn top-first so rung 1 sits at the BOTTOM, the way a
-           real ladder is climbed */
+        /* drawn top-first, so rung 1 sits at the BOTTOM the way a ladder is climbed.
+           NO per-rung <title>: an SVG <title> is real text content, and naming each
+           rung there put "Rung 4 - The Vanishing Ghost" into EVERY card's
+           textContent, which made qa-l2-rung4 mistake the intro card for rung 4. */
         for (var i = n - 1; i >= 0; i--) {
-          var r = rungs[i];
-          var isDone = done.indexOf(String(r.id)) !== -1;
-          var isNow = (i === idx) && !isDone;
-          var cls = 'lad-rung' + (isDone ? ' done' : (isNow ? ' active' : '')) +
-            (justCleared === String(r.id) ? ' landing' : '');
+          var d = drawn[i];
+          var cls = 'lad-rung' + (d.done ? ' done' : (d.active ? ' active' : '')) +
+            (justCleared === d.key ? ' landing' : '');
           var y = topRungY + (n - 1 - i) * GAP;
-          /* NO per-rung <title>: an SVG <title> is real text content, so naming
-             each rung here put "Rung 4 - The Vanishing Ghost" into EVERY card's
-             textContent and made qa-l2-rung4 mistake the intro card for rung 4.
-             The whole ladder's aria-label carries the meaning instead. */
           parts.push('<line class="' + cls + '" x1="' + X1 + '" y1="' + y + '" x2="' + X2 + '" y2="' + y + '"/>');
         }
 
-        var svg = '<svg class="lad' + (done.length ? ' lit' : '') + '" width="' + W + '" height="' + H +
+        var svg = '<svg class="lad' + (cleared ? ' lit' : '') + '" width="' + W + '" height="' + H +
           '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(ladderAria()) + '">' + parts.join('') + '</svg>';
 
-        /* rule 13: the ladder is readable at a glance, but the dashed rung is
-           not - so it is named where she first meets it, on the intro card */
+        /* rule 13: a ladder reads at a glance, but the dashed rung does not -
+           so it is named where she first meets it, on the intro card only */
         var key = withKey
-          ? '<p class="lad-key">This ladder is your progress. The rung you are on glows, and it turns gold for good once your micro:bit does what the card asked.' +
+          ? '<p class="lad-key">This ladder is your progress. The rung you are on glows, and it turns gold for good once you have done it.' +
             (hasStretch ? ' The dashed rung with the star, above the top, is the extra challenge &mdash; it wakes up once all ' + n + ' rungs are gold.' : '') + '</p>'
           : '';
         return '<div class="lad-wrap">' + svg + '</div>' + key;
       }
 
-      /* a screen reader gets the same information the drawing carries */
+      /* a screen reader is told what the drawing shows */
       function ladderAria() {
-        var n = rungs.length, d = Math.min(done.length, n);
+        var drawn = drawnRungs(), n = drawn.length;
+        var d = drawn.filter(function (x) { return x.done; }).length;
         var s = 'Ladder progress: ' + d + ' of ' + n + ' rungs complete';
         if (cfg.stretch) s += stretchDone ? ', extra challenge complete' : (d >= n ? ', extra challenge now available' : '');
         return s;
@@ -1619,6 +1631,21 @@
           : '';
       }
 
+      /* DAMIEN, 4 Aug 2026 (DFM 152c): he asked whether pupils start a new
+         MakeCode project per rung or keep overwriting one, and took the
+         recommendation of ONE project that grows - the code accumulates, the
+         hour has no spare minutes, and Bank Your Build wants a single sensibly
+         named .hex. That has to be SAID, at the point she opens MakeCode, and
+         as a numbered list rather than buried in prose (DFM 135/138.1.10). */
+      function setupList() {
+        var steps = cfg.setup || [];
+        if (!steps.length) return '';
+        return '<div class="ladder-setup"><p class="ladder-setup-lead">' +
+          esc(cfg.setupLead || 'Before your first rung, set MakeCode up like this:') + '</p><ol>' +
+          steps.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') +
+          '</ol></div>';
+      }
+
       // Catch-up runs are SOLO: swap the pair framing out (Session B rule -
       // an absent pupil is never told to confer with a partner who isn't there)
       var solo = !!ctx.catchup;
@@ -1630,7 +1657,7 @@
       introCard(host, {
         kicker: chunk.title, title: cfg.title || 'The Challenge Ladder',
         text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
-        extra: ladderSvg(true) + openerRow() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
+        extra: ladderSvg(true) + openerRow() + setupList() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
       }, unpluggedDone ? 'Back to the ladder' : 'Start climbing', function () {
         if (!unpluggedDone && cfg.unplugged) unplugged(); else showRung();
       });
@@ -1653,7 +1680,14 @@
           this.classList.add('ticked');
           unpluggedDone = true;
           saveLadder();
-          setTimeout(function () { host.innerHTML = ''; showRung(); }, 550);
+          /* the unplugged rung is on the ladder too, so it gets the same
+             landing flash as any other rung she clears */
+          setTimeout(function () {
+            host.innerHTML = '';
+            justCleared = '__unplugged';
+            showRung();
+            justCleared = null;
+          }, 550);
         };
       }
 
@@ -1664,7 +1698,17 @@
         var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(r.title) + '</span>' +
           ladderSvg() +
           '<h2 class="rung-target">' + esc(r.target) + '</h2>' +
-          (r.img ? '<img class="rung-img" src="' + esc(asset(r.img)) + '" alt="The blocks for this rung">' : '') +
+          /* DAMIEN, 4 Aug 2026: "might need to have a screenshot image in the
+             card to show them what a ghost icon looks like in makcode because I
+             really don't know which one it is myself without hovering over and
+             waiting for the wee pop up to tell me!" So a card picture is no
+             longer always the finished blocks - it can be a single icon she has
+             to FIND, which needs its own alt text and a caption saying what it
+             is. Showing her which icon to look for is not giving her the answer
+             (C-04); building the program around it is still hers. */
+          (r.img ? '<figure class="rung-fig"><img class="rung-img' + (r.imgSmall ? ' rung-img-sm' : '') +
+            '" src="' + esc(asset(r.img)) + '" alt="' + esc(r.imgAlt || 'The blocks for this rung') + '">' +
+            (r.imgCap ? '<figcaption>' + esc(r.imgCap) + '</figcaption>' : '') + '</figure>' : '') +
           '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(r.test || 'Flash it to the device and make it happen for real.') + '</p></div>' +
           /* C-04, approved 2 Aug 2026: the finished-blocks picture used to sit
              on the card, above a hint that charged 2 XP for less
