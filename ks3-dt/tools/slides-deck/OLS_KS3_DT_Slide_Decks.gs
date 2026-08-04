@@ -251,10 +251,10 @@ var DECKS = {
           'Everything lives on one screen called Mission Control — seventeen lessons on one board, all year (plus the occasional extra called a side quest).',
           'The main parts of each lesson are named sections called badges. Finish one, earn its badge.',
           'Badges bring points called XP. XP unlocks new colours for the website later in the year — it is private to you and your teacher, and nobody is ranked.',
-          'Tap an answer and you find out straight away whether you were right — and why. Read the reason every time.',
+          'Click an answer and you find out straight away whether you were right — and why. Read the reason every time.',
           'Stuck? The round ? button is on every screen — and your teacher is always the last step.'
         ], size: 15,
-        notes: 'If the wifi hiccups, a tapped answer says Checking… for a few seconds instead of answering straight away — worth one calm sentence if it happens.' },
+        notes: 'If the connection to the website slows down, a clicked answer says Checking… for a few seconds instead of answering straight away — worth one calm sentence if it happens.' },
       { type: 'bullets', heading: 'One screen to get past — watch first',
         bullets: [
           'The first time you open our class website, Google checks you are happy to let it in.',
@@ -309,11 +309,11 @@ var DECKS = {
       { type: 'bullets', heading: 'How the hour works',
         bullets: [
           'You climb a ladder of four small challenges, one rung at a time.',
-          'Every rung: build it, copy it onto the device, then TEST it with your hands.',
-          'Nobody marks this. The device is the judge \u2014 it either does what the card says, or it does not.',
-          'Stuck? The Debug Hint costs you a signal point and points you at the problem. It never gives you the answer.'
+          'Every rung: build it, copy it onto the micro:bit, then TEST it with your hands.',
+          'Nobody marks this. The micro:bit is the judge \u2014 it either does what the card says, or it does not.',
+          'Stuck? The Debug Hint costs you 2 XP and points you at the problem. It never gives you the answer.'
         ],
-        notes: 'Say the "device is the judge" line out loud. It is the honesty the whole lesson rests on.' },
+        notes: 'Say the "micro:bit is the judge" line out loud. Pupils decide for themselves whether each rung worked; nothing on screen marks it for them.' },
       { type: 'bullets', heading: 'Working in pairs',
         bullets: [
           'One of you builds the blocks. The other holds the card and presses the button to test.',
@@ -355,14 +355,14 @@ var DECKS = {
       { type: 'bullets', heading: 'Two shapes of code',
         bullets: [
           'An EVENT waits. It sits there doing nothing until something triggers it \u2014 like a button press.',
-          'A LOOP never stops. Nobody starts it; it just runs, over and over, from the moment the device powers up.',
+          'A LOOP never stops. Nobody starts it; it just runs, over and over, from the moment the micro:bit powers up.',
           'Your scoreboard needs BOTH: the buttons change the number, the loop keeps it on the screen.'
         ],
         notes: 'This distinction is the real lesson, and it carries into Scratch next lesson and Python in Year 9.' },
       { type: 'bullets', heading: 'How the hour works',
         bullets: [
           'Three rungs, each one an upgrade to the same scoreboard.',
-          'The device is the judge: the number on the grid is either right, or it is lying.',
+          'The micro:bit is the judge: the number on the grid is either right, or it is lying.',
           'Every rung ends with a MULTI-ROUND test \u2014 reset, count, reset, three times over.',
           'Right once could be luck. Right three rounds running is proof.'
         ],
@@ -534,11 +534,11 @@ var DECKS = {
 var DECK_TEXT_FIXES = [
   {
     from: 'Tap an answer and the screen goes quiet for a few seconds before it replies. That is normal \u2014 tap once and wait.',
-    to: 'Tap an answer and you find out straight away whether you were right \u2014 and why. Read the reason every time.'
+    to: 'Click an answer and you find out straight away whether you were right \u2014 and why. Read the reason every time.'
   },
   {
     from: 'The few-seconds wait matters most \u2014 say it now and you will not have thirty pupils convinced the site is broken at 9:15.',
-    to: 'If the wifi hiccups, a tapped answer says Checking\u2026 for a few seconds instead of answering straight away \u2014 worth one calm sentence if it happens.'
+    to: 'If the connection to the website slows down, a clicked answer says Checking\u2026 for a few seconds instead of answering straight away \u2014 worth one calm sentence if it happens.'
   }
 ];
 
