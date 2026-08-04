@@ -7235,6 +7235,9 @@ window.OLS_TRANSPORT = {
   function renderClassesFromCache() {
     if (!classesData) { renderClasses(); return; }
     var me = classesData.me;
+    /* the server sets this; it is the same flag the Guide tab's HoD section uses */
+    var meIsHod = !!Number(classesData.isHod);
+    if (!meIsHod) showAllTeachers = false;   // the toggle is his alone - never leave it stuck on
     var list = showAllTeachers ? classesData.classes : classesData.classes.filter(function (c) { return c.owner === me; });
     var rows = list.map(function (c) {
       var isMine = c.owner === me;
@@ -7247,13 +7250,30 @@ window.OLS_TRANSPORT = {
           '<button type="button" class="ghost-btn" data-action="copy-link" data-class="' + App.esc(c.name) + '">Copy link</button>' +
           '<button type="button" class="ghost-btn" data-action="show-qr" data-class="' + App.esc(c.name) + '">QR</button>' +
           '<button type="button" class="ghost-btn" data-action="select-class" data-class="' + App.esc(c.name) + '" data-year="' + App.esc(c.year) + '">' + (cls === c.name ? 'Selected' : 'Select') + '</button>' +
-          (isMine ? '<button type="button" class="ghost-btn danger" data-action="delete-class" data-class="' + App.esc(c.name) + '">Delete</button>' : '') +
+          /* DAMIEN, 3 Aug 2026: as Head of Department he can already unlock,
+             re-lock, reset and run cover on any class, and the server has allowed
+             him to DELETE any class since 30 Jul (DFM 55) - but the button was
+             only ever drawn on his own rows, so the power was unreachable. This
+             was logged as a September observation (DFM 120 E3); he asked for it
+             now. Someone else's class says whose it is, right on the button. */
+          (isMine
+            ? '<button type="button" class="ghost-btn danger" data-action="delete-class" data-class="' + App.esc(c.name) + '">Delete</button>'
+            : (meIsHod
+              ? '<button type="button" class="ghost-btn danger" data-action="delete-class" data-class="' + App.esc(c.name) + '" data-owner="' + App.esc(c.owner || '') + '">Delete (' + App.esc(ownerLabel) + '&rsquo;s)</button>'
+              : '')) +
         '</div></div>';
     }).join('') || ('<p class="staff-status">No classes' + (showAllTeachers ? '' : ' of your own') + ' yet -- add one below.</p>');
 
+    /* DAMIEN, 3 Aug 2026: "does an ordinary staff member still see the check box
+       ... they shouldn't see that, just me". They did. It leaked nothing - since
+       30 Jul the server only ever sends a teacher her OWN classes, so ticking it
+       showed her exactly what she already had - but it advertised a power she
+       does not have. Head of Department only now. */
     var html =
-      '<label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--muted);margin-bottom:12px">' +
-      '<input type="checkbox" id="cls-showall"' + (showAllTeachers ? ' checked' : '') + '> Show all teachers&rsquo; classes</label>' +
+      (meIsHod
+        ? '<label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--muted);margin-bottom:12px">' +
+          '<input type="checkbox" id="cls-showall"' + (showAllTeachers ? ' checked' : '') + '> Show all teachers&rsquo; classes</label>'
+        : '') +
       rows +
       '<div class="staff-add-row">' +
         '<input type="text" id="cls-name" class="text-input" placeholder="New class name" maxlength="40">' +
@@ -7322,9 +7342,26 @@ window.OLS_TRANSPORT = {
 
   function deleteClass(btn) {
     var name = btn.getAttribute('data-class');
-    if (!btn.classList.contains('arm')) {
+    var owner = btn.getAttribute('data-owner') || '';
+    /* DAMIEN, 3 Aug 2026: a Head of Department can now delete a colleague's class,
+       so that case gets a full named confirmation rather than the two-press arm.
+       Deleting your own class keeps the quick arm - it always had it. */
+    if (owner && !btn.classList.contains('confirmed')) {
+      App.confirm('Delete ' + name + ', which belongs to ' + owner + '?',
+        'You can do this because you are in the Head of Department register. Every pupil record for that ' +
+        'class is deleted, along with its lesson locks, settings, teams, and all its Vault chats and ' +
+        'galleries. It cannot be undone, and it is not your own class.',
+        'Delete it', function (yes) {
+          if (!yes) return;
+          btn.classList.add('confirmed');
+          deleteClass(btn);
+        });
+      return;
+    }
+    var label = btn.textContent;
+    if (!owner && !btn.classList.contains('arm')) {
       btn.classList.add('arm'); btn.textContent = 'Sure?';
-      setTimeout(function () { if (btn.classList.contains('arm')) { btn.classList.remove('arm'); btn.textContent = 'Delete'; } }, 4000);
+      setTimeout(function () { if (btn.classList.contains('arm')) { btn.classList.remove('arm'); btn.textContent = label; } }, 4000);
       return;
     }
     btn.disabled = true;
@@ -7333,8 +7370,10 @@ window.OLS_TRANSPORT = {
     adminCall('deleteClass', { className: name }).then(function (r) {
       btn.disabled = false;
       if (!r || !r.ok) {
-        btn.classList.remove('arm'); btn.textContent = 'Delete';
-        plainStatus(status, (r && r.error === 'not-owner') ? 'Only the owner can delete this class.' : 'Could not delete the class.');
+        btn.classList.remove('arm'); btn.classList.remove('confirmed'); btn.textContent = label;
+        plainStatus(status, (r && r.error === 'not-owner')
+          ? 'Only the class\u2019s own teacher, or a Head of Department, can delete it.'
+          : 'Could not delete the class.');
         return;
       }
       if (cls === name) cls = '';
