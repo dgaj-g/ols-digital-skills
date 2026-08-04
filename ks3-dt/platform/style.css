@@ -1335,22 +1335,60 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 
 /* ============ Lesson 2+: challenge ladder / parsons / bank-your-build ============ */
 .ladder-card { max-width: 640px; }
-.rung-bar { display: flex; gap: 6px; margin: 10px 0 14px; align-items: center; }
-/* DAMIEN, 4 Aug 2026: "the star and lightening icons are very hard to make out."
-   He is right - greyscale(1) at 0.35 opacity left a pale smudge on a light card.
-   The not-yet-earned state stays clearly GREY (so earned/not-earned is still
-   obvious at a glance) but is now legible; earned goes full colour and larger.
-   Sizes up too, because these are 1.15rem emoji doing a job at a distance. */
-.rung-dot {
-  font-size: 1.35rem; filter: grayscale(1); opacity: 0.8;
-  transition: filter 0.3s, opacity 0.3s, transform 0.3s;
+/* ---- THE PROGRESS LADDER (Damien approved the drawing 4 Aug 2026, DFM 152a) ----
+   It replaces a row of lightning bolts and a star he could barely see and which
+   never said what it meant. A real ladder needs no key to be read: the rung she
+   is ON glows, cleared rungs are permanently gold, and the rails gild as she
+   climbs. Only the dashed stretch rung is named in words, on the intro card. */
+.lad-wrap { display: flex; justify-content: center; margin: 6px 0 12px; }
+.lad { display: block; overflow: visible; }
+.lad-rail {
+  stroke: var(--rail-idle, #C3CBD9); stroke-width: 7; stroke-linecap: round;
+  transition: stroke 0.5s;
 }
-.rung-dot.lit { filter: none; opacity: 1; transform: scale(1.12); }
-.rung-dot.lit.hinted { opacity: 0.75; }
-/* the line that says what the bolts and the star ARE (rule 13) - intro card only.
-   The negative top margin closes the gap to the bar it explains WITHOUT changing
-   .rung-bar itself, which also sits on rung cards where there is no key. */
-.rung-bar-key { margin: -10px 0 14px; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
+.lad.lit .lad-rail { stroke: var(--gold-deep); }
+.lad-rung {
+  stroke: var(--rail-idle, #C3CBD9); stroke-width: 9; stroke-linecap: round;
+  transition: stroke 0.55s;
+}
+/* the rung she is on */
+.lad-rung.active { stroke: var(--gold); animation: lad-pulse 1.25s ease-in-out infinite; }
+@keyframes lad-pulse {
+  0%, 100% { stroke: #D9CFA8; filter: none; }
+  50% { stroke: var(--gold-hi); filter: drop-shadow(0 0 6px rgba(var(--gold-rgb), 0.95)); }
+}
+/* cleared: gold for good */
+.lad-rung.done {
+  stroke: var(--gold); filter: drop-shadow(0 0 3px rgba(var(--gold-rgb), 0.45)); animation: none;
+}
+/* the moment it is cleared: one bright flash, then it settles */
+.lad-rung.landing { animation: lad-land 0.85s cubic-bezier(0.2, 0.8, 0.25, 1) 1; }
+@keyframes lad-land {
+  0% { stroke: var(--gold-hi); stroke-width: 9; }
+  45% { stroke: #FFF3C4; stroke-width: 15; filter: drop-shadow(0 0 18px rgba(var(--gold-hi-rgb), 1)); }
+  100% { stroke: var(--gold); stroke-width: 9; filter: drop-shadow(0 0 3px rgba(var(--gold-rgb), 0.45)); }
+}
+/* the EXTRA challenge: a dashed rung above the top, with a star */
+.lad-bonus {
+  stroke: var(--rail-idle, #C3CBD9); stroke-width: 6; stroke-linecap: round;
+  stroke-dasharray: 9 7; opacity: 0.55; transition: stroke 0.5s, opacity 0.5s;
+}
+.lad-bonus.offered { stroke: var(--gold); opacity: 1; animation: lad-pulse 1.6s ease-in-out infinite; }
+.lad-bonus.done {
+  stroke: var(--gold); opacity: 1; stroke-dasharray: none;
+  filter: drop-shadow(0 0 4px rgba(var(--gold-rgb), 0.5)); animation: none;
+}
+.lad-star { fill: #E3E7ED; transition: fill 0.5s; }
+.lad-star.offered { fill: var(--gold); animation: lad-twinkle 1.6s ease-in-out infinite; }
+.lad-star.done { fill: var(--gold); filter: drop-shadow(0 0 6px rgba(var(--gold-rgb), 0.8)); animation: none; }
+@keyframes lad-twinkle { 0%, 100% { fill: #EFE2AE; } 50% { fill: var(--gold-hi); } }
+/* the one thing the drawing cannot say for itself (rule 13) - intro card only */
+.lad-key { margin: 0 0 14px; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
+/* a pupil who has asked her machine to stop animating gets a still ladder */
+@media (prefers-reduced-motion: reduce) {
+  .lad-rung.active, .lad-rung.landing, .lad-bonus.offered, .lad-star.offered { animation: none; }
+  .lad-rung.active { stroke: var(--gold-hi); }
+}
 .ladder-open { margin: 12px 0 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .ladder-open-note { color: var(--muted); font-size: 0.8rem; }
 .ladder-script { margin: 14px 0 18px; padding-left: 22px; color: var(--ink); }

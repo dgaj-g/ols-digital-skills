@@ -1475,6 +1475,9 @@
       var idx = 0;
       while (idx < rungs.length && done.indexOf(String(rungs[idx].id)) !== -1) idx++;
       var unpluggedDone = !!draft.unplugged || idx > 0;
+      /* the rung (or the stretch) cleared a heartbeat ago, so the ladder that
+         renders next can play the landing flash on it exactly once */
+      var justCleared = null;
 
       function saveLadder() {
         if (ctx.review) return;
@@ -1498,17 +1501,74 @@
          above three bolts. The key says "every rung you build on the micro:bit"
          precisely so those two agree (rule 35). Lesson 3 has three built rungs
          and says "Three rungs", so it was already consistent. */
-      function pointsBar(withKey) {
-        var lit = rungs.map(function (r) {
+      /* A DRAWN LADDER, approved by Damien 4 Aug 2026 (DFM 152a): "the ladder
+         image and animation are perfect ... build it into the cards (not the
+         buttons, they were just to let me see how the animation looked)".
+         It replaces the row of lightning bolts and a star (DFM 149), which he
+         could barely see and which told her nothing about where she was.
+         The rung she is ON pulses; a rung she has cleared is permanently gold;
+         the rails gild as she climbs. The STRETCH is a dashed rung with a star
+         ABOVE the top of the ladder - dashed and faded while it is out of
+         reach - which is also the answer to "I'm not sure which of the tasks
+         I've done was the extra challenge?" (DFM 152a). */
+      function ladderSvg(withKey) {
+        var n = rungs.length;
+        if (!n) return '';
+        var hasStretch = !!cfg.stretch;
+        var GAP = 32, X1 = 22, X2 = 74, W = 96;
+        /* laid out top-down: star, dashed stretch rung, then the real rungs */
+        var topRungY = hasStretch ? 62 : 24;
+        var railTop = topRungY - (hasStretch ? 40 : 14);
+        var bottomRungY = topRungY + (n - 1) * GAP;
+        var railBottom = bottomRungY + 14;
+        var H = railBottom + 8;
+
+        var parts = ['<g class="lad-rails">' +
+          '<line class="lad-rail" x1="' + X1 + '" y1="' + railTop + '" x2="' + X1 + '" y2="' + railBottom + '"/>' +
+          '<line class="lad-rail" x1="' + X2 + '" y1="' + railTop + '" x2="' + X2 + '" y2="' + railBottom + '"/></g>'];
+
+        if (hasStretch) {
+          var allDone = done.length >= n;
+          var bCls = 'lad-bonus' + (stretchDone ? ' done' : (allDone ? ' offered' : ''));
+          var sCls = 'lad-star' + (stretchDone ? ' done' : (allDone ? ' offered' : ''));
+          parts.push('<line class="' + bCls + '" x1="' + X1 + '" y1="' + (topRungY - 28) + '" x2="' + X2 + '" y2="' + (topRungY - 28) + '"/>');
+          parts.push('<polygon class="' + sCls + '" points="48,2 52,14 65,14 54,21 58,34 48,26 38,34 42,21 31,14 44,14"/>');
+        }
+
+        /* rungs are drawn top-first so rung 1 sits at the BOTTOM, the way a
+           real ladder is climbed */
+        for (var i = n - 1; i >= 0; i--) {
+          var r = rungs[i];
           var isDone = done.indexOf(String(r.id)) !== -1;
-          var isHint = hinted.indexOf(String(r.id)) !== -1;
-          return '<span class="rung-dot' + (isDone ? ' lit' : '') + (isHint ? ' hinted' : '') + '" title="' + esc(r.title) + '">&#9889;</span>';
-        }).join('');
+          var isNow = (i === idx) && !isDone;
+          var cls = 'lad-rung' + (isDone ? ' done' : (isNow ? ' active' : '')) +
+            (justCleared === String(r.id) ? ' landing' : '');
+          var y = topRungY + (n - 1 - i) * GAP;
+          /* NO per-rung <title>: an SVG <title> is real text content, so naming
+             each rung here put "Rung 4 - The Vanishing Ghost" into EVERY card's
+             textContent and made qa-l2-rung4 mistake the intro card for rung 4.
+             The whole ladder's aria-label carries the meaning instead. */
+          parts.push('<line class="' + cls + '" x1="' + X1 + '" y1="' + y + '" x2="' + X2 + '" y2="' + y + '"/>');
+        }
+
+        var svg = '<svg class="lad' + (done.length ? ' lit' : '') + '" width="' + W + '" height="' + H +
+          '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(ladderAria()) + '">' + parts.join('') + '</svg>';
+
+        /* rule 13: the ladder is readable at a glance, but the dashed rung is
+           not - so it is named where she first meets it, on the intro card */
         var key = withKey
-          ? '<p class="rung-bar-key">One &#9889; for every rung you build on the micro:bit. It lights up when yours works.'
-            + (cfg.stretch ? ' The &#11088; is the extra challenge at the end.' : '') + '</p>'
+          ? '<p class="lad-key">This ladder is your progress. The rung you are on glows, and it turns gold for good once your micro:bit does what the card asked.' +
+            (hasStretch ? ' The dashed rung with the star, above the top, is the extra challenge &mdash; it wakes up once all ' + n + ' rungs are gold.' : '') + '</p>'
           : '';
-        return '<div class="rung-bar">' + lit + (cfg.stretch ? '<span class="rung-dot stretch' + (stretchDone ? ' lit' : '') + '">&#11088;</span>' : '') + '</div>' + key;
+        return '<div class="lad-wrap">' + svg + '</div>' + key;
+      }
+
+      /* a screen reader gets the same information the drawing carries */
+      function ladderAria() {
+        var n = rungs.length, d = Math.min(done.length, n);
+        var s = 'Ladder progress: ' + d + ' of ' + n + ' rungs complete';
+        if (cfg.stretch) s += stretchDone ? ', extra challenge complete' : (d >= n ? ', extra challenge now available' : '');
+        return s;
       }
 
       /* DAMIEN, 2 Aug 2026 (rule 135c): "flash it to the device" pointed at a
@@ -1570,7 +1630,7 @@
       introCard(host, {
         kicker: chunk.title, title: cfg.title || 'The Challenge Ladder',
         text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
-        extra: pointsBar(true) + openerRow() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
+        extra: ladderSvg(true) + openerRow() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
       }, unpluggedDone ? 'Back to the ladder' : 'Start climbing', function () {
         if (!unpluggedDone && cfg.unplugged) unplugged(); else showRung();
       });
@@ -1602,7 +1662,7 @@
         var r = rungs[idx];
         var hintUsed = hinted.indexOf(String(r.id)) !== -1;
         var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(r.title) + '</span>' +
-          pointsBar() +
+          ladderSvg() +
           '<h2 class="rung-target">' + esc(r.target) + '</h2>' +
           (r.img ? '<img class="rung-img" src="' + esc(asset(r.img)) + '" alt="The blocks for this rung">' : '') +
           '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(r.test || 'Flash it to the device and make it happen for real.') + '</p></div>' +
@@ -1636,7 +1696,11 @@
           saveLadder();
           App.toast('Rung cleared &mdash; signal locked in.');
           idx++;
+          /* the next card's ladder plays the landing flash on the rung she just
+             cleared, then the flag is dropped so it fires exactly once */
+          justCleared = String(r.id);
           showRung();
+          justCleared = null;
         };
       }
 
@@ -1644,7 +1708,7 @@
         if (!cfg.stretch || stretchDone) { finishLadder(); return; }
         var s = cfg.stretch;
         var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(s.title || 'Stretch') + '</span>' +
-          pointsBar() +
+          ladderSvg() +
           '<h2 class="rung-target">' + esc(s.target) + '</h2>' +
           (s.img ? '<img class="rung-img" src="' + esc(asset(s.img)) + '" alt="Stretch blocks">' : '') +
           (s.test ? '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(s.test) + '</p></div>' : '') +

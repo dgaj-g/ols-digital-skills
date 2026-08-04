@@ -188,7 +188,9 @@ function staticHalf() {
   check(/setPane\('<p class="staff-status" id="lock-status"><\/p>' \+\s*'<div class="lock-grid">/.test(staff),
     'the status line renders ABOVE the 18-cell grid, not below it');
   check(/App\.toast\(lockNotice/.test(staff), 'and the confirmation also rides on a toast that cannot scroll off');
-  check(/lock it again, then tap <b>&#8634; Not taught<\/b>/.test(staff),
+  /* "tap" -> "click" in the 4 Aug sweep (DFM 150): she has a mouse, and so does
+     the teacher. The assertion follows the new wording, deliberately. */
+  check(/lock it again, then click <b>&#8634; Not taught<\/b>/.test(staff),
     'the footer says the pill only appears once the lesson is locked again');
 
   section('J. THE MISSING PILL - REAL CAUSE (DFM 114)');
