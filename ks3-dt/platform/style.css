@@ -398,9 +398,32 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   box-shadow: 0 0 0 4px rgba(var(--gold-hi-rgb), 0.25);
   outline: none;
 }
+/* DAMIEN, 3 Aug 2026: "should be in gold to stand out more and make it clear
+   that this lesson has already been completed... maybe slightly larger". */
 #rail-label {
-  text-align: center; margin: 0 0 14px; font-size: 0.82rem;
-  color: rgba(206, 222, 248, 0.78); min-height: 1.2em;
+  text-align: center; margin: 0 0 14px; font-size: 0.95rem; font-weight: 600;
+  color: var(--gold-hi); min-height: 1.2em; letter-spacing: 0.15px;
+}
+.review-banner {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 6px 12px; text-align: center;
+  max-width: min(920px, 92vw); margin: 4px auto 2px; padding: 11px 20px;
+  background: rgba(var(--gold-hi-rgb), 0.13);
+  border: 1.5px solid rgba(var(--gold-hi-rgb), 0.55);
+  border-radius: 999px;
+  box-shadow: 0 0 22px rgba(var(--gold-hi-rgb), 0.12);
+}
+.review-banner-tag {
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 1.1px;
+  color: var(--space-0); background: var(--gold-hi);
+  padding: 3px 10px; border-radius: 999px; white-space: nowrap;
+}
+.review-banner-text { font-size: 0.87rem; color: var(--gold-hi); line-height: 1.45; }
+@media (max-width: 640px) { .review-banner { border-radius: var(--r-md); } }
+/* a badge she already holds is not a badge she has just won */
+.badge-pop-card.already h2 { color: var(--ols-blue); }
+.badge-pop-already {
+  margin: 6px 0 2px; font-size: 0.9rem; line-height: 1.5; color: var(--muted);
 }
 
 /* ============ the reading card (light surface on the dark shell) ============ */
@@ -819,8 +842,21 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
    1440x900 screen. The card is widened rather than the video, so the chapter
    buttons and the fallback line widen with it. */
 .video-card { max-width: min(960px, 92vw); }
-/* the ladder's film-rewatch popup (DFM 135c, 2 Aug 2026) */
-.ols-modal-film { max-width: min(880px, 94vw); }
+/* the ladder's film-rewatch popup (DFM 135c, 2 Aug 2026)
+   DAMIEN, 3 Aug 2026: "the window playing the video is not as wide as it is the
+   first time it is played and it needs to be (on all cases of rewatching)... that
+   wider view we worked on for video tutorials needs to be in place across ALL
+   lessons, including ones that still need to be built."
+   The card gives its video 960 - 60 padding = 900px. This modal gave 880 - 56 =
+   824px, so every re-watch and every "Show me how" clip was SMALLER than the
+   first play. Sized so the modal's video is never the narrower of the two;
+   qa-video-width.js measures both in a real browser and fails if that reverses. */
+/* NOTE: .ols-modal-card sets `width: min(560px, 100%)` AND is declared LATER in
+   this file, so neither a max-width nor a same-specificity width overrides it.
+   Both classes sit on the same element, so the fix is the two-class selector.
+   qa-video-width.js caught both wrong attempts on 3 Aug - it measures the real
+   rendered <video>, which is why guessing at CSS could not slip past it. */
+.ols-modal-card.ols-modal-film { width: min(1040px, 94vw); max-width: min(1040px, 94vw); }
 .ols-modal-film video { width: 100%; border-radius: var(--r-md); background: #000; margin: 8px 0; }
 .video-card video { width: 100%; border-radius: var(--r-md); background: #000; margin: 8px 0; }
 .vid-chapters { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 14px; }
