@@ -1,0 +1,3263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Kitchen Portfolio</title>
+<style>
+/* ===== shared style.css ===== */
+:root {
+  --ols-blue: #1A3A6B;
+  --ols-blue-dark: #122A4F;
+  --ols-blue-soft: #2A4F8F;
+  --ols-gold: #E4B824;
+  --ols-gold-soft: #F5D45E;
+  --text: #222;
+  --muted: #595959;
+  --bg: #F4F6FA;
+  --card-bg: #FFFFFF;
+  --border: #595959;
+  --shadow-sm: 0 1px 3px rgba(18, 42, 79, 0.10);
+  --shadow-md: 0 6px 18px rgba(18, 42, 79, 0.16);
+  --shadow-lg: 0 14px 36px rgba(18, 42, 79, 0.22);
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   Landing page (root /index.html)
+   ============================================================
+   The root URL deliberately does NOT list activities. Activities
+   are accessed only via direct links shared by teachers. This
+   page is a minimal, branded stub for anyone who lands at the
+   root URL by accident.
+   ============================================================ */
+
+body.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(ellipse at center, var(--ols-blue-soft) 0%, var(--ols-blue) 55%, var(--ols-blue-dark) 100%);
+  color: white;
+}
+
+.landing-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  gap: 18px;
+}
+
+.landing-crest {
+  width: clamp(96px, 18vw, 160px);
+  height: auto;
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.35));
+  margin-bottom: 6px;
+}
+
+.landing h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  letter-spacing: 0.01em;
+  color: var(--ols-gold-soft);
+}
+
+.landing-note {
+  margin: 0;
+  font-size: clamp(0.92rem, 1.6vw, 1.1rem);
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 560px;
+}
+
+.landing-footer {
+  padding: 22px 24px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   Activity footer (shared brand mark, used by every activity)
+   ============================================================ */
+
+.act-footer {
+  margin-top: 8px;
+  padding: 14px 22px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+}
+.act-footer .footer-crest {
+  width: 22px;
+  height: auto;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+/* ===== activity style.css ===== */
+/* ============================================================
+   My Kitchen Portfolio - Home Economics KS3 (warm kitchen theme)
+   ------------------------------------------------------------
+   Year-group tones (set by script.js as body[data-year]):
+     J1 = honey & apricot     (Year 8,  soft morning kitchen)
+     J2 = sage & olive        (Year 9,  herb kitchen)
+     J3 = terracotta & copper (Year 10, rustic kitchen)
+   All share a warm cream chrome. OLS branding stays via the
+   crest intro + footer. PURE ASCII on purpose (the Path B
+   assembler inlines this file raw and guards against non-ASCII).
+   ============================================================ */
+
+:root {
+  --kp-ink: #3a2e24;
+  --kp-muted: #7d6b5a;
+  --kp-bg: #faf3e7;
+  --kp-card: #fffdf8;
+  --kp-acc: #c07a2c;
+  --kp-deep: #8a5418;
+  --kp-btn: #a05f1c;
+  --kp-soft: #f6e7cd;
+  --kp-soft2: #fdf6ea;
+  --kp-line: #e7d9c2;
+  --kp-good: #4e7a3a;
+  --kp-good-soft: #e9f2e2;
+  --kp-bad: #b04a3a;
+  --kp-bad-soft: #f7e6e2;
+  --kp-shadow: 0 6px 18px rgba(90, 62, 30, 0.13);
+  --kp-shadow-lg: 0 16px 42px rgba(90, 62, 30, 0.20);
+}
+body[data-year="J1"] {
+  --kp-acc: #c07a2c; --kp-deep: #8a5418; --kp-btn: #a05f1c; --kp-soft: #f6e7cd; --kp-soft2: #fdf6ea;
+  --kp-bg: #faf3e7; --kp-line: #e7d9c2;
+}
+body[data-year="J2"] {
+  --kp-acc: #67874f; --kp-deep: #435e33; --kp-btn: #557040; --kp-soft: #e6eed9; --kp-soft2: #f6f9ef;
+  --kp-bg: #f4f7eb; --kp-line: #d9e2c8;
+}
+body[data-year="J3"] {
+  --kp-acc: #b55a38; --kp-deep: #843c22; --kp-btn: #9c492a; --kp-soft: #f4ddd0; --kp-soft2: #fbf1ea;
+  --kp-bg: #f9f0e8; --kp-line: #e9d6c5;
+}
+
+/* author display rules (flex/grid) must never beat the hidden attribute */
+[hidden] { display: none !important; }
+
+html, body { background: var(--kp-bg); color: var(--kp-ink); }
+body {
+  background-image:
+    radial-gradient(rgba(192, 122, 44, 0.045) 1px, transparent 1.4px);
+  background-size: 26px 26px;
+}
+
+.app {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 18px 16px 30px;
+  min-height: calc(100vh - 120px);
+}
+
+h1, h2, h3, .home-title, .sv-title, .modal-title {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: 0.005em;
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  padding: 10px 20px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.btn-acc {
+  /* gradient starts from the darker per-theme button tone (not the accent),
+     so white label text keeps AA contrast across the whole face */
+  background: linear-gradient(180deg, var(--kp-btn), var(--kp-deep));
+  color: #fff;
+  box-shadow: var(--kp-shadow);
+}
+.btn-acc:not(:disabled):hover { box-shadow: var(--kp-shadow-lg); transform: translateY(-1px); }
+.btn-blue { background: var(--ols-blue); color: #fff; }
+.btn-blue:not(:disabled):hover { background: var(--ols-blue-soft); }
+.btn-soft {
+  background: var(--kp-soft);
+  color: var(--kp-deep);
+  border: 1.5px dashed var(--kp-acc);
+}
+.btn-soft:not(:disabled):hover { background: var(--kp-soft2); }
+.btn-ghost {
+  background: transparent;
+  color: var(--kp-deep);
+  border: 1.5px solid var(--kp-line);
+}
+.btn-ghost:not(:disabled):hover { border-color: var(--kp-acc); }
+.btn-lg { padding: 14px 28px; font-size: 1.08rem; }
+.btn-sm { padding: 5px 12px; font-size: 0.85rem; }
+.btn-spin {
+  width: 16px; height: 16px;
+  border: 2.5px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  display: inline-block;
+  animation: kp-spin 0.8s linear infinite;
+}
+@keyframes kp-spin { to { transform: rotate(360deg); } }
+
+/* ---------- boot guard: "Getting your details..." (auto sign-in) ---------- */
+.boot-guard {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px; min-height: 58vh; text-align: center; padding: 40px 16px;
+}
+.boot-guard-crest { width: 70px; height: auto; opacity: 0.92; }
+.spinner {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 4px solid var(--kp-line);
+  border-top-color: var(--kp-acc);
+  animation: kp-spin 0.8s linear infinite;
+}
+.boot-guard-text {
+  margin: 0; font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem; color: var(--kp-deep); font-weight: 600;
+}
+
+/* ---------- gold "this can take a moment" wait-card ----------
+   The OLS login-gated standard: every server round-trip (teacher unlock,
+   dashboard, add/delete class, writing the portfolio Doc) shows a prominent
+   pulsing GOLD card with bold OLS-blue text - never a bland grey "Loading...". */
+.panel-loading {
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  margin: 14px auto; max-width: 480px; padding: 18px 20px;
+  background: linear-gradient(180deg, #FFF3CF, #FCE7A0);
+  border: 2px solid var(--ols-gold); border-radius: 14px;
+  color: var(--ols-blue); font-weight: 800; font-size: 1.04rem; line-height: 1.25;
+  box-shadow: var(--kp-shadow); animation: panelPulse 1.4s ease-in-out infinite;
+}
+.panel-spinner {
+  width: 26px; height: 26px; border-radius: 50%; flex: 0 0 auto;
+  border: 4px solid rgba(26, 58, 107, 0.22); border-top-color: var(--ols-blue);
+  animation: kp-spin 0.7s linear infinite;
+}
+@keyframes panelPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+
+/* ---------- fields ---------- */
+.field-label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin: 14px 0 6px;
+  color: var(--kp-ink);
+}
+.field {
+  width: 100%;
+  font: inherit;
+  padding: 10px 14px;
+  border: 1.5px solid var(--kp-line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--kp-ink);
+}
+.field:focus, textarea:focus { outline: 2px solid var(--kp-acc); outline-offset: 1px; border-color: var(--kp-acc); }
+.field-big { font-size: 1.15rem; font-weight: 600; }
+.field-date { max-width: 220px; }
+textarea {
+  width: 100%;
+  font: inherit;
+  padding: 10px 14px;
+  border: 1.5px solid var(--kp-line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--kp-ink);
+  resize: vertical;
+  min-height: 64px;
+}
+.wc { display: block; font-size: 0.82rem; color: var(--kp-muted); margin-top: 4px; min-height: 1.1em; }
+.wc.good { color: var(--kp-good); }
+.wc.bad { color: var(--kp-bad); }
+
+.sv-msg { font-size: 0.92rem; color: var(--kp-muted); margin: 8px 0 0; min-height: 1.2em; }
+.sv-msg.good { color: var(--kp-good); font-weight: 600; }
+.sv-msg.bad { color: var(--kp-bad); font-weight: 600; }
+
+/* ---------- steam + pot ---------- */
+.pot-steam {
+  position: relative;
+  width: 84px; height: 92px;
+  margin: 0 auto 4px;
+}
+.pot-steam .pot { font-size: 52px; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
+.pot-steam.small { width: 64px; height: 70px; margin: 0; flex-shrink: 0; }
+.pot-steam.small .pot { font-size: 40px; }
+.steam {
+  position: absolute;
+  bottom: 46px;
+  left: 50%;
+  width: 9px; height: 26px;
+  border-radius: 50%;
+  background: rgba(122, 100, 78, 0.35);
+  filter: blur(3px);
+  opacity: 0;
+  animation: kp-steam 2.6s ease-in-out infinite;
+}
+.pot-steam.small .steam { bottom: 36px; height: 20px; }
+.steam.s1 { margin-left: -16px; animation-delay: 0s; }
+.steam.s2 { margin-left: -3px; animation-delay: 0.9s; }
+.steam.s3 { margin-left: 10px; animation-delay: 1.7s; }
+@keyframes kp-steam {
+  0% { transform: translateY(6px) scaleX(1); opacity: 0; }
+  30% { opacity: 0.75; }
+  100% { transform: translateY(-26px) scaleX(1.6); opacity: 0; }
+}
+
+/* ---------- welcome ---------- */
+.welcome { display: flex; justify-content: center; padding: 22px 0; }
+.welcome-card {
+  background: var(--kp-card);
+  border: 1px solid var(--kp-line);
+  border-radius: 22px;
+  box-shadow: var(--kp-shadow-lg);
+  padding: 30px 28px 28px;
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+}
+.welcome-crest { width: 64px; margin-bottom: 8px; }
+.welcome-card h1 { margin: 6px 0 10px; font-size: 1.7rem; color: var(--kp-deep); }
+.welcome-lead { margin: 0 0 6px; color: var(--kp-ink); }
+.welcome-hello { font-size: 0.85rem; color: var(--kp-muted); margin: 4px 0 10px; }
+.welcome-card .field-label { text-align: left; }
+.welcome-card .btn-lg { margin-top: 18px; }
+
+.year-pick { margin-top: 6px; }
+.year-pick .field-label { margin-bottom: 8px; }
+.year-pick-row { display: flex; gap: 10px; justify-content: center; }
+.year-chip {
+  font: inherit;
+  font-weight: 700;
+  border: 2px solid var(--kp-line);
+  background: #fff;
+  color: var(--kp-ink);
+  border-radius: 14px;
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 86px;
+}
+.year-chip small { font-weight: 600; color: var(--kp-muted); }
+.year-chip.on {
+  border-color: var(--kp-acc);
+  background: var(--kp-soft);
+  color: var(--kp-deep);
+}
+.year-chip.on small { color: var(--kp-deep); }
+
+/* ---------- home ---------- */
+.home-head {
+  background: var(--kp-card);
+  border: 1px solid var(--kp-line);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--kp-shadow);
+}
+.gingham {
+  height: 16px;
+  background:
+    repeating-linear-gradient(90deg, var(--kp-acc) 0 12px, transparent 12px 24px),
+    repeating-linear-gradient(0deg, var(--kp-acc) 0 12px, transparent 12px 24px);
+  opacity: 0.28;
+}
+.home-head-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 22px 16px;
+}
+.home-title { margin: 0; font-size: clamp(1.45rem, 4vw, 2rem); color: var(--kp-deep); }
+.home-sub { margin: 2px 0 0; color: var(--kp-muted); font-size: 0.95rem; }
+.year-badge {
+  display: inline-block;
+  margin-left: 8px;
+  background: var(--kp-soft);
+  color: var(--kp-deep);
+  border: 1px solid var(--kp-acc);
+  font-weight: 700;
+  font-size: 0.78rem;
+  border-radius: 999px;
+  padding: 1px 10px;
+  vertical-align: 1px;
+}
+.year-badge:empty { display: none; }
+
+.chef-strip {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "hat meta" "bar bar";
+  align-items: center;
+  gap: 4px 12px;
+  background: var(--kp-soft2);
+  border: 1px solid var(--kp-line);
+  border-radius: 16px;
+  padding: 12px 18px;
+  margin: 14px 0 0;
+}
+.chef-hat { grid-area: hat; font-size: 30px; }
+.chef-meta { grid-area: meta; display: flex; flex-direction: column; }
+.chef-meta b { color: var(--kp-deep); font-size: 1.02rem; }
+.chef-meta span { color: var(--kp-muted); font-size: 0.86rem; }
+.chef-bar {
+  grid-area: bar;
+  height: 8px;
+  background: var(--kp-soft);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.chef-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--kp-acc), var(--kp-deep));
+  border-radius: 999px;
+  transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.year-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  font-size: 0.78rem;
+  color: var(--kp-muted);
+  margin: 6px 2px 0;
+}
+.ys-btn {
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1.5px solid var(--kp-line);
+  background: #fff;
+  color: var(--kp-deep);
+  border-radius: 999px;
+  padding: 2px 10px;
+  cursor: pointer;
+}
+.ys-btn:hover { border-color: var(--kp-acc); }
+
+.class-badge { background: #fff; }
+
+.share-warn {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--kp-bad);
+  background: var(--kp-bad-soft);
+  border-radius: 999px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+
+.new-entry-wrap { text-align: center; margin: 22px 0 6px; }
+
+.portfolio-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--kp-card);
+  border: 1px solid var(--kp-line);
+  border-left: 5px solid var(--kp-acc);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin: 16px 0 0;
+  box-shadow: var(--kp-shadow);
+}
+.pc-icon { font-size: 26px; }
+.pc-text { flex: 1; display: flex; flex-direction: column; }
+.pc-text b { color: var(--kp-deep); }
+.pc-text span { font-size: 0.86rem; color: var(--kp-muted); }
+
+.tl-h { margin: 26px 0 10px; font-size: 1.2rem; color: var(--kp-deep); }
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.tl-card {
+  display: grid;
+  grid-template-columns: 86px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  background: var(--kp-card);
+  border: 1px solid var(--kp-line);
+  border-radius: 16px;
+  padding: 12px 14px;
+  box-shadow: var(--kp-shadow);
+}
+.tl-thumb {
+  width: 86px; height: 66px;
+  border-radius: 10px;
+  background: var(--kp-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  overflow: hidden;
+}
+.tl-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tl-body { min-width: 0; }
+.tl-dish { font-weight: 700; color: var(--kp-ink); font-size: 1.04rem; display: block; }
+.tl-date { font-size: 0.82rem; color: var(--kp-muted); }
+.tl-tags { margin-top: 5px; display: flex; flex-wrap: wrap; gap: 5px; }
+.tl-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--kp-soft);
+  color: var(--kp-deep);
+  border-radius: 999px;
+  padding: 1px 9px;
+  white-space: nowrap;
+}
+.tl-media { font-size: 0.78rem; color: var(--kp-muted); margin-top: 3px; display: block; }
+.tl-open { align-self: center; }
+
+.tl-empty {
+  text-align: center;
+  border: 2px dashed var(--kp-line);
+  border-radius: 18px;
+  padding: 26px 22px;
+  color: var(--kp-muted);
+  margin-top: 22px;
+}
+.tl-empty span { font-size: 38px; display: block; margin-bottom: 6px; }
+.tl-empty p { margin: 0; max-width: 420px; margin-inline: auto; }
+.tl-empty b { color: var(--kp-deep); }
+
+/* ---------- entry wizard ---------- */
+.sv-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.sv-back {
+  font: inherit;
+  font-weight: 600;
+  border: 0;
+  background: transparent;
+  color: var(--kp-deep);
+  cursor: pointer;
+  padding: 8px 10px 8px 0;
+  white-space: nowrap;
+}
+.sv-titles { flex: 1; min-width: 0; }
+.sv-title { margin: 0; font-size: 1.3rem; color: var(--kp-deep); }
+.sv-sub { margin: 1px 0 0; font-size: 0.88rem; color: var(--kp-muted); }
+.save-dot { font-size: 0.78rem; color: var(--kp-good); white-space: nowrap; min-width: 64px; text-align: right; }
+
+.wiz-dots {
+  list-style: none;
+  display: flex;
+  gap: 6px;
+  margin: 0 0 16px;
+  padding: 0;
+}
+.wiz-dots li {
+  flex: 1;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--kp-muted);
+  padding: 7px 4px 6px;
+  border-radius: 12px;
+  background: var(--kp-soft2);
+  border: 1.5px solid var(--kp-line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+.wiz-dots li span { font-size: 16px; }
+.wiz-dots li.on {
+  background: var(--kp-soft);
+  border-color: var(--kp-acc);
+  color: var(--kp-deep);
+}
+.wiz-dots li.done { border-color: var(--kp-good); color: var(--kp-good); }
+
+.kp-card {
+  background: var(--kp-card);
+  border: 1px solid var(--kp-line);
+  border-radius: 16px;
+  padding: 16px 18px 18px;
+  margin-bottom: 14px;
+  box-shadow: var(--kp-shadow);
+}
+.kp-card-h { margin: 0 0 6px; font-size: 1.08rem; color: var(--kp-deep); display: flex; align-items: center; gap: 8px; }
+.kp-card-h .opt-tag {
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--kp-muted);
+  background: var(--kp-soft2);
+  border: 1px solid var(--kp-line);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.kp-hint { margin: 0 0 10px; font-size: 0.9rem; color: var(--kp-muted); }
+.kp-hint b { color: var(--kp-deep); }
+
+.wiz-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+}
+.wiz-nav .btn-blue { margin-left: auto; }
+
+/* media */
+.media-strip { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 10px; padding: 0; }
+.media-strip:empty { margin: 0; }
+.media-item {
+  position: relative;
+  width: 96px; height: 76px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--kp-soft);
+  border: 1px solid var(--kp-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.media-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.media-item .mi-video {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.66rem;
+  color: var(--kp-deep);
+  font-weight: 600;
+  padding: 4px;
+  text-align: center;
+  word-break: break-all;
+}
+.media-item .mi-video em { font-style: normal; font-size: 20px; }
+.mi-x {
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(58, 46, 36, 0.78);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+.media-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.up-wrap { margin-top: 12px; }
+.up-bar {
+  height: 10px;
+  background: var(--kp-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.up-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--kp-acc), var(--kp-deep));
+  transition: width 0.25s ease;
+}
+#up-label { font-size: 0.82rem; color: var(--kp-muted); margin-top: 4px; display: inline-block; }
+
+/* focus */
+.focus-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.focus-chip {
+  font: inherit;
+  text-align: left;
+  border: 2px solid var(--kp-line);
+  background: #fff;
+  border-radius: 14px;
+  padding: 9px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 100%;
+}
+.focus-chip .fc-icon { font-size: 20px; }
+.focus-chip .fc-name { font-weight: 700; color: var(--kp-ink); display: block; font-size: 0.94rem; }
+.focus-chip .fc-term { font-size: 0.72rem; color: var(--kp-muted); display: block; }
+.focus-chip.on { border-color: var(--kp-acc); background: var(--kp-soft); }
+.focus-chip.on .fc-name { color: var(--kp-deep); }
+.focus-chip:focus-visible { outline: 2px solid var(--kp-acc); outline-offset: 2px; }
+
+.focus-panel {
+  background: var(--kp-card);
+  border: 1px solid var(--kp-line);
+  border-left: 5px solid var(--kp-acc);
+  border-radius: 14px;
+  padding: 14px 16px 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--kp-shadow);
+}
+.focus-panel h4 { margin: 0 0 4px; font-size: 1rem; color: var(--kp-deep); display: flex; gap: 8px; align-items: center; }
+.fp-prompt { margin: 0 0 4px; font-weight: 600; font-size: 0.94rem; }
+.fp-hint { margin: 0 0 8px; font-size: 0.84rem; color: var(--kp-muted); }
+
+/* costing widget (J3) */
+.cost-table { width: 100%; border-collapse: collapse; margin: 6px 0 8px; }
+.cost-table th {
+  text-align: left;
+  font-size: 0.8rem;
+  color: var(--kp-muted);
+  font-weight: 700;
+  padding: 4px 6px;
+}
+.cost-table td { padding: 3px 4px; }
+.cost-table .field { padding: 7px 10px; border-radius: 9px; }
+.cost-cost { max-width: 110px; }
+.cost-del {
+  border: 0;
+  background: transparent;
+  color: var(--kp-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+.cost-del:hover { color: var(--kp-bad); }
+.cost-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 4px; }
+.cost-serves { display: flex; align-items: center; gap: 7px; font-size: 0.9rem; font-weight: 600; }
+.cost-serves .field { width: 70px; }
+.cost-totals { margin-left: auto; text-align: right; font-size: 0.94rem; }
+.cost-totals b { color: var(--kp-deep); font-size: 1.05rem; }
+.cost-totals span { display: block; font-size: 0.84rem; color: var(--kp-muted); }
+
+/* stars */
+.star-row { display: flex; align-items: center; gap: 12px; padding: 7px 0; flex-wrap: wrap; }
+.star-row .sr-label { width: 150px; font-weight: 600; font-size: 0.95rem; }
+.stars { display: flex; gap: 2px; }
+.star-btn {
+  font-size: 27px;
+  line-height: 1;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: #d8cdbc;
+  padding: 3px;
+  transition: transform 0.1s ease, color 0.1s ease;
+}
+.star-btn.on { color: var(--kp-acc); }
+.star-btn:hover { transform: scale(1.18); }
+.star-btn:focus-visible { outline: 2px solid var(--kp-acc); border-radius: 6px; }
+.sr-word { font-size: 0.84rem; color: var(--kp-muted); min-width: 90px; }
+
+/* multiple choice */
+.mc-opts { display: grid; gap: 8px; }
+.mc-opt {
+  font: inherit;
+  text-align: left;
+  border: 2px solid var(--kp-line);
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  color: var(--kp-ink);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mc-opt .mc-dot {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--kp-line);
+  flex-shrink: 0;
+  position: relative;
+}
+.mc-opt.on { border-color: var(--kp-acc); background: var(--kp-soft); font-weight: 600; color: var(--kp-deep); }
+.mc-opt.on .mc-dot { border-color: var(--kp-deep); }
+.mc-opt.on .mc-dot::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--kp-deep);
+}
+
+/* submit */
+.submit-card { border-left: 5px solid var(--kp-acc); }
+.submit-check { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 5px; }
+.submit-check li { font-size: 0.9rem; color: var(--kp-muted); display: flex; gap: 8px; align-items: baseline; }
+.submit-check li::before { content: "\25CB"; color: var(--kp-line); font-size: 0.9em; }
+.submit-check li.ok { color: var(--kp-good); }
+.submit-check li.ok::before { content: "\2713"; color: var(--kp-good); font-weight: 700; }
+
+/* ---------- hooray ---------- */
+.hooray-card { text-align: center; position: relative; overflow: hidden; }
+.hooray-icon { font-size: 46px; display: block; margin-top: 6px; }
+.hooray-card h2 { margin: 8px 0 8px; color: var(--kp-deep); }
+.hooray-card p { margin: 0 auto 14px; max-width: 380px; color: var(--kp-ink); }
+.hooray-actions { justify-content: center; }
+.hooray-burst { position: absolute; inset: 0; pointer-events: none; }
+.confetto {
+  position: absolute;
+  top: -12px;
+  width: 9px; height: 13px;
+  border-radius: 2px;
+  opacity: 0.92;
+  animation: kp-confetto 2.4s ease-in forwards;
+}
+@keyframes kp-confetto {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(560px) rotate(560deg); opacity: 0; }
+}
+
+/* ---------- modals (shared chrome) ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(46, 34, 22, 0.5);
+}
+.modal-card {
+  background: var(--kp-card);
+  border-radius: 18px;
+  box-shadow: var(--kp-shadow-lg);
+  padding: 22px 22px 24px;
+  width: 100%;
+  max-width: 560px;
+  max-height: min(86vh, 720px);
+  overflow: auto;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 10px; right: 12px;
+  border: 0;
+  background: transparent;
+  font-size: 26px;
+  color: var(--kp-muted);
+  cursor: pointer;
+  line-height: 1;
+  padding: 6px;
+}
+.modal-title { margin: 0 0 10px; font-size: 1.25rem; color: var(--kp-deep); }
+.modal-note { font-size: 0.86rem; color: var(--kp-muted); margin: 0 0 12px; }
+
+/* two-tap confirm dialog (never a native confirm() - unreliable in the iframe).
+   Sits ABOVE the teacher panel (.modal z-index 300) since delete is triggered
+   from inside it - otherwise the dialog hides behind the panel. */
+#confirm-modal { z-index: 500; }
+.confirm-card { max-width: 420px; text-align: center; }
+.confirm-card .modal-title { color: var(--kp-bad); }
+.confirm-body { margin: 0 auto 4px; max-width: 340px; color: var(--kp-ink); font-size: 0.95rem; line-height: 1.4; }
+.confirm-actions { display: flex; gap: 10px; justify-content: center; margin-top: 18px; }
+
+.sv-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+
+/* doc preview */
+.doc-preview-card { max-width: 640px; }
+.doc-preview-body { margin-top: 10px; }
+.doc-paper {
+  background: #fff;
+  border: 1px solid var(--kp-line);
+  border-radius: 6px;
+  box-shadow: var(--kp-shadow);
+  padding: 26px 28px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.doc-title { font-size: 1.55rem; margin: 0 0 2px; font-family: inherit; color: #202124; }
+.doc-subtitle { color: #5f6368; margin: 0 0 14px; }
+.doc-h { font-size: 1.18rem; margin: 18px 0 6px; color: #202124; font-family: inherit; }
+.doc-h2 { font-size: 1rem; margin: 12px 0 4px; color: #202124; font-weight: 700; }
+.doc-paper p { margin: 0 0 8px; font-size: 0.93rem; }
+.doc-focusline { color: #5f6368; font-style: italic; }
+.doc-checklist {
+  background: #fcf3d9;
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+}
+.doc-checklist ul { margin: 6px 0 0; padding-left: 20px; }
+.doc-photos { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 10px; }
+.doc-photos img { max-width: 46%; border-radius: 4px; border: 1px solid #e0e0e0; }
+.doc-table { border-collapse: collapse; margin: 6px 0 10px; width: 100%; font-size: 0.9rem; }
+.doc-table td, .doc-table th { border: 1px solid #c9c9c9; padding: 5px 9px; text-align: left; }
+.doc-table th { background: #f3f3f3; }
+.doc-hr { border: 0; border-top: 1.5px solid #d5d5d5; margin: 18px 0; }
+.doc-link { color: #1a73e8; word-break: break-all; }
+
+/* ---------- staff ---------- */
+.staff-key {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 200;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--kp-line);
+  background: var(--kp-card);
+  box-shadow: var(--kp-shadow);
+  font-size: 19px;
+  cursor: pointer;
+  opacity: 0.78;
+}
+.staff-key:hover { opacity: 1; }
+.staff-card { max-width: 620px; }
+.staff-me { font-size: 0.86rem; color: var(--kp-muted); margin: 0 0 10px; }
+.staff-new { display: grid; gap: 10px; margin-bottom: 6px; }
+.staff-year-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.staff-year {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1.5px solid var(--kp-line);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  background: #fff;
+}
+.staff-year small { font-weight: 600; color: var(--kp-muted); }
+.staff-year:has(input:checked) { border-color: var(--kp-acc); background: var(--kp-soft); color: var(--kp-deep); }
+.staff-year input { accent-color: var(--kp-deep); margin: 0; }
+.staff-hint { font-size: 0.82rem; color: var(--kp-muted); margin: 8px 0; }
+.staff-toggle { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; margin: 8px 0; cursor: pointer; }
+.staff-toggle input { accent-color: var(--kp-deep); }
+.staff-classes { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+.cls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--kp-line);
+  border-radius: 12px;
+  padding: 9px 12px;
+  flex-wrap: wrap;
+}
+.cls-info { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+.cls-info b { color: var(--kp-ink); }
+.cls-yr {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--kp-soft);
+  color: var(--kp-deep);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.cls-meta, .cls-owner { font-size: 0.8rem; color: var(--kp-muted); }
+.cls-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.cls-del.arm { background: var(--kp-bad); border-color: var(--kp-bad); color: #fff; }
+.cls-empty { font-size: 0.9rem; color: var(--kp-muted); padding: 10px 4px; }
+.staff-msg { font-size: 0.86rem; color: var(--kp-deep); min-height: 1.2em; margin: 8px 0 0; }
+.staff-dash-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.staff-h3 { margin: 0; font-size: 1.05rem; color: var(--kp-deep); }
+.table-wrap { overflow-x: auto; }
+.dash { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+.dash th, .dash td { border-bottom: 1px solid var(--kp-line); padding: 7px 9px; text-align: left; }
+.dash th { color: var(--kp-muted); font-size: 0.78rem; }
+.dash td.yes { color: var(--kp-good); font-weight: 700; }
+.dash td.no { color: var(--kp-muted); }
+.qr-wrap { display: flex; justify-content: center; padding: 8px 0; }
+.qr-link { font-size: 0.78rem; color: var(--kp-muted); word-break: break-all; text-align: center; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 640px) {
+  .app { padding: 12px 10px 70px; }   /* clear the floating staff key */
+  .sv-head { flex-wrap: wrap; gap: 4px 10px; }
+  .sv-title { font-size: 1.12rem; }
+  .sv-back { padding: 6px 8px 6px 0; font-size: 0.9rem; }
+  .save-dot { min-width: 0; }
+  .home-head-inner { padding: 12px 14px 14px; gap: 10px; }
+  .tl-card { grid-template-columns: 70px 1fr; }
+  .tl-thumb { width: 70px; height: 56px; font-size: 24px; }
+  .tl-open { grid-column: 2; justify-self: start; }
+  .star-row .sr-label { width: 100%; }
+  .wiz-dots li { font-size: 0.68rem; padding: 6px 2px 5px; }
+  .cost-serves { width: 100%; }
+  .cost-totals { margin-left: 0; text-align: left; }
+  .modal { padding: 10px; }
+  .modal-card { padding: 18px 14px 18px; }
+}
+@media (min-width: 1280px) {
+  .app { max-width: 980px; }
+  .home-title { font-size: 2.2rem; }
+}
+
+</style>
+</head>
+<body>
+<script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>", classYear: "<?= classYear ?>" }; window.OLS_ASSET_BASE = "https://dgaj-g.github.io/ols-digital-skills/home-economics/kitchen-portfolio/";</script>
+
+  <!-- ============================================================
+       MY KITCHEN PORTFOLIO - Home Economics KS3 digital portfolio.
+       Login-gated (Path B, execute-as-user). One portfolio Google Doc
+       per pupil in her OWN Drive; each practical reflection appends an
+       entry (typed reflections + embedded photos + video links).
+       Year group (J1/J2/J3) comes from the class the teacher created;
+       it picks the focus-area options AND the warm kitchen colour tone.
+       ============================================================ -->
+
+  <main id="app" class="app" aria-live="polite">
+
+    <!-- Shown immediately on load while we read the pupil's name from her
+         school account (no typing). Hides into the shelf, or the welcome
+         card if the account can't supply a name. -->
+    <section id="boot-guard" class="boot-guard" aria-live="polite">
+      <img src="https://dgaj-g.github.io/ols-digital-skills/assets/crest.png" alt="" class="boot-guard-crest" aria-hidden="true">
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="boot-guard-text">Getting your details&hellip;</p>
+    </section>
+
+    <!-- First-visit welcome -->
+    <section id="welcome" class="welcome" hidden aria-labelledby="welcome-h">
+      <div class="welcome-card">
+        <img src="https://dgaj-g.github.io/ols-digital-skills/assets/crest.png" alt="" class="welcome-crest" aria-hidden="true">
+        <div class="pot-steam" aria-hidden="true">
+          <span class="steam s1"></span><span class="steam s2"></span><span class="steam s3"></span>
+          <span class="pot">&#127858;</span>
+        </div>
+        <h1 id="welcome-h">Welcome to your Kitchen Portfolio</h1>
+        <p class="welcome-lead">Your own cooking journal for Home Economics &mdash; every practical you cook
+          gets its own page, with your photos, your thoughts and your evaluation.</p>
+        <p id="welcome-hello" class="welcome-hello"></p>
+
+        <label class="field-label" for="kp-name">First, what's your name, chef?</label>
+        <input id="kp-name" class="field" type="text" maxlength="60" placeholder="e.g. Aoife Murphy" autocomplete="off">
+
+        <div id="year-pick" class="year-pick" hidden>
+          <p class="field-label">And which year are you in?</p>
+          <div class="year-pick-row" role="group" aria-label="Choose your year group">
+            <button type="button" class="year-chip" data-year="J1">Year 8<small>J1</small></button>
+            <button type="button" class="year-chip" data-year="J2">Year 9<small>J2</small></button>
+            <button type="button" class="year-chip" data-year="J3">Year 10<small>J3</small></button>
+          </div>
+        </div>
+
+        <button id="welcome-start" class="btn btn-acc btn-lg" type="button">Open my portfolio</button>
+        <p id="welcome-msg" class="sv-msg" role="alert"></p>
+      </div>
+    </section>
+
+    <!-- Home: the portfolio shelf -->
+    <section id="home" class="home" hidden aria-labelledby="home-h">
+      <header class="home-head">
+        <div class="gingham" aria-hidden="true"></div>
+        <div class="home-head-inner">
+          <div class="pot-steam small" aria-hidden="true">
+            <span class="steam s1"></span><span class="steam s2"></span><span class="steam s3"></span>
+            <span class="pot">&#127858;</span>
+          </div>
+          <div class="home-titles">
+            <h1 id="home-h" class="home-title">My Kitchen Portfolio</h1>
+            <p class="home-sub">Home Economics &middot; <span id="home-name"></span><span id="year-badge" class="year-badge"></span><span id="class-badge" class="year-badge class-badge"></span></p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Chef level strip -->
+      <div class="chef-strip" role="group" aria-label="Your chef level">
+        <span class="chef-hat" aria-hidden="true">&#128105;&#8205;&#127859;</span>
+        <div class="chef-meta">
+          <b id="chef-level">Apprentice Chef</b>
+          <span id="chef-progress">No practicals yet &mdash; your first one starts your journey.</span>
+        </div>
+        <div class="chef-bar" aria-hidden="true"><i id="chef-bar-fill"></i></div>
+      </div>
+
+      <!-- shown only when the class link carries no year group (the pupil
+           self-picked on welcome, so give her a way to fix a mistake) -->
+      <div id="year-switch" class="year-switch" hidden>
+        <span>In the wrong year group?</span>
+        <button type="button" class="ys-btn" data-year="J1">J1</button>
+        <button type="button" class="ys-btn" data-year="J2">J2</button>
+        <button type="button" class="ys-btn" data-year="J3">J3</button>
+      </div>
+
+      <!-- New entry -->
+      <div class="new-entry-wrap">
+        <button id="new-entry" class="btn btn-acc btn-lg" type="button">
+          <span aria-hidden="true">&#43;</span> New practical reflection
+        </button>
+        <p id="home-msg" class="sv-msg" role="status"></p>
+      </div>
+
+      <!-- Portfolio Doc card (appears once the Doc exists) -->
+      <div id="portfolio-card" class="portfolio-card" hidden>
+        <span class="pc-icon" aria-hidden="true">&#128214;</span>
+        <div class="pc-text">
+          <b>My portfolio document</b>
+          <span>Every reflection is collected here, in your own Google Drive &mdash; and your teacher can see it too.</span>
+        </div>
+        <a id="portfolio-open" class="btn btn-ghost" href="#" target="_blank" rel="noopener">Open</a>
+      </div>
+
+      <!-- Timeline of past entries -->
+      <h2 class="tl-h" id="tl-h" hidden>My practicals</h2>
+      <ul class="timeline" id="timeline"></ul>
+
+      <div id="tl-empty" class="tl-empty">
+        <span aria-hidden="true">&#129348;</span>
+        <p>Nothing on the shelf yet. After your next practical class, tap
+        <b>New practical reflection</b> and tell the story of what you cooked.</p>
+      </div>
+    </section>
+
+    <!-- Entry wizard -->
+    <section id="entry" class="entry" hidden aria-labelledby="entry-h">
+      <header class="sv-head">
+        <button class="sv-back" id="entry-back" type="button">&#8592; My portfolio</button>
+        <div class="sv-titles">
+          <h2 id="entry-h" class="sv-title">New practical reflection</h2>
+          <p class="sv-sub" id="entry-sub">Step 1 of 4 &mdash; Today's dish</p>
+        </div>
+        <span class="save-dot" id="save-dot" aria-live="polite"></span>
+      </header>
+
+      <ol class="wiz-dots" id="wiz-dots" aria-hidden="true">
+        <li class="on" data-step="1"><span>&#127869;&#65039;</span>Dish</li>
+        <li data-step="2"><span>&#127919;</span>Focus</li>
+        <li data-step="3"><span>&#11088;</span>Taste test</li>
+        <li data-step="4"><span>&#128221;</span>Reflect</li>
+      </ol>
+
+      <!-- Step 1: the dish + media -->
+      <div class="wiz-step" id="step-1">
+        <div class="kp-card">
+          <label class="field-label" for="dish-name">What did you make today?</label>
+          <input id="dish-name" class="field field-big" type="text" maxlength="80" placeholder="e.g. Vegetable stir fry" autocomplete="off">
+          <label class="field-label" for="dish-date">When did you cook it?</label>
+          <input id="dish-date" class="field field-date" type="date">
+        </div>
+
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#128247;</span> Show off your dish</h3>
+          <p class="kp-hint">Add photos of your cooking and your finished dish &mdash; and a short video if you like.
+            They are saved straight into <b>your own Google Drive</b>, all organised for you.</p>
+          <ul class="media-strip" id="media-strip"></ul>
+          <div class="media-btns">
+            <button id="add-photo" class="btn btn-soft" type="button"><span aria-hidden="true">&#128247;</span> Add photos</button>
+            <button id="add-video" class="btn btn-soft" type="button"><span aria-hidden="true">&#127909;</span> Add a video</button>
+          </div>
+          <input id="photo-input" type="file" accept="image/*" multiple hidden>
+          <input id="video-input" type="file" accept="video/*" hidden>
+          <div id="up-wrap" class="up-wrap" hidden>
+            <div class="up-bar"><i id="up-fill"></i></div>
+            <span id="up-label">Uploading&hellip;</span>
+          </div>
+          <p id="media-msg" class="sv-msg" role="status"></p>
+        </div>
+      </div>
+
+      <!-- Step 2: focus areas (year-specific) -->
+      <div class="wiz-step" id="step-2" hidden>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#127919;</span> What was today's focus?</h3>
+          <p class="kp-hint" id="focus-hint">Pick what this practical was about &mdash; choose at least one.</p>
+          <div id="focus-chips" class="focus-chips" role="group" aria-label="Focus areas"></div>
+        </div>
+        <div id="focus-panels"></div>
+        <p id="focus-msg" class="sv-msg" role="status"></p>
+      </div>
+
+      <!-- Step 3: taste test (evaluation MCQs) -->
+      <div class="wiz-step" id="step-3" hidden>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#11088;</span> The taste test</h3>
+          <p class="kp-hint">Be your own food critic &mdash; rate your finished dish.</p>
+          <div id="stars-wrap"></div>
+        </div>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#127858;</span> How did your dish turn out?</h3>
+          <div id="outcome-opts" class="mc-opts" role="group" aria-label="How did your dish turn out?"></div>
+        </div>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#129309;</span> How much help did you need?</h3>
+          <div id="conf-opts" class="mc-opts" role="group" aria-label="How much help did you need?"></div>
+        </div>
+        <p id="eval-msg" class="sv-msg" role="status"></p>
+      </div>
+
+      <!-- Step 4: open reflection + submit -->
+      <div class="wiz-step" id="step-4" hidden>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#127881;</span> What went well</h3>
+          <textarea id="www-text" rows="3" maxlength="600" placeholder="The thing I am proudest of today is&hellip;"></textarea>
+          <span class="wc" id="www-wc"></span>
+        </div>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#128161;</span> Even better if&hellip;</h3>
+          <textarea id="ebi-text" rows="3" maxlength="600" placeholder="My dish would have been even better if&hellip;"></textarea>
+          <span class="wc" id="ebi-wc"></span>
+        </div>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#128640;</span> Next time I will&hellip; <small class="opt-tag">optional</small></h3>
+          <textarea id="next-text" rows="2" maxlength="400" placeholder="Next time I make this, I will&hellip;"></textarea>
+        </div>
+
+        <div class="kp-card submit-card">
+          <h3 class="kp-card-h">Ready to add this to your portfolio?</h3>
+          <ul id="submit-check" class="submit-check"></ul>
+          <button id="entry-submit" class="btn btn-acc btn-lg" type="button">
+            Add to my portfolio
+          </button>
+          <p id="entry-msg" class="sv-msg" role="status"></p>
+        </div>
+      </div>
+
+      <div class="wiz-nav">
+        <button id="wiz-prev" class="btn btn-ghost" type="button" hidden>&#8592; Back</button>
+        <button id="wiz-next" class="btn btn-blue" type="button">Next &#8594;</button>
+      </div>
+    </section>
+
+    <!-- Celebration overlay after a successful submit -->
+    <div id="hooray" class="modal hooray" hidden role="dialog" aria-modal="true" aria-labelledby="hooray-h">
+      <div class="modal-card hooray-card">
+        <div class="hooray-burst" aria-hidden="true" id="hooray-burst"></div>
+        <span class="hooray-icon" aria-hidden="true">&#127881;</span>
+        <h2 id="hooray-h">Beautifully plated!</h2>
+        <p id="hooray-text">Your reflection has been added to your portfolio document, with your photos &mdash;
+          and your teacher can see it too.</p>
+        <div class="sv-actions hooray-actions">
+          <a id="hooray-open" class="btn btn-acc" href="#" target="_blank" rel="noopener">Open my portfolio</a>
+          <button id="hooray-close" class="btn btn-ghost" type="button">Back to my shelf</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entry preview (offline/local review of exactly what will be added to the Doc) -->
+    <div id="doc-preview" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="doc-preview-title">
+      <div class="modal-card doc-preview-card">
+        <button class="modal-close" id="doc-preview-close" type="button" aria-label="Close">&times;</button>
+        <h2 id="doc-preview-title" class="modal-title">Your portfolio page &mdash; preview</h2>
+        <p class="modal-note">This is exactly what gets added to your portfolio Google Doc.
+          (Preview only &mdash; on the school app it goes straight into your Doc in Drive.)</p>
+        <div id="doc-preview-body" class="doc-preview-body"></div>
+      </div>
+    </div>
+
+    <!-- Reusable two-tap confirm dialog (e.g. deleting a class) -->
+    <div id="confirm-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="modal-card confirm-card">
+        <h2 id="confirm-title" class="modal-title"></h2>
+        <p id="confirm-body" class="confirm-body"></p>
+        <div class="confirm-actions">
+          <button id="confirm-cancel" class="btn btn-ghost" type="button">Cancel</button>
+          <button id="confirm-ok" class="btn btn-acc" type="button">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Staff key (passcode-gated, multi-teacher class manager) -->
+    <button id="staff-key" class="staff-key" type="button" aria-label="Teacher area">&#128273;</button>
+    <div id="staff-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="staff-title">
+      <div class="modal-card staff-card">
+        <button class="modal-close" id="staff-close" type="button" aria-label="Close">&times;</button>
+        <h2 id="staff-title" class="modal-title">Teacher area</h2>
+
+        <div id="staff-gate">
+          <label class="field-label" for="staff-pass">Staff passcode</label>
+          <input id="staff-pass" class="field" type="password" autocomplete="off" inputmode="text">
+          <button id="staff-go" class="btn btn-blue" type="button">Open</button>
+          <p id="staff-msg" class="staff-msg" role="alert"></p>
+        </div>
+
+        <!-- Classes -->
+        <div id="staff-classes" hidden>
+          <p class="staff-me">Signed in as <b id="staff-me"></b></p>
+          <div class="staff-new">
+            <input id="staff-newclass" class="field" type="text" maxlength="40" placeholder="New class name, e.g. 8A HE" autocomplete="off">
+            <div class="staff-year-row" role="radiogroup" aria-label="Year group for this class">
+              <label class="staff-year"><input type="radio" name="staff-year" value="J1"> J1 <small>Yr 8</small></label>
+              <label class="staff-year"><input type="radio" name="staff-year" value="J2"> J2 <small>Yr 9</small></label>
+              <label class="staff-year"><input type="radio" name="staff-year" value="J3"> J3 <small>Yr 10</small></label>
+            </div>
+            <button id="staff-add" class="btn btn-blue" type="button">Add class</button>
+          </div>
+          <p class="staff-hint">The year group picks which focus areas the class sees &mdash; it can't be changed later,
+            so double-check it before you add the class.</p>
+          <label class="staff-toggle"><input type="checkbox" id="staff-all"> Show all teachers&rsquo; classes</label>
+          <ul id="staff-class-list" class="staff-classes" aria-label="Your classes"></ul>
+          <p id="staff-cmsg" class="staff-msg" role="status"></p>
+        </div>
+
+        <!-- Per-class dashboard -->
+        <div id="staff-dash" hidden>
+          <div class="staff-dash-head">
+            <button id="dash-back" class="btn btn-ghost btn-sm" type="button">&#8592; Classes</button>
+            <h3 id="dash-title" class="staff-h3"></h3>
+          </div>
+          <p class="staff-hint">Who has cooked what. Each pupil&rsquo;s portfolio opens for you because it was
+            shared with you automatically when it was created.</p>
+          <div class="table-wrap"><table class="dash" id="dash"></table></div>
+          <div class="sv-actions">
+            <button id="staff-refresh" class="btn btn-ghost" type="button">Refresh</button>
+            <button id="staff-csv" class="btn btn-ghost" type="button">Copy CSV</button>
+          </div>
+          <p id="staff-dmsg" class="staff-msg" role="status"></p>
+        </div>
+
+        <!-- In-page QR for a class link -->
+        <div id="staff-qr" hidden>
+          <div class="staff-dash-head">
+            <button id="qr-back" class="btn btn-ghost btn-sm" type="button">&#8592; Classes</button>
+            <h3 id="qr-title" class="staff-h3"></h3>
+          </div>
+          <div class="qr-wrap"><canvas id="qr-canvas"></canvas></div>
+          <p id="qr-link" class="qr-link"></p>
+          <button id="qr-copy" class="btn btn-blue" type="button">Copy link</button>
+          <p id="staff-qmsg" class="staff-msg" role="status"></p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="act-footer">
+    <img src="https://dgaj-g.github.io/ols-digital-skills/assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+    <span>OLS Digital Skills</span>
+  </footer>
+
+  
+<script>
+/*! node-qrcode (https://github.com/soldair/node-qrcode) \u2014 MIT licensed. Bundled for the browser with esbuild. */
+(()=>{var Ue=Object.create;var Lt=Object.defineProperty;var qe=Object.getOwnPropertyDescriptor;var De=Object.getOwnPropertyNames;var Fe=Object.getPrototypeOf,ke=Object.prototype.hasOwnProperty;var d=(n,t)=>()=>(t||n((t={exports:{}}).exports,t),t.exports);var ze=(n,t,e,r)=>{if(t&&typeof t=="object"||typeof t=="function")for(let o of De(t))!ke.call(n,o)&&o!==e&&Lt(n,o,{get:()=>t[o],enumerable:!(r=qe(t,o))||r.enumerable});return n};var Ve=(n,t,e)=>(e=n!=null?Ue(Fe(n)):{},ze(t||!n||!n.__esModule?Lt(e,"default",{value:n,enumerable:!0}):e,n));var xt=d((Dn,_t)=>{_t.exports=function(){return typeof Promise=="function"&&Promise.prototype&&Promise.prototype.then}});var I=d(P=>{var st,He=[0,26,44,70,100,134,172,196,242,292,346,404,466,532,581,655,733,815,901,991,1085,1156,1258,1364,1474,1588,1706,1828,1921,2051,2185,2323,2465,2611,2761,2876,3034,3196,3362,3532,3706];P.getSymbolSize=function(t){if(!t)throw new Error('"version" cannot be null or undefined');if(t<1||t>40)throw new Error('"version" should be in range from 1 to 40');return t*4+17};P.getSymbolTotalCodewords=function(t){return He[t]};P.getBCHDigit=function(n){let t=0;for(;n!==0;)t++,n>>>=1;return t};P.setToSJISFunction=function(t){if(typeof t!="function")throw new Error('"toSJISFunc" is not a valid function.');st=t};P.isKanjiModeEnabled=function(){return typeof st<"u"};P.toSJIS=function(t){return st(t)}});var j=d(m=>{m.L={bit:1};m.M={bit:0};m.Q={bit:3};m.H={bit:2};function Ke(n){if(typeof n!="string")throw new Error("Param is not a string");switch(n.toLowerCase()){case"l":case"low":return m.L;case"m":case"medium":return m.M;case"q":case"quartile":return m.Q;case"h":case"high":return m.H;default:throw new Error("Unknown EC Level: "+n)}}m.isValid=function(t){return t&&typeof t.bit<"u"&&t.bit>=0&&t.bit<4};m.from=function(t,e){if(m.isValid(t))return t;try{return Ke(t)}catch{return e}}});var Dt=d((zn,qt)=>{function Ut(){this.buffer=[],this.length=0}Ut.prototype={get:function(n){let t=Math.floor(n/8);return(this.buffer[t]>>>7-n%8&1)===1},put:function(n,t){for(let e=0;e<t;e++)this.putBit((n>>>t-e-1&1)===1)},getLengthInBits:function(){return this.length},putBit:function(n){let t=Math.floor(this.length/8);this.buffer.length<=t&&this.buffer.push(0),n&&(this.buffer[t]|=128>>>this.length%8),this.length++}};qt.exports=Ut});var kt=d((Vn,Ft)=>{function k(n){if(!n||n<1)throw new Error("BitMatrix size must be defined and greater than 0");this.size=n,this.data=new Uint8Array(n*n),this.reservedBit=new Uint8Array(n*n)}k.prototype.set=function(n,t,e,r){let o=n*this.size+t;this.data[o]=e,r&&(this.reservedBit[o]=!0)};k.prototype.get=function(n,t){return this.data[n*this.size+t]};k.prototype.xor=function(n,t,e){this.data[n*this.size+t]^=e};k.prototype.isReserved=function(n,t){return this.reservedBit[n*this.size+t]};Ft.exports=k});var zt=d(G=>{var Je=I().getSymbolSize;G.getRowColCoords=function(t){if(t===1)return[];let e=Math.floor(t/7)+2,r=Je(t),o=r===145?26:Math.ceil((r-13)/(2*e-2))*2,i=[r-7];for(let s=1;s<e-1;s++)i[s]=i[s-1]-o;return i.push(6),i.reverse()};G.getPositions=function(t){let e=[],r=G.getRowColCoords(t),o=r.length;for(let i=0;i<o;i++)for(let s=0;s<o;s++)i===0&&s===0||i===0&&s===o-1||i===o-1&&s===0||e.push([r[i],r[s]]);return e}});var Kt=d(Ht=>{var Ye=I().getSymbolSize,Vt=7;Ht.getPositions=function(t){let e=Ye(t);return[[0,0],[e-Vt,0],[0,e-Vt]]}});var Jt=d(g=>{g.Patterns={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7};var b={N1:3,N2:3,N3:40,N4:10};g.isValid=function(t){return t!=null&&t!==""&&!isNaN(t)&&t>=0&&t<=7};g.from=function(t){return g.isValid(t)?parseInt(t,10):void 0};g.getPenaltyN1=function(t){let e=t.size,r=0,o=0,i=0,s=null,u=null;for(let c=0;c<e;c++){o=i=0,s=u=null;for(let l=0;l<e;l++){let a=t.get(c,l);a===s?o++:(o>=5&&(r+=b.N1+(o-5)),s=a,o=1),a=t.get(l,c),a===u?i++:(i>=5&&(r+=b.N1+(i-5)),u=a,i=1)}o>=5&&(r+=b.N1+(o-5)),i>=5&&(r+=b.N1+(i-5))}return r};g.getPenaltyN2=function(t){let e=t.size,r=0;for(let o=0;o<e-1;o++)for(let i=0;i<e-1;i++){let s=t.get(o,i)+t.get(o,i+1)+t.get(o+1,i)+t.get(o+1,i+1);(s===4||s===0)&&r++}return r*b.N2};g.getPenaltyN3=function(t){let e=t.size,r=0,o=0,i=0;for(let s=0;s<e;s++){o=i=0;for(let u=0;u<e;u++)o=o<<1&2047|t.get(s,u),u>=10&&(o===1488||o===93)&&r++,i=i<<1&2047|t.get(u,s),u>=10&&(i===1488||i===93)&&r++}return r*b.N3};g.getPenaltyN4=function(t){let e=0,r=t.data.length;for(let i=0;i<r;i++)e+=t.data[i];return Math.abs(Math.ceil(e*100/r/5)-10)*b.N4};function Oe(n,t,e){switch(n){case g.Patterns.PATTERN000:return(t+e)%2===0;case g.Patterns.PATTERN001:return t%2===0;case g.Patterns.PATTERN010:return e%3===0;case g.Patterns.PATTERN011:return(t+e)%3===0;case g.Patterns.PATTERN100:return(Math.floor(t/2)+Math.floor(e/3))%2===0;case g.Patterns.PATTERN101:return t*e%2+t*e%3===0;case g.Patterns.PATTERN110:return(t*e%2+t*e%3)%2===0;case g.Patterns.PATTERN111:return(t*e%3+(t+e)%2)%2===0;default:throw new Error("bad maskPattern:"+n)}}g.applyMask=function(t,e){let r=e.size;for(let o=0;o<r;o++)for(let i=0;i<r;i++)e.isReserved(i,o)||e.xor(i,o,Oe(t,i,o))};g.getBestMask=function(t,e){let r=Object.keys(g.Patterns).length,o=0,i=1/0;for(let s=0;s<r;s++){e(s),g.applyMask(s,t);let u=g.getPenaltyN1(t)+g.getPenaltyN2(t)+g.getPenaltyN3(t)+g.getPenaltyN4(t);g.applyMask(s,t),u<i&&(i=u,o=s)}return o}});var ct=d(ut=>{var N=j(),Q=[1,1,1,1,1,1,1,1,1,1,2,2,1,2,2,4,1,2,4,4,2,4,4,4,2,4,6,5,2,4,6,6,2,5,8,8,4,5,8,8,4,5,8,11,4,8,10,11,4,9,12,16,4,9,16,16,6,10,12,18,6,10,17,16,6,11,16,19,6,13,18,21,7,14,21,25,8,16,20,25,8,17,23,25,9,17,23,34,9,18,25,30,10,20,27,32,12,21,29,35,12,23,34,37,12,25,34,40,13,26,35,42,14,28,38,45,15,29,40,48,16,31,43,51,17,33,45,54,18,35,48,57,19,37,51,60,19,38,53,63,20,40,56,66,21,43,59,70,22,45,62,74,24,47,65,77,25,49,68,81],$=[7,10,13,17,10,16,22,28,15,26,36,44,20,36,52,64,26,48,72,88,36,64,96,112,40,72,108,130,48,88,132,156,60,110,160,192,72,130,192,224,80,150,224,264,96,176,260,308,104,198,288,352,120,216,320,384,132,240,360,432,144,280,408,480,168,308,448,532,180,338,504,588,196,364,546,650,224,416,600,700,224,442,644,750,252,476,690,816,270,504,750,900,300,560,810,960,312,588,870,1050,336,644,952,1110,360,700,1020,1200,390,728,1050,1260,420,784,1140,1350,450,812,1200,1440,480,868,1290,1530,510,924,1350,1620,540,980,1440,1710,570,1036,1530,1800,570,1064,1590,1890,600,1120,1680,1980,630,1204,1770,2100,660,1260,1860,2220,720,1316,1950,2310,750,1372,2040,2430];ut.getBlocksCount=function(t,e){switch(e){case N.L:return Q[(t-1)*4+0];case N.M:return Q[(t-1)*4+1];case N.Q:return Q[(t-1)*4+2];case N.H:return Q[(t-1)*4+3];default:return}};ut.getTotalCodewordsCount=function(t,e){switch(e){case N.L:return $[(t-1)*4+0];case N.M:return $[(t-1)*4+1];case N.Q:return $[(t-1)*4+2];case N.H:return $[(t-1)*4+3];default:return}}});var Yt=d(Z=>{var z=new Uint8Array(512),W=new Uint8Array(256);(function(){let t=1;for(let e=0;e<255;e++)z[e]=t,W[t]=e,t<<=1,t&256&&(t^=285);for(let e=255;e<512;e++)z[e]=z[e-255]})();Z.log=function(t){if(t<1)throw new Error("log("+t+")");return W[t]};Z.exp=function(t){return z[t]};Z.mul=function(t,e){return t===0||e===0?0:z[W[t]+W[e]]}});var Ot=d(V=>{var lt=Yt();V.mul=function(t,e){let r=new Uint8Array(t.length+e.length-1);for(let o=0;o<t.length;o++)for(let i=0;i<e.length;i++)r[o+i]^=lt.mul(t[o],e[i]);return r};V.mod=function(t,e){let r=new Uint8Array(t);for(;r.length-e.length>=0;){let o=r[0];for(let s=0;s<e.length;s++)r[s]^=lt.mul(e[s],o);let i=0;for(;i<r.length&&r[i]===0;)i++;r=r.slice(i)}return r};V.generateECPolynomial=function(t){let e=new Uint8Array([1]);for(let r=0;r<t;r++)e=V.mul(e,new Uint8Array([1,lt.exp(r)]));return e}});var Qt=d((Gn,Gt)=>{var jt=Ot();function at(n){this.genPoly=void 0,this.degree=n,this.degree&&this.initialize(this.degree)}at.prototype.initialize=function(t){this.degree=t,this.genPoly=jt.generateECPolynomial(this.degree)};at.prototype.encode=function(t){if(!this.genPoly)throw new Error("Encoder not initialized");let e=new Uint8Array(t.length+this.degree);e.set(t);let r=jt.mod(e,this.genPoly),o=this.degree-r.length;if(o>0){let i=new Uint8Array(this.degree);return i.set(r,o),i}return r};Gt.exports=at});var ft=d($t=>{$t.isValid=function(t){return!isNaN(t)&&t>=1&&t<=40}});var dt=d(B=>{var Wt="[0-9]+",je="[A-Z $%*+\\-./:]+",H="(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+";H=H.replace(/u/g,"\\u");var Ge="(?:(?![A-Z0-9 $%*+\\-./:]|"+H+`)(?:.|[\r
+]))+`;B.KANJI=new RegExp(H,"g");B.BYTE_KANJI=new RegExp("[^A-Z0-9 $%*+\\-./:]+","g");B.BYTE=new RegExp(Ge,"g");B.NUMERIC=new RegExp(Wt,"g");B.ALPHANUMERIC=new RegExp(je,"g");var Qe=new RegExp("^"+H+"$"),$e=new RegExp("^"+Wt+"$"),We=new RegExp("^[A-Z0-9 $%*+\\-./:]+$");B.testKanji=function(t){return Qe.test(t)};B.testNumeric=function(t){return $e.test(t)};B.testAlphanumeric=function(t){return We.test(t)}});var M=d(p=>{var Ze=ft(),gt=dt();p.NUMERIC={id:"Numeric",bit:1,ccBits:[10,12,14]};p.ALPHANUMERIC={id:"Alphanumeric",bit:2,ccBits:[9,11,13]};p.BYTE={id:"Byte",bit:4,ccBits:[8,16,16]};p.KANJI={id:"Kanji",bit:8,ccBits:[8,10,12]};p.MIXED={bit:-1};p.getCharCountIndicator=function(t,e){if(!t.ccBits)throw new Error("Invalid mode: "+t);if(!Ze.isValid(e))throw new Error("Invalid version: "+e);return e>=1&&e<10?t.ccBits[0]:e<27?t.ccBits[1]:t.ccBits[2]};p.getBestModeForData=function(t){return gt.testNumeric(t)?p.NUMERIC:gt.testAlphanumeric(t)?p.ALPHANUMERIC:gt.testKanji(t)?p.KANJI:p.BYTE};p.toString=function(t){if(t&&t.id)return t.id;throw new Error("Invalid mode")};p.isValid=function(t){return t&&t.bit&&t.ccBits};function Xe(n){if(typeof n!="string")throw new Error("Param is not a string");switch(n.toLowerCase()){case"numeric":return p.NUMERIC;case"alphanumeric":return p.ALPHANUMERIC;case"kanji":return p.KANJI;case"byte":return p.BYTE;default:throw new Error("Unknown mode: "+n)}}p.from=function(t,e){if(p.isValid(t))return t;try{return Xe(t)}catch{return e}}});var ee=d(R=>{var X=I(),ve=ct(),Zt=j(),S=M(),ht=ft(),vt=7973,Xt=X.getBCHDigit(vt);function tn(n,t,e){for(let r=1;r<=40;r++)if(t<=R.getCapacity(r,e,n))return r}function te(n,t){return S.getCharCountIndicator(n,t)+4}function en(n,t){let e=0;return n.forEach(function(r){let o=te(r.mode,t);e+=o+r.getBitsLength()}),e}function nn(n,t){for(let e=1;e<=40;e++)if(en(n,e)<=R.getCapacity(e,t,S.MIXED))return e}R.from=function(t,e){return ht.isValid(t)?parseInt(t,10):e};R.getCapacity=function(t,e,r){if(!ht.isValid(t))throw new Error("Invalid QR Code version");typeof r>"u"&&(r=S.BYTE);let o=X.getSymbolTotalCodewords(t),i=ve.getTotalCodewordsCount(t,e),s=(o-i)*8;if(r===S.MIXED)return s;let u=s-te(r,t);switch(r){case S.NUMERIC:return Math.floor(u/10*3);case S.ALPHANUMERIC:return Math.floor(u/11*2);case S.KANJI:return Math.floor(u/13);case S.BYTE:default:return Math.floor(u/8)}};R.getBestVersionForData=function(t,e){let r,o=Zt.from(e,Zt.M);if(Array.isArray(t)){if(t.length>1)return nn(t,o);if(t.length===0)return 1;r=t[0]}else r=t;return tn(r.mode,r.getLength(),o)};R.getEncodedBits=function(t){if(!ht.isValid(t)||t<7)throw new Error("Invalid QR Code version");let e=t<<12;for(;X.getBCHDigit(e)-Xt>=0;)e^=vt<<X.getBCHDigit(e)-Xt;return t<<12|e}});var ie=d(oe=>{var pt=I(),re=1335,rn=21522,ne=pt.getBCHDigit(re);oe.getEncodedBits=function(t,e){let r=t.bit<<3|e,o=r<<10;for(;pt.getBCHDigit(o)-ne>=0;)o^=re<<pt.getBCHDigit(o)-ne;return(r<<10|o)^rn}});var ue=d((vn,se)=>{var on=M();function x(n){this.mode=on.NUMERIC,this.data=n.toString()}x.getBitsLength=function(t){return 10*Math.floor(t/3)+(t%3?t%3*3+1:0)};x.prototype.getLength=function(){return this.data.length};x.prototype.getBitsLength=function(){return x.getBitsLength(this.data.length)};x.prototype.write=function(t){let e,r,o;for(e=0;e+3<=this.data.length;e+=3)r=this.data.substr(e,3),o=parseInt(r,10),t.put(o,10);let i=this.data.length-e;i>0&&(r=this.data.substr(e),o=parseInt(r,10),t.put(o,i*3+1))};se.exports=x});var le=d((tr,ce)=>{var sn=M(),wt=["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"," ","$","%","*","+","-",".","/",":"];function U(n){this.mode=sn.ALPHANUMERIC,this.data=n}U.getBitsLength=function(t){return 11*Math.floor(t/2)+6*(t%2)};U.prototype.getLength=function(){return this.data.length};U.prototype.getBitsLength=function(){return U.getBitsLength(this.data.length)};U.prototype.write=function(t){let e;for(e=0;e+2<=this.data.length;e+=2){let r=wt.indexOf(this.data[e])*45;r+=wt.indexOf(this.data[e+1]),t.put(r,11)}this.data.length%2&&t.put(wt.indexOf(this.data[e]),6)};ce.exports=U});var fe=d((er,ae)=>{var un=M();function q(n){this.mode=un.BYTE,typeof n=="string"?this.data=new TextEncoder().encode(n):this.data=new Uint8Array(n)}q.getBitsLength=function(t){return t*8};q.prototype.getLength=function(){return this.data.length};q.prototype.getBitsLength=function(){return q.getBitsLength(this.data.length)};q.prototype.write=function(n){for(let t=0,e=this.data.length;t<e;t++)n.put(this.data[t],8)};ae.exports=q});var ge=d((nr,de)=>{var cn=M(),ln=I();function D(n){this.mode=cn.KANJI,this.data=n}D.getBitsLength=function(t){return t*13};D.prototype.getLength=function(){return this.data.length};D.prototype.getBitsLength=function(){return D.getBitsLength(this.data.length)};D.prototype.write=function(n){let t;for(t=0;t<this.data.length;t++){let e=ln.toSJIS(this.data[t]);if(e>=33088&&e<=40956)e-=33088;else if(e>=57408&&e<=60351)e-=49472;else throw new Error("Invalid SJIS character: "+this.data[t]+`
+Make sure your charset is UTF-8`);e=(e>>>8&255)*192+(e&255),n.put(e,13)}};de.exports=D});var he=d((rr,mt)=>{"use strict";var K={single_source_shortest_paths:function(n,t,e){var r={},o={};o[t]=0;var i=K.PriorityQueue.make();i.push(t,0);for(var s,u,c,l,a,w,h,y,A;!i.empty();){s=i.pop(),u=s.value,l=s.cost,a=n[u]||{};for(c in a)a.hasOwnProperty(c)&&(w=a[c],h=l+w,y=o[c],A=typeof o[c]>"u",(A||y>h)&&(o[c]=h,i.push(c,h),r[c]=u))}if(typeof e<"u"&&typeof o[e]>"u"){var T=["Could not find a path from ",t," to ",e,"."].join("");throw new Error(T)}return r},extract_shortest_path_from_predecessor_list:function(n,t){for(var e=[],r=t,o;r;)e.push(r),o=n[r],r=n[r];return e.reverse(),e},find_path:function(n,t,e){var r=K.single_source_shortest_paths(n,t,e);return K.extract_shortest_path_from_predecessor_list(r,e)},PriorityQueue:{make:function(n){var t=K.PriorityQueue,e={},r;n=n||{};for(r in t)t.hasOwnProperty(r)&&(e[r]=t[r]);return e.queue=[],e.sorter=n.sorter||t.default_sorter,e},default_sorter:function(n,t){return n.cost-t.cost},push:function(n,t){var e={value:n,cost:t};this.queue.push(e),this.queue.sort(this.sorter)},pop:function(){return this.queue.shift()},empty:function(){return this.queue.length===0}}};typeof mt<"u"&&(mt.exports=K)});var Ae=d(F=>{var f=M(),me=ue(),ye=le(),Ee=fe(),Ce=ge(),J=dt(),v=I(),an=he();function pe(n){return unescape(encodeURIComponent(n)).length}function Y(n,t,e){let r=[],o;for(;(o=n.exec(e))!==null;)r.push({data:o[0],index:o.index,mode:t,length:o[0].length});return r}function Be(n){let t=Y(J.NUMERIC,f.NUMERIC,n),e=Y(J.ALPHANUMERIC,f.ALPHANUMERIC,n),r,o;return v.isKanjiModeEnabled()?(r=Y(J.BYTE,f.BYTE,n),o=Y(J.KANJI,f.KANJI,n)):(r=Y(J.BYTE_KANJI,f.BYTE,n),o=[]),t.concat(e,r,o).sort(function(s,u){return s.index-u.index}).map(function(s){return{data:s.data,mode:s.mode,length:s.length}})}function yt(n,t){switch(t){case f.NUMERIC:return me.getBitsLength(n);case f.ALPHANUMERIC:return ye.getBitsLength(n);case f.KANJI:return Ce.getBitsLength(n);case f.BYTE:return Ee.getBitsLength(n)}}function fn(n){return n.reduce(function(t,e){let r=t.length-1>=0?t[t.length-1]:null;return r&&r.mode===e.mode?(t[t.length-1].data+=e.data,t):(t.push(e),t)},[])}function dn(n){let t=[];for(let e=0;e<n.length;e++){let r=n[e];switch(r.mode){case f.NUMERIC:t.push([r,{data:r.data,mode:f.ALPHANUMERIC,length:r.length},{data:r.data,mode:f.BYTE,length:r.length}]);break;case f.ALPHANUMERIC:t.push([r,{data:r.data,mode:f.BYTE,length:r.length}]);break;case f.KANJI:t.push([r,{data:r.data,mode:f.BYTE,length:pe(r.data)}]);break;case f.BYTE:t.push([{data:r.data,mode:f.BYTE,length:pe(r.data)}])}}return t}function gn(n,t){let e={},r={start:{}},o=["start"];for(let i=0;i<n.length;i++){let s=n[i],u=[];for(let c=0;c<s.length;c++){let l=s[c],a=""+i+c;u.push(a),e[a]={node:l,lastCount:0},r[a]={};for(let w=0;w<o.length;w++){let h=o[w];e[h]&&e[h].node.mode===l.mode?(r[h][a]=yt(e[h].lastCount+l.length,l.mode)-yt(e[h].lastCount,l.mode),e[h].lastCount+=l.length):(e[h]&&(e[h].lastCount=l.length),r[h][a]=yt(l.length,l.mode)+4+f.getCharCountIndicator(l.mode,t))}}o=u}for(let i=0;i<o.length;i++)r[o[i]].end=0;return{map:r,table:e}}function we(n,t){let e,r=f.getBestModeForData(n);if(e=f.from(t,r),e!==f.BYTE&&e.bit<r.bit)throw new Error('"'+n+'" cannot be encoded with mode '+f.toString(e)+`.
+ Suggested mode is: `+f.toString(r));switch(e===f.KANJI&&!v.isKanjiModeEnabled()&&(e=f.BYTE),e){case f.NUMERIC:return new me(n);case f.ALPHANUMERIC:return new ye(n);case f.KANJI:return new Ce(n);case f.BYTE:return new Ee(n)}}F.fromArray=function(t){return t.reduce(function(e,r){return typeof r=="string"?e.push(we(r,null)):r.data&&e.push(we(r.data,r.mode)),e},[])};F.fromString=function(t,e){let r=Be(t,v.isKanjiModeEnabled()),o=dn(r),i=gn(o,e),s=an.find_path(i.map,"start","end"),u=[];for(let c=1;c<s.length-1;c++)u.push(i.table[s[c]].node);return F.fromArray(fn(u))};F.rawSplit=function(t){return F.fromArray(Be(t,v.isKanjiModeEnabled()))}});var Ie=d(Te=>{var et=I(),Et=j(),hn=Dt(),pn=kt(),wn=zt(),mn=Kt(),At=Jt(),Tt=ct(),yn=Qt(),tt=ee(),En=ie(),Cn=M(),Ct=Ae();function Bn(n,t){let e=n.size,r=mn.getPositions(t);for(let o=0;o<r.length;o++){let i=r[o][0],s=r[o][1];for(let u=-1;u<=7;u++)if(!(i+u<=-1||e<=i+u))for(let c=-1;c<=7;c++)s+c<=-1||e<=s+c||(u>=0&&u<=6&&(c===0||c===6)||c>=0&&c<=6&&(u===0||u===6)||u>=2&&u<=4&&c>=2&&c<=4?n.set(i+u,s+c,!0,!0):n.set(i+u,s+c,!1,!0))}}function An(n){let t=n.size;for(let e=8;e<t-8;e++){let r=e%2===0;n.set(e,6,r,!0),n.set(6,e,r,!0)}}function Tn(n,t){let e=wn.getPositions(t);for(let r=0;r<e.length;r++){let o=e[r][0],i=e[r][1];for(let s=-2;s<=2;s++)for(let u=-2;u<=2;u++)s===-2||s===2||u===-2||u===2||s===0&&u===0?n.set(o+s,i+u,!0,!0):n.set(o+s,i+u,!1,!0)}}function In(n,t){let e=n.size,r=tt.getEncodedBits(t),o,i,s;for(let u=0;u<18;u++)o=Math.floor(u/3),i=u%3+e-8-3,s=(r>>u&1)===1,n.set(o,i,s,!0),n.set(i,o,s,!0)}function Bt(n,t,e){let r=n.size,o=En.getEncodedBits(t,e),i,s;for(i=0;i<15;i++)s=(o>>i&1)===1,i<6?n.set(i,8,s,!0):i<8?n.set(i+1,8,s,!0):n.set(r-15+i,8,s,!0),i<8?n.set(8,r-i-1,s,!0):i<9?n.set(8,15-i-1+1,s,!0):n.set(8,15-i-1,s,!0);n.set(r-8,8,1,!0)}function Nn(n,t){let e=n.size,r=-1,o=e-1,i=7,s=0;for(let u=e-1;u>0;u-=2)for(u===6&&u--;;){for(let c=0;c<2;c++)if(!n.isReserved(o,u-c)){let l=!1;s<t.length&&(l=(t[s]>>>i&1)===1),n.set(o,u-c,l),i--,i===-1&&(s++,i=7)}if(o+=r,o<0||e<=o){o-=r,r=-r;break}}}function Mn(n,t,e){let r=new hn;e.forEach(function(c){r.put(c.mode.bit,4),r.put(c.getLength(),Cn.getCharCountIndicator(c.mode,n)),c.write(r)});let o=et.getSymbolTotalCodewords(n),i=Tt.getTotalCodewordsCount(n,t),s=(o-i)*8;for(r.getLengthInBits()+4<=s&&r.put(0,4);r.getLengthInBits()%8!==0;)r.putBit(0);let u=(s-r.getLengthInBits())/8;for(let c=0;c<u;c++)r.put(c%2?17:236,8);return Sn(r,n,t)}function Sn(n,t,e){let r=et.getSymbolTotalCodewords(t),o=Tt.getTotalCodewordsCount(t,e),i=r-o,s=Tt.getBlocksCount(t,e),u=r%s,c=s-u,l=Math.floor(r/s),a=Math.floor(i/s),w=a+1,h=l-a,y=new yn(h),A=0,T=new Array(s),bt=new Array(s),rt=0,xe=new Uint8Array(n.buffer);for(let _=0;_<s;_++){let it=_<c?a:w;T[_]=xe.slice(A,A+it),bt[_]=y.encode(T[_]),A+=it,rt=Math.max(rt,it)}let ot=new Uint8Array(r),Rt=0,E,C;for(E=0;E<rt;E++)for(C=0;C<s;C++)E<T[C].length&&(ot[Rt++]=T[C][E]);for(E=0;E<h;E++)for(C=0;C<s;C++)ot[Rt++]=bt[C][E];return ot}function Pn(n,t,e,r){let o;if(Array.isArray(n))o=Ct.fromArray(n);else if(typeof n=="string"){let l=t;if(!l){let a=Ct.rawSplit(n);l=tt.getBestVersionForData(a,e)}o=Ct.fromString(n,l||40)}else throw new Error("Invalid data");let i=tt.getBestVersionForData(o,e);if(!i)throw new Error("The amount of data is too big to be stored in a QR Code");if(!t)t=i;else if(t<i)throw new Error(`
+The chosen QR Code version cannot contain this amount of data.
+Minimum version required to store current data is: `+i+`.
+`);let s=Mn(t,e,o),u=et.getSymbolSize(t),c=new pn(u);return Bn(c,t),An(c),Tn(c,t),Bt(c,e,0),t>=7&&In(c,t),Nn(c,s),isNaN(r)&&(r=At.getBestMask(c,Bt.bind(null,c,e))),At.applyMask(r,c),Bt(c,e,r),{modules:c,version:t,errorCorrectionLevel:e,maskPattern:r,segments:o}}Te.create=function(t,e){if(typeof t>"u"||t==="")throw new Error("No input text");let r=Et.M,o,i;return typeof e<"u"&&(r=Et.from(e.errorCorrectionLevel,Et.M),o=tt.from(e.version),i=At.from(e.maskPattern),e.toSJISFunc&&et.setToSJISFunction(e.toSJISFunc)),Pn(t,o,r,i)}});var It=d(L=>{function Ne(n){if(typeof n=="number"&&(n=n.toString()),typeof n!="string")throw new Error("Color should be defined as hex string");let t=n.slice().replace("#","").split("");if(t.length<3||t.length===5||t.length>8)throw new Error("Invalid hex color: "+n);(t.length===3||t.length===4)&&(t=Array.prototype.concat.apply([],t.map(function(r){return[r,r]}))),t.length===6&&t.push("F","F");let e=parseInt(t.join(""),16);return{r:e>>24&255,g:e>>16&255,b:e>>8&255,a:e&255,hex:"#"+t.slice(0,6).join("")}}L.getOptions=function(t){t||(t={}),t.color||(t.color={});let e=typeof t.margin>"u"||t.margin===null||t.margin<0?4:t.margin,r=t.width&&t.width>=21?t.width:void 0,o=t.scale||4;return{width:r,scale:r?4:o,margin:e,color:{dark:Ne(t.color.dark||"#000000ff"),light:Ne(t.color.light||"#ffffffff")},type:t.type,rendererOpts:t.rendererOpts||{}}};L.getScale=function(t,e){return e.width&&e.width>=t+e.margin*2?e.width/(t+e.margin*2):e.scale};L.getImageWidth=function(t,e){let r=L.getScale(t,e);return Math.floor((t+e.margin*2)*r)};L.qrToImageData=function(t,e,r){let o=e.modules.size,i=e.modules.data,s=L.getScale(o,r),u=Math.floor((o+r.margin*2)*s),c=r.margin*s,l=[r.color.light,r.color.dark];for(let a=0;a<u;a++)for(let w=0;w<u;w++){let h=(a*u+w)*4,y=r.color.light;if(a>=c&&w>=c&&a<u-c&&w<u-c){let A=Math.floor((a-c)/s),T=Math.floor((w-c)/s);y=l[i[A*o+T]?1:0]}t[h++]=y.r,t[h++]=y.g,t[h++]=y.b,t[h]=y.a}}});var Me=d(nt=>{var Nt=It();function bn(n,t,e){n.clearRect(0,0,t.width,t.height),t.style||(t.style={}),t.height=e,t.width=e,t.style.height=e+"px",t.style.width=e+"px"}function Rn(){try{return document.createElement("canvas")}catch{throw new Error("You need to specify a canvas element")}}nt.render=function(t,e,r){let o=r,i=e;typeof o>"u"&&(!e||!e.getContext)&&(o=e,e=void 0),e||(i=Rn()),o=Nt.getOptions(o);let s=Nt.getImageWidth(t.modules.size,o),u=i.getContext("2d"),c=u.createImageData(s,s);return Nt.qrToImageData(c.data,t,o),bn(u,i,s),u.putImageData(c,0,0),i};nt.renderToDataURL=function(t,e,r){let o=r;typeof o>"u"&&(!e||!e.getContext)&&(o=e,e=void 0),o||(o={});let i=nt.render(t,e,o),s=o.type||"image/png",u=o.rendererOpts||{};return i.toDataURL(s,u.quality)}});var be=d(Pe=>{var Ln=It();function Se(n,t){let e=n.a/255,r=t+'="'+n.hex+'"';return e<1?r+" "+t+'-opacity="'+e.toFixed(2).slice(1)+'"':r}function Mt(n,t,e){let r=n+t;return typeof e<"u"&&(r+=" "+e),r}function _n(n,t,e){let r="",o=0,i=!1,s=0;for(let u=0;u<n.length;u++){let c=Math.floor(u%t),l=Math.floor(u/t);!c&&!i&&(i=!0),n[u]?(s++,u>0&&c>0&&n[u-1]||(r+=i?Mt("M",c+e,.5+l+e):Mt("m",o,0),o=0,i=!1),c+1<t&&n[u+1]||(r+=Mt("h",s),s=0)):o++}return r}Pe.render=function(t,e,r){let o=Ln.getOptions(e),i=t.modules.size,s=t.modules.data,u=i+o.margin*2,c=o.color.light.a?"<path "+Se(o.color.light,"fill")+' d="M0 0h'+u+"v"+u+'H0z"/>':"",l="<path "+Se(o.color.dark,"stroke")+' d="'+_n(s,i,o.margin)+'"/>',a='viewBox="0 0 '+u+" "+u+'"',h='<svg xmlns="http://www.w3.org/2000/svg" '+(o.width?'width="'+o.width+'" height="'+o.width+'" ':"")+a+' shape-rendering="crispEdges">'+c+l+`</svg>
+`;return typeof r=="function"&&r(null,h),h}});var Le=d(O=>{var xn=xt(),St=Ie(),Re=Me(),Un=be();function Pt(n,t,e,r,o){let i=[].slice.call(arguments,1),s=i.length,u=typeof i[s-1]=="function";if(!u&&!xn())throw new Error("Callback required as last argument");if(u){if(s<2)throw new Error("Too few arguments provided");s===2?(o=e,e=t,t=r=void 0):s===3&&(t.getContext&&typeof o>"u"?(o=r,r=void 0):(o=r,r=e,e=t,t=void 0))}else{if(s<1)throw new Error("Too few arguments provided");return s===1?(e=t,t=r=void 0):s===2&&!t.getContext&&(r=e,e=t,t=void 0),new Promise(function(c,l){try{let a=St.create(e,r);c(n(a,t,r))}catch(a){l(a)}})}try{let c=St.create(e,r);o(null,n(c,t,r))}catch(c){o(c)}}O.create=St.create;O.toCanvas=Pt.bind(null,Re.render);O.toDataURL=Pt.bind(null,Re.renderToDataURL);O.toString=Pt.bind(null,function(n,t,e){return Un.render(n,e)})});var _e=Ve(Le());window.QRCode=_e.default;})();
+
+</script>
+<script>
+
+window.OLS_TRANSPORT = {
+  call: function (p) {
+    return new Promise(function (resolve, reject) {
+      var g = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+      switch (p.action) {
+        case 'whoami':        g.apiWhoAmI(); break;
+        case 'load':          g.apiLoad({ classCode: p['class'] }); break;
+        case 'save':          g.apiSave({ classCode: p['class'], name: p.name, year: p.year, draft: p.draft }); break;
+        case 'uploadPhoto':   g.apiUploadPhoto({ classCode: p['class'], b64: p.b64, w: p.w, h: p.h, dish: p.dish, date: p.date, entryId: p.entryId, folderId: p.folderId, n: p.n }); break;
+        case 'getUpload':     g.apiGetUpload({ classCode: p['class'], dish: p.dish, date: p.date, entryId: p.entryId, folderId: p.folderId }); break;
+        case 'uploadVideo':   g.apiUploadVideo({ classCode: p['class'], b64: p.b64, mime: p.mime, n: p.n, dish: p.dish, date: p.date, entryId: p.entryId, folderId: p.folderId }); break;
+        case 'registerMedia': g.apiRegisterMedia({ classCode: p['class'], fileId: p.fileId, kind: p.kind }); break;
+        case 'deleteMedia':   g.apiDeleteMedia({ fileId: p.fileId }); break;
+        case 'submitEntry':   g.apiSubmitEntry({ classCode: p['class'], spec: p.spec, summary: p.summary }); break;
+        case 'admin':         g.apiAdmin({ passcode: p.passcode, sub: p.sub, name: p.name, year: p.year, classCode: p.classCode || p['class'] }); break;
+        default: reject(new Error('unknown action ' + p.action));
+      }
+    });
+  }
+};
+</script>
+<script>
+/* ============================================================
+   My Kitchen Portfolio - front-end
+   ------------------------------------------------------------
+   ONE codebase, two homes:
+   - On the Apps Script page, window.OLS_TRANSPORT routes calls through
+     google.script.run (same-origin, carries the verified C2k sign-in),
+     and video files stream straight to Drive with a resumable upload.
+   - On github.io / local preview, OLS_TRANSPORT is absent, so we fall
+     back to an offline stub backed by localStorage (photos keep a local
+     thumbnail; the Doc becomes an in-page preview). This lets the whole
+     journey be reviewed without deploying.
+
+   The pupil's year group (J1/J2/J3) decides which focus areas she sees
+   AND the kitchen colour tone. It comes from the class the teacher
+   created (injected by the server as OLS_BOOT.classYear); if the class
+   has no year (bare /exec or legacy), the pupil picks once on welcome.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var BOOT = window.OLS_BOOT || { classCode: 'default', baseUrl: '', classYear: '' };
+  var ASSET = window.OLS_ASSET_BASE || '';
+  var ONLINE = !!(window.OLS_TRANSPORT && typeof window.OLS_TRANSPORT.call === 'function');
+
+  /* ============================================================
+     The focus areas - straight from the department's Schemes of Work
+     (Helena's brief). Keys are unique per year so saved answers can
+     never collide. costing:true switches on the recipe-costing table.
+     ============================================================ */
+  var FOCUS = {
+    J1: [
+      { key: 'hygiene', icon: '\u{1F9FC}', term: 'Term 1', name: 'Hygiene and Safety',
+        prompt: 'What did you do to keep yourself and your food safe in this practical?',
+        hint: 'Think about: washing your hands, tying hair back, your apron, clean worktops, and using knives and the cooker safely.',
+        ph: 'Before I started cooking, I\u2026' },
+      { key: 'skills', icon: '\u{1F52A}', term: 'Term 1', name: 'Skills and Equipment',
+        prompt: 'Which skills and pieces of equipment did you use today?',
+        hint: 'Name the skills (chopping, rubbing in, simmering\u2026) and the equipment that went with them. Which skill are you proudest of, and which needs more practice?',
+        ph: 'Today I practised\u2026' },
+      { key: 'foodgroups', icon: '\u{1F957}', term: 'Terms 2\u20133', name: 'Food Groups',
+        prompt: 'Which food groups from the Eatwell Guide are in your dish?',
+        hint: 'Go through your ingredients one by one. Is your dish balanced? What could you add or swap to make it more balanced?',
+        ph: 'My dish contains\u2026' },
+      { key: 'provenance', icon: '\u{1F69C}', term: 'Terms 2\u20133', name: 'Food Provenance',
+        prompt: 'Where do the main ingredients in your dish come from?',
+        hint: 'Pick two ingredients and tell their farm-to-fork story. Were they grown, reared or caught? Did they come from Northern Ireland or further away?',
+        ph: 'The flour in my dish comes from\u2026' }
+    ],
+    J2: [
+      { key: 'hygiene2', icon: '\u{1F9FC}', term: 'Term 1', name: 'Hygiene and Safety',
+        prompt: 'How did you keep your food safe to eat in this practical?',
+        hint: 'Think about personal hygiene, your work area, and how you stored, prepared and cooked your ingredients.',
+        ph: 'To keep my food safe, I\u2026' },
+      { key: 'skills2', icon: '\u{1F52A}', term: 'Term 1', name: 'Skills and Equipment',
+        prompt: 'Which skills and equipment did you use today \u2014 and what was new?',
+        hint: 'Which technique was the trickiest, and how did you manage it? What would you like to perfect next time?',
+        ph: 'The trickiest part was\u2026' },
+      { key: 'nutrients', icon: '\u{1F4AA}', term: 'Term 1', name: 'Nutrients',
+        prompt: 'Which nutrients does your dish provide, and what does each one do for your body?',
+        hint: 'Think protein, carbohydrates, fats, vitamins, minerals and fibre \u2014 and which ingredient provides each one.',
+        ph: 'My dish is a good source of\u2026' },
+      { key: 'label', icon: '\u{1F3F7}\ufe0f', term: 'Term 1', name: 'Exploring a Food Label',
+        prompt: 'Look closely at the label on one of your ingredients. What does it tell you?',
+        hint: 'Traffic-light colours, the ingredients list, allergy advice, portion size, storage instructions \u2014 did anything surprise you?',
+        ph: 'I looked at the label on\u2026' },
+      { key: 'health', icon: '\u2764\ufe0f', term: 'Terms 2\u20133', name: 'Priority Health Issues',
+        prompt: 'How could your recipe be adapted for a specific health condition?',
+        hint: 'Choose a condition \u2014 for example heart disease, obesity, type 2 diabetes or anaemia. Say exactly what you would change in the recipe, and why it helps.',
+        ph: 'To adapt this recipe for\u2026, I would\u2026' }
+    ],
+    J3: [
+      { key: 'crosscon', icon: '\u26a0\ufe0f', term: 'Term 1', name: 'Hygiene: Cross-Contamination',
+        prompt: 'What were the cross-contamination risks in this practical, and how did you control them?',
+        hint: 'Think raw and cooked foods, colour-coded chopping boards, cloths and tea towels, washing hands between tasks, and how things were stored in the fridge.',
+        ph: 'The biggest cross-contamination risk today was\u2026' },
+      { key: 'appliances', icon: '\u26a1', term: 'Term 1', name: 'Skills: Electrical Appliances',
+        prompt: 'Which electrical appliances did you use, and how did you use them safely and effectively?',
+        hint: 'Food processor, blender, hand mixer, microwave\u2026 What did each appliance add to your dish that hand tools could not?',
+        ph: 'I used the\u2026 to\u2026' },
+      { key: 'explorefood', icon: '\u{1F52C}', term: 'Term 1', name: 'Nutritional Analysis (Explore Food)',
+        prompt: 'What did the Explore Food program show you about your dish?',
+        hint: 'Run your recipe through Explore Food, then comment on the energy, fat, saturates, sugars, salt and fibre. Was anything higher or lower than you expected?',
+        ph: 'The analysis showed that my dish\u2026' },
+      { key: 'costing', icon: '\u{1F4B7}', term: 'Term 1', name: 'Costing of Recipe', costing: true,
+        prompt: 'Cost your recipe below \u2014 then, was your dish good value for money?',
+        hint: 'How does the cost per portion compare with a shop-bought version or a takeaway?',
+        ph: 'Compared with buying it ready-made\u2026' },
+      { key: 'lifecycle', icon: '\u{1F9D2}', term: 'Terms 2\u20133', name: 'Adapting for Life-Cycle Stages',
+        prompt: 'Which stage of the life cycle could your recipe be adapted for, and how?',
+        hint: 'Choose a stage \u2014 toddlers, teenagers, pregnancy or older adults. What would you change about the ingredients, portion size or texture, and why?',
+        ph: 'To adapt this dish for\u2026, I would\u2026' }
+    ]
+  };
+  var YEARS = ['J1', 'J2', 'J3'];
+  var YEAR_LABEL = { J1: 'J1 \u00b7 Year 8', J2: 'J2 \u00b7 Year 9', J3: 'J3 \u00b7 Year 10' };
+
+  var STAR_CATS = [
+    { key: 'appearance', label: 'How did it look?' },
+    { key: 'taste', label: 'How did it taste?' },
+    { key: 'texture', label: 'How was the texture?' }
+  ];
+  var STAR_WORDS = ['', 'Needs work', 'Getting there', 'Good', 'Really good', 'Restaurant standard'];
+  var OUTCOMES = [
+    'Even better than I hoped',
+    'Just as I planned',
+    'Good, with a few hiccups along the way',
+    'Not as planned \u2014 but I know what I would change'
+  ];
+  var CONFIDENCE = [
+    'I worked independently',
+    'I needed a little help',
+    'I needed quite a lot of help \u2014 and that is how you learn'
+  ];
+  var LEVELS = [
+    { n: 1, name: 'Apprentice Chef' },
+    { n: 3, name: 'Confident Cook' },
+    { n: 5, name: 'Sous Chef' },
+    { n: 8, name: 'Head Chef' },
+    { n: 12, name: 'Executive Chef' }
+  ];
+
+  var MAX_PHOTOS = 6;
+  var MAX_VIDEOS = 2;
+  var MIN_WORDS_FOCUS = 8;
+  var MIN_WORDS_OPEN = 5;
+
+  // ---- local state ----
+  var state = { email: '', name: '', autoName: '', year: '', docUrl: '', entries: [], draft: null };
+  var step = 1;
+
+  // ---- tiny DOM helpers ----
+  function $(id) { return document.getElementById(id); }
+  function show(el) { if (el) el.hidden = false; }
+  function hide(el) { if (el) el.hidden = true; }
+
+  /* A prominent pulsing GOLD wait-card, swapped into a status element while a
+     server round-trip runs (the OLS login-gated standard - a bland grey
+     "Loading..." is not enough on a board). clearBusy restores plain text. The
+     message may contain HTML entities; escape any pupil/class names yourself. */
+  function busyCard(el, html) {
+    if (!el) return;
+    if (el.getAttribute('data-base') === null) el.setAttribute('data-base', el.className);
+    el.hidden = false;
+    el.className = 'panel-loading';
+    el.innerHTML = '<span class="panel-spinner" aria-hidden="true"></span><span>' + html + '</span>';
+  }
+  function clearBusy(el, text) {
+    if (!el) return;
+    var base = el.getAttribute('data-base');
+    el.className = (base !== null) ? base : el.className.replace(/\bpanel-loading\b/g, '').trim();
+    el.textContent = text || '';
+  }
+
+  /* Two-tap confirm dialog. Never use native confirm() - it is unreliable
+     inside the sandboxed Apps Script iframe. cb is called with true/false. */
+  function kpConfirm(title, body, okLabel, cb) {
+    $('confirm-title').textContent = title;
+    $('confirm-body').textContent = body || '';
+    var ok = $('confirm-ok'), cancel = $('confirm-cancel');
+    ok.textContent = okLabel || 'Confirm';
+    function close(v) { hide($('confirm-modal')); ok.onclick = null; cancel.onclick = null; if (cb) cb(v); }
+    ok.onclick = function () { close(true); };
+    cancel.onclick = function () { close(false); };
+    show($('confirm-modal'));
+    ok.focus();
+  }
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+  function wordCount(s) { s = (s || '').trim(); return s ? s.split(/\s+/).length : 0; }
+  function todayIso() {
+    var d = new Date();
+    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+  }
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  function niceDate(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
+    if (!m) return String(iso || '');
+    return Number(m[3]) + ' ' + (MONTHS[Number(m[2]) - 1] || '') + ' ' + m[1];
+  }
+  function focusList() { return FOCUS[state.year] || FOCUS.J1; }
+  function focusByKey(k) {
+    var list = focusList();
+    for (var i = 0; i < list.length; i++) if (list[i].key === k) return list[i];
+    return null;
+  }
+  function uid() { return 'e' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36); }
+
+  /* ============================================================
+     Transport: OLS_TRANSPORT (Path B) or an offline localStorage stub
+     ============================================================ */
+  var LS_KEY = 'kp-' + BOOT.classCode;
+  var LS_THUMBS = 'kp-thumbs-' + BOOT.classCode;
+
+  function offlineStore() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (e) { return {}; }
+  }
+  function offlineSave(obj) { try { localStorage.setItem(LS_KEY, JSON.stringify(obj)); } catch (e) {} }
+  function thumbsStore() {
+    try { return JSON.parse(localStorage.getItem(LS_THUMBS) || '{}'); } catch (e) { return {}; }
+  }
+  function saveThumb(id, dataUrl) {
+    try {
+      var t = thumbsStore();
+      t[id] = dataUrl;
+      var keys = Object.keys(t);
+      if (keys.length > 40) { keys.sort(); for (var i = 0; i < keys.length - 40; i++) delete t[keys[i]]; }
+      localStorage.setItem(LS_THUMBS, JSON.stringify(t));
+    } catch (e) {}
+  }
+  function getThumb(id) { return thumbsStore()[id] || ''; }
+
+  function offlineCall(p) {
+    var s = offlineStore();
+    switch (p.action) {
+      case 'whoami':
+        return Promise.resolve({ ok: true, email: 'demo.pupil@offline (preview)' });
+      case 'load':
+        return Promise.resolve({
+          ok: true,
+          name: s.name || '',
+          year: s.year || '',
+          docUrl: s.docUrl || '',
+          entries: s.entries || [],
+          draft: s.draft || null
+        });
+      case 'save':
+        s.name = p.name != null ? p.name : (s.name || '');
+        s.year = p.year != null ? p.year : (s.year || '');
+        // same contract as the server: a null draft never wipes a stored one
+        if (p.draft && typeof p.draft === 'object') s.draft = p.draft;
+        else if (p.clearDraft === true) s.draft = null;
+        offlineSave(s);
+        return Promise.resolve({ ok: true });
+      case 'uploadPhoto': {
+        var pid = 'offp' + Date.now().toString(36) + Math.floor(Math.random() * 1e4);
+        return new Promise(function (resolve) {
+          setTimeout(function () { resolve({ ok: true, id: pid }); }, 700);
+        });
+      }
+      case 'getUpload':
+        // offline: no Drive - the caller falls back to a simulated upload
+        return Promise.resolve({ ok: false, error: 'offline' });
+      case 'uploadVideo': {
+        var vid = 'offv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4);
+        return new Promise(function (resolve) {
+          setTimeout(function () { resolve({ ok: true, id: vid, url: '' }); }, 1200);
+        });
+      }
+      case 'registerMedia':
+        return Promise.resolve({ ok: true, url: '' });
+      case 'deleteMedia':
+        return Promise.resolve({ ok: true });
+      case 'submitEntry': {
+        s.entries = s.entries || [];
+        s.entries.push(p.summary);
+        s.draft = null;
+        offlineSave(s);
+        // preview:true tells the client to render the entry locally instead of a real Doc
+        return Promise.resolve({ ok: true, preview: true, url: '', entries: s.entries });
+      }
+      case 'admin': {
+        if (String(p.passcode || '').trim().toLowerCase() !== 'demo') {
+          return Promise.resolve({ ok: false, error: 'bad-passcode' });
+        }
+        var ME = 'demo.teacher@c2ken.net';
+        var reg = s.staffClasses || [
+          { name: '8A-HE', owner: ME, year: 'J1' },
+          { name: '9C-HE', owner: 'other.teacher@c2ken.net', year: 'J2' }
+        ];
+        s.staffClasses = reg; offlineSave(s);
+        if (p.sub === 'classes') {
+          return Promise.resolve({
+            ok: true, me: ME,
+            classes: reg.map(function (c) {
+              return { name: c.name, owner: c.owner || '', year: c.year || '', mine: c.owner === ME, pupils: c.name === '8A-HE' ? 1 : 0 };
+            })
+          });
+        }
+        if (p.sub === 'addClass') {
+          var nm = String(p.name || '').trim().replace(/[^A-Za-z0-9_\- ]/g, '').replace(/\s+/g, '-').slice(0, 40);
+          if (!nm || nm === 'default') return Promise.resolve({ ok: false, error: 'bad-name' });
+          if (YEARS.indexOf(String(p.year || '')) === -1) return Promise.resolve({ ok: false, error: 'bad-year' });
+          for (var i = 0; i < reg.length; i++) if (reg[i].name.toLowerCase() === nm.toLowerCase()) return Promise.resolve({ ok: false, error: 'exists', name: reg[i].name });
+          reg.push({ name: nm, owner: ME, year: p.year }); s.staffClasses = reg; offlineSave(s);
+          return Promise.resolve({ ok: true, name: nm, owner: ME, year: p.year });
+        }
+        if (p.sub === 'deleteClass') {
+          var found = null;
+          reg.forEach(function (c) { if (c.name === p.name) found = c; });
+          if (found && found.owner && found.owner !== ME) return Promise.resolve({ ok: false, error: 'not-owner', owner: found.owner });
+          s.staffClasses = reg.filter(function (c) { return c.name !== p.name; }); offlineSave(s);
+          return Promise.resolve({ ok: true, name: p.name, removed: 0 });
+        }
+        // dashboard
+        var last = (s.entries && s.entries.length)
+          ? (s.entries[s.entries.length - 1].dish + ' \u00b7 ' + niceDate(s.entries[s.entries.length - 1].date))
+          : '';
+        return Promise.resolve({
+          ok: true, classCode: p.classCode || '8A-HE',
+          rows: [{ name: s.name || 'demo.pupil@offline', entries: (s.entries || []).length, last: last, docUrl: s.docUrl || '' }]
+        });
+      }
+      default:
+        return Promise.reject(new Error('unknown action ' + p.action));
+    }
+  }
+
+  function call(action, payload) {
+    var p = payload || {};
+    p.action = action;
+    p['class'] = BOOT.classCode;
+    if (ONLINE) return window.OLS_TRANSPORT.call(p);
+    return offlineCall(p);
+  }
+
+  /* ============================================================
+     Saving (quiet background autosave with a visible "Saved" dot)
+     ============================================================ */
+  var saveTimer = null;
+  var savePending = false;
+  function persistSoon() {
+    savePending = true;
+    setSaveDot('saving');
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(persistNow, 1200);
+  }
+  function persistNow() {
+    if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
+    if (!savePending) return Promise.resolve();
+    savePending = false;
+    return call('save', { name: state.name, year: state.year, draft: state.draft })
+      .then(function (r) {
+        // the RPC can succeed while the server still refuses the save - never
+        // show "Saved" unless it really was
+        if (r && r.ok) { setSaveDot('saved'); return; }
+        savePending = true;
+        if (r && r.error === 'draft-too-big') setSaveDot('error', 'Not saved \u2014 your answers are very long. Trim a little.');
+        else if (r && r.error === 'not-signed-in') setSaveDot('error', 'Not saved \u2014 refresh this page to sign back in.');
+        else setSaveDot('error');
+      })
+      .catch(function () { setSaveDot('error'); savePending = true; });
+  }
+  var saveDotTimer = null;
+  function setSaveDot(mode, text) {
+    var el = $('save-dot');
+    if (!el) return;
+    if (saveDotTimer) { clearTimeout(saveDotTimer); saveDotTimer = null; }
+    if (mode === 'saving') { el.textContent = 'Saving\u2026'; el.style.color = ''; }
+    else if (mode === 'saved') {
+      el.textContent = 'Saved \u2713'; el.style.color = '';
+      saveDotTimer = setTimeout(function () { el.textContent = ''; }, 2600);
+    } else if (mode === 'error') { el.textContent = text || 'Not saved yet'; el.style.color = '#b04a3a'; }
+    else el.textContent = '';
+  }
+
+  /* ============================================================
+     Year + theming
+     ============================================================ */
+  function applyYear() {
+    if (YEARS.indexOf(state.year) !== -1) document.body.setAttribute('data-year', state.year);
+    else document.body.removeAttribute('data-year');
+    var badge = $('year-badge');
+    if (badge) badge.textContent = state.year ? YEAR_LABEL[state.year] : '';
+  }
+
+  /* ============================================================
+     Welcome
+     ============================================================ */
+  var pickedYear = '';
+  function wireWelcome() {
+    document.querySelectorAll('#year-pick .year-chip').forEach(function (b) {
+      b.addEventListener('click', function () {
+        pickedYear = b.getAttribute('data-year');
+        document.querySelectorAll('#year-pick .year-chip').forEach(function (x) {
+          x.classList.toggle('on', x === b);
+        });
+      });
+    });
+    $('welcome-start').addEventListener('click', function () {
+      var msg = $('welcome-msg');
+      // When C2k gave us her name (or she saved one before) the name input is
+      // hidden - she only needs to confirm her year, so skip the typed-name check.
+      var nameKnown = !!state.name;
+      var name = nameKnown ? state.name : ($('kp-name').value || '').trim();
+      if (!nameKnown && name.length < 2) { msg.textContent = 'Type your name first \u2014 it goes on your portfolio.'; return; }
+      var needYear = !state.year;
+      if (needYear && YEARS.indexOf(pickedYear) === -1) { msg.textContent = 'And pick your year group.'; return; }
+      msg.textContent = '';
+      state.name = name;
+      if (needYear) state.year = pickedYear;
+      applyYear();
+      var btn = $('welcome-start');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-spin" aria-hidden="true"></span>Setting up your kitchen\u2026';
+      savePending = true;
+      persistNow().then(function () {
+        btn.disabled = false; btn.textContent = 'Open my portfolio';
+        hide($('welcome')); show($('home'));
+        renderHome();
+      });
+    });
+  }
+
+  /* Reveal the welcome card. When we already know her name (auto from C2k, or
+     saved on an earlier visit) the name input is hidden and she only confirms
+     her year group; otherwise the type-once name form is the fallback. */
+  function enterWelcome() {
+    var nameLabel = document.querySelector('label[for="kp-name"]');
+    var nameInput = $('kp-name');
+    var hello = $('welcome-hello');
+    if (state.name) {
+      if (nameLabel) nameLabel.hidden = true;
+      if (nameInput) nameInput.hidden = true;
+      if (hello) hello.textContent = 'Welcome, ' + state.name.split(' ')[0] + '! Just pick your year group to begin.';
+    } else {
+      if (nameLabel) nameLabel.hidden = false;
+      if (nameInput) nameInput.hidden = false;
+      if (hello) hello.textContent = state.email ? ('Signed in as ' + state.email) : 'Signed in with your school account';
+    }
+    if (!state.year) show($('year-pick'));
+    show($('welcome'));
+  }
+
+  /* ============================================================
+     Home (shelf): chef level, portfolio card, timeline
+     ============================================================ */
+  function chefLevel(n) {
+    var name = 'New to the kitchen', next = LEVELS[0], prevN = 0;
+    for (var i = 0; i < LEVELS.length; i++) {
+      if (n >= LEVELS[i].n) { name = LEVELS[i].name; prevN = LEVELS[i].n; next = LEVELS[i + 1] || null; }
+      else { next = LEVELS[i]; break; }
+    }
+    return { name: name, next: next, prevN: prevN };
+  }
+  function renderChef() {
+    var n = state.entries.length;
+    var lv = chefLevel(n);
+    $('chef-level').textContent = lv.name;
+    var prog = $('chef-progress'), fill = $('chef-bar-fill');
+    if (n === 0) {
+      prog.textContent = 'No practicals yet \u2014 your first one starts your journey.';
+      fill.style.width = '0%';
+    } else if (lv.next) {
+      var need = lv.next.n - n;
+      prog.textContent = n + (n === 1 ? ' practical' : ' practicals') + ' \u00b7 ' + need + ' more to become ' + lv.next.name;
+      fill.style.width = Math.min(100, Math.round(n / lv.next.n * 100)) + '%';
+    } else {
+      prog.textContent = n + ' practicals \u00b7 top of the kitchen!';
+      fill.style.width = '100%';
+    }
+  }
+  function entryThumbHtml(e) {
+    var inner = '<span aria-hidden="true">\u{1F37D}\ufe0f</span>';
+    if (e.thumbId) {
+      var src = ONLINE
+        ? ('https://drive.google.com/thumbnail?id=' + encodeURIComponent(e.thumbId) + '&sz=w400')
+        : getThumb(e.thumbId);
+      if (src) inner = '<img src="' + escapeHtml(src) + '" alt="" onerror="this.remove()">' + inner;
+    }
+    return '<div class="tl-thumb">' + inner + '</div>';
+  }
+  function renderTimeline() {
+    var ul = $('timeline');
+    var entries = state.entries.slice().reverse();   // newest first
+    ul.innerHTML = entries.map(function (e) {
+      var tags = (e.focus || []).map(function (k) {
+        var f = focusByKey(k);
+        return '<span class="tl-tag">' + escapeHtml(f ? f.name : k) + '</span>';
+      }).join('');
+      var media = [];
+      if (e.photos) media.push(e.photos + (e.photos === 1 ? ' photo' : ' photos'));
+      if (e.videos) media.push(e.videos + (e.videos === 1 ? ' video' : ' videos'));
+      var open = state.docUrl
+        ? '<a class="btn btn-ghost btn-sm tl-open" href="' + escapeHtml(state.docUrl) + '" target="_blank" rel="noopener">Open</a>'
+        : '';
+      return '<li class="tl-card">' +
+        entryThumbHtml(e) +
+        '<div class="tl-body">' +
+          '<span class="tl-dish">' + escapeHtml(e.dish) + '</span>' +
+          '<span class="tl-date">' + escapeHtml(niceDate(e.date)) + '</span>' +
+          (media.length ? '<span class="tl-media">\u{1F4F8} ' + media.join(' \u00b7 ') + '</span>' : '') +
+          (tags ? '<div class="tl-tags">' + tags + '</div>' : '') +
+        '</div>' + open +
+      '</li>';
+    }).join('');
+    var any = entries.length > 0;
+    $('tl-h').hidden = !any;
+    $('tl-empty').hidden = any;
+  }
+  function renderHome() {
+    $('home-name').textContent = state.name || 'my cooking journal';
+    applyYear();
+    var cb = $('class-badge');
+    if (cb) cb.textContent = (BOOT.classCode && BOOT.classCode !== 'default') ? BOOT.classCode : '';
+    // the year is teacher-set via the class link when present; only a self-picked
+    // year is the pupil's to change
+    var ys = $('year-switch');
+    if (ys) ys.hidden = !!BOOT.classYear || !state.year;
+    renderChef();
+    renderTimeline();
+    var pc = $('portfolio-card');
+    if (state.docUrl) { show(pc); $('portfolio-open').href = state.docUrl; }
+    else hide(pc);
+    var resume = !!(state.draft && (state.draft.dish || (state.draft.focus || []).length));
+    $('new-entry').innerHTML = resume
+      ? '<span aria-hidden="true">\u270f\ufe0f</span> Continue my reflection (' + escapeHtml(state.draft.dish || 'unnamed dish') + ')'
+      : '<span aria-hidden="true">+</span> New practical reflection';
+  }
+
+  /* ============================================================
+     Entry wizard
+     ============================================================ */
+  function blankDraft() {
+    return {
+      id: uid(), dish: '', date: todayIso(), media: [], folderId: '',
+      focus: [], answers: {}, costing: { rows: [{ item: '', cost: '' }, { item: '', cost: '' }, { item: '', cost: '' }], serves: 4 },
+      stars: { appearance: 0, taste: 0, texture: 0 }, outcome: '', conf: '',
+      www: '', ebi: '', next: ''
+    };
+  }
+  function draft() { return state.draft; }
+
+  function openEntry() {
+    if (!state.draft) state.draft = blankDraft();
+    if (!state.draft.costing) state.draft.costing = blankDraft().costing;
+    // a draft begun under another year group (class link changed, year switched)
+    // may hold focus keys that no longer exist - prune them so validation and
+    // the Doc can never see a stale key
+    state.draft.focus = (state.draft.focus || []).filter(function (k) { return !!focusByKey(k); });
+    ['media-msg', 'focus-msg', 'eval-msg', 'entry-msg'].forEach(function (id) {
+      var el = $(id); if (el) { el.textContent = ''; el.className = 'sv-msg'; }
+    });
+    step = 1;
+    $('dish-name').value = state.draft.dish || '';
+    $('dish-date').value = state.draft.date || todayIso();
+    $('www-text').value = state.draft.www || '';
+    $('ebi-text').value = state.draft.ebi || '';
+    $('next-text').value = state.draft.next || '';
+    renderMediaStrip();
+    renderFocusChips();
+    renderFocusPanels();
+    renderStars();
+    renderMcq();
+    updateOpenWc();
+    hide($('home')); show($('entry'));
+    showStep(1);
+  }
+  function closeEntry() {
+    persistSoon(); persistNow();
+    hide($('entry')); show($('home'));
+    renderHome();
+  }
+
+  var STEP_NAMES = { 1: "Today's dish", 2: 'My focus', 3: 'The taste test', 4: 'My reflection' };
+  function showStep(n) {
+    step = n;
+    for (var i = 1; i <= 4; i++) {
+      var panel = $('step-' + i);
+      if (panel) panel.hidden = i !== n;
+      var dot = document.querySelector('.wiz-dots li[data-step="' + i + '"]');
+      if (dot) {
+        dot.classList.toggle('on', i === n);
+        dot.classList.toggle('done', i < n);
+      }
+    }
+    $('entry-sub').textContent = 'Step ' + n + ' of 4 \u2014 ' + STEP_NAMES[n];
+    $('wiz-prev').hidden = n === 1;
+    $('wiz-next').hidden = n === 4;
+    if (n === 4) renderSubmitCheck();
+    window.scrollTo({ top: 0, behavior: 'instant' in document.documentElement.style ? 'auto' : 'auto' });
+  }
+  function stepError(n) {
+    var d = draft();
+    if (n === 1) {
+      if (!(d.dish || '').trim()) return 'Type the name of your dish first.';
+      return '';
+    }
+    if (n === 2) {
+      if (!d.focus.length) return 'Pick at least one focus area.';
+      for (var i = 0; i < d.focus.length; i++) {
+        var f = focusByKey(d.focus[i]);
+        if (!f) continue;
+        if (f.costing) {
+          if (!costingComplete(d)) return 'Add at least one ingredient with its cost (and how many it serves).';
+          if (wordCount(d.answers[f.key]) < MIN_WORDS_OPEN) return 'Add a sentence about whether your dish was good value.';
+        } else if (wordCount(d.answers[f.key]) < MIN_WORDS_FOCUS) {
+          return 'Write a little more for \u201c' + f.name + '\u201d (at least ' + MIN_WORDS_FOCUS + ' words).';
+        }
+      }
+      return '';
+    }
+    if (n === 3) {
+      if (!(d.stars.appearance && d.stars.taste && d.stars.texture)) return 'Give your dish a star rating for look, taste and texture.';
+      if (!d.outcome) return 'Choose how your dish turned out.';
+      if (!d.conf) return 'Choose how much help you needed.';
+      return '';
+    }
+    return '';
+  }
+  function nextStep() {
+    var msgEl = { 1: $('media-msg'), 2: $('focus-msg'), 3: $('eval-msg') }[step];
+    if (mediaBusy) {
+      if (msgEl) { msgEl.textContent = 'One moment \u2014 your photos or video are still saving to your Drive.'; msgEl.className = 'sv-msg'; }
+      return;
+    }
+    var err = stepError(step);
+    if (err) { if (msgEl) { msgEl.textContent = err; msgEl.className = 'sv-msg bad'; } return; }
+    if (msgEl) { msgEl.textContent = ''; msgEl.className = 'sv-msg'; }
+    persistSoon();
+    showStep(Math.min(4, step + 1));
+  }
+  function prevStep() { showStep(Math.max(1, step - 1)); }
+
+  // ---- step 1: dish + media ----
+  function mediaCounts() {
+    var d = draft(), p = 0, v = 0;
+    (d.media || []).forEach(function (m) { if (m.k === 'p') p++; else v++; });
+    return { p: p, v: v };
+  }
+  function renderMediaStrip() {
+    var d = draft();
+    var ul = $('media-strip');
+    ul.innerHTML = (d.media || []).map(function (m, i) {
+      var inner;
+      if (m.k === 'p') {
+        var src = ONLINE
+          ? ('https://drive.google.com/thumbnail?id=' + encodeURIComponent(m.id) + '&sz=w400')
+          : getThumb(m.id);
+        inner = src ? '<img src="' + escapeHtml(src) + '" alt="Photo ' + (i + 1) + '" onerror="this.remove()">' : '<span aria-hidden="true">\u{1F4F7}</span>';
+      } else {
+        inner = '<span class="mi-video"><em aria-hidden="true">\u{1F39E}\ufe0f</em>' + escapeHtml(m.n || 'video') + '</span>';
+      }
+      return '<li class="media-item">' + inner +
+        '<button type="button" class="mi-x" data-mi="' + i + '" aria-label="Remove this">&times;</button></li>';
+    }).join('');
+  }
+  function onMediaStripClick(e) {
+    var btn = e.target.closest ? e.target.closest('.mi-x') : null;
+    if (!btn) return;
+    var i = Number(btn.getAttribute('data-mi'));
+    var d = draft();
+    var m = d.media[i];
+    if (!m) return;
+    d.media.splice(i, 1);
+    renderMediaStrip();
+    persistSoon();
+    // best-effort: tidy the file out of Drive too (it is the pupil's own file)
+    call('deleteMedia', { fileId: m.id }).catch(function () {});
+  }
+
+  var mediaBusy = false;   // blocks Next/submit while photos or a video are still saving
+  function setBusyMedia(busy, label) {
+    mediaBusy = busy;
+    $('add-photo').disabled = busy;
+    $('add-video').disabled = busy;
+    var msg = $('media-msg');
+    if (busy) { msg.textContent = label || ''; msg.className = 'sv-msg'; }
+    if (!$('step-4').hidden) renderSubmitCheck();
+  }
+
+  // Downscale a photo in the browser (max 1600px, JPEG) so uploads are quick
+  // and the Doc stays light. Also makes a small thumbnail for the timeline.
+  function processPhoto(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        try {
+          var w = img.naturalWidth, h = img.naturalHeight;
+          if (!w || !h) throw new Error('empty');
+          var scale = Math.min(1, 1600 / Math.max(w, h));
+          var cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(h * scale));
+          var canvas = document.createElement('canvas');
+          canvas.width = cw; canvas.height = ch;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, cw, ch);
+          var dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          // thumbnail (longest edge 320) for the local preview timeline
+          var ts = Math.min(1, 320 / Math.max(cw, ch));
+          var tc = document.createElement('canvas');
+          tc.width = Math.max(1, Math.round(cw * ts)); tc.height = Math.max(1, Math.round(ch * ts));
+          tc.getContext('2d').drawImage(canvas, 0, 0, tc.width, tc.height);
+          var thumb = tc.toDataURL('image/jpeg', 0.7);
+          URL.revokeObjectURL(url);
+          resolve({ b64: dataUrl.split(',')[1], w: cw, h: ch, thumb: thumb });
+        } catch (err) { URL.revokeObjectURL(url); reject(err); }
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('unreadable')); };
+      img.src = url;
+    });
+  }
+
+  function onPhotosChosen(files) {
+    var d = draft();
+    if (!d) return;
+    var msg = $('media-msg');
+    if (!(d.dish || '').trim()) {
+      msg.textContent = 'Name your dish first \u2014 it names your photo folder in Drive.';
+      msg.className = 'sv-msg bad';
+      return;
+    }
+    var room = MAX_PHOTOS - mediaCounts().p;
+    var picked = Array.prototype.slice.call(files);
+    var list = picked.slice(0, Math.max(0, room));
+    var dropped = picked.length - list.length;
+    if (!list.length) {
+      msg.textContent = 'That is the maximum of ' + MAX_PHOTOS + ' photos for one practical.';
+      msg.className = 'sv-msg bad';
+      return;
+    }
+    var done = 0, failed = 0;
+    setBusyMedia(true, 'Saving your photo' + (list.length > 1 ? 's' : '') + ' into your Drive \u2014 this can take a few seconds\u2026');
+    function one(i) {
+      if (state.draft !== d) { setBusyMedia(false); return; }   // entry was submitted/closed mid-upload
+      if (i >= list.length) {
+        setBusyMedia(false);
+        var parts = [];
+        parts.push(done === 1 ? 'Photo saved into your Drive \u2713' : done + ' photos saved into your Drive \u2713');
+        if (failed) parts.push(failed + ' could not be saved \u2014 try those again.');
+        if (dropped) parts.push('Only ' + MAX_PHOTOS + ' photos fit on one practical, so ' + dropped + ' of your selection ' + (dropped === 1 ? 'was' : 'were') + ' not added.');
+        msg.textContent = parts.join(' ');
+        msg.className = (failed || dropped) ? 'sv-msg bad' : 'sv-msg good';
+        persistSoon();
+        return;
+      }
+      processPhoto(list[i])
+        .then(function (ph) {
+          return call('uploadPhoto', {
+            b64: ph.b64, w: ph.w, h: ph.h,
+            dish: d.dish || 'Practical', date: d.date || todayIso(),
+            entryId: d.id, folderId: d.folderId || '',
+            n: 'photo ' + (mediaCounts().p + 1)
+          }).then(function (r) {
+            if (!(r && r.ok && r.id)) throw new Error((r && r.error) || 'upload');
+            if (r.folderId) d.folderId = r.folderId;
+            saveThumb(r.id, ph.thumb);
+            if (state.draft !== d) return;   // submitted while this photo was in flight
+            d.media.push({ k: 'p', id: r.id, w: ph.w, h: ph.h });
+            done++;
+            renderMediaStrip();
+          });
+        })
+        .catch(function () { failed++; })
+        .then(function () { one(i + 1); });
+    }
+    one(0);
+  }
+
+  /* ---- video: resumable upload straight into the pupil's Drive ----
+     google.script.run tops out well below phone-video sizes, so the file
+     streams browser -> Drive REST API using the pupil's own OAuth token
+     (handed over by the server). Small files fall back to the simple
+     base64 path if the direct route is blocked. */
+  var VIDEO_HARD_CAP = 200 * 1024 * 1024;   // 200 MB - keep clips short
+  var VIDEO_B64_CAP = 15 * 1024 * 1024;     // fallback path limit
+
+  function setProgress(frac, label) {
+    show($('up-wrap'));
+    $('up-fill').style.width = Math.round(frac * 100) + '%';
+    $('up-label').textContent = label;
+  }
+  function clearProgress() { hide($('up-wrap')); $('up-fill').style.width = '0%'; }
+
+  function putChunks(location, file, onProgress) {
+    var CHUNK = 8 * 1024 * 1024;   // multiple of 256 KB, as Drive requires
+    return new Promise(function (resolve, reject) {
+      function sendFrom(start) {
+        var end = Math.min(start + CHUNK, file.size);
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', location);
+        xhr.setRequestHeader('Content-Range', 'bytes ' + start + '-' + (end - 1) + '/' + file.size);
+        xhr.upload.onprogress = function (ev) {
+          if (ev.lengthComputable) onProgress((start + ev.loaded) / file.size);
+        };
+        xhr.onload = function () {
+          if (xhr.status === 308) { sendFrom(end); }
+          else if (xhr.status >= 200 && xhr.status < 300) {
+            var resp = {};
+            try { resp = JSON.parse(xhr.responseText || '{}'); } catch (e) {}
+            resolve(resp);
+          } else reject(new Error('chunk ' + xhr.status));
+        };
+        xhr.onerror = function () { reject(new Error('network')); };
+        xhr.send(file.slice(start, end));
+      }
+      sendFrom(0);
+    });
+  }
+  function resumableUpload(file, token, folderId, name, onProgress) {
+    return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Upload-Content-Type': file.type || 'video/mp4',
+        'X-Upload-Content-Length': String(file.size)
+      },
+      body: JSON.stringify({ name: name, parents: folderId ? [folderId] : undefined, mimeType: file.type || 'video/mp4' })
+    }).then(function (r) {
+      if (!r.ok) throw new Error('init ' + r.status);
+      var loc = r.headers.get('Location') || r.headers.get('location');
+      if (!loc) throw new Error('no-location');
+      return putChunks(loc, file, onProgress);
+    });
+  }
+  function b64OfFile(file) {
+    return new Promise(function (resolve, reject) {
+      var fr = new FileReader();
+      fr.onload = function () { resolve(String(fr.result).split(',')[1] || ''); };
+      fr.onerror = function () { reject(new Error('read')); };
+      fr.readAsDataURL(file);
+    });
+  }
+  function videoName(d) {
+    var n = mediaCounts().v + 1;
+    return (d.date || todayIso()) + ' ' + (d.dish || 'Practical') + ' video ' + n + '.mp4';
+  }
+  function onVideoChosen(file) {
+    var d = draft();
+    if (!d) return;
+    var msg = $('media-msg');
+    if (!(d.dish || '').trim()) {
+      msg.textContent = 'Name your dish first \u2014 it names your video folder in Drive.';
+      msg.className = 'sv-msg bad';
+      return;
+    }
+    if (mediaCounts().v >= MAX_VIDEOS) {
+      msg.textContent = 'That is the maximum of ' + MAX_VIDEOS + ' videos for one practical.'; msg.className = 'sv-msg bad';
+      return;
+    }
+    if (!file || !file.size) {
+      msg.textContent = 'That video could not be read \u2014 try recording or choosing it again.'; msg.className = 'sv-msg bad';
+      return;
+    }
+    if (file.size > VIDEO_HARD_CAP) {
+      msg.textContent = 'That video is too big (over 200 MB) \u2014 trim it shorter and try again. Short clips work best.'; msg.className = 'sv-msg bad';
+      return;
+    }
+    var name = videoName(d);
+    setBusyMedia(true, 'Sending your video to your Drive \u2014 this can take a little while for big files\u2026');
+    setProgress(0, 'Getting your Drive ready\u2026');
+
+    function ok(id, url) {
+      clearProgress();
+      setBusyMedia(false);
+      if (state.draft !== d) return;   // entry was submitted/closed mid-upload
+      d.media.push({ k: 'v', id: id, n: file.name || 'video', url: url || '' });
+      renderMediaStrip();
+      msg.textContent = 'Video saved into your Drive \u2713'; msg.className = 'sv-msg good';
+      persistSoon();
+    }
+    function fail(t) {
+      clearProgress();
+      setBusyMedia(false);
+      if (state.draft !== d) return;
+      msg.textContent = t || 'Your video could not be uploaded just now \u2014 try again, or use a shorter clip.';
+      msg.className = 'sv-msg bad';
+    }
+
+    if (!ONLINE) {
+      // preview: simulate the journey so the UX is reviewable
+      var f = 0;
+      var t = setInterval(function () {
+        f = Math.min(1, f + 0.18);
+        setProgress(f, 'Uploading\u2026 ' + Math.round(f * 100) + '%');
+        if (f >= 1) {
+          clearInterval(t);
+          call('uploadVideo', {}).then(function (r) { ok(r.id, ''); });
+        }
+      }, 260);
+      return;
+    }
+
+    call('getUpload', { dish: d.dish || 'Practical', date: d.date || todayIso(), entryId: d.id, folderId: d.folderId || '' })
+      .then(function (r) {
+        if (!(r && r.ok && r.token)) throw new Error('no-token');
+        if (r.folderId) d.folderId = r.folderId;
+        return resumableUpload(file, r.token, r.folderId, name, function (frac) {
+          setProgress(frac, 'Uploading your video\u2026 ' + Math.round(frac * 100) + '%');
+        });
+      })
+      .then(function (resp) {
+        if (!resp || !resp.id) throw new Error('no-id');
+        setProgress(1, 'Nearly there \u2014 filing it in your Drive\u2026');
+        // the upload itself SUCCEEDED: a registerMedia (teacher-share) hiccup
+        // must not fall through to the fallback and upload the video twice.
+        return call('registerMedia', { fileId: resp.id, kind: 'video' }).then(
+          function (r2) { ok(resp.id, (r2 && r2.url) || ''); },
+          function () { ok(resp.id, ''); }
+        );
+      })
+      .catch(function () {
+        // fall back to the simple path for small files
+        if (file.size <= VIDEO_B64_CAP) {
+          setProgress(0.4, 'Trying another route\u2026 this can take a few seconds');
+          b64OfFile(file)
+            .then(function (b64) {
+              return call('uploadVideo', {
+                b64: b64, mime: file.type || 'video/mp4', n: name,
+                dish: d.dish || 'Practical', date: d.date || todayIso(), entryId: d.id, folderId: d.folderId || ''
+              });
+            })
+            .then(function (r) {
+              if (!(r && r.ok && r.id)) throw new Error('fallback');
+              if (r.folderId) d.folderId = r.folderId;
+              ok(r.id, r.url || '');
+            })
+            .catch(function () { fail(); });
+        } else {
+          fail('That upload route is blocked here and the file is too big for the backup route \u2014 try a shorter clip.');
+        }
+      });
+  }
+
+  // ---- step 2: focus chips + panels ----
+  function renderFocusChips() {
+    var d = draft();
+    var box = $('focus-chips');
+    box.innerHTML = focusList().map(function (f) {
+      var on = d.focus.indexOf(f.key) !== -1;
+      return '<button type="button" class="focus-chip' + (on ? ' on' : '') + '" data-fk="' + f.key + '" aria-pressed="' + on + '">' +
+        '<span class="fc-icon" aria-hidden="true">' + f.icon + '</span>' +
+        '<span><span class="fc-name">' + escapeHtml(f.name) + '</span>' +
+        '<span class="fc-term">' + escapeHtml(f.term) + '</span></span>' +
+      '</button>';
+    }).join('');
+    $('focus-hint').textContent = state.year
+      ? 'Pick what this practical was about \u2014 these are your ' + (YEAR_LABEL[state.year] || state.year) + ' focus areas. Choose at least one.'
+      : 'Pick what this practical was about \u2014 choose at least one.';
+  }
+  function onFocusChipClick(e) {
+    var btn = e.target.closest ? e.target.closest('.focus-chip') : null;
+    if (!btn) return;
+    var key = btn.getAttribute('data-fk');
+    var d = draft();
+    var i = d.focus.indexOf(key);
+    if (i === -1) d.focus.push(key); else d.focus.splice(i, 1);
+    renderFocusChips();
+    renderFocusPanels();
+    persistSoon();
+  }
+  function renderFocusPanels() {
+    var d = draft();
+    var box = $('focus-panels');
+    box.innerHTML = d.focus.map(function (k) {
+      var f = focusByKey(k);
+      if (!f) return '';
+      var h = '<div class="focus-panel" data-fp="' + f.key + '">' +
+        '<h4><span aria-hidden="true">' + f.icon + '</span>' + escapeHtml(f.name) + '</h4>' +
+        '<p class="fp-prompt">' + escapeHtml(f.prompt) + '</p>' +
+        '<p class="fp-hint">' + escapeHtml(f.hint) + '</p>';
+      if (f.costing) h += costingHtml(d);
+      h += '<textarea rows="' + (f.costing ? 2 : 4) + '" maxlength="700" data-fa="' + f.key + '" placeholder="' + escapeHtml(f.ph) + '">' + escapeHtml(d.answers[f.key] || '') + '</textarea>' +
+        '<span class="wc" data-fwc="' + f.key + '"></span>' +
+      '</div>';
+      return h;
+    }).join('');
+    d.focus.forEach(function (k) { updateFocusWc(k); });
+    wireCosting();
+  }
+  function updateFocusWc(key) {
+    var el = document.querySelector('[data-fwc="' + key + '"]');
+    if (!el) return;
+    var f = focusByKey(key);
+    var min = (f && f.costing) ? MIN_WORDS_OPEN : MIN_WORDS_FOCUS;
+    var w = wordCount(draft().answers[key]);
+    if (w >= min) { el.textContent = w + ' words \u2713'; el.className = 'wc good'; }
+    else { el.textContent = w + ' / ' + min + '+ words'; el.className = 'wc'; }
+  }
+  function onFocusInput(e) {
+    var ta = e.target;
+    var key = ta.getAttribute && ta.getAttribute('data-fa');
+    if (!key) return;
+    draft().answers[key] = ta.value;
+    updateFocusWc(key);
+    persistSoon();
+  }
+
+  // ---- the recipe-costing widget (J3) ----
+  function money(n) { return '\u00a3' + (Math.round(n * 100) / 100).toFixed(2); }
+  function costingTotals(d) {
+    var total = 0, rows = 0;
+    (d.costing.rows || []).forEach(function (r) {
+      var c = parseFloat(r.cost);
+      if ((r.item || '').trim() && !isNaN(c) && c > 0) { total += c; rows++; }
+    });
+    var serves = Math.max(1, parseInt(d.costing.serves, 10) || 1);
+    return { total: total, rows: rows, serves: serves, per: total / serves };
+  }
+  function costingComplete(d) { var t = costingTotals(d); return t.rows >= 1 && t.total > 0; }
+  function costingHtml(d) {
+    var rows = d.costing.rows.map(function (r, i) {
+      return '<tr>' +
+        '<td><input class="field" type="text" maxlength="60" data-ci="' + i + '" placeholder="e.g. 500g minced beef" value="' + escapeHtml(r.item || '') + '"></td>' +
+        '<td><input class="field cost-cost" type="number" min="0" step="0.01" inputmode="decimal" data-cc="' + i + '" placeholder="0.00" value="' + escapeHtml(r.cost || '') + '"></td>' +
+        '<td><button type="button" class="cost-del" data-cd="' + i + '" aria-label="Remove this ingredient">&times;</button></td>' +
+      '</tr>';
+    }).join('');
+    return '<table class="cost-table" id="cost-table">' +
+      '<thead><tr><th>Ingredient</th><th>Cost (\u00a3)</th><th></th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table>' +
+      '<div class="cost-foot">' +
+        '<button type="button" class="btn btn-soft btn-sm" id="cost-add">+ Add ingredient</button>' +
+        '<label class="cost-serves">Serves <input class="field" type="number" min="1" max="20" id="cost-serves" value="' + escapeHtml(String(d.costing.serves || 4)) + '"></label>' +
+        '<div class="cost-totals"><b id="cost-total">' + money(costingTotals(d).total) + '</b>' +
+        '<span id="cost-per">' + money(costingTotals(d).per) + ' per portion</span></div>' +
+      '</div>';
+  }
+  function refreshCostTotals() {
+    var d = draft();
+    var t = costingTotals(d);
+    var tot = $('cost-total'), per = $('cost-per');
+    if (tot) tot.textContent = money(t.total);
+    if (per) per.textContent = money(t.per) + ' per portion';
+  }
+  function wireCosting() {
+    var panel = document.querySelector('[data-fp="costing"]');
+    if (!panel) return;
+    panel.addEventListener('input', function (e) {
+      var d = draft();
+      var ci = e.target.getAttribute('data-ci'), cc = e.target.getAttribute('data-cc');
+      if (ci != null) d.costing.rows[Number(ci)].item = e.target.value;
+      if (cc != null) d.costing.rows[Number(cc)].cost = e.target.value;
+      if (e.target.id === 'cost-serves') d.costing.serves = e.target.value;
+      refreshCostTotals();
+      persistSoon();
+    });
+    panel.addEventListener('click', function (e) {
+      var d = draft();
+      if (e.target.id === 'cost-add') {
+        if (d.costing.rows.length < 20) d.costing.rows.push({ item: '', cost: '' });
+        renderFocusPanels();
+        persistSoon();
+        return;
+      }
+      var cd = e.target.getAttribute && e.target.getAttribute('data-cd');
+      if (cd != null) {
+        d.costing.rows.splice(Number(cd), 1);
+        if (!d.costing.rows.length) d.costing.rows.push({ item: '', cost: '' });
+        renderFocusPanels();
+        persistSoon();
+      }
+    });
+  }
+
+  // ---- step 3: stars + multiple choice ----
+  function renderStars() {
+    var d = draft();
+    $('stars-wrap').innerHTML = STAR_CATS.map(function (c) {
+      var v = d.stars[c.key] || 0;
+      var btns = '';
+      for (var i = 1; i <= 5; i++) {
+        btns += '<button type="button" class="star-btn' + (i <= v ? ' on' : '') + '" data-sc="' + c.key + '" data-sv="' + i + '" aria-label="' + escapeHtml(c.label) + ' ' + i + ' of 5">' + (i <= v ? '\u2605' : '\u2606') + '</button>';
+      }
+      return '<div class="star-row"><span class="sr-label">' + escapeHtml(c.label) + '</span>' +
+        '<span class="stars" role="group" aria-label="' + escapeHtml(c.label) + '">' + btns + '</span>' +
+        '<span class="sr-word">' + escapeHtml(STAR_WORDS[v] || '') + '</span></div>';
+    }).join('');
+  }
+  function onStarsClick(e) {
+    var b = e.target.closest ? e.target.closest('.star-btn') : null;
+    if (!b) return;
+    var sc = b.getAttribute('data-sc'), sv = b.getAttribute('data-sv');
+    draft().stars[sc] = Number(sv);
+    renderStars();
+    // re-rendering destroyed the focused node - put keyboard focus back
+    var again = document.querySelector('.star-btn[data-sc="' + sc + '"][data-sv="' + sv + '"]');
+    if (again) again.focus();
+    persistSoon();
+  }
+  function renderMcq() {
+    var d = draft();
+    $('outcome-opts').innerHTML = OUTCOMES.map(function (t) {
+      var on = d.outcome === t;
+      return '<button type="button" class="mc-opt' + (on ? ' on' : '') + '" data-mo="' + escapeHtml(t) + '" aria-pressed="' + on + '"><span class="mc-dot" aria-hidden="true"></span>' + escapeHtml(t) + '</button>';
+    }).join('');
+    $('conf-opts').innerHTML = CONFIDENCE.map(function (t) {
+      var on = d.conf === t;
+      return '<button type="button" class="mc-opt' + (on ? ' on' : '') + '" data-mc="' + escapeHtml(t) + '" aria-pressed="' + on + '"><span class="mc-dot" aria-hidden="true"></span>' + escapeHtml(t) + '</button>';
+    }).join('');
+  }
+  function onMcqClick(e) {
+    var b = e.target.closest ? e.target.closest('.mc-opt') : null;
+    if (!b) return;
+    var d = draft();
+    var attr = b.hasAttribute('data-mo') ? 'data-mo' : (b.hasAttribute('data-mc') ? 'data-mc' : '');
+    if (!attr) return;
+    var val = b.getAttribute(attr);
+    if (attr === 'data-mo') d.outcome = val; else d.conf = val;
+    renderMcq();
+    var again = document.querySelector('.mc-opt[' + attr + '="' + val.replace(/"/g, '\\"') + '"]');
+    if (again) again.focus();
+    persistSoon();
+  }
+
+  // ---- step 4: open reflection + submit ----
+  function updateOpenWc() {
+    var d = draft();
+    [['www', 'www-text', 'www-wc'], ['ebi', 'ebi-text', 'ebi-wc']].forEach(function (x) {
+      var w = wordCount($(x[1]).value);
+      var el = $(x[2]);
+      if (w >= MIN_WORDS_OPEN) { el.textContent = w + ' words \u2713'; el.className = 'wc good'; }
+      else { el.textContent = w + ' / ' + MIN_WORDS_OPEN + '+ words'; el.className = 'wc'; }
+    });
+  }
+  function submitChecks() {
+    var d = draft();
+    if (!d) return [];   // a late render after submit cleared the draft
+    var focusOk = !!d.focus.length && !stepError(2);
+    return [
+      { ok: !!(d.dish || '').trim(), label: 'My dish has a name' },
+      { ok: focusOk, label: 'My focus areas are answered' },
+      { ok: !stepError(3), label: 'The taste test is complete' },
+      { ok: wordCount(d.www) >= MIN_WORDS_OPEN, label: 'What went well (' + MIN_WORDS_OPEN + '+ words)' },
+      { ok: wordCount(d.ebi) >= MIN_WORDS_OPEN, label: 'Even better if\u2026 (' + MIN_WORDS_OPEN + '+ words)' },
+      { ok: mediaCounts().p > 0, label: 'A photo of my dish (optional \u2014 but it makes your page)', soft: true }
+    ];
+  }
+  function renderSubmitCheck() {
+    if (!draft()) return;
+    var checks = submitChecks();
+    $('submit-check').innerHTML = checks.map(function (c) {
+      return '<li class="' + (c.ok ? 'ok' : '') + '">' + escapeHtml(c.label) + '</li>';
+    }).join('');
+    var ready = checks.every(function (c) { return c.ok || c.soft; });
+    $('entry-submit').disabled = !ready || submitting || mediaBusy;
+  }
+
+  /* Compose the structured portfolio-page payload the server renders into
+     the Google Doc (and the offline build renders as a local preview).
+     The CLIENT owns the words; the server just renders the spec. */
+  function composeEntry() {
+    var d = draft();
+    var sections = d.focus.map(function (k) {
+      var f = focusByKey(k);
+      if (!f) return null;
+      var sec = { h: f.name, q: f.prompt, a: (d.answers[k] || '').trim() };
+      if (f.costing) {
+        var t = costingTotals(d);
+        sec.table = {
+          head: ['Ingredient', 'Cost'],
+          rows: d.costing.rows
+            .filter(function (r) { return (r.item || '').trim(); })
+            .map(function (r) {
+              var c = parseFloat(r.cost);
+              return [r.item.trim(), isNaN(c) ? '' : money(c)];
+            }),
+          foot: [
+            ['Total', money(t.total)],
+            ['Serves', String(t.serves)],
+            ['Cost per portion', money(t.per)]
+          ]
+        };
+      }
+      return sec;
+    }).filter(Boolean);
+
+    function starLine(c) {
+      var v = d.stars[c.key] || 0, s = '';
+      for (var i = 1; i <= 5; i++) s += i <= v ? '\u2605' : '\u2606';
+      return c.label + '  ' + s + '  (' + v + '/5 \u2014 ' + (STAR_WORDS[v] || '') + ')';
+    }
+
+    return {
+      pupil: state.name,
+      year: state.year,
+      classCode: BOOT.classCode,
+      entry: {
+        id: d.id,
+        dish: (d.dish || '').trim(),
+        date: d.date || todayIso(),
+        dateNice: niceDate(d.date || todayIso()),
+        focusNames: d.focus.map(function (k) { var f = focusByKey(k); return f ? f.name : null; }).filter(Boolean),
+        photos: d.media.filter(function (m) { return m.k === 'p'; }).map(function (m) { return { id: m.id, w: m.w || 0, h: m.h || 0 }; }),
+        videos: d.media.filter(function (m) { return m.k === 'v'; }).map(function (m) { return { id: m.id, n: m.n || 'video', url: m.url || '' }; }),
+        sections: sections,
+        evalLines: [
+          starLine(STAR_CATS[0]), starLine(STAR_CATS[1]), starLine(STAR_CATS[2]),
+          'How it turned out: ' + d.outcome,
+          'Help needed: ' + d.conf
+        ],
+        www: (d.www || '').trim(),
+        ebi: (d.ebi || '').trim(),
+        next: (d.next || '').trim()
+      }
+    };
+  }
+  function entrySummary(spec) {
+    var d = draft();
+    var firstPhoto = (spec.entry.photos[0] || {}).id || '';
+    return {
+      id: spec.entry.id,
+      dish: spec.entry.dish,
+      date: spec.entry.date,
+      focus: d.focus.slice(),
+      photos: spec.entry.photos.length,
+      videos: spec.entry.videos.length,
+      thumbId: firstPhoto
+    };
+  }
+
+  var submitting = false;
+  function submitEntry() {
+    if (submitting) return;
+    var msg0 = $('entry-msg');
+    if (mediaBusy) {
+      msg0.textContent = 'One moment \u2014 your photos or video are still saving to your Drive.';
+      msg0.className = 'sv-msg';
+      return;
+    }
+    var checks = submitChecks();
+    if (!checks.length || !checks.every(function (c) { return c.ok || c.soft; })) { renderSubmitCheck(); return; }
+    submitting = true;
+    var btn = $('entry-submit'), msg = $('entry-msg');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="btn-spin" aria-hidden="true"></span>Adding to your portfolio\u2026';
+    busyCard(msg, 'Google is writing your portfolio page&hellip; this can take a moment. Stay on this screen.');
+
+    var spec = composeEntry();
+    var summary = entrySummary(spec);
+
+    persistNow()
+      .then(function () { return call('submitEntry', { spec: spec, summary: summary }); })
+      .then(function (r) {
+        if (!(r && r.ok)) throw new Error((r && r.error) || 'submit');
+        // (covers duplicate:true retries too - never list the same entry twice)
+        var have = state.entries.some(function (e) { return e.id === summary.id; });
+        if (!have) state.entries.push(summary);
+        state.draft = null;
+        savePending = false;             // server already cleared the draft
+        if (r.url) state.docUrl = r.url;
+        clearBusy(msg, '');
+        hide($('entry')); show($('home'));
+        renderHome();
+        openHooray(r.preview ? spec : null);
+      })
+      .catch(function (e) {
+        if (e && e.message === 'not-signed-in') {
+          clearBusy(msg, 'Your sign-in has expired. Refresh this page to sign back in \u2014 your work is saved, then press the button again.');
+        } else {
+          clearBusy(msg, 'Sorry \u2014 that did not save just now. Nothing is lost: please press the button to try again.');
+        }
+        msg.className = 'sv-msg bad';
+      })
+      .then(function () {
+        submitting = false;
+        btn.innerHTML = 'Add to my portfolio';
+        renderSubmitCheck();
+      });
+  }
+
+  /* ============================================================
+     Celebration + offline Doc preview
+     ============================================================ */
+  function confettiBurst() {
+    var box = $('hooray-burst');
+    box.innerHTML = '';
+    var colors = ['#c07a2c', '#67874f', '#b55a38', '#e4b824', '#8a5418', '#fff'];
+    for (var i = 0; i < 26; i++) {
+      var c = document.createElement('i');
+      c.className = 'confetto';
+      c.style.left = (4 + Math.random() * 92) + '%';
+      c.style.background = colors[i % colors.length];
+      c.style.animationDelay = (Math.random() * 0.5) + 's';
+      c.style.transform = 'rotate(' + Math.floor(Math.random() * 360) + 'deg)';
+      box.appendChild(c);
+    }
+  }
+  var previewSpec = null;
+  function openHooray(specForPreview) {
+    previewSpec = specForPreview || null;
+    var a = $('hooray-open');
+    if (previewSpec) {
+      a.textContent = 'See my portfolio page';
+      a.removeAttribute('target');
+      a.href = '#';
+      $('hooray-text').textContent = 'Your reflection is on the shelf. On the school app this page is written into your portfolio Google Doc \u2014 here in the preview you can see exactly what it will look like.';
+    } else {
+      a.textContent = 'Open my portfolio';
+      a.setAttribute('target', '_blank');
+      a.href = state.docUrl || '#';
+      $('hooray-text').textContent = 'Your reflection has been added to your portfolio document, with your photos \u2014 and your teacher can see it too.';
+    }
+    confettiBurst();
+    show($('hooray'));
+    var ho = $('hooray-open');
+    if (ho) ho.focus();
+  }
+  function renderEntryPreview(spec) {
+    var e = spec.entry;
+    var h = '<div class="doc-paper">';
+    h += '<h1 class="doc-title">' + escapeHtml(e.dish) + '</h1>';
+    h += '<p class="doc-subtitle">' + escapeHtml(e.dateNice) + ' \u00b7 ' + escapeHtml(spec.pupil) + '</p>';
+    if (e.focusNames.length) h += '<p class="doc-focusline">Focus: ' + escapeHtml(e.focusNames.join(' \u00b7 ')) + '</p>';
+    if (e.photos.length) {
+      h += '<div class="doc-photos">';
+      e.photos.forEach(function (p) {
+        var src = ONLINE ? '' : getThumb(p.id);
+        if (src) h += '<img src="' + escapeHtml(src) + '" alt="">';
+      });
+      h += '</div>';
+    }
+    e.videos.forEach(function (v) {
+      h += '<p class="doc-link">\u{1F39E}\ufe0f My video: ' + escapeHtml(v.n) + (v.url ? ' \u2014 ' + escapeHtml(v.url) : '') + '</p>';
+    });
+    e.sections.forEach(function (s) {
+      h += '<h2 class="doc-h">' + escapeHtml(s.h) + '</h2>';
+      h += '<p class="doc-focusline">' + escapeHtml(s.q) + '</p>';
+      if (s.table) {
+        h += '<table class="doc-table"><tr>' + s.table.head.map(function (x) { return '<th>' + escapeHtml(x) + '</th>'; }).join('') + '</tr>';
+        s.table.rows.forEach(function (r) { h += '<tr>' + r.map(function (x) { return '<td>' + escapeHtml(x) + '</td>'; }).join('') + '</tr>'; });
+        s.table.foot.forEach(function (r) { h += '<tr><th>' + escapeHtml(r[0]) + '</th><td>' + escapeHtml(r[1]) + '</td></tr>'; });
+        h += '</table>';
+      }
+      if (s.a) h += '<p>' + escapeHtml(s.a) + '</p>';
+    });
+    h += '<h2 class="doc-h">My evaluation</h2>';
+    e.evalLines.forEach(function (l) { h += '<p>' + escapeHtml(l) + '</p>'; });
+    h += '<h2 class="doc-h2">What went well</h2><p>' + escapeHtml(e.www) + '</p>';
+    h += '<h2 class="doc-h2">Even better if\u2026</h2><p>' + escapeHtml(e.ebi) + '</p>';
+    if (e.next) h += '<h2 class="doc-h2">Next time I will\u2026</h2><p>' + escapeHtml(e.next) + '</p>';
+    h += '<hr class="doc-hr"></div>';
+    $('doc-preview-body').innerHTML = h;
+  }
+
+  /* ============================================================
+     Staff panel (multi-teacher class manager + per-class dashboard).
+     Same proven model as the other OLS boards, with one addition:
+     every class is created WITH a year group (J1/J2/J3), which the
+     server injects into pupils' pages to pick their focus areas.
+     ============================================================ */
+  var staff = { pass: '', me: '', all: false, classes: [], current: '', rows: [] };
+  var dashSeq = 0;
+
+  function staffView(id) {
+    ['staff-gate', 'staff-classes', 'staff-dash', 'staff-qr'].forEach(function (v) { hide($(v)); });
+    show($(id));
+  }
+  function classLink(name) {
+    var base = (BOOT.baseUrl && BOOT.baseUrl.indexOf('http') === 0) ? BOOT.baseUrl : (location.origin + location.pathname);
+    return base + '?class=' + encodeURIComponent(name);
+  }
+  function copyText(text, msgEl, doneMsg, failMsg) {
+    function done() { if (msgEl) msgEl.textContent = doneMsg || 'Copied.'; }
+    function legacy() {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      ta.remove();
+      if (ok) done();
+      else if (msgEl) msgEl.textContent = failMsg || ('Copy this by hand: ' + text);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, legacy);
+    else legacy();
+  }
+  function staffUnlock() {
+    if ($('staff-go').disabled) return;
+    var pass = ($('staff-pass').value || '').trim();
+    var msg = $('staff-msg');
+    $('staff-go').disabled = true;
+    busyCard(msg, 'Checking the passcode&hellip; this can take a moment');
+    call('admin', { passcode: pass, sub: 'classes' })
+      .then(function (r) {
+        if (r && r.ok) {
+          clearBusy(msg, '');
+          staff.pass = pass; staff.me = r.me || ''; staff.classes = r.classes || [];
+          $('staff-me').textContent = staff.me || 'your school account';
+          staffView('staff-classes');
+          renderClasses();
+        } else {
+          clearBusy(msg, (r && r.error === 'bad-passcode')
+            ? 'That passcode was not recognised. Try again.'
+            : 'Could not open the teacher area. Please try again.');
+        }
+      })
+      .catch(function () { clearBusy(msg, 'Something went wrong. Please try again.'); })
+      .then(function () { $('staff-go').disabled = false; });
+  }
+  function staffReloadClasses() {
+    return call('admin', { passcode: staff.pass, sub: 'classes' })
+      .then(function (r) {
+        if (r && r.ok) { staff.me = r.me || staff.me; staff.classes = r.classes || []; renderClasses(); }
+        else if (r && r.error === 'bad-passcode') {
+          staff.pass = '';
+          staffView('staff-gate');
+          $('staff-msg').textContent = 'The staff passcode has changed \u2014 enter the new one.';
+        }
+        else $('staff-cmsg').textContent = 'The class list may be out of date \u2014 close and reopen the teacher area.';
+      })
+      .catch(function () { $('staff-cmsg').textContent = 'The class list may be out of date \u2014 close and reopen the teacher area.'; });
+  }
+  function renderClasses() {
+    var ul = $('staff-class-list');
+    var list = staff.all ? staff.classes : staff.classes.filter(function (c) { return c.mine; });
+    ul.innerHTML = list.map(function (c) {
+      var who = c.mine ? '' : (c.owner ? '<span class="cls-owner">' + escapeHtml(c.owner) + '</span>' : '<span class="cls-owner">unowned</span>');
+      var yr = c.year ? '<span class="cls-yr">' + escapeHtml(c.year) + '</span>' : '';
+      return '<li class="cls-row" data-cls="' + escapeHtml(c.name) + '">' +
+        '<div class="cls-info"><b>' + escapeHtml(c.name) + '</b>' + yr +
+          '<span class="cls-meta">' + c.pupils + (c.pupils === 1 ? ' pupil' : ' pupils') + '</span>' + who + '</div>' +
+        '<div class="cls-actions">' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-act="dash">Dashboard</button>' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-act="link">Copy link</button>' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-act="qr">QR</button>' +
+          ((c.mine || !c.owner) ? '<button type="button" class="btn btn-ghost btn-sm cls-del" data-act="del" aria-label="Delete ' + escapeHtml(c.name) + '">&times;</button>' : '') +
+        '</div></li>';
+    }).join('') || '<li class="cls-empty">No classes of your own yet \u2014 type a class name above, choose its year group, and tap <b>Add class</b>. Then share its link (or QR) with that class. (Tick &ldquo;Show all teachers&rsquo; classes&rdquo; to see everyone else&rsquo;s.)</li>';
+  }
+  function chosenYear() {
+    var r = document.querySelector('input[name="staff-year"]:checked');
+    return r ? r.value : '';
+  }
+  function addClass() {
+    if ($('staff-add').disabled) return;
+    var input = $('staff-newclass'), name = (input.value || '').trim(), msg = $('staff-cmsg');
+    if (!name) { input.focus(); return; }
+    var year = chosenYear();
+    if (YEARS.indexOf(year) === -1) { clearBusy(msg, 'Choose the year group for this class first \u2014 it picks which focus areas the pupils see.'); return; }
+    busyCard(msg, 'Adding the class&hellip; this can take a moment');
+    $('staff-add').disabled = true;
+    call('admin', { passcode: staff.pass, sub: 'addClass', name: name, year: year })
+      .then(function (r) {
+        if (r && r.ok) {
+          input.value = '';
+          clearBusy(msg, r.claimed
+            ? ('Added ' + r.name + ' (' + year + '). Some pupils had already opened its link \u2014 the class is now yours, with its year group set, and their work is all there.')
+            : ('Added ' + r.name + ' (' + year + '). Copy its link (or show the QR) to share with that class.'));
+          // claimed classes were hidden under "show all" as unowned - replace, don't duplicate
+          staff.classes = staff.classes.filter(function (c) { return c.name.toLowerCase() !== r.name.toLowerCase(); });
+          staff.classes.push({ name: r.name, owner: r.owner || staff.me, year: year, mine: true, pupils: 0 });
+          renderClasses();
+          staffReloadClasses();
+        }
+        else if (r && r.error === 'exists') clearBusy(msg, 'A class called ' + (r.name || name) + ' already exists.');
+        else if (r && r.error === 'bad-year') clearBusy(msg, 'Choose the year group for this class first.');
+        else if (r && r.error === 'busy') clearBusy(msg, 'The board is busy right now \u2014 try again in a moment.');
+        else if (r && r.error === 'not-signed-in') clearBusy(msg, 'Your sign-in has expired \u2014 refresh the page and try again.');
+        else clearBusy(msg, 'Could not add that class \u2014 try a simpler name (letters and numbers).');
+      })
+      .catch(function () { clearBusy(msg, 'Could not add the class. Please try again.'); })
+      .then(function () { $('staff-add').disabled = false; });
+  }
+  function onClassListClick(e) {
+    var btn = e.target.closest ? e.target.closest('button[data-act]') : null;
+    if (!btn) return;
+    var row = btn.closest('.cls-row'), name = row && row.getAttribute('data-cls');
+    if (!name) return;
+    var act = btn.getAttribute('data-act'), msg = $('staff-cmsg');
+    if (act === 'dash') { openDash(name); return; }
+    if (act === 'link') { copyText(classLink(name), msg, 'Link for ' + name + ' copied \u2014 paste it into Google Classroom.'); return; }
+    if (act === 'qr') { openQr(name); return; }
+    if (act === 'del') {
+      kpConfirm(
+        'Delete ' + name + '?',
+        'This removes the class and its dashboard records. Pupils\u2019 own portfolios and photos in their Drive are untouched. This cannot be undone.',
+        'Delete class',
+        function (yes) {
+          if (!yes) return;
+          busyCard(msg, 'Deleting ' + escapeHtml(name) + '&hellip; this can take a moment');
+          call('admin', { passcode: staff.pass, sub: 'deleteClass', name: name })
+            .then(function (r) {
+              if (r && r.ok) {
+                clearBusy(msg, 'Deleted ' + name + '.');
+                staff.classes = staff.classes.filter(function (c) { return c.name !== name; });
+                renderClasses();
+                staffReloadClasses();
+              }
+              else if (r && r.error === 'not-owner') clearBusy(msg, 'Only ' + (r.owner || 'its owner') + ' can delete ' + name + '.');
+              else clearBusy(msg, 'Could not delete ' + name + '.');
+            })
+            .catch(function () { clearBusy(msg, 'Could not delete ' + name + '. Please try again.'); });
+        }
+      );
+      return;
+    }
+  }
+  /* "Spag bol \u00b7 2026-06-11" (server record) -> "Spag bol \u00b7 11 June 2026" */
+  function niceLast(last) {
+    var s = String(last || '');
+    var cut = s.lastIndexOf(' \u00b7 ');
+    if (cut === -1) return s;
+    return s.slice(0, cut) + ' \u00b7 ' + niceDate(s.slice(cut + 3));
+  }
+  function renderDash(rows) {
+    var t = $('dash');
+    if (!t) return;
+    var head = '<tr><th>Pupil</th><th>Practicals</th><th>Last cooked</th><th>Portfolio</th></tr>';
+    var body = (rows || []).map(function (r) {
+      var doc;
+      if (r.docUrl) {
+        // surface a share that never succeeded - otherwise the teacher only
+        // finds out via "Request access" pages at marking time
+        var warn = (r.shared && r.shared.indexOf('shared:') !== 0)
+          ? ' <span class="share-warn" title="This portfolio may ask you to request access \u2014 it could not be shared automatically.">\u26a0 not shared</span>' : '';
+        doc = '<td><a href="' + escapeHtml(r.docUrl) + '" target="_blank" rel="noopener">Open</a>' + warn + '</td>';
+      } else doc = '<td class="no">\u2013</td>';
+      var n = Number(r.entries) || 0;
+      return '<tr><td>' + escapeHtml(r.name || '') + '</td>' +
+        '<td class="' + (n ? 'yes' : 'no') + '">' + n + '</td>' +
+        '<td>' + escapeHtml(niceLast(r.last) || '\u2013') + '</td>' + doc + '</tr>';
+    }).join('');
+    t.innerHTML = head + (body || '<tr><td colspan="4">No pupils yet.</td></tr>');
+  }
+  function openDash(name) {
+    staff.current = name;
+    staff.rows = [];
+    $('dash').innerHTML = '';
+    $('dash-title').textContent = name;
+    staffView('staff-dash');
+    busyCard($('staff-dmsg'), 'Opening the class dashboard&hellip; this can take a moment');
+    var token = ++dashSeq;
+    call('admin', { passcode: staff.pass, sub: 'dashboard', classCode: name })
+      .then(function (r) {
+        if (token !== dashSeq) return;
+        if (r && r.ok) { staff.rows = r.rows || []; renderDash(staff.rows); clearBusy($('staff-dmsg'), ''); }
+        else clearBusy($('staff-dmsg'), 'Could not load the class. Please try again.');
+      })
+      .catch(function () { if (token === dashSeq) clearBusy($('staff-dmsg'), 'Could not load the class. Please try again.'); });
+  }
+  function dashCsv() {
+    function q(s) {
+      s = String(s == null ? '' : s);
+      // neutralise spreadsheet formula injection from pupil-typed names/dishes
+      if (/^[=+\-@]/.test(s)) s = "'" + s;
+      return '"' + s.replace(/"/g, '""') + '"';
+    }
+    var head = 'Pupil,Practicals,Last cooked,Portfolio link';
+    var lines = staff.rows.map(function (r) {
+      return [q(r.name), Number(r.entries) || 0, q(niceLast(r.last)), q(r.docUrl || '')].join(',');
+    });
+    copyText([head].concat(lines).join('\n'), $('staff-dmsg'), 'CSV copied \u2014 paste it into Excel or Sheets.',
+      'Could not copy here \u2014 try again, or read the table on screen.');
+  }
+  function openQr(name) {
+    var link = classLink(name);
+    $('qr-title').textContent = name;
+    $('qr-link').textContent = link;
+    $('staff-qmsg').textContent = '';
+    staffView('staff-qr');
+    var canvas = $('qr-canvas');
+    if (window.QRCode && window.QRCode.toCanvas) {
+      window.QRCode.toCanvas(canvas, link, { width: 260, margin: 2, errorCorrectionLevel: 'M', color: { dark: '#122a4f', light: '#ffffff' } }, function (err) {
+        if (err) $('staff-qmsg').textContent = 'Could not draw the QR code \u2014 use Copy link instead.';
+      });
+    } else {
+      $('staff-qmsg').textContent = 'QR unavailable here \u2014 use Copy link instead.';
+    }
+    $('qr-copy').onclick = function () { copyText(link, $('staff-qmsg'), 'Link for ' + name + ' copied.'); };
+  }
+  function staffOpenModal() {
+    show($('staff-modal'));
+    if (staff.pass) { staffView('staff-classes'); staffReloadClasses(); }
+    else { staffView('staff-gate'); var p = $('staff-pass'); if (p) p.focus(); }
+  }
+
+  /* ============================================================
+     Boot
+     ============================================================ */
+  function boot() {
+    // Preview-only conveniences (guarded to offline so they can never touch
+    // a pupil's saved work on the deployed app):
+    //   ?reset       wipe saved progress for a fresh run
+    //   ?year=J2     preview a year group's tone + focus areas
+    var previewYear = '', previewName = '';
+    if (!ONLINE) {
+      var qs = location.search;   // capture before ?reset strips the query string
+      var ym = /[?&]year=(J[123])/.exec(qs);
+      if (ym) previewYear = ym[1];
+      // ?name=Aoife%20Murphy simulates the C2k auto-name so the zero-typing path
+      // (guard screen -> shelf, no form) can be reviewed offline.
+      var nm = /[?&]name=([^&]+)/.exec(qs);
+      if (nm) { try { previewName = decodeURIComponent(nm[1]).slice(0, 60); } catch (e) { previewName = nm[1].slice(0, 60); } }
+      if (/(^|[?&])reset(=|&|$)/.test(qs)) {
+        try { localStorage.removeItem(LS_KEY); localStorage.removeItem(LS_THUMBS); } catch (e) {}
+        var keep = [];
+        if (previewYear) keep.push('year=' + previewYear);
+        if (previewName) keep.push('name=' + encodeURIComponent(previewName));
+        if (window.history && history.replaceState) history.replaceState({}, '', location.pathname + (keep.length ? '?' + keep.join('&') : ''));
+      }
+    }
+
+    // wire events
+    wireWelcome();
+    document.querySelectorAll('#year-switch .ys-btn').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var y = b.getAttribute('data-year');
+        if (y === state.year || YEARS.indexOf(y) === -1) return;
+        state.year = y;
+        // answers for areas that exist only in another year stay saved in the
+        // draft but are pruned from the focus list at openEntry
+        applyYear();
+        persistSoon();
+        renderHome();
+        $('home-msg').textContent = 'Year group switched to ' + (YEAR_LABEL[y] || y) + ' \u2014 your focus areas have updated.';
+      });
+    });
+    $('new-entry').addEventListener('click', openEntry);
+    $('entry-back').addEventListener('click', closeEntry);
+    $('wiz-prev').addEventListener('click', prevStep);
+    $('wiz-next').addEventListener('click', nextStep);
+    $('dish-name').addEventListener('input', function () { draft().dish = $('dish-name').value; persistSoon(); });
+    $('dish-date').addEventListener('input', function () { draft().date = $('dish-date').value || todayIso(); persistSoon(); });
+    $('media-strip').addEventListener('click', onMediaStripClick);
+    $('add-photo').addEventListener('click', function () { $('photo-input').click(); });
+    $('add-video').addEventListener('click', function () { $('video-input').click(); });
+    $('photo-input').addEventListener('change', function () {
+      if (this.files && this.files.length) onPhotosChosen(this.files);
+      this.value = '';
+    });
+    $('video-input').addEventListener('change', function () {
+      if (this.files && this.files[0]) onVideoChosen(this.files[0]);
+      this.value = '';
+    });
+    $('focus-chips').addEventListener('click', onFocusChipClick);
+    $('focus-panels').addEventListener('input', onFocusInput);
+    $('stars-wrap').addEventListener('click', onStarsClick);
+    $('outcome-opts').addEventListener('click', onMcqClick);
+    $('conf-opts').addEventListener('click', onMcqClick);
+    ['www-text', 'ebi-text', 'next-text'].forEach(function (id) {
+      $(id).addEventListener('input', function () {
+        var d = draft();
+        d.www = $('www-text').value; d.ebi = $('ebi-text').value; d.next = $('next-text').value;
+        updateOpenWc();
+        renderSubmitCheck();
+        persistSoon();
+      });
+    });
+    $('entry-submit').addEventListener('click', submitEntry);
+    $('hooray-close').addEventListener('click', function () { hide($('hooray')); });
+    $('hooray-open').addEventListener('click', function (e) {
+      if (previewSpec) {
+        e.preventDefault();
+        renderEntryPreview(previewSpec);
+        hide($('hooray'));
+        show($('doc-preview'));
+        $('doc-preview-close').focus();
+      }
+    });
+    $('doc-preview-close').addEventListener('click', function () { hide($('doc-preview')); });
+    $('staff-key').addEventListener('click', staffOpenModal);
+    $('staff-close').addEventListener('click', function () { hide($('staff-modal')); });
+    $('staff-go').addEventListener('click', staffUnlock);
+    $('staff-pass').addEventListener('keydown', function (e) { if (e.key === 'Enter') staffUnlock(); });
+    $('staff-add').addEventListener('click', addClass);
+    $('staff-newclass').addEventListener('keydown', function (e) { if (e.key === 'Enter') addClass(); });
+    $('staff-all').addEventListener('change', function () { staff.all = $('staff-all').checked; renderClasses(); });
+    $('staff-class-list').addEventListener('click', onClassListClick);
+    $('dash-back').addEventListener('click', function () { staffView('staff-classes'); staffReloadClasses(); });
+    $('qr-back').addEventListener('click', function () { staffView('staff-classes'); });
+    $('staff-refresh').addEventListener('click', function () { if (staff.current) openDash(staff.current); });
+    $('staff-csv').addEventListener('click', dashCsv);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { hide($('staff-modal')); hide($('doc-preview')); hide($('hooray')); hide($('confirm-modal')); }
+    });
+    window.addEventListener('beforeunload', function () { if (savePending) persistNow(); });
+    // phones rarely fire beforeunload - flush whenever the app goes to the background
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden' && savePending) persistNow();
+    });
+
+    // identity + saved state. The #boot-guard ("Getting your details...") is
+    // already on screen; we resolve whoami + load behind it, then reveal the
+    // shelf (zero typing) or the welcome card.
+    var namePending = false;   // auto-name differs from the stored one -> mirror it once
+    call('whoami', {})
+      .then(function (r) {
+        state.email = (r && r.email) || '';
+        state.autoName = (r && r.name) || '';   // pupil's real C2k name, or '' offline/blank
+      })
+      .catch(function () {})
+      .then(function () { return call('load', {}); })
+      .then(function (r) {
+        if (r && r.ok) {
+          state.name = r.name || '';
+          state.year = r.year || '';
+          state.docUrl = r.docUrl || '';
+          state.entries = r.entries || [];
+          state.draft = r.draft || null;
+        }
+      })
+      .catch(function () {})
+      .then(function () {
+        // the class's year (set by the teacher) always wins over a self-pick
+        if (BOOT.classYear && YEARS.indexOf(BOOT.classYear) !== -1) state.year = BOOT.classYear;
+        else if (previewYear) state.year = previewYear;
+        // preview only: pretend C2k handed us a name (see ?name= above)
+        if (!ONLINE && !state.autoName && previewName) state.autoName = previewName;
+        // C2k gives us her real name - it wins over any earlier self-typed one,
+        // and we mirror it to her store so the teacher dashboard shows it too.
+        if (state.autoName && state.autoName !== state.name) {
+          state.name = state.autoName;
+          namePending = true;
+        }
+        applyYear();
+        hide($('boot-guard'));
+        if (state.name && state.year) {
+          show($('home'));
+          renderHome();
+          if (namePending) { savePending = true; persistNow(); }
+        } else {
+          enterWelcome();
+        }
+      });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+</script>
+<script>
+/* ============================================================
+   OLS Digital Skills \u2014 intro overlay loader
+   ------------------------------------------------------------
+   Drop this script tag into any activity's <head> or end of <body>:
+
+     <script src="../../assets/intro-loader.js"><\/script>
+
+   Behaviour:
+   - Plays the 3-second crest animation once per browser session.
+   - Auto-fades into the activity when the video finishes.
+   - Tap the overlay or press Escape to dismiss it early (no visible button).
+   - Add ?intro to the URL to force-play (handy for demos).
+   - Add ?nointro to skip permanently this navigation.
+   - Resilient: if the video fails to load, the overlay disappears
+     and the activity is shown as normal \u2014 no broken state.
+   ============================================================ */
+
+(function () {
+  // ---- Config ----
+  // Two renders of the same animation: landscape (1920\u00d71080) for desktops,
+  // portrait (1080\u00d71920) for phones. Pick by the viewport aspect.
+  const VIDEO_FILENAME_LANDSCAPE = 'intro.mp4';
+  const VIDEO_FILENAME_PORTRAIT  = 'intro-portrait.mp4';
+  const isPortrait = window.innerHeight > window.innerWidth;
+  const VIDEO_FILENAME = isPortrait ? VIDEO_FILENAME_PORTRAIT : VIDEO_FILENAME_LANDSCAPE;
+  const SESSION_KEY = 'ols-intro-seen-v1';
+  const FADE_MS = 450;
+  const POST_HOLD_MS = 800;  // pause after the video ends so people can read the wordmark
+  const DEBUG = false;
+  const log = (...a) => { if (DEBUG) console.log('[ols-intro]', ...a); };
+  log('loader running, url=', location.href);
+
+  // ---- Skip if the user has already seen it this session ----
+  const params = new URLSearchParams(location.search);
+  const force = params.has('intro');
+  const skip  = params.has('nointro');
+  if (skip) { log('skipped via ?nointro'); return; }
+  if (!force && sessionStorage.getItem(SESSION_KEY) === '1') { log('skipped \u2014 session flag set'); return; }
+  log('proceeding to show intro');
+
+  // ---- Resolve path to /assets/intro.mp4 from the loader's own URL ----
+  const baseUrl = 'https://dgaj-g.github.io/ols-digital-skills/assets/'; // strip filename, keep trailing /
+  const videoSrc = baseUrl + VIDEO_FILENAME;
+
+  // ---- Build overlay ----
+  const style = document.createElement('style');
+  style.textContent = `
+    .ols-intro-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #0d1f3d;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 1; transition: opacity ${FADE_MS}ms ease;
+      cursor: pointer;
+    }
+    .ols-intro-overlay.fade-out { opacity: 0; pointer-events: none; }
+    .ols-intro-video {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      background: #0d1f3d;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ols-intro-overlay { transition: none; }
+    }
+  `;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'ols-intro-overlay';
+  overlay.setAttribute('role', 'presentation');
+  overlay.setAttribute('aria-hidden', 'true');
+
+  const video = document.createElement('video');
+  video.className = 'ols-intro-video';
+  video.src = videoSrc;
+  video.muted = true;            // required for autoplay in most browsers
+  video.autoplay = true;
+  video.playsInline = true;
+  video.preload = 'auto';
+  video.setAttribute('aria-hidden', 'true');
+
+  overlay.appendChild(video);
+
+  // Insert as early as possible so the overlay covers any unfinished layout
+  function attach() {
+    if (!document.head) {
+      // Document parsing hasn't reached <head> yet (extremely rare for a script
+      // tag at body-bottom) \u2014 defer one tick
+      requestAnimationFrame(attach);
+      return;
+    }
+    document.head.appendChild(style);
+    (document.body || document.documentElement).appendChild(overlay);
+  }
+  attach();
+
+  // ---- Dismissal logic ----
+  let dismissed = false;
+  function dismiss(reason) {
+    if (dismissed) return;
+    log('dismiss called, reason=', reason || 'unknown');
+    dismissed = true;
+    sessionStorage.setItem(SESSION_KEY, '1');
+    overlay.classList.add('fade-out');
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      style.remove();
+    }, FADE_MS + 50);
+  }
+
+  // Track playback so we know whether autoplay actually worked
+  let startedPlaying = false;
+  video.addEventListener('playing', () => { startedPlaying = true; log('playing'); });
+  video.addEventListener('ended', () => {
+    setTimeout(() => dismiss('ended'), POST_HOLD_MS);
+  });
+  video.addEventListener('loadedmetadata', () => log('loadedmetadata'));
+  video.addEventListener('canplay', () => {
+    log('canplay');
+    // Re-attempt play in case the first attempt happened before src was ready
+    video.play().catch(() => {});
+    // If autoplay is blocked, dismiss after a short wait so the activity isn't stuck
+    setTimeout(() => {
+      if (!startedPlaying && !dismissed) dismiss('autoplay-blocked');
+    }, 700);
+  });
+  // Click anywhere on the overlay dismisses (forgiving UX) \u2014 but ignore clicks
+  // that happen before the video starts playing (avoids accidental Puppeteer/auto-focus dismiss)
+  overlay.addEventListener('click', () => {
+    if (video.currentTime > 0.1) dismiss('overlay-click');
+    else log('click before playback ignored');
+  });
+  // Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !dismissed) dismiss('escape');
+  });
+
+  // ---- Resilience ----
+  // If the video fails to load or play, dismiss after a hard 4s timeout so
+  // the activity is never stuck behind a broken overlay.
+  const SAFETY_MS = 5500;  // covers video (~3s) + hold (~0.8s) + fade (~0.5s) plus buffer
+  setTimeout(() => { if (!dismissed) dismiss('safety-timeout'); }, SAFETY_MS);
+  video.addEventListener('error', (e) => { log('video error', video.error); dismiss('video-error'); });
+  video.addEventListener('stalled', () => {
+    log('stalled, readyState=', video.readyState);
+    setTimeout(() => { if (video.readyState < 2 && !dismissed) { dismiss('stall-recovery'); } }, 1500);
+  });
+
+  // Some browsers block autoplay even on muted videos under certain policies;
+  // catch a rejection and surface a 'tap to play' affordance by just skipping.
+  video.play().catch(() => { /* dismiss flow will handle via timeout / error */ });
+})();
+
+</script>
+</body>
+</html>
