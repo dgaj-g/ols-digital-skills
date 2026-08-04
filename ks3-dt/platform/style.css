@@ -1335,13 +1335,22 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 
 /* ============ Lesson 2+: challenge ladder / parsons / bank-your-build ============ */
 .ladder-card { max-width: 640px; }
-.rung-bar { display: flex; gap: 6px; margin: 10px 0 14px; }
+.rung-bar { display: flex; gap: 6px; margin: 10px 0 14px; align-items: center; }
+/* DAMIEN, 4 Aug 2026: "the star and lightening icons are very hard to make out."
+   He is right - greyscale(1) at 0.35 opacity left a pale smudge on a light card.
+   The not-yet-earned state stays clearly GREY (so earned/not-earned is still
+   obvious at a glance) but is now legible; earned goes full colour and larger.
+   Sizes up too, because these are 1.15rem emoji doing a job at a distance. */
 .rung-dot {
-  font-size: 1.15rem; filter: grayscale(1); opacity: 0.35;
+  font-size: 1.35rem; filter: grayscale(1); opacity: 0.8;
   transition: filter 0.3s, opacity 0.3s, transform 0.3s;
 }
 .rung-dot.lit { filter: none; opacity: 1; transform: scale(1.12); }
 .rung-dot.lit.hinted { opacity: 0.75; }
+/* the line that says what the bolts and the star ARE (rule 13) - intro card only.
+   The negative top margin closes the gap to the bar it explains WITHOUT changing
+   .rung-bar itself, which also sits on rung cards where there is no key. */
+.rung-bar-key { margin: -10px 0 14px; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
 .ladder-open { margin: 12px 0 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .ladder-open-note { color: var(--muted); font-size: 0.8rem; }
 .ladder-script { margin: 14px 0 18px; padding-left: 22px; color: var(--ink); }
