@@ -1903,6 +1903,15 @@ function apiAdmin(req) {
     if (!cls) return { ok: false, error: 'unknown-class' };
     var rpEmail = str_(req.email).toLowerCase();
     if (!rpEmail) return { ok: false, error: 'no-email' };
+    /* DAMIEN, 3 Aug 2026 (he asked who can remove a pupil, and the answer was
+       "anyone with the passcode"). Deleting a whole class has been owner-or-HoD
+       since 30 Jul; removing ONE pupil was never gated at all, so a passcode
+       holder who knew another teacher's class name could wipe a pupil's record
+       out of a class that was nothing to do with them. Same gate as
+       deleteClass now - the class's own teacher, or a HoD. */
+    var rpEntry = null;
+    getClasses_().forEach(function (c) { if (c.name === cls) rpEntry = c; });
+    if (rpEntry && rpEntry.owner && !canManageClass_(cls, me)) return { ok: false, error: 'not-owner' };
     sp_().deleteProperty(pKey_(cls, rpEmail));
     return { ok: true };
   }
