@@ -229,11 +229,11 @@
    "title": "Exit Check",
    "minutes": 2,
    "config": {
-    "intro": "Two scenarios before you go — and unlike everything else today, these ARE marked: your teacher sees how the class did, so think like a debugger before you click.",
+    "intro": "Two scenarios before you go — and unlike everything else today, these ARE marked: your teacher sees how the class did, so think like a debugger before you answer.",
     "items": [
      {
       "id": "ex2-1",
-      "stem": "You build 'on button A pressed → show heart'. You press button A on the micro:bit but nothing appears. What is the MOST likely reason?",
+      "stem": "Let's say you've built a program from the following instructions:\n`on button A pressed → show heart`\nYou press button A on the micro:bit but nothing appears. What is the MOST likely reason?",
       "options": [
        "The battery is flat",
        "You forgot to flash the code onto the device",
@@ -243,7 +243,7 @@
      },
      {
       "id": "ex2-2",
-      "stem": "Your finished program: press button A → a heart appears on the LED grid. Which part is the INPUT?",
+      "stem": "Here is what your finished program does:\n`press button A → a heart appears on the LED grid`\nWhich part of that is the INPUT?",
       "options": [
        "Pressing button A",
        "The heart appearing",
