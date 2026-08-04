@@ -270,6 +270,16 @@
     var el = $('#agent-insignia');
     if (el) { el.hidden = !ins; el.textContent = ins ? String(ins.glyph) : ''; }
   };
+  /* DAMIEN, 3 Aug 2026 - "once earned, always hers." The Agent Kit unlocks from
+     the HIGHEST XP she has ever reached, not her current total, so a teacher
+     pressing Start again on an earlier lesson can never take back a costume she
+     genuinely earned. Her RANK and her XP number still show the truth about her
+     current work; only the wardrobe is permanent. The server keeps `mx` and
+     validates against it too, so this is not merely a client courtesy. */
+  App.everXp = function () {
+    var s = App.state;
+    return Math.max(Number(s.xp) || 0, Number(s.me && s.me.mx) || 0);
+  };
   /* Clearance ladder position for a given XP (clearances are ascending). */
   App.clearanceFor = function (xp) {
     var cs = (App.state.kit && App.state.kit.clearances) || [];
@@ -703,9 +713,17 @@
     }
 
     // interface themes
+    var ever = App.everXp();
+    /* If her points have gone DOWN (a teacher set an earlier lesson back to the
+       start), the wardrobe will show items above her current rank. Say why, or
+       the screen contradicts itself (rule 35). Only ever shown in that case. */
+    if (ever > Number(s.xp)) {
+      head += '<p class="kit-keeps">Your points went down when a lesson was set back to the start &mdash; ' +
+        'but everything you had already unlocked is still yours to keep.</p>';
+    }
     var themes = (reg.themes || []).map(function (t) {
       var needXp = kitClearanceXp_(t.clearance);
-      var unlocked = Number(s.xp) >= needXp;
+      var unlocked = ever >= needXp;
       var equipped = curTh ? String(t.id) === curTh : String(t.id) === 'midnight';
       var v = t.vars || {};
       var pv = '--pv0:' + (v['--space-0'] || '#060D1F') + ';--pv2:' + (v['--space-2'] || '#102040') + ';--pva:' + (v['--gold-hi'] || '#FFD84D');
@@ -726,7 +744,7 @@
       '<span class="kit-chip-glyph">&mdash;</span><span class="kit-chip-name">None</span></button>';
     chips += (reg.insignia || []).map(function (g) {
       var needXp = kitClearanceXp_(g.clearance);
-      var unlocked = Number(s.xp) >= needXp;
+      var unlocked = ever >= needXp;   // once earned, always hers
       var equipped = curFx === String(g.id);
       return '<button type="button" class="kit-chip' + (unlocked ? '' : ' is-locked') + (equipped ? ' is-equipped' : '') + '"' +
         ' data-insignia="' + esc(g.id) + '" data-clearance="' + Number(g.clearance) + '" data-need="' + needXp + '">' +

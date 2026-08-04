@@ -214,7 +214,22 @@ function sanitizeClass_(name) {
 /* ---------- pupil records ---------- */
 function pKey_(cls, email) { return 'p:' + cls + ':' + email; }
 function readPupil_(cls, email) { return jget_(sp_(), pKey_(cls, email), null); }
-function writePupil_(cls, email, rec) { jset_(sp_(), pKey_(cls, email), rec); }
+
+/* DAMIEN, 3 Aug 2026 - "once earned, always hers."
+   His test case: lessons 1-3 done, then the teacher presses Start again on
+   lesson 2. Resetting DEDUCTS that lesson's XP (it must - the work no longer
+   exists), which can drop her below the clearance that unlocked the costume she
+   is wearing. She should not lose a reward she genuinely earned because of an
+   admin action, so the Agent Kit unlocks from the HIGHEST XP she has ever
+   reached - `mx` - rather than from her current total.
+   `mx` is maintained HERE, on the single write path, so no future caller can
+   forget it: it only ever rises, so a reset (which writes a LOWER xp) leaves it
+   untouched, which is exactly the behaviour wanted. */
+function everXp_(rec) { return Math.max(num_(rec && rec.xp), num_(rec && rec.mx)); }
+function writePupil_(cls, email, rec) {
+  if (rec && typeof rec === 'object' && num_(rec.xp) > num_(rec.mx)) rec.mx = num_(rec.xp);
+  jset_(sp_(), pKey_(cls, email), rec);
+}
 /* Store-full guard (review finding: the 500KB script-wide Properties quota is a
    real ceiling at whole-school scale). Callers return {ok:false, error:'store-full'}
    so the client can stop retrying and tell the pupil to flag the teacher. */
@@ -1161,7 +1176,7 @@ function apiSetKit(req) {
   return withLock_(function () {
     var rec = readPupil_(cls, email);
     if (!rec) return { ok: false, error: 'not-joined' };
-    var xp = num_(rec.xp);
+    var xp = everXp_(rec);   // once earned, always hers (see writePupil_)
     if (themeId != null) {
       if (themeId === '') { rec.th = ''; }
       else {
@@ -2203,6 +2218,8 @@ function apiAdmin(req) {
         var rsXp = num_((rsRec.L[rsNum] || [])[1]);
         delete rsRec.L[rsNum];
         rsRec.xp = Math.max(0, num_(rsRec.xp) - rsXp);   // the XP came from work that no longer exists
+        /* `mx` is deliberately NOT lowered: what she unlocked stays unlocked
+           (his ruling, 3 Aug). writePupil_ only ever raises it. */
         /* DAMIEN, 31 Jul 2026 (rule 99): the codename is Lesson 1's own output,
            so resetting Lesson 1 resets it too - otherwise a re-run greets the
            pupil by a codename the reset was supposed to unmake. Other lessons
