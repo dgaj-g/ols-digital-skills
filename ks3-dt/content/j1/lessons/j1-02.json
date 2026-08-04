@@ -91,7 +91,7 @@
    },
    "config": {
     "title": "The Signal Relay Ladder",
-    "intro": "This is where you learn to BUILD — and you do it in your pair: you and the person beside you, one micro:bit between you. The ladder has four small challenges, called rungs, and you climb them in order. Each rung card tells you exactly what your program should do. You build it in MakeCode (in your other tab), copy it onto the micro:bit, and test it with your own hands. Nobody marks this — the device itself is the judge: either it does what the card says, or it doesn't, and you can both see which. Take turns: one of you builds the blocks, the other holds the card and runs the test. Swap jobs at every rung.",
+    "intro": "This is where you learn to BUILD, and you do it with the person beside you: one micro:bit shared between the two of you. The ladder has four small challenges, called rungs, and you climb them in order. Rung 1 needs no computer at all. Rungs 2, 3 and 4 are real programs you build in MakeCode, copy onto the micro:bit, and test with your own hands.\n\nYou BOTH build every rung, each on your OWN computer. Talk it through together as you go, and try it on the simulator on your own screen first — that is the little micro:bit picture in the corner of MakeCode. You share the real micro:bit for the real test, so take turns: at each rung, one of you copies the program across and presses the button while the other watches. Swap over at every rung, so you both do both.\n\nNobody marks this. The micro:bit itself is the judge — either it does what the card says, or it doesn't, and you can both see which.",
     "makecode": {
      "url": "https://makecode.microbit.org/",
      "label": "Open MakeCode"
@@ -99,12 +99,12 @@
     "unplugged": {
      "title": "Rung 1 — The Human Circuit",
      "lines": [
-      "This first rung needs no computer at all: you and your partner are going to BE the machine. Stand up.",
+      "This first rung needs no computer at all: you and the person beside you are going to BE the machine. Stand up.",
       "Every machine from the start of the lesson — the lift, the crossing, the step-counter — has a part that NOTICES something happen (computing calls it a SENSOR) and a part that REACTS (an ACTUATOR). Decide now: one of you is the sensor, the other is the actuator.",
-      "SENSOR: mime pressing an invisible button. ACTUATOR: the instant you see the press, throw both arms up — you are the heart appearing on the screen.",
-      "New signal! SENSOR: mime shaking a device. ACTUATOR: wave both hands — you are the message scrolling across the screen.",
+      "SENSOR: mime pressing an invisible button. ACTUATOR: the instant you see the press, throw both arms up — you are REACTING, like the heart appearing on the screen after button A was pressed.",
+      "New signal! SENSOR: mime shaking the micro:bit. ACTUATOR: wave both hands — you are REACTING again, but this time to a completely different signal. Same rule, new trigger: when THIS happens, do THAT.",
       "Swap jobs and run both signals again, so each of you has played both parts.",
-      "Finish by saying it out loud together: the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT. Those three words run the whole hour."
+      "Finish by saying it out loud together (or a loud whisper will do if you prefer — or you could make a rap out of it (joking — but feel free to try!)): the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT. Those three words run the whole hour."
      ],
      "confirm": "We both played Sensor and Actuator — and said the magic sentence",
      "soloLines": [
@@ -119,26 +119,29 @@
     "rungs": [
      {
       "id": "r2",
-      "title": "Rung 2 — First Signal",
-      "target": "Your challenge: make the micro:bit show a HEART icon whenever button A is pressed.",
-      "img": "assets/img/l2/rung2.png",
-      "test": "Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive — the film button below replays exactly how, if you need it. Then press the real button A. Did the heart appear? (If your device won't connect, the on-screen simulator counts while your teacher sorts it.)",
-      "hint": "Is your 'show icon' block sitting INSIDE the 'on button A pressed' block? A block floating on its own never runs."
+      "title": "Rung 2 — Your First Signal",
+      "target": "Your challenge: make the micro:bit show a HAPPY FACE whenever button B is pressed. You built the button A one together with the film — this one is yours, on a different button, with a different picture.",
+      "test": "Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program onto the device — that is the word your teacher will use. The film button below replays exactly how, if you need it. Then press the real button B. Did the happy face appear? (If your device won't connect, the on-screen simulator counts while your teacher sorts it.)",
+      "hint": "Start from the same shape you saw in the film: an 'on button pressed' block with a 'show icon' block INSIDE it. Then change the dropdown on the event block from A to B, and pick the happy face in the icon dropdown. A block floating on its own never runs."
      },
      {
       "id": "r3",
-      "title": "Rung 3 — Two Signals",
-      "target": "Your challenge: give the micro:bit TWO different reactions — press button A and a HEART appears; press button B and a HAPPY FACE appears.",
-      "test": "Copy it across, then press A, then B. Do you get two DIFFERENT pictures — heart for A, happy face for B?",
-      "hint": "You need TWO separate 'on button pressed' blocks — one set to A, one set to B. Check the little dropdown on each one.",
-      "hintImg": "assets/img/l2/rung3.png"
+      "title": "Rung 3 — A Different Kind of Signal",
+      "target": "Your challenge: a button is not the only way to talk to a micro:bit. Make a GHOST appear when the micro:bit is SHAKEN. Leave your button A and button B blocks exactly where they are — this is a third signal, added alongside them.",
+      "test": "Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program onto the device — that is the word your teacher will use. The film button below replays exactly how, if you need it. Then give it a real shake. Does the ghost appear? Now press A and B again to check they still work — all three signals live in the same program.",
+      "hint": "You need an 'on shake' block, not an 'on button pressed' one — look for it in the Input drawer. Put a 'show icon' block inside it and choose the ghost, the shape pictured on the card.",
+      "hintImg": "assets/img/l2/rung3.png",
+      "img": "assets/img/l2/ghost-icon.png",
+      "imgAlt": "The ghost icon as it appears on the micro:bit: a five by five pattern of lit LEDs shaped like a ghost",
+      "imgCap": "THIS is the ghost. Look for this shape in the icon dropdown — it is easy to miss.",
+      "imgSmall": true
      },
      {
       "id": "r4",
       "title": "Rung 4 — The Vanishing Ghost",
-      "target": "Your challenge: when the micro:bit is SHAKEN, this is what should happen: 1. a GHOST icon appears — 2. it stays on screen for one second — 3. the screen clears itself.",
+      "target": "Your challenge: your ghost turns up and never leaves. Make it vanish on its own. When the micro:bit is SHAKEN, this is what should happen: 1. the GHOST appears — 2. it stays on screen for one second — 3. the screen clears itself.",
       "test": "Copy it across and give it a real shake. Does the ghost appear, hold, then vanish cleanly — every single time? Now prove the pause is earning its place: take the pause block out, copy the program across again, and shake. The ghost seems never to appear at all — the clear wipes it before your eyes can catch it. Put the pause back.",
-      "hint": "The ORDER inside 'on shake' matters: show icon, THEN pause (ms) 1000, THEN clear screen. The pause is the only thing giving the ghost time on screen — without it, 'clear screen' wipes it before your eyes can catch it and you see nothing at all. (Rung 2's heart stayed put because nothing came along to clear it.)",
+      "hint": "The ORDER inside 'on shake' matters: show icon, THEN pause (ms) 1000, THEN clear screen. The pause is the only thing giving the ghost time on screen — without it, 'clear screen' wipes it before your eyes can catch it and you see nothing at all. (Your button A heart stayed put because nothing came along to clear it.)",
       "hintImg": "assets/img/l2/rung4.png"
      }
     ],
@@ -170,7 +173,14 @@
       }
      ],
      "defaultT": 132
-    }
+    },
+    "setupLead": "Before you start rung 2, set MakeCode up like this:",
+    "setup": [
+     "Open MakeCode using the button above. Keep it in its own tab all lesson.",
+     "Give your project a name: click the box at the bottom that says Untitled and type Signal Relay.",
+     "Build every rung in this SAME project. It grows as you climb — you never start a new one.",
+     "Every time you press Download it saves a new copy of the WHOLE project, replacing the one from last time. If a box asks whether you want to replace the old file, say yes — that is exactly what you want."
+    ]
    }
   },
   {
