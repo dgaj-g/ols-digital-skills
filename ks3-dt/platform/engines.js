@@ -1483,13 +1483,32 @@
         ctx.saveEvent({ draft: App.state.draft });
       }
 
-      function pointsBar() {
+      /* DAMIEN, 4 Aug 2026: "the star and lightening icons are very hard to make
+         out. is there a purpose to them?" There IS one - it is her progress
+         along the ladder - but nothing on screen ever said so, and a symbol a
+         pupil has to decode before she can read it is rule 13 / 138.1.3 all
+         over again. So the bar now NAMES itself where she first meets it, and
+         the not-yet-earned state is legible instead of a pale smudge
+         (style.css .rung-dot: it was greyscale at 0.35 opacity).
+         withKey is true on the ladder INTRO card only - by the rung cards she
+         has met the symbols, and repeating the key on every card is clutter.
+         Note the bolts are the rungs she BUILDS. Lesson 2's Rung 1 is the
+         unplugged Human Circuit, which is mimed and never built, so it has no
+         bolt of its own - which is why an intro promising "four rungs" sits
+         above three bolts. The key says "every rung you build on the micro:bit"
+         precisely so those two agree (rule 35). Lesson 3 has three built rungs
+         and says "Three rungs", so it was already consistent. */
+      function pointsBar(withKey) {
         var lit = rungs.map(function (r) {
           var isDone = done.indexOf(String(r.id)) !== -1;
           var isHint = hinted.indexOf(String(r.id)) !== -1;
           return '<span class="rung-dot' + (isDone ? ' lit' : '') + (isHint ? ' hinted' : '') + '" title="' + esc(r.title) + '">&#9889;</span>';
         }).join('');
-        return '<div class="rung-bar">' + lit + (cfg.stretch ? '<span class="rung-dot stretch' + (stretchDone ? ' lit' : '') + '">&#11088;</span>' : '') + '</div>';
+        var key = withKey
+          ? '<p class="rung-bar-key">One &#9889; for every rung you build on the micro:bit. It lights up when yours works.'
+            + (cfg.stretch ? ' The &#11088; is the extra challenge at the end.' : '') + '</p>'
+          : '';
+        return '<div class="rung-bar">' + lit + (cfg.stretch ? '<span class="rung-dot stretch' + (stretchDone ? ' lit' : '') + '">&#11088;</span>' : '') + '</div>' + key;
       }
 
       /* DAMIEN, 2 Aug 2026 (rule 135c): "flash it to the device" pointed at a
@@ -1551,7 +1570,7 @@
       introCard(host, {
         kicker: chunk.title, title: cfg.title || 'The Challenge Ladder',
         text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
-        extra: pointsBar() + openerRow() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
+        extra: pointsBar(true) + openerRow() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
       }, unpluggedDone ? 'Back to the ladder' : 'Start climbing', function () {
         if (!unpluggedDone && cfg.unplugged) unplugged(); else showRung();
       });
