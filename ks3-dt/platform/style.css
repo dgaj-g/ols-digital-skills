@@ -507,6 +507,19 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   border-radius: 999px; padding: 2px 10px;
 }
 .q-stem { font-size: 1.2rem; margin: 6px 0 18px; }
+/* A stem line, and a PROGRAM line set apart from the question about it
+   (DAMIEN, 4 Aug 2026 — the program and the question used to run together).
+   The code line is centred, boxed and monospaced so it reads as the thing she
+   built rather than as more of the sentence. */
+.q-line { display: block; }
+.q-line + .q-line { margin-top: 10px; }
+.q-code {
+  display: block; margin: 14px auto; padding: 10px 16px; max-width: 92%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.95em; text-align: center;
+  background: var(--field); border: 1.5px solid var(--line-l);
+  border-radius: var(--r-md); color: var(--ols-blue);
+}
 .q-options { display: grid; gap: 10px; }
 .q-opt {
   display: flex; align-items: center; gap: 13px; text-align: left;
@@ -1441,7 +1454,22 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .rung-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
 .parsons-card { max-width: 680px; }
-.parsons-goal { font-weight: 700; font-size: 1.05rem; line-height: 1.45; margin: 4px 0 14px; }
+/* ---- the block puzzle, reworked 4 Aug 2026 on his Lesson 2 feedback ----
+   The card now says what to DO before it says what to build, the how-to line
+   sits ABOVE the blocks instead of in small print underneath, and the numbers
+   have real room between them and the block labels (his: "the numbers (and
+   their dots) are too close to the answer labels when moved over"). */
+.parsons-goal { font-weight: 700; font-size: 1.08rem; line-height: 1.45; margin: 4px 0 10px; }
+.parsons-target {
+  font-size: 1.02rem; line-height: 1.5; margin: 0 0 14px; padding: 11px 14px;
+  background: var(--field); border-left: 4px solid var(--gold); border-radius: 8px;
+}
+.parsons-how {
+  font-size: 0.95rem; line-height: 1.5; margin: 0 0 16px; padding: 10px 14px;
+  background: rgba(var(--gold-rgb), 0.10); border: 1px solid rgba(var(--gold-rgb), 0.45);
+  border-radius: 10px;
+}
+.parsons-how b { color: var(--ols-blue); }
 .parsons-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 @media (max-width: 640px) { .parsons-cols { grid-template-columns: 1fr; } }
 .parsons-tray, .parsons-prog {
@@ -1450,7 +1478,29 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 .parsons-tray h3, .parsons-prog h3 { margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .pt-list { display: flex; flex-direction: column; gap: 8px; }
-.pp-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+/* padding-left was 20px, which put the marker right up against the label */
+.pp-list { margin: 0; padding-left: 34px; display: flex; flex-direction: column; gap: 9px; }
+.pp-list li { padding-left: 10px; }
+.pp-list li::marker { color: var(--muted); font-weight: 700; }
+.pp-empty, .pt-empty {
+  list-style: none; color: var(--muted); font-size: 0.86rem; font-style: italic;
+  margin: 2px 0; padding: 6px 0;
+}
+.pp-empty { margin-left: -22px; }
+/* where a dragged block will land */
+.pp-list li.drop-before { box-shadow: 0 -3px 0 -1px var(--gold); }
+.pp-list li.drop-after { box-shadow: 0 3px 0 -1px var(--gold); }
+.parsons-prog.drop-empty, .parsons-tray.drop-back { border-color: var(--gold); background: rgba(var(--gold-rgb), 0.10); }
+.parsons-block { cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; }
+.parsons-block:disabled { cursor: default; }
+.parsons-block.dragging { opacity: 0.35; }
+/* the block that follows the cursor: fixed, no transition (a transition mid-drag
+   is exactly the lag he has objected to before), and never a hit target itself */
+.parsons-ghost {
+  position: fixed; left: 0; top: 0; margin: 0; z-index: 60; pointer-events: none;
+  transition: none; cursor: grabbing; opacity: 0.96;
+  box-shadow: 0 8px 22px rgba(23, 34, 59, 0.28); border-color: var(--gold);
+}
 .parsons-block {
   display: block; width: 100%; text-align: left; cursor: pointer; font: inherit; font-size: 0.92rem;
   background: #fff; color: var(--ink); border: 1.5px solid var(--line-l); border-radius: 10px;
@@ -1459,7 +1509,6 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .parsons-block:hover { border-color: var(--gold); }
 .parsons-block.placed { background: rgba(var(--gold-rgb), 0.1); border-color: rgba(var(--gold-rgb), 0.55); }
 .parsons-block:disabled { cursor: default; opacity: 0.75; }
-.parsons-note { color: var(--muted); font-size: 0.82rem; margin: 10px 0 12px; }
 .parsons-answer { margin: 8px 0; padding-left: 22px; }
 .parsons-answer li { margin: 4px 0; }
 

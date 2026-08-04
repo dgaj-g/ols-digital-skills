@@ -360,8 +360,24 @@
         ? '<span class="runner-progress">' + (idx + 1) + ' of ' + opts.items.length + '</span>' : '';
     }
 
-    /* stems may carry \n line breaks (e.g. numbered algorithm steps) */
-    function stemHtml(s) { return esc(s).replace(/\n/g, '<br>'); }
+    /* Stems may carry \n line breaks (e.g. numbered algorithm steps), and a
+       line written entirely inside backticks becomes a PROGRAM LINE on its own,
+       centred and set apart.
+
+       DAMIEN, 4 Aug 2026, on the exit check: the question ran the program the
+       pupil had supposedly built into the same breath as the question about it,
+       so neither read clearly. His shape: a lead-in line, a blank line, the
+       program on its own line, a blank line, then the question. The backtick
+       marker keeps that authorable from the lesson JSON instead of hard-coding
+       one question's layout, so every lesson gets it. Everything stays escaped;
+       only the line break and the code wrapper are markup. */
+    function stemHtml(s) {
+      return String(s == null ? '' : s).split('\n').map(function (line) {
+        var m = /^\s*`(.+)`\s*$/.exec(line);
+        if (m) return '<span class="q-code">' + esc(m[1]) + '</span>';
+        return line.trim() ? '<span class="q-line">' + esc(line.trim()) + '</span>' : '';
+      }).join('');
+    }
 
     function show() {
       var it = opts.items[idx];
@@ -1824,42 +1840,202 @@
       introCard(host, { kicker: 'Exit check — part 2', title: cfg.title || 'Build the program', text: cfg.intro || '' }, 'Ready', build);
 
       function build() {
+        /* DAMIEN, 4 Aug 2026 (DFM 151). Three faults, all his:
+           - the card never said what she was being asked to DO. It showed a
+             sentence, a tray of blocks and an unexplained gesture: three
+             fragments she had to join up herself. The target is now woven INTO
+             the instruction ("in the order that makes this happen:"), which is
+             what he meant by "incorporate the existing text to explain what
+             they'd be building".
+           - the how-to line sat UNDERNEATH the blocks, so it was read after she
+             had already tried. It is above them now, and it is not small print.
+           - "Tap a block to add it" used the banned word (DFM 150), and he
+             expected to DRAG. Dragging is built; clicking still works. */
+        var howMany = it.blocks.length;
         var c = el('<div class="card parsons-card">' +
-          '<p class="parsons-goal">&#127919; ' + esc(it.prompt) + '</p>' +
+          '<h2 class="parsons-goal">Your challenge: build the program yourself. Move all ' + howMany +
+          ' blocks across into <em>Your program</em>, and put them in the order that makes this happen:</h2>' +
+          '<p class="parsons-target">&#127919; ' + esc(it.prompt) + '</p>' +
+          '<p class="parsons-how"><b>How to build it:</b> drag a block from <b>Blocks</b> across into ' +
+          '<b>Your program</b> &mdash; or just click it, if you prefer. Drag the blocks up and down to change ' +
+          'the order, and drag one back to <b>Blocks</b> to take it out again.</p>' +
           '<div class="parsons-cols">' +
           '<div class="parsons-tray"><h3>Blocks</h3><div class="pt-list"></div></div>' +
           '<div class="parsons-prog"><h3>Your program</h3><ol class="pp-list"></ol></div>' +
           '</div>' +
-          '<p class="parsons-note">Tap a block to add it &mdash; tap it again in your program to send it back.</p>' +
           '<button class="primary-btn parsons-check" type="button" disabled>Check my program</button>' +
           '<div class="q-feedback" hidden></div></div>');
         host.appendChild(c);
         var tray = c.querySelector('.pt-list'), prog = c.querySelector('.pp-list');
+        /* The drop ZONES are the whole Blocks / Your program panels, not the
+           inner lists. Hit-testing the lists made the target only as tall as the
+           blocks already in it, so a drop onto the visible empty space of a
+           panel did nothing - and the highlight classes went on the lists while
+           the CSS styles the panels, so nothing lit up either. His standing drag
+           rule: the whole thing you can see is the target. */
+        var trayZone = c.querySelector('.parsons-tray'), progZone = c.querySelector('.parsons-prog');
         var checkBtn = c.querySelector('.parsons-check');
+
+        var locked = false;          // set once she has checked - no more moving
+        var dragSi = null;           // the block being dragged, by source index
+
+        function moveInto(si, at) {
+          var cur = placed.indexOf(si);
+          if (cur !== -1) placed.splice(cur, 1);
+          if (at == null || at > placed.length) at = placed.length;
+          placed.splice(at, 0, si);
+          render();
+        }
+        function takeOut(si) {
+          var cur = placed.indexOf(si);
+          if (cur !== -1) { placed.splice(cur, 1); render(); }
+        }
+        /* where would a drop at this pointer position land? Measured against the
+           MIDPOINT of each placed block, so the whole block is a target rather
+           than a thin seam between two of them. */
+        function dropIndexAt(clientY) {
+          var lis = Array.prototype.slice.call(prog.querySelectorAll('li:not(.pp-empty)'));
+          for (var i = 0; i < lis.length; i++) {
+            var r = lis[i].getBoundingClientRect();
+            if (clientY < r.top + r.height / 2) return i;
+          }
+          return lis.length;
+        }
+        function clearMarks() {
+          prog.querySelectorAll('li').forEach(function (li) { li.classList.remove('drop-before', 'drop-after'); });
+          /* (the pp-empty placeholder never carries a mark - it is not a slot) */
+          progZone.classList.remove('drop-empty');
+          trayZone.classList.remove('drop-back');
+        }
+
+        /* POINTER-based drag, not HTML5 drag-and-drop. Two reasons, and the
+           second is the one that decided it: HTML5 DnD cannot be driven by
+           synthetic mouse input, so neither I nor a harness could ever prove it
+           works - and a gesture I cannot test is a gesture I should not ship
+           (DFM 146b). Pointer events also give a ghost that tracks the cursor
+           with no transition, which is the lag-free feel his drag rule asks for.
+           A press that never moves is still a CLICK, so both gestures work. */
+        var ghost = null;
+        var suppressClick = false;   // set by a completed drag, eaten by its own click
+
+        function makeGhost(node, x, y) {
+          var r = node.getBoundingClientRect();
+          var g = node.cloneNode(true);
+          g.className = 'parsons-block parsons-ghost';
+          g.style.width = r.width + 'px';
+          g.style.height = r.height + 'px';
+          g.dataset.dx = String(r.left - x);
+          g.dataset.dy = String(r.top - y);
+          document.body.appendChild(g);
+          moveGhost(g, x, y);
+          return g;
+        }
+        function moveGhost(g, x, y) {
+          g.style.transform = 'translate(' + (x + Number(g.dataset.dx)) + 'px,' + (y + Number(g.dataset.dy)) + 'px)';
+        }
+        function inside(el, x, y) {
+          var r = el.getBoundingClientRect();
+          return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+        }
+        function showDropTarget(x, y) {
+          clearMarks();
+          if (inside(progZone, x, y)) {
+            var lis = prog.querySelectorAll('li:not(.pp-empty)');
+            if (!lis.length) { progZone.classList.add('drop-empty'); return; }
+            var at = dropIndexAt(y);
+            if (at >= lis.length) lis[lis.length - 1].classList.add('drop-after');
+            else lis[at].classList.add('drop-before');
+          } else if (inside(trayZone, x, y) && placed.indexOf(dragSi) !== -1) {
+            trayZone.classList.add('drop-back');
+          }
+        }
+        function commitDrop(si, x, y) {
+          if (inside(progZone, x, y)) {
+            var at = dropIndexAt(y);
+            var cur = placed.indexOf(si);
+            /* dropping BELOW its own old position: the index shifts by one once
+               the block is lifted out, or it lands one place short every time */
+            if (cur !== -1 && at > cur) at -= 1;
+            moveInto(si, at);
+          } else if (inside(trayZone, x, y)) {
+            takeOut(si);
+          } else {
+            render();            // dropped nowhere: put everything back as it was
+          }
+        }
+
+        function wireDrag(node, si, isPlaced) {
+          if (locked) return;
+          node.addEventListener('pointerdown', function (e) {
+            if (locked || (e.button !== undefined && e.button !== 0)) return;
+            var sx = e.clientX, sy = e.clientY, moved = false;
+            try { node.setPointerCapture(e.pointerId); } catch (err) { /* older engines */ }
+
+            function onMove(ev) {
+              if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 5) return;
+              if (!moved) {
+                moved = true; dragSi = si;
+                node.classList.add('dragging');
+                ghost = makeGhost(node, ev.clientX, ev.clientY);
+              }
+              ev.preventDefault();
+              moveGhost(ghost, ev.clientX, ev.clientY);
+              showDropTarget(ev.clientX, ev.clientY);
+            }
+            function onUp(ev) {
+              node.removeEventListener('pointermove', onMove);
+              node.removeEventListener('pointerup', onUp);
+              node.removeEventListener('pointercancel', onUp);
+              try { node.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+              if (ghost) { ghost.remove(); ghost = null; }
+              node.classList.remove('dragging');
+              clearMarks();
+              /* A drag ends here. A press that never moved is left to the CLICK
+                 handler below, so that keyboard activation (Enter or Space fires
+                 click with no pointer events at all) keeps working - handling it
+                 here instead locked out anyone not using a mouse. */
+              if (moved) { suppressClick = true; commitDrop(si, ev.clientX, ev.clientY); }
+              dragSi = null;
+            }
+            node.addEventListener('pointermove', onMove);
+            node.addEventListener('pointerup', onUp);
+            node.addEventListener('pointercancel', onUp);
+          });
+
+          node.addEventListener('click', function () {
+            if (locked) return;
+            if (suppressClick) { suppressClick = false; return; }   // the tail of a drag
+            if (isPlaced) takeOut(si); else moveInto(si, null);
+          });
+        }
 
         function render() {
           tray.innerHTML = '';
           prog.innerHTML = '';
           it.blocks.forEach(function (b, si) {
             if (placed.indexOf(si) !== -1) return;
-            var n = el('<button class="parsons-block" type="button">' + esc(b) + '</button>');
-            n.onclick = function () { placed.push(si); render(); };
+            var n = el('<button class="parsons-block" type="button" draggable="false">' + esc(b) + '</button>');
+            wireDrag(n, si, false);
             tray.appendChild(n);
           });
+          if (!tray.children.length) {
+            tray.appendChild(el('<p class="pt-empty">All of them are in your program.</p>'));
+          }
           placed.forEach(function (si) {
-            var n = el('<li><button class="parsons-block placed" type="button">' + esc(it.blocks[si]) + '</button></li>');
-            n.querySelector('button').onclick = function () {
-              placed.splice(placed.indexOf(si), 1);
-              render();
-            };
+            var n = el('<li><button class="parsons-block placed" type="button" draggable="false">' + esc(it.blocks[si]) + '</button></li>');
+            wireDrag(n.querySelector('button'), si, true);
             prog.appendChild(n);
           });
+          if (!placed.length) {
+            prog.appendChild(el('<li class="pp-empty">Nothing here yet &mdash; drag or click a block across.</li>'));
+          }
           checkBtn.disabled = placed.length !== it.blocks.length;
         }
         render();
 
         checkBtn.onclick = function () {
           checkBtn.disabled = true;
+          locked = true;
           c.querySelectorAll('.parsons-block').forEach(function (b) { b.disabled = true; });
           ctx.markItem(it.id, permIndex(placed)).then(function (r) {
             var fb = c.querySelector('.q-feedback');

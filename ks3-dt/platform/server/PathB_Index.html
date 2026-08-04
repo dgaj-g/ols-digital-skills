@@ -515,6 +515,19 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   border-radius: 999px; padding: 2px 10px;
 }
 .q-stem { font-size: 1.2rem; margin: 6px 0 18px; }
+/* A stem line, and a PROGRAM line set apart from the question about it
+   (DAMIEN, 4 Aug 2026 \2014  the program and the question used to run together).
+   The code line is centred, boxed and monospaced so it reads as the thing she
+   built rather than as more of the sentence. */
+.q-line { display: block; }
+.q-line + .q-line { margin-top: 10px; }
+.q-code {
+  display: block; margin: 14px auto; padding: 10px 16px; max-width: 92%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.95em; text-align: center;
+  background: var(--field); border: 1.5px solid var(--line-l);
+  border-radius: var(--r-md); color: var(--ols-blue);
+}
 .q-options { display: grid; gap: 10px; }
 .q-opt {
   display: flex; align-items: center; gap: 13px; text-align: left;
@@ -1449,7 +1462,22 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .rung-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
 .parsons-card { max-width: 680px; }
-.parsons-goal { font-weight: 700; font-size: 1.05rem; line-height: 1.45; margin: 4px 0 14px; }
+/* ---- the block puzzle, reworked 4 Aug 2026 on his Lesson 2 feedback ----
+   The card now says what to DO before it says what to build, the how-to line
+   sits ABOVE the blocks instead of in small print underneath, and the numbers
+   have real room between them and the block labels (his: "the numbers (and
+   their dots) are too close to the answer labels when moved over"). */
+.parsons-goal { font-weight: 700; font-size: 1.08rem; line-height: 1.45; margin: 4px 0 10px; }
+.parsons-target {
+  font-size: 1.02rem; line-height: 1.5; margin: 0 0 14px; padding: 11px 14px;
+  background: var(--field); border-left: 4px solid var(--gold); border-radius: 8px;
+}
+.parsons-how {
+  font-size: 0.95rem; line-height: 1.5; margin: 0 0 16px; padding: 10px 14px;
+  background: rgba(var(--gold-rgb), 0.10); border: 1px solid rgba(var(--gold-rgb), 0.45);
+  border-radius: 10px;
+}
+.parsons-how b { color: var(--ols-blue); }
 .parsons-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 @media (max-width: 640px) { .parsons-cols { grid-template-columns: 1fr; } }
 .parsons-tray, .parsons-prog {
@@ -1458,7 +1486,29 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 .parsons-tray h3, .parsons-prog h3 { margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .pt-list { display: flex; flex-direction: column; gap: 8px; }
-.pp-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+/* padding-left was 20px, which put the marker right up against the label */
+.pp-list { margin: 0; padding-left: 34px; display: flex; flex-direction: column; gap: 9px; }
+.pp-list li { padding-left: 10px; }
+.pp-list li::marker { color: var(--muted); font-weight: 700; }
+.pp-empty, .pt-empty {
+  list-style: none; color: var(--muted); font-size: 0.86rem; font-style: italic;
+  margin: 2px 0; padding: 6px 0;
+}
+.pp-empty { margin-left: -22px; }
+/* where a dragged block will land */
+.pp-list li.drop-before { box-shadow: 0 -3px 0 -1px var(--gold); }
+.pp-list li.drop-after { box-shadow: 0 3px 0 -1px var(--gold); }
+.parsons-prog.drop-empty, .parsons-tray.drop-back { border-color: var(--gold); background: rgba(var(--gold-rgb), 0.10); }
+.parsons-block { cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; }
+.parsons-block:disabled { cursor: default; }
+.parsons-block.dragging { opacity: 0.35; }
+/* the block that follows the cursor: fixed, no transition (a transition mid-drag
+   is exactly the lag he has objected to before), and never a hit target itself */
+.parsons-ghost {
+  position: fixed; left: 0; top: 0; margin: 0; z-index: 60; pointer-events: none;
+  transition: none; cursor: grabbing; opacity: 0.96;
+  box-shadow: 0 8px 22px rgba(23, 34, 59, 0.28); border-color: var(--gold);
+}
 .parsons-block {
   display: block; width: 100%; text-align: left; cursor: pointer; font: inherit; font-size: 0.92rem;
   background: #fff; color: var(--ink); border: 1.5px solid var(--line-l); border-radius: 10px;
@@ -1467,7 +1517,6 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .parsons-block:hover { border-color: var(--gold); }
 .parsons-block.placed { background: rgba(var(--gold-rgb), 0.1); border-color: rgba(var(--gold-rgb), 0.55); }
 .parsons-block:disabled { cursor: default; opacity: 0.75; }
-.parsons-note { color: var(--muted); font-size: 0.82rem; margin: 10px 0 12px; }
 .parsons-answer { margin: 8px 0; padding-left: 22px; }
 .parsons-answer li { margin: 4px 0; }
 
@@ -3922,8 +3971,24 @@ window.OLS_TRANSPORT = {
         ? '<span class="runner-progress">' + (idx + 1) + ' of ' + opts.items.length + '</span>' : '';
     }
 
-    /* stems may carry \n line breaks (e.g. numbered algorithm steps) */
-    function stemHtml(s) { return esc(s).replace(/\n/g, '<br>'); }
+    /* Stems may carry \n line breaks (e.g. numbered algorithm steps), and a
+       line written entirely inside backticks becomes a PROGRAM LINE on its own,
+       centred and set apart.
+
+       DAMIEN, 4 Aug 2026, on the exit check: the question ran the program the
+       pupil had supposedly built into the same breath as the question about it,
+       so neither read clearly. His shape: a lead-in line, a blank line, the
+       program on its own line, a blank line, then the question. The backtick
+       marker keeps that authorable from the lesson JSON instead of hard-coding
+       one question's layout, so every lesson gets it. Everything stays escaped;
+       only the line break and the code wrapper are markup. */
+    function stemHtml(s) {
+      return String(s == null ? '' : s).split('\n').map(function (line) {
+        var m = /^\s*`(.+)`\s*$/.exec(line);
+        if (m) return '<span class="q-code">' + esc(m[1]) + '</span>';
+        return line.trim() ? '<span class="q-line">' + esc(line.trim()) + '</span>' : '';
+      }).join('');
+    }
 
     function show() {
       var it = opts.items[idx];
@@ -5386,42 +5451,202 @@ window.OLS_TRANSPORT = {
       introCard(host, { kicker: 'Exit check \u2014 part 2', title: cfg.title || 'Build the program', text: cfg.intro || '' }, 'Ready', build);
 
       function build() {
+        /* DAMIEN, 4 Aug 2026 (DFM 151). Three faults, all his:
+           - the card never said what she was being asked to DO. It showed a
+             sentence, a tray of blocks and an unexplained gesture: three
+             fragments she had to join up herself. The target is now woven INTO
+             the instruction ("in the order that makes this happen:"), which is
+             what he meant by "incorporate the existing text to explain what
+             they'd be building".
+           - the how-to line sat UNDERNEATH the blocks, so it was read after she
+             had already tried. It is above them now, and it is not small print.
+           - "Tap a block to add it" used the banned word (DFM 150), and he
+             expected to DRAG. Dragging is built; clicking still works. */
+        var howMany = it.blocks.length;
         var c = el('<div class="card parsons-card">' +
-          '<p class="parsons-goal">&#127919; ' + esc(it.prompt) + '</p>' +
+          '<h2 class="parsons-goal">Your challenge: build the program yourself. Move all ' + howMany +
+          ' blocks across into <em>Your program</em>, and put them in the order that makes this happen:</h2>' +
+          '<p class="parsons-target">&#127919; ' + esc(it.prompt) + '</p>' +
+          '<p class="parsons-how"><b>How to build it:</b> drag a block from <b>Blocks</b> across into ' +
+          '<b>Your program</b> &mdash; or just click it, if you prefer. Drag the blocks up and down to change ' +
+          'the order, and drag one back to <b>Blocks</b> to take it out again.</p>' +
           '<div class="parsons-cols">' +
           '<div class="parsons-tray"><h3>Blocks</h3><div class="pt-list"></div></div>' +
           '<div class="parsons-prog"><h3>Your program</h3><ol class="pp-list"></ol></div>' +
           '</div>' +
-          '<p class="parsons-note">Tap a block to add it &mdash; tap it again in your program to send it back.</p>' +
           '<button class="primary-btn parsons-check" type="button" disabled>Check my program</button>' +
           '<div class="q-feedback" hidden></div></div>');
         host.appendChild(c);
         var tray = c.querySelector('.pt-list'), prog = c.querySelector('.pp-list');
+        /* The drop ZONES are the whole Blocks / Your program panels, not the
+           inner lists. Hit-testing the lists made the target only as tall as the
+           blocks already in it, so a drop onto the visible empty space of a
+           panel did nothing - and the highlight classes went on the lists while
+           the CSS styles the panels, so nothing lit up either. His standing drag
+           rule: the whole thing you can see is the target. */
+        var trayZone = c.querySelector('.parsons-tray'), progZone = c.querySelector('.parsons-prog');
         var checkBtn = c.querySelector('.parsons-check');
+
+        var locked = false;          // set once she has checked - no more moving
+        var dragSi = null;           // the block being dragged, by source index
+
+        function moveInto(si, at) {
+          var cur = placed.indexOf(si);
+          if (cur !== -1) placed.splice(cur, 1);
+          if (at == null || at > placed.length) at = placed.length;
+          placed.splice(at, 0, si);
+          render();
+        }
+        function takeOut(si) {
+          var cur = placed.indexOf(si);
+          if (cur !== -1) { placed.splice(cur, 1); render(); }
+        }
+        /* where would a drop at this pointer position land? Measured against the
+           MIDPOINT of each placed block, so the whole block is a target rather
+           than a thin seam between two of them. */
+        function dropIndexAt(clientY) {
+          var lis = Array.prototype.slice.call(prog.querySelectorAll('li:not(.pp-empty)'));
+          for (var i = 0; i < lis.length; i++) {
+            var r = lis[i].getBoundingClientRect();
+            if (clientY < r.top + r.height / 2) return i;
+          }
+          return lis.length;
+        }
+        function clearMarks() {
+          prog.querySelectorAll('li').forEach(function (li) { li.classList.remove('drop-before', 'drop-after'); });
+          /* (the pp-empty placeholder never carries a mark - it is not a slot) */
+          progZone.classList.remove('drop-empty');
+          trayZone.classList.remove('drop-back');
+        }
+
+        /* POINTER-based drag, not HTML5 drag-and-drop. Two reasons, and the
+           second is the one that decided it: HTML5 DnD cannot be driven by
+           synthetic mouse input, so neither I nor a harness could ever prove it
+           works - and a gesture I cannot test is a gesture I should not ship
+           (DFM 146b). Pointer events also give a ghost that tracks the cursor
+           with no transition, which is the lag-free feel his drag rule asks for.
+           A press that never moves is still a CLICK, so both gestures work. */
+        var ghost = null;
+        var suppressClick = false;   // set by a completed drag, eaten by its own click
+
+        function makeGhost(node, x, y) {
+          var r = node.getBoundingClientRect();
+          var g = node.cloneNode(true);
+          g.className = 'parsons-block parsons-ghost';
+          g.style.width = r.width + 'px';
+          g.style.height = r.height + 'px';
+          g.dataset.dx = String(r.left - x);
+          g.dataset.dy = String(r.top - y);
+          document.body.appendChild(g);
+          moveGhost(g, x, y);
+          return g;
+        }
+        function moveGhost(g, x, y) {
+          g.style.transform = 'translate(' + (x + Number(g.dataset.dx)) + 'px,' + (y + Number(g.dataset.dy)) + 'px)';
+        }
+        function inside(el, x, y) {
+          var r = el.getBoundingClientRect();
+          return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+        }
+        function showDropTarget(x, y) {
+          clearMarks();
+          if (inside(progZone, x, y)) {
+            var lis = prog.querySelectorAll('li:not(.pp-empty)');
+            if (!lis.length) { progZone.classList.add('drop-empty'); return; }
+            var at = dropIndexAt(y);
+            if (at >= lis.length) lis[lis.length - 1].classList.add('drop-after');
+            else lis[at].classList.add('drop-before');
+          } else if (inside(trayZone, x, y) && placed.indexOf(dragSi) !== -1) {
+            trayZone.classList.add('drop-back');
+          }
+        }
+        function commitDrop(si, x, y) {
+          if (inside(progZone, x, y)) {
+            var at = dropIndexAt(y);
+            var cur = placed.indexOf(si);
+            /* dropping BELOW its own old position: the index shifts by one once
+               the block is lifted out, or it lands one place short every time */
+            if (cur !== -1 && at > cur) at -= 1;
+            moveInto(si, at);
+          } else if (inside(trayZone, x, y)) {
+            takeOut(si);
+          } else {
+            render();            // dropped nowhere: put everything back as it was
+          }
+        }
+
+        function wireDrag(node, si, isPlaced) {
+          if (locked) return;
+          node.addEventListener('pointerdown', function (e) {
+            if (locked || (e.button !== undefined && e.button !== 0)) return;
+            var sx = e.clientX, sy = e.clientY, moved = false;
+            try { node.setPointerCapture(e.pointerId); } catch (err) { /* older engines */ }
+
+            function onMove(ev) {
+              if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 5) return;
+              if (!moved) {
+                moved = true; dragSi = si;
+                node.classList.add('dragging');
+                ghost = makeGhost(node, ev.clientX, ev.clientY);
+              }
+              ev.preventDefault();
+              moveGhost(ghost, ev.clientX, ev.clientY);
+              showDropTarget(ev.clientX, ev.clientY);
+            }
+            function onUp(ev) {
+              node.removeEventListener('pointermove', onMove);
+              node.removeEventListener('pointerup', onUp);
+              node.removeEventListener('pointercancel', onUp);
+              try { node.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+              if (ghost) { ghost.remove(); ghost = null; }
+              node.classList.remove('dragging');
+              clearMarks();
+              /* A drag ends here. A press that never moved is left to the CLICK
+                 handler below, so that keyboard activation (Enter or Space fires
+                 click with no pointer events at all) keeps working - handling it
+                 here instead locked out anyone not using a mouse. */
+              if (moved) { suppressClick = true; commitDrop(si, ev.clientX, ev.clientY); }
+              dragSi = null;
+            }
+            node.addEventListener('pointermove', onMove);
+            node.addEventListener('pointerup', onUp);
+            node.addEventListener('pointercancel', onUp);
+          });
+
+          node.addEventListener('click', function () {
+            if (locked) return;
+            if (suppressClick) { suppressClick = false; return; }   // the tail of a drag
+            if (isPlaced) takeOut(si); else moveInto(si, null);
+          });
+        }
 
         function render() {
           tray.innerHTML = '';
           prog.innerHTML = '';
           it.blocks.forEach(function (b, si) {
             if (placed.indexOf(si) !== -1) return;
-            var n = el('<button class="parsons-block" type="button">' + esc(b) + '</button>');
-            n.onclick = function () { placed.push(si); render(); };
+            var n = el('<button class="parsons-block" type="button" draggable="false">' + esc(b) + '</button>');
+            wireDrag(n, si, false);
             tray.appendChild(n);
           });
+          if (!tray.children.length) {
+            tray.appendChild(el('<p class="pt-empty">All of them are in your program.</p>'));
+          }
           placed.forEach(function (si) {
-            var n = el('<li><button class="parsons-block placed" type="button">' + esc(it.blocks[si]) + '</button></li>');
-            n.querySelector('button').onclick = function () {
-              placed.splice(placed.indexOf(si), 1);
-              render();
-            };
+            var n = el('<li><button class="parsons-block placed" type="button" draggable="false">' + esc(it.blocks[si]) + '</button></li>');
+            wireDrag(n.querySelector('button'), si, true);
             prog.appendChild(n);
           });
+          if (!placed.length) {
+            prog.appendChild(el('<li class="pp-empty">Nothing here yet &mdash; drag or click a block across.</li>'));
+          }
           checkBtn.disabled = placed.length !== it.blocks.length;
         }
         render();
 
         checkBtn.onclick = function () {
           checkBtn.disabled = true;
+          locked = true;
           c.querySelectorAll('.parsons-block').forEach(function (b) { b.disabled = true; });
           ctx.markItem(it.id, permIndex(placed)).then(function (r) {
             var fb = c.querySelector('.q-feedback');
