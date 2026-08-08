@@ -1478,15 +1478,21 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 .parsons-tray h3, .parsons-prog h3 { margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .pt-list { display: flex; flex-direction: column; gap: 8px; }
-/* padding-left was 20px, which put the marker right up against the label */
-.pp-list { margin: 0; padding-left: 34px; display: flex; flex-direction: column; gap: 9px; }
-.pp-list li { padding-left: 10px; }
-.pp-list li::marker { color: var(--muted); font-weight: 700; }
+/* The numbers are OUR elements, not automatic list markers: ::marker is not
+   reliably positioned on a flex item, which is why they wandered (8 Aug 2026).
+   A fixed-width right-aligned column pins them and makes them measurable. */
+.pp-list { list-style: none; margin: 0; padding-left: 0; display: flex; flex-direction: column; gap: 9px; }
+.pp-list li { display: flex; align-items: center; gap: 10px; padding-left: 0; }
+.pp-num {
+  flex: 0 0 28px; text-align: right; color: var(--muted); font-weight: 700;
+  font-variant-numeric: tabular-nums; font-size: 0.95rem;
+}
+.pp-list li .parsons-block { flex: 1 1 auto; }
 .pp-empty, .pt-empty {
   list-style: none; color: var(--muted); font-size: 0.86rem; font-style: italic;
   margin: 2px 0; padding: 6px 0;
 }
-.pp-empty { margin-left: -22px; }
+.pp-empty { margin-left: 0; }
 /* where a dragged block will land */
 .pp-list li.drop-before { box-shadow: 0 -3px 0 -1px var(--gold); }
 .pp-list li.drop-after { box-shadow: 0 3px 0 -1px var(--gold); }
