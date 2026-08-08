@@ -96,6 +96,25 @@ if (!old) {
     'pre-fix: nothing on the tab said the tick/wave/cross glyphs were the pupil’s own self-rating');
 }
 
+/* His live-verification finding, 8 Aug: the FIRST switch to a lesson sat silent
+   for a few seconds. Its own pre-fix ref is the redesign commit itself. */
+section('B2. SOURCE CONTROL - the silent wait he reported really was silent');
+const preBusy = (() => {
+  try {
+    return execFileSync('git', ['show', (process.env.KS3DT_BUSY_PREFIX_REF || 'c48961c') + ':ks3-dt/platform/staff.js'],
+      { cwd: ROOT, encoding: 'utf8' });
+  } catch (e) { return null; }
+})();
+if (!preBusy) {
+  check(false, 'could not read the pre-fix commit for the loading state - that control cannot run');
+} else {
+  check(/live-lesson-sel'\) \{ liveLessonNum = t\.value; renderLiveTable\(\)/.test(preBusy),
+    'pre-fix: changing the lesson went straight to the fetch with nothing drawn in between');
+  check(!/function paintLiveLoading/.test(preBusy), 'pre-fix: there was no loading screen to draw');
+  check(/function paintLiveLoading/.test(staff) && /paintLiveLoading\(liveLessonNum\); renderLiveTable\(\)/.test(staff),
+    'now: the loading screen is drawn first, then the fetch runs');
+}
+
 section('C. SOURCE: the glyph key exists in CSS as well as in words');
 ['.live-pick', '.live-elsewhere', '.lc-yes', '.lc-no', '.lc-mid', '.lc-skip', '.lc-dash', '.lc-comment', '.live-legend']
   .forEach(cl => check(css.indexOf(cl) !== -1, 'style.css defines ' + cl));
@@ -363,6 +382,33 @@ async function readTab(page) {
   check(t3.heads.filter(h => /^Q\d+$/.test(h)).length === L3_EXIT.length, 'and three Q columns, one per question');
   check(t3.legendItems.filter(li => /^Statement/.test(li)).length === L3_SE.statements.length,
     'Lesson 3’s four self-rating statements are all quoted (' + L3_SE.statements.length + ')');
+
+  section('L2. LIVE: no silent wait when the lesson is changed (rule 42, his 8 Aug finding)');
+  /* A lesson's content and answer key are fetched once and cached, so ONLY the
+     first visit to a lesson is slow - which is exactly what he saw. Read the DOM
+     synchronously, in the same tick as the change event, i.e. before any fetch
+     could possibly have resolved: whatever is on screen at that instant is what
+     he stares at during the wait. */
+  const instant = await page.evaluate(() => {
+    const sel = document.querySelector('#live-lesson-sel');
+    sel.value = '2';
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+    const body = document.getElementById('staff-body');
+    return {
+      busy: !!body.querySelector('.panel-loading'),
+      busyText: (body.querySelector('.panel-loading') || {}).textContent || '',
+      pickerStillThere: !!body.querySelector('#live-lesson-sel'),
+      pickerShows: body.querySelector('#live-lesson-sel') ? body.querySelector('#live-lesson-sel').value : ''
+    };
+  });
+  check(instant.busy, 'the moment the lesson changes, the screen says it is loading');
+  check(/Lesson 2/.test(instant.busyText), 'and names the lesson it is loading: "' + instant.busyText.trim() + '"');
+  check(instant.pickerStillThere && instant.pickerShows === '2',
+    'the picker stays on screen showing the newly chosen lesson, so nothing jumps');
+  await sleep(1800);
+  const afterBusy = await readTab(page);
+  check(/Lesson 2/.test(afterBusy.resultsHeading), 'and the real Lesson 2 view then replaces it');
+  await pick(page, '3');
 
   section('L. LIVE: Refresh keeps the lesson he is looking at');
   await page.evaluate(() => {
