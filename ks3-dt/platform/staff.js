@@ -1012,6 +1012,24 @@
       hasComment: !!String((a && a[8]) || '')
     };
   }
+  /* DFM 160 - the flag lifecycle. The acknowledgement lives on the lesson's own
+     detail ledger as hf (red) / hv (voice), in minutes, so it survives in the
+     yearly archive without new storage.
+     THE RE-ARM LAW, in the one sentence staff are taught: red only returns if
+     she works on the lesson again and gets stuck again. The MARKS reasons are
+     one-shot facts - they cannot become news twice - so once dealt with they
+     stay dealt with. Only the no-activity reason can re-arm, and only on
+     evidence NEWER than the acknowledgement itself. */
+  function ackAt(a, key) {
+    var m = new RegExp('(?:^|;)' + key + '=(\\d+)(?:;|$)').exec(String((a && a[2]) || ''));
+    return m ? Number(m[1]) : 0;
+  }
+  function liveReasonsFor(a, reasons, hf) {
+    if (!hf) return reasons;
+    return reasons.filter(function (rs) {
+      return /nothing new has been saved/.test(rs) && Number((a || [])[5]) > hf;
+    });
+  }
   function voiceTitle(v) {
     var quoted = v.said.map(function (s) { return '"' + s + '"'; }).join(' and ');
     var t = 'She pressed \'Not yet\' on: ' + quoted;
@@ -1141,14 +1159,12 @@
 
     /* DFM 156(c): stuck pupils are found across every delivered lesson, so
        choosing a lesson can never hide one. */
-    var elsewhere = [], voiceCount = 0, redCount = 0;
+    var elsewhere = [], voiceCount = 0, redCount = 0, greyCount = 0;
     var body = rows.map(function (r) {
       var hits = stuckLessonsFor(r, delivered);
       var stuck = hits.length > 0;
-      if (stuck) redCount++;
       var hereHit = null;
       hits.forEach(function (h) { if (h.num === num) hereHit = h; });
-      if (stuck && !hereHit) elsewhere.push({ name: r.name, num: hits[0].num, reasons: hits[0].reasons });
       var a = (r.L || {})[num];
       var st = Number((a || [])[0] || 0);
       var pillClass = st === 2 ? 'done' : st === 1 ? 'started' : 'none';
@@ -1165,18 +1181,55 @@
       }
       /* the flag names its own cause (DFM 157b), and when it belongs to another
          lesson it says so and its reasons are prefixed with that lesson */
-      var flag = '';
+      var flag = '', liveRed = false;
       if (stuck) {
         var src = hereHit || hits[0];
-        var reasonText = (hereHit ? '' : lessonLabelFor(src.num) + ': ') + src.reasons.join(' ');
-        flag = ' <span class="pill flag" title="' + App.esc(reasonText) + '">needs you' +
-          (hereHit ? '' : ' (' + App.esc(lessonNameFor(src.num)) + ')') + '</span>';
+        var srcArr = (r.L || {})[src.num];
+        var hf = ackAt(srcArr, 'hf');
+        var live = liveReasonsFor(srcArr, src.reasons, hf);
+        var btn = ' <button type="button" class="pill %CLS%" title="%T%" data-action="flag-toggle"' +
+          ' data-email="' + App.esc(r.email) + '" data-lesson="' + App.esc(src.num) + '"' +
+          ' data-kind="red" data-on="%ON%">%TXT%</button>';
+        if (live.length) {
+          liveRed = true; redCount++;
+          var reasonText = (hereHit ? '' : lessonLabelFor(src.num) + ': ') + live.join(' ') +
+            ' Click twice to mark her helped.';
+          flag = btn.replace('%CLS%', 'flag').replace('%T%', App.esc(reasonText)).replace('%ON%', '1')
+            .replace('%TXT%', 'needs you' + (hereHit ? '' : ' (' + App.esc(lessonNameFor(src.num)) + ')'));
+        } else if (hf) {
+          greyCount++;
+          flag = btn.replace('%CLS%', 'none flag-done')
+            .replace('%T%', App.esc('Marked helped on ' + fmtDate(hf) + '. The marks that raised the flag are still in her row. Click twice to bring the flag back.'))
+            .replace('%ON%', '0').replace('%TXT%', 'helped');
+        }
       }
       var v = voiceFlagFor(a, feat);
-      if (v) voiceCount++;
-      var voice = v ? ' <span class="pill voice" title="' + App.esc(voiceTitle(v)) + '">says not yet</span>' : '';
+      var voice = '';
+      if (v) {
+        var hv = ackAt(a, 'hv');
+        var vbtn = ' <button type="button" class="pill %CLS%" title="%T%" data-action="flag-toggle"' +
+          ' data-email="' + App.esc(r.email) + '" data-lesson="' + App.esc(num) + '"' +
+          ' data-kind="voice" data-on="%ON%">%TXT%</button>';
+        if (hv) {
+          greyCount++;
+          voice = vbtn.replace('%CLS%', 'none flag-done')
+            .replace('%T%', App.esc('Marked heard on ' + fmtDate(hv) + '. Her ratings and comment are still in her row. Click twice to bring the flag back.'))
+            .replace('%ON%', '0').replace('%TXT%', 'heard');
+        } else {
+          voiceCount++;
+          voice = vbtn.replace('%CLS%', 'voice')
+            .replace('%T%', App.esc(voiceTitle(v) + ' Click twice to mark her heard.'))
+            .replace('%ON%', '1').replace('%TXT%', 'says not yet');
+        }
+      }
+      /* a pupil already dealt with is not outstanding work: her row is calm and
+         she is not named in the cross-lesson line */
+      if (liveRed && !hereHit) {
+        var eSrc = hits[0], eArr = (r.L || {})[eSrc.num];
+        elsewhere.push({ name: r.name, num: eSrc.num, reasons: liveReasonsFor(eArr, eSrc.reasons, ackAt(eArr, 'hf')) });
+      }
       var blTitle = baselineTitle(r, l1);
-      return '<tr' + (stuck ? ' class="is-stuck"' : '') + '>' +
+      return '<tr' + (liveRed ? ' class="is-stuck"' : '') + '>' +
         '<td><button type="button" class="modal-close" style="font-size:1rem" title="Remove this pupil from the class (her own work is untouched)" data-action="remove-pupil" data-email="' + App.esc(r.email) + '" data-name="' + App.esc(r.name) + '">&times;</button> ' +
         App.esc(r.name) + flag + voice + '</td>' +
         '<td>' + App.esc(r.codename) + '</td>' +
@@ -1227,7 +1280,7 @@
       '<div class="dash-scroll"><table class="dash-table">' + head +
         (body || '<tr><td colspan="99">No pupils have joined this class yet.</td></tr>') + '</table></div>' +
       '<p class="pl-note">Your own runs of a lesson never appear in this table &mdash; it lists pupils only.</p>' +
-      liveLegendHtml(feat, showExit, showPuzzle, redCount > 0, voiceCount > 0) +
+      liveLegendHtml(feat, showExit, showPuzzle, redCount > 0, voiceCount > 0, greyCount > 0) +
       '<h3 style="margin-top:20px">Misconception patterns &mdash; ' +
         (isSideQuestNum(num) ? 'the side quest' : 'Lesson ' + App.esc(num)) + '</h3>' +
       '<div id="live-mis-body"></div>' +
@@ -1244,17 +1297,24 @@
      undefined term. Every glyph on the table is named here, and the real
      question stems and the pupil's real self-rating statements are quoted from
      the lesson's own content - never a copy that can drift. */
-  function liveLegendHtml(feat, showExit, showPuzzle, showRed, showVoice) {
+  function liveLegendHtml(feat, showExit, showPuzzle, showRed, showVoice, showGrey) {
     var out = [];
     if (showRed) {
       out.push('<p>A red <b>needs you</b> flag means one of three things: she got the exit check all wrong, ' +
         'under half her warm-up answers were right, or she started the lesson and nothing new has been ' +
-        'saved for over twenty minutes. Hover over the flag to see which it is.</p>');
+        'saved for over twenty minutes. Hover over the flag to see which it is. When you have dealt with ' +
+        'it, click the flag and click again: it becomes a quiet grey <b>helped</b>. Red only returns if ' +
+        'she works on the lesson again and gets stuck again.</p>');
     }
     if (showVoice) {
       out.push('<p>An amber <b>says not yet</b> flag is the pupil&rsquo;s own voice: at the end of the lesson ' +
         'she pressed &lsquo;Not yet&rsquo; against an I-can statement. Hover over it to see which statement ' +
-        'she meant.</p>');
+        'she meant. When you have listened and responded, click the flag and click again: it becomes a ' +
+        'quiet grey <b>heard</b>.</p>');
+    }
+    if (showGrey) {
+      out.push('<p>A grey flag is one you have already dealt with &mdash; hover over it for the date, and ' +
+        'click it twice if you need to bring it back.</p>');
     }
     if (showExit) {
       out.push('<p><b>The exit check</b> is the set of short marked questions at the end of the lesson. ' +
@@ -1810,6 +1870,59 @@
      exact unlabelled-code fault the tab itself had just been fixed for. A
      spreadsheet is a stat surface like any other, so it says what it means:
      words, and the same marks the table and its key use. */
+  /* DFM 160. Two presses, like Reset pairing: a flag is never cleared by a
+     stray click, and it is never a one-way door - the same two presses on a
+     grey flag bring the colour back. */
+  var flagArm = null, flagArmTimer = null;
+  function flagArmKey(btn) {
+    return btn.getAttribute('data-email') + '|' + btn.getAttribute('data-lesson') + '|' + btn.getAttribute('data-kind');
+  }
+  function flagDisarm() {
+    flagArm = null;
+    if (flagArmTimer) { clearTimeout(flagArmTimer); flagArmTimer = null; }
+    var b = q('[data-action="flag-toggle"][data-armed="1"]');
+    if (b) { b.removeAttribute('data-armed'); b.textContent = b.getAttribute('data-label') || b.textContent; }
+  }
+  function flagToggle(btn) {
+    var key = flagArmKey(btn);
+    var on = btn.getAttribute('data-on') === '1';
+    if (flagArm !== key) {
+      flagDisarm();
+      flagArm = key;
+      btn.setAttribute('data-label', btn.textContent);
+      btn.setAttribute('data-armed', '1');
+      btn.textContent = on
+        ? (btn.getAttribute('data-kind') === 'red' ? 'mark as helped?' : 'mark as heard?')
+        : 'put the flag back?';
+      flagArmTimer = setTimeout(flagDisarm, 4000);
+      return;
+    }
+    flagDisarm();
+    btn.disabled = true;
+    adminCall('flagHandled', {
+      className: cls,
+      email: btn.getAttribute('data-email'),
+      lessonNum: btn.getAttribute('data-lesson'),
+      kind: btn.getAttribute('data-kind'),
+      on: on ? 1 : 0
+    }).then(function (rr) {
+      if (!rr || !rr.ok) {
+        btn.disabled = false;
+        plainStatus(q('#live-status'), 'That did not save -- please try again.');
+        return;
+      }
+      /* repaint from the dashboard we already hold, with this one record's
+         ledger brought up to date - no round trip for the rest of the class */
+      var email = btn.getAttribute('data-email'), lnum = btn.getAttribute('data-lesson');
+      (dashData.rows || []).forEach(function (row) {
+        if (row.email !== email) return;
+        var arr = (row.L || {})[lnum];
+        if (arr) arr[2] = String(rr.detail == null ? arr[2] : rr.detail);
+      });
+      renderLiveTable();
+    });
+  }
+
   function liveCsv(btn) {
     if (!dashData) return;
     var rows = dashData.rows || [];
@@ -2508,7 +2621,12 @@
       'bottom show which wrong answer she chose and the misunderstanding it usually signals: that is the ' +
       'thing to re-teach. A low warm-up score means an earlier lesson&rsquo;s idea has faded, because the ' +
       'warm-up asks about past lessons. No activity means she is stuck right now, mid-lesson &mdash; that ' +
-      'one is a visit, not a re-teach. Stuck-spotting watches every delivered lesson, not just the one on ' +
+      'one is a visit, not a re-teach. When you have dealt with a flag, click it, then click again to ' +
+      'confirm: it becomes a quiet grey <b>helped</b>, the row stops being highlighted, and the tab goes ' +
+      'back to showing only what is outstanding. Hovering the grey flag remembers the day you marked it, ' +
+      'and clicking it twice brings the red back if you change your mind. The marks that raised it never ' +
+      'change &mdash; only the flag quietens. Red returns by itself only if the pupil works on that lesson ' +
+      'again and gets stuck again. Stuck-spotting watches every delivered lesson, not just the one on ' +
       'screen: a pupil struggling in a lesson you are not viewing is named in a line above the table, with ' +
       'her lesson, so choosing a lesson can never hide a pupil who needs help.</p>' +
       '<p>The amber <b>says not yet</b> flag is different: it is not the platform&rsquo;s judgement, it is ' +
@@ -2516,6 +2634,8 @@
       'pressing <b>Not yet</b> on one raises this flag &mdash; she is telling you, in the only place many ' +
       'pupils ever will, that there is something she cannot do yet. Hover over the flag and it names the ' +
       'exact statement, which is the gap to close; her private comment, if she left one, often says more. ' +
+      'When you have listened and responded, click the flag twice and it becomes a quiet grey <b>heard</b> ' +
+      '&mdash; her ratings and comment stay exactly as she wrote them. ' +
       'The <b>say not yet</b> count at the top of the lesson&rsquo;s results shows how many pupils are ' +
       'saying it before you read a single row &mdash; and when half the class says it, the message is ' +
       'about the lesson, not the pupils: re-teach that idea from the front. The two flags work together: ' +
@@ -2712,6 +2832,7 @@
       case 'brief-back': renderLessons(); break;
       case 'brief-print': briefPrint(); break;
       case 'archive-now': archiveNow(btn); break;
+      case 'flag-toggle': flagToggle(btn); break;
       case 'live-refresh': renderLive(); break;
       case 'live-csv': liveCsv(btn); break;
       case 'absence-dismiss': absenceDismiss(btn); break;

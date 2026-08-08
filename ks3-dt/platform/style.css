@@ -1035,6 +1035,12 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .pill.flag { white-space: nowrap; }
 /* the two flags sit side by side on one line under the name, never stacked */
 .dash-table .pill.flag, .dash-table .pill.voice { padding: 2px 7px; }
+/* DFM 160: a flag is a to-do, so it is a real button - and one already dealt
+   with goes quiet without disappearing, because it can always be brought back */
+.dash-table button.pill { border: 0; font-family: inherit; cursor: pointer; }
+.dash-table button.pill:hover { box-shadow: 0 0 0 2px rgba(26, 58, 107, 0.18); }
+.dash-table button.pill[data-armed="1"] { box-shadow: 0 0 0 2px var(--ols-blue); }
+.pill.flag-done { background: #EDF0F6; color: #9AA5B5; white-space: nowrap; }
 /* DFM 159 - the pupil's own voice, beside the marks but never mistaken for them:
    red is what the marks say, amber is what she says. */
 .pill.voice { background: #FFF3CF; color: #8A6D00; white-space: nowrap; }

@@ -62,7 +62,11 @@
     function take(seg) { if (!seg) return; var k = seg.split('=')[0]; if (!(k in map)) order.push(k); map[k] = seg; }
     String(existing || '').split(';').forEach(take);
     String(addition || '').split(';').forEach(take);
-    return order.map(function (k) { return map[k]; }).join(';').slice(0, 220);
+    /* 180, the same cap the real server applies (Code.gs.template mergeDetail_).
+       DFM 157a: a limit that lives in two places is a contract - these two had
+       drifted to 220 and 180, so the preview would have kept a ledger the live
+       server silently truncated. qa-flag-lifecycle asserts them equal. */
+    return order.map(function (k) { return map[k]; }).join(';').slice(0, 180);
   }
   function num_(v) { var n = Number(v); return isNaN(n) ? 0 : n; }
   function vhash_(x) {
@@ -293,6 +297,16 @@
     var reg = getClasses_(s), lc = c.toLowerCase();
     for (var i = 0; i < reg.length; i++) if (reg[i].name.toLowerCase() === lc) return reg[i].name;
     return '';
+  }
+  /* mirrors Code.gs.template canManageClass_: the class's own teacher, or a HoD.
+     The preview has one fixed staff identity, so this is about behaving the same
+     way rather than about real security. */
+  function canManageClass_(s, cls) {
+    var me = str_(STAFF_EMAIL).toLowerCase();
+    var owner = '';
+    getClasses_(s).forEach(function (c) { if (c.name === cls) owner = str_(c.owner).toLowerCase(); });
+    if (owner && owner === me) return true;
+    return (s.hods || []).map(function (h) { return str_(h).toLowerCase(); }).indexOf(me) !== -1;
   }
   function classYear_(s, cls) {
     var reg = getClasses_(s);
@@ -1301,6 +1315,7 @@
 
     if (sub === 'absenceDismiss') {
       if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      if (!canManageClass_(s, cls)) return Promise.resolve({ ok: false, error: 'not-owner' });
       var email2 = str_(p.email).toLowerCase();
       var num2 = str_(p.lessonNum);
       var rec2 = readPupil_(s, cls, email2);
@@ -1310,6 +1325,27 @@
       writePupil_(s, cls, email2, rec2);
       save_(s);
       return Promise.resolve({ ok: true });
+    }
+
+    /* mirrors apiAdmin sub 'flagHandled' (DFM 160) - see Code.gs.template for
+       why the acknowledgement lives on the detail ledger. */
+    if (sub === 'flagHandled') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      if (!canManageClass_(s, cls)) return Promise.resolve({ ok: false, error: 'not-owner' });
+      var fhKind = str_(p.kind);
+      if (fhKind !== 'red' && fhKind !== 'voice') return Promise.resolve({ ok: false, error: 'bad-kind' });
+      var fhKey = (fhKind === 'red') ? 'hf' : 'hv';
+      var fhEmail = str_(p.email).toLowerCase();
+      var fhNum = str_(p.lessonNum);
+      if (!fhEmail || !fhNum) return Promise.resolve({ ok: false, error: 'bad-request' });
+      var fhRec = readPupil_(s, cls, fhEmail);
+      if (!fhRec) return Promise.resolve({ ok: false, error: 'no-pupil' });
+      var fhAt = num_(p.on) ? tmin_() : 0;
+      var fhArr = larr_(fhRec, fhNum);
+      fhArr[2] = mergeDetail_(fhArr[2], fhKey + '=' + fhAt);
+      writePupil_(s, cls, fhEmail, fhRec);
+      save_(s);
+      return Promise.resolve({ ok: true, at: fhAt, detail: str_(fhArr[2]) });
     }
 
     if (sub === 'setConfig') {
