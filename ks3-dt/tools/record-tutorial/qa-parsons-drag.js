@@ -132,6 +132,40 @@ const centreOf = (page, sel, nth) => page.evaluate(([sel, nth]) => {
   console.log('\n== spacing ==');
   check(gap >= 34, 'the number and its dot have room before the block label (' + gap + 'px of indent)');
 
+  /* DAMIEN, 8 Aug 2026: "when i drag over the snippets to the right there is an
+     issue with the alignment". The numbers wandered because .pp-list is a FLEX
+     container and ::marker is not reliably placed on a flex item. They are now
+     real elements in a fixed right-aligned column - which is why this can be
+     measured at all. Checked after EVERY add, because the drift appeared as the
+     list grew. */
+  await mountPuzzle(page);
+  const align = await page.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const steps = [];
+    for (let i = 0; i < 4; i++) {
+      const b = document.querySelector('.pt-list .parsons-block');
+      if (b) b.click();
+      await sleep(180);
+      steps.push({
+        numRights: Array.from(document.querySelectorAll('.pp-num')).map(n => Math.round(n.getBoundingClientRect().right)),
+        blockLefts: Array.from(document.querySelectorAll('.pp-list .parsons-block')).map(x => Math.round(x.getBoundingClientRect().left))
+      });
+    }
+    return { steps, markers: document.querySelectorAll('.pp-num').length };
+  });
+  const allSame = arr => arr.every(v => v === arr[0]);
+  check(align.markers === 4, 'every placed block carries its own number element (' + align.markers + ')');
+  check(align.steps.every(s => allSame(s.numRights)),
+    'the numbers stay in one straight column as blocks are added ' +
+    JSON.stringify(align.steps.map(s => s.numRights)));
+  check(align.steps.every(s => allSame(s.blockLefts)),
+    'and every block starts at the same left edge ' + JSON.stringify(align.steps[3].blockLefts));
+  /* that block filled the board - hand the next section the state it expects:
+     a clean puzzle with exactly one block clicked across */
+  await mountPuzzle(page);
+  await page.evaluate(() => document.querySelector('.pt-list .parsons-block').click());
+  await sleep(250);
+
   /* ---------- click still works, in both directions ---------- */
   console.log('\n== clicking ==');
   check((await placed(page)).length === 1, 'clicking a block in the tray moves it across');
@@ -187,7 +221,10 @@ const centreOf = (page, sel, nth) => page.evaluate(([sel, nth]) => {
 
   /* ---------- CONTROL 1: the old 20px indent must fail the spacing check ---------- */
   console.log('\n== CONTROL 1: the pre-fix indent must fail the spacing check ==');
-  await page.addStyleTag({ content: '.pp-list { padding-left: 20px !important; } .pp-list li { padding-left: 0 !important; }' });
+  /* Reproduce the CURRENT design's failure mode, not the old one: collapse the
+     number column so the label sits hard against the list edge. (Injecting the
+     old padding-left now ADDS to the new column and proves nothing.) */
+  await page.addStyleTag({ content: '.pp-num { flex-basis: 0 !important; width: 0 !important; overflow: hidden !important; } .pp-list li { gap: 0 !important; }' });
   await mountPuzzle(page);
   await page.evaluate(() => document.querySelector('.pt-list .parsons-block').click());
   await sleep(250);
@@ -196,6 +233,26 @@ const centreOf = (page, sel, nth) => page.evaluate(([sel, nth]) => {
     return Math.round(ol.querySelector('li:not(.pp-empty) .parsons-block').getBoundingClientRect().left - ol.getBoundingClientRect().left);
   });
   check(preGap < 34, 'control: the old indent really did crowd the label (' + preGap + 'px)');
+
+  /* ---------- CONTROL 3: the alignment check must be able to fail ----------
+     The pre-fix state cannot be reproduced directly: it was a browser ::marker on
+     a flex item, and the whole reason it was replaceable is that its position is
+     not measurable. So instead prove the ASSERTION discriminates - knock one
+     number out of the column and the column check must notice. */
+  console.log('\n== CONTROL 3: one number out of line must fail the column check ==');
+  const c3 = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await c3.goto(BASE, { waitUntil: 'domcontentloaded' });
+  await sleep(2200);
+  await c3.addStyleTag({ content: '.pp-list li:nth-child(2) .pp-num { flex-basis: 70px !important; }' });
+  await mountPuzzle(c3);
+  const skewed = await c3.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    for (let i = 0; i < 3; i++) { const b = document.querySelector('.pt-list .parsons-block'); if (b) b.click(); await sleep(180); }
+    return Array.from(document.querySelectorAll('.pp-num')).map(n => Math.round(n.getBoundingClientRect().right));
+  });
+  check(!skewed.every(v => v === skewed[0]),
+    'control: a number knocked out of the column really does fail the check ' + JSON.stringify(skewed));
+  await c3.close();
 
   /* ---------- CONTROL 2: move the how-to line back below the blocks ---------- */
   console.log('\n== CONTROL 2: the how-to line below the blocks must fail ==');

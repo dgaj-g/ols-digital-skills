@@ -2021,8 +2021,15 @@
           if (!tray.children.length) {
             tray.appendChild(el('<p class="pt-empty">All of them are in your program.</p>'));
           }
-          placed.forEach(function (si) {
-            var n = el('<li><button class="parsons-block placed" type="button" draggable="false">' + esc(it.blocks[si]) + '</button></li>');
+          /* DAMIEN, 8 Aug 2026: the numbers wandered left and right as blocks were
+             added. Cause: .pp-list is a FLEX container, and a browser's automatic
+             list marker (::marker) is not reliably positioned on a flex item - so
+             "1." and "2." sat at different x. The number is now a real element in
+             a fixed-width right-aligned column, which pins it exactly AND makes
+             the alignment measurable, so a harness can hold it there. */
+          placed.forEach(function (si, i) {
+            var n = el('<li><span class="pp-num">' + (i + 1) + '.</span>' +
+              '<button class="parsons-block placed" type="button" draggable="false">' + esc(it.blocks[si]) + '</button></li>');
             wireDrag(n.querySelector('button'), si, true);
             prog.appendChild(n);
           });
