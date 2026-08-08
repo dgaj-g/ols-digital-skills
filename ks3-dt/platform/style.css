@@ -2051,3 +2051,23 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   /* keep the busy indicators legible - a frozen spinner reads as "hung" */
   .guard-spinner, .panel-spinner { animation: spin 1.4s linear infinite !important; }
 }
+
+/* ---- a step card that carries a numbered sequence and a picture (8 Aug 2026) ----
+   Built for the end-of-lesson "switch your micro:bit off" card: the actions are a
+   sequence (rule 135), and the reset button has to be SHOWN, not just named. */
+.step-lines { margin: 12px 0 14px; padding-left: 26px; }
+.step-lines li { margin: 0 0 8px; line-height: 1.55; }
+.step-lines li:last-child { margin-bottom: 0; }
+.step-fig { margin: 14px 0 16px; text-align: center; }
+.step-img {
+  display: block; max-width: 100%; margin: 0 auto; border-radius: 12px;
+  border: 1px solid var(--line-l); background: #fff;
+}
+.step-fig figcaption {
+  margin-top: 8px; color: var(--muted); font-size: 0.84rem; line-height: 1.45;
+}
+.step-note {
+  margin: 12px 0 4px; padding: 11px 14px; border-radius: 10px;
+  background: var(--field); border-left: 4px solid var(--gold);
+  font-size: 0.95rem; line-height: 1.55;
+}
