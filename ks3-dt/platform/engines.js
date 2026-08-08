@@ -695,6 +695,21 @@
           '<span class="runner-progress">Step ' + (i + 1) + ' of ' + cfg.steps.length + '</span>' +
           '<div class="step-head"><span class="step-icon">' + esc(st.icon || '') + '</span><h2>' + esc(st.title) + '</h2></div>' +
           '<p class="step-text">' + esc(st.text) + '</p>' +
+          /* A step can now carry a NUMBERED list and a PICTURE. Added 8 Aug 2026
+             for the end-of-lesson "switch your micro:bit off" card: the actions
+             are a sequence, and rule 135 says a sequence is a numbered list, not
+             prose; and she cannot be expected to find a small black button on the
+             back of a board she has only ever seen from the front, so the card
+             shows her exactly where it is (rule 138.2 - shown, not just named).
+             Both are optional, so every existing step is unchanged. */
+          (st.lines && st.lines.length
+            ? '<ol class="step-lines">' + st.lines.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol>'
+            : '') +
+          (st.img
+            ? '<figure class="step-fig"><img class="step-img" src="' + esc(asset(st.img)) + '" alt="' + esc(st.imgAlt || '') + '">' +
+              (st.imgCap ? '<figcaption>' + esc(st.imgCap) + '</figcaption>' : '') + '</figure>'
+            : '') +
+          (st.note ? '<p class="step-note">' + esc(st.note) + '</p>' : '') +
           (st.clip && st.clip.src ? '<p class="step-cliprow"><button class="ghost-btn step-clip-btn" type="button">&#127909; ' + esc(st.clip.label || 'Show me how') + '</button></p>' : '') +
           '<div class="step-action"></div></div>');
         host.innerHTML = '';

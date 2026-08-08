@@ -2060,6 +2060,26 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   .guard-spinner, .panel-spinner { animation: spin 1.4s linear infinite !important; }
 }
 
+/* ---- a step card that carries a numbered sequence and a picture (8 Aug 2026) ----
+   Built for the end-of-lesson "switch your micro:bit off" card: the actions are a
+   sequence (rule 135), and the reset button has to be SHOWN, not just named. */
+.step-lines { margin: 12px 0 14px; padding-left: 26px; }
+.step-lines li { margin: 0 0 8px; line-height: 1.55; }
+.step-lines li:last-child { margin-bottom: 0; }
+.step-fig { margin: 14px 0 16px; text-align: center; }
+.step-img {
+  display: block; max-width: 100%; margin: 0 auto; border-radius: 12px;
+  border: 1px solid var(--line-l); background: #fff;
+}
+.step-fig figcaption {
+  margin-top: 8px; color: var(--muted); font-size: 0.84rem; line-height: 1.45;
+}
+.step-note {
+  margin: 12px 0 4px; padding: 11px 14px; border-radius: 10px;
+  background: var(--field); border-left: 4px solid var(--gold);
+  font-size: 0.95rem; line-height: 1.55;
+}
+
 </style>
 </head>
 <body>
@@ -4312,6 +4332,21 @@ window.OLS_TRANSPORT = {
           '<span class="runner-progress">Step ' + (i + 1) + ' of ' + cfg.steps.length + '</span>' +
           '<div class="step-head"><span class="step-icon">' + esc(st.icon || '') + '</span><h2>' + esc(st.title) + '</h2></div>' +
           '<p class="step-text">' + esc(st.text) + '</p>' +
+          /* A step can now carry a NUMBERED list and a PICTURE. Added 8 Aug 2026
+             for the end-of-lesson "switch your micro:bit off" card: the actions
+             are a sequence, and rule 135 says a sequence is a numbered list, not
+             prose; and she cannot be expected to find a small black button on the
+             back of a board she has only ever seen from the front, so the card
+             shows her exactly where it is (rule 138.2 - shown, not just named).
+             Both are optional, so every existing step is unchanged. */
+          (st.lines && st.lines.length
+            ? '<ol class="step-lines">' + st.lines.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol>'
+            : '') +
+          (st.img
+            ? '<figure class="step-fig"><img class="step-img" src="' + esc(asset(st.img)) + '" alt="' + esc(st.imgAlt || '') + '">' +
+              (st.imgCap ? '<figcaption>' + esc(st.imgCap) + '</figcaption>' : '') + '</figure>'
+            : '') +
+          (st.note ? '<p class="step-note">' + esc(st.note) + '</p>' : '') +
           (st.clip && st.clip.src ? '<p class="step-cliprow"><button class="ghost-btn step-clip-btn" type="button">&#127909; ' + esc(st.clip.label || 'Show me how') + '</button></p>' : '') +
           '<div class="step-action"></div></div>');
         host.innerHTML = '';

@@ -276,6 +276,34 @@
    }
   },
   {
+   "id": "packup",
+   "engine": "steps",
+   "title": "Before you hand it back",
+   "minutes": 2,
+   "config": {
+    "intro": "One last job, so the micro:bits are ready for the next class.",
+    "steps": [
+     {
+      "icon": "🔌",
+      "title": "Switch your micro:bit off",
+      "text": "Your micro:bit has a small black button on the BACK. It is called the reset button, and holding it down switches the micro:bit off so your program stops running. Here is what to do:",
+      "lines": [
+       "Turn your micro:bit over so you are looking at the back. Find the small black button — the picture below shows you exactly where it is.",
+       "Press and HOLD that button for about 5 seconds.",
+       "Watch the tiny red light on the back. It fades from bright red to nothing — that is how you know your program has stopped. (If the USB lead is still plugged in, the light may then blink slowly. That is normal: it just means the computer is still feeding it power. It stays off once you unplug the lead.)",
+       "Let go, unplug the USB lead, and hand your micro:bit back to your teacher."
+      ],
+      "img": "assets/img/l2/microbit-reset.jpg",
+      "imgAlt": "The back of a micro:bit V2. The small black reset button is circled near the top edge, sitting between the silver USB socket and the white battery socket.",
+      "imgCap": "The reset button is on the BACK, between the USB socket and the battery socket. Photo: SimonWaldherr, CC BY 4.0, annotated by us.",
+      "note": "Your program is still ON the micro:bit — nothing you built today is lost. The next class will simply load their own program over the top of yours when they press Download.",
+      "confirm": "My micro:bit is switched off and handed back"
+     }
+    ],
+    "help": "Turn the micro:bit over. Hold the small black button on the back for about 5 seconds until the little red light fades out, then unplug the USB lead and hand it back. The picture on the card circles the button for you. Nothing you made is deleted — your program stays on the micro:bit until the next class downloads theirs."
+   }
+  },
+  {
    "id": "selfeval",
    "engine": "selfeval",
    "title": "How did it go?",

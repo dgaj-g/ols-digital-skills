@@ -6,6 +6,11 @@ All from Wikimedia Commons, resized to 900px wide.
 - `l2-crossing.jpg` — UK Pedestrian Crossing Button.jpg by Sebastiandoe5, CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:UK_Pedestrian_Crossing_Button.jpg
 - `l2-tracker.jpg` — Fitness-trackers-companies-Fitbug-Orb-Jawbone-Up.jpg by Abas Gemini, CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:Fitness-trackers-companies-Fitbug-Orb-Jawbone-Up.jpg
 - `l2-microbit.jpg` — "Cœur sur un micro bit" by Nicolas Buffler, CC BY 2.0 — https://commons.wikimedia.org/wiki/File:C%C5%93ur_sur_un_micro_bit_(51063716562).jpg (also used inside the Lesson 2 film; added 2 Aug 2026 for the teacher slide deck)
+- `microbit-reset.jpg` — "BBC micro bit v2 (3).jpg" by SimonWaldherr, CC BY 4.0 — https://commons.wikimedia.org/wiki/File:BBC_micro_bit_v2_(3).jpg — the BACK of a micro:bit V2. Cropped, resized to 900px and ANNOTATED by us (gold ring + label on the reset button) for the end-of-lesson switch-off card, added 8 Aug 2026. CC BY 4.0 permits the adaptation; the credit rides on the card itself as well as here.
+
+`ghost-icon.png` is not a third-party photo: it is a screenshot of the real
+MakeCode simulator's LED display showing IconNames.Ghost, captured by
+`tools/record-tutorial/make-l2-rung23-images.js`.
 
 
 # Video credits — assets/video/l2/l2-tutorial.mp4
