@@ -2095,6 +2095,12 @@ function apiAdmin(req) {
 
   if (sub === 'absenceDismiss') {
     if (!cls) return { ok: false, error: 'unknown-class' };
+    /* DAMIEN, 8 Aug 2026 (DFM 160's rider). This was the last write on the
+       staff API with no ownership check at all - the sibling of the removePupil
+       hole he found on 3 Aug. A passcode holder who knew another teacher's
+       class name could clear her absence flags. Same gate as removePupil and
+       deleteClass: the class's own teacher, or a HoD. */
+    if (!canManageClass_(cls, me)) return { ok: false, error: 'not-owner' };
     var email2 = str_(req.email).toLowerCase();
     var num2 = str_(req.lessonNum);
     var rec2 = readPupil_(cls, email2);
@@ -2103,6 +2109,38 @@ function apiAdmin(req) {
     a2[7] = num_(a2[7]) | 1;
     writePupil_(cls, email2, rec2);
     return { ok: true };
+  }
+
+  /* DAMIEN, 8 Aug 2026 (DFM 160): "does the 'needs you' appear permanently or is
+     there a way to indicate that the teacher has dealt with it?" It was
+     permanent - a pupil's exit answers are written once and her warm-up counters
+     only rise - so a flag nobody could clear was on its way to becoming
+     wallpaper. A flag is a to-do, not a verdict: the teacher marks it handled
+     and it becomes a quiet grey acknowledgement.
+     Stored as minutes-since-epoch on the lesson's own detail ledger, hf for the
+     red flag and hv for the pupil's voice flag, so the yearly archive keeps the
+     acknowledgement for free (detail is already exported) and mergeDetail_
+     overwrites the key in place on every toggle. NOTHING is deleted by this:
+     her marks, her ratings and her comment are untouched - only the
+     attention-pointer quietens, and clicking twice again brings it back. */
+  if (sub === 'flagHandled') {
+    if (!cls) return { ok: false, error: 'unknown-class' };
+    if (!canManageClass_(cls, me)) return { ok: false, error: 'not-owner' };
+    var fhKind = str_(req.kind);
+    if (fhKind !== 'red' && fhKind !== 'voice') return { ok: false, error: 'bad-kind' };
+    var fhKey = (fhKind === 'red') ? 'hf' : 'hv';
+    var fhEmail = str_(req.email).toLowerCase();
+    var fhNum = str_(req.lessonNum);
+    if (!fhEmail || !fhNum) return { ok: false, error: 'bad-request' };
+    var fhAt = num_(req.on) ? tmin_() : 0;
+    return withLock_(function () {
+      var fhRec = readPupil_(cls, fhEmail);
+      if (!fhRec) return { ok: false, error: 'no-pupil' };
+      var fhArr = larr_(fhRec, fhNum);
+      fhArr[2] = mergeDetail_(fhArr[2], fhKey + '=' + fhAt);
+      if (!tryWritePupil_(cls, fhEmail, fhRec)) return STORE_FULL_;
+      return { ok: true, at: fhAt, detail: str_(fhArr[2]) };
+    });
   }
 
   if (sub === 'setConfig') {
