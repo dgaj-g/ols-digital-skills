@@ -80,9 +80,10 @@ async function mountSteps(page, lessonFile, chunkId) {
   check(order.indexOf('packup') === order.indexOf('selfeval') - 1,
     'it sits immediately BEFORE the evaluation, as he asked (' + order.join(' > ') + ')');
 
-  /* ---------- what it says ---------- */
-  const card = await page.evaluate(() => {
+  /* Helper: read whichever step card is on screen right now. */
+  const readCard = () => page.evaluate(() => {
     const t = s => { const e = document.querySelector(s); return e ? e.textContent.trim() : ''; };
+    const i = document.querySelector('.step-img');
     return {
       title: t('.step-head h2'),
       text: t('.step-text'),
@@ -90,48 +91,77 @@ async function mountSteps(page, lessonFile, chunkId) {
       listTag: document.querySelector('.step-lines') ? document.querySelector('.step-lines').tagName : '',
       cap: t('.step-fig figcaption'),
       note: t('.step-note'),
-      confirm: t('.confirm-step')
+      link: document.querySelector('.step-link') ? document.querySelector('.step-link').getAttribute('href') : null,
+      img: i ? { alt: i.getAttribute('alt') || '', loaded: i.complete && i.naturalWidth > 0,
+                 natural: i.naturalWidth + 'x' + i.naturalHeight,
+                 rendered: Math.round(i.getBoundingClientRect().width) } : null
     };
   });
-  const all = (card.title + ' ' + card.text + ' ' + card.lines.join(' ') + ' ' + card.note).toLowerCase();
+  const advance = async () => {
+    await page.evaluate(() => { const c = document.querySelector('.confirm-step'); if (c) c.click(); });
+    await sleep(950);
+  };
 
-  console.log('\n== what the card claims ==');
-  check(card.lines.length >= 3, 'the actions are a NUMBERED list, not prose (' + card.lines.length + ' steps)');
-  check(card.listTag === 'OL', 'and it really is an ordered list (' + card.listTag + ')');
+  /* ================= STEP 1: clear it for the next class =================
+     DAMIEN, 8 Aug 2026: "the next class ... will be able to see an exiting
+     program?" Yes - holding reset powers the board off, it does not erase it,
+     and no button can. So step 1 sends the micro:bit an EMPTY program. The file
+     behind it has to exist and be a real hex or the step is worse than useless. */
+  const one = await readCard();
+  console.log('\n== step 1: clearing it for the next class ==');
+  check(/clear/i.test(one.title), 'step 1 is about CLEARING it (' + one.title + ')');
+  check(one.listTag === 'OL' && one.lines.length >= 3,
+    'its actions are a numbered list, not prose (' + one.lines.length + ')');
+  const oneAll = (one.title + ' ' + one.text + ' ' + one.lines.join(' ')).toLowerCase();
+  check(/cannot remove it|only way to clear/.test(oneAll),
+    'it tells her plainly that the reset button cannot remove a program');
+  check(/drag/.test(oneAll) && /microbit drive/.test(oneAll),
+    'it reuses the flashing skill she has practised all lesson');
+  check(/nothing happens/.test(oneAll), 'and gives her a way to CHECK it worked');
+  check(/nothing you made today is lost|saved in makecode/i.test(one.note),
+    'and reassures her that her own work is not lost');
+  check(!!one.link, 'the step carries a download link (' + one.link + ')');
+
+  const hex = await page.evaluate(async (href) => {
+    const r = await fetch('/ks3-dt/platform/' + href);
+    if (!r.ok) return { ok: false, status: r.status };
+    const t = await r.text();
+    const lines = t.split(/\r?\n/).filter(Boolean);
+    return { ok: true, bytes: t.length, records: lines.length,
+             allIntel: lines.every(l => l[0] === ':'),
+             eof: lines[lines.length - 1].trim().toUpperCase() === ':00000001FF' };
+  }, one.link);
+  check(hex.ok, 'the blank program is actually THERE (' + (hex.ok ? hex.bytes + ' bytes' : 'HTTP ' + hex.status) + ')');
+  check(hex.ok && hex.allIntel, 'every line of it is a real Intel HEX record (' + (hex.records || 0) + ')');
+  check(hex.ok && hex.eof, 'and it ends with the end-of-file record, so it is complete');
+
+  /* ================= STEP 2: switch it off ================= */
+  await advance();
+  const two = await readCard();
+  console.log('\n== step 2: switching it off ==');
+  const twoAll = (two.title + ' ' + two.text + ' ' + two.lines.join(' ') + ' ' + two.note).toLowerCase();
+  check(/switch/i.test(two.title), 'step 2 is about switching it off (' + two.title + ')');
   /* THE FACT CHECK: holding reset powers off; it does NOT erase. */
-  check(!/wipe|erase|delete[sd]? your program|clears? the program/.test(all),
-    'it never claims the button wipes or erases the program');
-  check(/switch(es)? .*off|stops? running/.test(all), 'it says what the button DOES: switches it off / stops the program');
-  check(/still on the micro:bit|nothing you built today is lost/i.test(card.note),
-    'and it reassures her that her program is not lost');
+  check(!/wipe|erase/.test(twoAll), 'it never claims the BUTTON wipes or erases the program');
+  check(/switch(es)? .*off|stops? running/.test(twoAll), 'it says what the button does: switches it off');
+  check(/about 5 seconds|5 seconds/.test(twoAll), 'it gives the real hold time');
   /* the light: true on BOTH power routes, or it is a half-truth on USB */
-  check(/blink|flash/.test(all) && /unplug/.test(all),
+  check(/blink|flash/.test(twoAll) && /unplug/.test(twoAll),
     'the light instruction covers the USB case (it blinks) rather than promising it just goes out');
-  check(/about 5 seconds|5 seconds/.test(all), 'it gives the real hold time');
-  check(!/\btap/.test(all), 'no banned "tap" (DFM 150)');
+  check(!/\btap/.test(twoAll + ' ' + oneAll), 'no banned "tap" anywhere on the card (DFM 150)');
 
-  /* ---------- the picture must actually load ---------- */
   console.log('\n== the photograph ==');
-  const img = await page.evaluate(() => {
-    const i = document.querySelector('.step-img');
-    if (!i) return null;
-    return { src: i.getAttribute('src'), alt: i.getAttribute('alt') || '',
-             loaded: i.complete && i.naturalWidth > 0,
-             natural: i.naturalWidth + 'x' + i.naturalHeight,
-             rendered: Math.round(i.getBoundingClientRect().width) };
-  });
-  check(!!img, 'the card carries a picture');
-  check(img && img.loaded, 'and it genuinely LOADS - not a broken image (' + (img && img.natural) + ')');
-  check(img && img.rendered > 200, 'it is big enough to find a small button on (' + (img && img.rendered) + 'px wide)');
-  check(img && /reset button/i.test(img.alt), 'it has alt text naming the reset button');
-  check(/cc by/i.test(card.cap), 'the caption carries the photographer credit and licence');
-  check(/back/i.test(card.cap), 'and says which side of the board she is looking at');
+  check(!!two.img, 'step 2 carries the picture of the board');
+  check(two.img && two.img.loaded, 'and it genuinely LOADS - not a broken image (' + (two.img && two.img.natural) + ')');
+  check(two.img && two.img.rendered > 200, 'big enough to find a small button on (' + (two.img && two.img.rendered) + 'px)');
+  check(two.img && /reset button/i.test(two.img.alt), 'it has alt text naming the reset button');
+  check(/cc by/i.test(two.cap), 'the caption carries the photographer credit and licence');
+  check(/back/i.test(two.cap), 'and says which side of the board she is looking at');
 
   /* ---------- it completes ---------- */
   console.log('\n== it finishes ==');
-  await page.evaluate(() => document.querySelector('.confirm-step').click());
-  await sleep(900);
-  check(await page.evaluate(() => window.__done === true), 'confirming the step finishes the chunk');
+  await advance();
+  check(await page.evaluate(() => window.__done === true), 'confirming both steps finishes the chunk');
 
   /* ---------- the shared engine is unharmed ----------
      Lesson 1's Real Vault uses the same engine and has none of the new fields. */

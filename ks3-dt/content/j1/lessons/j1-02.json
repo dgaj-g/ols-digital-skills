@@ -279,10 +279,27 @@
    "id": "packup",
    "engine": "steps",
    "title": "Before you hand it back",
-   "minutes": 2,
+   "minutes": 3,
    "config": {
-    "intro": "One last job, so the micro:bits are ready for the next class.",
+    "intro": "Two last jobs, so the micro:bits are ready for the next class.",
     "steps": [
+     {
+      "icon": "🧹",
+      "title": "Clear your program off the micro:bit",
+      "text": "Your program is still sitting on the micro:bit, and it would still be there for the next class — they would press a button and see YOUR heart appear. Holding the reset button cannot remove it; the only way to clear a micro:bit is to send it a different program. So you are going to send it an empty one.",
+      "lines": [
+       "Click the button below. A file called clear-my-microbit.hex lands in your Downloads folder.",
+       "Drag that file onto the MICROBIT drive, exactly the way you have done all lesson.",
+       "The yellow light on the micro:bit flashes while the file copies across. When it stops, the micro:bit is empty.",
+       "Check it: press button A and button B. Nothing happens now — and that is exactly right."
+      ],
+      "link": {
+       "href": "assets/files/l2/clear-my-microbit.hex",
+       "label": "Get the empty program"
+      },
+      "note": "Nothing you made today is lost. Your program is saved in MakeCode and in your Drive from Bank Your Build — this only clears the micro:bit itself.",
+      "confirm": "My micro:bit is empty — A and B do nothing"
+     },
      {
       "icon": "🔌",
       "title": "Switch your micro:bit off",
@@ -300,7 +317,7 @@
       "confirm": "My micro:bit is switched off and handed back"
      }
     ],
-    "help": "Turn the micro:bit over. Hold the small black button on the back for about 5 seconds until the little red light fades out, then unplug the USB lead and hand it back. The picture on the card circles the button for you. Nothing you made is deleted — your program stays on the micro:bit until the next class downloads theirs."
+    "help": "Two jobs. First, clear your program off the micro:bit: click the button on the card to get the empty program, then drag it onto the MICROBIT drive just like you have all lesson — when the yellow light stops flashing, press A and B and nothing should happen. Then hold the small black button on the back for about 5 seconds until the little red light fades, unplug the USB lead and hand it back. Nothing you made is lost: your work is in MakeCode and in your Drive."
    }
   },
   {
