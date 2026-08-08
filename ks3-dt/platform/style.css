@@ -1011,6 +1011,32 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .pill.started { background: #FFF3CF; color: #8A6D00; }
 .pill.none { background: #EDF0F6; color: #9AA5B5; }
 .pill.flag { background: #FDE5E7; color: #D9455B; }
+/* LIVE TAB, one lesson at a time (DFM 156, 8 Aug 2026). The picker that governs
+   the whole tab, the marked-answer glyphs, and the key that names every one of
+   them - a symbol a teacher has to decode is an undefined term (rule 149). */
+.live-pick { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.live-pick label { font-family: var(--font-display); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.live-pick .staff-select { margin: 0; max-width: 340px; }
+.live-elsewhere {
+  background: var(--bad-soft); border: 1px solid var(--bad); color: var(--bad);
+  border-radius: var(--r-sm); padding: 8px 12px; margin: 8px 0; font-size: 0.83rem; font-weight: 600;
+}
+.dash-table td.lc-mark { white-space: nowrap; font-size: 0.95rem; letter-spacing: 0.06em; }
+/* the name column carries the remove button, the full name and the flag: give it
+   room, or a flagged pupil's row grows to five lines and the table stops scanning */
+.dash-table td:first-child { min-width: 150px; }
+.pill.flag { white-space: nowrap; }
+.lc-yes { color: #1E9459; font-weight: 700; }
+.lc-no { color: var(--bad); font-weight: 700; }
+.lc-mid { color: #8A6D00; font-weight: 700; }
+.lc-skip, .lc-dash { color: #9AA5B5; font-weight: 700; }
+/* clipped on purpose: the full comment is on hover and in Copy CSV, and a wide
+   comment column would push the marked answers off the edge of the panel */
+.lc-comment { display: inline-block; max-width: 12ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+.live-legend { margin: 10px 0 4px; font-size: 0.83rem; color: var(--ink); }
+.live-legend p { margin: 8px 0 4px; }
+.live-legend-list { margin: 0 0 8px; padding-left: 20px; }
+.live-legend-list li { margin: 2px 0; color: var(--muted); }
 .mis-bar { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
 .mis-bar .mb-label { flex: 0 0 46%; font-size: 0.82rem; color: var(--ink); }
 .mis-bar .mb-track { flex: 1; height: 10px; border-radius: 5px; background: #EDF0F6; overflow: hidden; }

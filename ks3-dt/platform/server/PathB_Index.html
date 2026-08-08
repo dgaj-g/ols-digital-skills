@@ -1019,6 +1019,32 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .pill.started { background: #FFF3CF; color: #8A6D00; }
 .pill.none { background: #EDF0F6; color: #9AA5B5; }
 .pill.flag { background: #FDE5E7; color: #D9455B; }
+/* LIVE TAB, one lesson at a time (DFM 156, 8 Aug 2026). The picker that governs
+   the whole tab, the marked-answer glyphs, and the key that names every one of
+   them - a symbol a teacher has to decode is an undefined term (rule 149). */
+.live-pick { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.live-pick label { font-family: var(--font-display); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.live-pick .staff-select { margin: 0; max-width: 340px; }
+.live-elsewhere {
+  background: var(--bad-soft); border: 1px solid var(--bad); color: var(--bad);
+  border-radius: var(--r-sm); padding: 8px 12px; margin: 8px 0; font-size: 0.83rem; font-weight: 600;
+}
+.dash-table td.lc-mark { white-space: nowrap; font-size: 0.95rem; letter-spacing: 0.06em; }
+/* the name column carries the remove button, the full name and the flag: give it
+   room, or a flagged pupil's row grows to five lines and the table stops scanning */
+.dash-table td:first-child { min-width: 150px; }
+.pill.flag { white-space: nowrap; }
+.lc-yes { color: #1E9459; font-weight: 700; }
+.lc-no { color: var(--bad); font-weight: 700; }
+.lc-mid { color: #8A6D00; font-weight: 700; }
+.lc-skip, .lc-dash { color: #9AA5B5; font-weight: 700; }
+/* clipped on purpose: the full comment is on hover and in Copy CSV, and a wide
+   comment column would push the marked answers off the edge of the panel */
+.lc-comment { display: inline-block; max-width: 12ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+.live-legend { margin: 10px 0 4px; font-size: 0.83rem; color: var(--ink); }
+.live-legend p { margin: 8px 0 4px; }
+.live-legend-list { margin: 0 0 8px; padding-left: 20px; }
+.live-legend-list li { margin: 2px 0; color: var(--muted); }
 .mis-bar { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
 .mis-bar .mb-label { flex: 0 0 46%; font-size: 0.82rem; color: var(--ink); }
 .mis-bar .mb-track { flex: 1; height: 10px; border-radius: 5px; background: #EDF0F6; overflow: hidden; }
@@ -7465,7 +7491,14 @@ window.OLS_TRANSPORT = {
   var keyinfoCache = {};          // lessonId -> promise -> {itemId: {a, mis, explain}} | null
   var exitRightMap = {};          // lessonNum -> {exitItems, items} (for STUCK flags + CSV)
   var liveByNum = {};             // lessonNum -> manifest lesson entry, refreshed each Live render
-  var misLessonNum = '';          // Live tab: lesson chosen in the misconception dropdown
+  /* DAMIEN, 8 Aug 2026 (DFM 156): the Live tab shows ONE lesson at a time. This
+     is the single selection every panel on the tab obeys - the pairing lens, the
+     tournament row, the Press Night lens, the table and the misconception bars.
+     Before this, four panels each carried their own lesson dropdown and the table
+     showed every delivered lesson at once, which is what he read as "a bit of a
+     mess, with stats across different lessons". */
+  var liveLessonNum = '';         // Live tab: the one lesson the whole tab is showing
+  var liveFeatureCache = {};      // lessonId -> promise -> what that lesson CONTAINS (see lessonFeaturesFor)
   var coverPick = '';             // Cover tab: lessonId chosen in the override dropdown
   var briefByNum = {};            // Lessons tab: lessonNum -> manifest entry (for the Brief view)
   var lockNotice = '';            // Lessons tab: message to show once the grid re-renders (B-05 undo)
@@ -7473,10 +7506,9 @@ window.OLS_TRANSPORT = {
   var wired = false;
 
   /* pairing lens state (section 12) */
-  var pairLensLesson = '', pairLensTimer = null, pairAlerted = {}, pairedLessonCache = {}, pairResetArm = 0;
-  /* tournament state (section 13) */
-  var tourneyLessonCache = {};    // lessonId -> promise -> true|null ("has a tournament chunk")
-  var galleryLessonCache = {};    // lessonId -> promise -> true|null ("has a gallery chunk")
+  var pairLensLesson = '', pairLensTimer = null, pairAlerted = {}, pairResetArm = 0;
+  /* tournament + Press Night state (sections 13/14). What each lesson CONTAINS
+     is answered once, by lessonFeaturesFor, so no two panels can disagree. */
   var galleryLensLesson = '', galleryLensTimer = null;
   var audioCtx = null, chimeMuted = false;
   try { chimeMuted = localStorage.getItem('ks3dt-staff-mute') === '1'; } catch (e) {}
@@ -8254,6 +8286,77 @@ window.OLS_TRANSPORT = {
   /* ============================================================
      LIVE tab (dashboard + misconception patterns)
      ============================================================ */
+  /* ---------- which lessons are delivered, and which one the tab is showing ----------
+     The side quest's manifest num is the STRING 'S1' (every taught lesson's is a
+     number), so anything that sorts or compares lesson numbers has to say so out
+     loud - Number('S1') is NaN and would sort unpredictably. */
+  function isSideQuestNum(num) { return isNaN(Number(num)); }
+  /* mid-sentence ("stuck on the side quest") vs standing alone as a label */
+  function lessonNameFor(num) { return isSideQuestNum(num) ? 'the side quest' : 'Lesson ' + String(num); }
+  function lessonLabelFor(num) { return isSideQuestNum(num) ? 'Side quest' : 'Lesson ' + String(num); }
+  function lessonHeadingFor(le) {
+    return lessonLabelFor(le.num) + ' &mdash; ' + App.esc(String(le.title || ''));
+  }
+
+  function deliveredNumsOf(dash) {
+    var nums = Object.keys((dash && dash.locks) || {}).filter(function (n) { return Number(dash.locks[n].u); });
+    return nums.sort(function (a, b) {
+      var sa = isSideQuestNum(a), sb = isSideQuestNum(b);
+      if (sa !== sb) return sa ? 1 : -1;         // the side quest always sorts last
+      if (sa && sb) return a < b ? -1 : 1;
+      return Number(a) - Number(b);
+    });
+  }
+
+  /* DFM 156(a): "defaults to the most recently unlocked lesson". Read carefully:
+     `u` is the FIRST-unlock stamp and never moves again, so re-unlocking Lesson 1
+     for a catch-up cannot steal the default away from the lesson being taught.
+     A lesson that is currently unlocked beats one that was delivered and locked
+     again, and the self-paced side quest never wins - it is never "the lesson in
+     front of you", though it is always pickable. */
+  function defaultLiveLesson(delivered) {
+    var pool = delivered.filter(function (n) { return !isSideQuestNum(n); });
+    if (!pool.length) return delivered[0] || '';
+    function newest(list) {
+      return list.slice().sort(function (a, b) {
+        return Number(dashData.locks[b].u) - Number(dashData.locks[a].u);
+      })[0];
+    }
+    var on = pool.filter(function (n) { return Number(dashData.locks[n].on); });
+    return on.length ? newest(on) : newest(pool);
+  }
+
+  /* What a lesson CONTAINS - one fetch, one answer, so the panels can never
+     disagree about a lesson between themselves (four separate detectors was
+     part of what made this tab unreadable). Never rejects: a lesson with no
+     content file yet still renders its progress column. */
+  function lessonFeaturesFor(le) {
+    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null };
+    if (!le || !le.file) return Promise.resolve(blank);
+    var id = String(le.id);
+    if (!liveFeatureCache[id]) {
+      liveFeatureCache[id] = App.fetchContent(le.file).then(function (lesson) {
+        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null };
+        (lesson.chunks || []).forEach(function (ch) {
+          var cfg = ch.config || {};
+          if (cfg.paired) f.paired = true;
+          if (ch.engine === 'parsons') f.parsons = { title: String(cfg.title || ch.title || 'Build puzzle') };
+          if (ch.engine === 'tournament') f.tournament = { title: String(cfg.title || ch.title || 'Tournament') };
+          if (ch.engine === 'gallery') f.gallery = { title: String(ch.title || 'Press Night') };
+          if (ch.engine === 'selfeval') {
+            f.selfeval = {
+              statements: (cfg.statements || []).map(String),
+              difficulty: !!cfg.difficulty,
+              comment: !!cfg.comment
+            };
+          }
+        });
+        return f;
+      }).catch(function () { return blank; });
+    }
+    return liveFeatureCache[id];
+  }
+
   function renderLive() {
     requireClass(function () {
       setPane(busyHtml('Loading the live dashboard'));
@@ -8270,6 +8373,11 @@ window.OLS_TRANSPORT = {
           computeExitRightness(man, r.rows || []).then(function (rightMap) {
             if (token !== dashSeq) return;
             exitRightMap = rightMap;
+            var delivered = deliveredNumsOf(dashData);
+            if (!delivered.length) { setPane(liveEmptyHtml()); return; }
+            /* Refresh keeps the lesson he is looking at; a lesson that has since
+               been un-delivered falls back to the default. */
+            if (delivered.indexOf(liveLessonNum) === -1) liveLessonNum = defaultLiveLesson(delivered);
             renderLiveTable();
           });
         });
@@ -8277,94 +8385,240 @@ window.OLS_TRANSPORT = {
     });
   }
 
-  function lessonCell(a) {
-    if (!a) return '<span class="pill none">none</span>';
-    var status = Number(a[0]);
-    var pillClass = status === 2 ? 'done' : status === 1 ? 'started' : 'none';
-    var pillText = status === 2 ? 'done' : status === 1 ? 'started' : 'none';
-    var html = '<span class="pill ' + pillClass + '">' + pillText + '</span>';
-    var right = Number(a[9]), total = Number(a[10]);
-    if (total > 0) html += '<div class="staff-row-meta">' + Math.round((right / total) * 100) + '% recap</div>';
-    var se = String(a[4] || '');
-    if (se) {
-      var parts = se.split('|'), conf = parts[0] || '', diffCh = parts[1] || '';
-      var glyphs = conf.split('').map(function (c) {
-        return c === '2' ? '&#10003;' : c === '1' ? '&#8776;' : c === '0' ? '&#10007;' : '';
-      }).join(' ');
-      var diffGlyph = diffCh === '0' ? '&#128994;' : diffCh === '1' ? '&#128993;' : diffCh === '2' ? '&#128308;' : '';
-      if (glyphs.trim() || diffGlyph) html += '<div class="staff-row-meta">' + glyphs + (diffGlyph ? ' ' + diffGlyph : '') + '</div>';
-    }
-    var comment = String(a[8] || '');
-    if (comment) html += '<div class="staff-row-meta" title="' + App.esc(comment) + '">' + App.esc(comment) + '</div>';
-    return html;
+  function liveEmptyHtml() {
+    return '<div class="pair-lens-box"><p class="pl-note" style="margin:0">Nothing to show yet &mdash; no lesson has been ' +
+      'unlocked for this class. The moment you unlock one on the Lessons tab, this tab follows it.</p></div>';
   }
 
-  function isStuck(r, deliveredNums) {
+  /* Which lessons flag this pupil as stuck. DFM 156(c): the filter may never
+     hide a struggling pupil, so this stays CROSS-LESSON (every delivered lesson
+     is examined, not just the one on screen) and returns the lesson numbers that
+     triggered, so the flag and the strip above the table can name them. The
+     thresholds themselves are unchanged from the original isStuck. */
+  function stuckLessonsFor(r, deliveredNums) {
+    var hits = [];
     for (var i = 0; i < deliveredNums.length; i++) {
       var num = deliveredNums[i];
       var a = (r.L || {})[num];
       if (!a) continue;
-      var total = Number(a[10]), right = Number(a[9]);
-      if (total >= 2 && (right / total) < 0.5) return true;
-      if (a[3]) {
+      var total = Number(a[10]), right = Number(a[9]), hit = false;
+      if (total >= 2 && (right / total) < 0.5) hit = true;
+      if (!hit && a[3]) {
         var ex = exitRightMap[num];
         var rc = ex ? rightCountFor(String(a[3]), ex) : null;
-        if (rc && rc.total > 0 && rc.right === 0) return true;
+        if (rc && rc.total > 0 && rc.right === 0) hit = true;
       }
-      if (Number(a[0]) === 1 && (clientTmin() - Number(a[5])) > 20) return true;
+      if (!hit && Number(a[0]) === 1 && (clientTmin() - Number(a[5])) > 20) hit = true;
+      if (hit) hits.push(num);
     }
-    return false;
+    return hits;
+  }
+
+  /* One marked exit answer. Four states, and the fourth matters: "answered
+     nothing" is not the same as "wrong", and neither is the same as "has not
+     got there yet" (rule 35 - the screen must not claim what is not true). */
+  function exitGlyph(chosenStr, idx, itemId, keyItems) {
+    var ch = String(chosenStr || '').charAt(idx);
+    if (ch === '') return '<span class="lc-dash" title="Not there yet">&ndash;</span>';
+    if (ch === 'x') return '<span class="lc-skip" title="Answered nothing">&#9675;</span>';
+    var key = keyItems ? keyItems[itemId] : null;
+    if (!key) return '<span class="lc-dash" title="Not there yet">&ndash;</span>';
+    return Number(ch) === Number(key.a)
+      ? '<span class="lc-yes" title="Right">&#10003;</span>'
+      : '<span class="lc-no" title="Wrong">&#10007;</span>';
+  }
+
+  function selfEvalGlyphs(a) {
+    var parts = String((a && a[4]) || '').split('|'), conf = parts[0] || '';
+    var glyphs = conf.split('').map(function (c) {
+      return c === '2' ? '<span class="lc-yes">&#10003;</span>'
+        : c === '1' ? '<span class="lc-mid">&#8776;</span>'
+        : c === '0' ? '<span class="lc-no">&#10007;</span>' : '';
+    }).join(' ');
+    return glyphs.trim() ? glyphs : '&mdash;';
+  }
+  function feltGlyph(a) {
+    var parts = String((a && a[4]) || '').split('|'), d = parts[1] || '';
+    return d === '0' ? '<span title="Easy">&#128994;</span>'
+      : d === '1' ? '<span title="Just right">&#128993;</span>'
+      : d === '2' ? '<span title="Tricky">&#128308;</span>' : '&mdash;';
+  }
+  /* The closing build-the-code puzzle rides in the lesson's detail ledger as
+     ep=1 / ep=0 (engines.js, Engines.parsons). One submission, first wins. */
+  function puzzleGlyph(a) {
+    var m = /(?:^|;)ep=([01])(?:;|$)/.exec(String((a && a[2]) || ''));
+    if (!m) return '<span class="lc-dash" title="Not sent in">&ndash;</span>';
+    return m[1] === '1'
+      ? '<span class="lc-yes" title="Right">&#10003;</span>'
+      : '<span class="lc-no" title="Not right">&#10007;</span>';
   }
 
   function renderLiveTable() {
+    var le = liveByNum[liveLessonNum];
+    Promise.all([
+      lessonFeaturesFor(le),
+      (le && le.id) ? getKeyinfo(le.id) : Promise.resolve(null)
+    ]).then(function (res) {
+      if (String(liveLessonNum) !== String(le ? le.num : '')) return;  // he changed it while we fetched
+      paintLive(le, res[0], res[1]);
+    });
+  }
+
+  function paintLive(le, feat, keyItems) {
     var rows = dashData.rows || [];
     var joined = rows.length;
-    var l1done = rows.filter(function (r) { return r.L['1'] && Number(r.L['1'][0]) === 2; }).length;
     var avgXp = joined ? Math.round(rows.reduce(function (s, r) { return s + Number(r.xp || 0); }, 0) / joined) : 0;
-    var deliveredNums = Object.keys(dashData.locks || {}).filter(function (n) { return Number(dashData.locks[n].u); })
-      .sort(function (a, b) { return Number(a) - Number(b); });
+    var delivered = deliveredNumsOf(dashData);
+    var num = String(liveLessonNum);
 
-    var head = '<tr><th>Name</th><th>Codename</th><th>XP</th><th>Baseline</th>' +
-      deliveredNums.map(function (n) { return '<th>L' + n + '</th>'; }).join('') + '</tr>';
+    /* which columns this lesson earns */
+    var exitItems = (feat.exitItems || []);
+    var showExit = exitItems.length > 0 && !!keyItems;
+    var exitUnavailable = exitItems.length > 0 && !keyItems;
+    var showPuzzle = !!feat.parsons;
+    var se = feat.selfeval;
+
+    /* the lesson's own progress counts */
+    var fin = 0, started = 0;
+    rows.forEach(function (r) {
+      var st = Number(((r.L || {})[num] || [])[0] || 0);
+      if (st === 2) fin++; else if (st === 1) started++;
+    });
+    var notStarted = joined - fin - started;
+    var anyRecord = rows.some(function (r) { return !!(r.L || {})[num]; });
+
+    /* DFM 156(c): stuck pupils are found across every delivered lesson, so
+       choosing a lesson can never hide one. */
+    var elsewhere = [];
     var body = rows.map(function (r) {
-      var stuck = isStuck(r, deliveredNums);
-      var bl = baselineDisplay(r);
-      var cells = deliveredNums.map(function (n) { return '<td>' + lessonCell(r.L[n]) + '</td>'; }).join('');
+      var hits = stuckLessonsFor(r, delivered);
+      var stuck = hits.length > 0;
+      var here = hits.indexOf(num) !== -1;
+      if (stuck && !here) elsewhere.push({ name: r.name, num: hits[0] });
+      var a = (r.L || {})[num];
+      var st = Number((a || [])[0] || 0);
+      var pillClass = st === 2 ? 'done' : st === 1 ? 'started' : 'none';
+      var pillText = st === 2 ? 'done' : st === 1 ? 'started' : 'not started';
+      var warm = (a && Number(a[10]) > 0) ? (Number(a[9]) + '/' + Number(a[10])) : '&mdash;';
+      var cells = '';
+      if (showExit) cells += exitItems.map(function (it, i) { return '<td class="lc-mark">' + exitGlyph(a && a[3], i, it.id, keyItems) + '</td>'; }).join('');
+      if (showPuzzle) cells += '<td class="lc-mark">' + puzzleGlyph(a) + '</td>';
+      if (se) cells += '<td class="lc-mark">' + selfEvalGlyphs(a) + '</td>';
+      if (se && se.difficulty) cells += '<td class="lc-mark">' + feltGlyph(a) + '</td>';
+      if (se && se.comment) {
+        var comment = String((a && a[8]) || '');
+        cells += '<td>' + (comment ? '<span class="lc-comment" title="' + App.esc(comment) + '">' + App.esc(comment) + '</span>' : '&mdash;') + '</td>';
+      }
+      var flag = stuck
+        ? ' <span class="pill flag" title="Her numbers suggest she is stuck -- worth a quiet visit.">needs you' +
+          (here ? '' : ' (' + App.esc(lessonNameFor(hits[0])) + ')') + '</span>'
+        : '';
       return '<tr' + (stuck ? ' class="is-stuck"' : '') + '>' +
         '<td><button type="button" class="modal-close" style="font-size:1rem" title="Remove this pupil from the class (her own work is untouched)" data-action="remove-pupil" data-email="' + App.esc(r.email) + '" data-name="' + App.esc(r.name) + '">&times;</button> ' +
-        App.esc(r.name) + (stuck ? ' <span class="pill flag">needs you</span>' : '') + '</td>' +
+        App.esc(r.name) + flag + '</td>' +
         '<td>' + App.esc(r.codename) + '</td>' +
         '<td>' + Number(r.xp || 0) + '</td>' +
-        '<td>' + (bl || '&mdash;') + '</td>' +
+        '<td>' + (baselineDisplay(r) || '&mdash;') + '</td>' +
+        '<td><span class="pill ' + pillClass + '">' + pillText + '</span></td>' +
+        '<td>' + warm + '</td>' +
         cells + '</tr>';
     }).join('');
 
-    var misSelect = '<option value="">-- choose a lesson --</option>' + deliveredNums.map(function (n) {
-      var le = liveByNum[n];
-      return '<option value="' + n + '"' + (n === misLessonNum ? ' selected' : '') + '>Lesson ' + n + ' -- ' + App.esc(le ? le.title : '') + '</option>';
-    }).join('');
+    var head = '<tr><th>Name</th><th>Codename</th>' +
+      '<th title="Points earned across the whole year, not just this lesson.">XP</th>' +
+      '<th>Baseline</th><th>Progress</th><th>Warm-up</th>' +
+      (showExit ? exitItems.map(function (it, i) { return '<th title="' + App.esc(String(it.stem || '')) + '">Q' + (i + 1) + '</th>'; }).join('') : '') +
+      (showPuzzle ? '<th>Build puzzle</th>' : '') +
+      (se ? '<th>How did it go?</th>' : '') +
+      (se && se.difficulty ? '<th>How it felt</th>' : '') +
+      (se && se.comment ? '<th>Private comment</th>' : '') +
+      '</tr>';
+
+    var picker = '<div class="live-pick"><label for="live-lesson-sel">Showing:</label>' +
+      '<select id="live-lesson-sel" class="staff-select">' + delivered.map(function (n) {
+        var l = liveByNum[n];
+        return '<option value="' + App.esc(n) + '"' + (n === num ? ' selected' : '') + '>' +
+          App.esc(lessonLabelFor(n)) + ' &mdash; ' + App.esc(l ? String(l.title || '') : '') + '</option>';
+      }).join('') + '</select></div>' +
+      '<p class="pl-note">Everything below is about the lesson picked here. When you open this tab it starts on ' +
+      'the newest lesson you have unlocked.</p>';
+
+    var elseStrip = elsewhere.length
+      ? '<p class="live-elsewhere">Needs you, from other lessons: ' + elsewhere.map(function (e) {
+          return App.esc(e.name) + ' (' + App.esc(lessonNameFor(e.num)) + ')';
+        }).join(', ') + '</p>'
+      : '';
 
     var html =
       '<div class="staff-actions" style="margin-bottom:12px">' +
         '<span class="pill none">' + joined + ' joined</span>' +
-        '<span class="pill none">' + l1done + ' finished Lesson 1</span>' +
         '<span class="pill none">' + avgXp + ' avg XP</span>' +
         '<button type="button" class="ghost-btn" data-action="live-refresh">Refresh</button>' +
-        '<button type="button" class="ghost-btn" data-action="live-csv">Copy CSV</button>' +
+        '<button type="button" class="ghost-btn" data-action="live-csv" title="Copies every pupil and every delivered lesson &mdash; the whole marksheet, not just the lesson on screen.">Copy CSV</button>' +
       '</div>' +
+      picker +
       '<div id="pair-lens"></div>' +
       '<div id="tourney-slot"></div>' +
       '<div id="gallery-lens"></div>' +
-      '<div class="dash-scroll"><table class="dash-table">' + head + (body || '<tr><td colspan="99">No pupils have joined this class yet.</td></tr>') + '</table></div>' +
-      '<h3 style="margin-top:20px">Misconception patterns</h3>' +
-      '<select id="live-mis-select" class="staff-select">' + misSelect + '</select>' +
+      '<h3 style="margin-top:18px">' + (le ? lessonHeadingFor(le) : 'Lesson ' + App.esc(num)) + '</h3>' +
+      '<div class="staff-actions" style="margin-bottom:10px">' +
+        '<span class="pill none">' + fin + ' of ' + joined + ' finished</span>' +
+        '<span class="pill none">' + started + ' started</span>' +
+        '<span class="pill none">' + notStarted + ' not started</span>' +
+      '</div>' +
+      elseStrip +
+      (joined && !anyRecord ? '<p class="pl-note">No pupil has started this lesson yet.</p>' : '') +
+      (exitUnavailable ? '<p class="pl-note">The exit-check answers could not be loaded just now. Press Refresh to try again.</p>' : '') +
+      '<div class="dash-scroll"><table class="dash-table">' + head +
+        (body || '<tr><td colspan="99">No pupils have joined this class yet.</td></tr>') + '</table></div>' +
+      '<p class="pl-note">Your own runs of a lesson never appear in this table &mdash; it lists pupils only.</p>' +
+      liveLegendHtml(feat, showExit, showPuzzle) +
+      '<h3 style="margin-top:20px">Misconception patterns &mdash; ' +
+        (isSideQuestNum(num) ? 'the side quest' : 'Lesson ' + App.esc(num)) + '</h3>' +
       '<div id="live-mis-body"></div>' +
       '<p class="staff-status" id="live-status"></p>';
     setPane(html);
-    if (misLessonNum && liveByNum[misLessonNum]) loadMisconceptions(liveByNum[misLessonNum]);
-    initPairLens(deliveredNums);
-    initTourneySlot(deliveredNums);
-    initGalleryLens(deliveredNums);
+    if (le) loadMisconceptions(le);
+    initPairLens(le, feat);
+    initTourneySlot(le, feat);
+    initGalleryLens(le, feat);
+  }
+
+  /* DFM 156(c) / rule 149's family: a symbol a teacher has to decode is an
+     undefined term. Every glyph on the table is named here, and the real
+     question stems and the pupil's real self-rating statements are quoted from
+     the lesson's own content - never a copy that can drift. */
+  function liveLegendHtml(feat, showExit, showPuzzle) {
+    var out = [];
+    if (showExit) {
+      out.push('<p><b>The exit check</b> is the set of short marked questions at the end of the lesson. ' +
+        'In the Q columns: <span class="lc-yes">&#10003;</span> right &middot; <span class="lc-no">&#10007;</span> wrong &middot; ' +
+        '<span class="lc-skip">&#9675;</span> answered nothing &middot; <span class="lc-dash">&ndash;</span> not there yet. ' +
+        'What each question asked:</p>' +
+        '<ul class="live-legend-list">' + feat.exitItems.map(function (it, i) {
+          return '<li><b>Q' + (i + 1) + '</b> &mdash; ' + App.esc(String(it.stem || '')) + '</li>';
+        }).join('') + '</ul>');
+    }
+    if (showPuzzle) {
+      out.push('<p>The <b>Build puzzle</b> column is the closing rebuild-the-code puzzle (' +
+        App.esc(feat.parsons.title) + '): <span class="lc-yes">&#10003;</span> her build was right &middot; ' +
+        '<span class="lc-no">&#10007;</span> not right &middot; <span class="lc-dash">&ndash;</span> not sent in.</p>');
+    }
+    if (feat.selfeval) {
+      out.push('<p><b>How did it go?</b> is the pupil&rsquo;s own rating of herself, not a mark: ' +
+        '<span class="lc-yes">&#10003;</span> I can &middot; <span class="lc-mid">&#8776;</span> Getting there &middot; ' +
+        '<span class="lc-no">&#10007;</span> Not yet &mdash; one mark for each statement below' +
+        (feat.selfeval.difficulty ? ' &mdash; then how the hour felt: &#128994; Easy &middot; &#128993; Just right &middot; &#128308; Tricky' : '') +
+        '.</p>' +
+        '<ul class="live-legend-list">' + feat.selfeval.statements.map(function (s, i) {
+          return '<li><b>Statement ' + (i + 1) + '</b> &mdash; ' + App.esc(s) + '</li>';
+        }).join('') + '</ul>');
+      if (feat.selfeval.comment) {
+        out.push('<p>The <b>Private comment</b> column is what she typed in the box that promises her words go to ' +
+          'you and nobody else. Hover over a clipped comment to read all of it.</p>');
+      }
+    }
+    return out.length ? '<div class="live-legend">' + out.join('') + '</div>' : '';
   }
 
   /* ============================================================
@@ -8376,34 +8630,16 @@ window.OLS_TRANSPORT = {
      The REVEAL button flips the class's existing team-reveal flag (one source
      of truth), so pupil consoles flip to team colours at the same moment.
      ============================================================ */
-  function tourneyInfoFor(le) {
-    var id = String(le.id);
-    if (!tourneyLessonCache[id]) {
-      tourneyLessonCache[id] = App.fetchContent(le.file).then(function (lesson) {
-        var ch = (lesson.chunks || []).filter(function (c) { return c.engine === 'tournament'; })[0];
-        return ch ? { title: String((ch.config && ch.config.title) || ch.title || 'Tournament') } : null;
-      }).catch(function () { return null; });
-    }
-    return tourneyLessonCache[id];
-  }
-
-  function initTourneySlot(deliveredNums) {
+  /* DFM 156(b), his words: "Lesson 2 doesn't need to see the tournament panel".
+     The row now belongs to the lesson on screen and nothing else. */
+  function initTourneySlot(le, feat) {
     var slot = q('#tourney-slot');
-    if (!slot) return;
-    var candidates = deliveredNums.map(function (n) { return liveByNum[n]; }).filter(Boolean);
-    Promise.all(candidates.map(tourneyInfoFor)).then(function (infos) {
-      if (!q('#tourney-slot')) return;
-      var rows = [];
-      infos.forEach(function (inf, i) { if (inf) rows.push({ le: candidates[i], title: inf.title }); });
-      if (!rows.length) return;
-      slot.innerHTML = rows.map(function (row) {
-        return '<div class="pair-lens-box" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
-          '<h3 style="margin:0">&#127942; ' + App.esc(row.title) + ' &mdash; Lesson ' + App.esc(String(row.le.num)) + '</h3>' +
-          '<span class="pl-note" style="margin:0">hidden teams &middot; projector reveal</span>' +
-          '<button type="button" class="primary-btn" style="margin-left:auto" data-action="tourney-open" data-lesson="' + App.esc(String(row.le.id)) + '">Tournament view</button>' +
-          '</div>';
-      }).join('');
-    });
+    if (!slot || !le || !feat || !feat.tournament) return;
+    slot.innerHTML = '<div class="pair-lens-box" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
+      '<h3 style="margin:0">&#127942; ' + App.esc(feat.tournament.title) + ' &mdash; ' + App.esc(lessonLabelFor(le.num)) + '</h3>' +
+      '<span class="pl-note" style="margin:0">hidden teams &middot; projector reveal</span>' +
+      '<button type="button" class="primary-btn" style="margin-left:auto" data-action="tourney-open" data-lesson="' + App.esc(String(le.id)) + '">Tournament view</button>' +
+      '</div>';
   }
 
 
@@ -8412,43 +8648,21 @@ window.OLS_TRANSPORT = {
      live marquee + every signed review with REAL names, and a one-tap Remove:
      a removed review vanishes from the maker's screen on their next ~4s poll.
      Removed reviews stay listed struck-through (audit trail, rm flag). */
-  function galleryInfoFor(le) {
-    var id = String(le.id);
-    if (!galleryLessonCache[id]) {
-      galleryLessonCache[id] = App.fetchContent(le.file).then(function (lesson) {
-        var ch = (lesson.chunks || []).filter(function (c) { return c.engine === 'gallery'; })[0];
-        return ch ? { title: String(ch.title || 'Press Night') } : null;
-      }).catch(function () { return null; });
-    }
-    return galleryLessonCache[id];
-  }
-
-  function initGalleryLens(deliveredNums) {
+  function initGalleryLens(le, feat) {
     var slot = q('#gallery-lens');
-    if (!slot) return;
-    var candidates = deliveredNums.map(function (n) { return liveByNum[n]; }).filter(Boolean);
-    Promise.all(candidates.map(galleryInfoFor)).then(function (infos) {
-      if (!q('#gallery-lens')) return;
-      var rows = [];
-      infos.forEach(function (inf, i) { if (inf) rows.push({ le: candidates[i], title: inf.title }); });
-      if (!rows.length) return;
-      if (!galleryLensLesson || !rows.some(function (r) { return String(r.le.id) === galleryLensLesson; })) {
-        galleryLensLesson = String(rows[rows.length - 1].le.id);
-      }
-      var sel = rows.map(function (r) {
-        return '<option value="' + App.esc(String(r.le.id)) + '"' + (String(r.le.id) === galleryLensLesson ? ' selected' : '') + '>' +
-          App.esc(r.title) + ' &mdash; Lesson ' + App.esc(String(r.le.num)) + '</option>';
-      }).join('');
-      slot.innerHTML = '<div class="pair-lens-box">' +
-        '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
-        '<h3 style="margin:0">&#127914; Press Night</h3>' +
-        (rows.length > 1 ? '<select id="gallery-lesson-sel" class="staff-select" style="margin:0;max-width:280px">' + sel + '</select>'
-          : '<span class="pl-note" style="margin:0">' + App.esc(rows[0].title) + ' &mdash; Lesson ' + App.esc(String(rows[0].le.num)) + '</span>') +
-        '<span class="pl-note gal-lens-stat" style="margin:0 0 0 auto"></span></div>' +
-        '<div id="gallery-lens-body">' + busyHtml('Raising the marquee') + '</div></div>';
-      galleryLensTick();
-      if (!galleryLensTimer) galleryLensTimer = setInterval(galleryLensTick, 5000);
-    });
+    if (!slot || !le || !feat || !feat.gallery) {
+      if (galleryLensTimer) { clearInterval(galleryLensTimer); galleryLensTimer = null; }
+      return;
+    }
+    galleryLensLesson = String(le.id);
+    slot.innerHTML = '<div class="pair-lens-box">' +
+      '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
+      '<h3 style="margin:0">&#127914; ' + App.esc(feat.gallery.title) + ' &mdash; ' + App.esc(lessonLabelFor(le.num)) + '</h3>' +
+      '<span class="pl-note gal-lens-stat" style="margin:0 0 0 auto"></span></div>' +
+      '<div id="gallery-lens-body">' + busyHtml('Raising the marquee') + '</div></div>';
+    galleryLensTick();
+    if (galleryLensTimer) clearInterval(galleryLensTimer);
+    galleryLensTimer = setInterval(galleryLensTick, 5000);
   }
 
   function galleryLensTick() {
@@ -8710,45 +8924,29 @@ window.OLS_TRANSPORT = {
     document.head.appendChild(st);
   }
 
-  function pairedInfoFor(le) {
-    var id = String(le.id);
-    if (!pairedLessonCache[id]) {
-      pairedLessonCache[id] = App.fetchContent(le.file).then(function (lesson) {
-        return (lesson.chunks || []).some(function (ch) { return ch.config && ch.config.paired; }) || null;
-      }).catch(function () { return null; });
-    }
-    return pairedLessonCache[id];
-  }
-
-  function initPairLens(deliveredNums) {
+  /* DFM 156(b), his words: "Lesson 2 doesn't need to see the pairing panel."
+     The lens now belongs to the lesson on screen, and only appears when that
+     lesson actually has a paired stage. */
+  function initPairLens(le, feat) {
     var slot = q('#pair-lens');
-    if (!slot) return;
+    if (!slot || !le || !feat || !feat.paired) {
+      if (pairLensTimer) { clearInterval(pairLensTimer); pairLensTimer = null; }
+      return;
+    }
     injectPairStyles();
-    var candidates = deliveredNums.map(function (n) { return liveByNum[n]; }).filter(Boolean);
-    Promise.all(candidates.map(pairedInfoFor)).then(function (infos) {
-      if (!q('#pair-lens')) return;
-      var paired = [];
-      infos.forEach(function (inf, i) { if (inf) paired.push(candidates[i]); });
-      if (!paired.length) return; // no delivered lesson has a paired stage
-      var ids = paired.map(function (le) { return String(le.id); });
-      if (ids.indexOf(pairLensLesson) === -1) pairLensLesson = ids[ids.length - 1];
-      var sel = paired.map(function (le) {
-        return '<option value="' + App.esc(String(le.id)) + '"' + (String(le.id) === pairLensLesson ? ' selected' : '') + '>Lesson ' + App.esc(String(le.num)) + ' -- ' + App.esc(String(le.title || '')) + '</option>';
-      }).join('');
-      slot.innerHTML =
-        '<div class="pair-lens-box">' +
-        '<div class="pl-head"><h3>Pairing &mdash; live</h3>' +
-        '<select id="pair-lesson-sel" class="staff-select" style="margin:0;max-width:280px">' + sel + '</select>' +
-        '<label class="pl-mute"><input type="checkbox" id="pair-mute"' + (chimeMuted ? ' checked' : '') + '> mute chime</label></div>' +
-        '<div id="pair-lens-body">' + busyHtml('Listening to the room') + '</div></div>';
-      pairAlerted = {};
+    pairLensLesson = String(le.id);
+    slot.innerHTML =
+      '<div class="pair-lens-box">' +
+      '<div class="pl-head"><h3>Pairing &mdash; live (' + App.esc(lessonLabelFor(le.num)) + ')</h3>' +
+      '<label class="pl-mute"><input type="checkbox" id="pair-mute"' + (chimeMuted ? ' checked' : '') + '> mute chime</label></div>' +
+      '<div id="pair-lens-body">' + busyHtml('Listening to the room') + '</div></div>';
+    pairAlerted = {};
+    pairLensTick();
+    if (pairLensTimer) clearInterval(pairLensTimer);
+    pairLensTimer = setInterval(function () {
+      if (!document.getElementById('pair-lens-body')) { clearInterval(pairLensTimer); pairLensTimer = null; return; }
       pairLensTick();
-      if (pairLensTimer) clearInterval(pairLensTimer);
-      pairLensTimer = setInterval(function () {
-        if (!document.getElementById('pair-lens-body')) { clearInterval(pairLensTimer); pairLensTimer = null; return; }
-        pairLensTick();
-      }, 5000);
-    });
+    }, 5000);
   }
 
   function pairLensTick() {
@@ -9552,35 +9750,50 @@ window.OLS_TRANSPORT = {
       'flagged absent from a lesson that never actually ran.</p>' +
 
       '<h4>Live</h4><p>The during-the-hour view &mdash; this is the tab to keep open while your class ' +
-      'works. The table has one row per pupil. <b>XP</b> is the points pupils earn for finishing the ' +
-      'sections of each lesson (the badges); it is private &mdash; nobody is ranked unless you ' +
-      'deliberately choose that in Options. <b>Baseline</b> is the pupil&rsquo;s September Licence Exam ' +
-      'score, out of sixteen, kept so you can show progress by June. Then there is a column for each ' +
-      'delivered lesson, showing whether the pupil has not started, started or finished it, their score on ' +
-      'the recap questions (the quick retrieval quiz that later lessons open with), and their own ' +
-      'end-of-lesson answers. A red <b>needs you</b> flag appears beside any pupil whose numbers suggest ' +
-      'they are stuck &mdash; worth a quiet visit. <b>Refresh</b> re-reads the table; it does not update by ' +
-      'itself. <b>Copy CSV</b> puts the whole table on your clipboard, one row per pupil &mdash; paste it ' +
-      'straight into Excel or Google Sheets and it becomes your marksheet.</p>' +
-      '<p>Those end-of-lesson answers deserve a special mention, because they are one of the most useful ' +
-      'things the platform collects. Every pupil finishes every lesson with a short <b>How did it go?</b> ' +
-      'screen &mdash; three I-can self-ratings, an easy/just-right/tricky button, and a private comment ' +
-      'box. All of it lands in this table: the ratings and the difficulty appear under the lesson&rsquo;s ' +
-      'column, and the comment comes to you and nobody else. The quiet pupils often say there what they ' +
-      'would not say in the room. Hover over a clipped comment to read all of it, and Copy CSV keeps every ' +
-      'comment for your records.</p>' +
-      '<p>While a paired activity is running, a <b>Pairing &mdash; live</b> panel appears above the table ' +
-      'and updates itself every few seconds. It shows who is still waiting for a partner (<b>Solo run</b> ' +
-      'beside a name releases that pupil to work alone), who has been paired with whom &mdash; codenames ' +
-      'first, real names in brackets &mdash; how many messages each pair has sent, and <b>Channel</b>, ' +
-      'which opens that pair&rsquo;s chat so you can read every message. If the class has an odd number, ' +
-      'the platform holds the last three pupils and puts them in one Vault together, so nobody is left ' +
-      'partnerless by accident. <b>Match everyone waiting now</b> pairs the whole queue at once, and ' +
-      '<b>Reset pairing</b> &mdash; which asks twice &mdash; releases every pair to finish alone; released ' +
-      'pairs cannot be re-paired.</p>' +
-      '<p><b>Misconception patterns</b>, at the bottom of the tab: pick a delivered lesson and you will ' +
-      'see, for each closing question, which wrong answers the class actually chose &mdash; each one ' +
-      'labelled with the misunderstanding it usually signals, so you know what to re-teach and to whom.</p>' +
+      'works. It shows <b>one lesson at a time</b>: pick which one with the <b>Showing</b> menu at the ' +
+      'top, and it opens on the newest lesson you have unlocked, which on a teaching day is the lesson in ' +
+      'front of you. Everything on the tab &mdash; the panels, the table, the misconception bars at the ' +
+      'bottom &mdash; belongs to the lesson named beside Showing.</p>' +
+      '<p>The table has one row per pupil. <b>XP</b> is the points a pupil earns for finishing the ' +
+      'sections of each lesson (the badges), added up across the whole year; it is private &mdash; nobody ' +
+      'is ranked unless you deliberately choose that in Options. <b>Baseline</b> is her September Licence ' +
+      'Exam score, out of sixteen, kept so you can show progress by June. <b>Progress</b> says whether she ' +
+      'has not started, started or finished the lesson you are viewing. <b>Warm-up</b> is her score on the ' +
+      'quick recap questions this lesson opens with &mdash; they ask about earlier lessons, so a low score ' +
+      'here usually means last fortnight&rsquo;s idea needs another airing. The <b>Q columns</b> are her ' +
+      'marked answers to this lesson&rsquo;s exit check, question by question &mdash; the legend under the ' +
+      'table quotes what each question asked, and the key beside it explains every symbol, including the ' +
+      'difference between a wrong answer and no answer at all. Lessons that close with a build-the-code ' +
+      'puzzle add a <b>Build puzzle</b> column beside the questions &mdash; one tick or cross for whether ' +
+      'the pupil&rsquo;s rebuilt program was right.</p>' +
+      '<p>The <b>How did it go?</b> columns are different: they are the pupil&rsquo;s own words, not ' +
+      'marks. At the end of every lesson she rates herself against three I-can statements, says whether ' +
+      'the hour felt easy, just right or tricky, and can leave you a private comment, which comes to you ' +
+      'and nobody else. The quiet pupils often say there what they would not say in the room. Hover over ' +
+      'a clipped comment to read all of it, and <b>Copy CSV</b> keeps every comment for your records.</p>' +
+      '<p>A red <b>needs you</b> flag appears beside any pupil whose numbers suggest she is stuck &mdash; ' +
+      'worth a quiet visit. Stuck-spotting watches every delivered lesson, not just the one on screen: if ' +
+      'a pupil is struggling in a lesson you are not currently viewing, a line above the table names her ' +
+      'and that lesson, so filtering can never hide a pupil who needs help. <b>Refresh</b> re-reads the ' +
+      'table; it does not update by itself. <b>Copy CSV</b> copies every pupil and every delivered lesson ' +
+      '&mdash; the whole marksheet, not just the lesson on screen &mdash; one row per pupil, ready to ' +
+      'paste into Excel or Google Sheets. Your own practice runs of a lesson never appear in the table: it ' +
+      'lists pupils only.</p>' +
+      '<p>Some lessons grow an extra panel above the table, and only the lessons that use them: while a ' +
+      '<b>paired</b> activity is running, the Pairing panel appears and updates itself every few seconds ' +
+      '&mdash; who is waiting for a partner (<b>Solo run</b> releases a waiting pupil to work alone), who ' +
+      'is paired with whom (codenames first, real names in brackets), how many messages each pair has ' +
+      'sent, and <b>Channel</b>, which opens the pair&rsquo;s chat so you can read every message. If the ' +
+      'class has an odd number, the platform holds the last three pupils and puts them in one Vault ' +
+      'together, so nobody is left partnerless by accident. <b>Match everyone waiting now</b> pairs the ' +
+      'whole queue at once, and <b>Reset pairing</b> &mdash; which asks twice &mdash; releases every pair ' +
+      'to finish alone; released pairs cannot be re-paired. A lesson with a class tournament shows its ' +
+      '<b>Tournament view</b> launch row here, and Lesson 5&rsquo;s Press Night gallery brings its own ' +
+      'review panel.</p>' +
+      '<p><b>Misconception patterns</b>, at the bottom, follows the same Showing menu: for each exit-check ' +
+      'question of the lesson you are viewing, it shows which wrong answers the class actually chose ' +
+      '&mdash; each one labelled with the misunderstanding it usually signals, so you know what to ' +
+      're-teach and to whom.</p>' +
 
       '<h4>Absence</h4><p>A short list that is usually empty &mdash; and that is the good news it is ' +
       'designed to give you. A pupil appears here when a delivered lesson still has no meaningful work ' +
@@ -9735,7 +9948,7 @@ window.OLS_TRANSPORT = {
       case 'switch-tab': curTab = btn.getAttribute('data-tab'); renderPanel(); break;
       case 'copy-link': App.copyText(App.classLink(btn.getAttribute('data-class'))); break;
       case 'show-qr': showQr(btn.getAttribute('data-class')); break;
-      case 'select-class': cls = btn.getAttribute('data-class'); year = btn.getAttribute('data-year') || year; renderClassesFromCache(); break;
+      case 'select-class': cls = btn.getAttribute('data-class'); year = btn.getAttribute('data-year') || year; liveLessonNum = ''; renderClassesFromCache(); break;
       case 'delete-class': deleteClass(btn); break;
       case 'add-class': addClass(); break;
       case 'toggle-lock': toggleLock(btn); break;
@@ -9772,12 +9985,12 @@ window.OLS_TRANSPORT = {
     touch();
     var t = e.target;
     if (t.id === 'cls-showall') { showAllTeachers = t.checked; renderClassesFromCache(); return; }
-    if (t.id === 'live-mis-select') { misLessonNum = t.value; if (misLessonNum && liveByNum[misLessonNum]) loadMisconceptions(liveByNum[misLessonNum]); return; }
+    /* one picker, whole tab (DFM 156a): re-paint from the dashboard we already
+       hold - changing the lesson he is looking at must not cost a round trip */
+    if (t.id === 'live-lesson-sel') { liveLessonNum = t.value; renderLiveTable(); return; }
     if (t.name === 'lb-mode') { var pub = q('#opt-public'); if (pub) pub.hidden = (t.value !== 'public'); return; }
     if (t.id === 'team-reveal') { teamReveal(t); return; }
     if (t.id === 'cover-pick') { coverPick = t.value; renderCoverPane(manifestCache[year]); return; }
-    if (t.id === 'pair-lesson-sel') { pairLensLesson = t.value; pairAlerted = {}; pairLensTick(); return; }
-    if (t.id === 'gallery-lesson-sel') { galleryLensLesson = t.value; galleryLensTick(); return; }
     if (t.id === 'pair-mute') {
       chimeMuted = t.checked;
       try { localStorage.setItem('ks3dt-staff-mute', chimeMuted ? '1' : '0'); } catch (e2) {}
@@ -9818,6 +10031,9 @@ window.OLS_TRANSPORT = {
     open: function () {
       App.openModal('staff-modal');
       wireOnce();
+      /* a fresh open re-derives which lesson the Live tab shows, so opening the
+         panel during a lesson always lands on that lesson (DFM 156a) */
+      liveLessonNum = '';
       if (pass) { touch(); renderPanel(); return; }
       renderGate(lockMsg);
       lockMsg = '';
