@@ -985,6 +985,38 @@
       : '<span class="lc-no" title="Not right">&#10007;</span>';
   }
 
+  /* The class strip and the picker, which stay put while the lesson underneath
+     them is loading. ONE source for both the loading screen and the finished
+     one - two copies of this markup would drift apart (rule 144's family). */
+  function liveHeaderHtml(delivered, num) {
+    var rows = dashData.rows || [];
+    var joined = rows.length;
+    var avgXp = joined ? Math.round(rows.reduce(function (s, r) { return s + Number(r.xp || 0); }, 0) / joined) : 0;
+    return '<div class="staff-actions" style="margin-bottom:12px">' +
+        '<span class="pill none">' + joined + ' joined</span>' +
+        '<span class="pill none">' + avgXp + ' avg XP</span>' +
+        '<button type="button" class="ghost-btn" data-action="live-refresh">Refresh</button>' +
+        '<button type="button" class="ghost-btn" data-action="live-csv" title="Copies every pupil and every delivered lesson &mdash; the whole marksheet, not just the lesson on screen.">Copy CSV</button>' +
+      '</div>' +
+      '<div class="live-pick"><label for="live-lesson-sel">Showing:</label>' +
+      '<select id="live-lesson-sel" class="staff-select">' + delivered.map(function (n) {
+        var l = liveByNum[n];
+        return '<option value="' + App.esc(n) + '"' + (String(n) === String(num) ? ' selected' : '') + '>' +
+          App.esc(lessonLabelFor(n)) + ' &mdash; ' + App.esc(l ? String(l.title || '') : '') + '</option>';
+      }).join('') + '</select></div>' +
+      '<p class="pl-note">Everything below is about the lesson picked here. When you open this tab it starts on ' +
+      'the newest lesson you have unlocked.</p>';
+  }
+
+  /* DAMIEN, 8 Aug 2026, verifying the redesign live: "it would have been good to
+     see an indication that something was happening because it took few seconds
+     before it changed (this delay only happened the first time I switched)".
+     He is right, and the cause is exactly why it was only the first time: a
+     lesson's content and its answer key are fetched once and then cached, so the
+     first visit to a lesson pays a real round trip and every later one is
+     instant. Rule 42 - no silent waits - so the picker now stays on screen with
+     the lesson NAMED as it loads, and only the part that is actually changing
+     goes blank. */
   function renderLiveTable() {
     var le = liveByNum[liveLessonNum];
     Promise.all([
@@ -994,6 +1026,12 @@
       if (String(liveLessonNum) !== String(le ? le.num : '')) return;  // he changed it while we fetched
       paintLive(le, res[0], res[1]);
     });
+  }
+
+  function paintLiveLoading(num) {
+    if (!dashData) return;
+    setPane(liveHeaderHtml(deliveredNumsOf(dashData), num) +
+      busyHtml('Loading ' + lessonNameFor(num)));
   }
 
   function paintLive(le, feat, keyItems) {
@@ -1066,15 +1104,6 @@
       (se && se.comment ? '<th>Private comment</th>' : '') +
       '</tr>';
 
-    var picker = '<div class="live-pick"><label for="live-lesson-sel">Showing:</label>' +
-      '<select id="live-lesson-sel" class="staff-select">' + delivered.map(function (n) {
-        var l = liveByNum[n];
-        return '<option value="' + App.esc(n) + '"' + (n === num ? ' selected' : '') + '>' +
-          App.esc(lessonLabelFor(n)) + ' &mdash; ' + App.esc(l ? String(l.title || '') : '') + '</option>';
-      }).join('') + '</select></div>' +
-      '<p class="pl-note">Everything below is about the lesson picked here. When you open this tab it starts on ' +
-      'the newest lesson you have unlocked.</p>';
-
     var elseStrip = elsewhere.length
       ? '<p class="live-elsewhere">Needs you, from other lessons: ' + elsewhere.map(function (e) {
           return App.esc(e.name) + ' (' + App.esc(lessonNameFor(e.num)) + ')';
@@ -1082,13 +1111,7 @@
       : '';
 
     var html =
-      '<div class="staff-actions" style="margin-bottom:12px">' +
-        '<span class="pill none">' + joined + ' joined</span>' +
-        '<span class="pill none">' + avgXp + ' avg XP</span>' +
-        '<button type="button" class="ghost-btn" data-action="live-refresh">Refresh</button>' +
-        '<button type="button" class="ghost-btn" data-action="live-csv" title="Copies every pupil and every delivered lesson &mdash; the whole marksheet, not just the lesson on screen.">Copy CSV</button>' +
-      '</div>' +
-      picker +
+      liveHeaderHtml(delivered, num) +
       '<div id="pair-lens"></div>' +
       '<div id="tourney-slot"></div>' +
       '<div id="gallery-lens"></div>' +
@@ -2519,7 +2542,7 @@
     if (t.id === 'cls-showall') { showAllTeachers = t.checked; renderClassesFromCache(); return; }
     /* one picker, whole tab (DFM 156a): re-paint from the dashboard we already
        hold - changing the lesson he is looking at must not cost a round trip */
-    if (t.id === 'live-lesson-sel') { liveLessonNum = t.value; renderLiveTable(); return; }
+    if (t.id === 'live-lesson-sel') { liveLessonNum = t.value; paintLiveLoading(liveLessonNum); renderLiveTable(); return; }
     if (t.name === 'lb-mode') { var pub = q('#opt-public'); if (pub) pub.hidden = (t.value !== 'public'); return; }
     if (t.id === 'team-reveal') { teamReveal(t); return; }
     if (t.id === 'cover-pick') { coverPick = t.value; renderCoverPane(manifestCache[year]); return; }
