@@ -2071,3 +2071,5 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   background: var(--field); border-left: 4px solid var(--gold);
   font-size: 0.95rem; line-height: 1.55;
 }
+.step-linkrow { margin: 14px 0 4px; }
+.step-link { display: inline-block; text-decoration: none; font-weight: 700; }

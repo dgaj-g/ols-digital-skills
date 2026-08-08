@@ -709,6 +709,12 @@
             ? '<figure class="step-fig"><img class="step-img" src="' + esc(asset(st.img)) + '" alt="' + esc(st.imgAlt || '') + '">' +
               (st.imgCap ? '<figcaption>' + esc(st.imgCap) + '</figcaption>' : '') + '</figure>'
             : '') +
+          /* a downloadable file the step needs her to fetch (the blank program
+             that clears her micro:bit for the next class, 8 Aug 2026) */
+          (st.link && st.link.href
+            ? '<p class="step-linkrow"><a class="ghost-btn step-link" href="' + esc(asset(st.link.href)) +
+              '" target="_blank" rel="noopener" download>' + esc(st.link.label || 'Download') + ' &#8595;</a></p>'
+            : '') +
           (st.note ? '<p class="step-note">' + esc(st.note) + '</p>' : '') +
           (st.clip && st.clip.src ? '<p class="step-cliprow"><button class="ghost-btn step-clip-btn" type="button">&#127909; ' + esc(st.clip.label || 'Show me how') + '</button></p>' : '') +
           '<div class="step-action"></div></div>');
