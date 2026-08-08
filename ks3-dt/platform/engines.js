@@ -1412,6 +1412,11 @@
     }
   };
 
+  /* The private comment's one true length. The servers slice to this same
+     number (Code.gs.template / dev-server.js); qa-comment-limit.js asserts all
+     three agree, because a limit that lives in two places is a contract. */
+  var SE_COMMENT_MAX = 60;
+
   Engines.selfeval = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
@@ -1421,7 +1426,14 @@
           '<button class="se-chip" data-d="0" type="button">&#128994; Easy</button>' +
           '<button class="se-chip" data-d="1" type="button">&#128993; Just right</button>' +
           '<button class="se-chip" data-d="2" type="button">&#128308; Tricky</button></div></div>' : '') +
-        (cfg.comment ? '<textarea class="se-comment" maxlength="80" placeholder="Anything you want your teacher to know? (optional)"></textarea>' : '') +
+        /* DAMIEN, 8 Aug 2026 (DFM 157a). This box used to accept 80 characters
+           while BOTH servers stored only the first 60 (slice(0, 60)) - so a
+           pupil who filled it silently lost a fifth of what she wrote, on the
+           one screen that promises her words reach her teacher. The box now
+           tells the truth, and the countdown means she can see the limit
+           coming instead of meeting it invisibly. */
+        (cfg.comment ? '<textarea class="se-comment" maxlength="' + SE_COMMENT_MAX + '" placeholder="Anything you want your teacher to know? (optional)"></textarea>' +
+          '<p class="se-count" aria-live="polite"></p>' : '') +
         '<button class="primary-btn se-submit" type="button" disabled>Send &amp; finish</button></div>');
       host.appendChild(c);
       var rows = c.querySelector('.se-rows');
@@ -1432,6 +1444,22 @@
           '<button class="se-chip" data-v="1" type="button">&#8776; Getting there</button>' +
           '<button class="se-chip" data-v="0" type="button">&#10007; Not yet</button></div></div>');
       });
+      var commentBox = c.querySelector('.se-comment');
+      if (commentBox) {
+        var countEl = c.querySelector('.se-count');
+        var showCount = function () {
+          var left = SE_COMMENT_MAX - commentBox.value.length;
+          if (left <= 0) {
+            countEl.textContent = 'The box is full — 0 characters left.';
+            countEl.classList.add('is-full');
+          } else {
+            countEl.textContent = left + ' characters left';
+            countEl.classList.remove('is-full');
+          }
+        };
+        commentBox.addEventListener('input', showCount);
+        showCount();
+      }
       c.addEventListener('click', function (e) {
         var chip = e.target.closest('.se-chip');
         if (!chip) return;

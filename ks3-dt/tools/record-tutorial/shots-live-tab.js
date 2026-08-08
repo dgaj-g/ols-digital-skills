@@ -13,6 +13,22 @@ const BASE = 'http://localhost:8096/ks3-dt/platform/index.html?class=QA-Live';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 fs.mkdirSync(OUT, { recursive: true });
 
+/* the baseline answer strings, derived from the real key so the Licence Exam
+   panel photographs real arithmetic rather than invented numbers */
+const CONTENT = '/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/content-src/j1/lessons';
+const L1 = JSON.parse(fs.readFileSync(path.join(CONTENT, 'j1-01.json'), 'utf8'));
+const L1_EXAM = (L1.chunks || []).filter(c => c.engine === 'diagnostic')[0].config.items;
+const L1_KEYS = JSON.parse(fs.readFileSync(path.join(__dirname, '../../content/dev-keys.json'), 'utf8'))['j1/lessons/j1-01'];
+function baselineString(wrongQs, blankQs) {
+  return L1_EXAM.map((it, i) => {
+    const q = i + 1;
+    if (blankQs.indexOf(q) !== -1) return 'x';
+    const a = Number(L1_KEYS[it.id].a);
+    return wrongQs.indexOf(q) !== -1 ? String(a === 0 ? 1 : 0) : String(a);
+  }).join('');
+}
+const BL = { anyaBl: '14/16|' + baselineString([3, 7], []), orlaBl: '15/16|' + baselineString([], [2]) };
+
 function stageInPage(opts) {
   const CLS = 'QA-Live', STAFF = 'teacher@demo';
   const EPOCH = 1767225600000;
@@ -34,8 +50,12 @@ function stageInPage(opts) {
   };
   function rec(name, cn, xp, L) { return { n: name, cn: cn, j: weekAgo, xp: xp, g: '', L: L }; }
   s.pupils[CLS + ':anya.murphy@demo'] = rec('Anya Murphy', 'Silver Fox', 110, {
-    '1': [2, 60, 'bl=12/16|0121000000010000', '0', '222|0', tmin - 30, 46, 0, '', 7, 9],
-    '2': [2, 50, 'ep=0', '1', '222|0', tmin - 5, 40, 0, '', 6, 7]
+    '1': [2, 60, 'bl=' + opts.anyaBl, '0', '222|2', tmin - 30, 46, 0, '', 7, 9],
+    '2': [2, 50, 'ep=0', '1', '222|2', tmin - 5, 40, 0, '', 6, 7]
+  });
+  s.pupils[CLS + ':orla.devine@demo'] = rec('Orla Devine', 'Coral Tern', 40, {
+    '1': [2, 40, 'bl=' + opts.orlaBl, '1', '222|1', tmin - 30, 40, 0, '', 6, 9],
+    '2': [1, 10, '', '', '111|1', tmin - 60, 8, 0, '', 0, 0]
   });
   s.pupils[CLS + ':jarlath.gartland@demo'] = rec('Jarlath Gartland', 'Opal Heron', 96, {
     '1': [2, 46, 'bl=5/16|0121000000010000', '0', '221|1', tmin - 40, 44, 0, '', 6, 9],
@@ -56,7 +76,7 @@ async function openLive(page, opts) {
   await page.goto(BASE, { waitUntil: 'domcontentloaded' });
   await sleep(1200);
   await page.evaluate(() => localStorage.clear());
-  await page.evaluate(stageInPage, opts);
+  await page.evaluate(stageInPage, Object.assign({}, BL, opts));
   await page.reload({ waitUntil: 'domcontentloaded' });
   await sleep(2000);
   await page.evaluate(() => window.Staff.open());
@@ -118,6 +138,36 @@ const shot = (page, name) => page.locator('#staff-modal').screenshot({ path: pat
 
   await openLive(page, { l3On: true, l3Data: true });
   await shot(page, '05-lesson3-unlocked-default.png'); // the default follows the room
+
+  /* round 2 (DFM 157/159): the two flags, and the Licence Exam panel */
+  await openLive(page, { l3On: false });
+  await toTop(page);
+  await shot(page, '06-two-flags-and-count.png');      // red = the marks, amber = her own words
+  await pick(page, '1');
+  await page.evaluate(() => {
+    const h = Array.from(document.querySelectorAll('h3')).filter(x => /Licence Exam/.test(x.textContent))[0];
+    if (h) h.scrollIntoView({ block: 'start' });
+  });
+  await sleep(600);
+  await shot(page, '07-licence-exam-panel.png');       // where the class started, question by question
+
+  /* and the pupil's side of it: the comment box that now tells the truth */
+  await page.goto(BASE, { waitUntil: 'domcontentloaded' });
+  await sleep(2200);
+  await page.evaluate(async () => {
+    const lesson = await App.fetchContent('j1/lessons/j1-02.json');
+    const chunk = (lesson.chunks || []).filter(c => c.engine === 'selfeval')[0];
+    document.querySelectorAll('.card').forEach(n => n.remove());
+    const host = document.querySelector('#lesson-host') || document.body;
+    Engines.selfeval.mount(host, chunk, { next: function () {}, saveEvent: function () {}, review: false });
+    const box = document.querySelector('.se-comment');
+    box.value = 'I did not understand the bit where we flashed the code onto it';
+    box.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('.se-card').scrollIntoView({ block: 'center' });
+  });
+  await sleep(700);
+  await page.locator('.se-card').screenshot({ path: path.join(OUT, '08-pupil-comment-counter.png') });
+  console.log('  wrote 08-pupil-comment-counter.png');
 
   await browser.close();
   console.log('\nScreenshots in ' + OUT);
