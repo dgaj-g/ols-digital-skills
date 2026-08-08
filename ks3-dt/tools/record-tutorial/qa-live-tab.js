@@ -63,6 +63,25 @@ const L2_SE = chunkOf(L2, 'selfeval').config;
 const L3_EXIT = chunkOf(L3, 'exitcheck').config.items;
 const L3_SE = chunkOf(L3, 'selfeval').config;
 const L2_PARSONS = chunkOf(L2, 'parsons');
+const L1 = JSON.parse(fs.readFileSync(path.join(CONTENT, 'j1-01.json'), 'utf8'));
+const L1_EXAM = chunkOf(L1, 'diagnostic').config.items;
+const L1_SE = chunkOf(L1, 'selfeval').config;
+/* The real answer key, read from the same file the app reads, so the expected
+   "wrong question" list is derived and never hand-copied (DFM 149's lesson). */
+const DEVKEYS = JSON.parse(fs.readFileSync(path.join(ROOT, 'ks3-dt/content/dev-keys.json'), 'utf8'));
+const L1_KEYS = DEVKEYS['j1/lessons/j1-01'];
+/* Build a 16-digit baseline answer string: every question right except the ones
+   named, which are given a deliberately wrong digit (or 'x' = answered nothing). */
+function baselineString(wrongQs, blankQs) {
+  return L1_EXAM.map((it, i) => {
+    const q = i + 1;
+    if ((blankQs || []).indexOf(q) !== -1) return 'x';
+    const a = Number(L1_KEYS[it.id].a);
+    return (wrongQs.indexOf(q) !== -1) ? String(a === 0 ? 1 : 0) : String(a);
+  }).join('');
+}
+const ANYA_BL = baselineString([3, 7], []);       // 14 of 16
+const ORLA_BL = baselineString([], [2]);          // 15 of 16, Q2 answered nothing
 
 /* ============================================================
    A. SOURCE - the shapes the redesign needs, and the pre-fix controls
@@ -125,7 +144,7 @@ check(/one lesson at a time/.test(guideSlice) && /Showing/.test(guideSlice),
   'the Guide tab teaches the Showing menu');
 check(/Build puzzle/.test(guideSlice), 'and the Build puzzle column');
 check(/never appear in the table/.test(guideSlice), 'and says a teacher’s own runs are not listed');
-check(/filtering can never hide a pupil who needs help/.test(guideSlice),
+check(/choosing a lesson can never hide a pupil who needs help/.test(guideSlice),
   'and that choosing a lesson never hides a stuck pupil');
 
 /* The banned-word sweep (DFM 150) runs on RENDERED TEXT further down, not on
@@ -170,9 +189,11 @@ function stageInPage(opts) {
   };
   function rec(name, xp, L) { return { n: name, cn: name.split(' ')[0] + ' Heron', j: weekAgo, xp: xp, g: '', L: L }; }
   /* Larr: [status, xp, detail, exitChosen, selfEval, lastSeen, mins, flags, comment, recapRight, recapTotal] */
+  /* all sixteen but two right; all-ticks + Tricky is the control that a Tricky
+     dot ALONE never raises the amber voice flag (DFM 159) */
   s.pupils[CLS + ':anya.murphy@demo'] = rec('Anya Murphy', 110, {
-    '1': [2, 60, 'bl=12/16|0121000000010000', '0', '222|0', tmin - 30, 46, 0, '', 7, 9],
-    '2': [2, 50, 'ep=0', '1', '222|0', tmin - 5, 40, 0, '', 6, 7]
+    '1': [2, 60, 'bl=14/16|' + opts.anyaBl, '0', '222|2', tmin - 30, 46, 0, '', 7, 9],
+    '2': [2, 50, 'ep=0', '1', '222|2', tmin - 5, 40, 0, '', 6, 7]
   });
   s.pupils[CLS + ':jarlath.gartland@demo'] = rec('Jarlath Gartland', 96, {
     '1': [2, 46, 'bl=5/16|0121000000010000', '0', '221|1', tmin - 40, 44, 0, '', 6, 9],
@@ -184,6 +205,19 @@ function stageInPage(opts) {
     '1': [1, 20, '', '', '', tmin - 50, 12, 0, '', 1, 9]
   });
   s.pupils[CLS + ':mia.larkin@demo'] = rec('Mia Larkin', 0, {});
+  /* L1: the single-question exit check answered wrongly (one reason wording) and
+     one baseline question answered with nothing. L2: started and untouched for
+     an hour (the no-activity reason), with all-"Getting there" ratings, which
+     must NOT raise the voice flag. */
+  s.pupils[CLS + ':orla.devine@demo'] = rec('Orla Devine', 40, {
+    '1': [2, 40, 'bl=15/16|' + opts.orlaBl, '1', '222|1', tmin - 30, 40, 0, '', 6, 9],
+    '2': [1, 10, '', '', '111|1', tmin - 60, 8, 0, '', 0, 0]
+  });
+  /* every exit question wrong (the plural reason wording) with all-ticks
+     ratings: the control that a red-flagged pupil gets red ONLY */
+  s.pupils[CLS + ':sinead.boyle@demo'] = rec('Sinead Boyle', 60, {
+    '2': [2, 60, '', '01', '222|1', tmin - 8, 38, 0, '', 5, 7]
+  });
   if (opts.l3Data) {
     s.pupils[CLS + ':jarlath.gartland@demo'].L['3'] = [2, 40, '', '1x2', '2210|2', tmin - 3, 30, 0, '', 4, 6];
   }
@@ -194,7 +228,7 @@ async function openLive(page, opts) {
   await page.goto(BASE, { waitUntil: 'domcontentloaded' });
   await sleep(1200);
   await page.evaluate(() => localStorage.clear());
-  await page.evaluate(stageInPage, opts);
+  await page.evaluate(stageInPage, Object.assign({ anyaBl: ANYA_BL, orlaBl: ORLA_BL }, opts));
   await page.reload({ waitUntil: 'domcontentloaded' });
   await sleep(2000);
   await page.evaluate(() => window.Staff.open());
@@ -278,8 +312,54 @@ async function readTab(page) {
         anya: cellsFor('Anya Murphy'),
         jarlath: cellsFor('Jarlath Gartland'),
         ciara: cellsFor('Ciara Small'),
-        mia: cellsFor('Mia Larkin')
+        mia: cellsFor('Mia Larkin'),
+        orla: cellsFor('Orla Devine'),
+        sinead: cellsFor('Sinead Boyle')
       },
+      /* round 2: the flags' own explanations, read off the real attributes */
+      flagTitles: (() => {
+        const out = {};
+        ['Anya Murphy', 'Jarlath Gartland', 'Ciara Small', 'Orla Devine', 'Sinead Boyle'].forEach(n => {
+          const tr = rowFor(n); if (!tr) return;
+          const p = tr.querySelector('.pill.flag');
+          out[n] = p ? p.getAttribute('title') : null;
+        });
+        return out;
+      })(),
+      voiceTitles: (() => {
+        const out = {};
+        ['Anya Murphy', 'Jarlath Gartland', 'Ciara Small', 'Orla Devine', 'Sinead Boyle'].forEach(n => {
+          const tr = rowFor(n); if (!tr) return;
+          const p = tr.querySelector('.pill.voice');
+          out[n] = p ? p.getAttribute('title') : null;
+        });
+        return out;
+      })(),
+      voicePillCount: body.querySelectorAll('.dash-table .pill.voice').length,
+      stripTitles: Array.from(body.querySelectorAll('.live-elsewhere span')).map(s => s.getAttribute('title')),
+      refreshTitle: (body.querySelector('[data-action="live-refresh"]') || {}).title || '',
+      csvTitle: (body.querySelector('[data-action="live-csv"]') || {}).title || '',
+      baseline: (() => {
+        const h = Array.from(body.querySelectorAll('h3')).filter(x => /Licence Exam/.test(x.textContent))[0];
+        if (!h) return null;
+        /* the blocks that follow the Licence Exam heading, i.e. after the misconception ones */
+        const all = Array.from(body.querySelectorAll('.staff-row'));
+        const after = all.filter(el => h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING);
+        return {
+          blocks: after.length,
+          firstTitle: after.length ? after[0].querySelector('.staff-row-name').textContent.trim() : '',
+          text: after.map(el => el.textContent).join(' | '),
+          correctLabels: after.filter(el => /\(the correct answer\)/.test(el.textContent)).length
+        };
+      })(),
+      baselineTitles: (() => {
+        const out = {};
+        ['Anya Murphy', 'Orla Devine', 'Ciara Small'].forEach(n => {
+          const tr = rowFor(n); if (!tr) return;
+          out[n] = tr.querySelectorAll('td')[3].getAttribute('title');
+        });
+        return out;
+      })(),
       /* rendered pixels, not source (DFM 146b) */
       legendPx: (() => {
         const el = body.querySelector('.live-legend p');
@@ -354,7 +434,7 @@ async function readTab(page) {
     'his private comment is on screen');
 
   section('I. LIVE: the lesson’s own progress counts, and the teacher-run note');
-  check(t.chips.some(c => /^2 of 4 finished$/.test(c)), 'the counts belong to this lesson: ' + JSON.stringify(t.chips));
+  check(t.chips.some(c => /^3 of 6 finished$/.test(c)), 'the counts belong to this lesson: ' + JSON.stringify(t.chips));
   check(t.chips.some(c => /2 not started/.test(c)), 'and say how many have not started it');
   check(t.note.some(n => /never appear in this table/.test(n)),
     'the tab says on screen that a teacher’s own runs are not listed (rule 40, which is why his own sit-through showed nothing)');
@@ -455,6 +535,118 @@ async function readTab(page) {
   const j3 = t3d.cells.jarlath.slice(t3d.heads.indexOf('Q1'), t3d.heads.indexOf('Q1') + 3);
   check(j3[0] === '✓' && j3[1] === '○' && j3[2] === '✗',
     'his three Lesson 3 answers render right/answered-nothing/wrong in order (got ' + JSON.stringify(j3) + ')');
+
+  /* ============================================================
+     ROUND 2 (DFM 157/159) - the flags explain themselves, the pupil's own
+     voice gets its own flag, the baseline becomes readable, the CSV stops
+     speaking in codes.
+     ============================================================ */
+  section('Q. THE RED FLAG NAMES ITS OWN CAUSE (DFM 157b)');
+  await openLive(page, { l3On: false });
+  let q = await readTab(page);          // opens on Lesson 2
+  check(/every exit question wrong \(0 of 2\)/.test(q.flagTitles['Jarlath Gartland'] || ''),
+    'plural exit wording, with the real count: "' + q.flagTitles['Jarlath Gartland'] + '"');
+  check(/every exit question wrong \(0 of 2\)/.test(q.flagTitles['Sinead Boyle'] || ''),
+    'and the same for a pupil whose only trigger is the exit check');
+  check(/nothing new has been saved for over 20 minutes/.test(q.flagTitles['Orla Devine'] || ''),
+    'the no-activity trigger says so plainly: "' + q.flagTitles['Orla Devine'] + '"');
+  check(/^Lesson 1: /.test(q.flagTitles['Ciara Small'] || ''),
+    'a flag belonging to another lesson prefixes its reasons with that lesson: "' + q.flagTitles['Ciara Small'] + '"');
+  check(/Under half her warm-up answers were right \(1 of 9\)/.test(q.flagTitles['Ciara Small'] || ''),
+    'and carries the warm-up reason with its real numbers');
+  check(q.stripTitles.length === 1 && /Lesson 1: Under half/.test(q.stripTitles[0] || ''),
+    'the cross-lesson strip entry carries the same explanation');
+  check(/red <b>needs you<\/b> flag means one of three things/.test(q.legend) ||
+        /needs you.*flag means one of three things/.test(q.legend),
+    'the key under the table lists the three triggers');
+
+  section('R. THE PUPIL’S OWN VOICE HAS ITS OWN FLAG (DFM 159)');
+  check(/She pressed 'Not yet' on:/.test(q.voiceTitles['Jarlath Gartland'] || ''),
+    'the amber flag names what she pressed: "' + q.voiceTitles['Jarlath Gartland'] + '"');
+  check((q.voiceTitles['Jarlath Gartland'] || '').indexOf(String(L2_SE.statements[2]).slice(0, 30)) !== -1,
+    'and quotes the REAL statement she marked Not yet, from the lesson content');
+  check(/Her comment is in the last column\./.test(q.voiceTitles['Jarlath Gartland'] || ''),
+    'and points at her comment, because she left one');
+  check(!/felt tricky/.test(q.voiceTitles['Jarlath Gartland'] || ''),
+    'and does NOT claim she found it tricky - she said "just right"');
+  check(q.chips.some(c => /^1 says not yet$/.test(c)),
+    'the count chip is singular for one pupil: ' + JSON.stringify(q.chips));
+  check(q.voicePillCount === 1, 'exactly one amber flag on this lesson (' + q.voicePillCount + ')');
+  check(!q.voiceTitles['Anya Murphy'], 'CONTROL: all ticks with a Tricky dot raises NO amber flag');
+  check(!q.voiceTitles['Orla Devine'], 'CONTROL: all "Getting there" raises NO amber flag');
+  check(!q.voiceTitles['Sinead Boyle'] && !!q.flagTitles['Sinead Boyle'],
+    'CONTROL: a red-flagged pupil who rated herself all ticks gets red only');
+  check(!!q.flagTitles['Jarlath Gartland'] && !!q.voiceTitles['Jarlath Gartland'],
+    'and a pupil whose marks AND words both say so carries both flags');
+  check(/amber <b>says not yet<\/b> flag is the pupil/.test(q.legend) || /says not yet.*pupil’s own voice/.test(q.legend),
+    'the key explains the amber flag too');
+  check(q.stripTitles.every(t => !/Not yet/.test(t || '')),
+    'CONTROL: the cross-lesson strip stays red-only - no voice entries in the emergency line');
+  /* count REAL text lines: the cell's own padding is not a line (the first
+     version of this check counted it as one and reported four for three) */
+  const nameLines = await page.evaluate(() => {
+    const tr = Array.from(document.querySelectorAll('#staff-body .dash-table tr'))
+      .find(x => (x.textContent || '').indexOf('Jarlath Gartland') !== -1);
+    const td = tr.querySelector('td');
+    const cs = getComputedStyle(td);
+    const inner = td.getBoundingClientRect().height - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    return Math.round(inner / parseFloat(cs.lineHeight));
+  });
+  check(nameLines <= 2, 'her name and BOTH flags fit in two lines, never a stack (' + nameLines + ')');
+
+  section('S. REFRESH SAYS WHAT IT DOES (DFM 157e)');
+  check(/Re-reads this tab/.test(q.refreshTitle) && /except the Pairing panel/.test(q.refreshTitle),
+    'Refresh carries his hover explanation: "' + q.refreshTitle + '"');
+
+  section('T. THE LICENCE EXAM IS READABLE AT LAST (DFM 157d)');
+  check(!q.baseline, 'CONTROL: no Licence Exam panel on Lesson 2');
+  await pick(page, '1');
+  const t1b = await readTab(page);
+  check(!!t1b.baseline, 'the panel is there on Lesson 1');
+  check(t1b.baseline.blocks === L1_EXAM.length,
+    'one block per baseline question (' + (t1b.baseline ? t1b.baseline.blocks : 0) + ' of ' + L1_EXAM.length + ')');
+  check(/^Q1 — /.test(t1b.baseline.firstTitle), 'numbered, with the real stem: "' + t1b.baseline.firstTitle.slice(0, 60) + '"');
+  check(t1b.baseline.firstTitle.indexOf(String(L1_EXAM[0].stem).slice(0, 30)) !== -1,
+    'and that stem comes from the lesson content');
+  check(t1b.baseline.correctLabels === L1_EXAM.length, 'every question names its correct answer (DFM 106)');
+  check(/answered nothing: 1/.test(t1b.baseline.text), 'a question answered with nothing is counted on its own line');
+  const expWrong = 'Right 14 of 16. Wrong: Q3, Q7';
+  check((t1b.baselineTitles['Anya Murphy'] || '').indexOf(expWrong) === 0,
+    'the Baseline score hover names exactly her wrong questions: "' + t1b.baselineTitles['Anya Murphy'] + '"');
+  check(/Wrong: Q2 /.test(t1b.baselineTitles['Orla Devine'] || ''),
+    'a question she answered with nothing counts as not right: "' + t1b.baselineTitles['Orla Devine'] + '"');
+  check(!t1b.baselineTitles['Ciara Small'], 'CONTROL: no hover for a pupil who has not sat the exam');
+  await pick(page, '3');
+  const t3b = await readTab(page);
+  check(!t3b.baseline, 'CONTROL: no Licence Exam panel on Lesson 3 either');
+
+  section('U. THE CSV STOPS SPEAKING IN CODES (DFM 157f)');
+  await pick(page, '2');
+  const csv = await page.evaluate(async () => {
+    window.__csv = null;
+    const real = window.App.copyText;
+    window.App.copyText = (t) => { window.__csv = t; };
+    document.querySelector('[data-action="live-csv"]').click();
+    await new Promise(r => setTimeout(r, 1500));
+    window.App.copyText = real;
+    return window.__csv;
+  });
+  check(!!csv, 'Copy CSV produced a sheet');
+  const head = (csv || '').split('\n')[0];
+  check(/"Name","Email","Codename","XP","Baseline"/.test(head), 'it starts with the pupil columns and Baseline');
+  check(/"L2 build puzzle"/.test(head), 'a lesson with a build puzzle gets that column');
+  check(!/"L1 build puzzle"/.test(head), 'CONTROL: a lesson without one does not');
+  check(/"L2 how did it go","L2 how it felt","L2 comment"/.test(head),
+    'and the self-rating columns are named in words, not "self-eval"');
+  const jarlathRow = (csv || '').split('\n').filter(l => /Jarlath/.test(l))[0] || '';
+  check(/"done"/.test(jarlathRow) && /"0\/2"/.test(jarlathRow), 'his row carries progress and exit score');
+  check(/"right"/.test(jarlathRow), 'and his build puzzle in words');
+  check(/"✓ ≈ ✗"/.test(jarlathRow), 'his ratings render as the table’s own marks');
+  check(/"Just right"/.test(jarlathRow), 'and how the hour felt, in words');
+  const orlaRow = (csv || '').split('\n').filter(l => /Orla/.test(l))[0] || '';
+  check(/"started"/.test(orlaRow), 'a started lesson says "started"');
+  check(!/"none"/.test(csv || ''), 'the word "none" is retired from the export too');
+  check(!/\|/.test(csv || ''), 'CONTROL: not one raw pipe-code (like 200|2) survives anywhere in the sheet');
 
   await browser.close();
   console.log('\n' + (FAILS.length ? 'FAILED ' + FAILS.length : 'ALL LIVE-TAB CHECKS PASSED') + '  (' + PASS + ' checks)');

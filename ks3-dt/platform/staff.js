@@ -348,6 +348,32 @@
     var m = /(?:^|;)bl=(\d+)\/(\d+)/.exec(String(a1[2] || ''));
     return m ? (m[1] + '/' + m[2]) : '';
   }
+  /* Her sixteen September answers. They have been stored since day one - as
+     bl=<right>/16|<sixteen digits> on her Lesson 1 record - and shown on no
+     screen until DFM 157d. */
+  function baselineChosen(rec) {
+    var a1 = rec.L && rec.L['1'];
+    if (!a1) return '';
+    var m = /(?:^|;)bl=\d+\/\d+\|([^;]*)/.exec(String(a1[2] || ''));
+    return m ? m[1] : '';
+  }
+  function baselineTitle(rec, l1) {
+    var disp = baselineDisplay(rec);
+    if (!disp) return '';
+    var chosen = baselineChosen(rec);
+    var items = (l1 && l1.feat && l1.feat.baseline) ? l1.feat.baseline.items : null;
+    if (!chosen || !items || !l1.keys) return '';
+    var wrong = [];
+    for (var i = 0; i < items.length; i++) {
+      var key = l1.keys[items[i].id];
+      if (!key) continue;
+      var ch = chosen.charAt(i);
+      if (ch === '' || ch === 'x' || Number(ch) !== Number(key.a)) wrong.push('Q' + (i + 1));
+    }
+    if (!wrong.length) return 'All sixteen right.';
+    return 'Right ' + disp.split('/')[0] + ' of ' + items.length + '. Wrong: ' + wrong.join(', ') +
+      ' &mdash; numbered as in the Licence Exam panel below.';
+  }
 
   /* ============================================================
      CLASSES tab
@@ -863,18 +889,21 @@
      part of what made this tab unreadable). Never rejects: a lesson with no
      content file yet still renders its progress column. */
   function lessonFeaturesFor(le) {
-    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null };
+    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null };
     if (!le || !le.file) return Promise.resolve(blank);
     var id = String(le.id);
     if (!liveFeatureCache[id]) {
       liveFeatureCache[id] = App.fetchContent(le.file).then(function (lesson) {
-        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null };
+        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null };
         (lesson.chunks || []).forEach(function (ch) {
           var cfg = ch.config || {};
           if (cfg.paired) f.paired = true;
           if (ch.engine === 'parsons') f.parsons = { title: String(cfg.title || ch.title || 'Build puzzle') };
           if (ch.engine === 'tournament') f.tournament = { title: String(cfg.title || ch.title || 'Tournament') };
           if (ch.engine === 'gallery') f.gallery = { title: String(ch.title || 'Press Night') };
+          /* the September Licence Exam - stored for every pupil since day one,
+             and shown on no screen until now (DFM 157d) */
+          if (ch.engine === 'diagnostic' && cfg.items) f.baseline = { items: cfg.items };
           if (ch.engine === 'selfeval') {
             f.selfeval = {
               statements: (cfg.statements || []).map(String),
@@ -927,23 +956,69 @@
      is examined, not just the one on screen) and returns the lesson numbers that
      triggered, so the flag and the strip above the table can name them. The
      thresholds themselves are unchanged from the original isStuck. */
+  /* DFM 157b: it now returns WHICH reasons fired, not just that one did.
+     Damien had to reverse-engineer why a pupil was flagged ("I wonder ... if my
+     reading ... is actually accurate" - it was), so the flag names its own
+     cause on hover. Whether a pupil is flagged is unchanged; every reason is
+     collected rather than stopping at the first, because two causes want two
+     different kinds of help. */
   function stuckLessonsFor(r, deliveredNums) {
     var hits = [];
     for (var i = 0; i < deliveredNums.length; i++) {
       var num = deliveredNums[i];
       var a = (r.L || {})[num];
       if (!a) continue;
-      var total = Number(a[10]), right = Number(a[9]), hit = false;
-      if (total >= 2 && (right / total) < 0.5) hit = true;
-      if (!hit && a[3]) {
+      var reasons = [];
+      if (a[3]) {
         var ex = exitRightMap[num];
         var rc = ex ? rightCountFor(String(a[3]), ex) : null;
-        if (rc && rc.total > 0 && rc.right === 0) hit = true;
+        if (rc && rc.total > 0 && rc.right === 0) {
+          reasons.push(rc.total === 1
+            ? 'She got the exit question wrong.'
+            : 'She got every exit question wrong (0 of ' + rc.total + ').');
+        }
       }
-      if (!hit && Number(a[0]) === 1 && (clientTmin() - Number(a[5])) > 20) hit = true;
-      if (hit) hits.push(num);
+      var total = Number(a[10]), right = Number(a[9]);
+      if (total >= 2 && (right / total) < 0.5) {
+        reasons.push('Under half her warm-up answers were right (' + right + ' of ' + total + ').');
+      }
+      if (Number(a[0]) === 1 && (clientTmin() - Number(a[5])) > 20) {
+        reasons.push('She started this lesson and nothing new has been saved for over 20 minutes.');
+      }
+      if (reasons.length) hits.push({ num: num, reasons: reasons });
     }
     return hits;
+  }
+
+  /* DFM 159, his ruling: "teachers really aught to be listening to pupils who
+     feel like they are struggling". THE FRAME: the red flag is what the MARKS
+     say; this amber one is what SHE says. It fires on one thing only - she
+     pressed "Not yet" against an I-can statement, naming a specific thing she
+     cannot do yet. "Getting there" never fires it (that is the normal middle of
+     learning), "Tricky" alone never fires it (effortful success - the dot shows
+     it), and her free-text comment never fires it, because we do not
+     machine-judge a child's own words. */
+  function voiceFlagFor(a, feat) {
+    var se = String((a && a[4]) || '');
+    if (!se) return null;
+    var parts = se.split('|'), conf = parts[0] || '', diff = parts[1] || '';
+    var idx = [];
+    for (var i = 0; i < conf.length; i++) if (conf.charAt(i) === '0') idx.push(i);
+    if (!idx.length) return null;
+    var statements = (feat && feat.selfeval && feat.selfeval.statements) || [];
+    return {
+      said: idx.map(function (n) { return statements[n] || ('statement ' + (n + 1)); }),
+      tricky: diff === '2',
+      hasComment: !!String((a && a[8]) || '')
+    };
+  }
+  function voiceTitle(v) {
+    var quoted = v.said.map(function (s) { return '"' + s + '"'; }).join(' and ');
+    var t = 'She pressed \'Not yet\' on: ' + quoted;
+    if (!/[.!?]"$/.test(t)) t += '.';   /* the statements already end in a full stop; this only guards one that does not */
+    if (v.tricky) t += ' She also said the hour felt tricky.';
+    if (v.hasComment) t += ' Her comment is in the last column.';
+    return t;
   }
 
   /* One marked exit answer. Four states, and the fourth matters: "answered
@@ -995,7 +1070,7 @@
     return '<div class="staff-actions" style="margin-bottom:12px">' +
         '<span class="pill none">' + joined + ' joined</span>' +
         '<span class="pill none">' + avgXp + ' avg XP</span>' +
-        '<button type="button" class="ghost-btn" data-action="live-refresh">Refresh</button>' +
+        '<button type="button" class="ghost-btn" data-action="live-refresh" title="Re-reads this tab &mdash; new joiners, marks that have just landed, the lesson counts. Nothing here updates by itself except the Pairing panel.">Refresh</button>' +
         '<button type="button" class="ghost-btn" data-action="live-csv" title="Copies every pupil and every delivered lesson &mdash; the whole marksheet, not just the lesson on screen.">Copy CSV</button>' +
       '</div>' +
       '<div class="live-pick"><label for="live-lesson-sel">Showing:</label>' +
@@ -1019,12 +1094,19 @@
      goes blank. */
   function renderLiveTable() {
     var le = liveByNum[liveLessonNum];
+    /* Lesson 1's content and keys come too, whatever lesson is showing: the
+       Baseline column is on every view and its hover names the questions she
+       got wrong, which needs the Licence Exam's own answer key. Both are cached
+       after the first fetch. */
+    var l1 = liveByNum['1'];
     Promise.all([
       lessonFeaturesFor(le),
-      (le && le.id) ? getKeyinfo(le.id) : Promise.resolve(null)
+      (le && le.id) ? getKeyinfo(le.id) : Promise.resolve(null),
+      lessonFeaturesFor(l1),
+      (l1 && l1.id) ? getKeyinfo(l1.id) : Promise.resolve(null)
     ]).then(function (res) {
       if (String(liveLessonNum) !== String(le ? le.num : '')) return;  // he changed it while we fetched
-      paintLive(le, res[0], res[1]);
+      paintLive(le, res[0], res[1], { feat: res[2], keys: res[3] });
     });
   }
 
@@ -1034,7 +1116,7 @@
       busyHtml('Loading ' + lessonNameFor(num)));
   }
 
-  function paintLive(le, feat, keyItems) {
+  function paintLive(le, feat, keyItems, l1) {
     var rows = dashData.rows || [];
     var joined = rows.length;
     var avgXp = joined ? Math.round(rows.reduce(function (s, r) { return s + Number(r.xp || 0); }, 0) / joined) : 0;
@@ -1059,12 +1141,14 @@
 
     /* DFM 156(c): stuck pupils are found across every delivered lesson, so
        choosing a lesson can never hide one. */
-    var elsewhere = [];
+    var elsewhere = [], voiceCount = 0, redCount = 0;
     var body = rows.map(function (r) {
       var hits = stuckLessonsFor(r, delivered);
       var stuck = hits.length > 0;
-      var here = hits.indexOf(num) !== -1;
-      if (stuck && !here) elsewhere.push({ name: r.name, num: hits[0] });
+      if (stuck) redCount++;
+      var hereHit = null;
+      hits.forEach(function (h) { if (h.num === num) hereHit = h; });
+      if (stuck && !hereHit) elsewhere.push({ name: r.name, num: hits[0].num, reasons: hits[0].reasons });
       var a = (r.L || {})[num];
       var st = Number((a || [])[0] || 0);
       var pillClass = st === 2 ? 'done' : st === 1 ? 'started' : 'none';
@@ -1079,16 +1163,25 @@
         var comment = String((a && a[8]) || '');
         cells += '<td>' + (comment ? '<span class="lc-comment" title="' + App.esc(comment) + '">' + App.esc(comment) + '</span>' : '&mdash;') + '</td>';
       }
-      var flag = stuck
-        ? ' <span class="pill flag" title="Her numbers suggest she is stuck -- worth a quiet visit.">needs you' +
-          (here ? '' : ' (' + App.esc(lessonNameFor(hits[0])) + ')') + '</span>'
-        : '';
+      /* the flag names its own cause (DFM 157b), and when it belongs to another
+         lesson it says so and its reasons are prefixed with that lesson */
+      var flag = '';
+      if (stuck) {
+        var src = hereHit || hits[0];
+        var reasonText = (hereHit ? '' : lessonLabelFor(src.num) + ': ') + src.reasons.join(' ');
+        flag = ' <span class="pill flag" title="' + App.esc(reasonText) + '">needs you' +
+          (hereHit ? '' : ' (' + App.esc(lessonNameFor(src.num)) + ')') + '</span>';
+      }
+      var v = voiceFlagFor(a, feat);
+      if (v) voiceCount++;
+      var voice = v ? ' <span class="pill voice" title="' + App.esc(voiceTitle(v)) + '">says not yet</span>' : '';
+      var blTitle = baselineTitle(r, l1);
       return '<tr' + (stuck ? ' class="is-stuck"' : '') + '>' +
         '<td><button type="button" class="modal-close" style="font-size:1rem" title="Remove this pupil from the class (her own work is untouched)" data-action="remove-pupil" data-email="' + App.esc(r.email) + '" data-name="' + App.esc(r.name) + '">&times;</button> ' +
-        App.esc(r.name) + flag + '</td>' +
+        App.esc(r.name) + flag + voice + '</td>' +
         '<td>' + App.esc(r.codename) + '</td>' +
         '<td>' + Number(r.xp || 0) + '</td>' +
-        '<td>' + (baselineDisplay(r) || '&mdash;') + '</td>' +
+        '<td' + (blTitle ? ' title="' + blTitle + '"' : '') + '>' + (baselineDisplay(r) || '&mdash;') + '</td>' +
         '<td><span class="pill ' + pillClass + '">' + pillText + '</span></td>' +
         '<td>' + warm + '</td>' +
         cells + '</tr>';
@@ -1104,9 +1197,15 @@
       (se && se.comment ? '<th>Private comment</th>' : '') +
       '</tr>';
 
+    /* red only, and deliberately (DFM 159): this strip is the mid-lesson
+       emergency channel. Evaluations land at the END of a lesson and are read
+       in that lesson's own view, where the amber pill and the count chip make
+       them unmissable. Amber here would make the emergency channel noisy, and
+       a noisy channel is an ignored one. */
     var elseStrip = elsewhere.length
       ? '<p class="live-elsewhere">Needs you, from other lessons: ' + elsewhere.map(function (e) {
-          return App.esc(e.name) + ' (' + App.esc(lessonNameFor(e.num)) + ')';
+          return '<span title="' + App.esc(lessonLabelFor(e.num) + ': ' + e.reasons.join(' ')) + '">' +
+            App.esc(e.name) + ' (' + App.esc(lessonNameFor(e.num)) + ')</span>';
         }).join(', ') + '</p>'
       : '';
 
@@ -1120,6 +1219,7 @@
         '<span class="pill none">' + fin + ' of ' + joined + ' finished</span>' +
         '<span class="pill none">' + started + ' started</span>' +
         '<span class="pill none">' + notStarted + ' not started</span>' +
+        (voiceCount ? '<span class="pill voice">' + voiceCount + (voiceCount === 1 ? ' says' : ' say') + ' not yet</span>' : '') +
       '</div>' +
       elseStrip +
       (joined && !anyRecord ? '<p class="pl-note">No pupil has started this lesson yet.</p>' : '') +
@@ -1127,10 +1227,11 @@
       '<div class="dash-scroll"><table class="dash-table">' + head +
         (body || '<tr><td colspan="99">No pupils have joined this class yet.</td></tr>') + '</table></div>' +
       '<p class="pl-note">Your own runs of a lesson never appear in this table &mdash; it lists pupils only.</p>' +
-      liveLegendHtml(feat, showExit, showPuzzle) +
+      liveLegendHtml(feat, showExit, showPuzzle, redCount > 0, voiceCount > 0) +
       '<h3 style="margin-top:20px">Misconception patterns &mdash; ' +
         (isSideQuestNum(num) ? 'the side quest' : 'Lesson ' + App.esc(num)) + '</h3>' +
       '<div id="live-mis-body"></div>' +
+      (String(num) === '1' ? baselinePanelHtml(rows, l1) : '') +
       '<p class="staff-status" id="live-status"></p>';
     setPane(html);
     if (le) loadMisconceptions(le);
@@ -1143,8 +1244,18 @@
      undefined term. Every glyph on the table is named here, and the real
      question stems and the pupil's real self-rating statements are quoted from
      the lesson's own content - never a copy that can drift. */
-  function liveLegendHtml(feat, showExit, showPuzzle) {
+  function liveLegendHtml(feat, showExit, showPuzzle, showRed, showVoice) {
     var out = [];
+    if (showRed) {
+      out.push('<p>A red <b>needs you</b> flag means one of three things: she got the exit check all wrong, ' +
+        'under half her warm-up answers were right, or she started the lesson and nothing new has been ' +
+        'saved for over twenty minutes. Hover over the flag to see which it is.</p>');
+    }
+    if (showVoice) {
+      out.push('<p>An amber <b>says not yet</b> flag is the pupil&rsquo;s own voice: at the end of the lesson ' +
+        'she pressed &lsquo;Not yet&rsquo; against an I-can statement. Hover over it to see which statement ' +
+        'she meant.</p>');
+    }
     if (showExit) {
       out.push('<p><b>The exit check</b> is the set of short marked questions at the end of the lesson. ' +
         'In the Q columns: <span class="lc-yes">&#10003;</span> right &middot; <span class="lc-no">&#10007;</span> wrong &middot; ' +
@@ -1626,7 +1737,6 @@
       if (!exitItems.length) { body.innerHTML = '<p class="staff-status">This lesson has no exit check.</p>'; return; }
       var rows = dashData.rows || [];
       var html = exitItems.map(function (it, i) {
-        var key = items[it.id] || { a: -1, mis: [] };
         var counts = {};
         rows.forEach(function (r) {
           var a = r.L[String(le.num)];
@@ -1635,57 +1745,121 @@
           if (ch === '' || ch === 'x') return;
           counts[ch] = (counts[ch] || 0) + 1;
         });
-        var maxCount = 1;
-        Object.keys(counts).forEach(function (k) { if (counts[k] > maxCount) maxCount = counts[k]; });
-        /* DFM 106 (1 Aug 2026): the correct row said "Option A (correct)",
-           which tells a teacher nothing at a glance - she then had to open the
-           lesson to find out what option A actually was. The item's own option
-           text is right here. Distractor rows keep their authored
-           misconception labels; that part he confirmed works. */
-        var optText = it.options || [];
-        var optCount = Math.max(key.mis.length, optText.length, key.a + 1, 2);
-        var bars = '';
-        for (var oi = 0; oi < optCount; oi++) {
-          var n = counts[String(oi)] || 0;
-          var isCorrect = oi === Number(key.a);
-          var label = isCorrect
-            ? ((optText[oi] || ('Option ' + 'ABCDEFGH'.charAt(oi))) + ' (the correct answer)')
-            : (key.mis[oi] || ('Option ' + 'ABCDEFGH'.charAt(oi)));
-          bars += '<div class="mis-bar"><span class="mb-label">' + App.esc(label) + '</span>' +
-            '<span class="mb-track"><span class="mb-fill' + (isCorrect ? ' correct' : '') + '" style="width:' + Math.round((n / maxCount) * 100) + '%"></span></span>' +
-            '<span class="mb-n">' + n + '</span></div>';
-        }
-        return '<div class="staff-row" style="display:block"><div class="staff-row-name">' + App.esc(it.stem || ('Item ' + (i + 1))) + '</div>' + bars + '</div>';
+        return barBlockHtml(App.esc(it.stem || ('Item ' + (i + 1))), it, items[it.id] || { a: -1, mis: [] }, counts, '');
       }).join('');
       body.innerHTML = html;
     });
   }
 
-  function liveCsv() {
+  /* One block of answer bars. The misconception panel and the Licence Exam
+     panel are the same picture of the same kind of data, so they are drawn by
+     the same function rather than by two copies that can drift.
+     `titleHtml` is already-safe HTML (the callers escape their own text).
+     DFM 106 (1 Aug 2026): the correct row said "Option A (correct)", which
+     tells a teacher nothing at a glance - she then had to open the lesson to
+     find out what option A actually was. The item's own option text is right
+     here. Distractor rows keep their authored misconception labels; that part
+     he confirmed works. */
+  function barBlockHtml(titleHtml, item, key, counts, extraLine) {
+    var optText = item.options || [];
+    var mis = key.mis || [];
+    var optCount = Math.max(mis.length, optText.length, Number(key.a) + 1, 2);
+    var maxCount = 1;
+    Object.keys(counts).forEach(function (k) { if (counts[k] > maxCount) maxCount = counts[k]; });
+    var bars = '';
+    for (var oi = 0; oi < optCount; oi++) {
+      var n = counts[String(oi)] || 0;
+      var isCorrect = oi === Number(key.a);
+      var label = isCorrect
+        ? ((optText[oi] || ('Option ' + 'ABCDEFGH'.charAt(oi))) + ' (the correct answer)')
+        : (mis[oi] || ('Option ' + 'ABCDEFGH'.charAt(oi)));
+      bars += '<div class="mis-bar"><span class="mb-label">' + App.esc(label) + '</span>' +
+        '<span class="mb-track"><span class="mb-fill' + (isCorrect ? ' correct' : '') + '" style="width:' + Math.round((n / maxCount) * 100) + '%"></span></span>' +
+        '<span class="mb-n">' + n + '</span></div>';
+    }
+    return '<div class="staff-row" style="display:block"><div class="staff-row-name">' + titleHtml + '</div>' +
+      bars + (extraLine || '') + '</div>';
+  }
+
+  /* DFM 157d - his question: "is there a way to see what they answered
+     correctly/incorrectly, or where is this is stored". It always was stored;
+     nothing ever showed it. Lesson 1's view only. */
+  function baselinePanelHtml(rows, l1) {
+    if (!l1 || !l1.feat || !l1.feat.baseline || !l1.keys) return '';
+    var items = l1.feat.baseline.items || [];
+    if (!items.length) return '';
+    if (!rows.some(function (r) { return !!baselineChosen(r); })) return '';
+    var blocks = items.map(function (it, i) {
+      var counts = {}, none = 0;
+      rows.forEach(function (r) {
+        var ch = baselineChosen(r).charAt(i);
+        if (ch === '') return;
+        if (ch === 'x') { none++; return; }
+        counts[ch] = (counts[ch] || 0) + 1;
+      });
+      return barBlockHtml('Q' + (i + 1) + ' &mdash; ' + App.esc(String(it.stem || '')),
+        it, l1.keys[it.id] || { a: -1, mis: [] }, counts,
+        none ? '<div class="staff-row-meta">answered nothing: ' + none + '</div>' : '');
+    }).join('');
+    return '<h3 style="margin-top:20px">The Licence Exam &mdash; where the class started</h3>' +
+      '<p class="pl-note">Sixteen questions, sat once in September before any teaching. For each one, ' +
+      'what the class chose. No pupil was ever shown right or wrong on these.</p>' + blocks;
+  }
+
+  /* DFM 157f: this used to export "200|2" - the raw storage string, i.e. the
+     exact unlabelled-code fault the tab itself had just been fixed for. A
+     spreadsheet is a stat surface like any other, so it says what it means:
+     words, and the same marks the table and its key use. */
+  function liveCsv(btn) {
     if (!dashData) return;
     var rows = dashData.rows || [];
-    var deliveredNums = Object.keys(dashData.locks || {}).filter(function (n) { return Number(dashData.locks[n].u); })
-      .sort(function (a, b) { return Number(a) - Number(b); });
-    function csvCell(s) { return '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"'; }
-    var head = ['Name', 'Email', 'Codename', 'XP'];
-    deliveredNums.forEach(function (n) { head.push('L' + n + ' status', 'L' + n + ' exit', 'L' + n + ' self-eval', 'L' + n + ' comment'); });
-    var lines = [head.map(csvCell).join(',')];
-    rows.forEach(function (r) {
-      var line = [r.name, r.email, r.codename, r.xp];
-      deliveredNums.forEach(function (n) {
-        var a = r.L[n];
-        var status = !a ? 'none' : (Number(a[0]) === 2 ? 'done' : Number(a[0]) === 1 ? 'started' : 'none');
-        var exitTxt = '';
-        if (a && a[3]) {
-          var ex = exitRightMap[n];
-          var rc = ex ? rightCountFor(String(a[3]), ex) : null;
-          exitTxt = rc ? (rc.right + '/' + rc.total) : String(a[3]);
-        }
-        line.push(status, exitTxt, (a && a[4]) || '', (a && a[8]) || '');
+    var delivered = deliveredNumsOf(dashData);
+    if (btn) btn.disabled = true;
+    Promise.all(delivered.map(function (n) { return lessonFeaturesFor(liveByNum[n]); })).then(function (feats) {
+      function csvCell(s) { return '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"'; }
+      function pre(n) { return isSideQuestNum(n) ? String(n) : ('L' + n); }
+      /* the table's own tick, wave and cross - escaped, because this file is
+         ASCII-only by design (the assembler guards it) */
+      var MARK = { '2': '\u2713', '1': '\u2248', '0': '\u2717' };
+      var FELT = { '0': 'Easy', '1': 'Just right', '2': 'Tricky' };
+
+      var head = ['Name', 'Email', 'Codename', 'XP', 'Baseline'];
+      delivered.forEach(function (n, i) {
+        var f = feats[i] || {};
+        head.push(pre(n) + ' status', pre(n) + ' exit');
+        if (f.parsons) head.push(pre(n) + ' build puzzle');
+        head.push(pre(n) + ' how did it go', pre(n) + ' how it felt', pre(n) + ' comment');
       });
-      lines.push(line.map(csvCell).join(','));
+      var lines = [head.map(csvCell).join(',')];
+
+      rows.forEach(function (r) {
+        var line = [r.name, r.email, r.codename, r.xp, baselineDisplay(r) || ''];
+        delivered.forEach(function (n, i) {
+          var f = feats[i] || {};
+          var a = r.L[n];
+          var st = Number((a || [])[0] || 0);
+          line.push(st === 2 ? 'done' : st === 1 ? 'started' : 'not started');
+          var exitTxt = '';
+          if (a && a[3]) {
+            var ex = exitRightMap[n];
+            var rc = ex ? rightCountFor(String(a[3]), ex) : null;
+            if (rc) exitTxt = rc.right + '/' + rc.total;
+          }
+          line.push(exitTxt);
+          if (f.parsons) {
+            var m = /(?:^|;)ep=([01])(?:;|$)/.exec(String((a && a[2]) || ''));
+            line.push(m ? (m[1] === '1' ? 'right' : 'not right') : '');
+          }
+          var se = String((a && a[4]) || '').split('|');
+          line.push((se[0] || '').split('').map(function (c) { return MARK[c] || ''; }).filter(Boolean).join(' '));
+          line.push(FELT[se[1]] || '');
+          line.push((a && a[8]) || '');
+        });
+        lines.push(line.map(csvCell).join(','));
+      });
+      App.copyText(lines.join('\n'), 'CSV copied.');
+      if (btn) btn.disabled = false;
     });
-    App.copyText(lines.join('\n'), 'CSV copied.');
   }
 
   /* ============================================================
@@ -2326,14 +2500,36 @@
       'the hour felt easy, just right or tricky, and can leave you a private comment, which comes to you ' +
       'and nobody else. The quiet pupils often say there what they would not say in the room. Hover over ' +
       'a clipped comment to read all of it, and <b>Copy CSV</b> keeps every comment for your records.</p>' +
-      '<p>A red <b>needs you</b> flag appears beside any pupil whose numbers suggest she is stuck &mdash; ' +
-      'worth a quiet visit. Stuck-spotting watches every delivered lesson, not just the one on screen: if ' +
-      'a pupil is struggling in a lesson you are not currently viewing, a line above the table names her ' +
-      'and that lesson, so filtering can never hide a pupil who needs help. <b>Refresh</b> re-reads the ' +
-      'table; it does not update by itself. <b>Copy CSV</b> copies every pupil and every delivered lesson ' +
-      '&mdash; the whole marksheet, not just the lesson on screen &mdash; one row per pupil, ready to ' +
-      'paste into Excel or Google Sheets. Your own practice runs of a lesson never appear in the table: it ' +
-      'lists pupils only.</p>' +
+      '<p>A red <b>needs you</b> flag appears beside a pupil when her numbers say something went wrong, ' +
+      'and hovering over the flag tells you exactly what: she got the exit check all wrong; or under half ' +
+      'her warm-up answers were right; or she started the lesson and nothing new has been saved for over ' +
+      'twenty minutes. Each one points at a different kind of help. A wrong exit answer is a gap in this ' +
+      'lesson&rsquo;s idea &mdash; the Q column shows which question, and the misconception bars at the ' +
+      'bottom show which wrong answer she chose and the misunderstanding it usually signals: that is the ' +
+      'thing to re-teach. A low warm-up score means an earlier lesson&rsquo;s idea has faded, because the ' +
+      'warm-up asks about past lessons. No activity means she is stuck right now, mid-lesson &mdash; that ' +
+      'one is a visit, not a re-teach. Stuck-spotting watches every delivered lesson, not just the one on ' +
+      'screen: a pupil struggling in a lesson you are not viewing is named in a line above the table, with ' +
+      'her lesson, so choosing a lesson can never hide a pupil who needs help.</p>' +
+      '<p>The amber <b>says not yet</b> flag is different: it is not the platform&rsquo;s judgement, it is ' +
+      'the pupil&rsquo;s own. She ends every lesson rating herself against its I-can statements, and ' +
+      'pressing <b>Not yet</b> on one raises this flag &mdash; she is telling you, in the only place many ' +
+      'pupils ever will, that there is something she cannot do yet. Hover over the flag and it names the ' +
+      'exact statement, which is the gap to close; her private comment, if she left one, often says more. ' +
+      'The <b>say not yet</b> count at the top of the lesson&rsquo;s results shows how many pupils are ' +
+      'saying it before you read a single row &mdash; and when half the class says it, the message is ' +
+      'about the lesson, not the pupils: re-teach that idea from the front. The two flags work together: ' +
+      'red is what the marks say, amber is what she says. Both on one row means everything agrees she ' +
+      'needs help. Red alone is a pupil struggling without saying so. Amber with good marks is a pupil who ' +
+      'can do it but does not believe it yet &mdash; the first needs teaching, the second needs ' +
+      'reassuring. And a <b>Tricky</b> dot with no flags beside it simply says the hour cost effort ' +
+      '&mdash; effort is not a problem; if anything it is worth a word of praise.</p>' +
+      '<p><b>Refresh</b> re-reads the table; it does not update by itself. <b>Copy CSV</b> copies every ' +
+      'pupil and every delivered lesson &mdash; the whole marksheet, not just the lesson on screen &mdash; ' +
+      'one row per pupil, ready to paste into Excel or Google Sheets. Its columns match this table: for ' +
+      'every lesson &mdash; progress, the exit-check score, the build puzzle, the pupil&rsquo;s own ' +
+      'ratings in the same marks as the key above, how the hour felt in words, and her private comment. ' +
+      'Your own practice runs of a lesson never appear in the table: it lists pupils only.</p>' +
       '<p>Some lessons grow an extra panel above the table, and only the lessons that use them: while a ' +
       '<b>paired</b> activity is running, the Pairing panel appears and updates itself every few seconds ' +
       '&mdash; who is waiting for a partner (<b>Solo run</b> releases a waiting pupil to work alone), who ' +
@@ -2348,7 +2544,10 @@
       '<p><b>Misconception patterns</b>, at the bottom, follows the same Showing menu: for each exit-check ' +
       'question of the lesson you are viewing, it shows which wrong answers the class actually chose ' +
       '&mdash; each one labelled with the misunderstanding it usually signals, so you know what to ' +
-      're-teach and to whom.</p>' +
+      're-teach and to whom. On Lesson 1 one more panel sits underneath: <b>The Licence Exam</b>, ' +
+      'question by question &mdash; which answers the class chose in September, with the correct answer ' +
+      'named on each. Hover over a pupil&rsquo;s Baseline score in the table to see which question ' +
+      'numbers she got wrong.</p>' +
 
       '<h4>Absence</h4><p>A short list that is usually empty &mdash; and that is the good news it is ' +
       'designed to give you. A pupil appears here when a delivered lesson still has no meaningful work ' +
@@ -2514,7 +2713,7 @@
       case 'brief-print': briefPrint(); break;
       case 'archive-now': archiveNow(btn); break;
       case 'live-refresh': renderLive(); break;
-      case 'live-csv': liveCsv(); break;
+      case 'live-csv': liveCsv(btn); break;
       case 'absence-dismiss': absenceDismiss(btn); break;
       case 'team-chip': openChipMenu(btn); break;
       case 'team-add-group': teamAddGroup(); break;
