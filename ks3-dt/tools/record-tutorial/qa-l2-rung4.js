@@ -73,7 +73,7 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
       if (!h) return;
       const btn = Array.from(h.querySelectorAll('button')).find(b =>
         !b.disabled && b.offsetParent &&
-        /Start climbing|Next rung|Got it|We did it|Done|Continue|Nailed it|It works|It worked on the device/i.test(b.textContent) &&
+        /Start climbing|Next rung|Got it|We did it|Done|Continue|Nailed it|It works|It worked/i.test(b.textContent) &&
         !/hint|stuck|help/i.test(b.textContent));
       if (btn) { btn.click(); return; }
       const conf = h.querySelector('.confirm-step:not(:disabled)');

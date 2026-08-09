@@ -53,7 +53,7 @@ async function step(page) {
     if (!host) return 'none';
     const btns = Array.from(host.querySelectorAll('button')).filter(vis);
     const by = rx => btns.find(b => rx.test((b.textContent || '').trim()));
-    const pick = by(/It worked on the device/i) || by(/Start climbing|Back to the ladder/i) ||
+    const pick = by(/It worked/i) || by(/Start climbing|Back to the ladder/i) ||
       by(/Finish the ladder without it/i) || by(/Done watching|Watched it/i) ||
       by(/Run the HQ Inspection|Claim the badge/i) || by(/^Warm up$/i) ||
       by(/Start today.s lesson/i) || by(/Continue|Next|Ready|Onward|Start/i);

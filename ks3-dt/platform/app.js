@@ -409,7 +409,12 @@
     var title = $('#help-title'), body = $('#help-body'), generic = $('#help-generic');
     if (!title || !body || !generic) return;
     var ch = (App.state.lesson && App.state.chunks) ? App.state.chunks[App.state.chunkIdx] : null;
-    var txt = (ch && ch.config && ch.config.help) ? String(ch.config.help) : '';
+    /* A catch-up run shows different rules and a different button, so the help
+       has to match the screen she is actually on (L3 pre-sit review): a solo
+       pupil was told to "follow the five rules" above three of them. Content
+       supplies soloHelp only where the chunk really differs. */
+    var cfgH = (ch && ch.config) ? ch.config : null;
+    var txt = cfgH ? String((App.state.catchup && cfgH.soloHelp) ? cfgH.soloHelp : (cfgH.help || '')) : '';
     if (txt) {
       title.textContent = ch.title ? ('Help with: ' + ch.title) : 'Help';
       body.innerHTML = '<p class="help-text">' + esc(txt) + '</p>';
