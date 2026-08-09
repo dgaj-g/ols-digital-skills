@@ -1041,6 +1041,14 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .dash-table button.pill:hover { box-shadow: 0 0 0 2px rgba(26, 58, 107, 0.18); }
 .dash-table button.pill[data-armed="1"] { box-shadow: 0 0 0 2px var(--ols-blue); }
 .pill.flag-done { background: #EDF0F6; color: #9AA5B5; white-space: nowrap; }
+/* DFM 161: the wait between clicking a flag and it changing is the Apps Script
+   round trip - it says so now, in both directions */
+.dash-table button.pill.is-saving { background: #EDF0F6; color: var(--muted); white-space: nowrap; }
+.pill-spinner {
+  display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px;
+  vertical-align: -1px; border: 2px solid rgba(26, 58, 107, 0.25); border-top-color: var(--ols-blue);
+  animation: spin 0.7s linear infinite;
+}
 /* DFM 159 - the pupil's own voice, beside the marks but never mistaken for them:
    red is what the marks say, amber is what she says. */
 .pill.voice { background: #FFF3CF; color: #8A6D00; white-space: nowrap; }

@@ -241,6 +241,39 @@ async function clickFlag(page, name, kind, times) {
   });
   check(/needs you/.test(afterTimeout), 'CONTROL: left alone it disarms itself, having saved nothing');
 
+  section('F2. THE SAVE SAYS IT IS HAPPENING (DFM 161, his live finding)');
+  /* read the DOM in the SAME TICK as the confirming click - before any reply
+     could have landed - because that instant is what he sits looking at */
+  const saving = await page.evaluate(() => {
+    const tr = Array.from(document.querySelectorAll('#staff-body .dash-table tr'))
+      .find(x => x.textContent.indexOf('Ella Doran') !== -1);
+    const b = tr.querySelector('[data-action="flag-toggle"][data-kind="red"]');
+    b.click();          // arms
+    b.click();          // confirms - the round trip starts now
+    return { html: b.innerHTML, text: b.textContent.trim(), disabled: b.disabled, spinner: !!b.querySelector('.pill-spinner') };
+  });
+  check(saving.spinner, 'the moment it is confirmed, the flag shows a spinner');
+  check(/Saving/.test(saving.text), 'and says what is happening: "' + saving.text + '"');
+  check(saving.disabled, 'and cannot be pressed twice while it saves');
+  await sleep(1800);
+  let mid = await readRows(page);
+  check(mid.ella.some(f => f.text === 'helped'), 'and it lands on grey when the save returns');
+  /* put it back so the rest of the section starts from the live state */
+  await clickFlag(page, 'Ella Doran', 'red', 2);
+  const savingBack = await page.evaluate(() => {
+    const tr = Array.from(document.querySelectorAll('#staff-body .dash-table tr'))
+      .find(x => x.textContent.indexOf('Ella Doran') !== -1);
+    const b = tr.querySelector('[data-action="flag-toggle"][data-kind="red"]');
+    b.click(); b.click();
+    return !!b.querySelector('.pill-spinner');
+  });
+  check(savingBack, 'and the same spinner shows when bringing a flag BACK (he asked for both)');
+  await sleep(1800);
+  /* leave it LIVE again, so the next section starts where it expects to */
+  await clickFlag(page, 'Ella Doran', 'red', 2);
+  const backToLive = await readRows(page);
+  check(backToLive.ella.some(f => f.text === 'needs you'), 'and the flag is live again for the next check');
+
   section('F. TWO CLICKS MARK IT DEALT WITH');
   await clickFlag(page, 'Ella Doran', 'red', 2);
   r = await readRows(page);
