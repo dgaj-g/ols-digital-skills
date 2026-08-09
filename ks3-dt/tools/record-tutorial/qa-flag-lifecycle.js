@@ -24,6 +24,9 @@ const { chromium } = require('playwright');
 const ROOT = path.resolve(__dirname, '../../..');
 const P = f => path.join(ROOT, 'ks3-dt/platform', f);
 const PREFIX_REF = process.env.KS3DT_FLAGS_PREFIX_REF || '387e773';
+/* round 3 (DFM 162) landed on top of the lifecycle build, so its controls need
+   their own pre-fix ref - the commit that was live when he found the masking bug */
+const FLAGS2_REF = process.env.KS3DT_FLAGS2_PREFIX_REF || 'cfc3cbf';
 const BASE = 'http://localhost:8096/ks3-dt/platform/index.html?class=QA-Flags';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -109,6 +112,9 @@ function stageInPage(opts) {
     locks: {}, hods: [], cfg: {}, team: {}, pupils: {}, userProps: {}
   };
   s.locks[CLS] = { '1': { u: weekAgo, on: 1 }, '2': { u: weekAgo + 1440, on: 1 } };
+  /* Lesson 3 is the only built lesson with THREE exit questions, so the
+     under-half boundary (DFM 162b) and the multi-lesson strip both need it */
+  if (opts.l3) s.locks[CLS]['3'] = { u: weekAgo + 2880, on: 1 };
   s.cfg[CLS] = {
     lb: { mode: 'off', basis: 'xp', names: 'codename', topN: 0 },
     absDays: 5, cover: { on: 0, lesson: '', ts: 0 }, pairing: { on: 1 }, tn: { mode: 'team' }
@@ -132,6 +138,34 @@ function stageInPage(opts) {
   s.pupils[CLS + ':aoife.kane@demo'] = rec('Aoife Kane', 70, {
     '2': [2, 70, opts.aoifeHf ? 'hf=' + (tmin - 5) : '', '10', '222|0', tmin - 10, 40, 0, '', 6, 7]
   });
+  /* DFM 162(a) - the masking bug. She is genuinely live in Lesson 1 AND
+     Lesson 2 at the same time, and fine in Lesson 3, which is the case the old
+     code could not display: it named only the first lesson it found, and
+     acknowledging that one made her look dealt with while the other was still
+     live. Named after his own test account, because that is where he asked. */
+  if (opts.multi) {
+    s.pupils[CLS + ':g.gartland@demo'] = rec('g Gartland', 88, {
+      '1': [2, 40, '', '1', '222|1', tmin - 45, 40, 0, '', 7, 9],       // exit 0 of 1 -> live red
+      '2': [2, 28, '', '01', '222|1', tmin - 35, 38, 0, '', 6, 7],      // exit 0 of 2 -> live red
+      '3': [2, 20, '', '100', '222|1', tmin - 5, 30, 0, '', 5, 6]       // exit 2 of 3 -> nothing at all
+    });
+  }
+  /* DFM 162(b) - the under-half boundary, one pupil per case. Every one of them
+     is FINISHED with a healthy warm-up, so the exit check is the only thing that
+     could possibly raise a flag and a pass or fail is unambiguous.
+     L1 key: 0. L2 keys: 1, 0. L3 keys: 1, 0, 1. */
+  if (opts.threshold) {
+    var exitOnly = function (name, lessonNum, chosen) {
+      var L = {};
+      L[lessonNum] = [2, 40, '', chosen, '222|1', tmin - 5, 35, 0, '', 6, 7];
+      s.pupils[CLS + ':' + name.toLowerCase().replace(/ /g, '.') + '@demo'] = rec(name, 55, L);
+    }
+    exitOnly('Roisin Quinn', '1', '1');      // 0 of 1  -> flags, single-question sentence
+    exitOnly('Maeve Toner', '2', '00');      // 1 of 2  -> half is NOT under half, no flag
+    exitOnly('Sorcha Hughes', '2', '01');    // 0 of 2  -> flags, "(0 of 2)"
+    exitOnly('Niamh Casey', '3', '110');     // 1 of 3  -> flags, "(1 of 3)"  - NEW behaviour
+    exitOnly('Eimear Walsh', '3', '100');    // 2 of 3  -> Jarlath's case, still no flag
+  }
   localStorage.setItem('ks3dt-dev', JSON.stringify(s));
 }
 
@@ -199,6 +233,60 @@ function readRows(page) {
     };
   });
 }
+/* the strip and any named pupil's row, read off the real screen (DFM 146b) */
+function readTab2(page, names) {
+  return page.evaluate((who) => {
+    const body = document.getElementById('staff-body');
+    const rowFor = (name) => Array.from(body.querySelectorAll('.dash-table tr'))
+      .find(tr => (tr.querySelector('td') || {}).textContent && tr.querySelector('td').textContent.indexOf(name) !== -1);
+    const pills = {};
+    who.forEach(n => {
+      const tr = rowFor(n);
+      pills[n] = tr ? Array.from(tr.querySelectorAll('.pill.flag, .pill.voice, .pill.flag-done'))
+        .map(p => ({ text: p.textContent.trim(), title: p.getAttribute('title') || '' })) : null;
+    });
+    const strip = body.querySelector('.live-elsewhere');
+    /* the strip lists SEVERAL pupils, so every assertion has to be about one of
+       them: walk the line in order and hand each lesson button to the pupil
+       whose name was last read out */
+    const byPupil = {};
+    if (strip) {
+      let current = '';
+      Array.from(strip.childNodes).forEach(node => {
+        if (node.nodeType === 3) {
+          const m = /(?:^|[:,])\s*([^:,(]+?)\s*\($/.exec(node.textContent);
+          if (m) { current = m[1].trim(); byPupil[current] = byPupil[current] || []; }
+          return;
+        }
+        if (node.classList && node.classList.contains('strip-jump') && current) {
+          byPupil[current].push({
+            label: node.textContent.trim(), lesson: node.getAttribute('data-lesson'),
+            title: node.getAttribute('title') || '', tag: node.tagName,
+            underlined: getComputedStyle(node).textDecorationLine.indexOf('underline') !== -1,
+            pointer: getComputedStyle(node).cursor === 'pointer'
+          });
+        }
+      });
+    }
+    return {
+      pills: pills,
+      stripText: strip ? strip.textContent.trim() : '',
+      stripFor: byPupil,
+      stripButtons: strip ? Array.from(strip.querySelectorAll('.strip-jump')).map(b => ({
+        label: b.textContent.trim(), lesson: b.getAttribute('data-lesson'),
+        title: b.getAttribute('title') || '', tag: b.tagName,
+        underlined: getComputedStyle(b).textDecorationLine.indexOf('underline') !== -1,
+        pointer: getComputedStyle(b).cursor === 'pointer'
+      })) : [],
+      picked: (body.querySelector('#live-lesson-sel') || {}).value || '',
+      heading: (Array.from(body.querySelectorAll('h3')).map(h => h.textContent.trim())
+        .filter(t => !/Pairing|Press Night|Reaction|Misconception|Licence/.test(t))[0]) || '',
+      legend: (body.querySelector('.live-legend') || {}).textContent || '',
+      allText: body.textContent
+    };
+  }, names);
+}
+
 async function clickFlag(page, name, kind, times) {
   for (let i = 0; i < times; i++) {
     await page.evaluate(([n, k]) => {
@@ -314,7 +402,10 @@ async function clickFlag(page, name, kind, times) {
   await clickFlag(page, 'Ella Doran', 'red', 2);
   r = await readRows(page);
   check(r.ella.some(f => f.text === 'needs you'), 'two clicks on the grey flag bring the red back');
-  check(r.ella.filter(f => f.text === 'needs you')[0].title.indexOf('every exit question wrong') !== -1,
+  /* re-staged 9 Aug to the under-half sentence (DFM 162b): her two Lesson 2 exit
+     answers are both wrong, which is 0 of 2 either way (143b - a rule change
+     re-stages every harness that walks the thing it changed) */
+  check(r.ella.filter(f => f.text === 'needs you')[0].title.indexOf('Under half her exit answers were right (0 of 2)') !== -1,
     'with its reasons back in the hover');
   check(r.ellaStuck.indexOf('is-stuck') !== -1, 'and her row is outstanding again');
 
@@ -357,6 +448,156 @@ async function clickFlag(page, name, kind, times) {
   r = await readRows(page);
   check(r.aoife.length === 0,
     'CONTROL: an acknowledgement on a pupil with nothing wrong shows no pill at all');
+
+  /* ============================================================
+     ROUND 3 (DFM 162) - one pill one lesson, a complete clickable strip, and
+     the under-half exit threshold.
+     ============================================================ */
+  const G = 'g Gartland';
+  section('L. THE MASKING BUG IS DEAD - one pill, one lesson (DFM 162a)');
+  await openLive(page, { multi: true, l3: true });
+  await pick(page, '3');
+  let m = await readTab2(page, [G]);
+  check(m.pills[G] && m.pills[G].length === 0,
+    'viewing Lesson 3, where she is fine, her row carries no pill at all (' + JSON.stringify(m.pills[G]) + ')');
+  let gs = m.stripFor[G] || [];
+  check(gs.length === 2, 'the strip names BOTH lessons she is live in, not just the first (' + gs.length + ')');
+  check(gs.map(b => b.label).join(' + ') === 'Lesson 1 + Lesson 2',
+    'and names them plainly: "' + m.stripText + '"');
+  check(gs.every(b => b.tag === 'BUTTON'), 'each named lesson is a real button');
+  check(gs.every(b => b.underlined && b.pointer),
+    'and LOOKS pressable in rendered pixels - underlined, pointer cursor (DFM 146b)');
+  check(/Click to show this lesson\.$/.test(gs[0].title), 'whose hover says what it does: "' + gs[0].title + '"');
+  check(/She got the exit question wrong\./.test(gs[0].title) &&
+        /Under half her exit answers were right \(0 of 2\)\./.test(gs[1].title),
+    'and each button carries ITS OWN lesson’s reason, not the first lesson’s');
+  check(/needs you/.test(m.legend), 'the red key renders even though no red pill is in the table - the strip is a red flag too');
+
+  section('M. THE STRIP IS A WAY IN - clicking a lesson jumps the whole tab (DFM 162a)');
+  /* same-tick read, 161's pattern: the loading state must be painted BEFORE the
+     fetch, because the first visit to a lesson pays a real round trip */
+  const jump = await page.evaluate(() => {
+    /* HER Lesson 2 button, not the first one on the line - several pupils are named */
+    const b = Array.from(document.querySelectorAll('#staff-body .live-elsewhere .strip-jump'))
+      .filter(x => x.getAttribute('data-lesson') === '2').pop();
+    b.click();
+    const body = document.getElementById('staff-body');
+    return {
+      busy: !!body.querySelector('.panel-loading'),
+      busyText: (body.querySelector('.panel-loading') || {}).textContent || '',
+      picker: (body.querySelector('#live-lesson-sel') || {}).value || ''
+    };
+  });
+  check(jump.busy && /Lesson 2/.test(jump.busyText),
+    'the instant the button is clicked the screen says it is loading, by name: "' + jump.busyText.trim() + '"');
+  check(jump.picker === '2', 'and the Showing picker has already moved to Lesson 2, so nothing jumps under him');
+  await sleep(2000);
+  m = await readTab2(page, [G]);
+  check(m.picked === '2' && /Lesson 2/.test(m.heading), 'the tab lands on Lesson 2: "' + m.heading + '"');
+  check(m.pills[G].some(p => p.text === 'needs you'), 'and her live red flag is right there, in the lesson it belongs to');
+  check(/Under half her exit answers were right \(0 of 2\)/.test(m.pills[G].filter(p => p.text === 'needs you')[0].title),
+    'with that lesson’s own reason on it');
+  gs = m.stripFor[G] || [];
+  check(gs.length === 1 && gs[0].label === 'Lesson 1',
+    'and the strip now names only the OTHER lesson she is live in');
+
+  section('N. ACKNOWLEDGING ONE LESSON CAN NEVER HIDE ANOTHER (the bug’s exact shape)');
+  await pick(page, '1');
+  await clickFlag(page, G, 'red', 2);
+  m = await readTab2(page, [G]);
+  check(m.pills[G].some(p => p.text === 'helped'), 'Lesson 1 is marked helped, in Lesson 1’s own view');
+  gs = m.stripFor[G] || [];
+  check(gs.length === 1 && gs[0].label === 'Lesson 2',
+    'and Lesson 2 is STILL named in the strip - this is the fault he found, dead: "' + m.stripText + '"');
+  await pick(page, '3');
+  m = await readTab2(page, [G]);
+  check(m.pills[G].length === 0, 'back on Lesson 3 her row is still clean');
+  gs = m.stripFor[G] || [];
+  check(gs.length === 1 && gs[0].label === 'Lesson 2',
+    'and the strip names the one lesson that is genuinely still outstanding');
+  await pick(page, '2');
+  await clickFlag(page, G, 'red', 2);
+  await pick(page, '3');
+  m = await readTab2(page, [G]);
+  check(!m.stripFor[G], 'deal with the second one too and she drops out of the strip altogether');
+  check(/Ella Doran/.test(m.stripText),
+    'CONTROL: the strip is still there for the pupils who ARE outstanding - only she left it');
+
+  section('N2. SOURCE CONTROL - the pre-fix code really did drop the second lesson');
+  const preFlags = (() => {
+    try {
+      return execFileSync('git', ['show', FLAGS2_REF + ':ks3-dt/platform/staff.js'], { cwd: ROOT, encoding: 'utf8' });
+    } catch (e) { return null; }
+  })();
+  if (!preFlags) {
+    check(false, 'could not read the pre-fix commit ' + FLAGS2_REF + ' - these controls cannot run');
+  } else {
+    check(/var eSrc = hits\[0\]/.test(preFlags),
+      'pre-fix: the cross-lesson line was built from hits[0] only - the first flagged lesson won and the rest vanished');
+    check(/var src = hereHit \|\| hits\[0\]/.test(preFlags),
+      'pre-fix: the row pill could be about a DIFFERENT lesson than the one on screen');
+    check(/needs you' \+ \(hereHit \? '' : ' \(' \+ App\.esc\(lessonNameFor/.test(preFlags),
+      'pre-fix: which is why the pill had to carry a "(Lesson n)" suffix');
+    check(!/hits\[0\]/.test(staff), 'now: nothing anywhere reads only the first hit');
+    check(!/needs you \(/.test(staff) && !/lessonLabelFor\(src\.num\) \+ ': '/.test(staff),
+      'and the pill suffix and the "Lesson n: " title prefix are both gone');
+    check(!/data-lesson="' \+ App\.esc\(src\.num\)/.test(staff) && /data-action="strip-jump"/.test(staff),
+      'the flag button always acts on the shown lesson, and jumping lessons is the strip’s job');
+  }
+
+  section('O. THE EXIT THRESHOLD IS UNDER HALF RIGHT (DFM 162b, his ruling)');
+  await openLive(page, { threshold: true, l3: true });
+  await pick(page, '1');
+  let th = await readTab2(page, ['Roisin Quinn']);
+  check(th.pills['Roisin Quinn'].some(p => p.text === 'needs you'), 'one question, answered wrongly: flagged (0 of 1)');
+  check(/She got the exit question wrong\./.test(th.pills['Roisin Quinn'].filter(p => p.text === 'needs you')[0].title),
+    'and the single-question sentence is unchanged: "' + th.pills['Roisin Quinn'][0].title + '"');
+  await pick(page, '2');
+  th = await readTab2(page, ['Maeve Toner', 'Sorcha Hughes']);
+  check(th.pills['Maeve Toner'].length === 0,
+    'CONTROL: one of two right is NOT under half - no flag (half is not under half)');
+  check(th.pills['Sorcha Hughes'].some(p => p.text === 'needs you'), 'none of two right: flagged');
+  check(/Under half her exit answers were right \(0 of 2\)\./.test(th.pills['Sorcha Hughes'].filter(p => p.text === 'needs you')[0].title),
+    'with the new sentence and the real count: "' + th.pills['Sorcha Hughes'][0].title + '"');
+  await pick(page, '3');
+  th = await readTab2(page, ['Niamh Casey', 'Eimear Walsh']);
+  check(th.pills['Niamh Casey'].some(p => p.text === 'needs you'),
+    'THE ONE BEHAVIOUR CHANGE: one of three right now flags - she was missed before');
+  check(/Under half her exit answers were right \(1 of 3\)\./.test(th.pills['Niamh Casey'].filter(p => p.text === 'needs you')[0].title),
+    'saying so in the same words as the warm-up: "' + th.pills['Niamh Casey'][0].title + '"');
+  check(th.pills['Eimear Walsh'].length === 0,
+    'CONTROL: two of three right still does NOT flag - Jarlath’s case, exactly as he was told');
+  if (preFlags) {
+    check(/rc\.total > 0 && rc\.right === 0/.test(preFlags),
+      'CONTROL: pre-fix the trigger was right === 0, so 1 of 3 could never have flagged');
+    check(/rc\.right \/ rc\.total\) < 0\.5/.test(staff), 'now it is the same under-half test the warm-up uses');
+  }
+
+  section('P. THE OLD WORDING IS GONE FROM EVERY SURFACE (DFM 150)');
+  check(!/every exit question wrong/.test(th.allText), 'no rendered text on the Live tab says "every exit question wrong"');
+  check(/under half her exit answers were right/i.test(th.legend), 'and the key under the table teaches the new rule');
+  const guideText = await page.evaluate(() => {
+    const t = Array.from(document.querySelectorAll('#staff-modal [data-action="switch-tab"]')).find(x => /^guide$/i.test((x.textContent || '').trim()));
+    if (t) t.click();
+    return document.getElementById('staff-body').textContent;
+  });
+  check(!/every exit question wrong/.test(guideText) && !/exit check all wrong/.test(guideText),
+    'the Guide tab says neither old wording');
+  check(/under half her exit answers were right/i.test(guideText), 'it teaches the new trigger');
+  check(/click one to jump straight to it/.test(guideText), 'and it teaches that the strip’s lessons are clickable');
+  check(!/every exit question wrong/.test(staff) && !/exit check all wrong/.test(staff),
+    'and neither wording survives anywhere in staff.js');
+  /* A phrase broken across two JS string literals renders perfectly and greps to
+     nothing - which is how a source-level check passed while the wording had
+     moved. All three homes of this sentence stay in ONE literal each, so the
+     mechanical guard rule 150 asks for actually works. */
+  const oneLiteral = (staff.match(/under half her exit answers were right/gi) || []).length;
+  check(oneLiteral === 3,
+    'the new sentence is greppable in all three homes - the reason, the key and the Guide (' + oneLiteral + ' of 3)');
+  const builtIdx = fs.readFileSync(P('server/PathB_Index.html'), 'utf8');
+  check((builtIdx.match(/under half her exit answers were right/gi) || []).length === 3 &&
+        !/every exit question wrong|exit check all wrong/.test(builtIdx),
+    'and the BUILT Index.html he actually pastes carries all three and neither old wording');
 
   await browser.close();
   console.log('\n' + (FAILS.length ? 'FAILED ' + FAILS.length : 'ALL FLAG-LIFECYCLE CHECKS PASSED') + '  (' + PASS + ' checks)');

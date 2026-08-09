@@ -118,6 +118,14 @@ if (!old) {
 /* His live-verification finding, 8 Aug: the FIRST switch to a lesson sat silent
    for a few seconds. Its own pre-fix ref is the redesign commit itself. */
 section('B2. SOURCE CONTROL - the silent wait he reported really was silent');
+/* round 3 (DFM 162, 9 Aug) landed on top of the flag-lifecycle build, so its
+   controls need their own pre-fix ref */
+const preFlags2 = (() => {
+  try {
+    return execFileSync('git', ['show', (process.env.KS3DT_FLAGS2_PREFIX_REF || 'cfc3cbf') + ':ks3-dt/platform/staff.js'],
+      { cwd: ROOT, encoding: 'utf8' });
+  } catch (e) { return null; }
+})();
 const preBusy = (() => {
   try {
     return execFileSync('git', ['show', (process.env.KS3DT_BUSY_PREFIX_REF || 'c48961c') + ':ks3-dt/platform/staff.js'],
@@ -135,7 +143,7 @@ if (!preBusy) {
 }
 
 section('C. SOURCE: the glyph key exists in CSS as well as in words');
-['.live-pick', '.live-elsewhere', '.lc-yes', '.lc-no', '.lc-mid', '.lc-skip', '.lc-dash', '.lc-comment', '.live-legend']
+['.live-pick', '.live-elsewhere', '.strip-jump', '.lc-yes', '.lc-no', '.lc-mid', '.lc-skip', '.lc-dash', '.lc-comment', '.live-legend']
   .forEach(cl => check(css.indexOf(cl) !== -1, 'style.css defines ' + cl));
 
 section('D. SOURCE: the Guide tab teaches the new screen (DFM 156d)');
@@ -336,7 +344,10 @@ async function readTab(page) {
         return out;
       })(),
       voicePillCount: body.querySelectorAll('.dash-table .pill.voice').length,
-      stripTitles: Array.from(body.querySelectorAll('.live-elsewhere span')).map(s => s.getAttribute('title')),
+      /* re-staged 9 Aug (DFM 162a): the strip's lessons became BUTTONS that jump
+         the tab, so its explanations live on them and not on a span */
+      stripTitles: Array.from(body.querySelectorAll('.live-elsewhere .strip-jump')).map(s => s.getAttribute('title')),
+      stripLabels: Array.from(body.querySelectorAll('.live-elsewhere .strip-jump')).map(s => s.textContent.trim()),
       refreshTitle: (body.querySelector('[data-action="live-refresh"]') || {}).title || '',
       csvTitle: (body.querySelector('[data-action="live-csv"]') || {}).title || '',
       baseline: (() => {
@@ -442,7 +453,31 @@ async function readTab(page) {
   section('J. LIVE: choosing a lesson can never hide a stuck pupil');
   check(/Ciara Small/.test(t.elsewhere) && /Lesson 1/.test(t.elsewhere),
     'with Lesson 2 on screen, the strip names Ciara and her lesson: "' + t.elsewhere.trim() + '"');
-  check(t.flags.some(f => /needs you \(Lesson 1\)/.test(f)), 'and her row flag names that lesson too');
+  /* re-staged 9 Aug (DFM 162a - one pill, one lesson). Ciara is stuck in Lesson 1
+     and has no Lesson 2 record at all, so with Lesson 2 on screen her ROW says
+     nothing and the strip is the single, complete home of that signal. The old
+     "needs you (Lesson 1)" pill is what let an acknowledgement in one lesson
+     hide a live flag in another. */
+  check(!t.flags.some(f => /\(Lesson /.test(f)), 'no pill in the table names another lesson any more');
+  check(t.cells.ciara && !/needs you/.test(t.cells.ciara[0]),
+    'Ciara’s Lesson 2 row carries no flag: everything in the table is about the lesson on screen');
+  check(t.stripLabels.length === 2 && t.stripLabels.every(l => l === 'Lesson 1'),
+    'and every lesson named in the strip is a button: ' + JSON.stringify(t.stripLabels));
+  /* the completeness half of DFM 162(a): Orla is flagged in Lesson 2 (the lesson
+     on screen) AND in Lesson 1. The old strip skipped her entirely, because it
+     only listed pupils whose ROW pill was about another lesson - so a pupil in
+     trouble in two lessons at once was half invisible. */
+  check(/Orla Devine/.test(t.elsewhere),
+    'a pupil flagged in THIS lesson and another one is named in the strip too: "' + t.elsewhere.trim() + '"');
+  check(/Ciara Small/.test(t.elsewhere), 'alongside the pupil who is only flagged elsewhere');
+  /* this one's pre-fix ref is NOT ccb6822 (the strip did not exist then) but the
+     build that was live when he found the masking bug */
+  if (preFlags2) {
+    check(/if \(liveRed && !hereHit\)/.test(preFlags2),
+      'pre-fix CONTROL: the strip only ever listed a pupil whose row pill belonged to another lesson, so Orla was missed');
+  } else {
+    check(false, 'could not read the round-3 pre-fix commit - that control cannot run');
+  }
   check(t.flags.some(f => /^needs you$/.test(f)), 'a pupil stuck in THIS lesson keeps the plain flag');
 
   section('K. LIVE: the picker moves the whole tab');
@@ -544,18 +579,21 @@ async function readTab(page) {
   section('Q. THE RED FLAG NAMES ITS OWN CAUSE (DFM 157b)');
   await openLive(page, { l3On: false });
   let q = await readTab(page);          // opens on Lesson 2
-  check(/every exit question wrong \(0 of 2\)/.test(q.flagTitles['Jarlath Gartland'] || ''),
+  /* re-staged 9 Aug: the exit trigger is now under-half-right, his ruling
+     (DFM 162b). Jarlath answered one wrongly and skipped one; Sinead got both
+     wrong - 0 of 2 under either rule, said in the new words. */
+  check(/Under half her exit answers were right \(0 of 2\)/.test(q.flagTitles['Jarlath Gartland'] || ''),
     'plural exit wording, with the real count: "' + q.flagTitles['Jarlath Gartland'] + '"');
-  check(/every exit question wrong \(0 of 2\)/.test(q.flagTitles['Sinead Boyle'] || ''),
+  check(/Under half her exit answers were right \(0 of 2\)/.test(q.flagTitles['Sinead Boyle'] || ''),
     'and the same for a pupil whose only trigger is the exit check');
   check(/nothing new has been saved for over 20 minutes/.test(q.flagTitles['Orla Devine'] || ''),
     'the no-activity trigger says so plainly: "' + q.flagTitles['Orla Devine'] + '"');
-  check(/^Lesson 1: /.test(q.flagTitles['Ciara Small'] || ''),
-    'a flag belonging to another lesson prefixes its reasons with that lesson: "' + q.flagTitles['Ciara Small'] + '"');
-  check(/Under half her warm-up answers were right \(1 of 9\)/.test(q.flagTitles['Ciara Small'] || ''),
-    'and carries the warm-up reason with its real numbers');
-  check(q.stripTitles.length === 1 && /Lesson 1: Under half/.test(q.stripTitles[0] || ''),
-    'the cross-lesson strip entry carries the same explanation');
+  check(q.flagTitles['Ciara Small'] == null,
+    're-staged (DFM 162a): a pupil stuck only in ANOTHER lesson now has no pill in this table at all');
+  check(q.stripTitles.some(t2 => /Under half her warm-up answers were right \(1 of 9\)/.test(t2 || '')),
+    'her reason lives on the strip’s own lesson button, with its real numbers: "' + q.stripTitles[0] + '"');
+  check(q.stripTitles.length === 2 && q.stripTitles.every(t2 => /Click to show this lesson\.$/.test(t2 || '')),
+    'and every button on the line says what pressing it will do');
   check(/red <b>needs you<\/b> flag means one of three things/.test(q.legend) ||
         /needs you.*flag means one of three things/.test(q.legend),
     'the key under the table lists the three triggers');

@@ -1025,6 +1025,16 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   background: var(--bad-soft); border: 1px solid var(--bad); color: var(--bad);
   border-radius: var(--r-sm); padding: 8px 12px; margin: 8px 0; font-size: 0.83rem; font-weight: 600;
 }
+/* DFM 162(a): every lesson named in the strip is a button that takes her there.
+   It has to LOOK pressable where it sits - inside a line of red text - so it
+   carries the underline and the pointer, and answers to hover and focus. No new
+   colour: it borrows the strip's own red. */
+.live-elsewhere .strip-jump {
+  background: none; border: 0; padding: 0 1px; margin: 0; font: inherit; color: inherit;
+  text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
+}
+.live-elsewhere .strip-jump:hover { text-decoration-thickness: 2px; }
+.live-elsewhere .strip-jump:focus-visible { outline: 2px solid var(--bad); outline-offset: 2px; border-radius: 3px; }
 .dash-table td.lc-mark { white-space: nowrap; font-size: 0.95rem; letter-spacing: 0.06em; }
 /* the name column carries the remove button, the full name and the flag: give it
    room, or a flagged pupil's row grows to five lines and the table stops scanning */
