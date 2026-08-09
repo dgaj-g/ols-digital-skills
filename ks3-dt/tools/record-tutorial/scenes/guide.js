@@ -533,7 +533,7 @@ const scenes = [
           return r;
         };
       });
-      await chapterOpen(cine, page, 3, 'Live: the flags', 'part two &mdash; the flags, and what to do');
+      await chapterOpen(cine, page, 3, 'Live: the flags', 'part two: the flags, and what to do');
       await cine.lift();
       await cine.ensureCursor(640, 620);
 
