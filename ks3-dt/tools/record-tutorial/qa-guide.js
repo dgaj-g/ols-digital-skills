@@ -103,6 +103,17 @@ function staticHalf() {
   });
   check(/GUIDE_FILM_LIVE2_SPEC/.test(scene),
     'and the scene file says where the Live chapters\' captions are owned (rule 144: one home per fact)');
+  /* HIS FIND, 9 Aug 2026: the "Live: flags" title card read "part two &mdash;
+     the flags" on screen, raw. Title cards are set with textContent, so an HTML
+     entity is never decoded - but captions and ring labels DO take HTML, which
+     is why the habit leaks across. Guarded at record time in cinema.js; pinned
+     here so the guard itself cannot be quietly removed. */
+  const cinemaSrc = fs.readFileSync(path.join(ROOT, 'ks3-dt/tools/record-tutorial/lib/cinema.js'), 'utf8');
+  check(/assertPlainText/.test(cinemaSrc) && /TITLE CARD IS PLAIN TEXT/.test(cinemaSrc),
+    'a title card carrying an HTML entity fails the recording instead of reaching the screen');
+  const cardText = (scene.match(/chapterOpen\(cine, page, [^;]*?\);/gs) || []).join('\n');
+  check(cardText.length > 0 && !/&[a-zA-Z]+;|&#\d+;/.test(cardText),
+    'no chapter title card carries an HTML entity (' + (cardText.match(/chapterOpen/g) || []).length + ' cards checked)');
 
   section('D. THE WALKTHROUGH VIDEO - it exists and the stated length is true');
   const vid = P('assets/video/guide/guide-tour.mp4');

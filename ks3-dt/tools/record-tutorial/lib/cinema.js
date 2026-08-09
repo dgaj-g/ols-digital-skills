@@ -434,7 +434,23 @@ class Cinema {
     await this.pause(280);
   }
 
-  async curtain(spec) { await this.page.evaluate(s => window.__cine.curtain(s), spec); }
+  /* A TITLE CARD IS PLAIN TEXT, NEVER HTML (his find, 9 Aug 2026). curtain()
+     sets title/sub/kicker with textContent, so an HTML entity does not decode -
+     it is shown to the viewer raw, exactly as "&mdash;" appeared on the Live:
+     flags card. Captions and ring labels DO take HTML, which is why the habit
+     leaks in. Caught here, at record time, rather than on his screen. */
+  static assertPlainText(spec) {
+    ['title', 'sub', 'kicker', 'brand'].forEach(k => {
+      const v = spec && spec[k];
+      if (typeof v === 'string' && /&[a-zA-Z]+;|&#\d+;/.test(v)) {
+        throw new Error('TITLE CARD IS PLAIN TEXT: ' + k + ' contains an HTML entity that will be shown raw -> ' + v);
+      }
+    });
+  }
+  async curtain(spec) {
+    Cinema.assertPlainText(spec);
+    await this.page.evaluate(s => window.__cine.curtain(s), spec);
+  }
   async lift(ms) { this.mark('lift'); await this.page.evaluate(m => window.__cine.lift(m), ms || 700); }
   async drop(spec, ms) {
     await this.page.evaluate(([s, m]) => window.__cine.drop(s, m), [spec || {}, ms || 650]);
