@@ -1662,6 +1662,10 @@
          seen ANY of it - those open at the beginning. */
       function openFilm(startAt) {
         var f = cfg.film; if (!f || !f.src) return;
+        /* DFM 104's family, L3 pre-sit review: two quick presses on the film
+           button stacked two modals, and closing one left the other over the
+           card. One gesture, one modal. */
+        if (document.querySelector('.film-modal')) return;
         var seek = (typeof startAt === 'number') ? startAt : Number(f.defaultT || 0);
         var chips = (f.chapters || []).map(function (ch) {
           return '<button class="vid-chapter" type="button" data-t="' + Number(ch.t) + '">' + esc(ch.label) + '</button>';
@@ -1785,22 +1789,30 @@
           (r.hintImg ? '<img class="rung-img" src="' + esc(asset(r.hintImg)) + '" alt="The finished blocks for this rung">' : '') +
           '</div>' +
           '<div class="rung-actions">' +
-          '<button class="primary-btn rung-worked" type="button">It worked on the device! &#9889;</button>' +
+          '<button class="primary-btn rung-worked" type="button">It worked! &#9889;</button>' +
           (r.hint && !hintUsed ? '<button class="ghost-btn rung-hint-btn" type="button">Debug Hint (costs 2 XP)</button>' : '') +
           filmBtn() +
           '</div></div>');
         host.innerHTML = '';
         host.appendChild(c);
-        wireFilmBtn(c);
+        /* DFM 143's letter: the two screens straight after the film open it at
+           the BEGINNING, because a pupil who mis-clicked "Done watching" may
+           have seen none of it. On a ladder with an unplugged rung (L2) that
+           second screen is the unplugged card, which already opens at 0; on a
+           ladder without one (L3) it is rung 1, so rung 1 opens at 0 too. */
+        wireFilmBtn(c, (idx === 0 && !cfg.unplugged) ? 0 : undefined);
         if (hintUsed) { c.querySelector('.rung-hint').hidden = false; }
         var hb = c.querySelector('.rung-hint-btn');
-        if (hb) hb.onclick = function () {
+        /* DFM 104, L3 pre-sit review: these two were bare onclicks. Clearing a
+           rung renders the NEXT rung's identical button in the same spot under
+           her finger, so a double-click cleared two rungs at once. */
+        if (hb) App.armButton(hb, function () {
           hinted.push(String(r.id));
           saveLadder();
           c.querySelector('.rung-hint').hidden = false;
           hb.remove();
-        };
-        c.querySelector('.rung-worked').onclick = function () {
+        });
+        App.armButton(c.querySelector('.rung-worked'), function () {
           done.push(String(r.id));
           saveLadder();
           App.toast('Rung cleared &mdash; signal locked in.');
@@ -1810,7 +1822,7 @@
           justCleared = String(r.id);
           showRung();
           justCleared = null;
-        };
+        });
       }
 
       function stretchOrFinish() {
@@ -1829,9 +1841,11 @@
         host.innerHTML = '';
         host.appendChild(c);
         wireFilmBtn(c);
+        /* same guard as the rung buttons: this card replaces the one she just
+           pressed, and both of these end the ladder */
         var btns = c.querySelectorAll('button');
-        btns[0].onclick = function () { stretchDone = true; saveLadder(); finishLadder(); };
-        btns[1].onclick = function () { finishLadder(); };
+        App.armButton(btns[0], function () { stretchDone = true; saveLadder(); finishLadder(); });
+        App.armButton(btns[1], function () { finishLadder(); });
       }
 
       function finishLadder() {
@@ -2264,7 +2278,9 @@
         var b0 = best();
         host.appendChild(el('<div class="card rally-card"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
           '<h2>' + esc(cfg.title || 'The Reaction Rally') + '</h2>' +
-          '<p class="intro-lead">' + (draft.sub ? 'Rally logged — your pair’s best round was <b>' + b0 + '</b>. The reveal happened live in class.' : 'The Rally runs live, in class — nothing to replay here.') + '</p>' +
+          /* review mode cannot know whether the run was solo, and "your best
+             round" is true either way (L3 pre-sit review) */
+          '<p class="intro-lead">' + (draft.sub ? 'Rally logged — your best round was <b>' + b0 + '</b>. The reveal happened live in class.' : 'The Rally runs live, in class — nothing to replay here.') + '</p>' +
           '<button class="primary-btn" type="button">Continue</button></div>'));
         host.querySelector('button').onclick = function () { ctx.next(); };
         return;
@@ -2293,7 +2309,9 @@
         '<ol class="rally-rules">' + ruleRows + '</ol>' +
         '<div class="rally-console">' + slots + '</div>' +
         '<button class="confirm-step rally-confirm" type="button"><span class="confirm-box"></span>' + esc(confirmLabel || 'We tested it three times') + '</button>' +
-        '<div class="rung-actions"><button class="primary-btn rally-transmit" type="button" disabled>Send in our score</button></div>' +
+        /* Session B rule: a catch-up pupil has no pair, so "our score" is a
+           sentence about somebody who is not there (L3 pre-sit review) */
+        '<div class="rung-actions"><button class="primary-btn rally-transmit" type="button" disabled>Send in ' + (solo ? 'my' : 'our') + ' score</button></div>' +
         '<div class="rally-after"></div></div>');
       host.appendChild(c);
       var confirmBtn = c.querySelector('.rally-confirm');
