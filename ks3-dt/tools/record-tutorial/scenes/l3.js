@@ -254,6 +254,17 @@ const scenes = [
       await drv.waitFor(() => drv.page.evaluate(() =>
         !!Array.from(document.querySelectorAll('.ui.modal input, [role="dialog"] input'))
           .find(i => i.offsetParent !== null)), 10000, 'name input');
+      /* DFM 169: MakeCode decorates this dialog's title with emoji, and the
+         recording machine draws them in ITS OWN (Apple) art - his 9 Aug find.
+         A school Windows machine can never look like that, and this Mac can
+         never draw them the Windows way, so the film shows the plain title. */
+      await drv.page.evaluate(() => {
+        document.querySelectorAll('.ui.modal .header').forEach(h => {
+          h.childNodes.forEach(n => {
+            if (n.nodeType === 3) n.textContent = n.textContent.replace(/[^\x00-\x7F]/g, '').trimEnd();
+          });
+        });
+      });
       const inp = await drv.page.evaluate(() => {
         const i = Array.from(document.querySelectorAll('.ui.modal input, [role="dialog"] input')).find(x => x.offsetParent !== null);
         const b = i.getBoundingClientRect();
@@ -273,6 +284,30 @@ const scenes = [
         !!document.querySelector('.blocklyToolboxDiv, [role="treeitem"]')), 45000, 'editor after create');
       await drv.page.waitForTimeout(2500);
       await cine.captionHide();
+
+      /* DFM 169(b): the Welcome tour popup used to appear ON camera and get
+         dismissed OFF camera - an unexplained help box that vanished. The same
+         popup will greet a pupil on her own machine, so the film now teaches
+         the click instead of hiding it. If MakeCode ever stops showing the
+         popup, this beat simply never fires. */
+      const tourClose = await (async () => {
+        for (let i = 0; i < 12; i++) {
+          const r = await drv.page.evaluate(() => {
+            const el = document.querySelector('.tour-container .close, [aria-label="Close"]');
+            if (!el || el.offsetParent === null) return null;
+            const b = el.getBoundingClientRect();
+            return b.width > 4 ? { cx: b.x + b.width / 2, cy: b.y + b.height / 2 } : null;
+          }).catch(() => null);
+          if (r) return r;
+          await drv.page.waitForTimeout(500);
+        }
+        return null;
+      })();
+      if (tourClose) {
+        await cine.captionShow('A blue Welcome box may pop up. Click its &#10005; &mdash; you do not need the tour today.');
+        await cine.click(tourClose.cx, tourClose.cy, { after: 1400 });
+        await cine.captionHide();
+      }
       await drv.dismissDialogs();
       await drv.page.waitForTimeout(1800);
 
@@ -304,7 +339,7 @@ const scenes = [
       await cine.lift();
       await cine.ensureCursor(640, 430);
 
-      await cine.caption('Variables live in&hellip; <b>Variables</b>. Sensible.');
+      await cine.caption('Variable blocks live under <b>Variables</b>.');
       const cat = await drv.category('Variables');
       if (!cat) throw new Error('Variables category not found');
       await cine.captionShow('Click <b>Variables</b>.', { pos: 'top' });
@@ -327,18 +362,21 @@ const scenes = [
 
       const setBlk = await drv.flyoutBlock('set score to');
       if (!setBlk) throw new Error('set score to not in flyout after create');
-      await cine.caption('Three new blocks appeared. <b>set score to</b> &mdash; FORCE a number into the box.');
-      await cine.caption('<b>change score by</b> &mdash; ADD to whatever is already inside.');
-      await cine.caption('And the little <b>score</b> oval IS the box &mdash; drop it anywhere a number goes.');
+      await cine.caption('Three new blocks have appeared. <b>set score to</b>&hellip; FORCES a number into the box &mdash; whatever was there before is gone.');
+      await cine.caption('<b>change score by</b>&hellip; ADDS to the number already inside the box.');
+      await cine.caption('The round <b>score</b> block stands for the number inside the box.');
       await drv.page.keyboard.press('Escape').catch(() => {});
       await drv.page.waitForTimeout(700);
 
       /* the rework's teaching beat: the forever block was there all along */
       const fv = await drv.canvasBlock('forever', true);
       if (!fv) throw new Error('forever block not on canvas');
+      /* DFM 169 sit finding: the callout and the caption used to carry the
+         IDENTICAL sentence, so the film said the same thing twice in a row.
+         The callout now NAMES the block; the caption says what it DOES. */
       await cine.callout({ x: fv.x - 6, y: fv.y - 6, w: fv.w + 12, h: fv.h + 12 },
-        'Every new project comes with a forever block — free, and it never stops', { side: 'below' });
-      await cine.caption('Every new project comes with a <b>forever</b> block &mdash; free, and it never stops.');
+        'This forever block came free with your project', { side: 'below' });
+      await cine.caption('Every new project comes with a <b>forever</b> block. Whatever you put inside it runs over and over &mdash; and it never stops.');
 
       const basicCat = await drv.category('Basic');
       if (!basicCat) throw new Error('Basic category not found');
@@ -348,7 +386,7 @@ const scenes = [
       await cine.captionHide();
 
       const varCat2 = await drv.category('Variables');
-      await cine.captionShow('The clever bit: drag the <b>score</b> oval INTO the 0 slot.', { pos: 'top' });
+      await cine.captionShow('Now drag the round <b>score</b> block INTO the 0 slot, so the block reads <b>show number score</b>.', { pos: 'top' });
       await cine.click(varCat2.cx, varCat2.cy, { after: 1100 });
       const oval = await drv.flyoutBlock('^score$');
       if (!oval) throw new Error('score oval not in flyout');
@@ -367,7 +405,10 @@ const scenes = [
       await drv.page.waitForTimeout(3200); // let the simulator restart and draw
       const leds = await drv.ledsOn();
       log('LEDs with nothing pressed: ' + leds);
-      await cine.caption('The display is the <b>loop’s</b> job now. Before you press anything: the screen already reads <b>0</b> &mdash; nobody triggered that. <b>The loop started itself.</b>');
+      /* his screenshot-4 finding, 9 Aug: the old caption ("The display is the
+         loop's job now... The loop started itself.") was four abstractions in
+         two lines and he could not tell what it was trying to say. */
+      await cine.caption('Look at the simulator: it already shows <b>0</b>, and you have not pressed anything. The <b>forever</b> loop started by itself, and it is showing the number in the box &mdash; over and over.');
       await cine.caption('That is a variable made, and a scoreboard already running. <b>Now make it count.</b>');
 
       await cine.drop({});
@@ -398,7 +439,11 @@ const scenes = [
       await cine.lift();
       await cine.ensureCursor(700, 480);
 
-      await cine.caption('The job: every press of <b>button A</b> changes the number in the box. The loop is already showing it.');
+      /* his screenshot-5 finding, 9 Aug: the old caption ("The job: every
+         press of button A changes the number in the box. The loop is already
+         showing it.") described a block she had not built yet in the present
+         tense, and "it" could read as the button press. Future-framed now. */
+      await cine.caption('Right now, pressing <b>button A</b> does nothing &mdash; no block is listening for it. You are about to build the block that listens.');
 
       const inputCat = await drv.category('Input');
       if (!inputCat) throw new Error('Input category not found');
@@ -408,7 +453,7 @@ const scenes = [
       if (!onBtn) throw new Error('on button A pressed not in flyout');
       await cine.drag(onBtn.x + 60, onBtn.y + 22, 840, 300, { ms: 1500 });
       await cine.captionHide();
-      await cine.caption('Its <b>own</b> stack, beside the loop &mdash; not inside it.');
+      await cine.caption('Drop it on empty canvas BESIDE the forever block &mdash; its own separate stack, not inside forever. When A is pressed, this event will change the number in the box &mdash; and the loop already shows that number on screen, so you will see it change.');
 
       const varCat = await drv.category('Variables');
       await cine.captionShow('From <b>Variables</b>: drop <b>set score to</b> INSIDE the event.', { pos: 'top' });
@@ -603,10 +648,12 @@ const scenes = [
       await cine.captionHide();
       await cine.caption('<b>Right once could be luck. Right three rounds running is proof.</b>');
 
+      /* DFM 168: the film is now served in parts ON the ladder, so "now build
+         the ladder" would be false - she has been building all along. */
       await cine.drop({
-        crest: CREST, kicker: 'READY TO BUILD',
-        title: 'Now build the ladder',
-        sub: 'Rung 1 is the scoreboard you just watched. The Reaction Rally is waiting.'
+        crest: CREST, kicker: 'READY TO COMPETE',
+        title: 'That is the whole scoreboard',
+        sub: 'Built by you, tested three rounds — the Reaction Rally is waiting.'
       });
       await cine.pause(3800);
     },

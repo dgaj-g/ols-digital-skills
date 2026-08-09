@@ -25,7 +25,21 @@ async function runSet(setName, only) {
       log('--- recording (attempt ' + attempt + ')');
       const context = await browser.newContext({
         viewport: { width: 1280, height: 720 },
+        /* DFM 169: films are recorded as the SCHOOL'S machines will show the
+           site. The school runs Windows; recording from a Mac with no override
+           put macOS screen furniture into the Lesson 3 film (Damien's find,
+           9 Aug 2026 — Apple-drawn emoji in MakeCode's own Create-a-Project
+           title). Keep the Chrome major in step with the bundled Chromium. */
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',
         recordVideo: { dir: path.join(outDir, 'tmp'), size: { width: 1280, height: 720 } }
+      });
+      /* The UA string alone is not enough: MakeCode reads the LEGACY
+         navigator.platform for its keyboard hints, which is how a toast saying
+         "Press ⌘ / for help on keyboard controls" — the Mac command symbol —
+         got into the Lesson 3 film (his find, DFM 169). On a Windows platform
+         the same toast says Ctrl, which is what the school's machines show. */
+      await context.addInitScript(() => {
+        Object.defineProperty(Navigator.prototype, 'platform', { get: () => 'Win32' });
       });
       const page = await context.newPage();
       const cine = new Cinema(page, log);

@@ -1693,6 +1693,54 @@
         if (fb) fb.onclick = function () { openFilm(startAt); };
       }
 
+      /* DAMIEN, 9 Aug 2026 (DFM 168): "split up the video in parts, and after
+         each wee bit, then make the pupil do it on their computer, then
+         confirm it's done and move on to the next part of the video."
+         Each card can now carry its own slice of the film: the player opens at
+         the part's start and pauses itself at the part's end (crossing once,
+         from below - a pupil who presses play again afterwards has CHOSEN to
+         continue, and the full film is behind the film button regardless).
+         Everything here is gated on the part config existing, so a ladder
+         without parts (Lesson 2) renders byte-identically to before. */
+      function partHtml(part) {
+        if (!part || !cfg.film || !cfg.film.src) return '';
+        var m = Math.max(1, Math.round((Number(part.to) - Number(part.from)) / 60));
+        return '<div class="rung-part">' +
+          '<p class="rung-step-head">&#9312; Watch this part &mdash; <b>' + esc(part.label || 'the film') + '</b></p>' +
+          '<video class="rung-part-video" controls preload="metadata" playsinline src="' + esc(asset(cfg.film.src)) + '"></video>' +
+          '<p class="rung-part-note">This part runs about ' + m + ' minute' + (m === 1 ? '' : 's') + '.' +
+          ' <button class="ghost-btn rung-part-replay" type="button">&#8635; Watch this part again</button></p>' +
+          '<p class="rung-part-done" hidden>That&rsquo;s the part &mdash; now build it below.</p>' +
+          '</div>';
+      }
+      function wirePart(root, part) {
+        var v = root.querySelector('.rung-part-video');
+        if (!v || !part) return;
+        var from = Number(part.from) || 0, to = Number(part.to) || 0;
+        var doneLine = root.querySelector('.rung-part-done');
+        var lastT = 0;
+        v.addEventListener('loadedmetadata', function () { try { v.currentTime = from; } catch (e) {} });
+        v.addEventListener('timeupdate', function () {
+          var t = v.currentTime;
+          if (to && lastT < to - 0.3 && t >= to - 0.3) {
+            v.pause();
+            if (doneLine) doneLine.hidden = false;
+          }
+          lastT = t;
+        });
+        v.addEventListener('ended', function () { if (doneLine) doneLine.hidden = false; });
+        var rb = root.querySelector('.rung-part-replay');
+        if (rb) rb.onclick = function () {
+          if (doneLine) doneLine.hidden = true;
+          try { v.currentTime = from; v.play(); } catch (e) {}
+        };
+      }
+      /* a card being replaced takes its playing part with it - stop it first */
+      function pausePart() {
+        var v = host.querySelector('.rung-part-video');
+        if (v) { try { v.pause(); } catch (e) {} }
+      }
+
       function openerRow() {
         return cfg.makecode
           ? '<p class="ladder-open"><a class="ghost-btn" href="' + esc(cfg.makecode.url) + '" target="_blank" rel="noopener">' + esc(cfg.makecode.label || 'Open MakeCode') + ' &#8599;</a>' +
@@ -1726,11 +1774,12 @@
       introCard(host, {
         kicker: chunk.title, title: cfg.title || 'The Challenge Ladder',
         text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
-        extra: ladderSvg(true) + openerRow() + setupList() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
+        extra: ladderSvg(true) + (cfg.introPart ? partHtml(cfg.introPart) : '') + openerRow() + setupList() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
       }, unpluggedDone ? 'Back to the ladder' : 'Start climbing', function () {
         if (!unpluggedDone && cfg.unplugged) unplugged(); else showRung();
       });
       wireFilmBtn(host, 0);
+      wirePart(host, cfg.introPart);
 
       function unplugged() {
         var up = cfg.unplugged;
@@ -1762,10 +1811,13 @@
 
       function showRung() {
         if (idx >= rungs.length) { stretchOrFinish(); return; }
+        pausePart();
         var r = rungs[idx];
         var hintUsed = hinted.indexOf(String(r.id)) !== -1;
         var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(r.title) + '</span>' +
           ladderSvg() +
+          (r.part ? partHtml(r.part) : '') +
+          (r.part ? '<p class="rung-step-head">&#9313; Build it yourself</p>' : '') +
           '<h2 class="rung-target">' + esc(r.target) + '</h2>' +
           /* DAMIEN, 4 Aug 2026: "might need to have a screenshot image in the
              card to show them what a ghost icon looks like in makcode because I
@@ -1778,7 +1830,7 @@
           (r.img ? '<figure class="rung-fig"><img class="rung-img' + (r.imgSmall ? ' rung-img-sm' : '') +
             '" src="' + esc(asset(r.img)) + '" alt="' + esc(r.imgAlt || 'The blocks for this rung') + '">' +
             (r.imgCap ? '<figcaption>' + esc(r.imgCap) + '</figcaption>' : '') + '</figure>' : '') +
-          '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(r.test || 'Flash it to the device and make it happen for real.') + '</p></div>' +
+          '<div class="rung-test"><p>&#128293; <b>' + (r.part ? '&#9314; Prove it &mdash; the real test:' : 'The real test:') + '</b> ' + esc(r.test || 'Flash it to the device and make it happen for real.') + '</p></div>' +
           /* C-04, approved 2 Aug 2026: the finished-blocks picture used to sit
              on the card, above a hint that charged 2 XP for less
              than the picture gave away free - so the rung taught copying, not
@@ -1801,6 +1853,7 @@
            second screen is the unplugged card, which already opens at 0; on a
            ladder without one (L3) it is rung 1, so rung 1 opens at 0 too. */
         wireFilmBtn(c, (idx === 0 && !cfg.unplugged) ? 0 : undefined);
+        wirePart(c, r.part);
         if (hintUsed) { c.querySelector('.rung-hint').hidden = false; }
         var hb = c.querySelector('.rung-hint-btn');
         /* DFM 104, L3 pre-sit review: these two were bare onclicks. Clearing a
@@ -1826,6 +1879,7 @@
       }
 
       function stretchOrFinish() {
+        pausePart();
         if (!cfg.stretch || stretchDone) { finishLadder(); return; }
         var s = cfg.stretch;
         var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(s.title || 'Stretch') + '</span>' +

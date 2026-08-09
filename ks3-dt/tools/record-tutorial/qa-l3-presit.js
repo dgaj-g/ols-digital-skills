@@ -45,7 +45,9 @@ const PRE = {
   ex31opt1: "The 'change score by 1' block isn't sitting inside 'on button A pressed' properly"
 };
 /* the download-again instruction, however it is phrased */
-const DOWNLOAD_AGAIN = /download (it|and drag)[^.]*again|again and drag|download and drag the new file/i;
+const DOWNLOAD_AGAIN = /download (it|and drag)[^.]*again|again and drag|drag the new file across/i;
+/* the 596465f-era rung 2 test (pre guided-build): its dark proof lived on rung 1 */
+const PRE_GB_S2TEST = "Download it again and drag the new file across — your micro:bit keeps running the OLD program until a new file lands on it. Then press A three times. Does the number climb by exactly one per press — 1, 2, 3? Notice you never touched the display code: the forever loop redraws the new total the instant it changes. It also keeps counting up from whatever it showed before. Annoying? Good — a fresh-start button is exactly what Rung 3 builds.";
 
 (async () => {
   /* ================= 1. CONTENT: source AND packed must both carry it ====== */
@@ -59,7 +61,9 @@ const DOWNLOAD_AGAIN = /download (it|and drag)[^.]*again|again and drag|download
     const r = id => lad.rungs.find(x => x.id === id);
 
     // A1 the set-up list
-    check(Array.isArray(lad.setup) && lad.setup.length === 4, label + ': the ladder carries a 4-step MakeCode set-up list');
+    check(Array.isArray(lad.setup) && lad.setup.length === 5, label + ': the ladder carries a 5-step MakeCode set-up list');
+    check(/Welcome box/.test(lad.setup.join(' ')) && /✕|close it/.test(lad.setup.join(' ')),
+      label + ': the set-up list teaches closing the Welcome box (DFM 169)');
     check(/Before rung 1/.test(String(lad.setupLead || '')), label + ': the set-up list has its own lead line');
     check(/scoreboard/.test(lad.setup.join(' ')) && /Signal Relay/.test(lad.setup.join(' ')),
       label + ': the set-up list names the NEW project (scoreboard) and warns off Signal Relay');
@@ -72,29 +76,53 @@ const DOWNLOAD_AGAIN = /download (it|and drag)[^.]*again|again and drag|download
       label + ': the solo intro says it too');
     check(!/DEVICE is the judge/.test(JSON.stringify(L3)), label + ': "DEVICE is the judge" is gone from the whole lesson');
 
-    // A3 rung 1: the simulator, and no false film claim
-    check(/SIMULATOR/.test(r('s1').test), label + ': rung 1 sends the break-it step to the SIMULATOR');
-    check(/only changes when you download to it again/i.test(r('s1').test),
-      label + ': rung 1 says a micro:bit only changes on a fresh download');
+    // The guided-build re-cut (DFM 168): rung 1 = variable + the loop showing it
+    check(/Watch your simulator/i.test(r('s1').test), label + ': rung 1 starts at the simulator reading 0');
     check(!/the film button below replays it/.test(r('s1').test),
-      label + ': rung 1 no longer claims the film replays the copy-across routine');
+      label + ': rung 1 never claims the film replays the copy-across routine');
     check(/press Download in MakeCode, then drag the file across/.test(r('s1').test),
-      label + ': rung 1 spells the copy-across steps out itself instead');
+      label + ': rung 1 spells the copy-across steps out itself');
+    check(!/button A|set score/i.test(r('s1').target),
+      label + ': rung 1 no longer builds the button event — that is rung 2\'s part of the film');
 
-    // A4/A5 the download-again openers
-    check(DOWNLOAD_AGAIN.test(r('s2').test), label + ': rung 2 opens by telling her to download again');
+    // rung 2 = the event, set-vs-change, and the dark proof (moved here with its film part)
+    check(/set score to 1/.test(r('s2').target) && /change score by 1/.test(r('s2').target),
+      label + ': rung 2 builds the event and the set-to-change swap');
+    check(DOWNLOAD_AGAIN.test(r('s2').test), label + ': rung 2 opens by telling her to download');
     check(DOWNLOAD_AGAIN.test(r('s3').test), label + ': rung 3 opens by telling her to download again');
     check(/OLD program/i.test(r('s2').test), label + ': rung 2 says why — the micro:bit keeps running the OLD program');
+    check(/SIMULATOR/.test(r('s2').test) && /goes dark/.test(r('s2').test),
+      label + ': rung 2 carries the break-it proof, on the SIMULATOR');
+    check(/only changes when you download again/i.test(r('s2').test),
+      label + ': and says a micro:bit only changes on a fresh download');
     check(/First check you downloaded again/i.test(r('s2').hint),
       label + ': rung 2\'s hint names the fresh download as the FIRST thing to check');
+    check(/Part 2/.test(r('s1').target) && /Part 3/.test(r('s2').target),
+      label + ': the rung targets point at their own film parts');
 
     // A6 help
     check(/simulator's display goes dark/.test(lad.help), label + ': the ladder help names the simulator for the break-it step');
 
-    // A7 the film's watching instructions
-    const howto = L3.chunks.find(c => c.id === 'howto').config;
-    check(/just WATCH it/.test(String(howto.intro || '')), label + ': the film card says today she just watches it');
-    check(/pause it/.test(String(howto.intro || '')), label + ': and tells her she can pause it');
+    // DFM 168: the standalone film chunk is GONE — the film lives on the ladder in parts
+    check(!L3.chunks.find(c => c.id === 'howto'),
+      label + ': the standalone film chunk is gone — the film is served in parts on the ladder');
+    check(!!lad.introPart && /Part 1/.test(String(lad.introPart.label || '')),
+      label + ': the ladder intro carries film Part 1');
+    check(['s1', 's2', 's3'].every(function (id) { return r(id).part && /Part [234]/.test(r(id).part.label); }),
+      label + ': every rung carries its own film part');
+    /* the one-fact boundary law (144): the parts and the re-watch chapters must
+       EQUAL the film's own chapters.json — film edits can never silently desync */
+    const chJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'out/l3/chapters.json'), 'utf8'));
+    const chT = chJson.chapters.map(function (c) { return Number(c.t); });
+    const parts = [lad.introPart, r('s1').part, r('s2').part, r('s3').part];
+    parts.forEach(function (p, i) {
+      check(Number(p.from) === chT[i], label + ': part ' + (i + 1) + ' starts exactly at chapter ' + (i + 1) + ' (' + p.from + ' = ' + chT[i] + ')');
+      const expectedTo = (i < 3) ? chT[i + 1] : Number(chJson.durationSec);
+      check(Number(p.to) === expectedTo, label + ': part ' + (i + 1) + ' ends exactly where the next begins (' + p.to + ' = ' + expectedTo + ')');
+    });
+    check(lad.film.chapters.every(function (c, i) { return Number(c.t) === chT[i]; }),
+      label + ': the re-watch modal\'s chapter buttons match chapters.json too');
+    check(Number(lad.film.defaultT) === chT[1], label + ': the film button still defaults to the make-the-variable chapter');
 
     // A8 the exit item
     const ex = L3.chunks.find(c => c.id === 'exit').config.items.find(i => i.id === 'ex3-1');
@@ -140,8 +168,11 @@ const DOWNLOAD_AGAIN = /download (it|and drag)[^.]*again|again and drag|download
     // A13/A14
     check(!/the real device|their device never showed|A device dies/.test(JSON.stringify(L3.teacherBrief)),
       label + ': the brief calls it the micro:bit');
-    check(Number(L3.chunks.find(c => c.id === 'howto').minutes) === 8, label + ': the film chunk is 8 minutes on paper (DFM 164b)');
-    check(Number(L3.durationMin) === 63, label + ': the lesson\'s stated hour is 63 minutes');
+    check(Number(L3.chunks.find(c => c.id === 'ladder').minutes) === 35,
+      label + ': the ladder is 35 minutes on paper (the 8:44 film moved in with it)');
+    check(Number(L3.durationMin) === 64, label + ': the lesson\'s stated hour is 64 minutes (the film grew to 8:44 in the re-record — reported to him)');
+    const mSum = L3.chunks.reduce(function (a, c) { return a + (Number(c.minutes) || 0); }, 0);
+    check(mSum + 3 === 64, label + ': the chunk minutes plus the Do-Now really sum to the stated hour (' + (mSum + 3) + ')');
   }
 
   console.log('\n== 1b. the three reported Lesson 2 strings (DFM 150 sweep) ==');
@@ -158,10 +189,11 @@ const DOWNLOAD_AGAIN = /download (it|and drag)[^.]*again|again and drag|download
   }
 
   console.log('\n== 1c. CONTROLS: the pre-fix content must fail these tests ==');
-  control(!/SIMULATOR/.test(PRE.s1test), 'the pre-fix rung 1 test never mentioned the simulator');
+  control(!/Watch your simulator/i.test(PRE.s1test), 'the pre-fix rung 1 test never started at the simulator');
   control(/the film button below replays it/.test(PRE.s1test), 'the pre-fix rung 1 test carried the false film claim');
   control(!DOWNLOAD_AGAIN.test(PRE.s2test), 'the pre-fix rung 2 test never said to download again');
   control(!DOWNLOAD_AGAIN.test(PRE.s3test), 'the pre-fix rung 3 test never said to download again');
+  control(!/goes dark/.test(PRE_GB_S2TEST), 'the pre-guided-build rung 2 had no break-it proof — it lived on rung 1 then');
   control(!/First check you downloaded again/i.test(PRE.s2hint), 'the pre-fix hint sent her straight to the code');
   control(!/says 1 after every single press/.test(PRE.ex31stem), 'the pre-fix ex3-1 asked about a physically impossible score of 3');
   control(!/set score to 1/.test(PRE.ex31opt1), 'the pre-fix ex3-1 answer named a cause that would have counted 0, not 3');
@@ -212,6 +244,10 @@ const DOWNLOAD_AGAIN = /download (it|and drag)[^.]*again|again and drag|download
   const mountLadder = async (file, opts) => page.evaluate(async ([file, opts]) => {
     const lesson = await (await fetch('/ks3-dt/content/j1/lessons/' + file)).json();
     const ladder = lesson.chunks.find(c => c.engine === 'ladder');
+    /* show the player screen the way the app does, so pixel measurements are
+       real - #chunk-host lives inside <main id="player" hidden> */
+    document.getElementById('hub').hidden = true;
+    document.getElementById('player').hidden = false;
     const host = document.querySelector('#chunk-host');
     host.hidden = false; host.innerHTML = '';
     window.__cleared = [];
@@ -236,11 +272,31 @@ const DOWNLOAD_AGAIN = /download (it|and drag)[^.]*again|again and drag|download
       body: h.textContent
     };
   });
-  check(introDom.setupItems === 4, 'the intro card really renders the four set-up steps (' + introDom.setupItems + ')');
+  check(introDom.setupItems === 5, 'the intro card really renders the five set-up steps (' + introDom.setupItems + ')');
   check(/scoreboard/.test(introDom.setupText) && /Signal Relay/.test(introDom.setupText),
     'the rendered steps name scoreboard and warn off Signal Relay');
   check(/Before rung 1/.test(introDom.lead), 'the rendered lead line is on screen above them');
   check(/micro:bit is the judge/.test(introDom.body), 'the rendered intro says the micro:bit is the judge');
+
+  /* DFM 168: the guided-build part player, on the intro card and every rung */
+  console.log('\n== 3b. the film part player (DFM 168) ==');
+  const chBounds = JSON.parse(fs.readFileSync(path.join(__dirname, 'out/l3/chapters.json'), 'utf8'));
+  const introPartDom = await page.evaluate(() => {
+    const h = document.querySelector('#chunk-host');
+    const v = h.querySelector('.rung-part-video');
+    return {
+      has: !!v, w: v ? v.getBoundingClientRect().width : 0,
+      head: (h.querySelector('.rung-step-head') || {}).textContent || '',
+      note: (h.querySelector('.rung-part-note') || {}).textContent || '',
+      replay: !!h.querySelector('.rung-part-replay')
+    };
+  });
+  check(introPartDom.has, 'the intro card carries the Part 1 player');
+  check(introPartDom.w >= 500, 'the rendered player is a real size, not a thumbnail (' + Math.round(introPartDom.w) + 'px)');
+  check(/① Watch this part/.test(introPartDom.head) && /Part 1/.test(introPartDom.head),
+    'its step head reads "① Watch this part — Part 1 …"');
+  check(/runs about \d+ minute/.test(introPartDom.note), 'the card says how long the part runs');
+  check(introPartDom.replay, 'and offers "Watch this part again"');
 
   /* walk to rung 1 */
   const toRung1 = () => page.evaluate(async () => {
@@ -250,10 +306,59 @@ const DOWNLOAD_AGAIN = /download (it|and drag)[^.]*again|again and drag|download
   await toRung1();
   const rungDom = await page.evaluate(() => {
     const h = document.querySelector('#chunk-host');
-    return { label: (h.querySelector('.rung-worked') || {}).textContent || '', test: (h.querySelector('.rung-test') || {}).textContent || '' };
+    return {
+      label: (h.querySelector('.rung-worked') || {}).textContent || '',
+      test: (h.querySelector('.rung-test') || {}).textContent || '',
+      heads: Array.from(h.querySelectorAll('.rung-step-head')).map(x => x.textContent),
+      hasPart: !!h.querySelector('.rung-part-video')
+    };
   });
   check(/It worked!/.test(rungDom.label) && !/device/i.test(rungDom.label), 'the rung button reads "It worked!" with no generic noun');
-  check(/SIMULATOR/.test(rungDom.test), 'the rendered rung 1 test names the simulator');
+  check(/Watch your simulator/i.test(rungDom.test), 'the rendered rung 1 test starts at the simulator');
+  check(rungDom.hasPart, 'rung 1 carries its own part player');
+  check(rungDom.heads.some(t => /① Watch this part/.test(t)) && rungDom.heads.some(t => /② Build it yourself/.test(t)),
+    'the ①-watch and ②-build heads are both on the card');
+  check(/③ Prove it — the real test:/.test(rungDom.test), 'the test box leads with ③ Prove it');
+
+  /* the player pauses itself at the end of its part, and replay seeks back */
+  const partStop = await page.evaluate(async (bounds) => {
+    const h = document.querySelector('#chunk-host');
+    const v = h.querySelector('.rung-part-video');
+    for (let i = 0; i < 40 && v.readyState < 1; i++) await new Promise(r => setTimeout(r, 250));
+    const from = bounds.chapters[1].t, to = bounds.chapters[2].t;
+    const seeked = Math.abs(v.currentTime - from) < 2;      // loadedmetadata seeked to the part start
+    try { await v.play(); } catch (e) {}
+    v.currentTime = to + 1;
+    v.dispatchEvent(new Event('timeupdate'));
+    await new Promise(r => setTimeout(r, 300));
+    const done = h.querySelector('.rung-part-done');
+    const stopped = v.paused && done && !done.hidden;
+    h.querySelector('.rung-part-replay').click();
+    await new Promise(r => setTimeout(r, 400));
+    const replayed = Math.abs(v.currentTime - from) < 2;
+    try { v.pause(); } catch (e) {}
+    return { seeked, stopped, replayed };
+  }, chBounds);
+  check(partStop.seeked, 'the player opens at its part\'s start, not at 0');
+  check(partStop.stopped, 'crossing the part\'s end pauses the player and shows "now build it below"');
+  check(partStop.replayed, 'Watch-this-part-again seeks back to the part\'s start');
+
+  /* CONTROL + the L2 guard: a ladder with no parts renders none of this */
+  await mountLadder('j1-02.json', { unplugged: true });
+  const l2Dom = await page.evaluate(() => {
+    const h = document.querySelector('#chunk-host');
+    return { part: !!h.querySelector('.rung-part-video'), heads: h.querySelectorAll('.rung-step-head').length };
+  });
+  control(!l2Dom.part && l2Dom.heads === 0, 'Lesson 2 (no parts in config) renders NO player and NO step heads — byte-identical cards');
+  await page.evaluate(async () => {   // and its test box still reads exactly as before
+    document.querySelector('#chunk-host button.primary-btn').click();
+    await new Promise(r => setTimeout(r, 400));
+    const cs = document.querySelector('#chunk-host .confirm-step');
+    if (cs) { cs.click(); await new Promise(r => setTimeout(r, 800)); }
+  });
+  const l2Test = await page.evaluate(() => (document.querySelector('#chunk-host .rung-test') || {}).textContent || '');
+  check(/The real test:/.test(l2Test) && !/③/.test(l2Test), 'Lesson 2\'s test box still leads "The real test:" with no ③');
+  await mountLadder('j1-03.json', {});
 
   console.log('\n== 4. one gesture, one transition (DFM 104) ==');
   const dbl = async () => page.evaluate(async () => {
@@ -351,19 +456,18 @@ const DOWNLOAD_AGAIN = /download (it|and drag)[^.]*again|again and drag|download
   check(/three rules/.test(helpSolo) && /Send in my score/.test(helpSolo), 'the catch-up help says three rules and names hers');
   control(!/three rules/.test(helpPair), 'the two help texts are genuinely different (the pair one is not the solo one)');
 
-  console.log('\n== 8. the film card tells her how to watch it ==');
-  const howtoDom = await page.evaluate(async () => {
-    const lesson = await (await fetch('/ks3-dt/content/j1/lessons/j1-03.json')).json();
-    const chunk = lesson.chunks.find(c => c.engine === 'video');
-    const host = document.querySelector('#chunk-host');
-    host.hidden = false; host.innerHTML = '';
-    window.Engines.video.mount(host, chunk, { chunk, saveEvent: () => {}, next: () => {}, lesson });
+  console.log('\n== 8. the re-watch modal still carries the whole film ==');
+  await mountLadder('j1-03.json', {});   // section 6 left the rally card mounted
+  const modalDom = await page.evaluate(async () => {
     await new Promise(r => setTimeout(r, 300));
-    const h = document.querySelector('#chunk-host');
-    return { intro: (h.querySelector('.video-intro') || {}).textContent || '', chapters: h.querySelectorAll('.vid-chapter').length };
+    document.querySelector('#chunk-host .rung-film-btn').click();
+    await new Promise(r => setTimeout(r, 600));
+    const m = document.querySelector('.film-modal');
+    const out = { chapters: m ? m.querySelectorAll('.vid-chapter').length : 0 };
+    if (m) m.remove();
+    return out;
   });
-  check(/just WATCH it/.test(howtoDom.intro), 'the film card renders the watching instructions');
-  check(howtoDom.chapters === 4, 'and still offers its four chapter buttons (' + howtoDom.chapters + ')');
+  check(modalDom.chapters === 4, 'the film button still opens the whole film with its four chapter buttons (' + modalDom.chapters + ')');
 
   const realErrs = errs.filter(e => !/tutorial|\.mp4|poster|favicon/.test(e));
   check(realErrs.length === 0, 'zero console errors: ' + JSON.stringify(realErrs.slice(0, 3)));
