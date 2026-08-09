@@ -5,7 +5,8 @@
  "title": "Scoreboard Engineer",
  "tagline": "Build the invisible scorekeeper.",
  "mode": "quest",
- "durationMin": 64,
+ "skin": "arcade",
+ "durationMin": 65,
  "objectives": [
   "I can create a variable and explain that it stores a value that can change.",
   "I can use a variable to build a working score counter.",
@@ -22,16 +23,16 @@
     "clearance": "YEAR 8 · LESSON 3 OF 17",
     "headline": "Every game keeps score. Today you build the scorekeeper.",
     "lines": [
-     "In this lesson you will learn what a VARIABLE is — a named box in the computer's memory that holds a number, where the name stays the same but the number can change. It is the single most useful idea in all of programming, and by the end of the hour you will have built one, changed it, reset it and watched it work.",
-     "Look at the photos: the arcade's high-score table, a GAA scoreboard, the step count on a wrist. Behind every one is a variable — a box called score, or steps, holding a number that moves.",
-     "You will also learn the second SHAPE of code. Lesson 2 was all events — code that waits for a press. Today you add the LOOP: code that never stops. Your scoreboard uses both at once, and knowing which job belongs to which is the real lesson.",
-     "And at the end, your scoreboard gets a real job: a whole-class Reaction Rally, scored on the machines you built. You are secretly on a team — nobody finds out who is with who until the reveal at the very end."
+     "In this lesson you will learn what a VARIABLE is: a named box in the computer's memory, where it keeps something it needs to remember. The box's name never changes. The value inside can change any time. Today your box will hold a number — your score. It is the most useful idea in all of programming, and by the end of the hour you will have built one, changed it, reset it and watched it work.",
+     "Look at the photos: the arcade's high-score table, a GAA scoreboard, the step count on a wrist. Behind every one of them is a variable — a box called score, or steps, holding a number that keeps changing.",
+     "You will also learn the second SHAPE of code. Lesson 2 was all events — code that sits and waits for a press. Today you add the LOOP: code that never stops. Your scoreboard uses both at once, and by the end you will know which job belongs to which.",
+     "And at the end, your scoreboard gets a real job: a whole-class Reaction Rally, scored on the scoreboards you built. You are secretly on a team — nobody finds out who is with who until your teacher reveals the teams at the very end."
     ],
     "images": [
      {
       "src": "assets/img/l3/l3-arcade.jpg",
       "alt": "An arcade machine's glowing high-scores table",
-      "caption": "An arcade's HIGH SCORES — variables with fame attached"
+      "caption": "An arcade's HIGH SCORES table — every number on it lives in a variable"
      },
      {
       "src": "assets/img/l3/l3-gaa.jpg",
@@ -41,7 +42,7 @@
      {
       "src": "assets/img/l2/l2-tracker.jpg",
       "alt": "Fitness tracker devices",
-      "caption": "Lesson 2's trackers? Every step adds 1 to a box called steps"
+      "caption": "The trackers from Lesson 2 — every step adds 1 to a box called steps"
      }
     ],
     "video": null,
@@ -53,7 +54,7 @@
    "id": "ladder",
    "engine": "ladder",
    "title": "The Scoreboard Ladder",
-   "minutes": 35,
+   "minutes": 36,
    "badge": {
     "id": "score",
     "name": "Scorekeeper",
@@ -62,15 +63,14 @@
    },
    "config": {
     "title": "The Scoreboard Ladder",
-    "intro": "This is where you build it — with the person beside you, one micro:bit shared between the two of you. Three rungs, each one an upgrade, and the micro:bit is the judge: the number on the LED grid is either right or it's lying.\n\nYou BOTH build every rung, each on your OWN computer — exactly like last lesson. Talk it through together as you go, and watch the simulator on your own screen: it shows your score the moment your blocks change. You share the real micro:bit for the real test, so take turns: at each rung, one of you downloads the program and drags the file across while the other presses the buttons and reads the display. Swap over at every rung, so you both do both.\n\nYou'll build TWO shapes of code today: an EVENT that sits and waits to be triggered, and a LOOP that just keeps going on its own.",
+    "intro": "This is where you build it — with the person beside you, one micro:bit shared between the two of you. Three rungs, each one an upgrade. The micro:bit is the judge: the number on its display is either right, or it is lying — and your tests will catch it.\n\nYou BOTH build every rung, each on your OWN computer — exactly like last lesson. Talk it through together as you go, and watch the simulator on your own screen: it shows your score the moment your blocks change. You share the real micro:bit for the real test, so take turns. At each rung, one of you downloads the program and drags the file across, while the other presses the buttons and reads the display. Swap over at every rung, so you both do both.\n\nYou'll build TWO shapes of code today: an EVENT that sits and waits for a button press, and a LOOP that just keeps going on its own.",
     "makecode": {
      "url": "https://makecode.microbit.org/",
      "label": "Open MakeCode"
     },
     "introPart": {
      "label": "Part 1 — What is a variable?",
-     "from": 0,
-     "to": 54
+     "src": "assets/video/l3/l3-part1.mp4"
     },
     "setupLead": "Before rung 1, set MakeCode up like this:",
     "setup": [
@@ -86,49 +86,97 @@
       "title": "Rung 1 — Wake the Scoreboard",
       "part": {
        "label": "Part 2 — Make the variable",
-       "from": 54,
-       "to": 174
+       "src": "assets/video/l3/l3-part2.mp4"
       },
-      "target": "Your challenge: wake the scoreboard. Build exactly what Part 2 showed you: 1. make a variable called score — 2. put 'show number score' INSIDE the forever block that is already sitting on your canvas.",
+      "target": "Your challenge: wake the scoreboard.",
       "img": "assets/img/l3/rung1.png",
       "imgAlt": "The finished blocks for rung 1: a forever block with 'show number score' inside it.",
-      "test": "Watch your simulator, without pressing anything: it already reads 0. Nobody pressed a button — the forever loop starts by itself and shows the number in the box, over and over. Now copy it onto the micro:bit the same way as last lesson: press Download in MakeCode, then drag the file across onto the MICROBIT drive. (If your micro:bit won't connect, the on-screen simulator counts while your teacher sorts it.) The real display reads 0 too — your scoreboard is awake.",
-      "hint": "Variables → 'Make a Variable...' → name it score. Do NOT drag a new forever block: every new project already has one (next to 'on start'). From Basic drag 'show number 0' into forever's mouth, then drop the round 'score' block from Variables into the 0 slot so it reads 'show number score'."
+      "hint": "Variables → 'Make a Variable...' → name it score. Do NOT drag a new forever block: every new project already has one (next to 'on start'). From Basic drag 'show number 0' into forever's mouth, then drop the round 'score' block from Variables into the 0 slot so it reads 'show number score'.",
+      "stepsLead": "Build exactly what Part 2 showed you:",
+      "steps": [
+       "Make a variable and call it score.",
+       "Drag 'show number score' INSIDE the forever block that is already sitting on your canvas."
+      ],
+      "testLead": "Now prove it:",
+      "testSteps": [
+       "Watch your simulator without pressing anything. It already reads 0 — nobody pressed a button. That is the forever loop starting by itself and showing the number in the box, over and over.",
+       "Copy it onto the micro:bit the same way as last lesson: press Download in MakeCode, then drag the file across onto the MICROBIT drive. (If your micro:bit won't connect, keep going on the simulator while your teacher fixes it.)",
+       "The real display reads 0 too — your scoreboard is awake."
+      ]
      },
      {
       "id": "s2",
       "title": "Rung 2 — Make It Count",
       "part": {
        "label": "Part 3 — Count it up",
-       "from": 174,
-       "to": 390
+       "src": "assets/video/l3/l3-part3.mp4"
       },
-      "target": "Your challenge: make every press of button A count. Build what Part 3 showed you: 1. add a separate event: 'on button A pressed' with 'set score to 1' inside — press A on the simulator a few times and watch it stick at 1 — 2. now swap 'set score to 1' for 'change score by 1'. When you're done, your button A event holds just that one block — the loop is still doing all the showing.",
-      "test": "Download it and drag the new file across — your micro:bit keeps running the OLD program until a new file lands on it. Then press A three times. Does the number climb by exactly one per press — 1, 2, 3? One more proof, on the SIMULATOR: drag 'show number score' OUT of forever and drop it on empty canvas. The simulator's display goes dark and STAYS dark, even when you press its A — no loop, no scoreboard. Put the block back INSIDE forever. (Your real micro:bit still shows the old copy — it only changes when you download again.)",
+      "target": "Your challenge: make every press of button A count.",
       "hint": "Number stuck at 1 on the micro:bit? First check you downloaded again after the swap — the micro:bit only changes when a new file lands on it. Still stuck after a fresh download? Then the old 'set score to 1' block is still in there — swap it out, don't stack them: 'change score by 1' ADDS one to whatever is in the box.",
-      "hintImg": "assets/img/l3/rung2.png"
+      "hintImg": "assets/img/l3/rung2.png",
+      "stepsLead": "Build what Part 3 showed you:",
+      "steps": [
+       "Add a separate event: 'on button A pressed', with 'set score to 1' inside it.",
+       "Press A on the simulator a few times. Watch the display: the number sticks at 1, no matter how many times you press.",
+       "Now swap 'set score to 1' for 'change score by 1'."
+      ],
+      "note": "When you're done, your button A event holds just that one block — the forever loop is still doing all the showing.",
+      "testLead": "Now prove it:",
+      "testSteps": [
+       "Press Download and drag the new file across. Your micro:bit keeps running the OLD program until a new file lands on it.",
+       "Press A three times. Does the number climb by exactly one per press — 1, 2, 3?",
+       "One more proof, on the SIMULATOR: drag 'show number score' OUT of forever and drop it on empty canvas. The simulator's display goes dark and STAYS dark, even when you press its A. No loop — no scoreboard.",
+       "Put the block back INSIDE forever. (Your real micro:bit still shows the old copy — it only changes when you download again.)"
+      ]
      },
      {
       "id": "s3",
       "title": "Rung 3 — The Reset Button",
       "part": {
        "label": "Part 4 — Reset for a fresh game",
-       "from": 390,
-       "to": 524
+       "src": "assets/video/l3/l3-part4.mp4"
       },
-      "target": "Your challenge: give your scoreboard a fresh-start button. Add a second event: on button B pressed → set score to 0. When it works, this is what you'll have: 1. A still counts up — 2. B wipes the score back to 0 — 3. the loop keeps the number on screen the whole time.",
-      "test": "Download and drag the new file across once more, so the micro:bit holds all three blocks. Then THE MULTI-ROUND TEST: press B (it says 0), press A three times (it says 3), press B (back to 0). Now run that whole cycle three times over. A scoreboard that's right once can still be wrong — three clean rounds is proof.",
+      "target": "Your challenge: give your scoreboard a fresh-start button.",
       "hint": "Reset lives on its OWN event: a separate 'on button B pressed' block with 'set score to 0' inside it. You do NOT need another 'show number score' anywhere — the forever loop already shows every change the moment it happens. Leave your button A blocks alone.",
-      "hintImg": "assets/img/l3/rung3.png"
+      "hintImg": "assets/img/l3/rung3.png",
+      "stepsLead": "Build what Part 4 showed you:",
+      "steps": [
+       "Add a second event: 'on button B pressed'.",
+       "Put 'set score to 0' inside it."
+      ],
+      "note": "When it works: A still counts up, B wipes the score back to 0, and the loop keeps the number on screen the whole time.",
+      "testLead": "Now THE MULTI-ROUND TEST:",
+      "testSteps": [
+       "Download and drag the new file across once more, so the micro:bit holds all three parts of your program.",
+       "Press B — it says 0. Press A three times — it says 3. Press B — back to 0.",
+       "Now run that whole cycle three times over. A scoreboard that's right once can still be wrong — three clean rounds is proof."
+      ]
      }
     ],
     "stretch": {
      "title": "Stretch — The High-Score Keeper",
-     "target": "Your stretch challenge: teach your micro:bit to REMEMBER the best score ever. Build it in three steps: 1. make a SECOND variable called highScore — 2. add: on shake → if score > highScore then set highScore to score — 3. teach the loop to show both: inside forever, after 'show number score', add pause (ms) 1000 → show string \"H\" → show number highScore → pause (ms) 1000.",
-     "test": "Score 3 and shake — after the H you see 3. Score 5, shake — after the H you see 5. Now score just 2 and shake — after the H it STILL says 5? Then your micro:bit officially remembers the best. That 'if' block is asking a question — next lesson runs on them."
+     "target": "Your stretch challenge: teach your micro:bit to REMEMBER the best score ever.",
+     "stepsLead": "Build it step by step:",
+     "steps": [
+      "Make a SECOND variable and call it highScore.",
+      "Add a new event: 'on shake'.",
+      "From Logic, drag an 'if … then' block inside 'on shake'.",
+      "Set the if's question to: score > highScore. (The > sign means 'is bigger than'.)",
+      "Inside the if, put 'set highScore to score'. Now, whenever your score beats the best ever, the best ever is replaced.",
+      "Last job — teach the forever loop to show BOTH numbers. After 'show number score', add 'pause (ms) 1000'.",
+      "Then add 'show string \"H\"', then 'show number highScore'.",
+      "Finish with one more 'pause (ms) 1000'. The display now takes turns: your score … H … the best score … and round again."
+     ],
+     "testLead": "The proof:",
+     "testSteps": [
+      "Score 3 and shake — after the H you see 3.",
+      "Score 5 and shake — after the H you see 5.",
+      "Now score just 2 and shake. After the H it STILL says 5? Then your micro:bit officially remembers the best."
+     ],
+     "note": "That 'if' block is asking a question — you will build lots more of those next lesson."
     },
-    "introSolo": "This is where you build it — on your own today, so you do every job yourself: build the blocks AND run the multi-round test. Three rungs, each one an upgrade, and the micro:bit is the judge (or the on-screen simulator). You'll build two shapes of code: an EVENT that waits to be triggered, and a LOOP that keeps going on its own.",
-    "help": "Each rung starts with its part of the film: press play and watch it, then build what it showed in MakeCode (its own tab), then run the test the card describes — rung 2's break-it step, proving the simulator's display goes dark, is part of the test. The Debug Hint costs 2 XP and narrows the search; it never gives the fix. The film button replays the whole film without losing your place.",
+    "introSolo": "This is where you build it — on your own today, so you do every job yourself: build the blocks AND run the multi-round test. Three rungs, each one an upgrade. The micro:bit is the judge — or the on-screen simulator, if there is no micro:bit beside you. You'll build two shapes of code: an EVENT that waits for a button press, and a LOOP that keeps going on its own.",
+    "help": "Each rung starts with its own short video: press play and watch it, then build what it showed in MakeCode (in its own tab), then run the proof steps on the card. Rung 2's break-it step — making the simulator's display go dark on purpose — is part of the proof. The Debug Hint costs 2 XP and points you towards the problem; it never gives the fix away. The film button plays the whole film without losing your place.",
     "film": {
      "src": "assets/video/l3/l3-tutorial.mp4",
      "chapters": [
@@ -137,20 +185,21 @@
        "label": "What's a variable?"
       },
       {
-       "t": 54,
+       "t": 85,
        "label": "Make the variable"
       },
       {
-       "t": 174,
+       "t": 205,
        "label": "Count it up"
       },
       {
-       "t": 390,
+       "t": 422,
        "label": "Reset for a fresh game"
       }
      ],
-     "defaultT": 54
-    }
+     "defaultT": 85
+    },
+    "clearToast": "Rung cleared — scoreboard upgraded."
    }
   },
   {
@@ -166,7 +215,7 @@
    },
    "config": {
     "title": "Register your rig",
-    "intro": "Before the Rally, thirty seconds of protection: save your scoreboard program to your Drive, exactly like last lesson — then a yanked cable cannot lose your work mid-competition. The website checks it landed, same as before.",
+    "intro": "In a real rally, every car is checked in before the race starts. Your RIG is your scoreboard program — and this is its check-in. Save it into your Drive, the same way as last lesson. Then, even if a cable is pulled out during the Rally, your work is safe. Press Check my Drive below, and the website will look in your Drive to make sure the file is really there.",
     "kinds": [
      "hex"
     ],
@@ -180,17 +229,18 @@
      {
       "icon": "🗄️",
       "title": "Vault",
-      "text": "drive.google.com → School → DT Work. (Same routine as last lesson.)"
+      "text": "Open drive.google.com in a new tab. Click into School, then DT Work — the same folder as last lesson."
      },
      {
       "icon": "🏁",
       "title": "Drag it in",
-      "text": "Drag the .hex in. That's it saved — the website verifies it's really there."
+      "text": "Drag the .hex file in. That's it saved — the website will check it is really there."
      }
     ],
-    "passText": "Saved and verified. Your scoreboard follows your login to any machine — and you're ready to compete. Eyes up: the Rally is next.",
-    "failText": "Not registered yet. Check each step — especially that the .hex went INTO DT Work, not just onto the desktop — then run the inspection again.",
-    "help": "Download the .hex from MakeCode, drag it into Drive → School → DT Work, then press Run the HQ Inspection — the website checks your Drive for real. Same routine as Lesson 2 — thirty seconds."
+    "passText": "Saved and checked. Your scoreboard follows your login to any machine — and you're ready to compete. The Rally is next.",
+    "failText": "Not registered yet. Check each step — especially that the .hex went INTO DT Work, not just onto the desktop — then press Check my Drive again.",
+    "help": "Download the .hex from MakeCode and drag it into your Drive, in School, then DT Work. Then press Check my Drive — the website really does look in your Drive. It is the same routine as Lesson 2, and it only takes a minute.",
+    "checkLabel": "Check my Drive"
    }
   },
   {
@@ -207,13 +257,13 @@
    "config": {
     "kicker": "WHOLE-CLASS EVENT",
     "title": "The Reaction Rally",
-    "intro": "Your scoreboard's first real job. You are secretly on a team — nobody knows who's with who until the final reveal. Every point you bank is banked for your hidden team.",
+    "intro": "Your scoreboard's first real job. You are secretly on a team — nobody knows who's with who until the final reveal. Every point you send in counts for your hidden team.",
     "rules": [
      "A rally round: the REFEREE holds the micro:bit where you both can see it, and gives 10 surprise signals — a sharp \"NOW!\" whenever they like.",
-     "The PLAYER hovers over button A. On each \"NOW!\", the referee calls it: \"CATCH!\" for a fast reaction, \"MISS!\" for a slow one. The referee's word is final.",
+     "The PLAYER holds a finger just above button A. On each \"NOW!\", the referee calls it: \"CATCH!\" for a fast reaction, \"MISS!\" for a slow one. The referee's word is final.",
      "CATCH means the player presses A — the scoreboard they built counts it. MISS means hands off: no press, no point.",
-     "Round 1: one of you plays. Round 2: swap jobs. Round 3: the pair chooses — whoever is doing better today plays the last round (real teams choose who finishes).",
-     "Press B for a fresh 0 before every round. At the end of a round, read the final number OFF the micro:bit's display and enter exactly that number below with the + and − buttons — your pair's BEST round is the one that counts."
+     "Round 1: one of you plays. Round 2: swap jobs. Round 3: the pair chooses who plays the last round.",
+     "Press B for a fresh 0 before every round. At the end of a round, read the final number off the micro:bit's display. Enter exactly that number below with the + and − buttons. Your pair's BEST round is the one that counts."
     ],
     "roundsLabel": [
      "Round 1",
@@ -222,10 +272,10 @@
     ],
     "maxScore": 10,
     "confirm": "We ran the multi-round test first — B to zero, count up, B to zero, three times, no lies",
-    "soloIntro": "The live Rally happened in class — but your scoreboard still gets its moment. Your catch-up job: prove your rig is tournament-grade, then log your best solo round.",
+    "soloIntro": "The live Rally happened in class — but your scoreboard still gets its turn. Your catch-up job: prove your scoreboard counts honestly, then play your own rounds and send in your best.",
     "soloRules": [
      "Run the multi-round test: B to zero, three presses, B to zero — three full cycles, no lies on the display.",
-     "Now a solo round: 10 self-signals — say \"now\" in your head at random moments, press A only on a genuinely clean reaction. Referee yourself honestly.",
+     "Now a solo round: 10 signals you give yourself — say \"now\" in your head at random moments, and press A only if you reacted straight away. Referee yourself honestly.",
      "Play three rounds, pressing B for a fresh 0 each time. Read each round's final number off the micro:bit's display and enter it below — your best round still counts for your hidden team."
     ],
     "soloConfirm": "I ran the multi-round test three times — the scoreboard never lied",
@@ -244,7 +294,7 @@
    "title": "Exit Check",
    "minutes": 2,
    "config": {
-    "intro": "Three scenarios before you go — and these ARE marked: your teacher sees how the class did. Think like a scoreboard engineer.",
+    "intro": "Three questions about today before you go — and these ARE marked: your teacher sees your answers. Think like a scoreboard engineer.",
     "items": [
      {
       "id": "ex3-1",
@@ -277,7 +327,7 @@
       ]
      }
     ],
-    "help": "Three marked questions about today. Answer on your own — your verdicts arrive once the whole report is filed, at the end of the last screen."
+    "help": "Three marked questions about today. Answer them on your own. You find out how you did at the end, after the last screen."
    }
   },
   {
@@ -286,7 +336,7 @@
    "title": "Build the Scoreboard",
    "minutes": 2,
    "config": {
-    "intro": "Last one: four real blocks, two jobs, one working scoreboard. Put them in the order the sentence describes — the loop's job and the event's job.",
+    "intro": "Last one. You get four real blocks, and the sentence below describes one working scoreboard. Click the blocks into the order the sentence describes — the loop's job first, then the event's job.",
     "item": {
      "id": "ex3-p",
      "prompt": "Your scoreboard has two jobs. The first keeps the current score on the LEDs all by itself, over and over, showing whatever number is in the box. The second waits for button A, and adds one to that number every time it is pressed.",
@@ -297,7 +347,8 @@
       "on button A pressed"
      ]
     },
-    "help": "Click blocks from the tray into your program, in the order the sentence describes. Check when you're sure — you'll be shown the working order if it's off."
+    "help": "Click blocks from the tray into your program, in the order the sentence describes. Check when you're sure — you'll be shown the working order if it's off.",
+    "doneText": "Correct — that program does exactly what the card asked."
    }
   },
   {
@@ -314,9 +365,9 @@
     ],
     "difficulty": true,
     "comment": true,
-    "help": "Click the chip under each sentence that says how today really went, then the button that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving."
+    "help": "Click the button under each sentence that says how today really went, then the one that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving."
    }
   }
  ],
- "keysEnc": "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"
+ "keysEnc": "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"
 }

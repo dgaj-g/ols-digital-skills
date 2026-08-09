@@ -22,9 +22,13 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   check(l3f >= 6, 'j1-03 now teaches `forever` (' + l3f + ' occurrences; the audit found 1, a misconception label)');
   check(/frozen forever/.test(l3) ? l3f > 1 : true, 'the L3 hits are not just the old "frozen forever" label');
   const l3lad = JSON.parse(l3).chunks.find(c => c.id === 'ladder').config;
-  check(/forever/i.test(l3lad.rungs[0].target), 'Rung 1 asks the pupil to build the forever loop');
+  /* DFM 171 moved the steps out of `target` prose into a real numbered list, so
+     read the rung's whole pupil text - the teaching is what matters, not the key. */
+  const rungText = r => [r.target, r.stepsLead, (r.steps || []).join(' '), r.note,
+                         r.testLead, (r.testSteps || []).join(' '), r.test].filter(Boolean).join(' ');
+  check(/forever/i.test(rungText(l3lad.rungs[0])), 'Rung 1 asks the pupil to build the forever loop');
   /* DFM 168 re-cut: the break-it proof moved to rung 2, WITH its film part */
-  check(/dark/i.test(l3lad.rungs[1].test), 'Rung 2 has the genuine fail state (take it out, the screen goes dark)');
+  check(/dark/i.test(rungText(l3lad.rungs[1])), 'Rung 2 has the genuine fail state (take it out, the screen goes dark)');
   check(/loop/i.test(l3lad.intro) && /event/i.test(l3lad.intro), 'the ladder intro names both shapes: loop AND event');
   check(!/show number score/i.test(l3lad.rungs[1].target) && !/show number score/i.test(l3lad.rungs[2].target),
     'rungs 2 and 3 no longer put the display inside the button events');

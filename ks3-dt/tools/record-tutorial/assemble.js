@@ -56,7 +56,38 @@ function run(setName) {
 
   const total = ffprobeDuration(outFile);
   const sizeMb = fs.statSync(outFile).size / 1048576;
-  const manifest = { file: path.basename(outFile), durationSec: Math.round(total), sizeMB: +sizeMb.toFixed(2), chapters };
+
+  /* DFM 170 - DAMIEN, 9 Aug 2026: "I want it to be split into the section that
+     it's dealing with ONLY within each rung... a student who wants to rewind or
+     go forward might accidentally stray into another part of the video."
+     The trimmed per-chapter segments above ARE those sections, so the part files
+     are the same footage the full film is concatenated from - they cannot drift
+     out of step with it. They are only re-muxed, never re-encoded: same bytes,
+     plus faststart, so a part starts playing without downloading the whole file. */
+  const partDir = path.join(dir, 'parts');
+  fs.mkdirSync(partDir, { recursive: true });
+  const parts = [];
+  scenes.forEach((scene, i) => {
+    const seg = path.join(segDir, scene.id + '.mp4');
+    if (!fs.existsSync(seg)) return;
+    const out = path.join(partDir, 'part' + (i + 1) + '.mp4');
+    execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-i', seg,
+      '-c', 'copy', '-movflags', '+faststart', out]);
+    parts.push({
+      file: 'parts/part' + (i + 1) + '.mp4',
+      label: scene.label,
+      durationSec: +ffprobeDuration(out).toFixed(2),
+      sizeMB: +(fs.statSync(out).size / 1048576).toFixed(2)
+    });
+  });
+  const partsTotal = parts.reduce((a, p) => a + p.durationSec, 0);
+  if (Math.abs(partsTotal - total) > 1.5) {
+    throw new Error('the parts do not add up to the film (' + partsTotal.toFixed(2) +
+      's of parts vs ' + total.toFixed(2) + 's of film) - a rung would be serving ' +
+      'footage the film does not contain');
+  }
+
+  const manifest = { file: path.basename(outFile), durationSec: Math.round(total), sizeMB: +sizeMb.toFixed(2), chapters, parts };
   fs.writeFileSync(path.join(dir, 'chapters.json'), JSON.stringify(manifest, null, 1));
   console.log('ASSEMBLED: ' + outFile);
   console.log(JSON.stringify(manifest, null, 1));

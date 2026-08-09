@@ -1540,6 +1540,10 @@
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
       var rungs = cfg.rungs || [];
+      /* DFM 175's arcade skin, opt-in per lesson. Lesson 2 names no skin, so
+         every branch below it is skipped and its cards render byte-identically
+         (DFM 176 keeps L1/L2 locked). */
+      var skinned = !!(App.state.lesson && App.state.lesson.skin === 'arcade');
       var draft = (ctx.draft && ctx.draft.ladder) || {};
       var done = draft.done || [];      // rung ids cleared
       var hinted = draft.hinted || [];  // rung ids where the hint was bought
@@ -1702,38 +1706,60 @@
          continue, and the full film is behind the film button regardless).
          Everything here is gated on the part config existing, so a ladder
          without parts (Lesson 2) renders byte-identically to before. */
+      /* DAMIEN, 9 Aug 2026 (DFM 170), on seeing every rung's scrubber read 8:44:
+         "I want it to be split into the section that it's dealing with ONLY
+         within each rung - i know it jumps to the specific chapter, but the
+         problem is that a student who wants to rewind or go forward might
+         accidentally stray into another part of the video that isn't being
+         dealt with that particular rung."
+         So a part is now its OWN FILE. Seeking one long film and pausing it at a
+         boundary was never going to hold: the scrubber still showed the whole
+         film and the pupil could drag anywhere in it. The part files are the very
+         segments the full film is concatenated from (assemble.js), so they cannot
+         drift out of step with it, and the whole film stays one click away on
+         every card (DFM 143 untouched). */
       function partHtml(part) {
-        if (!part || !cfg.film || !cfg.film.src) return '';
-        var m = Math.max(1, Math.round((Number(part.to) - Number(part.from)) / 60));
+        if (!part || !part.src) return '';
         return '<div class="rung-part">' +
+          (skinned ? '<p class="now-showing">&#9654; NOW SHOWING</p>' : '') +
           '<p class="rung-step-head">&#9312; Watch this part &mdash; <b>' + esc(part.label || 'the film') + '</b></p>' +
-          '<video class="rung-part-video" controls preload="metadata" playsinline src="' + esc(asset(cfg.film.src)) + '"></video>' +
-          '<p class="rung-part-note">This part runs about ' + m + ' minute' + (m === 1 ? '' : 's') + '.' +
+          '<video class="rung-part-video" controls preload="metadata" playsinline src="' + esc(asset(part.src)) + '"></video>' +
+          '<p class="rung-part-note"><span class="rung-part-len"></span>' +
           ' <button class="ghost-btn rung-part-replay" type="button">&#8635; Watch this part again</button></p>' +
           '<p class="rung-part-done" hidden>That&rsquo;s the part &mdash; now build it below.</p>' +
           '</div>';
       }
       function wirePart(root, part) {
         var v = root.querySelector('.rung-part-video');
-        if (!v || !part) return;
-        var from = Number(part.from) || 0, to = Number(part.to) || 0;
+        if (!v || !part || !part.src) return;
         var doneLine = root.querySelector('.rung-part-done');
-        var lastT = 0;
-        v.addEventListener('loadedmetadata', function () { try { v.currentTime = from; } catch (e) {} });
-        v.addEventListener('timeupdate', function () {
-          var t = v.currentTime;
-          if (to && lastT < to - 0.3 && t >= to - 0.3) {
-            v.pause();
-            if (doneLine) doneLine.hidden = false;
-          }
-          lastT = t;
+        var lenLine = root.querySelector('.rung-part-len');
+        /* the length is read off the file itself - never a number typed into the
+           content, which could quietly stop being true after a re-record (35) */
+        v.addEventListener('loadedmetadata', function () {
+          if (!lenLine || !isFinite(v.duration)) return;
+          var m = Math.max(1, Math.round(v.duration / 60));
+          lenLine.textContent = 'This part runs about ' + m + ' minute' + (m === 1 ? '' : 's') + '.';
         });
         v.addEventListener('ended', function () { if (doneLine) doneLine.hidden = false; });
         var rb = root.querySelector('.rung-part-replay');
         if (rb) rb.onclick = function () {
           if (doneLine) doneLine.hidden = true;
-          try { v.currentTime = from; v.play(); } catch (e) {}
+          try { v.currentTime = 0; v.play(); } catch (e) {}
         };
+      }
+
+      /* DFM 171, his layout law: "the numbers listed one after another, with the
+         next number on a new line because it isn't really readable at the
+         moment." A numbered sequence is an ARRAY in the content and a real <ol>
+         on the screen - never digits buried in a paragraph. Gated on the array
+         existing, so Lesson 2's cards render byte-identically. */
+      function stepList(lead, items, cls) {
+        if (!items || !items.length) return '';
+        return (lead ? '<p class="rung-steps-lead">' + esc(lead) + '</p>' : '') +
+          '<ol class="' + cls + '">' +
+          items.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') +
+          '</ol>';
       }
       /* a card being replaced takes its playing part with it - stop it first */
       function pausePart() {
@@ -1809,12 +1835,31 @@
         };
       }
 
+      /* DFM 175's arcade skin. The strip shows what is TRUE and nothing else
+         (rule 35): which rung she is on, and how many she has actually cleared.
+         Returns '' unless the lesson opted into the skin, so every other ladder
+         renders the markup it always did. */
+      function ledStrip(nowLabel, cleared) {
+        if (!skinned) return '';
+        /* the seven-segment face renders DIGITS - every word belongs in a label,
+           or it comes out as nonsense on a real scoreboard font */
+        return '<div class="led-strip">' +
+          '<span class="led-cell"><span class="led-label">Rung</span>' +
+          '<span class="led-digits led-now">' + esc(nowLabel) + '</span>' +
+          '<span class="led-label">of ' + rungs.length + '</span></span>' +
+          '<span class="led-cell"><span class="led-label">Rungs cleared</span>' +
+          '<span class="led-digits led-cleared">' + esc(String(cleared)) + '</span></span>' +
+          '</div>';
+      }
+
       function showRung() {
         if (idx >= rungs.length) { stretchOrFinish(); return; }
         pausePart();
         var r = rungs[idx];
         var hintUsed = hinted.indexOf(String(r.id)) !== -1;
-        var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(r.title) + '</span>' +
+        var c = el('<div class="card ladder-card">' +
+          ledStrip(String(idx + 1), done.length) +
+          '<span class="intro-kicker">' + esc(r.title) + '</span>' +
           ladderSvg() +
           (r.part ? partHtml(r.part) : '') +
           (r.part ? '<p class="rung-step-head">&#9313; Build it yourself</p>' : '') +
@@ -1830,7 +1875,15 @@
           (r.img ? '<figure class="rung-fig"><img class="rung-img' + (r.imgSmall ? ' rung-img-sm' : '') +
             '" src="' + esc(asset(r.img)) + '" alt="' + esc(r.imgAlt || 'The blocks for this rung') + '">' +
             (r.imgCap ? '<figcaption>' + esc(r.imgCap) + '</figcaption>' : '') + '</figure>' : '') +
-          '<div class="rung-test"><p>&#128293; <b>' + (r.part ? '&#9314; Prove it &mdash; the real test:' : 'The real test:') + '</b> ' + esc(r.test || 'Flash it to the device and make it happen for real.') + '</p></div>' +
+          stepList(r.stepsLead, r.steps, 'rung-steps') +
+          (r.note ? '<p class="rung-note">' + esc(r.note) + '</p>' : '') +
+          (r.testSteps && r.testSteps.length
+            ? '<div class="rung-test"><p class="rung-test-head">&#128293; <b>' +
+              (r.part ? '&#9314; Prove it' : 'The real test') + '</b>' +
+              (r.testLead ? ' &mdash; ' + esc(r.testLead) : ':') + '</p>' +
+              '<ol class="rung-proof">' + r.testSteps.map(function (s) {
+                return '<li>' + esc(s) + '</li>'; }).join('') + '</ol></div>'
+            : '<div class="rung-test"><p>&#128293; <b>' + (r.part ? '&#9314; Prove it &mdash; the real test:' : 'The real test:') + '</b> ' + esc(r.test || 'Flash it to the device and make it happen for real.') + '</p></div>') +
           /* C-04, approved 2 Aug 2026: the finished-blocks picture used to sit
              on the card, above a hint that charged 2 XP for less
              than the picture gave away free - so the rung taught copying, not
@@ -1868,13 +1921,21 @@
         App.armButton(c.querySelector('.rung-worked'), function () {
           done.push(String(r.id));
           saveLadder();
-          App.toast('Rung cleared &mdash; signal locked in.');
+          /* "signal locked in" is Lesson 2's Signal Relay fiction and was leaking
+             into every ladder lesson. Content may name its own (DFM 25). */
+          App.toast(cfg.clearToast || 'Rung cleared &mdash; signal locked in.');
           idx++;
           /* the next card's ladder plays the landing flash on the rung she just
              cleared, then the flag is dropped so it fires exactly once */
           justCleared = String(r.id);
           showRung();
           justCleared = null;
+          if (skinned) {
+            var card = host.querySelector('.ladder-card');
+            var dig = host.querySelector('.led-cleared');
+            if (card) { card.classList.add('rung-won'); }
+            if (dig) { dig.classList.add('rolling'); }
+          }
         });
       }
 
@@ -1882,11 +1943,19 @@
         pausePart();
         if (!cfg.stretch || stretchDone) { finishLadder(); return; }
         var s = cfg.stretch;
-        var c = el('<div class="card ladder-card"><span class="intro-kicker">' + esc(s.title || 'Stretch') + '</span>' +
+        var c = el('<div class="card ladder-card">' +
+          ledStrip('\u2605', done.length) +
+          '<span class="intro-kicker">' + esc(s.title || 'Stretch') + '</span>' +
           ladderSvg() +
           '<h2 class="rung-target">' + esc(s.target) + '</h2>' +
           (s.img ? '<img class="rung-img" src="' + esc(asset(s.img)) + '" alt="Stretch blocks">' : '') +
-          (s.test ? '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(s.test) + '</p></div>' : '') +
+          stepList(s.stepsLead, s.steps, 'rung-steps') +
+          (s.note ? '<p class="rung-note">' + esc(s.note) + '</p>' : '') +
+          (s.testSteps && s.testSteps.length
+            ? '<div class="rung-test"><p class="rung-test-head">&#128293; <b>The real test</b>' +
+              (s.testLead ? ' &mdash; ' + esc(s.testLead) : ':') + '</p><ol class="rung-proof">' +
+              s.testSteps.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol></div>'
+            : (s.test ? '<div class="rung-test"><p>&#128293; <b>The real test:</b> ' + esc(s.test) + '</p></div>' : '')) +
           '<div class="rung-actions">' +
           '<button class="primary-btn" type="button">We built it! &#11088;</button>' +
           '<button class="ghost-btn" type="button">Finish the ladder without it</button>' +
@@ -2169,7 +2238,7 @@
               fb.innerHTML = '<p>Hmm &mdash; could not check that one. Moving on.</p><button class="primary-btn" type="button">Continue</button>';
             } else if (r.correct) {
               fb.className = 'q-feedback good';
-              fb.innerHTML = '<p class="q-verdict">Correct &mdash; that program does exactly what the mission asked.</p>' +
+              fb.innerHTML = '<p class="q-verdict">' + esc(cfg.doneText || 'Correct \u2014 that program does exactly what the mission asked.') + '</p>' +
                 (r.explain ? '<p class="q-explain">' + esc(r.explain) + '</p>' : '') +
                 '<button class="primary-btn" type="button">Continue</button>';
             } else {
@@ -2205,7 +2274,7 @@
         '<p class="intro-lead">' + esc(cfg.intro || '') + '</p>' +
         '<ol class="af-steps">' + steps + '</ol>' +
         '<div class="rung-actions">' +
-        '<button class="primary-btn" type="button">Run the HQ Inspection</button>' +
+        '<button class="primary-btn" type="button">' + esc(cfg.checkLabel || 'Run the HQ Inspection') + '</button>' +
         '<button class="ghost-btn" type="button" hidden>Continue without banking (ask your teacher)</button>' +
         '</div><div class="af-result"></div></div>');
       host.appendChild(c);
@@ -2234,9 +2303,9 @@
             skipBtn.hidden = true;
           } else {
             box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
-              (r.noFolder ? 'HQ could not find your School &gt; DT Work folder. Build it right now in Drive &mdash; + New &rarr; Folder &rarr; "School", then "DT Work" inside it &mdash; and run the inspection again. (The Files That Follow You side quest walks you through it too.)'
+              (r.noFolder ? 'HQ could not find your School &gt; DT Work folder. Build it right now in Drive &mdash; + New &rarr; Folder &rarr; "School", then "DT Work" inside it &mdash; and press the check button again. (The Files That Follow You side quest walks you through it too.)'
                 : 'No freshly-saved build found in DT Work yet.') + '</span></div>' +
-              '<p>' + esc(cfg.failText || 'Check each step above, then run the inspection again.') + '</p>';
+              '<p>' + esc(cfg.failText || 'Check each step above, then press ' + (cfg.checkLabel || 'Run the HQ Inspection') + ' again.') + '</p>';
             if (tries >= 2) skipBtn.hidden = false;
           }
         });
@@ -2484,7 +2553,7 @@
             '<span class="rally-team-total">' + Number(t.total) + '</span></div>';
         }).join('');
         box.innerHTML = '<div class="rally-declass">' +
-          '<span class="reveal-kicker">TEAMS DECLASSIFIED</span>' +
+          '<span class="reveal-kicker">THE TEAMS &mdash; REVEALED!</span>' +
           (myRow ? '<h3>You were on Team ' + esc(myRow.name) + ' — ' + place + suffix + ' place</h3>'
                  : '<h3>The teams stand revealed</h3>') +
           bars + '</div>';
@@ -2672,7 +2741,7 @@
           return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p></div></li>';
         }).join('');
         var c = el('<div class="card case-filecard"><span class="intro-kicker">EVIDENCE INTAKE</span>' +
-          '<h2>Secure the broken build</h2>' +
+          '<h2>Get the broken game</h2>' +
           '<p class="intro-lead">' + esc(g.intro || '') + '</p>' +
           '<p class="case-getgame-btns">' +
           '<a class="primary-btn case-dl" href="' + esc(asset(g.file || '')) + '" download>&#11015;&#65039; Download the broken game</a> ' +
@@ -2753,7 +2822,10 @@
           '<div class="case-clue"></div></div>' +
           '<div class="case-step"><span class="case-step-tag">3 &middot; FIX IT &amp; FILE THE LOG</span>' +
           '<p>Make your fix in Scratch, then log it like a real QA tester &mdash; one sentence: <b>what was wrong, and what you changed</b>.</p>' +
-          (cs.mechanic ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b> ' + esc(cs.mechanic) + '</p>' : '') +
+          (cs.mechanicSteps && cs.mechanicSteps.length
+            ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b></p><ol class="case-mech-steps">' +
+              cs.mechanicSteps.map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ol>'
+            : (cs.mechanic ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b> ' + esc(cs.mechanic) + '</p>' : '')) +
           '<textarea class="case-log-input" maxlength="200" placeholder="' + esc(cs.logHint || 'The bug was... so I...') + '">' + esc(logText) + '</textarea>' +
           '<p class="case-log-nudge"></p></div>' +
           '<div class="case-step"><span class="case-step-tag">4 &middot; RE-PLAY TO PROVE IT</span>' +
@@ -2922,7 +2994,7 @@
             '<p>' + esc(sh.intro || '') + '</p>' +
             '<ol class="af-steps">' + steps + '</ol>' +
             '<div class="rung-actions">' +
-            '<button class="primary-btn case-ship-btn" type="button">Run the HQ Inspection</button>' +
+            '<button class="primary-btn case-ship-btn" type="button">' + esc((cfg.ship && cfg.ship.checkLabel) || 'Run the HQ Inspection') + '</button>' +
             '<button class="ghost-btn case-ship-skip" type="button" hidden>Sign off without the vault copy (ask your teacher)</button>' +
             '</div><div class="af-result"></div>';
           var runBtn = shipBox.querySelector('.case-ship-btn');

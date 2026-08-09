@@ -55,7 +55,11 @@ async function step(page) {
     const by = rx => btns.find(b => rx.test((b.textContent || '').trim()));
     const pick = by(/It worked/i) || by(/Start climbing|Back to the ladder/i) ||
       by(/Finish the ladder without it/i) || by(/Done watching|Watched it/i) ||
-      by(/Run the HQ Inspection|Claim the badge/i) || by(/^Warm up$/i) ||
+      /* Lesson 3's artifact button is content-named now (cfg.checkLabel =
+         "Check my Drive"), because "Run the HQ Inspection" never matched what the
+         card told her to press. A renamed control re-stages every walker that
+         clicks it - DFM 143(b). */
+      by(/Run the HQ Inspection|Check my Drive|Claim the badge/i) || by(/^Warm up$/i) ||
       by(/Start today.s lesson/i) || by(/Continue|Next|Ready|Onward|Start/i);
     if (pick) { pick.click(); return (pick.textContent || '').trim().slice(0, 28); }
     return 'stuck';
