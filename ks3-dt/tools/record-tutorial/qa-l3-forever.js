@@ -23,7 +23,8 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   check(/frozen forever/.test(l3) ? l3f > 1 : true, 'the L3 hits are not just the old "frozen forever" label');
   const l3lad = JSON.parse(l3).chunks.find(c => c.id === 'ladder').config;
   check(/forever/i.test(l3lad.rungs[0].target), 'Rung 1 asks the pupil to build the forever loop');
-  check(/dark/i.test(l3lad.rungs[0].test), 'Rung 1 has a genuine fail state (take it out, the screen goes dark)');
+  /* DFM 168 re-cut: the break-it proof moved to rung 2, WITH its film part */
+  check(/dark/i.test(l3lad.rungs[1].test), 'Rung 2 has the genuine fail state (take it out, the screen goes dark)');
   check(/loop/i.test(l3lad.intro) && /event/i.test(l3lad.intro), 'the ladder intro names both shapes: loop AND event');
   check(!/show number score/i.test(l3lad.rungs[1].target) && !/show number score/i.test(l3lad.rungs[2].target),
     'rungs 2 and 3 no longer put the display inside the button events');
@@ -119,9 +120,9 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   const card = await page.evaluate(() => (document.querySelector('.chunk-host') || {}).textContent || '');
   check(/forever/i.test(card), 'the pupil is asked for the forever block on screen');
   check(/already/i.test(card), 'the card tells her the forever block is already on the canvas');
-  check(/goes dark|dark and STAYS dark/i.test(card), 'the fail state is on the card, in the pupil\'s own words');
   await page.screenshot({ path: path.join(OUT, 'l3-rung1-forever.png'), fullPage: true });
 
+  /* the picture probe must run while rung 1's card is still SHOWING */
   const img = await page.evaluate(async () => {
     const el = Array.from(document.querySelectorAll('img')).find(i => /l3\/rung1\.png/.test(i.src));
     if (!el) return null;
@@ -129,6 +130,17 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
     return { w: el.naturalWidth, h: el.naturalHeight };
   });
   check(!!img && img.w > 0, 'the REGENERATED rung1.png loads on the card' + (img ? ' (' + img.w + 'x' + img.h + ')' : ''));
+
+  /* DFM 168 re-cut: the break-it fail state now lives on rung 2's card, next
+     to its own film part - clear rung 1 and read it there */
+  await page.evaluate(() => {
+    const b = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /It worked/i.test(x.textContent));
+    if (b) b.click();
+  });
+  await sleep(900);
+  const card2 = await page.evaluate(() => (document.querySelector('.chunk-host') || {}).textContent || '');
+  check(/Make It Count/i.test(card2), 'clearing rung 1 lands on rung 2, "Make It Count"');
+  check(/goes dark|dark and STAYS dark/i.test(card2), 'the fail state is on rung 2\'s card, in the pupil\'s own words');
 
   /* the parsons key, marked through the real server path */
   console.log('\n== marking ==');
