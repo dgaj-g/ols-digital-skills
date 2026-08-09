@@ -1118,7 +1118,14 @@
     var ch = s.chunks[s.chunkIdx];
     var host = $('#chunk-host');
     host.innerHTML = '';
-    host.className = 'chunk-host engine-' + ch.engine;
+    /* DFM 175, his 9 Aug instruction: "The layout of the cards should also be
+       upgraded to be more aesthetically pleasing in this lesson - be inventive in
+       the way you're delivering it... I feel there is something missing in terms
+       of engagement." A lesson may name a SKIN, and only lessons that name one
+       get any new styling - so Lessons 1 and 2, locked by DFM 176, render exactly
+       the class string they rendered before. */
+    var skin = (App.state.lesson && App.state.lesson.skin) ? ' skin-' + App.state.lesson.skin : '';
+    host.className = 'chunk-host engine-' + ch.engine + skin;
     global.scrollTo(0, 0);
     renderRail();
     App.ping(); // fresh chunk position for the pairing/laggard picture

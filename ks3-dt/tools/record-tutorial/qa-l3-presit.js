@@ -23,6 +23,7 @@
 const { chromium } = require('./node_modules/playwright');
 const path = require('path');
 const fs = require('fs');
+const { execFileSync } = require('child_process');
 const URL = 'http://localhost:8096/ks3-dt/platform/index.html?class=Demo-8A&as=anya';
 const SRC = path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/content-src');
 const PACKED = path.join(__dirname, '../../content');
@@ -59,6 +60,20 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
   for (const [label, L3] of [['source', srcL3], ['packed', packL3]]) {
     const lad = L3.chunks.find(c => c.id === 'ladder').config;
     const r = id => lad.rungs.find(x => x.id === id);
+    /* DFM 171 moved every sequence out of `target`/`test` prose and into real
+       arrays (steps / testSteps), so these assertions read the rung's WHOLE
+       pupil-facing text rather than one field. What is being checked is that the
+       teaching is present - not which key happens to hold it. */
+    const rtxt = id => {
+      const x = r(id) || {};
+      return [x.target, x.stepsLead, (x.steps || []).join(' '), x.note,
+              x.testLead, (x.testSteps || []).join(' '), x.test].filter(Boolean).join(' ');
+    };
+    const stxt = () => {
+      const x = lad.stretch || {};
+      return [x.target, x.stepsLead, (x.steps || []).join(' '), x.note,
+              x.testLead, (x.testSteps || []).join(' '), x.test].filter(Boolean).join(' ');
+    };
 
     // A1 the set-up list
     check(Array.isArray(lad.setup) && lad.setup.length === 5, label + ': the ladder carries a 5-step MakeCode set-up list');
@@ -77,31 +92,31 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
     check(!/DEVICE is the judge/.test(JSON.stringify(L3)), label + ': "DEVICE is the judge" is gone from the whole lesson');
 
     // The guided-build re-cut (DFM 168): rung 1 = variable + the loop showing it
-    check(/Watch your simulator/i.test(r('s1').test), label + ': rung 1 starts at the simulator reading 0');
-    check(!/the film button below replays it/.test(r('s1').test),
+    check(/Watch your simulator/i.test(rtxt('s1')), label + ': rung 1 starts at the simulator reading 0');
+    check(!/the film button below replays it/.test(rtxt('s1')),
       label + ': rung 1 never claims the film replays the copy-across routine');
-    check(/press Download in MakeCode, then drag the file across/.test(r('s1').test),
+    check(/press Download in MakeCode, then drag the file across/.test(rtxt('s1')),
       label + ': rung 1 spells the copy-across steps out itself');
-    check(!/button A|set score/i.test(r('s1').target),
+    check(!/button A|set score/i.test(rtxt('s1')),
       label + ': rung 1 no longer builds the button event — that is rung 2\'s part of the film');
 
     // rung 2 = the event, set-vs-change, and the dark proof (moved here with its film part)
-    check(/set score to 1/.test(r('s2').target) && /change score by 1/.test(r('s2').target),
+    check(/set score to 1/.test(rtxt('s2')) && /change score by 1/.test(rtxt('s2')),
       label + ': rung 2 builds the event and the set-to-change swap');
-    check(DOWNLOAD_AGAIN.test(r('s2').test), label + ': rung 2 opens by telling her to download');
-    check(DOWNLOAD_AGAIN.test(r('s3').test), label + ': rung 3 opens by telling her to download again');
-    check(/OLD program/i.test(r('s2').test), label + ': rung 2 says why — the micro:bit keeps running the OLD program');
-    check(/SIMULATOR/.test(r('s2').test) && /goes dark/.test(r('s2').test),
+    check(DOWNLOAD_AGAIN.test(rtxt('s2')), label + ': rung 2 opens by telling her to download');
+    check(DOWNLOAD_AGAIN.test(rtxt('s3')), label + ': rung 3 opens by telling her to download again');
+    check(/OLD program/i.test(rtxt('s2')), label + ': rung 2 says why — the micro:bit keeps running the OLD program');
+    check(/SIMULATOR/.test(rtxt('s2')) && /goes dark/.test(rtxt('s2')),
       label + ': rung 2 carries the break-it proof, on the SIMULATOR');
-    check(/only changes when you download again/i.test(r('s2').test),
+    check(/only changes when you download again/i.test(rtxt('s2')),
       label + ': and says a micro:bit only changes on a fresh download');
     check(/First check you downloaded again/i.test(r('s2').hint),
       label + ': rung 2\'s hint names the fresh download as the FIRST thing to check');
-    check(/Part 2/.test(r('s1').target) && /Part 3/.test(r('s2').target),
+    check(/Part 2/.test(rtxt('s1')) && /Part 3/.test(rtxt('s2')),
       label + ': the rung targets point at their own film parts');
 
     // A6 help
-    check(/simulator's display goes dark/.test(lad.help), label + ': the ladder help names the simulator for the break-it step');
+    check(/simulator's display go dark/.test(lad.help), label + ': the ladder help names the simulator for the break-it step');
 
     // DFM 168: the standalone film chunk is GONE — the film lives on the ladder in parts
     check(!L3.chunks.find(c => c.id === 'howto'),
@@ -110,16 +125,43 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
       label + ': the ladder intro carries film Part 1');
     check(['s1', 's2', 's3'].every(function (id) { return r(id).part && /Part [234]/.test(r(id).part.label); }),
       label + ': every rung carries its own film part');
-    /* the one-fact boundary law (144): the parts and the re-watch chapters must
-       EQUAL the film's own chapters.json — film edits can never silently desync */
+    /* THE BOUNDARY LAW, re-shaped for FILES (DFM 170). A part used to be a window
+       into one long film (from/to seconds); it is now a file of its own, because
+       a window still let a pupil scrub into the next rung's material. So the law
+       becomes: every part file EXISTS, is the length of its own chapter, and the
+       parts add up to the whole film. Same one-fact discipline (144), now proved
+       against the media rather than against two numbers. */
     const chJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'out/l3/chapters.json'), 'utf8'));
     const chT = chJson.chapters.map(function (c) { return Number(c.t); });
+    const VID = path.join(__dirname, '../../platform/assets/video/l3');
+    const dur = function (f) {
+      return Number(String(execFileSync('ffprobe', ['-v', 'error', '-show_entries',
+        'format=duration', '-of', 'csv=p=0', f])).trim());
+    };
     const parts = [lad.introPart, r('s1').part, r('s2').part, r('s3').part];
+    let partSum = 0;
     parts.forEach(function (p, i) {
-      check(Number(p.from) === chT[i], label + ': part ' + (i + 1) + ' starts exactly at chapter ' + (i + 1) + ' (' + p.from + ' = ' + chT[i] + ')');
-      const expectedTo = (i < 3) ? chT[i + 1] : Number(chJson.durationSec);
-      check(Number(p.to) === expectedTo, label + ': part ' + (i + 1) + ' ends exactly where the next begins (' + p.to + ' = ' + expectedTo + ')');
+      check(!!p.src && !/from|to/.test(Object.keys(p).join(' ')),
+        label + ': part ' + (i + 1) + ' is served as its own FILE, not a window into the whole film');
+      const f = path.join(__dirname, '../../platform', String(p.src || ''));
+      const exists = fs.existsSync(f);
+      check(exists, label + ': part ' + (i + 1) + ' file exists on disk (' + p.src + ')');
+      if (!exists) return;
+      const d = dur(f);
+      partSum += d;
+      const expected = ((i < 3) ? chT[i + 1] : Number(chJson.durationSec)) - chT[i];
+      check(Math.abs(d - expected) <= 1.5,
+        label + ': part ' + (i + 1) + ' is exactly its own section (' + d.toFixed(1) + 's vs chapter ' + expected + 's)');
+      /* HIS ACTUAL COMPLAINT: every rung's scrubber read 8:44. A part must be a
+         small fraction of the film, or a pupil can still stray out of it. */
+      check(d < Number(chJson.durationSec) * 0.6,
+        label + ': part ' + (i + 1) + '\'s scrubber cannot reach the rest of the film (' +
+        d.toFixed(0) + 's of ' + chJson.durationSec + 's)');
     });
+    check(Math.abs(partSum - Number(chJson.durationSec)) <= 2,
+      label + ': the four parts add up to the whole film (' + partSum.toFixed(1) + 's vs ' + chJson.durationSec + 's) — no footage lost between rungs');
+    check(fs.existsSync(path.join(VID, 'l3-tutorial.mp4')),
+      label + ': the WHOLE film is still on disk for the re-watch button (DFM 143)');
     check(lad.film.chapters.every(function (c, i) { return Number(c.t) === chT[i]; }),
       label + ': the re-watch modal\'s chapter buttons match chapters.json too');
     check(Number(lad.film.defaultT) === chT[1], label + ': the film button still defaults to the make-the-variable chapter');
@@ -138,15 +180,26 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
       check(L3.keys['ex3-1'].mis.length === 4 && L3.keys['ex3-1'].mis[0] === 'blame-the-hardware first' &&
         L3.keys['ex3-1'].mis[1] === null && L3.keys['ex3-1'].mis[3] === 'blame-the-player instead of checking the code',
         label + ': the four misconception labels are unchanged');
-      check(/set-instead-of-change/.test(L3.keys['ex3-1'].explain), label + ': the explanation names the real fault');
+      /* the wording changed in the 9 Aug rework (DFM 173: "the classic
+         set-instead-of-change" was adult shorthand); the FAULT it must name has
+         not - so the assertion follows the meaning, not the old phrase. */
+      check(/'set score to 1' is\s+still inside the event/.test(L3.keys['ex3-1'].explain) &&
+            /adds one to what is already there/.test(L3.keys['ex3-1'].explain),
+        label + ': the explanation names the real fault (set forces, change adds)');
     } else {
       check(!L3.keys, label + ': the packed lesson carries no answer keys at all (they stay server-side)');
     }
 
     // A9 the rig
     const rig = L3.chunks.find(c => c.id === 'rig').config;
-    check(/Run the HQ Inspection/.test(rig.help), label + ': the rig help names the button as it appears on screen');
-    check(/run the inspection again/.test(rig.failText), label + ': the rig failText says "run the inspection again"');
+    /* DFM 35, tightened by the rework: the card must name the button she can
+       actually see, and Lesson 3's is now "Check my Drive" (cfg.checkLabel). The
+       law is that the two AGREE - so read the label and look for it. */
+    const rigBtn = rig.checkLabel || 'Run the HQ Inspection';
+    check(rig.help.indexOf(rigBtn) !== -1, label + ': the rig help names the button as it appears on screen (' + rigBtn + ')');
+    check(rig.failText.indexOf(rigBtn) !== -1, label + ': the rig failText names the same button');
+    check(!/HQ Inspection/.test(rig.help + rig.failText + rig.intro),
+      label + ': the old "HQ Inspection" wording is gone from Lesson 3 (it never matched the button)');
     check(rig.steps[2].title === 'Drag it in', label + ': the third rig step is titled "Drag it in"');
     check(!/insurance|kill your build/.test(rig.intro), label + ': the rig intro drops "insurance" and "kill your build"');
 
@@ -160,19 +213,28 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
     check(!/Catch-up mission/.test(rally.soloIntro), label + ': "Catch-up mission" is gone');
 
     // A11/A12
-    check(/at the end of the last screen/.test(L3.chunks.find(c => c.id === 'exit').config.help),
-      label + ': the exit help explains when verdicts arrive');
-    check(/Every step adds 1 to a box called steps/.test(JSON.stringify(L3.chunks[0].config.images)),
+    /* "your verdicts arrive once the whole report is filed" was legal-metaphor
+       register (DFM 173's family) and is now plain. Same promise, testable. */
+    check(/find out how you did at the end, after the last screen/.test(L3.chunks.find(c => c.id === 'exit').config.help),
+      label + ': the exit help says plainly when she finds out how she did');
+    check(/every step adds 1 to a box called steps/i.test(JSON.stringify(L3.chunks[0].config.images)),
       label + ': the tracker caption is words, not block syntax');
 
     // A13/A14
     check(!/the real device|their device never showed|A device dies/.test(JSON.stringify(L3.teacherBrief)),
       label + ': the brief calls it the micro:bit');
-    check(Number(L3.chunks.find(c => c.id === 'ladder').minutes) === 35,
-      label + ': the ladder is 35 minutes on paper (the 8:44 film moved in with it)');
-    check(Number(L3.durationMin) === 64, label + ': the lesson\'s stated hour is 64 minutes (the film grew to 8:44 in the re-record — reported to him)');
+    check(Number(L3.chunks.find(c => c.id === "ladder").minutes) === 36,
+      label + ': the ladder is 36 minutes on paper (the 9:16 film moved in with it)');
+    /* The paper minutes are DERIVED from the film that actually exists, never
+       typed from memory (DFM 164b, 131's law). The variable animation grew
+       chapter 1, so the ladder and the hour moved with it - both reported to him
+       in plain minutes rather than quietly left stale. */
+    check(Number(L3.durationMin) === 65, label + ': the lesson\'s stated hour is 65 minutes (the film grew to 9:16 with the variable animation — reported to him)');
     const mSum = L3.chunks.reduce(function (a, c) { return a + (Number(c.minutes) || 0); }, 0);
-    check(mSum + 3 === 64, label + ': the chunk minutes plus the Do-Now really sum to the stated hour (' + (mSum + 3) + ')');
+    check(mSum + 3 === 65, label + ': the chunk minutes plus the Do-Now really sum to the stated hour (' + (mSum + 3) + ')');
+    const filmSec = Number(JSON.parse(fs.readFileSync(path.join(__dirname, 'out/l3/chapters.json'), 'utf8')).durationSec);
+    check(Math.ceil(filmSec / 60) <= Number(lad.minutesFilmCheck || 36),
+      label + ': the ladder chunk is at least as long as the film inside it (' + Math.ceil(filmSec / 60) + ' min of film in 36)');
   }
 
   console.log('\n== 1b. the three reported Lesson 2 strings (DFM 150 sweep) ==');
@@ -318,30 +380,43 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
   check(rungDom.hasPart, 'rung 1 carries its own part player');
   check(rungDom.heads.some(t => /① Watch this part/.test(t)) && rungDom.heads.some(t => /② Build it yourself/.test(t)),
     'the ①-watch and ②-build heads are both on the card');
-  check(/③ Prove it — the real test:/.test(rungDom.test), 'the test box leads with ③ Prove it');
+  check(/③ Prove it/.test(rungDom.test), 'the test box leads with ③ Prove it');
 
-  /* the player pauses itself at the end of its part, and replay seeks back */
-  const partStop = await page.evaluate(async (bounds) => {
+  /* DFM 170 - THE POINT OF THE WHOLE CHANGE, measured on the real element:
+     a rung's player must be its OWN file, so its scrubber cannot reach any other
+     rung's material. His words: "a student who wants to rewind or go forward
+     might accidentally stray into another part of the video that isn't being
+     dealt with that particular rung." The old assertions here checked that the
+     player SEEKED to the part's start inside one long film - the very behaviour
+     he rejected - so they are replaced, not relaxed. */
+  const partPlay = await page.evaluate(async (bounds) => {
     const h = document.querySelector('#chunk-host');
     const v = h.querySelector('.rung-part-video');
-    for (let i = 0; i < 40 && v.readyState < 1; i++) await new Promise(r => setTimeout(r, 250));
-    const from = bounds.chapters[1].t, to = bounds.chapters[2].t;
-    const seeked = Math.abs(v.currentTime - from) < 2;      // loadedmetadata seeked to the part start
+    for (let i = 0; i < 60 && !(v.readyState >= 1 && isFinite(v.duration)); i++) {
+      await new Promise(r => setTimeout(r, 250));
+    }
+    const out = { src: v.getAttribute('src') || '', duration: v.duration, startsAtZero: v.currentTime < 0.5 };
     try { await v.play(); } catch (e) {}
-    v.currentTime = to + 1;
-    v.dispatchEvent(new Event('timeupdate'));
-    await new Promise(r => setTimeout(r, 300));
+    v.currentTime = Math.max(0, v.duration - 0.2);
+    await new Promise(r => setTimeout(r, 900));
     const done = h.querySelector('.rung-part-done');
-    const stopped = v.paused && done && !done.hidden;
+    out.stopped = !!(done && !done.hidden);
     h.querySelector('.rung-part-replay').click();
     await new Promise(r => setTimeout(r, 400));
-    const replayed = Math.abs(v.currentTime - from) < 2;
+    out.replayedToZero = v.currentTime < 1.5;
+    out.note = (h.querySelector('.rung-part-len') || {}).textContent || '';
     try { v.pause(); } catch (e) {}
-    return { seeked, stopped, replayed };
+    return out;
   }, chBounds);
-  check(partStop.seeked, 'the player opens at its part\'s start, not at 0');
-  check(partStop.stopped, 'crossing the part\'s end pauses the player and shows "now build it below"');
-  check(partStop.replayed, 'Watch-this-part-again seeks back to the part\'s start');
+  const filmLen = Number(chBounds.durationSec || 0);
+  check(/l3-part\d\.mp4$/.test(partPlay.src), 'the rung plays its OWN part file, not the whole film (' + partPlay.src.split('/').pop() + ')');
+  check(partPlay.startsAtZero, 'the part player opens at 0:00 — a part file has no offset to seek to');
+  check(partPlay.duration > 30 && partPlay.duration < filmLen * 0.6,
+    'the scrubber spans ONLY this part (' + Math.round(partPlay.duration) + 's of the ' + filmLen + 's film) — it cannot stray into another rung');
+  check(partPlay.stopped, 'reaching the end shows "now build it below"');
+  check(partPlay.replayedToZero, 'Watch-this-part-again returns to the start of the part');
+  check(/runs about \d+ minute/.test(partPlay.note),
+    'the length is read off the file itself, not typed into the content (' + partPlay.note.trim() + ')');
 
   /* CONTROL + the L2 guard: a ladder with no parts renders none of this */
   await mountLadder('j1-02.json', { unplugged: true });

@@ -60,13 +60,38 @@ function validateLesson(src, file) {
   return problems;
 }
 
+/* THE LANGUAGE GATE (DFM 172/178). Damien, 9 Aug 2026: "is what I'm trying to
+   instruct or communicate clear enough for an 11 or 12 year old?" - asked of every
+   pupil-facing sentence, every build, with no way round it. A standard that
+   depends on remembering it is not a standard (DFM 150), so the pack itself
+   refuses to run when the harness fails. There is deliberately no skip flag. */
+function languageGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-language.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-language.js is missing - the language gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error((res.stdout || '') + (res.stderr || ''));
+    console.error('\nPACK STOPPED: the communication-of-language harness failed (DFM 172).');
+    console.error('Fix the sentences, or record the read-aloud judgement, then pack again.');
+    process.exit(1);
+  }
+  console.log('language gate: PASSED (qa-language)');
+}
+
 function main() {
+  languageGate();
   const sec = secret();
   const devKeys = {};
   const problems = [];
   const walk = (dir) => fs.readdirSync(dir).flatMap(f => {
     const p = path.join(dir, f);
-    return fs.statSync(p).isDirectory() ? walk(p) : (f.endsWith('.json') ? [p] : []);
+    if (fs.statSync(p).isDirectory()) return walk(p);
+    /* dev-only companions of the content, never served to anyone */
+    if (f === 'language-ledger.json' || f === 'vocab.json') return [];
+    return f.endsWith('.json') ? [p] : [];
   });
   if (!fs.existsSync(SRC)) { console.error('No content source at ' + SRC); process.exit(1); }
   for (const srcPath of walk(SRC)) {

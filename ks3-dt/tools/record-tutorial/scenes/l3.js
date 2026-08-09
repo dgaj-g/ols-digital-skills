@@ -218,7 +218,17 @@ const scenes = [
     id: 'ch1',
     label: "What's a variable?",
     run: async ({ cine, drv, log }) => {
-      await drv.openHome();
+      /* DFM 174 - HIS INSTRUCTION: "Create an impressive 3d animation... of a box
+         or container that has a name on it (the name of the variable) and then
+         something like a number is being put into it, explaining whats happening
+         as you go. this can replace the current slide in the video that explains a
+         variable... then the video can start after that."
+         So chapter 1 now OPENS on the animation and the MakeCode teaching follows
+         it. The slide it replaced said a variable is "a named box holding a
+         number", which is the very oversimplification he corrected - beat 5 puts
+         a WORD in a second box to tell the truth without complicating it. */
+      const vbUrl = 'file://' + path.join(__dirname, '..', 'lib', 'variable-box', 'index.html');
+      await drv.page.goto(vbUrl);
       await cine.install();
       await cine.curtain({
         crest: CREST, kicker: 'SCOREBOARD ENGINEER ' + DASH + ' TUTORIAL',
@@ -227,18 +237,41 @@ const scenes = [
       });
       await cine.pause(2900);
       await cine.lift();
+
+      await drv.page.evaluate(() => window.vb.ready);
+      /* PROVE the canvas is really drawing: on a software renderer a failed
+         context gives a flat rectangle, and a flat rectangle records perfectly
+         happily (DFM 146b - verify the PIXELS, not the absence of an error).
+         The probe has to come AFTER a beat has drawn something: before beat 1
+         the box is still scaled to nothing, so an empty reading is correct and
+         the guard was failing honest takes. */
+      const BEATS = [
+        'A computer remembers things by keeping each one in a box like this. The box is called a <b>VARIABLE</b>.',
+        'Every variable has a <b>NAME</b>, so the computer can find the right box. This box is called <b>score</b>.',
+        'Inside the box goes a <b>VALUE</b> &mdash; the thing the computer is remembering. Right now, score holds <b>0</b>.',
+        'The <b>VALUE</b> can change any time &mdash; every press of button A puts a bigger number in the box. The <b>NAME</b> on the box never changes.',
+        'A variable can hold other things too, like a word. This box, called <b>team</b>, holds <b>GOLD</b>. Today, your box holds a number: your score.',
+        'Today you will build this for real: one box called <b>score</b>, with its number showing on the micro:bit&rsquo;s screen.'
+      ];
+      for (let i = 0; i < BEATS.length; i++) {
+        await cine.captionShow(BEATS[i]);
+        await drv.page.evaluate(n => window.vb.play(n), i + 1);
+        if (i === 0) {
+          const first = await drv.page.evaluate(() => window.vb.probe());
+          if (!first.some(p => p.max > 60)) {
+            throw new Error('variable-box drew nothing after beat 1 - WebGL failed: ' + JSON.stringify(first));
+          }
+          log('variable-box probe ok: ' + JSON.stringify(first.map(p => p.max)));
+        }
+      }
+      await cine.captionHide();
+      const last = await drv.page.evaluate(() => window.vb.probe());
+      if (!last.some(p => p.max > 60)) throw new Error('variable-box went blank mid-take');
+
+      /* now the film proper starts, exactly as he asked */
+      await drv.openHome();
+      await cine.install();          /* the injected cinema DOM dies with the old document */
       await cine.ensureCursor(640, 430);
-
-      await cine.card({
-        kicker: 'THE BIG IDEA', title: 'Every game keeps score somewhere invisible',
-        img: IMG_ARCADE, credit: CREDIT_ARCADE,
-        lines: [
-          'Behind every score sits a <b>VARIABLE</b> &mdash; a named box holding a number',
-          'The <b>name</b> stays the same. The <b>number inside</b> can change',
-          'Today you build one, and turn it into a real scoreboard'
-        ]
-      }, 14000);
-
       await cine.caption('Back at <b>makecode.microbit.org</b> &mdash; time to build.');
       const np = await drv.page.evaluate(() => {
         const el = document.querySelector('.newprojectcard');

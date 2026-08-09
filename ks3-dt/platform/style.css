@@ -2152,3 +2152,166 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 .step-linkrow { margin: 14px 0 4px; }
 .step-link { display: inline-block; text-decoration: none; font-weight: 700; }
+
+/* ============================================================================
+   THE NUMBERED-INSTRUCTION LAYOUT LAW (DFM 171) — 9 Aug 2026
+   His words on the stretch card he photographed: "the numbers listed one after
+   another, with the next number on a new line because it isn't really readable
+   at the moment. bake this in for future instruction cards with a harness."
+   A numbered sequence is an <ol> with real space between items, on EVERY
+   instruction card in every lesson. Content that authors no array renders
+   exactly as before, so Lessons 1 and 2 are untouched (DFM 176).
+   ========================================================================== */
+.rung-steps-lead { margin: 10px 0 6px; font-weight: 700; color: var(--ink); }
+.rung-steps, .rung-proof, .case-mech-steps {
+  margin: 6px 0 14px; padding-left: 28px;
+}
+.rung-steps li, .rung-proof li, .case-mech-steps li {
+  margin: 0 0 10px; line-height: 1.55;
+}
+.rung-steps li:last-child, .rung-proof li:last-child, .case-mech-steps li:last-child {
+  margin-bottom: 0;
+}
+.rung-steps li::marker, .rung-proof li::marker, .case-mech-steps li::marker {
+  font-weight: 700; color: var(--gold-deep);
+}
+.rung-note {
+  margin: 0 0 14px; padding: 10px 14px; border-radius: 10px;
+  background: var(--field); border-left: 4px solid var(--gold);
+  font-size: 0.95rem; line-height: 1.55;
+}
+.rung-test-head { margin: 0 0 8px; }
+.rung-test .rung-proof { margin-bottom: 0; }
+.case-mech-steps { margin-top: 4px; }
+
+/* ============================================================================
+   SECTION 16 — THE LESSON SKINS (DFM 175) — 9 Aug 2026
+   "The layout of the cards should also be upgraded to be more aesthetically
+   pleasing in this lesson - be inventive in the way you're delivering it. What
+   you have isn't terrible, but I feel there is something missing in terms of
+   engagement."
+   A skin is opt-in per lesson (`"skin"` in the lesson JSON → .skin-NAME on the
+   chunk host). No skin, no change: Lessons 1 and 2 are locked and render the
+   same DOM and the same CSS they always did.
+   ========================================================================== */
+
+/* ---- vendored display faces (licences in assets/fonts/CREDITS.md) ---- */
+@font-face {
+  font-family: 'DSEG7 Classic';
+  src: url('assets/fonts/dseg7-classic-bold.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Caveat';
+  src: url('assets/fonts/caveat-bold.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* ---- 16a. LESSON 3 "arcade": the card wears a real scoreboard ------------
+   L3 was visually the barest of the three - a ladder of white cards. It now
+   carries an LED readout that shows her ACTUAL progress (rule 35: the readout
+   never says anything untrue), because the lesson is about a number living in a
+   box and changing. */
+.skin-arcade .ladder-card { position: relative; padding-top: 64px; }
+.skin-arcade .led-strip {
+  position: absolute; top: 0; left: 0; right: 0; height: 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px; box-sizing: border-box;
+  background: linear-gradient(180deg, #0B1B3A, #060D1F);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  border-bottom: 2px solid var(--gold-deep);
+}
+.skin-arcade .led-cell { display: flex; align-items: baseline; gap: 9px; }
+.skin-arcade .led-label {
+  font-family: var(--font-display); font-size: 0.62rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: #7E93BE;
+}
+.skin-arcade .led-digits {
+  font-family: 'DSEG7 Classic', ui-monospace, monospace;
+  font-size: 1.32rem; color: var(--gold-hi);
+  text-shadow: 0 0 10px rgba(255, 216, 77, 0.55);
+}
+.skin-arcade .led-digits.rolling { animation: ledRoll 620ms ease-out; }
+@keyframes ledRoll {
+  0%   { transform: translateY(-0.55em); opacity: 0; filter: brightness(2.2); }
+  55%  { transform: translateY(0.06em);  opacity: 1; }
+  100% { transform: translateY(0);       opacity: 1; }
+}
+/* the one-shot marquee chase when a rung lands */
+.skin-arcade .ladder-card.rung-won::after {
+  content: ''; position: absolute; inset: 0; border-radius: var(--r-lg);
+  pointer-events: none; border: 3px solid transparent;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(255,216,77,0.95) 18%, transparent 36%)
+    border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: marqueeChase 1.15s ease-out 1;
+}
+@keyframes marqueeChase {
+  from { background-position: -120% 0; }
+  to   { background-position: 220% 0; }
+}
+/* the part player introduces itself like a screening */
+.skin-arcade .rung-part { position: relative; }
+.skin-arcade .rung-part .rung-step-head {
+  font-family: var(--font-display); letter-spacing: 0.05em;
+}
+/* DSEG7 is a SEVEN-SEGMENT face: it has digits and a handful of letter shapes,
+   so ordinary words come out as "nou ShoU inG". It is used for NUMBERS only.
+   (DFM 149's family: a label a pupil has to decode is a broken label.) */
+.skin-arcade .now-showing {
+  display: inline-block; margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--gold-deep); font-weight: 700;
+}
+.skin-arcade .led-footnote {
+  margin: 10px 0 0; font-size: 0.84rem; color: var(--muted); font-style: italic;
+}
+
+/* ---- 16b. LESSON 4 "casefile": the board was themed, the file was not ----
+   The cork board already had pins and a rubber stamp; opening a case dropped
+   the pupil onto a plain white card. The file now looks like a file. */
+.skin-casefile .case-filecard {
+  position: relative;
+  background:
+    linear-gradient(180deg, #FFFDF7 0%, #FFF8E9 100%);
+  border-top: 3px solid #C9A227;
+}
+.skin-casefile .case-filecard::before {
+  content: ''; position: absolute; top: -21px; left: 26px;
+  width: 132px; height: 21px;
+  background: linear-gradient(180deg, #F2DFA6, #E8CE86);
+  border-radius: 8px 8px 0 0;
+  border: 1px solid #C9A227; border-bottom: none;
+}
+.skin-casefile .case-ticket {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: #FFFFFF; border: 1px dashed #C3B58C;
+  border-radius: 8px; padding: 14px 16px; line-height: 1.6;
+}
+
+/* ---- 16c. LESSON 5 "studio": signing should feel like signing ----------- */
+/* .std-signature.done .std-sig-name (line ~1948) is THREE classes and would
+   otherwise win on specificity - the exact trap DFM 146(b) was written about,
+   where a CSS 'fix' reads correctly in the file and changes nothing on screen.
+   qa-skins.js measures the COMPUTED font-family, not this source line. */
+.skin-studio .std-signature.done .std-sig-name {
+  font-family: 'Caveat', 'Segoe Script', cursive;
+  font-size: 2.2rem; color: var(--ols-blue);
+  line-height: 1.15; display: inline-block;
+  animation: signIn 900ms ease-out 1;
+}
+/* the studio's own name, in her handwriting, on the marquee card that already
+   previews her listing as she types it */
+.skin-studio .gal-marquee-card .gal-mq-studio { letter-spacing: 0.04em; }
+@keyframes signIn {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skin-arcade .led-digits.rolling,
+  .skin-arcade .ladder-card.rung-won::after,
+  .skin-studio .std-signature.done .std-sig-name { animation: none !important; }
+}
