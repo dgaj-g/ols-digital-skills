@@ -1898,7 +1898,15 @@
       return;
     }
     flagDisarm();
+    /* DAMIEN, 8 Aug 2026, on the live flags: "once a flag is clicked, it can
+       take a few second before it changes to grey (and vice versa), so a small
+       spinning wheel or something would be helpful". Rule 42 again - the wait
+       here is the Apps Script round trip, and the pill said nothing while it
+       ran. Both directions, because he asked for both. */
+    var wasLabel = btn.textContent;
     btn.disabled = true;
+    btn.classList.add('is-saving');
+    btn.innerHTML = '<span class="pill-spinner"></span>Saving';
     adminCall('flagHandled', {
       className: cls,
       email: btn.getAttribute('data-email'),
@@ -1908,6 +1916,8 @@
     }).then(function (rr) {
       if (!rr || !rr.ok) {
         btn.disabled = false;
+        btn.classList.remove('is-saving');
+        btn.textContent = wasLabel;
         plainStatus(q('#live-status'), 'That did not save -- please try again.');
         return;
       }
