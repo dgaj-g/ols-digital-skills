@@ -346,6 +346,121 @@ function c11Section() {
   }
 }
 
+/* ============ DFM 131/164 - EVERY LESSON-END MUST UNLOCK SOMETHING ============
+ *
+ * His promise: "as long as, at the end of each lesson, they can unlock something
+ * new, that is fine" (131). His 9 Aug ruling (164a) dropped clearance level 2
+ * from 100 to 90 because a pupil who uses the PRICED features exactly as they
+ * were designed - buys every Debug Hint, takes every clue, gets nothing right
+ * first try in the Vault - finishes Lesson 1 on 92 and would otherwise be the
+ * one finisher whose first lesson-end unlocks nothing.
+ *
+ * The numbers are COMPUTED from the built content and the engine award sites,
+ * never copied (131's own law, and 149's lesson about a harness that prints a
+ * false number). Two paths per lesson:
+ *   BEST  - everything right first try, no hints, no clues, no stretch
+ *   FLOOR - completed, but every hint bought, every clue taken, nothing right
+ *           first try: the cheapest honest finish
+ * A threshold must sit AT OR BELOW the floor pupil's cumulative (or she unlocks
+ * nothing) and ABOVE the previous lesson's best (or a strong pupil takes two
+ * levels in one hour).
+ *
+ * Levels 3-6 currently fail the floor test. That was FOUND on 9 Aug, REPORTED to
+ * him, and deliberately NOT changed - he ruled on level 2 only. So this section
+ * asserts the ruled fact, and pins the rest as a RECORDED STATE: if a content
+ * edit or a re-tier moves any of it, in either direction, this fails and forces
+ * a fresh look. A known gap that nothing watches is how rule 131 broke the
+ * first time. */
+function xpPromiseSection() {
+  section('DFM 131/164 - the lesson-end unlock promise, computed from built content');
+  const L = n => JSON.parse(fs.readFileSync(path.join(CONTENT, 'j1/lessons/j1-0' + n + '.json'), 'utf8'));
+  const themes = JSON.parse(fs.readFileSync(path.join(CONTENT, 'themes.json'), 'utf8'));
+  const EXIT_XP = 10;   // server: Math.min(10, max(0, 150 - lessonXp)) on filing the exit report
+
+  /* the engine award sites, read off engines.js and asserted below so this can
+     never drift away from the code it models */
+  const eng = fs.readFileSync(path.join(ROOT, 'ks3-dt/platform/engines.js'), 'utf8');
+  check(/var xp = 12 \+ firstTryRight \* 3;/.test(eng), 'vault award is still 12 + firstTryRight*3');
+  check(/var xp = 7 \+ clean \* 5 \+ \(cleared - clean\) \* 3/.test(eng), 'ladder award is still 7 + clean*5 + hinted*3');
+  check(/var xp = 4 \+ closedCount \* 4 \+ gold/.test(eng), 'casework award is still 4 + closed*4 + gold');
+  check(/return passCount\(\) \* 4 \+ \(shipped \? 3 : 0\)/.test(eng), 'studio build award is still criteria*4 + ship');
+  check(/var xp = 3 \* given \+ \(v2ok \? 1 : 0\)/.test(eng), 'gallery award is still 3*given + v2');
+  check(/Math\.min\(10, Math\.max\(0, 150 - num_\(a\[1\]\)\)\)/.test(fs.readFileSync(SERVER, 'utf8')),
+    'and the server still awards up to 10 for filing the exit report');
+
+  function paths(n) {
+    const lesson = L(n);
+    let best = EXIT_XP, floor = EXIT_XP;
+    (lesson.chunks || []).forEach(c => {
+      const b = c.badge; if (!b) return;
+      const cfg = c.config || {};
+      let hi, lo;
+      switch (c.engine) {
+        case 'vault': { const f = (cfg.files || []).length; hi = 12 + f * 3; lo = 12; break; }
+        case 'ladder': { const r = (cfg.rungs || []).length; hi = 7 + r * 5; lo = 7 + r * 3; break; }
+        case 'casework': { const cs = (cfg.cases || []).length;
+          const base = 4 + cs * 4 + (cfg.rc ? 2 : 0) + (cfg.ship ? 3 : 0);
+          hi = base + cs; lo = base; break; }               // gold (+1 each) is lost to a clue
+        case 'studio': { const t = cfg.templates ? Object.keys(cfg.templates) : null;
+          if (t && t.length) { const crit = cfg.templates[t[0]].criteria.length; hi = lo = crit * 4 + 3; }
+          else { hi = lo = Number(b.xp); }
+          break; }
+        case 'gallery': { hi = lo = 3 * Number(cfg.quota || 0) + (cfg.v2 ? 1 : 0); break; }
+        default: hi = lo = Number(b.xp);
+      }
+      best += hi; floor += lo;
+    });
+    return { best, floor };
+  }
+
+  const cum = []; let cb = 0, cf = 0;
+  for (let n = 1; n <= 5; n++) { const p = paths(n); cb += p.best; cf += p.floor; cum.push({ n, best: cb, floor: cf }); }
+  const thr = {}; (themes.clearances || []).forEach(c => { thr[c.level] = Number(c.xp); });
+
+  console.log('  cumulative XP, best v floor (the cheapest honest finish):');
+  cum.forEach(r => console.log('    after L' + r.n + ':  best ' + String(r.best).padStart(3) +
+    '   floor ' + String(r.floor).padStart(3) + '   level ' + (r.n + 1) + ' threshold ' + thr[r.n + 1] +
+    '   floor unlocks? ' + (r.floor >= thr[r.n + 1] ? 'YES' : 'no')));
+
+  /* the arithmetic he was given, re-derived rather than trusted */
+  check(cum[0].best === 110 && cum[0].floor === 92,
+    'Lesson 1 computes to 110 on the best path and 92 on the floor path - the 92 he ruled on');
+
+  /* HIS RULING (164a), asserted */
+  check(thr[2] === 90, 'clearance level 2 is 90, his ruling');
+  check(cum[0].floor >= thr[2],
+    'so a full-hints Lesson 1 finisher (' + cum[0].floor + ') DOES cross level 2 (' + thr[2] + ') - the promise holds at Lesson 1');
+  check(cum[0].best < thr[3],
+    'and the best Lesson 1 finisher (' + cum[0].best + ') still stops short of level 3 (' + thr[3] + ') - nobody takes two levels in one hour');
+
+  /* RECORDED STATE for the levels he has NOT ruled on. Reported 9 Aug 2026;
+     unchanged deliberately. If any of this moves, look again - do not just
+     update the expectation. */
+  const KNOWN_FLOOR_UNLOCKS = { 2: true, 3: false, 4: false, 5: false, 6: false };
+  cum.forEach(r => {
+    const lvl = r.n + 1, got = r.floor >= thr[lvl];
+    check(got === KNOWN_FLOOR_UNLOCKS[lvl],
+      'level ' + lvl + ': the floor pupil ' + (got ? 'DOES' : 'does NOT') + ' unlock at the end of Lesson ' + r.n +
+      ' (' + r.floor + ' v ' + thr[lvl] + ') - matches the state recorded on 9 Aug');
+  });
+  check(!Object.keys(KNOWN_FLOOR_UNLOCKS).every(k => KNOWN_FLOOR_UNLOCKS[k]),
+    'REPORTED, NOT FIXED: levels 3-6 still leave a full-hints pupil with nothing to unlock - his ruling covered level 2 only');
+
+  /* the L3 film's paper minutes must match the film that ships (rule 35).
+     The brief is staff-only, so read it out of the PACKED encrypted blob the
+     same way E-08 does - this must test what really reaches a teacher. */
+  const l3 = L(3);
+  const l3brief = l3.teacherBrief || decryptKeys(l3.keysEnc, 'j1/lessons/j1-03')._brief || {};
+  const filmRow = (l3brief.atAGlance || []).filter(x => /film/i.test(x.part || ''))[0];
+  const man = path.join(ROOT, 'ks3-dt/tools/record-tutorial/out/l3/chapters.json');
+  if (filmRow && fs.existsSync(man)) {
+    const secs = JSON.parse(fs.readFileSync(man, 'utf8')).durationSec;
+    check(Number(filmRow.mins) === Math.ceil(secs / 60),
+      'the L3 brief says the film is ' + filmRow.mins + ' minutes and the film really runs ' +
+      Math.floor(secs / 60) + ':' + String(secs % 60).padStart(2, '0') + ' (DFM 164b)');
+  }
+}
+
 /* ================= browser halves ================= */
 async function openStaffPanel(page) {
   await page.evaluate(() => {
@@ -758,6 +873,7 @@ async function c14Browser(ctx) {
   console.log('KS3 DT pre-deploy harness - E-08, C-08, C-11, C-14  (pre-fix control ref ' + PREFIX_REF + ')');
   if (!ONLY || ONLY === 'e08' || ONLY === 'server') e08Section();
   if (!ONLY || ONLY === 'c11' || ONLY === 'server') c11Section();
+  if (!ONLY || ONLY === 'xp' || ONLY === 'server') xpPromiseSection();
   if (ONLY !== 'server' && ONLY !== 'e08') {
     let browser;
     try {

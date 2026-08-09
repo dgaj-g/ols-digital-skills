@@ -1,6 +1,6 @@
 {
  "comment": "Agent Kit registry. Cosmetic only - no keys, no marks. Every theme is a curated variant of the approved Mission Control v2 shell: lesson reading surfaces are never touched, contrast stays AA on the dark shell, and no theme may use background-attachment:fixed or per-card backdrop-filter (Chrome compositor rule). vars map to the THEME KNOB custom properties in style.css :root; stars feeds the starfield canvas; fx names an optional ambient effect layer (comets | aurora).",
- "clearanceNote": "Thresholds re-tiered 2 Aug 2026 (DFM 131): every lesson-end must unlock something new in the Agent Kit, so levels 2-6 sit a small margin below the NO-STRETCH full-completion cumulative XP for J1 L1-L5, computed from the built content and the engine award sites (ladder 7+clean*5; vault 12+right*3; casework 4+closed*4+gold+rc*2+ship*3; studio build crits*4+ship*3; gallery 3*given+v2; plus the server's +10 for filing the exit report). Cumulatives: L1 110, L2 148, L3 194, L4 233, L5 275. Levels 2-5 carry two themes each and level 6 carries Gold Command, so the five levels above the start are exactly five unlock moments for five lessons.",
+ "clearanceNote": "Thresholds re-tiered 2 Aug 2026 (DFM 131): every lesson-end must unlock something new in the Agent Kit, so levels 2-6 sit a small margin below the NO-STRETCH full-completion cumulative XP for J1 L1-L5, computed from the built content and the engine award sites (ladder 7+clean*5; vault 12+right*3; casework 4+closed*4+gold+rc*2+ship*3; studio build crits*4+ship*3; gallery 3*given+v2; plus the server's +10 for filing the exit report). Best-path cumulatives: L1 110, L2 148, L3 194, L4 233, L5 275. Levels 2-5 carry two themes each and level 6 carries Gold Command, so the five levels above the start are exactly five unlock moments for five lessons. DAMIEN'S RULING 9 Aug 2026 (DFM 164a): level 2 drops 100 -> 90, because a pupil who uses the priced features as designed - buys every Debug Hint, takes every clue, gets nothing right first try in the Vault - finishes Lesson 1 on 92 and would otherwise be the one finisher whose first lesson-end unlocks nothing. The FLOOR-path cumulatives for that pupil, computed the same way: L1 92, L2 124, L3 164, L4 199, L5 241. Levels 3-6 still sit ABOVE that floor (124<140, 164<185, 199<225, 241<265), so the promise still fails for her at every later lesson-end; this was found and REPORTED to him on 9 Aug and is awaiting his ruling - only level 2 was ruled on, so only level 2 was changed. qa-predeploy pins the whole table, so any content edit that shifts these numbers fails loudly.",
  "clearances": [
   {
    "level": 1,
@@ -9,7 +9,7 @@
   },
   {
    "level": 2,
-   "xp": 100,
+   "xp": 90,
    "name": "Field Agent"
   },
   {
