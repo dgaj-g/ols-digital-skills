@@ -72,6 +72,38 @@ function staticHalf() {
   check(/Training-day presentation/.test(staff) && /nothing here yet/.test(staff),
     'the training-day presentation slot is present and honestly labelled empty');
 
+  /* DFM 150: a banned word needs a harness, not a rule. The film's captions are
+     a surface like any other, and they are the ONE surface the 4 Aug sweep never
+     reached - on 9 Aug this generator was still telling teachers to "Tap a cell"
+     and "Tap any pupil's name" three days after the word was killed everywhere
+     else (147's law). Anything a grep can find, a harness should be watching. */
+  section('D0. THE FILM\'S OWN CAPTIONS OBEY THE LANGUAGE LAW (DFM 150/138.5)');
+  const scene = fs.readFileSync(path.join(ROOT, 'ks3-dt/tools/record-tutorial/scenes/guide.js'), 'utf8');
+  /* WHAT A TEACHER READS, not the source file. Code naming is not prose and
+     DFM 140(a) forbids "fixing" it: scrollIntoView({block:'center'}) is an API
+     value, and a comment RECORDING that the word was swept naturally contains
+     the word. Testing the raw file failed on both and would have pushed me to
+     damage working code to satisfy a harness - the exact trap qa-live-tab
+     already documents. So: strip comments, then take the quoted strings that
+     are actually sentences (a literal with a space in it - which excludes
+     'center', 'above', 'red' and every other bare API value). */
+  const captionText = (() => {
+    const noComments = scene.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:])\/\/.*$/gm, '$1 ');
+    return (noComments.match(/'(?:[^'\\]|\\.)*'/g) || [])
+      .map(s => s.slice(1, -1))
+      .filter(s => /\s/.test(s))
+      .join('\n');
+  })();
+  check(/Click a cell to unlock/.test(captionText) && /Showing/.test(captionText),
+    'the caption text really was extracted (' + captionText.split('\n').length + ' strings) - an empty blob would pass every check below');
+  [['tap', /\btap(s|ped|ping)?\b/i], ['wifi', /\bwi-?fi\b/i], ['the device', /\bthe device\b/i],
+   ['color', /\bcolors?\b/i], ['center', /\bcenter(ed|s)?\b/i], ['organize', /\borganiz/i],
+   ['recognize', /\brecogniz/i], ['favorite', /\bfavorite/i]].forEach(([word, rx]) => {
+    check(!rx.test(captionText), 'no caption in the walkthrough film says "' + word + '"');
+  });
+  check(/GUIDE_FILM_LIVE2_SPEC/.test(scene),
+    'and the scene file says where the Live chapters\' captions are owned (rule 144: one home per fact)');
+
   section('D. THE WALKTHROUGH VIDEO - it exists and the stated length is true');
   const vid = P('assets/video/guide/guide-tour.mp4');
   const chapters = P('assets/video/guide/chapters.json');
@@ -83,15 +115,28 @@ function staticHalf() {
     /* the stated length is written once, in GUIDE_LENGTH, and must match the
        finished file - a re-cut that changes the running time fails here */
     const stated = (staff.match(/var GUIDE_LENGTH = '([^']+)'/) || [])[1] || '';
+    /* every phrase GUIDE_LENGTH is allowed to hold, with the window it claims.
+       Re-recorded 9 Aug 2026 (DFM 163): the Live chapter became two chapters
+       and the film grew, which is exactly what this check exists to catch. */
     const words = { 'about eight minutes': [7.5, 8.5], 'about ten and a half minutes': [10.0, 11.0],
                     'seven and a half minutes': [7.0, 8.0], 'about ten minutes': [9.5, 10.5],
-                    'about eleven minutes': [10.5, 11.5], 'about nine minutes': [8.5, 9.5] }[stated];
+                    'about eleven minutes': [10.5, 11.5], 'about nine minutes': [8.5, 9.5],
+                    'about thirteen minutes': [12.5, 13.5], 'about fourteen minutes': [13.5, 14.5],
+                    'about fifteen minutes': [14.5, 15.5], 'about sixteen minutes': [15.5, 16.5],
+                    'about seventeen minutes': [16.5, 17.5], 'about eighteen minutes': [17.5, 18.5],
+                    'about nineteen minutes': [18.5, 19.5], 'about twenty minutes': [19.5, 20.5],
+                    'about twenty-one minutes': [20.5, 21.5], 'about twenty-one and a half minutes': [21.25, 21.75], 'about twenty-two minutes': [21.5, 22.5] }[stated];
     check(!!words && mins >= words[0] && mins <= words[1],
       'the Guide says "' + stated + '" and the film really is ' + man.durationSec + 's');
     const labels = man.chapters.map(c => c.label).join(',');
     check(/Classes/.test(labels) && /Lessons/.test(labels) && /Live/.test(labels) && /Absence/.test(labels) &&
           /Teams/.test(labels) && /Options/.test(labels) && /Cover/.test(labels),
       'every tab named in the Guide\'s chapter list is really a chapter');
+    /* DFM 163: the flags grew a lifecycle of their own, so they get their own
+       chapter - and the written fallback list must name it too, or the two
+       disagree the moment the manifest cannot load (rule 144's family) */
+    check(/Live: flags/.test(labels), 'the flags have their own chapter in the film');
+    check(/Live: flags/.test(staff), 'and the written chapter list on the Guide tab names it as well');
     check(!/Guide/.test(labels), 'the Guide chapter is gone - the viewer is already on that tab (DFM 121e)');
   }
   check(/GUIDE_VIDEO = 'assets\/video\/guide\/guide-tour\.mp4'/.test(staff), 'the Guide points at that exact file');
@@ -273,13 +318,15 @@ async function browserHalf() {
      seek - a list of words would make that sentence untrue (rule 35) */
   const chips = await pa.evaluate(() => Array.from(document.querySelectorAll('.guide-chip'))
     .map(c => c.textContent + ':' + c.getAttribute('data-t')));
-  /* seven, not eight: the Guide chapter was cut (DFM 121e) and "Opening" is
-     deliberately not offered as a jump target */
-  check(chips.length === 7, 'the seven chapter names are real seek buttons (' + chips.length + ')');
+  /* eight, not seven: the Guide chapter is still cut (DFM 121e) and "Opening"
+     is still not offered as a jump target, but the Live chapter became two on
+     9 Aug 2026 (DFM 163) */
+  check(chips.length === 8, 'the eight chapter names are real seek buttons (' + chips.length + ')');
+  check(chips.some(c => /^Live: flags:/.test(c)), 'including a chip straight to the flags chapter');
   check(!chips.some(c => /^Guide:/.test(c)), 'and there is no Guide chip, matching the re-cut film');
   if (chips.length) {
     await pa.evaluate(() => {
-      const c = Array.from(document.querySelectorAll('.guide-chip')).filter(x => /Live/.test(x.textContent))[0];
+      const c = Array.from(document.querySelectorAll('.guide-chip')).filter(x => /^Live$/.test(x.textContent.trim()))[0];
       if (c) c.click();
     });
     await sleep(1400);

@@ -151,6 +151,74 @@ function stageInPage(opts) {
      the Live tab - the only way to check the projector reveal for real. */
   if (opts.tournament) s.locks[CLASS]['3'] = { u: tmin - 60, on: 1 };
 
+  /* ---------- THE LIVE CHAPTERS (DFM 163) ----------
+     The redesigned Live tab shows ONE lesson at a time, so filming it needs a
+     class with SEVERAL lessons delivered and a spread of real outcomes across
+     them - every state the two chapters name has to be genuinely on screen
+     (rule 35), not described over a blank table.
+     Delivery order decides the default, so Lesson 5 is newest and the tab
+     opens on it. Exit answer keys, read from the built content: L2 -> 1,0 ;
+     L3 -> 1,0,1. So '10' = 2 of 2, '00' = 1 of 2, '01' = 0 of 2, '100' = 2 of
+     3, '110' = 1 of 3. */
+  if (opts.live2) {
+    s.locks[CLASS]['2'] = { u: weekAgo + 1440, on: 1 };
+    s.locks[CLASS]['3'] = { u: weekAgo + 2880, on: 1 };
+    s.locks[CLASS]['5'] = { u: weekAgo + 4320, on: 1 };
+    var P = function (email) { return s.pupils[CLASS + ':' + email]; };
+    var set = function (email, num, arr) { var r = P(email); if (r) r.L[num] = arr; };
+    /* [status, xp, detail, exitChosen, selfEval, lastSeen, mins, flags, comment, recapRight, recapTotal] */
+    set('aoife.byrne@demo', '2', [2, 38, 'ep=1', '10', '222|0', tmin - 12, 44, 0, '', 6, 7]);
+    set('aoife.byrne@demo', '3', [2, 40, '', '101', '222|1', tmin - 9, 42, 0, '', 6, 7]);
+    set('cara.mcparland@demo', '2', [2, 36, 'ep=1', '10', '222|1', tmin - 14, 43, 0, '', 6, 7]);
+    /* two of three right: NOT under half, so no flag - the boundary, on screen */
+    set('cara.mcparland@demo', '3', [2, 34, '', '100', '221|1', tmin - 10, 40, 0, '', 5, 7]);
+    /* the Build puzzle cross, so that column shows both marks */
+    set('niamh.ohare@demo', '2', [2, 30, 'ep=0', '10', '221|1', tmin - 16, 41, 0, '', 5, 7]);
+    /* amber beside GOOD marks: the pupil who can do it but does not believe it */
+    set('roisin.campbell@demo', '2', [2, 33, 'ep=1', '10', '210|1', tmin - 15, 42, 0, '', 6, 7]);
+    /* already acknowledged three days ago: the grey flag whose hover carries a date */
+    set('ellie.hughes@demo', '2', [2, 26, 'hf=' + (tmin - 3 * 1440), '01', '222|1', tmin - 20, 40, 0, '', 5, 7]);
+    /* Sophie's Lesson 1 red stands (warm-up 1 of 9). She is ALSO live in
+       Lesson 3 on one of three right - the new under-half case (DFM 162b) - so
+       the strip names TWO lessons for her and both buttons lead somewhere. */
+    set('sophie.magee@demo', '3', [2, 22, '', '110', '211|1', tmin - 11, 38, 0, '', 4, 6]);
+    /* one of two right is exactly half, which is NOT under half: no flag */
+    set('grace.toner@demo', '2', [2, 28, 'ep=1', '00', '222|1', tmin - 18, 41, 0, '', 5, 7]);
+    /* both flags on one row, plus Tricky and a comment: the lifecycle is filmed
+       on her, and every part of the amber hover has something real to quote */
+    set('lucy.sands@demo', '2', [2, 24, 'ep=0', '01', '110|2', tmin - 13, 39, 0,
+      'I got stuck at the download step', 4, 7]);
+    /* started and RECENTLY seen: she must not trip the 20-minute no-activity
+       trigger, or the counts and the flags stop saying what the captions say */
+    set('erin.quinn@demo', '2', [1, 8, '', '', '', tmin - 4, 9, 0, '', 0, 0]);
+
+    /* Press Night, so Lesson 5's own panel has real studios and a real review
+       on it rather than filming an empty marquee (the L5 brief screenshot was
+       already criticised for exactly that). Written in the LEGACY s.gal shape,
+       which galGetD_/galMigrateD_ read and fold into shards on first touch -
+       the supported route in, and the one field-for-field shape the staff
+       payload maps: studios {sid, sn, cn, gt, gh, tpl, rn, b, h}, reviews
+       {i, by, bcn, to, l, w, t, rm, sim}. */
+    s.gal = s.gal || {};
+    s.gal[CLASS + '|j1-05'] = {
+      seq: 2, bots: 0,
+      studios: {
+        'aoife.byrne@demo': { sid: 's1', sn: 'Falcon Games', cn: 'Amber Falcon',
+          gt: 'Catch the Comet', gh: 'Catch the falling comets before they land.',
+          tpl: 'catch', rn: 1, b: 0, h: 0 },
+        'grace.toner@demo': { sid: 's2', sn: 'Kestrel Studio', cn: 'Copper Kestrel',
+          gt: 'Maze Runner', gh: 'Steer through the maze without touching the walls.',
+          tpl: 'maze', rn: 0, b: 0, h: 0 }
+      },
+      reviews: [
+        { i: 1, by: 'grace.toner@demo', bcn: 'Copper Kestrel', to: 's1',
+          l: 'how fast the comets speed up when you get good at it',
+          w: 'if you could get a life back for catching ten in a row',
+          t: tsec - 300, rm: 0, sim: 0 }
+      ]
+    };
+  }
+
   if (opts.teams) {
     /* group membership lives on the pupil record (`g`), the groups themselves
        on the class - the shape getTeam_/dashboard actually read. Three pupils
