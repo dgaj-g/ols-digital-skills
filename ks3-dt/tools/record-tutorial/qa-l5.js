@@ -341,7 +341,11 @@ function check(cond, msg) {
   });
   check(/Ship your game/i.test(shipCard), 'the Ship your game step is on screen after Press Night: ' + JSON.stringify(shipCard.slice(0, 60)));
   check(/Drive|DT Work/i.test(shipCard), 'it names the Drive folder the .sb3 goes into');
-  await clickText('Run the HQ Inspection');
+  /* the artifact button is content-named now (cfg.checkLabel): Lesson 5's ship
+     step reads "Check my Drive", because "Run the HQ Inspection" never matched
+     what the card told her to press. A renamed control re-stages every walker
+     that clicks it - DFM 143(b), the same miss as the rally walker. */
+  await clickText('Check my Drive|Run the HQ Inspection');
   await sleep(1800);
   await page.evaluate(() => {
     const b = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /Claim the badge/i.test(x.textContent) && !x.disabled);
