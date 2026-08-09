@@ -1033,6 +1033,16 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   background: var(--bad-soft); border: 1px solid var(--bad); color: var(--bad);
   border-radius: var(--r-sm); padding: 8px 12px; margin: 8px 0; font-size: 0.83rem; font-weight: 600;
 }
+/* DFM 162(a): every lesson named in the strip is a button that takes her there.
+   It has to LOOK pressable where it sits - inside a line of red text - so it
+   carries the underline and the pointer, and answers to hover and focus. No new
+   colour: it borrows the strip's own red. */
+.live-elsewhere .strip-jump {
+  background: none; border: 0; padding: 0 1px; margin: 0; font: inherit; color: inherit;
+  text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
+}
+.live-elsewhere .strip-jump:hover { text-decoration-thickness: 2px; }
+.live-elsewhere .strip-jump:focus-visible { outline: 2px solid var(--bad); outline-offset: 2px; border-radius: 3px; }
 .dash-table td.lc-mark { white-space: nowrap; font-size: 0.95rem; letter-spacing: 0.06em; }
 /* the name column carries the remove button, the full name and the flag: give it
    room, or a flagged pupil's row grows to five lines and the table stops scanning */
@@ -8491,13 +8501,18 @@ window.OLS_TRANSPORT = {
       var a = (r.L || {})[num];
       if (!a) continue;
       var reasons = [];
+      /* DFM 162(b), HIS RULING: "I'll go with under half right." The exit trigger
+         was all-wrong; it is now the same under-half rule the warm-up below uses,
+         so staff learn ONE rule: under half = trouble. Answering nothing ('x')
+         already counts in the total and not in the right, which is what makes a
+         skipped question count against her. */
       if (a[3]) {
         var ex = exitRightMap[num];
         var rc = ex ? rightCountFor(String(a[3]), ex) : null;
-        if (rc && rc.total > 0 && rc.right === 0) {
+        if (rc && rc.total > 0 && (rc.right / rc.total) < 0.5) {
           reasons.push(rc.total === 1
             ? 'She got the exit question wrong.'
-            : 'She got every exit question wrong (0 of ' + rc.total + ').');
+            : 'Under half her exit answers were right (' + rc.right + ' of ' + rc.total + ').');
         }
       }
       var total = Number(a[10]), right = Number(a[9]);
@@ -8684,7 +8699,6 @@ window.OLS_TRANSPORT = {
     var elsewhere = [], voiceCount = 0, redCount = 0, greyCount = 0;
     var body = rows.map(function (r) {
       var hits = stuckLessonsFor(r, delivered);
-      var stuck = hits.length > 0;
       var hereHit = null;
       hits.forEach(function (h) { if (h.num === num) hereHit = h; });
       var a = (r.L || {})[num];
@@ -8701,23 +8715,26 @@ window.OLS_TRANSPORT = {
         var comment = String((a && a[8]) || '');
         cells += '<td>' + (comment ? '<span class="lc-comment" title="' + App.esc(comment) + '">' + App.esc(comment) + '</span>' : '&mdash;') + '</td>';
       }
-      /* the flag names its own cause (DFM 157b), and when it belongs to another
-         lesson it says so and its reasons are prefixed with that lesson */
+      /* the flag names its own cause (DFM 157b).
+         DFM 162(a): ONE PILL, ONE LESSON. This pill is about the lesson on
+         screen and nothing else. The old code showed the first flagged lesson it
+         found - so a pupil flagged in Lessons 1 and 2 only ever showed Lesson 1,
+         and marking that one helped left her looking dealt with while Lesson 2
+         was still live. A control must act on exactly one unambiguous thing, and
+         cross-lesson signal now lives in ONE complete place: the strip above the
+         table. */
       var flag = '', liveRed = false;
-      if (stuck) {
-        var src = hereHit || hits[0];
-        var srcArr = (r.L || {})[src.num];
-        var hf = ackAt(srcArr, 'hf');
-        var live = liveReasonsFor(srcArr, src.reasons, hf);
+      if (hereHit) {
+        var hf = ackAt(a, 'hf');
+        var live = liveReasonsFor(a, hereHit.reasons, hf);
         var btn = ' <button type="button" class="pill %CLS%" title="%T%" data-action="flag-toggle"' +
-          ' data-email="' + App.esc(r.email) + '" data-lesson="' + App.esc(src.num) + '"' +
+          ' data-email="' + App.esc(r.email) + '" data-lesson="' + App.esc(num) + '"' +
           ' data-kind="red" data-on="%ON%">%TXT%</button>';
         if (live.length) {
           liveRed = true; redCount++;
-          var reasonText = (hereHit ? '' : lessonLabelFor(src.num) + ': ') + live.join(' ') +
-            ' Click twice to mark her helped.';
-          flag = btn.replace('%CLS%', 'flag').replace('%T%', App.esc(reasonText)).replace('%ON%', '1')
-            .replace('%TXT%', 'needs you' + (hereHit ? '' : ' (' + App.esc(lessonNameFor(src.num)) + ')'));
+          flag = btn.replace('%CLS%', 'flag')
+            .replace('%T%', App.esc(live.join(' ') + ' Click twice to mark her helped.'))
+            .replace('%ON%', '1').replace('%TXT%', 'needs you');
         } else if (hf) {
           greyCount++;
           flag = btn.replace('%CLS%', 'none flag-done')
@@ -8744,12 +8761,19 @@ window.OLS_TRANSPORT = {
             .replace('%ON%', '1').replace('%TXT%', 'says not yet');
         }
       }
-      /* a pupil already dealt with is not outstanding work: her row is calm and
-         she is not named in the cross-lesson line */
-      if (liveRed && !hereHit) {
-        var eSrc = hits[0], eArr = (r.L || {})[eSrc.num];
-        elsewhere.push({ name: r.name, num: eSrc.num, reasons: liveReasonsFor(eArr, eSrc.reasons, ackAt(eArr, 'hf')) });
-      }
+      /* the strip is now the COMPLETE cross-lesson picture, computed
+         independently of whatever this row is showing: EVERY other lesson where
+         she is genuinely live, each one checked against its OWN acknowledgement.
+         A pupil already dealt with in a lesson simply drops out of that lesson -
+         and one acknowledged lesson can no longer hide another live one. */
+      var elseLessons = [];
+      hits.forEach(function (h) {
+        if (String(h.num) === num) return;
+        var hArr = (r.L || {})[h.num];
+        var hLive = liveReasonsFor(hArr, h.reasons, ackAt(hArr, 'hf'));
+        if (hLive.length) elseLessons.push({ num: h.num, reasons: hLive });
+      });
+      if (elseLessons.length) elsewhere.push({ name: r.name, lessons: elseLessons });
       var blTitle = baselineTitle(r, l1);
       return '<tr' + (liveRed ? ' class="is-stuck"' : '') + '>' +
         '<td><button type="button" class="modal-close" style="font-size:1rem" title="Remove this pupil from the class (her own work is untouched)" data-action="remove-pupil" data-email="' + App.esc(r.email) + '" data-name="' + App.esc(r.name) + '">&times;</button> ' +
@@ -8777,10 +8801,18 @@ window.OLS_TRANSPORT = {
        in that lesson's own view, where the amber pill and the count chip make
        them unmissable. Amber here would make the emergency channel noisy, and
        a noisy channel is an ignored one. */
+    /* DFM 162(a): every lesson is named, and every one of them is a button that
+       takes the teacher there - so a flag is always dealt with in the lesson it
+       belongs to, with that pupil's marks and the misconception bars on screen
+       beside it. */
     var elseStrip = elsewhere.length
       ? '<p class="live-elsewhere">Needs you, from other lessons: ' + elsewhere.map(function (e) {
-          return '<span title="' + App.esc(lessonLabelFor(e.num) + ': ' + e.reasons.join(' ')) + '">' +
-            App.esc(e.name) + ' (' + App.esc(lessonNameFor(e.num)) + ')</span>';
+          return App.esc(e.name) + ' (' + e.lessons.map(function (L) {
+            return '<button type="button" class="strip-jump" data-action="strip-jump"' +
+              ' data-lesson="' + App.esc(L.num) + '"' +
+              ' title="' + App.esc(L.reasons.join(' ') + ' Click to show this lesson.') + '">' +
+              App.esc(lessonLabelFor(L.num)) + '</button>';
+          }).join(' &middot; ') + ')';
         }).join(', ') + '</p>'
       : '';
 
@@ -8802,7 +8834,9 @@ window.OLS_TRANSPORT = {
       '<div class="dash-scroll"><table class="dash-table">' + head +
         (body || '<tr><td colspan="99">No pupils have joined this class yet.</td></tr>') + '</table></div>' +
       '<p class="pl-note">Your own runs of a lesson never appear in this table &mdash; it lists pupils only.</p>' +
-      liveLegendHtml(feat, showExit, showPuzzle, redCount > 0, voiceCount > 0, greyCount > 0) +
+      /* the red key is earned by a red flag ANYWHERE on screen - including one
+         that is only in the strip, which is a red flag the teacher can act on */
+      liveLegendHtml(feat, showExit, showPuzzle, redCount > 0 || elsewhere.length > 0, voiceCount > 0, greyCount > 0) +
       '<h3 style="margin-top:20px">Misconception patterns &mdash; ' +
         (isSideQuestNum(num) ? 'the side quest' : 'Lesson ' + App.esc(num)) + '</h3>' +
       '<div id="live-mis-body"></div>' +
@@ -8822,11 +8856,11 @@ window.OLS_TRANSPORT = {
   function liveLegendHtml(feat, showExit, showPuzzle, showRed, showVoice, showGrey) {
     var out = [];
     if (showRed) {
-      out.push('<p>A red <b>needs you</b> flag means one of three things: she got the exit check all wrong, ' +
-        'under half her warm-up answers were right, or she started the lesson and nothing new has been ' +
-        'saved for over twenty minutes. Hover over the flag to see which it is. When you have dealt with ' +
-        'it, click the flag and click again: it becomes a quiet grey <b>helped</b>. Red only returns if ' +
-        'she works on the lesson again and gets stuck again.</p>');
+      out.push('<p>A red <b>needs you</b> flag means one of three things: ' +
+        'under half her exit answers were right, under half her warm-up answers were right, or she ' +
+        'started the lesson and nothing new has been saved for over twenty minutes. Hover over the flag ' +
+        'to see which it is. When you have dealt with it, click the flag and click again: it becomes a ' +
+        'quiet grey <b>helped</b>. Red only returns if she works on the lesson again and gets stuck again.</p>');
     }
     if (showVoice) {
       out.push('<p>An amber <b>says not yet</b> flag is the pupil&rsquo;s own voice: at the end of the lesson ' +
@@ -9453,6 +9487,16 @@ window.OLS_TRANSPORT = {
       });
       renderLiveTable();
     });
+  }
+
+  /* DFM 162(a): the strip names every lesson a pupil is live in, and each one is
+     a way IN. This is deliberately the same path the Showing menu takes, loading
+     state and all (DFM 161 / 156f), because the first visit to a lesson pays a
+     real round trip and a silent one would be the same fault a third time. */
+  function stripJump(btn) {
+    liveLessonNum = btn.getAttribute('data-lesson');
+    paintLiveLoading(liveLessonNum);
+    renderLiveTable();
   }
 
   function liveCsv(btn) {
@@ -10146,12 +10190,12 @@ window.OLS_TRANSPORT = {
       'and nobody else. The quiet pupils often say there what they would not say in the room. Hover over ' +
       'a clipped comment to read all of it, and <b>Copy CSV</b> keeps every comment for your records.</p>' +
       '<p>A red <b>needs you</b> flag appears beside a pupil when her numbers say something went wrong, ' +
-      'and hovering over the flag tells you exactly what: she got the exit check all wrong; or under half ' +
-      'her warm-up answers were right; or she started the lesson and nothing new has been saved for over ' +
-      'twenty minutes. Each one points at a different kind of help. A wrong exit answer is a gap in this ' +
-      'lesson&rsquo;s idea &mdash; the Q column shows which question, and the misconception bars at the ' +
-      'bottom show which wrong answer she chose and the misunderstanding it usually signals: that is the ' +
-      'thing to re-teach. A low warm-up score means an earlier lesson&rsquo;s idea has faded, because the ' +
+      'and hovering over the flag tells you exactly what: under half her exit answers were right; or under ' +
+      'half her warm-up answers were right; or she started the lesson and nothing new has been saved for ' +
+      'over twenty minutes. Each one points at a different kind of help. Wrong exit answers are a gap in ' +
+      'this lesson&rsquo;s idea &mdash; the Q columns show which questions, and the misconception bars at ' +
+      'the bottom show which wrong answers she chose and the misunderstandings they usually signal: that ' +
+      'is the thing to re-teach. A low warm-up score means an earlier lesson&rsquo;s idea has faded, because the ' +
       'warm-up asks about past lessons. No activity means she is stuck right now, mid-lesson &mdash; that ' +
       'one is a visit, not a re-teach. When you have dealt with a flag, click it, then click again to ' +
       'confirm: it becomes a quiet grey <b>helped</b>, the row stops being highlighted, and the tab goes ' +
@@ -10159,8 +10203,9 @@ window.OLS_TRANSPORT = {
       'and clicking it twice brings the red back if you change your mind. The marks that raised it never ' +
       'change &mdash; only the flag quietens. Red returns by itself only if the pupil works on that lesson ' +
       'again and gets stuck again. Stuck-spotting watches every delivered lesson, not just the one on ' +
-      'screen: a pupil struggling in a lesson you are not viewing is named in a line above the table, with ' +
-      'her lesson, so choosing a lesson can never hide a pupil who needs help.</p>' +
+      'screen: a pupil struggling in lessons you are not viewing is named in a line above the table, ' +
+      'with every such lesson &mdash; click one to jump straight to it &mdash; so ' +
+      'choosing a lesson can never hide a pupil who needs help.</p>' +
       '<p>The amber <b>says not yet</b> flag is different: it is not the platform&rsquo;s judgement, it is ' +
       'the pupil&rsquo;s own. She ends every lesson rating herself against its I-can statements, and ' +
       'pressing <b>Not yet</b> on one raises this flag &mdash; she is telling you, in the only place many ' +
@@ -10365,6 +10410,7 @@ window.OLS_TRANSPORT = {
       case 'brief-print': briefPrint(); break;
       case 'archive-now': archiveNow(btn); break;
       case 'flag-toggle': flagToggle(btn); break;
+      case 'strip-jump': stripJump(btn); break;
       case 'live-refresh': renderLive(); break;
       case 'live-csv': liveCsv(btn); break;
       case 'absence-dismiss': absenceDismiss(btn); break;
