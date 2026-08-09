@@ -153,6 +153,44 @@ function pageRuntime() {
     };
   };
 
+  /* ---- tooltip: the app's OWN hover text, drawn as the browser would ----
+     Half the Live tab's teaching lives in title attributes - why a flag fired,
+     what Refresh does, which baseline questions she got wrong. A film that
+     merely says "hover it" teaches nothing, and a caption RETYPING the text
+     would be a copy that drifts (149's lesson). So this draws the real string,
+     passed in from the element itself, in a box that looks like the tooltip a
+     teacher will actually see. It never covers its own target (DFM 141a): the
+     box sits below, or above when told to. */
+  C.tooltip = function (x, y, w, h, text, opts) {
+    opts = opts || {};
+    const ring = el('div', {
+      position: 'fixed', left: (x - 6) + 'px', top: (y - 6) + 'px',
+      width: (w + 12) + 'px', height: (h + 12) + 'px', borderRadius: '14px',
+      border: '3px solid ' + GOLD, boxShadow: '0 0 0 5px rgba(228,184,36,0.22)',
+      zIndex: Z + 30, pointerEvents: 'none', opacity: '0'
+    });
+    const TIP_MAX = 460;
+    const tipW = Math.min(TIP_MAX, Math.max(200, text.replace(/<[^>]+>/g, '').length * 8.2));
+    const tip = el('div', {
+      position: 'fixed',
+      left: Math.max(12, Math.min(innerWidth - tipW - 12, x + Math.min(28, w / 2))) + 'px',
+      top: (opts.side === 'above' ? (y - 12) : (y + h + 12)) + 'px',
+      zIndex: Z + 31, pointerEvents: 'none', opacity: '0',
+      background: '#FFFFEA', color: '#111', fontFamily: FONT, fontSize: '16px',
+      fontWeight: '500', lineHeight: '1.45', width: tipW + 'px', textAlign: 'left',
+      padding: '9px 12px', borderRadius: '6px', border: '1px solid #9AA5B5',
+      boxShadow: '0 6px 18px rgba(9,20,40,0.35)'
+    });
+    tip.textContent = text;                       /* real title text: never HTML */
+    if (opts.side === 'above') tip.style.transform = 'translateY(-100%)';
+    C.animate(280, e => { ring.style.opacity = String(e); tip.style.opacity = String(e); });
+    return {
+      remove: () => C.animate(240, e => {
+        ring.style.opacity = String(1 - e); tip.style.opacity = String(1 - e);
+      }).then(() => { ring.remove(); tip.remove(); })
+    };
+  };
+
   /* ---- curtain (chapter title card / scene-end fade) ---- */
   C.curtain = function (spec) {
     spec = spec || {};
@@ -376,6 +414,19 @@ class Cinema {
     opts = opts || {};
     const h = await this.page.evaluateHandle(
       ([r, t, o]) => window.__cine.callout(r.x, r.y, r.w, r.h, t, o),
+      [rect, text, opts]
+    );
+    await this.pause(opts.hold != null ? opts.hold : this.holdFor(text) + 400);
+    await this.page.evaluate(c => c.remove(), h);
+    await this.pause(280);
+  }
+
+  /* the app's own hover text, drawn as a tooltip. `text` MUST be the element's
+     real title attribute, read in the page - see scenes/guide.js tip(). */
+  async tooltip(rect, text, opts) {
+    opts = opts || {};
+    const h = await this.page.evaluateHandle(
+      ([r, t, o]) => window.__cine.tooltip(r.x, r.y, r.w, r.h, t, o),
       [rect, text, opts]
     );
     await this.pause(opts.hold != null ? opts.hold : this.holdFor(text) + 400);

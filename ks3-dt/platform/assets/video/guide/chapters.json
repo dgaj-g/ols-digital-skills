@@ -1,7 +1,7 @@
 {
- "file": "guide-tutorial.mp4",
- "durationSec": 640,
- "sizeMB": 18.75,
+ "file": "guide-tour.mp4",
+ "durationSec": 1292,
+ "sizeMB": 39,
  "chapters": [
   {
    "t": 0,
@@ -16,23 +16,27 @@
    "label": "Lessons"
   },
   {
-   "t": 180,
+   "t": 179,
    "label": "Live"
   },
   {
-   "t": 351,
+   "t": 590,
+   "label": "Live: flags"
+  },
+  {
+   "t": 1003,
    "label": "Absence"
   },
   {
-   "t": 397,
+   "t": 1049,
    "label": "Teams"
   },
   {
-   "t": 446,
+   "t": 1098,
    "label": "Options"
   },
   {
-   "t": 560,
+   "t": 1212,
    "label": "Cover"
   }
  ]

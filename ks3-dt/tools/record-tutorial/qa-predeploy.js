@@ -390,61 +390,103 @@ function xpPromiseSection() {
 
   function paths(n) {
     const lesson = L(n);
-    let best = EXIT_XP, floor = EXIT_XP;
+    let best = EXIT_XP, floor = EXIT_XP, stretch = EXIT_XP;
     (lesson.chunks || []).forEach(c => {
       const b = c.badge; if (!b) return;
       const cfg = c.config || {};
-      let hi, lo;
+      let hi, lo, st;
       switch (c.engine) {
-        case 'vault': { const f = (cfg.files || []).length; hi = 12 + f * 3; lo = 12; break; }
-        case 'ladder': { const r = (cfg.rungs || []).length; hi = 7 + r * 5; lo = 7 + r * 3; break; }
+        case 'vault': { const f = (cfg.files || []).length; hi = 12 + f * 3; lo = 12; st = hi; break; }
+        case 'ladder': { const r = (cfg.rungs || []).length;
+          hi = 7 + r * 5; lo = 7 + r * 3; st = hi + (cfg.stretch ? 5 : 0); break; }
         case 'casework': { const cs = (cfg.cases || []).length;
           const base = 4 + cs * 4 + (cfg.rc ? 2 : 0) + (cfg.ship ? 3 : 0);
-          hi = base + cs; lo = base; break; }               // gold (+1 each) is lost to a clue
+          hi = base + cs; lo = base; st = hi + (cfg.stretchCase ? 3 : 0); break; }  // gold (+1 each) lost to a clue
         case 'studio': { const t = cfg.templates ? Object.keys(cfg.templates) : null;
-          if (t && t.length) { const crit = cfg.templates[t[0]].criteria.length; hi = lo = crit * 4 + 3; }
-          else { hi = lo = Number(b.xp); }
+          if (t && t.length) { const crit = cfg.templates[t[0]].criteria.length; hi = lo = crit * 4 + 3; st = hi + 3; }
+          else { hi = lo = st = Number(b.xp); }
           break; }
-        case 'gallery': { hi = lo = 3 * Number(cfg.quota || 0) + (cfg.v2 ? 1 : 0); break; }
-        default: hi = lo = Number(b.xp);
+        case 'gallery': { hi = lo = st = 3 * Number(cfg.quota || 0) + (cfg.v2 ? 1 : 0); break; }
+        default: hi = lo = st = Number(b.xp);
       }
-      best += hi; floor += lo;
+      best += hi; floor += lo; stretch += st;
     });
-    return { best, floor };
+    return { best, floor, stretch };
   }
 
-  const cum = []; let cb = 0, cf = 0;
-  for (let n = 1; n <= 5; n++) { const p = paths(n); cb += p.best; cf += p.floor; cum.push({ n, best: cb, floor: cf }); }
+  const cum = []; let cb = 0, cf = 0, cs = 0;
+  for (let n = 1; n <= 5; n++) {
+    const p = paths(n); cb += p.best; cf += p.floor; cs += p.stretch;
+    cum.push({ n, best: cb, floor: cf, stretch: cs });
+  }
   const thr = {}; (themes.clearances || []).forEach(c => { thr[c.level] = Number(c.xp); });
 
-  console.log('  cumulative XP, best v floor (the cheapest honest finish):');
-  cum.forEach(r => console.log('    after L' + r.n + ':  best ' + String(r.best).padStart(3) +
-    '   floor ' + String(r.floor).padStart(3) + '   level ' + (r.n + 1) + ' threshold ' + thr[r.n + 1] +
-    '   floor unlocks? ' + (r.floor >= thr[r.n + 1] ? 'YES' : 'no')));
+  console.log('  cumulative XP by pupil path:');
+  cum.forEach(r => console.log('    after L' + r.n + ':  floor ' + String(r.floor).padStart(3) +
+    '   no-stretch ' + String(r.best).padStart(3) + '   every-stretch ' + String(r.stretch).padStart(3) +
+    '   level ' + (r.n + 1) + ' at ' + thr[r.n + 1]));
 
-  /* the arithmetic he was given, re-derived rather than trusted */
   check(cum[0].best === 110 && cum[0].floor === 92,
     'Lesson 1 computes to 110 on the best path and 92 on the floor path - the 92 he ruled on');
 
-  /* HIS RULING (164a), asserted */
-  check(thr[2] === 90, 'clearance level 2 is 90, his ruling');
-  check(cum[0].floor >= thr[2],
-    'so a full-hints Lesson 1 finisher (' + cum[0].floor + ') DOES cross level 2 (' + thr[2] + ') - the promise holds at Lesson 1');
-  check(cum[0].best < thr[3],
-    'and the best Lesson 1 finisher (' + cum[0].best + ') still stops short of level 3 (' + thr[3] + ') - nobody takes two levels in one hour');
-
-  /* RECORDED STATE for the levels he has NOT ruled on. Reported 9 Aug 2026;
-     unchanged deliberately. If any of this moves, look again - do not just
-     update the expectation. */
-  const KNOWN_FLOOR_UNLOCKS = { 2: true, 3: false, 4: false, 5: false, 6: false };
-  cum.forEach(r => {
-    const lvl = r.n + 1, got = r.floor >= thr[lvl];
-    check(got === KNOWN_FLOOR_UNLOCKS[lvl],
-      'level ' + lvl + ': the floor pupil ' + (got ? 'DOES' : 'does NOT') + ' unlock at the end of Lesson ' + r.n +
-      ' (' + r.floor + ' v ' + thr[lvl] + ') - matches the state recorded on 9 Aug');
+  /* HIS RULING (165): the ladder serves the FLOOR pupil, so she unlocks
+     something at the end of EVERY lesson. That is rule 131's promise, kept for
+     the pupil most likely to give up without it. */
+  const LADDER = { 2: 90, 3: 120, 4: 160, 5: 195, 6: 235 };
+  Object.keys(LADDER).forEach(lvl => {
+    check(thr[lvl] === LADDER[lvl], 'clearance level ' + lvl + ' is ' + LADDER[lvl] + ' XP, his ruling');
   });
-  check(!Object.keys(KNOWN_FLOOR_UNLOCKS).every(k => KNOWN_FLOOR_UNLOCKS[k]),
-    'REPORTED, NOT FIXED: levels 3-6 still leave a full-hints pupil with nothing to unlock - his ruling covered level 2 only');
+  cum.forEach(r => {
+    const lvl = r.n + 1;
+    check(r.floor >= thr[lvl],
+      'the FLOOR pupil unlocks at the end of Lesson ' + r.n + ' (' + r.floor + ' >= ' + thr[lvl] + ')');
+    check(r.best >= thr[lvl],
+      'and so does the no-stretch finisher (' + r.best + ' >= ' + thr[lvl] + ')');
+  });
+  /* nobody may take two levels in one hour on the paths the ladder is tuned to */
+  for (let i = 0; i + 1 < cum.length; i++) {
+    check(cum[i].floor < thr[cum[i].n + 2],
+      'and the floor pupil does NOT reach level ' + (cum[i].n + 2) + ' early (' + cum[i].floor + ' < ' + thr[cum[i].n + 2] + ')');
+    check(cum[i].best < thr[cum[i].n + 2],
+      'nor does the no-stretch finisher (' + cum[i].best + ' < ' + thr[cum[i].n + 2] + ')');
+  }
+
+  /* HIS CONDITION, 9 Aug: "ensure that all the work we've done with unlocking
+     and locking costumes based on XP is not ruined." Two things make that safe,
+     and both are asserted rather than asserted-by-me-in-prose:
+       1. every theme and insignia still names a clearance level that exists;
+       2. the ladder only ever moved DOWN, and a lower threshold can only GRANT
+          an unlock - it can never take a costume off a pupil who has one.
+     The mx "once earned always hers" machinery (DFM 145) is untouched and is
+     covered end-to-end by qa-earned-stays. */
+  const levels = (themes.clearances || []).map(c => Number(c.level));
+  const badTheme = (themes.themes || []).filter(t => levels.indexOf(Number(t.clearance)) === -1);
+  const badSig = (themes.insignia || []).filter(t => levels.indexOf(Number(t.clearance)) === -1);
+  check(badTheme.length === 0 && badSig.length === 0,
+    'every costume and insignia still points at a clearance level that exists');
+  (themes.clearances || []).forEach((c, i, all) => {
+    if (!i) return;
+    check(Number(c.xp) > Number(all[i - 1].xp),
+      'level ' + c.level + ' still sits above level ' + all[i - 1].level + ' (' + all[i - 1].xp + ' -> ' + c.xp + ')');
+  });
+  const WAS = { 2: 100, 3: 140, 4: 185, 5: 225, 6: 265 };   // the ladder before 9 Aug 2026
+  check(Object.keys(WAS).every(l => thr[l] <= WAS[l]),
+    'NOBODY LOSES A COSTUME: every threshold moved down or stayed, so a pupil can only gain unlocks, never have one taken back');
+
+  /* RECORDED, because it cannot be designed away and he should not rediscover
+     it. A pupil who does EVERY stretch challenge is further ahead after three
+     lessons than the floor pupil is after four, so the two ranges overlap and
+     NO single threshold can give both exactly one unlock per lesson. Tuning to
+     the floor pupil is his ruling; the cost is that the every-stretch pupil
+     takes two levels at the end of Lesson 3 and none at the end of Lesson 5.
+     The clean fix is a seventh tier (two more costumes) - new content, his call. */
+  const sAt = n => cum[n - 1].stretch;
+  const crossings = n => Object.keys(thr).filter(l =>
+    Number(thr[l]) > (n === 1 ? 0 : sAt(n - 1)) && Number(thr[l]) <= sAt(n)).length;
+  check(crossings(3) === 2 && crossings(5) === 0,
+    'RECORDED, NOT FIXABLE without a 7th tier: the every-stretch pupil takes two levels at Lesson 3 and none at Lesson 5');
+  check(crossings(1) === 1 && crossings(2) === 1 && crossings(4) === 1,
+    'she still unlocks exactly one at the end of Lessons 1, 2 and 4');
 
   /* the L3 film's paper minutes must match the film that ships (rule 35).
      The brief is staff-only, so read it out of the PACKED encrypted blob the
