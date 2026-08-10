@@ -165,7 +165,12 @@ const LEXICON = [
   { rx: /tournament-grade/i, why: 'adult marketing register', fix: 'say what it must actually do' },
   { rx: /\bsolo shift\b/i, why: 'workplace idiom', fix: '"on your own today"' },
   { rx: /\bclock in\b/i, why: 'workplace idiom', fix: 'say the actual action ("Open the Case Board")' },
-  { rx: /on the bench\b/i, why: 'invents furniture she cannot see (DFM 35) + workplace idiom', fix: 'name the real place: "open in Scratch"' },
+  /* widened 10 Aug: the shipped Lesson 4 film says "onto YOUR bench", which the
+     old pattern ("on the bench") sailed straight past - the exact hole DFM 179(b)
+     is about. A ban is only as good as the forms it actually catches. */
+  { rx: /\bon(to)? (your|the|a) bench\b/i, why: 'invents furniture she cannot see (DFM 35) + workplace idiom', fix: 'name the real place: "open in Scratch"' },
+  { rx: /\bevery frame\b/i, why: 'a screen-drawing word she has never met (DFM 138.1.3) — it is not the word she needs', fix: '"over and over, all game long" / "all the time"' },
+  { rx: /\bthe vibes\b/i, why: 'teenage slang, and the opposite of the evidence the card is teaching', fix: '"the feeling"' },
   { rx: /gets its moment\b/i, why: 'adult flourish', fix: 'say what happens' },
   { rx: /for eternity/i, why: 'literary register', fix: '"forever"' },
   { rx: /\bscenarios?\b/i, why: 'adult exam word', fix: '"questions" / "what would happen if"' },
@@ -249,10 +254,19 @@ function lengthCheck(rawText, reader) {
       MAX_WORDS + ') — one idea per sentence: "' + s.slice(0, 90) + '…"');
 }
 
+/* The rule is 3+ em-dash CLAUSES, and the word clause is doing real work.
+   "read — predict — check — log" is four one-word LABELS on a title card, which
+   is a list, not a sentence that ran away with itself - and the first version of
+   this rule condemned it, which would have meant damaging a caption Fable had
+   already read and deliberately kept, to make my own harness green (DFM 146a).
+   So a dash-chain only fires when at least two of the parts are real clauses. */
 function dashChainCheck(rawText) {
   const text = prose(rawText);
   return sentences(text)
-    .filter(s => (s.match(/ — /g) || []).length >= 3)
+    .filter(s => {
+      if ((s.match(/ — /g) || []).length < 3) return false;
+      return s.split(' — ').filter(p => wordCount(p.trim()) >= 3).length >= 2;
+    })
     .map(s => 'dash-chain: 3+ em-dash clauses in one sentence — split it: "' + s.slice(0, 90) + '…"');
 }
 
@@ -274,8 +288,18 @@ function inlineSequenceCheck(rawText) {
    ACTION chain is different: it hides a sequence of things to DO inside arrows,
    which is the stretch card's other fault. Short segments, at most two arrows =
    a path. Anything longer = a sequence pretending to be a path. */
-function arrowChainCheck(rawText) {
+/* `names` (film strings only): segments the AUTHOR marked as things on screen,
+   by wrapping the whole segment in <b>. A real menu path can be longer than
+   three words - Scratch's own item is "Load from your computer" - and
+   "<b>File</b> → <b>Load from your computer</b>" is the same go-here-then-here
+   shape as the locked "Variables → Make a Variable", not an action chain. The
+   word ceiling still governs everything the author did NOT mark, so
+   "Four ticks → <b>READY FOR GALLERY</b> lights up" is still caught: the
+   segment is not a name, it is a thing happening. (DFM 146a: fix the harness,
+   never the correct sentence.) */
+function arrowChainCheck(rawText, names) {
   const text = prose(rawText);
+  const named = names || new Set();
   const out = [];
   /* Measure only what is ADJACENT to the arrows, bounded by ordinary punctuation
      - not the whole clause. The first version counted the surrounding sentence as
@@ -296,10 +320,12 @@ function arrowChainCheck(rawText) {
   for (let i = 0; i < segs.length - 1; i++) {
     const left = tailOf(segs[i]);
     const right = headOf(segs[i + 1]);
-    const midIsBareName = i > 0 && !BOUND.test(segs[i]) && wordCount(segs[i].trim()) <= MAX_STEP;
+    const isName = (s) => wordCount(s) <= MAX_STEP || named.has(s.trim());
+    const midIsBareName = i > 0 && !BOUND.test(segs[i]) &&
+      (wordCount(segs[i].trim()) <= MAX_STEP || named.has(segs[i].trim()));
     chain = midIsBareName ? chain + 1 : 1;
     const longest = Math.max(wordCount(left), wordCount(right));
-    if (chain > MAX_ARROWS || longest > MAX_STEP) {
+    if (chain > MAX_ARROWS || !isName(left) || !isName(right)) {
       out.push('action-arrow chain (DFM 171 family): "' + left + ' → ' + right + '" — ' +
         (chain > MAX_ARROWS ? chain + ' arrows in a row' : 'a ' + longest + '-word step') +
         '. Palette paths only (at most ' + MAX_ARROWS + ' arrows, ' + MAX_STEP +
@@ -424,11 +450,415 @@ function screenContractCheck(lessons) {
   return out;
 }
 
+/* ==================================================================== *
+ * THE FILM SECTION (DFM 179).
+ *
+ * DAMIEN, 10 Aug 2026: "the language harness needs to extend to the text
+ * in the video captions as well - does it?" It did not. He is right that
+ * it must: rule 172's own wording is "everything you write that explains
+ * something to a child", and a film caption is exactly that.
+ *
+ * The proof it was needed, from the 10 Aug audit: the shipped Lesson 4
+ * film said "onto your bench" and "the broken build" - the very phrases
+ * banned from the CONTENT the same day - because content and film were
+ * two surfaces with only one gate between them. A shared gate is the
+ * only thing that stops that drift (DFM 147's law: sweep every surface
+ * that will ever SHOW the wording, including the ones that have not run
+ * yet).
+ *
+ * THE STATIC-ONLY LAW, and why it is the right way round: a caption must
+ * be readable straight out of the source, without running the film. So
+ * every extracted argument has to resolve from string literals, literal
+ * "+" concatenation, and constants that are themselves literal. Anything
+ * else - a template interpolation, a function call, a value that only
+ * exists at run time - FAILS the build. The writing convention bends to
+ * the checkability, never the other way round (the DFM 166 precedent).
+ *
+ * scenes/guide.js is EXCLUDED by design: its reader is a teacher, not the
+ * child rule 172 names, so it is governed by 138.4's register and its own
+ * laws (121/122/163) - DFM 179(e).
+ * ==================================================================== */
+const SCENES_DIR = path.join(__dirname, 'scenes');
+
+/* Each film maps to the lesson AND the chunk where a pupil is served it.
+   That pairing is what lets the vocabulary gate run AT FILM POSITION - a
+   caption may only use a word the pupil has already been taught by the
+   time she is sitting in front of that film. A scene file with no entry
+   here FAILS rather than being skipped: silence is how a surface stops
+   being checked without anyone deciding that it should. */
+const FILM_MAP = {
+  l2: {
+    lesson: 'j1-02', chunkId: 'ladder', locked: true,
+    why: 'THE LESSON 2 FILM IS LOCKED. His words, 3 Aug 2026: "this video is fantastic, ' +
+         'just two tweaks... Once those are fixed, that is the video locked in" (DFM 141). ' +
+         'Its findings are printed, never blocking - exactly like Lesson 2 content under DFM 176.'
+  },
+  l3: { lesson: 'j1-03', chunkId: 'ladder' },
+  l4: { lesson: 'j1-04', chunkId: 'board' },
+  l5: { lesson: 'j1-05', chunkId: 'masterclass' }
+};
+/* Extra constants the extractor may resolve, beyond the ones it harvests
+   from the file itself. Extend this the day a scene needs one. */
+const FILM_CONSTS = {};
+
+/* Which cine call carries pupil-facing text, and where in its arguments.
+   'obj' means the first argument is a spec object and the pupil-facing
+   fields are kicker/title/sub/lines[]. */
+const CINE_CALLS = {
+  caption: { arg: 0 }, captionShow: { arg: 0 }, callout: { arg: 1 },
+  card: { obj: true }, curtain: { obj: true }, drop: { obj: true }
+};
+/* THE RENDERING CONTRACT, guarded statically (DFM 166's law: "when two
+   surfaces in one file take different input formats, the difference gets
+   a guard, because sooner or later someone writes the wrong one").
+   cinema.js sets a card's kicker/title/sub with textContent and a card's
+   lines[] with innerHTML - so an HTML entity in a TITLE is shown raw on
+   screen, which is exactly what he photographed on the Guide film's
+   "Chapter 3 - part two &mdash; the flags" card. cinema.js already throws
+   for curtain(); card() had no such guard at all. Now both are checked
+   here as well, at qa time, on the built text. */
+const PLAIN_TEXT_FIELDS = new Set(['kicker', 'title', 'sub', 'brand', 'credit']);
+
+/* Entities the films actually use, plus the numeric forms. Anything left
+   over after this decode is REPORTED, not silently tolerated: an entity
+   the renderer does not know is an entity the pupil reads out loud. */
+const ENTITIES = {
+  mdash: '—', ndash: '–', rarr: '→', larr: '←', hellip: '…', amp: '&',
+  rsquo: '’', lsquo: '‘', ldquo: '“', rdquo: '”',
+  quot: '"', apos: '\'', nbsp: ' ', middot: '·', times: '×', deg: '°',
+  lt: '<', gt: '>', pound: '£', eacute: 'é', frac12: '½', bull: '•'
+};
+function decodeEntities(s) {
+  return String(s)
+    .replace(/&#x([0-9a-fA-F]+);/g, (m, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (m, d) => String.fromCodePoint(Number(d)))
+    .replace(/&([a-zA-Z][a-zA-Z0-9]*);/g, (m, name) => (ENTITIES[name] !== undefined ? ENTITIES[name] : m));
+}
+/* The segments the author explicitly marked as things on screen: an arrow
+   segment that is ENTIRELY inside one emphasis tag. Used only by the arrow
+   law, and only for films (content strings carry no markup). */
+function boldNames(raw) {
+  const set = new Set();
+  decodeEntities(String(raw)).split(/\s*(?:→|->)\s*/).forEach(seg => {
+    const m = /^\s*<(b|i)>([^<]*)<\/\1>\s*$/.exec(seg);
+    if (m && m[2].trim()) set.add(m[2].trim());
+  });
+  return set;
+}
+
+/* What the pupil actually reads: entities decoded, the <b>/<i> emphasis
+   tags gone (they are styling, not words), and a line break in a title
+   read as a space rather than as the end of a sentence. */
+function filmRendered(raw) {
+  return decodeEntities(String(raw))
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/* ---- a very small, very deliberate reader of the scene source ---- *
+ * Comments are blanked (offsets preserved) and every string span is
+ * marked, so bracket matching can never be fooled by a bracket inside a
+ * caption or inside a comment. */
+function scanSource(src) {
+  const n = src.length;
+  const arr = src.split('');
+  const inStr = new Uint8Array(n);
+  let i = 0;
+  while (i < n) {
+    const c = src[i], d = src[i + 1];
+    if (c === '/' && d === '/') { while (i < n && src[i] !== '\n') { arr[i] = ' '; i++; } continue; }
+    if (c === '/' && d === '*') {
+      let e = src.indexOf('*/', i + 2); e = e < 0 ? n : e + 2;
+      for (let k = i; k < e; k++) if (src[k] !== '\n') arr[k] = ' ';
+      i = e; continue;
+    }
+    if (c === '\'' || c === '"' || c === '`') {
+      const q = c; inStr[i] = 1; let k = i + 1;
+      while (k < n) {
+        if (src[k] === '\\') { inStr[k] = 1; if (k + 1 < n) inStr[k + 1] = 1; k += 2; continue; }
+        inStr[k] = 1;
+        if (src[k] === q) { k++; break; }
+        k++;
+      }
+      i = k; continue;
+    }
+    i++;
+  }
+  return { clean: arr.join(''), inStr };
+}
+function matchBracket(s, inStr, start) {
+  let depth = 0;
+  for (let i = start; i < s.length; i++) {
+    if (inStr[i]) continue;
+    const c = s[i];
+    if (c === '(' || c === '{' || c === '[') depth++;
+    else if (c === ')' || c === '}' || c === ']') { depth--; if (depth === 0) return i; }
+  }
+  return -1;
+}
+function splitTop(s, inStr, from, to) {
+  const out = []; let depth = 0, start = from;
+  for (let i = from; i < to; i++) {
+    if (inStr[i]) continue;
+    const c = s[i];
+    if (c === '(' || c === '{' || c === '[') depth++;
+    else if (c === ')' || c === '}' || c === ']') depth--;
+    else if (c === ',' && depth === 0) { out.push([start, i]); start = i + 1; }
+  }
+  if (s.slice(start, to).trim()) out.push([start, to]);
+  return out;
+}
+function readLiteral(s, i) {
+  const q = s[i];
+  const ESC = { n: '\n', t: '\t', r: '\r', b: '\b', f: '\f', v: '\v', '0': '\0' };
+  let j = i + 1, buf = '';
+  while (j < s.length) {
+    const c = s[j];
+    if (c === '\\') {
+      const e = s[j + 1];
+      if (e === 'u') {
+        if (s[j + 2] === '{') { const end = s.indexOf('}', j + 3); buf += String.fromCodePoint(parseInt(s.slice(j + 3, end), 16)); j = end + 1; continue; }
+        buf += String.fromCodePoint(parseInt(s.slice(j + 2, j + 6), 16)); j += 6; continue;
+      }
+      if (e === 'x') { buf += String.fromCodePoint(parseInt(s.slice(j + 2, j + 4), 16)); j += 4; continue; }
+      buf += (ESC[e] !== undefined ? ESC[e] : e); j += 2; continue;
+    }
+    if (c === q) {
+      /* a template literal with an interpolation is not static - the text
+         only exists once the film is running, so it cannot be checked */
+      if (q === '`' && /\$\{/.test(buf)) return null;
+      return { value: buf, end: j + 1 };
+    }
+    buf += c; j++;
+  }
+  return null;
+}
+/* Returns an ARRAY of resolved strings (usually one), or null when the
+   expression is not statically readable. An index into a known literal
+   array yields every element, because every element can reach the screen. */
+function resolveStatic(exprRaw, consts, arrays) {
+  const s = String(exprRaw).trim();
+  if (!s) return null;
+  const idx = /^([A-Za-z_$][A-Za-z0-9_$]*)\s*\[[\s\S]*\]$/.exec(s);
+  if (idx && arrays[idx[1]]) return arrays[idx[1]].slice();
+  let out = '', i = 0, wantOperand = true;
+  while (i < s.length) {
+    const c = s[i];
+    if (/\s/.test(c)) { i++; continue; }
+    if (wantOperand) {
+      if (c === '\'' || c === '"' || c === '`') {
+        const lit = readLiteral(s, i);
+        if (!lit) return null;
+        out += lit.value; i = lit.end; wantOperand = false; continue;
+      }
+      const id = /^[A-Za-z_$][A-Za-z0-9_$]*/.exec(s.slice(i));
+      if (id && consts[id[0]] !== undefined) { out += consts[id[0]]; i += id[0].length; wantOperand = false; continue; }
+      return null;
+    }
+    if (c === '+') { i++; wantOperand = true; continue; }
+    return null;
+  }
+  return wantOperand ? null : [out];
+}
+/* Constants are harvested from the file itself rather than hand-listed, so
+   a scene that keeps its captions in a named array (the Lesson 3 animation
+   beats) is still fully readable from source. SCREAMING_CASE only, so the
+   rule stays obvious to whoever writes the next film. */
+function harvestConsts(clean, inStr) {
+  const consts = Object.assign({}, FILM_CONSTS);
+  const arrays = {};
+  const rx = /\bconst\s+([A-Z][A-Z0-9_]*)\s*=\s*/g;
+  let m;
+  while ((m = rx.exec(clean))) {
+    if (inStr[m.index]) continue;
+    const at = m.index + m[0].length;
+    if (clean[at] === '[') {
+      const end = matchBracket(clean, inStr, at);
+      if (end < 0) continue;
+      const vals = splitTop(clean, inStr, at + 1, end)
+        .map(r => resolveStatic(clean.slice(r[0], r[1]), consts, arrays));
+      if (vals.length && vals.every(v => v && v.length === 1)) arrays[m[1]] = vals.map(v => v[0]);
+    } else {
+      let e = at;
+      while (e < clean.length && !(clean[e] === ';' && !inStr[e])) {
+        if (!inStr[e] && '([{'.indexOf(clean[e]) >= 0) { const e2 = matchBracket(clean, inStr, e); if (e2 < 0) break; e = e2; }
+        e++;
+      }
+      const v = resolveStatic(clean.slice(at, e), consts, arrays);
+      if (v && v.length === 1) consts[m[1]] = v[0];
+    }
+  }
+  return { consts, arrays };
+}
+function objectFields(clean, inStr, from, to) {
+  const fields = {};
+  splitTop(clean, inStr, from, to).forEach(r => {
+    let depth = 0, colon = -1;
+    for (let i = r[0]; i < r[1]; i++) {
+      if (inStr[i]) continue;
+      const c = clean[i];
+      if (c === '(' || c === '{' || c === '[') depth++;
+      else if (c === ')' || c === '}' || c === ']') depth--;
+      else if (c === ':' && depth === 0) { colon = i; break; }
+    }
+    if (colon < 0) return;
+    fields[clean.slice(r[0], colon).trim().replace(/^['"]|['"]$/g, '')] = [colon + 1, r[1]];
+  });
+  return fields;
+}
+
+/* ---- the extractor ---- */
+function collectFilmStrings() {
+  const out = [], errs = [];
+  const files = fs.existsSync(SCENES_DIR)
+    ? fs.readdirSync(SCENES_DIR).filter(f => /^l[0-9][^\\/]*\.js$/.test(f)).sort()
+    : [];
+  files.forEach(file => {
+    const setId = file.replace(/\.js$/, '');
+    const map = FILM_MAP[setId];
+    if (!map) {
+      errs.push('scenes/' + file + ': a new film with no FILM_MAP entry in qa-language.js — ' +
+        'name the lesson and the chunk where a pupil is served it, so its captions are ' +
+        'checked at the right point in the year.');
+      return;
+    }
+    const src = fs.readFileSync(path.join(SCENES_DIR, file), 'utf8');
+    const { clean, inStr } = scanSource(src);
+    const { consts, arrays } = harvestConsts(clean, inStr);
+    const lineAt = (i) => clean.slice(0, i).split('\n').length;
+
+    const chapters = [];
+    const crx = /\bid:\s*'(ch\d+)'/g;
+    let cm;
+    while ((cm = crx.exec(clean))) { if (!inStr[cm.index]) chapters.push({ at: cm.index, id: cm[1] }); }
+    const chapterAt = (i) => {
+      let id = 'ch?';
+      for (const c of chapters) { if (c.at < i) id = c.id; else break; }
+      return id;
+    };
+
+    const take = (rangeFrom, rangeTo, fieldName, callName, at) => {
+      const vals = resolveStatic(clean.slice(rangeFrom, rangeTo), consts, arrays);
+      if (vals === null) {
+        errs.push('scenes/' + file + ':' + lineAt(at) + ' cine.' + callName +
+          (fieldName ? ' (' + fieldName + ')' : '') +
+          ': caption not statically checkable — write it as plain literals. ' +
+          '(A caption that only exists while the film runs cannot be read as the child, ' +
+          'so it cannot be gated. The writing convention bends to the checkability.)');
+        return;
+      }
+      vals.forEach(raw => {
+        if (!String(raw).trim()) return;
+        out.push({
+          set: setId, chapter: chapterAt(at), call: callName, field: fieldName || null,
+          line: lineAt(at), raw: raw, text: filmRendered(raw),
+          plainOnly: !!(fieldName && PLAIN_TEXT_FIELDS.has(fieldName)),
+          lesson: map.lesson, chunkId: map.chunkId, locked: !!map.locked
+        });
+      });
+    };
+
+    const callRx = /\bcine\.(caption|captionShow|callout|card|curtain|drop)\s*\(/g;
+    let m;
+    while ((m = callRx.exec(clean))) {
+      if (inStr[m.index]) continue;
+      const open = m.index + m[0].length - 1;
+      const close = matchBracket(clean, inStr, open);
+      if (close < 0) { errs.push('scenes/' + file + ':' + lineAt(m.index) + ': unbalanced cine.' + m[1] + '( — the extractor cannot read it'); continue; }
+      const args = splitTop(clean, inStr, open + 1, close);
+      const spec = CINE_CALLS[m[1]];
+      if (spec.obj) {
+        if (!args.length) continue;
+        let a = args[0][0];
+        while (a < args[0][1] && clean[a] !== '{') a++;
+        if (clean[a] !== '{') continue;                    /* not an object literal (never happens today) */
+        const end = matchBracket(clean, inStr, a);
+        const fields = objectFields(clean, inStr, a + 1, end);
+        ['kicker', 'title', 'sub', 'brand'].forEach(k => {
+          if (fields[k]) take(fields[k][0], fields[k][1], k, m[1], m.index);
+        });
+        if (fields.lines) {
+          let b = fields.lines[0];
+          while (b < fields.lines[1] && clean[b] !== '[') b++;
+          if (clean[b] === '[') {
+            const lend = matchBracket(clean, inStr, b);
+            splitTop(clean, inStr, b + 1, lend).forEach((r, i) =>
+              take(r[0], r[1], 'lines[' + i + ']', m[1], m.index));
+          }
+        }
+      } else {
+        if (args.length <= spec.arg) continue;
+        take(args[spec.arg][0], args[spec.arg][1], null, m[1], m.index);
+      }
+    }
+  });
+  return { strings: out, errs };
+}
+
+/* The vocabulary gate, run AT FILM POSITION: a caption may only use a word
+   the pupil has already been taught by the moment she is watching. */
+function filmVocabCheck(films, lessons, vocab) {
+  const out = [];
+  const byId = {};
+  lessons.forEach(L => { byId[L.fileId] = L; });
+  (vocab.terms || []).forEach(term => {
+    const rx = new RegExp('\\b(' + [term.term].concat(term.aliases || [])
+      .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', 'i');
+    const defL = byId[term.definedIn.lesson];
+    films.forEach(f => {
+      if (!rx.test(f.text)) return;
+      const here = byId[f.lesson];
+      if (!here || !defL) return;
+      const hereNum = Number(here.json.num || 99), defNum = Number(defL.json.num || 99);
+      if (defNum > hereNum) {
+        out.push(f.key + ': the film uses "' + term.term + '" but it is not taught until ' +
+          term.definedIn.lesson + ' — she hears the word before she has met the meaning');
+      } else if (defNum === hereNum) {
+        const ids = (here.json.chunks || []).map(c => c.id);
+        const defIdx = ids.indexOf(term.definedIn.chunkId), filmIdx = ids.indexOf(f.chunkId);
+        if (defIdx >= 0 && filmIdx >= 0 && defIdx > filmIdx) {
+          out.push(f.key + ': the film uses "' + term.term + '" but this lesson does not define it until "' +
+            term.definedIn.chunkId + '", which she reaches AFTER the film in "' + f.chunkId + '"');
+        }
+      }
+    });
+  });
+  return out;
+}
+
 /* ------------------------------------------------------------------ *
  * LAYER 2 - THE READ-ALOUD LEDGER. The heart of the file (DFM 178a).
  * ------------------------------------------------------------------ */
 const crypto = require('crypto');
 const sha1 = (s) => crypto.createHash('sha1').update(s, 'utf8').digest('hex').slice(0, 16);
+
+/* Film strings are CONTENT-ADDRESSED: the key carries the hash of the caption
+   itself, so editing a caption voids its record exactly like a content sentence,
+   and re-ordering the captions inside a chapter costs nothing. */
+const filmKey = (f) => 'film:' + f.set + ':' + f.chapter + ' › ' + sha1(f.raw);
+
+function filmLedgerCheck(films, ledger) {
+  const out = [];
+  const byPath = ledger.entries || {};
+  films.forEach(f => {
+    const e = byPath[f.key];
+    if (!e) {
+      out.push('UNREVIEWED CAPTION: ' + f.key + ' — no read-aloud record. It reads: "' +
+        f.text.slice(0, 80) + '". Ask it as an 11 or 12-year-old: can she DO it, PICTURE ' +
+        'every noun, SAY what it is for? Then: node ledger-tool.js --set-film "' + f.key + '" ...');
+      return;
+    }
+    if (e.grandfathered || e.reviewed) return;
+    const ra = e.readAloud || {};
+    ['do', 'picture', 'for'].forEach(k => {
+      if (!ra[k] || String(ra[k]).trim().length < 3) {
+        out.push('THIN CAPTION RECORD: ' + f.key + ' — readAloud.' + k + ' is empty.');
+      }
+    });
+  });
+  return out;
+}
 
 function ledgerCheck(lessons, ledger) {
   const out = [];
@@ -507,6 +937,52 @@ function runControls() {
   control(clean(OK5) === 0, "Lesson 2's backticked BLOCK LISTING is not judged as prose (code exemption)");
   const MIXED = 'First open it up. `a → b` Then go to Settings → the third tab down → press the blue Save button.';
   control(arrowChainCheck(MIXED).length >= 1, 'the code exemption does NOT forgive an action chain in the same string');
+
+  /* ---- THE FILM CONTROLS (DFM 179). The captions that were SHIPPED on his
+     screen this week must fail these checks before any rewrite is credited. */
+  const F1 = 'First: the broken game onto your bench &mdash; exactly like the <b>Evidence Intake</b> card.';
+  control(lexiconCheck(filmRendered(F1)).length >= 1,
+    'the shipped L4 caption "onto your bench" fails the lexicon (the phrase banned from the CONTENT the same day)');
+  const F2 = 'PREDICT: &ldquo;right arrow &rarr; the shark swims right.&rdquo; CHECK:';
+  control(arrowChainCheck(filmRendered(F2)).length >= 1,
+    'the shipped L4 chapter-3 PREDICT caption fails the action-arrow law');
+  const F3 = 'Point it at the Bowl and it answers every frame';
+  control(lexiconCheck(filmRendered(F3)).length >= 1,
+    'the shipped L5 caption "it answers every frame" fails the lexicon (new entry)');
+  const F4 = 'The first computer <b>bug</b> was a real moth &mdash; taped into Harvard&rsquo;s logbook, 1947';
+  const cleanFilm = (t) => { const r = filmRendered(t); return lexiconCheck(r).length + lengthCheck(r, 'x').length +
+    dashChainCheck(r).length + inlineSequenceCheck(r).length + arrowChainCheck(r).length; };
+  control(cleanFilm(F4) === 0,
+    'the moth line still PASSES unchanged (over-tightening guard — a harness that flags good text is broken, not strict)');
+  /* the two places the harness itself was wrong, pinned in BOTH directions so
+     nobody "tightens" them back and quietly damages correct captions (DFM 146a) */
+  const MENU = '<b>File</b> &rarr; <b>Load from your computer</b>';
+  control(arrowChainCheck(filmRendered(MENU), boldNames(MENU)).length === 0,
+    'a real menu path with a 4-word ITEM NAME the author marked with <b> still PASSES (the "Variables → Make a Variable" family)');
+  const NOTNAME = 'Four ticks &rarr; <b>READY FOR GALLERY</b> lights up &rarr; open your doors';
+  control(arrowChainCheck(filmRendered(NOTNAME), boldNames(NOTNAME)).length >= 1,
+    'and the same allowance does NOT forgive a segment that is a thing HAPPENING rather than a name');
+  control(dashChainCheck('read — predict — check — log').length === 0,
+    'a row of one-word LABELS on a title card is a list, not a dash-chain');
+  control(dashChainCheck('You open the file — then you read the code — then you predict what it does — then you check it').length >= 1,
+    'and a real runaway sentence of dash-joined clauses still FAILS');
+  /* the static-only law, proved on a fixture rather than asserted */
+  const FIX_DIR = path.join(__dirname, 'out', '.qa-language-fixture');
+  try {
+    fs.mkdirSync(FIX_DIR, { recursive: true });
+    const bad = path.join(FIX_DIR, 'lX.js');
+    fs.writeFileSync(bad, 'const someVar = "hello";\nconst scenes=[{id:\'ch1\',run:async({cine})=>{await cine.caption(someVar);}}];\n');
+    const { clean, inStr } = scanSource(fs.readFileSync(bad, 'utf8'));
+    const { consts, arrays } = harvestConsts(clean, inStr);
+    const m = /\bcine\.caption\s*\(/.exec(clean);
+    const open = m.index + m[0].length - 1;
+    const args = splitTop(clean, inStr, open + 1, matchBracket(clean, inStr, open));
+    control(resolveStatic(clean.slice(args[0][0], args[0][1]), consts, arrays) === null,
+      'a caption built from a variable is NOT statically checkable and fails the build');
+    fs.unlinkSync(bad); fs.rmdirSync(FIX_DIR);
+  } catch (e) {
+    control(false, 'the static-only fixture could not run: ' + e.message);
+  }
 }
 
 /* ------------------------------------------------------------------ *
@@ -534,6 +1010,8 @@ function main() {
 
   const lessons = loadLessons();
   if (!lessons.length) { console.error('no lessons found at ' + SRC); process.exit(1); }
+  const byFileId = {};
+  lessons.forEach(L => { byFileId[L.fileId] = L.json; });
   const inScope = (p) => !only || String(p).indexOf(only) === 0;
   const vocab = fs.existsSync(VOCAB_FILE) ? JSON.parse(fs.readFileSync(VOCAB_FILE, 'utf8')) : { terms: [] };
   const ledger = fs.existsSync(LEDGER_FILE) ? JSON.parse(fs.readFileSync(LEDGER_FILE, 'utf8')) : { entries: {} };
@@ -561,8 +1039,14 @@ function main() {
       found.forEach(f => (isLocked ? locked : problems).push(s.path + ': ' + f));
     });
   });
-  vocabCheck(lessons, vocab).filter(inScope).forEach(p => (LOCKED.has(p.slice(0, 6)) ? locked : problems).push(p));
-  screenContractCheck(lessons).filter(inScope).forEach(p => (LOCKED.has(p.slice(0, 6)) ? locked : problems).push(p));
+  /* route by the lesson id at the FRONT of the message. `p.slice(0, 6)` used to
+     be the test and it never matched anything - "j1-02 " carries a trailing
+     space - so a vocabulary or screen-contract finding on a LOCKED lesson would
+     have blocked the pack instead of being waived. Nothing had ever tripped it,
+     which is exactly how a latent fault survives (DFM 143b's family). */
+  const lessonOf = (p) => (String(p).match(/^(j\d-[a-z0-9]+)/) || [])[1];
+  vocabCheck(lessons, vocab).filter(inScope).forEach(p => (LOCKED.has(lessonOf(p)) ? locked : problems).push(p));
+  screenContractCheck(lessons).filter(inScope).forEach(p => (LOCKED.has(lessonOf(p)) ? locked : problems).push(p));
   console.log('  scanned ' + n + ' pupil-facing strings across ' + lessons.length + ' lesson(s)');
   console.log(problems.length ? '  ' + problems.length + ' problem(s)' : '  clean');
   problems.forEach(p => { console.log('  FAIL ' + p); FAILS.push(p); });
@@ -573,8 +1057,51 @@ function main() {
     locked.forEach(p => console.log('    WAIVED ' + p));
   }
 
+  /* ---- THE FILMS (DFM 179): the same laws, on the surface a pupil watches ---- */
+  console.log('\nFILM CAPTIONS — the same net, on the screen she watches (DFM 179):');
+  const film = collectFilmStrings();
+  film.strings.forEach(f => { f.key = filmKey(f); });
+  const inScopeFilm = (f) => !only || f.lesson.indexOf(only) === 0 || ('film:' + f.set).indexOf(only) === 0;
+  const films = film.strings.filter(inScopeFilm);
+  const filmProblems = [], filmLocked = [];
+  film.errs.forEach(e => { console.log('  FAIL ' + e); FAILS.push(e); });
+  films.forEach(f => {
+    const bucket = f.locked ? filmLocked : filmProblems;
+    const r = f.text;
+    [].concat(
+      lengthCheck(r, readerFor((byFileId[f.lesson] || {}).year || 'j1')),
+      dashChainCheck(r), inlineSequenceCheck(r), arrowChainCheck(r, boldNames(f.raw)), lexiconCheck(r)
+    ).forEach(p => bucket.push(f.key + ' [' + f.set + ' ' + f.chapter + ' line ' + f.line + ']: ' + p));
+    /* an entity the decoder does not know is an entity the pupil READS (DFM 166) */
+    const left = decodeEntities(f.raw).match(/&[a-zA-Z][a-zA-Z0-9]*;/g);
+    if (left) bucket.push(f.key + ': unknown HTML entity ' + left.join(' ') + ' — it will be shown raw on screen (DFM 166)');
+    /* a card/curtain TITLE is set with textContent, so an entity there is
+       always shown raw. cinema.js throws for curtain(); card() had no guard. */
+    if (f.plainOnly && /&[a-zA-Z]+;|&#\d+;/.test(f.raw)) {
+      bucket.push(f.key + ': a ' + f.call + ' ' + f.field + ' is PLAIN TEXT (cinema.js sets it with ' +
+        'textContent) — the entity in "' + f.raw.slice(0, 60) + '" would be shown raw, exactly like the ' +
+        '"part two &mdash; the flags" card he photographed (DFM 166)');
+    }
+  });
+  filmVocabCheck(films, lessons, vocab).forEach(p => {
+    const set = (p.match(/^film:(l\d+)/) || [])[1];
+    ((FILM_MAP[set] || {}).locked ? filmLocked : filmProblems).push(p);
+  });
+  console.log('  scanned ' + films.length + ' caption/card/callout string(s) across ' +
+    Object.keys(FILM_MAP).filter(s => films.some(f => f.set === s)).join(', ') +
+    '  (scenes/guide.js excluded by design — its reader is a teacher, DFM 179e)');
+  console.log(filmProblems.length ? '  ' + filmProblems.length + ' problem(s)' : '  clean');
+  filmProblems.forEach(p => { console.log('  FAIL ' + p); FAILS.push(p); });
+  if (filmLocked.length) {
+    console.log('\n  LOCKED FILM (DFM 141) — ' + filmLocked.length + ' finding(s) in the Lesson 2 film, recorded, NOT blocking.');
+    console.log('  His words, 3 Aug 2026: "that is the video locked in." Printed every run so the debt');
+    console.log('  stays visible rather than looking like cleanliness.');
+    filmLocked.forEach(p => console.log('    WAIVED ' + p));
+  }
+
   console.log('\nLAYER 2 — the read-aloud ledger (the gate that matters):');
-  const led = ledgerCheck(lessons, ledger).filter(p => inScope(p.replace(/^[A-Z ]+: /, '')));
+  const led = ledgerCheck(lessons, ledger).filter(p => inScope(p.replace(/^[A-Z ]+: /, '')))
+    .concat(filmLedgerCheck(films, ledger));
   console.log(led.length ? '  ' + led.length + ' unrecorded or stale sentence(s)' : '  every pupil sentence carries a record');
   led.slice(0, 40).forEach(p => { console.log('  FAIL ' + p); });
   if (led.length > 40) console.log('  … and ' + (led.length - 40) + ' more (run ledger-tool.js --missing for the full list)');
@@ -583,4 +1110,8 @@ function main() {
   console.log('\n' + (FAILS.length ? 'qa-language: ' + FAILS.length + ' FAILURE(S)' : 'qa-language: ALL GREEN'));
   process.exit(FAILS.length ? 1 : 0);
 }
-main();
+if (require.main === module) main();
+/* ledger-tool.js reads the films through THIS extractor rather than carrying a
+   second copy of it — one fact, one home (DFM 144). pack-content.js runs this
+   file as a child process, so the guard above leaves the gate untouched. */
+module.exports = { collectFilmStrings, filmKey, filmRendered, FILM_MAP };

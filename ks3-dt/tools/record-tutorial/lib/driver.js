@@ -345,6 +345,26 @@ class ScratchDriver {
       if (ok) ok.click();
     });
     await this.page.waitForSelector('[class*="sprite-selector-item_sprite-name"]', { timeout: 30000 });
+    /* CLOSE THE FILE MENU AGAIN (found 10 Aug 2026 in the frame audit). Scratch
+       closes this menu on a real document click, and every click here is a
+       synthetic el.click() - so the menu was left hanging open when the curtain
+       lifted, and sat over the top-left of the editor for most of Lesson 4's
+       chapters 2-4 and all of Lesson 5. The pupil never sees that state on her
+       own machine, which is the whole point of DFM 169: the film shows what the
+       school's screens will show. Toggling the menu-bar item shuts it. */
+    await this.page.evaluate(() => {
+      const fm = Array.from(document.querySelectorAll('[class*="menu-bar_menu-bar-item"]'))
+        .find(e => /^File/.test((e.textContent || '').trim()));
+      if (fm) fm.click();
+    });
+    await sleep(250);
+    const stillOpen = await this.page.evaluate(() => Array.from(document.querySelectorAll('li'))
+      .some(e => e.offsetParent !== null && /Load from your computer/i.test(e.textContent || '')));
+    if (stillOpen) {
+      /* belt and braces: a real click on neutral chrome always dismisses it */
+      await this.page.mouse.click(640, 76);
+      await sleep(250);
+    }
     await sleep(1800);
   }
 

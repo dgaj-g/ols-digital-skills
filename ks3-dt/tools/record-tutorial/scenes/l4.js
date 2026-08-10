@@ -90,16 +90,16 @@ const scenes = [
       await cine.ensureCursor(640, 430);
 
       await cine.card({
-        kicker: 'THE JOB', title: 'Four bugs shipped. You’re QA.',
+        kicker: 'THE JOB', title: 'Four bugs got past. You’re QA.',
         img: IMG_MOTH, credit: CREDIT_MOTH,
         lines: [
           'The first computer <b>bug</b> was a real moth &mdash; taped into Harvard’s logbook, 1947',
-          'Every game ever shipped, shipped with bugs. <b>QA testers</b> find them before players do',
+          'Every game you have ever played went on sale with bugs in it. <b>QA testers</b> find them before players do',
           'Four player tickets are on your case board. This film is your handbook'
         ]
       }, 13000);
 
-      await cine.caption('First: the broken game onto your bench &mdash; exactly like the <b>Evidence Intake</b> card.');
+      await cine.caption('First: get the broken game open in Scratch &mdash; exactly like the <b>Evidence Intake</b> card.');
 
       const fm = await drv.fileMenu();
       if (!fm) throw new Error('File menu not found');
@@ -134,7 +134,7 @@ const scenes = [
       await cine.lift();
       await cine.pause(400);
 
-      await cine.caption('The broken build, on the bench. <b>Meet the suspects.</b>');
+      await cine.caption('The broken game is open. <b>Meet the suspects.</b>');
       const sharkTile = await drv.spriteTile('Shark');
       const fishTile = await drv.spriteTile('Fish');
       if (!sharkTile || !fishTile) throw new Error('sprite tiles missing');
@@ -148,7 +148,7 @@ const scenes = [
       const leftScript = await drv.canvasBlock('when left arrow key pressed');
       if (!leftScript) throw new Error('left arrow script not found on canvas');
       await cine.callout({ x: leftScript.x - 8, y: leftScript.y - 8, w: leftScript.w + 16, h: leftScript.h + 16 },
-        '“WHEN left arrow pressed &rarr; point left &rarr; move 10 &rarr; next costume.” You just read code.', { side: 'below' });
+        '“WHEN the left arrow is pressed: point left, move 10 steps, next costume.” You just read code.', { side: 'below' });
 
       await cine.caption('Read first, click second &mdash; that’s the whole detective method. <b>Chapter 2: what starts a script.</b>');
 
@@ -193,7 +193,7 @@ const scenes = [
       await cine.callout({ x: orphan.x - 8, y: orphan.y - 8, w: orphan.w + 16, h: orphan.h + 16 },
         'This stack has <b>NO HAT</b>. Perfect code &mdash; that never, ever runs', { side: 'above' });
 
-      await cine.caption('No trigger = no code runs. <b>Case cracked by reading alone.</b> Now the fix.');
+      await cine.caption('No trigger means no code runs. <b>Case cracked by reading alone.</b> Now the fix.');
 
       const evCat = await drv.category('Events');
       if (!evCat) throw new Error('Events category not found');
@@ -246,7 +246,7 @@ const scenes = [
       await cine.captionShow('Green flag. Then a FULL lap &mdash; all four arrows, no shortcuts.');
       await flagAndSwim(cine, drv, [['ArrowRight', 6], ['ArrowUp', 4], ['ArrowLeft', 6], ['ArrowDown', 4]]);
       await cine.captionHide();
-      await cine.caption('All four arrows swim. <b>Now it’s true</b> &mdash; and you watched it be true.');
+      await cine.caption('All four arrows swim. <b>Now it’s true</b> &mdash; because you watched it happen.');
 
       await cine.drop({});
       await cine.pause(1200);
@@ -279,18 +279,18 @@ const scenes = [
 
       await cine.caption('A tester never “just plays”. A tester <b>PREDICTS</b>, then <b>CHECKS</b>. Here’s the game as it SHOULD be.');
 
-      await cine.captionShow('PREDICT: “right arrow &rarr; the shark swims right.” CHECK:');
+      await cine.captionShow('PREDICT: “press the right arrow and the shark swims right.” CHECK:');
       await flagAndSwim(cine, drv, [['ArrowRight', 5]]);
       await cine.captionHide();
       await cine.caption('Prediction held. <b>One check passed.</b>');
 
-      await cine.captionShow('PREDICT: “eat a fish &rarr; the score climbs by exactly 1.” CHECK:');
+      await cine.captionShow('PREDICT: “eat a fish and the score climbs by exactly 1.” CHECK:');
       const got = await sweepUntilScore(cine, drv, 1, log);
       if (got < 1) throw new Error('no fish eaten during the sweep (score ' + got + ')');
       await cine.captionHide();
       const mon = await drv.monitorRect();
       if (mon) await cine.callout({ x: mon.x - 6, y: mon.y - 6, w: mon.w + 12, h: mon.h + 12 },
-        'The score moved the moment the bite happened. <b>Watch the number, not the vibes</b>', { side: 'below' });
+        'The score moved the moment the bite happened. <b>Watch the number, not the feeling</b>', { side: 'below' });
 
       await cine.caption('One catch could be luck. <b>Three catches, three points &mdash; that’s proof.</b> Keep checking.');
 
@@ -299,7 +299,7 @@ const scenes = [
         lines: [
           '<b>PREDICT</b> what should happen &mdash; say it out loud, before you touch anything',
           '<b>CHECK</b> one thing at a time &mdash; watch what ACTUALLY happens',
-          'A failed check isn’t bad luck. <b>It’s a case file.</b> Your broken build will fail some &mdash; that’s the job'
+          'A failed check isn’t bad luck. <b>It’s a case file.</b> Your broken game will fail some &mdash; that’s the job'
         ]
       }, 13000);
 
@@ -349,7 +349,7 @@ const scenes = [
         ]
       }, 12000);
 
-      await cine.caption('Fix &rarr; log &rarr; <b>re-play to prove it</b> &rarr; and only then, the stamp.');
+      await cine.caption('Fix it, log it, <b>re-play to prove it</b> &mdash; and only then, the stamp.');
 
       await cine.drop({
         kicker: 'BACK TO THE BOARD', title: 'Four tickets\nare waiting',
