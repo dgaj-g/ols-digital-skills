@@ -1063,6 +1063,8 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
    red is what the marks say, amber is what she says. */
 .pill.voice { background: #FFF3CF; color: #8A6D00; white-space: nowrap; }
 .lc-yes { color: #1E9459; font-weight: 700; }
+/* the claimed stretch challenge, beside her name (DFM 183) */
+.lc-stretch { font-size: 0.95em; cursor: help; }
 .lc-no { color: var(--bad); font-weight: 700; }
 .lc-mid { color: #8A6D00; font-weight: 700; }
 .lc-skip, .lc-dash { color: #9AA5B5; font-weight: 700; }
@@ -1576,6 +1578,24 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .pp-list li.drop-before { box-shadow: 0 -3px 0 -1px var(--gold); }
 .pp-list li.drop-after { box-shadow: 0 3px 0 -1px var(--gold); }
 .parsons-prog.drop-empty, .parsons-tray.drop-back { border-color: var(--gold); background: rgba(var(--gold-rgb), 0.10); }
+
+/* TWO STACKS, TWO BOXES (DFM 186). His find: four numbered lines drew one
+   continuous program where the micro:bit really runs two separate ones. Each
+   job is now its own box, with its own numbering, and the whole box is the
+   drop target. Only a card that declares cfg.stacks gets any of this. */
+.parsons-prog.is-stacked { display: flex; flex-direction: column; gap: 10px; }
+.pp-box {
+  border: 1.5px dashed var(--line-l); border-radius: 12px; padding: 9px 11px 11px;
+  background: rgba(255, 255, 255, 0.55); transition: border-color 0.15s, background 0.15s;
+}
+.pp-box-label {
+  margin: 0 0 8px; font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--ols-blue);
+}
+.pp-box.drop-empty { border-color: var(--gold); background: rgba(var(--gold-rgb), 0.12); border-style: solid; }
+.pp-box.drop-full { border-color: #C4443A; background: rgba(196, 68, 58, 0.09); }
+.pa-box { margin: 8px 0 0; }
+.pa-box .pp-box-label { margin-bottom: 4px; }
 .parsons-block { cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; }
 .parsons-block:disabled { cursor: default; }
 .parsons-block.dragging { opacity: 0.35; }
@@ -1598,6 +1618,22 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .parsons-answer li { margin: 4px 0; }
 
 .af-card { max-width: 640px; }
+/* the save-to-Drive film (DFM 187): open on Lesson 2, behind "Show me how" on
+   Lesson 3. Same register as the ladder's part player, so a pupil meets one
+   kind of embedded film on this platform, not two. */
+.af-demo { margin: 12px 0 16px; }
+.af-demo-head {
+  margin: 0 0 6px; font-weight: 800; color: var(--ols-blue);
+  font-size: 0.86rem; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.af-demo-video { width: 100%; border-radius: var(--r-md); background: #000; display: block; }
+.af-demo-len, .af-demo-fallback { margin: 6px 0 0; color: var(--muted); font-size: 0.86rem; }
+.af-demo-note {
+  margin: 8px 0 0; font-weight: 700; color: var(--ols-blue);
+  background: rgba(var(--gold-rgb), 0.12); border: 1px solid rgba(var(--gold-rgb), 0.5);
+  border-radius: 8px; padding: 7px 12px;
+}
+.af-demo-ask { margin: 12px 0 4px; }
 .af-steps { list-style: none; margin: 14px 0 16px; padding: 0; display: grid; gap: 10px; counter-reset: af; }
 .af-steps li {
   display: flex; gap: 12px; align-items: flex-start;
@@ -1666,8 +1702,49 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   background: #12224544; color: #EAF0FC; font-size: 1.15rem; font-weight: 700;
   cursor: pointer; transition: border-color 0.15s, background 0.15s;
 }
-.rally-step:hover { border-color: #FFD84D; background: #1A2E58; }
+.rally-step:hover:not(:disabled) { border-color: #FFD84D; background: #1A2E58; }
+.rally-step:disabled { opacity: 0.32; cursor: default; }
+.rally-step[data-d="10"], .rally-step[data-d="-10"] { width: 46px; font-size: 0.85rem; }
 .rally-confirm { margin-top: 14px; }
+
+/* THE FIVE-SECOND TIMER (DFM 185) — the referee starts it on the player's own
+   screen, so a pair, a cover class and a catch-up pupil all work the same way. */
+.rally-timer {
+  margin: 16px 0 4px; text-align: center;
+  background: #0B1733; border: 1.5px solid #1E3560; border-radius: 16px; padding: 14px 12px 16px;
+}
+.rally-timer-head {
+  margin: 0 0 6px; color: #8FA5CE; font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+.rally-timer-face { min-height: 62px; display: flex; align-items: center; justify-content: center; }
+.rally-timer-num {
+  font-size: 2.9rem; font-weight: 800; color: #FFD84D; line-height: 1;
+  text-shadow: 0 0 18px rgba(255, 216, 77, 0.45);
+}
+.rally-timer.is-live .rally-timer-num { color: #7DF08A; text-shadow: 0 0 20px rgba(125, 240, 138, 0.5); }
+.rally-timer-bar {
+  height: 8px; border-radius: 999px; background: #16274A; overflow: hidden; margin: 10px auto 8px; max-width: 340px;
+}
+.rally-timer-fill { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #FFD84D, #7DF08A); }
+.rally-timer-say { margin: 0 0 12px; color: #C7D6F2; font-size: 0.92rem; font-weight: 600; min-height: 1.3em; }
+.rally-timer-btn { min-width: 220px; }
+.rally-round.is-locked-go { opacity: 0.55; }
+.rally-locked-tag {
+  position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
+  background: #16274A; color: #8FA5CE; border: 1px solid #2A4373;
+  font-size: 0.6rem; font-weight: 800; letter-spacing: 0.06em;
+  border-radius: 999px; padding: 2px 8px; white-space: nowrap; display: none;
+}
+.rally-round.is-locked-go .rally-locked-tag { display: inline-block; }
+.rally-console.is-locked .rally-locked-tag { display: none; }
+.rally-total-row {
+  margin: 12px 0 0; text-align: center; color: #C7D6F2; font-weight: 700; font-size: 1rem;
+}
+.rally-total { color: #FFD84D; font-size: 1.5rem; font-weight: 800; margin-left: 6px; }
+@media (prefers-reduced-motion: reduce) {
+  .rally-timer-fill { transition: none !important; }
+}
 
 .rally-sealed { text-align: center; padding: 6px 0 2px; }
 .rally-sealed-line { font-weight: 700; color: var(--ink); margin: 10px 0 6px; }

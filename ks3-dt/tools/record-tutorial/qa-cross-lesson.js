@@ -202,7 +202,61 @@ for (const f of lessonFiles) {
 }
 check(chapterHomes >= 5, 'every chapter-time home in the year was found and checked (' + chapterHomes + ')');
 
-console.log('\n== 5. CONTROLS: the pre-fix text must fail these very tests ==');
+/* ------------------------------------------------------------------ *
+ * 5. A LATER LESSON NEVER BRAND-NAMES AN EARLIER LESSON'S PROJECT
+ *    UNLESS THAT NAME IS ONE FACT (DFM 181, 10 Aug 2026).
+ *
+ *    His words: "you've said on point 2 not to open Signal Relay project
+ *    from the last lesson. I don't remember lesson 2 having this name,
+ *    can you double check this?"
+ *
+ *    Checked - and the answer is not the simple one. Lesson 2 names that
+ *    project TWICE, differently:
+ *      - its ladder SET-UP CARD tells the pupil to type "Signal Relay";
+ *      - its FILM is a build-along ("build the programs along with it on
+ *        your own screen") and types "make-it-move" on camera, and the
+ *        teacher brief names the demo that too.
+ *    So whichever a pupil followed, the OTHER name is wrong for her - and
+ *    Lesson 3 naming either one would be wrong for half the room. Lesson 3
+ *    therefore calls it "last lesson's project", which is true for every
+ *    pupil and invents nothing.
+ *
+ *    Lesson 2's own conflict is NOT fixed here: DFM 176 locks Lesson 2 and
+ *    the fix is his call. It is printed as a WAIVED finding on every run,
+ *    the same way "the device" debt is, so it stays visible.
+ * ------------------------------------------------------------------ */
+console.log('\n== 5. a later lesson never brand-names an earlier project (DFM 181) ==');
+const PROJECT_NAMES = /(Signal Relay|make-it-move)/i;
+const L2j = JSON.parse(fs.readFileSync(path.join(SRC, 'j1/lessons/j1-02.json'), 'utf8'));
+const L3j = JSON.parse(fs.readFileSync(path.join(SRC, 'j1/lessons/j1-03.json'), 'utf8'));
+const setupOf = (L) => {
+  const lad = (L.chunks || []).find(c => c.engine === 'ladder');
+  return ((lad && lad.config && lad.config.setup) || []).join(' ');
+};
+const setup3 = setupOf(L3j);
+check(/last lesson's project/i.test(setup3),
+  "Lesson 3's set-up list calls the old project \"last lesson's project\" — true whichever name she used");
+check(!PROJECT_NAMES.test(setup3),
+  'and it brand-names neither "Signal Relay" nor "make-it-move" (DFM 181)');
+/* the built shell she is served must agree with the source */
+check(!/Do NOT open (your Signal Relay|make-it-move)/i.test(built),
+  'the built PathB_Index.html carries no brand-named warn-off either');
+
+/* THE LOCKED DEBT, printed not fixed (DFM 176 + 179c's honesty pattern) */
+const l2Setup = setupOf(L2j);
+const l2NamesCard = /Signal Relay/i.test(l2Setup);
+const l2FilmName = fs.existsSync(path.join(__dirname, 'scenes/l2.js')) &&
+  /make-it-move/.test(fs.readFileSync(path.join(__dirname, 'scenes/l2.js'), 'utf8'));
+if (l2NamesCard && l2FilmName) {
+  console.log('  WAIVED j1-02: the set-up card tells her to name the project "Signal Relay" while the');
+  console.log('         build-along FILM names it "make-it-move" on camera — one project, two names.');
+  console.log('         LOCKED by DFM 176; his call. Printed every run so it cannot rot. Lesson 3 is');
+  console.log('         written to be true either way, so no pupil is misled today.');
+} else {
+  check(false, 'the Lesson 2 two-names debt changed shape — re-read it before trusting this section');
+}
+
+console.log('\n== 6. CONTROLS: the pre-fix text must fail these very tests ==');
 const PRE_INTRO = "This is where you build it — in your pair again: you and the person beside you, one micro:bit between you. Three rungs, each one an upgrade — and the micro:bit is the judge. Take turns: one of you builds the blocks, the other reads the rung card and runs the test. Swap jobs at every rung.";
 const PRE_PREP = "micro:bit class set and cables, one per pair — the same grey box as Lesson 2. Same pairs and the same devices if you can; quiet ownership works.";
 const PRE_WHERE = "The DT office, in the grey box";
@@ -229,6 +283,19 @@ control(!sameChapters(PRE_MASTERCLASS, PRE_STUDIO_DESK),
   "Lesson 5's pre-fix 173-against-174 chapter times FAIL the one-film-one-fact check");
 control(sameChapters(PRE_MASTERCLASS, PRE_MASTERCLASS.slice()),
   'and two genuinely identical chapter lists still PASS it (over-tightening guard)');
+/* THE PROJECT-NAME CONTROLS: the exact sentence he read on his own screen, and
+   the one I nearly replaced it with. BOTH must fail — that is the whole finding:
+   the fault was never which name, it was naming it at all. */
+const PRE_SETUP = "Click New Project, type scoreboard as the project's name, and press Create. Do NOT " +
+  "open your Signal Relay project from last lesson — today's scoreboard is a fresh build.";
+const NEARLY = "Click New Project, type scoreboard as the project's name, and press Create. Do NOT " +
+  "open make-it-move from last lesson — today's scoreboard is a fresh build.";
+control(PROJECT_NAMES.test(PRE_SETUP) && !/last lesson's project/i.test(PRE_SETUP),
+  'the sentence he questioned brand-names the project ("Signal Relay") and FAILS the law');
+control(PROJECT_NAMES.test(NEARLY) && !/last lesson's project/i.test(NEARLY),
+  'and so does the "make-it-move" version — Lesson 2 gives that project BOTH names, so either is wrong for half the class');
+control(!PROJECT_NAMES.test("Do NOT open last lesson's project — today's scoreboard is a fresh build."),
+  'while the shipped wording, which names no brand at all, PASSES (over-tightening guard)');
 
 console.log('\n=========================================');
 console.log(FAILS.length ? 'FAILURES:\n- ' + FAILS.join('\n- ') : 'ALL CROSS-LESSON CHECKS PASSED');

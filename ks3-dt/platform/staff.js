@@ -889,15 +889,20 @@
      part of what made this tab unreadable). Never rejects: a lesson with no
      content file yet still renders its progress column. */
   function lessonFeaturesFor(le) {
-    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null };
+    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null };
     if (!le || !le.file) return Promise.resolve(blank);
     var id = String(le.id);
     if (!liveFeatureCache[id]) {
       liveFeatureCache[id] = App.fetchContent(le.file).then(function (lesson) {
-        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null };
+        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null };
         (lesson.chunks || []).forEach(function (ch) {
           var cfg = ch.config || {};
           if (cfg.paired) f.paired = true;
+          /* DFM 183: a ladder's stretch challenge is CLAIMED on screen, so the
+             teacher needs to be able to see who claimed it */
+          if (ch.engine === 'ladder' && cfg.stretch) {
+            f.stretch = { title: String(cfg.stretch.title || 'the stretch challenge') };
+          }
           if (ch.engine === 'parsons') f.parsons = { title: String(cfg.title || ch.title || 'Build puzzle') };
           if (ch.engine === 'tournament') f.tournament = { title: String(cfg.title || ch.title || 'Tournament') };
           if (ch.engine === 'gallery') f.gallery = { title: String(ch.title || 'Press Night') };
@@ -1083,6 +1088,25 @@
       : '<span class="lc-no" title="Not right">&#10007;</span>';
   }
 
+  /* THE STRETCH CLAIM (DFM 183). Damien, 10 Aug 2026: "Does either button affect
+     XP points (I think it does?) I'm just wondering if there is a way to verify
+     that the pair actually did complete it or can they just pretend and claim
+     the points... Maybe it's just a simple case of having the teacher verify it
+     or something?"
+     It is worth exactly 5 XP, and it is a CLAIM - which is the same trust the
+     rest of the ladder runs on. Rather than gate it (a desk queue would stop the
+     hour dead, and a cover class has nobody to queue for), the claim is made
+     visible: the ladder already writes "ladder=2/3+s" into her detail ledger, so
+     the star simply reads what is already there, and the hover says how to check
+     it in ten seconds. Trust on screen, teacher verifies humanly. */
+  function stretchStar(a, feat) {
+    if (!feat || !feat.stretch) return '';
+    if (!/(?:^|;)ladder=[^;]*\+s(?:;|$)/.test(String((a && a[2]) || ''))) return '';
+    return ' <span class="lc-stretch" title="Claimed the stretch challenge &mdash; ' +
+      App.esc(feat.stretch.title) + ' (+5 XP). Ten-second check at the desk: ask for a shake. A real ' +
+      'build takes turns showing the score, an H, and the best score.">&#11088;</span>';
+  }
+
   /* The class strip and the picker, which stay put while the lesson underneath
      them is loading. ONE source for both the loading screen and the finished
      one - two copies of this markup would drift apart (rule 144's family). */
@@ -1245,7 +1269,7 @@
       var blTitle = baselineTitle(r, l1);
       return '<tr' + (liveRed ? ' class="is-stuck"' : '') + '>' +
         '<td><button type="button" class="modal-close" style="font-size:1rem" title="Remove this pupil from the class (her own work is untouched)" data-action="remove-pupil" data-email="' + App.esc(r.email) + '" data-name="' + App.esc(r.name) + '">&times;</button> ' +
-        App.esc(r.name) + flag + voice + '</td>' +
+        App.esc(r.name) + flag + voice + stretchStar(a, feat) + '</td>' +
         '<td>' + App.esc(r.codename) + '</td>' +
         '<td>' + Number(r.xp || 0) + '</td>' +
         '<td' + (blTitle ? ' title="' + blTitle + '"' : '') + '>' + (baselineDisplay(r) || '&mdash;') + '</td>' +
@@ -1348,6 +1372,12 @@
         '<ul class="live-legend-list">' + feat.exitItems.map(function (it, i) {
           return '<li><b>Q' + (i + 1) + '</b> &mdash; ' + App.esc(String(it.stem || '')) + '</li>';
         }).join('') + '</ul>');
+    }
+    if (feat.stretch) {
+      out.push('<p>A gold star <span class="lc-stretch">&#11088;</span> beside a name means she claimed the ' +
+        'stretch challenge (' + App.esc(feat.stretch.title) + '), which is worth <b>5 XP</b>. It is a claim, ' +
+        'the same as the rungs are &mdash; if you want to check one, it takes ten seconds at the desk: ask ' +
+        'for a shake. A real build takes turns showing the score, an H, and the best score.</p>');
     }
     if (showPuzzle) {
       out.push('<p>The <b>Build puzzle</b> column is the closing rebuild-the-code puzzle (' +
@@ -1519,7 +1549,13 @@
           : '<button type="button" class="tourney-reveal-btn" data-t="reveal"' + (canReveal ? '' : ' disabled') + '>' + (r.revealed ? 'Replay the reveal' : 'REVEAL THE TEAMS') + '</button>') +
         (App.state.preview ? '<button type="button" class="tourney-ghost-btn" data-t="seed">Seed demo scores (preview)</button>' : '') +
         '</div>' +
-        '<p class="tourney-note">Keep this for the very end &mdash; the suspense is the point. Revealing also shows every pupil her own team on her screen.</p>';
+        '<p class="tourney-note">Keep this for the very end &mdash; the suspense is the point. Revealing also shows every pupil her own team on her screen.</p>' +
+        /* DFM 185(e), his words at the sit: "I need to know how the teacher
+           assigns the students into teams... so I don't know who is in what
+           team?" The panel hides names ON PURPOSE - it is the screen you put on
+           the projector - but nothing on it said so, or said where the names DO
+           live. A screen that keeps a secret has to say where the secret is kept. */
+        '<p class="tourney-note">Who is in each team: the <b>Teams</b> tab (this screen never shows names, so it is safe to project). A team&rsquo;s score is its pupils&rsquo; totals added together.</p>';
       var btn = lobby.querySelector('[data-t="reveal"]');
       if (btn) btn.onclick = function () { startReveal(r.revealed); };
       var ab = lobby.querySelector('[data-t="assign"]');
