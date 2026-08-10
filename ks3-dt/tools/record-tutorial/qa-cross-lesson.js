@@ -141,7 +141,68 @@ for (const f of lessonFiles) {
 }
 check(ladders >= 2, 'both ladder lessons were found and checked (' + ladders + ')');
 
-console.log('\n== 4. CONTROLS: the pre-fix text must fail these very tests ==');
+/* ------------------------------------------------------------------ *
+ * 4. ONE FILM, ONE SET OF CHAPTER TIMES (DFM 144/167 applied to a
+ *    number instead of a sentence; added 10 Aug 2026, DFM 179d).
+ *
+ *    Found while bringing the film captions under the language harness:
+ *    Lesson 5's chapter times lived in TWO content homes - the
+ *    masterclass video chunk and the Studio Desk's own copy inside the
+ *    build chunk - and they had ALREADY drifted apart, 173 against 174.
+ *    Nobody typed the second one wrong on purpose; the film was
+ *    re-assembled once and only one of the two copies was updated. That
+ *    is exactly rule 144's law ("a fact that changes lives in exactly ONE
+ *    file") in a place nobody had thought to look, so it gets the same
+ *    treatment every other repeated fact gets: a harness.
+ *
+ *    The rule has two halves, and the second is the one with teeth: the
+ *    copies must agree with EACH OTHER, and they must agree with the
+ *    film's own chapters.json - the thing the assembler measured out of
+ *    the real video. Agreeing with each other while both being wrong is
+ *    still a lesson that jumps a pupil to the wrong place.
+ * ------------------------------------------------------------------ */
+console.log('\n== 4. one film, one set of chapter times (DFM 144/179d) ==');
+const OUT = path.join(__dirname, 'out');
+const sameChapters = (a, b) => a.length === b.length &&
+  a.every((c, i) => Number(c.t) === Number(b[i].t) && String(c.label) === String(b[i].label));
+const chapterNodes = (node, p, out) => {
+  if (Array.isArray(node)) { node.forEach((v, i) => chapterNodes(v, p + '[' + i + ']', out)); return out; }
+  if (!node || typeof node !== 'object') return out;
+  if (Array.isArray(node.chapters)) out.push({ path: p, src: node.src, chapters: node.chapters });
+  Object.keys(node).forEach(k => chapterNodes(node[k], p + ' › ' + k, out));
+  return out;
+};
+let chapterHomes = 0;
+for (const f of lessonFiles) {
+  for (const [label, root] of [['source', SRC], ['packed', PACKED]]) {
+    const p = path.join(root, 'j1/lessons/' + f);
+    if (!fs.existsSync(p)) continue;
+    const L = JSON.parse(fs.readFileSync(p, 'utf8'));
+    const homes = [];
+    (L.chunks || []).forEach(c => chapterNodes(c.config || {}, f.replace(/\.json$/, '') + ' › ' + c.id + ' › config', homes));
+    if (!homes.length) continue;
+    if (label === 'source') chapterHomes += homes.length;
+    /* (a) every copy inside one lesson says the same thing */
+    homes.slice(1).forEach(h => {
+      check(sameChapters(homes[0].chapters, h.chapters),
+        label + '/' + f + ': "' + h.path + '" carries the same chapter times as "' + homes[0].path +
+        '" — one film, one fact (DFM 144)');
+    });
+    /* (b) and they say what the assembler actually measured out of the film */
+    homes.forEach(h => {
+      const set = (String(h.src || '').match(/assets\/video\/([^/]+)\//) || [])[1];
+      const cj = set && path.join(OUT, set, 'chapters.json');
+      if (!cj || !fs.existsSync(cj)) return;
+      const real = JSON.parse(fs.readFileSync(cj, 'utf8')).chapters || [];
+      check(sameChapters(real, h.chapters),
+        label + '/' + f + ': "' + h.path + '" matches the times the assembler measured in ' +
+        set + '/chapters.json (' + real.map(c => c.t).join('/') + ')');
+    });
+  }
+}
+check(chapterHomes >= 5, 'every chapter-time home in the year was found and checked (' + chapterHomes + ')');
+
+console.log('\n== 5. CONTROLS: the pre-fix text must fail these very tests ==');
 const PRE_INTRO = "This is where you build it — in your pair again: you and the person beside you, one micro:bit between you. Three rungs, each one an upgrade — and the micro:bit is the judge. Take turns: one of you builds the blocks, the other reads the rung card and runs the test. Swap jobs at every rung.";
 const PRE_PREP = "micro:bit class set and cables, one per pair — the same grey box as Lesson 2. Same pairs and the same devices if you can; quiet ownership works.";
 const PRE_WHERE = "The DT office, in the grey box";
@@ -156,6 +217,18 @@ control(KIT_SCOPE[0].rx.test(PRE_WHAT), 'the pre-fix kit line claimed the micro:
    and quietly damages the Guide's true sentence to make this file green */
 control(!ALL_SCOPE.some(b => b.rx.test('each one labelled with the misunderstanding it usually signals')),
   'the Guide\'s approved "labelled with the misunderstanding" sentence is NOT caught by the always-banned list');
+/* THE CHAPTER-TIME CONTROL: the exact pair that was live on his screen on
+   10 Aug 2026 - the Lesson 5 masterclass chunk said the worked example starts at
+   173 seconds, the Studio Desk's copy said 174. One second is nothing to look at
+   and is precisely why it survived; the point is that a repeated fact drifted at
+   all. If this control ever passes, the check above has stopped comparing. */
+const PRE_MASTERCLASS = [{ t: 0, label: 'From sequence to selection' }, { t: 76, label: 'The if/else block' },
+  { t: 173, label: 'Worked example: Catch It' }, { t: 279, label: 'Test like a studio' }];
+const PRE_STUDIO_DESK = PRE_MASTERCLASS.map(c => (c.t === 173 ? { t: 174, label: c.label } : c));
+control(!sameChapters(PRE_MASTERCLASS, PRE_STUDIO_DESK),
+  "Lesson 5's pre-fix 173-against-174 chapter times FAIL the one-film-one-fact check");
+control(sameChapters(PRE_MASTERCLASS, PRE_MASTERCLASS.slice()),
+  'and two genuinely identical chapter lists still PASS it (over-tightening guard)');
 
 console.log('\n=========================================');
 console.log(FAILS.length ? 'FAILURES:\n- ' + FAILS.join('\n- ') : 'ALL CROSS-LESSON CHECKS PASSED');

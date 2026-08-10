@@ -89,7 +89,7 @@ const scenes = [
       await cine.ensureCursor(640, 430);
 
       await cine.card({
-        kicker: 'THE COMMISSION', title: 'Your game has to choose.',
+        kicker: 'THE JOB', title: 'Your game has to choose.',
         lines: [
           'Last lesson you read scripts that run <b>top to bottom</b> &mdash; a SEQUENCE, every block in order',
           'But a real game makes decisions: caught&hellip; <b>or</b> dropped? right&hellip; <b>or</b> wrong?',
@@ -110,7 +110,7 @@ const scenes = [
       const fall = await drv.canvasBlock('(?=[\\s\\S]*repeat until)(?=[\\s\\S]*change y)');
       if (!fall) throw new Error('fall loop not found on Apple');
       await cine.callout({ x: fall.x - 8, y: fall.y - 8, w: fall.w + 16, h: fall.h + 16 },
-        'Go to the top &rarr; fall&hellip; then <b>nothing</b>. Perfect sequence, zero decisions', { side: 'above' });
+        'Go to the top, fall&hellip; then <b>nothing</b>. Perfect sequence, zero decisions', { side: 'above' });
 
       const note = await commentRect(drv);
       if (note) {
@@ -168,7 +168,7 @@ const scenes = [
       const touching = await drv.flyoutBlock('(?=[\\s\\S]*touching)(?=[\\s\\S]*mouse)');
       if (!touching) throw new Error('touching block not in Sensing flyout');
       await cine.callout({ x: touching.x - 8, y: touching.y - 8, w: touching.w + 16, h: touching.h + 16 },
-        '<b>touching &hellip;?</b> &mdash; a yes/no question. Point it at the Bowl and it answers every frame', { side: 'below' });
+        '<b>touching &hellip;?</b> &mdash; a yes/no question. Point it at the Bowl and it keeps answering, over and over, all game long', { side: 'below' });
 
       await cine.caption('&hellip;and one more, in <b>Operators</b> &mdash; the maze door and the quiz tiles both need it.');
       const ops = await drv.category('Operators');
@@ -187,8 +187,8 @@ const scenes = [
         kicker: 'THE ANATOMY', title: 'if / else, in one breath',
         lines: [
           'A <b>question</b> sits in the diamond: touching Bowl? &hellip; lives = 0?',
-          'TRUE &rarr; the <b>top mouth</b> runs',
-          'FALSE &rarr; the <b>else mouth</b> runs &mdash; exactly one, never both, every single time'
+          'When the answer is TRUE, the <b>top mouth</b> runs',
+          'When it is FALSE, the <b>else mouth</b> runs &mdash; exactly one, never both, every single time'
         ]
       }, 8500);
 
@@ -224,7 +224,7 @@ const scenes = [
       const lonely = await drv.canvasBlock('(?=[\\s\\S]*touching)(?=[\\s\\S]*change score)');
       if (!lonely) throw new Error('score-only if not found');
       await cine.callout({ x: lonely.x - 8, y: lonely.y - 8, w: lonely.w + 16, h: lonely.h + 16 },
-        'IF touching Bowl &rarr; score. But when the answer is FALSE&hellip; <b>nothing handles the miss</b>', { side: 'above' });
+        'IF touching Bowl: the score goes up. But when the answer is FALSE&hellip; <b>nothing handles the miss</b>', { side: 'above' });
 
       const flag = await drv.greenFlag();
       await cine.captionShow('Watch a miss. Predict first: what SHOULD it cost?', { pos: 'top' });
@@ -249,7 +249,7 @@ const scenes = [
 
       const score = await drv.canvasBlock('^change score by$|change score by');
       if (score) await cine.callout({ x: score.x - 8, y: score.y - 8, w: score.w + 16, h: 40 },
-        'TRUE mouth: touching the Bowl &rarr; <b>score +1</b>, play pop', { side: 'below' });
+        'TRUE mouth: touching the Bowl &mdash; <b>score up 1</b>, and the pop sound plays', { side: 'below' });
 
       const lives = await drv.canvasBlock('change lives by');
       if (lives) await cine.callout({ x: lives.x - 8, y: lives.y - 8, w: lives.w + 16, h: 40 },
@@ -257,7 +257,7 @@ const scenes = [
 
       const over = await drv.canvasBlock('(?=[\\s\\S]*Game over)(?=[\\s\\S]*stop all)');
       if (over) await cine.callout({ x: over.x - 8, y: over.y - 8, w: over.w + 16, h: over.h + 16 },
-        'And inside the else: <b>lives = 0?</b> &rarr; Game over &rarr; <b>stop all</b>. The game can END', { side: 'above' });
+        'And inside the else: when lives hits 0 &mdash; Game over, then <b>stop all</b>. The game can END', { side: 'above' });
 
       await cine.caption('One if/else, one variable pair, one ending. <b>REACT &middot; TRACK &middot; END</b> &mdash; the whole brief.');
       await cine.caption('Your kit&rsquo;s blueprint shows YOUR version &mdash; maze door, quiz tiles, same block. <b>Chapter 4: prove it works.</b>');
@@ -327,7 +327,7 @@ const scenes = [
         lines: [
           'Your QA Desk has <b>four tests</b> &mdash; run every one in Scratch, like these two',
           'Record what <b>ACTUALLY</b> happened. A cross isn&rsquo;t failure &mdash; it hands you the exact fix',
-          'Four ticks &rarr; <b>READY FOR GALLERY</b> lights up &rarr; open your doors. See you at Press Night'
+          'Four ticks and <b>READY FOR GALLERY</b> lights up &mdash; open your doors. See you at Press Night'
         ]
       }, 10500);
 

@@ -30,7 +30,15 @@
      node ledger-tool.js --grandfather j1-01 j1-02 j1-sq1
      node ledger-tool.js --reviewed j1-03 --note "..."   (only for paths with no entry)
      node ledger-tool.js --set "<path>" "<do>" "<picture>" "<for>"
-     node ledger-tool.js --prune                     drop entries whose path is gone */
+     node ledger-tool.js --prune                     drop entries whose path is gone
+
+   FILM CAPTIONS (DFM 179) are in the same ledger, under content-addressed keys
+   ("film:l4:ch3 › <hash>"), because a caption is a sentence written to explain
+   something to a child exactly like a card is:
+     node ledger-tool.js --missing-film [set]
+     node ledger-tool.js --set-film "<key>" "<do>" "<picture>" "<for>"
+     node ledger-tool.js --grandfather-film l2
+     node ledger-tool.js --reviewed-film l3 --note "..." */
 
 const fs = require('fs');
 const path = require('path');
@@ -195,10 +203,94 @@ function main() {
     return;
   }
 
+  /* ---- the film side. The extractor lives in qa-language.js and is imported,
+     never copied: two readers of the same source would drift apart the first
+     time one of them was taught something new (DFM 144). ---- */
+  const films = () => {
+    const { collectFilmStrings, filmKey } = require('./qa-language.js');
+    const r = collectFilmStrings();
+    if (r.errs.length) { console.error(r.errs.join('\n')); process.exit(1); }
+    return r.strings.map(f => Object.assign(f, { key: filmKey(f) }));
+  };
+
+  if (cmd === '--missing-film') {
+    const set = args[1];
+    let n = 0;
+    films().filter(f => !set || f.set === set).forEach(f => {
+      if (ledger.entries[f.key]) return;
+      n++;
+      console.log('\nMISSING  ' + f.key + '   [' + f.set + ' ' + f.chapter + ' line ' + f.line + ', read as an 11 or 12-year-old]');
+      console.log('  ' + f.text);
+    });
+    console.log('\n' + n + ' caption(s) need a record.');
+    return;
+  }
+
+  if (cmd === '--set-film') {
+    const [, key, doIt, picture, forWhat] = args;
+    if (!key || !doIt || !picture || !forWhat) {
+      console.error('usage: --set-film "<key>" "<what she does>" "<what she pictures>" "<what it is for>"');
+      process.exit(1);
+    }
+    const f = films().find(x => x.key === key);
+    if (!f) { console.error('no such caption key: ' + key); process.exit(1); }
+    ledger.entries[key] = {
+      label: f.text.slice(0, 60),
+      sha1: key.split(' › ')[1],
+      readAloud: { do: doIt, picture: picture, for: forWhat },
+      by: 'opus-5', date: today()
+    };
+    save(ledger);
+    console.log('recorded ' + key);
+    return;
+  }
+
+  if (cmd === '--grandfather-film') {
+    const sets = args.slice(1);
+    if (!sets.length) { console.error('name the locked film(s), e.g. --grandfather-film l2'); process.exit(1); }
+    let n = 0;
+    films().filter(f => sets.includes(f.set)).forEach(f => {
+      if (ledger.entries[f.key]) return;
+      ledger.entries[f.key] = {
+        label: f.text.slice(0, 60),
+        sha1: f.key.split(' › ')[1],
+        grandfathered: 'THE LESSON 2 FILM IS LOCKED. Damien, 3 Aug 2026: "this video is fantastic, just two tweaks... Once those are fixed, that is the video locked in" (DFM 141). No read-aloud pass is claimed. Editing this caption changes its key and demands a real judgement.',
+        by: 'opus-5', date: today()
+      };
+      n++;
+    });
+    save(ledger);
+    console.log('grandfathered ' + n + ' caption(s) in ' + sets.join(', '));
+    return;
+  }
+
+  if (cmd === '--reviewed-film') {
+    const set = args[1];
+    const noteIdx = args.indexOf('--note');
+    const note = noteIdx > 0 ? args[noteIdx + 1] : '';
+    if (!set || !note) { console.error('usage: --reviewed-film <set> --note "<what pass, when>"'); process.exit(1); }
+    let n = 0;
+    films().filter(f => f.set === set).forEach(f => {
+      if (ledger.entries[f.key]) return;                 // never overwrite a real judgement
+      ledger.entries[f.key] = {
+        label: f.text.slice(0, 60), sha1: f.key.split(' › ')[1],
+        reviewed: note, by: 'opus-5', date: today()
+      };
+      n++;
+    });
+    save(ledger);
+    console.log('stamped ' + n + ' unrecorded caption(s) in ' + set + ' as reviewed-in-pass');
+    return;
+  }
+
   if (cmd === '--prune') {
     const lessons = loadAll();
     const live = new Set();
     lessons.forEach(L => L.strings.forEach(s => live.add(s.path)));
+    /* film captions are live too — without this, one --prune would have deleted
+       every caption record in the ledger and the next pack would have demanded
+       250 fresh judgements */
+    films().forEach(f => live.add(f.key));
     let n = 0;
     Object.keys(ledger.entries).forEach(p => { if (!live.has(p)) { delete ledger.entries[p]; n++; } });
     save(ledger);
