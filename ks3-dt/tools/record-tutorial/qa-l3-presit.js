@@ -80,8 +80,18 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
     check(/Welcome box/.test(lad.setup.join(' ')) && /✕|close it/.test(lad.setup.join(' ')),
       label + ': the set-up list teaches closing the Welcome box (DFM 169)');
     check(/Before rung 1/.test(String(lad.setupLead || '')), label + ': the set-up list has its own lead line');
-    check(/scoreboard/.test(lad.setup.join(' ')) && /Signal Relay/.test(lad.setup.join(' ')),
-      label + ': the set-up list names the NEW project (scoreboard) and warns off Signal Relay');
+    /* DFM 181, his 10 Aug sit: "I don't remember lesson 2 having this name, can
+       you double check this?" Checked - and Lesson 2 names that project TWO
+       ways: its set-up card tells her to type "Signal Relay", while its film is
+       a build-along that types "make-it-move" on camera. Whichever she
+       followed, the other name is wrong for her, so Lesson 3 must not brand-name
+       it at all. It says "last lesson's project", which is true either way.
+       This check used to REQUIRE the disputed name - a harness that pins a name
+       nobody verified just preserves the argument. */
+    check(/scoreboard/.test(lad.setup.join(' ')) && /last lesson's project/i.test(lad.setup.join(' ')),
+      label + ": the set-up list names the NEW project (scoreboard) and refers to the old one as \"last lesson's project\"");
+    check(!/Signal Relay|make-it-move/i.test(lad.setup.join(' ')),
+      label + ': and it brand-names neither of the two names Lesson 2 gives that project (DFM 181)');
     check(/New Project/i.test(lad.setup.join(' ')), label + ': it says to click New Project');
 
     // A2 the banned generic noun
@@ -207,8 +217,11 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
     const rally = L3.chunks.find(c => c.id === 'rally').config;
     check(!/closer|on form/.test(rally.rules.join(' ')), label + ': the rally rules drop "closer"/"on form"');
     check(!/key it in|key exactly that number/.test(JSON.stringify(rally)), label + ': "key it in" is gone from the rally');
-    check(/Send in our score/.test(rally.help), label + ': the rally help names the real button');
-    check(/three rules/.test(String(rally.soloHelp || '')) && /Send in my score/.test(String(rally.soloHelp || '')),
+    /* DFM 185 re-stage: every pupil now sends in HER OWN two goes, so both help
+        texts name one button - "Send in my scores" - and the old our/my split
+        has nothing left to describe. */
+    check(/Send in my scores/.test(rally.help), label + ': the rally help names the real button');
+    check(/three rules/.test(String(rally.soloHelp || '')) && /Send in my scores/.test(String(rally.soloHelp || '')),
       label + ': the rally carries its own solo help, matching the solo screen');
     check(!/Catch-up mission/.test(rally.soloIntro), label + ': "Catch-up mission" is gone');
 
@@ -266,7 +279,10 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
   check(built.indexOf('It worked! &#9889;') !== -1, 'the built shell carries the new rung button label');
   check(built.indexOf('It worked on the device!') === -1, 'and not one copy of the old one survives');
   check(/if \(document\.querySelector\('\.film-modal'\)\) return;/.test(built), 'the built shell carries the film-modal guard');
-  check(/Send in ' \+ \(solo \? 'my' : 'our'\) \+ ' score/.test(built), 'the built shell picks the rally button by mode');
+  check(/Send in my scores/.test(built) && !/Send in ' \+ \(solo \? 'my' : 'our'\)/.test(built),
+    'the built shell serves ONE rally button label, because every pupil now sends her own scores (DFM 185)');
+  check(/Start the ' \+ secs \+ ' seconds/.test(built) || /Start the .{0,4} seconds/.test(built),
+    'the built shell carries the five-second timer button');
   check(built.indexOf('cfgH.soloHelp') !== -1, 'the built shell prefers soloHelp on a catch-up run');
   check(built.indexOf('your pair’s best round') === -1 && built.indexOf("your pair's best round") === -1,
     'the review line no longer assumes a pair');
@@ -335,8 +351,8 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
     };
   });
   check(introDom.setupItems === 5, 'the intro card really renders the five set-up steps (' + introDom.setupItems + ')');
-  check(/scoreboard/.test(introDom.setupText) && /Signal Relay/.test(introDom.setupText),
-    'the rendered steps name scoreboard and warn off Signal Relay');
+  check(/scoreboard/.test(introDom.setupText) && /last lesson's project/i.test(introDom.setupText),
+    "the rendered steps name scoreboard and refer to the old one as \"last lesson's project\" (DFM 181)");
   check(/Before rung 1/.test(introDom.lead), 'the rendered lead line is on screen above them');
   check(/micro:bit is the judge/.test(introDom.body), 'the rendered intro says the micro:bit is the judge');
 
@@ -509,8 +525,8 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
     return { btn: (h.querySelector('.rally-transmit') || {}).textContent || '', rules: h.querySelectorAll('.rally-rules li').length };
   }, solo);
   const pair = await mountRally(false), soloR = await mountRally(true);
-  check(pair.btn === 'Send in our score' && pair.rules === 5, 'a pair sees five rules and "Send in our score"');
-  check(soloR.btn === 'Send in my score' && soloR.rules === 3, 'a catch-up pupil sees three rules and "Send in my score"');
+  check(pair.btn === 'Send in my scores' && pair.rules === 5, 'a pair sees five rules and "Send in my scores"');
+  check(soloR.btn === 'Send in my scores' && soloR.rules === 3, 'a catch-up pupil sees three rules and the same button');
   control(!(soloR.rules === 5), 'the solo screen genuinely shows fewer rules than the help used to promise');
 
   console.log('\n== 7. the round ? matches the screen underneath it ==');
@@ -527,8 +543,8 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
     return t;
   }, catchup);
   const helpPair = await helpFor(false), helpSolo = await helpFor(true);
-  check(/five rules/.test(helpPair) && /Send in our score/.test(helpPair), 'the pair help says five rules and names her button');
-  check(/three rules/.test(helpSolo) && /Send in my score/.test(helpSolo), 'the catch-up help says three rules and names hers');
+  check(/five rules/.test(helpPair) && /Send in my scores/.test(helpPair), 'the pair help says five rules and names her button');
+  check(/three rules/.test(helpSolo) && /Send in my scores/.test(helpSolo), 'the catch-up help says three rules and names the same button');
   control(!/three rules/.test(helpPair), 'the two help texts are genuinely different (the pair one is not the solo one)');
 
   console.log('\n== 8. the re-watch modal still carries the whole film ==');

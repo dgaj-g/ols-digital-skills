@@ -1718,7 +1718,20 @@
          segments the full film is concatenated from (assemble.js), so they cannot
          drift out of step with it, and the whole film stays one click away on
          every card (DFM 143 untouched). */
-      function partHtml(part) {
+      /* DAMIEN, 10 Aug 2026 (DFM 182), on the message that appears when a part
+         finishes: "the wording needs to change to 'You've watched the tutorial,
+         now build it using the instructions below'. This is clearer and makes
+         more sense for a child, rather than 'That's the part...'"
+         His sentence, with two truths added and both reported to him: each rung
+         serves ONE PART of the tutorial rather than the whole of it, and the
+         ladder-intro card has no build underneath it - the set-up list follows
+         instead - so telling her to build there would send her looking for
+         something that is not on the screen (DFM 35). */
+      function partDoneLine(isIntro) {
+        return '<p class="rung-part-done" hidden>You&rsquo;ve watched this part of the tutorial &mdash; now ' +
+          (isIntro ? 'get MakeCode set up' : 'build it') + ' using the instructions below.</p>';
+      }
+      function partHtml(part, isIntro) {
         if (!part || !part.src) return '';
         return '<div class="rung-part">' +
           (skinned ? '<p class="now-showing">&#9654; NOW SHOWING</p>' : '') +
@@ -1726,7 +1739,7 @@
           '<video class="rung-part-video" controls preload="metadata" playsinline src="' + esc(asset(part.src)) + '"></video>' +
           '<p class="rung-part-note"><span class="rung-part-len"></span>' +
           ' <button class="ghost-btn rung-part-replay" type="button">&#8635; Watch this part again</button></p>' +
-          '<p class="rung-part-done" hidden>That&rsquo;s the part &mdash; now build it below.</p>' +
+          partDoneLine(isIntro) +
           '</div>';
       }
       function wirePart(root, part) {
@@ -1800,7 +1813,7 @@
       introCard(host, {
         kicker: chunk.title, title: cfg.title || 'The Challenge Ladder',
         text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
-        extra: ladderSvg(true) + (cfg.introPart ? partHtml(cfg.introPart) : '') + openerRow() + setupList() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
+        extra: ladderSvg(true) + (cfg.introPart ? partHtml(cfg.introPart, true) : '') + openerRow() + setupList() + (cfg.film && cfg.film.src ? '<p class="ladder-open">' + filmBtn() + '</p>' : '')
       }, unpluggedDone ? 'Back to the ladder' : 'Start climbing', function () {
         if (!unpluggedDone && cfg.unplugged) unplugged(); else showRung();
       });
@@ -1861,7 +1874,7 @@
           ledStrip(String(idx + 1), done.length) +
           '<span class="intro-kicker">' + esc(r.title) + '</span>' +
           ladderSvg() +
-          (r.part ? partHtml(r.part) : '') +
+          (r.part ? partHtml(r.part, false) : '') +
           (r.part ? '<p class="rung-step-head">&#9313; Build it yourself</p>' : '') +
           '<h2 class="rung-target">' + esc(r.target) + '</h2>' +
           /* DAMIEN, 4 Aug 2026: "might need to have a screenshot image in the
@@ -2022,7 +2035,28 @@
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
       var it = cfg.item;
-      var placed = []; // source indices in the pupil's chosen order
+      /* DAMIEN, 10 Aug 2026 (DFM 186), on Lesson 3's build-the-scoreboard card:
+         "even though they are presented with 4 lines, they are actually 2
+         separate code blocks, one forever and the other the input, but the end
+         result looks like one continuous program that shows no reflection of the
+         2 different blocks. How can we fix this?"
+         He is right, and the card was already saying so in words: its own
+         explanation reads "Two stacks, two shapes of code" while the screen
+         numbered them 1-4 as one program. So a card can now declare its STACKS
+         and the program side becomes one labelled box per stack, numbered within
+         each box. The marking is untouched: the boxes are flattened in order and
+         checked exactly as before, which is the same permutation the answer key
+         already holds. Gated on cfg.stacks, so every other lesson's puzzle keeps
+         the single column it has today, markup for markup. */
+      var STACKS = (cfg.stacks && cfg.stacks.length) ? cfg.stacks : null;
+      /* one box per stack; single-column mode is simply one box with no ceiling */
+      var boxes = STACKS ? STACKS.map(function () { return []; }) : [[]];
+      var capOf = function (k) { return STACKS ? Number(STACKS[k].size) || 0 : Infinity; };
+      var flat = function () { return boxes.reduce(function (a, b) { return a.concat(b); }, []); };
+      var boxOf = function (si) {
+        for (var k = 0; k < boxes.length; k++) if (boxes[k].indexOf(si) !== -1) return k;
+        return -1;
+      };
       introCard(host, { kicker: 'Exit check — part 2', title: cfg.title || 'Build the program', text: cfg.intro || '' }, 'Ready', build);
 
       function build() {
@@ -2038,21 +2072,40 @@
            - "Tap a block to add it" used the banned word (DFM 150), and he
              expected to DRAG. Dragging is built; clicking still works. */
         var howMany = it.blocks.length;
+        var goalLine = STACKS
+          ? 'Your challenge: build the program yourself. Move all ' + howMany +
+            ' blocks across &mdash; this scoreboard is <b>TWO separate stacks</b>, so build each job in its own box:'
+          : 'Your challenge: build the program yourself. Move all ' + howMany +
+            ' blocks across into <em>Your program</em>, and put them in the order that makes this happen:';
+        var howLine = STACKS
+          ? '<b>How to build it:</b> drag each block into the right job &mdash; or click it to drop it into ' +
+            'the first empty space. Drag blocks up and down inside a job, and drag one back to <b>Blocks</b> ' +
+            'to take it out again.'
+          : '<b>How to build it:</b> drag a block from <b>Blocks</b> across into ' +
+            '<b>Your program</b> &mdash; or just click it, if you prefer. Drag the blocks up and down to change ' +
+            'the order, and drag one back to <b>Blocks</b> to take it out again.';
+        var progSide = STACKS
+          ? '<div class="parsons-prog is-stacked"><h3>Your program</h3>' +
+            STACKS.map(function (st, k) {
+              return '<div class="pp-box" data-box="' + k + '">' +
+                '<h4 class="pp-box-label">' + esc(st.label || ('Job ' + (k + 1))) + '</h4>' +
+                '<ol class="pp-list" data-box="' + k + '"></ol></div>';
+            }).join('') + '</div>'
+          : '<div class="parsons-prog"><h3>Your program</h3><ol class="pp-list"></ol></div>';
         var c = el('<div class="card parsons-card">' +
-          '<h2 class="parsons-goal">Your challenge: build the program yourself. Move all ' + howMany +
-          ' blocks across into <em>Your program</em>, and put them in the order that makes this happen:</h2>' +
+          '<h2 class="parsons-goal">' + goalLine + '</h2>' +
           '<p class="parsons-target">&#127919; ' + esc(it.prompt) + '</p>' +
-          '<p class="parsons-how"><b>How to build it:</b> drag a block from <b>Blocks</b> across into ' +
-          '<b>Your program</b> &mdash; or just click it, if you prefer. Drag the blocks up and down to change ' +
-          'the order, and drag one back to <b>Blocks</b> to take it out again.</p>' +
+          '<p class="parsons-how">' + howLine + '</p>' +
           '<div class="parsons-cols">' +
           '<div class="parsons-tray"><h3>Blocks</h3><div class="pt-list"></div></div>' +
-          '<div class="parsons-prog"><h3>Your program</h3><ol class="pp-list"></ol></div>' +
+          progSide +
           '</div>' +
           '<button class="primary-btn parsons-check" type="button" disabled>Check my program</button>' +
           '<div class="q-feedback" hidden></div></div>');
         host.appendChild(c);
-        var tray = c.querySelector('.pt-list'), prog = c.querySelector('.pp-list');
+        var tray = c.querySelector('.pt-list');
+        var progLists = Array.prototype.slice.call(c.querySelectorAll('.pp-list'));
+        var prog = progLists[0];   /* single-column mode: the one and only list */
         /* The drop ZONES are the whole Blocks / Your program panels, not the
            inner lists. Hit-testing the lists made the target only as tall as the
            blocks already in it, so a drop onto the visible empty space of a
@@ -2065,22 +2118,36 @@
         var locked = false;          // set once she has checked - no more moving
         var dragSi = null;           // the block being dragged, by source index
 
-        function moveInto(si, at) {
-          var cur = placed.indexOf(si);
-          if (cur !== -1) placed.splice(cur, 1);
-          if (at == null || at > placed.length) at = placed.length;
-          placed.splice(at, 0, si);
+        function moveInto(si, at, k) {
+          k = k || 0;
+          var from = boxOf(si);
+          if (from !== -1) boxes[from].splice(boxes[from].indexOf(si), 1);
+          /* A FULL JOB REFUSES A FIFTH BLOCK rather than silently swapping one
+             out: a block that vanished from a box she had already filled would
+             be a fault she could not see (DFM 43's family). It goes back where
+             it came from and the tray keeps it. */
+          if (boxes[k].length >= capOf(k)) {
+            if (from !== -1) boxes[from].splice(Math.min(at == null ? boxes[from].length : at, boxes[from].length), 0, si);
+            render();
+            return;
+          }
+          if (at == null || at > boxes[k].length) at = boxes[k].length;
+          boxes[k].splice(at, 0, si);
           render();
         }
+        function firstOpenBox() {
+          for (var k = 0; k < boxes.length; k++) if (boxes[k].length < capOf(k)) return k;
+          return -1;
+        }
         function takeOut(si) {
-          var cur = placed.indexOf(si);
-          if (cur !== -1) { placed.splice(cur, 1); render(); }
+          var k = boxOf(si);
+          if (k !== -1) { boxes[k].splice(boxes[k].indexOf(si), 1); render(); }
         }
         /* where would a drop at this pointer position land? Measured against the
            MIDPOINT of each placed block, so the whole block is a target rather
            than a thin seam between two of them. */
-        function dropIndexAt(clientY) {
-          var lis = Array.prototype.slice.call(prog.querySelectorAll('li:not(.pp-empty)'));
+        function dropIndexAt(clientY, listEl) {
+          var lis = Array.prototype.slice.call((listEl || prog).querySelectorAll('li:not(.pp-empty)'));
           for (var i = 0; i < lis.length; i++) {
             var r = lis[i].getBoundingClientRect();
             if (clientY < r.top + r.height / 2) return i;
@@ -2088,9 +2155,10 @@
           return lis.length;
         }
         function clearMarks() {
-          prog.querySelectorAll('li').forEach(function (li) { li.classList.remove('drop-before', 'drop-after'); });
+          c.querySelectorAll('.pp-list li').forEach(function (li) { li.classList.remove('drop-before', 'drop-after'); });
           /* (the pp-empty placeholder never carries a mark - it is not a slot) */
           progZone.classList.remove('drop-empty');
+          c.querySelectorAll('.pp-box').forEach(function (b) { b.classList.remove('drop-empty', 'drop-full'); });
           trayZone.classList.remove('drop-back');
         }
 
@@ -2123,26 +2191,58 @@
           var r = el.getBoundingClientRect();
           return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
         }
+        /* which job is the pointer over? The whole labelled BOX is the target,
+           not its inner list - his standing drag rule (DFM feedback_drag_quality:
+           "drop on the WHOLE picture"), which is why single-column mode hit-tests
+           the panel rather than the <ol> too. */
+        function boxAt(x, y) {
+          var hit = -1;
+          c.querySelectorAll('.pp-box').forEach(function (b) {
+            if (inside(b, x, y)) hit = Number(b.getAttribute('data-box'));
+          });
+          return hit;
+        }
         function showDropTarget(x, y) {
           clearMarks();
-          if (inside(progZone, x, y)) {
+          if (STACKS) {
+            var k = boxAt(x, y);
+            if (k !== -1) {
+              var boxEl = c.querySelector('.pp-box[data-box="' + k + '"]');
+              var full = boxes[k].length >= capOf(k) && boxOf(dragSi) !== k;
+              if (full) { boxEl.classList.add('drop-full'); return; }
+              var kl = boxEl.querySelectorAll('li:not(.pp-empty)');
+              if (!kl.length) { boxEl.classList.add('drop-empty'); return; }
+              var at2 = dropIndexAt(y, boxEl.querySelector('.pp-list'));
+              if (at2 >= kl.length) kl[kl.length - 1].classList.add('drop-after');
+              else kl[at2].classList.add('drop-before');
+              return;
+            }
+          } else if (inside(progZone, x, y)) {
             var lis = prog.querySelectorAll('li:not(.pp-empty)');
             if (!lis.length) { progZone.classList.add('drop-empty'); return; }
             var at = dropIndexAt(y);
             if (at >= lis.length) lis[lis.length - 1].classList.add('drop-after');
             else lis[at].classList.add('drop-before');
-          } else if (inside(trayZone, x, y) && placed.indexOf(dragSi) !== -1) {
+            return;
+          }
+          if (inside(trayZone, x, y) && boxOf(dragSi) !== -1) {
             trayZone.classList.add('drop-back');
           }
         }
         function commitDrop(si, x, y) {
-          if (inside(progZone, x, y)) {
-            var at = dropIndexAt(y);
-            var cur = placed.indexOf(si);
-            /* dropping BELOW its own old position: the index shifts by one once
-               the block is lifted out, or it lands one place short every time */
-            if (cur !== -1 && at > cur) at -= 1;
-            moveInto(si, at);
+          var k = STACKS ? boxAt(x, y) : (inside(progZone, x, y) ? 0 : -1);
+          if (k !== -1) {
+            var listEl = STACKS ? c.querySelector('.pp-box[data-box="' + k + '"] .pp-list') : prog;
+            var at = dropIndexAt(y, listEl);
+            var from = boxOf(si);
+            /* dropping BELOW its own old position IN THE SAME box: the index
+               shifts by one once the block is lifted out, or it lands one place
+               short every time */
+            if (from === k) {
+              var cur = boxes[k].indexOf(si);
+              if (cur !== -1 && at > cur) at -= 1;
+            }
+            moveInto(si, at, k);
           } else if (inside(trayZone, x, y)) {
             takeOut(si);
           } else {
@@ -2191,15 +2291,18 @@
           node.addEventListener('click', function () {
             if (locked) return;
             if (suppressClick) { suppressClick = false; return; }   // the tail of a drag
-            if (isPlaced) takeOut(si); else moveInto(si, null);
+            /* click-to-add drops into the first job with a space, box one first -
+               which is also the order a keyboard user meets them in */
+            if (isPlaced) takeOut(si);
+            else { var k = firstOpenBox(); if (k !== -1) moveInto(si, null, k); }
           });
         }
 
         function render() {
           tray.innerHTML = '';
-          prog.innerHTML = '';
+          progLists.forEach(function (l) { l.innerHTML = ''; });
           it.blocks.forEach(function (b, si) {
-            if (placed.indexOf(si) !== -1) return;
+            if (boxOf(si) !== -1) return;
             var n = el('<button class="parsons-block" type="button" draggable="false">' + esc(b) + '</button>');
             wireDrag(n, si, false);
             tray.appendChild(n);
@@ -2213,16 +2316,22 @@
              "1." and "2." sat at different x. The number is now a real element in
              a fixed-width right-aligned column, which pins it exactly AND makes
              the alignment measurable, so a harness can hold it there. */
-          placed.forEach(function (si, i) {
-            var n = el('<li><span class="pp-num">' + (i + 1) + '.</span>' +
-              '<button class="parsons-block placed" type="button" draggable="false">' + esc(it.blocks[si]) + '</button></li>');
-            wireDrag(n.querySelector('button'), si, true);
-            prog.appendChild(n);
+          /* numbering restarts INSIDE each job. Running 1-4 straight down two
+             stacks is the very thing he caught: it draws one program where the
+             micro:bit really has two. */
+          boxes.forEach(function (list, k) {
+            var listEl = progLists[k];
+            list.forEach(function (si, i) {
+              var n = el('<li><span class="pp-num">' + (i + 1) + '.</span>' +
+                '<button class="parsons-block placed" type="button" draggable="false">' + esc(it.blocks[si]) + '</button></li>');
+              wireDrag(n.querySelector('button'), si, true);
+              listEl.appendChild(n);
+            });
+            if (!list.length) {
+              listEl.appendChild(el('<li class="pp-empty">Nothing here yet &mdash; drag or click a block across.</li>'));
+            }
           });
-          if (!placed.length) {
-            prog.appendChild(el('<li class="pp-empty">Nothing here yet &mdash; drag or click a block across.</li>'));
-          }
-          checkBtn.disabled = placed.length !== it.blocks.length;
+          checkBtn.disabled = flat().length !== it.blocks.length;
         }
         render();
 
@@ -2230,7 +2339,10 @@
           checkBtn.disabled = true;
           locked = true;
           c.querySelectorAll('.parsons-block').forEach(function (b) { b.disabled = true; });
-          ctx.markItem(it.id, permIndex(placed)).then(function (r) {
+          /* the boxes are flattened in order, job one then job two, and marked
+             exactly as a single column always was - so the answer key is
+             untouched by this whole change */
+          ctx.markItem(it.id, permIndex(flat())).then(function (r) {
             var fb = c.querySelector('.q-feedback');
             fb.hidden = false;
             if (!r || !r.ok) {
@@ -2243,9 +2355,27 @@
                 '<button class="primary-btn" type="button">Continue</button>';
             } else {
               var order = permFromIndex(Number(r.correctIdx), it.blocks.length);
+              /* THE ANSWER IS SHOWN IN THE SAME TWO BOXES SHE BUILT IN. Printing
+                 the working order as one flat 1-4 list would teach, at the exact
+                 moment she is most likely to believe it, the very falsehood this
+                 fix exists to kill (DFM 186). */
+              var answerHtml;
+              if (STACKS) {
+                var cut = 0;
+                answerHtml = STACKS.map(function (st, k) {
+                  var size = Number(st.size) || 0;
+                  var slice = order.slice(cut, cut + size);
+                  cut += size;
+                  return '<div class="pa-box"><h4 class="pp-box-label">' + esc(st.label || ('Job ' + (k + 1))) + '</h4>' +
+                    '<ol class="parsons-answer">' + slice.map(function (si) { return '<li>' + esc(it.blocks[si]) + '</li>'; }).join('') + '</ol></div>';
+                }).join('');
+              } else {
+                answerHtml = '<ol class="parsons-answer">' +
+                  order.map(function (si) { return '<li>' + esc(it.blocks[si]) + '</li>'; }).join('') + '</ol>';
+              }
               fb.className = 'q-feedback bad';
               fb.innerHTML = '<p class="q-verdict">Not quite &mdash; here is the working order:</p>' +
-                '<ol class="parsons-answer">' + order.map(function (si) { return '<li>' + esc(it.blocks[si]) + '</li>'; }).join('') + '</ol>' +
+                answerHtml +
                 (r.explain ? '<p class="q-explain">' + esc(r.explain) + '</p>' : '') +
                 '<button class="primary-btn" type="button">Continue</button>';
             }
@@ -2269,17 +2399,72 @@
       var steps = (cfg.steps || []).map(function (s, i) {
         return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p></div></li>';
       }).join('');
+
+      /* DAMIEN, 10 Aug 2026 (DFM 184/187). He asked at his Lesson 3 sit whether a
+         film had ever been made showing how to save the .hex into Drive - there
+         never had been - and then recorded one himself the same evening. It is
+         one film with one home, shown two ways:
+           Lesson 2, where saving to Drive is TAUGHT: open on the card.
+           Lesson 3, where it is a REMINDER: behind a "Show me how" button, so a
+           pupil who remembers is not made to sit through it (DFM 135c gives the
+           route to being shown; it does not force it).
+         Every line of this is gated on cfg.demo, so an artifact card without one
+         - Lesson 5's ship desk - renders exactly as it did before. */
+      function demoHtml() {
+        var d = cfg.demo;
+        if (!d || !d.src) return '';
+        return '<div class="af-demo">' +
+          '<p class="af-demo-head">Watch first: saving your program into Google Drive</p>' +
+          '<video class="af-demo-video" controls preload="metadata" playsinline src="' + esc(asset(d.src)) + '"></video>' +
+          '<p class="af-demo-len"></p>' +
+          '<p class="af-demo-fallback">If the film won&rsquo;t load, the written steps below cover everything it shows.</p>' +
+          (d.note ? '<p class="af-demo-note">' + esc(d.note) + '</p>' : '') +
+          '</div>';
+      }
+      function wireDemo(root) {
+        var v = root.querySelector('.af-demo-video');
+        if (!v) return;
+        var lenLine = root.querySelector('.af-demo-len');
+        /* the length is measured off the file, never typed into content - a
+           number in a card stops being true the day the film is rebuilt (35) */
+        v.addEventListener('loadedmetadata', function () {
+          if (!lenLine || !isFinite(v.duration)) return;
+          var m = Math.floor(v.duration / 60), s = Math.round(v.duration % 60);
+          lenLine.textContent = 'The film lasts about ' + (m ? m + ' minute' + (m === 1 ? '' : 's') + ' ' : '') +
+            s + ' seconds. You can pause it at any point and catch up.';
+        });
+      }
+
       var c = el('<div class="card af-card"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
         '<h2>' + esc(cfg.title || 'Bank your build') + '</h2>' +
         '<p class="intro-lead">' + esc(cfg.intro || '') + '</p>' +
+        (cfg.demo && cfg.demo.src
+          ? (cfg.demo.open
+              ? demoHtml()
+              : '<p class="af-demo-ask"><button class="ghost-btn af-demo-btn" type="button">Show me how</button></p>')
+          : '') +
         '<ol class="af-steps">' + steps + '</ol>' +
         '<div class="rung-actions">' +
         '<button class="primary-btn" type="button">' + esc(cfg.checkLabel || 'Run the HQ Inspection') + '</button>' +
         '<button class="ghost-btn" type="button" hidden>Continue without banking (ask your teacher)</button>' +
         '</div><div class="af-result"></div></div>');
       host.appendChild(c);
-      var runBtn = c.querySelectorAll('button')[0];
-      var skipBtn = c.querySelectorAll('button')[1];
+      wireDemo(c);
+      var askBtn = c.querySelector('.af-demo-btn');
+      if (askBtn) {
+        App.armButton(askBtn, function () {
+          /* she chose to be shown: the film REPLACES the button rather than
+             toggling it, so the card cannot end up half-open behind her */
+          var slot = c.querySelector('.af-demo-ask');
+          slot.outerHTML = demoHtml();
+          wireDemo(c);
+        });
+      }
+      /* the run/skip buttons are found by CLASS now, not by position: the demo
+         button lands before them in the card, and "the first button" would have
+         picked it up - the exact fault DFM 143(a) caught on the ladder intro */
+      var runBtn = c.querySelector('.rung-actions .primary-btn');
+      var skipBtn = c.querySelector('.rung-actions .ghost-btn');
       var box = c.querySelector('.af-result');
       var tries = 0;
       skipBtn.onclick = function () { ctx.next(); };
@@ -2346,24 +2531,52 @@
   };
 
   /* ================= tournament (the Reaction Rally console) ===============
-     L3's whole-class event. Pairs play the physical rally (referee + player,
-     the micro:bit scoreboard THEY built keeps count), key each round's score
-     into an arcade-style LED console, tick the tested-3-times gate, and
-     TRANSMIT their best round to HQ. Scores land on the pupil record as
-     detail keys (rt=best, rr=r1.r2.r3); teams stay SEALED until the teacher
-     fires the projector reveal (staff Live tab), at which point the pupil
-     console flips to team colours live. Never blocks: Continue is available
-     from the moment the score is transmitted. */
+     L3's whole-class event.
+
+     REBUILT 10 Aug 2026 TO HIS OWN MECHANIC (DFM 185). He sat the lesson and
+     said: "I don't think this activity is very clear. I think a better idea
+     would be to have a timer, and when the timer starts, the pupils have to
+     press a as many times as possible until the timer stops, then record their
+     score. Then the highest combined score for a team wins." And, on sharing one
+     micro:bit: "should it be that they each get two chances against the clock
+     and record their own two scores and send them in, so even though they're
+     sharing a microbit, they are still playing independently? Yes, I like that,
+     and the referee's job is the person in the pair who isn't using the microbit
+     at a turn... Each person does the 2 goes before handing over."
+
+     So: TWO timed goes each, the partner referees, and every pupil sends in her
+     OWN total under her OWN name. Three design facts worth keeping written down:
+       - The timer lives on the PLAYER'S screen, not the front of the room. A
+         front-of-class timer would strand a cover class and a catch-up pupil
+         (rule 53), and pairs finish at different speeds anyway.
+       - Goes are FIVE seconds and a go is capped at 45. The deployed server
+         clamps a submitted score to 0-99 (tnAgg_), and this job does not touch
+         the server - so two goes must not be able to sum past 99, or a fast
+         pupil's honest total would be silently truncated. 2 x 45 = 90. The
+         harness pins that arithmetic (DFM 157a: a limit living in two places is
+         a contract, and one of them is lying unless something checks).
+       - "Highest combined score for a team wins" needs NO new server code: every
+         pupil's rt= is already summed into her team's total.
+     Scores still land as detail keys (rt=total, rr=go1.go2), teams stay SEALED
+     until the teacher fires the projector reveal, and Continue is available from
+     the moment the score is transmitted. */
   Engines.tournament = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config || {};
       var max = Number(cfg.maxScore) || 10;
       var solo = !!ctx.catchup;
       var draft = (ctx.draft && ctx.draft.rally) || {};
-      var rounds = (draft.r && draft.r.slice(0, 3)) || [null, null, null];
+      var GOES = 2;
+      var secs = Number(cfg.timerSeconds) || 5;
+      /* a draft written by the OLD three-round rally is treated as empty: its
+         numbers meant something else entirely, and only his own test accounts
+         can be holding one */
+      var rounds = (draft.r && draft.r.length === GOES) ? draft.r.slice(0, GOES) : [null, null];
+      var timed = Math.max(0, Math.min(GOES, Number(draft.t) || 0));  // goes whose timer has run
       var ticked = !!draft.c;
       var submitted = !!draft.sub;
       var pollTimer = null;
+      var running = false;
 
       /* 3x5 dot-matrix digit font - the console displays scores the way the
          micro:bit's own LED grid would */
@@ -2384,26 +2597,29 @@
         }
         return out;
       }
-      function best() {
-        var b = null;
-        rounds.forEach(function (v) { if (v != null && (b == null || v > b)) b = v; });
-        return b;
+      /* his ruling: the two goes are ADDED, and the team with the highest
+         combined score wins. The server already sums one number per pupil, so
+         the number we send is her total. */
+      function total() {
+        var t = 0, any = false;
+        rounds.forEach(function (v) { if (v != null) { t += v; any = true; } });
+        return any ? t : null;
       }
       function saveDraft() {
         if (ctx.review) return;
         App.state.draft = App.state.draft || {};
-        App.state.draft.rally = { r: rounds, c: ticked ? 1 : 0, sub: submitted ? 1 : 0 };
+        App.state.draft.rally = { r: rounds, t: timed, c: ticked ? 1 : 0, sub: submitted ? 1 : 0 };
         ctx.saveEvent({ draft: App.state.draft });
       }
 
       /* review = a re-read: static summary, zero network */
       if (ctx.review) {
-        var b0 = best();
+        var t0 = total();
         host.appendChild(el('<div class="card rally-card"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
           '<h2>' + esc(cfg.title || 'The Reaction Rally') + '</h2>' +
-          /* review mode cannot know whether the run was solo, and "your best
-             round" is true either way (L3 pre-sit review) */
-          '<p class="intro-lead">' + (draft.sub ? 'Rally logged — your best round was <b>' + b0 + '</b>. The reveal happened live in class.' : 'The Rally runs live, in class — nothing to replay here.') + '</p>' +
+          /* review mode cannot know whether the run was solo, and "your two
+             goes" is true either way (L3 pre-sit review) */
+          '<p class="intro-lead">' + (draft.sub && t0 != null ? 'Rally logged — your two goes made <b>' + t0 + '</b> together. The reveal happened live in class.' : 'The Rally runs live, in class — nothing to replay here.') + '</p>' +
           '<button class="primary-btn" type="button">Continue</button></div>'));
         host.querySelector('button').onclick = function () { ctx.next(); };
         return;
@@ -2415,47 +2631,121 @@
       var ruleRows = (rules || []).map(function (r, i) {
         return '<li><span class="rally-rule-n">' + (i + 1) + '</span><span>' + esc(r) + '</span></li>';
       }).join('');
-      var labels = cfg.roundsLabel || ['Round 1', 'Round 2', 'Round 3'];
+      var labels = (cfg.roundsLabel || ['Go 1', 'Go 2']).slice(0, GOES);
       var slots = labels.map(function (lab, i) {
         return '<div class="rally-round" data-i="' + i + '">' +
           '<span class="rally-round-label">' + esc(lab) + '</span>' +
           '<div class="led-display"></div>' +
           '<div class="rally-steps">' +
-          '<button class="rally-step" data-d="-1" type="button" aria-label="Down">&minus;</button>' +
-          '<button class="rally-step" data-d="1" type="button" aria-label="Up">+</button>' +
-          '</div><span class="rally-best-tag">BEST</span></div>';
+          '<button class="rally-step" data-d="-10" type="button" aria-label="Down ten">&minus;10</button>' +
+          '<button class="rally-step" data-d="-1" type="button" aria-label="Down one">&minus;</button>' +
+          '<button class="rally-step" data-d="1" type="button" aria-label="Up one">+</button>' +
+          '<button class="rally-step" data-d="10" type="button" aria-label="Up ten">+10</button>' +
+          '</div><span class="rally-locked-tag">Run the timer first</span></div>';
       }).join('');
+
+      /* THE TIMER. One button, pressed by the referee on the player's screen. */
+      var timerHtml = '<div class="rally-timer">' +
+        '<p class="rally-timer-head">Go ' + '<span class="rally-go-n">1</span> of ' + GOES + '</p>' +
+        '<div class="rally-timer-face"><span class="rally-timer-num">' + secs + '</span></div>' +
+        '<div class="rally-timer-bar"><span class="rally-timer-fill"></span></div>' +
+        '<p class="rally-timer-say">Ready when you are — the referee presses the button.</p>' +
+        '<button class="primary-btn rally-timer-btn" type="button">Start the ' + secs + ' seconds</button>' +
+        '</div>';
 
       var c = el('<div class="card rally-card"><span class="intro-kicker">' + esc(cfg.kicker || chunk.title) + '</span>' +
         '<h2>' + esc(cfg.title || 'The Reaction Rally') + '</h2>' +
         '<p class="intro-lead">' + esc(intro || '') + '</p>' +
         '<ol class="rally-rules">' + ruleRows + '</ol>' +
+        timerHtml +
         '<div class="rally-console">' + slots + '</div>' +
-        '<button class="confirm-step rally-confirm" type="button"><span class="confirm-box"></span>' + esc(confirmLabel || 'We tested it three times') + '</button>' +
-        /* Session B rule: a catch-up pupil has no pair, so "our score" is a
-           sentence about somebody who is not there (L3 pre-sit review) */
-        '<div class="rung-actions"><button class="primary-btn rally-transmit" type="button" disabled>Send in ' + (solo ? 'my' : 'our') + ' score</button></div>' +
+        '<p class="rally-total-row">Your total: <span class="rally-total">—</span></p>' +
+        '<button class="confirm-step rally-confirm" type="button"><span class="confirm-box"></span>' + esc(confirmLabel || 'We played it fair') + '</button>' +
+        /* DFM 185: every pupil now sends in HER OWN two goes under her own name,
+           so the old "our score" / "my score" split has nothing left to describe */
+        '<div class="rung-actions"><button class="primary-btn rally-transmit" type="button" disabled>Send in my scores</button></div>' +
         '<div class="rally-after"></div></div>');
       host.appendChild(c);
       var confirmBtn = c.querySelector('.rally-confirm');
       var transmitBtn = c.querySelector('.rally-transmit');
       var afterBox = c.querySelector('.rally-after');
 
+      var timerBtn = c.querySelector('.rally-timer-btn');
+      var timerNum = c.querySelector('.rally-timer-num');
+      var timerFill = c.querySelector('.rally-timer-fill');
+      var timerSay = c.querySelector('.rally-timer-say');
+      var goN = c.querySelector('.rally-go-n');
+      var totalOut = c.querySelector('.rally-total');
+
       function paint() {
-        var b = best();
         c.querySelectorAll('.rally-round').forEach(function (slot) {
           var i = Number(slot.getAttribute('data-i'));
+          /* a go's number cannot be typed until ITS timer has actually run:
+             the score has to come off the micro:bit after a real five seconds,
+             not out of thin air */
+          var open = i < timed && !running && !submitted;
           slot.querySelector('.led-display').innerHTML = ledHtml(rounds[i]);
-          slot.classList.toggle('is-best', rounds[i] != null && rounds[i] === b && b != null);
+          slot.classList.toggle('is-locked-go', !open);
+          slot.querySelectorAll('.rally-step').forEach(function (b) { b.disabled = !open; });
         });
+        var t = total();
+        totalOut.textContent = t == null ? '—' : String(t);
         if (ticked) confirmBtn.classList.add('ticked');
-        var ready = ticked && rounds.every(function (v) { return v != null; });
+        var allIn = rounds.every(function (v) { return v != null; });
+        var ready = ticked && allIn && timed >= GOES;
         transmitBtn.disabled = !ready || submitted;
+        if (goN) goN.textContent = String(Math.min(GOES, timed + 1));
+        if (timerBtn) {
+          timerBtn.hidden = submitted || (timed >= GOES && allIn);
+          timerBtn.disabled = running;
+          timerBtn.textContent = timed >= GOES ? 'Run a go again' : 'Start the ' + secs + ' seconds';
+        }
       }
+
+      /* 3-2-1, then the five seconds, then hands off. Whole seconds only: a
+         decimal counter would have her watching the screen instead of pressing. */
+      function runTimer() {
+        if (running || submitted) return;
+        running = true;
+        paint();
+        var stage = 3;
+        timerSay.textContent = 'Get ready…';
+        c.querySelector('.rally-timer').classList.add('is-counting');
+        var countIn = setInterval(function () {
+          if (stage > 0) { timerNum.textContent = String(stage); stage--; return; }
+          clearInterval(countIn);
+          timerNum.textContent = 'GO!';
+          timerSay.textContent = 'PRESS BUTTON A as fast as you can!';
+          c.querySelector('.rally-timer').classList.add('is-live');
+          var left = secs;
+          timerFill.style.transition = 'none';
+          timerFill.style.width = '100%';
+          setTimeout(function () {
+            timerFill.style.transition = 'width ' + secs + 's linear';
+            timerFill.style.width = '0%';
+          }, 30);
+          var tick = setInterval(function () {
+            left--;
+            if (left > 0) { timerNum.textContent = String(left); return; }
+            clearInterval(tick);
+            timerNum.textContent = 'TIME!';
+            timerSay.textContent = 'TIME! Hands off — read the number off the micro:bit.';
+            c.querySelector('.rally-timer').classList.remove('is-live', 'is-counting');
+            running = false;
+            /* re-running before you submit is allowed and never re-locks a go -
+               the referee is the one who decides a go was fair, not the app */
+            if (timed < GOES) timed++;
+            paint(); saveDraft();
+          }, 1000);
+        }, 700);
+      }
+      if (timerBtn) timerBtn.onclick = runTimer;
+
       c.querySelectorAll('.rally-step').forEach(function (btn) {
         btn.onclick = function () {
-          if (submitted) return;
+          if (submitted || running) return;
           var i = Number(btn.closest('.rally-round').getAttribute('data-i'));
+          if (i >= timed) return;
           var v = rounds[i] == null ? 0 : rounds[i] + Number(btn.getAttribute('data-d'));
           rounds[i] = Math.max(0, Math.min(max, v));
           paint(); saveDraft();
@@ -2471,7 +2761,11 @@
         if (submitted) return;
         submitted = true;
         paint(); saveDraft();
-        var detail = 'rt=' + best() + ';rr=' + rounds.join('.');
+        /* SAME KEYS as before, so the server, the CSV and the yearly archive are
+           untouched: rt is now her TWO-GO TOTAL and rr its two parts. The total
+           cannot pass the server's 0-99 clamp by construction (GOES x maxScore
+           = 90) - qa pins that so a future maxScore edit cannot break it quietly. */
+        var detail = 'rt=' + total() + ';rr=' + rounds.join('.');
         ctx.awardBadge(ctx.chunk.badge, detail).then(function () {
           /* S-1 (2 Aug 2026): awardBadge replaces the whole chunk host with the
              "Saving your badge..." panel, so this card - and afterBox with it -
@@ -2487,6 +2781,8 @@
       function lockConsole() {
         c.querySelector('.rally-rules').hidden = true;
         c.querySelector('.rally-console').classList.add('is-locked');
+        var tb = c.querySelector('.rally-timer');
+        if (tb) tb.hidden = true;                 /* the goes are over - the timer stops being an offer */
         confirmBtn.hidden = true;
         transmitBtn.parentNode.hidden = true;
       }

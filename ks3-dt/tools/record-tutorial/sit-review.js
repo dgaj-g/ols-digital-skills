@@ -459,13 +459,35 @@ const CASE_LOGS = {
       case 'rally': {
         await sleep(GHOST_WAIT);
         await shot(ck + '-rally-console');
-        await page.evaluate(() => {
-          const slots = document.querySelectorAll('.rally-round');
-          const targets = [7, 8, 6];
-          slots.forEach((slot, i) => {
-            const plus = slot.querySelector('.rally-step[data-d="1"]');
-            for (let k = 0; k < (targets[i] || 5); k++) plus.click();
+        /* DFM 185: each go's score box unlocks only after THAT go's five-second
+           timer has run, so the walker plays the goes like a pupil - about
+           fifteen seconds of real waiting, which is the price of a real timer. */
+        const goes = await page.evaluate(() => document.querySelectorAll('.rally-round').length);
+        const targets = [23, 27];
+        for (let i = 0; i < goes; i++) {
+          await page.evaluate(() => {
+            const b = document.querySelector('.rally-timer-btn');
+            if (b && !b.disabled && !b.hidden) b.click();
           });
+          if (i === 0) { await sleep(3200); await shot(ck + '-rally-timer-running'); }
+          let open = false;
+          for (let t = 0; t < 40 && !open; t++) {
+            await sleep(500);
+            open = await page.evaluate((n) => {
+              const slot = document.querySelectorAll('.rally-round')[n];
+              const plus = slot && slot.querySelector('.rally-step[data-d="1"]');
+              return !!plus && !plus.disabled;
+            }, i);
+          }
+          await page.evaluate(([n, want]) => {
+            const slot = document.querySelectorAll('.rally-round')[n];
+            const up10 = slot.querySelector('.rally-step[data-d="10"]');
+            const up1 = slot.querySelector('.rally-step[data-d="1"]');
+            for (let k = 0; k < Math.floor(want / 10); k++) up10.click();
+            for (let k = 0; k < want % 10; k++) up1.click();
+          }, [i, targets[i] || 20]);
+        }
+        await page.evaluate(() => {
           const tick = document.querySelector('.rally-confirm');
           if (tick && !tick.classList.contains('ticked')) tick.click();
         });

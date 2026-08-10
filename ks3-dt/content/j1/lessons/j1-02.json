@@ -220,7 +220,12 @@
     ],
     "passText": "Your build now follows your login anywhere — that's the whole point of the Vault. Next lesson you can pick up exactly where you left off, on any machine.",
     "failText": "Not there yet. Check each step above — especially that the file went INTO the DT Work folder, not just onto the desktop — then run the inspection again.",
-    "help": "Three steps: download your program from MakeCode, open your Google Drive in a new tab, drag the file into School → DT Work. Then press the inspection button and the website checks your Drive for real. If it says the file isn't there, check it went INSIDE the DT Work folder, not just onto the desktop."
+    "help": "Three steps: download your program from MakeCode, open your Google Drive in a new tab, drag the file into School → DT Work. Then press the inspection button and the website checks your Drive for real. If it says the file isn't there, check it went INSIDE the DT Work folder, not just onto the desktop.",
+    "demo": {
+     "src": "assets/video/shared/save-to-drive.mp4",
+     "open": true,
+     "note": "The program saved in the film is just an example — do not copy it. You are saving your own program, make-it-move.hex."
+    }
    }
   },
   {

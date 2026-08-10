@@ -77,12 +77,41 @@ async function toRally(page, label) {
   return false;
 }
 
+/* DFM 185 re-stage: a go's score cannot be typed until THAT go's five-second
+   timer has actually run - which is the point of the rebuild, so the walker has
+   to play the game rather than reach past it. Two goes is about fifteen seconds
+   of real waiting, and that is the honest cost of testing a timer. */
+async function playGo(page, i) {
+  const pressed = await page.evaluate(() => {
+    const b = document.querySelector('.rally-timer-btn');
+    if (!b || b.disabled || b.hidden) return false;
+    b.click(); return true;
+  });
+  if (!pressed) return false;
+  for (let t = 0; t < 40; t++) {
+    await sleep(500);
+    const open = await page.evaluate((n) => {
+      const slot = document.querySelectorAll('.rally-round')[n];
+      const plus = slot && slot.querySelector('.rally-step[data-d="1"]');
+      return !!plus && !plus.disabled;
+    }, i);
+    if (open) return true;
+  }
+  return false;
+}
+
 async function transmit(page) {
-  await page.evaluate(() => {
-    document.querySelectorAll('.rally-round').forEach((slot, i) => {
+  const goes = await page.evaluate(() => document.querySelectorAll('.rally-round').length);
+  for (let i = 0; i < goes; i++) {
+    const ran = await playGo(page, i);
+    if (!ran) { console.log('  the timer never opened go ' + (i + 1)); return false; }
+    await page.evaluate((n) => {
+      const slot = document.querySelectorAll('.rally-round')[n];
       const plus = slot.querySelector('.rally-step[data-d="1"]');
-      for (let n = 0; n < 5 + i; n++) plus.click();
-    });
+      for (let k = 0; k < 5 + n; k++) plus.click();
+    }, i);
+  }
+  await page.evaluate(() => {
     const tick = document.querySelector('.rally-confirm');
     if (tick && !tick.classList.contains('ticked')) tick.click();
   });
