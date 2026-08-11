@@ -242,19 +242,26 @@ check(!PROJECT_NAMES.test(setup3),
 check(!/Do NOT open (your Signal Relay|make-it-move)/i.test(built),
   'the built PathB_Index.html carries no brand-named warn-off either');
 
-/* THE LOCKED DEBT, printed not fixed (DFM 176 + 179c's honesty pattern) */
+/* THE DEBT IS PAID (DFM 188, his 11 Aug ruling — he opened Lesson 2's lock to do it).
+   It used to print here as a WAIVED finding: the set-up card said "Signal Relay" while
+   the build-along film typed "make-it-move" on camera, so one project had two names and
+   whichever a pupil followed, the other was wrong for her. His fix deleted the naming
+   step entirely — the project is named ONCE, on camera, in the film — so the card now
+   refers back to the name she actually gave it. This is a law now, not a waiver: the
+   card and the film must agree, and a card that re-names a project the film already
+   named is the fault. */
 const l2Setup = setupOf(L2j);
-const l2NamesCard = /Signal Relay/i.test(l2Setup);
-const l2FilmName = fs.existsSync(path.join(__dirname, 'scenes/l2.js')) &&
-  /make-it-move/.test(fs.readFileSync(path.join(__dirname, 'scenes/l2.js'), 'utf8'));
-if (l2NamesCard && l2FilmName) {
-  console.log('  WAIVED j1-02: the set-up card tells her to name the project "Signal Relay" while the');
-  console.log('         build-along FILM names it "make-it-move" on camera — one project, two names.');
-  console.log('         LOCKED by DFM 176; his call. Printed every run so it cannot rot. Lesson 3 is');
-  console.log('         written to be true either way, so no pupil is misled today.');
-} else {
-  check(false, 'the Lesson 2 two-names debt changed shape — re-read it before trusting this section');
-}
+const l2FilmSrc = path.join(__dirname, 'scenes/l2.js');
+check(fs.existsSync(l2FilmSrc), "Lesson 2's film scene script was found, so the name it types can be checked");
+const l2FilmText = fs.existsSync(l2FilmSrc) ? fs.readFileSync(l2FilmSrc, 'utf8') : '';
+check(/make-it-move/.test(l2FilmText),
+  'the Lesson 2 film still types "make-it-move" on camera (the one place the project is named)');
+check(!/Signal Relay/i.test(l2Setup),
+  'and the Lesson 2 set-up card no longer tells her to type a DIFFERENT name (DFM 188)');
+check(/make-it-move/i.test(l2Setup),
+  'the set-up card names the project exactly as the film named it — one project, one name');
+check(!/type\s+Signal Relay|says Untitled/i.test(l2Setup),
+  'the card no longer promises the box reads "Untitled", which was only true if she had NOT built along');
 
 console.log('\n== 6. CONTROLS: the pre-fix text must fail these very tests ==');
 const PRE_INTRO = "This is where you build it — in your pair again: you and the person beside you, one micro:bit between you. Three rungs, each one an upgrade — and the micro:bit is the judge. Take turns: one of you builds the blocks, the other reads the rung card and runs the test. Swap jobs at every rung.";
@@ -296,6 +303,15 @@ control(PROJECT_NAMES.test(NEARLY) && !/last lesson's project/i.test(NEARLY),
   'and so does the "make-it-move" version — Lesson 2 gives that project BOTH names, so either is wrong for half the class');
 control(!PROJECT_NAMES.test("Do NOT open last lesson's project — today's scoreboard is a fresh build."),
   'while the shipped wording, which names no brand at all, PASSES (over-tightening guard)');
+/* THE LESSON-2 ONE-NAME CONTROLS (DFM 188): the exact set-up line he had us delete,
+   which is the line that created the two-name clash in the first place. */
+const PRE_L2_SETUP = 'Give your project a name: click the box at the bottom that says Untitled and type Signal Relay.';
+control(/Signal Relay/i.test(PRE_L2_SETUP),
+  'the deleted Lesson 2 set-up step named the project "Signal Relay" and FAILS the one-name law');
+control(/says Untitled/i.test(PRE_L2_SETUP),
+  'and it promised the box would read "Untitled", which was false for any pupil who built along with the film');
+control(!/Signal Relay/i.test(l2Setup) && /make-it-move/i.test(l2Setup),
+  'while the shipped set-up list names the project once, the way the film named it (over-tightening guard)');
 
 console.log('\n=========================================');
 console.log(FAILS.length ? 'FAILURES:\n- ' + FAILS.join('\n- ') : 'ALL CROSS-LESSON CHECKS PASSED');

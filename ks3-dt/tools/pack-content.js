@@ -16,7 +16,10 @@ const crypto = require('crypto');
 
 const SRC = process.env.KS3DT_SRC ||
   path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/content-src');
-const OUT = path.join(__dirname, '..', 'content');
+/* OUT and the version stamp are env-overridable for one reason only: so the
+   version gate below can be PROVED to fail, in a sandbox, without touching a
+   byte of the real content or the real stamp (qa-content-version.js). */
+const OUT = process.env.KS3DT_OUT || path.join(__dirname, '..', 'content');
 const SECRET_FILE = path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/.ks3dt-secret');
 
 function secret() {
@@ -81,8 +84,67 @@ function languageGate() {
   console.log('language gate: PASSED (qa-language)');
 }
 
+/* THE VERSION GATE (his 11 Aug 2026 find, DFM 189). Every content change since
+   4 Aug shipped under the SAME contentVersion "2026-08-03c" - and that string is
+   the cache key on BOTH sides: app.js stores each lesson file in localStorage
+   under 'ks3dt-content:<version>:<path>' and only purges entries whose version
+   DIFFERS, while Code.gs caches each file under 'ks3dt:f:<version>:<path>'. So a
+   pupil's browser kept serving a copy from before the change, forever, and a hard
+   refresh could never clear it (localStorage survives a reload). He sat a Lesson 3
+   that had been fixed and deployed, and read the old sentence off his own screen.
+   THE GATE: if the content source changed but contentVersion did not, the pack
+   STOPS. Anything a machine can check must not depend on remembering it (DFM 150).
+   The digest is taken over the SOURCE (not the packed output, whose encrypted key
+   blobs are not byte-stable) and deliberately excludes contentVersion itself, so
+   bumping the version can never satisfy the check on its own. */
+const STAMP_FILE = process.env.KS3DT_STAMP || path.join(__dirname, 'content-stamp.json');
+
+function contentDigest() {
+  const files = [];
+  const walk = (dir) => fs.readdirSync(dir).forEach(f => {
+    const p = path.join(dir, f);
+    if (fs.statSync(p).isDirectory()) return walk(p);
+    /* dev-only companions the client is never served (see main's walk) */
+    if (f === 'language-ledger.json' || f === 'vocab.json') return;
+    if (f.endsWith('.json')) files.push(p);
+  });
+  walk(SRC);
+  files.sort();
+  const h = crypto.createHash('sha256');
+  for (const p of files) {
+    const rel = path.relative(SRC, p).replace(/\\/g, '/');
+    const obj = JSON.parse(fs.readFileSync(p, 'utf8'));
+    if (rel === 'index.json') delete obj.contentVersion;
+    h.update(rel + '\0' + JSON.stringify(obj) + '\0');
+  }
+  return h.digest('hex');
+}
+
+function versionGate() {
+  const version = String(JSON.parse(fs.readFileSync(path.join(SRC, 'index.json'), 'utf8')).contentVersion || '');
+  const digest = contentDigest();
+  if (!version) { console.error('index.json has no contentVersion - the pack stops.'); process.exit(1); }
+  if (fs.existsSync(STAMP_FILE)) {
+    const stamp = JSON.parse(fs.readFileSync(STAMP_FILE, 'utf8'));
+    if (stamp.digest !== digest && stamp.contentVersion === version) {
+      console.error('\nPACK STOPPED: the content changed but contentVersion did not (DFM 189).');
+      console.error('  contentVersion is still "' + version + '" (unchanged since the last pack).');
+      console.error('  Every pupil browser caches lesson files under that string in localStorage and');
+      console.error('  keeps them until it changes - so this change would reach nobody, and no hard');
+      console.error('  refresh would fix it.');
+      console.error('  FIX: bump "contentVersion" in content-src/index.json, then pack again.');
+      process.exit(1);
+    }
+  }
+  /* field name matters: versionGate READS stamp.contentVersion, so it must WRITE
+     contentVersion. Naming it "version" here made the gate silently never fire —
+     found by qa-content-version's own control, which is the entire point of it. */
+  return { contentVersion: version, digest };
+}
+
 function main() {
   languageGate();
+  const stamp = versionGate();
   const sec = secret();
   const devKeys = {};
   const problems = [];
@@ -139,5 +201,8 @@ function main() {
   fs.writeFileSync(path.join(OUT, 'dev-keys.json'), JSON.stringify(devKeys, null, 1));
   console.log('wrote dev-keys.json (git-ignored, preview marking only)');
   if (problems.length) { console.error('\nVALIDATION PROBLEMS:\n' + problems.join('\n')); process.exit(1); }
+  /* Only a pack that got this far is a real one, so only now does the stamp move. */
+  fs.writeFileSync(STAMP_FILE, JSON.stringify(stamp, null, 1) + '\n');
+  console.log('version gate: contentVersion "' + stamp.contentVersion + '" stamped against this content');
 }
 main();

@@ -177,8 +177,7 @@
     "setupLead": "Before you start rung 2, set MakeCode up like this:",
     "setup": [
      "Open MakeCode using the button above. Keep it in its own tab all lesson.",
-     "Give your project a name: click the box at the bottom that says Untitled and type Signal Relay.",
-     "Build every rung in this SAME project. It grows as you climb — you never start a new one.",
+     "Build each rung (each activity) in the SAME project that you created for the video tutorial you've just completed on the previous screen, which you called make-it-move. The project name stays the same as you climb the ladder and complete each new activity — you never start a new one.",
      "Every time you press Download it saves a new copy of the WHOLE project, replacing the one from last time. If a box asks whether you want to replace the old file, say yes — that is exactly what you want."
     ]
    }
