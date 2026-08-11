@@ -167,17 +167,56 @@ const scenes = [
     id: 'ch2',
     label: 'Hat blocks: what starts a script',
     run: async ({ page, cine, drv, log }) => {
-      await drv.openEditor();
+      /* DFM 191c - HIS INSTRUCTION, 11 Aug 2026: "could we add animations to aid
+         understanding of concepts that they meet (I loved the variable one you
+         did)?" This chapter's whole idea is WHY SOME CODE NEVER RUNS, so it opens
+         on the animation and the editor work follows it - the DFM 174 shape.
+         The three stacks are Shark Attack's own: a flag script, a working arrow
+         script, and the hatless right-arrow stack the pupil fixes minutes later. */
+      const hbUrl = 'file://' + path.join(__dirname, '..', 'lib', 'hat-block', 'index.html');
+      await drv.page.goto(hbUrl);
       await cine.install();
       await cine.curtain({
         kicker: 'CHAPTER 2', title: 'Hat blocks:\nwhat starts a script',
         sub: 'no trigger ' + DASH + ' no code runs'
       });
+      await cine.pause(2900);
+      await cine.lift();
+
+      await drv.page.evaluate(() => window.hb.ready);
+      const HB_BEATS = [
+        'Code does not start by itself. Every stack of blocks waits to be woken up.',
+        'Things keep happening: the flag is clicked&hellip; a key is pressed. Each one is an <b>EVENT</b>.',
+        'A <b>HAT BLOCK</b> catches ONE event. When that event happens, everything under the hat runs.',
+        'A different hat catches a different event.',
+        'No hat? Events fly straight past. The blocks are perfect &mdash; and they will <b>never run</b>.',
+        'The fix is the hat. Give the stack its trigger &mdash; and it wakes.'
+      ];
+      for (let i = 0; i < HB_BEATS.length; i++) {
+        await cine.captionShow(HB_BEATS[i]);
+        await drv.page.evaluate(n => window.hb.play(n), i + 1);
+        if (i === 0) {
+          /* DFM 146b: a failed WebGL context records as a happy flat rectangle,
+             so the take is only trusted once real pixels are proved. */
+          const first = await drv.page.evaluate(() => window.hb.probe());
+          if (!first.some(p => p.max > 60)) {
+            throw new Error('hat-block drew nothing after beat 1 - WebGL failed: ' + JSON.stringify(first));
+          }
+          log('hat-block probe ok: ' + JSON.stringify(first.map(p => p.max)));
+        }
+      }
+      await cine.captionHide();
+      const hbLast = await drv.page.evaluate(() => window.hb.probe());
+      if (!hbLast.some(p => p.max > 60)) throw new Error('hat-block went blank mid-take');
+
+      /* now into the real editor, to find that same missing hat for real */
+      await drv.openEditor();
+      await cine.install();          /* the injected cinema DOM dies with the old document */
       await drv.loadProject(SB3_BROKEN);
       await drv.selectSprite('Shark');
       await cine.pause(1400);
-      await cine.lift();
       await cine.ensureCursor(700, 430);
+      await cine.caption('That is the idea. Now find it for real, in the broken game.');
 
       const hat = await drv.canvasBlock('when left arrow key pressed');
       if (!hat) throw new Error('left arrow hat script not found');

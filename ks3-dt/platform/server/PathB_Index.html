@@ -1076,6 +1076,21 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .lc-no { color: var(--bad); font-weight: 700; }
 .lc-mid { color: #8A6D00; font-weight: 700; }
 .lc-skip, .lc-dash { color: #9AA5B5; font-weight: 700; }
+/* the main-activity column (DFM 191b): a count a teacher can read at a glance
+   across a room, with its own hover sentence. Colour carries "finished / part
+   way / not yet" WITHOUT carrying "good / bad" - an unfinished board is normal
+   mid-lesson, and a red-looking number would read as a verdict on the pupil. */
+.lc-actwrap { cursor: help; white-space: nowrap; }
+.lc-act { font-variant-numeric: tabular-nums; font-weight: 800; }
+.lc-act.all { color: #1E9459; }
+.lc-act.some { color: #A8760B; }
+.lc-act.none { color: #7A8798; }
+.lc-ship { font-size: 0.92em; }
+.lc-beta {
+  display: inline-block; margin-left: 4px; padding: 1px 6px; border-radius: 999px;
+  background: #FDF2D9; border: 1px solid #E0B24A; color: #7A5A05;
+  font-size: 0.68rem; font-weight: 800; letter-spacing: 0.04em; vertical-align: 1px;
+}
 /* clipped on purpose: the full comment is on hover and in Copy CSV, and a wide
    comment column would push the marked answers off the edge of the panel */
 .lc-comment { display: inline-block; max-width: 8ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
@@ -7844,7 +7859,9 @@ window.OLS_TRANSPORT = {
           '<label class="std-sig-label" for="std-gt">Game title</label>' +
           '<input id="std-gt" class="std-sig-input" maxlength="28" autocomplete="off" placeholder="' + esc(m.titlePlaceholder || 'e.g. Sushi Drop') + '" value="' + esc(gt) + '">' +
           '<label class="std-sig-label" for="std-gh">How to play &mdash; one line</label>' +
-          '<input id="std-gh" class="std-sig-input" maxlength="80" autocomplete="off" placeholder="' + esc(m.howPlaceholder || 'e.g. Arrow keys to move. Catch sushi, dodge wasabi!') + '" value="' + esc(gh) + '">' +
+          /* 90, not 80: the server's GAL_HOW_MAX is 90 and a limit that lives in
+             two places is a contract (DFM 157a). The box was the one lying. */
+          '<input id="std-gh" class="std-sig-input" maxlength="90" autocomplete="off" placeholder="' + esc(m.howPlaceholder || 'e.g. Arrow keys to move. Catch sushi, dodge wasabi!') + '" value="' + esc(gh) + '">' +
           '<div class="gal-marquee-card preview"><span class="gal-mq-studio"></span><b class="gal-mq-title"></b><p class="gal-mq-how"></p></div>' +
           '<p class="std-marquee-status"></p>' +
           '<button class="primary-btn std-doors" type="button" disabled>' + esc(m.confirmLabel || 'OPEN THE DOORS') + '</button>' +
@@ -9141,12 +9158,12 @@ window.OLS_TRANSPORT = {
      part of what made this tab unreadable). Never rejects: a lesson with no
      content file yet still renders its progress column. */
   function lessonFeaturesFor(le) {
-    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null };
+    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null };
     if (!le || !le.file) return Promise.resolve(blank);
     var id = String(le.id);
     if (!liveFeatureCache[id]) {
       liveFeatureCache[id] = App.fetchContent(le.file).then(function (lesson) {
-        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null };
+        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null };
         (lesson.chunks || []).forEach(function (ch) {
           var cfg = ch.config || {};
           if (cfg.paired) f.paired = true;
@@ -9156,6 +9173,15 @@ window.OLS_TRANSPORT = {
             f.stretch = { title: String(cfg.stretch.title || 'the stretch challenge') };
           }
           if (ch.engine === 'parsons') f.parsons = { title: String(cfg.title || ch.title || 'Build puzzle') };
+          /* DFM 191b: the lesson's MAIN activity earns its own column. Detected
+             from content, never from a lesson number, so lessons 6+ inherit it
+             the day they are written (DFM 156b). */
+          if (ch.engine === 'casework') {
+            f.casework = { title: String(cfg.title || ch.title || 'The Case Board'), stretch: !!cfg.stretchCase };
+          }
+          if (ch.engine === 'studio' && cfg.phase === 'build') {
+            f.studio = { title: String(cfg.introTitle || ch.title || 'The Studio Sprint') };
+          }
           if (ch.engine === 'tournament') f.tournament = { title: String(cfg.title || ch.title || 'Tournament') };
           if (ch.engine === 'gallery') f.gallery = { title: String(ch.title || 'Press Night') };
           /* the September Licence Exam - stored for every pupil since day one,
@@ -9359,6 +9385,88 @@ window.OLS_TRANSPORT = {
       'build takes turns showing the score, an H, and the best score.">&#11088;</span>';
   }
 
+  /* ---------- THE MAIN-ACTIVITY COLUMN (DFM 191b) ----------------------------
+     Lesson 4 spends FORTY minutes of its hour inside one chunk and Lesson 5
+     twenty-five, and both already write a full account of that work into the
+     pupil's detail ledger - `cw=` for the Case Board, `qa=` for the Studio
+     Sprint. Until now this tab rendered neither, so a teacher watching the heart
+     of either lesson saw a warm-up column, an exit column, and nothing at all
+     about the thing the class was actually doing. DFM 156(c) exactly: the data
+     was there, no screen showed it.
+     Both denominators are read from the pupil's OWN string rather than assumed,
+     so a lesson with three cases or five QA checks needs no code change here. */
+  function detailOf(a) { return String((a && a[2]) || ''); }
+  function dFlag(s, k) { return new RegExp('(?:^|;)' + k + '=1(?:;|$)').test(s); }
+  function dNum(s, k) {
+    var m = new RegExp('(?:^|;)' + k + '=([0-9]+)(?:;|$)').exec(s);
+    return m ? Number(m[1]) : 0;
+  }
+  function dFrac(s, k) {
+    var m = new RegExp('(?:^|;)' + k + '=([0-9]+)/([0-9]+)(?:;|$)').exec(s);
+    return m ? { n: Number(m[1]), d: Number(m[2]) } : null;
+  }
+  function actCount(fr) {
+    var cls = (fr.d > 0 && fr.n >= fr.d) ? 'all' : (fr.n > 0 ? 'some' : 'none');
+    return '<b class="lc-act ' + cls + '">' + fr.n + '/' + fr.d + '</b>';
+  }
+  var NOT_STARTED = '<span class="lc-dash" title="Not started">&ndash;</span>';
+
+  /* Lesson 4: cw=closed/total;g=gold;rc=0|1;ship=0|1[;s=1] */
+  function caseworkCell(a) {
+    var s = detailOf(a);
+    var fr = dFrac(s, 'cw');
+    if (!fr) return NOT_STARTED;
+    var gold = dNum(s, 'g');
+    var silver = Math.max(0, fr.n - gold);
+    var say = [fr.n + ' of ' + fr.d + ' cases closed.'];
+    if (fr.n) {
+      say.push(silver
+        ? gold + ' gold, ' + silver + ' silver \u2014 a silver stamp means HQ\u2019s clue was taken, which is still a closed case.'
+        : 'All gold \u2014 every one solved unaided.');
+    }
+    say.push(dFlag(s, 'rc')
+      ? 'The whole-game check was run at the release desk.'
+      : 'The whole-game check has not been run yet.');
+    if (dFlag(s, 'ship')) say.push('The fixed game was saved into her Drive.');
+    if (dFlag(s, 's')) say.push('The stretch job was taken and closed.');
+    return '<span class="lc-actwrap" title="' + App.esc(say.join(' ')) + '">' + actCount(fr) +
+      (dFlag(s, 'ship') ? ' <span class="lc-ship" aria-label="shipped to Drive">&#128674;</span>' : '') +
+      (dFlag(s, 's') ? ' <span class="lc-stretch">&#11088;</span>' : '') +
+      '</span>';
+  }
+
+  /* Lesson 5: qa=passed/total;ship=1[;b=1][;fq=N][;s=1] */
+  function studioCell(a) {
+    var s = detailOf(a);
+    var fr = dFrac(s, 'qa');
+    if (!fr) return NOT_STARTED;
+    var fq = dNum(s, 'fq');
+    var beta = dFlag(s, 'b');
+    var say = [fr.n + ' of ' + fr.d + ' QA tests passed.'];
+    if (fq) {
+      say.push(fq + (fq === 1 ? ' test failed first and was fixed' : ' tests failed first and were fixed') +
+        ' \u2014 FOUND BY QA is the desk doing its job, not a black mark.');
+    }
+    if (dFlag(s, 'ship')) {
+      say.push(beta
+        ? 'Doors opened IN BETA \u2014 she exhibited before all four tests were green.'
+        : 'Doors opened \u2014 all four QA tests were green first.');
+    } else {
+      say.push('The doors never opened, so nothing went to the gallery.');
+    }
+    if (dFlag(s, 's')) say.push('The second variable was added and tested.');
+    return '<span class="lc-actwrap" title="' + App.esc(say.join(' ')) + '">' + actCount(fr) +
+      (beta ? ' <span class="lc-beta">IN BETA</span>' : '') +
+      (dFlag(s, 's') ? ' <span class="lc-stretch">&#11088;</span>' : '') +
+      '</span>';
+  }
+
+  function activityCell(a, feat) {
+    if (feat.casework) return caseworkCell(a);
+    if (feat.studio) return studioCell(a);
+    return '';
+  }
+
   /* The class strip and the picker, which stay put while the lesson underneath
      them is loading. ONE source for both the loading screen and the finished
      one - two copies of this markup would drift apart (rule 144's family). */
@@ -9427,6 +9535,7 @@ window.OLS_TRANSPORT = {
     var showExit = exitItems.length > 0 && !!keyItems;
     var exitUnavailable = exitItems.length > 0 && !keyItems;
     var showPuzzle = !!feat.parsons;
+    var act = feat.casework || feat.studio;   /* DFM 191b: the main-activity column */
     var se = feat.selfeval;
 
     /* the lesson's own progress counts */
@@ -9451,6 +9560,7 @@ window.OLS_TRANSPORT = {
       var pillText = st === 2 ? 'done' : st === 1 ? 'started' : 'not started';
       var warm = (a && Number(a[10]) > 0) ? (Number(a[9]) + '/' + Number(a[10])) : '&mdash;';
       var cells = '';
+      if (act) cells += '<td class="lc-mark">' + activityCell(a, feat) + '</td>';
       if (showExit) cells += exitItems.map(function (it, i) { return '<td class="lc-mark">' + exitGlyph(a && a[3], i, it.id, keyItems) + '</td>'; }).join('');
       if (showPuzzle) cells += '<td class="lc-mark">' + puzzleGlyph(a) + '</td>';
       if (se) cells += '<td class="lc-mark">' + selfEvalGlyphs(a) + '</td>';
@@ -9533,6 +9643,7 @@ window.OLS_TRANSPORT = {
     var head = '<tr><th>Name</th><th>Codename</th>' +
       '<th title="Points earned across the whole year, not just this lesson.">XP</th>' +
       '<th>Baseline</th><th>Progress</th><th>Warm-up</th>' +
+      (act ? '<th>' + App.esc(act.title) + '</th>' : '') +
       (showExit ? exitItems.map(function (it, i) { return '<th title="' + App.esc(String(it.stem || '')) + '">Q' + (i + 1) + '</th>'; }).join('') : '') +
       (showPuzzle ? '<th>Build puzzle</th>' : '') +
       (se ? '<th>How did it go?</th>' : '') +
@@ -9624,6 +9735,28 @@ window.OLS_TRANSPORT = {
         '<ul class="live-legend-list">' + feat.exitItems.map(function (it, i) {
           return '<li><b>Q' + (i + 1) + '</b> &mdash; ' + App.esc(String(it.stem || '')) + '</li>';
         }).join('') + '</ul>');
+    }
+    /* DFM 191b: the main-activity column, explained in plain words. A number with
+       no key beside it is exactly the unreadable-glyph fault DFM 156(c) was
+       written about, so the legend ships in the same commit as the column. */
+    if (feat.casework) {
+      out.push('<p>The <b>' + App.esc(feat.casework.title) + '</b> column is the hour&rsquo;s main work: how many ' +
+        'of the player tickets she closed. A case only closes when she has written her case log AND re-played ' +
+        'the game to watch the bug not happen. <b class="lc-act all">4/4</b> means every case closed; ' +
+        '<b class="lc-act some">2/4</b> means some still open; <b class="lc-act none">0/4</b> means none yet; ' +
+        '<span class="lc-dash">&ndash;</span> means she has not started the board. Hover a number to read what ' +
+        'happened, including whether the stamps were gold (solved unaided) or silver (HQ&rsquo;s clue was taken ' +
+        '&mdash; still a closed case). <span class="lc-ship">&#128674;</span> means the fixed game reached her ' +
+        'Drive' + (feat.casework.stretch ? '; <span class="lc-stretch">&#11088;</span> means she took the stretch job too' : '') + '.</p>');
+    }
+    if (feat.studio) {
+      out.push('<p>The <b>' + App.esc(feat.studio.title) + '</b> column is her own game: how many of its QA tests ' +
+        'passed. She cannot open her doors to the gallery until all four are green, so ' +
+        '<b class="lc-act all">4/4</b> is a game that reacts, counts and ends. Hover a number to read what ' +
+        'happened. A test that failed first and was then fixed is a good sign, not a bad one &mdash; that is QA ' +
+        'working, and the hover says so. <span class="lc-beta">IN BETA</span> means she ran out of time and ' +
+        'exhibited an unfinished game on purpose, which is a real studio thing to do and is not a fault; ' +
+        '<span class="lc-stretch">&#11088;</span> means she added and tested a second variable.</p>');
     }
     if (feat.stretch) {
       out.push('<p>A gold star <span class="lc-stretch">&#11088;</span> beside a name means she claimed the ' +
@@ -10940,6 +11073,24 @@ window.OLS_TRANSPORT = {
       'difference between a wrong answer and no answer at all. Lessons that close with a build-the-code ' +
       'puzzle add a <b>Build puzzle</b> column beside the questions &mdash; one tick or cross for whether ' +
       'the pupil&rsquo;s rebuilt program was right.</p>' +
+      /* DFM 191b: taught here as well as in the on-screen legend, because a
+         teacher meeting the tab for the first time reads the Guide, and a
+         teacher mid-lesson reads the legend (138.4 - patient completeness). */
+      '<p>Some lessons spend most of the hour inside a single big activity, and those get a column of ' +
+      'their own, named after the activity itself. In Lesson 4 it is <b>The Case Board</b>, and the ' +
+      'number is how many of the four broken-game cases that pupil has closed &mdash; a case only closes ' +
+      'once she has written her case log and re-played the game to watch the bug not happen. In Lesson 5 ' +
+      'it is <b>The Studio Sprint</b>, and the number is how many of the four QA tests her own game has ' +
+      'passed; she cannot open her doors at Press Night until all four are green. Green means finished, ' +
+      'amber means part way, grey means nothing yet, and a dash means she has not started that activity ' +
+      'at all. <b>Hover any of these numbers</b> and you get the whole story in a sentence or two: ' +
+      'whether her case stamps were gold (solved unaided) or silver (she took HQ&rsquo;s clue, which is ' +
+      'still a closed case), whether the fixed game reached her Drive, whether a QA test failed and was ' +
+      'then fixed, and whether she took the stretch job. Two of those are worth reading generously: a ' +
+      'test that failed first and passed later is QA working exactly as it should, and a game tagged ' +
+      '<b>IN BETA</b> is a pupil who ran out of time and exhibited anyway, which is what real studios do. ' +
+      'This column is the answer to &ldquo;what is my class actually doing right now?&rdquo; during the ' +
+      'longest part of either hour.</p>' +
       '<p>The <b>How did it go?</b> columns are different: they are the pupil&rsquo;s own words, not ' +
       'marks. At the end of every lesson she rates herself against three I-can statements, says whether ' +
       'the hour felt easy, just right or tricky, and can leave you a private comment, which comes to you ' +

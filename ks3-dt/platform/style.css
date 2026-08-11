@@ -1068,6 +1068,21 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .lc-no { color: var(--bad); font-weight: 700; }
 .lc-mid { color: #8A6D00; font-weight: 700; }
 .lc-skip, .lc-dash { color: #9AA5B5; font-weight: 700; }
+/* the main-activity column (DFM 191b): a count a teacher can read at a glance
+   across a room, with its own hover sentence. Colour carries "finished / part
+   way / not yet" WITHOUT carrying "good / bad" - an unfinished board is normal
+   mid-lesson, and a red-looking number would read as a verdict on the pupil. */
+.lc-actwrap { cursor: help; white-space: nowrap; }
+.lc-act { font-variant-numeric: tabular-nums; font-weight: 800; }
+.lc-act.all { color: #1E9459; }
+.lc-act.some { color: #A8760B; }
+.lc-act.none { color: #7A8798; }
+.lc-ship { font-size: 0.92em; }
+.lc-beta {
+  display: inline-block; margin-left: 4px; padding: 1px 6px; border-radius: 999px;
+  background: #FDF2D9; border: 1px solid #E0B24A; color: #7A5A05;
+  font-size: 0.68rem; font-weight: 800; letter-spacing: 0.04em; vertical-align: 1px;
+}
 /* clipped on purpose: the full comment is on hover and in Copy CSV, and a wide
    comment column would push the marked answers off the edge of the panel */
 .lc-comment { display: inline-block; max-width: 8ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
