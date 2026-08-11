@@ -2649,7 +2649,14 @@
         '<p class="rally-timer-head">Go ' + '<span class="rally-go-n">1</span> of ' + GOES + '</p>' +
         '<div class="rally-timer-face"><span class="rally-timer-num">' + secs + '</span></div>' +
         '<div class="rally-timer-bar"><span class="rally-timer-fill"></span></div>' +
-        '<p class="rally-timer-say">Ready when you are — the referee presses the button.</p>' +
+        /* his 11 Aug find: "the referee presses the button" never said WHOSE
+           screen this is, and the referee is standing at someone else's machine.
+           Content-driven (so it goes through the language gate like every other
+           pupil sentence) and solo-aware, because a catch-up pupil has no
+           referee and must not be told to wait for one (rule 35). */
+        '<p class="rally-timer-say">' + esc(solo
+          ? (cfg.soloTimerSay || 'You are refereeing yourself today. When you are ready, click the button below to start your ' + secs + ' seconds.')
+          : (cfg.timerSay || 'Referee — this screen belongs to the player, not to you. When she is ready, click the button below to start her ' + secs + ' seconds.')) + '</p>' +
         '<button class="primary-btn rally-timer-btn" type="button">Start the ' + secs + ' seconds</button>' +
         '</div>';
 

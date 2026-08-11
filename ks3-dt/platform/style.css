@@ -1705,7 +1705,11 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .rally-step:hover:not(:disabled) { border-color: #FFD84D; background: #1A2E58; }
 .rally-step:disabled { opacity: 0.32; cursor: default; }
 .rally-step[data-d="10"], .rally-step[data-d="-10"] { width: 46px; font-size: 0.85rem; }
-.rally-confirm { margin-top: 14px; }
+/* his 11 Aug find: the confirm box had a top margin and no bottom one, so its
+   filled background sat flush against "Send in my scores" underneath it and the
+   two read as one block. Every other confirm-step on the platform is followed by
+   prose, which is why this only showed here. */
+.rally-confirm { margin: 14px 0 16px; }
 
 /* THE FIVE-SECOND TIMER (DFM 185) — the referee starts it on the player's own
    screen, so a pair, a cover class and a catch-up pupil all work the same way. */
