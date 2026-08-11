@@ -226,7 +226,15 @@ const MAX_WORDS = 34;
    (DFM 35 + 146a: a harness must never print a fault the app does not have).
    So prose checks see the string with its code spans removed; the LEXICON still
    sees everything, because a banned word is banned wherever it hides. */
-const prose = (text) => String(text).replace(/`[^`]*`/g, ' ');
+/* DFM 192a — the ** bold markers are AUTHORING marks, not words. Every check
+   (word ceilings, banned register, defining phrases, dash chains) must see the
+   sentence the CHILD sees, or "a **BUG** has meant a **mistake**" would read as
+   different text from the same sentence unbolded, and a bolded banned word
+   would slip the lexicon. Stripped here, at the single choke point every check
+   already goes through. The LEDGER still hashes the raw authored string, so
+   adding or removing emphasis correctly voids the judgement and re-asks it. */
+const unbold = (text) => String(text).replace(/\*\*([^*]+)\*\*/g, '$1');
+const prose = (text) => unbold(String(text)).replace(/`[^`]*`/g, ' ');
 
 /* ------------------------------------------------------------------ *
  * THE CHECKS. Each returns an array of problem strings.
@@ -1027,14 +1035,15 @@ function main() {
     L.strings.forEach(s => {
       n++;
       const orderBearing = ORDER_BEARING.test(s.path);
+      const plain = unbold(s.text);          // the child's text, never the markers
       const found = orderBearing
-        ? lexiconCheck(s.text)
+        ? lexiconCheck(plain)
         : [].concat(
-            lengthCheck(s.text, reader),
-            dashChainCheck(s.text),
-            inlineSequenceCheck(s.text),
-            arrowChainCheck(s.text),
-            lexiconCheck(s.text)
+            lengthCheck(plain, reader),
+            dashChainCheck(plain),
+            inlineSequenceCheck(plain),
+            arrowChainCheck(plain),
+            lexiconCheck(plain)
           );
       found.forEach(f => (isLocked ? locked : problems).push(s.path + ': ' + f));
     });

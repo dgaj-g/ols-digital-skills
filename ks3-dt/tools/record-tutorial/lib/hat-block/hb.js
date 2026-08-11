@@ -17,9 +17,13 @@
    picture stay in step and a re-record is reproducible. No Math.random anywhere.
 
    window.hb.ready   resolves once the first frame has been drawn
-   window.hb.play(n) plays beat n (1..6), resolves when it finishes
+   window.hb.play(n) plays beat n (1..7), resolves when it finishes
    window.hb.probe() pixel samples, so the recorder can PROVE the canvas is not a
-                     black rectangle before it trusts the take (DFM 146b) */
+                     black rectangle before it trusts the take (DFM 146b)
+   window.hb.probeTokens() projects each VISIBLE event token's height to screen
+                     pixels. record.js asserts >= 110px at every naming pause and
+                     throws otherwise — DFM 192e's legibility law, measured in
+                     real pixels rather than judged by eye (146b). */
 (function () {
   var W = 1280, H = 720;
   var NAVY = 0x060D1F;
@@ -187,26 +191,111 @@
   gapMark.material.opacity = 0;
   scene.add(gapMark);
 
-  /* ---------- the events ---------- */
-  function makeOrb(colour, glyph) {
+  /* ---------- THE EVENT TOKENS ----------
+     DAMIEN, 11 Aug 2026 (DFM 192e): "the little things flying across at the top
+     can't hardly be seen… it wasn't a green flag that dropped in there. It
+     wasn't an arrow key… the exact polar opposite of impressiveness to the
+     variable animation."
+     He is right, and it wrote the law: IN A CONCEPT ANIMATION, EVERY ACTOR MUST
+     BE A PHYSICALLY RECOGNISABLE THING, LARGE ENOUGH TO READ, ON SCREEN LONG
+     ENOUGH TO NAME. The 0.3-unit glyph orbs (⚑ ← ␣, about 40px on a 720p frame,
+     three at once, crossing frame in 2.4s) are gone entirely. In their place:
+     a real green flag on a pole, and real arrow KEYCAPS — the same keys she
+     presses to play the game. One at a time, and each one pauses close to
+     camera while the caption names it. Legibility is not asserted by eye: see
+     window.hb.probeTokens(), which the recorder gates the take on. */
+
+  /* An arrow drawn as CANVAS PATHS, never a glyph. A missing font renders a
+     glyph as a tofu box and the take would still look "fine" to a pixel probe —
+     and this film is recorded under a Windows UA on headless Chromium, where
+     the available fonts are not ours to assume. Paths always draw. */
+  function arrowTexture(dir) {
+    var S = 256;
+    var c = document.createElement('canvas'); c.width = c.height = S;
+    var g = c.getContext('2d');
+    g.fillStyle = '#1B2740';
+    g.translate(S / 2, S / 2);
+    if (dir === 'left') g.rotate(Math.PI);
+    /* shaft + head, drawn pointing RIGHT then rotated */
+    var shaftH = S * 0.17, shaftW = S * 0.34, headW = S * 0.30, headH = S * 0.52;
+    g.beginPath();
+    g.moveTo(-S * 0.34, -shaftH / 2);
+    g.lineTo(-S * 0.34 + shaftW, -shaftH / 2);
+    g.lineTo(-S * 0.34 + shaftW, -headH / 2);
+    g.lineTo(-S * 0.34 + shaftW + headW, 0);
+    g.lineTo(-S * 0.34 + shaftW, headH / 2);
+    g.lineTo(-S * 0.34 + shaftW, shaftH / 2);
+    g.lineTo(-S * 0.34, shaftH / 2);
+    g.closePath();
+    g.fill();
+    var tex = new THREE.CanvasTexture(c);
+    tex.anisotropy = 4;
+    return tex;
+  }
+
+  /* A KEYCAP: skirt + raised pale key top + a huge dark arrow printed on it.
+     1.35 units square — at its naming pause that is ~175px tall on the frame. */
+  function makeKeycap(dir) {
     var g = new THREE.Group();
-    var core = new THREE.Mesh(new THREE.SphereGeometry(0.3, 18, 14),
-      new THREE.MeshBasicMaterial({ color: colour }));
-    g.add(core);
-    var ha = glow('rgba(255,255,255,0.5)', 2.1);
+    var K = 1.35, D = 0.34;
+    var skirt = new THREE.Mesh(new THREE.BoxGeometry(K, K, D),
+      new THREE.MeshStandardMaterial({ color: 0xC7CFDE, roughness: 0.62, metalness: 0.04 }));
+    g.add(skirt);
+    var top = new THREE.Mesh(new THREE.BoxGeometry(K * 0.84, K * 0.84, 0.09),
+      new THREE.MeshStandardMaterial({ color: 0xF2F5FA, roughness: 0.5, metalness: 0.02 }));
+    top.position.z = D / 2 + 0.04;
+    g.add(top);
+    var art = new THREE.Mesh(new THREE.PlaneGeometry(0.92, 0.92),
+      new THREE.MeshBasicMaterial({ map: arrowTexture(dir), transparent: true, depthWrite: false }));
+    art.position.z = D / 2 + 0.095;
+    art.renderOrder = 5;
+    g.add(art);
+    var ha = glow('rgba(255,255,255,0.34)', 3.2);
+    ha.position.z = -0.3;
     g.add(ha);
-    var t = label(glyph, { colour: '#0B1730', h: 0.3, fs: 110 });
-    t.position.set(0, 0, 0.32);
-    g.add(t);
     g.visible = false;
     scene.add(g);
-    g.userData = { halo: ha };
+    g.userData = { halo: ha, kind: 'keycap' };
     return g;
   }
-  var orbFlag = makeOrb(0x4CBB59, '⚑');
-  var orbLeft = makeOrb(0x4C97FF, '←');
-  var orbRight = makeOrb(0x4C97FF, '→');
-  var orbSpace = makeOrb(0xB48CFF, '␣');
+
+  /* THE GREEN FLAG: pole + flag mesh in Scratch's own green, ~1.7 units tall —
+     the thing she clicks to start the game, not a symbol standing for it. */
+  function makeGreenFlag() {
+    var g = new THREE.Group();
+    var poleMat = new THREE.MeshStandardMaterial({ color: 0xD8DEE9, roughness: 0.5, metalness: 0.25 });
+    var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 1.7, 14), poleMat);
+    pole.position.set(-0.44, 0, 0);
+    g.add(pole);
+    var foot = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.24, 0.1, 18), poleMat);
+    foot.position.set(-0.44, -0.85, 0);
+    g.add(foot);
+    var mesh = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.62, 0.07),
+      new THREE.MeshStandardMaterial({ color: 0x4CBB59, roughness: 0.42, metalness: 0.03,
+        emissive: new THREE.Color(0x4CBB59), emissiveIntensity: 0.14 }));
+    mesh.position.set(0.06, 0.5, 0);
+    g.add(mesh);
+    var ha = glow('rgba(120,235,140,0.42)', 3.4);
+    ha.position.set(0, 0.2, -0.3);
+    g.add(ha);
+    g.visible = false;
+    scene.add(g);
+    g.userData = { halo: ha, kind: 'flag' };
+    return g;
+  }
+
+  var tokFlag = makeGreenFlag();
+  var tokLeft = makeKeycap('left');
+  var tokRight = makeKeycap('right');
+  var TOKENS = [
+    { name: 'green flag', g: tokFlag },
+    { name: 'left arrow keycap', g: tokLeft },
+    { name: 'right arrow keycap', g: tokRight }
+  ];
+
+  /* where a token pauses to be NAMED: centre stage, close to camera, so it is
+     the biggest thing on the frame while the caption says what it is */
+  var NAME_SPOT = [0, 0.8, 6.6];
 
   /* the loose hat that lands in beat 6 */
   var looseHat = makeHat('when right arrow key pressed', true);
@@ -268,17 +357,53 @@
     });
   }
 
-  /* an orb flying an arc from a to b; lands = it drops INTO the hat */
-  function flyOrb(t, orb, from, to, at, dur, arc) {
-    t.call(function () { orb.visible = true; orb.position.set(from[0], from[1], from[2]); }, null, at);
-    t.to(orb.position, { x: to[0], duration: dur, ease: 'none' }, at);
-    t.to(orb.position, { y: from[1] + (arc || 1.2), duration: dur / 2, ease: 'sine.out' }, at);
-    t.to(orb.position, { y: to[1], duration: dur / 2, ease: 'sine.in' }, at + dur / 2);
-    t.to(orb.position, { z: to[2], duration: dur, ease: 'none' }, at);
+  /* ---------- token motion (the pacing law lives here) ----------
+     enter ~2.0s -> PAUSE ~1.8s at centre stage while the caption names it ->
+     travel ~1.6s to its hat. Nothing on screen moves faster than a child can
+     read it, and only ever ONE event is on screen (DFM 192e). */
+  function enterAndName(t, tok, from, at) {
+    t.call(function () {
+      tok.visible = true;
+      tok.position.set(from[0], from[1], from[2]);
+      tok.scale.setScalar(1);
+      tok.rotation.set(0, 0, 0);
+    }, null, at);
+    t.to(tok.position, { x: NAME_SPOT[0], y: NAME_SPOT[1], z: NAME_SPOT[2], duration: 2.0, ease: 'power2.out' }, at);
+    /* a slow quarter-turn while it settles: it reads as a THING, not a sprite */
+    t.fromTo(tok.rotation, { y: -0.5 }, { y: 0, duration: 2.0, ease: 'power2.out' }, at);
+    return at + 2.0 + 1.8;                       // the naming pause is real time
   }
-  function hideOrb(t, orb, at) {
-    t.to(orb.scale, { x: 0.01, y: 0.01, z: 0.01, duration: 0.3 }, at);
-    t.call(function () { orb.visible = false; orb.scale.setScalar(1); }, null, at + 0.32);
+  /* the matching hat's label brightens BEFORE the catch: the match must be seen,
+     not implied — and every other stack stays dark while it happens */
+  function armHat(t, stack, at) {
+    if (!stack.userData.hat) return;
+    t.to(stack.userData.hat.userData.mat, { emissiveIntensity: 0.55, duration: 0.5 }, at);
+  }
+  function travelToHat(t, tok, stack, at, dur) {
+    var p = stack.position;
+    t.to(tok.position, { x: p.x, y: p.y + 0.44, z: 0.34, duration: dur || 1.6, ease: 'power2.inOut' }, at);
+    t.to(tok.scale, { x: 0.72, y: 0.72, z: 0.72, duration: dur || 1.6, ease: 'power2.inOut' }, at);
+    return at + (dur || 1.6);
+  }
+  /* THE CATCH, made visible: the dome flashes, the token sinks in and is gone */
+  function catchAt(t, tok, stack, at) {
+    var hatMat = stack.userData.hat && stack.userData.hat.userData.mat;
+    if (hatMat) {
+      t.to(hatMat, { emissiveIntensity: 1.0, duration: 0.16 }, at);
+      t.to(hatMat, { emissiveIntensity: 0.2, duration: 0.55 }, at + 0.18);
+    }
+    t.to(tok.position, { y: stack.position.y - 0.1, z: -0.3, duration: 0.42, ease: 'power2.in' }, at);
+    t.to(tok.scale, { x: 0.02, y: 0.02, z: 0.02, duration: 0.42, ease: 'power2.in' }, at);
+    t.call(function () { tok.visible = false; tok.scale.setScalar(1); }, null, at + 0.46);
+    return at + 0.5;
+  }
+  function driftPastAndFade(t, tok, at) {
+    t.to(tok.position, { x: 11.5, y: -1.4, duration: 2.0, ease: 'power1.in' }, at);
+    t.to(tok.rotation, { z: -0.5, duration: 2.0 }, at);
+    tok.traverse(function (n) { if (n.material && n.material.transparent !== undefined) {} });
+    t.to(tok.scale, { x: 0.35, y: 0.35, z: 0.35, duration: 2.0, ease: 'power1.in' }, at);
+    t.call(function () { tok.visible = false; tok.scale.setScalar(1); tok.rotation.set(0, 0, 0); }, null, at + 2.05);
+    return at + 2.1;
   }
 
   var beats = {
@@ -287,93 +412,93 @@
       var t = tl();
       [stackA, stackB, stackC].forEach(function (s, i) {
         s.scale.setScalar(0.01);
-        t.to(s.scale, { x: 1, y: 1, z: 1, duration: 0.9, ease: 'back.out(1.3)' }, 0.15 + i * 0.22);
+        t.to(s.scale, { x: 1, y: 1, z: 1, duration: 0.9, ease: 'back.out(1.3)' }, 0.15 + i * 0.28);
       });
-      t.to(gapMark.material, { opacity: 0.75, duration: 0.6 }, 1.5);
-      t.to({}, { duration: 2.2 });
+      t.to(gapMark.material, { opacity: 0.75, duration: 0.6 }, 1.7);
+      t.to({}, { duration: 3.6 });
       return t;
     },
 
-    /* 2 — events exist, and they keep happening */
+    /* 2 — the GREEN FLAG arrives, and stops, and is named. */
     2: function () {
       var t = tl();
-      flyOrb(t, orbFlag, [-12, 5.2, 1.5], [12, 5.2, 1.5], 0.0, 2.4, 0.8);
-      flyOrb(t, orbLeft, [-12, 6.0, 0.5], [12, 6.0, 0.5], 0.7, 2.4, 0.8);
-      flyOrb(t, orbSpace, [-12, 4.6, 2.0], [12, 4.6, 2.0], 1.4, 2.4, 0.8);
-      hideOrb(t, orbFlag, 2.4);
-      hideOrb(t, orbLeft, 3.1);
-      hideOrb(t, orbSpace, 3.8);
-      t.to({}, { duration: 4.4 });
+      var after = enterAndName(t, tokFlag, [-11, 4.4, 4.0], 0.2);
+      t.to({}, { duration: 2.2 }, after);
       return t;
     },
 
-    /* 3 — a hat CATCHES its event, and everything under it runs */
+    /* 3 — the hat CATCHES it, and everything under the hat runs */
     3: function () {
       var t = tl();
-      t.to(camera.position, { x: -1.7, duration: 1.0, ease: 'sine.inOut',
-        onUpdate: function () { camera.lookAt(-1.9, 0.85, 0); } }, 0);
-      flyOrb(t, orbFlag, [-12, 5.6, 1.6], [-4.15, 2.34, 0.0], 0.5, 1.5, 0.7);
-      t.to(orbFlag.scale, { x: 0.01, y: 0.01, z: 0.01, duration: 0.28 }, 1.95);
-      t.call(function () { orbFlag.visible = false; orbFlag.scale.setScalar(1); }, null, 2.25);
-      t.to(stackA.userData.hat.userData.mat, { emissiveIntensity: 1.0, duration: 0.2 }, 1.95);
-      runStack(t, stackA, 2.2);
-      t.to({}, { duration: 4.6 });
+      armHat(t, stackA, 0.2);
+      var landed = travelToHat(t, tokFlag, stackA, 0.6, 1.6);
+      var done = catchAt(t, tokFlag, stackA, landed);
+      runStack(t, stackA, done + 0.15);
+      t.to({}, { duration: 3.2 });
       return t;
     },
 
-    /* 4 — a different hat, a different event */
+    /* 4 — a different EVENT, a different hat */
     4: function () {
       var t = tl();
-      t.to(camera.position, { x: 0, duration: 1.0, ease: 'sine.inOut',
-        onUpdate: function () { camera.lookAt(0, 0.85, 0); } }, 0);
-      flyOrb(t, orbLeft, [-12, 5.9, 1.4], [0, 2.34, 0.0], 0.5, 1.5, 0.7);
-      t.to(orbLeft.scale, { x: 0.01, y: 0.01, z: 0.01, duration: 0.28 }, 1.95);
-      t.call(function () { orbLeft.visible = false; orbLeft.scale.setScalar(1); }, null, 2.25);
-      t.to(stackB.userData.hat.userData.mat, { emissiveIntensity: 1.0, duration: 0.2 }, 1.95);
-      runStack(t, stackB, 2.2);
-      t.to({}, { duration: 4.4 });
+      var after = enterAndName(t, tokLeft, [-11, 3.4, 4.0], 0.2);
+      armHat(t, stackB, after - 0.4);
+      var landed = travelToHat(t, tokLeft, stackB, after, 1.6);
+      var done = catchAt(t, tokLeft, stackB, landed);
+      runStack(t, stackB, done + 0.15);
+      t.to({}, { duration: 2.6 });
       return t;
     },
 
-    /* 5 — the bare stack: events fly straight past it, twice */
+    /* 5 — the bare stack: the event arrives, hovers, and NOTHING catches it */
     5: function () {
       var t = tl();
-      t.to(camera.position, { x: 1.7, duration: 1.0, ease: 'sine.inOut',
-        onUpdate: function () { camera.lookAt(1.9, 0.85, 0); } }, 0);
-      /* aimed AT it, and nothing catches them */
-      flyOrb(t, orbRight, [-9, 5.4, 1.6], [13, 3.2, 1.6], 0.6, 2.0, 0.5);
-      flyOrb(t, orbSpace, [-9, 4.4, 2.2], [13, 2.6, 2.2], 1.5, 2.0, 0.5);
-      t.to(gapMark.scale, { x: 1.5, y: 1.5, duration: 0.3 }, 1.9);
-      t.to(gapMark.scale, { x: 1, y: 1, duration: 0.7, ease: 'elastic.out(1,0.4)' }, 2.2);
-      /* it does not even flicker: the dead stack's emissive never moves */
-      hideOrb(t, orbRight, 2.7);
-      hideOrb(t, orbSpace, 3.6);
-      t.to({}, { duration: 4.6 });
+      var after = enterAndName(t, tokRight, [-11, 3.2, 4.0], 0.2);
+      /* it goes to the orphan and SLOWS — the beat where she expects a catch */
+      t.to(tokRight.position, { x: stackC.position.x, y: 3.05, z: 1.0, duration: 1.8, ease: 'power2.out' }, after);
+      t.to(tokRight.scale, { x: 0.8, y: 0.8, z: 0.8, duration: 1.8 }, after);
+      t.to(gapMark.scale, { x: 1.45, y: 1.45, duration: 0.35 }, after + 1.5);
+      t.to(gapMark.scale, { x: 1, y: 1, duration: 0.8, ease: 'elastic.out(1,0.4)' }, after + 1.85);
+      /* the dead stack does not even flicker: no emissive move, anywhere */
+      t.to({}, { duration: 0.9 }, after + 1.8);
+      driftPastAndFade(t, tokRight, after + 2.7);
+      t.to({}, { duration: 2.0 });
       return t;
     },
 
-    /* 6 — the fix: give the stack its trigger, and it wakes */
+    /* 6 — the fix: give the stack its hat, and its colours wake */
     6: function () {
       var t = tl();
-      t.to(camera.position, { x: 0.9, duration: 1.2, ease: 'sine.inOut',
-        onUpdate: function () { camera.lookAt(1.0, 0.85, 0); } }, 0);
       t.call(function () { looseHat.visible = true; }, null, 0);
       t.to(gapMark.material, { opacity: 0, duration: 0.4 }, 0.2);
-      t.fromTo(looseHat.position, { y: 8.4 }, { y: 1.9, duration: 1.1, ease: 'power3.in' }, 0.4);
-      /* the snap: a squash, a flash, and the stack is whole */
-      t.to(looseHat.scale, { x: 1.09, y: 0.9, duration: 0.1 }, 1.5);
-      t.to(looseHat.scale, { x: 1, y: 1, duration: 0.45, ease: 'elastic.out(1,0.4)' }, 1.6);
-      t.to(looseHat.userData.mat, { emissiveIntensity: 1.0, duration: 0.14 }, 1.5);
-      t.to(looseHat.userData.mat, { emissiveIntensity: 0.16, duration: 0.5 }, 1.66);
-      wakeColours(t, stackC, 1.6);
-      flyOrb(t, orbRight, [-10, 5.4, 1.6], [4.15, 2.34, 0.0], 2.3, 1.3, 0.6);
-      t.to(orbRight.scale, { x: 0.01, y: 0.01, z: 0.01, duration: 0.26 }, 3.55);
-      t.call(function () { orbRight.visible = false; orbRight.scale.setScalar(1); }, null, 3.85);
-      /* the loose hat runs with the stack it just joined */
-      t.to(looseHat.userData.mat, { emissiveIntensity: 0.9, duration: 0.22 }, 3.8);
-      t.to(looseHat.userData.mat, { emissiveIntensity: 0.16, duration: 0.5 }, 4.04);
-      runStack(t, stackC, 4.06);
-      t.to({}, { duration: 5.0 });
+      t.fromTo(looseHat.position, { y: 8.4 }, { y: 1.9, duration: 1.4, ease: 'power3.in' }, 0.5);
+      t.to(looseHat.scale, { x: 1.09, y: 0.9, duration: 0.1 }, 1.9);
+      t.to(looseHat.scale, { x: 1, y: 1, duration: 0.45, ease: 'elastic.out(1,0.4)' }, 2.0);
+      t.to(looseHat.userData.mat, { emissiveIntensity: 1.0, duration: 0.14 }, 1.9);
+      t.to(looseHat.userData.mat, { emissiveIntensity: 0.16, duration: 0.5 }, 2.06);
+      wakeColours(t, stackC, 2.0);
+      /* from here on the loose hat IS stack C's hat: beat 7's catch flashes
+         it, and runStack lights it with the blocks it now owns. */
+      t.call(function () { stackC.userData.hat = looseHat; stackC.userData.awake = true; }, null, 2.1);
+      t.to({}, { duration: 3.4 });
+      return t;
+    },
+
+    /* 7 — press it again: caught, and the stack runs. The shark swims right. */
+    7: function () {
+      var t = tl();
+      t.call(function () {
+        tokRight.visible = true;
+        tokRight.position.set(-9, 3.4, 3.2);
+        tokRight.scale.setScalar(1);
+        tokRight.rotation.set(0, 0, 0);
+      }, null, 0.2);
+      t.to(tokRight.position, { x: -2.2, y: 3.2, z: 2.0, duration: 1.5, ease: 'power2.out' }, 0.2);
+      armHat(t, stackC, 1.4);
+      var landed = travelToHat(t, tokRight, stackC, 1.8, 1.6);
+      var done = catchAt(t, tokRight, stackC, landed);
+      runStack(t, stackC, done + 0.15);
+      t.to({}, { duration: 3.0 });
       return t;
     }
   };
@@ -386,6 +511,28 @@
         var t = beats[n]();
         t.eventCallback('onComplete', res);
       });
+    },
+    /* DFM 192e, gated in pixels: "the little things flying across at the top
+       can't hardly be seen". A number now decides that, not an opinion. */
+    probeTokens: function () {
+      var out = [];
+      TOKENS.forEach(function (tk) {
+        if (!tk.g.visible) return;
+        /* MEASURE THE OBJECT, NOT ITS HALO. setFromObject swallows the glow
+           Sprite (scale 3.4), which reported the green flag at 441px when the
+           flag itself is 1.75 units — a gate that would have passed a 40px
+           token, i.e. exactly the defect it exists to catch. Meshes only. */
+        var box = new THREE.Box3();
+        tk.g.traverse(function (n) {
+          if (n.isMesh && n.geometry) box.expandByObject(n);
+        });
+        if (box.isEmpty()) return;
+        var c = box.getCenter(new THREE.Vector3());
+        var top = new THREE.Vector3(c.x, box.max.y, c.z).project(camera);
+        var bot = new THREE.Vector3(c.x, box.min.y, c.z).project(camera);
+        out.push({ name: tk.name, px: Math.round(Math.abs(top.y - bot.y) / 2 * H) });
+      });
+      return out;
     },
     probe: function () {
       var g = renderer.domElement.getContext('webgl2') || renderer.domElement.getContext('webgl');

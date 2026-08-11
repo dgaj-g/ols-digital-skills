@@ -12,6 +12,21 @@
      works under the hosted (googleusercontent) origin too. Absolute URLs pass through. */
   var asset = function (p) { return /^https?:/i.test(String(p)) ? p : App.asset(p); };
 
+  /* DFM 192a — the ONLY markup a pupil string may carry, and the only formatter
+     allowed to build it. Damien's hook-card ask was that key words stand out
+     ("fault", "BUG", "QA"…), and briefing lines render as plain text today.
+     ORDER MATTERS: escape the WHOLE line first, so nothing a content author
+     types can become live HTML, THEN turn **paired** markers into <b>. An
+     unmatched ** renders literally. Every line that carries no ** comes back
+     byte-identical to esc(line) — that equality is the lock control (DFM 176)
+     that keeps L1/L2/L3/L5's hooks unchanged, asserted in qa-l4-visual. */
+  function fmtBold(s) {
+    return esc(String(s == null ? '' : s)).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  }
+  /* exposed so the harness can run every other lesson's lines through the real
+     function rather than a copy of it (a copy would pass while the engine drifts) */
+  App.fmtBold = fmtBold;
+
   function el(html) {
     var d = document.createElement('div');
     d.innerHTML = html.trim();
@@ -541,6 +556,15 @@
       String(opts.text || '').split(/\n\s*\n/).map(function (para) {
         return '<p class="intro-lead">' + esc(para.trim()) + '</p>';
       }).join('') +
+      /* DFM 192b + 171: an intro that ends "every case is closed the same way:"
+         must then SHOW the way as a real numbered list, one number per line —
+         not as a chain of fragments buried in prose. Both fields are optional
+         and no other engine passes them, so every other lesson's intro card
+         renders byte-identically (locked in qa-l4-visual). */
+      (opts.steps && opts.steps.length
+        ? '<ol class="case-intro-steps">' + opts.steps.map(function (s) { return '<li>' + fmtBold(s) + '</li>'; }).join('') + '</ol>'
+        : '') +
+      (opts.after ? '<p class="case-intro-after">' + fmtBold(opts.after) + '</p>' : '') +
       (opts.extra || '') +
       '<button class="primary-btn" type="button">' + esc(beginLabel) + '</button></div>');
     host.appendChild(c);
@@ -559,7 +583,11 @@
       // optional hook-photo strip (real images, credited in assets/img/CREDITS.md)
       var photoStrip = (cfg.images && cfg.images.length)
         ? '<div class="dossier-photos">' + cfg.images.map(function (im) {
-            return '<figure><img src="' + esc(asset(im.src)) + '" alt="' + esc(im.alt || '') + '" loading="lazy">' +
+            /* DFM 192a: the strip crops every image to a 220x120 thumbnail, which
+               reduced the 1947 moth to a sliver ("you can hardly make it out").
+               `wide` is opt-in PER IMAGE so L2/L3/L5's hook strips, which are
+               genuinely strips, render byte-identically (harness-locked). */
+            return '<figure' + (im.wide ? ' class="wide"' : '') + '><img src="' + esc(asset(im.src)) + '" alt="' + esc(im.alt || '') + '" loading="lazy">' +
               (im.caption ? '<figcaption>' + esc(im.caption) + '</figcaption>' : '') + '</figure>';
           }).join('') + '</div>'
         : '';
@@ -585,7 +613,7 @@
       function reveal() {
         timers.forEach(clearTimeout);
         headline.textContent = cfg.headline;
-        linesBox.innerHTML = (cfg.lines || []).map(function (l) { return '<p class="dossier-line show">' + esc(l) + '</p>'; }).join('');
+        linesBox.innerHTML = (cfg.lines || []).map(function (l) { return '<p class="dossier-line show">' + fmtBold(l) + '</p>'; }).join('');
         showCta();
       }
       /* Safety net: a backgrounded tab throttles timers, so the animation can
@@ -603,7 +631,7 @@
           (cfg.lines || []).forEach(function (l, i) {
             timers.push(setTimeout(function () {
               var p = document.createElement('p');
-              p.className = 'dossier-line'; p.textContent = l;
+              p.className = 'dossier-line'; p.innerHTML = fmtBold(l);
               linesBox.appendChild(p);
               /* capture p, never lastChild — throttled tabs batch rAF callbacks
                  and lastChild would point at the newest line for all of them */
@@ -2953,7 +2981,9 @@
         host.appendChild(el('<div class="card case-review"><span class="intro-kicker">' + esc(chunk.title) + '</span>' +
           '<h2>Your case files, on record</h2>' + rows +
           (stretchDone ? '<p class="case-review-extra">&#11088; The Jellyfish Job: taken and closed.' + (draft.sn ? ' &ldquo;' + esc(String(draft.sn)) + '&rdquo;' : '') + '</p>' : '') +
-          '<p class="case-review-extra">' + (draft.ship ? 'Fixed build shipped to your Drive vault.' : 'The fixed build lives on in Scratch.') + '</p>' +
+          /* DFM 167b: "Vault" is Lesson 1's machine. Calling Drive a vault here
+             gave one name two meanings — Drive is Drive on every L4 surface. */
+          '<p class="case-review-extra">' + (draft.ship ? 'The fixed game is saved in your Drive.' : 'The fixed build lives on in Scratch.') + '</p>' +
           '<button class="primary-btn" type="button">Continue</button></div>'));
         host.querySelector('button').onclick = function () { ctx.next(); };
         return;
@@ -2965,6 +2995,8 @@
         kicker: chunk.title,
         title: cfg.title || 'The Case Board',
         text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
+        steps: cfg.introSteps,
+        after: cfg.introAfter,
         extra: (solo ? '' : (cfg.pairNote ? '<p class="case-pair-note">&#128101; ' + esc(cfg.pairNote) + '</p>' : ''))
       }, began ? 'Back to the board' : 'Open the case board', boardView);
 
@@ -3082,7 +3114,7 @@
           '<h2>' + esc(v.title || 'How to read someone else’s code') + '</h2>' +
           '<video controls preload="metadata" playsinline ' + (v.poster ? 'poster="' + esc(asset(v.poster)) + '"' : '') + ' src="' + esc(asset(v.src)) + '"></video>' +
           (chapters ? '<div class="vid-chapters">' + chapters + '</div>' : '') +
-          '<p class="case-handbook-note">Dip back in any time &mdash; chapter 3 is most useful when you&rsquo;re mid-case.</p>' +
+          '<p class="case-handbook-note">' + fmtBold(cfg.handbookNote || 'Come back to this film any time. Chapter 3 helps most while you are working on a case.') + '</p>' +
           backRow() + '</div>');
         host.appendChild(c);
         var vid = c.querySelector('video');
@@ -3124,17 +3156,23 @@
           '<p class="case-one-thing">&#128269; Find the ONE thing wrong &mdash; don&rsquo;t rebuild the whole script.</p>' +
           '<div class="case-clue"></div></div>' +
           '<div class="case-step"><span class="case-step-tag">3 &middot; FIX IT &amp; FILE THE LOG</span>' +
-          '<p>Make your fix in Scratch, then log it like a real QA tester &mdash; one sentence: <b>what was wrong, and what you changed</b>.</p>' +
+          '<p>' + fmtBold(cfg.logLead || 'Make your fix in Scratch. Then write your case log in the box just below — one sentence with two halves: **what was wrong**, and **what you changed**.') + '</p>' +
           (cs.mechanicSteps && cs.mechanicSteps.length
             ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b></p><ol class="case-mech-steps">' +
               cs.mechanicSteps.map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ol>'
             : (cs.mechanic ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b> ' + esc(cs.mechanic) + '</p>' : '')) +
           '<textarea class="case-log-input" maxlength="200" placeholder="' + esc(cs.logHint || 'The bug was... so I...') + '">' + esc(logText) + '</textarea>' +
-          '<p class="case-log-nudge"></p></div>' +
+          '</div>' +
           '<div class="case-step"><span class="case-step-tag">4 &middot; RE-PLAY TO PROVE IT</span>' +
           '<p>' + esc(cs.replay) + '</p>' +
-          '<p class="case-honesty">Only one kind of proof counts: you watched the bug NOT happen.</p>' +
-          '<button class="confirm-step case-close-btn" type="button" disabled><span class="confirm-box"></span><span>' + esc(cs.replayConfirm) + '</span></button></div>' +
+          '<p class="case-honesty">' + fmtBold(cfg.proofNote || 'This tick is a promise. It says: I played the game again, and I watched the bug NOT happen.') + '</p>' +
+          /* DFM 192f/193a: the reason a control is locked lives AT the control.
+             This note is rendered from the start and only removed when the tick
+             genuinely unlocks — the shipped bug was that the explanation lived
+             two steps away AND stayed blank while the log box was empty, which
+             is the exact state Damien sat in. */
+          '<p class="case-locked-note"></p>' +
+          '<button class="confirm-step case-close-btn locked" type="button" aria-disabled="true"><span class="confirm-box"></span><span>' + esc(cs.replayConfirm) + '</span></button></div>' +
           '<div class="case-stampzone"></div>' +
           backRow() + '</div>');
         host.appendChild(c);
@@ -3145,15 +3183,15 @@
         function paintClue() {
           if (wasSilver || isSilver(cs.id)) {
             clueBox.innerHTML = '<div class="case-clue-open"><p><b>HQ&rsquo;s clue:</b> ' + esc(clue.hq || '') + '</p>' +
-              '<p class="case-clue-cost">This case now stamps <b class="silver-word">SILVER</b>. Solve the rest unaided for gold.</p></div>';
+              '<p class="case-clue-cost">' + fmtBold(cfg.clueSilverNote || 'You took HQ’s clue, so this case stamps SILVER when it closes. A silver case still counts — solve the next one without the clue for GOLD.') + '</p></div>';
             return;
           }
-          clueBox.innerHTML = '<button class="ghost-btn case-clue-btn" type="button">Stuck? Start the clue routine</button>';
+          clueBox.innerHTML = '<button class="ghost-btn case-clue-btn" type="button">' + esc(cfg.clueButton || 'Stuck? Open the help steps') + '</button>';
           clueBox.querySelector('.case-clue-btn').onclick = function () {
             clueBox.innerHTML = '<div class="case-clue-open">' +
-              '<p><b>Step 1 &mdash; free:</b> ' + esc(clue.free || 'Re-read the ticket. What EXACTLY does the player say happens?') + '</p>' +
-              '<p><b>Step 2 &mdash; detective protocol:</b> ' + esc(solo ? (clue.consultSolo || 'No other agencies on shift right now — go straight to Step 3 if Step 1 didn’t crack it.') : (clue.consult || 'Consult another agency that has CLOSED this case. One question, detective to detective.')) + '</p>' +
-              '<button class="ghost-btn case-hq-btn" type="button">Still stuck &mdash; open HQ&rsquo;s clue (this case stamps SILVER, not gold)</button></div>';
+              '<p><b>' + esc(cfg.clueStep1Head || 'Help step 1 — costs nothing') + ':</b> ' + esc(clue.free || 'Re-read the ticket. What EXACTLY does the player say happens?') + '</p>' +
+              '<p><b>' + esc(cfg.clueStep2Head || 'Help step 2 — ask another agency') + ':</b> ' + esc(solo ? (clue.consultSolo || 'No other agencies on shift right now — go straight to Step 3 if Step 1 didn’t crack it.') : (clue.consult || 'Consult another agency that has CLOSED this case. One question, detective to detective.')) + '</p>' +
+              '<button class="ghost-btn case-hq-btn" type="button">' + esc(cfg.clueHqButton || 'Help step 3 — show HQ’s clue (this case will then stamp SILVER instead of GOLD)') + '</button></div>';
             clueBox.querySelector('.case-hq-btn').onclick = function () {
               if (!isSilver(cs.id)) { silver.push(String(cs.id)); saveBoard(); }
               paintClue();
@@ -3163,35 +3201,44 @@
         paintClue();
 
         /* The log gates the close button - a case without a log isn't casework.
-           A raw length check was gameable (the hint stem itself cleared it, and
-           ONE generic sentence closed all four cases), so the gate asks the log
-           to NAME the thing that was wrong: >=6 words, not a near-copy of the
-           hint stem, and at least one of that case's own terms (authored
-           generously, with synonyms - a genuine answer in a pupil's own words
-           passes). The nudge says which part is missing, so it never reads as
-           arbitrary. Terms sit in public config deliberately: they name the
-           SUBJECT of the bug, never the fix, and the platform still marks
-           nothing - the proof is the re-play. */
+           WHAT THIS GATE MAY NOT DO (DFM 193a, written from Damien's own sit):
+           it used to demand one of eight listed words (hat/trigger/event/when/
+           key/top/arrow/start). That is a hidden vocabulary test on a child's
+           own sentence, and it marked honest answers WRONG - "it was missing
+           the block that makes it move, so I added one" failed it. The machine
+           never vets a pupil's words. Only two honesty floors remain: enough of
+           a sentence to be a log at all (>=6 words), and enough of it her own
+           that the hint stem alone cannot clear it (>=3 words). Judging the
+           log's QUALITY is the teacher's job at the desk, exactly as the brief
+           says - and the real proof is still the re-play, not the text. */
         var ta = c.querySelector('.case-log-input');
         var closeBtn = c.querySelector('.case-close-btn');
-        var nudge = c.querySelector('.case-log-nudge');
-        var terms = (cs.logTerms || []).map(function (t) { return String(t).toLowerCase(); });
+        var lockedNote = c.querySelector('.case-locked-note');
         var stemWords = String(cs.logHint || '').toLowerCase().replace(/[^a-z ]/g, ' ').split(/\s+/).filter(Boolean);
         function logProblem() {
           var raw = ta.value.trim();
           var low = raw.toLowerCase();
           var words = low.replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(Boolean);
-          if (words.length < 6) return 'Two halves, remember: what was wrong, and what you changed.';
+          if (words.length < 6) return fmtBold(cfg.nudgeShort || 'Your log needs both halves in one sentence: what was wrong, and what you changed.');
           var own = words.filter(function (w) { return stemWords.indexOf(w) === -1; });
-          if (own.length < 3) return 'In your OWN words - the hint is a starter, not the log.';
-          if (terms.length && !terms.some(function (t) { return low.indexOf(t) !== -1; }))
-            return 'Name the block or script you changed - a log HQ can act on.';
+          if (own.length < 3) return fmtBold(cfg.nudgeOwnWords || 'Say it in your OWN words — the grey line in the box is only a starter.');
           return '';
         }
         function gateClose() {
-          var p = logProblem();
-          closeBtn.disabled = !!p;
-          nudge.textContent = ta.value.trim() ? p : '';
+          var p = ta.value.trim()
+            ? logProblem()
+            : fmtBold(cfg.lockedNote || 'This stamp is locked until your case log in step 3 is written — both halves.');
+          if (p) {
+            closeBtn.classList.add('locked');
+            closeBtn.setAttribute('aria-disabled', 'true');
+            lockedNote.innerHTML = p;
+            lockedNote.hidden = false;
+          } else {
+            closeBtn.classList.remove('locked');
+            closeBtn.removeAttribute('aria-disabled');
+            lockedNote.innerHTML = '';
+            lockedNote.hidden = true;
+          }
         }
         ta.oninput = function () {
           logs[cs.id] = ta.value.trim();
@@ -3201,8 +3248,24 @@
         gateClose();
 
         closeBtn.onclick = function () {
+          /* Locked is not mute and not dead: the click gets an answer, and the
+             answer points at the box that unlocks it. DFM 42/85/161. */
+          if (closeBtn.classList.contains('locked')) {
+            lockedNote.classList.remove('pulse');
+            void lockedNote.offsetWidth;            // restart the animation
+            lockedNote.classList.add('pulse');
+            ta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            ta.classList.add('flash');
+            setTimeout(function () { ta.classList.remove('flash'); }, 1000);
+            ta.focus();
+            return;
+          }
           if (isClosed(cs.id)) return;          // double-tap / stale view guard
+          /* Disabled AFTER a successful close is a finished control, not a mute
+             lock: it ticks, the CASE CLOSED stamp lands beside it, and the board
+             returns in 1.5s. qa-no-mute-locks exempts .ticked for that reason. */
           closeBtn.disabled = true;
+          lockedNote.hidden = true;
           logs[cs.id] = ta.value.trim();
           closed.push(String(cs.id));
           saveBoard();
@@ -3234,20 +3297,38 @@
           '<div class="case-step"><span class="case-step-tag">PROVE IT</span><p>' + esc(s.test) + '</p>' +
           '<p class="case-rc-ask">' + esc(s.ask || 'One line for the release notes: what did you add, and what does it do to the player?') + '</p>' +
           '<textarea class="case-log-input case-stretch-note" maxlength="200" placeholder="' + esc(s.notePlaceholder || 'I added... and now...') + '"' + (stretchDone ? ' disabled' : '') + '>' + esc(stretchNote) + '</textarea>' +
-          '<button class="confirm-step" type="button" disabled><span class="confirm-box' + (stretchDone ? ' done' : '') + '"></span><span>' + esc(s.confirm) + '</span></button></div>' +
+          '<p class="case-locked-note"></p>' +
+          '<button class="confirm-step' + (stretchDone ? '' : ' locked') + '" type="button"' + (stretchDone ? '' : ' aria-disabled="true"') + '><span class="confirm-box' + (stretchDone ? ' done' : '') + '"></span><span>' + esc(s.confirm) + '</span></button></div>' +
           backRow() + '</div>');
         host.appendChild(c);
         wireBack(c);
         var snBox = c.querySelector('.case-stretch-note');
         var snBtn = c.querySelector('.confirm-step');
+        var snNote = c.querySelector('.case-locked-note');
         if (!stretchDone) {
+          /* DFM 192f: same mute-lock family as the case tick — it now says what
+             unlocks it, from the first render, with the box still empty. */
           snBox.oninput = function () {
             stretchNote = snBox.value.trim();
-            snBtn.disabled = stretchNote.replace(/[^a-z0-9 ]/gi, ' ').split(/\s+/).filter(Boolean).length < 6;
+            var short = stretchNote.replace(/[^a-z0-9 ]/gi, ' ').split(/\s+/).filter(Boolean).length < 6;
+            snBtn.classList.toggle('locked', short);
+            if (short) snBtn.setAttribute('aria-disabled', 'true'); else snBtn.removeAttribute('aria-disabled');
+            snNote.innerHTML = short ? fmtBold(s.lockedNote || 'This tick unlocks when your release note above is written — a full sentence.') : '';
+            snNote.hidden = !short;
           };
           snBox.oninput();
-        }
+        } else { snNote.hidden = true; }
         if (!stretchDone) c.querySelector('.confirm-step').onclick = function () {
+          if (this.classList.contains('locked')) {
+            snNote.classList.remove('pulse');
+            void snNote.offsetWidth;
+            snNote.classList.add('pulse');
+            snBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            snBox.classList.add('flash');
+            setTimeout(function () { snBox.classList.remove('flash'); }, 1000);
+            snBox.focus();
+            return;
+          }
           this.classList.add('ticked');
           stretchDone = true;
           saveBoard();
@@ -3274,7 +3355,8 @@
              the score you finished on can only be known by actually running it */
           '<p class="case-rc-ask">' + esc(r.ask || 'What score did you finish the full run on?') + '</p>' +
           '<input class="case-rc-score" type="number" min="1" max="999" inputmode="numeric" placeholder="fish caught"' + (rcDone ? ' disabled value="' + Number(draft.rcs || 0) + '"' : '') + '>' +
-          '<button class="confirm-step case-rc-btn" type="button" disabled><span class="confirm-box' + (rcDone ? ' done' : '') + '"></span><span>' + esc(r.confirm || 'Full run clean — every fix held') + '</span></button></div>' +
+          '<p class="case-locked-note"></p>' +
+          '<button class="confirm-step case-rc-btn' + (rcDone ? '' : ' locked') + '" type="button"' + (rcDone ? '' : ' aria-disabled="true"') + '><span class="confirm-box' + (rcDone ? ' done' : '') + '"></span><span>' + esc(r.confirm || 'Full run clean — every fix held') + '</span></button></div>' +
           '<div class="case-ship" ' + (rcDone ? '' : 'hidden') + '></div>' +
           backRow() + '</div>');
         host.appendChild(c);
@@ -3284,7 +3366,7 @@
         function paintShip() {
           if (shipped || shipSkipped) {
             shipBox.innerHTML = '<div class="dc-row ok"><span class="dc-mark">&#10003;</span><span>' +
-              (shipped ? 'Build shipped &mdash; the fixed game is in your Drive vault.' : 'Signed off without the vault copy.') + '</span></div>' +
+              (shipped ? 'Build shipped &mdash; the fixed game is in your Drive.' : 'Signed off without the Drive copy.') + '</span></div>' +
               '<button class="primary-btn case-finish-btn" type="button">Wrap up the board</button>';
             var fb = shipBox.querySelector('.case-finish-btn');
             fb.onclick = function () { maybeFinish(); };
@@ -3298,7 +3380,7 @@
             '<ol class="af-steps">' + steps + '</ol>' +
             '<div class="rung-actions">' +
             '<button class="primary-btn case-ship-btn" type="button">' + esc((cfg.ship && cfg.ship.checkLabel) || 'Run the HQ Inspection') + '</button>' +
-            '<button class="ghost-btn case-ship-skip" type="button" hidden>Sign off without the vault copy (ask your teacher)</button>' +
+            '<button class="ghost-btn case-ship-skip" type="button" hidden>Sign off without the Drive copy (ask your teacher first)</button>' +
             '</div><div class="af-result"></div>';
           var runBtn = shipBox.querySelector('.case-ship-btn');
           var skipBtn = shipBox.querySelector('.case-ship-skip');
@@ -3307,7 +3389,7 @@
           skipBtn.onclick = function () { shipSkipped = true; saveBoard(); paintShip(); };
           runBtn.onclick = function () {
             runBtn.disabled = true;
-            box.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>HQ is looking inside your Vault&hellip;</span></div>';
+            box.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>HQ is looking inside your Drive&hellip;</span></div>';
             ctx.call('artifactCheck', { lessonNum: String(ctx.lessonEntry.num), kinds: sh.kinds || ['sb3'], hours: sh.hours || 3 }).then(function (res) {
               runBtn.disabled = false;
               tries++;
@@ -3318,7 +3400,7 @@
               if (res.found) {
                 shipped = true;
                 saveBoard();
-                box.innerHTML = '<div class="dc-row ok"><span class="dc-mark">&#10003;</span><span>HQ found <b>' + esc(res.name) + '</b> in your DT Work vault.</span></div>' +
+                box.innerHTML = '<div class="dc-row ok"><span class="dc-mark">&#10003;</span><span>HQ found <b>' + esc(res.name) + '</b> in your School &rarr; DT Work folder.</span></div>' +
                   (res.simulated ? '<p class="dc-sim">(Preview mode: this inspection is simulated &mdash; the live platform checks your real Drive.)</p>' : '');
                 setTimeout(paintShip, 900);
               } else {
@@ -3333,15 +3415,34 @@
 
         var rcBtn = c.querySelector('.case-rc-btn');
         var rcScore = c.querySelector('.case-rc-score');
-        if (rcDone) { rcBtn.disabled = true; paintShip(); }
+        var rcNote = c.querySelector('.case-locked-note');
+        if (rcDone) { rcBtn.disabled = true; rcNote.hidden = true; paintShip(); }
         else {
+          /* DFM 192f: third member of the mute-lock family — it announces its
+             own unlock instead of sitting dead beside an empty number box. */
           rcScore.oninput = function () {
             var v = Number(rcScore.value);
-            rcBtn.disabled = !(v >= 1 && v <= 999);
+            var bad = !(v >= 1 && v <= 999);
+            rcBtn.classList.toggle('locked', bad);
+            if (bad) rcBtn.setAttribute('aria-disabled', 'true'); else rcBtn.removeAttribute('aria-disabled');
+            rcNote.innerHTML = bad ? fmtBold(r.lockedNote || 'This button unlocks when you type the number of fish you caught into the box above.') : '';
+            rcNote.hidden = !bad;
           };
+          rcScore.oninput();
           rcBtn.onclick = function () {
+            if (rcBtn.classList.contains('locked')) {
+              rcNote.classList.remove('pulse');
+              void rcNote.offsetWidth;
+              rcNote.classList.add('pulse');
+              rcScore.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              rcScore.classList.add('flash');
+              setTimeout(function () { rcScore.classList.remove('flash'); }, 1000);
+              rcScore.focus();
+              return;
+            }
             rcBtn.classList.add('ticked');
             rcBtn.disabled = true;
+            rcNote.hidden = true;
             rcScore.disabled = true;
             rcDone = true;
             rcScoreVal = Number(rcScore.value) || 0;
@@ -3509,7 +3610,8 @@
           signBlock = '<div class="std-signature">' +
             '<label class="std-sig-label" for="std-name">Sign with your studio name</label>' +
             '<input id="std-name" class="std-sig-input" maxlength="24" autocomplete="off" placeholder="' + esc(cfg.namePlaceholder || 'e.g. Golden Otter Games') + '" value="' + esc(sn) + '">' +
-            '<button class="primary-btn std-sign" type="button" disabled>Sign the contract</button>' +
+            '<p class="case-locked-note"></p>' +
+            '<button class="primary-btn std-sign locked" type="button" aria-disabled="true">Sign the contract</button>' +
             (tpl ? '<p class="std-sig-note">Signing this tears up your ' + esc((contractOf(tpl) || {}).name || 'other') + ' contract.</p>' : '') +
             '</div>';
         }
@@ -3526,10 +3628,28 @@
         card.querySelector('.std-back').onclick = function () { host.innerHTML = ''; pickView(); };
         var input = card.querySelector('.std-sig-input');
         var signBtn = card.querySelector('.std-sign');
+        var signNote = card.querySelector('.std-signature .case-locked-note');
         if (input && signBtn) {
-          input.oninput = function () { signBtn.disabled = input.value.trim().length < 3; };
+          /* DFM 192f, the L4 pattern applied here: a control born disabled with
+             no reason on screen is a dead end. It says what unlocks it. */
+          input.oninput = function () {
+            var short = input.value.trim().length < 3;
+            signBtn.classList.toggle('locked', short);
+            if (short) signBtn.setAttribute('aria-disabled', 'true'); else signBtn.removeAttribute('aria-disabled');
+            if (signNote) {
+              signNote.innerHTML = short ? fmtBold(cfg.signLockedNote || 'Type your studio name above — at least 3 letters — and the signing line unlocks.') : '';
+              signNote.hidden = !short;
+            }
+          };
           input.oninput();
           signBtn.onclick = function () {
+            if (signBtn.classList.contains('locked')) {
+              if (signNote) { signNote.classList.remove('pulse'); void signNote.offsetWidth; signNote.classList.add('pulse'); }
+              input.classList.add('flash');
+              setTimeout(function () { input.classList.remove('flash'); }, 1000);
+              input.focus();
+              return;
+            }
             tpl = String(c.id);
             sn = input.value.trim().slice(0, 24);
             saveStudio();
@@ -3541,7 +3661,7 @@
         if (tear) tear.onclick = function () {
           if (!tear.classList.contains('arm')) {
             tear.classList.add('arm');
-            tear.textContent = 'Sure? The contract is shredded';
+            tear.textContent = 'Click again to shred this contract';
             setTimeout(function () { tear.classList.remove('arm'); tear.innerHTML = 'Tear it up &amp; choose again'; }, 4000);
             return;
           }
@@ -3707,7 +3827,15 @@
           '<button class="std-ready-btn ' + readyState + '" type="button"' + (readyState === 'lit' ? '' : ' disabled') + '>' +
           (shipped ? (beta ? 'DOORS OPEN &mdash; IN BETA' : 'DOORS OPEN &mdash; SEE YOU AT PRESS NIGHT') : 'READY FOR GALLERY') + '</button>' +
           (shipped ? '' : '<p class="std-ready-note">' + (allPass() ? 'All four checks passed &mdash; open your doors.' : 'Lights up when all four QA checks pass.') + '</p>') +
-          (!shipped && !allPass() && Object.keys(qa).length >= 2 ? '<button class="ghost-btn std-beta-door" type="button">Out of time? Open in beta &mdash; ask your teacher first</button>' : '') +
+          /* DFM 192f's hidden-state half: the beta door used to APPEAR out of
+             nowhere once two checks were attempted. A control that materialises
+             unannounced is as bad as one that sits mute — so its own place on
+             the screen now says, from the start, what makes it appear. */
+          (!shipped && !allPass()
+            ? (Object.keys(qa).length >= 2
+                ? '<button class="ghost-btn std-beta-door" type="button">Out of time? Open in beta &mdash; ask your teacher first</button>'
+                : '<p class="std-beta-hint">' + fmtBold(cfg.betaHint || "Out of time? An 'open in beta' door appears here once you have tried at least two QA checks.") + '</p>')
+            : '') +
           '</div>' +
 
           '<div class="card std-stretch' + (stretchDone ? ' done' : '') + '"><span class="std-qa-tag">&#11088; STUDIO NOTE &middot; STRETCH</span>' +
@@ -3789,7 +3917,7 @@
         if (betaDoor) betaDoor.onclick = function () {
           if (!betaDoor.classList.contains('arm')) {
             betaDoor.classList.add('arm');
-            betaDoor.innerHTML = 'Sure? Critics will see IN BETA on your listing';
+            betaDoor.innerHTML = 'Click again &mdash; players will see IN BETA on your listing';
             setTimeout(function () { betaDoor.classList.remove('arm'); betaDoor.innerHTML = 'Out of time? Open in beta &mdash; ask your teacher first'; }, 4000);
             return;
           }
@@ -3866,7 +3994,7 @@
         var m = cfg.marquee || {};
         var c = el('<div class="card std-marquee-form"><span class="intro-kicker">' + (asBeta ? 'OPENING IN BETA' : 'READY FOR GALLERY') + '</span>' +
           '<h2>' + esc(m.title || 'Open the doors') + '</h2>' +
-          '<p class="intro-lead">' + esc(asBeta ? (m.betaIntro || 'In beta is a real studio state. Your listing goes up with an IN BETA tag - critics review what is there.') : (m.intro || 'Your listing goes up on the class marquee. Make it worth a visit.')) + '</p>' +
+          '<p class="intro-lead">' + esc(asBeta ? (m.betaIntro || 'In beta is a real studio state. Your listing goes up with an IN BETA tag - reviewers play what is there.') : (m.intro || 'Your listing goes up on the class marquee. Make it worth a visit.')) + '</p>' +
           '<label class="std-sig-label" for="std-gt">Game title</label>' +
           '<input id="std-gt" class="std-sig-input" maxlength="28" autocomplete="off" placeholder="' + esc(m.titlePlaceholder || 'e.g. Sushi Drop') + '" value="' + esc(gt) + '">' +
           '<label class="std-sig-label" for="std-gh">How to play &mdash; one line</label>' +
@@ -3875,22 +4003,33 @@
           '<input id="std-gh" class="std-sig-input" maxlength="90" autocomplete="off" placeholder="' + esc(m.howPlaceholder || 'e.g. Arrow keys to move. Catch sushi, dodge wasabi!') + '" value="' + esc(gh) + '">' +
           '<div class="gal-marquee-card preview"><span class="gal-mq-studio"></span><b class="gal-mq-title"></b><p class="gal-mq-how"></p></div>' +
           '<p class="std-marquee-status"></p>' +
-          '<button class="primary-btn std-doors" type="button" disabled>' + esc(m.confirmLabel || 'OPEN THE DOORS') + '</button>' +
+          '<p class="case-locked-note"></p>' +
+          '<button class="primary-btn std-doors locked" type="button" aria-disabled="true">' + esc(m.confirmLabel || 'OPEN THE DOORS') + '</button>' +
           '<button class="ghost-btn std-back" type="button">&larr; Back to the desk</button></div>');
         host.appendChild(c);
         c.querySelector('.std-back').onclick = function () { host.innerHTML = ''; deskView(); };
         var ti = c.querySelector('#std-gt'), hi = c.querySelector('#std-gh');
         var doors = c.querySelector('.std-doors');
+        var doorsNote = c.querySelector('.std-marquee-form .case-locked-note');
         var status = c.querySelector('.std-marquee-status');
         function paintPreview() {
           c.querySelector('.gal-mq-studio').textContent = sn || 'Your studio';
           c.querySelector('.gal-mq-title').textContent = ti.value.trim() || 'Your game';
           c.querySelector('.gal-mq-how').textContent = hi.value.trim() || 'How to play...';
-          doors.disabled = ti.value.trim().length < 2 || hi.value.trim().length < 8;
+          var short = ti.value.trim().length < 2 || hi.value.trim().length < 8;
+          doors.classList.toggle('locked', short);
+          if (short) doors.setAttribute('aria-disabled', 'true'); else doors.removeAttribute('aria-disabled');
+          doorsNote.innerHTML = short ? fmtBold(cfg.doorsLockedNote || 'The doors open when your game title and the how-to-play line are both filled in.') : '';
+          doorsNote.hidden = !short;
         }
         ti.oninput = paintPreview; hi.oninput = paintPreview;
         paintPreview();
         doors.onclick = function () {
+          if (doors.classList.contains('locked')) {
+            doorsNote.classList.remove('pulse'); void doorsNote.offsetWidth; doorsNote.classList.add('pulse');
+            (ti.value.trim().length < 2 ? ti : hi).focus();
+            return;
+          }
           doors.disabled = true;
           gt = ti.value.trim().slice(0, 28);
           gh = hi.value.trim().slice(0, 80);
@@ -4097,7 +4236,12 @@
         if (!floor) return;
         var passes = floor.querySelector('.gal-passes');
         var given = feed ? feed.given : 0;
-        passes.innerHTML = 'Press passes: <b>' + Math.max(0, quota - given) + '</b> to spend' + (given >= quota ? ' &#10003;' : '');
+        /* DFM 35: the counter read "0 to spend" while a third review was still
+           allowed, and the desk said so on the very next screen. Two surfaces,
+           one truth — at quota it now states BOTH facts. */
+        passes.innerHTML = given >= quota
+          ? 'Press passes: <b>both spent</b> &#10003; &mdash; one bonus pass left'
+          : 'Press passes: <b>' + Math.max(0, quota - given) + '</b> to spend';
         var mine = feed && feed.studios.filter(function (s) { return s.mine; })[0];
         floor.querySelector('.gal-mine-card').innerHTML = mine
           ? (marqueeCardHtml(mine, false) + (mine.hd ? '<p class="std-note">Your listing is hidden just now &mdash; have a word with your teacher.</p>' : ''))
@@ -4105,7 +4249,7 @@
         var list = floor.querySelector('.gal-incoming-list');
         var myReviews = (feed && feed.myReviews) || [];
         if (!myReviews.length) {
-          list.innerHTML = '<p class="gal-waiting">No reviews yet &mdash; critics are still playing&hellip;</p>';
+          list.innerHTML = '<p class="gal-waiting">No reviews yet &mdash; reviewers are still playing&hellip;</p>';
         } else {
           var anyNew = false;
           list.innerHTML = myReviews.slice().reverse().map(function (x) {
@@ -4161,7 +4305,7 @@
         if (given < need) {
           zone.innerHTML = '<div class="card gal-v2-card locked"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
             '<p>Unlocks when ' + (need === 1 ? 'your press pass is' : 'both press passes are') +
-            ' spent &mdash; critics first, designers second.</p></div>';
+            ' spent &mdash; reviews first, your V2 note second.</p></div>';
           return;
         }
         var prompt = received.length
@@ -4194,7 +4338,7 @@
         var c = el('<div class="card gal-desk"><span class="intro-kicker">REVIEW DESK</span>' +
           marqueeCardHtml(s, false) +
           (spent ? '<p class="std-note">All three press passes are spent &mdash; head back to the floor.</p>' :
-            '<p class="gal-desk-note">' + esc(cfg.deskNote || 'Play it at their desk first. Then write like a critic: kind, specific, helpful.') + '</p>' +
+            '<p class="gal-desk-note">' + esc(cfg.deskNote || 'Play it at their desk first. Then write like a reviewer: kind, specific, helpful.') + '</p>' +
             '<label class="std-sig-label">' + esc(stemLike) + '</label>' +
             '<textarea class="gal-stem-input" data-stem="like" maxlength="200" placeholder="' + esc(cfg.likePlaceholder || 'name the exact bit you liked, and why it works') + '"></textarea>' +
             '<label class="std-sig-label">' + esc(stemWonder) + '</label>' +
@@ -4226,7 +4370,7 @@
                 'passes-spent': 'All three press passes are spent.',
                 'already-reviewed': 'You already reviewed this studio - spread the passes around.',
                 'too-thin': 'Too thin for print - name the exact thing.',
-                'own-studio': 'Nice try - critics cannot review their own studio.'
+                'own-studio': 'Nice try - you cannot review your own studio.'
               }[(r && r.error) || ''] || 'The review did not file - try again.';
               nudge.textContent = msg;
               return;
@@ -4251,7 +4395,7 @@
         var c = el('<div class="card gal-wrapcard"><span class="intro-kicker">PRESS NIGHT &middot; CLOSING</span>' +
           '<h2>' + esc(wrap.title || 'The presses roll') + '</h2>' +
           '<p class="gal-wrap-stat"><b>' + total + '</b> reviews filed across the class tonight &middot; <b>' + studios + '</b> studios opened their doors.</p>' +
-          '<p class="intro-lead">' + esc(wrap.note || 'No scores. No rankings. Real games, real critics, real notes for version 2 - that is how studios grow.') + '</p>' +
+          '<p class="intro-lead">' + esc(wrap.note || 'No scores. No rankings. Real games, real reviewers, real notes for version 2 - that is how studios grow.') + '</p>' +
           '<button class="primary-btn" type="button">Collect your press badge</button></div>');
         host.appendChild(c);
         c.querySelector('button').onclick = function () {

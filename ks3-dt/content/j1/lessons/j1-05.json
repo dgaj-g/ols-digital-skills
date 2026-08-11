@@ -22,10 +22,10 @@
     "clearance": "YEAR 8 · LESSON 5 OF 17",
     "headline": "You fixed their game. Now ship your own.",
     "lines": [
-     "In this lesson you will learn the block that lets a game make a DECISION: if/else. The game asks one question, like: is the apple touching the bowl? Then it runs exactly one of two sets of blocks — one set if the answer is yes, a different set if the answer is no. Computing calls this SELECTION, and it is the difference between a slideshow and a game.",
-     "Last lesson your QA team rescued Shark Attack. Today OLS GAMES is hiring new studios — and one of them is yours. Three contracts are on the desk: a catching game, a maze escape, a quiz show. Every contract needs the SAME three things — the game must choose, count, and end — but everything else is yours: your name, your look, your rules.",
-     "One more thing. Tonight is PRESS NIGHT: the class plays the game you ship, and your studio gets its first signed reviews. Every game gets played by real players — so every studio tests its own game hard before the doors open.",
-     "Designer and QA tester. Both jobs are yours today. Time to open your doors."
+     "In this lesson you will learn the block that lets a game make a DECISION: **if/else**. The game asks one question, like: is the apple touching the bowl? Then it runs exactly one of two sets of blocks — one set if the answer is yes, a different set if the answer is no. Computing calls this **SELECTION**, and it is the difference between a slideshow and a game.",
+     "Last lesson your QA team rescued Shark Attack. Today OLS GAMES is hiring new studios — and one of them is yours. Three **CONTRACTS** are on the desk — a contract is a signed deal to build one game. Yours will be a catching game, a maze escape, or a quiz show. Every contract demands the SAME three things — your game must **choose**, **count**, and **end** — but everything else is yours: your name, your look, your rules.",
+     "One more thing. Tonight is **PRESS NIGHT**: the class plays the game you ship, and your studio gets its first signed reviews. Every game gets played by real players — so every studio tests its own game hard before the doors open.",
+     "Today you hold both jobs: designer and QA tester. Time to open your doors."
     ],
     "images": [],
     "video": null,
@@ -47,8 +47,8 @@
    "config": {
     "phase": "sign",
     "title": "Three contracts on the desk",
-    "intro": "Read all three contracts before you sign — you are choosing the game you will ship tonight. There is no easy option: same brief, same checks, same XP, whichever you pick. When you sign, you sign with a STUDIO NAME. Make it a name worth putting up in lights.",
-    "introSolo": "Catch-up day — the studios have been and gone, but the contracts are still on the desk. Read all three, pick the game you will build, and sign with a studio name worth putting up in lights. Same brief, same checks, same XP, whichever you choose.",
+    "intro": "Read all three contracts before you sign — you are choosing the game you will ship tonight. There is no easy option: every contract carries the same BRIEF (the list of things your game must do), the same checks and the same XP. When you sign, you sign with a STUDIO NAME — pick one you will be proud for the whole class to see tonight.",
+    "introSolo": "Catch-up day — the studios have been and gone, but the contracts are still on the desk. Read all three, pick the game you will build, and sign with a STUDIO NAME you would be proud of. Every contract carries the same BRIEF (the list of things your game must do), the same checks and the same XP, whichever you choose.",
     "namePlaceholder": "e.g. Golden Otter Games",
     "signNote": "Signed the wrong one? You can tear a contract up and re-sign — right up until your first QA test is recorded. (Re-signing means a fresh kit: anything you built in Scratch stays with the old contract.)",
     "brief": {
@@ -65,7 +65,7 @@
       "id": "catch",
       "name": "Catch It",
       "headline": "The arcade classic",
-      "pitch": "Apples fall. One bowl. No second chances. Miss three and the game is over — if you build it that way.",
+      "pitch": "Apples fall, and one bowl waits below. Miss three and the game is over — if you build it that way.",
       "img": "assets/img/l5/contract-catch.png",
       "imgAlt": "The Catch It starter: an apple falling from a blue sky toward a bowl",
       "ships": [
@@ -84,7 +84,7 @@
       "id": "maze",
       "name": "Maze Escape",
       "headline": "The escape room",
-      "pitch": "Walls bite. Three stars glitter in the corners. One locked door stands between your beetle and freedom.",
+      "pitch": "The walls bounce you back to the start. Three stars glitter in the corners — and one locked door stands between your beetle and freedom.",
       "img": "assets/img/l5/contract-maze.png",
       "imgAlt": "The Maze Escape starter: a beetle in a walled maze with stars and a locked door",
       "ships": [
@@ -104,12 +104,12 @@
       "id": "quiz",
       "name": "Quiz Master",
       "headline": "The quiz show",
-      "pitch": "Three questions, two tiles, one host who never blinks. The quickest quiz show on television — and you write the script.",
+      "pitch": "Three questions, two answer tiles, and a host who never stops talking. It is the quickest quiz show on television — and you write the script.",
       "img": "assets/img/l5/contract-quiz.png",
       "imgAlt": "The Quiz Master starter: a host by a chalkboard with T and F answer tiles",
       "ships": [
        "A host who asks three questions in a row",
-       "T and F tiles that hear every click",
+       "T and F answer tiles that already sense every click",
        "A question flow that runs itself"
       ],
       "adds": [
@@ -170,9 +170,9 @@
     "intro": "This is your SPRINT — one short, focused burst of building, about 25 minutes on the clock. Your desk has three zones. The KIT gets your game open in Scratch. The BLUEPRINT lists the exact blocks your contract needs. And four QA CHECKS stand between you and the gallery. You build your OWN game — the person beside you is your QA tester, and when your teacher calls the halfway swap, you run the four tests on each other's machines. Personalise everything you like, but remember what QA taught you last lesson: looking finished and working are two different things. The READY FOR GALLERY button only believes ticks.",
     "introSolo": "A solo sprint — one short burst of building, and you run your own tests today. Your desk has the same three zones: the kit, the blueprint, and the four QA checks. The same rule stands: the READY FOR GALLERY button only believes ticks.",
     "pairNote": "You each build your OWN game — but you're also your partner's QA tester. At the midpoint swap: run the four tests on THEIR machine while they run yours. A tester who didn't build it finds what the builder can't see.",
-    "qaIntro": "Four checks stand between your build and the gallery. Run each test in Scratch, then record what ACTUALLY happened — not what you hoped. A cross isn't failure: it's QA doing its job, and it hands you the exact fix.",
+    "qaIntro": "Four checks stand between your build and the gallery. Run each test in Scratch, then record what ACTUALLY happened — not what you hoped. A cross isn't failure: it's QA doing its job, and it hands you the exact fix. When a check that failed turns green, it earns a FOUND BY QA tag — that is the desk doing its job, not a black mark.",
     "kit": {
-     "intro": "Your starter kit is deliberately unfinished — it runs, but it can't choose, count or end yet. Get it open in Scratch:",
+     "intro": "Your starter kit is deliberately unfinished — it runs, but it cannot choose, count or end yet. Somewhere in its code sits a yellow STUDIO NOTE. A comment is a programmer's sticky-note — it does nothing when the game runs — and this one marks the exact spot where your big block will go. Get the kit open in Scratch:",
      "confirm": "The kit is open in Scratch and I found the STUDIO NOTE comment in its code"
     },
     "masterclass": {
@@ -658,7 +658,7 @@
    },
    "config": {
     "introTitle": "Press Night",
-    "intro": "The doors are open across the studio floor. Half the room EXHIBITS — shows their game at their own desk — while the other half TOURS the room playing them. Then you swap. You are about to give, and get, your first real reviews. Every review follows the Reviewer's Code, and every review is signed.",
+    "intro": "The doors are open across the studio floor. Half the room EXHIBITS — shows their game at their own desk — while the other half TOURS the room playing them. Then you swap. You are about to give, and get, your first real reviews. Every review follows the Reviewer's Code, and every review is signed. You have TWO PRESS PASSES to spend — each pass is one signed review you write about another studio's game.",
     "quota": 2,
     "stems": {
      "like": "I like…",
@@ -723,7 +723,7 @@
      },
      {
       "icon": "🗄️",
-      "title": "Vault it",
+      "title": "Put it in your Drive",
       "text": "Open drive.google.com, click into School, then DT Work, and drag the .sb3 in. The same folder as everything you have saved this term."
      },
      {

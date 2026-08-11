@@ -72,6 +72,37 @@ function pageRuntime() {
     C.dot.style.left = x + 'px'; C.dot.style.top = y + 'px';
     C.cx = x; C.cy = y;
   };
+  /* ---- THE CURSOR-PARKING LAW (DFM 192, his ch2 find) ----
+     He saw the pointer sitting on a title word. The cause is not a stray move:
+     curtain() hides the dot, but lift() un-hides it at the START of its 700ms
+     fade, so for the whole fade the dot is drawn ON TOP of a title card that is
+     still fully legible — and the recorder had parked it at (640,430), which is
+     exactly where curtain titles draw.
+     THE LAW: whenever a curtain, card or caption is on screen and no pointer
+     work is in progress, the cursor is parked outside every text rectangle.
+     One place, so every future film inherits it. */
+  C.PARK = [1252, 706];
+  C.park = function () {
+    if (C.dragging) return false;          // never yank a drag mid-flight
+    if (C.dot) C.cursor(C.PARK[0], C.PARK[1]);
+    return true;
+  };
+  /* Record-time proof, not a promise: returns the first text rectangle the
+     cursor is inside (with a margin), or null. The driver throws on a hit, so
+     a regression fails in front of us and never on his screen. */
+  C.cursorClear = function (margin) {
+    if (!C.cover || !C.dot) return null;
+    var m = margin == null ? 24 : margin;
+    var hits = null;
+    Array.prototype.forEach.call(C.cover.querySelectorAll('[data-cine-text]'), function (n) {
+      if (hits) return;
+      var r = n.getBoundingClientRect();
+      if (C.cx >= r.left - m && C.cx <= r.right + m && C.cy >= r.top - m && C.cy <= r.bottom + m) {
+        hits = { text: (n.textContent || '').slice(0, 60), rect: [r.left, r.top, r.width, r.height], cursor: [C.cx, C.cy] };
+      }
+    });
+    return hits;
+  };
   C.press = function () {
     if (!C.dot) return;
     C.dot.style.transform = 'scale(0.72)';
@@ -195,6 +226,7 @@ function pageRuntime() {
   C.curtain = function (spec) {
     spec = spec || {};
     if (C.cover) C.cover.remove();
+    C.park();                                   // cursor-parking law, before it shows
     if (C.dot) C.dot.style.opacity = '0';
     const cov = el('div', {
       position: 'fixed', inset: '0px', zIndex: Z + 50, display: 'flex',
@@ -213,6 +245,7 @@ function pageRuntime() {
         color: 'rgba(255,255,255,0.78)', fontWeight: '600'
       }, cov);
       brand.textContent = spec.brand || 'OLS DIGITAL TECHNOLOGY';
+      brand.setAttribute('data-cine-text', '1');
     }
     if (spec.crest) {
       const img = el('img', { width: '108px', marginBottom: '26px', filter: 'drop-shadow(0 6px 18px rgba(0,0,0,0.4))' }, cov);
@@ -223,6 +256,7 @@ function pageRuntime() {
         fontSize: '21px', letterSpacing: '5px', color: GOLD, fontWeight: '700', marginBottom: '18px'
       }, cov);
       k.textContent = spec.kicker;
+      k.setAttribute('data-cine-text', '1');
     }
     if (spec.title) {
       const t = el('div', {
@@ -231,6 +265,7 @@ function pageRuntime() {
         whiteSpace: 'pre-line' // authored \n = controlled break (no dangling words)
       }, cov);
       t.textContent = spec.title;
+      t.setAttribute('data-cine-text', '1');
     }
     if (spec.sub) {
       const s = el('div', {
@@ -238,6 +273,7 @@ function pageRuntime() {
         maxWidth: '860px', textAlign: 'center', lineHeight: '1.45', fontWeight: '400'
       }, cov);
       s.textContent = spec.sub;
+      s.setAttribute('data-cine-text', '1');
     }
     C.cover = cov;
     return 'curtain-up';
@@ -258,16 +294,19 @@ function pageRuntime() {
 
   /* ---- full-screen instruction card (physical steps: photos + big text) ---- */
   C.card = function (spec) {
+    C.park();                                   // cursor-parking law
     C.curtain({ bare: true });
     const cov = C.cover;
     cov.style.opacity = '0';
     if (spec.kicker) {
       const k = el('div', { fontSize: '20px', letterSpacing: '4.5px', color: GOLD, fontWeight: '700', marginBottom: '16px' }, cov);
       k.textContent = spec.kicker;
+      k.setAttribute('data-cine-text', '1');
     }
     if (spec.title) {
       const t = el('div', { fontSize: '42px', fontWeight: '700', textAlign: 'center', maxWidth: '980px', lineHeight: '1.16' }, cov);
       t.textContent = spec.title;
+      t.setAttribute('data-cine-text', '1');
     }
     if (spec.img) {
       const fr = el('div', {
@@ -276,6 +315,7 @@ function pageRuntime() {
       }, cov);
       const img = el('img', { display: 'block', maxWidth: '560px', maxHeight: '300px', borderRadius: '10px' }, fr);
       img.src = spec.img;
+      fr.setAttribute('data-cine-text', '1');
       if (spec.credit) {
         const cr = el('div', { marginTop: '7px', fontSize: '12.5px', color: 'rgba(255,255,255,0.55)', textAlign: 'right' }, fr);
         cr.textContent = spec.credit;
@@ -302,6 +342,7 @@ function pageRuntime() {
           textAlign: numbered ? 'left' : 'center'
         }, row);
         tx.innerHTML = ln;
+        tx.setAttribute('data-cine-text', '1');
         Array.from(tx.querySelectorAll('b')).forEach(b => { b.style.color = GOLD; b.style.fontWeight = '700'; });
       });
     }
@@ -335,8 +376,32 @@ class Cinema {
   }
   async ensureCursor(x, y) {
     this.cx = x; this.cy = y;
-    await this.page.evaluate(([a, b]) => window.__cine.ensureCursor(a, b), [x, y]);
+    /* ensureCursor() only CREATES the dot — it returns early if one exists, so
+       a second call moved the real mouse and left the dot where it was. That
+       silent divergence is half of DFM 192's cursor find. Create, then place. */
+    await this.page.evaluate(([a, b]) => { window.__cine.ensureCursor(a, b); window.__cine.cursor(a, b); }, [x, y]);
     await this.page.mouse.move(x, y);
+  }
+
+  /* THE CURSOR-PARKING LAW (DFM 192). Park BOTH the drawn dot and the real
+     mouse in the dead corner before any full-screen text appears, so nothing
+     is ever drawn on a word — including during lift()'s fade, which is where
+     Damien actually saw it. */
+  async park() {
+    const [x, y] = [1252, 706];
+    await this.page.evaluate(() => window.__cine.park());
+    await this.page.mouse.move(x, y).catch(() => {});
+    this.cx = x; this.cy = y;
+  }
+  /* Proof, at record time, that the law held for THIS card. Throws in front of
+     us rather than shipping a frame with a dot on a title (DFM 146b's family). */
+  async assertCursorClear(what) {
+    const hit = await this.page.evaluate(() => window.__cine.cursorClear());
+    if (hit) {
+      throw new Error('CURSOR-PARK LAW BROKEN on ' + what + ': the pointer sits on "' +
+        hit.text.trim() + '" (cursor ' + hit.cursor.join(',') + ' inside rect ' +
+        hit.rect.map(n => Math.round(n)).join(',') + ')');
+    }
   }
 
   /* eased move: real mouse + dot in lockstep */
@@ -370,7 +435,8 @@ class Cinema {
     opts = opts || {};
     await this.moveTo(fx, fy, { ms: opts.approachMs });
     await this.pause(360);
-    await this.page.evaluate(() => window.__cine.press());
+    /* the parking law must never yank a pointer that is holding something */
+    await this.page.evaluate(() => { window.__cine.dragging = true; window.__cine.press(); });
     await this.page.mouse.down();
     await this.pause(opts.holdStart != null ? opts.holdStart : 380);
     const ms = opts.ms || Math.max(700, Math.min(1900, Math.hypot(tx - fx, ty - fy) * 2.1));
@@ -386,7 +452,7 @@ class Cinema {
     this.cx = tx; this.cy = ty;
     await this.pause(opts.holdEnd != null ? opts.holdEnd : 420);
     await this.page.mouse.up();
-    await this.page.evaluate(() => window.__cine.release());
+    await this.page.evaluate(() => { window.__cine.dragging = false; window.__cine.release(); });
     await this.pause(500);
   }
 
@@ -449,15 +515,21 @@ class Cinema {
   }
   async curtain(spec) {
     Cinema.assertPlainText(spec);
+    await this.park();
     await this.page.evaluate(s => window.__cine.curtain(s), spec);
+    await this.assertCursorClear('curtain "' + (spec.title || spec.kicker || '') + '"');
   }
   async lift(ms) { this.mark('lift'); await this.page.evaluate(m => window.__cine.lift(m), ms || 700); }
   async drop(spec, ms) {
+    await this.park();
     await this.page.evaluate(([s, m]) => window.__cine.drop(s, m), [spec || {}, ms || 650]);
+    if (spec && (spec.title || spec.sub)) await this.assertCursorClear('drop "' + (spec.title || '') + '"');
     this.mark('down');
   }
   async card(spec, hold) {
+    await this.park();
     await this.page.evaluate(s => window.__cine.card(s), spec);
+    await this.assertCursorClear('card "' + (spec.title || spec.kicker || '') + '"');
     const textLen = (spec.title || '') + ' ' + (spec.lines || []).join(' ');
     await this.pause(hold != null ? hold : this.holdFor(textLen) + 1600);
     await this.page.evaluate(() => window.__cine.uncard());

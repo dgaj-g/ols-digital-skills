@@ -24,8 +24,9 @@ const { dataUri } = require('../lib/cinema');
 
 const DASH = '—';
 const CREST = dataUri('crest-360.png');
-const IMG_MOTH = dataUri('moth-log-950.jpg');
-const CREDIT_MOTH = 'Photo: U.S. Navy, public domain, Wikimedia Commons';
+/* the moth card was CUT from chapter 1 (DFM 192c: it re-told the hook card the
+   pupil had just read), so its image is no longer loaded here. The photograph
+   still lives on the hook card itself, at paragraph width. */
 
 const SB3_DIR = path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/sb3');
 const SB3_BROKEN = path.join(SB3_DIR, 'shark-attack-broken-edition.sb3');
@@ -76,30 +77,26 @@ const scenes = [
   /* ============ CHAPTER 1: load the game & read its code ============ */
   {
     id: 'ch1',
-    label: 'Load the game & read its code',
+    label: 'Open the game & meet Scratch',
     run: async ({ page, cine, drv, log }) => {
       await drv.openEditor();
       await cine.install();
       await cine.curtain({
         crest: CREST, kicker: 'THE BROKEN GAME ' + DASH + " DETECTIVE'S HANDBOOK",
         title: 'Reading Someone\nElse’s Code',
-        sub: 'Chapter 1 ' + DASH + ' Load the game & read its code'
+        sub: 'Chapter 1 ' + DASH + ' open the game & meet Scratch'
       });
       await cine.pause(2900);
       await cine.lift();
       await cine.ensureCursor(640, 430);
 
-      await cine.card({
-        kicker: 'THE JOB', title: 'Four bugs got past. You’re QA.',
-        img: IMG_MOTH, credit: CREDIT_MOTH,
-        lines: [
-          'The first computer <b>bug</b> was a real moth &mdash; taped into Harvard’s logbook, 1947',
-          'Every game you have ever played went on sale with bugs in it. <b>QA testers</b> find them before players do',
-          'Four player tickets are on your case board. This film is your handbook'
-        ]
-      }, 13000);
+      /* THE MOTH CARD IS CUT (Damien, 11 Aug 2026, DFM 192c). It re-told, in a
+         film, the 1947 story he had just read on the hook card one screen
+         earlier. A film that opens by repeating the last screen teaches nothing
+         and spends 13 seconds doing it. The time goes to the interface tour
+         below — the thing he actually asked for. */
 
-      await cine.caption('First: get the broken game open in Scratch &mdash; exactly like the <b>Evidence Intake</b> card.');
+      await cine.caption('First: get the broken game open in Scratch. The next card on the board &mdash; <b>Evidence Intake</b> &mdash; gives you these steps to follow. This film shows what they look like.');
 
       const fm = await drv.fileMenu();
       if (!fm) throw new Error('File menu not found');
@@ -134,23 +131,58 @@ const scenes = [
       await cine.lift();
       await cine.pause(400);
 
-      await cine.caption('The broken game is open. <b>Meet the suspects.</b>');
+      /* ---- THE TOUR (DFM 192c). Lesson 4 is the year's first Scratch hour.
+         Every word the rest of the film and every case card leans on — STAGE,
+         SPRITE, SCRIPT, CODE AREA — is defined HERE, on the real editor, before
+         it is ever used. Five beats, each held long enough to read. ---- */
+      const stage = await drv.region('stage');
+      const controls = await drv.region('controls');
+      if (!stage) throw new Error('stage region not found for the tour');
+      const stageBox = controls
+        ? { x: Math.min(stage.x, controls.x) - 6, y: Math.min(stage.y, controls.y) - 6,
+            w: Math.max(stage.x + stage.w, controls.x + controls.w) - Math.min(stage.x, controls.x) + 12,
+            h: Math.max(stage.y + stage.h, controls.y + controls.h) - Math.min(stage.y, controls.y) + 12 }
+        : { x: stage.x - 6, y: stage.y - 6, w: stage.w + 12, h: stage.h + 12 };
+      await cine.callout(stageBox,
+        'This side is the <b>STAGE</b> &mdash; where the game actually plays. The green flag starts the game; the red sign stops it.',
+        { side: 'below', hold: 4500 });
+
+      const sprites = await drv.region('sprites');
       const sharkTile = await drv.spriteTile('Shark');
       const fishTile = await drv.spriteTile('Fish');
       if (!sharkTile || !fishTile) throw new Error('sprite tiles missing');
-      await cine.callout(
-        { x: sharkTile.x - 6, y: sharkTile.y - 6, w: (fishTile.x + fishTile.w) - sharkTile.x + 12, h: sharkTile.h + 12 },
-        'Every sprite carries its OWN scripts &mdash; click one to read its code', { side: 'above' });
+      const spriteBox = sprites
+        ? { x: sprites.x - 4, y: sprites.y - 4, w: sprites.w + 8, h: sprites.h + 8 }
+        : { x: sharkTile.x - 6, y: sharkTile.y - 6, w: (fishTile.x + fishTile.w) - sharkTile.x + 12, h: sharkTile.h + 12 };
+      await cine.callout(spriteBox,
+        'These little pictures are the game’s <b>SPRITES</b> &mdash; one for each character or thing. This game has a Shark and a Fish.',
+        { side: 'above', hold: 4500 });
 
-      await cine.click(sharkTile.cx, sharkTile.cy, { after: 1200 });
-      await cine.caption('The Shark’s scripts. Blocks say what they mean &mdash; so <b>read one out loud</b>, top to bottom.');
+      /* click the Shark ON CAMERA, so "its scripts" is something she watched
+         happen rather than a claim about a screen she never saw change */
+      await cine.click(sharkTile.cx, sharkTile.cy, { after: 1300 });
+      const code = await drv.region('code');
+      if (!code) throw new Error('code area region not found for the tour');
+      await cine.callout({ x: code.x + 6, y: code.y + 6, w: code.w - 12, h: code.h - 12 },
+        'The middle is the <b>CODE AREA</b>. These stacks of blocks are the Shark’s <b>SCRIPTS</b> &mdash; its instructions. Every sprite carries its own.',
+        { side: 'below', hold: 4800 });
+
+      const palette = await drv.region('palette');
+      if (!palette) throw new Error('palette region not found for the tour');
+      await cine.callout({ x: palette.x - 4, y: palette.y + 4, w: palette.w + 8, h: palette.h - 8 },
+        'Down the left side live all the blocks Scratch knows, sorted into colour groups. You drag them in &mdash; you never type code.',
+        { side: 'below', hold: 4500 });
+
+      await cine.caption('Sprites, scripts, the stage &mdash; that is the whole map. <b>Now read some code.</b>');
 
       const leftScript = await drv.canvasBlock('when left arrow key pressed');
       if (!leftScript) throw new Error('left arrow script not found on canvas');
       await cine.callout({ x: leftScript.x - 8, y: leftScript.y - 8, w: leftScript.w + 16, h: leftScript.h + 16 },
-        '“WHEN the left arrow is pressed: point left, move 10 steps, next costume.” You just read code.', { side: 'below' });
+        '&ldquo;WHEN the left arrow key is pressed: point left, move 10 steps, next costume.&rdquo; Blocks are sentences &mdash; read them top to bottom and they tell you what they do.',
+        { side: 'below' });
 
-      await cine.caption('Read first, click second &mdash; that’s the whole detective method. <b>Chapter 2: what starts a script.</b>');
+      await cine.caption('You just read someone else’s code. That is the detective’s first skill &mdash; <b>read it BEFORE you click anything</b>.');
+      await cine.caption('Next: why one of the Shark’s scripts <b>never runs at all</b>.');
 
       await cine.drop({});
       await cine.pause(1200);
@@ -165,7 +197,7 @@ const scenes = [
   /* ============ CHAPTER 2: hat blocks - crack the training case ============ */
   {
     id: 'ch2',
-    label: 'Hat blocks: what starts a script',
+    label: 'Why some code never runs',
     run: async ({ page, cine, drv, log }) => {
       /* DFM 191c - HIS INSTRUCTION, 11 Aug 2026: "could we add animations to aid
          understanding of concepts that they meet (I loved the variable one you
@@ -176,25 +208,58 @@ const scenes = [
       const hbUrl = 'file://' + path.join(__dirname, '..', 'lib', 'hat-block', 'index.html');
       await drv.page.goto(hbUrl);
       await cine.install();
+      /* The old title used "hat block" and "script" before either word existed
+          for her, and said nothing about why she should care. The new one names
+          the PROBLEM (DFM 192c). */
       await cine.curtain({
-        kicker: 'CHAPTER 2', title: 'Hat blocks:\nwhat starts a script',
-        sub: 'no trigger ' + DASH + ' no code runs'
+        kicker: 'CHAPTER 2', title: 'Why some code\nnever runs',
+        sub: 'and the one block that fixes it'
       });
       await cine.pause(2900);
       await cine.lift();
 
       await drv.page.evaluate(() => window.hb.ready);
+      /* SEVEN beats now, one event on screen at a time, each token big enough
+         to read and held long enough to name (DFM 192e). */
       const HB_BEATS = [
-        'Code does not start by itself. Every stack of blocks waits to be woken up.',
-        'Things keep happening: the flag is clicked&hellip; a key is pressed. Each one is an <b>EVENT</b>.',
-        'A <b>HAT BLOCK</b> catches ONE event. When that event happens, everything under the hat runs.',
-        'A different hat catches a different event.',
-        'No hat? Events fly straight past. The blocks are perfect &mdash; and they will <b>never run</b>.',
-        'The fix is the hat. Give the stack its trigger &mdash; and it wakes.'
+        'Every stack of blocks is waiting. Code never starts by itself &mdash; something has to wake it.',
+        'The player just clicked the <b>GREEN FLAG</b>. A thing that happens while a game runs is called an <b>EVENT</b>.',
+        'The curved block on top is a <b>HAT BLOCK</b>. It catches ONE event &mdash; the green flag &mdash; and every block under it runs.',
+        'A different EVENT &mdash; the <b>LEFT ARROW</b> key. A different hat catches it, and that stack runs.',
+        'This stack has <b>NO HAT</b>. The RIGHT ARROW is pressed&hellip; and nothing catches it. Perfect blocks &mdash; that never run.',
+        'The fix is a hat: &ldquo;when right arrow key pressed&rdquo;. Now the stack knows what wakes it.',
+        'Right arrow pressed &mdash; caught &mdash; the stack runs. That is exactly why the shark would not swim right.'
       ];
+      /* DFM 192e, gated in pixels, not judged by eye: at each beat's naming
+         pause the event token on screen must measure at least 110px tall. This
+         is the direct answer to "the little things flying across at the top
+         can't hardly be seen" — a number decides it, and the take dies here if
+         it regresses. Beats 2, 4 and 5 are the naming pauses. */
+      const NAMING_BEATS = { 2: 'green flag', 4: 'left arrow keycap', 5: 'right arrow keycap' };
+      const MIN_TOKEN_PX = 110;
+      const tokenSizes = {};
       for (let i = 0; i < HB_BEATS.length; i++) {
+        const beatNo = i + 1;
         await cine.captionShow(HB_BEATS[i]);
-        await drv.page.evaluate(n => window.hb.play(n), i + 1);
+        if (NAMING_BEATS[beatNo]) {
+          /* measure DURING the pause, not after it: play the beat and sample
+             while the token is parked centre-stage being named */
+          const playing = drv.page.evaluate(n => window.hb.play(n), beatNo);
+          await drv.page.waitForTimeout(3200);        // enter (2.0s) + into the pause
+          const seen = await drv.page.evaluate(() => window.hb.probeTokens());
+          const want = NAMING_BEATS[beatNo];
+          const tok = (seen || []).find(t => t.name === want);
+          if (!tok) throw new Error('beat ' + beatNo + ': "' + want + '" was not on screen at its naming pause (saw ' + JSON.stringify(seen) + ')');
+          if (tok.px < MIN_TOKEN_PX) {
+            throw new Error('beat ' + beatNo + ': ' + want + ' measures only ' + tok.px +
+              'px tall at its naming pause — the DFM 192e floor is ' + MIN_TOKEN_PX + 'px');
+          }
+          tokenSizes[want] = tok.px;
+          log('token legibility ok: ' + want + ' = ' + tok.px + 'px');
+          await playing;
+        } else {
+          await drv.page.evaluate(n => window.hb.play(n), beatNo);
+        }
         if (i === 0) {
           /* DFM 146b: a failed WebGL context records as a happy flat rectangle,
              so the take is only trusted once real pixels are proved. */
@@ -206,6 +271,7 @@ const scenes = [
         }
       }
       await cine.captionHide();
+      log('TOKEN LEGIBILITY (DFM 192e floor 110px): ' + JSON.stringify(tokenSizes));
       const hbLast = await drv.page.evaluate(() => window.hb.probe());
       if (!hbLast.some(p => p.max > 60)) throw new Error('hat-block went blank mid-take');
 
@@ -232,11 +298,11 @@ const scenes = [
       await cine.callout({ x: orphan.x - 8, y: orphan.y - 8, w: orphan.w + 16, h: orphan.h + 16 },
         'This stack has <b>NO HAT</b>. Perfect code &mdash; that never, ever runs', { side: 'above' });
 
-      await cine.caption('No trigger means no code runs. <b>Case cracked by reading alone.</b> Now the fix.');
+      await cine.caption('No hat means nothing wakes it. <b>Case cracked by reading alone.</b> Now the fix.');
 
       const evCat = await drv.category('Events');
       if (!evCat) throw new Error('Events category not found');
-      await cine.captionShow('Triggers live in <b>Events</b> &mdash; drag a <b>when key pressed</b> hat onto the stack.', { pos: 'top' });
+      await cine.captionShow('Hat blocks live in <b>Events</b>, the yellow group &mdash; drag &ldquo;when space key pressed&rdquo; onto the stack.', { pos: 'top' });
       await cine.click(evCat.cx, evCat.cy, { after: 1300 });
       const fly = await drv.flyoutBlock('when space key pressed');
       if (!fly) throw new Error('when space key pressed not in flyout');
@@ -273,7 +339,7 @@ const scenes = [
          state a real click produces (pre-authored c1-fixed build). */
       await cine.caption('It says <b>space</b> &mdash; the ticket needs <b>right arrow</b>.');
       await cine.callout({ x: merged.x + 34, y: merged.y - 2, w: 128, h: 36 },
-        'This little menu picks the key &mdash; click it, choose <b>right arrow</b>', { side: 'below' });
+        'This little menu picks the key &mdash; click the word &ldquo;space&rdquo; and choose right arrow', { side: 'below' });
       await cine.curtain({ kicker: 'ONE CLICK', title: 'space → right arrow', sub: 'pick it from the little menu' });
       await drv.loadProject(SB3_C1FIXED);
       await drv.selectSprite('Shark');
@@ -282,7 +348,7 @@ const scenes = [
       await cine.pause(400);
 
       await cine.caption('Trigger restored. But a detective never trusts a fix &mdash; <b>a detective re-plays.</b>');
-      await cine.captionShow('Green flag. Then a FULL lap &mdash; all four arrows, no shortcuts.');
+      await cine.captionShow('Green flag. Then a full lap &mdash; swim RIGHT, UP, LEFT, DOWN. All four arrows.');
       await flagAndSwim(cine, drv, [['ArrowRight', 6], ['ArrowUp', 4], ['ArrowLeft', 6], ['ArrowDown', 4]]);
       await cine.captionHide();
       await cine.caption('All four arrows swim. <b>Now it’s true</b> &mdash; because you watched it happen.');

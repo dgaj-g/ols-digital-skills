@@ -431,6 +431,32 @@ class ScratchDriver {
     });
   }
 
+  /* ---- the interface tour (DFM 192c) ----
+     Damien: "an overview of the Scratch interface, what each section means and
+     does… you've mentioned sprites in this video but how do you know that a
+     child has ever heard of that?" Lesson 4 is the year's FIRST Scratch hour,
+     so chapter 1 now names the four regions on camera. Each lookup returns the
+     region's real rectangle — the callout is drawn round what is actually
+     there, never round a guessed box. */
+  async region(which) {
+    return this.page.evaluate((w) => {
+      const rect = (el) => {
+        if (!el) return null;
+        const b = el.getBoundingClientRect();
+        if (b.width < 8 || b.height < 8) return null;
+        return { x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+      };
+      const q = (s) => document.querySelector(s);
+      if (w === 'stage') return rect(q('[class*="stage-wrapper_stage-wrapper"]') || q('[class*="stage_stage"]'));
+      if (w === 'controls') return rect(q('[class*="controls_controls-container"]') ||
+        (q('[class*="green-flag"]') && q('[class*="green-flag"]').parentElement));
+      if (w === 'sprites') return rect(q('[class*="sprite-selector_sprite-selector"]'));
+      if (w === 'code') return rect(q('[class*="blocks_blocks"]') || q('.injectionDiv'));
+      if (w === 'palette') return rect(q('.blocklyToolboxDiv') || q('[class*="blocklyToolbox"]'));
+      return null;
+    }, which);
+  }
+
   async monitorText() {
     return this.page.evaluate(() =>
       Array.from(document.querySelectorAll('[class*="monitor_monitor-container"]')).map(e => (e.textContent || '').trim()).join('|'));
