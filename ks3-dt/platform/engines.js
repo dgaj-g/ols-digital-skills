@@ -3870,7 +3870,9 @@
           '<label class="std-sig-label" for="std-gt">Game title</label>' +
           '<input id="std-gt" class="std-sig-input" maxlength="28" autocomplete="off" placeholder="' + esc(m.titlePlaceholder || 'e.g. Sushi Drop') + '" value="' + esc(gt) + '">' +
           '<label class="std-sig-label" for="std-gh">How to play &mdash; one line</label>' +
-          '<input id="std-gh" class="std-sig-input" maxlength="80" autocomplete="off" placeholder="' + esc(m.howPlaceholder || 'e.g. Arrow keys to move. Catch sushi, dodge wasabi!') + '" value="' + esc(gh) + '">' +
+          /* 90, not 80: the server's GAL_HOW_MAX is 90 and a limit that lives in
+             two places is a contract (DFM 157a). The box was the one lying. */
+          '<input id="std-gh" class="std-sig-input" maxlength="90" autocomplete="off" placeholder="' + esc(m.howPlaceholder || 'e.g. Arrow keys to move. Catch sushi, dodge wasabi!') + '" value="' + esc(gh) + '">' +
           '<div class="gal-marquee-card preview"><span class="gal-mq-studio"></span><b class="gal-mq-title"></b><p class="gal-mq-how"></p></div>' +
           '<p class="std-marquee-status"></p>' +
           '<button class="primary-btn std-doors" type="button" disabled>' + esc(m.confirmLabel || 'OPEN THE DOORS') + '</button>' +

@@ -137,16 +137,52 @@ const scenes = [
     id: 'ch2',
     label: 'The if/else block',
     run: async ({ page, cine, drv, log }) => {
-      await drv.openEditor();
+      /* DFM 191c - HIS INSTRUCTION, 11 Aug 2026: an animation for the concept the
+         lesson turns on. The thing an 11-year-old gets wrong about if/else is
+         FALSE - they read it as "nothing happens" - so the gate answers with an
+         amber lamp and a working ELSE chute, never a red cross. Beat 4 exists for
+         that sentence alone; beat 5 proves "exactly one, never both". */
+      const cgUrl = 'file://' + path.join(__dirname, '..', 'lib', 'choice-gate', 'index.html');
+      await drv.page.goto(cgUrl);
       await cine.install();
       await cine.curtain({
         kicker: 'CHAPTER 2', title: 'The if/else block',
         sub: 'one question ' + DASH + ' two mouths ' + DASH + ' exactly one runs'
       });
+      await cine.pause(2900);
+      await cine.lift();
+
+      await drv.page.evaluate(() => window.cg.ready);
+      const CG_BEATS = [
+        'A game is full of moments like this one: the apple lands. Caught&hellip; or dropped?',
+        'One <b>QUESTION</b> decides: touching Bowl? The answer is always YES or NO.',
+        'YES &mdash; TRUE &mdash; and the <b>top mouth</b> runs: score up 1.',
+        'NO &mdash; FALSE &mdash; and the <b>else mouth</b> runs: lose a life. FALSE never means nothing happens.',
+        'Every apple, the gate chooses again. Exactly <b>ONE mouth</b> runs each time &mdash; never both.',
+        'This is Scratch&rsquo;s <b>if/else</b> block. Choosing has a name &mdash; <b>SELECTION</b> &mdash; and it is what turns a slideshow into a game.'
+      ];
+      for (let i = 0; i < CG_BEATS.length; i++) {
+        await cine.captionShow(CG_BEATS[i]);
+        await drv.page.evaluate(n => window.cg.play(n), i + 1);
+        if (i === 0) {
+          /* DFM 146b: prove the pixels, not the absence of an error */
+          const first = await drv.page.evaluate(() => window.cg.probe());
+          if (!first.some(p => p.max > 60)) {
+            throw new Error('choice-gate drew nothing after beat 1 - WebGL failed: ' + JSON.stringify(first));
+          }
+          log('choice-gate probe ok: ' + JSON.stringify(first.map(p => p.max)));
+        }
+      }
+      await cine.captionHide();
+      const cgLast = await drv.page.evaluate(() => window.cg.probe());
+      if (!cgLast.some(p => p.max > 60)) throw new Error('choice-gate went blank mid-take');
+
+      /* now find that block in the real palette */
+      await drv.openEditor();
+      await cine.install();          /* the injected cinema DOM dies with the old document */
       await drv.loadProject(SB3_STARTER);
       await drv.selectSprite('Apple');
       await cine.pause(1200);
-      await cine.lift();
       await cine.ensureCursor(640, 430);
 
       await cine.caption('Selection lives in <b>Control</b> &mdash; the gold category.');
