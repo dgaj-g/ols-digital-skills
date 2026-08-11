@@ -487,6 +487,10 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .dossier-headline { color: #fff; font-size: clamp(1.7rem, 4.5vw, 2.5rem); font-weight: 700; min-height: 1.3em; margin-bottom: 16px; }
 .dossier-line { color: rgba(234, 240, 252, 0.85); margin: 0 0 11px; opacity: 0; transform: translateY(8px); transition: opacity 0.5s ease, transform 0.5s ease; }
 .dossier-line.show { opacity: 1; transform: none; }
+/* DFM 192a — the emphasis Damien asked for on the hook's key words. The gold is
+   the dossier skin's own (--gold-hi, already used by .dossier-clearance), not a
+   new colour: one skin, one accent. */
+.dossier-line b { color: var(--gold-hi); font-weight: 700; }
 .dossier-cta { position: relative; z-index: 1; margin-top: 16px; }
 .dossier-skip {
   position: absolute; right: 16px; bottom: 14px; z-index: 1;
@@ -1668,6 +1672,12 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   border: 1px solid var(--line-d); display: block;
 }
 .dossier-photos figcaption { color: var(--muted-d); font-size: 0.72rem; margin-top: 5px; line-height: 1.35; }
+/* DFM 192a: one image per hook may claim the full text column instead of a
+   thumbnail slot. Damien on the 1947 moth: "you can hardly make it out". The
+   strip's own crop (height 120 / object-fit cover) is what destroyed it, so a
+   wide figure opts out of BOTH: natural aspect ratio, capped by height. */
+.dossier-photos figure.wide { flex: 1 1 100%; max-width: 100%; }
+.dossier-photos figure.wide img { height: auto; max-height: 420px; object-fit: contain; }
 
 /* ===================== section 13: the Reaction Rally ======================
    Pupil console (light card, arcade LED inset) + the staff projector reveal
@@ -1977,7 +1987,30 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 .case-mechanic { background: var(--field); border: 1px solid var(--line-l); border-radius: var(--r-sm);
   padding: 8px 12px; font-size: 0.93rem; color: var(--ink); }
-.case-log-nudge { min-height: 18px; margin: 4px 0 0; color: #8C6D1F; font-size: 0.88rem; font-weight: 600; }
+/* DFM 192f/193a — the locked-state note. It lives directly above the control it
+   explains (never two steps away, which is the bug Damien hit), it is on screen
+   the WHOLE time the control is locked including when the box is still empty,
+   and clicking the locked control pulses it. */
+.case-locked-note { margin: 8px 0 6px; color: #8C6D1F; font-size: 0.92rem; font-weight: 600;
+  border-left: 3px solid var(--gold); padding-left: 10px; line-height: 1.45; }
+.case-locked-note[hidden] { display: none; }
+.case-locked-note.pulse { animation: lockedPulse 0.7s ease 2; }
+@keyframes lockedPulse {
+  0%, 100% { transform: none; color: #8C6D1F; }
+  50% { transform: translateX(3px); color: #6B5008; }
+}
+/* the box the note points at, flashed for one second so the eye follows */
+.case-log-input.flash, .case-rc-score.flash {
+  outline: 2px solid var(--gold); border-color: var(--gold); background: #FFFDF2;
+}
+/* locked is DIMMED and unmistakably not-yet — but it is never `disabled`, so
+   the click still lands and still gets an answer (rule 42/85/161). */
+.confirm-step.locked { opacity: 0.55; }
+.confirm-step.locked .confirm-box { border-style: dashed; }
+/* DFM 171 — the case rhythm as a real numbered list, one number per line */
+.case-intro-steps { margin: 10px 0 4px; padding-left: 22px; }
+.case-intro-steps li { margin: 0 0 7px; line-height: 1.5; }
+.case-intro-after { margin: 10px 0 0; line-height: 1.55; }
 .case-rc-ask { margin-top: 10px; font-weight: 600; }
 .case-rc-score { width: 140px; font: inherit; font-size: 1.05rem; text-align: center;
   border: 1px solid var(--line-l); border-radius: var(--r-sm); background: var(--field);
