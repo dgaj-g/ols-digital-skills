@@ -43,8 +43,15 @@ const SCENARIOS = [
   },
   {
     id: 'own-words-log',
-    what: 'Case 01, a real 12-word log in a pupil\'s own words naming none of the old listed terms',
-    type: () => 'it was missing the block that makes it move, so I added one',
+    /* THE SENTENCE MATTERS, and the first one I tried was a bad control. The old
+       gate matched its eight words as SUBSTRINGS, so "hat" was found inside
+       "t-HAT" and the sentence sailed through by accident. That is worth
+       recording on its own: whether a child's honest log was accepted came down
+       to whether one of eight fragments happened to appear anywhere inside it.
+       This sentence contains none of them, as a substring or otherwise, so the
+       pre-fix gate genuinely refuses it — which is what makes it a control. */
+    what: 'Case 01, an honest 18-word log in a pupil\'s own words that the old hidden word-list refuses',
+    type: () => 'the shark could not go right because one piece of code was missing, so I put it back',
   },
 ];
 
@@ -122,9 +129,11 @@ const AUDIT = (EXPLAIN_PX) => {
     for (const n of ['1', '2', '3', '4', '5', 'S1']) db.locks['Demo-8A'][n] = { u: now, on: 1 };
     db.cfg['Demo-8A'] = db.cfg['Demo-8A'] || {};
     db.cfg['Demo-8A'].pairing = { on: 0 };
-    const done = { '1': 1, '2': 1, '3': 1, 'S1': 1 };
+    /* NO prior lessons marked complete. Rule 134 means the Do-Now warm-up serves
+       only COMPLETED lessons, so a pupil with none walks straight into the hook.
+       That is deliberate here: this harness is about the CASE CARD's locked
+       controls, and a recap quiz in front of it is just distance to travel. */
     const L = {};
-    Object.keys(done).forEach((k, ix) => { L[k] = [2, 10, 'sit' + k + '=1', '1', '222|1', 100 + ix, 10, 0, '', 0, 0]; });
     db.pupils = db.pupils || {};
     db.pupils['Demo-8A:anya.murphy@demo'] = Object.assign(
       db.pupils['Demo-8A:anya.murphy@demo'] || { n: 'Anya Murphy', cn: '', j: 1, xp: 0, g: '' }, { L });
@@ -140,33 +149,52 @@ const AUDIT = (EXPLAIN_PX) => {
   });
   await sleep(1600);
 
-  const click = async (sel) => {
-    await page.waitForSelector(sel, { timeout: 20000 });
-    await page.click(sel);
-    await sleep(800);
-  };
-  try {
-    /* the lesson tile may open on a start card before the hook mounts; advance
-       through whatever primary button is on screen until the dossier appears */
-    for (let i = 0; i < 6; i++) {
-      if (await page.$('.dossier-cta')) break;
-      const btn = await page.$('.chunk-host .primary-btn, .lesson-start .primary-btn, .primary-btn');
-      if (btn) { await btn.click(); await sleep(1200); } else { await sleep(900); }
+  /* Drive to Case 01 with DOM clicks inside the page, exactly as sit-review.js
+     does. Playwright's own click() enforces visibility/stability and refuses
+     mid-animation elements — which is what stalled the first attempt. A DOM
+     click is also what a badge-pop overlay cannot swallow. */
+  const step = async () => page.evaluate(() => {
+    const q = (s) => document.querySelector(s);
+    const vis = (e) => e && e.offsetParent !== null;
+    // clear any badge/intro overlay first
+    const pop = q('.badge-pop button');
+    if (pop) { pop.click(); return 'badge'; }
+    const skip = q('.intro-skip');
+    if (vis(skip)) { skip.click(); return 'intro-skip'; }
+    // the case card is the destination
+    if (q('.case-log-input')) return 'ARRIVED';
+    const c1 = q('.case-file[data-case="c1"]:not([disabled])');
+    if (vis(c1)) { c1.click(); return 'case-c1'; }
+    // evidence intake: open it, then tick its confirm
+    const intakeTick = q('.case-filecard .confirm-step:not(.ticked)');
+    if (vis(intakeTick) && /broken game is open/i.test(intakeTick.textContent || '')) {
+      intakeTick.click(); return 'intake-confirm';
     }
-    /* the hook card reveals its CTA on a timer */
-    await page.waitForSelector('.dossier-cta:not([hidden])', { timeout: 30000 });
-    await click('.dossier-cta');
-    await click('.intro-card .primary-btn');
-    await click('[data-view="intake"]');
-    await click('.case-filecard .confirm-step');
-    await sleep(1400);
-    await click('.case-file[data-case="c1"]');
-    await page.waitForSelector('.case-log-input', { timeout: 15000 });
-  } catch (e) {
-    console.error('could not reach Case 01: ' + e.message);
+    const intake = q('[data-view="intake"]:not([disabled])');
+    if (vis(intake) && !intake.classList.contains('done')) { intake.click(); return 'intake'; }
+    // the hook card's CTA appears on a timer
+    const cta = q('.dossier-cta');
+    if (vis(cta) && !cta.hidden) { cta.click(); return 'dossier-cta'; }
+    // any remaining primary button advances the intro cards
+    const pb = Array.from(document.querySelectorAll('.chunk-host .primary-btn')).find(vis);
+    if (pb) { pb.click(); return 'primary:' + (pb.textContent || '').trim().slice(0, 24); }
+    return 'wait';
+  });
+
+  let arrived = false;
+  const trail = [];
+  for (let i = 0; i < 40 && !arrived; i++) {
+    const what = await step();
+    if (what !== 'wait') trail.push(what);
+    if (what === 'ARRIVED') { arrived = true; break; }
+    await sleep(900);
+  }
+  if (!arrived) {
+    console.error('could not reach Case 01. Trail: ' + trail.join(' -> '));
     await browser.close();
     process.exit(2);
   }
+  log('reached Case 01 via: ' + trail.join(' -> '));
 
   for (const sc of SCENARIOS) {
     const typed = sc.type();
