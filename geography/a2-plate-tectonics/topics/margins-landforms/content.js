@@ -217,7 +217,7 @@ window.OLS_A2PT_TOPICS.push({
             { left: 'Caledonian rocks of the same age, type and structure on five landmasses', right: 'Mountain chains once ran side by side' }
           ] },
 
-        { type: 'cloze', title: 'The jigsaw paragraph',
+        { type: 'cloze', title: 'The continental account',
           prompt: 'Complete the account. First letters given.',
           segments: [
             { t: 'txt', text: 'In 1620, Francis Bacon noted the ' },
@@ -416,13 +416,13 @@ window.OLS_A2PT_TOPICS.push({
 
         { type: 'checkpoint', title: 'Checkpoint — oceanic evidence', items: [
           { type: 'mcq',
-            stem: 'What would thick sediment across the whole ocean floor have suggested?',
+            stem: 'If the sea bed had been buried under thick sediment, what would that have suggested?',
             teach: 'Thin sediment is the clue — a young, renewing floor.',
             options: [
-              { text: 'That the ocean floor was as old as the continents', correct: true, why: 'Right — the near-absence of sediment is what shows the floor is young and being renewed.' },
-              { text: 'That the ocean floor was spreading quickly', why: 'The reverse. Fast renewal means less time for sediment to gather.' },
-              { text: 'That there were more rivers depositing material', why: 'The argument is about the age of the floor, not the supply of sediment.' },
-              { text: 'That the magnetic field had reversed more often', width: false, why: 'Sediment thickness has nothing to do with magnetic reversals.' }
+              { text: 'That it was as old as the continents', correct: true, why: 'Right — the near-absence of sediment is what shows the floor is young and being renewed.' },
+              { text: 'That it was spreading unusually quickly', why: 'The reverse. Fast renewal means less time for material to gather.' },
+              { text: 'That rivers were supplying more material', why: 'The argument is about age, not about the supply of sediment.' },
+              { text: 'That the magnetic field had reversed more often', why: 'Sediment thickness has nothing to do with magnetic reversals.' }
             ] },
           { type: 'mcq',
             stem: 'Which word is the key to a top-band answer on ocean-floor age and relief?',
@@ -665,6 +665,755 @@ window.OLS_A2PT_TOPICS.push({
               { text: 'Tidal energy from the Moon', why: 'This is essentially Wegener\'s mistake — far too weak.' }
             ] }
         ] }
+      ]
+    },
+
+    /* ======================================================
+       6 — CONSTRUCTIVE
+       ====================================================== */
+    {
+      id: 'constructive', num: 6,
+      title: 'The Constructive Margin',
+      subtitle: 'Ocean ridges and rift valleys',
+      specIds: ['ii', 'iii'],
+      blocks: [
+        { type: 'callout', genre: 'keypoint', title: 'Memory tip',
+          html: '<p>Think <strong>CONSTRUCT is to CREATE or BUILD</strong>. At a constructive ' +
+          'margin the plates move apart and new crust is created.</p>' },
+
+        { type: 'text', html:
+          '<p>Read the process chain below as one continuous story. It begins with a plate ' +
+          'being pulled apart and ends with a mature mid-ocean ridge — and along the way it ' +
+          'produces two of the five landforms the specification names.</p>' },
+
+        { type: 'sim', id: 'constructive' },
+
+        { type: 'heading', text: 'The process, step by step' },
+        { type: 'steps', items: [
+          'Plates are pulled apart due to the rising convection currents of magma from the asthenosphere below.',
+          'Hot spots deep in the asthenosphere cause magma to rise, heating the lithosphere and causing it to warp upwards and stretch, breaking along fault lines.',
+          'The upwelling of mantle material reduces pressure on the partially molten mantle, causing <strong>decompression melting</strong>. This produces more magma, less dense than the surrounding rock, which rises to fill the tensional cracks and creates new crust.',
+          'This heating and magma accumulation produces an <strong>isostatic response</strong>, causing the young crust nearest the boundary to rise. Partial melting and the buoyancy of hotter, less dense magma also make the mid-ocean ridge sit higher than the surrounding seafloor. These ridges can span thousands of kilometres and rise 1–3 km above the abyssal plain.',
+          'These raised features produce <strong>ridge push</strong> — gravity pulling the lithosphere down and away from the ridge. The crust fractures allow magma to reach the surface, and the central area slumps and collapses, forming a central <strong>rift valley</strong>.',
+          'The stretched plate may allow a nearby ocean to spill in, creating a shallow, linear sea above the new ocean crust.',
+          'The sea widens, with submarine and often surface volcanic activity. A broad <strong>mid-ocean ridge</strong> develops as magma rises, cools and forms basalt, the ridge elevated by the buoyancy of partially molten, newly formed crust.'
+        ] },
+
+        { type: 'callout', genre: 'place', place: 'Great Rift Valley',
+          html: '<p>East Africa — the central rift valley stage, where the crust has fractured ' +
+          'and the centre has slumped, but the sea has not yet flooded in.</p>' },
+        { type: 'callout', genre: 'place', place: 'Red Sea',
+          html: '<p>The next stage — a shallow, <strong>linear sea</strong> formed where a ' +
+          'nearby ocean has spilled into the stretched, rifted crust.</p>' },
+        { type: 'callout', genre: 'place', place: 'Mid-Atlantic Ridge',
+          html: '<p>The mature stage — a broad mid-ocean ridge, around 2,000 km wide, with a ' +
+          'rift valley up to 1.5 km deep and 30 km wide running along its crest.</p>' },
+
+        { type: 'note', text: 'Great Rift Valley → Red Sea → Mid-Atlantic Ridge. One margin, three ages. Naming all three shows the examiner you understand it as a sequence.' },
+
+        { type: 'sequence', title: 'The life of a constructive margin',
+          prompt: 'Put the stages into the order the workbook gives them.',
+          items: [
+            'Rising convection warps and stretches the lithosphere',
+            'The crust breaks along fault lines',
+            'Decompression melting creates new crust',
+            'An isostatic response lifts the ridge',
+            'The centre slumps to form a rift valley',
+            'The sea spills in, creating a linear sea',
+            'A broad mid-ocean ridge develops'
+          ] },
+
+        { type: 'heading', text: 'Volcanic activity at constructive margins' },
+        { type: 'text', html:
+          '<p>The vast majority of volcanic activity at constructive margins is hidden below ' +
+          'the sea. It is here that magma forms the mid-ocean ridges. As magma extrudes onto ' +
+          'the ocean floor it cools rapidly, forming bulbous shapes known as <strong>pillow ' +
+          'lavas</strong>, composed of fine-textured igneous <strong>basalt</strong> or ' +
+          '<strong>gabbro</strong>. This is how oceanic plates are created.</p>' },
+
+        { type: 'callout', genre: 'place', place: "Giant's Causeway",
+          html: '<p>On land, the basalt rocks of the Giant\'s Causeway are the product of ' +
+          'constructive margin activity from over <strong>55 million years ago</strong>.</p>' },
+        { type: 'callout', genre: 'place', place: 'Iceland',
+          html: '<p>Iceland experiences a significant amount of constructive margin activity. ' +
+          'Along with frequent eruptions from central volcanoes, thermal lakes and geysers are ' +
+          'also common.</p>' },
+
+        { type: 'data', facts: [
+          { value: '1–3', unit: 'km', label: 'Ridge height above the abyssal plain' },
+          { value: '55', unit: 'Ma', label: "Age of the Giant's Causeway basalts", detail: 'Over 55 million years old.' },
+          { value: '30', unit: 'km', label: 'Width of the central rift valley', detail: 'And up to 1.5 km deep, running along the ridge crest.' }
+        ] },
+
+        { type: 'callout', genre: 'examtip', title: 'The drawn diagram is an essential skill',
+          html: '<p>You are expected to be able to draw a fully annotated diagram of a ' +
+          'constructive boundary. Use the colour code every time: <strong>blue for oceanic, ' +
+          'brown for continental, red for magma movement</strong>. The animation above uses ' +
+          'exactly that code, so what you see is what you should draw.</p>' },
+
+        { type: 'classify', title: 'Plate, sub-plate, or landform — the constructive margin',
+          prompt: 'Sort each feature of this margin into the right column.',
+          columns: ['Plate process', 'Sub-plate process', 'Resultant landform'],
+          items: [
+            { text: 'Two plates moving apart', col: 'Plate process' },
+            { text: 'Decompression melting', col: 'Sub-plate process' },
+            { text: 'Isostatic response', col: 'Sub-plate process' },
+            { text: 'Ridge push', col: 'Sub-plate process' },
+            { text: 'Ocean ridge', col: 'Resultant landform' },
+            { text: 'Rift valley', col: 'Resultant landform' },
+            { text: 'Pillow lavas', col: 'Resultant landform' }
+          ] },
+
+        { type: 'checkpoint', title: 'Checkpoint — constructive margins', items: [
+          { type: 'mcq',
+            stem: 'What causes decompression melting at a constructive margin?',
+            teach: 'Upwelling mantle material reduces the pressure on partially molten rock.',
+            options: [
+              { text: 'Upwelling mantle material reduces the pressure on partially molten rock', correct: true, why: 'Correct — less pressure means the already partially molten rock melts further.' },
+              { text: 'Sea water lowers the melting point of the lithosphere', why: 'That is hydration melting, which happens at destructive margins.' },
+              { text: 'Friction between the two plates generates heat', why: 'Friction matters at conservative margins, not here — these plates are moving apart.' },
+              { text: 'The slab sinks deep enough to reach hotter rock', why: 'That is subduction melting at a destructive margin.' }
+            ] },
+          { type: 'mcq',
+            stem: 'Which rock type forms the pillow lavas at a mid-ocean ridge?',
+            teach: 'Fine-textured igneous basalt (or gabbro).',
+            options: [
+              { text: 'Basalt', correct: true, why: 'Right — fine-textured igneous basalt or gabbro, formed as lava cools rapidly under water.' },
+              { text: 'Granite', why: 'Granite is a coarse continental rock, not the product of rapid undersea cooling.' },
+              { text: 'Limestone', why: 'A sedimentary rock — not formed from cooling lava at all.' },
+              { text: 'Slate', why: 'A metamorphic rock, formed by heat and pressure on shale rather than by eruption.' }
+            ] },
+          { type: 'cloze', title: 'Naming the three stages',
+            prompt: 'Name the place example for each stage.',
+            teach: 'Great Rift Valley → Red Sea → Mid-Atlantic Ridge.',
+            segments: [
+              { t: 'txt', text: 'The stage where the centre slumps between the faults is illustrated by the Great ' },
+              { t: 'gap', answer: 'Rift' },
+              { t: 'txt', text: ' Valley; the shallow linear sea stage by the ' },
+              { t: 'gap', answer: 'Red' },
+              { t: 'txt', text: ' Sea; and the mature broad ridge by the Mid-' },
+              { t: 'gap', answer: 'Atlantic', show: 1 },
+              { t: 'txt', text: ' Ridge.' }
+            ] }
+        ] }
+      ]
+    },
+
+    /* ======================================================
+       7 — DESTRUCTIVE
+       ====================================================== */
+    {
+      id: 'destructive', num: 7,
+      title: 'The Destructive Margins',
+      subtitle: 'Trenches, island arcs and fold mountains',
+      specIds: ['ii', 'iii'],
+      blocks: [
+        { type: 'text', html:
+          '<p>Destructive margins come in two forms, and the specification expects you to know ' +
+          'both. The processes are largely the same; what differs is <strong>what the trench ' +
+          'forms parallel to</strong>. Get that distinction right and you have the marks.</p>' },
+
+        { type: 'callout', genre: 'keypoint', title: 'The one-line difference',
+          html: '<p>At an <strong>oceanic-to-oceanic</strong> margin, the trench forms parallel ' +
+          'to an <strong>island arc</strong>. At a <strong>continental-to-oceanic</strong> ' +
+          'margin, the trench forms parallel to a <strong>fold mountain chain</strong>.</p>' },
+
+        { type: 'heading', text: 'Oceanic to oceanic' },
+        { type: 'sim', id: 'destructive-oo' },
+
+        { type: 'steps', items: [
+          'Two oceanic plates converge due to convection currents in the asthenosphere.',
+          'The denser oceanic plate (the Pacific Plate) is subducted into the asthenosphere beneath the less dense oceanic plate (the Indo-Australian Plate) due to <strong>slab pull</strong>. As the magma in the asthenosphere becomes cooler and denser, the convection currents drag the oceanic lithosphere down further.',
+          'As the plate is subducted, the lithosphere melts as it meets the hotter asthenosphere — <strong>subduction melting</strong>.',
+          'This is aided by <strong>hydration melting</strong>, which begins at depths of 80 km. Without it, melting would not start until 200 km. Sea water carried down by the subducting plate lowers the melting point of the lithosphere and mixes with the melted material, reducing its viscosity and helping it flow.',
+          'Compression forces cause the plate to buckle and deform, marking the point of subduction with a <strong>deep ocean trench</strong> — a linear chasm plunging 11 km below sea level, forming parallel to an island arc.',
+          'By 600–700 km, subduction stops as the descending plate is fully assimilated into the asthenosphere.',
+          'The magma produced is less dense than the surrounding rock, so it rises. Recycled crustal material erupts onto the ocean floor, cools, and builds up until it reaches the surface, creating an <strong>island arc</strong> lying parallel to the trench.'
+        ] },
+
+        { type: 'callout', genre: 'place', place: 'Tonga',
+          html: '<p>The Pacific Plate is subducted beneath the Indo-Australian Plate, creating ' +
+          'the <strong>Tonga Trench</strong>. Over <strong>150 islands</strong> — the Tongan ' +
+          'Islands — lie to the west of, and parallel to, the trench.</p>' },
+
+        { type: 'heading', text: 'Oceanic to continental' },
+        { type: 'sim', id: 'destructive-co' },
+
+        { type: 'steps', items: [
+          'An oceanic and a continental plate converge due to convection currents in the asthenosphere.',
+          'The Nazca Plate moves from west to east. The denser oceanic lithosphere is subducted beneath the less dense continental lithosphere of the South American Plate due to slab pull.',
+          'Compression forces cause the plate to buckle and deform, marking the point of subduction with a <strong>deep ocean trench</strong> plunging 11 km below sea level. At this type of margin the trench forms parallel to a <strong>fold mountain chain</strong>.',
+          'Subduction melting occurs as the lithosphere meets the hotter asthenosphere, aided by hydration melting from 80 km.',
+          'By 600–700 km, subduction stops as the descending plate is fully assimilated.',
+          'The magma rises beneath the continental lithosphere. It may force its way through lines of weakness into the plate, or right through it to erupt at the surface.'
+        ] },
+
+        { type: 'callout', genre: 'place', place: 'The Andes',
+          html: '<p>The <strong>Peru–Chile Trench</strong>, with volcanic activity common on ' +
+          'the west coast of South America — <strong>Mt Tacora</strong> in Chile and ' +
+          '<strong>Nevado del Ruiz</strong> in Colombia.</p>' },
+
+        { type: 'heading', text: 'Volcanic and seismic activity' },
+        { type: 'text', html:
+          '<p>Eruptions at destructive margins tend to be more <strong>violent and less ' +
+          'fluid</strong>, with silica-rich lava coming from steeper, cone-shaped volcanoes. ' +
+          'Magma produced by former ocean plate melting deep in subduction zones rises to ' +
+          'penetrate and move through the plate above, leading to violent volcanic activity.</p>' +
+          '<p>Shallow earthquakes occur near the deep ocean trench, and with increasing distance ' +
+          'away the foci are deeper. This plane of earthquakes is the <strong>Benioff Zone</strong> ' +
+          '— at a continental-to-oceanic margin it is the boundary between the subducting ' +
+          'oceanic plate and the overriding continental plate, a sloping plane of shallow, ' +
+          'intermediate and deep earthquakes. As the plate is subducted it can become stuck due ' +
+          'to increased friction; tension and stress build until they are released as seismic ' +
+          'waves.</p>' },
+
+        { type: 'callout', genre: 'place', place: 'Mt Pinatubo',
+          html: '<p>The 1991 eruption was an example of the violent volcanic activity ' +
+          'associated with destructive margins. It sent a vast cloud of debris ' +
+          '<strong>16 km wide</strong>, more than <strong>30 km</strong> into the atmosphere.</p>' },
+
+        { type: 'data', facts: [
+          { value: '11', unit: 'km', label: 'Depth of a deep ocean trench', detail: 'Below sea level — a deep, linear chasm.' },
+          { value: '80', unit: 'km', label: 'Where hydration melting begins', detail: 'Without it, melting would not begin until 200 km.' },
+          { value: '600–700', unit: 'km', label: 'Where subduction stops', detail: 'The descending plate is fully assimilated into the asthenosphere.' },
+          { value: '150+', unit: '', label: 'Islands in the Tongan island arc', detail: 'West of, and parallel to, the Tonga Trench.' },
+          { value: '16', unit: 'km', label: 'Width of the 1991 Pinatubo debris cloud', detail: 'Thrown more than 30 km into the atmosphere.' }
+        ] },
+
+        { type: 'match', title: 'Which margin does each feature belong to?',
+          prompt: 'Both are destructive — but the landforms differ. Drag each margin onto its feature.',
+          pairs: [
+            { left: 'A trench forming parallel to an island arc', right: 'Oceanic to oceanic' },
+            { left: 'A trench forming parallel to a fold mountain chain', right: 'Oceanic to continental' },
+            { left: 'The Tonga Trench and over 150 islands', right: 'Pacific under Indo-Australian' },
+            { left: 'The Peru–Chile Trench and the Andes', right: 'Nazca under South American' },
+            { left: 'Magma forcing through lines of weakness in a continental plate', right: 'Nevado del Ruiz' }
+          ] },
+
+        { type: 'callout', genre: 'examtip', title: 'Do not say "the lighter plate sinks"',
+          html: '<p>It is the <strong>denser</strong> plate that is subducted. Writing that the ' +
+          '"lighter" plate goes under is one of the most common errors in this topic, and it ' +
+          'costs the process mark every time. Oceanic lithosphere is denser than continental, ' +
+          'which is why it always subducts.</p>' },
+
+        { type: 'checkpoint', title: 'Checkpoint — destructive margins', items: [
+          { type: 'mcq',
+            stem: 'Why does sea water carried down by the subducting plate matter?',
+            teach: 'It lowers the melting point — hydration melting from 80 km rather than 200 km.',
+            options: [
+              { text: 'It lowers the melting point of the lithosphere, so melting begins at 80 km rather than 200 km', correct: true, why: 'Correct — and it reduces the viscosity of the melt, helping it flow.' },
+              { text: 'It cools the descending plate so it sinks faster', why: 'The plate is already cool and dense; the water\'s role is chemical, not thermal.' },
+              { text: 'It causes decompression melting', why: 'Decompression melting happens where pressure is released at a constructive margin.' },
+              { text: 'It lubricates the boundary so no earthquakes occur', why: 'Destructive margins have plenty of earthquakes — the Benioff Zone.' }
+            ] },
+          { type: 'mcq',
+            stem: 'What is the Benioff Zone?',
+            teach: 'The sloping plane of earthquake foci that deepens away from the trench.',
+            options: [
+              { text: 'A sloping plane of shallow, intermediate and deep earthquakes along the subducting plate', correct: true, why: 'Right — shallow near the trench, deeper with distance away from it.' },
+              { text: 'The depth at which hydration melting begins', why: 'That is 80 km — a depth, not a plane of earthquake foci.' },
+              { text: 'The line of volcanoes above a subduction zone', why: 'That is the island arc or volcanic chain, not the Benioff Zone.' },
+              { text: 'The boundary between the crust and the mantle', why: 'That is the Moho discontinuity.' }
+            ] },
+          { type: 'mcq',
+            stem: 'Which plate subducts, and why?',
+            teach: 'The denser plate — oceanic lithosphere is denser than continental.',
+            options: [
+              { text: 'The denser plate, because oceanic lithosphere is denser than continental', correct: true, why: 'Correct. Never write that the "lighter" plate goes under.' },
+              { text: 'The lighter plate, because it is pushed beneath the heavier one', why: 'This is the classic error. Density drives subduction, and the denser plate goes down.' },
+              { text: 'Whichever plate is moving faster', why: 'Speed does not determine which subducts — relative density does.' },
+              { text: 'Whichever plate is older, regardless of type', why: 'Age contributes to density, but the rule to state is that the denser plate subducts.' }
+            ] }
+        ] }
+      ]
+    },
+
+    /* ======================================================
+       8 — COLLISION
+       ====================================================== */
+    {
+      id: 'collision', num: 8,
+      title: 'The Collision Margin',
+      subtitle: 'How the Himalayas were built',
+      specIds: ['ii', 'iii'],
+      blocks: [
+        { type: 'text', html:
+          '<p>A collision margin begins life as a destructive one. What makes it different is ' +
+          'what happens when the ocean finally runs out.</p>' },
+
+        { type: 'sim', id: 'collision' },
+
+        { type: 'steps', items: [
+          'As two continental plates approach one another due to convection currents, the oceanic lithosphere between them subducts below one of the continents. At this stage it is a destructive margin.',
+          'Eventually the two sections of continental lithosphere — the Indian Plate and the Eurasian Plate — collide, and the subducting oceanic lithosphere becomes detached from the continents above.',
+          'It continues down into the asthenosphere, where it slowly melts and is fully assimilated. Eventually all subduction stops below a collision margin.',
+          'Because the continental lithosphere is too <strong>buoyant</strong> to subduct, the plates collide into each other and are compressed.',
+          'The continental material thickens due to folding and faulting by compressional forces. Crustal material and seafloor sediment deposited between the plates buckles upwards into a range of <strong>fold mountains</strong>.'
+        ] },
+
+        { type: 'callout', genre: 'place', place: 'The Himalayas',
+          html: '<p>The Indian Plate meeting the Eurasian Plate. The sediment that once lay on ' +
+          'the floor of the ocean between them is now buckled up into the highest mountains on ' +
+          'Earth.</p>' },
+
+        { type: 'callout', genre: 'keypoint', title: 'Why there are no volcanoes here',
+          html: '<p>Violent earthquakes are common at a collision margin: the plates become ' +
+          'stuck, pressure builds, and is eventually released as seismic waves. But there is ' +
+          '<strong>no volcanic activity</strong>, because there is <strong>no subduction and no ' +
+          'creation of new crust</strong>. This is a favourite exam point — learn the reason, ' +
+          'not just the fact.</p>' },
+
+        { type: 'mcq',
+          stem: 'A collision margin has violent earthquakes but no volcanic activity. Why not?',
+          options: [
+            { text: 'There is no subduction, so no new magma is generated to reach the surface', correct: true, why: 'Exactly. Once the continents meet, subduction ceases — and with it the supply of magma.' },
+            { text: 'The mountains are too high for magma to reach the surface', why: 'Height is not the obstacle; the absence of subduction and magma generation is.' },
+            { text: 'The continental crust is too thin to hold a magma chamber', why: 'Continental crust here is unusually <em>thick</em>, not thin — but that is not the reason either.' },
+            { text: 'The plates are moving too slowly for friction to melt rock', why: 'Friction is not the source of magma at any margin in this topic.' }
+          ] },
+
+        { type: 'examq',
+          qid: 'q-collision9',
+          source: 'CCEA A2 1 Physical Processes, Landforms and Management, Specimen Assessment Materials © CCEA 2017',
+          question: 'With the aid of a diagram, explain the processes and landforms associated with a collision plate margin. <strong>[9]</strong>',
+          marks: 9,
+          plan: [
+            'Two continental plates move towards each other because…',
+            'The oceanic lithosphere between them…',
+            'When the continents meet, the lithosphere is too buoyant to…',
+            'Compression causes the crust to…',
+            'The resulting landform is…',
+            'There is no volcanic activity because…'
+          ],
+          schemeNote: 'Note the command: <em>with the aid of a diagram</em>. Sketch it as well as writing it — the diagram carries marks, and Plate VII in the Plate Room is the version to practise.',
+          scheme: [
+            { point: 'Two continental plates converge due to convection currents in the asthenosphere' },
+            { point: 'The oceanic lithosphere between them subducts first — the margin begins as a destructive one' },
+            { point: 'The plates meet and the subducting slab detaches, sinks and is assimilated, so subduction stops' },
+            { point: 'Continental lithosphere is too buoyant to subduct' },
+            { point: 'The plates are compressed against one another' },
+            { point: 'Continental material thickens through folding and faulting' },
+            { point: 'Crustal material and seafloor sediment buckle upwards' },
+            { point: 'Names <strong>fold mountains</strong> as the resultant landform, with a place example such as the Himalayas' },
+            { point: 'Notes violent shallow earthquakes but no volcanic activity, and explains why' }
+          ],
+          examiner: 'Nine marks, and one of the most predictable questions on this option. The ' +
+            'answers that fall short are usually the ones that describe two continents crashing ' +
+            'together without ever mentioning the ocean that had to close first, or that forget ' +
+            'to explain the absence of volcanoes.'
+        },
+
+        { type: 'checkpoint', title: 'Checkpoint — collision', items: [
+          { type: 'mcq',
+            stem: 'What happens to the oceanic lithosphere that lay between the two continents?',
+            teach: 'It detaches, sinks into the asthenosphere and is fully assimilated.',
+            options: [
+              { text: 'It detaches, sinks into the asthenosphere and is assimilated, so subduction stops', correct: true, why: 'Correct — and that is why the margin stops behaving destructively.' },
+              { text: 'It is pushed upwards to form the fold mountains', why: 'It is the seafloor <em>sediment</em> that buckles upwards, not the oceanic slab itself.' },
+              { text: 'It remains locked between the two plates', why: 'It becomes detached from the continents above and continues downwards.' },
+              { text: 'It melts and erupts as volcanoes along the range', why: 'There is no volcanic activity at a collision margin.' }
+            ] },
+          { type: 'cloze', title: 'Why the continents cannot subduct',
+            prompt: 'One word.',
+            teach: 'Continental lithosphere is too buoyant to subduct.',
+            segments: [
+              { t: 'txt', text: 'The continental lithosphere is too ' },
+              { t: 'gap', answer: 'buoyant' },
+              { t: 'txt', text: ' to subduct, so instead the plates are ' },
+              { t: 'gap', answer: 'compressed' },
+              { t: 'txt', text: '.' }
+            ] }
+        ] }
+      ]
+    },
+
+    /* ======================================================
+       9 — CONSERVATIVE
+       ====================================================== */
+    {
+      id: 'conservative', num: 9,
+      title: 'The Conservative Margin',
+      subtitle: 'Sliding past — and why nothing erupts',
+      specIds: ['ii'],
+      blocks: [
+        { type: 'text', html:
+          '<p>The fourth margin creates no crust and destroys none — it conserves it. That one ' +
+          'fact explains almost everything else about it.</p>' },
+
+        { type: 'sim', id: 'conservative' },
+
+        { type: 'steps', items: [
+          'Convection currents in the asthenosphere cause two plates to slide past one another, with the movement of the plate parallel to the plate boundary. Plates can move in opposite directions, or in the same direction at different speeds.',
+          'As the plates slide past one another there is a build-up of stress and tension between the plate edges. Frictional forces lock the blocks of lithosphere together.',
+          'Eventually those forces are overcome and there is a sudden release of friction. The stress is released as seismic waves during an earthquake.',
+          'Frequent small tremors are common at conservative boundaries, but several earthquakes of considerable magnitude also occur.'
+        ] },
+
+        { type: 'callout', genre: 'place', place: 'San Andreas Fault',
+          html: '<p>In California the Pacific Plate and the North American Plate are ' +
+          '<strong>both moving north-west</strong>, but at different speeds — the Pacific Plate ' +
+          'at approximately <strong>6 cm per year</strong> and the North American Plate at ' +
+          'approximately <strong>2 cm per year</strong>. In 1906 the crust was displaced by ' +
+          '<strong>7 m</strong>, generating a <strong>magnitude 7.8</strong> earthquake.</p>' },
+
+        { type: 'callout', genre: 'place', place: 'North Anatolian Fault',
+          html: '<p>A second example, in northern Turkey. It marks the boundary between the ' +
+          'Anatolian plate and the larger Eurasian plate, and is one of the most seismically ' +
+          'active zones in the world. Turkey is being squeezed sideways to the west as the ' +
+          'Arabian plate pushes into the Eurasian plate, and earthquakes happen regularly along ' +
+          'the fault as different sections break.</p>' },
+
+        { type: 'data', facts: [
+          { value: '6', unit: 'cm/yr', label: 'Speed of the Pacific Plate', detail: 'Moving north-west along the San Andreas Fault.' },
+          { value: '2', unit: 'cm/yr', label: 'Speed of the North American Plate', detail: 'Also north-west — the difference in speed is what builds the strain.' },
+          { value: '7', unit: 'm', label: 'Crustal displacement in 1906', detail: 'Generating a magnitude 7.8 earthquake on the San Andreas Fault.' }
+        ] },
+
+        { type: 'callout', genre: 'keypoint', title: 'Crust is conserved — so no volcanoes',
+          html: '<p>Because crust is neither created nor destroyed, there is no volcanic ' +
+          'activity. As no subduction takes place, no rising magma can reach the surface, so ' +
+          'extrusive volcanic activity does not occur.</p>' },
+
+        { type: 'heading', text: 'Transform faults' },
+        { type: 'text', html:
+          '<p>Conservative margins can also result from very complex movements of plates as they ' +
+          'curve across the ocean floor. To avoid the margin twisting into an "S" shape, it ' +
+          'instead fractures perpendicular to the margin. This creates a series of ' +
+          '<strong>transform faults</strong> bisecting the constructive margin, forming a ' +
+          '<strong>zig-zag pattern</strong> along the length of the ridge.</p>' },
+
+        { type: 'sequence', title: 'The earthquake cycle at a conservative margin',
+          prompt: 'Order the four stages.',
+          items: [
+            'The plates slide past one another, driven by convection currents',
+            'Friction locks the blocks of lithosphere together',
+            'Stress and tension build between the plate edges',
+            'The frictional forces are overcome and stress is released as seismic waves'
+          ] },
+
+        { type: 'examq',
+          qid: 'q-naf9',
+          source: 'CCEA A2 1 Physical Processes, Landforms and Management, Specimen Assessment Materials © CCEA 2017',
+          question: 'Study Resource A which describes the tectonic situation in Northern Turkey. Identify the type of plate margin found at the North Antolian Fault and explain the processes that result in earthquakes without volcanic activity along this margin. <strong>[9]</strong>',
+          resource: {
+            label: 'Resource A: Tectonic instability in Turkey',
+            html: '<p>The North Anatolian Fault is a major fracture that runs across the ' +
+              'northern part of Turkey, marking the boundary between the Anatolian plate and ' +
+              'the larger Eurasian plate. The area is considered as one of the most seismically ' +
+              'active zones of the world. Turkey is being squeezed sideways to the west as the ' +
+              'Arabian plate pushes into the Eurasian plate. The North Anatolian Fault forms ' +
+              'the edge of the Anatolian plate and earthquakes happen regularly along it as ' +
+              'different sections break. The map illustrates how, within the last one hundred ' +
+              'years, a series of significant earthquakes has rocked northern Turkey along the ' +
+              'line of the fault.</p>' +
+              '<p class="fc-res-note">The resource map plots significant earthquakes along the ' +
+              'fault over the last century — 1939, 1942, 1943, 1944, 1957, 1967 and 1999 — ' +
+              'running broadly from east to west across northern Turkey, with the Anatolian ' +
+              'plate moving west and the Arabian plate pushing north.</p>'
+          },
+          marks: 9,
+          plan: [
+            'The North Anatolian Fault is a … margin, because…',
+            'The plates move…',
+            'Frictional forces…',
+            'Stress builds until…',
+            'There is no volcanic activity because…',
+            'The resource shows that…'
+          ],
+          schemeNote: 'Two commands in one: <em>identify</em> the margin, then <em>explain</em> the processes. Do both, and use the resource — the dates on the map are there to be used.',
+          scheme: [
+            { point: 'Identifies the margin as <strong>conservative</strong>' },
+            { point: 'Supports this from the resource — plates sliding past one another, Turkey squeezed sideways to the west' },
+            { point: 'Movement is parallel to the plate boundary, driven by convection currents in the asthenosphere' },
+            { point: 'Frictional forces lock the blocks of lithosphere together' },
+            { point: 'Stress and tension build between the plate edges' },
+            { point: 'The forces are eventually overcome and there is a sudden release' },
+            { point: 'The stress is released as seismic waves — an earthquake' },
+            { point: 'No volcanic activity because crust is neither created nor destroyed — it is conserved' },
+            { point: 'No subduction takes place, so no rising magma can reach the surface' },
+            { point: 'Uses the resource\'s evidence of repeated significant earthquakes along the fault as different sections break' }
+          ],
+          examiner: 'The "without volcanic activity" clause is the part candidates skip. It is ' +
+            'worth marks in its own right, and the explanation has two halves: crust is ' +
+            'conserved, and there is no subduction to generate magma.'
+        },
+
+        { type: 'checkpoint', title: 'Checkpoint — conservative margins', items: [
+          { type: 'mcq',
+            stem: 'At the San Andreas Fault, how are the two plates moving?',
+            teach: 'Both north-west, but at different speeds — 6 cm/yr against 2 cm/yr.',
+            options: [
+              { text: 'Both north-west, but at different speeds', correct: true, why: 'Correct — it is the difference in speed, not opposite directions, that builds the strain here.' },
+              { text: 'Directly towards each other', why: 'That would be a destructive or collision margin.' },
+              { text: 'Directly away from each other', why: 'That would be a constructive margin.' },
+              { text: 'In opposite directions along the fault', why: 'Plates at a conservative margin <em>can</em> move in opposite directions, but at the San Andreas they both move north-west.' }
+            ] },
+          { type: 'mcq',
+            stem: 'Why does a zig-zag pattern of transform faults develop along a ridge?',
+            teach: 'The margin fractures perpendicular to itself rather than twisting into an S shape.',
+            options: [
+              { text: 'The margin fractures perpendicular to itself rather than twisting into an "S" shape', correct: true, why: 'Right — the fractures bisect the constructive margin, giving the zig-zag.' },
+              { text: 'Earthquakes shatter the ridge into separate blocks', why: 'The pattern comes from how the margin accommodates curvature, not from earthquake damage.' },
+              { text: 'Magma erupts unevenly along the ridge crest', why: 'Uneven eruption does not produce the systematic offsetting seen at transform faults.' },
+              { text: 'The two plates are moving at right angles to each other', why: 'At a transform fault the plates slip laterally past one another.' }
+            ] },
+          { type: 'cloze', title: 'Why nothing erupts here',
+            prompt: 'Complete the reason there are no volcanoes.',
+            teach: 'Crust is neither created nor destroyed, and there is no subduction.',
+            segments: [
+              { t: 'txt', text: 'Crust is neither created nor destroyed — it is ' },
+              { t: 'gap', answer: 'conserved' },
+              { t: 'txt', text: '. As no ' },
+              { t: 'gap', answer: 'subduction' },
+              { t: 'txt', text: ' takes place, no rising magma can reach the surface.' }
+            ] }
+        ] }
+      ]
+    },
+
+    /* ======================================================
+       10 — THE FIVE LANDFORMS
+       ====================================================== */
+    {
+      id: 'landforms', num: 10,
+      title: 'The Five Landforms',
+      subtitle: 'Everything specification statement (iii) asks for',
+      specIds: ['iii'],
+      blocks: [
+        { type: 'callout', genre: 'speclink', title: 'The exact wording',
+          html: '<p>"Demonstrate knowledge and understanding of resultant landforms — ' +
+          '<strong>ocean ridges, rift valleys, deep sea trenches, island arcs and fold ' +
+          'mountains</strong>." Five landforms, named. This chapter gathers them, and each one ' +
+          'links back to the margin that built it.</p>' },
+
+        { type: 'keyterms', terms: [
+          { term: 'Ocean ridge', def: 'A raised portion of the sea bed, possibly thousands of kilometres in length and 1–3 km in height. The Mid-Atlantic Ridge is around 2,000 km wide. Formed at a constructive margin, where new crust is created and an isostatic response lifts the young crust.' },
+          { term: 'Rift valley', def: 'A linear valley running along the length of an ocean ridge — as much as 1.5 km deep and up to 30 km wide — formed where the central area slumps and collapses between fault lines. Also found on land, as at the Great Rift Valley in East Africa.' },
+          { term: 'Deep sea trench', def: 'A deep, linear chasm plunging as much as 11 km below sea level, marking the point of subduction at a destructive margin, where compression makes the plate buckle and deform.' },
+          { term: 'Island arc', def: 'A curved chain of volcanic islands lying parallel to a deep ocean trench, built where magma from a subducting oceanic plate erupts onto the ocean floor and accumulates until it breaks the surface. Formed at an oceanic-to-oceanic destructive margin.' },
+          { term: 'Fold mountains', def: 'A range formed where compression buckles crustal material and seafloor sediment upwards. Formed at a collision margin, and at an oceanic-to-continental destructive margin, where the trench forms parallel to the chain.' }
+        ] },
+
+        { type: 'classify', title: 'Which margin builds which landform?',
+          prompt: 'Sort all five landforms — plus the volcanic features — onto the margin that produces them.',
+          columns: ['Constructive', 'Destructive', 'Collision'],
+          items: [
+            { text: 'Ocean ridge', col: 'Constructive' },
+            { text: 'Rift valley', col: 'Constructive' },
+            { text: 'Pillow lavas', col: 'Constructive' },
+            { text: 'Deep sea trench', col: 'Destructive' },
+            { text: 'Island arc', col: 'Destructive' },
+            { text: 'Composite volcanoes', col: 'Destructive' },
+            { text: 'Fold mountains raised with no volcanic activity', col: 'Collision' }
+          ] },
+
+        { type: 'callout', genre: 'examtip', title: 'Fold mountains appear twice',
+          html: '<p>Fold mountains form at a <strong>collision</strong> margin, where two ' +
+          'continents meet — and also at an <strong>oceanic-to-continental destructive</strong> ' +
+          'margin, where compression buckles the edge of the continent and the trench runs ' +
+          'parallel to the chain. If a question asks where fold mountains form, saying both ' +
+          '(and distinguishing them) is what separates a strong answer.</p>' },
+
+        { type: 'match', title: 'Landform to place',
+          prompt: 'Drag the place example onto the landform it illustrates.',
+          pairs: [
+            { left: 'Ocean ridge', right: 'Mid-Atlantic Ridge' },
+            { left: 'Rift valley (on land)', right: 'Great Rift Valley' },
+            { left: 'Linear sea flooding a rift', right: 'Red Sea' },
+            { left: 'Deep sea trench with an island arc', right: 'Tonga Trench' },
+            { left: 'Deep sea trench with fold mountains', right: 'Peru–Chile Trench' },
+            { left: 'Fold mountains at a collision margin', right: 'The Himalayas' }
+          ] },
+
+        { type: 'classify', title: 'The full organiser',
+          prompt: 'The three-column organiser one last time — this time with everything in it.',
+          columns: ['Plate process', 'Sub-plate process', 'Resultant landform'],
+          items: [
+            { text: 'Plates moving apart', col: 'Plate process' },
+            { text: 'Plates converging', col: 'Plate process' },
+            { text: 'Plates sliding past one another', col: 'Plate process' },
+            { text: 'Continental plates colliding', col: 'Plate process' },
+            { text: 'Decompression melting', col: 'Sub-plate process' },
+            { text: 'Hydration melting', col: 'Sub-plate process' },
+            { text: 'Subduction melting', col: 'Sub-plate process' },
+            { text: 'Slab pull', col: 'Sub-plate process' },
+            { text: 'Ridge push', col: 'Sub-plate process' },
+            { text: 'Isostatic response', col: 'Sub-plate process' },
+            { text: 'Ocean ridge', col: 'Resultant landform' },
+            { text: 'Rift valley', col: 'Resultant landform' },
+            { text: 'Deep sea trench', col: 'Resultant landform' },
+            { text: 'Island arc', col: 'Resultant landform' },
+            { text: 'Fold mountains', col: 'Resultant landform' }
+          ] },
+
+        { type: 'checkpoint', title: 'Checkpoint — the landforms', items: [
+          { type: 'mcq',
+            stem: 'An island arc always forms parallel to which feature?',
+            teach: 'A deep ocean trench, at an oceanic-to-oceanic destructive margin.',
+            options: [
+              { text: 'A deep ocean trench', correct: true, why: 'Correct — the arc of islands runs parallel to the trench, as at Tonga.' },
+              { text: 'An ocean ridge', why: 'Ocean ridges form at constructive margins, where no subduction occurs.' },
+              { text: 'A rift valley', why: 'Rift valleys form where crust is pulled apart, not where it is subducted.' },
+              { text: 'A transform fault', why: 'Transform faults offset ridges; they do not generate island arcs.' }
+            ] },
+          { type: 'mcq',
+            stem: 'At which TWO margins can fold mountains form?',
+            teach: 'Collision, and oceanic-to-continental destructive.',
+            options: [
+              { text: 'Collision, and oceanic-to-continental destructive', correct: true, why: 'Right — the Himalayas at a collision margin, the Andes at a destructive one.' },
+              { text: 'Constructive, and conservative', why: 'Neither compresses continental crust; one creates crust and the other conserves it.' },
+              { text: 'Collision, and oceanic-to-oceanic destructive', why: 'An oceanic-to-oceanic margin produces an island arc, not fold mountains.' },
+              { text: 'Conservative, and collision', why: 'Conservative margins produce fault lines, not mountain ranges.' }
+            ] },
+          { type: 'mcq',
+            stem: 'How deep can a deep sea trench plunge?',
+            teach: 'As much as 11 km below sea level.',
+            options: [
+              { text: 'About 11 km below sea level', correct: true, why: 'Correct — the figure to quote.' },
+              { text: 'About 1.5 km below sea level', why: 'That is the depth of the rift valley along an ocean ridge.' },
+              { text: 'About 80 km below sea level', why: '80 km is the depth at which hydration melting begins, not a trench depth.' },
+              { text: 'About 600 km below sea level', why: '600–700 km is where subduction stops, deep inside the asthenosphere.' }
+            ] }
+        ] }
+      ]
+    },
+
+    /* ======================================================
+       11 — THE EXAM ZONE
+       ====================================================== */
+    {
+      id: 'exam-zone', num: 11,
+      title: 'The Exam Zone',
+      subtitle: 'Real questions, real mark schemes, and marking a real script',
+      specIds: ['i', 'ii', 'iii'],
+      blocks: [
+        { type: 'text', html:
+          '<p>Everything in this chapter is the real thing: questions from CCEA\'s own ' +
+          'assessment materials, the mark-scheme points behind them, and a genuine pupil script ' +
+          'to mark. Work through it last, once the rest of the atlas is secure.</p>' },
+
+        { type: 'callout', genre: 'examtip', title: 'What the paper looks like',
+          html: '<p>The A2 Unit 1 external exam paper tests your knowledge of physical geography, ' +
+          'with a particular focus on physical processes, landforms and their management. The ' +
+          'exam lasts <strong>1 hour 30 minutes</strong> and the unit makes up <strong>24% of ' +
+          'your final A-level grade</strong>.</p>' },
+
+        { type: 'callout', genre: 'examtip', title: 'Three standing instructions',
+          html: '<ul>' +
+          '<li>Reference to place is for illustration purposes — review your notes and make ' +
+          'sure you have examples throughout.</li>' +
+          '<li>Complete every question in the past paper booklet.</li>' +
+          '<li>Review the model answers.</li></ul>' },
+
+        { type: 'examq',
+          qid: 'q-oceanic8',
+          source: 'CCEA A2 1 Physical Processes, Landforms and Management, Specimen Assessment Materials © CCEA 2017',
+          question: 'Describe and explain <strong>two</strong> types of evidence for plate movement based on knowledge of oceanic crust material. <strong>[8]</strong>',
+          marks: 8,
+          plan: [
+            'The first type of evidence from oceanic crust is…',
+            'This shows that…',
+            'A second type of evidence is…',
+            'This proves that…'
+          ],
+          schemeNote: 'Her PowerPoint records this as the May 2015 question, and flags the two ' +
+            'themes it expects: magnetic striping and geological evidence. Note the command is ' +
+            '<em>describe AND explain</em> — describing the pattern alone will not do.',
+          scheme: [
+            { point: 'Selects two distinct types of oceanic evidence (for example magnetic striping and the age of the sea floor)' },
+            { point: 'Palaeomagnetism: iron particles align with the magnetic field as lava cools and record it permanently' },
+            { point: 'The field reverses approximately every one million years' },
+            { point: 'This produces bands of alternating polarity parallel to the ridge, detected by magnetometers in the 1960s' },
+            { point: 'Age of the sea floor: rocks are youngest at the ridge and grow older away from it' },
+            { point: 'Sediment is minimal, so the floor cannot be as old as the continents' },
+            { point: 'Stresses that both patterns are <strong>symmetrical</strong> either side of the ridge' },
+            { point: 'Explains that this can only be accounted for by new crust forming at the ridge and moving outwards — sea-floor spreading' }
+          ],
+          model: '<p>The first type of evidence is <mark>magnetic striping</mark>. When lava ' +
+            'erupts at a mid-ocean ridge and cools, <mark>iron particles within it align with ' +
+            'the Earth\'s magnetic field and record its direction permanently</mark>. Because ' +
+            '<mark>the field reverses approximately every one million years</mark>, rock formed ' +
+            'after a reversal records the opposite polarity. Magnetometers towed behind ships ' +
+            'in the 1960s revealed <mark>bands of alternating polarity lying parallel to the ' +
+            'ridge and symmetrical on both sides of it</mark>. This can only be explained if ' +
+            'new crust forms at the ridge and is carried outwards.</p>' +
+            '<p>The second type is <mark>the age and sediment pattern of the ocean floor</mark>. ' +
+            'The rocks of the ridge crest are very young, and <mark>their age increases away ' +
+            'from the ridge in a symmetrical pattern</mark>. <mark>Sediment is minimal ' +
+            'compared with the continents</mark>; if the ocean floors were billions of years ' +
+            'old they would lie beneath thick deposits. Together these show that ' +
+            '<mark>the sea floor is continually created at the ridge and destroyed ' +
+            'elsewhere</mark>.</p>',
+          modelNote: 'Assembled from the mark-scheme points recorded in her PowerPoint and the ' +
+            'wording of her own workbook notes — this is a worked model, not a candidate script.',
+          examiner: 'Two types, described and explained. A common way to lose marks here is to ' +
+            'write a great deal about palaeomagnetism and then run out of time for the second ' +
+            'type. Budget the space: roughly half each.'
+        },
+
+        { type: 'marker',
+          qid: 'm-destconst',
+          question: 'Explain the processes and landforms associated with a destructive and a constructive plate margin. <strong>[8]</strong>',
+          marks: 8,
+          intro: 'This is a real answer written by a pupil, reproduced exactly as it was ' +
+            'written. Her teacher has annotated one line of it in green. Read it, decide what ' +
+            'you would give it, and then compare.',
+          answer:
+            '<p>Destructive plate margins occur where two plates meet, moving in opposite ' +
+            'directions, e.g. the Nazca Plate and the South American Plate. By contrast, ' +
+            'constructive plate margins are located where two plates are moving away from each ' +
+            'other, such as the N. American Plate and the Eurasian plate.</p>' +
+            '<p>At destructive plate margins the lighter of the two plates is pulled underneath ' +
+            'the other, in the process of subduction, leaving a deep ocean trench. As the plate ' +
+            'being subducted reaches depths of 200–300 km some of its material will melt and ' +
+            'rise up underneath the other plate sometimes breaking through the surface forming ' +
+            'volcanoes.</p>' +
+            '<p>However, at constructive plate margins, subduction does not occur. Instead, the ' +
+            'two plates moving apart leave cracks and eventually a gap between them in which ' +
+            'magma will rise up and create new crust material, forming mid-ocean ridges and ' +
+            'volcanoes.</p>',
+          teacherNote: 'least dense — the teacher\'s own correction, written beside "the lighter of the two plates"',
+          bands: [
+            { band: 'Band 1', range: '0–3 marks', descriptor: 'Limited. Little accurate process, few or no examples, landforms barely mentioned.' },
+            { band: 'Band 2', range: '4–6 marks', descriptor: 'Sound. Basic processes correct with valid examples, but gaps in detail, terminology or landform coverage.' },
+            { band: 'Band 3', range: '7–8 marks', descriptor: 'Excellent. Accurate, detailed processes using specialist terminology, sub-plate processes named, a full range of landforms and secure place examples.' }
+          ],
+          verdict: {
+            band: 'Band 2', mark: '4',
+            commentary:
+              '<p><strong>What it does well</strong></p><ul>' +
+              '<li>Valid, correctly named examples for both margins — Nazca and South American.</li>' +
+              '<li>The core process is right: subduction leaves a deep ocean trench.</li>' +
+              '<li>Correct that constructive margins create new crust and mid-ocean ridges.</li>' +
+              '<li>Genuinely comparative structure, signposted with "By contrast" and "However" — which is exactly what the question wants.</li>' +
+              '</ul>' +
+              '<p><strong>Where it loses marks</strong></p><ul>' +
+              '<li><strong>A process error.</strong> "The <em>lighter</em> of the two plates is pulled underneath" — it is the <strong>denser</strong> plate that subducts. Her teacher has flagged exactly this.</li>' +
+              '<li><strong>Wrong figures.</strong> "200–300 km" does not match the taught values: hydration melting begins at 80 km, and the slab is fully assimilated by 600–700 km.</li>' +
+              '<li><strong>Landforms are thin.</strong> The question asks for landforms, and only the trench and the mid-ocean ridge appear. There is no island arc, no fold mountains, no rift valley.</li>' +
+              '<li><strong>No sub-plate processes.</strong> Slab pull, ridge push, decompression melting and hydration melting are all absent.</li>' +
+              '<li><strong>Non-specialist terminology.</strong> No use of lithosphere or asthenosphere.</li>' +
+              '</ul>' +
+              '<p>Sound understanding, then, but a significant error and too little landform ' +
+              'detail for the top band.</p>',
+            caveat: 'This verdict is our assessment against the CCEA level descriptors — the ' +
+              'workbook page where the class marked this together was left blank, so your ' +
+              'teacher may well justify a different mark. Use it to compare your reasoning, ' +
+              'not as the last word.'
+          }
+        },
+
+        { type: 'callout', genre: 'thinkdiscuss', title: 'Now mark your own',
+          html: '<p>Go back to any answer you wrote in the Examiner\'s Folio and mark it the ' +
+          'same way: band it first, then justify the band, then give the mark. Marking your own ' +
+          'work against the descriptors is the fastest way to learn what the top band actually ' +
+          'requires.</p>' },
+
+        { type: 'callout', genre: 'keypoint', title: 'Before you close the atlas',
+          html: '<p>Two things worth doing. Open the <strong>Plate Room</strong> and clear it — ' +
+          'every plate mastered in Test mode means one diagram you can draw from memory. Then ' +
+          'go back to the contents and set your confidence against each of the three ' +
+          'specification statements, so you know exactly where to spend your next hour.</p>' }
       ]
     }
   ]
