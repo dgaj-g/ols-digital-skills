@@ -728,8 +728,12 @@ h3.tm-h { font-size: clamp(18px, 2.4vw, 22px); }
 }
 .tray.sticky {
   position: sticky; bottom: 0; z-index: 20;
-  background: rgba(239,241,247,.97);
-  backdrop-filter: blur(6px);
+  /* NO backdrop-filter here. A filter/backdrop-filter/transform on an
+     ancestor makes it the containing block for position:fixed children,
+     which breaks the drag lift: the chip is placed relative to the tray
+     instead of the viewport and leaps away from the pointer. Use an
+     opaque background instead. */
+  background: #EFF1F7;
   box-shadow: 0 -6px 18px rgba(18,42,79,.10);
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   margin-top: 14px;
@@ -886,8 +890,9 @@ h3.tm-h { font-size: clamp(18px, 2.4vw, 22px); }
    ============================================================ */
 .overlay {
   position: fixed; inset: 0; z-index: 200;
-  background: rgba(18, 41, 79, 0.55);
-  backdrop-filter: blur(3px);
+  /* No backdrop-filter — the plate viewer holds draggable label chips, and
+     it would become their fixed-position containing block (see .tray.sticky). */
+  background: rgba(18, 41, 79, 0.62);
   display: flex; align-items: flex-start; justify-content: center;
   padding: clamp(12px, 4vh, 56px) clamp(10px, 3vw, 28px);
   overflow-y: auto;

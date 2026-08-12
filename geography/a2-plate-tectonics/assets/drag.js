@@ -53,7 +53,7 @@
    */
   function makeDraggable(chip, opts) {
     chip.style.touchAction = 'none';
-    const ptr = { id: null, sx: 0, sy: 0, moved: false, lastX: 0, lastY: 0 };
+    const ptr = { id: null, sx: 0, sy: 0, moved: false, lastX: 0, lastY: 0, cx: 0, cy: 0 };
     let raf = null;
     let hovered = null;
 
@@ -94,9 +94,33 @@
         chip.style.position = 'fixed';
         chip.style.left = r.left + 'px'; chip.style.top = r.top + 'px';
         chip.style.width = r.width + 'px'; chip.style.margin = '0'; chip.style.zIndex = '1000';
+
+        /* `position: fixed` is only relative to the viewport while no ancestor
+           is a containing block for fixed descendants. Any ancestor with a
+           transform, filter, backdrop-filter, perspective, contain or a
+           will-change naming those becomes one — and then the left/top we just
+           wrote (viewport coordinates) are measured from that ancestor instead,
+           so the chip jumps away from the pointer and the drag looks broken.
+           Rather than trust the CSS never to reintroduce one, measure where the
+           chip actually landed and carry the error as a correction. */
+        const after = chip.getBoundingClientRect();
+        ptr.cx = r.left - after.left;
+        ptr.cy = r.top - after.top;
+        if (ptr.cx || ptr.cy) {
+          chip.style.left = (r.left + ptr.cx) + 'px';
+          chip.style.top = (r.top + ptr.cy) + 'px';
+        }
         chip.classList.add('dragging');
         document.body.classList.add('dragging-active');
-        try { chip.setPointerCapture(e.pointerId); } catch (_) {}
+        /* Deliberately NO setPointerCapture. The gesture is tracked with
+           document-level listeners, which can never lose the event stream.
+           Capturing as well adds nothing and actively breaks real mouse
+           drags: lifting the chip to position:fixed changes its box, the
+           browser can drop the capture, and the resulting
+           lostpointercapture would abort a drag that is going fine.
+           (Synthetic pointer events never engage capture, so this failure
+           is invisible to scripted QA — it has to be driven by a real
+           mouse. See BUILD_PLAYBOOK Step 6, drag gotcha 1.) */
         autoScroll.start();
         ptr.sx = e.clientX; ptr.sy = e.clientY;
         ptr.lastX = e.clientX; ptr.lastY = e.clientY;
@@ -132,13 +156,11 @@
       document.addEventListener('pointerup', onUp);
       document.addEventListener('pointercancel', onUp);
     });
-    chip.addEventListener('lostpointercapture', (e) => {
-      if (ptr.id !== e.pointerId) return;
-      const wasMoved = ptr.moved;
-      ptr.id = null; ptr.moved = false;
-      teardown();
-      if (wasMoved) { unstyle(); opts.onDrop(chip, null); }
-    });
+    /* There is deliberately no `lostpointercapture` handler. An earlier
+       version aborted the drag when capture was lost, which is the single
+       most common way a Pointer Events drag dies under a real mouse while
+       passing every synthetic test. Losing capture is not a reason to stop:
+       the document-level listeners above still have the event stream. */
 
     // Keyboard pick-and-place: Enter/Space lifts the chip, arrow/tab moves focus
     // between zones, Enter/Space on a zone drops it there, Escape cancels.
