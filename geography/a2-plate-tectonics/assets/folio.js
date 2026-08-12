@@ -215,6 +215,15 @@
           onStart: tick
         });
       });
+      /* Safety net: if frames are throttled (background tab, some embeds) the
+         timeline never completes and the pupil is left looking at an unmarked
+         model answer. Force the finished state once the run should be over. */
+      const runMs = (0.28 + marks.length * 0.34 + 0.6) * 1000;
+      setTimeout(() => {
+        Array.prototype.forEach.call(marks, (m) => m.style.setProperty('--ink', '1'));
+        shown = marks.length;
+        count.textContent = marks.length + ' of ' + marks.length + ' mark-scheme points hit';
+      }, runMs);
     } else {
       Array.prototype.forEach.call(marks, (m) => m.style.setProperty('--ink', '1'));
       count.textContent = marks.length + ' of ' + marks.length + ' mark-scheme points hit';

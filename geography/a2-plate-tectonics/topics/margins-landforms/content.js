@@ -872,6 +872,14 @@ window.OLS_A2PT_TOPICS.push({
           'associated with destructive margins. It sent a vast cloud of debris ' +
           '<strong>16 km wide</strong>, more than <strong>30 km</strong> into the atmosphere.</p>' },
 
+        { type: 'callout', genre: 'howdoweknow', title: 'Further exploring',
+          html: '<p>The Smithsonian Institution keeps an interactive world map of volcanoes ' +
+          'and eruptions. Find the chain running parallel to the Peru–Chile Trench, then ' +
+          'compare it with the arc around Tonga — the pattern of this chapter, plotted on a ' +
+          'real map.</p>' +
+          '<p><a href="https://volcano.si.axismaps.io/" target="_blank" rel="noopener">' +
+          'https://volcano.si.axismaps.io/</a></p>' },
+
         { type: 'data', facts: [
           { value: '11', unit: 'km', label: 'Depth of a deep ocean trench', detail: 'Below sea level — a deep, linear chasm.' },
           { value: '80', unit: 'km', label: 'Where hydration melting begins', detail: 'Without it, melting would not begin until 200 km.' },

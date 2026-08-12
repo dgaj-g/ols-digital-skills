@@ -237,6 +237,14 @@ h3.tm-h { font-size: clamp(18px, 2.4vw, 22px); }
   font-family: var(--ui); font-size: 10px; letter-spacing: 0.14em;
   text-transform: uppercase; color: rgba(255,255,255,0.55);
 }
+/* On a phone the caption wraps and would sit across the map, so it drops
+   below the map as its own bar instead. */
+@media (max-width: 760px) {
+  .frontis-cap {
+    position: static; display: block; padding: 9px 14px 11px;
+    background: var(--tm-navy-deep); line-height: 1.4;
+  }
+}
 .frontis-legend {
   display: flex; flex-wrap: wrap; gap: 8px;
   margin: 14px 0 0; padding: 0; list-style: none;
