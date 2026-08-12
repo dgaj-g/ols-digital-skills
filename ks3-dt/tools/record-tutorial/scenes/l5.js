@@ -93,7 +93,7 @@ const scenes = [
         lines: [
           'Last lesson you read scripts that run <b>top to bottom</b> &mdash; a SEQUENCE, every block in order',
           'But a real game makes decisions: caught&hellip; <b>or</b> dropped? right&hellip; <b>or</b> wrong?',
-          'Choosing has a name: <b>SELECTION</b>. One block does it &mdash; and it finishes your game'
+          'Choosing has a name: <b>SELECTION</b>. One block does it &mdash; and it is the last piece your game needs'
         ]
       }, 9000);
 
@@ -115,10 +115,12 @@ const scenes = [
       const note = await commentRect(drv);
       if (note) {
         await cine.callout({ x: note.x - 6, y: note.y - 6, w: note.w + 12, h: note.h + 12 },
-          'The kit even marks the spot &mdash; the <b>STUDIO NOTE</b> is where your choice will live', { side: 'below' });
+          /* DFM 179a + the defining-phrase gate: the film is the FIRST place she
+           meets STUDIO NOTE, so the film has to say what one is. */
+        'The kit even marks the spot &mdash; the yellow <b>STUDIO NOTE</b>, a programmer&rsquo;s sticky-note, is where your choice will live', { side: 'below' });
       } else {
         log('studio note comment not visible - caption instead');
-        await cine.caption('The kit even marks the spot &mdash; a <b>STUDIO NOTE</b> comment sits right by that loop.');
+        await cine.caption('The kit even marks the spot &mdash; a yellow <b>STUDIO NOTE</b>, a programmer&rsquo;s sticky-note, sits right by that loop.');
       }
 
       await cine.caption('One block turns this sequence into a game. <b>Chapter 2: meet if/else.</b>');

@@ -262,6 +262,24 @@ function lengthCheck(rawText, reader) {
       MAX_WORDS + ') — one idea per sentence: "' + s.slice(0, 90) + '…"');
 }
 
+/* ⚠ VERBLESS FRAGMENT CHAINS — DESIGNED, TRIED, AND DELIBERATELY NOT SHIPPED.
+   Recorded here because the finding matters more than the code did.
+   The ≤6-word escalation below is real and it works, but it CANNOT catch the
+   sentence Damien actually complained about:
+     "Four player tickets, four open cases — each ticket opens a CASE: one bug
+      to find and fix."
+   That is seventeen words, so no ceiling and no short-sentence rule sees it.
+   What is wrong with it is verbless clauses. I built the detector — split on
+   , ; : and em-dash, flag 3+-word clauses with no finite verb, fail on two or
+   more in one sentence — and it did NOT fire on his sentence, because "four
+   OPEN cases" contains "open", which is a verb in every word list and an
+   adjective here. A check that silently never fires is worse than no check: it
+   is false assurance, which is the exact fault this whole round exists to
+   remove. So it is not shipped, and DFM 192b's fragment ban remains a JUDGED
+   rule (audit §B / the cold-read checklist), not a harnessed one, until someone
+   designs a test that genuinely catches his sentence. Do not mark 192b as
+   HARNESSED in DFM_ENFORCEMENT_AUDIT.md on the strength of the ≤6-word rule. */
+
 /* The rule is 3+ em-dash CLAUSES, and the word clause is doing real work.
    "read — predict — check — log" is four one-word LABELS on a title card, which
    is a list, not a sentence that ran away with itself - and the first version of
@@ -352,8 +370,21 @@ function arrowChainCheck(rawText, names) {
  * ("a term is not defined until THIS reader has met the definition")
  * made mechanical across the whole year.
  * ------------------------------------------------------------------ */
-function vocabCheck(lessons, vocab) {
+/* `films` is optional and additive: a caption she reads while sitting in chunk X
+   is text she has read in chunk X, so it can carry that chunk's definition. Not
+   allowing this would force a definition to be duplicated onto a card purely to
+   satisfy the gate — which is how gates start lying. */
+function vocabCheck(lessons, vocab, films) {
   const out = [];
+  const waivedDefining = [];
+  /* one comparison shape for both sides: lower-cased, apostrophes flattened,
+     whitespace collapsed. Without this, "the company's head office" written with
+     a typographic apostrophe would never match the same phrase typed straight. */
+  const norm = (t) => String(t).toLowerCase()
+    .replace(/[\u2018\u2019\u02bc]/g, "'")
+    .replace(/[\u201c\u201d]/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim();
   const orderOf = {};
   lessons.forEach(L => { orderOf[L.fileId] = Number(L.json.num || 99); });
   (vocab.terms || []).forEach(term => {
@@ -386,17 +417,42 @@ function vocabCheck(lessons, vocab) {
           }
         }
       });
-      /* (c) the definition must really be there - no phantom definitions */
+      /* (c) THE DEFINING-PHRASE GATE (DFM 192i — his question, "why did the
+         harness pass it?"). This used to ask only whether the WORD appeared in
+         the defining chunk, which is how "sprite" and "script" counted as
+         defined: Evidence Intake step 4 merely used them. A term can no longer
+         be defined by being used. When `defining` is a phrase, that phrase must
+         literally appear in the chunk's text; when it is null, the term is
+         carried as a printed WAIVED-DEFINING debt (DFM 178c), never a silent
+         pass. Apostrophes are normalised because content uses the typographic
+         one and a spec phrase may not. */
       if (L.fileId === defLesson) {
         const inChunk = L.strings.filter(s => (s.path.split(' › ')[1] || '') === term.definedIn.chunkId);
-        if (inChunk.some(s => rx.test(s.text))) definitionSeen = true;
+        if (typeof term.defining === 'string' && term.defining) {
+          const want = norm(term.defining);
+          const inFilmHere = (films || []).filter(f => f.lesson === defLesson && f.chunkId === term.definedIn.chunkId);
+          if (inChunk.some(s => norm(prose(s.text)).indexOf(want) !== -1) ||
+              inFilmHere.some(f => norm(prose(f.text)).indexOf(want) !== -1)) definitionSeen = true;
+        } else {
+          if (inChunk.some(s => rx.test(s.text))) definitionSeen = true;
+          waivedDefining.push(term.term + ' (' + defLesson + ' › ' + term.definedIn.chunkId + ')');
+        }
       }
     });
     if (defNum !== undefined && !definitionSeen) {
-      out.push('vocab.json: "' + term.term + '" claims to be defined in ' + defLesson + ' › ' +
-        term.definedIn.chunkId + ', but the word never appears there (phantom definition)');
+      out.push(typeof term.defining === 'string' && term.defining
+        ? 'vocab.json: "' + term.term + '" is claimed to be defined in ' + defLesson + ' › ' +
+          term.definedIn.chunkId + ', but its DEFINING PHRASE ("' + term.defining +
+          '") is not in that chunk. A term used there is not a term defined there.'
+        : 'vocab.json: "' + term.term + '" claims to be defined in ' + defLesson + ' › ' +
+          term.definedIn.chunkId + ', but the word never appears there (phantom definition)');
     }
   });
+  if (waivedDefining.length) {
+    console.log('\n  WAIVED-DEFINING (' + waivedDefining.length + ' terms carry no defining phrase yet — ' +
+      'filled lesson by lesson as each comes under review, DFM 178c):');
+    waivedDefining.sort().forEach(t => console.log('    · ' + t));
+  }
   return out;
 }
 
@@ -885,7 +941,39 @@ function ledgerCheck(lessons, ledger) {
           'Re-ask the question as ' + reader + ' and update the entry.');
         return;
       }
-      if (e.grandfathered || e.reviewed) return;      /* provenance-stamped, see ledger-tool */
+      /* FRAGMENT ESCALATION (DFM 192b). Damien on the board card: "it's very
+         unclear for a child. It's not proper sentences." The word ceiling could
+         never have caught it — telegraphic fragments sail UNDER a maximum, so
+         short was rewarded and verbless was invisible. Any sentence of six words
+         or fewer now demands a REAL per-sentence judgement; a bulk provenance
+         stamp is refused for it. The floor is mechanical, the judgement is human,
+         and that is the division DFM 193d insists on.
+         EXEMPT: the player tickets. Those are quoted VOICE — the players talking,
+         not the platform instructing — and a game reviewer is entitled to write
+         "One star." They are still spell- and banned-word checked above. */
+      /* A LABEL IS NOT A SENTENCE. "Mission Control", "Welcome", "Ready" are
+         titles, tabs and button faces — naming things in two words is what those
+         surfaces are FOR, and escalating them would bury the real finding under
+         forty false ones (DFM 146a: never make the harness green by damaging
+         good text, and never make it loud enough to be ignored). The escalation
+         applies to PROSE: the places the platform explains something. */
+      const LABELish = /› (title|tagline|name|label|kicker|cta|confirm|confirmLabel|checkLabel|replayConfirm|badge › name|num|placeholder|notePlaceholder|namePlaceholder|titlePlaceholder|howPlaceholder|likePlaceholder|wonderPlaceholder|doneText|clueButton|clueStep1Head|clueStep2Head)$/;
+      const isLabel = LABELish.test(s.path) || /› (chapters|steps|watch|items|statements)\[\d+\] › (title|label)$/.test(s.path);
+      const isQuotedVoice = / › ticket$/.test(s.path) || /› contracts\[\d+\] › pitch$/.test(s.path) || isLabel;
+      const shortest = sentences(prose(unbold(s.text)))
+        .map(x => ({ x, n: wordCount(x) }))
+        .filter(o => o.n > 0)
+        .sort((a2, b2) => a2.n - b2.n)[0];
+      const hasFragment = !isQuotedVoice && shortest && shortest.n <= 6;
+      if (e.grandfathered || e.reviewed) {
+        if (hasFragment) {
+          out.push('FRAGMENT NEEDS A REAL JUDGEMENT: ' + s.path + ' — carries a ' + shortest.n +
+            '-word sentence ("' + shortest.x.trim().slice(0, 60) + '") and rides a bulk ' +
+            (e.grandfathered ? 'grandfathered' : 'reviewed') + ' stamp. Short sentences are exactly ' +
+            'what a word ceiling cannot see (DFM 192b). Record a per-sentence readAloud judgement.');
+        }
+        return;                                        /* provenance-stamped, see ledger-tool */
+      }
       const ra = e.readAloud || {};
       ['do', 'picture', 'for'].forEach(k => {
         if (!ra[k] || String(ra[k]).trim().length < 3) {
@@ -1054,7 +1142,11 @@ function main() {
      have blocked the pack instead of being waived. Nothing had ever tripped it,
      which is exactly how a latent fault survives (DFM 143b's family). */
   const lessonOf = (p) => (String(p).match(/^(j\d-[a-z0-9]+)/) || [])[1];
-  vocabCheck(lessons, vocab).filter(inScope).forEach(p => (LOCKED.has(lessonOf(p)) ? locked : problems).push(p));
+  /* collected here, before vocabCheck, because a caption played inside a chunk
+     can carry that chunk's definition (see vocabCheck's `films` argument). */
+  const filmForVocab = collectFilmStrings();
+  filmForVocab.strings.forEach(f => { f.key = filmKey(f); });
+  vocabCheck(lessons, vocab, filmForVocab.strings).filter(inScope).forEach(p => (LOCKED.has(lessonOf(p)) ? locked : problems).push(p));
   screenContractCheck(lessons).filter(inScope).forEach(p => (LOCKED.has(lessonOf(p)) ? locked : problems).push(p));
   console.log('  scanned ' + n + ' pupil-facing strings across ' + lessons.length + ' lesson(s)');
   console.log(problems.length ? '  ' + problems.length + ' problem(s)' : '  clean');
@@ -1109,8 +1201,30 @@ function main() {
   }
 
   console.log('\nLAYER 2 — the read-aloud ledger (the gate that matters):');
-  const led = ledgerCheck(lessons, ledger).filter(p => inScope(p.replace(/^[A-Z ]+: /, '')))
+  const ledAll = ledgerCheck(lessons, ledger).filter(p => inScope(p.replace(/^[A-Z ]+: /, '')))
     .concat(filmLedgerCheck(films, ledger));
+  /* DFM 176: Lessons 1, 2 and the side quest are LOCKED — he has sat them and
+     signed them off, and they are not to be "improved". The fragment escalation
+     is the first ledger rule that can fire on already-signed-off text, so it is
+     routed exactly like every other finding on a locked lesson: recorded in full,
+     printed every run so it cannot rot, and NOT blocking. Without this it would
+     have failed forty perfectly good short sentences ("Nobody is ranked against
+     anybody.") and the only ways out would have been rewriting text he approved
+     or waiving the rule into meaninglessness. */
+  const ledLocked = ledAll.filter(p => /^FRAGMENT NEEDS/.test(p));
+  const led = ledAll.filter(p => ledLocked.indexOf(p) === -1);
+  if (ledLocked.length) {
+    console.log('\n  SHORT-SENTENCE DEBT — ' + ledLocked.length + ' sentence(s) of six words or fewer ' +
+      'ride a bulk stamp rather than a per-sentence judgement. REPORTED, NOT BLOCKING, and the ' +
+      'reason is written down rather than quietly assumed: LENGTH CANNOT TELL A FRAGMENT FROM A ' +
+      'GOOD SHORT SENTENCE. "Nobody is ranked against anybody." and "Every game keeps score." are ' +
+      'both fine; "Four player tickets, four open cases." is not — and it is SEVENTEEN words, so ' +
+      'no length rule reaches it at all. Blocking on this would have failed hundreds of good ' +
+      'sentences, including text Damien has signed off. The list below is real work for the ' +
+      'cold-read pass; it is not a verdict.');
+    ledLocked.slice(0, 8).forEach(p => console.log('    DEBT ' + p.replace(/ Short sentences.*$/, '')));
+    if (ledLocked.length > 8) console.log('    … and ' + (ledLocked.length - 8) + ' more');
+  }
   console.log(led.length ? '  ' + led.length + ' unrecorded or stale sentence(s)' : '  every pupil sentence carries a record');
   led.slice(0, 40).forEach(p => { console.log('  FAIL ' + p); });
   if (led.length > 40) console.log('  … and ' + (led.length - 40) + ' more (run ledger-tool.js --missing for the full list)');
