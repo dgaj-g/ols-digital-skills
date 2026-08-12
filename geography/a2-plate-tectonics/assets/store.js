@@ -10,7 +10,7 @@
   const KEY = 'ols-a2pt-v1';
 
   function blank() {
-    return { chapters: {}, bank: {}, spec: {}, lastLoc: null };
+    return { chapters: {}, bank: {}, spec: {}, lastLoc: null, plates: {}, examDrafts: {} };
   }
 
   let state = blank();
@@ -49,10 +49,26 @@
     },
     checkpoint(chId) { return chapter(chId).checkpoint; },
 
-    /* Data Bank */
-    collectFact(id) { state.bank[id] = true; save(); },
+    /* Data Bank — stores the fact itself so the bank view can render
+       collected figures without walking the whole topic tree */
+    collectFact(id, payload) { state.bank[id] = payload || true; save(); },
     hasFact(id) { return !!state.bank[id]; },
     bankCount() { return Object.keys(state.bank).length; },
+    bankFacts() {
+      return Object.keys(state.bank)
+        .map((id) => Object.assign({ id }, state.bank[id]))
+        .filter((f) => f && f.label);
+    },
+    clearBank() { state.bank = {}; save(); },
+
+    /* Atlas Plates mastered in the Plate Room's TEST mode */
+    masterPlate(id) { state.plates[id] = true; save(); },
+    plateIsMastered(id) { return !!state.plates[id]; },
+    platesMastered() { return Object.keys(state.plates).length; },
+
+    /* Exam Folio attempt drafts (device-local only, never transmitted) */
+    saveDraft(qid, text) { state.examDrafts[qid] = text; save(); },
+    draft(qid) { return state.examDrafts[qid] || ''; },
 
     /* spec-statement self-assessment: 0 none, 1 shaky, 2 secure */
     setSpec(id, level) { state.spec[id] = level; save(); },
