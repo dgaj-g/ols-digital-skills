@@ -72,9 +72,9 @@
       s.appendChild(sea(0, 112, 1000, 188));
       s.appendChild(asthenosphere(360));
 
-      /* base crust either side of the ridge */
-      s.appendChild(slab([[0, 300], [430, 300], [430, 360], [0, 360]], 'oceanic'));
-      s.appendChild(slab([[570, 300], [1000, 300], [1000, 360], [570, 360]], 'oceanic'));
+      /* base crust — one continuous band, so no white shows through beneath
+         the ridge once the stripes are laid on top of it */
+      s.appendChild(slab([[0, 300], [1000, 300], [1000, 360], [0, 360]], 'oceanic'));
 
       /* stripes sit ON the crust, so they must be added after the base slabs */
       els.stripes = svg('g');
@@ -223,64 +223,78 @@
     plateFrame(e) {
       e.faults.setAttribute('opacity', '0');
       e.rift.setAttribute('opacity', '0');
+      e.ridgePush.setAttribute('opacity', '0');
+      e.left.setAttribute('transform', 'translate(-170,0)');
+      e.right.setAttribute('transform', 'translate(170,0)');
     },
     build() {
       const s = scene({ label: 'An animation of a constructive plate margin: the lithosphere stretches and faults, a rift valley forms, the sea floods in, and a mid-ocean ridge develops.' });
       const els = {};
-      s.appendChild(sky(210));
-      s.appendChild(asthenosphere(340));
+      const LAND = 218, BASE = 320;
 
-      els.seaFill = hidden(sea(300, 190, 400, 60));
+      s.appendChild(sky(LAND));
+      /* the sea that floods the widening rift — drawn before the land so the
+         land masses always sit in front of it as they separate */
+      els.seaFill = hidden(sea(330, 196, 340, 124));
       s.appendChild(els.seaFill);
+      s.appendChild(asthenosphere(BASE));
 
-      els.left = slab([[0, 200], [500, 200], [500, 340], [0, 340]], 'continental');
-      els.right = slab([[500, 200], [1000, 200], [1000, 340], [500, 340]], 'continental');
+      /* new oceanic crust wells up in the gap; drawn under the land blocks */
+      els.newCrust = hidden(svg('rect', {
+        x: 330, y: 262, width: 340, height: BASE - 262,
+        fill: C.oceanic, stroke: C.oceanicDark, 'stroke-width': '2'
+      }));
+      s.appendChild(els.newCrust);
+
+      els.magma = hidden(magmaArrow(500, 448, 500, 276, 15));
+      s.appendChild(els.magma);
+
+      /* the two continental blocks, initially meeting in the middle */
+      els.left = slab([[0, LAND], [500, LAND], [500, BASE], [0, BASE]], 'continental');
+      els.right = slab([[500, LAND], [1000, LAND], [1000, BASE], [500, BASE]], 'continental');
       s.appendChild(els.left); s.appendChild(els.right);
 
+      /* the collapsed central block — the rift valley floor */
       els.rift = hidden(svg('path', {
-        d: 'M420,200 L470,250 L530,250 L580,200 z', fill: '#C9D3E2',
-        stroke: C.contDark, 'stroke-width': '2'
+        d: 'M424,' + LAND + ' L452,272 L548,272 L576,' + LAND + ' z',
+        fill: '#B08A63', stroke: C.contDark, 'stroke-width': '2', 'stroke-linejoin': 'round'
       }));
       s.appendChild(els.rift);
 
       els.faults = hidden(svg('g'));
-      [[430, 200, 470, 340], [570, 200, 530, 340]].forEach(([x1, y1, x2, y2]) => {
+      [[424, LAND, 452, BASE], [576, LAND, 548, BASE]].forEach(([x1, y1, x2, y2]) => {
         els.faults.appendChild(svg('line', {
-          x1, y1, x2, y2, stroke: C.ink, 'stroke-width': '2.4', 'stroke-dasharray': '8 5'
+          x1, y1, x2, y2, stroke: C.ink, 'stroke-width': '2.6', 'stroke-dasharray': '9 6'
         }));
       });
       s.appendChild(els.faults);
 
-      els.magma = hidden(magmaArrow(500, 500, 500, 300, 20));
-      s.appendChild(els.magma);
-      els.newCrust = hidden(svg('rect', { x: 440, y: 240, width: 120, height: 100, fill: C.oceanic,
-        stroke: C.oceanicDark, 'stroke-width': '2' }));
-      s.appendChild(els.newCrust);
-
+      /* the mature ridge, with its central rift notch */
       els.ridge = hidden(svg('path', {
-        d: 'M400,250 L470,196 L490,214 L500,204 L510,214 L530,196 L600,250 z',
+        d: 'M356,262 L462,206 L492,232 L500,222 L508,232 L538,206 L644,262 z',
         fill: C.oceanic, stroke: C.oceanicDark, 'stroke-width': '2.5', 'stroke-linejoin': 'round'
       }));
       s.appendChild(els.ridge);
 
       els.pillow = hidden(svg('g'));
-      [[478, 210], [498, 202], [518, 210], [488, 220], [510, 220]].forEach(([cx, cy]) => {
-        els.pillow.appendChild(svg('ellipse', { cx, cy, rx: 11, ry: 7.5, fill: '#2F4A63',
-          stroke: '#1B2C3D', 'stroke-width': '1.4' }));
+      [[470, 228], [492, 240], [512, 240], [532, 228]].forEach(([cx, cy]) => {
+        els.pillow.appendChild(svg('ellipse', {
+          cx, cy, rx: 12, ry: 8, fill: '#2F4A63', stroke: '#1B2C3D', 'stroke-width': '1.4'
+        }));
       });
       s.appendChild(els.pillow);
 
-      els.arrowL = hidden(motionArrow(360, 168, -1, 66));
-      els.arrowR = hidden(motionArrow(640, 168, 1, 66));
+      els.arrowL = hidden(motionArrow(300, 160, -1, 70));
+      els.arrowR = hidden(motionArrow(700, 160, 1, 70));
       s.appendChild(els.arrowL); s.appendChild(els.arrowR);
 
+      /* Named in the sim while ridge push is being explained; the static plate
+         labels it instead, so plateFrame hides these. */
       els.ridgePush = hidden(svg('g'));
-      els.ridgePush.appendChild(label(300, 300, 'RIDGE PUSH', { colour: '#fff', size: 14 }));
-      els.ridgePush.appendChild(label(700, 300, 'RIDGE PUSH', { colour: '#fff', size: 14 }));
+      els.ridgePush.appendChild(label(180, 296, 'RIDGE PUSH', { colour: '#fff', size: 14 }));
+      els.ridgePush.appendChild(label(820, 296, 'RIDGE PUSH', { colour: '#fff', size: 14 }));
       s.appendChild(els.ridgePush);
 
-      els.caption = svg('g');
-      s.appendChild(els.caption);
       els.svg = s;
       return els;
     },
@@ -291,7 +305,8 @@
           'lithosphere so that it warps upwards and stretches.',
         enter(tl, e) {
           tl.to([e.arrowL, e.arrowR], { opacity: 1, duration: .5 });
-          tl.to([e.left, e.right], { attr: { transform: 'translate(0,-8)' }, duration: .8 }, '<');
+          tl.to(e.left, { attr: { transform: 'translate(-14,0)' }, duration: .9 }, '<');
+          tl.to(e.right, { attr: { transform: 'translate(14,0)' }, duration: .9 }, '<');
         }
       },
       {
@@ -328,7 +343,13 @@
         title: 'The sea floods in — a linear sea',
         caption: 'The stretched plate may allow a nearby ocean to spill in, creating a ' +
           'shallow, linear sea above the new ocean crust — for example the Red Sea.',
-        enter(tl, e) { tl.to(e.seaFill, { opacity: 1, duration: .8 }); }
+        enter(tl, e) {
+          tl.to(e.left, { attr: { transform: 'translate(-92,0)' }, duration: 1, ease: 'power1.inOut' });
+          tl.to(e.right, { attr: { transform: 'translate(92,0)' }, duration: 1, ease: 'power1.inOut' }, '<');
+          tl.to(e.rift, { opacity: 0, duration: .4 }, '<');
+          tl.to(e.faults, { opacity: 0, duration: .4 }, '<');
+          tl.to(e.seaFill, { opacity: 1, duration: .8 }, '-=0.5');
+        }
       },
       {
         title: 'A broad mid-ocean ridge develops',
@@ -336,7 +357,9 @@
           'develops — for example the Mid-Atlantic Ridge — as magma rises, cools and forms ' +
           'basalt. Lava erupting under water cools rapidly into bulbous pillow lavas.',
         enter(tl, e) {
-          tl.to(e.ridge, { opacity: 1, duration: .7 });
+          tl.to(e.left, { attr: { transform: 'translate(-170,0)' }, duration: 1, ease: 'power1.inOut' });
+          tl.to(e.right, { attr: { transform: 'translate(170,0)' }, duration: 1, ease: 'power1.inOut' }, '<');
+          tl.to(e.ridge, { opacity: 1, duration: .7 }, '-=0.4');
           tl.to(e.pillow, { opacity: 1, duration: .5 }, '-=0.3');
         }
       }
@@ -347,6 +370,14 @@
   SIMS['destructive-oo'] = {
     title: 'Destructive margin: oceanic meets oceanic',
     plate: 'p-dest-oo',
+    /* These captions name features while the sim explains them; the static
+       plate carries its own labels, so showing both would duplicate and
+       collide. */
+    plateFrame(e) {
+      e.slabPull.setAttribute('opacity', '0');
+      e.hydration.querySelectorAll('text').forEach((t) => t.setAttribute('opacity', '0'));
+      e.assim.setAttribute('opacity', '0');
+    },
     build() {
       const s = scene({ label: 'An animation of an oceanic-to-oceanic destructive margin: the denser plate subducts, forming a deep ocean trench and an island arc.' });
       const els = {};
@@ -366,7 +397,8 @@
       s.appendChild(els.trench);
 
       els.arrowL = hidden(motionArrow(240, 200, 1, 70));
-      els.arrowR = hidden(motionArrow(800, 200, -1, 70));
+      /* kept up in the sky so it never sits behind the island arc */
+      els.arrowR = hidden(motionArrow(950, 106, -1, 70));
       s.appendChild(els.arrowL); s.appendChild(els.arrowR);
 
       els.slabPull = hidden(label(700, 470, 'SLAB PULL', { colour: '#fff', size: 14, halo: false }));
@@ -462,10 +494,16 @@
   SIMS['destructive-co'] = {
     title: 'Destructive margin: oceanic meets continental',
     plate: 'p-dest-co',
+    plateFrame(e) {
+      e.slabPull.setAttribute('opacity', '0');
+      e.hydration.querySelectorAll('text').forEach((t) => t.setAttribute('opacity', '0'));
+    },
     build() {
       const s = scene({ label: 'An animation of an oceanic-to-continental destructive margin: the oceanic plate subducts, forming a deep ocean trench and a fold mountain chain with violent volcanoes.' });
       const els = {};
-      s.appendChild(sky(150));
+      /* sky spans the full width down to the land surface, so no unfilled
+         white shows behind the continent */
+      s.appendChild(sky(240));
       s.appendChild(sea(0, 150, 520, 90));
       s.appendChild(asthenosphere(250));
 
@@ -504,8 +542,8 @@
       els.volc = hidden(svg('g'));
       els.volc.appendChild(volcano(690, 200, 92, 62, '#5B4A3C'));
       els.volc.appendChild(volcano(760, 214, 74, 52, '#5B4A3C'));
-      els.plume = hidden(svg('ellipse', { cx: 690, cy: 84, rx: 74, ry: 34,
-        fill: '#8A8177', opacity: '.85' }));
+      els.plume = hidden(svg('ellipse', { cx: 782, cy: 66, rx: 72, ry: 30,
+        fill: '#8A8177', opacity: '.8' }));
       els.volc.appendChild(els.plume);
       s.appendChild(els.volc);
 
@@ -588,12 +626,15 @@
       e.right.setAttribute('transform', 'translate(-90,0)');
       e.detached.setAttribute('transform', 'translate(0,40)');
       e.detached.setAttribute('opacity', '0.45');
+      /* the plate carries its own labels for both of these */
+      e.noVolc.setAttribute('opacity', '0');
+      e.buoy.setAttribute('opacity', '0');
     },
     build() {
       const s = scene({ label: 'An animation of a collision margin: the ocean between two continents closes, the plates collide, and fold mountains are pushed up.' });
       const els = {};
-      s.appendChild(sky(210));
-      s.appendChild(asthenosphere(330));
+      s.appendChild(sky(300));
+      s.appendChild(asthenosphere(300));
 
       els.sea = sea(360, 190, 300, 60);
       s.appendChild(els.sea);
@@ -710,6 +751,12 @@
       e.quake.setAttribute('opacity', '0');
       e.strain.setAttribute('opacity', '0');
       e.roadBot.setAttribute('transform', 'translate(120,0)');
+      /* the plate carries all of these as its own labels */
+      e.nameN.setAttribute('opacity', '0');
+      e.nameP.setAttribute('opacity', '0');
+      e.locked.setAttribute('opacity', '0');
+      e.stat.setAttribute('opacity', '0');
+      e.noVolc.setAttribute('opacity', '0');
     },
     build() {
       const s = scene({ label: 'A plan view of a conservative margin: two plates slide past each other, strain builds along a locked fault, and is released as an earthquake.' });
@@ -726,10 +773,12 @@
       els.fault = svg('rect', { x: 0, y: 268, width: 1000, height: 24, fill: '#8A7A5E' });
       s.appendChild(els.fault);
 
-      s.appendChild(label(150, 60, 'NORTH AMERICAN PLATE — 2 cm per year',
-        { colour: C.ink, size: 15, anchor: 'start' }));
-      s.appendChild(label(150, 540, 'PACIFIC PLATE — 6 cm per year',
-        { colour: C.ink, size: 15, anchor: 'start' }));
+      /* named in the sim; the static plate labels them instead */
+      els.nameN = label(150, 60, 'NORTH AMERICAN PLATE — 2 cm per year',
+        { colour: C.ink, size: 15, anchor: 'start' });
+      els.nameP = label(150, 540, 'PACIFIC PLATE — 6 cm per year',
+        { colour: C.ink, size: 15, anchor: 'start' });
+      s.appendChild(els.nameN); s.appendChild(els.nameP);
 
       els.arrowTop = motionArrow(700, 60, 1, 90);
       els.arrowBot = motionArrow(700, 540, 1, 90);
@@ -823,15 +872,21 @@
   SIMS.forces = {
     title: 'What drives the plates',
     plate: 'p-forces',
+    /* the plate labels ridge push, slab pull and the heat source itself */
+    plateFrame(e) {
+      e.decay.setAttribute('opacity', '0');
+      e.ridgePush.querySelectorAll('text').forEach((t) => t.setAttribute('opacity', '0'));
+      e.slabPull.querySelectorAll('text').forEach((t) => t.setAttribute('opacity', '0'));
+    },
     build() {
       const s = scene({ label: 'An animation contrasting the traditional convection-current explanation of plate movement with the modern view of ridge push and slab pull.' });
       const els = {};
-      s.appendChild(sky(150));
-      s.appendChild(sea(0, 150, 1000, 60));
+      s.appendChild(sky(240));
+      s.appendChild(sea(0, 150, 1000, 90));
       s.appendChild(asthenosphere(300));
 
-      s.appendChild(slab([[0, 240], [420, 240], [420, 300], [0, 300]], 'oceanic'));
-      s.appendChild(slab([[580, 240], [820, 240], [1000, 300], [580, 300]], 'oceanic'));
+      /* one continuous crust band, so no white shows through beneath the ridge */
+      s.appendChild(slab([[0, 240], [1000, 240], [1000, 300], [0, 300]], 'oceanic'));
       els.ridge = svg('path', {
         d: 'M420,300 L470,214 L500,238 L530,214 L580,300 z',
         fill: C.oceanic, stroke: C.oceanicDark, 'stroke-width': '2.5', 'stroke-linejoin': 'round'

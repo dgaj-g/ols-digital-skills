@@ -44,13 +44,13 @@
     { id: 'p-constructive', title: 'The constructive margin', chapter: 'constructive',
       from: 'sim', ref: 'constructive',
       labels: [
-        { text: 'Plates moving apart', x: 170, y: 120, to: [330, 168] },
-        { text: 'Central rift valley', x: 500, y: 112, to: [500, 208] },
-        { text: 'Mid-ocean ridge', x: 800, y: 158, to: [566, 224] },
-        { text: 'Pillow lavas (basalt)', x: 810, y: 246, to: [518, 212] },
-        { text: 'New oceanic crust', x: 214, y: 296, to: [448, 300] },
-        { text: 'Rising magma — decompression melting', x: 660, y: 476, to: [512, 420] },
-        { text: 'Ridge push', x: 214, y: 356, to: [300, 300] }
+        { text: 'Plates moving apart', x: 176, y: 118, to: [268, 158] },
+        { text: 'Central rift valley', x: 500, y: 104, to: [500, 226] },
+        { text: 'Mid-ocean ridge', x: 806, y: 152, to: [604, 238] },
+        { text: 'Pillow lavas (basalt)', x: 820, y: 212, to: [534, 230] },
+        { text: 'New oceanic crust', x: 196, y: 254, to: [370, 288] },
+        { text: 'Ridge push', x: 176, y: 350, to: [232, 300] },
+        { text: 'Rising magma — decompression melting', x: 672, y: 470, to: [510, 430] }
       ],
       caption: 'Great Rift Valley → Red Sea → Mid-Atlantic Ridge: the same margin at three ' +
         'stages of its life.' },
@@ -70,9 +70,9 @@
     { id: 'p-dest-co', title: 'Destructive margin: oceanic to continental', chapter: 'destructive',
       from: 'sim', ref: 'destructive-co',
       labels: [
-        { text: 'Deep ocean trench', x: 300, y: 118, to: [522, 266] },
-        { text: 'Fold mountains', x: 700, y: 96, to: [700, 200] },
-        { text: 'Composite volcano', x: 880, y: 150, to: [760, 190] },
+        { text: 'Deep ocean trench', x: 292, y: 112, to: [522, 266] },
+        { text: 'Fold mountains', x: 596, y: 138, to: [648, 224] },
+        { text: 'Composite volcano', x: 830, y: 186, to: [700, 176] },
         { text: 'Subducting oceanic plate (Nazca)', x: 230, y: 348, to: [420, 300] },
         { text: 'Continental plate (South American)', x: 830, y: 320, to: [900, 268] },
         { text: 'Hydration melting from 80 km', x: 300, y: 410, to: [560, 380] },
@@ -83,32 +83,34 @@
     { id: 'p-collision', title: 'The collision margin', chapter: 'collision',
       from: 'sim', ref: 'collision',
       labels: [
-        { text: 'Fold mountains (the Himalayas)', x: 500, y: 88, to: [500, 170] },
-        { text: 'Buckled sea-floor sediment', x: 820, y: 150, to: [560, 200] },
-        { text: 'Continental plate (Indian)', x: 150, y: 250, to: [200, 250] },
-        { text: 'Continental plate (Eurasian)', x: 860, y: 250, to: [900, 250] },
-        { text: 'Detached slab sinking and melting', x: 500, y: 500, to: [515, 450] },
-        { text: 'Shallow, violent earthquakes', x: 250, y: 400, to: [450, 274] }
+        { text: 'Fold mountains (the Himalayas)', x: 500, y: 82, to: [500, 168] },
+        { text: 'Buckled sea-floor sediment', x: 832, y: 146, to: [566, 202] },
+        { text: 'Continental plate (Indian)', x: 168, y: 246, to: [220, 252] },
+        { text: 'Continental plate (Eurasian)', x: 838, y: 246, to: [880, 252] },
+        { text: 'No volcanic activity — no subduction, no new crust', x: 500, y: 348, to: [500, 300] },
+        { text: 'Detached slab sinking and melting', x: 500, y: 508, to: [515, 460] },
+        { text: 'Shallow, violent earthquakes', x: 214, y: 396, to: [452, 276] }
       ],
       caption: 'No volcanic activity here — there is no subduction and no new crust.' },
     { id: 'p-conservative', title: 'The conservative margin (plan view)', chapter: 'conservative',
       from: 'sim', ref: 'conservative',
       labels: [
-        { text: 'North American Plate — 2 cm a year', x: 250, y: 130, to: [400, 90] },
-        { text: 'Pacific Plate — 6 cm a year', x: 250, y: 460, to: [400, 500] },
-        { text: 'The fault line', x: 800, y: 258, to: [860, 280] },
-        { text: 'Offset road — 7 m in 1906', x: 700, y: 400, to: [560, 330] },
-        { text: 'Both plates moving north-west', x: 800, y: 130, to: [790, 60] }
+        { text: 'North American Plate — 2 cm a year', x: 236, y: 92, to: [340, 150] },
+        { text: 'Pacific Plate — 6 cm a year', x: 236, y: 486, to: [330, 420] },
+        { text: 'The fault line', x: 838, y: 232, to: [880, 278] },
+        { text: 'Offset road — 7 m of displacement in 1906', x: 636, y: 372, to: [614, 320] },
+        { text: 'Both plates moving north-west', x: 762, y: 118, to: [744, 60] },
+        { text: 'No volcanic activity — crust is conserved', x: 260, y: 232, to: [180, 278] }
       ],
       caption: 'The San Andreas Fault. Crust is conserved, so there is no volcanic activity.' },
     { id: 'p-forces', title: 'What drives the plates', chapter: 'forces',
       from: 'sim', ref: 'forces',
       labels: [
-        { text: 'Convection cell', x: 250, y: 400, to: [250, 440] },
-        { text: 'Ridge push', x: 210, y: 150, to: [300, 216] },
-        { text: 'Slab pull — the most important force', x: 700, y: 470, to: [940, 460] },
-        { text: 'Radioactive decay provides the heat', x: 500, y: 552, to: [500, 520] },
-        { text: 'Mid-ocean ridge', x: 500, y: 150, to: [500, 230] }
+        { text: 'Convection cell', x: 214, y: 402, to: [250, 448] },
+        { text: 'Ridge push', x: 208, y: 148, to: [268, 214] },
+        { text: 'Slab pull — the most important force', x: 660, y: 486, to: [944, 470] },
+        { text: 'Heat from radioactive decay', x: 500, y: 556, to: [500, 512] },
+        { text: 'Mid-ocean ridge', x: 500, y: 140, to: [500, 224] }
       ],
       caption: 'The traditional view (convection) and the modern view (ridge push and slab ' +
         'pull) sit on one diagram.' }

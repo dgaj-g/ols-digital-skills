@@ -418,22 +418,23 @@
     title: 'Lithosphere and asthenosphere',
     build: function () {
       const s = scene({ label: 'A cross-section showing the rigid lithosphere — oceanic and continental — riding on the semi-molten asthenosphere below.' });
-      s.appendChild(svg('rect', { x: 0, y: 0, width: 1000, height: 300, fill: 'url(#tm-sky)' }));
-      s.appendChild(svg('rect', { x: 0, y: 190, width: 470, height: 110, fill: 'url(#tm-sea)' }));
-      s.appendChild(asthenosphere(300));
-      /* oceanic slab (thin) + continental slab (thick) */
-      s.appendChild(slab([[0, 262], [470, 262], [470, 300], [0, 300]], 'oceanic'));
-      s.appendChild(slab([[470, 262], [520, 196], [880, 178], [1000, 208], [1000, 300], [470, 300]], 'continental'));
-      s.appendChild(label(232, 240, 'OCEANIC LITHOSPHERE', { colour: '#fff', size: 15 }));
-      s.appendChild(label(742, 248, 'CONTINENTAL LITHOSPHERE', { colour: '#fff', size: 15 }));
-      s.appendChild(label(500, 420, 'ASTHENOSPHERE — semi-molten, allows the plates to move',
-        { colour: '#fff', size: 17, halo: false }));
-      s.appendChild(label(500, 452, 'rigid lithosphere above · partially melted rock below',
-        { colour: 'rgba(255,255,255,.85)', size: 13, weight: '600' }));
+      s.appendChild(svg('rect', { x: 0, y: 0, width: 1000, height: 250, fill: 'url(#tm-sky)' }));
+      s.appendChild(svg('rect', { x: 0, y: 132, width: 470, height: 118, fill: 'url(#tm-sea)' }));
+      s.appendChild(asthenosphere(250));
+      /* oceanic slab (thin) + continental slab (thick, standing above sea level) */
+      s.appendChild(slab([[0, 206], [470, 206], [470, 250], [0, 250]], 'oceanic'));
+      s.appendChild(slab([[470, 206], [524, 122], [884, 104], [1000, 136], [1000, 250], [470, 250]], 'continental'));
+      s.appendChild(label(232, 234, 'OCEANIC LITHOSPHERE', { colour: '#fff', size: 14 }));
+      s.appendChild(label(748, 196, 'CONTINENTAL LITHOSPHERE', { colour: '#fff', size: 14 }));
+      s.appendChild(label(500, 336, 'ASTHENOSPHERE', { colour: '#fff', size: 21 }));
+      s.appendChild(label(500, 366, 'semi-molten — partially melted rock that can flow,',
+        { colour: 'rgba(255,255,255,.92)', size: 14, weight: '600' }));
+      s.appendChild(label(500, 388, 'which is what allows the rigid plates above it to move',
+        { colour: 'rgba(255,255,255,.92)', size: 14, weight: '600' }));
       return { svg: s, labels: [
-        { id: 'ocean', text: 'Oceanic lithosphere — thinner, denser', x: 200, y: 84, lead: [232, 272] },
-        { id: 'cont', text: 'Continental lithosphere — thicker, less dense', x: 740, y: 84, lead: [740, 226] },
-        { id: 'asth', text: 'Asthenosphere', x: 500, y: 540, lead: [500, 380] }
+        { id: 'ocean', text: 'Oceanic lithosphere — thinner, denser', x: 176, y: 62, lead: [232, 216] },
+        { id: 'cont', text: 'Continental lithosphere — thicker, less dense', x: 748, y: 62, lead: [760, 150] },
+        { id: 'asth', text: 'Asthenosphere', x: 500, y: 508, lead: [500, 430] }
       ] };
     }
   };
