@@ -48,45 +48,72 @@
   SIMS.seafloor = {
     title: 'Sea-floor spreading and magnetic striping',
     plate: 'p-seafloor',
+    /* The striped record is created stage by stage during playback, so the
+       static plate has to lay the finished pattern down itself. */
+    plateFrame(e) {
+      e.compass.setAttribute('opacity', '0');
+      e.ridgeCaption.setAttribute('opacity', '0');
+      for (let i = 0; i < 7; i++) {
+        addStripe(e, 0, i % 2 ? 'normal' : 'reversed');
+        spread(e, 64);
+      }
+      e.sediment.innerHTML = '';
+      [[60, 9], [200, 6], [340, 3], [660, 3], [800, 6], [940, 9]].forEach(([x, h]) => {
+        e.sediment.appendChild(svg('rect', {
+          x: x - 45, y: 300 - h, width: 90, height: h, fill: '#C9B79A'
+        }));
+      });
+      e.ages.setAttribute('opacity', '1');
+    },
     build() {
       const s = scene({ label: 'An animation of new sea floor forming at a mid-ocean ridge and recording the Earth\'s magnetic field as symmetrical stripes.' });
       const els = {};
-      s.appendChild(sky(150));
-      s.appendChild(sea(0, 150, 1000, 60));
+      s.appendChild(sky(112));
+      s.appendChild(sea(0, 112, 1000, 188));
       s.appendChild(asthenosphere(360));
 
-      const ridgeX = 500;
+      /* base crust either side of the ridge */
+      s.appendChild(slab([[0, 300], [430, 300], [430, 360], [0, 360]], 'oceanic'));
+      s.appendChild(slab([[570, 300], [1000, 300], [1000, 360], [570, 360]], 'oceanic'));
+
+      /* stripes sit ON the crust, so they must be added after the base slabs */
       els.stripes = svg('g');
       s.appendChild(els.stripes);
 
-      /* base crust either side */
-      s.appendChild(slab([[0, 300], [430, 300], [430, 360], [0, 360]], 'oceanic'));
-      s.appendChild(slab([[570, 300], [1000, 300], [1000, 360], [570, 360]], 'oceanic'));
-      /* the ridge itself */
+      els.sediment = hidden(svg('g'));
+      s.appendChild(els.sediment);
+
+      /* the ridge itself, with its central rift notch */
       els.ridge = svg('path', {
-        d: 'M430,300 L470,250 L490,268 L500,258 L510,268 L530,250 L570,300 z',
+        d: 'M430,300 L470,250 L492,272 L500,262 L508,272 L530,250 L570,300 z',
         fill: C.oceanic, stroke: C.oceanicDark, 'stroke-width': '2.5', 'stroke-linejoin': 'round'
       });
       s.appendChild(els.ridge);
-      els.magma = hidden(magmaArrow(500, 470, 500, 288, 16));
+      els.magma = hidden(magmaArrow(500, 452, 500, 296, 14));
       s.appendChild(els.magma);
 
-      els.arrowL = hidden(motionArrow(400, 232, -1, 70));
-      els.arrowR = hidden(motionArrow(600, 232, 1, 70));
+      els.arrowL = hidden(motionArrow(392, 214, -1, 68));
+      els.arrowR = hidden(motionArrow(608, 214, 1, 68));
       s.appendChild(els.arrowL); s.appendChild(els.arrowR);
 
-      els.compass = hidden(label(500, 120, 'MAGNETIC FIELD: NORMAL', { colour: C.navy, size: 15, halo: true }));
+      els.compass = hidden(label(500, 86, 'MAGNETIC FIELD: NORMAL', { colour: C.navy, size: 15, halo: true }));
       s.appendChild(els.compass);
 
       els.ages = hidden(svg('g'));
-      [[120, 'OLDEST'], [300, 'OLDER'], [500, 'YOUNGEST'], [700, 'OLDER'], [880, 'OLDEST']].forEach(([x, t]) => {
-        els.ages.appendChild(label(x, 344, t, { colour: '#fff', size: 12 }));
+      [[118, 'OLDEST'], [300, 'OLDER'], [500, 'YOUNGEST'], [700, 'OLDER'], [882, 'OLDEST']].forEach(([x, t]) => {
+        /* a short tick ties each age word to the band of crust above it */
+        els.ages.appendChild(svg('line', {
+          x1: x, y1: 364, x2: x, y2: 376, stroke: '#fff', 'stroke-width': '2', opacity: '.85'
+        }));
+        els.ages.appendChild(label(x, 392, t, { colour: '#fff', size: 12 }));
       });
       s.appendChild(els.ages);
 
-      s.appendChild(label(500, 232, 'MID-OCEAN RIDGE', { colour: C.navy, size: 15, halo: true }));
-      els.sediment = hidden(svg('g'));
-      s.appendChild(els.sediment);
+      /* In the sim this names the ridge while it is being built. The static
+         plate labels it instead, so plateFrame hides this one to avoid a
+         duplicate sitting under the plate label. */
+      els.ridgeCaption = label(500, 168, 'MID-OCEAN RIDGE', { colour: C.navy, size: 15, halo: true });
+      s.appendChild(els.ridgeCaption);
 
       els.svg = s;
       return els;
@@ -190,6 +217,13 @@
   SIMS.constructive = {
     title: 'The constructive margin',
     plate: 'p-constructive',
+    /* Canonical frame: the mature stage — sea flooded in, ridge built, magma
+       rising. The early-stage fault lines and the collapsed grey rift block
+       belong to earlier moments and would contradict it. */
+    plateFrame(e) {
+      e.faults.setAttribute('opacity', '0');
+      e.rift.setAttribute('opacity', '0');
+    },
     build() {
       const s = scene({ label: 'An animation of a constructive plate margin: the lithosphere stretches and faults, a rift valley forms, the sea floods in, and a mid-ocean ridge develops.' });
       const els = {};
@@ -545,6 +579,16 @@
   SIMS.collision = {
     title: 'The collision margin',
     plate: 'p-collision',
+    /* Canonical frame: after the collision. The ocean has gone, the continents
+       have met, the detached slab has sunk. */
+    plateFrame(e) {
+      e.sea.setAttribute('opacity', '0');
+      e.oceanSlab.setAttribute('opacity', '0');
+      e.left.setAttribute('transform', 'translate(90,0)');
+      e.right.setAttribute('transform', 'translate(-90,0)');
+      e.detached.setAttribute('transform', 'translate(0,40)');
+      e.detached.setAttribute('opacity', '0.45');
+    },
     build() {
       const s = scene({ label: 'An animation of a collision margin: the ocean between two continents closes, the plates collide, and fold mountains are pushed up.' });
       const els = {};
@@ -660,6 +704,13 @@
   SIMS.conservative = {
     title: 'The conservative margin',
     plate: 'p-conservative',
+    /* Canonical frame: after the release — the road offset, the shock rings
+       gone, the strain caption gone (it has just been released). */
+    plateFrame(e) {
+      e.quake.setAttribute('opacity', '0');
+      e.strain.setAttribute('opacity', '0');
+      e.roadBot.setAttribute('transform', 'translate(120,0)');
+    },
     build() {
       const s = scene({ label: 'A plan view of a conservative margin: two plates slide past each other, strain builds along a locked fault, and is released as an earthquake.' });
       const els = {};
@@ -1015,11 +1066,15 @@
       if (force) window.TM.announce('Stage ' + (i + 1) + ': ' + st.title);
     }
 
-    /* Build lazily, pause when scrolled away */
+    /* Build synchronously. Nothing here measures layout, so there is no reason
+       to wait for a frame — and deferring to rAF or an IntersectionObserver
+       leaves an empty frame on the page in any context where those are
+       throttled (a background tab, a hidden preview pane, some embeds).
+       The observer below only pauses playback when the pupil scrolls away. */
+    build();
     const io = new IntersectionObserver((entries) => {
       entries.forEach((en) => {
-        if (en.isIntersecting) build();
-        else if (tl && playBtn && playBtn.getAttribute('data-playing') === '1') {
+        if (!en.isIntersecting && tl && playBtn && playBtn.getAttribute('data-playing') === '1') {
           tl.pause(); setPlaying(false);
         }
       });

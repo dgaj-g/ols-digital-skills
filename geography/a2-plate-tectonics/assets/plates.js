@@ -32,25 +32,25 @@
     { id: 'p-seafloor', title: 'Sea-floor spreading and magnetic striping', chapter: 'oceanic-evidence',
       from: 'sim', ref: 'seafloor',
       labels: [
-        { text: 'Mid-ocean ridge', x: 500, y: 96, to: [500, 250] },
-        { text: 'Rising magma', x: 780, y: 470, to: [520, 400] },
-        { text: 'Normal polarity', x: 190, y: 420, to: [300, 330] },
-        { text: 'Reversed polarity', x: 810, y: 420, to: [700, 330] },
-        { text: 'Youngest rock', x: 500, y: 400, to: [500, 330] },
-        { text: 'Thin sediment near the crest', x: 500, y: 456, to: [660, 298] }
+        { text: 'Mid-ocean ridge', x: 500, y: 132, to: [500, 254] },
+        { text: 'Central rift valley', x: 786, y: 190, to: [510, 268] },
+        { text: 'Thin sediment near the crest', x: 214, y: 190, to: [340, 297] },
+        { text: 'Normal polarity', x: 168, y: 452, to: [270, 330] },
+        { text: 'Reversed polarity', x: 832, y: 452, to: [730, 330] },
+        { text: 'Rising magma', x: 706, y: 512, to: [516, 420] }
       ],
       caption: 'New basalt records the magnetic field as it cools, so the sea floor carries ' +
         'a symmetrical striped record of every reversal.' },
     { id: 'p-constructive', title: 'The constructive margin', chapter: 'constructive',
       from: 'sim', ref: 'constructive',
       labels: [
-        { text: 'Plates moving apart', x: 180, y: 120, to: [330, 168] },
-        { text: 'Fault lines', x: 300, y: 400, to: [446, 280] },
-        { text: 'Rift valley', x: 500, y: 118, to: [500, 240] },
-        { text: 'Rising magma — decompression melting', x: 640, y: 470, to: [510, 420] },
-        { text: 'New oceanic crust', x: 240, y: 300, to: [452, 300] },
-        { text: 'Mid-ocean ridge', x: 790, y: 150, to: [560, 220] },
-        { text: 'Pillow lavas (basalt)', x: 790, y: 254, to: [516, 214] }
+        { text: 'Plates moving apart', x: 170, y: 120, to: [330, 168] },
+        { text: 'Central rift valley', x: 500, y: 112, to: [500, 208] },
+        { text: 'Mid-ocean ridge', x: 800, y: 158, to: [566, 224] },
+        { text: 'Pillow lavas (basalt)', x: 810, y: 246, to: [518, 212] },
+        { text: 'New oceanic crust', x: 214, y: 296, to: [448, 300] },
+        { text: 'Rising magma — decompression melting', x: 660, y: 476, to: [512, 420] },
+        { text: 'Ridge push', x: 214, y: 356, to: [300, 300] }
       ],
       caption: 'Great Rift Valley → Red Sea → Mid-Atlantic Ridge: the same margin at three ' +
         'stages of its life.' },
@@ -128,7 +128,7 @@
       if (!def) return { svg: null, labels: [] };
       const out = def.build();
       return { svg: out.svg, labels: (out.labels || []).map((l) => ({
-        text: l.text, x: l.x, y: l.y, to: l.lead
+        text: l.text, x: l.x, y: l.y, to: l.lead, anchor: l.anchor
       })) };
     }
     const def = window.TM_SIMS.SIMS[plate.ref];
@@ -141,6 +141,10 @@
         n.setAttribute('opacity', '1');
       }
     });
+    /* A sim moves through stages that contradict each other (an ocean that
+       later closes, a strain that is later released). `plateFrame` sets the
+       one canonical state the finished exam diagram should show. */
+    if (typeof def.plateFrame === 'function') def.plateFrame(els);
     return { svg: els.svg, labels: (plate.labels || []).slice() };
   }
 
@@ -197,7 +201,7 @@
     const g = S.svg('g', { class: 'plate-labels' });
     labels.forEach((l) => {
       g.appendChild(S.label(l.x, l.y, l.text, {
-        leadTo: l.to, halo: true, size: board ? 17 : 15,
+        leadTo: l.to, halo: true, size: board ? 17 : 15, anchor: l.anchor,
         colour: '#12294F', leadColour: '#12294F'
       }));
     });

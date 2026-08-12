@@ -1024,6 +1024,11 @@
     cleanup.forEach((fn) => { try { fn(); } catch (_) {} });
     cleanup = [];
 
+    /* Overlays (plate viewer, search) live on <body>, not inside the view, so
+       a route change would otherwise leave one stranded over the new page. */
+    document.querySelectorAll('.overlay').forEach((o) => o.remove());
+    document.body.style.overflow = '';
+
     const h = location.hash || '#/contents';
     const m = h.match(/^#\/ch\/(.+)$/);
     let view, title = 'Terra Mobilis';
@@ -1055,7 +1060,7 @@
     main.innerHTML = '';
     main.appendChild(view);
     refreshChrome();
-    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
     const h1 = main.querySelector('h1');
     if (h1) { h1.setAttribute('tabindex', '-1'); h1.focus({ preventScroll: true }); }
   }

@@ -80,7 +80,7 @@
     { name: 'EURASIAN PLATE', lon: 75, lat: 55, size: 28 },
     { name: 'AFRICAN PLATE', lon: 18, lat: -8, size: 27 },
     { name: 'INDO-AUSTRALIAN', lon: 122, lat: -27, size: 26 },
-    { name: 'ANTARCTIC PLATE', lon: 40, lat: -76, size: 26 }
+    { name: 'ANTARCTIC PLATE', lon: 40, lat: -70, size: 26 }
   ];
 
   function frontispiece() {
@@ -363,40 +363,52 @@
 
   const DIAGRAMS = {};
 
-  /* d1 — Earth's interior */
+  /* d1 — Earth's interior. Concentric bands, each a distinct colour, with a
+     fanned set of labels on the right so no two leader lines cross. */
   DIAGRAMS.d1 = {
     title: "Inside the Earth",
     build: function () {
       const s = svg('svg', { viewBox: '0 0 1000 580', class: 'tm-scene',
         role: 'img', 'aria-label': "A cut-away of the Earth showing the crust, mantle, outer core and inner core, with the Moho and Gutenberg discontinuities marked." });
-      const defs = svg('defs');
-      defs.innerHTML =
-        '<radialGradient id="tm-earth" cx="50%" cy="50%" r="50%">' +
-        '<stop offset="0" stop-color="#FFE9A8"/><stop offset="0.34" stop-color="#FFC845"/>' +
-        '<stop offset="0.62" stop-color="#F58220"/><stop offset="1" stop-color="#B92B18"/></radialGradient>';
-      s.appendChild(defs);
-      const cx = 330, cy = 290;
-      const layers = [
-        { r: 250, fill: 'url(#tm-earth)', name: null },
-        { r: 250, fill: 'none', name: null }
-      ];
-      s.appendChild(svg('circle', { cx, cy, r: 250, fill: 'url(#tm-earth)' }));
-      /* rings */
-      [[250, '#B92B18'], [150, '#E1462C'], [92, '#FFC845']].forEach(([r, col]) => {
-        s.appendChild(svg('circle', { cx, cy, r, fill: 'none', stroke: '#fff',
-          'stroke-width': '2.5', opacity: '.65' }));
-      });
-      s.appendChild(svg('circle', { cx, cy, r: 250, fill: 'none', stroke: C.ink, 'stroke-width': '3' }));
-      /* crust ring */
-      s.appendChild(svg('circle', { cx, cy, r: 246, fill: 'none', stroke: C.cont, 'stroke-width': '9' }));
+      s.appendChild(svg('rect', { x: 0, y: 0, width: 1000, height: 580, fill: '#F7F9FC' }));
 
+      const cx = 300, cy = 290;
+      const R = { crust: 250, moho: 233, mantle: 233, gutenberg: 140, outer: 140, inner: 66 };
+
+      /* bands, outermost first */
+      s.appendChild(svg('circle', { cx, cy, r: R.crust, fill: C.cont }));          /* crust */
+      s.appendChild(svg('circle', { cx, cy, r: R.mantle, fill: '#F58220' }));      /* mantle */
+      s.appendChild(svg('circle', { cx, cy, r: R.outer, fill: '#E1462C' }));       /* outer core */
+      s.appendChild(svg('circle', { cx, cy, r: R.inner, fill: '#FFC845' }));       /* inner core */
+
+      /* boundary rings — the two discontinuities drawn as real lines */
+      s.appendChild(svg('circle', { cx, cy, r: R.moho, fill: 'none',
+        stroke: '#fff', 'stroke-width': '3' }));
+      s.appendChild(svg('circle', { cx, cy, r: R.gutenberg, fill: 'none',
+        stroke: '#fff', 'stroke-width': '3' }));
+      s.appendChild(svg('circle', { cx, cy, r: R.inner, fill: 'none',
+        stroke: 'rgba(255,255,255,.6)', 'stroke-width': '2' }));
+      s.appendChild(svg('circle', { cx, cy, r: R.crust, fill: 'none',
+        stroke: C.ink, 'stroke-width': '3' }));
+
+      /* in-band captions */
+      s.appendChild(label(cx, cy + 6, 'INNER CORE', { colour: '#7A4B00', size: 13 }));
+      s.appendChild(label(cx, cy + 108, 'OUTER CORE', { colour: '#fff', size: 13 }));
+      s.appendChild(label(cx, cy + 208, 'MANTLE', { colour: '#fff', size: 13 }));
+
+      /* leader anchor points, fanned from upper-right round to lower-right */
+      function at(r, deg) {
+        const a = deg * Math.PI / 180;
+        return [Math.round(cx + r * Math.cos(a)), Math.round(cy + r * Math.sin(a))];
+      }
+      const LX = 620;
       return { svg: s, labels: [
-        { id: 'crust', text: 'Crust', x: 700, y: 96, lead: [cx + 176, cy - 176] },
-        { id: 'moho', text: 'Moho discontinuity', x: 700, y: 148, lead: [cx + 168, cy - 168] },
-        { id: 'mantle', text: 'Mantle', x: 700, y: 206, lead: [cx + 148, cy - 96] },
-        { id: 'gutenberg', text: 'Gutenberg discontinuity', x: 700, y: 262, lead: [cx + 106, cy + 106] },
-        { id: 'outer', text: 'Outer core', x: 700, y: 320, lead: [cx + 62, cy + 96] },
-        { id: 'inner', text: 'Inner core', x: 700, y: 378, lead: [cx, cy] }
+        { id: 'crust',      text: 'Crust',                   x: LX, y: 88,  anchor: 'start', lead: at(245, -62) },
+        { id: 'moho',       text: 'Moho discontinuity',      x: LX, y: 146, anchor: 'start', lead: at(238, -42) },
+        { id: 'mantle',     text: 'Mantle',                  x: LX, y: 216, anchor: 'start', lead: at(190, -20) },
+        { id: 'gutenberg',  text: 'Gutenberg discontinuity', x: LX, y: 288, anchor: 'start', lead: at(140, 2) },
+        { id: 'outer',      text: 'Outer core',              x: LX, y: 366, anchor: 'start', lead: at(104, 26) },
+        { id: 'inner',      text: 'Inner core',              x: LX, y: 442, anchor: 'start', lead: at(44, 52) }
       ] };
     }
   };
