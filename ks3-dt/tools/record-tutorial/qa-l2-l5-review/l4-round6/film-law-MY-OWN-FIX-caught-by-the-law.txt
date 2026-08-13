@@ -1,0 +1,16 @@
+FILM-LAW REPORT — set l4, mode enforce
+scenes: ch1, ch2, ch3, ch4
+TOTAL VIOLATIONS: 3  {"IN-FRAME":3}
+
+1. [IN-FRAME] ch1 — callout "This side is the STAGE &mdash; where the game ac"
+     text: "This side is the STAGE — where the game actually plays. The green flag starts the game; th"
+     rect: [626,478,654,87]
+     viewport: [1280,720]
+2. [IN-FRAME] ch1 — callout "This side is the STAGE &mdash; where the game ac"
+     text: "This side is the STAGE — where the game actually plays. The green flag starts the game; th"
+     rect: [626,478,654,87]
+     viewport: [1280,720]
+3. [IN-FRAME] ch1 — callout "This side is the STAGE &mdash; where the game ac"
+     text: "This side is the STAGE — where the game actually plays. The green flag starts the game; th"
+     rect: [626,478,654,87]
+     viewport: [1280,720]

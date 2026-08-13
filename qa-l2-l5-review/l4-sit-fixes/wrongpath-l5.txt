@@ -1,0 +1,18 @@
+[wrongpath 5] opened: 🎮Lesson 5Game StudioYour game. Your rul
+[wrongpath 5] screen: OLS KS3 Digital Technology
+[wrongpath 5]   (nothing to click yet — waiting)
+[wrongpath 5] screen: Three contracts on the desk
+[wrongpath 5] screen: Every contract carries the same brief
+[wrongpath 5] screen: The arcade classic
+[wrongpath 5]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 5]   wrong move: an empty box in .std-sig-input — the refusal explains itself
+[wrongpath 5]   wrong move: a three-word answer in .std-sig-input — the refusal explains itself
+
+SCREENS THE CONFUSED PUPIL STOOD ON (4 distinct, 4 visits):
+   · OLS KS3 Digital Technology
+   · Three contracts on the desk
+   · Every contract carries the same brief
+   · The arcade classic
+  gates tested per screen: every unactionable control clicked; every text box submitted empty and then with three words.
+
+sit-wrongpath 5: PASS — every refusal on the walked path explained itself, in the state the pupil was actually in.

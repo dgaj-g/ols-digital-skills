@@ -518,6 +518,90 @@ class ScratchDriver {
     }, name);
   }
 
+  /* ---- THE BLOCKS-IN-FRAME LAW (DFM 201a, his 13 Aug find) ----
+     "the code blocks, although they are no longer on top of each other, are not
+     all visible in the frame." True, and unfixable by moving them: the Shark's
+     five stacks are laid out on a generous grid (that was Case 01's own fix in
+     round 5) and simply do not fit Scratch's default zoom at 1280x720. The film
+     used to pan past whatever fell outside. Now it does what a pupil must do —
+     click Scratch's own zoom-out button until everything fits — ON CAMERA, so
+     the move is taught rather than hidden. The pupil is told the same thing on
+     Case 01's card, so film and card agree (DFM 167's one-fact law). */
+  async workspaceFit() {
+    return this.page.evaluate(() => {
+      const region = document.querySelector('[class*="blocks_blocks"]') || document.querySelector('.injectionDiv');
+      if (!region) return null;
+      const rb = region.getBoundingClientRect();
+      /* the visible code area is the region clipped by the window itself */
+      const vis = {
+        left: Math.max(rb.left, 0), top: Math.max(rb.top, 0),
+        right: Math.min(rb.right, innerWidth), bottom: Math.min(rb.bottom, innerHeight)
+      };
+      const boxes = [];
+      for (const g of document.querySelectorAll('.blocklyBlockCanvas > g.blocklyDraggable')) {
+        if (g.closest('.blocklyFlyout')) continue;
+        const b = g.getBoundingClientRect();
+        if (b.width < 10) continue;
+        boxes.push({
+          x: Math.round(b.x), y: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height),
+          inFrame: b.left >= vis.left - 1 && b.right <= vis.right + 1 &&
+                   b.top >= vis.top - 1 && b.bottom <= vis.bottom + 1
+        });
+      }
+      /* scratch-blocks does NOT expose Blockly on window (probed, 13 Aug), so
+         there is no scale to read. The rendered SIZE of the blocks is the
+         honest stand-in — and it is the thing the viewer actually sees change. */
+      const span = boxes.length
+        ? Math.round(Math.max(...boxes.map(b => b.w)))
+        : 0;
+      return { region: { x: rb.x, y: rb.y, w: rb.width, h: rb.height }, boxes, span,
+        out: boxes.filter(b => !b.inFrame).length, total: boxes.length };
+    });
+  }
+  /* the zoom-out control. scratch-blocks tags its three controls explicitly —
+     .blocklyZoomIn / .blocklyZoomOut / .blocklyZoomReset — so ask for the one we
+     want by name rather than guessing an order or a position (probed live before
+     writing this: three separate <g> elements, not one container). */
+  async zoomOutControl() {
+    return this.page.evaluate(() => {
+      const z = document.querySelector('.blocklyZoomOut');
+      if (!z) return null;
+      const b = z.getBoundingClientRect();
+      if (b.width < 8 || b.height < 8) return null;
+      return { x: b.x, y: b.y, w: b.width, h: b.height, cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+    });
+  }
+  /* click zoom-out (real mouse, on camera) until every script is inside the
+     visible code area. Throws rather than filming a half-visible workspace. */
+  async fitWorkspace(cine, maxClicks) {
+    const limit = maxClicks == null ? 3 : maxClicks;
+    let fit = await this.workspaceFit();
+    if (!fit) throw new Error('code area not found for the blocks-in-frame law');
+    let clicks = 0;
+    while (fit.out > 0 && clicks < limit) {
+      const zo = await this.zoomOutControl();
+      if (!zo) throw new Error('zoom-out control not found, and ' + fit.out + ' of ' +
+        fit.total + ' scripts are outside the visible code area');
+      const before = fit.span;
+      await cine.click(zo.cx, zo.cy, { after: 700 });
+      clicks++;
+      fit = await this.workspaceFit();
+      /* verify by the EFFECT, never by the click having happened (DFM 194c) */
+      if (before > 0 && fit.span >= before) {
+        throw new Error('the zoom-out click did not shrink the blocks (widest script ' +
+          before + 'px -> ' + fit.span + 'px) — the control was mis-identified or the click missed');
+      }
+      this.log('zoom-out click ' + clicks + ': widest script ' + before + 'px -> ' + fit.span +
+        'px, ' + fit.out + '/' + fit.total + ' still out of frame');
+    }
+    if (fit.out > 0) {
+      throw new Error('BLOCKS-IN-FRAME LAW: ' + fit.out + ' of ' + fit.total +
+        ' scripts are still outside the visible code area after ' + clicks + ' zoom-out clicks');
+    }
+    this.log('blocks-in-frame ok: all ' + fit.total + ' scripts visible after ' + clicks + ' zoom-out click(s)');
+    return clicks;
+  }
+
   /* count key-pressed hats on the selected sprite's visible canvas */
   async countCanvasBlocks(rxSrc) {
     return this.page.evaluate((rx) => {

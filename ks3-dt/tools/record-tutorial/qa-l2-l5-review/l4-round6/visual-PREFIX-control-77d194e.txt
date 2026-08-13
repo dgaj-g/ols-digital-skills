@@ -1,0 +1,37 @@
+  reached CASE 01 via: dossier-cta -> primary:Open the case board -> intake -> intake-confirm -> open-CASE 01 -> ARRIVED
+
+DFM 201e — a CLOSED case must keep its file readable:
+  ✓ Case 01 really closed
+  ✗ the closed card keeps a "for the record" section
+  ✗ the proof line he could not go back to check is still readable  [not found]
+  ✗ the Scratch steps survive on the closed card
+  ✓ nothing on the closed card is still an active control  [0 controls]
+  ✓ the help ladder is gone from the closed card  [0 ladder parts]
+  reached CASE 02 via: back-from-CASE 01 -> open-CASE 02 -> ARRIVED
+
+DFM 201g — the "Doing that in Scratch" panel must stand out:
+  ✗ the case card renders a "Doing that in Scratch" panel  [not present]
+
+DFM 201f — the help ladder must state its own price:
+  ✗ the ladder opens by naming what it costs  [absent]
+  ✗ the price line is the FIRST thing in the ladder
+  ✗ the step-2 heading defines "agency" where it is used  [Help step 1 — costs nothing: | Help step 2 — ask another agency:]
+
+DFM 201e — Case 02 closed keeps the proof line he asked about:
+  ✗ Case 02 closed and kept its record
+  ✗ the tick wording he could not go back to check is readable on the closed card  [not found]
+  ✗ zero console errors  [Failed to load resource: the server responded with a status of 404 (Not Found) | Failed to load resource: the server responded with a status of 404 (Not Found)]
+
+FINDINGS: 10
+  1. the closed card keeps a "for the record" section
+  2. the proof line he could not go back to check is still readable — not found
+  3. the Scratch steps survive on the closed card
+  4. the case card renders a "Doing that in Scratch" panel — not present
+  5. the ladder opens by naming what it costs — absent
+  6. the price line is the FIRST thing in the ladder
+  7. the step-2 heading defines "agency" where it is used — Help step 1 — costs nothing: | Help step 2 — ask another agency:
+  8. Case 02 closed and kept its record
+  9. the tick wording he could not go back to check is readable on the closed card — not found
+  10. zero console errors — Failed to load resource: the server responded with a status of 404 (Not Found) | Failed to load resource: the server responded with a status of 404 (Not Found)
+
+(--expect-fail: the control reproduced on the pre-fix build)

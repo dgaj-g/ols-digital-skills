@@ -1,0 +1,20 @@
+KIT FACTS — derived from the real blocks (DFM 201d)
+  ✓ shark-attack-broken-edition.sb3 — every derived fact matches the manifest
+  ✓ shark-attack-c1-fixed.sb3 — every derived fact matches the manifest
+  ✓ shark-attack-v2-working.sb3 — every derived fact matches the manifest
+
+TEXT RATCHET — Case 02 against shark-attack-broken-edition.sb3
+  content: /tmp/satcontent/j1-04-sat.json
+
+FINDINGS: 3
+  1. j1-04 c2.symptom asks for more fish than the kit can show (kit makes 1 per green flag; the broken kit makes ONE fish per green flag and the clone deletes itself when eaten, so a second fish only exists after a restart)
+        "Click the green flag and steer the shark to eat a fish. Listen for the bite sound… then look at the score. Eat another fish. Is the score still stuck "
+        matched: /\b(another|more|two|three|four|five|six|\d+)\s+(fish|catches)\b/i
+  2. j1-04 c2.replay asks for more fish than the kit can show (kit makes 1 per green flag; the broken kit makes ONE fish per green flag and the clone deletes itself when eaten, so a second fish only exists after a restart)
+        "Click the green flag and eat THREE fish, watching the score climb 1, 2, 3. Right once could be luck — right three times is proof."
+        matched: /\b(another|more|two|three|four|five|six|\d+)\s+(fish|catches)\b/i
+  3. j1-04 c2.replayConfirm asks for more fish than the kit can show (kit makes 1 per green flag; the broken kit makes ONE fish per green flag and the clone deletes itself when eaten, so a second fish only exists after a restart)
+        "Three catches, three points — the scoreboard tells the truth"
+        matched: /\b(another|more|two|three|four|five|six|\d+)\s+(fish|catches)\b/i
+
+(--expect-fail: findings were expected — this is the control passing)

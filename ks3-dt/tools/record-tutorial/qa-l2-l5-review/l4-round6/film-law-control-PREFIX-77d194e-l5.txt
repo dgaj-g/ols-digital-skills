@@ -1,0 +1,32 @@
+FILM-LAW REPORT — set l5, mode report
+scenes: ch1, ch2, ch3, ch4
+TOTAL VIOLATIONS: 7  {"IN-FRAME":2,"CURSOR-ON-TEXT":5}
+
+1. [IN-FRAME] ch1 — callout "Straight through the bowl. No catch, no miss &md"
+     text: "Straight through the bowl. No catch, no miss — the kit can’t CHOOSE yet"
+     rect: [646,207,634,87]
+     viewport: [1280,720]
+2. [CURSOR-ON-TEXT] ch1 — callout "Go to the top, fall&hellip; then nothing. Perfec"
+     text: "Go to the top, fall… then nothing. Perfect sequence, zero decisions"
+     rect: [186,42,668,87]
+     cursor: [806,70]
+3. [IN-FRAME] ch3 — callout "Misses just&hellip; vanish. No lives. No danger."
+     text: "Misses just… vanish. No lives. No danger. No ending. Half a choice is half a game"
+     rect: [613,179,667,87]
+     viewport: [1280,720]
+4. [CURSOR-ON-TEXT] ch4 — caption "TEST 1 running: lives 3&hellip;2&hellip;1&hellip"
+     text: "TEST 1 running: lives 3…2…1…"
+     rect: [443,22,403,71]
+     cursor: [806,70]
+5. [CURSOR-ON-TEXT] ch4 — caption "TEST 2 running: chase the apple&hellip;"
+     text: "TEST 2 running: chase the apple…"
+     rect: [412,22,464,71]
+     cursor: [806,70]
+6. [CURSOR-ON-TEXT] ch4 — caption "TEST 1 running: lives 3&hellip;2&hellip;1&hellip"
+     text: "TEST 1 running: lives 3…2…1…"
+     rect: [443,22,403,71]
+     cursor: [806,70]
+7. [CURSOR-ON-TEXT] ch4 — caption "TEST 2 running: chase the apple&hellip;"
+     text: "TEST 2 running: chase the apple…"
+     rect: [412,22,464,71]
+     cursor: [806,70]

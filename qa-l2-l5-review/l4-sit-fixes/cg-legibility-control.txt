@@ -1,0 +1,17 @@
+CHOICE-GATE LEGIBILITY — OLD animation
+  measured (same instrument both runs):
+    apple       82px   floor 90px   *** BELOW FLOOR ***
+    YES         22px   floor 18px   ok
+    NO          22px   floor 18px   ok
+    TOP MOUTH   18px   floor 18px   ok
+    ELSE MOUTH  18px   floor 18px   ok
+  RESULT: the gate REFUSES this take — apple below floor
+
+CHOICE-GATE LEGIBILITY — NEW animation
+  measured (same instrument both runs):
+    apple       134px   floor 90px   ok
+    YES         35px   floor 18px   ok
+    NO          35px   floor 18px   ok
+    TOP MOUTH   27px   floor 18px   ok
+    ELSE MOUTH  27px   floor 18px   ok
+  RESULT: passes every floor

@@ -1,0 +1,49 @@
+FRAGMENT-CANDIDATES SWEEP — PRE-FIX BUILD 7bba564 (the build Damien sat)
+content: /private/tmp/prefix-l4/ks3-dt/content
+
+j1-01: 6 candidate(s)
+   [CHAIN(intra)] j1-01 › b1-login › config › intro
+      "Three things to read, then some questions."
+   [CHAIN(inter)] j1-01 › b1-login › config › intro
+      "Then the rules of this room.  ·  Three things to read, then some questions."
+   [CHAIN(intra)] j1-01 › b1-login › config › steps[0] › text
+      "Not with your best friend, not with your siblings, not with anyone who says they are helping."
+   [CHAIN(intra)] j1-01 › b2-navigator › config › stops[0] › text
+      "Your whole year, at a glance."
+   [CHAIN(intra)] j1-01 › b2-navigator › config › items[2] › options[1]
+      "The whole class, on a scoreboard"
+   [CHAIN(intra)] j1-01 › b2-navigator › config › items[2] › options[2]
+      "Nobody at all, not even you"
+j1-02: 4 candidate(s)
+   [CHAIN(intra)] j1-02 › hook › config › lines[1]
+      "A lift button, a pedestrian crossing, a fitness tracker: something happens (the INPUT — a press, a step), and something reacts (the OUTPUT —"
+   [CHAIN(inter)] j1-02 › ladder › config › unplugged › lines[3]
+      "New signal!  ·  SENSOR: mime shaking the micro:bit."
+   [CHAIN(intra)] j1-02 › ladder › config › unplugged › soloLines[2]
+      "With one hand, mime pressing an invisible button."
+   [CHAIN(intra)] j1-02 › packup › config › intro
+      "Two last jobs, so the micro:bits are ready for the next class."
+j1-03: 0 candidate(s)
+j1-04: 3 candidate(s)
+   [CHAIN(intra)] j1-04 › board › config › intro
+      "Four player tickets, four open cases — each ticket opens a CASE: one bug to find and fix."
+   [CHAIN(intra)] j1-04 › board › config › introSolo
+      "Four player tickets, four open cases — each ticket opens a CASE: one bug to find and fix."
+   [CHAIN(inter)] j1-04 › board › config › cases[3] › symptom
+      "And again.  ·  Same wrongness every time?"
+j1-05: 6 candidate(s)
+   [CHAIN(inter)] j1-05 › sign › config › contracts[0] › pitch
+      "One bowl.  ·  No second chances."
+   [CHAIN(inter)] j1-05 › build › config › templates › maze › criteria[1] › outcomes[2] › mech
+      "in the top mouth and 'Locked!'  ·  in the else."
+   [CHAIN(inter)] j1-05 › build › config › templates › quiz › blueprint › steps[2] › text
+      "The condition asks: answer = true.  ·  for 1 second."
+   [CHAIN(intra)] j1-05 › build › config › templates › quiz › criteria[0] › outcomes[1] › mech
+      "Drag change score by 1 into the if's top mouth, next to say 'Correct!'."
+   [CHAIN(inter)] j1-05 › press › config › wrap › note
+      "No scores.  ·  No rankings."
+   [CHAIN(inter)] j1-05 › ship › config › help
+      "Three steps.  ·  Last, press Check my Drive."
+j1-sq1: 0 candidate(s)
+
+TOTAL: 19

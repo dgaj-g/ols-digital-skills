@@ -1,0 +1,11 @@
+E3 IN-FILM TERM ORDERING — DFM 196 CONTROL
+Run against the OLD Lesson 4 film scene source (git 7bba564:scenes/l4.js),
+with everything else at the current build. The old captions must FAIL.
+
+  3 problem(s)
+  FAIL film:l4:ch1 › 19484a3b5cfa7843 [l4 ch1 line 141]: the film says "sprite" here for the FIRST time and nothing has defined it yet — not this caption, not an earlier one, not a screen she passes before the film. She can watch this before she reads a single card (DFM 192i). Carry the definition at or before this caption: "a sprite is one character or thing" / "one for each character or thing"
+  FAIL film:l4:ch1 › 19484a3b5cfa7843 [l4 ch1 line 141]: the film says "script" here for the FIRST time and nothing has defined it yet — not this caption, not an earlier one, not a screen she passes before the film. She can watch this before she reads a single card (DFM 192i). Carry the definition at or before this caption: "the stacks of blocks that tell" / "are the Shark's SCRIPTS"
+  FAIL film:l4:ch2 › 72eeab4ed40ac4e3 [l4 ch2 line 179]: the film says "hat block" here for the FIRST time and nothing has defined it yet — not this caption, not an earlier one, not a screen she passes before the film. She can watch this before she reads a single card (DFM 192i). Carry the definition at or before this caption: "called a HAT BLOCK" / "is a HAT BLOCK"
+
+--- and the CURRENT film, same check ---
+qa-language: ALL GREEN

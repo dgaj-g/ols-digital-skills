@@ -17,6 +17,11 @@ async function runSet(setName, only) {
   const timingsPath = path.join(outDir, 'timings.json');
   const timings = fs.existsSync(timingsPath) ? JSON.parse(fs.readFileSync(timingsPath, 'utf8')) : {};
 
+  /* DFM 201a/b: in 'report' mode nothing throws, so the film-law violations of the
+     PRE-FIX build are collected across every scene and written out as one file —
+     the DFM 196 control evidence, and an honest enumeration of "this repeats in
+     other parts of the video" rather than a single first-fault throw. */
+  const filmLawViolations = [];
   const browser = await chromium.launch({ headless: true });
   for (const scene of scenes) {
     let lastErr = null;
@@ -48,6 +53,7 @@ async function runSet(setName, only) {
       try {
         await scene.run({ page, cine, drv, log, dataUri, sleep });
         if (scene.verify) await scene.verify({ page, drv, log });
+        filmLawViolations.push(...cine.violations.map(v => Object.assign({ set: setName, sceneId: scene.id }, v)));
         const video = page.video();
         await context.close();
         const tmp = await video.path();
@@ -61,14 +67,39 @@ async function runSet(setName, only) {
         break;
       } catch (e) {
         lastErr = e;
+        filmLawViolations.push(...cine.violations.map(v => Object.assign({ set: setName, sceneId: scene.id }, v)));
         log('FAILED: ' + e.message);
         try { await page.screenshot({ path: path.join(outDir, 'fail-' + scene.id + '-a' + attempt + '.png') }); } catch (e2) {}
         await context.close().catch(() => {});
       }
     }
-    if (lastErr) { await browser.close(); throw new Error(scene.id + ': ' + lastErr.message); }
+    if (lastErr) { await browser.close(); writeLawReport(); throw new Error(scene.id + ': ' + lastErr.message); }
   }
   await browser.close();
+  writeLawReport();
+
+  function writeLawReport() {
+    if (!filmLawViolations.length) { console.log('FILM LAWS: no violations'); return; }
+    const dest = process.env.KS3DT_FILM_LAW_OUT ||
+      path.join(outDir, 'film-law-violations-' + (process.env.KS3DT_FILM_LAWS || 'enforce') + '.txt');
+    const byLaw = {};
+    filmLawViolations.forEach(v => { byLaw[v.law] = (byLaw[v.law] || 0) + 1; });
+    const body = [
+      'FILM-LAW REPORT — set ' + setName + ', mode ' + (process.env.KS3DT_FILM_LAWS || 'enforce'),
+      'scenes: ' + scenes.map(s => s.id).join(', '),
+      'TOTAL VIOLATIONS: ' + filmLawViolations.length + '  ' + JSON.stringify(byLaw),
+      ''
+    ].concat(filmLawViolations.map((v, i) =>
+      (i + 1) + '. [' + v.law + '] ' + v.sceneId + ' — ' + v.scene +
+      '\n     text: "' + (v.text || '') + '"' +
+      '\n     rect: ' + JSON.stringify(v.rect) +
+      (v.cursor ? '\n     cursor: ' + JSON.stringify(v.cursor) : '') +
+      (v.viewport ? '\n     viewport: ' + JSON.stringify(v.viewport) : '')
+    )).join('\n');
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.writeFileSync(dest, body + '\n');
+    console.log('FILM LAWS: ' + filmLawViolations.length + ' violation(s) -> ' + dest);
+  }
   // clear leftover tmp webms
   const tmpDir = path.join(outDir, 'tmp');
   if (fs.existsSync(tmpDir)) {
