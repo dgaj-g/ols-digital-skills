@@ -118,7 +118,15 @@ function collectStrings(lesson, fileId) {
     if (Array.isArray(node)) { node.forEach((v, i) => walk(v, p + '[' + i + ']')); return; }
     if (typeof node !== 'object') return;
     Object.keys(node).forEach(k => {
-      if (MACHINE_KEYS.has(k)) return;
+      /* `img` is TWO different things in this content, and treating it as one
+         hid four pupil-facing sentences (12 Aug 2026). As a STRING it is a file
+         path — machine. As an OBJECT it is `{src, alt, caption}`, and the alt
+         and the caption are sentences a child reads: the four Lesson 4 evidence
+         photos carry the ticket's claim in words, right under the picture. They
+         had never been scanned, never been ledgered, and rule 35's "a caption
+         may not claim what its picture does not show" had nothing checking it.
+         `src` inside stays machine on its own key. */
+      if (MACHINE_KEYS.has(k) && !(k === 'img' && node[k] && typeof node[k] === 'object')) return;
       walk(node[k], p + ' › ' + k);
     });
   };
@@ -235,6 +243,116 @@ const MAX_WORDS = 34;
    adding or removing emphasis correctly voids the judgement and re-asks it. */
 const unbold = (text) => String(text).replace(/\*\*([^*]+)\*\*/g, '$1');
 const prose = (text) => unbold(String(text)).replace(/`[^`]*`/g, ' ');
+
+/* ------------------------------------------------------------------ *
+ * A LABEL IS NOT A SENTENCE — hoisted to module scope so the ledger's
+ * short-sentence debt list and the fragment reporter below share ONE
+ * definition (DFM 144). "Mission Control", "Welcome", "Ready" are
+ * titles, tabs and button faces: naming a thing in two words is what
+ * those surfaces are FOR. The rules that judge PROSE must not judge
+ * them, or the real finding drowns in forty false ones (DFM 146a).
+ * ------------------------------------------------------------------ */
+const LABELish = /› (title|tagline|name|label|kicker|cta|confirm|confirmLabel|checkLabel|replayConfirm|badge › name|num|placeholder|notePlaceholder|namePlaceholder|titlePlaceholder|howPlaceholder|likePlaceholder|wonderPlaceholder|doneText|clueButton|clueStep1Head|clueStep2Head)$/;
+const isLabelPath = (p) => LABELish.test(p) ||
+  /› (chapters|steps|watch|items|statements)\[\d+\] › (title|label)$/.test(p);
+
+/* ------------------------------------------------------------------ *
+ * L1-6  THE FRAGMENT-CANDIDATES REPORTER (DFM 192b, redesigned by
+ * Fable 5 on 12 Aug 2026 after the spec'd mechanism failed against
+ * reality — ROUND5_DESIGN_ADDENDUM.md Part A; the law is DFM 197).
+ *
+ * WHAT DIED AND WHY, so nobody rebuilds it: Damien's rejected card read
+ * "Four player tickets, four open cases — each ticket opens a CASE: one
+ * bug to find and fix." That is SEVENTEEN words, so no length floor can
+ * ever reach it; a word-list verb detector mis-reads it twice over
+ * ("four OPEN cases", "one bug to FIND and FIX"); and the ≤6-word floor,
+ * run for real, false-failed 242 good short sentences including text he
+ * has signed off. THIS IS A REPORTER, NEVER A GATE. It surfaces suspects
+ * so the judged cold-read pass (checklist §C q11) cannot miss one. The
+ * judgement is the enforcement; 192b stays JUDGED in the audit.
+ *
+ * Every rule below exists because a prototype false positive demanded it.
+ * ------------------------------------------------------------------ */
+let nlp;
+try { nlp = require('compromise'); }
+catch (e) {
+  /* a silently skipped reporter is rot (DFM 146a) — fail loudly, with the fix */
+  console.error('\nqa-language: the fragment reporter needs compromise@14 and it is not installed.');
+  console.error('  Run:  cd ks3-dt/tools/record-tutorial && npm i compromise@14');
+  console.error('  (package.json carries it, so a freshly synced machine needs one npm i.)');
+  process.exit(2);
+}
+
+/* A filename wrecks the tagger — "Pick shark-attack-broken-edition.sb3" reads
+   as verbless — so it becomes an ordinary noun phrase before tagging. */
+const fragNormalise = (text) => prose(text).replace(/\S+\.\w{2,4}\b/g, 'the file');
+
+/* Bare base verbs COUNT: "Now try…", "then look…" are tagged #Infinitive with
+   no "to", and excluding them was the prototype's false-positive engine. What
+   does NOT count: gerunds/participles on their own, and the infinitives inside
+   a to-group ("one bug TO FIND AND FIX" is a noun phrase, not an action). */
+function hasRealVerb(text) {
+  const doc = nlp(String(text));
+  if (doc.match('#Imperative').found) return true;
+  const inf = new Set();
+  doc.match('to #Infinitive+ (and #Infinitive+)?').docs
+    .forEach(ts => ts.forEach(t => inf.add(t.id)));
+  let real = false;
+  doc.match('#Verb').docs.forEach(ts => ts.forEach(t => {
+    if (inf.has(t.id)) return;
+    const tags = t.tags instanceof Set ? t.tags : new Set(Object.keys(t.tags || {}));
+    if (tags.has('Gerund') || tags.has('Participle')) return;
+    real = true;
+  }));
+  return real;
+}
+
+/* COMMAS ONLY. An em-dash, colon or semicolon ENDS the run — otherwise the
+   appositive "Design ONE more change — a second danger, a speed-up —" reads as
+   a fragment chain, and it is perfectly good writing. His sentence still fires,
+   on "Four player tickets," + "four open cases". */
+const RUN_END = /[—–;:]|--/;
+function leadingVerblessRun(sentence) {
+  const cut = sentence.search(RUN_END);
+  const head = (cut === -1 ? sentence : sentence.slice(0, cut));
+  const clauses = head.split(',').map(c => c.trim()).filter(Boolean);
+  let run = 0;
+  for (let i = 0; i < clauses.length; i++) {
+    if (wordCount(clauses[i]) < 3 || hasRealVerb(clauses[i])) break;
+    run++;
+  }
+  return run;
+}
+
+function fragmentCandidates(rawText) {
+  /* menu-path notation ("Variables → Make a Variable → 'score'") is not prose */
+  if (String(rawText).indexOf('→') !== -1) return [];
+  const sents = sentences(fragNormalise(rawText));
+  const out = [];
+  sents.forEach(s => {
+    if (leadingVerblessRun(s) >= 2) {
+      out.push({ kind: 'CHAIN(intra)', text: s.trim() });
+    }
+  });
+  const verbless = sents.filter(s => wordCount(s) >= 2 && !hasRealVerb(s));
+  if (verbless.length >= 2) {
+    out.push({ kind: 'CHAIN(inter)', text: verbless.map(s => s.trim()).slice(0, 3).join('  ·  ') });
+  }
+  return out;
+}
+
+/* SCOPE: prose paths only. `ticket` is the players' own quoted voice and a
+   reviewer may write "One star."; `caption`/`alt` are image text, nominal
+   register by design; the ships/adds bullets are list register (both cold-read
+   PASSed). PITCHES ARE IN SCOPE — the L5 spec itself rewrote them for exactly
+   this fault. Films are out of scope here: their captions are individually
+   ledgered and judged. */
+const fragInScope = (p) => !(
+  isLabelPath(p) ||
+  / › ticket$/.test(p) ||
+  /› (caption|alt)$/.test(p) ||
+  /› (ships|adds)\[\d+\]$/.test(p)
+);
 
 /* ------------------------------------------------------------------ *
  * THE CHECKS. Each returns an array of problem strings.
@@ -374,17 +492,31 @@ function arrowChainCheck(rawText, names) {
    is text she has read in chunk X, so it can carry that chunk's definition. Not
    allowing this would force a definition to be duplicated onto a card purely to
    satisfy the gate — which is how gates start lying. */
+/* Apostrophes and quotes normalised, whitespace collapsed. Without this, "the
+   company's head office" written with a typographic apostrophe would never match
+   the same phrase typed straight. Module scope: the card check, the in-film
+   order check and definingPhrases() must all normalise identically. */
+const norm = (t) => String(t).toLowerCase()
+  .replace(/[\u2018\u2019\u02bc]/g, "'")
+  .replace(/[\u201c\u201d]/g, '"')
+  .replace(/\s+/g, ' ')
+  .trim();
+
+/* `defining` is a string OR an array of strings (addendum Part D, 12 Aug 2026).
+   One place decides what the phrases are, so the card check and the in-film
+   ORDER check below can never disagree about what counts as a definition. */
+function definingPhrases(term) {
+  return [].concat(term.defining || [])
+    .filter(x => typeof x === 'string' && x.trim())
+    .map(x => norm(x));
+}
+
 function vocabCheck(lessons, vocab, films) {
   const out = [];
   const waivedDefining = [];
   /* one comparison shape for both sides: lower-cased, apostrophes flattened,
      whitespace collapsed. Without this, "the company's head office" written with
      a typographic apostrophe would never match the same phrase typed straight. */
-  const norm = (t) => String(t).toLowerCase()
-    .replace(/[\u2018\u2019\u02bc]/g, "'")
-    .replace(/[\u201c\u201d]/g, '"')
-    .replace(/\s+/g, ' ')
-    .trim();
   const orderOf = {};
   lessons.forEach(L => { orderOf[L.fileId] = Number(L.json.num || 99); });
   (vocab.terms || []).forEach(term => {
@@ -428,11 +560,17 @@ function vocabCheck(lessons, vocab, films) {
          one and a spec phrase may not. */
       if (L.fileId === defLesson) {
         const inChunk = L.strings.filter(s => (s.path.split(' › ')[1] || '') === term.definedIn.chunkId);
-        if (typeof term.defining === 'string' && term.defining) {
-          const want = norm(term.defining);
+        /* `defining` is a STRING **or an ARRAY** (addendum Part D). A term can
+           honestly be defined in more than one form of words — the film says
+           "one for each character or thing", the card says "a sprite is one
+           character or thing" — and forcing one phrase onto both would mean
+           writing worse English to satisfy a gate. Any listed phrase satisfies
+           either check. */
+        const wants = definingPhrases(term);
+        if (wants.length) {
           const inFilmHere = (films || []).filter(f => f.lesson === defLesson && f.chunkId === term.definedIn.chunkId);
-          if (inChunk.some(s => norm(prose(s.text)).indexOf(want) !== -1) ||
-              inFilmHere.some(f => norm(prose(f.text)).indexOf(want) !== -1)) definitionSeen = true;
+          if (inChunk.some(s => wants.some(w => norm(prose(s.text)).indexOf(w) !== -1)) ||
+              inFilmHere.some(f => wants.some(w => norm(prose(f.text)).indexOf(w) !== -1))) definitionSeen = true;
         } else {
           if (inChunk.some(s => rx.test(s.text))) definitionSeen = true;
           waivedDefining.push(term.term + ' (' + defLesson + ' › ' + term.definedIn.chunkId + ')');
@@ -440,9 +578,9 @@ function vocabCheck(lessons, vocab, films) {
       }
     });
     if (defNum !== undefined && !definitionSeen) {
-      out.push(typeof term.defining === 'string' && term.defining
+      out.push(definingPhrases(term).length
         ? 'vocab.json: "' + term.term + '" is claimed to be defined in ' + defLesson + ' › ' +
-          term.definedIn.chunkId + ', but its DEFINING PHRASE ("' + term.defining +
+          term.definedIn.chunkId + ', but its DEFINING PHRASE ("' + [].concat(term.defining).join('" / "') +
           '") is not in that chunk. A term used there is not a term defined there.'
         : 'vocab.json: "' + term.term + '" claims to be defined in ' + defLesson + ' › ' +
           term.definedIn.chunkId + ', but the word never appears there (phantom definition)');
@@ -894,6 +1032,89 @@ function filmVocabCheck(films, lessons, vocab) {
 /* ------------------------------------------------------------------ *
  * LAYER 2 - THE READ-ALOUD LEDGER. The heart of the file (DFM 178a).
  * ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
+ * E3 — IN-FILM TERM ORDERING (L4 spec Part E3, refined by addendum Part D).
+ *
+ * DAMIEN, 11 Aug 2026, on the Lesson 4 film: "You've mentioned sprites in this
+ * video but how do you know that a child has ever heard of that?" He is right,
+ * and the reason the old gate passed it is on the record (DFM 192i): the
+ * vocabulary check works at CHUNK granularity, and the film lives inside the
+ * chunk that defines the term — so the captions passed by POSITION, although a
+ * pupil can watch the film before reading a single card.
+ *
+ * So: for a watched term whose defining lesson IS this film's lesson, the
+ * term's FIRST USE in the film must be covered one of three ways. The second
+ * and third exist because the spec's original wording missed two facts about
+ * how these films are actually reached:
+ *   (a) an earlier caption carries a defining phrase, or the first-use caption
+ *       carries it ITSELF — a film may define a term in the same breath;
+ *   (b) the term is already defined on a chunk that RENDERS BEFORE the film's
+ *       host chunk;
+ *   (c) it is defined on the host chunk's own pre-grid intro surface
+ *       (intro / introSolo / introSteps / introAfter) — Lesson 4's film sits
+ *       behind a board pin, and she cannot reach the pin without passing that
+ *       card.
+ * ------------------------------------------------------------------ */
+const PREGRID = ['intro', 'introSolo', 'introSteps', 'introAfter'];
+
+function filmOrderCheck(films, lessons, vocab) {
+  const out = [];
+  const byId = {};
+  lessons.forEach(L => { byId[L.fileId] = L; });
+
+  (vocab.terms || []).forEach(term => {
+    const wants = definingPhrases(term);
+    if (!wants.length) return;                    /* WAIVED-DEFINING: printed elsewhere */
+    const rx = new RegExp('\\b(' + [term.term].concat(term.aliases || [])
+      .map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', 'i');
+    const defLesson = term.definedIn.lesson;
+
+    const bySet = {};
+    films.filter(f => f.lesson === defLesson).forEach(f => { (bySet[f.set] = bySet[f.set] || []).push(f); });
+
+    Object.keys(bySet).forEach(set => {
+      /* the order she WATCHES them in: chapter, then line */
+      const caps = bySet[set].slice().sort((a, b) =>
+        String(a.chapter).localeCompare(String(b.chapter)) || (a.line - b.line));
+      const firstIdx = caps.findIndex(f => rx.test(f.text));
+      if (firstIdx === -1) return;
+      const first = caps[firstIdx];
+
+      /* (a) carried by this caption, or any caption before it */
+      if (caps.slice(0, firstIdx + 1)
+        .some(f => wants.some(w => norm(prose(f.text)).indexOf(w) !== -1))) return;
+
+      const L = byId[defLesson];
+      if (!L) return;
+      const ids = (L.json.chunks || []).map(c => c.id);
+      const hostIdx = ids.indexOf(first.chunkId);
+      const defIdx = ids.indexOf(term.definedIn.chunkId);
+
+      /* (b) defined on a chunk she passes BEFORE the film's host chunk */
+      if (defIdx >= 0 && hostIdx >= 0 && defIdx < hostIdx) return;
+
+      /* (c) defined on the host chunk's own pre-grid intro surface */
+      const pre = L.strings.filter(s => {
+        const parts = s.path.split(' \u203a ');
+        /* strip the array index: the case-log definition lives on
+           `introSteps[3]`, and comparing the raw segment to "introSteps" missed
+           it — the check reported a real definition as missing, which is the
+           one thing a gate must never do (DFM 146a). */
+        const surface = String(parts[3] || '').replace(/\[\d+\]$/, '');
+        return parts[1] === first.chunkId && parts[2] === 'config' && PREGRID.indexOf(surface) !== -1;
+      });
+      if (pre.some(s => wants.some(w => norm(prose(s.text)).indexOf(w) !== -1))) return;
+
+      out.push(first.key + ' [' + first.set + ' ' + first.chapter + ' line ' + first.line + ']: the film ' +
+        'says "' + term.term + '" here for the FIRST time and nothing has defined it yet — not this ' +
+        'caption, not an earlier one, not a screen she passes before the film. She can watch this ' +
+        'before she reads a single card (DFM 192i). Carry the definition at or before this caption: "' +
+        [].concat(term.defining).join('" / "') + '"');
+    });
+  });
+  return out;
+}
+
 const crypto = require('crypto');
 const sha1 = (s) => crypto.createHash('sha1').update(s, 'utf8').digest('hex').slice(0, 16);
 
@@ -928,7 +1149,7 @@ function ledgerCheck(lessons, ledger) {
   const out = [];
   const byPath = ledger.entries || {};
   lessons.forEach(L => {
-    const reader = readerFor(L.json.year);
+    const reader = readerFor(L.year || L.json.year);   /* the directory is the fallback (multi-year walk) */
     L.strings.forEach(s => {
       const e = byPath[s.path];
       if (!e) {
@@ -951,15 +1172,15 @@ function ledgerCheck(lessons, ledger) {
          EXEMPT: the player tickets. Those are quoted VOICE — the players talking,
          not the platform instructing — and a game reviewer is entitled to write
          "One star." They are still spell- and banned-word checked above. */
-      /* A LABEL IS NOT A SENTENCE. "Mission Control", "Welcome", "Ready" are
-         titles, tabs and button faces — naming things in two words is what those
-         surfaces are FOR, and escalating them would bury the real finding under
-         forty false ones (DFM 146a: never make the harness green by damaging
-         good text, and never make it loud enough to be ignored). The escalation
-         applies to PROSE: the places the platform explains something. */
-      const LABELish = /› (title|tagline|name|label|kicker|cta|confirm|confirmLabel|checkLabel|replayConfirm|badge › name|num|placeholder|notePlaceholder|namePlaceholder|titlePlaceholder|howPlaceholder|likePlaceholder|wonderPlaceholder|doneText|clueButton|clueStep1Head|clueStep2Head)$/;
-      const isLabel = LABELish.test(s.path) || /› (chapters|steps|watch|items|statements)\[\d+\] › (title|label)$/.test(s.path);
-      const isQuotedVoice = / › ticket$/.test(s.path) || /› contracts\[\d+\] › pitch$/.test(s.path) || isLabel;
+      /* A LABEL IS NOT A SENTENCE — the shared definition is at module scope
+         (isLabelPath), so this list and the fragment reporter can never drift
+         apart (DFM 144). The escalation applies to PROSE: the places the
+         platform explains something.
+         THE PITCH EXEMPTION WAS REVOKED, 12 Aug 2026 (addendum Part A): a
+         contract pitch is platform copy, not a player's voice, and the L5 spec
+         had already had to rewrite the pitches for verbless chains. `ticket`
+         stays exempt — those really are the players talking. */
+      const isQuotedVoice = / › ticket$/.test(s.path) || isLabelPath(s.path);
       const shortest = sentences(prose(unbold(s.text)))
         .map(x => ({ x, n: wordCount(x) }))
         .filter(o => o.n > 0)
@@ -1034,6 +1255,39 @@ function runControls() {
   const MIXED = 'First open it up. `a → b` Then go to Settings → the third tab down → press the blue Save button.';
   control(arrowChainCheck(MIXED).length >= 1, 'the code exemption does NOT forgive an action chain in the same string');
 
+  /* ---- THE FRAGMENT-CANDIDATE CONTROLS (DFM 192b/196/197; addendum Part A).
+     Every string below is VERBATIM from the build he sat (`7bba564`), so the
+     reporter proves on every run that it still catches the text he rejected —
+     and, just as importantly, that it does NOT catch the good short sentences
+     a length floor would have destroyed. */
+  const G1 = 'Four player tickets, four open cases — each ticket opens a CASE: one bug to find and fix.';
+  control(fragmentCandidates(G1).length >= 1,
+    'HIS OWN REJECTED SENTENCE is a fragment candidate — seventeen words, so no length rule could ever reach it (DFM 192b)');
+  const G2 = 'Click the green flag and watch ONLY the very first second. Now click it again. And again. Same wrongness every time?';
+  control(fragmentCandidates(G2).length >= 1,
+    'his Case 04 find ("And again." + "Same wrongness every time?") is a candidate');
+  const G3 = 'Apples fall. One bowl. No second chances. Miss three and the game is over — if you build it that way.';
+  control(fragmentCandidates(G3).length >= 1, 'the pre-fix Catch It pitch is a candidate');
+  /* verbatim, whole: a truncated control is a control that proves nothing */
+  const G4 = "Three steps. First, save the .sb3 from Scratch: open the File menu and choose " +
+    "'Save to your computer'. Then drag that file into your Google Drive, into School, then DT Work. " +
+    "Last, press Check my Drive. The website really does look in your Drive, the same check as every build this term.";
+  control(fragmentCandidates(G4).length >= 1,
+    'the pre-fix ship help opening "Three steps." is a candidate (the one this detector found on current content, 12 Aug)');
+  /* THE OVER-TIGHTENING GUARDS. A reporter that cries at good writing gets
+     ignored, and an ignored reporter is worse than none (DFM 146a). Each line
+     below is text that must stay silent — three of them are sentences the
+     abandoned ≤6-word floor false-failed. */
+  const OKF = [
+    ['Nobody is ranked against anybody.', 'the signed-off Press Night line'],
+    ['Every game keeps score.', 'a good short sentence'],
+    ['Design ONE more change — a second danger, a speed-up — and test it.', 'an appositive between em-dashes is not a chain'],
+    ["Variables → Make a Variable → 'score'", 'menu-path notation is not prose'],
+    ['Shipping your game takes three steps.', 'the 12 Aug rewrite of the ship help opener'],
+    ['Now try the left arrow. Then look at the code area.', 'bare imperatives are real verbs']
+  ];
+  OKF.forEach(([t, why]) => control(fragmentCandidates(t).length === 0, why + ' raises NO candidate'));
+
   /* ---- THE FILM CONTROLS (DFM 179). The captions that were SHIPPED on his
      screen this week must fail these checks before any rewrite is credited. */
   const F1 = 'First: the broken game onto your bench &mdash; exactly like the <b>Evidence Intake</b> card.';
@@ -1079,6 +1333,39 @@ function runControls() {
   } catch (e) {
     control(false, 'the static-only fixture could not run: ' + e.message);
   }
+
+  /* ---- THE MULTI-YEAR WALK (addendum Part E; the gap HIS question found on
+     12 Aug 2026: "will these persist to J2 and J3?"). Until that day this
+     harness walked `j1/lessons` and nothing else, so a Lesson dropped into
+     `content-src/j2/lessons/` would have shipped with no banned-word check, no
+     ledger and no vocabulary order — silently, which is the worst kind. The
+     control plants exactly that file, with one banned word and one sentence
+     that has no record, and proves the walk AND the checks reach it. It is
+     permanent: the day somebody narrows the walk back to one year, this fails
+     and says why. */
+  const YR_DIR = path.join(__dirname, 'out', '.qa-language-j2-fixture');
+  try {
+    const lessonDir = path.join(YR_DIR, 'j2/lessons');
+    fs.mkdirSync(lessonDir, { recursive: true });
+    fs.writeFileSync(path.join(lessonDir, 'j2-99.json'), JSON.stringify({
+      num: 99, year: 'j2', title: 'Multi-year scan control',
+      chunks: [{ id: 'probe', title: 'Probe', config: {
+        /* "tap" is the ban he has had to give twice (DFM 150) — she has a mouse */
+        intro: 'Just tap the screen when you are ready to begin the next part.'
+      } }]
+    }, null, 1));
+    const planted = loadLessons(YR_DIR);
+    control(planted.length === 1 && planted[0].fileId === 'j2-99',
+      'a lesson sitting in content-src/j2/lessons IS found by the walk (it was invisible until 12 Aug — his question)');
+    const probe = (planted[0] || { strings: [] }).strings.find(s => / › intro$/.test(s.path)) || { text: '' };
+    control(lexiconCheck(unbold(probe.text)).length >= 1,
+      'and a banned word inside that J2 lesson is caught, judged as ' + readerFor('j2'));
+    control(ledgerCheck(planted, { entries: {} }).some(p => /^UNREVIEWED: j2-99/.test(p)),
+      'and its unrecorded sentence blocks the pack exactly as a J1 one would');
+    fs.rmSync(YR_DIR, { recursive: true, force: true });
+  } catch (e) {
+    control(false, 'the multi-year fixture could not run: ' + e.message);
+  }
 }
 
 /* ------------------------------------------------------------------ *
@@ -1088,15 +1375,38 @@ function runControls() {
    cannot know whether "simulator" was taught earlier if it can only see one file.
    `only` narrows what is REPORTED, never what is read. (Scoping the read made a
    one-lesson run invent 20 failures about lessons it had not opened.) */
-function loadLessons() {
-  const dir = path.join(SRC, 'j1/lessons');
-  const files = fs.existsSync(dir)
-    ? fs.readdirSync(dir).filter(f => /^j\d-.*\.json$/.test(f) && !f.includes('.bak')) : [];
-  return files.map(f => {
-    const fileId = f.replace(/\.json$/, '');
-    const json = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
-    return { fileId, json, strings: collectStrings(json, fileId) };
-  }).sort((a, b) => Number(a.json.num || 99) - Number(b.json.num || 99));
+/* DAMIEN, 12 Aug 2026: "will these persist to J2 and J3?" — and the question
+   found a real hole. This walk read ONE directory, `j1/lessons`, so the day a
+   J2 lesson landed in `content-src/j2/lessons/` it would have shipped entirely
+   unscanned and nothing would have said a word: no banned-word check, no
+   ledger, no vocabulary order, silence. The READER table above already knew j2
+   and j3 (12–13 / 13–14); only the walk was stuck in year one. It now reads
+   the lessons directory of EVERY year folder it finds (j1, j2, j3 …), and the
+   control below proves it by planting a J2 lesson with a known fault and
+   watching the harness catch it.
+   `root` is a parameter ONLY so that control can run on a fixture. */
+function loadLessons(root) {
+  const src = root || SRC;
+  const years = fs.existsSync(src)
+    ? fs.readdirSync(src).filter(d => /^j\d$/.test(d) && fs.existsSync(path.join(src, d, 'lessons'))).sort()
+    : [];
+  const out = [];
+  years.forEach(y => {
+    const dir = path.join(src, y, 'lessons');
+    fs.readdirSync(dir)
+      .filter(f => /^j\d-.*\.json$/.test(f) && !f.includes('.bak'))
+      .forEach(f => {
+        const fileId = f.replace(/\.json$/, '');
+        const json = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+        /* the directory is the fallback truth: a file that forgets its `year`
+           field must still be judged as its own year group's reader, never
+           silently as an 11-year-old's */
+        out.push({ fileId, year: json.year || y, json, strings: collectStrings(json, fileId) });
+      });
+  });
+  return out.sort((a, b) => (a.year === b.year)
+    ? Number(a.json.num || 99) - Number(b.json.num || 99)
+    : String(a.year).localeCompare(String(b.year)));
 }
 
 function main() {
@@ -1118,7 +1428,7 @@ function main() {
   const locked = [];
   lessons.forEach(L => {
     if (!inScope(L.fileId)) return;
-    const reader = readerFor(L.json.year);
+    const reader = readerFor(L.year || L.json.year);   /* the directory is the fallback (multi-year walk) */
     const isLocked = LOCKED.has(L.fileId);
     L.strings.forEach(s => {
       n++;
@@ -1188,6 +1498,10 @@ function main() {
     const set = (p.match(/^film:(l\d+)/) || [])[1];
     ((FILM_MAP[set] || {}).locked ? filmLocked : filmProblems).push(p);
   });
+  filmOrderCheck(films, lessons, vocab).forEach(p => {
+    const set = (p.match(/^film:(l\d+)/) || [])[1];
+    ((FILM_MAP[set] || {}).locked ? filmLocked : filmProblems).push(p);
+  });
   console.log('  scanned ' + films.length + ' caption/card/callout string(s) across ' +
     Object.keys(FILM_MAP).filter(s => films.some(f => f.set === s)).join(', ') +
     '  (scenes/guide.js excluded by design — its reader is a teacher, DFM 179e)');
@@ -1225,6 +1539,31 @@ function main() {
     ledLocked.slice(0, 8).forEach(p => console.log('    DEBT ' + p.replace(/ Short sentences.*$/, '')));
     if (ledLocked.length > 8) console.log('    … and ' + (ledLocked.length - 8) + ' more');
   }
+
+  /* ---- FRAGMENT-CANDIDATES (DFM 192b Layer 2 — the mechanical reporter that
+     feeds the judged pass; addendum Part A). NEVER BLOCKING. A candidate is not
+     a finding: cold-read checklist §C q11 decides each one on the extracted
+     transcript. It exists because his own sentence was seventeen words long and
+     every length rule in the world sails straight past it. ---- */
+  const fragOpen = [], fragLocked = [];
+  lessons.forEach(L => {
+    if (!inScope(L.fileId)) return;
+    const bucket = LOCKED.has(L.fileId) ? fragLocked : fragOpen;
+    L.strings.forEach(s => {
+      if (!fragInScope(s.path)) return;
+      fragmentCandidates(s.text).forEach(c =>
+        bucket.push(s.path + ' [' + c.kind + '] "' + c.text.slice(0, 90) + '"'));
+    });
+  });
+  console.log('\n  FRAGMENT-CANDIDATES — ' + fragOpen.length + ' on the lessons under review' +
+    (fragLocked.length ? ', ' + fragLocked.length + ' on locked lessons' : '') +
+    '. REPORTED, NOT BLOCKING.');
+  console.log('    A chain of labels with nothing DOING anything reads as a headline, not a');
+  console.log('    sentence — his verdict on "Four player tickets, four open cases." Each line');
+  console.log('    below is a SUSPECT for the cold-read pass (checklist q11) to decide, and some');
+  console.log('    will be fine. 192b is enforced by that judgement, not by this list.');
+  fragOpen.forEach(p => console.log('    CANDIDATE ' + p));
+  fragLocked.forEach(p => console.log('    WAIVED (locked) ' + p));
   console.log(led.length ? '  ' + led.length + ' unrecorded or stale sentence(s)' : '  every pupil sentence carries a record');
   led.slice(0, 40).forEach(p => { console.log('  FAIL ' + p); });
   if (led.length > 40) console.log('  … and ' + (led.length - 40) + ' more (run ledger-tool.js --missing for the full list)');
@@ -1237,4 +1576,8 @@ if (require.main === module) main();
 /* ledger-tool.js reads the films through THIS extractor rather than carrying a
    second copy of it — one fact, one home (DFM 144). pack-content.js runs this
    file as a child process, so the guard above leaves the gate untouched. */
-module.exports = { collectFilmStrings, filmKey, filmRendered, FILM_MAP };
+module.exports = { collectFilmStrings, filmKey, filmRendered, FILM_MAP,
+  /* exported for the DFM 196 control sweep: the same detector is run against the
+     build he sat (7bba564) so the failure it catches there is filed as evidence
+     before the fix it guards is credited. One implementation, two runs. */
+  fragmentCandidates, hasRealVerb, collectStrings, fragInScope, loadLessons };

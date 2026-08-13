@@ -908,6 +908,14 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   background: rgba(26, 58, 107, 0.05); border-left: 3px solid var(--gold);
   border-radius: var(--r-sm); line-height: 1.5;
 }
+/* the film-split signpost (DFM 168, L5 spec Part B): a pupil who has watched
+   this half to the end must be told, on this card, where the other half lives.
+   Sits UNDER the player, above Done watching, so it is the last thing read. */
+.video-note {
+  text-align: left; margin: 12px 0 2px; padding: 11px 14px;
+  background: rgba(var(--gold-rgb), 0.12); border-left: 3px solid var(--gold);
+  border-radius: var(--r-sm); line-height: 1.5;
+}
 /* (rule 138.2) the step-card "Show me how" clip, and the note his instruction
    puts on screen once the clip has finished playing */
 .step-cliprow { margin: 10px 0 2px; }
@@ -6570,6 +6578,12 @@ window.OLS_TRANSPORT = {
         (cfg.intro ? '<p class="video-intro">' + esc(cfg.intro) + '</p>' : '') +
         '<video controls preload="metadata" playsinline ' + (cfg.poster ? 'poster="' + esc(asset(cfg.poster)) + '"' : '') + ' src="' + esc(asset(cfg.src)) + '"></video>' +
         (chapters ? '<div class="vid-chapters">' + chapters + '</div>' : '') +
+        /* DFM 168 (L5 spec Part B): when a film is SPLIT and half of it lives
+           somewhere else, the screen has to say where the other half went \u2014 or a
+           pupil who watched to the end believes she has seen it all. Rendered
+           only when content asks for it, so every video chunk without a `note`
+           (Lessons 2 and 3) is byte-identical to before. */
+        (cfg.note ? '<p class="video-note">' + esc(cfg.note) + '</p>' : '') +
         '<button class="primary-btn" type="button">Done watching</button></div>');
       host.appendChild(c2);
       var vid = c2.querySelector('video');
@@ -7036,7 +7050,16 @@ window.OLS_TRANSPORT = {
             '<b class="case-name">' + esc(cs.name) + '</b>' +
             '<span class="case-stars">' + starsHtml(cs.stars) + '</span>' +
             spannersHtml(cs.spanners) +
-            (done ? stampHtml(cs.id, true) : (sealed ? '<span class="case-sealed-ribbon">SEALED</span>' : '<span class="case-open-chip">OPEN</span>')) +
+            /* "SEALED" is a STATE, not a reason \u2014 and a state with no reason is the exact
+   fault Damien hit on the re-play stamp. The Release Desk pin two rows down
+   already got this right ("SEALED UNTIL ALL 4 CLOSE"); the case pins did not,
+   and sit-wrongpath caught it on its first run (12 Aug 2026). The wording is
+   content's (rule 172), and it names the ONE thing that unseals it. */
+            (done ? stampHtml(cs.id, true) : (sealed
+              ? '<span class="case-sealed-ribbon">' + esc(!gg
+                  ? (cfg.sealedNoKit || 'SEALED UNTIL YOU HAVE THE GAME')
+                  : (cfg.sealedRibbon || 'SEALED UNTIL CASE 01 CLOSES')) + '</span>'
+              : '<span class="case-open-chip">OPEN</span>')) +
             '</button>';
         }).join('');
         var stretchSealed = !gg || !caseUnsealed({ training: false });
@@ -7046,7 +7069,10 @@ window.OLS_TRANSPORT = {
             '<span class="case-tab">' + esc(cfg.stretchCase.num) + ' &middot; STRETCH</span>' +
             '<b class="case-name">' + esc(cfg.stretchCase.name) + '</b>' +
             '<span class="case-stars">' + starsHtml(cfg.stretchCase.stars) + '</span>' +
-            (stretchDone ? '<span class="case-stamp gold mini">JOB DONE</span>' : (stretchSealed ? '<span class="case-sealed-ribbon">SEALED</span>' : '<span class="case-open-chip">FEATURE REQUEST</span>')) +
+            (stretchDone ? '<span class="case-stamp gold mini">JOB DONE</span>' : (stretchSealed
+              ? '<span class="case-sealed-ribbon">' + esc((cfg.stretchCase && cfg.stretchCase.sealedRibbon) ||
+                  'SEALED UNTIL CASE 01 CLOSES') + '</span>'
+              : '<span class="case-open-chip">FEATURE REQUEST</span>')) +
             '</button>'
           : '';
         var b = el('<div class="case-board">' +
@@ -7552,6 +7578,15 @@ window.OLS_TRANSPORT = {
     /* ---------- phase 1: the contracts ---------- */
     _sign: function (host, chunk, ctx) {
       var cfg = chunk.config || {};
+      /* ---- PUPIL SENTENCES LIVE IN CONTENT (rule 172; L5 spec Part D2) ----
+         Damien met four engine literals on one Lesson 4 card that no gate could
+         see, because the language harness reads CONTENT and these were code
+         (DFM 192g). Casework's moved in the last round; the studio and gallery
+         move now. `S(key, fallback)` keeps the engine's own words as the
+         fallback, so nothing shifts on screen until content says otherwise, and
+         the ledger and the banned-word sweep own every one of them the moment
+         it does. */
+      var S = function (k, d) { var t = (cfg.strings || {})[k]; return (typeof t === 'string' && t) ? t : d; };
       var solo = !!ctx.catchup;
       var draft = (ctx.draft && ctx.draft.studio) || {};
       var tpl = String(draft.tpl || '');
@@ -7585,7 +7620,7 @@ window.OLS_TRANSPORT = {
         kicker: chunk.title,
         title: cfg.title || 'Three contracts on the desk',
         text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || '')
-      }, tpl ? 'Back to the contracts' : 'See the contracts', pickView);
+      }, tpl ? S('backToContracts', 'Back to the contracts') : S('seeContracts', 'See the contracts'), pickView);
 
       function pickView() {
         host.innerHTML = '';
@@ -7683,8 +7718,8 @@ window.OLS_TRANSPORT = {
         if (tear) tear.onclick = function () {
           if (!tear.classList.contains('arm')) {
             tear.classList.add('arm');
-            tear.textContent = 'Click again to shred this contract';
-            setTimeout(function () { tear.classList.remove('arm'); tear.innerHTML = 'Tear it up &amp; choose again'; }, 4000);
+            tear.textContent = S('tearArm', 'Click again to shred this contract');
+            setTimeout(function () { tear.classList.remove('arm'); tear.innerHTML = S('tearIdle', 'Tear it up &amp; choose again'); }, 4000);
             return;
           }
           tpl = ''; sn = '';
@@ -7703,6 +7738,15 @@ window.OLS_TRANSPORT = {
     /* ---------- phase 2: the Studio Desk + QA Desk ---------- */
     _build: function (host, chunk, ctx) {
       var cfg = chunk.config || {};
+      /* ---- PUPIL SENTENCES LIVE IN CONTENT (rule 172; L5 spec Part D2) ----
+         Damien met four engine literals on one Lesson 4 card that no gate could
+         see, because the language harness reads CONTENT and these were code
+         (DFM 192g). Casework's moved in the last round; the studio and gallery
+         move now. `S(key, fallback)` keeps the engine's own words as the
+         fallback, so nothing shifts on screen until content says otherwise, and
+         the ledger and the banned-word sweep own every one of them the moment
+         it does. */
+      var S = function (k, d) { var t = (cfg.strings || {})[k]; return (typeof t === 'string' && t) ? t : d; };
       var solo = !!ctx.catchup;
       var draft = (ctx.draft && ctx.draft.studio) || {};
       var tpl = String(draft.tpl || '');
@@ -7784,7 +7828,7 @@ window.OLS_TRANSPORT = {
         title: (cfg.introTitle || 'The Studio Sprint'),
         text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
         extra: (solo || !cfg.pairNote) ? '' : '<p class="case-pair-note">&#128101; ' + esc(cfg.pairNote) + '</p>'
-      }, began ? 'Back to the desk' : 'Open the studio', deskView);
+      }, began ? S('backToDesk', 'Back to the desk') : S('openStudio', 'Open the studio'), deskView);
 
       /* one expanded QA row at a time; remembered across re-renders,
          never persisted (reload folds the desk tidy again) */
@@ -7814,7 +7858,7 @@ window.OLS_TRANSPORT = {
                 (oc && oc.mech ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b> ' + esc(oc.mech) + '</p>' : '') +
                 '</div>';
             }
-            row += '<button class="primary-btn std-qa-run" type="button">' + (st === 'f' ? 'I made the fix &mdash; run the test again' : 'I ran the test &mdash; record what happened') + '</button>' +
+            row += '<button class="primary-btn std-qa-run" type="button">' + (st === 'f' ? S('qaRunAgain', 'I made the fix &mdash; run the test again') : S('qaRunFirst', 'I ran the test &mdash; record what happened')) + '</button>' +
               '<div class="std-qa-outcomes" hidden></div></div>';
           }
           row += '</div>';
@@ -7837,7 +7881,20 @@ window.OLS_TRANSPORT = {
           '<div class="card std-tool"><span class="std-qa-tag">2 &middot; THE BLUEPRINT</span>' +
           '<p>' + esc((t.blueprint && t.blueprint.intro) || 'Exactly what your studio adds - in order.') + '</p>' +
           '<button class="ghost-btn std-blueprint-btn" type="button">&#128506;&#65039; Open the blueprint</button> ' +
-          (cfg.masterclass && cfg.masterclass.src ? '<button class="ghost-btn std-rewatch" type="button">&#127909; Re-watch the masterclass</button>' : '') +
+          /* the label is content's, not the engine's (rule 172): after the DFM 168
+             split this button no longer serves "the masterclass" \u2014 it serves the
+             half of the film that belongs HERE, beside the blueprint it walks
+             through. The old text stays as the fallback so nothing else moves. */
+          (cfg.masterclass && cfg.masterclass.src ? '<button class="ghost-btn std-rewatch" type="button">&#127909; ' +
+            esc((cfg.masterclass.button || 'Re-watch the masterclass')) + '</button>' : '') +
+          /* AND THE WAY BACK TO THE OTHER HALF (DFM 143, and the L5 spec's own
+             words: "BOTH are one click away from both places"). Splitting the
+             film moved the concept chapters off this screen \u2014 so without this
+             button, a pupil who pressed "Done watching" a second too early could
+             never see them again. That is precisely the stranding rule 143
+             exists to prevent, and qa-film-reachable now proves this route. */
+          (cfg.masterclassAlt && cfg.masterclassAlt.src ? ' <button class="ghost-btn std-rewatch-alt" type="button">&#127909; ' +
+            esc((cfg.masterclassAlt.button || 'Watch the first half again')) + '</button>' : '') +
           '</div></div>' +
 
           '<div class="std-qadesk' + (kit ? '' : ' locked') + '"><div class="std-qadesk-head"><span class="std-qa-tag">3 &middot; THE QA DESK</span>' +
@@ -7847,8 +7904,8 @@ window.OLS_TRANSPORT = {
 
           '<div class="std-ready-zone">' +
           '<button class="std-ready-btn ' + readyState + '" type="button"' + (readyState === 'lit' ? '' : ' disabled') + '>' +
-          (shipped ? (beta ? 'DOORS OPEN &mdash; IN BETA' : 'DOORS OPEN &mdash; SEE YOU AT PRESS NIGHT') : 'READY FOR GALLERY') + '</button>' +
-          (shipped ? '' : '<p class="std-ready-note">' + (allPass() ? 'All four checks passed &mdash; open your doors.' : 'Lights up when all four QA checks pass.') + '</p>') +
+          (shipped ? (beta ? S('doorsOpenBeta', 'DOORS OPEN &mdash; IN BETA') : S('doorsOpen', 'DOORS OPEN &mdash; SEE YOU AT PRESS NIGHT')) : S('readyLabel', 'READY FOR GALLERY')) + '</button>' +
+          (shipped ? '' : '<p class="std-ready-note">' + (allPass() ? S('readyAllPass', 'All four checks passed &mdash; open your doors.') : S('readyNote', 'Lights up when all four QA checks pass.')) + '</p>') +
           /* DFM 192f's hidden-state half: the beta door used to APPEAR out of
              nowhere once two checks were attempted. A control that materialises
              unannounced is as bad as one that sits mute \u2014 so its own place on
@@ -7879,13 +7936,15 @@ window.OLS_TRANSPORT = {
             this.classList.add('ticked');
             kit = true;
             saveDesk();
-            App.toast('Kit secured &mdash; the QA Desk is open.');
+            App.toast(S('kitToast', 'Kit secured &mdash; the QA Desk is open.'));
             setTimeout(function () { host.innerHTML = ''; deskView(); }, 600);
           };
         }
         d.querySelector('.std-blueprint-btn').onclick = function () { blueprintView(); };
         var rw = d.querySelector('.std-rewatch');
-        if (rw) rw.onclick = function () { masterclassView(); };
+        if (rw) rw.onclick = function () { masterclassView(cfg.masterclass); };
+        var rwa = d.querySelector('.std-rewatch-alt');
+        if (rwa) rwa.onclick = function () { masterclassView(cfg.masterclassAlt); };
 
         d.querySelectorAll('.std-qa-row').forEach(function (row) {
           var cid = row.getAttribute('data-crit');
@@ -7939,8 +7998,8 @@ window.OLS_TRANSPORT = {
         if (betaDoor) betaDoor.onclick = function () {
           if (!betaDoor.classList.contains('arm')) {
             betaDoor.classList.add('arm');
-            betaDoor.innerHTML = 'Click again &mdash; players will see IN BETA on your listing';
-            setTimeout(function () { betaDoor.classList.remove('arm'); betaDoor.innerHTML = 'Out of time? Open in beta &mdash; ask your teacher first'; }, 4000);
+            betaDoor.innerHTML = S('betaArm', 'Click again &mdash; players will see IN BETA on your listing');
+            setTimeout(function () { betaDoor.classList.remove('arm'); betaDoor.innerHTML = S('betaIdle', 'Out of time? Open in beta &mdash; ask your teacher first'); }, 4000);
             return;
           }
           marqueeView(true);
@@ -7952,7 +8011,7 @@ window.OLS_TRANSPORT = {
           var nudge = d.querySelector('.std-stretch-nudge');
           var words = ta.value.trim().split(/\s+/).filter(Boolean);
           if (words.length < 5) {
-            nudge.textContent = 'Say what you added AND what it changes - a real release note (5+ words).';
+            nudge.textContent = S('stretchNudge', 'Say what you added AND what it changes - a real release note (5+ words).');
             return;
           }
           stretchNote = ta.value.trim().slice(0, 140);
@@ -7989,9 +8048,9 @@ window.OLS_TRANSPORT = {
         c.querySelector('.std-back').onclick = function () { host.innerHTML = ''; deskView(); };
       }
 
-      function masterclassView() {
+      function masterclassView(which) {
         host.innerHTML = '';
-        var v = cfg.masterclass || {};
+        var v = which || cfg.masterclass || {};
         var chapters = (v.chapters || []).map(function (ch) {
           return '<button class="vid-chapter" data-t="' + Number(ch.t) + '" type="button">' + esc(ch.label) + '</button>';
         }).join('');
@@ -8059,18 +8118,18 @@ window.OLS_TRANSPORT = {
           status.textContent = 'Raising the marquee...';
           ctx.call('galleryOpen', { lessonId: ctx.lesson.id, gt: gt, gh: gh, tpl: tpl, sn: sn, beta: asBeta ? 1 : 0 }).then(function (r) {
             if (!r || !r.ok) {
-              status.textContent = 'The marquee did not answer (' + esc((r && r.error) || 'no reply') + ') - try again.';
+              status.textContent = S('marqueeNoAnswer', 'The marquee did not answer') + ' (' + esc((r && r.error) || 'no reply') + ') - ' + S('tryAgain', 'try again.');
               doors.disabled = false;
               return;
             }
             shipped = true;
             beta = !!asBeta;
             saveDesk();
-            App.toast('&#127914; Doors open - your game is on the marquee.');
+            App.toast('&#127914; ' + S('doorsToast', 'Doors open - your game is on the marquee.'));
             host.innerHTML = '';
             deskView();
           }).catch(function () {
-            status.textContent = 'No connection - try again.';
+            status.textContent = S('noConnection', 'No connection - try again.');
             doors.disabled = false;
           });
         };
@@ -8093,6 +8152,9 @@ window.OLS_TRANSPORT = {
   Engines.gallery = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config || {};
+      /* pupil sentences live in content (rule 172; L5 spec Part D2) \u2014 same
+         helper and same law as the studio engine above. */
+      var S = function (k, d) { var t = (cfg.strings || {})[k]; return (typeof t === 'string' && t) ? t : d; };
       var solo = !!ctx.catchup;
       var quota = Number(cfg.quota) || 2;
       var stems = cfg.stems || {};
@@ -8145,10 +8207,10 @@ window.OLS_TRANSPORT = {
           var statusEl = rv.querySelector('.gal-review-status');
           var list = rv.querySelector('.gal-review-list');
           if (!r || !r.ok || !r.myReviews || !r.myReviews.length) {
-            statusEl.innerHTML = 'The gallery has been archived &mdash; your reviews live in the class record now.';
+            statusEl.innerHTML = S('archived', 'The gallery has been archived &mdash; your reviews live in the class record now.');
             return;
           }
-          statusEl.textContent = 'The reviews your game received:';
+          statusEl.textContent = S('yourReviews', 'The reviews your game received:');
           list.innerHTML = r.myReviews.map(function (x) {
             return '<div class="gal-review-item"><span class="gal-rev-by">' + esc(x.bcn) + (x.sim ? ' <em class="gal-sim">simulated</em>' : '') + '</span>' +
               '<p><b>' + esc(stemLike) + '</b> ' + esc(x.l) + '</p><p><b>' + esc(stemWonder) + '</b> ' + esc(x.w) + '</p></div>';
@@ -8178,7 +8240,7 @@ window.OLS_TRANSPORT = {
           host.appendChild(c);
           ctx.call('galleryFeed', { lessonId: ctx.lesson.id }).then(function (r) {
             if (!r || !r.ok) return;
-            c.querySelector('.gal-total').textContent = r.total + ' reviews were filed on the night';
+            c.querySelector('.gal-total').textContent = r.total + ' ' + S('filedOnNight', 'reviews were filed on the night');
             c.querySelector('.gal-marquee-grid').innerHTML = (r.studios || []).map(function (s) {
               return marqueeCardHtml(s, false);
             }).join('') || '<p class="std-note">The marquee is empty now.</p>';
@@ -8188,7 +8250,7 @@ window.OLS_TRANSPORT = {
             var nudge = c.querySelector('.gal-v2-nudge');
             var words = ta.value.trim().split(/\s+/).filter(Boolean);
             if (words.length < 6) {
-              nudge.textContent = 'A real design note names the change AND the reason (6+ words).';
+              nudge.textContent = S('v2Nudge', 'A real design note names the change AND the reason (6+ words).');
               return;
             }
             v2 = ta.value.trim().slice(0, 200);
@@ -8326,7 +8388,7 @@ window.OLS_TRANSPORT = {
         var need = Math.min(quota, others);
         if (given < need) {
           zone.innerHTML = '<div class="card gal-v2-card locked"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
-            '<p>Unlocks when ' + (need === 1 ? 'your press pass is' : 'both press passes are') +
+            '<p>Unlocks when ' + (need === 1 ? S('passOne', 'your press pass is') : S('passBoth', 'both press passes are')) +
             ' spent &mdash; reviews first, your V2 note second.</p></div>';
           return;
         }
@@ -8343,7 +8405,7 @@ window.OLS_TRANSPORT = {
           var nudge = zone.querySelector('.gal-v2-nudge');
           var words = ta.value.trim().split(/\s+/).filter(Boolean);
           if (words.length < 6) {
-            nudge.textContent = 'A real design note names the change AND the reason (6+ words).';
+            nudge.textContent = S('v2Nudge', 'A real design note names the change AND the reason (6+ words).');
             return;
           }
           v2 = ta.value.trim().slice(0, 200);
@@ -8378,7 +8440,7 @@ window.OLS_TRANSPORT = {
           var lw = likeTa.value.trim().split(/\s+/).filter(Boolean);
           var ww = wonderTa.value.trim().split(/\s+/).filter(Boolean);
           if (lw.length < 5 || ww.length < 5) {
-            nudge.textContent = 'Specific means at least 5 real words in each line - name the exact thing.';
+            nudge.textContent = S('specificNudge', 'Specific means at least 5 real words in each line - name the exact thing.');
             return;
           }
           fileBtn.disabled = true;
@@ -8389,20 +8451,20 @@ window.OLS_TRANSPORT = {
             if (!r || !r.ok) {
               fileBtn.disabled = false;
               var msg = {
-                'passes-spent': 'All three press passes are spent.',
-                'already-reviewed': 'You already reviewed this studio - spread the passes around.',
-                'too-thin': 'Too thin for print - name the exact thing.',
-                'own-studio': 'Nice try - you cannot review your own studio.'
+                'passes-spent': S('passesSpent', 'All three press passes are spent.'),
+                'already-reviewed': S('alreadyReviewed', 'You already reviewed this studio - spread the passes around.'),
+                'too-thin': S('tooThin', 'Too thin for print - name the exact thing.'),
+                'own-studio': S('ownStudio', 'Nice try - you cannot review your own studio.')
               }[(r && r.error) || ''] || 'The review did not file - try again.';
               nudge.textContent = msg;
               return;
             }
-            App.toast('&#128240; Review filed - signed and delivered.');
+            App.toast('&#128240; ' + S('reviewFiled', 'Review filed - signed and delivered.'));
             host.innerHTML = '';
             floorView();
           }).catch(function () {
             fileBtn.disabled = false;
-            nudge.textContent = 'No connection - try again.';
+            nudge.textContent = S('noConnection', 'No connection - try again.');
           });
         };
       }

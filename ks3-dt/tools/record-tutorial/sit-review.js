@@ -13,7 +13,30 @@ const fs = require('fs');
 
 const NUM = String(process.argv[2] || '2');
 const WHO = process.argv[3] || 'anya';
-const BASE = 'http://localhost:8121/ks3-dt/platform/index.html?class=Demo-8A&as=';
+/* the port is overridable so the SAME walker can be pointed at the build he
+   sat (the DFM 196 worktree on :8097) without editing this file — comparing a
+   number against a different build is how this round proves things. */
+const HOST = process.env.KS3DT_BASE || 'http://localhost:8121';
+const BASE = HOST + '/ks3-dt/platform/index.html?class=Demo-8A&as=';
+/* ------------------------------------------------------------------ *
+ * WHAT THIS RUN MUST PROVE (DFM 199 — his ruling, 13 Aug 2026:
+ * "pin the stable numbers and carry on with the rest").
+ *
+ * The old gate pinned the TURN COUNT, and the turn count is this file's own
+ * loop counter: it counts the passes where the walker WAITS for an animation
+ * exactly as it counts the passes where it acts. Lesson 5's Mission Briefing
+ * types itself out, so whether a look lands during the typing or just after it
+ * depends on machine load — the same build measured 61, then 62. A pass/fail
+ * gate built on a number that moves on its own is a false alarm waiting to
+ * happen, which is the very fault this round exists to remove.
+ *
+ * So the turn count is REPORTED, and these are ASSERTED. Every one of them was
+ * identical across every run of both builds: what the pupil actually does.
+ * ------------------------------------------------------------------ */
+const EXPECT = {
+  '4': { xp: 42, chunks: 6, presses: 8, marks: 7, badges: 1 },
+  '5': { xp: 42, chunks: 10, presses: 17, marks: 7, badges: 4 }
+};
 const OUT = path.join('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform',
   'qa-l2-l5-review', 'l' + NUM.toLowerCase() + (WHO === 'anya' ? '' : '-' + WHO));
 fs.mkdirSync(OUT, { recursive: true });
@@ -114,6 +137,7 @@ const CASE_LOGS = {
   /* ---------- the walker ---------- */
   const helpSeen = new Set();
   let lastKey = '', same = 0, turns = 0;
+  const seen = { chunks: new Set(), presses: 0, marks: 0, badges: 0 };
   const askedTexts = new Set();
 
   for (turns = 0; turns < 400; turns++) {
@@ -125,6 +149,7 @@ const CASE_LOGS = {
     /* once per chunk: capture the ? help modal */
     if (ck !== '(none)' && !helpSeen.has(ck)) {
       helpSeen.add(ck);
+      seen.chunks.add(ck);
       const t = await hostText();
       note('\n==== CHUNK ' + ck + ' ====\n' + t.slice(0, 3000));
       await shot(ck + '-enter');
@@ -220,7 +245,14 @@ const CASE_LOGS = {
           if (ta0.length) return { kind: 'input', ph: ta0.map(e => e.placeholder || e.className).join(' | ') };
         }
       }
-      if (q('.confirm-step:not(.ticked):not([disabled])')) return { kind: 'confirm', label: (q('.confirm-step:not(.ticked):not([disabled])') || {}).textContent || '' };
+      /* :not(.locked) added 12 Aug 2026. The casework gate redesign replaced
+         `disabled` with a `.locked` class + aria-disabled (so a locked control
+         can still be CLICKED and answer why it is locked). The walker fills
+         every input before it reads button state, so this never changed a turn
+         — but a walker that CAN click a locked control is a walker whose 48/42
+         means less than it looks. */
+      var CONFIRM_OPEN = '.confirm-step:not(.ticked):not([disabled]):not(.locked)';
+      if (q(CONFIRM_OPEN)) return { kind: 'confirm', label: (q(CONFIRM_OPEN) || {}).textContent || '' };
       if (q('.tour-callout button')) return { kind: 'tour' };
       if (q('.panel-loading')) return { kind: 'loading' };
       const host = q('.chunk-host');
@@ -242,6 +274,7 @@ const CASE_LOGS = {
     switch (st.kind) {
       case 'badge':
         await shot(ck + '-badge-pop');
+        seen.badges++;
         note('BADGE POP @ ' + ck + ': ' + (st.label || '').trim());
         await page.evaluate(() => document.querySelector('.badge-pop button').click());
         await sleep(600); break;
@@ -254,7 +287,10 @@ const CASE_LOGS = {
 
       case 'confirm':
         await sleep(GHOST_WAIT);
-        await page.evaluate(() => document.querySelector('.confirm-step:not(.ticked)').click());
+        /* the same guard as the selector that decided this turn — clicking a
+           control the walker just declared unavailable is how a harness quietly
+           starts testing a screen no pupil can reach */
+        await page.evaluate(() => document.querySelector('.confirm-step:not(.ticked):not([disabled]):not(.locked)').click());
         await sleep(700); break;
 
       case 'tour':
@@ -278,6 +314,7 @@ const CASE_LOGS = {
           if (got) { latency = Date.now() - t0; break; }
           await sleep(50);
         }
+        seen.marks++;
         note('MARKING LATENCY @ ' + ck + ': ' + latency + 'ms');
         await shot(ck + '-answered');
         await sleep(500); break;
@@ -445,6 +482,7 @@ const CASE_LOGS = {
 
       case 'button': {
         await sleep(GHOST_WAIT);
+        seen.presses++;
         note('BUTTONS @ ' + ck + ': [' + (st.all || []).join(' | ') + '] -> pressing "' + st.label + '"');
         await shot(ck + '-btn-' + st.label);
         await page.evaluate(() => {
@@ -609,9 +647,48 @@ const CASE_LOGS = {
 
   /* final XP + record */
   const xp = await page.evaluate(() => window.App && window.App.state ? Number(window.App.state.xp) : -1);
-  note('\nFINAL XP: ' + xp + '  (turns: ' + turns + ')');
+  note('\nFINAL XP: ' + xp);
+  note('TURNS: ' + turns + '  (reported, asserted by nothing — DFM 199: this is the walker\'s own ' +
+    'loop counter and it counts the passes where it waits for an animation)');
   note('CONSOLE ERRORS: ' + (errs.length ? '\n' + errs.join('\n') : 'none'));
+
+  /* ---- THE GATE (DFM 199): only what holds steady ---- */
+  /* CONTROL (DFM 146a/196): a gate nobody has ever seen fail is a decoration.
+     KS3DT_CONTROL=1 moves one expected number by one and the run MUST then
+     fail — proof the counters are real and the comparison bites.
+     Run it after any change here:  KS3DT_CONTROL=1 node sit-review.js 5   */
+  const CONTROL = process.env.KS3DT_CONTROL === '1';
+  const want = EXPECT[NUM] && (CONTROL
+    ? Object.assign({}, EXPECT[NUM], { presses: EXPECT[NUM].presses + 1 })
+    : EXPECT[NUM]);
+  const got = { xp: xp, chunks: seen.chunks.size, presses: seen.presses, marks: seen.marks, badges: seen.badges };
+  let bad = [];
+  if (want) {
+    Object.keys(want).forEach(k => {
+      if (got[k] !== want[k]) bad.push(k + ': expected ' + want[k] + ', got ' + got[k]);
+    });
+  }
+  if (errs.length) bad.push('console errors: expected none, got ' + errs.length);
+  const line = 'SHAPE  xp=' + got.xp + '  screens=' + got.chunks + '  presses=' + got.presses +
+    '  marking=' + got.marks + '  badges=' + got.badges + '  errors=' + errs.length;
+  note(line);
+  if (!want) note('(no pinned shape for lesson ' + NUM + ' — reported only)');
+  else if (bad.length) {
+    note('\nSIT-REVIEW ' + NUM + ': FAILED THE PINNED SHAPE');
+    bad.forEach(b => note('  x ' + b));
+  } else {
+    note('\nSIT-REVIEW ' + NUM + ': the pinned shape holds — every number a pupil moves is exactly as expected.');
+  }
+
   fs.writeFileSync(path.join(OUT, '_log.md'), log.join('\n'));
   await browser.close();
-  console.log('\nDONE -> ' + OUT + '  (' + shotN + ' screenshots)');
+  console.log('\n' + line);
+  if (bad.length) { bad.forEach(b => console.error('  x ' + b)); }
+  console.log('DONE -> ' + OUT + '  (' + shotN + ' screenshots)');
+  if (CONTROL) {
+    if (bad.length) { console.log('CONTROL OK — a shape that is wrong by ONE press fails the gate.'); process.exit(0); }
+    console.error('CONTROL FAILED — the gate did not notice a wrong number. It is decoration.');
+    process.exit(1);
+  }
+  if (bad.length) process.exit(1);
 })().catch(e => { console.error('DRIVER CRASH', e); process.exit(1); });

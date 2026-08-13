@@ -18,7 +18,10 @@
 
    window.cg.ready   resolves once the first frame has been drawn
    window.cg.play(n) plays beat n (1..6), resolves when it finishes
-   window.cg.probe() pixel samples, proving the canvas is not a black rectangle */
+   window.cg.probe() pixel samples, proving the canvas is not a black rectangle
+   window.cg.probeTokens() projected pixel height of the apple and the four
+                     teaching labels; record refuses a take below the floors
+                     (apple >= 90px, labels >= 18px) — L5 spec Part C. */
 (function () {
   var W = 1280, H = 720;
   var NAVY = 0x060D1F;
@@ -110,28 +113,47 @@
   diamondGlow.material.opacity = 0;
   gate.add(diamondGlow);
 
-  /* the two answer lamps — amber, never red: FALSE is not failure */
+  /* the two answer lamps — amber, never red: FALSE is not failure.
+     POLISHED 12 Aug 2026 (L5 spec Part C, judged from the beat stills): the
+     lamps were "near-invisible until lit" and their labels too small to read on
+     a projector. Bulb 0.26 -> 0.40, halo 2.6 -> 3.6, and the YES/NO labels 0.26
+     -> 0.42 units (1.6x, the spec's floor). The label also drops clear of the
+     bigger bulb, and the unlit label is brighter (#9FB4D8 -> #C6D6F0), because a
+     lamp you cannot read before it lights teaches nothing about the choice that
+     is about to be made.
+     AND THE THING THE NUMBERS COULD NOT SEE: at 1.6x the label no longer fitted
+     the dark gap — it landed half on the gold arch, pale blue on gold, which is
+     LESS readable than the small version it replaced. Measuring pixel height
+     proves size, not contrast. So each label now carries its own dark plate,
+     exactly as the score/lives counters do, and reads on any background. */
   function lamp(x, colour, text) {
     var g = new THREE.Group();
-    var bulb = new THREE.Mesh(new THREE.SphereGeometry(0.26, 16, 12),
+    var bulb = new THREE.Mesh(new THREE.SphereGeometry(0.40, 20, 16),
       new THREE.MeshStandardMaterial({
         color: 0x2A3550, roughness: 0.4,
         emissive: new THREE.Color(colour), emissiveIntensity: 0
       }));
     g.add(bulb);
-    var ha = glow(colour === YES ? 'rgba(76,187,89,0.75)' : 'rgba(242,163,60,0.75)', 2.6);
+    var ha = glow(colour === YES ? 'rgba(76,187,89,0.75)' : 'rgba(242,163,60,0.75)', 3.6);
     ha.material.opacity = 0;
     g.add(ha);
-    var t = label(text, { colour: '#9FB4D8', h: 0.26, fs: 84 });
-    t.position.set(0, -0.48, 0);
+    var t = label(text, { colour: '#C6D6F0', h: 0.42, fs: 96 });
+    var tw = t.geometry.parameters.width;
+    var plate = new THREE.Mesh(new THREE.PlaneGeometry(tw + 0.26, 0.62),
+      new THREE.MeshBasicMaterial({ color: 0x0B1428, transparent: true, opacity: 0.92 }));
+    plate.position.set(0, -0.80, -0.01);
+    plate.renderOrder = 3;
+    g.add(plate);
+    t.position.set(0, -0.80, 0);
     g.add(t);
     g.position.set(x, 0.05, 0.9);
-    g.userData = { bulb: bulb, halo: ha, txt: t };
+    g.userData = { bulb: bulb, halo: ha, txt: t, plate: plate };
     gate.add(g);
     return g;
   }
-  var lampYes = lamp(-2.0, YES, 'YES');
-  var lampNo = lamp(2.0, NO, 'NO');
+  /* pushed out from ±2.0 so the bigger bulbs clear the question diamond */
+  var lampYes = lamp(-2.25, YES, 'YES');
+  var lampNo = lamp(2.25, NO, 'NO');
 
   /* ---------- the two chutes ---------- */
   function chute(x, colour, blockText, counterName, startVal) {
@@ -172,12 +194,14 @@
   var chuteTop = chute(-3.3, VARS, 'change score by 1', 'score', 0);
   var chuteElse = chute(3.3, VARS, 'change lives by -1', 'lives', 3);
 
-  var mouthTop = label('TOP MOUTH', { colour: '#7FE39A', h: 0.22, fs: 80 });
-  mouthTop.position.set(-3.55, -1.05, 0.7);
+  /* 0.22 -> 0.34 units (1.55x): these two labels carry the whole vocabulary
+     of the lesson's QA outcomes, and they were the smallest text in the frame. */
+  var mouthTop = label('TOP MOUTH', { colour: '#7FE39A', h: 0.34, fs: 92 });
+  mouthTop.position.set(-3.80, -1.10, 0.7);
   mouthTop.material.opacity = 0;
   scene.add(mouthTop);
-  var mouthElse = label('ELSE MOUTH', { colour: '#F2C67C', h: 0.22, fs: 80 });
-  mouthElse.position.set(3.55, -1.05, 0.7);
+  var mouthElse = label('ELSE MOUTH', { colour: '#F2C67C', h: 0.34, fs: 92 });
+  mouthElse.position.set(3.80, -1.10, 0.7);
   mouthElse.material.opacity = 0;
   scene.add(mouthElse);
 
@@ -194,15 +218,27 @@
   }
 
   /* ---------- the apple, and the bowl ---------- */
+  /* THE APPLE IS THE STAR AND IT READ SMALL (~60px) — L5 spec Part C. Scaled
+     x1.5 in the GEOMETRY, not with apple.scale: the beats animate that channel
+     (they shrink it to 0.01 as it lands), so a base scale would be wiped by the
+     first tween. Radius 0.42 -> 0.63, and the stalk with it. */
   var apple = new THREE.Group();
-  var appleBody = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 16),
+  var appleBody = new THREE.Mesh(new THREE.SphereGeometry(0.63, 20, 16),
     new THREE.MeshStandardMaterial({ color: 0xE23B2E, roughness: 0.35 }));
   apple.add(appleBody);
-  var stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.3, 8),
+  var stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.45, 8),
     new THREE.MeshStandardMaterial({ color: 0x6B4A2B, roughness: 0.7 }));
-  stalk.position.y = 0.46;
+  stalk.position.y = 0.69;
   apple.add(stalk);
-  apple.position.set(0, 6.4, 0);
+  /* THE APPLE FLIES IN FRONT OF THE GATE, AND PAUSES ABOVE IT.
+     Scaling it x1.5 made it bigger and STILL invisible: it fell to y=1.5, which
+     is dead centre of the arch beam (world y 0.75..2.25, depth z -0.6..0.6), so
+     the star of the animation spent its naming pause INSIDE the gate with only
+     its stalk showing. probeTokens measured 120px of apple that nobody could
+     see — pixel height proves size, never visibility, and the rendered frame is
+     what caught it (DFM 146b). It now travels at z = 1.05, clear of the arch,
+     the diamond and the lamps, and pauses at y = 3.05 against the dark sky. */
+  apple.position.set(0, 6.4, 1.05);
   apple.visible = false;
   scene.add(apple);
 
@@ -252,36 +288,43 @@
 
   var tl = function () { return gsap.timeline({ defaults: { ease: 'power3.out' } }); };
 
-  /* one apple: falls to the gate, the gate answers, the apple takes ONE chute */
-  function oneApple(t, at, caught, endVal) {
+  /* one apple: falls to the gate, the gate answers, the apple takes ONE chute.
+     `hold` is the NAMING PAUSE (L5 spec Part C, the hat-block's pacing law): the
+     apple stops at the gate long enough for the caption to name what is being
+     decided, before anything moves. Beats 3 and 4 use it — they are the teaching
+     moments. Beat 5 passes 0 on purpose: its whole point is the RHYTHM of apple
+     after apple, and a pause in each would turn it into three slow repeats. */
+  function oneApple(t, at, caught, endVal, hold) {
+    hold = hold || 0;
     var lampG = caught ? lampYes : lampNo;
     var chuteG = caught ? chuteTop : chuteElse;
     t.call(function () {
       apple.visible = true;
-      apple.position.set(0, 6.4, 0);
+      apple.position.set(0, 6.4, 1.05);
       apple.scale.setScalar(1);
       bowl.visible = false;   /* the chutes tell the story from beat 3 on */
     }, null, at);
-    t.to(apple.position, { y: 1.5, duration: 0.75, ease: 'power2.in' }, at);
+    t.to(apple.position, { y: 3.05, duration: 0.75, ease: 'power2.in' }, at);
     /* the question pulses as it is asked */
     t.to(diamondGlow.material, { opacity: 0.9, duration: 0.18 }, at + 0.7);
-    t.to(diamondGlow.material, { opacity: 0.25, duration: 0.5 }, at + 0.9);
+    if (hold) t.to({}, { duration: hold }, at + 0.88);   /* the naming pause */
+    t.to(diamondGlow.material, { opacity: 0.25, duration: 0.5 }, at + 0.9 + hold);
     /* the answer */
-    t.to(lampG.userData.bulb.material, { emissiveIntensity: 1.0, duration: 0.16 }, at + 0.95);
-    t.to(lampG.userData.halo.material, { opacity: 0.95, duration: 0.16 }, at + 0.95);
-    t.to(lampG.userData.txt.material, { opacity: 1, duration: 0.16 }, at + 0.95);
+    t.to(lampG.userData.bulb.material, { emissiveIntensity: 1.6, duration: 0.16 }, at + 0.95 + hold);
+    t.to(lampG.userData.halo.material, { opacity: 0.95, duration: 0.16 }, at + 0.95 + hold);
+    t.to(lampG.userData.txt.material, { opacity: 1, duration: 0.16 }, at + 0.95 + hold);
     /* down exactly one chute */
-    t.to(apple.position, { x: chuteG.position.x, duration: 0.5, ease: 'power2.inOut' }, at + 1.1);
-    t.to(apple.position, { y: -1.9, duration: 0.5, ease: 'power2.in' }, at + 1.2);
-    t.to(chuteG.userData.mat, { emissiveIntensity: 0.9, duration: 0.18 }, at + 1.7);
-    t.to(chuteG.userData.halo.material, { opacity: 0.85, duration: 0.2 }, at + 1.7);
-    t.call(function () { setCounter(chuteG, endVal); }, null, at + 1.82);
-    t.to(apple.scale, { x: 0.01, y: 0.01, z: 0.01, duration: 0.3 }, at + 1.85);
-    t.to(chuteG.userData.mat, { emissiveIntensity: 0, duration: 0.6 }, at + 2.1);
-    t.to(chuteG.userData.halo.material, { opacity: 0, duration: 0.6 }, at + 2.1);
-    t.to(lampG.userData.bulb.material, { emissiveIntensity: 0, duration: 0.5 }, at + 2.2);
-    t.to(lampG.userData.halo.material, { opacity: 0, duration: 0.5 }, at + 2.2);
-    t.call(function () { apple.visible = false; }, null, at + 2.3);
+    t.to(apple.position, { x: chuteG.position.x, duration: 0.5, ease: 'power2.inOut' }, at + 1.1 + hold);
+    t.to(apple.position, { y: -1.9, duration: 0.5, ease: 'power2.in' }, at + 1.2 + hold);
+    t.to(chuteG.userData.mat, { emissiveIntensity: 0.9, duration: 0.18 }, at + 1.7 + hold);
+    t.to(chuteG.userData.halo.material, { opacity: 0.85, duration: 0.2 }, at + 1.7 + hold);
+    t.call(function () { setCounter(chuteG, endVal); }, null, at + 1.82 + hold);
+    t.to(apple.scale, { x: 0.01, y: 0.01, z: 0.01, duration: 0.3 }, at + 1.85 + hold);
+    t.to(chuteG.userData.mat, { emissiveIntensity: 0, duration: 0.6 }, at + 2.1 + hold);
+    t.to(chuteG.userData.halo.material, { opacity: 0, duration: 0.6 }, at + 2.1 + hold);
+    t.to(lampG.userData.bulb.material, { emissiveIntensity: 0, duration: 0.5 }, at + 2.2 + hold);
+    t.to(lampG.userData.halo.material, { opacity: 0, duration: 0.5 }, at + 2.2 + hold);
+    t.call(function () { apple.visible = false; }, null, at + 2.3 + hold);
   }
 
   var beats = {
@@ -292,9 +335,9 @@
       chuteTop.scale.setScalar(0.01);
       chuteElse.scale.setScalar(0.01);
       t.to(gate.scale, { x: 1, y: 1, z: 1, duration: 1.0, ease: 'back.out(1.3)' }, 0.1);
-      t.call(function () { apple.visible = true; apple.position.set(0, 6.4, 0); }, null, 0.9);
-      t.to(apple.position, { y: 2.6, duration: 1.1, ease: 'power2.in' }, 0.9);
-      t.to(apple.position, { y: 2.2, duration: 0.9, ease: 'sine.inOut' }, 2.0);
+      t.call(function () { apple.visible = true; apple.position.set(0, 6.4, 1.05); }, null, 0.9);
+      t.to(apple.position, { y: 3.3, duration: 1.1, ease: 'power2.in' }, 0.9);
+      t.to(apple.position, { y: 3.0, duration: 0.9, ease: 'sine.inOut' }, 2.0);
       t.to({}, { duration: 2.2 });
       return t;
     },
@@ -308,7 +351,7 @@
       t.to(diamond.material, { emissiveIntensity: 0.6, duration: 0.4 }, 0.1);
       /* both lamps introduce themselves, then go dark again */
       [lampYes, lampNo].forEach(function (l, i) {
-        t.to(l.userData.bulb.material, { emissiveIntensity: 0.9, duration: 0.3 }, 1.2 + i * 0.5);
+        t.to(l.userData.bulb.material, { emissiveIntensity: 1.4, duration: 0.3 }, 1.2 + i * 0.5);
         t.to(l.userData.halo.material, { opacity: 0.85, duration: 0.3 }, 1.2 + i * 0.5);
         t.to(l.userData.bulb.material, { emissiveIntensity: 0, duration: 0.5 }, 2.5 + i * 0.3);
         t.to(l.userData.halo.material, { opacity: 0, duration: 0.5 }, 2.5 + i * 0.3);
@@ -323,8 +366,8 @@
       var t = tl();
       t.to(chuteTop.scale, { x: 1, y: 1, z: 1, duration: 0.7, ease: 'back.out(1.3)' }, 0);
       t.to(mouthTop.material, { opacity: 1, duration: 0.4 }, 0.5);
-      oneApple(t, 0.9, true, 1);
-      t.to({}, { duration: 4.0 });
+      oneApple(t, 0.9, true, 1, 1.2);
+      t.to({}, { duration: 5.2 });
       return t;
     },
 
@@ -333,8 +376,8 @@
       var t = tl();
       t.to(chuteElse.scale, { x: 1, y: 1, z: 1, duration: 0.7, ease: 'back.out(1.3)' }, 0);
       t.to(mouthElse.material, { opacity: 1, duration: 0.4 }, 0.5);
-      oneApple(t, 0.9, false, 2);
-      t.to({}, { duration: 4.0 });
+      oneApple(t, 0.9, false, 2, 1.2);
+      t.to({}, { duration: 5.2 });
       return t;
     },
 
@@ -377,6 +420,38 @@
         var t = beats[n]();
         t.eventCallback('onComplete', res);
       });
+    },
+    /* THE LEGIBILITY GATE (L5 spec Part C; same contract as hb.probeTokens).
+       Projects the apple and the four teaching labels to screen pixels so the
+       recorder can REFUSE a take, rather than anyone judging "big enough" by eye
+       (DFM 146b/192e).
+       MEASURE THE OBJECT, NOT ITS HALO: Box3.setFromObject swallows the glow
+       Sprite and reported the hat-block's green flag at 441px when the flag is
+       1.75 units — a gate that would have passed the very defect it exists to
+       catch. Meshes only, exactly as hb.probeTokens() does. */
+    probeTokens: function () {
+      var want = [
+        { name: 'apple', obj: apple },
+        { name: 'YES', obj: lampYes.userData.txt },
+        { name: 'NO', obj: lampNo.userData.txt },
+        { name: 'TOP MOUTH', obj: mouthTop },
+        { name: 'ELSE MOUTH', obj: mouthElse }
+      ];
+      var out = [];
+      want.forEach(function (w) {
+        var o = w.obj;
+        if (!o || !o.visible) return;
+        /* a label that has faded to nothing is not on screen, whatever its box says */
+        if (o.material && o.material.transparent && o.material.opacity < 0.05) return;
+        var box = new THREE.Box3();
+        o.traverse(function (n) { if (n.isMesh && n.geometry) box.expandByObject(n); });
+        if (box.isEmpty()) return;
+        var c = box.getCenter(new THREE.Vector3());
+        var top = new THREE.Vector3(c.x, box.max.y, c.z).project(camera);
+        var bot = new THREE.Vector3(c.x, box.min.y, c.z).project(camera);
+        out.push({ name: w.name, px: Math.round(Math.abs(top.y - bot.y) / 2 * H) });
+      });
+      return out;
     },
     probe: function () {
       var g = renderer.domElement.getContext('webgl2') || renderer.domElement.getContext('webgl');

@@ -115,7 +115,89 @@ const clickSel = (page, sel) => page.evaluate(s => { const e = document.querySel
   await sleep(900);
   await page.screenshot({ path: path.join(OUT, '13-board-narrow.png'), fullPage: true });
 
-  console.log('console errors:', errs.length ? JSON.stringify(errs.slice(0, 8)) : 'NONE');
+  /* ------------------------------------------------------------------ *
+   * E7 — MEASURED CHECKS, not just screenshots (L4 spec Part E7 (e) and (i)).
+   * This file took thirteen pictures and asserted nothing, which is how his two
+   * findings below survived a "visual QA" that reported no errors at all.
+   * The rest of E7's list is covered where it belongs: the locked-note states
+   * by qa-no-mute-locks and sit-wrongpath, the byte-identical hook/intro
+   * controls by the harnesses written with those changes.
+   * ------------------------------------------------------------------ */
+  const FAILS = [];
+  const check = (c, m) => { if (c) console.log('  PASS  ' + m); else { console.log('  FAIL  ' + m); FAILS.push(m); } };
+  console.log('\n== E7 measured checks ==');
+
+  /* (e) HIS COMPLAINT, IN PIXELS: "you can hardly make it out" — the CSS cropped
+     every hook image to a 220x120 thumbnail. The moth must now measure at least
+     90% of the width of the text it sits with. */
+  await page.setViewportSize({ width: 1280, height: 900 });
+  /* start from a CLEAN pupil: the screenshot walk above left niamh deep inside
+     the lesson, and re-opening it resumes her at the board — so the briefing,
+     which is the card being measured, never renders. (It reported the photo as
+     "not loading" when the photo was simply on a screen we had walked past.) */
+  await page.goto(URL, { waitUntil: 'domcontentloaded' });
+  await sleep(1600);
+  await page.evaluate(() => localStorage.clear());
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await sleep(2200);
+  await page.evaluate(() => {
+    const db = JSON.parse(localStorage.getItem('ks3dt-dev'));
+    const now = Math.floor((Date.now() - 1767225600000) / 60000);
+    for (const n of ['3', '4']) db.locks['Demo-8A'][n] = { u: now, on: 1 };
+    localStorage.setItem('ks3dt-dev', JSON.stringify(db));
+  });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await sleep(2600);
+  await page.evaluate(() => { const b = document.querySelector('.intro-skip'); if (b) b.click(); });
+  await sleep(900);
+  await page.evaluate(() => {
+    const tile = Array.from(document.querySelectorAll('.tile')).find(e => /Lesson\s*4(?!\d)/i.test(e.textContent));
+    if (tile) tile.click();
+  });
+  await sleep(2600);
+  /* the briefing types itself out and the photo strip arrives with the reveal,
+     so wait for the picture rather than guessing a sleep — measuring a photo
+     that has not rendered yet would report a fault the app does not have */
+  await page.waitForSelector('.dossier-photos figure img', { timeout: 30000 }).catch(() => {});
+  await sleep(1200);
+  const moth = await page.evaluate(() => {
+    const fig = document.querySelector('.dossier-photos figure');
+    const img = fig && fig.querySelector('img');
+    const col = document.querySelector('.dossier-line') || document.querySelector('.card');
+    if (!img || !col) return null;
+    const r = img.getBoundingClientRect(), c = col.getBoundingClientRect();
+    return { img: Math.round(r.width), imgH: Math.round(r.height), col: Math.round(c.width),
+             loaded: img.complete && img.naturalWidth > 0, src: img.getAttribute('src') };
+  });
+  check(!!moth && moth.loaded, 'the hook photo loads (not a broken image)');
+  if (moth) {
+    check(moth.img >= moth.col * 0.9,
+      'the moth photo measures ' + moth.img + 'px across a ' + moth.col + 'px text column — ' +
+      'at least 90% of it, so it is no longer the 220x120 thumbnail he could "hardly make out"');
+    check(moth.imgH > 130, 'and it is ' + moth.imgH + 'px tall (the old crop was 120px)');
+  }
+
+  /* (i) the four evidence photos: they exist, they load, and they are in their
+     own case files — a caption with no picture is worse than neither. */
+  const shots = await page.evaluate(async () => {
+    const out = [];
+    for (const n of ['c1', 'c2', 'c3', 'c4']) {
+      const url = 'assets/img/l4/evidence-' + n + '.png';
+      let ok = false, w = 0;
+      try {
+        const r = await fetch(url, { method: 'GET' });
+        ok = r.ok; const b = await r.blob(); w = b.size;
+      } catch (e) { ok = false; }
+      out.push({ n: n, ok: ok, bytes: w });
+    }
+    return out;
+  });
+  shots.forEach(s => check(s.ok && s.bytes > 5000,
+    'evidence-' + s.n + '.png is served and real (' + s.bytes + ' bytes)'));
+
+  console.log('\nconsole errors:', errs.length ? JSON.stringify(errs.slice(0, 8)) : 'NONE');
   console.log('shots in', OUT);
   await browser.close();
+  if (FAILS.length) { console.error('\nqa-l4-visual: ' + FAILS.length + ' FAILURE(S)'); process.exit(1); }
+  console.log('qa-l4-visual: ALL GREEN');
 })().catch(e => { console.error('QA FAILED:', e.message); process.exit(1); });

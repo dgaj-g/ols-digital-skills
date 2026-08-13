@@ -105,7 +105,13 @@ const AUDIT = (EXPLAIN_PX) => {
   return out;
 };
 
-(async () => {
+/* EXPORTED so sit-wrongpath.js asks the SAME question this harness asks —
+   "is this control explained, right here, in this state?" Two definitions of
+   "explained" would mean two different standards, and the one nobody ran would
+   be the lenient one (DFM 144). */
+module.exports = { AUDIT, EXPLAIN_PX };
+
+if (require.main === module) (async () => {
   const browser = await chromium.launch({ headless: true });
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();

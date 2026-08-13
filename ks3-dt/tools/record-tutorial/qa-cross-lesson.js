@@ -182,21 +182,40 @@ for (const f of lessonFiles) {
     (L.chunks || []).forEach(c => chapterNodes(c.config || {}, f.replace(/\.json$/, '') + ' › ' + c.id + ' › config', homes));
     if (!homes.length) continue;
     if (label === 'source') chapterHomes += homes.length;
-    /* (a) every copy inside one lesson says the same thing */
-    homes.slice(1).forEach(h => {
-      check(sameChapters(homes[0].chapters, h.chapters),
-        label + '/' + f + ': "' + h.path + '" carries the same chapter times as "' + homes[0].path +
-        '" — one film, one fact (DFM 144)');
+    /* (a) every copy OF THE SAME FILM says the same thing.
+       RE-STAGED 12 Aug 2026 for the DFM 168 split: Lesson 5's film is now
+       served as two halves in two places — the idea at the masterclass chunk,
+       the worked example on the Studio Desk — so its two homes legitimately
+       carry DIFFERENT times. The rule was never "one lesson, one set of
+       numbers"; it is "one FILM, one set of numbers", and the drift it caught
+       (173 against 174) was two copies of the SAME film. Grouping by src keeps
+       exactly that tooth and loses nothing. */
+    const bySrc = {};
+    homes.forEach(h => { (bySrc[String(h.src || '')] = bySrc[String(h.src || '')] || []).push(h); });
+    Object.keys(bySrc).forEach(src => {
+      bySrc[src].slice(1).forEach(h => {
+        check(sameChapters(bySrc[src][0].chapters, h.chapters),
+          label + '/' + f + ': "' + h.path + '" carries the same chapter times as "' + bySrc[src][0].path +
+          '" — one film, one fact (DFM 144)');
+      });
     });
-    /* (b) and they say what the assembler actually measured out of the film */
+    /* (b) and each home says what the assembler measured out of THE FILE IT
+       SERVES — the full film, or the half it points at. A home that agreed with
+       its twin while both were wrong would still jump a pupil to the wrong
+       place, which is why this half is the one with teeth. */
     homes.forEach(h => {
-      const set = (String(h.src || '').match(/assets\/video\/([^/]+)\//) || [])[1];
+      const src = String(h.src || '');
+      const set = (src.match(/assets\/video\/([^/]+)\//) || [])[1];
       const cj = set && path.join(OUT, set, 'chapters.json');
       if (!cj || !fs.existsSync(cj)) return;
-      const real = JSON.parse(fs.readFileSync(cj, 'utf8')).chapters || [];
+      const man = JSON.parse(fs.readFileSync(cj, 'utf8'));
+      const base = src.split('/').pop();
+      /* a published half is named "<set>-<the assembler's own name>" */
+      const part = (man.halves || []).find(x => base === set + '-' + String(x.file).split('/').pop());
+      const real = part ? (part.chapters || []) : (man.chapters || []);
       check(sameChapters(real, h.chapters),
-        label + '/' + f + ': "' + h.path + '" matches the times the assembler measured in ' +
-        set + '/chapters.json (' + real.map(c => c.t).join('/') + ')');
+        label + '/' + f + ': "' + h.path + '" matches the times the assembler measured for ' +
+        base + ' (' + real.map(c => c.t).join('/') + ')');
     });
   }
 }

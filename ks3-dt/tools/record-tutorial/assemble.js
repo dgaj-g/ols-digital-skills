@@ -11,6 +11,16 @@ const TITLE_HOLD_MS = 2200;  // navy title card shown before each lift
 const CRF = '23';
 const FPS = 30;
 
+/* Films that are SERVED IN TWO PLACES, cut at their own concept seam (DFM 168).
+   Only Lesson 5 so far: "the idea" belongs at the masterclass chunk, "the worked
+   example & the tests" belongs on the Studio Desk beside the blueprint. */
+const HALVES = {
+  l5: [
+    { file: 'half1.mp4', ids: ['ch1', 'ch2'], label: 'The idea' },
+    { file: 'half2.mp4', ids: ['ch3', 'ch4'], label: 'The worked example & the tests' }
+  ]
+};
+
 function ffprobeDuration(file) {
   const out = execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration',
     '-of', 'csv=p=0', file], { encoding: 'utf8' });
@@ -87,7 +97,51 @@ function run(setName) {
       'footage the film does not contain');
   }
 
+  /* ---- HALVES (DFM 168; L5 spec Part B) ------------------------------------
+     A film that is half concept and half worked-example does not belong in one
+     place on the platform. Lesson 5's splits at its own seam: chapters 1-2 (the
+     idea) stay on the masterclass chunk, chapters 3-4 (the worked example and
+     the testing) move onto the Studio Desk, beside the blueprint they walk
+     through — instruction at the point of need, and a pupil mid-build watches
+     the worked example WHILE building.
+     Each half is re-muxed from the SAME segments the full film is built from,
+     so it can never drift out of step with it, and each carries its OWN chapter
+     times, measured from its own start — the 179d guard checks each home
+     against its own part file, not against the full film's numbers. */
+  const halves = [];
+  (HALVES[setName] || []).forEach(h => {
+    const segs = h.ids.map(id => path.join(segDir, id + '.mp4'));
+    segs.forEach(s => { if (!fs.existsSync(s)) throw new Error('half ' + h.file + ' wants ' + s + ' and it is not there'); });
+    const hList = path.join(segDir, 'concat-' + h.file + '.txt');
+    fs.writeFileSync(hList, segs.map(s => "file '" + s.replace(/'/g, "'\\''") + "'").join('\n') + '\n');
+    const hOut = path.join(partDir, h.file);
+    execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-f', 'concat', '-safe', '0',
+      '-i', hList, '-c', 'copy', '-movflags', '+faststart', hOut]);
+    let cur = 0;
+    const hChapters = h.ids.map(id => {
+      const scene = scenes.find(s => s.id === id);
+      const row = { t: Math.round(cur), label: scene.label };
+      cur += ffprobeDuration(path.join(segDir, id + '.mp4'));
+      return row;
+    });
+    halves.push({
+      file: 'parts/' + h.file, label: h.label, chapterIds: h.ids,
+      durationSec: +ffprobeDuration(hOut).toFixed(2),
+      sizeMB: +(fs.statSync(hOut).size / 1048576).toFixed(2),
+      chapters: hChapters
+    });
+  });
+  if (halves.length) {
+    const halvesTotal = halves.reduce((a, h) => a + h.durationSec, 0);
+    if (Math.abs(halvesTotal - total) > 1.5) {
+      throw new Error('the halves do not add up to the film (' + halvesTotal.toFixed(2) +
+        's vs ' + total.toFixed(2) + 's) — one of its two homes would be serving footage ' +
+        'the film does not contain');
+    }
+  }
+
   const manifest = { file: path.basename(outFile), durationSec: Math.round(total), sizeMB: +sizeMb.toFixed(2), chapters, parts };
+  if (halves.length) manifest.halves = halves;
   fs.writeFileSync(path.join(dir, 'chapters.json'), JSON.stringify(manifest, null, 1));
   console.log('ASSEMBLED: ' + outFile);
   console.log(JSON.stringify(manifest, null, 1));
