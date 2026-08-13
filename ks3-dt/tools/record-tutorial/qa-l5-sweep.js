@@ -76,20 +76,74 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
   await sleep(900);
   await page.evaluate(() => document.querySelector('.std-kit-confirm').click());
   await sleep(1000);
+  /* CHOOSE THE PASSING OUTCOME BY THE LESSON'S OWN ANSWER KEY, never by words.
+     This is what was broken, 13 Aug 2026, and it had been broken for a while:
+     the picker matched outcome TEXT against a word list, the Maze criterion 1
+     answer had since been reworded ("One per star" -> "one for each star"), and
+     when nothing matched it fell back to the first option on screen. The engine
+     SHUFFLES the options on purpose, so that fallback was a random answer — a
+     wrong one three times in four. The check then failed, READY stayed dark,
+     the marquee never opened and the sweep fell over dereferencing null.
+     The lesson was never at fault. Content marks exactly one outcome
+     `pass: true`, and the engine renders each button with its authored index in
+     `data-oi`, so the driver can now click the right one no matter how the
+     options are shuffled OR reworded. A driver may read the answer key: its job
+     is to REACH Press Night, not to prove a robot can pass a quiz. */
+  const passIdx = await page.evaluate(async (tplId) => {
+    const v = (window.App && App.state && App.state.contentVersion) || '';
+    const r = await fetch('../content/j1/lessons/j1-05.json?v=' + v);
+    const L = await r.json();
+    const b = (L.chunks || []).filter(c => c.id === 'build')[0].config;
+    const t = b.templates[tplId];
+    const out = {};
+    (t.criteria || []).forEach(c => {
+      const i = (c.outcomes || []).findIndex(o => o && o.pass === true);
+      out[c.id] = i;
+    });
+    return out;
+  }, tpl);
   for (const cid of ['c1', 'c2', 'c3', 'c4']) {
+    if (passIdx[cid] === undefined || passIdx[cid] < 0) {
+      throw new Error('no passing outcome authored for ' + tpl + ' ' + cid + ' — that IS a content fault');
+    }
     await page.evaluate((c) => document.querySelector('.std-qa-row[data-crit="' + c + '"] .std-qa-head').click(), cid);
     await sleep(400);
-    await page.evaluate(() => document.querySelector('.std-qa-run').click());
+    await page.evaluate((c) => {
+      const row = document.querySelector('.std-qa-row[data-crit="' + c + '"]');
+      const run = row && row.querySelector('.std-qa-run');
+      if (run) run.click();
+    }, cid);
     await sleep(350);
-    await page.evaluate(() => {
-      const opts = Array.from(document.querySelectorAll('.std-outcome'));
-      const pass = opts.find(b => /exactly|One per star|both times|Bounced me back|announced my actual|arrived anyway|climbing on rights|on stage the whole time|Called me out|went green|froze|one thing each time|holding still/i.test(b.textContent));
-      (pass || opts[0]).click();
-    });
+    const clicked = await page.evaluate((a) => {
+      const row = document.querySelector('.std-qa-row[data-crit="' + a.c + '"]');
+      const btn = row && row.querySelector('.std-outcome[data-oi="' + a.i + '"]');
+      if (!btn) return null;
+      btn.click();
+      return (btn.textContent || '').trim().slice(0, 60);
+    }, { c: cid, i: passIdx[cid] });
+    if (clicked === null) throw new Error(tpl + ' ' + cid + ': the authored passing outcome was not on screen');
     await sleep(600);
+  }
+
+  /* AND SAY SO IF IT DID NOT WORK. The old code clicked READY blind and then
+     crashed on the form that never opened — reporting nothing at all. A checker
+     that crashes tells you less than no checker, because it looks like coverage
+     (DFM 200). */
+  const ready = await page.evaluate(() => {
+    const b = document.querySelector('.std-ready-btn');
+    return b ? { lit: b.classList.contains('lit'), disabled: !!b.disabled,
+                 rows: Array.from(document.querySelectorAll('.std-qa-row'))
+                   .map(r => r.getAttribute('data-crit') + ':' + (r.classList.contains('pass') ? 'pass' : 'not-pass')).join(' ') } : null;
+  });
+  if (!ready || !ready.lit || ready.disabled) {
+    throw new Error('after four QA checks on the ' + tpl + ' contract, READY FOR GALLERY is still dark — ' +
+      (ready ? ready.rows : 'the button is not on screen') +
+      '. Either a check did not pass or the button is not lighting when it should.');
   }
   await page.evaluate(() => document.querySelector('.std-ready-btn').click());
   await sleep(700);
+  const form = await page.evaluate(() => !!document.querySelector('#std-gt') && !!document.querySelector('#std-gh'));
+  if (!form) throw new Error('READY was lit and clicked, but the marquee form did not open');
   await page.evaluate((args) => {
     const t = document.querySelector('#std-gt'); t.value = args[0]; t.dispatchEvent(new Event('input'));
     const h = document.querySelector('#std-gh'); h.value = 'Arrow keys. Play it and see!'; h.dispatchEvent(new Event('input'));
@@ -122,7 +176,13 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
   await pa.evaluate(() => {
     const db = JSON.parse(localStorage.getItem('ks3dt-dev'));
     const now = Math.floor((Date.now() - 1767225600000) / 60000);
-    for (const n of ['1', '2', '3', '4', '5']) db.locks['Demo-8A'][n] = { u: now, on: 1 };
+    /* stamp the unlocks the way a real term does — one lesson at a time, in
+       order — instead of all five in the same minute. With identical stamps the
+       Live tab's "newest unlocked" had no winner, and this harness was testing a
+       class that could not exist. */
+    ['1', '2', '3', '4', '5'].forEach(function (n, i) {
+      db.locks['Demo-8A'][n] = { u: now - (5 - i), on: 1 };
+    });
     localStorage.setItem('ks3dt-dev', JSON.stringify(db));
   });
   await pa.reload({ waitUntil: 'domcontentloaded' });
@@ -228,7 +288,11 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
   await ps.evaluate(() => { const t = Array.from(document.querySelectorAll('button')).find(x => /Live/i.test(x.textContent) && x.offsetParent); if (t) t.click(); });
   await sleep(2500);
   const liveHtml = await ps.evaluate(() => (document.querySelector('#staff-body') || document.body).textContent);
-  check(/L5/.test(liveHtml), 'Live tab grew an L5 column');
+  /* the needle was the literal "L5", and the panel has always said
+     "Lesson 5 - Game Studio". The check was looking for a string the screen
+     never contained, so it reported a fault the app does not have (DFM 146a). */
+  check(/Lesson 5/.test(liveHtml) && /Game Studio/.test(liveHtml),
+    'the Live tab opens on Lesson 5 (Game Studio), the newest unlocked lesson, as it promises');
   let lensTxt = '';
   for (let i = 0; i < 6; i++) {
     await sleep(1500);
@@ -305,7 +369,13 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
       const opt = h.querySelector('.q-opt:not(:disabled)');
       if (opt) { opt.click(); return 'a'; }
       const btns = Array.from(h.querySelectorAll('button')).filter(b => !b.disabled && b.offsetParent);
-      const ship = btns.find(b => /Run the HQ Inspection|Claim the badge/i.test(b.textContent));
+      /* "Check my Drive" was missing from this list. The ship button is named by
+         CONTENT (cfg.checkLabel) and was renamed from "Run the HQ Inspection"
+         because that never matched what the card told her to press — qa-l5.js
+         was re-staged for it and this walker was not, so it sat on the Ship
+         screen for 24 turns and then fell over further down. A renamed control
+         re-stages EVERY walker that clicks it (DFM 143b). */
+      const ship = btns.find(b => /Check my Drive|Run the HQ Inspection|Claim the badge/i.test(b.textContent));
       if (ship) { ship.click(); return 's'; }
       const nxt = btns.find(b => /Next|Finish|Continue|Start|Ready|Begin/i.test(b.textContent));
       if (nxt) { nxt.click(); return 'n'; }
@@ -313,6 +383,21 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
     });
     if (st === 'parsons') break;
     await sleep(st === 's' ? 1800 : 800);
+    if (i === 23) {
+      /* say WHERE it got stuck. The old code just walked off the end and then
+         crashed on a button that was never going to be there (DFM 200). */
+      const where = await pa.evaluate(() => {
+        const h = document.querySelector('.chunk-host');
+        return {
+          chunk: (window.App && App.state && App.state.chunks && App.state.chunks[App.state.chunkIdx] || {}).id,
+          heading: (h && h.querySelector('h2') || {}).textContent,
+          buttons: h ? Array.from(h.querySelectorAll('button')).filter(b => b.offsetParent)
+            .map(b => (b.textContent || '').trim().slice(0, 34) + (b.disabled ? ' [disabled]' : '')) : []
+        };
+      });
+      check(false, 'the walk from Ship reached the ordering puzzle within 24 steps — stuck at "' +
+        where.chunk + '" (' + where.heading + '), buttons: ' + JSON.stringify(where.buttons));
+    }
   }
   for (const frag of ['when green flag clicked', 'set score to 0', 'forever', 'if <touching Ball?>', 'else']) {
     await pa.evaluate((f) => {
@@ -321,7 +406,12 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
     }, frag);
     await sleep(250);
   }
-  await pa.evaluate(() => document.querySelector('.parsons-check').click());
+  const parsonsReady = await pa.evaluate(() => {
+    const b = document.querySelector('.parsons-check');
+    if (!b) return false;
+    b.click(); return true;
+  });
+  check(parsonsReady, 'the ordering puzzle offers its Check button once the blocks are placed');
   await sleep(1500);
   await pa.evaluate(() => { const b = Array.from(document.querySelectorAll('.q-feedback button')).find(x => /Continue/i.test(x.textContent)); if (b) b.click(); });
   await sleep(1200);
@@ -329,7 +419,12 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
     document.querySelectorAll('.se-row').forEach(r => { const c = r.querySelector('[data-v="2"]'); if (c) c.click(); });
     const d = document.querySelector('[data-d="1"]'); if (d) d.click();
   });
-  await pa.evaluate(() => document.querySelector('.se-submit').click());
+  const seOk = await pa.evaluate(() => {
+    const b = document.querySelector('.se-submit');
+    if (!b) return false;
+    b.click(); return true;
+  });
+  check(seOk, 'the self-review offers its Send & finish button');
   await sleep(2200);
   for (let i = 0; i < 10; i++) {
     const done = await pa.evaluate(() => {
@@ -471,7 +566,23 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
     await sleep(800);
   }
   const soloIntro = await pn.evaluate(() => (document.querySelector('.chunk-host') || {}).textContent || '');
-  check(/Catch-up shift/.test(soloIntro), 'contracts intro swaps to the SOLO copy');
+  /* ASK CONTENT WHAT THE SOLO COPY SAYS, rather than hard-coding a phrase.
+     This looked for "Catch-up shift" — wording that was deliberately changed
+     ("shift" is a workplace idiom, banned by the lexicon), so the check failed
+     on text that had been correctly IMPROVED. A checker pinned to a sentence
+     goes stale the first time the sentence gets better; pinned to the SWAP, it
+     never does. */
+  const soloCopy = await pn.evaluate(async () => {
+    const v = (window.App && App.state && App.state.contentVersion) || '';
+    const L = await (await fetch('../content/j1/lessons/j1-05.json?v=' + v)).json();
+    const c = (L.chunks || []).filter(x => x.id === 'sign')[0].config;
+    return { solo: String(c.introSolo || ''), pair: String(c.intro || '') };
+  });
+  const key = soloCopy.solo.split(/[—.]/)[0].trim().slice(0, 24);
+  check(!!key && soloIntro.indexOf(key) !== -1,
+    'the contracts intro swaps to the SOLO copy content actually carries ("' + key + '…")');
+  check(soloIntro.indexOf(soloCopy.pair.slice(0, 30)) === -1,
+    'and the pair copy is NOT also on screen');
   await pn.evaluate(() => { const b = Array.from(document.querySelectorAll('button')).find(x => /See the contracts/i.test(x.textContent) && x.offsetParent); if (b) b.click(); });
   await sleep(800);
   await pn.evaluate(() => document.querySelector('.std-contract[data-c="quiz"]').click());

@@ -86,10 +86,16 @@ function refsIn(text) {
     /* a leading SPACE only counts when what precedes it is not a word — the
        "qa-live-tab 149" case, where 149 is a harness's CHECK COUNT. A gate that
        invents rows is worse than no gate at all (DFM 146a). */
-    if (/\s/.test(lead)) {
-      const before = text.slice(0, m.index).replace(/\s+$/, '');
-      if (/[A-Za-z)\]]$/.test(before)) continue;
-    }
+    /* Walk back to the start of the slash-run before judging it. "172/178(b)"
+       is two rule references; "gallery caps 28/90/200" is three character
+       LIMITS in a sentence — and once rule 200 was really written, reading that
+       limit as a rule filed 200 in two homes and failed the build for nothing.
+       The test is the same either way: does the RUN begin somewhere a rule can
+       legally begin, or straight after a word? */
+    let at = m.index + (lead ? lead.length : 0);
+    while (at > 0 && /[0-9a-z/]/i.test(text[at - 1])) at--;
+    const before = text.slice(0, at).replace(/[ \t]+$/, '');
+    if (/[A-Za-z)\]]$/.test(before)) continue;
     const a = Number(m[2]);
     const part = m[3] ? m[3].replace(/[()\s]/g, '') : '';
     const b = m[6] ? Number(m[6]) : a;
