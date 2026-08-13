@@ -877,7 +877,15 @@
     if (!pool.length) return delivered[0] || '';
     function newest(list) {
       return list.slice().sort(function (a, b) {
-        return Number(dashData.locks[b].u) - Number(dashData.locks[a].u);
+        var d = Number(dashData.locks[b].u) - Number(dashData.locks[a].u);
+        /* TIE-BREAK ON LESSON NUMBER (13 Aug 2026). Unlock several lessons in
+           the same minute — a start-of-term set-up, or a cover day — and every
+           `u` stamp is identical, so the sort had no winner and the tab opened
+           on LESSON 1 while Lesson 5 was the one being taught. The panel's own
+           sentence promises "the newest lesson you have unlocked", and a screen
+           may not claim what it then contradicts (rule 35). Where the stamps are
+           equal, the higher lesson number is the newer one. */
+        return d !== 0 ? d : Number(b) - Number(a);
       })[0];
     }
     var on = pool.filter(function (n) { return Number(dashData.locks[n].on); });
