@@ -1462,6 +1462,13 @@
            coming instead of meeting it invisibly. */
         (cfg.comment ? '<textarea class="se-comment" maxlength="' + SE_COMMENT_MAX + '" placeholder="Anything you want your teacher to know? (optional)"></textarea>' +
           '<p class="se-count" aria-live="polite"></p>' : '') +
+        /* DFM 204 — found by the confused-pupil walker once its coverage was
+           asserted. This button is born `disabled` on the COMPULSORY closing
+           screen of every lesson (rule 68), and nothing said what unlocks it:
+           a pupil who pressed it first got silence. Same fault as the Case 01
+           stamp (DFM 192f), on the one screen nobody may skip. */
+        '<p class="case-locked-note se-locked-note">' + esc(cfg.lockedNote ||
+          'Answer every sentence above — and how it felt — and this button wakes up.') + '</p>' +
         '<button class="primary-btn se-submit" type="button" disabled>Send &amp; finish</button></div>');
       host.appendChild(c);
       var rows = c.querySelector('.se-rows');
@@ -1503,6 +1510,8 @@
         }
         var all = conf.every(function (v) { return v !== null; }) && (!cfg.difficulty || diff !== '');
         c.querySelector('.se-submit').disabled = !all;
+        var seNote = c.querySelector('.se-locked-note');
+        if (seNote) seNote.hidden = all;
       });
       c.querySelector('.se-submit').onclick = function () {
         if (ctx.review) {
@@ -2128,6 +2137,9 @@
           '<div class="parsons-tray"><h3>Blocks</h3><div class="pt-list"></div></div>' +
           progSide +
           '</div>' +
+          /* DFM 204, same family: born disabled with nothing saying why. */
+          '<p class="case-locked-note parsons-locked-note">' + esc(cfg.lockedNote ||
+            'Click every block from the tray into your program, then this button wakes up.') + '</p>' +
           '<button class="primary-btn parsons-check" type="button" disabled>Check my program</button>' +
           '<div class="q-feedback" hidden></div></div>');
         host.appendChild(c);
@@ -3892,6 +3904,14 @@
 
           '<div class="std-qadesk' + (kit ? '' : ' locked') + '"><div class="std-qadesk-head"><span class="std-qa-tag">3 &middot; THE QA DESK</span>' +
           '<p>' + esc(cfg.qaIntro || 'Four checks stand between your build and the gallery. Run each test in Scratch, then record what actually happened - crosses are QA doing its job.') + '</p>' +
+          /* DFM 204 — FOUND BY THE CONFUSED-PUPIL WALKER, BEFORE HE SAT LESSON 5.
+             Every check row is rendered `disabled` until the kit is confirmed, and
+             the only sign of it was 60% opacity: a pupil who clicked a check got
+             nothing, and nothing on screen told her why. That is exactly the Case
+             01 experience he complained about (DFM 192f). The note is content, not
+             an engine literal, so the language gate can see it (rule 172). */
+          (kit ? '' : '<p class="case-locked-note">' + fmtBold(cfg.qaLockedNote ||
+            'These four checks wake up the moment you tick step 1 above — the kit open in Scratch, with its STUDIO NOTE found. Until then there is nothing to test.') + '</p>') +
           (kit ? '' : '<span class="std-sealed-ribbon">SECURE THE KIT FIRST</span>') + '</div>' +
           qaRows + '</div>' +
 
