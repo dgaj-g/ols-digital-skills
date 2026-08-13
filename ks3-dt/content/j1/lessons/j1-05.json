@@ -669,7 +669,8 @@
      "marqueeNoAnswer": "The marquee did not answer",
      "tryAgain": "try again.",
      "noConnection": "No connection - try again."
-    }
+    },
+    "qaLockedNote": "These four checks wake up the moment you tick step 1 above — the kit open in Scratch, with its STUDIO NOTE found. Until then there is nothing to test."
    }
   },
   {

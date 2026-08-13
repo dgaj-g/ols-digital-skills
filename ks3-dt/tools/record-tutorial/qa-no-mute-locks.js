@@ -70,12 +70,35 @@ const AUDIT = (EXPLAIN_PX) => {
   };
   const unactionable = (e) =>
     e.disabled === true || e.getAttribute('aria-disabled') === 'true' || e.classList.contains('locked');
+  const EXPLAINS = /unlock|until|locked|needs|write|type|fill|both halves|appears|at least|lights up|turns on|wakes|opens when|available when|once all|once you|when all|when your|as soon as|first you|you need/i;
   const host = document.querySelector('.chunk-host') || document.body;
   const out = [];
   const controls = Array.from(host.querySelectorAll('button, input[type=submit]')).filter(vis);
-  /* a control that has already been USED is not a mute lock: it shows a tick and
-     its job is done. Only controls the pupil still has to unlock are in scope. */
-  const inScope = controls.filter(e => unactionable(e) && !e.classList.contains('ticked'));
+  /* A control that has already been USED is not a mute lock: it shows a tick and
+     its job is done. Only controls the pupil still has to unlock are in scope.
+     DFM 204: "done" is not always marked on the BUTTON. The studio desk's kit
+     confirm renders `disabled` with its tick on an inner `.confirm-box.done`
+     span, and an answered QA row disables its own head — both are finished
+     controls showing a tick, and reading only the button's own class list made
+     the confused-pupil walker report six faults that were not there. A gate that
+     invents a fault is worse than no gate (DFM 146a), so ask the same question
+     the pupil's eye asks: is there a tick on or inside this control? */
+  const FINISHED_STATE = ['ticked', 'done', 'shipped', 'pass', 'signed', 'closed'];
+  const finished = (e) => {
+    if (FINISHED_STATE.some(c => e.classList.contains(c))) return true;
+    if (e.querySelector('.done, .confirm-box.done, .std-qa-state.pass')) return true;
+    if (/✓|✔|&#10003;/.test(e.innerHTML || '')) return true;
+    /* An ANSWERED ordering puzzle disables every one of its blocks on purpose —
+       "no more moving" once she has checked — and the verdict is on screen right
+       there. Those are finished controls, not mute locks (DFM 204/146a). */
+    const card = e.closest('.parsons-card');
+    if (card) {
+      const fb = card.querySelector('.q-feedback');
+      if (fb && !fb.hidden && (fb.textContent || '').trim().length > 4) return true;
+    }
+    return false;
+  };
+  const inScope = controls.filter(e => unactionable(e) && !finished(e));
   /* every visible text node on screen, with its rectangle */
   const texts = Array.from(host.querySelectorAll('p, span, li, label, div'))
     .filter(e => vis(e) && e.children.length === 0 && (e.textContent || '').trim().length > 12)
@@ -97,10 +120,20 @@ const AUDIT = (EXPLAIN_PX) => {
       const dy = Math.max(0, Math.max(x.r.top - b.bottom, b.top - x.r.bottom));
       const dx = Math.max(0, Math.max(x.r.left - b.right, b.left - x.r.right));
       return Math.hypot(dx, dy) <= EXPLAIN_PX &&
-        /unlock|until|locked|needs|write|type|fill|both halves|appears|at least/i.test(x.t);
+        /* WHAT AN EXPLANATION LOOKS LIKE. A set of "this happens WHEN that
+           happens" constructions, not a list of magic words — widened (DFM 204)
+           after it reported the READY button as mute while the sentence "Lights
+           up when all four QA checks pass." sat directly beneath it. Widened on
+           the principle, not until the finding went away: every addition below is
+           a precondition phrasing a child would read as one.
+           (JS has no free-spacing flag — kept on one line deliberately.) */
+        EXPLAINS.test(x.t.replace(/\s+/g, ' '));
     });
     if (near) return;
-    out.push({ label: label.slice(0, 70), rect: [Math.round(b.x), Math.round(b.y)] });
+    /* carry the control's real markup with every finding, so a false positive
+       can be told from a real one without re-running the whole walk (DFM 146a) */
+    out.push({ label: label.slice(0, 70), rect: [Math.round(b.x), Math.round(b.y)],
+      cls: btn.className, inner: (btn.innerHTML || '').replace(/\s+/g, ' ').slice(0, 120) });
   });
   return out;
 };

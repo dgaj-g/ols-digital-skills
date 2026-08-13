@@ -38,6 +38,43 @@ const EXPECT_FAIL = args.includes('--expect-fail');
    version's Lesson-5 pattern matched Lesson 2's tile and the walker cheerfully
    tested the wrong lesson while printing PASS. */
 const TILE = { 4: /Lesson\s*4(?!\d)/i, 5: /Lesson\s*5(?!\d)/i };   /* the tile reads "Lesson 5Game Studio" — no space, so \b never fires */
+
+/* ---- REQUIRED COVERAGE (DFM 204, his ruling of 13 Aug 2026) ----
+   "why has the confused-pupil walker only reaches 4 screens of Lesson 5. this is
+   unacceptable and surely violates a harness?" He is right: a checker that walks
+   four screens of a ten-screen lesson and prints PASS is reporting coverage it
+   does not have — the DFM 200 class. Printing an honest coverage NOTE underneath
+   is not enough; nobody reads a footnote as a failure.
+   So coverage is now ASSERTED. Each landmark is a real DOM surface the confused
+   pupil must have STOOD ON. If the walk never reaches one, the run FAILS and
+   names it. These are chosen to be reachable by ONE pupil working alone — Press
+   Night is checked by its floor/waiting state, not by another pupil's review. */
+const LANDMARKS = {
+  4: [
+    ['the case board', '.case-file, .case-pin'],
+    ['Evidence Intake', '.case-filecard .confirm-step'],
+    ['a case file with a log box', '.case-log-input'],
+    ['the clue ladder', '.case-clue-btn, .case-clue-open'],
+    ['the release desk', '.case-rc-score, .case-rc-btn'],
+    ['the ship steps', '.case-ship, .case-ship-btn'],
+    ['the exit check', '.q-opt, .exit-q'],
+    ['the closing screen', '.se-row, .se-card, .se-submit']
+  ],
+  5: [
+    ['the contracts desk', '.std-contract'],
+    ['the shared brief', '.std-brief'],
+    ['a contract, open', '.std-contract-full'],
+    ['the signing gate', '.std-sig-input, .std-sign'],
+    ['the studio desk', '.std-desk'],
+    ['the kit card', '.std-kit-confirm, .std-tool'],
+    ['the blueprint', '.std-blueprint, .std-blueprint-btn'],
+    ['the QA desk', '.std-qadesk, .std-qa-row'],
+    ['the READY gate', '.std-ready-btn'],
+    ['Press Night', '.gal-desk, .gal-floor, .gal-waiting, .gal-marquee-grid'],
+    ['the exit check', '.q-opt, .exit-q'],
+    ['the closing screen', '.se-row, .se-card, .se-submit']
+  ]
+};
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 /* WHAT "WRONG" MEANS AT EACH KIND OF GATE. Every one of these is a real thing a
@@ -96,6 +133,7 @@ const WRONG = {
     return null;
   }, TILE[LESSON].source);
   if (!opened) { console.error('could not find the Lesson ' + LESSON + ' tile'); await browser.close(); process.exit(2); }
+  await page.evaluate(v => { window.__WP_TRACE = v; }, !!process.env.KS3DT_WP_TRACE);
   await sleep(3000);
   log('opened: ' + opened.replace(/\s+/g, ' '));
 
@@ -162,8 +200,31 @@ const WRONG = {
   /* ---- the RIGHT move, so the walk reaches the next gate ---- *
    * Deliberately the same shapes sit-review.js uses. This walker's job is not
    * to finish the lesson with a good score — it is to stand on every gate. */
+  /* the authored pass index per QA criterion, read from the packed content */
+  const PASS_BY_CRIT = (() => {
+    try {
+      const f = path.join(__dirname, '..', '..', 'content', 'j1', 'lessons', 'j1-0' + LESSON + '.json');
+      const L = JSON.parse(fs.readFileSync(f, 'utf8'));
+      /* the criteria live under each contract TEMPLATE (catch/maze/quiz), and
+         their ids repeat (c1..c4) across templates — same index each time, so a
+         flat id map is correct here; walking the whole tree keeps it true if the
+         shape ever moves. */
+      const map = {};
+      (function walk(o) {
+        if (!o || typeof o !== 'object') return;
+        if (Array.isArray(o)) return o.forEach(walk);
+        if (o.id && Array.isArray(o.outcomes)) {
+          const i = o.outcomes.findIndex(x => x && x.pass);
+          if (i >= 0) map[o.id] = i;
+        }
+        Object.values(o).forEach(walk);
+      })(L);
+      return map;
+    } catch (e) { return {}; }
+  })();
+
   async function goRight() {
-    return page.evaluate(() => {
+    return page.evaluate((PASS_BY_CRIT) => {
       const q = (s) => document.querySelector(s);
       const vis = (e) => e && e.offsetParent !== null;
       const pop = q('.badge-pop button'); if (pop) { pop.click(); return 'badge'; }
@@ -174,18 +235,103 @@ const WRONG = {
          type at all. That one missing selector meant the walker never typed the
          case log, so the tick never unlocked and it bounced between the board and
          Case 01 for ninety loops while reporting PASS. */
+      /* WHAT COUNTS AS "FILLED" DEPENDS ON THE FIELD, and getting this wrong is
+         what stopped the Lesson 5 walk dead at four screens while printing PASS
+         (his find, DFM 204). The old rule was "fewer than six words = keep
+         typing". A STUDIO NAME is three words and its box is maxlength 24, so it
+         could never reach six: the walker retyped it ninety times, never clicked
+         Sign, and never saw the rest of the lesson. A short field is filled when
+         it has something in it; a log box is filled when it has a sentence. */
+      const needsFill = (e) => {
+        const v = (e.value || '').trim();
+        const ml = Number(e.getAttribute('maxlength') || 0);
+        if (e.type === 'number') return v === '';
+        if (e.tagName === 'INPUT' && ml && ml <= 40) return v.length < 2;
+        return !v || v.split(/\s+/).filter(Boolean).length < 6;
+      };
       const ta = Array.from(document.querySelectorAll(
-        '.chunk-host textarea, .chunk-host input[type=text], .chunk-host input:not([type])'))
-        .filter(vis).find(e => !e.value || e.value.split(/\s+/).filter(Boolean).length < 6);
+        '.chunk-host textarea, .chunk-host input[type=text], .chunk-host input[type=number], .chunk-host input:not([type])'))
+        .filter(vis).find(needsFill);
       if (ta) {
-        ta.value = ta.classList.contains('std-sig-input')
-          ? 'Pixel Otter Studio'
-          : 'the code that moves it to the right was missing, so I put that block back in';
+        ta.value = ta.type === 'number' ? '7'
+          : (Number(ta.getAttribute('maxlength') || 0) && Number(ta.getAttribute('maxlength')) <= 40)
+            ? 'Pixel Otter Studio'
+            : 'the code that moves it to the right was missing, so I put that block back in';
         ta.dispatchEvent(new Event('input', { bubbles: true }));
+        ta.dispatchEvent(new Event('change', { bubbles: true }));
         return 'typed:' + (ta.className || 'input').split(' ')[0];
       }
-      const opt = Array.from(document.querySelectorAll('.chunk-host .opt:not(.chosen)')).filter(vis)[0];
+      /* the exit check's options are `.q-opt`, not `.opt` — with the wrong class
+         the walker reached the exit check and could not answer a single
+         question, so it never got to the closing screen (DFM 204). */
+      const opt = Array.from(document.querySelectorAll(
+        '.chunk-host .q-opt:not(.chosen):not(.picked), .chunk-host .opt:not(.chosen)')).filter(vis)[0];
       if (opt) { opt.click(); return 'answer'; }
+      /* the ordering puzzle: move every block out of the tray, then check —
+         the same two moves sit-review.js makes */
+      const pblock = Array.from(document.querySelectorAll('.chunk-host .parsons-tray .parsons-block')).filter(vis)[0];
+      if (pblock) { pblock.click(); return 'parsons-place'; }
+      const pcheck = Array.from(document.querySelectorAll('.chunk-host .parsons-check:not([disabled])')).filter(vis)[0];
+      if (pcheck) { pcheck.click(); return 'parsons-check'; }
+      /* the closing screen answers with CHIPS, not .opt buttons */
+      const chip = Array.from(document.querySelectorAll(
+        '.chunk-host .se-row .se-chip:not(.chosen):not(.on), .chunk-host .se-diff-chips .se-chip:not(.chosen):not(.on)'))
+        .filter(vis)[0];
+      if (chip) { chip.click(); return 'se-chip'; }
+      /* Lesson 5's QA checks: record an outcome so the desk can move on. The
+         walker's job is coverage, not a good score — but a check left unanswered
+         keeps READY dark and Press Night unreachable. */
+      /* RECORD THE OUTCOME THE CONTENT MARKS `pass`, by its AUTHORED INDEX.
+         Clicking the first outcome on screen fails the check roughly three times
+         in four (the engine shuffles them), so the walker re-ran the same check
+         for ever, never lit READY, and never reached Press Night. This is the
+         same lesson qa-l5-sweep paid for on 13 Aug — read the pass index from
+         the content, never from the order on screen (DFM 200's finding 1). */
+      const outs = Array.from(document.querySelectorAll('.chunk-host .std-outcome')).filter(vis);
+      if (outs.length) {
+        const crit = (document.querySelector('.chunk-host .std-qa-row.open') || {}).dataset;
+        const want = crit && PASS_BY_CRIT[crit.crit];
+        const pick2 = (want != null && outs.find(o => Number(o.getAttribute('data-oi')) === want)) || outs[0];
+        pick2.click();
+        return 'qa-outcome:' + pick2.getAttribute('data-oi') + (want != null ? '(pass)' : '(first)');
+      }
+      const qaRun = Array.from(document.querySelectorAll('.chunk-host .std-qa-run:not([disabled])')).filter(vis)[0];
+      if (qaRun) { qaRun.click(); return 'qa-run'; }
+      /* A QA CHECK OPENS BY ITS OWN HEADER, and that header is neither a
+         .primary-btn nor a .ghost-btn — so the walker could not open one, never
+         answered a check, never lit READY, and never reached Press Night. It
+         looped desk → blueprint → back instead. Open the first row that has not
+         passed yet. */
+      const qaHead = Array.from(document.querySelectorAll(
+        '.chunk-host .std-qa-row:not(.open):not(.pass) .std-qa-head:not([disabled])')).filter(vis)[0];
+      if (qaHead) { qaHead.click(); return 'qa-open'; }
+      /* The studio's own gates are not .primary-btn / .ghost-btn either, so the
+         walker could not press READY once it was lit — it went round the
+         blueprint 28 times instead and never opened its doors. Every one of
+         these is the step the lesson itself says comes next. */
+      /* Press Night: a review starts by picking a studio off the marquee, and
+         those cards are `.gal-marquee-card.clickable` — not buttons the walker
+         recognised — so it stood on the gallery floor with its two press passes
+         unspent and its V2 note correctly locked, and called that the end of the
+         lesson. (The lesson was right; the walker could not review.) */
+      /* ONLY go back to the marquee while reviews are still OWED. The V2 card is
+         locked exactly while she owes them, so that card is the honest signal —
+         without it the walker re-entered a review desk that had already told it
+         "all three press passes are spent", on a loop, and never filed the V2
+         note that is the only way off the gallery floor. */
+      const v2locked = document.querySelector('.chunk-host .gal-v2-card.locked');
+      const mq = v2locked && Array.from(document.querySelectorAll(
+        '.chunk-host .gal-marquee-card.clickable:not(.reviewed)')).filter(vis)[0];
+      if (mq) { mq.click(); return 'review:' + (mq.getAttribute('data-sid') || ''); }
+      const studioGate = Array.from(document.querySelectorAll(
+        '.chunk-host .std-ready-btn:not([disabled]), .chunk-host .std-doors:not([disabled]), ' +
+        '.chunk-host .std-continue:not([disabled]), .chunk-host .std-enter:not([disabled]), ' +
+        '.chunk-host .gal-file-btn:not([disabled]), .chunk-host .gal-v2-save:not([disabled]), ' +
+        '.chunk-host .gal-wrap:not([disabled])')).filter(vis)[0];
+      if (studioGate) {
+        studioGate.click();
+        return 'studio-gate:' + (studioGate.className || '').split(' ')[0];
+      }
       /* Lesson 5's first real gate is a CHOICE of contract, and it is a card,
          not a button with a primary class — without this the walk stopped dead
          at the contracts desk and reported three screens as if that were the
@@ -214,17 +360,46 @@ const WRONG = {
          because a back button is a .primary-btn like any other. A walker that
          keeps leaving the room proves nothing about the rest of the lesson. */
       const isBack = (e) => /back to|←|&larr;|return to/i.test((e.textContent || ''));
+      /* NEVER TAKE A ONE-WAY DOOR (DFM 204, found by tracing this walk). After
+         signing its contract the walker pressed "Click again to shred this
+         contract" — twice, because the tear-up is a deliberate two-press door —
+         and destroyed its own studio, landing back at the contracts desk. It did
+         that on a loop and never saw eight of Lesson 5's twelve surfaces.
+         The lesson was behaving correctly: the door announced itself and asked
+         twice. It is the WALKER that must not walk through it. A confused pupil
+         explores; she does not systematically undo her own work. */
+      const isDestructive = (e) =>
+        e.classList.contains('std-tearup') ||
+        /shred|tear up|tear it up|delete|start again|swap contract|reset|undo|clear my/i
+          .test((e.textContent || ''));
+      /* A DOWNLOAD OR AN EXTERNAL LINK IS NOT PROGRESS (DFM 204). `.primary-btn`
+         is a CLASS, and the kit's "⬇️ Download the Catch It kit" is an <a> that
+         carries it — so the walker clicked it on a loop, never ticked the kit
+         confirm, and never reached Press Night. Anchors that leave the page or
+         fetch a file cannot advance the lesson. */
+      const isExit = (e) => e.tagName === 'A' &&
+        (e.hasAttribute('download') || e.getAttribute('target') === '_blank');
       const btns = Array.from(document.querySelectorAll(
-        '.chunk-host .primary-btn:not([disabled]):not(.locked), .chunk-host .ghost-btn:not([disabled])')).filter(vis);
+        '.chunk-host .primary-btn:not([disabled]):not(.locked), .chunk-host .ghost-btn:not([disabled])'))
+        .filter(vis).filter(e => !isDestructive(e) && !isExit(e));
       const on = btns.filter(e => !isBack(e))[0];
       if (on) { on.click(); return 'go:' + (on.textContent || '').trim().slice(0, 24); }
       const back = btns[0];
-      if (back) { back.click(); return 'back:' + (back.textContent || '').trim().slice(0, 24); }
+      if (back) {
+        const dbg = window.__WP_TRACE ? (' [desk=' + !!document.querySelector('.chunk-host .gal-desk') +
+          ' textareas=' + document.querySelectorAll('.chunk-host textarea').length +
+          ' spentNote=' + !!Array.from(document.querySelectorAll('.chunk-host p')).find(n=>/passes are spent/i.test(n.textContent||'')) + ']') : '';
+        back.click(); return 'back:' + (back.textContent || '').trim().slice(0, 24) + dbg;
+      }
       return 'stuck';
-    });
+    }, PASS_BY_CRIT);
   }
 
-  const MAX = 90;
+  const seenLandmarks = new Set();
+  /* the loop budget is not the standard — Lesson 5 is a longer lesson with a
+     Press Night in the middle of it, and a walk that runs out of loops must not
+     be mistaken for a walk that finished (DFM 204). */
+  const MAX = LESSON === '5' ? 160 : 110;
   let stuckRuns = 0;
   for (let i = 0; i < MAX; i++) {
     const where = await page.evaluate(() => {
@@ -232,6 +407,12 @@ const WRONG = {
       return (h ? h.textContent : (document.title || 'screen')).trim().slice(0, 46);
     });
     if (visited[visited.length - 1] !== where) { visited.push(where); log('screen: ' + where); }
+    /* record every required landmark that is on screen RIGHT NOW (DFM 204) */
+    const here = await page.evaluate(sels => sels.filter(s => {
+      const e = document.querySelector('.chunk-host ' + s.split(',').join(', .chunk-host '));
+      return e && e.offsetParent !== null;
+    }), (LANDMARKS[LESSON] || []).map(l => l[1]));
+    here.forEach(s => seenLandmarks.add(s));
     await beWrong(where);
     const moved = await goRight();
     /* 'stuck' is usually just EARLY — a card that renders on a timer, a badge
@@ -245,6 +426,7 @@ const WRONG = {
       continue;
     }
     stuckRuns = 0;
+    if (process.env.KS3DT_WP_TRACE) log('  move: ' + moved);
     await sleep(750);
   }
 
@@ -254,14 +436,25 @@ const WRONG = {
   await page.screenshot({ path: shot, fullPage: true });
   await browser.close();
 
-  /* HONEST COVERAGE. This walker reaches the screens it can drive itself to;
-     it is not a claim to have walked the whole lesson, and saying so is the
-     point — a harness that overstates its reach is the false assurance this
-     round exists to remove. Distinct screens, and what it never stood on. */
+  /* COVERAGE IS ASSERTED, NOT REPORTED (DFM 204). It used to print an honest
+     note saying which screens it had reached and pass anyway — which is how a
+     four-screen walk of Lesson 5 sat under the word PASS for a day. */
   const distinct = Array.from(new Set(visited));
   console.log('\nSCREENS THE CONFUSED PUPIL STOOD ON (' + distinct.length + ' distinct, ' +
     visited.length + ' visits):');
   distinct.forEach(v => console.log('   · ' + v));
+
+  const required = LANDMARKS[LESSON] || [];
+  const missed = required.filter(([, sel]) => !seenLandmarks.has(sel));
+  if (required.length) {
+    console.log('\nREQUIRED COVERAGE: ' + (required.length - missed.length) + ' of ' +
+      required.length + ' landmarks reached');
+    required.forEach(([name, sel]) =>
+      console.log('   ' + (seenLandmarks.has(sel) ? '✓' : '✗') + ' ' + name));
+    missed.forEach(([name, sel]) => findings.push(
+      'COVERAGE: the confused pupil never stood on ' + name + ' (' + sel + '). ' +
+      'A walk that does not reach a screen has not checked it (DFM 204).'));
+  }
   console.log('  gates tested per screen: every unactionable control clicked; every text box ' +
     'submitted empty and then with three words.');
   if (consoleErrors.length) {
