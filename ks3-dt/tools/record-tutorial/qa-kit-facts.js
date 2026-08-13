@@ -34,7 +34,11 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const SB3_DIR = path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/sb3');
+/* overridable so the control can run against a DOCTORED copy of the kits without
+   ever touching the real ones (DFM 196: a control that edits the shipping file is
+   not a control, it is a risk) */
+const SB3_DIR = process.env.KS3DT_SB3_DIR ||
+  path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/sb3');
 const FACTS = path.join(SB3_DIR, 'kit-facts.json');
 const CONTENT_DIR = path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/content-src/j1/lessons');
 
@@ -45,6 +49,7 @@ const contentIdx = args.indexOf('--content');
 const CONTENT_OVERRIDE = contentIdx >= 0 ? args[contentIdx + 1] : null;
 
 const findings = [];
+let manifestRef = null;
 const fail = (m) => findings.push(m);
 const ok = (m) => console.log('  ✓ ' + m);
 
@@ -124,6 +129,26 @@ function deriveKitFacts(file) {
     out.shark.hatlessTopLevelStacks = topLevels(shark)
       .filter(([, b]) => !/^event_/.test(b.opcode)).length;
   }
+  /* LESSON 5's starter kits are a different shape of claim: the pupil BUILDS on
+     them, so what matters is what is NOT there yet (the if/else she adds, the
+     counter she makes). Derived for every kit; only the L5 manifest rows use it. */
+  out.kit = { ifElseBlocks: 0, counterVariables: [], arrowKeyHats: 0, backdrops: 0, sounds: 0 };
+  const COUNTERS = (manifestRef && manifestRef.unfinishedKitClaim && manifestRef.unfinishedKitClaim.counterNames) ||
+    ['score', 'lives', 'stars', 'points', 'count', 'timer'];
+  for (const t of proj.targets) {
+    for (const b of Object.values(t.blocks || {})) {
+      if (b.opcode === 'control_if_else') out.kit.ifElseBlocks++;
+      if (b.opcode === 'event_whenkeypressed' && b.topLevel &&
+          /arrow/.test((b.fields.KEY_OPTION || [''])[0])) out.kit.arrowKeyHats++;
+    }
+    for (const v of Object.values(t.variables || {})) {
+      const nm = String(v[0]).toLowerCase();
+      if (COUNTERS.some(c => nm === c || nm.indexOf(c) !== -1)) out.kit.counterVariables.push(v[0]);
+    }
+    out.kit.sounds += (t.sounds || []).length;
+    if (t.isStage) out.kit.backdrops = (t.costumes || []).length;
+  }
+
   if (stage) {
     const flagTop = topLevels(stage).find(([, b]) => b.opcode === 'event_whenflagclicked');
     if (flagTop) {
@@ -157,6 +182,7 @@ function findCase(lesson, caseId) {
 
 /* ---------- run ---------- */
 const manifest = JSON.parse(fs.readFileSync(FACTS, 'utf8'));
+manifestRef = manifest;
 
 console.log('KIT FACTS — derived from the real blocks (DFM 201d)');
 const derivedAll = {};
@@ -211,6 +237,43 @@ if (loopWrapped) {
       } else clean++;
     }
     if (clean && !findings.length) ok(`all ${clean} Case 02 surfaces stay inside what the kit can do`);
+  }
+}
+
+/* ---------- LESSON 5: the "deliberately unfinished kit" claim (DFM 201d, §C q12) ----------
+   Lesson 5's kit card promises every pupil that her starter "cannot choose, count or end
+   yet". That is a claim about three real files, of exactly the class his Case 02 find
+   belongs to — so it is checked here BEFORE he sits Lesson 5, not after. */
+const U = manifest.unfinishedKitClaim;
+if (U) {
+  console.log('\nLESSON 5 — the "deliberately unfinished kit" claim');
+  const l5file = CONTENT_OVERRIDE && /j1-05/.test(CONTENT_OVERRIDE)
+    ? CONTENT_OVERRIDE : path.join(CONTENT_DIR, U.lesson + '.json');
+  if (!fs.existsSync(l5file)) fail('Lesson 5 content not found: ' + l5file);
+  else {
+    const txt = fs.readFileSync(l5file, 'utf8');
+    const claimed = txt.indexOf(U.claimMustAppear) !== -1;
+    if (!claimed) {
+      /* the claim was reworded or removed — say so rather than silently passing:
+         a check that quietly stops applying is the false assurance this round removes */
+      fail(`the kit card no longer says "${U.claimMustAppear}" — this check was written for that ` +
+        `sentence and must be re-pointed at whatever replaced it (it has NOT been silently skipped)`);
+    } else {
+      ok(`the kit card still promises "${U.claimMustAppear}" — so the files must be in that state`);
+      for (const k of U.kits) {
+        const got = derivedAll[k] || deriveKitFacts(k);
+        const kf = got.kit || {};
+        if (kf.ifElseBlocks !== U.requires.ifElseBlocks) {
+          fail(`${k}: the kit card says it cannot CHOOSE yet, but the file already contains ` +
+            `${kf.ifElseBlocks} if/else block(s) — ${U.reason}`);
+        } else if (U.requires.counterVariablesEmpty && kf.counterVariables.length) {
+          fail(`${k}: the kit card says it cannot COUNT yet, but the file already carries ` +
+            `the variable(s) ${kf.counterVariables.join(', ')} — ${U.reason}`);
+        } else {
+          ok(`${k} — no if/else, no counter variable: the promise is true of this file`);
+        }
+      }
+    }
   }
 }
 
