@@ -95,15 +95,15 @@
        "label": "Open the game & meet Scratch"
       },
       {
-       "t": 102,
+       "t": 108,
        "label": "Why some code never runs"
       },
       {
-       "t": 287,
+       "t": 293,
        "label": "Test like a detective"
       },
       {
-       "t": 354,
+       "t": 361,
        "label": "The case log"
       }
      ]
@@ -119,14 +119,14 @@
       "player": "FinnTastic_11",
       "ticket": "The shark won't swim RIGHT. Left, up, down — all fine. Right? Nothing. My shark just stares at the wall while the fish laugh at it. One star.",
       "symptom": "Click the green flag to start the game, then press the RIGHT arrow key and watch what happens. Now try the other three arrow keys, one at a time. The player is not making it up.",
-      "look": "Open the Shark's scripts and compare them with each other. Working code is your best evidence: what does every WORKING arrow script start with that the broken one is missing?",
+      "look": "Open the Shark's scripts and compare them with each other. Working code is your best evidence: what does every WORKING arrow script start with that the broken one is missing? Cannot see all five stacks at once? Click the minus (–) button at the bottom right of the code area until they all fit.",
       "logHint": "The right-arrow script had no… so I…",
       "replay": "Click the green flag, then swim a full lap of the tank: RIGHT along the bottom, UP the far wall, LEFT across the top, DOWN back to where you started. Press all four arrow keys on the way round — no shortcuts.",
       "replayConfirm": "Full lap swum — all four arrows work",
       "clue": {
        "free": "Re-read the ticket. Which arrows work? Which ONE doesn't? That tells you exactly which script to stare at.",
-       "consult": "Ask another agency that has CLOSED Case 01 — one question, detective to detective. (Your teacher also solved this one at the front.)",
-       "consultSolo": "No other agencies are on shift today — if re-reading the ticket didn't crack it, go straight to HQ's clue.",
+       "consult": "Ask another agency — another detective pair — that has CLOSED Case 01. One question, detective to detective. (Your teacher also solved this one at the front.)",
+       "consultSolo": "No other agencies are on shift today — you are the whole QA team. If re-reading the ticket didn’t crack it, go straight to HQ’s clue below.",
        "hq": "The bug lives on the SHARK. Put the four arrow-key scripts side by side and look at the very TOP of each."
       },
       "mechanicSteps": [
@@ -148,23 +148,28 @@
       "stars": 2,
       "spanners": 2,
       "player": "ChompChamp07",
-      "ticket": "I ate SO many fish and the score just sits on 0. I can literally HEAR the bite happen. This game is eating my points as well as the fish.",
-      "symptom": "Click the green flag and steer the shark to eat a fish. Listen for the bite sound… then look at the score. Eat another fish. Is the score still stuck on 0?",
+      "ticket": "I ate SO many fish — I kept restarting the game to eat more — and the score just sits on 0. I can literally HEAR the bite happen. This game is eating my points as well as the fish.",
+      "symptom": "Click the green flag and steer the shark to eat the fish. Listen for the bite sound… then look at the score. Click the flag again — a fresh fish arrives. Eat that one too. Still 0?",
       "look": "Find the script that runs at the moment a fish gets eaten, and read it block by block, out loud. Every block will sound right — until you reach the one NUMBER that is wrong.",
       "logHint": "The change-score block said… so I…",
-      "replay": "Click the green flag and eat THREE fish, watching the score climb 1, 2, 3. Right once could be luck — right three times is proof.",
-      "replayConfirm": "Three catches, three points — the scoreboard tells the truth",
+      "replay": "Click the green flag, eat the fish, and watch the score the moment you bite — it must jump to 1. Restart and prove it twice more. Right once could be luck; right three times is proof.",
+      "replayConfirm": "Three restarts, a clean point every time — the scoreboard tells the truth",
       "clue": {
        "free": "Re-read the ticket. The bite HAPPENS — the sound plays and the fish vanishes — so the eating part of the game works. What is the one thing that never moves?",
-       "consult": "Ask an agency that has CLOSED Case 02 — one question only, detective to detective. If nobody near you has closed it yet, go straight to HQ's clue.",
-       "consultSolo": "No other agencies are on shift today — if re-reading the ticket didn't crack it, go straight to HQ's clue.",
+       "consult": "Ask an agency that has CLOSED Case 02 — one question only, detective to detective. Nobody near you has closed it yet? Go straight to HQ’s clue below.",
+       "consultSolo": "No other agencies are on shift today — you are the whole QA team. If re-reading the ticket didn’t crack it, go straight to HQ’s clue below.",
        "hq": "The bug lives on the FISH, in the script that starts 'when I start as a clone'."
       },
       "img": {
        "src": "assets/img/l4/evidence-c2.png",
        "alt": "A screenshot of the game: the shark chasing a fish, with the score display in the corner still reading 0.",
        "caption": "ChompChamp07's screenshot: the hunt is on, and the score has not moved off 0."
-      }
+      },
+      "mechanicSteps": [
+       "Some scripts hold blocks you have not met yet — go to random position, glide, when I start as a clone. That is normal: real QA testers read code they did not write, every day.",
+       "You never need to understand every block. Read the stack out loud, and at each block ask: is this block’s job the thing the ticket says is broken? Skip every block whose job is something else.",
+       "To fix a wrong number: click the white oval on the block, type the right number, then press Enter. A number fix never moves a block."
+      ]
      },
      {
       "id": "c3",
@@ -175,14 +180,14 @@
       "player": "SharkSnackSara",
       "ticket": "One fish. ONE. I ate it in ten seconds flat and then swam round an empty ocean for the rest of my life. Where did everybody GO??",
       "symptom": "Click the green flag, eat the first fish, then keep playing while you count slowly to ten. Watch the water the whole time: do any new fish arrive?",
-      "look": "One script's entire job is making new fish — each new fish is a CLONE, a temporary copy of the Fish sprite. Find that script and read it top to bottom: exactly how many times does it actually make one?",
+      "look": "One script's entire job is making new fish — each new fish is a CLONE, a temporary copy of the Fish sprite. Find that script and read it top to bottom: exactly how many times does it actually make one? One warning from HQ: the hide block at the very top is MEANT to be there. The Fish in the sprite list is only the mould — every swimming fish is a copy of it. The bug is about how many fish get MADE.",
       "logHint": "The fish-maker script only ran… so I…",
       "replay": "Click the green flag and play for twenty full seconds. Fish should KEEP arriving the whole time — count at least five new fish before you tick the stamp.",
       "replayConfirm": "Fish kept coming the whole time",
       "clue": {
        "free": "Re-read the ticket. The FIRST fish was fine — it swam, it got eaten. It is everything AFTER that first fish the player never sees. So which script's whole job is making fish?",
-       "consult": "Ask an agency that has CLOSED Case 03 — one question, and make it a good one. If you are the first in the room to reach it, go straight to HQ's clue instead.",
-       "consultSolo": "No other agencies are on shift today — if re-reading the ticket didn't crack it, go straight to HQ's clue.",
+       "consult": "Ask an agency — another detective pair — that has already CLOSED Case 03. One question, so make it a good one. Nobody in the room has closed it yet? Skip this step and go straight to HQ’s clue below.",
+       "consultSolo": "No other agencies are on shift today — you are the whole QA team. If re-reading the ticket didn’t crack it, go straight to HQ’s clue below.",
        "hq": "The bug lives on the FISH, in the script under 'when green flag clicked' (not the clone one)."
       },
       "mechanicSteps": [
@@ -211,8 +216,8 @@
       "replayConfirm": "Three starts, three instant oceans",
       "clue": {
        "free": "Re-read the ticket. The sea is not missing — it 'strolls in a second late'. So it does arrive. Watch the very first second again and say exactly what you see, in order.",
-       "consult": "Ask an agency that has CLOSED Case 04 — one question, detective to detective. First one here? Take HQ's clue — no shame in it.",
-       "consultSolo": "No other agencies are on shift today — if re-reading the ticket didn't crack it, go straight to HQ's clue.",
+       "consult": "Ask an agency that has CLOSED Case 04 — one question, detective to detective. First pair to reach it? Take HQ’s clue below — no shame in it.",
+       "consultSolo": "No other agencies are on shift today — you are the whole QA team. If re-reading the ticket didn’t crack it, go straight to HQ’s clue below.",
        "hq": "Not a sprite at all — open the STAGE's scripts (click the Stage panel, bottom-right, beside the sprite list)."
       },
       "mechanicSteps": [
@@ -246,7 +251,7 @@
     "stretchNudge": "Your fixed game has gone back to the players — but one five-star request is still pinned to the board. Take the job, or finish for today?",
     "rc": {
      "title": "The whole-game check",
-     "text": "Four fixes, one game — and some bugs only show up when the whole game is played. Before the game goes back to the players, QA plays the WHOLE game like a real player: one full minute, from the green flag to the end. Watch all four fixes holding at once:",
+     "text": "You have fixed four bugs in one game — and some bugs only show up when the whole game is played. So before the game goes back to the players, QA plays the WHOLE game like a real player: one full minute, from the green flag to the end. Watch all four fixes holding at once:",
      "watch": [
       "All four arrows — swim a full lap.",
       "Eat at least five fish — the score counts every single one.",
@@ -254,7 +259,7 @@
       "Restart twice — the ocean is there from the first instant, every time."
      ],
      "confirm": "Full sixty-second run — every fix held",
-     "ask": "Only one number proves you actually ran it: how many fish did you catch in the full run?",
+     "ask": "There is no right or wrong number here — your count is simply proof you really played. How many fish did you catch in your full run?",
      "lockedNote": "This button unlocks when you type the number of fish you caught into the box above."
     },
     "ship": {
@@ -283,7 +288,7 @@
      "checkLabel": "Check my Drive"
     },
     "boardTip": "Lost your game? Nothing is broken — reload <b>scratch.mit.edu</b>, then File &rarr; Load from your computer, and pick the .sb3 again.",
-    "help": "The board is your home screen. Its pins are: the film, Evidence Intake (where you get the broken game), the four cases, and the release desk where the fixed game goes back to the players. Start with Evidence Intake, then the TRAINING case. Inside a case you always do the same five things: see the bug happen, read the code, fix one thing, write your log, then re-play to prove it. Stuck on a case? Open the help steps on the card — re-reading the ticket costs nothing. Chapter 3 of the film is the one worth re-watching while you work.",
+    "help": "The board is your home screen. Its pins are: the film, Evidence Intake (where you get the broken game), the four cases, and the release desk where the fixed game goes back to the players. Start with Evidence Intake, then the TRAINING case. Inside a case you always do the same five things: see the bug happen, read the code, fix one thing, write your log, then re-play to prove it. Stuck on a case? Open the help steps on the card — re-reading the ticket is always free. Chapter 3 of the film is the one worth re-watching while you work.",
     "introSteps": [
      "Play the broken game and SEE the bug happen with your own eyes.",
      "Read the code and find the ONE thing that is wrong.",
@@ -291,20 +296,21 @@
      "Write your CASE LOG — one sentence saying what was wrong and what you changed, just like the engineers wrote one sentence in their logbook in 1947.",
      "Play the game again and WATCH the bug not happen. That re-play is your proof."
     ],
-    "introAfter": "When the log is written and the re-play is ticked, the case gets its CASE CLOSED stamp. Need help during a case? Every case card carries help steps: the first ones cost nothing, but if you open the final clue from HQ — the company's head office — your stamp turns SILVER instead of GOLD. A silver case still counts. And remember: the website cannot see inside Scratch. YOU are the tester, so only tick what you truly watched happen.",
+    "introAfter": "When the log is written and the re-play is ticked, the case gets its CASE CLOSED stamp. Need help during a case? Every case card carries help steps: the first ones are free, but if you open the final clue from HQ — the company's head office — your stamp turns SILVER instead of GOLD. A silver case still counts. And remember: the website cannot see inside Scratch. YOU are the tester, so only tick what you truly watched happen.",
     "logLead": "Make your fix in Scratch. Then write your case log in the box just below — one sentence with two halves: **what was wrong**, and **what you changed**.",
     "proofNote": "This tick is a promise. It says: I played the game again, and I watched the bug NOT happen.",
     "lockedNote": "This stamp is locked until your case log in step 3 is written — both halves.",
     "nudgeShort": "Your log needs both halves in one sentence: what was wrong, and what you changed.",
     "nudgeOwnWords": "Say it in your OWN words — the grey line in the box is only a starter.",
     "clueButton": "Stuck? Open the help steps",
-    "clueStep1Head": "Help step 1 — costs nothing",
-    "clueStep2Head": "Help step 2 — ask another agency",
+    "clueStep1Head": "Help step 1 — re-read the ticket",
+    "clueStep2Head": "Help step 2 — ask another agency (another detective pair)",
     "clueHqButton": "Help step 3 — show HQ's clue (this case will then stamp SILVER instead of GOLD)",
     "clueSilverNote": "You took HQ's clue, so this case stamps SILVER when it closes. A silver case still counts — solve the next one without the clue for GOLD.",
     "handbookNote": "Come back to this film any time. Chapter 3 helps most while you are working on a case.",
     "sealedNoKit": "SEALED UNTIL YOU HAVE THE GAME",
-    "sealedRibbon": "SEALED UNTIL CASE 01 CLOSES"
+    "sealedRibbon": "SEALED UNTIL CASE 01 CLOSES",
+    "clueLadderCost": "These help steps are FREE — your gold stamp is safe. Only step 3, HQ’s clue, turns this case’s stamp from GOLD to SILVER."
    }
   },
   {

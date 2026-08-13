@@ -2001,8 +2001,29 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   .case-board { padding: 14px 10px 20px; }
   .case-board-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
 }
-.case-mechanic { background: var(--field); border: 1px solid var(--line-l); border-radius: var(--r-sm);
-  padding: 8px 12px; font-size: 0.93rem; color: var(--ink); }
+/* DFM 201g \2014  his sit: "i can now see that the steps are actually there under
+   'doing that in scratch'!!! that is great, but i think it needs to stand out
+   more because I missed that!" It was a pale field tint with a hairline border,
+   sitting between two blocks of prose. It is now a gold-barred toolbox panel:
+   the same visual weight as the locked-note, which he never missed. */
+.case-mechanic { background: rgba(228,184,36,0.07); border: 1px solid var(--line-l);
+  border-left: 4px solid var(--gold); border-radius: var(--r-sm);
+  padding: 10px 14px; font-size: 0.93rem; color: var(--ink); letter-spacing: 0.2px; }
+.case-mechanic b { letter-spacing: 0.4px; }
+/* the steps list continues the same gold-barred panel. Deliberately NOT written
+   with :has() \2014  the school's machines are not guaranteed to support it, and a
+   selector that silently does nothing on C2k is worse than a plain one. */
+.case-mechanic + .case-mech-steps { background: rgba(228,184,36,0.07);
+  border: 1px solid var(--line-l); border-top: 0; border-left: 4px solid var(--gold);
+  border-radius: 0 0 var(--r-sm) var(--r-sm); padding: 4px 14px 10px 32px; margin-top: 0; }
+/* DFM 201e \2014  a closed case keeps its file readable (read-only, no controls) */
+.case-record { margin-top: 14px; padding: 12px 14px; border: 1px dashed var(--line-l);
+  border-radius: var(--r-sm); background: var(--field); }
+.case-record p { font-size: 0.92rem; color: #5E6B80; margin: 6px 0; }
+.case-record .case-mechanic, .case-record .case-mech-steps { font-size: 0.9rem; }
+.case-record-tick { color: var(--good); font-weight: 600; }
+/* the ladder's price, first line inside the opened help steps (DFM 201f) */
+.case-clue-price { border-left: 3px solid var(--gold); padding-left: 10px; font-weight: 600; }
 /* DFM 192f/193a \2014  the locked-state note. It lives directly above the control it
    explains (never two steps away, which is the bug Damien hit), it is on screen
    the WHOLE time the control is locked including when the box is still empty,
@@ -7180,12 +7201,30 @@ window.OLS_TRANSPORT = {
         var clue = cs.clue || {};
 
         if (done) {
+          /* DFM 201e: "as I was finishing writing the log and clicking the button
+             for case 02, it said something about three catches, but I couldn't go
+             back and check what that meant." He was right that he could not: a
+             closed case collapsed to ticket + stamp + log, so every instruction
+             she had just followed vanished the moment she succeeded. A finished
+             case now keeps its file readable \u2014 read-only, no inputs, no clue
+             ladder (the ladder's price only makes sense on an OPEN case). */
+          var recordBits =
+            '<div class="case-record"><span class="case-step-tag">THE CASE FILE, FOR THE RECORD</span>' +
+            '<p><b>What the player saw:</b> ' + esc(cs.symptom) + '</p>' +
+            '<p><b>Where you looked:</b> ' + esc(cs.look) + '</p>' +
+            (cs.mechanicSteps && cs.mechanicSteps.length
+              ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b></p><ol class="case-mech-steps">' +
+                cs.mechanicSteps.map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ol>'
+              : (cs.mechanic ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b> ' + esc(cs.mechanic) + '</p>' : '')) +
+            '<p><b>How you proved it:</b> ' + esc(cs.replay) + '</p>' +
+            '<p class="case-record-tick">&#10003; ' + esc(cs.replayConfirm) + '</p></div>';
           var cDone = el('<div class="card case-filecard closed-file"><span class="intro-kicker">' + esc(cs.num) + '</span>' +
             '<h2>' + esc(cs.name) + '</h2>' +
             stampHtml(cs.id) +
             '<div class="case-ticket"><span class="case-stars">' + starsHtml(cs.stars) + '</span>' +
             '<p>&ldquo;' + esc(cs.ticket) + '&rdquo;</p><span class="case-player">&mdash; ' + esc(cs.player) + '</span></div>' +
             (logs[cs.id] ? '<div class="case-log-final"><b>Your case log:</b><p>&ldquo;' + esc(logs[cs.id]) + '&rdquo;</p></div>' : '') +
+            recordBits +
             backRow() + '</div>');
           host.appendChild(cDone);
           wireBack(cDone);
@@ -7237,8 +7276,13 @@ window.OLS_TRANSPORT = {
           clueBox.innerHTML = '<button class="ghost-btn case-clue-btn" type="button">' + esc(cfg.clueButton || 'Stuck? Open the help steps') + '</button>';
           clueBox.querySelector('.case-clue-btn').onclick = function () {
             clueBox.innerHTML = '<div class="case-clue-open">' +
-              '<p><b>' + esc(cfg.clueStep1Head || 'Help step 1 \u2014 costs nothing') + ':</b> ' + esc(clue.free || 'Re-read the ticket. What EXACTLY does the player say happens?') + '</p>' +
-              '<p><b>' + esc(cfg.clueStep2Head || 'Help step 2 \u2014 ask another agency') + ':</b> ' + esc(solo ? (clue.consultSolo || 'No other agencies on shift right now \u2014 go straight to Step 3 if Step 1 didn\u2019t crack it.') : (clue.consult || 'Consult another agency that has CLOSED this case. One question, detective to detective.')) + '</p>' +
+              /* DFM 201f: "help step one costs nothing, but a student doesn't know
+                 what you mean by costs nothing. Do you mean it doesn't cost any
+                 XP?" The ladder's only price anywhere is the GOLD stamp, and no
+                 surface said so where she reads it. It does now, first line. */
+              (cfg.clueLadderCost ? '<p class="case-clue-price">' + fmtBold(cfg.clueLadderCost) + '</p>' : '') +
+              '<p><b>' + esc(cfg.clueStep1Head || 'Help step 1 \u2014 re-read the ticket') + ':</b> ' + esc(clue.free || 'Re-read the ticket. What EXACTLY does the player say happens?') + '</p>' +
+              '<p><b>' + esc(cfg.clueStep2Head || 'Help step 2 \u2014 ask another agency (another detective pair)') + ':</b> ' + esc(solo ? (clue.consultSolo || 'No other agencies are on shift today \u2014 you are the whole QA team. If re-reading the ticket didn\u2019t crack it, go straight to HQ\u2019s clue below.') : (clue.consult || 'Ask another agency \u2014 another detective pair \u2014 that has CLOSED this case. One question, detective to detective.')) + '</p>' +
               '<button class="ghost-btn case-hq-btn" type="button">' + esc(cfg.clueHqButton || 'Help step 3 \u2014 show HQ\u2019s clue (this case will then stamp SILVER instead of GOLD)') + '</button></div>';
             clueBox.querySelector('.case-hq-btn').onclick = function () {
               if (!isSilver(cs.id)) { silver.push(String(cs.id)); saveBoard(); }

@@ -3150,12 +3150,30 @@
         var clue = cs.clue || {};
 
         if (done) {
+          /* DFM 201e: "as I was finishing writing the log and clicking the button
+             for case 02, it said something about three catches, but I couldn't go
+             back and check what that meant." He was right that he could not: a
+             closed case collapsed to ticket + stamp + log, so every instruction
+             she had just followed vanished the moment she succeeded. A finished
+             case now keeps its file readable — read-only, no inputs, no clue
+             ladder (the ladder's price only makes sense on an OPEN case). */
+          var recordBits =
+            '<div class="case-record"><span class="case-step-tag">THE CASE FILE, FOR THE RECORD</span>' +
+            '<p><b>What the player saw:</b> ' + esc(cs.symptom) + '</p>' +
+            '<p><b>Where you looked:</b> ' + esc(cs.look) + '</p>' +
+            (cs.mechanicSteps && cs.mechanicSteps.length
+              ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b></p><ol class="case-mech-steps">' +
+                cs.mechanicSteps.map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ol>'
+              : (cs.mechanic ? '<p class="case-mechanic">&#128295; <b>Doing that in Scratch:</b> ' + esc(cs.mechanic) + '</p>' : '')) +
+            '<p><b>How you proved it:</b> ' + esc(cs.replay) + '</p>' +
+            '<p class="case-record-tick">&#10003; ' + esc(cs.replayConfirm) + '</p></div>';
           var cDone = el('<div class="card case-filecard closed-file"><span class="intro-kicker">' + esc(cs.num) + '</span>' +
             '<h2>' + esc(cs.name) + '</h2>' +
             stampHtml(cs.id) +
             '<div class="case-ticket"><span class="case-stars">' + starsHtml(cs.stars) + '</span>' +
             '<p>&ldquo;' + esc(cs.ticket) + '&rdquo;</p><span class="case-player">&mdash; ' + esc(cs.player) + '</span></div>' +
             (logs[cs.id] ? '<div class="case-log-final"><b>Your case log:</b><p>&ldquo;' + esc(logs[cs.id]) + '&rdquo;</p></div>' : '') +
+            recordBits +
             backRow() + '</div>');
           host.appendChild(cDone);
           wireBack(cDone);
@@ -3207,8 +3225,13 @@
           clueBox.innerHTML = '<button class="ghost-btn case-clue-btn" type="button">' + esc(cfg.clueButton || 'Stuck? Open the help steps') + '</button>';
           clueBox.querySelector('.case-clue-btn').onclick = function () {
             clueBox.innerHTML = '<div class="case-clue-open">' +
-              '<p><b>' + esc(cfg.clueStep1Head || 'Help step 1 — costs nothing') + ':</b> ' + esc(clue.free || 'Re-read the ticket. What EXACTLY does the player say happens?') + '</p>' +
-              '<p><b>' + esc(cfg.clueStep2Head || 'Help step 2 — ask another agency') + ':</b> ' + esc(solo ? (clue.consultSolo || 'No other agencies on shift right now — go straight to Step 3 if Step 1 didn’t crack it.') : (clue.consult || 'Consult another agency that has CLOSED this case. One question, detective to detective.')) + '</p>' +
+              /* DFM 201f: "help step one costs nothing, but a student doesn't know
+                 what you mean by costs nothing. Do you mean it doesn't cost any
+                 XP?" The ladder's only price anywhere is the GOLD stamp, and no
+                 surface said so where she reads it. It does now, first line. */
+              (cfg.clueLadderCost ? '<p class="case-clue-price">' + fmtBold(cfg.clueLadderCost) + '</p>' : '') +
+              '<p><b>' + esc(cfg.clueStep1Head || 'Help step 1 — re-read the ticket') + ':</b> ' + esc(clue.free || 'Re-read the ticket. What EXACTLY does the player say happens?') + '</p>' +
+              '<p><b>' + esc(cfg.clueStep2Head || 'Help step 2 — ask another agency (another detective pair)') + ':</b> ' + esc(solo ? (clue.consultSolo || 'No other agencies are on shift today — you are the whole QA team. If re-reading the ticket didn’t crack it, go straight to HQ’s clue below.') : (clue.consult || 'Ask another agency — another detective pair — that has CLOSED this case. One question, detective to detective.')) + '</p>' +
               '<button class="ghost-btn case-hq-btn" type="button">' + esc(cfg.clueHqButton || 'Help step 3 — show HQ’s clue (this case will then stamp SILVER instead of GOLD)') + '</button></div>';
             clueBox.querySelector('.case-hq-btn').onclick = function () {
               if (!isSilver(cs.id)) { silver.push(String(cs.id)); saveBoard(); }

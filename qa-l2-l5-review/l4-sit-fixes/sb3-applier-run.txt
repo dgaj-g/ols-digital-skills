@@ -1,0 +1,15 @@
+backed up 7 kit(s) to .bak-12aug-prel5layout/
+layout law: 40 script(s) repositioned across 7 kits
+
+  ✓ catch-it-starter.sb3 — unzip -t clean, re-parses, masked diff EMPTY (4 top-level scripts)
+  ✓ catch-it-score-only.sb3 — unzip -t clean, re-parses, masked diff EMPTY (4 top-level scripts)
+  ✓ catch-it-complete.sb3 — unzip -t clean, re-parses, masked diff EMPTY (4 top-level scripts)
+  ✓ maze-escape-starter.sb3 — unzip -t clean, re-parses, masked diff EMPTY (10 top-level scripts)
+  ✓ maze-escape-complete.sb3 — unzip -t clean, re-parses, masked diff EMPTY (10 top-level scripts)
+  ✓ quiz-master-starter.sb3 — unzip -t clean, re-parses, masked diff EMPTY (4 top-level scripts)
+  ✓ quiz-master-complete.sb3 — unzip -t clean, re-parses, masked diff EMPTY (4 top-level scripts)
+  ✓ served copy synced + byte-verified: catch-it-starter.sb3
+  ✓ served copy synced + byte-verified: maze-escape-starter.sb3
+  ✓ served copy synced + byte-verified: quiz-master-starter.sb3
+
+APPLIER: clean. Now run qa-sb3-layout.js — it reported 10 findings before this.

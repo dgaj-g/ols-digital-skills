@@ -1,0 +1,28 @@
+  reached CASE 01 via: dossier-cta -> primary:Open the case board -> intake -> intake-confirm -> open-CASE 01 -> ARRIVED
+
+DFM 201e — a CLOSED case must keep its file readable:
+  ✓ Case 01 really closed
+  ✓ the closed card keeps a "for the record" section
+  ✓ the proof line he could not go back to check is still readable  [full lap of the tank: RIGHT along the bottom, UP the far wal]
+  ✓ the Scratch steps survive on the closed card
+  ✓ nothing on the closed card is still an active control  [0 controls]
+  ✓ the help ladder is gone from the closed card  [0 ladder parts]
+  reached CASE 02 via: back-from-CASE 01 -> open-CASE 02 -> ARRIVED
+
+DFM 201g — the "Doing that in Scratch" panel must stand out:
+  ✓ it carries a gold bar at least 3px wide  [4px rgb(228, 184, 36)]
+  ✓ the bar is the platform gold  [rgb(228, 184, 36)]
+  ✓ its background differs from the card  [rgba(228, 184, 36, 0.07) vs card rgba(0, 0, 0, 0)]
+  ✓ Case 02 now carries its own numbered Scratch steps  [3 steps]
+
+DFM 201f — the help ladder must state its own price:
+  ✓ the ladder opens by naming what it costs  [These help steps are FREE — your gold stamp is safe. Only step 3, HQ’s c…]
+  ✓ the price line is the FIRST thing in the ladder  [case-clue-price]
+  ✓ the step-2 heading defines "agency" where it is used  [Help step 1 — re-read the ticket: | Help step 2 — ask another agency (another detective pa]
+
+DFM 201e — Case 02 closed keeps the proof line he asked about:
+  ✓ Case 02 closed and kept its record
+  ✓ the tick wording he could not go back to check is readable on the closed card  [Three restarts, a clean point every time ]
+  ✓ zero console errors
+
+ALL PASSED — measured on the real rendered card, screenshots in qa-l2-l5-review/l4-round6/

@@ -1993,8 +1993,29 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   .case-board { padding: 14px 10px 20px; }
   .case-board-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
 }
-.case-mechanic { background: var(--field); border: 1px solid var(--line-l); border-radius: var(--r-sm);
-  padding: 8px 12px; font-size: 0.93rem; color: var(--ink); }
+/* DFM 201g — his sit: "i can now see that the steps are actually there under
+   'doing that in scratch'!!! that is great, but i think it needs to stand out
+   more because I missed that!" It was a pale field tint with a hairline border,
+   sitting between two blocks of prose. It is now a gold-barred toolbox panel:
+   the same visual weight as the locked-note, which he never missed. */
+.case-mechanic { background: rgba(228,184,36,0.07); border: 1px solid var(--line-l);
+  border-left: 4px solid var(--gold); border-radius: var(--r-sm);
+  padding: 10px 14px; font-size: 0.93rem; color: var(--ink); letter-spacing: 0.2px; }
+.case-mechanic b { letter-spacing: 0.4px; }
+/* the steps list continues the same gold-barred panel. Deliberately NOT written
+   with :has() — the school's machines are not guaranteed to support it, and a
+   selector that silently does nothing on C2k is worse than a plain one. */
+.case-mechanic + .case-mech-steps { background: rgba(228,184,36,0.07);
+  border: 1px solid var(--line-l); border-top: 0; border-left: 4px solid var(--gold);
+  border-radius: 0 0 var(--r-sm) var(--r-sm); padding: 4px 14px 10px 32px; margin-top: 0; }
+/* DFM 201e — a closed case keeps its file readable (read-only, no controls) */
+.case-record { margin-top: 14px; padding: 12px 14px; border: 1px dashed var(--line-l);
+  border-radius: var(--r-sm); background: var(--field); }
+.case-record p { font-size: 0.92rem; color: #5E6B80; margin: 6px 0; }
+.case-record .case-mechanic, .case-record .case-mech-steps { font-size: 0.9rem; }
+.case-record-tick { color: var(--good); font-weight: 600; }
+/* the ladder's price, first line inside the opened help steps (DFM 201f) */
+.case-clue-price { border-left: 3px solid var(--gold); padding-left: 10px; font-weight: 600; }
 /* DFM 192f/193a — the locked-state note. It lives directly above the control it
    explains (never two steps away, which is the bug Damien hit), it is on screen
    the WHOLE time the control is locked including when the box is still empty,

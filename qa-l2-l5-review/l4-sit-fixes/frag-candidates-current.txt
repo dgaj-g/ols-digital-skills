@@ -1,0 +1,41 @@
+FRAGMENT-CANDIDATES SWEEP — CURRENT content-src (round-5 fixes applied)
+content: /Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/content-src
+
+j1-01: 6 candidate(s)
+   [CHAIN(intra)] j1-01 › b1-login › config › intro
+      "Three things to read, then some questions."
+   [CHAIN(inter)] j1-01 › b1-login › config › intro
+      "Then the rules of this room.  ·  Three things to read, then some questions."
+   [CHAIN(intra)] j1-01 › b1-login › config › steps[0] › text
+      "Not with your best friend, not with your siblings, not with anyone who says they are helping."
+   [CHAIN(intra)] j1-01 › b2-navigator › config › stops[0] › text
+      "Your whole year, at a glance."
+   [CHAIN(intra)] j1-01 › b2-navigator › config › items[2] › options[1]
+      "The whole class, on a scoreboard"
+   [CHAIN(intra)] j1-01 › b2-navigator › config › items[2] › options[2]
+      "Nobody at all, not even you"
+j1-02: 4 candidate(s)
+   [CHAIN(intra)] j1-02 › hook › config › lines[1]
+      "A lift button, a pedestrian crossing, a fitness tracker: something happens (the INPUT — a press, a step), and something reacts (the OUTPUT —"
+   [CHAIN(inter)] j1-02 › ladder › config › unplugged › lines[3]
+      "New signal!  ·  SENSOR: mime shaking the micro:bit."
+   [CHAIN(intra)] j1-02 › ladder › config › unplugged › soloLines[2]
+      "With one hand, mime pressing an invisible button."
+   [CHAIN(intra)] j1-02 › packup › config › intro
+      "Two last jobs, so the micro:bits are ready for the next class."
+j1-03: 0 candidate(s)
+j1-04: 0 candidate(s)
+j1-05: 4 candidate(s)
+   [CHAIN(inter)] j1-05 › build › config › templates › maze › criteria[1] › outcomes[2] › mech
+      "in the top mouth and 'Locked!'  ·  in the else."
+   [CHAIN(inter)] j1-05 › build › config › templates › quiz › blueprint › steps[2] › text
+      "The condition asks: answer = true.  ·  for 1 second."
+   [CHAIN(intra)] j1-05 › build › config › templates › quiz › criteria[0] › outcomes[1] › mech
+      "Drag change score by 1 into the if's top mouth, next to say 'Correct!'."
+   [CHAIN(inter)] j1-05 › press › config › wrap › note
+      "No scores.  ·  No rankings."
+j1-sq1: 1 candidate(s)
+   [CHAIN(intra)] j1-sq1 › keys › sq-ex1 › explain
+      "Two logins' worth of storage, two separate buildings: Microsoft work lives in OneDrive, Google work lives in Drive."
+
+TOTAL: 15

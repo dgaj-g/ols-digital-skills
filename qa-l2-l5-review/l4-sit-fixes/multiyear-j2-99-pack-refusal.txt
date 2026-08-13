@@ -1,0 +1,133 @@
+qa-language — the communication-of-language harness (DFM 172/178)
+
+CONTROLS — the harness proves itself before it judges anything:
+  PASS CONTROL: HIS EXHIBIT fails the lexicon ("Before the Rally," + "thirty seconds of protection")
+  PASS CONTROL: the old rung-2 target fails the numbered-sequence layout law (DFM 171)
+  PASS CONTROL: the stretch card he photographed fails the action-arrow rule
+  PASS CONTROL: the stretch card also fails the numbered-sequence rule
+  PASS CONTROL: "tournament-grade" fails the lexicon
+  PASS CONTROL: a 40-word run-on fails the sentence ceiling
+  PASS CONTROL: the approved belonging-card line still PASSES (over-tightening guard)
+  PASS CONTROL: the approved pairing sentence still PASSES
+  PASS CONTROL: the locked Lesson-2 palette path "Variables → Make a Variable" still PASSES
+  PASS CONTROL: an ordinary two-sentence instruction still PASSES
+  PASS CONTROL: Lesson 2's backticked BLOCK LISTING is not judged as prose (code exemption)
+  PASS CONTROL: the code exemption does NOT forgive an action chain in the same string
+  PASS CONTROL: HIS OWN REJECTED SENTENCE is a fragment candidate — seventeen words, so no length rule could ever reach it (DFM 192b)
+  PASS CONTROL: his Case 04 find ("And again." + "Same wrongness every time?") is a candidate
+  PASS CONTROL: the pre-fix Catch It pitch is a candidate
+  PASS CONTROL: the pre-fix ship help opening "Three steps." is a candidate (the one this detector found on current content, 12 Aug)
+  PASS CONTROL: the signed-off Press Night line raises NO candidate
+  PASS CONTROL: a good short sentence raises NO candidate
+  PASS CONTROL: an appositive between em-dashes is not a chain raises NO candidate
+  PASS CONTROL: menu-path notation is not prose raises NO candidate
+  PASS CONTROL: the 12 Aug rewrite of the ship help opener raises NO candidate
+  PASS CONTROL: bare imperatives are real verbs raises NO candidate
+  PASS CONTROL: the shipped L4 caption "onto your bench" fails the lexicon (the phrase banned from the CONTENT the same day)
+  PASS CONTROL: the shipped L4 chapter-3 PREDICT caption fails the action-arrow law
+  PASS CONTROL: the shipped L5 caption "it answers every frame" fails the lexicon (new entry)
+  PASS CONTROL: the moth line still PASSES unchanged (over-tightening guard — a harness that flags good text is broken, not strict)
+  PASS CONTROL: a real menu path with a 4-word ITEM NAME the author marked with <b> still PASSES (the "Variables → Make a Variable" family)
+  PASS CONTROL: and the same allowance does NOT forgive a segment that is a thing HAPPENING rather than a name
+  PASS CONTROL: a row of one-word LABELS on a title card is a list, not a dash-chain
+  PASS CONTROL: and a real runaway sentence of dash-joined clauses still FAILS
+  PASS CONTROL: a caption built from a variable is NOT statically checkable and fails the build
+  PASS CONTROL: a lesson sitting in content-src/j2/lessons IS found by the walk (it was invisible until 12 Aug — his question)
+  PASS CONTROL: and a banned word inside that J2 lesson is caught, judged as a 12 or 13-year-old
+  PASS CONTROL: and its unrecorded sentence blocks the pack exactly as a J1 one would
+
+LAYER 1 — the mechanical net (structure first, lexicon last):
+
+  WAIVED-DEFINING (10 terms carry no defining phrase yet — filled lesson by lesson as each comes under review, DFM 178c):
+    · Debug Hint (j1-02 › ladder)
+    · event (j1-02 › ladder)
+    · forever block (j1-03 › ladder)
+    · referee (j1-03 › rally)
+    · rig (j1-03 › rig)
+    · rung (j1-02 › howto)
+    · ship (j1-04 › board)
+    · simulator (j1-02 › ladder)
+    · trigger (j1-02 › ladder)
+    · variable (j1-03 › hook)
+  scanned 1241 pupil-facing strings across 7 lesson(s)
+  1 problem(s)
+  FAIL j2-99 › probe › config › intro: banned register: "tap" — she has a MOUSE (DFM 138.1.6, 150) - the ban he has had to give twice → "click"
+
+  LOCKED (DFM 176) — 27 finding(s) in Lessons 1/2/side quest, recorded, NOT blocking.
+  He has sat and signed these off; they are not to be "improved". This list is the
+  work waiting the day he lifts the lock — and it is printed every run so it cannot rot.
+    WAIVED j1-01 › briefing › config › lines[1]: sentence too long for an 11 or 12-year-old (39 words, ceiling 34) — one idea per sentence: "After that you will open a computer up and find out what each part is for, discover how ph…"
+    WAIVED j1-01 › b1-login › config › intro: sentence too long for an 11 or 12-year-old (35 words, ceiling 34) — one idea per sentence: "In this part you will learn how to keep your school account safe — what makes a password h…"
+    WAIVED j1-01 › b3-vault › config › intro: sentence too long for an 11 or 12-year-old (40 words, ceiling 34) — one idea per sentence: "In this part you will learn where school work should be kept, and why it matters — and you…"
+    WAIVED j1-01 › b3-vault › config › channelPrompt: sentence too long for an 11 or 12-year-old (37 words, ceiling 34) — one idea per sentence: "The website will give her a temporary code name for this Vault — you will see it at the to…"
+    WAIVED j1-01 › b3-vault › config › debrief › syncLive: sentence too long for an 11 or 12-year-old (46 words, ceiling 34) — one idea per sentence: "Think about what just happened: you and your partner were on DIFFERENT machines, yet you w…"
+    WAIVED j1-01 › realvault › config › steps[1] › text: sentence too long for an 11 or 12-year-old (46 words, ceiling 34) — one idea per sentence: "Making the folders is a whole activity of its own called Files That Follow You — a side qu…"
+    WAIVED j1-01 › b4-exam › config › items[11] › stem: numbered sequence inside one string (DFM 171) — it renders as run-on prose. Author it as an array field (steps / testSteps / lines / setup / rules) so each number gets its own line.
+    WAIVED j1-02 › hook › config › lines[1]: sentence too long for an 11 or 12-year-old (36 words, ceiling 34) — one idea per sentence: "A lift button, a pedestrian crossing, a fitness tracker: something happens (the INPUT — a …"
+    WAIVED j1-02 › hook › config › lines[2]: sentence too long for an 11 or 12-year-old (39 words, ceiling 34) — one idea per sentence: "You will work in a pair with the person sitting beside you, one micro:bit between the two …"
+    WAIVED j1-02 › hook › config › lines[3]: sentence too long for an 11 or 12-year-old (43 words, ceiling 34) — one idea per sentence: "By the end of the hour you will have built a program on a real device, tested it with your…"
+    WAIVED j1-02 › ladder › config › unplugged › lines[1]: sentence too long for an 11 or 12-year-old (35 words, ceiling 34) — one idea per sentence: "Every machine from the start of the lesson — the lift, the crossing, the step-counter — ha…"
+    WAIVED j1-02 › ladder › config › unplugged › lines[5]: sentence too long for an 11 or 12-year-old (38 words, ceiling 34) — one idea per sentence: "Finish by saying it out loud together (or a loud whisper will do if you prefer — or you co…"
+    WAIVED j1-02 › ladder › config › rungs[0] › test: banned register: "the device" — generic noun (DFM 138.1.5) - name it: the micro:bit → "the micro:bit"
+    WAIVED j1-02 › ladder › config › rungs[1] › test: banned register: "the device" — generic noun (DFM 138.1.5) - name it: the micro:bit → "the micro:bit"
+    WAIVED j1-02 › ladder › config › rungs[2] › target: numbered sequence inside one string (DFM 171) — it renders as run-on prose. Author it as an array field (steps / testSteps / lines / setup / rules) so each number gets its own line.
+    WAIVED j1-02 › ladder › config › stretch › target: sentence too long for an 11 or 12-year-old (35 words, ceiling 34) — one idea per sentence: "When A and B are pressed at the SAME TIME, this is what should happen: 1. a heart appears …"
+    WAIVED j1-02 › ladder › config › stretch › target: numbered sequence inside one string (DFM 171) — it renders as run-on prose. Author it as an array field (steps / testSteps / lines / setup / rules) so each number gets its own line.
+    WAIVED j1-02 › bank › config › intro: sentence too long for an 11 or 12-year-old (42 words, ceiling 34) — one idea per sentence: "In this step you learn the habit that protects every piece of work you ever make in DT: sa…"
+    WAIVED j1-02 › bank › config › help: action-arrow chain (DFM 171 family): "drag the file into School → DT Work" — a 5-word step. Palette paths only (at most 2 arrows, 3 words either side, e.g. "Variables → Make a Variable"). Write ACTIONS as sentences or numbered steps — an arrow between two things to DO hides a sequence.
+    WAIVED j1-02 › exit › config › intro: banned register: "scenarios" — adult exam word → "questions" / "what would happen if"
+    WAIVED j1-02 › packup › config › help: sentence too long for an 11 or 12-year-old (46 words, ceiling 34) — one idea per sentence: "First, clear your program off the micro:bit: click the button on the card to get the empty…"
+    WAIVED j1-sq1 › sq-onedrive › config › steps[1] › text: action-arrow chain (DFM 171 family): "Click + New → Folder and name it exactly" — a 5-word step. Palette paths only (at most 2 arrows, 3 words either side, e.g. "Variables → Make a Variable"). Write ACTIONS as sentences or numbered steps — an arrow between two things to DO hides a sequence.
+    WAIVED j1-sq1 › sq-onedrive › config › steps[2] › text: action-arrow chain (DFM 171 family): "Word / Excel / PowerPoint work → OneDrive" — a 6-word step. Palette paths only (at most 2 arrows, 3 words either side, e.g. "Variables → Make a Variable"). Write ACTIONS as sentences or numbered steps — an arrow between two things to DO hides a sequence.
+    WAIVED j1-sq1 › sq-onedrive › config › steps[2] › text: action-arrow chain (DFM 171 family): "Google Docs and everything you make in DT → Google Drive" — a 8-word step. Palette paths only (at most 2 arrows, 3 words either side, e.g. "Variables → Make a Variable"). Write ACTIONS as sentences or numbered steps — an arrow between two things to DO hides a sequence.
+    WAIVED j1-sq1 › sq-onedrive › config › help: action-arrow chain (DFM 171 family): "Launch → Microsoft 365 Web Apps" — a 4-word step. Palette paths only (at most 2 arrows, 3 words either side, e.g. "Variables → Make a Variable"). Write ACTIONS as sentences or numbered steps — an arrow between two things to DO hides a sequence.
+    WAIVED j1-sq1 › sq-onedrive › config › help: action-arrow chain (DFM 171 family): "Microsoft 365 Web Apps → the squares menu" — a 4-word step. Palette paths only (at most 2 arrows, 3 words either side, e.g. "Variables → Make a Variable"). Write ACTIONS as sentences or numbered steps — an arrow between two things to DO hides a sequence.
+    WAIVED j1-sq1 › exit › config › intro: banned register: "scenario" — adult exam word → "questions" / "what would happen if"
+
+FILM CAPTIONS — the same net, on the screen she watches (DFM 179):
+  scanned 262 caption/card/callout string(s) across l2, l3, l4, l5  (scenes/guide.js excluded by design — its reader is a teacher, DFM 179e)
+  clean
+
+LAYER 2 — the read-aloud ledger (the gate that matters):
+
+  SHORT-SENTENCE DEBT — 407 sentence(s) of six words or fewer ride a bulk stamp rather than a per-sentence judgement. REPORTED, NOT BLOCKING, and the reason is written down rather than quietly assumed: LENGTH CANNOT TELL A FRAGMENT FROM A GOOD SHORT SENTENCE. "Nobody is ranked against anybody." and "Every game keeps score." are both fine; "Four player tickets, four open cases." is not — and it is SEVENTEEN words, so no length rule reaches it at all. Blocking on this would have failed hundreds of good sentences, including text Damien has signed off. The list below is real work for the cold-read pass; it is not a verdict.
+    DEBT FRAGMENT NEEDS A REAL JUDGEMENT: j1-01 › briefing › config › headline — carries a 4-word sentence ("Welcome to Digital Technology.") and rides a bulk grandfathered stamp.
+    DEBT FRAGMENT NEEDS A REAL JUDGEMENT: j1-01 › briefing › config › lines[4] — carries a 5-word sentence ("Nobody is ranked against anybody.") and rides a bulk grandfathered stamp.
+    DEBT FRAGMENT NEEDS A REAL JUDGEMENT: j1-01 › briefing › config › help — carries a 3-word sentence ("Nothing to answer.") and rides a bulk grandfathered stamp.
+    DEBT FRAGMENT NEEDS A REAL JUDGEMENT: j1-01 › calibration › config › variant — carries a 1-word sentence ("calibration") and rides a bulk grandfathered stamp.
+    DEBT FRAGMENT NEEDS A REAL JUDGEMENT: j1-01 › calibration › config › items[1] › stem — carries a 2-word sentence ("What happens?") and rides a bulk grandfathered stamp.
+    DEBT FRAGMENT NEEDS A REAL JUDGEMENT: j1-01 › calibration › config › items[1] › options[1] — carries a 3-word sentence ("You lose points") and rides a bulk grandfathered stamp.
+    DEBT FRAGMENT NEEDS A REAL JUDGEMENT: j1-01 › calibration › config › items[2] › stem — carries a 4-word sentence ("What is the number?") and rides a bulk grandfathered stamp.
+    DEBT FRAGMENT NEEDS A REAL JUDGEMENT: j1-01 › calibration › config › items[2] › options[1] — carries a 6-word sentence ("How many minutes I have left") and rides a bulk grandfathered stamp.
+    … and 399 more
+
+  FRAGMENT-CANDIDATES — 4 on the lessons under review, 11 on locked lessons. REPORTED, NOT BLOCKING.
+    A chain of labels with nothing DOING anything reads as a headline, not a
+    sentence — his verdict on "Four player tickets, four open cases." Each line
+    below is a SUSPECT for the cold-read pass (checklist q11) to decide, and some
+    will be fine. 192b is enforced by that judgement, not by this list.
+    CANDIDATE j1-05 › build › config › templates › maze › criteria[1] › outcomes[2] › mech [CHAIN(inter)] "in the top mouth and 'Locked!'  ·  in the else."
+    CANDIDATE j1-05 › build › config › templates › quiz › blueprint › steps[2] › text [CHAIN(inter)] "The condition asks: answer = true.  ·  for 1 second."
+    CANDIDATE j1-05 › build › config › templates › quiz › criteria[0] › outcomes[1] › mech [CHAIN(intra)] "Drag change score by 1 into the if's top mouth, next to say 'Correct!'."
+    CANDIDATE j1-05 › press › config › wrap › note [CHAIN(inter)] "No scores.  ·  No rankings."
+    WAIVED (locked) j1-01 › b1-login › config › intro [CHAIN(intra)] "Three things to read, then some questions."
+    WAIVED (locked) j1-01 › b1-login › config › intro [CHAIN(inter)] "Then the rules of this room.  ·  Three things to read, then some questions."
+    WAIVED (locked) j1-01 › b1-login › config › steps[0] › text [CHAIN(intra)] "Not with your best friend, not with your siblings, not with anyone who says they are helpi"
+    WAIVED (locked) j1-01 › b2-navigator › config › stops[0] › text [CHAIN(intra)] "Your whole year, at a glance."
+    WAIVED (locked) j1-01 › b2-navigator › config › items[2] › options[1] [CHAIN(intra)] "The whole class, on a scoreboard"
+    WAIVED (locked) j1-01 › b2-navigator › config › items[2] › options[2] [CHAIN(intra)] "Nobody at all, not even you"
+    WAIVED (locked) j1-02 › hook › config › lines[1] [CHAIN(intra)] "A lift button, a pedestrian crossing, a fitness tracker: something happens (the INPUT — a "
+    WAIVED (locked) j1-02 › ladder › config › unplugged › lines[3] [CHAIN(inter)] "New signal!  ·  SENSOR: mime shaking the micro:bit."
+    WAIVED (locked) j1-02 › ladder › config › unplugged › soloLines[2] [CHAIN(intra)] "With one hand, mime pressing an invisible button."
+    WAIVED (locked) j1-02 › packup › config › intro [CHAIN(intra)] "Two last jobs, so the micro:bits are ready for the next class."
+    WAIVED (locked) j1-sq1 › keys › sq-ex1 › explain [CHAIN(intra)] "Two logins' worth of storage, two separate buildings: Microsoft work lives in OneDrive, Go"
+  3 unrecorded or stale sentence(s)
+  FAIL UNREVIEWED: j2-99 › title — no read-aloud record. Ask it as a 12 or 13-year-old: can she DO it, PICTURE every noun, SAY what it is for? Then: node ledger-tool.js --add "j2-99 › title"
+  FAIL UNREVIEWED: j2-99 › probe › title — no read-aloud record. Ask it as a 12 or 13-year-old: can she DO it, PICTURE every noun, SAY what it is for? Then: node ledger-tool.js --add "j2-99 › probe › title"
+  FAIL UNREVIEWED: j2-99 › probe › config › intro — no read-aloud record. Ask it as a 12 or 13-year-old: can she DO it, PICTURE every noun, SAY what it is for? Then: node ledger-tool.js --add "j2-99 › probe › config › intro"
+
+qa-language: 4 FAILURE(S)
+
+
+PACK STOPPED: the communication-of-language harness failed (DFM 172).
+Fix the sentences, or record the read-aloud judgement, then pack again.

@@ -1,0 +1,153 @@
+[wrongpath 4] opened: 🔍Lesson 4The Broken GameFour bugs. One 
+[wrongpath 4] screen: OLS KS3 Digital Technology
+[wrongpath 4]   (nothing to click yet — waiting)
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 6 locked control(s) — each explained itself
+[wrongpath 4] screen: Get the broken game
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 5 locked control(s) — each explained itself
+[wrongpath 4] screen: The Frozen Shark
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4]   wrong move: an empty box in .case-log-input — the refusal explains itself
+[wrongpath 4]   wrong move: a three-word answer in .case-log-input — the refusal explains itself
+[wrongpath 4]   wrong move: an empty box in textarea — the refusal explains itself
+[wrongpath 4]   wrong move: a three-word answer in textarea — the refusal explains itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4]   wrong move: an empty box in .case-log-input — the refusal explains itself
+[wrongpath 4]   wrong move: a three-word answer in .case-log-input — the refusal explains itself
+[wrongpath 4]   wrong move: an empty box in textarea — the refusal explains itself
+[wrongpath 4]   wrong move: a three-word answer in textarea — the refusal explains itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Vanishing Fish
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4]   wrong move: an empty box in .case-log-input — the refusal explains itself
+[wrongpath 4]   wrong move: a three-word answer in .case-log-input — the refusal explains itself
+[wrongpath 4]   wrong move: an empty box in textarea — the refusal explains itself
+[wrongpath 4]   wrong move: a three-word answer in textarea — the refusal explains itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The White Void
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4]   wrong move: an empty box in .case-log-input — the refusal explains itself
+[wrongpath 4]   wrong move: a three-word answer in .case-log-input — the refusal explains itself
+[wrongpath 4]   wrong move: an empty box in textarea — the refusal explains itself
+[wrongpath 4]   wrong move: a three-word answer in textarea — the refusal explains itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The Jellyfish Job
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4]   wrong move: an empty box in .case-log-input — the refusal explains itself
+[wrongpath 4]   wrong move: a three-word answer in .case-log-input — the refusal explains itself
+[wrongpath 4]   wrong move: an empty box in textarea — the refusal explains itself
+[wrongpath 4]   wrong move: a three-word answer in textarea — the refusal explains itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The whole-game check
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Case Board
+
+SCREENS THE CONFUSED PUPIL STOOD ON (9 distinct, 76 visits):
+   · OLS KS3 Digital Technology
+   · The Case Board
+   · Get the broken game
+   · The Frozen Shark
+   · The Broken Scoreboard
+   · The Vanishing Fish
+   · The White Void
+   · The Jellyfish Job
+   · The whole-game check
+  gates tested per screen: every unactionable control clicked; every text box submitted empty and then with three words.
+
+sit-wrongpath 4: PASS — every refusal on the walked path explained itself, in the state the pupil was actually in.

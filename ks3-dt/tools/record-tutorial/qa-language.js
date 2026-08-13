@@ -285,7 +285,22 @@ catch (e) {
 
 /* A filename wrecks the tagger — "Pick shark-attack-broken-edition.sb3" reads
    as verbless — so it becomes an ordinary noun phrase before tagging. */
-const fragNormalise = (text) => prose(text).replace(/\S+\.\w{2,4}\b/g, 'the file');
+/* NORMALISATION FOR THE POS PATH ONLY (the debt list keeps the original text).
+   Three things confuse the tagger rather than the reader, each fixed here:
+     · filenames  "shark-attack-broken-edition.sb3" -> the file
+     · Scratch BLOCK NAMES inside **bold**: "Drag **change score by 1** into…"
+       tagged as one long noun phrase and swallowed the imperative "Drag", so a
+       perfectly good instruction was reported as verbless (12 Aug artefact 3).
+     · QUOTED EXCLAMATIONS  'Locked!' / 'Not this time!' ended a sentence
+       mid-clause, so ONE good sentence read as two verbless ones (artefacts 1
+       and 2). Protected before the splitter ever sees them.
+   These are the three false candidates reported on 12 Aug; the ruling (DFM 201i)
+   is that they are fixed here rather than tolerated as a noise floor, because
+   the same run also drops the clause floor and a noisy reporter stops being read. */
+const fragNormalise = (text) => prose(String(text)
+  .replace(/\*\*([^*]+)\*\*/g, (m, inner) => (/\s/.test(inner) ? 'the block' : inner)))
+  .replace(/\S+\.\w{2,4}\b/g, 'the file')
+  .replace(/(["'‘“])([^"'’”]{1,40}?)[!?]([”’"'])/g, '$1$2$3');
 
 /* Bare base verbs COUNT: "Now try…", "then look…" are tagged #Infinitive with
    no "to", and excluding them was the prototype's false-positive engine. What
@@ -318,7 +333,12 @@ function leadingVerblessRun(sentence) {
   const clauses = head.split(',').map(c => c.trim()).filter(Boolean);
   let run = 0;
   for (let i = 0; i < clauses.length; i++) {
-    if (wordCount(clauses[i]) < 3 || hasRealVerb(clauses[i])) break;
+    /* FLOOR 3 -> 2 WORDS (DFM 201i, his 13 Aug find). The release-desk sentence
+       he caught — "Four fixes, one game — and some bugs only show up…" — chains
+       two TWO-word verbless clauses, so a three-word floor could not reach it,
+       and the judged pass missed it too. Two words is the shortest thing that
+       can be a clause at all; below that a run is punctuation, not register. */
+    if (wordCount(clauses[i]) < 2 || hasRealVerb(clauses[i])) break;
     run++;
   }
   return run;
@@ -1274,6 +1294,24 @@ function runControls() {
     "Last, press Check my Drive. The website really does look in your Drive, the same check as every build this term.";
   control(fragmentCandidates(G4).length >= 1,
     'the pre-fix ship help opening "Three steps." is a candidate (the one this detector found on current content, 12 Aug)');
+  /* DFM 201i, HIS 13 AUG FIND — the sentence that proved the three-word clause
+     floor too high: "Four fixes, one game" is two TWO-word verbless clauses, so
+     nothing could reach it and the judged pass walked past it too. This control
+     is the reason the floor is 2, and it must never go silent again. */
+  const G5 = 'Four fixes, one game — and some bugs only show up when the whole game is played.';
+  control(fragmentCandidates(G5).length >= 1,
+    'HIS RELEASE-DESK FIND is a candidate at the two-word clause floor (it was invisible at three)');
+  /* THE THREE 12 AUG ARTEFACTS. Each was a REAL sentence wrongly reported, and
+     each is now normalised away rather than tolerated as a noise floor — a
+     reporter with known false rows is a reporter that stops being read. */
+  const A1 = "The sprite says 'Locked!' and slides back to the start of the maze.";
+  control(fragmentCandidates(A1).length === 0,
+    'a quoted exclamation no longer splits one good sentence into two verbless ones (artefact 1)');
+  const A2 = "It says 'Not this time!' when the answer is wrong.";
+  control(fragmentCandidates(A2).length === 0, 'same artefact on the quiz blueprint step (artefact 2)');
+  const A3 = 'Drag **change score by 1** into the empty mouth of the if block.';
+  control(fragmentCandidates(A3).length === 0,
+    'a Scratch BLOCK NAME in bold no longer swallows the imperative "Drag" (artefact 3)');
   /* THE OVER-TIGHTENING GUARDS. A reporter that cries at good writing gets
      ignored, and an ignored reporter is worse than none (DFM 146a). Each line
      below is text that must stay silent — three of them are sentences the

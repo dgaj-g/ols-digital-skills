@@ -161,6 +161,16 @@ const scenes = [
       /* click the Shark ON CAMERA, so "its scripts" is something she watched
          happen rather than a claim about a screen she never saw change */
       await cine.click(sharkTile.cx, sharkTile.cy, { after: 1300 });
+
+      /* DFM 201a — HIS FIND: "the code blocks… are not all visible in the frame."
+         The Shark's five stacks do not fit Scratch's default zoom. Zoom out ON
+         CAMERA before naming the code area, so she sees the move and the frame
+         then really does hold everything the callout is about to talk about. */
+      await cine.captionShow('Five stacks of blocks &mdash; and if you cannot see them all, the <b>minus button</b> at the bottom right zooms out until you can.');
+      const zoomClicks = await drv.fitWorkspace(cine);
+      await cine.captionHide();
+      log('workspace fitted with ' + zoomClicks + ' zoom-out click(s)');
+
       const code = await drv.region('code');
       if (!code) throw new Error('code area region not found for the tour');
       await cine.callout({ x: code.x + 6, y: code.y + 6, w: code.w - 12, h: code.h - 12 },

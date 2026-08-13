@@ -1,0 +1,44 @@
+FILM-LAW REPORT — set l4, mode report
+scenes: ch1, ch2, ch3, ch4
+TOTAL VIOLATIONS: 10  {"IN-FRAME":4,"ANCHOR-OFF-FRAME":2,"CURSOR-ON-TEXT":4}
+
+1. [IN-FRAME] ch1 — callout "This side is the STAGE &mdash; where the game ac"
+     text: "This side is the STAGE — where the game actually plays. The green flag starts the game; th"
+     rect: [646,478,634,117]
+     viewport: [1280,720]
+2. [ANCHOR-OFF-FRAME] ch1 — callout "These little pictures are the game’s SPRITES &md"
+     text: "These little pictures are the game’s SPRITES &mdash; one for each character or thing. This"
+     rect: [786,458,410,266]
+     viewport: [1280,720]
+3. [IN-FRAME] ch1 — callout "These little pictures are the game’s SPRITES &md"
+     text: "These little pictures are the game’s SPRITES — one for each character or thing. This game "
+     rect: [646,374,634,117]
+     viewport: [1280,720]
+4. [IN-FRAME] ch1 — callout "The middle is the CODE AREA. These stacks of blo"
+     text: "The middle is the CODE AREA. These stacks of blocks are the Shark’s SCRIPTS — its instruct"
+     rect: [81,732,668,117]
+     viewport: [1280,720]
+5. [ANCHOR-OFF-FRAME] ch1 — callout "Down the left side live all the blocks Scratch k"
+     text: "Down the left side live all the blocks Scratch knows, sorted into colour groups. You drag "
+     rect: [-3,97,69,567]
+     viewport: [1280,720]
+6. [IN-FRAME] ch1 — callout "Down the left side live all the blocks Scratch k"
+     text: "Down the left side live all the blocks Scratch knows, sorted into colour groups. You drag "
+     rect: [14,682,668,117]
+     viewport: [1280,720]
+7. [CURSOR-ON-TEXT] ch1 — caption "Sprites, scripts, the stage &mdash; that is the "
+     text: "Sprites, scripts, the stage — that is the whole map. Now read some code."
+     rect: [329,588,631,106]
+     cursor: [834.1953125,624]
+8. [CURSOR-ON-TEXT] ch1 — caption "You just read someone else’s code. That is the d"
+     text: "You just read someone else’s code. That is the detective’s first skill — read it BEFORE yo"
+     rect: [329,553,631,142]
+     cursor: [834.1953125,624]
+9. [CURSOR-ON-TEXT] ch1 — caption "Next: why one of the Shark’s scripts never runs "
+     text: "Next: why one of the Shark’s scripts never runs at all."
+     rect: [329,588,631,106]
+     cursor: [834.1953125,624]
+10. [CURSOR-ON-TEXT] ch2 — callout "A HAT BLOCK. It names the trigger: WHEN this hap"
+     text: "A HAT BLOCK. It names the trigger: WHEN this happens, run everything below"
+     rect: [132,433,668,87]
+     cursor: [700,430]

@@ -1,0 +1,143 @@
+[wrongpath 4] opened: 🔍Lesson 4The Broken GameFour bugs. One 
+[wrongpath 4] screen: OLS KS3 Digital Technology
+[wrongpath 4]   (nothing to click yet — waiting)
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: Get the broken game
+[wrongpath 4] screen: The Case Board
+[wrongpath 4] screen: The Frozen Shark
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+[wrongpath 4] screen: The Broken Scoreboard
+[wrongpath 4] screen: The Case Board
+[wrongpath 4]   wrong move: clicked 1 locked control(s) — each explained itself
+
+SCREENS THE CONFUSED PUPIL STOOD ON (5 distinct, 80 visits):
+   · OLS KS3 Digital Technology
+   · The Case Board
+   · Get the broken game
+   · The Frozen Shark
+   · The Broken Scoreboard
+  gates tested per screen: every unactionable control clicked; every text box submitted empty and then with three words.
+
+CONSOLE ERRORS (3):
+   ! Failed to load resource: the server responded with a status of 404 (Not Found)
+   ! Failed to load resource: the server responded with a status of 404 (Not Found)
+   ! Failed to load resource: the server responded with a status of 404 (Not Found)
+
+CONTROL OK — the pre-fix build fails the confused pupil. 8 finding(s):
+  ✗ The Case Board: "CASE 03The Vanishing Fish★★★★★🔧🔧🔧SEALED" will not act and nothing on screen says why — not before the click, and not after it
+  ✗ The Case Board: "CASE 04The White Void★★★★★🔧🔧🔧🔧SEALED" will not act and nothing on screen says why — not before the click, and not after it
+  ✗ The Frozen Shark: "Full lap flown — all four arrows work" will not act and nothing on screen says why — not before the click, and not after it
+  ✗ The Frozen Shark [nothing typed]: "Full lap flown — all four arrows work" refuses and nothing beside it says what it wants
+  ✗ The Frozen Shark [three words typed]: "Full lap flown — all four arrows work" refuses and nothing beside it says what it wants
+  ✗ The Broken Scoreboard: "Three catches, three points — the scoreboard tells the truth" will not act and nothing on screen says why — not before the click, and not after it
+  ✗ The Broken Scoreboard [nothing typed]: "Three catches, three points — the scoreboard tells the truth" refuses and nothing beside it says what it wants
+  ✗ The Broken Scoreboard [three words typed]: "Three catches, three points — the scoreboard tells the truth" refuses and nothing beside it says what it wants
