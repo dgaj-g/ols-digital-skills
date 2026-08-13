@@ -84,6 +84,29 @@ function languageGate() {
   console.log('language gate: PASSED (qa-language)');
 }
 
+/* THE AUDIT GATE (audit gap G7; DFM 195b). Damien: "you've logged rulings as a
+   rule. this makes no sense to me. does it have a harness?" Not every rule can
+   have one — but no rule may exist without declaring WHICH of the three homes
+   enforces it, and that declaration is itself machine-checked. Write rule 199
+   tomorrow and forget its row in DFM_ENFORCEMENT_AUDIT.md, and the pack stops.
+   Rule 144's law, applied to the file that records rule 144. */
+function auditGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-dfm-audit.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-dfm-audit.js is missing - the audit gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error((res.stdout || '') + (res.stderr || ''));
+    console.error('\nPACK STOPPED: a rule in DAMIEN_FEEDBACK_MASTER.md has no enforcement home.');
+    console.error('Add its row to DFM_ENFORCEMENT_AUDIT.md (A harnessed / B judged / D standing');
+    console.error('order / E his call / F gap), then pack again.');
+    process.exit(1);
+  }
+  console.log('audit gate: PASSED (qa-dfm-audit)');
+}
+
 /* THE VERSION GATE (his 11 Aug 2026 find, DFM 189). Every content change since
    4 Aug shipped under the SAME contentVersion "2026-08-03c" - and that string is
    the cache key on BOTH sides: app.js stores each lesson file in localStorage
@@ -144,6 +167,7 @@ function versionGate() {
 
 function main() {
   languageGate();
+  auditGate();
   const stamp = versionGate();
   const sec = secret();
   const devKeys = {};

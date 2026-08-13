@@ -163,9 +163,45 @@ const scenes = [
         'Every apple, the gate chooses again. Exactly <b>ONE mouth</b> runs each time &mdash; never both.',
         'This is Scratch&rsquo;s <b>if/else</b> block. Choosing has a name &mdash; <b>SELECTION</b> &mdash; and it is what turns a slideshow into a game.'
       ];
+      /* THE LEGIBILITY GATE (L5 spec Part C). Damien's verdict on the beat
+         stills: the apple "is the star and reads small", the lamps are
+         "near-invisible until lit". Sizes are now MEASURED at the moment each
+         thing is being taught, and the take is refused below the floor — the
+         hat-block's law, applied to this animation (DFM 192e/146b).
+         Beats 3 and 4 are sampled DURING the apple's naming pause at the gate;
+         beat 5 is sampled while all four labels are on screen at once. */
+      const CG_MIN = { apple: 90, label: 18 };
+      const CG_SAMPLE = { 3: ['apple', 'YES', 'TOP MOUTH'], 4: ['apple', 'NO', 'ELSE MOUTH'],
+        5: ['TOP MOUTH', 'ELSE MOUTH'] };
+      const cgSizes = {};
       for (let i = 0; i < CG_BEATS.length; i++) {
+        const beatNo = i + 1;
         await cine.captionShow(CG_BEATS[i]);
-        await drv.page.evaluate(n => window.cg.play(n), i + 1);
+        if (CG_SAMPLE[beatNo]) {
+          const playing = drv.page.evaluate(n => window.cg.play(n), beatNo);
+          /* beats 3/4: entry 0.9s + fall 0.75s, then a 1.2s pause at the gate —
+             sample inside it. Beat 5: both mouth labels are already lit. */
+          await drv.page.waitForTimeout(beatNo === 5 ? 1200 : 2600);
+          const seen = await drv.page.evaluate(() => window.cg.probeTokens());
+          CG_SAMPLE[beatNo].forEach(name => {
+            const tok = (seen || []).find(t => t.name === name);
+            if (!tok) {
+              throw new Error('choice-gate beat ' + beatNo + ': "' + name +
+                '" was not on screen at its teaching moment (saw ' + JSON.stringify(seen) + ')');
+            }
+            const floor = name === 'apple' ? CG_MIN.apple : CG_MIN.label;
+            if (tok.px < floor) {
+              throw new Error('choice-gate beat ' + beatNo + ': ' + name + ' measures only ' +
+                tok.px + 'px tall — the floor is ' + floor + 'px (L5 spec Part C)');
+            }
+            cgSizes[name] = tok.px;
+          });
+          log('choice-gate legibility ok (beat ' + beatNo + '): ' +
+            CG_SAMPLE[beatNo].map(n => n + ' = ' + cgSizes[n] + 'px').join(', '));
+          await playing;
+        } else {
+          await drv.page.evaluate(n => window.cg.play(n), beatNo);
+        }
         if (i === 0) {
           /* DFM 146b: prove the pixels, not the absence of an error */
           const first = await drv.page.evaluate(() => window.cg.probe());

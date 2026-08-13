@@ -162,8 +162,8 @@
       },
       "img": {
        "src": "assets/img/l4/evidence-c2.png",
-       "alt": "A screenshot of the game: the shark's mouth on a fish, and the score display in the corner reading 0.",
-       "caption": "ChompChamp07's screenshot: a fish being eaten while the score sits on 0."
+       "alt": "A screenshot of the game: the shark chasing a fish, with the score display in the corner still reading 0.",
+       "caption": "ChompChamp07's screenshot: the hunt is on, and the score has not moved off 0."
       }
      },
      {
@@ -240,7 +240,8 @@
      "confirm": "Danger installed — touching the jellyfish ends the game",
      "ask": "One line for the release notes: what did you add, and what does it do to the player?",
      "notePlaceholder": "I added a jellyfish that... so now the player...",
-     "lockedNote": "This tick unlocks when your release note above is written — a full sentence."
+     "lockedNote": "This tick unlocks when your release note above is written — a full sentence.",
+     "sealedRibbon": "SEALED UNTIL CASE 01 CLOSES"
     },
     "stretchNudge": "Your fixed game has gone back to the players — but one five-star request is still pinned to the board. Take the job, or finish for today?",
     "rc": {
@@ -301,7 +302,9 @@
     "clueStep2Head": "Help step 2 — ask another agency",
     "clueHqButton": "Help step 3 — show HQ's clue (this case will then stamp SILVER instead of GOLD)",
     "clueSilverNote": "You took HQ's clue, so this case stamps SILVER when it closes. A silver case still counts — solve the next one without the clue for GOLD.",
-    "handbookNote": "Come back to this film any time. Chapter 3 helps most while you are working on a case."
+    "handbookNote": "Come back to this film any time. Chapter 3 helps most while you are working on a case.",
+    "sealedNoKit": "SEALED UNTIL YOU HAVE THE GAME",
+    "sealedRibbon": "SEALED UNTIL CASE 01 CLOSES"
    }
   },
   {

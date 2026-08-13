@@ -43,8 +43,16 @@ function staticChecks() {
     const i = d.chunks.indexOf(videoChunk);
     const next = d.chunks[i + 1];
     const nextCfg = (next && next.config) || {};
+    /* RE-STAGED 12 Aug 2026 for the DFM 168 split. Lesson 5's film is served in
+       two halves in two places, so the desk's MAIN film button now serves the
+       second half — and the rule this check enforces is not "the same button",
+       it is "she is never stranded away from the film she was just watching".
+       So the screen after Done watching must carry THAT film somewhere: the
+       ladder's `film`, the desk's `masterclass`, or the desk's second player
+       `masterclassAlt`, which exists for exactly this reason. */
     const carries = (nextCfg.film && nextCfg.film.src === src) ||
-      (nextCfg.masterclass && nextCfg.masterclass.src === src);
+      (nextCfg.masterclass && nextCfg.masterclass.src === src) ||
+      (nextCfg.masterclassAlt && nextCfg.masterclassAlt.src === src);
     check(carries, id + ': the screen after "Done watching" (' + (next && next.id) +
       ') carries the film, so it can offer a way back');
   });

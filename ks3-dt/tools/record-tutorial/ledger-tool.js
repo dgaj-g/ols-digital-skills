@@ -50,49 +50,17 @@ const LEDGER_FILE = path.join(SRC, 'language-ledger.json');
 const sha1 = (s) => crypto.createHash('sha1').update(s, 'utf8').digest('hex').slice(0, 16);
 
 const READERS = { j1: 'an 11 or 12-year-old', j2: 'a 12 or 13-year-old', j3: 'a 13 or 14-year-old' };
-const MACHINE_KEYS = new Set([
-  'id', 'src', 'href', 'url', 'file', 'poster', 'img', 'icon', 'engine', 'phase',
-  'mode', 'year', 'kind', 'kinds', 'logTerms', 'skin', 'clearToast_dev'
-]);
-
-function collectStrings(lesson, fileId) {
-  const out = [];
-  const push = (p, s) => { if (typeof s === 'string' && s.trim()) out.push({ path: p, text: s }); };
-  const walk = (node, p) => {
-    if (node === null || node === undefined) return;
-    if (typeof node === 'string') { push(p, node); return; }
-    if (Array.isArray(node)) { node.forEach((v, i) => walk(v, p + '[' + i + ']')); return; }
-    if (typeof node !== 'object') return;
-    Object.keys(node).forEach(k => { if (!MACHINE_KEYS.has(k)) walk(node[k], p + ' › ' + k); });
-  };
-  ['title', 'tagline'].forEach(k => push(fileId + ' › ' + k, lesson[k]));
-  (lesson.chunks || []).forEach(ch => {
-    const base = fileId + ' › ' + ch.id;
-    push(base + ' › title', ch.title);
-    if (ch.badge && ch.badge.name) push(base + ' › badge › name', ch.badge.name);
-    walk(ch.config || {}, base + ' › config');   /* mirrors qa-language.js exactly */
-  });
-  Object.keys(lesson.keys || {}).forEach(k => {
-    if (k !== '_brief' && lesson.keys[k] && lesson.keys[k].explain) {
-      push(fileId + ' › keys › ' + k + ' › explain', lesson.keys[k].explain);
-    }
-  });
-  return out.filter(s => !/›\s*mis(\s|›|\[)/.test(s.path));
-}
-
-function loadAll(only) {
-  const dir = path.join(SRC, 'j1/lessons');
-  return fs.readdirSync(dir)
-    .filter(f => /^j\d-.*\.json$/.test(f) && !f.includes('.bak'))
-    .map(f => {
-      const fileId = f.replace(/\.json$/, '');
-      if (only && fileId !== only) return null;
-      const json = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
-      return { fileId, json, strings: collectStrings(json, fileId) };
-    })
-    .filter(Boolean)
-    .sort((a, b) => Number(a.json.num || 99) - Number(b.json.num || 99));
-}
+/* The string COLLECTOR is qa-language.js's too — same reason as the walk below.
+   This file used to carry a copy "that mirrors qa-language.js exactly", which is
+   a promise no comment can keep. */
+/* THE LESSON WALK LIVES IN qa-language.js AND ONLY THERE (DFM 144). It used to
+   be copied here, and on 12 Aug 2026 Damien asked "will these persist to J2 and
+   J3?" — both copies read `j1/lessons` and nothing else, so a J2 lesson would
+   have been invisible to the gate AND to this tool at the same time. Two copies
+   of a rule are two chances to be wrong; there is now one walk, and its
+   multi-year control lives with it. */
+const loadAll = (only) => require('./qa-language.js').loadLessons()
+  .filter(L => !only || L.fileId === only);
 
 const load = () => fs.existsSync(LEDGER_FILE)
   ? JSON.parse(fs.readFileSync(LEDGER_FILE, 'utf8'))
@@ -109,7 +77,7 @@ function main() {
     const lessons = loadAll(args[1]);
     let n = 0;
     lessons.forEach(L => {
-      const reader = READERS[L.json.year] || READERS.j1;
+      const reader = READERS[L.year || L.json.year] || READERS.j1;
       L.strings.forEach(s => {
         const e = ledger.entries[s.path];
         const stale = e && e.sha1 !== sha1(s.text);

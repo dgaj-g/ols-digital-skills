@@ -900,6 +900,14 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   background: rgba(26, 58, 107, 0.05); border-left: 3px solid var(--gold);
   border-radius: var(--r-sm); line-height: 1.5;
 }
+/* the film-split signpost (DFM 168, L5 spec Part B): a pupil who has watched
+   this half to the end must be told, on this card, where the other half lives.
+   Sits UNDER the player, above Done watching, so it is the last thing read. */
+.video-note {
+  text-align: left; margin: 12px 0 2px; padding: 11px 14px;
+  background: rgba(var(--gold-rgb), 0.12); border-left: 3px solid var(--gold);
+  border-radius: var(--r-sm); line-height: 1.5;
+}
 /* (rule 138.2) the step-card "Show me how" clip, and the note his instruction
    puts on screen once the clip has finished playing */
 .step-cliprow { margin: 10px 0 2px; }

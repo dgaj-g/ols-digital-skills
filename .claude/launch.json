@@ -42,6 +42,16 @@
         "8121"
       ],
       "port": 8121
+    },
+    {
+      "name": "prefix-l4-8097",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "ks3-dt/tools/dev-static.js",
+        "8097",
+        "/private/tmp/prefix-l4"
+      ],
+      "port": 8097
     }
   ]
 }
