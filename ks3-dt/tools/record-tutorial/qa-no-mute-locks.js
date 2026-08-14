@@ -70,7 +70,16 @@ const AUDIT = (EXPLAIN_PX) => {
   };
   const unactionable = (e) =>
     e.disabled === true || e.getAttribute('aria-disabled') === 'true' || e.classList.contains('locked');
-  const EXPLAINS = /unlock|until|locked|needs|write|type|fill|both halves|appears|at least|lights up|turns on|wakes|opens when|available when|once all|once you|when all|when your|as soon as|first you|you need/i;
+  /* "…first" joined this list on 14 Aug 2026 (DFM 221). It is one of the plainest
+   ways English says what has to happen before a control will work, and the
+   platform already uses it: Lesson 3's Rally prints "Run the timer first" on a
+   tag directly above the score steppers, exactly where a pupil looks — and the
+   list recognised "first you" but not a sentence ENDING in "first", so five
+   controls on a signed-off lesson were reported as unexplained when the screen
+   was explaining them perfectly. A gate that invents a fault is worse than no
+   gate (DFM 146a), and this is a recognition rule, not a loosening: a control
+   with no sentence beside it at all still fails. */
+const EXPLAINS = /unlock|until|locked|needs|write|type|fill|both halves|appears|at least|lights up|turns on|wakes|opens when|available when|once all|once you|when all|when your|as soon as|first you|you need|\bfirst\b/i;
   const host = document.querySelector('.chunk-host') || document.body;
   const out = [];
   /* NOTHING BEHIND A MODAL IS IN SCOPE (added 14 Aug 2026, DFM 221).
