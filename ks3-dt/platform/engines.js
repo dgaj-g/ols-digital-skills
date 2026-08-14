@@ -3883,8 +3883,14 @@
           '<h2>The Studio Desk</h2>' +
           '<span class="std-count">' + ticks + ' of ' + crits.length + ' QA checks passed</span></div>' +
 
+          /* HIS FIND (DFM 212): the zones are numbered 1-2-3, but only the QA
+             desk is gated — the blueprint is live from the first render. The
+             numbers promised a chain the screen does not follow. They now say
+             WHEN each zone is used, which is the true relationship, rather than
+             locking the plan away (a pupil must be able to read the plan). */
           '<div class="std-toolrow">' +
           '<div class="card std-tool' + (kit ? ' done' : '') + '"><span class="std-qa-tag">1 &middot; THE KIT</span>' +
+          ((cfg.zoneWhen && cfg.zoneWhen.kit) ? '<p class="std-zone-when">' + esc(cfg.zoneWhen.kit) + '</p>' : '') +
           '<p>' + esc((cfg.kit && cfg.kit.intro) || 'Download your starter kit and load it at scratch.mit.edu.') + '</p>' +
           '<p class="case-getgame-btns"><a class="primary-btn" href="' + esc(asset(t.file)) + '" download>&#11015;&#65039; Download the ' + esc(t.name) + ' kit</a> ' +
           '<a class="ghost-btn" href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener">Open the Scratch editor &#8599;</a></p>' +
@@ -3899,6 +3905,7 @@
           '<button class="confirm-step std-kit-confirm" type="button"' + (kit ? ' disabled' : '') + '><span class="confirm-box' + (kit ? ' done' : '') + '"></span><span>' + esc((cfg.kit && cfg.kit.confirm) || 'The kit is open in Scratch and I can see its code') + '</span></button></div>' +
 
           '<div class="card std-tool"><span class="std-qa-tag">2 &middot; THE BLUEPRINT</span>' +
+          ((cfg.zoneWhen && cfg.zoneWhen.blueprint) ? '<p class="std-zone-when">' + esc(cfg.zoneWhen.blueprint) + '</p>' : '') +
           '<p>' + esc((t.blueprint && t.blueprint.intro) || 'Exactly what your studio adds - in order.') + '</p>' +
           '<button class="ghost-btn std-blueprint-btn" type="button">&#128506;&#65039; Open the blueprint</button> ' +
           /* the label is content's, not the engine's (rule 172): after the DFM 168
@@ -3918,6 +3925,7 @@
           '</div></div>' +
 
           '<div class="std-qadesk' + (kit ? '' : ' locked') + '"><div class="std-qadesk-head"><span class="std-qa-tag">3 &middot; THE QA DESK</span>' +
+          ((cfg.zoneWhen && cfg.zoneWhen.qa) ? '<p class="std-zone-when">' + esc(cfg.zoneWhen.qa) + '</p>' : '') +
           '<p>' + esc(cfg.qaIntro || 'Four checks stand between your build and the gallery. Run each test in Scratch, then record what actually happened - crosses are QA doing its job.') + '</p>' +
           /* DFM 204 — FOUND BY THE CONFUSED-PUPIL WALKER, BEFORE HE SAT LESSON 5.
              Every check row is rendered `disabled` until the kit is confirmed, and

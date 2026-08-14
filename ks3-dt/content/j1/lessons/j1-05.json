@@ -145,12 +145,12 @@
       "label": "From sequence to selection"
      },
      {
-      "t": 80,
+      "t": 203,
       "label": "The if/else block"
      }
     ],
-    "help": "Watch the if/else chapter even if you picked Maze or Quiz — the block is exactly the same; your blueprint shows you where it goes in YOUR game. The worked example and the testing chapters wait on your Studio Desk, beside your blueprint, for the moment you need them.",
-    "note": "The film builds ONE game — Catch It — because the if/else block is identical in all three contracts; your blueprint shows where it goes in YOURS. The worked example and the testing chapters live on your Studio Desk, right beside the blueprint."
+    "help": "Watch this whichever contract you signed — the block is the same in all three, and it is taught here on its own, not on anybody's game. Your blueprint shows where it goes in yours. The worked example and the testing chapters wait on your Studio Desk, beside your blueprint, for the moment you need them.",
+    "note": "This film teaches the if/else block itself — not any one of the three games. Nobody's answer is given away here. You will watch the block being built in Scratch and tested, then your blueprint shows exactly where it goes in the game YOU picked. The worked example and the testing chapters live on your Studio Desk, beside the blueprint."
    }
   },
   {
@@ -167,12 +167,12 @@
    "config": {
     "phase": "build",
     "introTitle": "The Studio Sprint",
-    "intro": "This is your SPRINT — one short, focused burst of building, about 25 minutes on the clock. Your desk has three zones. The KIT gets your game open in Scratch. The BLUEPRINT lists the exact blocks your contract needs. And four QA CHECKS stand between you and the gallery. You build your OWN game — the person beside you is your QA tester, and when your teacher calls the halfway swap, you run the four tests on each other's machines. Personalise everything you like, but remember what QA taught you last lesson: looking finished and working are two different things. The READY FOR GALLERY button only believes ticks.",
-    "introSolo": "A solo sprint — one short burst of building, and you run your own tests today. Your desk has the same three zones: the kit, the blueprint, and the four QA checks. The same rule stands: the READY FOR GALLERY button only believes ticks.",
-    "pairNote": "You each build your OWN game — but you're also your partner's QA tester. At the midpoint swap: run the four tests on THEIR machine while they run yours. A tester who didn't build it finds what the builder can't see.",
-    "qaIntro": "Four checks stand between your build and the gallery. Run each test in Scratch, then record what ACTUALLY happened — not what you hoped. A cross isn't failure: it's QA doing its job, and it hands you the exact fix. When a check that failed turns green, it earns a FOUND BY QA tag — that is the desk doing its job, not a black mark.",
+    "intro": "You have about 25 minutes to build your game. Studios call one short, focused burst of work like this a SPRINT. The desk below works top to bottom, and here is your job at each step. STEP 1, THE KIT: get your game open in Scratch. STEP 2, THE BLUEPRINT: your builder's plan — the exact blocks to add, in the order to add them. STEP 3, THE QA DESK: four tests that prove the game really works. You build your OWN game. The person beside you is your tester — when your teacher calls the swap, you run each other's four tests. Change how it looks as much as you like, but remember: a game that LOOKS finished is not the same as a game that WORKS. The READY FOR GALLERY button only counts green ticks.",
+    "introSolo": "You have about 25 minutes to build your game, and today you run your own tests. Studios call one short, focused burst of work like this a SPRINT. The desk works top to bottom. STEP 1, THE KIT: get your game open in Scratch. STEP 2, THE BLUEPRINT: your builder's plan — the exact blocks to add, in order. STEP 3, THE QA DESK: four tests that prove the game really works. The same rule stands: the READY FOR GALLERY button only counts green ticks.",
+    "pairNote": "You each build your OWN game, and you are also each other's tester. When your teacher calls the swap, you sit at your partner's machine and run their four tests while they run yours. A tester who did not build the game spots things the builder cannot see.",
+    "qaIntro": "Now you test your game, the way a real studio does. There are four tests below. For each one: read what it asks, try it in Scratch, then click the answer that matches what REALLY happened — even if that is not what you were hoping for. If your answer shows something is not working yet, the desk tells you exactly what to fix. Fix it, run that test again, and the test turns green. When all four are green, your game can open to the public. A test you got wrong first and then fixed earns a FOUND BY QA badge: finding a bug and fixing it is exactly what testing is for.",
     "kit": {
-     "intro": "Your starter kit is deliberately unfinished — it runs, but it cannot choose, count or end yet. Somewhere in its code sits a yellow STUDIO NOTE. A comment is a programmer's sticky-note — it does nothing when the game runs — and this one marks the exact spot where your big block will go. Get the kit open in Scratch:",
+     "intro": "Your starter kit already runs, but it is not finished: it cannot choose, count or end yet — that is your job today. Somewhere in its code is a yellow STUDIO NOTE. A note like that is a message one programmer leaves for another; it does nothing when the game runs, and this one marks the exact spot where your big block goes. Get the kit open in Scratch:",
      "confirm": "The kit is open in Scratch and I found the STUDIO NOTE comment in its code"
     },
     "masterclass": {
@@ -182,10 +182,10 @@
      "chapters": [
       {
        "t": 0,
-       "label": "Worked example: Catch It"
+       "label": "Building it for real"
       },
       {
-       "t": 110,
+       "t": 143,
        "label": "Test like a studio"
       }
      ],
@@ -206,12 +206,12 @@
       "file": "assets/games/catch-it-starter.sb3",
       "blueprint": {
        "title": "The Catch It blueprint",
-       "intro": "Five moves, in order. The STUDIO NOTE comment in the Apple's code marks the exact spot for the big one.",
+       "intro": "This is your BLUEPRINT — a builder's plan. It lists the exact blocks your game needs, in the order you add them. There are five steps, and step 3 is the big one. The STUDIO NOTE in the Apple's code marks the exact spot where it goes.",
        "steps": [
         {
          "icon": "🧮",
          "title": "Make the variables",
-         "text": "Variables → Make a Variable → 'score'. Again → 'lives'. For all sprites, both times. New variables show on stage automatically — leave the ticks on."
+         "text": "Down the left of the Scratch window is a list of coloured categories — Motion, Looks, Sound and the rest. Click Variables (the orange one), then click the button that says “Make a Variable”. Type score for the name, leave “For all sprites” chosen, and press OK. Now do the whole thing again and call the second one lives. A counter for each appears on the stage — leave their ticks on so the player can see them."
         },
         {
          "icon": "🚩",
@@ -221,7 +221,7 @@
         {
          "icon": "🔀",
          "title": "The if/else — the big one",
-         "text": "Control → if/else. It goes AFTER the fall loop, still INSIDE the forever (the STUDIO NOTE points at the spot). Condition: Sensing → touching Bowl?. Top mouth: change score by 1 + start sound pop. Bottom mouth (else): change lives by -1."
+         "text": "Click Control (the gold category) and drag out the if/else block. It goes AFTER the fall loop, still INSIDE the forever (the STUDIO NOTE points at the spot). For the question, click Sensing, drag “touching …?” into the pointed slot, and pick Bowl from its little menu. The block has two gaps. In the IF part — the top gap: change score by 1 + start sound pop. In the ELSE part — the gap underneath: change lives by -1."
         },
         {
          "icon": "🏁",
@@ -251,8 +251,8 @@
          },
          {
           "t": "It kept climbing on its own, without me catching anything.",
-          "fix": "Your change-score block is loose inside the fall loop, so it fires every tick. It must live inside the if's TOP mouth — points only exist when 'touching Bowl?' is true.",
-          "mech": "Drag change score by 1 INTO the top mouth of the if/else, right under the touching Bowl condition."
+          "fix": "Your change-score block is loose inside the fall loop, so it runs on every lap of the loop. It must live in the IF part — the top gap of the if/else — because a point should only exist when 'touching Bowl?' is true.",
+          "mech": "Drag change score by 1 INTO the IF part — the top gap of the if/else, right under the touching Bowl condition."
          },
          {
           "t": "Nothing — the score never moved.",
@@ -262,7 +262,7 @@
          {
           "t": "The score went up even when I MISSED.",
           "fix": "Scoring is happening outside the choice. If change score sits outside the if/else, every apple pays out, caught or dropped — selection means the game must CHOOSE.",
-          "mech": "Move change score by 1 inside the if's top mouth so only a real catch counts."
+          "mech": "Move change score by 1 into the IF part — the top gap — so only a real catch counts."
          }
         ]
        },
@@ -278,23 +278,23 @@
          },
          {
           "t": "Lives never moved at all.",
-          "fix": "Nothing is handling the miss. That's exactly what ELSE is for: the bottom mouth runs when the answer to 'touching Bowl?' is no. Also check the flag sets lives to 3 — a variable that's never set can't count down.",
-          "mech": "Drag change lives by -1 into the BOTTOM mouth (else). Check set lives to 3 sits at the flag."
+          "fix": "Nothing is handling the miss. That's exactly what ELSE is for: the ELSE part runs when the answer to 'touching Bowl?' is no. Also check the flag sets lives to 3 — a variable that's never set can't count down.",
+          "mech": "Drag change lives by -1 into the ELSE part — the gap underneath. Check set lives to 3 sits at the flag."
          },
          {
           "t": "I lost a life even when I CAUGHT the apple.",
-          "fix": "Your lives block is running on both branches — it's sitting outside the else, or after the whole if/else. If/else picks exactly ONE mouth: catch = top, miss = bottom.",
-          "mech": "Move change lives by -1 so it sits INSIDE the else mouth and nowhere else."
+          "fix": "Your lives block is running whatever happens — it is sitting outside the else, or after the whole if/else. If/else runs exactly ONE part: a catch runs the IF part, a miss runs the ELSE part.",
+          "mech": "Move change lives by -1 so it sits INSIDE the ELSE part and nowhere else."
          },
          {
           "t": "Lives went UP, or dropped by more than 1 at a time.",
-          "fix": "The number on the block is wrong. A miss costs exactly one life: change lives by -1 — minus one, once, in the else mouth.",
+          "fix": "The number on the block is wrong. A miss costs exactly one life: change lives by -1 — minus one, once, in the ELSE part.",
           "mech": "Click the number in change lives by and retype -1."
          },
          {
           "t": "Lives behaved — but the SCORE also changed while I was dodging.",
           "fix": "That's not a lives bug — your scoring is loose. If change score sits outside the if/else, every apple pays out, dodged or not. Check 1's fix is your fix.",
-          "mech": "Move change score by 1 INSIDE the if's top mouth (see QA check 1), then run this dodge test again."
+          "mech": "Move change score by 1 INSIDE the IF part — the top gap (see QA check 1) — then run this dodge test again."
          }
         ]
        },
@@ -311,7 +311,7 @@
          {
           "t": "One apple changed BOTH — score up AND a life gone.",
           "fix": "One of your blocks has escaped the if/else, so it runs no matter which branch fires. The whole point of selection: one situation, one branch, never both.",
-          "mech": "Both blocks live INSIDE the if/else — score in the top mouth, lives in the bottom. Nothing score-ish after it."
+          "mech": "Both blocks live INSIDE the if/else — score in the IF part, lives in the ELSE part. Nothing score-ish after it."
          },
          {
           "t": "Sometimes an apple fell and NOTHING changed.",
@@ -360,12 +360,12 @@
       "file": "assets/games/maze-escape-starter.sb3",
       "blueprint": {
        "title": "The Maze Escape blueprint",
-       "intro": "Four moves. The kit already punishes wall-touches — READ that script first (it's a working if, your best evidence). The STUDIO NOTE on the Door marks where your if/else lands.",
+       "intro": "This is your BLUEPRINT — a builder's plan. It lists the exact blocks your game needs, in the order you add them. There are five steps, and step 4 is the big one. Before you start, run the kit and walk the beetle into a wall: it says “Ouch! Back to the start.” and puts you back at the beginning. That is an IF block already doing its job — the same family as the block you are about to build. The STUDIO NOTE on the Door marks the exact spot where yours goes.",
        "steps": [
         {
          "icon": "🧮",
          "title": "Make the stars variable",
-         "text": "Variables → Make a Variable → 'stars', for all sprites. Its counter appears on stage — leave the tick on so players can see it climb."
+         "text": "Down the left of the Scratch window is a list of coloured categories — Motion, Looks, Sound and the rest. Click Variables (the orange one), then click the button that says “Make a Variable”. Type stars for the name, leave “For all sprites” chosen, and press OK. A counter appears on the stage — leave its tick on so players can watch it climb."
         },
         {
          "icon": "🚩",
@@ -380,7 +380,7 @@
         {
          "icon": "🚪",
          "title": "The door's if/else — the big one",
-         "text": "Open the Door. The STUDIO NOTE points at the gap between 'wait until touching Beetle' and 'wait until NOT touching Beetle'. Put an if/else there, with Operators' (=) asking stars = 3. Top mouth: switch costume to door-open, say 'You escaped!' for 2 seconds, then 'stop all'. Else: say 'Locked! Collect all 3 stars.' for 2 seconds. Notice the difference: (=) ASKS a question — 'is stars 3?' — while 'set' MAKES it so. Asking never changes the number."
+         "text": "Open the Door. The STUDIO NOTE points at the gap between 'wait until touching Beetle' and 'wait until NOT touching Beetle'. Put an if/else there, with Operators' (=) asking stars = 3. The block has two gaps. In the IF part — the top gap: switch costume to door-open, say 'You escaped!' for 2 seconds, then 'stop all'. In the ELSE part — the gap underneath: say 'Locked! Collect all 3 stars.' for 2 seconds. Notice the difference: (=) ASKS a question — 'is stars 3?' — while 'set' MAKES it so. Asking never changes the number."
         },
         {
          "icon": "🎨",
@@ -437,8 +437,8 @@
          },
          {
           "t": "It let me escape with ZERO stars!",
-          "fix": "The branches are swapped or the condition is wrong. 'You escaped!' belongs in the TOP mouth — the branch that runs when stars = 3 is TRUE. Else is the door saying no.",
-          "mech": "Check the condition reads stars = 3, with 'You escaped!' in the top mouth and 'Locked!' in the else."
+          "fix": "The two parts are swapped, or the condition is wrong. 'You escaped!' belongs in the IF part — the part that runs when stars = 3 is TRUE. The ELSE part is the door saying no.",
+          "mech": "Check the condition reads stars = 3, with 'You escaped!' in the IF part and 'Locked!' in the ELSE part."
          }
         ]
        },
@@ -459,8 +459,8 @@
          },
          {
           "t": "It said 'You escaped!' but the game kept running behind the message.",
-          "fix": "An escape should end the run — that's the END part of the brief. After the say, the top mouth needs 'stop all' — the block that ends every running script.",
-          "mech": "Add 'stop all' from Control, right after 'You escaped!' inside the top mouth."
+          "fix": "An escape should end the run — that's the END part of the brief. After the say, the IF part needs 'stop all' — the block that ends every running script.",
+          "mech": "Add 'stop all' from Control, right after 'You escaped!' inside the IF part."
          }
         ]
        },
@@ -499,12 +499,12 @@
       "file": "assets/games/quiz-master-starter.sb3",
       "blueprint": {
        "title": "The Quiz Master blueprint",
-       "intro": "Five moves — then the best bit: the questions become YOURS. The STUDIO NOTE on each tile marks where your if/else lands. The kit already owns two variables, q and answer — they are the host's wiring, so leave them alone and do not rebuild them. The one NEW variable your studio makes is the score. (When you write your own questions in the final step, you will set each question's answer to true or false — step 6 shows you how.)",
+       "intro": "This is your BLUEPRINT — a builder's plan. It lists the exact blocks your game needs, in the order you add them. There are six steps, and the last one is the best: you write the quiz questions yourself. Two variables are already in the kit — q and answer. They are the host's own wiring, so leave them alone. The only new one your studio makes is the score. The STUDIO NOTE on each answer tile marks the exact spot where your if/else goes.",
        "steps": [
         {
          "icon": "🧮",
          "title": "Make the score",
-         "text": "Variables → Make a Variable → 'score', for all sprites. Its counter appears on stage — the audience needs to see it, so leave the tick on."
+         "text": "Down the left of the Scratch window is a list of coloured categories — Motion, Looks, Sound and the rest. Click Variables (the orange one), then click the button that says “Make a Variable”. Type score for the name, leave “For all sprites” chosen, and press OK. A counter appears on the stage — the audience needs to see it, so leave its tick on."
         },
         {
          "icon": "🚩",
@@ -514,12 +514,12 @@
         {
          "icon": "🔀",
          "title": "The True tile's if/else — the big one",
-         "text": "Open the True Tile. Your if/else REPLACES the grey say block — the STUDIO NOTE marks it. The condition asks: answer = true. In the top mouth: say 'Correct!' for 1 second, then change score by 1. In the else mouth: say 'Not this time!' for 1 second. Keep 'broadcast next' underneath — it asks for the next question. Notice the difference: (=) ASKS a question — 'is the answer true?' — while 'set' MAKES it so. Asking never changes anything."
+         "text": "Open the True Tile. Your if/else REPLACES the purple say block (the one that says “I don’t know how to check answers yet!”) — the STUDIO NOTE marks it. The condition asks: answer = true. The block has two gaps. In the IF part — the top gap: say 'Correct!' for 1 second, then change score by 1. In the ELSE part — the gap underneath: say 'Not this time!' for 1 second. Keep 'broadcast next' underneath — it asks for the next question. Notice the difference: (=) ASKS a question — 'is the answer true?' — while 'set' MAKES it so. Asking never changes anything."
         },
         {
          "icon": "🔁",
          "title": "Now the False tile",
-         "text": "Same job, one twist: this tile is right when the answer is FALSE — its condition reads answer = false. Praise and point in the top mouth, 'Not this time!' in the else, broadcast next stays at the bottom."
+         "text": "Same job, one twist: this tile is right when the answer is FALSE — its condition reads answer = false. The praise and the point go in the IF part, 'Not this time!' goes in the ELSE part, and broadcast next stays at the bottom."
         },
         {
          "icon": "📣",
@@ -549,13 +549,13 @@
          },
          {
           "t": "It said 'Correct!' but the score never moved.",
-          "fix": "The praise runs but the points don't — change score by 1 must sit in the SAME top mouth as the 'Correct!' say. If it's below the if/else, it never met the choice.",
-          "mech": "Drag change score by 1 into the if's top mouth, next to say 'Correct!'."
+          "fix": "The praise runs but the points don't — change score by 1 must sit in the SAME IF part as the 'Correct!' say. If it is below the if/else, it never met the choice.",
+          "mech": "Drag change score by 1 into the IF part — the top gap — next to say 'Correct!'."
          },
          {
           "t": "Nothing at all — no reply, no point.",
-          "fix": "The tile still can't check answers — the if/else hasn't replaced the grey say block yet, or the whole script lost its broadcast. The tile needs: check the answer, respond, THEN broadcast next.",
-          "mech": "Open the tile: if/else replaces the grey say (STUDIO NOTE marks it); broadcast next stays at the bottom."
+          "fix": "The tile still can't check answers — the if/else hasn't replaced the purple say block yet, or the whole script lost its broadcast. The tile needs: check the answer, respond, THEN broadcast next.",
+          "mech": "Open the tile: if/else replaces the purple say block (STUDIO NOTE marks it); broadcast next stays at the bottom."
          },
          {
           "t": "It said 'Not this time!' to a RIGHT answer.",
@@ -576,8 +576,8 @@
          },
          {
           "t": "A wrong answer still scored a point!",
-          "fix": "Points are leaking through the choice. If change score sits outside the if/else — or in the else mouth — every click pays out. Points live ONLY in the top mouth. Check BOTH tiles.",
-          "mech": "On each tile: change score by 1 belongs inside the if's TOP mouth, nowhere else."
+          "fix": "Points are leaking through the choice. If change score sits outside the if/else — or in the ELSE part — every click pays out. Points live ONLY in the IF part. Check BOTH tiles.",
+          "mech": "On each tile: change score by 1 belongs inside the IF part, nowhere else."
          },
          {
           "t": "The quiz got stuck — no reply ever came, or no next question.",
@@ -621,7 +621,7 @@
          {
           "t": "It ended with a plain 'That's the quiz!' — no score in sight.",
           "fix": "The finale hasn't been upgraded. The join block glues your words and the live score into one announcement — that's the difference between an ending and a FINALE.",
-          "mech": "Operators → join. Slot 1: 'That's the quiz! You scored '. Slot 2: the orange score variable. Drop the join into the final say."
+          "mech": "Click Operators and drag out the join block. Slot 1: 'That's the quiz! You scored '. Slot 2: the orange score variable. Drop the join into the final say."
          },
          {
           "t": "It announced 'You scored score' — the word, not the number!",
@@ -638,7 +638,7 @@
       }
      }
     },
-    "help": "Your desk has three zones. The kit gets your game open in Scratch. The blueprint lists the exact blocks your contract needs — the STUDIO NOTE comment in the code marks the spot. Then there are the four QA checks. Run each check's test in Scratch, then record what ACTUALLY happened; a cross hands you the exact fix. The READY FOR GALLERY button lights when all four are green.",
+    "help": "The desk works top to bottom. STEP 1, THE KIT: get your game open in Scratch. STEP 2, THE BLUEPRINT: the exact blocks your contract needs, in order — the yellow STUDIO NOTE in the code marks the spot. STEP 3, THE QA DESK: four tests. Read each one, try it in Scratch, then click the answer that matches what really happened. A wrong result tells you exactly what to fix. The READY FOR GALLERY button lights up when all four tests are green.",
     "masterclassAlt": {
      "title": "The idea: sequence, then selection",
      "button": "The idea — watch the first half again",
@@ -650,7 +650,7 @@
        "label": "From sequence to selection"
       },
       {
-       "t": 80,
+       "t": 203,
        "label": "The if/else block"
       }
      ]
@@ -659,10 +659,10 @@
      "openStudio": "Open the studio",
      "backToDesk": "Back to the desk",
      "kitToast": "Kit secured &mdash; the QA Desk is open.",
-     "qaRunFirst": "I ran the test &mdash; record what happened",
-     "qaRunAgain": "I made the fix &mdash; run the test again",
+     "qaRunFirst": "I tried it — let me say what happened",
+     "qaRunAgain": "I fixed it — let me try the test again",
      "readyLabel": "READY FOR GALLERY",
-     "readyNote": "Lights up when all four QA checks pass.",
+     "readyNote": "This lights up when all four tests are green.",
      "readyAllPass": "All four checks passed &mdash; open your doors.",
      "doorsOpen": "DOORS OPEN &mdash; SEE YOU AT PRESS NIGHT",
      "doorsOpenBeta": "DOORS OPEN &mdash; IN BETA",
@@ -674,7 +674,12 @@
      "tryAgain": "try again.",
      "noConnection": "No connection - try again."
     },
-    "qaLockedNote": "These four checks wake up the moment you tick step 1 above — the kit open in Scratch, with its STUDIO NOTE found. Until then there is nothing to test."
+    "qaLockedNote": "These four checks wake up the moment you tick step 1 — the kit open in Scratch, with its STUDIO NOTE found. There is nothing to test until your game is running. Your blueprint in step 2 is open right now: read it and start building.",
+    "zoneWhen": {
+     "kit": "Start here. Nothing else works until your game is open in Scratch.",
+     "blueprint": "Open this while you build. It stays here all lesson — read it as often as you need.",
+     "qa": "Run these four tests once your game does something. They are how you know it really works."
+    }
    }
   },
   {
@@ -796,7 +801,7 @@
       "stem": "In an if/else block, what happens when the condition turns out to be FALSE?",
       "options": [
        "Nothing happens at all",
-       "The blocks in the ELSE mouth run",
+       "The blocks in the ELSE part run",
        "Both sets of blocks run, one after the other",
        "Scratch stops the script with an error"
       ]
@@ -821,16 +826,16 @@
    "title": "Rebuild the Score Check",
    "minutes": 2,
    "config": {
-    "intro": "Last job of the night. You get five real blocks, and the sentence below describes one clean scoring loop — the exact pattern your game shipped with. Click the blocks into the order the sentence describes.",
+    "intro": "This is the last job of the night. You get five real blocks, and the sentence below describes one clean scoring loop — the exact pattern your game shipped with. Click the blocks into the order the sentence describes.",
     "item": {
      "id": "ex5-p",
      "prompt": "The score starts at zero. Every time the sprite touches the ball, the score goes up by one; otherwise the game just takes a breath — and keeps checking, forever.",
      "blocks": [
-      "else → wait 0.1 seconds",
+      "else — with wait 0.1 seconds in the ELSE part",
       "when green flag clicked",
       "forever",
       "set score to 0",
-      "if <touching Ball?> then → change score by 1"
+      "if <touching Ball?> then — with change score by 1 in the IF part"
      ]
     },
     "help": "Click blocks from the tray into your program, in the order the sentence describes. Check when you're sure — you'll be shown the working order if it's off.",
@@ -854,5 +859,5 @@
    }
   }
  ],
- "keysEnc": "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"
+ "keysEnc": "HlGQBQ6dG8ybbUNz9hT4R8AjYyCd4Gv6mHeyz+LR4yOwpoIa/MOhiJ0HjJ6I813lrdzVTCTjhETvG7FSkcoqS8uhgSkA+6diaINR8lVLPlGL/Ebb3SQeKqfkyIZ9yzjeKfYtULusLrBWHTMijsfZpauLwiPj/Id98uk18Y6X9ybDjL+hvKWORl2YAZE7soC/uB36d7mTdoecMY3AICmYNA73dWKoq+cJDSylew8GP9HHR0bmwT8imR9UhkQKJhRGl6GzCz1sRePlBNgfEkkDAweux9/Bh++fZ1GQwM/CRozCVepHrAGoJaUhQAVkVKQOlBS4jsGywTAPDS2apNjLf6oIZPXTg0Siq43xcrHpEyp+qj9ZAgnLHnsGe6rbqvLVM2Os6/sjNOrZP93Qg7e1FGYFr+R3AI6va9cbGZtb6ifbqk4phOIA/GlX1bi9YrV78+9eFMZleF1Smz34gNnm4KP7ckCdLeQ2etLBfVJC31/eFXyCPsVpshiTS/y5KpsLzGvilMWP6s25hLVzlGGdTEaEcl60KXVNbBm1E8nHB9wW1+bFnos81J19XGUsVZNkO0g/GBZq7A77HiCPaPSiXtabO6GZgeFxrc9ANA/429thDGx3yrEqGXmdE302aVjSyr2T0ISYhuW/fo1dfVx93SZ40q0ulUcc1ukbXzJW2oWK9QvDpCp1L5G5UXox2Plx2N2cemQYyHMI7P93NDsSsBRTEFUSHY+OR/TcDt8zaZ+/OgIESfSjOmTuS+8OJ7iB9xukQ99Q9IV8MIESAvm3BQ76p8H+6m8qviZ9fL1jmwmv9rUpabqks/P55GZUNQAr3z9u3/jtcHG9f6/7ii6Ldq7ppsNouoo7zpzPb+RdVUJ2MLpN/WSwGfRpNZx5b6keMYJ4eYQ8hY5qAI+n4SujVPFUeD68raRW+Lsi5VBSmOgJuRkdJSYmCACZUmwF/rg+smz8k6wQSouxDSuuT5lFJ99jELAdmvbOqWmATZL0agay7VITHj4PnbQAJJgJRfQRw6U8poCU9Lavb+03OPJ7f/kS+QNxyYlQQtg+MgaUo36JlFv7k/PY5zxD5dyfum8PUQ0+IInnSI78v5Xnhyt1p+OyIKVmyUjgyaW4Wupxb8qERMiMZw2ero95Qq3GH1Q3Mbdt0dwtb+PHn6OS6Hzw+OoMhsCViUity+D32DklDaVotGVZpQZgXTiGUTCcJ9Pv8ihxOaFo/zL+gWcFsY1lI7o63FYLYB/FQ86XCvdLKziqMqeqw3RWIKk8AFVVktbSIHCd+rdxFMmQyGfMB/km7+Rn5gMvEGPUQ4c6uNKBOw+H2laRLqI0AvCS2mTfsiUJSBM74uMDjSJV0RCTgRbxOgOczHJ5tsOznAqhmBnD8pQ4QEiDaBb8HNKXDX7M8RtKT3y7LgT4mMi5A2SMRaW5GtrfTiJNyfB8Ed2tjA4TGmwdAPyI2CMWGDBq6TdXlEdYw1sIH9loWqPvNfQ1s4xmPQpjflI4pmb+BL7cmyRcIeDufJrAmFyLmbEXB+dZEgeM+n/uSQpDWi0d0C/3maLH9NOqpTpOCqgkQZPTpN2zoFR8UELQu17G7sCGMStCC2b1fRDG+NFAz4NZoj7sDLydp2TIj0TRc+qkQb+5OQRxQgkYzTuZYn3fVV0bCuELN8NY6Zv8xUBJMMG/aVG3UU2UprOuGpIOmuH/wIrjzAQZGI+1vtJlLidVP4CqX2dfj1J79KucG6T1IlSTv7ocwAZ6oyXZdPXU6jMgCvCHVpJ8Y+j3OKKtOVsm6u93PVPUSznwcOMWRCs9sHODYVCI8BriZ6yM6/uByBxzYll7ip0FR9jaYzGBxtwOSeS7nOwsR7i+k6ztItSn5UXypKhj3rXO9JgDSOVpiA9GlF9aKviNmhNxgSf+7DODUOa4qTd6iuGWUilT1WbTKDP0HEQbfndf4lltrWJQLN0ycsv1w4jKRek7xKOsxKagxj+ks/ReOCeJEWNdX9nnE3gzye046wbSrxziF3Ywe0sSS/CasZrFgf+Zi8xBS1X/TKOHU7dw/utiUskzAtS0Gk5e5jFgDgBfmVXjoj5kIbLKxvahGJt/6Gf4vwrpR9HLDUMOYabz6rJmSdbFYKy2Fnfm6zYzLEncBhwxk4tcEYIfSXHwFnAQADvSmhJ6ZxhlqTBYfEjGRtMid3oeQJ91kPo1BLLcJTJq3I02LWu61bZ2B8azZ5c9J7G7FiDacHeGvsgMdQGpTtMSI1xdFos3CfF5LRRGVetUs6+syEwBVvT6vIUOaaIVxRgOZMK5PRfP6NxmxzDzriE0bpdKu2cgWk2qiIcamIBkULFYc1GsR5WqIHTNZnixANicUTIq3wer8tS++uyKjyLj3Sf5/Qg35AkFhcgPDW71E9HsRJJyJ2+0OkIgnR6k4N9Xq1u96wM7eIo6eFRbdwn323nLZWKLj2Hhp//d/z2zRtrxirEoaQIbZAsZ7mfhgXMQb0+C6KhEk1cAwzJFgJlCx5Sa6asHHPKgSO6PRNbehSorYg1BLZXJuN1zrCfo4nD3NXomD3lLrHyLL+FwOYGB/p46kvbilEGufQnkZy2ulq/qJTHs2OXqdGNMVukLC/13nvlShwL/bQtqj/7Hq7iYZCCfrA/TOuym3wvs4Kd8CfoNTsRSY2HtvudDYtrM4SAXd1B2BWPLl94Jpa87TsEZeabdHQYLBKX/HwxSzuHQpKHsZFQEeackgrWZe4/QeU1k+/9XnW/+WtwnER6JAIyPw6uW+Y1suzeAV4l/UclOeqCmEmh8sedYOUnBK5BAicAplf1EQWgNZlXP3rG8evcfc/8GRdbLPKFzZcutdxmupN/s7NqqwwHnyz8c5Nlc/jl/RXKhDA8HShD+7H4NwwnFsTf+wM1d0dSadTAhU29qx5WVRtLSrbW1lO8RPZGGueAIKLlXcThELTF7Ib4mChmrxeDOiDW44sL3bxWQV3HX9PYgvgbaLQYuIj4Xdwz/AA4ItkmQGIyBqAJX/oaKLJdpMu1JNhczRbqRF5vgKN56BCFUckAI7L1qpJa98vEevdyrLrSYF5MJ6S6Q7vI1i+mXo0zyZc+ryLfFC8xBDRVbxnvWepjcSWXboaG//RLOlAuptW4DZcVmEPZun5c04Z8yd4fmfHovsgh74vpxQ/gOWwcPNlFcxolNJzNTzkGY+wmBzIRpn4iw6zjdndTwg0bl0wJHAHcGoRmpFofbgUer3rOX/uZmci0TxtVY+Kxk2DHJ6oxTzdbQgSAWBXUqWou/W4WeyAYVs5X7rDpK18vBe+5JehE6X7yXm1ptfprNIsFsOCXzzczqeRKF7dFg/mtO3o8XgMSZ+jYToiYubDpT3EFSFD+Z7S3ZItl/viM7xKxakQ6lzOS9Y0o2ijS2s/0ilFZdKq8BW07kk2PuQic1xLO0ld3JFHw0rCycwYzMTV4SpKxVA46+YMGs10E8WX/Wwr24j+tVdXbnVXYx8Ag3+1eeuKOFJQSTFLX+RAyeFwCqbC1WI0YXAkOv+uG4lWStnpIl4M3zVCcrqrvcZ2E5+rvT0KGLxRsZMHynxlZ3EuExVDXrOFHE+Jofo11wIt3CFSTVMTg0pIHU1zUskxGG45/4r9PEb8tuwHLqEEjn5zOP3GryqEHBCJDoNgSXu3b0ettVAAN+6jxTZ86FkTx4jWDbeJSXai9V8FnecXDMdjqanRwX0SJJypdTfxbDp3T0ZfgySQ1xZOiSIbmXT/+oKpx93DTf072FOLEJ5PCdI80hCNtu1P4H+hDZsLmZVDn9bVZPYX8zAGMAzfmOxXyiO+rtk9p3t0poH3M/0r6DGC7AybRlk0fw9NFcFto8LCl6KpCmIilxl5UOm8cQan0al39W1m9F2XX90yLv2kHBNsKh3ec4tzBp1eoK28nthy7kgsRsJEKtSCGa9troMFaVeCT07lTxAsHiTw9y/HBQY6Cqd+vlu8R+ZtlAfrphhXJKMKdCFIEok2BzHf7rf1s+3zr1LC52xji4MFkVZM3hfzxNRqs6GkhkZmYH7v5pDIxaj94nhCiGaL6ohc8b/GG9ASNjMKqwpvtsfa5BSgXE3jgi/rKc6VuFp3sZ2d4JyVhCj/vZS2w2/hafUwFMWb3rBIlpDgCASdZcyDCih33HLJiNQ9KUdF6Wy1RIxam1NG46bRncmg4nOSC7V2zwyEReonmWYWP4enxklxyPjPk+rEbMtTGGH24v4jJRvOt1STsH+CBzRXWq3IlvGsyvAIQnQAGIUrZwOE8KTAD6nJFFfWPtIz+/B9DX7ixbsVhMawwHDKwCRIqIFXqZ1VMjFmiKHvdbs6K5dHq9eVmyp7dVioKt0/lBzU2lk92jr2cEocnvQYFbohMeXUZvzJZ6UzpI0OEysiguWTqR8sSBL9W1Svj6W9Exje53Jd241kesEgLlYg0bI6vXjYz7G8hXCElFh9mvweZEfUncBF5eYAj42BrSQf518ytQXSDMrP9yKjwTIQ0D8DSG67JP0OPl1xb3wJTDcU4XKHayazDoEOBjC6lM3YhlR6QIFKEK5x5Pc+Ysyuc9Cd6tLeyiWZkMP2V8aK6VH1ChCrKCoSLjrZhWyZni7niDjQVQeo4O1ENqDPygAXnhuSJ8EZ9y42paC30lW9tAJfHvfgCjN2s5G5O4wr8RwH9rpRgV7AhvZFhHVyaoTFc2vu4mmF+0HIItwvPM+ANy6Rlmo2nU7+xnM7h83jdmIf1aqgQRwi/v4UeI1ZjKrl0CQk69rd/5z5l+Rjh0TXzTY/BOTDIYH/rrqzu70o9m7s52+mroXApGequbvqLxaQUxgi0T5IV0tHOfqXffulcxn2y3jXobqmbPcgpS6F9aPCtdq5e+FDw9K0VSWGQ+h0Z53rYC3Z24x7Q0OAF/Jq+XqBRxc4svI1nA7ocQwYO4uMgOKiLC8q9ezZATlg73/ZxKhfJJBfAcrqDDpT6KH/Zge4LCkrnQWKRN10S2DdXzflhIEyamTP+ubxOoF5gBZnVPS7FU8Ly/ljcCLtOQZ0kY+lQmafYYAbldQYKDeD+ADMmGM24VW5rHWP7sUr/rw3utcCfeOuKFVmD0fdP7SegRGwK4WSAKnZjPM6fnHkYpTl/Oyy86x+ZE3SOIUau6AlawHpq30ZgyLinkLtpiLOSzDQKOlLoBZmo72tSb+m3Wfuy19YCKqgsEDNlKE8TU0hX7pOi3UvySDjmY0vA+Hta/nOrrRWbqnCrGKqFex+Sm7DgwIXOCunuV9a4gISJw0uDoFd0A3DyAA+rXA0jOnWrTAFRlc/JNo40uDft1+kVmbeF3W+47lEJA1jIbmzB7TxiETIWztneZumdBjtgJJLiYdambM5WBhGPlhhu7dvnPfbW9AO8GtE7Uox0NpuFppKN+ly6r39O2CBJkQyDAKG2W2qn8+0ddXsaKWOlzhsGYV0lJGxLLd71upwq/svmBIYtcwqlJ4Zj7+NGQ/6Zb2QjYw0Tdk5kqggvYF1YDvtK6ggq+6YcukIzyG0tsdh7RE/pYHlEbwXJfHwrmELDPcLjWtsjygjznV4s+yJvB7JnJzFDhL6DEoAl8B0H0UYS5UieZT74cmjTQtlYrJYel3cBSRzh2L14QaUl0w8LudO867ksleClepFocnj3qLIqCRzOjiaOkQ1QSwwlSCBEIzIE2/nPnNwOLQruTxIL9U3UXa1pNpmvDxtfOXqXLuHnxUPhQnABdueiHFRkvGeDKMW8R0lsNmTZod/+6aMdK0wCLUxp7v4HI1UfQPDuNP5+1zxIEJ43POk1ESprBHr0iNjo+dOwdTyTgs35egWuCpPwha+MtwpusCHl6Bx3FnD4uyzXmedrhMa74M+/lj/xTJZgglFrr78P8bdmbLGlV82wU6+B4l3ivFYuSUZ5Q23iGiPh8pjTTnoJ0Yn6M4+ka7PA0sh9/GJ7ELHJ5xzc2gaCsTXWRXCjrt02H/LI1C5v0pa+0GKQx8pzWPW75rC/R4NQuEKt+xTvElCbtG6IEOCvekwsR7VpoWK76EvN8UgoDVxg2GG7E5EP6xDwcJpWicxtqYnBUVChDjqKxNqgZ71BTUDHy1KYnMjkYBgQiTbHn7b6810Nvtlyhta3A24GUfu3FBoypOADaM6CT9HZQmXodtnQ1aG1nD2ujMeYVUZ1KzHVycW89mnY7GXDCHUS+19Atv8jc+Jhn7xV+AdD/emFGinRqVDVmu4dO0y8Glh0TNj7DUHWXLtK+4+KNc3gCcKNI4S3edqRoiZDU/if8Z+5am1JxTyiaVIcIykkugRTkWifzU3t1CNwXdBPLZGHwEIpV9WgxC9ET+B5pN3DarwjMvvgWAIooo1WAIW5dNHORkoZFOC7ko3VwZ3GPTf8v50s+ck+kFKVM7KHOtt4n8ufF4xOnibaX6a7ZG6tutfwu+4AHLzIVb6gYL661bHdtVjEETFSt+Sz4MYWrLsQcTu8eZnWp/qQc5VSsBgPoLtubos36kFzbeeZLH/EvNEy+rI/YFAk5uXUSLbiU4SfVwFblE6NXDBS/v8OTgAba86ELsTkBDylU0b+uzaOmf+MMWcK230nSOOEcogpIHJxEWgtVIBEHwKXrt+2aBJohLB4aF1Bg/TYa6kA67hstjxUG5L7gAic8BqIukJQpNJafE+T9seASEOyAKei7+T4vs1sbxiGt4bug8vKJ8Dy7cJJKametxY+3MqwB3i9+PsZJkYFJuaSbQJj0vB5Ui5+9wthD9+YJxHeddN6b9GduXtHOPvmU8BaaNbQUKSNNYTeklS9N4IOF6v4jRQjOql5jhoggXDVZ0xET+svHnj10uW9dXi1ftoLYfqvrKdWNqv/TDqDRWBgj3Rb1H/d/lQiMYLuLguMhhPdQByJJIKIQMahHa7IAiLMam2v5EJfRFjlL/+FhOySO7hWz74T9imY3yX4nvDwOHEbgcZzFkz3Gi53A1DVfOmvUd/7/JfBgJ0n2pteavQ+u+437/y3KXrx/37x6Iu71f9bA3iB6R/aaPSJpD/GeyPzMS7nnIN7mpTsu0t0TiG2hICL7OjOHL+t5LNvDcV9FXjfzr3GpL72siLLlLUDhgRG5zDDzHZl0eEYpMA3hUY0A9kHTLz9T+LA3kPNUCoIJ1Yf8X7R5hjzVWoIqasAAZpqxTF5ZSDrjBaoEftZ+VRiPtK05bIF5gIF/wX8HaDXD+Xus9oSp5dEbSxKBEE2bmAP2dgaL9IdNRY3wz7cxrNqaIObbJKqeoN55cTb3bbS73i1by2lK+Gum/JunexX2R7m1Qa8dkQM3JCgUNLpAo4pV+HB6g3vKfjVfh9fOgZsTMWK080gMieKeOeSpEWf7yKdG6sUJrC37zQvBMIYYyvU1xRM3eHHjsKUNt+w8toO7VK9cxV8D99tVOVftKIFKSKJHiMWTDhyIwWC1jhmLbUL2LKA8iZHrFkf2NmP/TwvGBViKLQ+CE1KTk/kSKNdoL3rnjRgU4Rh/Ii4JAYgTflkbcWdbYfG6wz3SbwWW6WYmuRc3NtkISj6nsFaplJRtEfSWvtPFa6SP+r6OFNQGvHQwCQOZlwZH+54d6VPYEmb4uo3LuDsPqEfcVQYYo9rxW8+NegeLm/JTpldKG/14HHGdbw9M4za46nxjl8ZFGj6+RM1sRl8yB3FUP5e/B55pGMot6CE+rQ5hV7LNmVcYcH6SYkwsHdfGPtnUUHUQYFHfJuMs619XU1BOkBop6BjDGTW2dXEAmFHtXnLbkd7gQUbNEGXoEbqDxaAF+1HDv39qPUqqTSbfe8tjDtebrcmWAVjF9m17KemDMcixN8bthZBvrmH0A27H/dLUy2ezTWfgXgz8c79ATv7vKPYMWRsld1Aq9Px+FXnRXef7sjzTAsPxPRWcJ68dgmsHK8wbPgXHonRlr/adl2Wi4t8i6Ug0VZnjaGSMAV73NwEETgT1SR/nAs3zX80UXyFA9g3QIbHOEoEHSYy6RA4l4Ym1hzyJL7ngheCQ/JgxOhndKWwXPezAYNNNhiPI1OQzW1kwQQApNcmBlTT/18CSn6iuX3UduUrVESVQfBAnFMKfKR5ImcGVyN3gMrarEfm82YZujOzQDi6QXUHaq1zh/HePvv3T+8M254fEtMqPotZhlfLUVVdECKgURh4DNstTptJ5f1a5UgE5tKxJXs3IDpfyhq/6z5kP8yN64LEV6irjSlsJJsrWgCKRVtMO7he1aSOL54Sa25sFw7zk9CmBrGm7v2/Ga6pT3hub0DQSWvB5Ci7prjwhmbhfrbo7qL1fIvYyWXzX2u/JGrAicJPmIXC9RuQtUlUN+nSD6G464T6XtjpY7y0A0+f4qZUaHYbS4Vrwc9FaJ91sY5ReI8ZB05rcuB9V6ak4h1KXRJYFscGSL+6sUak8e/LfNwb7LV+1Jz3v1m5MFnjLL/ieYk/p6ZVCbhS3A4Srf5/vq4l+mKZLJQwi8z+Q/JUq+RN/j8y8LnFI37Ajp5epXbOTWb4eNH38VBJktT2cYXpgdOEr18fQ8lZOR7H8IzcXKWs/Ykd7iQFx7caSeFRAPiOdDaM9t1zafEjVv/xbj5Fu7KezTQ8jzocbMlcXIys1TG2Fx3gkxUn7dEwSPLD/sL1oopCzfF9gT310b2/X3+bDPx5d+W8/8+9Rn8DgFEIljKdmXfGdeM12b7j0vWaVNz4s7xjdI0ah8Xtu+OIgPsd8xCrQfnf58xBK9naQKm0LsyY551Xf2l1Rn+9t22B2ZHZoz2wwc4gx8ZVPfdXmmVXPMvN44XIZeR7//kRPmLuxVUzPDMUZK/ITNZXUHpnh7H2Jn6dFY6fJJsbQCBhCLADILdF+zVkP5AnSMS8rRHjPy3it8966461Oq5AT9jtpEH8gK95Y8L39xGFiKsF48AOH3gZ10WESosmJt2dA9rjgX1RICfI6BioU2YEycY9GJZ8QDgHtzbDGvq9WZh+CbMg9kR7KtJBRG2sUxlpAwB42DpuH9E+jl5hYnpUN34la1x4mE5YCG3SNF3cFShhHyytgXiKlxPhIPHBwx3xlIYzKPgMBNiKkZGfM4aaAM7LDR8T0jH7tAanTz5v9QlT2ZGl4bN6E0ZaQlnF1Mf7kIzZeF2f2UjxNm1rhMofgH2a0XGp5pur7m6ARud2WFjtGIkdVuUcXTISw+DLhqE592liJ3vPHytGxJ1alySZmJ0U7Vmhz1E9/Dta4vzYn32G4SqJ+RssUVOd2juHBCNzIQ6t0OjCxLVJtlGoJcnvhgHza/9gw4oEvn3qmeYBZ9gHxKACP2czqum3OA3Zm76HXoLOdgALwYwTtBP9Uvy5NpCHEnvIfrdJyBUTFbSCgZWqydIF4zvjr4qyt7kiNuNxJta7ncTOYI3df6CnewzqK8s9I1y+qmSbGNVm7VftHyMY7sVTKAG92yRBJ5DfDte1PN/McB1zafT2e6cdeZiL9dj4nhUaiLqFr/ILdyiMZAnfD8LvZvYDk5dyfScVv9MfyJyiFI2zL5OfWKJ3+yraMspHhEbttnfc0+jgE/l/3MpuY8WReXVP6xm49e8YA5NUd6blbxHnJRLGEc0EunmWY9hxKRGoBtxtbWpolTbm9tqJ0gALTrKweSYJzhw01qVpsk5B5u8p2xw8XtBDo6seWd/zC8nXMEMSjJ8bq/xmONyp58YKdqoAB5Lk6GAtmy2gM8wz3mGpN6dXLzdTdUcAMLKIEfkqXp18/JqxJwyuZVQVIbJYKwcXz7UzQf9r+mpQrVSC3EJ2XmNHSe5kWO6lIBLZdYhIxtWkFDSpA/FO1YE2CzUwOSRFVAc5qFFTG/pJ4Q3uT0Uct+rIPrm9xNI8tBa0841D+DmAtzha6tsprBsDQaCWjfjN93kkbCqbmB9b7494u73qtJw9f0TXHJcxSkCKPrLFEP8NqOPKDSnJ3iaJ9QbjXrxm+oWFHPN5BMH4NMC9HnJT1i5e06UmHDRqdA1UNz5+7F0K9eBO4wt6gCdxVNLbJc0xVp2Eov7pDCtAN4dJ1Sv+B8qeI5hIyvHcAva2zjIgvtHCaM0XQbSF72ZQqK3nKT6h3RMDQnm9b7/A5r0AqLsCwjaXwKWgtZVK2flIokW21Cdt0niaZmsYJA7laAP+N7YlWCjiYgwsEi1+ezGoKz9VMV3PhdzL4HMk+8jUMtAZr83dPRmGZ0VDOUw0c8aWTHFmRWvAFzhviT25C0LP2aGTHtZ369lgkEZ+uz6JLKELjRWhzWX44HRlqcY8TLsXqwgzrqkE8O/M74R+HwThKiyEDwuEfnYenI5Dd5TQV6D/SDKX/45MmboypgfEUlJndlYyA9PnIKss5TdcRBM2YK5Mfe+0PXbjnP9GdXT55pDb1TkwsEKDYWHs3C3p+Rp0rT0VOONozcG66gnFbSsND5FuYjI3l+uG+OPipZ84rwsv78JG6hc15u9caqHTUY/T6ta+z9GPTAXSgn2nirCtb5GjLCCrxxV3aKy6fzN1Ua2VhFXwJRhz5/HPoHwackGQgIIqx5y3xAtkD9pw+WKaofaB1BLys2qyJ1d+Pdt/l5o8MLKhSXpnoxtXhhSiHhyOyQm6O8e5YgpihOEuirdzTg/FORDuCdG8ml/Yg8bF76+YUVSduov7LEDJ8Ev5DJhlB3SDwTGDgh/ZLZlCUqHHbvtd22x97mRNKe2gNkrzit/ON0Hx6comZL1HOhVxS5nPRkmfjsxjniiHXCx4YllF0rijl7UII3Y2osVfg7RLwYSyE8UtvbmcxovP/0jPGQC0+d/a8Sog40k4yIh2HPSx83+LYoZD5DymE7UETBwzKI5Y5Hyd4sZTcodiYKStwbvFmh/RtKXLRlJJnRMJ+ExEgzGaZCASqSEsuW7E0xotKIJF1lUz2/KklZCBDyI5PmzJjODr/pX7P6bRTbZQehwBnztf2Q7JHoT3z8w6w63kJsDbu79JLhwfSZBdwPib0obdApjHu55g9oDwUzs4lhZ1fNFYKSUCt81EuVIaVlFg3u1X/2IUC26DMZ2PrhlwvBFBi3h0ipiYH/zWcSYK2TxJ84TiomAUA83KwPo9kMccLQ4c+RRKpIEmWprfAxVuMWv1BK+dm7KIbjTlFG9Y/OZsTVGjmwhfXUnXXKhv4FlUD/KjhJT0pjIycbOKt+9+y9fNabb+QUkn/ncfzndo2behr/B2fVdGtnYrkIS0owBlcYcxM5/iPF2KBPCoHrDF3Xo218kXCuRvnI6TNQ567pQKt6FAitIQ/60r61LNcdpSLT0B/XS95y6m2Rdx/0NNUuBiWonBcEPmwKFPN/f/IesPhT+3Pooi1Et5JpvCdoXZuVGBhT32I1UhjiXepX9vLL+cv3/eQJqFaCV7mK6McmqbUd5Y3z+FQLNf4VQgpWMIeoB0I+AT6qsmYbQdOZtIcDHNw4kB74UrxTx6Tvp2awBVFbTZql5B5Mck0th5i0UsToJDKrQe74NlsCLG+f/WvMUYzi/L+9ApMabe7D8wCaLmYZH75S1lxz/6hEAJpjrLOQsJrdxCJ3QNZwL4AV62j624SFPXxbRyCHv0+sP/MHAXePAavEeZZsOlgwZlDKFVxeSO3dHmBQbOQ/0f5dBKVBdl8bmuhgx8hTzskwRLUo1qM5WvwCrH8YaHwzNirsveNWaExUMO14auqKdqDajlTBNgQRddiG3I1m2y4Tv3ded+ajLdqWcC8QGj2piqbpz3x7sEELbSd1rtGePGX2ROCjGY88tqfKfWKv9xY6hVFYr+MkKJ1syreRiPSa/DRWQ4udIkbh0tZ2HBeoCsRIDw/t5wRS4pJ8tf9SXLYJHCZZ+1cWeehYBqNIA7h90+ngke48KJ4m/jHa3QbkQ3HB0aVyz+0sUjnUZfho5fRmtUJEndRRmlA+s/yX27HlhKHxbXgQDBUUhZKC+xHEXBrYH/K0fJUKSq8xKfkmrXVk+6/kxqg0sj5UB1Yr1pWoHu0Zwxo5WSKGBpeKLz5RhpCzXFpLo0l7qhA8AHN23yu3ZPfHGykDbVVJv3Y5VWVVV/160foyTaFVFTAn6Ls5gkTEuX81GdgZcsBe+CkjMmgSJyXHPOq1kI7JbCTFufmo3pRPa5FZ3y+fgcX/LzJyl3Zn5bIYcR5Yromm9XmOH7faIRhdctndKhdLO4C/mN1DkcJv60vAAXzoHV25c6MQCIB5p6Yfy3+mGlKS4oAxyvvfaJxrZodI+nE1Fdg+VaFao1qXgqoxJl/5Besm+oqyRwCECE+dM7ozWc98ktsiiVbncTHIpLhD9GWWYsppTagG0Rb5nomXkA6yJ2M8SqQIE7UrW/i5Z20sGeMVSZ3q4TfJZr7i+wW/KrM50vNJlu8+kUNaLgD+jlID8ASWJ7SUFEeaA8wyCHdkt9dvVd3FW8NGW9OUZlMKjJeEm/JZVfa71nM3MbLz9PySvq+kbKrR3u9HhvGZb1gG8si1M1r6gLp4epm0zXa5CHq1Gq4Iv7rQwosVvb0EiTVMWyIS0H0lD9qEfVw6WBVR67WzT3grXi5cc1blgvleg4eaf7cT4RUhXtq/c8YJUDFKUd8nHJeFeCD5PU0gu10sy4PhiVaJ8gkPH/9PtIDwBTPyGkmhST9GbJda1qW9wE5Z5s4oyCjUyyIrtYI07X4nVlLL73BZPOhgvcfSbmBkvNQQSmcJ4UvWLB6nEAPHg+Thc1tHZJ4qr19d83nKe0gdLHI/M2CBqSRn6RDoDZ36QFNOe+SaDoJRcOwI2RCu5TgrNKozM4WOAHPb8b1/mLHaUh7ZN1X+u+MlhFln5dOBTmByIulHSdLS2FA+0LOVhFr+FRnrHMhviYIexjbf9JT30I2LwCQD7wLbgAsOlU4QWruryphOQV/ncji/bnkIKRxMJyRqTI0hSVbKaKckubqeiUdu8LHn2aKBN0ohnRrCNOF9qgdBlraHJEiskaBOv7VIau50nuk0uTBw9UsgdIb1MeiPMh1hMZx40+YBb9hvGq2LCU+BgIxKJFjUvhJfaCta0w/T+2zWQStHOFvzj4B3GYa9l2dF/IUPk7J/T61qbcIPR2qocQkZXXyr8F4vf7UVOc69zajxl62T/l8lFCi6LhSOSXbO3q2deuWKfVQnB1nWNobmyCGOimSevNIrC+ldYi2Pf9itOF5gIbB40snZCJBNqY17nHeqDlQBHEUUGxh/tVhoaVDEv6F+zYdDQtzf69uxmGpCYwMoGnZflJG8NQkXHYTsSJJvlav2zWx2l6cBBvhsYBBss3I0gWAAHp++ou1Gr2A9kNuVBkC81+DwftKRbbFiZgy2qbJSWU1QdQBlZ+uDyKqD7qBUdn5Q8Fi1tdUyCFCAU6FnqSYpGVJgT3nYEIfY5hJPlJWb+CFrRXGrsnMKzYusPZ/YWsloRF069y9+e5r5dT+UxAzhVdHIBCnxM2ZTM8RvNpY6F/E18F9INqeAwz2KpbMOpXIIe8bPupIzZE/WdK6u7mkhngP/Sky6OKullS7Bv1/mjP8L5CBLJTM5u0yF7S5qxyaxZundY4OBpREpf9Se6LA6mqQeqCVuu/NQC5tR3O5AM2eW4cuM/jawOTG+2pQZ3lJj7DS2+sTaBPuW33fFTHKksqNBfDCRnyLOWdWU/bMFKr0X9Y+v0Gj4luEphOny8XFMfM1k7S+tvEFzJfqAe+T4PjXipiM3RY88dTKfkb00ltPDuT74FYqlIWXyRqPYbtt2tQrRYDhmiPRSb7ptpPCXn5NPQwrCvqmRCtqm0CAzd5lvdjhG79bKVYSpv8fB/fp62/h7vT+gjOPSW499HW/qk0BHAp/tAoIX/ActF3gDND09KQgAw0RCAL3EIzBhByN21SRNE8epIXIhMes90AawGAsT5JYbBVp95ZcS3k/I/wHol/gB4yAKb8IOQK1fDthU+aDHoKwHReWOmsxoEA4pKS1UCFnPwnOeWRni3mprkXOXFlGHrG9LdTLOdpfSXTy4eiUJo65tBNHpYR2x3opAP9rZ1ug4+nPTI2xKCRkiQxF+jfLI6alGzxWc4zGl9oSF0ED74zNHDVtyiCtPVRO0WV5SG2qXZw8WpasqYQeB0GaitYK4lrToe60bppYsBJE8sQ1aRWkYrZD/C6H4GQKmUR2AMqXTyQ9CZ+bWKZb6jAlIOTd+GMUfrJHh/y3wffQ1m3Vn/vgXCYiITheDy2gzCy3+hZkyrQUgpsfkqq0NLVN/diG3/f/n+A4SeCQi4wTs2ZsQztoGQaNpC+2r+C+DD60oYGK3YW15HtqFax/zD9Ur0qWGJSXV0+Hpr+SpdCbPOatHf2oaVb2BHdv+7Yp5U9+dFE4l08e9CKRaIkVGf03QghJqXk6Td5kwhfBPgYcOpKFfJlGrEcLXZ6O+wSwhLsdI1SsfNTNiH8iU+b/vyGY8Y1QtvS0cmCYIOjg0iak86Iw+i9bU52h/GuBJ4x96f/8nYBthw2CmfvJN0AWZafWcx9M7cDq6iYeLQDhXWtqXqAtw4jB3xkiuv5ofgaEPpsCUJef0KQPJAAHsjlod0YWkmOYHONjnDBB/s5Z1r6hxdTx4gAkmQPTJgu1Ve0/mblA97r6at6LwSTphpDFQw0uQkxS1zu2W2NXDlNJkPRbWeKaGZwFWQ6YLE7cVruH8d29hh+/yZpp/tXIHse+GAuVkb8x41/7SEvhlttXscGLpUDMM8sM4pe1r00m2D7XeVrR3gYGm89oXOvIytMe+L3RkSGyyAzLBu01FTCfc/3RBR9rLs2z9qbOY7d2D/CSCx//wgbM09a1szn9dYd+qU5dnAyMzkqPNegiQVgmo0qW4xD4NMDftEltNSM3EBgFUEu9fHLIUw287FnLRxneQ/nD7gOVDcUPcq81dQtoCPjsgTC+VrnVwIqSIfFUKc8/xxz1vznM/Uf4mCNUeDsU9H8wyB+21B+dGwlieP7vtEqbNgNTegoKmHTFvVefnW+qjEDe+3a5MKXl2V9AIfpeMxFqa0NkAjwZRUO4GuNoVxFQOazXX7ZOP54N6lo6y+PJ/iPD2i19U9ogyROaGUpIsyKBrI3hMjt9gq9Ktbqm/vBn0/7Jt95t9EiEIbc5WWZCcU62WEfgwX/y5d1AynfJYxCRIJ78VzR3cq+d4jwZDk+TAxC/nDxk2wXmH6aF5mcZCK/Ms2uC897Uzxv0qrUsOopDz8FNFV8veyfWexQQEIhy8XefaE8pa6n9Jc1h1uLtrXrwaZxa4KH56LLCbTjTficGkHswdSVDJ8AA/0oCHEcNxuIaDbrac7C7m9gmoinsoIpHTLz/t0tB46CMxRK++8SoeCYllxsdnb6bKUMXGw8UYKDr6Zax0xQ1h5nysaXhMJfKhBIiSOZqhDVOX2HrmeAc5wNMqrfkHGZNHtb+t7IoK5auWt0kjI/GtP3Gp9bzkU0hoHBfaaEMc3VVHBF4moZo8YQChRpVYv+BkPSkFrBPoFUSbqKdNTEB1FVMJyCpwH8xzbLcc78+rpXJ86tDdRKyAypeOXELTv7PVF1UcZ6+OmBoTZpoVajQ/tjBpNiDrP/XVOjSgndWF1nHlSFSEtiEFlAiH4ZYYQyH69tPJNVMs6ZUi7yFkv6Q/YcvlRFKNm8fzy8c9SdaJGPxdWt5nO4R9BCUmZX6aDEa7lQAYVezm3lgo5Q3bFLZOMk3PLKUdLyS5ExI0Ma2C6QKDS9BROLoRH4CDVrGFMp09QMD+RuGO/JMRHAoBN1LhjQBPdZu6J9A8Ootif8mwa/msXoFzTw/feAjTYAZ6UMXJWA3ylgAFiP+zBznE7x54TM8CEW6mihdSj0IHVTNyTA8SSl6jptjv5j1wdF0cEmdWxsvIztopVOdNZ38XFs8YENWAWy/FfBQlUhR9dYx"
 }
