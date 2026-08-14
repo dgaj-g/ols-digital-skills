@@ -45,7 +45,10 @@ const KS3 = process.env.KS3DT_KS3 ||
   path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform');
 const CONTENT = process.env.KS3DT_CONTENT_SRC || path.join(KS3, 'content-src');
 const SB3 = process.env.KS3DT_SB3_DIR || path.join(KS3, 'sb3');
-const HERE = __dirname;
+/* where the harness DECLARATIONS are read from. Overridable for exactly the same
+   reason KS3DT_SB3_DIR is: a control must be able to plant a declaration without
+   ever editing a shipping harness. Defaults to the real directory. */
+const HERE = process.env.KS3DT_HARNESS_DIR || __dirname;
 
 const FAILS = [];
 const check = (c, m) => { if (c) console.log('  PASS  ' + m); else { console.log('  FAIL  ' + m); FAILS.push(m); } };
@@ -98,6 +101,23 @@ function objectEntries(file, declRe) {
   return out;
 }
 
+/* ------------------------------------------------ THE COVERAGE KEY (year) */
+/* Every coverage lookup used to be keyed by the BARE lesson number, because for
+   a year there was only one year. J2 and J3 both start at Lesson 1 — a pupil in
+   J2 must see "Lesson 1" — so a bare number is no longer a unique name for a
+   lesson, and the collision is not theoretical: an uncovered J2 lesson numbered 4
+   would have read Lesson 4's landmark list, its pinned sit shape and its filed
+   verdicts, and this gate would have called it covered. That is a FALSE PASS in
+   the one machine whose whole job is to refuse false passes (DFM 206).
+   The key is therefore year-qualified for every year EXCEPT j1, whose existing
+   bare-number declarations are read as legacy: J1's six built lessons keep the
+   keys they already have, and nothing recorded about them is renamed (DFM 176 —
+   locked lessons and their recorded assets are not touched to make a gate tidy).
+   Proven both ways by `--control-year`. */
+function coverageKey(year, num) {
+  return String(year) === 'j1' ? String(num) : String(year) + '-' + String(num);
+}
+
 /* ------------------------------------------------- the lessons that EXIST */
 /* Every year folder, every lesson the year's manifest declares that really has a
    content file. A lesson in the manifest with no file yet is not built and is not
@@ -125,6 +145,7 @@ function builtLessons() {
       const assets = (re) => [...new Set((blob.match(re) || []).map(s => s.replace(/^.*\//, '')))];
       out.push({
         year: y.id, id: id, num: String(json.num), title: json.title, file: file,
+        key: coverageKey(y.id, json.num),
         films: assets(/assets\/[A-Za-z0-9_./-]+\.mp4/g),
         kits: assets(/assets\/[A-Za-z0-9_./-]+\.sb3/g)
       });
@@ -170,13 +191,21 @@ function declarations() {
   /* film laws: a lesson with a film needs a scene file the record-time laws run
      over, and that scene must declare the blocks it puts on camera (DFM 207c —
      his "anything similarly new or complex needs explained as well"). */
+  /* Scene FILENAMES are year-qualified for the new years (scenes/j2-l1.js). The
+     bare `l<n>.js` form is LEGACY and resolves to j1 only — L2–L5's recorded
+     films keep the filenames their pipeline already uses (nothing is renamed to
+     make a gate tidy), and a J2 lesson can never satisfy its film row with a
+     scene file that belongs to J1. */
   d.film = {};
   const scenesDir = path.join(HERE, 'scenes');
   if (exists(scenesDir)) {
-    fs.readdirSync(scenesDir).filter(f => /^l[0-9a-z]+\.js$/i.test(f)).forEach(f => {
-      const num = /^l([0-9a-z]+)\.js$/i.exec(f)[1];
+    fs.readdirSync(scenesDir).filter(f => /^(?:l[0-9a-z]+|j[0-9]+-l[0-9a-z]+)\.js$/i.test(f)).forEach(f => {
+      const legacy = /^l([0-9a-z]+)\.js$/i.exec(f);
+      const yearly = /^(j[0-9]+)-l([0-9a-z]+)\.js$/i.exec(f);
+      const key = legacy ? legacy[1].toUpperCase()
+        : yearly[1].toLowerCase() + '-' + yearly[2].toUpperCase();
       const src = fs.readFileSync(path.join(scenesDir, f), 'utf8');
-      d.film[num.toUpperCase()] = { file: f, blocks: /BLOCKS_ON_CAMERA/.test(src) };
+      d.film[key] = { file: f, blocks: /BLOCKS_ON_CAMERA/.test(src) };
     });
   }
 
@@ -185,8 +214,11 @@ function declarations() {
   fs.readdirSync(KS3).filter(f => /^COLD_READ_VERDICTS.*\.md$/.test(f)).forEach(f => {
     const text = fs.readFileSync(path.join(KS3, f), 'utf8');
     /* "## LESSON 4" / "## LESSON 5" section heads are the file's own structure */
-    (text.match(/^##+\s*LESSON\s+([0-9A-Za-z]+)/gim) || []).forEach(h => {
-      const n = /LESSON\s+([0-9A-Za-z]+)/i.exec(h)[1].toUpperCase();
+    /* "## LESSON 4" is J1's legacy heading; the new years write "## J2 LESSON 1"
+       so a verdict filed for one year can never be counted as another's. */
+    (text.match(/^##+\s*(?:(J[0-9]+)\s+)?LESSON\s+([0-9A-Za-z]+)/gim) || []).forEach(h => {
+      const m = /^##+\s*(?:(J[0-9]+)\s+)?LESSON\s+([0-9A-Za-z]+)/i.exec(h);
+      const n = m[1] ? m[1].toLowerCase() + '-' + m[2].toUpperCase() : m[2].toUpperCase();
       d.verdicts[n] = (d.verdicts[n] || 0) + 1;
     });
   });
@@ -203,31 +235,36 @@ function run() {
 
   const matrix = [];
   lessons.forEach(L => {
-    const num = L.num;
+    /* the YEAR-QUALIFIED key (coverageKey): j1 keeps its bare numbers, every
+       other year is "<year>-<num>", so two Lesson 1s can never read each other's
+       coverage. Proven both ways by --control-year. */
+    const key = L.key;
     const row = { lesson: L.id + ' (' + L.title + ')', cells: {} };
 
     /* --- every lesson: the confused-pupil walk must name its surfaces --- */
-    const lm = d.landmarks[num];
+    const lm = d.landmarks[key];
     row.cells.landmarks = lm > 0 ? 'covered (' + lm + ' landmarks)' : 'MISSING';
     check(lm > 0, L.id + ' × sit-wrongpath: a landmark list exists' +
       (lm > 0 ? ' (' + lm + ' surfaces asserted)' : ' — NO LIST, and a lesson with no landmark list is a failure, never a skip'));
 
     /* --- every lesson: a pinned sit-through shape --- */
-    row.cells.sitshape = d.sitshape[num] ? 'covered' : 'MISSING';
-    check(!!d.sitshape[num], L.id + ' × sit-review: a pinned shape exists' +
-      (d.sitshape[num] ? '' : ' — the walk-through would print "reported only" and pass whatever it saw'));
+    row.cells.sitshape = d.sitshape[key] ? 'covered' : 'MISSING';
+    check(!!d.sitshape[key], L.id + ' × sit-review: a pinned shape exists' +
+      (d.sitshape[key] ? '' : ' — the walk-through would print "reported only" and pass whatever it saw'));
 
     /* --- every lesson: filed cold-read verdicts --- */
-    row.cells.verdicts = d.verdicts[num] ? 'covered' : 'MISSING';
-    check(!!d.verdicts[num], L.id + ' × cold-read verdicts: the judged pass left evidence' +
-      (d.verdicts[num] ? '' : ' — no verdict section names this lesson'));
+    row.cells.verdicts = d.verdicts[key] ? 'covered' : 'MISSING';
+    check(!!d.verdicts[key], L.id + ' × cold-read verdicts: the judged pass left evidence' +
+      (d.verdicts[key] ? '' : ' — no verdict section names this lesson' +
+        (L.year === 'j1' ? '' : ' (it needs a "## ' + L.year.toUpperCase() + ' LESSON ' + L.num + '" heading)')));
 
     /* --- films: only lessons that ship one --- */
     if (L.films.length) {
-      const f = d.film[num];
+      const f = d.film[key];
+      const wantScene = L.year === 'j1' ? 'l' + L.num + '.js' : L.year + '-l' + L.num + '.js';
       row.cells.film = f ? (f.blocks ? 'covered' : 'covered, NO BLOCK MANIFEST') : 'MISSING';
       check(!!f, L.id + ' × film laws: a scene file exists for its ' + L.films.length +
-        ' film(s) (' + L.films.join(', ') + ')' + (f ? ' — ' + f.file : ' — no scenes/l' + num + '.js, so no record-time law ever ran over it'));
+        ' film(s) (' + L.films.join(', ') + ')' + (f ? ' — ' + f.file : ' — no scenes/' + wantScene + ', so no record-time law ever ran over it'));
       if (f) {
         check(f.blocks, L.id + ' × film blocks manifest: every block shown on camera declares where it is taught (DFM 207c)');
       }
@@ -348,4 +385,145 @@ function control() {
   process.exit(1);
 }
 
-if (process.argv.includes('--control')) control(); else run();
+/* ------------------------------------------------ THE YEAR-KEY CONTROL (§1)
+ * The collision this proves is not hypothetical, and the control is built to
+ * reproduce it rather than to assert the fix: it plants a J2 lesson NUMBERED 4
+ * — the number a J2 pupil really will see on her second block — and runs the
+ * PRE-CHANGE gate over it first.
+ *
+ *   Part 1  the pre-change gate reads Lesson 4's landmark list, Lesson 4's pinned
+ *           sit shape and Lesson 4's filed verdicts for a J2 lesson nothing has
+ *           ever walked, and calls it covered. A FALSE PASS, filed as evidence.
+ *   Part 2  this gate refuses the same fixture and names it.
+ *   Part 3  LEGACY: J1's six built lessons resolve exactly as before — the
+ *           coverage matrix rows for j1 are byte-equal pre-change and post-change.
+ *   Part 4  and a fixture that declares itself PROPERLY (LANDMARKS['j2-4'],
+ *           EXPECT['j2-4'], a "## J2 LESSON 4" verdict heading) passes — so the
+ *           new key is satisfiable, not merely stricter.
+ *
+ *   node qa-harness-coverage.js --control-year
+ */
+function controlYear() {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ks3dt-yearkey-'));
+  const say = (ok, m) => { console.log('  ' + (ok ? 'PASS  ' : 'FAIL  ') + m); return ok; };
+  const results = [];
+
+  /* ---- the sandbox content tree: J1 untouched, plus a J2 lesson numbered 4 ---- */
+  const dst = path.join(tmp, 'content-src');
+  fs.cpSync(CONTENT, dst, { recursive: true });
+  const j2 = path.join(dst, 'j2');
+  fs.mkdirSync(path.join(j2, 'lessons'), { recursive: true });
+  fs.writeFileSync(path.join(j2, 'manifest.json'), JSON.stringify({
+    year: 'j2', title: 'Fixture Year', lessons: ['j2-04']
+  }, null, 1));
+  /* deliberately NO film and NO kit: this fixture exists to test the three
+     every-lesson rows, so nothing else can account for a pass or a fail */
+  fs.writeFileSync(path.join(j2, 'lessons', 'j2-04.json'), JSON.stringify({
+    id: 'j2-04', num: '4', title: 'The Number-Four Collision',
+    chunks: [{ id: 'c1', engine: 'briefing', config: { intro: 'A J2 lesson nobody has walked.' } }]
+  }, null, 1));
+  const idx = readJSON(path.join(dst, 'index.json'));
+  idx.years.push({ id: 'j2', title: 'Fixture Year', manifest: 'j2/manifest.json' });
+  fs.writeFileSync(path.join(dst, 'index.json'), JSON.stringify(idx, null, 1));
+
+  /* ---- a sandbox KS3 dir: the real ledger + verdict files, nothing invented -- */
+  const ks3 = path.join(tmp, 'ks3');
+  fs.mkdirSync(ks3, { recursive: true });
+  fs.readdirSync(KS3).filter(f => /^COVERAGE_DEBT\.md$|^COLD_READ_VERDICTS.*\.md$/.test(f))
+    .forEach(f => fs.copyFileSync(path.join(KS3, f), path.join(ks3, f)));
+
+  const runGate = (file, env) => {
+    const res = require('child_process').spawnSync(process.execPath, [file], {
+      encoding: 'utf8',
+      env: Object.assign({}, process.env, {
+        KS3DT_CONTENT_SRC: dst, KS3DT_KS3: ks3, KS3DT_SB3_DIR: SB3
+      }, env || {})
+    });
+    return { out: (res.stdout || '') + (res.stderr || ''), status: res.status };
+  };
+  /* J1's rows out of a matrix print — the legacy comparison of Part 3 */
+  const j1Rows = (out) => out.split('\n').filter(l => /^\s{4}j1-/.test(l)).join('\n');
+  /* A cell is only "raised" when it is a FAIL. The first cut of this control
+     matched "j2-04 × sit-wrongpath" anywhere in the output and therefore matched
+     the gate's own PASS line, reporting two faults that did not exist — DFM 146a
+     in miniature, caught here rather than in something shown to him. */
+  const raised = (out, re) => out.split('\n').some(l => /^\s*FAIL\s/.test(l) && re.test(l));
+
+  /* the PRE-CHANGE gate, written beside the real declarations so its own
+     __dirname still finds sit-wrongpath.js — deleted in the finally below */
+  const prefixRef = process.env.KS3DT_YEARKEY_PREFIX_REF || 'd39e2eb';
+  const prefixFile = path.join(__dirname, '.prefix-coverage-' + process.pid + '.js');
+  let post, pre;
+  try {
+    fs.writeFileSync(prefixFile, require('child_process').execSync(
+      'git -C "' + path.resolve(__dirname, '../../..') + '" show ' +
+      prefixRef + ':ks3-dt/tools/record-tutorial/qa-harness-coverage.js',
+      { maxBuffer: 40 * 1024 * 1024 }).toString('utf8'));
+
+    console.log('CONTROL — the year key (§1). Pre-change ref: ' + prefixRef + '\n');
+
+    console.log('Part 1 — the collision, reproduced against the PRE-CHANGE gate');
+    pre = runGate(prefixFile);
+    const preNamed = raised(pre.out, /j2-04 × sit-wrongpath/);
+    const preCovered = /^\s{4}j2-04 .*covered \(8 landmarks\)/m.test(pre.out);
+    results.push(say(!preNamed,
+      'pre-change: the J2 lesson numbered 4 is NOT reported as missing a landmark list'));
+    results.push(say(preCovered,
+      'pre-change: it is reported COVERED BY LESSON 4\'S OWN 8 LANDMARKS — a J2 lesson nothing has ever walked, passing on J1\'s evidence'));
+
+    console.log('\nPart 2 — this gate refuses the same fixture');
+    post = runGate(__filename);
+    results.push(say(raised(post.out, /j2-04 × sit-wrongpath/),
+      'post-change: named j2-04 × sit-wrongpath as having NO landmark list'));
+    results.push(say(raised(post.out, /j2-04 × sit-review/),
+      'post-change: named j2-04 × sit-review as having no pinned shape'));
+    results.push(say(raised(post.out, /j2-04 × cold-read verdicts/) &&
+      /"## J2 LESSON 4" heading/.test(post.out),
+      'post-change: named j2-04 × cold-read verdicts AND said which heading would satisfy it'));
+    results.push(say(post.status !== 0,
+      'post-change: the gate exits non-zero — it STOPS the pack (status ' + post.status + ')'));
+
+    console.log('\nPart 3 — legacy: J1 resolves exactly as it did before');
+    results.push(say(j1Rows(pre.out) === j1Rows(post.out) && j1Rows(post.out).length > 0,
+      'the six J1 coverage rows are byte-equal pre-change and post-change (nothing about J1 was renamed)'));
+
+    console.log('\nPart 4 — a fixture that declares itself properly PASSES');
+    /* a sandbox harness dir carrying year-qualified declarations. Only the two
+       declaration files are planted; scenes/ is linked so film lookups behave. */
+    const hdir = path.join(tmp, 'harness');
+    fs.mkdirSync(hdir, { recursive: true });
+    fs.writeFileSync(path.join(hdir, 'sit-wrongpath.js'),
+      'const LANDMARKS = {\n' +
+      Object.entries(objectEntries(path.join(__dirname, 'sit-wrongpath.js'), /const\s+LANDMARKS\s*=/) || {})
+        .map(([k, v]) => '  ' + JSON.stringify(k) + ':' + v).join(',\n') +
+      ",\n  'j2-4': [\n    ['the briefing card', '.brief-card'],\n    ['the closing screen', '.se-card']\n  ]\n};\n");
+    fs.writeFileSync(path.join(hdir, 'sit-review.js'),
+      'const EXPECT = {\n' +
+      Object.entries(objectEntries(path.join(__dirname, 'sit-review.js'), /const\s+EXPECT\s*=/) || {})
+        .map(([k, v]) => '  ' + JSON.stringify(k) + ':' + v).join(',\n') +
+      ",\n  'j2-4': { xp: 0, chunks: 1, presses: 0, marks: 0, badges: 0 }\n};\n");
+    try { fs.symlinkSync(path.join(__dirname, 'scenes'), path.join(hdir, 'scenes'), 'dir'); } catch (e) {}
+    fs.writeFileSync(path.join(ks3, 'COLD_READ_VERDICTS_J2J3.md'),
+      '# fixture\n\n## J2 LESSON 4\n\n| screen | verdict |\n|---|---|\n| briefing | fixture row |\n');
+    const good = runGate(__filename, { KS3DT_HARNESS_DIR: hdir });
+    results.push(say(!raised(good.out, /j2-04 × /),
+      'with LANDMARKS[\'j2-4\'], EXPECT[\'j2-4\'] and a "## J2 LESSON 4" heading, j2-04 raises no cell'));
+    results.push(say(/j2-04 .*covered \(2 landmarks\)/.test(good.out),
+      'and it is credited with ITS OWN 2 landmarks, not Lesson 4\'s 8'));
+    results.push(say(good.status === 0,
+      'the gate lets the properly-declared year through (status ' + good.status + ') — the key is satisfiable, not merely stricter'));
+  } finally {
+    try { fs.unlinkSync(prefixFile); } catch (e) {}
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+
+  const bad = results.filter(r => !r).length;
+  console.log('\n' + (bad === 0
+    ? 'CONTROL PASSED — the bare-number key really did let a J2 lesson pass on J1\'s coverage, and the year key stops it without disturbing J1.'
+    : 'CONTROL FAILED — ' + bad + ' of ' + results.length + ' assertions did not hold.'));
+  process.exit(bad === 0 ? 0 : 1);
+}
+
+if (process.argv.includes('--control-year')) controlYear();
+else if (process.argv.includes('--control')) control();
+else run();

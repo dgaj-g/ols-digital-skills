@@ -116,6 +116,52 @@ function auditGate() {
    naming lesson x missing harness. Debt is allowed ONLY when written into
    COVERAGE_DEBT.md with a reason, an owner and the lesson's hash, and a lesson
    carrying debt may not be edited at all. */
+/* THE YEAR-FOLDER GATE (the J2/J3 stand-up, 14 Aug 2026).
+   The packer SHIPS every .json it finds under the content source - a raw
+   recursive walk. The coverage gate, by contrast, only walks years DECLARED in
+   index.json. Those two facts together are a hole with the exact shape of the
+   one DFM 206 was written about: a year folder that exists on disk but is not
+   declared would reach pupils having skipped the machine whose whole job is to
+   refuse an uncovered lesson. Nothing would say a word.
+   It is guarded in BOTH directions, because both are silent:
+     folder with no declaration -> it ships uncovered;
+     declaration with no folder -> the coverage gate's builtLessons() returns
+     early on the missing manifest and the year is silently judged as nothing.
+   The second direction is what makes "declare the year and create its folder in
+   ONE commit" a rule the machine enforces rather than a habit.
+   It runs FIRST, ahead of every other gate, because it is the gate that decides
+   whether the other gates can see the whole tree. */
+function yearFolderGate() {
+  const indexPath = path.join(SRC, 'index.json');
+  if (!fs.existsSync(indexPath)) {
+    console.error('PACK STOPPED: no index.json at ' + SRC + ' - there is nothing to declare years in.');
+    process.exit(1);
+  }
+  const index = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+  const declared = (index.years || []).map(y => y.id);
+  const onDisk = fs.readdirSync(SRC, { withFileTypes: true })
+    .filter(e => e.isDirectory() && /^j\d+$/i.test(e.name)).map(e => e.name).sort();
+
+  const undeclared = onDisk.filter(n => !declared.includes(n));
+  if (undeclared.length) {
+    console.error('PACK STOPPED: year folder(s) on disk that index.json does not declare: ' + undeclared.join(', '));
+    console.error('  The packer ships every .json it finds, but the coverage gate only walks');
+    console.error('  DECLARED years - so ' + undeclared.join(', ') + ' would reach pupils having skipped it');
+    console.error('  entirely, and no lesson in it would owe a landmark list, a pinned sit shape');
+    console.error('  or a filed cold read. Declare the year in index.json, or remove the folder.');
+    process.exit(1);
+  }
+  const missing = declared.filter(id => !fs.existsSync(path.join(SRC, id)));
+  if (missing.length) {
+    console.error('PACK STOPPED: index.json declares year(s) with no folder on disk: ' + missing.join(', '));
+    console.error('  A declared year whose manifest is missing is skipped in silence by the');
+    console.error('  coverage gate, so the year would read as "nothing to cover" rather than as');
+    console.error('  a mistake. Create the folder and its manifest, or remove the declaration.');
+    process.exit(1);
+  }
+  console.log('year-folder gate: PASSED - ' + onDisk.length + ' year folder(s), each declared: ' + onDisk.join(', '));
+}
+
 function coverageGate() {
   const harness = path.join(__dirname, 'record-tutorial', 'qa-harness-coverage.js');
   if (!fs.existsSync(harness)) {
@@ -135,7 +181,9 @@ function coverageGate() {
   const debt = /(\d+) CELL\(S\) OF NAMED DEBT/.exec(out);
   if (debt) {
     console.log('coverage gate: ' + debt[1] + ' CELLS OF NAMED DEBT (see COVERAGE_DEBT.md)');
-    out.split('\n').filter(l => /^\s{4}j1-|^\s{4}j2-/.test(l)).forEach(l => console.log('   ' + l.trim()));
+    /* any year, not a hardcoded j1/j2 pair - a J3 debt row printed nowhere is
+       the same silence this gate exists to end */
+    out.split('\n').filter(l => /^\s{4}j\d/.test(l)).forEach(l => console.log('   ' + l.trim()));
     console.log('  those surfaces are UNCHECKED - debt, not coverage.');
   } else console.log('coverage gate: PASSED (qa-harness-coverage) - every lesson, every applicable harness');
 }
@@ -199,6 +247,7 @@ function versionGate() {
 }
 
 function main() {
+  yearFolderGate();
   languageGate();
   auditGate();
   coverageGate();
