@@ -136,8 +136,11 @@ console.log('\n== 5. CONTROL — a DECLARED year WITH its folder is accepted =='
    That is the whole point of the guard: an undeclared j9 got none of this. */
 plantYear('j9', true);
 r = runPack();
-ctrl(/year-folder gate: PASSED/.test(text(r)) && /each declared: j1, j9/.test(text(r)),
-  'the year-folder gate PASSES and names both years');
+/* names the years it FOUND, whatever they are: pinning the exact list "j1, j9"
+   made this fail the moment j2 and j3 were declared, which is the same
+   fixture-not-law fault as qa-staff-authority's delete-button count */
+ctrl(/year-folder gate: PASSED/.test(text(r)) && /each declared: .*\bj9\b/.test(text(r)),
+  'the year-folder gate PASSES and names j9 among the declared years');
 ctrl(/UNREVIEWED: j9-01/.test(text(r)),
   'and the declared year is immediately INSIDE the other gates — the language gate names j9-01\'s unjudged sentences by id and stops the pack');
 ctrl(r.status !== 0, 'so a declared-but-unjudged year still cannot ship (status ' + r.status + ')');

@@ -36,7 +36,15 @@
     ryan: { email: 'ryan.fitzsimons@demo', name: 'Ryan Fitzsimons' },
     niamh: { email: 'niamh.quinn@demo', name: 'Niamh Quinn' },
     sean: { email: 'sean.ohagan@demo', name: "Sean O'Hagan" },
-    erin: { email: 'erin.mallon@demo', name: 'Erin Mallon' }
+    erin: { email: 'erin.mallon@demo', name: 'Erin Mallon' },
+    /* J2 (Demo-9A) and J3 (Demo-10A) — see seed_(). aoife/leah and orla/katie
+       are first-ever-login pupils on 0 XP; sinead and maeve carry XP. */
+    aoife: { email: 'aoife.mcgrath@demo', name: 'Aoife McGrath' },
+    leah: { email: 'leah.donnelly@demo', name: 'Leah Donnelly' },
+    sinead: { email: 'sinead.begley@demo', name: 'Sinead Begley' },
+    orla: { email: 'orla.mccann@demo', name: 'Orla McCann' },
+    katie: { email: 'katie.lennon@demo', name: 'Katie Lennon' },
+    maeve: { email: 'maeve.torley@demo', name: 'Maeve Torley' }
   };
   function personaKey_() {
     var as = '';
@@ -236,7 +244,15 @@
     var s = {
       passcode: 'demo',
       classes: [
-        { name: 'Demo-8A', owner: STAFF_EMAIL, year: 'j1', created: tminToDate_(tenDaysAgo).toISOString() }
+        { name: 'Demo-8A', owner: STAFF_EMAIL, year: 'j1', created: tminToDate_(tenDaysAgo).toISOString() },
+        /* J2/J3 preview classes (the stand-up, 14 Aug 2026). Their pupils are
+           deliberately FRESH — 0 XP, no lesson records — because both Year-One
+           Lesson 1s are written for a girl who has never seen this website and
+           the seeded-XP gotcha is real: a persona carrying XP would silently
+           skip the clearance pop the lesson's first-unlock beat depends on.
+           One persona per class keeps prior XP, for delta work later. */
+        { name: 'Demo-9A', owner: STAFF_EMAIL, year: 'j2', created: tminToDate_(tenDaysAgo).toISOString() },
+        { name: 'Demo-10A', owner: STAFF_EMAIL, year: 'j3', created: tminToDate_(tenDaysAgo).toISOString() }
       ],
       locks: { 'Demo-8A': { '1': { u: tenDaysAgo, on: 1 }, '2': { u: tenDaysAgo, on: 1 } } },
       /* Head of Department register (Code.gs: Script Property `hods`). Empty by
@@ -281,6 +297,17 @@
       n: 'Erin Mallon', cn: '', j: tenDaysAgo, xp: 0, g: '',
       L: { '2': [0, 0, '', '', '', 0, 0, 1, '', 0, 0] } // flags bit 1: teacher already dismissed
     };
+
+    /* ---- J2 (Demo-9A) and J3 (Demo-10A): first-ever-login pupils ---- */
+    getCfg_(s, 'Demo-9A'); getTeam_(s, 'Demo-9A');
+    getCfg_(s, 'Demo-10A'); getTeam_(s, 'Demo-10A');
+    s.pupils['Demo-9A:aoife.mcgrath@demo'] = { n: 'Aoife McGrath', cn: '', j: tenDaysAgo, xp: 0, g: '', L: {} };
+    s.pupils['Demo-9A:leah.donnelly@demo'] = { n: 'Leah Donnelly', cn: '', j: tenDaysAgo, xp: 0, g: '', L: {} };
+    /* the one carrying XP, so a later round can assert a DELTA rather than a total */
+    s.pupils['Demo-9A:sinead.begley@demo'] = { n: 'Sinead Begley', cn: '', j: tenDaysAgo, xp: 60, g: '', L: {} };
+    s.pupils['Demo-10A:orla.mccann@demo'] = { n: 'Orla McCann', cn: '', j: tenDaysAgo, xp: 0, g: '', L: {} };
+    s.pupils['Demo-10A:katie.lennon@demo'] = { n: 'Katie Lennon', cn: '', j: tenDaysAgo, xp: 0, g: '', L: {} };
+    s.pupils['Demo-10A:maeve.torley@demo'] = { n: 'Maeve Torley', cn: '', j: tenDaysAgo, xp: 60, g: '', L: {} };
     return s;
   }
 
@@ -944,8 +971,24 @@
     var s = load_();
     var cls = realClass_(s, p.classCode);
     if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
-    return fetchContent_('themes.json').catch(function () { return null; }).then(function (reg) {
-      if (!reg) return { ok: false, error: 'no-registry' };
+    return fetchContent_('themes.json').catch(function () { return null; }).then(function (reg0) {
+      if (!reg0) return { ok: false, error: 'no-registry' };
+      /* the year's own slice, mirroring Code.gs's kitFor_ exactly (his K1 ruling).
+         The preview MUST refuse a cross-year equip the same way the real server
+         does, or the one place this is testable would be the place it is not
+         enforced — the DFM 157(a) lesson: a rule that lives in two homes is a
+         contract, and a harness has to hold them equal. */
+      var y = str_(cls.year || 'j1');
+      var reg = {};
+      for (var k in reg0) if (Object.prototype.hasOwnProperty.call(reg0, k)) reg[k] = reg0[k];
+      var by = reg0.clearancesByYear;
+      reg.clearances = (by && by[y]) || (by && by.j1) || reg0.clearances || [];
+      var mine = function (item) {
+        var t = item && item.year;
+        return t == null ? (y === 'j1') : (t === 'all' || str_(t) === y);
+      };
+      reg.themes = (reg0.themes || []).filter(mine);
+      reg.insignia = (reg0.insignia || []).filter(mine);
       function clearanceXp(level) {
         var cs = reg.clearances || [];
         for (var i = 0; i < cs.length; i++) if (num_(cs[i].level) === num_(level)) return num_(cs[i].xp);
