@@ -3042,6 +3042,48 @@ window.OLS_TRANSPORT = {
     var s = App.state;
     return Math.max(Number(s.xp) || 0, Number(s.me && s.me.mx) || 0);
   };
+  /* ---------------- the year's own view of the kit registry ----------------
+     HIS K1 RULING, 14 Aug 2026: J2 and J3 must not inherit J1's agent fiction,
+     its rank names or its wardrobe. One registry file still holds everything \u2014
+     adding a look is still a git push, no redeploy \u2014 but each year reads only
+     its own slice of it: its rank ladder, the looks tagged for it, and its own
+     kit NAME and explainer.
+     Resolved ONCE here, at load, so every reader downstream (the clearance pop,
+     the kit modal, the theme painter) is untouched and J1 renders exactly as it
+     did. The server does the identical filtering in apiSetKit, so this is a
+     convenience for her screen and never the security boundary.
+     THE LEGACY READS ARE DELIBERATE (rule 42/35 family \u2014 never strand a pupil):
+     a browser holding a themes.json cached from before this change has no
+     clearancesByYear and no year tags, and localStorage survives a reload
+     (DFM 189), so the old `clearances` key is still honoured and a look that
+     names no year is treated as J1's. And if filtering ever leaves her with
+     nothing to wear, midnight is put back \u2014 an empty wardrobe is a broken
+     screen, not a rule. */
+  App.resolveKit = function (reg, year) {
+    if (!reg) return reg;
+    var y = String(year || 'j1');
+    var out = {}, k;
+    for (k in reg) if (Object.prototype.hasOwnProperty.call(reg, k)) out[k] = reg[k];
+    var by = reg.clearancesByYear;
+    out.clearances = (by && by[y]) || (by && by.j1) || reg.clearances || [];
+    var mine = function (item) {
+      var t = item && item.year;
+      return t == null ? (y === 'j1') : (t === 'all' || String(t) === y);
+    };
+    out.themes = (reg.themes || []).filter(mine);
+    out.insignia = (reg.insignia || []).filter(mine);
+    if (!out.themes.length) {
+      out.themes = (reg.themes || []).filter(function (t) { return String(t.id) === 'midnight'; });
+    }
+    out.kit = (reg.kits && (reg.kits[y] || reg.kits.j1)) ||
+      { name: 'Agent Kit', explainer: 'Your Agent Kit is kind of like this website\u2019s own wardrobe or costumes!' };
+    return out;
+  };
+  /* the kit's NAME is content now, not a literal (his K1 ruling) */
+  App.kitName = function () {
+    return ((App.state.kit || {}).kit || {}).name || 'Agent Kit';
+  };
+
   /* Clearance ladder position for a given XP (clearances are ascending). */
   App.clearanceFor = function (xp) {
     var cs = (App.state.kit && App.state.kit.clearances) || [];
@@ -3121,7 +3163,7 @@ window.OLS_TRANSPORT = {
         s.man = man;
         // Kit registry rides along; its absence never blocks the platform
         return App.fetchContent('themes.json').then(
-          function (reg) { s.kit = reg; },
+          function (reg) { s.kit = App.resolveKit(reg, s.year); },
           function () { s.kit = null; }
         );
       }).then(function () {
@@ -3418,14 +3460,19 @@ window.OLS_TRANSPORT = {
       /* DAMIEN, 31 Jul 2026: a pupil has never met the term "Agent Kit", so the
          old line explained nothing and the button asked her to open something she
          could not picture. His wording, verbatim. The last sentence is true:
-         #agent-chip calls App.openKit (see wireChrome). */
-      '<p class="clearance-sub">Your Agent Kit is kind of like this website\u2019s own wardrobe or ' +
-      'costumes! It holds the looks and badge designs your console can wear, unlocked as your XP ' +
+         #agent-chip calls App.openKit (see wireChrome).
+         14 Aug 2026 (his K1 ruling): the NAME and the explaining sentence now come
+         from the registry, because J2's is a toolbench and J3's is a studio and
+         neither is an Agent Kit. J1's registry values reproduce this wording
+         exactly, so his approved sentence is unchanged on a J1 screen \u2014 proved by
+         a rendered comparison, not by reading the source. */
+      '<p class="clearance-sub">' + esc(((App.state.kit || {}).kit || {}).explainer || '') +
+      ' It holds the looks and badge designs your console can wear, unlocked as your XP ' +
       'grows. This clearance has just unlocked new ones. Open it to try them on &mdash; you can ' +
       'change your look any time from your name chip, top right.</p>' +
       '<div class="confirm-actions">' +
       '<button class="ghost-btn" data-act="later" type="button">Later</button>' +
-      '<button class="primary-btn" data-act="open" type="button">Open Agent Kit</button>' +
+      '<button class="primary-btn" data-act="open" type="button">Open ' + esc(App.kitName()) + '</button>' +
       '</div></div>';
     document.body.appendChild(ov);
     requestAnimationFrame(function () { ov.classList.add('show'); });
@@ -3441,7 +3488,7 @@ window.OLS_TRANSPORT = {
   App.openKit = function () {
     var s = App.state;
     if (!s.me) return; // not joined yet (staff preview of the join screen etc.)
-    if (!s.kit) { App.toast('Your Agent Kit could not load \u2014 check your connection and refresh.'); return; }
+    if (!s.kit) { App.toast('Your ' + App.kitName() + ' could not load \u2014 check your connection and refresh.'); return; }
     renderKit();
     App.openModal('kit-modal');
   };

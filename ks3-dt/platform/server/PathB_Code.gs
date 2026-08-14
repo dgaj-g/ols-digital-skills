@@ -1158,6 +1158,29 @@ function apiArtifactCheck(req) {
    redeploy); the server re-reads it here so a DevTools call cannot equip kit
    above the pupil's clearance. Clearance = total XP vs the registry ladder. */
 function kitRegistry_() { return fetchContent_('themes.json'); }
+/* THE YEAR'S OWN SLICE (his K1 ruling, 14 Aug 2026). One registry file, but each
+   year has its own rank ladder, its own looks and its own kit name: J2 is a
+   workshop, J3 is a studio, and neither is an Agent Kit. This is the SECURITY
+   half - the client filters the same way for her screen, but a DevTools call that
+   names a J1 theme from a J2 account has to be refused HERE.
+   The legacy reads mirror app.js exactly (one behaviour, two homes): a registry
+   without clearancesByYear falls back to the old flat ladder, and a look with no
+   year tag is J1's. Deliberate, so a mid-deploy fetch of an older themes.json can
+   never lock a pupil out of a costume she owns. */
+function kitFor_(reg, year) {
+  var y = str_(year || 'j1');
+  var out = {}, k;
+  for (k in reg) if (Object.prototype.hasOwnProperty.call(reg, k)) out[k] = reg[k];
+  var by = reg && reg.clearancesByYear;
+  out.clearances = (by && by[y]) || (by && by.j1) || (reg && reg.clearances) || [];
+  var mine = function (item) {
+    var t = item && item.year;
+    return t == null ? (y === 'j1') : (t === 'all' || str_(t) === y);
+  };
+  out.themes = ((reg && reg.themes) || []).filter(mine);
+  out.insignia = ((reg && reg.insignia) || []).filter(mine);
+  return out;
+}
 function kitClearanceXp_(reg, level) {
   var cs = (reg && reg.clearances) || [];
   for (var i = 0; i < cs.length; i++) if (num_(cs[i].level) === num_(level)) return num_(cs[i].xp);
@@ -1170,7 +1193,9 @@ function apiSetKit(req) {
   var cls = realClass_(req.classCode);
   if (!cls) return { ok: false, error: 'unknown-class' };
   var reg;
-  try { reg = kitRegistry_(); } catch (e) { return { ok: false, error: 'no-registry' }; }
+  /* the CLASS's year decides which looks exist for her - never a value the
+     caller supplies, so a crafted request cannot promote itself into J1's kit */
+  try { reg = kitFor_(kitRegistry_(), cls.year); } catch (e) { return { ok: false, error: 'no-registry' }; }
   var themeId = req.themeId != null ? str_(req.themeId) : null;
   var insigniaId = req.insigniaId != null ? str_(req.insigniaId) : null;
   return withLock_(function () {

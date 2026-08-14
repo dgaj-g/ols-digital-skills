@@ -1159,9 +1159,9 @@ function apiArtifactCheck(req) {
    above the pupil's clearance. Clearance = total XP vs the registry ladder. */
 function kitRegistry_() { return fetchContent_('themes.json'); }
 /* THE YEAR'S OWN SLICE (his K1 ruling, 14 Aug 2026). One registry file, but each
-   year has its own rank ladder, its own looks and its own kit name — J2 is a
+   year has its own rank ladder, its own looks and its own kit name: J2 is a
    workshop, J3 is a studio, and neither is an Agent Kit. This is the SECURITY
-   half: the client filters the same way for her screen, but a DevTools call that
+   half - the client filters the same way for her screen, but a DevTools call that
    names a J1 theme from a J2 account has to be refused HERE.
    The legacy reads mirror app.js exactly (one behaviour, two homes): a registry
    without clearancesByYear falls back to the old flat ladder, and a look with no
@@ -1193,7 +1193,7 @@ function apiSetKit(req) {
   var cls = realClass_(req.classCode);
   if (!cls) return { ok: false, error: 'unknown-class' };
   var reg;
-  /* the CLASS's year decides which looks exist for her — never a value the
+  /* the CLASS's year decides which looks exist for her - never a value the
      caller supplies, so a crafted request cannot promote itself into J1's kit */
   try { reg = kitFor_(kitRegistry_(), cls.year); } catch (e) { return { ok: false, error: 'no-registry' }; }
   var themeId = req.themeId != null ? str_(req.themeId) : null;
