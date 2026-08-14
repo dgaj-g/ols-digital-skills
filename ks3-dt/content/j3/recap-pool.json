@@ -1,0 +1,68 @@
+{
+ "year": "j3",
+ "comment": "Seeded with the year's keystone THREADS only. items is deliberately empty for the same reason as J2's: under DFM 134 the Do-Now serves only items from lessons this pupil has COMPLETED, so each item is authored by the lesson that teaches it. Year-One note (his K4 ruling): this cohort arrives with no platform history and no Python, so nothing here assumes a J1 or J2 thread — J3 L1 and L2 establish their own ground first.",
+ "threads": {
+  "kp-platform-j3": {
+   "label": "How this website works",
+   "note": "First-ever login for this cohort. Established J3 L1; deliberately not inherited from J1."
+  },
+  "kp-code-j3": {
+   "label": "The studio code",
+   "note": "The DT room rules taught as what professionals do, and tested by judgement in J3 L1."
+  },
+  "kp-py-basics": {
+   "label": "Python from zero: print, variables, running a program",
+   "note": "Established J3 L2, the Year-One lesson added because this cohort has no Python (his K4 taper)."
+  },
+  "kp-list": {
+   "label": "Lists: holding a set of values",
+   "note": "Established L3."
+  },
+  "kp-function": {
+   "label": "Functions and parameters",
+   "note": "Established L4; the reuse idea the sprint leans on."
+  },
+  "kp-debug": {
+   "label": "Finding and naming a fault in code",
+   "note": "Established L5. Sorting and searching are deliberately NOT here — decided 17 Jul, left for GCSE."
+  },
+  "kp-data-insight": {
+   "label": "Turning query results into an insight",
+   "note": "Established L6; picks up J2's kp-query for pupils who have it."
+  },
+  "kp-ml-pattern": {
+   "label": "How a machine learns a pattern",
+   "note": "Established L7."
+  },
+  "kp-genai-verify": {
+   "label": "Checking what AI gives you",
+   "note": "Established L8. The verification habit, not the tool."
+  },
+  "kp-ai-ethics": {
+   "label": "The costs and ethics of AI",
+   "note": "Established L9, environmental cost included. Stat cards must be sourced before go-live."
+  },
+  "kp-user-story": {
+   "label": "User-centred design and user stories",
+   "note": "Established L10; the sprint in L11 is judged against these."
+  },
+  "kp-prototype": {
+   "label": "Building and testing a prototype",
+   "note": "Established L11. Year-One: a micro:bit gadget is one of the build mediums."
+  },
+  "kp-accessibility": {
+   "label": "Making work usable by everybody",
+   "note": "Established L12. New-engine flag: contrast gate and keyboard-only simulators need a prototype first."
+  },
+  "kp-testing": {
+   "label": "Test plans and honest evaluation",
+   "note": "Established L13."
+  },
+  "kp-routes": {
+   "label": "The two GCSE routes and their shared core",
+   "note": "Opened in L1's compass, tried out in L14/L15, decided in L16, reviewed in L17."
+  }
+ },
+ "items": [],
+ "keysEnc": "GXU="
+}
