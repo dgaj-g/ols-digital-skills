@@ -2716,6 +2716,18 @@
         '<button class="confirm-step rally-confirm" type="button"><span class="confirm-box"></span>' + esc(confirmLabel || 'We played it fair') + '</button>' +
         /* DFM 185: every pupil now sends in HER OWN two goes under her own name,
            so the old "our score" / "my score" split has nothing left to describe */
+        /* THE LOCKED NOTE (DFM 205's class, found on Lesson 3 by the confused-pupil
+           walker on 14 Aug 2026 and fixed on his word, DFM 223). "Send in my
+           scores" is born `disabled` and only wakes when the referee box is
+           ticked, both goes have been played and both numbers are in — and
+           nothing beside it said so, so a pupil who pressed it early got
+           silence. The three things that would have explained it were all on
+           screen and none was attached to the button: the rules list sits above
+           the console, the tick is a control rather than a sentence, and the
+           steppers' own tag speaks only about the steppers. Same shape as the
+           closing screen and the ordering puzzle, which this rule already fixed. */
+        '<p class="case-locked-note rally-locked-note">' + esc(cfg.lockedNote ||
+          'This wakes up when both goes have been played, both scores are in, and you have ticked the box above.') + '</p>' +
         '<div class="rung-actions"><button class="primary-btn rally-transmit" type="button" disabled>Send in my scores</button></div>' +
         '<div class="rally-after"></div></div>');
       host.appendChild(c);
@@ -2747,6 +2759,10 @@
         var allIn = rounds.every(function (v) { return v != null; });
         var ready = ticked && allIn && timed >= GOES;
         transmitBtn.disabled = !ready || submitted;
+        /* the note disappears the moment it is satisfied, and once she has sent
+           her scores there is nothing left to unlock (DFM 205's own rule) */
+        var txNote = c.querySelector('.rally-locked-note');
+        if (txNote) txNote.hidden = ready || submitted;
         if (goN) goN.textContent = String(Math.min(GOES, timed + 1));
         if (timerBtn) {
           timerBtn.hidden = submitted || (timed >= GOES && allIn);
