@@ -125,7 +125,8 @@
      "seeContracts": "See the contracts",
      "backToContracts": "Back to the contracts",
      "tearIdle": "Tear it up &amp; choose again",
-     "tearArm": "Click again to shred this contract"
+     "tearArm": "Click again to shred this contract",
+     "enterLabel": "Open my studio"
     }
    }
   },
@@ -149,7 +150,7 @@
      }
     ],
     "help": "Watch the if/else chapter even if you picked Maze or Quiz — the block is exactly the same; your blueprint shows you where it goes in YOUR game. The worked example and the testing chapters wait on your Studio Desk, beside your blueprint, for the moment you need them.",
-    "note": "The worked example and the testing chapters live on your Studio Desk, right beside the blueprint."
+    "note": "The film builds ONE game — Catch It — because the if/else block is identical in all three contracts; your blueprint shows where it goes in YOURS. The worked example and the testing chapters live on your Studio Desk, right beside the blueprint."
    }
   },
   {
@@ -201,6 +202,7 @@
     "templates": {
      "catch": {
       "name": "Catch It",
+      "noteWhere": "Click the Apple in the sprite list — the STUDIO NOTE is stuck to its code, right beside the blocks that make the apple fall.",
       "file": "assets/games/catch-it-starter.sb3",
       "blueprint": {
        "title": "The Catch It blueprint",
@@ -354,6 +356,7 @@
      },
      "maze": {
       "name": "Maze Escape",
+      "noteWhere": "Click the Door in the sprite list — the STUDIO NOTE is stuck to its code.",
       "file": "assets/games/maze-escape-starter.sb3",
       "blueprint": {
        "title": "The Maze Escape blueprint",
@@ -492,6 +495,7 @@
      },
      "quiz": {
       "name": "Quiz Master",
+      "noteWhere": "Click the True Tile in the sprite list — the STUDIO NOTE is stuck to its code, and a matching note sits on the False Tile.",
       "file": "assets/games/quiz-master-starter.sb3",
       "blueprint": {
        "title": "The Quiz Master blueprint",

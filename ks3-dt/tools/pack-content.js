@@ -107,6 +107,39 @@ function auditGate() {
   console.log('audit gate: PASSED (qa-dfm-audit)');
 }
 
+/* THE COVERAGE GATE (DFM 206). Damien, after his Lesson 5 sit was handed to him
+   with the confused-pupil walker reaching four of its twelve surfaces: "how can a
+   harness fail to be, well, harnessed? makes no sense and I'm very frustrated."
+   Every checker had been pointed at the lesson whose fault created it, and nothing
+   mechanical demanded it cover the others. This is that machine: a lesson that
+   exists is a lesson that is covered, and it stops the pack when one is not —
+   naming lesson x missing harness. Debt is allowed ONLY when written into
+   COVERAGE_DEBT.md with a reason, an owner and the lesson's hash, and a lesson
+   carrying debt may not be edited at all. */
+function coverageGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-harness-coverage.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-harness-coverage.js is missing - the coverage gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  const out = (res.stdout || '') + (res.stderr || '');
+  if (res.status !== 0) {
+    console.error(out);
+    console.error('\nPACK STOPPED: a built lesson is not covered by a harness that applies to it.');
+    console.error('Close the cell, or write it into COVERAGE_DEBT.md with a reason, an owner and');
+    console.error('the lesson hash. A lesson with no landmark list is a failure, never a skip.');
+    process.exit(1);
+  }
+  /* debt is printed on EVERY pack, never folded away into a quiet exit code */
+  const debt = /(\d+) CELL\(S\) OF NAMED DEBT/.exec(out);
+  if (debt) {
+    console.log('coverage gate: ' + debt[1] + ' CELLS OF NAMED DEBT (see COVERAGE_DEBT.md)');
+    out.split('\n').filter(l => /^\s{4}j1-|^\s{4}j2-/.test(l)).forEach(l => console.log('   ' + l.trim()));
+    console.log('  those surfaces are UNCHECKED - debt, not coverage.');
+  } else console.log('coverage gate: PASSED (qa-harness-coverage) - every lesson, every applicable harness');
+}
+
 /* THE VERSION GATE (his 11 Aug 2026 find, DFM 189). Every content change since
    4 Aug shipped under the SAME contentVersion "2026-08-03c" - and that string is
    the cache key on BOTH sides: app.js stores each lesson file in localStorage
@@ -168,6 +201,7 @@ function versionGate() {
 function main() {
   languageGate();
   auditGate();
+  coverageGate();
   const stamp = versionGate();
   const sec = secret();
   const devKeys = {};

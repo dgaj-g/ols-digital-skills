@@ -193,7 +193,11 @@ for (const [file, want] of Object.entries(manifest.kits)) {
   derivedAll[file] = got;
   if (PRINT) { console.log('\n' + file + ':\n' + JSON.stringify(got, null, 2)); continue; }
   for (const group of Object.keys(want)) {
-    if (group.startsWith('_') || group === 'role') continue;
+    /* 'lesson' is a COVERAGE DECLARATION, not a fact derived from the blocks:
+       qa-harness-coverage.js reads it to prove a lesson shipping an .sb3 really
+       has a ratchet (DFM 206). Left in the fact loop it was walked as if it were
+       a group of facts and compared character by character ("j1-05" -> 1,-,0,5). */
+    if (group.startsWith('_') || group === 'role' || group === 'lesson') continue;
     for (const [k, wv] of Object.entries(want[group])) {
       const gv = (got[group] || {})[k];
       const same = JSON.stringify(gv) === JSON.stringify(Array.isArray(wv) ? [...wv].sort() : wv);
@@ -239,6 +243,37 @@ if (loopWrapped) {
     if (clean && !findings.length) ok(`all ${clean} Case 02 surfaces stay inside what the kit can do`);
   }
 }
+
+/* ---------- THE STUDIO-NOTE POINTER (DFM 207f) ----------
+   Lesson 5's kit card now NAMES the sprite whose code carries the STUDIO NOTE
+   ("Click the Apple in the sprite list..."). That is a claim about a real file,
+   so it is held to the file: the named sprite must really own a comment in that
+   .sb3. Rename a sprite or move the note and this fails, rather than sending a
+   child hunting through the wrong sprite. */
+function spritesWithComments(file) {
+  const json = readProject(path.join(SB3_DIR, file));
+  return (json.targets || []).filter(t => Object.keys(t.comments || {}).length).map(t => t.name);
+}
+(function noteWherePointers() {
+  const CONTENT_L5 = CONTENT_OVERRIDE && /j1-05/.test(CONTENT_OVERRIDE)
+    ? CONTENT_OVERRIDE : path.join(CONTENT_DIR, 'j1-05.json');
+  if (!fs.existsSync(CONTENT_L5)) return;
+  const lesson = JSON.parse(fs.readFileSync(CONTENT_L5, 'utf8'));
+  const build = (lesson.chunks || []).find(c => c.engine === 'studio' && c.config && c.config.templates);
+  if (!build) return;
+  console.log('\nTHE STUDIO-NOTE POINTER — the sprite the card names must really carry the note');
+  Object.entries(build.config.templates).forEach(([id, t]) => {
+    if (!t.noteWhere) return;
+    const file = String(t.file || '').replace(/^.*\//, '');
+    let owners;
+    try { owners = spritesWithComments(file); } catch (e) { fail(`${id}: cannot read ${file} (${e.message})`); return; }
+    const named = owners.filter(n => new RegExp('\\b' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i').test(t.noteWhere));
+    if (!named.length) {
+      fail(`${id}: the card says "${t.noteWhere.slice(0, 60)}..." but the sprites carrying a ` +
+        `comment in ${file} are: ${owners.join(', ') || '(none)'}`);
+    } else ok(`${id} — the card names ${named.join(' + ')}, and ${named.length > 1 ? 'those sprites' : 'that sprite'} really carries the note in ${file}`);
+  });
+})();
 
 /* ---------- LESSON 5: the "deliberately unfinished kit" claim (DFM 201d, §C q12) ----------
    Lesson 5's kit card promises every pupil that her starter "cannot choose, count or end
