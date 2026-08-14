@@ -156,7 +156,10 @@ function check(cond, msg) {
   await sleep(900);
   check(await page.evaluate(() => !!document.querySelector('.std-signature.done')), 'signature lands on the contract');
   await shot('05-signed');
-  await clickText('Found the studio');
+  /* DFM 143b: this used to find the button by the words "Found the studio". He
+     asked what that meant (DFM 207b), the label became "Open my studio", and a
+     text match would have sat here for twenty turns. The CLASS is the contract. */
+  await page.evaluate(() => { const b = document.querySelector('.std-enter'); if (!b) throw new Error('no .std-enter button on the signed contract'); b.click(); });
   await dismissBadge();
   check((await xp()) === 2, 'Founder badge = +2 XP (total 2), got ' + (await xp()));
 

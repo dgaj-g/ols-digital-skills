@@ -3665,7 +3665,14 @@
           signBlock = '<div class="std-signature done"><span class="std-sig-name">' + esc(sn) + '</span><span class="std-sig-line"></span>' +
             '<p class="std-sig-note">Contract signed.</p>' +
             (qaStarted ? '' : '<button class="ghost-btn std-tearup" type="button">Tear it up &amp; choose again</button>') +
-            '<button class="primary-btn std-enter" type="button">' + (chunk.badge ? 'Found the studio' : 'Continue') + '</button></div>';
+            /* HIS FINDING (DFM 207b): "I'm not sure what it means by found the
+               studio. What does that mean? do you mean that the studio has been
+               created?" It meant FOUNDED — and to an 11-year-old "found" is the
+               past tense of find. It was also a raw engine literal at three
+               words, under the debt inventory's four-word floor, so no language
+               gate ever read it. Content owns it now, and it says what the
+               button does: pressing it opens the studio desk. */
+            '<button class="primary-btn std-enter" type="button">' + (chunk.badge ? S('enterLabel', 'Open my studio') : S('enterContinue', 'Continue')) + '</button></div>';
         } else if (tpl && qaStarted) {
           signBlock = '<p class="std-note">Your studio already has QA work on the ' + esc((contractOf(tpl) || {}).name || 'other') + ' contract &mdash; finish that one.</p>';
         } else {
@@ -3881,6 +3888,14 @@
           '<p>' + esc((cfg.kit && cfg.kit.intro) || 'Download your starter kit and load it at scratch.mit.edu.') + '</p>' +
           '<p class="case-getgame-btns"><a class="primary-btn" href="' + esc(asset(t.file)) + '" download>&#11015;&#65039; Download the ' + esc(t.name) + ' kit</a> ' +
           '<a class="ghost-btn" href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener">Open the Scratch editor &#8599;</a></p>' +
+          /* HIS QUESTION (DFM 207f): "should we have a note to say that they have
+             to click on the apple to see the studio code note? Or is that part of
+             the task?" Ruled: it is NOT the task — the confirm is a setup step,
+             and the card asked her to tick something it never told her how to do.
+             The sprite is named per kit (Apple / Door / True Tile), and
+             qa-kit-facts checks the named sprite really owns a comment in that
+             .sb3, so this pointer can never drift from the file it describes. */
+          (t.noteWhere ? '<p class="std-note-where">&#128205; ' + esc(t.noteWhere) + '</p>' : '') +
           '<button class="confirm-step std-kit-confirm" type="button"' + (kit ? ' disabled' : '') + '><span class="confirm-box' + (kit ? ' done' : '') + '"></span><span>' + esc((cfg.kit && cfg.kit.confirm) || 'The kit is open in Scratch and I can see its code') + '</span></button></div>' +
 
           '<div class="card std-tool"><span class="std-qa-tag">2 &middot; THE BLUEPRINT</span>' +

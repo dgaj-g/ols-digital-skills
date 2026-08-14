@@ -467,7 +467,13 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .card h1, .card h2, .card h3 { color: var(--ols-blue); }
 .intro-card { text-align: center; }
 .intro-kicker {
-  display: inline-block; color: var(--gold-deep); background: rgba(var(--gold-rgb), 0.14);
+  /* THE SMALL-CAPS LABEL ON EVERY CARD IN THE PLATFORM ("CONTRACT \b7  Catch It",
+     "CASE 01", "THE JOB"). It painted --gold-deep on a --gold tint: two shades of
+     the same hue, 3.25:1 at 11px on the default skin and worse on four others.
+     --accent-ink is the theme's OWN dark counterpart to its accent (the ink the
+     primary button already uses on the same gold), so the label stays in the
+     skin's colour family and becomes readable on every one of the twelve. */
+  display: inline-block; color: var(--accent-ink); background: rgba(var(--gold-rgb), 0.14);
   font-family: var(--font-display); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; font-size: 0.7rem;
   border-radius: 999px; padding: 5px 14px; margin-bottom: 12px;
 }
@@ -2104,6 +2110,21 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .std-contract-cols ul { margin: 0; padding-left: 18px; font-size: 0.9rem; line-height: 1.5; }
 .std-theme { background: #F4F6FA; border-left: 3px solid var(--gold); padding: 8px 12px;
   border-radius: 0 6px 6px 0; font-size: 0.9rem; }
+/* HIS FIRST LESSON 5 FINDING: "the sign the contract button touches the back to
+   the desk button." It did \2014  `.std-back` closes the card straight after the
+   signature block with no spacing rule anywhere, so the two controls sat flush.
+   qa-readability.js's gap probe now measures every pair of controls on a landmark
+   surface and fails below 10px. */
+.std-contract-full .std-back { margin-top: 18px; }
+.std-signature .std-enter { margin-top: 10px; }
+/* the probe then found the same fault a third time, on the blueprint card: three
+   ghost buttons (the blueprint, and both halves of the film) separated by nothing
+   but the space between two tags. Different jobs, touching. */
+.std-tool .ghost-btn { margin: 6px 12px 6px 0; }   /* they WRAP, so the vertical
+   margin is what separates rows: 4px+4px measured 8px and the probe held the line */
+/* the per-kit pointer to the STUDIO NOTE's sprite (his "should we have a note to
+   say that they have to click on the apple?") */
+.std-note-where { margin: 8px 0 10px; color: var(--ols-blue); font-weight: 600; font-size: 0.94rem; }
 .std-signature { margin-top: 14px; border-top: 2px dashed #C9CFDD; padding-top: 14px; }
 .std-sig-label { display: block; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
   color: #5A6784; margin-bottom: 4px; text-transform: uppercase; }
@@ -2138,9 +2159,23 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .std-qadesk { border: 1px dashed rgba(120,170,255,0.45); border-radius: 12px; padding: 14px; margin-bottom: 18px; }
 .std-qadesk.locked { opacity: 0.55; }
 .std-qadesk-head { color: #C7D6F2; margin-bottom: 10px; position: relative; }
+/* HIS "three, the QA desk ... very hard to read". `.std-qa-tag` is a NAVY pill
+   made for the light kit and blueprint cards; the QA desk zone sits on the DARK
+   shell, so the same class rendered #2E4E86 on #152647 \2014  1.78:1. One class was
+   straddling two worlds; here it takes the dark world's colours. */
+.std-qadesk-head .std-qa-tag { color: #CFE0FF; background: rgba(120, 170, 255, 0.22); }
 .std-qadesk-head p { margin: 4px 0 0; font-size: 0.9rem; }
 .std-sealed-ribbon { position: absolute; right: 0; top: 0; background: #24355C; color: #93A3C4;
   font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; padding: 4px 10px; border-radius: 4px; }
+/* THE ROOT OF HIS "I CAN'T READ IT" (DFM 207g). This row paints a light parchment
+   plate but never set a text colour, so everything inside INHERITED THE DARK
+   SHELL'S LIGHT TEXT: the question, the test panel and the row's arrow rendered
+   near-white on near-white. Measured on the build he sat: "What did the score
+   actually do?" was #EAF0FC on #F9F6ED \2014  1.06:1, where 4.5 is the floor. The
+   headings escaped only because they set their own ink. One line fixes the
+   family, and qa-readability.js now measures every one of them on every skin. */
+.std-qa-row { color: var(--ink); }
+.std-qa-arrow { color: #5A6784; }
 .std-qa-row { background: linear-gradient(178deg, #FDFBF4 0%, #F3EFE2 100%); border-radius: 10px;
   margin-bottom: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
 .std-qa-row.locked { opacity: 0.6; }
@@ -2173,7 +2208,11 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .std-ready-zone { text-align: center; margin: 20px 0; }
 .std-ready-btn { font: inherit; font-family: var(--font-display); font-size: 1.15rem; letter-spacing: 0.06em;
   border: none; border-radius: 999px; padding: 16px 38px; cursor: pointer; transition: all 0.25s ease; }
-.std-ready-btn.dim { background: #1C2A4A; color: #55688F; box-shadow: inset 0 0 0 2px #2A3B63; cursor: default; }
+/* HIS "ready for gallery is quite hard to read". It is MEANT to look asleep until
+   four ticks wake it \2014  but dim must mean quieter, never unreadable: #55688F on
+   #1C2A4A measured 2.51:1. It stays plainly darker than `.lit` (no gold, no glow,
+   no pulse) while clearing the large-text floor. */
+.std-ready-btn.dim { background: #1C2A4A; color: #9FB2D6; box-shadow: inset 0 0 0 2px #2A3B63; cursor: default; }
 .std-ready-btn.lit { background: linear-gradient(170deg, var(--gold-hi), var(--gold-deep));
   color: #241A02; box-shadow: 0 0 28px rgba(228,184,36,0.55), 0 6px 18px rgba(0,0,0,0.4);
   animation: stdReadyPulse 1.6s ease-in-out infinite; }
@@ -7716,7 +7755,14 @@ window.OLS_TRANSPORT = {
           signBlock = '<div class="std-signature done"><span class="std-sig-name">' + esc(sn) + '</span><span class="std-sig-line"></span>' +
             '<p class="std-sig-note">Contract signed.</p>' +
             (qaStarted ? '' : '<button class="ghost-btn std-tearup" type="button">Tear it up &amp; choose again</button>') +
-            '<button class="primary-btn std-enter" type="button">' + (chunk.badge ? 'Found the studio' : 'Continue') + '</button></div>';
+            /* HIS FINDING (DFM 207b): "I'm not sure what it means by found the
+               studio. What does that mean? do you mean that the studio has been
+               created?" It meant FOUNDED \u2014 and to an 11-year-old "found" is the
+               past tense of find. It was also a raw engine literal at three
+               words, under the debt inventory's four-word floor, so no language
+               gate ever read it. Content owns it now, and it says what the
+               button does: pressing it opens the studio desk. */
+            '<button class="primary-btn std-enter" type="button">' + (chunk.badge ? S('enterLabel', 'Open my studio') : S('enterContinue', 'Continue')) + '</button></div>';
         } else if (tpl && qaStarted) {
           signBlock = '<p class="std-note">Your studio already has QA work on the ' + esc((contractOf(tpl) || {}).name || 'other') + ' contract &mdash; finish that one.</p>';
         } else {
@@ -7932,6 +7978,14 @@ window.OLS_TRANSPORT = {
           '<p>' + esc((cfg.kit && cfg.kit.intro) || 'Download your starter kit and load it at scratch.mit.edu.') + '</p>' +
           '<p class="case-getgame-btns"><a class="primary-btn" href="' + esc(asset(t.file)) + '" download>&#11015;&#65039; Download the ' + esc(t.name) + ' kit</a> ' +
           '<a class="ghost-btn" href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener">Open the Scratch editor &#8599;</a></p>' +
+          /* HIS QUESTION (DFM 207f): "should we have a note to say that they have
+             to click on the apple to see the studio code note? Or is that part of
+             the task?" Ruled: it is NOT the task \u2014 the confirm is a setup step,
+             and the card asked her to tick something it never told her how to do.
+             The sprite is named per kit (Apple / Door / True Tile), and
+             qa-kit-facts checks the named sprite really owns a comment in that
+             .sb3, so this pointer can never drift from the file it describes. */
+          (t.noteWhere ? '<p class="std-note-where">&#128205; ' + esc(t.noteWhere) + '</p>' : '') +
           '<button class="confirm-step std-kit-confirm" type="button"' + (kit ? ' disabled' : '') + '><span class="confirm-box' + (kit ? ' done' : '') + '"></span><span>' + esc((cfg.kit && cfg.kit.confirm) || 'The kit is open in Scratch and I can see its code') + '</span></button></div>' +
 
           '<div class="card std-tool"><span class="std-qa-tag">2 &middot; THE BLUEPRINT</span>' +

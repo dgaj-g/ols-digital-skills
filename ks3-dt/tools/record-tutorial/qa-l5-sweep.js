@@ -64,7 +64,10 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
   }, studioName);
   await page.evaluate(() => document.querySelector('.std-sign').click());
   await sleep(800);
-  await page.evaluate(() => { const b = Array.from(document.querySelectorAll('button')).find(x => /Found the studio/i.test(x.textContent)); b.click(); });
+  /* DFM 143b: this used to find the button by the words "Found the studio". He
+     asked what that meant (DFM 207b), the label became "Open my studio", and a
+     text match would have sat here for twenty turns. The CLASS is the contract. */
+  await page.evaluate(() => { const b = document.querySelector('.std-enter'); if (!b) throw new Error('no .std-enter button on the signed contract'); b.click(); });
   await sleep(1200);
   await page.evaluate(() => { const b = document.querySelector('.badge-pop button'); if (b) b.click(); });
   await sleep(1200);
@@ -593,7 +596,10 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
   });
   await pn.evaluate(() => document.querySelector('.std-sign').click());
   await sleep(700);
-  await pn.evaluate(() => { const b = Array.from(document.querySelectorAll('button')).find(x => /Found the studio/i.test(x.textContent)); b.click(); });
+  /* DFM 143b: this used to find the button by the words "Found the studio". He
+     asked what that meant (DFM 207b), the label became "Open my studio", and a
+     text match would have sat here for twenty turns. The CLASS is the contract. */
+  await pn.evaluate(() => { const b = document.querySelector('.std-enter'); if (!b) throw new Error('no .std-enter button on the signed contract'); b.click(); });
   await sleep(1200);
   await pn.evaluate(() => { const b = document.querySelector('.badge-pop button'); if (b) b.click(); });
   await sleep(1000);

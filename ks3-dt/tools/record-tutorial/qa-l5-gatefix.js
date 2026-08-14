@@ -65,7 +65,10 @@ function check(cond, msg) {
   await pa.evaluate(() => { const i = document.querySelector('.std-sig-input'); i.value = 'Beta Badger Games'; i.dispatchEvent(new Event('input')); });
   await pa.evaluate(() => document.querySelector('.std-sign').click());
   await sleep(700);
-  await pa.evaluate(() => { const b = Array.from(document.querySelectorAll('button')).find(x => /Found the studio/i.test(x.textContent)); b.click(); });
+  /* DFM 143b: this used to find the button by the words "Found the studio". He
+     asked what that meant (DFM 207b), the label became "Open my studio", and a
+     text match would have sat here for twenty turns. The CLASS is the contract. */
+  await pa.evaluate(() => { const b = document.querySelector('.std-enter'); if (!b) throw new Error('no .std-enter button on the signed contract'); b.click(); });
   await sleep(1200);
   await pa.evaluate(() => { const b = document.querySelector('.badge-pop button'); if (b) b.click(); });
   await sleep(1100);
