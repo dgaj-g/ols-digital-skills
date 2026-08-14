@@ -461,6 +461,24 @@ function dashChainCheck(rawText) {
    engine builds <ol> from ARRAY fields only, so a sequence must be an array. */
 function inlineSequenceCheck(rawText) {
   const text = prose(rawText);
+  /* MARKERS ARE NOT ALWAYS "1." (DFM 217, his find). This only ever recognised
+     `1.` and `1)`, so "STEP 1, THE KIT: ... STEP 2, THE BLUEPRINT: ..." — a
+     three-step sequence written straight into a paragraph — sailed through and
+     shipped to him as run-on prose. A number introduced by the word STEP, or by
+     an ordinal word, enumerates just as plainly as a full stop does.
+     A REFERENCE IS NOT AN ENUMERATION. The first cut of this also caught "you
+     tick step 1 above ... your blueprint in step 2 is open right now", which
+     POINTS AT steps rather than listing them — good writing, and forcing it to
+     change would be the gate inventing a fault (DFM 146a). So a marker only
+     counts when it OPENS a clause: start of the string, or straight after a full
+     stop or semicolon. */
+  const WORDED = /(^|[.;!?]\s+)(step|stage|part)\s*1\b[\s\S]{0,400}?[.;!?]\s+(step|stage|part)\s*2\b/i;
+  const ORDINAL = /(^|[.;!?]\s+)first,[\s\S]{0,300}?[.;!?]\s+second,/i;
+  if (WORDED.test(text) || ORDINAL.test(text)) {
+    return ['numbered sequence inside one string (DFM 171/217) — the steps are written into a ' +
+      'paragraph and render as run-on prose. Author them as an array field (steps / introSteps / ' +
+      'lines / testSteps) so each step gets its own line.'];
+  }
   if (/(^|[^0-9])1[.)]\s+\S[\s\S]*?[^0-9]2[.)]\s+\S/.test(text)) {
     return ['numbered sequence inside one string (DFM 171) — it renders as run-on prose. ' +
       'Author it as an array field (steps / testSteps / lines / setup / rules) so each number ' +
@@ -1650,4 +1668,4 @@ module.exports = { collectFilmStrings, filmKey, filmRendered, FILM_MAP,
   /* exported for the DFM 196 control sweep: the same detector is run against the
      build he sat (7bba564) so the failure it catches there is filed as evidence
      before the fix it guards is credited. One implementation, two runs. */
-  fragmentCandidates, hasRealVerb, collectStrings, fragInScope, loadLessons };
+  fragmentCandidates, hasRealVerb, collectStrings, fragInScope, loadLessons, inlineSequenceCheck };

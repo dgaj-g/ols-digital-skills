@@ -7941,6 +7941,12 @@ window.OLS_TRANSPORT = {
         kicker: chunk.title,
         title: (cfg.introTitle || 'The Studio Sprint'),
         text: (solo && cfg.introSolo) ? cfg.introSolo : (cfg.intro || ''),
+        /* DFM 217, his find: the three desk steps were written into the intro
+           PARAGRAPH ("STEP 1, THE KIT: ... STEP 2, ..."), which renders as run-on
+           prose \u2014 the exact fault rule 171 exists to stop. introCard has taken a
+           `steps` array since round 6 and this engine simply never passed one. */
+        steps: cfg.introSteps || null,
+        after: (solo && cfg.introSoloAfter) ? cfg.introSoloAfter : (cfg.introAfter || ''),
         extra: (solo || !cfg.pairNote) ? '' : '<p class="case-pair-note">&#128101; ' + esc(cfg.pairNote) + '</p>'
       }, began ? S('backToDesk', 'Back to the desk') : S('openStudio', 'Open the studio'), deskView);
 

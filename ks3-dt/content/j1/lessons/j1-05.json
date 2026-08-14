@@ -167,8 +167,15 @@
    "config": {
     "phase": "build",
     "introTitle": "The Studio Sprint",
-    "intro": "You have about 25 minutes to build your game. Studios call one short, focused burst of work like this a SPRINT. The desk below works top to bottom, and here is your job at each step. STEP 1, THE KIT: get your game open in Scratch. STEP 2, THE BLUEPRINT: your builder's plan — the exact blocks to add, in the order to add them. STEP 3, THE QA DESK: four tests that prove the game really works. You build your OWN game. The person beside you is your tester — when your teacher calls the swap, you run each other's four tests. Change how it looks as much as you like, but remember: a game that LOOKS finished is not the same as a game that WORKS. The READY FOR GALLERY button only counts green ticks.",
-    "introSolo": "You have about 25 minutes to build your game, and today you run your own tests. Studios call one short, focused burst of work like this a SPRINT. The desk works top to bottom. STEP 1, THE KIT: get your game open in Scratch. STEP 2, THE BLUEPRINT: your builder's plan — the exact blocks to add, in order. STEP 3, THE QA DESK: four tests that prove the game really works. The same rule stands: the READY FOR GALLERY button only counts green ticks.",
+    "intro": "You have about 25 minutes to build your game. Studios call one short, focused burst of work like this a SPRINT. The desk below works top to bottom, and here is your job at each step.",
+    "introSteps": [
+     "**THE KIT** — get your game open in Scratch.",
+     "**THE BLUEPRINT** — your builder's plan: the exact blocks to add, in the order to add them.",
+     "**THE QA DESK** — four tests that prove the game really works."
+    ],
+    "introAfter": "You build your OWN game. The person beside you is your tester — when your teacher calls the swap, you run each other's four tests. Change how it looks as much as you like, but remember: a game that LOOKS finished is not the same as a game that WORKS. The READY FOR GALLERY button only counts green ticks.",
+    "introSolo": "You have about 25 minutes to build your game, and today you run your own tests. Studios call one short, focused burst of work like this a SPRINT. The desk below works top to bottom, and here is your job at each step.",
+    "introSoloAfter": "You build your OWN game and you run your own four tests. Change how it looks as much as you like, but remember: a game that LOOKS finished is not the same as a game that WORKS. The READY FOR GALLERY button only counts green ticks.",
     "pairNote": "You each build your OWN game, and you are also each other's tester. When your teacher calls the swap, you sit at your partner's machine and run their four tests while they run yours. A tester who did not build the game spots things the builder cannot see.",
     "qaIntro": "Now you test your game, the way a real studio does. There are four tests below. For each one: read what it asks, try it in Scratch, then click the answer that matches what REALLY happened — even if that is not what you were hoping for. If your answer shows something is not working yet, the desk tells you exactly what to fix. Fix it, run that test again, and the test turns green. When all four are green, your game can open to the public. A test you got wrong first and then fixed earns a FOUND BY QA badge: finding a bug and fixing it is exactly what testing is for.",
     "kit": {
@@ -638,7 +645,7 @@
       }
      }
     },
-    "help": "The desk works top to bottom. STEP 1, THE KIT: get your game open in Scratch. STEP 2, THE BLUEPRINT: the exact blocks your contract needs, in order — the yellow STUDIO NOTE in the code marks the spot. STEP 3, THE QA DESK: four tests. Read each one, try it in Scratch, then click the answer that matches what really happened. A wrong result tells you exactly what to fix. The READY FOR GALLERY button lights up when all four tests are green.",
+    "help": "The desk works top to bottom. THE KIT gets your game open in Scratch. THE BLUEPRINT is your builder's plan — the exact blocks your contract needs, in order, and the yellow STUDIO NOTE in the code marks the spot. THE QA DESK holds four tests: read each one, try it in Scratch, then click the answer that matches what really happened. A wrong result tells you exactly what to fix. The READY FOR GALLERY button lights up when all four tests are green.",
     "masterclassAlt": {
      "title": "The idea: sequence, then selection",
      "button": "The idea — watch the first half again",
