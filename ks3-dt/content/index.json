@@ -1,11 +1,23 @@
 {
- "contentVersion": "2026-08-14d",
+ "contentVersion": "2026-08-14e",
  "years": [
   {
    "id": "j1",
    "title": "Your Digital World",
    "subtitle": "J1 · Season One",
    "manifest": "j1/manifest.json"
+  },
+  {
+   "id": "j2",
+   "title": "Build It, Protect It",
+   "subtitle": "J2 · The Workshop",
+   "manifest": "j2/manifest.json"
+  },
+  {
+   "id": "j3",
+   "title": "Create, Judge, Choose",
+   "subtitle": "J3 · The Studio",
+   "manifest": "j3/manifest.json"
   }
  ]
 }

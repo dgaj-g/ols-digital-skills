@@ -1,0 +1,229 @@
+{
+ "year": "j2",
+ "title": "Build It, Protect It",
+ "tagline": "You build real things this year, and you learn how to protect them.",
+ "recapPool": "j2/recap-pool.json",
+ "blocks": [
+  {
+   "id": "b1",
+   "name": "Into the Workshop",
+   "color": "#E4B824"
+  },
+  {
+   "id": "b2",
+   "name": "From Blocks to Python",
+   "color": "#4FA3D9"
+  },
+  {
+   "id": "b3",
+   "name": "Making Sense of Data",
+   "color": "#3BAF7E"
+  },
+  {
+   "id": "b4",
+   "name": "Protect What You Build",
+   "color": "#C94F6D"
+  },
+  {
+   "id": "b5",
+   "name": "Build for the Web",
+   "color": "#D97C4F"
+  },
+  {
+   "id": "b6",
+   "name": "Real or Not?",
+   "color": "#7C6FD9"
+  }
+ ],
+ "lessons": [
+  {
+   "id": "j2-01",
+   "num": 1,
+   "title": "Welcome to the Workshop",
+   "tagline": "You find your way around this website, go over the room rules and see where you are starting from.",
+   "block": "b1",
+   "icon": "🧰",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-02",
+   "num": 2,
+   "title": "Translation Bureau",
+   "tagline": "You turn blocks you already know into your first lines of Python.",
+   "block": "b2",
+   "icon": "🔤",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-03",
+   "num": 3,
+   "title": "Chatbot Workshop",
+   "tagline": "You write a program that asks a question and answers you back.",
+   "block": "b2",
+   "icon": "💬",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-04",
+   "num": 4,
+   "title": "Adventure Engine",
+   "tagline": "You make your program choose what happens next.",
+   "block": "b2",
+   "icon": "🗺️",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-05",
+   "num": 5,
+   "title": "Loop Machines",
+   "tagline": "You get the computer to repeat a job for you, and you draw with it.",
+   "block": "b2",
+   "icon": "🔁",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-06",
+   "num": 6,
+   "title": "Festival Planner",
+   "tagline": "You build a spreadsheet that works the answers out for you.",
+   "block": "b3",
+   "icon": "📊",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-07",
+   "num": 7,
+   "title": "Chart Crimes",
+   "tagline": "You learn how a chart can tell the truth, and how one can mislead you.",
+   "block": "b3",
+   "icon": "📉",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-08",
+   "num": 8,
+   "title": "The Bake Sale Mystery",
+   "tagline": "You sort messy information into a database that makes sense.",
+   "block": "b3",
+   "icon": "🧁",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-09",
+   "num": 9,
+   "title": "Query Quest",
+   "tagline": "You ask a database questions and get back exactly the answers you need.",
+   "block": "b3",
+   "icon": "🔎",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-10",
+   "num": 10,
+   "title": "Outbreak",
+   "tagline": "You find out how malware spreads between computers, and how it is stopped.",
+   "block": "b4",
+   "icon": "🦠",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-11",
+   "num": 11,
+   "title": "Cipher School",
+   "tagline": "You hide a message in code, then break somebody else's.",
+   "block": "b4",
+   "icon": "🔐",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-12",
+   "num": 12,
+   "title": "The Courtroom",
+   "tagline": "You meet the real UK laws about computers, and see how they are used.",
+   "block": "b4",
+   "icon": "⚖️",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-13",
+   "num": 13,
+   "title": "Con Artist Files",
+   "tagline": "You learn to spot the tricks people use to con others online.",
+   "block": "b4",
+   "icon": "🎣",
+   "status": "soon",
+   "coverSuitability": "caution",
+   "coverNote": "Most of this hour is class discussion, which is much harder to lead without knowing the class. If cover cannot be avoided, the on-screen work stands on its own and the discussion can be picked up next lesson.",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-14",
+   "num": 14,
+   "title": "Skeleton Crew",
+   "tagline": "You build the skeleton of a real web page in HTML.",
+   "block": "b5",
+   "icon": "🧱",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-15",
+   "num": 15,
+   "title": "Style Salon",
+   "tagline": "You style your web page with CSS until it looks the way you want it.",
+   "block": "b5",
+   "icon": "🎨",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-16",
+   "num": 16,
+   "title": "Launch Day",
+   "tagline": "You finish your site, put it online and find out what your class thinks of it.",
+   "block": "b5",
+   "icon": "🚀",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j2-17",
+   "num": 17,
+   "title": "Real or Rendered?",
+   "tagline": "You work out what is real online, when a video or a voice can be faked.",
+   "block": "b6",
+   "icon": "🎭",
+   "status": "soon",
+   "coverSuitability": "caution",
+   "coverNote": "This hour is built around a whole-class discussion about faked video and audio. If cover cannot be avoided, the on-screen work stands on its own and the discussion can be picked up next lesson.",
+   "absenceInferenceEligible": true
+  }
+ ]
+}

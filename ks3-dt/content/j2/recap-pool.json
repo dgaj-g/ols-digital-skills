@@ -1,0 +1,76 @@
+{
+ "year": "j2",
+ "comment": "Seeded with the year's keystone THREADS only. items is deliberately empty: under DFM 134 the Do-Now may serve a pupil only recap items from lessons she has COMPLETED, so every item is authored by the lesson that teaches it and added when that lesson is built. An empty pool serves nothing, which is the correct behaviour for a year whose first lesson has not run yet (and Lesson 1 has no Do-Now at all).",
+ "threads": {
+  "kp-platform-j2": {
+   "label": "How this website works",
+   "note": "Locks, saving, help, XP and the Workshop. Established J2 L1; every later lesson leans on it."
+  },
+  "kp-rules-j2": {
+   "label": "The DT room rules",
+   "note": "Re-covered and tested in J2 L1's inspection rather than recited (his K4 ruling: assume nothing, measure instead)."
+  },
+  "kp-py-sequence": {
+   "label": "Python: steps run in order",
+   "note": "Established L2 in the block-to-Python bridge; the spine of L3-L5."
+  },
+  "kp-py-variable": {
+   "label": "Python: storing a value in a variable",
+   "note": "Carries J1's kp-variable forward into text code — one idea, two languages."
+  },
+  "kp-py-input": {
+   "label": "Python: asking the user a question",
+   "note": "Established L3. Needs the runner's input() increment."
+  },
+  "kp-py-selection": {
+   "label": "Python: choosing with if",
+   "note": "Established L4. The direct descendant of J1's kp-ifelse."
+  },
+  "kp-py-loop": {
+   "label": "Python: repeating with a loop",
+   "note": "Established L5 with turtle drawing."
+  },
+  "kp-formula": {
+   "label": "Spreadsheet formulae and cell references",
+   "note": "Established L6. New-engine flag on the grid: prototype before it is promised."
+  },
+  "kp-chart-honesty": {
+   "label": "Reading a chart honestly",
+   "note": "Established L7; the judgement half of the data block."
+  },
+  "kp-database": {
+   "label": "Tables, records and keys",
+   "note": "Established L8."
+  },
+  "kp-query": {
+   "label": "Asking a database a question",
+   "note": "Established L9 (AND/OR/NOT/BETWEEN). Feeds J3 L6."
+  },
+  "kp-malware": {
+   "label": "Malware and how it spreads",
+   "note": "Established L10; opens the protect block."
+  },
+  "kp-encryption": {
+   "label": "Encryption, and why HTTPS matters",
+   "note": "Established L11. Kid Krypto licence needed before the cipher-wheel kit prints."
+  },
+  "kp-law": {
+   "label": "The UK laws about computers",
+   "note": "Established L12 by name: DPA/GDPR, Computer Misuse Act 1990, CDPA 1988."
+  },
+  "kp-social-eng": {
+   "label": "Scams and how people are tricked",
+   "note": "Established L13. Discussion-first hour."
+  },
+  "kp-html": {
+   "label": "HTML: the structure of a page",
+   "note": "Established L14."
+  },
+  "kp-css": {
+   "label": "CSS: how a page looks",
+   "note": "Established L15, used for real in L16."
+  }
+ },
+ "items": [],
+ "keysEnc": "hhI="
+}

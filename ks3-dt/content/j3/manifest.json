@@ -1,0 +1,228 @@
+{
+ "year": "j3",
+ "title": "Create, Judge, Choose",
+ "tagline": "Your last KS3 year: you create work, you judge it honestly, and you choose your GCSE route.",
+ "recapPool": "j3/recap-pool.json",
+ "blocks": [
+  {
+   "id": "b1",
+   "name": "Starting in the Studio",
+   "color": "#E4B824"
+  },
+  {
+   "id": "b2",
+   "name": "Real Code",
+   "color": "#4FA3D9"
+  },
+  {
+   "id": "b3",
+   "name": "Data and AI",
+   "color": "#7C6FD9"
+  },
+  {
+   "id": "b4",
+   "name": "Working for a Client",
+   "color": "#3BAF7E"
+  },
+  {
+   "id": "b5",
+   "name": "Choosing Your Route",
+   "color": "#D97C4F"
+  },
+  {
+   "id": "b6",
+   "name": "Graduation",
+   "color": "#C94F6D"
+  }
+ ],
+ "lessons": [
+  {
+   "id": "j3-01",
+   "num": 1,
+   "title": "The Studio Opens",
+   "tagline": "You see where this year leads, and you measure where you are starting from.",
+   "block": "b1",
+   "icon": "🎬",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-02",
+   "num": 2,
+   "title": "First Words in Python",
+   "tagline": "You write real Python from nothing, starting with your very first line.",
+   "block": "b2",
+   "icon": "🐍",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-03",
+   "num": 3,
+   "title": "Playlist Engine",
+   "tagline": "You hold a whole set of data in one place, using lists.",
+   "block": "b2",
+   "icon": "🎵",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-04",
+   "num": 4,
+   "title": "Function Factory",
+   "tagline": "You package your code into functions you can use again and again.",
+   "block": "b2",
+   "icon": "🏭",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-05",
+   "num": 5,
+   "title": "Bug Bounty",
+   "tagline": "You learn to find a fault in code, name it properly and fix it.",
+   "block": "b2",
+   "icon": "🐞",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-06",
+   "num": 6,
+   "title": "Data Newsroom",
+   "tagline": "You question a set of data until it gives you a story worth telling.",
+   "block": "b3",
+   "icon": "📰",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-07",
+   "num": 7,
+   "title": "Train Your Model",
+   "tagline": "You find out how a machine learns a pattern from examples you give it.",
+   "block": "b3",
+   "icon": "🧠",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-08",
+   "num": 8,
+   "title": "The Intern",
+   "tagline": "You use AI to help you write code, and learn where it cannot be trusted.",
+   "block": "b3",
+   "icon": "🤖",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-09",
+   "num": 9,
+   "title": "The Tribunal",
+   "tagline": "You weigh up the real costs of AI and reach your own verdict on it.",
+   "block": "b3",
+   "icon": "⚖️",
+   "status": "soon",
+   "coverSuitability": "caution",
+   "coverNote": "This hour is built around a whole-class debate, which is much harder to lead without knowing the class. The regular teacher is strongly preferred; if cover cannot be avoided, the on-screen work stands on its own.",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-10",
+   "num": 10,
+   "title": "Client Files",
+   "tagline": "You turn what a real client asks for into user stories you can build from.",
+   "block": "b4",
+   "icon": "📋",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-11",
+   "num": 11,
+   "title": "Prototype Sprint",
+   "tagline": "You build a working prototype and test it against what the client actually asked for.",
+   "block": "b4",
+   "icon": "🛠️",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-12",
+   "num": 12,
+   "title": "The Accessibility Audit",
+   "tagline": "You test whether your work can be used by everybody, and fix what cannot.",
+   "block": "b4",
+   "icon": "♿️",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-13",
+   "num": 13,
+   "title": "Release Day",
+   "tagline": "You plan the tests a real release needs, then write up how it went.",
+   "block": "b4",
+   "icon": "📦",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-14",
+   "num": 14,
+   "title": "Studio Case: Multimedia",
+   "tagline": "You try the Multimedia route for an hour and find out how it suits you.",
+   "block": "b5",
+   "icon": "🎞️",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-15",
+   "num": 15,
+   "title": "Dev Case: Programming",
+   "tagline": "You try the Programming route for an hour and find out how it suits you.",
+   "block": "b5",
+   "icon": "💻",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-16",
+   "num": 16,
+   "title": "Choose Your Route",
+   "tagline": "You compare both GCSE routes against your own evidence, and you choose.",
+   "block": "b5",
+   "icon": "🧭",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  },
+  {
+   "id": "j3-17",
+   "num": 17,
+   "title": "Graduation",
+   "tagline": "You show how far you have come since your first hour in the Studio.",
+   "block": "b6",
+   "icon": "🎓",
+   "status": "soon",
+   "coverSuitability": "ok",
+   "absenceInferenceEligible": true
+  }
+ ]
+}
