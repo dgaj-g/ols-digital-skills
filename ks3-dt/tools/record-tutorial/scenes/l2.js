@@ -299,4 +299,29 @@ const scenes = [
   }
 ];
 
-module.exports = { scenes };
+/* ============ BLOCKS_ON_CAMERA (DFM 207c; declared 14 Aug 2026 on his R1
+   ruling, DFM 222a) ============
+   THE RULE: a film may not put a block on screen and leave a child to guess
+   what it is. Every block this film shows names where it is taught.
+
+   BUILT FROM THE FILM'S OWN SCRIPT, not from memory: this is a BUILD-ALONG
+   film — it makes a new MakeCode project on camera and drags exactly two
+   blocks, and the two starter blocks MakeCode puts on the canvas for you are
+   on screen throughout and are named by the film ("Every new project gives you
+   two starter blocks. Leave them be.").
+
+   THE AUDIT'S FINDING, stated plainly: every block on camera is taught by this
+   film, at the moment it is dragged, and `forever` is explicitly parked rather
+   than left unexplained. Nothing needed changing in a signed-off lesson. */
+const BLOCKS_ON_CAMERA = [
+  { block: 'on button A pressed',
+    taughtBy: 'this film IS its lesson — dragged from the Input palette on camera ("Drag on button A pressed onto the workspace"), and rung 2 has her build it herself' },
+  { block: 'show icon',
+    taughtBy: 'this film — dropped INSIDE the event block on camera ("Drop show icon INSIDE the event block"), then built again on rung 2' },
+  { block: 'on start',
+    taughtBy: 'this film, named as one of the two starter blocks MakeCode provides and explicitly parked ("Leave them be") — she is never asked to use it in this lesson' },
+  { block: 'forever',
+    taughtBy: 'this film, named as the second starter block and parked the same way; TAUGHT properly in Lesson 3, where the scoreboard needs it and she builds with it' }
+];
+
+module.exports = { scenes, BLOCKS_ON_CAMERA };

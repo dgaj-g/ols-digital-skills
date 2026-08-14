@@ -606,8 +606,21 @@ function vocabCheck(lessons, vocab, films) {
   /* one comparison shape for both sides: lower-cased, apostrophes flattened,
      whitespace collapsed. Without this, "the company's head office" written with
      a typographic apostrophe would never match the same phrase typed straight. */
+  /* WHERE THE SIDE QUEST SITS IN THE SPINE (fixed 14 Aug 2026, DFM 221's
+     cold read). `Number("S1")` is NaN, and every comparison with NaN is
+     false — so before this, the side quest could neither be ordered nor be
+     found out of order. It is not outside the spine at all: its own briefing
+     tells the pupil "have it done before Lesson 3", so it sits between
+     Lessons 2 and 3 and a term taught in Lesson 4 is genuinely unmet there. */
+  const numOf = (L) => {
+    const raw = L.json.num;
+    const n = Number(raw);
+    if (!isNaN(n)) return n;
+    if (/^s\d+$/i.test(String(raw))) return 2.5;   /* J1's side quest: due before Lesson 3 */
+    return 99;
+  };
   const orderOf = {};
-  lessons.forEach(L => { orderOf[L.fileId] = Number(L.json.num || 99); });
+  lessons.forEach(L => { orderOf[L.fileId] = numOf(L); });
   (vocab.terms || []).forEach(term => {
     const rx = new RegExp('\\b(' + [term.term].concat(term.aliases || [])
       .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', 'i');
@@ -615,11 +628,19 @@ function vocabCheck(lessons, vocab, films) {
     const defNum = orderOf[defLesson];
     let definitionSeen = false;
     lessons.forEach(L => {
-      const num = Number(L.json.num || 99);
-      const isSide = (L.json.mode === 'side' || /sq/.test(L.fileId));
+      const num = numOf(L);
       L.strings.forEach(s => {
         if (!rx.test(s.text)) return;
-        if (isSide) return;                       /* side quest sits outside the spine */
+        /* THE SIDE-QUEST EXEMPTION IS GONE (14 Aug 2026, DFM 221's cold read).
+           It used to read `if (isSide) return;` — "side quest sits outside the
+           spine" — which exempted EVERY side-quest sentence from the
+           term-order gate by design. That is DFM 213's exact shape: an
+           exemption that hides a whole class of pupil text is worse than no
+           check, and it hid a real one. The side quest says "HQ will inspect
+           the result" and titles a screen "HQ Inspection"; vocab.json files HQ
+           as taught in Lesson 4, and the side quest is due before Lesson 3.
+           The side quest is LOCKED (DFM 176), so this prints as waived debt
+           rather than blocking — visible, not silent, and his to rule on. */
         if (defNum === undefined) {
           out.push(s.path + ': watched term "' + term.term + '" but vocab.json names an unknown lesson "' + defLesson + '"');
           return;

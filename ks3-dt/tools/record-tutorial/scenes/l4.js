@@ -475,4 +475,38 @@ const scenes = [
   }
 ];
 
-module.exports = { scenes, driver: 'scratch' };
+/* ============ BLOCKS_ON_CAMERA (DFM 207c; declared 14 Aug 2026 on his R1
+   ruling, DFM 222a) ============
+   THE RULE: a film may not put a block on screen and leave a child to guess
+   what it is. Every block this film shows must name where it is taught.
+
+   HOW THIS LIST WAS BUILT — from the film's own script and the real .sb3, not
+   from memory: chapter 1 opens `shark-attack-broken-edition.sb3`, zooms the
+   workspace until all five of the SHARK's stacks fit, and calls the code area
+   out; chapters 2-4 work inside those same Shark stacks. So the blocks on
+   camera are the Shark's, plus the two the fix itself handles. The Fish's
+   clone machinery and the Stage's backdrop scripts are NOT toured by the film
+   — a pupil meets them inside the case files, where the cards teach them, and
+   the release desk plays the finished game rather than reading its code.
+
+   THE AUDIT'S FINDING, stated plainly rather than buried: every block the film
+   shows has a teaching home, and two of them are taught BY THIS FILM as its
+   subject matter. Nothing here needed a change to a signed-off lesson. */
+const BLOCKS_ON_CAMERA = [
+  { block: 'when green flag clicked',
+    taughtBy: 'ch1 — the interface tour names the green flag and the film clicks it; Lesson 2 and 3 taught "something starts it"' },
+  { block: 'when _ key pressed',
+    taughtBy: 'ch2 IS its lesson — the hat block is defined on camera ("a curved top, and it is what starts the script running"), and the missing one is the case' },
+  { block: 'point in direction _',
+    taughtBy: 'ch1, read aloud as part of the arrow-key stacks ("read it BEFORE you click anything"); its effect is watched on the stage in ch2’s re-play' },
+  { block: 'move _ steps',
+    taughtBy: 'ch1, same reading pass; ch2’s re-play shows the shark actually swimming when it runs' },
+  { block: 'next costume',
+    taughtBy: 'ch1, same reading pass; the shark’s swimming animation on the stage is the block doing its job' },
+  { block: 'go to x: _ y: _',
+    taughtBy: 'ch1 — in the Shark’s green-flag stack; coordinates are taught on camera in Lesson 5’s film, and here the block is only read, never edited' },
+  { block: 'set _ to _',
+    taughtBy: 'Lesson 3 — she built the scoreboard with set and change on the micro:bit; ch1 reads it in the Shark’s green-flag stack' }
+];
+
+module.exports = { scenes, driver: 'scratch', BLOCKS_ON_CAMERA };

@@ -308,7 +308,23 @@ function run() {
   const crypto = require('crypto');
   const hashOf = (f) => crypto.createHash('md5').update(fs.readFileSync(f)).digest('hex').slice(0, 12);
 
-  const unledgered = [], stale = [];
+  /* ---- WAIVED BY HIS RULING (DFM 222b, 14 Aug 2026) ----
+     A waiver is NOT a way to make a cell quiet. It is his signature on ONE
+     named cell, dated, and it changes exactly one thing: that cell no longer
+     FREEZES its lesson against editing. The cell is still printed as debt on
+     every run, still counted, and still described as unchecked.
+     Why it exists: `j1-01 × film laws` covers `open-a-tab.mp4`, his own screen
+     capture from before the film library existed, of a mechanic that has not
+     changed. Closing it properly means re-shooting a pupil-visible film in a
+     signed-off lesson — a content decision, and he ruled (b): waive it now,
+     re-shoot whenever he wants the polish. Without the waiver, Lesson 1's
+     teacher brief could never be rebuilt, because a brief lives inside the
+     lesson file (DFM 221).
+     THE GUARD THAT KEEPS DFM 206 INTACT: only a row carrying the exact
+     WAIVED-BY-HIS-RULING marker with a date is exempt. An ordinary debt row
+     still freezes its lesson, and `--control-waiver` proves it does. */
+  const WAIVER_RE = /WAIVED BY HIS RULING\s+(\d{1,2}\s+\w+\s+\d{4})/i;
+  const unledgered = [], stale = [], waived = [];
   owed.forEach(f => {
     const m = /^(\S+) × ([a-z-]+(?: [a-z]+)*):/.exec(f);
     const cell = m ? m[1] + ' × ' + m[2] : f;
@@ -317,6 +333,12 @@ function run() {
     if (!row) { unledgered.push(cell); return; }
     const L = lessons.find(x => x.id === m[1]);
     const want = (row[3] || '').trim();
+    /* the marker may sit in the WHY column or the OWNER column — read both.
+       (The first version read only the owner column, and `--control-waiver`
+       caught it: PART 1 failed, which is exactly the job of a control that
+       fires before the thing it guards is credited, DFM 196.) */
+    const w = WAIVER_RE.exec((row[1] || '') + ' ' + (row[2] || ''));
+    if (w) { waived.push(cell + '  (waived ' + w[1] + ' — printed, never frozen)'); return; }
     if (L && want && want !== hashOf(L.file)) stale.push(cell + '  (ledger recorded ' + want + ', the lesson is now ' + hashOf(L.file) + ')');
   });
 
@@ -334,6 +356,10 @@ function run() {
     console.log('\nYou may not change a lesson whose coverage you owe. Cover it first, or');
     console.log('revert the edit. (This is the rule his Lesson 5 sit was owed — DFM 206.)');
     process.exit(1);
+  }
+  if (waived.length) {
+    console.log('WAIVED BY HIS RULING — still uncovered, still printed, no longer freezing its lesson:');
+    waived.forEach(c => console.log('    ' + c));
   }
   if (owed.length) {
     console.log('qa-harness-coverage: ' + owed.length + ' CELL(S) OF NAMED DEBT, every one written down and unchanged.');
@@ -524,6 +550,69 @@ function controlYear() {
   process.exit(bad === 0 ? 0 : 1);
 }
 
+/* --------------------------------------------- THE WAIVER CONTROL (DFM 222b)
+ * A waiver he has signed must free EXACTLY the cell he signed, and nothing
+ * else. The danger of any exemption is the one DFM 213 is about: an exemption
+ * that quietly covers a whole class is worse than no check. So this control
+ * runs the gate twice over a sandboxed copy of the ledger:
+ *
+ *   Part 1  the real ledger, with his dated j1-01 × film laws waiver in it, and
+ *           j1-01 EDITED. The gate must let the pack run — that is the whole
+ *           point of the ruling, and it is what lets Lesson 1's brief be rebuilt.
+ *   Part 2  the SAME edit, with the waiver marker stripped out of that one row.
+ *           The gate must STOP and name the lesson. If it does not, the waiver
+ *           has silently disabled the freeze for everything and DFM 206 is gone.
+ */
+function controlWaiver() {
+  const os2 = require('os');
+  const crypto2 = require('crypto');
+  const ledgerPath = path.join(KS3, 'COVERAGE_DEBT.md');
+  const realLedger = fs.readFileSync(ledgerPath, 'utf8');
+  const lessonFile = path.join(CONTENT, 'j1', 'lessons', 'j1-01.json');
+  const realLesson = fs.readFileSync(lessonFile, 'utf8');
+  const results = [];
+  const runGate = () => {
+    const r = require('child_process').spawnSync(process.execPath, [__filename], { encoding: 'utf8' });
+    return { status: r.status, out: (r.stdout || '') + (r.stderr || '') };
+  };
+  try {
+    /* edit the lesson so its hash no longer matches the ledger */
+    fs.writeFileSync(lessonFile, realLesson.replace(/\}\s*$/, '  \n}'));
+    const editedHash = crypto2.createHash('md5').update(fs.readFileSync(lessonFile)).digest('hex').slice(0, 12);
+
+    const a = runGate();
+    results.push({
+      name: 'PART 1 — with his dated waiver, an edited j1-01 does NOT stop the pack',
+      ok: a.status === 0 && /WAIVED BY HIS RULING/.test(a.out)
+    });
+
+    /* strip the marker from that ONE row and try again */
+    const stripped = realLedger.split('\n').map(l =>
+      /^\|\s*j1-01\s*\|\s*film laws\s*\|/.test(l) ? l.replace(/WAIVED BY HIS RULING[^|]*/i, 'plain debt, no ruling ') : l).join('\n');
+    fs.writeFileSync(ledgerPath, stripped);
+    const b = runGate();
+    results.push({
+      name: 'PART 2 — with the marker removed, the same edit STOPS the pack and names it',
+      ok: b.status !== 0 && /HAS BEEN EDITED/.test(b.out) && /j1-01/.test(b.out)
+    });
+    results.push({
+      name: 'PART 2 — the freeze names the real edited hash, not a stale one',
+      ok: b.out.indexOf(editedHash) !== -1
+    });
+  } finally {
+    fs.writeFileSync(ledgerPath, realLedger);
+    fs.writeFileSync(lessonFile, realLesson);
+  }
+  console.log('CONTROL — a waiver frees the cell he signed, and only that cell (DFM 222b)');
+  results.forEach(r => console.log('  ' + (r.ok ? 'OK  ' : 'FAIL') + '  ' + r.name));
+  const bad = results.filter(r => !r.ok).length;
+  console.log('\n' + (bad === 0
+    ? 'CONTROL PASSED — his signature lifts the freeze on exactly one named cell, and an unruled row still freezes its lesson.'
+    : 'CONTROL FAILED — ' + bad + ' assertion(s) did not hold. The waiver must never become a general exemption.'));
+  process.exit(bad === 0 ? 0 : 1);
+}
+
 if (process.argv.includes('--control-year')) controlYear();
+else if (process.argv.includes('--control-waiver')) controlWaiver();
 else if (process.argv.includes('--control')) control();
 else run();

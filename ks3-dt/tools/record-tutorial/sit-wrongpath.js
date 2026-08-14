@@ -31,13 +31,19 @@ const { AUDIT, EXPLAIN_PX } = require('./qa-no-mute-locks.js');
 
 const args = process.argv.slice(2);
 const argOf = (n, d) => { const i = args.indexOf(n); return i === -1 ? d : args[i + 1]; };
-const LESSON = String(args.find(a => /^[45]$/.test(a)) || '4');
+const LESSON = String(args.find(a => /^([1-5]|S1)$/i.test(a)) || '4').toUpperCase();
 const BASE = argOf('--base', 'http://localhost:8121');
 const EXPECT_FAIL = args.includes('--expect-fail');
 /* match the tile by its LESSON NUMBER, not by a word in its title: the first
    version's Lesson-5 pattern matched Lesson 2's tile and the walker cheerfully
    tested the wrong lesson while printing PASS. */
-const TILE = { 4: /Lesson\s*4(?!\d)/i, 5: /Lesson\s*5(?!\d)/i };   /* the tile reads "Lesson 5Game Studio" — no space, so \b never fires */
+/* Lessons 1-3 and the side quest added 14 Aug 2026 (DFM 221) — the side quest
+   is not "Lesson N" on its tile at all, so it matches by its own title. */
+const TILE = {
+  1: /Lesson\s*1(?!\d)/i, 2: /Lesson\s*2(?!\d)/i, 3: /Lesson\s*3(?!\d)/i,
+  4: /Lesson\s*4(?!\d)/i, 5: /Lesson\s*5(?!\d)/i,
+  S1: /Files That Follow You/i
+};   /* the tile reads "Lesson 5Game Studio" — no space, so \b never fires */
 
 /* ---- REQUIRED COVERAGE (DFM 204, his ruling of 13 Aug 2026) ----
    "why has the confused-pupil walker only reaches 4 screens of Lesson 5. this is
@@ -50,6 +56,60 @@ const TILE = { 4: /Lesson\s*4(?!\d)/i, 5: /Lesson\s*5(?!\d)/i };   /* the tile r
    names it. These are chosen to be reachable by ONE pupil working alone — Press
    Night is checked by its floor/waiting state, not by another pupil's review. */
 const LANDMARKS = {
+  /* ---- Lessons 1-3 + the side quest, added 14 Aug 2026 (DFM 221) ----
+     Every entry is a real interactive surface of that lesson, named from its
+     own chunk list and its engine's rendered DOM — not from memory. A walk
+     that does not reach one of these FAILS and says which (DFM 204). */
+  /* A THIRD FIELD MAY NAME THE CHUNK the landmark must be reached IN, and on
+     these four lessons it is not optional. Lessons 1-3 ask questions on three
+     different screens — the warm-up, the Licence Exam and the exit check — and
+     all three are drawn by ONE shared question renderer, so they share
+     `.q-opt` exactly. Selector-only landmarks therefore ticked the exam and the
+     exit check the moment the walker answered the FIRST warm-up question: 4 of
+     11 "reached" on a walk that had stood on three screens. That is coverage
+     claimed and not had — the DFM 204 sin, inside the harness written to
+     enforce DFM 204. The chunk id makes each landmark mean the screen it names. */
+  1: [
+    ['the welcome briefing', '.dossier-cta, .briefing-card', 'briefing'],
+    ['the warm-up questions', '.q-opt', 'calibration'],
+    ['Badge 1 — the account cards', '.confirm-step', 'b1-login'],
+    ['Badge 2 — the guided tour', '.tour-callout', 'b2-navigator'],
+    ['the Vault', '.vault-file, .vault-folder', 'b3-vault'],
+    ['the Real Vault steps', '.confirm-step', 'realvault'],
+    ['the Licence Exam', '.q-opt, .seal-card', 'b4-exam'],
+    ['the codename picker', '.codename-card, .codename-display', 'b5-codename'],
+    ['the oath', '.oath-card, .oath-sign', 'b5-codename'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']
+  ],
+  2: [
+    ['the mission briefing', '.dossier-cta, .briefing-card', 'hook'],
+    ['the film', 'video', 'howto'],
+    ['the ladder', '.ladder-card, .rung-card, .rung-actions', 'ladder'],
+    ['Bank Your Build', '.af-steps, .af-demo', 'bank'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the ordering puzzle', '.parsons-card, .parsons-tray', 'exitp'],
+    ['the pack-up card', '.confirm-step', 'packup'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']
+  ],
+  3: [
+    ['the mission briefing', '.dossier-cta, .briefing-card', 'hook'],
+    ['the ladder', '.ladder-card, .rung-card, .rung-actions', 'ladder'],
+    ['Register Your Rig', '.af-steps, .af-demo', 'rig'],
+    ['the Reaction Rally', '.rally-round, .rally-timer-btn', 'rally'],
+    ['the score gate', '.rally-transmit, .rally-confirm', 'rally'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the ordering puzzle', '.parsons-card, .parsons-tray', 'exitp'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']
+  ],
+  S1: [
+    ['the side-quest briefing', '.dossier-cta, .briefing-card', 'sq-brief'],
+    ['the Drive steps', '.confirm-step', 'sq-drive'],
+    ['the folder check', '.dc-card, .dc-list, .dc-sim', 'sq-inspect'],
+    ['the OneDrive steps', '.confirm-step', 'sq-onedrive'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']
+  ],
   4: [
     ['the case board', '.case-file, .case-pin'],
     ['Evidence Intake', '.case-filecard .confirm-step'],
@@ -150,7 +210,24 @@ const WRONG = {
       return stuck.map(e => (e.textContent || '').trim().slice(0, 50));
     });
     if (clicked.length) await sleep(700);
-    const after = await page.evaluate(AUDIT, EXPLAIN_PX);
+    let after = await page.evaluate(AUDIT, EXPLAIN_PX);
+    /* A CONTROL THAT FREES ITSELF WAS NEVER A LOCK (added 14 Aug 2026, DFM 221).
+       Lesson 1's oath arms only once the last promise has finished typing
+       itself out, and Lesson 5's briefing does the same — for a second or two
+       the button really is disabled with no sentence beside it, but the pupil
+       is watching the lines appear and it opens on its own with nothing asked
+       of her. Reporting that as a mute lock is the DFM 146a fault; waiting and
+       looking again is what a pupil does. Anything still refusing after this
+       pause needed an action nobody told her about, which is the real thing
+       DFM 205 is about. */
+    if (after.length) {
+      await sleep(2600);
+      const still = await page.evaluate(AUDIT, EXPLAIN_PX);
+      const stillLabels = new Set(still.map(b => b.label));
+      const freed = after.filter(b => !stillLabels.has(b.label));
+      if (freed.length) log('  (' + freed.length + ' control(s) armed themselves while we waited — not locks)');
+      after = still;
+    }
     after.forEach(b => findings.push(where + ': "' + b.label +
       '" will not act and nothing on screen says why — not before the click, and not after it'));
     if (clicked.length && !after.length) {
@@ -203,7 +280,8 @@ const WRONG = {
   /* the authored pass index per QA criterion, read from the packed content */
   const PASS_BY_CRIT = (() => {
     try {
-      const f = path.join(__dirname, '..', '..', 'content', 'j1', 'lessons', 'j1-0' + LESSON + '.json');
+      const f = path.join(__dirname, '..', '..', 'content', 'j1', 'lessons',
+        LESSON === 'S1' ? 'j1-sq1.json' : 'j1-0' + LESSON + '.json');
       const L = JSON.parse(fs.readFileSync(f, 'utf8'));
       /* the criteria live under each contract TEMPLATE (catch/maze/quiz), and
          their ids repeat (c1..c4) across templates — same index each time, so a
@@ -223,12 +301,126 @@ const WRONG = {
     } catch (e) { return {}; }
   })();
 
+  /* ---- LESSON 1's two hand-made gates (added 14 Aug 2026, DFM 221) ----
+     Neither is a button the generic mover can press: the Vault is a pointer
+     DRAG whose answer key never reaches the client in plaintext (salted
+     hashes), and the oath is a press-and-HOLD so nobody signs by accident
+     (rule 104's family). Both are driven here with synthetic pointer events,
+     the folders tried in DOM order until one accepts — deterministic, and it
+     exercises the reject path a confused pupil really meets. */
+  async function vaultAndOath() {
+    return page.evaluate(async () => {
+      const sleep2 = ms => new Promise(r => setTimeout(r, ms));
+      const vis = (e) => e && e.offsetParent !== null;
+      const centre = (e) => { const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
+      const pev = (el, type, pt) => el.dispatchEvent(new PointerEvent(type, {
+        bubbles: true, cancelable: true, pointerId: 1, isPrimary: true, clientX: pt.x, clientY: pt.y }));
+      const file = document.querySelector('.chunk-host .vault-file:not(.filed)');
+      if (file && vis(file)) {
+        if (!file.setPointerCapture) file.setPointerCapture = () => {};
+        const folders = Array.from(document.querySelectorAll('.chunk-host .vault-folder'));
+        for (const fo of folders) {
+          const a = centre(file), b = centre(fo);
+          pev(file, 'pointerdown', a); await sleep2(25);
+          pev(file, 'pointermove', { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }); await sleep2(25);
+          pev(file, 'pointermove', b); await sleep2(25);
+          pev(file, 'pointerup', b); await sleep2(300);
+          if (file.classList.contains('filed')) return 'vault-filed:' + (file.getAttribute('data-id') || '');
+        }
+        return 'vault-refused:' + (file.getAttribute('data-id') || '');
+      }
+      const sign = document.querySelector('.chunk-host .oath-sign:not([disabled])');
+      if (sign && vis(sign)) {
+        if (!sign.setPointerCapture) sign.setPointerCapture = () => {};
+        const p = centre(sign);
+        pev(sign, 'pointerdown', p);
+        await sleep2(1800);      /* the hold is 1200ms — hold past it */
+        pev(sign, 'pointerup', p);
+        await sleep2(400);
+        return 'oath-signed';
+      }
+      return null;
+    });
+  }
+
+  /* ---- LESSON 3's REACTION RALLY (added 14 Aug 2026, DFM 221) ----
+     A timed activity is played, not poked at. Each go's score steppers stay
+     shut until THAT go's five seconds have run (DFM 185a) — and the engine
+     says so beside them, on a `.rally-locked-tag` reading "Run the timer
+     first". Driving it one-move-per-loop made the walker start the next go's
+     timer instead of entering the score it had just unlocked, for ever. So the
+     whole activity runs here as one block, the way a pupil plays it: start the
+     go, wait out the five seconds, key the number in, then the next go. */
+  const ralliedGoes = new Set();
+  async function playRally() {
+    const has = await page.evaluate(() =>
+      !!document.querySelector('.chunk-host .rally-round') &&
+      !!document.querySelector('.chunk-host .rally-timer-btn'));
+    if (!has) return null;
+    const goes = await page.evaluate(() => document.querySelectorAll('.chunk-host .rally-round').length);
+    /* Once every go has been played and keyed in, this activity is FINISHED and
+       the walker must fall through to the referee tick and "Send in my scores".
+       Without this it re-keyed the same two scores for its whole budget — the
+       steppers stay live so she can correct a number, which is correct
+       behaviour and is not an invitation to play the game again. */
+    if (ralliedGoes.size >= goes) return null;
+    for (let i = 0; i < goes; i++) {
+      if (ralliedGoes.has(i)) continue;
+      const scored = await page.evaluate((n) => {
+        const slot = document.querySelectorAll('.chunk-host .rally-round')[n];
+        const up = slot && slot.querySelector('.rally-step[data-d="1"]');
+        return !!(up && !up.disabled);
+      }, i);
+      if (!scored) {
+        const started = await page.evaluate(() => {
+          const b = document.querySelector('.chunk-host .rally-timer-btn:not([disabled])');
+          if (b && b.offsetParent !== null && !b.hidden) { b.click(); return true; }
+          return false;
+        });
+        if (!started) continue;
+        let armed = false;
+        for (let w = 0; w < 30 && !armed; w++) {
+          await sleep(700);
+          armed = await page.evaluate((n) => {
+            const slot = document.querySelectorAll('.chunk-host .rally-round')[n];
+            const up = slot && slot.querySelector('.rally-step[data-d="1"]');
+            return !!(up && !up.disabled && up.offsetParent !== null);
+          }, i);
+        }
+        if (!armed) { log('  go ' + (i + 1) + ': the score box never opened after the timer ran'); return 'rally-stalled'; }
+      }
+      await page.evaluate((n) => {
+        const slot = document.querySelectorAll('.chunk-host .rally-round')[n];
+        const up10 = slot.querySelector('.rally-step[data-d="10"]');
+        const up1 = slot.querySelector('.rally-step[data-d="1"]');
+        for (let k = 0; k < 2; k++) if (up10 && !up10.disabled) up10.click();
+        for (let k = 0; k < 3; k++) if (up1 && !up1.disabled) up1.click();
+      }, i);
+      ralliedGoes.add(i);
+      log('  played go ' + (i + 1) + ' of ' + goes + ' and keyed the score in');
+      await sleep(400);
+    }
+    return 'rally-played';
+  }
+
   async function goRight() {
+    const special = await vaultAndOath();
+    if (special) return special;
+    const rally = await playRally();
+    if (rally) return rally;
     return page.evaluate((PASS_BY_CRIT) => {
       const q = (s) => document.querySelector(s);
       const vis = (e) => e && e.offsetParent !== null;
       const pop = q('.badge-pop button'); if (pop) { pop.click(); return 'badge'; }
       const skip = q('.intro-skip'); if (vis(skip)) { skip.click(); return 'intro-skip'; }
+      const rallyConfirm = q('.chunk-host .rally-confirm:not(.ticked)');
+      if (vis(rallyConfirm)) { rallyConfirm.click(); return 'rally-confirm'; }
+      const rallyTx = q('.chunk-host .rally-transmit:not([disabled])');
+      if (vis(rallyTx)) { rallyTx.click(); return 'rally-send'; }
+      /* the codename picker: keep the first name offered rather than shuffling
+         for ever — the shuffle is a loop with no end state */
+      const cnKeep = q('.chunk-host #cn-keep');
+      if (vis(cnKeep)) { cnKeep.click(); return 'codename-keep'; }
       /* fill anything that wants words, honestly and at length */
       /* `input[type=text]` does NOT match `<input class="case-log-input">`: an
          attribute selector needs the attribute to be PRESENT, and this one has no
@@ -264,9 +456,22 @@ const WRONG = {
       /* the exit check's options are `.q-opt`, not `.opt` — with the wrong class
          the walker reached the exit check and could not answer a single
          question, so it never got to the closing screen (DFM 204). */
+      /* `:not([disabled])` added 14 Aug 2026, and it was a REAL WALKER DEFECT:
+         the question engine marks an answered question by DISABLING its
+         options (engines.js: `.q-opt` … `b.disabled = true`), and adds no
+         .chosen/.picked class at all. The old selector therefore kept finding
+         the same answered option, "clicked" it to no effect, and reported a
+         move — so the walk sat on Lesson 1's first warm-up question for its
+         whole budget and reached three screens. It is the DFM 205 lesson
+         again: a walker that cannot recognise a finished control does not
+         test the lesson, however green it prints. */
       const opt = Array.from(document.querySelectorAll(
-        '.chunk-host .q-opt:not(.chosen):not(.picked), .chunk-host .opt:not(.chosen)')).filter(vis)[0];
+        '.chunk-host .q-opt:not(.chosen):not(.picked):not([disabled]), .chunk-host .opt:not(.chosen):not([disabled])')).filter(vis)[0];
       if (opt) { opt.click(); return 'answer'; }
+      /* the verdict panel's own Next button — without it the walk stops at the
+         first marked answer of every lesson */
+      const qnext = Array.from(document.querySelectorAll('.chunk-host .q-feedback button:not([disabled])')).filter(vis)[0];
+      if (qnext) { qnext.click(); return 'q-next'; }
       /* the ordering puzzle: move every block out of the tray, then check —
          the same two moves sit-review.js makes */
       const pblock = Array.from(document.querySelectorAll('.chunk-host .parsons-tray .parsons-block')).filter(vis)[0];
@@ -379,9 +584,25 @@ const WRONG = {
          fetch a file cannot advance the lesson. */
       const isExit = (e) => e.tagName === 'A' &&
         (e.hasAttribute('download') || e.getAttribute('target') === '_blank');
+      /* A RE-WATCH IS NOT PROGRESS (added 14 Aug 2026, DFM 221 — the third
+         member of this family, after the back button and the download link).
+         Every ladder screen carries "Watch the film again" by law (DFM 143, so
+         one mis-click on "Done watching" can never strand a pupil), and it is
+         a .ghost-btn like any other — so the walker opened the film, closed
+         it, opened it again, and never climbed a single rung of Lesson 2. The
+         control is right; a walker that keeps re-watching proves nothing about
+         the rest of the lesson. */
+      /* the label differs per lesson — Lesson 2 says "Watch the film again",
+         Lesson 3's per-rung player says "↻ Watch this part again" — so match
+         the SHAPE (watch … again), never one lesson's exact words. Matching
+         literally is what let Lesson 3 re-watch its way through the whole
+         budget after Lesson 2 had already been fixed. */
+      const isReplay = (e) =>
+        e.classList.contains('rung-film-btn') ||
+        /watch\b[^.!?]{0,24}\bagain|show me how|re-?watch/i.test((e.textContent || ''));
       const btns = Array.from(document.querySelectorAll(
         '.chunk-host .primary-btn:not([disabled]):not(.locked), .chunk-host .ghost-btn:not([disabled])'))
-        .filter(vis).filter(e => !isDestructive(e) && !isExit(e));
+        .filter(vis).filter(e => !isDestructive(e) && !isExit(e) && !isReplay(e));
       const on = btns.filter(e => !isBack(e))[0];
       if (on) { on.click(); return 'go:' + (on.textContent || '').trim().slice(0, 24); }
       const back = btns[0];
@@ -399,7 +620,7 @@ const WRONG = {
   /* the loop budget is not the standard — Lesson 5 is a longer lesson with a
      Press Night in the middle of it, and a walk that runs out of loops must not
      be mistaken for a walk that finished (DFM 204). */
-  const MAX = LESSON === '5' ? 160 : 110;
+  const MAX = LESSON === "5" ? 160 : (LESSON === "1" ? 200 : (LESSON === "3" ? 170 : 110));
   let stuckRuns = 0;
   for (let i = 0; i < MAX; i++) {
     const where = await page.evaluate(() => {
@@ -407,11 +628,18 @@ const WRONG = {
       return (h ? h.textContent : (document.title || 'screen')).trim().slice(0, 46);
     });
     if (visited[visited.length - 1] !== where) { visited.push(where); log('screen: ' + where); }
-    /* record every required landmark that is on screen RIGHT NOW (DFM 204) */
-    const here = await page.evaluate(sels => sels.filter(s => {
-      const e = document.querySelector('.chunk-host ' + s.split(',').join(', .chunk-host '));
+    /* record every required landmark that is on screen RIGHT NOW (DFM 204),
+       in the CHUNK it belongs to where the list names one */
+    const chunkNow = await page.evaluate(() => {
+      const s = window.App && window.App.state;
+      return (s && s.chunks && s.chunks[s.chunkIdx] && s.chunks[s.chunkIdx].id) || '';
+    });
+    const here = await page.evaluate(rows => rows.filter(r => {
+      const e = document.querySelector('.chunk-host ' + r.sel.split(',').map(x => x.trim()).join(', .chunk-host '));
       return e && e.offsetParent !== null;
-    }), (LANDMARKS[LESSON] || []).map(l => l[1]));
+    }).map(r => r.key), (LANDMARKS[LESSON] || [])
+      .filter(l => !l[2] || l[2] === chunkNow)
+      .map(l => ({ sel: l[1], key: l[0] + '|' + l[1] })));
     here.forEach(s => seenLandmarks.add(s));
     await beWrong(where);
     const moved = await goRight();
@@ -445,12 +673,13 @@ const WRONG = {
   distinct.forEach(v => console.log('   · ' + v));
 
   const required = LANDMARKS[LESSON] || [];
-  const missed = required.filter(([, sel]) => !seenLandmarks.has(sel));
+  const keyOf = ([name, sel]) => name + '|' + sel;
+  const missed = required.filter(l => !seenLandmarks.has(keyOf(l)));
   if (required.length) {
     console.log('\nREQUIRED COVERAGE: ' + (required.length - missed.length) + ' of ' +
       required.length + ' landmarks reached');
-    required.forEach(([name, sel]) =>
-      console.log('   ' + (seenLandmarks.has(sel) ? '✓' : '✗') + ' ' + name));
+    required.forEach(l =>
+      console.log('   ' + (seenLandmarks.has(keyOf(l)) ? '✓' : '✗') + ' ' + l[0]));
     missed.forEach(([name, sel]) => findings.push(
       'COVERAGE: the confused pupil never stood on ' + name + ' (' + sel + '). ' +
       'A walk that does not reach a screen has not checked it (DFM 204).'));

@@ -73,6 +73,16 @@ const AUDIT = (EXPLAIN_PX) => {
   const EXPLAINS = /unlock|until|locked|needs|write|type|fill|both halves|appears|at least|lights up|turns on|wakes|opens when|available when|once all|once you|when all|when your|as soon as|first you|you need/i;
   const host = document.querySelector('.chunk-host') || document.body;
   const out = [];
+  /* NOTHING BEHIND A MODAL IS IN SCOPE (added 14 Aug 2026, DFM 221).
+     While a badge pop, the ? help window or a film window is open, the card
+     underneath is deliberately inert — that is what a modal IS — and the pop
+     itself is the explanation, with its own button on it. Auditing through
+     the overlay reported Lesson 1's "Finish" as an unexplained mute lock
+     twice: it was disabled because "Badge earned · Onward" was sitting on top
+     of it. A pupil is never refused by a control she cannot even see. */
+  const modal = Array.from(document.querySelectorAll(
+    '.badge-pop, .ols-modal, #help-modal, .pop-card, .clearance-pop')).filter(vis)[0];
+  if (modal) return out;
   const controls = Array.from(host.querySelectorAll('button, input[type=submit]')).filter(vis);
   /* A control that has already been USED is not a mute lock: it shows a tick and
      its job is done. Only controls the pupil still has to unlock are in scope.
@@ -95,6 +105,23 @@ const AUDIT = (EXPLAIN_PX) => {
     if (card) {
       const fb = card.querySelector('.q-feedback');
       if (fb && !fb.hidden && (fb.textContent || '').trim().length > 4) return true;
+    }
+    /* AN ANSWERED QUESTION IS A FINISHED CONTROL (added 14 Aug 2026, DFM 221).
+       The shared question renderer marks a question as answered by DISABLING
+       all four of its options — that is what stops a pupil changing her mind
+       after the verdict — and the verdict panel is on screen beside them,
+       which is the explanation. Reading only the button's own classes made the
+       confused-pupil walk report FOUR faults per answered question across
+       Lessons 1-3: 40+ inventions in one run. DFM 146a: a gate that invents a
+       fault is worse than no gate — and it would have buried anything real. */
+    if (e.classList.contains('q-opt')) {
+      const qc = e.closest('.q-card');
+      if (qc && (qc.classList.contains('answered') ||
+        qc.querySelector('.q-feedback, .q-verdict, .q-ack, .exit-fb'))) return true;
+      /* the exam gives no verdict BY DESIGN (rule 77) — its own "Answer saved"
+         acknowledgement is the finished mark, and it is beside the options */
+      const host2 = document.querySelector('.chunk-host');
+      if (qc && host2 && /answer saved/i.test(host2.textContent || '')) return true;
     }
     return false;
   };

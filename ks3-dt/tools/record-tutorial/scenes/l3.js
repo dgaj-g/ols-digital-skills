@@ -700,4 +700,37 @@ const scenes = [
   }
 ];
 
-module.exports = { scenes };
+/* ============ BLOCKS_ON_CAMERA (DFM 207c; declared 14 Aug 2026 on his R1
+   ruling, DFM 222a) ============
+   THE RULE: a film may not put a block on screen and leave a child to guess
+   what it is. Every block this film shows names where it is taught.
+
+   BUILT FROM THE FILM'S OWN SCRIPT, not from memory: this film is served in
+   PARTS, one per rung (DFM 170), and each part builds its own step on camera —
+   the variable is made in the editor, `show number` is dropped inside the free
+   `forever`, and the buttons get `set` and `change`. The 3D variable animation
+   (DFM 174) opens it and teaches what a named box IS before any block appears.
+
+   THE AUDIT'S FINDING, stated plainly: every block on camera is taught by this
+   film at the moment it is used, and `forever` — which Lesson 2 deliberately
+   parked — is taught here properly, which is exactly where Lesson 2's manifest
+   says it would be. The two lessons' manifests agree. Nothing needed changing
+   in a signed-off lesson. */
+const BLOCKS_ON_CAMERA = [
+  { block: 'forever',
+    taughtBy: 'this film, ch1 — named as the block that comes free with the project and taught as the one that never stops ("This forever block came free with your project"); Lesson 2 met it and parked it' },
+  { block: 'show number',
+    taughtBy: 'this film — dragged from Basic and dropped INSIDE forever on camera ("From Basic: drop show number INSIDE forever")' },
+  { block: 'a variable (the score box)',
+    taughtBy: 'the 3D variable animation that opens the film (DFM 174) plus the on-camera Make a Variable ("Name the box score — short, clear, exactly what it holds")' },
+  { block: 'set _ to _',
+    taughtBy: 'this film — dragged after the variable is created, taught against change as "put this exact number in the box"' },
+  { block: 'change _ by _',
+    taughtBy: 'this film, glossed on camera in its own caption ("change score by… ADDS to the number already inside the box")' },
+  { block: 'on button A pressed',
+    taughtBy: 'Lesson 2 — she dragged it herself on camera there and built two rungs with it; this film reuses it as known ground' },
+  { block: 'on start',
+    taughtBy: 'Lesson 2, where it was named as a starter block and parked; it stays parked here' }
+];
+
+module.exports = { scenes, BLOCKS_ON_CAMERA };
