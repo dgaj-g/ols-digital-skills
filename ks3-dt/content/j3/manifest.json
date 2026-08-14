@@ -44,7 +44,8 @@
    "block": "b1",
    "icon": "🎬",
    "status": "soon",
-   "coverSuitability": "ok",
+   "coverSuitability": "caution",
+   "coverNote": "This is the class's first-ever visit to the website, so the one-off Google permission screens land in this hour and they are far easier with the class's own teacher walking pupils through them. If cover cannot be avoided, printed credential slips (school office) should be to hand as a backup for pupils whose logins fail.",
    "absenceInferenceEligible": true
   },
   {

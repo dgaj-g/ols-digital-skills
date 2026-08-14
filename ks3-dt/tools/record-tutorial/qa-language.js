@@ -84,6 +84,35 @@ const readerFor = (year) => READERS[year] || READERS.j1;
 const LOCKED = new Set(['j1-01', 'j1-02', 'j1-sq1']);
 
 /* ------------------------------------------------------------------ *
+ * THE HUB TEXT (his ruling, 14 Aug 2026: "definitely apply a language
+ * harness. definitely, definitely, definitely! language is CRUCIAL
+ * throughout.")
+ *
+ * Until this landed, the walk below opened `<year>/lessons/*.json` and
+ * NOTHING else. So the text a pupil meets FIRST — the year title on the
+ * hub, the block headers, and the title and tagline on all eighteen
+ * tiles — went through no gate at all: no shape rules, no lexicon, no
+ * read-aloud record, and no banned-word ratchet. The recap pool sits
+ * outside `lessons/` too, so its stems and options were equally unseen
+ * even though a pupil answers them in the Do-Now.
+ * That is the largest single exemption this harness has ever had, and
+ * it was invisible precisely because it was an absence (DFM 213: an
+ * exemption that hides a class of pupil text is worse than no check).
+ *
+ * WHAT IS IN: year title, year tagline, block names, every lesson title
+ * and tagline, and every recap item's stem, options and explanation.
+ * WHAT IS OUT, and the run SAYS so rather than staying quiet about it:
+ * `coverNote` and `absenceNote` are written to the TEACHER (138.3's
+ * register, judged by a different standard), and the pool's `threads`
+ * labels/notes are planning metadata no pupil ever sees.
+ * J1's hub strings are LOCKED (DFM 176) — reported every run, never
+ * blocking, never edited without his word.
+ * ------------------------------------------------------------------ */
+const HUB_LOCKED_YEARS = new Set(['j1']);
+const HUB_PUPIL_KEYS = new Set(['title', 'tagline', 'name', 'stem', 'options', 'explain']);
+const HUB_TEACHER_KEYS = ['coverNote', 'absenceNote'];
+
+/* ------------------------------------------------------------------ *
  * WHAT COUNTS AS PUPIL-FACING.
  * Fail-safe by design: every string under a chunk's config is INCLUDED
  * unless its key is machine-only. A new field somebody adds next month
@@ -1183,6 +1212,71 @@ const sha1 = (s) => crypto.createHash('sha1').update(s, 'utf8').digest('hex').sl
    and re-ordering the captions inside a chapter costs nothing. */
 const filmKey = (f) => 'film:' + f.set + ':' + f.chapter + ' › ' + sha1(f.raw);
 
+/* ---------------------------------------------------- THE HUB STRINGS
+   Every DECLARED year's manifest and recap pool. Read from index.json's
+   years array rather than by globbing directories, so this walk and the
+   pack's own year-folder gate can never disagree about what a year is.
+   Paths are keyed by LESSON ID where one exists (`j2-04 › manifest ›
+   tagline`), not by array position, so reordering the manifest cannot
+   silently void a record or move it onto a different lesson. */
+function collectHubStrings() {
+  const out = [];
+  const errs = [];
+  const indexPath = path.join(SRC, 'index.json');
+  if (!fs.existsSync(indexPath)) { errs.push('no index.json at ' + SRC); return { strings: out, errs: errs }; }
+  const index = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+  (index.years || []).forEach(y => {
+    const locked = HUB_LOCKED_YEARS.has(y.id);
+    const manPath = path.join(SRC, y.manifest || (y.id + '/manifest.json'));
+    if (!fs.existsSync(manPath)) { errs.push(y.id + ': declared in index.json but no manifest at ' + manPath); return; }
+    const man = JSON.parse(fs.readFileSync(manPath, 'utf8'));
+    const push = (p, s) => { if (typeof s === 'string' && s.trim()) out.push({ path: p, text: s, year: y.id, locked: locked }); };
+
+    push(y.id + ' › manifest › title', man.title);
+    push(y.id + ' › manifest › tagline', man.tagline);
+    (man.blocks || []).forEach(b => push(y.id + ' › manifest › block:' + b.id + ' › name', b.name));
+    (man.lessons || []).forEach(L => {
+      const id = L.id || (y.id + '-' + L.num);
+      push(id + ' › manifest › title', L.title);
+      push(id + ' › manifest › tagline', L.tagline);
+    });
+
+    /* the recap pool: the stems a pupil actually answers in the Do-Now */
+    const poolRel = man.recapPool || (y.id + '/recap-pool.json');
+    const poolPath = path.join(SRC, poolRel);
+    if (!fs.existsSync(poolPath)) return;            /* a year may have no pool yet */
+    const pool = JSON.parse(fs.readFileSync(poolPath, 'utf8'));
+    (pool.items || []).forEach(it => {
+      const base = (it.lesson || y.id) + ' › recap:' + it.id;
+      push(base + ' › stem', it.stem);
+      (it.options || []).forEach((o, i) => push(base + ' › options[' + i + ']', o));
+    });
+    Object.entries(pool.keys || {}).forEach(([k, v]) => {
+      if (v && typeof v.explain === 'string') push(y.id + ' › recap:' + k + ' › explain', v.explain);
+    });
+  });
+  return { strings: out, errs: errs };
+}
+
+function hubLedgerCheck(hub, ledger) {
+  const out = [];
+  const byPath = ledger.entries || {};
+  hub.forEach(s => {
+    const e = byPath[s.path];
+    if (!e) {
+      out.push('UNREVIEWED HUB TEXT: ' + s.path + ' — no read-aloud record. It reads: "' +
+        s.text.slice(0, 80) + '". Ask it as ' + readerFor(s.year) + ': can she DO it, PICTURE ' +
+        'every noun, SAY what it is for? Then: node ledger-tool.js --add "' + s.path + '"');
+      return;
+    }
+    if (e.sha1 !== sha1(s.text)) {
+      out.push('CHANGED SINCE REVIEW: ' + s.path + ' — the hub text was edited after its record ' +
+        'was written. Re-ask the question as ' + readerFor(s.year) + ' and update the entry.');
+    }
+  });
+  return out;
+}
+
 function filmLedgerCheck(films, ledger) {
   const out = [];
   const byPath = ledger.entries || {};
@@ -1454,6 +1548,54 @@ function runControls() {
   } catch (e) {
     control(false, 'the multi-year fixture could not run: ' + e.message);
   }
+
+  /* ---- THE HUB CONTROLS (his 14 Aug ruling). Each one proves the gate at the
+     layer it guards, and the first proves the thing that was missing: that a
+     manifest is opened AT ALL. Until this landed the answer was no. ---- */
+  const hubFx = collectHubStrings();
+  const hubPath = (p) => hubFx.strings.find(s => s.path === p) || { text: '', year: 'j1' };
+  control(hubFx.strings.length > 0 && hubFx.strings.some(s => / › manifest › /.test(s.path)),
+    'THE MANIFESTS ARE SCANNED AT ALL — ' + hubFx.strings.length + ' hub strings across ' +
+    [...new Set(hubFx.strings.map(s => s.year))].join('/') + ' (before 14 Aug 2026: zero, and nothing said so)');
+  control(hubFx.strings.some(s => / › recap:/.test(s.path)),
+    'and the recap pool is scanned too — its stems are answered by a pupil in the Do-Now');
+  /* HIS OWN APPROVED TAGLINE is the exemplar of the register 192b bans. It must
+     be CAUGHT (and waived, because J1 is locked) — if the reporter cannot see
+     the clearest case of the fault on the platform, it sees nothing. */
+  const l1Tag = hubPath('j1-01 › manifest › tagline');
+  control(fragmentCandidates(l1Tag.text).length >= 1,
+    'HIS OWN LESSON-1 TAGLINE ("' + l1Tag.text.slice(0, 44) + '") is a fragment candidate — the ' +
+    'headline register, on the tile every pupil sees first, invisible to every gate until now');
+  control(HUB_LOCKED_YEARS.has('j1'),
+    'and it is WAIVED, not fixed: J1 is locked (DFM 176) and nothing here edits it');
+  /* a banned word in a planted tagline must fail, judged at the right age */
+  control(lexiconCheck('Just tap the tile to start this lesson.').length >= 1,
+    'a banned word planted in a manifest tagline is caught (the "tap" ban, DFM 150)');
+  /* the ledger really reaches hub text, in both directions */
+  const j2Tag = hubPath('j2-01 › manifest › tagline');
+  control(hubLedgerCheck([{ path: 'x › manifest › tagline', text: 'Anything.', year: 'j2', locked: false }], { entries: {} })
+    .some(p => /^UNREVIEWED HUB TEXT/.test(p)),
+    'an unrecorded hub string blocks the pack exactly as a lesson sentence does');
+  control(hubLedgerCheck([{ path: 'p', text: 'Anything.', year: 'j2', locked: false }],
+    { entries: { p: { sha1: sha1('Anything.') } } }).length === 0,
+    'and a recorded one is silent (over-tightening guard)');
+  control(hubLedgerCheck([{ path: 'p', text: 'Edited since.', year: 'j2', locked: false }],
+    { entries: { p: { sha1: sha1('Anything.') } } }).some(p => /^CHANGED SINCE REVIEW/.test(p)),
+    'and editing a tagline after its record voids it — a tile cannot be reworded behind the judgement');
+  /* over-tightening on the real new text: the shipped J2/J3 taglines are prose
+     and must raise NOTHING mechanically, or the gate is punishing good writing */
+  const newHub = hubFx.strings.filter(s => !s.locked);
+  const newHubProblems = newHub.filter(s => [].concat(
+    lengthCheck(unbold(s.text), readerFor(s.year)), dashChainCheck(unbold(s.text)),
+    inlineSequenceCheck(unbold(s.text)), arrowChainCheck(unbold(s.text)), lexiconCheck(unbold(s.text))
+  ).length > 0);
+  control(newHub.length > 0 && newHubProblems.length === 0,
+    'the ' + newHub.length + ' J2/J3 hub strings raise NO mechanical problem (over-tightening guard)');
+  /* and a title is a LABEL: reporting it as a fragment would be DFM 146a */
+  control(fragmentCandidates('Query Quest').length >= 1,
+    'a bare noun phrase IS a fragment by the reporter\'s own rule…');
+  control(true, '…which is exactly why manifest TITLES and BLOCK NAMES are exempted from it — ' +
+    '"Mission Control" and "The Broken Game" are his own approved titles, and a title is a label, not a sentence');
 }
 
 /* ------------------------------------------------------------------ *
@@ -1556,6 +1698,53 @@ function main() {
     locked.forEach(p => console.log('    WAIVED ' + p));
   }
 
+  /* ---- THE HUB (his 14 Aug ruling): the same laws, on the text she reads FIRST ---- */
+  console.log('\nHUB TEXT — the same net, on the year map and the tiles:');
+  const hubAll = collectHubStrings();
+  hubAll.errs.forEach(e => { console.log('  FAIL ' + e); FAILS.push(e); });
+  const hub = hubAll.strings.filter(s => inScope(s.path));
+  const hubProblems = [], hubLocked = [];
+  hub.forEach(s => {
+    const bucket = s.locked ? hubLocked : hubProblems;
+    const plain = unbold(s.text);
+    [].concat(
+      lengthCheck(plain, readerFor(s.year)),
+      dashChainCheck(plain), inlineSequenceCheck(plain), arrowChainCheck(plain), lexiconCheck(plain)
+    ).forEach(p => bucket.push(s.path + ': ' + p));
+  });
+  console.log('  scanned ' + hub.length + ' manifest/recap string(s) across ' +
+    [...new Set(hub.map(s => s.year))].join(', ') +
+    '  (coverNote/absenceNote excluded BY NAME — teacher register, DFM 138.3; thread labels are planning metadata)');
+  console.log(hubProblems.length ? '  ' + hubProblems.length + ' problem(s)' : '  clean');
+  hubProblems.forEach(p => { console.log('  FAIL ' + p); FAILS.push(p); });
+  if (hubLocked.length) {
+    console.log('\n  LOCKED HUB (DFM 176) — ' + hubLocked.length + ' finding(s) in J1\'s year map, recorded, NOT blocking.');
+    console.log('  J1\'s tiles were written and signed off long before anything scanned them. This list is');
+    console.log('  the work waiting the day he lifts the lock, printed every run so it cannot rot.');
+    hubLocked.forEach(p => console.log('    WAIVED ' + p));
+  }
+  /* The fragment reporter runs here too — J1's TAGLINES are the exact headline
+     register DFM 192b bans and must be visible rather than merely absent.
+     But a lesson TITLE and a block NAME are labels: "Mission Control", "The
+     Broken Game", "Query Quest" are noun phrases because that is what a title
+     IS, and every one of his own approved J1 titles is one. Reporting them
+     would be the DFM 146a fault — a gate inventing a fault drowns the real
+     ones, and the first cut of this listed 34 of them. Titles and block names
+     are still fully checked by the lexicon and the shape rules above; they are
+     simply not candidates for "this should have been a sentence". */
+  const hubIsLabel = (p) => /› manifest › (title|block:[^ ]+ › name)$/.test(p) || /› options\[\d+\]$/.test(p);
+  const hubFrag = [], hubFragLocked = [];
+  hub.forEach(s => {
+    if (hubIsLabel(s.path)) return;
+    const bucket = s.locked ? hubFragLocked : hubFrag;
+    fragmentCandidates(s.text).forEach(c => bucket.push(s.path + ' [' + c.kind + '] "' + c.text.slice(0, 90) + '"'));
+  });
+  if (hubFrag.length || hubFragLocked.length) {
+    console.log('\n  HUB FRAGMENT-CANDIDATES — ' + hubFrag.length + ' open, ' + hubFragLocked.length +
+      ' locked. REPORTED, NOT BLOCKING (§C q11 decides each one).');
+    hubFrag.concat(hubFragLocked).slice(0, 12).forEach(p => console.log('    CANDIDATE ' + p));
+  }
+
   /* ---- THE FILMS (DFM 179): the same laws, on the surface a pupil watches ---- */
   console.log('\nFILM CAPTIONS — the same net, on the screen she watches (DFM 179):');
   const film = collectFilmStrings();
@@ -1603,8 +1792,16 @@ function main() {
   }
 
   console.log('\nLAYER 2 — the read-aloud ledger (the gate that matters):');
+  /* J1's hub text is LOCKED, so it is reported as debt rather than ledgered:
+     stamping ninety "grandfathered" judgements onto tiles he signed off before
+     any gate existed would claim a read-aloud pass that never happened. The
+     honest position is the waived list above — visible every run, blocking
+     nothing. J2/J3's hub text is NOT locked and is ledgered like any other
+     pupil sentence. */
+  const hubLed = hubLedgerCheck(hub.filter(s => !s.locked), ledger);
   const ledAll = ledgerCheck(lessons, ledger).filter(p => inScope(p.replace(/^[A-Z ]+: /, '')))
-    .concat(filmLedgerCheck(films, ledger));
+    .concat(filmLedgerCheck(films, ledger))
+    .concat(hubLed);
   /* DFM 176: Lessons 1, 2 and the side quest are LOCKED — he has sat them and
      signed them off, and they are not to be "improved". The fragment escalation
      is the first ledger rule that can fire on already-signed-off text, so it is
@@ -1668,4 +1865,8 @@ module.exports = { collectFilmStrings, filmKey, filmRendered, FILM_MAP,
   /* exported for the DFM 196 control sweep: the same detector is run against the
      build he sat (7bba564) so the failure it catches there is filed as evidence
      before the fix it guards is credited. One implementation, two runs. */
-  fragmentCandidates, hasRealVerb, collectStrings, fragInScope, loadLessons, inlineSequenceCheck };
+  fragmentCandidates, hasRealVerb, collectStrings, fragInScope, loadLessons, inlineSequenceCheck,
+  /* the hub collector is exported for the same reason the film one is: ledger-tool
+     must write records against the SAME strings this gate reads, and a second walk
+     would drift the first time one of them learned something new (DFM 144) */
+  collectHubStrings, HUB_LOCKED_YEARS };

@@ -160,6 +160,14 @@ function main() {
     const lessons = loadAll();
     let found = null;
     lessons.forEach(L => L.strings.forEach(s => { if (s.path === p) found = s; }));
+    /* HUB TEXT (his 14 Aug 2026 ruling): the year map's titles, taglines and
+       block names, and the recap pool's stems, are pupil-facing and now gated.
+       They are not inside any lesson file, so the lesson walk above cannot see
+       them — this reads the SAME collector qa-language uses, never a copy. */
+    if (!found) {
+      const { collectHubStrings } = require('./qa-language.js');
+      found = collectHubStrings().strings.find(s => s.path === p) || null;
+    }
     if (!found) { console.error('no such string path: ' + p); process.exit(1); }
     ledger.entries[p] = {
       sha1: sha1(found.text),
