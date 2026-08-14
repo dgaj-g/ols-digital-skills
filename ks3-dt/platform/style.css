@@ -2156,6 +2156,12 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 
 .std-qadesk { border: 1px dashed rgba(120,170,255,0.45); border-radius: 12px; padding: 14px; margin-bottom: 18px; }
 .std-qadesk.locked { opacity: 0.55; }
+/* the "when do I use this?" line under each studio-desk zone heading (DFM 212).
+   On the light kit/blueprint cards it takes the card's ink; inside the dark QA
+   zone it takes the dark zone's, the same one-class-two-worlds trap the QA tag
+   fell into earlier this round. */
+.std-zone-when { margin: 0 0 10px; font-size: 0.88rem; color: #4A5878; }
+.std-qadesk-head .std-zone-when { color: #C7D6F2; }
 .std-qadesk-head { color: #C7D6F2; margin-bottom: 10px; position: relative; }
 /* HIS "three, the QA desk ... very hard to read". `.std-qa-tag` is a NAVY pill
    made for the light kit and blueprint cards; the QA desk zone sits on the DARK

@@ -345,15 +345,37 @@ function leadingVerblessRun(sentence) {
 }
 
 function fragmentCandidates(rawText) {
-  /* menu-path notation ("Variables → Make a Variable → 'score'") is not prose */
-  if (String(rawText).indexOf('→') !== -1) return [];
-  const sents = sentences(fragNormalise(rawText));
+  /* MENU-PATH NOTATION IS A CANDIDATE, NOT AN EXEMPTION (DFM 213, his find).
+     This function used to `return []` for any string containing an arrow, on the
+     grounds that "Variables → Make a Variable → 'score'" is not prose. The effect
+     was that every instruction written that way — the first step of all three
+     Lesson 5 blueprints among them — was exempt from the language gate BY DESIGN.
+     His words: "a child won't know what you're actually saying here. What is the
+     instruction?" He is right, and an exemption that hides a whole class of pupil
+     text is worse than no check. Arrow notation is now REPORTED for pupil-facing
+     text, and the rest of the string is judged normally. */
+  const raw = String(rawText);
   const out = [];
+  if (raw.indexOf('\u2192') !== -1) {
+    out.push({ kind: 'MENU-PATH', text: raw.trim() });
+  }
+  /* the arrow run itself is not a sentence, so it is lifted out before the prose
+     around it is judged — otherwise every such string reports twice for one fault */
+  const sents = sentences(fragNormalise(raw.replace(/[^.!?;]*\u2192[^.!?]*/g, ' ')));
   sents.forEach(s => {
     if (leadingVerblessRun(s) >= 2) {
       out.push({ kind: 'CHAIN(intra)', text: s.trim() });
     }
   });
+  /* A LONE VERBLESS OPENER IS A CANDIDATE ON ITS OWN (DFM 213). The rule below
+     needs TWO verbless sentences in one string before it says anything, so
+     "Four moves." followed by proper sentences was invisible — and the opening
+     line is the worst place to have a hole, because it is where she decides
+     whether she understands. His finds: "Four moves." (maze blueprint) and
+     "Five moves" (quiz), both of which also miscounted their own steps. */
+  if (sents.length && wordCount(sents[0]) >= 2 && wordCount(sents[0]) <= 6 && !hasRealVerb(sents[0])) {
+    out.push({ kind: 'OPENER(verbless)', text: sents[0].trim() });
+  }
   const verbless = sents.filter(s => wordCount(s) >= 2 && !hasRealVerb(s));
   if (verbless.length >= 2) {
     out.push({ kind: 'CHAIN(inter)', text: verbless.map(s => s.trim()).slice(0, 3).join('  ·  ') });
@@ -1299,6 +1321,16 @@ function runControls() {
      nothing could reach it and the judged pass walked past it too. This control
      is the reason the floor is 2, and it must never go silent again. */
   const G5 = 'Four fixes, one game — and some bugs only show up when the whole game is played.';
+  /* DFM 213: this exact string used to be a control asserting that menu-path
+     notation raises NOTHING — the old law. It is now a control the other way
+     round, because that exemption is what hid the first step of all three
+     Lesson 5 blueprints from every language check. */
+  control(fragmentCandidates("Variables \u2192 Make a Variable \u2192 'score', for all sprites.")
+    .some(c => c.kind === 'MENU-PATH'),
+    'HIS MENU-PATH FIND is a candidate: an instruction written as arrows is not an instruction a child can follow');
+  control(fragmentCandidates('Four moves. The kit already punishes wall-touches — READ that script first.')
+    .some(c => c.kind === 'OPENER(verbless)'),
+    'HIS "Four moves." FIND is a candidate: a lone verbless opener no longer needs a second one to be seen');
   control(fragmentCandidates(G5).length >= 1,
     'HIS RELEASE-DESK FIND is a candidate at the two-word clause floor (it was invisible at three)');
   /* THE THREE 12 AUG ARTEFACTS. Each was a REAL sentence wrongly reported, and
@@ -1320,7 +1352,7 @@ function runControls() {
     ['Nobody is ranked against anybody.', 'the signed-off Press Night line'],
     ['Every game keeps score.', 'a good short sentence'],
     ['Design ONE more change — a second danger, a speed-up — and test it.', 'an appositive between em-dashes is not a chain'],
-    ["Variables → Make a Variable → 'score'", 'menu-path notation is not prose'],
+
     ['Shipping your game takes three steps.', 'the 12 Aug rewrite of the ship help opener'],
     ['Now try the left arrow. Then look at the code area.', 'bare imperatives are real verbs']
   ];
