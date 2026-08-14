@@ -277,6 +277,7 @@
     "maxScore": 45,
     "timerSay": "Referee — this screen belongs to the player, not to you. When she is ready, click the button below to start her 5 seconds.",
     "soloTimerSay": "You are refereeing yourself today. When you are ready, click the button below to start your 5 seconds.",
+    "lockedNote": "This wakes up when both goes have been played, both scores are in, and you have ticked the box above.",
     "confirm": "We played it fair: the referee watched every go, and both numbers are exactly what the micro:bit showed",
     "soloIntro": "The live Rally happened in class — but your scoreboard still gets its goes. You are the player AND the referee today, so the honesty is all yours: the timer runs, you press, and the numbers you enter must be exactly what the micro:bit shows.",
     "soloRules": [
