@@ -33,9 +33,20 @@ const BASE = HOST + '/ks3-dt/platform/index.html?class=Demo-8A&as=';
  * So the turn count is REPORTED, and these are ASSERTED. Every one of them was
  * identical across every run of both builds: what the pupil actually does.
  * ------------------------------------------------------------------ */
+/* Lessons 1, 2, 3 and the side quest joined this table on 14 Aug 2026, closing
+   their COVERAGE_DEBT rows (DFM 221). Each number below was MEASURED on two
+   independent clean runs against `4ab8208` and was identical both times — the
+   only property DFM 199 asks of a pinned number. Nothing here is estimated.
+   L1's Vault is walked with auto-pairing OFF (the solo path), which is the
+   only single-pupil-deterministic route through a paired activity; the paired
+   path is covered by its own two-browser harnesses. */
 const EXPECT = {
+  '1': { xp: 95, chunks: 10, presses: 17, marks: 33, badges: 5 },
+  '2': { xp: 43, chunks: 9, presses: 14, marks: 7, badges: 2 },
+  '3': { xp: 51, chunks: 8, presses: 12, marks: 8, badges: 3 },
   '4': { xp: 42, chunks: 6, presses: 8, marks: 7, badges: 1 },
-  '5': { xp: 42, chunks: 10, presses: 17, marks: 7, badges: 4 }
+  '5': { xp: 42, chunks: 10, presses: 17, marks: 7, badges: 4 },
+  'S1': { xp: 30, chunks: 6, presses: 6, marks: 1, badges: 1 }
 };
 const OUT = path.join('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform',
   'qa-l2-l5-review', 'l' + NUM.toLowerCase() + (WHO === 'anya' ? '' : '-' + WHO));
@@ -43,7 +54,10 @@ fs.mkdirSync(OUT, { recursive: true });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const GHOST_WAIT = 420;
 
-const TITLES = { '2': 'Make It Move', '3': 'Scoreboard Engineer', '4': 'The Broken Game', '5': 'Game Studio', 'S1': 'Files That Follow You' };
+/* Lesson 1 joined this table on 14 Aug 2026, closing its COVERAGE_DEBT row
+   (DFM 221). It was the last J1 lesson no expert walker had ever driven — it
+   shipped before this file existed and was never retro-fitted. */
+const TITLES = { '1': 'Mission Control', '2': 'Make It Move', '3': 'Scoreboard Engineer', '4': 'The Broken Game', '5': 'Game Studio', 'S1': 'Files That Follow You' };
 
 let shotN = 0;
 const log = [];
@@ -208,6 +222,11 @@ const CASE_LOGS = {
         if (after && after.textContent.trim()) return { kind: 'rally-after', revealed: !!q('.rally-reveal .reveal-row, .rally-reveal [class*="bar"]') };
         return { kind: 'rally' };
       }
+      /* Lesson 1's Vault and oath, added 14 Aug 2026 (DFM 221). Both outrank
+         the generic handlers below: a vault file is not a button, and the
+         oath's sign control does nothing at all on a plain click. */
+      if (q('.vault-file:not(.filed)') && vis(q('.vault-folder'))) return { kind: 'vault' };
+      if (vis(q('.oath-sign:not([disabled])'))) return { kind: 'hold-sign' };
       if (q('.q-feedback button') && vis(q('.q-feedback button'))) return { kind: 'q-next' };
       if (q('.q-opt:not(:disabled)')) return { kind: 'q-opt' };
       /* L4 case board: drive the PIN BUTTONS by priority — intake first, then
@@ -424,6 +443,92 @@ const CASE_LOGS = {
         await page.evaluate(() => document.querySelector('.std-ready-btn.lit').click());
         await sleep(1200);
         await shot(ck + '-doors');
+        break;
+      }
+
+      /* ---- LESSON 1's VAULT (added 14 Aug 2026, DFM 221) ----
+         The filing game is a real pointer DRAG, and its answer key never
+         reaches the client in plaintext: the engine compares a salted hash
+         (`vhash(salt|fileId|folderId) === check[fileId]`), and the packed
+         content carries `keysEnc`, not `keys`. So the walker cannot look the
+         answer up, and it does not need to: it tries the folders in DOM order
+         and stops at the one the Vault accepts. That is DETERMINISTIC — the
+         same order, the same content, the same result every run — which is the
+         only property DFM 199 asks of a pinned number. A wrong drop is a real
+         part of this activity (it bounces back and hands the controls over),
+         so the walk exercises the reject path as well as the accept path. */
+      case 'vault': {
+        await sleep(GHOST_WAIT);
+        await shot(ck + '-vault-stage');
+        const filed = await page.evaluate(async () => {
+          const sleep2 = ms => new Promise(r => setTimeout(r, ms));
+          const centre = (e) => { const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
+          const drag = async (fileEl, folderEl) => {
+            const a = centre(fileEl), b = centre(folderEl);
+            const ev = (type, pt) => fileEl.dispatchEvent(new PointerEvent(type, {
+              bubbles: true, cancelable: true, pointerId: 1, isPrimary: true,
+              clientX: pt.x, clientY: pt.y
+            }));
+            /* setPointerCapture would redirect the later events to the node;
+               the engine calls it, so a stub keeps the synthetic drag alive */
+            if (!fileEl.setPointerCapture) fileEl.setPointerCapture = () => {};
+            ev('pointerdown', a);
+            await sleep2(30);
+            ev('pointermove', { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+            await sleep2(30);
+            ev('pointermove', b);
+            await sleep2(30);
+            ev('pointerup', b);
+            await sleep2(320);
+          };
+          const report = [];
+          for (let guard = 0; guard < 40; guard++) {
+            const file = document.querySelector('.chunk-host .vault-file:not(.filed)');
+            if (!file) break;
+            const folders = Array.from(document.querySelectorAll('.chunk-host .vault-folder'));
+            if (!folders.length) break;
+            let tries = 0, done = false;
+            for (const fo of folders) {
+              tries++;
+              await drag(file, fo);
+              if (file.classList.contains('filed')) {
+                report.push((file.getAttribute('data-id') || '?') + '->' +
+                  (fo.getAttribute('data-id') || '?') + ' on try ' + tries);
+                done = true;
+                break;
+              }
+            }
+            if (!done) { report.push((file.getAttribute('data-id') || '?') + ' REFUSED BY EVERY FOLDER'); break; }
+          }
+          return report;
+        });
+        filed.forEach(f => note('VAULT: ' + f));
+        await sleep(1200);
+        await shot(ck + '-vault-filed');
+        break;
+      }
+
+      /* Lesson 1's codename signing is a PRESS AND HOLD (rule 104's family:
+         nobody signs by accident). A click does nothing at all, which is
+         correct behaviour and was the second place this walk stopped. */
+      case 'hold-sign': {
+        await sleep(GHOST_WAIT);
+        await shot(ck + '-oath');
+        await page.evaluate(async () => {
+          const sleep2 = ms => new Promise(r => setTimeout(r, ms));
+          const b = document.querySelector('.chunk-host .oath-sign, .chunk-host .hold-btn, .chunk-host [class*="hold"]');
+          if (!b) return;
+          const r = b.getBoundingClientRect();
+          const pt = { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 };
+          const ev = (t) => b.dispatchEvent(new PointerEvent(t, Object.assign({
+            bubbles: true, cancelable: true, pointerId: 1, isPrimary: true }, pt)));
+          if (!b.setPointerCapture) b.setPointerCapture = () => {};
+          ev('pointerdown');
+          await sleep2(1800);          /* the hold is 1200ms; hold past it */
+          ev('pointerup');
+        });
+        await sleep(2200);
+        await shot(ck + '-signed');
         break;
       }
 
