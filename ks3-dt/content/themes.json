@@ -1,38 +1,6 @@
 {
  "comment": "Agent Kit registry. Cosmetic only - no keys, no marks. Every theme is a curated variant of the approved Mission Control v2 shell: lesson reading surfaces are never touched, contrast stays AA on the dark shell, and no theme may use background-attachment:fixed or per-card backdrop-filter (Chrome compositor rule). vars map to the THEME KNOB custom properties in style.css :root; stars feeds the starfield canvas; fx names an optional ambient effect layer (comets | aurora).",
  "clearanceNote": "Thresholds re-tiered 2 Aug 2026 (DFM 131): every lesson-end must unlock something new in the Agent Kit, so levels 2-6 sit a small margin below the NO-STRETCH full-completion cumulative XP for J1 L1-L5, computed from the built content and the engine award sites (ladder 7+clean*5; vault 12+right*3; casework 4+closed*4+gold+rc*2+ship*3; studio build crits*4+ship*3; gallery 3*given+v2; plus the server's +10 for filing the exit report). Best-path cumulatives: L1 110, L2 148, L3 194, L4 233, L5 275. Levels 2-5 carry two themes each and level 6 carries Gold Command, so the five levels above the start are exactly five unlock moments for five lessons. DAMIEN'S RULINGS, 9 Aug 2026 (DFM 164a then 165): the whole ladder is now tuned to the FLOOR path - the pupil who uses the priced features exactly as designed, buying every Debug Hint, taking every clue, and getting nothing right first try in the Vault. Her cumulatives, computed from the same built content: L1 92, L2 124, L3 164, L4 199, L5 241. Thresholds sit a small margin below each (90, 120, 160, 195, 235), so SHE unlocks something at every lesson-end - the promise rule 131 actually makes. The no-stretch full-completion pupil (110, 148, 194, 233, 275) also crosses exactly one level per lesson. KNOWN AND ACCEPTED, because no ladder can avoid it: a pupil who does EVERY stretch challenge (110, 153, 204, 246, 291) crosses two levels at the end of Lesson 3 and none at the end of Lesson 5, because she is further ahead after three lessons than the floor pupil is after four - the ranges overlap and no single threshold exists. Fixing that properly needs a SEVENTH tier (two more themes), which is new content and his call. Lowering thresholds can only ever GRANT an unlock, never revoke one, so no pupil loses a costume she already had; the mx 'once earned always hers' machinery (DFM 145) is untouched. qa-predeploy pins all three pupil paths and both invariants, so any content edit that shifts these numbers fails loudly.",
- "clearances": [
-  {
-   "level": 1,
-   "xp": 0,
-   "name": "Recruit"
-  },
-  {
-   "level": 2,
-   "xp": 90,
-   "name": "Field Agent"
-  },
-  {
-   "level": 3,
-   "xp": 120,
-   "name": "Specialist"
-  },
-  {
-   "level": 4,
-   "xp": 160,
-   "name": "Senior Agent"
-  },
-  {
-   "level": 5,
-   "xp": 195,
-   "name": "Commander"
-  },
-  {
-   "level": 6,
-   "xp": 235,
-   "name": "Star Commander"
-  }
- ],
  "themes": [
   {
    "id": "midnight",
@@ -45,7 +13,8 @@
     "base": "#CFE0FF",
     "accent": "#FFD84D",
     "ratio": 0.12
-   }
+   },
+   "year": "all"
   },
   {
    "id": "emerald",
@@ -78,7 +47,8 @@
     "base": "#CFF5E2",
     "accent": "#7FEBBB",
     "ratio": 0.12
-   }
+   },
+   "year": "j1"
   },
   {
    "id": "coral",
@@ -111,7 +81,8 @@
     "base": "#FFE3D6",
     "accent": "#FFAE96",
     "ratio": 0.12
-   }
+   },
+   "year": "j1"
   },
   {
    "id": "violet",
@@ -144,7 +115,8 @@
     "base": "#DCD2FF",
     "accent": "#CBB8FF",
     "ratio": 0.12
-   }
+   },
+   "year": "j1"
   },
   {
    "id": "arctic",
@@ -177,7 +149,8 @@
     "base": "#E6F6FF",
     "accent": "#9FEFFB",
     "ratio": 0.12
-   }
+   },
+   "year": "j1"
   },
   {
    "id": "ember",
@@ -210,7 +183,8 @@
     "base": "#FFE9CF",
     "accent": "#FFC584",
     "ratio": 0.12
-   }
+   },
+   "year": "j1"
   },
   {
    "id": "rose",
@@ -243,7 +217,8 @@
     "base": "#FFDFF0",
     "accent": "#FFA9C9",
     "ratio": 0.12
-   }
+   },
+   "year": "j1"
   },
   {
    "id": "lagoon",
@@ -276,7 +251,8 @@
     "base": "#D8F4F2",
     "accent": "#82ECD8",
     "ratio": 0.12
-   }
+   },
+   "year": "j1"
   },
   {
    "id": "nova",
@@ -309,7 +285,8 @@
     "base": "#FFFFFF",
     "accent": "#FFF6A0",
     "ratio": 0.18
-   }
+   },
+   "year": "j1"
   },
   {
    "id": "aurora",
@@ -340,7 +317,8 @@
     "accent": "#A5F5C8",
     "ratio": 0.12
    },
-   "fx": "aurora"
+   "fx": "aurora",
+   "year": "j1"
   },
   {
    "id": "comet",
@@ -374,7 +352,8 @@
     "accent": "#A9D1FF",
     "ratio": 0.12
    },
-   "fx": "comets"
+   "fx": "comets",
+   "year": "j1"
   },
   {
    "id": "goldelite",
@@ -401,7 +380,8 @@
     "base": "#FFE9A8",
     "accent": "#FFD84D",
     "ratio": 0.3
-   }
+   },
+   "year": "j1"
   }
  ],
  "insignia": [
@@ -409,67 +389,155 @@
    "id": "star",
    "glyph": "⭐",
    "name": "First Star",
-   "clearance": 1
+   "clearance": 1,
+   "year": "j1"
   },
   {
    "id": "sat",
    "glyph": "🛰️",
    "name": "Satellite",
-   "clearance": 1
+   "clearance": 1,
+   "year": "j1"
   },
   {
    "id": "rocket",
    "glyph": "🚀",
    "name": "Rocket",
-   "clearance": 2
+   "clearance": 2,
+   "year": "j1"
   },
   {
    "id": "compass",
    "glyph": "🧭",
    "name": "Navigator",
-   "clearance": 2
+   "clearance": 2,
+   "year": "j1"
   },
   {
    "id": "cometfx",
    "glyph": "💫",
    "name": "Comet Trail",
-   "clearance": 3
+   "clearance": 3,
+   "year": "j1"
   },
   {
    "id": "shield",
    "glyph": "🛡️",
    "name": "Shield",
-   "clearance": 3
+   "clearance": 3,
+   "year": "j1"
   },
   {
    "id": "bolt",
    "glyph": "⚡",
    "name": "Bolt",
-   "clearance": 4
+   "clearance": 4,
+   "year": "j1"
   },
   {
    "id": "invader",
    "glyph": "👾",
    "name": "Invader",
-   "clearance": 4
+   "clearance": 4,
+   "year": "j1"
   },
   {
    "id": "galaxy",
    "glyph": "🌌",
    "name": "Galaxy",
-   "clearance": 5
+   "clearance": 5,
+   "year": "j1"
   },
   {
    "id": "medal",
    "glyph": "🏅",
    "name": "Medal",
-   "clearance": 5
+   "clearance": 5,
+   "year": "j1"
   },
   {
    "id": "crown",
    "glyph": "👑",
    "name": "Crown",
-   "clearance": 6
+   "clearance": 6,
+   "year": "j1"
+  },
+  {
+   "id": "spanner",
+   "glyph": "🔧",
+   "name": "Spanner",
+   "clearance": 1,
+   "year": "j2"
+  },
+  {
+   "id": "clapper",
+   "glyph": "🎬",
+   "name": "Clapperboard",
+   "clearance": 1,
+   "year": "j3"
   }
- ]
+ ],
+ "clearancesByYear": {
+  "j1": [
+   {
+    "level": 1,
+    "xp": 0,
+    "name": "Recruit"
+   },
+   {
+    "level": 2,
+    "xp": 90,
+    "name": "Field Agent"
+   },
+   {
+    "level": 3,
+    "xp": 120,
+    "name": "Specialist"
+   },
+   {
+    "level": 4,
+    "xp": 160,
+    "name": "Senior Agent"
+   },
+   {
+    "level": 5,
+    "xp": 195,
+    "name": "Commander"
+   },
+   {
+    "level": 6,
+    "xp": 235,
+    "name": "Star Commander"
+   }
+  ],
+  "j2": [
+   {
+    "level": 1,
+    "xp": 0,
+    "name": "Apprentice"
+   }
+  ],
+  "j3": [
+   {
+    "level": 1,
+    "xp": 0,
+    "name": "Rookie"
+   }
+  ]
+ },
+ "kits": {
+  "j1": {
+   "name": "Agent Kit",
+   "explainer": "Your Agent Kit is kind of like this website’s own wardrobe or costumes!"
+  },
+  "j2": {
+   "name": "The Workshop",
+   "explainer": "The Workshop is kind of like this website’s own toolbench. Finish lessons and you earn new looks for your screen, and they are yours to keep."
+  },
+  "j3": {
+   "name": "The Studio",
+   "explainer": "The Studio is where your earned looks live. Finish lessons and the collection grows, and anything you have unlocked stays yours."
+  }
+ },
+ "yearNote": "PER-YEAR REGISTRY (his K1 ruling, 14 Aug 2026: the J2 and J3 rewards must be different from J1’s, in what they are and what they are called). clearancesByYear holds one rank ladder per year; every theme and insignia carries a year tag, and a look may be equipped only when its tag is \"all\" or matches the class’s year - enforced on the server as well as the client, so a DevTools call cannot cross years. J2 and J3 ship with level 1 ONLY: their level-2 threshold is computed from that year’s BUILT Lesson 1 floor path (DFM 165 - never from memory), so it does not exist until that lesson does, and the kit modal therefore promises nothing it cannot keep (rule 35)."
 }

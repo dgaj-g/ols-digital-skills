@@ -150,8 +150,19 @@ async function classesTabAs(page, isHod) {
   section('D. LIVE - an ORDINARY teacher');
   const plain = await classesTabAs(page, false);
   check(!plain.checkbox, 'she does NOT see the "Show all teachers\u2019 classes" checkbox');
-  check(plain.deleteButtons.length === 1 && plain.deleteButtons[0].cls === 'Demo-8A',
-    'and she gets a Delete button on her OWN class only (' + JSON.stringify(plain.deleteButtons.map(b => b.cls)) + ')');
+  /* THE RULE IS "HER OWN CLASSES", NOT "ONE CLASS". This asserted a count of 1
+     because the preview seeded exactly one class; the J2/J3 stand-up added
+     Demo-9A and Demo-10A to the same owner (14 Aug 2026) and the check failed
+     while the behaviour was perfectly correct — she owns all three. A harness
+     that encodes the fixture instead of the law fails the day the world moves
+     (DFM 143b: a change re-stages every harness, not only the obvious one).
+     `owner` is set on a button only when the class belongs to SOMEBODY ELSE, so
+     the real law is: every Delete she sees is on a class of her own. */
+  const MINE = ['Demo-8A', 'Demo-9A', 'Demo-10A'];
+  check(plain.deleteButtons.length === MINE.length &&
+    plain.deleteButtons.every(b => MINE.indexOf(b.cls) !== -1) &&
+    plain.deleteButtons.every(b => !b.owner),
+    'and every Delete button she sees is on a class of her OWN (' + JSON.stringify(plain.deleteButtons.map(b => b.cls)) + ')');
 
   section('E. LIVE - the HEAD OF DEPARTMENT');
   const hod = await classesTabAs(page, true);

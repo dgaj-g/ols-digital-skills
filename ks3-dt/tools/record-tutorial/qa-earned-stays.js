@@ -25,6 +25,12 @@ const path = require('path');
 const { chromium } = require('playwright');
 
 const ROOT = path.resolve(__dirname, '../../..');
+/* J1's clearance ladder moved into clearancesByYear when J2 and J3 got their own
+   (his K1 ruling, 14 Aug 2026). This scenario is Demo-8A, a J1 class, so it reads
+   J1's rows — from their new home, with the legacy key as the fallback. Every
+   assertion in this file is unchanged; qa-kit-years proves the rows themselves
+   are byte-equal to the pre-change registry. */
+const j1Clearances_ = (reg) => ((reg && reg.clearancesByYear && reg.clearancesByYear.j1) || (reg && reg.clearances) || []);
 const BASE = 'http://localhost:8096/ks3-dt/platform/index.html?class=Demo-8A&as=anya';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -109,11 +115,16 @@ async function scenario(page, opts) {
   const BEFORE_XP = 190, AFTER_XP = 145;
   const pick = await page.evaluate(async (o) => {
     const reg = await (await fetch('/ks3-dt/content/themes.json')).json();
+    /* the RAW registry, so the year has to be resolved here: Demo-8A is a J1
+       class, and J1's ladder moved into clearancesByYear (his K1 ruling). The
+       legacy key stays as the fallback for a stale cached file. */
+    const j1c = (reg.clearancesByYear && reg.clearancesByYear.j1) || reg.clearances || [];
     const xpFor = lvl => {
-      const c = (reg.clearances || []).find(x => Number(x.level) === Number(lvl));
+      const c = j1c.find(x => Number(x.level) === Number(lvl));
       return Number(c && c.xp);
     };
     const candidates = (reg.themes || [])
+      .filter(t => t.year == null || t.year === 'all' || t.year === 'j1')
       .map(t => ({ id: t.id, need: xpFor(t.clearance), clearance: Number(t.clearance) }))
       .filter(t => t.need > o.after && t.need <= o.before)
       .sort((a, b) => b.need - a.need);
@@ -168,6 +179,10 @@ async function scenario(page, opts) {
     const s = window.App.state;
     const reg = s.kit || {};
     const t = (reg.themes || []).find(x => String(x.id) === themeId);
+    /* NOT the year-aware helper: inside the page, App.state.kit is ALREADY the
+       resolved view for this class's year, so it carries a flat `clearances`
+       exactly as it always did. That is the point of resolving once at load —
+       every browser-side reader is untouched by the per-year change. */
     const cl = (reg.clearances || []).find(c => Number(c.level) === Number(t.clearance));
     const need = Number(cl && cl.xp);
     return { need: need, byCurrentXp: Number(s.xp) >= need, byEver: window.App.everXp() >= need };

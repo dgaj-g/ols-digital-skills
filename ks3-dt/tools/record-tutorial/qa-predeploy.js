@@ -419,7 +419,12 @@ function xpPromiseSection() {
     const p = paths(n); cb += p.best; cf += p.floor; cs += p.stretch;
     cum.push({ n, best: cb, floor: cf, stretch: cs });
   }
-  const thr = {}; (themes.clearances || []).forEach(c => { thr[c.level] = Number(c.xp); });
+  /* J1's ladder moved into clearancesByYear when J2/J3 got their own (his K1
+     ruling, 14 Aug 2026). Every ASSERTION below is unchanged — this reads the
+     same six rows from their new home, and qa-kit-years proves they are
+     byte-equal to the pre-change file. */
+  const j1Clearances = (themes.clearancesByYear && themes.clearancesByYear.j1) || themes.clearances || [];
+  const thr = {}; j1Clearances.forEach(c => { thr[c.level] = Number(c.xp); });
 
   console.log('  cumulative XP by pupil path:');
   cum.forEach(r => console.log('    after L' + r.n + ':  floor ' + String(r.floor).padStart(3) +
@@ -459,12 +464,12 @@ function xpPromiseSection() {
           an unlock - it can never take a costume off a pupil who has one.
      The mx "once earned always hers" machinery (DFM 145) is untouched and is
      covered end-to-end by qa-earned-stays. */
-  const levels = (themes.clearances || []).map(c => Number(c.level));
+  const levels = j1Clearances.map(c => Number(c.level));
   const badTheme = (themes.themes || []).filter(t => levels.indexOf(Number(t.clearance)) === -1);
   const badSig = (themes.insignia || []).filter(t => levels.indexOf(Number(t.clearance)) === -1);
   check(badTheme.length === 0 && badSig.length === 0,
     'every costume and insignia still points at a clearance level that exists');
-  (themes.clearances || []).forEach((c, i, all) => {
+  j1Clearances.forEach((c, i, all) => {
     if (!i) return;
     check(Number(c.xp) > Number(all[i - 1].xp),
       'level ' + c.level + ' still sits above level ' + all[i - 1].level + ' (' + all[i - 1].xp + ' -> ' + c.xp + ')');
