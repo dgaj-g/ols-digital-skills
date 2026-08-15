@@ -154,6 +154,24 @@ function lineCount_(str, boxW, size) {
   return lines;
 }
 
+/* NO LONE LAST WORD (read off the proofs, 15 Aug 2026).
+   His find on Slide 17 was the word "you." sitting by itself on the last line.
+   Fixing the line ADVANCE fixed the spacing but not the orphan, and the proofs
+   showed four more of them — "who." on the Vault slide, "else." on the last-two-
+   screens slide, "year." and "ranked." in the two-column list. No amount of
+   arithmetic prevents this, because it depends on where the renderer breaks.
+   So the last two words are tied together with a non-breaking space: whatever
+   the box width, whatever the font does, they wrap as a pair and a single word
+   can never be stranded. It costs nothing and it is true of every future deck.
+   The AUTHORED sentence is untouched — this is a rendering nicety, so the
+   language ledger's hash of the real text still matches. */
+function tie_(s) {
+  var t = String(s == null ? '' : s);
+  var i = t.replace(/\s+$/, '').lastIndexOf(' ');
+  if (i < 1) return t;
+  return t.slice(0, i) + '\u00A0' + t.slice(i + 1);   /* the non-breaking space, written as an escape so the generated file stays plain ASCII */
+}
+
 function bullets_(slide, d, arr, top, size) {
   var th = themeOf_(d);
   var y = top;
@@ -165,7 +183,7 @@ function bullets_(slide, d, arr, top, size) {
     dot.getFill().setSolidFill(th.accent);
     dot.getBorder().setTransparent();
     var lines = lineCount_(arr[i], W - 66 - 44, sz);
-    var t = text_(slide, arr[i], 66, y - 2, W - 66 - 44, Math.max(40, lines * 19 + 10),
+    var t = text_(slide, tie_(arr[i]), 66, y - 2, W - 66 - 44, Math.max(40, lines * 19 + 10),
       { size: sz, color: '#FFFFFF', font: th.body, spacing: 108 });
     y += Math.max(30, lines * 19 + 12);
   }
@@ -205,7 +223,7 @@ function slideTitle_(slide, d, s) {
   text_(slide, s.heading, 44, 130, W - 88, 70,
     { size: 40, bold: true, color: '#FFFFFF', font: th.display, align: SlidesApp.ParagraphAlignment.CENTER });
   if (s.sub) {
-    text_(slide, s.sub, 44, 248, W - 88, 40,
+    text_(slide, tie_(s.sub), 44, 248, W - 88, 40,
       { size: 13, color: th.dim, font: th.body, align: SlidesApp.ParagraphAlignment.CENTER });
   }
 }
@@ -236,7 +254,7 @@ function slideBullets_(slide, d, s, label) {
       dot.getBorder().setTransparent();
       var bs = s.size ? s.size - 2 : 11.5;
       var bl = lineCount_(arr[i], 330, bs);
-      text_(slide, arr[i], 62, y - 2, 330, Math.max(40, bl * 15 + 10),
+      text_(slide, tie_(arr[i]), 62, y - 2, 330, Math.max(40, bl * 15 + 10),
         { size: bs, color: '#FFFFFF', font: th.body, spacing: 106 });
       y += Math.max(26, bl * 15 + 12);
     }
@@ -259,7 +277,7 @@ function slideStep_(slide, d, s, label) {
   kicker_(slide, d, label);
   text_(slide, s.heading, 44, 52, W - 88, 30,
     { size: 21, bold: true, color: '#FFFFFF', font: th.display });
-  text_(slide, s.text || '', 44, 96, 300, H - 130,
+  text_(slide, tie_(s.text || ''), 44, 96, 300, H - 130,
     { size: 12.5, color: '#FFFFFF', font: th.body, spacing: 112 });
   var c = CONSENT[s.img];
   if (c) {
@@ -298,7 +316,7 @@ function slideStop_(slide, d, s, label) {
     dot.getFill().setSolidFill(th.accent);
     dot.getBorder().setTransparent();
     var sl = lineCount_(arr[i], W - 62 - 44, 12.5);
-    text_(slide, arr[i], 62, y - 2, W - 62 - 44, Math.max(36, sl * 15 + 10),
+    text_(slide, tie_(arr[i]), 62, y - 2, W - 62 - 44, Math.max(36, sl * 15 + 10),
       { size: 12.5, color: '#FFFFFF', font: th.body, spacing: 106 });
     y += Math.max(26, sl * 15 + 11);
   }
@@ -328,7 +346,7 @@ function slideCloser_(slide, d, s, label) {
   var BAND_TOP = 150, BAND_BOTTOM = H - 74;   /* 74 = the sign-off line's room */
   var y = Math.max(BAND_TOP, BAND_TOP + ((BAND_BOTTOM - BAND_TOP) - total) / 2);
   for (var i = 0; i < arr.length; i++) {
-    text_(slide, arr[i], 110, y, BOX, heights[i] + 6,
+    text_(slide, tie_(arr[i]), 110, y, BOX, heights[i] + 6,
       { size: SZ, color: '#FFFFFF', font: th.body,
         align: SlidesApp.ParagraphAlignment.CENTER });
     y += heights[i] + GAP;
