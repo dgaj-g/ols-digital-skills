@@ -129,12 +129,20 @@ function e08Section() {
   check(!/headphones/i.test(all), 'and no longer implies the closing message has audio');
   check(/no video for this lesson/i.test(all), 'it says plainly that this lesson has no video, so nothing looks missing');
 
-  /* E-07: the old overrun plan named two levers the built platform cannot do.
-     It is gone; what replaced it must be achievable. */
-  check(!!brief.ifBehind, 'there is an "if you fall behind" section');
+  /* E-07 was the old overrun plan, which named two levers the built platform
+     cannot do. Its replacement, the "if you fall behind" section, is ITSELF now
+     gone: DAMIEN, 15 Aug 2026 (DFM 227c) — "'If you fall behind' section should
+     be removed entirely from all briefs" — because the minute labels now sum to
+     the hour and there is nothing left to fall behind against.
+     These two checks used to assert that the section EXISTED. Turned around
+     rather than deleted, so the surface stays covered and a section he removed
+     can never quietly return. */
+  check(!('ifBehind' in brief), 'there is no "if you fall behind" section — he removed it entirely (DFM 227c)');
+  check(!/if you fall behind/i.test(all), 'and no other part of the brief still points at one');
   check(!/run badge 2 as a (whole-class )?(projector )?demo/i.test(all) && !/shorten badge 5/i.test(all),
     'the two impossible overrun levers (E-07) are gone rather than repeated');
-  check(/licence exam/i.test(brief.ifBehind || ''), 'and it protects the Licence Exam, which is the one thing that cannot be rushed');
+  check((brief.runningTheHour || []).reduce(function (a, r) { return a + (Number(r.mins) || 0); }, 0) === 60,
+    'and the run sheet labels add up to the hour instead (DFM 227d)');
 
   section('E-08 CONTROL - the same checks against the pre-fix brief');
   try {
