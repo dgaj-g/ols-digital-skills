@@ -651,15 +651,6 @@
       out += '<h4>The purpose of this lesson</h4>' +
         r.purpose.map(function (p) { return '<p>' + App.esc(p) + '</p>'; }).join('');
     }
-    if ((r.atAGlance || []).length) {
-      out += '<h4>What the pupils will actually do</h4>' +
-        '<p class="brief-note">Every part of the hour, in the order they meet it. The rest of this brief uses these names, so it is worth a read-through first.</p>' +
-        '<ol class="brief-glance">' + r.atAGlance.map(function (g) {
-          return '<li><b>' + App.esc(g.part) + '</b>' +
-            (Number(g.mins) ? ' <span class="brief-mins">' + Number(g.mins) + ' min</span>' : '') +
-            '<br>' + briefText(g.what) + briefShot(g) + '</li>';
-        }).join('') + '</ol>';
-    }
     if ((r.prepare || []).length) {
       out += '<h4>Preparing for this lesson</h4><ul class="brief-prep">' +
         r.prepare.map(function (p) {
@@ -707,13 +698,31 @@
             '</li>';
         }).join('') + '</ol>';
     }
+    /* DFM 227a/b (15 Aug 2026): this section moved BELOW the run sheet and was
+       retitled at his instruction. Its old note promised that "the rest of this
+       brief uses these names", which was true when it came second and is not
+       true where it now sits — so the note says what it does from here: the
+       same hour again, this time part by part. */
+    if ((r.atAGlance || []).length) {
+      out += '<h4>Breakdown of what the pupils will actually do</h4>' +
+        '<p class="brief-note">The same hour again, part by part, in the order the pupils meet it — what each one asks of them, and what the website does.</p>' +
+        '<ol class="brief-glance">' + r.atAGlance.map(function (g) {
+          return '<li><b>' + App.esc(g.part) + '</b>' +
+            (Number(g.mins) ? ' <span class="brief-mins">' + Number(g.mins) + ' min</span>' : '') +
+            '<br>' + briefText(g.what) + briefShot(g) + '</li>';
+        }).join('') + '</ol>';
+    }
     if ((r.goesWrong || []).length) {
       out += '<h4>What commonly goes wrong, and what to do</h4><ul class="brief-pitfalls">' +
         r.goesWrong.map(function (w) {
           return '<li><b>' + App.esc(w.q) + '</b><br>' + briefText(w.a) + briefShot(w) + '</li>';
         }).join('') + '</ul>';
     }
-    if (r.ifBehind) out += '<h4>If you fall behind</h4><p>' + App.esc(r.ifBehind) + '</p>';
+    /* "If you fall behind" IS GONE (DFM 227c, his instruction: removed entirely
+       from all briefs). The minute labels now sum to the hour, so the section it
+       existed to explain no longer exists either. Deliberately no fallback
+       render: a brief that still carried the key would print a heading he has
+       deleted. */
     return out;
   }
 

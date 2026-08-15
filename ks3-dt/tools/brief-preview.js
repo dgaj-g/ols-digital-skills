@@ -38,18 +38,6 @@ function render(lessonId) {
     out.push('');
     b.purpose.forEach(p => { out.push(p); out.push(''); });
   }
-  if (b.atAGlance) {
-    out.push('## What the girls will actually do');
-    out.push('');
-    out.push('*Every part of the hour, in the order they meet it.*');
-    out.push('');
-    b.atAGlance.forEach((g, i) => {
-      out.push('**' + (i + 1) + '. ' + g.part + '**' + (g.mins ? '  ·  *' + g.mins + ' min*' : ''));
-      out.push('');
-      out.push(g.what);
-      out.push('');
-    });
-  }
   if (b.prepare) {
     out.push('## Preparing for this lesson');
     out.push('');
@@ -67,7 +55,10 @@ function render(lessonId) {
     out.push('');
   }
   if (b.runningTheHour) {
+    const mins = b.runningTheHour.reduce((a, h) => a + (Number(h.mins) || 0), 0);
     out.push('## Running the hour');
+    out.push('');
+    out.push('*' + mins + ' minutes across ' + b.runningTheHour.length + ' stages*');
     out.push('');
     b.runningTheHour.forEach((h, i) => {
       out.push('### ' + (i + 1) + '. ' + h.part + (h.mins ? '  ·  ' + h.mins + ' min' : ''));
@@ -77,13 +68,27 @@ function render(lessonId) {
       out.push('');
     });
   }
+  /* DFM 227a/b: below the run sheet, retitled. (It also said "the girls" here,
+     which rule 26 killed on every other surface years ago and this file kept.) */
+  if (b.atAGlance) {
+    out.push('## Breakdown of what the pupils will actually do');
+    out.push('');
+    out.push('*The same hour again, part by part, in the order the pupils meet it.*');
+    out.push('');
+    b.atAGlance.forEach((g, i) => {
+      out.push('**' + (i + 1) + '. ' + g.part + '**');
+      out.push('');
+      out.push(g.what);
+      out.push('');
+    });
+  }
   if (b.goesWrong) {
     out.push('## What commonly goes wrong, and what to do');
     out.push('');
     b.goesWrong.forEach(w => { out.push('- **' + w.q + '**  \n  ' + w.a); });
     out.push('');
   }
-  if (b.ifBehind) { out.push('## If you fall behind'); out.push(''); out.push(b.ifBehind); out.push(''); }
+  /* "If you fall behind" is gone (DFM 227c) — no brief carries it and none may. */
   return out.join('\n');
 }
 

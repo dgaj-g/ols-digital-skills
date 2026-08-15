@@ -107,6 +107,33 @@ function deckShotGate() {
   console.log('deck-shot gate: PASSED (qa-deck-shots)');
 }
 
+/* THE BRIEF-SHAPE GATE (DFM 227). His 15 Aug redesign: the sections run
+   purpose -> preparing -> resources -> running the hour -> the breakdown ->
+   what goes wrong; "If you fall behind" is gone from every brief; and the
+   minute labels sum to the hour. The order lives in ONE place in staff.js and
+   the minutes live in ONE place per brief, so both are checkable - and a
+   redesign that quietly half-applies to five briefs and not the sixth is
+   exactly what this stops. */
+function briefShapeGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-brief-shape.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-brief-shape.js is missing - the brief-shape gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error((res.stdout || '') + (res.stderr || ''));
+    console.error('\nPACK STOPPED: a teacher brief is not the shape he ruled (DFM 227).');
+    process.exit(1);
+  }
+  /* the named debt prints on every pack, pass or fail (DFM 200's lesson: a
+     bounded check that stays silent about what it skipped reads as coverage) */
+  (res.stdout || '').split('\n')
+    .filter(l => /NAMED DEBT|labels sum to/.test(l))
+    .forEach(l => console.log(l.replace(/^\s+/, '  ')));
+  console.log('brief-shape gate: PASSED (qa-brief-shape)');
+}
+
 /* THE AUDIT GATE (audit gap G7; DFM 195b). Damien: "you've logged rulings as a
    rule. this makes no sense to me. does it have a harness?" Not every rule can
    have one — but no rule may exist without declaring WHICH of the three homes
@@ -273,6 +300,7 @@ function main() {
   yearFolderGate();
   languageGate();
   deckShotGate();
+  briefShapeGate();
   auditGate();
   coverageGate();
   const stamp = versionGate();
