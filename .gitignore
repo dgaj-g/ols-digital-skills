@@ -3,3 +3,7 @@ node_modules/
 .vscode/
 *.log
 ks3-dt/content/dev-keys.json
+
+# deck capture intermediates — the framed shots are what ship; the raw ones
+# are a working step and would only grow a repo that is already 821MB
+ks3-dt/platform/assets/img/deck/*/_raw/

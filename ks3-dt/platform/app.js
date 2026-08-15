@@ -24,6 +24,7 @@
     email: '', name: '', codename: '', classCode: '', year: 'j1',
     man: null, me: null, locks: {}, lb: null, team: null, absence: [], kit: null,
     xp: 0, contentVersion: '', preview: false,
+    showRealName: false,   // DFM 226 — her own screen's codename toggle
     lesson: null, chunkIdx: 0, catchup: false, pendingMin: 0,
     localKeys: null   // this lesson's answer key, fetched at open (rule 97: instant marking)
   };
@@ -396,6 +397,10 @@
       s.contentVersion = String(r.contentVersion || 'v0');
       s.xp = r.me ? Number(r.me.xp || 0) : 0;
       s.codename = r.me ? String(r.me.cn || '') : '';
+      /* whether she last chose to see her own name there (DFM 226) — her
+         machine, her account, nowhere else */
+      try { s.showRealName = localStorage.getItem(realNameKey()) === '1'; }
+      catch (e) { s.showRealName = false; }
       purgeOldContent();
       return App.fetchContent(s.year + '/manifest.json').then(function (man) {
         s.man = man;
@@ -475,6 +480,20 @@
     $('#help-beacon').onclick = function () { renderHelp(); App.openModal('help-modal'); };
     $('#help-close').onclick = function () { App.closeModal('help-modal'); };
     $('#agent-chip').onclick = function () { App.openKit(); };
+    /* DAMIEN, 15 Aug 2026 (DFM 226): "clicking the codename in the top corner
+       of her own screen switches it to her real first name and back". HER OWN
+       SCREEN ONLY — nothing public moves, so the board, the Live tab and every
+       shared surface still show the codename and the pseudonym rules are
+       untouched. The click is stopped here so it never reaches the chip behind
+       it, which opens the Agent Kit. */
+    var nameEl = $('#agent-name');
+    if (nameEl) nameEl.onclick = function (ev) {
+      if (!canToggleName()) return;          /* nothing to switch to yet */
+      ev.stopPropagation();
+      App.state.showRealName = !App.state.showRealName;
+      try { localStorage.setItem(realNameKey(), App.state.showRealName ? '1' : ''); } catch (e) { }
+      paintAgentName();
+    };
     $('#join-staff').onclick = function () { if (global.Staff) global.Staff.open(); };
     $('#staff-open').onclick = function () { if (global.Staff) global.Staff.open(); };
     /* FIX PACKAGE item 2 (Damien, 30 Jul): the pupil class link must not offer
@@ -877,6 +896,33 @@
     });
   }
 
+  /* ---------------- the codename toggle (DFM 226) ----------------
+     She chose the codename and it is hers for the year, but it is HER name for
+     herself: one click on it in the top corner shows her own first name, and
+     one more puts the codename back. The choice is remembered on her own
+     machine, under her own account, and travels nowhere else. */
+  function realFirstName() {
+    return String(App.state.name || '').trim().split(/\s+/)[0] || '';
+  }
+  function canToggleName() {
+    return !!(App.state.codename && realFirstName());
+  }
+  function realNameKey() {
+    return 'ks3dt-realname-' + (App.state.email || App.state.classCode || 'me');
+  }
+  function paintAgentName() {
+    var s = App.state, el = $('#agent-name');
+    if (!el) return;
+    var real = realFirstName();
+    var codename = s.codename ? 'Agent ' + s.codename : '';
+    el.textContent = (s.showRealName && real) ? real : (codename || real || 'Agent');
+    var on = canToggleName();
+    el.classList.toggle('name-toggle', on);
+    el.setAttribute('title', !on ? '' : (s.showRealName
+      ? 'Click to go back to your codename'
+      : 'Click to show your own first name'));
+  }
+
   function renderHub() {
     var s = App.state, man = s.man;
     $('#topbar-year').textContent = man.title;
@@ -884,7 +930,7 @@
     $('#hero-kicker').textContent = man.tagline || '';
     var who = s.codename ? 'Agent ' + s.codename : (s.name.split(' ')[0] || 'Agent');
     $('#hero-welcome').textContent = 'Welcome back, ' + who + '.';
-    $('#agent-name').textContent = who;
+    paintAgentName();
     $('#agent-xp').textContent = s.xp + ' XP';
 
     // Side quests never count toward the year ring or steal the hero CTA —

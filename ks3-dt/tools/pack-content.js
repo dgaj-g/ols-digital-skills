@@ -84,6 +84,29 @@ function languageGate() {
   console.log('language gate: PASSED (qa-language)');
 }
 
+/* THE DECK-SHOT GATE (DFM 225b). Damien, 15 Aug 2026, on finding the Vault's
+   inbox on three slides that named three other screens: "figure out how this
+   happened and what you'll do (screenshot reading harness needed) to ensure it
+   never happens again." A picture projected to a class is a promise about what
+   her screen will look like, so every deck shot must be able to prove which
+   screen it was standing on — checked against the lesson's own packed content,
+   with a planted mislabelled control. No skip flag here either. */
+function deckShotGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-deck-shots.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-deck-shots.js is missing - the deck-shot gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error((res.stdout || '') + (res.stderr || ''));
+    console.error('\nPACK STOPPED: a deck screenshot cannot prove which screen it shows (DFM 225b).');
+    console.error('Re-capture it: node ks3-dt/tools/slides-deck/capture-deck-shots.js');
+    process.exit(1);
+  }
+  console.log('deck-shot gate: PASSED (qa-deck-shots)');
+}
+
 /* THE AUDIT GATE (audit gap G7; DFM 195b). Damien: "you've logged rulings as a
    rule. this makes no sense to me. does it have a harness?" Not every rule can
    have one — but no rule may exist without declaring WHICH of the three homes
@@ -249,6 +272,7 @@ function versionGate() {
 function main() {
   yearFolderGate();
   languageGate();
+  deckShotGate();
   auditGate();
   coverageGate();
   const stamp = versionGate();
