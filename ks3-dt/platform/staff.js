@@ -637,7 +637,7 @@
   function briefText(s) {
     return App.esc(String(s || '')).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
   }
-  function briefBody(r) {
+  function briefBody(r, fileId) {
     var out = '';
     var isNew = (r.purpose || []).length || (r.runningTheHour || []).length;
     if (!isNew) {
@@ -677,11 +677,32 @@
         }).join('') + '</ul>';
     }
     if ((r.runningTheHour || []).length) {
-      out += '<h4>Running the hour</h4><ol class="brief-run">' +
-        r.runningTheHour.map(function (h) {
-          return '<li><b>' + App.esc(h.part) + '</b>' +
-            (Number(h.mins) ? ' <span class="brief-mins">' + Number(h.mins) + ' min</span>' : '') +
-            '<br>' + briefText(h.text) + briefShot(h) +
+      /* THE STAGED, COLOUR-CODED RUN SHEET (his 14 Aug decision 7, DFM 219g):
+         "In each lesson brief, give each section of the lesson a different
+         background colour so teachers can see the stages at a glance."
+         The cycle is FIXED and the same in every lesson, so the rhythm of an
+         hour reads the same way across the year. A stage that names its deck
+         slides carries them, because deck and brief are two views of one
+         sequence (DFM 148's consistency trap, answered by generating both
+         from the lesson's own chunk list). */
+      var mins = r.runningTheHour.reduce(function (a, h) { return a + (Number(h.mins) || 0); }, 0);
+      out += '<h4>Running the hour</h4>' +
+        '<div class="brief-run-head">' +
+        '<span class="brief-run-total">' + mins + ' minutes across ' +
+        r.runningTheHour.length + ' stages</span>' +
+        (fileId ? '<button class="ghost-btn" type="button" data-action="brief-script" ' +
+          'data-deck="' + App.esc(fileId) + '">Print the delivery script</button>' : '') +
+        '</div>' +
+        '<ol class="brief-run staged">' +
+        r.runningTheHour.map(function (h, i) {
+          return '<li class="brief-stage s' + (i % 8) + '">' +
+            '<div class="brief-stage-head">' +
+            '<b>' + App.esc(h.part) + '</b>' +
+            '<span class="brief-stage-meta">' +
+            (Number(h.mins) ? '<span class="brief-mins">' + Number(h.mins) + ' min</span>' : '') +
+            (h.slides ? '<span class="brief-slides">' + App.esc(h.slides) + '</span>' : '') +
+            '</span></div>' +
+            briefText(h.text) + briefShot(h) +
             (h.say ? '<div class="brief-say"><span class="brief-say-tag">You could say</span>' + App.esc(h.say) + '</div>' : '') +
             '</li>';
         }).join('') + '</ol>';
@@ -741,13 +762,44 @@
       setPane(
         '<div class="brief-sheet">' +
           '<h3>Lesson ' + App.esc(r.num) + ' &middot; ' + App.esc(r.title) + ' &mdash; teacher brief</h3>' +
-          briefBody(r) +
+          briefBody(r, r.fileId || ('j1/decks/j1-' + String(r.num).padStart(2, '0') + '.deck')) +
         '</div>' +
         '<div class="confirm-actions" style="justify-content:flex-start;margin-top:12px">' +
           '<button type="button" class="ghost-btn" data-action="brief-back">&larr; Back to the lessons</button>' +
           '<button type="button" class="primary-btn" data-action="brief-print">Print this brief</button>' +
         '</div>' +
         '<p class="staff-status" id="brief-status"></p>');
+    });
+  }
+
+  /* THE DELIVERY SCRIPT, PRINTED (DFM 220b — one source, two renderings).
+     The words a teacher says live in ONE place: the deck's speaker notes, in
+     packed content. Presenter view shows them slide by slide while she teaches;
+     this button lays the same text out on paper for anyone who would rather
+     hold it. Nothing is retyped, so the two can never drift apart. */
+  function printDeliveryScript(deckPath, statusEl) {
+    if (statusEl) statusEl.textContent = 'Building the script\u2026';
+    App.fetchContent(deckPath + '.json').then(function (d) {
+      if (!d || !d.sections) throw new Error('no deck');
+      var html = '<h1>' + App.esc(d.deckName || 'Delivery script') + '</h1>' +
+        '<p class="script-lead">What to say, in order. The same words appear in the ' +
+        'speaker notes of every slide, so this sheet and the deck can never disagree.</p>';
+      var n = 0;
+      d.sections.forEach(function (sec) {
+        html += '<h2>' + App.esc(sec.label || sec.id) + '</h2>';
+        (sec.slides || []).forEach(function (sl) {
+          n++;
+          html += '<div class="script-slide"><h3>Slide ' + n + ' &middot; ' +
+            App.esc(sl.heading || sl.kind) + '</h3>' +
+            '<pre class="script-notes">' + App.esc(sl.notes || '(no note on this slide)') + '</pre></div>';
+        });
+      });
+      var host = document.createElement('div');
+      host.className = 'brief-sheet script-sheet';
+      host.innerHTML = html;
+      printStandalone(host, d.deckName || 'Delivery script', statusEl);
+    }).catch(function () {
+      if (statusEl) statusEl.textContent = 'The delivery script could not be loaded for this lesson yet.';
     });
   }
 
@@ -3054,6 +3106,9 @@
       case 'show-brief': showBrief(btn); break;
       case 'brief-back': renderLessons(); break;
       case 'brief-print': briefPrint(); break;
+      case 'brief-script':
+        printDeliveryScript(btn.getAttribute('data-deck'), document.getElementById('brief-status'));
+        break;
       case 'archive-now': archiveNow(btn); break;
       case 'flag-toggle': flagToggle(btn); break;
       case 'strip-jump': stripJump(btn); break;
