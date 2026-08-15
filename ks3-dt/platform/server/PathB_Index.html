@@ -2533,6 +2533,74 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   .skin-studio .std-signature.done .std-sig-name { animation: none !important; }
 }
 
+/* ============================================================
+   THE STAGED RUN SHEET (his 14 Aug decision 7, DFM 219g)
+   "give each section of the lesson a different background colour so teachers
+   can see the stages at a glance."
+   The cycle is FIXED and shared by every lesson, so the rhythm of an hour
+   reads the same way across the year. Ink is one dark navy on every tint,
+   measured against all eight (qa-readability covers the brief surfaces), so
+   the colour is a landmark and never a legibility problem.
+   ============================================================ */
+.brief-run-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; margin: 2px 0 10px;
+}
+.brief-run-total { font-size: .82rem; font-weight: 700; color: #46506B; letter-spacing: .02em; }
+.brief-run.staged { list-style: none; margin: 0; padding: 0; counter-reset: stage; }
+.brief-run.staged > li.brief-stage {
+  counter-increment: stage;
+  position: relative;
+  margin: 0 0 10px; padding: 12px 14px 12px 46px;
+  border-radius: 10px; color: #1F2937;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, .06);
+}
+.brief-run.staged > li.brief-stage::before {
+  content: counter(stage);
+  position: absolute; left: 13px; top: 12px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(31, 41, 55, .12); color: #1F2937;
+  font-size: .78rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.brief-stage-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 10px; flex-wrap: wrap; margin-bottom: 4px;
+}
+.brief-stage-head > b { font-size: 1rem; }
+.brief-stage-meta { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+.brief-stage .brief-mins,
+.brief-stage .brief-slides {
+  font-size: .74rem; font-weight: 700; letter-spacing: .02em;
+  padding: 2px 8px; border-radius: 999px;
+  background: rgba(31, 41, 55, .10); color: #1F2937;
+}
+.brief-stage .brief-say { background: rgba(255, 255, 255, .62); }
+/* the eight tints, in order */
+.brief-stage.s0 { background: #EAF2FF; }
+.brief-stage.s1 { background: #FFF4E5; }
+.brief-stage.s2 { background: #EAF9F0; }
+.brief-stage.s3 { background: #F6EFFF; }
+.brief-stage.s4 { background: #FFEFEF; }
+.brief-stage.s5 { background: #F0F7E8; }
+.brief-stage.s6 { background: #FFF9E0; }
+.brief-stage.s7 { background: #EFF8FB; }
+
+/* the printed delivery script (DFM 220b) */
+.script-sheet .script-lead { color: #46506B; font-size: .9rem; margin-bottom: 14px; }
+.script-sheet .script-slide { margin: 0 0 14px; page-break-inside: avoid; }
+.script-sheet .script-slide h3 { margin: 0 0 4px; font-size: .95rem; }
+.script-sheet .script-notes {
+  white-space: pre-wrap; font-family: inherit; font-size: .88rem; line-height: 1.5;
+  margin: 0; padding: 10px 12px; border-radius: 8px; background: #F4F6FA; color: #1F2937;
+}
+/* the tints must survive Save as PDF \2014  a colour-coded sheet that prints grey
+   has lost the very thing it was built for (DFM 126's standalone-print path) */
+@media print {
+  .brief-run.staged > li.brief-stage,
+  .script-sheet .script-notes { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
 </style>
 </head>
 <body>
@@ -9352,7 +9420,7 @@ window.OLS_TRANSPORT = {
   function briefText(s) {
     return App.esc(String(s || '')).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
   }
-  function briefBody(r) {
+  function briefBody(r, fileId) {
     var out = '';
     var isNew = (r.purpose || []).length || (r.runningTheHour || []).length;
     if (!isNew) {
@@ -9392,11 +9460,32 @@ window.OLS_TRANSPORT = {
         }).join('') + '</ul>';
     }
     if ((r.runningTheHour || []).length) {
-      out += '<h4>Running the hour</h4><ol class="brief-run">' +
-        r.runningTheHour.map(function (h) {
-          return '<li><b>' + App.esc(h.part) + '</b>' +
-            (Number(h.mins) ? ' <span class="brief-mins">' + Number(h.mins) + ' min</span>' : '') +
-            '<br>' + briefText(h.text) + briefShot(h) +
+      /* THE STAGED, COLOUR-CODED RUN SHEET (his 14 Aug decision 7, DFM 219g):
+         "In each lesson brief, give each section of the lesson a different
+         background colour so teachers can see the stages at a glance."
+         The cycle is FIXED and the same in every lesson, so the rhythm of an
+         hour reads the same way across the year. A stage that names its deck
+         slides carries them, because deck and brief are two views of one
+         sequence (DFM 148's consistency trap, answered by generating both
+         from the lesson's own chunk list). */
+      var mins = r.runningTheHour.reduce(function (a, h) { return a + (Number(h.mins) || 0); }, 0);
+      out += '<h4>Running the hour</h4>' +
+        '<div class="brief-run-head">' +
+        '<span class="brief-run-total">' + mins + ' minutes across ' +
+        r.runningTheHour.length + ' stages</span>' +
+        (fileId ? '<button class="ghost-btn" type="button" data-action="brief-script" ' +
+          'data-deck="' + App.esc(fileId) + '">Print the delivery script</button>' : '') +
+        '</div>' +
+        '<ol class="brief-run staged">' +
+        r.runningTheHour.map(function (h, i) {
+          return '<li class="brief-stage s' + (i % 8) + '">' +
+            '<div class="brief-stage-head">' +
+            '<b>' + App.esc(h.part) + '</b>' +
+            '<span class="brief-stage-meta">' +
+            (Number(h.mins) ? '<span class="brief-mins">' + Number(h.mins) + ' min</span>' : '') +
+            (h.slides ? '<span class="brief-slides">' + App.esc(h.slides) + '</span>' : '') +
+            '</span></div>' +
+            briefText(h.text) + briefShot(h) +
             (h.say ? '<div class="brief-say"><span class="brief-say-tag">You could say</span>' + App.esc(h.say) + '</div>' : '') +
             '</li>';
         }).join('') + '</ol>';
@@ -9456,13 +9545,44 @@ window.OLS_TRANSPORT = {
       setPane(
         '<div class="brief-sheet">' +
           '<h3>Lesson ' + App.esc(r.num) + ' &middot; ' + App.esc(r.title) + ' &mdash; teacher brief</h3>' +
-          briefBody(r) +
+          briefBody(r, r.fileId || ('j1/decks/j1-' + String(r.num).padStart(2, '0') + '.deck')) +
         '</div>' +
         '<div class="confirm-actions" style="justify-content:flex-start;margin-top:12px">' +
           '<button type="button" class="ghost-btn" data-action="brief-back">&larr; Back to the lessons</button>' +
           '<button type="button" class="primary-btn" data-action="brief-print">Print this brief</button>' +
         '</div>' +
         '<p class="staff-status" id="brief-status"></p>');
+    });
+  }
+
+  /* THE DELIVERY SCRIPT, PRINTED (DFM 220b \u2014 one source, two renderings).
+     The words a teacher says live in ONE place: the deck's speaker notes, in
+     packed content. Presenter view shows them slide by slide while she teaches;
+     this button lays the same text out on paper for anyone who would rather
+     hold it. Nothing is retyped, so the two can never drift apart. */
+  function printDeliveryScript(deckPath, statusEl) {
+    if (statusEl) statusEl.textContent = 'Building the script\u2026';
+    App.fetchContent(deckPath + '.json').then(function (d) {
+      if (!d || !d.sections) throw new Error('no deck');
+      var html = '<h1>' + App.esc(d.deckName || 'Delivery script') + '</h1>' +
+        '<p class="script-lead">What to say, in order. The same words appear in the ' +
+        'speaker notes of every slide, so this sheet and the deck can never disagree.</p>';
+      var n = 0;
+      d.sections.forEach(function (sec) {
+        html += '<h2>' + App.esc(sec.label || sec.id) + '</h2>';
+        (sec.slides || []).forEach(function (sl) {
+          n++;
+          html += '<div class="script-slide"><h3>Slide ' + n + ' &middot; ' +
+            App.esc(sl.heading || sl.kind) + '</h3>' +
+            '<pre class="script-notes">' + App.esc(sl.notes || '(no note on this slide)') + '</pre></div>';
+        });
+      });
+      var host = document.createElement('div');
+      host.className = 'brief-sheet script-sheet';
+      host.innerHTML = html;
+      printStandalone(host, d.deckName || 'Delivery script', statusEl);
+    }).catch(function () {
+      if (statusEl) statusEl.textContent = 'The delivery script could not be loaded for this lesson yet.';
     });
   }
 
@@ -11769,6 +11889,9 @@ window.OLS_TRANSPORT = {
       case 'show-brief': showBrief(btn); break;
       case 'brief-back': renderLessons(); break;
       case 'brief-print': briefPrint(); break;
+      case 'brief-script':
+        printDeliveryScript(btn.getAttribute('data-deck'), document.getElementById('brief-status'));
+        break;
       case 'archive-now': archiveNow(btn); break;
       case 'flag-toggle': flagToggle(btn); break;
       case 'strip-jump': stripJump(btn); break;

@@ -1636,6 +1636,47 @@ function runControls() {
    control below proves it by planting a J2 lesson with a known fault and
    watching the harness catch it.
    `root` is a parameter ONLY so that control can run on a fixture. */
+/* ---- the teacher decks (DFM 219d) -----------------------------------------
+   Slide text lives in content-src/<year>/decks/*.deck.json so that it is packed
+   like all content and read by this gate. Projected text is judged as the
+   pupil's own register; speaker notes as the teacher's. */
+function collectDeckStrings() {
+  const out = [], errs = [];
+  const years = fs.existsSync(SRC)
+    ? fs.readdirSync(SRC).filter(d => /^j\d$/.test(d)).sort() : [];
+  years.forEach(y => {
+    const dir = path.join(SRC, y, 'decks');
+    if (!fs.existsSync(dir)) return;
+    fs.readdirSync(dir).filter(f => f.endsWith('.deck.json')).sort().forEach(f => {
+      let d;
+      try { d = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')); }
+      catch (e) { errs.push(f + ': unreadable — ' + e.message); return; }
+      const deckId = d.lesson || f.replace(/\.deck\.json$/, '');
+      const locked = LOCKED.has(deckId);
+      const push = (p, s, register) => {
+        if (typeof s === 'string' && s.trim()) {
+          out.push({ path: deckId + '.deck › ' + p, text: s, year: d.year || y,
+            deck: deckId, locked: locked, register: register || 'pupil' });
+        }
+      };
+      (d.sections || []).forEach((sec, si) => {
+        (sec.slides || []).forEach((sl, li) => {
+          const at = 's' + (si + 1) + '.' + (li + 1) + (sl.kind ? ':' + sl.kind : '');
+          push(at + ' › heading', sl.heading);
+          push(at + ' › kicker', sl.kicker);
+          push(at + ' › sub', sl.sub);
+          push(at + ' › text', sl.text);
+          (sl.bullets || []).forEach((b, bi) => push(at + ' › bullets[' + bi + ']', b));
+          /* the script: teacher register, and it must still never carry a
+             banned FACT (the grey box, the invented currency, "the device") */
+          push(at + ' › notes', sl.notes, 'teacher');
+        });
+      });
+    });
+  });
+  return { strings: out, errs: errs };
+}
+
 function loadLessons(root) {
   const src = root || SRC;
   const years = fs.existsSync(src)
@@ -1764,6 +1805,53 @@ function main() {
     console.log('\n  HUB FRAGMENT-CANDIDATES — ' + hubFrag.length + ' open, ' + hubFragLocked.length +
       ' locked. REPORTED, NOT BLOCKING (§C q11 decides each one).');
     hubFrag.concat(hubFragLocked).slice(0, 12).forEach(p => console.log('    CANDIDATE ' + p));
+  }
+
+  /* ---- THE TEACHER DECKS (his 14 Aug decision 4, DFM 219d) ----
+     "The language harness applies to the slide decks. This serves two purposes:
+     the language stays appropriate for J1–J3 pupils, and the teachers — who are
+     not subject experts — can understand and confidently say what's on the
+     slides."
+     So a deck's PROJECTED text is judged at the pupil's own register: it is
+     read off a wall by the same eleven-year-old, eight feet wide. The SPEAKER
+     NOTES are the teacher's register (138.3) and are checked for banned facts
+     and the lexicon only — a note is allowed to be a paragraph of instructions
+     to an adult, which is exactly what 138.4 asks of it.
+     This closes the DFM 147 rot for good: before decks were content, three
+     separate wording sweeps missed the deck file entirely, and by 14 Aug its
+     Lesson 5 slides still said "two mouths" — killed everywhere else on 13 Aug. */
+  console.log('\nTEACHER DECKS — projected text at pupil register, notes at teacher register (DFM 219d):');
+  const deck = collectDeckStrings();
+  deck.errs.forEach(e => { console.log('  FAIL ' + e); FAILS.push(e); });
+  const decks = deck.strings.filter(s => inScope(s.path));
+  const deckProblems = [], deckLocked = [];
+  decks.forEach(s => {
+    const bucket = s.locked ? deckLocked : deckProblems;
+    const plain = unbold(s.text);
+    const checks = s.register === 'teacher'
+      ? [].concat(lexiconCheck(plain))
+      : [].concat(lengthCheck(plain, readerFor(s.year)), dashChainCheck(plain),
+          inlineSequenceCheck(plain), arrowChainCheck(plain), lexiconCheck(plain));
+    checks.forEach(p => bucket.push(s.path + ': ' + p));
+  });
+  console.log('  scanned ' + decks.length + ' deck string(s) across ' +
+    ([...new Set(decks.map(s => s.deck))].join(', ') || 'no decks') +
+    '  (' + decks.filter(s => s.register === 'teacher').length + ' of them speaker notes)');
+  console.log(deckProblems.length ? '  ' + deckProblems.length + ' problem(s)' : '  clean');
+  deckProblems.forEach(p => { console.log('  FAIL ' + p); FAILS.push(p); });
+  if (deckLocked.length) {
+    console.log('\n  LOCKED DECKS (DFM 176) — ' + deckLocked.length + ' finding(s), recorded, NOT blocking.');
+    deckLocked.forEach(p => console.log('    WAIVED ' + p));
+  }
+  const deckFrag = [];
+  decks.forEach(s => {
+    if (s.register === 'teacher') return;           /* notes are prose to an adult */
+    if (/› (heading|kicker|sub)$/.test(s.path)) return;  /* a heading is a label (the hubIsLabel reasoning) */
+    fragmentCandidates(s.text).forEach(c => deckFrag.push(s.path + ' [' + c.kind + '] "' + c.text.slice(0, 90) + '"'));
+  });
+  if (deckFrag.length) {
+    console.log('\n  DECK FRAGMENT-CANDIDATES — ' + deckFrag.length + '. REPORTED, NOT BLOCKING (§C q11).');
+    deckFrag.slice(0, 12).forEach(p => console.log('    CANDIDATE ' + p));
   }
 
   /* ---- THE FILMS (DFM 179): the same laws, on the surface a pupil watches ---- */

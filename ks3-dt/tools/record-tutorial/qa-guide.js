@@ -264,13 +264,23 @@ function staticHalf() {
   const idx = JSON.parse(fs.readFileSync(path.join(process.env.HOME,
     'Desktop/Claude Work/KS3 DT Platform/content-src/index.json'), 'utf8'));
   const rth = lesson.teacherBrief.runningTheHour;
-  const bookmark = rth.filter(e => /Bookmark the class link/.test(e.part))[0];
-  check(!!bookmark && !bookmark.img && !bookmark.imgCap, 'the 18-bookmark image slot is gone');
-  check(!!bookmark && /press the star/i.test(bookmark.text), 'but the bookmarking advice itself stays');
-  check(!/18-bookmark/.test(JSON.stringify(lesson)), 'and nothing else still references that picture');
-  const pairEntry = rth.filter(e => /pairing panel/i.test(e.part))[0];
-  check(!!pairEntry && /Guide tab/.test(pairEntry.text), 'the pairing-panel entry now points at the Guide tab');
-  check(!!pairEntry && !!pairEntry.img && !!pairEntry.say, 'while keeping its picture and its say-line');
+  /* RE-STAGED 15 Aug 2026 (DFM 143b's discipline). These checks used to find
+     their facts by ROW TITLE — "Bookmark the class link", "…pairing panel".
+     His 14 Aug commission (DFM 219) rebuilt Running the hour as nine STAGES of
+     the lesson, so those titles no longer exist, and the checks failed on a
+     brief that HAD in fact dropped two of the facts they guard (the star-and-
+     Bookmarks-bar advice, and the pointer to the Guide tab). Both were
+     restored; the checks now assert THE FACT ANYWHERE IN THE RUN SHEET, so a
+     future restructure cannot break them while the teacher is still told.
+     What they refuse is unchanged: silently losing the advice, or the picture. */
+  const rthStr = JSON.stringify(rth);
+  check(!/18-bookmark/.test(JSON.stringify(lesson)), 'the 18-bookmark image slot is gone (rule 109)');
+  check(/press the star/i.test(rthStr) && /Bookmarks bar/i.test(rthStr),
+    'but the bookmarking advice itself stays, wherever the run sheet puts it');
+  check(/Guide tab/.test(rthStr),
+    'the run sheet points at the Guide tab for the pairing panel button by button');
+  const vaultRow = rth.filter(e => e.img && e.say && /17-live-pairing/.test(e.img))[0];
+  check(!!vaultRow, 'while keeping the Live-tab picture and a say-line on the Vault stage');
   /* re-pinned per batch on purpose: an exact pin is what catches a repack
      that never happened. 2 Aug 2026 = the L2-L5 batch. */
   /* This used to pin one literal version string, so it failed on every later
