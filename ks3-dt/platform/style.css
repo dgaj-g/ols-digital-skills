@@ -222,6 +222,15 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 }
 .agent-chip.small { padding: 5px 13px; }
 .agent-name { font-family: var(--font-display); color: #fff; font-weight: 700; font-size: 0.9rem; }
+/* DFM 226 — the codename is clickable on her own screen and swaps to her own
+   first name. It has to LOOK clickable without shouting: a dotted underline
+   that only appears once there is something to swap to. */
+.agent-name.name-toggle {
+  cursor: pointer;
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.45);
+  padding-bottom: 1px;
+}
+.agent-name.name-toggle:hover { border-bottom-color: var(--gold-hi); }
 .agent-xp { font-family: var(--font-display); color: var(--gold-hi); font-weight: 700; font-size: 0.88rem; white-space: nowrap; }
 
 /* ============ hub hero ============ */

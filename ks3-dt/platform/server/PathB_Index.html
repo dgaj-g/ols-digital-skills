@@ -230,6 +230,15 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 }
 .agent-chip.small { padding: 5px 13px; }
 .agent-name { font-family: var(--font-display); color: #fff; font-weight: 700; font-size: 0.9rem; }
+/* DFM 226 \2014  the codename is clickable on her own screen and swaps to her own
+   first name. It has to LOOK clickable without shouting: a dotted underline
+   that only appears once there is something to swap to. */
+.agent-name.name-toggle {
+  cursor: pointer;
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.45);
+  padding-bottom: 1px;
+}
+.agent-name.name-toggle:hover { border-bottom-color: var(--gold-hi); }
 .agent-xp { font-family: var(--font-display); color: var(--gold-hi); font-weight: 700; font-size: 0.88rem; white-space: nowrap; }
 
 /* ============ hub hero ============ */
@@ -2854,6 +2863,7 @@ window.OLS_TRANSPORT = {
     email: '', name: '', codename: '', classCode: '', year: 'j1',
     man: null, me: null, locks: {}, lb: null, team: null, absence: [], kit: null,
     xp: 0, contentVersion: '', preview: false,
+    showRealName: false,   // DFM 226 \u2014 her own screen's codename toggle
     lesson: null, chunkIdx: 0, catchup: false, pendingMin: 0,
     localKeys: null   // this lesson's answer key, fetched at open (rule 97: instant marking)
   };
@@ -3226,6 +3236,10 @@ window.OLS_TRANSPORT = {
       s.contentVersion = String(r.contentVersion || 'v0');
       s.xp = r.me ? Number(r.me.xp || 0) : 0;
       s.codename = r.me ? String(r.me.cn || '') : '';
+      /* whether she last chose to see her own name there (DFM 226) \u2014 her
+         machine, her account, nowhere else */
+      try { s.showRealName = localStorage.getItem(realNameKey()) === '1'; }
+      catch (e) { s.showRealName = false; }
       purgeOldContent();
       return App.fetchContent(s.year + '/manifest.json').then(function (man) {
         s.man = man;
@@ -3305,6 +3319,20 @@ window.OLS_TRANSPORT = {
     $('#help-beacon').onclick = function () { renderHelp(); App.openModal('help-modal'); };
     $('#help-close').onclick = function () { App.closeModal('help-modal'); };
     $('#agent-chip').onclick = function () { App.openKit(); };
+    /* DAMIEN, 15 Aug 2026 (DFM 226): "clicking the codename in the top corner
+       of her own screen switches it to her real first name and back". HER OWN
+       SCREEN ONLY \u2014 nothing public moves, so the board, the Live tab and every
+       shared surface still show the codename and the pseudonym rules are
+       untouched. The click is stopped here so it never reaches the chip behind
+       it, which opens the Agent Kit. */
+    var nameEl = $('#agent-name');
+    if (nameEl) nameEl.onclick = function (ev) {
+      if (!canToggleName()) return;          /* nothing to switch to yet */
+      ev.stopPropagation();
+      App.state.showRealName = !App.state.showRealName;
+      try { localStorage.setItem(realNameKey(), App.state.showRealName ? '1' : ''); } catch (e) { }
+      paintAgentName();
+    };
     $('#join-staff').onclick = function () { if (global.Staff) global.Staff.open(); };
     $('#staff-open').onclick = function () { if (global.Staff) global.Staff.open(); };
     /* FIX PACKAGE item 2 (Damien, 30 Jul): the pupil class link must not offer
@@ -3707,6 +3735,33 @@ window.OLS_TRANSPORT = {
     });
   }
 
+  /* ---------------- the codename toggle (DFM 226) ----------------
+     She chose the codename and it is hers for the year, but it is HER name for
+     herself: one click on it in the top corner shows her own first name, and
+     one more puts the codename back. The choice is remembered on her own
+     machine, under her own account, and travels nowhere else. */
+  function realFirstName() {
+    return String(App.state.name || '').trim().split(/\s+/)[0] || '';
+  }
+  function canToggleName() {
+    return !!(App.state.codename && realFirstName());
+  }
+  function realNameKey() {
+    return 'ks3dt-realname-' + (App.state.email || App.state.classCode || 'me');
+  }
+  function paintAgentName() {
+    var s = App.state, el = $('#agent-name');
+    if (!el) return;
+    var real = realFirstName();
+    var codename = s.codename ? 'Agent ' + s.codename : '';
+    el.textContent = (s.showRealName && real) ? real : (codename || real || 'Agent');
+    var on = canToggleName();
+    el.classList.toggle('name-toggle', on);
+    el.setAttribute('title', !on ? '' : (s.showRealName
+      ? 'Click to go back to your codename'
+      : 'Click to show your own first name'));
+  }
+
   function renderHub() {
     var s = App.state, man = s.man;
     $('#topbar-year').textContent = man.title;
@@ -3714,7 +3769,7 @@ window.OLS_TRANSPORT = {
     $('#hero-kicker').textContent = man.tagline || '';
     var who = s.codename ? 'Agent ' + s.codename : (s.name.split(' ')[0] || 'Agent');
     $('#hero-welcome').textContent = 'Welcome back, ' + who + '.';
-    $('#agent-name').textContent = who;
+    paintAgentName();
     $('#agent-xp').textContent = s.xp + ' XP';
 
     // Side quests never count toward the year ring or steal the hero CTA \u2014

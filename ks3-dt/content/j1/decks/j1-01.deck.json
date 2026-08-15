@@ -26,7 +26,7 @@
      "bg": "title",
      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
      "heading": "Lesson 1 · Mission Control",
-     "sub": "Your first Digital Technology lesson — Year 8 · Lesson 1 of 17",
+     "sub": "Your first Digital Technology lesson — J1 · Lesson 1 of 17",
      "notes": "WHERE THE CLASS IS: sitting down, logged in to the computer, nothing else open.\n\nSAY: welcome them in properly. Names, smiles, no screens yet — the lesson starts with you, not the computers.\n\nWHEN TO MOVE: as soon as the room is settled."
     },
     {
@@ -160,7 +160,8 @@
      "heading": "STOP — eyes front · The Vault",
      "shots": [
       "vault-door",
-      "vault-waiting"
+      "vault-waiting",
+      "vault-matched"
      ],
      "bullets": [
       "You are about to be PAIRED with someone in this class — the website chooses, and it will tell you who.",
@@ -270,7 +271,7 @@
      "bullets": [
       "Sign out properly — if you stay signed in, the next person at this machine IS you.",
       "Chairs in, area tidy.",
-      "Next lesson you make a computer react."
+      "In the next lesson, you will make a real computer react — you will press its buttons and make its lights do what you say."
      ],
      "notes": "SAY: hold the room to the two rules the lesson just taught — sign out, tidy up. \"If you stay signed in, the next person at this machine IS you as far as the school is concerned.\"\n\nThen tell them what is coming: next lesson they make a real computer react to a button press."
     }

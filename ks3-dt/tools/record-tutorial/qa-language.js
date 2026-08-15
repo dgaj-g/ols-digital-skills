@@ -1320,6 +1320,58 @@ function filmLedgerCheck(films, ledger) {
   return out;
 }
 
+/* ---- THE DECK'S OWN LEDGER DEMAND (DFM 225d, 15 Aug 2026) ----------------
+   His find, on the built deck: Slide 17 said "Next lesson you make a computer
+   react." His question — "why was that not picked up in the language harness?"
+   — has an honest answer. Deck text was wired into LAYER 1, the mechanical net,
+   and never into this one. The sentence has a verb and sits under every
+   ceiling, so no mechanical rule could fire; only a person reading it aloud
+   from the pupil's seat hears that it is compressed, ungrammatical and speaks
+   about a lesson she has not had yet.
+   So projected deck text now carries a read-aloud record like every other
+   pupil sentence: no deck sentence ships without one.
+   THE LOCK DOES NOT EXCUSE IT. j1-01 is in LOCKED, which waives Layer 1
+   findings on text he has already signed off (DFM 176) — but the deck did not
+   exist when he locked the lesson, and its slides are this round's OPEN
+   surface. An unreviewed deck sentence blocks the pack whether its lesson is
+   locked or not.
+   Speaker notes are teacher register and are NOT demanded here: a note is a
+   paragraph of instructions to an adult (138.3/138.4), and it is already swept
+   for banned facts and the lexicon above. */
+function deckLedgerCheck(deckStrings, ledger) {
+  const out = [];
+  const byPath = ledger.entries || {};
+  deckStrings.forEach(s => {
+    if (s.register === 'teacher') return;
+    const e = byPath[s.path];
+    if (!e) {
+      out.push('UNREVIEWED DECK TEXT: ' + s.path + ' — no read-aloud record. This goes on a ' +
+        'wall, eight feet wide, in front of the class. Read it aloud from the back row as ' +
+        readerFor(s.year) + ': can she DO it, PICTURE every noun, SAY what it is for? ' +
+        'It reads: "' + s.text.slice(0, 90) + '". Then: node ledger-tool.js --add "' + s.path + '"');
+      return;
+    }
+    if (e.sha1 !== sha1(s.text)) {
+      out.push('CHANGED SINCE REVIEW: ' + s.path + ' — the slide was edited after its record was ' +
+        'written. Re-read it aloud and update the entry.');
+      return;
+    }
+    if (e.grandfathered) {
+      out.push('NO GRANDFATHERING ON SLIDES: ' + s.path + ' — a bulk provenance stamp is exactly ' +
+        'what let "Next lesson you make a computer react" through. Record a real judgement.');
+      return;
+    }
+    if (e.reviewed) return;
+    const ra = e.readAloud || {};
+    ['do', 'picture', 'for'].forEach(k => {
+      if (!ra[k] || String(ra[k]).trim().length < 3) {
+        out.push('THIN RECORD: ' + s.path + ' — readAloud.' + k + ' is empty.');
+      }
+    });
+  });
+  return out;
+}
+
 function ledgerCheck(lessons, ledger) {
   const out = [];
   const byPath = ledger.entries || {};
@@ -1603,6 +1655,33 @@ function runControls() {
   control(hubLedgerCheck([{ path: 'p', text: 'Edited since.', year: 'j2', locked: false }],
     { entries: { p: { sha1: sha1('Anything.') } } }).some(p => /^CHANGED SINCE REVIEW/.test(p)),
     'and editing a tagline after its record voids it — a tile cannot be reworded behind the judgement');
+  /* THE SLIDE LEDGER, BOTH DIRECTIONS (DFM 225d). The control is the exact
+     sentence that got through: it has a verb, it breaks no ceiling, and Layer 1
+     is silent about it — only the demand for a judgement stops it. */
+  const theSlip = 'Next lesson you make a computer react.';
+  const deckStr = p => [{ path: p, text: theSlip, year: 'j1', deck: 'j1-01',
+    locked: true, register: 'pupil' }];
+  control(deckLedgerCheck(deckStr('j1-01.deck › s7.1:closer › bullets[2]'), { entries: {} })
+    .some(p => /^UNREVIEWED DECK TEXT/.test(p)),
+    'an unrecorded SLIDE sentence blocks the pack — the DFM 225d hole, closed');
+  const fullRecord = { do: 'she listens', picture: 'the next lesson', for: 'knowing what is coming' };
+  control(deckLedgerCheck(deckStr('p'), { entries: { p: { sha1: sha1(theSlip),
+    readAloud: fullRecord } } }).length === 0,
+    'and a judged slide sentence is silent (over-tightening guard)');
+  control(deckLedgerCheck(deckStr('p'), { entries: { p: { sha1: sha1(theSlip),
+    readAloud: { do: 'she listens', picture: '', for: 'knowing what is coming' } } } })
+    .some(p => /^THIN RECORD/.test(p)),
+    'and a record with an empty half is not a judgement');
+  control(deckLedgerCheck(deckStr('p'), { entries: { p: { sha1: sha1('something else'),
+    readAloud: fullRecord } } }).some(p => /^CHANGED SINCE REVIEW/.test(p)),
+    'and rewording a slide after its judgement voids the judgement');
+  control(deckLedgerCheck(deckStr('p'), { entries: { p: { sha1: sha1(theSlip),
+    grandfathered: 'locked' } } }).some(p => /^NO GRANDFATHERING ON SLIDES/.test(p)),
+    'and a bulk provenance stamp cannot stand in for a slide judgement');
+  control(deckLedgerCheck([{ path: 'n', text: theSlip, year: 'j1', register: 'teacher' }],
+    { entries: {} }).length === 0,
+    'while speaker notes are not demanded — they are prose to an adult (138.3)');
+
   /* over-tightening on the real new text: the shipped J2/J3 taglines are prose
      and must raise NOTHING mechanically, or the gate is punishing good writing */
   const newHub = hubFx.strings.filter(s => !s.locked);
@@ -1843,6 +1922,14 @@ function main() {
     console.log('\n  LOCKED DECKS (DFM 176) — ' + deckLocked.length + ' finding(s), recorded, NOT blocking.');
     deckLocked.forEach(p => console.log('    WAIVED ' + p));
   }
+  /* LAYER 2 REACHES THE SLIDES (DFM 225d) — the judged layer, which is the one
+     that catches compressed register. Blocking, locked lesson or not. */
+  const deckLedger = deckLedgerCheck(decks, ledger);
+  console.log('  read-aloud ledger: ' +
+    (deckLedger.length ? deckLedger.length + ' slide sentence(s) without a judgement' :
+      'every projected sentence carries a judgement'));
+  deckLedger.forEach(p => { console.log('  FAIL ' + p); FAILS.push(p); });
+
   const deckFrag = [];
   decks.forEach(s => {
     if (s.register === 'teacher') return;           /* notes are prose to an adult */

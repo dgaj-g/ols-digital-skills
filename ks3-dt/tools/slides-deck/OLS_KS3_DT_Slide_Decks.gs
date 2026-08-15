@@ -11,8 +11,12 @@
  *   rebuildLesson1Deck   rebuilds Lesson 1's deck IN PLACE, keeping its file id
  *                        so the two links in the Lesson 1 teacher brief and the
  *                        department's shared copy keep working.
+ *   exportDeckProofs     renders every slide of that deck to a picture in Drive
+ *                        ("KS3 DT Deck Proofs"), so the built pixels are read
+ *                        before anyone is told the deck is ready (DFM 225b).
+ *                        Run it straight after the rebuild, every time.
  *
- * Built 2026-08-15 from contentVersion 2026-08-14k.
+ * Built 2026-08-15 from contentVersion 2026-08-15a.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -45,7 +49,7 @@ var DECKS = {
       "bg": "title",
       "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
       "heading": "Lesson 1 · Mission Control",
-      "sub": "Your first Digital Technology lesson — Year 8 · Lesson 1 of 17",
+      "sub": "Your first Digital Technology lesson — J1 · Lesson 1 of 17",
       "notes": "WHERE THE CLASS IS: sitting down, logged in to the computer, nothing else open.\n\nSAY: welcome them in properly. Names, smiles, no screens yet — the lesson starts with you, not the computers.\n\nWHEN TO MOVE: as soon as the room is settled."
      },
      {
@@ -179,7 +183,8 @@ var DECKS = {
       "heading": "STOP — eyes front · The Vault",
       "shots": [
        "vault-door",
-       "vault-waiting"
+       "vault-waiting",
+       "vault-matched"
       ],
       "bullets": [
        "You are about to be PAIRED with someone in this class — the website chooses, and it will tell you who.",
@@ -289,7 +294,7 @@ var DECKS = {
       "bullets": [
        "Sign out properly — if you stay signed in, the next person at this machine IS you.",
        "Chairs in, area tidy.",
-       "Next lesson you make a computer react."
+       "In the next lesson, you will make a real computer react — you will press its buttons and make its lights do what you say."
       ],
       "notes": "SAY: hold the room to the two rules the lesson just taught — sign out, tidy up. \"If you stay signed in, the next person at this machine IS you as far as the school is concerned.\"\n\nThen tell them what is coming: next lesson they make a real computer react to a button press."
      }
@@ -356,18 +361,43 @@ function kicker_(slide, d, label) {
   t.getText().getTextStyle().setBold(true);
 }
 
+/* THE ONE PLACE A LINE COUNT IS WORKED OUT (DFM 225e).
+   Every block that advances down the slide asks this, and nothing anywhere
+   advances by a fixed amount per item. The old closer added a flat 30pt a
+   bullet, which was an ESTIMATED line count wearing layout clothes — so the
+   moment a bullet wrapped, its second line landed under the next one and the
+   word "you." was left orphaned on Slide 17.
+   The calibration is bullets_'s own, kept: 78 characters filled a 610pt box at
+   13pt, i.e. 0.60 x font size per character. Wrapping is worked out WORD by
+   word rather than by dividing the length, because a long word straddling the
+   end of a line is exactly the case a division misses. */
+function lineCount_(str, boxW, size) {
+  var perChar = 0.60 * (size || 13);
+  var perLine = Math.max(8, Math.floor(boxW / perChar));
+  var words = String(str == null ? '' : str).split(/\s+/);
+  var lines = 1, cur = 0;
+  for (var i = 0; i < words.length; i++) {
+    if (!words[i]) continue;
+    var add = words[i].length + (cur ? 1 : 0);
+    if (cur > 0 && cur + add > perLine) { lines++; cur = words[i].length; }
+    else cur += add;
+  }
+  return lines;
+}
+
 function bullets_(slide, d, arr, top, size) {
   var th = themeOf_(d);
   var y = top;
+  var sz = size || 13;
   for (var i = 0; i < arr.length; i++) {
     /* a small accent dot instead of a bullet glyph: it reads as design rather
        than as a word-processor list */
     var dot = slide.insertShape(SlidesApp.ShapeType.ELLIPSE, 46, y + 6, 7, 7);
     dot.getFill().setSolidFill(th.accent);
     dot.getBorder().setTransparent();
-    var t = text_(slide, arr[i], 66, y - 2, W - 66 - 44, 40,
-      { size: size || 13, color: '#FFFFFF', font: th.body, spacing: 108 });
-    var lines = Math.ceil(String(arr[i]).length / 78);
+    var lines = lineCount_(arr[i], W - 66 - 44, sz);
+    var t = text_(slide, arr[i], 66, y - 2, W - 66 - 44, Math.max(40, lines * 19 + 10),
+      { size: sz, color: '#FFFFFF', font: th.body, spacing: 108 });
     y += Math.max(30, lines * 19 + 12);
   }
   return y;
@@ -435,9 +465,11 @@ function slideBullets_(slide, d, s, label) {
       var dot = slide.insertShape(SlidesApp.ShapeType.ELLIPSE, 46, y + 6, 6, 6);
       dot.getFill().setSolidFill(th.accent);
       dot.getBorder().setTransparent();
-      text_(slide, arr[i], 62, y - 2, 330, 40,
-        { size: s.size ? s.size - 2 : 11.5, color: '#FFFFFF', font: th.body, spacing: 106 });
-      y += Math.max(26, Math.ceil(String(arr[i]).length / 44) * 15 + 12);
+      var bs = s.size ? s.size - 2 : 11.5;
+      var bl = lineCount_(arr[i], 330, bs);
+      text_(slide, arr[i], 62, y - 2, 330, Math.max(40, bl * 15 + 10),
+        { size: bs, color: '#FFFFFF', font: th.body, spacing: 106 });
+      y += Math.max(26, bl * 15 + 12);
     }
     try {
       var img = slide.insertImage(shotUrl_(d, s.shot));
@@ -496,9 +528,10 @@ function slideStop_(slide, d, s, label) {
     var dot = slide.insertShape(SlidesApp.ShapeType.ELLIPSE, 46, y + 6, 6, 6);
     dot.getFill().setSolidFill(th.accent);
     dot.getBorder().setTransparent();
-    text_(slide, arr[i], 62, y - 2, W - 62 - 44, 36,
+    var sl = lineCount_(arr[i], W - 62 - 44, 12.5);
+    text_(slide, arr[i], 62, y - 2, W - 62 - 44, Math.max(36, sl * 15 + 10),
       { size: 12.5, color: '#FFFFFF', font: th.body, spacing: 106 });
-    y += Math.max(26, Math.ceil(String(arr[i]).length / 82) * 15 + 11);
+    y += Math.max(26, sl * 15 + 11);
   }
   shots_(slide, d, s.shots, Math.max(y + 8, 214), H - Math.max(y + 8, 214) - 26);
 }
@@ -510,13 +543,26 @@ function slideCloser_(slide, d, s, label) {
   text_(slide, s.heading, 44, 92, W - 88, 44,
     { size: 34, bold: true, color: '#FFFFFF', font: th.display,
       align: SlidesApp.ParagraphAlignment.CENTER });
+  /* THE CENTRED 500pt BOX. Each line is measured before anything is placed, so
+     a wrapped bullet takes the room it actually needs and the block sits
+     balanced between the heading and the sign-off line, whatever the words are
+     (DFM 225e — layout arithmetic is never an estimate). */
   var arr = s.bullets || [];
-  var y = 168;
+  var BOX = W - 220, SZ = 13, LH = 19, GAP = 12;
+  var heights = [], total = 0;
+  for (var m = 0; m < arr.length; m++) {
+    var h = lineCount_(arr[m], BOX, SZ) * LH;
+    heights.push(h);
+    total += h + GAP;
+  }
+  if (arr.length) total -= GAP;
+  var BAND_TOP = 150, BAND_BOTTOM = H - 74;   /* 74 = the sign-off line's room */
+  var y = Math.max(BAND_TOP, BAND_TOP + ((BAND_BOTTOM - BAND_TOP) - total) / 2);
   for (var i = 0; i < arr.length; i++) {
-    text_(slide, arr[i], 110, y, W - 220, 30,
-      { size: 13, color: '#FFFFFF', font: th.body,
+    text_(slide, arr[i], 110, y, BOX, heights[i] + 6,
+      { size: SZ, color: '#FFFFFF', font: th.body,
         align: SlidesApp.ParagraphAlignment.CENTER });
-    y += 30;
+    y += heights[i] + GAP;
   }
   if (s.sub) {
     text_(slide, s.sub, 44, H - 62, W - 88, 26,
@@ -576,7 +622,92 @@ function rebuildDeck_(lessonId) {
   Logger.log(n + ' slides written from contentVersion-packed data');
   Logger.log('Read-only link : https://docs.google.com/presentation/d/' + pres.getId() + '/edit');
   Logger.log('Make-a-copy    : https://docs.google.com/presentation/d/' + pres.getId() + '/copy');
+  Logger.log('');
+  Logger.log('NEXT, BEFORE ANYONE IS TOLD THIS DECK IS READY: run exportDeckProofs');
+  Logger.log('from the dropdown. It renders every slide to a picture in Drive so the');
+  Logger.log('BUILT PIXELS can be read, not the arithmetic that produced them.');
   return pres.getId();
 }
 
 function rebuildLesson1Deck() { return rebuildDeck_('j1-01'); }
+
+/* ===================== the proofs (DFM 225b, standing) ====================
+   A deck is never handed over on the strength of the code that built it. Slide
+   17 shipped with the word "you." stranded on its own line, and nothing in the
+   build could have said so: the arithmetic believed itself. So every slide is
+   rendered to a picture and READ, eyes on pixels, before the deck is declared
+   ready — DFM 194c, extended from the platform to decks.
+
+   Rendering uses the Slides API's own thumbnail, taken through the advanced
+   service when the project has it switched on and through a plain authorised
+   request when it does not, so the proofs never depend on a setting somebody
+   forgot to tick. */
+var PROOFS_ROOT = 'KS3 DT Deck Proofs';
+
+function subFolder_(parent, name) {
+  var it = parent.getFoldersByName(name);
+  return it.hasNext() ? it.next() : parent.createFolder(name);
+}
+
+function thumbUrl_(presId, pageId) {
+  /* the advanced service, if this project has Slides switched on */
+  try {
+    if (typeof Slides !== 'undefined' && Slides.Presentations && Slides.Presentations.Pages) {
+      var r = Slides.Presentations.Pages.getThumbnail(presId, pageId,
+        { 'thumbnailProperties.thumbnailSize': 'LARGE' });
+      if (r && r.contentUrl) return r.contentUrl;
+    }
+  } catch (e) { /* fall through to the request below */ }
+  var url = 'https://slides.googleapis.com/v1/presentations/' + presId +
+    '/pages/' + pageId + '/thumbnail?thumbnailProperties.thumbnailSize=LARGE';
+  var res = UrlFetchApp.fetch(url, {
+    muteHttpExceptions: true,
+    headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() }
+  });
+  if (res.getResponseCode() !== 200) {
+    throw new Error('could not render slide ' + pageId + ' — ' +
+      res.getResponseCode() + ' ' + res.getContentText().slice(0, 200));
+  }
+  return JSON.parse(res.getContentText()).contentUrl;
+}
+
+function exportDeckProofs_(lessonId) {
+  var d = DECKS[lessonId];
+  if (!d) throw new Error('no deck data for ' + lessonId);
+  if (!d.driveFileId) throw new Error(lessonId + ' has no driveFileId — build the deck first');
+  var pres = SlidesApp.openById(d.driveFileId);
+  var slides = pres.getSlides();
+  if (!slides.length) throw new Error('the deck has no slides — run its rebuild function first');
+
+  var root = subFolder_(DriveApp.getRootFolder(), PROOFS_ROOT);
+  var folder = subFolder_(root, d.deckName);
+  /* a proof set is a photograph of ONE build: last round's pictures are cleared
+     so nobody can read a stale slide and think it is the current one */
+  var old = folder.getFiles(), cleared = 0;
+  while (old.hasNext()) { old.next().setTrashed(true); cleared++; }
+
+  Logger.log('================ DECK PROOFS ================');
+  Logger.log(d.deckName);
+  Logger.log(slides.length + ' slides · folder "' + PROOFS_ROOT + '/' + d.deckName + '"' +
+    (cleared ? ' (' + cleared + ' old proof(s) cleared)' : ''));
+  var urls = [];
+  for (var i = 0; i < slides.length; i++) {
+    var num = (i + 1 < 10 ? '0' : '') + (i + 1);
+    var name = 'proof-' + num + '.png';
+    var blob = UrlFetchApp.fetch(thumbUrl_(pres.getId(), slides[i].getObjectId()))
+      .getBlob().setName(name);
+    var file = folder.createFile(blob);
+    try { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); }
+    catch (e) { /* a domain that forbids link sharing still keeps the file */ }
+    var link = 'https://drive.google.com/uc?export=view&id=' + file.getId();
+    urls.push(link);
+    Logger.log('  slide ' + num + '  ' + link);
+  }
+  Logger.log('');
+  Logger.log('Folder: ' + folder.getUrl());
+  Logger.log('THESE ARE READ BEFORE THE DECK IS DECLARED READY. Every slide, every');
+  Logger.log('line — an orphaned word or a wrong screenshot only ever shows here.');
+  return urls;
+}
+
+function exportDeckProofs() { return exportDeckProofs_('j1-01'); }
