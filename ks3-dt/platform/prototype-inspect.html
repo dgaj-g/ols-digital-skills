@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J2 Lesson 1 — Scene 1 prototype (K9 style gate)</title>
+<!--
+  THE K9 PROTOTYPE, AND WHAT IT IS NOT.
+
+  His ruling, 15 Aug 2026: "make sure that the prototype is excellent" — Scene 1
+  is built at final rendered size with its zones wired live, and goes to his
+  screen for style sign-off BEFORE scenes 2-5 exist.
+
+  This page loads the REAL style.css, the REAL engines.js and the REAL scene
+  file, applies the REAL J2 Workbench theme knobs, and mounts the inspect engine
+  with the exact chunk config the lesson will carry. So what he judges is what
+  will ship, at the size it will ship at.
+
+  It is deliberately NOT a built lesson. Declaring j2-01 as built would tell
+  qa-harness-coverage that a lesson exists with a full coverage bill behind it,
+  and that bill is not owed until after this gate. A prototype that lies to a
+  gate to get itself looked at is the exact class of fault DFM 204 named.
+-->
+<link rel="stylesheet" href="style.css">
+<style>
+  body { padding: 26px 0 60px; }
+  .proto-note { width: min(1000px, 96vw); margin: 0 auto 22px; color: var(--muted-d);
+    font-size: 0.9rem; border-left: 3px solid var(--gold); padding-left: 14px; }
+  .proto-note b { color: var(--text-d); }
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="aurora"></div>
+<div class="proto-note">
+  <b>Prototype — J2 Lesson 1, Scene 1 of the Workshop Safety Inspection.</b>
+  Final rendered size, zones wired live, on the J2 Workbench world.
+  Flag freely, unflag freely, then file the report.
+</div>
+<div class="chunk-host" id="host"></div>
+
+<script src="app.js"></script>
+<script src="engines.js"></script>
+<script>
+/* the J2 Workbench knobs, read from the registry the platform actually ships,
+   so this page cannot drift from the year world (DFM 144: one fact, one file) */
+fetch('../content/themes.json').then(function (r) { return r.json(); }).then(function (reg) {
+  var th = (reg.themes || []).filter(function (t) { return t.id === 'workbench'; })[0];
+  App.state.year = 'j2';
+  App.state.kit = App.resolveKit(reg, 'j2');
+  App.state.me = { th: '', fx: '', xp: 0 };
+  App.applyKit();
+}).then(mount, mount);
+
+function mount() {
+  var chunk = {
+    id: 'inspection',
+    title: 'The Workshop Safety Inspection',
+    config: {
+      introTitle: 'You are the safety inspector',
+      intro: 'Every DT room runs on the same six rules. Today you check whether a room is ' +
+        'keeping them.\n\n' +
+        'You will see a photograph-style drawing of a DT room. Click any station you think ' +
+        'breaks a rule to plant a flag on it. You can change your mind as often as you like — ' +
+        'nothing is marked until you file your report.',
+      steps: [
+        'Look along the whole bench before you click anything.',
+        'Click a station to flag it. Click it again to take the flag off.',
+        'When you are happy, press File my inspection report.',
+        'You will then be told which rule each flag breaks, and shown anything you missed.'
+      ],
+      begin: 'Start the inspection',
+      scenes: [{
+        tab: 'SCENE 1 OF 4',
+        title: 'Room B12, straight after a lesson',
+        lead: 'The class has just left. Five stations. Some of them were put back the way the ' +
+          'room rules ask, and some of them were not.',
+        art: 'assets/img/j2/inspection-1.svg',
+        alt: 'A school DT room bench with five computer stations. One station has a drink can ' +
+          'standing beside the keyboard. One has a screen still signed in with somebody’s work ' +
+          'open. One has headphones, papers and a memory stick left out and its chair pushed back. ' +
+          'The other two are tidy, with their screens off and their chairs in.',
+        noneYet: 'Nothing flagged yet. If you think the room is fine, you can file an empty report.',
+        fileLabel: 'File my inspection report',
+        fileNote: 'Filing tells you which rule each flag breaks, and shows you anything you missed. ' +
+          'A flag on a station that is fine costs you nothing.',
+        reportTitle: 'Your inspection report',
+        nextLabel: 'Next scene',
+        xpPerFlag: 2, xpClean: 3,
+        zones: [
+          { x: 0, y: 22, w: 20, h: 72, name: 'Station 1', breaks: null,
+            clearSay: 'This one is fine. The screen is off, the chair is in and the bench is clear.',
+            okSay: 'This one is fine. The screen is off, the chair is in and the bench is clear.' },
+          { x: 20, y: 22, w: 20, h: 72, name: 'Station 2',
+            breaks: 'no food or drink',
+            rule: 'This breaks the rule about food and drink. A can of fizzy drink is standing right ' +
+              'beside the keyboard, and one knock ruins the machine underneath it.' },
+          { x: 40, y: 22, w: 20, h: 72, name: 'Station 3',
+            breaks: 'sign out every time',
+            rule: 'This breaks the rule about signing out. The screen is still signed in and ' +
+              'somebody’s work is open, so the next person to sit down is using her account.' },
+          { x: 60, y: 22, w: 20, h: 72, name: 'Station 4',
+            breaks: 'chair in, area tidy',
+            rule: 'This breaks the rule about leaving your area tidy. Headphones, papers and a ' +
+              'memory stick have been left out, and the chair has not been pushed in.' },
+          { x: 80, y: 22, w: 20, h: 72, name: 'Station 5', breaks: null,
+            clearSay: 'This one is fine too. Nothing has been left out and the chair is in.',
+            okSay: 'This one is fine too. Nothing has been left out and the chair is in.' }
+        ]
+      }]
+    }
+  };
+  var ctx = {
+    chunk: chunk,
+    next: function () {
+      document.getElementById('host').innerHTML =
+        '<div class="insp"><div class="insp-head"><h2>End of the prototype</h2>' +
+        '<p class="insp-lead">In the lesson, scene 2 would open here.</p></div></div>';
+    },
+    addXp: function () {}
+  };
+  Engines.inspect.mount(document.getElementById('host'), chunk, ctx);
+}
+</script>
+</body>
+</html>

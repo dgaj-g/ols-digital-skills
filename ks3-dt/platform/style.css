@@ -2687,3 +2687,107 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   .brief-run.staged > li.brief-stage,
   .script-sheet .script-notes { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* ================= the Workshop Safety Inspection (J2 L1, chunk 3) =========
+   His K9 ruling: drawn scenes, and the prototype has to be excellent. The card
+   is the case-board craft (DFM 192k, "I love the look of the actual case board")
+   rebuilt in the Workbench's own copper rather than J1's navy — extend, never
+   regress. Everything here is scoped under .insp, so no existing lesson can be
+   touched by it. */
+.insp { width: min(1000px, 96vw); margin: 0 auto; padding: 20px 20px 26px;
+  border-radius: var(--r-lg); position: relative;
+  background:
+    radial-gradient(120% 90% at 15% 0%, rgba(var(--gold-rgb), 0.09), transparent 55%),
+    linear-gradient(160deg, #2C1B0D 0%, #22150A 55%, #1A1006 100%);
+  border: 1px solid rgba(var(--gold-rgb), 0.38);
+  box-shadow: inset 0 0 0 6px rgba(var(--gold-rgb), 0.07), 0 18px 50px rgba(0, 0, 0, 0.5); }
+.insp-head { text-align: center; margin-bottom: 14px; }
+.insp-tab { display: inline-block; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.16em;
+  color: #2A1502; background: rgba(var(--gold-rgb), 0.75); border-radius: 4px; padding: 3px 10px; }
+.insp-head h2 { font-family: var(--font-display); color: #fff; font-size: clamp(1.35rem, 3vw, 1.8rem); margin: 9px 0 4px; }
+.insp-lead { color: var(--text-d); font-size: 1rem; margin: 0 auto; max-width: 62ch; }
+
+/* the stage: the drawing, with the clickable stations laid over it. The zones
+   are positioned in PERCENTAGES of the picture, so the scene and its zones can
+   never drift apart when the card is narrower than the art. */
+.insp-stage { position: relative; margin: 16px 0 12px; border-radius: var(--r-md); overflow: hidden;
+  border: 1px solid rgba(var(--gold-rgb), 0.28); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
+.insp-art { display: block; width: 100%; height: auto; }
+.insp-zones { position: absolute; inset: 0; }
+.insp-zone { position: absolute; margin: 0; padding: 0; background: none; border: none;
+  cursor: pointer; font: inherit; color: inherit; }
+/* at rest the frame is a hint, not a grid: enough to say "this is clickable"
+   without cutting the drawing into five boxes she then reads as the answer */
+.insp-zone-frame { position: absolute; inset: 4px; border-radius: 10px;
+  border: 2px dashed rgba(255, 255, 255, 0.10); transition: border-color 0.15s ease, background 0.15s ease; }
+.insp-zone:hover .insp-zone-frame,
+.insp-zone:focus-visible .insp-zone-frame { border-color: var(--gold-hi); background: rgba(var(--gold-hi-rgb), 0.10); }
+.insp-zone:focus-visible { outline: none; }
+/* the flag she plants: a real marker, large, with its own shadow, so a flagged
+   station is unmistakable at a glance and from the back of a classroom */
+.insp-zone-flag { position: absolute; top: 8px; right: 10px; font-size: 1.5rem; line-height: 1;
+  color: var(--gold-hi); opacity: 0; transform: translateY(-6px) scale(0.8);
+  transition: opacity 0.16s ease, transform 0.16s ease; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
+.insp-zone-name { position: absolute; left: 8px; right: 8px; bottom: 8px; text-align: center;
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #2A1502; background: rgba(var(--gold-hi-rgb), 0.92); border-radius: 4px; padding: 3px 4px;
+  opacity: 0; transition: opacity 0.15s ease; }
+.insp-zone:hover .insp-zone-name, .insp-zone:focus-visible .insp-zone-name,
+.insp-zone.is-flagged .insp-zone-name, .insp-zone.is-done .insp-zone-name { opacity: 1; }
+.insp-zone.is-flagged .insp-zone-frame { border-style: solid; border-color: var(--gold-hi);
+  background: rgba(var(--gold-hi-rgb), 0.16); }
+.insp-zone.is-flagged .insp-zone-flag { opacity: 1; transform: translateY(0) scale(1); }
+
+/* after filing: the scene answers itself, in the same colours as the rows below */
+.insp-zone.is-done { cursor: default; }
+.insp-zone.is-found .insp-zone-frame { border: 2px solid #6FD08C; background: rgba(111, 208, 140, 0.18); }
+.insp-zone.is-found .insp-zone-name { background: #6FD08C; }
+.insp-zone.is-missed .insp-zone-frame { border: 2px solid #E8963C; background: rgba(232, 150, 60, 0.20); }
+.insp-zone.is-missed .insp-zone-name { background: #E8963C; }
+.insp-zone.is-clear .insp-zone-frame { border: 2px dashed rgba(255, 255, 255, 0.34); background: none; }
+.insp-zone.is-clear .insp-zone-name { background: rgba(244, 237, 227, 0.9); }
+.insp-zone.is-fine .insp-zone-frame { border-color: rgba(255, 255, 255, 0.12); }
+.insp-zone.is-fine .insp-zone-name { opacity: 0; }
+/* the missed mark: its own glyph, its own colour, and a ring so it cannot be
+   mistaken at a glance for a flag she planted herself */
+.insp-zone.is-missed .insp-zone-flag { opacity: 1; transform: none; color: #2A1502;
+  font-family: var(--font-display); font-weight: 800; font-size: 1.05rem;
+  width: 26px; height: 26px; line-height: 26px; text-align: center; border-radius: 50%;
+  background: #E8963C; text-shadow: none; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }
+
+.insp-count { text-align: center; color: var(--text-d); font-weight: 700; margin: 6px 0 10px; }
+.insp-actions { display: flex; justify-content: center; }
+.insp-note { text-align: center; color: var(--muted-d); font-size: 0.86rem; margin: 12px auto 0; max-width: 60ch; }
+
+/* the report card: a light reading surface, the platform's standing rule for
+   anything she has to READ rather than glance at */
+.insp-report { margin-top: 20px; background: var(--card); color: var(--ink);
+  border-radius: var(--r-md); padding: 20px 20px 16px; box-shadow: var(--shadow-card); }
+.insp-report h3 { font-family: var(--font-display); font-size: 1.25rem; margin: 0 0 6px; }
+.insp-score { color: var(--ink); font-weight: 700; margin: 0 0 14px; }
+.insp-rows { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.insp-row { display: grid; grid-template-columns: minmax(140px, auto) 1fr; gap: 4px 14px;
+  padding: 12px 14px; border-radius: var(--r-sm); background: var(--field); border-left: 5px solid var(--line-l); }
+.insp-row-tag { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.insp-row-name { font-weight: 700; }
+.insp-row-say { grid-column: 1 / -1; color: var(--muted); }
+.insp-row.is-found { background: var(--good-soft); border-left-color: #2FBF74; }
+.insp-row.is-found .insp-row-tag { color: #1F7A4C; }
+.insp-row.is-missed { background: #FDF1E2; border-left-color: #D98324; }
+.insp-row.is-missed .insp-row-tag { color: #8A5210; }
+.insp-row.is-clear .insp-row-tag, .insp-row.is-ok .insp-row-tag { color: #5B6579; }
+
+@media (max-width: 720px) {
+  .insp-zone-name { font-size: 0.6rem; letter-spacing: 0.04em; }
+  .insp-row { grid-template-columns: 1fr; }
+}
+
+/* The inspection's own intro list. The shared .case-intro-steps is centred with
+   the case board around it; on this card that stranded every number several
+   centimetres from the sentence it numbers, which is rule 171 broken by layout
+   rather than by markup. Left-aligned, with the number hanging beside its own
+   line, and the whole block set in from the prose above it. */
+.insp-intro-steps { list-style: decimal; text-align: left; margin: 4px auto 18px;
+  padding-left: 26px; max-width: 46ch; display: flex; flex-direction: column; gap: 9px; }
+.insp-intro-steps li { padding-left: 4px; line-height: 1.5; }
+.insp-intro-steps li::marker { font-weight: 800; color: var(--ols-blue); }
