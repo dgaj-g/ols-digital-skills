@@ -1,0 +1,223 @@
+{
+ "id": "j1-05.deck",
+ "lesson": "j1-05",
+ "deckName": "KS3 DT · J1 Lesson 5 — Game Studio (Teacher Deck)",
+ "driveFileId": "1l9agcHZemr9HpwZRXufvIqY9a-SHWsHjQS1s8GYq3hg",
+ "theme": {
+  "id": "premiere-night",
+  "name": "Premiere Night",
+  "ground": "#1C0910",
+  "panel": "#2A1018",
+  "accent": "#FF6E8C",
+  "accent2": "#FFE9B8",
+  "text": "#FFFFFF",
+  "dim": "#E8C9D2",
+  "display": "Bebas Neue",
+  "body": "Inter"
+ },
+ "sections": [
+  {
+   "id": "opening",
+   "chunk": "hook",
+   "label": "The opening",
+   "slides": [
+    {
+     "kind": "title",
+     "bg": "title",
+     "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+     "heading": "Lesson 5 · Game Studio",
+     "sub": "You build your own game — and you test it like a real studio does — J1 · Lesson 5 of 17",
+     "notes": "WHERE THE CLASS IS: coming in, logging in. Two tabs again: the class link and scratch.mit.edu, both left alone until told. The Do-Now marks itself as they settle.\n\nSAY: welcome them in with the headline — last lesson they fixed somebody else's game; today they ship their own.\n\nWHEN TO MOVE: when the Do-Now hands over to the briefing screen, stop the room — eyes front."
+    },
+    {
+     "kind": "objectives",
+     "bg": "section",
+     "heading": "In this lesson you will…",
+     "bullets": [
+      "Use IF/ELSE so your game reacts differently to different situations.",
+      "Make a game YOURS — your look, your rules — while still doing everything the job asks for.",
+      "Test your own game against a real checklist before anyone else plays it."
+     ],
+     "notes": "WHERE THE CLASS IS: eyes front, briefing waiting on their monitors.\n\nSAY: read the three lines. The third is the studio secret — testing your own work harder than your players will.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "The block of the day: if/else",
+     "size": 15,
+     "shot": "ifelse-film",
+     "bullets": [
+      "Today you give your game a DECISION to make.",
+      "It asks ONE question — like a snack machine checking whether it has been given enough money.",
+      "Then it runs exactly ONE of two sets of blocks: one if the answer is yes, a different one if the answer is no.",
+      "Computing calls this SELECTION — and it is the difference between a slideshow and a game."
+     ],
+     "notes": "SAY: say the question-and-two-outcomes sentence slowly, twice — it is the whole concept. The picture is the film's own frame of the real block: the IF part is the top gap, the ELSE part is the gap underneath. The film will build it in front of them in a few minutes.\n\nThe example is deliberately a snack machine and not anybody's game: the film teaches on a demo nobody is building, so no contract is handed its own answer.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Your studio opens today",
+     "size": 15,
+     "bullets": [
+      "OLS GAMES is hiring new studios — and one of them is yours.",
+      "Three CONTRACTS are on the desk: a catching game, a maze escape, a quiz show. You sign exactly ONE.",
+      "Every contract asks for the same things: your game must CHOOSE, COUNT and END — and it must WORK. Everything else is yours.",
+      "And tonight is PRESS NIGHT: the class plays the game you ship, and your studio gets its first signed reviews."
+     ],
+     "notes": "SAY: sell the hour — designer AND tester, both jobs hers. Land the fairness line: same brief, same checks, same XP, whichever contract she signs. Then the forecast: sign, watch the short masterclass, build for about twenty-five minutes, then the doors open.\n\nWHEN TO MOVE: straight on — three more slides in this front block, then they run on their own for half the hour."
+    }
+   ]
+  },
+  {
+   "id": "sign",
+   "chunk": "sign",
+   "label": "The contracts",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Sign your contract",
+     "size": 15,
+     "shot": "contracts",
+     "bullets": [
+      "Read all THREE contracts before you sign — you are choosing the game you ship tonight.",
+      "There is no easy option: every contract has the same jobs to do, the same checks and the same XP. Pick the one you WANT to build.",
+      "Sign with a STUDIO NAME you will be proud to see up in lights tonight.",
+      "Signed the wrong one? You can tear it up and re-sign, right up until your first QA test is recorded. Re-signing means a fresh kit, so anything you built in Scratch stays with the old contract."
+     ],
+     "notes": "SAY: read the four lines and keep this moment brisk — the contracts screen repeats every word, and the building time is the treasure. Names: one veto rule, said kindly — a studio name the whole class will see must be one she is proud of.\n\nWHAT THEY WILL SEE: the three contracts (the picture), each with what the kit ships and what her studio adds.\n\nWHEN TO MOVE: straight on."
+    }
+   ]
+  },
+  {
+   "id": "masterclass",
+   "chunk": "masterclass",
+   "label": "The masterclass",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "The masterclass — part one: the idea",
+     "size": 15,
+     "shot": "film",
+     "bullets": [
+      "After you sign, a short film teaches the if/else block itself — watch it whichever contract you picked.",
+      "It is taught on ITS OWN demo, not on anybody's game. Nobody's answer is given away.",
+      "Your BLUEPRINT on the Studio Desk then shows exactly where the block goes in YOUR game.",
+      "Part two — the worked example and the tests — waits on your desk for when you are building."
+     ],
+     "notes": "[film-led — or demonstrate live if you are confident]\n\nWHERE THE CLASS IS: still eyes front; they sign and then meet this film at their own pace.\n\nSAY: read the four lines. The neutrality matters and is worth saying: the film builds a snack-machine demo that nobody is shipping, so watching it helps every contract equally.\n\nLIVE OPTION, only if you are confident, AFTER the film has played (or if it will not load): demonstrate the BLOCK itself on a BLANK Scratch project — never on any contract's kit: scratch.mit.edu → Control (gold) → drag out if/else → point at the two gaps: \"the IF part is the top gap, the ELSE part is the gap underneath\" → Sensing (light blue) → drag \"touching …?\" into the pointed question slot → say the sentence: \"one question, and exactly one of the two gaps runs.\" Do NOT build any contract's answer — the lesson's own rule is that no demo does a pupil's build for her.\n\nWHAT THEY WILL SEE: the film with its two chapters (the picture).\n\nWHEN TO MOVE: straight on to the sprint slide — the last one before they work."
+    }
+   ]
+  },
+  {
+   "id": "sprint",
+   "chunk": "build",
+   "label": "The Studio Sprint",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "The Studio Sprint",
+     "size": 15,
+     "shot": "desk",
+     "bullets": [
+      "Your desk works top to bottom, in three zones.",
+      "THE KIT — get your game open in Scratch, and find the yellow STUDIO NOTE.",
+      "THE BLUEPRINT — the exact blocks, in order.",
+      "THE QA DESK — four tests that prove your game WORKS.",
+      "You build your OWN game. The person beside you is your TESTER — when your teacher calls the swap, you run each other's four tests.",
+      "Change how it looks as much as you like, but a game that LOOKS finished is not the same as a game that WORKS. READY FOR GALLERY lights up only when all four tests are green."
+     ],
+     "notes": "WHERE THE CLASS IS: end of the front block; the room is about to run itself for half an hour — sign → film → build, each at her own pace.\n\nSAY: read the lines, then send them in. The sprint is about twenty-five minutes; keep the clock yourself rather than putting it on the board, so you can stretch or shorten it as the room needs.\n\nWHILE THEY BUILD, circulate on ONE question: \"which QA check are you on?\" — the dim READY button does your nagging for you. Point stuck pupils at part two of the film on their own desk (the worked example) rather than re-teaching from the front. AT THE MIDPOINT, call the swap out loud: \"Testers — run the four tests on your partner's machine.\" A cross on a check is the desk working: it hands her the exact fix, and fixing it earns a FOUND BY QA badge.\n\nOut of time and not green? The beta door exists — after two attempted checks the desk offers \"Open in beta — ask your teacher first\". Say yes: an IN BETA listing gets reviewed for what is there, and nobody sits out Press Night.\n\nWHAT THEY WILL SEE: the desk (the picture) — kit, blueprint, four locked checks that wake when the kit tick is done.\n\nWHEN TO MOVE: when most studios show DOORS OPEN — or the clock says so — stop the room for Press Night."
+    }
+   ]
+  },
+  {
+   "id": "press",
+   "chunk": "press",
+   "label": "STOP · Press Night",
+   "stop": true,
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "1",
+     "heading": "STOP — Press Night",
+     "size": 15,
+     "shots": [
+      "press"
+     ],
+     "bullets": [
+      "The doors are open across the studio floor.",
+      "Half the room EXHIBITS — your game running full screen, you welcoming the players at your desk.",
+      "The other half TOURS — you play two or three games at other people's desks, and you remember the studio names.",
+      "Then we swap. Everyone gives, and gets, real signed reviews."
+     ],
+     "notes": "WHERE THE CLASS IS: doors open (some IN BETA — that counts), eyes front.\n\nSAY: read the four lines with premiere energy. Name the halves NOW (window side exhibits first, door side tours — whatever split fits the room) so the swap is one word later.\n\nWHEN TO MOVE: straight on to the code slide."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "The Reviewer's Code",
+     "size": 15,
+     "bullets": [
+      "You have TWO PRESS PASSES — each one is a signed review of another studio's game.",
+      "KIND — you review the game, never the maker. Reviews build studios up.",
+      "SPECIFIC — name the exact moment. \"The wasabi near the end got me twice\" beats \"it's good\" every time.",
+      "HELPFUL — your \"I wonder…\" should hand that studio a real idea for version 2.",
+      "Every review is signed with your name — write ones you would be proud to sign."
+     ],
+     "notes": "WHERE THE CLASS IS: eyes front, about to play each other's games.\n\nSAY: read the code, then the two stems — every review is \"I like…\" then \"I wonder…\". Give the good example aloud: \"I like how the lives counter makes every drop feel risky — I wonder what a golden apple worth 3 points would add.\" That is the bar.\n\nRUN IT ON A STOPWATCH: about a minute to set up, four minutes round one, call the swap, four minutes round two, then a final window for finishing reviews and the V2 note. Scan the Press Night lens (Live tab → Press Night) for fifteen seconds at each swap — every review lands there signed, Remove pulls one off a pupil's screen in seconds, quiet word second. In round two, steer strong reviewers to the studios the marquee floats to the top — it lists the least-reviewed first by itself.\n\nWHAT THEY WILL SEE: the marquee of every studio, their own reviews landing live, and the V2 note that unlocks once both their reviews are in.\n\nWHEN TO MOVE: when the final window closes, stop the room — the ship slide."
+    }
+   ]
+  },
+  {
+   "id": "ship",
+   "chunk": "ship",
+   "label": "STOP · Ship it, then the finish line",
+   "stop": true,
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "2",
+     "heading": "STOP — Ship your game, then the finish line",
+     "size": 15,
+     "shots": [
+      "selfeval"
+     ],
+     "bullets": [
+      "A game that lives on one classroom machine is a game you can lose.",
+      "Ship it: in Scratch, open the File menu and choose 'Save to your computer'. Then open drive.google.com, click into School, then DT Work, and drag the .sb3 in.",
+      "Press Check my Drive — the website really looks. Your game then follows your login home.",
+      "Then there are two marked questions, one last block puzzle, and How did it go?",
+      "Everyone finishes How did it go? before leaving."
+     ],
+     "notes": "WHERE THE CLASS IS: buzzing from Press Night, eyes front for one minute.\n\nDO: ship YOUR OWN practice game on the projector — File → Save to your computer, drag it into School → DT Work, press the check. Thirty seconds, and it is the reason nobody's first authored game is lost at the bell.\n\nSAY: \"That .sb3 file IS your game. Tonight it follows your login home — drive.google.com.\"\n\nWHAT THEY WILL SEE: the three ship steps, the two questions, the puzzle, then the final screen (the picture).\n\nWHEN TO MOVE: send them in; the last slide goes up as they finish."
+    }
+   ]
+  },
+  {
+   "id": "closer",
+   "chunk": "selfeval",
+   "label": "Before you leave",
+   "slides": [
+    {
+     "kind": "closer",
+     "bg": "closer",
+     "heading": "Before you leave",
+     "sub": "See you in a fortnight.",
+     "bullets": [
+      "Sign out properly — if you stay signed in, the next person at this machine IS you.",
+      "Chairs in, area tidy.",
+      "Tonight you shipped a game YOU made, and it is in your Drive right now — open drive.google.com at home and show somebody.",
+      "Keep your reviews in mind: your V2 note is a real plan, and studios grow by building version 2."
+     ],
+     "notes": "SAY: end on the achievement — five lessons in, she has logged in like a professional, built on real hardware, kept score, fixed a shipped game, and tonight shipped one of her own. The Drive line is the take-home: the game follows her login, tonight.\n\n(No next-lesson promise is made: Lessons 6 onward are not built yet, and this deck claims nothing that does not exist — DFM 228b.)"
+    }
+   ]
+  }
+ ]
+}

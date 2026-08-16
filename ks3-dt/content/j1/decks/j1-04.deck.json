@@ -1,0 +1,197 @@
+{
+ "id": "j1-04.deck",
+ "lesson": "j1-04",
+ "deckName": "KS3 DT · J1 Lesson 4 — The Broken Game (Teacher Deck)",
+ "driveFileId": "1jCu9Rfvgs-rJXg8Aj7QMjfO1R-AbrTZqhR611MO2NwA",
+ "theme": {
+  "id": "case-file",
+  "name": "The Case File",
+  "ground": "#101418",
+  "panel": "#1A2028",
+  "accent": "#F5DFA8",
+  "accent2": "#FF4D4D",
+  "text": "#FFFFFF",
+  "dim": "#C7CFD9",
+  "display": "Special Elite",
+  "body": "Inter"
+ },
+ "sections": [
+  {
+   "id": "opening",
+   "chunk": "hook",
+   "label": "The opening",
+   "slides": [
+    {
+     "kind": "title",
+     "bg": "title",
+     "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+     "heading": "Lesson 4 · The Broken Game",
+     "sub": "One broken game, four faults to find, and you are the detectives — J1 · Lesson 4 of 17",
+     "notes": "WHERE THE CLASS IS: coming in, logging in. Two tabs today: the class link in one, and scratch.mit.edu in the other — both left alone until told. The Do-Now marks itself as they settle. No micro:bits today: the kit is a broken game.\n\nSAY: welcome them in, and set the two-tab rule now — it saves twenty \"where's my game?\" moments later.\n\nWHEN TO MOVE: when the Do-Now hands over to the briefing screen, stop the room — eyes front."
+    },
+    {
+     "kind": "objectives",
+     "bg": "section",
+     "heading": "In this lesson you will…",
+     "bullets": [
+      "READ code somebody else wrote — and work out what it is SUPPOSED to do.",
+      "Find a bug — a mistake in a program — by testing, predicting and checking, never by guessing.",
+      "Explain, in your own words, what was wrong and how you fixed it."
+     ],
+     "notes": "WHERE THE CLASS IS: eyes front, the briefing waiting on their monitors.\n\nSAY: read the three lines. Tell them the first is the rare one — most people can only read code they wrote themselves, and today they go further than that.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "The first bug was an actual moth",
+     "size": 15,
+     "shot": "moth",
+     "bullets": [
+      "In 1947, one of the very first computers in the world stopped working, and the engineers searched the machine for the fault…",
+      "…and found a real moth stuck inside it! They taped the moth into their logbook and wrote: \"First actual case of bug being found.\"",
+      "Ever since, a BUG has meant a mistake in a program. Every game you have ever played had hundreds of them while it was being made."
+     ],
+     "notes": "WHERE THE CLASS IS: eyes front.\n\nSAY: tell the story rather than reading it — it is true, and the photograph on the slide is the actual logbook page. Pupils meet the same story again on their screens; you are the storyteller, the screen is the record.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "You are the new QA team",
+     "size": 15,
+     "bullets": [
+      "The people who find bugs before the players do are called QA — short for Quality Assurance. It is a real job.",
+      "Last night a games company called OLS GAMES released Shark Attack — and this morning the reviews are terrible.",
+      "Four bugs got past the old testing team. Each player complaint is called a TICKET — and all four are waiting for you.",
+      "Fix all four, and the players get their game back."
+     ],
+     "notes": "SAY: give it drama — the old testers missed four bugs, the reviews are in, and this class is the rescue team. Then send them back to their screens: read the briefing, then press Open the Case Board — and STOP there, eyes front, before touching any pin.\n\nWHAT THEY WILL SEE: the briefing with the moth photograph, then the Case Board.\n\nWHEN TO MOVE: when most screens show the Case Board, straight into the next section."
+    }
+   ]
+  },
+  {
+   "id": "board",
+   "chunk": "board",
+   "label": "STOP · The Case Board",
+   "stop": true,
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "1",
+     "heading": "STOP — The Case Board",
+     "size": 15,
+     "shots": [
+      "board"
+     ],
+     "bullets": [
+      "This board is your home screen for the whole hour: the film, Evidence Intake, four cases, and the release desk.",
+      "Every case closes the same way, and the order matters. SEE the bug happen — play the game and watch it go wrong.",
+      "READ the code that is supposed to be doing that job.",
+      "FIX one thing, and only one thing.",
+      "LOG it in one sentence with two halves: what was wrong, and what you changed — just like the engineers wrote in 1947.",
+      "RE-PLAY, and watch the bug NOT happen. The website cannot see inside Scratch, so YOU are the tester: only tick what you truly watched happen."
+     ],
+     "notes": "WHERE THE CLASS IS: Case Board on every screen, eyes front. THE NEXT FOUR SLIDES ARE ONE FRONT BLOCK — deliver S5 to S8, then send them to work.\n\nSAY: read the rhythm slowly — it is the lesson. The honesty line lands best said plainly: nobody is watching inside Scratch, which is exactly why a tester's word has to be worth something.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Stuck? Help that is free — and help that costs",
+     "size": 15,
+     "bullets": [
+      "Help step 1 — re-read the ticket. It is free, and it cracks more cases than anything else.",
+      "Help step 2 — ask another agency: a pair who have already CLOSED that case. One question, detective to detective, and it is free.",
+      "Help step 3 — HQ, the company's head office, gives you a clue naming WHERE the bug lives. Your stamp then turns SILVER instead of GOLD.",
+      "A silver case still counts. Solve the next one without the clue for gold."
+     ],
+     "notes": "SAY: the price list matters — pupils protect gold stamps fiercely once they know silver exists. Your line for the hour when asked \"is this right?\": \"show me the re-play.\"\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Evidence Intake — get the broken game open",
+     "size": 15,
+     "shot": "intake",
+     "bullets": [
+      "Click the gold button — shark-attack-broken-edition.sb3 drops into your Downloads.",
+      "Open the Scratch editor in your second tab — scratch.mit.edu. No login needed, ever.",
+      "In Scratch, open the File menu and choose 'Load from your computer'. Pick the .sb3 from your Downloads, then press OK to replace.",
+      "Keep BOTH tabs open all hour: case board here, game there."
+     ],
+     "notes": "SAY: walk the four steps on the slide, then let pairs do it. The card on their screens repeats every step, and its last step tours the crime scene — sprites, scripts, and the word CLONE.\n\nWHAT THEY WILL SEE: the Evidence Intake card (the picture), then a confirm line once the game is open.\n\nWHEN TO MOVE: when most pairs have the game open in Scratch — the shark, the fish, the score stuck on 0 — go straight to the training case."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Case 01 — we crack this one together",
+     "size": 15,
+     "shot": "case1",
+     "bullets": [
+      "The training case: FinnTastic_11 says the shark will not swim RIGHT. Left, up and down all work — right does nothing.",
+      "Watch the board while your teacher closes it in front of you — the whole rhythm, log included.",
+      "Then it is your turn: the same case, on your own screen, walks you through the same fix.",
+      "After Case 01 closes, the other three cases open — take them in ANY order."
+     ],
+     "notes": "WHERE THE CLASS IS: game open in Scratch, eyes front for the live crack.\n\nDO, on the board or via Veyon, click by click: run the game, press RIGHT, watch nothing happen — the bug seen. Open the Shark's scripts and put the five stacks side by side (the minus button, bottom-right of the code area, shrinks them to fit). Compare: every WORKING arrow script starts with a hat block; the right-arrow stack has none. Say the sentence: \"a stack with no hat block never runs at all.\" Fix it the way their card teaches: Events (yellow) → find 'when space key pressed' → drag it onto the hatless stack until the white shadow line snaps it on → click the word 'space' → choose 'right arrow'. Re-play: a FULL lap, all four arrows. Then TYPE THE LOG on the projector, out loud: \"The right-arrow script had no hat block, so it never ran. I added when right-arrow pressed.\" Both halves — what was wrong, what I changed.\n\nSAY, as you finish: \"That is one case, closed. Three tickets left — and I am not solving those.\"\n\nWHEN TO MOVE: straight on to the last slide of this block."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Cases 2, 3, 4 — then the release desk",
+     "size": 15,
+     "shot": "release",
+     "bullets": [
+      "Work as a two-person detective agency: the PLAYER runs the game and reads the ticket aloud; the ENGINEER moves the blocks. SWAP JOBS at every new case.",
+      "The film pinned to your Case Board — Reading Someone Else's Code — is your handbook. Chapter 3, Test like a detective, helps most while a case is open.",
+      "When all four cases are closed, the release desk opens. Play the WHOLE game for one full minute and watch all four fixes hold at once.",
+      "Then ship it: the fixed game goes into your Drive, and the players get their game back."
+     ],
+     "notes": "SAY: read the four lines, name the swap rule twice, then send them to work.\n\nWHILE THEY WORK: circulate on one question — \"show me the re-play.\" Deflect \"is this right?\" to the help ladder. Call the swap by name at each new case: the pair that never swaps has one pupil learning and one watching. One word to have ready: a CLONE is a temporary copy Scratch makes while the game runs — it is why two cases live in two different Fish scripts. Treat a bug that resurfaces at the release desk's full-minute run as the best teaching moment of the hour, not a failure.\n\nWHAT THEY WILL SEE: case files like Case 01's, each with its ticket, symptom, clue ladder and log box; then the release desk (the picture) with its four watch items and the fish-count box that proves they really played.\n\nWHEN TO MOVE: no stop until the finish line. When most pairs have shipped — or the hour demands it — stop the room."
+    }
+   ]
+  },
+  {
+   "id": "finish",
+   "chunk": "exit",
+   "label": "STOP · The finish line",
+   "stop": true,
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "2",
+     "heading": "STOP — The finish line",
+     "shots": [
+      "selfeval"
+     ],
+     "bullets": [
+      "Two questions — and these ARE marked. Think like a detective, not a guesser.",
+      "Then Rebuild the Opening: put five real blocks into the order the sentence describes. Two of the blocks are new to you, and each one says on it what it does.",
+      "Then How did it go? — three honest ratings and a private comment. Everyone finishes it before leaving."
+     ],
+     "notes": "WHERE THE CLASS IS: shipped (or parked), eyes front for one minute.\n\nSAY: read the three lines. The marked questions are the hour's two instincts — no hat, no run; and one lucky re-play proves nothing.\n\nWHAT THEY WILL SEE: the two questions, the five-block puzzle, then the final screen (the picture).\n\nWHEN TO MOVE: send them in; the last slide goes up as they finish."
+    }
+   ]
+  },
+  {
+   "id": "closer",
+   "chunk": "selfeval",
+   "label": "Before you leave",
+   "slides": [
+    {
+     "kind": "closer",
+     "bg": "closer",
+     "heading": "Before you leave",
+     "sub": "See you in a fortnight.",
+     "bullets": [
+      "Sign out properly — if you stay signed in, the next person at this machine IS you.",
+      "Chairs in, area tidy — no kit to hand back today; the game shipped to your Drive.",
+      "The Jellyfish Job stays open all week — put real danger into the shark game, then show your teacher and the job is done.",
+      "Next lesson OLS GAMES hires you to BUILD: your own game — and the if-touching block from the Jellyfish Job is its superpower."
+     ],
+     "notes": "SAY: the Jellyfish line is an invitation, said like one. Then the tease: next lesson they stop fixing other people's games and build their own — and the block the stretch previewed is the heart of it.\n\n(The last line is Lesson 5's truth, verified against j1-05: pupils choose a contract and build their own game around the if/else block.)"
+    }
+   ]
+  }
+ ]
+}
