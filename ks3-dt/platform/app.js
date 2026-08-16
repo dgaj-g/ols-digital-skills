@@ -339,6 +339,7 @@
     if (!out.themes.length) {
       out.themes = (reg.themes || []).filter(function (t) { return String(t.id) === 'midnight'; });
     }
+    out.hub = (reg.hubs && (reg.hubs[y] || reg.hubs.j1)) || { name: 'Mission Control' };
     out.kit = (reg.kits && (reg.kits[y] || reg.kits.j1)) ||
       { name: 'Agent Kit', explainer: 'Your Agent Kit is kind of like this website’s own wardrobe or costumes!' };
     return out;
@@ -346,6 +347,20 @@
   /* the kit's NAME is content now, not a literal (his K1 ruling) */
   App.kitName = function () {
     return ((App.state.kit || {}).kit || {}).name || 'Agent Kit';
+  };
+  /* THE HUB'S NAME, per year (found by the J2 L1 cold read, 16 Aug 2026). DFM 57
+     kept "Mission Control" FOR J1 and required the lesson to explain it; it was
+     never J2's or J3's, and it was a literal in index.html where no gate reads.
+     J1's registry value reproduces the shipped label exactly. */
+  App.hubName = function () {
+    var reg = App.state.kit || {};
+    var h = reg.hub || ((reg.hubs || {})[String(App.state.year || 'j1')]);
+    return (h && h.name) || 'Mission Control';
+  };
+  App.paintHubName = function () {
+    var n = App.hubName();
+    var b = document.getElementById('player-back');
+    if (b) b.innerHTML = '&larr; ' + esc(n);
   };
   /* ---- and so is every other word on the shared kit surfaces ----------------
      The kit modal, the level-up pop and both toasts are ONE set of screens
@@ -473,6 +488,7 @@
         );
       }).then(function () {
         App.applyKit();
+        App.paintHubName();
         return true;
       }).catch(function () { return false; });
     });
@@ -1447,7 +1463,7 @@
       '<div class="finish-glyph">&#127942;</div>' +
       '<h2>Mission complete</h2><p class="badge-pop-name">' + esc(s.lesson.title) + '</p>' +
       '<p class="badge-pop-xp">' + App.state.xp + ' XP total</p>' +
-      '<button class="primary-btn" type="button">Back to Mission Control</button></div>';
+      '<button class="primary-btn" type="button">Back to ' + esc(App.hubName()) + '</button></div>';
     document.body.appendChild(ov);
     App.armButton(ov.querySelector('button'), function () {   // DFM 104
       ov.remove();

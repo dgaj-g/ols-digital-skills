@@ -4593,18 +4593,50 @@
       var cfg = chunk.config || {};
       var scenes = cfg.scenes || [];
       var si = 0;
+      /* XP IS CARRIED TO THE BADGE, NOT SPENT AS IT IS EARNED. The first cut
+         called ctx.addXp() per scene — and the player's context has no such
+         method, so every flag she got right would have scored nothing and
+         nothing on screen would have said so. Content that names a field the
+         engine ignores fails silently and looks fine in the JSON (DFM 155). It
+         now accumulates and rides the chunk's own badge, the pattern every
+         other scoring engine here uses. */
+      var earned = 0;
+      /* THE SIX RULES ARE STATED BEFORE SHE IS TESTED ON THEM. Found by the
+         cold read, 16 Aug 2026: the inspection was asking her to judge a room
+         against six rules the lesson had never put on a screen. That is rule 31
+         (teach before test) broken by the activity the lesson is built around,
+         and it is also the half of his K4 ruling that says the rules are
+         RE-COVERED and then tested. `rules` renders as a real numbered list
+         (DFM 171) and `after` is the prose that follows it. */
       introCard(host, {
         kicker: chunk.title,
         title: (cfg.introTitle || chunk.title),
         text: cfg.intro || '',
-        steps: cfg.steps || null,
-        stepsClass: 'insp-intro-steps'
+        steps: cfg.rules || null,
+        stepsClass: 'insp-rules',
+        /* `after` carries more than one paragraph, and introCard's own after
+           field is a single <p> — so the paragraphs are built here rather than
+           run together into one wall of text on the screen she reads first. */
+        extra: String(cfg.after || '').split(/\n\s*\n/).filter(Boolean)
+          .map(function (para) { return '<p class="intro-lead">' + esc(para.trim()) + '</p>'; }).join('') +
+          (cfg.steps && cfg.steps.length
+            ? '<p class="insp-how-lead">How the inspection works:</p><ol class="insp-intro-steps">' +
+              cfg.steps.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol>'
+            : '')
       }, cfg.begin || 'Start the inspection', showScene);
 
       function showScene() {
         host.innerHTML = '';
         var sc = scenes[si];
-        if (!sc) { finishChunk(ctx); return; }
+        if (!sc) {
+          var badge = Object.assign({}, ctx.chunk.badge || {},
+            { xp: Number((ctx.chunk.badge || {}).xp || 0) + earned });
+          if (ctx.chunk.badge) {
+            ctx._finished = true;
+            ctx.awardBadge(badge, 'insp=' + earned).then(function () { ctx.next(); });
+          } else finishChunk(ctx, 'insp=' + earned);
+          return;
+        }
         var flagged = {};
         var filed = false;
 
@@ -4720,8 +4752,7 @@
         rep.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
         App.armButton(rep.querySelector('.insp-next'), function () {
-          var xp = found * (sc.xpPerFlag || 0) + (found === total ? (sc.xpClean || 0) : 0);
-          ctx.addXp ? ctx.addXp(xp) : 0;
+          earned += found * (sc.xpPerFlag || 0) + (found === total ? (sc.xpClean || 0) : 0);
           si += 1;
           showScene();
         });

@@ -596,6 +596,18 @@
   ]
  },
  "kitsNote": "EVERY WORD ON THE SHARED KIT SURFACES LIVES HERE (his K1 ruling, extended 16 Aug). The kit modal, the level-up pop and both toasts are ONE set of screens serving three years, and J1's agent fiction is J1's alone (DFM 25: a word she must decode before she can reach the content is a cost, not fun). So the rank word, the pop title, the pop body, both toasts and the footer are registry text, not literals in app.js - which also ends the DFM 162b class, where a sentence split across two JavaScript strings renders perfectly and greps to nothing. J1's values reproduce its approved wording character for character (DFM 87/81), proved by a rendered comparison in qa-j1-unchanged.js, never by reading the source. TOKENS: {level} is the level number, {short} the XP still to go.",
+ "hubsNote": "THE HUB'S OWN NAME, per year. Found by the J2 Lesson 1 cold read, 16 Aug 2026: the back button in index.html is the literal \"Mission Control\", which is J1's fiction (DFM 57 kept the name FOR J1 and required the lesson to explain it). A J2 pupil was going to meet a button named after another year's story, and the lesson step telling her to click \"Back to the year map\" named a button that did not exist - rule 35 on both sides at once. J1's value reproduces the shipped label character for character.",
+ "hubs": {
+  "j1": {
+   "name": "Mission Control"
+  },
+  "j2": {
+   "name": "Year map"
+  },
+  "j3": {
+   "name": "Year map"
+  }
+ },
  "kits": {
   "j1": {
    "name": "Agent Kit",

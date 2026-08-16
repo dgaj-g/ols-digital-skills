@@ -1681,6 +1681,16 @@ function runControls() {
   control(/an 11 or 12-year-old/.test(j2Prompt),
     'and the UNREVIEWED prompt a J2 string produces asks it as ' + readerFor('j2') +
     ' — the question in front of the judge is the ruled one');
+  /* THE WRITING END OF THE SAME CONTRACT. ledger-tool.js prints the reader when
+     it asks for a judgement; if its table drifts from this one, a record gets
+     written against a question this gate is not asking, and nothing would say
+     so (DFM 157a: a rule in two places is a contract, and a harness holds the
+     copies equal or one of them is lying). */
+  const toolSrc = fs.readFileSync(path.join(__dirname, 'ledger-tool.js'), 'utf8');
+  control(/const READERS = \{ j1: J1_READER, j2: J1_READER, j3: J1_READER \}/.test(toolSrc),
+    'and ledger-tool.js — the WRITING end — reads every year at the same one profile');
+  control(!/12 or 13-year-old|13 or 14-year-old/.test(toolSrc),
+    'with neither retired profile left in it either');
   /* the ledger really reaches hub text, in both directions */
   const j2Tag = hubPath('j2-01 › manifest › tagline');
   control(hubLedgerCheck([{ path: 'x › manifest › tagline', text: 'Anything.', year: 'j2', locked: false }], { entries: {} })
