@@ -14,7 +14,77 @@
     "accent": "#FFD84D",
     "ratio": 0.12
    },
-   "year": "all"
+   "year": "j1"
+  },
+  {
+   "id": "workbench",
+   "name": "The Workbench",
+   "tag": "The Workshop after hours. Iron and copper, with sparks drifting up.",
+   "clearance": 1,
+   "vars": {
+    "--gold": "#E8963C",
+    "--gold-hi": "#FFB45C",
+    "--gold-deep": "#A85E1B",
+    "--gold-rgb": "232, 150, 60",
+    "--gold-hi-rgb": "255, 180, 92",
+    "--accent-ink": "#2A1502",
+    "--space-0": "#150C05",
+    "--space-1": "#1F1309",
+    "--space-2": "#2A1A0D",
+    "--space-3": "#382312",
+    "--space-deep": "#0D0703",
+    "--text-d": "#F4EDE3",
+    "--muted-d": "#CDB89C",
+    "--glass-d": "rgba(48, 30, 16, 0.55)",
+    "--glass-d-solid": "rgba(38, 24, 12, 0.85)",
+    "--line-d": "rgba(230, 196, 150, 0.16)",
+    "--panel": "rgba(52, 33, 18, 0.72)",
+    "--panel-hover": "rgba(66, 42, 23, 0.72)",
+    "--topbar-bg": "rgba(21, 12, 5, 0.72)",
+    "--toast-bg": "rgba(42, 26, 13, 0.92)",
+    "--aurora-b-color": "rgba(232, 150, 60, 0.40)",
+    "--bg-glow-b": "rgba(232, 150, 60, 0.09)"
+   },
+   "stars": {
+    "density": 11000,
+    "base": "#FFC584",
+    "accent": "#FF9D5C",
+    "ratio": 0.14
+   },
+   "fx": "embers",
+   "year": "j2"
+  },
+  {
+   "id": "screeningroom",
+   "name": "The Screening Room",
+   "tag": "House lights down, plum velvet everywhere, one beam across the room.",
+   "clearance": 1,
+   "vars": {
+    "--space-0": "#120711",
+    "--space-1": "#1A0B18",
+    "--space-2": "#251020",
+    "--space-3": "#32162B",
+    "--space-deep": "#0A040A",
+    "--text-d": "#F2ECF4",
+    "--muted-d": "#C9AEC2",
+    "--glass-d": "rgba(45, 22, 40, 0.55)",
+    "--glass-d-solid": "rgba(36, 17, 32, 0.85)",
+    "--line-d": "rgba(220, 190, 215, 0.16)",
+    "--panel": "rgba(48, 24, 42, 0.72)",
+    "--panel-hover": "rgba(62, 32, 55, 0.72)",
+    "--topbar-bg": "rgba(18, 7, 17, 0.72)",
+    "--toast-bg": "rgba(37, 16, 32, 0.92)",
+    "--aurora-b-color": "rgba(255, 240, 210, 0.32)",
+    "--bg-glow-b": "rgba(255, 240, 210, 0.07)"
+   },
+   "stars": {
+    "density": 14000,
+    "base": "#F5E6EE",
+    "accent": "#FFD84D",
+    "ratio": 0.1
+   },
+   "fx": "spotlight",
+   "year": "j3"
   },
   {
    "id": "emerald",
@@ -525,19 +595,51 @@
    }
   ]
  },
+ "kitsNote": "EVERY WORD ON THE SHARED KIT SURFACES LIVES HERE (his K1 ruling, extended 16 Aug). The kit modal, the level-up pop and both toasts are ONE set of screens serving three years, and J1's agent fiction is J1's alone (DFM 25: a word she must decode before she can reach the content is a cost, not fun). So the rank word, the pop title, the pop body, both toasts and the footer are registry text, not literals in app.js - which also ends the DFM 162b class, where a sentence split across two JavaScript strings renders perfectly and greps to nothing. J1's values reproduce its approved wording character for character (DFM 87/81), proved by a rendered comparison in qa-j1-unchanged.js, never by reading the source. TOKENS: {level} is the level number, {short} the XP still to go.",
  "kits": {
   "j1": {
    "name": "Agent Kit",
-   "explainer": "Your Agent Kit is kind of like this website’s own wardrobe or costumes!"
+   "explainer": "Your Agent Kit is kind of like this website’s own wardrobe or costumes!",
+   "rankWord": "Clearance",
+   "popTitle": "Clearance upgraded",
+   "popBody": "It holds the looks and badge designs your console can wear, unlocked as your XP grows. This clearance has just unlocked new ones. Open it to try them on — you can change your look any time from your name chip, top right.",
+   "savedToast": "Equipped — saved to your Agent File.",
+   "lockedToast": "Locked — Clearance {level} kit. {short} XP to go, Agent.",
+   "foot": "Click to equip — every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks more kit.",
+   "insigniaLabel": "Insignia",
+   "insigniaNote": "shows beside your codename",
+   "insigniaLockedToast": "That insignia is above your clearance.",
+   "nameFallback": "Agent"
   },
   "j2": {
-   "name": "The Workshop",
-   "explainer": "The Workshop is kind of like this website’s own toolbench. Finish lessons and you earn new looks for your screen, and they are yours to keep."
+   "name": "The Kit Locker",
+   "explainer": "The Kit Locker is your own locker in the Workshop. Finish lessons and you earn new looks for your screen. They hang in here, and they are yours to keep.",
+   "rankWord": "Level",
+   "popTitle": "New level reached",
+   "popBody": "It holds the looks your screen can wear, and you unlock more as your XP grows. This level has just unlocked new ones. Open the locker to try them on. You can change your look any time from your name chip, top right.",
+   "savedToast": "Equipped — saved to your Kit Locker.",
+   "lockedToast": "Locked — this look needs Level {level}. {short} XP to go.",
+   "foot": "Click to equip. Every choice saves by itself. You earn XP by finishing lessons and getting your checks right, and a higher level unlocks more looks.",
+   "insigniaLabel": "Symbol",
+   "insigniaNote": "shows beside your name",
+   "insigniaLockedToast": "That symbol is above your level.",
+   "nameFallback": "You"
   },
   "j3": {
-   "name": "The Studio",
-   "explainer": "The Studio is where your earned looks live. Finish lessons and the collection grows, and anything you have unlocked stays yours."
+   "name": "Wardrobe",
+   "explainer": "Every real studio has a Wardrobe department. This is yours. The looks you have earned live here, and anything you unlock stays yours.",
+   "rankWord": "Level",
+   "popTitle": "New level reached",
+   "popBody": "It holds the looks your screen can wear, and more unlock as your XP grows. This level has just unlocked new ones. Open Wardrobe to try them on. You can change your look any time from your name chip, top right.",
+   "savedToast": "Equipped — saved to your Wardrobe.",
+   "lockedToast": "Locked — this look needs Level {level}. {short} XP to go.",
+   "foot": "Click to equip. Every choice saves by itself. You earn XP by finishing lessons and getting your checks right, and a higher level unlocks more looks.",
+   "insigniaLabel": "Symbol",
+   "insigniaNote": "shows beside your name",
+   "insigniaLockedToast": "That symbol is above your level.",
+   "nameFallback": "You"
   }
  },
+ "worldNote": "PER-YEAR DEFAULT WORLDS (his DFM 224b ask - \"Each Year group must have it's own distinctive background colour. A soft animation would be great as well\" - ruled to these two worlds as K11a, 15 Aug 2026). Each year has a level-1 BASE LOOK, which is an ordinary theme in this registry: j1 midnight (untouched), j2 workbench \"The Workbench\" (forge charcoal and copper, embers drifting up), j3 screeningroom \"The Screening Room\" (plum velvet and marquee gold, one beam sweeping). A pupil record stores '' for \"the default\", and app.js resolves '' through App.defaultThemeId, so the SAME stored value opens three different worlds. midnight is re-tagged j1 (it was \"all\"), which also kills the stray \"classic HQ interface\" line from a J2 or J3 wardrobe - the exact agent word DFM 223b removed from the side quest. J1 IS UNCHANGED BY CONSTRUCTION AND BY PROOF: midnight overrides no custom properties and its starfield equals the shell's STAR_DEFAULTS value for value, so resolving to it paints the same screen the stylesheet always painted - asserted in rendered pixels by qa-j1-unchanged.js, not claimed. Palettes and their computed contrast are binding from J2J3_DESIGN_ROUND_PROPOSALS.md section A; the authority at build is qa-readability on rendered pixels, never these numbers. The two fx layers (embers, spotlight) animate transform and opacity only - the Chrome compositor rule that keeps old C2k machines from going black.",
  "yearNote": "PER-YEAR REGISTRY (his K1 ruling, 14 Aug 2026: the J2 and J3 rewards must be different from J1’s, in what they are and what they are called). clearancesByYear holds one rank ladder per year; every theme and insignia carries a year tag, and a look may be equipped only when its tag is \"all\" or matches the class’s year - enforced on the server as well as the client, so a DevTools call cannot cross years. J2 and J3 ship with level 1 ONLY: their level-2 threshold is computed from that year’s BUILT Lesson 1 floor path (DFM 165 - never from memory), so it does not exist until that lesson does, and the kit modal therefore promises nothing it cannot keep (rule 35)."
 }

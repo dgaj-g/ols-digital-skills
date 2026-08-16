@@ -251,14 +251,39 @@
     d.setAttribute('aria-hidden', 'true');
     if (fx === 'comets') d.innerHTML = '<span class="fx-comet c1"></span><span class="fx-comet c2"></span><span class="fx-comet c3"></span>';
     else if (fx === 'aurora') d.innerHTML = '<span class="fx-band"></span>';
+    else if (fx === 'embers') d.innerHTML = '<span class="fx-ember e1"></span><span class="fx-ember e2"></span>' +
+      '<span class="fx-ember e3"></span><span class="fx-ember e4"></span><span class="fx-ember e5"></span>' +
+      '<span class="fx-ember e6"></span>';
+    else if (fx === 'spotlight') d.innerHTML = '<span class="fx-beam"></span><span class="fx-motes"></span>';
     document.body.appendChild(d);
   }
+  /* ---------------- the DEFAULT look is the YEAR's, not J1's ----------------
+     DAMIEN, 14 Aug 2026 (DFM 224b): "Each Year group must have it's own
+     distinctive background colour. A soft animation would be great as well."
+     Ruled to two worlds on 15 Aug (K11a): J2 opens on The Workbench, J3 on The
+     Screening Room, J1's night sky untouched.
+     A pupil record stores '' for "I have not chosen a look", and until now ''
+     meant J1's midnight everywhere — which is exactly why a J2 girl was opening
+     into another year's world. So '' RESOLVES here, in one place, and every
+     reader downstream (the painter, the wardrobe's Equipped mark, the equip
+     itself) asks this function rather than naming a theme.
+     WHY THIS IS SAFE FOR J1, and it is the risky half: today a pupil on ''
+     receives NO theme object and the stylesheet's own :root values paint the
+     screen; now she receives midnight by name. Those are the same screen only
+     because midnight overrides no custom properties and its starfield equals
+     STAR_DEFAULTS — which is asserted in rendered pixels by qa-j1-unchanged.js
+     and value-for-value by qa-year-worlds.js, never assumed. */
+  var YEAR_DEFAULT_THEME = { 'j1': 'midnight', 'j2': 'workbench', 'j3': 'screeningroom' };
+  App.defaultThemeId = function (year) {
+    var y = String(year || (App.state && App.state.year) || 'j1');
+    return YEAR_DEFAULT_THEME[y] || YEAR_DEFAULT_THEME.j1;
+  };
   App.applyKit = function () {
     var s = App.state;
     var root = document.documentElement;
     appliedVars.forEach(function (v) { root.style.removeProperty(v); });
     appliedVars = [];
-    var theme = kitTheme_(s.me && s.me.th);
+    var theme = kitTheme_((s.me && s.me.th) || App.defaultThemeId());
     var vars = (theme && theme.vars) || {};
     Object.keys(vars).forEach(function (k) {
       if (k.indexOf('--') !== 0) return; // custom properties only
@@ -322,6 +347,43 @@
   App.kitName = function () {
     return ((App.state.kit || {}).kit || {}).name || 'Agent Kit';
   };
+  /* ---- and so is every other word on the shared kit surfaces ----------------
+     The kit modal, the level-up pop and both toasts are ONE set of screens
+     serving three years, and J1's agent fiction is J1's alone (K1; DFM 25). A
+     literal here reaches a J2 girl as vocabulary she must decode before she can
+     read her own reward. So the rank word, the pop title and body, both toasts
+     and the footer are registry text — which also ends the DFM 162b class,
+     where a sentence split across two JavaScript strings renders perfectly and
+     greps to nothing.
+     The FALLBACKS are J1's exact wording, deliberately: a browser holding a
+     themes.json cached from before this change (DFM 189 — up to five minutes)
+     must still show a whole sentence rather than a blank. */
+  var KIT_WORD_FALLBACK = {
+    rankWord: 'Clearance',
+    popTitle: 'Clearance upgraded',
+    popBody: 'It holds the looks and badge designs your console can wear, unlocked as your XP grows. ' +
+      'This clearance has just unlocked new ones. Open it to try them on — you can change your look ' +
+      'any time from your name chip, top right.',
+    savedToast: 'Equipped — saved to your Agent File.',
+    insigniaLabel: 'Insignia',
+    insigniaNote: 'shows beside your codename',
+    insigniaLockedToast: 'That insignia is above your clearance.',
+    nameFallback: 'Agent',
+    lockedToast: 'Locked — Clearance {level} kit. {short} XP to go, Agent.',
+    /* ONE literal per sentence, deliberately: a phrase split across two
+       JavaScript strings renders perfectly and greps to nothing (DFM 162b), and
+       that is how a banned wording once survived a sweep. */
+    foot: 'Click to equip — every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks more kit.'
+  };
+  function kitWord_(key, tokens) {
+    var k = (App.state.kit || {}).kit || {};
+    var s = String(k[key] != null && k[key] !== '' ? k[key] : (KIT_WORD_FALLBACK[key] || ''));
+    if (tokens) Object.keys(tokens).forEach(function (t) {
+      s = s.split('{' + t + '}').join(String(tokens[t]));
+    });
+    return s;
+  }
+  App.kitWord = kitWord_;
 
   /* Clearance ladder position for a given XP (clearances are ascending). */
   App.clearanceFor = function (xp) {
@@ -712,8 +774,9 @@
     ov.className = 'badge-pop';
     ov.innerHTML = '<div class="badge-pop-card">' +
       '<div class="finish-glyph">&#127894;&#65039;</div>' +
-      '<h2>Clearance upgraded</h2>' +
-      '<p class="badge-pop-name">Clearance ' + Number(rank.level) + ' &mdash; ' + esc(rank.name) + '</p>' +
+      '<h2>' + esc(kitWord_('popTitle')) + '</h2>' +
+      '<p class="badge-pop-name">' + esc(kitWord_('rankWord')) + ' ' + Number(rank.level) +
+      ' &mdash; ' + esc(rank.name) + '</p>' +
       /* DAMIEN, 31 Jul 2026: a pupil has never met the term "Agent Kit", so the
          old line explained nothing and the button asked her to open something she
          could not picture. His wording, verbatim. The last sentence is true:
@@ -724,9 +787,7 @@
          exactly, so his approved sentence is unchanged on a J1 screen — proved by
          a rendered comparison, not by reading the source. */
       '<p class="clearance-sub">' + esc(((App.state.kit || {}).kit || {}).explainer || '') +
-      ' It holds the looks and badge designs your console can wear, unlocked as your XP ' +
-      'grows. This clearance has just unlocked new ones. Open it to try them on &mdash; you can ' +
-      'change your look any time from your name chip, top right.</p>' +
+      ' ' + esc(kitWord_('popBody')) + '</p>' +
       '<div class="confirm-actions">' +
       '<button class="ghost-btn" data-act="later" type="button">Later</button>' +
       '<button class="primary-btn" data-act="open" type="button">Open ' + esc(App.kitName()) + '</button>' +
@@ -769,7 +830,8 @@
     var head = '<div class="kit-rank">' +
       '<div class="kit-rank-badge">' + Number(pos.cur.level) + '</div>' +
       '<div class="kit-rank-text">' +
-      '<span class="kit-rank-name">Clearance ' + Number(pos.cur.level) + ' &mdash; ' + esc(pos.cur.name) + '</span>' +
+      '<span class="kit-rank-name">' + esc(kitWord_('rankWord')) + ' ' + Number(pos.cur.level) +
+      ' &mdash; ' + esc(pos.cur.name) + '</span>' +
       '<span class="kit-rank-xp">' + Number(s.xp) + ' XP</span>' +
       '</div></div>';
     if (pos.next) {
@@ -777,10 +839,12 @@
       var into = Math.max(0, Number(s.xp) - Number(pos.cur.xp));
       var pct = span > 0 ? Math.min(100, Math.round(100 * into / span)) : 0;
       head += '<div class="kit-next"><div class="kit-next-track"><div class="kit-next-fill" style="width:' + pct + '%"></div></div>' +
-        '<span class="kit-next-label">' + Math.max(0, Number(pos.next.xp) - Number(s.xp)) + ' XP to Clearance ' +
+        '<span class="kit-next-label">' + Math.max(0, Number(pos.next.xp) - Number(s.xp)) + ' XP to ' +
+        esc(kitWord_('rankWord')) + ' ' +
         Number(pos.next.level) + ' &mdash; ' + esc(pos.next.name) + '</span></div>';
     } else {
-      head += '<div class="kit-next"><span class="kit-next-label maxed">Top clearance reached. Legend.</span></div>';
+      head += '<div class="kit-next"><span class="kit-next-label maxed">Top ' +
+        esc(kitWord_('rankWord').toLowerCase()) + ' reached. Legend.</span></div>';
     }
 
     // interface themes
@@ -795,7 +859,7 @@
     var themes = (reg.themes || []).map(function (t) {
       var needXp = kitClearanceXp_(t.clearance);
       var unlocked = ever >= needXp;
-      var equipped = curTh ? String(t.id) === curTh : String(t.id) === 'midnight';
+      var equipped = curTh ? String(t.id) === curTh : String(t.id) === App.defaultThemeId();
       var v = t.vars || {};
       var pv = '--pv0:' + (v['--space-0'] || '#060D1F') + ';--pv2:' + (v['--space-2'] || '#102040') + ';--pva:' + (v['--gold-hi'] || '#FFD84D');
       return '<button type="button" class="kit-theme' + (unlocked ? '' : ' is-locked') + (equipped ? ' is-equipped' : '') + '"' +
@@ -805,7 +869,8 @@
         '<span class="kit-theme-tag">' + esc(t.tag || '') + '</span>' +
         (equipped ? '<span class="kit-state on">Equipped</span>'
           : unlocked ? '<span class="kit-state go">Click to equip</span>'
-          : '<span class="kit-state lock">&#128274; Clearance ' + Number(t.clearance) + ' &middot; ' + needXp + ' XP</span>') +
+          : '<span class="kit-state lock">&#128274; ' + esc(kitWord_('rankWord')) + ' ' +
+            Number(t.clearance) + ' &middot; ' + needXp + ' XP</span>') +
         '</button>';
     }).join('');
 
@@ -827,8 +892,9 @@
 
     body.innerHTML = head +
       '<h3 class="kit-section">Interface</h3><div class="kit-themes">' + themes + '</div>' +
-      '<h3 class="kit-section">Insignia <small>shows beside your codename</small></h3><div class="kit-chips">' + chips + '</div>' +
-      '<p class="kit-foot">Click to equip &mdash; every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks more kit.</p>' +
+      '<h3 class="kit-section">' + esc(kitWord_('insigniaLabel')) + ' <small>' +
+      esc(kitWord_('insigniaNote')) + '</small></h3><div class="kit-chips">' + chips + '</div>' +
+      '<p class="kit-foot">' + esc(kitWord_('foot')) + '</p>' +
       '<div class="confirm-actions" style="margin-top:6px"><button type="button" class="primary-btn" id="kit-done">Done</button></div>';
 
     body.querySelectorAll('.kit-theme').forEach(function (el) {
@@ -844,7 +910,7 @@
   function lockedNudge_(el, clearance, needXp) {
     el.classList.remove('wobble'); void el.offsetWidth; el.classList.add('wobble');
     var short = Math.max(0, needXp - Number(App.state.xp));
-    App.toast('Locked — Clearance ' + clearance + ' kit. ' + short + ' XP to go, Agent.', 3200);
+    App.toast(kitWord_('lockedToast', { level: clearance, short: short }), 3200);
   }
 
   /* Equip = optimistic apply (instant, feels great) + server save; on a server
@@ -856,7 +922,7 @@
     if (!th) return;
     if (el.classList.contains('is-locked')) { lockedNudge_(el, Number(th.clearance), kitClearanceXp_(th.clearance)); return; }
     var prev = (s.me && s.me.th) || '';
-    var next = (id === 'midnight') ? '' : id; // default stored as '' (record stays lean)
+    var next = (id === App.defaultThemeId()) ? '' : id; // her year's default is stored as '' (record stays lean)
     if (prev === next) return;
     s.me.th = next;
     App.applyKit();
@@ -868,7 +934,7 @@
         renderKit();
         App.toast(r && r.error === 'kit-locked' ? 'That kit is above your clearance.' : 'Could not save your kit — try again.');
       } else {
-        App.toast('Equipped — saved to your Agent File.', 2000);
+        App.toast(kitWord_('savedToast'), 2000);
       }
     });
   }
@@ -889,9 +955,9 @@
         s.me.fx = prev;
         App.applyKit();
         renderKit();
-        App.toast(r && r.error === 'kit-locked' ? 'That insignia is above your clearance.' : 'Could not save your kit — try again.');
+        App.toast(r && r.error === 'kit-locked' ? kitWord_('insigniaLockedToast') : 'Could not save your kit — try again.');
       } else {
-        App.toast('Equipped — saved to your Agent File.', 2000);
+        App.toast(kitWord_('savedToast'), 2000);
       }
     });
   }
@@ -915,7 +981,10 @@
     if (!el) return;
     var real = realFirstName();
     var codename = s.codename ? 'Agent ' + s.codename : '';
-    el.textContent = (s.showRealName && real) ? real : (codename || real || 'Agent');
+    /* the last fallback is a nameless record, which the school's own accounts
+       never produce — but "Agent" is J1's word, so even the unreachable case is
+       the year's own (K1). */
+    el.textContent = (s.showRealName && real) ? real : (codename || real || kitWord_('nameFallback'));
     var on = canToggleName();
     el.classList.toggle('name-toggle', on);
     el.setAttribute('title', !on ? '' : (s.showRealName

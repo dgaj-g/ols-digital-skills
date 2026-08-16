@@ -57,15 +57,29 @@ const control = (failed, m) => {
 };
 
 /* ------------------------------------------------------------------ *
- * THE READER. DFM 178(b): the reader ages up with the year group. The
- * register laws (138) hold at every age; the LEVEL calibrates. Every
- * failure message and every ledger prompt names the right reader, so
- * nobody writing J2 text is silently judging it as an 11-year-old's.
+ * THE READER — ONE, FOR THE WHOLE PLATFORM, AND IT IS J1's.
+ *
+ * DFM 178(b) had the reader ageing up with the year group (J2 12/13,
+ * J3 13/14). HIS K10 RULING, 15 Aug 2026, amends it in his own words:
+ *   "the same reading age that we have for J1 is perfectly fine for
+ *    both J2 and J3. So, really, there doesn't have to be anything more
+ *    complicated."
+ * So every pupil-facing sentence on the platform, in every year, is
+ * written to and judged at the eleven-or-twelve-year-old. What stays
+ * per-year is VOICE only — J2's builder voice, J3's junior-professional
+ * voice — and tone never buys a harder sentence.
+ *
+ * THE TABLE IS KEPT, rather than collapsed to a constant, for two
+ * reasons: the failure messages and ledger prompts still name a reader
+ * per year (so nothing reads as if the year were unknown), and the day
+ * he rules otherwise for one year, the change is one line in one place
+ * rather than a hunt (DFM 144).
  * ------------------------------------------------------------------ */
+const J1_READER = 'an 11 or 12-year-old';
 const READERS = {
-  j1: 'an 11 or 12-year-old',
-  j2: 'a 12 or 13-year-old',
-  j3: 'a 13 or 14-year-old'
+  j1: J1_READER,
+  j2: J1_READER,   /* K10 — was 'a 12 or 13-year-old' */
+  j3: J1_READER    /* K10 — was 'a 13 or 14-year-old' */
 };
 const readerFor = (year) => READERS[year] || READERS.j1;
 
@@ -1644,6 +1658,29 @@ function runControls() {
   /* a banned word in a planted tagline must fail, judged at the right age */
   control(lexiconCheck('Just tap the tile to start this lesson.').length >= 1,
     'a banned word planted in a manifest tagline is caught (the "tap" ban, DFM 150)');
+
+  /* ---- HIS K10 RULING, CONTROLLED BOTH WAYS (15 Aug 2026) ----------------
+     "the same reading age that we have for J1 is perfectly fine for both J2
+     and J3." The table above was per-year; if it silently drifted back, J2 and
+     J3 text would be judged at an older reader than he has ruled for, and the
+     drift would be invisible — the sentences would still pass. So the reader
+     is asserted in BOTH directions: it IS J1's for every year, and no message
+     this gate can emit names either of the two retired profiles. */
+  control(readerFor('j2') === readerFor('j1') && readerFor('j3') === readerFor('j1'),
+    'K10: J2 and J3 are read at J1\'s reader — ' + readerFor('j2') + ' — one profile, every year');
+  control(readerFor('j1') === J1_READER && Object.keys(READERS).length === 3,
+    'and J1\'s own reader is untouched by the repoint (the over-tightening guard)');
+  const retired = Object.values(READERS).filter(r => /12 or 13|13 or 14/.test(r));
+  control(retired.length === 0,
+    'neither retired profile survives anywhere in the table — a J2 string can no longer be ' +
+    'judged as a 12 or 13-year-old\'s by accident');
+  /* and the prompt a pupil-facing J2 string actually produces must say so, or
+     the ruling lives in a constant nobody reads (DFM 195b: a rule with no
+     enforcement home is a defect) */
+  const j2Prompt = 'Ask it as ' + readerFor('j2');
+  control(/an 11 or 12-year-old/.test(j2Prompt),
+    'and the UNREVIEWED prompt a J2 string produces asks it as ' + readerFor('j2') +
+    ' — the question in front of the judge is the ruled one');
   /* the ledger really reaches hub text, in both directions */
   const j2Tag = hubPath('j2-01 › manifest › tagline');
   control(hubLedgerCheck([{ path: 'x › manifest › tagline', text: 'Anything.', year: 'j2', locked: false }], { entries: {} })

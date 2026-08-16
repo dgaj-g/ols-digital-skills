@@ -95,8 +95,14 @@ const oldView = { clearances: before.clearances, themes: before.themes, insignia
 
 section('J2 AND J3 ARE GENUINELY DIFFERENT (his K1 ruling)');
 const j2 = resolve(reg, 'j2'), j3 = resolve(reg, 'j3');
-check(j2.kit.name === 'The Workshop' && j3.kit.name === 'The Studio',
+/* HIS K11b RULING, 15 Aug 2026 supersedes the 14-Aug working names: the YEAR
+   identities keep The Workshop / The Studio, and the WARDROBES get their own
+   names, because "J2 · The Workshop" above a button that also opens "The
+   Workshop" gives a pupil two true answers to one question (rule 52). */
+check(j2.kit.name === 'The Kit Locker' && j3.kit.name === 'Wardrobe',
   'the kit is named per year: ' + j2.kit.name + ' / ' + j3.kit.name + ' — not an Agent Kit');
+check(j2.kit.name !== 'The Workshop' && j3.kit.name !== 'The Studio',
+  'and neither wardrobe shares its name with its own year (his K11b ruling)');
 check(!/agent/i.test(j2.kit.explainer) && !/agent/i.test(j3.kit.explainer),
   'and neither explaining sentence uses the agent fiction (DFM 25 — a word she must decode is a cost)');
 check(j2.clearances[0].name === 'Apprentice' && j3.clearances[0].name === 'Rookie',
@@ -120,10 +126,16 @@ section('NOTHING PROMISES A LEVEL THAT DOES NOT EXIST (rule 35)');
     y + '\'s every insignia points at a level that exists');
   check(v.themes.length >= 1, y + ' still has something to wear (' + v.themes.map(t => t.id).join(',') + ')');
 });
-check(j2.themes.length === 1 && j2.themes[0].id === 'midnight',
-  'a J2 pupil at 0 XP wears midnight and sees no J1 costume at all');
-check(j3.themes.length === 1 && j3.themes[0].id === 'midnight',
-  'and so does a J3 pupil');
+/* AMENDED BY K11a (15 Aug): each year now has its OWN level-1 base look, so a
+   J2 pupil at 0 XP no longer borrows J1's midnight — she opens on The Workbench.
+   What has NOT changed is the thing this check was really for: she sees no J1
+   costume at all. */
+check(j2.themes.length === 1 && j2.themes[0].id === 'workbench',
+  'a J2 pupil at 0 XP wears The Workbench and sees no J1 costume at all');
+check(j3.themes.length === 1 && j3.themes[0].id === 'screeningroom',
+  'and a J3 pupil wears The Screening Room');
+check(!j2.themes.some(t => t.id === 'midnight') && !j3.themes.some(t => t.id === 'midnight'),
+  'and midnight, re-tagged j1, is in neither year\'s wardrobe — so its "classic HQ interface" line reaches nobody but J1');
 
 section('CONTROL — a year may not wear another year\'s looks');
 const j1Only = reg.themes.find(t => t.year === 'j1');
