@@ -49,7 +49,12 @@ const SRC = process.env.KS3DT_SRC ||
 const LEDGER_FILE = path.join(SRC, 'language-ledger.json');
 const sha1 = (s) => crypto.createHash('sha1').update(s, 'utf8').digest('hex').slice(0, 16);
 
-const READERS = { j1: 'an 11 or 12-year-old', j2: 'a 12 or 13-year-old', j3: 'a 13 or 14-year-old' };
+/* HIS K10 RULING, 15 Aug 2026: one reading age for the whole platform, and it
+   is J1's. This table is the WRITING end of the same contract qa-language.js
+   reads at; if the two ever disagree, a judgement gets written against a
+   question the gate is not asking. qa-language asserts they agree. */
+const J1_READER = 'an 11 or 12-year-old';
+const READERS = { j1: J1_READER, j2: J1_READER, j3: J1_READER };
 /* The string COLLECTOR is qa-language.js's too — same reason as the walk below.
    This file used to carry a copy "that mirrors qa-language.js exactly", which is
    a promise no comment can keep. */

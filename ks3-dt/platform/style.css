@@ -2791,3 +2791,11 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   padding-left: 26px; max-width: 46ch; display: flex; flex-direction: column; gap: 9px; }
 .insp-intro-steps li { padding-left: 4px; line-height: 1.5; }
 .insp-intro-steps li::marker { font-weight: 800; color: var(--ols-blue); }
+
+/* the six room rules, stated before she is tested on them */
+.insp-rules { list-style: decimal; text-align: left; margin: 6px auto 14px;
+  padding-left: 26px; max-width: 52ch; display: flex; flex-direction: column; gap: 9px; }
+.insp-rules li { padding-left: 4px; line-height: 1.5; }
+.insp-rules li::marker { font-weight: 800; color: var(--ols-blue); }
+.insp-how-lead { font-weight: 700; margin: 16px 0 4px; text-align: left; max-width: 46ch;
+  margin-left: auto; margin-right: auto; }
