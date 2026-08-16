@@ -31,7 +31,20 @@ const { AUDIT, EXPLAIN_PX } = require('./qa-no-mute-locks.js');
 
 const args = process.argv.slice(2);
 const argOf = (n, d) => { const i = args.indexOf(n); return i === -1 ? d : args[i + 1]; };
-const LESSON = String(args.find(a => /^([1-5]|S1)$/i.test(a)) || '4').toUpperCase();
+/* YEAR-QUALIFIED KEYS FROM 16 AUG 2026. J1 keeps its bare-number legacy keys
+   ('1'…'5', 'S1') because sit-review, qa-harness-coverage and COVERAGE_DEBT all
+   name its cells that way and renaming them would break six lessons' evidence
+   for nothing. Every other year is `j2-1`, `j3-1`, … so a lesson number can
+   never mean two lessons. */
+const LESSON = String(args.find(a => /^([1-5]|S1|j[23]-\d+)$/i.test(a)) || '4').toUpperCase()
+  .replace(/^J([23])-/, 'j$1-');
+const YEAR = /^j2-/.test(LESSON) ? 'j2' : /^j3-/.test(LESSON) ? 'j3' : 'j1';
+/* the seeded demo class and its first-ever-login pupil, per year (dev-server.js) */
+const CLASS = { j1: 'Demo-8A', j2: 'Demo-9A', j3: 'Demo-10A' }[YEAR];
+const PUPIL = { j1: 'anya', j2: 'aoife', j3: 'orla' }[YEAR];
+const PUPIL_KEY = { j1: 'anya.murphy@demo', j2: 'aoife.mcgrath@demo', j3: 'orla.mccann@demo' }[YEAR];
+const PUPIL_NAME = { j1: 'Anya Murphy', j2: 'Aoife McGrath', j3: 'Orla McCann' }[YEAR];
+const LESSON_NUM = LESSON.replace(/^j[23]-/, '');
 const BASE = argOf('--base', 'http://localhost:8121');
 const EXPECT_FAIL = args.includes('--expect-fail');
 /* match the tile by its LESSON NUMBER, not by a word in its title: the first
@@ -42,7 +55,9 @@ const EXPECT_FAIL = args.includes('--expect-fail');
 const TILE = {
   1: /Lesson\s*1(?!\d)/i, 2: /Lesson\s*2(?!\d)/i, 3: /Lesson\s*3(?!\d)/i,
   4: /Lesson\s*4(?!\d)/i, 5: /Lesson\s*5(?!\d)/i,
-  S1: /Files That Follow You/i
+  S1: /Files That Follow You/i,
+  'j2-1': /Lesson\s*1(?!\d)/i,
+  'j3-1': /Lesson\s*1(?!\d)/i
 };   /* the tile reads "Lesson 5Game Studio" — no space, so \b never fires */
 
 /* ---- REQUIRED COVERAGE (DFM 204, his ruling of 13 Aug 2026) ----
@@ -133,6 +148,52 @@ const LANDMARKS = {
     ['Press Night', '.gal-desk, .gal-floor, .gal-waiting, .gal-marquee-grid'],
     ['the exit check', '.q-opt, .exit-q'],
     ['the closing screen', '.se-row, .se-card, .se-submit']
+  ],
+  /* ---- J2 Lesson 1, 16 Aug 2026. Named from its own chunk list and the
+     inspect engine's rendered DOM, not from the design document. The three
+     `inspect` landmarks are the three states that matter to a confused pupil:
+     a scene with nothing flagged (the file button must explain itself rather
+     than sit dead), the report card she gets back, and the OPTIONAL fifth
+     scene, which must say it is optional AND give her the control to refuse it
+     (his K11d stretch). The chunk id is carried on every question landmark for
+     the same reason it is on J1's: the snapshot, the warrant and the exit check
+     are all drawn by one shared `.q-opt` renderer. ---- */
+  'j2-1': [
+    ['the welcome briefing', '.dossier-cta, .dossier', 'briefing'],
+    ['the workbench steps', '.confirm-step', 'workbench'],
+    ['the inspection rules card', '.insp-rules, .insp-intro-steps', 'inspection'],
+    ['an inspection scene, nothing flagged', '.insp-stage, .insp-zone', 'inspection'],
+    ['the inspection report', '.insp-report, .insp-rows', 'inspection'],
+    ['the optional Hard Inspection', '.insp-skip', 'inspection'],
+    ['the Snapshot questions', '.q-opt', 'snapshot'],
+    ['the Warrant questions', '.q-opt', 'warrant'],
+    ['the what-you-build-next card', '.confirm-step', 'next'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']
+  ],
+  /* ---- J3 Lesson 1, 16 Aug 2026, from its own chunk list and rendered DOM.
+     The three that matter most to a confused pupil: the SENIOR-CASE gate (it
+     must say the two extra cases are optional AND give her a control to
+     decline), the COMPASS BOARD before she has tapped anything (its settle
+     button is born disabled, so it has to say what unlocks it), and the
+     COMPASS RESULT, which is the one screen in the lesson that could read as a
+     verdict about her and must not.
+     The kit modal is deliberately NOT here: it is a hub surface no lesson
+     walker stands on, and "nothing promises a level that does not exist" is
+     qa-kit-years' assertion, not a landmark. ---- */
+  'j3-1': [
+    ['the welcome briefing', '.dossier-cta, .dossier', 'briefing'],
+    ['the orientation steps', '.confirm-step', 'orientation'],
+    ['a studio-code case, unanswered', '.q-opt', 'code'],
+    ['a studio-code verdict', '.q-feedback', 'code'],
+    ['the optional Senior Cases', '.stretch-skip', 'code'],
+    ['the Portfolio Zero questions', '.q-opt', 'portfolio'],
+    ['the Portfolio Zero seal card', '.seal-card', 'portfolio'],
+    ['the compass board, before any tap', '.cmp-side', 'compass'],
+    ['the compass result', '.cmp-needle', 'compass'],
+    ['the where-this-year-goes card', '.confirm-step', 'next'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']
   ]
 };
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -166,23 +227,26 @@ const WRONG = {
   const log = (m) => console.log('[wrongpath ' + LESSON + '] ' + m);
 
   /* ---- boot a fresh pupil, exactly as sit-review.js / qa-no-mute-locks do ---- */
-  const URL = BASE + '/ks3-dt/platform/index.html?class=Demo-8A&as=anya';
+  const URL = BASE + '/ks3-dt/platform/index.html?class=' + CLASS + '&as=' + PUPIL;
   await page.goto(URL, { waitUntil: 'domcontentloaded' });
   await sleep(1400);
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'domcontentloaded' });
   await sleep(2000);
-  await page.evaluate(() => {
+  await page.evaluate((seed) => {
     const db = JSON.parse(localStorage.getItem('ks3dt-dev'));
     const now = Math.floor((Date.now() - 1767225600000) / 60000);
-    for (const n of ['1', '2', '3', '4', '5', 'S1']) db.locks['Demo-8A'][n] = { u: now, on: 1 };
-    db.cfg['Demo-8A'] = db.cfg['Demo-8A'] || {};
-    db.cfg['Demo-8A'].pairing = { on: 0 };
+    db.locks = db.locks || {};
+    db.locks[seed.cls] = db.locks[seed.cls] || {};
+    for (const n of ['1', '2', '3', '4', '5', 'S1']) db.locks[seed.cls][n] = { u: now, on: 1 };
+    db.cfg[seed.cls] = db.cfg[seed.cls] || {};
+    db.cfg[seed.cls].pairing = { on: 0 };
     db.pupils = db.pupils || {};
-    db.pupils['Demo-8A:anya.murphy@demo'] = Object.assign(
-      db.pupils['Demo-8A:anya.murphy@demo'] || { n: 'Anya Murphy', cn: '', j: 1, xp: 0, g: '' }, { L: {} });
+    const k = seed.cls + ':' + seed.key;
+    db.pupils[k] = Object.assign(
+      db.pupils[k] || { n: seed.name, cn: '', j: 1, xp: 0, g: '' }, { L: {} });
     localStorage.setItem('ks3dt-dev', JSON.stringify(db));
-  });
+  }, { cls: CLASS, key: PUPIL_KEY, name: PUPIL_NAME });
   await page.reload({ waitUntil: 'domcontentloaded' });
   await sleep(2400);
   await page.evaluate(() => { const b = document.querySelector('.intro-skip'); if (b) b.click(); });
@@ -280,8 +344,9 @@ const WRONG = {
   /* the authored pass index per QA criterion, read from the packed content */
   const PASS_BY_CRIT = (() => {
     try {
-      const f = path.join(__dirname, '..', '..', 'content', 'j1', 'lessons',
-        LESSON === 'S1' ? 'j1-sq1.json' : 'j1-0' + LESSON + '.json');
+      const f = path.join(__dirname, '..', '..', 'content', YEAR, 'lessons',
+        LESSON === 'S1' ? 'j1-sq1.json'
+          : YEAR + '-' + String(LESSON_NUM).padStart(2, '0') + '.json');
       const L = JSON.parse(fs.readFileSync(f, 'utf8'));
       /* the criteria live under each contract TEMPLATE (catch/maze/quiz), and
          their ids repeat (c1..c4) across templates — same index each time, so a
@@ -421,6 +486,23 @@ const WRONG = {
          for ever — the shuffle is a loop with no end state */
       const cnKeep = q('.chunk-host #cn-keep');
       if (vis(cnKeep)) { cnKeep.click(); return 'codename-keep'; }
+      /* J3's COMPASS. Its settle button is born disabled and stays disabled
+         until all three pairs are answered, and a `.cmp-side` is not a primary
+         button — so without this the confused pupil clicked the locked settle
+         button for ever and the walk died on the compass board, eight screens
+         short of the end. Found 16 Aug 2026 by raising the coverage assertion,
+         which is exactly what DFM 204 says coverage assertions are for. */
+      const cmpRow = Array.from(document.querySelectorAll('.chunk-host .cmp-row'))
+        .find(r => vis(r) && !r.querySelector('.cmp-side.on'));
+      if (cmpRow) { cmpRow.querySelector('.cmp-side').click(); return 'compass-pick'; }
+      const cmpSettle = q('.chunk-host .cmp-settle:not([disabled])');
+      if (vis(cmpSettle)) { cmpSettle.click(); return 'compass-settle'; }
+      const cmpDone = q('.chunk-host .cmp-done');
+      if (vis(cmpDone)) { cmpDone.click(); return 'compass-done'; }
+      /* the optional tail on an items chunk: the CONFUSED pupil refuses it,
+         which is the path that proves the refusal actually works */
+      const stretchSkip = q('.chunk-host .stretch-skip');
+      if (vis(stretchSkip)) { stretchSkip.click(); return 'stretch-skip'; }
       /* fill anything that wants words, honestly and at length */
       /* `input[type=text]` does NOT match `<input class="case-log-input">`: an
          attribute selector needs the attribute to be PRESENT, and this one has no
@@ -620,7 +702,10 @@ const WRONG = {
   /* the loop budget is not the standard — Lesson 5 is a longer lesson with a
      Press Night in the middle of it, and a walk that runs out of loops must not
      be mistaken for a walk that finished (DFM 204). */
-  const MAX = LESSON === "5" ? 160 : (LESSON === "1" ? 200 : (LESSON === "3" ? 170 : 110));
+  /* J2 Lesson 1 walks five inspection scenes with five zones each on top of an
+     eighteen-question hour, so it needs the longest budget of the set. */
+  const MAX = LESSON === 'j2-1' ? 260 : LESSON === 'j3-1' ? 220
+    : LESSON === "5" ? 160 : (LESSON === "1" ? 200 : (LESSON === "3" ? 170 : 110));
   let stuckRuns = 0;
   for (let i = 0; i < MAX; i++) {
     const where = await page.evaluate(() => {

@@ -1,7 +1,7 @@
 {
  "year": "j3",
  "title": "Create, Judge, Choose",
- "tagline": "Your last KS3 year. You make real work, you learn to judge it, and you find out which kind of digital work suits you.",
+ "tagline": "This is your last KS3 year. You make real work, you learn to judge it, and you find out which kind of digital work suits you.",
  "recapPool": "j3/recap-pool.json",
  "blocks": [
   {
@@ -43,10 +43,11 @@
    "tagline": "You see where this year leads, and you measure where you are starting from.",
    "block": "b1",
    "icon": "🎬",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "caution",
    "coverNote": "This is the class's first-ever visit to the website, so the one-off Google permission screens land in this hour and they are far easier with the class's own teacher walking pupils through them. If cover cannot be avoided, printed credential slips (school office) should be to hand as a backup for pupils whose logins fail.",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j3/lessons/j3-01.json"
   },
   {
    "id": "j3-02",

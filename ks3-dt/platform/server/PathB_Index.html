@@ -27,6 +27,11 @@
   --space-1: #0A1630;
   --space-2: #102040;
   --space-3: #17294E;
+  /* the bottom of the page gradient. It was the literal #04091A, which is navy \2014 
+     so a forge-brown or plum-velvet year world faded into J1's night sky at the
+     foot of every screen. A knob, defaulted to the exact old value, so J1 is
+     unchanged and each year world can finish in its own dark. */
+  --space-deep: #04091A;
   --glass-d: rgba(17, 33, 64, 0.55);
   --glass-d-solid: rgba(13, 26, 52, 0.85);
   --line-d: rgba(148, 178, 230, 0.16);
@@ -86,7 +91,7 @@ body::before {
   background:
     radial-gradient(1100px 700px at 85% -10%, rgba(var(--gold-rgb), 0.07), transparent 55%),
     radial-gradient(900px 900px at -15% 30%, var(--bg-glow-b), transparent 60%),
-    linear-gradient(170deg, var(--space-1) 0%, var(--space-0) 45%, #04091A 100%);
+    linear-gradient(170deg, var(--space-1) 0%, var(--space-0) 45%, var(--space-deep) 100%);
 }
 button { font: inherit; }
 h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10px; letter-spacing: -0.01em; }
@@ -356,11 +361,29 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .tile-state.lock { background: rgba(148, 178, 230, 0.1); color: var(--muted-d); }
 .tile-state.flag { background: rgba(255, 122, 107, 0.15); color: var(--flag); border: 1px solid rgba(255, 122, 107, 0.5); }
 .tile.is-locked { cursor: default; }
-.tile.is-locked .tile-card { opacity: 0.55; }
+/* THE LOCKED TILE'S WORDS WERE UNREADABLE, ON EVERY SKIN, SINCE THE HUB WAS
+   BUILT \2014  found 16 Aug 2026 the first time his readability harness (DFM 207g)
+   was pointed at the hub at all. The card sat at 0.55 opacity, which drags
+   --muted-d down to 2.75:1 against the tile plate, measured; the floor is 4.5.
+   Every "Lesson N" number and every tagline for lessons 6-17 was below it, and
+   the J2 and J3 hubs would have shipped with all seventeen tiles that way.
+   DIM MUST MEAN QUIETER, NEVER UNREADABLE (the harness's own rule). The card
+   goes to 0.85 \2014  computed, not chosen: at this plate that is 5.34:1, with the
+   0.80 that first clears the floor left as margin for the darker skins. The
+   ICON keeps its 0.55 and its desaturation, so the tile still reads as locked
+   at a glance; it is a picture, not a sentence.
+   This is DFM 208's ruled class - a fix that only makes existing words legible
+   may cross a signed-off lock - and it is REPORTED, never quiet. */
+.tile.is-locked .tile-card { opacity: 0.85; }
 .tile.is-locked .tile-icon { opacity: 0.55; filter: saturate(0.4); }
 .tile.is-done .tile-card { border-color: rgba(var(--gold-hi-rgb), 0.35); }
 .tile.wobble { animation: wobble 0.4s ease; }
-.hub-footnote { text-align: center; color: rgba(146, 164, 199, 0.55); font-size: 0.78rem; padding: 0 20px 30px; position: relative; z-index: 1; }
+/* Second finding from the same first-ever measurement of the hub, 16 Aug 2026:
+   the school's own name in the footer measured 2.98:1 on all twelve skins
+   (12px at 0.55 alpha). Raised to 0.85 \2014  computed against the darkest plate of
+   all fourteen skins, where it reads 5.34:1, with 0.80 the first value that
+   clears the floor. Still visibly quieter than the tiles above it. DFM 208. */
+.hub-footnote { text-align: center; color: rgba(146, 164, 199, 0.85); font-size: 0.78rem; padding: 0 20px 30px; position: relative; z-index: 1; }
 
 /* ============ public class board (teacher-enabled only) ============ */
 .board-card-list {
@@ -1234,10 +1257,16 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 
 .kit-section {
   font-family: var(--font-display); font-size: 0.74rem; font-weight: 700;
-  letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted-d);
+  /* 16 Aug 2026, the first time the wardrobe was measured at all: this heading
+     read 3.93:1 on ALL TWELVE skins. A 12px uppercase face at 0.22em tracking
+     renders far weaker than its nominal colour - the anti-aliasing on thin
+     wide-tracked glyphs pulls every pixel toward the plate - so the nominal
+     --muted-d was never what a child actually saw. A section heading is the
+     thing that tells her what she is looking at; it gets the bright ink. */
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-d);
   margin: 16px 0 10px; display: flex; align-items: baseline; gap: 10px;
 }
-.kit-section small { letter-spacing: 0.02em; text-transform: none; font-weight: 600; font-size: 0.74rem; color: rgba(146, 164, 199, 0.7); }
+.kit-section small { letter-spacing: 0.02em; text-transform: none; font-weight: 600; font-size: 0.74rem; color: var(--muted-d); }
 
 .kit-themes { display: grid; grid-template-columns: repeat(auto-fill, minmax(186px, 1fr)); gap: 10px; }
 .kit-theme {
@@ -1270,7 +1299,11 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .kit-state.on { color: var(--gold-hi); }
 .kit-state.go { color: var(--muted-d); }
 .kit-theme:hover .kit-state.go { color: var(--gold-hi); }
-.kit-state.lock { color: rgba(146, 164, 199, 0.75); }
+/* was rgba(146,164,199,0.75) - a hardcoded NAVY grey at three-quarter alpha,
+   measuring 3.93-4.05:1 on every skin and worse on the warm and plum year
+   worlds, where a navy grey does not belong at all. The token follows the
+   theme; the alpha goes, because "locked" is already said by the padlock. */
+.kit-state.lock { color: var(--muted-d); }
 .kit-theme.wobble, .kit-chip.wobble { animation: wobble 0.4s ease; }
 
 .kit-chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -1286,7 +1319,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .kit-chip-glyph { font-size: 1.05rem; line-height: 1; }
 .kit-chip-name { font-family: var(--font-display); font-weight: 700; }
 .kit-chip-lock { font-size: 0.75rem; }
-.kit-foot { color: rgba(146, 164, 199, 0.75); font-size: 0.8rem; margin: 16px 0 2px; }
+.kit-foot { color: var(--muted-d); font-size: 0.8rem; margin: 16px 0 2px; }
 .clearance-sub { color: var(--muted); font-size: 0.94rem; margin: 0 0 6px; }
 
 /* ---- Agent Kit ambient fx layers (transform/opacity animations ONLY \2014 
@@ -1316,6 +1349,58 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 @keyframes bandDrift {
   from { transform: translate3d(-4vw, 0, 0) scale(1); }
   to { transform: translate3d(5vw, 3vw, 0) scale(1.12); }
+}
+
+/* ---- J2 "The Workbench": sparks drifting up off the forge ----
+   Six small warm dots on long, offset loops, so nothing ever pulses in time
+   with anything else and the eye never finds a pattern. Same compositor rule as
+   the comets above: transform and opacity only. */
+.fx-embers .fx-ember {
+  position: absolute; bottom: -3vh; width: 4px; height: 4px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.95), rgba(var(--gold-rgb), 0) 70%);
+  opacity: 0;
+}
+.fx-embers .fx-ember.e1 { left: 12%; animation: emberRise 19s linear infinite 0s; }
+.fx-embers .fx-ember.e2 { left: 27%; width: 3px; height: 3px; animation: emberRise 26s linear infinite 4s; }
+.fx-embers .fx-ember.e3 { left: 44%; animation: emberRise 22s linear infinite 9s; }
+.fx-embers .fx-ember.e4 { left: 61%; width: 5px; height: 5px; animation: emberRise 30s linear infinite 2.5s; }
+.fx-embers .fx-ember.e5 { left: 78%; width: 3px; height: 3px; animation: emberRise 17s linear infinite 12s; }
+.fx-embers .fx-ember.e6 { left: 90%; animation: emberRise 24s linear infinite 6.5s; }
+@keyframes emberRise {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  8% { opacity: 0.85; }
+  55% { transform: translate3d(3vw, -55vh, 0); opacity: 0.55; }
+  100% { transform: translate3d(-2vw, -108vh, 0); opacity: 0; }
+}
+
+/* ---- J3 "The Screening Room": one soft projector beam crossing the room ----
+   The aurora band's machinery re-aimed: a single blurred shaft on a slow
+   alternating loop, plus a faint dust drift so the light has something to catch. */
+.fx-spotlight .fx-beam {
+  position: absolute; top: -30vh; left: 8vw; width: 34vw; height: 170vh;
+  background: linear-gradient(180deg, rgba(255, 246, 224, 0.16), rgba(255, 246, 224, 0.06) 45%, transparent 78%);
+  filter: blur(48px);
+  transform: rotate(14deg);
+  opacity: 0.9;
+  animation: beamSweep 48s ease-in-out infinite alternate;
+}
+.fx-spotlight .fx-motes {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(2px 2px at 22% 34%, rgba(255, 248, 230, 0.55), transparent 60%),
+    radial-gradient(2px 2px at 39% 71%, rgba(255, 248, 230, 0.40), transparent 60%),
+    radial-gradient(3px 3px at 57% 22%, rgba(255, 248, 230, 0.35), transparent 60%),
+    radial-gradient(2px 2px at 71% 58%, rgba(255, 248, 230, 0.45), transparent 60%);
+  opacity: 0.5;
+  animation: moteDrift 37s ease-in-out infinite alternate;
+}
+@keyframes beamSweep {
+  from { transform: translate3d(-6vw, 0, 0) rotate(14deg); opacity: 0.75; }
+  to { transform: translate3d(38vw, 0, 0) rotate(9deg); opacity: 1; }
+}
+@keyframes moteDrift {
+  from { transform: translate3d(0, 0, 0); opacity: 0.35; }
+  to { transform: translate3d(2vw, -3vh, 0); opacity: 0.6; }
 }
 
 @media (max-width: 640px) {
@@ -2350,7 +2435,8 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
     scroll-behavior: auto !important;
   }
   /* ambient layers: hold them still rather than flashing one frame */
-  .aurora, #fx-layer, .fx-comet, .fx-band { animation: none !important; opacity: 0.35 !important; }
+  .aurora, #fx-layer, .fx-comet, .fx-band,
+  .fx-ember, .fx-beam, .fx-motes { animation: none !important; opacity: 0.35 !important; }
   /* the "ready" waypoint still needs to read as ready without pulsing */
   .tile.is-open .tile-icon { animation: none !important; box-shadow: 0 0 0 3px var(--gold-hi) inset; }
   /* keep the busy indicators legible - a frozen spinner reads as "hung" */
@@ -2609,6 +2695,171 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   .brief-run.staged > li.brief-stage,
   .script-sheet .script-notes { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* ================= the Workshop Safety Inspection (J2 L1, chunk 3) =========
+   His K9 ruling: drawn scenes, and the prototype has to be excellent. The card
+   is the case-board craft (DFM 192k, "I love the look of the actual case board")
+   rebuilt in the Workbench's own copper rather than J1's navy \2014  extend, never
+   regress. Everything here is scoped under .insp, so no existing lesson can be
+   touched by it. */
+.insp { width: min(1000px, 96vw); margin: 0 auto; padding: 20px 20px 26px;
+  border-radius: var(--r-lg); position: relative;
+  background:
+    radial-gradient(120% 90% at 15% 0%, rgba(var(--gold-rgb), 0.09), transparent 55%),
+    linear-gradient(160deg, #2C1B0D 0%, #22150A 55%, #1A1006 100%);
+  border: 1px solid rgba(var(--gold-rgb), 0.38);
+  box-shadow: inset 0 0 0 6px rgba(var(--gold-rgb), 0.07), 0 18px 50px rgba(0, 0, 0, 0.5); }
+.insp-head { text-align: center; margin-bottom: 14px; }
+/* THE INK AND THE PLATE BOTH FOLLOW THE THEME. The first cut pinned the ink to
+   The Workbench's own #2A1502 and let the plate sit at 0.75 alpha over the dark
+   shell \2014  which on Copperline composited to #b4623f and measured 3.84:1 against
+   that fixed brown, under the 4.5 floor (qa-readability, 16 Aug 2026). A solid
+   accent plate with the theme's own accent ink clears it on every J2 skin. */
+.insp-tab { display: inline-block; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.16em;
+  color: var(--accent-ink); background: var(--gold); border-radius: 4px; padding: 3px 10px; }
+.insp-head h2 { font-family: var(--font-display); color: #fff; font-size: clamp(1.35rem, 3vw, 1.8rem); margin: 9px 0 4px; }
+.insp-lead { color: var(--text-d); font-size: 1rem; margin: 0 auto; max-width: 62ch; }
+
+/* the stage: the drawing, with the clickable stations laid over it. The zones
+   are positioned in PERCENTAGES of the picture, so the scene and its zones can
+   never drift apart when the card is narrower than the art. */
+.insp-stage { position: relative; margin: 16px 0 12px; border-radius: var(--r-md); overflow: hidden;
+  border: 1px solid rgba(var(--gold-rgb), 0.28); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
+.insp-art { display: block; width: 100%; height: auto; }
+.insp-zones { position: absolute; inset: 0; }
+.insp-zone { position: absolute; margin: 0; padding: 0; background: none; border: none;
+  cursor: pointer; font: inherit; color: inherit; }
+/* at rest the frame is a hint, not a grid: enough to say "this is clickable"
+   without cutting the drawing into five boxes she then reads as the answer */
+.insp-zone-frame { position: absolute; inset: 4px; border-radius: 10px;
+  border: 2px dashed rgba(255, 255, 255, 0.10); transition: border-color 0.15s ease, background 0.15s ease; }
+.insp-zone:hover .insp-zone-frame,
+.insp-zone:focus-visible .insp-zone-frame { border-color: var(--gold-hi); background: rgba(var(--gold-hi-rgb), 0.10); }
+.insp-zone:focus-visible { outline: none; }
+/* the flag she plants: a real marker, large, with its own shadow, so a flagged
+   station is unmistakable at a glance and from the back of a classroom */
+.insp-zone-flag { position: absolute; top: 8px; right: 10px; font-size: 1.5rem; line-height: 1;
+  color: var(--gold-hi); opacity: 0; transform: translateY(-6px) scale(0.8);
+  transition: opacity 0.16s ease, transform 0.16s ease; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
+.insp-zone-name { position: absolute; left: 8px; right: 8px; bottom: 8px; text-align: center;
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #2A1502; background: rgba(var(--gold-hi-rgb), 0.92); border-radius: 4px; padding: 3px 4px;
+  opacity: 0; transition: opacity 0.15s ease; }
+.insp-zone:hover .insp-zone-name, .insp-zone:focus-visible .insp-zone-name,
+.insp-zone.is-flagged .insp-zone-name, .insp-zone.is-done .insp-zone-name { opacity: 1; }
+.insp-zone.is-flagged .insp-zone-frame { border-style: solid; border-color: var(--gold-hi);
+  background: rgba(var(--gold-hi-rgb), 0.16); }
+.insp-zone.is-flagged .insp-zone-flag { opacity: 1; transform: translateY(0) scale(1); }
+
+/* after filing: the scene answers itself, in the same colours as the rows below */
+.insp-zone.is-done { cursor: default; }
+.insp-zone.is-found .insp-zone-frame { border: 2px solid #6FD08C; background: rgba(111, 208, 140, 0.18); }
+.insp-zone.is-found .insp-zone-name { background: #6FD08C; }
+.insp-zone.is-missed .insp-zone-frame { border: 2px solid #E8963C; background: rgba(232, 150, 60, 0.20); }
+.insp-zone.is-missed .insp-zone-name { background: #E8963C; }
+.insp-zone.is-clear .insp-zone-frame { border: 2px dashed rgba(255, 255, 255, 0.34); background: none; }
+.insp-zone.is-clear .insp-zone-name { background: rgba(244, 237, 227, 0.9); }
+.insp-zone.is-fine .insp-zone-frame { border-color: rgba(255, 255, 255, 0.12); }
+.insp-zone.is-fine .insp-zone-name { opacity: 0; }
+/* the missed mark: its own glyph, its own colour, and a ring so it cannot be
+   mistaken at a glance for a flag she planted herself */
+.insp-zone.is-missed .insp-zone-flag { opacity: 1; transform: none; color: #2A1502;
+  font-family: var(--font-display); font-weight: 800; font-size: 1.05rem;
+  width: 26px; height: 26px; line-height: 26px; text-align: center; border-radius: 50%;
+  background: #E8963C; text-shadow: none; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }
+
+.insp-count { text-align: center; color: var(--text-d); font-weight: 700; margin: 6px 0 10px; }
+/* gap, not margins: two interactive controls may never sit closer than 10px
+   (his DFM 207a law, measured in rendered pixels by the gap probe) */
+.insp-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.insp-note { text-align: center; color: var(--muted-d); font-size: 0.86rem; margin: 12px auto 0; max-width: 60ch; }
+
+/* the report card: a light reading surface, the platform's standing rule for
+   anything she has to READ rather than glance at */
+.insp-report { margin-top: 20px; background: var(--card); color: var(--ink);
+  border-radius: var(--r-md); padding: 20px 20px 16px; box-shadow: var(--shadow-card); }
+.insp-report h3 { font-family: var(--font-display); font-size: 1.25rem; margin: 0 0 6px; }
+.insp-score { color: var(--ink); font-weight: 700; margin: 0 0 14px; }
+.insp-rows { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.insp-row { display: grid; grid-template-columns: minmax(140px, auto) 1fr; gap: 4px 14px;
+  padding: 12px 14px; border-radius: var(--r-sm); background: var(--field); border-left: 5px solid var(--line-l); }
+.insp-row-tag { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.insp-row-name { font-weight: 700; }
+.insp-row-say { grid-column: 1 / -1; color: var(--muted); }
+.insp-row.is-found { background: var(--good-soft); border-left-color: #2FBF74; }
+.insp-row.is-found .insp-row-tag { color: #1F7A4C; }
+.insp-row.is-missed { background: #FDF1E2; border-left-color: #D98324; }
+.insp-row.is-missed .insp-row-tag { color: #8A5210; }
+.insp-row.is-clear .insp-row-tag, .insp-row.is-ok .insp-row-tag { color: #5B6579; }
+
+@media (max-width: 720px) {
+  .insp-zone-name { font-size: 0.6rem; letter-spacing: 0.04em; }
+  .insp-row { grid-template-columns: 1fr; }
+}
+
+/* The inspection's own intro list. The shared .case-intro-steps is centred with
+   the case board around it; on this card that stranded every number several
+   centimetres from the sentence it numbers, which is rule 171 broken by layout
+   rather than by markup. Left-aligned, with the number hanging beside its own
+   line, and the whole block set in from the prose above it. */
+.insp-intro-steps { list-style: decimal; text-align: left; margin: 4px auto 18px;
+  padding-left: 26px; max-width: 46ch; display: flex; flex-direction: column; gap: 9px; }
+.insp-intro-steps li { padding-left: 4px; line-height: 1.5; }
+.insp-intro-steps li::marker { font-weight: 800; color: var(--ols-blue); }
+
+/* the six room rules, stated before she is tested on them */
+.insp-rules { list-style: decimal; text-align: left; margin: 6px auto 14px;
+  padding-left: 26px; max-width: 52ch; display: flex; flex-direction: column; gap: 9px; }
+.insp-rules li { padding-left: 4px; line-height: 1.5; }
+.insp-rules li::marker { font-weight: 800; color: var(--ols-blue); }
+.insp-how-lead { font-weight: 700; margin: 16px 0 4px; text-align: left; max-width: 46ch;
+  margin-left: auto; margin-right: auto; }
+
+/* ============ compass (J3 Lesson 1's Find Your Compass) ============
+   The needle is the whole point of the widget being a widget rather than three
+   more question cards: she watches it move to where SHE is. Transform-only, so
+   it costs the compositor nothing, and it is inside the reduced-motion hold. */
+.cmp-card { text-align: center; }
+.cmp-rows { display: grid; gap: 18px; margin: 18px 0 4px; }
+.cmp-q { color: var(--ink); font-weight: 700; margin: 0 0 10px; font-size: 1.02rem; }
+.cmp-sides { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .cmp-sides { grid-template-columns: 1fr; } }
+.cmp-side {
+  border: 2px solid rgba(var(--gold-rgb), 0.45); background: var(--card-2, #fff);
+  color: var(--ink); border-radius: var(--r-md); padding: 14px 16px; cursor: pointer;
+  font: inherit; font-size: 0.98rem; line-height: 1.4; text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease;
+}
+.cmp-side:hover { border-color: var(--gold); transform: translateY(-1px); }
+.cmp-side.on { border-color: var(--gold-deep); background: rgba(var(--gold-rgb), 0.18); font-weight: 700; }
+.cmp-locked-note { color: var(--ink-soft, #40506B); font-size: 0.9rem; margin: 14px 0 0; }
+.cmp-note { color: var(--ink-soft, #40506B); font-size: 0.95rem; margin: 12px auto 0; max-width: 60ch; }
+.cmp-route { color: var(--ink); font-weight: 700; margin: 10px auto 0; max-width: 60ch; }
+
+.cmp-dial {
+  position: relative; width: min(320px, 82%); aspect-ratio: 2 / 1; margin: 6px auto 18px;
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(180deg, rgba(var(--gold-rgb), 0.16), rgba(var(--gold-rgb), 0.04));
+  border: 2px solid rgba(var(--gold-rgb), 0.5); border-bottom: none;
+}
+.cmp-dial-a, .cmp-dial-b {
+  position: absolute; bottom: 8px; font-size: 0.78rem; font-weight: 800;
+  letter-spacing: 0.06em; color: var(--ink); max-width: 40%; line-height: 1.25;
+}
+.cmp-dial-a { left: 8px; text-align: left; }
+.cmp-dial-b { right: 8px; text-align: right; }
+.cmp-needle {
+  position: absolute; left: 50%; bottom: 0; width: 6px; height: 78%;
+  margin-left: -3px; border-radius: 3px 3px 0 0; background: var(--gold-deep);
+  transform-origin: 50% 100%; transform: rotate(0deg);
+  transition: transform 900ms cubic-bezier(0.2, 0.9, 0.25, 1.15);
+}
+.cmp-needle.settled { transform: rotate(var(--deg, 0deg)); }
+@media (prefers-reduced-motion: reduce) { .cmp-needle { transition: none; } }
+
+/* the optional tail on an items chunk (J3's two Senior Cases): two real
+   choices, with room between them (his DFM 207a 10px law) */
+.intro-card .confirm-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
 
 </style>
 </head>
@@ -3090,14 +3341,39 @@ window.OLS_TRANSPORT = {
     d.setAttribute('aria-hidden', 'true');
     if (fx === 'comets') d.innerHTML = '<span class="fx-comet c1"></span><span class="fx-comet c2"></span><span class="fx-comet c3"></span>';
     else if (fx === 'aurora') d.innerHTML = '<span class="fx-band"></span>';
+    else if (fx === 'embers') d.innerHTML = '<span class="fx-ember e1"></span><span class="fx-ember e2"></span>' +
+      '<span class="fx-ember e3"></span><span class="fx-ember e4"></span><span class="fx-ember e5"></span>' +
+      '<span class="fx-ember e6"></span>';
+    else if (fx === 'spotlight') d.innerHTML = '<span class="fx-beam"></span><span class="fx-motes"></span>';
     document.body.appendChild(d);
   }
+  /* ---------------- the DEFAULT look is the YEAR's, not J1's ----------------
+     DAMIEN, 14 Aug 2026 (DFM 224b): "Each Year group must have it's own
+     distinctive background colour. A soft animation would be great as well."
+     Ruled to two worlds on 15 Aug (K11a): J2 opens on The Workbench, J3 on The
+     Screening Room, J1's night sky untouched.
+     A pupil record stores '' for "I have not chosen a look", and until now ''
+     meant J1's midnight everywhere \u2014 which is exactly why a J2 girl was opening
+     into another year's world. So '' RESOLVES here, in one place, and every
+     reader downstream (the painter, the wardrobe's Equipped mark, the equip
+     itself) asks this function rather than naming a theme.
+     WHY THIS IS SAFE FOR J1, and it is the risky half: today a pupil on ''
+     receives NO theme object and the stylesheet's own :root values paint the
+     screen; now she receives midnight by name. Those are the same screen only
+     because midnight overrides no custom properties and its starfield equals
+     STAR_DEFAULTS \u2014 which is asserted in rendered pixels by qa-j1-unchanged.js
+     and value-for-value by qa-year-worlds.js, never assumed. */
+  var YEAR_DEFAULT_THEME = { 'j1': 'midnight', 'j2': 'workbench', 'j3': 'screeningroom' };
+  App.defaultThemeId = function (year) {
+    var y = String(year || (App.state && App.state.year) || 'j1');
+    return YEAR_DEFAULT_THEME[y] || YEAR_DEFAULT_THEME.j1;
+  };
   App.applyKit = function () {
     var s = App.state;
     var root = document.documentElement;
     appliedVars.forEach(function (v) { root.style.removeProperty(v); });
     appliedVars = [];
-    var theme = kitTheme_(s.me && s.me.th);
+    var theme = kitTheme_((s.me && s.me.th) || App.defaultThemeId());
     var vars = (theme && theme.vars) || {};
     Object.keys(vars).forEach(function (k) {
       if (k.indexOf('--') !== 0) return; // custom properties only
@@ -3153,6 +3429,7 @@ window.OLS_TRANSPORT = {
     if (!out.themes.length) {
       out.themes = (reg.themes || []).filter(function (t) { return String(t.id) === 'midnight'; });
     }
+    out.hub = (reg.hubs && (reg.hubs[y] || reg.hubs.j1)) || { name: 'Mission Control' };
     out.kit = (reg.kits && (reg.kits[y] || reg.kits.j1)) ||
       { name: 'Agent Kit', explainer: 'Your Agent Kit is kind of like this website\u2019s own wardrobe or costumes!' };
     return out;
@@ -3161,6 +3438,68 @@ window.OLS_TRANSPORT = {
   App.kitName = function () {
     return ((App.state.kit || {}).kit || {}).name || 'Agent Kit';
   };
+  /* THE HUB'S NAME, per year (found by the J2 L1 cold read, 16 Aug 2026). DFM 57
+     kept "Mission Control" FOR J1 and required the lesson to explain it; it was
+     never J2's or J3's, and it was a literal in index.html where no gate reads.
+     J1's registry value reproduces the shipped label exactly. */
+  App.hubName = function () {
+    var reg = App.state.kit || {};
+    var h = reg.hub || ((reg.hubs || {})[String(App.state.year || 'j1')]);
+    return (h && h.name) || 'Mission Control';
+  };
+  App.paintHubName = function () {
+    var n = App.hubName();
+    var b = document.getElementById('player-back');
+    if (b) b.innerHTML = '&larr; ' + esc(n);
+  };
+  /* ---- and so is every other word on the shared kit surfaces ----------------
+     The kit modal, the level-up pop and both toasts are ONE set of screens
+     serving three years, and J1's agent fiction is J1's alone (K1; DFM 25). A
+     literal here reaches a J2 girl as vocabulary she must decode before she can
+     read her own reward. So the rank word, the pop title and body, both toasts
+     and the footer are registry text \u2014 which also ends the DFM 162b class,
+     where a sentence split across two JavaScript strings renders perfectly and
+     greps to nothing.
+     The FALLBACKS are J1's exact wording, deliberately: a browser holding a
+     themes.json cached from before this change (DFM 189 \u2014 up to five minutes)
+     must still show a whole sentence rather than a blank. */
+  var KIT_WORD_FALLBACK = {
+    rankWord: 'Clearance',
+    popTitle: 'Clearance upgraded',
+    popBody: 'It holds the looks and badge designs your console can wear, unlocked as your XP grows. ' +
+      'This clearance has just unlocked new ones. Open it to try them on \u2014 you can change your look ' +
+      'any time from your name chip, top right.',
+    savedToast: 'Equipped \u2014 saved to your Agent File.',
+    insigniaLabel: 'Insignia',
+    insigniaNote: 'shows beside your codename',
+    insigniaLockedToast: 'That insignia is above your clearance.',
+    nameFallback: 'Agent',
+    lockedToast: 'Locked \u2014 Clearance {level} kit. {short} XP to go, Agent.',
+    /* THE LADDER'S LAST RUNG MUST NOT CLAIM TO BE THE LAST RUNG THERE WILL EVER
+       BE. J2 and J3 deliberately carry only the levels whose thresholds are real
+       (\u00a74a / DFM 165), so a J2 pupil crosses the top of her ladder at the END OF
+       LESSON 1 \u2014 and was told "Top clearance reached. Legend." on her first day.
+       Found by the J2 L1 cold read. J1's wording is the fallback, unchanged. */
+    maxedLabel: 'Top {rank} reached. Legend.',
+    /* the modal's own heading and the chip's tooltip: the last two places the
+       kit's NAME was still a literal, so a J2 girl opened "your Kit Locker" and
+       read "Agent Kit" at the top of it (rule 35, and K11b). */
+    openTip: 'Open your Agent Kit',
+    finishTitle: 'Mission complete',
+    /* ONE literal per sentence, deliberately: a phrase split across two
+       JavaScript strings renders perfectly and greps to nothing (DFM 162b), and
+       that is how a banned wording once survived a sweep. */
+    foot: 'Click to equip \u2014 every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks more kit.'
+  };
+  function kitWord_(key, tokens) {
+    var k = (App.state.kit || {}).kit || {};
+    var s = String(k[key] != null && k[key] !== '' ? k[key] : (KIT_WORD_FALLBACK[key] || ''));
+    if (tokens) Object.keys(tokens).forEach(function (t) {
+      s = s.split('{' + t + '}').join(String(tokens[t]));
+    });
+    return s;
+  }
+  App.kitWord = kitWord_;
 
   /* Clearance ladder position for a given XP (clearances are ascending). */
   App.clearanceFor = function (xp) {
@@ -3250,6 +3589,8 @@ window.OLS_TRANSPORT = {
         );
       }).then(function () {
         App.applyKit();
+        App.paintHubName();
+        App.paintKitName();
         return true;
       }).catch(function () { return false; });
     });
@@ -3551,8 +3892,9 @@ window.OLS_TRANSPORT = {
     ov.className = 'badge-pop';
     ov.innerHTML = '<div class="badge-pop-card">' +
       '<div class="finish-glyph">&#127894;&#65039;</div>' +
-      '<h2>Clearance upgraded</h2>' +
-      '<p class="badge-pop-name">Clearance ' + Number(rank.level) + ' &mdash; ' + esc(rank.name) + '</p>' +
+      '<h2>' + esc(kitWord_('popTitle')) + '</h2>' +
+      '<p class="badge-pop-name">' + esc(kitWord_('rankWord')) + ' ' + Number(rank.level) +
+      ' &mdash; ' + esc(rank.name) + '</p>' +
       /* DAMIEN, 31 Jul 2026: a pupil has never met the term "Agent Kit", so the
          old line explained nothing and the button asked her to open something she
          could not picture. His wording, verbatim. The last sentence is true:
@@ -3563,9 +3905,7 @@ window.OLS_TRANSPORT = {
          exactly, so his approved sentence is unchanged on a J1 screen \u2014 proved by
          a rendered comparison, not by reading the source. */
       '<p class="clearance-sub">' + esc(((App.state.kit || {}).kit || {}).explainer || '') +
-      ' It holds the looks and badge designs your console can wear, unlocked as your XP ' +
-      'grows. This clearance has just unlocked new ones. Open it to try them on &mdash; you can ' +
-      'change your look any time from your name chip, top right.</p>' +
+      ' ' + esc(kitWord_('popBody')) + '</p>' +
       '<div class="confirm-actions">' +
       '<button class="ghost-btn" data-act="later" type="button">Later</button>' +
       '<button class="primary-btn" data-act="open" type="button">Open ' + esc(App.kitName()) + '</button>' +
@@ -3581,10 +3921,21 @@ window.OLS_TRANSPORT = {
   }
 
   /* ---------------- Agent Kit modal (pupil customisation) ---------------- */
+  /* The kit's NAME on the two surfaces that were still literals in index.html \u2014
+     the modal's own heading and the chip's tooltip. Painted whenever the year is
+     known, so a J2 girl's "Kit Locker" is headed Kit Locker. */
+  App.paintKitName = function () {
+    var h = document.querySelector('#kit-modal .kit-head h2');
+    if (h) h.textContent = App.kitName();
+    var chip = document.getElementById('agent-chip');
+    if (chip) chip.title = kitWord_('openTip', { kit: App.kitName() });
+  };
+
   App.openKit = function () {
     var s = App.state;
     if (!s.me) return; // not joined yet (staff preview of the join screen etc.)
     if (!s.kit) { App.toast('Your ' + App.kitName() + ' could not load \u2014 check your connection and refresh.'); return; }
+    App.paintKitName();
     renderKit();
     App.openModal('kit-modal');
   };
@@ -3608,7 +3959,8 @@ window.OLS_TRANSPORT = {
     var head = '<div class="kit-rank">' +
       '<div class="kit-rank-badge">' + Number(pos.cur.level) + '</div>' +
       '<div class="kit-rank-text">' +
-      '<span class="kit-rank-name">Clearance ' + Number(pos.cur.level) + ' &mdash; ' + esc(pos.cur.name) + '</span>' +
+      '<span class="kit-rank-name">' + esc(kitWord_('rankWord')) + ' ' + Number(pos.cur.level) +
+      ' &mdash; ' + esc(pos.cur.name) + '</span>' +
       '<span class="kit-rank-xp">' + Number(s.xp) + ' XP</span>' +
       '</div></div>';
     if (pos.next) {
@@ -3616,10 +3968,12 @@ window.OLS_TRANSPORT = {
       var into = Math.max(0, Number(s.xp) - Number(pos.cur.xp));
       var pct = span > 0 ? Math.min(100, Math.round(100 * into / span)) : 0;
       head += '<div class="kit-next"><div class="kit-next-track"><div class="kit-next-fill" style="width:' + pct + '%"></div></div>' +
-        '<span class="kit-next-label">' + Math.max(0, Number(pos.next.xp) - Number(s.xp)) + ' XP to Clearance ' +
+        '<span class="kit-next-label">' + Math.max(0, Number(pos.next.xp) - Number(s.xp)) + ' XP to ' +
+        esc(kitWord_('rankWord')) + ' ' +
         Number(pos.next.level) + ' &mdash; ' + esc(pos.next.name) + '</span></div>';
     } else {
-      head += '<div class="kit-next"><span class="kit-next-label maxed">Top clearance reached. Legend.</span></div>';
+      head += '<div class="kit-next"><span class="kit-next-label maxed">' +
+        esc(kitWord_('maxedLabel', { rank: kitWord_('rankWord').toLowerCase() })) + '</span></div>';
     }
 
     // interface themes
@@ -3634,7 +3988,7 @@ window.OLS_TRANSPORT = {
     var themes = (reg.themes || []).map(function (t) {
       var needXp = kitClearanceXp_(t.clearance);
       var unlocked = ever >= needXp;
-      var equipped = curTh ? String(t.id) === curTh : String(t.id) === 'midnight';
+      var equipped = curTh ? String(t.id) === curTh : String(t.id) === App.defaultThemeId();
       var v = t.vars || {};
       var pv = '--pv0:' + (v['--space-0'] || '#060D1F') + ';--pv2:' + (v['--space-2'] || '#102040') + ';--pva:' + (v['--gold-hi'] || '#FFD84D');
       return '<button type="button" class="kit-theme' + (unlocked ? '' : ' is-locked') + (equipped ? ' is-equipped' : '') + '"' +
@@ -3644,7 +3998,8 @@ window.OLS_TRANSPORT = {
         '<span class="kit-theme-tag">' + esc(t.tag || '') + '</span>' +
         (equipped ? '<span class="kit-state on">Equipped</span>'
           : unlocked ? '<span class="kit-state go">Click to equip</span>'
-          : '<span class="kit-state lock">&#128274; Clearance ' + Number(t.clearance) + ' &middot; ' + needXp + ' XP</span>') +
+          : '<span class="kit-state lock">&#128274; ' + esc(kitWord_('rankWord')) + ' ' +
+            Number(t.clearance) + ' &middot; ' + needXp + ' XP</span>') +
         '</button>';
     }).join('');
 
@@ -3666,8 +4021,9 @@ window.OLS_TRANSPORT = {
 
     body.innerHTML = head +
       '<h3 class="kit-section">Interface</h3><div class="kit-themes">' + themes + '</div>' +
-      '<h3 class="kit-section">Insignia <small>shows beside your codename</small></h3><div class="kit-chips">' + chips + '</div>' +
-      '<p class="kit-foot">Click to equip &mdash; every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks more kit.</p>' +
+      '<h3 class="kit-section">' + esc(kitWord_('insigniaLabel')) + ' <small>' +
+      esc(kitWord_('insigniaNote')) + '</small></h3><div class="kit-chips">' + chips + '</div>' +
+      '<p class="kit-foot">' + esc(kitWord_('foot')) + '</p>' +
       '<div class="confirm-actions" style="margin-top:6px"><button type="button" class="primary-btn" id="kit-done">Done</button></div>';
 
     body.querySelectorAll('.kit-theme').forEach(function (el) {
@@ -3683,7 +4039,7 @@ window.OLS_TRANSPORT = {
   function lockedNudge_(el, clearance, needXp) {
     el.classList.remove('wobble'); void el.offsetWidth; el.classList.add('wobble');
     var short = Math.max(0, needXp - Number(App.state.xp));
-    App.toast('Locked \u2014 Clearance ' + clearance + ' kit. ' + short + ' XP to go, Agent.', 3200);
+    App.toast(kitWord_('lockedToast', { level: clearance, short: short }), 3200);
   }
 
   /* Equip = optimistic apply (instant, feels great) + server save; on a server
@@ -3695,7 +4051,7 @@ window.OLS_TRANSPORT = {
     if (!th) return;
     if (el.classList.contains('is-locked')) { lockedNudge_(el, Number(th.clearance), kitClearanceXp_(th.clearance)); return; }
     var prev = (s.me && s.me.th) || '';
-    var next = (id === 'midnight') ? '' : id; // default stored as '' (record stays lean)
+    var next = (id === App.defaultThemeId()) ? '' : id; // her year's default is stored as '' (record stays lean)
     if (prev === next) return;
     s.me.th = next;
     App.applyKit();
@@ -3707,7 +4063,7 @@ window.OLS_TRANSPORT = {
         renderKit();
         App.toast(r && r.error === 'kit-locked' ? 'That kit is above your clearance.' : 'Could not save your kit \u2014 try again.');
       } else {
-        App.toast('Equipped \u2014 saved to your Agent File.', 2000);
+        App.toast(kitWord_('savedToast'), 2000);
       }
     });
   }
@@ -3728,9 +4084,9 @@ window.OLS_TRANSPORT = {
         s.me.fx = prev;
         App.applyKit();
         renderKit();
-        App.toast(r && r.error === 'kit-locked' ? 'That insignia is above your clearance.' : 'Could not save your kit \u2014 try again.');
+        App.toast(r && r.error === 'kit-locked' ? kitWord_('insigniaLockedToast') : 'Could not save your kit \u2014 try again.');
       } else {
-        App.toast('Equipped \u2014 saved to your Agent File.', 2000);
+        App.toast(kitWord_('savedToast'), 2000);
       }
     });
   }
@@ -3754,7 +4110,10 @@ window.OLS_TRANSPORT = {
     if (!el) return;
     var real = realFirstName();
     var codename = s.codename ? 'Agent ' + s.codename : '';
-    el.textContent = (s.showRealName && real) ? real : (codename || real || 'Agent');
+    /* the last fallback is a nameless record, which the school's own accounts
+       never produce \u2014 but "Agent" is J1's word, so even the unreachable case is
+       the year's own (K1). */
+    el.textContent = (s.showRealName && real) ? real : (codename || real || kitWord_('nameFallback'));
     var on = canToggleName();
     el.classList.toggle('name-toggle', on);
     el.setAttribute('title', !on ? '' : (s.showRealName
@@ -4215,9 +4574,11 @@ window.OLS_TRANSPORT = {
     ov.className = 'badge-pop show';
     ov.innerHTML = '<div class="badge-pop-card finish">' +
       '<div class="finish-glyph">&#127942;</div>' +
-      '<h2>Mission complete</h2><p class="badge-pop-name">' + esc(s.lesson.title) + '</p>' +
+      /* the last J1 literal on the shared finish overlay: a J2 girl ended her
+         first hour on "Mission complete" (found by the J2 L1 cold read) */
+      '<h2>' + esc(kitWord_('finishTitle')) + '</h2><p class="badge-pop-name">' + esc(s.lesson.title) + '</p>' +
       '<p class="badge-pop-xp">' + App.state.xp + ' XP total</p>' +
-      '<button class="primary-btn" type="button">Back to Mission Control</button></div>';
+      '<button class="primary-btn" type="button">Back to ' + esc(App.hubName()) + '</button></div>';
     document.body.appendChild(ov);
     App.armButton(ov.querySelector('button'), function () {   // DFM 104
       ov.remove();
@@ -4310,11 +4671,19 @@ window.OLS_TRANSPORT = {
      click advanced her a SECOND time, marking the NEXT chunk complete without
      ever showing it. Badge 2 and the whole Vault were lost that way, with no
      route back. One finish per mounted chunk, always. */
-  function finishChunk(ctx, detail) {
+  /* `bonus` is added to the badge's own XP \u2014 the standing +5 stretch pattern,
+     for engines whose stretch is inside their own chunk. It is always OPTIONAL
+     and defaults to 0, so every existing caller behaves identically. Anything
+     that uses it must stay inside the server's 40-XP-per-event ceiling, which
+     qa-xp-ceiling computes from the content and enforces at the pack. */
+  function finishChunk(ctx, detail, bonus) {
     if (ctx._finished) return;
     ctx._finished = true;
     if (ctx.chunk.badge) {
-      ctx.awardBadge(ctx.chunk.badge, detail).then(function () { ctx.next(); });
+      var b = Number(bonus || 0)
+        ? Object.assign({}, ctx.chunk.badge, { xp: Number(ctx.chunk.badge.xp || 0) + Number(bonus) })
+        : ctx.chunk.badge;
+      ctx.awardBadge(b, detail).then(function () { ctx.next(); });
     } else ctx.next();
   }
   /* mirror of the server's vhash_ - the vault placement check compares salted
@@ -4834,7 +5203,14 @@ window.OLS_TRANSPORT = {
          and no other engine passes them, so every other lesson's intro card
          renders byte-identically (locked in qa-l4-visual). */
       (opts.steps && opts.steps.length
-        ? '<ol class="case-intro-steps">' + opts.steps.map(function (s) { return '<li>' + fmtBold(s) + '</li>'; }).join('') + '</ol>'
+        /* stepsClass is OPT-IN and defaults to the class Lesson 4 already uses,
+           so the locked case board renders byte-identically (DFM 176). The J2
+           inspection asks for its own, because on a centred card the shared one
+           strands every number away from its own sentence \u2014 rule 171 says a
+           numbered sequence renders one per line, and a number that has floated
+           off the line it belongs to has not. */
+        ? '<ol class="' + (opts.stepsClass || 'case-intro-steps') + '">' +
+          opts.steps.map(function (s) { return '<li>' + fmtBold(s) + '</li>'; }).join('') + '</ol>'
         : '') +
       (opts.after ? '<p class="case-intro-after">' + fmtBold(opts.after) + '</p>' : '') +
       (opts.extra || '') +
@@ -4931,13 +5307,47 @@ window.OLS_TRANSPORT = {
         kicker: cfg.variant === 'calibration' ? '' : chunk.title,
         title: cfg.variant === 'calibration' ? chunk.title : 'Quick check',
         text: cfg.intro || ''
-      }, 'Start', function () {
+      }, cfg.startLabel || 'Start', function () { runFrom(0); });
+
+      /* AN OPTIONAL TAIL (16 Aug 2026, for J3 Lesson 1's two Senior Cases).
+         `stretchFrom` splits the item list: everything before it is the lesson,
+         everything from it on is the extra challenge \u2014 offered on its own card,
+         with a real way to decline, because "optional" with no button behind it
+         is a promise the screen does not keep (the same fault the J2 inspection
+         had). CONFIG-GATED: no existing chunk declares `stretchFrom`, so every
+         J1 items chunk runs exactly as it always has (asserted). */
+      function runFrom(start) {
+        var split = Number(cfg.stretchFrom);
+        var isStretch = start > 0;
+        var end = (!isStretch && split > 0 && split < cfg.items.length) ? split : cfg.items.length;
         itemRunner(host, {
-          items: cfg.items, mode: 'feedback',
+          items: cfg.items.slice(start, end), mode: 'feedback',
           markFn: function (it, i) { return ctx.markItem(it.id, i); },
-          onDone: function () { finishChunk(ctx); }
+          onDone: function () {
+            if (!isStretch && end < cfg.items.length) { offerStretch(end); return; }
+            finishChunk(ctx, isStretch ? 'stretch=1' : undefined,
+              isStretch ? Number(cfg.stretchXp || 0) : 0);
+          }
         });
-      });
+      }
+
+      function offerStretch(at) {
+        host.innerHTML = '';
+        var s = cfg.stretch || {};
+        var c = el('<div class="card intro-card">' +
+          '<span class="intro-kicker">' + esc(s.kicker || 'EXTRA CHALLENGE') + '</span>' +
+          '<h2>' + esc(s.title || 'The hard ones') + '</h2>' +
+          String(s.text || '').split(/\n\s*\n/).map(function (p) {
+            return '<p class="intro-lead">' + esc(p.trim()) + '</p>';
+          }).join('') +
+          '<div class="confirm-actions">' +
+          '<button class="primary-btn stretch-go" type="button">' + esc(s.goLabel || 'Give them a go') + '</button>' +
+          '<button class="ghost-btn stretch-skip" type="button">' + esc(s.skipLabel || 'Stop here instead') + '</button>' +
+          '</div></div>');
+        host.appendChild(c);
+        App.armButton(c.querySelector('.stretch-go'), function () { host.innerHTML = ''; runFrom(at); });
+        App.armButton(c.querySelector('.stretch-skip'), function () { finishChunk(ctx); });
+      }
     }
   };
 
@@ -5466,15 +5876,35 @@ window.OLS_TRANSPORT = {
   Engines.diagnostic = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
+      /* EVERY WORD ON THIS SCREEN IS J1'S UNTIL A LESSON SAYS OTHERWISE.
+         Found by the J2 Lesson 1 cold read, 16 Aug 2026, and it is the biggest
+         thing that read found: this engine hardcoded "The Licence Exam", "Open
+         my Agent File", "Sealing your Agent File", "Agent File sealed" and
+         "Sixteen answers" \u2014 so J2's Skills Snapshot, a fifth of her first hour,
+         rendered in J1's agent fiction AND told a pupil answering twelve
+         questions that she had answered sixteen (rule 35). None of it was ever
+         readable by the language gate, because the gate reads CONTENT and these
+         were engine literals (DFM 207b's G1 class).
+         Every string is content-owned now with J1's exact wording as the
+         fallback, so J1 renders byte-identically (asserted by qa-j1-unchanged)
+         and every new year has to write \u2014 and get judged on \u2014 its own.
+         `solo` was worse than a literal: the engine used it as a truthy FLAG
+         and threw the authored sentence away (DFM 155 \u2014 content that names a
+         field the engine ignores fails silently and looks fine in the JSON). */
       introCard(host, {
-        kicker: chunk.title, title: 'The Licence Exam',
+        kicker: chunk.title, title: cfg.examTitle || 'The Licence Exam',
         text: cfg.intro || '',
-        extra: cfg.solo ? '<div class="solo-banner">&#129323; Solo mission \u2014 your own answers only.</div>' : ''
-      }, 'Open my Agent File', function () {
+        extra: cfg.solo
+          ? '<div class="solo-banner">&#129323; ' +
+            esc(typeof cfg.solo === 'string' ? cfg.solo : 'Solo mission \u2014 your own answers only.') +
+            '</div>'
+          : ''
+      }, cfg.openLabel || 'Open my Agent File', function () {
         itemRunner(host, {
           items: cfg.items, mode: 'neutral', ackText: cfg.ackText || 'Logged',
           onDone: function (res) {
-            host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Sealing your Agent File&hellip;</span></div>';
+            host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
+              esc(cfg.sealingLabel || 'Sealing your Agent File\u2026') + '</span></div>';
             var payload = { lessonId: ctx.lesson.id, answers: res.answers };
             // review mode: never overwrite the original baseline record
             var submit = ctx.review ? Promise.resolve({ ok: true }) : ctx.call('submitBaseline', payload);
@@ -5482,8 +5912,10 @@ window.OLS_TRANSPORT = {
               if (!ctx.review && (!r || !r.ok)) App.enqueue('submitBaseline', payload);
               host.innerHTML = '';
               var seal = el('<div class="card seal-card"><div class="seal">&#128736;</div>' +
-                '<h2>Agent File sealed</h2><p>Sixteen answers, logged for the record. At the end of the year you\u2019ll open this file again \u2014 and see how far you\u2019ve come.</p>' +
-                '<button class="primary-btn" type="button">Claim the badge</button></div>');
+                '<h2>' + esc(cfg.sealTitle || 'Agent File sealed') + '</h2><p>' +
+                esc(cfg.sealBody || 'Sixteen answers, logged for the record. At the end of the year you\u2019ll open this file again \u2014 and see how far you\u2019ve come.') +
+                '</p>' +
+                '<button class="primary-btn" type="button">' + esc(cfg.claimLabel || 'Claim the badge') + '</button></div>');
               host.appendChild(seal);
               seal.querySelector('button').onclick = function () { finishChunk(ctx, undefined); };
             });
@@ -5693,7 +6125,18 @@ window.OLS_TRANSPORT = {
   Engines.exitcheck = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
-      introCard(host, { kicker: 'Exit check', title: 'Before you clock off\u2026', text: cfg.intro || '' }, 'Ready', function () {
+      /* "Before you clock off\u2026" was a raw engine literal on the exit check of
+         EVERY lesson, and no gate has ever read it. Clocking off is workplace
+         idiom (138.1.9): a twelve-year-old has never clocked off anything.
+         Content-owned now, with the shipped wording as the fallback so J1's
+         five signed-off lessons render byte-identically \u2014 J1's own wording is
+         REPORTED to Damien as a proposed reword rather than changed under his
+         lock (DFM 176/208). */
+      introCard(host, {
+        kicker: cfg.kicker || 'Exit check',
+        title: cfg.cardTitle || 'Before you clock off\u2026',
+        text: cfg.intro || ''
+      }, cfg.readyLabel || 'Ready', function () {
         itemRunner(host, {
           items: cfg.items, mode: 'collect',
           onDone: function (res) {
@@ -5788,7 +6231,11 @@ window.OLS_TRANSPORT = {
       c.querySelector('.se-submit').onclick = function () {
         if (ctx.review) {
           host.innerHTML = '';
-          var rv = el('<div class="card"><h2>Already filed</h2><p>This mission report went to your teacher the first time \u2014 a review visit never overwrites it.</p>' +
+          /* "mission report" and "Mission complete." below are J1's fiction and
+             were reaching every year (found by the J2 L1 cold read). Both are
+             content-owned now with J1's exact wording as the fallback. */
+          var rv = el('<div class="card"><h2>Already filed</h2><p>' +
+            esc(cfg.alreadyFiled || 'This mission report went to your teacher the first time \u2014 a review visit never overwrites it.') + '</p>' +
             '<button class="primary-btn" type="button">Finish reviewing</button></div>');
           host.appendChild(rv);
           rv.querySelector('button').onclick = function () { ctx.next(); };
@@ -5803,7 +6250,8 @@ window.OLS_TRANSPORT = {
         App.submitExit(payload, function (r) {
           host.innerHTML = '';
           if (!r) {
-            var safe = el('<div class="card"><h2>Report saved on this machine</h2><p>Your connection is playing up, so your answers are safe here and will send automatically. Mission complete.</p>' +
+            var safe = el('<div class="card"><h2>Report saved on this machine</h2><p>' +
+              esc(cfg.offlineSay || 'Your connection is playing up, so your answers are safe here and will send automatically. Mission complete.') + '</p>' +
               '<button class="primary-btn" type="button">Finish</button></div>');
             host.appendChild(safe);
             safe.querySelector('button').onclick = function () { ctx.next(); };
@@ -8831,6 +9279,346 @@ window.OLS_TRANSPORT = {
       }
     }
   };
+
+
+  /* ================= compass (J3 Lesson 1's Find Your Compass) ==============
+     HER JOB: answer three either/or questions about the kind of work she
+     ENJOYS, and watch a needle settle on the side she leans to.
+
+     THE LAWS THIS ENGINE IS BUILT ON, and they are his (K12/K13):
+       IT DECIDES NOTHING. It is where she is standing today, said on screen
+         before she taps and again after. The GCSE options window is January's,
+         Digital Technology is optional, and choosing neither is a fine answer.
+       THE RESULT READS BOTH WAYS (K13d). First the KIND of digital work that
+         suits her, in plain words \u2014 that answer is true for every girl,
+         including one who will never pick DT. The route mapping comes second,
+         and only as an if.
+       UNDECIDED IS A REAL RESULT, never a failure. A pupil who splits her three
+         answers gets a needle that stands up straight and a card that says so.
+       SHE CAN CHANGE HER MIND before she commits: taps are free until she
+         presses the settle button (the place-all-then-check law again).
+
+     CONFIG-GATED: no other lesson declares a `compass` chunk. */
+  Engines.compass = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var pairs = cfg.pairs || [];
+      var picks = pairs.map(function () { return null; });
+
+      introCard(host, {
+        kicker: chunk.title,
+        title: cfg.introTitle || chunk.title,
+        text: cfg.intro || '',
+        extra: cfg.note ? '<p class="cmp-note">' + esc(cfg.note) + '</p>' : ''
+      }, cfg.begin || 'Start', board);
+
+      function board() {
+        host.innerHTML = '';
+        var rows = pairs.map(function (p, i) {
+          return '<div class="cmp-row" data-r="' + i + '">' +
+            '<p class="cmp-q">' + esc(p.q || '') + '</p>' +
+            '<div class="cmp-sides">' +
+            '<button type="button" class="cmp-side" data-side="design" data-r="' + i + '">' + esc(p.design) + '</button>' +
+            '<button type="button" class="cmp-side" data-side="build" data-r="' + i + '">' + esc(p.build) + '</button>' +
+            '</div></div>';
+        }).join('');
+        var c = el('<div class="card cmp-card">' +
+          '<h2>' + esc(cfg.boardTitle || 'Which one sounds more like you?') + '</h2>' +
+          (cfg.boardLead ? '<p class="intro-lead">' + esc(cfg.boardLead) + '</p>' : '') +
+          '<div class="cmp-rows">' + rows + '</div>' +
+          '<p class="cmp-locked-note">' + esc(cfg.lockedNote ||
+            'Answer all three and the button below wakes up.') + '</p>' +
+          '<div class="confirm-actions"><button type="button" class="primary-btn cmp-settle" disabled>' +
+            esc(cfg.settleLabel || 'Settle my compass') + '</button></div>' +
+          '</div>');
+        host.appendChild(c);
+
+        c.querySelectorAll('.cmp-side').forEach(function (b) {
+          b.onclick = function () {
+            var r = Number(b.getAttribute('data-r'));
+            picks[r] = b.getAttribute('data-side');
+            c.querySelectorAll('.cmp-side[data-r="' + r + '"]').forEach(function (x) { x.classList.remove('on'); });
+            b.classList.add('on');
+            var all = picks.every(function (v) { return v !== null; });
+            c.querySelector('.cmp-settle').disabled = !all;
+            /* DFM 205: a locked control says what unlocks it, and the note goes
+               the moment it is satisfied. */
+            c.querySelector('.cmp-locked-note').hidden = all;
+          };
+        });
+        App.armButton(c.querySelector('.cmp-settle'), settle);
+      }
+
+      function settle() {
+        /* side 'a' is the designing-and-communicating side, 'b' is the
+           building-and-problem-solving side.
+           HOW THE FOUR RESULTS ARE REACHED, and why it is four and not three.
+           The first cut had a/b/even and read `even` as an equal split \u2014 which
+           with an ODD number of pairs can never happen, so the "undecided is a
+           real answer" result his K13d ruling asks for was unreachable code.
+           Found by the cold read of the built lesson, 16 Aug 2026.
+           A CLEAN SWEEP (every pair to one side) is a clear lean. ANYTHING ELSE
+           is a genuine middle \u2014 and it is the honest, common answer on day one \u2014
+           so it gets its own result that still tells her which way she tipped.
+           Every outcome is a real answer about her; none of them is a failure. */
+        /* THE FIELD NAMES ARE `design` / `build`, NEVER `a` / `b`. The packer's
+           plaintext-leak guard forbids any `"a":` field in a public lesson file,
+           because that is the shape of an answer key \u2014 and it caught this engine's
+           first cut (16 Aug 2026). The guard is exactly right and was not touched;
+           the naming is clearer anyway. */
+        var a = picks.filter(function (v) { return v === 'design'; }).length;
+        var b = pairs.length - a;
+        var lean = a === pairs.length ? 'design' : b === pairs.length ? 'build'
+          : a > b ? 'mixedDesign' : 'mixedBuild';
+        var r = (cfg.results || {})[lean] || {};
+        host.innerHTML = '';
+        var deg = { design: -38, mixedDesign: -15, mixedBuild: 15, build: 38 }[lean] || 0;
+        var c = el('<div class="card cmp-card cmp-result">' +
+          '<div class="cmp-dial"><span class="cmp-dial-a">' + esc(cfg.designLabel || '') + '</span>' +
+            '<span class="cmp-dial-b">' + esc(cfg.buildLabel || '') + '</span>' +
+            '<span class="cmp-needle" style="--deg:' + deg + 'deg"></span></div>' +
+          '<h2>' + esc(r.title || '') + '</h2>' +
+          String(r.say || '').split(/\n\s*\n/).map(function (p) {
+            return '<p class="intro-lead">' + esc(p.trim()) + '</p>';
+          }).join('') +
+          (r.route ? '<p class="cmp-route">' + esc(r.route) + '</p>' : '') +
+          (cfg.resultNote ? '<p class="cmp-note">' + esc(cfg.resultNote) + '</p>' : '') +
+          '<div class="confirm-actions"><button type="button" class="primary-btn cmp-done">' +
+            esc(cfg.doneLabel || 'Keep going') + '</button></div>' +
+          '</div>');
+        host.appendChild(c);
+        requestAnimationFrame(function () { c.querySelector('.cmp-needle').classList.add('settled'); });
+        App.armButton(c.querySelector('.cmp-done'), function () {
+          /* her lean is saved so the January checkpoint (K13a) and the re-aimed
+             L14-16 lessons can read it back. It is her own record, nothing else. */
+          finishChunk(ctx, 'compass=' + lean);
+        });
+      }
+    }
+  };
+
+  /* ================= inspect (J2 Lesson 1's Workshop Safety Inspection) =====
+     HER JOB: look at a drawn scene of a DT room, flag the places she thinks
+     break a room rule, then FILE THE REPORT and find out.
+
+     THE THREE LAWS THIS ENGINE IS BUILT ON, each of them his:
+       PLACE ALL, THEN CHECK (his genuine-consequence law). Nothing is judged
+         until she presses File my inspection report. She can flag and unflag
+         freely until then, so the screen never force-corrects her and never
+         telegraphs an answer by reacting to a click.
+       A WRONG FLAG COSTS NOTHING AND EARNS NOTHING (the platform's
+         no-punishment logic, experienced before it is described). She is told
+         that before she starts, not after she is stung by it.
+       EVERY LOCKED CONTROL SAYS WHAT UNLOCKS IT (DFM 205). File my inspection
+         report is live from the first moment \u2014 filing nothing is a real answer,
+         and a scene with nothing wrong in it is a scene she must be able to
+         pass. The note under the button says what filing will do.
+
+     CONFIG-GATED: no other lesson declares an `inspect` chunk, so nothing that
+     exists today renders one line differently (asserted).
+  */
+  Engines.inspect = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var scenes = cfg.scenes || [];
+      var si = 0;
+      /* XP IS CARRIED TO THE BADGE, NOT SPENT AS IT IS EARNED. The first cut
+         called ctx.addXp() per scene \u2014 and the player's context has no such
+         method, so every flag she got right would have scored nothing and
+         nothing on screen would have said so. Content that names a field the
+         engine ignores fails silently and looks fine in the JSON (DFM 155). It
+         now accumulates and rides the chunk's own badge, the pattern every
+         other scoring engine here uses. */
+      var earned = 0;
+      /* THE SIX RULES ARE STATED BEFORE SHE IS TESTED ON THEM. Found by the
+         cold read, 16 Aug 2026: the inspection was asking her to judge a room
+         against six rules the lesson had never put on a screen. That is rule 31
+         (teach before test) broken by the activity the lesson is built around,
+         and it is also the half of his K4 ruling that says the rules are
+         RE-COVERED and then tested. `rules` renders as a real numbered list
+         (DFM 171) and `after` is the prose that follows it. */
+      introCard(host, {
+        kicker: chunk.title,
+        title: (cfg.introTitle || chunk.title),
+        text: cfg.intro || '',
+        steps: cfg.rules || null,
+        stepsClass: 'insp-rules',
+        /* `after` carries more than one paragraph, and introCard's own after
+           field is a single <p> \u2014 so the paragraphs are built here rather than
+           run together into one wall of text on the screen she reads first. */
+        /* A CATCH-UP PUPIL HAS NOBODY BESIDE HER. `after` ends by telling her to
+           talk it over with the pupil at the next machine \u2014 true in the room,
+           false for a girl doing this alone days later (rule 35, and 138.1.6's
+           "never an instruction the reader cannot obey where she sits"). Found
+           by the cold read; the engine had never read ctx.catchup at all. */
+        extra: String((ctx.catchup && cfg.afterSolo) || cfg.after || '').split(/\n\s*\n/).filter(Boolean)
+          .map(function (para) { return '<p class="intro-lead">' + esc(para.trim()) + '</p>'; }).join('') +
+          (cfg.steps && cfg.steps.length
+            ? '<p class="insp-how-lead">' + esc(cfg.howLead || 'How the inspection works:') + '</p><ol class="insp-intro-steps">' +
+              cfg.steps.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol>'
+            : '')
+      }, cfg.begin || 'Start the inspection', showScene);
+
+      function showScene() {
+        host.innerHTML = '';
+        var sc = scenes[si];
+        if (!sc) {
+          var badge = Object.assign({}, ctx.chunk.badge || {},
+            { xp: Number((ctx.chunk.badge || {}).xp || 0) + earned });
+          if (ctx.chunk.badge) {
+            ctx._finished = true;
+            ctx.awardBadge(badge, 'insp=' + earned).then(function () { ctx.next(); });
+          } else finishChunk(ctx, 'insp=' + earned);
+          return;
+        }
+        var flagged = {};
+        var filed = false;
+
+        var zones = (sc.zones || []).map(function (z, i) {
+          return '<button type="button" class="insp-zone" data-z="' + i + '"' +
+            ' style="left:' + z.x + '%;top:' + z.y + '%;width:' + z.w + '%;height:' + z.h + '%"' +
+            ' aria-pressed="false">' +
+            '<span class="insp-zone-frame"></span>' +
+            '<span class="insp-zone-flag" aria-hidden="true">&#9873;</span>' +
+            '<span class="insp-zone-name">' + esc(z.name) + '</span>' +
+            '</button>';
+        }).join('');
+
+        var card = el('<div class="insp">' +
+          '<div class="insp-head">' +
+            '<span class="insp-tab">' + esc(sc.tab || ('SCENE ' + (si + 1))) + '</span>' +
+            '<h2>' + esc(sc.title) + '</h2>' +
+            '<p class="insp-lead">' + esc(sc.lead || '') + '</p>' +
+          '</div>' +
+          '<div class="insp-stage">' +
+            '<img class="insp-art" src="' + esc(asset(sc.art)) + '" alt="' + esc(sc.alt || '') + '">' +
+            '<div class="insp-zones">' + zones + '</div>' +
+          '</div>' +
+          '<p class="insp-count" aria-live="polite"></p>' +
+          '<div class="insp-actions">' +
+            '<button type="button" class="primary-btn insp-file">' + esc(sc.fileLabel || 'File my inspection report') + '</button>' +
+            /* AN OPTIONAL SCENE MUST BE REFUSABLE. The stretch scene's own lead
+               says "If you would rather stop here, that is fine" and the screen
+               gave her no way to stop \u2014 a promise with no control behind it, and
+               the fail state his K11d stretch depends on. The skip button is a
+               real answer, so it sits beside the file button rather than hiding
+               under it. */
+            (sc.optional
+              ? '<button type="button" class="ghost-btn insp-skip">' + esc(sc.skipLabel || 'Stop here') + '</button>'
+              : '') +
+          '</div>' +
+          '<p class="insp-note">' + esc(sc.fileNote || '') + '</p>' +
+          '</div>');
+        host.appendChild(card);
+
+        var countEl = card.querySelector('.insp-count');
+        function paintCount() {
+          var n = Object.keys(flagged).length;
+          countEl.textContent = n === 0
+            ? (sc.noneYet || 'Nothing flagged yet.')
+            : (n === 1 ? (cfg.countOne || 'You have flagged 1 place.')
+                       : String(cfg.countMany || 'You have flagged {n} places.').replace('{n}', n));
+        }
+        paintCount();
+
+        card.querySelectorAll('.insp-zone').forEach(function (b) {
+          b.onclick = function () {
+            if (filed) return;
+            var k = b.getAttribute('data-z');
+            if (flagged[k]) { delete flagged[k]; b.classList.remove('is-flagged'); b.setAttribute('aria-pressed', 'false'); }
+            else { flagged[k] = 1; b.classList.add('is-flagged'); b.setAttribute('aria-pressed', 'true'); }
+            paintCount();
+          };
+        });
+
+        App.armButton(card.querySelector('.insp-file'), function () {
+          if (filed) return;
+          filed = true;
+          report(card, sc, flagged);
+        });
+        var skipBtn = card.querySelector('.insp-skip');
+        if (skipBtn) App.armButton(skipBtn, function () {
+          if (filed) return;
+          filed = true;
+          si = scenes.length;   // an optional scene refused ends the inspection
+          showScene();
+        });
+      }
+
+      /* THE REPORT CARD. Every zone gets a row, in the order she sees them on
+         the bench, so nothing is hidden: a correct flag NAMES the rule it
+         breaks, a missed one is revealed as missed, and a flag on a station
+         that was fine is answered plainly rather than scored. */
+      function report(card, sc, flagged) {
+        var rows = (sc.zones || []).map(function (z, i) {
+          var wasFlagged = !!flagged[i];
+          var kind = z.breaks ? (wasFlagged ? 'found' : 'missed') : (wasFlagged ? 'clear' : 'ok');
+          var label = {
+            found: cfg.labelFound || 'You found it',
+            missed: cfg.labelMissed || 'You missed this one',
+            clear: cfg.labelClear || 'Nothing wrong here',
+            ok: cfg.labelClear || 'Nothing wrong here'
+          }[kind];
+          return '<li class="insp-row is-' + kind + '">' +
+            '<span class="insp-row-tag">' + label + '</span>' +
+            '<span class="insp-row-name">' + esc(z.name) + '</span>' +
+            '<span class="insp-row-say">' + esc(z.breaks ? z.rule : (wasFlagged ? z.clearSay : z.okSay || z.clearSay)) + '</span>' +
+            '</li>';
+        }).join('');
+        var found = (sc.zones || []).filter(function (z, i) { return z.breaks && flagged[i]; }).length;
+        var total = (sc.zones || []).filter(function (z) { return z.breaks; }).length;
+
+        card.querySelectorAll('.insp-zone').forEach(function (b) {
+          var i = Number(b.getAttribute('data-z'));
+          var z = sc.zones[i];
+          b.classList.add('is-done');
+          b.classList.add(z.breaks ? (flagged[i] ? 'is-found' : 'is-missed') : (flagged[i] ? 'is-clear' : 'is-fine'));
+          /* A FLAG MEANS "I FLAGGED THIS", AND IT MUST GO ON MEANING THAT. The
+             first cut marked a MISSED violation with the same flag glyph, so the
+             one screen that is supposed to teach her what she overlooked showed
+             her a flag she never planted. A symbol a pupil has to decode is an
+             undefined term (DFM 149's law, applied to a mark). Missed gets its
+             own mark, and the label underneath says the word. */
+          var mark = b.querySelector('.insp-zone-flag');
+          if (mark && z.breaks && !flagged[i]) mark.textContent = '!';
+          var nameEl = b.querySelector('.insp-zone-name');
+          if (nameEl) {
+            nameEl.textContent = z.breaks
+              ? (flagged[i] ? (cfg.labelFound || 'You found it') : (cfg.markMissed || 'Missed'))
+              : (flagged[i] ? (cfg.labelClear || 'Nothing wrong here') : '');
+          }
+          b.disabled = true;
+        });
+        card.querySelector('.insp-actions').innerHTML = '';
+        card.querySelector('.insp-note').textContent = '';
+        card.querySelector('.insp-count').textContent = '';
+
+        var rep = el('<div class="insp-report">' +
+          '<h3>' + esc(sc.reportTitle || 'Your inspection report') + '</h3>' +
+          '<p class="insp-score">' + esc(
+            found === total
+              ? (total === 1
+                  ? (cfg.scoreOne || 'You found the one thing that breaks a rule.')
+                  : String(cfg.scoreAll || 'You found all {total} of them.').replace('{total}', total))
+              : String(cfg.scoreSome || 'You found {found} of the {total} things that break a rule. The rest are named below.')
+                  .replace('{found}', found).replace('{total}', total)) +
+          '</p>' +
+          '<ul class="insp-rows">' + rows + '</ul>' +
+          '<div class="confirm-actions"><button type="button" class="primary-btn insp-next">' +
+            esc(sc.nextLabel || 'Next') + '</button></div>' +
+          '</div>');
+        card.appendChild(rep);
+        rep.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        App.armButton(rep.querySelector('.insp-next'), function () {
+          earned += found * (sc.xpPerFlag || 0) + (found === total ? (sc.xpClean || 0) : 0);
+          si += 1;
+          showScene();
+        });
+      }
+    }
+  };
+
 
 })(window);
 

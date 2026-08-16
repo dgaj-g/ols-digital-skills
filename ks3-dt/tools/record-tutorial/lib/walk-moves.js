@@ -80,6 +80,26 @@ function detectKind() {
   if (q('.vault-file:not(.filed)') && vis(q('.vault-folder'))) return { kind: 'vault' };
   if (vis(q('.oath-sign:not([disabled])'))) return { kind: 'hold-sign' };
 
+  /* J3's Compass (the `compass` engine, 16 Aug 2026) and the optional tail on
+     an items chunk. Both outrank the generic handlers: a compass side is not a
+     primary button, and the stretch gate has TWO real choices on it. */
+  if (q('.stretch-go') && vis(q('.stretch-go'))) return { kind: 'stretch-gate' };
+  if (q('.cmp-needle')) return { kind: 'cmp-done' };
+  if (q('.cmp-card') && q('.cmp-side')) {
+    return vis(q('.cmp-settle')) && !q('.cmp-settle').disabled
+      ? { kind: 'cmp-settle' } : { kind: 'cmp-pick' };
+  }
+
+  /* J2's Workshop Safety Inspection (the `inspect` engine, 16 Aug 2026). Two
+     states, and they must be told apart before the generic handlers below: a
+     scene she is still flagging, and the report card she gets back after
+     filing. The report outranks the scene because both are on screen together
+     — filing leaves the picture up with the report underneath it. */
+  if (q('.insp')) {
+    if (vis(q('.insp-next'))) return { kind: 'insp-next' };
+    if (vis(q('.insp-file'))) return { kind: 'insp-scene' };
+  }
+
   if (q('.q-feedback button') && vis(q('.q-feedback button'))) return { kind: 'q-next' };
   if (q('.q-opt:not(:disabled)')) return { kind: 'q-opt' };
 

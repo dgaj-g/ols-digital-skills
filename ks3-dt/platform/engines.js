@@ -38,11 +38,19 @@
      click advanced her a SECOND time, marking the NEXT chunk complete without
      ever showing it. Badge 2 and the whole Vault were lost that way, with no
      route back. One finish per mounted chunk, always. */
-  function finishChunk(ctx, detail) {
+  /* `bonus` is added to the badge's own XP — the standing +5 stretch pattern,
+     for engines whose stretch is inside their own chunk. It is always OPTIONAL
+     and defaults to 0, so every existing caller behaves identically. Anything
+     that uses it must stay inside the server's 40-XP-per-event ceiling, which
+     qa-xp-ceiling computes from the content and enforces at the pack. */
+  function finishChunk(ctx, detail, bonus) {
     if (ctx._finished) return;
     ctx._finished = true;
     if (ctx.chunk.badge) {
-      ctx.awardBadge(ctx.chunk.badge, detail).then(function () { ctx.next(); });
+      var b = Number(bonus || 0)
+        ? Object.assign({}, ctx.chunk.badge, { xp: Number(ctx.chunk.badge.xp || 0) + Number(bonus) })
+        : ctx.chunk.badge;
+      ctx.awardBadge(b, detail).then(function () { ctx.next(); });
     } else ctx.next();
   }
   /* mirror of the server's vhash_ - the vault placement check compares salted
@@ -666,13 +674,47 @@
         kicker: cfg.variant === 'calibration' ? '' : chunk.title,
         title: cfg.variant === 'calibration' ? chunk.title : 'Quick check',
         text: cfg.intro || ''
-      }, 'Start', function () {
+      }, cfg.startLabel || 'Start', function () { runFrom(0); });
+
+      /* AN OPTIONAL TAIL (16 Aug 2026, for J3 Lesson 1's two Senior Cases).
+         `stretchFrom` splits the item list: everything before it is the lesson,
+         everything from it on is the extra challenge — offered on its own card,
+         with a real way to decline, because "optional" with no button behind it
+         is a promise the screen does not keep (the same fault the J2 inspection
+         had). CONFIG-GATED: no existing chunk declares `stretchFrom`, so every
+         J1 items chunk runs exactly as it always has (asserted). */
+      function runFrom(start) {
+        var split = Number(cfg.stretchFrom);
+        var isStretch = start > 0;
+        var end = (!isStretch && split > 0 && split < cfg.items.length) ? split : cfg.items.length;
         itemRunner(host, {
-          items: cfg.items, mode: 'feedback',
+          items: cfg.items.slice(start, end), mode: 'feedback',
           markFn: function (it, i) { return ctx.markItem(it.id, i); },
-          onDone: function () { finishChunk(ctx); }
+          onDone: function () {
+            if (!isStretch && end < cfg.items.length) { offerStretch(end); return; }
+            finishChunk(ctx, isStretch ? 'stretch=1' : undefined,
+              isStretch ? Number(cfg.stretchXp || 0) : 0);
+          }
         });
-      });
+      }
+
+      function offerStretch(at) {
+        host.innerHTML = '';
+        var s = cfg.stretch || {};
+        var c = el('<div class="card intro-card">' +
+          '<span class="intro-kicker">' + esc(s.kicker || 'EXTRA CHALLENGE') + '</span>' +
+          '<h2>' + esc(s.title || 'The hard ones') + '</h2>' +
+          String(s.text || '').split(/\n\s*\n/).map(function (p) {
+            return '<p class="intro-lead">' + esc(p.trim()) + '</p>';
+          }).join('') +
+          '<div class="confirm-actions">' +
+          '<button class="primary-btn stretch-go" type="button">' + esc(s.goLabel || 'Give them a go') + '</button>' +
+          '<button class="ghost-btn stretch-skip" type="button">' + esc(s.skipLabel || 'Stop here instead') + '</button>' +
+          '</div></div>');
+        host.appendChild(c);
+        App.armButton(c.querySelector('.stretch-go'), function () { host.innerHTML = ''; runFrom(at); });
+        App.armButton(c.querySelector('.stretch-skip'), function () { finishChunk(ctx); });
+      }
     }
   };
 
@@ -1201,15 +1243,35 @@
   Engines.diagnostic = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
+      /* EVERY WORD ON THIS SCREEN IS J1'S UNTIL A LESSON SAYS OTHERWISE.
+         Found by the J2 Lesson 1 cold read, 16 Aug 2026, and it is the biggest
+         thing that read found: this engine hardcoded "The Licence Exam", "Open
+         my Agent File", "Sealing your Agent File", "Agent File sealed" and
+         "Sixteen answers" — so J2's Skills Snapshot, a fifth of her first hour,
+         rendered in J1's agent fiction AND told a pupil answering twelve
+         questions that she had answered sixteen (rule 35). None of it was ever
+         readable by the language gate, because the gate reads CONTENT and these
+         were engine literals (DFM 207b's G1 class).
+         Every string is content-owned now with J1's exact wording as the
+         fallback, so J1 renders byte-identically (asserted by qa-j1-unchanged)
+         and every new year has to write — and get judged on — its own.
+         `solo` was worse than a literal: the engine used it as a truthy FLAG
+         and threw the authored sentence away (DFM 155 — content that names a
+         field the engine ignores fails silently and looks fine in the JSON). */
       introCard(host, {
-        kicker: chunk.title, title: 'The Licence Exam',
+        kicker: chunk.title, title: cfg.examTitle || 'The Licence Exam',
         text: cfg.intro || '',
-        extra: cfg.solo ? '<div class="solo-banner">&#129323; Solo mission — your own answers only.</div>' : ''
-      }, 'Open my Agent File', function () {
+        extra: cfg.solo
+          ? '<div class="solo-banner">&#129323; ' +
+            esc(typeof cfg.solo === 'string' ? cfg.solo : 'Solo mission — your own answers only.') +
+            '</div>'
+          : ''
+      }, cfg.openLabel || 'Open my Agent File', function () {
         itemRunner(host, {
           items: cfg.items, mode: 'neutral', ackText: cfg.ackText || 'Logged',
           onDone: function (res) {
-            host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>Sealing your Agent File&hellip;</span></div>';
+            host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
+              esc(cfg.sealingLabel || 'Sealing your Agent File…') + '</span></div>';
             var payload = { lessonId: ctx.lesson.id, answers: res.answers };
             // review mode: never overwrite the original baseline record
             var submit = ctx.review ? Promise.resolve({ ok: true }) : ctx.call('submitBaseline', payload);
@@ -1217,8 +1279,10 @@
               if (!ctx.review && (!r || !r.ok)) App.enqueue('submitBaseline', payload);
               host.innerHTML = '';
               var seal = el('<div class="card seal-card"><div class="seal">&#128736;</div>' +
-                '<h2>Agent File sealed</h2><p>Sixteen answers, logged for the record. At the end of the year you’ll open this file again — and see how far you’ve come.</p>' +
-                '<button class="primary-btn" type="button">Claim the badge</button></div>');
+                '<h2>' + esc(cfg.sealTitle || 'Agent File sealed') + '</h2><p>' +
+                esc(cfg.sealBody || 'Sixteen answers, logged for the record. At the end of the year you’ll open this file again — and see how far you’ve come.') +
+                '</p>' +
+                '<button class="primary-btn" type="button">' + esc(cfg.claimLabel || 'Claim the badge') + '</button></div>');
               host.appendChild(seal);
               seal.querySelector('button').onclick = function () { finishChunk(ctx, undefined); };
             });
@@ -1428,7 +1492,18 @@
   Engines.exitcheck = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
-      introCard(host, { kicker: 'Exit check', title: 'Before you clock off…', text: cfg.intro || '' }, 'Ready', function () {
+      /* "Before you clock off…" was a raw engine literal on the exit check of
+         EVERY lesson, and no gate has ever read it. Clocking off is workplace
+         idiom (138.1.9): a twelve-year-old has never clocked off anything.
+         Content-owned now, with the shipped wording as the fallback so J1's
+         five signed-off lessons render byte-identically — J1's own wording is
+         REPORTED to Damien as a proposed reword rather than changed under his
+         lock (DFM 176/208). */
+      introCard(host, {
+        kicker: cfg.kicker || 'Exit check',
+        title: cfg.cardTitle || 'Before you clock off…',
+        text: cfg.intro || ''
+      }, cfg.readyLabel || 'Ready', function () {
         itemRunner(host, {
           items: cfg.items, mode: 'collect',
           onDone: function (res) {
@@ -1523,7 +1598,11 @@
       c.querySelector('.se-submit').onclick = function () {
         if (ctx.review) {
           host.innerHTML = '';
-          var rv = el('<div class="card"><h2>Already filed</h2><p>This mission report went to your teacher the first time — a review visit never overwrites it.</p>' +
+          /* "mission report" and "Mission complete." below are J1's fiction and
+             were reaching every year (found by the J2 L1 cold read). Both are
+             content-owned now with J1's exact wording as the fallback. */
+          var rv = el('<div class="card"><h2>Already filed</h2><p>' +
+            esc(cfg.alreadyFiled || 'This mission report went to your teacher the first time — a review visit never overwrites it.') + '</p>' +
             '<button class="primary-btn" type="button">Finish reviewing</button></div>');
           host.appendChild(rv);
           rv.querySelector('button').onclick = function () { ctx.next(); };
@@ -1538,7 +1617,8 @@
         App.submitExit(payload, function (r) {
           host.innerHTML = '';
           if (!r) {
-            var safe = el('<div class="card"><h2>Report saved on this machine</h2><p>Your connection is playing up, so your answers are safe here and will send automatically. Mission complete.</p>' +
+            var safe = el('<div class="card"><h2>Report saved on this machine</h2><p>' +
+              esc(cfg.offlineSay || 'Your connection is playing up, so your answers are safe here and will send automatically. Mission complete.') + '</p>' +
               '<button class="primary-btn" type="button">Finish</button></div>');
             host.appendChild(safe);
             safe.querySelector('button').onclick = function () { ctx.next(); };
@@ -4568,6 +4648,122 @@
   };
 
 
+  /* ================= compass (J3 Lesson 1's Find Your Compass) ==============
+     HER JOB: answer three either/or questions about the kind of work she
+     ENJOYS, and watch a needle settle on the side she leans to.
+
+     THE LAWS THIS ENGINE IS BUILT ON, and they are his (K12/K13):
+       IT DECIDES NOTHING. It is where she is standing today, said on screen
+         before she taps and again after. The GCSE options window is January's,
+         Digital Technology is optional, and choosing neither is a fine answer.
+       THE RESULT READS BOTH WAYS (K13d). First the KIND of digital work that
+         suits her, in plain words — that answer is true for every girl,
+         including one who will never pick DT. The route mapping comes second,
+         and only as an if.
+       UNDECIDED IS A REAL RESULT, never a failure. A pupil who splits her three
+         answers gets a needle that stands up straight and a card that says so.
+       SHE CAN CHANGE HER MIND before she commits: taps are free until she
+         presses the settle button (the place-all-then-check law again).
+
+     CONFIG-GATED: no other lesson declares a `compass` chunk. */
+  Engines.compass = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var pairs = cfg.pairs || [];
+      var picks = pairs.map(function () { return null; });
+
+      introCard(host, {
+        kicker: chunk.title,
+        title: cfg.introTitle || chunk.title,
+        text: cfg.intro || '',
+        extra: cfg.note ? '<p class="cmp-note">' + esc(cfg.note) + '</p>' : ''
+      }, cfg.begin || 'Start', board);
+
+      function board() {
+        host.innerHTML = '';
+        var rows = pairs.map(function (p, i) {
+          return '<div class="cmp-row" data-r="' + i + '">' +
+            '<p class="cmp-q">' + esc(p.q || '') + '</p>' +
+            '<div class="cmp-sides">' +
+            '<button type="button" class="cmp-side" data-side="design" data-r="' + i + '">' + esc(p.design) + '</button>' +
+            '<button type="button" class="cmp-side" data-side="build" data-r="' + i + '">' + esc(p.build) + '</button>' +
+            '</div></div>';
+        }).join('');
+        var c = el('<div class="card cmp-card">' +
+          '<h2>' + esc(cfg.boardTitle || 'Which one sounds more like you?') + '</h2>' +
+          (cfg.boardLead ? '<p class="intro-lead">' + esc(cfg.boardLead) + '</p>' : '') +
+          '<div class="cmp-rows">' + rows + '</div>' +
+          '<p class="cmp-locked-note">' + esc(cfg.lockedNote ||
+            'Answer all three and the button below wakes up.') + '</p>' +
+          '<div class="confirm-actions"><button type="button" class="primary-btn cmp-settle" disabled>' +
+            esc(cfg.settleLabel || 'Settle my compass') + '</button></div>' +
+          '</div>');
+        host.appendChild(c);
+
+        c.querySelectorAll('.cmp-side').forEach(function (b) {
+          b.onclick = function () {
+            var r = Number(b.getAttribute('data-r'));
+            picks[r] = b.getAttribute('data-side');
+            c.querySelectorAll('.cmp-side[data-r="' + r + '"]').forEach(function (x) { x.classList.remove('on'); });
+            b.classList.add('on');
+            var all = picks.every(function (v) { return v !== null; });
+            c.querySelector('.cmp-settle').disabled = !all;
+            /* DFM 205: a locked control says what unlocks it, and the note goes
+               the moment it is satisfied. */
+            c.querySelector('.cmp-locked-note').hidden = all;
+          };
+        });
+        App.armButton(c.querySelector('.cmp-settle'), settle);
+      }
+
+      function settle() {
+        /* side 'a' is the designing-and-communicating side, 'b' is the
+           building-and-problem-solving side.
+           HOW THE FOUR RESULTS ARE REACHED, and why it is four and not three.
+           The first cut had a/b/even and read `even` as an equal split — which
+           with an ODD number of pairs can never happen, so the "undecided is a
+           real answer" result his K13d ruling asks for was unreachable code.
+           Found by the cold read of the built lesson, 16 Aug 2026.
+           A CLEAN SWEEP (every pair to one side) is a clear lean. ANYTHING ELSE
+           is a genuine middle — and it is the honest, common answer on day one —
+           so it gets its own result that still tells her which way she tipped.
+           Every outcome is a real answer about her; none of them is a failure. */
+        /* THE FIELD NAMES ARE `design` / `build`, NEVER `a` / `b`. The packer's
+           plaintext-leak guard forbids any `"a":` field in a public lesson file,
+           because that is the shape of an answer key — and it caught this engine's
+           first cut (16 Aug 2026). The guard is exactly right and was not touched;
+           the naming is clearer anyway. */
+        var a = picks.filter(function (v) { return v === 'design'; }).length;
+        var b = pairs.length - a;
+        var lean = a === pairs.length ? 'design' : b === pairs.length ? 'build'
+          : a > b ? 'mixedDesign' : 'mixedBuild';
+        var r = (cfg.results || {})[lean] || {};
+        host.innerHTML = '';
+        var deg = { design: -38, mixedDesign: -15, mixedBuild: 15, build: 38 }[lean] || 0;
+        var c = el('<div class="card cmp-card cmp-result">' +
+          '<div class="cmp-dial"><span class="cmp-dial-a">' + esc(cfg.designLabel || '') + '</span>' +
+            '<span class="cmp-dial-b">' + esc(cfg.buildLabel || '') + '</span>' +
+            '<span class="cmp-needle" style="--deg:' + deg + 'deg"></span></div>' +
+          '<h2>' + esc(r.title || '') + '</h2>' +
+          String(r.say || '').split(/\n\s*\n/).map(function (p) {
+            return '<p class="intro-lead">' + esc(p.trim()) + '</p>';
+          }).join('') +
+          (r.route ? '<p class="cmp-route">' + esc(r.route) + '</p>' : '') +
+          (cfg.resultNote ? '<p class="cmp-note">' + esc(cfg.resultNote) + '</p>' : '') +
+          '<div class="confirm-actions"><button type="button" class="primary-btn cmp-done">' +
+            esc(cfg.doneLabel || 'Keep going') + '</button></div>' +
+          '</div>');
+        host.appendChild(c);
+        requestAnimationFrame(function () { c.querySelector('.cmp-needle').classList.add('settled'); });
+        App.armButton(c.querySelector('.cmp-done'), function () {
+          /* her lean is saved so the January checkpoint (K13a) and the re-aimed
+             L14-16 lessons can read it back. It is her own record, nothing else. */
+          finishChunk(ctx, 'compass=' + lean);
+        });
+      }
+    }
+  };
+
   /* ================= inspect (J2 Lesson 1's Workshop Safety Inspection) =====
      HER JOB: look at a drawn scene of a DT room, flag the places she thinks
      break a room rule, then FILE THE REPORT and find out.
@@ -4617,10 +4813,15 @@
         /* `after` carries more than one paragraph, and introCard's own after
            field is a single <p> — so the paragraphs are built here rather than
            run together into one wall of text on the screen she reads first. */
-        extra: String(cfg.after || '').split(/\n\s*\n/).filter(Boolean)
+        /* A CATCH-UP PUPIL HAS NOBODY BESIDE HER. `after` ends by telling her to
+           talk it over with the pupil at the next machine — true in the room,
+           false for a girl doing this alone days later (rule 35, and 138.1.6's
+           "never an instruction the reader cannot obey where she sits"). Found
+           by the cold read; the engine had never read ctx.catchup at all. */
+        extra: String((ctx.catchup && cfg.afterSolo) || cfg.after || '').split(/\n\s*\n/).filter(Boolean)
           .map(function (para) { return '<p class="intro-lead">' + esc(para.trim()) + '</p>'; }).join('') +
           (cfg.steps && cfg.steps.length
-            ? '<p class="insp-how-lead">How the inspection works:</p><ol class="insp-intro-steps">' +
+            ? '<p class="insp-how-lead">' + esc(cfg.howLead || 'How the inspection works:') + '</p><ol class="insp-intro-steps">' +
               cfg.steps.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol>'
             : '')
       }, cfg.begin || 'Start the inspection', showScene);
@@ -4663,6 +4864,15 @@
           '<p class="insp-count" aria-live="polite"></p>' +
           '<div class="insp-actions">' +
             '<button type="button" class="primary-btn insp-file">' + esc(sc.fileLabel || 'File my inspection report') + '</button>' +
+            /* AN OPTIONAL SCENE MUST BE REFUSABLE. The stretch scene's own lead
+               says "If you would rather stop here, that is fine" and the screen
+               gave her no way to stop — a promise with no control behind it, and
+               the fail state his K11d stretch depends on. The skip button is a
+               real answer, so it sits beside the file button rather than hiding
+               under it. */
+            (sc.optional
+              ? '<button type="button" class="ghost-btn insp-skip">' + esc(sc.skipLabel || 'Stop here') + '</button>'
+              : '') +
           '</div>' +
           '<p class="insp-note">' + esc(sc.fileNote || '') + '</p>' +
           '</div>');
@@ -4673,7 +4883,8 @@
           var n = Object.keys(flagged).length;
           countEl.textContent = n === 0
             ? (sc.noneYet || 'Nothing flagged yet.')
-            : (n === 1 ? 'You have flagged 1 place.' : 'You have flagged ' + n + ' places.');
+            : (n === 1 ? (cfg.countOne || 'You have flagged 1 place.')
+                       : String(cfg.countMany || 'You have flagged {n} places.').replace('{n}', n));
         }
         paintCount();
 
@@ -4692,6 +4903,13 @@
           filed = true;
           report(card, sc, flagged);
         });
+        var skipBtn = card.querySelector('.insp-skip');
+        if (skipBtn) App.armButton(skipBtn, function () {
+          if (filed) return;
+          filed = true;
+          si = scenes.length;   // an optional scene refused ends the inspection
+          showScene();
+        });
       }
 
       /* THE REPORT CARD. Every zone gets a row, in the order she sees them on
@@ -4702,7 +4920,12 @@
         var rows = (sc.zones || []).map(function (z, i) {
           var wasFlagged = !!flagged[i];
           var kind = z.breaks ? (wasFlagged ? 'found' : 'missed') : (wasFlagged ? 'clear' : 'ok');
-          var label = { found: 'You found it', missed: 'You missed this one', clear: 'Nothing wrong here', ok: 'Nothing wrong here' }[kind];
+          var label = {
+            found: cfg.labelFound || 'You found it',
+            missed: cfg.labelMissed || 'You missed this one',
+            clear: cfg.labelClear || 'Nothing wrong here',
+            ok: cfg.labelClear || 'Nothing wrong here'
+          }[kind];
           return '<li class="insp-row is-' + kind + '">' +
             '<span class="insp-row-tag">' + label + '</span>' +
             '<span class="insp-row-name">' + esc(z.name) + '</span>' +
@@ -4728,8 +4951,8 @@
           var nameEl = b.querySelector('.insp-zone-name');
           if (nameEl) {
             nameEl.textContent = z.breaks
-              ? (flagged[i] ? 'You found it' : 'Missed')
-              : (flagged[i] ? 'Nothing wrong here' : '');
+              ? (flagged[i] ? (cfg.labelFound || 'You found it') : (cfg.markMissed || 'Missed'))
+              : (flagged[i] ? (cfg.labelClear || 'Nothing wrong here') : '');
           }
           b.disabled = true;
         });
@@ -4741,8 +4964,11 @@
           '<h3>' + esc(sc.reportTitle || 'Your inspection report') + '</h3>' +
           '<p class="insp-score">' + esc(
             found === total
-              ? (total === 1 ? 'You found the one thing that breaks a rule.' : 'You found all ' + total + ' of them.')
-              : 'You found ' + found + ' of the ' + total + ' things that break a rule. The rest are named below.') +
+              ? (total === 1
+                  ? (cfg.scoreOne || 'You found the one thing that breaks a rule.')
+                  : String(cfg.scoreAll || 'You found all {total} of them.').replace('{total}', total))
+              : String(cfg.scoreSome || 'You found {found} of the {total} things that break a rule. The rest are named below.')
+                  .replace('{found}', found).replace('{total}', total)) +
           '</p>' +
           '<ul class="insp-rows">' + rows + '</ul>' +
           '<div class="confirm-actions"><button type="button" class="primary-btn insp-next">' +

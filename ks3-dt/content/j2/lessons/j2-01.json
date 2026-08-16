@@ -1,0 +1,740 @@
+{
+ "id": "j2-01",
+ "year": "j2",
+ "num": 1,
+ "title": "Welcome to the Workshop",
+ "tagline": "Your builder's year starts here.",
+ "mode": "taught",
+ "durationMin": 60,
+ "objectives": [
+  "I know what this year is about: I build real things, and I learn how to keep them safe.",
+  "I know the rules of the DT room, and I can spot a room that is not keeping them.",
+  "I can find my way around this website, and I know where my work is saved."
+ ],
+ "chunks": [
+  {
+   "id": "briefing",
+   "engine": "briefing",
+   "title": "Welcome",
+   "minutes": 5,
+   "config": {
+    "clearance": "J2 · LESSON 1 OF 17",
+    "headline": "Welcome to the Workshop.",
+    "lines": [
+     "Your Digital Technology year has a name, and the name is the Workshop. It is not a real room in this school. It is what we call your DT year, because building things is what you do in it. You have seventeen Workshop lessons this year, one every fortnight.",
+     "This year is about two things, and they go together. You BUILD real things: programs that follow your instructions, spreadsheets that work things out for you, and web pages you write yourself. Then you learn to PROTECT what you build, and to spot the tricks people use to get at other people's work.",
+     "Everything you need is on this website. The page you have just come from is your year map. All seventeen lessons sit on it, and you come back to it at the start and the end of every lesson.",
+     "One thing about the screens you clicked through to get here. Those were Google's own permission screens, and they were asking whether this website is allowed to know who you are, so that your work saves under your name. You only see them the very first time you sign in. You will not see them again.",
+     "Here is what this hour holds, in order. First you set up your workbench, which takes about seven minutes and means finding your way around this website. Then you run a safety inspection on an ICT room: four goes at it, and a harder fifth one if you want it. After that come twelve quick questions about what you can do already, which are not a test and cannot be failed. Then six questions about this hour, and your first unlock. It finishes with a card about what you build next, one marked question, and a screen that asks you how the hour went."
+    ],
+    "cta": "Set up my workbench",
+    "help": "This card types itself out. Read it through — your teacher may be reading it with the class — and press the button at the bottom when you are ready to move on. Nothing here is marked."
+   }
+  },
+  {
+   "id": "workbench",
+   "engine": "steps",
+   "title": "Set up your workbench",
+   "minutes": 7,
+   "badge": {
+    "id": "j2-b1",
+    "name": "Your Workbench",
+    "icon": "assets/badges/compass.png",
+    "xp": 12
+   },
+   "config": {
+    "intro": "There are five things to find on this screen. This website is where every Workshop lesson lives, so seven minutes now saves you asking all year. Each step tells you what to look for and what you will SEE when you have found it.",
+    "steps": [
+     {
+      "icon": "🗺️",
+      "title": "You already know where your year map is",
+      "text": "Your year map is the page you came from to get here, and it holds all seventeen lessons in six groups, with a heading over each group. Look at the top left of this screen: the button there says Year map, and it takes you back at any time. Do not press it now — you come back to your year map at the end of the lesson.",
+      "confirm": "I can see the Year map button at the top left"
+     },
+     {
+      "icon": "🔒",
+      "title": "A locked tile is normal, not a fault",
+      "text": "Most of the tiles on your year map have a small padlock on them. Nothing is broken. Your teacher opens each lesson on the day you do it, so a locked tile just means we have not got there yet. Only the lesson you are working on is open.",
+      "confirm": "I understand what a locked tile means"
+     },
+     {
+      "icon": "💾",
+      "title": "Watch your work save itself",
+      "text": "Look along the top of this screen, over on the right, for a small green word: Saved. You never press a save button here. Every time you answer something or finish a part of a lesson, this website writes it to your own record, and that green word tells you it has landed. Your work follows your login, so you can pick it up on any school computer.",
+      "confirm": "I found the Saved chip at the top"
+     },
+     {
+      "icon": "❓",
+      "title": "Find the help button",
+      "text": "Look at the bottom right of this screen for a round button with a question mark on it. Click it now. A panel opens with help for the part of the lesson you are on right now, so it says something different on every screen. Close it again when you have read it.",
+      "confirm": "I opened the help button and read what it said"
+     },
+     {
+      "icon": "🧰",
+      "title": "Open your Kit Locker",
+      "text": "Click your name in the top right corner. Your Kit Locker opens. This is your own locker in the Workshop: finish lessons and you earn new looks for your screen, and they hang in here. Anything you unlock stays yours for the rest of the year, even if your points move around later. You have not earned anything yet, so most of what you can see is still padlocked. Close it and come back here.",
+      "confirm": "I opened my Kit Locker and saw what is in it"
+     }
+    ],
+    "help": "Work down the steps one at a time. Each one says exactly what to click and what you should see when it worked. Tick the box under a step once you have done it, and the next step appears. If you cannot find something, ask the pupil beside you where they clicked."
+   }
+  },
+  {
+   "id": "inspection",
+   "engine": "inspect",
+   "title": "The Workshop Safety Inspection",
+   "minutes": 15,
+   "badge": {
+    "id": "j2-b2",
+    "name": "Safety Inspector",
+    "icon": "assets/badges/magnifier.png",
+    "xp": 10
+   },
+   "config": {
+    "introTitle": "You are the safety inspector",
+    "intro": "The Workshop is the name of your year, but you do it in a real ICT room, and every DT room runs on the same six rules. Here they are, so that nobody is guessing.",
+    "rules": [
+     "Never come into the room without a teacher. Line up quietly outside, in single file, until your teacher arrives.",
+     "No food and no drink anywhere near the machines.",
+     "Look after the equipment. Nothing gets unplugged, moved or taken apart.",
+     "Push your chair in and leave your area tidy before you go.",
+     "Sign out every time you finish.",
+     "Tell your teacher about anything broken, straight away."
+    ],
+    "after": "Five of those six you can SEE in a room. The first one happens outside the door, before you are in it, so it is the only one you will not be looking for today.\n\nNow you are the inspector. You will see a drawing of an ICT room after a class has left. Click any station you think breaks one of those rules to plant a flag on it. You can change your mind as often as you like, because nothing is marked until you file your report.\n\nTalk it over with the pupil beside you. Then each of you files your own report.",
+    "afterSolo": "Five of those six you can SEE in a room. The first one happens outside the door, before you are in it, so it is the only one you will not be looking for today.\n\nNow you are the inspector. You will see a drawing of an ICT room after a class has left. Click any station you think breaks one of those rules to plant a flag on it. You can change your mind as often as you like, because nothing is marked until you file your report.\n\nYou are doing this one on your own, so take your time over each station. There is nobody to hurry you.",
+    "howLead": "How the inspection works:",
+    "countOne": "You have flagged 1 station.",
+    "countMany": "You have flagged {n} stations.",
+    "labelFound": "You found it",
+    "labelMissed": "You missed this one",
+    "labelClear": "Nothing wrong here",
+    "markMissed": "Missed",
+    "scoreOne": "You found the one thing that breaks a rule.",
+    "scoreAll": "You found all {total} of them.",
+    "scoreSome": "You found {found} of the {total} things that break a rule. The rest are named below.",
+    "steps": [
+     "Look along the whole row before you click anything.",
+     "Click a station to flag it. Click it again to take the flag off.",
+     "When you are happy, press File my inspection report.",
+     "You will then be told which rule each flag breaks, and shown anything you missed."
+    ],
+    "begin": "Start the inspection",
+    "help": "Click a station to plant a flag on it, and click it again to take the flag off. Nothing is judged until you press File my inspection report, so change your mind as often as you like. A flag on a station that turns out to be fine costs you nothing at all. After you file, every station gets a line telling you what was wrong with it, or that it was fine.",
+    "scenes": [
+     {
+      "tab": "SCENE 1 OF 4",
+      "title": "An ICT room, straight after a lesson",
+      "lead": "The class has just left. Five stations. Some of them were put back the way the room rules ask, and some of them were not.",
+      "art": "assets/img/j2/inspection-1.svg",
+      "alt": "A school ICT room bench with five computer stations. One station has a drink can standing beside the keyboard. One has a screen still signed in with somebody's work open. One has headphones, papers and a memory stick left out and its chair pushed back. The other two are tidy, with their screens off and their chairs in.",
+      "noneYet": "Nothing flagged yet. If you think the room is fine, you can file an empty report.",
+      "fileLabel": "File my inspection report",
+      "fileNote": "Filing tells you which rule each flag breaks, and shows you anything you missed. A flag on a station that is fine costs you nothing.",
+      "reportTitle": "Your inspection report",
+      "nextLabel": "Next scene",
+      "xpPerFlag": 1,
+      "xpClean": 2,
+      "zones": [
+       {
+        "x": 0.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 1",
+        "breaks": null,
+        "clearSay": "This one is fine. The screen is off, the chair is in and the bench is clear.",
+        "okSay": "This one is fine. The screen is off, the chair is in and the bench is clear."
+       },
+       {
+        "x": 20.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 2",
+        "breaks": "no food or drink",
+        "rule": "This breaks the rule about food and drink. A can of fizzy drink is standing right beside the keyboard, and one knock ruins the machine underneath it."
+       },
+       {
+        "x": 40.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 3",
+        "breaks": "sign out every time",
+        "rule": "This breaks the rule about signing out. The screen is still signed in and somebody's work is open, so the next person to sit down is using her account."
+       },
+       {
+        "x": 60.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 4",
+        "breaks": "chair in, area tidy",
+        "rule": "This breaks the rule about leaving your area tidy. Headphones, papers and a memory stick have been left out, and the chair has not been pushed in."
+       },
+       {
+        "x": 80.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 5",
+        "breaks": null,
+        "clearSay": "This one is fine too. Nothing has been left out and the chair is in.",
+        "okSay": "This one is fine too. Nothing has been left out and the chair is in."
+       }
+      ]
+     },
+     {
+      "tab": "SCENE 2 OF 4",
+      "title": "The same room, a different class",
+      "lead": "Look along the row again. This class left three things behind, and one of them is not up beside the machines at all.",
+      "art": "assets/img/j2/inspection-2.svg",
+      "alt": "A school ICT room bench with five computer stations. One station has a sports bottle of juice standing beside the keyboard. One has a lead pulled out of the back of the machine, hanging down under the bench with the plug on the end of it. One has a bag dumped on its chair, which is pushed back. The other two are tidy, with their screens off and their chairs in.",
+      "noneYet": "Nothing flagged yet. Remember you can file an empty report if you think the room is fine.",
+      "fileLabel": "File my inspection report",
+      "fileNote": "A flag on a station that is fine still costs you nothing.",
+      "reportTitle": "Your inspection report",
+      "nextLabel": "Next scene",
+      "xpPerFlag": 1,
+      "xpClean": 2,
+      "zones": [
+       {
+        "x": 0.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 1",
+        "breaks": null,
+        "clearSay": "This one is fine. Screen off, chair in, nothing left beside the machine.",
+        "okSay": "This one is fine. Screen off, chair in, nothing left beside the machine."
+       },
+       {
+        "x": 20.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 2",
+        "breaks": "no food or drink",
+        "rule": "This breaks the rule about food and drink. A bottle of juice is standing right beside the machine. A lid is no help once the bottle is knocked over."
+       },
+       {
+        "x": 40.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 3",
+        "breaks": "respect the equipment",
+        "rule": "This breaks the rule about respecting the equipment. A lead has been pulled out of the back of the machine and left hanging under the bench with the plug on the end of it. Nobody should be unplugging anything."
+       },
+       {
+        "x": 60.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 4",
+        "breaks": "chair in, area tidy",
+        "rule": "This breaks the rule about leaving your area tidy. A bag has been dumped on the chair, which is why the chair could not be pushed in."
+       },
+       {
+        "x": 80.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 5",
+        "breaks": null,
+        "clearSay": "This one is fine. There is nothing wrong with it at all.",
+        "okSay": "This one is fine. There is nothing wrong with it at all."
+       }
+      ]
+     },
+     {
+      "tab": "SCENE 3 OF 4",
+      "title": "Getting harder",
+      "lead": "Only two things are wrong in this one, and neither of them is as loud as a drink can. Take your time.",
+      "art": "assets/img/j2/inspection-3.svg",
+      "alt": "A school ICT room bench with five computer stations. One station has three keys off its keyboard, lying beside it, with nothing on the machine to say so. One has a screen still signed in with somebody's work open. The other three are tidy, with their screens off and their chairs in.",
+      "noneYet": "Nothing flagged yet.",
+      "fileLabel": "File my inspection report",
+      "fileNote": "Take a proper look at every station before you file this one.",
+      "reportTitle": "Your inspection report",
+      "nextLabel": "Next scene",
+      "xpPerFlag": 1,
+      "xpClean": 3,
+      "zones": [
+       {
+        "x": 0.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 1",
+        "breaks": null,
+        "clearSay": "This one is fine.",
+        "okSay": "This one is fine."
+       },
+       {
+        "x": 20.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 2",
+        "breaks": "report a fault",
+        "rule": "This breaks the rule about reporting faults. Three keys are off the keyboard and lying loose beside it, and there is nothing on the machine to say anyone has told a teacher. A fault nobody reports is a fault nobody fixes."
+       },
+       {
+        "x": 40.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 3",
+        "breaks": null,
+        "clearSay": "This one is fine.",
+        "okSay": "This one is fine."
+       },
+       {
+        "x": 60.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 4",
+        "breaks": "sign out every time",
+        "rule": "This breaks the rule about signing out. The chair is in and the bench is clear, so it looks tidy, but the screen is still signed in with somebody's work on it."
+       },
+       {
+        "x": 80.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 5",
+        "breaks": null,
+        "clearSay": "This one is fine.",
+        "okSay": "This one is fine."
+       }
+      ]
+     },
+     {
+      "tab": "SCENE 4 OF 4",
+      "title": "The last one, and the sneakiest",
+      "lead": "A screen that is lit is not the same thing as a screen somebody has left signed in. Read what is actually ON each screen before you decide.",
+      "art": "assets/img/j2/inspection-4.svg",
+      "alt": "A school ICT room bench with five computer stations. One station is lit and showing its sign-in box, with nobody's work on it. One has a crisp packet tucked in behind the monitor. One has a screen still signed in with somebody's work open. The other two are tidy, with their screens off.",
+      "noneYet": "Nothing flagged yet.",
+      "fileLabel": "File my inspection report",
+      "fileNote": "A lit screen is not automatically a problem. What matters is whose work is on it.",
+      "reportTitle": "Your inspection report",
+      "nextLabel": "Finish the inspection",
+      "xpPerFlag": 1,
+      "xpClean": 3,
+      "zones": [
+       {
+        "x": 0.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 1",
+        "breaks": null,
+        "clearSay": "This one is fine, and it is the one that catches people out. The screen is on, but look at what is on it: the sign-in box, and nobody's work. That means the last person DID sign out, and a machine being awake breaks no rule.",
+        "okSay": "Good judgement. This screen is on, but it is showing the sign-in box, which means the last person DID sign out. The machine being awake is not against any rule, and you were right to leave it."
+       },
+       {
+        "x": 20.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 2",
+        "breaks": null,
+        "clearSay": "This one is fine.",
+        "okSay": "This one is fine."
+       },
+       {
+        "x": 40.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 3",
+        "breaks": "no food or drink",
+        "rule": "This breaks the rule about food and drink. A crisp packet has been pushed in behind the monitor, where somebody hoped it would not be spotted. Crumbs in a keyboard are exactly as bad as spilled juice."
+       },
+       {
+        "x": 60.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 4",
+        "breaks": null,
+        "clearSay": "This one is fine.",
+        "okSay": "This one is fine."
+       },
+       {
+        "x": 80.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 5",
+        "breaks": "sign out every time",
+        "rule": "This breaks the rule about signing out. This is the one that is really still signed in: there is a name at the top and somebody's work underneath it."
+       }
+      ]
+     },
+     {
+      "optional": true,
+      "skipLabel": "Stop here instead",
+      "tab": "EXTRA CHALLENGE · THE HARD INSPECTION",
+      "title": "The Hard Inspection",
+      "lead": "The four scenes are done. This fifth one is the extra challenge and you do not have to do it. It is a harder room: everything you have already learned is in it, plus one station that LOOKS wrong and is not. Have a go if you want one, or press Stop here instead and move on with the lesson. Nothing is taken off you either way.",
+      "art": "assets/img/j2/inspection-5.svg",
+      "alt": "A school ICT room bench with five computer stations. One station has a cracked screen with a REPORTED tag taped to its monitor. One has a crisp packet tucked in behind the monitor. One is completely tidy except that its screen is still signed in. One has a memory stick left lying beside its keyboard. The first station is tidy with its screen off.",
+      "noneYet": "Nothing flagged yet. Read every station before you file this one.",
+      "fileLabel": "File my inspection report",
+      "fileNote": "One station here is broken AND is keeping the rules. Work out which, and why.",
+      "reportTitle": "Your inspection report",
+      "nextLabel": "Finish the challenge",
+      "xpPerFlag": 1,
+      "xpClean": 3,
+      "zones": [
+       {
+        "x": 0.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 1",
+        "breaks": null,
+        "clearSay": "This one is fine.",
+        "okSay": "This one is fine."
+       },
+       {
+        "x": 20.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 2",
+        "breaks": null,
+        "clearSay": "This is the one that looks wrong and is not. The screen really is cracked, but the rule is to REPORT a fault to your teacher, and somebody has: there is a REPORTED tag taped to the monitor. A broken machine that has been reported is a rule kept, not a rule broken.",
+        "okSay": "You were right to leave this one. The screen is cracked, but the rule is to report a fault, and somebody has: there is a REPORTED tag taped to the monitor."
+       },
+       {
+        "x": 40.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 3",
+        "breaks": "no food or drink",
+        "rule": "This breaks the rule about food and drink. Another crisp packet, pushed in behind the monitor where it is hard to see."
+       },
+       {
+        "x": 60.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 4",
+        "breaks": "sign out every time",
+        "rule": "This breaks the rule about signing out. Everything else about this station is perfect, which is exactly why it is easy to walk past."
+       },
+       {
+        "x": 80.75,
+        "y": 22,
+        "w": 18.5,
+        "h": 72,
+        "name": "Station 5",
+        "breaks": "chair in, area tidy",
+        "rule": "This breaks the rule about leaving your area tidy. A memory stick has been left lying beside the keyboard, and whoever owns it has walked out without it."
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "snapshot",
+   "engine": "diagnostic",
+   "title": "Skills Snapshot",
+   "minutes": 12,
+   "badge": {
+    "id": "j2-b3",
+    "name": "Snapshot Taken",
+    "icon": "assets/badges/numbers.png",
+    "xp": 10
+   },
+   "config": {
+    "examTitle": "Where you are starting from",
+    "openLabel": "Start my Snapshot",
+    "sealingLabel": "Saving your Snapshot…",
+    "sealTitle": "Snapshot taken",
+    "sealBody": "Twelve answers, kept as the record of where you were on day one. Later in the year you answer some of them again, and you see the difference for yourself.",
+    "claimLabel": "Claim the badge",
+    "intro": "This part is called your Skills Snapshot. It is a picture of what you can do right now, on the first day of the year, before anybody has taught you any of it.\n\nThere are twelve quick questions. It is NOT a test and you cannot fail it. Most of them are about things you have not been taught yet, so not knowing is completely normal and completely expected.\n\nYou will not be told right or wrong on these, and that is on purpose. At the end of the year you will answer some of the same questions again, and you will see for yourself how far you have come.",
+    "ackText": "Answer saved",
+    "solo": "You do this one on your own, quietly — nobody is told right or wrong here, so there is nothing to compare.",
+    "items": [
+     {
+      "id": "j2s-01",
+      "stem": "A robot is told to take three steps forward, then turn left, then take two more steps forward. What would change if it turned left FIRST and then took all five steps?",
+      "options": [
+       "It would end up somewhere different",
+       "It would end up in exactly the same place",
+       "It would not move at all",
+       "The robot would break"
+      ]
+     },
+     {
+      "id": "j2s-02",
+      "matched": true,
+      "stem": "A program keeps a score. It starts at 0, then the score is changed to 5, then it is changed to 8. What is in the score now?",
+      "options": [
+       "8",
+       "13",
+       "0",
+       "5"
+      ]
+     },
+     {
+      "id": "j2s-03",
+      "matched": true,
+      "stem": "A program says: IF the temperature is under 10, put on a coat. OTHERWISE, do not. The temperature is 14. What happens?",
+      "options": [
+       "No coat",
+       "A coat goes on",
+       "Both happen",
+       "Nothing happens at all"
+      ]
+     },
+     {
+      "id": "j2s-04",
+      "stem": "You need to write 'hello' on the screen twenty times. Which is the better plan?",
+      "options": [
+       "Tell the computer to repeat it twenty times",
+       "Type it out twenty times yourself",
+       "Type it once and hope",
+       "Ask twenty different people to type it"
+      ]
+     },
+     {
+      "id": "j2s-05",
+      "stem": "A spreadsheet adds up a column of prices for you. You change one of the prices. What happens to the total?",
+      "options": [
+       "It works itself out again straight away",
+       "It stays the same until you type a new total",
+       "The column empties",
+       "Nothing, unless you print it"
+      ]
+     },
+     {
+      "id": "j2s-06",
+      "matched": true,
+      "stem": "Two charts are drawn from exactly the same numbers, but one makes a small difference look enormous. What has most likely been done to it?",
+      "options": [
+       "The bottom of the chart has been chopped off",
+       "The numbers were changed",
+       "It was drawn by a different person",
+       "Charts always show different things"
+      ]
+     },
+     {
+      "id": "j2s-07",
+      "matched": true,
+      "stem": "A club types every member's address into a list, and lots of members live at the same house. What goes wrong first?",
+      "options": [
+       "The same address gets typed differently in different rows",
+       "The list will not open",
+       "The addresses disappear",
+       "Nothing ever goes wrong"
+      ]
+     },
+     {
+      "id": "j2s-08",
+      "stem": "You have a list of every pupil in the school. You want the ones in J2 AND on the netball team. What do you have to do?",
+      "options": [
+       "Check both things at once, and keep only the rows where both are true",
+       "Keep everyone in J2",
+       "Keep everyone on the netball team",
+       "Look through it by eye and hope"
+      ]
+     },
+     {
+      "id": "j2s-09",
+      "matched": true,
+      "stem": "A pop-up appears saying 'Your computer is infected! Click here to fix it now!' What is it most likely to be?",
+      "options": [
+       "A trick to get you to click something",
+       "A real message from the school",
+       "A message from your teacher",
+       "A normal part of every website"
+      ]
+     },
+     {
+      "id": "j2s-10",
+      "stem": "You are on a website and there is a small padlock in the address bar at the top. What does it tell you?",
+      "options": [
+       "What you type is scrambled on its way to the website",
+       "The website is definitely safe to trust",
+       "The website belongs to the school",
+       "The page is locked and you cannot type"
+      ]
+     },
+     {
+      "id": "j2s-11",
+      "stem": "Somebody copies a whole page of your project and hands it in as their own work. Which of these is closest to the truth?",
+      "options": [
+       "They have used your work without permission, and there are laws about that",
+       "It is fine, because it was on a computer",
+       "It is fine, as long as they change the title",
+       "Only music and films are protected"
+      ]
+     },
+     {
+      "id": "j2s-12",
+      "matched": true,
+      "stem": "A web page is built from two kinds of instruction. One kind says what each part IS: a heading, a paragraph, a picture. The other kind says how it LOOKS: the colours, the sizes, the spacing. If somebody changed ONLY the second kind, what would the page do?",
+      "options": [
+       "It would look different, but the same words and pictures would still be there",
+       "The words would change as well",
+       "The page would stop working",
+       "Nothing would change until it was printed"
+      ]
+     }
+    ],
+    "help": "Twelve quick questions, and nothing here is marked. You will not be told right or wrong, on purpose: this is a record of where you are starting from, and it is only useful if it is honest. Pick the answer that seems most likely and move on. If you do not know, guess and keep going."
+   }
+  },
+  {
+   "id": "warrant",
+   "engine": "items",
+   "title": "The Workshop Warrant",
+   "minutes": 8,
+   "badge": {
+    "id": "j2-b4",
+    "name": "Workshop Warrant",
+    "icon": "assets/badges/contract.png",
+    "xp": 15
+   },
+   "config": {
+    "intro": "Your Warrant is your proof that you know your way around the Workshop. Six quick questions, all of them about THIS hour, and every one of them is marked straight away with the reason.",
+    "items": [
+     {
+      "id": "j2w-1",
+      "stem": "A tile on your year map has a padlock on it. What does that mean?",
+      "options": [
+       "Your teacher has not opened that lesson yet",
+       "The lesson is broken",
+       "You have already finished it",
+       "You are not allowed to do that lesson at all"
+      ]
+     },
+     {
+      "id": "j2w-2",
+      "stem": "You have just answered a question. How does your work get saved?",
+      "options": [
+       "This website saves it by itself, and the word Saved appears at the top",
+       "You press a save button at the end",
+       "Your teacher saves it for you",
+       "It is not saved until you finish the whole lesson"
+      ]
+     },
+     {
+      "id": "j2w-3",
+      "stem": "In the inspection, a screen was left signed in with somebody's work open. Which rule does that break?",
+      "options": [
+       "Sign out every time you finish",
+       "No food or drink at the machines",
+       "Push your chair in",
+       "Report faults to your teacher"
+      ]
+     },
+     {
+      "id": "j2w-4",
+      "stem": "In the last room you inspected, one screen was switched on and showing the sign-in box, with nobody's work on it. Why was that station keeping the rules?",
+      "options": [
+       "Because the last person had signed out, which is all the rule asks",
+       "Because a screen that is on never breaks a rule",
+       "Because somebody else had used it last",
+       "Because the chair was pushed in"
+      ]
+     },
+     {
+      "id": "j2w-5",
+      "stem": "What was the Skills Snapshot for?",
+      "options": [
+       "To record what you can do now, so you can see how far you come by June",
+       "To give you a mark for your report",
+       "To decide which lessons you are allowed to do",
+       "To test what you learned this hour"
+      ]
+     },
+     {
+      "id": "j2w-6",
+      "stem": "What is in your Kit Locker?",
+      "options": [
+       "The looks for your screen that you have earned, which stay yours",
+       "Your saved work",
+       "The lessons your teacher has opened",
+       "Your password"
+      ]
+     }
+    ],
+    "help": "Six questions about this hour only. Each one is marked the moment you click, and you are told why. Nothing here is about anything you have not done today."
+   }
+  },
+  {
+   "id": "next",
+   "engine": "steps",
+   "title": "What you build next",
+   "minutes": 5,
+   "config": {
+    "intro": "One thing to look at before you go, so you know where this year is heading.",
+    "steps": [
+     {
+      "icon": "🧱",
+      "title": "Next on your year map: From Blocks to Python",
+      "text": "That is the first group on your year map done. The next group is called From Blocks to Python, and it is four lessons long. You start with the blocks you already know, turn them into real lines of Python, and finish by building something that makes its own decisions. You are not expected to know any of it already: Lesson 2 is called Translation Bureau, and it starts from your very first line.",
+      "confirm": "I know what is coming next"
+     }
+    ],
+    "help": "One card about the next block of lessons. Read it and press the button to move on."
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit Check",
+   "minutes": 3,
+   "config": {
+    "kicker": "Exit check",
+    "cardTitle": "One question before you finish",
+    "readyLabel": "Ready",
+    "intro": "One last question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "items": [
+     {
+      "id": "j2x-1",
+      "stem": "You get a question wrong in a lesson on this website. What actually happens?",
+      "options": [
+       "You are told why, and you carry on — nothing is taken off you",
+       "You lose points you had already earned",
+       "The lesson locks and you have to start it again",
+       "Your teacher is sent a message about that one question"
+      ]
+     }
+    ],
+    "help": "One question about this website itself, and this one IS marked. You are told whether you were right, and why, at the very end of the lesson — after the How did it go? screen."
+   }
+  },
+  {
+   "id": "selfeval",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "alreadyFiled": "This lesson report went to your teacher the first time — looking back through it never overwrites it.",
+    "offlineSay": "Your connection is playing up, so your answers are safe on this computer and will send by themselves. That is the lesson finished.",
+    "statements": [
+     "I know my way around this website.",
+     "I know the DT room rules, and I found them in the inspection.",
+     "I understand what the Snapshot was for."
+    ],
+    "difficulty": true,
+    "comment": true,
+    "help": "Click the button under each sentence that says how today really went, then the one that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving — it is how your teacher hears from everyone, not just the loudest."
+   }
+  }
+ ],
+ "keysEnc": "ypFUFYNoUeBUHHF/GKRKPOrnYwxQnC4SmpZ3x4Cls7iP3ZSAlyn412JU9wjcWqCubdQqMaCB04f7RJuRh9EhjZA7hjxKbNYfXR5V+Kcgcb2tLCgfZg16obj1UpoCp+Ww5YXriy9Xs+EKrLwgb/SPMcGsMTSKg6auYlIL6qZUfSUOTbBP766RxBP16TpGlI99mA9F0Sp1PRFaRASc0UAr18bpY9KTsFPfx8D8m2hi5Ym2y4WrRJFd1AUBHHbXJCiPlpD+4tMdyg//jFFttjZKAi2uAoyEtVE6cd3MzGa6rpeyIMcaraOiw8CohS449XGHCgkMgSkyN+C3LrdJbF8nVgndz4FgYqibbR2xP1VZowlVHBsaFAXSqVGYfGer9U86nv+G2ynKouwrz8ZfaCphWuvdd3EMy2mExS3GTB8nX3iHHLIU6aQLuanUONvvzkEuTZJkAwQ12f91+wcwAo5tUslMiWgafNyOlUvEwq57vB3HIjNJ71zkgR4TJ3RF1tcd8x6nplCEoO2/zr/c3qW3uMXjZ4iXS2HPWMpsqCw7SGvkQi6cG/pLHBoI3n0XyIbkwfZrHppYG3ECY1FASM+c5ZieZHDAXIK/A0BfA2UAGeuP77cGl9x4gWp/T8aNCYTlbmzg+5KBjFZ9F3mYymghnsV+mCBtxEey+D7hpNfEnz92aBY2fbLs5ZFJZT/D8Q4IgNtdYh1WELzaaQljw5dcjp4Ef6bJjzRTQoBDPQlCcUjGkD7b+k24OY+J3Q5lI/gkeaoiUvbJ0KITgXYLtH6He330Z8WcySebGHY/Qux0YHUgS5mA8Ess+JiGi/2IXLU4Xz/wiCQiFNTnpMpy/Ii/n57ttjBeylPoGWfYojlTcJ9hI1oRvIQ0JQ9SZfATL/mB9aJjAmFmx6nmGWl2IlA6JHLph0jMqwSndpBAXXgCdn9Otj4PotBxlGw4Po9JU9KrqFsqugsDWuzi/HKWg3T/oQe/JiR1R6w1fWEBWY0fdnNZ1Cd0ITbPe7Lsfwk55INuN0GqGZlOj4UKEkHDiIQtrK/CeSkpdp1+8Cn9c06y1qgkYKuEZFTK9y7obyAioaZ/4Xxaso6cojXL4+366zmLFVbdbgdc75E4zd6yPZTEPNVamFXEsD1tPO2EJVuV3BsJRhnXix66LpUATUwEwmUFaU+Ej+q/u1rZhXh4twMGn5T5Rm4pLVCbxGmSIxMNd3rH4/r/2gdF3kT0lDkQO6NNR7lcmpeQVdOgYWOzAN/JPZ1fV0qncS0gkAZhO83N/3hkAUhP9DUkiNX3VR9YMdDVKANceirfHZs/Qt5TXu8BG1gMhdSZMXXP8Uo5behEW8jxtHmnjrQar6Gb3DgMQ4VzdpVAU1EHHgK0bBdT7AWytDmVm5l7CWw6pmKMaotBButnFQA1VLvxc1cIFiamjn594pefEUGq8bxn206gMqJ2exObMGWGGg6YAEVj2G/ynFdGHffGWGA4pBMtn+a3ZHRBxckLPxcggxARFRlGkS5f9S+wlUXH5q8WwMCYmjFm1e5U37/4w9kRL+QD+WDIDZbqqNdh6ed6MwpcQzf8PFH5yUFwh15PmlCIIOwpqWV5yzq48/qWLSweyt4yJ+Qu3ybYI8RRWdFdvWMwvpUDP4WD9hOpseQQUVPziVFCcHqoZiacA1TJtAzHLddflc+LnzvRLpV3otmGCCXVOpwnlF/TQY7dis5T4Ja4Ufc6IkoSzVBznoAlh8eDsAJjSNj+Qz6oEzG0mJynb0OrMMXpy3aPpuo0JmH2IfYmmLxbkzc9MlLhr5V5tuO/6wKCL2WfjJh3XI0ui4d21OhIthqgLoYMaMod6Schbp+bUSXlcTfj18iyWqRysjUgTPdvimIwJek0pFBrXHGD2H8m8tVeOcVA+lJTgGmPoP1hRBZ9FFEQ9d1t8uVYDNv1I2+3IVNvBsV4R6h5NEF1nfMygkfb6B71NpKxu7wp316+voN/FseQWqOhVoU/K5FzdbFVev8WFnRUTRlVtdaqTVkGfctwQ167/3DHwZsvJ4iX2vvskVHqcPzm5tJvrLTDjolsdCYIkQnTGIppOMcGrAytJGWZTwqdzb1e22E7mp2fhhMmCZjPnALyF7etOrY64TMyLam+FZvIUIzdHLdfN/Toxi3uKGHnWINs8X503QgQ0P4j1lGj6AbJLNSOny6QHISGLdReryMzzKE9JHGGMK4ItzgP3YSCNIdMYP/N196gH3BikITS5xSa1T6KJWVyyrQMBsqD2hbrvJXQTZvLnFkanko/AFERjC0DfsPWbTIZi6jvU186w2kl5bq6pTBSMS/P4t3HLrKduoQbO9nA/us2faImdlZZQKDmNTAdHzk6qK7ueI0LgQ551RxCZXkqs7pcfxshWHsfwPhdOHZZ60E6fe+FmXD4ApdlZW4S8ae+2xIlRO522hNk8INdSB9iVO48U3hbTCO8sbDxVRm7LlorLHpBP6bbZztDKYE0U6oaQ7NA0+JSH7BvQ+zqYvGtzNQVVR4zLIo8h4OqCqxSR28k8+6QXLf8+0fcaMhi/zh2/rbWLLsRZFxPCzfOmbyiPzltrgA8LQKzJdFR9PR35+Swwd8OnFz3JAUdBQN3hnybXjOKfJQmHkklu23qYcZKNh6dYgdqtLrQRmI7dYhON83z4sm9B5wilezhBdQbjnHQKOG5WzMB6QGdI4EIDpdYMtcf0I0lyRzvwCVawBQA+av5NIm+VeKAwHYO93mD0eBvTv5usYvWoad+94Z49k/gL5dICMKyGF/cY3au8or0xVo9A4dqpdvqE/BH6CTb1em+g0h34wATb5UyTnxqDNXgqpB4xVtWyK3TZWMmkls1BRXN5PVS6nwOKx6HsPSA60iUaDPgn0hJRVtYGx0n3D5yWRvZFGMcYTIsF0DVPctizkSQFMO0uBRFuME1hC1ikmYS17H9k3DyHod0wyah9+SL53b/49RPgp1b/+TmENUqdO3F22/Je3E2p7Sc4YQGyJ2mEEV2KiTAFdJQ5xId4BjFf2YpTosmcJHwegaLXp1vVtXt9taXjFHwXb0rp1XyJonJ9K2hwuzukyzJqm6DMI7wvzLLn9fzN/YCDq08lrabRlTFBIaoi22jQ7egrUJ/EY+NHXjSHXdxLSvGKfnRHXvjeqm0L/vuEP7gVbC4kyUhlfpSbAkZPCUKtfG1iDIxuP59dNomlCL2ByO2C90YaQkI8oe9xFS1dVTUJOFEjgBKatzhxf0CJe2R+K5tpoVryiVHuf7ysrAoizjoZFfQoxIoOc946Ge0Z0uIix1wXztrmDiVwabQpq2473W/9rjLTNptETHTRfkfj6oolNNl3P33+ZjO8PrJvd3Q9Qep/aHwmieD+3itC6N/vH1EfNxg4kMknmmYmxu0CJYbT/EX9gcqLBauo5Y2dXubgLksFDvEvjeP0x9YIqPTI2w8dEml1RrC3PLC8BJDj2pxfYIg5GY3nTMNODirYiOHHuJwRaee8VqFn+rI8U1e0AFpT3oZMx+/mp1/UK5RACl/dkiKecYKgvJDULf3dPmE86cbFqigRIUENNjZk+/RcqyI9DdMOe35hExkd4NyeEEpz38ZqUf/R18IZl4FeybIqeoYgYUGWMcfyVHqwMSVmmfaDuw9eOPm07XNv6+kbll3gFl0Yy6F3dlsTKFj0f5Skc56r6Z6NIn0VdmPfFrhcmEKcveSVml3I1g0huUP5zcox1YebM0Gr5Gs8V5UjzT6iiBBdeZo0uDQycz+KB6n88RTm/C5h6G2fQad9cGyj9E2Vy4vGTr/bKbWxI/ih9RU5Bp1SmNAzmeRgG3IFJhZ0+Q3/NrjQ7eZWxQziaOnuV42CXrZQDQ2MeHHvn2Wud+KWYU3XeHXkxQ9VYdcSHHImeTtMh8USaz1Nrmgnx5j8NaX9S9f4mW0hrT3byC6YgX55BG89VcIVLofxFcyexyA8wllS9w2pLiABlGvEl49egr2C1T29UHkctqhNoxA5OGkJjTykJWUCy5ee/JUOqWkAdhM5C2xSu8Ltwhgqi8oEnE2uP/WK+9fvCZPg3U8NoYl7onIH+2nNl+0j3IJN3SIPftUiYM9k2XZBgPkAHEJ3wqtDTtt8pF+Fy90H+fk2/Kc5JGlrxz/0Eva2jBpWy7fPwSxbTaa2SuZ7Wg4jNYDv6+WjfQ9jHuCkaIY7D7kAwX32j9sBW5dP2Oddq+nKCCYtNlLbjvKMrGEW3+1XBEFeXuYPOl2Ub4vd59Fh5+88DfJdYJgRWDUaVaYwB+7X2FXXVm41Z+qAq9Qt+B669EMPzR1ib3uHOXDLtu61bY7JgfGTCtVnsOj2xQ9SskEyvVWmyI9u3WVmV9Tt4AnlNdpM8kNmCDPvALW+ZBizTeef+9hWrz357rrY0ahJdevl1nT6Xl/yiBGaua5RC3IZpFhYyu/IvCL4S3SbpK9h05+aJ7hNzbMuafUB2NfYFsdNNB8mT77eO1/bTaQGruCduvdHNiXlQWgGGTlvLXpD+NtvhUNaOKB2U+an7HF36HIhtp6W3w4AF8PzOTt9Y5x+U4MKQKfsbW6oFfnDKVKXiuyBgQO1lwbWChCT8onSXaMHWlGio2xC/B9VYSoFlHWtHnX6Cw3q6qcAS3dQlfdDUDBh0vTAtHJAwTJ/NUrjquBvThidx5wltbtz06KHQMrsE7Ne6wUyUuzktyjiq/KAQSA6NPfmHwrfrUt4XJaqJkExjvODtWIbx6yfcPJlvxQzL0n13OriaNgVHGo4U2RcKzBu8CaDyTz6zZf9nAadJ8V3/2vdt0gYGph5mW1q5Cx6udgR7y1bVhcmhjTNYBbpDk712tzAOBJUkHBix2EoBxp4ZgA4xPO7nrUfI13F6YgMzzcoPvFbtjur/YWJS/LjsU77vPP6NtWhfSyhi7fEJOYpmr4ShqdUsBwPViGPwTG9hhPf+tHBALFprcRR7nq7qmt84K11N3fARipN/kBJyvXQW+fFP/pcGJBEl1NDTmUmlfa1Rh9XD2aLoHlvIqGwAuhkjcZG0flUb/FCtmwK6b3fHSgJXLHMK6qaytO1OE2tYwMhY6k46cs/aPJhGfouTamgC8fSBKLgb9XyOPJ5wK3M0fnOwAoQj3+ovMHPH7L/JmCrIdTcYObQQahHv4ShFn4idH8mzz03f1wD4pLta0GCSEFRdOmRlrrq7jSfCHIckr163cP0y7tVsWcXwQBSepI8LYHkoNi+y0g+W2XREX4yn8CG/oqVx38BeheARDtG4gGvfPHb9A0fUaFZbDL8wTBieXiU6fu+oMEGsp9xyHfDzTJoWw2eGQ++uuR7UO45KjVNmLC0FilkpOpp2SaxHC3b+D/eMV7k7fj6s6Bj1/JGCRkVPNA6QUq+L8aT00lvvlcTZfwTR35DvkD0MmDcZYaL+YlK5MoJ22PpLWN/DyRHQo7w2OfYSdojr2COE1XjoXATg8vEpj2QQM+JjhS5PobhNUbEPFj1CKg5jJCpfmPov3p0pECeYpYKQhsDyxhzVYWdYR7uypDZ5a4B8dw3bm+t3LisFYt45AH8qA55iCwsP7msyRXMl3MUyJlo30Rdx91FaQgIeYSbq/qcfXYTxrRzA6Yx7+/Hza+IB6oaED0Z9cDeXxG/1Z4RKlWFxGLv7qRoEmtJTAxsLAyhDPQMxfvFJmUicyIzByZZvByvj9HMn5FyWNF4+nK9AQnRAL8yu6KOsxKk+FjLczZ5LKkaGX2v/Savhe/Sqo9o/93CmGIX3uFYXDyXiKDpofEivdxK1VipPV4QjJrmpRXxUKhQgN71/iAcRBwzg8uxx4mHfC303nCyrOifiOWxMvysgj+AtcjW0d/Vh+UVqBBJ4j0EgIIlnkbBERyL+IGhetV3piyIBJesFDCJd7uoWo60sP4aBhrsxLdKqHp354A4fiS/U407BQb0Mn2nn8kUHZUK69w9lNlFf34TcEURGgbF+GWw/3prnzXHpLeAKUpwtnCII8/HYo+HCX47IjkRhDJtUrilvFiZINQBDusSsP6Z9ffUFKABfmW7UbXXGmFLn4Psha/lVSlzQ=="
+}
