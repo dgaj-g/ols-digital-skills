@@ -181,6 +181,38 @@ async function pupil(ctx, who, lesson, fresh) {
   return page;
 }
 
+/* ═════════════ NOTHING IS PHOTOGRAPHED WHILE IT IS STILL LOADING ══════════
+   Read off the proofs, 16 Aug 2026. Lesson 3's rung-1 card and Lesson 5's
+   masterclass card were both photographed with the film player mid-load: a
+   black spinner arc sat across the title and, on Lesson 5, a half-faded caption
+   was still dissolving underneath it. Every check passed — the predicate held,
+   the selector was right, the pinned words were all present — because provenance
+   was all anything measured. A screen that is still ASSEMBLING is not the screen
+   a class will see, so the shutter now waits for it to be still: no live spinner
+   inside the frame, and any film settled enough to have drawn its own first
+   frame. It gives up after a few seconds rather than hanging, and says so. */
+async function settled(pg, el, name) {
+  const deadline = Date.now() + 6000;
+  for (;;) {
+    const busy = await el.evaluate(node => {
+      const spin = node.querySelector('.panel-spinner, .guard-spinner, .q-spin, .pill-spinner');
+      if (spin && spin.getClientRects().length) return 'a spinner';
+      const vids = Array.from(node.querySelectorAll('video'));
+      const cold = vids.find(v => v.readyState < 2 && !v.poster);
+      return cold ? 'a film with nothing drawn yet' : '';
+    });
+    if (!busy) break;
+    if (Date.now() > deadline) {
+      console.log('    note: "' + name + '" still showed ' + busy +
+        ' after 6s — photographed anyway, READ THIS ONE.');
+      break;
+    }
+    await pg.waitForTimeout(250);
+  }
+  /* one more beat so a fade that has just started is over before the shutter */
+  await pg.waitForTimeout(400);
+}
+
 /* ═══════════════ ONE WALK, SHOOTING WHATEVER COMES TRUE ═══════════════════
    The walk never steers toward a picture. Each turn it asks which of the
    pictures it still owes are true RIGHT NOW, takes those, and then takes one
@@ -634,6 +666,7 @@ async function captureLesson(browser, lesson) {
               said.slice(0, 120) + '…"');
           }
         }
+        await settled(pg, el, name);
         const raw = path.join(rawDir, name + '.png');
         await el.screenshot({ path: raw });
         /* AND AGAIN AFTER: a screen that moved under the shutter is a screen
@@ -742,6 +775,7 @@ async function captureLesson(browser, lesson) {
         if (!el) await abort(pg, 'nothing to photograph for the brief image "' + name + '"');
         const lines = await el.evaluate(node => (node.innerText || '').split('\n')
           .map(s => s.replace(/\s+/g, ' ').trim()).filter(Boolean));
+        await settled(pg, el, name);
         const out = path.join(briefDir, name);
         await el.screenshot({ path: out, quality: /\.jpe?g$/i.test(name) ? 88 : undefined,
           type: /\.jpe?g$/i.test(name) ? 'jpeg' : 'png' });
