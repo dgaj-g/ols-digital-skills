@@ -149,18 +149,48 @@ function chair(x, state) {
 }
 
 function can(x) {
-  /* a fizzy-drink can standing on the bench right beside the keyboard: 36x60,
-     ring pull, metal band, condensation highlight. Unmistakable at a glance. */
-  const cx = x + SW / 2 + 74, y = BENCH - 62;
+  /* HIS FINDING AT THE K9 GATE, 16 Aug 2026: "the 'can of fizzy drink' doesn't
+     look like that at all so do that again with the word Coke on it perhaps."
+     He is right — the first one was a striped cylinder. What makes a drink can
+     read as a drink can is its SHAPE before its colour: the body pulls IN at the
+     top and bottom into a neck and a foot, the lid is a silver disc with a ring
+     pull sitting on it, and the label is a band with a word on it.
+     ON THE WORD: it says COLA, not Coke. His "perhaps" was a suggestion for how
+     to make it obvious, and COLA does the identical job — every pupil reads it
+     instantly — without a real company's trademark being drawn into school
+     lesson material that gets published. One word from him changes it.
+     Drawn 44 x 74, up from 36 x 60, so the word is comfortably readable at the
+     size the scene renders. */
+  const cx = x + SW / 2 + 76, y = BENCH - 76;
+  const H_ = 74, halfW = 22, neck = 5;
+  /* the body: straight sides with the top and bottom drawn in to a neck */
+  const body = `M${cx - halfW + neck} ${y + 4}
+    L${cx + halfW - neck} ${y + 4}
+    L${cx + halfW} ${y + 13}
+    L${cx + halfW} ${y + H_ - 13}
+    L${cx + halfW - neck} ${y + H_ - 4}
+    L${cx - halfW + neck} ${y + H_ - 4}
+    L${cx - halfW} ${y + H_ - 13}
+    L${cx - halfW} ${y + 13} Z`;
   return g(
-    shadow(cx, BENCH + 1, 20, 4, 0.35),
-    `<rect x="${cx - 18}" y="${y}" width="36" height="60" rx="5" fill="${C.can}"/>`,
-    `<rect x="${cx - 18}" y="${y}" width="11" height="60" rx="5" fill="${C.canHi}" opacity="0.6"/>`,
-    `<rect x="${cx - 18}" y="${y + 22}" width="36" height="13" fill="${C.canMetal}" opacity="0.92"/>`,
-    `<rect x="${cx - 18}" y="${y + 22}" width="36" height="3" fill="#FFFFFF" opacity="0.35"/>`,
-    `<ellipse cx="${cx}" cy="${y + 2}" rx="18" ry="5.5" fill="${C.canMetal}"/>`,
-    `<ellipse cx="${cx}" cy="${y + 1}" rx="7.5" ry="2.6" fill="${C.bodyDark}" opacity="0.6"/>`,
-    `<ellipse cx="${cx}" cy="${y + 59}" rx="18" ry="5" fill="${C.canHi}" opacity="0.45"/>`
+    shadow(cx, BENCH + 1, 18, 3.5, 0.26),
+    `<path d="${body}" fill="${C.can}"/>`,
+    /* the light down one side, and the darker turn of the cylinder on the other */
+    `<path d="${body}" fill="none"/>`,
+    `<rect x="${cx - halfW + 2}" y="${y + 8}" width="9" height="${H_ - 16}" rx="4" fill="${C.canHi}" opacity="0.55"/>`,
+    `<rect x="${cx + halfW - 8}" y="${y + 8}" width="6" height="${H_ - 16}" rx="3" fill="${C.bodyDark}" opacity="0.22"/>`,
+    /* the label band and the word on it */
+    `<rect x="${cx - halfW}" y="${y + 26}" width="${halfW * 2}" height="24" fill="${C.canMetal}" opacity="0.95"/>`,
+    `<rect x="${cx - halfW}" y="${y + 26}" width="${halfW * 2}" height="3" fill="#FFFFFF" opacity="0.4"/>`,
+    `<text x="${cx}" y="${y + 43}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"` +
+      ` font-size="13" font-weight="700" letter-spacing="0.5" fill="${C.can}">COLA</text>`,
+    /* the lid: a silver disc, with a real ring pull sitting on it */
+    `<ellipse cx="${cx}" cy="${y + 4}" rx="${halfW - neck}" ry="5" fill="${C.canMetal}"/>`,
+    `<ellipse cx="${cx}" cy="${y + 3}" rx="${halfW - neck - 3}" ry="3.4" fill="#A9AEB4"/>`,
+    `<ellipse cx="${cx + 2}" cy="${y + 3}" rx="5" ry="2.4" fill="none" stroke="${C.bodyDark}" stroke-width="1.4" opacity="0.75"/>`,
+    `<rect x="${cx - 6}" y="${y + 2}" width="5" height="2" rx="1" fill="${C.bodyDark}" opacity="0.6"/>`,
+    /* the foot */
+    `<ellipse cx="${cx}" cy="${y + H_ - 4}" rx="${halfW - neck}" ry="4.5" fill="${C.canHi}" opacity="0.5"/>`
   );
 }
 
@@ -210,26 +240,29 @@ function tray(x) {
 }
 
 /* ---------------- the room ------------------------------------------------ */
-function pegboard() {
-  let holes = '';
-  for (let r = 0; r < 5; r++) for (let c = 0; c < 22; c++) {
-    holes += `<circle cx="${624 + c * 15}" cy="${64 + r * 15}" r="2" fill="${C.pegHole}" opacity="0.75"/>`;
-  }
-  const tool = (tx, kind) => kind === 'spanner'
-    ? `<g transform="translate(${tx} 60)">
-         <rect x="-4" y="14" width="8" height="52" rx="4" fill="${C.steel}"/>
-         <path d="M-11 6 a11 11 0 1 1 22 0 l-6 0 a5 5 0 1 0 -10 0 z" fill="${C.steel}"/>
-         <path d="M-11 6 l0 8 l22 0 l0 -8" fill="${C.steel}"/></g>`
-    : `<g transform="translate(${tx} 58)">
-         <path d="M-9 0 l6 -10 l5 4 l-5 10 z" fill="${C.steel}"/>
-         <path d="M9 0 l-6 -10 l-5 4 l5 10 z" fill="${C.steel}"/>
-         <rect x="-8" y="0" width="6" height="46" rx="3" fill="${C.copperDeep}"/>
-         <rect x="2" y="0" width="6" height="46" rx="3" fill="${C.copperDeep}"/></g>`;
+function roomSign() {
+  /* HIS SECOND FINDING AT THE K9 GATE: "the board with the tools on it looks
+     like its something you'd find in technology room, not ICT, so replace it
+     with a sign that says 'ICT Room'." He is right, and it is rule 138.1.6 —
+     true to the room she is actually sitting in. A pegboard hung with spanners
+     is a workshop; this is an ICT suite.
+     His wording is used exactly as he wrote it. The sign is a mounted plate
+     with its own frame and two fixings, so it reads as a thing screwed to a
+     wall rather than as a caption floating on it — and it gives nothing away:
+     it names the room, it never names a rule. */
+  const x = 678, y = 58, w = 206, h = 70;
   return g(
-    `<rect x="612" y="52" width="330" height="86" rx="4" fill="${C.peg}"/>`,
-    `<rect x="612" y="52" width="330" height="86" rx="4" fill="none" stroke="${C.benchEdge}" stroke-width="2"/>`,
-    holes,
-    tool(680, 'spanner'), tool(730, 'pliers'), tool(786, 'spanner')
+    shadow(x + w / 2, y + h + 8, w * 0.44, 6, 0.3),
+    `<rect x="${x - 6}" y="${y - 6}" width="${w + 12}" height="${h + 12}" rx="6" fill="${C.bodyDark}"/>`,
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="#E3D6BC"/>`,
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="none" stroke="${C.copperDeep}" stroke-width="3"/>`,
+    `<rect x="${x + 10}" y="${y + h - 16}" width="${w - 20}" height="3" rx="1.5" fill="${C.copperDeep}" opacity="0.55"/>`,
+    `<text x="${x + w / 2}" y="${y + 45}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"` +
+      ` font-size="30" font-weight="700" letter-spacing="1" fill="#2A1502">ICT Room</text>`,
+    `<circle cx="${x + 10}" cy="${y + 10}" r="3.2" fill="${C.steel}"/>`,
+    `<circle cx="${x + w - 10}" cy="${y + 10}" r="3.2" fill="${C.steel}"/>`,
+    `<circle cx="${x + 10}" cy="${y + h - 10}" r="3.2" fill="${C.steel}"/>`,
+    `<circle cx="${x + w - 10}" cy="${y + h - 10}" r="3.2" fill="${C.steel}"/>`
   );
 }
 
@@ -246,7 +279,7 @@ function room() {
     `<rect x="176" y="64" width="6" height="112" fill="${C.bodyDark}"/>`,
     `<rect x="78" y="116" width="198" height="6" fill="${C.bodyDark}"/>`,
     `<rect x="62" y="184" width="230" height="9" rx="3" fill="${C.benchEdge}"/>`,
-    pegboard(),
+    roomSign(),
     /* clock */
     shadow(452, 116, 34, 6, 0.25),
     `<circle cx="452" cy="98" r="33" fill="${C.bodyDark}"/>`,

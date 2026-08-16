@@ -56,7 +56,7 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
    floor is on what recognition actually depends on: the longest dimension, and
    the area. A gate that condemns good work is worse than no gate (DFM 146a). */
 const STAGED = [
-  { zone: 1, what: 'the drink can standing beside the keyboard', w: 36, h: 62 },
+  { zone: 1, what: 'the drink can standing beside the keyboard', w: 44, h: 74 },
   { zone: 2, what: 'the lit screen, still signed in', w: 128, h: 86 },
   { zone: 3, what: 'the headphones left hanging over the monitor', w: 74, h: 48 },
   { zone: 3, what: 'the papers left fanned across the bench', w: 110, h: 48 },
