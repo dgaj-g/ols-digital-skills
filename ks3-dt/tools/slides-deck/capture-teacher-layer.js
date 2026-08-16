@@ -192,14 +192,20 @@ async function pupil(ctx, who, lesson, fresh) {
    inside the frame, and any film settled enough to have drawn its own first
    frame. It gives up after a few seconds rather than hanging, and says so. */
 async function settled(pg, el, name) {
-  const deadline = Date.now() + 6000;
+  const deadline = Date.now() + 15000;
   for (;;) {
     const busy = await el.evaluate(node => {
       const spin = node.querySelector('.panel-spinner, .guard-spinner, .q-spin, .pill-spinner');
       if (spin && spin.getClientRects().length) return 'a spinner';
+      /* AND THE POSTER IS NOT AN EXCUSE TO SHOOT EARLY. The first version of
+         this check skipped any film that had a poster — and a poster is exactly
+         when Chrome draws its OWN loading ring over the frame, which is not in
+         the DOM and cannot be queried, only waited out. Lesson 5's masterclass
+         still came back with a black arc across the school crest. So every film
+         is waited for, poster or not, until it holds enough to play. */
       const vids = Array.from(node.querySelectorAll('video'));
-      const cold = vids.find(v => v.readyState < 2 && !v.poster);
-      return cold ? 'a film with nothing drawn yet' : '';
+      const cold = vids.find(v => v.readyState < 4);
+      return cold ? 'a film still loading (readyState ' + cold.readyState + ')' : '';
     });
     if (!busy) break;
     if (Date.now() > deadline) {
@@ -209,8 +215,27 @@ async function settled(pg, el, name) {
     }
     await pg.waitForTimeout(250);
   }
+  /* CHROME'S OWN LOADING RING IS NOT IN THE DOM AND DOES NOT GO AWAY BY
+     WAITING. It is drawn over a poster until the media has actually decoded a
+     frame, so it survived every readiness check and sat across the school crest
+     on Lesson 5's masterclass card. The cure is to make the film paint: play it
+     for a moment, pause it, and put it back to the start. Nothing is faked —
+     the poster IS the film's own opening frame (qa-film-posters holds that), so
+     what the shutter sees is the same picture without the ring. */
+  await el.evaluate(async node => {
+    const vids = Array.from(node.querySelectorAll('video'));
+    for (const v of vids) {
+      try {
+        v.muted = true;
+        await v.play();
+        await new Promise(r => setTimeout(r, 120));
+        v.pause();
+        v.currentTime = 0;
+      } catch (e) { /* a film that refuses to play is the walk's problem, not the shutter's */ }
+    }
+  });
   /* one more beat so a fade that has just started is over before the shutter */
-  await pg.waitForTimeout(400);
+  await pg.waitForTimeout(500);
 }
 
 /* ═══════════════ ONE WALK, SHOOTING WHATEVER COMES TRUE ═══════════════════

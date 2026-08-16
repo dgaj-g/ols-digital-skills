@@ -24,7 +24,7 @@
  *   exportLesson2Proofs  the same, per lesson; exportAllDeckProofs does the set.
  *   …3, …4, …5
  *
- * Built 2026-08-16 from contentVersion 2026-08-15d.
+ * Built 2026-08-16 from contentVersion 2026-08-16b.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -751,9 +751,9 @@ var DECKS = {
       "heading": "Before you leave",
       "sub": "See you in a fortnight.",
       "bullets": [
-       "Switch your micro:bit off the way Lesson 2 taught you: hold the black button on the back for about 5 seconds, until the red light fades. With the cable still plugged in it may then blink slowly — that is normal. Then hand the micro:bit and the cable back.",
+       "Switch your micro:bit off the way Lesson 2 taught you: hold the black button on the back for about 5 seconds, until the red light fades. Then hand it and the cable back.",
        "Sign out properly — if you stay signed in, the next person at this machine IS you.",
-       "Next lesson you leave the micro:bit behind and become a bug detective: a games company has shipped a broken game, and four player complaints are waiting for you."
+       "Next lesson you become a bug detective: a games company has shipped a broken game, and four complaints are waiting for you."
       ],
       "notes": "SAY: both lines are rules — kit back, signed out — so say them as rules and keep this short. Then the tease: Lesson 4 is a Scratch detective story — a games company called OLS GAMES has shipped a broken game called Shark Attack, and they will read real code to find four real bugs.\n\n(The last line is Lesson 4's truth, verified against j1-04: four tickets on a case board, casework on a broken Scratch game.)"
      }
@@ -848,7 +848,15 @@ var DECKS = {
       ],
       "bullets": [
        "This board is your home screen for the whole hour: the film, Evidence Intake, four cases, and the release desk.",
-       "Every case closes the same way, and the order matters. SEE the bug happen — play the game and watch it go wrong.",
+       "Every case closes the same way, and the order matters — the next slide is that order."
+      ],
+      "notes": "WHERE THE CLASS IS: Case Board on every screen, eyes front. THE NEXT FOUR SLIDES ARE ONE FRONT BLOCK — deliver S5 to S8, then send them to work.\n\nSAY: read the rhythm slowly — it is the lesson. The honesty line lands best said plainly: nobody is watching inside Scratch, which is exactly why a tester's word has to be worth something.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "heading": "How every case closes",
+      "bullets": [
+       "SEE the bug happen — play the game and watch it go wrong.",
        "READ the code that is supposed to be doing that job.",
        "FIX one thing, and only one thing.",
        "LOG it in one sentence with two halves: what was wrong, and what you changed — just like the engineers wrote in 1947.",
@@ -948,9 +956,9 @@ var DECKS = {
       "sub": "See you in a fortnight.",
       "bullets": [
        "Sign out properly — if you stay signed in, the next person at this machine IS you.",
-       "Chairs in, area tidy — no kit to hand back today; the game shipped to your Drive.",
-       "The Jellyfish Job stays open all week — put real danger into the shark game, then show your teacher and the job is done.",
-       "Next lesson OLS GAMES hires you to BUILD: your own game — and the if-touching block from the Jellyfish Job is its superpower."
+       "Chairs in, area tidy — no kit to hand back today.",
+       "The Jellyfish Job stays open all week — put real danger into the shark game, then show your teacher.",
+       "Next lesson OLS GAMES hires you to BUILD your own game — and the if-touching block is its superpower."
       ],
       "notes": "SAY: the Jellyfish line is an invitation, said like one. Then the tease: next lesson they stop fixing other people's games and build their own — and the block the stretch previewed is the heart of it.\n\n(The last line is Lesson 5's truth, verified against j1-05: pupils choose a contract and build their own game around the if/else block.)"
      }
