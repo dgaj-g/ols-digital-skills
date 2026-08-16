@@ -11,7 +11,7 @@
    "ring": null,
    "inset": null,
    "says": "the real if/else block on the neutral demo, both parts labelled",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-16a",
    "px": "1440x768"
   },
   "contracts": {
@@ -23,7 +23,7 @@
    "contentAnchor": "Signed the wrong one? You can tear a contract up and re-sign — right up until your first QA test is recorded. (Re-signing means a fresh kit: anything you built in Scratch stays with the old contract.)",
    "cardText": "OLS GAMES · COMMISSIONS · Every contract carries the same brief · REACT — an if/else that chooses · TRACK — a variable that changes in play · END — a game that can finish · WORKS — passes all four QA tests · Catch It · Apples fall, and one bowl waits below. Miss three and the game is over — if you build it that way. · OPEN · Maze Escape · The walls bounce you back to the start. Three stars glitter in the corners — and one locked door stands between your beetle and freedom. · OPEN · Quiz Master ·",
    "says": "the contracts desk, all three still open",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-16a",
    "chunkHash": "a19f09cf4f0c",
    "px": "1892x1258"
   },
@@ -36,7 +36,7 @@
    "contentAnchor": "This film teaches the if/else block itself — not any one of the three games. Nobody's answer is given away here. You will watch the block being built in Scratch and tested, then your blueprint shows exactly where it goes in the game YOU picked. The worked example and the testing chapters live on your Studio Desk, beside the blueprint.",
    "cardText": "Masterclass: Making Your Game React · From sequence to selection · The if/else block · This film teaches the if/else block itself — not any one of the three games. Nobody's answer is given away here. You will watch the block being built in Scratch and tested, then your blueprint shows exactly where it goes in the game YOU picked. The worked example and the testing chapters live on your Studio Desk, beside the blueprint. · Done watching",
    "says": "the masterclass player and its two chapters",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-16a",
    "chunkHash": "ed84a9803043",
    "px": "1748x1628"
   },
@@ -49,8 +49,8 @@
    "contentAnchor": "Your starter kit already runs, but it is not finished: it cannot choose, count or end yet — that is your job today. Somewhere in its code is a yellow STUDIO NOTE. A note like that is a message one programmer leaves for another; it does nothing when the game runs, and this one marks the exact spot where your big block goes. Get the kit open in Scratch:",
    "cardText": "1 · THE KIT · Start here. Nothing else works until your game is open in Scratch. · Your starter kit already runs, but it is not finished: it cannot choose, count or end yet — that is your job today. Somewhere in its code is a yellow STUDIO NOTE. A note like that is a message one programmer leaves for another; it does nothing when the game runs, and this one marks the exact spot where your big block goes. Get the kit open in Scratch: · ⬇️ Download the Catch It kit · Open the Scratch editor ↗ · 📍",
    "says": "the Studio Desk at the top of the sprint, QA checks still locked",
-   "contentVersion": "2026-08-15d",
-   "chunkHash": "68d3816165da",
+   "contentVersion": "2026-08-16a",
+   "chunkHash": "d97f458907f8",
    "px": "912x1346"
   },
   "press": {
@@ -62,7 +62,7 @@
    "contentAnchor": "🎪 Exhibiting? Have your game running FULL SCREEN in Scratch, with this marquee page beside it. Welcome your players, show them the controls, and watch your reviews land below. Still in beta? Exhibit anyway — reviews are written about what is there.",
    "cardText": "OLS GAMES · PRESS NIGHT · The gallery floor · Press passes: 2 to spend · Two rounds — your teacher calls the swap. · 🎪 Exhibiting? Have your game running FULL SCREEN in Scratch, with this marquee page beside it. Welcome your players, show them the controls, and watch your reviews land below. Still in beta? Exhibit anyway — reviews are written about what is there. · 🙈 Touring? Play 2 or 3 games at their desks first. Remember the studio names — back here, you will pick them off the marquee and w",
    "says": "Press Night with another studio really on the marquee",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-16a",
    "chunkHash": "f283efb60f20",
    "px": "1892x1852"
   },
@@ -75,7 +75,7 @@
    "contentAnchor": "I can tell the difference between a game that looks finished and one that actually works.",
    "cardText": "How did it go? · I can use if/else to make my game react differently in different situations. · ✓ I can · ≈ Getting there · ✗ Not yet · I can test my own game against a checklist before sharing it. · ✓ I can · ≈ Getting there · ✗ Not yet · I can tell the difference between a game that looks finished and one that actually works. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer every sentence above — and how it felt —",
    "says": "the compulsory How did it go? screen, untouched",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-16a",
    "chunkHash": "e3733c1fc770",
    "px": "1372x1450"
   }
