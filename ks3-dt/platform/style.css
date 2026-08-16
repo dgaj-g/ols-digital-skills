@@ -19,6 +19,11 @@
   --space-1: #0A1630;
   --space-2: #102040;
   --space-3: #17294E;
+  /* the bottom of the page gradient. It was the literal #04091A, which is navy —
+     so a forge-brown or plum-velvet year world faded into J1's night sky at the
+     foot of every screen. A knob, defaulted to the exact old value, so J1 is
+     unchanged and each year world can finish in its own dark. */
+  --space-deep: #04091A;
   --glass-d: rgba(17, 33, 64, 0.55);
   --glass-d-solid: rgba(13, 26, 52, 0.85);
   --line-d: rgba(148, 178, 230, 0.16);
@@ -78,7 +83,7 @@ body::before {
   background:
     radial-gradient(1100px 700px at 85% -10%, rgba(var(--gold-rgb), 0.07), transparent 55%),
     radial-gradient(900px 900px at -15% 30%, var(--bg-glow-b), transparent 60%),
-    linear-gradient(170deg, var(--space-1) 0%, var(--space-0) 45%, #04091A 100%);
+    linear-gradient(170deg, var(--space-1) 0%, var(--space-0) 45%, var(--space-deep) 100%);
 }
 button { font: inherit; }
 h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10px; letter-spacing: -0.01em; }
@@ -348,11 +353,29 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .tile-state.lock { background: rgba(148, 178, 230, 0.1); color: var(--muted-d); }
 .tile-state.flag { background: rgba(255, 122, 107, 0.15); color: var(--flag); border: 1px solid rgba(255, 122, 107, 0.5); }
 .tile.is-locked { cursor: default; }
-.tile.is-locked .tile-card { opacity: 0.55; }
+/* THE LOCKED TILE'S WORDS WERE UNREADABLE, ON EVERY SKIN, SINCE THE HUB WAS
+   BUILT — found 16 Aug 2026 the first time his readability harness (DFM 207g)
+   was pointed at the hub at all. The card sat at 0.55 opacity, which drags
+   --muted-d down to 2.75:1 against the tile plate, measured; the floor is 4.5.
+   Every "Lesson N" number and every tagline for lessons 6-17 was below it, and
+   the J2 and J3 hubs would have shipped with all seventeen tiles that way.
+   DIM MUST MEAN QUIETER, NEVER UNREADABLE (the harness's own rule). The card
+   goes to 0.85 — computed, not chosen: at this plate that is 5.34:1, with the
+   0.80 that first clears the floor left as margin for the darker skins. The
+   ICON keeps its 0.55 and its desaturation, so the tile still reads as locked
+   at a glance; it is a picture, not a sentence.
+   This is DFM 208's ruled class - a fix that only makes existing words legible
+   may cross a signed-off lock - and it is REPORTED, never quiet. */
+.tile.is-locked .tile-card { opacity: 0.85; }
 .tile.is-locked .tile-icon { opacity: 0.55; filter: saturate(0.4); }
 .tile.is-done .tile-card { border-color: rgba(var(--gold-hi-rgb), 0.35); }
 .tile.wobble { animation: wobble 0.4s ease; }
-.hub-footnote { text-align: center; color: rgba(146, 164, 199, 0.55); font-size: 0.78rem; padding: 0 20px 30px; position: relative; z-index: 1; }
+/* Second finding from the same first-ever measurement of the hub, 16 Aug 2026:
+   the school's own name in the footer measured 2.98:1 on all twelve skins
+   (12px at 0.55 alpha). Raised to 0.85 — computed against the darkest plate of
+   all fourteen skins, where it reads 5.34:1, with 0.80 the first value that
+   clears the floor. Still visibly quieter than the tiles above it. DFM 208. */
+.hub-footnote { text-align: center; color: rgba(146, 164, 199, 0.85); font-size: 0.78rem; padding: 0 20px 30px; position: relative; z-index: 1; }
 
 /* ============ public class board (teacher-enabled only) ============ */
 .board-card-list {
@@ -1226,10 +1249,16 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 
 .kit-section {
   font-family: var(--font-display); font-size: 0.74rem; font-weight: 700;
-  letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted-d);
+  /* 16 Aug 2026, the first time the wardrobe was measured at all: this heading
+     read 3.93:1 on ALL TWELVE skins. A 12px uppercase face at 0.22em tracking
+     renders far weaker than its nominal colour - the anti-aliasing on thin
+     wide-tracked glyphs pulls every pixel toward the plate - so the nominal
+     --muted-d was never what a child actually saw. A section heading is the
+     thing that tells her what she is looking at; it gets the bright ink. */
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-d);
   margin: 16px 0 10px; display: flex; align-items: baseline; gap: 10px;
 }
-.kit-section small { letter-spacing: 0.02em; text-transform: none; font-weight: 600; font-size: 0.74rem; color: rgba(146, 164, 199, 0.7); }
+.kit-section small { letter-spacing: 0.02em; text-transform: none; font-weight: 600; font-size: 0.74rem; color: var(--muted-d); }
 
 .kit-themes { display: grid; grid-template-columns: repeat(auto-fill, minmax(186px, 1fr)); gap: 10px; }
 .kit-theme {
@@ -1262,7 +1291,11 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .kit-state.on { color: var(--gold-hi); }
 .kit-state.go { color: var(--muted-d); }
 .kit-theme:hover .kit-state.go { color: var(--gold-hi); }
-.kit-state.lock { color: rgba(146, 164, 199, 0.75); }
+/* was rgba(146,164,199,0.75) - a hardcoded NAVY grey at three-quarter alpha,
+   measuring 3.93-4.05:1 on every skin and worse on the warm and plum year
+   worlds, where a navy grey does not belong at all. The token follows the
+   theme; the alpha goes, because "locked" is already said by the padlock. */
+.kit-state.lock { color: var(--muted-d); }
 .kit-theme.wobble, .kit-chip.wobble { animation: wobble 0.4s ease; }
 
 .kit-chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -1278,7 +1311,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .kit-chip-glyph { font-size: 1.05rem; line-height: 1; }
 .kit-chip-name { font-family: var(--font-display); font-weight: 700; }
 .kit-chip-lock { font-size: 0.75rem; }
-.kit-foot { color: rgba(146, 164, 199, 0.75); font-size: 0.8rem; margin: 16px 0 2px; }
+.kit-foot { color: var(--muted-d); font-size: 0.8rem; margin: 16px 0 2px; }
 .clearance-sub { color: var(--muted); font-size: 0.94rem; margin: 0 0 6px; }
 
 /* ---- Agent Kit ambient fx layers (transform/opacity animations ONLY —
@@ -1308,6 +1341,58 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 @keyframes bandDrift {
   from { transform: translate3d(-4vw, 0, 0) scale(1); }
   to { transform: translate3d(5vw, 3vw, 0) scale(1.12); }
+}
+
+/* ---- J2 "The Workbench": sparks drifting up off the forge ----
+   Six small warm dots on long, offset loops, so nothing ever pulses in time
+   with anything else and the eye never finds a pattern. Same compositor rule as
+   the comets above: transform and opacity only. */
+.fx-embers .fx-ember {
+  position: absolute; bottom: -3vh; width: 4px; height: 4px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.95), rgba(var(--gold-rgb), 0) 70%);
+  opacity: 0;
+}
+.fx-embers .fx-ember.e1 { left: 12%; animation: emberRise 19s linear infinite 0s; }
+.fx-embers .fx-ember.e2 { left: 27%; width: 3px; height: 3px; animation: emberRise 26s linear infinite 4s; }
+.fx-embers .fx-ember.e3 { left: 44%; animation: emberRise 22s linear infinite 9s; }
+.fx-embers .fx-ember.e4 { left: 61%; width: 5px; height: 5px; animation: emberRise 30s linear infinite 2.5s; }
+.fx-embers .fx-ember.e5 { left: 78%; width: 3px; height: 3px; animation: emberRise 17s linear infinite 12s; }
+.fx-embers .fx-ember.e6 { left: 90%; animation: emberRise 24s linear infinite 6.5s; }
+@keyframes emberRise {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  8% { opacity: 0.85; }
+  55% { transform: translate3d(3vw, -55vh, 0); opacity: 0.55; }
+  100% { transform: translate3d(-2vw, -108vh, 0); opacity: 0; }
+}
+
+/* ---- J3 "The Screening Room": one soft projector beam crossing the room ----
+   The aurora band's machinery re-aimed: a single blurred shaft on a slow
+   alternating loop, plus a faint dust drift so the light has something to catch. */
+.fx-spotlight .fx-beam {
+  position: absolute; top: -30vh; left: 8vw; width: 34vw; height: 170vh;
+  background: linear-gradient(180deg, rgba(255, 246, 224, 0.16), rgba(255, 246, 224, 0.06) 45%, transparent 78%);
+  filter: blur(48px);
+  transform: rotate(14deg);
+  opacity: 0.9;
+  animation: beamSweep 48s ease-in-out infinite alternate;
+}
+.fx-spotlight .fx-motes {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(2px 2px at 22% 34%, rgba(255, 248, 230, 0.55), transparent 60%),
+    radial-gradient(2px 2px at 39% 71%, rgba(255, 248, 230, 0.40), transparent 60%),
+    radial-gradient(3px 3px at 57% 22%, rgba(255, 248, 230, 0.35), transparent 60%),
+    radial-gradient(2px 2px at 71% 58%, rgba(255, 248, 230, 0.45), transparent 60%);
+  opacity: 0.5;
+  animation: moteDrift 37s ease-in-out infinite alternate;
+}
+@keyframes beamSweep {
+  from { transform: translate3d(-6vw, 0, 0) rotate(14deg); opacity: 0.75; }
+  to { transform: translate3d(38vw, 0, 0) rotate(9deg); opacity: 1; }
+}
+@keyframes moteDrift {
+  from { transform: translate3d(0, 0, 0); opacity: 0.35; }
+  to { transform: translate3d(2vw, -3vh, 0); opacity: 0.6; }
 }
 
 @media (max-width: 640px) {
@@ -2342,7 +2427,8 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
     scroll-behavior: auto !important;
   }
   /* ambient layers: hold them still rather than flashing one frame */
-  .aurora, #fx-layer, .fx-comet, .fx-band { animation: none !important; opacity: 0.35 !important; }
+  .aurora, #fx-layer, .fx-comet, .fx-band,
+  .fx-ember, .fx-beam, .fx-motes { animation: none !important; opacity: 0.35 !important; }
   /* the "ready" waypoint still needs to read as ready without pulsing */
   .tile.is-open .tile-icon { animation: none !important; box-shadow: 0 0 0 3px var(--gold-hi) inset; }
   /* keep the busy indicators legible - a frozen spinner reads as "hung" */

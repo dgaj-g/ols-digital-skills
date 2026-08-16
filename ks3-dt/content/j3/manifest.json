@@ -1,7 +1,7 @@
 {
  "year": "j3",
  "title": "Create, Judge, Choose",
- "tagline": "Your last KS3 year: you create work, you judge it honestly, and you choose your GCSE route.",
+ "tagline": "Your last KS3 year. You make real work, you learn to judge it, and you find out which kind of digital work suits you.",
  "recapPool": "j3/recap-pool.json",
  "blocks": [
   {
@@ -26,7 +26,7 @@
   },
   {
    "id": "b5",
-   "name": "Choosing Your Route",
+   "name": "Meeting Both Routes",
    "color": "#D97C4F"
   },
   {
@@ -206,8 +206,8 @@
   {
    "id": "j3-16",
    "num": 16,
-   "title": "Choose Your Route",
-   "tagline": "You compare both GCSE routes against your own evidence, and you choose.",
+   "title": "Both Routes, Side by Side",
+   "tagline": "You put both GCSE routes side by side and see which one fits the work you like doing.",
    "block": "b5",
    "icon": "🧭",
    "status": "soon",

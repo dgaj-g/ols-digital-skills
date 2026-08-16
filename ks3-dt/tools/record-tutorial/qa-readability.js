@@ -82,8 +82,17 @@ const MEASURE = async ([dataUri, rects]) => {
   const lum = (r, gg, b) => 0.2126 * lin(r) + 0.7152 * lin(gg) + 0.0722 * lin(b);
 
   return rects.map(R => {
-    const x = Math.max(0, Math.round(R.x * dpr)), y = Math.max(0, Math.round(R.y * dpr));
-    const w = Math.min(c.width - x, Math.round(R.w * dpr)), h = Math.min(c.height - y, Math.round(R.h * dpr));
+    /* SAMPLE THE INTERIOR, NOT THE EDGES. A pill-shaped button's bounding box
+       includes four corners that are NOT the button — they are whatever sits
+       behind it — and on one skin those corners outvoted the button's own
+       gradient, so the modal bucket came out as the panel and a perfectly
+       legible violet pill was condemned at 1.22:1 while the browser's own
+       colours give 6.55:1. Insetting by an eighth on each side keeps every
+       glyph (text never reaches its own border) and drops the corners. */
+    const inx = Math.round(R.w * dpr * 0.12), iny = Math.round(R.h * dpr * 0.12);
+    const x = Math.max(0, Math.round(R.x * dpr) + inx), y = Math.max(0, Math.round(R.y * dpr) + iny);
+    const w = Math.min(c.width - x, Math.round(R.w * dpr) - inx * 2);
+    const h = Math.min(c.height - y, Math.round(R.h * dpr) - iny * 2);
     if (w < 2 || h < 2) return Object.assign({}, R, { skip: 'off screen' });
     const d = g.getImageData(x, y, w, h).data;
     const N = 48, buckets = [];
@@ -137,7 +146,7 @@ const MEASURE = async ([dataUri, rects]) => {
 };
 
 /* the rects + type metrics of every text-bearing element now on screen */
-const COLLECT = ([extraSels, hisSels]) => {
+const COLLECT = ([extraSels, hisSels, rootSel]) => {
   const out = [];
   const seen = new Set();
   const push = (el, forced) => {
@@ -175,7 +184,8 @@ const COLLECT = ([extraSels, hisSels]) => {
     });
   };
   /* the host area only — the top bar and starfield are chrome, not lesson text */
-  const root = document.querySelector('.chunk-host') || document.body;
+  const root = (rootSel && document.querySelector(rootSel)) ||
+    document.querySelector('.chunk-host') || document.body;
   root.querySelectorAll('*').forEach(el => push(el, false));
   (extraSels || []).forEach(s => document.querySelectorAll(s).forEach(el => push(el, true)));
   return out;
@@ -184,8 +194,17 @@ const COLLECT = ([extraSels, hisSels]) => {
 /* ------------------------------------------------------------------- the run */
 (async () => {
   fs.mkdirSync(SHOTS, { recursive: true });
-  const themesAll = JSON.parse(fs.readFileSync(THEMES_JSON, 'utf8')).themes.map(t => t.id);
-  const themes = ONLY_THEME ? [ONLY_THEME] : themesAll;
+  /* SKINS ARE YEAR-SCOPED NOW (his K1 ruling, and K11a's two year worlds). A
+     J2 look on a J1 lesson screen is a combination no pupil can ever produce —
+     the server refuses it and the wardrobe never offers it — so measuring it
+     would let the gate invent a fault (DFM 146a) and block a pack over a screen
+     that does not exist. Each surface says which year it belongs to and is
+     measured under exactly the skins that year can wear. */
+  const REGISTRY = JSON.parse(fs.readFileSync(THEMES_JSON, 'utf8')).themes;
+  const themesForYear = (y) => REGISTRY
+    .filter(t => (t.year == null ? 'j1' : String(t.year)) === 'all' || (t.year == null ? 'j1' : String(t.year)) === y)
+    .map(t => t.id);
+  const themesAll = REGISTRY.map(t => t.id);
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   const errors = [];
@@ -318,6 +337,68 @@ const COLLECT = ([extraSels, hisSels]) => {
       drive: async () => {
         if (!await advanceUntil('.case-file, .case-pin, .case-filecard')) throw new Error('never reached the case board');
       }
+    },
+    /* ---- THE J1 HUB AND WARDROBE: the control for the two below -----------
+       These have NEVER been measured. qa-readability was built for Lesson 5's
+       QA desk and only ever walked lesson surfaces, so the screen every pupil
+       of every year lands on was outside its coverage entirely (DFM 206's own
+       class). They are here first so that any finding on a J2 or J3 world can
+       be told apart from a finding that has been true of the hub all along. */
+    {
+      id: 'j1-hub', year: 'j1', cls: 'Demo-8A', as: 'anya', hub: true, root: '.hub',
+      what: 'the J1 hub (the control for the two year worlds below)',
+      must: ['button.tile'],
+      drive: async () => { await page.waitForFunction(() => document.querySelectorAll('button.tile').length > 0, null, { timeout: 20000 }); }
+    },
+    {
+      id: 'j1-kit', year: 'j1', cls: 'Demo-8A', as: 'anya', hub: true, root: '#kit-body',
+      what: 'the Agent Kit, open (the control for the two wardrobes below)',
+      extras: ['.kit-rank-name', '.kit-next-label', '.kit-theme-name', '.kit-theme-tag', '.kit-state', '.kit-foot', '.kit-chip-name'],
+      must: ['.kit-rank-name', '.kit-foot', '.kit-theme-name'],
+      drive: async () => {
+        await page.waitForFunction(() => document.querySelectorAll('button.tile').length > 0, null, { timeout: 20000 });
+        await page.evaluate(() => { if (window.App && App.openKit) App.openKit(); });
+        await sleep(900);
+      }
+    },
+    /* ---- THE TWO NEW YEAR WORLDS (K11a) ----------------------------------
+       J2 and J3 have no built lesson yet, so their landmark surfaces today are
+       the two screens every pupil of that year meets on her first login: the
+       hub she lands on, and the wardrobe she is told to open in Lesson 1's
+       orientation. Both are measured under that year's own skins only. */
+    {
+      id: 'j2-hub', year: 'j2', cls: 'Demo-9A', as: 'aoife', hub: true, root: '.hub',
+      what: 'the J2 hub on The Workbench (her first-ever screen)',
+      must: ['button.tile', '.hub-year, .year-title, h1'],
+      drive: async () => { await page.waitForFunction(() => document.querySelectorAll('button.tile').length > 0, null, { timeout: 15000 }); }
+    },
+    {
+      id: 'j2-kit', year: 'j2', cls: 'Demo-9A', as: 'aoife', hub: true, root: '#kit-body',
+      what: 'The Kit Locker, open (every registry word she reads)',
+      extras: ['.kit-rank-name', '.kit-next-label', '.kit-theme-name', '.kit-theme-tag', '.kit-state', '.kit-foot', '.kit-chip-name'],
+      must: ['.kit-rank-name', '.kit-foot', '.kit-theme-name'],
+      drive: async () => {
+        await page.waitForFunction(() => document.querySelectorAll('button.tile').length > 0, null, { timeout: 15000 });
+        await page.evaluate(() => { if (window.App && App.openKit) App.openKit(); });
+        await sleep(900);
+      }
+    },
+    {
+      id: 'j3-hub', year: 'j3', cls: 'Demo-10A', as: 'orla', hub: true, root: '.hub',
+      what: 'the J3 hub in The Screening Room (her first-ever screen)',
+      must: ['button.tile', '.hub-year, .year-title, h1'],
+      drive: async () => { await page.waitForFunction(() => document.querySelectorAll('button.tile').length > 0, null, { timeout: 15000 }); }
+    },
+    {
+      id: 'j3-kit', year: 'j3', cls: 'Demo-10A', as: 'orla', hub: true, root: '#kit-body',
+      what: 'Wardrobe, open (every registry word she reads)',
+      extras: ['.kit-rank-name', '.kit-next-label', '.kit-theme-name', '.kit-theme-tag', '.kit-state', '.kit-foot', '.kit-chip-name'],
+      must: ['.kit-rank-name', '.kit-foot', '.kit-theme-name'],
+      drive: async () => {
+        await page.waitForFunction(() => document.querySelectorAll('button.tile').length > 0, null, { timeout: 15000 });
+        await page.evaluate(() => { if (window.App && App.openKit) App.openKit(); });
+        await sleep(900);
+      }
     }
   ];
 
@@ -325,13 +406,16 @@ const COLLECT = ([extraSels, hisSels]) => {
   const gaps = [];
   for (const S of (ONLY_SURFACE ? SURFACES.filter(s => s.id === ONLY_SURFACE) : SURFACES)) {
     /* fresh route per surface: state from a previous drive is a different screen */
-    await page.goto(BASE + '/ks3-dt/platform/index.html?class=Demo-8A&as=anya', { waitUntil: 'domcontentloaded' });
+    await page.goto(BASE + '/ks3-dt/platform/index.html?class=' + (S.cls || 'Demo-8A') +
+      '&as=' + (S.as || 'anya'), { waitUntil: 'domcontentloaded' });
     await sleep(1500);
     await page.evaluate(() => { const b = document.querySelector('.intro-skip'); if (b) b.click(); });
     await sleep(500);
-    await openLesson(S.lesson);
+    if (!S.hub) await openLesson(S.lesson);
     await S.drive();
-    const reached = await page.evaluate(() => !!document.querySelector('.chunk-host') &&
+    /* a hub surface has no .chunk-host — its "did we arrive" test is its own
+       `must` list below, which is stricter anyway */
+    const reached = S.hub ? true : await page.evaluate(() => !!document.querySelector('.chunk-host') &&
       document.querySelector('.chunk-host').textContent.trim().length > 40);
     if (!reached) { findings.push('could not reach the ' + S.id + ' surface — the walk stopped'); continue; }
     /* THE SURFACE MUST REALLY BE THE SURFACE (DFM 204's lesson at element scale):
@@ -348,16 +432,35 @@ const COLLECT = ([extraSels, hisSels]) => {
       }
     }
 
+    /* only the skins THIS year can wear (see the note at themesForYear) */
+    const themes = ONLY_THEME ? [ONLY_THEME] : themesForYear(S.year || 'j1');
     for (const th of themes) {
       /* switch skins through the app's OWN code path, not by poking CSS */
       await page.evaluate((id) => {
         if (window.App && App.state && App.state.me) { App.state.me.th = id; App.applyKit(); }
       }, th);
       await sleep(420);
-      const rects = await page.evaluate(COLLECT, [S.extras || [], HIS.map(h => h.sel)]);
+      /* AN ELEMENT BELOW AN INTERNAL SCROLL FOLD IS NOT MEASURABLE AGAINST A
+         FULL-PAGE SHOT. The kit modal scrolls inside itself, so the "Done"
+         button's document rect landed on the page background behind the modal
+         and the gate reported dark ink at 1.39:1 on a perfectly good gold
+         button — a fault the app does not have (DFM 146a). The modal is
+         therefore laid out in full for the measurement: nothing about the
+         COLOURS changes, only whether the glyphs are somewhere the camera can
+         see them. */
+      if (S.root) await page.addStyleTag({ content:
+        '.ols-modal, .ols-modal-card, #kit-body { max-height: none !important; overflow: visible !important; }' });
+      await sleep(200);
+      const rects = await page.evaluate(COLLECT, [S.extras || [], HIS.map(h => h.sel), S.root || null]);
       const shot = await page.screenshot({ fullPage: true });
       const measured = await page.evaluate(MEASURE, ['data:image/png;base64,' + shot.toString('base64'), rects]);
-      measured.forEach(m => { if (!m.skip) rows.push(Object.assign({ theme: th, surface: S.id }, m)); });
+      measured.forEach(m => { if (!m.skip) rows.push(Object.assign({ theme: th, surface: S.id, year: S.year || 'j1' }, m)); });
+      /* A SURFACE THAT MEASURED NOTHING IS NOT A PASS (DFM 204). The J2 hub
+         printed "ALL PASSED" on zero measurements the first time this ran,
+         because the hub has an EMPTY .chunk-host and the collector rooted
+         itself there. Silence read as cleanliness, which is the exact fault. */
+      if (!rects.length) findings.push(S.id + ' (' + th + '): the collector found no text at all under "' +
+        (S.root || '.chunk-host') + '" — the surface was not measured');
 
       /* THE CONTROL-GAP PROBE (his first finding, DFM 207a): "the sign the
          contract button touches the back to the desk button." Two controls that
@@ -399,7 +502,7 @@ const COLLECT = ([extraSels, hisSels]) => {
           (EXPECT_FAIL ? '-PREFIX' : '') + '.png'), shot);
       }
     }
-    log('measured ' + S.id + ' across ' + themes.length + ' skin(s)');
+    log('measured ' + S.id + ' (' + (S.year || 'j1') + ') across ' + themes.length + ' skin(s): ' + themes.join(', '));
   }
 
   await browser.close();
@@ -421,8 +524,9 @@ const COLLECT = ([extraSels, hisSels]) => {
     console.log('  ✗ ' + k);
     console.log('      worst ' + worst.ratio + ':1 (needs ' + floorFor(worst) + ') — ink ' +
       worst.ink + ' on plate ' + worst.plate + ', ' + Math.round(worst.px) + 'px/' + worst.weight);
-    console.log('      skins affected: ' + (themesHit.length === themes.length
-      ? 'ALL ' + themes.length + ' — this is not the skin, it is the surface'
+    const yearSkins = themesForYear(worst.year || 'j1').length;
+    console.log('      skins affected: ' + (themesHit.length === yearSkins
+      ? 'ALL ' + yearSkins + ' of that year\'s skins — this is not the skin, it is the surface'
       : themesHit.join(', ')));
     findings.push(k + ' — ' + worst.ratio + ':1 on ' + themesHit.length + ' skin(s)');
   });
