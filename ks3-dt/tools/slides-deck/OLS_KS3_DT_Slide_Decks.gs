@@ -314,6 +314,7 @@ var DECKS = {
   "id": "j1-02.deck",
   "lesson": "j1-02",
   "deckName": "KS3 DT · J1 Lesson 2 — Make It Move (Teacher Deck)",
+  "driveFileId": "1tLRxl53kjFaOw2kXOwxaTx4rPmPFzN5MYr4tOpOLh6A",
   "theme": {
    "id": "amber-circuit",
    "name": "Amber Circuit",
@@ -555,6 +556,7 @@ var DECKS = {
   "id": "j1-03.deck",
   "lesson": "j1-03",
   "deckName": "KS3 DT · J1 Lesson 3 — Scoreboard Engineer (Teacher Deck)",
+  "driveFileId": "1tx88EznqaFebj87_xx51HZvLMEuNo9HaZxcxeKaHyFM",
   "theme": {
    "id": "arcade-glow",
    "name": "Arcade Glow",
@@ -763,6 +765,7 @@ var DECKS = {
   "id": "j1-04.deck",
   "lesson": "j1-04",
   "deckName": "KS3 DT · J1 Lesson 4 — The Broken Game (Teacher Deck)",
+  "driveFileId": "1jCu9Rfvgs-rJXg8Aj7QMjfO1R-AbrTZqhR611MO2NwA",
   "theme": {
    "id": "case-file",
    "name": "The Case File",
@@ -959,6 +962,7 @@ var DECKS = {
   "id": "j1-05.deck",
   "lesson": "j1-05",
   "deckName": "KS3 DT · J1 Lesson 5 — Game Studio (Teacher Deck)",
+  "driveFileId": "1l9agcHZemr9HpwZRXufvIqY9a-SHWsHjQS1s8GYq3hg",
   "theme": {
    "id": "premiere-night",
    "name": "Premiere Night",
