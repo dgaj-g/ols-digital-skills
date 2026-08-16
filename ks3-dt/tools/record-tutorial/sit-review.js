@@ -10,6 +10,7 @@
 const { chromium } = require('./node_modules/playwright');
 const path = require('path');
 const fs = require('fs');
+const WALK = require('./lib/walk-moves.js');
 
 const NUM = String(process.argv[2] || '2');
 const WHO = process.argv[3] || 'anya';
@@ -195,95 +196,13 @@ const CASE_LOGS = {
       if (vm) note('VIDEO METRICS[' + ck + ']: ' + JSON.stringify(vm));
     }
 
-    const st = await page.evaluate(() => {
-      const q = s => document.querySelector(s);
-      const vis = e => e && e.offsetParent !== null && !e.disabled;
-      if (q('.badge-pop button')) return { kind: 'badge', label: (q('.badge-pop-card h2') || q('.badge-pop-card h3') || {}).textContent || '' };
-      if (vis(q('.dossier-cta'))) return { kind: 'dossier-cta' };
-      if (q('.se-card')) return { kind: 'selfeval' };
-      /* studio QA desk: expand row -> run test -> pick the pass outcome -> ready */
-      if (q('.std-qa-row')) {
-        if (q('.std-qa-outcomes:not([hidden]) .std-outcome')) return { kind: 'std-outcome' };
-        if (Array.from(document.querySelectorAll('.std-qa-run')).some(b => vis(b))) return { kind: 'std-run' };
-        const head = Array.from(document.querySelectorAll('.std-qa-row:not(.pass) .std-qa-head:not([disabled])')).find(vis);
-        if (head) return { kind: 'std-expand', label: (head.textContent || '').trim().slice(0, 30) };
-        if (q('.std-ready-btn.lit:not([disabled])')) return { kind: 'std-ready' };
-      }
-      /* studio sign phase: the three contract cards are on screen */
-      {
-        const host1 = q('.chunk-host');
-        if (q('.std-sig-input') && vis(q('.std-sig-input')) && !q('.std-qa-row') &&
-            host1 && /Maze Escape/.test(host1.textContent) && /Quiz Master/.test(host1.textContent)) {
-          return { kind: 'std-sign' };
-        }
-      }
-      if (q('.rally-transmit')) {
-        const after = q('.rally-after');
-        if (after && after.textContent.trim()) return { kind: 'rally-after', revealed: !!q('.rally-reveal .reveal-row, .rally-reveal [class*="bar"]') };
-        return { kind: 'rally' };
-      }
-      /* Lesson 1's Vault and oath, added 14 Aug 2026 (DFM 221). Both outrank
-         the generic handlers below: a vault file is not a button, and the
-         oath's sign control does nothing at all on a plain click. */
-      if (q('.vault-file:not(.filed)') && vis(q('.vault-folder'))) return { kind: 'vault' };
-      if (vis(q('.oath-sign:not([disabled])'))) return { kind: 'hold-sign' };
-      if (q('.q-feedback button') && vis(q('.q-feedback button'))) return { kind: 'q-next' };
-      if (q('.q-opt:not(:disabled)')) return { kind: 'q-opt' };
-      /* L4 case board: drive the PIN BUTTONS by priority — intake first, then
-         open cases, then stretch, then the release desk. Handbook skipped
-         (film audited separately). Closed pins carry a .case-stamp child. */
-      if (q('.case-board')) {
-        const pins = Array.from(document.querySelectorAll('button.case-pin:not([disabled])'));
-        const intake = pins.find(p => p.getAttribute('data-view') === 'intake' && !p.classList.contains('done'));
-        const openCase = pins.find(p => p.hasAttribute('data-case') && !p.querySelector('.case-stamp'));
-        const stretch = pins.find(p => p.classList.contains('case-stretch') && !p.querySelector('.case-stamp'));
-        const release = pins.find(p => p.getAttribute('data-view') === 'release' && !/signed off/i.test(p.textContent));
-        const pick = intake || openCase || stretch || release;
-        if (pick) {
-          const label = (pick.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 40);
-          return { kind: 'case-pin', label };
-        }
-        /* board exhausted — fall through to generic (a Continue should exist) */
-      }
-      if (q('.parsons-card')) return { kind: 'parsons' };
-      /* L4 case file open: explicit protocol — fill the log, then the armed close */
-      if (q('.case-close-btn')) {
-        const btn = q('.case-close-btn');
-        const ta = q('.case-log-input');
-        if (q('.case-stamp.big')) return { kind: 'case-stamped' };
-        if (ta && !ta.value) return { kind: 'case-log' };
-        if (!btn.disabled && !btn.classList.contains('ticked')) return { kind: 'case-close' };
-        return { kind: 'case-wait' };
-      }
-      /* an empty gating textarea/input outranks a pending confirm — logs and
-         notes must be written before their confirms arm */
-      {
-        const host0 = q('.chunk-host');
-        if (host0) {
-          const ta0 = Array.from(host0.querySelectorAll('textarea, input[type=text], input[type=number], input:not([type])')).filter(vis).filter(e => !e.value);
-          if (ta0.length) return { kind: 'input', ph: ta0.map(e => e.placeholder || e.className).join(' | ') };
-        }
-      }
-      /* :not(.locked) added 12 Aug 2026. The casework gate redesign replaced
-         `disabled` with a `.locked` class + aria-disabled (so a locked control
-         can still be CLICKED and answer why it is locked). The walker fills
-         every input before it reads button state, so this never changed a turn
-         — but a walker that CAN click a locked control is a walker whose 48/42
-         means less than it looks. */
-      var CONFIRM_OPEN = '.confirm-step:not(.ticked):not([disabled]):not(.locked)';
-      if (q(CONFIRM_OPEN)) return { kind: 'confirm', label: (q(CONFIRM_OPEN) || {}).textContent || '' };
-      if (q('.tour-callout button')) return { kind: 'tour' };
-      if (q('.panel-loading')) return { kind: 'loading' };
-      const host = q('.chunk-host');
-      if (!host) return { kind: 'nohost' };
-      /* generic text inputs that gate progress (case log, marquee, RC ask, v2) */
-      const ta = Array.from(host.querySelectorAll('textarea, input[type=text], input[type=number], input:not([type])')).filter(vis).filter(e => !e.value);
-      if (ta.length) return { kind: 'input', ph: ta.map(e => e.placeholder || e.className).join(' | ') };
-      const b = Array.from(host.querySelectorAll('button')).filter(vis);
-      if (!b.length) return { kind: 'stuck', text: (host.textContent || '').replace(/\s+/g, ' ').slice(0, 160) };
-      const pri = b.find(x => x.classList.contains('primary-btn')) || b[0];
-      return { kind: 'button', label: (pri.textContent || '').trim().slice(0, 40), all: b.map(x => (x.textContent || '').trim().slice(0, 30)) };
-    });
+    /* THE DETECTOR LIVES IN lib/walk-moves.js — one home, both walkers.
+       It used to live inline here, and the day capture-deck-shots needed the
+       same knowledge it wrote its own dumber copy instead, could not drag, and
+       shipped the Vault under three other screens' names (DFM 225b). The
+       proof this extraction is faithful is this file's own pinned shape: if a
+       single screen were now read differently, the end-of-run numbers move. */
+    const st = await page.evaluate(WALK.detectKind);
 
     const key = ck + ':' + st.kind + ':' + (st.label || '');
     same = key === lastKey ? same + 1 : 0;

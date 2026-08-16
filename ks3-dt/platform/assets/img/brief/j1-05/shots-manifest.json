@@ -1,0 +1,83 @@
+{
+ "lesson": "j1-05",
+ "kind": "brief",
+ "contentVersion": "2026-08-15d",
+ "shots": {
+  "01-do-now.jpg": {
+   "name": "01-do-now.jpg",
+   "chunkId": "_recap",
+   "synthetic": true,
+   "textSnippet": "Where should your DT work live so you can open it anywhere, even at home?",
+   "contentAnchor": null,
+   "says": "the Do-Now, mid-question",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": null
+  },
+  "02-briefing.jpg": {
+   "name": "02-briefing.jpg",
+   "chunkId": "hook",
+   "textSnippet": "YEAR 8 · LESSON 5 OF 17",
+   "contentAnchor": "YEAR 8 · LESSON 5 OF 17",
+   "says": "the briefing pupils read at the start of the hour",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "245e5dc08d8b"
+  },
+  "03-contracts.jpg": {
+   "name": "03-contracts.jpg",
+   "chunkId": "sign",
+   "textSnippet": "Signed the wrong one? You can tear a contract up and re-sign — right up until your first QA test is recorded. (Re-signing means a fresh kit: anything you built in Scratch stays with the old contract.)",
+   "contentAnchor": "Signed the wrong one? You can tear a contract up and re-sign — right up until your first QA test is recorded. (Re-signing means a fresh kit: anything you built in Scratch stays with the old contract.)",
+   "says": "the contracts desk, all three still open",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "a19f09cf4f0c"
+  },
+  "04-film.jpg": {
+   "name": "04-film.jpg",
+   "chunkId": "masterclass",
+   "textSnippet": "This film teaches the if/else block itself — not any one of the three games. Nobody's answer is given away here. You will watch the block being built in Scratch and tested, then your blueprint shows e",
+   "contentAnchor": "This film teaches the if/else block itself — not any one of the three games. Nobody's answer is given away here. You will watch the block being built in Scratch and tested, then your blueprint shows exactly where it goes in the game YOU picked. The worked example and the testing chapters live on your Studio Desk, beside the blueprint.",
+   "says": "the masterclass film — part one plays here",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "ed84a9803043"
+  },
+  "05-sprint.jpg": {
+   "name": "05-sprint.jpg",
+   "chunkId": "build",
+   "textSnippet": "Your starter kit already runs, but it is not finished: it cannot choose, count or end yet — that is your job today. Somewhere in its code is a yellow STUDIO NOTE. A note like that is a message one pro",
+   "contentAnchor": "Your starter kit already runs, but it is not finished: it cannot choose, count or end yet — that is your job today. Somewhere in its code is a yellow STUDIO NOTE. A note like that is a message one programmer leaves for another; it does nothing when the game runs, and this one marks the exact spot where your big block goes. Get the kit open in Scratch:",
+   "says": "the Studio Desk — the kit, the blueprint and the four QA checks",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "68d3816165da"
+  },
+  "06-press.jpg": {
+   "name": "06-press.jpg",
+   "chunkId": "press",
+   "textSnippet": "Unlocks when your press pass is spent — reviews first, your V2 note second.",
+   "contentAnchor": "Unlocks when your press pass is spent — reviews first, your V2 note second.",
+   "says": "the marquee at Press Night",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "f283efb60f20"
+  },
+  "08-ship.jpg": {
+   "name": "08-ship.jpg",
+   "chunkId": "ship",
+   "textSnippet": "Your game is real now — and a real game must not live and die on one classroom machine. This is the same save-to-Drive routine as every build this term: three steps, about a minute. Then your game fol",
+   "contentAnchor": "Your game is real now — and a real game must not live and die on one classroom machine. This is the same save-to-Drive routine as every build this term: three steps, about a minute. Then your game follows your login home — any school computer, any time.",
+   "says": "Ship your game — the same save-to-Drive routine as every build this term",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "9c585cb84674"
+  },
+  "09-exit.jpg": {
+   "name": "09-exit.jpg",
+   "chunkId": "exit",
+   "textSnippet": "In an if/else block, what happens when the condition turns out to be FALSE?",
+   "contentAnchor": "In an if/else block, what happens when the condition turns out to be FALSE?",
+   "says": "an exit-check question, verdict held back until the report is filed",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "3ce3a570ec9c"
+  }
+ },
+ "reused": {
+  "j1-05/07-press-lens.jpg": "the Press Night teacher lens, unchanged this round"
+ }
+}

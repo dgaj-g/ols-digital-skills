@@ -1,0 +1,90 @@
+{
+ "lesson": "j1-04",
+ "kind": "brief",
+ "contentVersion": "2026-08-15d",
+ "shots": {
+  "01-do-now.jpg": {
+   "name": "01-do-now.jpg",
+   "chunkId": "_recap",
+   "synthetic": true,
+   "textSnippet": "Which of these is the STRONGEST password?",
+   "contentAnchor": null,
+   "says": "the Do-Now, mid-question",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": null
+  },
+  "02-briefing.jpg": {
+   "name": "02-briefing.jpg",
+   "chunkId": "hook",
+   "textSnippet": "The first computer 'bug' — a real moth, taped into Harvard's logbook, 1947. U.S. Navy photo (public domain).",
+   "contentAnchor": "The first computer 'bug' — a real moth, taped into Harvard's logbook, 1947. U.S. Navy photo (public domain).",
+   "says": "the briefing, with the real 1947 logbook page",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "f2eff2c9c3c5"
+  },
+  "03-board.jpg": {
+   "name": "03-board.jpg",
+   "chunkId": "board",
+   "textSnippet": "Lost your game? Nothing is broken — reload scratch.mit.edu, then File → Load from your computer, and pick the .sb3 again.",
+   "contentAnchor": "Lost your game? Nothing is broken — reload scratch.mit.edu, then File → Load from your computer, and pick the .sb3 again.",
+   "says": "the Case Board — the hour’s home screen",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "fb727a4283db"
+  },
+  "glance-intake.png": {
+   "name": "glance-intake.png",
+   "chunkId": "board",
+   "textSnippet": "You should see a Shark, a Fish and a score stuck on 0. The little pictures at the bottom right are the game's SPRITES — a sprite is one character or thing in the game. Click a sprite and you will see ",
+   "contentAnchor": "You should see a Shark, a Fish and a score stuck on 0. The little pictures at the bottom right are the game's SPRITES — a sprite is one character or thing in the game. Click a sprite and you will see its SCRIPTS: the stacks of blocks that tell that sprite what to do. Every sprite carries its OWN scripts, never anyone else's — that is why a bug can hide on one sprite while everything else looks fine. One more word you WILL meet on the Fish: CLONE. A clone is a temporary copy of a sprite that Scratch makes while the game runs — every fish swimming in the water is a clone of the one Fish sprite in the list. Most of the bugs are hiding in the sprites' scripts — but not all of them: one case will take you somewhere new.",
+   "says": "Evidence Intake — four steps to get the broken game open",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "fb727a4283db"
+  },
+  "04-case.jpg": {
+   "name": "04-case.jpg",
+   "chunkId": "board",
+   "textSnippet": "Open the Shark's scripts and compare them with each other. Working code is your best evidence: what does every WORKING arrow script start with that the broken one is missing? Cannot see all five stack",
+   "contentAnchor": "Open the Shark's scripts and compare them with each other. Working code is your best evidence: what does every WORKING arrow script start with that the broken one is missing? Cannot see all five stacks at once? Click the minus (–) button at the bottom right of the code area until they all fit.",
+   "says": "a case file as a pupil first meets it — log box empty",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "fb727a4283db"
+  },
+  "glance-clues.png": {
+   "name": "glance-clues.png",
+   "chunkId": "board",
+   "textSnippet": "Open the Shark's scripts and compare them with each other. Working code is your best evidence: what does every WORKING arrow script start with that the broken one is missing? Cannot see all five stack",
+   "contentAnchor": "Open the Shark's scripts and compare them with each other. Working code is your best evidence: what does every WORKING arrow script start with that the broken one is missing? Cannot see all five stacks at once? Click the minus (–) button at the bottom right of the code area until they all fit.",
+   "says": "the help steps, open — two free, one that costs a gold stamp",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "fb727a4283db"
+  },
+  "glance-jellyfish.png": {
+   "name": "glance-jellyfish.png",
+   "chunkId": "board",
+   "textSnippet": "Add a Jellyfish from Scratch's sprite library: click 'Choose a Sprite' at the bottom right, then search 'Jellyfish'. Build it with the starter blocks in the picture below: the jellyfish drifts to a ne",
+   "contentAnchor": "Add a Jellyfish from Scratch's sprite library: click 'Choose a Sprite' at the bottom right, then search 'Jellyfish'. Build it with the starter blocks in the picture below: the jellyfish drifts to a new spot every couple of seconds, and if the Shark ever touches it, the whole game stops. That 'if touching' block is next lesson's superpower — this is a sneak preview. Finished the jellyfish and want more? Design ONE more change of your own — a second danger, a speed-up, a power-up — and name it in your release note.",
+   "says": "the Jellyfish Job — the stretch, with next lesson’s block previewed",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "fb727a4283db"
+  },
+  "05-release.jpg": {
+   "name": "05-release.jpg",
+   "chunkId": "board",
+   "textSnippet": "You have fixed four bugs in one game — and some bugs only show up when the whole game is played. So before the game goes back to the players, QA plays the WHOLE game like a real player: one full minut",
+   "contentAnchor": "You have fixed four bugs in one game — and some bugs only show up when the whole game is played. So before the game goes back to the players, QA plays the WHOLE game like a real player: one full minute, from the green flag to the end. Watch all four fixes holding at once:",
+   "says": "the release desk — four things to watch, and the count that proves she played",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "fb727a4283db"
+  },
+  "06-exit.jpg": {
+   "name": "06-exit.jpg",
+   "chunkId": "exitp",
+   "textSnippet": "How to build it: drag a block from Blocks across into Your program — or just click it, if you prefer. Drag the blocks up and down to change the order, and drag one back to Blocks to take it out again.",
+   "contentAnchor": "🎯 When the flag is clicked, the sprite gets into position without the player seeing it move, then appears in the middle of the screen and animates by changing costume forever.",
+   "says": "the ordering puzzle, before any block is placed",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "ff7291dda8dd"
+  }
+ },
+ "reused": {}
+}

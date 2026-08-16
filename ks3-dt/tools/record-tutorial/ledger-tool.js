@@ -59,8 +59,26 @@ const READERS = { j1: 'an 11 or 12-year-old', j2: 'a 12 or 13-year-old', j3: 'a 
    have been invisible to the gate AND to this tool at the same time. Two copies
    of a rule are two chances to be wrong; there is now one walk, and its
    multi-year control lives with it. */
-const loadAll = (only) => require('./qa-language.js').loadLessons()
-  .filter(L => !only || L.fileId === only);
+/* THE DECKS ARE IN THE LEDGER TOO (DFM 225d), so this tool has to see them.
+   Until 15 Aug 2026 it did not: --missing walked lesson content only and reported
+   "0 sentence(s) need a record" while 115 projected deck strings had none, and
+   --set answered "no such string path" for every one of them. The gate was
+   honest — the pack failed loudly — but a tool that reports coverage it does not
+   have is DFM 204's class, and it is the tool a human reads. The deck walk comes
+   from qa-language.js for the same reason the lesson walk does: one walk, one
+   home. Deck strings are presented as a pseudo-lesson so every command below
+   (--missing, --set, --stats, --prune) reaches them without knowing the
+   difference. */
+const loadAll = (only) => {
+  const lessons = require('./qa-language.js').loadLessons();
+  const deck = require('./qa-language.js').collectDeckStrings();
+  const byDeck = {};
+  deck.strings.forEach(s => {
+    const id = s.deck + '.deck';
+    (byDeck[id] = byDeck[id] || { fileId: id, year: s.year, strings: [] }).strings.push(s);
+  });
+  return lessons.concat(Object.values(byDeck)).filter(L => !only || L.fileId === only);
+};
 
 const load = () => fs.existsSync(LEDGER_FILE)
   ? JSON.parse(fs.readFileSync(LEDGER_FILE, 'utf8'))

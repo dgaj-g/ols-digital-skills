@@ -107,6 +107,27 @@ function deckShotGate() {
   console.log('deck-shot gate: PASSED (qa-deck-shots)');
 }
 
+/* THE NO-ANSWERS GATE (DFM 37). The deck is delivered at the FRONT and the
+   on-screen activities reinforce it afterwards - so a quiz question printed on
+   a slide is a question already answered, and the activity that follows it
+   measures nothing. Every deck spec this round ends with the words "DFM 37
+   sweep", and until this gate existed that sweep was a person reading slides,
+   which holds for exactly as long as nobody edits one (DFM 150's law). */
+function deckAnswerGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-deck-no-answers.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-deck-no-answers.js is missing - the DFM 37 gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error((res.stdout || '') + (res.stderr || ''));
+    console.error('\nPACK STOPPED: a slide carries a question or an answer a pupil is meant to work out (DFM 37).');
+    process.exit(1);
+  }
+  console.log('no-answers gate: PASSED (qa-deck-no-answers)');
+}
+
 /* THE BRIEF-SHAPE GATE (DFM 227). His 15 Aug redesign: the sections run
    purpose -> preparing -> resources -> running the hour -> the breakdown ->
    what goes wrong; "If you fall behind" is gone from every brief; and the
@@ -300,6 +321,7 @@ function main() {
   yearFolderGate();
   languageGate();
   deckShotGate();
+  deckAnswerGate();
   briefShapeGate();
   auditGate();
   coverageGate();
