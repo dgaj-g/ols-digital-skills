@@ -78,13 +78,21 @@ const header = `/**
  * reads it (DFM 219d) and a platform-wide wording sweep reaches it (DFM 147).
  *
  * TO RUN, ONE FUNCTION AT A TIME, from the toolbar dropdown:
- *   rebuildLesson1Deck   rebuilds Lesson 1's deck IN PLACE, keeping its file id
- *                        so the two links in the Lesson 1 teacher brief and the
- *                        department's shared copy keep working.
+ *   createLesson2Deck    creates Lesson 2's deck ONCE, shares it read-only, and
+ *   createLesson3Deck    LOGS ITS FILE ID. Read that id back: it is written into
+ *   createLesson4Deck    the deck data and into the brief's two resource links
+ *   createLesson5Deck    BEFORE the content is packed, so no teacher ever meets
+ *                        a link that leads nowhere. Refuses to run twice.
+ *   rebuildLesson1Deck   rebuilds a deck IN PLACE, keeping its file id so the
+ *   rebuildLesson2Deck   two links in that lesson's teacher brief and the
+ *   …3, …4, …5           department's shared copy keep working. Refuses to run
+ *                        on a lesson whose deck has not been created yet.
  *   exportDeckProofs     renders every slide of that deck to a picture in Drive
  *                        ("KS3 DT Deck Proofs"), so the built pixels are read
  *                        before anyone is told the deck is ready (DFM 225b).
  *                        Run it straight after the rebuild, every time.
+ *   exportLesson2Proofs  the same, per lesson; exportAllDeckProofs does the set.
+ *   …3, …4, …5
  *
  * Built ${new Date().toISOString().slice(0, 10)} from contentVersion ${JSON.parse(fs.readFileSync(path.join(PACKED, 'index.json'), 'utf8')).contentVersion}.
  */
@@ -379,17 +387,17 @@ function renderSlide_(pres, d, s, label) {
 function rebuildDeck_(lessonId) {
   var d = DECKS[lessonId];
   if (!d) throw new Error('no deck data for ' + lessonId);
-  var pres;
-  if (d.driveFileId) {
-    /* IN PLACE: the brief prints two links to this file id and the department
-       already has it shared. A new file would break both (DFM 111/62). */
-    pres = SlidesApp.openById(d.driveFileId);
-  } else {
-    var folder, it = DriveApp.getFoldersByName(FOLDER_NAME);
-    folder = it.hasNext() ? it.next() : DriveApp.createFolder(FOLDER_NAME);
-    pres = SlidesApp.create(d.deckName);
-    DriveApp.getFileById(pres.getId()).moveTo(folder);
+  if (!d.driveFileId) {
+    /* A REBUILD NEVER CREATES. If this deck has no id recorded yet, silently
+       making a new file here would leave TWO decks in his Drive with the same
+       name and no way to tell which one the brief links to. Creation is its own
+       named function, run once, and it prints the id he reads back. */
+    throw new Error(lessonId + ' has no driveFileId yet — run create' +
+      lessonLabel_(lessonId) + 'Deck first, then record the id it logs.');
   }
+  /* IN PLACE: the brief prints two links to this file id and the department
+     already has it shared. A new file would break both (DFM 111/62). */
+  var pres = SlidesApp.openById(d.driveFileId);
   var old = pres.getSlides();
   for (var i = 0; i < old.length; i++) old[i].remove();
   var n = 0;
@@ -416,7 +424,79 @@ function rebuildDeck_(lessonId) {
   return pres.getId();
 }
 
+function lessonLabel_(lessonId) {
+  return 'Lesson' + String(Number(lessonId.split('-')[1]));
+}
+
+/* ============ create a deck ONCE, and print the id he reads back ==========
+   Lessons 2-5 have no deck in his Drive yet. Creation is deliberately separate
+   from rebuilding, and deliberately refuses to run twice, because the ORDER of
+   this round depends on it: he creates each deck, reads its id back, the id is
+   written into the deck data AND into the brief's two resource links, and only
+   THEN is the content packed — so every link in every shipped brief is born
+   live instead of pointing at nothing (L2 spec §7). */
+function createDeck_(lessonId) {
+  var d = DECKS[lessonId];
+  if (!d) throw new Error('no deck data for ' + lessonId);
+  if (d.driveFileId) {
+    throw new Error(d.deckName + ' already exists (file id ' + d.driveFileId +
+      '). Creating it again would leave two decks with the same name and the ' +
+      'brief pointing at the wrong one. Run rebuild' + lessonLabel_(lessonId) +
+      'Deck instead — it rebuilds in place and keeps every link working.');
+  }
+  var it = DriveApp.getFoldersByName(FOLDER_NAME);
+  var folder = it.hasNext() ? it.next() : DriveApp.createFolder(FOLDER_NAME);
+  var pres = SlidesApp.create(d.deckName);
+  DriveApp.getFileById(pres.getId()).moveTo(folder);
+  /* SlidesApp.create() opens with one default slide; it is removed so the deck
+     starts on the title slide the data describes */
+  var seeded = pres.getSlides();
+  for (var i = 0; i < seeded.length; i++) seeded[i].remove();
+
+  var n = 0;
+  for (var si = 0; si < d.sections.length; si++) {
+    var sec = d.sections[si];
+    for (var sl = 0; sl < sec.slides.length; sl++) {
+      renderSlide_(pres, d, sec.slides[sl], sec.label);
+      n++;
+    }
+  }
+  pres.saveAndClose();
+  var file = DriveApp.getFileById(pres.getId());
+  /* read-only to everyone who has the link, so any DT teacher opens it without
+     asking for access (DFM 62) */
+  try { file.setSharing(DriveApp.Access.DOMAIN_WITH_LINK, DriveApp.Permission.VIEW); }
+  catch (e) { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); }
+
+  Logger.log('================ DECK CREATED ================');
+  Logger.log(d.deckName);
+  Logger.log(n + ' slides written from contentVersion-packed data');
+  Logger.log('Folder         : ' + FOLDER_NAME);
+  Logger.log('');
+  Logger.log('>>> THE FILE ID — READ THIS LINE BACK, IT IS THE ONE THING NEEDED <<<');
+  Logger.log('>>> ' + pres.getId());
+  Logger.log('');
+  Logger.log('Read-only link : https://docs.google.com/presentation/d/' + pres.getId() + '/edit');
+  Logger.log('Make-a-copy    : https://docs.google.com/presentation/d/' + pres.getId() + '/copy');
+  Logger.log('');
+  Logger.log('The brief\'s two links are filled in from that id, and the content is');
+  Logger.log('packed AFTER it — so no teacher ever meets a resource row that leads');
+  Logger.log('nowhere. From now on this deck is updated with rebuild' +
+    lessonLabel_(lessonId) + 'Deck,');
+  Logger.log('which keeps this id and therefore keeps every link working.');
+  return pres.getId();
+}
+
+function createLesson2Deck() { return createDeck_('j1-02'); }
+function createLesson3Deck() { return createDeck_('j1-03'); }
+function createLesson4Deck() { return createDeck_('j1-04'); }
+function createLesson5Deck() { return createDeck_('j1-05'); }
+
 function rebuildLesson1Deck() { return rebuildDeck_('j1-01'); }
+function rebuildLesson2Deck() { return rebuildDeck_('j1-02'); }
+function rebuildLesson3Deck() { return rebuildDeck_('j1-03'); }
+function rebuildLesson4Deck() { return rebuildDeck_('j1-04'); }
+function rebuildLesson5Deck() { return rebuildDeck_('j1-05'); }
 
 /* ===================== the proofs (DFM 225b, standing) ====================
    A deck is never handed over on the strength of the code that built it. Slide
@@ -498,6 +578,23 @@ function exportDeckProofs_(lessonId) {
 }
 
 function exportDeckProofs() { return exportDeckProofs_('j1-01'); }
+function exportLesson2Proofs() { return exportDeckProofs_('j1-02'); }
+function exportLesson3Proofs() { return exportDeckProofs_('j1-03'); }
+function exportLesson4Proofs() { return exportDeckProofs_('j1-04'); }
+function exportLesson5Proofs() { return exportDeckProofs_('j1-05'); }
+
+/* every proof set in one run, for the end of a round that built four decks */
+function exportAllDeckProofs() {
+  var out = {}, ids = ['j1-01', 'j1-02', 'j1-03', 'j1-04', 'j1-05'];
+  for (var i = 0; i < ids.length; i++) {
+    if (!DECKS[ids[i]] || !DECKS[ids[i]].driveFileId) {
+      Logger.log('(skipped ' + ids[i] + ' — no deck created yet)');
+      continue;
+    }
+    out[ids[i]] = exportDeckProofs_(ids[i]);
+  }
+  return out;
+}
 `;
 
 fs.writeFileSync(OUT, header + body);

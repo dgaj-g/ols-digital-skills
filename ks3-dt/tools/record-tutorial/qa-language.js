@@ -2058,6 +2058,14 @@ if (require.main === module) main();
    second copy of it — one fact, one home (DFM 144). pack-content.js runs this
    file as a child process, so the guard above leaves the gate untouched. */
 module.exports = { collectFilmStrings, filmKey, filmRendered, FILM_MAP,
+  /* exported so ledger-tool.js can SEE deck strings. It could not: its --missing
+     walked lesson content only and printed "0 sentence(s) need a record" while a
+     hundred and fifteen projected deck strings had none, and its --set answered
+     "no such string path" for every one of them. The gate was honest (the pack
+     failed loudly); the TOOL was reporting coverage it did not have, which is
+     DFM 204's class. One walk, one home (DFM 144) — the same law the lesson walk
+     above already states. */
+  collectDeckStrings,
   /* exported for the DFM 196 control sweep: the same detector is run against the
      build he sat (7bba564) so the failure it catches there is filed as evidence
      before the fix it guards is credited. One implementation, two runs. */

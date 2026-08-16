@@ -42,8 +42,15 @@ const STAFF = path.join(ROOT, 'platform', 'staff.js');
    (DFM 144), and this one had quietly kept "the girls" long after rule 26. */
 const PREVIEW = path.join(ROOT, 'tools', 'brief-preview.js');
 
-/* the briefs whose teacher layer has been BUILT to TEACHER_LAYER_TEMPLATE */
-const REDESIGNED = new Set(['j1-01']);
+/* The briefs whose teacher layer has been BUILT to TEACHER_LAYER_TEMPLATE, and which
+   are therefore HELD to the hour rather than merely reported on.
+   j1-02..05 joined on 15 Aug 2026 with the L2-L5 teacher-layer round (DFM 228). That
+   leaves the SIDE QUEST as the only named debt — and it is debt by his own ruling, not
+   by omission: the side quest is not teacher-delivered, so DFM 220(d) kept it out of
+   this round deliberately. When a lesson's teacher layer is built, its id joins here in
+   the same commit; a lesson that is merely PASSING at 60 without being listed is
+   passing by luck, which is not the same thing. */
+const REDESIGNED = new Set(['j1-01', 'j1-02', 'j1-03', 'j1-04', 'j1-05']);
 const HOUR = 60;
 
 const ORDER = [
@@ -143,6 +150,22 @@ function checkBrief(id, b) {
     }
   });
   const rows = b.runningTheHour || [];
+  /* (f) THE MINUTES ARE NUMBERS, AND THE SUM NEVER COERCES ONE QUIETLY.
+     `Number(r.mins) || 0` reads the string "7" as 7 and says nothing, so a row
+     could carry a minute label of the wrong TYPE for ever and every sum would
+     still look right — until the day someone wrote "7 " or "seven" and the row
+     silently became a zero that still added up. A label that is not a number is
+     a fault the moment it exists, in every brief, built teacher layer or not:
+     this check is about the type, not about the hour. (L5 spec §6.1.) */
+  rows.forEach((r, i) => {
+    if (r.mins === undefined || r.mins === null) return;
+    if (typeof r.mins !== 'number' || !Number.isFinite(r.mins)) {
+      errs.push('run-sheet row ' + (i + 1) + ' ("' + String(r.part || '').slice(0, 40) +
+        '") carries mins as ' + typeof r.mins + ' ' + JSON.stringify(r.mins) +
+        ', not a number. The sum would coerce it silently — a label of the wrong ' +
+        'type is a fault before it is ever wrong');
+    }
+  });
   if (REDESIGNED.has(id) && rows.length) {
     const sum = rows.reduce((a, r) => a + (Number(r.mins) || 0), 0);
     if (sum !== HOUR) {
@@ -179,6 +202,16 @@ notes.push(briefs.length + ' brief(s) read; ' + REDESIGNED.size + ' held to the 
   ok(checkBrief('j1-01', { atAGlance: [{ part: 'Badge 4', mins: 15 }], runningTheHour: [{ mins: 60 }] })
     .some(e => /15-minute label/.test(e)),
     'a breakdown row carrying its own minutes is REJECTED (the 62-against-60 clash)');
+  ok(checkBrief('j1-99', { runningTheHour: [{ part: 'The masterclass', mins: '7' }] })
+    .some(e => /carries mins as string "7"/.test(e)),
+    'a run-sheet row whose minutes are the STRING "7" is REJECTED, in a brief whose ' +
+    'teacher layer is not built yet — the type is wrong wherever it appears');
+  ok(checkBrief('j1-99', { runningTheHour: [{ part: 'x', mins: 7 }] })
+    .every(e => !/carries mins as/.test(e)),
+    'and the number 7 in the same row passes (over-tightening guard)');
+  ok(checkBrief('j1-99', { runningTheHour: [{ part: 'x' }] })
+    .every(e => !/carries mins as/.test(e)),
+    'and a row with no minutes at all is not invented into a fault');
   ok(checkBrief('j1-99', { runningTheHour: [{ part: 'x', mins: 67 }] }).length === 0,
     'while a brief whose teacher layer is not built yet is not failed for it — it is named as debt');
   ok(checkOrder(['The purpose of this lesson', 'Breakdown of what the pupils will actually do',
@@ -207,4 +240,5 @@ if (fails.length) {
   process.exit(1);
 }
 console.log('qa-brief-shape: PASSED — his section order, no "If you fall behind" anywhere, ' +
-  'one home for the minutes, Lesson 1 at ' + HOUR);
+  'one home for the minutes, minutes that are really numbers, and ' + REDESIGNED.size +
+  ' brief(s) held to exactly ' + HOUR + ' (' + [...REDESIGNED].join(', ') + ')');

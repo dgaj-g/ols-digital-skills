@@ -1,0 +1,85 @@
+{
+ "lesson": "j1-03",
+ "shots": {
+  "scores-trio": {
+   "name": "scores-trio",
+   "kind": "content-asset",
+   "chunkId": "hook",
+   "sources": [
+    "assets/img/l3/l3-arcade.jpg",
+    "assets/img/l3/l3-gaa.jpg",
+    "assets/img/l2/l2-tracker.jpg"
+   ],
+   "captions": "An arcade's HIGH SCORES table — every number on it lives in a variable · A GAA scoreboard — four numbers, all variables · The trackers from Lesson 2 — every step adds 1 to a box called steps",
+   "says": "the arcade, the GAA scoreboard and Lesson 2’s trackers",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "904f563c025d",
+   "px": "1440x530"
+  },
+  "variable-box": {
+   "name": "variable-box",
+   "kind": "film-frame",
+   "src": "assets/video/l3/l3-part1.mp4",
+   "tSeconds": 17,
+   "filmHash": "91cf14e7d4b3",
+   "crop": null,
+   "ring": null,
+   "inset": null,
+   "says": "the named box with its value arriving, from the film itself",
+   "contentVersion": "2026-08-15d",
+   "px": "1440x768"
+  },
+  "rung1": {
+   "name": "rung1",
+   "kind": "app",
+   "chunkId": "ladder",
+   "selector": ".chunk-host .rung-part",
+   "textSnippet": "① WATCH THIS PART — PART 2 — MAKE THE VARIABLE",
+   "contentAnchor": null,
+   "cardText": "▶ NOW SHOWING · ① WATCH THIS PART — PART 2 — MAKE THE VARIABLE · This part runs about 2 minutes. · ↻ Watch this part again",
+   "says": "a rung’s own slice of the film, sitting on the rung card",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "7d13b1ab299f",
+   "px": "1212x912"
+  },
+  "rig": {
+   "name": "rig",
+   "kind": "app",
+   "chunkId": "rig",
+   "selector": ".chunk-host .af-card",
+   "textSnippet": "Your scoreboard program is built — this part keeps it safe before the Rally. You are going to save a copy into your Google Drive, the same way as last lesson: three steps, about a minute. In a real ra",
+   "contentAnchor": "Your scoreboard program is built — this part keeps it safe before the Rally. You are going to save a copy into your Google Drive, the same way as last lesson: three steps, about a minute. In a real rally every car is checked in before the race — your RIG is your scoreboard program, and this is its check-in. When the file is in your Drive, press Check my Drive below, and the website will look to make sure it is really there. Then even if a cable is pulled out mid-Rally, your work is safe.",
+   "cardText": "REGISTER YOUR RIG · Register your rig · Your scoreboard program is built — this part keeps it safe before the Rally. You are going to save a copy into your Google Drive, the same way as last lesson: three steps, about a minute. In a real rally every car is checked in before the race — your RIG is your scoreboard program, and this is its check-in. When the file is in your Drive, press Check my Drive below, and the website will look to make sure it is really there. Then even if a cable is pulled o",
+   "says": "the Register Your Rig check-in card",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "5be86ae976c3",
+   "px": "1332x1554"
+  },
+  "rally": {
+   "name": "rally",
+   "kind": "app",
+   "chunkId": "rally",
+   "selector": ".chunk-host .rally-timer",
+   "textSnippet": "Referee — this screen belongs to the player, not to you. When she is ready, click the button below to start her 5 seconds.",
+   "contentAnchor": "Referee — this screen belongs to the player, not to you. When she is ready, click the button below to start her 5 seconds.",
+   "cardText": "GO 1 OF 2 · 5 · Referee — this screen belongs to the player, not to you. When she is ready, click the button below to start her 5 seconds. · Start the 5 seconds",
+   "says": "the Rally timer before it is started — whose screen it is, and the start button",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "09525cf680e2",
+   "px": "1292x564"
+  },
+  "selfeval": {
+   "name": "selfeval",
+   "kind": "app",
+   "chunkId": "selfeval",
+   "selector": ".chunk-host .se-card",
+   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
+   "contentAnchor": "I can test my code over several rounds to check the score is right.",
+   "cardText": "How did it go? · I can create a variable and change its value. · ✓ I can · ≈ Getting there · ✗ Not yet · I can test my code over several rounds to check the score is right. · ✓ I can · ≈ Getting there · ✗ Not yet · I can explain what my score variable is doing in my own words. · ✓ I can · ≈ Getting there · ✗ Not yet · I can say what a forever loop does differently from an event. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters le",
+   "says": "the compulsory How did it go? screen, untouched",
+   "contentVersion": "2026-08-15d",
+   "chunkHash": "a71df70c0a26",
+   "px": "1372x1580"
+  }
+ }
+}
