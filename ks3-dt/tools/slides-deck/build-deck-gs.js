@@ -183,7 +183,8 @@ function tie_(s) {
 function bullets_(slide, d, arr, top, size) {
   var th = themeOf_(d);
   var y = top;
-  var sz = size || 13;
+  var fit = fitSize_(arr, W - 66 - 44, (H - 24) - top, size || 13, 1.462, 12);
+  var sz = fit.size, LH = fit.lh;
   for (var i = 0; i < arr.length; i++) {
     /* a small accent dot instead of a bullet glyph: it reads as design rather
        than as a word-processor list */
@@ -191,11 +192,52 @@ function bullets_(slide, d, arr, top, size) {
     dot.getFill().setSolidFill(th.accent);
     dot.getBorder().setTransparent();
     var lines = lineCount_(arr[i], W - 66 - 44, sz);
-    var t = text_(slide, tie_(arr[i]), 66, y - 2, W - 66 - 44, Math.max(40, lines * 19 + 10),
+    var t = text_(slide, tie_(arr[i]), 66, y - 2, W - 66 - 44, Math.max(40, lines * LH + 10),
       { size: sz, color: '#FFFFFF', font: th.body, spacing: 108 });
-    y += Math.max(30, lines * 19 + 12);
+    y += Math.max(LH + 11, lines * LH + 12);
   }
   return y;
+}
+
+/* WHICH LESSON THIS IS, TAKEN FROM THE DECK'S OWN ID (read off the proofs,
+   16 Aug 2026). The objectives slide used to say the words "LESSON 1" no matter
+   whose deck it was, and on Lesson 1 that was true — which is exactly why it
+   survived his style gate and every machine check: the one deck a human had
+   looked at was the one the hardcoded answer happened to fit. A label that
+   names a slide's own lesson is derived, never typed. */
+function lessonKicker_(d) {
+  var m = String(d.lesson || '').match(/(\d+)\s*$/);
+  return m ? 'LESSON ' + parseInt(m[1], 10) : 'THIS LESSON';
+}
+
+/* WHERE THE CONTENT MAY START, given a heading that might wrap (read off the
+   proofs, 16 Aug 2026). Lesson 4's "Stuck? Help that is free - and help that
+   costs" wrapped to a second line and the word "costs" landed underneath the
+   first bullet, because the heading was drawn in a fixed box and the bullets
+   began at a fixed y. lineCount_ has existed since DFM 225(e); it was simply
+   never asked about the heading. */
+function headFloor_(heading, boxW, size, top, floor) {
+  var lines = lineCount_(heading, boxW, size);
+  return Math.max(floor, top + lines * (size * 1.25) + 18);
+}
+
+/* NOTHING RUNS OFF THE BOTTOM OF A SLIDE (read off the proofs, 16 Aug 2026).
+   Lesson 5's Studio Sprint lost its last line - "only when all four tests are
+   green" - over the bottom edge, and a bullet a class cannot read is worse than
+   a bullet a class has to squint at. The type steps down half a point at a time
+   until the block fits the room it actually has; a slide that already fits is
+   rendered at exactly the size it was before, so approved decks are untouched. */
+function fitSize_(arr, boxW, avail, base, lhFactor, gap) {
+  for (var s = base; s >= base - 3.5; s -= 0.5) {
+    if (s < 9) break;
+    var lh = s * lhFactor, tot = 0;
+    for (var i = 0; i < arr.length; i++) {
+      tot += Math.max(gap + lh, lineCount_(arr[i], boxW, s) * lh + gap);
+    }
+    if (tot <= avail) return { size: s, lh: lh };
+  }
+  var sm = Math.max(9, base - 3.5);
+  return { size: sm, lh: sm * lhFactor };
 }
 
 function shotUrl_(d, name) {
@@ -239,10 +281,10 @@ function slideTitle_(slide, d, s) {
 function slideObjectives_(slide, d, s) {
   var th = themeOf_(d);
   bgImage_(slide, d, s.bg || 'section');
-  kicker_(slide, d, 'LESSON 1');
+  kicker_(slide, d, lessonKicker_(d));
   text_(slide, s.heading, 44, 52, W - 88, 34,
     { size: 27, bold: true, color: '#FFFFFF', font: th.display });
-  bullets_(slide, d, s.bullets || [], 108, 13.5);
+  bullets_(slide, d, s.bullets || [], headFloor_(s.heading, W - 88, 27, 52, 108), 13.5);
 }
 
 function slideBullets_(slide, d, s, label) {
@@ -253,29 +295,30 @@ function slideBullets_(slide, d, s, label) {
     { size: 25, bold: true, color: '#FFFFFF', font: th.display });
   var hasShot = !!s.shot;
   var arr = s.bullets || [];
+  var top = headFloor_(s.heading, W - 88, 25, 52, 104);
   if (hasShot) {
     /* text left, her real screen right — the two-column shape */
-    var y = 104;
+    var y = top;
+    var fit = fitSize_(arr, 330, (H - 22) - top, s.size ? s.size - 2 : 11.5, 1.304, 12);
     for (var i = 0; i < arr.length; i++) {
       var dot = slide.insertShape(SlidesApp.ShapeType.ELLIPSE, 46, y + 6, 6, 6);
       dot.getFill().setSolidFill(th.accent);
       dot.getBorder().setTransparent();
-      var bs = s.size ? s.size - 2 : 11.5;
-      var bl = lineCount_(arr[i], 330, bs);
-      text_(slide, tie_(arr[i]), 62, y - 2, 330, Math.max(40, bl * 15 + 10),
-        { size: bs, color: '#FFFFFF', font: th.body, spacing: 106 });
-      y += Math.max(26, bl * 15 + 12);
+      var bl = lineCount_(arr[i], 330, fit.size);
+      text_(slide, tie_(arr[i]), 62, y - 2, 330, Math.max(40, bl * fit.lh + 10),
+        { size: fit.size, color: '#FFFFFF', font: th.body, spacing: 106 });
+      y += Math.max(fit.lh + 11, bl * fit.lh + 12);
     }
     try {
       var img = slide.insertImage(shotUrl_(d, s.shot));
       var ratio = img.getWidth() / img.getHeight();
-      var maxW = 250, maxH = H - 120 - 34;
+      var maxW = 250, maxH = H - (top + 16) - 34;
       var w = maxW, h = w / ratio;
       if (h > maxH) { h = maxH; w = h * ratio; }
-      img.setWidth(w).setHeight(h).setLeft(W - 44 - w).setTop(104);
+      img.setWidth(w).setHeight(h).setLeft(W - 44 - w).setTop(top);
     } catch (e) { }
   } else {
-    bullets_(slide, d, arr, 104, s.size ? s.size - 2 : 13);
+    bullets_(slide, d, arr, top, s.size ? s.size - 2 : 13);
   }
 }
 
@@ -318,15 +361,20 @@ function slideStop_(slide, d, s, label) {
   text_(slide, s.heading, s.beacon ? 100 : 44, 50, W - (s.beacon ? 100 : 44) - 44, 34,
     { size: 24, bold: true, color: '#FFFFFF', font: th.display });
   var arr = s.bullets || [];
-  var y = 104;
+  var top = headFloor_(s.heading, W - (s.beacon ? 100 : 44) - 44, 24, 50, 104);
+  var y = top;
+  /* a stop slide that carries her screens keeps room for them; one that does
+     not may use the whole page */
+  var room = (H - (s.shots && s.shots.length ? 120 : 22)) - top;
+  var fit = fitSize_(arr, W - 62 - 44, room, 12.5, 1.2, 11);
   for (var i = 0; i < arr.length; i++) {
     var dot = slide.insertShape(SlidesApp.ShapeType.ELLIPSE, 46, y + 6, 6, 6);
     dot.getFill().setSolidFill(th.accent);
     dot.getBorder().setTransparent();
-    var sl = lineCount_(arr[i], W - 62 - 44, 12.5);
-    text_(slide, tie_(arr[i]), 62, y - 2, W - 62 - 44, Math.max(36, sl * 15 + 10),
-      { size: 12.5, color: '#FFFFFF', font: th.body, spacing: 106 });
-    y += Math.max(26, sl * 15 + 11);
+    var sl = lineCount_(arr[i], W - 62 - 44, fit.size);
+    text_(slide, tie_(arr[i]), 62, y - 2, W - 62 - 44, Math.max(36, sl * fit.lh + 10),
+      { size: fit.size, color: '#FFFFFF', font: th.body, spacing: 106 });
+    y += Math.max(fit.lh + 11, sl * fit.lh + 11);
   }
   shots_(slide, d, s.shots, Math.max(y + 8, 214), H - Math.max(y + 8, 214) - 26);
 }
@@ -343,7 +391,16 @@ function slideCloser_(slide, d, s, label) {
      balanced between the heading and the sign-off line, whatever the words are
      (DFM 225e — layout arithmetic is never an estimate). */
   var arr = s.bullets || [];
-  var BOX = W - 220, SZ = 13, LH = 19, GAP = 12;
+  var BOX = W - 220, GAP = 12;
+  var BAND_TOP = 150, BAND_BOTTOM = H - 74;   /* 74 = the sign-off line's room */
+  /* AND THE BAND IS A CEILING, NOT A HOPE (read off the proofs, 16 Aug 2026).
+     Lesson 3's closer ran four paragraphs, one of them wrapping to three lines,
+     and the block simply grew past the band until "See you in a fortnight." was
+     printed on top of "waiting for you." Measuring every line was only half the
+     job (DFM 225e); the other half is doing something when the measurement does
+     not fit. */
+  var cf = fitSize_(arr, BOX, (BAND_BOTTOM - BAND_TOP), 13, 1.462, GAP);
+  var SZ = cf.size, LH = cf.lh;
   var heights = [], total = 0;
   for (var m = 0; m < arr.length; m++) {
     var h = lineCount_(arr[m], BOX, SZ) * LH;
@@ -351,7 +408,6 @@ function slideCloser_(slide, d, s, label) {
     total += h + GAP;
   }
   if (arr.length) total -= GAP;
-  var BAND_TOP = 150, BAND_BOTTOM = H - 74;   /* 74 = the sign-off line's room */
   var y = Math.max(BAND_TOP, BAND_TOP + ((BAND_BOTTOM - BAND_TOP) - total) / 2);
   for (var i = 0; i < arr.length; i++) {
     text_(slide, tie_(arr[i]), 110, y, BOX, heights[i] + 6,
