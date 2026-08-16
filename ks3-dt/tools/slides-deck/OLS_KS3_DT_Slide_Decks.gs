@@ -24,7 +24,7 @@
  *   exportLesson2Proofs  the same, per lesson; exportAllDeckProofs does the set.
  *   …3, …4, …5
  *
- * Built 2026-08-15 from contentVersion 2026-08-15c.
+ * Built 2026-08-16 from contentVersion 2026-08-15d.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -305,6 +305,873 @@ var DECKS = {
        "In the next lesson, you will make a real computer react — you will press its buttons and make its lights do what you say."
       ],
       "notes": "SAY: hold the room to the two rules the lesson just taught — sign out, tidy up. \"If you stay signed in, the next person at this machine IS you as far as the school is concerned.\"\n\nThen tell them what is coming: next lesson they make a real computer react to a button press."
+     }
+    ]
+   }
+  ]
+ },
+ "j1-02": {
+  "id": "j1-02.deck",
+  "lesson": "j1-02",
+  "deckName": "KS3 DT · J1 Lesson 2 — Make It Move (Teacher Deck)",
+  "theme": {
+   "id": "amber-circuit",
+   "name": "Amber Circuit",
+   "ground": "#161006",
+   "panel": "#241906",
+   "accent": "#FFC24B",
+   "accent2": "#FF5A36",
+   "text": "#FFFFFF",
+   "dim": "#E8D9B8",
+   "display": "Chakra Petch",
+   "body": "Inter"
+  },
+  "sections": [
+   {
+    "id": "opening",
+    "chunk": "hook",
+    "label": "The opening",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 2 · Make It Move",
+      "sub": "A real computer in your hands, and you make it react — J1 · Lesson 2 of 17",
+      "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link from Google Classroom. The lesson opens on the Do-Now — five quick questions from Lesson 1 that mark themselves. The micro:bits and cables are already out, flat on the desks.\n\nSAY: welcome them in. One rule before anything else: the micro:bit and its cable stay flat on the desk — nobody plugs anything in until the film shows how.\n\nWHEN TO MOVE: when the Do-Now hands over to today's briefing screen (it types itself out), stop the room — eyes front."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "In this lesson you will…",
+      "bullets": [
+       "Learn what an INPUT and an OUTPUT are — and spot them in machines all around you.",
+       "Build a real program on a real micro:bit — a computer small enough to hold — and make it react when you press it.",
+       "Test your program with your own hands — and when it does not do what you wanted, work out why yourself."
+      ],
+      "notes": "WHERE THE CLASS IS: eyes front, briefing screen waiting on their monitors.\n\nSAY: read the three lines out. Tell them the third one is the real skill — today they learn what programmers do when a thing does NOT work.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "What today is",
+      "bullets": [
+       "Today you get a micro:bit in your hands: a real computer the size of a biscuit, with two buttons and a grid of 25 tiny lights.",
+       "You and the person beside you share ONE micro:bit — but you BOTH build every program, each on your own computer.",
+       "By the end of the hour it will react to your press and your shake — because you told it how."
+      ],
+      "notes": "SAY: hold a micro:bit up while you talk — the thing itself is the hook. The sharing rule matters: both of them build on their own screens; the device is shared only for the real test.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Three words that run the hour",
+      "size": 15,
+      "shot": "inputs-trio",
+      "bullets": [
+       "INPUT — something happens: you press a button, or you take a step.",
+       "OUTPUT — something reacts: the doors open, the green man lights up, the count goes up.",
+       "EVENT — the rule connecting them: when THIS happens, do THAT.",
+       "Every machine that reacts to you works on that one idea — and these three photos are today's proof."
+      ],
+      "notes": "SAY: point at each photo as you name it — the lift button is pure input; the crossing is a press (input) becoming a green man (output); the tracker senses every step. Then say the event sentence slowly: when THIS happens, do THAT. The lesson repeats these three words on their screens — you are giving the answers first, on purpose.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "How the hour works",
+      "size": 15,
+      "bullets": [
+       "First you watch a short film — and you BUILD ALONG with it on your own screen, in a website called MakeCode.",
+       "Then comes the Signal Relay Ladder: four small challenges, called rungs, that you climb in order.",
+       "Nobody marks the ladder. The micro:bit itself is the judge — either it does what the card says, or it doesn't.",
+       "Stuck on a rung? The Debug Hint button nudges you towards the fix without giving it away — it costs 2 XP.",
+       "Two badges are waiting today: Signal Relay for the ladder, and Vault Keeper for saving your program safely into your Google Drive."
+      ],
+      "notes": "SAY: the judge line is the tone of the hour — honest testing, not guessing. The Debug Hint is allowed and priced, not cheating.\n\nWHEN TO MOVE: straight on to the film slide."
+     }
+    ]
+   },
+   {
+    "id": "film",
+    "chunk": "howto",
+    "label": "The film, build along",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The film — build along",
+      "size": 15,
+      "shot": "film",
+      "bullets": [
+       "Back to your screens: read the briefing on screen, then press Start the lesson.",
+       "Watch the film on your OWN computer and BUILD ALONG on your own screen — both of you, at the same time.",
+       "The film names the project make-it-move — type the name exactly. You use this one project all lesson.",
+       "When the film reaches the real micro:bit, pick ONE of your two computers for that part — one micro:bit between you.",
+       "When the film finishes, stop and look up."
+      ],
+      "notes": "[film-led — or demonstrate live if you are confident]\n\nWHERE THE CLASS IS: about to press Start the lesson; the film screen is next.\n\nSAY: read the five lines, then send them in. The film is silent and captioned; the chapter buttons under it let anyone re-watch a part — nobody needs to keep up.\n\nLIVE OPTION, only if you are confident: build the same program on the board in step with the film's chapters, pupils building along with you — they still type the project name make-it-move themselves, because the ladder's set-up card refers back to it. The exact path the film takes: makecode.microbit.org → New Project → name it make-it-move → Create → close the \"Welcome! Take a tour\" box → Input drawer → drag \"on button A pressed\" onto the workspace → Basic drawer → drag \"show icon\" INSIDE it → press A on the simulator: the heart lights → purple Download button → the .hex lands in Downloads → plug the micro:bit in by USB → drag the file onto the MICROBIT drive → the yellow light flashes while it copies → press the real button A.\n\nIF THE FILM WON'T LOAD: demonstrate live from that same path — the lesson's own fallback line tells pupils your demonstration covers everything.\n\nWHAT THEY WILL SEE: the film screen with four chapter buttons (the picture on this slide).\n\nWHEN TO MOVE: when the film ends and the ladder screen appears on most monitors, stop the whole room for the Human Circuit."
+     }
+    ]
+   },
+   {
+    "id": "humancircuit",
+    "chunk": "ladder",
+    "label": "STOP · The Human Circuit",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "STOP — The Human Circuit",
+      "size": 15,
+      "bullets": [
+       "Stand up — you and the person beside you are about to BE the machine.",
+       "One of you is the SENSOR — the part that NOTICES something happen. The other is the ACTUATOR — the part that REACTS.",
+       "The sensor mimes pressing a button, and the instant the actuator sees it, the actuator throws both arms up.",
+       "Then the sensor mimes a shake, and the actuator waves both hands. Then you swap jobs and run both signals again.",
+       "Finish by saying it together: the press is the INPUT, the reaction is the OUTPUT, the rule — when THIS happens, do THAT — is an EVENT."
+      ],
+      "notes": "WHERE THE CLASS IS: the film is done; the ladder's first rung — this mime — is on their screens.\n\nSAY: run it as a whole-room moment, from the front, with the slide up. It feels silly for ninety seconds and then the vocabulary sticks all year. Their screens carry the same script — after the mime they tick the confirm on the rung card.\n\nWHAT THEY WILL SEE: the rung 1 card with the same steps and a confirm line to tick.\n\nWHEN TO MOVE: when the room has said the sentence, sit them down and keep eyes front for the next two slides."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The ladder: rungs 2, 3 and 4",
+      "size": 15,
+      "shot": "rung2",
+      "bullets": [
+       "Every rung lives in the SAME project — make-it-move. You never start a new one.",
+       "Each rung card gives you a challenge and a real test: build it, try it on the simulator (the little micro:bit picture in the corner of MakeCode), then prove it on the real micro:bit.",
+       "Rung done? Press the gold button and the next rung appears. After rung 4, a stretch challenge appears for anyone who wants more.",
+       "Stuck? The Debug Hint nudges you towards the fix without giving it away, and it costs 2 XP. The film is one click away on every rung card."
+      ],
+      "notes": "SAY: point at the picture — a rung card: the challenge at the top, the real test underneath, the Debug Hint button below. The rule of the room while they build is SHOW ME: a rung is done when the micro:bit does it in front of your eyes.\n\nWHEN TO MOVE: straight on — one more slide before they build."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Flashing — getting your program onto the micro:bit",
+      "size": 15,
+      "shot": "flash-film",
+      "bullets": [
+       "Press Download in MakeCode — a file ending in .hex lands in the Downloads folder. That file IS your program.",
+       "Drag it onto the MICROBIT drive. Copying it across like this is called FLASHING.",
+       "The yellow light on the back flashes while it copies. When it stops flashing, test it with your hands.",
+       "If a box asks to replace the old file, say yes: each Download replaces the last one, and that is what you want."
+      ],
+      "notes": "WHERE THE CLASS IS: still eyes front, one slide from building.\n\nSAY: this is the one move that goes wrong most — the picture is the film's own frame of it. Downloading is not flashing: the file must be dragged across, and the yellow light is how you know it worked. Remind them: take turns at the micro:bit, swap every rung.\n\nWHAT THEY WILL SEE: rung 2's card, asking for a happy face on button B.\n\nWHEN TO MOVE: send them to the ladder. Circulate with one question — \"show me\". Nudge any pair done before minute 40 onto the stretch. When most pairs have rung 4 proven, stop the room for Bank Your Build."
+     }
+    ]
+   },
+   {
+    "id": "bank",
+    "chunk": "bank",
+    "label": "STOP · Bank Your Build",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "2",
+      "heading": "STOP — Bank Your Build",
+      "size": 15,
+      "shots": [
+       "bank"
+      ],
+      "bullets": [
+       "A build that lives on one computer is a build you can lose.",
+       "Yours goes into your Google Drive — the real Vault you met in Lesson 1.",
+       "Press Download, open drive.google.com, click into School, then DT Work, and drag your .hex file in.",
+       "The website then checks your Drive FOR REAL — the badge appears only when the file is really there.",
+       "Watch the board first, then bank yours."
+      ],
+      "notes": "WHERE THE CLASS IS: rungs proven, eyes front.\n\nDO: bank YOUR build on the projector, start to finish — Download in MakeCode, new tab, drive.google.com, into School → DT Work, drag the .hex in, then press the inspection button on the lesson screen. Thirty seconds, and it is the save-your-work habit for the rest of the year.\n\nSAY: \"The file in my Downloads folder IS my program. Watch where it lands — School, then DT Work. Yours goes to the same place in YOUR Drive.\"\n\nWHAT THEY WILL SEE: the three steps on their screen, a short film of the same moves if they want it, and the check button underneath.\n\nWHEN TO MOVE: when most pairs have the badge, send them on — the finish line runs to the end of the lesson without you."
+     }
+    ]
+   },
+   {
+    "id": "finish",
+    "chunk": "exit",
+    "label": "STOP · The finish line",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "3",
+      "heading": "STOP — The finish line",
+      "size": 15,
+      "shots": [
+       "selfeval"
+      ],
+      "bullets": [
+       "Two questions — and unlike everything else today, these ARE marked, so read each one twice before you answer.",
+       "Then Build the Program: put four real blocks into the order the sentence describes.",
+       "Then two last jobs so the micro:bits are ready for the next class — your screen shows both, with pictures.",
+       "Finish with How did it go? — three honest ratings and a private comment. Everyone finishes it before leaving."
+      ],
+      "notes": "WHERE THE CLASS IS: banked, eyes front for one minute.\n\nSAY: read the four lines. The marked questions are about today — both of them reward a pupil who tests carefully rather than guessing. The comment box comes to you and nobody else.\n\nWHAT THEY WILL SEE: the two questions, the block puzzle, the hand-back jobs, then the final screen (the picture).\n\nWHEN TO MOVE: send them in — the next slide stays up while they work."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Hand it back ready",
+      "size": 15,
+      "shot": "reset-button",
+      "bullets": [
+       "Clear your program off: the card gives you an empty program — flash it across exactly the way you have all lesson. Then press A and B: nothing happens, and that is right.",
+       "Switch it off: hold the small black button on the BACK for about 5 seconds, until the little red light fades. With the cable still plugged in it may then blink slowly — that is normal. Unplug the cable, and hand both back.",
+       "Nothing you made today is lost — your program is saved in MakeCode and banked in your Drive."
+      ],
+      "notes": "WHERE THE CLASS IS: working through the finish line at their own pace; this slide stays projected as the reference.\n\nSAY (as they reach it, not as a speech): the picture shows exactly where the reset button hides — on the BACK, between the USB socket and the battery socket.\n\nA calm check as devices come back: press A, press B — silence means cleared.\n\nWHEN TO MOVE: when the trays are filling and most pupils are on How did it go?, put the last slide up."
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "chunk": "selfeval",
+    "label": "Before you leave",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Micro:bits and cables back in the tray — coiled, not knotted.",
+       "Sign out properly — if you stay signed in, the next person at this machine IS you.",
+       "Banked your build? Then it is already waiting for you at home — drive.google.com.",
+       "Next lesson you make a micro:bit COUNT: you build a scoreboard, and the whole class competes on the scoreboards you built."
+      ],
+      "notes": "SAY: hold the room to the kit rule and the sign-out rule — both are the lesson's own teaching today. Then the hook for next time: Lesson 3 builds a scoreboard on this same little computer, and it ends in a whole-class reaction race.\n\n(The last line is Lesson 3's truth: its ladder builds a scoreboard program and its hour ends in the Reaction Rally, a whole-class team game.)"
+     }
+    ]
+   }
+  ]
+ },
+ "j1-03": {
+  "id": "j1-03.deck",
+  "lesson": "j1-03",
+  "deckName": "KS3 DT · J1 Lesson 3 — Scoreboard Engineer (Teacher Deck)",
+  "theme": {
+   "id": "arcade-glow",
+   "name": "Arcade Glow",
+   "ground": "#120720",
+   "panel": "#1E0C33",
+   "accent": "#FF4FA3",
+   "accent2": "#48FF9E",
+   "text": "#FFFFFF",
+   "dim": "#D9C8F2",
+   "display": "Orbitron",
+   "body": "Inter"
+  },
+  "sections": [
+   {
+    "id": "opening",
+    "chunk": "hook",
+    "label": "The opening",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 3 · Scoreboard Engineer",
+      "sub": "Build the invisible scorekeeper — J1 · Lesson 3 of 17",
+      "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link. The lesson opens on the Do-Now — five questions from Lessons 1 and 2 that mark themselves. Micro:bits and cables are out, flat on the desks, angled away from bright windows (LED digits wash out in direct daylight).\n\nSAY: welcome them in. The kit rule stands from last lesson: nothing is plugged in yet.\n\nWHEN TO MOVE: when the Do-Now hands over to the briefing screen, stop the room — eyes front."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "In this lesson you will…",
+      "size": 15,
+      "bullets": [
+       "Make a VARIABLE — a named box where the computer keeps something it needs to remember.",
+       "Use your variable to build a real, working score counter.",
+       "Test your scoring code over several rounds — because a scoreboard that is right once can still be wrong.",
+       "Use a FOREVER LOOP to keep your score on screen — and say how a loop is different from an event."
+      ],
+      "notes": "WHERE THE CLASS IS: eyes front, briefing waiting on their monitors.\n\nSAY: read the four lines. Land the third one hardest — today is as much about TESTING as building.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The invisible box behind every score",
+      "size": 15,
+      "shot": "scores-trio",
+      "bullets": [
+       "A VARIABLE is a named box in the computer's memory. The NAME never changes. The VALUE inside can change any time.",
+       "The arcade's HIGH SCORES table, a GAA scoreboard, the step count on a wrist — behind every one is a box like that, called score, or steps.",
+       "Today you make one with your own hands: a box called score, on your micro:bit."
+      ],
+      "notes": "SAY: point at each photo as you name it. Then say the box sentence twice, slowly — name stays, value changes. The film's opening animation shows exactly this box in 3D; you are giving them the idea first, on purpose.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Two shapes of code",
+      "shot": "variable-box",
+      "bullets": [
+       "Last lesson was all EVENTS — code that sits and WAITS: when THIS happens, do THAT.",
+       "Today you add the LOOP — code that never stops. The forever block starts by itself and goes round and round.",
+       "Your scoreboard uses BOTH at once: buttons change the number, the loop keeps showing it."
+      ],
+      "notes": "SAY: the picture is from the film — the named box the animation builds. Keep the split simple: buttons CHANGE, the loop SHOWS. Pupils meet the same sentence again on the last screen of the hour.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "How the hour works",
+      "size": 15,
+      "bullets": [
+       "The Scoreboard Ladder has three rungs, each one an upgrade — and each rung starts with its OWN short film.",
+       "Watch the rung's film, build that step yourself, then PROVE it on the micro:bit. The micro:bit is the judge.",
+       "The question of the hour: is your scoreboard counting, or is it lying? How would you KNOW? Your tests answer that.",
+       "Then you register your scoreboard, and the hour ends in the REACTION RALLY — a whole-class speed test, scored on the scoreboards you built, in secret teams.",
+       "There are three badges today: Scorekeeper, Rig Registered and Rally Contender. Stuck? The Debug Hint costs 2 XP."
+      ],
+      "notes": "SAY: plant the counting-or-lying question with weight — it is the hour's spine, and Rung 3's multi-round test answers it. Tease the Rally without the rules (they come at the Rally stop): teams are already mixed and sealed, and nobody learns who is with who until the very end.\n\nWHEN TO MOVE: straight on to the ladder slide."
+     }
+    ]
+   },
+   {
+    "id": "ladder",
+    "chunk": "ladder",
+    "label": "The ladder, at their own pace",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The Scoreboard Ladder — build it",
+      "size": 15,
+      "shot": "rung1",
+      "bullets": [
+       "Back to your screens: read the briefing, press Start the lesson, and the ladder begins.",
+       "Set up first: make a NEW project called scoreboard. Do NOT open last lesson's project — today starts from empty.",
+       "On each rung, press play on its short film, build exactly what it showed, then run the proof steps on the card.",
+       "Rung 2 makes you BREAK your program on purpose — the dark display is part of the lesson, not a mistake.",
+       "Finish all three rungs and the stretch appears: teach your micro:bit to remember the best score ever."
+      ],
+      "notes": "[film-led] — the rung films are the teaching and are never replaced by a live demonstration; each card serves ONLY its own section, so nobody can stray into a later step.\n\nWHERE THE CLASS IS: about to press Start the lesson.\n\nSAY: read the five lines, then send them in. While they climb, circulate on ONE question — \"show me the multi-round test\". A pupil who says \"mine is broken, it only says 1\" has just met the difference between set and change: send her to Rung 2's film, not to the answer. A DARK display means the show block came out of the forever loop — ask \"where does the showing happen?\".\n\nWHAT THEY WILL SEE: rung cards like the picture — the rung's own film on top, the steps, the proof, the Debug Hint.\n\nWHEN TO MOVE: nothing to deliver until the Rally — the next screen (Register Your Rig) runs itself. When most pairs have registered, stop the room."
+     }
+    ]
+   },
+   {
+    "id": "rig",
+    "chunk": "rig",
+    "label": "Register Your Rig",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Register Your Rig — before the Rally",
+      "shot": "rig",
+      "bullets": [
+       "Your scoreboard is built — now it gets checked in, like a rally car before the race.",
+       "It is the same routine as last lesson: press Download, open drive.google.com, click into School, then DT Work, and drag scoreboard.hex in.",
+       "Press Check my Drive — the website really looks. When it is registered, you are ready to compete."
+      ],
+      "notes": "WHERE THE CLASS IS: this slide is delivered in the SAME front moment as the ladder slide — it is what comes after the climbing, so they hear it once now and meet it again on screen.\n\nSAY: one sentence is enough — \"when the ladder is climbed, register your rig; it is last lesson's Drive routine with a racing name.\"\n\nWHEN TO MOVE: send them to the ladder. The room runs itself until the Rally."
+     }
+    ]
+   },
+   {
+    "id": "rally",
+    "chunk": "rally",
+    "label": "STOP · The Reaction Rally",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "STOP — The Reaction Rally",
+      "size": 15,
+      "shots": [
+       "rally"
+      ],
+      "bullets": [
+       "The speed test your scoreboard was built for: press button A as fast as you can, for five seconds.",
+       "You play in your pair, but every pupil plays for HERSELF: two goes each, your scores under your own name.",
+       "You are secretly on a team: the website has mixed the class into four hidden teams, and nobody learns who is with who until the reveal.",
+       "One of you plays while the other REFEREES. Then you swap. The referee keeps it fair."
+      ],
+      "notes": "WHERE THE CLASS IS: rigs registered, eyes front. THE PROJECTOR IS STILL ON THIS DECK — the switch to the live lobby comes after the next slide.\n\nSAY: read the four lines with relish — this is the payoff of the hour. The fairness line matters: every score goes in under the player's own name, and the referee's eyes are the anti-cheat.\n\nWHEN TO MOVE: straight on to the rules slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The rules of the Rally",
+      "size": 15,
+      "bullets": [
+       "Before every go: the player presses B for a fresh 0 — the referee checks the display really shows 0.",
+       "The REFEREE presses Start the 5 seconds on the PLAYER'S screen. 3, 2, 1, GO.",
+       "When the timer stops — hands off. Presses after the stop do not count, and the referee is watching.",
+       "Enter EXACTLY the number the micro:bit shows (a two-digit score scrolls past over and over — watch it come round).",
+       "Two goes each, swap jobs, then everyone presses Send in my scores on her OWN screen. Then eyes on the big screen."
+      ],
+      "notes": "WHERE THE CLASS IS: eyes front, about to play.\n\nSAY: walk the five rules once, slowly. Then send them in.\n\nDO, in this order: (1) switch the projector to the teacher tools — Live tab, Rally view: the sealed-teams lobby with its live scores-received counter goes on the big screen. If teams were never assigned, press Auto-assign hidden teams NOW, before any countdown — never after scores land. (2) Walk the room while they play; the referees do the policing, so you are watching for pairs who have not started, not for cheats. (3) When everyone is in — or a straggler has had a fair ninety seconds — stop the room; a pupil who never sends can call her total out to you. Never hold the payoff for a straggler. (4) Say it aloud BEFORE you press it: \"Somebody in this room just carried their team to victory, and nobody knows who is with who.\" THEN press REVEAL THE TEAMS — the bars race on the projector and every pupil's screen flips to her team at the same moment.\n\nWHAT THEY WILL SEE: the Rally console (the picture on the stop slide): the timer, two goes, the referee's tick, Send in my scores — and the send button says on it what wakes it.\n\nWHEN TO MOVE: after the reveal, bring the deck back up — the finish line."
+     }
+    ]
+   },
+   {
+    "id": "finish",
+    "chunk": "exit",
+    "label": "STOP · The finish line",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "2",
+      "heading": "STOP — The finish line",
+      "shots": [
+       "selfeval"
+      ],
+      "bullets": [
+       "Three questions — and these ARE marked. Think like a scoreboard engineer.",
+       "Then Build the Scoreboard: put four real blocks into TWO separate stacks — the loop's job and the button's job.",
+       "Then How did it go? — four honest ratings and a private comment. Everyone finishes it before leaving."
+      ],
+      "notes": "WHERE THE CLASS IS: buzzing from the reveal. Settle them with the marked-questions line.\n\nSAY: read the three bullets. The two-stack puzzle is the whole lesson in one screen — the loop shows, the button changes.\n\nWHAT THEY WILL SEE: the three questions, the two labelled boxes, then the final screen (the picture).\n\nWHEN TO MOVE: as the room finishes, the last slide goes up."
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "chunk": "selfeval",
+    "label": "Before you leave",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Switch your micro:bit off the way Lesson 2 taught you: hold the black button on the back for about 5 seconds, until the red light fades. With the cable still plugged in it may then blink slowly — that is normal. Then hand the micro:bit and the cable back.",
+       "Sign out properly — if you stay signed in, the next person at this machine IS you.",
+       "Next lesson you leave the micro:bit behind and become a bug detective: a games company has shipped a broken game, and four player complaints are waiting for you."
+      ],
+      "notes": "SAY: both lines are rules — kit back, signed out — so say them as rules and keep this short. Then the tease: Lesson 4 is a Scratch detective story — a games company called OLS GAMES has shipped a broken game called Shark Attack, and they will read real code to find four real bugs.\n\n(The last line is Lesson 4's truth, verified against j1-04: four tickets on a case board, casework on a broken Scratch game.)"
+     }
+    ]
+   }
+  ]
+ },
+ "j1-04": {
+  "id": "j1-04.deck",
+  "lesson": "j1-04",
+  "deckName": "KS3 DT · J1 Lesson 4 — The Broken Game (Teacher Deck)",
+  "theme": {
+   "id": "case-file",
+   "name": "The Case File",
+   "ground": "#101418",
+   "panel": "#1A2028",
+   "accent": "#F5DFA8",
+   "accent2": "#FF4D4D",
+   "text": "#FFFFFF",
+   "dim": "#C7CFD9",
+   "display": "Special Elite",
+   "body": "Inter"
+  },
+  "sections": [
+   {
+    "id": "opening",
+    "chunk": "hook",
+    "label": "The opening",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 4 · The Broken Game",
+      "sub": "One broken game, four faults to find, and you are the detectives — J1 · Lesson 4 of 17",
+      "notes": "WHERE THE CLASS IS: coming in, logging in. Two tabs today: the class link in one, and scratch.mit.edu in the other — both left alone until told. The Do-Now marks itself as they settle. No micro:bits today: the kit is a broken game.\n\nSAY: welcome them in, and set the two-tab rule now — it saves twenty \"where's my game?\" moments later.\n\nWHEN TO MOVE: when the Do-Now hands over to the briefing screen, stop the room — eyes front."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "In this lesson you will…",
+      "bullets": [
+       "READ code somebody else wrote — and work out what it is SUPPOSED to do.",
+       "Find a bug — a mistake in a program — by testing, predicting and checking, never by guessing.",
+       "Explain, in your own words, what was wrong and how you fixed it."
+      ],
+      "notes": "WHERE THE CLASS IS: eyes front, the briefing waiting on their monitors.\n\nSAY: read the three lines. Tell them the first is the rare one — most people can only read code they wrote themselves, and today they go further than that.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The first bug was an actual moth",
+      "size": 15,
+      "shot": "moth",
+      "bullets": [
+       "In 1947, one of the very first computers in the world stopped working, and the engineers searched the machine for the fault…",
+       "…and found a real moth stuck inside it! They taped the moth into their logbook and wrote: \"First actual case of bug being found.\"",
+       "Ever since, a BUG has meant a mistake in a program. Every game you have ever played had hundreds of them while it was being made."
+      ],
+      "notes": "WHERE THE CLASS IS: eyes front.\n\nSAY: tell the story rather than reading it — it is true, and the photograph on the slide is the actual logbook page. Pupils meet the same story again on their screens; you are the storyteller, the screen is the record.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "You are the new QA team",
+      "size": 15,
+      "bullets": [
+       "The people who find bugs before the players do are called QA — short for Quality Assurance. It is a real job.",
+       "Last night a games company called OLS GAMES released Shark Attack — and this morning the reviews are terrible.",
+       "Four bugs got past the old testing team. Each player complaint is called a TICKET — and all four are waiting for you.",
+       "Fix all four, and the players get their game back."
+      ],
+      "notes": "SAY: give it drama — the old testers missed four bugs, the reviews are in, and this class is the rescue team. Then send them back to their screens: read the briefing, then press Open the Case Board — and STOP there, eyes front, before touching any pin.\n\nWHAT THEY WILL SEE: the briefing with the moth photograph, then the Case Board.\n\nWHEN TO MOVE: when most screens show the Case Board, straight into the next section."
+     }
+    ]
+   },
+   {
+    "id": "board",
+    "chunk": "board",
+    "label": "STOP · The Case Board",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "STOP — The Case Board",
+      "size": 15,
+      "shots": [
+       "board"
+      ],
+      "bullets": [
+       "This board is your home screen for the whole hour: the film, Evidence Intake, four cases, and the release desk.",
+       "Every case closes the same way, and the order matters. SEE the bug happen — play the game and watch it go wrong.",
+       "READ the code that is supposed to be doing that job.",
+       "FIX one thing, and only one thing.",
+       "LOG it in one sentence with two halves: what was wrong, and what you changed — just like the engineers wrote in 1947.",
+       "RE-PLAY, and watch the bug NOT happen. The website cannot see inside Scratch, so YOU are the tester: only tick what you truly watched happen."
+      ],
+      "notes": "WHERE THE CLASS IS: Case Board on every screen, eyes front. THE NEXT FOUR SLIDES ARE ONE FRONT BLOCK — deliver S5 to S8, then send them to work.\n\nSAY: read the rhythm slowly — it is the lesson. The honesty line lands best said plainly: nobody is watching inside Scratch, which is exactly why a tester's word has to be worth something.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Stuck? Help that is free — and help that costs",
+      "size": 15,
+      "bullets": [
+       "Help step 1 — re-read the ticket. It is free, and it cracks more cases than anything else.",
+       "Help step 2 — ask another agency: a pair who have already CLOSED that case. One question, detective to detective, and it is free.",
+       "Help step 3 — HQ, the company's head office, gives you a clue naming WHERE the bug lives. Your stamp then turns SILVER instead of GOLD.",
+       "A silver case still counts. Solve the next one without the clue for gold."
+      ],
+      "notes": "SAY: the price list matters — pupils protect gold stamps fiercely once they know silver exists. Your line for the hour when asked \"is this right?\": \"show me the re-play.\"\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Evidence Intake — get the broken game open",
+      "size": 15,
+      "shot": "intake",
+      "bullets": [
+       "Click the gold button — shark-attack-broken-edition.sb3 drops into your Downloads.",
+       "Open the Scratch editor in your second tab — scratch.mit.edu. No login needed, ever.",
+       "In Scratch, open the File menu and choose 'Load from your computer'. Pick the .sb3 from your Downloads, then press OK to replace.",
+       "Keep BOTH tabs open all hour: case board here, game there."
+      ],
+      "notes": "SAY: walk the four steps on the slide, then let pairs do it. The card on their screens repeats every step, and its last step tours the crime scene — sprites, scripts, and the word CLONE.\n\nWHAT THEY WILL SEE: the Evidence Intake card (the picture), then a confirm line once the game is open.\n\nWHEN TO MOVE: when most pairs have the game open in Scratch — the shark, the fish, the score stuck on 0 — go straight to the training case."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Case 01 — we crack this one together",
+      "size": 15,
+      "shot": "case1",
+      "bullets": [
+       "The training case: FinnTastic_11 says the shark will not swim RIGHT. Left, up and down all work — right does nothing.",
+       "Watch the board while your teacher closes it in front of you — the whole rhythm, log included.",
+       "Then it is your turn: the same case, on your own screen, walks you through the same fix.",
+       "After Case 01 closes, the other three cases open — take them in ANY order."
+      ],
+      "notes": "WHERE THE CLASS IS: game open in Scratch, eyes front for the live crack.\n\nDO, on the board or via Veyon, click by click: run the game, press RIGHT, watch nothing happen — the bug seen. Open the Shark's scripts and put the five stacks side by side (the minus button, bottom-right of the code area, shrinks them to fit). Compare: every WORKING arrow script starts with a hat block; the right-arrow stack has none. Say the sentence: \"a stack with no hat block never runs at all.\" Fix it the way their card teaches: Events (yellow) → find 'when space key pressed' → drag it onto the hatless stack until the white shadow line snaps it on → click the word 'space' → choose 'right arrow'. Re-play: a FULL lap, all four arrows. Then TYPE THE LOG on the projector, out loud: \"The right-arrow script had no hat block, so it never ran. I added when right-arrow pressed.\" Both halves — what was wrong, what I changed.\n\nSAY, as you finish: \"That is one case, closed. Three tickets left — and I am not solving those.\"\n\nWHEN TO MOVE: straight on to the last slide of this block."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Cases 2, 3, 4 — then the release desk",
+      "size": 15,
+      "shot": "release",
+      "bullets": [
+       "Work as a two-person detective agency: the PLAYER runs the game and reads the ticket aloud; the ENGINEER moves the blocks. SWAP JOBS at every new case.",
+       "The film pinned to your Case Board — Reading Someone Else's Code — is your handbook. Chapter 3, Test like a detective, helps most while a case is open.",
+       "When all four cases are closed, the release desk opens. Play the WHOLE game for one full minute and watch all four fixes hold at once.",
+       "Then ship it: the fixed game goes into your Drive, and the players get their game back."
+      ],
+      "notes": "SAY: read the four lines, name the swap rule twice, then send them to work.\n\nWHILE THEY WORK: circulate on one question — \"show me the re-play.\" Deflect \"is this right?\" to the help ladder. Call the swap by name at each new case: the pair that never swaps has one pupil learning and one watching. One word to have ready: a CLONE is a temporary copy Scratch makes while the game runs — it is why two cases live in two different Fish scripts. Treat a bug that resurfaces at the release desk's full-minute run as the best teaching moment of the hour, not a failure.\n\nWHAT THEY WILL SEE: case files like Case 01's, each with its ticket, symptom, clue ladder and log box; then the release desk (the picture) with its four watch items and the fish-count box that proves they really played.\n\nWHEN TO MOVE: no stop until the finish line. When most pairs have shipped — or the hour demands it — stop the room."
+     }
+    ]
+   },
+   {
+    "id": "finish",
+    "chunk": "exit",
+    "label": "STOP · The finish line",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "2",
+      "heading": "STOP — The finish line",
+      "shots": [
+       "selfeval"
+      ],
+      "bullets": [
+       "Two questions — and these ARE marked. Think like a detective, not a guesser.",
+       "Then Rebuild the Opening: put five real blocks into the order the sentence describes. Two of the blocks are new to you, and each one says on it what it does.",
+       "Then How did it go? — three honest ratings and a private comment. Everyone finishes it before leaving."
+      ],
+      "notes": "WHERE THE CLASS IS: shipped (or parked), eyes front for one minute.\n\nSAY: read the three lines. The marked questions are the hour's two instincts — no hat, no run; and one lucky re-play proves nothing.\n\nWHAT THEY WILL SEE: the two questions, the five-block puzzle, then the final screen (the picture).\n\nWHEN TO MOVE: send them in; the last slide goes up as they finish."
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "chunk": "selfeval",
+    "label": "Before you leave",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Sign out properly — if you stay signed in, the next person at this machine IS you.",
+       "Chairs in, area tidy — no kit to hand back today; the game shipped to your Drive.",
+       "The Jellyfish Job stays open all week — put real danger into the shark game, then show your teacher and the job is done.",
+       "Next lesson OLS GAMES hires you to BUILD: your own game — and the if-touching block from the Jellyfish Job is its superpower."
+      ],
+      "notes": "SAY: the Jellyfish line is an invitation, said like one. Then the tease: next lesson they stop fixing other people's games and build their own — and the block the stretch previewed is the heart of it.\n\n(The last line is Lesson 5's truth, verified against j1-05: pupils choose a contract and build their own game around the if/else block.)"
+     }
+    ]
+   }
+  ]
+ },
+ "j1-05": {
+  "id": "j1-05.deck",
+  "lesson": "j1-05",
+  "deckName": "KS3 DT · J1 Lesson 5 — Game Studio (Teacher Deck)",
+  "theme": {
+   "id": "premiere-night",
+   "name": "Premiere Night",
+   "ground": "#1C0910",
+   "panel": "#2A1018",
+   "accent": "#FF6E8C",
+   "accent2": "#FFE9B8",
+   "text": "#FFFFFF",
+   "dim": "#E8C9D2",
+   "display": "Bebas Neue",
+   "body": "Inter"
+  },
+  "sections": [
+   {
+    "id": "opening",
+    "chunk": "hook",
+    "label": "The opening",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 5 · Game Studio",
+      "sub": "You build your own game — and you test it like a real studio does — J1 · Lesson 5 of 17",
+      "notes": "WHERE THE CLASS IS: coming in, logging in. Two tabs again: the class link and scratch.mit.edu, both left alone until told. The Do-Now marks itself as they settle.\n\nSAY: welcome them in with the headline — last lesson they fixed somebody else's game; today they ship their own.\n\nWHEN TO MOVE: when the Do-Now hands over to the briefing screen, stop the room — eyes front."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "In this lesson you will…",
+      "bullets": [
+       "Use IF/ELSE so your game reacts differently to different situations.",
+       "Make a game YOURS — your look, your rules — while still doing everything the job asks for.",
+       "Test your own game against a real checklist before anyone else plays it."
+      ],
+      "notes": "WHERE THE CLASS IS: eyes front, briefing waiting on their monitors.\n\nSAY: read the three lines. The third is the studio secret — testing your own work harder than your players will.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The block of the day: if/else",
+      "size": 15,
+      "shot": "ifelse-film",
+      "bullets": [
+       "Today you give your game a DECISION to make.",
+       "It asks ONE question — like a snack machine checking whether it has been given enough money.",
+       "Then it runs exactly ONE of two sets of blocks: one if the answer is yes, a different one if the answer is no.",
+       "Computing calls this SELECTION — and it is the difference between a slideshow and a game."
+      ],
+      "notes": "SAY: say the question-and-two-outcomes sentence slowly, twice — it is the whole concept. The picture is the film's own frame of the real block: the IF part is the top gap, the ELSE part is the gap underneath. The film will build it in front of them in a few minutes.\n\nThe example is deliberately a snack machine and not anybody's game: the film teaches on a demo nobody is building, so no contract is handed its own answer.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Your studio opens today",
+      "size": 15,
+      "bullets": [
+       "OLS GAMES is hiring new studios — and one of them is yours.",
+       "Three CONTRACTS are on the desk: a catching game, a maze escape, a quiz show. You sign exactly ONE.",
+       "Every contract asks for the same things: your game must CHOOSE, COUNT and END — and it must WORK. Everything else is yours.",
+       "And tonight is PRESS NIGHT: the class plays the game you ship, and your studio gets its first signed reviews."
+      ],
+      "notes": "SAY: sell the hour — designer AND tester, both jobs hers. Land the fairness line: same brief, same checks, same XP, whichever contract she signs. Then the forecast: sign, watch the short masterclass, build for about twenty-five minutes, then the doors open.\n\nWHEN TO MOVE: straight on — three more slides in this front block, then they run on their own for half the hour."
+     }
+    ]
+   },
+   {
+    "id": "sign",
+    "chunk": "sign",
+    "label": "The contracts",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Sign your contract",
+      "size": 15,
+      "shot": "contracts",
+      "bullets": [
+       "Read all THREE contracts before you sign — you are choosing the game you ship tonight.",
+       "There is no easy option: every contract has the same jobs to do, the same checks and the same XP. Pick the one you WANT to build.",
+       "Sign with a STUDIO NAME you will be proud to see up in lights tonight.",
+       "Signed the wrong one? You can tear it up and re-sign, right up until your first QA test is recorded. Re-signing means a fresh kit, so anything you built in Scratch stays with the old contract."
+      ],
+      "notes": "SAY: read the four lines and keep this moment brisk — the contracts screen repeats every word, and the building time is the treasure. Names: one veto rule, said kindly — a studio name the whole class will see must be one she is proud of.\n\nWHAT THEY WILL SEE: the three contracts (the picture), each with what the kit ships and what her studio adds.\n\nWHEN TO MOVE: straight on."
+     }
+    ]
+   },
+   {
+    "id": "masterclass",
+    "chunk": "masterclass",
+    "label": "The masterclass",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The masterclass — part one: the idea",
+      "size": 15,
+      "shot": "film",
+      "bullets": [
+       "After you sign, a short film teaches the if/else block itself — watch it whichever contract you picked.",
+       "It is taught on ITS OWN demo, not on anybody's game. Nobody's answer is given away.",
+       "Your BLUEPRINT on the Studio Desk then shows exactly where the block goes in YOUR game.",
+       "Part two — the worked example and the tests — waits on your desk for when you are building."
+      ],
+      "notes": "[film-led — or demonstrate live if you are confident]\n\nWHERE THE CLASS IS: still eyes front; they sign and then meet this film at their own pace.\n\nSAY: read the four lines. The neutrality matters and is worth saying: the film builds a snack-machine demo that nobody is shipping, so watching it helps every contract equally.\n\nLIVE OPTION, only if you are confident, AFTER the film has played (or if it will not load): demonstrate the BLOCK itself on a BLANK Scratch project — never on any contract's kit: scratch.mit.edu → Control (gold) → drag out if/else → point at the two gaps: \"the IF part is the top gap, the ELSE part is the gap underneath\" → Sensing (light blue) → drag \"touching …?\" into the pointed question slot → say the sentence: \"one question, and exactly one of the two gaps runs.\" Do NOT build any contract's answer — the lesson's own rule is that no demo does a pupil's build for her.\n\nWHAT THEY WILL SEE: the film with its two chapters (the picture).\n\nWHEN TO MOVE: straight on to the sprint slide — the last one before they work."
+     }
+    ]
+   },
+   {
+    "id": "sprint",
+    "chunk": "build",
+    "label": "The Studio Sprint",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The Studio Sprint",
+      "size": 15,
+      "shot": "desk",
+      "bullets": [
+       "Your desk works top to bottom, in three zones.",
+       "THE KIT — get your game open in Scratch, and find the yellow STUDIO NOTE.",
+       "THE BLUEPRINT — the exact blocks, in order.",
+       "THE QA DESK — four tests that prove your game WORKS.",
+       "You build your OWN game. The person beside you is your TESTER — when your teacher calls the swap, you run each other's four tests.",
+       "Change how it looks as much as you like, but a game that LOOKS finished is not the same as a game that WORKS. READY FOR GALLERY lights up only when all four tests are green."
+      ],
+      "notes": "WHERE THE CLASS IS: end of the front block; the room is about to run itself for half an hour — sign → film → build, each at her own pace.\n\nSAY: read the lines, then send them in. The sprint is about twenty-five minutes; keep the clock yourself rather than putting it on the board, so you can stretch or shorten it as the room needs.\n\nWHILE THEY BUILD, circulate on ONE question: \"which QA check are you on?\" — the dim READY button does your nagging for you. Point stuck pupils at part two of the film on their own desk (the worked example) rather than re-teaching from the front. AT THE MIDPOINT, call the swap out loud: \"Testers — run the four tests on your partner's machine.\" A cross on a check is the desk working: it hands her the exact fix, and fixing it earns a FOUND BY QA badge.\n\nOut of time and not green? The beta door exists — after two attempted checks the desk offers \"Open in beta — ask your teacher first\". Say yes: an IN BETA listing gets reviewed for what is there, and nobody sits out Press Night.\n\nWHAT THEY WILL SEE: the desk (the picture) — kit, blueprint, four locked checks that wake when the kit tick is done.\n\nWHEN TO MOVE: when most studios show DOORS OPEN — or the clock says so — stop the room for Press Night."
+     }
+    ]
+   },
+   {
+    "id": "press",
+    "chunk": "press",
+    "label": "STOP · Press Night",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "STOP — Press Night",
+      "size": 15,
+      "shots": [
+       "press"
+      ],
+      "bullets": [
+       "The doors are open across the studio floor.",
+       "Half the room EXHIBITS — your game running full screen, you welcoming the players at your desk.",
+       "The other half TOURS — you play two or three games at other people's desks, and you remember the studio names.",
+       "Then we swap. Everyone gives, and gets, real signed reviews."
+      ],
+      "notes": "WHERE THE CLASS IS: doors open (some IN BETA — that counts), eyes front.\n\nSAY: read the four lines with premiere energy. Name the halves NOW (window side exhibits first, door side tours — whatever split fits the room) so the swap is one word later.\n\nWHEN TO MOVE: straight on to the code slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The Reviewer's Code",
+      "size": 15,
+      "bullets": [
+       "You have TWO PRESS PASSES — each one is a signed review of another studio's game.",
+       "KIND — you review the game, never the maker. Reviews build studios up.",
+       "SPECIFIC — name the exact moment. \"The wasabi near the end got me twice\" beats \"it's good\" every time.",
+       "HELPFUL — your \"I wonder…\" should hand that studio a real idea for version 2.",
+       "Every review is signed with your name — write ones you would be proud to sign."
+      ],
+      "notes": "WHERE THE CLASS IS: eyes front, about to play each other's games.\n\nSAY: read the code, then the two stems — every review is \"I like…\" then \"I wonder…\". Give the good example aloud: \"I like how the lives counter makes every drop feel risky — I wonder what a golden apple worth 3 points would add.\" That is the bar.\n\nRUN IT ON A STOPWATCH: about a minute to set up, four minutes round one, call the swap, four minutes round two, then a final window for finishing reviews and the V2 note. Scan the Press Night lens (Live tab → Press Night) for fifteen seconds at each swap — every review lands there signed, Remove pulls one off a pupil's screen in seconds, quiet word second. In round two, steer strong reviewers to the studios the marquee floats to the top — it lists the least-reviewed first by itself.\n\nWHAT THEY WILL SEE: the marquee of every studio, their own reviews landing live, and the V2 note that unlocks once both their reviews are in.\n\nWHEN TO MOVE: when the final window closes, stop the room — the ship slide."
+     }
+    ]
+   },
+   {
+    "id": "ship",
+    "chunk": "ship",
+    "label": "STOP · Ship it, then the finish line",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "2",
+      "heading": "STOP — Ship your game, then the finish line",
+      "size": 15,
+      "shots": [
+       "selfeval"
+      ],
+      "bullets": [
+       "A game that lives on one classroom machine is a game you can lose.",
+       "Ship it: in Scratch, open the File menu and choose 'Save to your computer'. Then open drive.google.com, click into School, then DT Work, and drag the .sb3 in.",
+       "Press Check my Drive — the website really looks. Your game then follows your login home.",
+       "Then there are two marked questions, one last block puzzle, and How did it go?",
+       "Everyone finishes How did it go? before leaving."
+      ],
+      "notes": "WHERE THE CLASS IS: buzzing from Press Night, eyes front for one minute.\n\nDO: ship YOUR OWN practice game on the projector — File → Save to your computer, drag it into School → DT Work, press the check. Thirty seconds, and it is the reason nobody's first authored game is lost at the bell.\n\nSAY: \"That .sb3 file IS your game. Tonight it follows your login home — drive.google.com.\"\n\nWHAT THEY WILL SEE: the three ship steps, the two questions, the puzzle, then the final screen (the picture).\n\nWHEN TO MOVE: send them in; the last slide goes up as they finish."
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "chunk": "selfeval",
+    "label": "Before you leave",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Sign out properly — if you stay signed in, the next person at this machine IS you.",
+       "Chairs in, area tidy.",
+       "Tonight you shipped a game YOU made, and it is in your Drive right now — open drive.google.com at home and show somebody.",
+       "Keep your reviews in mind: your V2 note is a real plan, and studios grow by building version 2."
+      ],
+      "notes": "SAY: end on the achievement — five lessons in, she has logged in like a professional, built on real hardware, kept score, fixed a shipped game, and tonight shipped one of her own. The Drive line is the take-home: the game follows her login, tonight.\n\n(No next-lesson promise is made: Lessons 6 onward are not built yet, and this deck claims nothing that does not exist — DFM 228b.)"
      }
     ]
    }
