@@ -562,7 +562,14 @@
          and no other engine passes them, so every other lesson's intro card
          renders byte-identically (locked in qa-l4-visual). */
       (opts.steps && opts.steps.length
-        ? '<ol class="case-intro-steps">' + opts.steps.map(function (s) { return '<li>' + fmtBold(s) + '</li>'; }).join('') + '</ol>'
+        /* stepsClass is OPT-IN and defaults to the class Lesson 4 already uses,
+           so the locked case board renders byte-identically (DFM 176). The J2
+           inspection asks for its own, because on a centred card the shared one
+           strands every number away from its own sentence — rule 171 says a
+           numbered sequence renders one per line, and a number that has floated
+           off the line it belongs to has not. */
+        ? '<ol class="' + (opts.stepsClass || 'case-intro-steps') + '">' +
+          opts.steps.map(function (s) { return '<li>' + fmtBold(s) + '</li>'; }).join('') + '</ol>'
         : '') +
       (opts.after ? '<p class="case-intro-after">' + fmtBold(opts.after) + '</p>' : '') +
       (opts.extra || '') +
@@ -4559,5 +4566,168 @@
       }
     }
   };
+
+
+  /* ================= inspect (J2 Lesson 1's Workshop Safety Inspection) =====
+     HER JOB: look at a drawn scene of a DT room, flag the places she thinks
+     break a room rule, then FILE THE REPORT and find out.
+
+     THE THREE LAWS THIS ENGINE IS BUILT ON, each of them his:
+       PLACE ALL, THEN CHECK (his genuine-consequence law). Nothing is judged
+         until she presses File my inspection report. She can flag and unflag
+         freely until then, so the screen never force-corrects her and never
+         telegraphs an answer by reacting to a click.
+       A WRONG FLAG COSTS NOTHING AND EARNS NOTHING (the platform's
+         no-punishment logic, experienced before it is described). She is told
+         that before she starts, not after she is stung by it.
+       EVERY LOCKED CONTROL SAYS WHAT UNLOCKS IT (DFM 205). File my inspection
+         report is live from the first moment — filing nothing is a real answer,
+         and a scene with nothing wrong in it is a scene she must be able to
+         pass. The note under the button says what filing will do.
+
+     CONFIG-GATED: no other lesson declares an `inspect` chunk, so nothing that
+     exists today renders one line differently (asserted).
+  */
+  Engines.inspect = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {};
+      var scenes = cfg.scenes || [];
+      var si = 0;
+      introCard(host, {
+        kicker: chunk.title,
+        title: (cfg.introTitle || chunk.title),
+        text: cfg.intro || '',
+        steps: cfg.steps || null,
+        stepsClass: 'insp-intro-steps'
+      }, cfg.begin || 'Start the inspection', showScene);
+
+      function showScene() {
+        host.innerHTML = '';
+        var sc = scenes[si];
+        if (!sc) { finishChunk(ctx); return; }
+        var flagged = {};
+        var filed = false;
+
+        var zones = (sc.zones || []).map(function (z, i) {
+          return '<button type="button" class="insp-zone" data-z="' + i + '"' +
+            ' style="left:' + z.x + '%;top:' + z.y + '%;width:' + z.w + '%;height:' + z.h + '%"' +
+            ' aria-pressed="false">' +
+            '<span class="insp-zone-frame"></span>' +
+            '<span class="insp-zone-flag" aria-hidden="true">&#9873;</span>' +
+            '<span class="insp-zone-name">' + esc(z.name) + '</span>' +
+            '</button>';
+        }).join('');
+
+        var card = el('<div class="insp">' +
+          '<div class="insp-head">' +
+            '<span class="insp-tab">' + esc(sc.tab || ('SCENE ' + (si + 1))) + '</span>' +
+            '<h2>' + esc(sc.title) + '</h2>' +
+            '<p class="insp-lead">' + esc(sc.lead || '') + '</p>' +
+          '</div>' +
+          '<div class="insp-stage">' +
+            '<img class="insp-art" src="' + esc(asset(sc.art)) + '" alt="' + esc(sc.alt || '') + '">' +
+            '<div class="insp-zones">' + zones + '</div>' +
+          '</div>' +
+          '<p class="insp-count" aria-live="polite"></p>' +
+          '<div class="insp-actions">' +
+            '<button type="button" class="primary-btn insp-file">' + esc(sc.fileLabel || 'File my inspection report') + '</button>' +
+          '</div>' +
+          '<p class="insp-note">' + esc(sc.fileNote || '') + '</p>' +
+          '</div>');
+        host.appendChild(card);
+
+        var countEl = card.querySelector('.insp-count');
+        function paintCount() {
+          var n = Object.keys(flagged).length;
+          countEl.textContent = n === 0
+            ? (sc.noneYet || 'Nothing flagged yet.')
+            : (n === 1 ? 'You have flagged 1 place.' : 'You have flagged ' + n + ' places.');
+        }
+        paintCount();
+
+        card.querySelectorAll('.insp-zone').forEach(function (b) {
+          b.onclick = function () {
+            if (filed) return;
+            var k = b.getAttribute('data-z');
+            if (flagged[k]) { delete flagged[k]; b.classList.remove('is-flagged'); b.setAttribute('aria-pressed', 'false'); }
+            else { flagged[k] = 1; b.classList.add('is-flagged'); b.setAttribute('aria-pressed', 'true'); }
+            paintCount();
+          };
+        });
+
+        App.armButton(card.querySelector('.insp-file'), function () {
+          if (filed) return;
+          filed = true;
+          report(card, sc, flagged);
+        });
+      }
+
+      /* THE REPORT CARD. Every zone gets a row, in the order she sees them on
+         the bench, so nothing is hidden: a correct flag NAMES the rule it
+         breaks, a missed one is revealed as missed, and a flag on a station
+         that was fine is answered plainly rather than scored. */
+      function report(card, sc, flagged) {
+        var rows = (sc.zones || []).map(function (z, i) {
+          var wasFlagged = !!flagged[i];
+          var kind = z.breaks ? (wasFlagged ? 'found' : 'missed') : (wasFlagged ? 'clear' : 'ok');
+          var label = { found: 'You found it', missed: 'You missed this one', clear: 'Nothing wrong here', ok: 'Nothing wrong here' }[kind];
+          return '<li class="insp-row is-' + kind + '">' +
+            '<span class="insp-row-tag">' + label + '</span>' +
+            '<span class="insp-row-name">' + esc(z.name) + '</span>' +
+            '<span class="insp-row-say">' + esc(z.breaks ? z.rule : (wasFlagged ? z.clearSay : z.okSay || z.clearSay)) + '</span>' +
+            '</li>';
+        }).join('');
+        var found = (sc.zones || []).filter(function (z, i) { return z.breaks && flagged[i]; }).length;
+        var total = (sc.zones || []).filter(function (z) { return z.breaks; }).length;
+
+        card.querySelectorAll('.insp-zone').forEach(function (b) {
+          var i = Number(b.getAttribute('data-z'));
+          var z = sc.zones[i];
+          b.classList.add('is-done');
+          b.classList.add(z.breaks ? (flagged[i] ? 'is-found' : 'is-missed') : (flagged[i] ? 'is-clear' : 'is-fine'));
+          /* A FLAG MEANS "I FLAGGED THIS", AND IT MUST GO ON MEANING THAT. The
+             first cut marked a MISSED violation with the same flag glyph, so the
+             one screen that is supposed to teach her what she overlooked showed
+             her a flag she never planted. A symbol a pupil has to decode is an
+             undefined term (DFM 149's law, applied to a mark). Missed gets its
+             own mark, and the label underneath says the word. */
+          var mark = b.querySelector('.insp-zone-flag');
+          if (mark && z.breaks && !flagged[i]) mark.textContent = '!';
+          var nameEl = b.querySelector('.insp-zone-name');
+          if (nameEl) {
+            nameEl.textContent = z.breaks
+              ? (flagged[i] ? 'You found it' : 'Missed')
+              : (flagged[i] ? 'Nothing wrong here' : '');
+          }
+          b.disabled = true;
+        });
+        card.querySelector('.insp-actions').innerHTML = '';
+        card.querySelector('.insp-note').textContent = '';
+        card.querySelector('.insp-count').textContent = '';
+
+        var rep = el('<div class="insp-report">' +
+          '<h3>' + esc(sc.reportTitle || 'Your inspection report') + '</h3>' +
+          '<p class="insp-score">' + esc(
+            found === total
+              ? (total === 1 ? 'You found the one thing that breaks a rule.' : 'You found all ' + total + ' of them.')
+              : 'You found ' + found + ' of the ' + total + ' things that break a rule. The rest are named below.') +
+          '</p>' +
+          '<ul class="insp-rows">' + rows + '</ul>' +
+          '<div class="confirm-actions"><button type="button" class="primary-btn insp-next">' +
+            esc(sc.nextLabel || 'Next') + '</button></div>' +
+          '</div>');
+        card.appendChild(rep);
+        rep.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        App.armButton(rep.querySelector('.insp-next'), function () {
+          var xp = found * (sc.xpPerFlag || 0) + (found === total ? (sc.xpClean || 0) : 0);
+          ctx.addXp ? ctx.addXp(xp) : 0;
+          si += 1;
+          showScene();
+        });
+      }
+    }
+  };
+
 
 })(window);
