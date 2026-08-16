@@ -275,23 +275,36 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
     if (gone) await sleep(900);
     return gone;
   };
-  const advanceUntil = async (target, tries) => {
+  /* `via` widens what counts as "the way on" for ONE surface only. It defaults
+     to the two controls every J1 drive has always used, so no existing surface
+     changes what it clicks; J2 Lesson 1 adds `.confirm-step`, which is how a
+     pupil advances a steps card and is the only control on its workbench. */
+  const ADVANCE_DEFAULT = '.chunk-host .primary-btn, .chunk-host .dossier-cta';
+  const advanceUntil = async (target, tries, via) => {
     for (let i = 0; i < (tries || 14); i++) {
       const there = await page.evaluate((t) => !!document.querySelector(t), target);
       if (there) return true;
       await dismissBadge();
       const again = await page.evaluate((t) => !!document.querySelector(t), target);
       if (again) return true;
-      await page.evaluate(() => {
+      await page.evaluate((sel) => {
         const vis = (el) => { const r = el.getBoundingClientRect(); return r.width > 2 && r.height > 2; };
-        const b = Array.from(document.querySelectorAll('.chunk-host .primary-btn, .chunk-host .dossier-cta'))
-          .find(x => !x.disabled && vis(x));
+        const b = Array.from(document.querySelectorAll(sel))
+          .find(x => !x.disabled && vis(x) && !x.classList.contains('ticked'));
         if (b) b.click();
-      });
+      }, via || ADVANCE_DEFAULT);
       await sleep(1300);
     }
     return await page.evaluate((t) => !!document.querySelector(t), target);
   };
+  const VIA_J2 = '.chunk-host .primary-btn, .chunk-host .dossier-cta, .chunk-host .confirm-step';
+  /* J3 adds the compass's own controls and the optional-tail buttons, because
+     neither is a primary button and the compass board sits between the drive
+     and every screen after it. */
+  const VIA_J3 = VIA_J2 + ', .chunk-host .stretch-go, .chunk-host .cmp-side, .chunk-host .cmp-done'
+    /* and the question renderer itself: the compass sits BEHIND twenty answered
+       questions, so a drive that cannot answer one never gets there */
+    + ', .chunk-host .q-feedback button, .chunk-host .q-opt';
   const clickIn = async (sel, ms) => {
     await dismissBadge();
     const hit = await page.evaluate((s) => {
@@ -362,10 +375,11 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
       }
     },
     /* ---- THE TWO NEW YEAR WORLDS (K11a) ----------------------------------
-       J2 and J3 have no built lesson yet, so their landmark surfaces today are
-       the two screens every pupil of that year meets on her first login: the
-       hub she lands on, and the wardrobe she is told to open in Lesson 1's
-       orientation. Both are measured under that year's own skins only. */
+       The hub she lands on and the wardrobe Lesson 1 tells her to open. Both
+       are measured under that year's own skins only — a J2 look on a J1 lesson
+       screen is a combination the server refuses and the wardrobe never offers,
+       so measuring it could only ever invent a fault. J2's lesson surfaces
+       follow below. */
     {
       id: 'j2-hub', year: 'j2', cls: 'Demo-9A', as: 'aoife', hub: true, root: '.hub',
       what: 'the J2 hub on The Workbench (her first-ever screen)',
@@ -399,6 +413,109 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
         await page.evaluate(() => { if (window.App && App.openKit) App.openKit(); });
         await sleep(900);
       }
+    },
+    /* ---- J2 LESSON 1's OWN LANDMARK SCREENS (16 Aug 2026) ----------------
+       Measured on BOTH new J2 themes as well as The Workbench, which is what
+       §4b's readability clause asks for: a look she can equip at the end of
+       this very lesson must not make the lesson she just did unreadable. */
+    {
+      id: 'j2-inspect-rules', year: 'j2', cls: 'Demo-9A', as: 'aoife', lesson: '1',
+      what: 'the six room rules, stated before she is tested on them',
+      extras: ['.insp-rules li', '.intro-lead', '.insp-how-lead', '.insp-intro-steps li'],
+      must: ['.insp-rules', '.insp-intro-steps'],
+      drive: async () => {
+        if (!await advanceUntil('.insp-rules', 22, VIA_J2)) throw new Error('never reached the inspection rules card');
+      }
+    },
+    {
+      id: 'j2-inspect-scene', year: 'j2', cls: 'Demo-9A', as: 'aoife', lesson: '1',
+      what: 'an inspection scene with nothing flagged (zone names, count, file note)',
+      extras: ['.insp-tab', '.insp-lead', '.insp-count', '.insp-note', '.insp-zone-name', '.insp-file'],
+      must: ['.insp-stage', '.insp-file', '.insp-note'],
+      drive: async () => {
+        if (!await advanceUntil('.insp-rules', 22, VIA_J2)) throw new Error('never reached the inspection rules card');
+        if (!await clickIn('.chunk-host .primary-btn', 1600)) throw new Error('no way into the first scene');
+        await page.waitForSelector('.insp-stage', { timeout: 8000 });
+      }
+    },
+    {
+      id: 'j2-inspect-report', year: 'j2', cls: 'Demo-9A', as: 'aoife', lesson: '1',
+      what: 'the filed inspection report (every row she reads back)',
+      extras: ['.insp-score', '.insp-row-tag', '.insp-row-name', '.insp-row-say', '.insp-next'],
+      must: ['.insp-report', '.insp-rows', '.insp-score'],
+      drive: async () => {
+        if (!await advanceUntil('.insp-rules', 22, VIA_J2)) throw new Error('never reached the inspection rules card');
+        if (!await clickIn('.chunk-host .primary-btn', 1200)) throw new Error('no way into the first scene');
+        await page.waitForSelector('.insp-stage', { timeout: 8000 });
+        await page.evaluate(() => { const z = document.querySelector('.insp-zone'); if (z) z.click(); });
+        await sleep(300);
+        await page.evaluate(() => document.querySelector('.insp-file').click());
+        await page.waitForSelector('.insp-report', { timeout: 8000 });
+      }
+    },
+    {
+      id: 'j2-question', year: 'j2', cls: 'Demo-9A', as: 'aoife', lesson: '1',
+      what: 'a Snapshot question card (the shared question renderer on a J2 skin)',
+      extras: ['.q-stem', '.q-opt', '.runner-progress'],
+      must: ['.q-stem', '.q-opt'],
+      drive: async () => {
+        if (!await advanceUntil('.q-opt', 60, VIA_J2)) throw new Error('never reached a question card');
+      }
+    },
+    /* ---- J3 LESSON 1's OWN LANDMARK SCREENS (16 Aug 2026) ---------------
+       Measured on The Screening Room and on both new J3 themes. The Compass
+       result is the one screen in the lesson that could read as a verdict, so
+       it is measured deliberately rather than swept up with the rest. */
+    {
+      id: 'j3-code', year: 'j3', cls: 'Demo-10A', as: 'orla', lesson: '1',
+      what: 'a Studio Code case card (the shared question renderer on a J3 skin)',
+      extras: ['.q-stem', '.q-opt', '.runner-progress'],
+      must: ['.q-stem', '.q-opt'],
+      drive: async () => {
+        if (!await advanceUntil('.q-opt', 30, VIA_J2)) throw new Error('never reached a case card');
+      }
+    },
+    {
+      id: 'j3-compass-board', year: 'j3', cls: 'Demo-10A', as: 'orla', lesson: '1',
+      what: 'the compass board before any tap (its settle button must explain itself)',
+      extras: ['.cmp-q', '.cmp-side', '.cmp-locked-note', '.cmp-settle'],
+      must: ['.cmp-rows', '.cmp-side', '.cmp-locked-note'],
+      drive: async () => {
+        if (!await advanceUntil('.cmp-rows', 90, VIA_J3)) throw new Error('never reached the compass board');
+      }
+    },
+    {
+      id: 'j3-compass-result', year: 'j3', cls: 'Demo-10A', as: 'orla', lesson: '1',
+      what: 'the compass result (the one screen that could read as a verdict)',
+      extras: ['.cmp-dial-a', '.cmp-dial-b', '.cmp-result h2', '.cmp-route', '.cmp-note', '.cmp-done'],
+      must: ['.cmp-result', '.cmp-dial', '.cmp-route'],
+      drive: async () => {
+        if (!await advanceUntil('.cmp-rows', 90, VIA_J3)) throw new Error('never reached the compass board');
+        await page.evaluate(() => document.querySelectorAll('.cmp-row').forEach(r => {
+          const b = r.querySelector('.cmp-side'); if (b) b.click();
+        }));
+        await sleep(400);
+        await page.evaluate(() => document.querySelector('.cmp-settle').click());
+        await page.waitForSelector('.cmp-result', { timeout: 8000 });
+        await sleep(1200);
+      }
+    },
+    {
+      id: 'j3-route-card', year: 'j3', cls: 'Demo-10A', as: 'orla', lesson: '1',
+      what: 'the two-routes card and its picture caption',
+      extras: ['.step-card h3, .step-title', '.step-body, .step-text', 'figcaption, .step-cap'],
+      must: ['.confirm-step'],
+      drive: async () => {
+        if (!await advanceUntil('.cmp-rows', 90, VIA_J3)) throw new Error('never reached the compass board');
+        await page.evaluate(() => document.querySelectorAll('.cmp-row').forEach(r => {
+          const b = r.querySelector('.cmp-side'); if (b) b.click();
+        }));
+        await sleep(400);
+        await page.evaluate(() => document.querySelector('.cmp-settle').click());
+        await page.waitForSelector('.cmp-result', { timeout: 8000 });
+        await clickIn('.cmp-done', 1400);
+        if (!await advanceUntil('.confirm-step', 20, VIA_J3)) throw new Error('never reached the two-routes card');
+      }
     }
   ];
 
@@ -409,6 +526,21 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
     await page.goto(BASE + '/ks3-dt/platform/index.html?class=' + (S.cls || 'Demo-8A') +
       '&as=' + (S.as || 'anya'), { waitUntil: 'domcontentloaded' });
     await sleep(1500);
+    /* UNLOCK THE LESSON THIS SURFACE LIVES IN. J1's demo class ships with its
+       lessons delivered; J2's and J3's do not, so a lesson surface on those
+       years opened onto "lesson 1 is locked" and the whole run crashed. The
+       walkers already seed this the same way — one line, same dev store. */
+    if (!S.hub && S.cls && S.cls !== 'Demo-8A') {
+      await page.evaluate((cls) => {
+        const db = JSON.parse(localStorage.getItem('ks3dt-dev') || '{}');
+        const now = Math.floor((Date.now() - 1767225600000) / 60000);
+        db.locks = db.locks || {}; db.locks[cls] = db.locks[cls] || {};
+        for (const n of ['1', '2', '3', '4', '5']) db.locks[cls][n] = { u: now, on: 1 };
+        localStorage.setItem('ks3dt-dev', JSON.stringify(db));
+      }, S.cls);
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await sleep(1800);
+    }
     await page.evaluate(() => { const b = document.querySelector('.intro-skip'); if (b) b.click(); });
     await sleep(500);
     if (!S.hub) await openLesson(S.lesson);

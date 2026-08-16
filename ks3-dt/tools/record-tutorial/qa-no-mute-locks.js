@@ -123,6 +123,17 @@ const EXPLAINS = /unlock|until|locked|needs|write|type|fill|both halves|appears|
        confused-pupil walk report FOUR faults per answered question across
        Lessons 1-3: 40+ inventions in one run. DFM 146a: a gate that invents a
        fault is worse than no gate — and it would have buried anything real. */
+    /* A FILED INSPECTION SCENE IS ANSWERED (16 Aug 2026, and it is the same
+       class as the ordering puzzle above). Once she presses File my inspection
+       report every zone is disabled on purpose — that is what stops her editing
+       her answer after seeing the verdict — and the explanation is as close as
+       an explanation gets: the zone's own label is overwritten with "You found
+       it" / "Missed" / "Nothing wrong here", and the report underneath names
+       the rule each one broke. The confused-pupil walk reported two of these
+       per scene, ten in a run, and every one of them was the checker not
+       recognising a finished control (DFM 146a). */
+    if (e.classList.contains('insp-zone') && e.classList.contains('is-done')) return true;
+
     if (e.classList.contains('q-opt')) {
       const qc = e.closest('.q-card');
       if (qc && (qc.classList.contains('answered') ||

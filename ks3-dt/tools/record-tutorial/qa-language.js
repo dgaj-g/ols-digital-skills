@@ -135,7 +135,16 @@ const HUB_TEACHER_KEYS = ['coverNote', 'absenceNote'];
  * ------------------------------------------------------------------ */
 const MACHINE_KEYS = new Set([
   'id', 'src', 'href', 'url', 'file', 'poster', 'img', 'icon', 'engine', 'phase',
-  'mode', 'year', 'kind', 'kinds', 'logTerms', 'skin', 'clearToast_dev'
+  'mode', 'year', 'kind', 'kinds', 'logTerms', 'skin', 'clearToast_dev',
+  /* THE INSPECT ENGINE'S TWO MACHINE FIELDS (16 Aug 2026, found while writing
+     J2 Lesson 1's ledger records). `art` is a file path exactly like `src`, and
+     `breaks` never reaches a screen at all: the engine reads it as the flag that
+     says this zone stages a violation, and qa-inspect-scene reads it to prove
+     every visualisable room rule is staged somewhere. Demanding a read-aloud
+     judgement on either would have had someone write a judgement of a filename,
+     which is a gate inventing work (DFM 146a). The zone's PUPIL sentence is
+     `rule` / `clearSay` / `okSay`, and all three are checked. */
+  'art', 'breaks'
 ]);
 /* Order-bearing contracts: a wording change here can silently break an answer
    key, so they are checked by the LEXICON only - never by shape rules, and they

@@ -61,9 +61,21 @@ function exists(p) { try { fs.accessSync(p); return true; } catch (e) { return f
    the declaration where it lives rather than importing the module, because these
    walkers launch browsers at require-time and a coverage gate must stay cheap
    enough to run on every pack. Brace-counted, so a nested object cannot fool it. */
+/* A COMMENT MUST NOT BE ABLE TO SILENCE THIS GATE (16 Aug 2026, and it silenced
+   it). The entry scanner below looks for `key:` at depth 0, and a `/* ... *\/`
+   comment sitting between two entries is just characters to it — so the phrase
+   "(DFM 199: pin only what does not move)" inside a comment above EXPECT['j3-1']
+   registered a phantom key `199`, swallowed the real entry, and the pack
+   reported that J3 Lesson 1 had no pinned shape when it had one. A gate a
+   comment can fool is the DFM 146a fault, so comments are stripped before
+   anything is parsed. String literals here never contain comment markers, and
+   the controls at the foot of this file prove the tables still parse. */
+function stripComments(s) {
+  return s.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:])\/\/[^\n]*/g, '$1');
+}
 function objectBody(file, declRe) {
   if (!exists(file)) return null;
-  const src = fs.readFileSync(file, 'utf8');
+  const src = stripComments(fs.readFileSync(file, 'utf8'));
   const m = declRe.exec(src);
   if (!m) return null;
   let i = src.indexOf('{', m.index);

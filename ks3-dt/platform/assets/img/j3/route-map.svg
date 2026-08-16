@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 340" width="900" height="340" role="img" aria-label="The two GCSE Digital Technology routes and the core work everybody does first">
+  <!-- THE ROUTE MAP (J3 Lesson 1). Flat vector, house style, drawn to the same
+       rules as the J2 inspection scenes: nothing invented about the real school,
+       every label large enough to read at the size it renders, and the two
+       routes drawn as EQUALS — same size, same weight, same distance from the
+       core — because K13 says the year is framed for every girl and neither
+       route is the better one. Ink is dark on light throughout so it clears the
+       readability floor on every skin. -->
+  <defs>
+    <linearGradient id="coreFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFF8E4"/>
+      <stop offset="100%" stop-color="#F6E9C4"/>
+    </linearGradient>
+    <linearGradient id="mmFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FDECF3"/>
+      <stop offset="100%" stop-color="#F6D8E6"/>
+    </linearGradient>
+    <linearGradient id="pgFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E7F1FB"/>
+      <stop offset="100%" stop-color="#D2E4F6"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="340" rx="14" fill="#FFFDF7"/>
+
+  <!-- the shared core -->
+  <rect x="34" y="86" width="268" height="140" rx="16" fill="url(#coreFill)" stroke="#8A6B14" stroke-width="3"/>
+  <text x="168" y="140" text-anchor="middle" font-family="Georgia, serif" font-size="26" font-weight="700" fill="#2A2205">The shared core</text>
+  <text x="168" y="174" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="18" fill="#3A3320">Everybody who takes the</text>
+  <text x="168" y="198" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="18" fill="#3A3320">subject does this part.</text>
+
+  <!-- the split -->
+  <path d="M302 156 H 372 V 84 H 448" fill="none" stroke="#8A6B14" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M302 156 H 372 V 244 H 448" fill="none" stroke="#8A6B14" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <polygon points="448,84 434,74 434,94" fill="#8A6B14"/>
+  <polygon points="448,244 434,234 434,254" fill="#8A6B14"/>
+
+  <!-- Multimedia -->
+  <rect x="456" y="30" width="412" height="108" rx="16" fill="url(#mmFill)" stroke="#8C2F5C" stroke-width="3"/>
+  <text x="482" y="72" font-family="Georgia, serif" font-size="25" font-weight="700" fill="#4A1130">Multimedia</text>
+  <text x="482" y="104" font-family="Helvetica, Arial, sans-serif" font-size="18" fill="#43213A">designing and communicating</text>
+
+  <!-- Programming -->
+  <rect x="456" y="190" width="412" height="108" rx="16" fill="url(#pgFill)" stroke="#1F4E80" stroke-width="3"/>
+  <text x="482" y="232" font-family="Georgia, serif" font-size="25" font-weight="700" fill="#0F2E4D">Programming</text>
+  <text x="482" y="264" font-family="Helvetica, Arial, sans-serif" font-size="18" fill="#16334F">building and problem-solving</text>
+
+  <!-- the honest line, and it is the point of the picture -->
+  <text x="450" y="326" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="19" font-weight="700" fill="#2A2205">You choose in January — and you can choose neither.</text>
+</svg>

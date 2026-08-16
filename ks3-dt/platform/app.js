@@ -385,6 +385,17 @@
     insigniaLockedToast: 'That insignia is above your clearance.',
     nameFallback: 'Agent',
     lockedToast: 'Locked — Clearance {level} kit. {short} XP to go, Agent.',
+    /* THE LADDER'S LAST RUNG MUST NOT CLAIM TO BE THE LAST RUNG THERE WILL EVER
+       BE. J2 and J3 deliberately carry only the levels whose thresholds are real
+       (§4a / DFM 165), so a J2 pupil crosses the top of her ladder at the END OF
+       LESSON 1 — and was told "Top clearance reached. Legend." on her first day.
+       Found by the J2 L1 cold read. J1's wording is the fallback, unchanged. */
+    maxedLabel: 'Top {rank} reached. Legend.',
+    /* the modal's own heading and the chip's tooltip: the last two places the
+       kit's NAME was still a literal, so a J2 girl opened "your Kit Locker" and
+       read "Agent Kit" at the top of it (rule 35, and K11b). */
+    openTip: 'Open your Agent Kit',
+    finishTitle: 'Mission complete',
     /* ONE literal per sentence, deliberately: a phrase split across two
        JavaScript strings renders perfectly and greps to nothing (DFM 162b), and
        that is how a banned wording once survived a sweep. */
@@ -489,6 +500,7 @@
       }).then(function () {
         App.applyKit();
         App.paintHubName();
+        App.paintKitName();
         return true;
       }).catch(function () { return false; });
     });
@@ -819,10 +831,21 @@
   }
 
   /* ---------------- Agent Kit modal (pupil customisation) ---------------- */
+  /* The kit's NAME on the two surfaces that were still literals in index.html —
+     the modal's own heading and the chip's tooltip. Painted whenever the year is
+     known, so a J2 girl's "Kit Locker" is headed Kit Locker. */
+  App.paintKitName = function () {
+    var h = document.querySelector('#kit-modal .kit-head h2');
+    if (h) h.textContent = App.kitName();
+    var chip = document.getElementById('agent-chip');
+    if (chip) chip.title = kitWord_('openTip', { kit: App.kitName() });
+  };
+
   App.openKit = function () {
     var s = App.state;
     if (!s.me) return; // not joined yet (staff preview of the join screen etc.)
     if (!s.kit) { App.toast('Your ' + App.kitName() + ' could not load — check your connection and refresh.'); return; }
+    App.paintKitName();
     renderKit();
     App.openModal('kit-modal');
   };
@@ -859,8 +882,8 @@
         esc(kitWord_('rankWord')) + ' ' +
         Number(pos.next.level) + ' &mdash; ' + esc(pos.next.name) + '</span></div>';
     } else {
-      head += '<div class="kit-next"><span class="kit-next-label maxed">Top ' +
-        esc(kitWord_('rankWord').toLowerCase()) + ' reached. Legend.</span></div>';
+      head += '<div class="kit-next"><span class="kit-next-label maxed">' +
+        esc(kitWord_('maxedLabel', { rank: kitWord_('rankWord').toLowerCase() })) + '</span></div>';
     }
 
     // interface themes
@@ -1461,7 +1484,9 @@
     ov.className = 'badge-pop show';
     ov.innerHTML = '<div class="badge-pop-card finish">' +
       '<div class="finish-glyph">&#127942;</div>' +
-      '<h2>Mission complete</h2><p class="badge-pop-name">' + esc(s.lesson.title) + '</p>' +
+      /* the last J1 literal on the shared finish overlay: a J2 girl ended her
+         first hour on "Mission complete" (found by the J2 L1 cold read) */
+      '<h2>' + esc(kitWord_('finishTitle')) + '</h2><p class="badge-pop-name">' + esc(s.lesson.title) + '</p>' +
       '<p class="badge-pop-xp">' + App.state.xp + ' XP total</p>' +
       '<button class="primary-btn" type="button">Back to ' + esc(App.hubName()) + '</button></div>';
     document.body.appendChild(ov);

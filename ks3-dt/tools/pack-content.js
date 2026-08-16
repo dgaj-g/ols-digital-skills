@@ -84,6 +84,28 @@ function languageGate() {
   console.log('language gate: PASSED (qa-language)');
 }
 
+/* THE XP-CEILING GATE (16 Aug 2026). The deployed server stores at most 40 XP
+   per event and 150 per lesson, and says nothing when it truncates — while the
+   badge pop prints the number the CONTENT asked for. J2 Lesson 1's inspection
+   asked for 63 and would have granted 40 in front of the pupil. The server is
+   zero-diff by law, so the content bends to the cap (the DFM 185b precedent),
+   and this gate is what makes the cap visible at authoring time. */
+function xpCeilingGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-xp-ceiling.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-xp-ceiling.js is missing - the XP gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error((res.stdout || '') + (res.stderr || ''));
+    console.error('\nPACK STOPPED: a badge promises more XP than the deployed server will store (rule 35).');
+    console.error('Lower the content\'s numbers — the server is not changed for this.');
+    process.exit(1);
+  }
+  console.log('xp-ceiling gate: PASSED (qa-xp-ceiling)');
+}
+
 /* THE DECK-SHOT GATE (DFM 225b). Damien, 15 Aug 2026, on finding the Vault's
    inbox on three slides that named three other screens: "figure out how this
    happened and what you'll do (screenshot reading harness needed) to ensure it
@@ -320,6 +342,7 @@ function versionGate() {
 function main() {
   yearFolderGate();
   languageGate();
+  xpCeilingGate();
   deckShotGate();
   deckAnswerGate();
   briefShapeGate();

@@ -2702,8 +2702,13 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   border: 1px solid rgba(var(--gold-rgb), 0.38);
   box-shadow: inset 0 0 0 6px rgba(var(--gold-rgb), 0.07), 0 18px 50px rgba(0, 0, 0, 0.5); }
 .insp-head { text-align: center; margin-bottom: 14px; }
+/* THE INK AND THE PLATE BOTH FOLLOW THE THEME. The first cut pinned the ink to
+   The Workbench's own #2A1502 and let the plate sit at 0.75 alpha over the dark
+   shell — which on Copperline composited to #b4623f and measured 3.84:1 against
+   that fixed brown, under the 4.5 floor (qa-readability, 16 Aug 2026). A solid
+   accent plate with the theme's own accent ink clears it on every J2 skin. */
 .insp-tab { display: inline-block; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.16em;
-  color: #2A1502; background: rgba(var(--gold-rgb), 0.75); border-radius: 4px; padding: 3px 10px; }
+  color: var(--accent-ink); background: var(--gold); border-radius: 4px; padding: 3px 10px; }
 .insp-head h2 { font-family: var(--font-display); color: #fff; font-size: clamp(1.35rem, 3vw, 1.8rem); margin: 9px 0 4px; }
 .insp-lead { color: var(--text-d); font-size: 1rem; margin: 0 auto; max-width: 62ch; }
 
@@ -2756,7 +2761,9 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   background: #E8963C; text-shadow: none; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }
 
 .insp-count { text-align: center; color: var(--text-d); font-weight: 700; margin: 6px 0 10px; }
-.insp-actions { display: flex; justify-content: center; }
+/* gap, not margins: two interactive controls may never sit closer than 10px
+   (his DFM 207a law, measured in rendered pixels by the gap probe) */
+.insp-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
 .insp-note { text-align: center; color: var(--muted-d); font-size: 0.86rem; margin: 12px auto 0; max-width: 60ch; }
 
 /* the report card: a light reading surface, the platform's standing rule for
@@ -2799,3 +2806,49 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .insp-rules li::marker { font-weight: 800; color: var(--ols-blue); }
 .insp-how-lead { font-weight: 700; margin: 16px 0 4px; text-align: left; max-width: 46ch;
   margin-left: auto; margin-right: auto; }
+
+/* ============ compass (J3 Lesson 1's Find Your Compass) ============
+   The needle is the whole point of the widget being a widget rather than three
+   more question cards: she watches it move to where SHE is. Transform-only, so
+   it costs the compositor nothing, and it is inside the reduced-motion hold. */
+.cmp-card { text-align: center; }
+.cmp-rows { display: grid; gap: 18px; margin: 18px 0 4px; }
+.cmp-q { color: var(--ink); font-weight: 700; margin: 0 0 10px; font-size: 1.02rem; }
+.cmp-sides { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .cmp-sides { grid-template-columns: 1fr; } }
+.cmp-side {
+  border: 2px solid rgba(var(--gold-rgb), 0.45); background: var(--card-2, #fff);
+  color: var(--ink); border-radius: var(--r-md); padding: 14px 16px; cursor: pointer;
+  font: inherit; font-size: 0.98rem; line-height: 1.4; text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease;
+}
+.cmp-side:hover { border-color: var(--gold); transform: translateY(-1px); }
+.cmp-side.on { border-color: var(--gold-deep); background: rgba(var(--gold-rgb), 0.18); font-weight: 700; }
+.cmp-locked-note { color: var(--ink-soft, #40506B); font-size: 0.9rem; margin: 14px 0 0; }
+.cmp-note { color: var(--ink-soft, #40506B); font-size: 0.95rem; margin: 12px auto 0; max-width: 60ch; }
+.cmp-route { color: var(--ink); font-weight: 700; margin: 10px auto 0; max-width: 60ch; }
+
+.cmp-dial {
+  position: relative; width: min(320px, 82%); aspect-ratio: 2 / 1; margin: 6px auto 18px;
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(180deg, rgba(var(--gold-rgb), 0.16), rgba(var(--gold-rgb), 0.04));
+  border: 2px solid rgba(var(--gold-rgb), 0.5); border-bottom: none;
+}
+.cmp-dial-a, .cmp-dial-b {
+  position: absolute; bottom: 8px; font-size: 0.78rem; font-weight: 800;
+  letter-spacing: 0.06em; color: var(--ink); max-width: 40%; line-height: 1.25;
+}
+.cmp-dial-a { left: 8px; text-align: left; }
+.cmp-dial-b { right: 8px; text-align: right; }
+.cmp-needle {
+  position: absolute; left: 50%; bottom: 0; width: 6px; height: 78%;
+  margin-left: -3px; border-radius: 3px 3px 0 0; background: var(--gold-deep);
+  transform-origin: 50% 100%; transform: rotate(0deg);
+  transition: transform 900ms cubic-bezier(0.2, 0.9, 0.25, 1.15);
+}
+.cmp-needle.settled { transform: rotate(var(--deg, 0deg)); }
+@media (prefers-reduced-motion: reduce) { .cmp-needle { transition: none; } }
+
+/* the optional tail on an items chunk (J3's two Senior Cases): two real
+   choices, with room between them (his DFM 207a 10px law) */
+.intro-card .confirm-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }

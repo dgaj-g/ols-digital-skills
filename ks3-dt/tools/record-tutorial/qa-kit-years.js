@@ -113,12 +113,21 @@ check(j2.insignia.some(i => i.glyph === '🔧') && j3.insignia.some(i => i.glyph
   'each year has its own insignia');
 
 section('NOTHING PROMISES A LEVEL THAT DOES NOT EXIST (rule 35)');
-/* the reason J2/J3 ship SHORT: their level-2 threshold is computed from that
-   year's BUILT Lesson 1 floor path (DFM 165), and that lesson does not exist
-   yet. A placeholder number would be a promise the kit modal could not keep. */
+/* the reason J2/J3 ship SHORT: every level above 1 has to be computed from that
+   year's BUILT Lesson 1 floor path (DFM 165). A placeholder number would be a
+   promise the kit modal could not keep.
+   AMENDED 16 Aug 2026 by the amendment's own §4b: BOTH years' Lesson 1 is now
+   built, so each carries level 2 — J2 "Maker" at 40, J3 "Creator" at 40, both
+   computed from their own floor path (arithmetic in themes.json's
+   clearanceNote) — and NOTHING ABOVE IT. This is the amendment's control (b),
+   re-run: level 2 present, 3-6 absent. */
+const LEVELS_OWED = { j2: 2, j3: 2 };
 [['j2', j2], ['j3', j3]].forEach(([y, v]) => {
-  check(v.clearances.length === 1 && Number(v.clearances[0].xp) === 0,
-    y + ' ships level 1 only, at 0 XP — no invented threshold (DFM 165: computed, never from memory)');
+  const top = LEVELS_OWED[y];
+  check(v.clearances.length === top && Number(v.clearances[0].xp) === 0 &&
+    v.clearances.every(c => Number(c.level) <= top),
+    y + ' ships levels 1-' + top + ' only, the first at 0 XP, and nothing above ' + top +
+    ' — every threshold computed from a BUILT lesson (DFM 165)');
   const levels = v.clearances.map(c => Number(c.level));
   check(v.themes.every(t => levels.indexOf(Number(t.clearance)) !== -1),
     y + '\'s every theme points at a level that exists');
@@ -130,10 +139,14 @@ section('NOTHING PROMISES A LEVEL THAT DOES NOT EXIST (rule 35)');
    J2 pupil at 0 XP no longer borrows J1's midnight — she opens on The Workbench.
    What has NOT changed is the thing this check was really for: she sees no J1
    costume at all. */
-check(j2.themes.length === 1 && j2.themes[0].id === 'workbench',
-  'a J2 pupil at 0 XP wears The Workbench and sees no J1 costume at all');
-check(j3.themes.length === 1 && j3.themes[0].id === 'screeningroom',
-  'and a J3 pupil wears The Screening Room');
+check(j2.themes.length === 3 && j2.themes[0].id === 'workbench' &&
+  j2.themes.every(t => ['workbench', 'copperline', 'firewall'].indexOf(t.id) !== -1),
+  'a J2 pupil opens on The Workbench and her wardrobe holds only J2 looks — ' +
+  'the two level-2 ones (Copperline, Firewall) landed with her Lesson 1, and no J1 costume is in it');
+check(j3.themes.length === 3 && j3.themes[0].id === 'screeningroom' &&
+  j3.themes.every(t => ['screeningroom', 'premiere', 'cuttingroom'].indexOf(t.id) !== -1),
+  'a J3 pupil opens on The Screening Room and her Wardrobe holds only J3 looks — ' +
+  'Première (red-carpet crimson, K11f) and Cutting Room landed with her Lesson 1');
 check(!j2.themes.some(t => t.id === 'midnight') && !j3.themes.some(t => t.id === 'midnight'),
   'and midnight, re-tagged j1, is in neither year\'s wardrobe — so its "classic HQ interface" line reaches nobody but J1');
 

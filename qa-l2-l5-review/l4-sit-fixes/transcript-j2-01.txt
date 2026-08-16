@@ -115,14 +115,35 @@ SCREEN: The Workshop Safety Inspection   [15 min]   (inspect)
       You are the safety inspector
 
   · inspection › config › intro
-      Every DT room runs on the same six rules, and you already know most of them. Today you find out whether a room is keeping them.
+      Every DT room runs on the same six rules. Here they are, so that nobody is guessing.
+
+  · inspection › config › rules[0]
+      Never come into the room without a teacher. Line up quietly outside, in single file, until your teacher arrives.
+
+  · inspection › config › rules[1]
+      No food and no drink anywhere near the machines.
+
+  · inspection › config › rules[2]
+      Look after the equipment. Nothing gets unplugged, moved or taken apart.
+
+  · inspection › config › rules[3]
+      Push your chair in and leave your area tidy before you go.
+
+  · inspection › config › rules[4]
+      Sign out every time you finish.
+
+  · inspection › config › rules[5]
+      Tell your teacher about anything broken, straight away.
+
+  · inspection › config › after
+      Five of those six you can SEE in a room. The first one happens outside the door, before you are in it, so it is the only one you will not be looking for today.
       
-      You will see a drawing of a DT room after a class has left. Click any station you think breaks a rule to plant a flag on it. You can change your mind as often as you like, because nothing is marked until you file your report.
+      Now you are the inspector. You will see a drawing of an ICT room after a class has left. Click any station you think breaks one of those rules to plant a flag on it. You can change your mind as often as you like, because nothing is marked until you file your report.
       
       Talk it over with the pupil beside you. Then each of you files your own report.
 
   · inspection › config › steps[0]
-      Look along the whole bench before you click anything.
+      Look along the whole row before you click anything.
 
   · inspection › config › steps[1]
       Click a station to flag it. Click it again to take the flag off.
@@ -927,5 +948,5 @@ SHOWN OUTSIDE A CHUNK — the lesson tile, and the marking she reads after answe
       You are told why the answer was wrong and you carry straight on. Nothing is ever taken off you for a wrong answer on this website, and no single question is reported to your teacher on its own — she sees how the whole class did.
 
 ==============================================================================
-TOTAL: 292 card/config sentences + 0 film captions
+TOTAL: 299 card/config sentences + 0 film captions
 ==============================================================================

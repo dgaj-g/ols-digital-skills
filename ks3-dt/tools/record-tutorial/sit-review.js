@@ -12,13 +12,20 @@ const path = require('path');
 const fs = require('fs');
 const WALK = require('./lib/walk-moves.js');
 
-const NUM = String(process.argv[2] || '2');
-const WHO = process.argv[3] || 'anya';
+const NUM = String(process.argv[2] || '2').replace(/^J([23])-/i, 'j$1-');
+/* YEAR-QUALIFIED KEYS FROM 16 AUG 2026 (see sit-wrongpath.js for the reason J1
+   keeps its bare-number legacy keys). `j2-1` is J2's Lesson 1; '1' is J1's. */
+const YEAR = /^j2-/.test(NUM) ? 'j2' : /^j3-/.test(NUM) ? 'j3' : 'j1';
+const CLASS = { j1: 'Demo-8A', j2: 'Demo-9A', j3: 'Demo-10A' }[YEAR];
+const DEFAULT_WHO = { j1: 'anya', j2: 'aoife', j3: 'orla' }[YEAR];
+const PUPIL_KEY = { anya: 'anya.murphy@demo', aoife: 'aoife.mcgrath@demo', orla: 'orla.mccann@demo' };
+const PUPIL_NAME = { anya: 'Anya Murphy', aoife: 'Aoife McGrath', orla: 'Orla McCann' };
+const WHO = process.argv[3] || DEFAULT_WHO;
 /* the port is overridable so the SAME walker can be pointed at the build he
    sat (the DFM 196 worktree on :8097) without editing this file — comparing a
    number against a different build is how this round proves things. */
 const HOST = process.env.KS3DT_BASE || 'http://localhost:8121';
-const BASE = HOST + '/ks3-dt/platform/index.html?class=Demo-8A&as=';
+const BASE = HOST + '/ks3-dt/platform/index.html?class=' + CLASS + '&as=';
 /* ------------------------------------------------------------------ *
  * WHAT THIS RUN MUST PROVE (DFM 199 — his ruling, 13 Aug 2026:
  * "pin the stable numbers and carry on with the rest").
@@ -47,7 +54,15 @@ const EXPECT = {
   '3': { xp: 51, chunks: 8, presses: 12, marks: 8, badges: 3 },
   '4': { xp: 42, chunks: 6, presses: 8, marks: 7, badges: 1 },
   '5': { xp: 42, chunks: 10, presses: 17, marks: 7, badges: 4 },
-  'S1': { xp: 30, chunks: 6, presses: 6, marks: 1, badges: 1 }
+  'S1': { xp: 30, chunks: 6, presses: 6, marks: 1, badges: 1 },
+  /* J2 Lesson 1, pinned from a real run on 16 Aug 2026 — deterministic values
+     only (DFM 199). The turn count is still reported, never asserted. */
+  'j2-1': { xp: 83, chunks: 8, presses: 8, marks: 19, badges: 4 },
+  /* J3 Lesson 1, pinned from a real run on 16 Aug 2026, identical on a second.
+     The Compass is deterministic here because the walker always takes the FIRST
+     side of each pair — a clean sweep, so the result card is the same every run
+     (DFM 199: pin only what does not move). */
+  'j3-1': { xp: 62, chunks: 8, presses: 8, marks: 21, badges: 4 }
 };
 const OUT = path.join('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform',
   'qa-l2-l5-review', 'l' + NUM.toLowerCase() + (WHO === 'anya' ? '' : '-' + WHO));
@@ -58,7 +73,8 @@ const GHOST_WAIT = 420;
 /* Lesson 1 joined this table on 14 Aug 2026, closing its COVERAGE_DEBT row
    (DFM 221). It was the last J1 lesson no expert walker had ever driven — it
    shipped before this file existed and was never retro-fitted. */
-const TITLES = { '1': 'Mission Control', '2': 'Make It Move', '3': 'Scoreboard Engineer', '4': 'The Broken Game', '5': 'Game Studio', 'S1': 'Files That Follow You' };
+const TITLES = { '1': 'Mission Control', '2': 'Make It Move', '3': 'Scoreboard Engineer', '4': 'The Broken Game', '5': 'Game Studio', 'S1': 'Files That Follow You',
+  'j2-1': 'Welcome to the Workshop', 'j3-1': 'The Studio Opens' };
 
 let shotN = 0;
 const log = [];
@@ -107,15 +123,20 @@ const CASE_LOGS = {
   /* ---------- boot: fresh pupil, all lessons delivered NOW, pairing off ---------- */
   await page.goto(BASE + WHO, { waitUntil: 'domcontentloaded' });
   await sleep(1400);
-  if (WHO === 'anya') await page.evaluate(() => localStorage.clear()); // cara keeps anya's world
+  /* cara is the SECOND pupil in the paired Vault run and keeps anya's world;
+     every other persona (including J2's aoife and J3's orla) starts clean. */
+  if (WHO !== 'cara') await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'domcontentloaded' });
   await sleep(2000);
-  await page.evaluate((TARGET_NUM) => {
+  await page.evaluate((seed) => {
+    const TARGET_NUM = seed.target;
     const db = JSON.parse(localStorage.getItem('ks3dt-dev'));
     const now = Math.floor((Date.now() - 1767225600000) / 60000);
-    for (const n of ['1', '2', '3', '4', '5', 'S1']) db.locks['Demo-8A'][n] = { u: now, on: 1 };
-    db.cfg['Demo-8A'] = db.cfg['Demo-8A'] || {};
-    db.cfg['Demo-8A'].pairing = { on: 0 };
+    db.locks = db.locks || {};
+    db.locks[seed.cls] = db.locks[seed.cls] || {};
+    for (const n of ['1', '2', '3', '4', '5', 'S1']) db.locks[seed.cls][n] = { u: now, on: 1 };
+    db.cfg[seed.cls] = db.cfg[seed.cls] || {};
+    db.cfg[seed.cls].pairing = { on: 0 };
     /* rule 134 (2 Aug 2026): the Do-Now serves only lessons this pupil has
        COMPLETED, so a fresh persona would get no warm-up at all. Stage the
        sitting pupil the way a real one arrives: every lesson BEFORE the one
@@ -130,10 +151,12 @@ const CASE_LOGS = {
     const L = {};
     Object.keys(done).forEach((k, ix) => { L[k] = [2, 10, 'sit' + k + '=1', '1', '222|1', 100 + ix, 10, 0, '', 0, 0]; });
     db.pupils = db.pupils || {};
-    db.pupils['Demo-8A:anya.murphy@demo'] = Object.assign(
-      db.pupils['Demo-8A:anya.murphy@demo'] || { n: 'Anya Murphy', cn: '', j: 1, xp: 0, g: '' }, { L });
+    const pk = seed.cls + ':' + seed.key;
+    db.pupils[pk] = Object.assign(
+      db.pupils[pk] || { n: seed.name, cn: '', j: 1, xp: 0, g: '' }, { L });
     localStorage.setItem('ks3dt-dev', JSON.stringify(db));
-  }, NUM === 'S1' ? 'S1' : Number(NUM));
+  }, { cls: CLASS, key: PUPIL_KEY[WHO] || (WHO + '@demo'), name: PUPIL_NAME[WHO] || WHO,
+       target: NUM === 'S1' ? 'S1' : Number(String(NUM).replace(/^j[23]-/, '')) });
   await page.reload({ waitUntil: 'domcontentloaded' });
   await sleep(2400);
   await page.evaluate(() => { const b = document.querySelector('.intro-skip'); if (b) b.click(); });
@@ -211,6 +234,14 @@ const CASE_LOGS = {
 
     switch (st.kind) {
       case 'badge':
+        /* THE GHOST GUARD APPLIES HERE TOO (found 16 Aug 2026, while pinning
+           J2 Lesson 1). This was the one case that clicked without waiting, so
+           the pop's own 350ms mount guard (DFM 104) swallowed the click, the
+           pop was still on screen next turn, and the SAME badge was counted
+           twice — J2 Lesson 1 reported five badges for four. A harness that
+           inflates its own number and then pins it is DFM 146a's fault, and it
+           would have baked the wrong shape in for ever. */
+        await sleep(GHOST_WAIT);
         await shot(ck + '-badge-pop');
         seen.badges++;
         note('BADGE POP @ ' + ck + ': ' + (st.label || '').trim());
@@ -262,6 +293,92 @@ const CASE_LOGS = {
         await sleep(GHOST_WAIT);
         await page.evaluate(() => document.querySelector('.q-feedback button').click());
         await sleep(700); break;
+
+      /* THE EXPERT INSPECTOR. She reads the room correctly: every station that
+         really breaks a rule gets a flag and no station that does not. The
+         zones' truth is read from the CLIENT'S OWN chunk config, never from a
+         copy in this file — the walker must not hold its own idea of which
+         station is wrong, or it would keep passing after the content moved.
+         She also TAKES the optional Hard Inspection (this is the expert walk;
+         the floor path that sets the §4b threshold is arithmetic, not a walk),
+         so the skip button is deliberately never pressed here — sit-wrongpath
+         is what stands on it. */
+      case 'insp-scene': {
+        await sleep(GHOST_WAIT);
+        await shot(ck + '-inspect-scene');
+        const flagged = await page.evaluate(() => {
+          const s = window.App.state;
+          const ch = s.chunks[s.chunkIdx];
+          const scenes = (ch.config || {}).scenes || [];
+          const tab = (document.querySelector('.insp-tab') || {}).textContent || '';
+          const sc = scenes.find(x => (x.tab || '') === tab) || scenes[0];
+          let n = 0;
+          (sc.zones || []).forEach((z, i) => {
+            if (!z.breaks) return;
+            const b = document.querySelector('.insp-zone[data-z="' + i + '"]');
+            if (b) { b.click(); n++; }
+          });
+          return n;
+        });
+        note('INSPECT: flagged ' + flagged + ' station(s) @ ' + ck);
+        await sleep(400);
+        await shot(ck + '-inspect-flagged');
+        await sleep(GHOST_WAIT);
+        await page.evaluate(() => document.querySelector('.insp-file').click());
+        await sleep(900); break;
+      }
+
+      /* THE EXPERT TAKES THE OPTIONAL WORK. sit-review is the best-path walk,
+         so it presses "Give them a go" and answers the Senior Cases; the floor
+         path that sets the §4b threshold is arithmetic, and the REFUSAL is what
+         sit-wrongpath stands on. */
+      case 'stretch-gate':
+        await sleep(GHOST_WAIT);
+        await shot(ck + '-stretch-gate');
+        note('STRETCH OFFERED @ ' + ck + ' — the expert walk takes it');
+        await page.evaluate(() => document.querySelector('.stretch-go').click());
+        await sleep(900); break;
+
+      case 'cmp-pick': {
+        await sleep(GHOST_WAIT);
+        await shot(ck + '-compass-board');
+        /* one side per row, deterministically the FIRST side, so the pinned
+           shape does not move between runs (DFM 199) */
+        const picked = await page.evaluate(() => {
+          let n = 0;
+          document.querySelectorAll('.cmp-row').forEach(r => {
+            if (r.querySelector('.cmp-side.on')) return;
+            const b = r.querySelector('.cmp-side'); if (b) { b.click(); n++; }
+          });
+          return n;
+        });
+        note('COMPASS: picked ' + picked + ' side(s) @ ' + ck);
+        await sleep(400); break;
+      }
+
+      case 'cmp-settle':
+        await sleep(GHOST_WAIT);
+        await shot(ck + '-compass-ready');
+        await page.evaluate(() => document.querySelector('.cmp-settle').click());
+        await sleep(1400); break;
+
+      case 'cmp-done': {
+        await sleep(GHOST_WAIT);
+        const lean = await page.evaluate(() => ((document.querySelector('.cmp-result h2') || {}).textContent || '').trim());
+        note('COMPASS RESULT @ ' + ck + ': ' + lean);
+        await shot(ck + '-compass-result');
+        await page.evaluate(() => document.querySelector('.cmp-done').click());
+        await sleep(900); break;
+      }
+
+      case 'insp-next': {
+        await sleep(GHOST_WAIT);
+        const score = await page.evaluate(() => ((document.querySelector('.insp-score') || {}).textContent || '').trim());
+        note('INSPECT REPORT @ ' + ck + ': ' + score);
+        await shot(ck + '-inspect-report');
+        await page.evaluate(() => document.querySelector('.insp-next').click());
+        await sleep(900); break;
+      }
 
       case 'parsons': {
         await sleep(GHOST_WAIT);
@@ -693,6 +810,14 @@ const CASE_LOGS = {
     });
   }
   if (errs.length) bad.push('console errors: expected none, got ' + errs.length);
+  /* A WALK THAT REACHED NOTHING IS NEVER A PASS, WHATEVER THE PIN SAYS
+     (16 Aug 2026, and it caught itself). J3 Lesson 1 was pinned with a
+     placeholder of all zeros while its numbers were still being measured; the
+     lesson then failed to open at all, the walker visited 0 screens, and the
+     run printed "the pinned shape holds". A gate that agrees with a walk that
+     never happened is DFM 204's exact sin, inside the harness that exists to
+     enforce it. Coverage is asserted, never merely compared. */
+  if (got.chunks === 0) bad.push('the walk reached 0 screens — the lesson never opened, so nothing was tested');
   const line = 'SHAPE  xp=' + got.xp + '  screens=' + got.chunks + '  presses=' + got.presses +
     '  marking=' + got.marks + '  badges=' + got.badges + '  errors=' + errs.length;
   note(line);
