@@ -303,7 +303,8 @@
     /* --- J3 --- */
     spotlight: wash() + '<span class="fx-beam"></span>' + motes('fx-mote', 6) + '<span class="fx-house"></span>',
     flashbulbs: wash() + '<span class="fx-marquee"></span>' +
-      '<span class="fx-flash f1"></span><span class="fx-flash f2"></span><span class="fx-flash f3"></span>',
+      '<span class="fx-flash f1"></span><span class="fx-flash f2"></span><span class="fx-flash f3"></span>' +
+      motes('fx-mote', 6),
     silverdust: wash() + '<span class="fx-sheen"></span>' + motes('fx-dust', 9)
   };
   /* ---------------- the DEFAULT look is the YEAR's, not J1's ----------------

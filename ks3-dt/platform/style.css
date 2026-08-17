@@ -1438,18 +1438,18 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
     radial-gradient(ellipse 60% 50% at 28% 32%, rgba(var(--gold-rgb), 0.13), transparent 70%),
     radial-gradient(ellipse 55% 45% at 74% 68%, rgba(var(--gold-hi-rgb), 0.10), transparent 72%);
   filter: blur(30px);
-  animation: washBreathe 19s ease-in-out infinite alternate;
+  animation: washBreathe 9s ease-in-out infinite alternate;
 }
 @keyframes washBreathe {
-  from { opacity: 0.55; transform: scale(1) translate3d(0, 0, 0); }
-  to { opacity: 1; transform: scale(1.08) translate3d(1.5vw, -1vh, 0); }
+  from { opacity: 0.30; transform: scale(0.96) translate3d(-2vw, 1vh, 0); }
+  to { opacity: 1; transform: scale(1.14) translate3d(2vw, -1.5vh, 0); }
 }
 
 /* ---- the starfield drifts, on the year looks only (his own example) ---- */
-#stars.is-drifting { animation: skyDrift 42s ease-in-out infinite alternate; }
+#stars.is-drifting { animation: skyDrift 20s ease-in-out infinite alternate; }
 @keyframes skyDrift {
-  from { transform: translate3d(-0.6vw, 0.4vh, 0) scale(1.015); }
-  to { transform: translate3d(0.7vw, -0.5vh, 0) scale(1.035); }
+  from { transform: translate3d(-1.6vw, 1vh, 0) scale(1.02); }
+  to { transform: translate3d(1.8vw, -1.2vh, 0) scale(1.06); }
 }
 
 /* ---- J2 "The Workbench": a forge that is still warm ----
@@ -1483,9 +1483,9 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .fx-embers .fx-forge {
   position: absolute; left: 0; right: 0; bottom: 0; height: 30vh;
   background: linear-gradient(0deg, rgba(var(--gold-rgb), 0.16), rgba(var(--gold-rgb), 0.05) 45%, transparent 85%);
-  animation: forgeBreathe 13s ease-in-out infinite alternate;
+  animation: forgeBreathe 8s ease-in-out infinite alternate;
 }
-@keyframes forgeBreathe { from { opacity: 0.4; } to { opacity: 0.95; } }
+@keyframes forgeBreathe { from { opacity: 0.25; } to { opacity: 1; } }
 
 /* ---- J2 "Copperline": warm copper light, blooming and fading ----
    WAS a molten seam with a gleam running along it — his "dreadful looking and
@@ -1495,11 +1495,15 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.20), rgba(var(--gold-rgb), 0.07) 45%, transparent 72%);
   filter: blur(46px);
 }
-.fx-copperglow .fx-bloom.b1 { left: 6%; top: 18%; width: 46vw; height: 46vw; animation: bloomBreathe 23s ease-in-out infinite alternate; }
-.fx-copperglow .fx-bloom.b2 { right: 4%; bottom: 10%; width: 38vw; height: 38vw; animation: bloomBreathe 29s ease-in-out infinite alternate-reverse 4s; }
+.fx-copperglow .fx-bloom.b1 { left: 6%; top: 18%; width: 46vw; height: 46vw; animation: bloomBreathe 11s ease-in-out infinite alternate; }
+.fx-copperglow .fx-bloom.b2 { right: 4%; bottom: 10%; width: 38vw; height: 38vw; animation: bloomBreatheB 14s ease-in-out infinite alternate; }
 @keyframes bloomBreathe {
-  from { opacity: 0.4; transform: scale(0.94); }
-  to { opacity: 0.9; transform: scale(1.1); }
+  from { opacity: 0.20; transform: scale(0.82) translate3d(-3vw, 2vh, 0); }
+  to { opacity: 1; transform: scale(1.22) translate3d(3vw, -2vh, 0); }
+}
+@keyframes bloomBreatheB {
+  from { opacity: 0.95; transform: scale(1.18) translate3d(2vw, -2vh, 0); }
+  to { opacity: 0.18; transform: scale(0.84) translate3d(-3vw, 3vh, 0); }
 }
 
 /* ---- J2 "Firewall": a veil of gold light over cold steel ----
@@ -1510,11 +1514,11 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   background:
     linear-gradient(102deg, transparent 18%, rgba(var(--gold-rgb), 0.13) 42%, rgba(var(--gold-hi-rgb), 0.06) 58%, transparent 82%);
   filter: blur(38px);
-  animation: veilBreathe 26s ease-in-out infinite alternate;
+  animation: veilBreathe 12s ease-in-out infinite alternate;
 }
 @keyframes veilBreathe {
-  from { opacity: 0.35; transform: scale(1.02) translate3d(-1vw, 0, 0); }
-  to { opacity: 0.85; transform: scale(1.12) translate3d(1vw, 0, 0); }
+  from { opacity: 0.15; transform: scale(1) translate3d(-6vw, 0, 0); }
+  to { opacity: 0.95; transform: scale(1.18) translate3d(6vw, 0, 0); }
 }
 
 /* ---- the drifting particles shared by the two J2 unlock looks ---- */
@@ -1523,18 +1527,18 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.9), rgba(var(--gold-rgb), 0) 70%);
   opacity: 0;
 }
-.fx-glint.m1 { left: 12%; top: 68%; animation: driftUp 34s ease-in-out infinite 0s; }
-.fx-glint.m2 { left: 27%; top: 82%; animation: driftUp 41s ease-in-out infinite 5.5s; }
-.fx-glint.m3 { left: 41%; top: 74%; width: 3px; height: 3px; animation: driftUp 37s ease-in-out infinite 11s; }
-.fx-glint.m4 { left: 58%; top: 88%; animation: driftUp 45s ease-in-out infinite 3s; }
-.fx-glint.m5 { left: 71%; top: 70%; width: 5px; height: 5px; animation: driftUp 32s ease-in-out infinite 16s; }
-.fx-glint.m6 { left: 84%; top: 80%; animation: driftUp 39s ease-in-out infinite 8.5s; }
-.fx-glint.m7 { left: 94%; top: 76%; width: 3px; height: 3px; animation: driftUp 43s ease-in-out infinite 13.5s; }
+.fx-glint.m1 { left: 12%; top: 68%; animation: driftUp 15s ease-in-out infinite 0s; }
+.fx-glint.m2 { left: 27%; top: 82%; animation: driftUp 19s ease-in-out infinite 2.2s; }
+.fx-glint.m3 { left: 41%; top: 74%; width: 3px; height: 3px; animation: driftUp 17s ease-in-out infinite 4.6s; }
+.fx-glint.m4 { left: 58%; top: 88%; animation: driftUp 21s ease-in-out infinite 6.8s; }
+.fx-glint.m5 { left: 71%; top: 70%; width: 5px; height: 5px; animation: driftUp 16s ease-in-out infinite 9.1s; }
+.fx-glint.m6 { left: 84%; top: 80%; animation: driftUp 18s ease-in-out infinite 11.4s; }
+.fx-glint.m7 { left: 94%; top: 76%; width: 3px; height: 3px; animation: driftUp 20s ease-in-out infinite 13.7s; }
 @keyframes driftUp {
   0% { transform: translate3d(0, 0, 0); opacity: 0; }
-  20% { opacity: 0.6; }
-  70% { opacity: 0.35; }
-  100% { transform: translate3d(-3vw, -46vh, 0); opacity: 0; }
+  15% { opacity: 0.95; }
+  70% { opacity: 0.7; }
+  100% { transform: translate3d(-4vw, -60vh, 0); opacity: 0; }
 }
 
 /* ---- J3 "The Screening Room": the projector is running ----
@@ -1545,11 +1549,11 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   background: linear-gradient(180deg, rgba(255, 246, 224, 0.22), rgba(255, 246, 224, 0.08) 45%, transparent 78%);
   filter: blur(52px);
   transform: rotate(14deg);
-  animation: beamSweep 46s ease-in-out infinite alternate;
+  animation: beamSweep 16s ease-in-out infinite alternate;
 }
 @keyframes beamSweep {
-  from { transform: translate3d(-4vw, 0, 0) rotate(14deg); opacity: 0.6; }
-  to { transform: translate3d(16vw, 0, 0) rotate(10deg); opacity: 0.95; }
+  from { transform: translate3d(-6vw, 0, 0) rotate(15deg); opacity: 0.45; }
+  to { transform: translate3d(20vw, 0, 0) rotate(9deg); opacity: 1; }
 }
 .fx-mote {
   position: absolute; width: 3px; height: 3px; border-radius: 50%;
@@ -1557,25 +1561,25 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   box-shadow: 0 0 6px rgba(255, 248, 230, 0.5);
   opacity: 0;
 }
-.fx-mote.m1 { left: 22%; top: 34%; animation: moteFloat 30s ease-in-out infinite 0s; }
-.fx-mote.m2 { left: 31%; top: 68%; animation: moteFloat 38s ease-in-out infinite 5.6s; }
-.fx-mote.m3 { left: 44%; top: 22%; width: 4px; height: 4px; animation: moteFloat 26s ease-in-out infinite 11s; }
-.fx-mote.m4 { left: 52%; top: 55%; animation: moteFloat 42s ease-in-out infinite 3.2s; }
-.fx-mote.m5 { left: 63%; top: 41%; animation: moteFloat 34s ease-in-out infinite 16.4s; }
-.fx-mote.m6 { left: 72%; top: 74%; width: 4px; height: 4px; animation: moteFloat 48s ease-in-out infinite 8.2s; }
+.fx-mote.m1 { left: 22%; top: 34%; animation: moteFloat 15s ease-in-out infinite 0s; }
+.fx-mote.m2 { left: 31%; top: 68%; animation: moteFloat 19s ease-in-out infinite 5.6s; }
+.fx-mote.m3 { left: 44%; top: 22%; width: 4px; height: 4px; animation: moteFloat 14s ease-in-out infinite 11s; }
+.fx-mote.m4 { left: 52%; top: 55%; animation: moteFloat 21s ease-in-out infinite 3.2s; }
+.fx-mote.m5 { left: 63%; top: 41%; animation: moteFloat 17s ease-in-out infinite 16.4s; }
+.fx-mote.m6 { left: 72%; top: 74%; width: 4px; height: 4px; animation: moteFloat 23s ease-in-out infinite 8.2s; }
 @keyframes moteFloat {
   0% { transform: translate3d(0, 0, 0); opacity: 0; }
-  25% { opacity: 0.6; }
-  75% { opacity: 0.4; }
-  100% { transform: translate3d(2.5vw, -13vh, 0); opacity: 0; }
+  20% { opacity: 0.95; }
+  75% { opacity: 0.65; }
+  100% { transform: translate3d(4vw, -26vh, 0); opacity: 0; }
 }
 .fx-spotlight .fx-house {
   position: absolute; left: 0; right: 0; bottom: 0; height: 34vh;
   background: radial-gradient(ellipse at 10% 100%, rgba(255, 214, 170, 0.10), transparent 62%),
               radial-gradient(ellipse at 90% 100%, rgba(255, 214, 170, 0.10), transparent 62%);
-  animation: houseGlow 17s ease-in-out infinite alternate;
+  animation: houseGlow 7s ease-in-out infinite alternate;
 }
-@keyframes houseGlow { from { opacity: 0.35; } to { opacity: 0.9; } }
+@keyframes houseGlow { from { opacity: 0.2; } to { opacity: 1; } }
 
 /* ---- J3 "Première": the closest to the bar, softened further ----
    His "more what I'm after (although could still be improved)". The marquee
@@ -1598,13 +1602,13 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   filter: blur(44px);
   opacity: 0;
 }
-.fx-flashbulbs .fx-flash.f1 { left: 2%; top: 10%; animation: bulbPop 21s ease-in-out infinite 1s; }
-.fx-flashbulbs .fx-flash.f2 { right: 4%; top: 28%; animation: bulbPop 27s ease-in-out infinite 9s; }
-.fx-flashbulbs .fx-flash.f3 { left: 32%; bottom: 4%; animation: bulbPop 24s ease-in-out infinite 17s; }
+.fx-flashbulbs .fx-flash.f1 { left: 2%; top: 10%; animation: bulbPop 13s ease-in-out infinite 0.6s; }
+.fx-flashbulbs .fx-flash.f2 { right: 4%; top: 28%; animation: bulbPop 16s ease-in-out infinite 5s; }
+.fx-flashbulbs .fx-flash.f3 { left: 32%; bottom: 4%; animation: bulbPop 15s ease-in-out infinite 10s; }
 @keyframes bulbPop {
-  0%, 100% { opacity: 0; transform: scale(0.9); }
-  14% { opacity: 0.75; transform: scale(1.04); }
-  38% { opacity: 0; transform: scale(1.12); }
+  0%, 100% { opacity: 0; transform: scale(0.88); }
+  12% { opacity: 0.95; transform: scale(1.06); }
+  42% { opacity: 0; transform: scale(1.16); }
 }
 
 /* ---- J3 "The Cutting Room": silver dust and a slow sheen ----
@@ -1615,11 +1619,11 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   background: radial-gradient(ellipse 70% 55% at 40% 40%, rgba(var(--gold-hi-rgb), 0.14), transparent 72%),
               radial-gradient(ellipse 50% 60% at 78% 72%, rgba(var(--gold-rgb), 0.10), transparent 74%);
   filter: blur(40px);
-  animation: sheenBreathe 31s ease-in-out infinite alternate;
+  animation: sheenBreathe 13s ease-in-out infinite alternate;
 }
 @keyframes sheenBreathe {
-  from { opacity: 0.4; transform: scale(1) translate3d(0, 0, 0); }
-  to { opacity: 0.9; transform: scale(1.09) translate3d(-1.5vw, 1vh, 0); }
+  from { opacity: 0.18; transform: scale(0.94) translate3d(3vw, -2vh, 0); }
+  to { opacity: 1; transform: scale(1.16) translate3d(-3vw, 2vh, 0); }
 }
 .fx-dust {
   position: absolute; width: 3px; height: 3px; border-radius: 50%;
@@ -1627,20 +1631,20 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   box-shadow: 0 0 6px rgba(var(--gold-hi-rgb), 0.4);
   opacity: 0;
 }
-.fx-dust.m1 { left: 9%; top: 30%; animation: dustDrift 40s ease-in-out infinite 0s; }
-.fx-dust.m2 { left: 21%; top: 62%; animation: dustDrift 47s ease-in-out infinite 4s; }
-.fx-dust.m3 { left: 34%; top: 20%; animation: dustDrift 36s ease-in-out infinite 9s; }
-.fx-dust.m4 { left: 46%; top: 78%; width: 4px; height: 4px; animation: dustDrift 52s ease-in-out infinite 14s; }
-.fx-dust.m5 { left: 57%; top: 44%; animation: dustDrift 43s ease-in-out infinite 19s; }
-.fx-dust.m6 { left: 68%; top: 26%; animation: dustDrift 38s ease-in-out infinite 6s; }
-.fx-dust.m7 { left: 78%; top: 70%; width: 4px; height: 4px; animation: dustDrift 49s ease-in-out infinite 24s; }
-.fx-dust.m8 { left: 88%; top: 38%; animation: dustDrift 45s ease-in-out infinite 12s; }
-.fx-dust.m9 { left: 96%; top: 58%; animation: dustDrift 41s ease-in-out infinite 17s; }
+.fx-dust.m1 { left: 9%; top: 30%; animation: dustDrift 17s ease-in-out infinite 0s; }
+.fx-dust.m2 { left: 21%; top: 62%; animation: dustDrift 21s ease-in-out infinite 1.8s; }
+.fx-dust.m3 { left: 34%; top: 20%; animation: dustDrift 15s ease-in-out infinite 3.6s; }
+.fx-dust.m4 { left: 46%; top: 78%; width: 4px; height: 4px; animation: dustDrift 23s ease-in-out infinite 5.4s; }
+.fx-dust.m5 { left: 57%; top: 44%; animation: dustDrift 19s ease-in-out infinite 7.2s; }
+.fx-dust.m6 { left: 68%; top: 26%; animation: dustDrift 16s ease-in-out infinite 9s; }
+.fx-dust.m7 { left: 78%; top: 70%; width: 4px; height: 4px; animation: dustDrift 22s ease-in-out infinite 10.8s; }
+.fx-dust.m8 { left: 88%; top: 38%; animation: dustDrift 18s ease-in-out infinite 12.6s; }
+.fx-dust.m9 { left: 96%; top: 58%; animation: dustDrift 20s ease-in-out infinite 14.4s; }
 @keyframes dustDrift {
   0% { transform: translate3d(0, 0, 0); opacity: 0; }
-  22% { opacity: 0.55; }
-  72% { opacity: 0.3; }
-  100% { transform: translate3d(3.5vw, -18vh, 0); opacity: 0; }
+  18% { opacity: 0.9; }
+  72% { opacity: 0.6; }
+  100% { transform: translate3d(5vw, -30vh, 0); opacity: 0; }
 }
 
 @media (max-width: 640px) {
