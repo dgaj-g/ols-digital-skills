@@ -119,5 +119,32 @@ if (fs.existsSync(STAMP)) {
 
 fs.rmSync(tmp, { recursive: true, force: true });
 console.log('\n=========================================');
+/* ------------------------------------------------------------------ *
+ * THE HTTP LAYER, closed 17 Aug 2026 — the half of DFM 189 that was missed.
+ * That rule keyed localStorage by contentVersion, so a stale lesson could not
+ * be served out of the store. It never looked one layer down: GitHub Pages
+ * sends `cache-control: max-age=600`, so the browser's own HTTP cache answered
+ * the fetch for ten minutes without asking Pages — and the stale body it
+ * returned was written into localStorage under the NEW key, where nothing would
+ * ever purge it. He hit exactly that: Pages serving the new lesson, the server
+ * reporting the new version, a private window correct, and his ordinary tab
+ * showing the old wording through repeated hard refreshes.
+ * The version now rides in the URL, so a new version cannot be answered from a
+ * cache of the old one. Asserted in BOTH homes (DFM 234).
+ * ------------------------------------------------------------------ */
+(function httpCacheLayer() {
+  const ROOT2 = path.resolve(__dirname, '../../..');
+  const app = fs.readFileSync(path.join(ROOT2, 'ks3-dt/platform/app.js'), 'utf8');
+  const dev = fs.readFileSync(path.join(ROOT2, 'ks3-dt/platform/dev-server.js'), 'utf8');
+  console.log('\n== THE CONTENT URL CARRIES THE VERSION (the HTTP-cache half of DFM 189) ==');
+  check(/CONTENT_BASE \+ path \+ \(App\.state\.contentVersion \? '\?v='/.test(app),
+    'app.js puts the contentVersion in the content URL, so a new version is a new URL');
+  check(/'\.\.\/content\/' \+ path \+ \(CONTENT_VER \? '\?v='/.test(dev),
+    'and dev-server.js does the same, so the two homes behave alike');
+  check(!/fetch\(CONTENT_BASE \+ path, \{ cache: 'default' \}\)/.test(app),
+    'CONTROL: the old version-less fetch — the one his browser answered from its own cache — is gone');
+})();
+
 console.log(FAILS.length ? 'FAILURES:\n- ' + FAILS.join('\n- ') : 'ALL CONTENT-VERSION CHECKS PASSED');
 process.exit(FAILS.length ? 1 : 0);
+
