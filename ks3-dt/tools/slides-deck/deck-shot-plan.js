@@ -892,9 +892,12 @@ const BRIEF_SHOTS = {
     },
     '04-inspect-scene.png': {
       chunk: 'inspection', says: 'a room being inspected, before any station is flagged',
+      /* `is-flagged` is the engine's own class, read out of engines.js rather than
+         guessed — the first version tested `.flagged` and `.is-on`, neither of
+         which exists, so it would have accepted a room with flags already on it */
       at: () => {
         const st = document.querySelector('.chunk-host .insp-stage');
-        return !!st && !document.querySelector('.chunk-host .insp-zone.flagged, .chunk-host .insp-zone.is-on');
+        return !!st && !document.querySelector('.chunk-host .insp-zone.is-flagged');
       }
     },
     '05-snapshot.png': {
@@ -906,17 +909,38 @@ const BRIEF_SHOTS = {
     },
     '06-warrant.png': {
       chunk: 'warrant', says: 'a Warrant question after answering: the verdict and the reason',
+      /* ── .q-feedback EXISTS FROM THE START, HIDDEN, AND THAT COST THIS ROW A
+         RUN. `engines.js` renders `<div class="q-feedback" hidden></div>` with the
+         question, so "does a feedback box exist" is true on an unanswered card —
+         a predicate that looks falsifiable and is not, which is the exact fault
+         this file's own header warns about. It shipped a picture of an UNANSWERED
+         question under a caption promising the verdict and the reason, and every
+         machine passed it; my own eyes on the contact sheet caught it. So the test
+         is now the three things that are only true AFTER a click: the box is not
+         hidden, it carries real words, and the card knows it has been answered. */
       at: () => {
         const c = document.querySelector('.chunk-host .q-card');
-        return !!c && !!c.querySelector('.q-feedback');
+        if (!c) return false;
+        const fb = c.querySelector('.q-feedback');
+        return !!fb && !fb.hidden && (fb.textContent || '').trim().length > 20;
       }
     },
     '07-exit.png': {
       chunk: 'exit', says: 'the marked exit question, before it is answered',
-      at: () => !!document.querySelector('.chunk-host .q-card')
+      /* BEFORE it is answered has to be tested, or the caption is a hope */
+      at: () => {
+        const c = document.querySelector('.chunk-host .q-card');
+        if (!c) return false;
+        const fb = c.querySelector('.q-feedback');
+        return (!fb || fb.hidden) && !c.querySelector('.q-opt[disabled]');
+      }
     },
     '08-selfeval.png': {
-      chunk: 'selfeval', says: 'the final screen — compulsory, and the comment box comes to her'
+      chunk: 'selfeval', says: 'the final screen, untouched — compulsory, and the comment box comes to the teacher',
+      at: () => {
+        const c = document.querySelector('.chunk-host .se-card');
+        return !!c && !c.querySelector('.se-chip.on, .se-chip.sel, .se-chip[aria-pressed="true"]');
+      }
     }
   },
 
@@ -945,9 +969,13 @@ const BRIEF_SHOTS = {
     },
     '04-case.png': {
       chunk: 'code', says: 'a judged case: the verdict and the reason underneath it',
+      /* see j2-01's 06-warrant row: the feedback box is in the DOM from the start,
+         hidden, so only "not hidden AND carrying words" proves a case was judged */
       at: () => {
         const c = document.querySelector('.chunk-host .q-card');
-        return !!c && !!c.querySelector('.q-feedback');
+        if (!c) return false;
+        const fb = c.querySelector('.q-feedback');
+        return !!fb && !fb.hidden && (fb.textContent || '').trim().length > 20;
       }
     },
     '05-portfolio.png': {
@@ -966,10 +994,20 @@ const BRIEF_SHOTS = {
     },
     '07-exit.png': {
       chunk: 'exit', says: 'the marked exit question, before it is answered',
-      at: () => !!document.querySelector('.chunk-host .q-card')
+      /* BEFORE it is answered has to be tested, or the caption is a hope */
+      at: () => {
+        const c = document.querySelector('.chunk-host .q-card');
+        if (!c) return false;
+        const fb = c.querySelector('.q-feedback');
+        return (!fb || fb.hidden) && !c.querySelector('.q-opt[disabled]');
+      }
     },
     '08-selfeval.png': {
-      chunk: 'selfeval', says: 'the final screen — compulsory, and the comment box comes to her'
+      chunk: 'selfeval', says: 'the final screen, untouched — compulsory, and the comment box comes to the teacher',
+      at: () => {
+        const c = document.querySelector('.chunk-host .se-card');
+        return !!c && !c.querySelector('.se-chip.on, .se-chip.sel, .se-chip[aria-pressed="true"]');
+      }
     }
   }
 };
