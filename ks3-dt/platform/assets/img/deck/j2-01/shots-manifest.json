@@ -1,0 +1,83 @@
+{
+ "lesson": "j2-01",
+ "shots": {
+  "workbench": {
+   "name": "workbench",
+   "kind": "app",
+   "chunkId": "workbench",
+   "selector": ".chunk-host .step-card",
+   "textSnippet": "Look along the top of this screen, over on the right, for a small green word: Saved. You never press a save button here. Every time you answer something or finish a part of a lesson, this website writ",
+   "contentAnchor": "Look along the top of this screen, over on the right, for a small green word: Saved. You never press a save button here. Every time you answer something or finish a part of a lesson, this website writes it to your own record, and that green word tells you it has landed. Your work follows your login, so you can pick it up on any school computer.",
+   "cardText": "STEP 3 OF 5 · 💾 · Watch your work save itself · Look along the top of this screen, over on the right, for a small green word: Saved. You never press a save button here. Every time you answer something or finish a part of a lesson, this website writes it to your own record, and that green word tells you it has landed. Your work follows your login, so you can pick it up on any school computer. · I found the Saved chip at the top",
+   "says": "a workbench step: what to look for, and the box to tick when it is found",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "b8b484fbf276",
+   "px": "1372x754"
+  },
+  "badge": {
+   "name": "badge",
+   "kind": "app",
+   "chunkId": "workbench",
+   "selector": ".badge-pop-card",
+   "textSnippet": "Badge earned Your Workbench +12 XP Onward",
+   "contentAnchor": null,
+   "cardText": "Badge earned · Your Workbench · +12 XP · Onward",
+   "says": "the badge card that appears over the lesson, with its points",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "b8b484fbf276",
+   "px": "912x776"
+  },
+  "inspect-intro": {
+   "name": "inspect-intro",
+   "kind": "app",
+   "chunkId": "inspection",
+   "selector": ".chunk-host .insp-intro-steps",
+   "textSnippet": "You will then be told which rule each flag breaks, and shown anything you missed.",
+   "contentAnchor": "You will then be told which rule each flag breaks, and shown anything you missed.",
+   "cardText": "Look along the whole row before you click anything. · Click a station to flag it. Click it again to take the flag off. · When you are happy, press File my inspection report. · You will then be told which rule each flag breaks, and shown anything you missed.",
+   "says": "how the inspection works, in the four steps off its own opening card",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "eeb6953a0b0e",
+   "px": "980x348"
+  },
+  "snapshot-q": {
+   "name": "snapshot-q",
+   "kind": "app",
+   "chunkId": "snapshot",
+   "selector": ".chunk-host .q-card",
+   "textSnippet": "A robot is told to take three steps forward, then turn left, then take two more steps forward. What would change if it turned left FIRST and then took all five steps?",
+   "contentAnchor": "A robot is told to take three steps forward, then turn left, then take two more steps forward. What would change if it turned left FIRST and then took all five steps?",
+   "cardText": "1 OF 12 · A robot is told to take three steps forward, then turn left, then take two more steps forward. What would change if it turned left FIRST and then took all five steps? · A · It would not move at all · B · It would end up in exactly the same place · C · The robot would break · D · It would end up somewhere different",
+   "says": "a Snapshot question, unanswered — one question, four choices, no verdict",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "6f203e531173",
+   "px": "1372x930"
+  },
+  "warrant-intro": {
+   "name": "warrant-intro",
+   "kind": "app",
+   "chunkId": "warrant",
+   "selector": ".chunk-host .intro-card",
+   "textSnippet": "Your Warrant is your proof that you know your way around the Workshop. Six quick questions, all of them about THIS hour, and every one of them is marked straight away with the reason.",
+   "contentAnchor": "Your Warrant is your proof that you know your way around the Workshop. Six quick questions, all of them about THIS hour, and every one of them is marked straight away with the reason.",
+   "cardText": "THE WORKSHOP WARRANT · Quick check · Your Warrant is your proof that you know your way around the Workshop. Six quick questions, all of them about THIS hour, and every one of them is marked straight away with the reason. · Start",
+   "says": "the card that opens the Workshop Warrant",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "ef9f092ab2fb",
+   "px": "1372x628"
+  },
+  "selfeval": {
+   "name": "selfeval",
+   "kind": "app",
+   "chunkId": "selfeval",
+   "selector": ".chunk-host .se-card",
+   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
+   "contentAnchor": "I know the DT room rules, and I found them in the inspection.",
+   "cardText": "How did it go? · I know my way around this website. · ✓ I can · ≈ Getting there · ✗ Not yet · I know the DT room rules, and I found them in the inspection. · ✓ I can · ≈ Getting there · ✗ Not yet · I understand what the Snapshot was for. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer every sentence above — and how it felt — and this button wakes up. · Send & finish",
+   "says": "the compulsory How did it go? screen, untouched",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "fadb62ce5b35",
+   "px": "1372x1402"
+  }
+ }
+}

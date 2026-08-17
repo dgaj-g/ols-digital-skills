@@ -1,0 +1,80 @@
+{
+ "lesson": "j2-01",
+ "kind": "brief",
+ "contentVersion": "2026-08-17f",
+ "shots": {
+  "01-briefing.png": {
+   "name": "01-briefing.png",
+   "chunkId": "briefing",
+   "textSnippet": "Here is what this hour holds, in order. First you set up your workbench, which takes about seven minutes and means finding your way around this website. Then you run a safety inspection on an ICT room",
+   "contentAnchor": "Here is what this hour holds, in order. First you set up your workbench, which takes about seven minutes and means finding your way around this website. Then you run a safety inspection on an ICT room: four goes at it, and a harder fifth one if you want it. After that come twelve quick questions about what you can do already, which are not a test and cannot be failed. Then six questions about this hour, and your first unlock. It finishes with a card about what you build next, one marked question, and a screen that asks you how the hour went.",
+   "says": "the welcome card pupils read together at the start of the hour",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "f8e2b3ee4117"
+  },
+  "02-workbench.png": {
+   "name": "02-workbench.png",
+   "chunkId": "workbench",
+   "textSnippet": "Look along the top of this screen, over on the right, for a small green word: Saved. You never press a save button here. Every time you answer something or finish a part of a lesson, this website writ",
+   "contentAnchor": "Look along the top of this screen, over on the right, for a small green word: Saved. You never press a save button here. Every time you answer something or finish a part of a lesson, this website writes it to your own record, and that green word tells you it has landed. Your work follows your login, so you can pick it up on any school computer.",
+   "says": "a workbench step — what to look for, and the box to tick",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "b8b484fbf276"
+  },
+  "03-inspect-intro.png": {
+   "name": "03-inspect-intro.png",
+   "chunkId": "inspection",
+   "textSnippet": "Now you are the inspector. You will see a drawing of an ICT room after a class has left. Click any station you think breaks one of those rules to plant a flag on it. You can change your mind as often ",
+   "contentAnchor": "Now you are the inspector. You will see a drawing of an ICT room after a class has left. Click any station you think breaks one of those rules to plant a flag on it. You can change your mind as often as you like, because nothing is marked until you file your report.",
+   "says": "the inspection opening card: the six rules, then how it works",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "eeb6953a0b0e"
+  },
+  "04-inspect-scene.png": {
+   "name": "04-inspect-scene.png",
+   "chunkId": "inspection",
+   "textSnippet": "Filing tells you which rule each flag breaks, and shows you anything you missed. A flag on a station that is fine costs you nothing.",
+   "contentAnchor": "Filing tells you which rule each flag breaks, and shows you anything you missed. A flag on a station that is fine costs you nothing.",
+   "says": "a room being inspected, before any station is flagged",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "eeb6953a0b0e"
+  },
+  "05-snapshot.png": {
+   "name": "05-snapshot.png",
+   "chunkId": "snapshot",
+   "textSnippet": "A robot is told to take three steps forward, then turn left, then take two more steps forward. What would change if it turned left FIRST and then took all five steps?",
+   "contentAnchor": "A robot is told to take three steps forward, then turn left, then take two more steps forward. What would change if it turned left FIRST and then took all five steps?",
+   "says": "a Snapshot question — no verdict on these, by design",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "6f203e531173"
+  },
+  "06-warrant.png": {
+   "name": "06-warrant.png",
+   "chunkId": "warrant",
+   "textSnippet": "A tile on your year map has a padlock on it. What does that mean?",
+   "contentAnchor": "A tile on your year map has a padlock on it. What does that mean?",
+   "says": "a Warrant question after answering: the verdict and the reason",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "ef9f092ab2fb"
+  },
+  "07-exit.png": {
+   "name": "07-exit.png",
+   "chunkId": "exit",
+   "textSnippet": "You get a question wrong in a lesson on this website. What actually happens?",
+   "contentAnchor": "You get a question wrong in a lesson on this website. What actually happens?",
+   "says": "the marked exit question, before it is answered",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "bf382b908652"
+  },
+  "08-selfeval.png": {
+   "name": "08-selfeval.png",
+   "chunkId": "selfeval",
+   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
+   "contentAnchor": "I know the DT room rules, and I found them in the inspection.",
+   "says": "the final screen — compulsory, and the comment box comes to her",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "fadb62ce5b35"
+  }
+ },
+ "reused": {}
+}

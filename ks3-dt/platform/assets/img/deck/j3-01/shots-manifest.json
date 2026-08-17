@@ -1,0 +1,83 @@
+{
+ "lesson": "j3-01",
+ "shots": {
+  "orientation": {
+   "name": "orientation",
+   "kind": "app",
+   "chunkId": "orientation",
+   "selector": ".chunk-host .step-card",
+   "textSnippet": "Look along the top of this screen, over on the right, for a small green word: Saved. You never press a save button here. Every time you answer something or finish a part of a lesson, this website writ",
+   "contentAnchor": "Look along the top of this screen, over on the right, for a small green word: Saved. You never press a save button here. Every time you answer something or finish a part of a lesson, this website writes it to your own record, and that green word tells you it has landed. Your work follows your login, so you can pick it up on any school computer.",
+   "cardText": "STEP 3 OF 5 · 💾 · Watch your work save itself · Look along the top of this screen, over on the right, for a small green word: Saved. You never press a save button here. Every time you answer something or finish a part of a lesson, this website writes it to your own record, and that green word tells you it has landed. Your work follows your login, so you can pick it up on any school computer. · I found the Saved chip at the top",
+   "says": "an orientation step: what to look for, and the box to tick when it is found",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "0c9906c5cae9",
+   "px": "1372x754"
+  },
+  "badge": {
+   "name": "badge",
+   "kind": "app",
+   "chunkId": "orientation",
+   "selector": ".badge-pop-card",
+   "textSnippet": "Badge earned Studio Pass +12 XP Onward",
+   "contentAnchor": null,
+   "cardText": "Badge earned · Studio Pass · +12 XP · Onward",
+   "says": "the badge card that appears over the lesson, with its points",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "0c9906c5cae9",
+   "px": "912x776"
+  },
+  "code-intro": {
+   "name": "code-intro",
+   "kind": "app",
+   "chunkId": "code",
+   "selector": ".chunk-host .intro-card",
+   "textSnippet": "A working studio writes its rules down as a code of conduct, and then somebody has to decide whether people are keeping it. Today that somebody is you. You will read six real situations. For each one ",
+   "contentAnchor": "A working studio writes its rules down as a code of conduct, and then somebody has to decide whether people are keeping it. Today that somebody is you. You will read six real situations. For each one you decide whether it is IN LINE with the code or AGAINST it, and if it is against it, which standard it breaks.",
+   "cardText": "THE STUDIO CODE · Quick check · These are the DT room rules. They are the same six rules every DT room in this school runs on, and there is nothing new in them — what is new is the job you are given here. · A working studio writes its rules down as a code of conduct, and then somebody has to decide whether people are keeping it. Today that somebody is you. You will read six real situations. For each one you decide whether it is IN LINE with the code or AGAINST it, and if it is against it, which ",
+   "says": "the card that opens the Studio Code and explains the judging job",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "bc917839fc9a",
+   "px": "1372x1000"
+  },
+  "portfolio-q": {
+   "name": "portfolio-q",
+   "kind": "app",
+   "chunkId": "portfolio",
+   "selector": ".chunk-host .q-card",
+   "textSnippet": "A playlist holds four songs. Song 2 is deleted. What is the playlist like afterwards?",
+   "contentAnchor": "A playlist holds four songs. Song 2 is deleted. What is the playlist like afterwards?",
+   "cardText": "2 OF 12 · A playlist holds four songs. Song 2 is deleted. What is the playlist like afterwards? · A · Three songs, shuffled into a brand-new order · B · Three songs, with an empty gap where song 2 used to be · C · Three songs — and the songs that were after the gap have each moved up one place · D · Four songs, but song 2 is silent",
+   "says": "a Portfolio Zero question, unanswered — one question, four choices, no verdict",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "1e4156f74af4",
+   "px": "1372x922"
+  },
+  "compass": {
+   "name": "compass",
+   "kind": "app",
+   "chunkId": "compass",
+   "selector": ".chunk-host .cmp-card",
+   "textSnippet": "Your group is making a quiz game for the school open night. Somebody has to design how it looks and how the questions are worded. Somebody has to write the code that keeps the score and picks the winn",
+   "contentAnchor": "Your group is making a quiz game for the school open night. Somebody has to design how it looks and how the questions are worded. Somebody has to write the code that keeps the score and picks the winner. You get first pick.",
+   "cardText": "Which one sounds more like you? · Pick one from each pair. You can change any of them until you press the button at the bottom. · Your group is making a quiz game for the school open night. Somebody has to design how it looks and how the questions are worded. Somebody has to write the code that keeps the score and picks the winner. You get first pick. · I would rather design how it looks and reads · I would rather write the code that keeps the score · Something you made is not working properly a",
+   "says": "the Compass board — three pairs, nothing picked, the settle button still locked",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "fa8c8617ea1d",
+   "px": "1372x1492"
+  },
+  "selfeval": {
+   "name": "selfeval",
+   "kind": "app",
+   "chunkId": "selfeval",
+   "selector": ".chunk-host .se-card",
+   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
+   "contentAnchor": "I know how to check my own progress on this website.",
+   "cardText": "How did it go? · I know what this year is building towards. · ✓ I can · ≈ Getting there · ✗ Not yet · I know the studio code, and I judged the cases. · ✓ I can · ≈ Getting there · ✗ Not yet · I know how to check my own progress on this website. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer every sentence above — and how it felt — and this button wakes up. · Send & finish",
+   "says": "the compulsory How did it go? screen, untouched",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "3b1d5516175b",
+   "px": "1372x1402"
+  }
+ }
+}

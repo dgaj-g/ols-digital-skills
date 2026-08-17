@@ -96,6 +96,31 @@ function askedIn(lessonJson, recapPool, lessonNum) {
       (cs.clues || []).forEach((c, i) => add(typeof c === 'string' ? c : (c.text || c.clue), cs.id + ' clue ' + (i + 1)));
       (cs.fixes || []).forEach((f, i) => add(typeof f === 'string' ? f : (f.text || f.fix), cs.id + ' fix ' + (i + 1)));
     });
+    /* ══ THE INSPECTION'S OWN ANSWERS (added for the J2/J3 round, 17 Aug 2026) ══
+       J2 Lesson 1's biggest activity is not a question engine at all: it is five
+       drawn rooms, and the pupil's job is to work out which stations break which
+       rule. Every zone therefore carries the answer in prose — `rule` says what is
+       wrong with a flagged station, and `clearSay`/`okSay` say why a clean one is
+       fine, INCLUDING the two looks-wrong-but-is-not traps that are the whole
+       point of scenes 4 and 5.
+       None of that was reachable from this gate: it collected `items`, `blocks`,
+       `criteria` and `cases`, and an inspect zone is none of them. So a slide
+       could have printed "the screen showing the sign-in box is the one that is
+       fine" and every check would have gone green. That is the DFM 204 shape —
+       coverage that does not exist, reporting nothing — on the one activity in
+       the year that is built entirely out of answers.
+       The six RULES themselves (`config.rules`) are deliberately NOT collected:
+       they are the teaching, the deck is meant to deliver them, and he ruled that
+       giving the room rules first is on purpose. */
+    (cfg.scenes || []).forEach((sc, si) => {
+      const where = ch.id + ' scene ' + (si + 1);
+      (sc.zones || []).forEach((z, zi) => {
+        const zn = where + ' › ' + (z.name || 'zone ' + (zi + 1));
+        add(z.rule, zn + ' verdict');
+        add(z.clearSay, zn + ' clean verdict');
+        add(z.okSay, zn + ' left-alone verdict');
+      });
+    });
   }
   (lessonJson.exit && lessonJson.exit.items || []).forEach(it => addItem(it, 'exit check'));
 
@@ -212,6 +237,48 @@ for (const year of fs.readdirSync(CONTENT)) {
       'than no gate (DFM 146a). Fix the matcher before trusting any pass above.');
   } else {
     notes.push('control: the real j1-02 deck passes cleanly (the over-tightening guard)');
+  }
+
+  /* ═══ (4) THE INSPECTION CONTROL — the new row kind, proved to bite ═════════
+     A gate that has grown a new reach and never been watched to use it has not
+     grown at all. This plants the exact leak the extension exists for: a slide
+     that tells the class which station in scene 4 is the one that only LOOKS
+     wrong. It is fed through the same askedIn/sweep the real decks go through. */
+  const j2Path = path.join(CONTENT, 'j2', 'lessons', 'j2-01.json');
+  const j2Deck = path.join(CONTENT, 'j2', 'decks', 'j2-01.deck.json');
+  if (!fs.existsSync(j2Path) || !fs.existsSync(j2Deck)) {
+    notes.push('(inspection control skipped — j2-01 is not packed yet)');
+    return;
+  }
+  const j2 = JSON.parse(fs.readFileSync(j2Path, 'utf8'));
+  const j2asked = askedIn(j2, null, j2.num);
+  const zoneVerdicts = j2asked.filter(a => /scene \d+ › .* verdict$/.test(a.what));
+  if (!zoneVerdicts.length) {
+    fails.push('THE INSPECTION CONTROL COULD NOT RUN: j2-01\'s inspection scenes yielded no ' +
+      'zone verdicts, so the new reach is collecting nothing and the extension is ' +
+      'decorative. Check askedIn\'s scenes walk.');
+    return;
+  }
+  notes.push('j2-01: ' + zoneVerdicts.length + ' inspection zone verdict(s) now held off the board too');
+  const j2real = JSON.parse(fs.readFileSync(j2Deck, 'utf8'));
+  const leak2 = JSON.parse(JSON.stringify(j2real));
+  const sl2 = ((leak2.sections || [])[0] || {}).slides || [];
+  sl2[0].bullets = (sl2[0].bullets || []).concat([zoneVerdicts[0].text]);
+  if (!sweep('CONTROL', leak2, j2asked).length) {
+    fails.push('THE INSPECTION-LEAK CONTROL PASSED. A slide printing "' +
+      zoneVerdicts[0].text.slice(0, 60) + '…" — the verdict on a real station in a room the ' +
+      'class is about to inspect — was accepted. The whole activity is made of answers, so ' +
+      'this gate must reach them.');
+  } else {
+    notes.push('control: a slide printing an inspection station\'s verdict was REJECTED');
+  }
+  if (sweep('CONTROL', j2real, j2asked).length) {
+    fails.push('THE INSPECTION OVER-TIGHTENING CONTROL FAILED. The real j2-01 deck was flagged ' +
+      'as leaking an inspection verdict. Its six-rules slide is DELIBERATE (his ruling: the ' +
+      'rules are given first, on purpose), so if the rules are being collected as answers the ' +
+      'extension is over-reaching (DFM 146a).');
+  } else {
+    notes.push('control: the real j2-01 deck passes cleanly, six-rules slide and all');
   }
 })();
 

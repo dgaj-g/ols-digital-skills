@@ -75,6 +75,46 @@ const THEMES = {
     ground: '#1C0910', panel: '#2A1018', accent: '#FF6E8C', accent2: '#FFE9B8',
     text: '#FFFFFF', dim: '#E8C9D2',
     motif: 'marquee'          /* bulb runs + crossed spotlight beams */
+  },
+
+  /* ══════════════════════ THE J2/J3 THEMES (K26, 17 Aug 2026) ═══════════════
+     His ruling was REUSE — one generator, one house style — with the condition
+     that reuse never becomes laziness (DFM 237a). So these two are built to the
+     same two-layer motif contract as the five above and are held to the same
+     contrast floor, and each is harmonised with its own year's pupil-side world
+     so the board and her screen belong to one another (template §4).
+
+     BEING DISTINCT WAS THE HARD PART, and it is worth recording why each choice
+     was made rather than leaving it to look arbitrary.
+
+     THE WORKBENCH (J2 Lesson 1) sits nearest to Lesson 2's Amber Circuit, which
+     is already a warm dark board with an amber accent. Three things separate
+     them, and all three are visible from the back of a room: the ground is an
+     iron-warm CHARCOAL (`#1A1512`, lightness 9%) rather than Amber Circuit's
+     near-black `#161006` (6%); the accent is COPPER at hue 24 rather than amber
+     at hue 40; and the second accent is COLD STEEL — Amber Circuit has no cool
+     colour anywhere in it, so a steel-blue hairline is unmistakably not that
+     deck. The motif is a workshop rather than a circuit board.
+
+     THE SCREENING ROOM (J3 Lesson 1) sits nearest to Lesson 5's Premiere Night.
+     Same discipline: PLUM (hue 305) rather than red-black (hue 340), MARQUEE
+     GOLD as the dominant accent rather than pink — and the accent is what a
+     slide is mostly coloured by, since every kicker, bullet dot, beacon ring and
+     screenshot frame takes it — with red-carpet crimson second (K11f). And the
+     motif is the room's INTERIOR (seat backs, the projector's beam, the screen
+     itself) where Premiere Night is the building's FRONT (marquee bulbs,
+     spotlights). One is where the audience sits; the other is the facade. */
+  'j2-01': {
+    name: 'The Workbench',
+    ground: '#1A1512', panel: '#2B2320', accent: '#F5822F', accent2: '#9FB6C4',
+    text: '#FFFFFF', dim: '#D8C4B4',
+    motif: 'forge'            /* embers + peg-board wall; bench, vice, anvil, hearth */
+  },
+  'j3-01': {
+    name: 'The Screening Room',
+    ground: '#170A16', panel: '#2D1429', accent: '#FFD666', accent2: '#FF4D67',
+    text: '#FFFFFF', dim: '#D8BFD2',
+    motif: 'screening'        /* beam dust + grain; seats, the beam, the screen */
   }
 };
 
@@ -317,6 +357,177 @@ const MOTIFS = {
         `<ellipse cx="${x}" cy="-10" rx="150" ry="90" fill="${t.accent2}" ` +
         `opacity="${(op * 1.1).toFixed(3)}" filter="url(#soft)"/>`).join('');
       return beams + lamps;
+    }
+  },
+
+  /* J2 LESSON 1 — THE WORKBENCH. The room after hours: the hearth still warm at
+     one end, embers going up, a peg-board of tools on the wall and the bench
+     itself running across the lower third with a vice clamped to it. Everything
+     is silhouette and glow, because a background that draws itself in detail
+     competes with the words written on top of it. */
+  forge: {
+    dust: (t, o) => {
+      const r = rng(o.seed);
+      let out = '';
+      /* THE PEG-BOARD, upper right: a regular grid of small holes, which is what
+         a tool wall actually looks like from across a room. Regular on purpose —
+         it is the one ORDERED thing in the drawing, and it reads as a wall
+         rather than as scatter. Kept faint: it sits behind the heading. */
+      for (let row = 0; row < 7; row++) {
+        for (let col = 0; col < 9; col++) {
+          out += ledDot(1010 + col * 46, 92 + row * 46, 4.5, t.accent2, '0.10');
+        }
+      }
+      /* THE EMBERS. The year's pupil-side world has sparks drifting up, so the
+         board has them too. Weighted DOWNWARDS — an ember has just left the
+         hearth, so most of them are still low — and warmest at the bottom. */
+      const n = Math.round(o.starCount * 1.15);
+      for (let i = 0; i < n; i++) {
+        /* y biased low by squaring the random draw, which puts roughly three
+           quarters of them in the bottom half without any of them being placed
+           by hand */
+        const y = Math.round(H - Math.pow(r(), 2) * H);
+        const x = Math.round(r() * W);
+        const rad = (r() * 2.0 + 0.7).toFixed(2);
+        const hot = y > H * 0.62;
+        out += ledDot(x, y, rad, hot ? t.accent : t.dim,
+          (r() * (hot ? 0.42 : 0.20) + 0.08).toFixed(2));
+      }
+      return out;
+    },
+    lines: (t, op) => {
+      /* THE HEARTH, low left. A blurred wash, not a shape: an ellipse with a
+         hard edge reads as something somebody drew (the generic look he calls
+         ugly), and blurred it reads as heat. */
+      const hearth =
+        `<ellipse cx="140" cy="${H - 30}" rx="360" ry="190" fill="${t.accent}" ` +
+        `opacity="${(op * 1.35).toFixed(3)}" filter="url(#soft)"/>`;
+      /* ── NOT ONE STRAIGHT RULE ANYWHERE, AND THAT IS THE DESIGN, NOT A TASTE ─
+         He read the finished Lesson 3 proofs and found "a faint background rule
+         [that] lands on the first bullet's baseline and reads as an accidental
+         underline". It was reported rather than fixed, because fixing it meant
+         redrawing artwork he had already approved. It is a KNOWN fault class, so
+         no new theme gets to reproduce it: the bench is not drawn as a line
+         across the slide, it is IMPLIED by two objects standing at the same
+         height in the bottom corners. A soft silhouette can sit behind a
+         sentence; a horizontal rule cannot. */
+
+      /* THE VICE, bottom left — the one object in a workshop that says "work is
+         held here while it is worked on". Jaws, slide, screw and handle. */
+      const vy = H - 74;
+      const vice =
+        `<rect x="196" y="${vy - 54}" width="88" height="30" rx="3" fill="${t.accent2}" ` +
+        `opacity="${(op * 1.5).toFixed(3)}"/>` +
+        `<rect x="290" y="${vy - 58}" width="32" height="34" rx="3" fill="${t.accent2}" ` +
+        `opacity="${(op * 1.9).toFixed(3)}"/>` +
+        `<rect x="232" y="${vy - 24}" width="40" height="34" fill="${t.accent2}" ` +
+        `opacity="${(op * 1.3).toFixed(3)}"/>` +
+        `<rect x="200" y="${vy + 10}" width="104" height="16" rx="4" fill="${t.accent2}" ` +
+        `opacity="${(op * 1.3).toFixed(3)}"/>` +
+        `<rect x="322" y="${vy - 47}" width="86" height="9" rx="4" fill="${t.accent2}" ` +
+        `opacity="${(op * 1.6).toFixed(3)}"/>` +
+        `<circle cx="416" cy="${vy - 42.5}" r="13" fill="none" stroke="${t.accent2}" ` +
+        `stroke-width="7" opacity="${(op * 1.6).toFixed(3)}"/>`;
+
+      /* THE ANVIL, bottom right. Three parts, because that is what makes the
+         silhouette readable rather than a lump: the long top face with the horn
+         tapering off it, the narrow waist beneath, and the flared base. An anvil
+         is the one workshop object that is recognisable in outline alone, which
+         is why it carries the theme instead of a hammer. */
+      const ax = 990, ay = H - 214;
+      const anvil =
+        `<g transform="translate(${ax},${ay})" fill="${t.accent}" ` +
+        `opacity="${(op * 1.5).toFixed(3)}">` +
+        `<path d="M26,0 H244 Q302,4 334,26 Q294,34 244,34 H26 Q10,34 10,17 Q10,0 26,0 Z"/>` +
+        `<path d="M116,34 H172 L186,116 H102 Z"/>` +
+        `<path d="M64,116 H222 L242,162 H44 Z"/>` +
+        `</g>`;
+      return hearth + vice + anvil;
+    }
+  },
+
+  /* J3 LESSON 1 — THE SCREENING ROOM. Seen from the back of the room: the seat
+     backs in front of you, the projector's beam going over your shoulder, and
+     the screen itself lit at the far end. The year's world is plum velvet and
+     one beam sweeping, so the board is the same room with the house lights down. */
+  screening: {
+    dust: (t, o) => {
+      const r = rng(o.seed);
+      let out = '';
+      /* DUST IN THE BEAM. The specks are only visible where the light is, so
+         they are placed INSIDE the wedge rather than sprinkled over the slide:
+         the beam leaves the projector high left and widens to the right, so the
+         band a mote may sit in gets taller the further right it is. That is what
+         makes it read as light rather than as noise. */
+      const n = Math.round(o.starCount * 1.25);
+      for (let i = 0; i < n; i++) {
+        const fx = r();                         /* how far along the beam */
+        const x = Math.round(60 + fx * (W - 60));
+        const mid = 150 + fx * 250;             /* the beam's centre line */
+        const spread = 34 + fx * 190;           /* and how wide it is there */
+        const y = Math.round(mid + (r() - 0.5) * spread);
+        if (y < 0 || y > H) continue;
+        const rad = (r() * 1.7 + 0.5).toFixed(2);
+        out += ledDot(x, y, rad, '#fff', (r() * 0.34 + 0.10).toFixed(2));
+      }
+      /* FILM GRAIN over the whole frame, so the plum is card and not glass */
+      const g = Math.round(o.starCount * 0.55);
+      for (let i = 0; i < g; i++) {
+        out += ledDot(Math.round(r() * W), Math.round(r() * H),
+          (r() * 1.1 + 0.4).toFixed(2), t.dim, (r() * 0.11 + 0.03).toFixed(2));
+      }
+      return out;
+    },
+    lines: (t, op) => {
+      /* THE BEAM, as one soft wedge. Deliberately NOT two crossing beams: that
+         is Lesson 5's marquee, and crossing beams draw a letterform across the
+         middle of every slide (the fault already found and fixed there). */
+      const beam =
+        `<path d="M-30,116 L-30,184 L${W + 40},${H * 0.92} L${W + 40},${H * 0.10} Z" ` +
+        `fill="${t.accent}" opacity="${(op * 0.55).toFixed(3)}" filter="url(#soft2)"/>` +
+        `<ellipse cx="-10" cy="150" rx="120" ry="70" fill="${t.accent}" ` +
+        `opacity="${(op * 1.0).toFixed(3)}" filter="url(#soft)"/>`;
+      /* THE SCREEN, right of frame — AND IT IS A GLOW, NOT AN OUTLINE.
+         The first version drew it as a clean rectangle with a gold edge, and the
+         edge landed exactly where a bullets slide's text runs: a bright border
+         behind sentences reads as a box somebody drew round them. That is the
+         fault he found on Lesson 3's proofs and reported ("a faint background
+         rule … reads as an accidental underline") — a known class, so it does
+         not get reproduced in a new theme. Blurred and unbordered it is also
+         truer to the room: from the back seats the screen is light, not a frame. */
+      /* Placed HIGH RIGHT and running off the edge of the frame, because that is
+         where a slide has least writing on it: the heading is short and starts at
+         the left, and the bullets begin below. The room is seen at an angle from
+         the back, so a screen that leaves the frame is what the geometry of the
+         room would actually give you. */
+      const screen =
+        `<rect x="1078" y="58" width="420" height="228" rx="8" fill="${t.dim}" ` +
+        `opacity="${(op * 1.1).toFixed(3)}"/>` +
+        `<rect x="1048" y="34" width="470" height="276" rx="24" fill="${t.dim}" ` +
+        `opacity="${(op * 1.1).toFixed(3)}" filter="url(#soft)"/>`;
+      /* THE SEATS. Two staggered rows of seat backs along the bottom edge, the
+         near row larger and darker — which is the whole trick that says "you are
+         standing at the back". Silhouettes in the crimson, so the second accent
+         is somewhere the eye actually meets it. Curves, never rules, and low
+         enough that only the crowns of the far row reach the text band. */
+      let seats = '';
+      const row = (y, w, h, gap, opa, colour) => {
+        let s = '';
+        for (let x = -w / 2; x < W + w; x += w + gap) {
+          s += `<path d="M${x},${H} L${x},${y + h * 0.35} ` +
+            `Q${x},${y} ${x + w * 0.5},${y} Q${x + w},${y} ${x + w},${y + h * 0.35} ` +
+            `L${x + w},${H} Z" fill="${colour}" opacity="${opa}"/>`;
+        }
+        return s;
+      };
+      /* TWO ROWS AT CLEARLY DIFFERENT HEIGHTS. Made the same height they merged
+         into one crimson stripe along the bottom edge — a rule by accident,
+         which is the thing this theme is not allowed to do. The far row's crowns
+         standing well above the near row's is also the only thing that says
+         "there are rows", i.e. that this is a room and not a border. */
+      seats += row(H - 96, 150, 96, 26, (op * 1.5).toFixed(3), t.accent2);
+      seats += row(H - 44, 196, 44, 46, (op * 1.9).toFixed(3), t.accent2);
+      return beam + screen + seats;
     }
   }
 };
