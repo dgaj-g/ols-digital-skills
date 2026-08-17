@@ -241,6 +241,27 @@
     if (reg && id) (reg.insignia || []).forEach(function (x) { if (String(x.id) === String(id)) g = x; });
     return g;
   }
+  /* HIS K21 RULING, 17 Aug 2026, on the first cut of these effects: "the line
+     through the screen is dreadful looking and needs removed... the vertical
+     line that moves from left to right in the firewall skin is way too
+     distracting. when i said that i wanted animation, i meant just way more
+     gentle, subtle animation in the background, as if the whole wallpaper was
+     gently pulsing, and the little stars gently move around the screen... The
+     goal is to have them be distinctive, ethereal, calm and beautiful and
+     ANIMATED."
+     THE LAW THAT COMES OUT OF IT: ambient motion is ATMOSPHERE, never an EVENT.
+     Nothing with a hard edge travels across the view — a line crossing the
+     screen reads as something happening, and something happening takes the
+     attention the lesson needs. What is left is light blooming and fading,
+     particles drifting, and the wallpaper itself breathing.
+     `wash()` is that breathing, and EVERY J2/J3 look carries it, so the calm is
+     the shared floor and the per-look part is only its flavour. */
+  function wash() { return '<span class="fx-wash"></span>'; }
+  function motes(cls, n) {
+    var s = '';
+    for (var i = 1; i <= n; i++) s += '<span class="' + cls + ' m' + i + '"></span>';
+    return s;
+  }
   function syncFxLayer(fx) {
     var old = document.getElementById('fx-layer');
     if (old) old.remove();
@@ -267,28 +288,23 @@
      rule the comets set), nothing that can be read as a control, and every part
      is held still by the reduced-motion block in style.css. */
   var FX_PARTS = {
-    /* --- J1, unchanged --- */
+    /* --- J1, unchanged and untouchable --- */
     comets: '<span class="fx-comet c1"></span><span class="fx-comet c2"></span><span class="fx-comet c3"></span>',
     aurora: '<span class="fx-band"></span>',
     /* --- J2 --- */
-    embers: (function () {
+    embers: wash() + (function () {
       var s = '';
       for (var i = 1; i <= 12; i++) s += '<span class="fx-ember e' + i + '"></span>';
-      return s + '<span class="fx-forge"></span><span class="fx-spark"></span>';
+      return s + '<span class="fx-forge"></span>';
     })(),
-    copperpour: '<span class="fx-seam"></span><span class="fx-seam-gleam"></span>' +
-      '<span class="fx-glint g1"></span><span class="fx-glint g2"></span>' +
-      '<span class="fx-glint g3"></span><span class="fx-glint g4"></span>',
-    firescan: '<span class="fx-scan"></span><span class="fx-blocked b1"></span><span class="fx-blocked b2"></span>',
+    copperglow: wash() + '<span class="fx-bloom b1"></span><span class="fx-bloom b2"></span>' +
+      motes('fx-glint', 7),
+    guardveil: wash() + '<span class="fx-veil"></span>' + motes('fx-glint', 6),
     /* --- J3 --- */
-    spotlight: (function () {
-      var s = '<span class="fx-beam"></span>';
-      for (var i = 1; i <= 6; i++) s += '<span class="fx-mote m' + i + '"></span>';
-      return s + '<span class="fx-house"></span>';
-    })(),
-    flashbulbs: '<span class="fx-marquee"></span>' +
+    spotlight: wash() + '<span class="fx-beam"></span>' + motes('fx-mote', 6) + '<span class="fx-house"></span>',
+    flashbulbs: wash() + '<span class="fx-marquee"></span>' +
       '<span class="fx-flash f1"></span><span class="fx-flash f2"></span><span class="fx-flash f3"></span>',
-    playhead: '<span class="fx-head"></span><span class="fx-sprockets"></span>'
+    silverdust: wash() + '<span class="fx-sheen"></span>' + motes('fx-dust', 9)
   };
   /* ---------------- the DEFAULT look is the YEAR's, not J1's ----------------
      DAMIEN, 14 Aug 2026 (DFM 224b): "Each Year group must have it's own
@@ -324,6 +340,13 @@
       appliedVars.push(k);
     });
     App.setStars(theme && theme.stars);
+    /* "and the little stars gently move around the screen" — his own example of
+       what he meant (K21). The starfield is one canvas, so it drifts as a whole:
+       a few pixels over half a minute, which reads as the sky breathing rather
+       than as anything moving. J1's canvas is PIXEL-PINNED by qa-j1-unchanged
+       and gets no drift at all — the flag lives on the year's own looks. */
+    var stars = document.getElementById('stars');
+    if (stars) stars.classList.toggle('is-drifting', !!(theme && theme.drift));
     syncFxLayer(theme && theme.fx ? String(theme.fx) : '');
     var ins = kitInsignia_(s.me && s.me.fx);
     var el = $('#agent-insignia');
