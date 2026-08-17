@@ -32,13 +32,27 @@ const FAILS = [];
 const check = (ok, m) => { console.log((ok ? '  PASS  ' : '  FAIL  ') + m); if (!ok) FAILS.push(m); };
 const ctrl = (ok, m) => { console.log((ok ? '  CTRL  ' : '  FAIL  ') + m); if (!ok) FAILS.push('CONTROL: ' + m); };
 
-/* the class follows the look: the kit is sliced per year, so a J3 look asked
+/* THE LIST IS READ FROM THE REGISTRY, NEVER TYPED HERE.
+   His demand, 17 Aug 2026, on being told this gate "should stop this
+   recurring": "that is not satisfactory - this MUST not happen again."
+   A hardcoded list is exactly how it happens again: someone adds the two looks
+   that come with J2 level 3, forgets to add them here, and the gate reports
+   ALL GREEN on a look nothing has ever watched — which is DFM 206's law (a
+   thing that exists is a thing that is covered) and the reason his last three
+   rounds each found an unchecked new surface.
+   So the looks come from content/themes.json itself. A look cannot exist
+   without being measured, because existing IS what puts it in this list.
+   The class follows the look: the kit is sliced per year, so a J3 look asked
    for on a J2 class is simply not in the wardrobe (the first cut of this probe
-   reported "no layer" and the app was fine — DFM 146a) */
-const LOOKS = [
-  ['Demo-9A', 'workbench'], ['Demo-9A', 'copperline'], ['Demo-9A', 'firewall'],
-  ['Demo-10A', 'screeningroom'], ['Demo-10A', 'premiere'], ['Demo-10A', 'cuttingroom']
-];
+   reported "no layer" and the app was fine — DFM 146a). */
+const fs = require('fs');
+const path = require('path');
+const REG = JSON.parse(fs.readFileSync(path.join(process.env.HOME,
+  'Desktop/Claude Work/KS3 DT Platform/content-src/themes.json'), 'utf8'));
+const CLASS_FOR = { j2: 'Demo-9A', j3: 'Demo-10A' };
+const LOOKS = (REG.themes || [])
+  .filter(t => CLASS_FOR[t.year])
+  .map(t => [CLASS_FOR[t.year], String(t.id)]);
 /* THE FLOORS. Chosen from the measured difference between the build he called
    still and the build he could see: the still one peaked at 0.02-0.03 opacity
    change with one layer moving; the visible one peaks above 0.6 with several.
@@ -106,6 +120,13 @@ async function measure(page, cls, theme, cur) {
   console.log('  base: ' + BASE + '  ·  settle ' + (SETTLE_MS / 1000) + 's then watch ' +
     (WINDOW_MS / 1000) + 's  ·  floors: light shift ' + MIN_LIGHT_SWING + ', ' +
     MIN_PARTICLES + ' travelling particle\n');
+  /* coverage is ASSERTED, never assumed (DFM 204): if the registry gains a look
+     and this gate somehow does not see it, that is a failure, not a quiet skip */
+  const declared = (REG.themes || []).filter(t => t.year === 'j2' || t.year === 'j3').length;
+  check(LOOKS.length === declared && LOOKS.length > 0,
+    'every J2/J3 look in the registry is on this gate\'s list (' + LOOKS.length + ' of ' + declared +
+    ') — the list is DERIVED, so a new look cannot ship unmeasured');
+
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
   const cur = { v: '' };
