@@ -2114,9 +2114,21 @@
     for (var oi = 0; oi < optCount; oi++) {
       var n = counts[String(oi)] || 0;
       var isCorrect = oi === Number(key.a);
+      /* NEVER "Option B". His find, 17 Aug 2026, on the new baseline panels:
+         "the actual questions are showing up, just Option A etc..."
+         DFM 106 made the CORRECT row show its real text, and left the wrong rows
+         to their authored misconception labels — which works for a marked
+         question, where every distractor carries one. A diagnostic item has no
+         misconception labels (it is never marked and nothing teaches from it),
+         so every wrong row fell through to a letter and told the teacher
+         nothing about what her class actually chose. It reaches J1's Licence
+         Exam panel too — its sixteen keys are bare `{a}` — so this has been
+         true on a surface he has used since 9 August.
+         The option's own words are ALWAYS the better fallback than a letter:
+         106's whole point is that a letter is not information. */
       var label = isCorrect
         ? ((optText[oi] || ('Option ' + 'ABCDEFGH'.charAt(oi))) + ' (the correct answer)')
-        : (mis[oi] || ('Option ' + 'ABCDEFGH'.charAt(oi)));
+        : (mis[oi] || optText[oi] || ('Option ' + 'ABCDEFGH'.charAt(oi)));
       bars += '<div class="mis-bar"><span class="mb-label">' + App.esc(label) + '</span>' +
         '<span class="mb-track"><span class="mb-fill' + (isCorrect ? ' correct' : '') + '" style="width:' + Math.round((n / maxCount) * 100) + '%"></span></span>' +
         '<span class="mb-n">' + n + '</span></div>';

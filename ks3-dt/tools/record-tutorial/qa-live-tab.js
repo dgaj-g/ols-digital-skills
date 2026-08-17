@@ -807,6 +807,16 @@ async function readTab(page) {
     }
     check(ty.baseline.blocks === items.length,
       YR.year + ': one block per item (' + ty.baseline.blocks + ' of ' + items.length + ')');
+    /* HIS FIND, 17 Aug 2026: "the actual questions are showing up, just Option A
+       etc..." A bar labelled with a letter tells a teacher nothing about what
+       her class chose — DFM 106's whole point, which had been applied to the
+       correct row only. */
+    const lettered = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('#staff-body .mb-label'))
+        .map(e => e.textContent.trim()).filter(t => /^Option [A-H]$/.test(t)));
+    check(lettered.length === 0,
+      YR.year + ': not one bar is labelled with a bare letter — every row says what the pupil actually chose' +
+      (lettered.length ? ' (' + lettered.length + ' found)' : ''));
     check(ty.baseline.correctLabels === YR.marked,
       YR.year + ': exactly the ' + YR.marked + ' scored questions name a correct answer, and the confidence cards do not (' +
       ty.baseline.correctLabels + ')');
@@ -843,6 +853,8 @@ async function readTab(page) {
       'pre-fix: nothing knew a confidence card cannot be got wrong, so J3\'s three would have counted against every pupil');
     check(/return 'All sixteen right\.'/.test(preStaff),
       'pre-fix: a J2 pupil right on all twelve would have been told "All sixteen right."');
+    check(/\(mis\[oi\] \|\| \('Option ' \+ 'ABCDEFGH'/.test(preStaff),
+      'pre-fix: a wrong row with no misconception label fell through to a bare letter — his "just Option A etc"');
   }
 
   await browser.close();
