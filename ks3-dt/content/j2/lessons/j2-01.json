@@ -501,7 +501,7 @@
      },
      {
       "id": "j2s-04",
-      "stem": "You need to write 'hello' on the screen twenty times. Which is the better plan?",
+      "stem": "You need to write 'hello' on the screen twenty times. Which is the best plan?",
       "options": [
        "Tell the computer to repeat the instruction twenty times",
        "Write the instruction out twenty times in your program",
@@ -522,23 +522,23 @@
      {
       "id": "j2s-06",
       "matched": true,
-      "stem": "Two charts are drawn from exactly the same numbers, and the numbers are only a little different from each other. One chart makes that small difference look enormous. What has most likely been done to that chart?",
+      "stem": "Two people draw a bar chart from the very same set of numbers. On one chart the bars all look about the same height. On the other, one bar towers over the rest. What has most likely been done to the second chart?",
       "options": [
-       "Its number scale does not start at zero, so only the tops of the bars are shown",
-       "The numbers underneath it were changed",
-       "It was printed bigger",
-       "It was drawn by a different program"
+       "Its scale starts part way up instead of at zero, so only the tops of the bars are shown",
+       "It was drawn bigger, so everything on it looks taller",
+       "Its bars were put in a different order",
+       "Its tallest bar was given a brighter colour"
       ]
      },
      {
       "id": "j2s-07",
       "matched": true,
-      "stem": "Two pupils in your class live at the same house. Each types her own address into the class trip list. What is most likely to go wrong?",
+      "stem": "Your class types every pupil's home address into one list. Two pupils live at the same house: one types 'Ardmore Road', the other types 'ardmore rd'. What problem does that cause?",
       "options": [
-       "They type the same address in different ways, so one house looks like two different addresses",
-       "The list refuses to accept the same address twice",
-       "One of the addresses disappears",
-       "Nothing — the list will be correct"
+       "The computer treats them as two different addresses, even though they are one house",
+       "The list will not let the second pupil type anything",
+       "One of the two addresses gets deleted",
+       "None — the computer works out that they mean the same place"
       ]
      },
      {
