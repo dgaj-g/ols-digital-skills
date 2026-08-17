@@ -471,13 +471,16 @@
      same as the real server's UrlFetchApp throw). devKeysAll_ never throws —
      dev-keys.json is the ONE file that's expected to 404 on github.io. */
   var contentCache = {};
+  var CONTENT_VER = 'dev-preview';
   function fetchContent_(path) {
     if (Object.prototype.hasOwnProperty.call(contentCache, path)) {
       var hit = contentCache[path];
       if (hit.ok) return Promise.resolve(hit.data);
       return Promise.reject(new Error(hit.err));
     }
-    return fetch('../content/' + path).then(function (r) {
+    /* the version rides in the URL here too — one behaviour, two homes
+       (DFM 234: the copies must BEHAVE the same, not merely look alike) */
+    return fetch('../content/' + path + (CONTENT_VER ? '?v=' + encodeURIComponent(CONTENT_VER) : '')).then(function (r) {
       if (!r.ok) {
         var e = 'content fetch ' + path + ' HTTP ' + r.status;
         contentCache[path] = { ok: false, err: e };

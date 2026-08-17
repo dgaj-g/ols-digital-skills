@@ -3509,7 +3509,25 @@ window.OLS_TRANSPORT = {
       var hit = localStorage.getItem(cacheKey(path));
       if (hit) return Promise.resolve(JSON.parse(hit));
     } catch (e) {}
-    return fetch(CONTENT_BASE + path, { cache: 'default' }).then(function (r) {
+    /* THE VERSION GOES IN THE URL, and this is the half of DFM 189 that was
+       never closed. That rule fixed the localStorage key: a new contentVersion
+       means a new key, so a stale lesson can no longer be served out of it.
+       Underneath it, GitHub Pages sends `cache-control: max-age=600`, so for ten
+       minutes the BROWSER'S OWN HTTP cache answers this fetch without asking
+       Pages at all \u2014 and the stale body it returns was then written into
+       localStorage under the NEW key. The old content got laundered into the new
+       version's slot and stayed there for good, because purgeOldContent only
+       removes entries whose version DIFFERS.
+       That is exactly what he hit on 17 Aug: Pages was serving the new lesson,
+       the server was reporting the new version, a private window (empty HTTP
+       cache) showed the new wording, and his ordinary tab kept the old one
+       through repeated hard refreshes.
+       Putting the version in the query string makes the URL change when the
+       content changes, so a new version can never be answered from a cache of
+       the old one \u2014 while a repeat load of the SAME version still comes from
+       cache, which is what keeps a C2k machine quick. */
+    var url = CONTENT_BASE + path + (App.state.contentVersion ? '?v=' + encodeURIComponent(App.state.contentVersion) : '');
+    return fetch(url, { cache: 'default' }).then(function (r) {
       if (!r.ok) throw new Error('content ' + path + ' HTTP ' + r.status);
       return r.text();
     }).then(function (text) {
