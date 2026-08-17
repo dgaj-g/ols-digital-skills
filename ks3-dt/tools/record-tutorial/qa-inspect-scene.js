@@ -63,6 +63,9 @@ const STAGED = [
   { zone: 3, what: 'the chair left pulled out and turned', w: 88, h: 106 }
 ];
 
+const CSRC = path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/content-src/j2/lessons/j2-01.json');
+const LESSON = JSON.parse(fs.readFileSync(CSRC, 'utf8'));
+
 (async () => {
   console.log('qa-inspect-scene — the scene legibility law (K9 / DFM 146b / 192e)');
   console.log('  scene: ' + SVG + '\n  base: ' + BASE);
@@ -158,7 +161,15 @@ const STAGED = [
   check(afterFlag.flagged === 1, 'flagging a station marks it flagged');
   check(afterFlag.judged === 0 && !afterFlag.report,
     'and NOTHING is judged by it — no verdict, no report, no force-correction (DFM: never telegraph)');
-  check(/1 place/.test(afterFlag.count), 'the running count says what she has done: "' + afterFlag.count.trim() + '"');
+  /* the expected wording is READ FROM THE LESSON, never copied here. It used to
+     assert "1 place", which was the string in the prototype page's own hardcoded
+     copy of the config — and the lesson itself says "1 station". The page now
+     loads the real content, so the copy is gone and this reads the same source
+     the pupil does (DFM 144: one fact, one home). */
+  const COUNT_ONE = String(LESSON.chunks.find(c => c.id === 'inspection').config.countOne || '')
+    .replace('{n}', '1');
+  check(afterFlag.count.indexOf(COUNT_ONE) !== -1,
+    'the running count says what she has done, in the lesson\'s own words: "' + afterFlag.count.trim() + '"');
   await page.evaluate(() => document.querySelector('.insp-zone[data-z="1"]').click());
   await sleep(300);
   const afterUnflag = await page.evaluate(() => document.querySelectorAll('.insp-zone.is-flagged').length);
@@ -206,6 +217,150 @@ const STAGED = [
 
   check(errors.length === 0, 'zero console errors across the whole scene' +
     (errors.length ? ' — ' + errors.slice(0, 3).join(' | ') : ''));
+
+  /* ==================================================================
+     THE PROP MANIFEST — the words and the picture are ONE fact.
+     16 Aug 2026, his K17(b): "the crisp packet looks more like a book" ·
+     "your drawing of a memory stick is laughably awful" · "there is nothing
+     visible on the screen that is supposedly still signed in" · and, of the
+     loose lead, "the actual drawing of that was impossible for a student to
+     make out that that was what it was."
+     K9's legibility law already said every staged violation must be
+     recognisable at the size the scene renders — but nothing enforced it per
+     OBJECT, and the cold read judged the TEXT, never the pixels. So: every
+     object a zone's sentence names must exist in that scene's SVG under its own
+     name, and must be big enough to recognise at the size the scene is really
+     drawn at. Art and words can no longer drift apart in silence.
+     ================================================================== */
+  section('THE PROP MANIFEST — every object the words name is really in the picture');
+  const SCENES = (LESSON.chunks.find(c => c.id === 'inspection').config.scenes) || [];
+  /* what a sentence SAYS -> what the picture must therefore SHOW */
+  const SAYS = [
+    [/bottle of water/i, 'water'],
+    [/bottle of juice/i, 'juice'],
+    [/crisp packet/i, 'crisps'],
+    [/memory stick/i, 'usb-stick'],
+    [/lead has been pulled|pulled out of the back/i, 'cable-socket'],
+    [/bag has been dumped/i, 'bag'],
+    [/can of/i, 'can'],
+    [/keys are off|keys off the keyboard|three keys/i, 'broken-keys'],
+    [/REPORTED/, 'reported-tag'],
+    [/sign-in box/i, 'screen-signin'],
+    [/still signed in|name at the top/i, 'screen-signedin']
+  ];
+  const SVGDIR = path.join(__dirname, '..', '..', 'platform', 'assets', 'img', 'j2');
+  const propsOf = (file) => {
+    const t = fs.readFileSync(file, 'utf8');
+    const out = {};
+    (t.match(/class="prop prop-[a-z-]+"/g) || []).forEach(m => {
+      const n = m.replace(/.*prop-/, '').replace(/"/, '');
+      out[n] = (out[n] || 0) + 1;
+    });
+    return out;
+  };
+  SCENES.forEach((sc, i) => {
+    const file = path.join(SVGDIR, 'inspection-' + (i + 1) + '.svg');
+    const have = propsOf(file);
+    const text = (sc.zones || []).map(z => String(z.rule || z.clearSay || '')).join(' ');
+    const want = SAYS.filter(([rx]) => rx.test(text)).map(([, n]) => n);
+    const missing = want.filter(n => !have[n]);
+    check(missing.length === 0,
+      'scene ' + (i + 1) + ': every object its own words name is drawn and named in the file' +
+      (missing.length ? ' — MISSING: ' + missing.join(', ') : ' (' + want.join(', ') + ')'));
+  });
+
+  section('AND EACH ONE IS BIG ENOUGH TO RECOGNISE AT THE SIZE IT RENDERS');
+  /* the scale the pupil actually sees: the card's rendered width over the
+     scene's own viewBox width (DFM 146b — measured, never assumed) */
+  const artW = await page.evaluate(() => {
+    const i = document.querySelector('.insp-art');
+    return i ? i.getBoundingClientRect().width : 0;
+  });
+  check(artW > 0, 'the scene really is on screen (' + Math.round(artW) + 'px wide)');
+  const SCALE = artW / VBW;
+  /* measured by inlining each SVG and asking the browser for real bounding
+     boxes - the same numbers the renderer itself uses */
+  const boxes = await page.evaluate(async (dir) => {
+    const out = {};
+    for (let n = 1; n <= 5; n++) {
+      const r = await fetch('/ks3-dt/platform/assets/img/j2/inspection-' + n + '.svg');
+      const txt = await r.text();
+      const host = document.createElement('div');
+      host.style.cssText = 'position:absolute;left:-9999px;top:0;width:1000px';
+      host.innerHTML = txt;
+      document.body.appendChild(host);
+      out[n] = {};
+      host.querySelectorAll('.prop').forEach(el => {
+        const name = (el.getAttribute('class') || '').replace(/.*prop-/, '');
+        const b = el.getBBox();
+        const prev = out[n][name];
+        if (!prev || b.width * b.height > prev.w * prev.h) out[n][name] = { w: b.width, h: b.height };
+      });
+      host.remove();
+    }
+    return out;
+  }, SVGDIR);
+  /* the floor recognition actually depends on: the LONGEST side, in real
+     rendered pixels. A hand prop under this is a smudge, whatever it is meant
+     to be. (Screens are whole monitors and are far above it; they are here so
+     the table is complete rather than selective.) */
+  const FLOOR = 34;
+  const NAMED = ['water', 'crisps', 'usb-stick', 'cable-socket', 'cable-lead', 'bag', 'can',
+    'broken-keys', 'reported-tag', 'juice', 'screen-signin', 'screen-signedin'];
+  Object.keys(boxes).forEach(n => {
+    Object.keys(boxes[n]).forEach(name => {
+      if (NAMED.indexOf(name) === -1) return;
+      const b = boxes[n][name];
+      const longest = Math.max(b.w, b.h) * SCALE;
+      check(longest >= FLOOR,
+        'scene ' + n + ' · ' + name + ': ' + Math.round(longest) + 'px on its longest side (floor ' + FLOOR + ')');
+    });
+  });
+
+  section('THE WORDS ON A SCREEN ARE READABLE, because the whole judgement turns on them');
+  const labels = await page.evaluate(async () => {
+    const out = [];
+    for (const n of [4, 5]) {
+      const r = await fetch('/ks3-dt/platform/assets/img/j2/inspection-' + n + '.svg');
+      const txt = await r.text();
+      const host = document.createElement('div');
+      host.style.cssText = 'position:absolute;left:-9999px;top:0;width:1000px';
+      host.innerHTML = txt;
+      document.body.appendChild(host);
+      host.querySelectorAll('text').forEach(t => {
+        const b = t.getBBox();
+        out.push({ scene: n, text: t.textContent.trim(), h: b.height });
+      });
+      host.remove();
+    }
+    return out;
+  });
+  ['Sign in', 'REPORTED'].forEach(word => {
+    const hit = labels.filter(l => l.text === word)[0];
+    check(!!hit, 'the word "' + word + '" is really drawn in the scene, not implied by a shape');
+    if (hit) check(hit.h * SCALE >= 9,
+      '  and it renders at ' + (hit.h * SCALE).toFixed(1) + 'px tall (floor 9) — she can read it, not guess it');
+  });
+  const names = labels.filter(l => /^[A-Z]+ [A-Z]$/.test(l.text));
+  check(names.length >= 2,
+    'a signed-in screen shows a real NAME (' + names.map(n => n.text).join(', ') +
+    ') — his "there is nothing to indicate this other than the screen being lit up"');
+
+  section('CONTROL — the scenes he sat must FAIL this manifest (DFM 196)');
+  const SAT = process.env.KS3DT_PREFIX_TREE || '';
+  if (!SAT || !fs.existsSync(SAT)) {
+    check(false, 'KS3DT_PREFIX_TREE must point at a worktree of the sat build for this control');
+  } else {
+    const satDir = path.join(SAT, 'ks3-dt/platform/assets/img/j2');
+    const satProps = propsOf(path.join(satDir, 'inspection-5.svg'));
+    ctrl(Object.keys(satProps).length === 0,
+      'the sat build\'s scenes carry NO named props at all, so the manifest cannot be checked on them — which is why it never was');
+    const satSvg4 = fs.readFileSync(path.join(satDir, 'inspection-4.svg'), 'utf8');
+    ctrl(!/>Sign in</.test(satSvg4),
+      'and scene 4\'s "sign-in box" station drew no such words — the branch that would have drawn them was unreachable, so it rendered as a signed-in screen, exactly as he reported');
+    const satSvg5 = fs.readFileSync(path.join(satDir, 'inspection-5.svg'), 'utf8');
+    ctrl(!/prop-water/.test(satSvg5), 'and scene 5 had a crisp packet where he asked for a water bottle');
+  }
 
   await browser.close();
   console.log('');

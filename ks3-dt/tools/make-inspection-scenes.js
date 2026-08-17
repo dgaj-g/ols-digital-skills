@@ -70,33 +70,45 @@ function monitor(x, state, opts) {
   opts = opts || {};
   const cx = x + SW / 2;
   const w = 138, h = 96, top = BENCH - 136;
-  const lit = state === 'on' || state === 'login';
-  const inner = lit
+  /* THREE STATES, AND THEY MUST LOOK LIKE THREE THINGS.
+     HIS K17(b), 16 Aug 2026: "it is impossible for a student to realise that
+     the screen on is at the sign in box" and, of the signed-in one, "there is
+     nothing to indicate this other than the screen being lit up."
+     He was righter than he knew, and this was not a drawing problem: `lit` used
+     to be `state === 'on' || state === 'login'`, and the ternary tested `lit`
+     BEFORE it tested `state === 'login'` — so the sign-in branch below was
+     UNREACHABLE CODE and a login station was drawn with somebody's work open on
+     it, pixel for pixel the same as the signed-in one. The whole judgement in
+     scene 4 turned on telling those two apart, and they were identical.
+     Same family as the Compass's unreachable "undecided" (16 Aug): a design
+     honoured in the data, impossible on the screen. The check is the render. */
+  const lit = state === 'on';
+  const inner = state === 'login'
+    /* ON, BUT SIGNED OUT — the machine sitting at its own login box. Drawn as a
+       real sign-in panel and, decisively, LABELLED: she should be able to read
+       the words "Sign in" rather than infer a state from a shape. */
+    ? `<rect x="${cx - 50}" y="${top + 14}" width="100" height="68" rx="6" fill="#F4F7FB"/>
+      <circle cx="${cx}" cy="${top + 33}" r="12" fill="${C.screenBar}"/>
+      <circle cx="${cx}" cy="${top + 29.5}" r="4.4" fill="#F4F7FB"/>
+      <path d="M${cx - 7.5} ${top + 39} a7.5 7.5 0 0 1 15 0" fill="#F4F7FB"/>
+      <text x="${cx}" y="${top + 56}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"
+        font-size="12" font-weight="700" fill="#25415F">Sign in</text>
+      <rect x="${cx - 34}" y="${top + 61}" width="68" height="8" rx="4" fill="#FFFFFF" stroke="#B9C7D8" stroke-width="1"/>
+      <rect x="${cx - 34}" y="${top + 72}" width="68" height="8" rx="4" fill="#FFFFFF" stroke="#B9C7D8" stroke-width="1"/>`
+    : lit
     /* SOMEBODY'S SCREEN, LEFT OPEN. A title bar with an avatar and a name pill,
        and a document under it. It has to be readable from across a classroom as
        "that one is still signed in", so the bar is 16px tall and high-contrast
        against the page, not a hint. */
     ? `<rect x="${cx - w / 2 + 9}" y="${top + 9}" width="${w - 18}" height="17" rx="3" fill="${C.screenBar}"/>
       <circle cx="${cx - w / 2 + 20}" cy="${top + 17}" r="5.4" fill="${C.screenOn}"/>
-      <rect x="${cx - w / 2 + 30}" y="${top + 13}" width="52" height="8" rx="4" fill="${C.screenOn}" opacity="0.9"/>
+      <text x="${cx - w / 2 + 30}" y="${top + 21}" font-family="Helvetica, Arial, sans-serif"
+        font-size="11" font-weight="700" fill="${C.screenOn}">${opts.who || 'AOIFE M'}</text>
       <rect x="${cx + w / 2 - 20}" y="${top + 13}" width="8" height="8" rx="2" fill="${C.screenOn}" opacity="0.55"/>
       <rect x="${cx - w / 2 + 15}" y="${top + 36}" width="${w - 44}" height="6" rx="3" fill="${C.screenText}"/>
       <rect x="${cx - w / 2 + 15}" y="${top + 49}" width="${w - 62}" height="6" rx="3" fill="${C.screenText}"/>
       <rect x="${cx - w / 2 + 15}" y="${top + 62}" width="${w - 34}" height="6" rx="3" fill="${C.screenText}" opacity="0.75"/>
       <rect x="${cx - w / 2 + 15}" y="${top + 75}" width="${w - 70}" height="6" rx="3" fill="${C.screenText}" opacity="0.55"/>`
-    : state === 'login'
-    /* ON, BUT SIGNED OUT — the sign-in screen. This is the near-miss in scene 4:
-       a lit screen that a quick look reads as "somebody left this signed in",
-       and a proper look reads as the machine sitting at its own login box with
-       nobody's work on it. It is a JUDGEMENT test, so the difference is drawn
-       large and plainly: one centred box with a person circle and a Sign in
-       button, and no title bar, no name, no document. */
-    ? `<rect x="${cx - 44}" y="${top + 18}" width="88" height="60" rx="5" fill="#FFFFFF" opacity="0.9"/>
-      <circle cx="${cx}" cy="${top + 36}" r="11" fill="${C.screenBar}"/>
-      <path d="M${cx - 7} ${top + 40} a7 7 0 0 1 14 0" fill="${C.screenOn}"/>
-      <circle cx="${cx}" cy="${top + 33}" r="4" fill="${C.screenOn}"/>
-      <rect x="${cx - 30}" y="${top + 52}" width="60" height="9" rx="4.5" fill="${C.screenText}" opacity="0.55"/>
-      <rect x="${cx - 22}" y="${top + 65}" width="44" height="9" rx="4.5" fill="${C.screenBar}"/>`
     : `<rect x="${cx - w / 2 + 9}" y="${top + 9}" width="${w - 18}" height="${h - 18}" rx="3" fill="${C.screenOffHi}"/>
       <path d="M${cx - w / 2 + 9} ${top + h - 9} L${cx + w / 2 - 9} ${top + 9} L${cx + w / 2 - 9} ${top + 28} L${cx - w / 2 + 30} ${top + h - 9} Z" fill="#FFFFFF" opacity="0.035"/>`;
   return g(
@@ -106,7 +118,7 @@ function monitor(x, state, opts) {
     `<rect x="${cx - w / 2 + 5}" y="${top + 5}" width="${w - 10}" height="${h - 10}" rx="4" fill="${state === 'login' ? '#25415F' : (lit ? C.screenOn : C.screenOff)}"/>`,
     inner,
     /* the power light: off is off, on is on, and it is 6px of truth */
-    `<circle cx="${cx + w / 2 - 12}" cy="${top + h - 5}" r="3" fill="${lit ? '#7BD88F' : '#3C3835'}"/>`,
+    `<circle cx="${cx + w / 2 - 12}" cy="${top + h - 5}" r="3" fill="${lit || state === 'login' ? '#7BD88F' : '#3C3835'}"/>`,
     /* THE CRACKED SCREEN (scene 5's trap). A real fault has to be readable at
        the size the scene renders — a hairline on a 22px mouse is not, and that
        is DFM 207d's own lesson. Cracks run right across the glass, with the
@@ -120,7 +132,7 @@ function monitor(x, state, opts) {
       <circle cx="${cx + 6}" cy="${top + 44}" r="5.5" fill="#E6EDF5" opacity="0.85"/>
       <circle cx="${cx + 6}" cy="${top + 44}" r="11" fill="none" stroke="#CBD5E2" stroke-width="1.6" opacity="0.7"/>
     </g>` : '',
-    lit ? `<ellipse cx="${cx}" cy="${top + h / 2}" rx="${w * 0.85}" ry="${h * 0.8}" fill="${C.screenTint}" opacity="0.07"/>` : '',
+    (lit || state === 'login') ? `<ellipse cx="${cx}" cy="${top + h / 2}" rx="${w * 0.85}" ry="${h * 0.8}" fill="${C.screenTint}" opacity="0.07"/>` : '',
     `<path d="M${cx - 11} ${top + h} h22 l5 22 h-32 z" fill="${C.bodyDark}"/>`,
     `<rect x="${cx - 38}" y="${top + h + 22}" width="76" height="9" rx="4.5" fill="${C.bodyHi}"/>`
   );
@@ -246,9 +258,10 @@ function clutter(x) {
     `<g transform="rotate(9 ${cx + 34} ${BENCH + 4})">
        <rect x="${cx + 8}" y="${BENCH - 10}" width="58" height="32" rx="2" fill="${C.paper}" opacity="0.93"/>
        <rect x="${cx + 16}" y="${BENCH - 2}" width="40" height="3.4" fill="${C.paperLine}" opacity="0.8"/></g>`,
-    /* memory stick, cap off, left on the bench */
-    `<rect x="${cx + 60}" y="${BENCH + 2}" width="30" height="13" rx="2.5" fill="${C.copper}"/>`,
-    `<rect x="${cx + 86}" y="${BENCH + 4.5}" width="12" height="8" rx="1.5" fill="${C.canMetal}"/>`
+    /* memory stick, cap off, left on the bench — the SAME drawing scene 5 uses
+       (his K17(b) "laughably awful" was aimed at scene 5's, and this was the
+       identical pair of rectangles; one object, one drawing, DFM 144) */
+    prop('usb-stick', usbStick(cx + 60, BENCH + 2, 4))
   );
 }
 
@@ -267,26 +280,37 @@ function bottle(x, side) {
   );
 }
 
-function looseCable(x, part) {
-  /* THE LEAD PULLED OUT OF THE BACK OF THE MACHINE — "respect the equipment,
-     no tampering". Two earlier attempts failed the same way and it is worth
-     recording why: the bench is only 20px deep in a straight-on view, so a
-     cable lying ON it has nowhere to be and reads as a scratch. This one hangs
-     DOWN over the bench front into the open space between the chairs, where
-     there is room for it, and ends in a real three-pin plug 30 x 22 — the same
-     size class as every other staged object, so it is found by looking rather
-     than by squinting (DFM 207d). */
+function looseCable(x) {
+  /* THE LEAD PULLED OUT OF THE BACK OF THE MACHINE — "respect the equipment".
+     HIS K17(b): "there was a scene that you said showed a loose cable or
+     something, but the actual drawing of that was impossible for a student to
+     make out that that was what it was."
+     He was right twice over. A cable on its own is a line — what makes it read
+     as PULLED OUT is the empty socket it should be sitting in. And the earlier
+     version drew both the socket and the lead's upper half BEFORE the monitor,
+     so the monitor covered them: all that survived was a plug floating in mid
+     air with nothing attached to it. Nobody could have read that.
+     So the whole thing is drawn as ONE piece, AFTER the monitor, entirely in
+     clear space beside it: the socket sits on the monitor's right edge where it
+     can be seen, the lead hangs from it over the bench and down the front, and
+     the plug lands in the open floor space between the chairs. */
   const cx = x + SW / 2;
-  if (part === 'back') return g(
-    `<path d="M${cx + 26} ${BENCH - 118} q40 10 44 40"
-       stroke="${C.cable}" stroke-width="7" fill="none" stroke-linecap="round"/>`
-  );
-  const px = cx + 62, py = FRONT + 74;
+  const sx = cx + 74, sy = BENCH - 104;
+  const px = cx + 60, py = FRONT + 66;
   return g(
-    `<path d="M${cx + 70} ${BENCH - 76} q10 40 -4 62 q-10 16 -4 32"
-       stroke="${C.cable}" stroke-width="7" fill="none" stroke-linecap="round"/>`,
-    `<path d="M${cx + 70} ${BENCH - 76} q10 40 -4 62 q-10 16 -4 32"
-       stroke="#332F2B" stroke-width="2.4" fill="none" stroke-linecap="round" opacity="0.55"/>`,
+    /* the empty socket, with its pins showing */
+    `<rect x="${sx - 11}" y="${sy}" width="22" height="16" rx="2.5" fill="#120C06"/>`,
+    `<rect x="${sx - 11}" y="${sy}" width="22" height="16" rx="2.5" fill="none"
+       stroke="${C.canMetal}" stroke-width="1.8" opacity="0.85"/>`,
+    `<rect x="${sx - 6}" y="${sy + 4}" width="3" height="8" fill="${C.canMetal}" opacity="0.7"/>`,
+    `<rect x="${sx - 1}" y="${sy + 4}" width="3" height="8" fill="${C.canMetal}" opacity="0.7"/>`,
+    `<rect x="${sx + 4}" y="${sy + 4}" width="3" height="8" fill="${C.canMetal}" opacity="0.7"/>`,
+    /* the lead, hanging out of it and over the bench */
+    `<path d="M${sx} ${sy + 18} C ${sx + 16} ${sy + 64}, ${px - 30} ${py - 96}, ${px} ${py - 2}"
+       stroke="#6E6660" stroke-width="8" fill="none" stroke-linecap="round"/>`,
+    `<path d="M${sx} ${sy + 18} C ${sx + 16} ${sy + 64}, ${px - 30} ${py - 96}, ${px} ${py - 2}"
+       stroke="#9A918A" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.9"/>`,
+    /* the plug on the end of it */
     shadow(px, py + 36, 16, 3.5, 0.3),
     `<rect x="${px - 16}" y="${py}" width="32" height="24" rx="4" fill="#8C8781"/>`,
     `<rect x="${px - 16}" y="${py}" width="32" height="7" rx="3.5" fill="#A9A49D"/>`,
@@ -320,18 +344,32 @@ function brokenMouse(x) {
 }
 
 function brokenKeys(x) {
-  /* two keys off the keyboard and lying beside it, with the gaps they came
-     from. The fault is the picture; whether it was REPORTED is what a tag would
-     settle, and in scene 3 there is no tag. */
+  /* THREE KEYS OFF THE KEYBOARD, with the holes they came out of.
+     The first cut drew 9 x 4.4 gaps and 14 x 12 caps — a smudge at the size the
+     scene renders, which is the very fault K9's law exists to stop and the one
+     he named on three other props. What makes this readable is contrast and
+     size: the holes are BLACK recesses with a lip, big enough to see from the
+     back of a classroom, and the loose caps are drawn as real keycaps — a top
+     face, a bevelled side, and a letter on them — lying on the bench beside the
+     keyboard where there is clear space. */
   const cx = x + SW / 2, y = BENCH - 12, w = 112;
+  const hole = (hx, hy) => `<rect x="${hx}" y="${hy}" width="15" height="9" rx="2" fill="#0B0906"/>` +
+    `<rect x="${hx}" y="${hy}" width="15" height="2.6" rx="1.3" fill="#2A2622"/>`;
+  const cap = (kx, ky, rot, letter) => `<g transform="rotate(${rot} ${kx + 10} ${ky + 8})">
+      <rect x="${kx}" y="${ky + 3}" width="21" height="15" rx="3" fill="${C.bodyDark}"/>
+      <rect x="${kx}" y="${ky}" width="21" height="15" rx="3" fill="${C.keyHi}"/>
+      <rect x="${kx + 2.5}" y="${ky + 2}" width="16" height="10" rx="2" fill="${C.key}"/>
+      <text x="${kx + 10.5}" y="${ky + 10.5}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"
+        font-size="8" font-weight="700" fill="#C9C4BF">${letter}</text>
+    </g>`;
   return g(
-    `<rect x="${cx - w / 2 + 30}" y="${y + 5}" width="9" height="4.4" rx="1.4" fill="${C.bodyDark}"/>`,
-    `<rect x="${cx - w / 2 + 41.6}" y="${y + 5}" width="9" height="4.4" rx="1.4" fill="${C.bodyDark}"/>`,
-    `<rect x="${cx - w / 2 + 30}" y="${y + 11.4}" width="9" height="4.4" rx="1.4" fill="${C.bodyDark}"/>`,
-    shadow(cx + 20, BENCH + 8, 22, 3.5, 0.22),
-    `<rect x="${cx + 4}" y="${BENCH + 1}" width="14" height="12" rx="2.5" transform="rotate(18 ${cx + 11} ${BENCH + 7})" fill="${C.keyHi}"/>`,
-    `<rect x="${cx + 24}" y="${BENCH + 3}" width="14" height="12" rx="2.5" transform="rotate(-24 ${cx + 31} ${BENCH + 9})" fill="${C.keyHi}"/>`,
-    `<rect x="${cx + 44}" y="${BENCH}" width="14" height="12" rx="2.5" transform="rotate(6 ${cx + 51} ${BENCH + 6})" fill="${C.key}"/>`
+    hole(cx - w / 2 + 28, y + 4),
+    hole(cx - w / 2 + 46, y + 4),
+    hole(cx - w / 2 + 28, y + 15),
+    shadow(cx + 30, BENCH + 10, 30, 4, 0.26),
+    cap(cx + 6, BENCH - 2, 16, 'A'),
+    cap(cx + 30, BENCH + 1, -22, 'S'),
+    cap(cx + 54, BENCH - 3, 7, 'D')
   );
 }
 
@@ -354,15 +392,68 @@ function reportedTag(x) {
 }
 
 function crisps(x) {
-  /* a crisp packet tucked in BEHIND the monitor — the food rule, staged so it
-     has to be looked for rather than seen. It is subtle because of WHERE it is,
-     never because it is drawn small: 46 x 52, the same size class as the can. */
-  const cx = x + SW / 2, y = BENCH - 46;
+  /* A CRISP PACKET, tucked in BEHIND the monitor — the food rule, staged so it
+     has to be looked for rather than seen. HIS K17(b): "the crisp packet looks
+     more like a book". It did: a flat quadrilateral with a straight spine-like
+     edge and a pale rectangle for a label is a book, and no amount of colour
+     fixes that. What makes a crisp packet READ as one is the silhouette — the
+     crimped seams top and bottom, the puff of trapped air in the middle, and a
+     foil sheen. All three are drawn now, and the outline is irregular so no
+     edge reads as a spine. Still 46 x 56: subtle by WHERE it is, never by being
+     drawn small (DFM 207d). */
+  const cx = x + SW / 2, y = BENCH - 52;
+  const bx = cx - 88;
   return g(
-    `<path d="M${cx - 84} ${y - 4} l34 -9 l16 46 l-34 11 z" fill="#3E7BC4"/>`,
-    `<path d="M${cx - 84} ${y - 4} l11 -3 l16 48 l-11 3 z" fill="#5E9AE0" opacity="0.7"/>`,
-    `<path d="M${cx - 51} ${y - 14} l9 -7 l5 12 z" fill="#3E7BC4"/>`,
-    `<rect x="${cx - 78}" y="${y + 12}" width="26" height="7" rx="3.5" transform="rotate(-15 ${cx - 65} ${y + 15})" fill="#F1E8D4" opacity="0.9"/>`
+    shadow(bx + 22, BENCH + 2, 20, 3, 0.22),
+    /* the crimped top seam */
+    `<path d="M${bx + 2} ${y - 6} l40 -10 l2 8 l-40 10 z" fill="#2F63A6"/>`,
+    `<path d="M${bx + 2} ${y - 6} l40 -10" stroke="#7FB0E6" stroke-width="1.6" fill="none" opacity="0.8"/>`,
+    /* the bag body: puffed, so the long edges bow outwards */
+    `<path d="M${bx + 4} ${y}
+       q-7 16 -1 30 q4 12 3 22 l30 -8 q3 -12 8 -24 q6 -15 1 -30 z" fill="#3E7BC4"/>`,
+    /* foil sheen down one side */
+    `<path d="M${bx + 6} ${y + 1} q-6 16 -1 29 q4 11 3 21 l8 -2 q1 -11 -3 -22 q-5 -14 1 -28 z"
+       fill="#7FB0E6" opacity="0.55"/>`,
+    /* the crimped bottom seam */
+    `<path d="M${bx + 6} ${y + 52} l30 -8 l2 7 l-30 8 z" fill="#2F63A6"/>`,
+    /* a label band and a crisp on it, so the eye is told what is inside */
+    `<rect x="${bx + 9}" y="${y + 18}" width="26" height="11" rx="3"
+       transform="rotate(-9 ${bx + 22} ${y + 23})" fill="#F1E8D4" opacity="0.95"/>`,
+    `<ellipse cx="${bx + 22}" cy="${y + 23}" rx="6" ry="4"
+       transform="rotate(-9 ${bx + 22} ${y + 23})" fill="#E8A33C"/>`
+  );
+}
+
+function waterBottle(x) {
+  /* HIS ORDER, K17(b): "change it to a water bottle (draw it as an obvious
+     water bottle)". So it is drawn as the thing itself and nothing else: a
+     clear plastic bottle with a tapered shoulder, a ribbed neck, a BLUE screw
+     cap, a label band across the middle and a water line inside it, standing on
+     the bench where the crisp packet used to be. It is deliberately CLEAR-bodied
+     so the water inside is visible — that is what makes a bottle a bottle at a
+     glance rather than a can or a jar.
+     Placed mostly behind the monitor's right shoulder: hard because it is
+     partly hidden, fair because the cap and the shoulder are in clean space. */
+  const cx = x + SW / 2 + 58, y = BENCH - 96;
+  return g(
+    shadow(cx, BENCH + 1, 17, 3.5, 0.24),
+    /* body */
+    `<path d="M${cx - 16} ${y + 34}
+       q0 -13 7 -18 l0 -6 l18 0 l0 6 q7 5 7 18 l0 50 q0 8 -8 8 l-16 0 q-8 0 -8 -8 z"
+       fill="#DCEAF4" opacity="0.92"/>`,
+    /* the water inside, with a meniscus */
+    `<path d="M${cx - 16} ${y + 52} l32 0 l0 32 q0 8 -8 8 l-16 0 q-8 0 -8 -8 z" fill="#8FC6E8" opacity="0.85"/>`,
+    `<ellipse cx="${cx}" cy="${y + 52}" rx="16" ry="3" fill="#B9DCF0"/>`,
+    /* highlight down the left, which is what makes it read as clear plastic */
+    `<rect x="${cx - 12}" y="${y + 38}" width="6" height="48" rx="3" fill="#FFFFFF" opacity="0.55"/>`,
+    /* label band */
+    `<rect x="${cx - 16}" y="${y + 58}" width="32" height="16" fill="#2F7FB8" opacity="0.9"/>`,
+    `<rect x="${cx - 12}" y="${y + 63}" width="24" height="3" rx="1.5" fill="#FFFFFF" opacity="0.85"/>`,
+    /* ribbed neck + blue screw cap */
+    `<rect x="${cx - 9}" y="${y + 8}" width="18" height="10" fill="#CFE2EE"/>`,
+    `<rect x="${cx - 9}" y="${y + 11}" width="18" height="2" fill="#A9C6D8"/>`,
+    `<rect x="${cx - 10}" y="${y - 4}" width="20" height="13" rx="2.5" fill="#2F7FB8"/>`,
+    `<rect x="${cx - 10}" y="${y - 4}" width="20" height="4" rx="2" fill="#4EA0D8"/>`
   );
 }
 
@@ -378,18 +469,35 @@ function bagOnChair(x) {
   );
 }
 
-function looseStick(x) {
-  /* A MEMORY STICK LEFT ON THE BENCH, cap off beside it. It was first drawn as
-     a stick left "in the machine's front port" — and the scene draws monitors,
-     not towers, so the picture could not keep that claim (rule 35). What is
-     drawn is what is said: something of hers left behind on the bench. */
-  const cx = x + SW / 2;
+/* ONE USB STICK, drawn once and used wherever one is left lying about.
+   HIS K17(b): "your drawing of a memory stick is laughably awful". It was two
+   rectangles end to end, which is a domino. A stick is recognisable by three
+   things and this has all three: a metal CONNECTOR with the slot showing, a
+   plastic BODY thicker than the connector with a seam along it, and a LANYARD
+   hole at the tail. */
+function usbStick(cx, y, rot) {
   return g(
-    shadow(cx - 64, BENCH + 8, 26, 3.5, 0.24),
-    `<rect x="${cx - 86}" y="${BENCH - 2}" width="38" height="15" rx="3" fill="${C.copper}"/>`,
-    `<rect x="${cx - 86}" y="${BENCH - 2}" width="38" height="4" rx="2" fill="${C.copperHi}" opacity="0.7"/>`,
-    `<rect x="${cx - 50}" y="${BENCH + 1}" width="14" height="9" rx="2" fill="${C.canMetal}"/>`,
-    `<rect x="${cx - 30}" y="${BENCH + 2}" width="13" height="11" rx="3" fill="${C.bodyDark}"/>`
+    `<g transform="rotate(${rot || 0} ${cx} ${y})">`,
+    `<rect x="${cx - 30}" y="${y}" width="24" height="15" rx="1.5" fill="#B9BFC6"/>`,
+    `<rect x="${cx - 30}" y="${y + 2}" width="24" height="4" rx="1" fill="#D8DDE2"/>`,
+    `<rect x="${cx - 26}" y="${y + 5}" width="15" height="6" rx="1" fill="#6E747A"/>`,
+    `<rect x="${cx - 7}" y="${y - 3}" width="38" height="21" rx="3.5" fill="${C.copper}"/>`,
+    `<rect x="${cx - 7}" y="${y - 3}" width="38" height="6" rx="3" fill="${C.copperHi}" opacity="0.75"/>`,
+    `<rect x="${cx - 7}" y="${y + 7}" width="38" height="1.6" fill="${C.copperDeep}" opacity="0.6"/>`,
+    `<circle cx="${cx + 25}" cy="${y + 7.5}" r="4" fill="${C.copperDeep}"/>`,
+    `<circle cx="${cx + 25}" cy="${y + 7.5}" r="2.2" fill="${C.benchTop}"/>`,
+    `</g>`
+  );
+}
+
+function looseStick(x) {
+  /* the stick left on the bench in scene 5. What is drawn is what is said
+     (rule 35): the scene draws monitors, not towers, so it is lying on the
+     bench, never "in the front port". */
+  const cx = x + SW / 2 - 70, y = BENCH - 4;
+  return g(
+    shadow(cx + 8, BENCH + 9, 26, 3.5, 0.26),
+    usbStick(cx, y, -6)
   );
 }
 
@@ -472,23 +580,33 @@ function bench() {
 }
 
 /* ---------------- assembly ------------------------------------------------ */
+/* EVERY STAGED OBJECT CARRIES ITS OWN NAME IN THE FILE.
+   16 Aug 2026, his K17(b). The words and the picture are two homes for one fact
+   (DFM 144/167b): a zone's `rule` sentence says "a bottle of water", and only a
+   pair of eyes ever checked that a bottle of water was drawn. So each prop is
+   wrapped in a group named for what it IS, and qa-inspect-scene asserts the
+   named props of each scene exist AND are big enough to recognise at the size
+   the scene renders. A prop renamed in the words and forgotten in the picture
+   now fails a machine instead of reaching a pupil. */
+function prop(name, svg) { return `<g class="prop prop-${name}">${svg}</g>`; }
+
 function station(i, spec) {
   const x = i * SW;
   return `    <g class="stn stn-${i}">
       ${chair(x, spec.chair)}
-      ${spec.bag ? bagOnChair(x) : ''}
-      ${spec.crisps ? crisps(x) : ''}
-      ${spec.cable ? looseCable(x, 'back') : ''}
-      ${monitor(x, spec.screen, spec)}
+      ${spec.bag ? prop('bag', bagOnChair(x)) : ''}
+      ${spec.crisps ? prop('crisps', crisps(x)) : ''}
+      ${prop('screen-' + (spec.screen === 'login' ? 'signin' : spec.screen === 'on' ? 'signedin' : 'off'), monitor(x, spec.screen, spec))}
       ${spec.tray ? tray(x) : ''}
       ${keyboard(x, spec)}
-      ${spec.can ? can(x) : ''}
-      ${spec.bottle ? bottle(x, spec.bottleSide) : ''}
-      ${spec.cable ? looseCable(x, 'front') : ''}
-      ${spec.brokenKeys ? brokenKeys(x) : ''}
-      ${spec.stick ? looseStick(x) : ''}
-            ${spec.clutter ? clutter(x) : ''}
-      ${spec.reported ? reportedTag(x) : ''}
+      ${spec.can ? prop('can', can(x)) : ''}
+      ${spec.bottle ? prop('juice', bottle(x, spec.bottleSide)) : ''}
+      ${spec.water ? prop('water', waterBottle(x)) : ''}
+      ${spec.cable ? prop('cable-socket', looseCable(x)) : ''}
+      ${spec.brokenKeys ? prop('broken-keys', brokenKeys(x)) : ''}
+      ${spec.stick ? prop('usb-stick', looseStick(x)) : ''}
+      ${spec.clutter ? prop('clutter', clutter(x)) : ''}
+      ${spec.reported ? prop('reported-tag', reportedTag(x)) : ''}
     </g>`;
 }
 
@@ -594,7 +712,7 @@ const SCENES = [
       { screen: 'off', chair: 'in' },
       { screen: 'off', chair: 'in', crisps: true },
       { screen: 'off', chair: 'in' },
-      { screen: 'on', chair: 'in' }
+      { screen: 'on', chair: 'in', who: 'AOIFE M' }
     ]
   },
   {
@@ -602,15 +720,22 @@ const SCENES = [
        wrong and is fine: its mouse is broken and a REPORTED tag is taped to the
        monitor, so the rule about reporting a fault was kept, not broken. */
     file: 'inspection-5.svg',
-    alt: ALT_HEAD + 'One station has a cracked screen with a REPORTED tag taped to its monitor. ' +
-      'One has a crisp packet tucked in behind the monitor. One is completely tidy except that ' +
-      'its screen is still signed in. One has a memory stick left in the machine\u2019s front ' +
-      'port. The first station is tidy with its screen off.',
+    alt: ALT_HEAD + 'The first station is lit and showing its sign-in box, with nobody\u2019s work ' +
+      'on it. One has a cracked screen with a REPORTED tag taped to its monitor. One has a ' +
+      'bottle of water standing beside the machine. One is completely tidy except that its ' +
+      'screen is still signed in, with a name on it. One has a memory stick left on the bench.',
     stations: [
-      { screen: 'off', chair: 'in' },
+      /* HIS K17(b): "The hard inspection is not hard at all!" It was not: its
+         only decoy was the cracked screen, and the other four were the same
+         staging as scenes 2-4. Station 1 is now a SECOND decoy, and a fair one
+         — a lit screen sitting at its sign-in box, which is exactly what scene
+         4 has just taught her to read. A pupil who learned that scene passes
+         this one; a pupil who is flagging every lit screen does not. */
+      { screen: 'login', chair: 'in' },
       { screen: 'off', chair: 'in', cracked: true, reported: true },
-      { screen: 'off', chair: 'in', crisps: true },
-      { screen: 'on', chair: 'in' },
+      /* his order: the crisp packet becomes an obvious water bottle */
+      { screen: 'off', chair: 'in', water: true },
+      { screen: 'on', chair: 'in', who: 'NIAMH R' },
       { screen: 'off', chair: 'in', stick: true }
     ]
   }

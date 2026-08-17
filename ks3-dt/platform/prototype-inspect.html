@@ -53,73 +53,46 @@ fetch('../content/themes.json').then(function (r) { return r.json(); }).then(fun
 }).then(mount, mount);
 
 function mount() {
-  var chunk = {
-    id: 'inspection',
-    title: 'The Workshop Safety Inspection',
-    config: {
-      introTitle: 'You are the safety inspector',
-      intro: 'Every DT room runs on the same six rules. Today you check whether a room is ' +
-        'keeping them.\n\n' +
-        'You will see a photograph-style drawing of a DT room. Click any station you think ' +
-        'breaks a rule to plant a flag on it. You can change your mind as often as you like — ' +
-        'nothing is marked until you file your report.',
-      steps: [
-        'Look along the whole bench before you click anything.',
-        'Click a station to flag it. Click it again to take the flag off.',
-        'When you are happy, press File my inspection report.',
-        'You will then be told which rule each flag breaks, and shown anything you missed.'
-      ],
-      begin: 'Start the inspection',
-      scenes: [{
-        tab: 'SCENE 1 OF 4',
-        title: 'An ICT room, straight after a lesson',
-        lead: 'The class has just left. Five stations. Some of them were put back the way the ' +
-          'room rules ask, and some of them were not.',
-        art: 'assets/img/j2/inspection-1.svg',
-        alt: 'A school DT room bench with five computer stations. One station has a drink can ' +
-          'standing beside the keyboard. One has a screen still signed in with somebody’s work ' +
-          'open. One has headphones, papers and a memory stick left out and its chair pushed back. ' +
-          'The other two are tidy, with their screens off and their chairs in.',
-        noneYet: 'Nothing flagged yet. If you think the room is fine, you can file an empty report.',
-        fileLabel: 'File my inspection report',
-        fileNote: 'Filing tells you which rule each flag breaks, and shows you anything you missed. ' +
-          'A flag on a station that is fine costs you nothing.',
-        reportTitle: 'Your inspection report',
-        nextLabel: 'Next scene',
-        xpPerFlag: 2, xpClean: 3,
-        zones: [
-          { x: 0, y: 22, w: 20, h: 72, name: 'Station 1', breaks: null,
-            clearSay: 'This one is fine. The screen is off, the chair is in and the bench is clear.',
-            okSay: 'This one is fine. The screen is off, the chair is in and the bench is clear.' },
-          { x: 20, y: 22, w: 20, h: 72, name: 'Station 2',
-            breaks: 'no food or drink',
-            rule: 'This breaks the rule about food and drink. A can of fizzy drink is standing right ' +
-              'beside the keyboard, and one knock ruins the machine underneath it.' },
-          { x: 40, y: 22, w: 20, h: 72, name: 'Station 3',
-            breaks: 'sign out every time',
-            rule: 'This breaks the rule about signing out. The screen is still signed in and ' +
-              'somebody’s work is open, so the next person to sit down is using her account.' },
-          { x: 60, y: 22, w: 20, h: 72, name: 'Station 4',
-            breaks: 'chair in, area tidy',
-            rule: 'This breaks the rule about leaving your area tidy. Headphones, papers and a ' +
-              'memory stick have been left out, and the chair has not been pushed in.' },
-          { x: 80, y: 22, w: 20, h: 72, name: 'Station 5', breaks: null,
-            clearSay: 'This one is fine too. Nothing has been left out and the chair is in.',
-            okSay: 'This one is fine too. Nothing has been left out and the chair is in.' }
-        ]
-      }]
-    }
-  };
-  var ctx = {
-    chunk: chunk,
-    next: function () {
-      document.getElementById('host').innerHTML =
-        '<div class="insp"><div class="insp-head"><h2>End of the prototype</h2>' +
-        '<p class="insp-lead">In the lesson, scene 2 would open here.</p></div></div>';
-    },
-    addXp: function () {}
-  };
-  Engines.inspect.mount(document.getElementById('host'), chunk, ctx);
+  /* HIS ORDER, K17(b), 16 Aug 2026: "re-do each scene and then show me it in
+     isolation for my approval before rebuilding it into the lesson."
+     So this page serves ANY scene by number — ?scene=1 .. ?scene=5 — and it
+     reads the REAL lesson content rather than a copy of it, so what he approves
+     on this page is exactly what a pupil meets in the lesson. (The first cut of
+     this file carried its own hand-typed copy of scene 1's config, which is one
+     fact in two homes: the page could have drifted from the lesson and his
+     approval would have been of something nobody ships. DFM 144.) */
+  var n = Math.max(1, Math.min(5, Number((location.search.match(/scene=(\d+)/) || [])[1] || 1)));
+  fetch('../content/j2/lessons/j2-01.json').then(function (r) { return r.json(); }).then(function (lesson) {
+    var src = null;
+    (lesson.chunks || []).forEach(function (c) { if (c.id === 'inspection') src = c; });
+    if (!src) throw new Error('no inspection chunk in j2-01');
+    var sc = (src.config.scenes || [])[n - 1];
+    if (!sc) throw new Error('no scene ' + n);
+    var chunk = { id: 'inspection', title: src.title, config: {} };
+    Object.keys(src.config).forEach(function (k) { chunk.config[k] = src.config[k]; });
+    chunk.config.scenes = [sc];
+    /* skip straight to the picture: he is judging the ROOM, not the intro card */
+    chunk.config.intro = 'Scene ' + n + ' of 5, shown on its own for approval. ' +
+      'Everything below is the real lesson content.';
+    chunk.config.introTitle = 'Scene ' + n + ' — ' + (sc.title || '');
+    chunk.config.steps = null;
+
+    var ctx = {
+      chunk: chunk,
+      next: function () {
+        document.getElementById('host').innerHTML =
+          '<div class="insp"><div class="insp-head"><h2>End of scene ' + n + '</h2>' +
+          '<p class="insp-lead">In the lesson, the next scene would open here. ' +
+          'Change the number in the address bar to see another one.</p></div></div>';
+      },
+      addXp: function () {}
+    };
+    Engines.inspect.mount(document.getElementById('host'), chunk, ctx);
+  }).catch(function (e) {
+    document.getElementById('host').innerHTML =
+      '<div class="insp"><div class="insp-head"><h2>Could not load the scene</h2>' +
+      '<p class="insp-lead">' + String(e && e.message || e) + '</p></div></div>';
+  });
 }
 </script>
 </body>

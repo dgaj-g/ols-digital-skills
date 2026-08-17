@@ -249,14 +249,47 @@
     d.id = 'fx-layer';
     d.className = 'fx-' + fx;
     d.setAttribute('aria-hidden', 'true');
-    if (fx === 'comets') d.innerHTML = '<span class="fx-comet c1"></span><span class="fx-comet c2"></span><span class="fx-comet c3"></span>';
-    else if (fx === 'aurora') d.innerHTML = '<span class="fx-band"></span>';
-    else if (fx === 'embers') d.innerHTML = '<span class="fx-ember e1"></span><span class="fx-ember e2"></span>' +
-      '<span class="fx-ember e3"></span><span class="fx-ember e4"></span><span class="fx-ember e5"></span>' +
-      '<span class="fx-ember e6"></span>';
-    else if (fx === 'spotlight') d.innerHTML = '<span class="fx-beam"></span><span class="fx-motes"></span>';
+    d.innerHTML = FX_PARTS[fx] || '';
     document.body.appendChild(d);
   }
+  /* ---------------- the ambient layer, one look at a time ----------------
+     DAMIEN, 16 Aug 2026 (K17d), after sitting both new lessons: "barely any
+     difference in them and, worse, hardly a shred of animation, which is
+     something i really wanted the j2 and j3 interfaces to have" — and, of his
+     level-2 unlocks, "the colours are pretty dull."
+     He was right on the built registry as well as on his screen: Firewall and
+     Cutting Room carried NO fx at all, and each year's level-2 look reused its
+     own default's effect, so an unlock animated exactly like the thing it
+     replaced. Every J2/J3 look now has its OWN motion, and the two J1 effects
+     are untouched — J1 is locked (DFM 176) and its two entries below are the
+     same markup they have always been.
+     House rule for every entry here: transform and opacity only (the compositor
+     rule the comets set), nothing that can be read as a control, and every part
+     is held still by the reduced-motion block in style.css. */
+  var FX_PARTS = {
+    /* --- J1, unchanged --- */
+    comets: '<span class="fx-comet c1"></span><span class="fx-comet c2"></span><span class="fx-comet c3"></span>',
+    aurora: '<span class="fx-band"></span>',
+    /* --- J2 --- */
+    embers: (function () {
+      var s = '';
+      for (var i = 1; i <= 12; i++) s += '<span class="fx-ember e' + i + '"></span>';
+      return s + '<span class="fx-forge"></span><span class="fx-spark"></span>';
+    })(),
+    copperpour: '<span class="fx-seam"></span><span class="fx-seam-gleam"></span>' +
+      '<span class="fx-glint g1"></span><span class="fx-glint g2"></span>' +
+      '<span class="fx-glint g3"></span><span class="fx-glint g4"></span>',
+    firescan: '<span class="fx-scan"></span><span class="fx-blocked b1"></span><span class="fx-blocked b2"></span>',
+    /* --- J3 --- */
+    spotlight: (function () {
+      var s = '<span class="fx-beam"></span>';
+      for (var i = 1; i <= 6; i++) s += '<span class="fx-mote m' + i + '"></span>';
+      return s + '<span class="fx-house"></span>';
+    })(),
+    flashbulbs: '<span class="fx-marquee"></span>' +
+      '<span class="fx-flash f1"></span><span class="fx-flash f2"></span><span class="fx-flash f3"></span>',
+    playhead: '<span class="fx-head"></span><span class="fx-sprockets"></span>'
+  };
   /* ---------------- the DEFAULT look is the YEAR's, not J1's ----------------
      DAMIEN, 14 Aug 2026 (DFM 224b): "Each Year group must have it's own
      distinctive background colour. A soft animation would be great as well."
@@ -901,9 +934,27 @@
       var equipped = curTh ? String(t.id) === curTh : String(t.id) === App.defaultThemeId();
       var v = t.vars || {};
       var pv = '--pv0:' + (v['--space-0'] || '#060D1F') + ';--pv2:' + (v['--space-2'] || '#102040') + ';--pva:' + (v['--gold-hi'] || '#FFD84D');
+      /* THE PREVIEW SHOWS THE LOOK (his K17d, 16 Aug 2026: "barely any
+         difference in them"). Three near-identical dark rectangles with one dot
+         told her nothing about what she was choosing, so a J2/J3 swatch also
+         carries that look's own mid-tone and accent, and a still drawing of the
+         motion it will bring. J1's swatch markup is deliberately untouched: the
+         kit modal is a PIXEL-PINNED J1 surface (qa-j1-unchanged), a prettier
+         preview is not DFM 208's legibility class, and J1 is locked — so the
+         richer treatment is gated on the look's own year and J1 renders
+         byte-identically by construction, not by luck. */
+      var rich = (t.year === 'j2' || t.year === 'j3');
+      if (rich) {
+        pv += ';--pv3:' + (v['--space-3'] || '#1B2836') + ';--pvg:' + (v['--gold'] || '#FFD84D');
+      }
       return '<button type="button" class="kit-theme' + (unlocked ? '' : ' is-locked') + (equipped ? ' is-equipped' : '') + '"' +
         ' data-theme="' + esc(t.id) + '" style="' + pv + '">' +
-        '<span class="kit-swatch"><span class="kit-swatch-node"></span><i></i><i></i><i></i></span>' +
+        (rich
+          ? '<span class="kit-swatch is-rich sw-' + esc(t.fx || 'none') + '">' +
+              '<span class="kit-swatch-node"></span><span class="kit-swatch-fx"></span>' +
+              '<span class="kit-swatch-chips"><i></i><i></i><i></i></span>' +
+            '</span>'
+          : '<span class="kit-swatch"><span class="kit-swatch-node"></span><i></i><i></i><i></i></span>') +
         '<span class="kit-theme-name">' + esc(t.name) + '</span>' +
         '<span class="kit-theme-tag">' + esc(t.tag || '') + '</span>' +
         (equipped ? '<span class="kit-state on">Equipped</span>'
@@ -929,8 +980,17 @@
         '</button>';
     }).join('');
 
+    /* HIS QUESTION, K17(a): "there are only 3 kits visible in the kit locker
+       (same as J3), shouldn't there be far more... Is it a case that has more
+       xp and lessons are added/unlocked, more kit interfaces become visible?"
+       That IS the design (DFM 165 / K11c: a level exists only once its
+       threshold is computed from a built lesson), but nothing on the screen
+       said so, so three looks read as the whole collection. J1 has no note —
+       all twelve of its looks are already there, and its modal is pinned. */
+    var moreNote = kitWord_('moreNote');
     body.innerHTML = head +
       '<h3 class="kit-section">Interface</h3><div class="kit-themes">' + themes + '</div>' +
+      (moreNote ? '<p class="kit-more">' + esc(moreNote) + '</p>' : '') +
       '<h3 class="kit-section">' + esc(kitWord_('insigniaLabel')) + ' <small>' +
       esc(kitWord_('insigniaNote')) + '</small></h3><div class="kit-chips">' + chips + '</div>' +
       '<p class="kit-foot">' + esc(kitWord_('foot')) + '</p>' +

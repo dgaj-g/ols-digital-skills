@@ -1285,6 +1285,81 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .kit-swatch i:nth-child(2) { left: 18%; top: 30%; }
 .kit-swatch i:nth-child(3) { left: 38%; top: 62%; opacity: 0.6; }
 .kit-swatch i:nth-child(4) { left: 58%; top: 22%; opacity: 0.75; }
+
+/* ---- the J2/J3 preview: the look's own colours, and a still of its motion ----
+   16 Aug 2026, his K17(d). The plain swatch above is J1's and stays exactly as
+   it is (its modal is pixel-pinned). A rich swatch adds the theme's mid-tone and
+   accent as real colour, plus a drawn hint of the animation the look brings, so
+   choosing one is an informed choice rather than a guess between dark boxes.
+   These hints are STILL — the modal is a decision screen, not a showreel. */
+.kit-swatch.is-rich {
+  height: 62px;
+  background: linear-gradient(145deg, var(--pv3, var(--pv2)), var(--pv2) 46%, var(--pv0) 100%);
+}
+.kit-swatch-fx { position: absolute; inset: 0; pointer-events: none; }
+.kit-swatch-chips { position: absolute; left: 8px; bottom: 7px; display: flex; gap: 4px; }
+.kit-swatch-chips i {
+  position: static; width: 11px; height: 11px; border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.22); background: var(--pv3, var(--pv2));
+}
+.kit-swatch-chips i:nth-child(2) { background: var(--pvg, var(--pva)); }
+.kit-swatch-chips i:nth-child(3) { background: var(--pva); }
+
+/* embers — sparks off a warm bottom edge */
+.sw-embers .kit-swatch-fx {
+  background:
+    radial-gradient(2px 2px at 22% 44%, var(--pva), transparent 60%),
+    radial-gradient(3px 3px at 46% 28%, var(--pva), transparent 60%),
+    radial-gradient(2px 2px at 66% 52%, var(--pva), transparent 60%),
+    radial-gradient(2px 2px at 82% 33%, var(--pva), transparent 60%),
+    linear-gradient(0deg, rgba(var(--gold-rgb), 0.28), transparent 46%);
+}
+/* copperpour — a molten seam with a gleam on it */
+.sw-copperpour .kit-swatch-fx {
+  background:
+    radial-gradient(ellipse 26px 8px at 62% 50%, var(--pva), transparent 70%),
+    linear-gradient(90deg, transparent, var(--pvg, var(--pva)) 22%, var(--pva) 52%, var(--pvg, var(--pva)) 78%, transparent);
+  background-size: 100% 100%, 100% 3px;
+  background-position: 0 0, 0 50%;
+  background-repeat: no-repeat;
+}
+/* firescan — one guard line, and a point flaring beside it */
+.sw-firescan .kit-swatch-fx {
+  background:
+    radial-gradient(4px 4px at 72% 36%, var(--pva), transparent 65%),
+    linear-gradient(180deg, transparent, var(--pva) 16%, var(--pva) 84%, transparent);
+  background-size: 100% 100%, 2px 100%;
+  background-position: 0 0, 46% 0;
+  background-repeat: no-repeat;
+}
+/* spotlight — a beam across the room, with dust in it */
+.sw-spotlight .kit-swatch-fx {
+  background:
+    radial-gradient(2px 2px at 40% 40%, rgba(255, 248, 230, 0.9), transparent 60%),
+    radial-gradient(2px 2px at 52% 64%, rgba(255, 248, 230, 0.7), transparent 60%),
+    linear-gradient(108deg, transparent 26%, rgba(255, 246, 224, 0.30) 38%, rgba(255, 246, 224, 0.06) 52%, transparent 62%);
+}
+/* flashbulbs — marquee bulbs along the top, one flash going off */
+.sw-flashbulbs .kit-swatch-fx {
+  background:
+    radial-gradient(14px 14px at 74% 58%, rgba(255, 252, 240, 0.42), transparent 70%),
+    radial-gradient(circle at 5px 4px, var(--pva) 2px, transparent 2.6px);
+  background-size: 100% 100%, 17px 8px;
+  background-position: 0 0, 0 0;
+  background-repeat: no-repeat, repeat-x;
+}
+/* playhead — the timeline, and the sprockets under it */
+.sw-playhead .kit-swatch-fx {
+  background:
+    linear-gradient(180deg, transparent, var(--pva) 12%, var(--pva) 88%, transparent),
+    radial-gradient(circle at 6px 5px, rgba(var(--gold-hi-rgb), 0.30) 3px, transparent 3.6px);
+  background-size: 2px 100%, 22px 10px;
+  background-position: 58% 0, 0 86%;
+  background-repeat: no-repeat, repeat-x;
+}
+.kit-more {
+  margin: 8px 0 0; color: var(--muted-d); font-size: 0.82rem; line-height: 1.45;
+}
 .kit-theme-name { font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 0.95rem; }
 .kit-theme-tag { color: var(--muted-d); font-size: 0.76rem; line-height: 1.35; min-height: 2.6em; }
 .kit-state { font-family: var(--font-display); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; margin-top: 5px; }
@@ -1343,56 +1418,227 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   to { transform: translate3d(5vw, 3vw, 0) scale(1.12); }
 }
 
-/* ---- J2 "The Workbench": sparks drifting up off the forge ----
-   Six small warm dots on long, offset loops, so nothing ever pulses in time
-   with anything else and the eye never finds a pattern. Same compositor rule as
-   the comets above: transform and opacity only. */
+/* ================= THE YEAR LOOKS AND THEIR OWN MOTION (16 Aug 2026) =========
+   DAMIEN, K17(d), having sat both new lessons: "barely any difference in them
+   and, worse, hardly a shred of animation" · "the colours are pretty dull."
+   True of the built registry, not just of his screen: two of the six J2/J3
+   looks had no fx at all, and each year's level-2 unlock reused its own
+   default's effect. Each look below now has motion of its own, so equipping one
+   is a visible event.
+   THE RULES EVERY EFFECT HERE KEEPS: transform and opacity only (no layout, no
+   paint storms); nothing that could be mistaken for a control; every moving
+   part named in the reduced-motion block at the foot of this file, which holds
+   it still rather than flashing one frame; and nothing bright enough to drag a
+   surface under the readability floors — qa-readability measures every one of
+   these skins on every landmark surface, and it is the arbiter, not taste. */
+
+/* ---- J2 "The Workbench": a forge that is still warm ----
+   Twelve sparks on offset loops so the eye never finds a pattern, a slow glow
+   breathing along the bottom edge, and the occasional spark streak. */
 .fx-embers .fx-ember {
   position: absolute; bottom: -3vh; width: 4px; height: 4px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.98), rgba(var(--gold-rgb), 0) 70%);
+  box-shadow: 0 0 6px rgba(var(--gold-hi-rgb), 0.55);
+  opacity: 0;
+}
+.fx-embers .fx-ember.e1 { left: 7%; animation: emberRise 13s linear infinite 0s; }
+.fx-embers .fx-ember.e2 { left: 16%; width: 3px; height: 3px; animation: emberRise 17s linear infinite 2.4s; }
+.fx-embers .fx-ember.e3 { left: 24%; width: 6px; height: 6px; animation: emberRise 11s linear infinite 5.1s; }
+.fx-embers .fx-ember.e4 { left: 33%; animation: emberRise 15s linear infinite 1.2s; }
+.fx-embers .fx-ember.e5 { left: 41%; width: 3px; height: 3px; animation: emberRise 18s linear infinite 7.6s; }
+.fx-embers .fx-ember.e6 { left: 50%; width: 5px; height: 5px; animation: emberRise 12s linear infinite 3.3s; }
+.fx-embers .fx-ember.e7 { left: 58%; animation: emberRise 16s linear infinite 9.2s; }
+.fx-embers .fx-ember.e8 { left: 66%; width: 7px; height: 7px; animation: emberRise 10s linear infinite 6s; }
+.fx-embers .fx-ember.e9 { left: 74%; width: 3px; height: 3px; animation: emberRise 14s linear infinite 0.8s; }
+.fx-embers .fx-ember.e10 { left: 82%; animation: emberRise 18s linear infinite 4.4s; }
+.fx-embers .fx-ember.e11 { left: 90%; width: 5px; height: 5px; animation: emberRise 12s linear infinite 8.1s; }
+.fx-embers .fx-ember.e12 { left: 96%; width: 3px; height: 3px; animation: emberRise 15s linear infinite 2s; }
+@keyframes emberRise {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  8% { opacity: 0.95; }
+  55% { transform: translate3d(3vw, -55vh, 0); opacity: 0.6; }
+  100% { transform: translate3d(-2vw, -108vh, 0); opacity: 0; }
+}
+.fx-embers .fx-forge {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 26vh;
+  background: linear-gradient(0deg, rgba(var(--gold-rgb), 0.20), rgba(var(--gold-rgb), 0.06) 45%, transparent 85%);
+  animation: forgeBreathe 7s ease-in-out infinite alternate;
+}
+@keyframes forgeBreathe { from { opacity: 0.45; } to { opacity: 1; } }
+.fx-embers .fx-spark {
+  position: absolute; left: 20%; bottom: 8vh; width: 90px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, rgba(var(--gold-hi-rgb), 0), rgba(var(--gold-hi-rgb), 0.95), rgba(var(--gold-hi-rgb), 0));
+  opacity: 0;
+  animation: sparkFly 11s ease-out infinite 3s;
+}
+@keyframes sparkFly {
+  0% { transform: translate3d(0, 0, 0) rotate(-24deg); opacity: 0; }
+  3% { opacity: 0.9; }
+  14% { transform: translate3d(46vw, -26vh, 0) rotate(-24deg); opacity: 0; }
+  100% { transform: translate3d(46vw, -26vh, 0) rotate(-24deg); opacity: 0; }
+}
+
+/* ---- J2 "Copperline": molten copper, poured and cooling ----
+   A horizontal seam with a gleam travelling along it, and a few drifting glints. */
+.fx-copperpour .fx-seam {
+  position: absolute; left: -5vw; right: -5vw; top: 35%; height: 3px;
+  background: linear-gradient(90deg, rgba(var(--gold-rgb), 0), rgba(var(--gold-rgb), 0.75) 18%, rgba(var(--gold-hi-rgb), 0.9) 50%, rgba(var(--gold-rgb), 0.75) 82%, rgba(var(--gold-rgb), 0));
+  box-shadow: 0 0 24px rgba(var(--gold-rgb), 0.55);
+  opacity: 0.55;
+  animation: seamPulse 9s ease-in-out infinite alternate;
+}
+@keyframes seamPulse { from { opacity: 0.35; } to { opacity: 0.75; } }
+.fx-copperpour .fx-seam-gleam {
+  position: absolute; top: calc(35% - 26px); left: -22vw; width: 22vw; height: 56px;
+  background: radial-gradient(ellipse at center, rgba(var(--gold-hi-rgb), 0.55), transparent 68%);
+  filter: blur(14px);
+  animation: gleamRun 8s linear infinite;
+}
+@keyframes gleamRun {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translate3d(144vw, 0, 0); opacity: 0; }
+}
+.fx-copperpour .fx-glint {
+  position: absolute; width: 5px; height: 5px; border-radius: 50%;
   background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.95), rgba(var(--gold-rgb), 0) 70%);
   opacity: 0;
 }
-.fx-embers .fx-ember.e1 { left: 12%; animation: emberRise 19s linear infinite 0s; }
-.fx-embers .fx-ember.e2 { left: 27%; width: 3px; height: 3px; animation: emberRise 26s linear infinite 4s; }
-.fx-embers .fx-ember.e3 { left: 44%; animation: emberRise 22s linear infinite 9s; }
-.fx-embers .fx-ember.e4 { left: 61%; width: 5px; height: 5px; animation: emberRise 30s linear infinite 2.5s; }
-.fx-embers .fx-ember.e5 { left: 78%; width: 3px; height: 3px; animation: emberRise 17s linear infinite 12s; }
-.fx-embers .fx-ember.e6 { left: 90%; animation: emberRise 24s linear infinite 6.5s; }
-@keyframes emberRise {
+.fx-copperpour .fx-glint.g1 { left: 18%; top: 62%; animation: glintDrift 14s ease-in-out infinite 0s; }
+.fx-copperpour .fx-glint.g2 { left: 43%; top: 74%; animation: glintDrift 18s ease-in-out infinite 3.5s; }
+.fx-copperpour .fx-glint.g3 { left: 67%; top: 58%; animation: glintDrift 16s ease-in-out infinite 7s; }
+.fx-copperpour .fx-glint.g4 { left: 86%; top: 70%; animation: glintDrift 20s ease-in-out infinite 10.5s; }
+@keyframes glintDrift {
   0% { transform: translate3d(0, 0, 0); opacity: 0; }
-  8% { opacity: 0.85; }
-  55% { transform: translate3d(3vw, -55vh, 0); opacity: 0.55; }
-  100% { transform: translate3d(-2vw, -108vh, 0); opacity: 0; }
+  20% { opacity: 0.85; }
+  80% { opacity: 0.35; }
+  100% { transform: translate3d(-4vw, -22vh, 0); opacity: 0; }
 }
 
-/* ---- J3 "The Screening Room": one soft projector beam crossing the room ----
-   The aurora band's machinery re-aimed: a single blurred shaft on a slow
-   alternating loop, plus a faint dust drift so the light has something to catch. */
+/* ---- J2 "Firewall": a guard line sweeping the wall ----
+   One gold scan crossing left to right, and two points that flare as it passes. */
+.fx-firescan .fx-scan {
+  position: absolute; top: -10vh; bottom: -10vh; left: -8vw; width: 3px;
+  background: linear-gradient(180deg, transparent, rgba(var(--gold-hi-rgb), 0.85) 18%, rgba(var(--gold-hi-rgb), 0.85) 82%, transparent);
+  box-shadow: 0 0 30px 6px rgba(var(--gold-rgb), 0.35);
+  opacity: 0.8;
+  animation: scanSweep 10s linear infinite;
+}
+@keyframes scanSweep {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  6% { opacity: 0.85; }
+  94% { opacity: 0.85; }
+  100% { transform: translate3d(118vw, 0, 0); opacity: 0; }
+}
+.fx-firescan .fx-blocked {
+  position: absolute; width: 12px; height: 12px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.9), rgba(var(--gold-rgb), 0) 70%);
+  opacity: 0;
+}
+.fx-firescan .fx-blocked.b1 { left: 33%; top: 28%; animation: blockedFlash 10s ease-out infinite 2.6s; }
+.fx-firescan .fx-blocked.b2 { left: 71%; top: 64%; animation: blockedFlash 10s ease-out infinite 6.4s; }
+@keyframes blockedFlash {
+  0%, 100% { opacity: 0; transform: scale(0.6); }
+  4% { opacity: 0.95; transform: scale(1.4); }
+  16% { opacity: 0; transform: scale(1.8); }
+}
+
+/* ---- J3 "The Screening Room": the projector is running ----
+   The beam sweeps rather more than twice as often as it used to (48s read as
+   still), and the dust it catches is drawn as real motes with their own drifts. */
 .fx-spotlight .fx-beam {
   position: absolute; top: -30vh; left: 8vw; width: 34vw; height: 170vh;
-  background: linear-gradient(180deg, rgba(255, 246, 224, 0.16), rgba(255, 246, 224, 0.06) 45%, transparent 78%);
-  filter: blur(48px);
+  background: linear-gradient(180deg, rgba(255, 246, 224, 0.26), rgba(255, 246, 224, 0.10) 45%, transparent 78%);
+  filter: blur(44px);
   transform: rotate(14deg);
   opacity: 0.9;
-  animation: beamSweep 48s ease-in-out infinite alternate;
-}
-.fx-spotlight .fx-motes {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(2px 2px at 22% 34%, rgba(255, 248, 230, 0.55), transparent 60%),
-    radial-gradient(2px 2px at 39% 71%, rgba(255, 248, 230, 0.40), transparent 60%),
-    radial-gradient(3px 3px at 57% 22%, rgba(255, 248, 230, 0.35), transparent 60%),
-    radial-gradient(2px 2px at 71% 58%, rgba(255, 248, 230, 0.45), transparent 60%);
-  opacity: 0.5;
-  animation: moteDrift 37s ease-in-out infinite alternate;
+  animation: beamSweep 22s ease-in-out infinite alternate;
 }
 @keyframes beamSweep {
-  from { transform: translate3d(-6vw, 0, 0) rotate(14deg); opacity: 0.75; }
+  from { transform: translate3d(-6vw, 0, 0) rotate(14deg); opacity: 0.7; }
   to { transform: translate3d(38vw, 0, 0) rotate(9deg); opacity: 1; }
 }
-@keyframes moteDrift {
-  from { transform: translate3d(0, 0, 0); opacity: 0.35; }
-  to { transform: translate3d(2vw, -3vh, 0); opacity: 0.6; }
+.fx-spotlight .fx-mote {
+  position: absolute; width: 3px; height: 3px; border-radius: 50%;
+  background: rgba(255, 248, 230, 0.85);
+  box-shadow: 0 0 5px rgba(255, 248, 230, 0.6);
+  opacity: 0;
+}
+.fx-spotlight .fx-mote.m1 { left: 22%; top: 34%; animation: moteFloat 15s ease-in-out infinite 0s; }
+.fx-spotlight .fx-mote.m2 { left: 31%; top: 68%; animation: moteFloat 19s ease-in-out infinite 2.8s; }
+.fx-spotlight .fx-mote.m3 { left: 44%; top: 22%; width: 4px; height: 4px; animation: moteFloat 13s ease-in-out infinite 5.5s; }
+.fx-spotlight .fx-mote.m4 { left: 52%; top: 55%; animation: moteFloat 21s ease-in-out infinite 1.6s; }
+.fx-spotlight .fx-mote.m5 { left: 63%; top: 41%; animation: moteFloat 17s ease-in-out infinite 8.2s; }
+.fx-spotlight .fx-mote.m6 { left: 72%; top: 74%; width: 4px; height: 4px; animation: moteFloat 24s ease-in-out infinite 4.1s; }
+@keyframes moteFloat {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  25% { opacity: 0.75; }
+  75% { opacity: 0.5; }
+  100% { transform: translate3d(3vw, -14vh, 0); opacity: 0; }
+}
+.fx-spotlight .fx-house {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 30vh;
+  background: radial-gradient(ellipse at 10% 100%, rgba(255, 214, 170, 0.10), transparent 60%),
+              radial-gradient(ellipse at 90% 100%, rgba(255, 214, 170, 0.10), transparent 60%);
+  animation: houseGlow 11s ease-in-out infinite alternate;
+}
+@keyframes houseGlow { from { opacity: 0.4; } to { opacity: 1; } }
+
+/* ---- J3 "Première": the cameras are on you ----
+   A chasing row of marquee bulbs along the top, and three flashes that never
+   fire together (fast attack, slow decay — a camera flash, not a strobe). */
+.fx-flashbulbs .fx-marquee {
+  position: absolute; left: 0; right: 0; top: 0; height: 10px;
+  background-image: radial-gradient(circle at 6px 5px, rgba(var(--gold-hi-rgb), 0.95) 2.5px, transparent 3px);
+  background-size: 34px 10px;
+  opacity: 0.75;
+  animation: marqueeChase 2.4s linear infinite;
+}
+@keyframes marqueeChase {
+  from { background-position: 0 0; }
+  to { background-position: 34px 0; }
+}
+.fx-flashbulbs .fx-flash {
+  position: absolute; width: 42vw; height: 42vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 252, 240, 0.30), rgba(255, 250, 235, 0.10) 40%, transparent 70%);
+  filter: blur(30px);
+  opacity: 0;
+}
+.fx-flashbulbs .fx-flash.f1 { left: 4%; top: 12%; animation: bulbPop 7s ease-out infinite 0.5s; }
+.fx-flashbulbs .fx-flash.f2 { right: 6%; top: 30%; animation: bulbPop 9s ease-out infinite 3.2s; }
+.fx-flashbulbs .fx-flash.f3 { left: 34%; bottom: 6%; animation: bulbPop 8s ease-out infinite 6.1s; }
+@keyframes bulbPop {
+  0% { opacity: 0; transform: scale(0.85); }
+  2% { opacity: 0.85; transform: scale(1); }
+  22% { opacity: 0; transform: scale(1.08); }
+  100% { opacity: 0; transform: scale(0.85); }
+}
+
+/* ---- J3 "The Cutting Room": the timeline is running ----
+   A silver playhead crossing the frame, and sprocket holes scrolling below it. */
+.fx-playhead .fx-head {
+  position: absolute; top: 0; bottom: 0; left: -4vw; width: 2px;
+  background: linear-gradient(180deg, transparent, rgba(var(--gold-hi-rgb), 0.9) 12%, rgba(var(--gold-hi-rgb), 0.9) 88%, transparent);
+  box-shadow: 0 0 18px 3px rgba(var(--gold-rgb), 0.30);
+  animation: playheadRun 14s linear infinite;
+}
+@keyframes playheadRun {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  5% { opacity: 0.9; }
+  95% { opacity: 0.9; }
+  100% { transform: translate3d(112vw, 0, 0); opacity: 0; }
+}
+.fx-playhead .fx-sprockets {
+  position: absolute; left: 0; right: 0; bottom: 3vh; height: 16px;
+  background-image: radial-gradient(circle at 9px 8px, rgba(var(--gold-hi-rgb), 0.28) 4px, transparent 5px);
+  background-size: 46px 16px;
+  opacity: 0.6;
+  animation: sprocketRoll 3.6s linear infinite;
+}
+@keyframes sprocketRoll {
+  from { background-position: 0 0; }
+  to { background-position: -46px 0; }
 }
 
 @media (max-width: 640px) {
@@ -2426,9 +2672,17 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  /* ambient layers: hold them still rather than flashing one frame */
+  /* ambient layers: hold them still rather than flashing one frame.
+     Every moving part of every look is named here — a new fx that forgets to
+     join this list would animate for a pupil who has asked the machine not to
+     (qa-skins asserts the list covers what app.js can render). */
   .aurora, #fx-layer, .fx-comet, .fx-band,
-  .fx-ember, .fx-beam, .fx-motes { animation: none !important; opacity: 0.35 !important; }
+  .fx-ember, .fx-forge, .fx-spark,
+  .fx-seam, .fx-seam-gleam, .fx-glint,
+  .fx-scan, .fx-blocked,
+  .fx-beam, .fx-mote, .fx-house,
+  .fx-marquee, .fx-flash,
+  .fx-head, .fx-sprockets { animation: none !important; opacity: 0.35 !important; }
   /* the "ready" waypoint still needs to read as ready without pulsing */
   .tile.is-open .tile-icon { animation: none !important; box-shadow: 0 0 0 3px var(--gold-hi) inset; }
   /* keep the busy indicators legible - a frozen spinner reads as "hung" */

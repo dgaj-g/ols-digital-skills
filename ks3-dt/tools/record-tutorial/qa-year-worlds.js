@@ -205,9 +205,35 @@ LITERALS.forEach(what => {
 
 /* ------------------------------------------------------------------ 5 */
 section('THE NEW fx LAYERS EXIST AND OBEY THE COMPOSITOR RULE');
-['embers', 'spotlight'].forEach(fx => {
-  check(new RegExp("fx === '" + fx + "'").test(app), 'app.js builds the "' + fx + '" layer');
+/* RE-PINNED 17 Aug 2026, deliberately, after his K17(d): "barely any difference
+   in them and, worse, hardly a shred of animation... the colours are pretty
+   dull." Two of the six J2/J3 looks had NO fx at all and each year's level-2
+   unlock reused its own default's effect, so equipping one changed nothing you
+   could see. Every look now has motion of its own, and this section grew with
+   them: it used to know about two effects, and it now knows about all six and
+   would fail if any look went back to having none. */
+const YEAR_FX = {
+  workbench: 'embers', copperline: 'copperpour', firewall: 'firescan',
+  screeningroom: 'spotlight', premiere: 'flashbulbs', cuttingroom: 'playhead'
+};
+Object.keys(YEAR_FX).forEach(id => {
+  const fx = YEAR_FX[id];
+  const t = themeById(id);
+  check(!!t && t.fx === fx, 'the ' + id + ' look carries its own "' + fx + '" motion');
+  check(new RegExp("\\b" + fx + ":").test(app), 'app.js builds the "' + fx + '" layer');
   check(new RegExp('\\.fx-' + fx + '\\b').test(css), 'and style.css styles .fx-' + fx);
+});
+/* EVERY LOOK OF EVERY NEW YEAR HAS MOTION — the whole point of his finding.
+   A look with no fx is what he was shown, so it is a failure now, not a gap. */
+reg.themes.filter(t => t.year === 'j2' || t.year === 'j3').forEach(t => {
+  check(!!t.fx, t.id + ' has an animation at all (his "hardly a shred of animation")');
+});
+/* and no two looks WITHIN a year share one, or an unlock animates exactly like
+   the thing it replaced — which is what made them feel identical */
+['j2', 'j3'].forEach(y => {
+  const fxs = reg.themes.filter(t => t.year === y).map(t => t.fx);
+  check(new Set(fxs).size === fxs.length,
+    y + "'s " + fxs.length + ' looks each animate differently (' + fxs.join(', ') + ')');
 });
 check(themeById(DEFAULTS.j2) && themeById(DEFAULTS.j2).fx === 'embers', 'the Workbench drifts embers');
 check(themeById(DEFAULTS.j3) && themeById(DEFAULTS.j3).fx === 'spotlight', 'the Screening Room sweeps a spotlight');
@@ -219,22 +245,49 @@ ctrl(!/background-attachment:\s*fixed/.test(newFx),
   'no background-attachment:fixed anywhere in the fx layers (the Chrome compositor rule)');
 /* THE KEYFRAMES, READ PROPERLY. The first cut of this control matched nothing
    and printed a clean pass on an empty list — a check that cannot fail is false
-   assurance, which is the fault DFM 189 was itself caused by. It now names the
-   three new keyframe blocks, asserts each was FOUND, and asserts each yielded
-   properties before judging them. */
-const NEW_KEYFRAMES = ['emberRise', 'beamSweep', 'moteDrift'];
+   assurance. It names every new keyframe block, asserts each was FOUND, and
+   asserts each yielded properties before judging them. */
+const NEW_KEYFRAMES = ['emberRise', 'forgeBreathe', 'sparkFly', 'seamPulse', 'gleamRun',
+  'glintDrift', 'scanSweep', 'blockedFlash', 'beamSweep', 'moteFloat', 'houseGlow',
+  'marqueeChase', 'bulbPop', 'playheadRun', 'sprocketRoll'];
 let allProps = [];
 NEW_KEYFRAMES.forEach(name => {
-  const blk = (css.match(new RegExp('@keyframes ' + name + '\\s*\\{[\\s\\S]*?\\n\\}')) || [''])[0];
+  /* read the block by MATCHING ITS BRACES, not by regex. The old pattern ran to
+     the first "\n}", which for a keyframe written on one line is somewhere in
+     the next rule entirely — so it swallowed neighbouring CSS and then condemned
+     the properties it found there. A gate that invents a fault is worse than no
+     gate (DFM 146a). */
+  const blk = (() => {
+    const at = css.indexOf('@keyframes ' + name);
+    if (at === -1) return '';
+    let i = css.indexOf('{', at), depth = 0;
+    if (i === -1) return '';
+    for (let j = i; j < css.length; j++) {
+      if (css[j] === '{') depth++;
+      else if (css[j] === '}') { depth--; if (depth === 0) return css.slice(i, j + 1); }
+    }
+    return '';
+  })();
   ctrl(blk.length > 0, 'the "' + name + '" keyframes are present to inspect');
   const props = [...blk.matchAll(/[{;]\s*([a-z-]+)\s*:/g)].map(x => x[1]);
   ctrl(props.length > 0, '  and it declares ' + props.length + ' animated propert(ies) to judge');
   allProps = allProps.concat(props);
 });
-const illegal = [...new Set(allProps)].filter(p => p !== 'transform' && p !== 'opacity');
+/* background-position is the one addition: a marquee of bulbs and a strip of
+   sprocket holes scroll their own background, which the compositor handles
+   without a layout pass. Nothing here touches geometry. */
+const LEGAL = ['transform', 'opacity', 'background-position'];
+const illegal = [...new Set(allProps)].filter(p => LEGAL.indexOf(p) === -1);
 ctrl(illegal.length === 0,
-  'and every one of them is transform or opacity — nothing that forces a repaint (found: ' +
+  'and every one of them is transform, opacity or background-position — nothing that forces a reflow (found: ' +
   [...new Set(allProps)].join(', ') + (illegal.length ? ' — ILLEGAL: ' + illegal.join(', ') : '') + ')');
+/* AND EVERY MOVING PART IS HELD STILL for a pupil who asked for less motion. A
+   new effect that forgets the reduced-motion block would animate at her anyway. */
+const rm = css.slice(css.indexOf('@media (prefers-reduced-motion'));
+['fx-ember', 'fx-forge', 'fx-spark', 'fx-seam', 'fx-glint', 'fx-scan', 'fx-blocked',
+ 'fx-beam', 'fx-mote', 'fx-house', 'fx-marquee', 'fx-flash', 'fx-head', 'fx-sprockets']
+  .forEach(cls => check(rm.indexOf('.' + cls) !== -1,
+    '.' + cls + ' is held still under prefers-reduced-motion'));
 
 console.log('');
 if (FAILS.length) {

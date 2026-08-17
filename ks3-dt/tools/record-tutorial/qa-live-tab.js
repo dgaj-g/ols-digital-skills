@@ -351,23 +351,39 @@ async function readTab(page) {
       refreshTitle: (body.querySelector('[data-action="live-refresh"]') || {}).title || '',
       csvTitle: (body.querySelector('[data-action="live-csv"]') || {}).title || '',
       baseline: (() => {
-        const h = Array.from(body.querySelectorAll('h3')).filter(x => /Licence Exam/.test(x.textContent))[0];
+        /* the panel is found by what it SAYS IT IS, not by J1's name for it:
+           it is the Licence Exam in J1, the Skills Snapshot in J2 and Portfolio
+           Zero in J3, and matching on "Licence Exam" made this harness blind to
+           the other two years (16 Aug 2026, his K19c question) */
+        const h = Array.from(body.querySelectorAll('h3')).filter(x => /where the class started/.test(x.textContent))[0];
         if (!h) return null;
-        /* the blocks that follow the Licence Exam heading, i.e. after the misconception ones */
+        /* the blocks that follow that heading, i.e. after the misconception ones */
         const all = Array.from(body.querySelectorAll('.staff-row'));
         const after = all.filter(el => h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING);
         return {
           blocks: after.length,
           firstTitle: after.length ? after[0].querySelector('.staff-row-name').textContent.trim() : '',
           text: after.map(el => el.textContent).join(' | '),
+          heading: h.textContent.trim(),
           correctLabels: after.filter(el => /\(the correct answer\)/.test(el.textContent)).length
         };
       })(),
       baselineTitles: (() => {
+        /* every row on screen, keyed by the name in it — the old version listed
+           J1's three pupils by hand, so a J2 or J3 class returned an empty map
+           and the hover checks passed on nothing (16 Aug 2026; DFM 146a — the
+           harness was wrong, not the tab) */
         const out = {};
-        ['Anya Murphy', 'Orla Devine', 'Ciara Small'].forEach(n => {
-          const tr = rowFor(n); if (!tr) return;
-          out[n] = tr.querySelectorAll('td')[3].getAttribute('title');
+        Array.from(body.querySelectorAll('.dash-table tr')).forEach(tr => {
+          const tds = tr.querySelectorAll('td');
+          if (tds.length < 4) return;
+          /* the name cell also holds the remove button and any flag/voice/star
+             chips, so read only its own TEXT nodes — a flagged pupil's name
+             otherwise comes back with "says not yet" glued to it */
+          const name = Array.from(tds[0].childNodes)
+            .filter(n => n.nodeType === 3).map(n => n.textContent).join(' ').trim();
+          if (!name) return;
+          out[name] = tds[3].getAttribute('title');
         });
         return out;
       })(),
@@ -685,6 +701,149 @@ async function readTab(page) {
   check(/"started"/.test(orlaRow), 'a started lesson says "started"');
   check(!/"none"/.test(csv || ''), 'the word "none" is retired from the export too');
   check(!/\|/.test(csv || ''), 'CONTROL: not one raw pipe-code (like 200|2) survives anywhere in the sheet');
+
+  /* ============================================================
+     V. THE TAB WORKS FOR J2 AND J3 — his K19(c) question, 16 Aug 2026:
+     "have you designed the live lessons to be fully workable for these J2 and
+     J3 lessons?" The honest answer was that it had never been tried. It half
+     worked: the exit and self-eval columns are engine-detected and were fine,
+     but every word of the baseline panel was J1's — it called a J2 class's
+     Skills Snapshot "The Licence Exam" and told the teacher it was "Sixteen
+     questions" when it is twelve. And underneath that, the diagnostics had no
+     answer keys at all, so the score the panel reports was 0 for every pupil
+     in both years (qa-item-keys now guards that half).
+     ============================================================ */
+  for (const YR of [
+    { year: 'j2', lesson: 'j2-01', panel: 'Skills Snapshot', chunk: 'snapshot', marked: 12, conf: 0 },
+    { year: 'j3', lesson: 'j3-01', panel: 'Portfolio Zero', chunk: 'portfolio', marked: 9, conf: 3 }
+  ]) {
+    section('V. THE LIVE TAB ON A ' + YR.year.toUpperCase() + ' CLASS (his K19c question)');
+    const SRCDIR = path.join('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/content-src', YR.year, 'lessons');
+    const LY = JSON.parse(fs.readFileSync(path.join(SRCDIR, YR.lesson + '.json'), 'utf8'));
+    const diag = (LY.chunks || []).filter(c => c.engine === 'diagnostic')[0];
+    const items = diag.config.items;
+    const yKeys = DEVKEYS[YR.year + '/lessons/' + YR.lesson] || {};
+    /* one pupil right on everything keyed, one wrong on two, so the hover and
+       the bars both have something true to say */
+    const strFor = (wrongQs) => items.map((it, i) => {
+      const k = yKeys[it.id];
+      if (!k) return '0';                       // a confidence card: she still answered
+      const a = Number(k.a);
+      return (wrongQs.indexOf(i + 1) !== -1) ? String(a === 0 ? 1 : 0) : String(a);
+    }).join('');
+    const AOIFE = strFor([]), NIAMH = strFor([3, 6]);
+
+    await page.evaluate(() => localStorage.clear());
+    await page.evaluate((cfg) => {
+      const EPOCH = 1767225600000;
+      const tmin = Math.floor((Date.now() - EPOCH) / 60000);
+      const weekAgo = tmin - 7 * 1440;
+      const CLS = 'QA-Year', STAFF = 'teacher@demo';
+      const s = {
+        passcode: 'demo',
+        classes: [{ name: CLS, owner: STAFF, year: cfg.year, created: new Date(Date.now() - 7 * 864e5).toISOString() }],
+        locks: {}, hods: [], cfg: {}, team: {}, pupils: {}, userProps: {}
+      };
+      s.locks[CLS] = { '1': { u: weekAgo, on: 1 } };
+      s.cfg[CLS] = {
+        lb: { mode: 'off', basis: 'xp', names: 'codename', topN: 0 },
+        absDays: 5, cover: { on: 0, lesson: '', ts: 0 }, pairing: { on: 1 }, tn: { mode: 'team' }
+      };
+      const mk = (name, xp, bl, exit, se) => ({
+        n: name, cn: name.split(' ')[0] + ' Wren', j: weekAgo, xp: xp, g: '',
+        L: { '1': [2, xp, 'bl=' + bl.right + '/' + bl.total + '|' + bl.str, exit, se, tmin - 60, 40, 0, '', 0, 0] }
+      });
+      s.pupils[CLS + ':aoife@demo'] = mk('Aoife Brennan', 62, cfg.aoife, '0', '222|1');
+      s.pupils[CLS + ':niamh@demo'] = mk('Niamh Quinn', 41, cfg.niamh, '1', '200|2');
+      localStorage.setItem('ks3dt-dev', JSON.stringify(s));
+    }, {
+      year: YR.year,
+      aoife: { right: YR.marked, total: items.length, str: AOIFE },
+      niamh: { right: YR.marked - 2, total: items.length, str: NIAMH }
+    });
+    await page.goto('http://localhost:8096/ks3-dt/platform/index.html?class=QA-Year', { waitUntil: 'domcontentloaded' });
+    await sleep(2200);
+    await page.evaluate(() => window.Staff.open());
+    await sleep(700);
+    await page.evaluate(() => {
+      const i = document.querySelector('#staff-modal input[type=password], #staff-modal input');
+      if (i) { i.value = 'demo'; i.dispatchEvent(new Event('input', { bubbles: true })); }
+      const b = Array.from(document.querySelectorAll('#staff-modal button')).find(x => /enter|unlock|go/i.test(x.textContent || ''));
+      if (b) b.click();
+    });
+    await sleep(1800);
+    await page.evaluate(() => {
+      const b = document.querySelector('#staff-modal [data-action="select-class"][data-class="QA-Year"]');
+      if (b) b.click();
+    });
+    await sleep(900);
+    await page.evaluate(() => {
+      const t = Array.from(document.querySelectorAll('#staff-modal [data-action="switch-tab"]')).find(x => /^live$/i.test((x.textContent || '').trim()));
+      if (t) t.click();
+    });
+    await sleep(3000);
+    const ty = await readTab(page);
+
+    check(!!ty.baseline, YR.year + ': the baseline panel renders at all (it never had before)');
+    const heading = await page.evaluate(() => {
+      const h = Array.from(document.querySelectorAll('#staff-body h3')).map(x => x.textContent.trim())
+        .filter(t => /where the class started/.test(t))[0] || '';
+      return h;
+    });
+    check(heading.indexOf(YR.panel) === 0,
+      YR.year + ': the panel is called by ' + YR.year.toUpperCase() + '\'s OWN name — "' + heading + '"');
+    check(!/Licence Exam/.test(heading), YR.year + ': and NOT "The Licence Exam" (the fault he would have met)');
+    const lead = await page.evaluate(() => {
+      const p = Array.from(document.querySelectorAll('#staff-body .pl-note')).map(x => x.textContent.trim())
+        .filter(t => /sat once in September/.test(t))[0] || '';
+      return p;
+    });
+    check(lead.indexOf(String(YR.marked) + ' question') === 0,
+      YR.year + ': the lead names the real number of scored questions (' + YR.marked + ') — "' + lead.slice(0, 60) + '…"');
+    check(!/Sixteen questions/.test(lead), YR.year + ': and never "Sixteen questions"');
+    if (YR.conf) {
+      check(/not scored/.test(lead),
+        YR.year + ': its ' + YR.conf + ' confidence cards are named as unscored rather than counted as wrong');
+    }
+    check(ty.baseline.blocks === items.length,
+      YR.year + ': one block per item (' + ty.baseline.blocks + ' of ' + items.length + ')');
+    check(ty.baseline.correctLabels === YR.marked,
+      YR.year + ': exactly the ' + YR.marked + ' scored questions name a correct answer, and the confidence cards do not (' +
+      ty.baseline.correctLabels + ')');
+    const hover = ty.baselineTitles['Niamh Quinn'] || '';
+    check(hover.indexOf('Right ' + (YR.marked - 2) + ' of ' + YR.marked) === 0,
+      YR.year + ': the score hover counts only what can be scored — "' + hover.slice(0, 70) + '"');
+    check(/Wrong: Q3, Q6/.test(hover), YR.year + ': and names exactly the questions she got wrong');
+    check((ty.baselineTitles['Aoife Brennan'] || '').indexOf('All ' + YR.marked + ' right') === 0,
+      YR.year + ': a pupil right on everything reads "All ' + YR.marked + ' right." — "' +
+      (ty.baselineTitles['Aoife Brennan'] || '') + '"');
+    check(!/sixteen/i.test(JSON.stringify(ty.baselineTitles)), YR.year + ': the word "sixteen" appears in no hover');
+    check(ty.heads.some(h => /^Q1$/.test(h)) || ty.heads.length > 5,
+      YR.year + ': the per-question exit columns render for a lesson of this year');
+  }
+
+  section('V2. CONTROL — the build he sat must FAIL the J2/J3 panel checks (DFM 196)');
+  /* the control ref for THIS round is the build he actually sat */
+  const preStaff = (() => {
+    try {
+      return execFileSync('git', ['show', (process.env.KS3DT_SAT_REF || '53ff188') + ':ks3-dt/platform/staff.js'],
+        { cwd: ROOT, encoding: 'utf8' });
+    } catch (e) { return null; }
+  })();
+  if (!preStaff) {
+    check(false, 'could not read the pre-fix staff.js — this control cannot run');
+  } else {
+    check(/The Licence Exam &mdash; where the class started/.test(preStaff),
+      'pre-fix: the panel heading was the literal "The Licence Exam" for every year');
+    check(/Sixteen questions, sat once in September/.test(preStaff),
+      'pre-fix: and it told every teacher "Sixteen questions", whatever her class was answering');
+    check(/rec\.L && rec\.L\['1'\]/.test(preStaff),
+      'pre-fix: the record key was the literal \'1\' rather than the diagnostic lesson\'s own number');
+    check(!/isConfidenceItem/.test(preStaff),
+      'pre-fix: nothing knew a confidence card cannot be got wrong, so J3\'s three would have counted against every pupil');
+    check(/return 'All sixteen right\.'/.test(preStaff),
+      'pre-fix: a J2 pupil right on all twelve would have been told "All sixteen right."');
+  }
 
   await browser.close();
   console.log('\n' + (FAILS.length ? 'FAILED ' + FAILS.length : 'ALL LIVE-TAB CHECKS PASSED') + '  (' + PASS + ' checks)');
