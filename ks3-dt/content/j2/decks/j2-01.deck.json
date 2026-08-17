@@ -26,21 +26,21 @@
      "bg": "title",
      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
      "heading": "Lesson 1 · Welcome to the Workshop",
-     "sub": "Your first Digital Technology lesson of J2 — J2 · Lesson 1 of 17",
-     "notes": "WHERE THE CLASS IS: seated, logged in to the computer, nothing else open. Most of these pupils have never used this website before, and this is their first-ever sign-in to it.\n\nSAY: welcome them in properly. Names, smiles, no screens yet — the hour starts with you, not with the machines.\n\nWHEN TO MOVE: as soon as the room is settled."
+     "sub": "Your first Digital Technology lesson of the year — J2 · Lesson 1 of 17",
+     "notes": "WHERE THE CLASS IS: seated, logged in to the computer, nothing else open. Most of these pupils have never used this website before, and this is their first-ever sign-in to it.\n\nSAY: \"Good morning. Books away, hands off the mice, and look up here — this hour starts with me, not with the computers.\"\n\nWHY: names and eye contact first. The whole of this lesson rests on the class believing that nothing today is a test, and that is easier to establish from the front than to repair later.\n\nWHEN TO MOVE: as soon as the room is settled."
     },
     {
      "kind": "objectives",
      "bg": "section",
      "heading": "In this lesson you will…",
      "bullets": [
-      "Find out what your Workshop year is about: you build real things, and you learn how to look after them.",
-      "Learn the six rules of the DT rooms.",
-      "Inspect a room after a class has left, and spot the stations that are breaking those rules.",
+      "Find out what your Workshop year is about: you build real things, and you learn how to keep them safe.",
+      "Find your way around this website, and see where your work is saved.",
+      "Learn the six rules of the DT rooms, then inspect a room and spot the computers where they were broken.",
       "Show what you can do already — the Snapshot is not a test and nobody can fail it.",
-      "Earn your first badges, and unlock a new look for your screen."
+      "Finish the big parts of the lesson to earn a reward called a badge, and unlock a new look for your screen."
      ],
-     "notes": "WHERE THE CLASS IS: still eyes front, screens ignored.\n\nSAY: read the five lines out. Land the fourth one hardest — a class that thinks the Snapshot is a test will guess badly and the September picture will be worthless.\n\nWHEN TO MOVE: straight on."
+     "notes": "WHERE THE CLASS IS: still eyes front, screens ignored.\n\nSAY: \"Five things today.\" Then read the five lines out.\n\nWATCH FOR: the fourth line is the one to land hardest. A class that believes the Snapshot counts will guess badly, and the whole value of it is that it is honest.\n\nWHEN TO MOVE: straight on."
     },
     {
      "kind": "bullets",
@@ -52,7 +52,7 @@
       "Then you learn to PROTECT what you build, and to spot the tricks people use to get at other people's work.",
       "Seventeen Workshop lessons this year, one every fortnight."
      ],
-     "notes": "SAY: this is the frame the whole year hangs on, so it is worth thirty seconds. Build, then protect. Their opening card on screen says the same thing in the same words a few minutes from now, which is deliberate.\n\nWHEN TO MOVE: straight on."
+     "notes": "WHERE THE CLASS IS: eyes front.\n\nSAY: \"Two words for the whole year: build, then protect. You make real things, and then you learn how to look after them.\" Then read the four lines out.\n\nWHY: the pupils' own welcome card says the same thing in the same words a few minutes from now, so this is not a preamble — it is the first hearing of a sentence they are about to read for themselves.\n\nWHEN TO MOVE: straight on."
     },
     {
      "kind": "bullets",
@@ -67,19 +67,21 @@
       "Sign out every time you finish.",
       "Tell your teacher about anything broken, straight away."
      ],
-     "notes": "SAY: deliver these as OUR rules, not the website's. The pupils meet the same six on screen later in the hour and then have to spot them being broken, so you are giving them the answers first, on purpose.\n\nThese are the six rules every DT room in the school runs on, and they are word for word what the pupils will read.\n\nWHEN TO MOVE: straight on."
+     "notes": "WHERE THE CLASS IS: eyes front.\n\nSAY: \"These are our six rules, and they are the same in every DT room in the school.\" Then read all six out.\n\nWHY: deliver them as OUR rules, not the website's. The pupils meet the same six on their own screens later in the hour and then have to spot them being broken, so you are giving them the answers first, on purpose. These are word for word what the pupils will read.\n\nWHEN TO MOVE: straight on."
     },
     {
      "kind": "bullets",
      "bg": "section",
      "heading": "Ready? Go.",
+     "size": 15,
      "bullets": [
+      "Open Google Classroom, then click the Digital Technology Lesson 1 link.",
       "Read the welcome card together — it types itself out, so wait for the last line.",
-      "Then work on your own through the five things to find, and stop when the badge appears.",
-      "Your screen tells you what to do next. Stuck? Click the round ? button at the bottom right.",
-      "Then look up, because we all stop together before the inspection."
+      "Then work on your own. The screen gives you five short steps, one at a time.",
+      "When a card pops up to say you have finished that part, stop and look up. That card is your badge.",
+      "Stuck on the way? Click the round ? button at the bottom right, then put your hand up."
      ],
-     "notes": "WHERE THE CLASS IS: about to touch their screens for the first time.\n\nSAY: the welcome card is worth reading ALOUD together as the class opener — it types itself out, so wait for the last line, then read it while pupils follow on their own screens. It also explains the Google permission screens they clicked through to get in, so nobody is left wondering what those were.\n\nThen give the stop rule before they start: \"when your badge appears, stop and look up.\"\n\nWalk the room while they work. The pupils who need you are the ones who cannot find something on screen, not the ones who are stuck on an idea.\n\nWHEN TO MOVE: when the first badges appear, stop the whole room for the inspection."
+     "notes": "WHERE THE CLASS IS: about to open the website for the first time.\n\nSAY: \"Google Classroom first, then the Digital Technology Lesson 1 link. Nothing else.\" Wait until the room is on the welcome card before you say another word.\n\nTHEN SAY: \"We are going to read this together.\" The card types itself out, so wait for the last line, then read it aloud while pupils follow on their own screens. It also explains the Google permission screens they clicked through to get in, so nobody is left wondering what those were.\n\nTHEN SAY: \"Work through the five steps on your own. When your badge card pops up, stop and look up.\"\n\nWATCH FOR: if the link is not on Google Classroom, put the QR code from the Classes tab on the board instead. And walk the room — the pupils who need you are the ones who cannot find something on screen.\n\nWHEN TO MOVE: when the first badge cards appear, stop the whole room for the inspection."
     }
    ]
   },
@@ -91,15 +93,17 @@
     {
      "kind": "bullets",
      "bg": "section",
-     "heading": "Five things to find on your screen",
+     "heading": "Five things to find",
      "shot": "workbench",
+     "size": 15,
      "bullets": [
-      "Your year map is the page all seventeen lessons sit on. The button at the top left always takes you back.",
-      "Most tiles have a padlock on them. That is normal: each lesson opens on the day you do it.",
-      "Look top right for the small green word Saved. There is no save button on this website.",
-      "Bottom right is the round ? button, and your own name at the top right opens your Kit Locker."
+      "The Year map button at the top left. It takes you back to the page with all seventeen lessons on it — but do not press it yet.",
+      "The padlocks on your year map. Nearly every tile has one, and that is normal: each lesson opens on the day you do it.",
+      "The small green word Saved at the top right. There is no save button on this website.",
+      "The round ? button at the bottom right. It gives you help for the screen you are on.",
+      "Your own name at the top right. It opens your Kit Locker, where the new looks for your screen are kept."
      ],
-     "notes": "WHERE THE CLASS IS: on the second screen of the lesson, working down five short steps and ticking each one off.\n\nWHAT THEY WILL SEE: the picture on the right. Each step names one thing to look for and says what they should see when they have found it.\n\nSAY, before they start: seven minutes now saves a term of hands going up. Point at the picture and tell them the ticks only appear one at a time, so there is nothing to hurry.\n\nThe padlock step is the one worth saying out loud yourself. A locked tile looks like a fault to a pupil who has never seen this website, and every tile except today's is locked.\n\nWHEN TO MOVE: straight on to the badge slide while they work."
+     "notes": "WHERE THE CLASS IS: on the second screen of the lesson, working down five short steps.\n\nSAY: \"Seven minutes on this now saves you a term of putting your hand up. Each step tells you exactly what to look for.\"\n\nTHEN SAY, pointing at the picture: \"The steps come one at a time. You tick the box yourself once you have found the thing, and the next step then appears. There is nothing to hurry.\"\n\nWATCH FOR: the padlock step. A locked tile looks like a fault to a pupil who has never seen this website, and every tile except today's is locked. Say that one out loud yourself rather than leaving it to the screen.\n\nWHEN TO MOVE: straight on to the badge slide while they work."
     },
     {
      "kind": "bullets",
@@ -107,12 +111,12 @@
      "heading": "Badges, points and your Kit Locker",
      "shot": "badge",
      "bullets": [
-      "The big parts of a lesson are called badges. Finish one and its badge lands in your own record.",
-      "Badges bring points called XP, and XP unlocks new looks for your screen.",
-      "Your looks hang in your Kit Locker, under your own name in the top right corner.",
+      "There are four big parts to this lesson. Finish one and the website gives you a badge — a picture in your own record that says you did it.",
+      "Every badge brings points. On the badge card the points are called XP.",
+      "Points unlock new looks for your screen, and your looks are kept in your Kit Locker.",
       "Once you have unlocked a look it stays yours for the rest of the year."
      ],
-     "notes": "WHERE THE CLASS IS: finishing the five steps. The first badge is landing on screens around the room.\n\nWHAT THEY WILL SEE: the picture on the right — the badge card that appears over the lesson, with the points on it. It needs one click to clear.\n\nSAY: there are four badges in this hour. Nothing is handed out and nothing is printed: a badge is a picture in the pupil's own record on this website.\n\nThe Kit Locker holds three looks today and grows as the year unlocks new levels, so a pupil who says \"is that all there is?\" is reading it right — it is the beginning of a collection, not the whole of it.\n\nWHEN TO MOVE: when badges have appeared around the room, stop everybody."
+     "notes": "WHERE THE CLASS IS: finishing the five steps. The first badge card is appearing on screens around the room.\n\nSAY: \"That card is a badge. There are four of them in this hour. Nothing is handed out and nothing is printed — a badge is a picture in your own record on this website, and it comes with points.\"\n\nWATCH FOR: a pupil who opens the Kit Locker and asks whether that is all there is. On day one it holds three looks — the one that pupil's screen is wearing and the two this lesson can unlock — and the rest arrive as the year unlocks new levels. That pupil is reading it right: it is the beginning of a collection, not the whole of it.\n\nWHEN TO MOVE: when badge cards have appeared around the room, stop everybody."
     }
    ]
   },
@@ -128,13 +132,13 @@
      "beacon": "1",
      "heading": "STOP — eyes front · The Safety Inspection",
      "bullets": [
-      "You are the safety inspector. The room you inspect is an ICT room after a class has left.",
-      "Click any station you think is breaking a rule to plant a flag on it.",
+      "You are the safety inspector. You get a drawing of an ICT room just after a class has left it.",
+      "Each computer and the space around it is called a station. There are five in the room.",
+      "Click a station you think is breaking a rule and a flag goes on it. Click it again and the flag comes off.",
       "Nothing is marked until you press File my inspection report, so change your mind as often as you like.",
-      "A flag on a station that turns out to be fine costs you nothing at all.",
       "Talk it over with the pupil beside you — then each of you files your own report."
      ],
-     "notes": "WHERE THE CLASS IS: first badge earned, screens ignored, eyes front. This is the longest activity of the hour, so the minute you spend here is the minute that makes it work.\n\nSAY: \"You are the safety inspector now. You will see a drawing of an ICT room just after a class has left it, with five stations along the bench. Click any station you think is breaking one of our six rules and it plants a flag on it. Click it again and the flag comes off. Nothing is judged until you file your report, so change your mind as often as you like — and a flag on a station that turns out to be fine costs you nothing.\"\n\nThen the sentence that decides the quality of the work: \"Talk it over with the pupil beside you. You each file your own report, so you do not have to agree.\"\n\nWHAT THEY WILL NOT SEE FROM YOU: the rooms themselves. They are not on this deck on purpose — putting one on the board hands the class the answers to a room they are about to inspect.\n\nWHEN TO MOVE: straight on to the next slide, then send them in."
+     "notes": "WHERE THE CLASS IS: first badge earned, screens ignored, eyes front. This is the longest activity of the hour, so the minute you spend here is the minute that makes it work.\n\nSAY: \"You are the safety inspector now. You will see a drawing of an ICT room just after a class has left it, with five stations along the bench. A station is one computer and the space around it. Click any station you think is breaking one of our six rules and a flag goes on it. Click it again and the flag comes off. Nothing is judged until you file your report, so change your mind as often as you like — and a flag on a station that turns out to be fine costs you nothing.\"\n\nTHEN SAY, and it is the sentence that decides the quality of the work: \"Talk it over with the pupil beside you. You each file your own report, so you do not have to agree.\"\n\nDO NOT SAY: anything about what is wrong in any of the rooms. The rooms are not on this deck for the same reason — every station in them is an answer.\n\nWHEN TO MOVE: straight on to the next slide, then send them in."
     },
     {
      "kind": "bullets",
@@ -143,11 +147,11 @@
      "shot": "inspect-intro",
      "bullets": [
       "First you get the six rules again, written out, so nobody is guessing.",
-      "Then a numbered list of how the inspection works, and a button that says Start the inspection.",
+      "Then a numbered list of how it works, and a button that says Start the inspection.",
       "Five of the six rules are ones you can SEE in a room. The first one happens outside the door.",
-      "There are four rooms to inspect, and a harder fifth one you can take or leave."
+      "You get four goes at it — your screen calls them Scene 1 of 4 to Scene 4 of 4 — then a harder extra challenge you can choose to do or skip."
      ],
-     "notes": "WHERE THE CLASS IS: about to press into the inspection.\n\nWHAT THEY WILL SEE: the picture on the right is the screen they land on — the six rules, then the numbered steps, then Start the inspection.\n\nSAY: the fifth room is an extra challenge with a real Stop here instead button beside it, so a pupil who has had enough may genuinely stop and lose nothing. Say that out loud: pupils will take an optional challenge if they believe it is optional.\n\nWHILE THEY WORK: circulate. The room to watch for is the fourth one, where one screen is switched on and showing its sign-in box — a lit screen is not the same thing as a screen somebody left signed in, and that is the whole point of it.\n\nWHEN TO MOVE: when most of the class has filed the fourth report, stop the room for the Snapshot. Pupils still on the extra challenge can finish it."
+     "notes": "WHERE THE CLASS IS: about to press into the inspection.\n\nSAY: \"The picture on the right is the screen you land on. Rules first, then how it works, then Start the inspection.\"\n\nTHEN SAY: \"After the four scenes there is a harder extra challenge. It is genuinely optional — there is a Stop here instead button beside it and nothing is taken off you for pressing it.\"\n\nWHY: pupils only take an optional challenge if they believe it is optional, so say it rather than leaving it on the screen.\n\nWHILE THEY WORK: circulate. One of the four scenes turns on reading what is actually ON a screen rather than whether it is lit — the brief says which and why, and it is the one place not to help too early.\n\nWHEN TO MOVE: when most of the class has filed the fourth report, stop the room for the Snapshot. Pupils still on the extra challenge can finish it."
     }
    ]
   },
@@ -169,7 +173,7 @@
       "You will not be told right or wrong, and that is on purpose.",
       "At the end of the year you answer some of them again, and you see the difference for yourself."
      ],
-     "notes": "WHERE THE CLASS IS: inspection reports filed, facing front.\n\nSAY, and set the tone in one go before anybody touches it: \"Quiet and on your own now. Twelve quick questions. It is not a test, you cannot fail it, and I am not marking it. Most of them are about things nobody has taught you yet, so not knowing is completely normal and completely expected. You will not be told right or wrong, and that is deliberate — this is a record of where you are starting from, and it is only worth having if it is honest.\"\n\nThe thing that ruins a baseline is a pupil who thinks it counts, so it is worth saying twice.\n\nNothing for you to mark afterwards: the scores land beside each name on the Live tab.\n\nWHEN TO MOVE: straight on to the next slide, then let them start."
+     "notes": "WHERE THE CLASS IS: inspection reports filed, facing front.\n\nSAY, and set the tone in one go before anybody starts it: \"Quiet and on your own now. Twelve quick questions. It is not a test, you cannot fail it, and I am not marking it. Most of them are about things nobody has taught you yet, so not knowing is completely normal and completely expected. You will not be told right or wrong, and that is deliberate — this is a record of where you are starting from, and it is only worth having if it is honest.\"\n\nWHY: the thing that ruins a starting-point record is a pupil who thinks it counts, so it is worth saying twice.\n\nIF A PUPIL ASKS WHETHER IT GIVES YOU A SCORE: nothing is marked on a pupil's screen and no pupil is ever told right or wrong. On the staff side you get a picture of how the class answered, and that is for your planning. That is the honest answer and it is the one to give.\n\nWHEN TO MOVE: straight on to the next slide, then let them start."
     },
     {
      "kind": "bullets",
@@ -182,7 +186,7 @@
       "There is no right-or-wrong message on these, so there is nothing to compare with anybody.",
       "If you do not know one, pick what seems most likely and keep going."
      ],
-     "notes": "WHERE THE CLASS IS: about to start twelve questions on their own, in silence.\n\nWHAT THEY WILL SEE: the picture on the right, twelve times over — a question and four answers, with nothing chosen yet. The words Answer saved appear where the chosen answer was, a moment after a pupil clicks, and that is the whole of the response.\n\nSAY: \"The screen will say Answer saved and nothing else. That is it working, not the website being broken.\" Someone always asks, and answering it once to the whole room saves answering it eleven times at desks.\n\nWHILE THEY WORK: this is the quietest part of the hour and the best chance to catch up with anyone whose sign-in was awkward at the start.\n\nWHEN TO MOVE: when the room has finished."
+     "notes": "WHERE THE CLASS IS: about to start twelve questions on their own, in silence.\n\nSAY: \"The screen will say Answer saved and nothing else. That is it working, not the website being broken.\"\n\nWHY: somebody always asks, and answering it once to the whole room saves answering it at desk after desk.\n\nWATCH FOR: the picture on the right is what they will see twelve times over — a question and four answers. The words Answer saved appear where the chosen answer was, a moment after a pupil clicks, and that is the whole of the response.\n\nWHILE THEY WORK: this is the quietest part of the hour and the best chance to catch up with anyone whose sign-in was awkward at the start.\n\nWHEN TO MOVE: when the room has finished."
     }
    ]
   },
@@ -200,10 +204,9 @@
      "bullets": [
       "Your Warrant is your proof that you know your way around the Workshop.",
       "Six questions, and every one of them is about this hour.",
-      "This time you ARE told whether you were right, straight away, and why.",
-      "Read the reason underneath every time. That is where the learning is."
+      "Read the reason underneath every answer. It tells you why the answer was right or wrong."
      ],
-     "notes": "WHERE THE CLASS IS: Snapshot finished, facing front. Say this stop is a short one — it is, and telling them so keeps the room with you.\n\nSAY: \"The Warrant is your proof that you know your way around the Workshop. Six questions, all of them about this hour — nothing from outside it. This time the website does tell you whether you were right, straight away, and it gives you the reason. Read the reason every single time.\"\n\nThat last sentence is the one worth repeating all year: the reason under a marked answer is the teaching, and pupils will click past it if nobody tells them not to.\n\nWHEN TO MOVE: straight on."
+     "notes": "WHERE THE CLASS IS: Snapshot finished, facing front. Tell them this stop is a short one — it is, and saying so keeps the room with you.\n\nSAY: \"The Warrant is your proof that you know your way around the Workshop. Six questions, all of them about this hour — nothing from outside it. Read the reason underneath every answer, every single time.\"\n\nWHY: the reason under a marked answer is the teaching, and pupils will click past it if nobody tells them not to. It is the one habit worth establishing in the first hour of the year.\n\nWHEN TO MOVE: straight on."
     },
     {
      "kind": "bullets",
@@ -212,30 +215,48 @@
      "shot": "warrant-intro",
      "bullets": [
       "A card tells you what the Warrant is. Then the six questions start.",
-      "Click an answer and the verdict appears, with a short reason underneath it.",
+      "Click an answer and the screen tells you straight away whether you were right, with a short reason underneath.",
       "After the sixth question a badge lands, and your first new look is waiting on your year map."
      ],
-     "notes": "WHERE THE CLASS IS: about to start the Warrant.\n\nWHAT THEY WILL SEE: the picture on the right is the card that opens it, and then six questions that behave the way the earlier ones did.\n\nSAY: the new look is not in the lesson — it appears when they get back to the year map at the end. Worth saying now, because otherwise the pupils who finish first go hunting for it.\n\nWHILE THEY WORK: the Live tab shows how the class did question by question. Anything most of the room got wrong is worth a sentence to everybody rather than six conversations at desks.\n\nWHEN TO MOVE: when the badges have landed."
+     "notes": "WHERE THE CLASS IS: about to start the Warrant.\n\nSAY: \"The picture on the right is the card that opens it. Then six questions that behave the way the earlier ones did.\"\n\nTHEN SAY: \"The new look is not inside the lesson. It appears when you get back to your year map at the end.\"\n\nWHY: otherwise the pupils who finish first go hunting for it inside the lesson.\n\nWHILE THEY WORK: the Live tab shows how the class did question by question. Anything most of the room got wrong is worth a sentence to everybody rather than a conversation at every desk.\n\nWHEN TO MOVE: when the badge cards have landed."
+    }
+   ]
+  },
+  {
+   "id": "next",
+   "chunk": "next",
+   "label": "What you build next",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "What you build next",
+     "bullets": [
+      "One card before you finish, so you know where the year is going.",
+      "Next comes From Blocks to Python — four lessons long.",
+      "The first of them is Lesson 2, Translation Bureau, and it starts from your very first line of Python."
+     ],
+     "notes": "WHERE THE CLASS IS: Warrant done, reading one card on their own.\n\nSAY: \"One card about what you build next, then two screens and we are finished.\"\n\nWHY: nobody should leave the first hour of the year not knowing where it is going. The card names the block and the next lesson, and says plainly that nothing is assumed.\n\nWHEN TO MOVE: as soon as the card is confirmed."
     }
    ]
   },
   {
    "id": "finishing",
-   "chunk": "next",
-   "label": "Finishing the hour",
+   "chunk": "exit",
+   "label": "The last two screens",
    "slides": [
     {
      "kind": "bullets",
      "bg": "section",
-     "heading": "The last three screens",
+     "heading": "The last two screens",
      "shot": "selfeval",
      "bullets": [
-      "A card about what you build next, so you know where the year is going.",
-      "Then one more question — this one IS marked, so think about it.",
+      "One question, on your own. This one IS marked, so think about it.",
+      "You find out how you did right at the end, after the last screen.",
       "Then How did it go?, where you say honestly how the hour went.",
       "The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving."
      ],
-     "notes": "WHERE THE CLASS IS: Warrant done, working through the last three screens on their own.\n\nWHAT THEY WILL SEE: the picture on the right is the final screen — three sentences to rate, a how-it-felt choice and a comment box.\n\nSAY: \"Last question after this card, and that one is marked, so think about it. Then tell me honestly how today went. The comment box comes to me and nobody else.\"\n\n**Nobody leaves without finishing How did it go?** It is compulsory, and it is how you hear from the pupils who never put a hand up. The staff panel flags anyone who says they are not there yet, so a quiet pupil having a hard time reaches you without having to say so out loud.\n\nWHEN TO MOVE: when both screens are done."
+     "notes": "WHERE THE CLASS IS: working through the last two screens on their own.\n\nSAY: \"One question now, on your own, and this one is marked — so think about it. You find out how you did right at the end, after the last screen, so do not sit waiting for an answer.\"\n\nTHEN SAY: \"Then tell me honestly how today went. The comment box comes to me and nobody else.\"\n\nWATCH FOR: the picture on the right is the final screen — three sentences to rate, a how-it-felt choice and a comment box.\n\nNOBODY LEAVES WITHOUT FINISHING How did it go? It is compulsory, and it is how you hear from the pupils who never put a hand up. The staff panel flags any pupil who answers Not yet, so a quiet pupil having a hard time reaches you without having to say so out loud.\n\nWHEN TO MOVE: when both screens are done."
     }
    ]
   },
@@ -250,11 +271,11 @@
      "heading": "Before you leave",
      "sub": "See you in a fortnight.",
      "bullets": [
-      "Sign out every time — if you stay signed in, the next person at this machine is you.",
+      "Sign out every time. If you stay signed in, anything the next person does on this computer looks like you did it.",
       "Chair in, area tidy, nothing left beside your machine.",
-      "In the next lesson you turn the blocks you already know into real lines of Python, and you start from your very first line."
+      "Next time: From Blocks to Python, starting with Lesson 2, Translation Bureau."
      ],
-     "notes": "SAY: hold the room to two of the rules the hour just taught — sign out, and leave the area tidy. \"If you stay signed in, the next person at this machine is you as far as the school is concerned.\"\n\nThe class has spent twenty minutes flagging other people's untidy stations, so this is the moment that lands.\n\nThen tell them what is coming: the next block of lessons turns the blocks they already know into written Python, starting from the first line."
+     "notes": "WHERE THE CLASS IS: finished, packing up.\n\nSAY: \"Two jobs before you stand up. Sign out — if you stay signed in, anything the next person does on this computer looks like you did it. Then chair in, area tidy, nothing left beside your machine.\"\n\nWHY: the class has just spent the biggest part of the hour flagging other people's untidy stations, so this is the moment those two rules land.\n\nWHEN TO MOVE: dismiss when the room is signed out and tidy."
     }
    ]
   }
