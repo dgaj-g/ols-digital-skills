@@ -153,8 +153,15 @@ const MACHINE_KEYS = new Set([
 const ORDER_BEARING = /›\s*item\s*›\s*(prompt|blocks)/;
 /* Staff-facing: the misconception labels under keys.*.mis are read by a teacher
    on the Live tab, never by a pupil. keys.*.explain IS pupil-facing (she sees it
-   the moment she answers) and is fully checked. */
-const isStaffPath = (p) => /›\s*mis(\s|›|\[)/.test(p);
+   the moment she answers) and is fully checked.
+   `staffTitle` joins them (16 Aug 2026): it is what the Live tab calls this
+   lesson's diagnostic in its panel heading — J1's Licence Exam, J2's Skills
+   Snapshot, J3's Portfolio Zero — and no pupil ever sees it. It exists because
+   the panel used to say "The Licence Exam" and "Sixteen questions" to a teacher
+   looking at a J2 class. Judging it at the pupil's reading age would be the gate
+   inventing work in the wrong register (DFM 146a); it is TEACHER register
+   (138.3) and is judged in the teacher-facing pass like the brief. */
+const isStaffPath = (p) => /›\s*mis(\s|›|\[)/.test(p) || /›\s*staffTitle\s*$/.test(p);
 
 function collectStrings(lesson, fileId) {
   const out = [];
@@ -238,6 +245,14 @@ const LEXICON = [
   { rx: /\btap\b/i, allow: /tape|tapped it into|taps? of the/i, why: 'she has a MOUSE (DFM 138.1.6, 150) - the ban he has had to give twice', fix: '"click"' },
   { rx: /the device\b/i, allow: /any device|pair device|mime a device|the device's own/i, why: 'generic noun (DFM 138.1.5) - name it: the micro:bit', fix: '"the micro:bit"' },
   { rx: /\bthe wifi\b/i, why: 'the school connection is WIRED (DFM 138.1.6)', fix: '"the connection to the website"' },
+  /* HIS K18(a), 16 Aug 2026, on J3 Lesson 1's two stretch cases: "why is the
+     last two questions on the 3rd card called 'SENIOR CASE'? makes no sense to
+     me. a pupil might think these things only happen in senior school." The
+     word carries a school meaning she already has, and it is the wrong one.
+     One word, one meaning platform-wide: J2's stretch is the Hard Inspection,
+     so J3's is the Hard Case. J1's "Senior Agent" RANK is a different word in a
+     different place and is locked — hence `senior case`, never bare `senior`. */
+  { rx: /\bsenior case/i, why: 'HIS NAMED FAULT (K18a): a pupil reads "senior" as senior school, not as harder', fix: '"Hard Case" (J2\'s Hard Inspection is the same word for the same idea)' },
   { rx: /\bgirls?\b/i, allow: /girls' school/i, why: 'DFM 26: "pupil", never "girl"', fix: '"pupil"' },
   { rx: /\bsignal points?\b/i, why: 'invented currency, killed by DFM 141(b)', fix: 'price it in real XP' },
   { rx: /\b(colou?r)ize|\borganize|\brecognize|\bapologize|\bcolor\b|\bcenter\b|\bbehavior\b/i, why: 'US spelling (DFM 138.1.12)', fix: 'UK form' }

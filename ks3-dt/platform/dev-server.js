@@ -977,8 +977,14 @@
          The preview MUST refuse a cross-year equip the same way the real server
          does, or the one place this is testable would be the place it is not
          enforced — the DFM 157(a) lesson: a rule that lives in two homes is a
-         contract, and a harness has to hold them equal. */
-      var y = str_(cls.year || 'j1');
+         contract, and a harness has to hold them equal.
+         realClass_ returns the class NAME (a string), so the year is looked up:
+         `cls.year` was undefined here and in Code.gs alike, both fell back to
+         j1, and every J2/J3 equip was refused `unknown-theme` (his 16 Aug sit).
+         BOTH homes carried the SAME fault, which is why holding them equal
+         would have proved nothing — qa-kit-parity asserts the BEHAVIOUR (a
+         year's own look saves on that year's class), not just agreement. */
+      var y = str_(classYear_(s, cls));
       var reg = {};
       for (var k in reg0) if (Object.prototype.hasOwnProperty.call(reg0, k)) reg[k] = reg0[k];
       var by = reg0.clearancesByYear;

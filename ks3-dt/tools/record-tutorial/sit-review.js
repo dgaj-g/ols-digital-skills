@@ -329,7 +329,7 @@ const CASE_LOGS = {
       }
 
       /* THE EXPERT TAKES THE OPTIONAL WORK. sit-review is the best-path walk,
-         so it presses "Give them a go" and answers the Senior Cases; the floor
+         so it presses "Give them a go" and answers the Hard Cases; the floor
          path that sets the §4b threshold is arithmetic, and the REFUSAL is what
          sit-wrongpath stands on. */
       case 'stretch-gate':

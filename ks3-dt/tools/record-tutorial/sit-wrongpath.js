@@ -186,7 +186,7 @@ const LANDMARKS = {
     ['the orientation steps', '.confirm-step', 'orientation'],
     ['a studio-code case, unanswered', '.q-opt', 'code'],
     ['a studio-code verdict', '.q-feedback', 'code'],
-    ['the optional Senior Cases', '.stretch-skip', 'code'],
+    ['the optional Hard Cases', '.stretch-skip', 'code'],
     ['the Portfolio Zero questions', '.q-opt', 'portfolio'],
     ['the Portfolio Zero seal card', '.seal-card', 'portfolio'],
     ['the compass board, before any tap', '.cmp-side', 'compass'],

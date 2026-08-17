@@ -1194,8 +1194,12 @@ function apiSetKit(req) {
   if (!cls) return { ok: false, error: 'unknown-class' };
   var reg;
   /* the CLASS's year decides which looks exist for her - never a value the
-     caller supplies, so a crafted request cannot promote itself into J1's kit */
-  try { reg = kitFor_(kitRegistry_(), cls.year); } catch (e) { return { ok: false, error: 'no-registry' }; }
+     caller supplies, so a crafted request cannot promote itself into J1's kit.
+     realClass_ returns the class NAME (a string), so the year has to be looked
+     up: reading `cls.year` gave undefined, kitFor_ fell back to j1, and every
+     J2/J3 equip was refused `unknown-theme` on the live app (his 16 Aug sit;
+     DFM 234). qa-kit-parity runs these functions against both homes. */
+  try { reg = kitFor_(kitRegistry_(), classYear_(cls)); } catch (e) { return { ok: false, error: 'no-registry' }; }
   var themeId = req.themeId != null ? str_(req.themeId) : null;
   var insigniaId = req.insigniaId != null ? str_(req.insigniaId) : null;
   return withLock_(function () {

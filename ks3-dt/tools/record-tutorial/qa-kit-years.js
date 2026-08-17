@@ -160,8 +160,19 @@ ctrl(!j3.themes.some(t => t.id === j1Only.id),
 /* the client filter is a convenience; THIS is the boundary */
 const srv = fs.readFileSync(SERVER, 'utf8');
 ctrl(/function kitFor_\(/.test(srv), 'the SERVER resolves the year itself (kitFor_)');
-ctrl(/kitFor_\(kitRegistry_\(\), cls\.year\)/.test(srv),
-  'and apiSetKit resolves from the CLASS\'s year, never a value the caller sends');
+/* 17 Aug 2026: this control used to assert the LITERAL `kitFor_(kitRegistry_(),
+   cls.year)` — which is the buggy expression itself. realClass_ returns the
+   class NAME, so `cls.year` was undefined and every J2/J3 equip was refused on
+   the live app (his 16 Aug sit; DFM 234). The ratchet was holding the wrong
+   ground: it would have failed the FIX and passed the fault for ever.
+   It now asserts the RULE — the year is looked up from the class register —
+   and the old broken form is banned outright. The behaviour itself is proved by
+   running the code, in qa-kit-parity; this stays a source check because that is
+   what this file is. */
+ctrl(/kitFor_\(kitRegistry_\(\), classYear_\(cls\)\)/.test(srv),
+  'and apiSetKit resolves the year from the CLASS REGISTER (classYear_), never from the caller');
+ctrl(!/kitFor_\(kitRegistry_\(\), cls\.year\)/.test(srv),
+  'and never from `cls.year`, which is undefined on a class NAME — the fault he found');
 const dev = fs.readFileSync(DEV, 'utf8');
 ctrl(/clearancesByYear/.test(dev) && /cls\.year/.test(dev),
   'and the preview server filters the same way, so the one testable copy is not the unenforced one');

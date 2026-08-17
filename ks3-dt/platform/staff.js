@@ -342,8 +342,19 @@
     }
     return { right: right, total: total };
   }
-  function baselineDisplay(rec) {
-    var a1 = rec.L && rec.L['1'];
+  /* THE RECORD KEY IS THE DIAGNOSTIC LESSON'S OWN NUMBER, not the literal '1'.
+     It happens to BE 1 in all three years today, so this changes nothing on any
+     screen - but the old literal was a J1 fact standing in for a general one,
+     which is how "works for J1" quietly becomes "works only for J1". */
+  function baselineNum(l1) {
+    var n = (l1 && l1.feat && l1.feat.baseline && l1.feat.baseline.num) || '';
+    return n || (l1 && l1.num) || '1';
+  }
+  function baselineArr(rec, l1) {
+    return rec.L && rec.L[String(baselineNum(l1))];
+  }
+  function baselineDisplay(rec, l1) {
+    var a1 = baselineArr(rec, l1);
     if (!a1) return '';
     var m = /(?:^|;)bl=(\d+)\/(\d+)/.exec(String(a1[2] || ''));
     return m ? (m[1] + '/' + m[2]) : '';
@@ -351,28 +362,41 @@
   /* Her sixteen September answers. They have been stored since day one - as
      bl=<right>/16|<sixteen digits> on her Lesson 1 record - and shown on no
      screen until DFM 157d. */
-  function baselineChosen(rec) {
-    var a1 = rec.L && rec.L['1'];
+  function baselineChosen(rec, l1) {
+    var a1 = baselineArr(rec, l1);
     if (!a1) return '';
     var m = /(?:^|;)bl=\d+\/\d+\|([^;]*)/.exec(String(a1[2] || ''));
     return m ? m[1] : '';
   }
+  /* A CONFIDENCE CARD IS NOT A QUESTION SHE CAN GET WRONG. J3's Portfolio Zero
+     ends with three "NO RIGHT ANSWER - be honest" cards, and they are declared
+     that way in the sentence the pupil herself reads, so the same sentence is
+     what identifies them here. They are counted out of the score and out of the
+     wrong list; counting them in would have told a teacher that every pupil in
+     J3 got three questions wrong on the first day of the year. */
+  function isConfidenceItem(it) { return /^\s*NO RIGHT ANSWER/i.test(String((it && it.stem) || '')); }
+
   function baselineTitle(rec, l1) {
-    var disp = baselineDisplay(rec);
+    var disp = baselineDisplay(rec, l1);
     if (!disp) return '';
-    var chosen = baselineChosen(rec);
-    var items = (l1 && l1.feat && l1.feat.baseline) ? l1.feat.baseline.items : null;
+    var chosen = baselineChosen(rec, l1);
+    var bl = (l1 && l1.feat && l1.feat.baseline) ? l1.feat.baseline : null;
+    var items = bl ? bl.items : null;
     if (!chosen || !items || !l1.keys) return '';
-    var wrong = [];
+    var wrong = [], marked = 0, right = 0;
     for (var i = 0; i < items.length; i++) {
+      if (isConfidenceItem(items[i])) continue;
       var key = l1.keys[items[i].id];
       if (!key) continue;
+      marked++;
       var ch = chosen.charAt(i);
       if (ch === '' || ch === 'x' || Number(ch) !== Number(key.a)) wrong.push('Q' + (i + 1));
+      else right++;
     }
-    if (!wrong.length) return 'All sixteen right.';
-    return 'Right ' + disp.split('/')[0] + ' of ' + items.length + '. Wrong: ' + wrong.join(', ') +
-      ' &mdash; numbered as in the Licence Exam panel below.';
+    if (!marked) return '';
+    if (!wrong.length) return 'All ' + marked + ' right.';
+    return 'Right ' + right + ' of ' + marked + '. Wrong: ' + wrong.join(', ') +
+      ' &mdash; numbered as in the ' + App.esc(bl.title) + ' panel below.';
   }
 
   /* ============================================================
@@ -984,9 +1008,24 @@
           }
           if (ch.engine === 'tournament') f.tournament = { title: String(cfg.title || ch.title || 'Tournament') };
           if (ch.engine === 'gallery') f.gallery = { title: String(ch.title || 'Press Night') };
-          /* the September Licence Exam - stored for every pupil since day one,
-             and shown on no screen until now (DFM 157d) */
-          if (ch.engine === 'diagnostic' && cfg.items) f.baseline = { items: cfg.items };
+          /* THE SEPTEMBER DIAGNOSTIC - stored for every pupil since day one, and
+             shown on no screen until DFM 157d.
+             ITS NAME IS THE LESSON'S OWN (16 Aug 2026, his K19c question "have
+             you designed the live lessons to be fully workable for these J2 and
+             J3 lessons?"). It is J1's Licence Exam, J2's Skills Snapshot and
+             J3's Portfolio Zero - three different things with three different
+             lengths - and every label here used to say "the Licence Exam" and
+             "sixteen questions" whatever year the teacher was looking at. That
+             is the same fault the diagnostic ENGINE had on the pupil side (the
+             J2 cold read's first finding), surviving on the teacher's surface
+             because the sweep never crossed the aisle. */
+          if (ch.engine === 'diagnostic' && cfg.items) {
+            f.baseline = {
+              items: cfg.items,
+              title: String(cfg.staffTitle || 'The Licence Exam'),
+              num: String(le.num == null ? '' : le.num)
+            };
+          }
           if (ch.engine === 'selfeval') {
             f.selfeval = {
               statements: (cfg.statements || []).map(String),
@@ -1434,7 +1473,7 @@
         App.esc(r.name) + flag + voice + stretchStar(a, feat) + '</td>' +
         '<td>' + App.esc(r.codename) + '</td>' +
         '<td>' + Number(r.xp || 0) + '</td>' +
-        '<td' + (blTitle ? ' title="' + blTitle + '"' : '') + '>' + (baselineDisplay(r) || '&mdash;') + '</td>' +
+        '<td' + (blTitle ? ' title="' + blTitle + '"' : '') + '>' + (baselineDisplay(r, l1) || '&mdash;') + '</td>' +
         '<td><span class="pill ' + pillClass + '">' + pillText + '</span></td>' +
         '<td>' + warm + '</td>' +
         cells + '</tr>';
@@ -1495,7 +1534,7 @@
       '<h3 style="margin-top:20px">Misconception patterns &mdash; ' +
         (isSideQuestNum(num) ? 'the side quest' : 'Lesson ' + App.esc(num)) + '</h3>' +
       '<div id="live-mis-body"></div>' +
-      (String(num) === '1' ? baselinePanelHtml(rows, l1) : '') +
+      (l1 && l1.feat && l1.feat.baseline && String(num) === String(baselineNum(l1)) ? baselinePanelHtml(rows, l1) : '') +
       '<p class="staff-status" id="live-status"></p>';
     setPane(html);
     if (le) loadMisconceptions(le);
@@ -2091,24 +2130,36 @@
      nothing ever showed it. Lesson 1's view only. */
   function baselinePanelHtml(rows, l1) {
     if (!l1 || !l1.feat || !l1.feat.baseline || !l1.keys) return '';
-    var items = l1.feat.baseline.items || [];
+    var bl = l1.feat.baseline;
+    var items = bl.items || [];
     if (!items.length) return '';
-    if (!rows.some(function (r) { return !!baselineChosen(r); })) return '';
+    if (!rows.some(function (r) { return !!baselineChosen(r, l1); })) return '';
+    var marked = items.filter(function (it) { return !isConfidenceItem(it); }).length;
     var blocks = items.map(function (it, i) {
       var counts = {}, none = 0;
       rows.forEach(function (r) {
-        var ch = baselineChosen(r).charAt(i);
+        var ch = baselineChosen(r, l1).charAt(i);
         if (ch === '') return;
         if (ch === 'x') { none++; return; }
         counts[ch] = (counts[ch] || 0) + 1;
       });
+      var meta = none ? '<div class="staff-row-meta">answered nothing: ' + none + '</div>' : '';
+      /* a confidence card gets its bars WITHOUT a right answer marked, and says
+         so, because there is nothing to be right about */
+      if (isConfidenceItem(it)) {
+        return barBlockHtml('Q' + (i + 1) + ' &mdash; ' + App.esc(String(it.stem || '')),
+          it, { a: -1, mis: [] }, counts,
+          meta + '<div class="staff-row-meta">She was asked how confident she feels. There is no right answer here, ' +
+          'and it is not counted in her score.</div>');
+      }
       return barBlockHtml('Q' + (i + 1) + ' &mdash; ' + App.esc(String(it.stem || '')),
-        it, l1.keys[it.id] || { a: -1, mis: [] }, counts,
-        none ? '<div class="staff-row-meta">answered nothing: ' + none + '</div>' : '');
+        it, l1.keys[it.id] || { a: -1, mis: [] }, counts, meta);
     }).join('');
-    return '<h3 style="margin-top:20px">The Licence Exam &mdash; where the class started</h3>' +
-      '<p class="pl-note">Sixteen questions, sat once in September before any teaching. For each one, ' +
-      'what the class chose. No pupil was ever shown right or wrong on these.</p>' + blocks;
+    return '<h3 style="margin-top:20px">' + App.esc(bl.title) + ' &mdash; where the class started</h3>' +
+      '<p class="pl-note">' + marked + ' question' + (marked === 1 ? '' : 's') +
+      (marked === items.length ? '' : ' (plus ' + (items.length - marked) + ' about how she feels, which are not scored)') +
+      ', sat once in September before any teaching. For each one, what the class chose. ' +
+      'No pupil was ever shown right or wrong on these.</p>' + blocks;
   }
 
   /* DFM 157f: this used to export "200|2" - the raw storage string, i.e. the
@@ -2194,6 +2245,12 @@
     var delivered = deliveredNumsOf(dashData);
     if (btn) btn.disabled = true;
     Promise.all(delivered.map(function (n) { return lessonFeaturesFor(liveByNum[n]); })).then(function (feats) {
+      /* the Baseline column reads the diagnostic lesson's own record key, the
+         same way the table does — whichever of the three years this class is */
+      var csvL1 = null;
+      delivered.forEach(function (n, i) {
+        if (!csvL1 && feats[i] && feats[i].baseline) csvL1 = { feat: feats[i], num: n };
+      });
       function csvCell(s) { return '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"'; }
       function pre(n) { return isSideQuestNum(n) ? String(n) : ('L' + n); }
       /* the table's own tick, wave and cross - escaped, because this file is
@@ -2211,7 +2268,7 @@
       var lines = [head.map(csvCell).join(',')];
 
       rows.forEach(function (r) {
-        var line = [r.name, r.email, r.codename, r.xp, baselineDisplay(r) || ''];
+        var line = [r.name, r.email, r.codename, r.xp, baselineDisplay(r, csvL1) || ''];
         delivered.forEach(function (n, i) {
           var f = feats[i] || {};
           var a = r.L[n];

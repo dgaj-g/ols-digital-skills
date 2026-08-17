@@ -61,8 +61,7 @@
     </g>
       
       
-      
-      <ellipse cx="100" cy="302" rx="52" ry="5" fill="#000" opacity="0.32"/>
+      <g class="prop prop-screen-off"><ellipse cx="100" cy="302" rx="52" ry="5" fill="#000" opacity="0.32"/>
       <rect x="31" y="164" width="138" height="96" rx="7" fill="#35322F"/>
       <rect x="31" y="164" width="138" height="96" rx="7" fill="none" stroke="#5E5955" stroke-width="1" opacity="0.5"/>
       <rect x="36" y="169" width="128" height="86" rx="4" fill="#16130F"/>
@@ -70,7 +69,7 @@
       <path d="M40 251 L160 173 L160 192 L61 251 Z" fill="#FFFFFF" opacity="0.035"/>
       <circle cx="157" cy="255" r="3" fill="#3C3835"/>
       <path d="M89 260 h22 l5 22 h-32 z" fill="#232120"/>
-      <rect x="62" y="282" width="76" height="9" rx="4.5" fill="#4A4643"/>
+      <rect x="62" y="282" width="76" height="9" rx="4.5" fill="#4A4643"/></g>
       
       <ellipse cx="100" cy="316" rx="60" ry="4" fill="#000" opacity="0.25"/>
       <rect x="44" y="288" width="112" height="27" rx="4" fill="#4B4744"/>
@@ -84,7 +83,8 @@
       
       
       
-            
+      
+      
       
     </g>
     <g class="stn stn-1">
@@ -100,8 +100,7 @@
     </g>
       
       
-      
-      <ellipse cx="300" cy="302" rx="52" ry="5" fill="#000" opacity="0.32"/>
+      <g class="prop prop-screen-off"><ellipse cx="300" cy="302" rx="52" ry="5" fill="#000" opacity="0.32"/>
       <rect x="231" y="164" width="138" height="96" rx="7" fill="#35322F"/>
       <rect x="231" y="164" width="138" height="96" rx="7" fill="none" stroke="#5E5955" stroke-width="1" opacity="0.5"/>
       <rect x="236" y="169" width="128" height="86" rx="4" fill="#16130F"/>
@@ -109,7 +108,7 @@
       <path d="M240 251 L360 173 L360 192 L261 251 Z" fill="#FFFFFF" opacity="0.035"/>
       <circle cx="357" cy="255" r="3" fill="#3C3835"/>
       <path d="M289 260 h22 l5 22 h-32 z" fill="#232120"/>
-      <rect x="262" y="282" width="76" height="9" rx="4.5" fill="#4A4643"/>
+      <rect x="262" y="282" width="76" height="9" rx="4.5" fill="#4A4643"/></g>
       
       <ellipse cx="300" cy="316" rx="60" ry="4" fill="#000" opacity="0.25"/>
       <rect x="244" y="288" width="112" height="27" rx="4" fill="#4B4744"/>
@@ -121,15 +120,34 @@
       
       
       
-      <rect x="274" y="293" width="9" height="4.4" rx="1.4" fill="#232120"/>
-      <rect x="285.6" y="293" width="9" height="4.4" rx="1.4" fill="#232120"/>
-      <rect x="274" y="299.4" width="9" height="4.4" rx="1.4" fill="#232120"/>
-      <ellipse cx="320" cy="308" rx="22" ry="3.5" fill="#000" opacity="0.22"/>
-      <rect x="304" y="301" width="14" height="12" rx="2.5" transform="rotate(18 311 307)" fill="#635D59"/>
-      <rect x="324" y="303" width="14" height="12" rx="2.5" transform="rotate(-24 331 309)" fill="#635D59"/>
-      <rect x="344" y="300" width="14" height="12" rx="2.5" transform="rotate(6 351 306)" fill="#4B4744"/>
       
-            
+      <g class="prop prop-broken-keys"><rect x="272" y="292" width="15" height="9" rx="2" fill="#0B0906"/><rect x="272" y="292" width="15" height="2.6" rx="1.3" fill="#2A2622"/>
+      <rect x="290" y="292" width="15" height="9" rx="2" fill="#0B0906"/><rect x="290" y="292" width="15" height="2.6" rx="1.3" fill="#2A2622"/>
+      <rect x="272" y="303" width="15" height="9" rx="2" fill="#0B0906"/><rect x="272" y="303" width="15" height="2.6" rx="1.3" fill="#2A2622"/>
+      <ellipse cx="330" cy="310" rx="30" ry="4" fill="#000" opacity="0.26"/>
+      <g transform="rotate(16 316 306)">
+      <rect x="306" y="301" width="21" height="15" rx="3" fill="#232120"/>
+      <rect x="306" y="298" width="21" height="15" rx="3" fill="#635D59"/>
+      <rect x="308.5" y="300" width="16" height="10" rx="2" fill="#4B4744"/>
+      <text x="316.5" y="308.5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"
+        font-size="8" font-weight="700" fill="#C9C4BF">A</text>
+    </g>
+      <g transform="rotate(-22 340 309)">
+      <rect x="330" y="304" width="21" height="15" rx="3" fill="#232120"/>
+      <rect x="330" y="301" width="21" height="15" rx="3" fill="#635D59"/>
+      <rect x="332.5" y="303" width="16" height="10" rx="2" fill="#4B4744"/>
+      <text x="340.5" y="311.5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"
+        font-size="8" font-weight="700" fill="#C9C4BF">S</text>
+    </g>
+      <g transform="rotate(7 364 305)">
+      <rect x="354" y="300" width="21" height="15" rx="3" fill="#232120"/>
+      <rect x="354" y="297" width="21" height="15" rx="3" fill="#635D59"/>
+      <rect x="356.5" y="299" width="16" height="10" rx="2" fill="#4B4744"/>
+      <text x="364.5" y="307.5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"
+        font-size="8" font-weight="700" fill="#C9C4BF">D</text>
+    </g></g>
+      
+      
       
     </g>
     <g class="stn stn-2">
@@ -145,8 +163,7 @@
     </g>
       
       
-      
-      <ellipse cx="500" cy="302" rx="52" ry="5" fill="#000" opacity="0.32"/>
+      <g class="prop prop-screen-off"><ellipse cx="500" cy="302" rx="52" ry="5" fill="#000" opacity="0.32"/>
       <rect x="431" y="164" width="138" height="96" rx="7" fill="#35322F"/>
       <rect x="431" y="164" width="138" height="96" rx="7" fill="none" stroke="#5E5955" stroke-width="1" opacity="0.5"/>
       <rect x="436" y="169" width="128" height="86" rx="4" fill="#16130F"/>
@@ -154,7 +171,7 @@
       <path d="M440 251 L560 173 L560 192 L461 251 Z" fill="#FFFFFF" opacity="0.035"/>
       <circle cx="557" cy="255" r="3" fill="#3C3835"/>
       <path d="M489 260 h22 l5 22 h-32 z" fill="#232120"/>
-      <rect x="462" y="282" width="76" height="9" rx="4.5" fill="#4A4643"/>
+      <rect x="462" y="282" width="76" height="9" rx="4.5" fill="#4A4643"/></g>
       
       <ellipse cx="500" cy="316" rx="60" ry="4" fill="#000" opacity="0.25"/>
       <rect x="444" y="288" width="112" height="27" rx="4" fill="#4B4744"/>
@@ -168,7 +185,8 @@
       
       
       
-            
+      
+      
       
     </g>
     <g class="stn stn-3">
@@ -184,14 +202,14 @@
     </g>
       
       
-      
-      <ellipse cx="700" cy="302" rx="52" ry="5" fill="#000" opacity="0.32"/>
+      <g class="prop prop-screen-signedin"><ellipse cx="700" cy="302" rx="52" ry="5" fill="#000" opacity="0.32"/>
       <rect x="631" y="164" width="138" height="96" rx="7" fill="#35322F"/>
       <rect x="631" y="164" width="138" height="96" rx="7" fill="none" stroke="#5E5955" stroke-width="1" opacity="0.5"/>
       <rect x="636" y="169" width="128" height="86" rx="4" fill="#E4EDF6"/>
       <rect x="640" y="173" width="120" height="17" rx="3" fill="#4C6E96"/>
       <circle cx="651" cy="181" r="5.4" fill="#E4EDF6"/>
-      <rect x="661" y="177" width="52" height="8" rx="4" fill="#E4EDF6" opacity="0.9"/>
+      <text x="661" y="185" font-family="Helvetica, Arial, sans-serif"
+        font-size="11" font-weight="700" fill="#E4EDF6">AOIFE M</text>
       <rect x="749" y="177" width="8" height="8" rx="2" fill="#E4EDF6" opacity="0.55"/>
       <rect x="646" y="200" width="94" height="6" rx="3" fill="#A9BACD"/>
       <rect x="646" y="213" width="76" height="6" rx="3" fill="#A9BACD"/>
@@ -200,7 +218,7 @@
       <circle cx="757" cy="255" r="3" fill="#7BD88F"/>
       <ellipse cx="700" cy="212" rx="117.3" ry="76.80000000000001" fill="#C9DAEA" opacity="0.07"/>
       <path d="M689 260 h22 l5 22 h-32 z" fill="#232120"/>
-      <rect x="662" y="282" width="76" height="9" rx="4.5" fill="#4A4643"/>
+      <rect x="662" y="282" width="76" height="9" rx="4.5" fill="#4A4643"/></g>
       
       <ellipse cx="700" cy="316" rx="60" ry="4" fill="#000" opacity="0.25"/>
       <rect x="644" y="288" width="112" height="27" rx="4" fill="#4B4744"/>
@@ -214,7 +232,8 @@
       
       
       
-            
+      
+      
       
     </g>
     <g class="stn stn-4">
@@ -230,8 +249,7 @@
     </g>
       
       
-      
-      <ellipse cx="900" cy="302" rx="52" ry="5" fill="#000" opacity="0.32"/>
+      <g class="prop prop-screen-off"><ellipse cx="900" cy="302" rx="52" ry="5" fill="#000" opacity="0.32"/>
       <rect x="831" y="164" width="138" height="96" rx="7" fill="#35322F"/>
       <rect x="831" y="164" width="138" height="96" rx="7" fill="none" stroke="#5E5955" stroke-width="1" opacity="0.5"/>
       <rect x="836" y="169" width="128" height="86" rx="4" fill="#16130F"/>
@@ -239,7 +257,7 @@
       <path d="M840 251 L960 173 L960 192 L861 251 Z" fill="#FFFFFF" opacity="0.035"/>
       <circle cx="957" cy="255" r="3" fill="#3C3835"/>
       <path d="M889 260 h22 l5 22 h-32 z" fill="#232120"/>
-      <rect x="862" y="282" width="76" height="9" rx="4.5" fill="#4A4643"/>
+      <rect x="862" y="282" width="76" height="9" rx="4.5" fill="#4A4643"/></g>
       
       <ellipse cx="900" cy="316" rx="60" ry="4" fill="#000" opacity="0.25"/>
       <rect x="844" y="288" width="112" height="27" rx="4" fill="#4B4744"/>
@@ -253,7 +271,8 @@
       
       
       
-            
+      
+      
       
     </g>
   <rect width="1000" height="560" fill="url(#vig)" pointer-events="none"/>

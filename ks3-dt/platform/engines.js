@@ -676,7 +676,7 @@
         text: cfg.intro || ''
       }, cfg.startLabel || 'Start', function () { runFrom(0); });
 
-      /* AN OPTIONAL TAIL (16 Aug 2026, for J3 Lesson 1's two Senior Cases).
+      /* AN OPTIONAL TAIL (16 Aug 2026, for J3 Lesson 1's two Hard Cases).
          `stretchFrom` splits the item list: everything before it is the lesson,
          everything from it on is the extra challenge — offered on its own card,
          with a real way to decline, because "optional" with no button behind it
