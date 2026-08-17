@@ -213,8 +213,8 @@ section('THE NEW fx LAYERS EXIST AND OBEY THE COMPOSITOR RULE');
    them: it used to know about two effects, and it now knows about all six and
    would fail if any look went back to having none. */
 const YEAR_FX = {
-  workbench: 'embers', copperline: 'copperpour', firewall: 'firescan',
-  screeningroom: 'spotlight', premiere: 'flashbulbs', cuttingroom: 'playhead'
+  workbench: 'embers', copperline: 'copperglow', firewall: 'guardveil',
+  screeningroom: 'spotlight', premiere: 'flashbulbs', cuttingroom: 'silverdust'
 };
 Object.keys(YEAR_FX).forEach(id => {
   const fx = YEAR_FX[id];
@@ -237,6 +237,36 @@ reg.themes.filter(t => t.year === 'j2' || t.year === 'j3').forEach(t => {
 });
 check(themeById(DEFAULTS.j2) && themeById(DEFAULTS.j2).fx === 'embers', 'the Workbench drifts embers');
 check(themeById(DEFAULTS.j3) && themeById(DEFAULTS.j3).fx === 'spotlight', 'the Screening Room sweeps a spotlight');
+/* HIS K21 LAW, 17 Aug 2026: ambient motion is ATMOSPHERE, never an EVENT.
+   "the line through the screen is dreadful looking and needs removed... the
+   vertical line that moves from left to right in the firewall skin is way too
+   distracting... The goal is to have them be distinctive, ethereal, calm and
+   beautiful and ANIMATED."
+   The judgement half of this is his eye. The half a machine can hold is that
+   the three shapes he named never come back, and that every LARGE piece of
+   light is blurred — a big element with a hard edge is exactly what a
+   travelling line is made of. Particles are exempt by being particles. */
+['fx-seam', 'fx-seam-gleam', 'fx-scan', 'fx-blocked', 'fx-head', 'fx-sprockets']
+  .forEach(dead => check(css.indexOf('.' + dead) === -1,
+    'the travelling ' + dead.replace('fx-', '') + ' he had removed has not come back'));
+['copperpour', 'firescan', 'playhead'].forEach(dead => {
+  check(!reg.themes.some(t => t.fx === dead), 'no look uses the retired "' + dead + '" effect');
+});
+const BIG_LIGHT = ['fx-wash', 'fx-bloom', 'fx-veil', 'fx-beam', 'fx-sheen', 'fx-flash'];
+BIG_LIGHT.forEach(cls => {
+  const at = css.indexOf('.' + cls + ' {') !== -1 ? css.indexOf('.' + cls + ' {') : css.indexOf('.' + cls);
+  const blk = at === -1 ? '' : css.slice(at, css.indexOf('}', at));
+  check(/filter:\s*blur/.test(blk),
+    '.' + cls + ' is BLURRED — a large shape with a hard edge is how a travelling line is made');
+});
+/* and every J2/J3 look carries the shared breath he asked for by name */
+check((app.match(/wash\(\)/g) || []).length >= 7,
+  'every year look carries the wallpaper breath ("as if the whole wallpaper was gently pulsing")');
+check(/is-drifting/.test(app) && /skyDrift/.test(css),
+  'and the starfield drifts on the year looks ("the little stars gently move around the screen")');
+check(/theme && theme\.drift/.test(app),
+  'the drift is gated on the LOOK\'s own flag, so J1\'s pixel-pinned starfield never moves');
+
 /* the compositor rule, asserted on the new blocks only — the shell's existing
    .aurora blur is approved and predates it */
 const fxBlock = css.slice(css.indexOf('#fx-layer'));
@@ -247,9 +277,9 @@ ctrl(!/background-attachment:\s*fixed/.test(newFx),
    and printed a clean pass on an empty list — a check that cannot fail is false
    assurance. It names every new keyframe block, asserts each was FOUND, and
    asserts each yielded properties before judging them. */
-const NEW_KEYFRAMES = ['emberRise', 'forgeBreathe', 'sparkFly', 'seamPulse', 'gleamRun',
-  'glintDrift', 'scanSweep', 'blockedFlash', 'beamSweep', 'moteFloat', 'houseGlow',
-  'marqueeChase', 'bulbPop', 'playheadRun', 'sprocketRoll'];
+const NEW_KEYFRAMES = ['washBreathe', 'skyDrift', 'emberRise', 'forgeBreathe', 'bloomBreathe',
+  'veilBreathe', 'driftUp', 'beamSweep', 'moteFloat', 'houseGlow', 'marqueeChase', 'bulbPop',
+  'sheenBreathe', 'dustDrift'];
 let allProps = [];
 NEW_KEYFRAMES.forEach(name => {
   /* read the block by MATCHING ITS BRACES, not by regex. The old pattern ran to
@@ -284,8 +314,8 @@ ctrl(illegal.length === 0,
 /* AND EVERY MOVING PART IS HELD STILL for a pupil who asked for less motion. A
    new effect that forgets the reduced-motion block would animate at her anyway. */
 const rm = css.slice(css.indexOf('@media (prefers-reduced-motion'));
-['fx-ember', 'fx-forge', 'fx-spark', 'fx-seam', 'fx-glint', 'fx-scan', 'fx-blocked',
- 'fx-beam', 'fx-mote', 'fx-house', 'fx-marquee', 'fx-flash', 'fx-head', 'fx-sprockets']
+['fx-wash', 'fx-ember', 'fx-forge', 'fx-bloom', 'fx-veil', 'fx-glint',
+ 'fx-beam', 'fx-mote', 'fx-house', 'fx-marquee', 'fx-flash', 'fx-sheen', 'fx-dust']
   .forEach(cls => check(rm.indexOf('.' + cls) !== -1,
     '.' + cls + ' is held still under prefers-reduced-motion'));
 

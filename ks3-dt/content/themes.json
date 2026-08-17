@@ -52,7 +52,8 @@
     "ratio": 0.16
    },
    "fx": "embers",
-   "year": "j2"
+   "year": "j2",
+   "drift": true
   },
   {
    "id": "screeningroom",
@@ -84,7 +85,8 @@
     "ratio": 0.12
    },
    "fx": "spotlight",
-   "year": "j3"
+   "year": "j3",
+   "drift": true
   },
   {
    "id": "emerald",
@@ -456,7 +458,7 @@
   {
    "id": "copperline",
    "name": "Copperline",
-   "tag": "Polished copper on warm bronze, with a molten seam that catches the light.",
+   "tag": "Polished copper on warm bronze, with the light breathing across it.",
    "clearance": 2,
    "vars": {
     "--gold": "#FF8A50",
@@ -488,13 +490,14 @@
     "accent": "#FF8A50",
     "ratio": 0.18
    },
-   "fx": "copperpour",
-   "year": "j2"
+   "fx": "copperglow",
+   "year": "j2",
+   "drift": true
   },
   {
    "id": "firewall",
    "name": "Firewall",
-   "tag": "Cold steel, and a line of gold sweeping across it on guard.",
+   "tag": "Cold steel under a slow veil of gold light.",
    "clearance": 2,
    "vars": {
     "--gold": "#FFC23A",
@@ -527,7 +530,8 @@
     "ratio": 0.14
    },
    "year": "j2",
-   "fx": "firescan"
+   "fx": "guardveil",
+   "drift": true
   },
   {
    "id": "premiere",
@@ -565,12 +569,13 @@
     "ratio": 0.14
    },
    "fx": "flashbulbs",
-   "year": "j3"
+   "year": "j3",
+   "drift": true
   },
   {
    "id": "cuttingroom",
    "name": "Cutting Room",
-   "tag": "Charcoal and silver, the lights down and the playhead running.",
+   "tag": "Charcoal and silver, with the dust still drifting in the lamplight.",
    "clearance": 2,
    "vars": {
     "--gold": "#A8C8D8",
@@ -603,7 +608,8 @@
     "ratio": 0.1
    },
    "year": "j3",
-   "fx": "playhead"
+   "fx": "silverdust",
+   "drift": true
   }
  ],
  "insignia": [
