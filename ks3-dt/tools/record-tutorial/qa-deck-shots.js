@@ -111,6 +111,28 @@ const CHROME_PINS = {
     desk: { must: [/ready for gallery/i], says: 'the READY FOR GALLERY button' },
     press: { must: [/press night/i, /i like/i, /i wonder/i], says: 'the heading and the two stems' },
     selfeval: { must: [/how did it go/i], says: 'the How did it go? heading' }
+  },
+  /* J2/J3 Lesson 1, 17 Aug 2026. Only the badge card needs a pin in each: every
+     other shot in both decks stands on a screen that carries one of its own
+     lesson's sentences, so the manifest's anchor does the vouching. The badge
+     card is entirely engine-drawn — "Badge earned", the badge's own name and its
+     points — so nothing in the lesson JSON can certify it, and the expectation
+     is pinned HERE where a manifest row cannot certify itself. Each pin names
+     the badge, because a picture of the WRONG badge is exactly the kind of thing
+     that reads as fine and teaches the class the wrong screen. */
+  'j2-01': {
+    badge: {
+      must: [/badge earned/i, /your workbench/i, /\+\s*12\s*XP/i],
+      says: 'the first badge card — Your Workbench, and its points'
+    },
+    selfeval: { must: [/how did it go/i], says: 'the How did it go? heading' }
+  },
+  'j3-01': {
+    badge: {
+      must: [/badge earned/i, /studio pass/i, /\+\s*12\s*XP/i],
+      says: 'the first badge card — Studio Pass, and its points'
+    },
+    selfeval: { must: [/how did it go/i], says: 'the How did it go? heading' }
   }
 };
 

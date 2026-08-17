@@ -165,8 +165,23 @@ function devHome(devPath) {
       head: { appendChild() {} }, body: { appendChild() {} }
     },
     addEventListener() {},
+    /* ── THE QUERY STRING IS STRIPPED, AND THIS GATE WAS BLIND WITHOUT IT ─────
+       Found 17/18 Aug 2026 while running the full set for the J2/J3 teacher
+       layer. DFM 236 put the content version INTO the request — `themes.json`
+       became `themes.json?v=2026-08-17f` — because a cache key is only as good
+       as the fetch that fills it. This stand-in fetch was never told, so it
+       looked for a file literally named "themes.json?v=…", answered 404, and the
+       preview home returned `no-registry` for EVERY equip.
+       The gate then printed fifty-four failures and, worse, could never have
+       printed a pass on the half it exists for: the only preview rows that could
+       still go green were the ones asserting a REFUSAL. This is the gate written
+       to catch the kit-save defect (DFM 234) having its own preview half switched
+       off by an unrelated URL change — a harness reporting a fault the app does
+       not have, which DFM 146(a) calls worse than no harness at all.
+       Same class as DFM 143(b): a rule change re-stages every harness, not just
+       the one in front of you. */
     fetch: (url) => {
-      const rel = String(url).replace(/^\.\.\/content\//, '');
+      const rel = String(url).replace(/^\.\.\/content\//, '').replace(/[?#].*$/, '');
       const file = path.join(ROOT, 'ks3-dt/content', rel);
       if (!fs.existsSync(file)) return Promise.resolve({ ok: false, status: 404 });
       return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(JSON.parse(fs.readFileSync(file, 'utf8'))) });
@@ -281,6 +296,36 @@ async function runMatrix(home, label) {
   if (homeB.broken) { console.log('  FAIL  ' + homeB.broken); FAILS.push(homeB.broken); }
   if (FAILS.length) { console.log('\nqa-kit-parity: could not execute one of the homes — that IS the failure.'); process.exit(1); }
   await homeB.prime();
+
+  /* ── CAN EACH HOME SEE A REGISTRY AT ALL? ASKED FIRST, AND BY NAME ─────────
+     Added 18 Aug 2026, because the alternative had just happened. When the
+     preview home could not load `themes.json` (DFM 236 put a `?v=` on the URL and
+     this file's stand-in fetch answered 404), the gate printed fifty-four
+     equip failures — every one of them true, none of them the cause, and the real
+     answer buried at the end of each line as "no-registry". A run that cannot
+     even reach the registry has not tested a single equip, so it says THAT, once,
+     before it says anything else. Coverage that does not exist must name itself
+     (DFM 200/204). */
+  for (const home of [homeA, homeB]) {
+    const cls = CLASSES[0];
+    home.seed(cls.name, 0);
+    const probe = await home.equip(cls.name, { themeId: '__no_such_look__' });
+    const noReg = probe && probe.ok === false && probe.error === 'no-registry';
+    if (noReg) {
+      const m = home.name + ' cannot load the theme registry at all (no-registry), so NOT ONE ' +
+        'equip below has been tested. Check how this home fetches content — the URL ' +
+        'convention has probably changed underneath it (DFM 236 added ?v=<contentVersion>).';
+      console.log('  FAIL  ' + m);
+      FAILS.push(m);
+    } else {
+      console.log('  ok    ' + home.name + ' can reach the theme registry');
+    }
+  }
+  if (FAILS.length) {
+    console.log('\nqa-kit-parity: a home cannot read the registry — every result below would be ' +
+      'a refusal for the wrong reason, so the run stops here rather than printing them.');
+    process.exit(1);
+  }
 
   section('HOME 1 — Code.gs.template, its own functions, executed');
   (await runMatrix(homeA, 'Code.gs')).forEach(r => check(r.ok, r.m));

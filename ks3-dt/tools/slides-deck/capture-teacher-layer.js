@@ -42,9 +42,18 @@ const argOf = (n, d) => { const i = args.indexOf(n); return i === -1 ? d : args[
 const BASE = argOf('--base', 'http://localhost:8121');
 const ALL = args.includes('--all');
 const ONE = argOf('--lesson', '');
-const LESSONS = ALL ? ['j1-02', 'j1-03', 'j1-04', 'j1-05'] : (ONE ? [ONE] : []);
+/* --all means every lesson this script has a shot plan for, DERIVED from the plan
+   rather than typed. It used to be a hardcoded list of J1's four, which was true
+   the day it was written and would have silently skipped both J2/J3 decks — the
+   exact fault K23 refused to accept an excuse for ("a hardcoded list closes
+   today's instance and nothing else"). A lesson with a plan is a lesson --all
+   captures, because having a plan is what puts it on the list. */
+const PLANNED = Array.from(new Set(
+  [].concat(Object.keys(DECK_SHOTS), Object.keys(BRIEF_SHOTS), Object.keys(COMPOSED))
+)).filter(id => id !== 'j1-01').sort();
+const LESSONS = ALL ? PLANNED : (ONE ? [ONE] : []);
 if (!LESSONS.length) {
-  console.error('name a lesson: --lesson j1-02   (or --all)');
+  console.error('name a lesson: --lesson j2-01   (or --all for ' + PLANNED.join(', ') + ')');
   process.exit(2);
 }
 
@@ -55,8 +64,22 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const CONTENT_VERSION = JSON.parse(
   fs.readFileSync(path.join(ROOT, 'content', 'index.json'), 'utf8')).contentVersion;
 
-/* the lesson NUMBER the hub tile carries, derived rather than typed */
-const numOf = id => String(Number(id.replace(/^j1-0?/, '')));
+/* ══════════════ WHICH YEAR A LESSON BELONGS TO, TAKEN FROM ITS ID ═══════════
+   Three things in this file used to assume J1 and would each have failed
+   differently on a J2 deck: the hub-tile number stripped a literal "j1-" prefix,
+   the lesson JSON was read out of `content/j1/lessons`, and the preview pupil was
+   always Demo-8A's Anya — who is in a J1 class, so the J2 lesson she was sent to
+   open is not on her year map at all. All three now come from the id. */
+const yearOf = id => (String(id).match(/^(j\d)-/) || [null, 'j1'])[1];
+const numOf = id => String(Number(String(id).replace(/^j\d-0?/, '')));
+/* the dummy class and the preview pupil per year — the same three sit-review and
+   sit-wrongpath use, so a capture stands where the walkers stand (DFM 144) */
+const CLASS_OF = { j1: 'Demo-8A', j2: 'Demo-9A', j3: 'Demo-10A' };
+const WHO_OF = { j1: 'anya', j2: 'aoife', j3: 'orla' };
+/* the second pupil, used for the brief pass — Cara's seeded J1 record is what
+   gives Lesson 2-5's Do-Now real questions (DFM 134). J2/J3 Lesson 1 has no
+   Do-Now at all, so their brief pass uses the year's own first pupil. */
+const BRIEF_WHO_OF = { j1: 'cara', j2: 'aoife', j3: 'orla' };
 
 /* the tallest a deck screenshot may be, height over width — see the shape
    guard at the shutter for why this number is 1.6 and not a guess */
@@ -84,7 +107,7 @@ const STUDIOS = {
    fingerprints its own chunk, and the gate recomputes it. */
 function lessonJson(lesson) {
   return JSON.parse(fs.readFileSync(
-    path.join(ROOT, 'content', 'j1', 'lessons', lesson + '.json'), 'utf8'));
+    path.join(ROOT, 'content', yearOf(lesson), 'lessons', lesson + '.json'), 'utf8'));
 }
 function chunkOf(lj, id) { return (lj.chunks || []).find(c => c.id === id) || null; }
 function md5(s) { return crypto.createHash('md5').update(s).digest('hex'); }
@@ -132,9 +155,10 @@ async function abort(page, msg) {
 
 /* ═══════════════════════ staging a preview pupil ══════════════════════════ */
 async function pupil(ctx, who, lesson, fresh) {
+  const cls = CLASS_OF[yearOf(lesson)];
   const page = await ctx.newPage();
   page.on('console', m => { if (m.type() === 'error') console.error('   [page error] ' + m.text().slice(0, 140)); });
-  await page.goto(BASE + '/ks3-dt/platform/index.html?class=Demo-8A&as=' + who,
+  await page.goto(BASE + '/ks3-dt/platform/index.html?class=' + cls + '&as=' + who,
     { waitUntil: 'domcontentloaded' });
   await sleep(1400);
   /* the preview "server" is localStorage, so two pupils must share ONE browser
@@ -145,14 +169,16 @@ async function pupil(ctx, who, lesson, fresh) {
     await page.reload({ waitUntil: 'domcontentloaded' });
     await sleep(1800);
   }
-  await page.evaluate(() => {
+  await page.evaluate((cls) => {
     const db = JSON.parse(localStorage.getItem('ks3dt-dev'));
     const now = Math.floor((Date.now() - 1767225600000) / 60000);
-    for (const n of ['1', '2', '3', '4', '5', 'S1']) db.locks['Demo-8A'][n] = { u: now, on: 1 };
-    db.cfg['Demo-8A'] = db.cfg['Demo-8A'] || {};
-    db.cfg['Demo-8A'].pairing = { on: 0 };
+    db.locks = db.locks || {};
+    db.locks[cls] = db.locks[cls] || {};
+    for (const n of ['1', '2', '3', '4', '5', 'S1']) db.locks[cls][n] = { u: now, on: 1 };
+    db.cfg[cls] = db.cfg[cls] || {};
+    db.cfg[cls].pairing = { on: 0 };
     localStorage.setItem('ks3dt-dev', JSON.stringify(db));
-  });
+  }, cls);
   await page.reload({ waitUntil: 'domcontentloaded' });
   await sleep(2200);
   /* a studio identity per pupil, so Press Night's marquee lists two DIFFERENT
@@ -162,13 +188,23 @@ async function pupil(ctx, who, lesson, fresh) {
   await page.evaluate(() => { const b = document.querySelector('.intro-skip'); if (b) b.click(); });
   await sleep(600);
   const n = numOf(lesson);
-  const opened = await page.evaluate((num) => {
-    const rx = new RegExp('Lesson\\s*' + num + '(?!\\d)', 'i');
-    const t = Array.from(document.querySelectorAll('.tile')).find(e => rx.test(e.textContent || ''));
-    if (t) { t.click(); return true; }
-    return false;
-  }, n);
-  if (!opened) await abort(page, 'the hub had no tile for Lesson ' + n);
+  /* THE TILE IS FOUND BY ITS OWN TITLE FIRST, and the number is the fallback.
+     "Lesson 1" appears on three year maps now, and the tile a J2 pupil is being
+     sent to is not identified by a number that every year shares. The title
+     comes out of the lesson JSON, so it can never drift from the tile. */
+  const title = lessonJson(lesson).title || '';
+  const opened = await page.evaluate((arg) => {
+    const tiles = Array.from(document.querySelectorAll('.tile'));
+    const byTitle = arg.title && tiles.find(e => (e.textContent || '').indexOf(arg.title) !== -1);
+    if (byTitle) { byTitle.click(); return 'title'; }
+    const rx = new RegExp('Lesson\\s*' + arg.num + '(?!\\d)', 'i');
+    const byNum = tiles.find(e => rx.test(e.textContent || ''));
+    if (byNum) { byNum.click(); return 'number'; }
+    return null;
+  }, { num: n, title: title });
+  if (!opened) {
+    await abort(page, 'the hub had no tile for "' + title + '" (Lesson ' + n + ') on ' + cls);
+  }
   await sleep(2600);
   /* the local preview stamps a PREVIEW pill on the page — an artefact of
      previewing, never something a pupil or a teacher sees */
@@ -656,7 +692,7 @@ async function captureLesson(browser, lesson) {
   const owedDeck = new Set(Object.keys(deckPlan));
   if (owedDeck.size) {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 940 }, deviceScaleFactor: 2 });
-    const page = await pupil(ctx, 'anya', lesson);
+    const page = await pupil(ctx, WHO_OF[yearOf(lesson)], lesson);
     const take = {
       spec: n => deckPlan[n],
       shoot: async (pg, name, spec) => {
@@ -769,7 +805,7 @@ async function captureLesson(browser, lesson) {
        seeded record has Lesson 1 finished, so her Do-Now is a real one with
        real questions on it. */
     const ctx = await browser.newContext({ viewport: { width: 1000, height: 769 }, deviceScaleFactor: 2 });
-    const page = await pupil(ctx, 'cara', lesson);
+    const page = await pupil(ctx, BRIEF_WHO_OF[yearOf(lesson)], lesson);
     if (lesson === 'j1-05') await stagePressNight(ctx, page, lesson);
     const take = {
       spec: (n) => {

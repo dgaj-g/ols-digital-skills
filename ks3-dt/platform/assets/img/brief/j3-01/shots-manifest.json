@@ -1,0 +1,80 @@
+{
+ "lesson": "j3-01",
+ "kind": "brief",
+ "contentVersion": "2026-08-17f",
+ "shots": {
+  "01-briefing.png": {
+   "name": "01-briefing.png",
+   "chunkId": "briefing",
+   "textSnippet": "Here is what this hour holds, in order. First a short look around this website, which takes about seven minutes. Then the studio code: six real situations, and you decide whether each one is in line w",
+   "contentAnchor": "Here is what this hour holds, in order. First a short look around this website, which takes about seven minutes. Then the studio code: six real situations, and you decide whether each one is in line with the code or against it. Then Portfolio Zero, which is twelve quick questions about where you are starting from, and it is not a test. Then your Compass, which asks what kind of work you actually enjoy. It finishes with a card about where the year goes next, one marked question, and a screen that asks you how the hour went.",
+   "says": "the opening card, including what January's options actually mean",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "de3d75e8b53e"
+  },
+  "02-orientation.png": {
+   "name": "02-orientation.png",
+   "chunkId": "orientation",
+   "textSnippet": "Look along the top of this screen, over on the right, for a small green word: Saved. You never press a save button here. Every time you answer something or finish a part of a lesson, this website writ",
+   "contentAnchor": "Look along the top of this screen, over on the right, for a small green word: Saved. You never press a save button here. Every time you answer something or finish a part of a lesson, this website writes it to your own record, and that green word tells you it has landed. Your work follows your login, so you can pick it up on any school computer.",
+   "says": "an orientation step — what to look for, and the box to tick",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "0c9906c5cae9"
+  },
+  "03-code-intro.png": {
+   "name": "03-code-intro.png",
+   "chunkId": "code",
+   "textSnippet": "A working studio writes its rules down as a code of conduct, and then somebody has to decide whether people are keeping it. Today that somebody is you. You will read six real situations. For each one ",
+   "contentAnchor": "A working studio writes its rules down as a code of conduct, and then somebody has to decide whether people are keeping it. Today that somebody is you. You will read six real situations. For each one you decide whether it is IN LINE with the code or AGAINST it, and if it is against it, which standard it breaks.",
+   "says": "the card that opens the Studio Code and explains the judging job",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "bc917839fc9a"
+  },
+  "04-case.png": {
+   "name": "04-case.png",
+   "chunkId": "code",
+   "textSnippet": "A pupil finishes early. She leaves her machine with her work still on the screen, goes out at the bell, and does not come back.",
+   "contentAnchor": "A pupil finishes early. She leaves her machine with her work still on the screen, goes out at the bell, and does not come back.",
+   "says": "a judged case: the verdict and the reason underneath it",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "bc917839fc9a"
+  },
+  "05-portfolio.png": {
+   "name": "05-portfolio.png",
+   "chunkId": "portfolio",
+   "textSnippet": "A program is given these three instructions, in this order: set the total to 10, add 5 to the total, then print the total. What appears on the screen?",
+   "contentAnchor": "A program is given these three instructions, in this order: set the total to 10, add 5 to the total, then print the total. What appears on the screen?",
+   "says": "a Portfolio Zero question — no verdict on these, by design",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "1e4156f74af4"
+  },
+  "06-compass.png": {
+   "name": "06-compass.png",
+   "chunkId": "compass",
+   "textSnippet": "Your group is making a quiz game for the school open night. Somebody has to design how it looks and how the questions are worded. Somebody has to write the code that keeps the score and picks the winn",
+   "contentAnchor": "Your group is making a quiz game for the school open night. Somebody has to design how it looks and how the questions are worded. Somebody has to write the code that keeps the score and picks the winner. You get first pick.",
+   "says": "the Compass board — three pairs, nothing picked yet",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "fa8c8617ea1d"
+  },
+  "07-exit.png": {
+   "name": "07-exit.png",
+   "chunkId": "exit",
+   "textSnippet": "Which of these is TRUE about the two GCSE Digital Technology routes, going by what this lesson has told you?",
+   "contentAnchor": "Which of these is TRUE about the two GCSE Digital Technology routes, going by what this lesson has told you?",
+   "says": "the marked exit question, before it is answered",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "561bf621a5a5"
+  },
+  "08-selfeval.png": {
+   "name": "08-selfeval.png",
+   "chunkId": "selfeval",
+   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
+   "contentAnchor": "I know how to check my own progress on this website.",
+   "says": "the final screen — compulsory, and the comment box comes to her",
+   "contentVersion": "2026-08-17f",
+   "chunkHash": "3b1d5516175b"
+  }
+ },
+ "reused": {}
+}

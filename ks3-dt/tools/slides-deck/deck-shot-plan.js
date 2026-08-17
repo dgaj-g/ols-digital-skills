@@ -351,6 +351,207 @@ const DECK_SHOTS = {
       },
       says: 'the compulsory How did it go? screen, untouched'
     }
+  },
+
+  /* ══════════════════════════ J2 LESSON 1 (17 Aug 2026) ═══════════════════
+     THE ONE DELIBERATE ABSENCE, and it is a design decision rather than an
+     oversight: NO INSPECTION SCENE IS PHOTOGRAPHED. The rooms are the puzzle —
+     every station in them is an answer — and a room on the board is a room the
+     class has already been walked through. What the deck shows instead is the
+     MECHANIC: the numbered "how the inspection works" list off the intro card,
+     which is the thing a pupil who has never met a flag-a-station screen
+     actually hesitates at. Same reasoning keeps every Warrant question and
+     every marked exit question off the slides (DFM 37).
+
+     AND THE TWO DIAGNOSTIC SHOTS ARE PINNED TO NON-`matched` ITEMS. Lesson 1's
+     own deck photographs a Licence Exam question that IS re-served in June, so
+     one baseline item is pre-exposed on a wall. Here each shot names the stem it
+     must be standing on, and both are items the year-end re-serve never asks
+     again — so a class sees exactly what the screen looks like and nothing that
+     June measures is spent. */
+  'j2-01': {
+    workbench: {
+      chunk: 'workbench',
+      selector: '.chunk-host .step-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'workbench') return false;
+        const c = document.querySelector('.chunk-host .step-card');
+        if (!c) return false;
+        /* STEP 3 specifically — the Saved chip, which is the step the slide's
+           own third bullet is about — and UNTICKED, because a card photographed
+           with its box already ticked shows the class a screen they cannot act on */
+        return /STEP 3 OF 5/i.test(c.textContent || '') &&
+          !c.querySelector('.confirm-step.ticked');
+      },
+      mustShow: /watch your work save itself/i,
+      says: 'a workbench step: what to look for, and the box to tick when it is found'
+    },
+    badge: {
+      chunk: 'workbench',
+      selector: '.badge-pop-card',
+      at: () => {
+        const c = document.querySelector('.badge-pop-card');
+        return !!c && /your workbench/i.test(c.textContent || '');
+      },
+      mustShow: /badge earned/i,
+      says: 'the badge card that appears over the lesson, with its points'
+    },
+    'inspect-intro': {
+      chunk: 'inspection',
+      /* A TIGHTER ELEMENT, and the reason is DFM 237(b). The whole intro card is
+         660x962 in the preview — 1:1.46 — and the deck scales one screenshot into
+         about 250 points of width, so the card entire would render 172pt wide and
+         its six rules would be unreadable from the back of a room. This element is
+         the numbered mechanic on its own: a complete thing, 1:0.32, and it renders
+         at the full 250pt. The rules are on the slide before it, in the teacher's
+         own voice, which is where he ruled they belong. */
+      selector: '.chunk-host .insp-intro-steps',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'inspection') return false;
+        /* the intro card, before the first scene: the steps list exists only there */
+        return !!document.querySelector('.chunk-host .insp-intro-steps') &&
+          !document.querySelector('.chunk-host .insp-stage');
+      },
+      mustShow: /file my inspection report/i,
+      says: 'how the inspection works, in the four steps off its own opening card'
+    },
+    'snapshot-q': {
+      chunk: 'snapshot',
+      selector: '.chunk-host .q-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'snapshot') return false;
+        const c = document.querySelector('.chunk-host .q-card');
+        if (!c) return false;
+        /* NAMED BY ITS STEM, not by its number, and the stem is deliberately one
+           of the items the year-end re-serve does NOT ask again. Unanswered, so
+           no choice of anybody's is projected. */
+        return /A robot is told to take three steps/i.test(c.textContent || '') &&
+          !c.querySelector('.q-logged');
+      },
+      mustShow: /1 OF 12/i,
+      says: 'a Snapshot question, unanswered — one question, four choices, no verdict'
+    },
+    'warrant-intro': {
+      chunk: 'warrant',
+      selector: '.chunk-host .intro-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'warrant') return false;
+        return !!document.querySelector('.chunk-host .intro-card') &&
+          !document.querySelector('.chunk-host .q-card');
+      },
+      mustShow: /your warrant is your proof/i,
+      says: 'the card that opens the Workshop Warrant'
+    },
+    selfeval: {
+      chunk: 'selfeval',
+      selector: '.chunk-host .se-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'selfeval') return false;
+        const c = document.querySelector('.se-card');
+        /* UNTOUCHED: a photographed self-evaluation with answers already on it
+           teaches the class what to answer */
+        return !!c && !c.querySelector('.se-chip.on, .se-chip.sel, .se-chip[aria-pressed="true"]');
+      },
+      mustShow: /how did it go/i,
+      says: 'the compulsory How did it go? screen, untouched'
+    }
+  },
+
+  /* ══════════════════════════ J3 LESSON 1 (17 Aug 2026) ═══════════════════
+     Same two decisions as J2's, for the same reasons: NO CASE is photographed
+     (the six judgements are the whole activity), and the Portfolio Zero shot is
+     pinned to a NON-`matched` item so the year-end re-serve is untouched. What
+     the deck shows is every screen whose SHAPE is new to her — the orientation
+     step, the badge card, the card that opens the code, a question in its
+     unanswered state, the Compass board, and the final screen. */
+  'j3-01': {
+    orientation: {
+      chunk: 'orientation',
+      selector: '.chunk-host .step-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'orientation') return false;
+        const c = document.querySelector('.chunk-host .step-card');
+        if (!c) return false;
+        return /STEP 3 OF 5/i.test(c.textContent || '') &&
+          !c.querySelector('.confirm-step.ticked');
+      },
+      mustShow: /watch your work save itself/i,
+      says: 'an orientation step: what to look for, and the box to tick when it is found'
+    },
+    badge: {
+      chunk: 'orientation',
+      selector: '.badge-pop-card',
+      at: () => {
+        const c = document.querySelector('.badge-pop-card');
+        return !!c && /studio pass/i.test(c.textContent || '');
+      },
+      mustShow: /badge earned/i,
+      says: 'the badge card that appears over the lesson, with its points'
+    },
+    'code-intro': {
+      chunk: 'code',
+      selector: '.chunk-host .intro-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'code') return false;
+        return !!document.querySelector('.chunk-host .intro-card') &&
+          !document.querySelector('.chunk-host .q-card');
+      },
+      /* the sentence that changes how the class works — "Nothing wrong here is a
+         real answer" — has to be IN the picture, not merely on the page */
+      mustShow: /nothing wrong here is a real answer/i,
+      says: 'the card that opens the Studio Code and explains the judging job'
+    },
+    'portfolio-q': {
+      chunk: 'portfolio',
+      selector: '.chunk-host .q-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'portfolio') return false;
+        const c = document.querySelector('.chunk-host .q-card');
+        if (!c) return false;
+        /* the SECOND item, named by its stem: item 1 is re-served at the end of
+           the year and item 2 is not, so this is the one that costs nothing to
+           put on a wall */
+        return /A playlist holds four songs/i.test(c.textContent || '') &&
+          !c.querySelector('.q-logged');
+      },
+      mustShow: /2 OF 12/i,
+      says: 'a Portfolio Zero question, unanswered — one question, four choices, no verdict'
+    },
+    compass: {
+      chunk: 'compass',
+      selector: '.chunk-host .cmp-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'compass') return false;
+        const c = document.querySelector('.chunk-host .cmp-card');
+        /* the BOARD, not the result, and nothing picked on it yet: a Compass
+           photographed with a side already chosen shows the class an answer to
+           a question that has none */
+        return !!c && !c.classList.contains('cmp-result') && !c.querySelector('.cmp-side.on');
+      },
+      mustShow: /which one sounds more like you/i,
+      says: 'the Compass board — three pairs, nothing picked, the settle button still locked'
+    },
+    selfeval: {
+      chunk: 'selfeval',
+      selector: '.chunk-host .se-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'selfeval') return false;
+        const c = document.querySelector('.se-card');
+        return !!c && !c.querySelector('.se-chip.on, .se-chip.sel, .se-chip[aria-pressed="true"]');
+      },
+      mustShow: /how did it go/i,
+      says: 'the compulsory How did it go? screen, untouched'
+    }
   }
 };
 
@@ -652,6 +853,123 @@ const BRIEF_SHOTS = {
     '09-exit.jpg': {
       chunk: 'exit', says: 'an exit-check question, verdict held back until the report is filed',
       at: () => !!document.querySelector('.chunk-host .q-stem')
+    }
+  },
+
+  /* ═══════════════ J2 LESSON 1's BRIEF (17 Aug 2026) ══════════════════════
+     A teacher's brief is not a deck: rule 36 is the most repeated point in his
+     whole review — "the teacher must SEE what pupils will see, and when" — and
+     the DFM 37 no-answers rule governs the BOARD, not her own run document. So
+     the brief DOES carry the inspection room and a marked question with its
+     verdict, because she needs to recognise both. The precedent is Lesson 1's
+     own brief, which prints a Badge 1 question after answering. */
+  'j2-01': {
+    '01-briefing.png': {
+      chunk: 'briefing', says: 'the welcome card pupils read together at the start of the hour',
+      /* THE BRIEFING IS NOT A `.card` AND IT TYPES ITSELF OUT — two facts that
+         cost this row its first run. The engine renders `.dossier`, and its CTA
+         is built hidden and revealed only when the last line has landed, so the
+         button appearing is the one honest signal that the card is COMPLETE. A
+         shot taken a second earlier is a half-written screen. */
+      at: () => {
+        const d = document.querySelector('.chunk-host .dossier');
+        if (!d) return false;
+        const cta = d.querySelector('.dossier-cta');
+        return !!cta && !cta.hidden && /welcome to the workshop/i.test(d.textContent || '');
+      }
+    },
+    '02-workbench.png': {
+      chunk: 'workbench', says: 'a workbench step — what to look for, and the box to tick',
+      at: () => {
+        const c = document.querySelector('.chunk-host .step-card');
+        return !!c && /STEP 3 OF 5/i.test(c.textContent || '');
+      }
+    },
+    '03-inspect-intro.png': {
+      chunk: 'inspection', says: 'the inspection opening card: the six rules, then how it works',
+      at: () => !!document.querySelector('.chunk-host .insp-intro-steps') &&
+        !document.querySelector('.chunk-host .insp-stage')
+    },
+    '04-inspect-scene.png': {
+      chunk: 'inspection', says: 'a room being inspected, before any station is flagged',
+      at: () => {
+        const st = document.querySelector('.chunk-host .insp-stage');
+        return !!st && !document.querySelector('.chunk-host .insp-zone.flagged, .chunk-host .insp-zone.is-on');
+      }
+    },
+    '05-snapshot.png': {
+      chunk: 'snapshot', says: 'a Snapshot question — no verdict on these, by design',
+      at: () => {
+        const c = document.querySelector('.chunk-host .q-card');
+        return !!c && /OF 12/i.test(c.textContent || '');
+      }
+    },
+    '06-warrant.png': {
+      chunk: 'warrant', says: 'a Warrant question after answering: the verdict and the reason',
+      at: () => {
+        const c = document.querySelector('.chunk-host .q-card');
+        return !!c && !!c.querySelector('.q-feedback');
+      }
+    },
+    '07-exit.png': {
+      chunk: 'exit', says: 'the marked exit question, before it is answered',
+      at: () => !!document.querySelector('.chunk-host .q-card')
+    },
+    '08-selfeval.png': {
+      chunk: 'selfeval', says: 'the final screen — compulsory, and the comment box comes to her'
+    }
+  },
+
+  /* ═══════════════ J3 LESSON 1's BRIEF (17 Aug 2026) ═════════════════════ */
+  'j3-01': {
+    '01-briefing.png': {
+      chunk: 'briefing', says: 'the opening card, including what January\'s options actually mean',
+      at: () => {
+        const d = document.querySelector('.chunk-host .dossier');
+        if (!d) return false;
+        const cta = d.querySelector('.dossier-cta');
+        return !!cta && !cta.hidden && /the studio is open/i.test(d.textContent || '');
+      }
+    },
+    '02-orientation.png': {
+      chunk: 'orientation', says: 'an orientation step — what to look for, and the box to tick',
+      at: () => {
+        const c = document.querySelector('.chunk-host .step-card');
+        return !!c && /STEP 3 OF 5/i.test(c.textContent || '');
+      }
+    },
+    '03-code-intro.png': {
+      chunk: 'code', says: 'the card that opens the Studio Code and explains the judging job',
+      at: () => !!document.querySelector('.chunk-host .intro-card') &&
+        !document.querySelector('.chunk-host .q-card')
+    },
+    '04-case.png': {
+      chunk: 'code', says: 'a judged case: the verdict and the reason underneath it',
+      at: () => {
+        const c = document.querySelector('.chunk-host .q-card');
+        return !!c && !!c.querySelector('.q-feedback');
+      }
+    },
+    '05-portfolio.png': {
+      chunk: 'portfolio', says: 'a Portfolio Zero question — no verdict on these, by design',
+      at: () => {
+        const c = document.querySelector('.chunk-host .q-card');
+        return !!c && /OF 12/i.test(c.textContent || '');
+      }
+    },
+    '06-compass.png': {
+      chunk: 'compass', says: 'the Compass board — three pairs, nothing picked yet',
+      at: () => {
+        const c = document.querySelector('.chunk-host .cmp-card');
+        return !!c && !c.classList.contains('cmp-result') && !c.querySelector('.cmp-side.on');
+      }
+    },
+    '07-exit.png': {
+      chunk: 'exit', says: 'the marked exit question, before it is answered',
+      at: () => !!document.querySelector('.chunk-host .q-card')
+    },
+    '08-selfeval.png': {
+      chunk: 'selfeval', says: 'the final screen — compulsory, and the comment box comes to her'
     }
   }
 };

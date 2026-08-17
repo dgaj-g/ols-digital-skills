@@ -8,23 +8,32 @@
  * reads it (DFM 219d) and a platform-wide wording sweep reaches it (DFM 147).
  *
  * TO RUN, ONE FUNCTION AT A TIME, from the toolbar dropdown:
- *   createLesson2Deck    creates Lesson 2's deck ONCE, shares it read-only, and
+ *   createLesson2Deck    creates that deck ONCE, shares it read-only, and
  *   createLesson3Deck    LOGS ITS FILE ID. Read that id back: it is written into
  *   createLesson4Deck    the deck data and into the brief's two resource links
  *   createLesson5Deck    BEFORE the content is packed, so no teacher ever meets
- *                        a link that leads nowhere. Refuses to run twice.
+ *   createJ2Lesson1Deck  a link that leads nowhere. Refuses to run twice.
+ *   createJ3Lesson1Deck
  *   rebuildLesson1Deck   rebuilds a deck IN PLACE, keeping its file id so the
  *   rebuildLesson2Deck   two links in that lesson's teacher brief and the
  *   …3, …4, …5           department's shared copy keep working. Refuses to run
- *                        on a lesson whose deck has not been created yet.
+ *   rebuildJ2Lesson1Deck on a lesson whose deck has not been created yet.
+ *   rebuildJ3Lesson1Deck
  *   exportDeckProofs     renders every slide of that deck to a picture in Drive
  *                        ("KS3 DT Deck Proofs"), so the built pixels are read
  *                        before anyone is told the deck is ready (DFM 225b).
  *                        Run it straight after the rebuild, every time.
  *   exportLesson2Proofs  the same, per lesson; exportAllDeckProofs does the set.
  *   …3, …4, …5
+ *   exportJ2Lesson1Proofs / exportJ3Lesson1Proofs
  *
- * Built 2026-08-16 from contentVersion 2026-08-16b.
+ * EVERY FUNCTION NAME CARRIES ITS YEAR FROM THE J2/J3 ROUND ON (K26, 17 Aug
+ * 2026). "Lesson 1" is now three different lessons, so a dropdown entry reading
+ * only rebuildLesson1Deck would be a coin toss in front of him. J1's five keep
+ * their existing names exactly — they are in his run log and in the handover
+ * file — and every new year is named for its year.
+ *
+ * Built 2026-08-17 from contentVersion 2026-08-17f.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -1188,6 +1197,529 @@ var DECKS = {
     ]
    }
   ]
+ },
+ "j2-01": {
+  "id": "j2-01.deck",
+  "lesson": "j2-01",
+  "year": "j2",
+  "deckName": "KS3 DT · J2 Lesson 1 — Welcome to the Workshop (Teacher Deck)",
+  "theme": {
+   "id": "workbench",
+   "name": "The Workbench",
+   "ground": "#1A1512",
+   "panel": "#2B2320",
+   "accent": "#F5822F",
+   "accent2": "#9FB6C4",
+   "text": "#FFFFFF",
+   "dim": "#D8C4B4",
+   "display": "Archivo Black",
+   "body": "Inter"
+  },
+  "sections": [
+   {
+    "id": "opening",
+    "chunk": "briefing",
+    "label": "The opening",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 1 · Welcome to the Workshop",
+      "sub": "Your first Digital Technology lesson of J2 — J2 · Lesson 1 of 17",
+      "notes": "WHERE THE CLASS IS: seated, logged in to the computer, nothing else open. Most of these pupils have never used this website before, and this is their first-ever sign-in to it.\n\nSAY: welcome them in properly. Names, smiles, no screens yet — the hour starts with you, not with the machines.\n\nWHEN TO MOVE: as soon as the room is settled."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "In this lesson you will…",
+      "bullets": [
+       "Find out what your Workshop year is about: you build real things, and you learn how to look after them.",
+       "Learn the six rules of the DT rooms.",
+       "Inspect a room after a class has left, and spot the stations that are breaking those rules.",
+       "Show what you can do already — the Snapshot is not a test and nobody can fail it.",
+       "Earn your first badges, and unlock a new look for your screen."
+      ],
+      "notes": "WHERE THE CLASS IS: still eyes front, screens ignored.\n\nSAY: read the five lines out. Land the fourth one hardest — a class that thinks the Snapshot is a test will guess badly and the September picture will be worthless.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "What The Workshop means",
+      "bullets": [
+       "Your Digital Technology year is called The Workshop, because you work the way a real workshop works.",
+       "You BUILD real things: programs that follow your instructions, spreadsheets that work things out for you, and web pages you write yourself.",
+       "Then you learn to PROTECT what you build, and to spot the tricks people use to get at other people's work.",
+       "Seventeen Workshop lessons this year, one every fortnight."
+      ],
+      "notes": "SAY: this is the frame the whole year hangs on, so it is worth thirty seconds. Build, then protect. Their opening card on screen says the same thing in the same words a few minutes from now, which is deliberate.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The rules of these rooms",
+      "size": 15,
+      "bullets": [
+       "Never come into the room without a teacher. Line up quietly outside, in single file, until your teacher arrives.",
+       "No food and no drink anywhere near the machines.",
+       "Look after the equipment. Nothing gets unplugged, moved or taken apart.",
+       "Push your chair in and leave your area tidy before you go.",
+       "Sign out every time you finish.",
+       "Tell your teacher about anything broken, straight away."
+      ],
+      "notes": "SAY: deliver these as OUR rules, not the website's. The pupils meet the same six on screen later in the hour and then have to spot them being broken, so you are giving them the answers first, on purpose.\n\nThese are the six rules every DT room in the school runs on, and they are word for word what the pupils will read.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Ready? Go.",
+      "bullets": [
+       "Read the welcome card together — it types itself out, so wait for the last line.",
+       "Then work on your own through the five things to find, and stop when the badge appears.",
+       "Your screen tells you what to do next. Stuck? Click the round ? button at the bottom right.",
+       "Then look up, because we all stop together before the inspection."
+      ],
+      "notes": "WHERE THE CLASS IS: about to touch their screens for the first time.\n\nSAY: the welcome card is worth reading ALOUD together as the class opener — it types itself out, so wait for the last line, then read it while pupils follow on their own screens. It also explains the Google permission screens they clicked through to get in, so nobody is left wondering what those were.\n\nThen give the stop rule before they start: \"when your badge appears, stop and look up.\"\n\nWalk the room while they work. The pupils who need you are the ones who cannot find something on screen, not the ones who are stuck on an idea.\n\nWHEN TO MOVE: when the first badges appear, stop the whole room for the inspection."
+     }
+    ]
+   },
+   {
+    "id": "workbench",
+    "chunk": "workbench",
+    "label": "Set up your workbench",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Five things to find on your screen",
+      "shot": "workbench",
+      "bullets": [
+       "Your year map is the page all seventeen lessons sit on. The button at the top left always takes you back.",
+       "Most tiles have a padlock on them. That is normal: each lesson opens on the day you do it.",
+       "Look top right for the small green word Saved. There is no save button on this website.",
+       "Bottom right is the round ? button, and your own name at the top right opens your Kit Locker."
+      ],
+      "notes": "WHERE THE CLASS IS: on the second screen of the lesson, working down five short steps and ticking each one off.\n\nWHAT THEY WILL SEE: the picture on the right. Each step names one thing to look for and says what they should see when they have found it.\n\nSAY, before they start: seven minutes now saves a term of hands going up. Point at the picture and tell them the ticks only appear one at a time, so there is nothing to hurry.\n\nThe padlock step is the one worth saying out loud yourself. A locked tile looks like a fault to a pupil who has never seen this website, and every tile except today's is locked.\n\nWHEN TO MOVE: straight on to the badge slide while they work."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Badges, points and your Kit Locker",
+      "shot": "badge",
+      "bullets": [
+       "The big parts of a lesson are called badges. Finish one and its badge lands in your own record.",
+       "Badges bring points called XP, and XP unlocks new looks for your screen.",
+       "Your looks hang in your Kit Locker, under your own name in the top right corner.",
+       "Once you have unlocked a look it stays yours for the rest of the year."
+      ],
+      "notes": "WHERE THE CLASS IS: finishing the five steps. The first badge is landing on screens around the room.\n\nWHAT THEY WILL SEE: the picture on the right — the badge card that appears over the lesson, with the points on it. It needs one click to clear.\n\nSAY: there are four badges in this hour. Nothing is handed out and nothing is printed: a badge is a picture in the pupil's own record on this website.\n\nThe Kit Locker holds three looks today and grows as the year unlocks new levels, so a pupil who says \"is that all there is?\" is reading it right — it is the beginning of a collection, not the whole of it.\n\nWHEN TO MOVE: when badges have appeared around the room, stop everybody."
+     }
+    ]
+   },
+   {
+    "id": "inspection",
+    "chunk": "inspection",
+    "label": "STOP · The Safety Inspection",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "STOP — eyes front · The Safety Inspection",
+      "bullets": [
+       "You are the safety inspector. The room you inspect is an ICT room after a class has left.",
+       "Click any station you think is breaking a rule to plant a flag on it.",
+       "Nothing is marked until you press File my inspection report, so change your mind as often as you like.",
+       "A flag on a station that turns out to be fine costs you nothing at all.",
+       "Talk it over with the pupil beside you — then each of you files your own report."
+      ],
+      "notes": "WHERE THE CLASS IS: first badge earned, screens ignored, eyes front. This is the longest activity of the hour, so the minute you spend here is the minute that makes it work.\n\nSAY: \"You are the safety inspector now. You will see a drawing of an ICT room just after a class has left it, with five stations along the bench. Click any station you think is breaking one of our six rules and it plants a flag on it. Click it again and the flag comes off. Nothing is judged until you file your report, so change your mind as often as you like — and a flag on a station that turns out to be fine costs you nothing.\"\n\nThen the sentence that decides the quality of the work: \"Talk it over with the pupil beside you. You each file your own report, so you do not have to agree.\"\n\nWHAT THEY WILL NOT SEE FROM YOU: the rooms themselves. They are not on this deck on purpose — putting one on the board hands the class the answers to a room they are about to inspect.\n\nWHEN TO MOVE: straight on to the next slide, then send them in."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "What the inspection looks like",
+      "shot": "inspect-intro",
+      "bullets": [
+       "First you get the six rules again, written out, so nobody is guessing.",
+       "Then a numbered list of how the inspection works, and a button that says Start the inspection.",
+       "Five of the six rules are ones you can SEE in a room. The first one happens outside the door.",
+       "There are four rooms to inspect, and a harder fifth one you can take or leave."
+      ],
+      "notes": "WHERE THE CLASS IS: about to press into the inspection.\n\nWHAT THEY WILL SEE: the picture on the right is the screen they land on — the six rules, then the numbered steps, then Start the inspection.\n\nSAY: the fifth room is an extra challenge with a real Stop here instead button beside it, so a pupil who has had enough may genuinely stop and lose nothing. Say that out loud: pupils will take an optional challenge if they believe it is optional.\n\nWHILE THEY WORK: circulate. The room to watch for is the fourth one, where one screen is switched on and showing its sign-in box — a lit screen is not the same thing as a screen somebody left signed in, and that is the whole point of it.\n\nWHEN TO MOVE: when most of the class has filed the fourth report, stop the room for the Snapshot. Pupils still on the extra challenge can finish it."
+     }
+    ]
+   },
+   {
+    "id": "snapshot",
+    "chunk": "snapshot",
+    "label": "STOP · The Skills Snapshot",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "2",
+      "heading": "STOP — The Skills Snapshot",
+      "bullets": [
+       "Twelve quick questions about what you can do already.",
+       "It is NOT a test, you cannot fail it, and nobody is marking it.",
+       "Most of it is about things nobody has taught you yet, so not knowing is completely normal.",
+       "You will not be told right or wrong, and that is on purpose.",
+       "At the end of the year you answer some of them again, and you see the difference for yourself."
+      ],
+      "notes": "WHERE THE CLASS IS: inspection reports filed, facing front.\n\nSAY, and set the tone in one go before anybody touches it: \"Quiet and on your own now. Twelve quick questions. It is not a test, you cannot fail it, and I am not marking it. Most of them are about things nobody has taught you yet, so not knowing is completely normal and completely expected. You will not be told right or wrong, and that is deliberate — this is a record of where you are starting from, and it is only worth having if it is honest.\"\n\nThe thing that ruins a baseline is a pupil who thinks it counts, so it is worth saying twice.\n\nNothing for you to mark afterwards: the scores land beside each name on the Live tab.\n\nWHEN TO MOVE: straight on to the next slide, then let them start."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "What the Snapshot looks like",
+      "shot": "snapshot-saved",
+      "bullets": [
+       "One question at a time, with four answers to choose from.",
+       "When you click, the screen says Answer saved and nothing else. That is it working.",
+       "There is no right-or-wrong message on these, so there is nothing to compare with anybody.",
+       "If you do not know one, pick what seems most likely and keep going."
+      ],
+      "notes": "WHERE THE CLASS IS: about to start twelve questions on their own, in silence.\n\nWHAT THEY WILL SEE: the picture on the right, twelve times over — a question, four answers, and then the words Answer saved. Point at those two words as you say the next line.\n\nSAY: \"The screen will say Answer saved and nothing else. That is it working, not the website being broken.\" Someone always asks, and answering it once to the whole room saves answering it eleven times at desks.\n\nWHILE THEY WORK: this is the quietest part of the hour and the best chance to catch up with anyone whose sign-in was awkward at the start.\n\nWHEN TO MOVE: when the room has finished."
+     }
+    ]
+   },
+   {
+    "id": "warrant",
+    "chunk": "warrant",
+    "label": "STOP · The Workshop Warrant",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "3",
+      "heading": "STOP — The Workshop Warrant",
+      "bullets": [
+       "Your Warrant is your proof that you know your way around the Workshop.",
+       "Six questions, and every one of them is about this hour.",
+       "This time you ARE told whether you were right, straight away, and why.",
+       "Read the reason underneath every time. That is where the learning is."
+      ],
+      "notes": "WHERE THE CLASS IS: Snapshot finished, facing front. Say this stop is a short one — it is, and telling them so keeps the room with you.\n\nSAY: \"The Warrant is your proof that you know your way around the Workshop. Six questions, all of them about this hour — nothing from outside it. This time the website does tell you whether you were right, straight away, and it gives you the reason. Read the reason every single time.\"\n\nThat last sentence is the one worth repeating all year: the reason under a marked answer is the teaching, and pupils will click past it if nobody tells them not to.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "What the Warrant looks like",
+      "shot": "warrant-intro",
+      "bullets": [
+       "A card tells you what the Warrant is. Then the six questions start.",
+       "Click an answer and the verdict appears, with a short reason underneath it.",
+       "After the sixth question a badge lands, and your first new look is waiting on your year map."
+      ],
+      "notes": "WHERE THE CLASS IS: about to start the Warrant.\n\nWHAT THEY WILL SEE: the picture on the right is the card that opens it, and then six questions that behave the way the earlier ones did.\n\nSAY: the new look is not in the lesson — it appears when they get back to the year map at the end. Worth saying now, because otherwise the pupils who finish first go hunting for it.\n\nWHILE THEY WORK: the Live tab shows how the class did question by question. Anything most of the room got wrong is worth a sentence to everybody rather than six conversations at desks.\n\nWHEN TO MOVE: when the badges have landed."
+     }
+    ]
+   },
+   {
+    "id": "finishing",
+    "chunk": "next",
+    "label": "Finishing the hour",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The last three screens",
+      "shot": "selfeval",
+      "bullets": [
+       "A card about what you build next, so you know where the year is going.",
+       "Then one more question — this one IS marked, so think about it.",
+       "Then How did it go?, where you say honestly how the hour went.",
+       "The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving."
+      ],
+      "notes": "WHERE THE CLASS IS: Warrant done, working through the last three screens on their own.\n\nWHAT THEY WILL SEE: the picture on the right is the final screen — three sentences to rate, a how-it-felt choice and a comment box.\n\nSAY: \"Last question after this card, and that one is marked, so think about it. Then tell me honestly how today went. The comment box comes to me and nobody else.\"\n\n**Nobody leaves without finishing How did it go?** It is compulsory, and it is how you hear from the pupils who never put a hand up. The staff panel flags anyone who says they are not there yet, so a quiet pupil having a hard time reaches you without having to say so out loud.\n\nWHEN TO MOVE: when both screens are done."
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "chunk": "selfeval",
+    "label": "Before you leave",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Sign out every time — if you stay signed in, the next person at this machine is you.",
+       "Chair in, area tidy, nothing left beside your machine.",
+       "In the next lesson you turn the blocks you already know into real lines of Python, and you start from your very first line."
+      ],
+      "notes": "SAY: hold the room to two of the rules the hour just taught — sign out, and leave the area tidy. \"If you stay signed in, the next person at this machine is you as far as the school is concerned.\"\n\nThe class has spent twenty minutes flagging other people's untidy stations, so this is the moment that lands.\n\nThen tell them what is coming: the next block of lessons turns the blocks they already know into written Python, starting from the first line."
+     }
+    ]
+   }
+  ]
+ },
+ "j3-01": {
+  "id": "j3-01.deck",
+  "lesson": "j3-01",
+  "year": "j3",
+  "deckName": "KS3 DT · J3 Lesson 1 — The Studio Opens (Teacher Deck)",
+  "theme": {
+   "id": "screening-room",
+   "name": "The Screening Room",
+   "ground": "#170A16",
+   "panel": "#2D1429",
+   "accent": "#FFD666",
+   "accent2": "#FF4D67",
+   "text": "#FFFFFF",
+   "dim": "#D8BFD2",
+   "display": "Playfair Display",
+   "body": "Inter"
+  },
+  "sections": [
+   {
+    "id": "opening",
+    "chunk": "briefing",
+    "label": "The opening",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 1 · The Studio Opens",
+      "sub": "Your first Digital Technology lesson of J3 — J3 · Lesson 1 of 17",
+      "notes": "WHERE THE CLASS IS: seated, logged in to the computer, nothing else open. These pupils have never used this website before, and this is their first-ever sign-in to it.\n\nSAY: welcome them in properly. Names, smiles, no screens yet. This is their last year of Digital Technology before GCSE and the hour is built to say so, so open it like something that matters.\n\nWHEN TO MOVE: as soon as the room is settled."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "In this lesson you will…",
+      "bullets": [
+       "Find out what your Studio year builds: you make real work, you learn to judge it, and you get better at choosing.",
+       "Meet the studio code, which is the six rules of the DT rooms.",
+       "Judge six real situations and decide whether each one keeps the code or breaks it.",
+       "Show where you are starting from — Portfolio Zero is not a test and nobody can fail it.",
+       "Find your Compass: what kind of work you actually enjoy."
+      ],
+      "notes": "WHERE THE CLASS IS: still eyes front, screens ignored.\n\nSAY: read the five lines out. Land the fourth one hardest — a class that thinks Portfolio Zero is a test will guess badly, and the September picture is only worth having if it is honest.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "What The Studio means",
+      "bullets": [
+       "Your Digital Technology year is called The Studio, because you work the way a real studio works.",
+       "You CREATE real work: programs you write yourself, data you turn into something worth reading, and web pages you design for somebody else to use.",
+       "You learn to JUDGE work, your own and other people's, against a standard instead of a feeling.",
+       "And you get better at CHOOSING, because by the end you have real evidence about what you are good at."
+      ],
+      "notes": "SAY: create, judge, choose. Those three words are the shape of the whole year and every lesson lands under one of them, so they are worth thirty seconds now.\n\nThe pupils' own opening card says the same thing in the same words a few minutes from now, which is deliberate.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Why this year is worth doing",
+      "bullets": [
+       "In JANUARY you pick your GCSE options. Digital Technology is one of the subjects on that list, and it is optional.",
+       "Plenty of people will pick it and plenty will not, and both of those are fine answers.",
+       "If you do pick it there are two routes inside it, and by January you will know far more about which kind of work suits you.",
+       "If you do not pick it, everything this year teaches you is still yours."
+      ],
+      "notes": "WHERE THE CLASS IS: eyes front. This is the slide the room will have questions about, so take it slowly.\n\nSAY it exactly as it reads. The options window is JANUARY, not the end of the year, and Digital Technology is an optional subject — so the honest frame is that this year hands every pupil real evidence about herself, and choosing the subject is one use of that evidence rather than the point of it.\n\nWHAT NOT TO SAY: nothing here decides anything, and no pupil should leave thinking she has been sorted into a route. The Compass later in the hour says so twice on its own screens.\n\nIf a pupil asks whether she has to pick DT: no. Say so plainly — it is on the slide because it is true.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Ready? Go.",
+      "bullets": [
+       "Read the opening card together — it types itself out, so wait for the last line.",
+       "Then work on your own through the five things to find, and stop when the badge appears.",
+       "Your screen tells you what to do next. Stuck? Click the round ? button at the bottom right.",
+       "Then look up, because we all stop together before the studio code."
+      ],
+      "notes": "WHERE THE CLASS IS: about to touch their screens for the first time.\n\nSAY: the opening card is worth reading ALOUD together as the class opener — it types itself out, so wait for the last line, then read it while pupils follow on their own screens. It also explains the Google permission screens they clicked through to get in, so nobody is left wondering what those were.\n\nThen give the stop rule before they start: \"when your badge appears, stop and look up.\"\n\nWalk the room while they work. The pupils who need you are the ones who cannot find something on screen.\n\nWHEN TO MOVE: when the first badges appear, stop the whole room for the studio code."
+     }
+    ]
+   },
+   {
+    "id": "orientation",
+    "chunk": "orientation",
+    "label": "Find your way around",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Five things to find on your screen",
+      "shot": "orientation",
+      "bullets": [
+       "Your year map is the page all seventeen lessons sit on. The button at the top left always takes you back.",
+       "Most tiles have a padlock on them. That is normal: each lesson opens on the day the class does it.",
+       "Look top right for the small green word Saved. There is no save button on this website.",
+       "Bottom right is the round ? button, and your own name at the top right opens your Wardrobe."
+      ],
+      "notes": "WHERE THE CLASS IS: on the second screen of the lesson, working down five short steps and ticking each one off.\n\nWHAT THEY WILL SEE: the picture on the right. Each step names one thing to look for and says what they should see when they have found it.\n\nSAY, before they start: seven minutes now saves a term of hands going up. The ticks appear one at a time, so there is nothing to hurry.\n\nThe padlock step is the one worth saying out loud yourself. A locked tile looks like a fault to a pupil who has never seen this website, and every tile except today's is locked.\n\nWHEN TO MOVE: straight on to the badge slide while they work."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Badges, points and your Wardrobe",
+      "shot": "badge",
+      "bullets": [
+       "The big parts of a lesson are called badges. Finish one and its badge lands in your own record.",
+       "Badges bring points called XP, and XP unlocks new looks for your screen.",
+       "Your looks hang in your Wardrobe, under your own name in the top right corner.",
+       "Once you have unlocked a look it stays yours for the rest of the year."
+      ],
+      "notes": "WHERE THE CLASS IS: finishing the five steps. The first badge is landing on screens around the room.\n\nWHAT THEY WILL SEE: the picture on the right — the badge card that appears over the lesson, with the points on it. It needs one click to clear.\n\nSAY: there are four badges in this hour. Nothing is handed out and nothing is printed: a badge is a picture in the pupil's own record on this website.\n\nThe Wardrobe holds three looks today and grows as the year unlocks new levels, so a pupil who says \"is that all there is?\" is reading it right — it is the beginning of a collection, not the whole of it.\n\nWHEN TO MOVE: when badges have appeared around the room, stop everybody."
+     }
+    ]
+   },
+   {
+    "id": "code",
+    "chunk": "code",
+    "label": "STOP · The Studio Code",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "STOP — eyes front · The Studio Code",
+      "bullets": [
+       "A working studio writes its rules down, and then somebody has to decide whether people are keeping them.",
+       "Today that somebody is you. You read six real situations and judge each one.",
+       "For each one you decide whether it is IN LINE with the code or AGAINST it.",
+       "Watch out: not every case is somebody doing something wrong.",
+       "Nothing wrong here is a real answer, and it is the right answer more than once."
+      ],
+      "notes": "WHERE THE CLASS IS: first badge earned, screens ignored, eyes front.\n\nSAY: \"These are the same six DT room rules you already know — there is nothing new in them. What is new is the job. A working studio writes its rules down as a code of conduct, and then somebody has to decide whether people are keeping it. Today that somebody is you.\"\n\nThen the sentence that changes how the class works: \"Not every case is somebody doing something wrong. Nothing wrong here is a real answer, and it is the right answer more than once.\" Without that, pupils hunt for a fault in every case and get the two clean ones wrong for the wrong reason.\n\nWHAT THEY WILL NOT SEE FROM YOU: the cases themselves. They are not on this deck on purpose — a case on the board is a case already judged.\n\nWHEN TO MOVE: straight on to the next slide, then send them in."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "What a case looks like",
+      "shot": "code-intro",
+      "bullets": [
+       "A card explains the job, then the first case opens.",
+       "You read what happened, then click the judgement that matches it.",
+       "Every case is marked the moment you click, and you are told why.",
+       "After the six there are two harder cases you can take or leave, where two of the rules pull against each other."
+      ],
+      "notes": "WHERE THE CLASS IS: about to press into the first case.\n\nWHAT THEY WILL SEE: the picture on the right is the card that opens it. The cases themselves follow one at a time.\n\nSAY: the two hard cases at the end are an extra challenge with a real Stop here instead button beside them, so a pupil who has had enough may genuinely stop and lose nothing. Say that out loud: pupils will take an optional challenge if they believe it is optional.\n\nWHILE THEY WORK: circulate, and read the reasons over shoulders rather than the marks. The interesting pupil is the one who picked a defensible wrong answer, and the reason on screen tells you which rule she was weighing.\n\nWHEN TO MOVE: when most of the class has judged the sixth case, stop the room. Pupils still on the two hard cases can finish them."
+     }
+    ]
+   },
+   {
+    "id": "portfolio",
+    "chunk": "portfolio",
+    "label": "STOP · Portfolio Zero",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "2",
+      "heading": "STOP — Portfolio Zero",
+      "bullets": [
+       "A portfolio is the collection of work somebody shows to prove what they can do.",
+       "This is yours before you have made any of it — the zero at the start.",
+       "Twelve quick questions. It is NOT a test, you cannot fail it, and nobody is marking it.",
+       "Nine of them you might work out. Three just ask how you feel about your own work.",
+       "You will not be told right or wrong, and that is on purpose."
+      ],
+      "notes": "WHERE THE CLASS IS: the studio code judged, facing front.\n\nSAY, and set the tone in one go before anybody touches it: \"Quiet and on your own now. Twelve quick questions. It is not a test, you cannot fail it, and I am not marking it. Most of the nine are about things nobody has taught you yet, so not knowing is completely normal. The last three have no right answer at all — they just ask how you feel about your own work, so say what is true.\"\n\nThe thing that ruins a baseline is a pupil who thinks it counts, so it is worth saying twice.\n\nSay the word portfolio out loud and define it as the slide does. It is the word the year is built on and most of the class will not have met it.\n\nWHEN TO MOVE: straight on to the next slide, then let them start."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "What Portfolio Zero looks like",
+      "shot": "portfolio-saved",
+      "bullets": [
+       "One question at a time, with four answers to choose from.",
+       "When you click, the screen says Answer saved and nothing else. That is it working.",
+       "There is no right-or-wrong message on these, so there is nothing to compare with anybody.",
+       "You read this back twice: before your options in January, and again in the last lesson of the year."
+      ],
+      "notes": "WHERE THE CLASS IS: about to start twelve questions on their own, in silence.\n\nWHAT THEY WILL SEE: the picture on the right, twelve times over — a question, four answers, and then the words Answer saved. Point at those two words as you say the next line.\n\nSAY: \"The screen will say Answer saved and nothing else. That is it working, not the website being broken.\" Someone always asks, and answering it once to the whole room saves answering it eleven times at desks.\n\nWHILE THEY WORK: this is the quietest part of the hour and the best chance to catch up with anyone whose sign-in was awkward at the start.\n\nWHEN TO MOVE: when the room has finished."
+     }
+    ]
+   },
+   {
+    "id": "compass",
+    "chunk": "compass",
+    "label": "STOP · Your Compass",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "3",
+      "heading": "STOP — Your Compass",
+      "bullets": [
+       "Portfolio Zero asked what you can DO. Your Compass asks what you ENJOY.",
+       "Three questions, each with two things to choose between.",
+       "Neither side is better than the other and there is no right answer.",
+       "Pick the one that sounds more like you, even if it is only slightly more.",
+       "Your Compass decides nothing. It is where you are standing today."
+      ],
+      "notes": "WHERE THE CLASS IS: Portfolio Zero finished, facing front. This is the last new thing in the hour.\n\nSAY: \"Portfolio Zero asked what you can do. This asks something completely different: what you actually enjoy. Three questions, two things to choose between each time, and neither side is better than the other. Pick the one that sounds more like you, even if it is only slightly more.\"\n\nAND SAY THIS, because it is the sentence that stops a pupil worrying: \"Your Compass decides nothing at all. It is where you are standing today, and today is the first day of the year. You look at it again in January, and people do change their minds.\"\n\nWHAT THE RESULT DOES: it names the kind of digital work that suits her first, and only then mentions which GCSE route that side of the work belongs to. Landing near the middle is a real result, not a failure to decide, and on the first day of a year it will be the commonest one.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "What the Compass looks like",
+      "shot": "compass",
+      "bullets": [
+       "Three pairs on one screen. You can change any of them until you press the button.",
+       "Then a needle settles, and you are told in plain words what it found.",
+       "Pick all three on one side and it lands firmly there. Split them and it settles near the middle.",
+       "Near the middle is a real answer, and on the first day of a year it is the most common one."
+      ],
+      "notes": "WHERE THE CLASS IS: about to answer the three pairs.\n\nWHAT THEY WILL SEE: the picture on the right — all three pairs on one screen, with the settle button underneath. It stays locked until one is picked from each pair, and the screen says so.\n\nSAY: read the result with them if the room is quiet enough. It gives the KIND of work that suits her first — designing and communicating, or building and problem-solving — and the GCSE route mapping second. That order is the point: a pupil who never takes the subject still gets a true answer about herself.\n\nWHEN TO MOVE: when the needles have settled and the badges have landed."
+     }
+    ]
+   },
+   {
+    "id": "finishing",
+    "chunk": "next",
+    "label": "Finishing the hour",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The last three screens",
+      "shot": "selfeval",
+      "bullets": [
+       "A card with a picture of the two GCSE routes, and the core work everybody does first.",
+       "Then one more question — this one IS marked, so think about it.",
+       "Then How did it go?, where you say honestly how the hour went.",
+       "The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving."
+      ],
+      "notes": "WHERE THE CLASS IS: Compass settled, working through the last three screens on their own.\n\nWHAT THEY WILL SEE: the picture on the right is the final screen — three sentences to rate, a how-it-felt choice and a comment box.\n\nSAY: \"Last question after the routes card, and that one is marked, so think about it. Then tell me honestly how today went. The comment box comes to me and nobody else.\"\n\nThe routes card is a diagram, not a decision. Nobody chooses anything today, and the card says so in its own words.\n\n**Nobody leaves without finishing How did it go?** It is compulsory, and it is how you hear from the pupils who never put a hand up. The staff panel flags anyone who says they are not there yet.\n\nWHEN TO MOVE: when both screens are done."
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "chunk": "selfeval",
+    "label": "Before you leave",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Sign out every time — if you stay signed in, the next person at this machine is you.",
+       "Chair in, area tidy, nothing left beside your machine.",
+       "In the next lesson you write real code yourself, and it starts from your very first line."
+      ],
+      "notes": "SAY: hold the room to two of the rules the hour just taught — sign out, and leave the area tidy. \"If you stay signed in, the next person at this machine is you as far as the school is concerned.\"\n\nThe class has spent fifteen minutes judging other people for exactly this, so it is the moment that lands.\n\nThen tell them what is coming: the next lesson has them writing real code, starting from the first line, and nothing is assumed."
+     }
+    ]
+   }
+  ]
  }
 };
 var CONSENT = {
@@ -1590,8 +2122,17 @@ function rebuildDeck_(lessonId) {
   return pres.getId();
 }
 
+/* THE NAME OF THE FUNCTION HE RUNS, DERIVED FROM THE DECK'S OWN ID.
+   It used to be 'Lesson' + the number, which was right while J1 was the only
+   year on the platform and wrong the moment J2 arrived: j1-01 and j2-01 both
+   produced "Lesson1", so an error message would have told him to run a function
+   that rebuilds a different year's deck. J1's five names are unchanged — they are
+   in his own run log — and every other year is qualified by its year. */
 function lessonLabel_(lessonId) {
-  return 'Lesson' + String(Number(lessonId.split('-')[1]));
+  var parts = String(lessonId).split('-');
+  var year = parts[0], num = String(Number(parts[1]));
+  if (year === 'j1') return 'Lesson' + num;
+  return year.toUpperCase() + 'Lesson' + num;
 }
 
 /* ============ create a deck ONCE, and print the id he reads back ==========
@@ -1657,12 +2198,18 @@ function createLesson2Deck() { return createDeck_('j1-02'); }
 function createLesson3Deck() { return createDeck_('j1-03'); }
 function createLesson4Deck() { return createDeck_('j1-04'); }
 function createLesson5Deck() { return createDeck_('j1-05'); }
+/* THE TWO NEW YEARS. Created ONCE each, then rebuilt in place for ever after —
+   the same contract J1's decks live under (template §7). */
+function createJ2Lesson1Deck() { return createDeck_('j2-01'); }
+function createJ3Lesson1Deck() { return createDeck_('j3-01'); }
 
 function rebuildLesson1Deck() { return rebuildDeck_('j1-01'); }
 function rebuildLesson2Deck() { return rebuildDeck_('j1-02'); }
 function rebuildLesson3Deck() { return rebuildDeck_('j1-03'); }
 function rebuildLesson4Deck() { return rebuildDeck_('j1-04'); }
 function rebuildLesson5Deck() { return rebuildDeck_('j1-05'); }
+function rebuildJ2Lesson1Deck() { return rebuildDeck_('j2-01'); }
+function rebuildJ3Lesson1Deck() { return rebuildDeck_('j3-01'); }
 
 /* ===================== the proofs (DFM 225b, standing) ====================
    A deck is never handed over on the strength of the code that built it. Slide
@@ -1748,16 +2295,27 @@ function exportLesson2Proofs() { return exportDeckProofs_('j1-02'); }
 function exportLesson3Proofs() { return exportDeckProofs_('j1-03'); }
 function exportLesson4Proofs() { return exportDeckProofs_('j1-04'); }
 function exportLesson5Proofs() { return exportDeckProofs_('j1-05'); }
+function exportJ2Lesson1Proofs() { return exportDeckProofs_('j2-01'); }
+function exportJ3Lesson1Proofs() { return exportDeckProofs_('j3-01'); }
 
-/* every proof set in one run, for the end of a round that built four decks */
+/* EVERY PROOF SET IN ONE RUN, and the list is DERIVED from the deck data rather
+   than typed. It used to be a hardcoded array of five, which was true on the day
+   it was written and would have silently skipped both new decks — the exact
+   shape of K23's complaint ("a hardcoded list closes today's instance and
+   nothing else"). A deck that exists is a deck whose proofs get exported,
+   because existing is what puts it on the list. */
 function exportAllDeckProofs() {
-  var out = {}, ids = ['j1-01', 'j1-02', 'j1-03', 'j1-04', 'j1-05'];
+  var out = {}, ids = Object.keys(DECKS).sort(), done = 0;
   for (var i = 0; i < ids.length; i++) {
     if (!DECKS[ids[i]] || !DECKS[ids[i]].driveFileId) {
       Logger.log('(skipped ' + ids[i] + ' — no deck created yet)');
       continue;
     }
     out[ids[i]] = exportDeckProofs_(ids[i]);
+    done++;
   }
+  Logger.log('');
+  Logger.log(done + ' of ' + ids.length + ' deck(s) had proofs exported. Any line above that');
+  Logger.log('says "skipped" is a deck that has not been created yet — run its create function.');
   return out;
 }

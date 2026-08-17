@@ -50,7 +50,14 @@ const PREVIEW = path.join(ROOT, 'tools', 'brief-preview.js');
    this round deliberately. When a lesson's teacher layer is built, its id joins here in
    the same commit; a lesson that is merely PASSING at 60 without being listed is
    passing by luck, which is not the same thing. */
-const REDESIGNED = new Set(['j1-01', 'j1-02', 'j1-03', 'j1-04', 'j1-05']);
+/* j2-01 and j3-01 joined on 17 Aug 2026 with the J2/J3 Lesson 1 teacher layer
+   (K26/K27). J2's paper hour was 57 and J3's was 60 before the teacher's own
+   front-of-room minutes were added; both tables are re-derived from the built
+   chunks and then labelled to exactly 60, which is his delegation in DFM 228(e)
+   ("shaving time from some lesson sections while adding some to others"). Where
+   each minute moved is written down in PROGRESS_J2J3_L1_TEACHER.md rather than
+   left as arithmetic nobody can audit. */
+const REDESIGNED = new Set(['j1-01', 'j1-02', 'j1-03', 'j1-04', 'j1-05', 'j2-01', 'j3-01']);
 const HOUR = 60;
 
 const ORDER = [

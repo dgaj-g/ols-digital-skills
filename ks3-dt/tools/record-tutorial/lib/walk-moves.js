@@ -221,6 +221,44 @@ const MOVES = {
   'case-close': () => { const b = document.querySelector('.case-close-btn'); if (b && !b.disabled) b.click(); },
   'case-stamped': () => {},
   'case-wait': () => {},
+  /* ══════ THE J2/J3 SCREENS THE DETECTOR KNEW AND NOTHING HERE COULD MOVE ═══
+     Found 17 Aug 2026, pointing the deck capture at J2/J3 Lesson 1 for the first
+     time. The detector was taught both years' new screens when they were built
+     on 16 August; MOVES and ACTIONS were not. So this shared library recognised
+     six screens it could not get past — an inspection room, the optional-cases
+     gate, and all three Compass states — and every walker except sit-review
+     (which keeps its own switch, because it photographs and counts between the
+     sub-steps) stalled at the first one it met.
+     That is a shared library with a private half, which is the DFM 144 fault the
+     extraction of this file was written to end. Recorded plainly rather than
+     quietly patched, because "the detector knows it" had been standing in for
+     "the walkers can do it". sit-review's behaviour is untouched, so every
+     pinned shape is untouched. */
+  'stretch-gate': () => {
+    /* the EXPERT default: take the optional work. sit-wrongpath is the walker
+       that stands on the refusal, and it presses the skip itself. */
+    const go = document.querySelector('.stretch-go');
+    if (go && !go.disabled) { go.click(); return; }
+    const skip = document.querySelector('.stretch-skip');
+    if (skip && !skip.disabled) skip.click();
+  },
+  'cmp-pick': () => {
+    /* deterministically the FIRST side of every pair, which is what keeps the
+       result card the same on every run (DFM 199) */
+    document.querySelectorAll('.cmp-row').forEach(r => {
+      if (r.querySelector('.cmp-side.on')) return;
+      const b = r.querySelector('.cmp-side');
+      if (b) b.click();
+    });
+  },
+  'cmp-settle': () => {
+    const b = document.querySelector('.cmp-settle');
+    if (b && !b.disabled) b.click();
+  },
+  'cmp-done': () => {
+    const b = document.querySelector('.cmp-done');
+    if (b) b.click();
+  },
   'std-expand': () => {
     const vis = e => e && e.offsetParent !== null;
     const head = Array.from(document.querySelectorAll('.std-qa-row:not(.pass) .std-qa-head:not([disabled])')).find(vis);
@@ -330,6 +368,53 @@ const SETTLE = {
 const nap = ms => new Promise(r => setTimeout(r, ms));
 
 const ACTIONS = {
+  /* ══════ THE INSPECTION, ADDED 17 AUG 2026 — AND IT WAS A REAL HOLE ════════
+     The DETECTOR above has known `insp-scene` and `insp-next` since J2 Lesson 1
+     was built, and neither MOVES nor ACTIONS could act on either of them: the
+     only code that could drive an inspection scene was sit-review's own private
+     switch. So any walker using this shared library — which is every walker
+     except sit-review — stalled at the first room and reported the walk stuck.
+     The deck capture hit it the first time it was pointed at J2 Lesson 1.
+     That is the exact fault the extraction of this file was meant to end (DFM
+     144: one home): a detector that recognises a screen nothing here can move
+     past is a shared library with a private half. sit-review keeps its own
+     switch, because it photographs and counts between the sub-steps, so its
+     pinned shape is untouched by this — but nothing else has to write a second,
+     dumber copy any more, which is precisely how DFM 225b happened.
+
+     THE ZONES TO FLAG ARE READ OUT OF THE RUNNING LESSON, never held here: a
+     walker with its own idea of which station is wrong would go on passing after
+     the content moved. Same rule sit-review already follows. */
+  async 'insp-scene'(page) {
+    const flagged = await page.evaluate(() => {
+      const s = window.App && window.App.state;
+      const ch = s && s.chunks[s.chunkIdx];
+      const scenes = ((ch || {}).config || {}).scenes || [];
+      const tab = (document.querySelector('.insp-tab') || {}).textContent || '';
+      const sc = scenes.find(x => (x.tab || '') === tab) || scenes[0];
+      let n = 0;
+      ((sc || {}).zones || []).forEach((z, i) => {
+        if (!z.breaks) return;
+        const b = document.querySelector('.insp-zone[data-z="' + i + '"]');
+        if (b) { b.click(); n++; }
+      });
+      return n;
+    });
+    await nap(420);
+    await page.evaluate(() => {
+      const f = document.querySelector('.insp-file');
+      if (f && !f.disabled) f.click();
+    });
+    return flagged;
+  },
+
+  async 'insp-next'(page) {
+    await page.evaluate(() => {
+      const n = document.querySelector('.insp-next');
+      if (n) n.click();
+    });
+  },
+
   async 'hold-sign'(page) {
     await page.evaluate(async () => {
       const s2 = ms => new Promise(r => setTimeout(r, ms));

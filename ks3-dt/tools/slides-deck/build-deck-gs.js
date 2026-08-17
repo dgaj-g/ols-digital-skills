@@ -78,21 +78,30 @@ const header = `/**
  * reads it (DFM 219d) and a platform-wide wording sweep reaches it (DFM 147).
  *
  * TO RUN, ONE FUNCTION AT A TIME, from the toolbar dropdown:
- *   createLesson2Deck    creates Lesson 2's deck ONCE, shares it read-only, and
+ *   createLesson2Deck    creates that deck ONCE, shares it read-only, and
  *   createLesson3Deck    LOGS ITS FILE ID. Read that id back: it is written into
  *   createLesson4Deck    the deck data and into the brief's two resource links
  *   createLesson5Deck    BEFORE the content is packed, so no teacher ever meets
- *                        a link that leads nowhere. Refuses to run twice.
+ *   createJ2Lesson1Deck  a link that leads nowhere. Refuses to run twice.
+ *   createJ3Lesson1Deck
  *   rebuildLesson1Deck   rebuilds a deck IN PLACE, keeping its file id so the
  *   rebuildLesson2Deck   two links in that lesson's teacher brief and the
  *   …3, …4, …5           department's shared copy keep working. Refuses to run
- *                        on a lesson whose deck has not been created yet.
+ *   rebuildJ2Lesson1Deck on a lesson whose deck has not been created yet.
+ *   rebuildJ3Lesson1Deck
  *   exportDeckProofs     renders every slide of that deck to a picture in Drive
  *                        ("KS3 DT Deck Proofs"), so the built pixels are read
  *                        before anyone is told the deck is ready (DFM 225b).
  *                        Run it straight after the rebuild, every time.
  *   exportLesson2Proofs  the same, per lesson; exportAllDeckProofs does the set.
  *   …3, …4, …5
+ *   exportJ2Lesson1Proofs / exportJ3Lesson1Proofs
+ *
+ * EVERY FUNCTION NAME CARRIES ITS YEAR FROM THE J2/J3 ROUND ON (K26, 17 Aug
+ * 2026). "Lesson 1" is now three different lessons, so a dropdown entry reading
+ * only rebuildLesson1Deck would be a coin toss in front of him. J1's five keep
+ * their existing names exactly — they are in his run log and in the handover
+ * file — and every new year is named for its year.
  *
  * Built ${new Date().toISOString().slice(0, 10)} from contentVersion ${JSON.parse(fs.readFileSync(path.join(PACKED, 'index.json'), 'utf8')).contentVersion}.
  */
@@ -480,8 +489,17 @@ function rebuildDeck_(lessonId) {
   return pres.getId();
 }
 
+/* THE NAME OF THE FUNCTION HE RUNS, DERIVED FROM THE DECK'S OWN ID.
+   It used to be 'Lesson' + the number, which was right while J1 was the only
+   year on the platform and wrong the moment J2 arrived: j1-01 and j2-01 both
+   produced "Lesson1", so an error message would have told him to run a function
+   that rebuilds a different year's deck. J1's five names are unchanged — they are
+   in his own run log — and every other year is qualified by its year. */
 function lessonLabel_(lessonId) {
-  return 'Lesson' + String(Number(lessonId.split('-')[1]));
+  var parts = String(lessonId).split('-');
+  var year = parts[0], num = String(Number(parts[1]));
+  if (year === 'j1') return 'Lesson' + num;
+  return year.toUpperCase() + 'Lesson' + num;
 }
 
 /* ============ create a deck ONCE, and print the id he reads back ==========
@@ -547,12 +565,18 @@ function createLesson2Deck() { return createDeck_('j1-02'); }
 function createLesson3Deck() { return createDeck_('j1-03'); }
 function createLesson4Deck() { return createDeck_('j1-04'); }
 function createLesson5Deck() { return createDeck_('j1-05'); }
+/* THE TWO NEW YEARS. Created ONCE each, then rebuilt in place for ever after —
+   the same contract J1's decks live under (template §7). */
+function createJ2Lesson1Deck() { return createDeck_('j2-01'); }
+function createJ3Lesson1Deck() { return createDeck_('j3-01'); }
 
 function rebuildLesson1Deck() { return rebuildDeck_('j1-01'); }
 function rebuildLesson2Deck() { return rebuildDeck_('j1-02'); }
 function rebuildLesson3Deck() { return rebuildDeck_('j1-03'); }
 function rebuildLesson4Deck() { return rebuildDeck_('j1-04'); }
 function rebuildLesson5Deck() { return rebuildDeck_('j1-05'); }
+function rebuildJ2Lesson1Deck() { return rebuildDeck_('j2-01'); }
+function rebuildJ3Lesson1Deck() { return rebuildDeck_('j3-01'); }
 
 /* ===================== the proofs (DFM 225b, standing) ====================
    A deck is never handed over on the strength of the code that built it. Slide
@@ -638,17 +662,28 @@ function exportLesson2Proofs() { return exportDeckProofs_('j1-02'); }
 function exportLesson3Proofs() { return exportDeckProofs_('j1-03'); }
 function exportLesson4Proofs() { return exportDeckProofs_('j1-04'); }
 function exportLesson5Proofs() { return exportDeckProofs_('j1-05'); }
+function exportJ2Lesson1Proofs() { return exportDeckProofs_('j2-01'); }
+function exportJ3Lesson1Proofs() { return exportDeckProofs_('j3-01'); }
 
-/* every proof set in one run, for the end of a round that built four decks */
+/* EVERY PROOF SET IN ONE RUN, and the list is DERIVED from the deck data rather
+   than typed. It used to be a hardcoded array of five, which was true on the day
+   it was written and would have silently skipped both new decks — the exact
+   shape of K23's complaint ("a hardcoded list closes today's instance and
+   nothing else"). A deck that exists is a deck whose proofs get exported,
+   because existing is what puts it on the list. */
 function exportAllDeckProofs() {
-  var out = {}, ids = ['j1-01', 'j1-02', 'j1-03', 'j1-04', 'j1-05'];
+  var out = {}, ids = Object.keys(DECKS).sort(), done = 0;
   for (var i = 0; i < ids.length; i++) {
     if (!DECKS[ids[i]] || !DECKS[ids[i]].driveFileId) {
       Logger.log('(skipped ' + ids[i] + ' — no deck created yet)');
       continue;
     }
     out[ids[i]] = exportDeckProofs_(ids[i]);
+    done++;
   }
+  Logger.log('');
+  Logger.log(done + ' of ' + ids.length + ' deck(s) had proofs exported. Any line above that');
+  Logger.log('says "skipped" is a deck that has not been created yet — run its create function.');
   return out;
 }
 `;
