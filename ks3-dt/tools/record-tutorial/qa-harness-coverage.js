@@ -158,6 +158,10 @@ function builtLessons() {
       out.push({
         year: y.id, id: id, num: String(json.num), title: json.title, file: file,
         key: coverageKey(y.id, json.num),
+        /* `mode` and the brief itself, for the teacher-layer row: a self-paced
+           lesson is not teacher-delivered and is exempt by its own declaration
+           rather than by a list somebody maintains (K23's law) */
+        mode: json.mode || 'taught', json: json,
         films: assets(/assets\/[A-Za-z0-9_./-]+\.mp4/g),
         kits: assets(/assets\/[A-Za-z0-9_./-]+\.sb3/g)
       });
@@ -221,6 +225,18 @@ function declarations() {
     });
   }
 
+  /* the teacher layer's own evidence: a deck file for the lesson. Read from the
+     content tree, so a deck that exists is a deck this gate can see — the same
+     reason every other declaration here is read where it lives (rule 144). */
+  d.decks = {};
+  fs.readdirSync(CONTENT).filter(f => /^j\d+$/.test(f)).forEach(y => {
+    const dir = path.join(CONTENT, y, 'decks');
+    if (!exists(dir)) return;
+    fs.readdirSync(dir).filter(f => f.endsWith('.deck.json')).forEach(f => {
+      d.decks[f.replace(/\.deck\.json$/, '')] = f;
+    });
+  });
+
   /* the judged pass's evidence: a filed verdict row naming the lesson */
   d.verdicts = {};
   fs.readdirSync(KS3).filter(f => /^COLD_READ_VERDICTS.*\.md$/.test(f)).forEach(f => {
@@ -269,6 +285,56 @@ function run() {
     check(!!d.verdicts[key], L.id + ' × cold-read verdicts: the judged pass left evidence' +
       (d.verdicts[key] ? '' : ' — no verdict section names this lesson' +
         (L.year === 'j1' ? '' : ' (it needs a "## ' + L.year.toUpperCase() + ' LESSON ' + L.num + '" heading)')));
+
+    /* ═══ THE TEACHER LAYER — template §6's promised `qa-teacher-covered` row ═══
+       Built 18 Aug 2026, and it should have existed when the first deck did.
+       TEACHER_LAYER_TEMPLATE §6 has named this row since 14 August: "a lesson that
+       is BUILT AND APPROVED must have deck + script + brief to this template,
+       proven by machine". Nothing checked it. So a lesson could ship pupil-side
+       complete with a half-page interim note and no machine would say a word —
+       which is precisely what J2/J3 Lesson 1 did for two days. That was HIS
+       ruling (K3) and therefore fine; what is not fine is that the ruling was the
+       only thing standing between the platform and a silent gap, because a
+       ruling is a decision and a gate is a guarantee (DFM 206's own law: a lesson
+       that exists is a lesson that is covered, and a machine proves it).
+
+       WHAT IT ASKS: a deck file for the lesson, and a teacherBrief carrying all
+       six sections his DFM 227 order names, none of them empty. It does NOT
+       re-check their shape or their words — qa-teacher-spine, qa-brief-shape,
+       qa-deck-shots, qa-deck-geometry and the language gate each own a piece of
+       that, and duplicating them here would be two homes for one fact (DFM 144).
+
+       WHAT IT EXEMPTS, and only this: a lesson that is SELF-PACED. The side quest
+       is not teacher-delivered and he kept it out of the round deliberately (DFM
+       220d), so the lesson's own `mode` decides rather than a list somebody
+       maintains — a hardcoded exemption is how K23's fault gets in.
+       AND IT IS WRITTEN AS "NOT SELF-PACED" RATHER THAN "IS TAUGHT" ON PURPOSE:
+       J1's five lessons declare `mode: "quest"` (the original name) and the two
+       new years declare `mode: "taught"`, so a test for the word "taught" would
+       have exempted every J1 lesson in silence — the gate would have printed n/a
+       against the five decks this template was BUILT from. A default that lets a
+       surface through is the DFM 204 fault; the default here is that a lesson is
+       teacher-delivered unless it says it is not. */
+    if (L.mode !== 'sidequest' && L.mode !== 'selfpaced') {
+      const brief = (L.json && L.json.teacherBrief) || {};
+      const SECTIONS = ['purpose', 'prepare', 'resources', 'runningTheHour', 'atAGlance', 'goesWrong'];
+      const empty = SECTIONS.filter(k => {
+        const v = brief[k];
+        if (Array.isArray(v)) return v.length === 0;
+        return !v;
+      });
+      const hasDeck = !!d.decks[L.id];
+      const interim = !!brief.interim;
+      const ok = hasDeck && !empty.length && !interim;
+      row.cells.teacher = ok ? 'covered' : 'MISSING';
+      check(ok, L.id + ' × teacher layer: a deck and a full six-section brief exist' +
+        (ok ? '' : ' — ' + [
+          hasDeck ? null : 'no deck file',
+          interim ? 'the brief is still marked interim' : null,
+          empty.length ? 'the brief has nothing in ' + empty.join(', ') : null
+        ].filter(Boolean).join('; ') +
+        '. A taught lesson with no teacher layer is a lesson a colleague cannot deliver'));
+    } else row.cells.teacher = 'n/a';
 
     /* --- films: only lessons that ship one --- */
     if (L.films.length) {
