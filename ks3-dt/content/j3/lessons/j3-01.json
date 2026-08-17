@@ -362,9 +362,9 @@
     "settleLabel": "Settle my compass",
     "pairs": [
      {
-      "q": "Your group is making a website for the school concert. Somebody has to design the poster that advertises it, and somebody has to build the website itself. You get first pick.",
-      "design": "I would rather design the poster",
-      "build": "I would rather build the website"
+      "q": "Your group is making a quiz game for the school open night. Somebody has to design how it looks and how the questions are worded. Somebody has to write the code that keeps the score and picks the winner. You get first pick.",
+      "design": "I would rather design how it looks and reads",
+      "build": "I would rather write the code that keeps the score"
      },
      {
       "q": "Something you made is not working properly and nobody knows why.",
