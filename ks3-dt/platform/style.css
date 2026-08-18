@@ -3371,7 +3371,14 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
     repeating-linear-gradient(90deg, rgba(var(--gold-hi-rgb), 0.10) 0 1px, transparent 1px 62px),
     radial-gradient(closest-side at 62% 30%, rgba(var(--gold-hi-rgb), 0.26), transparent 74%);
   filter: blur(1.2px);
-  animation: draftBreathe 13s ease-in-out infinite alternate;
+  /* THE PERIOD, NOT THE AMPLITUDE, IS WHAT FAILED (19 Aug 2026, qa-fx-motion).
+     The keyframes already swing 0.16 to 0.92 — but over a 13s ease-in-out
+     alternate, a three-second look (which is roughly how long a pupil glances
+     at her own screen) saw the light move 0.05, and the gate's own words for
+     that are "a pupil would call this still". K22's floor is that a look is
+     built to be SEEN, not merely declared. Shortened until it MEASURES above
+     the floor rather than until it felt right in the source. */
+  animation: draftBreathe 7s ease-in-out infinite alternate;
 }
 @keyframes draftBreathe {
   from { opacity: 0.16; transform: scale(1) translate3d(-1.5vw, 1vh, 0); }
@@ -3385,7 +3392,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   position: absolute; right: -6%; top: 6%; width: 58vw; height: 58vw; border-radius: 50%;
   background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.30), rgba(var(--gold-rgb), 0.09) 42%, transparent 70%);
   filter: blur(52px);
-  animation: lampBloom 15s ease-in-out infinite alternate;
+  animation: lampBloom 8s ease-in-out infinite alternate;   /* same measured fix as Blueprint above */
 }
 @keyframes lampBloom {
   from { opacity: 0.14; transform: scale(0.86) translate3d(2vw, 2vh, 0); }

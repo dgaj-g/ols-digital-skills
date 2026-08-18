@@ -66,7 +66,20 @@ const LOOKS = (REG.themes || [])
    glow — the areas that fill the screen. Those moved 0.02-0.07 in three seconds
    on the build he called still, and above 0.2 on the one he could see. So the
    floor is on the light, and the particles are checked for presence, not swing. */
-const LIGHT = /fx-(wash|bloom|veil|sheen|beam|house|forge|flash|marquee)/;
+/* THE LIGHT-LAYER LIST IS A HARDCODED ENUMERATION AND A NEW LOOK FELL OUT OF IT
+   (19 Aug 2026). Blueprint's light is `fx-draft` and Green Room's is `fx-lamp`,
+   and neither was here — so the gate graded each look's generic `fx-wash`
+   instead, reported "the light shifts 0.05" about a layer that is not the look's
+   light at all, and counted the lamp itself as a travelling PARTICLE. Both
+   numbers were about the wrong thing, and shortening the lamp's period changed
+   neither of them, which is what exposed it.
+   The list is extended AND the omission is now a failure rather than a silent
+   mis-measurement: `assertLightKnown` below refuses any look whose fx layer
+   carries a class this pattern has never heard of (DFM 213 — an exemption that
+   quietly swallows a whole surface is worse than no check). */
+const LIGHT = /fx-(wash|bloom|veil|sheen|beam|house|forge|flash|marquee|draft|lamp)/;
+/* every non-light layer a look may legitimately carry: motes and specks */
+const KNOWN_PARTICLE = /fx-(mote|glint|spark|dust|ash|drift|ember|flake|bit)/;
 const MIN_LIGHT_SWING = 0.15;   // the largest opacity change among the light layers
 const MIN_PARTICLES = 1;        // and at least one particle actually travelling
 
@@ -104,6 +117,8 @@ async function measure(page, cls, theme, cur) {
   await page.waitForTimeout(WINDOW_MS);
   const b = await shot();
   let lightSwing = 0, particles = 0, moving = 0;
+  const unknown = a.kids.map(k => String(k.cls || ''))
+    .filter(c => c && !LIGHT.test(c) && !KNOWN_PARTICLE.test(c));
   a.kids.forEach((k, i) => {
     const k2 = b.kids[i] || {};
     const d = Math.abs((k2.op == null ? 0 : k2.op) - k.op);
@@ -112,7 +127,7 @@ async function measure(page, cls, theme, cur) {
     if (LIGHT.test(k.cls)) { if (d > lightSwing) lightSwing = d; }
     else if (shifted) particles++;
   });
-  return { moving, total: a.kids.length, lightSwing, particles, drifting: a.sky !== b.sky };
+  return { moving, total: a.kids.length, lightSwing, particles, drifting: a.sky !== b.sky, unknown };
 }
 
 (async () => {
@@ -134,6 +149,12 @@ async function measure(page, cls, theme, cur) {
   for (const [cls, theme] of LOOKS) {
     const m = await measure(page, cls, theme, cur);
     if (!m) { check(false, theme + ': no fx layer rendered at all'); continue; }
+    /* A LAYER THIS GATE CANNOT CLASSIFY IS A FAILURE, NOT A PASS. Until 19 Aug a
+       look could invent its own light class, fall outside the pattern, and be
+       graded on a layer that was not its light — silently. */
+    check(m.unknown.length === 0, theme + ': every fx layer is one this gate can classify' +
+      (m.unknown.length ? ' — UNKNOWN: ' + m.unknown.join(', ') +
+        ' (add it to LIGHT or KNOWN_PARTICLE in this file, or the look is measured on the wrong layer)' : ''));
     const ok = m.lightSwing >= MIN_LIGHT_SWING && m.particles >= MIN_PARTICLES;
     check(ok, theme + ': the light shifts ' + m.lightSwing.toFixed(2) + ' in ' + (WINDOW_MS / 1000) +
       's and ' + m.particles + ' particle(s) are travelling (' + m.moving + ' of ' + m.total +
