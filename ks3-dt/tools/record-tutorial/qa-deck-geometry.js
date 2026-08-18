@@ -66,15 +66,24 @@ const FLOOR_SIZE = 10;     /* below this a bullet is unreadable from the back ro
    kind of derivation as MAX_ASPECT's in the capture script: taken from what the
    renderer itself sets aside, not from what today's pictures happen to measure.
 
-   AND IT FOUND FIVE IN DECKS HE HAS ALREADY APPROVED, which is why it prints
-   them rather than hiding them: j1-05's closing-screen shot renders 82.5pt wide,
-   j1-02's 100.8pt, j1-05's Press Night 135.9pt, j1-03's 138.1pt and j1-04's
-   140.9pt. Those lessons are LOCKED (DFM 176/203) and re-cutting their shots
-   means new captures, five deck rebuilds and 47 proof slides read again — his
-   call, not a script's. So J1 is NAMED DEBT, printed on every run, and the floor
-   BLOCKS for every deck built from the J2/J3 round onwards. */
+   AND IT FOUND SIX IN DECKS HE HAD ALREADY APPROVED, which is why it printed
+   them rather than hiding them: j1-05's closing screen at 82.5pt, j1-02's at
+   100.8, j1-05's Press Night at 135.9, j1-03's at 138.1, j1-01's paired-Vault
+   pop at 138.1 and j1-04's at 140.9. Those lessons are LOCKED (DFM 176/203), so
+   they were carried as NAMED DEBT and put to him.
+
+   HIS RULING, 18 Aug 2026: RE-CUT THEM. All six were re-photographed as wider,
+   COMPLETE elements — the four closing screens as the heading plus one full
+   rating row, Press Night down to a real studio on the marquee, the Vault pop
+   down to the line that names her partner — and every one now clears the floor.
+   So THE FLOOR NOW HOLDS ON EVERY DECK, with no list of exceptions: a held set
+   of two deck ids was the K23 fault waiting to happen (a new deck would not have
+   been on it), and there is nothing left to waive. If a lesson ever needs one
+   again, it is his ruling and it goes in beside this sentence, dated. */
 const MIN_SHOT_W = 150;
-const SHOT_HELD = new Set(['j2-01', 'j3-01']);
+/* every deck, always — see above. Kept as a predicate rather than a list so
+   there is no place for a deck to be quietly left out (K23). */
+const isShotHeld = () => true;
 
 const fails = [];
 const notes = [];
@@ -168,7 +177,7 @@ function shotWidths(s, sizeOf) {
 }
 
 function judgeShotSizes(deckId, n, s, sizeOf) {
-  const held = SHOT_HELD.has(deckId);
+  const held = isShotHeld(deckId);
   for (const r of shotWidths(s, sizeOf)) {
     const where = deckId + ' slide ' + String(n).padStart(2, '0') + ' › shot "' + r.name + '"';
     if (r.w === null) {
@@ -391,29 +400,29 @@ if (fs.existsSync(BUILDER)) {
   }
   fails.length = before;
 
-  /* (4) and the debt route: the same crushed shot on a LOCKED J1 deck is
-     reported, not blocked — his call, printed loudly (DFM 221's pattern) */
+  /* (4) THE FLOOR REACHES J1 TOO, now that he has ruled: the same crushed shape
+     on a signed-off J1 deck must FAIL, not be filed as debt. This control used to
+     assert the opposite, and it is replaced rather than deleted so the change of
+     state is visible in the file that enforces it. */
   judgeShotSizes('j1-05', 96, {
     kind: 'stop', beacon: '1', heading: 'A control',
     bullets: Array.from({ length: 5 }, (_, i) => 'A bullet that runs to two lines, ' + (i + 1) + '.'),
     shots: ['planted']
   }, () => ({ w: 1372, h: 1450 }));
-  if (fails.length !== before) {
-    fails.push('A LOCKED J1 DECK WAS BLOCKED by the size floor. J1 is closed for changes ' +
-      '(DFM 176/203) and its rows are debt, not failures — this gate would stop every pack ' +
-      'until he ruled.');
+  if (fails.length === before) {
+    fails.push('THE J1 FLOOR CONTROL PASSED. A crushed screenshot on a signed-off J1 deck was ' +
+      'accepted, so the six he ruled on could come back one re-capture later and nothing ' +
+      'would say a word (DFM 150: a settled correction becomes a ratchet).');
     fails.length = before;
-  } else if (shotDebt.length === debtBefore) {
-    fails.push('THE DEBT CONTROL PASSED SILENTLY. A crushed shot on a locked deck was neither ' +
-      'blocked nor named, so the floor would read as coverage J1 does not have (DFM 200/204).');
   } else {
-    notes.push('control: a crushed shot on a LOCKED J1 deck is NAMED AS DEBT, not blocked');
+    notes.push('control: a crushed shot on a J1 deck is REJECTED too — the floor holds everywhere');
   }
+  fails.length = before;
   shotDebt.length = debtBefore;
 })();
 
 console.log('qa-deck-geometry: ' + slides + ' slide(s) across ' + decks + ' deck(s)' +
-  ' · screenshot floor ' + MIN_SHOT_W + 'pt, held on ' + [...SHOT_HELD].join(', '));
+  ' · screenshot floor ' + MIN_SHOT_W + 'pt, held on EVERY deck');
 notes.forEach(n => console.log('  ' + n));
 /* debt prints on EVERY run, pass or fail — a bounded check that stays quiet about
    what it skipped reads as coverage it does not have (DFM 200/204) */

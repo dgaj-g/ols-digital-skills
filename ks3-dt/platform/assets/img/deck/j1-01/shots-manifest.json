@@ -7,8 +7,9 @@
    "selector": ".chunk-host .q-card",
    "textSnippet": "Your answer is checked right on your own computer, so the verdict and the reason appear straight away. If the connection to the website seems slower than usual, it may say 'Checking…' for a few second",
    "contentAnchor": "When you click an answer to a question like this one, what do you think happens next?",
-   "cardText": "1 OF 3 · When you click an answer to a question like this one, what do you think happens next? · A · Your teacher gets a message about it · B · Nothing at all until the whole lesson is finished · C · You have to press a separate Check button first · D · You are told straight away whether you were right, and why · Not this time. · Your answer is checked right on your own computer, so the verdict and the reason appear straight away. If the connection to the website seems slower than usual, it may ",
-   "contentVersion": "2026-08-14k",
+   "cardText": "1 OF 3 · When you click an answer to a question like this one, what do you think happens next? · A · You are told straight away whether you were right, and why · B · Your teacher gets a message about it · C · Nothing at all until the whole lesson is finished · D · You have to press a separate Check button first · Correct. · Your answer is checked right on your own computer, so the verdict and the reason appear straight away. If the connection to the website seems slower than usual, it may say 'C",
+   "crop": null,
+   "contentVersion": "2026-08-18b",
    "chunkHash": "993fae0f63f4",
    "px": "1372x1368"
   },
@@ -19,7 +20,8 @@
    "textSnippet": "In this part you will learn where school work should be kept, and why it matters — and you will find out what it is like to work on the same thing as somebody else at the very same moment. Six files h",
    "contentAnchor": "In this part you will learn where school work should be kept, and why it matters — and you will find out what it is like to work on the same thing as somebody else at the very same moment. Six files have landed in your Inbox. Send each one where it really belongs — and if something should never be saved at all, there is a place for that too. Choose wrong and the file comes straight back to you, and you are NOT told the answer — work it out from what each file actually is.",
    "cardText": "BADGE 3 — THE VAULT · The Vault · In this part you will learn where school work should be kept, and why it matters — and you will find out what it is like to work on the same thing as somebody else at the very same moment. Six files have landed in your Inbox. Send each one where it really belongs — and if something should never be saved at all, there is a place for that too. Choose wrong and the file comes straight back to you, and you are NOT told the answer — work it out from what each file ac",
-   "contentVersion": "2026-08-14k",
+   "crop": null,
+   "contentVersion": "2026-08-18b",
    "chunkHash": "5d69ca68d180",
    "px": "1372x1020"
   },
@@ -30,7 +32,8 @@
    "textSnippet": "Open a NEW tab and go to drive.google.com — on a school computer it signs you in by itself. That page is YOUR real Vault: it follows your login to any device, even at home. If you have never opened a ",
    "contentAnchor": "Open a NEW tab and go to drive.google.com — on a school computer it signs you in by itself. That page is YOUR real Vault: it follows your login to any device, even at home. If you have never opened a new tab before, press Show me how and watch the short clip.",
    "cardText": "STEP 1 OF 2 · 🗄️ · Open your real Drive · Open a NEW tab and go to drive.google.com — on a school computer it signs you in by itself. That page is YOUR real Vault: it follows your login to any device, even at home. If you have never opened a new tab before, press Show me how and watch the short clip. · 🎥 Show me how · I can see my Google Drive",
-   "contentVersion": "2026-08-14k",
+   "crop": null,
+   "contentVersion": "2026-08-18b",
    "chunkHash": "70e56ccc164b",
    "px": "1372x792"
   },
@@ -40,8 +43,9 @@
    "selector": ".chunk-host .q-card",
    "textSnippet": "Which of these is a piece of HARDWARE?",
    "contentAnchor": "Which of these is a piece of HARDWARE?",
-   "cardText": "1 OF 16 · Which of these is a piece of HARDWARE? · A · Google Docs · B · A website · C · A password · D · The keyboard",
-   "contentVersion": "2026-08-14k",
+   "cardText": "1 OF 16 · Which of these is a piece of HARDWARE? · A · A website · B · Google Docs · C · The keyboard · D · A password",
+   "crop": null,
+   "contentVersion": "2026-08-18b",
    "chunkHash": "167d287ca7dc",
    "px": "1372x842"
   },
@@ -51,8 +55,9 @@
    "selector": ".chunk-host .q-card",
    "textSnippet": "Which of these is a piece of HARDWARE?",
    "contentAnchor": "Which of these is a piece of HARDWARE?",
-   "cardText": "1 OF 16 · Which of these is a piece of HARDWARE? · A · Google Docs · Answer saved · B · A website · C · A password · D · The keyboard",
-   "contentVersion": "2026-08-14k",
+   "cardText": "1 OF 16 · Which of these is a piece of HARDWARE? · A · A website · Answer saved · B · Google Docs · C · The keyboard · D · A password",
+   "crop": null,
+   "contentVersion": "2026-08-18b",
    "chunkHash": "167d287ca7dc",
    "px": "1372x842"
   },
@@ -60,10 +65,11 @@
    "name": "codename",
    "chunkId": "b5-codename",
    "selector": ".chunk-host .codename-card",
-   "textSnippet": "YOUR CODENAME Agent Amber Compass 🎲 Shuffle Keep this name",
+   "textSnippet": "YOUR CODENAME Agent Coral Otter 🎲 Shuffle Keep this name",
    "contentAnchor": null,
-   "cardText": "YOUR CODENAME · Agent Amber Compass · 🎲 Shuffle · Keep this name",
-   "contentVersion": "2026-08-14k",
+   "cardText": "YOUR CODENAME · Agent Coral Otter · 🎲 Shuffle · Keep this name",
+   "crop": null,
+   "contentVersion": "2026-08-18b",
    "chunkHash": "d5c608a7e4fc",
    "px": "1372x512"
   },
@@ -74,7 +80,8 @@
    "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
    "contentAnchor": "I know where my work is saved and how to find it again.",
    "cardText": "How did it go? · I know what makes a password hard to guess. · ✓ I can · ≈ Getting there · ✗ Not yet · I know the rules of the DT rooms. · ✓ I can · ≈ Getting there · ✗ Not yet · I know where my work is saved and how to find it again. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer every sentence above — and how it felt — and this button wakes up. · Send & finish",
-   "contentVersion": "2026-08-14k",
+   "crop": null,
+   "contentVersion": "2026-08-18b",
    "chunkHash": "19c8a6cb8d47",
    "px": "1372x1402"
   },
@@ -84,10 +91,14 @@
    "selector": ".pair-pop .badge-pop-card",
    "textSnippet": "Who she really is stays secret until the Vault is sealed — so keep real names out of the message box, including your own. Remember: your teacher can read every message.",
    "contentAnchor": null,
-   "cardText": "PARTNER FOUND · You’ve been paired! · Your partner for this Vault is Agent Kestrel. She is at another computer, looking at the same Vault as you. · Who she really is stays secret until the Vault is sealed — so keep real names out of the message box, including your own. Remember: your teacher can read every message. · Talk it through, agree, then whoever holds the controls drops the file. · Open the Vault together",
-   "contentVersion": "2026-08-14k",
+   "cardText": "PARTNER FOUND · You’ve been paired! · Your partner for this Vault is Agent Harrier. She is at another computer, looking at the same Vault as you. · Who she really is stays secret until the Vault is sealed — so keep real names out of the message box, including your own. Remember: your teacher can read every message. · Talk it through, agree, then whoever holds the controls drops the file. · Open the Vault together",
+   "crop": {
+    "to": ".pair-pop-line",
+    "keepFrac": 0.447
+   },
+   "contentVersion": "2026-08-18b",
    "chunkHash": "5d69ca68d180",
-   "px": "912x980"
+   "px": "912x467"
   },
   "vault-waiting": {
    "name": "vault-waiting",
@@ -96,7 +107,8 @@
    "textSnippet": "You are in the queue. The website is waiting for another pupil in your class to reach the Vault — the moment one does, you become partners and this screen changes by itself. Nothing is wrong: stay on ",
    "contentAnchor": null,
    "cardText": "Waiting to be paired. · You are in the queue. The website is waiting for another pupil in your class to reach the Vault — the moment one does, you become partners and this screen changes by itself. Nothing is wrong: stay on this screen.",
-   "contentVersion": "2026-08-14k",
+   "crop": null,
+   "contentVersion": "2026-08-18b",
    "chunkHash": "5d69ca68d180",
    "px": "1372x674"
   }

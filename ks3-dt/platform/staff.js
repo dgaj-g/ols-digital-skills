@@ -792,10 +792,20 @@
           '<button type="button" class="ghost-btn" data-action="brief-back">&larr; Back to the lessons</button>');
         return;
       }
+      /* WHICH DECK THIS BRIEF'S SCRIPT COMES FROM. Derived from the lesson's
+         OWN manifest entry, never from its number: every year's Lesson 1 has
+         num 1, so the old 'j1/decks/j1-<num>' shape printed J1 Lesson 1's
+         delivery script under the J2 and J3 briefs (found 18 Aug 2026, the
+         first time a year outside J1 had a brief to print). The Side Quest is
+         not teacher-delivered (DFM 220d) and has no deck, so it gets no button
+         rather than one that could only ever fail. Pinned by
+         qa-brief-deck-link.js, with the old expression as its control. */
+      var deckPath = le.side ? ''
+        : (r.fileId || (String(le.file || '').replace('/lessons/', '/decks/').replace(/\.json$/, '.deck')));
       setPane(
         '<div class="brief-sheet">' +
           '<h3>Lesson ' + App.esc(r.num) + ' &middot; ' + App.esc(r.title) + ' &mdash; teacher brief</h3>' +
-          briefBody(r, r.fileId || ('j1/decks/j1-' + String(r.num).padStart(2, '0') + '.deck')) +
+          briefBody(r, deckPath) +
         '</div>' +
         '<div class="confirm-actions" style="justify-content:flex-start;margin-top:12px">' +
           '<button type="button" class="ghost-btn" data-action="brief-back">&larr; Back to the lessons</button>' +

@@ -92,7 +92,17 @@ const DECK_SHOTS = {
            with answers already on it teaches the class the wrong thing. */
         return !!c && !c.querySelector('.se-chip.on, .se-chip.sel, .se-chip[aria-pressed="true"]');
       },
-      says: 'the compulsory How did it go? screen, untouched'
+      /* CROPPED TO ITS TOP (DFM 237b). The whole card is near-square, and on a
+         stop slide under four or five bullets that comes out 83-141pt wide on a
+         720pt canvas — a smudge. The heading plus ONE complete rating row is
+         landscape, is the thing a teacher points at ("three sentences like this,
+         and you pick one of these three"), and clears the floor with room. The
+         J2/J3 rows are NOT cropped: their shots sit on their own bullets slides
+         and already render 231-250pt, so cropping them would fix nothing and
+         throw away a whole card the class can read.
+      */
+      cropTo: '.se-row .se-chips',
+      says: 'the top of the compulsory How did it go? screen: its heading and the first rating row, untouched'
     }
   },
 
@@ -167,7 +177,17 @@ const DECK_SHOTS = {
         const c = document.querySelector('.se-card');
         return !!c && !c.querySelector('.se-chip.on, .se-chip.sel, .se-chip[aria-pressed="true"]');
       },
-      says: 'the compulsory How did it go? screen, untouched'
+      /* CROPPED TO ITS TOP (DFM 237b). The whole card is near-square, and on a
+         stop slide under four or five bullets that comes out 83-141pt wide on a
+         720pt canvas — a smudge. The heading plus ONE complete rating row is
+         landscape, is the thing a teacher points at ("three sentences like this,
+         and you pick one of these three"), and clears the floor with room. The
+         J2/J3 rows are NOT cropped: their shots sit on their own bullets slides
+         and already render 231-250pt, so cropping them would fix nothing and
+         throw away a whole card the class can read.
+      */
+      cropTo: '.se-row .se-chips',
+      says: 'the top of the compulsory How did it go? screen: its heading and the first rating row, untouched'
     }
   },
 
@@ -247,7 +267,17 @@ const DECK_SHOTS = {
         const c = document.querySelector('.se-card');
         return !!c && !c.querySelector('.se-chip.on, .se-chip.sel, .se-chip[aria-pressed="true"]');
       },
-      says: 'the compulsory How did it go? screen, untouched'
+      /* CROPPED TO ITS TOP (DFM 237b). The whole card is near-square, and on a
+         stop slide under four or five bullets that comes out 83-141pt wide on a
+         720pt canvas — a smudge. The heading plus ONE complete rating row is
+         landscape, is the thing a teacher points at ("three sentences like this,
+         and you pick one of these three"), and clears the floor with room. The
+         J2/J3 rows are NOT cropped: their shots sit on their own bullets slides
+         and already render 231-250pt, so cropping them would fix nothing and
+         throw away a whole card the class can read.
+      */
+      cropTo: '.se-row .se-chips',
+      says: 'the top of the compulsory How did it go? screen: its heading and the first rating row, untouched'
     }
   },
 
@@ -338,7 +368,18 @@ const DECK_SHOTS = {
         return h.querySelectorAll('.gal-marquee-card').length >= 1 &&
           /press night/i.test(h.textContent || '');
       },
-      says: 'Press Night with another studio really on the marquee'
+      /* CROPPED to the bottom of the first marquee card (DFM 237b): everything
+         this shot CLAIMS sits above that line — the heading, the press passes, the
+         two-rounds box, the studio card and a real listing — and what it drops is
+         the greyed-out V2 note the selector already had to fight off once. */
+      /* `.gal-marquee-grid` FIRST, and that word is load-bearing: the pupil's
+         OWN studio card is also a `.gal-marquee-card` (it carries `.mine`) and
+         sits ABOVE the marquee, so cropping to the first match cut the picture
+         off before the marquee itself — the shot's own claim, gone, while the
+         crop looked perfectly tidy. Caught by reading the picture (DFM 225b);
+         a crop is a claim about a screen exactly as a shot is. */
+      cropTo: '.gal-marquee-grid .gal-marquee-card',
+      says: 'Press Night down to the first studio really on the marquee'
     },
     selfeval: {
       chunk: 'selfeval',
@@ -349,7 +390,17 @@ const DECK_SHOTS = {
         const c = document.querySelector('.se-card');
         return !!c && !c.querySelector('.se-chip.on, .se-chip.sel, .se-chip[aria-pressed="true"]');
       },
-      says: 'the compulsory How did it go? screen, untouched'
+      /* CROPPED TO ITS TOP (DFM 237b). The whole card is near-square, and on a
+         stop slide under four or five bullets that comes out 83-141pt wide on a
+         720pt canvas — a smudge. The heading plus ONE complete rating row is
+         landscape, is the thing a teacher points at ("three sentences like this,
+         and you pick one of these three"), and clears the floor with room. The
+         J2/J3 rows are NOT cropped: their shots sit on their own bullets slides
+         and already render 231-250pt, so cropping them would fix nothing and
+         throw away a whole card the class can read.
+      */
+      cropTo: '.se-row .se-chips',
+      says: 'the top of the compulsory How did it go? screen: its heading and the first rating row, untouched'
     }
   },
 

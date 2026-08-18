@@ -33,7 +33,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-08-17 from contentVersion 2026-08-18b.
+ * Built 2026-08-18 from contentVersion 2026-08-18c.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -1203,6 +1203,7 @@ var DECKS = {
   "lesson": "j2-01",
   "year": "j2",
   "deckName": "KS3 DT · J2 Lesson 1 — Welcome to the Workshop (Teacher Deck)",
+  "driveFileId": "1uLvennkRTGvec5VAOgCwPM8O1XKT-xxRMkIy9gkyU1I",
   "theme": {
    "id": "workbench",
    "name": "The Workbench",
@@ -1486,6 +1487,7 @@ var DECKS = {
   "lesson": "j3-01",
   "year": "j3",
   "deckName": "KS3 DT · J3 Lesson 1 — The Studio Opens (Teacher Deck)",
+  "driveFileId": "1pvulE-V1elKFuxRiKnbc-4KAfG66P1JMzSOFgAX9xsg",
   "theme": {
    "id": "screening-room",
    "name": "The Screening Room",

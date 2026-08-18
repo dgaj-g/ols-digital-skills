@@ -12,7 +12,7 @@
    ],
    "captions": "A lift's buttons — pure input · Press (input) → green man (output) · Trackers sensing every step you take",
    "says": "the three input photographs from her own hook, with their captions",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-18b",
    "chunkHash": "5d1fea5c8b11",
    "px": "1440x530"
   },
@@ -25,7 +25,7 @@
    ],
    "captions": "The reset button is on the BACK, between the USB socket and the battery socket. Photo: SimonWaldherr, CC BY 4.0, annotated by us.",
    "says": "the annotated reset-button photo, credit intact",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-18b",
    "chunkHash": "4182bb7527c9",
    "px": "1440x778"
   },
@@ -44,7 +44,7 @@
    },
    "inset": null,
    "says": "the .hex mid-drag onto the MICROBIT drive, from the film itself, with the drive ringed",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-18b",
    "px": "1440x768"
   },
   "film": {
@@ -56,7 +56,8 @@
    "contentAnchor": "Watch this film on your OWN computer — both of you, at the same time — and build the programs along with it on your own screen. Later in the film the program gets sent to the real micro:bit. When you and your partner reach that part, pick ONE of your two computers to do it on, because you have one micro:bit between you.",
    "cardText": "How to use MakeCode (the film) · Watch this film on your OWN computer — both of you, at the same time — and build the programs along with it on your own screen. Later in the film the program gets sent to the real micro:bit. When you and your partner reach that part, pick ONE of your two computers to do it on, because you have one micro:bit between you. · Find MakeCode · First blocks · Onto the real micro:bit · Test it properly · Done watching",
    "says": "the film screen with its four chapter buttons",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-18b",
+   "crop": null,
    "chunkHash": "97441e72cfe0",
    "px": "1748x1648"
   },
@@ -69,7 +70,8 @@
    "contentAnchor": "🔥 The real test: Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program onto the device — that is the word your teacher will use. The film button below replays exactly how, if you need it. Then press the real button B. Did the happy face appear? (If your device won't connect, the on-screen simulator counts while your teacher sorts it.)",
    "cardText": "RUNG 2 — YOUR FIRST SIGNAL · Your challenge: make the micro:bit show a HAPPY FACE whenever button B is pressed. You built the button A one together with the film — this one is yours, on a different button, with a different picture. · 🔥 The real test: Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program onto the device — that is the word your teacher will use. The film b",
    "says": "a rung card — the challenge, the test and the Debug Hint",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-18b",
+   "crop": null,
    "chunkHash": "765dbf73e91e",
    "px": "1332x1390"
   },
@@ -82,7 +84,8 @@
    "contentAnchor": "New tab → drive.google.com → open School → DT Work. Don't see those folders? Click + New → Folder, make 'School', open it, make 'DT Work' inside — thirty seconds, then carry on.",
    "cardText": "💾 · Download your build · In MakeCode press the purple Download button. A file ending in .hex lands in the computer's Downloads folder — that file IS your program. · 🗄️ · Open your Vault · New tab → drive.google.com → open School → DT Work. Don't see those folders? Click + New → Folder, make 'School', open it, make 'DT Work' inside — thirty seconds, then carry on. · 🎯 · Drag it in · Drag the .hex file from Downloads into DT Work. Done — the website can now verify it's really there.",
    "says": "the three Bank Your Build steps",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-18b",
+   "crop": null,
    "chunkHash": "86af621ed3ba",
    "px": "1212x690"
   },
@@ -94,10 +97,14 @@
    "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
    "contentAnchor": "I can tell the difference between an input and an output.",
    "cardText": "How did it go? · I can tell the difference between an input and an output. · ✓ I can · ≈ Getting there · ✗ Not yet · I can build code that reacts when something happens. · ✓ I can · ≈ Getting there · ✗ Not yet · I can test my code and notice when it's not working. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer every sentence above — and how it felt — and this button wakes up. · Send & finish",
-   "says": "the compulsory How did it go? screen, untouched",
-   "contentVersion": "2026-08-15d",
+   "says": "the top of the compulsory How did it go? screen: its heading and the first rating row, untouched",
+   "contentVersion": "2026-08-18b",
+   "crop": {
+    "to": ".se-row .se-chips",
+    "keepFrac": 0.235
+   },
    "chunkHash": "287759bc1b55",
-   "px": "1372x1402"
+   "px": "1372x369"
   }
  }
 }

@@ -595,8 +595,26 @@ const VARIANTS = {
 /* the glow frame a screenshot sits inside, built to the shot's own size so the
    picture is never stretched (rule 146b's spirit: what is promised visually is
    produced in real pixels) */
-async function frameShot(srcPng, outPng, t) {
-  const img = sharp(srcPng);
+/* ── CROPPING A SCREENSHOT TO ITS TOP (DFM 237b, 18 Aug 2026) ───────────────
+   Six approved J1 shots render 83–141pt wide on a 720pt slide because they are
+   near-square cards sitting in a row UNDER a stop slide's bullets: the height
+   left over is what decides the width, so a tall picture comes out narrow. The
+   cure the gate itself names first is "photograph a wider, COMPLETE element",
+   and that is what `crop` does — it keeps the top of the card down to the
+   bottom of a named element inside it (the first rating row, the first marquee
+   card), which is landscape, complete in itself, and the part a teacher points
+   at. The fraction is measured in the browser off the real boxes, so it cannot
+   drift when text wraps differently in a different lesson, and it is recorded
+   in the manifest: a cropped picture that does not say it was cropped is a
+   claim about a screen nobody can check (the film-frame precedent). */
+async function frameShot(srcPng, outPng, t, crop) {
+  let img = sharp(srcPng);
+  if (crop && crop.keepFrac > 0 && crop.keepFrac < 1) {
+    const m0 = await img.metadata();
+    const keep = Math.max(1, Math.round(m0.height * crop.keepFrac));
+    img = sharp(await img.extract({ left: 0, top: 0, width: m0.width, height: keep })
+      .png().toBuffer());
+  }
   const meta = await img.metadata();
   const PAD = 26, R = 14;
   const w = meta.width + PAD * 2, h = meta.height + PAD * 2;
