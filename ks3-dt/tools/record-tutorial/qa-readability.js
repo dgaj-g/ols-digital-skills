@@ -280,6 +280,28 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
      changes what it clicks; J2 Lesson 1 adds `.confirm-step`, which is how a
      pupil advances a steps card and is the only control on its workbench. */
   const ADVANCE_DEFAULT = '.chunk-host .primary-btn, .chunk-host .dossier-cta';
+  /* THIS DRIVE CLICKS PRIMARY BUTTONS, AND TWO SCREENS CANNOT BE CLICKED THROUGH
+     (19 Aug 2026). The matching desk is cleared by pairing six blocks and the
+     build card by assembling a program and pressing RUN — neither is a primary
+     button, so the drive stalled on the desk and this harness crashed with
+     "never reached the build card". Every console row therefore measured
+     NOTHING, on a surface the file's own comment calls the 207g class.
+     This is the THIRD walker in this round to be caught not knowing the two new
+     engines (DFM 238a's family), so the fix is the same one: ask the shared
+     detector first, and if the screen has a mover in lib/walk-moves.js, run THAT
+     mover — the one every other walker runs — before falling back to clicking a
+     button. One fact, one home (DFM 144). */
+  const WALK = require('./lib/walk-moves.js');
+  let primed = false;
+  const engineStep = async () => {
+    if (!primed) { await WALK.primeDevKeys(page, BASE); primed = true; }
+    const st = await page.evaluate(WALK.detectKind);
+    const mv = st && WALK.MOVES[st.kind];
+    if (!mv) return false;
+    await page.evaluate(([src]) => { (new Function('return (' + src + ')')())(); }, [String(mv)]);
+    await sleep(WALK.SETTLE[st.kind] || 600);
+    return true;
+  };
   const advanceUntil = async (target, tries, via) => {
     for (let i = 0; i < (tries || 14); i++) {
       const there = await page.evaluate((t) => !!document.querySelector(t), target);
@@ -287,6 +309,7 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
       await dismissBadge();
       const again = await page.evaluate((t) => !!document.querySelector(t), target);
       if (again) return true;
+      if (await engineStep()) continue;
       await page.evaluate((sel) => {
         const vis = (el) => { const r = el.getBoundingClientRect(); return r.width > 2 && r.height > 2; };
         const b = Array.from(document.querySelectorAll(sel))
@@ -532,8 +555,13 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
       must: ['.pyc-out', '.pyrun-verdict.is-matched'],
       drive: async () => {
         if (!await advanceUntil('.pyrun-card', 34, VIA_J3)) throw new Error('never reached the call sheet');
-        /* build 1 is one line with one box: fill it from the lesson's own key,
-           the way the walker does, rather than from a copy in this file */
+        /* build 1 is one line with one gap. It is filled from the WALKER'S key
+           route, not from `App.state.localKeys` — that was the same false premise
+           the walk was built on and it is corrected in lib/walk-moves.js: both
+           servers filter the key call to multiple-choice answers, so a pyrun key
+           has never reached a pupil's browser and must not. Typing 'x' into the
+           theatre name is why this surface could never reach MATCHED. */
+        await WALK.primeDevKeys(page, BASE);
         await page.evaluate(() => {
           const n = document.querySelector('.pyt-list .pyrun-line'); if (n) n.click();
         });
@@ -541,7 +569,7 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
         await page.evaluate(() => {
           const card = document.querySelector('.pyrun-card');
           const bid = card && card.getAttribute('data-build');
-          const key = (window.App && App.state && App.state.localKeys && App.state.localKeys[bid]) || null;
+          const key = window.__walkKey ? window.__walkKey(bid) : null;
           document.querySelectorAll('.pyp-list .pyrun-blank').forEach(inp => {
             const k = inp.getAttribute('data-key');
             inp.value = (key && key.blanks && key.blanks[k] != null) ? String(key.blanks[k]) : 'x';

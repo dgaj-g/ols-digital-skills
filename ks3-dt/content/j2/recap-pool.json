@@ -77,12 +77,12 @@
    "lesson": "j2-01",
    "topic": "The year map",
    "thread": "kp-platform-j2",
-   "stem": "Órla scrolls down her year map to look ahead and finds Lesson 9 has a padlock on its tile. What does the padlock tell her?",
+   "stem": "Órla scrolls down her year map on Monday and sees that Lesson 9 still has a padlock on its tile. What has to happen before she can open it?",
    "options": [
-    "Her teacher has not opened that lesson yet",
-    "Lesson 9 is broken and will not load",
-    "She has already finished Lesson 9",
-    "She is not allowed to do Lesson 9 at any point this year"
+    "Her teacher has to open Lesson 9 for the class",
+    "She has to finish Lessons 7 and 8 first",
+    "She has to wait until the date of that lesson comes round",
+    "She has to sign out and sign back in again"
    ]
   },
   {
@@ -92,8 +92,8 @@
    "thread": "kp-platform-j2",
    "stem": "Niamh answers a question in Lesson 3, then the bell goes and she signs out. Next fortnight her answer is still there. Why?",
    "options": [
-    "The website keeps every answer the moment you give it",
-    "Because she pressed the Save button at the bottom of the screen before she left",
+    "Because the website kept it the moment she typed it",
+    "Because she pressed the Save button before she left the room",
     "Because the page was copied into her Google Drive",
     "Because signing out puts your work away for you"
    ]
@@ -105,10 +105,10 @@
    "thread": "kp-rules-j2",
    "stem": "Saoirse's class gets to the DT room before the teacher. The door has been left unlocked and two pupils have already gone in and sat down. What should Saoirse do?",
    "options": [
-    "Wait outside in the line with everybody else until the teacher arrives",
-    "Go in as well, since the door is open and other people are already inside",
-    "Go in and tell the two pupils to come back out",
-    "Go and find another teacher to come and open the room properly"
+    "Wait in the line outside until the teacher comes",
+    "Go in and sit down, since the door is open anyway",
+    "Wait outside, but send somebody in to bring the two out",
+    "Run to the staffroom to fetch whichever teacher is free"
    ]
   },
   {
@@ -116,12 +116,12 @@
    "lesson": "j2-01",
    "topic": "The DT room rules",
    "thread": "kp-rules-j2",
-   "stem": "You sit down and find the mouse at your station will not move the pointer. What should you do?",
+   "stem": "Sorcha sits down in the DT room and her mouse will not move the pointer. There is a spare mouse sitting on the shelf by the door. What should she do?",
    "options": [
-    "Put your hand up and tell your teacher now",
-    "Swap it with the mouse from the empty station beside you",
-    "Tell your teacher at the end, so you do not interrupt the lesson",
-    "Unplug it and plug it back in yourself"
+    "Put her hand up and tell Mr Boyle straight away",
+    "Fetch the spare from the shelf and swap it in herself",
+    "Move to the free station at the end of the row",
+    "Get on with the lesson and mention it at the bell"
    ]
   },
   {
@@ -129,14 +129,14 @@
    "lesson": "j2-01",
    "topic": "Your Kit Locker",
    "thread": "kp-platform-j2",
-   "stem": "Aoife opens her Kit Locker on this website. What does she find inside it?",
+   "stem": "Aoife finishes Lesson 2 and clicks the Kit Locker at the top of her year map. What is waiting for her in there?",
    "options": [
-    "Looks she can put on her screen",
-    "The work she has saved this year",
-    "The lessons she has finished so far",
+    "The new screen colours and badges she has unlocked",
+    "The answers she typed in Lesson 1 and Lesson 2",
+    "The lessons she has finished so far this year",
     "A list of the equipment in the DT room"
    ]
   }
  ],
- "keysEnc": "hk1zLMKfFIZksnR5LXM75owimq6Ej3aKZeRhtLiW2JjHE61LBXA5yhQF4Y6WIaEcLV0GGuID24ZgqRQVEA2tC1rXSKidl12Ed/RajBof1Ddpmq+hQGlu+IDfZ6iOJF0bNTZqSzKeOPjrpPMIgBQYN1QR19b2IZz35DLVa1SKVJafg2IpQ4FVqsvnXlCoXISvAJu0M/KZ0PjImupn2ZKsln+bPDYcsyOzpphx+KgIbrhrzAk7a6qi0XOkmZBZ9dZDzqgpl2G++VPNmzHx88jKGJ6E+YOwlcvmQV42qIagDAeGFRPCqRSZAbf5wALwNEdIyAaNH+NGySLDTdK3JU9XzeHiHW4gx0/tKsoDRee8BakVh3wxGoAS/LE3NLgVnzVwJngSftVniYFLybloGr14OL3Wz4KBnwSZd4nAjaLfbg50BhMg2XVvhPJhMmpvTNr8nLfeHm59FB+Q0MIdK8AUrXMU/6CNj22tKAw7jBLH6U6HzbIMYC50a0kgVjbl7MRF9hPj7OuJ3YmNA81oi7xlef83Rl+dFMwdz90lfmZEeqQmpeUvDhLrj00TyR+vtdp+KVTqpePl9O6/ZRJNO8gQnLADvTC5poHIFMm/tLQXZXzcd0YCIeKKfNUH57asJnYfkGRlxg7vpoQu8SOKnejr82G5WecN/1tJqUCOxCTq4W6jtuINCtgrlLX65eb/4xfy/BnL3G5m+qM6qNcbSumK/r6ha/SBocjVkraJTbucIMA0gV+pxxysOZUk91gl53a2TcHyqdFPI5J1saLvdJ/OBHL+mm+IHqNFVsrmAdLc8MDaa8HsIHkveir9MCdw0igL7rUgeOCFAhvp99EPmWAiea8Z67nDryyi0vIkAf4oRf8wGEmixdD23d9Lakh2riUGrNolxkJAW/VyKou9wC7dAiECS/SdNekMBbB4GAPdOIF71heePcP7LWdOQ6fi8xoiMVZGtx7pLuyl/Oi5TfoNOXsWaD2K6m5fIC2Hml8q575Q2LdMau/Px94pSvlFfcobkovCzLAqfD5ugtgLrrFpYEe2B3uH1Y2R5IoUPz1mXzZC0RveM4XKGnnHq2FqjLOTrA8yR7mOVOINefrM02Dx70p6/7EvOnw9x63TvUMAGX1rsSxmgzFfQXhbWtZUUddo3qYB1oYgXR2h/oRXkpyWdXGOMi7r+tywjM232Fh02JCthayUeCluluqiZk/1WJ7RuOB8FrkUMK3umyijabZZh87kuf4P2Ae4E3Mkc0eppVhU4jLXX4hIsbULAwB/14p1+v/YX+2ZNlrIfV+7N5dsTnZNa68GbTgNxtPPbhcN4UdiA/+Xhj5FaZ7zr9kWftvL3OvgSojlRca76IXQbI2XX7+NnP6RECdvOBu9sWzUOfYmBYnQoCL3I3WHB7V/JdM18WOYLOeyhDAAivzrVwmvhWm7i+mR+NTiBYvmpb9fp9k71kDDvAYdhlIjdRzV3gHILmngv+ss/frL6psVHLx7W50U6BeTRfKOR2X5JEui++xBI2f+x2p5ub55Rfu0CcO1WdUR5XhhHmOkBueV6mZvYxIEFDBhrssP9qmcrvKbqzUZuqF9NgOIz4AqEqLuA/A6Ap+bHgzTvOFHSRfF5Wual6u0JAxSVX4oDwFhQO5WgBuwscuXdoLN68COux76aCVOQ7aI3suARht9WL5v7JwD9Gw3KV4sA7uzW5kAOCWouoFHGqpAYR/uDUhu+HO6aNskIPsUQhwKVflMZRFtaVsVlVwHjrjhTA96g468dvhvAq7ZGmkUwavzsA8Z93QZl229OJy25SvTJpTc4dZwniy8G+TP+arWkVMap8p+Z+erawyaOQ=="
+ "keysEnc": "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"
 }

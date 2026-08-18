@@ -28,7 +28,7 @@
      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
      "heading": "Lesson 2 · First Words in Python",
      "sub": "You write your first Python today, and make the computer print exactly the right words — J3 · Lesson 2 of 17",
-     "notes": "WHERE THE CLASS IS: coming in, logging in to the computer, then opening the class link from Google Classroom. The lesson opens itself on the Do-Now, which is a short warm-up of questions from Lesson 1. It marks itself as they settle, and it is never graded and never public.\n\nSAY: \"Log in, open the class link, and work through the warm-up questions. When the warm-up hands over to today's card, stop there and look up.\"\n\nWATCH FOR: a pupil who has not finished Lesson 1 gets no warm-up at all, because it only ever serves questions from lessons that pupil has completed. That screen goes straight to today's card, and it is correct rather than broken.\n\nWHEN TO MOVE: when most of the room is sitting on today's card, stop the room — eyes front."
+     "notes": "WHERE THE CLASS IS: coming in, logging in to the computer, then opening the class link from Google Classroom. The lesson opens itself on the Do-Now, which is a short warm-up of questions from Lesson 1. It marks itself as they settle, and it is never graded and never public.\n\nSAY: \"Log in, open the class link, and work through the warm-up questions. When the warm-up ends you land on a page headed “Every day on a film set starts with one sheet of paper.” — stop there and look up.\"\n\nWATCH FOR: a pupil who has not finished Lesson 1 gets no warm-up at all, because it only ever serves questions from lessons that pupil has completed. That screen goes straight to today's card, and it is correct rather than broken.\n\nWHEN TO MOVE: when most screens show the page headed “Every day on a film set starts with one sheet of paper.” — a page of text with no buttons on it yet — stop the room, eyes front."
     },
     {
      "kind": "objectives",
@@ -48,7 +48,7 @@
      "bullets": [
       "A call sheet is the single piece of paper a film or theatre crew works from.",
       "It carries the title, the times and the numbers everyone needs for the day, and somebody prints it every morning.",
-      "In this Studio the call sheet is printed by a program, and this hour you write that program.",
+      "In this lesson the call sheet is printed by a program, and this hour you write that program.",
       "The language is Python. You type it, it is one of the most used languages in the world, and a great deal of real software is written in it."
      ],
      "notes": "WHERE THE CLASS IS: eyes front, screens ignored.\n\nSAY: read the four lines out. The pupils' own card says the same thing in their own words in a moment, so they meet it twice on purpose.\n\nTHE THING TO KNOW BEFORE YOU START, and it is worth saying to the room in your own words: this class starts Python from zero by design — nothing from last year is assumed. Everything a pupil meets in this hour is taught in this hour. No pupil is behind at the start of it.\n\nWHEN TO MOVE: straight on."
@@ -79,7 +79,7 @@
       "The film has no sound and it comes in four parts. The buttons underneath jump to any part.",
       "When the film ends, stop and look up."
      ],
-     "notes": "WHERE THE CLASS IS: about to read today's card on their own screens.\n\nSAY: \"Back to your screens. The card types itself out, so wait for the last line before we read it.\" Wait until the room is on the card before you say another word.\n\nTHEN SAY: \"We are reading this together.\" Read it aloud while pupils follow on their own screens. It repeats what you have just said from the front, in the pupils' own words, and it names the four builds in order.\n\nTHEN SAY: \"Press Start the film. Watch it on your own computer.\"\n\nWATCH FOR: if the class link is not on Google Classroom, put the QR code from the Classes tab on the board instead.\n\nWHEN TO MOVE: send them into the film, then put the film slide up while they watch."
+     "notes": "WHERE THE CLASS IS: about to read today's card on their own screens.\n\nSAY: \"Back to your screens. The card types itself out, so wait for the last line before we read it.\" Wait until the room is on the card before you say another word.\n\nTHEN SAY: \"We are reading this together.\" Read it aloud while pupils follow on their own screens. It repeats what you have just said from the front, in the pupils' own words, and it names the four builds in order.\n\nTHEN SAY: \"Press Start the film. Watch it on your own computer.\"\n\nWATCH FOR: if the class link is not on Google Classroom, open your teacher tools — the address is in this lesson's brief, under Resources — go to the Classes tab at the top, and put this class's QR code on the board instead.\n\nWHEN TO MOVE: send them into the film, then put the film slide up while they watch."
     }
    ]
   },
@@ -131,7 +131,8 @@
      "size": 15,
      "bullets": [
       "Press Open the call sheet, and the first build opens.",
-      "The lines you can use sit under The lines. Drag the ones you want into Your program, in the order you want them to run.",
+      "All the lines you can use are listed under the heading **The lines**.",
+      "Drag the ones you want into **Your program**, in the order they should run.",
       "Some lines have a gap in them for you to type into, and each gap says what it wants.",
       "Press RUN my program. The console underneath shows exactly what your program printed.",
       "MATCHED means the console said exactly what the target shows. NOT YET means it did not, and you get the lines back to try again."
@@ -193,7 +194,7 @@
       "The second card is about next fortnight, when you build a playlist engine.",
       "Every box you made today holds ONE value. A playlist is a list of many, in an order."
      ],
-     "notes": "WHERE THE CLASS IS: both badges earned, reading two short cards on their own.\n\nSAY: \"Two cards, on your own. Read the first one properly — it is the whole of today in four lines.\"\n\nWHAT THE FIRST CARD DOES: it names the four things the pupils have just used, in the pupils' own words. Those four lines are the ones worth being able to say out loud, and next lesson is built on them.\n\nWHAT THE SECOND CARD SAYS: next fortnight is a playlist engine. There is nothing to bring and nothing to do in between, and this lesson stays open on the year map for anyone who wants to look back through the four builds.\n\nWHEN TO MOVE: when both cards are confirmed, put the next slide up."
+     "notes": "WHERE THE CLASS IS: both badges earned, reading two short cards on their own.\n\nSAY: \"Two cards, on your own. Read the first one properly — it is the whole of today in four lines.\"\n\nWHAT THE FIRST CARD DOES: it names the four things the pupils have just used, in the pupils' own words. Those four lines are the ones worth being able to say out loud, and next lesson is built on them.\n\nWHAT THE SECOND CARD SAYS: next fortnight is a playlist engine. There is nothing to bring and nothing to do in between, and this lesson stays open on the year map — the screen showing all seventeen lessons, which they reach from the Year map button at the top left — for anyone who wants to look back through the four builds.\n\nWHEN TO MOVE: when both cards are confirmed, put the next slide up."
     }
    ]
   },
@@ -212,7 +213,7 @@
       "You find out whether you were right, and why, at the very end of the lesson.",
       "That comes after the How did it go? screen, so do not sit waiting for an answer."
      ],
-     "notes": "NOTHING ABOUT THE MARKED QUESTION GOES ON THE BOARD. This slide is written so that it cannot answer it, and no other slide in the deck carries the question or any part of it.\n\nWHERE THE CLASS IS: one question, on their own.\n\nSAY: \"One question, on your own, and this one is marked. I can see how the class did on it, so no conferring.\"\n\nTHEN SAY: \"You find out whether you were right, and why, right at the end — after the last screen. Do not sit waiting for it.\"\n\nWHY THE VERDICT IS HELD BACK: so that nobody can work out from it whether to change anything on the way through. Tell the class that plainly, or the wait reads as the website being broken.\n\nDO NOT answer it at a desk. It is the one marked thing in the hour, and it is the one honest read you get on the class.\n\nWHEN TO MOVE: when the room has answered, straight on to the last screen."
+     "notes": "NOTHING ABOUT THE MARKED QUESTION GOES ON THE BOARD. No slide in this deck shows the question or any part of it, so you can leave any slide up while they answer.\n\nWHERE THE CLASS IS: one question, on their own.\n\nSAY: \"One question, on your own, and this one is marked. I can see how the class did on it, so no conferring.\"\n\nTHEN SAY: \"You find out whether you were right, and why, right at the end — after the last screen. Do not sit waiting for it.\"\n\nWHY THE VERDICT IS HELD BACK: nobody sees the right answer while other pupils are still answering. Tell the class that plainly, or the wait reads as the website being broken.\n\nDO NOT answer it at a desk. It is the one marked thing in the hour, and it is the one honest read you get on the class.\n\nWHEN TO MOVE: when the room has answered, straight on to the last screen."
     }
    ]
   },
@@ -232,7 +233,7 @@
       "Sign out every time. If you stay signed in, anything the next person does on this computer looks like you did it.",
       "Chair in, area tidy, nothing left beside your machine."
      ],
-     "notes": "WHERE THE CLASS IS: on the last screen, then packing up.\n\nSAY: \"Last screen. Three sentences to rate, one choice about how hard the hour felt, and a comment box that comes to me and nobody else.\"\n\nNOBODY LEAVES WITHOUT FINISHING How did it go? It is compulsory, and it is how you hear from the pupils who never put a hand up. After a first hour of real code it matters more than usual: a pupil who found it hard will often say so here and nowhere else.\n\nTHEN SAY: \"Sign out. Chair in. Nothing left beside your machine.\"\n\nWHY: the sign-out rule is one the class judged other people against in Lesson 1, so hold them to it here.\n\nWHEN TO MOVE: dismiss when the room is signed out and tidy."
+     "notes": "WHERE THE CLASS IS: on the last screen, then packing up.\n\nSAY: \"Last screen. Three sentences to rate, one choice about how hard the hour felt, and a comment box that comes to me and nobody else.\"\n\nNOBODY LEAVES WITHOUT FINISHING How did it go? It is compulsory, and it is how you hear from the pupils who never put a hand up. After a first hour of real code it matters more than usual: a pupil who found it hard will often say so here and nowhere else.\n\nTHEN SAY: \"Sign out. Chair in. Nothing left beside your machine.\"\n\nWHY: they were taught this rule in Lesson 1 and know it perfectly well, so hold them to it here.\n\nWHEN TO MOVE: dismiss when the room is signed out and tidy."
     }
    ]
   }

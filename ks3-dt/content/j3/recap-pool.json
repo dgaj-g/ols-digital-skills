@@ -69,11 +69,11 @@
    "lesson": "j3-01",
    "topic": "The Studio Code",
    "thread": "kp-platform-j3",
-   "stem": "Méabh leaves at the bell without signing out. The next pupil sits down at that machine and deletes a folder by accident. Whose name is on it, as far as the school is concerned?",
+   "stem": "Méabh leaves at the bell without signing out. The next pupil sits down at that machine and deletes a folder by accident. When the school checks who deleted it, which name comes up?",
    "options": [
     "Méabh's, because the machine was still signed in as her",
     "The next pupil's, because she is the one who did it",
-    "Nobody's — the school cannot tell who was sitting at a machine",
+    "Nobody's, because the school cannot tell who was at a machine",
     "Mr Boyle's, because he is in charge of the room"
    ]
   },
@@ -108,12 +108,12 @@
    "lesson": "j3-01",
    "topic": "Portfolio Zero",
    "thread": "kp-platform-j3",
-   "stem": "In June, Róisín's class answers the same twelve Portfolio Zero questions again. Why does the teacher do that?",
+   "stem": "It is June. Mr Boyle puts the same twelve questions on the screen that Róisín answered in her very first DT lesson back in September. Why is she doing them a second time?",
    "options": [
-    "So each pupil can see what she has learned since September",
-    "So the teacher can work out the mark for Róisín's summer report",
-    "So the class can be sorted into the two GCSE routes",
-    "So the website knows which lessons to unlock over the summer"
+    "So she can see for herself how much she has learned",
+    "So Mr Boyle can work out the mark for her report",
+    "So the teacher can decide which class she is in next year",
+    "So the website knows which lessons to open for her"
    ]
   },
   {
@@ -130,5 +130,5 @@
    ]
   }
  ],
- "keysEnc": "GSod1rajKVyWLbTM8He6h6W6BrVJbFkYadxXM7WQGtuS+XhClc3+Od4fTovXepJ85ye/WtoxEZaKJmxrySAcZyMENBhKukz9OrwXQ3Jd6jPHocXU4y0tNhfIvhu0JniHjGL0mu/H9ATr+W+p5eM4W/SkIvxREhJr5gzzbMGb0COvJCvhM78PVWC6YqrQZUhMVP8ikTdv2yHmrj/2T0uLsDFE93N92fbmTNYB7tkIa2RbMwQnbT4sYT+k4h6lVnUFeFndnCOTMm7/3EyIzRIStqkdOdUSmTRVI7K1Qgf1nZMgj+2/5YOoSvb5mW+gR5BBnpV4e6al6O7fZPzc+h/h6hQjbLt6g7ocsVj+pjWcFXXltACgCDldV0kGqb6KVKdL/qvgkRIe+w9xc/6oGOTeveLuXvFh1vcFzGIDEXJE2tm9d3TJgf9KawG3bzthZkFKKWWcuwlX6DE5azKXOibOIZEAjUTmOxjRSf+ViWw0o2knBykcwhI6JJTnejA+YeSrMhC0wXi1y8QkpU39YpbFZDxhXQA1Jk/KkdVvsMre3S39vMJxB6p22buQ8J5a9jAtwXOROwSVE/YJIgiEk2gHL68lTnRP3CksOVU4qDOvoBFkbBIM3WQjUhdprPJBjyn35kwRmUUXCaDTzgjd2JpKjo+li3au/P0Iqxt07UGM/Cr4H3baLoeHV4qva+AHkaULyKhus+t7veS1I0DNwzWmymv0WOaYCmznOiZdWZFlWvl5vMuOrvekDkm+/1s34CVtEBRQIkTJOaQO+i1Q7AQthKVKbQSUlxsddiVqOlX6vOcMF685cRES0Oqs65DoNFI3FgPOeCsmpuG5RdsyOUVK3qVhrkL0PGftXTtC7mSW+DQyWgDTQe8DJGhf31FOYjBuamE5Q3FcVbhNYDfQVQV1bu1KIplbJEnb69GgYIa0S7xG/aBpEVa9EIqkRriSbfi8GkB7Pdvsvq55aVyQ+sRjsmXkW0gY4WXi9e8GRw7/4DhEWpI8pFoeMjbWkIRePPBMK+Y16c2vwTlBn2gaJq04Xfu3i+cbEWdqjl0TvU4Yy393Kl6IyLc86X4CxQVhpSkE8ZzyEr2vDIG1EswOTo/GgduHn04RVcmUomiwrvGIkQTvUqjJfczqR4t9gEnxwrxlK1e6QS7C3agojOKRWe1rbQghtrTZWFr6CaEGmSosSDNQwB+xLh3YU1wC8XH+1ARRMPy/hh+hVSzNyuqdRSF07a4HD3xY8wpjNPoXFZdJ6u70K3oqA91lfb7pgvoCrYyh6N9J0KbqEEyUKTpHKNNw1gJZFXzdgs1opKgEulRv9p8LtUbW35Q8ujmfyTndpfCYRd1IJnuHsirIz1uzPgE7e3XqUUq32uWZOR7ApWyEP+SfIw6ubBtoOYTpUDleVXVDIbTKMV6/f9xCGnTwnHZdHni1kH/boU6H6IIgkuWlDvrAKNPSlYpAtqRm+TBNzyS4Zm21bcX55jRadWEwIBPP6ERNXl3gia0dyjwBbUIWfoPCac0Cnv+ADvZ3IYNiCwZQ1VVUN5eXIUd35nnt1oPIIfK68DH6GmB3E5lPvQIQx7PCwyshaGuS0N60CEAcX105X0uOlObjUSoGHy/iiEdjCQ5pLfKiDQFcvGV9CxC7CjgTeeGh08joeYf72sjYtqtamQgV5RUZKzLNSg864/QX/xjD+dmEYZ0R/HnSVYI0Zg+6sWhQMulv3JObFQvb2QlMPtlLbbAIyBjuNOGpIkUS6yJWnDFuA8uMJ/vSA9m/FpCYaDJVpZygCiG95pPC7yzzZ33ea+yO9xq1Z6R1cR7HGBe61q2OJ73B91pLotSHEIgLwN28cKgc6cybSnlu9QdLpuiSvhc43mbnmWs2A4690wnmlvQkZYyJxXIdG/RngoIXj+yKkOxsHDuL0hWLsX69I32chFP9cdxnMx9QwpGvx8wZ676vQAmehBDNGNCI"
+ "keysEnc": "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"
 }
