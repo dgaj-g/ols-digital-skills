@@ -1,0 +1,318 @@
+{
+ "id": "j2-02",
+ "year": "j2",
+ "num": 2,
+ "title": "Translation Bureau",
+ "tagline": "A bureau is an office where things are written out again in another language. Today you turn blocks you already know into your first lines of Python.",
+ "mode": "taught",
+ "durationMin": 60,
+ "objectives": [
+  "Read a Scratch block and say what it does, without needing the block in front of me.",
+  "Match a Scratch block to the line of Python that does the same job.",
+  "Assemble and run a short Python program, and read the console to find out what it really did."
+ ],
+ "chunks": [
+  {
+   "id": "briefing",
+   "engine": "briefing",
+   "title": "The Translation Bureau",
+   "minutes": 5,
+   "config": {
+    "clearance": "J2 · LESSON 2 OF 17",
+    "headline": "Same job. Different language.",
+    "lines": [
+     "A translation bureau is an office where people take something written in one language and write it again in another. That is your job for the next hour. You will do it at a desk on this screen, with Scratch on one side and Python on the other.",
+     "The two languages are Scratch and Python. You have met Scratch before: it is the one where you drag coloured blocks together. Python is a programming language you TYPE instead of drag. It is one of the most used languages in the world, and by the end of this hour you will have written and run some.",
+     "Here is the thing worth knowing before you start. A Scratch block and a line of Python can do exactly the same job. The block says it with a shape and a colour; Python says it with words and brackets. So today is not a new idea. It is a second way of writing down an idea you already have.",
+     "Why does anyone type code, if dragging blocks works? Two reasons. Typing is far quicker once you know the words, and almost all of the software you use every day was typed rather than dragged. Scratch was built to teach you the ideas. Python is what people build with.",
+     "Here is the hour, in order.",
+     "First a short film, about four minutes, with no sound.",
+     "Then the matching desk: six Scratch blocks, and you find the Python line that does the same job as each one.",
+     "Then the build. You put Python lines together into a real program and press RUN. Whatever your program prints comes up in a box under it called the console, so you can see exactly what it did.",
+     "It finishes with a card about your next lesson, one marked question, and a screen that asks you how the hour went."
+    ],
+    "cta": "Start the film",
+    "help": "This card types itself out. Read it through — your teacher may be reading it with the class — and click the button at the bottom when you are ready. Nothing on this screen is marked."
+   }
+  },
+  {
+   "id": "film",
+   "engine": "video",
+   "title": "From blocks to Python (the film)",
+   "minutes": 5,
+   "config": {
+    "src": "assets/video/j2/j2-l2.mp4",
+    "intro": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is about four minutes long, and it is in four parts — you can click the buttons underneath to jump to any part while you are on this screen.",
+    "fallback": "If the film will not play, carry on — every block it shows appears again on the next screen, with a line underneath saying what it does. Tell whoever is in the room that the film would not play.",
+    "chapters": [
+     {
+      "t": 0,
+      "label": "Why anyone types code"
+     },
+     {
+      "t": 52,
+      "label": "Meet print()"
+     },
+     {
+      "t": 108,
+      "label": "A variable: a box with a name on it"
+     },
+     {
+      "t": 168,
+      "label": "Reading a whole program"
+     }
+    ],
+    "help": "Press play, or click one of the four part buttons underneath the film to jump to that part. Everything the film shows is written again on the cards that come after it, so you do not need to come back to it. Nothing here is marked."
+   }
+  },
+  {
+   "id": "bureau",
+   "engine": "snap",
+   "title": "The matching desk",
+   "minutes": 13,
+   "badge": {
+    "id": "j2-b5",
+    "name": "Bureau Reader",
+    "icon": "assets/badges/id.png",
+    "xp": 15
+   },
+   "config": {
+    "kicker": "Badge 1 — the matching desk",
+    "title": "Six blocks, six lines of Python",
+    "intro": "This is the first half of your Bureau work, and it is about READING rather than writing.\n\nOn the left are six Scratch blocks. Each one has a line underneath it saying what that block does, so you never have to remember. On the right are six lines of Python, shuffled. Exactly one Python line does the same job as each block.",
+    "steps": [
+     "Click a block on the left. It gets a gold ring, so you can see which one you are working on.",
+     "Click the Python line on the right that you think does the same job.",
+     "If they are a pair, they lock together and both leave the desk. If they are not, they both come back and you try again.",
+     "The desk does not tell you which one was wrong, and it never shows you an answer. Read them again and think it through — that is the whole activity."
+    ],
+    "beginLabel": "Open the desk",
+    "goalLine": "**Your challenge:** clear the desk. Match all six blocks to the six lines of Python that do the same job.",
+    "howLine": "**How it works:** click a block, then click a Python line. A correct pair locks and leaves. A wrong pair comes back, and nothing is revealed.",
+    "blocksLabel": "Scratch blocks",
+    "pythonLabel": "Python lines",
+    "pickBlockSay": "Click a block on the left to start.",
+    "pickPythonSay": "Now click the Python line you think does the same job.",
+    "pickBlockFirstSay": "Click a block on the left first, then a Python line.",
+    "rightSay": "That is a pair. Both are locked in.",
+    "wrongSay": "Not a pair. Both go back on the desk — read them again and try a different one.",
+    "doneText": "**The desk is clear.** You have just read six Scratch blocks and found the Python that does the same job as every one of them. Next you write a program out of lines like these, and run it for real.",
+    "doneSay": "All six matched.",
+    "continueLabel": "Go to the build",
+    "firstTryXp": 1,
+    "firstTryXpCap": 6,
+    "pythons": [
+     "print(\"Hello!\")",
+     "score = 0",
+     "score = score + 1",
+     "name = \"Aoife\"",
+     "print(\"Score: \" + str(score))",
+     "print(score)"
+    ],
+    "pairs": [
+     {
+      "id": "j2p-say",
+      "img": "assets/img/j2/blocks/say-hello.png",
+      "imgAlt": "A purple Scratch block that reads: say Hello!",
+      "gloss": "This block makes your character say Hello! in a speech bubble on the screen."
+     },
+     {
+      "id": "j2p-set",
+      "img": "assets/img/j2/blocks/set-score.png",
+      "imgAlt": "An orange Scratch block that reads: set score to 0",
+      "gloss": "This block puts the number 0 into a variable called score. A variable is a box with a name on it that holds one value for you."
+     },
+     {
+      "id": "j2p-change",
+      "img": "assets/img/j2/blocks/change-score.png",
+      "imgAlt": "An orange Scratch block that reads: change score by 1",
+      "gloss": "This block adds 1 to whatever is already in the score box."
+     },
+     {
+      "id": "j2p-name",
+      "img": "assets/img/j2/blocks/set-name.png",
+      "imgAlt": "An orange Scratch block that reads: set name to Aoife",
+      "gloss": "This block puts the word Aoife into a variable called name. Words go in speech marks; numbers do not."
+     },
+     {
+      "id": "j2p-joins",
+      "img": "assets/img/j2/blocks/say-join.png",
+      "imgAlt": "A purple Scratch say block holding a green join block, which holds the words Score: and the orange score variable",
+      "gloss": "The green join block sticks two things together, so this says the words Score: followed by whatever number is in the score box."
+     },
+     {
+      "id": "j2p-sayvar",
+      "img": "assets/img/j2/blocks/say-score.png",
+      "imgAlt": "A purple Scratch block that reads: say score, with score in an orange oval",
+      "gloss": "This block says the number that is in the score box, and nothing else."
+     }
+    ],
+    "help": "Click a Scratch block on the left, then click the Python line on the right that you think does the same job. The line under each block tells you what that block does, so you never need to remember Scratch. A wrong pair simply comes back — you can try as often as you like, and nothing is taken off you.",
+    "pythonNote": "Some of these lines have str( ) in them. You do not need to know what that does yet — match on what the block does."
+   }
+  },
+  {
+   "id": "build",
+   "engine": "pyrun",
+   "title": "Build it and run it",
+   "minutes": 22,
+   "badge": {
+    "id": "j2-b6",
+    "name": "First Program",
+    "icon": "assets/badges/bolt.png",
+    "xp": 20
+   },
+   "config": {
+    "kicker": "Badge 2 — the build",
+    "title": "Make a scoreboard, in Python",
+    "intro": "Now you write a program rather than read one, and you run it for real.\n\nA customer has come into the Bureau and asked for a scoreboard. It has three jobs to do. It starts the score at 0. It adds a point, twice. Then it prints the score with the word Score: in front of it.",
+    "steps": [
+     "Seven lines are waiting in **The lines**. FOUR of them are the program. The other three have real mistakes in them, the kind everybody makes.",
+     "Drag the lines you want across into Your program, in the order you want them to run — or just click a line, if you prefer.",
+     "When you are ready, press RUN. Your program is really run, and the console underneath shows exactly what it printed.",
+     "If the console does not print exactly what The target shows, your lines stay where they are and you try again. Nothing is taken off you for a wrong run."
+    ],
+    "beginLabel": "Open the build",
+    "targetLead": "The target — make the console print exactly this",
+    "trayLabel": "The lines",
+    "progLabel": "Your program",
+    "runLabel": "RUN my program",
+    "howLine": "**How it works:** to ADD a line, drag it into **Your program**, or click the line itself. To MOVE a line, drag it up or down inside **Your program**. To TAKE a line out, drag it back to **The lines**. Python runs your program from the top line down, one line at a time.",
+    "trayEmpty": "Every line is in your program.",
+    "progEmpty": "Nothing here yet — drag or click a line across.",
+    "lockedNote": "Move at least one line into Your program, and the RUN button turns on.",
+    "matchedLabel": "MATCHED",
+    "notYetLabel": "NOT YET",
+    "matchedSay": "The console printed exactly what The target shows. That is a working program, and you wrote it.",
+    "notYetSay": "The console did not print what The target shows. Look at what it really printed, in the console under your program. Then change one line and press RUN again.",
+    "continueLabel": "Continue",
+    "firstTryXp": 5,
+    "firstTryXpCap": 5,
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Build your program, then press RUN.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell your teacher, and press RUN again in a moment."
+    },
+    "errorWords": {
+     "name": "Python does not know that name. Check how it is spelled — Python treats a capital letter as a different letter altogether.",
+     "syntax": "Python could not read that line at all. Look for a bracket or a speech mark that was opened and never closed.",
+     "type": "You have tried to join a word to a number. Python will not do that on its own — the number has to be turned into text first, with str( ) around it.",
+     "other": "Python stopped at the line named above. Read that line again, slowly."
+    },
+    "builds": [
+     {
+      "id": "j2b-scoreboard",
+      "tab": "Scoreboard",
+      "goalLine": "**Build the scoreboard.** Four of these seven lines make it work.",
+      "brief": "The score starts at 0. It goes up by one, twice. Then the console prints the word Score: followed by the number.",
+      "target": [
+       "Score: 2"
+      ],
+      "matchedSay": "MATCHED. That is your first working Python program: a variable, two changes to it, and a line that prints the result.",
+      "lines": [
+       {
+        "t": "score = 0"
+       },
+       {
+        "t": "score = score + 1"
+       },
+       {
+        "t": "score = score + 1"
+       },
+       {
+        "t": "print(\"Score: \" + str(score))"
+       },
+       {
+        "t": "print(\"Score: \" + score)"
+       },
+       {
+        "t": "print(\"Score: \" + str(Score))"
+       },
+       {
+        "t": "print(\"Score: \" + str(score)"
+       }
+      ]
+     }
+    ],
+    "help": "Drag the lines you want into Your program, in the order you want them to run, then press RUN. Your program is really run and the console shows exactly what it printed — and if Python stops, the console shows you Python's own words plus a plain-English explanation underneath. Three of the seven lines have real mistakes in them. You can run as many times as you like."
+   }
+  },
+  {
+   "id": "next",
+   "engine": "steps",
+   "title": "What you did, and what is next",
+   "minutes": 5,
+   "config": {
+    "intro": "Two things to remember from the Bureau before you go.",
+    "steps": [
+     {
+      "icon": "🔤",
+      "title": "You can already read Python",
+      "text": "An hour ago you had never seen a line of Python. You have now matched six blocks to six lines of it, and written a working program out of four more. Every one of those lines does a job Scratch can do as well: make a box, add to what is in it, print an answer. Python writes those jobs down a different way, and that is the part that was new today.",
+      "lines": [
+       "print( ) puts something on the console, the way say puts something on the Scratch stage.",
+       "A name with an = after it makes a variable, the way set score to makes one in Scratch.",
+       "Speech marks mean the thing inside them is words, not a number.",
+       "str( ) turns a number into words, so it can be joined to other words."
+      ]
+     },
+     {
+      "icon": "🤖",
+      "title": "Next lesson: the program talks back",
+      "text": "Next fortnight you build a chatbot. Every program you have run so far does exactly the same thing every time you press RUN. A chatbot asks the person at the keyboard a question, waits for the answer, and uses what they typed. That is one new Python word, and you already have everything else you need for it.",
+      "note": "Nothing to bring, and nothing to do between now and then. The Bureau desk stays open on this lesson if you ever want to look back at the six pairs."
+     }
+    ],
+    "help": "Two cards to read, then the last two screens. Nothing here is marked. Click Continue at the bottom of each card."
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit check",
+   "minutes": 3,
+   "config": {
+    "kicker": "Exit check",
+    "cardTitle": "One question before you finish",
+    "readyLabel": "Ready",
+    "intro": "One last question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "items": [
+     {
+      "id": "j2x2-1",
+      "stem": "Your program has score = 0 on the first line. What has that line actually done?",
+      "options": [
+       "It has made a variable called score and put 0 into it",
+       "It has printed the number 0 on the console",
+       "It has asked Python whether score is the same as 0",
+       "It has emptied the console before the program runs"
+      ]
+     }
+    ],
+    "help": "One marked question about the Python you wrote today. You are told whether you were right, and why, at the very end of the lesson — after the How did it go? screen."
+   }
+  },
+  {
+   "id": "selfeval",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 4,
+   "config": {
+    "alreadyFiled": "You have already sent this to your teacher. You can read back through it as often as you like, and nothing you click now will change what you sent.",
+    "offlineSay": "Your connection is playing up, so your answers are safe on this computer and will send by themselves. That is the lesson finished.",
+    "statements": [
+     "I can look at a Scratch block and say what it does.",
+     "I can find the line of Python that does the same job as a block.",
+     "I can read the console and work out what my program really did."
+    ],
+    "difficulty": true,
+    "comment": true,
+    "help": "Under each sentence, click the button that says how today really went. Then, at the bottom of the screen, click how hard the hour felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving — it is how your teacher hears from everyone, not just the loudest."
+   }
+  }
+ ],
+ "keysEnc": "+1WJ3w5TciJ8ggUStRnLu24gZv2KpAKqX7SwSS1WYFA2kcoPgPJv4xjxeMB2g0XCTqYozACKPXnQMAc8aRBMhc8w1Rz2GYpy4gFAxjbQ48QrPHOpH2WwI4h5P3/l3nYCNizSx1x74HCWJPH20u1WqeQ/DGN8Dag+4bPg4WWiugdQPldGIJhPZO/C8ZFb54BYzk4VykXPSLoqMbSMadyO0rjkhk9jqdqAXfEFb8SaOSfMdoiuLizGj7nEb3EvK8nSy0Fa1Q8vUOoN+6UqY2T7EBgwswPaxEaR+N2UgCSgyOkyj+Eq8N+FbBx2lWFzNRi0FsCV3+8iMZXGS//g+2cQm7T08empqQvZ/iFqHvOgxY/zchCMeDyDyRx7LEb9uaMovi1FYytzrOr/TZgO2+MFAW5trK4g5c/TawagZwZMbVeSR9hKAt71/3u6sJ2wCHn5E8EMQD94oqngRfKOJbXgkkAeDVSVM4Jnthmiau733b+EqMGH3HSFktPBtVC4lFvjNarMYoqzWwRpoGYCuFqxZFrWQyobw6wQ+lObDvgExEIPlrY0YOo1TzxrHDmi"
+}

@@ -1,6 +1,6 @@
 {
  "comment": "Agent Kit registry. Cosmetic only - no keys, no marks. Every theme is a curated variant of the approved Mission Control v2 shell: lesson reading surfaces are never touched, contrast stays AA on the dark shell, and no theme may use background-attachment:fixed or per-card backdrop-filter (Chrome compositor rule). vars map to the THEME KNOB custom properties in style.css :root; stars feeds the starfield canvas; fx names an optional ambient effect layer (comets | aurora).",
- "clearanceNote": "Thresholds re-tiered 2 Aug 2026 (DFM 131): every lesson-end must unlock something new in the Agent Kit, so levels 2-6 sit a small margin below the NO-STRETCH full-completion cumulative XP for J1 L1-L5, computed from the built content and the engine award sites (ladder 7+clean*5; vault 12+right*3; casework 4+closed*4+gold+rc*2+ship*3; studio build crits*4+ship*3; gallery 3*given+v2; plus the server's +10 for filing the exit report). Best-path cumulatives: L1 110, L2 148, L3 194, L4 233, L5 275. Levels 2-5 carry two themes each and level 6 carries Gold Command, so the five levels above the start are exactly five unlock moments for five lessons. DAMIEN'S RULINGS, 9 Aug 2026 (DFM 164a then 165): the whole ladder is now tuned to the FLOOR path - the pupil who uses the priced features exactly as designed, buying every Debug Hint, taking every clue, and getting nothing right first try in the Vault. Her cumulatives, computed from the same built content: L1 92, L2 124, L3 164, L4 199, L5 241. Thresholds sit a small margin below each (90, 120, 160, 195, 235), so SHE unlocks something at every lesson-end - the promise rule 131 actually makes. The no-stretch full-completion pupil (110, 148, 194, 233, 275) also crosses exactly one level per lesson. KNOWN AND ACCEPTED, because no ladder can avoid it: a pupil who does EVERY stretch challenge (110, 153, 204, 246, 291) crosses two levels at the end of Lesson 3 and none at the end of Lesson 5, because she is further ahead after three lessons than the floor pupil is after four - the ranges overlap and no single threshold exists. Fixing that properly needs a SEVENTH tier (two more themes), which is new content and his call. Lowering thresholds can only ever GRANT an unlock, never revoke one, so no pupil loses a costume she already had; the mx 'once earned always hers' machinery (DFM 145) is untouched. qa-predeploy pins all three pupil paths and both invariants, so any content edit that shifts these numbers fails loudly. J2 §4b, 16 Aug 2026 (amendment §4b, DFM 165 — computed from the BUILT j2-01, never from memory, and re-computed after the expert walk found the real numbers). XP in J2 Lesson 1 comes only from badges (markItem awards none), plus the server's own flat +10 for FILING the exit report, which lands after the closing screen. THE FLOOR PATH — she completes the hour with the worst honest answers, gets no flag right in any inspection scene and refuses the optional Hard Inspection — is 12 (Your Workbench) + 10 (Safety Inspector, earning 0 flag XP) + 10 (Snapshot Taken) + 15 (Workshop Warrant) = 47 BY THE END OF THE WARRANT, which is where the first unlock has to happen: the clearance pop fires on the year map (app.js maybeClearancePop, never mid-lesson), and the exit's +10 arrives after it. Level 2 'Maker' therefore sits at 40, a margin of 7 below 47, so SHE unlocks something at the end of Lesson 1 — the promise rule 131 makes, held for the pupil most at risk of giving up. The other two paths on the same built content, for the record: the pupil who finds every violation in the four main scenes but skips the stretch reaches 12 + (10 + 20) + 10 + 15 = 67 by the warrant and 77 with the exit filed; the pupil who also clears the Hard Inspection reaches 73 and 83. Flag XP per scene is 1 per correct flag plus a clean-scene bonus of 2/2/3/3/3, so the inspection badge tops out at 10 + 26 = 36 — DELIBERATELY under the deployed server's 40-XP-per-event ceiling, which silently truncated the first cut's 63 (qa-xp-ceiling now fails the pack rather than letting a badge pop promise points the record will never gain). Levels 3-6 do not exist for J2 and are not invented: they land with the lessons that earn them (§4a's law). J3 §4b, 16 Aug 2026, on the same law and the same method. J3 Lesson 1's XP is also badges-only: 12 (Studio Pass) + 15 (Studio Code) + 10 (Portfolio Zero) + 10 (Compass Set) = 47 by the end of the Compass, which is where its first unlock has to land, for the same reason as J2's — the clearance pop fires on the year map and the exit report's flat +10 arrives after it. Level 2 'Creator' therefore sits at 40, a margin of 7. The Studio Code's two optional Hard Cases add the standing +5, so the largest single event in the lesson is 20 and the whole lesson tops out at 62 — both well inside the server's 40-per-event and 150-per-lesson ceilings (qa-xp-ceiling). Levels 3-6 do not exist for J3 either, and are not invented.",
+ "clearanceNote": "Thresholds re-tiered 2 Aug 2026 (DFM 131): every lesson-end must unlock something new in the Agent Kit, so levels 2-6 sit a small margin below the NO-STRETCH full-completion cumulative XP for J1 L1-L5, computed from the built content and the engine award sites (ladder 7+clean*5; vault 12+right*3; casework 4+closed*4+gold+rc*2+ship*3; studio build crits*4+ship*3; gallery 3*given+v2; plus the server's +10 for filing the exit report). Best-path cumulatives: L1 110, L2 148, L3 194, L4 233, L5 275. Levels 2-5 carry two themes each and level 6 carries Gold Command, so the five levels above the start are exactly five unlock moments for five lessons. DAMIEN'S RULINGS, 9 Aug 2026 (DFM 164a then 165): the whole ladder is now tuned to the FLOOR path - the pupil who uses the priced features exactly as designed, buying every Debug Hint, taking every clue, and getting nothing right first try in the Vault. Her cumulatives, computed from the same built content: L1 92, L2 124, L3 164, L4 199, L5 241. Thresholds sit a small margin below each (90, 120, 160, 195, 235), so SHE unlocks something at every lesson-end - the promise rule 131 actually makes. The no-stretch full-completion pupil (110, 148, 194, 233, 275) also crosses exactly one level per lesson. KNOWN AND ACCEPTED, because no ladder can avoid it: a pupil who does EVERY stretch challenge (110, 153, 204, 246, 291) crosses two levels at the end of Lesson 3 and none at the end of Lesson 5, because she is further ahead after three lessons than the floor pupil is after four - the ranges overlap and no single threshold exists. Fixing that properly needs a SEVENTH tier (two more themes), which is new content and his call. Lowering thresholds can only ever GRANT an unlock, never revoke one, so no pupil loses a costume she already had; the mx 'once earned always hers' machinery (DFM 145) is untouched. qa-predeploy pins all three pupil paths and both invariants, so any content edit that shifts these numbers fails loudly. J2 §4b, 16 Aug 2026 (amendment §4b, DFM 165 — computed from the BUILT j2-01, never from memory, and re-computed after the expert walk found the real numbers). XP in J2 Lesson 1 comes only from badges (markItem awards none), plus the server's own flat +10 for FILING the exit report, which lands after the closing screen. THE FLOOR PATH — she completes the hour with the worst honest answers, gets no flag right in any inspection scene and refuses the optional Hard Inspection — is 12 (Your Workbench) + 10 (Safety Inspector, earning 0 flag XP) + 10 (Snapshot Taken) + 15 (Workshop Warrant) = 47 BY THE END OF THE WARRANT, which is where the first unlock has to happen: the clearance pop fires on the year map (app.js maybeClearancePop, never mid-lesson), and the exit's +10 arrives after it. Level 2 'Maker' therefore sits at 40, a margin of 7 below 47, so SHE unlocks something at the end of Lesson 1 — the promise rule 131 makes, held for the pupil most at risk of giving up. The other two paths on the same built content, for the record: the pupil who finds every violation in the four main scenes but skips the stretch reaches 12 + (10 + 20) + 10 + 15 = 67 by the warrant and 77 with the exit filed; the pupil who also clears the Hard Inspection reaches 73 and 83. Flag XP per scene is 1 per correct flag plus a clean-scene bonus of 2/2/3/3/3, so the inspection badge tops out at 10 + 26 = 36 — DELIBERATELY under the deployed server's 40-XP-per-event ceiling, which silently truncated the first cut's 63 (qa-xp-ceiling now fails the pack rather than letting a badge pop promise points the record will never gain). Levels 3-6 do not exist for J2 and are not invented: they land with the lessons that earn them (§4a's law). J3 §4b, 16 Aug 2026, on the same law and the same method. J3 Lesson 1's XP is also badges-only: 12 (Studio Pass) + 15 (Studio Code) + 10 (Portfolio Zero) + 10 (Compass Set) = 47 by the end of the Compass, which is where its first unlock has to land, for the same reason as J2's — the clearance pop fires on the year map and the exit report's flat +10 arrives after it. Level 2 'Creator' therefore sits at 40, a margin of 7. The Studio Code's two optional Hard Cases add the standing +5, so the largest single event in the lesson is 20 and the whole lesson tops out at 62 — both well inside the server's 40-per-event and 150-per-lesson ceilings (qa-xp-ceiling). Levels 3-6 do not exist for J3 either, and are not invented. LEVEL 3 FOR J2 AND J3, 19 Aug 2026, computed from the BUILT j2-02 and j3-02 rather than from memory (the same law as level 2). J2 Lesson 2 awards 15 (Bureau Reader) + 20 (First Program) from badges, plus up to 6 and 5 respectively for first-try work; J3 Lesson 2 awards 15 (First Words) + 20 (Call Sheet Printed) plus up to 6 each. THE FLOOR PATH for both years — she finishes the hour with nothing right first try — is 57 after Lesson 1 (47 badges + the server’s flat 10 for filing the exit report) and 92 by the end of Lesson 2’s second badge, which is where the unlock has to land. THE BINDING CONSTRAINT is the other end: the J2 pupil who cleared the Hard Inspection in Lesson 1 is already on 83, so a threshold at or below 83 would fire her unlock at the END OF LESSON 1 and leave Lesson 2 unlocking nothing for her (rule 131 broken for the strongest pupil instead of the weakest). The window is therefore (83, 92] and level 3 sits at 87 for both years: every path crosses it exactly once, inside Lesson 2. Largest single event: 26 XP (J3’s second badge with every build clean), well inside the deployed server’s 40-per-event ceiling, and each lesson tops out at 56 of the 150-per-lesson ceiling (qa-xp-ceiling computes both from the content). Each new level carries ONE look per year rather than J1’s two, because a year has 17 lessons and 16 unlock moments to spread across them; the pattern is set here and revisited when J2 L3 lands.",
  "themes": [
   {
    "id": "midnight",
@@ -610,6 +610,84 @@
    "year": "j3",
    "fx": "silverdust",
    "drift": true
+  },
+  {
+   "id": "blueprint",
+   "name": "Blueprint",
+   "tag": "The drafting table under one lamp: indigo paper, a pale grid, and the light moving slowly across it.",
+   "clearance": 3,
+   "vars": {
+    "--gold": "#7FD4E8",
+    "--gold-hi": "#B7EBF7",
+    "--gold-deep": "#2C7A92",
+    "--gold-rgb": "127, 212, 232",
+    "--gold-hi-rgb": "183, 235, 247",
+    "--accent-ink": "#06212B",
+    "--space-0": "#0B1430",
+    "--space-1": "#111C42",
+    "--space-2": "#182553",
+    "--space-3": "#213068",
+    "--space-deep": "#060C1E",
+    "--text-d": "#EAF3FB",
+    "--muted-d": "#A9BFDA",
+    "--glass-d": "rgba(24, 37, 83, 0.55)",
+    "--glass-d-solid": "rgba(20, 31, 71, 0.85)",
+    "--line-d": "rgba(183, 235, 247, 0.18)",
+    "--panel": "rgba(28, 43, 96, 0.72)",
+    "--panel-hover": "rgba(38, 56, 118, 0.72)",
+    "--topbar-bg": "rgba(11, 20, 48, 0.72)",
+    "--toast-bg": "rgba(24, 37, 83, 0.92)",
+    "--aurora-b-color": "rgba(127, 212, 232, 0.44)",
+    "--bg-glow-b": "rgba(127, 212, 232, 0.11)"
+   },
+   "stars": {
+    "density": 10000,
+    "base": "#CFEBF6",
+    "accent": "#7FD4E8",
+    "ratio": 0.18
+   },
+   "fx": "blueprint",
+   "year": "j2",
+   "drift": true
+  },
+  {
+   "id": "greenroom",
+   "name": "Green Room",
+   "tag": "The quiet room off the side of the stage: deep teal, one warm lamp in the corner, dust turning in it.",
+   "clearance": 3,
+   "vars": {
+    "--gold": "#F2C46B",
+    "--gold-hi": "#FFE0A3",
+    "--gold-deep": "#A9761C",
+    "--gold-rgb": "242, 196, 107",
+    "--gold-hi-rgb": "255, 224, 163",
+    "--accent-ink": "#231703",
+    "--space-0": "#08211D",
+    "--space-1": "#0D2C27",
+    "--space-2": "#123832",
+    "--space-3": "#19483F",
+    "--space-deep": "#041512",
+    "--text-d": "#EDF6F2",
+    "--muted-d": "#A8C7BC",
+    "--glass-d": "rgba(18, 56, 50, 0.55)",
+    "--glass-d-solid": "rgba(14, 46, 41, 0.85)",
+    "--line-d": "rgba(255, 224, 163, 0.18)",
+    "--panel": "rgba(20, 62, 55, 0.72)",
+    "--panel-hover": "rgba(27, 80, 70, 0.72)",
+    "--topbar-bg": "rgba(8, 33, 29, 0.72)",
+    "--toast-bg": "rgba(18, 56, 50, 0.92)",
+    "--aurora-b-color": "rgba(242, 196, 107, 0.44)",
+    "--bg-glow-b": "rgba(242, 196, 107, 0.11)"
+   },
+   "stars": {
+    "density": 11000,
+    "base": "#F6E7C4",
+    "accent": "#F2C46B",
+    "ratio": 0.16
+   },
+   "fx": "greenroom",
+   "year": "j3",
+   "drift": true
   }
  ],
  "insignia": [
@@ -762,6 +840,11 @@
     "level": 2,
     "xp": 40,
     "name": "Maker"
+   },
+   {
+    "level": 3,
+    "xp": 87,
+    "name": "Engineer"
    }
   ],
   "j3": [
@@ -774,6 +857,11 @@
     "level": 2,
     "xp": 40,
     "name": "Creator"
+   },
+   {
+    "level": 3,
+    "xp": 87,
+    "name": "Director"
    }
   ]
  },

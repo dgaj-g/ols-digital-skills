@@ -62,7 +62,21 @@ const EXPECT = {
      The Compass is deterministic here because the walker always takes the FIRST
      side of each pair — a clean sweep, so the result card is the same every run
      (DFM 199: pin only what does not move). */
-  'j3-1': { xp: 62, chunks: 8, presses: 8, marks: 21, badges: 4 }
+  'j3-1': { xp: 62, chunks: 8, presses: 8, marks: 21, badges: 4 },
+  /* J2 Lesson 2, measured on 19 Aug 2026 — and XP IS DELIBERATELY NOT PINNED.
+     Two runs gave 27 and 28. That is not flakiness in the walker: the matching
+     desk SHUFFLES its Python column at mount (`Math.random`), which is the whole
+     point of it — a pupil who learns the order learns nothing. The walker
+     brute-forces that desk on purpose, so how many pairs it gets first time
+     depends on the shuffle, and `firstTryXp` turns that into XP. Everything a
+     shuffle cannot touch was identical on both runs and is pinned here. Pinning
+     the 27 would have made this gate fail every other run for a reason that is
+     the design working (DFM 199: pin only what does not move). */
+  'j2-2': { chunks: 8, presses: 8, marks: 7, badges: 2 },
+  /* J3 Lesson 2, measured 19 Aug 2026, IDENTICAL on a second run — every number
+     including XP, because this lesson has no shuffled surface: four builds, each
+     driven from the same key to the same answer. */
+  'j3-2': { xp: 31, chunks: 8, presses: 8, marks: 10, badges: 2 }
 };
 const OUT = path.join('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform',
   'qa-l2-l5-review', 'l' + NUM.toLowerCase() + (WHO === 'anya' ? '' : '-' + WHO));
@@ -74,9 +88,11 @@ const GHOST_WAIT = 420;
    (DFM 221). It was the last J1 lesson no expert walker had ever driven — it
    shipped before this file existed and was never retro-fitted. */
 const TITLES = { '1': 'Mission Control', '2': 'Make It Move', '3': 'Scoreboard Engineer', '4': 'The Broken Game', '5': 'Game Studio', 'S1': 'Files That Follow You',
-  'j2-1': 'Welcome to the Workshop', 'j3-1': 'The Studio Opens' };
+  'j2-1': 'Welcome to the Workshop', 'j3-1': 'The Studio Opens',
+  'j2-2': 'Translation Bureau', 'j3-2': 'First Words in Python' };
 
 let shotN = 0;
+const shotOnce = new Set();   /* the Python screens repeat many turns; shoot each kind once */
 const log = [];
 function note(s) { log.push(s); console.log(s); }
 
@@ -780,6 +796,57 @@ const CASE_LOGS = {
           }
         }
         await sleep(700); break;
+      /* THE TWO PYTHON ENGINES — DRIVEN FROM lib/walk-moves.js, NOT FROM A COPY
+         HERE (19 Aug 2026, found by the first real walk of j2-2, which stalled
+         eighteen turns deep on the matching desk).
+         DFM 238a is the law and this is its MIRROR IMAGE. That entry was written
+         when only the DETECTOR learned a new year: six screens recognised and
+         unactionable, every walker but this one stalled. So the last round taught
+         both halves of walk-moves.js — and this file was never in the list,
+         because it does not use MOVES at all. It reads the detector from the one
+         home and then works every screen from its own switch, so a new engine is
+         recognised here and has nowhere to go.
+         Fixed by delegating: the seven new kinds run the SAME mover both other
+         walkers run, which is what "one fact, one home" is supposed to mean
+         (DFM 144). The gestures stay in walk-moves; only the screenshots and the
+         counters, which are this walker's own job, stay here. */
+      case 'snap-pick':
+      case 'snap-try':
+      case 'snap-done':
+      case 'pyrun-place':
+      case 'pyrun-blank':
+      case 'pyrun-run':
+      case 'pyrun-next': {
+        await sleep(GHOST_WAIT);
+        /* installed here rather than at boot so it survives any navigation, and
+           it early-returns once it is in place */
+        await WALK.primeDevKeys(page, HOST);
+        if (!shotOnce.has(st.kind)) { shotOnce.add(st.kind); await shot(ck + '-' + st.kind); }
+        /* A STUCK WALKER THAT SAYS NOTHING IS THE PROBLEM (19 Aug 2026). The
+           first three walks of j2-2 each stalled somewhere different and the log
+           said only "STATE pyrun-place" forty-five times. The mover's own view of
+           the card is reported on every turn, so the next stall names its cause
+           on the first line instead of the forty-sixth. */
+        const why = await page.evaluate(([k, src]) => {
+          const fn = new Function('return (' + src + ')')();
+          fn();
+          const card = document.querySelector('.pyrun-card');
+          const bid = card && card.getAttribute('data-build');
+          const key = window.__walkKey ? window.__walkKey(bid) : null;
+          return {
+            build: bid, key: key ? (key.order || []).join(',') : 'NONE',
+            tray: document.querySelectorAll('.pyt-list .pyrun-line').length,
+            prog: Array.from(document.querySelectorAll('.pyp-list .pyrun-line')).map(n => n.getAttribute('data-si')).join(','),
+            blanks: Array.from(document.querySelectorAll('.pyp-list .pyrun-blank')).map(i => i.getAttribute('data-key') + '=' + (i.value || '')).join(' '),
+            run: (() => { const b = document.querySelector('.pyrun-run'); return b ? (b.disabled ? 'asleep' : 'armed') : 'none'; })()
+          };
+        }, [st.kind, String(WALK.MOVES[st.kind])]);
+        if (same === 0 || same > 40) note('  ' + st.kind + ' :: ' + JSON.stringify(why));
+        if (st.kind === 'pyrun-run') seen.marks++;
+        await sleep(WALK.SETTLE[st.kind] || 600);
+        break;
+      }
+
       default:
         note('STATE ' + st.kind + ' @ ' + ck + (st.text ? ' :: ' + st.text : ''));
         await sleep(800);

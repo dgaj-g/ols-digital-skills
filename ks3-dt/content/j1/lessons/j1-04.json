@@ -3,7 +3,7 @@
  "year": "j1",
  "num": 4,
  "title": "The Broken Game",
- "tagline": "Four bugs. One broken game. You're the bug detectives.",
+ "tagline": "Four bugs. One shipped game. You're QA.",
  "mode": "quest",
  "skin": "casefile",
  "durationMin": 60,

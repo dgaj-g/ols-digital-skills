@@ -1,0 +1,391 @@
+{
+ "id": "j3-02",
+ "year": "j3",
+ "num": 2,
+ "title": "First Words in Python",
+ "tagline": "Today you write your first computer code, in a language called Python, and make the computer print exactly the right words.",
+ "mode": "taught",
+ "durationMin": 60,
+ "objectives": [
+  "Write a line of Python that prints exactly the text I want, and no other text.",
+  "Put a value in a variable, use it in more than one place, and change it in one place only.",
+  "Do a calculation inside a printed line, and read the console to check the answer."
+ ],
+ "chunks": [
+  {
+   "id": "briefing",
+   "engine": "briefing",
+   "title": "Today's call sheet",
+   "minutes": 5,
+   "config": {
+    "clearance": "J3 · LESSON 2 OF 17",
+    "headline": "Every day on a film set starts with one sheet of paper.",
+    "lines": [
+     "A call sheet is the single piece of paper a film or theatre crew works from. It carries the title, the times, and the numbers everyone needs for the day. On a real production somebody prints it every morning, and nobody starts until it is right.",
+     "In this Studio the call sheet is printed by a program, and this hour you write that program. The language is Python.",
+     "Python is a programming language you type. It is one of the most used languages in the world, and it is what a great deal of real software is written in. You are starting it from nothing today — no Python is assumed and none is needed. Everything you meet in this hour is taught in this hour.",
+     "The job is always the same, and it is worth saying plainly because it is the whole lesson: MAKE THE CONSOLE PRINT THE EXACT WORDS YOU ARE ASKED FOR. The console is the strip where a program's words come out. The hour is four BUILDS, and a build is one small job. Each build shows you the exact wording the call sheet must have. You put the Python together, press RUN, and the console shows you what your program really printed. If it says exactly what was asked for, you get MATCHED. If it does not, you get NOT YET, and you look at what came out and work out why.",
+     "Here is what happens this hour, in order. A short film first, about four and a half minutes, with no sound. Then four builds, and they get harder as you go. You print one exact line, then two lines in the right order. Then you use a box with a name on it that remembers a word for you. Last comes a sum that Python works out inside a printed line. It finishes with a card about your next lesson, one marked question, and a screen that asks you how the hour went."
+    ],
+    "cta": "Start the film",
+    "help": "This card types itself out. Read it through — your teacher may be reading it with the class — and click the button at the bottom when you are ready. Nothing on this screen is marked."
+   }
+  },
+  {
+   "id": "film",
+   "engine": "video",
+   "title": "First words in Python (the film)",
+   "minutes": 5,
+   "config": {
+    "src": "assets/video/j3/j3-l2.mp4",
+    "intro": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is about four and a half minutes long, and it is in four parts — you can click the buttons underneath to jump to any part while you are on this screen.",
+    "fallback": "If the film will not play, carry on — every idea in it is written again on the build cards. Tell whoever is in the room that the film would not play.",
+    "chapters": [
+     {
+      "t": 0,
+      "label": "What Python is"
+     },
+     {
+      "t": 62,
+      "label": "print, exactly"
+     },
+     {
+      "t": 116,
+      "label": "A box with a name on it"
+     },
+     {
+      "t": 201,
+      "label": "Reading an error without fear"
+     }
+    ],
+    "help": "Press play, or click one of the four part buttons underneath the film to jump to that part. Everything the film shows is written again on the build cards, so you do not need to come back to it. Nothing here is marked."
+   }
+  },
+  {
+   "id": "callsheet-a",
+   "engine": "pyrun",
+   "title": "Builds 1 and 2 — the title and the times",
+   "minutes": 12,
+   "badge": {
+    "id": "j3-b5",
+    "name": "First Words",
+    "icon": "assets/badges/newspaper.png",
+    "xp": 15
+   },
+   "config": {
+    "kicker": "Badge 1 — the top of the call sheet",
+    "title": "Make the console say it",
+    "intro": "Two builds, and they are the two smallest things Python can do for you: print one exact line, and print two lines in the right order.\n\nExact matters here. Change one capital letter and the console counts it as a different line from The target. It does not guess what you meant, and tonight's audience is standing outside a theatre whose name has to be right.",
+    "steps": [
+     "Read The target at the top of the card. That is exactly what the console has to print — every letter, every space.",
+     "Drag the lines you want into Your program, in the order you want them to run. Some of the lines have a gap in them for you to type into.",
+     "Press RUN. Your program is really run, and the console shows exactly what came out of it.",
+     "MATCHED means the console said exactly what was asked. NOT YET means it did not, and you get the lines back to try again. Nothing is taken off you for a run that does not work."
+    ],
+    "beginLabel": "Open the call sheet",
+    "targetLead": "The target — make the console print exactly this",
+    "trayLabel": "The lines",
+    "progLabel": "Your program",
+    "runLabel": "RUN my program",
+    "howLine": "**How it works:** to ADD a line, drag it into **Your program**, or click the line itself. To MOVE a line, drag it up or down inside **Your program**. To TAKE a line out, drag it back to **The lines**. Python runs your program from the top line down, one line at a time.",
+    "trayEmpty": "Every line is in your program.",
+    "progEmpty": "Nothing here yet — drag or click a line across.",
+    "lockedNote": "Move at least one line into Your program, and the RUN button will turn on.",
+    "matchedLabel": "MATCHED",
+    "notYetLabel": "NOT YET",
+    "matchedSay": "The console printed exactly what The target shows.",
+    "notYetSay": "The console did not print what The target shows. Look at what it really printed, in the console under your program. Then change one thing and press RUN again.",
+    "blankEmptySay": "One of the gaps in your lines is still empty, so there is nothing for Python to print there. Click the gap, type into it, then press RUN.",
+    "nextBuildLabel": "Next build",
+    "continueLabel": "Continue",
+    "firstTryXp": 3,
+    "firstTryXpCap": 6,
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Build your program, then press RUN.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell your teacher, and press RUN again in a moment."
+    },
+    "errorWords": {
+     "name": "Python does not know that name. Words you want printed have to sit inside speech marks, like \"THE HARBOUR LIGHT\". Without them, Python goes looking for a box with that name and cannot find one. Look at what you typed into the gap, put speech marks round it, then press RUN.",
+     "syntax": "Python could not read that line at all. Look for a bracket or a speech mark that was opened and never closed.",
+     "type": "You have tried to join a word to a number. Python will not do that on its own — the number has to be turned into text first, with str( ) around it.",
+     "indent": "One of the lines has spaces at the front that should not be there. Drag it back to The lines and put it in again.",
+     "value": "Python read the line, but it did not understand what was typed into the gap. Check what you typed into each gap, then press RUN.",
+     "timelimit": "Your program was still going after a few seconds, so the computer stopped it. Drag the bottom line of Your program back out to The lines, then press RUN again.",
+     "other": "Python stopped at the line named above. Read that line again, slowly."
+    },
+    "builds": [
+     {
+      "id": "j3b-title",
+      "tab": "1 · Title",
+      "goalLine": "**Build 1.** Print the name of the theatre at the top of the call sheet.",
+      "brief": "print( ) is the Python word for putting something on the console. Whatever sits inside the brackets and inside the speech marks comes out exactly as you typed it.",
+      "target": [
+       "THE HARBOUR LIGHT"
+      ],
+      "matchedSay": "MATCHED. That is a working Python program, and it is one line long.",
+      "lines": [
+       {
+        "t": "print(\"____\")",
+        "blanks": [
+         {
+          "key": "title",
+          "slot": "____",
+          "ph": "type it",
+          "size": 20,
+          "max": 30,
+          "label": "the theatre name, exactly as the target shows it"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "j3b-times",
+      "tab": "2 · Times",
+      "goalLine": "**Build 2.** Print two lines, and get them the right way round.",
+      "brief": "Python runs your lines from the top down. Two print lines make two lines on the console, in the order you put them.",
+      "target": [
+       "THE HARBOUR LIGHT",
+       "Doors open at 7"
+      ],
+      "matchedSay": "MATCHED. The console printed your lines in exactly the order you stacked them. Swap them round and the call sheet comes out wrong.",
+      "lines": [
+       {
+        "t": "print(\"THE HARBOUR LIGHT\")"
+       },
+       {
+        "t": "print(\"Doors open at 7\")"
+       },
+       {
+        "t": "print(\"Doors open at seven\")"
+       }
+      ]
+     }
+    ],
+    "help": "The target at the top of the card is exactly what the console has to print. Drag the lines you want into Your program, type into any gap, then press RUN. The console shows exactly what your program printed — and if Python stops, it shows Python's own words with a plain-English explanation underneath. You can run as many times as you like."
+   }
+  },
+  {
+   "id": "callsheet-b",
+   "engine": "pyrun",
+   "title": "Builds 3 and 4 — the venue and the money",
+   "minutes": 22,
+   "badge": {
+    "id": "j3-b6",
+    "name": "Call Sheet Printed",
+    "icon": "assets/badges/numbers.png",
+    "xp": 20
+   },
+   "config": {
+    "kicker": "Badge 2 — the rest of the call sheet",
+    "title": "One name, used twice — and a sum",
+    "intro": "Two more builds, and the first one is the important one.\n\nSo far every word you printed was typed into the line that printed it. Build 3 puts the theatre's name into a VARIABLE instead: a box with a name on it, holding one thing for you. Two different lines then use that box. Change what is in the box, and both lines change, because you only ever typed the name in one place.",
+    "steps": [
+     "Read The target at the top of the card. It is two lines this time, and the theatre's name appears in both of them.",
+     "A line with = in it makes a variable: the name on the left, the value on the right. In Python, = means 'put this into that box'. It does not mean 'is the same as'.",
+     "A name used WITHOUT speech marks means the box. The same word INSIDE speech marks is just those letters. That one difference is what build 3 is really about.",
+     "Press RUN, read the console, and fix what needs fixing. Nothing is taken off you for a run that does not work."
+    ],
+    "beginLabel": "Open the call sheet",
+    "targetLead": "The target — make the console print exactly this",
+    "trayLabel": "The lines",
+    "progLabel": "Your program",
+    "runLabel": "RUN my program",
+    "howLine": "**How it works:** to ADD a line, drag it into **Your program**, or click the line itself. To MOVE a line, drag it up or down inside **Your program**. To TAKE a line out, drag it back to **The lines**. Python runs your program from the top line down, one line at a time. A line that fills a box has to come above any line that uses it.",
+    "trayEmpty": "Every line is in your program.",
+    "progEmpty": "Nothing here yet — drag or click a line across.",
+    "lockedNote": "Move at least one line into Your program, and the RUN button will turn on.",
+    "matchedLabel": "MATCHED",
+    "notYetLabel": "NOT YET",
+    "matchedSay": "The console printed exactly what The target shows.",
+    "notYetSay": "The console did not print what The target shows. Look at what it really printed, in the console under your program. Then change one thing and press RUN again.",
+    "blankEmptySay": "One of the gaps in your lines is still empty, so there is nothing for Python to put there. Click the gap, type into it, then press RUN.",
+    "nextBuildLabel": "Next build",
+    "continueLabel": "Continue",
+    "firstTryXp": 3,
+    "firstTryXpCap": 6,
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Build your program, then press RUN.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell your teacher, and press RUN again in a moment."
+    },
+    "errorWords": {
+     "name": "Python does not know that name. Either it is spelled differently from the box you made, or it was meant to be words and needs speech marks around it.",
+     "syntax": "Python could not read that line at all. Look for a bracket or a speech mark that was opened and never closed.",
+     "type": "You have tried to join a word to a number. Python will not do that on its own — the number has to be turned into text first, with str( ) around it.",
+     "indent": "One of the lines has spaces at the front that should not be there. Drag it back to The lines and put it in again.",
+     "value": "Python read the line, but it did not understand what was typed into the gap. Check what you typed into each gap, then press RUN.",
+     "timelimit": "Your program was still going after a few seconds, so the computer stopped it. Drag the bottom line of Your program back out to The lines, then press RUN again.",
+     "other": "Python stopped at the line named above. Read that line again, slowly."
+    },
+    "builds": [
+     {
+      "id": "j3b-venue",
+      "tab": "3 · Venue",
+      "goalLine": "**Build 3.** Put the theatre's name in a box, and use that box in both lines.",
+      "brief": "The name has to come out exactly the same in both lines, so you type it once, into the gap in the first line. That puts it into the box called venue. In a print line, a + sticks two pieces together: the words inside the speech marks, then whatever is in the box.",
+      "target": [
+       "Tonight at THE HARBOUR LIGHT",
+       "Thank you for coming to THE HARBOUR LIGHT"
+      ],
+      "matchedSay": "MATCHED. Look at what you did there: the theatre's name is typed once and printed twice. If the show moved venue tomorrow, you would change one box, and every line that uses it would change with it.",
+      "lines": [
+       {
+        "t": "venue = \"____\"",
+        "blanks": [
+         {
+          "key": "venue",
+          "slot": "____",
+          "ph": "type it",
+          "size": 20,
+          "max": 30,
+          "label": "the theatre name, exactly as the target shows it"
+         }
+        ]
+       },
+       {
+        "t": "print(\"Tonight at \" + venue)"
+       },
+       {
+        "t": "print(\"Thank you for coming to \" + venue)"
+       },
+       {
+        "t": "print(\"Tonight at venue\")"
+       }
+      ]
+     },
+     {
+      "id": "j3b-takings",
+      "tab": "4 · Money",
+      "goalLine": "**Build 4.** Make Python work out how much money the tickets bring in, and print the answer in the same line as the words.",
+      "brief": "Tonight there are 60 seats and one seat costs 4 pounds. Python can do the multiplying for you: * is the multiply sign. Python will not join a number straight onto words, so the line already wraps the sum in str( ) — that turns the answer into writing, and then the + can stick it beside the words.",
+      "target": [
+       "Money taken: 240 pounds"
+      ],
+      "matchedSay": "MATCHED. Nobody typed 240 anywhere — Python worked it out. Change the price or the number of seats and the call sheet prints the new answer by itself.",
+      "lines": [
+       {
+        "t": "price = ____",
+        "blanks": [
+         {
+          "key": "price",
+          "slot": "____",
+          "ph": "0",
+          "size": 4,
+          "max": 4,
+          "label": "the cost of one seat — just the number"
+         }
+        ]
+       },
+       {
+        "t": "seats = ____",
+        "blanks": [
+         {
+          "key": "seats",
+          "slot": "____",
+          "ph": "0",
+          "size": 4,
+          "max": 4,
+          "label": "how many seats there are"
+         }
+        ]
+       },
+       {
+        "t": "print(\"Money taken: \" + str(price * seats) + \" pounds\")"
+       },
+       {
+        "t": "print(\"Money taken: \" + price * seats + \" pounds\")"
+       },
+       {
+        "t": "print(\"Money taken: price * seats pounds\")"
+       }
+      ]
+     }
+    ],
+    "help": "The target at the top of the card is exactly what the console has to print. A line with = in it makes a box with a name on it; a line with print( ) puts something on the console. Drag the lines into the order you want, type into any gap, then press RUN. If Python stops, the console shows Python's own words with a plain-English explanation underneath. You can run as many times as you like."
+   }
+  },
+  {
+   "id": "next",
+   "engine": "steps",
+   "title": "What you did, and what is next",
+   "minutes": 5,
+   "config": {
+    "intro": "Two things to remember from today before you go.",
+    "steps": [
+     {
+      "icon": "🖨️",
+      "title": "The call sheet prints itself now",
+      "text": "You started this hour with no Python at all. You have now built four programs: one that prints a title, one that prints two lines in the right order, one with a name you only had to type once, and one with a sum it works out for itself. Programmers use those same four things every day.",
+      "lines": [
+       "print( ) puts something on the console, exactly as you wrote it.",
+       "Speech marks mean 'these letters'. No speech marks means 'the box with this name'.",
+       "A name with = after it makes a box and puts a value in it.",
+       "str( ) turns a number into text so it can be joined to words, and * multiplies."
+      ]
+     },
+     {
+      "icon": "🎵",
+      "title": "Next lesson: more than one thing in a box",
+      "text": "Next fortnight you build a playlist engine. Every box you made today holds ONE value. A playlist is a list of many, in an order, and Python has its own way of holding one. Everything you wrote today is what it is built on.",
+      "note": "Nothing to bring, and nothing to do between now and then. This lesson stays open on your year map if you want to look back through the four builds."
+     }
+    ],
+    "help": "Two cards to read, then the last two screens. Nothing here is marked. Click Continue at the bottom of each card."
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit check",
+   "minutes": 3,
+   "config": {
+    "kicker": "Exit check",
+    "cardTitle": "One question before you finish",
+    "readyLabel": "Ready",
+    "intro": "One last question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "items": [
+     {
+      "id": "j3x2-1",
+      "stem": "Ciara has this as the first line of her call sheet program:\n`venue = \"THE HARBOUR LIGHT\"`\nOn the next line she can write venue, or she can write \"venue\". What is the difference?",
+      "options": [
+       "venue gives you what is in the box; \"venue\" gives you those five letters",
+       "There is no difference — Python treats both the same way",
+       "venue is allowed inside print( ) and \"venue\" is not",
+       "\"venue\" gives you what is in the box; venue makes a new empty box"
+      ]
+     }
+    ],
+    "help": "One marked question about the Python you wrote today. You are told whether you were right, and why, at the very end of the lesson — after the How did it go? screen."
+   }
+  },
+  {
+   "id": "selfeval",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 5,
+   "config": {
+    "alreadyFiled": "You already sent this to your teacher when you finished the lesson. Looking back through it now does not change what you sent.",
+    "offlineSay": "The internet has dropped out. Your answers are saved on this computer and will send on their own. That is the lesson finished.",
+    "statements": [
+     "I can write a print line that puts exactly the words I want on the console.",
+     "I can put a value in a variable and use it in more than one line.",
+     "I can read the console and work out why my program did what it did."
+    ],
+    "difficulty": true,
+    "comment": true,
+    "help": "Under each sentence, click the button that says how today really went. Then, at the bottom of the screen, click how hard the hour felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving — it is how your teacher hears from everyone, not just the loudest."
+   }
+  }
+ ],
+ "keysEnc": "JhUDAoiCSnLKtQpbsgD0tgRQ/aDLumPnJot4xWI0WkhUgbNZ6KKhUctpGQ0LDRLRy5D3Vkdp2qwn+0xWpQCBMDvwSCEnIWc9RHR11AXoyIn9igMgIX9gvM1SGujZIv3CAUK0mUC54EzCOoyWG48qtZuj7dTFbFoc0HXMw+xFzcUt+UdmYtOcyVVJFLLwTHLbqAqEflcjL/EtZ84cCYv3yzG079Eqb9PgDxiYOlJhOD8uMiskHUTxAA/jzb6jbaO9jyJNlm130Y+5Anpjbd8ZclapuGwtfuxJQTKGmTkQ7gtAwpHI9/d9C+FRQkbQ6E4kOE6E4gn2/uAsF/ILEY9/mH+mKaYTS/0obmuRvRIHfEkYCPOjkaU/hZ0w3IsKXOo8SHUC2GQprCWwKd+qdLtepJM1xfk9YVHXPHq2a7za8S5U1EyDMNOjnsy1ksliQJfRTICFD8mGQl8eY0myrj8O+daSYEV1DpmDl1hwD53nYmqYnfSRo6B+8ur5hgkampwGlP4ZsIXbgqKePrq1n3804szn2xFVE9R3hi2Zjgx4GTMnUZzKKYaquQpMQzI1QET7koHjRz7eYlLi8Nk4KGfuSklkTix4bt/TtPzoWjiVmS7N2NRVxMUn2BisR7QdNms4xWqJiHNsmUMH2sgpClQo0mHLfD1C29nTHrKJCHBk2xswWLGVcA8SAA+dQ4Tr01cRBfLF"
+}

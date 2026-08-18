@@ -1,6 +1,6 @@
 {
  "year": "j2",
- "comment": "Seeded with the year's keystone THREADS only. items is deliberately empty: under DFM 134 the Do-Now may serve a pupil only recap items from lessons she has COMPLETED, so every item is authored by the lesson that teaches it and added when that lesson is built. An empty pool serves nothing, which is the correct behaviour for a year whose first lesson has not run yet (and Lesson 1 has no Do-Now at all).",
+ "comment": "Keystone THREADS for the year, plus the recap ITEMS the built lessons have authored. Under DFM 134 the Do-Now serves a pupil only items from lessons she has COMPLETED, so each item is authored by the lesson that teaches it and added when that lesson is built. Lesson 1 has no Do-Now of its own; its five items are served from Lesson 2 onwards.",
  "threads": {
   "kp-platform-j2": {
    "label": "How this website works",
@@ -71,6 +71,72 @@
    "note": "Established L15, used for real in L16."
   }
  },
- "items": [],
- "keysEnc": "hhI="
+ "items": [
+  {
+   "id": "r-j2-101",
+   "lesson": "j2-01",
+   "topic": "The year map",
+   "thread": "kp-platform-j2",
+   "stem": "Órla scrolls down her year map to look ahead and finds Lesson 9 has a padlock on its tile. What does the padlock tell her?",
+   "options": [
+    "Her teacher has not opened that lesson yet",
+    "Lesson 9 is broken and will not load",
+    "She has already finished Lesson 9",
+    "She is not allowed to do Lesson 9 at any point this year"
+   ]
+  },
+  {
+   "id": "r-j2-102",
+   "lesson": "j2-01",
+   "topic": "Saving",
+   "thread": "kp-platform-j2",
+   "stem": "Niamh answers a question in Lesson 3, then the bell goes and she signs out. Next fortnight her answer is still there. Why?",
+   "options": [
+    "The website keeps every answer the moment you give it",
+    "Because she pressed the Save button at the bottom of the screen before she left",
+    "Because the page was copied into her Google Drive",
+    "Because signing out puts your work away for you"
+   ]
+  },
+  {
+   "id": "r-j2-103",
+   "lesson": "j2-01",
+   "topic": "The DT room rules",
+   "thread": "kp-rules-j2",
+   "stem": "Saoirse's class gets to the DT room before the teacher. The door has been left unlocked and two pupils have already gone in and sat down. What should Saoirse do?",
+   "options": [
+    "Wait outside in the line with everybody else until the teacher arrives",
+    "Go in as well, since the door is open and other people are already inside",
+    "Go in and tell the two pupils to come back out",
+    "Go and find another teacher to come and open the room properly"
+   ]
+  },
+  {
+   "id": "r-j2-104",
+   "lesson": "j2-01",
+   "topic": "The DT room rules",
+   "thread": "kp-rules-j2",
+   "stem": "You sit down and find the mouse at your station will not move the pointer. What should you do?",
+   "options": [
+    "Put your hand up and tell your teacher now",
+    "Swap it with the mouse from the empty station beside you",
+    "Tell your teacher at the end, so you do not interrupt the lesson",
+    "Unplug it and plug it back in yourself"
+   ]
+  },
+  {
+   "id": "r-j2-105",
+   "lesson": "j2-01",
+   "topic": "Your Kit Locker",
+   "thread": "kp-platform-j2",
+   "stem": "Aoife opens her Kit Locker on this website. What does she find inside it?",
+   "options": [
+    "Looks she can put on her screen",
+    "The work she has saved this year",
+    "The lessons she has finished so far",
+    "A list of the equipment in the DT room"
+   ]
+  }
+ ],
+ "keysEnc": "hk1zLMKfFIZksnR5LXM75owimq6Ej3aKZeRhtLiW2JjHE61LBXA5yhQF4Y6WIaEcLV0GGuID24ZgqRQVEA2tC1rXSKidl12Ed/RajBof1Ddpmq+hQGlu+IDfZ6iOJF0bNTZqSzKeOPjrpPMIgBQYN1QR19b2IZz35DLVa1SKVJafg2IpQ4FVqsvnXlCoXISvAJu0M/KZ0PjImupn2ZKsln+bPDYcsyOzpphx+KgIbrhrzAk7a6qi0XOkmZBZ9dZDzqgpl2G++VPNmzHx88jKGJ6E+YOwlcvmQV42qIagDAeGFRPCqRSZAbf5wALwNEdIyAaNH+NGySLDTdK3JU9XzeHiHW4gx0/tKsoDRee8BakVh3wxGoAS/LE3NLgVnzVwJngSftVniYFLybloGr14OL3Wz4KBnwSZd4nAjaLfbg50BhMg2XVvhPJhMmpvTNr8nLfeHm59FB+Q0MIdK8AUrXMU/6CNj22tKAw7jBLH6U6HzbIMYC50a0kgVjbl7MRF9hPj7OuJ3YmNA81oi7xlef83Rl+dFMwdz90lfmZEeqQmpeUvDhLrj00TyR+vtdp+KVTqpePl9O6/ZRJNO8gQnLADvTC5poHIFMm/tLQXZXzcd0YCIeKKfNUH57asJnYfkGRlxg7vpoQu8SOKnejr82G5WecN/1tJqUCOxCTq4W6jtuINCtgrlLX65eb/4xfy/BnL3G5m+qM6qNcbSumK/r6ha/SBocjVkraJTbucIMA0gV+pxxysOZUk91gl53a2TcHyqdFPI5J1saLvdJ/OBHL+mm+IHqNFVsrmAdLc8MDaa8HsIHkveir9MCdw0igL7rUgeOCFAhvp99EPmWAiea8Z67nDryyi0vIkAf4oRf8wGEmixdD23d9Lakh2riUGrNolxkJAW/VyKou9wC7dAiECS/SdNekMBbB4GAPdOIF71heePcP7LWdOQ6fi8xoiMVZGtx7pLuyl/Oi5TfoNOXsWaD2K6m5fIC2Hml8q575Q2LdMau/Px94pSvlFfcobkovCzLAqfD5ugtgLrrFpYEe2B3uH1Y2R5IoUPz1mXzZC0RveM4XKGnnHq2FqjLOTrA8yR7mOVOINefrM02Dx70p6/7EvOnw9x63TvUMAGX1rsSxmgzFfQXhbWtZUUddo3qYB1oYgXR2h/oRXkpyWdXGOMi7r+tywjM232Fh02JCthayUeCluluqiZk/1WJ7RuOB8FrkUMK3umyijabZZh87kuf4P2Ae4E3Mkc0eppVhU4jLXX4hIsbULAwB/14p1+v/YX+2ZNlrIfV+7N5dsTnZNa68GbTgNxtPPbhcN4UdiA/+Xhj5FaZ7zr9kWftvL3OvgSojlRca76IXQbI2XX7+NnP6RECdvOBu9sWzUOfYmBYnQoCL3I3WHB7V/JdM18WOYLOeyhDAAivzrVwmvhWm7i+mR+NTiBYvmpb9fp9k71kDDvAYdhlIjdRzV3gHILmngv+ss/frL6psVHLx7W50U6BeTRfKOR2X5JEui++xBI2f+x2p5ub55Rfu0CcO1WdUR5XhhHmOkBueV6mZvYxIEFDBhrssP9qmcrvKbqzUZuqF9NgOIz4AqEqLuA/A6Ap+bHgzTvOFHSRfF5Wual6u0JAxSVX4oDwFhQO5WgBuwscuXdoLN68COux76aCVOQ7aI3suARht9WL5v7JwD9Gw3KV4sA7uzW5kAOCWouoFHGqpAYR/uDUhu+HO6aNskIPsUQhwKVflMZRFtaVsVlVwHjrjhTA96g468dvhvAq7ZGmkUwavzsA8Z93QZl229OJy25SvTJpTc4dZwniy8G+TP+arWkVMap8p+Z+erawyaOQ=="
 }

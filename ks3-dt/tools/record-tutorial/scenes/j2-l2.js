@@ -119,7 +119,7 @@ const scenes = [
   /* ------------------------------------------------------------------ ch3 */
   {
     id: 'ch3',
-    label: 'The same variable, written in Python',
+    label: 'A variable: a box with a name on it',
     tailMs: 1400,
     run: async ({ page, cine }) => {
       await openStage(page, cine);

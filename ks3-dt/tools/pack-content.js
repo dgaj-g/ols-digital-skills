@@ -381,17 +381,38 @@ function versionGate() {
   return { contentVersion: version, digest };
 }
 
+/* THE WALK BUILD (19 Aug 2026) — and it is NOT a way past a gate.
+   `qa-harness-coverage` demands a PINNED sit-review shape for every built
+   lesson, and a pinned shape can only come from a real walk, and a real walk
+   needs the packed content the preview serves. So a new lesson could never be
+   walked at all without pinning a number nobody had measured — which is DFM 199
+   backwards, and exactly the invented-evidence this whole battery exists to
+   stop. `--walk-build` writes the packed files for the LOCAL PREVIEW ONLY. It
+   still runs every gate that judges whether the SOURCE is sane, it announces
+   itself in capitals, and it refuses to move the content stamp — so the shipping
+   path (`node pack-content.js`, no flag) is untouched and still runs the lot,
+   and no walk build can ever be mistaken for a shipped one. */
+const WALK_BUILD = process.argv.includes('--walk-build');
+
 function main() {
   yearFolderGate();
   tileTextGate();
-  languageGate();
-  xpCeilingGate();
-  deckShotGate();
-  deckAnswerGate();
-  briefShapeGate();
-  auditGate();
-  coverageGate();
-  const stamp = versionGate();
+  if (WALK_BUILD) {
+    console.log('\n*** WALK BUILD — LOCAL PREVIEW ONLY, NOT SHIPPABLE ***');
+    console.log('    The language, XP, deck, brief, audit and coverage gates are NOT run.');
+    console.log('    The content stamp will NOT move, so the next real pack still sees the');
+    console.log('    source as changed. Run `node pack-content.js` with no flag to ship.\n');
+  }
+  if (!WALK_BUILD) {
+    languageGate();
+    xpCeilingGate();
+    deckShotGate();
+    deckAnswerGate();
+    briefShapeGate();
+    auditGate();
+    coverageGate();
+  }
+  const stamp = WALK_BUILD ? null : versionGate();
   const sec = secret();
   const devKeys = {};
   const problems = [];
@@ -449,6 +470,10 @@ function main() {
   console.log('wrote dev-keys.json (git-ignored, preview marking only)');
   if (problems.length) { console.error('\nVALIDATION PROBLEMS:\n' + problems.join('\n')); process.exit(1); }
   /* Only a pack that got this far is a real one, so only now does the stamp move. */
+  if (WALK_BUILD) {
+    console.log('\n*** WALK BUILD COMPLETE — content written for the preview, stamp NOT moved. ***');
+    return;
+  }
   fs.writeFileSync(STAMP_FILE, JSON.stringify(stamp, null, 1) + '\n');
   console.log('version gate: contentVersion "' + stamp.contentVersion + '" stamped against this content');
 }
