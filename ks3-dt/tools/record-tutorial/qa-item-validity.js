@@ -45,12 +45,21 @@ const path = require('path');
 
 const SRC = process.env.KS3DT_SRC ||
   path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/content-src');
-const VERDICTS = path.join(process.env.HOME,
-  'Desktop/Claude Work/KS3 DT Platform/COLD_READ_VERDICTS_J2J3.md');
+/* EVERY VERDICTS FILE, NOT ONE NAMED FILE (19 Aug 2026). This pointed at a
+   single markdown file, so the moment a round filed its rows in a NEW file —
+   which is exactly what COLD_READ_VERDICTS_J2J3_L2.md is — every row in it was
+   invisible and the gate would have reported the items as unjudged. The
+   coverage harness already reads the whole COLD_READ_VERDICTS*.md family; this
+   now does the same, and the two can no longer disagree about where evidence
+   lives. */
+const KS3 = path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform');
+const VERDICT_FILES = fs.readdirSync(KS3)
+  .filter(f => /^COLD_READ_VERDICTS.*\.md$/.test(f)).sort()
+  .map(f => path.join(KS3, f));
 
 /* the lessons under active review — the ones his sit is about. A locked lesson
    is not re-judged (DFM 176); a new one joins this list when it is authored. */
-const UNDER_REVIEW = ['j2-01', 'j3-01'];
+const UNDER_REVIEW = ['j2-01', 'j3-01', 'j2-02', 'j3-02'];
 const SCORING = ['diagnostic', 'items', 'quiz', 'exit', 'exitcheck'];
 const isConfidence = (it) => /^\s*NO RIGHT ANSWER/i.test(String(it.stem || ''));
 
@@ -72,6 +81,25 @@ function objectiveItems(lessonId) {
       out.push(it.id);
     });
   });
+  /* AND THE RECAP POOL, WHICH THIS GATE COULD NOT SEE AT ALL (19 Aug 2026).
+     `objectiveItems` walked a lesson's own chunks, and a year's recap items live
+     in `<year>/recap-pool.json` — a different file. A pupil answers them in the
+     Do-Now at the start of every lesson from Lesson 2 on, marked, exactly like
+     an exit check. Nobody had ever run DFM 233 over them, and when a separated
+     reader finally did it called EIGHT of the ten BROKEN. A law that cannot
+     reach a surface is not applied to it. The pool is attributed to the lesson
+     that authored the item (`it.lesson`), so the rows are demanded in the round
+     that owns them. */
+  const pool = path.join(SRC, year, 'recap-pool.json');
+  if (fs.existsSync(pool)) {
+    const P = JSON.parse(fs.readFileSync(pool, 'utf8'));
+    (P.items || []).forEach(it => {
+      if (!it || !it.id || isConfidence(it)) return;
+      if (!Array.isArray(it.options) || !it.options.length) return;
+      if (String(it.lesson || '') !== lessonId) return;
+      out.push(it.id);
+    });
+  }
   return out;
 }
 
@@ -89,9 +117,9 @@ function filedRows(md) {
 }
 
 console.log('qa-item-validity — every item carries a filed answer to DFM 233\'s five questions');
-console.log('  verdicts: ' + VERDICTS + '\n');
+console.log('  verdicts: ' + VERDICT_FILES.map(f => path.basename(f)).join(', ') + '\n');
 
-const md = fs.existsSync(VERDICTS) ? fs.readFileSync(VERDICTS, 'utf8') : '';
+const md = VERDICT_FILES.map(f => fs.readFileSync(f, 'utf8')).join('\n');
 check(!!md, 'the verdicts file exists to read');
 const rows = filedRows(md);
 
@@ -127,7 +155,9 @@ if (FAILS.length) {
   console.log('qa-item-validity: ' + FAILS.length + ' FAILURE(S)');
   FAILS.forEach(f => console.log('   ' + f));
   console.log('\n  Ask DFM 233\'s five questions of each item named above and FILE the answers in');
-  console.log('  COLD_READ_VERDICTS_J2J3.md § ITEM VALIDITY. The checklist existing is not the check.');
+  console.log('  a COLD_READ_VERDICTS*.md § ITEM VALIDITY section. Any of ' +
+    VERDICT_FILES.map(f => path.basename(f)).join(' / ') + ' is read.');
+  console.log('  The checklist existing is not the check.');
   process.exit(1);
 }
 console.log('qa-item-validity: ALL GREEN — no item ships without a written judgement of its validity.');
