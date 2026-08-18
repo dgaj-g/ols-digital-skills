@@ -51,6 +51,26 @@ function badgeMax(chunk) {
     }, 0);
     return { max: base + earned, how: base + ' badge + ' + earned + ' from every flag and every clean scene' };
   }
+  /* Engines.snap and Engines.pyrun (19 Aug 2026) both pass a BONUS to
+     finishChunk: firstTryXp per clean pair / clean build, held to
+     firstTryXpCap. The bonus is added to the badge's own xp BEFORE the award,
+     so the pop shows the total and the server stores the total — which means a
+     generous firstTryXp is exactly the way to cross the 40 ceiling without a
+     single number in the content looking wrong. It is declared here for the
+     same reason `inspect` is: an engine that scores has to say so, or the gate
+     passes a badge nobody has measured (DFM 206's own class). */
+  if (chunk.engine === 'snap' || chunk.engine === 'pyrun') {
+    const per = Number(cfg.firstTryXp || 0);
+    const cap = Number(cfg.firstTryXpCap || 0);
+    const units = chunk.engine === 'snap'
+      ? (cfg.pairs || []).length
+      : (cfg.builds || []).length;
+    const bonus = Math.min(per * units, cap || (per * units));
+    if (bonus) {
+      return { max: base + bonus, how: base + ' badge + ' + bonus + ' for first-try work (' +
+        per + ' x ' + units + ', capped at ' + (cap || 'nothing') + ')' };
+    }
+  }
   return { max: base, how: base + ' badge' };
 }
 
@@ -135,6 +155,20 @@ function controls() {
   /* (3) one over the cap is caught */
   const overCap = { id: 'control-over', json: { chunks: [{ id: 'c', engine: 'items', badge: { xp: 41 } }] } };
   res.push(say(audit(overCap).fails.length === 1, 'a badge of 41 is caught'));
+
+  /* (2b) THE FIRST-TRY BONUS IS COUNTED. Before 19 Aug this gate read only
+     `badge.xp`, so a pyrun chunk could promise 30 + 3 per build across five
+     builds and print PASS at 30. Planted both ways. */
+  const bonusOver = { id: 'control-bonus', json: { chunks: [{ id: 'c', engine: 'pyrun',
+    badge: { xp: 30 }, config: { firstTryXp: 3, firstTryXpCap: 15,
+      builds: [{}, {}, {}, {}, {}] } }] } };
+  res.push(say(audit(bonusOver).fails.length === 1,
+    'a pyrun badge of 30 + a 15-point first-try bonus is caught at 45'));
+  const bonusFine = { id: 'control-bonus-ok', json: { chunks: [{ id: 'c', engine: 'snap',
+    badge: { xp: 15 }, config: { firstTryXp: 1, firstTryXpCap: 6,
+      pairs: [{}, {}, {}, {}, {}, {}] } }] } };
+  res.push(say(audit(bonusFine).fails.length === 0,
+    'and a snap badge of 15 + 6 still passes — the cap is a ceiling, not a wall'));
 
   /* (4) the per-LESSON ceiling bites independently of the per-event one */
   const fat = { id: 'control-lesson', json: { chunks: Array.from({ length: 4 }, (_, i) =>
