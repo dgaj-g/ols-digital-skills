@@ -1,0 +1,42 @@
+{
+ "built": "j2-l2 snap desk",
+ "source": "sb3/build-j2-l2-blocks.js -> j2-l2-blocks.sb3, photographed in scratch.mit.edu",
+ "blocks": [
+  {
+   "id": "say-hello",
+   "text": "Hello! say",
+   "cssWidth": 81,
+   "cssHeight": 38
+  },
+  {
+   "id": "set-score",
+   "text": "0 set score to",
+   "cssWidth": 138,
+   "cssHeight": 38
+  },
+  {
+   "id": "change-score",
+   "text": "1 change score by",
+   "cssWidth": 155,
+   "cssHeight": 38
+  },
+  {
+   "id": "set-name",
+   "text": "Aoife set name to",
+   "cssWidth": 151,
+   "cssHeight": 38
+  },
+  {
+   "id": "say-join",
+   "text": "Score:  score join say",
+   "cssWidth": 174,
+   "cssHeight": 43
+  },
+  {
+   "id": "say-score",
+   "text": "score say",
+   "cssWidth": 84,
+   "cssHeight": 38
+  }
+ ]
+}

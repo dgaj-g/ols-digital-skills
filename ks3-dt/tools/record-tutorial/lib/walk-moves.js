@@ -100,6 +100,26 @@ function detectKind() {
     if (vis(q('.insp-file'))) return { kind: 'insp-scene' };
   }
 
+  /* J2/J3 Lesson 2 — the snap desk and the build card (19 Aug 2026). Both
+     outrank the generic handlers below and BOTH halves are taught here at once:
+     `walk-moves` exists so that recognising a screen and acting on it are one
+     fact in one home, and the last round proved what happens when only the
+     detector learns a new year (DFM 238a — six screens recognised and
+     unactionable, every walker but sit-review stalled at the first room). */
+  if (q('.snap-card')) {
+    if (vis(q('.snap-done button'))) return { kind: 'snap-done' };
+    if (q('.snap-block.picked')) return { kind: 'snap-try' };
+    if (vis(q('.snap-block'))) return { kind: 'snap-pick' };
+  }
+  if (q('.pyrun-card')) {
+    if (vis(q('.pyrun-verdict .primary-btn'))) return { kind: 'pyrun-next' };
+    if (q('.pyt-list .pyrun-line')) return { kind: 'pyrun-place' };
+    const blank = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank'))
+      .filter(vis).find(i => !i.value);
+    if (blank) return { kind: 'pyrun-blank', ph: blank.getAttribute('data-key') || '' };
+    if (vis(q('.pyrun-run'))) return { kind: 'pyrun-run' };
+  }
+
   if (q('.q-feedback button') && vis(q('.q-feedback button'))) return { kind: 'q-next' };
   if (q('.q-opt:not(:disabled)')) return { kind: 'q-opt' };
 
@@ -200,6 +220,72 @@ const MOVES = {
     if (c) c.click();
   },
   tour: () => { const b = document.querySelector('.tour-callout button'); if (b) b.click(); },
+  /* ---- J2/J3 Lesson 2 --------------------------------------------------
+     THE SNAP DESK IS BRUTE-FORCED, ON PURPOSE. The engine reveals nothing on a
+     wrong pair, which is the point of it — so a walker cannot be told the
+     answer by the screen and must not be handed one in a second copy of the
+     content (DFM 225b's fault). It picks a block and tries each Python line it
+     has not yet tried against THAT block, so the walk terminates in at most
+     n tries per block and exercises the wrong path as well as the right one. */
+  'snap-pick': () => {
+    const b = document.querySelector('.snap-block:not(.snapped)');
+    if (b) b.click();
+  },
+  'snap-try': () => {
+    window.__snapTried = window.__snapTried || {};
+    const picked = document.querySelector('.snap-block.picked');
+    if (!picked) return;
+    const bi = picked.getAttribute('data-b');
+    const done = window.__snapTried[bi] || (window.__snapTried[bi] = {});
+    const next = Array.from(document.querySelectorAll('.snap-py:not(.snapped)'))
+      .find(n => !done[n.getAttribute('data-p')]);
+    if (next) { done[next.getAttribute('data-p')] = 1; next.click(); }
+    else picked.click();   /* every line tried: unpick and let the walk re-detect */
+  },
+  'snap-done': () => { const b = document.querySelector('.snap-done button'); if (b) b.click(); },
+
+  /* THE BUILD CARD IS DRIVEN FROM THE LESSON'S OWN ANSWER KEY, and that is a
+     deliberate difference from the snap desk. Correctness here is decided by
+     RUNNING the program, so there is nothing on screen to brute-force against
+     and a tray with real-slip decoys has more orders than a walk could try.
+     The order and the blank values therefore live in the lesson's ENCRYPTED
+     keys, which the client already holds for instant marking (rule 97) — so
+     the walker reads exactly what the pupil's own machine holds, and nothing
+     is duplicated into this file. The ENGINE never reads them: qa-pyrun proves
+     that by stripping the key and watching a correct build still MATCH. */
+  'pyrun-place': () => {
+    const card = document.querySelector('.pyrun-card');
+    const bid = card && card.getAttribute('data-build');
+    const key = (window.App && App.state && App.state.localKeys && App.state.localKeys[bid]) || null;
+    const order = key && key.order;
+    if (order && order.length) {
+      const placed = Array.from(document.querySelectorAll('.pyp-list .pyrun-line'))
+        .map(n => Number(n.getAttribute('data-si')));
+      const want = order.find(si => placed.indexOf(Number(si)) === -1);
+      if (want != null) {
+        const n = document.querySelector('.pyt-list .pyrun-line[data-si="' + want + '"]');
+        if (n) { n.click(); return; }
+      }
+      /* every wanted line is placed: leave the decoys in the tray */
+      return;
+    }
+    const any = document.querySelector('.pyt-list .pyrun-line');
+    if (any) any.click();
+  },
+  'pyrun-blank': () => {
+    const card = document.querySelector('.pyrun-card');
+    const bid = card && card.getAttribute('data-build');
+    const key = (window.App && App.state && App.state.localKeys && App.state.localKeys[bid]) || null;
+    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank')).find(i => !i.value);
+    if (!inp) return;
+    const k = inp.getAttribute('data-key');
+    const v = (key && key.blanks && key.blanks[k] != null) ? String(key.blanks[k]) : 'x';
+    inp.value = v;
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+  },
+  'pyrun-run': () => { const b = document.querySelector('.pyrun-run:not([disabled])'); if (b) b.click(); },
+  'pyrun-next': () => { const b = document.querySelector('.pyrun-verdict .primary-btn'); if (b) b.click(); },
+
   'q-opt': () => { const o = document.querySelector('.q-opt:not(:disabled)'); if (o) o.click(); },
   'q-next': () => { const b = document.querySelector('.q-feedback button'); if (b) b.click(); },
   'case-pin': () => {
@@ -339,6 +425,8 @@ const MOVES = {
 /* how long each move needs before the screen has settled enough to re-detect */
 const SETTLE = {
   badge: 600, 'dossier-cta': 1100, confirm: 700, tour: 600, 'q-opt': 900, 'q-next': 700,
+  'snap-pick': 350, 'snap-try': 750, 'snap-done': 700,
+  'pyrun-place': 260, 'pyrun-blank': 220, 'pyrun-run': 2600, 'pyrun-next': 700,
   'case-pin': 900, 'case-log': 400, 'case-close': 1200, 'case-stamped': 700, 'case-wait': 700,
   'std-expand': 700, 'std-run': 700, 'std-outcome': 900, 'std-ready': 1200,
   parsons: 400, input: 400, loading: 700, button: 700, vault: 900, 'hold-sign': 1800,
