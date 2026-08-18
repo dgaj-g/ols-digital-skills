@@ -509,11 +509,37 @@ const WRONG = {
     return 'rally-played';
   }
 
+  /* THE FOURTH WALKER CAUGHT NOT KNOWING THE TWO NEW ENGINES (19 Aug 2026).
+     This one advances by clicking primary and ghost buttons, and neither Python
+     screen has one to click: the matching desk is cleared by pairing six blocks,
+     the build card by assembling a program and pressing RUN. So the confused
+     pupil never reached the exit check or the closing screen on EITHER Lesson 2,
+     and this harness said so honestly — two COVERAGE failures per lesson, which
+     is DFM 204 doing its job.
+     Fixed like the other three: ask the shared detector, and if the screen has a
+     mover in lib/walk-moves.js, run THAT mover before falling back to buttons.
+     One fact, one home (DFM 144). The wrong-path walk still gets its wrong path:
+     the snap mover brute-forces the desk, which exercises a wrong pair before a
+     right one, and the build mover leaves the decoys in the tray. */
+  const WALK = require('./lib/walk-moves.js');
+  let wpPrimed = false;
+  async function engineStep() {
+    if (!wpPrimed) { await WALK.primeDevKeys(page, BASE); wpPrimed = true; }
+    const st = await page.evaluate(WALK.detectKind);
+    const mv = st && WALK.MOVES[st.kind];
+    if (!mv) return null;
+    await page.evaluate(([src]) => { (new Function('return (' + src + ')')())(); }, [String(mv)]);
+    await new Promise(r => setTimeout(r, WALK.SETTLE[st.kind] || 600));
+    return 'engine:' + st.kind;
+  }
+
   async function goRight() {
     const special = await vaultAndOath();
     if (special) return special;
     const rally = await playRally();
     if (rally) return rally;
+    const eng = await engineStep();
+    if (eng) return eng;
     return page.evaluate((PASS_BY_CRIT) => {
       const q = (s) => document.querySelector(s);
       const vis = (e) => e && e.offsetParent !== null;
