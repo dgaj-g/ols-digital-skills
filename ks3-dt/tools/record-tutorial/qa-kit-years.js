@@ -120,8 +120,16 @@ section('NOTHING PROMISES A LEVEL THAT DOES NOT EXIST (rule 35)');
    built, so each carries level 2 — J2 "Maker" at 40, J3 "Creator" at 40, both
    computed from their own floor path (arithmetic in themes.json's
    clearanceNote) — and NOTHING ABOVE IT. This is the amendment's control (b),
-   re-run: level 2 present, 3-6 absent. */
-const LEVELS_OWED = { j2: 2, j3: 2 };
+   re-run: level 2 present, 3-6 absent.
+   AMENDED AGAIN 19 Aug 2026: both years' LESSON 2 is now built, so each carries
+   level 3 — J2 "Engineer" and J3 "Director", both at 87 XP, computed from their
+   own built Lesson 2 and each bringing one new look (Blueprint, Green Room).
+   The number this gate holds is not a preference, it is a COUNT OF BUILT
+   LESSONS: a year may promise exactly as many levels as it can compute from
+   lessons that exist, and no more. Raising it without building the lesson is
+   what rule 35 forbids. Levels 4-6 stay absent, and this gate is what keeps
+   them absent. */
+const LEVELS_OWED = { j2: 3, j3: 3 };
 [['j2', j2], ['j3', j3]].forEach(([y, v]) => {
   const top = LEVELS_OWED[y];
   check(v.clearances.length === top && Number(v.clearances[0].xp) === 0 &&
@@ -139,13 +147,13 @@ const LEVELS_OWED = { j2: 2, j3: 2 };
    J2 pupil at 0 XP no longer borrows J1's midnight — she opens on The Workbench.
    What has NOT changed is the thing this check was really for: she sees no J1
    costume at all. */
-check(j2.themes.length === 3 && j2.themes[0].id === 'workbench' &&
-  j2.themes.every(t => ['workbench', 'copperline', 'firewall'].indexOf(t.id) !== -1),
-  'a J2 pupil opens on The Workbench and her wardrobe holds only J2 looks — ' +
-  'the two level-2 ones (Copperline, Firewall) landed with her Lesson 1, and no J1 costume is in it');
-check(j3.themes.length === 3 && j3.themes[0].id === 'screeningroom' &&
-  j3.themes.every(t => ['screeningroom', 'premiere', 'cuttingroom'].indexOf(t.id) !== -1),
-  'a J3 pupil opens on The Screening Room and her Wardrobe holds only J3 looks — ' +
+check(j2.themes.length === 4 && j2.themes[0].id === 'workbench' &&
+  j2.themes.every(t => ['workbench', 'copperline', 'firewall', 'blueprint'].indexOf(t.id) !== -1),
+  'a J2 pupil opens on The Workbench and her wardrobe holds only J2 looks — Copperline and ' +
+  'Firewall landed with her Lesson 1, Blueprint with her Lesson 2, and no J1 costume is in it');
+check(j3.themes.length === 4 && j3.themes[0].id === 'screeningroom' &&
+  j3.themes.every(t => ['screeningroom', 'premiere', 'cuttingroom', 'greenroom'].indexOf(t.id) !== -1),
+  'a J3 pupil opens on The Screening Room and her Wardrobe holds only J3 looks (Green Room landed with her Lesson 2) — ' +
   'Première (red-carpet crimson, K11f) and Cutting Room landed with her Lesson 1');
 check(!j2.themes.some(t => t.id === 'midnight') && !j3.themes.some(t => t.id === 'midnight'),
   'and midnight, re-tagged j1, is in neither year\'s wardrobe — so its "classic HQ interface" line reaches nobody but J1');

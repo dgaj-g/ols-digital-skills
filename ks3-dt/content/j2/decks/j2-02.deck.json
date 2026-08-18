@@ -34,10 +34,10 @@
      "bg": "section",
      "heading": "In this lesson you will…",
      "bullets": [
-      "Look at a Scratch block and say what it does, without the block in front of you.",
+      "Read a Scratch block and say in your own words what it does.",
       "Find the line of Python that does the same job as a Scratch block.",
       "Put a short Python program together and run it for real.",
-      "Read the console to find out what your program really did.",
+      "Read what your program printed on screen, and find out what it really did.",
       "Earn two badges: one for the matching desk, and one for your first program."
      ],
      "notes": "WHERE THE CLASS IS: eyes front, screens ignored.\n\nSAY: \"Five things today.\" Then read the five lines out.\n\nWHY: the third line is the one to land hardest. Every pupil in this room writes a program that really runs today, and that is true of the pupil who has never typed a line of code in her life.\n\nWATCH FOR: the word Python worries some pupils before they have seen any. The answer is on the next slide, so do not spend long here.\n\nWHEN TO MOVE: straight on."
@@ -103,7 +103,7 @@
       "Everything the film shows is written again on the cards that come after it.",
       "Nothing here is marked."
      ],
-     "notes": "WHERE THE CLASS IS: at the film, each pupil on her own screen.\n\n[film-led] The film does this part of the teaching. It is not shown from the front, and you are not expected to explain what it explains.\n\nSAY: \"The film is on your own computer, not on the board. It has no sound, so read the screen. Press play when you are ready.\"\n\nWHAT THEY WILL SEE: a player with four buttons under it, named \"Why anyone types code\", \"Meet print()\", \"A variable: a box with a name on it\" and \"Reading a whole program\". A pupil can jump to any part while she is on this screen.\n\nIF A FILM WILL NOT PLAY: that pupil carries on. Every block the film shows appears again on the very next screen, with a line underneath saying what it does, so nothing is lost. Her screen also tells her to say so out loud, so expect to be told.\n\nWHILE THEY WORK: this is the quietest stretch of the hour, and the best chance to sort out anyone whose login was awkward.\n\nWHEN TO MOVE: when most of the room has reached the end of the film, stop everybody for the matching desk. Anyone still watching can finish."
+     "notes": "WHERE THE CLASS IS: at the film, each pupil on her own screen.\n\nThe film does this part of the teaching. It is not shown from the front, and you are not expected to explain what it explains.\n\nSAY: \"The film is on your own computer, not on the board. It has no sound, so read the screen. Press play when you are ready.\"\n\nWHAT THEY WILL SEE: a player with four buttons under it, named \"Why anyone types code\", \"Meet print()\", \"A variable: a box with a name on it\" and \"Reading a whole program\". A pupil can jump to any part while she is on this screen.\n\nIF A FILM WILL NOT PLAY: that pupil carries on. Every block the film shows appears again on the very next screen, with a line underneath saying what it does, so nothing is lost. Her screen also tells her to say so out loud, so expect to be told.\n\nWHILE THEY WORK: this is the quietest stretch of the hour, and the best chance to sort out anyone whose login was awkward.\n\nWHEN TO MOVE: when most of the room has reached the end of the film, stop everybody for the next screen — six Scratch blocks down the left, six lines of Python down the right, and they click one of each to pair them up. Anyone still watching can finish."
     }
    ]
   },
@@ -192,7 +192,7 @@
       "If Python stops, the console shows Python's own words, and a line underneath in plain English.",
       "A wrong run costs you nothing. You can run as many times as you like."
      ],
-     "notes": "WHERE THE CLASS IS: building, running, and reading the console.\n\nSAY: \"Read the console before you change anything. It tells you what your program really did, which is not always what you meant it to do.\"\n\nWHAT THEY WILL SEE: when Python stops, the console gives Python's own error words AND a line underneath in plain English saying what that error means. Both, never one instead of the other. The plain line is the one to point at.\n\nTHE HELP THAT ACTUALLY HELPS: ask what the console printed, then ask what she wanted it to print, then ask which one line she is going to change. You do not have to know any Python to ask those three questions, and they are worth more than an answer would be.\n\nIF A SCREEN SAYS PYTHON DID NOT LOAD: that pupil presses RUN again in a moment. Her screen tells her to tell you, so you will hear about it.\n\nWHEN TO MOVE: when the badge cards have landed around the room, move the class on. Anyone still running can finish."
+     "notes": "WHERE THE CLASS IS: building, running, and reading the console.\n\nSAY: \"Read the console before you change anything. It tells you what your program really did, which is not always what you meant it to do.\"\n\nWHAT THEY WILL SEE: when Python stops, the console gives Python's own error words AND a line underneath in plain English saying what that error means. Both, never one instead of the other. The plain line is the one to point at.\n\nTHE HELP THAT ACTUALLY HELPS — three questions, in this order:\n1. What did the console print?\n2. What did you want it to print?\n3. Which one line are you going to change? You do not have to know any Python to ask those three questions, and they are worth more than an answer would be.\n\nIF A SCREEN SAYS PYTHON DID NOT LOAD: that pupil presses RUN again in a moment. Her screen tells her to tell you, so you will hear about it.\n\nWHEN TO MOVE: when most of the room has had MATCHED on screen and clicked past the badge that follows it, move the class on. Anyone still running can finish."
     }
    ]
   },
@@ -230,7 +230,7 @@
      "bullets": [
       "You answer one question on your own, and this one IS marked.",
       "You are told whether you were right, and why, at the very end — after the last screen.",
-      "Then How did it go?: three sentences about today, and a choice about how hard the hour felt.",
+      "Then a screen called How did it go? — three short questions about today, a choice about how hard the hour felt, and a comment box.",
       "The comment box goes to your teacher and nobody else.",
       "Everyone finishes this screen before leaving."
      ],
