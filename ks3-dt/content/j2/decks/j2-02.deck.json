@@ -1,0 +1,262 @@
+{
+ "id": "j2-02.deck",
+ "lesson": "j2-02",
+ "year": "j2",
+ "deckName": "KS3 DT · J2 Lesson 2 — Translation Bureau (Teacher Deck)",
+ "theme": {
+  "id": "bureau-desk",
+  "name": "The Bureau",
+  "ground": "#0E1D1B",
+  "panel": "#17302C",
+  "accent": "#3FC79A",
+  "accent2": "#F2B25C",
+  "text": "#FFFFFF",
+  "dim": "#C6DCD4",
+  "display": "Bitter",
+  "body": "Inter"
+ },
+ "sections": [
+  {
+   "id": "opening",
+   "chunk": "briefing",
+   "label": "The opening",
+   "slides": [
+    {
+     "kind": "title",
+     "bg": "title",
+     "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+     "heading": "Lesson 2 · Translation Bureau",
+     "sub": "Same job. Different language. — J2 · Lesson 2 of 17",
+     "notes": "WHERE THE CLASS IS: coming in, logging in to the computer, and opening the class link from Google Classroom. The lesson does not open on today's work. It opens on a warm-up called the Do-Now: a short set of questions from Lesson 1 that mark themselves as each pupil answers them. Nothing in it is graded and nothing about it is shown to the class.\n\nSAY: \"Log in, open the class link, and work through the warm-up questions on your own screen. When the screen hands you over to today's first card, stop there and look up.\"\n\nWHY: it is revision of the last lesson, and it gives you a settled room to take the register in.\n\nWHEN TO MOVE: when most of the room is sitting on today's first card, stop everybody, eyes front, and go on."
+    },
+    {
+     "kind": "objectives",
+     "bg": "section",
+     "heading": "In this lesson you will…",
+     "bullets": [
+      "Look at a Scratch block and say what it does, without the block in front of you.",
+      "Find the line of Python that does the same job as a Scratch block.",
+      "Put a short Python program together and run it for real.",
+      "Read the console to find out what your program really did.",
+      "Earn two badges: one for the matching desk, and one for your first program."
+     ],
+     "notes": "WHERE THE CLASS IS: eyes front, screens ignored.\n\nSAY: \"Five things today.\" Then read the five lines out.\n\nWHY: the third line is the one to land hardest. Every pupil in this room writes a program that really runs today, and that is true of the pupil who has never typed a line of code in her life.\n\nWATCH FOR: the word Python worries some pupils before they have seen any. The answer is on the next slide, so do not spend long here.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Same job. Different language.",
+     "size": 15,
+     "bullets": [
+      "A translation bureau is an office where people write something out again in another language.",
+      "That is your job for the next hour, at a desk on your screen: Scratch on one side, Python on the other.",
+      "You have met Scratch before. It is the one where you drag coloured blocks together.",
+      "Python is a programming language you TYPE instead of drag, and it is one of the most used in the world.",
+      "A Scratch block and a line of Python can do exactly the same job."
+     ],
+     "notes": "WHERE THE CLASS IS: eyes front.\n\nSAY: \"A bureau is an office where things are written out again in another language. That is what you are for the next hour.\" Then read the five lines out.\n\nWHY: the pupils' own opening card says the same thing in the same words a minute from now, so this is the first hearing of a sentence they are about to read for themselves.\n\nTHE ONE TO SAY SLOWLY: a block and a line of Python can do the same job. It settles the biggest worry in the room, which is that Python is a new subject rather than a new way of writing something they already know.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Why anyone types code",
+     "size": 15,
+     "bullets": [
+      "The block says it with a shape and a colour. Python says it with words and brackets.",
+      "So today is not a new idea. It is a second way of writing down an idea you already have.",
+      "Typing is far quicker once you know the words.",
+      "Almost all of the software you use every day was typed rather than dragged.",
+      "Scratch was built to teach you the ideas. Python is what people build with."
+     ],
+     "notes": "WHERE THE CLASS IS: eyes front.\n\nSAY: read the five lines out, and take the last one slowly.\n\nIF SOMEBODY ASKS why they were taught Scratch at all: Scratch was built to teach the ideas, and Python is what people build with. Both are true, and neither is a criticism of Scratch — the ideas the pupils bring from it are exactly what makes today possible.\n\nWHY: a pupil who decides Python is simply harder Scratch has missed the point of the next four lessons, and it is much easier to say this now than to unpick it later.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "How this hour works",
+     "size": 15,
+     "bullets": [
+      "You start with a short film. It has no sound, so every word you need is written on the screen.",
+      "Then the matching desk: six Scratch blocks, and the Python line that does the same job as each one.",
+      "Then you build a real program out of Python lines, and you run it.",
+      "Anything your program prints comes up in a box under it called the console.",
+      "It finishes with a card about your next lesson, one marked question, and a screen asking how the hour went."
+     ],
+     "notes": "WHERE THE CLASS IS: eyes front, about to be sent into the hour.\n\nSAY: read the five lines out, then: \"Read the card on your screen. When you are ready, click the button at the bottom of it.\"\n\nWHAT THEY WILL SEE: the opening card types itself out and says the same five things in longer words. The button at the bottom says Start the film.\n\nWATCH FOR: pupils who click the button before the card has finished typing. Nothing is lost, but that card is the plainest account of the hour they will get, so it is worth a nudge to read it.\n\nWHEN TO MOVE: let the room read. Walk the desks rather than talking over them, and go on to the next slide while they read."
+    }
+   ]
+  },
+  {
+   "id": "film",
+   "chunk": "film",
+   "label": "The film",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "The film — on your own screen",
+     "size": 15,
+     "bullets": [
+      "The film plays on your own computer, not on the board.",
+      "It has no sound, so every word you need is written on the screen.",
+      "It comes in four parts, and the buttons underneath jump you to any part.",
+      "Everything the film shows is written again on the cards that come after it.",
+      "Nothing here is marked."
+     ],
+     "notes": "WHERE THE CLASS IS: at the film, each pupil on her own screen.\n\n[film-led] The film does this part of the teaching. It is not shown from the front, and you are not expected to explain what it explains.\n\nSAY: \"The film is on your own computer, not on the board. It has no sound, so read the screen. Press play when you are ready.\"\n\nWHAT THEY WILL SEE: a player with four buttons under it, named \"Why anyone types code\", \"Meet print()\", \"A variable: a box with a name on it\" and \"Reading a whole program\". A pupil can jump to any part while she is on this screen.\n\nIF A FILM WILL NOT PLAY: that pupil carries on. Every block the film shows appears again on the very next screen, with a line underneath saying what it does, so nothing is lost. Her screen also tells her to say so out loud, so expect to be told.\n\nWHILE THEY WORK: this is the quietest stretch of the hour, and the best chance to sort out anyone whose login was awkward.\n\nWHEN TO MOVE: when most of the room has reached the end of the film, stop everybody for the matching desk. Anyone still watching can finish."
+    }
+   ]
+  },
+  {
+   "id": "bureau",
+   "chunk": "bureau",
+   "label": "STOP · The matching desk",
+   "stop": true,
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "1",
+     "heading": "STOP — eyes front · The matching desk",
+     "bullets": [
+      "Six Scratch blocks down the left. Six lines of Python down the right, shuffled.",
+      "Exactly one Python line does the same job as each block.",
+      "Under every block is a line saying what that block does, so you never have to remember Scratch.",
+      "Click a block, then click the Python line you think does the same job.",
+      "A pair that is right locks together and leaves the desk. A pair that is wrong comes back.",
+      "The desk never tells you which one was wrong, and it never shows you an answer."
+     ],
+     "notes": "WHERE THE CLASS IS: film finished, screens ignored, eyes front. This is the reading half of the Bureau, and the minute you spend at the front is what makes it work.\n\nSAY: \"You are reading now, not writing. Six blocks on the left, six lines of Python on the right, and exactly one of those lines does the same job as each block. Under every block is a line telling you what that block does, so you are never being asked to remember Scratch.\"\n\nTHEN SAY: \"Click a block, then click the line you think matches it. If you are right, the pair locks and leaves the desk. If you are wrong, both come back and you try again — and nothing is taken off you for a wrong try.\"\n\nDO NOT SAY which line goes with which block. The six pairs are the whole activity, they are deliberately not on any slide, and naming one finishes the desk for the pupil who hears it.\n\nWHEN TO MOVE: straight on to the next slide, then send them in."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "What the matching desk looks like",
+     "size": 15,
+     "bullets": [
+      "The card explains it, then the button at the bottom says Open the desk.",
+      "Click a block on the left and it gets a gold ring, so you can see which one you are working on.",
+      "Then click a Python line on the right.",
+      "Matched pairs leave the desk. Your job is to clear it.",
+      "Some Python lines have str( ) in them. You do not need to know what that does yet — match on what the block does."
+     ],
+     "notes": "WHERE THE CLASS IS: about to open the desk.\n\nSAY: \"Read the card, then press Open the desk. Clear all six.\"\n\nWHILE THEY WORK: circulate, but let the desk do the deciding. A pupil who is stuck is best helped by being asked what her block actually does — the line underneath it says so — rather than by being pointed at a line of Python. You do not need to be able to read Python to run this activity.\n\nWATCH FOR: guessing. A wrong pair costs nothing, which is deliberate, but a pupil clicking at random learns nothing. Ask her which block she is working on and what it does, and the guessing usually stops.\n\nWHEN TO MOVE: a badge card lands as each desk is cleared. When those cards have appeared around the room, stop everybody for the build. Anyone still matching can finish while you talk."
+    }
+   ]
+  },
+  {
+   "id": "build",
+   "chunk": "build",
+   "label": "STOP · Build it and run it",
+   "stop": true,
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "2",
+     "heading": "STOP — eyes front · Build it and run it",
+     "bullets": [
+      "A customer has come into the Bureau and asked for a scoreboard.",
+      "It has to start the score at 0, add a point twice, then print the score with the word Score: in front of it.",
+      "Seven lines are waiting in the box called The lines. Four of them are the program.",
+      "The other three have real mistakes in them, the kind everybody makes.",
+      "Drag the lines you want into Your program, in the order you want them to run.",
+      "Then press RUN. Your program is really run, and the console shows exactly what it printed."
+     ],
+     "notes": "WHERE THE CLASS IS: badge cards from the desk have landed, screens ignored, eyes front. This is the biggest part of the hour and the part the whole lesson has been walking towards, so it is worth the stop.\n\nSAY: \"Now you write one. A customer has asked the Bureau for a scoreboard, and it has three jobs to do: it starts the score at 0, it adds a point twice, and it prints the score with the word Score: in front of it. Seven lines are waiting for you. Four of them are the program, and the other three have real mistakes in them.\"\n\nTHE SENTENCE THAT MATTERS MOST, in your own words: the screen decides whether a program is right, not you. It compares what the console printed against the target on the pupil's own screen and answers MATCHED or NOT YET, so you never have to read a line of Python to teach this.\n\nAND SAY THIS ONE OUT LOUD TOO: a run that does not work costs a pupil nothing. Her lines stay exactly where they are, nothing is taken off her, and she can press RUN as often as she likes. Being wrong and then reading what really printed IS the lesson, not a failure inside it.\n\nWHEN TO MOVE: straight on to the next two slides, then send them in."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "How the build screen works",
+     "size": 15,
+     "bullets": [
+      "The lines you can use sit in The lines. Your program is the box beside it.",
+      "To ADD a line, drag it into Your program, or click the line itself.",
+      "To MOVE a line, drag it up or down inside Your program.",
+      "To TAKE a line out, drag it back to The lines.",
+      "Python runs your program from the top line down, one line at a time.",
+      "The RUN button turns on once at least one line is in Your program."
+     ],
+     "notes": "WHERE THE CLASS IS: about to open the build.\n\nSAY: read the six lines out, and point at the order one. \"Python runs your program from the top line down. The right lines in the wrong order will not give you the right answer.\"\n\nWHAT THEY WILL SEE: two boxes side by side, the target printed above them, and a RUN button that is off until a line has been moved across. Her screen says so in as many words, so a pupil who reports a dead button has simply not moved a line yet.\n\nWHILE THEY WORK: a line can be ADDED by clicking it instead of dragging it, which is worth saying to anyone struggling with the mouse. Moving a line up or down, and taking one back out, are drags.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "The console",
+     "size": 15,
+     "bullets": [
+      "The console is the box under your program. It shows exactly what your program printed.",
+      "If that is what The target shows, the screen says MATCHED.",
+      "If it is not, the screen says NOT YET, your lines stay where they are, and you try again.",
+      "If Python stops, the console shows Python's own words, and a line underneath in plain English.",
+      "A wrong run costs you nothing. You can run as many times as you like."
+     ],
+     "notes": "WHERE THE CLASS IS: building, running, and reading the console.\n\nSAY: \"Read the console before you change anything. It tells you what your program really did, which is not always what you meant it to do.\"\n\nWHAT THEY WILL SEE: when Python stops, the console gives Python's own error words AND a line underneath in plain English saying what that error means. Both, never one instead of the other. The plain line is the one to point at.\n\nTHE HELP THAT ACTUALLY HELPS: ask what the console printed, then ask what she wanted it to print, then ask which one line she is going to change. You do not have to know any Python to ask those three questions, and they are worth more than an answer would be.\n\nIF A SCREEN SAYS PYTHON DID NOT LOAD: that pupil presses RUN again in a moment. Her screen tells her to tell you, so you will hear about it.\n\nWHEN TO MOVE: when the badge cards have landed around the room, move the class on. Anyone still running can finish."
+    }
+   ]
+  },
+  {
+   "id": "next",
+   "chunk": "next",
+   "label": "What you did, and what is next",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "What you did, and what is next",
+     "size": 15,
+     "bullets": [
+      "Two cards to read on your own. Nothing on them is marked.",
+      "The first is what you can already do: you read six Scratch blocks and found the Python that does the same job.",
+      "Then you wrote a working program yourself.",
+      "The second is next fortnight, when you build a chatbot.",
+      "A chatbot asks the person at the keyboard a question, and then uses what they typed."
+     ],
+     "notes": "WHERE THE CLASS IS: build finished, reading two cards on their own.\n\nSAY: \"Two cards, then the last two screens and we are finished.\"\n\nWHY: an hour ago most of this room had never seen a line of Python, and the first card is where they are told plainly what they have just done. It is worth letting it land rather than rushing it.\n\nWHAT THEY WILL SEE: the second card names the next lesson and says there is nothing to bring and nothing to do between now and then. It also tells them the matching desk stays open on this lesson, so a pupil can look back at the six pairs whenever she likes.\n\nWHEN TO MOVE: as soon as both cards are confirmed."
+    }
+   ]
+  },
+  {
+   "id": "finishing",
+   "chunk": "exit",
+   "label": "The last two screens",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "The last two screens",
+     "size": 15,
+     "bullets": [
+      "You answer one question on your own, and this one IS marked.",
+      "You are told whether you were right, and why, at the very end — after the last screen.",
+      "Then How did it go?: three sentences about today, and a choice about how hard the hour felt.",
+      "The comment box goes to your teacher and nobody else.",
+      "Everyone finishes this screen before leaving."
+     ],
+     "notes": "WHERE THE CLASS IS: working through the last two screens on their own.\n\nSAY: \"One question now, on your own, and this one is marked, so think about it. You are told how you did right at the end, after the last screen, so do not sit waiting for an answer.\"\n\nTHEN SAY: \"Then tell me honestly how today went. The comment box comes to me and nobody else.\"\n\nDO NOT talk the class through the question. You see how the class did on it afterwards, and that is only useful if the answers are theirs.\n\nNOBODY LEAVES WITHOUT FINISHING How did it go? It is compulsory, and it is how you hear from the pupils who never put a hand up.\n\nWHEN TO MOVE: when both screens are done."
+    }
+   ]
+  },
+  {
+   "id": "closer",
+   "chunk": "selfeval",
+   "label": "Before you leave",
+   "slides": [
+    {
+     "kind": "closer",
+     "bg": "closer",
+     "heading": "Before you leave",
+     "sub": "See you in a fortnight.",
+     "bullets": [
+      "Finish How did it go? Nobody leaves without it.",
+      "Sign out every time. If you stay signed in, anything the next person does on this computer looks like you did it.",
+      "Chair in, area tidy, nothing left beside your machine.",
+      "Next time: the program talks back, and you build a chatbot."
+     ],
+     "notes": "WHERE THE CLASS IS: finished, packing up.\n\nSAY: \"Two jobs before you stand up. Sign out — if you stay signed in, anything the next person does on this computer looks like you did it. Then chair in, area tidy, nothing left beside your machine.\"\n\nWHY: they are the room rules from Lesson 1, and this is the moment of the fortnight when they are easiest to hold.\n\nWHEN TO MOVE: dismiss when the room is signed out and tidy."
+    }
+   ]
+  }
+ ]
+}

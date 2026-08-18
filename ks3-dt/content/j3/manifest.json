@@ -53,12 +53,13 @@
    "id": "j3-02",
    "num": 2,
    "title": "First Words in Python",
-   "tagline": "You write real Python from nothing, starting with your very first line.",
+   "tagline": "Today you write your first computer code, in a language called Python, and make the computer print exactly the right words.",
    "block": "b2",
    "icon": "🐍",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j3/lessons/j3-02.json"
   },
   {
    "id": "j3-03",

@@ -1,6 +1,6 @@
 {
  "year": "j3",
- "comment": "Seeded with the year's keystone THREADS only. items is deliberately empty for the same reason as J2's: under DFM 134 the Do-Now serves only items from lessons this pupil has COMPLETED, so each item is authored by the lesson that teaches it. Year-One note (his K4 ruling): this cohort arrives with no platform history and no Python, so nothing here assumes a J1 or J2 thread — J3 L1 and L2 establish their own ground first.",
+ "comment": "Keystone THREADS for the year, plus the recap ITEMS the built lessons have authored. Under DFM 134 the Do-Now serves a pupil only items from lessons she has COMPLETED, so each item is authored by the lesson that teaches it and added when that lesson is built. Lesson 1 has no Do-Now of its own; its five items are served from Lesson 2 onwards. Year-One note (his K4 ruling): this cohort arrives with no platform history and no Python, so nothing here assumes a J1 or J2 thread — J3 L1 and L2 establish their own ground first.",
  "threads": {
   "kp-platform-j3": {
    "label": "How this website works",
@@ -63,6 +63,72 @@
    "note": "Opened in L1's compass, tried out in L14/L15, decided in L16, reviewed in L17."
   }
  },
- "items": [],
- "keysEnc": "GXU="
+ "items": [
+  {
+   "id": "r-j3-101",
+   "lesson": "j3-01",
+   "topic": "The Studio Code",
+   "thread": "kp-platform-j3",
+   "stem": "Méabh leaves at the bell without signing out. The next pupil sits down at that machine and deletes a folder by accident. Whose name is on it, as far as the school is concerned?",
+   "options": [
+    "Méabh's, because the machine was still signed in as her",
+    "The next pupil's, because she is the one who did it",
+    "Nobody's — the school cannot tell who was sitting at a machine",
+    "Mr Boyle's, because he is in charge of the room"
+   ]
+  },
+  {
+   "id": "r-j3-102",
+   "lesson": "j3-01",
+   "topic": "The Studio Code",
+   "thread": "kp-platform-j3",
+   "stem": "Ciara sits down and finds the machine still signed in as somebody from the last class, with their work open on the screen. What should she do?",
+   "options": [
+    "Sign that person out without reading their work, then sign in as herself",
+    "Close the work down and carry on working in that person's account",
+    "Read enough of it to find out whose it is, then go and tell the teacher",
+    "Move to a different machine and say nothing about it to anybody"
+   ]
+  },
+  {
+   "id": "r-j3-103",
+   "lesson": "j3-01",
+   "topic": "The year map",
+   "thread": "kp-platform-j3",
+   "stem": "Sinéad opens her year map and finds Lesson 3 has a padlock on its tile, and the class was told they are doing Lesson 3 today. What should she do?",
+   "options": [
+    "Tell her teacher, because a padlock means nobody has opened it yet",
+    "Refresh the page until the padlock disappears from the tile",
+    "Start Lesson 4 instead, because that tile has no padlock",
+    "Wait, because a padlocked lesson opens by itself at lesson time"
+   ]
+  },
+  {
+   "id": "r-j3-104",
+   "lesson": "j3-01",
+   "topic": "Portfolio Zero",
+   "thread": "kp-platform-j3",
+   "stem": "In June, Róisín's class answers the same twelve Portfolio Zero questions again. Why does the teacher do that?",
+   "options": [
+    "So each pupil can see what she has learned since September",
+    "So the teacher can work out the mark for Róisín's summer report",
+    "So the class can be sorted into the two GCSE routes",
+    "So the website knows which lessons to unlock over the summer"
+   ]
+  },
+  {
+   "id": "r-j3-105",
+   "lesson": "j3-01",
+   "topic": "The Studio Code",
+   "thread": "kp-platform-j3",
+   "stem": "Aoibhe comes in from break with a bottle of water and stands it beside the keyboard with the lid screwed on. Mr Boyle asks her to move it. Why?",
+   "options": [
+    "Nothing to drink goes near the machines, lid on or lid off",
+    "Water is fine, but the bottle has to sit on the floor under the desk",
+    "Water is fine, but she needed to ask a teacher before bringing it in",
+    "Only fizzy drinks are banned near the machines, and water is not one"
+   ]
+  }
+ ],
+ "keysEnc": "GSod1rajKVyWLbTM8He6h6W6BrVJbFkYadxXM7WQGtuS+XhClc3+Od4fTovXepJ85ye/WtoxEZaKJmxrySAcZyMENBhKukz9OrwXQ3Jd6jPHocXU4y0tNhfIvhu0JniHjGL0mu/H9ATr+W+p5eM4W/SkIvxREhJr5gzzbMGb0COvJCvhM78PVWC6YqrQZUhMVP8ikTdv2yHmrj/2T0uLsDFE93N92fbmTNYB7tkIa2RbMwQnbT4sYT+k4h6lVnUFeFndnCOTMm7/3EyIzRIStqkdOdUSmTRVI7K1Qgf1nZMgj+2/5YOoSvb5mW+gR5BBnpV4e6al6O7fZPzc+h/h6hQjbLt6g7ocsVj+pjWcFXXltACgCDldV0kGqb6KVKdL/qvgkRIe+w9xc/6oGOTeveLuXvFh1vcFzGIDEXJE2tm9d3TJgf9KawG3bzthZkFKKWWcuwlX6DE5azKXOibOIZEAjUTmOxjRSf+ViWw0o2knBykcwhI6JJTnejA+YeSrMhC0wXi1y8QkpU39YpbFZDxhXQA1Jk/KkdVvsMre3S39vMJxB6p22buQ8J5a9jAtwXOROwSVE/YJIgiEk2gHL68lTnRP3CksOVU4qDOvoBFkbBIM3WQjUhdprPJBjyn35kwRmUUXCaDTzgjd2JpKjo+li3au/P0Iqxt07UGM/Cr4H3baLoeHV4qva+AHkaULyKhus+t7veS1I0DNwzWmymv0WOaYCmznOiZdWZFlWvl5vMuOrvekDkm+/1s34CVtEBRQIkTJOaQO+i1Q7AQthKVKbQSUlxsddiVqOlX6vOcMF685cRES0Oqs65DoNFI3FgPOeCsmpuG5RdsyOUVK3qVhrkL0PGftXTtC7mSW+DQyWgDTQe8DJGhf31FOYjBuamE5Q3FcVbhNYDfQVQV1bu1KIplbJEnb69GgYIa0S7xG/aBpEVa9EIqkRriSbfi8GkB7Pdvsvq55aVyQ+sRjsmXkW0gY4WXi9e8GRw7/4DhEWpI8pFoeMjbWkIRePPBMK+Y16c2vwTlBn2gaJq04Xfu3i+cbEWdqjl0TvU4Yy393Kl6IyLc86X4CxQVhpSkE8ZzyEr2vDIG1EswOTo/GgduHn04RVcmUomiwrvGIkQTvUqjJfczqR4t9gEnxwrxlK1e6QS7C3agojOKRWe1rbQghtrTZWFr6CaEGmSosSDNQwB+xLh3YU1wC8XH+1ARRMPy/hh+hVSzNyuqdRSF07a4HD3xY8wpjNPoXFZdJ6u70K3oqA91lfb7pgvoCrYyh6N9J0KbqEEyUKTpHKNNw1gJZFXzdgs1opKgEulRv9p8LtUbW35Q8ujmfyTndpfCYRd1IJnuHsirIz1uzPgE7e3XqUUq32uWZOR7ApWyEP+SfIw6ubBtoOYTpUDleVXVDIbTKMV6/f9xCGnTwnHZdHni1kH/boU6H6IIgkuWlDvrAKNPSlYpAtqRm+TBNzyS4Zm21bcX55jRadWEwIBPP6ERNXl3gia0dyjwBbUIWfoPCac0Cnv+ADvZ3IYNiCwZQ1VVUN5eXIUd35nnt1oPIIfK68DH6GmB3E5lPvQIQx7PCwyshaGuS0N60CEAcX105X0uOlObjUSoGHy/iiEdjCQ5pLfKiDQFcvGV9CxC7CjgTeeGh08joeYf72sjYtqtamQgV5RUZKzLNSg864/QX/xjD+dmEYZ0R/HnSVYI0Zg+6sWhQMulv3JObFQvb2QlMPtlLbbAIyBjuNOGpIkUS6yJWnDFuA8uMJ/vSA9m/FpCYaDJVpZygCiG95pPC7yzzZ33ea+yO9xq1Z6R1cR7HGBe61q2OJ73B91pLotSHEIgLwN28cKgc6cybSnlu9QdLpuiSvhc43mbnmWs2A4690wnmlvQkZYyJxXIdG/RngoIXj+yKkOxsHDuL0hWLsX69I32chFP9cdxnMx9QwpGvx8wZ676vQAmehBDNGNCI"
 }

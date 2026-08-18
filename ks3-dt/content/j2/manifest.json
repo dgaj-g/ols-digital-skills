@@ -53,12 +53,13 @@
    "id": "j2-02",
    "num": 2,
    "title": "Translation Bureau",
-   "tagline": "You turn blocks you already know into your first lines of Python.",
+   "tagline": "A bureau is an office where things are written out again in another language. Today you turn blocks you already know into your first lines of Python.",
    "block": "b2",
    "icon": "🔤",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j2/lessons/j2-02.json"
   },
   {
    "id": "j2-03",

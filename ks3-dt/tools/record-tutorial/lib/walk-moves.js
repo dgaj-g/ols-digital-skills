@@ -113,7 +113,28 @@ function detectKind() {
   }
   if (q('.pyrun-card')) {
     if (vis(q('.pyrun-verdict .primary-btn'))) return { kind: 'pyrun-next' };
-    if (q('.pyt-list .pyrun-line')) return { kind: 'pyrun-place' };
+    /* "THE TRAY IS NOT EMPTY" DOES NOT MEAN "STILL PLACING" (19 Aug 2026, found
+       by the first real walk of j2-2). Parsons empties its tray, so tray-empty
+       was a safe proxy there. A pyrun build deliberately leaves its DECOYS in the
+       tray for ever — j2-02 keeps three lines with real slips in them, and that
+       is the whole design — so this rule could never be satisfied and the walker
+       looped on pyrun-place with all four correct lines already in place and RUN
+       sitting armed beside it. Ask the real question instead: is anything the
+       program still WANTS unplaced? The key comes from the walker's own route
+       (see primeDevKeys), never from the pupil's client, which does not hold it. */
+    const wantOrder = (() => {
+      const card = q('.pyrun-card');
+      const bid = card && card.getAttribute('data-build');
+      const k = window.__walkKey ? window.__walkKey(bid) : null;
+      return (k && k.order) || null;
+    })();
+    if (wantOrder) {
+      const placed = Array.from(document.querySelectorAll('.pyp-list .pyrun-line'))
+        .map(n => Number(n.getAttribute('data-si')));
+      if (wantOrder.some(si => placed.indexOf(Number(si)) === -1)) return { kind: 'pyrun-place' };
+    } else if (q('.pyt-list .pyrun-line')) {
+      return { kind: 'pyrun-place' };
+    }
     const blank = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank'))
       .filter(vis).find(i => !i.value);
     if (blank) return { kind: 'pyrun-blank', ph: blank.getAttribute('data-key') || '' };
@@ -256,7 +277,7 @@ const MOVES = {
   'pyrun-place': () => {
     const card = document.querySelector('.pyrun-card');
     const bid = card && card.getAttribute('data-build');
-    const key = (window.App && App.state && App.state.localKeys && App.state.localKeys[bid]) || null;
+    const key = window.__walkKey ? window.__walkKey(bid) : null;
     const order = key && key.order;
     if (order && order.length) {
       const placed = Array.from(document.querySelectorAll('.pyp-list .pyrun-line'))
@@ -269,13 +290,13 @@ const MOVES = {
       /* every wanted line is placed: leave the decoys in the tray */
       return;
     }
-    const any = document.querySelector('.pyt-list .pyrun-line');
-    if (any) any.click();
+    /* NO KEY, NO GUESS. This used to click any line in the tray, which is how a
+       walk with no key placed all seven and looped on RUN for ever. */
   },
   'pyrun-blank': () => {
     const card = document.querySelector('.pyrun-card');
     const bid = card && card.getAttribute('data-build');
-    const key = (window.App && App.state && App.state.localKeys && App.state.localKeys[bid]) || null;
+    const key = window.__walkKey ? window.__walkKey(bid) : null;
     const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank')).find(i => !i.value);
     if (!inp) return;
     const k = inp.getAttribute('data-key');
@@ -639,4 +660,43 @@ const ACTIONS = {
   }
 };
 
-module.exports = { detectKind, whereAmI, chunkNow, MOVES, SETTLE, ACTIONS };
+/* WHERE A BUILD'S ANSWER REALLY LIVES — corrected 19 Aug 2026 by the first real
+   walk of j2-2, which placed all SEVEN lines, emptied the tray and then pressed
+   RUN fifty-one times against a program that could never match.
+   The movers read `App.state.localKeys`, on the stated belief that "the client
+   already holds the build order for instant marking". **IT DOES NOT, and it
+   should not.** Both servers filter that call to multiple-choice keys only
+   (`if (typeof k.a !== 'number') return;` in dev-server.js and in
+   Code.gs.template), so a pyrun key — `{order, blanks}`, with no `a` — has never
+   reached a pupil's browser. That is correct and must stay correct: `pyrun`
+   decides correctness by RUNNING the program, so shipping the answer to her
+   machine would give away the lesson for nothing.
+   So the WALKER gets its own route, and only the walker. `dev-keys.json` is the
+   preview's own git-ignored marking file, served beside the packed content;
+   a harness may read it because a harness is not a pupil. `primeDevKeys` fetches
+   it once and installs `window.__walkKey`, which prefers it and falls back to
+   whatever the client happens to hold. If neither answers, the mover now does
+   NOTHING rather than placing every line in the tray — a walk that stalls is a
+   report; a walk that quietly builds the wrong program and reports "0 badges" is
+   a lie (DFM 146a). */
+async function primeDevKeys(page, host) {
+  const url = (host || 'http://localhost:8121') + '/ks3-dt/content/dev-keys.json';
+  await page.evaluate(async (u) => {
+    if (window.__walkKey) return;
+    let all = null;
+    try { const r = await fetch(u, { cache: 'no-store' }); if (r.ok) all = await r.json(); } catch (e) {}
+    window.__devKeys = all;
+    window.__walkKey = function (bid) {
+      if (!bid) return null;
+      if (all) {
+        for (const fid of Object.keys(all)) {
+          const k = all[fid] && all[fid][bid];
+          if (k) return k;
+        }
+      }
+      return (window.App && App.state && App.state.localKeys && App.state.localKeys[bid]) || null;
+    };
+  }, url);
+}
+
+module.exports = { detectKind, whereAmI, chunkNow, MOVES, SETTLE, ACTIONS, primeDevKeys };
