@@ -8,6 +8,10 @@
  * reads it (DFM 219d) and a platform-wide wording sweep reaches it (DFM 147).
  *
  * TO RUN, ONE FUNCTION AT A TIME, from the toolbar dropdown:
+ *   runDeckRound         THE WHOLE ROUND, ONE BUTTON: rebuilds every deck
+ *                        that exists, then exports every proof set. Resumable
+ *                        — if it says PAUSED, press Run again. It is the first
+ *                        function in the file, so a fresh page selects it.
  *   createLesson2Deck    creates that deck ONCE, shares it read-only, and
  *   createLesson3Deck    LOGS ITS FILE ID. Read that id back: it is written into
  *   createLesson4Deck    the deck data and into the brief's two resource links
@@ -2238,6 +2242,77 @@ function createDeck_(lessonId) {
     lessonLabel_(lessonId) + 'Deck,');
   Logger.log('which keeps this id and therefore keeps every link working.');
   return pres.getId();
+}
+
+/* ═══════════ ONE BUTTON FOR A WHOLE ROUND (18 Aug 2026) ═══════════════════
+   THIS IS THE FIRST PUBLIC FUNCTION IN THE FILE ON PURPOSE: a freshly loaded
+   project selects it by default, so a whole round can be run without ever
+   touching the function picker.
+
+   WHY IT EXISTS. A round is now seven decks: rebuild each, then export each
+   deck's proof set for the eyes-on-pixels read (DFM 225b). That was fourteen
+   dropdown selections, each one a chance to run the wrong year's function in
+   front of him — the exact risk the year-qualified names (template §7) were
+   introduced to reduce. One entry point removes the choice entirely.
+
+   IT IS RESUMABLE, because fourteen jobs do not fit in Apps Script's six
+   minutes. It stops at four, records where it got to in a script property, and
+   says so; pressing Run again picks up at the next job. Nothing is repeated and
+   nothing is skipped — and because the position is stored rather than assumed,
+   a browser crash or a closed tab costs one job, not the round.
+
+   THE LIST IS DERIVED from the deck data, never typed (K23): a deck that exists
+   is a deck this round covers, because existing is what puts it on the list. */
+function runDeckRound() {
+  var props = PropertiesService.getScriptProperties();
+  var KEY = 'ks3dt.round.at';
+  var ids = Object.keys(DECKS).sort().filter(function (id) {
+    return DECKS[id] && DECKS[id].driveFileId;
+  });
+  var jobs = [], i;
+  for (i = 0; i < ids.length; i++) jobs.push({ kind: 'rebuild', id: ids[i] });
+  for (i = 0; i < ids.length; i++) jobs.push({ kind: 'proof', id: ids[i] });
+
+  var at = Number(props.getProperty(KEY) || 0);
+  if (!(at >= 0) || at >= jobs.length) at = 0;
+  var started = new Date().getTime();
+  var BUDGET_MS = 4 * 60 * 1000;
+
+  Logger.log('================ DECK ROUND ================');
+  Logger.log(ids.length + ' deck(s): ' + ids.join(', '));
+  Logger.log(jobs.length + ' jobs — every deck rebuilt, then every proof set exported');
+  Logger.log('starting at job ' + (at + 1) + ' of ' + jobs.length);
+  Logger.log('');
+
+  while (at < jobs.length && (new Date().getTime() - started) < BUDGET_MS) {
+    var job = jobs[at];
+    Logger.log('---------- job ' + (at + 1) + ' of ' + jobs.length + ': ' +
+      job.kind + ' ' + job.id + ' ----------');
+    if (job.kind === 'rebuild') rebuildDeck_(job.id);
+    else exportDeckProofs_(job.id);
+    at++;
+    props.setProperty(KEY, String(at));
+  }
+
+  Logger.log('');
+  if (at >= jobs.length) {
+    props.deleteProperty(KEY);
+    Logger.log('================ ROUND COMPLETE ================');
+    Logger.log('Every deck rebuilt in place and every proof set exported.');
+    Logger.log('The proofs are now read, slide by slide, before any deck is called ready.');
+  } else {
+    Logger.log('================ PAUSED, NOT FINISHED ================');
+    Logger.log(at + ' of ' + jobs.length + ' jobs done. It stopped short of the six-minute');
+    Logger.log('limit on purpose. PRESS RUN AGAIN — it starts at job ' + (at + 1) + '.');
+  }
+  return at + '/' + jobs.length;
+}
+
+/* Start the round again from job 1 — only needed if a round is abandoned
+   half-way and the next one should not resume into it. */
+function resetDeckRound() {
+  PropertiesService.getScriptProperties().deleteProperty('ks3dt.round.at');
+  Logger.log('The round position is cleared. runDeckRound starts at job 1.');
 }
 
 function createLesson2Deck() { return createDeck_('j1-02'); }
