@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-08-18 from contentVersion 2026-08-18c.
+ * Built 2026-08-18 from contentVersion 2026-08-18d.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -1241,7 +1241,7 @@ var DECKS = {
       "bullets": [
        "Find out what your Workshop year is about: you build real things, and you learn how to keep them safe.",
        "Find your way around this website, and see where your work is saved.",
-       "Learn the six rules of the DT rooms, then inspect a room and spot the computers where they were broken.",
+       "Learn the six rules of the DT rooms, then inspect a room and spot the places where a rule has been broken.",
        "Show what you can do already — the Snapshot is not a test and nobody can fail it.",
        "Finish the big parts of the lesson to earn a reward called a badge, and unlock a new look for your screen."
       ],
