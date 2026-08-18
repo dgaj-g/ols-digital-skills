@@ -887,7 +887,13 @@ const FILM_MAP = {
   },
   l3: { lesson: 'j1-03', chunkId: 'ladder' },
   l4: { lesson: 'j1-04', chunkId: 'board' },
-  l5: { lesson: 'j1-05', chunkId: 'masterclass' }
+  l5: { lesson: 'j1-05', chunkId: 'masterclass' },
+  /* THE TWO LESSON 2 FILMS (19 Aug 2026). Both are text-based and both are
+     served on their lesson's `film` chunk, which is also where vocab.json says
+     J2's own spine teaches the word "variable" — so this entry is what makes
+     that claim checkable rather than asserted. */
+  'j2-l2': { lesson: 'j2-02', chunkId: 'film' },
+  'j3-l2': { lesson: 'j3-02', chunkId: 'film' }
 };
 /* Extra constants the extractor may resolve, beyond the ones it harvests
    from the file itself. Extend this the day a scene needs one. */
