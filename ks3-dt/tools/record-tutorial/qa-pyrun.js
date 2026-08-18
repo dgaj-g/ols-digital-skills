@@ -118,6 +118,10 @@ function engineTidyRule() {
     : /TypeError/i.test(s) ? 'type'
     : /ValueError/i.test(s) ? 'value' : 'other';
 
+  /* which error kinds each chunk's own decoys really raise, filled by section 2
+     and spent by section 5 */
+  const raised = {};
+
   for (const L of found) {
     const keys = L.lesson.keys || {};
     for (const ch of L.uses) {
@@ -166,6 +170,8 @@ function engineTidyRule() {
           check(failed, b.id + ' decoy [' + String(b.lines[d].t).slice(0, 46) + ']: really fails');
           if (!dres.ok) {
             const kind = ERRKIND(dres.err);
+            const rk = L.lesson.id + '·' + ch.id;
+            (raised[rk] || (raised[rk] = [])).push(kind);
             check(!!(cfg.errorWords && cfg.errorWords[kind]),
               b.id + ' decoy raises ' + kind + ' — and this lesson has plain words for ' + kind);
           }
@@ -224,9 +230,29 @@ function engineTidyRule() {
       if (ch.engine === 'pyrun') {
         const hasBlank = (cfg.builds || []).some(b => (b.lines || []).some(l => (l.blanks || []).length));
         if (hasBlank) check(!!cfg.blankEmptySay, L.lesson.id + ' · ' + ch.id + ': uses blanks, so it must supply blankEmptySay');
-        const kinds = ['name', 'syntax', 'type', 'indent', 'value', 'timelimit', 'other'];
-        kinds.forEach(kd => check(!!(cfg.errorWords || {})[kd],
-          L.lesson.id + ' · ' + ch.id + ': has plain words for a ' + kd + ' error'));
+        /* PLAIN WORDS FOR EVERY KIND THIS CHUNK CAN REALLY RAISE, AND NO MORE.
+           The first version of this rule demanded all seven kinds on every
+           pyrun chunk, and the separated cold read caught what that produces:
+           J2's build is a drag-only tray of fixed lines, so it can never raise
+           an IndentationError or a TimeLimitError — and the sentences the rule
+           forced told a pupil to line lines up she cannot indent and to look
+           for a loop she has never met. A gate that demands content which can
+           never be true is manufacturing untruths (rule 35, arriving through
+           the back door of a harness).
+           The producible kinds are not guessed: they are the ones section 2
+           actually SAW while running this chunk's own decoys, plus `other`,
+           which is the catch-all any run can land on. */
+        const canRaise = new Set(['other']);
+        (raised[L.lesson.id + '·' + ch.id] || []).forEach(k => canRaise.add(k));
+        Array.from(canRaise).sort().forEach(kd => check(!!(cfg.errorWords || {})[kd],
+          L.lesson.id + ' · ' + ch.id + ': has plain words for a ' + kd + ' error (its decoys really raise it)'));
+        const surplus = Object.keys(cfg.errorWords || {}).filter(k => !canRaise.has(k));
+        if (surplus.length) {
+          console.log('  NOTE  ' + L.lesson.id + ' · ' + ch.id + ': carries plain words for ' +
+            surplus.join(', ') + ' — no decoy in it raises those, so they are unreachable on this ' +
+            'card. Not a failure (a pupil may still find her own way to one), but worth reading: ' +
+            'a sentence she can never see cannot be judged by anyone who has not gone looking for it.');
+        }
       }
       if (ch.engine === 'snap') {
         (cfg.pairs || []).forEach(p => {
