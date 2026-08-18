@@ -10,7 +10,7 @@
    ],
    "captions": "The first computer 'bug' — a real moth, taped into Harvard's logbook, 1947. U.S. Navy photo (public domain).",
    "says": "the 1947 moth, wide, with its public-domain credit",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-18b",
    "chunkHash": "f2eff2c9c3c5",
    "px": "1440x748"
   },
@@ -23,7 +23,8 @@
    "contentAnchor": "Lost your game? Nothing is broken — reload scratch.mit.edu, then File → Load from your computer, and pick the .sb3 again.",
    "cardText": "OLS GAMES · QA DIVISION · The Case Board · 0 of 4 cases closed · 🎥 · Detective’s Handbook · training film · watch any time · 📥 · Evidence Intake · START HERE · get the broken game · CASE 01 · TRAINING · The Frozen Shark · ★★★★★ · 🔧 · SEALED UNTIL YOU HAVE THE GAME · CASE 02 · The Broken Scoreboard · ★★★★★ · 🔧🔧 · SEALED UNTIL YOU HAVE THE GAME · CASE 03 · The Vanishing Fish · ★★★★★ · 🔧🔧🔧 · SEALED UNTIL YOU HAVE THE GAME · CASE 04 · The White Void · ★★★★★ · 🔧🔧🔧🔧 · SEALED UNTIL YOU HAVE",
    "says": "the Case Board, the hour’s home, with nothing closed yet",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-18b",
+   "crop": null,
    "chunkHash": "fb727a4283db",
    "px": "1812x1294"
   },
@@ -31,12 +32,13 @@
    "name": "intake",
    "kind": "app",
    "chunkId": "board",
-   "selector": ".chunk-host .card, .chunk-host .case-intake",
+   "selector": ".chunk-host .card",
    "textSnippet": "You should see a Shark, a Fish and a score stuck on 0. The little pictures at the bottom right are the game's SPRITES — a sprite is one character or thing in the game. Click a sprite and you will see ",
    "contentAnchor": "You should see a Shark, a Fish and a score stuck on 0. The little pictures at the bottom right are the game's SPRITES — a sprite is one character or thing in the game. Click a sprite and you will see its SCRIPTS: the stacks of blocks that tell that sprite what to do. Every sprite carries its OWN scripts, never anyone else's — that is why a bug can hide on one sprite while everything else looks fine. One more word you WILL meet on the Fish: CLONE. A clone is a temporary copy of a sprite that Scratch makes while the game runs — every fish swimming in the water is a clone of the one Fish sprite in the list. Most of the bugs are hiding in the sprites' scripts — but not all of them: one case will take you somewhere new.",
    "cardText": "EVIDENCE INTAKE · Get the broken game · A detective examines the REAL broken thing, not a photo of it. Get the broken game open on your own screen: · ⬇️ Download the broken game · Open the Scratch editor ↗ · ⬇️ · Download the evidence · Click the gold button — shark-attack-broken-edition.sb3 drops into your Downloads. · 🧪 · Open the Scratch editor · Use the second button — scratch.mit.edu opens in a new tab. No login needed, ever. Keep BOTH tabs open: case board here, game there. · 📂 · Load th",
    "says": "the Evidence Intake card — how she gets the broken game",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-18b",
+   "crop": null,
    "chunkHash": "fb727a4283db",
    "px": "1372x1986"
   },
@@ -49,7 +51,8 @@
    "contentAnchor": "“The shark won't swim RIGHT. Left, up, down — all fine. Right? Nothing. My shark just stares at the wall while the fish laugh at it. One star.”",
    "cardText": "★★★★★ · “The shark won't swim RIGHT. Left, up, down — all fine. Right? Nothing. My shark just stares at the wall while the fish laugh at it. One star.” · — FinnTastic_11",
    "says": "the case ticket as a pupil first meets it — the players’ own report",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-18b",
+   "crop": null,
    "chunkHash": "fb727a4283db",
    "px": "1252x378"
   },
@@ -62,7 +65,8 @@
    "contentAnchor": "You have fixed four bugs in one game — and some bugs only show up when the whole game is played. So before the game goes back to the players, QA plays the WHOLE game like a real player: one full minute, from the green flag to the end. Watch all four fixes holding at once:",
    "cardText": "RELEASE DESK · The whole-game check · THE FULL RUN · You have fixed four bugs in one game — and some bugs only show up when the whole game is played. So before the game goes back to the players, QA plays the WHOLE game like a real player: one full minute, from the green flag to the end. Watch all four fixes holding at once: · All four arrows — swim a full lap. · Eat at least five fish — the score counts every single one. · Fish keep arriving for the whole minute. · Restart twice — the ocean is t",
    "says": "the release desk — the whole-game check",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-18b",
+   "crop": null,
    "chunkHash": "fb727a4283db",
    "px": "1372x1426"
   },
@@ -74,10 +78,14 @@
    "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
    "contentAnchor": "I can read code someone else wrote and work out what it should do.",
    "cardText": "How did it go? · I can read code someone else wrote and work out what it should do. · ✓ I can · ≈ Getting there · ✗ Not yet · I can find a bug by testing and checking — not by guessing. · ✓ I can · ≈ Getting there · ✗ Not yet · I can explain what was wrong and what I changed, in my own words. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer every sentence above — and how it felt — and this button wakes up. · Send & ",
-   "says": "the compulsory How did it go? screen, untouched",
-   "contentVersion": "2026-08-15d",
+   "says": "the top of the compulsory How did it go? screen: its heading and the first rating row, untouched",
+   "contentVersion": "2026-08-18b",
+   "crop": {
+    "to": ".se-row .se-chips",
+    "keepFrac": 0.235
+   },
    "chunkHash": "0315af471592",
-   "px": "1372x1402"
+   "px": "1372x369"
   }
  }
 }

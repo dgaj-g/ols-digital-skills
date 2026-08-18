@@ -222,7 +222,14 @@ const SHOTS = {
       const pop = document.querySelector('.pair-pop');
       return !!pop && (pop.textContent || '').trim().length > 20;
     },
-    says: 'the pop-up that names her partner'
+    /* CROPPED to the bottom of the first line (DFM 237b). The whole pop is four
+       paragraphs of text in a near-square card, and it shares its slide with two
+       other shots — so it came out 138pt wide on a 720pt canvas, where not one
+       word of it could be read. What the slide needs it to say is the PARTNER
+       FOUND chip, "You've been paired!" and who with; the rules underneath are
+       the teacher's own bullets on the same slide. */
+    cropTo: '.pair-pop-line',
+    says: 'the top of the pop-up that names her partner'
   }
 };
 
@@ -429,8 +436,24 @@ async function shoot(page, name) {
     await abort(page, '"' + name + '" moved off its screen while it was being photographed');
   }
 
+  /* the crop, measured off the real boxes so it cannot drift with the text
+     (DFM 237b; the same measurement capture-teacher-layer.js makes) */
+  let crop = null;
+  if (shot.cropTo) {
+    crop = await el.evaluate((node, sel) => {
+      const inner = node.querySelector(sel);
+      if (!inner) return null;
+      const a = node.getBoundingClientRect(), b = inner.getBoundingClientRect();
+      if (!a.height) return null;
+      return { to: sel, keepFrac: Math.min(1, (b.bottom - a.top + 16) / a.height) };
+    }, shot.cropTo);
+    if (!crop) {
+      await abort(page, '"' + name + '" declares cropTo "' + shot.cropTo +
+        '", and the element photographed has no such descendant');
+    }
+  }
   const framed = path.join(OUT, 'shot-' + name + '.png');
-  const size = await frameShot(raw, framed, theme);
+  const size = await frameShot(raw, framed, theme, crop);
   manifest.shots[name] = {
     name,
     chunkId: shot.chunk,
@@ -440,6 +463,8 @@ async function shoot(page, name) {
     /* the whole card, so a pinned expectation can be checked against what the
        screen SAID rather than against whichever line happened to be longest */
     cardText: lines.join(' · ').slice(0, 500),
+    /* what was done to the picture, recorded rather than implied */
+    crop: crop ? { to: crop.to, keepFrac: Math.round(crop.keepFrac * 1000) / 1000 } : null,
     contentVersion: CONTENT_VERSION,
     chunkHash: chunkHash(shot.chunk),
     px: size.w + 'x' + size.h

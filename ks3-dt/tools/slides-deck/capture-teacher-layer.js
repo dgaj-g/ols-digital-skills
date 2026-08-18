@@ -735,8 +735,30 @@ async function captureLesson(browser, lesson) {
         if (!await pg.evaluate(spec.at)) {
           await abort(pg, '"' + name + '" moved off its screen while it was being photographed');
         }
+        /* ── THE CROP, measured off the real boxes (DFM 237b) ───────────────
+           `cropTo` names an element INSIDE the photographed one; the picture
+           keeps the top of the card down to that element's bottom, plus a
+           little air. Measured as a FRACTION so it is independent of the
+           device pixel ratio and re-measures itself in every lesson, where the
+           same card is a different height. A cropTo that matches nothing is a
+           failure, never a silent full-size shot — the whole point is that the
+           picture is the size the plan says it is. */
+        let crop = null;
+        if (spec.cropTo) {
+          crop = await el.evaluate((node, sel) => {
+            const inner = node.querySelector(sel);
+            if (!inner) return null;
+            const a = node.getBoundingClientRect(), b = inner.getBoundingClientRect();
+            if (!a.height) return null;
+            return { to: sel, keepFrac: Math.min(1, (b.bottom - a.top + 16) / a.height) };
+          }, spec.cropTo);
+          if (!crop) {
+            await abort(pg, '"' + name + '" declares cropTo "' + spec.cropTo +
+              '", and the element photographed has no such descendant');
+          }
+        }
         const framed = path.join(deckDir, 'shot-' + name + '.png');
-        const size = await frameShot(raw, framed, theme);
+        const size = await frameShot(raw, framed, theme, crop);
         /* ── THE SHAPE GUARD, and it is about the back of the room ──────────
            A shot can be of exactly the right screen and still be useless. The
            deck gives a single screenshot about 250 points of width beside its
@@ -766,6 +788,8 @@ async function captureLesson(browser, lesson) {
           contentAnchor: contentAnchor(lj, spec.chunk, lines),
           cardText: lines.join(' · ').slice(0, 500),
           says: spec.says, contentVersion: CONTENT_VERSION,
+          /* what was done to the picture, recorded rather than implied */
+          crop: crop ? { to: crop.to, keepFrac: Math.round(crop.keepFrac * 1000) / 1000 } : null,
           chunkHash: chunkHash(lj, spec.chunk), px: size.w + 'x' + size.h
         };
         write();
