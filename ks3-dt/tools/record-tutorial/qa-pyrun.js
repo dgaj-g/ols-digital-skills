@@ -254,6 +254,26 @@ function engineTidyRule() {
             'a sentence she can never see cannot be judged by anyone who has not gone looking for it.');
         }
       }
+      /* RAW HTML IN A STRING THIS ENGINE RENDERS IS TEXT ON HER SCREEN, NOT
+         MARKUP (DFM 166's class, found by the separated cold read on rendered
+         output rather than by any mechanical rule). `fmtBold` escapes the WHOLE
+         string first and only then turns **paired markers** into bold — which
+         is right, because it means nothing a content author types can become
+         live HTML. But `parsons` renders its own how-line with innerHTML, so
+         `<b>` works there and not here, and I copied the habit across. Three
+         cards would have shown a pupil the characters `<b>Your program</b>`.
+         Two neighbouring surfaces taking opposite input is exactly what needs a
+         guard rather than a correction. */
+      ['howLine', 'goalLine', 'doneText', 'intro'].forEach(k => {
+        const v = String(cfg[k] == null ? '' : cfg[k]);
+        check(!/<[a-z/][^>]*>/i.test(v),
+          L.lesson.id + ' · ' + ch.id + ': ' + k + ' carries no raw HTML — this engine escapes it, so a tag is TEXT');
+      });
+      (cfg.builds || []).forEach(b2 => ['goalLine', 'brief', 'matchedSay'].forEach(k => {
+        const v = String((b2 || {})[k] == null ? '' : b2[k]);
+        check(!/<[a-z/][^>]*>/i.test(v),
+          L.lesson.id + ' · ' + b2.id + ': ' + k + ' carries no raw HTML');
+      }));
       if (ch.engine === 'snap') {
         (cfg.pairs || []).forEach(p => {
           check(!!p.gloss, L.lesson.id + ': block ' + p.id + ' is glossed at first meeting (K4)');
@@ -319,6 +339,15 @@ function engineTidyRule() {
       sel + ' sets BOTH its own ink and its own ground');
   });
   control(!/\.pyc-plain\s*\{[^}]*color:\s*inherit/.test(block), 'no console surface falls back to inherit');
+
+  /* CONTROL for the raw-HTML guard: the very string that was shipping, put
+     through the real formatter, must come back with its tag visible as text. */
+  {
+    const bad = 'drag a line into <b>Your program</b>';
+    const escaped = bad.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    control(/&lt;b&gt;/.test(escaped), 'the platform formatter really does turn a <b> tag into visible characters');
+    control(/<[a-z/][^>]*>/i.test(bad), 'and the guard above recognises that string as raw HTML');
+  }
 
   /* ---- 7. THE ENGINES REALLY MOUNT, AND THE CARD REALLY DRIVES ---------
      Sections 1-6 prove the Python and read the source. Neither of them would
