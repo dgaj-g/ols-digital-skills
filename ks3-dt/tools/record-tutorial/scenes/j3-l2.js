@@ -42,6 +42,15 @@ async function assertStage(page, want) {
   return p;
 }
 
+/* NO BLOCK EVER APPEARS ON CAMERA IN THIS FILM, AND THAT IS DECLARED RATHER
+   THAN LEFT BLANK (DFM 207c). J2's Lesson 2 film puts four real Scratch blocks
+   up and each one has to say where it is taught. This film has none: it is
+   Python from nothing, a 3D box with a name on it, and a console. An ABSENT
+   manifest and an EMPTY one look the same to a reader and mean opposite things
+   — "nobody checked" against "checked, and there are none" — so it is written
+   down. If a block ever does appear here, this list is where it is declared. */
+const BLOCKS_ON_CAMERA = [];
+
 const scenes = [
   /* ------------------------------------------------------------------ ch1 */
   {
@@ -206,4 +215,4 @@ const scenes = [
   }
 ];
 
-module.exports = { scenes };
+module.exports = { scenes, BLOCKS_ON_CAMERA };
