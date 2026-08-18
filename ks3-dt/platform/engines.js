@@ -591,6 +591,191 @@
     App.armButton(c.querySelector('button.primary-btn'), function () { host.innerHTML = ''; onBegin(); });
   }
 
+  /* ================= PyRun — THE PYTHON RUNTIME (runner spec §A, v1) =========
+     Built 19 Aug 2026, after the prototype gate (spec §B) proved Skulpt runs
+     inside the Apps Script sandbox: `eval`/`new Function` are allowed on the
+     googleusercontent origin, a cross-origin <script src> from Pages loads the
+     library in ~450ms, a five-line program returns exact stdout, the execLimit
+     guard fires on `while True: pass`, and thirty consecutive runs cost +1.8MB
+     of a 4GB heap. Because the script tag works, NOTHING is inlined: the paste
+     does not grow by a byte (the costed fallback was +966,760, a 2.25x paste).
+
+     V1 SCOPE, and it is deliberately small (the spec's own scope discipline):
+     assembled or authored code, real stdout, an honest error, an expected-output
+     comparison. NO turtle. NO input(). NO free-typing beyond single-line blanks.
+     Those arrive with the lessons that need them (J2 L3 input, J2 L5 turtle).
+
+     THE CONSOLE IS HONEST (rule 35, and DFM 214's "say what her job is").
+     It shows what the program really printed. On an error it shows the REAL
+     Python error AND one plain-words line underneath it — never a fake error,
+     and never a hidden one. The plain-words lines are CONTENT, not engine
+     literals, because a string hardcoded in an engine escapes the language gate
+     entirely (DFM 190d/192g); the engine's own copies are fallbacks that the
+     harness proves are never the ones a pupil reads. */
+  var PyRun = global.PyRun = {
+    /* one home for the library (DFM 144). The gate proved this exact pair. */
+    SRC: ['assets/vendor/skulpt/skulpt.min.js', 'assets/vendor/skulpt/skulpt-stdlib.js'],
+    DEFAULT_LIMIT_MS: 5000,
+    _p: null,
+
+    /* Lazily loaded, and memoised: a pupil who never reaches a run card never
+       pays for the library, and a pupil who runs twenty programs pays once. */
+    load: function () {
+      if (PyRun._p) return PyRun._p;
+      PyRun._p = PyRun.SRC.reduce(function (chain, src) {
+        return chain.then(function () {
+          return new Promise(function (res, rej) {
+            var s = document.createElement('script');
+            s.src = asset(src);
+            s.async = false;
+            s.onload = function () { res(); };
+            s.onerror = function () { rej(new Error('pyrun-load-failed')); };
+            document.head.appendChild(s);
+            setTimeout(function () { rej(new Error('pyrun-load-timeout')); }, 30000);
+          });
+        });
+      }, Promise.resolve()).then(function () {
+        if (typeof Sk === 'undefined') throw new Error('pyrun-no-sk');
+        return true;
+      });
+      return PyRun._p;
+    },
+
+    /* The shape the prototype gate proved, unchanged: one configure per run,
+       output captured, execLimit as the guard. Resolves EITHER way — a program
+       that fails is not an exception in this app, it is the lesson working. */
+    run: function (code, opts) {
+      opts = opts || {};
+      var limit = Number(opts.limitMs || PyRun.DEFAULT_LIMIT_MS);
+      return PyRun.load().then(function () {
+        var out = '';
+        Sk.configure({
+          output: function (t) { out += t; },
+          read: function (x) {
+            if (Sk.builtinFiles === undefined || Sk.builtinFiles.files[x] === undefined) {
+              throw 'File not found: ' + x;
+            }
+            return Sk.builtinFiles.files[x];
+          },
+          execLimit: limit,
+          __future__: Sk.python3
+        });
+        return Sk.misceval.asyncToPromise(function () {
+          return Sk.importMainWithBody('<stdin>', false, code, true);
+        }).then(function () {
+          return { ok: true, out: out, err: '', limitMs: limit };
+        }, function (e) {
+          return { ok: false, out: out, err: String(e), limitMs: limit };
+        });
+      }, function () {
+        return { ok: false, out: '', err: '', offline: true, limitMs: limit };
+      });
+    },
+
+    /* Which plain-words line belongs to this error. The KEY is chosen here; the
+       WORDS come from the lesson (cfg.errorWords), so every sentence a pupil
+       reads has been through the gate and carries a read-aloud record. */
+    errKind: function (errText) {
+      var s = String(errText || '');
+      if (/TimeLimitError/i.test(s)) return 'timelimit';
+      if (/IndentationError|TabError/i.test(s)) return 'indent';
+      if (/NameError/i.test(s)) return 'name';
+      if (/SyntaxError/i.test(s)) return 'syntax';
+      if (/TypeError/i.test(s)) return 'type';
+      if (/ValueError/i.test(s)) return 'value';
+      return 'other';
+    },
+    /* The engine's own words are a FALLBACK ONLY. qa-pyrun proves the lesson
+       supplies every kind it can actually produce, so a pupil never reads one
+       of these. They exist so a missing content key can never render a blank
+       line where an explanation belongs (DFM 42: no silent nothing). */
+    FALLBACK_WORDS: {
+      timelimit: 'That program was still going after a few seconds, so it was stopped. Look for a loop that never ends.',
+      indent: 'One of the lines is not lined up with the others. Lines inside a loop start four spaces in.',
+      name: 'Python does not know that name. Check how it is spelled, and check you made it before you used it.',
+      syntax: 'Python could not read that line. Look for a missing bracket or a missing speech mark.',
+      type: 'You have joined a word to a number. Put str( ) around the number first.',
+      value: 'Python understood the line, but not the value it was given.',
+      other: 'Python stopped at the line named above. Read that line again, slowly.'
+    },
+    plain: function (errText, words) {
+      var kind = PyRun.errKind(errText);
+      var w = (words && words[kind]) || PyRun.FALLBACK_WORDS[kind] || PyRun.FALLBACK_WORDS.other;
+      return { kind: kind, text: String(w) };
+    },
+
+    /* Expected-output comparison. Trailing spaces on a line and the final
+       newline are forgiven, because neither is something a pupil can see on
+       screen — comparing on invisible characters would be a fail state she
+       could never diagnose (rule 35's family). Everything else must match. */
+    tidy: function (s) {
+      return String(s == null ? '' : s).replace(/\r/g, '')
+        .split('\n').map(function (l) { return l.replace(/[ \t]+$/, ''); })
+        .join('\n').replace(/\n+$/, '');
+    },
+    matches: function (actual, expected) {
+      var want = Array.isArray(expected) ? expected.join('\n') : expected;
+      return PyRun.tidy(actual) === PyRun.tidy(want);
+    },
+
+    /* ---- the console surface -------------------------------------------
+       A NEW pupil surface, so it sets its OWN ink on its OWN ground and never
+       inherits the shell's light text (the exact fault DFM 207g found on the
+       studio QA desk: a light plate inheriting light type). qa-readability
+       measures it on every skin. */
+    console: function (host, labels) {
+      labels = labels || {};
+      var box = el('<div class="pyc">' +
+        '<div class="pyc-bar"><span class="pyc-dot"></span><span class="pyc-title">' +
+        esc(labels.title || 'The console') + '</span></div>' +
+        '<div class="pyc-body" role="status" aria-live="polite"></div></div>');
+      host.appendChild(box);
+      var body = box.querySelector('.pyc-body');
+      var api = {
+        node: box,
+        idle: function () {
+          box.className = 'pyc';
+          body.innerHTML = '<p class="pyc-idle">' +
+            esc(labels.idle || 'Nothing has run yet. Build your program, then press RUN.') + '</p>';
+        },
+        /* DFM 42/161: the control that starts a wait owns the waiting state. */
+        running: function () {
+          box.className = 'pyc is-running';
+          body.innerHTML = '<p class="pyc-run"><span class="pyc-spin"></span>' +
+            esc(labels.running || 'Running your program…') + '</p>';
+        },
+        show: function (res, words) {
+          var printed = PyRun.tidy(res.out);
+          var html = '';
+          if (res.offline) {
+            box.className = 'pyc is-bad';
+            body.innerHTML = '<p class="pyc-plain">' +
+              esc(labels.offline || 'Python did not load just now. Ask your teacher, and try RUN again in a moment.') +
+              '</p>';
+            return;
+          }
+          if (printed) {
+            html += '<p class="pyc-lead">' + esc(labels.printedLead || 'Your program printed this:') + '</p>' +
+              '<pre class="pyc-out">' + esc(printed) + '</pre>';
+          } else if (res.ok) {
+            html += '<p class="pyc-lead">' + esc(labels.nothingLead || 'Your program ran, and it printed nothing at all.') + '</p>';
+          }
+          if (!res.ok) {
+            var p = PyRun.plain(res.err, words);
+            /* the REAL error, then ONE plain line under it. Both, always. */
+            html += '<p class="pyc-lead pyc-errlead">' + esc(labels.errorLead || 'Python stopped, and this is exactly what it said:') + '</p>' +
+              '<pre class="pyc-err">' + esc(String(res.err).replace(/^Error:\s*/, '')) + '</pre>' +
+              '<p class="pyc-plain">' + esc(p.text) + '</p>';
+          }
+          box.className = 'pyc ' + (res.ok ? 'is-ok' : 'is-bad');
+          body.innerHTML = html;
+        }
+      };
+      api.idle();
+      return api;
+    }
+  };
+
   /* ================= briefing (cinematic dossier) ================= */
   Engines.briefing = {
     mount: function (host, chunk, ctx) {
@@ -2509,6 +2694,428 @@
             if (!ctx.review && r && r.ok) ctx.saveEvent({ detail: 'ep=' + (r.correct ? 1 : 0) });
             fb.querySelector('button').onclick = function () { ctx.next(); };
             fb.querySelector('button').focus();
+          });
+        };
+      }
+    }
+  };
+
+  /* Pupil-facing fallbacks for the two Python engines. A lesson is REQUIRED to
+     supply every one of these and qa-pyrun fails the build if it does not —
+     these exist only so that a missing key can never render a mute control or
+     an empty box where an explanation belongs (DFM 205's law, DFM 42's family).
+     They are engine literals, which is exactly why they must never be the thing
+     a pupil reads (DFM 192g); the harness proves they are not. */
+  var PY_SAY = {
+    pickBlockSay: 'Click a block on the left to start.',
+    pickPythonSay: 'Now click the Python line you think does the same job.',
+    wrongSay: 'Not a pair. Both go back — look at them again and try another one.',
+    rightSay: 'That is a pair. Both are locked in.',
+    lockedNote: 'Move at least one line into your program, then RUN wakes up.',
+    blankEmptySay: 'One of the boxes is still empty. Type something into it, then press RUN.',
+    trayEmpty: 'Every line is in your program.',
+    progEmpty: 'Nothing here yet — drag or click a line across.',
+    matchedSay: 'The console said exactly what the target asked for.',
+    notYetSay: 'The console did not say what the target asked for. Read what it really printed, change your program, and run it again.'
+  };
+
+  /* ================= snap — MATCH A BLOCK TO ITS PYTHON TWIN ================
+     J2 Lesson 2, Phase 1 (runner spec §C). She taps a Scratch block she can
+     read, then taps the Python line she believes is its twin. Right: they snap
+     together and both leave the tray. Wrong: BOTH flash and bounce back, and
+     nothing is revealed and nothing is named — the Isotope-Snap pattern, rebuilt
+     small inside the platform.
+
+     GENUINE CONSEQUENCE (feedback_genuine_consequence): no auto-correct, no
+     telegraphing, no "not that one — try the third". The Python side is shuffled
+     at mount, so a pupil who learns the order learns nothing.
+
+     EVERY BLOCK IS GLOSSED AT FIRST MEETING (spec §C, his K4 taper): this
+     cohort's Scratch is shaky and untrusted, so the picture on the card carries
+     one plain line saying what the block does. Reading the blocks is TAUGHT in
+     place, on the card, rather than assumed. */
+  Engines.snap = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      introCard(host, {
+        kicker: cfg.kicker, title: cfg.title, text: cfg.intro || '',
+        steps: cfg.steps, stepsClass: 'snap-intro-steps'
+      }, cfg.beginLabel || 'Open the desk', build);
+
+      function build() {
+        var pairs = cfg.pairs || [];
+        var pys = cfg.pythons || [];
+        /* the Python side is shuffled; the BLOCK side keeps its authored order,
+           because the blocks are a taught sequence and the gloss on each one is
+           written to be met in that order */
+        var order = pys.map(function (_, i) { return i; });
+        for (var i = order.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1)), t = order[i]; order[i] = order[j]; order[j] = t;
+        }
+        var solved = {}, firstTry = 0, tries = {};
+        var pickedBlock = null, pickedPy = null, busy = false;
+
+        var c = el('<div class="card snap-card">' +
+          '<h2 class="snap-goal">' + fmtBold(cfg.goalLine || '') + '</h2>' +
+          '<p class="snap-how">' + fmtBold(cfg.howLine || '') + '</p>' +
+          '<div class="snap-cols">' +
+          '<div class="snap-side snap-blocks"><h3>' + esc(cfg.blocksLabel || 'The blocks') + '</h3><div class="snap-list"></div></div>' +
+          '<div class="snap-side snap-pys"><h3>' + esc(cfg.pythonLabel || 'The Python lines') + '</h3><div class="snap-list"></div></div>' +
+          '</div>' +
+          '<div class="snap-done" hidden></div>' +
+          '<p class="snap-say" role="status" aria-live="polite">' + esc(cfg.pickBlockSay || PY_SAY.pickBlockSay) + '</p>' +
+          '</div>');
+        host.appendChild(c);
+        var blockList = c.querySelector('.snap-blocks .snap-list');
+        var pyList = c.querySelector('.snap-pys .snap-list');
+        var say = c.querySelector('.snap-say');
+        var doneBox = c.querySelector('.snap-done');
+
+        function speak(t) { say.textContent = String(t || ''); }
+
+        function render() {
+          blockList.innerHTML = ''; pyList.innerHTML = '';
+          pairs.forEach(function (p, bi) {
+            if (solved[p.id]) return;
+            var b = el('<button class="snap-block" type="button" data-b="' + bi + '">' +
+              '<img class="snap-img" src="' + esc(asset(p.img)) + '" alt="' + esc(p.imgAlt || '') + '">' +
+              '<span class="snap-gloss">' + esc(p.gloss || '') + '</span></button>');
+            b.onclick = function () { onBlock(bi); };
+            blockList.appendChild(b);
+          });
+          order.forEach(function (pi) {
+            if (usedPython(pi)) return;
+            var n = el('<button class="snap-py" type="button" data-p="' + pi + '"><code>' + esc(pys[pi]) + '</code></button>');
+            n.onclick = function () { onPy(pi); };
+            pyList.appendChild(n);
+          });
+          if (pickedBlock != null) {
+            var sel = blockList.querySelector('[data-b="' + pickedBlock + '"]');
+            if (sel) sel.classList.add('picked');
+          }
+          if (!blockList.children.length) finish();
+        }
+        function usedPython(pi) {
+          return pairs.some(function (p) { return solved[p.id] && Number(p.py) === Number(pi); });
+        }
+
+        function onBlock(bi) {
+          if (busy) return;
+          pickedBlock = (pickedBlock === bi) ? null : bi;
+          render();
+          speak(pickedBlock == null ? (cfg.pickBlockSay || PY_SAY.pickBlockSay) : (cfg.pickPythonSay || PY_SAY.pickPythonSay));
+        }
+        function onPy(pi) {
+          if (busy) return;
+          if (pickedBlock == null) { speak(cfg.pickBlockFirstSay || cfg.pickBlockSay || PY_SAY.pickBlockSay); return; }
+          var p = pairs[pickedBlock];
+          busy = true; pickedPy = pi;
+          tries[p.id] = (tries[p.id] || 0) + 1;
+          ctx.markItem(p.id, pi).then(function (r) {
+            var blockNode = blockList.querySelector('[data-b="' + pickedBlock + '"]');
+            var pyNode = pyList.querySelector('[data-p="' + pi + '"]');
+            if (r && r.ok && r.correct) {
+              if (tries[p.id] === 1) firstTry++;
+              if (blockNode) blockNode.classList.add('snapped');
+              if (pyNode) pyNode.classList.add('snapped');
+              solved[p.id] = 1; p.py = pi;
+              speak(cfg.rightSay || PY_SAY.rightSay);
+              setTimeout(function () { pickedBlock = null; busy = false; render(); }, 520);
+            } else {
+              /* BOTH bounce. Nothing is revealed, nothing is named, and the
+                 block stays picked so the next tap is a real second guess. */
+              if (blockNode) blockNode.classList.add('bounce');
+              if (pyNode) pyNode.classList.add('bounce');
+              speak(cfg.wrongSay || PY_SAY.wrongSay);
+              setTimeout(function () {
+                if (blockNode) blockNode.classList.remove('bounce');
+                if (pyNode) pyNode.classList.remove('bounce');
+                busy = false;
+              }, 560);
+            }
+          });
+        }
+
+        function finish() {
+          if (doneBox.hasAttribute('hidden') === false) return;
+          doneBox.hidden = false;
+          doneBox.innerHTML = '<p class="snap-verdict">' + fmtBold(cfg.doneText || '') + '</p>' +
+            '<button class="primary-btn" type="button">' + esc(cfg.continueLabel || 'Continue') + '</button>';
+          speak(cfg.doneSay || '');
+          var clean = firstTry;
+          App.armButton(doneBox.querySelector('button'), function () {
+            finishChunk(ctx, { detail: 'snap=' + clean + '/' + pairs.length },
+              Math.min(Number(cfg.firstTryXp || 0) * clean, Number(cfg.firstTryXpCap || 0)));
+          });
+        }
+        render();
+      }
+    }
+  };
+
+  /* ================= pyrun — BUILD IT, THEN MAKE THE CONSOLE SAY IT =========
+     The card the runner spec commissions (§A/§C/§D). One engine, two very
+     different jobs, because what varies between the years is the CARD and the
+     cognitive frame, not the machinery:
+
+       J2 Lesson 2, Phase 2 — one build, a tray carrying REAL SLIPS as decoys
+       (no brackets, a capital S on Score, a duplicate line). She assembles the
+       Python she has just learned to read, and the verifier console tells her
+       what her program really did.
+
+       J3 Lesson 2 — four builds in a ramp (exact print, two prints in order, a
+       variable used twice, arithmetic in the output). Each build STATES its
+       target output and she must MAKE THE CONSOLE SAY IT, typing into
+       single-line blanks along the way.
+
+     WHY THIS AND NOT AN EXTENSION OF `parsons` (a judgement call, recorded):
+     the spec named parsons for Phase 2's assembly, written before this engine
+     existed. Parsons is used by four lessons Damien has signed off (DFM
+     176/203/218) and it LOCKS on check, which is the opposite of what a run
+     card needs — a wrong program must hand the lines back and let her try
+     again. Putting a retry loop, a runtime, a console and typed blanks inside
+     it would have put all four locked lessons on the table for a mechanic none
+     of them uses. So the assembly lives here, beside the run and the console it
+     feeds, in ONE home; `parsons` is not touched by this round at all, and
+     qa-j1-unchanged proves it.
+
+     THE VERDICT IS MATCHED / NOT YET AND NEVER WHICH LINE TO FIX (spec §D).
+     The console is honest about what happened; the diagnosis is hers. */
+  Engines.pyrun = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var builds = cfg.builds || [];
+      var at = 0, cleanFirst = 0;
+
+      introCard(host, {
+        kicker: cfg.kicker, title: cfg.title, text: cfg.intro || '',
+        steps: cfg.steps, stepsClass: 'pyrun-intro-steps'
+      }, cfg.beginLabel || 'Open the desk', function () { startBuild(); });
+
+      function startBuild() {
+        host.innerHTML = '';
+        var b = builds[at];
+        var lines = b.lines || [];
+        var placed = [];                 // source indices, in her order
+        var vals = {};                   // blank key -> typed value
+        var attempts = 0;
+
+        var stepStrip = builds.length > 1
+          ? '<div class="pyrun-steps">' + builds.map(function (x, i) {
+              return '<span class="pyrun-step' + (i < at ? ' done' : (i === at ? ' now' : '')) + '">' +
+                esc(x.tab || String(i + 1)) + '</span>';
+            }).join('') + '</div>'
+          : '';
+
+        var c = el('<div class="card pyrun-card" data-build="' + esc(b.id || '') + '">' +
+          stepStrip +
+          '<h2 class="pyrun-goal">' + fmtBold(b.goalLine || '') + '</h2>' +
+          (b.brief ? '<p class="pyrun-brief">' + fmtBold(b.brief) + '</p>' : '') +
+          '<div class="pyrun-target"><p class="pyrun-target-lead">' + esc(cfg.targetLead || '') + '</p>' +
+          '<pre class="pyrun-target-out">' + esc((b.target || []).join('\n')) + '</pre></div>' +
+          '<p class="pyrun-how">' + fmtBold(cfg.howLine || '') + '</p>' +
+          '<div class="pyrun-cols">' +
+          '<div class="pyrun-tray"><h3>' + esc(cfg.trayLabel || 'The lines') + '</h3><div class="pyt-list"></div></div>' +
+          '<div class="pyrun-prog"><h3>' + esc(cfg.progLabel || 'Your program') + '</h3><ol class="pyp-list"></ol></div>' +
+          '</div>' +
+          '<p class="case-locked-note pyrun-locked-note">' + esc(cfg.lockedNote || PY_SAY.lockedNote) + '</p>' +
+          '<button class="primary-btn pyrun-run" type="button" disabled>' + esc(cfg.runLabel || 'RUN my program') + '</button>' +
+          '<div class="pyrun-console-host"></div>' +
+          '<div class="pyrun-verdict" hidden></div>' +
+          '</div>');
+        host.appendChild(c);
+
+        var tray = c.querySelector('.pyt-list');
+        var prog = c.querySelector('.pyp-list');
+        var trayZone = c.querySelector('.pyrun-tray'), progZone = c.querySelector('.pyrun-prog');
+        var runBtn = c.querySelector('.pyrun-run');
+        var lockedNote = c.querySelector('.pyrun-locked-note');
+        var verdict = c.querySelector('.pyrun-verdict');
+        var con = PyRun.console(c.querySelector('.pyrun-console-host'), cfg.consoleLabels || {});
+        /* warm the runtime while she is still reading, so RUN is not the first
+           thing that ever waits on a megabyte (DFM 42's family) */
+        PyRun.load().catch(function () { /* reported honestly at RUN, not here */ });
+
+        /* ---- code assembly, blanks substituted where she typed them ---- */
+        function codeOf() {
+          return placed.map(function (si) {
+            var L = lines[si];
+            var t = String(L.t || '');
+            (L.blanks || []).forEach(function (bl) {
+              t = t.replace(bl.slot || '____', String(vals[bl.key] == null ? '' : vals[bl.key]));
+            });
+            return t;
+          }).join('\n');
+        }
+        function emptyBlank() {
+          for (var i = 0; i < placed.length; i++) {
+            var bls = lines[placed[i]].blanks || [];
+            for (var k = 0; k < bls.length; k++) {
+              var v = vals[bls[k].key];
+              if (v == null || !String(v).trim()) return bls[k];
+            }
+          }
+          return null;
+        }
+
+        /* ---- pointer drag, with click as an equal citizen -------------- */
+        var ghost = null, suppressClick = false;
+        function inside(node, x, y) {
+          var r = node.getBoundingClientRect();
+          return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+        }
+        function dropIndexAt(clientY) {
+          var lis = Array.prototype.slice.call(prog.querySelectorAll('li:not(.pyp-empty)'));
+          for (var i = 0; i < lis.length; i++) {
+            var r = lis[i].getBoundingClientRect();
+            if (clientY < r.top + r.height / 2) return i;
+          }
+          return lis.length;
+        }
+        function wire(node, si, isPlaced) {
+          node.addEventListener('pointerdown', function (e) {
+            /* a press on a typing blank is TYPING, never a drag */
+            if (e.target && /input/i.test(e.target.tagName)) return;
+            if (e.button != null && e.button !== 0) return;
+            var sx = e.clientX, sy = e.clientY, moved = false;
+            try { node.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+            function onMove(ev) {
+              if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 6) return;
+              if (!moved) {
+                moved = true;
+                node.classList.add('dragging');
+                var r = node.getBoundingClientRect();
+                ghost = node.cloneNode(true);
+                ghost.className = 'pyrun-line pyrun-ghost';
+                ghost.style.width = r.width + 'px';
+                ghost.dataset.dx = String(r.left - ev.clientX);
+                ghost.dataset.dy = String(r.top - ev.clientY);
+                document.body.appendChild(ghost);
+              }
+              ghost.style.transform = 'translate(' + (ev.clientX + Number(ghost.dataset.dx)) + 'px,' +
+                (ev.clientY + Number(ghost.dataset.dy)) + 'px)';
+              progZone.classList.toggle('drop-here', inside(progZone, ev.clientX, ev.clientY));
+              trayZone.classList.toggle('drop-back', inside(trayZone, ev.clientX, ev.clientY));
+            }
+            function onUp(ev) {
+              node.removeEventListener('pointermove', onMove);
+              node.removeEventListener('pointerup', onUp);
+              node.removeEventListener('pointercancel', onUp);
+              try { node.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+              if (ghost) { ghost.remove(); ghost = null; }
+              node.classList.remove('dragging');
+              progZone.classList.remove('drop-here'); trayZone.classList.remove('drop-back');
+              if (!moved) return;
+              suppressClick = true;
+              if (inside(trayZone, ev.clientX, ev.clientY)) take(si);
+              else if (inside(progZone, ev.clientX, ev.clientY)) put(si, dropIndexAt(ev.clientY));
+            }
+            node.addEventListener('pointermove', onMove);
+            node.addEventListener('pointerup', onUp);
+            node.addEventListener('pointercancel', onUp);
+          });
+          node.addEventListener('click', function (e) {
+            if (e.target && /input/i.test(e.target.tagName)) return;
+            if (suppressClick) { suppressClick = false; return; }
+            if (isPlaced) take(si); else put(si, null);
+          });
+        }
+        function put(si, at2) {
+          var i = placed.indexOf(si);
+          if (i !== -1) placed.splice(i, 1);
+          if (at2 == null || at2 > placed.length) at2 = placed.length;
+          placed.splice(at2, 0, si);
+          render();
+        }
+        function take(si) {
+          var i = placed.indexOf(si);
+          if (i !== -1) { placed.splice(i, 1); render(); }
+        }
+
+        function lineHtml(L, cls, si) {
+          var t = esc(String(L.t || ''));
+          (L.blanks || []).forEach(function (bl) {
+            var slot = esc(bl.slot || '____');
+            t = t.replace(slot, '<input class="pyrun-blank" type="text" spellcheck="false" autocomplete="off" ' +
+              'data-key="' + esc(bl.key) + '" size="' + (Number(bl.size) || 8) + '" maxlength="' + (Number(bl.max) || 24) + '" ' +
+              'aria-label="' + esc(bl.label || 'type here') + '" placeholder="' + esc(bl.ph || '') + '">');
+          });
+          return '<button class="pyrun-line ' + cls + '" type="button" draggable="false" data-si="' + si + '"><code>' + t + '</code></button>';
+        }
+        function wireBlanks(root) {
+          root.querySelectorAll('.pyrun-blank').forEach(function (inp) {
+            var k = inp.getAttribute('data-key');
+            if (vals[k] != null) inp.value = vals[k];
+            inp.addEventListener('input', function () { vals[k] = inp.value; arm(); });
+            inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') ev.preventDefault(); });
+          });
+        }
+        function arm() {
+          var enough = placed.length > 0;
+          runBtn.disabled = !enough;
+          lockedNote.hidden = enough;
+        }
+        function render() {
+          tray.innerHTML = ''; prog.innerHTML = '';
+          lines.forEach(function (L, si) {
+            if (placed.indexOf(si) !== -1) return;
+            var n = el(lineHtml(L, 'in-tray', si));
+            wire(n, si, false); wireBlanks(n);
+            tray.appendChild(n);
+          });
+          if (!tray.children.length) tray.appendChild(el('<p class="pt-empty">' + esc(cfg.trayEmpty || PY_SAY.trayEmpty) + '</p>'));
+          placed.forEach(function (si, i) {
+            var li = el('<li><span class="pyp-num">' + (i + 1) + '.</span>' + lineHtml(lines[si], 'placed', si) + '</li>');
+            wire(li.querySelector('button'), si, true); wireBlanks(li);
+            prog.appendChild(li);
+          });
+          if (!placed.length) prog.appendChild(el('<li class="pyp-empty">' + esc(cfg.progEmpty || PY_SAY.progEmpty) + '</li>'));
+          arm();
+        }
+        render();
+
+        runBtn.onclick = function () {
+          /* THE BLANK REFUSAL EXPLAINS ITSELF (spec §D's landmark, DFM 205's
+             law): an empty box never fails silently and never fails mutely. */
+          var miss = emptyBlank();
+          if (miss) {
+            verdict.hidden = false;
+            verdict.className = 'pyrun-verdict is-note';
+            verdict.innerHTML = '<p>' + esc(cfg.blankEmptySay || PY_SAY.blankEmptySay) + '</p>';
+            var inp = c.querySelector('.pyrun-blank[data-key="' + miss.key + '"]');
+            if (inp) { inp.classList.add('wants'); inp.focus(); }
+            return;
+          }
+          verdict.hidden = true;
+          runBtn.disabled = true;
+          con.running();
+          attempts++;
+          PyRun.run(codeOf(), { limitMs: Number(cfg.limitMs || 0) || undefined }).then(function (res) {
+            con.show(res, cfg.errorWords || {});
+            var ok = res.ok && PyRun.matches(res.out, b.target || []);
+            verdict.hidden = false;
+            verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
+            verdict.innerHTML = '<p class="pyrun-vtag">' +
+              esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
+              '<p class="pyrun-vsay">' + esc(ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay) : (cfg.notYetSay || PY_SAY.notYetSay)) + '</p>';
+            if (ok) {
+              if (attempts === 1) cleanFirst++;
+              c.querySelectorAll('.pyrun-line').forEach(function (n) { n.disabled = true; });
+              c.querySelectorAll('.pyrun-blank').forEach(function (n) { n.disabled = true; });
+              var moreLabel = (at + 1 < builds.length) ? (cfg.nextBuildLabel || 'Next build') : (cfg.continueLabel || 'Continue');
+              var go = el('<button class="primary-btn" type="button">' + esc(moreLabel) + '</button>');
+              verdict.appendChild(go);
+              App.armButton(go, function () {
+                at++;
+                if (at < builds.length) startBuild();
+                else {
+                  finishChunk(ctx, { detail: 'py=' + cleanFirst + '/' + builds.length },
+                    Math.min(Number(cfg.firstTryXp || 0) * cleanFirst, Number(cfg.firstTryXpCap || 0)));
+                }
+              });
+            } else {
+              runBtn.disabled = false;
+            }
           });
         };
       }

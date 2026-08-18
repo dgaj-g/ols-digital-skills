@@ -323,7 +323,10 @@
     flashbulbs: wash() + '<span class="fx-marquee"></span>' +
       '<span class="fx-flash f1"></span><span class="fx-flash f2"></span><span class="fx-flash f3"></span>' +
       motes('fx-mote', 6),
-    silverdust: wash() + '<span class="fx-sheen"></span>' + motes('fx-dust', 9)
+    silverdust: wash() + '<span class="fx-sheen"></span>' + motes('fx-dust', 9),
+    /* --- the two level-3 unlocks, landing with each year's Lesson 2 --- */
+    blueprint: wash() + '<span class="fx-draft"></span>' + motes('fx-glint', 8),
+    greenroom: wash() + '<span class="fx-lamp"></span>' + motes('fx-mote', 8)
   };
   /* ---------------- the DEFAULT look is the YEAR's, not J1's ----------------
      DAMIEN, 14 Aug 2026 (DFM 224b): "Each Year group must have it's own
