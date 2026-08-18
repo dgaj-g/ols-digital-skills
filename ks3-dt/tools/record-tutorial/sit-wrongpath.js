@@ -57,7 +57,9 @@ const TILE = {
   4: /Lesson\s*4(?!\d)/i, 5: /Lesson\s*5(?!\d)/i,
   S1: /Files That Follow You/i,
   'j2-1': /Lesson\s*1(?!\d)/i,
-  'j3-1': /Lesson\s*1(?!\d)/i
+  'j3-1': /Lesson\s*1(?!\d)/i,
+  'j2-2': /Lesson\s*2(?!\d)/i,
+  'j3-2': /Lesson\s*2(?!\d)/i
 };   /* the tile reads "Lesson 5Game Studio" — no space, so \b never fires */
 
 /* ---- REQUIRED COVERAGE (DFM 204, his ruling of 13 Aug 2026) ----
@@ -181,6 +183,45 @@ const LANDMARKS = {
      The kit modal is deliberately NOT here: it is a hub surface no lesson
      walker stands on, and "nothing promises a level that does not exist" is
      qa-kit-years' assertion, not a landmark. ---- */
+  /* ---- J2 AND J3 LESSON 2, 19 Aug 2026, the Python hours ----------------
+     Named from each lesson's own chunk list and from the DOM its engines really
+     render (qa-pyrun mounts and drives both, so these selectors are the ones a
+     pupil's screen actually carries, not remembered ones).
+     THE THREE THAT MATTER MOST TO A CONFUSED PUPIL are the fail states, because
+     they are the whole design: the console after a run that did NOT work, the
+     NOT YET verdict that refuses to name a line, and — on J3 — the empty-box
+     refusal, which is the one control in either lesson that can be pressed
+     before it is ready and therefore the one that must explain itself
+     (DFM 205). A walk that never stands on those has walked the happy path,
+     which is exactly the blindness sit-wrongpath exists to end (DFM 194c). */
+  'j2-2': [
+    ['the Do-Now', '.q-opt', '_recap'],
+    ['the Bureau briefing', '.dossier-cta, .dossier', 'briefing'],
+    ['the film and its chapters', '.video-card, .vid-chapter', 'film'],
+    ['the snap desk, untouched', '.snap-card .snap-list', 'bureau'],
+    ['a block picked, waiting for its twin', '.snap-block.picked', 'bureau'],
+    ['the build tray', '.pyt-list .pyrun-line', 'build'],
+    ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'build'],
+    ['NOT YET, with no line named', '.pyrun-verdict.is-notyet', 'build'],
+    ['MATCHED', '.pyrun-verdict.is-matched', 'build'],
+    ['the what-you-did-next card', '.confirm-step', 'next'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']
+  ],
+  'j3-2': [
+    ['the Do-Now', '.q-opt', '_recap'],
+    ['the call-sheet briefing', '.dossier-cta, .dossier', 'briefing'],
+    ['the film and its chapters', '.video-card, .vid-chapter', 'film'],
+    ['the target, before she has moved anything', '.pyrun-target-out', 'callsheet-a'],
+    ['a program assembled but not yet run', '.pyp-list .pyrun-line', 'callsheet-a'],
+    ['the empty-box refusal, explaining itself', '.pyrun-verdict.is-note', 'callsheet-a'],
+    ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'callsheet-a'],
+    ['MATCHED', '.pyrun-verdict.is-matched', 'callsheet-a'],
+    ['the variable build', '.pyrun-target-out', 'callsheet-b'],
+    ['the what-you-did-next card', '.confirm-step', 'next'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']
+  ],
   'j3-1': [
     ['the welcome briefing', '.dossier-cta, .dossier', 'briefing'],
     ['the orientation steps', '.confirm-step', 'orientation'],
