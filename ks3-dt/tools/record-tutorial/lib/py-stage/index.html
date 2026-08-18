@@ -1,0 +1,124 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Python stage</title>
+<style>
+/* THE PYTHON FILM STAGE (19 Aug 2026). J1's four films drive a live editor —
+   MakeCode or Scratch — because the lesson IS that editor. The two Lesson 2
+   films are TEXT-BASED by the spec: nothing a pupil has to be shown lives in an
+   editor, so a purpose-built stage is the honest set. It renders exactly three
+   things, because that is all either film needs: a Scratch block beside its
+   Python twin, a program building up a line at a time, and a console printing
+   what really came out. Nothing here is decorative and nothing animates on its
+   own — record.js drives every beat, so a re-record is reproducible. */
+:root{--navy:#0B152B;--navy2:#122040;--gold:#E4B824;--ink:#F4F6FA;--muted:#93A4C4;
+      --line:#22355F;--code:#BFD8FF;--err:#FF9A8F;--ok:#8BE58B;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1280px;height:720px;overflow:hidden;background:var(--navy);
+  font-family:"Segoe UI",system-ui,-apple-system,sans-serif;color:var(--ink)}
+#stage{position:relative;width:1280px;height:720px;padding:64px 88px;display:flex;
+  flex-direction:column;gap:26px;justify-content:center}
+.eyebrow{font-size:19px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);
+  font-weight:700;min-height:24px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;min-height:250px}
+.panel{background:var(--navy2);border:1px solid var(--line);border-radius:16px;padding:26px 30px}
+.panel h3{font-size:16px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  font-weight:700;margin-bottom:16px}
+#blockImg{max-width:100%;max-height:190px;display:block;margin:0 auto;image-rendering:auto}
+.pyline{font-family:ui-monospace,Consolas,"Courier New",monospace;font-size:30px;
+  color:var(--code);line-height:1.6;white-space:pre;letter-spacing:.01em}
+#prog{display:flex;flex-direction:column;gap:12px;min-height:200px;justify-content:center}
+#prog .row{font-family:ui-monospace,Consolas,"Courier New",monospace;font-size:31px;
+  color:var(--code);background:#0E1B36;border-left:4px solid var(--line);
+  border-radius:9px;padding:11px 20px;white-space:pre;opacity:0;transform:translateY(9px);
+  transition:opacity .34s ease,transform .34s ease,border-color .34s ease,background .34s ease}
+#prog .row.in{opacity:1;transform:none}
+#prog .row.lit{border-color:var(--gold);background:#16294F}
+#prog .row.bad{border-color:var(--err);color:var(--err)}
+#con{background:#060D1F;border:1px solid var(--line);border-radius:14px;padding:22px 28px;
+  min-height:150px}
+#con h3{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  font-weight:700;margin-bottom:12px}
+#conBody{font-family:ui-monospace,Consolas,"Courier New",monospace;font-size:28px;
+  line-height:1.55;white-space:pre-wrap;color:var(--ok);min-height:44px}
+#conBody.err{color:var(--err)}
+#conBody .plain{display:block;margin-top:14px;font-family:"Segoe UI",system-ui,sans-serif;
+  font-size:23px;color:var(--ink);line-height:1.5}
+.hidden{display:none!important}
+</style></head><body>
+<div id="stage">
+  <div class="eyebrow" id="eyebrow"></div>
+  <div class="cols hidden" id="cols">
+    <div class="panel"><h3 id="leftLabel">Scratch</h3><img id="blockImg" alt=""></div>
+    <div class="panel"><h3 id="rightLabel">Python</h3><div class="pyline" id="pyline"></div></div>
+  </div>
+  <div class="panel hidden" id="progPanel"><h3 id="progLabel">Your program</h3><div id="prog"></div></div>
+  <div id="con" class="hidden"><h3 id="conLabel">The console</h3><div id="conBody"></div></div>
+</div>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var show=function(el,on){el.classList[on?'remove':'add']('hidden')};
+  function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+  window.pystage={
+    ready:Promise.resolve(true),
+    reset:function(){
+      $('eyebrow').textContent='';show($('cols'),false);show($('progPanel'),false);
+      show($('con'),false);$('prog').innerHTML='';$('conBody').textContent='';
+      $('conBody').className='';$('blockImg').removeAttribute('src');$('pyline').textContent='';
+    },
+    eyebrow:function(t){$('eyebrow').textContent=t||''},
+    pair:function(o){
+      o=o||{};show($('cols'),true);
+      $('leftLabel').textContent=o.leftLabel||'Scratch';
+      $('rightLabel').textContent=o.rightLabel||'Python';
+      if(o.img){$('blockImg').src=o.img;$('blockImg').alt=o.alt||''}
+      $('pyline').textContent=o.python||'';
+      return new Promise(function(res){
+        var im=$('blockImg');
+        if(!o.img||im.complete){res(true);return}
+        im.onload=function(){res(true)};im.onerror=function(){res(false)};
+      });
+    },
+    hidePair:function(){show($('cols'),false)},
+    program:function(label){show($('progPanel'),true);$('progLabel').textContent=label||'Your program';$('prog').innerHTML=''},
+    addLine:async function(text){
+      var d=document.createElement('div');d.className='row';d.textContent=text;
+      $('prog').appendChild(d);await wait(40);d.classList.add('in');await wait(420);return true;
+    },
+    lit:function(i){
+      var rows=$('prog').querySelectorAll('.row');
+      for(var k=0;k<rows.length;k++)rows[k].classList.toggle('lit',k===i);
+    },
+    bad:function(i){
+      var rows=$('prog').querySelectorAll('.row');
+      if(rows[i])rows[i].classList.add('bad');
+    },
+    clearLit:function(){
+      var rows=$('prog').querySelectorAll('.row');
+      for(var k=0;k<rows.length;k++)rows[k].classList.remove('lit');
+    },
+    consoleOpen:function(label){show($('con'),true);$('conLabel').textContent=label||'The console';
+      $('conBody').textContent='';$('conBody').className='';},
+    print:async function(lines){
+      var b=$('conBody');b.className='';b.textContent='';
+      for(var i=0;i<lines.length;i++){b.textContent+=(i?'\n':'')+lines[i];await wait(500)}
+      return true;
+    },
+    error:function(real,plain){
+      var b=$('conBody');b.className='err';b.textContent=real;
+      if(plain){var s=document.createElement('span');s.className='plain';s.textContent=plain;b.appendChild(s)}
+    },
+    /* the recorder PROVES the stage is not a blank rectangle before it trusts a
+       take — the same discipline the variable-box scene uses (DFM 243's family:
+       an artefact is not the artefact until it has been checked) */
+    probe:function(){
+      return {
+        eyebrow:$('eyebrow').textContent.trim(),
+        rows:$('prog').querySelectorAll('.row').length,
+        console:$('conBody').textContent.trim(),
+        blockLoaded:!!($('blockImg').src&&$('blockImg').complete&&$('blockImg').naturalWidth>0),
+        python:$('pyline').textContent.trim()
+      };
+    }
+  };
+})();
+</script></body></html>
