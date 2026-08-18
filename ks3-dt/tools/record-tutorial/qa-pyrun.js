@@ -234,6 +234,26 @@ function engineTidyRule() {
           check(!!p.imgAlt, L.lesson.id + ': block ' + p.id + ' has alt text');
           const img = path.join(__dirname, '..', '..', 'platform', p.img);
           check(fs.existsSync(img), L.lesson.id + ': block picture ' + p.img + ' really exists');
+          /* THE PICTURE AND THE CARD CANNOT DRIFT APART. The capture script
+             records what each photographed block really SAYS; the card's alt
+             text has to account for every word of it. Without this the capture
+             manifest was a promise nothing kept — a block could be re-cut, or
+             the pairs re-ordered, and the only thing that would notice is a
+             pupil looking at the wrong picture (DFM 225b's own class). */
+          const man = path.join(path.dirname(img), 'manifest.json');
+          if (fs.existsSync(man)) {
+            const rec = (JSON.parse(fs.readFileSync(man, 'utf8')).blocks || [])
+              .find(x => x.id === path.basename(p.img, '.png'));
+            check(!!rec, L.lesson.id + ': ' + path.basename(p.img) + ' is in the capture manifest');
+            if (rec) {
+              const words = String(rec.text).split(/\s+/).filter(w => w.length > 1);
+              const alt = String(p.imgAlt || '');
+              const missing = words.filter(w => alt.indexOf(w) === -1);
+              check(missing.length === 0,
+                L.lesson.id + ': ' + p.id + '\'s alt text accounts for every word the photographed block says' +
+                (missing.length ? '  [missing: ' + missing.join(' ') + ']' : '  [' + rec.text + ']'));
+            }
+          }
         });
         check((cfg.pairs || []).length === (cfg.pythons || []).length,
           L.lesson.id + ' · ' + ch.id + ': one Python line per block');
