@@ -108,7 +108,14 @@ function objectiveItems(lessonId) {
 function filedRows(md) {
   const rows = {};
   md.split('\n').forEach(line => {
-    const m = /^\|\s*`?([a-z0-9]+-[a-z0-9]+)`?\s*\|(.+)\|\s*$/i.exec(line.trim());
+    /* THE ID PATTERN HAD TWO SEGMENTS AND SOME IDS HAVE THREE (19 Aug 2026).
+       `j2s-01` and `j2x2-1` parse; `r-j2-101` does not — the pattern matched
+       `r-j2` and then demanded a pipe where the second hyphen is. So the ten
+       recap rows could be filed, correctly, in the right file, and the gate
+       would still report every one of them MISSING. A gate that cannot read the
+       evidence it demands is worse than no gate: it sends you back to write
+       again what you already wrote. */
+    const m = /^\|\s*`?([a-z0-9]+(?:-[a-z0-9]+)+)`?\s*\|(.+)\|\s*$/i.exec(line.trim());
     if (!m) return;
     const cells = m[2].split('|').map(c => c.trim());
     rows[m[1]] = cells;
@@ -143,6 +150,9 @@ if (process.argv.includes('--controls')) {
   const without = md.split('\n').filter(l => l.indexOf('| ' + someItem + ' ') === -1).join('\n');
   ctrl(!filedRows(without)[someItem],
     'an item whose row is deleted is seen as MISSING (' + someItem + ') — the pack would stop');
+  ctrl(!!filedRows('| r-j2-101 | a | b | c | d | e |')['r-j2-101'],
+    'a THREE-part item id (r-j2-101) is read as a filed row — until 19 Aug the pattern stopped at "r-j2" ' +
+    'and reported ten correctly-filed rows as missing');
   const thinMd = md.replace(new RegExp('^\\|\\s*' + someItem + '\\s*\\|.*$', 'm'),
     '| ' + someItem + ' | y | | | | |');
   const r = filedRows(thinMd)[someItem];
