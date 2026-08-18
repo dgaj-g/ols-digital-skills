@@ -274,6 +274,165 @@ function engineTidyRule() {
   });
   control(!/\.pyc-plain\s*\{[^}]*color:\s*inherit/.test(block), 'no console surface falls back to inherit');
 
+  /* ---- 7. THE ENGINES REALLY MOUNT, AND THE CARD REALLY DRIVES ---------
+     Sections 1-6 prove the Python and read the source. Neither of them would
+     notice a crash on mount, a control that never arms, or a verdict that never
+     renders — and "it looked right in the file" is the fault DFM 146b exists to
+     stop. So the two engines are mounted for real, in a real browser, with the
+     lesson's own config, and driven the way a pupil drives them. */
+  log('\n=== 7. THE ENGINES, MOUNTED AND DRIVEN IN A REAL BROWSER ===');
+  {
+    const br = await chromium.launch({ headless: true });
+    const pg = await br.newPage();
+    const errs = [];
+    pg.on('pageerror', e => errs.push(String(e.message)));
+    await pg.goto('about:blank');
+    await pg.addStyleTag({ path: STYLE });
+    /* the smallest honest stand-in for the app: esc/asset/armButton and a ctx
+       whose markItem answers from the LESSON'S OWN keys, exactly as the real
+       one does off App.state.localKeys (rule 97). Nothing here re-implements
+       an engine. */
+    await pg.evaluate(() => {
+      window.App = {
+        esc: s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+          ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])),
+        asset: p => p,
+        armButton: (b, fn) => { if (b) b.onclick = fn; }
+      };
+    });
+    await pg.addScriptTag({ path: ENGINES });
+    await pg.evaluate(([skulptDir]) => { window.__SK = skulptDir; }, [SKULPT]);
+    /* PyRun must load Skulpt from where the app asks for it; in this bare page
+       there is no server, so its two files are injected under the same globals. */
+    await pg.addScriptTag({ path: path.join(SKULPT, 'skulpt.min.js') });
+    await pg.addScriptTag({ path: path.join(SKULPT, 'skulpt-stdlib.js') });
+    await pg.evaluate(() => { window.PyRun._p = Promise.resolve(true); });
+    check(typeof await pg.evaluate(() => typeof window.Engines.pyrun) === 'string' &&
+      await pg.evaluate(() => !!window.Engines.pyrun && !!window.Engines.snap && !!window.PyRun),
+      'engines.js parses and registers PyRun, Engines.snap and Engines.pyrun');
+
+    const j2 = JSON.parse(fs.readFileSync(path.join(SRC, 'j2', 'lessons', 'j2-02.json'), 'utf8'));
+    const buildChunk = j2.chunks.find(c => c.engine === 'pyrun');
+    const snapChunk = j2.chunks.find(c => c.engine === 'snap');
+    const keys = j2.keys;
+
+    /* --- the build card: assemble the right program and RUN it --- */
+    const built = await pg.evaluate(async ([chunk, key]) => {
+      document.body.innerHTML = '<div id="host"></div>';
+      const host = document.getElementById('host');
+      let finished = null;
+      window.Engines.pyrun.mount(host, chunk, {
+        chunk: chunk, review: false, catchup: false,
+        awardBadge: (b, d) => { finished = d; return Promise.resolve({ ok: true }); },
+        next: () => {}, saveEvent: () => Promise.resolve({ ok: true }),
+        markItem: () => Promise.resolve({ ok: true })
+      });
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+      host.querySelector('.intro-card button.primary-btn').click();
+      await wait(60);
+      const before = { tray: host.querySelectorAll('.pyt-list .pyrun-line').length,
+                       runDisabled: host.querySelector('.pyrun-run').disabled,
+                       lockedNoteShown: !host.querySelector('.pyrun-locked-note').hidden,
+                       consoleIdle: !!host.querySelector('.pyc-idle') };
+      key.order.forEach(si => {
+        const n = host.querySelector('.pyt-list .pyrun-line[data-si="' + si + '"]');
+        if (n) n.click();
+      });
+      await wait(40);
+      const placed = host.querySelectorAll('.pyp-list .pyrun-line').length;
+      host.querySelector('.pyrun-run').click();
+      for (let i = 0; i < 80 && !host.querySelector('.pyrun-verdict:not([hidden]) .pyrun-vtag'); i++) await wait(100);
+      const tag = (host.querySelector('.pyrun-vtag') || {}).textContent || '';
+      const printed = (host.querySelector('.pyc-out') || {}).textContent || '';
+      return { before, placed, tag: tag.trim(), printed: printed.trim(), finished: finished };
+    }, [buildChunk, keys[buildChunk.config.builds[0].id]]);
+
+    check(built.before.tray === buildChunk.config.builds[0].lines.length,
+      'the build card mounts with every line in the tray (' + built.before.tray + ')');
+    check(built.before.runDisabled === true && built.before.lockedNoteShown === true,
+      'RUN is born asleep AND says what wakes it — never a mute lock (DFM 205)');
+    check(built.before.consoleIdle, 'the console says what it is before anything has run');
+    check(built.placed === keys[buildChunk.config.builds[0].id].order.length,
+      'clicking a line moves it into Your program (' + built.placed + ' placed)');
+    check(built.tag === (buildChunk.config.matchedLabel || 'MATCHED'),
+      'the correct program really runs and really MATCHES  [verdict: ' + built.tag + ']');
+    check(built.printed === (buildChunk.config.builds[0].target || []).join('\n'),
+      'and the console shows what it printed  [' + JSON.stringify(built.printed) + ']');
+
+    /* --- the same card, driven WRONG: a real error, both halves shown --- */
+    const wrong = await pg.evaluate(async ([chunk]) => {
+      document.body.innerHTML = '<div id="host"></div>';
+      const host = document.getElementById('host');
+      window.Engines.pyrun.mount(host, chunk, {
+        chunk: chunk, review: false, catchup: false,
+        awardBadge: () => Promise.resolve({ ok: true }), next: () => {},
+        saveEvent: () => Promise.resolve({ ok: true }), markItem: () => Promise.resolve({ ok: true })
+      });
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+      host.querySelector('.intro-card button.primary-btn').click();
+      await wait(60);
+      /* the capital-S decoy on its own: a real NameError */
+      const n = Array.from(host.querySelectorAll('.pyt-list .pyrun-line'))
+        .find(x => /str\(Score\)/.test(x.textContent));
+      if (n) n.click();
+      await wait(40);
+      host.querySelector('.pyrun-run').click();
+      for (let i = 0; i < 80 && !host.querySelector('.pyrun-verdict:not([hidden]) .pyrun-vtag'); i++) await wait(100);
+      return {
+        tag: ((host.querySelector('.pyrun-vtag') || {}).textContent || '').trim(),
+        realErr: ((host.querySelector('.pyc-err') || {}).textContent || '').trim(),
+        plain: ((host.querySelector('.pyc-plain') || {}).textContent || '').trim(),
+        trayBack: host.querySelectorAll('.pyt-list .pyrun-line').length,
+        runArmedAgain: !host.querySelector('.pyrun-run').disabled
+      };
+    }, [buildChunk]);
+    check(wrong.tag === (buildChunk.config.notYetLabel || 'NOT YET'), 'a wrong program gets NOT YET  [' + wrong.tag + ']');
+    check(/NameError/.test(wrong.realErr), 'the console shows PYTHON\'S OWN words  [' + wrong.realErr.slice(0, 54) + ']');
+    check(wrong.plain === buildChunk.config.errorWords.name,
+      'and the lesson\'s own plain-words line underneath it, not the engine\'s fallback');
+    check(wrong.runArmedAgain, 'RUN arms again so she can try once more — nothing auto-corrects');
+
+    /* --- the snap desk: a WRONG pair must reveal nothing --- */
+    const sn = await pg.evaluate(async ([chunk]) => {
+      document.body.innerHTML = '<div id="host"></div>';
+      const host = document.getElementById('host');
+      window.Engines.snap.mount(host, chunk, {
+        chunk: chunk, review: false, catchup: false,
+        awardBadge: () => Promise.resolve({ ok: true }), next: () => {},
+        saveEvent: () => Promise.resolve({ ok: true }),
+        /* every answer is WRONG, on purpose */
+        markItem: () => Promise.resolve({ ok: true, correct: false })
+      });
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+      host.querySelector('.intro-card button.primary-btn').click();
+      await wait(60);
+      const blocks = host.querySelectorAll('.snap-block').length;
+      const glosses = host.querySelectorAll('.snap-gloss').length;
+      host.querySelector('.snap-block').click();
+      await wait(30);
+      const picked = !!host.querySelector('.snap-block.picked');
+      host.querySelector('.snap-py').click();
+      await wait(120);
+      return {
+        blocks, glosses, picked,
+        bounced: host.querySelectorAll('.bounce').length,
+        stillThere: host.querySelectorAll('.snap-block').length,
+        said: (host.querySelector('.snap-say') || {}).textContent || '',
+        anySnapped: host.querySelectorAll('.snapped').length
+      };
+    }, [snapChunk]);
+    check(sn.blocks === snapChunk.config.pairs.length, 'the snap desk mounts all ' + sn.blocks + ' blocks');
+    check(sn.glosses === sn.blocks, 'every block carries its gloss on screen (K4)');
+    check(sn.picked, 'clicking a block marks it picked');
+    check(sn.bounced === 2, 'a wrong pair bounces BOTH cards back (' + sn.bounced + ')');
+    check(sn.stillThere === sn.blocks && sn.anySnapped === 0, 'nothing leaves the desk and nothing is revealed');
+    check(sn.said.trim() === snapChunk.config.wrongSay, 'and it says the lesson\'s own words, not the engine\'s');
+
+    check(errs.length === 0, 'no uncaught page errors while driving either engine' +
+      (errs.length ? '  [' + errs.slice(0, 2).join(' | ') + ']' : ''));
+    await br.close();
+  }
+
   console.log('\n' + (FAILS.length ? 'qa-pyrun: ' + FAILS.length + ' FAILURE(S)\n - ' + FAILS.join('\n - ')
     : 'qa-pyrun: ALL GREEN'));
   process.exit(FAILS.length ? 1 : 0);
