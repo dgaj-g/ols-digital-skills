@@ -26,6 +26,7 @@
 
    Usage:
      node ledger-tool.js --missing [lessonId]        what has no record yet
+     node ledger-tool.js --stale-paths [lessonId]    paths whose record was VOIDED by an edit
      node ledger-tool.js --stats                     counts by kind, per lesson
      node ledger-tool.js --grandfather j1-01 j1-02 j1-sq1
      node ledger-tool.js --reviewed j1-03 --note "..."   (only for paths with no entry)
@@ -74,6 +75,12 @@ const READERS = { j1: J1_READER, j2: J1_READER, j3: J1_READER };
    home. Deck strings are presented as a pseudo-lesson so every command below
    (--missing, --set, --stats, --prune) reaches them without knowing the
    difference. */
+/* AND SO IS THE HUB (19 Aug 2026, the same fault one layer further out). The
+   gate's remedy line told a reader to run `--missing`, and `--missing` reported
+   "0 sentence(s) need a record" while SIXTY recap-pool and manifest strings had
+   none and were blocking the pack. Same class as the deck omission above and
+   the same fix: the hub walk comes from qa-language.js, presented as a
+   pseudo-lesson, so every verb reaches it without knowing the difference. */
 const loadAll = (only) => {
   const lessons = require('./qa-language.js').loadLessons();
   const deck = require('./qa-language.js').collectDeckStrings();
@@ -82,7 +89,14 @@ const loadAll = (only) => {
     const id = s.deck + '.deck';
     (byDeck[id] = byDeck[id] || { fileId: id, year: s.year, strings: [] }).strings.push(s);
   });
-  return lessons.concat(Object.values(byDeck)).filter(L => !only || L.fileId === only);
+  const hub = require('./qa-language.js').collectHubStrings();
+  const byHub = {};
+  hub.strings.forEach(s => {
+    const id = (String(s.path).split(' \u203a ')[0] || s.year) + '.hub';
+    (byHub[id] = byHub[id] || { fileId: id, year: s.year, strings: [] }).strings.push(s);
+  });
+  return lessons.concat(Object.values(byDeck), Object.values(byHub))
+    .filter(L => !only || L.fileId === only);
 };
 
 const load = () => fs.existsSync(LEDGER_FILE)
@@ -111,6 +125,23 @@ function main() {
       });
     });
     console.log('\n' + n + ' sentence(s) need a record.');
+    return;
+  }
+
+  /* --stale-paths (19 Aug 2026). A sentence that has been EDITED still has a
+     record, and that record is void: it judged words the reader never saw. The
+     ledger already knows this (the sha1 no longer matches) and the gate already
+     says CHANGED SINCE REVIEW — but `ledger-apply` refused every one of them,
+     because "already has a record" and "has a VOID record" were the same test.
+     A voided judgement that cannot be replaced by a separated reader forces the
+     author to delete entries by hand, which is how DFM 235's failure gets back
+     in. This verb names them, in the one place that owns the walk. */
+  if (cmd === '--stale-paths') {
+    const lessons = loadAll(args[1]);
+    lessons.forEach(L => L.strings.forEach(s => {
+      const e = ledger.entries[s.path];
+      if (e && e.sha1 !== sha1(s.text)) console.log(s.path);
+    }));
     return;
   }
 

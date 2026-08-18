@@ -255,6 +255,48 @@ function yearFolderGate() {
   console.log('year-folder gate: PASSED - ' + onDisk.length + ' year folder(s), each declared: ' + onDisk.join(', '));
 }
 
+function tileTextGate() {
+  /* THE WORDS ON A LESSON TILE LIVE IN TWO FILES, AND ON 19 AUG 2026 THEY HAD
+     DRIFTED (DFM 179d's one-fact law). `app.js` renders `man.lessons[].tagline`
+     and `.title` on the tile — the manifest copy. Every lesson file ALSO carries
+     a `title` and `tagline`, and NOTHING renders them: they are a second copy
+     that no pupil ever reads.
+     Both copies are in the read-aloud ledger, so the language gate was asking a
+     reader to judge a sentence nobody sees, while the sentence she DOES see was
+     judged separately — and the two had come apart on j1-04 ("One shipped game.
+     You're QA." on the tile, "One broken game. You're the bug detectives." in
+     the file) long before this round noticed. Nothing was wrong on screen; the
+     record simply described a different lesson from the one on the tile.
+     THE RULE: where a lesson file exists, its title and tagline must be word for
+     word the manifest's. This does not pick a winner — it refuses to let one
+     fact be two. */
+  const bad = [];
+  (JSON.parse(fs.readFileSync(path.join(SRC, 'index.json'), 'utf8')).years || []).forEach(y => {
+    const mf = path.join(SRC, y.id, 'manifest.json');
+    if (!fs.existsSync(mf)) return;
+    (JSON.parse(fs.readFileSync(mf, 'utf8')).lessons || []).forEach(le => {
+      const lf = path.join(SRC, y.id, 'lessons', le.id + '.json');
+      if (!fs.existsSync(lf)) return;
+      const L = JSON.parse(fs.readFileSync(lf, 'utf8'));
+      ['title', 'tagline'].forEach(k => {
+        if ((le[k] || '') !== (L[k] || '')) {
+          bad.push(le.id + ' \u00b7 ' + k + '\n      tile (manifest): ' + JSON.stringify(le[k] || '') +
+            '\n      lesson file   : ' + JSON.stringify(L[k] || ''));
+        }
+      });
+    });
+  });
+  if (bad.length) {
+    console.error('PACK STOPPED: ' + bad.length + ' lesson tile string(s) disagree with the lesson file.');
+    console.error('  The TILE renders the manifest copy; the lesson-file copy is rendered nowhere,');
+    console.error('  and both are in the read-aloud ledger. Two copies of one fact means one of the');
+    console.error('  two judgements describes words no pupil reads (DFM 179d).');
+    bad.forEach(b => console.error('    ' + b));
+    process.exit(1);
+  }
+  console.log('tile-text gate: PASSED - every built lesson\'s title and tagline match its tile');
+}
+
 function coverageGate() {
   const harness = path.join(__dirname, 'record-tutorial', 'qa-harness-coverage.js');
   if (!fs.existsSync(harness)) {
@@ -341,6 +383,7 @@ function versionGate() {
 
 function main() {
   yearFolderGate();
+  tileTextGate();
   languageGate();
   xpCeilingGate();
   deckShotGate();

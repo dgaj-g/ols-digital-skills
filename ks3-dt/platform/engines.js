@@ -2760,7 +2760,12 @@
           '<p class="snap-how">' + fmtBold(cfg.howLine || '') + '</p>' +
           '<div class="snap-cols">' +
           '<div class="snap-side snap-blocks"><h3>' + esc(cfg.blocksLabel || 'The blocks') + '</h3><div class="snap-list"></div></div>' +
-          '<div class="snap-side snap-pys"><h3>' + esc(cfg.pythonLabel || 'The Python lines') + '</h3><div class="snap-list"></div></div>' +
+          /* DFM 138 (j2-02 cold read, 19 Aug 2026): `str( )` appears on this desk before
+             anything explains it. `pythonNote` puts one line naming it as survivable at the
+             top of the column she is actually reading, rather than a screen earlier. */
+          '<div class="snap-side snap-pys"><h3>' + esc(cfg.pythonLabel || 'The Python lines') + '</h3>' +
+          (cfg.pythonNote ? '<p class="snap-col-note">' + esc(cfg.pythonNote) + '</p>' : '') +
+          '<div class="snap-list"></div></div>' +
           '</div>' +
           '<div class="snap-done" hidden></div>' +
           '<p class="snap-say" role="status" aria-live="polite">' + esc(cfg.pickBlockSay || PY_SAY.pickBlockSay) + '</p>' +
@@ -3040,7 +3045,17 @@
               'data-key="' + esc(bl.key) + '" size="' + (Number(bl.size) || 8) + '" maxlength="' + (Number(bl.max) || 24) + '" ' +
               'aria-label="' + esc(bl.label || 'type here') + '" placeholder="' + esc(bl.ph || '') + '">');
           });
-          return '<button class="pyrun-line ' + cls + '" type="button" draggable="false" data-si="' + si + '"><code>' + t + '</code></button>';
+          /* THE ONE SENTENCE THAT SAYS WHAT TO TYPE WAS INVISIBLE (j3-02 cold read, 19 Aug
+             2026). `bl.label` reached the input's `aria-label` and nowhere else, so a sighted
+             pupil with a mouse saw the placeholder and nothing more — "type it" for the
+             theatre name, and a bare "0" for BOTH of build 4's numbers with nothing saying
+             which was the price and which the seats. Four sentences written to the standard
+             and then hidden. They now render as a caption on the line that owns the gap, and
+             the aria-label stays exactly as it was for a screen reader. */
+          var hints = (L.blanks || []).map(function (bl) { return bl.label; }).filter(Boolean);
+          var hint = hints.length
+            ? '<span class="pyrun-blank-hint">' + esc(hints.join(' · ')) + '</span>' : '';
+          return '<button class="pyrun-line ' + cls + '" type="button" draggable="false" data-si="' + si + '"><code>' + t + '</code>' + hint + '</button>';
         }
         function wireBlanks(root) {
           root.querySelectorAll('.pyrun-blank').forEach(function (inp) {
@@ -3263,6 +3278,19 @@
         '<button class="primary-btn" type="button">Done watching</button></div>');
       host.appendChild(c2);
       var vid = c2.querySelector('video');
+      /* DFM 42/143 — A DEAD PLAYER MUST STILL SAY SOMETHING (j3-02 cold read, 19 Aug 2026).
+         `cfg.fallback` used to render ONLY in the `!cfg.src` branch above, i.e. only when no
+         film had been set at all. The case it is written for is the OTHER one: a film that is
+         set and does not load. A 404 gave her a broken player and not one word, which on a
+         cover day with nobody in the room is a dead screen. The film's own words now render
+         underneath the player the moment the element reports it cannot play. */
+      vid.addEventListener('error', function () {
+        if (c2.querySelector('.video-failed')) return;
+        var f = el('<p class="video-failed" role="status">' +
+          esc(cfg.fallback || 'The film will not play just now. Carry on — everything it shows is written again on the cards that come next. Tell whoever is in the room that the film would not play.') +
+          '</p>');
+        vid.insertAdjacentElement('afterend', f);
+      }, true);
       c2.querySelectorAll('.vid-chapter').forEach(function (b) {
         b.onclick = function () { vid.currentTime = Number(b.getAttribute('data-t')); vid.play(); };
       });

@@ -659,16 +659,52 @@ function vocabCheck(lessons, vocab, films) {
   };
   const orderOf = {};
   lessons.forEach(L => { orderOf[L.fileId] = numOf(L); });
+  /* THE COURSE A PUPIL ACTUALLY SITS IS THE UNIT OF "BEFORE" (19 Aug 2026, found
+     by this gate failing j2-02 and j3-02 for sixteen words they teach themselves).
+     Until today every lesson in every year was ordered on `num` alone, so `j2-02`
+     (num 2) was judged against `j1-03` (num 3) and failed for "meeting variable
+     before the meaning" — a lesson in a DIFFERENT COURSE that a J2 pupil never
+     sits. Year One's whole premise (his K4 taper) is that the J2/J3 openers assume
+     nothing from J1.
+     So `definedIn` is now per-year: one object, or an ARRAY of them, and the
+     ordering comparison happens only inside the year that owns the definition.
+     THE EXEMPTION IS NOT SILENT AND IS NOT FREE (DFM 213): a term used in a year
+     whose own spine never defines it FAILS. The only way past is to declare, in
+     vocab.json and in writing, either where that year teaches it or that the year
+     uses the ordinary English word — and the second prints as visible debt. */
+  const yearOfLesson = (id) => String(id || '').slice(0, 2);
+  const yearOf = (L) => String((L.json && L.json.year) || yearOfLesson(L.fileId));
+  const defsOf = (term) => [].concat(term.definedIn || []).filter(Boolean);
+  const defForYear = (term, yr) => defsOf(term).find(d =>
+    String(d.year || yearOfLesson(d.lesson)) === yr) || null;
+  const plainSenseNotes = [];
   (vocab.terms || []).forEach(term => {
     const rx = new RegExp('\\b(' + [term.term].concat(term.aliases || [])
       .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', 'i');
-    const defLesson = term.definedIn.lesson;
+    const primary = defsOf(term)[0] || {};
+    const defLesson = primary.lesson;
     const defNum = orderOf[defLesson];
     let definitionSeen = false;
     lessons.forEach(L => {
       const num = numOf(L);
+      const yr = yearOf(L);
+      const mine = defForYear(term, yr);
       L.strings.forEach(s => {
         if (!rx.test(s.text)) return;
+        if (!mine) {
+          out.push(s.path + ': uses "' + term.term + '" but ' + yr.toUpperCase() +
+            '\u2019s own spine never teaches it — vocab.json defines it only in ' +
+            defsOf(term).map(d => d.lesson || d.year).join(', ') +
+            ', and a ' + yr.toUpperCase() + ' pupil never sits that lesson');
+          return;
+        }
+        if (mine.ordinaryWord) {
+          plainSenseNotes.push(term.term + ' in ' + yr.toUpperCase() + ' — ' +
+            (mine.why || 'declared as the ordinary English word, needing no teaching'));
+          return;
+        }
+        const defLessonY = mine.lesson;
+        const defNumY = orderOf[defLessonY];
         /* THE SIDE-QUEST EXEMPTION IS GONE (14 Aug 2026, DFM 221's cold read).
            It used to read `if (isSide) return;` — "side quest sits outside the
            spine" — which exempted EVERY side-quest sentence from the
@@ -679,21 +715,21 @@ function vocabCheck(lessons, vocab, films) {
            as taught in Lesson 4, and the side quest is due before Lesson 3.
            The side quest is LOCKED (DFM 176), so this prints as waived debt
            rather than blocking — visible, not silent, and his to rule on. */
-        if (defNum === undefined) {
-          out.push(s.path + ': watched term "' + term.term + '" but vocab.json names an unknown lesson "' + defLesson + '"');
+        if (defNumY === undefined) {
+          out.push(s.path + ': watched term "' + term.term + '" but vocab.json names an unknown lesson "' + defLessonY + '"');
           return;
         }
-        if (num < defNum) {
+        if (num < defNumY) {
           out.push(s.path + ': uses "' + term.term + '" but it is not taught until ' +
-            defLesson + ' (' + term.definedIn.chunkId + ') — she meets the word before the meaning');
-        } else if (num === defNum) {
+            defLessonY + ' (' + mine.chunkId + ') — she meets the word before the meaning');
+        } else if (num === defNumY) {
           const chunkIds = (L.json.chunks || []).map(c => c.id);
-          const defIdx = chunkIds.indexOf(term.definedIn.chunkId);
+          const defIdx = chunkIds.indexOf(mine.chunkId);
           const thisChunk = (s.path.split(' › ')[1] || '');
           const thisIdx = chunkIds.indexOf(thisChunk);
           if (defIdx >= 0 && thisIdx >= 0 && thisIdx < defIdx) {
             out.push(s.path + ': uses "' + term.term + '" before its own lesson defines it in "' +
-              term.definedIn.chunkId + '"');
+              mine.chunkId + '"');
           }
         }
       });
@@ -706,8 +742,9 @@ function vocabCheck(lessons, vocab, films) {
          carried as a printed WAIVED-DEFINING debt (DFM 178c), never a silent
          pass. Apostrophes are normalised because content uses the typographic
          one and a spec phrase may not. */
-      if (L.fileId === defLesson) {
-        const inChunk = L.strings.filter(s => (s.path.split(' › ')[1] || '') === term.definedIn.chunkId);
+      const here = defsOf(term).find(dd => dd.lesson === L.fileId);
+      if (here && !here.ordinaryWord) {
+        const inChunk = L.strings.filter(s => (s.path.split(' › ')[1] || '') === here.chunkId);
         /* `defining` is a STRING **or an ARRAY** (addendum Part D). A term can
            honestly be defined in more than one form of words — the film says
            "one for each character or thing", the card says "a sprite is one
@@ -716,24 +753,29 @@ function vocabCheck(lessons, vocab, films) {
            either check. */
         const wants = definingPhrases(term);
         if (wants.length) {
-          const inFilmHere = (films || []).filter(f => f.lesson === defLesson && f.chunkId === term.definedIn.chunkId);
+          const inFilmHere = (films || []).filter(f => f.lesson === here.lesson && f.chunkId === here.chunkId);
           if (inChunk.some(s => wants.some(w => norm(prose(s.text)).indexOf(w) !== -1)) ||
               inFilmHere.some(f => wants.some(w => norm(prose(f.text)).indexOf(w) !== -1))) definitionSeen = true;
         } else {
           if (inChunk.some(s => rx.test(s.text))) definitionSeen = true;
-          waivedDefining.push(term.term + ' (' + defLesson + ' › ' + term.definedIn.chunkId + ')');
+          waivedDefining.push(term.term + ' (' + here.lesson + ' › ' + here.chunkId + ')');
         }
       }
     });
     if (defNum !== undefined && !definitionSeen) {
       out.push(definingPhrases(term).length
         ? 'vocab.json: "' + term.term + '" is claimed to be defined in ' + defLesson + ' › ' +
-          term.definedIn.chunkId + ', but its DEFINING PHRASE ("' + [].concat(term.defining).join('" / "') +
+          (primary.chunkId || '?') + ', but its DEFINING PHRASE ("' + [].concat(term.defining).join('" / "') +
           '") is not in that chunk. A term used there is not a term defined there.'
         : 'vocab.json: "' + term.term + '" claims to be defined in ' + defLesson + ' › ' +
-          term.definedIn.chunkId + ', but the word never appears there (phantom definition)');
+          (primary.chunkId || '?') + ', but the word never appears there (phantom definition)');
     }
   });
+  if (plainSenseNotes.length) {
+    console.log('\n  ORDINARY-WORD DECLARATIONS (a year using a term in its everyday sense, ' +
+      'declared in vocab.json rather than skipped — visible, never silent):');
+    [...new Set(plainSenseNotes)].sort().forEach(t => console.log('    \u00b7 ' + t));
+  }
   if (waivedDefining.length) {
     console.log('\n  WAIVED-DEFINING (' + waivedDefining.length + ' terms carry no defining phrase yet — ' +
       'filled lesson by lesson as each comes under review, DFM 178c):');
@@ -1325,7 +1367,7 @@ function hubLedgerCheck(hub, ledger) {
     if (!e) {
       out.push('UNREVIEWED HUB TEXT: ' + s.path + ' — no read-aloud record. It reads: "' +
         s.text.slice(0, 80) + '". Ask it as ' + readerFor(s.year) + ': can she DO it, PICTURE ' +
-        'every noun, SAY what it is for? Then: node ledger-tool.js --add "' + s.path + '"');
+        'every noun, SAY what it is for? Then: node ledger-tool.js --set "' + s.path + '" "<what she does>" "<what she pictures>" "<what it is for>"');
       return;
     }
     if (e.sha1 !== sha1(s.text)) {
@@ -1386,7 +1428,7 @@ function deckLedgerCheck(deckStrings, ledger) {
       out.push('UNREVIEWED DECK TEXT: ' + s.path + ' — no read-aloud record. This goes on a ' +
         'wall, eight feet wide, in front of the class. Read it aloud from the back row as ' +
         readerFor(s.year) + ': can she DO it, PICTURE every noun, SAY what it is for? ' +
-        'It reads: "' + s.text.slice(0, 90) + '". Then: node ledger-tool.js --add "' + s.path + '"');
+        'It reads: "' + s.text.slice(0, 90) + '". Then: node ledger-tool.js --set "' + s.path + '" "<what she does>" "<what she pictures>" "<what it is for>"');
       return;
     }
     if (e.sha1 !== sha1(s.text)) {
@@ -1419,7 +1461,7 @@ function ledgerCheck(lessons, ledger) {
       const e = byPath[s.path];
       if (!e) {
         out.push('UNREVIEWED: ' + s.path + ' — no read-aloud record. Ask it as ' + reader +
-          ': can she DO it, PICTURE every noun, SAY what it is for? Then: node ledger-tool.js --add "' + s.path + '"');
+          ': can she DO it, PICTURE every noun, SAY what it is for? Then: node ledger-tool.js --set "' + s.path + '" "<what she does>" "<what she pictures>" "<what it is for>"');
         return;
       }
       if (e.sha1 !== sha1(s.text)) {
@@ -1658,6 +1700,48 @@ function runControls() {
     fs.rmSync(YR_DIR, { recursive: true, force: true });
   } catch (e) {
     control(false, 'the multi-year fixture could not run: ' + e.message);
+  }
+
+  /* ---- THE YEAR-AWARE VOCABULARY CONTROLS (19 Aug 2026). The rule this gate
+     used to apply — order every lesson in every year on `num` alone — failed
+     j2-02 and j3-02 sixteen times for words those lessons teach themselves,
+     because `j2-02` is num 2 and `j1-03` is num 3. The fix must be able to say
+     NO in three distinct ways or it is an exemption wearing a rule's clothes
+     (DFM 213), so all four cases are planted and asserted here. ---- */
+  try {
+    const mk = (fileId, year, num, chunkId, text) => ({
+      fileId, json: { num, year, chunks: [{ id: chunkId }] },
+      strings: [{ path: fileId + ' \u203a ' + chunkId + ' \u203a intro', text }]
+    });
+    const V = (definedIn) => ({ terms: [{ term: 'widget', aliases: [], definedIn, defining: null }] });
+    const say = (v, ls) => vocabCheck(ls, v, []).join(' | ');
+
+    /* (1) THE FAULT ITSELF: a J2 lesson judged against a J1 lesson it never sits. */
+    const crossYear = say(V([{ lesson: 'j1-03', chunkId: 'hook' }]),
+      [mk('j1-03', 'j1', 3, 'hook', 'a widget is a thing'), mk('j2-02', 'j2', 2, 'build', 'use the widget')]);
+    control(/J2\u2019s own spine never teaches it/.test(crossYear),
+      'a term used in J2 with no J2 definition FAILS, and says so in those words (before 19 Aug it ' +
+      'failed for the WRONG reason — "not taught until j1-03", a lesson no J2 pupil sits)');
+    control(!/not taught until/.test(crossYear),
+      'and it no longer compares a J2 lesson number against a J1 one at all');
+
+    /* (2) A PER-YEAR DEFINITION MAKES IT PASS — the exemption exists and works. */
+    control(say(V([{ lesson: 'j1-03', chunkId: 'hook' }, { lesson: 'j2-02', chunkId: 'build' }]),
+      [mk('j1-03', 'j1', 3, 'hook', 'a widget is a thing'), mk('j2-02', 'j2', 2, 'build', 'use the widget')]) === '',
+      'and a term J2 teaches in its OWN Lesson 2 passes');
+
+    /* (3) THE ORDER RULE STILL BITES INSIDE A YEAR — the half that must not be lost. */
+    control(/not taught until j2-04/.test(say(V([{ lesson: 'j2-04', chunkId: 'hook' }]),
+      [mk('j2-04', 'j2', 4, 'hook', 'a widget is a thing'), mk('j2-02', 'j2', 2, 'build', 'use the widget')])),
+      'and INSIDE one year, meeting the word before the meaning still fails exactly as it did');
+
+    /* (4) THE ORDINARY-WORD DECLARATION IS THE ONLY WAY PAST, AND IT IS WRITTEN DOWN. */
+    control(say(V([{ lesson: 'j1-03', chunkId: 'hook' },
+      { year: 'j2', ordinaryWord: true, why: 'control fixture' }]),
+      [mk('j1-03', 'j1', 3, 'hook', 'a widget is a thing'), mk('j2-02', 'j2', 2, 'build', 'use the widget')]) === '',
+      'and a year may declare the ordinary English sense in vocab.json — printed as visible debt, never silent');
+  } catch (e) {
+    control(false, 'the year-aware vocabulary fixture could not run: ' + e.message);
   }
 
   /* ---- THE HUB CONTROLS (his 14 Aug ruling). Each one proves the gate at the

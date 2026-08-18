@@ -32,6 +32,14 @@ const SRC = process.env.KS3DT_SRC || path.join(process.env.HOME, 'Desktop/Claude
 const LEDGER = path.join(SRC, 'language-ledger.json');
 const before = JSON.parse(fs.readFileSync(LEDGER, 'utf8'));
 const had = new Set(Object.keys(before.entries || before));
+/* A VOIDED JUDGEMENT MUST BE REPLACEABLE (19 Aug 2026). "already has a record"
+   and "has a record that an edit made void" were one test, so every CHANGED
+   SINCE REVIEW path was refused and the only way forward was deleting entries
+   by hand — the author touching the ledger, which is the exact thing separation
+   exists to prevent. Stale paths come from ledger-tool, which owns the walk. */
+const stale = new Set(String(execFileSync(process.execPath,
+  [path.join(__dirname, 'ledger-tool.js'), '--stale-paths'], { encoding: 'utf8' }))
+  .split('\n').map(x => x.trim()).filter(Boolean));
 
 const rows = [];
 fs.readFileSync(file, 'utf8').split('\n').forEach((line, i) => {
@@ -48,7 +56,7 @@ const counts = {};
 rows.forEach(r => { const s = sig(r.v); counts[s] = (counts[s] || 0) + 1; });
 const REPEAT_LIMIT = 3;
 
-let applied = 0, refusedBlank = 0, refusedRepeat = 0, refusedExisting = 0, failed = 0;
+let applied = 0, refusedBlank = 0, refusedRepeat = 0, refusedExisting = 0, failed = 0, replaced = 0;
 const seen = new Set();
 for (const r of rows) {
   const v = r.v;
@@ -64,7 +72,9 @@ for (const r of rows) {
     console.log('  REFUSED (the same words on ' + counts[sig(v)] + ' sentences — that is a bulk stamp) ' + v.path);
     refusedRepeat++; continue;
   }
-  if (had.has(v.path)) { refusedExisting++; continue; }
+  if (had.has(v.path) && !stale.has(v.path)) { refusedExisting++; continue; }
+  const replacing = stale.has(v.path);
+  if (replacing) replaced++;
   if (DRY) { applied++; continue; }
   try {
     execFileSync(process.execPath, [TOOL, '--set', v.path, fields[0], fields[1], fields[2]],
@@ -77,6 +87,7 @@ for (const r of rows) {
 }
 
 console.log('\napplied ' + applied +
+  ' (of which ' + replaced + ' replaced a judgement an edit had VOIDED)' +
   ' · refused-blank ' + refusedBlank +
   ' · refused-as-bulk-stamp ' + refusedRepeat +
   ' · already-had-a-record ' + refusedExisting +

@@ -938,6 +938,14 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   background: rgba(26, 58, 107, 0.05); border-left: 3px solid var(--gold);
   border-radius: var(--r-sm); line-height: 1.5;
 }
+/* A DEAD PLAYER STILL SAYS SOMETHING (DFM 42/143; j3-02 cold read, 19 Aug
+   2026). Rendered only when the video element reports it cannot play, so a
+   film that 404s gives her the lesson's own words instead of silence. */
+.video-failed {
+  text-align: left; margin: 10px 0 0; padding: 11px 14px;
+  background: rgba(196, 68, 58, 0.07); border-left: 3px solid #C4443A;
+  border-radius: var(--r-sm); line-height: 1.5;
+}
 /* the film-split signpost (DFM 168, L5 spec Part B): a pupil who has watched
    this half to the end must be told, on this card, where the other half lives.
    Sits UNDER the player, above Done watching, so it is the last thing read. */
@@ -3201,6 +3209,12 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .snap-side h3 {
   margin: 0 0 9px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
 }
+/* the one line naming str( ) as survivable, at the top of the column she is
+   reading rather than a screen earlier (j2-02 cold read, 19 Aug 2026). */
+.snap-col-note {
+  margin: -4px 0 9px; font-size: 0.84rem; line-height: 1.45; color: var(--muted);
+  border-left: 2px solid rgba(var(--gold-rgb), 0.55); padding-left: 8px;
+}
 .snap-list { display: flex; flex-direction: column; gap: 9px; }
 .snap-block, .snap-py {
   display: block; width: 100%; text-align: left; font: inherit; cursor: pointer;
@@ -3303,6 +3317,14 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.95rem; color: #16305C;
   white-space: pre-wrap; word-break: break-word;
 }
+/* WHAT GOES IN THE GAP IS SEEN, NOT ONLY ANNOUNCED (j3-02 cold read, 19 Aug
+   2026). The blank's label used to reach `aria-label` alone, so a sighted pupil
+   with a mouse read "type it" — and a bare "0" for BOTH of build 4's numbers. */
+.pyrun-blank-hint {
+  display: block; margin-top: 5px; font-size: 0.8rem; line-height: 1.4;
+  color: var(--muted); font-style: italic;
+}
+.pyrun-line.dragging .pyrun-blank-hint { opacity: 0.5; }
 .pyrun-ghost {
   position: fixed; left: 0; top: 0; margin: 0; z-index: 60; pointer-events: none; transition: none;
   cursor: grabbing; opacity: 0.96; box-shadow: 0 8px 22px rgba(23, 34, 59, 0.28); border-color: var(--gold);
