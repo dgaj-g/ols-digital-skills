@@ -462,6 +462,97 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
         if (!await advanceUntil('.q-opt', 60, VIA_J2)) throw new Error('never reached a question card');
       }
     },
+    /* ---- J2 AND J3 LESSON 2: THE PYTHON SURFACES (19 Aug 2026) ----------
+       THE CONSOLE IS THE 207g CLASS AND IT IS MEASURED, NEVER ASSUMED. It is a
+       DARK plate that a pupil reads inside a light card, on a screen whose skin
+       she chose — exactly the shape of the studio QA desk fault, where a light
+       plate inherited the shell's light type and the theme registry's own
+       comment promised "contrast stays AA" with nothing measuring it. Every
+       console surface therefore has its own row here: the printed output, the
+       real Python error, and the plain-words line under it, which is the one a
+       pupil reads when she is already stuck and least able to squint.
+       Measured on both years' Lesson-2 skins as well as each year's default. */
+    {
+      id: 'j2-snap-desk', year: 'j2', cls: 'Demo-9A', as: 'aoife', lesson: '2',
+      what: 'the matching desk (block glosses, Python lines, the running commentary)',
+      extras: ['.snap-goal', '.snap-how', '.snap-gloss', '.snap-py code', '.snap-side h3', '.snap-say'],
+      must: ['.snap-card', '.snap-gloss', '.snap-py'],
+      drive: async () => {
+        if (!await advanceUntil('.snap-card', 26, VIA_J2)) throw new Error('never reached the snap desk');
+      }
+    },
+    {
+      id: 'j2-build-target', year: 'j2', cls: 'Demo-9A', as: 'aoife', lesson: '2',
+      what: 'the build card before any run (the target block, the tray, the locked note)',
+      extras: ['.pyrun-goal', '.pyrun-brief', '.pyrun-target-lead', '.pyrun-target-out',
+               '.pyrun-how', '.pyrun-line code', '.pyrun-locked-note', '.pyc-idle', '.pyc-title'],
+      must: ['.pyrun-card', '.pyrun-target-out', '.pyc'],
+      drive: async () => {
+        if (!await advanceUntil('.pyrun-card', 34, VIA_J2)) throw new Error('never reached the build card');
+      }
+    },
+    {
+      id: 'j2-console-error', year: 'j2', cls: 'Demo-9A', as: 'aoife', lesson: '2',
+      what: 'THE CONSOLE AFTER A FAILED RUN — the real Python error and the plain line under it',
+      extras: ['.pyc-lead', '.pyc-errlead', '.pyc-out', '.pyc-err', '.pyc-plain',
+               '.pyrun-vtag', '.pyrun-vsay'],
+      must: ['.pyc-err', '.pyc-plain', '.pyrun-vtag'],
+      drive: async () => {
+        if (!await advanceUntil('.pyrun-card', 34, VIA_J2)) throw new Error('never reached the build card');
+        /* place ONE line that really fails, then run it — the fail state is the
+           surface under test, so it is produced rather than simulated */
+        await page.evaluate(() => {
+          const n = Array.from(document.querySelectorAll('.pyt-list .pyrun-line'))
+            .find(x => /str\(Score\)/.test(x.textContent))
+            || document.querySelector('.pyt-list .pyrun-line');
+          if (n) n.click();
+        });
+        await sleep(400);
+        await page.evaluate(() => { const b = document.querySelector('.pyrun-run:not([disabled])'); if (b) b.click(); });
+        await page.waitForSelector('.pyc-err', { timeout: 30000 });
+      }
+    },
+    {
+      id: 'j3-blank-refusal', year: 'j3', cls: 'Demo-10A', as: 'orla', lesson: '2',
+      what: 'the empty-box refusal on the call sheet (a locked control that explains itself)',
+      extras: ['.pyrun-verdict.is-note p', '.pyrun-blank', '.pyrun-target-out', '.pyrun-goal'],
+      must: ['.pyrun-verdict.is-note', '.pyrun-blank'],
+      drive: async () => {
+        if (!await advanceUntil('.pyrun-card', 34, VIA_J3)) throw new Error('never reached the call sheet');
+        await page.evaluate(() => { const n = document.querySelector('.pyt-list .pyrun-line'); if (n) n.click(); });
+        await sleep(400);
+        await page.evaluate(() => { const b = document.querySelector('.pyrun-run:not([disabled])'); if (b) b.click(); });
+        await page.waitForSelector('.pyrun-verdict.is-note', { timeout: 15000 });
+      }
+    },
+    {
+      id: 'j3-console-matched', year: 'j3', cls: 'Demo-10A', as: 'orla', lesson: '2',
+      what: 'the console and the MATCHED verdict after a run that worked',
+      extras: ['.pyc-lead', '.pyc-out', '.pyrun-vtag', '.pyrun-vsay', '.pyrun-step'],
+      must: ['.pyc-out', '.pyrun-verdict.is-matched'],
+      drive: async () => {
+        if (!await advanceUntil('.pyrun-card', 34, VIA_J3)) throw new Error('never reached the call sheet');
+        /* build 1 is one line with one box: fill it from the lesson's own key,
+           the way the walker does, rather than from a copy in this file */
+        await page.evaluate(() => {
+          const n = document.querySelector('.pyt-list .pyrun-line'); if (n) n.click();
+        });
+        await sleep(350);
+        await page.evaluate(() => {
+          const card = document.querySelector('.pyrun-card');
+          const bid = card && card.getAttribute('data-build');
+          const key = (window.App && App.state && App.state.localKeys && App.state.localKeys[bid]) || null;
+          document.querySelectorAll('.pyp-list .pyrun-blank').forEach(inp => {
+            const k = inp.getAttribute('data-key');
+            inp.value = (key && key.blanks && key.blanks[k] != null) ? String(key.blanks[k]) : 'x';
+            inp.dispatchEvent(new Event('input', { bubbles: true }));
+          });
+        });
+        await sleep(350);
+        await page.evaluate(() => { const b = document.querySelector('.pyrun-run:not([disabled])'); if (b) b.click(); });
+        await page.waitForSelector('.pyrun-verdict.is-matched', { timeout: 30000 });
+      }
+    },
     /* ---- J3 LESSON 1's OWN LANDMARK SCREENS (16 Aug 2026) ---------------
        Measured on The Screening Room and on both new J3 themes. The Compass
        result is the one screen in the lesson that could read as a verdict, so
