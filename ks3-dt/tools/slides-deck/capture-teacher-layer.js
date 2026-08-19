@@ -42,6 +42,15 @@ const argOf = (n, d) => { const i = args.indexOf(n); return i === -1 ? d : args[
 const BASE = argOf('--base', 'http://localhost:8121');
 const ALL = args.includes('--all');
 const ONE = argOf('--lesson', '');
+/* ── --wrong: DRIVE LIKE THE CONFUSED PUPIL (19 Aug 2026) ───────────────────
+   Some screens only exist for a pupil who gets it wrong, and one of them is a
+   picture a teacher genuinely needs on the board: THE CONSOLE AFTER A RUN THAT
+   DID NOT WORK. The expert walker cannot reach it, because it drives every
+   build from the answer key and therefore never fails. `WRONG_MOVES` — the same
+   home, beside the movers it replaces (DFM 144) — fails each build once on a
+   decoy the author planted and then puts it right, so the walk still finishes
+   the lesson and every other predicate is still met. */
+const WRONG = args.includes('--wrong');
 /* --all means every lesson this script has a shot plan for, DERIVED from the plan
    rather than typed. It used to be a hardcoded list of J1's four, which was true
    the day it was written and would have silently skipped both J2/J3 decks — the
@@ -206,6 +215,12 @@ async function pupil(ctx, who, lesson, fresh) {
     await abort(page, 'the hub had no tile for "' + title + '" (Lesson ' + n + ') on ' + cls);
   }
   await sleep(2600);
+  /* THE BUILD CARD'S MOVER NEEDS THE PREVIEW'S OWN MARKING FILE, and without it
+     it does NOTHING rather than guessing (which is correct — a walk that quietly
+     assembles the wrong program and photographs it would be the DFM 225b fault
+     wearing new clothes). `dev-keys.json` is git-ignored and served beside the
+     packed content; a harness may read it because a harness is not a pupil. */
+  await WALK.primeDevKeys(page, BASE);
   /* the local preview stamps a PREVIEW pill on the page — an artefact of
      previewing, never something a pupil or a teacher sees */
   await page.evaluate(() => {
@@ -526,7 +541,7 @@ async function walkAndShoot(page, owed, take, budget) {
     /* the shell arms every control with a 350ms mount guard (DFM 104): a click
        fired the instant a button appears is deliberately swallowed */
     await sleep(420);
-    const mv = WALK.MOVES[st.kind];
+    const mv = (WRONG && WALK.WRONG_MOVES[st.kind]) || WALK.MOVES[st.kind];
     if (mv) { try { await page.evaluate(mv); } catch (e) { /* re-detected next turn */ } }
     else if (WALK.ACTIONS[st.kind]) {
       try { await WALK.ACTIONS[st.kind](page); } catch (e) { /* re-detected next turn */ }
@@ -729,7 +744,40 @@ async function captureLesson(browser, lesson) {
         }
         await settled(pg, el, name);
         const raw = path.join(rawDir, name + '.png');
+        /* ── THE APP'S OWN CHROME MUST NOT LAND IN THE PICTURE (19 Aug 2026) ──
+           `.topbar` is `position: sticky; top: 0`, so when Playwright scrolls a
+           card TALLER THAN THE VIEWPORT into frame to photograph it, the bar
+           parks itself over the top of that card — and the element screenshot
+           takes it with it. The two Python cards are the first cards on this
+           platform tall enough to trigger it (2,022 and 2,892 device pixels),
+           and the result was a dark band across the card's own HEADING with a
+           stray letter from the bar's title showing at the left edge. Projected
+           eight feet wide, that is a slide whose first line cannot be read.
+           So every fixed or sticky element that is NOT part of the thing being
+           photographed is hidden for the shutter and put straight back. Nothing
+           inside the picture changes; what leaves is furniture that was never
+           part of the screen being claimed. `visibility` rather than `display`,
+           so no layout moves and the predicate that was true a moment ago is
+           still true after (it is re-checked below, and would catch it if not). */
+        const unchromed = await el.evaluate((node) => {
+          const hidden = [];
+          Array.from(document.querySelectorAll('body *')).forEach(e => {
+            const pos = getComputedStyle(e).position;
+            if (pos !== 'fixed' && pos !== 'sticky') return;
+            if (e === node || e.contains(node) || node.contains(e)) return;
+            if (e.offsetParent === null && pos !== 'fixed') return;
+            hidden.push([e, e.style.visibility]);
+            e.style.visibility = 'hidden';
+          });
+          window.__unchrome = hidden;
+          return hidden.length;
+        });
         await el.screenshot({ path: raw });
+        await pg.evaluate(() => {
+          (window.__unchrome || []).forEach(([e, v]) => { e.style.visibility = v || ''; });
+          window.__unchrome = null;
+        });
+        if (unchromed) console.log('      (' + unchromed + ' fixed/sticky element(s) held back for the shutter)');
         /* AND AGAIN AFTER: a screen that moved under the shutter is a screen
            photographed mid-change, and that picture goes on a projector */
         if (!await pg.evaluate(spec.at)) {

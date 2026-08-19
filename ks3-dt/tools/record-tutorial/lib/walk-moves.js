@@ -443,6 +443,100 @@ const MOVES = {
   }
 };
 
+/* ═══════════ THE CONFUSED PUPIL'S OWN MOVERS (19 Aug 2026) ════════════════
+   WHY A SECOND TABLE RATHER THAN A FLAG ON THE FIRST. `MOVES` drives from the
+   build's answer key, which is correct for sit-review — it is an EXPERT player
+   and its job is a deterministic finish. But the moment sit-wrongpath started
+   using the shared movers (the DFM 238a fix), the confused pupil began building
+   the RIGHT program every time, and the three landmarks that matter most to a
+   confused pupil went unreached: the console after a run that did NOT work, the
+   NOT YET verdict, and J3's empty-gap refusal. A walker that cannot fail has
+   walked the happy path, which is the blindness this walker exists to end
+   (DFM 194c).
+   So the wrong path gets its own movers, in the same home as the right ones
+   (DFM 144), and sit-wrongpath prefers them. Each build is failed ONCE and then
+   corrected, so the walk still reaches the end of the lesson: a walker that
+   never finishes proves nothing about the screens after the one it died on.
+   NOTHING HERE INVENTS A MISTAKE. Every wrong move is one the lesson itself
+   offers: a decoy line the author put in the tray on purpose, a gap left empty,
+   a number typed that is not the number asked for. */
+const WRONG_MOVES = {
+  /* THE EMPTY GAP. J3's `blankEmptySay` refusal is the one control in either
+     lesson that can be pressed before it is ready, so it is pressed. */
+  'pyrun-blank': () => {
+    const card = document.querySelector('.pyrun-card');
+    const bid = (card && card.getAttribute('data-build')) || '?';
+    const st = (window.__wpWrong = window.__wpWrong || {})[bid] ||
+      (window.__wpWrong[bid] = {});
+    const run = document.querySelector('.pyrun-run');
+    if (!st.emptyRun && run && !run.disabled) { st.emptyRun = 1; run.click(); return; }
+    /* then fill it exactly as the right-path mover does */
+    const key = window.__walkKey ? window.__walkKey(bid) : null;
+    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank')).find(i => !i.value);
+    if (!inp) return;
+    const k = inp.getAttribute('data-key');
+    const v = (key && key.blanks && key.blanks[k] != null) ? String(key.blanks[k]) : 'x';
+    inp.value = v;
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+  },
+
+  /* THE RUN THAT DOES NOT WORK. Phases, one build at a time:
+       decoy  → place a line the author planted as a real slip, then RUN
+       (or, on a build with no decoy at all — j3b-title is one line and a gap —
+        type a value that is not the one asked for, then RUN)
+       then put it right and RUN properly, so the walk goes on.
+     A build with neither a decoy nor a gap simply runs correctly; there is no
+     wrong move available and pretending otherwise would be a fiction. */
+  'pyrun-run': () => {
+    const card = document.querySelector('.pyrun-card');
+    const bid = (card && card.getAttribute('data-build')) || '?';
+    const st = (window.__wpWrong = window.__wpWrong || {})[bid] ||
+      (window.__wpWrong[bid] = {});
+    const key = window.__walkKey ? window.__walkKey(bid) : null;
+    const order = (key && key.order) || null;
+    const wanted = (si) => !order || order.indexOf(Number(si)) !== -1;
+    const runIt = () => { const b = document.querySelector('.pyrun-run:not([disabled])'); if (b) b.click(); };
+
+    if (order && !st.decoy) {
+      const d = Array.from(document.querySelectorAll('.pyt-list .pyrun-line'))
+        .find(n => !wanted(n.getAttribute('data-si')));
+      if (d) { st.decoy = 'placed'; d.click(); return; }
+      st.decoy = 'none';
+    }
+    if (st.decoy === 'placed') { st.decoy = 'ran'; runIt(); return; }
+    if (st.decoy === 'ran') {
+      st.decoy = 'removed';
+      const d = Array.from(document.querySelectorAll('.pyp-list .pyrun-line'))
+        .find(n => !wanted(n.getAttribute('data-si')));
+      if (d) d.click();
+      return;
+    }
+    if (st.decoy === 'none' && !st.badVal) {
+      const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank'))
+        .filter(i => i.offsetParent !== null)[0];
+      if (inp) {
+        st.badVal = 'set';
+        inp.value = 'not that';
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        return;
+      }
+      st.badVal = 'skip';
+    }
+    if (st.badVal === 'set') { st.badVal = 'ran'; runIt(); return; }
+    if (st.badVal === 'ran') {
+      st.badVal = 'fixed';
+      Array.from(document.querySelectorAll('.pyp-list .pyrun-blank')).forEach(function (i) {
+        const k = i.getAttribute('data-key');
+        const v = (key && key.blanks && key.blanks[k] != null) ? String(key.blanks[k]) : 'x';
+        i.value = v;
+        i.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      return;
+    }
+    runIt();
+  }
+};
+
 /* how long each move needs before the screen has settled enough to re-detect */
 const SETTLE = {
   badge: 600, 'dossier-cta': 1100, confirm: 700, tour: 600, 'q-opt': 900, 'q-next': 700,
@@ -699,4 +793,4 @@ async function primeDevKeys(page, host) {
   }, url);
 }
 
-module.exports = { detectKind, whereAmI, chunkNow, MOVES, SETTLE, ACTIONS, primeDevKeys };
+module.exports = { detectKind, whereAmI, chunkNow, MOVES, WRONG_MOVES, SETTLE, ACTIONS, primeDevKeys };

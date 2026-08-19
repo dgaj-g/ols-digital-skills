@@ -85,7 +85,7 @@
    "id": "j1-04",
    "num": 4,
    "title": "The Broken Game",
-   "tagline": "Four bugs. One shipped game. You're QA.",
+   "tagline": "A game has gone out to players and four things in it do not work. Today you find all four and fix them.",
    "block": "b1",
    "icon": "🔍",
    "status": "ready",

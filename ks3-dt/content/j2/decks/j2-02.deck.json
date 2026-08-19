@@ -95,6 +95,7 @@
      "kind": "bullets",
      "bg": "section",
      "heading": "The film — on your own screen",
+     "shot": "film",
      "size": 15,
      "bullets": [
       "The film plays on your own computer, not on the board.",
@@ -132,6 +133,7 @@
      "kind": "bullets",
      "bg": "section",
      "heading": "What the matching desk looks like",
+     "shot": "desk",
      "size": 15,
      "bullets": [
       "The card explains it, then the button at the bottom says Open the desk.",
@@ -169,6 +171,7 @@
      "kind": "bullets",
      "bg": "section",
      "heading": "How the build screen works",
+     "shot": "build",
      "size": 15,
      "bullets": [
       "The lines you can use sit in The lines. Your program is the box beside it.",
@@ -184,6 +187,7 @@
      "kind": "bullets",
      "bg": "section",
      "heading": "The console",
+     "shot": "console",
      "size": 15,
      "bullets": [
       "The console is the box under your program. It shows exactly what your program printed.",
@@ -226,6 +230,7 @@
      "kind": "bullets",
      "bg": "section",
      "heading": "The last two screens",
+     "shot": "selfeval",
      "size": 15,
      "bullets": [
       "You answer one question on your own, and this one IS marked.",

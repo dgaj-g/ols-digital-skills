@@ -115,6 +115,47 @@ const THEMES = {
     ground: '#170A16', panel: '#2D1429', accent: '#FFD666', accent2: '#FF4D67',
     text: '#FFFFFF', dim: '#D8BFD2',
     motif: 'screening'        /* beam dust + grain; seats, the beam, the screen */
+  },
+
+  /* ══════════════ THE TWO LESSON-2 THEMES (19 Aug 2026) ═════════════════════
+     Both palettes are COPIED, value for value, out of the lesson's own
+     `<lesson>.deck.json` theme block, which the deck renderer uses for every
+     shape and every word on the slide. They are not re-chosen here. If the two
+     ever drifted, the board's picture and the board's text would belong to two
+     different colour worlds and nothing would say so — the one-fact-one-home
+     rule (DFM 144) applied to a palette.
+
+     WHY THE MOTIFS ARE NOT REUSED, and what makes each its own.
+     THE BUREAU (J2 Lesson 2) is an office where something is written out again
+     in another language: six Scratch blocks on one desk, six lines of Python on
+     the other. So the drawing is a TRANSLATOR'S DESK — a nib and an inkwell in
+     silhouette, a lamp pooling on the desktop, and the same thing said twice
+     down the right of frame in two different hands. It could not be mistaken
+     for the Workbench beside it in the same year: that theme is charcoal, copper
+     and iron, and its objects are a vice and an anvil.
+     THE CALL SHEET (J3 Lesson 2) is a theatre's running order, printed by her
+     own program. So the drawing is BACKSTAGE — fly ropes dropping the full
+     height of the frame with sandbags on their ends, a work lamp burning warm
+     in a cold room, and a clipboard held at an angle. It could not be mistaken
+     for the Screening Room beside it: that theme is plum and gold and is the
+     view from the back of the AUDIENCE, looking at the beam and the screen.
+     One is where the show is watched; this one is where the show is run.
+
+     AND NEITHER DRAWS A HORIZONTAL RULE, which is a named fault class rather
+     than a taste: he read Lesson 3's proofs and found "a faint background rule
+     [that] lands on the first bullet's baseline and reads as an accidental
+     underline". Every straight line in both motifs is VERTICAL or is a curve. */
+  'j2-02': {
+    name: 'The Bureau',
+    ground: '#0E1D1B', panel: '#17302C', accent: '#3FC79A', accent2: '#F2B25C',
+    text: '#FFFFFF', dim: '#C6DCD4',
+    motif: 'bureau'           /* paper tooth + the same thing said twice; nib, inkwell, lamp */
+  },
+  'j3-02': {
+    name: 'The Call Sheet',
+    ground: '#052220', panel: '#0B3A36', accent: '#4DE3A3', accent2: '#FFB43D',
+    text: '#FFFFFF', dim: '#B6DED4',
+    motif: 'callsheet'        /* punched holes + grain; fly ropes, sandbags, work lamp, clipboard */
   }
 };
 
@@ -528,6 +569,159 @@ const MOTIFS = {
       seats += row(H - 96, 150, 96, 26, (op * 1.5).toFixed(3), t.accent2);
       seats += row(H - 44, 196, 44, 46, (op * 1.9).toFixed(3), t.accent2);
       return beam + screen + seats;
+    }
+  },
+
+  /* J2 LESSON 2 — THE BUREAU. A translator's desk after the office has gone
+     quiet: one lamp still lit over it, a nib and an inkwell lying where they
+     were put down, and, pinned up the right-hand side, the same six things
+     written out twice — once in blocks, once in lines. That last part is the
+     lesson itself turned into wallpaper, and it is the only ORDERED thing in
+     the drawing, which is what makes it read as a wall of work rather than as
+     scatter (the peg-board's trick, on a different object). */
+  bureau: {
+    dust: (t, o) => {
+      const r = rng(o.seed);
+      let out = '';
+      /* THE SAME THING SAID TWICE, eight rows down the right of frame. On the
+         left of each pair a rounded BAR — a block, the shape she has been
+         dragging since Year 8. On the right, three small squares — a line of
+         type. Kept faint: on a bullets slide a screenshot sits over this
+         column, and on every other slide it has to stay behind the heading. */
+      for (let i = 0; i < 8; i++) {
+        const y = 96 + i * 74;
+        out += `<rect x="1006" y="${y}" width="118" height="26" rx="9" ` +
+          `fill="${t.accent}" opacity="0.11"/>`;
+        for (let k = 0; k < 3; k++) {
+          out += `<rect x="${1168 + k * 46}" y="${y + 8}" width="34" height="10" rx="3" ` +
+            `fill="${t.accent2}" opacity="0.10"/>`;
+        }
+      }
+      /* PAPER TOOTH. Sparse specks so the ground reads as laid paper under a
+         lamp rather than as glass — the same reason the case file has it. */
+      const n = Math.round(o.starCount * 0.85);
+      for (let i = 0; i < n; i++) {
+        out += ledDot(Math.round(r() * W), Math.round(r() * H),
+          (r() * 1.3 + 0.5).toFixed(2), t.dim, (r() * 0.10 + 0.03).toFixed(2));
+      }
+      return out;
+    },
+    lines: (t, op) => {
+      /* THE LAMP, top left, where a desk lamp actually is: above the work,
+         throwing down. Amber, because amber is the second accent and a colour
+         that appears nowhere the eye meets it is a colour that is not in the
+         theme. Blurred — a hard ellipse reads as a shape somebody drew. */
+      const lamp =
+        `<ellipse cx="210" cy="-30" rx="330" ry="240" fill="${t.accent2}" ` +
+        `opacity="${(op * 1.25).toFixed(3)}" filter="url(#soft)"/>`;
+      /* THE NIB, bottom left. A fountain-pen nib is recognisable in outline
+         alone — a tapered leaf, a slit down the middle, one round breather
+         hole — which is why it carries the theme instead of a pen, and it is
+         drawn tip-DOWN as it would lie on a desk. */
+      const nx = 168, ny = H - 250;
+      const nib =
+        `<g transform="translate(${nx},${ny}) rotate(-18)" opacity="${(op * 1.6).toFixed(3)}">` +
+        `<path d="M0,0 Q34,14 34,86 Q34,168 17,208 Q0,168 0,86 Q0,14 0,0 Z" ` +
+        `transform="translate(-17,0)" fill="${t.accent}"/>` +
+        `<rect x="-1.6" y="70" width="3.2" height="126" fill="${t.ground}" opacity="0.85"/>` +
+        `<circle cx="0" cy="62" r="9" fill="${t.ground}" opacity="0.85"/>` +
+        `</g>`;
+      /* THE INKWELL, to its right. Squat body, short neck, a glint on the
+         shoulder — the object that says the nib is not a decoration. */
+      const ix = 300, iy = H - 118;
+      const well =
+        `<g transform="translate(${ix},${iy})" opacity="${(op * 1.5).toFixed(3)}">` +
+        `<path d="M-62,0 Q-70,-74 -34,-86 L34,-86 Q70,-74 62,0 Z" fill="${t.accent2}"/>` +
+        `<rect x="-26" y="-108" width="52" height="26" rx="7" fill="${t.accent2}"/>` +
+        `<ellipse cx="-24" cy="-58" rx="13" ry="22" fill="${t.text}" opacity="0.20"/>` +
+        `</g>`;
+      /* ONE STROKE OF INK, and it is a CURVE that climbs. Not a rule: a rule
+         across a slide lands on a bullet's baseline and reads as an underline,
+         which is a fault he found on an approved deck and which no new theme is
+         allowed to reproduce. This one starts at the nib and leaves the frame. */
+      const stroke =
+        `<path d="M196,${H - 62} Q470,${H - 150} 690,${H - 92} T${W + 40},${H - 210}" ` +
+        `fill="none" stroke="${t.accent}" stroke-width="7" stroke-linecap="round" ` +
+        `opacity="${(op * 1.1).toFixed(3)}"/>`;
+      return lamp + stroke + nib + well;
+    }
+  },
+
+  /* J3 LESSON 2 — THE CALL SHEET. Backstage, not front of house: the fly ropes
+     coming down out of the grid with their sandbags on, one work lamp burning
+     because the house lights are off, and the call sheet itself on a clipboard,
+     held at an angle the way anything held in one hand is. */
+  callsheet: {
+    dust: (t, o) => {
+      const r = rng(o.seed);
+      let out = '';
+      /* THE PUNCHED HOLES of a ring binder, down the left margin. It is the one
+         thing every call sheet in every theatre has in common, it is VERTICAL,
+         and it cannot be mistaken for anything else on a slide. Kept to the top
+         half so it never runs into the clipboard standing at the bottom. */
+      for (let i = 0; i < 7; i++) {
+        out += `<circle cx="44" cy="${72 + i * 68}" r="11" fill="none" ` +
+          `stroke="${t.dim}" stroke-width="3" opacity="0.14"/>`;
+      }
+      /* GRAIN over the whole frame, so the teal is card and not glass. */
+      const n = Math.round(o.starCount * 0.95);
+      for (let i = 0; i < n; i++) {
+        out += ledDot(Math.round(r() * W), Math.round(r() * H),
+          (r() * 1.2 + 0.45).toFixed(2), t.dim, (r() * 0.10 + 0.03).toFixed(2));
+      }
+      return out;
+    },
+    lines: (t, op) => {
+      /* THE FLY SYSTEM, hard right. Four ropes out of the grid with sandbags on
+         their ends — the thing you are standing under backstage, and the thing
+         you are never standing under in the auditorium, which is what separates
+         this theme from the Screening Room in the same year.
+         PLACED RIGHT AND HIGH ON PURPOSE: ropes are vertical so they can never
+         land on a bullet's baseline (the accidental-underline class), and the
+         bags stop above the middle of the frame so nothing hangs behind a
+         sentence. On a bullets slide this is the column the screenshot covers.
+         THE BAG IS LONG AND NARROW, not a trapezoid: the first version read as
+         four plant pots, which is a drawing nobody can name. */
+      const ropes = [
+        { x: 1062, bag: 268 }, { x: 1148, bag: 356 },
+        { x: 1236, bag: 214 }, { x: 1322, bag: 322 }
+      ].map(r2 =>
+        `<rect x="${r2.x}" y="0" width="2.5" height="${r2.bag}" fill="${t.accent}" ` +
+        `opacity="${(op * 1.6).toFixed(3)}"/>` +
+        `<path d="M${r2.x - 15},${r2.bag} L${r2.x + 17},${r2.bag} ` +
+        `L${r2.x + 21},${r2.bag + 128} Q${r2.x + 1},${r2.bag + 146} ${r2.x - 19},${r2.bag + 128} Z" ` +
+        `fill="${t.accent}" opacity="${(op * 1.3).toFixed(3)}"/>`).join('');
+      /* THE WORK LAMP, low left, standing at the side of the stage and pooling
+         on the floor — the one warm source in a cold room, and the only place
+         the orange appears, because a colour the eye never meets is not in the
+         theme. Blurred: a hard ellipse reads as a shape somebody drew. */
+      const lamp =
+        `<ellipse cx="150" cy="${H + 40}" rx="380" ry="270" fill="${t.accent2}" ` +
+        `opacity="${(op * 1.5).toFixed(3)}" filter="url(#soft)"/>` +
+        `<ellipse cx="150" cy="${H - 26}" rx="54" ry="38" fill="${t.accent2}" ` +
+        `opacity="${(op * 2.2).toFixed(3)}" filter="url(#soft)"/>`;
+      /* THE CLIPBOARD, standing in that pool, tilted the way anything held in
+         one hand is. The SHEET IS DRAWN, not glowed: the first version blurred
+         it into the ground at stdDeviation 70 and left the clip hanging in mid
+         air — an orange blob with nothing under it, which is a drawing nobody
+         can name. It is a flat pale rectangle at low opacity instead, so it
+         reads as paper without ever competing with a sentence, and the ruled
+         rows on it are SHORT and sit inside the board's own tilt, so no line of
+         them crosses the slide. */
+      const rows = Array.from({ length: 6 }, (_, i) =>
+        `<rect x="34" y="${64 + i * 40}" width="${i % 2 ? 150 : 196}" height="6" rx="3" ` +
+        `fill="${t.ground}" opacity="0.30"/>`).join('');
+      const cb =
+        `<g transform="translate(232,${H - 322}) rotate(-8)">` +
+        `<rect x="0" y="0" width="272" height="318" rx="10" fill="${t.dim}" ` +
+        `opacity="${(op * 1.5).toFixed(3)}"/>` +
+        rows +
+        `<rect x="86" y="-20" width="100" height="32" rx="9" fill="${t.accent2}" ` +
+        `opacity="${(op * 2.4).toFixed(3)}"/>` +
+        `<rect x="114" y="-38" width="44" height="22" rx="7" fill="${t.accent2}" ` +
+        `opacity="${(op * 2.0).toFixed(3)}"/>` +
+        `</g>`;
+      return lamp + ropes + cb;
     }
   }
 };
