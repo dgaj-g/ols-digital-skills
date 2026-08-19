@@ -603,6 +603,152 @@ const DECK_SHOTS = {
       mustShow: /how did it go/i,
       says: 'the compulsory How did it go? screen, untouched'
     }
+  },
+
+  /* ═════════════════ J2 LESSON 2 — THE TRANSLATION BUREAU ═══════════════════
+     Five pictures, one per bullets slide that talks about a screen, and NONE on
+     a stop slide — DFM 244(b)'s design rule, which is how these two decks clear
+     the 150pt floor by construction rather than by cropping.
+     Every predicate names a state that is true ONLY on the screen claimed: a
+     desk with nothing matched yet, a build card with nothing placed yet, a
+     console that has really stopped. Photographed a moment later, each one
+     would be showing the class a screen they cannot act on. */
+  'j2-02': {
+    film: {
+      chunk: 'film',
+      selector: '.chunk-host .video-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'film') return false;
+        return document.querySelectorAll('.chunk-host .vid-chapter').length >= 4 &&
+          !!document.querySelector('.chunk-host video');
+      },
+      says: 'the film screen with its four chapter buttons'
+    },
+    desk: {
+      chunk: 'bureau',
+      selector: '.chunk-host .snap-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'bureau') return false;
+        const c = document.querySelector('.chunk-host .snap-card');
+        if (!c) return false;
+        /* UNTOUCHED: all six blocks still on the desk, nothing snapped and
+           nothing picked. A desk photographed half-cleared shows an answer. */
+        return c.querySelectorAll('.snap-block').length === 6 &&
+          !c.querySelector('.snap-block.snapped, .snap-block.picked, .snap-py.snapped');
+      },
+      /* CROPPED TO THE FIRST TWO PAIRS (DFM 237b/244b). The desk is two columns
+         of six, so photographed entire it is 1572x2892 — 1:1.84 — and the deck
+         scales one screenshot into about 250pt of width, which would put this
+         on the board at 136pt: a ribbon, under the floor, teaching nothing.
+         Keeping the top down to the second block is a COMPLETE thing in itself
+         — both column headings and two pairs — and it is exactly what a teacher
+         points at: "the blocks are on this side, the Python is on that side."
+         The remaining four rows are the same shape repeated. */
+      cropTo: '.snap-blocks .snap-list .snap-block:nth-of-type(2)',
+      says: 'the top of the matching desk before anything is matched: the blocks on the left, the lines of Python on the right'
+    },
+    build: {
+      chunk: 'build',
+      selector: '.chunk-host .pyrun-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'build') return false;
+        const c = document.querySelector('.chunk-host .pyrun-card[data-build="j2b-scoreboard"]');
+        if (!c) return false;
+        /* NOTHING PLACED YET, so the picture is the empty shape she meets, and
+           RUN still asleep — which is this slide's own last bullet. */
+        const run = c.querySelector('.pyrun-run');
+        return c.querySelectorAll('.pyp-list .pyrun-line').length === 0 && !!run && run.disabled;
+      },
+      mustShow: /RUN my program/i,
+      says: 'the build screen before a line is moved: the target, the lines, the empty program and RUN still asleep'
+    },
+    console: {
+      chunk: 'build',
+      selector: '.chunk-host .pyc',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'build') return false;
+        const c = document.querySelector('.chunk-host .pyc.is-bad');
+        const err = c && c.querySelector('.pyc-err');
+        /* A RUN THAT REALLY STOPPED. `is-bad` is set only when Python raised,
+           and the error box must carry Python's own words — the state this
+           slide's fourth bullet is entirely about. Reached with the confused
+           pupil's movers (--wrong), because the expert walker never fails. */
+        return !!err && (err.textContent || '').trim().length > 8;
+      },
+      mustShow: /Error/i,
+      says: "the console after a run that did not work: Python's own words, and a line underneath in plain English"
+    },
+    selfeval: {
+      chunk: 'selfeval',
+      selector: '.chunk-host .se-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'selfeval') return false;
+        const c = document.querySelector('.se-card');
+        return !!c && !c.querySelector('.se-chip.on, .se-chip.sel, .se-chip[aria-pressed="true"]');
+      },
+      mustShow: /how did it go/i,
+      says: 'the compulsory How did it go? screen, untouched'
+    }
+  },
+
+  /* ═════════════════════ J3 LESSON 2 — THE CALL SHEET ═══════════════════════
+     Three pictures, and the count is deliberate rather than short. The screens
+     a J3 pupil could hesitate at this hour are the film player and the two
+     shapes of build card; the closing How-did-it-go screen is the same one
+     j3-01's deck already showed this class, and no slide here talks about it.
+     **AND THE EXIT QUESTION IS NOT PHOTOGRAPHED**: DFM 37 says in as many words
+     not to put the actual quiz questions in the deck, and this one is marked, so
+     projecting its stem would hand the class the question. */
+  'j3-02': {
+    film: {
+      chunk: 'film',
+      selector: '.chunk-host .video-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'film') return false;
+        return document.querySelectorAll('.chunk-host .vid-chapter').length >= 4 &&
+          !!document.querySelector('.chunk-host video');
+      },
+      says: 'the film screen with its four chapter buttons'
+    },
+    build: {
+      chunk: 'callsheet-a',
+      selector: '.chunk-host .pyrun-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'callsheet-a') return false;
+        /* BUILD 1 specifically, and untouched. It is the first build screen she
+           ever meets, and the one that carries a typing gap with its own
+           caption — the thing this slide's fourth bullet is about. */
+        const c = document.querySelector('.chunk-host .pyrun-card[data-build="j3b-title"]');
+        if (!c) return false;
+        const run = c.querySelector('.pyrun-run');
+        return c.querySelectorAll('.pyp-list .pyrun-line').length === 0 && !!run && run.disabled;
+      },
+      mustShow: /RUN my program/i,
+      says: 'the first build before a line is moved: the target, the lines with their typing gap, and the empty program'
+    },
+    variable: {
+      chunk: 'callsheet-b',
+      selector: '.chunk-host .pyrun-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'callsheet-b') return false;
+        /* BUILD 3, untouched — the first build in the lesson with an `=` line in
+           its tray, which is exactly what this slide's bullets explain. */
+        const c = document.querySelector('.chunk-host .pyrun-card[data-build="j3b-venue"]');
+        if (!c) return false;
+        const run = c.querySelector('.pyrun-run');
+        return c.querySelectorAll('.pyp-list .pyrun-line').length === 0 && !!run && run.disabled;
+      },
+      mustShow: /venue/i,
+      says: 'the build that makes a variable, before a line is moved: the = line still in the tray'
+    }
   }
 };
 

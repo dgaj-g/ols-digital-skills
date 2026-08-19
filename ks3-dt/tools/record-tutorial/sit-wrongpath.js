@@ -214,10 +214,21 @@ const LANDMARKS = {
     ['the film and its chapters', '.video-card, .vid-chapter', 'film'],
     ['the target, before she has moved anything', '.pyrun-target-out', 'callsheet-a'],
     ['a program assembled but not yet run', '.pyp-list .pyrun-line', 'callsheet-a'],
-    ['the empty-box refusal, explaining itself', '.pyrun-verdict.is-note', 'callsheet-a'],
-    ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'callsheet-a'],
+    ['the empty-gap refusal, explaining itself', '.pyrun-verdict.is-note', 'callsheet-a'],
+    ['NOT YET, with no line named', '.pyrun-verdict.is-notyet', 'callsheet-a'],
     ['MATCHED', '.pyrun-verdict.is-matched', 'callsheet-a'],
     ['the variable build', '.pyrun-target-out', 'callsheet-b'],
+    /* THE ERROR CONSOLE IS FILED WHERE IT CAN ACTUALLY HAPPEN (corrected 19 Aug
+       2026). It was declared against `callsheet-a`, and callsheet-a CANNOT raise
+       a Python error: both of its builds are `print( )` lines holding string
+       literals, so every wrong answer there is a wrong OUTPUT, never a stopped
+       program. A landmark that names a state its own chunk cannot produce is the
+       DFM 146a fault in the coverage gate itself — it can only ever be satisfied
+       by loosening it. The state is real and it lives one chunk along:
+       `j3b-takings` carries `print("Money taken: " + price * seats + " pounds")`
+       as a decoy, and adding a number to a string is a TypeError, which is
+       exactly the error the build's own errorWords answer. */
+    ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'callsheet-b'],
     ['the what-you-did-next card', '.confirm-step', 'next'],
     ['the exit check', '.q-opt, .exit-q', 'exit'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']
@@ -282,12 +293,29 @@ const WRONG = {
     for (const n of ['1', '2', '3', '4', '5', 'S1']) db.locks[seed.cls][n] = { u: now, on: 1 };
     db.cfg[seed.cls] = db.cfg[seed.cls] || {};
     db.cfg[seed.cls].pairing = { on: 0 };
+    /* THE DO-NOW HAD NOTHING TO SERVE, SO THE WALK NEVER STOOD ON IT (19 Aug
+       2026). Rule 134 gates every recap item on a lesson this pupil has
+       COMPLETED, and this walker seeded `L: {}` — nothing completed — so from
+       Lesson 2 on the warm-up rendered empty and passed straight through. That
+       is a real screen of every lesson but the first, it is the first thing a
+       confused pupil meets, and no walk had ever pressed anything on it.
+       Staged exactly as sit-review.js stages it, and for the same reason: a
+       pupil arriving at Lesson N has done the lessons before it. */
+    const target = seed.target;
+    const done = {};
+    if (typeof target === 'number') {
+      for (let n = 1; n < target; n++) done[String(n)] = 1;
+      if (target >= 3) done['S1'] = 1;
+    } else if (target === 'S1') { done['1'] = 1; }
+    const L = {};
+    Object.keys(done).forEach((kk, ix) => { L[kk] = [2, 10, 'sit' + kk + '=1', '1', '222|1', 100 + ix, 10, 0, '', 0, 0]; });
     db.pupils = db.pupils || {};
     const k = seed.cls + ':' + seed.key;
     db.pupils[k] = Object.assign(
-      db.pupils[k] || { n: seed.name, cn: '', j: 1, xp: 0, g: '' }, { L: {} });
+      db.pupils[k] || { n: seed.name, cn: '', j: 1, xp: 0, g: '' }, { L });
     localStorage.setItem('ks3dt-dev', JSON.stringify(db));
-  }, { cls: CLASS, key: PUPIL_KEY, name: PUPIL_NAME });
+  }, { cls: CLASS, key: PUPIL_KEY, name: PUPIL_NAME,
+       target: LESSON === 'S1' ? 'S1' : Number(LESSON_NUM) });
   await page.reload({ waitUntil: 'domcontentloaded' });
   await sleep(2400);
   await page.evaluate(() => { const b = document.querySelector('.intro-skip'); if (b) b.click(); });
@@ -526,7 +554,14 @@ const WRONG = {
   async function engineStep() {
     if (!wpPrimed) { await WALK.primeDevKeys(page, BASE); wpPrimed = true; }
     const st = await page.evaluate(WALK.detectKind);
-    const mv = st && WALK.MOVES[st.kind];
+    /* THE WRONG MOVER FIRST (19 Aug 2026). Delegating to the shared movers fixed
+       the stall, and introduced a subtler fault in its place: those movers drive
+       from the answer key, so the CONFUSED pupil built the right program every
+       time and never once saw a run that did not work. `WRONG_MOVES` fails each
+       build once — on a decoy the author planted, or a gap left empty — and then
+       puts it right, so the three fail-state landmarks are really stood on and
+       the walk still reaches the closing screen. */
+    const mv = st && (WALK.WRONG_MOVES[st.kind] || WALK.MOVES[st.kind]);
     if (!mv) return null;
     await page.evaluate(([src]) => { (new Function('return (' + src + ')')())(); }, [String(mv)]);
     await new Promise(r => setTimeout(r, WALK.SETTLE[st.kind] || 600));

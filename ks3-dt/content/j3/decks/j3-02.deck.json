@@ -92,6 +92,7 @@
      "kind": "bullets",
      "bg": "section",
      "heading": "The film — on your own screen",
+     "shot": "film",
      "size": 15,
      "bullets": [
       "The film has no sound, so every word you need is written on the screen. Read as you watch.",
@@ -128,6 +129,7 @@
      "kind": "bullets",
      "bg": "section",
      "heading": "What a build looks like",
+     "shot": "build",
      "size": 15,
      "bullets": [
       "Press Open the call sheet, and the first build opens.",
@@ -165,6 +167,7 @@
      "kind": "bullets",
      "bg": "section",
      "heading": "What changes in these two builds",
+     "shot": "variable",
      "size": 15,
      "bullets": [
       "A line with = in it makes a variable: the name on the left, the value on the right.",

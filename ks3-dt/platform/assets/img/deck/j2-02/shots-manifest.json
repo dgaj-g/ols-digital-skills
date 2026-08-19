@@ -1,0 +1,78 @@
+{
+ "lesson": "j2-02",
+ "shots": {
+  "film": {
+   "name": "film",
+   "kind": "app",
+   "chunkId": "film",
+   "selector": ".chunk-host .video-card",
+   "textSnippet": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is about four minutes long, and it is in four parts — you can click the buttons underneath to jump",
+   "contentAnchor": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is about four minutes long, and it is in four parts — you can click the buttons underneath to jump to any part while you are on this screen.",
+   "cardText": "From blocks to Python (the film) · Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is about four minutes long, and it is in four parts — you can click the buttons underneath to jump to any part while you are on this screen. · Why anyone types code · Meet print() · A variable: a box with a name on it · Reading a whole program · Done watching",
+   "says": "the film screen with its four chapter buttons",
+   "contentVersion": "2026-08-19d",
+   "crop": null,
+   "chunkHash": "8ac675eed42a",
+   "px": "1748x1600"
+  },
+  "desk": {
+   "name": "desk",
+   "kind": "app",
+   "chunkId": "bureau",
+   "selector": ".chunk-host .snap-card",
+   "textSnippet": "How it works: click a block, then click a Python line. A correct pair locks and leaves. A wrong pair comes back, and nothing is revealed.",
+   "contentAnchor": "The green join block sticks two things together, so this says the words Score: followed by whatever number is in the score box.",
+   "cardText": "Your challenge: clear the desk. Match all six blocks to the six lines of Python that do the same job. · How it works: click a block, then click a Python line. A correct pair locks and leaves. A wrong pair comes back, and nothing is revealed. · SCRATCH BLOCKS · This block makes your character say Hello! in a speech bubble on the screen. · This block puts the number 0 into a variable called score. A variable is a box with a name on it that holds one value for you. · This block adds 1 to whatever i",
+   "says": "the top of the matching desk before anything is matched: the blocks on the left, the lines of Python on the right",
+   "contentVersion": "2026-08-19d",
+   "crop": {
+    "to": ".snap-blocks .snap-list .snap-block:nth-of-type(2)",
+    "keepFrac": 0.426
+   },
+   "chunkHash": "db400ebeec80",
+   "px": "1572x1261"
+  },
+  "build": {
+   "name": "build",
+   "kind": "app",
+   "chunkId": "build",
+   "selector": ".chunk-host .pyrun-card",
+   "textSnippet": "How it works: to ADD a line, drag it into Your program, or click the line itself. To MOVE a line, drag it up or down inside Your program. To TAKE a line out, drag it back to The lines. Python runs you",
+   "contentAnchor": "How it works: to ADD a line, drag it into Your program, or click the line itself. To MOVE a line, drag it up or down inside Your program. To TAKE a line out, drag it back to The lines. Python runs your program from the top line down, one line at a time.",
+   "cardText": "Build the scoreboard. Four of these seven lines make it work. · The score starts at 0. It goes up by one, twice. Then the console prints the word Score: followed by the number. · THE TARGET — MAKE THE CONSOLE PRINT EXACTLY THIS · Score: 2 · How it works: to ADD a line, drag it into Your program, or click the line itself. To MOVE a line, drag it up or down inside Your program. To TAKE a line out, drag it back to The lines. Python runs your program from the top line down, one line at a time. · THE",
+   "says": "the build screen before a line is moved: the target, the lines, the empty program and RUN still asleep",
+   "contentVersion": "2026-08-19d",
+   "crop": null,
+   "chunkHash": "8d4493f198fc",
+   "px": "1572x2022"
+  },
+  "console": {
+   "name": "console",
+   "kind": "app",
+   "chunkId": "build",
+   "selector": ".chunk-host .pyc",
+   "textSnippet": "You have tried to join a word to a number. Python will not do that on its own — the number has to be turned into text first, with str( ) around it.",
+   "contentAnchor": "You have tried to join a word to a number. Python will not do that on its own — the number has to be turned into text first, with str( ) around it.",
+   "cardText": "THE CONSOLE · Your program printed this: · Score: 2 · Python stopped, and this is exactly what it said: · TypeError: cannot concatenate 'str' and 'int' objects on line 5 · You have tried to join a word to a number. Python will not do that on its own — the number has to be turned into text first, with str( ) around it.",
+   "says": "the console after a run that did not work: Python's own words, and a line underneath in plain English",
+   "contentVersion": "2026-08-19d",
+   "crop": null,
+   "chunkHash": "8d4493f198fc",
+   "px": "1452x600"
+  },
+  "selfeval": {
+   "name": "selfeval",
+   "kind": "app",
+   "chunkId": "selfeval",
+   "selector": ".chunk-host .se-card",
+   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
+   "contentAnchor": "I can find the line of Python that does the same job as a block.",
+   "cardText": "How did it go? · I can look at a Scratch block and say what it does. · ✓ I can · ≈ Getting there · ✗ Not yet · I can find the line of Python that does the same job as a block. · ✓ I can · ≈ Getting there · ✗ Not yet · I can read the console and work out what my program really did. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer every sentence above — and how it felt — and this button wakes up. · Send & finish",
+   "says": "the compulsory How did it go? screen, untouched",
+   "contentVersion": "2026-08-19d",
+   "crop": null,
+   "chunkHash": "5bb1ea578518",
+   "px": "1372x1402"
+  }
+ }
+}

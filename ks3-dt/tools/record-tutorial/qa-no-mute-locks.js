@@ -115,6 +115,34 @@ const EXPLAINS = /unlock|until|locked|needs|write|type|fill|both halves|appears|
       const fb = card.querySelector('.q-feedback');
       if (fb && !fb.hidden && (fb.textContent || '').trim().length > 4) return true;
     }
+    /* A BUILD THAT HAS MATCHED IS A FINISHED CARD (19 Aug 2026, and it is the
+       ordering puzzle's clause word for word, on the engine that replaced it).
+       `pyrun` locks the whole card the moment the program matches: RUN goes to
+       0.38 opacity with `cursor: not-allowed`, and every one of the seven lines
+       is disabled so she cannot edit a program she has already got right. The
+       confused-pupil walk reported all eight of them as unexplained mute locks
+       on BOTH Lesson 2s — fourteen findings in one round — and the screen was
+       LOOKED AT before this clause was written rather than after (DFM 194c):
+       the console says "Your program printed this: Score: 2", the verdict panel
+       161px below RUN says MATCHED and what she has just built, and the next
+       control, Continue, is lit inside that same panel. Nothing on that screen
+       is waiting on her.
+       The reason the generic test could not see it is worth naming, because it
+       is NOT a reason to loosen the generic test: the sentence beside RUN is a
+       COMPLETION notice, not an unlock condition, so it can never match the
+       EXPLAINS list — and EXPLAINS must go on meaning "here is what would turn
+       this on", or it stops catching real locks (DFM 204's own warning: widen on
+       the principle, never until the finding goes away).
+       DELIBERATELY NARROW: only `is-matched` rescues the card. A NOT YET verdict
+       and the empty-gap `is-note` refusal do not, because in both of those
+       states the pupil still has work to do and a mute control would be a real
+       fault — which is exactly what qa-no-mute-locks exists to find. */
+    const pyc = e.closest('.pyrun-card');
+    if (pyc) {
+      const v = pyc.querySelector('.pyrun-verdict.is-matched');
+      if (v && !v.hidden && v.getBoundingClientRect().height > 4) return true;
+    }
+
     /* AN ANSWERED QUESTION IS A FINISHED CONTROL (added 14 Aug 2026, DFM 221).
        The shared question renderer marks a question as answered by DISABLING
        all four of its options — that is what stops a pupil changing her mind
@@ -300,6 +328,116 @@ if (require.main === module) (async () => {
       log(`clean: ${sc.id}`);
     }
   }
+
+  /* ══ THE PYRUN CLAUSE, PROVED BOTH WAYS (19 Aug 2026, DFM 196) ═════════════
+     `finished()` gained a clause that exempts every control inside a build card
+     whose verdict reads MATCHED. An exemption is exactly the thing that can go
+     on printing green over a real fault (DFM 213: an exemption that hides a
+     class of pupil surface is worse than no check), so it is proved in both
+     directions on the real j2-02 build card, in a real browser:
+       A · MATCHED — RUN and all seven lines are disabled on purpose, with the
+           console and the verdict beside them. The audit must be SILENT.
+       B · NOT YET — the same card, one press earlier, with RUN forced disabled
+           and the locked note hidden: a genuine mute lock in the one state
+           where she still has work to do. The audit must CATCH it.
+     If B ever goes quiet, the clause has stopped being narrow and this gate has
+     stopped being a gate. */
+  const WALK = require('./lib/walk-moves.js');
+  async function pyrunControls() {
+    const p2 = await ctx.newPage();
+    await p2.goto(BASE + '/ks3-dt/platform/index.html?class=Demo-9A&as=aoife', { waitUntil: 'domcontentloaded' });
+    await sleep(1400);
+    await p2.evaluate(() => localStorage.clear());
+    await p2.reload({ waitUntil: 'domcontentloaded' });
+    await sleep(2000);
+    await p2.evaluate(() => {
+      const db = JSON.parse(localStorage.getItem('ks3dt-dev'));
+      const now = Math.floor((Date.now() - 1767225600000) / 60000);
+      db.locks['Demo-9A'] = db.locks['Demo-9A'] || {};
+      for (const n of ['1', '2']) db.locks['Demo-9A'][n] = { u: now, on: 1 };
+      db.cfg['Demo-9A'] = db.cfg['Demo-9A'] || {};
+      db.cfg['Demo-9A'].pairing = { on: 0 };
+      db.pupils = db.pupils || {};
+      const k = 'Demo-9A:aoife.mcgrath@demo';
+      db.pupils[k] = Object.assign(db.pupils[k] || { n: 'Aoife McGrath', cn: '', j: 1, xp: 0, g: '' },
+        { L: { '1': [2, 10, 'sit1=1', '1', '222|1', 100, 10, 0, '', 0, 0] } });
+      localStorage.setItem('ks3dt-dev', JSON.stringify(db));
+    });
+    await p2.reload({ waitUntil: 'domcontentloaded' });
+    await sleep(2400);
+    await p2.evaluate(() => { const b = document.querySelector('.intro-skip'); if (b) b.click(); });
+    await sleep(700);
+    await p2.evaluate(() => {
+      const t = Array.from(document.querySelectorAll('.tile')).find(e => /Lesson\s*2(?!\d)/i.test(e.textContent));
+      if (t) t.click();
+    });
+    await sleep(3000);
+    await WALK.primeDevKeys(p2, BASE);
+
+    /* walk until the build card is assembled and RUN is armed — one press short
+       of MATCHED, which is where control B lives */
+    let armed = false;
+    for (let i = 0; i < 220 && !armed; i++) {
+      armed = await p2.evaluate(() => {
+        const r = document.querySelector('.pyrun-run');
+        return !!(r && !r.disabled && !document.querySelector('.pyrun-verdict.is-matched'));
+      });
+      if (armed) break;
+      const st = await p2.evaluate(WALK.detectKind);
+      const mv = st && WALK.MOVES[st.kind];
+      if (!mv) { await sleep(1200); continue; }
+      await p2.evaluate(([src]) => { (new Function('return (' + src + ')')())(); }, [String(mv)]);
+      await sleep(WALK.SETTLE[st.kind] || 600);
+    }
+    if (!armed) { await p2.close(); return ['pyrun control: never reached an armed build card']; }
+
+    const out = [];
+    /* B — plant the mute lock in the NOT-YET state and demand the audit sees it */
+    await p2.evaluate(() => {
+      const r = document.querySelector('.pyrun-run');
+      const n = document.querySelector('.pyrun-locked-note');
+      if (r) r.disabled = true;
+      if (n) n.hidden = true;
+    });
+    await sleep(400);
+    const planted = await p2.evaluate(AUDIT, EXPLAIN_PX);
+    if (!planted.some(b => /RUN/i.test(b.label))) {
+      out.push('CONTROL B FAILED: a build card with RUN disabled, no note beside it and no ' +
+        'MATCHED verdict was NOT reported — the pyrun exemption is too wide.');
+    } else {
+      log('control B ok: a planted mute lock on the un-matched build card is caught');
+    }
+    /* put it back and let the card really match */
+    await p2.evaluate(() => {
+      const r = document.querySelector('.pyrun-run');
+      const n = document.querySelector('.pyrun-locked-note');
+      if (r) r.disabled = false;
+      if (n) n.hidden = false;
+    });
+    let matched = false;
+    for (let i = 0; i < 220 && !matched; i++) {
+      matched = await p2.evaluate(() => !!document.querySelector('.pyrun-verdict.is-matched'));
+      if (matched) break;
+      const st = await p2.evaluate(WALK.detectKind);
+      const mv = st && WALK.MOVES[st.kind];
+      if (!mv) { await sleep(1200); continue; }
+      await p2.evaluate(([src]) => { (new Function('return (' + src + ')')())(); }, [String(mv)]);
+      await sleep(WALK.SETTLE[st.kind] || 600);
+    }
+    if (!matched) { out.push('pyrun control: never reached MATCHED'); await p2.close(); return out; }
+    await sleep(500);
+    const afterMatch = await p2.evaluate(AUDIT, EXPLAIN_PX);
+    if (afterMatch.length) {
+      out.push('CONTROL A FAILED: a build card showing MATCHED still reports ' +
+        afterMatch.length + ' unexplained control(s): ' + afterMatch.map(b => b.label).join(' | '));
+    } else {
+      log('control A ok: a MATCHED build card is silent — its verdict and Continue are the explanation');
+    }
+    await p2.screenshot({ path: path.join(__dirname, 'qa-l2-l5-review', 'l4-sit-fixes', 'mutelocks-pyrun-matched.png'), fullPage: true });
+    await p2.close();
+    return out;
+  }
+  (await pyrunControls()).forEach(f => findings.push(f));
 
   await browser.close();
 
