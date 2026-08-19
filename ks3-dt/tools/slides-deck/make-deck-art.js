@@ -682,14 +682,21 @@ const MOTIFS = {
          sentence. On a bullets slide this is the column the screenshot covers.
          THE BAG IS LONG AND NARROW, not a trapezoid: the first version read as
          four plant pots, which is a drawing nobody can name. */
+      /* MOVED INTO THE TOP-RIGHT CORNER AND SHORTENED, after the proofs were read
+         (19 Aug 2026). The first version hung the bags down to 60% of the frame
+         and they sat behind the right-hand end of every bullet and every centred
+         closer line — visual noise behind words, which is the one thing a
+         background is not allowed to be. The heading is short and left-aligned
+         and the kicker is top-left, so the corner above the text band is the
+         part of a slide that is genuinely empty on every kind. */
       const ropes = [
-        { x: 1062, bag: 268 }, { x: 1148, bag: 356 },
-        { x: 1236, bag: 214 }, { x: 1322, bag: 322 }
+        { x: 1200, bag: 168 }, { x: 1272, bag: 228 },
+        { x: 1348, bag: 132 }, { x: 1420, bag: 206 }
       ].map(r2 =>
         `<rect x="${r2.x}" y="0" width="2.5" height="${r2.bag}" fill="${t.accent}" ` +
         `opacity="${(op * 1.6).toFixed(3)}"/>` +
         `<path d="M${r2.x - 15},${r2.bag} L${r2.x + 17},${r2.bag} ` +
-        `L${r2.x + 21},${r2.bag + 128} Q${r2.x + 1},${r2.bag + 146} ${r2.x - 19},${r2.bag + 128} Z" ` +
+        `L${r2.x + 20},${r2.bag + 104} Q${r2.x + 1},${r2.bag + 120} ${r2.x - 18},${r2.bag + 104} Z" ` +
         `fill="${t.accent}" opacity="${(op * 1.3).toFixed(3)}"/>`).join('');
       /* THE WORK LAMP, low left, standing at the side of the stage and pooling
          on the floor — the one warm source in a cold room, and the only place
@@ -708,18 +715,24 @@ const MOTIFS = {
          reads as paper without ever competing with a sentence, and the ruled
          rows on it are SHORT and sit inside the board's own tilt, so no line of
          them crosses the slide. */
-      const rows = Array.from({ length: 6 }, (_, i) =>
-        `<rect x="34" y="${64 + i * 40}" width="${i % 2 ? 150 : 196}" height="6" rx="3" ` +
-        `fill="${t.ground}" opacity="0.30"/>`).join('');
+      const rows = Array.from({ length: 5 }, (_, i) =>
+        `<rect x="30" y="${58 + i * 38}" width="${i % 2 ? 138 : 182}" height="6" rx="3" ` +
+        `fill="${t.ground}" opacity="0.34"/>`).join('');
+      /* AND THE CLIPBOARD DROPPED INTO THE BOTTOM BAND, for the same reason and
+         found the same way: at its old height its clip and the top third of its
+         sheet sat under the bullets on four slides and under the centred closer
+         lines on a fifth. Only its top ~200pt shows now, standing in the lamp's
+         pool the way a board propped against a wall would — and it is dimmer,
+         because a pale slab behind a sentence is a slab whatever it depicts. */
       const cb =
-        `<g transform="translate(232,${H - 322}) rotate(-8)">` +
-        `<rect x="0" y="0" width="272" height="318" rx="10" fill="${t.dim}" ` +
-        `opacity="${(op * 1.5).toFixed(3)}"/>` +
+        `<g transform="translate(168,${H - 196}) rotate(-8)">` +
+        `<rect x="0" y="0" width="252" height="300" rx="10" fill="${t.dim}" ` +
+        `opacity="${(op * 1.15).toFixed(3)}"/>` +
         rows +
-        `<rect x="86" y="-20" width="100" height="32" rx="9" fill="${t.accent2}" ` +
-        `opacity="${(op * 2.4).toFixed(3)}"/>` +
-        `<rect x="114" y="-38" width="44" height="22" rx="7" fill="${t.accent2}" ` +
+        `<rect x="78" y="-18" width="94" height="30" rx="9" fill="${t.accent2}" ` +
         `opacity="${(op * 2.0).toFixed(3)}"/>` +
+        `<rect x="104" y="-35" width="42" height="21" rx="7" fill="${t.accent2}" ` +
+        `opacity="${(op * 1.7).toFixed(3)}"/>` +
         `</g>`;
       return lamp + ropes + cb;
     }

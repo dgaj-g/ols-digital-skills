@@ -946,6 +946,14 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   background: rgba(26, 58, 107, 0.05); border-left: 3px solid var(--gold);
   border-radius: var(--r-sm); line-height: 1.5;
 }
+/* A DEAD PLAYER STILL SAYS SOMETHING (DFM 42/143; j3-02 cold read, 19 Aug
+   2026). Rendered only when the video element reports it cannot play, so a
+   film that 404s gives her the lesson's own words instead of silence. */
+.video-failed {
+  text-align: left; margin: 10px 0 0; padding: 11px 14px;
+  background: rgba(196, 68, 58, 0.07); border-left: 3px solid #C4443A;
+  border-radius: var(--r-sm); line-height: 1.5;
+}
 /* the film-split signpost (DFM 168, L5 spec Part B): a pupil who has watched
    this half to the end must be told, on this card, where the other half lives.
    Sits UNDER the player, above Done watching, so it is the last thing read. */
@@ -1350,6 +1358,21 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   background-repeat: no-repeat, repeat-x;
 }
 /* playhead \2014  the timeline, and the sprockets under it */
+/* the two level-3 swatches (J2 Blueprint, J3 Green Room) */
+.sw-blueprint .kit-swatch-fx {
+  background:
+    repeating-linear-gradient(0deg, var(--pva) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(90deg, var(--pva) 0 1px, transparent 1px 9px),
+    radial-gradient(ellipse 34px 22px at 62% 38%, var(--pvg, var(--pva)), transparent 72%);
+  opacity: 0.85;
+}
+.sw-greenroom .kit-swatch-fx {
+  background:
+    radial-gradient(2px 2px at 30% 62%, var(--pva), transparent 60%),
+    radial-gradient(2px 2px at 52% 40%, var(--pva), transparent 60%),
+    radial-gradient(3px 3px at 74% 66%, var(--pva), transparent 60%),
+    radial-gradient(ellipse 40px 30px at 78% 26%, var(--pvg, var(--pva)), transparent 74%);
+}
 .sw-silverdust .kit-swatch-fx {
   background:
     radial-gradient(2px 2px at 26% 40%, var(--pva), transparent 60%),
@@ -3121,6 +3144,273 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
    choices, with room between them (his DFM 207a 10px law) */
 .intro-card .confirm-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
 
+/* ============================================================================
+   PYTHON: THE CONSOLE, THE SNAP DESK AND THE BUILD CARD
+   Built 19 Aug 2026 for J2 Lesson 2 and J3 Lesson 2 (runner spec \a7 A/\a7 C/\a7 D).
+
+   EVERY SURFACE HERE SETS ITS OWN INK ON ITS OWN GROUND. That is not tidiness:
+   the studio QA desk shipped a light plate that INHERITED the dark shell's
+   light type and became unreadable (DFM 207g), and the theme registry's own
+   comment promised "contrast stays AA" with nothing measuring it. These
+   surfaces are measured on every skin by qa-readability.
+   ========================================================================== */
+
+/* ---- the console -------------------------------------------------------
+   Deliberately a dark terminal plate: it is the one place on the card where
+   the MACHINE speaks, and it should not look like the lesson talking. Ink and
+   ground are both explicit, so no skin can drift it. */
+.pyc {
+  margin: 14px 0 0; border-radius: 12px; overflow: hidden;
+  background: #0E1A30; border: 1.5px solid #2B3F63;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.pyc-bar {
+  display: flex; align-items: center; gap: 8px; padding: 7px 12px;
+  background: #16253F; border-bottom: 1px solid #2B3F63;
+}
+.pyc-dot { width: 9px; height: 9px; border-radius: 50%; background: #6E819F; flex: 0 0 auto; }
+.pyc.is-running .pyc-dot { background: var(--gold-hi); }
+.pyc.is-ok .pyc-dot { background: #4FD08A; }
+.pyc.is-bad .pyc-dot { background: #FF8A7A; }
+.pyc-title {
+  font-size: 0.74rem; letter-spacing: 0.09em; text-transform: uppercase;
+  font-weight: 800; color: #B9C8E2;
+}
+.pyc-body { padding: 12px 14px; color: #E8EEF9; }
+.pyc-idle, .pyc-run { margin: 0; font-size: 0.9rem; color: #C4D2EA; }
+.pyc-run { display: flex; align-items: center; gap: 9px; }
+.pyc-spin {
+  width: 13px; height: 13px; border-radius: 50%; flex: 0 0 auto;
+  border: 2px solid rgba(var(--gold-hi-rgb), 0.25); border-top-color: var(--gold-hi);
+  animation: pyc-spin 0.8s linear infinite;
+}
+@keyframes pyc-spin { to { transform: rotate(360deg); } }
+.pyc-lead { margin: 0 0 7px; font-size: 0.88rem; color: #C4D2EA; }
+.pyc-errlead { margin-top: 12px; color: #FFC3B8; }
+.pyc-out, .pyc-err {
+  margin: 0; padding: 10px 12px; border-radius: 9px; white-space: pre-wrap; word-break: break-word;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.92rem; line-height: 1.55;
+}
+.pyc-out { background: #08111F; color: #EAF2FF; border: 1px solid #24354F; }
+.pyc-err { background: #3A1620; color: #FFD9D2; border: 1px solid #6B2A33; }
+/* the ONE plain-words line under the real error - never instead of it */
+.pyc-plain {
+  margin: 9px 0 0; font-size: 0.93rem; line-height: 1.55; color: #FFE7A8;
+  border-left: 3px solid var(--gold); padding-left: 11px;
+}
+
+/* ---- the snap desk (J2 Phase 1) ---------------------------------------- */
+.snap-card { max-width: 760px; }
+.snap-goal { font-weight: 700; font-size: 1.08rem; line-height: 1.45; margin: 4px 0 10px; color: var(--ink); }
+.snap-how {
+  font-size: 0.95rem; line-height: 1.5; margin: 0 0 16px; padding: 10px 14px; color: var(--ink);
+  background: rgba(var(--gold-rgb), 0.10); border: 1px solid rgba(var(--gold-rgb), 0.45); border-radius: 10px;
+}
+.snap-how b { color: var(--ols-blue); }
+.snap-intro-steps { margin: 6px 0 14px 1.1em; padding: 0; }
+.snap-intro-steps li { margin: 0 0 7px; line-height: 1.5; }
+.snap-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 680px) { .snap-cols { grid-template-columns: 1fr; } }
+.snap-side {
+  background: var(--field); border: 1px solid var(--line-l); border-radius: 12px; padding: 10px 12px; min-height: 160px;
+}
+.snap-side h3 {
+  margin: 0 0 9px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+}
+/* the one line naming str( ) as survivable, at the top of the column she is
+   reading rather than a screen earlier (j2-02 cold read, 19 Aug 2026). */
+.snap-col-note {
+  margin: -4px 0 9px; font-size: 0.84rem; line-height: 1.45; color: var(--muted);
+  border-left: 2px solid rgba(var(--gold-rgb), 0.55); padding-left: 8px;
+}
+.snap-list { display: flex; flex-direction: column; gap: 9px; }
+.snap-block, .snap-py {
+  display: block; width: 100%; text-align: left; font: inherit; cursor: pointer;
+  background: #fff; color: var(--ink); border: 1.5px solid var(--line-l); border-radius: 10px;
+  padding: 9px 11px; transition: border-color 0.12s, box-shadow 0.12s, transform 0.12s;
+}
+.snap-block:hover, .snap-py:hover { border-color: var(--gold); box-shadow: 0 4px 14px rgba(23, 34, 59, 0.10); }
+/* the picked block is unmistakable from across a desk, not a subtle tint */
+.snap-block.picked {
+  border-color: var(--gold); border-width: 2.5px; background: rgba(var(--gold-rgb), 0.12);
+  box-shadow: 0 0 0 4px rgba(var(--gold-rgb), 0.20);
+}
+.snap-img {
+  display: block; max-width: 100%; height: auto; border-radius: 7px; background: #F7F9FD;
+  border: 1px solid var(--line-l);
+}
+.snap-gloss { display: block; margin-top: 7px; font-size: 0.88rem; line-height: 1.45; color: var(--ink); }
+.snap-py code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.95rem; color: #16305C;
+}
+.snap-block.snapped, .snap-py.snapped {
+  border-color: #2E9E63; background: rgba(46, 158, 99, 0.12); animation: snap-lock 0.5s ease-out;
+}
+@keyframes snap-lock {
+  0% { transform: scale(1); } 40% { transform: scale(1.045); } 100% { transform: scale(1); }
+}
+/* WRONG: both bounce, and nothing is revealed and nothing is named. */
+.snap-block.bounce, .snap-py.bounce { animation: snap-bounce 0.5s ease-in-out; border-color: #C4443A; }
+@keyframes snap-bounce {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-7px); } 45% { transform: translateX(6px); }
+  70% { transform: translateX(-4px); } 88% { transform: translateX(2px); }
+}
+.snap-say { margin: 14px 0 0; font-size: 0.94rem; line-height: 1.5; color: var(--ols-blue); font-weight: 600; min-height: 1.4em; }
+.snap-verdict { margin: 10px 0 14px; font-size: 1.02rem; line-height: 1.55; color: var(--ink); }
+.snap-verdict b { color: var(--ols-blue); }
+
+/* ---- the build card (J2 Phase 2 and all four J3 builds) ---------------- */
+.pyrun-card { max-width: 760px; }
+.pyrun-steps { display: flex; gap: 7px; margin: 0 0 12px; flex-wrap: wrap; }
+.pyrun-step {
+  font-size: 0.74rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px; background: var(--field); color: var(--muted);
+  border: 1px solid var(--line-l);
+}
+.pyrun-step.now { background: var(--ols-blue); color: #fff; border-color: var(--ols-blue); }
+.pyrun-step.done { background: rgba(46, 158, 99, 0.14); color: #1E6B45; border-color: rgba(46, 158, 99, 0.5); }
+.pyrun-goal { font-weight: 700; font-size: 1.08rem; line-height: 1.45; margin: 4px 0 10px; color: var(--ink); }
+.pyrun-brief { font-size: 0.98rem; line-height: 1.55; margin: 0 0 12px; color: var(--ink); }
+.pyrun-target {
+  margin: 0 0 14px; padding: 11px 14px; border-radius: 10px;
+  background: #FFFAE8; border: 1.5px solid rgba(var(--gold-rgb), 0.55); border-left-width: 5px;
+}
+.pyrun-target-lead {
+  margin: 0 0 7px; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em;
+  text-transform: uppercase; color: #6B5405;
+}
+.pyrun-target-out {
+  margin: 0; padding: 9px 11px; border-radius: 8px; background: #fff; border: 1px solid rgba(var(--gold-rgb), 0.45);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.95rem; line-height: 1.55;
+  color: #26313F; white-space: pre-wrap;
+}
+.pyrun-how {
+  font-size: 0.95rem; line-height: 1.5; margin: 0 0 16px; padding: 10px 14px; color: var(--ink);
+  background: rgba(var(--gold-rgb), 0.10); border: 1px solid rgba(var(--gold-rgb), 0.45); border-radius: 10px;
+}
+.pyrun-how b { color: var(--ols-blue); }
+.pyrun-intro-steps { margin: 6px 0 14px 1.1em; padding: 0; }
+.pyrun-intro-steps li { margin: 0 0 7px; line-height: 1.5; }
+.pyrun-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 680px) { .pyrun-cols { grid-template-columns: 1fr; } }
+.pyrun-tray, .pyrun-prog {
+  background: var(--field); border: 1px solid var(--line-l); border-radius: 12px; padding: 10px 12px; min-height: 150px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.pyrun-tray h3, .pyrun-prog h3 {
+  margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+}
+.pyt-list { display: flex; flex-direction: column; gap: 8px; }
+.pyp-list { list-style: none; margin: 0; padding-left: 0; display: flex; flex-direction: column; gap: 9px; }
+.pyp-list li { display: flex; align-items: center; gap: 10px; padding-left: 0; }
+.pyp-num {
+  flex: 0 0 28px; text-align: right; color: var(--muted); font-weight: 700;
+  font-variant-numeric: tabular-nums; font-size: 0.95rem;
+}
+.pyp-list li .pyrun-line { flex: 1 1 auto; }
+.pyp-empty {
+  list-style: none; color: var(--muted); font-size: 0.86rem; font-style: italic; margin: 2px 0; padding: 6px 0;
+}
+.pyrun-line {
+  display: block; width: 100%; text-align: left; font: inherit; cursor: grab; touch-action: none;
+  -webkit-user-select: none; user-select: none;
+  background: #fff; color: var(--ink); border: 1.5px solid var(--line-l); border-radius: 10px; padding: 9px 11px;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+.pyrun-line:hover { border-color: var(--gold); box-shadow: 0 4px 14px rgba(23, 34, 59, 0.10); }
+.pyrun-line:disabled { cursor: default; opacity: 1; }
+.pyrun-line.dragging { opacity: 0.35; }
+.pyrun-line code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.95rem; color: #16305C;
+  white-space: pre-wrap; word-break: break-word;
+}
+/* WHAT GOES IN THE GAP IS SEEN, NOT ONLY ANNOUNCED (j3-02 cold read, 19 Aug
+   2026). The blank's label used to reach `aria-label` alone, so a sighted pupil
+   with a mouse read "type it" \2014  and a bare "0" for BOTH of build 4's numbers. */
+.pyrun-blank-hint {
+  display: block; margin-top: 5px; font-size: 0.8rem; line-height: 1.4;
+  color: var(--muted); font-style: italic;
+}
+.pyrun-line.dragging .pyrun-blank-hint { opacity: 0.5; }
+.pyrun-ghost {
+  position: fixed; left: 0; top: 0; margin: 0; z-index: 60; pointer-events: none; transition: none;
+  cursor: grabbing; opacity: 0.96; box-shadow: 0 8px 22px rgba(23, 34, 59, 0.28); border-color: var(--gold);
+}
+.pyrun-prog.drop-here, .pyrun-tray.drop-back { border-color: var(--gold); background: rgba(var(--gold-rgb), 0.10); }
+/* the typed blank sits INSIDE the code line and still reads as code */
+.pyrun-blank {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.95rem;
+  color: #0F2547; background: #FFFBEA; border: none; border-bottom: 2.5px solid var(--gold);
+  border-radius: 4px 4px 0 0; padding: 1px 5px; min-width: 3.5em; text-align: center;
+}
+.pyrun-blank:focus { outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.28); }
+.pyrun-blank::placeholder { color: #8A7A47; opacity: 1; }
+.pyrun-blank.wants { box-shadow: 0 0 0 3px rgba(196, 68, 58, 0.34); background: #FFF2F0; }
+.pyrun-run { margin-top: 14px; }
+.pyrun-locked-note { margin-top: 12px; }
+.pyrun-verdict { margin: 14px 0 0; padding: 12px 14px; border-radius: 11px; }
+.pyrun-verdict.is-note { background: #FFF2F0; border: 1.5px solid #C4443A; color: #7A2018; }
+.pyrun-verdict.is-note p { margin: 0; font-size: 0.96rem; line-height: 1.55; }
+.pyrun-verdict.is-matched { background: rgba(46, 158, 99, 0.12); border: 1.5px solid #2E9E63; }
+.pyrun-verdict.is-notyet { background: #FFF6E6; border: 1.5px solid rgba(var(--gold-rgb), 0.75); }
+.pyrun-vtag {
+  margin: 0 0 6px; font-size: 1.02rem; font-weight: 800; letter-spacing: 0.07em; font-family: var(--font-display);
+}
+.pyrun-verdict.is-matched .pyrun-vtag { color: #1E6B45; }
+.pyrun-verdict.is-notyet .pyrun-vtag { color: #6B5405; }
+.pyrun-vsay { margin: 0 0 4px; font-size: 0.96rem; line-height: 1.55; color: var(--ink); }
+.pyrun-verdict .primary-btn { margin-top: 10px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .snap-block.snapped, .snap-py.snapped, .snap-block.bounce, .snap-py.bounce { animation: none; }
+  .pyc-spin { animation: none; }
+}
+
+/* ---- J2 "Blueprint" (level 3, lands with J2 Lesson 2) ----
+   A drafting table under a lamp: indigo paper, a pale grid, and the light
+   moving slowly across it. Atmosphere, never an event (K21) \2014  the grid does
+   not travel, it breathes; the drifting specks are the motion the eye catches
+   (K22's floor, measured by qa-fx-motion). */
+.fx-blueprint .fx-draft {
+  position: absolute; inset: -10%;
+  background:
+    repeating-linear-gradient(0deg, rgba(var(--gold-hi-rgb), 0.10) 0 1px, transparent 1px 62px),
+    repeating-linear-gradient(90deg, rgba(var(--gold-hi-rgb), 0.10) 0 1px, transparent 1px 62px),
+    radial-gradient(closest-side at 62% 30%, rgba(var(--gold-hi-rgb), 0.26), transparent 74%);
+  filter: blur(1.2px);
+  /* THE PERIOD, NOT THE AMPLITUDE, IS WHAT FAILED (19 Aug 2026, qa-fx-motion).
+     The keyframes already swing 0.16 to 0.92 \2014  but over a 13s ease-in-out
+     alternate, a three-second look (which is roughly how long a pupil glances
+     at her own screen) saw the light move 0.05, and the gate's own words for
+     that are "a pupil would call this still". K22's floor is that a look is
+     built to be SEEN, not merely declared. Shortened until it MEASURES above
+     the floor rather than until it felt right in the source. */
+  animation: draftBreathe 7s ease-in-out infinite alternate;
+}
+@keyframes draftBreathe {
+  from { opacity: 0.16; transform: scale(1) translate3d(-1.5vw, 1vh, 0); }
+  to { opacity: 0.92; transform: scale(1.09) translate3d(1.5vw, -1vh, 0); }
+}
+
+/* ---- J3 "Green Room" (level 3, lands with J3 Lesson 2) ----
+   The quiet room off the side of the stage: deep teal, one warm lamp blooming
+   in the corner, dust turning in it. */
+.fx-greenroom .fx-lamp {
+  position: absolute; right: -6%; top: 6%; width: 58vw; height: 58vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.30), rgba(var(--gold-rgb), 0.09) 42%, transparent 70%);
+  filter: blur(52px);
+  animation: lampBloom 8s ease-in-out infinite alternate;   /* same measured fix as Blueprint above */
+}
+@keyframes lampBloom {
+  from { opacity: 0.14; transform: scale(0.86) translate3d(2vw, 2vh, 0); }
+  to { opacity: 0.96; transform: scale(1.20) translate3d(-2vw, -2vh, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-blueprint .fx-draft, .fx-greenroom .fx-lamp { animation: none; }
+}
+
 </style>
 </head>
 <body>
@@ -3673,7 +3963,10 @@ window.OLS_TRANSPORT = {
     flashbulbs: wash() + '<span class="fx-marquee"></span>' +
       '<span class="fx-flash f1"></span><span class="fx-flash f2"></span><span class="fx-flash f3"></span>' +
       motes('fx-mote', 6),
-    silverdust: wash() + '<span class="fx-sheen"></span>' + motes('fx-dust', 9)
+    silverdust: wash() + '<span class="fx-sheen"></span>' + motes('fx-dust', 9),
+    /* --- the two level-3 unlocks, landing with each year's Lesson 2 --- */
+    blueprint: wash() + '<span class="fx-draft"></span>' + motes('fx-glint', 8),
+    greenroom: wash() + '<span class="fx-lamp"></span>' + motes('fx-mote', 8)
   };
   /* ---------------- the DEFAULT look is the YEAR's, not J1's ----------------
      DAMIEN, 14 Aug 2026 (DFM 224b): "Each Year group must have it's own
@@ -5585,6 +5878,191 @@ window.OLS_TRANSPORT = {
        button and left the real CTA dead. Caught by qa-film-reachable.js. */
     App.armButton(c.querySelector('button.primary-btn'), function () { host.innerHTML = ''; onBegin(); });
   }
+
+  /* ================= PyRun \u2014 THE PYTHON RUNTIME (runner spec \u00a7A, v1) =========
+     Built 19 Aug 2026, after the prototype gate (spec \u00a7B) proved Skulpt runs
+     inside the Apps Script sandbox: `eval`/`new Function` are allowed on the
+     googleusercontent origin, a cross-origin <script src> from Pages loads the
+     library in ~450ms, a five-line program returns exact stdout, the execLimit
+     guard fires on `while True: pass`, and thirty consecutive runs cost +1.8MB
+     of a 4GB heap. Because the script tag works, NOTHING is inlined: the paste
+     does not grow by a byte (the costed fallback was +966,760, a 2.25x paste).
+
+     V1 SCOPE, and it is deliberately small (the spec's own scope discipline):
+     assembled or authored code, real stdout, an honest error, an expected-output
+     comparison. NO turtle. NO input(). NO free-typing beyond single-line blanks.
+     Those arrive with the lessons that need them (J2 L3 input, J2 L5 turtle).
+
+     THE CONSOLE IS HONEST (rule 35, and DFM 214's "say what her job is").
+     It shows what the program really printed. On an error it shows the REAL
+     Python error AND one plain-words line underneath it \u2014 never a fake error,
+     and never a hidden one. The plain-words lines are CONTENT, not engine
+     literals, because a string hardcoded in an engine escapes the language gate
+     entirely (DFM 190d/192g); the engine's own copies are fallbacks that the
+     harness proves are never the ones a pupil reads. */
+  var PyRun = global.PyRun = {
+    /* one home for the library (DFM 144). The gate proved this exact pair. */
+    SRC: ['assets/vendor/skulpt/skulpt.min.js', 'assets/vendor/skulpt/skulpt-stdlib.js'],
+    DEFAULT_LIMIT_MS: 5000,
+    _p: null,
+
+    /* Lazily loaded, and memoised: a pupil who never reaches a run card never
+       pays for the library, and a pupil who runs twenty programs pays once. */
+    load: function () {
+      if (PyRun._p) return PyRun._p;
+      PyRun._p = PyRun.SRC.reduce(function (chain, src) {
+        return chain.then(function () {
+          return new Promise(function (res, rej) {
+            var s = document.createElement('script');
+            s.src = asset(src);
+            s.async = false;
+            s.onload = function () { res(); };
+            s.onerror = function () { rej(new Error('pyrun-load-failed')); };
+            document.head.appendChild(s);
+            setTimeout(function () { rej(new Error('pyrun-load-timeout')); }, 30000);
+          });
+        });
+      }, Promise.resolve()).then(function () {
+        if (typeof Sk === 'undefined') throw new Error('pyrun-no-sk');
+        return true;
+      });
+      return PyRun._p;
+    },
+
+    /* The shape the prototype gate proved, unchanged: one configure per run,
+       output captured, execLimit as the guard. Resolves EITHER way \u2014 a program
+       that fails is not an exception in this app, it is the lesson working. */
+    run: function (code, opts) {
+      opts = opts || {};
+      var limit = Number(opts.limitMs || PyRun.DEFAULT_LIMIT_MS);
+      return PyRun.load().then(function () {
+        var out = '';
+        Sk.configure({
+          output: function (t) { out += t; },
+          read: function (x) {
+            if (Sk.builtinFiles === undefined || Sk.builtinFiles.files[x] === undefined) {
+              throw 'File not found: ' + x;
+            }
+            return Sk.builtinFiles.files[x];
+          },
+          execLimit: limit,
+          __future__: Sk.python3
+        });
+        return Sk.misceval.asyncToPromise(function () {
+          return Sk.importMainWithBody('<stdin>', false, code, true);
+        }).then(function () {
+          return { ok: true, out: out, err: '', limitMs: limit };
+        }, function (e) {
+          return { ok: false, out: out, err: String(e), limitMs: limit };
+        });
+      }, function () {
+        return { ok: false, out: '', err: '', offline: true, limitMs: limit };
+      });
+    },
+
+    /* Which plain-words line belongs to this error. The KEY is chosen here; the
+       WORDS come from the lesson (cfg.errorWords), so every sentence a pupil
+       reads has been through the gate and carries a read-aloud record. */
+    errKind: function (errText) {
+      var s = String(errText || '');
+      if (/TimeLimitError/i.test(s)) return 'timelimit';
+      if (/IndentationError|TabError/i.test(s)) return 'indent';
+      if (/NameError/i.test(s)) return 'name';
+      if (/SyntaxError/i.test(s)) return 'syntax';
+      if (/TypeError/i.test(s)) return 'type';
+      if (/ValueError/i.test(s)) return 'value';
+      return 'other';
+    },
+    /* The engine's own words are a FALLBACK ONLY. qa-pyrun proves the lesson
+       supplies every kind it can actually produce, so a pupil never reads one
+       of these. They exist so a missing content key can never render a blank
+       line where an explanation belongs (DFM 42: no silent nothing). */
+    FALLBACK_WORDS: {
+      timelimit: 'That program was still going after a few seconds, so it was stopped. Look for a loop that never ends.',
+      indent: 'One of the lines is not lined up with the others. Lines inside a loop start four spaces in.',
+      name: 'Python does not know that name. Check how it is spelled, and check you made it before you used it.',
+      syntax: 'Python could not read that line. Look for a missing bracket or a missing speech mark.',
+      type: 'You have joined a word to a number. Put str( ) around the number first.',
+      value: 'Python understood the line, but not the value it was given.',
+      other: 'Python stopped at the line named above. Read that line again, slowly.'
+    },
+    plain: function (errText, words) {
+      var kind = PyRun.errKind(errText);
+      var w = (words && words[kind]) || PyRun.FALLBACK_WORDS[kind] || PyRun.FALLBACK_WORDS.other;
+      return { kind: kind, text: String(w) };
+    },
+
+    /* Expected-output comparison. Trailing spaces on a line and the final
+       newline are forgiven, because neither is something a pupil can see on
+       screen \u2014 comparing on invisible characters would be a fail state she
+       could never diagnose (rule 35's family). Everything else must match. */
+    tidy: function (s) {
+      return String(s == null ? '' : s).replace(/\r/g, '')
+        .split('\n').map(function (l) { return l.replace(/[ \t]+$/, ''); })
+        .join('\n').replace(/\n+$/, '');
+    },
+    matches: function (actual, expected) {
+      var want = Array.isArray(expected) ? expected.join('\n') : expected;
+      return PyRun.tidy(actual) === PyRun.tidy(want);
+    },
+
+    /* ---- the console surface -------------------------------------------
+       A NEW pupil surface, so it sets its OWN ink on its OWN ground and never
+       inherits the shell's light text (the exact fault DFM 207g found on the
+       studio QA desk: a light plate inheriting light type). qa-readability
+       measures it on every skin. */
+    console: function (host, labels) {
+      labels = labels || {};
+      var box = el('<div class="pyc">' +
+        '<div class="pyc-bar"><span class="pyc-dot"></span><span class="pyc-title">' +
+        esc(labels.title || 'The console') + '</span></div>' +
+        '<div class="pyc-body" role="status" aria-live="polite"></div></div>');
+      host.appendChild(box);
+      var body = box.querySelector('.pyc-body');
+      var api = {
+        node: box,
+        idle: function () {
+          box.className = 'pyc';
+          body.innerHTML = '<p class="pyc-idle">' +
+            esc(labels.idle || 'Nothing has run yet. Build your program, then press RUN.') + '</p>';
+        },
+        /* DFM 42/161: the control that starts a wait owns the waiting state. */
+        running: function () {
+          box.className = 'pyc is-running';
+          body.innerHTML = '<p class="pyc-run"><span class="pyc-spin"></span>' +
+            esc(labels.running || 'Running your program\u2026') + '</p>';
+        },
+        show: function (res, words) {
+          var printed = PyRun.tidy(res.out);
+          var html = '';
+          if (res.offline) {
+            box.className = 'pyc is-bad';
+            body.innerHTML = '<p class="pyc-plain">' +
+              esc(labels.offline || 'Python did not load just now. Ask your teacher, and try RUN again in a moment.') +
+              '</p>';
+            return;
+          }
+          if (printed) {
+            html += '<p class="pyc-lead">' + esc(labels.printedLead || 'Your program printed this:') + '</p>' +
+              '<pre class="pyc-out">' + esc(printed) + '</pre>';
+          } else if (res.ok) {
+            html += '<p class="pyc-lead">' + esc(labels.nothingLead || 'Your program ran, and it printed nothing at all.') + '</p>';
+          }
+          if (!res.ok) {
+            var p = PyRun.plain(res.err, words);
+            /* the REAL error, then ONE plain line under it. Both, always. */
+            html += '<p class="pyc-lead pyc-errlead">' + esc(labels.errorLead || 'Python stopped, and this is exactly what it said:') + '</p>' +
+              '<pre class="pyc-err">' + esc(String(res.err).replace(/^Error:\s*/, '')) + '</pre>' +
+              '<p class="pyc-plain">' + esc(p.text) + '</p>';
+          }
+          box.className = 'pyc ' + (res.ok ? 'is-ok' : 'is-bad');
+          body.innerHTML = html;
+        }
+      };
+      api.idle();
+      return api;
+    }
+  };
 
   /* ================= briefing (cinematic dossier) ================= */
   Engines.briefing = {
@@ -7510,6 +7988,443 @@ window.OLS_TRANSPORT = {
     }
   };
 
+  /* Pupil-facing fallbacks for the two Python engines. A lesson is REQUIRED to
+     supply every one of these and qa-pyrun fails the build if it does not \u2014
+     these exist only so that a missing key can never render a mute control or
+     an empty box where an explanation belongs (DFM 205's law, DFM 42's family).
+     They are engine literals, which is exactly why they must never be the thing
+     a pupil reads (DFM 192g); the harness proves they are not. */
+  var PY_SAY = {
+    pickBlockSay: 'Click a block on the left to start.',
+    pickPythonSay: 'Now click the Python line you think does the same job.',
+    wrongSay: 'Not a pair. Both go back \u2014 look at them again and try another one.',
+    rightSay: 'That is a pair. Both are locked in.',
+    lockedNote: 'Move at least one line into your program, then RUN wakes up.',
+    blankEmptySay: 'One of the boxes is still empty. Type something into it, then press RUN.',
+    trayEmpty: 'Every line is in your program.',
+    progEmpty: 'Nothing here yet \u2014 drag or click a line across.',
+    matchedSay: 'The console said exactly what the target asked for.',
+    notYetSay: 'The console did not say what the target asked for. Read what it really printed, change your program, and run it again.'
+  };
+
+  /* ================= snap \u2014 MATCH A BLOCK TO ITS PYTHON TWIN ================
+     J2 Lesson 2, Phase 1 (runner spec \u00a7C). She taps a Scratch block she can
+     read, then taps the Python line she believes is its twin. Right: they snap
+     together and both leave the tray. Wrong: BOTH flash and bounce back, and
+     nothing is revealed and nothing is named \u2014 the Isotope-Snap pattern, rebuilt
+     small inside the platform.
+
+     GENUINE CONSEQUENCE (feedback_genuine_consequence): no auto-correct, no
+     telegraphing, no "not that one \u2014 try the third". The Python side is shuffled
+     at mount, so a pupil who learns the order learns nothing.
+
+     EVERY BLOCK IS GLOSSED AT FIRST MEETING (spec \u00a7C, his K4 taper): this
+     cohort's Scratch is shaky and untrusted, so the picture on the card carries
+     one plain line saying what the block does. Reading the blocks is TAUGHT in
+     place, on the card, rather than assumed. */
+  Engines.snap = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      introCard(host, {
+        kicker: cfg.kicker, title: cfg.title, text: cfg.intro || '',
+        steps: cfg.steps, stepsClass: 'snap-intro-steps'
+      }, cfg.beginLabel || 'Open the desk', build);
+
+      function build() {
+        var pairs = cfg.pairs || [];
+        var pys = cfg.pythons || [];
+        /* the Python side is shuffled; the BLOCK side keeps its authored order,
+           because the blocks are a taught sequence and the gloss on each one is
+           written to be met in that order */
+        var order = pys.map(function (_, i) { return i; });
+        for (var i = order.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1)), t = order[i]; order[i] = order[j]; order[j] = t;
+        }
+        var solved = {}, firstTry = 0, tries = {};
+        var pickedBlock = null, pickedPy = null, busy = false;
+
+        var c = el('<div class="card snap-card">' +
+          '<h2 class="snap-goal">' + fmtBold(cfg.goalLine || '') + '</h2>' +
+          '<p class="snap-how">' + fmtBold(cfg.howLine || '') + '</p>' +
+          '<div class="snap-cols">' +
+          '<div class="snap-side snap-blocks"><h3>' + esc(cfg.blocksLabel || 'The blocks') + '</h3><div class="snap-list"></div></div>' +
+          /* DFM 138 (j2-02 cold read, 19 Aug 2026): `str( )` appears on this desk before
+             anything explains it. `pythonNote` puts one line naming it as survivable at the
+             top of the column she is actually reading, rather than a screen earlier. */
+          '<div class="snap-side snap-pys"><h3>' + esc(cfg.pythonLabel || 'The Python lines') + '</h3>' +
+          (cfg.pythonNote ? '<p class="snap-col-note">' + esc(cfg.pythonNote) + '</p>' : '') +
+          '<div class="snap-list"></div></div>' +
+          '</div>' +
+          '<div class="snap-done" hidden></div>' +
+          '<p class="snap-say" role="status" aria-live="polite">' + esc(cfg.pickBlockSay || PY_SAY.pickBlockSay) + '</p>' +
+          '</div>');
+        host.appendChild(c);
+        var blockList = c.querySelector('.snap-blocks .snap-list');
+        var pyList = c.querySelector('.snap-pys .snap-list');
+        var say = c.querySelector('.snap-say');
+        var doneBox = c.querySelector('.snap-done');
+
+        function speak(t) { say.textContent = String(t || ''); }
+
+        function render() {
+          blockList.innerHTML = ''; pyList.innerHTML = '';
+          pairs.forEach(function (p, bi) {
+            if (solved[p.id]) return;
+            var b = el('<button class="snap-block" type="button" data-b="' + bi + '">' +
+              '<img class="snap-img" src="' + esc(asset(p.img)) + '" alt="' + esc(p.imgAlt || '') + '">' +
+              '<span class="snap-gloss">' + esc(p.gloss || '') + '</span></button>');
+            b.onclick = function () { onBlock(bi); };
+            blockList.appendChild(b);
+          });
+          order.forEach(function (pi) {
+            if (usedPython(pi)) return;
+            var n = el('<button class="snap-py" type="button" data-p="' + pi + '"><code>' + esc(pys[pi]) + '</code></button>');
+            n.onclick = function () { onPy(pi); };
+            pyList.appendChild(n);
+          });
+          if (pickedBlock != null) {
+            var sel = blockList.querySelector('[data-b="' + pickedBlock + '"]');
+            if (sel) sel.classList.add('picked');
+          }
+          if (!blockList.children.length) finish();
+        }
+        function usedPython(pi) {
+          return pairs.some(function (p) { return solved[p.id] && Number(p.py) === Number(pi); });
+        }
+
+        function onBlock(bi) {
+          if (busy) return;
+          pickedBlock = (pickedBlock === bi) ? null : bi;
+          render();
+          speak(pickedBlock == null ? (cfg.pickBlockSay || PY_SAY.pickBlockSay) : (cfg.pickPythonSay || PY_SAY.pickPythonSay));
+        }
+        function onPy(pi) {
+          if (busy) return;
+          if (pickedBlock == null) { speak(cfg.pickBlockFirstSay || cfg.pickBlockSay || PY_SAY.pickBlockSay); return; }
+          var p = pairs[pickedBlock];
+          busy = true; pickedPy = pi;
+          tries[p.id] = (tries[p.id] || 0) + 1;
+          ctx.markItem(p.id, pi).then(function (r) {
+            var blockNode = blockList.querySelector('[data-b="' + pickedBlock + '"]');
+            var pyNode = pyList.querySelector('[data-p="' + pi + '"]');
+            if (r && r.ok && r.correct) {
+              if (tries[p.id] === 1) firstTry++;
+              if (blockNode) blockNode.classList.add('snapped');
+              if (pyNode) pyNode.classList.add('snapped');
+              solved[p.id] = 1; p.py = pi;
+              speak(cfg.rightSay || PY_SAY.rightSay);
+              setTimeout(function () { pickedBlock = null; busy = false; render(); }, 520);
+            } else {
+              /* BOTH bounce. Nothing is revealed, nothing is named, and the
+                 block stays picked so the next tap is a real second guess. */
+              if (blockNode) blockNode.classList.add('bounce');
+              if (pyNode) pyNode.classList.add('bounce');
+              speak(cfg.wrongSay || PY_SAY.wrongSay);
+              setTimeout(function () {
+                if (blockNode) blockNode.classList.remove('bounce');
+                if (pyNode) pyNode.classList.remove('bounce');
+                busy = false;
+              }, 560);
+            }
+          });
+        }
+
+        function finish() {
+          if (doneBox.hasAttribute('hidden') === false) return;
+          doneBox.hidden = false;
+          doneBox.innerHTML = '<p class="snap-verdict">' + fmtBold(cfg.doneText || '') + '</p>' +
+            '<button class="primary-btn" type="button">' + esc(cfg.continueLabel || 'Continue') + '</button>';
+          speak(cfg.doneSay || '');
+          var clean = firstTry;
+          App.armButton(doneBox.querySelector('button'), function () {
+            finishChunk(ctx, { detail: 'snap=' + clean + '/' + pairs.length },
+              Math.min(Number(cfg.firstTryXp || 0) * clean, Number(cfg.firstTryXpCap || 0)));
+          });
+        }
+        render();
+      }
+    }
+  };
+
+  /* ================= pyrun \u2014 BUILD IT, THEN MAKE THE CONSOLE SAY IT =========
+     The card the runner spec commissions (\u00a7A/\u00a7C/\u00a7D). One engine, two very
+     different jobs, because what varies between the years is the CARD and the
+     cognitive frame, not the machinery:
+
+       J2 Lesson 2, Phase 2 \u2014 one build, a tray carrying REAL SLIPS as decoys
+       (no brackets, a capital S on Score, a duplicate line). She assembles the
+       Python she has just learned to read, and the verifier console tells her
+       what her program really did.
+
+       J3 Lesson 2 \u2014 four builds in a ramp (exact print, two prints in order, a
+       variable used twice, arithmetic in the output). Each build STATES its
+       target output and she must MAKE THE CONSOLE SAY IT, typing into
+       single-line blanks along the way.
+
+     WHY THIS AND NOT AN EXTENSION OF `parsons` (a judgement call, recorded):
+     the spec named parsons for Phase 2's assembly, written before this engine
+     existed. Parsons is used by four lessons Damien has signed off (DFM
+     176/203/218) and it LOCKS on check, which is the opposite of what a run
+     card needs \u2014 a wrong program must hand the lines back and let her try
+     again. Putting a retry loop, a runtime, a console and typed blanks inside
+     it would have put all four locked lessons on the table for a mechanic none
+     of them uses. So the assembly lives here, beside the run and the console it
+     feeds, in ONE home; `parsons` is not touched by this round at all, and
+     qa-j1-unchanged proves it.
+
+     THE VERDICT IS MATCHED / NOT YET AND NEVER WHICH LINE TO FIX (spec \u00a7D).
+     The console is honest about what happened; the diagnosis is hers. */
+  Engines.pyrun = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var builds = cfg.builds || [];
+      var at = 0, cleanFirst = 0;
+
+      introCard(host, {
+        kicker: cfg.kicker, title: cfg.title, text: cfg.intro || '',
+        steps: cfg.steps, stepsClass: 'pyrun-intro-steps'
+      }, cfg.beginLabel || 'Open the desk', function () { startBuild(); });
+
+      function startBuild() {
+        host.innerHTML = '';
+        var b = builds[at];
+        var lines = b.lines || [];
+        var placed = [];                 // source indices, in her order
+        var vals = {};                   // blank key -> typed value
+        var attempts = 0;
+
+        var stepStrip = builds.length > 1
+          ? '<div class="pyrun-steps">' + builds.map(function (x, i) {
+              return '<span class="pyrun-step' + (i < at ? ' done' : (i === at ? ' now' : '')) + '">' +
+                esc(x.tab || String(i + 1)) + '</span>';
+            }).join('') + '</div>'
+          : '';
+
+        var c = el('<div class="card pyrun-card" data-build="' + esc(b.id || '') + '">' +
+          stepStrip +
+          '<h2 class="pyrun-goal">' + fmtBold(b.goalLine || '') + '</h2>' +
+          (b.brief ? '<p class="pyrun-brief">' + fmtBold(b.brief) + '</p>' : '') +
+          '<div class="pyrun-target"><p class="pyrun-target-lead">' + esc(cfg.targetLead || '') + '</p>' +
+          '<pre class="pyrun-target-out">' + esc((b.target || []).join('\n')) + '</pre></div>' +
+          '<p class="pyrun-how">' + fmtBold(cfg.howLine || '') + '</p>' +
+          '<div class="pyrun-cols">' +
+          '<div class="pyrun-tray"><h3>' + esc(cfg.trayLabel || 'The lines') + '</h3><div class="pyt-list"></div></div>' +
+          '<div class="pyrun-prog"><h3>' + esc(cfg.progLabel || 'Your program') + '</h3><ol class="pyp-list"></ol></div>' +
+          '</div>' +
+          '<p class="case-locked-note pyrun-locked-note">' + esc(cfg.lockedNote || PY_SAY.lockedNote) + '</p>' +
+          '<button class="primary-btn pyrun-run" type="button" disabled>' + esc(cfg.runLabel || 'RUN my program') + '</button>' +
+          '<div class="pyrun-console-host"></div>' +
+          '<div class="pyrun-verdict" hidden></div>' +
+          '</div>');
+        host.appendChild(c);
+
+        var tray = c.querySelector('.pyt-list');
+        var prog = c.querySelector('.pyp-list');
+        var trayZone = c.querySelector('.pyrun-tray'), progZone = c.querySelector('.pyrun-prog');
+        var runBtn = c.querySelector('.pyrun-run');
+        var lockedNote = c.querySelector('.pyrun-locked-note');
+        var verdict = c.querySelector('.pyrun-verdict');
+        var con = PyRun.console(c.querySelector('.pyrun-console-host'), cfg.consoleLabels || {});
+        /* warm the runtime while she is still reading, so RUN is not the first
+           thing that ever waits on a megabyte (DFM 42's family) */
+        PyRun.load().catch(function () { /* reported honestly at RUN, not here */ });
+
+        /* ---- code assembly, blanks substituted where she typed them ---- */
+        function codeOf() {
+          return placed.map(function (si) {
+            var L = lines[si];
+            var t = String(L.t || '');
+            (L.blanks || []).forEach(function (bl) {
+              t = t.replace(bl.slot || '____', String(vals[bl.key] == null ? '' : vals[bl.key]));
+            });
+            return t;
+          }).join('\n');
+        }
+        function emptyBlank() {
+          for (var i = 0; i < placed.length; i++) {
+            var bls = lines[placed[i]].blanks || [];
+            for (var k = 0; k < bls.length; k++) {
+              var v = vals[bls[k].key];
+              if (v == null || !String(v).trim()) return bls[k];
+            }
+          }
+          return null;
+        }
+
+        /* ---- pointer drag, with click as an equal citizen -------------- */
+        var ghost = null, suppressClick = false;
+        function inside(node, x, y) {
+          var r = node.getBoundingClientRect();
+          return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+        }
+        function dropIndexAt(clientY) {
+          var lis = Array.prototype.slice.call(prog.querySelectorAll('li:not(.pyp-empty)'));
+          for (var i = 0; i < lis.length; i++) {
+            var r = lis[i].getBoundingClientRect();
+            if (clientY < r.top + r.height / 2) return i;
+          }
+          return lis.length;
+        }
+        function wire(node, si, isPlaced) {
+          node.addEventListener('pointerdown', function (e) {
+            /* a press on a typing blank is TYPING, never a drag */
+            if (e.target && /input/i.test(e.target.tagName)) return;
+            if (e.button != null && e.button !== 0) return;
+            var sx = e.clientX, sy = e.clientY, moved = false;
+            try { node.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+            function onMove(ev) {
+              if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 6) return;
+              if (!moved) {
+                moved = true;
+                node.classList.add('dragging');
+                var r = node.getBoundingClientRect();
+                ghost = node.cloneNode(true);
+                ghost.className = 'pyrun-line pyrun-ghost';
+                ghost.style.width = r.width + 'px';
+                ghost.dataset.dx = String(r.left - ev.clientX);
+                ghost.dataset.dy = String(r.top - ev.clientY);
+                document.body.appendChild(ghost);
+              }
+              ghost.style.transform = 'translate(' + (ev.clientX + Number(ghost.dataset.dx)) + 'px,' +
+                (ev.clientY + Number(ghost.dataset.dy)) + 'px)';
+              progZone.classList.toggle('drop-here', inside(progZone, ev.clientX, ev.clientY));
+              trayZone.classList.toggle('drop-back', inside(trayZone, ev.clientX, ev.clientY));
+            }
+            function onUp(ev) {
+              node.removeEventListener('pointermove', onMove);
+              node.removeEventListener('pointerup', onUp);
+              node.removeEventListener('pointercancel', onUp);
+              try { node.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+              if (ghost) { ghost.remove(); ghost = null; }
+              node.classList.remove('dragging');
+              progZone.classList.remove('drop-here'); trayZone.classList.remove('drop-back');
+              if (!moved) return;
+              suppressClick = true;
+              if (inside(trayZone, ev.clientX, ev.clientY)) take(si);
+              else if (inside(progZone, ev.clientX, ev.clientY)) put(si, dropIndexAt(ev.clientY));
+            }
+            node.addEventListener('pointermove', onMove);
+            node.addEventListener('pointerup', onUp);
+            node.addEventListener('pointercancel', onUp);
+          });
+          node.addEventListener('click', function (e) {
+            if (e.target && /input/i.test(e.target.tagName)) return;
+            if (suppressClick) { suppressClick = false; return; }
+            if (isPlaced) take(si); else put(si, null);
+          });
+        }
+        function put(si, at2) {
+          var i = placed.indexOf(si);
+          if (i !== -1) placed.splice(i, 1);
+          if (at2 == null || at2 > placed.length) at2 = placed.length;
+          placed.splice(at2, 0, si);
+          render();
+        }
+        function take(si) {
+          var i = placed.indexOf(si);
+          if (i !== -1) { placed.splice(i, 1); render(); }
+        }
+
+        function lineHtml(L, cls, si) {
+          var t = esc(String(L.t || ''));
+          (L.blanks || []).forEach(function (bl) {
+            var slot = esc(bl.slot || '____');
+            t = t.replace(slot, '<input class="pyrun-blank" type="text" spellcheck="false" autocomplete="off" ' +
+              'data-key="' + esc(bl.key) + '" size="' + (Number(bl.size) || 8) + '" maxlength="' + (Number(bl.max) || 24) + '" ' +
+              'aria-label="' + esc(bl.label || 'type here') + '" placeholder="' + esc(bl.ph || '') + '">');
+          });
+          /* THE ONE SENTENCE THAT SAYS WHAT TO TYPE WAS INVISIBLE (j3-02 cold read, 19 Aug
+             2026). `bl.label` reached the input's `aria-label` and nowhere else, so a sighted
+             pupil with a mouse saw the placeholder and nothing more \u2014 "type it" for the
+             theatre name, and a bare "0" for BOTH of build 4's numbers with nothing saying
+             which was the price and which the seats. Four sentences written to the standard
+             and then hidden. They now render as a caption on the line that owns the gap, and
+             the aria-label stays exactly as it was for a screen reader. */
+          var hints = (L.blanks || []).map(function (bl) { return bl.label; }).filter(Boolean);
+          var hint = hints.length
+            ? '<span class="pyrun-blank-hint">' + esc(hints.join(' \u00b7 ')) + '</span>' : '';
+          return '<button class="pyrun-line ' + cls + '" type="button" draggable="false" data-si="' + si + '"><code>' + t + '</code>' + hint + '</button>';
+        }
+        function wireBlanks(root) {
+          root.querySelectorAll('.pyrun-blank').forEach(function (inp) {
+            var k = inp.getAttribute('data-key');
+            if (vals[k] != null) inp.value = vals[k];
+            inp.addEventListener('input', function () { vals[k] = inp.value; arm(); });
+            inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') ev.preventDefault(); });
+          });
+        }
+        function arm() {
+          var enough = placed.length > 0;
+          runBtn.disabled = !enough;
+          lockedNote.hidden = enough;
+        }
+        function render() {
+          tray.innerHTML = ''; prog.innerHTML = '';
+          lines.forEach(function (L, si) {
+            if (placed.indexOf(si) !== -1) return;
+            var n = el(lineHtml(L, 'in-tray', si));
+            wire(n, si, false); wireBlanks(n);
+            tray.appendChild(n);
+          });
+          if (!tray.children.length) tray.appendChild(el('<p class="pt-empty">' + esc(cfg.trayEmpty || PY_SAY.trayEmpty) + '</p>'));
+          placed.forEach(function (si, i) {
+            var li = el('<li><span class="pyp-num">' + (i + 1) + '.</span>' + lineHtml(lines[si], 'placed', si) + '</li>');
+            wire(li.querySelector('button'), si, true); wireBlanks(li);
+            prog.appendChild(li);
+          });
+          if (!placed.length) prog.appendChild(el('<li class="pyp-empty">' + esc(cfg.progEmpty || PY_SAY.progEmpty) + '</li>'));
+          arm();
+        }
+        render();
+
+        runBtn.onclick = function () {
+          /* THE BLANK REFUSAL EXPLAINS ITSELF (spec \u00a7D's landmark, DFM 205's
+             law): an empty box never fails silently and never fails mutely. */
+          var miss = emptyBlank();
+          if (miss) {
+            verdict.hidden = false;
+            verdict.className = 'pyrun-verdict is-note';
+            verdict.innerHTML = '<p>' + esc(cfg.blankEmptySay || PY_SAY.blankEmptySay) + '</p>';
+            var inp = c.querySelector('.pyrun-blank[data-key="' + miss.key + '"]');
+            if (inp) { inp.classList.add('wants'); inp.focus(); }
+            return;
+          }
+          verdict.hidden = true;
+          runBtn.disabled = true;
+          con.running();
+          attempts++;
+          PyRun.run(codeOf(), { limitMs: Number(cfg.limitMs || 0) || undefined }).then(function (res) {
+            con.show(res, cfg.errorWords || {});
+            var ok = res.ok && PyRun.matches(res.out, b.target || []);
+            verdict.hidden = false;
+            verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
+            verdict.innerHTML = '<p class="pyrun-vtag">' +
+              esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
+              '<p class="pyrun-vsay">' + esc(ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay) : (cfg.notYetSay || PY_SAY.notYetSay)) + '</p>';
+            if (ok) {
+              if (attempts === 1) cleanFirst++;
+              c.querySelectorAll('.pyrun-line').forEach(function (n) { n.disabled = true; });
+              c.querySelectorAll('.pyrun-blank').forEach(function (n) { n.disabled = true; });
+              var moreLabel = (at + 1 < builds.length) ? (cfg.nextBuildLabel || 'Next build') : (cfg.continueLabel || 'Continue');
+              var go = el('<button class="primary-btn" type="button">' + esc(moreLabel) + '</button>');
+              verdict.appendChild(go);
+              App.armButton(go, function () {
+                at++;
+                if (at < builds.length) startBuild();
+                else {
+                  finishChunk(ctx, { detail: 'py=' + cleanFirst + '/' + builds.length },
+                    Math.min(Number(cfg.firstTryXp || 0) * cleanFirst, Number(cfg.firstTryXpCap || 0)));
+                }
+              });
+            } else {
+              runBtn.disabled = false;
+            }
+          });
+        };
+      }
+    }
+  };
+
   /* ================= artifact (bank your build: HQ checks the REAL Drive) ==
      Teaches the save-to-Drive flow for external tools (Damien's condition:
      pupils are SHOWN how), then genuinely verifies a fresh file of the right
@@ -7651,6 +8566,19 @@ window.OLS_TRANSPORT = {
         '<button class="primary-btn" type="button">Done watching</button></div>');
       host.appendChild(c2);
       var vid = c2.querySelector('video');
+      /* DFM 42/143 \u2014 A DEAD PLAYER MUST STILL SAY SOMETHING (j3-02 cold read, 19 Aug 2026).
+         `cfg.fallback` used to render ONLY in the `!cfg.src` branch above, i.e. only when no
+         film had been set at all. The case it is written for is the OTHER one: a film that is
+         set and does not load. A 404 gave her a broken player and not one word, which on a
+         cover day with nobody in the room is a dead screen. The film's own words now render
+         underneath the player the moment the element reports it cannot play. */
+      vid.addEventListener('error', function () {
+        if (c2.querySelector('.video-failed')) return;
+        var f = el('<p class="video-failed" role="status">' +
+          esc(cfg.fallback || 'The film will not play just now. Carry on \u2014 everything it shows is written again on the cards that come next. Tell whoever is in the room that the film would not play.') +
+          '</p>');
+        vid.insertAdjacentElement('afterend', f);
+      }, true);
       c2.querySelectorAll('.vid-chapter').forEach(function (b) {
         b.onclick = function () { vid.currentTime = Number(b.getAttribute('data-t')); vid.play(); };
       });
