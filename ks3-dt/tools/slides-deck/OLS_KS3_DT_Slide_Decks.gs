@@ -2321,14 +2321,47 @@ function bgImage_(slide, d, which) {
   return img;
 }
 
+/* ── **BOLD** IS RENDERED, NOT PROJECTED (19 Aug 2026, found by the proof read)
+   j3-02's build slide carried three bullets written with markdown emphasis —
+   "listed under the heading **The lines**" — and this renderer printed the
+   asterisks LITERALLY, eight feet wide in front of a class. It is DFM 166's
+   exact class ("a title card is plain text, not HTML": an entity rendered raw
+   on his own screen), on a different surface and in a different notation.
+   The author's intent was right: those three are the screen's own labels and
+   they should stand out. So the markers are STRIPPED and the run between them
+   is really made bold, which changes no sentence anybody judged and closes the
+   class for every deck from here. Guarded in qa-deck-geometry, which now fails
+   any slide string still carrying a marker after rendering. */
+function markup_(str) {
+  var s = String(str == null ? '' : str), out = '', runs = [], i = 0;
+  while (i < s.length) {
+    var a = s.indexOf('**', i);
+    if (a === -1) { out += s.slice(i); break; }
+    var b = s.indexOf('**', a + 2);
+    if (b === -1) { out += s.slice(i); break; }
+    out += s.slice(i, a);
+    var start = out.length;
+    out += s.slice(a + 2, b);
+    runs.push([start, out.length]);
+    i = b + 2;
+  }
+  return { text: out, bold: runs };
+}
+
 function text_(slide, str, x, y, w, h, o) {
   o = o || {};
-  var t = slide.insertTextBox(str, x, y, w, h);
+  var m = markup_(str);
+  var t = slide.insertTextBox(m.text, x, y, w, h);
   var st = t.getText().getTextStyle();
   st.setForegroundColor(o.color || '#FFFFFF');
   st.setFontSize(o.size || 16);
   st.setFontFamily(o.font || 'Inter');
   st.setBold(!!o.bold);
+  for (var k = 0; k < m.bold.length; k++) {
+    try {
+      t.getText().getRange(m.bold[k][0], m.bold[k][1]).getTextStyle().setBold(true);
+    } catch (e) { /* a range Slides will not take is not worth losing the slide over */ }
+  }
   if (o.spacing) t.getText().getParagraphStyle().setLineSpacing(o.spacing);
   if (o.align) t.getText().getParagraphStyle().setParagraphAlignment(o.align);
   return t;
@@ -2355,7 +2388,11 @@ function kicker_(slide, d, label) {
 function lineCount_(str, boxW, size) {
   var perChar = 0.60 * (size || 13);
   var perLine = Math.max(8, Math.floor(boxW / perChar));
-  var words = String(str == null ? '' : str).split(/\s+/);
+  /* MEASURE WHAT IS RENDERED, NOT WHAT IS WRITTEN. The emphasis markers are
+     stripped before Slides ever sees them, so counting them would over-estimate
+     every line they sit on — an arithmetic that describes a string nobody will
+     read, which is the sin this whole function exists to end. */
+  var words = markup_(str).text.split(/\s+/);
   var lines = 1, cur = 0;
   for (var i = 0; i < words.length; i++) {
     if (!words[i]) continue;

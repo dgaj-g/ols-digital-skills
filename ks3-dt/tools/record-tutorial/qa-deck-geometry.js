@@ -86,6 +86,32 @@ const MIN_SHOT_W = 150;
 const isShotHeld = () => true;
 
 const fails = [];
+
+const MARK_BAD = [
+  [/&[a-z]+;|&#\d+;/i, 'an HTML entity — nothing decodes it, so it prints as typed (DFM 166)'],
+  [/<\/?[a-z][^>]*>/i, 'an HTML tag — the renderer prints it, it does not obey it'],
+  [/__[^_]+__/, 'underscore emphasis — the renderer only understands **bold**'],
+  [/\[[^\]]+\]\([^)]+\)/, 'a markdown link — a slide cannot be clicked through']
+];
+function judgeMarkup(lesson, n, s, out) {
+  const strings = [];
+  ['heading', 'sub', 'kicker', 'beacon'].forEach(k => { if (s[k]) strings.push([k, String(s[k])]); });
+  (s.bullets || []).forEach((b, i) => strings.push(['bullet ' + (i + 1), String(b)]));
+  for (const [where, str] of strings) {
+    const stars = (str.match(/\*\*/g) || []).length;
+    if (stars % 2 !== 0) {
+      out.push(lesson + ' slide ' + n + ' ' + where + ': an unpaired ** — the marker it cannot ' +
+        'close is printed on the board as typed. ' + JSON.stringify(str.slice(0, 90)));
+    }
+    for (const [rx, why] of MARK_BAD) {
+      if (rx.test(str)) {
+        out.push(lesson + ' slide ' + n + ' ' + where + ': ' + why + '. ' +
+          JSON.stringify(str.slice(0, 90)));
+      }
+    }
+  }
+}
+
 const notes = [];
 const shotDebt = [];
 
@@ -281,7 +307,32 @@ for (const year of years) {
       n++; slides++;
       judge(d.lesson, n, s, fails);
       judgeShotSizes(d.lesson, n, s, sizeOf);
+      judgeMarkup(d.lesson, n, s, fails);
     }
+  }
+}
+
+/* ───── NOTHING A RENDERER CANNOT READ IS PROJECTED (19 Aug 2026) ──────────
+   The proof read found three of j3-02's bullets printing their markdown
+   asterisks literally on the board — "listed under the heading **The lines**",
+   eight feet wide. It is DFM 166's class exactly ("a title card is plain text,
+   not HTML": an HTML entity rendered raw on his own screen), on a different
+   surface in a different notation, and it is the second time a mark-up habit
+   has leaked onto something a class reads.
+   The renderer now RENDERS `**bold**` and strips the markers, so the notation
+   is legitimate — which is precisely why it needs a machine: a marker the
+   renderer cannot pair up, and every OTHER notation nothing handles, still
+   reach the board. Both are checked here, on the words themselves. */
+/* AND THE RENDERER'S HALF OF THE CONTRACT: it must actually strip the markers.
+   A gate that allows a notation the renderer has stopped handling is worse than
+   one that banned it outright (DFM 213). */
+if (fs.existsSync(BUILDER)) {
+  const src0 = fs.readFileSync(BUILDER, 'utf8');
+  if (!/function\s+markup_/.test(src0) || !/markup_\(str\)/.test(src0)) {
+    fails.push('the renderer no longer strips **bold** markers, so every one of them would be ' +
+      'projected as typed — the fault the 19 Aug proof read caught.');
+  } else {
+    notes.push('the renderer strips **bold** markers and bolds the run instead');
   }
 }
 
@@ -344,6 +395,40 @@ if (fs.existsSync(BUILDER)) {
       'were reported as overflowing, which would teach everyone to ignore this gate (DFM 146a).');
   } else {
     notes.push('control: an ordinary slide PASSES (the over-tightening guard)');
+  }
+
+  /* ─── THE MARK-UP CONTROLS (19 Aug 2026), both directions ─────────────────
+     The guard exists because the renderer now UNDERSTANDS **bold**, which is
+     exactly why it needs proving in both directions: a legitimate notation that
+     nothing checks is how the illegitimate ones get in beside it (DFM 213). */
+  {
+    const say = (pass, good, bad) => pass ? notes.push(good) : fails.push(bad);
+
+    const planted = [];
+    judgeMarkup('fixture', 1, { heading: 'What a build looks like',
+      bullets: ['All the lines are under **The lines**.'] }, planted);
+    say(planted.length === 0,
+      'control: a balanced **bold** run PASSES — the renderer strips it (over-tightening guard)',
+      'CONTROL FAILED: a balanced **bold** run was rejected though the renderer handles it: ' +
+        planted.join(' | '));
+
+    const bad1 = [];
+    judgeMarkup('fixture', 2, { bullets: ['Drag it into **Your program, in the order they run.'] }, bad1);
+    say(bad1.some(f => /unpaired/.test(f)),
+      'control: an unpaired ** is REJECTED — it would be printed on the board as typed',
+      'CONTROL FAILED: an unpaired ** was allowed through');
+
+    const bad2 = [];
+    judgeMarkup('fixture', 3, { heading: 'Chapter 3 &mdash; the flags' }, bad2);
+    say(bad2.some(f => /HTML entity/.test(f)),
+      'control: an HTML entity is REJECTED — DFM 166, the fault he photographed on a title card',
+      'CONTROL FAILED: an HTML entity was allowed through');
+
+    const bad3 = [];
+    judgeMarkup('fixture', 4, { bullets: ['Press <b>RUN</b> and read the console.'] }, bad3);
+    say(bad3.some(f => /HTML tag/.test(f)),
+      'control: an HTML tag is REJECTED — the renderer prints it, it does not obey it',
+      'CONTROL FAILED: an HTML tag was allowed through');
   }
 
   /* ─── THE SCREENSHOT-FLOOR CONTROLS (DFM 237b), all three directions ───────
