@@ -587,20 +587,55 @@ function createDeck_(lessonId) {
 function runDeckRound() {
   var props = PropertiesService.getScriptProperties();
   var KEY = 'ks3dt.round.at';
-  var ids = Object.keys(DECKS).sort().filter(function (id) {
-    return DECKS[id] && DECKS[id].driveFileId;
-  });
+  /* A DECK THAT DOES NOT EXIST YET IS A JOB, NOT A GAP (19 Aug 2026).
+     This list used to be filtered to decks that already had a driveFileId, so
+     a NEW deck was silently absent from the round and nothing said so — the
+     DFM 204 fault inside the one entry point DFM 241 built to remove exactly
+     this class of mistake. The round now covers every deck in the data: one
+     with no file id is CREATED, one with a file id is REBUILT, and every one
+     of them then has its proofs exported. createDeck_ still refuses to run
+     twice, so a resumed round can never make a second copy. */
+  var ids = Object.keys(DECKS).sort();
   var jobs = [], i;
-  for (i = 0; i < ids.length; i++) jobs.push({ kind: 'rebuild', id: ids[i] });
+  for (i = 0; i < ids.length; i++) {
+    jobs.push({ kind: DECKS[ids[i]].driveFileId ? 'rebuild' : 'create', id: ids[i] });
+  }
   for (i = 0; i < ids.length; i++) jobs.push({ kind: 'proof', id: ids[i] });
 
+  /* A SAVED POSITION ONLY MEANS ANYTHING AGAINST THE LIST IT WAS SAVED FROM
+     (19 Aug 2026, and it very nearly bit). The position is job 9; the job list
+     it was taken against had 14 jobs and no creates in it. The moment the list
+     grew to 18 with two creates at jobs 7 and 9, resuming at 9 would have
+     stepped straight over BOTH of them and printed a clean round — a resumed
+     round silently doing less than the round it claims to be. So the signature
+     of the list rides with the position, and a position taken against a
+     different list is discarded rather than trusted. This is the same law as
+     the content-version gate: a key is only as good as the thing that filled
+     it (DFM 236), and it removes the one step a human had to remember. */
+  var SIG = 'ks3dt.round.sig';
+  var sig = jobs.map(function (j) { return j.kind + ':' + j.id; }).join(',');
+  var madeThisRound = [];
   var at = Number(props.getProperty(KEY) || 0);
+  if (props.getProperty(SIG) !== sig) {
+    if (at > 0) {
+      Logger.log('The saved position was taken against a DIFFERENT round and has been');
+      Logger.log('discarded. This round starts at job 1 — nothing is skipped.');
+    }
+    at = 0;
+    props.setProperty(SIG, sig);
+  }
   if (!(at >= 0) || at >= jobs.length) at = 0;
   var started = new Date().getTime();
   var BUDGET_MS = 4 * 60 * 1000;
 
   Logger.log('================ DECK ROUND ================');
   Logger.log(ids.length + ' deck(s): ' + ids.join(', '));
+  var toMake = ids.filter(function (x) { return !DECKS[x].driveFileId; });
+  if (toMake.length) {
+    Logger.log('NEW THIS ROUND, created rather than rebuilt: ' + toMake.join(', '));
+    Logger.log('Their file ids are printed below — they go into the deck data and the');
+    Logger.log('briefs\' Resources rows before the content is packed again.');
+  }
   Logger.log(jobs.length + ' jobs — every deck rebuilt, then every proof set exported');
   Logger.log('starting at job ' + (at + 1) + ' of ' + jobs.length);
   Logger.log('');
@@ -610,6 +645,22 @@ function runDeckRound() {
     Logger.log('---------- job ' + (at + 1) + ' of ' + jobs.length + ': ' +
       job.kind + ' ' + job.id + ' ----------');
     if (job.kind === 'rebuild') rebuildDeck_(job.id);
+    else if (job.kind === 'create') createDeck_(job.id);
+    else if (!DECKS[job.id].driveFileId) {
+      /* A DECK CREATED THIS ROUND CANNOT HAVE ITS PROOFS EXPORTED IN THE SAME
+         ROUND, and that is the design rather than a fault: the file id has to
+         travel back through the CONTENT — into the deck data and the brief's
+         two Resources rows — before this file knows it (template §7's two
+         pushes). Before this branch the proof job threw a bare "has no
+         driveFileId", which is true and tells nobody what to do about it.
+         It now says the actual next step, and the round reports itself
+         INCOMPLETE at the end instead of printing COMPLETE over a gap. */
+      madeThisRound.push(job.id);
+      Logger.log('NOT YET — ' + job.id + ' was created in this round, so its id is not in this');
+      Logger.log('file. Put the id into content-src/<year>/decks/' + job.id + '.deck.json and');
+      Logger.log('into that lesson\'s two Resources rows, pack, push, re-paste this file, and');
+      Logger.log('run the round again. Its proofs come out on that pass.');
+    }
     else exportDeckProofs_(job.id);
     at++;
     props.setProperty(KEY, String(at));
@@ -618,8 +669,15 @@ function runDeckRound() {
   Logger.log('');
   if (at >= jobs.length) {
     props.deleteProperty(KEY);
+    props.deleteProperty(SIG);
+    if (madeThisRound.length) {
+      Logger.log('============ ROUND DONE, BUT NOT FINISHED ============');
+      Logger.log('New deck(s) this round: ' + madeThisRound.join(', ') + '. Their proofs are still owed —');
+      Logger.log('put their file ids into the content, pack, push, re-paste, and run once more.');
+      return at + '/' + jobs.length + ' (proofs owed: ' + madeThisRound.join(',') + ')';
+    }
     Logger.log('================ ROUND COMPLETE ================');
-    Logger.log('Every deck rebuilt in place and every proof set exported.');
+    Logger.log('Every deck created or rebuilt in place, and every proof set exported.');
     Logger.log('The proofs are now read, slide by slide, before any deck is called ready.');
   } else {
     Logger.log('================ PAUSED, NOT FINISHED ================');
@@ -632,26 +690,12 @@ function runDeckRound() {
 /* Start the round again from job 1 — only needed if a round is abandoned
    half-way and the next one should not resume into it. */
 function resetDeckRound() {
+  PropertiesService.getScriptProperties().deleteProperty('ks3dt.round.sig');
   PropertiesService.getScriptProperties().deleteProperty('ks3dt.round.at');
   Logger.log('The round position is cleared. runDeckRound starts at job 1.');
 }
 
-function createLesson2Deck() { return createDeck_('j1-02'); }
-function createLesson3Deck() { return createDeck_('j1-03'); }
-function createLesson4Deck() { return createDeck_('j1-04'); }
-function createLesson5Deck() { return createDeck_('j1-05'); }
-/* THE TWO NEW YEARS. Created ONCE each, then rebuilt in place for ever after —
-   the same contract J1's decks live under (template §7). */
-function createJ2Lesson1Deck() { return createDeck_('j2-01'); }
-function createJ3Lesson1Deck() { return createDeck_('j3-01'); }
-
-function rebuildLesson1Deck() { return rebuildDeck_('j1-01'); }
-function rebuildLesson2Deck() { return rebuildDeck_('j1-02'); }
-function rebuildLesson3Deck() { return rebuildDeck_('j1-03'); }
-function rebuildLesson4Deck() { return rebuildDeck_('j1-04'); }
-function rebuildLesson5Deck() { return rebuildDeck_('j1-05'); }
-function rebuildJ2Lesson1Deck() { return rebuildDeck_('j2-01'); }
-function rebuildJ3Lesson1Deck() { return rebuildDeck_('j3-01'); }
+__PER_DECK_FUNCTIONS__
 
 /* ===================== the proofs (DFM 225b, standing) ====================
    A deck is never handed over on the strength of the code that built it. Slide
@@ -732,13 +776,7 @@ function exportDeckProofs_(lessonId) {
   return urls;
 }
 
-function exportDeckProofs() { return exportDeckProofs_('j1-01'); }
-function exportLesson2Proofs() { return exportDeckProofs_('j1-02'); }
-function exportLesson3Proofs() { return exportDeckProofs_('j1-03'); }
-function exportLesson4Proofs() { return exportDeckProofs_('j1-04'); }
-function exportLesson5Proofs() { return exportDeckProofs_('j1-05'); }
-function exportJ2Lesson1Proofs() { return exportDeckProofs_('j2-01'); }
-function exportJ3Lesson1Proofs() { return exportDeckProofs_('j3-01'); }
+__PER_DECK_PROOF_FUNCTIONS__
 
 /* EVERY PROOF SET IN ONE RUN, and the list is DERIVED from the deck data rather
    than typed. It used to be a hardcoded array of five, which was true on the day
@@ -763,7 +801,43 @@ function exportAllDeckProofs() {
 }
 `;
 
-fs.writeFileSync(OUT, header + body);
+/* ══════════ THE PER-DECK ENTRY POINTS ARE DERIVED, NEVER TYPED ══════════════
+   These were a hand-written list of fourteen functions, and on 19 Aug 2026 the
+   two new Lesson 2 decks arrived with no `createJ2Lesson2Deck` and no
+   `createJ3Lesson2Deck` in the file at all — so the only way to make them was
+   to edit the generator, which is K23's own complaint word for word ("a
+   hardcoded list closes today's instance and nothing else"). `runDeckRound` is
+   the one entry point that matters (DFM 241) and it now covers creates too;
+   these named functions remain for a single deck out of band, and they are
+   built from the deck data so a new deck can never again be missing one.
+   J1'S FIVE KEEP THEIR UNQUALIFIED NAMES, because those are the names in his
+   own run log and in the handover (template §7); every other year is
+   year-qualified, which is the rule that stopped "Lesson 1" meaning three
+   different lessons. */
+function fnLabel(id) {
+  const m = /^j(\d)-(\d+)$/.exec(id);
+  if (!m) return id.replace(/[^A-Za-z0-9]/g, '');
+  const year = 'J' + m[1], num = String(Number(m[2]));
+  return (year === 'J1' ? '' : year) + 'Lesson' + num;
+}
+const deckIds = Object.keys(DATA).sort();
+const perDeck = deckIds.map(id =>
+  `function create${fnLabel(id)}Deck() { return createDeck_('${id}'); }`).join('\n') +
+  '\n\n' + deckIds.map(id =>
+  `function rebuild${fnLabel(id)}Deck() { return rebuildDeck_('${id}'); }`).join('\n');
+const perProof = deckIds.map(id =>
+  `function export${fnLabel(id)}Proofs() { return exportDeckProofs_('${id}'); }`).join('\n');
+/* THE ONE NAME THAT IS NOT DERIVED, and it is deliberate: `exportDeckProofs`
+   with no lesson in it is J1 Lesson 1's, and it is written down in his own run
+   log from 15 August. Renaming it would break the only record of what he ran. */
+const perProofCompat = perProof.replace(
+  "function exportLesson1Proofs() { return exportDeckProofs_('j1-01'); }",
+  "function exportDeckProofs() { return exportDeckProofs_('j1-01'); }\n" +
+  "function exportLesson1Proofs() { return exportDeckProofs_('j1-01'); }");
+
+fs.writeFileSync(OUT, (header + body)
+  .replace('__PER_DECK_FUNCTIONS__', perDeck)
+  .replace('__PER_DECK_PROOF_FUNCTIONS__', perProofCompat));
 const kb = (fs.statSync(OUT).size / 1024).toFixed(0);
 console.log('wrote ' + path.relative(ROOT, OUT) + '  (' + kb + ' KB)');
 console.log('decks: ' + Object.keys(DATA).join(', '));
