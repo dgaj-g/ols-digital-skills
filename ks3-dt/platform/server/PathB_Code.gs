@@ -17,8 +17,11 @@
  *    pair:<class>:<lessonId>  {P:{pid:{m,cn,t,trio,done,rv,n}}, solo:[emails]}  (section 12)
  *    chat:<class>:<lessonId>  {pid:{m,cn,n,t,c,tx}} compact monitored transcripts,
  *      swept to the Archive Sheet's Chat Archive tab after CHAT_ARCHIVE_AFTER_DAYS
- *  CacheService (ephemeral, no scope): ks3dt:pres:<class> presence beacons,
- *    ks3dt:pq:* pairing queues, ks3dt:pch:<pid> chat channels, ks3dt:pls:* liveness
+ *  Pairing coordination (pair:<class>:pres presence, pair:<class>:q:<lessonId>
+ *    queues, pair:<class>:ch:<pid> chat channels) lives in ScriptProperties -
+ *    NEVER CacheService: cache stopped crossing users on this execute-as-user
+ *    deployment (21 Aug 2026 incident). CacheService remains only for
+ *    single-user-safe caching (content files, the version string).
  *  UserProperties (private per pupil):
  *    recap              {threads:{id:{s:streak, d:lastSessionDay, r:retired}},
  *                        seen:{itemId: lastDay}}
@@ -1380,9 +1383,22 @@ function chatMigrate_(cls, lessonId) {
   jset_(sp_(), chatKey_(cls, lessonId), { v: 2, nc: nc });
   return { v: 2, nc: nc, oldChat: null };
 }
-function pqCacheKey_(cls, lessonId) { return 'ks3dt:pq:' + cls + ':' + lessonId; }
-function chCacheKey_(pid) { return 'ks3dt:pch:' + pid; }
-function presCacheKey_(cls) { return 'ks3dt:pres:' + cls; }
+/* Pairing coordination lives in SCRIPT PROPERTIES, not CacheService (21 Aug
+   2026, live incident). Proven that morning on the deployed app: cache written
+   by one signed-in user of this execute-as-user deployment is INVISIBLE to
+   every other user - three pupils pinged (executions Completed) while every
+   reader, including the matcher inside their own joins, saw an empty store, so
+   each arrival looked like the last pupil standing and was released solo. The
+   roster, records and pair REGISTRIES (all properties) crossed users perfectly
+   in the same hour. Same rules as before: entries carry their own timestamps
+   and every reader already filters by them. The keys sit inside the
+   'pair:<cls>:' family so deleteClass's existing prefix wipe covers them all.
+   (lessonIds never collide with the 'q:'/'ch:'/'pres' segments.) */
+function pGet_(key, fallback) { return jget_(sp_(), key, fallback); }
+function pPut_(key, obj) { jset_(sp_(), key, obj); }
+function pqPKey_(cls, lessonId) { return 'pair:' + cls + ':q:' + lessonId; }
+function chPKey_(cls, pid) { return 'pair:' + cls + ':ch:' + pid; }
+function presPKey_(cls) { return 'pair:' + cls + ':pres'; }
 
 function pairReg_(cls, lessonId) {
   var reg = jget_(sp_(), pairRegKey_(cls, lessonId), null) || {};
@@ -1417,15 +1433,20 @@ function apiPing(req) {
   if (!email) return { ok: false, error: 'not-signed-in' };
   var cls = realClass_(req.classCode);
   if (!cls) return { ok: false, error: 'unknown-class' };
-  var pres = cGet_(presCacheKey_(cls), {});
-  pres[email] = [tmin_(), str_(req.lessonNum || ''), num_(req.ci), num_(req.cc)];
-  cPut_(presCacheKey_(cls), pres, 21600);
+  var pres = pGet_(presPKey_(cls), {});
+  var pnow = tmin_();
+  /* prune-on-write: cache TTL used to do this for free; on properties the
+     writer keeps the blob small (anything >30 min stale is long past every
+     reader's own 10-minute window) */
+  Object.keys(pres).forEach(function (pe) { if (pnow - num_((pres[pe] || [])[0]) > 30) delete pres[pe]; });
+  pres[email] = [pnow, str_(req.lessonNum || ''), num_(req.ci), num_(req.cc)];
+  pPut_(presPKey_(cls), pres);
   return { ok: true };
 }
 
 function presentOn_(cls, numStr) {
   // emails live-present on this lesson, with their chunk positions
-  var pres = cGet_(presCacheKey_(cls), {});
+  var pres = pGet_(presPKey_(cls), {});
   var floor = tmin_() - PAIR_PRESENT_MIN;
   var out = {};
   Object.keys(pres).forEach(function (e) {
@@ -1491,7 +1512,7 @@ function pairMatch_(cls, lessonId, numStr, stageIdx, reg, q) {
       cn: callsignFill_(formed),
       t: tmin_(), trio: formed.length === 3 ? 1 : 0, done: 0, rv: 0
     };
-    cPut_(chCacheKey_(pid), { seq: 0, ev: [], ls: [] }, 21600);
+    pPut_(chPKey_(cls, pid), { seq: 0, ev: [], ls: [] });
   }
   return { E: E, solo: '' };
 }
@@ -1526,7 +1547,7 @@ function apiPairJoin(req) {
       }
       return { ok: true, state: 'solo' };
     }
-    var q = cGet_(pqCacheKey_(cls, lessonId), { q: [], stage: stageIdx });
+    var q = pGet_(pqPKey_(cls, lessonId), { q: [], stage: stageIdx });
     q.stage = stageIdx;
     var mine = null;
     for (var i = 0; i < q.q.length; i++) if (str_(q.q[i].e) === email) mine = q.q[i];
@@ -1537,7 +1558,7 @@ function apiPairJoin(req) {
     }
     var res = pairMatch_(cls, lessonId, numStr, stageIdx, reg, q);
     jset_(sp_(), pairRegKey_(cls, lessonId), reg);
-    cPut_(pqCacheKey_(cls, lessonId), q, 21600);
+    pPut_(pqPKey_(cls, lessonId), q);
     var hit2 = pairOf_(reg, email);
     if (hit2) return pairStateFor_(reg, hit2);
     if (res.solo === email || reg.solo.indexOf(email) !== -1) return { ok: true, state: 'solo' };
@@ -1565,7 +1586,7 @@ function apiPairSend(req) {
   var hit = pairOf_(reg, email);
   if (!hit || str_(hit.pid) !== str_(req.pid)) return { ok: false, error: 'not-your-pair' };
   return withLock_(function () {
-    var ch = cGet_(chCacheKey_(str_(req.pid)), { seq: 0, ev: [], ls: [] });
+    var ch = pGet_(chPKey_(cls, str_(req.pid)), { seq: 0, ev: [], ls: [] });
     if (kind === 'msg') {
       var last = num_((ch.ls || [])[hit.mi]);
       if (last && tsec_() - last < 1) return { ok: false, error: 'too-fast' };
@@ -1575,7 +1596,7 @@ function apiPairSend(req) {
     ch.seq = num_(ch.seq) + 1;
     ch.ev.push([ch.seq, num_(hit.mi), kind, text, tsec_()]);
     if (ch.ev.length > PAIR_EV_KEEP) ch.ev = ch.ev.slice(ch.ev.length - PAIR_EV_KEEP);
-    cPut_(chCacheKey_(str_(req.pid)), ch, 21600);
+    pPut_(chPKey_(cls, str_(req.pid)), ch);
     return { ok: true, seq: num_(ch.seq) };
   });
 }
@@ -1599,17 +1620,22 @@ function apiPairChannel(req) {
   if (num_(reg.P[hit.pid].dis)) return { ok: true, dis: 1, seq: num_(req.since), ev: [], live: [], done: 0, rv: 0 };
   var P = reg.P[hit.pid];
   var pid = str_(hit.pid);
-  cPut_('ks3dt:pls:' + pid + ':' + hit.mi, { t: tsec_() }, 3600);
   var since = num_(req.since);
-  var ch = cGet_(chCacheKey_(pid), { seq: 0, ev: [], ls: [] });
+  var ch = pGet_(chPKey_(cls, pid), { seq: 0, ev: [], ls: [] });
   var ev = [];
   for (var i = 0; i < ch.ev.length; i++) if (num_(ch.ev[i][0]) > since) ev.push(ch.ev[i]);
+  /* Partner liveness rides the presence heartbeat (~60s while her lesson is
+     open) instead of the old per-poll cache beacon - a beacon written every
+     ~2s per member was a cache habit the properties store must not inherit.
+     Generous 3-minute threshold: the failure mode is a partner briefly shown
+     present after leaving, never a present partner shown as away. */
+  var presAll = pGet_(presPKey_(cls), {});
   var live = [];
   for (var mi = 0; mi < (P.m || []).length; mi++) {
     if (mi === hit.mi) { live.push(1); continue; }
-    var b = cGet_('ks3dt:pls:' + pid + ':' + mi, null);
-    if (!b) live.push(tmin_() - num_(P.t) <= 2 ? 1 : 0); // formation grace: no beacon until their first poll
-    else live.push(tsec_() - num_(b.t) <= 45 ? 1 : 0);
+    var pb = presAll[str_((P.m || [])[mi])];
+    if (!pb) live.push(tmin_() - num_(P.t) <= 2 ? 1 : 0); // formation grace: no heartbeat yet
+    else live.push(tmin_() - num_(pb[0]) <= 3 ? 1 : 0);
   }
   return {
     ok: true, seq: num_(ch.seq), ev: ev, live: live,
@@ -1641,7 +1667,7 @@ function apiPairComplete(req) {
     P.done = 1; P.rv = 1; P.n = names;
     jset_(sp_(), pairRegKey_(cls, lessonId), reg);
     try {
-      var ch = cGet_(chCacheKey_(str_(hit.pid)), { seq: 0, ev: [], ls: [] });
+      var ch = pGet_(chPKey_(cls, str_(hit.pid)), { seq: 0, ev: [], ls: [] });
       var msgs = ch.ev.filter(function (e) { return str_(e[2]) === 'msg'; });
       var counts = (P.m || []).map(function () { return 0; });
       msgs.forEach(function (e) { counts[num_(e[1])] = num_(counts[num_(e[1])]) + 1; });
@@ -2300,8 +2326,12 @@ function apiAdmin(req) {
       var rsMan = yearManifest_(rsYear);
       (rsMan && rsMan.lessons || []).forEach(function (le) {
         if (str_(le.num) !== rsNum) return;
+        /* the channels belong to the registry's pids - collect them BEFORE the
+           registry is deleted, or they orphan against the storage quota */
+        var rsReg = jget_(sp_(), pairRegKey_(cls, str_(le.id)), null);
+        if (rsReg && rsReg.P) Object.keys(rsReg.P).forEach(function (rp) { sp_().deleteProperty(chPKey_(cls, rp)); });
         sp_().deleteProperty(pairRegKey_(cls, str_(le.id)));
-        cPut_(pqCacheKey_(cls, str_(le.id)), { q: [], stage: 0 }, 60);
+        sp_().deleteProperty(pqPKey_(cls, str_(le.id)));
       });
       return { ok: true, cleared: num_(rsCleared) };
     });
@@ -2315,14 +2345,12 @@ function apiAdmin(req) {
     var plNum = lessonNum_(plYear, plLessonId);
     var plCfg = getCfg_(cls);
     var plReg = pairReg_(cls, plLessonId);
-    var plQ = cGet_(pqCacheKey_(cls, plLessonId), { q: [], stage: 0 });
+    var plQ = pGet_(pqPKey_(cls, plLessonId), { q: [], stage: 0 });
     var nameOf = {};
     allPupils_(cls).forEach(function (r) { nameOf[str_(r.email)] = str_(r.n); });
     var plNow = tsec_();
     var plAssigned = {};
     var pids2 = Object.keys(plReg.P);
-    var chAll = {};
-    try { chAll = cache_().getAll(pids2.map(function (p) { return chCacheKey_(p); })) || {}; } catch (e) {}
     var pairsOut = pids2.map(function (p) {
       var P = plReg.P[p];
       /* dissolved pairs (C-11) stay listed so their transcript is still
@@ -2330,9 +2358,8 @@ function apiAdmin(req) {
       if (!num_(P.dis)) (P.m || []).forEach(function (e) { plAssigned[str_(e)] = 1; });
       var msgs = 0, lastMsg = '';
       try {
-        var chRaw = chAll[chCacheKey_(p)];
-        if (chRaw) {
-          var ch2 = JSON.parse(chRaw);
+        var ch2 = pGet_(chPKey_(cls, p), null);
+        if (ch2) {
           (ch2.ev || []).forEach(function (e2) {
             if (str_(e2[2]) === 'msg') { msgs++; lastMsg = str_(P.cn[num_(e2[1])]) + ': ' + str_(e2[3]); }
           });
@@ -2373,7 +2400,7 @@ function apiAdmin(req) {
     var ptReg = pairReg_(cls, str_(req.lessonId));
     var ptP = ptReg.P[ptPid];
     if (!ptP) return { ok: false, error: 'unknown-pair' };
-    var ptCh = cGet_(chCacheKey_(ptPid), null);
+    var ptCh = pGet_(chPKey_(cls, ptPid), null);
     if (ptCh && (ptCh.ev || []).length) {
       var lines = ptCh.ev.filter(function (e) { return str_(e[2]) === 'msg'; }).map(function (e) {
         return { who: str_(ptP.cn[num_(e[1])]), text: str_(e[3]), t: num_(e[4]) };
@@ -2394,9 +2421,9 @@ function apiAdmin(req) {
       if (pairOf_(prReg, prEmail)) return { ok: false, error: 'already-paired' };
       if (prReg.solo.indexOf(prEmail) === -1) prReg.solo.push(prEmail);
       jset_(sp_(), pairRegKey_(cls, str_(req.lessonId)), prReg);
-      var prQ = cGet_(pqCacheKey_(cls, str_(req.lessonId)), { q: [], stage: 0 });
+      var prQ = pGet_(pqPKey_(cls, str_(req.lessonId)), { q: [], stage: 0 });
       prQ.q = (prQ.q || []).filter(function (w) { return str_(w.e) !== prEmail; });
-      cPut_(pqCacheKey_(cls, str_(req.lessonId)), prQ, 21600);
+      pPut_(pqPKey_(cls, str_(req.lessonId)), prQ);
       return { ok: true };
     });
   }
@@ -2407,7 +2434,7 @@ function apiAdmin(req) {
     if (!cls) return { ok: false, error: 'unknown-class' };
     return withLock_(function () {
       var pfReg = pairReg_(cls, str_(req.lessonId));
-      var pfQ = cGet_(pqCacheKey_(cls, str_(req.lessonId)), { q: [], stage: 0 });
+      var pfQ = pGet_(pqPKey_(cls, str_(req.lessonId)), { q: [], stage: 0 });
       var pfNow = tsec_();
       pfQ.q = (pfQ.q || []).filter(function (w) { return pfNow - num_(w.p) <= PAIR_QUEUE_STALE_S; });
       var made = 0;
@@ -2420,7 +2447,7 @@ function apiAdmin(req) {
           cn: callsignFill_(formed),
           t: tmin_(), trio: take === 3 ? 1 : 0, done: 0, rv: 0
         };
-        cPut_(chCacheKey_(pid2), { seq: 0, ev: [], ls: [] }, 21600);
+        pPut_(chPKey_(cls, pid2), { seq: 0, ev: [], ls: [] });
         made++;
       }
       if (pfQ.q.length === 1) {
@@ -2428,7 +2455,7 @@ function apiAdmin(req) {
         if (pfReg.solo.indexOf(str_(lone2.e)) === -1) pfReg.solo.push(str_(lone2.e));
       }
       jset_(sp_(), pairRegKey_(cls, str_(req.lessonId)), pfReg);
-      cPut_(pqCacheKey_(cls, str_(req.lessonId)), pfQ, 21600);
+      pPut_(pqPKey_(cls, str_(req.lessonId)), pfQ);
       return { ok: true, made: num_(made) };
     });
   }
@@ -2467,7 +2494,7 @@ function apiAdmin(req) {
         });
       });
       jset_(sp_(), pairRegKey_(cls, prLesson), prReg2);
-      cPut_(pqCacheKey_(cls, prLesson), { q: [], stage: 0 }, 60);
+      pPut_(pqPKey_(cls, prLesson), { q: [], stage: 0 });
       return { ok: true, freed: num_(prFreed), sealed: num_(prSealed) };
     });
   }
