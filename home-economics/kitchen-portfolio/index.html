@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>My Kitchen Portfolio</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ============================================================
+       MY KITCHEN PORTFOLIO - Home Economics KS3 digital portfolio.
+       Login-gated (Path B, execute-as-user). One portfolio Google Doc
+       per pupil in her OWN Drive; each practical reflection appends an
+       entry (typed reflections + embedded photos + video links).
+       Year group (J1/J2/J3) comes from the class the teacher created;
+       it picks the focus-area options AND the warm kitchen colour tone.
+       ============================================================ -->
+
+  <main id="app" class="app" aria-live="polite">
+
+    <!-- Shown immediately on load while we read the pupil's name from her
+         school account (no typing). Hides into the shelf, or the welcome
+         card if the account can't supply a name. -->
+    <section id="boot-guard" class="boot-guard" aria-live="polite">
+      <img src="../../assets/crest.png" alt="" class="boot-guard-crest" aria-hidden="true">
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="boot-guard-text">Getting your details&hellip;</p>
+    </section>
+
+    <!-- First-visit welcome -->
+    <section id="welcome" class="welcome" hidden aria-labelledby="welcome-h">
+      <div class="welcome-card">
+        <img src="../../assets/crest.png" alt="" class="welcome-crest" aria-hidden="true">
+        <div class="pot-steam" aria-hidden="true">
+          <span class="steam s1"></span><span class="steam s2"></span><span class="steam s3"></span>
+          <span class="pot">&#127858;</span>
+        </div>
+        <h1 id="welcome-h">Welcome to your Kitchen Portfolio</h1>
+        <p class="welcome-lead">Your own cooking journal for Home Economics &mdash; every practical you cook
+          gets its own page, with your photos, your thoughts and your evaluation.</p>
+        <p id="welcome-hello" class="welcome-hello"></p>
+
+        <label class="field-label" for="kp-name">First, what's your name, chef?</label>
+        <input id="kp-name" class="field" type="text" maxlength="60" placeholder="e.g. Aoife Murphy" autocomplete="off">
+
+        <div id="year-pick" class="year-pick" hidden>
+          <p class="field-label">And which year are you in?</p>
+          <div class="year-pick-row" role="group" aria-label="Choose your year group">
+            <button type="button" class="year-chip" data-year="J1">Year 8<small>J1</small></button>
+            <button type="button" class="year-chip" data-year="J2">Year 9<small>J2</small></button>
+            <button type="button" class="year-chip" data-year="J3">Year 10<small>J3</small></button>
+          </div>
+        </div>
+
+        <button id="welcome-start" class="btn btn-acc btn-lg" type="button">Open my portfolio</button>
+        <p id="welcome-msg" class="sv-msg" role="alert"></p>
+      </div>
+    </section>
+
+    <!-- Home: the portfolio shelf -->
+    <section id="home" class="home" hidden aria-labelledby="home-h">
+      <header class="home-head">
+        <div class="gingham" aria-hidden="true"></div>
+        <div class="home-head-inner">
+          <div class="pot-steam small" aria-hidden="true">
+            <span class="steam s1"></span><span class="steam s2"></span><span class="steam s3"></span>
+            <span class="pot">&#127858;</span>
+          </div>
+          <div class="home-titles">
+            <h1 id="home-h" class="home-title">My Kitchen Portfolio</h1>
+            <p class="home-sub">Home Economics &middot; <span id="home-name"></span><span id="year-badge" class="year-badge"></span><span id="class-badge" class="year-badge class-badge"></span></p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Chef level strip -->
+      <div class="chef-strip" role="group" aria-label="Your chef level">
+        <span class="chef-hat" aria-hidden="true">&#128105;&#8205;&#127859;</span>
+        <div class="chef-meta">
+          <b id="chef-level">Apprentice Chef</b>
+          <span id="chef-progress">No practicals yet &mdash; your first one starts your journey.</span>
+        </div>
+        <div class="chef-bar" aria-hidden="true"><i id="chef-bar-fill"></i></div>
+      </div>
+
+      <!-- shown only when the class link carries no year group (the pupil
+           self-picked on welcome, so give her a way to fix a mistake) -->
+      <div id="year-switch" class="year-switch" hidden>
+        <span>In the wrong year group?</span>
+        <button type="button" class="ys-btn" data-year="J1">J1</button>
+        <button type="button" class="ys-btn" data-year="J2">J2</button>
+        <button type="button" class="ys-btn" data-year="J3">J3</button>
+      </div>
+
+      <!-- New entry -->
+      <div class="new-entry-wrap">
+        <button id="new-entry" class="btn btn-acc btn-lg" type="button">
+          <span aria-hidden="true">&#43;</span> New practical reflection
+        </button>
+        <p id="home-msg" class="sv-msg" role="status"></p>
+      </div>
+
+      <!-- Portfolio Doc card (appears once the Doc exists) -->
+      <div id="portfolio-card" class="portfolio-card" hidden>
+        <span class="pc-icon" aria-hidden="true">&#128214;</span>
+        <div class="pc-text">
+          <b>My portfolio document</b>
+          <span>Every reflection is collected here, in your own Google Drive &mdash; and your teacher can see it too.</span>
+        </div>
+        <a id="portfolio-open" class="btn btn-ghost" href="#" target="_blank" rel="noopener">Open</a>
+      </div>
+
+      <!-- Timeline of past entries -->
+      <h2 class="tl-h" id="tl-h" hidden>My practicals</h2>
+      <ul class="timeline" id="timeline"></ul>
+
+      <div id="tl-empty" class="tl-empty">
+        <span aria-hidden="true">&#129348;</span>
+        <p>Nothing on the shelf yet. After your next practical class, tap
+        <b>New practical reflection</b> and tell the story of what you cooked.</p>
+      </div>
+    </section>
+
+    <!-- Entry wizard -->
+    <section id="entry" class="entry" hidden aria-labelledby="entry-h">
+      <header class="sv-head">
+        <button class="sv-back" id="entry-back" type="button">&#8592; My portfolio</button>
+        <div class="sv-titles">
+          <h2 id="entry-h" class="sv-title">New practical reflection</h2>
+          <p class="sv-sub" id="entry-sub">Step 1 of 4 &mdash; Today's dish</p>
+        </div>
+        <span class="save-dot" id="save-dot" aria-live="polite"></span>
+      </header>
+
+      <ol class="wiz-dots" id="wiz-dots" aria-hidden="true">
+        <li class="on" data-step="1"><span>&#127869;&#65039;</span>Dish</li>
+        <li data-step="2"><span>&#127919;</span>Focus</li>
+        <li data-step="3"><span>&#11088;</span>Taste test</li>
+        <li data-step="4"><span>&#128221;</span>Reflect</li>
+      </ol>
+
+      <!-- Step 1: the dish + media -->
+      <div class="wiz-step" id="step-1">
+        <div class="kp-card">
+          <label class="field-label" for="dish-name">What did you make today?</label>
+          <input id="dish-name" class="field field-big" type="text" maxlength="80" placeholder="e.g. Vegetable stir fry" autocomplete="off">
+          <label class="field-label" for="dish-date">When did you cook it?</label>
+          <input id="dish-date" class="field field-date" type="date">
+        </div>
+
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#128247;</span> Show off your dish</h3>
+          <p class="kp-hint">Add photos of your cooking and your finished dish &mdash; and a short video if you like.
+            They are saved straight into <b>your own Google Drive</b>, all organised for you.</p>
+          <ul class="media-strip" id="media-strip"></ul>
+          <div class="media-btns">
+            <button id="add-photo" class="btn btn-soft" type="button"><span aria-hidden="true">&#128247;</span> Add photos</button>
+            <button id="add-video" class="btn btn-soft" type="button"><span aria-hidden="true">&#127909;</span> Add a video</button>
+          </div>
+          <input id="photo-input" type="file" accept="image/*" multiple hidden>
+          <input id="video-input" type="file" accept="video/*" hidden>
+          <div id="up-wrap" class="up-wrap" hidden>
+            <div class="up-bar"><i id="up-fill"></i></div>
+            <span id="up-label">Uploading&hellip;</span>
+          </div>
+          <p id="media-msg" class="sv-msg" role="status"></p>
+        </div>
+      </div>
+
+      <!-- Step 2: focus areas (year-specific) -->
+      <div class="wiz-step" id="step-2" hidden>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#127919;</span> What was today's focus?</h3>
+          <p class="kp-hint" id="focus-hint">Pick what this practical was about &mdash; choose at least one.</p>
+          <div id="focus-chips" class="focus-chips" role="group" aria-label="Focus areas"></div>
+        </div>
+        <div id="focus-panels"></div>
+        <p id="focus-msg" class="sv-msg" role="status"></p>
+      </div>
+
+      <!-- Step 3: taste test (evaluation MCQs) -->
+      <div class="wiz-step" id="step-3" hidden>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#11088;</span> The taste test</h3>
+          <p class="kp-hint">Be your own food critic &mdash; rate your finished dish.</p>
+          <div id="stars-wrap"></div>
+        </div>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#127858;</span> How did your dish turn out?</h3>
+          <div id="outcome-opts" class="mc-opts" role="group" aria-label="How did your dish turn out?"></div>
+        </div>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#129309;</span> How much help did you need?</h3>
+          <div id="conf-opts" class="mc-opts" role="group" aria-label="How much help did you need?"></div>
+        </div>
+        <p id="eval-msg" class="sv-msg" role="status"></p>
+      </div>
+
+      <!-- Step 4: open reflection + submit -->
+      <div class="wiz-step" id="step-4" hidden>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#127881;</span> What went well</h3>
+          <textarea id="www-text" rows="3" maxlength="600" placeholder="The thing I am proudest of today is&hellip;"></textarea>
+          <span class="wc" id="www-wc"></span>
+        </div>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#128161;</span> Even better if&hellip;</h3>
+          <textarea id="ebi-text" rows="3" maxlength="600" placeholder="My dish would have been even better if&hellip;"></textarea>
+          <span class="wc" id="ebi-wc"></span>
+        </div>
+        <div class="kp-card">
+          <h3 class="kp-card-h"><span aria-hidden="true">&#128640;</span> Next time I will&hellip; <small class="opt-tag">optional</small></h3>
+          <textarea id="next-text" rows="2" maxlength="400" placeholder="Next time I make this, I will&hellip;"></textarea>
+        </div>
+
+        <div class="kp-card submit-card">
+          <h3 class="kp-card-h">Ready to add this to your portfolio?</h3>
+          <ul id="submit-check" class="submit-check"></ul>
+          <button id="entry-submit" class="btn btn-acc btn-lg" type="button">
+            Add to my portfolio
+          </button>
+          <p id="entry-msg" class="sv-msg" role="status"></p>
+        </div>
+      </div>
+
+      <div class="wiz-nav">
+        <button id="wiz-prev" class="btn btn-ghost" type="button" hidden>&#8592; Back</button>
+        <button id="wiz-next" class="btn btn-blue" type="button">Next &#8594;</button>
+      </div>
+    </section>
+
+    <!-- Celebration overlay after a successful submit -->
+    <div id="hooray" class="modal hooray" hidden role="dialog" aria-modal="true" aria-labelledby="hooray-h">
+      <div class="modal-card hooray-card">
+        <div class="hooray-burst" aria-hidden="true" id="hooray-burst"></div>
+        <span class="hooray-icon" aria-hidden="true">&#127881;</span>
+        <h2 id="hooray-h">Beautifully plated!</h2>
+        <p id="hooray-text">Your reflection has been added to your portfolio document, with your photos &mdash;
+          and your teacher can see it too.</p>
+        <div class="sv-actions hooray-actions">
+          <a id="hooray-open" class="btn btn-acc" href="#" target="_blank" rel="noopener">Open my portfolio</a>
+          <button id="hooray-close" class="btn btn-ghost" type="button">Back to my shelf</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entry preview (offline/local review of exactly what will be added to the Doc) -->
+    <div id="doc-preview" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="doc-preview-title">
+      <div class="modal-card doc-preview-card">
+        <button class="modal-close" id="doc-preview-close" type="button" aria-label="Close">&times;</button>
+        <h2 id="doc-preview-title" class="modal-title">Your portfolio page &mdash; preview</h2>
+        <p class="modal-note">This is exactly what gets added to your portfolio Google Doc.
+          (Preview only &mdash; on the school app it goes straight into your Doc in Drive.)</p>
+        <div id="doc-preview-body" class="doc-preview-body"></div>
+      </div>
+    </div>
+
+    <!-- Reusable two-tap confirm dialog (e.g. deleting a class) -->
+    <div id="confirm-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="modal-card confirm-card">
+        <h2 id="confirm-title" class="modal-title"></h2>
+        <p id="confirm-body" class="confirm-body"></p>
+        <div class="confirm-actions">
+          <button id="confirm-cancel" class="btn btn-ghost" type="button">Cancel</button>
+          <button id="confirm-ok" class="btn btn-acc" type="button">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Staff key (passcode-gated, multi-teacher class manager) -->
+    <button id="staff-key" class="staff-key" type="button" aria-label="Teacher area">&#128273;</button>
+    <div id="staff-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="staff-title">
+      <div class="modal-card staff-card">
+        <button class="modal-close" id="staff-close" type="button" aria-label="Close">&times;</button>
+        <h2 id="staff-title" class="modal-title">Teacher area</h2>
+
+        <div id="staff-gate">
+          <label class="field-label" for="staff-pass">Staff passcode</label>
+          <input id="staff-pass" class="field" type="password" autocomplete="off" inputmode="text">
+          <button id="staff-go" class="btn btn-blue" type="button">Open</button>
+          <p id="staff-msg" class="staff-msg" role="alert"></p>
+        </div>
+
+        <!-- Classes -->
+        <div id="staff-classes" hidden>
+          <p class="staff-me">Signed in as <b id="staff-me"></b></p>
+          <div class="staff-new">
+            <input id="staff-newclass" class="field" type="text" maxlength="40" placeholder="New class name, e.g. 8A HE" autocomplete="off">
+            <div class="staff-year-row" role="radiogroup" aria-label="Year group for this class">
+              <label class="staff-year"><input type="radio" name="staff-year" value="J1"> J1 <small>Yr 8</small></label>
+              <label class="staff-year"><input type="radio" name="staff-year" value="J2"> J2 <small>Yr 9</small></label>
+              <label class="staff-year"><input type="radio" name="staff-year" value="J3"> J3 <small>Yr 10</small></label>
+            </div>
+            <button id="staff-add" class="btn btn-blue" type="button">Add class</button>
+          </div>
+          <p class="staff-hint">The year group picks which focus areas the class sees &mdash; it can't be changed later,
+            so double-check it before you add the class.</p>
+          <label class="staff-toggle"><input type="checkbox" id="staff-all"> Show all teachers&rsquo; classes</label>
+          <ul id="staff-class-list" class="staff-classes" aria-label="Your classes"></ul>
+          <p id="staff-cmsg" class="staff-msg" role="status"></p>
+        </div>
+
+        <!-- Per-class dashboard -->
+        <div id="staff-dash" hidden>
+          <div class="staff-dash-head">
+            <button id="dash-back" class="btn btn-ghost btn-sm" type="button">&#8592; Classes</button>
+            <h3 id="dash-title" class="staff-h3"></h3>
+          </div>
+          <p class="staff-hint">Who has cooked what. Each pupil&rsquo;s portfolio opens for you because it was
+            shared with you automatically when it was created.</p>
+          <div class="table-wrap"><table class="dash" id="dash"></table></div>
+          <div class="sv-actions">
+            <button id="staff-refresh" class="btn btn-ghost" type="button">Refresh</button>
+            <button id="staff-csv" class="btn btn-ghost" type="button">Copy CSV</button>
+          </div>
+          <p id="staff-dmsg" class="staff-msg" role="status"></p>
+        </div>
+
+        <!-- In-page QR for a class link -->
+        <div id="staff-qr" hidden>
+          <div class="staff-dash-head">
+            <button id="qr-back" class="btn btn-ghost btn-sm" type="button">&#8592; Classes</button>
+            <h3 id="qr-title" class="staff-h3"></h3>
+          </div>
+          <div class="qr-wrap"><canvas id="qr-canvas"></canvas></div>
+          <p id="qr-link" class="qr-link"></p>
+          <button id="qr-copy" class="btn btn-blue" type="button">Copy link</button>
+          <p id="staff-qmsg" class="staff-msg" role="status"></p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="act-footer">
+    <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+    <span>OLS Digital Skills</span>
+  </footer>
+
+  <script src="qrcode.min.js"></script>
+  <script src="script.js"></script>
+  <script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
