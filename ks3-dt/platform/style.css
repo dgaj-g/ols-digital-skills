@@ -837,6 +837,11 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .exit-fb-ans { font-weight: 600; margin: 0 0 4px; }
 .exit-fb-why { color: var(--muted); margin: 0; font-size: 0.94rem; }
 .exit-done .primary-btn { margin-top: 10px; width: 100%; }
+/* The lesson's own closing note, when a lesson writes one (22 Aug 2026). It
+   sets its OWN ink rather than inheriting: .card sits on a light plate and the
+   shell's text colour is light, which is exactly the light-on-light fault
+   DFM 207(g) was ordered about. qa-readability measures it on every skin. */
+.exit-closing-note { color: var(--ink); margin: 14px 0 0; font-weight: 600; }
 
 /* ============ badge pop / finish ============ */
 .badge-pop {

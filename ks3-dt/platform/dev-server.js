@@ -8,7 +8,8 @@
      { passcode, classes[{name,owner,year,created}],
        locks:{class:{"<num>":{u,on}}}, cfg:{class:{lb,absDays,cover}},
        team:{class:{groups,reveal}}, pupils:{"<class>:<email>": leanRec},
-       userProps:{"<email>": {recap:{threads,seen}, rs:{"<num>":session}, draft:{"<num>":obj}}} }
+       userProps:{"<email>": {recap:{threads,seen}, rs:{"<num>":session},
+                              draft:{"<year>:<num>:<class>":obj}}} }
    leanRec / Larr layout is identical to Code.gs.template §3.
 
    Identity: there is no real sign-in here, so two fixed personas stand in —
@@ -411,6 +412,14 @@
     if (!s.team) s.team = {};
     if (!s.team[cls]) s.team[cls] = { groups: [], reveal: false };
     return s.team[cls];
+  }
+  /* A DRAFT BELONGS TO THE RUN IT CAME FROM - verbatim mirror of
+     Code.gs.template's draftKey_ (22 Aug 2026, DFM 249). This home was worse
+     than the deployed one: its key was the BARE lesson number, so a preview
+     draft crossed years as well as classes. Held by qa-draft-scope.js, which
+     executes both homes against the same walk (DFM 234a). */
+  function draftKey_(s, cls, numStr) {
+    return (cls ? classYear_(s, cls) : 'j1') + ':' + numStr + ':' + str_(cls);
   }
   function userProps_(s, email) {
     if (!s.userProps) s.userProps = {};
@@ -846,7 +855,7 @@
     if (p.draft != null) {
       var up = userProps_(s, PUPIL_EMAIL);
       var draftStr = str_(JSON.stringify(p.draft));
-      if (draftStr.length < 8000) up.draft[numStr] = p.draft;
+      if (draftStr.length < 8000) up.draft[draftKey_(s, cls, numStr)] = p.draft;
     }
     save_(s);
     return Promise.resolve({ ok: true, xp: num_(rec.xp) });
@@ -855,8 +864,10 @@
   function doLoadDraft(p) {
     var s = load_();
     var numStr = str_((p || {}).lessonNum || '');
+    var cls = realClass_(s, (p || {}).classCode);
     var up = userProps_(s, PUPIL_EMAIL);
-    var draft = (up.draft && up.draft[numStr] != null) ? up.draft[numStr] : null;
+    var key = draftKey_(s, cls, numStr);
+    var draft = (up.draft && up.draft[key] != null) ? up.draft[key] : null;
     return Promise.resolve({ ok: true, draft: draft });
   }
 

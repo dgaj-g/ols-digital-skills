@@ -845,6 +845,11 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .exit-fb-ans { font-weight: 600; margin: 0 0 4px; }
 .exit-fb-why { color: var(--muted); margin: 0; font-size: 0.94rem; }
 .exit-done .primary-btn { margin-top: 10px; width: 100%; }
+/* The lesson's own closing note, when a lesson writes one (22 Aug 2026). It
+   sets its OWN ink rather than inheriting: .card sits on a light plate and the
+   shell's text colour is light, which is exactly the light-on-light fault
+   DFM 207(g) was ordered about. qa-readability measures it on every skin. */
+.exit-closing-note { color: var(--ink); margin: 14px 0 0; font-weight: 600; }
 
 /* ============ badge pop / finish ============ */
 .badge-pop {
@@ -6877,23 +6882,33 @@ window.OLS_TRANSPORT = {
     }
   };
 
-  /* ================= drivecheck (side quest: HQ inspects the REAL Drive) ==
+  /* ================= drivecheck (the side quest inspects the REAL Drive) ==
      Genuine consequence: the badge is only claimable after the server has
      actually found the folders in the pupil's own Google Drive. In preview
-     the FakeServer simulates a pass and says so on screen. */
+     the FakeServer simulates a pass and says so on screen.
+
+     ITS PUPIL SENTENCES ARE CONTENT-OWNED (the 190d timerSay / 192g precedent).
+     DFM 223(b) took "HQ" out of the side quest because no lesson teaches the
+     word until Lesson 4 - the CONTENT was fixed and these three engine literals
+     survived it, so they were still saying it on her screen on 22 Aug 2026. A
+     string hardcoded in an engine never meets the language gate or the
+     read-aloud ledger, which is the whole G1 class. The fallbacks below are
+     deliberately NEUTRAL, never the old wording: a fallback is what ships if
+     content ever goes missing, so it must be safe on its own. */
   Engines.drivecheck = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
-      introCard(host, { kicker: chunk.title, title: 'HQ Inspection', text: cfg.intro || '' }, 'Run the inspection', run);
+      introCard(host, { kicker: chunk.title, title: cfg.cardTitle || 'The Inspection', text: cfg.intro || '' }, 'Run the inspection', run);
 
       function run() {
-        host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>HQ is looking inside your Drive&hellip;</span></div>';
+        host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
+          esc(cfg.checking || 'Looking inside your Drive\u2026') + '</span></div>';
         ctx.call('driveCheck', { lessonNum: String(ctx.lessonEntry.num) }).then(function (r) {
           host.innerHTML = '';
           if (!r || !r.ok) {
             var errC = el('<div class="card"><h2>The inspection could not run</h2><p>' +
               (r && r.error === 'locked' ? 'This side quest is not unlocked for your class yet \u2014 check with your teacher.'
-                : 'The line to HQ dropped. Nothing is lost \u2014 try again in a moment.') +
+                : esc(cfg.errorText || 'The website could not be reached just then. Nothing is lost \u2014 try again in a moment.')) +
               '</p><button class="primary-btn" type="button">Try again</button></div>');
             host.appendChild(errC);
             errC.querySelector('button').onclick = function () { host.innerHTML = ''; run(); };
@@ -7105,7 +7120,15 @@ window.OLS_TRANSPORT = {
               (!f.correct && it.options[f.correctIdx] ? '<p class="exit-fb-ans">The answer: ' + esc(it.options[f.correctIdx]) + '</p>' : '') +
               (f.explain ? '<p class="exit-fb-why">' + esc(f.explain) + '</p>' : '') + '</div>';
           }).join('');
+          /* THE LAST CARD OF THE LESSON, and until 22 Aug 2026 it could say
+             nothing a lesson had written for it. Config-gated: a lesson that
+             names no closingNote renders byte-identically, which is what keeps
+             J1's five signed-off lessons and both Year-One Lesson 1s untouched
+             (DFM 176's config-gate precedent). Verified rather than assumed:
+             this card IS the final surface a pupil sees - the drivecheck pass,
+             the exit items and the self-eval all run before it. */
           var done = el('<div class="card exit-done"><h2>' + (r.right === r.total ? 'Nailed it.' : 'Report filed.') + '</h2>' + fbHtml +
+            (cfg.closingNote ? '<p class="exit-closing-note">' + esc(cfg.closingNote) + '</p>' : '') +
             '<button class="primary-btn" type="button">Finish the lesson</button></div>');
           host.appendChild(done);
           done.querySelector('button').onclick = function () { ctx.next(); };
