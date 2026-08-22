@@ -85,6 +85,9 @@
     "xp": 20
    },
    "config": {
+    "cardTitle": "The Inspection",
+    "checking": "Looking inside your real Drive for your folders…",
+    "errorText": "The website could not be reached just then. Nothing is lost — try again in a moment.",
     "intro": "Now prove it. The website will look inside your actual Google Drive — with your permission, that is what the tick-boxes on your first day allowed — and check the folders are really there. Nothing else is looked at: just the two folder names.",
     "checks": [
      {
@@ -96,7 +99,7 @@
       "label": "A folder named DT Work inside School"
      }
     ],
-    "passText": "Inspection PASSED. Your Vault is real, and it will follow you to every device you ever sign in on.",
+    "passText": "Inspection PASSED. Your Vault is real, and it will follow you to every device you ever sign in on. That has earned you the Vault Builder badge — 20 XP. Press the button below to claim it, and the points are banked.",
     "failText": "Not there yet — that's fixable in under a minute. Check the exact names and try the inspection again.",
     "help": "Press the button and the website checks your real Drive for the two folders. If it fails, the message names what's missing — fix it in the Drive tab and run it again. You can retry as often as you like."
    }
@@ -166,7 +169,8 @@
     ],
     "difficulty": true,
     "comment": true,
-    "help": "Click the chip under each sentence that says how today really went, then the button that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving."
+    "help": "Click the chip under each sentence that says how today really went, then the button that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving.",
+    "closingNote": "If your points just crossed a clearance level, your Agent Kit has something new in it — go and look."
    }
   }
  ],

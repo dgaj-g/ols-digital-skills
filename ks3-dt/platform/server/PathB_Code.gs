@@ -26,7 +26,8 @@
  *    recap              {threads:{id:{s:streak, d:lastSessionDay, r:retired}},
  *                        seen:{itemId: lastDay}}
  *    rs:<lessonNum>     live recap session {items:[{id, ord:[..]}], day}
- *    draft:<lessonNum>  in-progress activity state
+ *    draft:<year>:<lessonNum>:<class>  in-progress activity state (a draft
+ *      belongs to the run it came from - see draftKey_)
  *
  * Script Properties Damien sets once: KS3DT_SECRET (from .ks3dt-secret),
  * staffPasscode, contentBase (optional override).
@@ -892,6 +893,20 @@ function vhash_(s) {
 }
 
 /* ---------- progress events (badges, XP, drafts, active time) ---------- */
+/* A DRAFT BELONGS TO THE RUN IT CAME FROM (22 Aug 2026, DFM 249). The key was
+   year-qualified (an earlier fix stopped a J2 pupil inheriting her own J1 drafts
+   for the same lesson numbers) but not CLASS-qualified, so two classes of one
+   year shared it: M McKeever had sat Lesson 1 in an earlier class, opened a new
+   class's Lesson 1 on 21 Aug and it opened at the end of her old run. The class
+   now joins the key, so an old class's drafts simply stop matching - which is
+   the behaviour wanted, not a side effect. realClass_ returns '' for a class
+   this pupil cannot reach, and that yields a key ending in ':' that no save can
+   ever have written, so an unknown class reads as no draft with no extra branch.
+   Held by qa-draft-scope.js, controls both ways, in BOTH server homes. */
+function draftKey_(cls, numStr) {
+  return 'draft:' + (cls ? classYear_(cls) : 'j1') + ':' + numStr + ':' + str_(cls);
+}
+
 function apiSaveEvent(req) {
   req = req || {};
   var email = userEmail_();
@@ -929,7 +944,7 @@ function apiSaveEvent(req) {
   });
   if (out.ok && req.draft != null) {
     var draft = str_(JSON.stringify(req.draft));
-    if (draft.length < 8000) up_().setProperty('draft:' + classYear_(cls) + ':' + numStr, draft);
+    if (draft.length < 8000) up_().setProperty(draftKey_(cls, numStr), draft);
   }
   return out;
 }
@@ -938,9 +953,7 @@ function apiLoadDraft(req) {
   req = req || {};
   var numStr = str_(req.lessonNum || '');
   var cls = realClass_(req.classCode);
-  // Year-qualified key (review finding: bare lessonNum collides across years -
-  // a J2 pupil would inherit her own J1 drafts for the same lesson numbers).
-  var raw = up_().getProperty('draft:' + (cls ? classYear_(cls) : 'j1') + ':' + numStr);
+  var raw = up_().getProperty(draftKey_(cls, numStr));
   var draft = null;
   try { draft = raw ? JSON.parse(raw) : null; } catch (e) {}
   return { ok: true, draft: draft };
@@ -1317,13 +1330,19 @@ function apiTournament(req) {
 }
 
 /* ==================== AUTO-PAIRING + MONITORED CHAT (ARCHITECTURE.md section 12) ====================
-   FIFO stage-matched pairing with a last-three trio, plus a CacheService
-   "Comms Channel" between partners. Queue + channel are ephemeral cache;
-   formed pairs mirror to ScriptProperties pair:<cls>:<lessonId> (tiny) so a
-   cache eviction can never orphan a live pair; compact transcripts land in
-   chat:<cls>:<lessonId> at completion and sweep to the Archive Sheet's
-   "Chat Archive" tab after CHAT_ARCHIVE_AFTER_DAYS. No new OAuth scopes:
-   CacheService + LockService are scope-free. */
+   FIFO stage-matched pairing with a last-three trio, plus a monitored "Comms
+   Channel" between partners. EVERY store here is ScriptProperties, because
+   every one of them must be read by a DIFFERENT user from the one who wrote it:
+   presence (pair:<cls>:pres), the queue (pair:<cls>:q:<lessonId>), the channels
+   (pair:<cls>:ch:<pid>) and the pair registry (pair:<cls>:<lessonId>). Compact
+   transcripts land in chat:<cls>:<lessonId> at completion and sweep to the
+   Archive Sheet's "Chat Archive" tab after CHAT_ARCHIVE_AFTER_DAYS.
+   CacheService is NOT used anywhere in this section and must never be: on 21
+   Aug 2026 it was measured, live, to have stopped crossing users on this
+   execute-as-user deployment, and three staff mid-lesson each looked like the
+   last pupil standing. See the storage-model header, the properties note below,
+   and DFM 248. No new OAuth scopes: PropertiesService and LockService are both
+   scope-free. */
 var PAIR_PRESENT_MIN = 10;     // live-present window, minutes (agreed spec)
 var PAIR_QUEUE_STALE_S = 45;   // a waiter this silent is pruned (re-adds on next poll)
 var PAIR_MSG_MAX = 240;        // chars per chat message
@@ -1342,14 +1361,6 @@ function callsignFill_(formed) {
 }
 
 function tsec_() { return Math.floor(Date.now() / 1000); }
-function cache_() { return CacheService.getScriptCache(); }
-function cGet_(key, fallback) {
-  try { var raw = cache_().get(key); return raw ? JSON.parse(raw) : fallback; }
-  catch (e) { return fallback; }
-}
-function cPut_(key, obj, ttl) {
-  try { cache_().put(key, JSON.stringify(obj), ttl || 21600); } catch (e) {}
-}
 function pairRegKey_(cls, lessonId) { return 'pair:' + cls + ':' + lessonId; }
 function chatKey_(cls, lessonId) { return 'chat:' + cls + ':' + lessonId; }
 function chatSBase_(cls, lessonId) { return 'chats:' + cls + ':' + lessonId; }

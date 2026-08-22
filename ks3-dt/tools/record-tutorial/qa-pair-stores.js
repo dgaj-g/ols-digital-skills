@@ -24,7 +24,13 @@ const { execSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..', '..');
 const TEMPLATE = path.join(ROOT, 'platform', 'server', 'Code.gs.template');
-const BASE_REF = process.env.PAIR_STORES_BASE || 'HEAD';
+/* PINNED at the PRE-FIX ref, never 'HEAD' (22 Aug 2026). With 'HEAD' the base
+   became the fixed code the moment the fix was committed, and the control below
+   printed "already carries the fix; control skipped" and went green — a gate
+   whose control skips itself is a gate with no evidence behind it (DFM 196).
+   af5b69b is the last commit before the pairing hotfix, i.e. the code that was
+   live the morning three staff were each released solo. */
+const BASE_REF = process.env.PAIR_STORES_BASE || 'af5b69b';
 
 let failures = 0;
 function check(name, ok, detail) {
@@ -123,7 +129,10 @@ console.log('qa-pair-stores — pairing must coordinate across users\n');
 const baseSrc = execSync('git show ' + BASE_REF + ':ks3-dt/platform/server/Code.gs.template',
   { cwd: ROOT, maxBuffer: 16 * 1024 * 1024 }).toString();
 if (/pPut_\(presPKey_/.test(baseSrc)) {
-  console.log('  note: base ref already carries the fix; control skipped (set PAIR_STORES_BASE to a pre-fix ref)');
+  failures++;
+  console.log('  FAIL  CONTROL CANNOT RUN: base ref ' + BASE_REF + ' already carries the fix.');
+  console.log('        A control that skips itself is not evidence (DFM 196/204). Point');
+  console.log('        PAIR_STORES_BASE at a pre-fix ref, or leave the pinned default.');
 } else {
   const ctl = runScenario(makeWorld(baseSrc, 'pre-fix template'));
   check('CONTROL: pre-fix code under partitioned cache solos the first joiner instantly',

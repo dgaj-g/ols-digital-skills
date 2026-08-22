@@ -332,6 +332,46 @@ control(/says Untitled/i.test(PRE_L2_SETUP),
 control(!/Signal Relay/i.test(l2Setup) && /make-it-move/i.test(l2Setup),
   'while the shipped set-up list names the project once, the way the film named it (over-tightening guard)');
 
+/* ------------------------------------------------------------------ *
+ * THE SIDE QUEST'S DEADLINE IS ONE FACT WITH THREE HOMES (22 Aug 2026).
+ * It is stated on the briefing card a pupil reads, on the lesson file's
+ * tagline, and on the year manifest's tagline (the string the TILE renders).
+ * DFM 144/167b: a fact stated in more than one place changes everywhere at
+ * once or a harness fails. This deliberately does NOT hardcode which lesson
+ * the deadline names - that is Damien's call - it holds the three homes EQUAL
+ * to each other, so whichever he rules, they can never come apart again.
+ * ------------------------------------------------------------------ */
+console.log('\n== 7. the side quest names ONE deadline, in all three of its homes ==');
+{
+  const sqFile = JSON.parse(fs.readFileSync(path.join(SRC, 'j1/lessons/j1-sq1.json'), 'utf8'));
+  const man = JSON.parse(fs.readFileSync(path.join(SRC, 'j1/manifest.json'), 'utf8'));
+  const manEntry = (man.lessons || []).find(l => l.id === 'j1-sq1') || {};
+  const brief = (sqFile.chunks || []).find(c => c.id === 'sq-brief') || { config: {} };
+  const briefLine = ((brief.config || {}).lines || []).find(l => /before Lesson/i.test(l)) || '';
+  /* "before Lesson N" is the fact; the number is what must agree. */
+  const nameOf = (t) => { const m = /before\s+Lesson\s+(\d+)/i.exec(String(t || '')); return m ? m[1] : null; };
+  const homes = {
+    'the briefing card a pupil reads': nameOf(briefLine),
+    'the lesson file tagline': nameOf(sqFile.tagline),
+    'the manifest tagline (the tile)': nameOf(manEntry.tagline)
+  };
+  Object.keys(homes).forEach(h => {
+    check(homes[h] !== null, 'the deadline is stated in ' + h + ' (found: ' + JSON.stringify(homes[h]) + ')');
+  });
+  const vals = Object.keys(homes).map(h => homes[h]);
+  check(new Set(vals).size === 1 && vals[0] !== null,
+    'all three homes name the SAME lesson (' + JSON.stringify(homes) + ')');
+  /* Controls both ways (DFM 196): a disagreement must be caught, and agreement
+     must not be caught, or the check proves nothing either way. */
+  const agree = (a, b, c) => new Set([nameOf(a), nameOf(b), nameOf(c)]).size === 1;
+  control(!agree('done before Lesson 2.', 'done before Lesson 3.', 'done before Lesson 2.'),
+    'a deadline that says Lesson 3 on the tile and Lesson 2 on the card FAILS the one-fact law');
+  control(!agree('done before Lesson 2.', 'done before Lesson 2.', 'a vault you build yourself'),
+    'a home that drops the deadline altogether FAILS it too (silence is not agreement)');
+  check(agree('done before Lesson 2.', 'done before Lesson 2.', 'have it done before Lesson 2.'),
+    'and three homes that DO agree pass, whatever wording surrounds the fact (over-tightening guard)');
+}
+
 console.log('\n=========================================');
 console.log(FAILS.length ? 'FAILURES:\n- ' + FAILS.join('\n- ') : 'ALL CROSS-LESSON CHECKS PASSED');
 process.exit(FAILS.length ? 1 : 0);
