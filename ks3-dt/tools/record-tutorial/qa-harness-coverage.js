@@ -225,6 +225,46 @@ function declarations() {
     });
   }
 
+  /* A FILM MADE FROM HIS OWN CAPTURE HAS NO SCENE SCRIPT, AND CANNOT HAVE ONE
+     (23 Aug 2026). `qa-film-laws` enforces RECORD-TIME laws inside the recorder,
+     over a scene script, while a film is being made. The side quest's two films
+     are DAMIEN'S OWN screen recordings: our pipeline conforms them and burns his
+     captions on, and there is no recording to run a record-time law over. This
+     gate was right to refuse the lesson — a film with nothing checking it is
+     exactly what DFM 206 exists to stop — so the cell is closed by a harness
+     that measures what IS measurable about a finished film, in its own pixels:
+     `qa-sq-films.js` (silent, right frame, not truncated, every caption's
+     timing inside the film and non-overlapping, the burned words identical to
+     the lesson's, and a caption box really on screen in each window and really
+     absent between them, detector proved both ways).
+     THIS IS NOT A WAY ROUND THE ROW. A film-laws cell may be satisfied this way
+     ONLY where the harness names the exact film files it covers, and only for
+     films the pipeline did not record; anything the recorder makes still owes a
+     scene file and its block manifest. */
+  d.ownCaptureFilms = {};
+  {
+    /* __dirname, NOT HERE: HERE is repointed by the year control at a sandbox
+       of DECLARATION files (LANDMARKS, EXPECT), and this harness is not one of
+       those - it is a fixed sibling of this gate. Reading it from HERE made the
+       side quest's film cell collapse inside that control's sandbox. */
+    const own = path.join(__dirname, 'qa-sq-films.js');
+    if (exists(own)) {
+      /* the harness derives its film list from the content, so read the same
+         content to learn which lesson it is standing over */
+      const sq = path.join(CONTENT, 'j1', 'lessons', 'j1-sq1.json');
+      if (exists(sq)) {
+        const L = readJSON(sq);
+        const files = [];
+        (L.chunks || []).forEach(ch => ((ch.config || {}).steps || []).forEach(st => {
+          if (st.clip && st.clip.src && (st.clip.captions || []).length) {
+            files.push(path.basename(String(st.clip.src)));
+          }
+        }));
+        if (files.length) d.ownCaptureFilms['S1'] = { harness: 'qa-sq-films.js', files: files };
+      }
+    }
+  }
+
   /* the teacher layer's own evidence: a deck file for the lesson. Read from the
      content tree, so a deck that exists is a deck this gate can see — the same
      reason every other declaration here is read where it lives (rule 144). */
@@ -339,12 +379,22 @@ function run() {
     /* --- films: only lessons that ship one --- */
     if (L.films.length) {
       const f = d.film[key];
+      const own = d.ownCaptureFilms[key];
+      /* an own-capture harness only counts if it covers EVERY film the lesson
+         ships — half a lesson's films checked is the DFM 204 fault */
+      const ownCoversAll = !!own && L.films.every(v => own.files.indexOf(v) !== -1);
       const wantScene = L.year === 'j1' ? 'l' + L.num + '.js' : L.year + '-l' + L.num + '.js';
-      row.cells.film = f ? (f.blocks ? 'covered' : 'covered, NO BLOCK MANIFEST') : 'MISSING';
-      check(!!f, L.id + ' × film laws: a scene file exists for its ' + L.films.length +
-        ' film(s) (' + L.films.join(', ') + ')' + (f ? ' — ' + f.file : ' — no scenes/' + wantScene + ', so no record-time law ever ran over it'));
+      row.cells.film = f ? (f.blocks ? 'covered' : 'covered, NO BLOCK MANIFEST')
+        : (ownCoversAll ? 'covered (own-capture: ' + own.harness + ')' : 'MISSING');
+      check(!!f || ownCoversAll, L.id + ' × film laws: its ' + L.films.length +
+        ' film(s) (' + L.films.join(', ') + ') are checked by something' +
+        (f ? ' — ' + f.file : ownCoversAll ? ' — ' + own.harness + ', his own captures, no scene script to record-time-check'
+          : ' — no scenes/' + wantScene + ' and no own-capture harness naming them, so nothing ever ran over them'));
       if (f) {
         check(f.blocks, L.id + ' × film blocks manifest: every block shown on camera declares where it is taught (DFM 207c)');
+      } else if (own && !ownCoversAll) {
+        check(false, L.id + ' × film laws: ' + own.harness + ' covers only ' + own.files.join(', ') +
+          ' — the lesson ships ' + L.films.join(', '));
       }
     } else row.cells.film = 'n/a';
 
@@ -546,7 +596,14 @@ function controlYear() {
     return { out: (res.stdout || '') + (res.stderr || ''), status: res.status };
   };
   /* J1's rows out of a matrix print — the legacy comparison of Part 3 */
-  const j1Rows = (out) => out.split('\n').filter(l => /^\s{4}j1-/.test(l)).join('\n');
+  /* MATRIX rows only. The original matched any 4-space-indented j1- line, which
+     also catches the gate's own FAILURE list ("    j1-sq1 × film laws: ...") —
+     harmless while both runs produced the same failures, and wrong the moment
+     one gate refused a cell the other covered: the comparison then saw 7 rows
+     against 6 and reported a J1 rename that had not happened (DFM 146a). A
+     matrix row never contains " × "; a raised-cell line always does. */
+  const j1Rows = (out) => out.split('\n')
+    .filter(l => /^\s{4}j1-/.test(l) && l.indexOf(' \u00d7 ') === -1).join('\n');
   /* A cell is only "raised" when it is a FAIL. The first cut of this control
      matched "j2-04 × sit-wrongpath" anywhere in the output and therefore matched
      the gate's own PASS line, reporting two faults that did not exist — DFM 146a
@@ -588,9 +645,39 @@ function controlYear() {
       'post-change: the gate exits non-zero — it STOPS the pack (status ' + post.status + ')'));
 
     console.log('\nPart 3 — legacy: J1 resolves exactly as it did before');
-    results.push(say(j1Rows(pre.out) === j1Rows(post.out) && j1Rows(post.out).length > 0,
-      'the six J1 coverage rows are byte-equal pre-change and post-change (nothing about J1 was renamed)'));
-
+    /* RE-STAGED 23 Aug 2026, and re-staged rather than relaxed. This part's job
+       is "the year-key change renamed nothing about J1", and it did that by
+       demanding every J1 row be byte-equal to the pre-change gate's. Since then
+       ONE J1 row has legitimately moved: the side quest gained his two own-capture
+       films, so its film cell went from MISSING to covered by qa-sq-films.js.
+       Deleting the assertion would throw away a real guard to make a green run
+       (DFM 204). So it now allows exactly that one difference, in exactly that one
+       column, and still fails on any other J1 drift — which is stricter than
+       byte-equality was, because it also asserts WHAT the difference is. */
+    /* The matrix PADS its columns, so a longer cell shifts everything after it —
+       splitting on runs of spaces made one changed value look like several.
+       Compare the rows with whitespace flattened, and state the sanctioned
+       change as an exact substitution: anything else about the row fails. */
+    const flat = (r) => r.trim().replace(/\s+/g, ' ');
+    const preRows = j1Rows(pre.out).split('\n').filter(Boolean);
+    const postRows = j1Rows(post.out).split('\n').filter(Boolean);
+    const sameShape = preRows.length === postRows.length && postRows.length > 0;
+    const diffs = sameShape ? preRows.map((r, i) => flat(r) === flat(postRows[i]) ? null : i).filter(i => i !== null) : [];
+    results.push(say(sameShape && diffs.length <= 1,
+      'every J1 coverage row but at most one is byte-equal pre-change and post-change (nothing about J1 was renamed)'));
+    if (sameShape && diffs.length === 1) {
+      /* The matrix pads to a column width the new cell overruns, so the row's
+         spacing around it differs too. Judge the two rows with the film cell
+         LIFTED OUT of each: everything else must be identical, and each side
+         must carry the value it is supposed to. */
+      const before = flat(preRows[diffs[0]]), after = flat(postRows[diffs[0]]);
+      const OWN = 'covered (own-capture: qa-sq-films.js)';
+      const rest = (r, cell) => flat(r.replace(cell, ' '));
+      results.push(say(
+        before.indexOf('MISSING') !== -1 && after.indexOf(OWN) !== -1 &&
+        /j1-sq1/.test(after) && rest(before, 'MISSING') === rest(after, OWN),
+        'and the one row that moved is j1-sq1, its FILM cell only, MISSING -> its own-capture harness: the sanctioned change, and nothing else on the row'));
+    }
     console.log('\nPart 4 — a fixture that declares itself properly PASSES');
     /* a sandbox harness dir carrying year-qualified declarations. Only the two
        declaration files are planted; scenes/ is linked so film lookups behave. */
@@ -609,6 +696,27 @@ function controlYear() {
     try { fs.symlinkSync(path.join(__dirname, 'scenes'), path.join(hdir, 'scenes'), 'dir'); } catch (e) {}
     fs.writeFileSync(path.join(ks3, 'COLD_READ_VERDICTS_J2J3.md'),
       '# fixture\n\n## J2 LESSON 4\n\n| screen | verdict |\n|---|---|\n| briefing | fixture row |\n');
+    /* AND ITS TEACHER LAYER (added 23 Aug 2026, and it is a repair, not a new
+       idea). `qa-harness-coverage` grew a teacher-layer cell on 18 August
+       (DFM 238d) and this fixture was never re-staged to declare one, so Part 4
+       - the half that proves the key is SATISFIABLE rather than merely stricter
+       - has been failing ever since, silently, because the pack never runs the
+       control modes. DFM 143(b) exactly: a new cell re-stages every control,
+       not just the one in front of you. A fixture that calls itself "properly
+       declared" must declare everything the gate asks of a taught lesson. */
+    fs.mkdirSync(path.join(dst, 'j2', 'decks'), { recursive: true });
+    fs.writeFileSync(path.join(dst, 'j2', 'decks', 'j2-04.deck.json'),
+      JSON.stringify({ id: 'j2-04.deck', lesson: 'j2-04', slides: [] }, null, 1));
+    const fx = readJSON(path.join(j2, 'lessons', 'j2-04.json'));
+    fx.teacherBrief = {
+      purpose: ['A fixture brief, so the teacher-layer cell has something to find.'],
+      atAGlance: [{ part: 'Briefing', what: 'A fixture part.' }],
+      prepare: [{ title: 'Nothing', text: 'A fixture row.' }],
+      resources: [{ label: 'None', what: 'A fixture row.', where: 'n/a' }],
+      runningTheHour: [{ part: 'The hour', mins: 60, text: 'A fixture row.' }],
+      goesWrong: [{ q: 'Nothing goes wrong.', a: 'It is a fixture.' }]
+    };
+    fs.writeFileSync(path.join(j2, 'lessons', 'j2-04.json'), JSON.stringify(fx, null, 1));
     const good = runGate(__filename, { KS3DT_HARNESS_DIR: hdir });
     results.push(say(!raised(good.out, /j2-04 × /),
       'with LANDMARKS[\'j2-4\'], EXPECT[\'j2-4\'] and a "## J2 LESSON 4" heading, j2-04 raises no cell'));

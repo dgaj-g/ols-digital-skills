@@ -1,0 +1,69 @@
+{
+ "burned": [
+  {
+   "from": 0,
+   "to": 5,
+   "text": "Click 'Microsoft 365' from the Launch section"
+  },
+  {
+   "from": 6,
+   "to": 10,
+   "text": "Click the grid of dots on the top left"
+  },
+  {
+   "from": 12,
+   "to": 23,
+   "text": "Click on 'OneDrive'. You can search for it if you can't see it"
+  },
+  {
+   "from": 27,
+   "to": 33,
+   "text": "Click 'My Files'"
+  },
+  {
+   "from": 35,
+   "to": 40,
+   "text": "Click 'Create or Upload', then 'Folder'"
+  },
+  {
+   "from": 41,
+   "to": 48,
+   "text": "Choose a colour for your folder if you'd like, name it 'School', then click 'Create'"
+  },
+  {
+   "from": 50,
+   "to": 55,
+   "text": "We'll put a folder inside our 'School' folder by clicking on it."
+  },
+  {
+   "from": 56,
+   "to": 72,
+   "text": "Follow the same steps as before to create a new folder, and name it 'DT Work'"
+  },
+  {
+   "from": 73,
+   "to": 83,
+   "text": "You can see that this DT Work folder lives inside the School folder, which lives inside My Files. Subfolders are folders that live inside other folders - so DT Work is a subfolder inside School."
+  },
+  {
+   "from": 85,
+   "to": 90,
+   "text": "We'll create a Word document that will be saved in the DT Work folder"
+  },
+  {
+   "from": 95,
+   "to": 107,
+   "text": "Inside the DT Work folder, click 'Create or Upload'. You'll see a range of Microsoft products that you can create and save there. Click Word Document."
+  },
+  {
+   "from": 110,
+   "to": 124,
+   "text": "Give it a name, and watch how it saves automatically (the green tick inside the cloud)"
+  },
+  {
+   "from": 135,
+   "to": 145,
+   "text": "You can see that, because we created the document inside the folder we wanted it to live in, that's where we will find it."
+  }
+ ]
+}

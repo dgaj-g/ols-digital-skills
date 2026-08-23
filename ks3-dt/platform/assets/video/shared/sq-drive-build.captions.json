@@ -1,0 +1,44 @@
+{
+ "burned": [
+  {
+   "from": 0,
+   "to": 5,
+   "text": "Click 'View All' from the Launch section"
+  },
+  {
+   "from": 6,
+   "to": 14,
+   "text": "Click 'Google Workspace', then launch the Google Drive app (if the app is already on the Launch section, click it from there instead.)"
+  },
+  {
+   "from": 16,
+   "to": 31,
+   "text": "Click on 'New', 'New Folder', and name it 'School'. Then click 'Create'"
+  },
+  {
+   "from": 34,
+   "to": 40,
+   "text": "We'll put a folder inside our 'School' folder by double-clicking on it."
+  },
+  {
+   "from": 43,
+   "to": 55,
+   "text": "Follow the same steps as before to create a new folder, and name it 'DT Work'"
+  },
+  {
+   "from": 60,
+   "to": 72,
+   "text": "We'll create a new document that will live inside the DT Work folder. Click New, Google Docs, then Blank Document"
+  },
+  {
+   "from": 74,
+   "to": 91,
+   "text": "Give the document a name. Documents created within Google Drive are automatically saved any time you add something or make a change - just look for the little tick inside the cloud and you'll know it is saved"
+  },
+  {
+   "from": 94,
+   "to": 110,
+   "text": "You can see that the document lives inside the DT Work folder, which lives inside the School folder, which lives inside My Drive. Subfolders are folders that live inside other folders - so DT Work is a subfolder inside School."
+  }
+ ]
+}

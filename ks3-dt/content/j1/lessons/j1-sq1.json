@@ -42,8 +42,56 @@
      {
       "icon": "🗄️",
       "title": "Open your real Drive",
-      "text": "Open a new tab and go to drive.google.com — on a school computer it signs you in by itself. At home, sign in with your C2k email (yourusername@c2ken.net).",
-      "confirm": "My Drive is open"
+      "text": "Log into My-School, the way you do every day. In the Launch panel, click View All, then Google Workspace, then Launch App under Google Drive. If Google Drive is already a tile in your Launch panel, click that instead. At home you can go straight to drive.google.com and sign in with your C2k email (yourusername@c2ken.net).",
+      "confirm": "My Drive is open",
+      "clip": {
+       "src": "assets/video/shared/sq-drive-build.mp4",
+       "label": "Show me how",
+       "title": "Getting into Drive and building your folders",
+       "note": "The film does this whole card: getting into Drive, building School, building DT Work inside it, and putting a first document in. The one it makes is called Test Document - yours gets your codename instead.",
+       "captions": [
+        {
+         "from": 0,
+         "to": 5,
+         "text": "Click 'View All' from the Launch section"
+        },
+        {
+         "from": 6,
+         "to": 14,
+         "text": "Click 'Google Workspace', then launch the Google Drive app (if the app is already on the Launch section, click it from there instead.)"
+        },
+        {
+         "from": 16,
+         "to": 31,
+         "text": "Click on 'New', 'New Folder', and name it 'School'. Then click 'Create'"
+        },
+        {
+         "from": 34,
+         "to": 40,
+         "text": "We'll put a folder inside our 'School' folder by double-clicking on it."
+        },
+        {
+         "from": 43,
+         "to": 55,
+         "text": "Follow the same steps as before to create a new folder, and name it 'DT Work'"
+        },
+        {
+         "from": 60,
+         "to": 72,
+         "text": "We'll create a new document that will live inside the DT Work folder. Click New, Google Docs, then Blank Document"
+        },
+        {
+         "from": 74,
+         "to": 91,
+         "text": "Give the document a name. Documents created within Google Drive are automatically saved any time you add something or make a change - just look for the little tick inside the cloud and you'll know it is saved"
+        },
+        {
+         "from": 94,
+         "to": 110,
+         "text": "You can see that the document lives inside the DT Work folder, which lives inside the School folder, which lives inside My Drive. Subfolders are folders that live inside other folders - so DT Work is a subfolder inside School."
+        }
+       ]
+      }
      },
      {
       "icon": "📁",
@@ -60,7 +108,7 @@
      {
       "icon": "📄",
       "title": "Put your first real file in it",
-      "text": "Inside DT Work: + New → Google Docs. A blank document opens — type your codename (or your name, if Lesson 1 hasn't given you a codename yet), then close the tab. No save button needed: Google Docs saves to the cloud as you type.",
+      "text": "Inside DT Work, click + New, then Google Docs, then Blank document. A blank document opens - type your codename (or your name, if Lesson 1 hasn't given you a codename yet), then close the tab. No save button needed: Google Docs saves to the cloud as you type.",
       "confirm": "My first file is in DT Work"
      },
      {
@@ -115,19 +163,92 @@
      {
       "icon": "☁️",
       "title": "Open your OneDrive",
-      "text": "Log into My-School, the way you do every day. In the Launch panel, click Microsoft 365 Web Apps. When it opens, click the squares menu in the very top-left corner and choose OneDrive.",
-      "confirm": "My OneDrive is open"
+      "text": "Log into My-School, the way you do every day. In the Launch panel, click Microsoft 365 Web Apps. When it opens, click the squares menu in the very top-left corner and choose OneDrive - if you cannot see it there, type OneDrive into the search box at the top of that menu. Then click My files, down the left-hand side.",
+      "confirm": "My OneDrive is open",
+      "clip": {
+       "src": "assets/video/shared/sq-onedrive.mp4",
+       "label": "Show me how",
+       "title": "Getting into OneDrive and building your folders",
+       "note": "That squares menu sits in the very top-left corner of every Microsoft 365 page. The film goes on to make a Word document inside DT Work - you do not have to do that part, it is showing you what this cloud is for.",
+       "captions": [
+        {
+         "from": 0,
+         "to": 5,
+         "text": "Click 'Microsoft 365' from the Launch section"
+        },
+        {
+         "from": 6,
+         "to": 10,
+         "text": "Click the grid of dots on the top left"
+        },
+        {
+         "from": 12,
+         "to": 23,
+         "text": "Click on 'OneDrive'. You can search for it if you can't see it"
+        },
+        {
+         "from": 27,
+         "to": 33,
+         "text": "Click 'My Files'"
+        },
+        {
+         "from": 35,
+         "to": 40,
+         "text": "Click 'Create or Upload', then 'Folder'"
+        },
+        {
+         "from": 41,
+         "to": 48,
+         "text": "Choose a colour for your folder if you'd like, name it 'School', then click 'Create'"
+        },
+        {
+         "from": 50,
+         "to": 55,
+         "text": "We'll put a folder inside our 'School' folder by clicking on it."
+        },
+        {
+         "from": 56,
+         "to": 72,
+         "text": "Follow the same steps as before to create a new folder, and name it 'DT Work'"
+        },
+        {
+         "from": 73,
+         "to": 83,
+         "text": "You can see that this DT Work folder lives inside the School folder, which lives inside My Files. Subfolders are folders that live inside other folders - so DT Work is a subfolder inside School."
+        },
+        {
+         "from": 85,
+         "to": 90,
+         "text": "We'll create a Word document that will be saved in the DT Work folder"
+        },
+        {
+         "from": 95,
+         "to": 107,
+         "text": "Inside the DT Work folder, click 'Create or Upload'. You'll see a range of Microsoft products that you can create and save there. Click Word Document."
+        },
+        {
+         "from": 110,
+         "to": 124,
+         "text": "Give it a name, and watch how it saves automatically (the green tick inside the cloud)"
+        },
+        {
+         "from": 135,
+         "to": 145,
+         "text": "You can see that, because we created the document inside the folder we wanted it to live in, that's where we will find it."
+        }
+       ]
+      }
      },
      {
       "icon": "📁",
       "title": "Build a School folder here too",
-      "text": "Click + New → Folder and name it exactly: School. Now both of your clouds have the same tidy top level — future-you will be very grateful.",
+      "text": "Click + Create or upload, then Folder. Name it exactly: School - you can pick a folder colour too, if you like. Now both of your clouds have the same tidy top level - future-you will be very grateful.",
       "confirm": "OneDrive has a School folder"
      },
      {
       "icon": "📁",
       "title": "And DT Work inside it",
-      "text": "Open your School folder, then + New → Folder again, and name it exactly: DT Work. Now BOTH of your clouds have the same two folders. This one is your DT home on the Microsoft side — later in the course, the DT work you make in Word, Excel or PowerPoint will live here.",
+      "text": "Open your School folder, then click + Create or upload and Folder again, and name it exactly: DT Work. Now BOTH of your clouds have the same two folders. This one is your DT home on the Microsoft side - later in the course, the DT work you make in Word, Excel or PowerPoint will live here.",
       "confirm": "DT Work is inside School — in OneDrive too"
      },
      {
@@ -180,5 +301,5 @@
    }
   }
  ],
- "keysEnc": "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"
+ "keysEnc": "pKRhiWGU1uA7tVDshRxe5hvC0IgIrXR+S1lC3UKqI42RxART4FM0ckehZQjj2p6joI5EmWMbf/TtdMTthc3yrS/GkWwZKanvPUp3jXNbukKYwDLjYU2BrXHyHpMqxfgkHGbcDumN8XoWpsflo0qQvOrYv2YjJQEw+JqDnOhx8EA2B3AkCwZatMmucwK0GTLPJa4MhVC+a1+W26pjMozKOyfFocV8V5qhGLR/T83aXLU65gccQUC/SShJ4M/CSWny3/6FZwX9rMJqso9z+gi/uCsTM6t03H8f4ImNhQzvvReo0XB8SY5O+OEr/pkOA1gUxXjIvxVOJmdg4lABTr3a7mVSp1xjKFSK0XjQ92u8/8fbiK5pfJpAnmLOxTB+8hBh+naq/sIis0q6n8QCc5o+JhxW/fl3TCTghunttdOFPt0rijTtehvbwJsw+KFgJqHg9Pb9/WZ6J+sODRuMBy+LQXzf28eWQnqavbkWcmWtvmatcN+FvT76GP86wRnE7Q+Dc5EkRC8usKNozvtK7Mg06ExNVSWY17YGWYDP6LNbsPT0SzY2JP6vKkfj+5nl1e/vKur/iEtjZ8cZiaCMp+gKXn9M3FHPIYEQCPPJT0GAQdLmdrj2+PlrHqEr9aTmvxnk+CwCu+3WPUlYLF5dG0ekV/gXWTJZpQ+GiahtbI8GccsxXD9SVZ97Vzc4uK390+z8Nr0uI/p9teziGGnB74H6AgEWV5fG8N+1oTcEa2nOXvYFyJcIsk1sY6n0pUU7Pk3b/6z/X43QuEtnWm+Nr2KE/ZwQG96XZPxGqi1zC4y1LJKQNloflDsBGAfam5m9fcz9Eut7+rOTGR+RqDCvj2QC5zpjevlt5oibF4xKl3iouR0IbIclgsfd7c7uxNZ6GULlmOgFnWDUZDZVHphInyziTkUluxlTRtfUW8jbIOVd662uFmG/ZVWoZ+6zSFExDxHhlHNEoNgbrwYvIQjCySxfKh3hugh4Ualb1E4IjGPJbZnbDkAUWozHvCMLMurvD2+Xnd4d0rVHN48yPAOrnmEPTYqjwVsijbIJPAKbQbsWRk3z+C4ZASJxPHAD4NoT0Aq3eWBkm5Vsn6XKGBe0lKuZWQp4Ngy5WaOY3sQxkEit5ZaFoCo7Lu/m3z/GNTu3Ib2n1E/XAJDIaWU9fUDXMDu8HeTgHn7KPd4RB6/SC51TXDsqMzWEwrSr0KxJ1jj1Hja7a55MlfyU6p1Wq5WCbhMC+l6jXlH2bVNVPXv/BfQpDyeoeVBsompMEt7JCvyD1PW30S2L8hxsBwFWeTJdwrNJZhOzAmlxv+vJ8rKeUs9y92Ud3hFRSKefEOcc1xplCQWeVqITGacoq50eOkqwdrfM+0b79yjRD56DidyyxBWNpddso9Hddu6+vn/56M+I6K7gGbpFdkF6XSgqwEMiPdDf/41BfjXIRJhoJuQ9m9ABFyhXEBpNGj2YvIPJmaFxIBcPSX9KIVwz8zmTakVLbInhg3yAxHMbkJvDR72q/jVN3ADrDw5ZdVmVBOaECM0M40+BIzrxapk/PKE5T9FHgaEo6RYOoqAv0/GG65qG2QMzOqoRFK21n8CfjEilE9f2Ty8WEjRLbzlTFl2GRQfVqVu+j+GBRGc1syixAL2mAL2sbM0WQjFOY8s9EMLzWSiCiJMJ8IllOGAKEcpyD1o6hK3Kvtq6LZPx2L0FeWnuSUdJ9DTPaDRfMynhdoG1wZJUmHy6yfyd+OOSqtm34o2driRk5bfb3r/PlaRGqfHbS2YpJ1oMG4Y9FKpHCH4+3u+KeJxK54bH8aORpcBrt5Uc85EwTCt2CbhG1BczMlImpsZj6XsYBADaTGDDLsSJv4z8d9u8YKquO+axpPAmn2Y4crTS4wRSiOuQB7++kAd3qUSctGVy2v7cXlo83VPdN+aOak8hb8kl2uGTERddKQ29ix+zlfwhP0i+Of3DJAlSs3DJeVyJvn2/RgKhBTpBCq9bF/6iZeM+7njfOEwMAnxvsYDFi7THBf5bzNsGrU+CAlLTM0Eq/kivD8Ombj9hKnRHuhSUhmYHOAIXAmYrIJcn4z2fQ+lc+ELfUG1zI5YgJ9vtV3/zyEa3U2i9xHRi75GqKv1Ajo6Xuwo/+7DqOw/FIHnNqcjOJDgxccQ0eIv3TQDWDZGxY63xn2IqKcqZcNHWzRlJiHbnEtClQC1Ow8U/ms2awAo/PunCwEfgk5A7/21AmnjHNjt1KdMT24ey9h8uB/33TyqJiZnhrsRSQPjJnsFcZQb4ktTjIjIMY4h8+4veLItoyfmbILBqFazJ5U4G4Lzm5AaDGSqV/3Ed9PnK4/fwTtAV0DtkC3s+S9NOqy8jxNTfYk1aTfHU92hB6VA6xSBJ+kMv5/4bO95ksYJwfWy3OiuWxCB5KxIX13EcoVXXuBiUMV+H3P1kt4SULm8STrd6Iw0z4XXgs1MciG4LRMECyTqCxtYJtB4mgdhbgyJBQ6RRIwenwhAyuZ7AkyexXH8oEKPV3Wdr4bpnfJj0x4mNVXZcprjiZkvJtHerspiMSKo7PxIAq6zo4W5gvgj7X/UQEHYwtp/1B3kE4RcRx+l4skNf7QzewcrSEkPmjdWSIiEh+0yhgIInBj1Wdes7r72dnRRcv8OUQikKWKiFeYcM5ppIohR0hxQHlAmOFoU/7+JP55AHq3Ebj/DBccqRk2pskDvwhMrIoJ6KGG4Uv+SLQi/zllvUUmwNDKHhEjx22AQ0lNGkFUGrpWlz5xBnkrEzJWN9WLiCocmoAXxBBbhOexJax3Vizi2ZRxhU/jBMfyBOEk3M4dnmQydo0IdFhCyaldqjQ1hl5YwLx75BvgFnLgOxSL8ta6rqq53ZFQvYiAoVA90vU6euRsp0J18BwIlgDBs6zmhaY38pqDkNl20WKIN5LooOdO/0aGzcO6/Djk6MCcg/m48XlepiJEYsGD7jKGz4G2eaBgU8h23PZ+PgZhpFKSt/ZakTRI2e8BNzQvkCIUWxmavYDHdsgd+NQg2zWYiCbPo7XILarPeIJ+3xExNhxtrVbpHAjKIc/9Ces7cfIf1DwVtGJFh2TlFCvlepPQyQ4sk5aSzBcbSg5GqlV74hCN5/RiBxKXLpT0c1UOW45CyrKWhdkfr0TvJrb3t+TVxGayw+WPf3ydkHs7UEfT6Kq09cyjwPY87INGQl0SSpG5loU/HZ7x8YOVWm5X9ZmDCXE9xTs1FmayQGzMqjII1EhqYLmhRVrSqc1nQl287OBTQK9YNz+iUqeGeZoZnoL1bo3VGLjR14t6l51ni38KXn/N3qUyy8RqocrR+gqP04PFlTARBa9RW4n8R0wGxrNB2TuW/X4P7N8cSfqWayOfy846sAoccj59Dty55dJ+76ONT7E6Q7EydRecKFatHfzH8uJS/3tX7MXOKECKSk31OQ6dE8/wIdAg7G0Pc5fcszfLrjfVR64deLUPlYYjnkK//ehcnBneGtcnMcPRjMn7KQB+pANTRV26pj9hl6DiyWNq9sgiLDwQegtgyDej/JYlPCsajY0qQ+QQPICxON8SpSAtTidoLMybc53FIGlsvOvtIxfjqm20oNQPrQ0GW00+Mv9e1cldyDDv2cyUMNsrjgCcyqvUGctBLlkR+L4euLorEENCD62muUKqRmGbdxwyaUaepjWQXikU26yD52bIy6HOfDMXee0BwQa2bfAq3H7QCNgjyG5/ohq08dCCFb4a9MUodBqVsgy5iGuP9MCCPhyBCdlJyMvpeq0SYiILRgqpmTsF07otsZW2TrgietTO9foRwgB+GyvxcQPbNkPFtbzJK5bnHNUXqlixNJvku9fOLto3jXW5TIaF7MZvwxEM93oFp3uv8HWbLmc15FfT3MNfULpcSLIhccP38TexsamGXY/u/ZsfFklI3iSGcEYhv/W94C0hG5ym/MIBzuqofkBL4moympys9iWdGCP3ovjJgvI5dYi3gbiyxGJFtdsQ6lk8Ag3Z6GlHqJE91gZDodr2r4gJTZtg3D0f0vjIglTb1hz8tFzSQTJgwzeDtdt+eXY9kC/j/uXzKjVvb1AT2XH+fSCMQM6O3NHGrdzsk8x0VzLzV2jj26UDXdwJZVVPbYDyltODdmPu+OoyWfB/pkFVO9Hcw85zr82ZaUueeoaEUM1knxf963JA37TnnD8ypw9XJcJJOVDK/gy+V1zb7Ihv4UPCfJbLvi0TjWWueOfkTlMvYkxL0VEQa2J3mq2MQF+uIzQxxXihyS2QsQV1J3mXa1pJMw9mfOxGtxPlYk+MjKAtKIMPGedQhCVKLKvoDoqpbFtcjzUQqULCKHQI3Y92oxHJEr6BJiMKaUWQloYM8nVhEK1Rg/JyTCKdZr0PMbolLImJJXaUqGhSfwsJthxwNGduNfzRBz1Z89rDbFhXzk7MY9Yvk/hLEeo7JTiBY/1+5Mrfh8r40JmJCkrK1Uyp8ZbjfpNwrORa0N+CjltwJdcj/DngBbP91rQQmS/gNgnAVjEUuJdEpsygy/87t2YGSWFc2hr+1zVXcYuUcS0EtCdRB6K0EviUTaYtIfrZ/N7HaCu5ne17HB8L/iw5OCWOv7FBR9Ule1AZLlXE9Gafa/3BGEUMn9SNSgtNjWt9I4OMNoKQ8cOqqGp5i9iGwH08UvOrAbxhGBMRPl5/XYLSB8QxiVYhsAU93aAH6U/A9zfcvSGC2VFZ4WWO4x+sfDhYyE64PcFNkMow9zIRiEJAeZ2XFANQNTOM5sAgyIpbcYnGPZSe98J55K5n34h4ndlJYXDzsciHQKUyjq4xsb+oxU5xPEgZ/3ErgBOu9ZR5dp/zFLBI+wAgc2D8/aOXV19zoQqMT5rHJ0LNaYmGDHBJfgkWUwYlMFoslboeIEdBkc+zhGY5QNmuIOoj+uC+bEaIQMr5rLu8Finqr3MSWHSYrdGVCN0g/DzEmDHurnHQEGyu5pGoC+dJJnsSTkx/gqqa5lJVVHPNuEC8OPSUD8aEDaK++YWktUrhLLon27gWnKv2QTQMCUaAh44BuhA5KeGeXEjq5CXxu9s77neA/U+pMG0tgPt6zqcF95MD+mr4MUDHRZ0yO6D2AIuS5pcEMcQAQ2WGLh4qrNzmSAlzljKpLYeFIqy3hZ0/Md1oPvXa/Qngl9ctSiGa3gaXyvxr3CiE6b4OjH0VZGfy7pI+ksngsRjbInqR0snKYo8xa0OszgzMKbEJ78JFw6N+3jaULlElnZLIcMj406gUKm5p18q5TAOXWy9SQy0SNX6uEpS7oVI3NQP6TFi9jiYeKJ2PfWXRofgvrtddKBcwVmfXwNBzXrqPSc7gIbL+wXMS0hHlOq4q8NANRltVbXpQO1PpGrO131+uCPq6YSoSoD0h5QueQkZsuenXqzjlQDH77rCqmq7vefISjUTPrJ7uUIskJfSs/ljGMuzgD84A0mdlbd1PvsDw58v9Xp5A2669rlceWAhvnln3OhcJa39LrmGCh5PaI0kL3rFxgHbdsqJ3n7aBXf5ifV7urOAHjRZXRiiZKhBjoUKPmsqUVy1aW4uu/3OlAns1HT3ClQ9nRb62vLKCgU9U55wl6PwXXJMHHZl1CRuc9b9xneNOSadh/5NUsBFiO8HednB2a+LLvnJfzbAEyICPUnerVO2yPg+1oBSawmY86ehDzgFXTcUj5jNN9fxxCFSWYrfwW7IF1fOLWfa7UVCVfcIEmwtKak7IZnUwhoOu5noI5jN88JazSQIl0+9dutc8zGjnDaUcdEbmiFHlHNEs7YoXoDzLqYBhf4vVjUfRjytIufWPGuuTVax1zDzPFGjbI1eoRu0qESr4qJLV+jxTROYoUC0mZSI35kBT/3B37Pm2ZcnbcZVt1+61ZOMKqVaIybwttwC/MB3J3Uw03P34yan42QuvhZrzYrWWJJzdmFcU7oiDLkMMeTaLR4/eoLb+zDgV7IDfQc2CIxvH+YBOzsseIkDkPzMIeWGPlNmQjaoxfby9kNhDD9zhcjVS+MMZiBScb739VJpgbcoRwdoqmzKsn1rmVnWaBCa1Bn7kBufI6cKUcdmzMEyq5L0MGn5N5iPkSafj8sIOI4PPIHTVb0qVvN4w1mGmHFr7Lnr2gwrQqJ7L7I1hJ4TtsusUMKXNihhFibPe7R1/2CodKsGlsapUgcrxYLq0pwSJj47GBdXdMumiKAS7nb2NRnEj/eoXa9k3lRs0Bd/bYGi00V+5XJ7+TlyJnyUa7VEeK+TaCy8TIWwIpoQBV2oSE3fhZDtWrRDdDd7GgaPZAPKaEG9GlLrCRTz4BJNT/uJb0cm7SLZUz7BEtcYG6q+ElrjQvEdKxsn9Ewe03gxgfFSElGFOYEo6Ac9qwvsijyAV6f4o8wYgI359ZCObt42E6hy6UzeZn3Tc9CrtNXB4LtA7gvi3+7Jrs2v+0nKCK4zz0pWNDjbqDvEAQR7i3J5qcXJ1QbXX2Jt6P8DZEpqixeiuKgp5vFXL9wf9NczRzLkW1xp3QRwQhY1r3XGC3oQWYXiBifN9MY0vetwIREZ5l5PNLY6wQIEIMfZHF9xKBp7njHZLe9rotwcyzBsvOwcXIfNJiwyr2biyhwDhjJ"
 }
