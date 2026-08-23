@@ -134,7 +134,14 @@ const HUB_TEACHER_KEYS = ['coverNote', 'absenceNote'];
  * silently ignores anything it has not been told about.
  * ------------------------------------------------------------------ */
 const MACHINE_KEYS = new Set([
-  'id', 'src', 'href', 'url', 'file', 'poster', 'img', 'icon', 'engine', 'phase',
+  /* `video` joined this set on 23 Aug 2026, when the briefing engine's dead
+     `video` field was finally wired (DFM 253a). It is a file path exactly like
+     `src`, and it had been null everywhere until then — so the moment it held a
+     string, this fail-safe walk would have demanded a read-aloud judgement of
+     "assets/video/shared/sq-cloud-explainer.mp4". A gate inventing work is the
+     DFM 146a fault. The film's WORDS are not exempt: they live in `videoFilm`,
+     which is walked in full. */
+  'id', 'src', 'video', 'href', 'url', 'file', 'poster', 'img', 'icon', 'engine', 'phase',
   'mode', 'year', 'kind', 'kinds', 'logTerms', 'skin', 'clearToast_dev',
   /* THE INSPECT ENGINE'S TWO MACHINE FIELDS (16 Aug 2026, found while writing
      J2 Lesson 1's ledger records). `art` is a file path exactly like `src`, and
@@ -389,6 +396,23 @@ function hasRealVerb(text) {
   return real;
 }
 
+/* An instruction that INTRODUCES a menu path ("Click …", "Choose …", "Go to …")
+   is not part of the path. Drops a leading verb (and a leading adverb or "then"
+   in front of it) so the arrow ratchet judges the PATH, not the instruction that
+   points at it. Returns null when nothing is left to judge. */
+function stripLeadingImperative(phrase) {
+  let s = String(phrase).replace(/^(?:and\s+|then\s+|now\s+|first\s+|next\s+)+/i, '').trim();
+  if (!s) return null;
+  const doc = nlp(s);
+  const terms = (doc.json()[0] || {}).terms || [];
+  if (!terms.length) return null;
+  const tags = new Set(terms[0].tags || []);
+  if (tags.has('Verb') || tags.has('Imperative')) {
+    s = terms.slice(1).map(t => t.text).join(' ').trim();
+  }
+  return s || null;
+}
+
 /* COMMAS ONLY. An em-dash, colon or semicolon ENDS the run — otherwise the
    appositive "Design ONE more change — a second danger, a speed-up —" reads as
    a fragment chain, and it is perfectly good writing. His sentence still fires,
@@ -585,6 +609,83 @@ function arrowChainCheck(rawText, names) {
 
   const segs = text.split(/\s*(?:→|->)\s*/);
   if (segs.length < 2) return out;
+
+  /* ── THE ARROW RATCHET (DFM 253c, his law of 23 Aug 2026) ───────────────────
+     HIS WORDS, on step 4 of the OneDrive card: "I don't agree with having the
+     arrow. I think it needs to be better explained. Like, the way we use our
+     language harness." The rule he set: an arrow may mark a MENU PATH a pupil
+     clicks — "+ New → Folder" stays — but it may NEVER stand for "goes to" or
+     "becomes" inside a sentence that states a rule. Write the sentence out.
+
+     WHY THE WORD-COUNT RULE ABOVE COULD NOT REACH IT, from the code rather than
+     from a guess: it bounds each step at COMMAS, so his own sentence — "Work
+     made in Word, Excel or PowerPoint → OneDrive" — measured its left step as
+     "Excel or PowerPoint", three words, and passed. Its sibling one line below,
+     "Work made in Google Docs → Google Drive", was caught only because it
+     happens to have no comma in it. The two sentences are the same fault and
+     the gate saw one of them.
+
+     WHAT SEPARATES THE TWO KINDS, mechanically: a menu path NAMES things on
+     screen, so its clause is verbless once a leading imperative ("Click…",
+     "Choose…") is set aside. A rule statement makes a claim, and a claim has a
+     verb of its own — "Work MADE in Word…". That is the test. */
+  /* THE TWO SIDES ARE BOUNDED DIFFERENTLY, and the asymmetry IS the fix.
+     BEFORE an arrow, a comma is usually inside the phrase the sentence has been
+     building — "Work made in Word, Excel or PowerPoint" is one subject, and
+     cutting it at the comma is exactly how the old rule measured a seven-word
+     rule statement as the three-word name "Excel or PowerPoint" and let it
+     through. So the left side runs back to real sentence punctuation.
+     AFTER an arrow, a comma genuinely ends the path and the sentence moves on:
+     "+ New → Folder, make 'School', open it" names ONE target, Folder. So the
+     right side stops at the first comma. */
+  /* AN EM-DASH ENDS A CLAUSE ON BOTH SIDES. Found by the ratchet firing on the
+     very sentence DFM 254 adjudicates: "Build it right now in Drive — + New →
+     Folder → 'School', then 'DT Work' inside it — and press the check button
+     again." His entry says in as many words that "its arrows are menu paths and
+     legitimate under 253c", so the gate was wrong and not the sentence — an
+     em-dash brackets the path as an aside, and reading back THROUGH one turned
+     a two-word path segment into a seven-word instruction (DFM 146a). His own
+     "Work made in Word, Excel or PowerPoint → OneDrive" has no dash in it and is
+     still caught, which is the control below. */
+  const SENT_L = /[.!?;:]|[—–]|--|["“”]|\bthen\b/;
+  const SENT_R = /[,.!?;:]|[—–]|--|["“”]|\bthen\b/;
+  const firstArrow = text.search(/\s*(?:→|->)/);
+  const lastArrowEnd = (() => {
+    const m = [...text.matchAll(/\s*(?:→|->)\s*/g)];
+    return m.length ? m[m.length - 1].index + m[m.length - 1][0].length : -1;
+  })();
+  if (firstArrow > 0 && lastArrowEnd > 0) {
+    const leftParts = text.slice(0, firstArrow).split(SENT_L);
+    const rightParts = text.slice(lastArrowEnd).split(SENT_R);
+    const sides = [
+      { where: 'before', phrase: (leftParts[leftParts.length - 1] || '').trim() },
+      { where: 'after', phrase: (rightParts[0] || '').trim() }
+    ];
+    sides.forEach(side => {
+      if (!side.phrase || wordCount(side.phrase) < 2) return;
+      if (named.has(side.phrase)) return;
+      /* a LEADING imperative introduces the path, it is not part of it:
+         "Click + New (top-left) → New folder" is a menu path with an
+         instruction in front of it, and condemning that would make the gate
+         demand worse writing (DFM 146a). */
+      const bare = stripLeadingImperative(side.phrase);
+      if (!bare) return;
+      /* BOTH CONDITIONS, and the conjunction is the whole point. A name is short:
+         "Make a Variable" is three words, "+ New" is two, "on shake" is two. A
+         RULE is longer than a name AND carries a verb of its own. The first cut
+         of this ratchet tested the verb alone and condemned five perfectly good
+         menu paths in locked lessons — including "Variables → 'Make a
+         Variable...' → name it score", which is exactly the notation Lesson 2 is
+         locked around. A gate that makes me mangle correct text to go green is
+         the fault, not the text (DFM 146a). */
+      if (wordCount(bare) <= MAX_STEP || !hasRealVerb(bare)) return;
+      out.push('rule-statement arrow (DFM 253c, HIS LAW): "' + side.phrase + ' →" — the ' +
+        'words ' + side.where + ' the arrow are a sentence with a verb in it (' +
+        JSON.stringify(bare) + '), so the arrow is standing for "goes to", not for a menu ' +
+        'path a pupil clicks. An arrow may mark a path ("+ New → Folder"); write a RULE out ' +
+        'as a sentence.');
+    });
+  }
   /* consecutive arrows belong to ONE path while the segment between them is a
      bare name (no sentence punctuation in it) */
   let chain = 1;
@@ -1106,6 +1207,53 @@ function objectFields(clean, inStr, from, to) {
   return fields;
 }
 
+/* ═════════════ A SCENE WHOSE WORDS LIVE IN THE CONTENT ════════════════════
+   scenes/lS1.js (the side quest's cloud explainer, 23 Aug 2026) holds NO pupil
+   words at all: every caption, and the title card's kicker, title and sub, are
+   read out of the lesson JSON, so they are checked by the CONTENT gate and the
+   read-aloud ledger like any other pupil sentence (DFM 190d — the arrangement
+   his two own films already use).
+   That is strictly better than the static film extractor, but it comes with an
+   obvious way to rot: somebody adds ONE hardcoded caption to that file next
+   month and nothing anywhere reads it. So the arrangement is asserted rather
+   than trusted — every cine call in a content-fed scene must be handed a
+   variable, never a string literal. (This is the same instinct as the
+   static-only law, pointed the other way round.)
+
+   REPORTED AND NOT CHANGED THIS ROUND, because it is a finding in lessons he has
+   signed off and DFM 222(a) says those come to him before anything moves:
+   `collectFilmStrings` scans `scenes/l[0-9]*.js` ONLY, so **scenes/j2-l2.js and
+   scenes/j3-l2.js are not scanned at all**, although both carry FILM_MAP
+   entries naming the lesson and chunk they belong to. The run says so in its own
+   output — "across l2, l3, l4, l5" — and nobody has read it as the absence it
+   is. Turning it on is a one-word regex change; what it may then find in two
+   approved J2/J3 films is his call, not mine. */
+const CONTENT_FED_SCENES = ['lS1.js'];
+function contentFedSceneProblems() {
+  const errs = [];
+  CONTENT_FED_SCENES.forEach(file => {
+    const f = path.join(SCENES_DIR, file);
+    if (!fs.existsSync(f)) { errs.push('scenes/' + file + ': declared content-fed and not there'); return; }
+    const src = fs.readFileSync(f, 'utf8');
+    const { clean, inStr } = scanSource(src);
+    const rx = /\bcine\.(caption|captionShow|callout|card|curtain|drop)\s*\(\s*(['"`])/g;
+    let m;
+    while ((m = rx.exec(clean))) {
+      if (inStr[m.index]) continue;
+      errs.push('scenes/' + file + ':' + (clean.slice(0, m.index).split('\n').length) +
+        ' cine.' + m[1] + ' is handed a STRING LITERAL. This scene\'s words live in the ' +
+        'lesson JSON so the language gate and the read-aloud ledger can see them (DFM 190d); ' +
+        'a literal here is a pupil sentence no gate reads.');
+    }
+    /* and it really must be reading them from the content, not from a copy */
+    if (!/videoFilm/.test(src)) {
+      errs.push('scenes/' + file + ': it no longer reads videoFilm out of the lesson — ' +
+        'the words and the judgement have come apart (DFM 144)');
+    }
+  });
+  return errs;
+}
+
 /* ---- the extractor ---- */
 function collectFilmStrings() {
   const out = [], errs = [];
@@ -1567,6 +1715,38 @@ function runControls() {
   control(clean(OK5) === 0, "Lesson 2's backticked BLOCK LISTING is not judged as prose (code exemption)");
   const MIXED = 'First open it up. `a → b` Then go to Settings → the third tab down → press the blue Save button.';
   control(arrowChainCheck(MIXED).length >= 1, 'the code exemption does NOT forgive an action chain in the same string');
+
+  /* ---- THE ARROW RATCHET (DFM 253c, HIS LAW, 23 Aug 2026) -------------------
+     "An arrow may mark a MENU PATH a pupil clicks; it may never stand for 'goes
+     to' in a rule statement." Both directions, because a ratchet that condemned
+     the menu paths would make the gate demand worse writing than it has (DFM
+     146a) — and because "+ New → Folder" is text he has already sat. */
+  const RULE_ARROW = 'Work made in Word, Excel or PowerPoint → OneDrive.';
+  const RULE_ARROW2 = 'Work made in Google Docs → Google Drive.';
+  const isRuleArrow = (t) => arrowChainCheck(t).some(m => /rule-statement arrow/.test(m));
+  control(isRuleArrow(RULE_ARROW),
+    'HIS OWN STEP-4 SENTENCE is caught: "Work made in Word, Excel or PowerPoint → OneDrive" — ' +
+    'the word-count rule measured its left step as "Excel or PowerPoint" and passed it');
+  control(isRuleArrow(RULE_ARROW2),
+    'and so is its sibling one line below it, which the old rule caught only by accident (no comma in it)');
+  const PATH1 = 'Click + New (top-left) → New folder. Name it exactly: School.';
+  const PATH2 = 'Open your School folder (double-click it), then + New → New folder again.';
+  const PATH3 = 'Follow the route exactly: My-School → Launch → Microsoft 365 Web Apps → the squares menu → OneDrive.';
+  const PATH4 = '+ New → Folder';
+  [[PATH1, 'the sq-drive step-2 menu path'], [PATH2, 'the sq-drive step-3 menu path'],
+   [PATH3, 'the OneDrive route in the help text'], [PATH4, 'the bare "+ New → Folder" path'],
+   [OK3, 'the locked "Variables → Make a Variable" path']].forEach(([t, what]) => {
+    control(!isRuleArrow(t), what + ' still PASSES the ratchet — an arrow marking a path is legitimate');
+  });
+  control(!isRuleArrow('Nothing here has an arrow in it at all.'),
+    'and a sentence with no arrow in it raises nothing (the ratchet only judges arrows)');
+  const DASHPATH = 'Build it right now in Drive — + New → Folder → "School", then "DT Work" inside it — ' +
+    'and press the check button again.';
+  control(!isRuleArrow(DASHPATH),
+    'the noFolder sentence DFM 254 adjudicates ("its arrows are menu paths and legitimate under 253c") ' +
+    'PASSES — an em-dash brackets a path as an aside and the ratchet reads only inside the brackets');
+  control(isRuleArrow(RULE_ARROW),
+    'and his own sentence, which has no dash in it, is still caught by exactly the same code');
 
   /* ---- THE FRAGMENT-CANDIDATE CONTROLS (DFM 192b/196/197; addendum Part A).
      Every string below is VERBATIM from the build he sat (`7bba564`), so the
@@ -2104,6 +2284,15 @@ function main() {
 
   /* ---- THE FILMS (DFM 179): the same laws, on the surface a pupil watches ---- */
   console.log('\nFILM CAPTIONS — the same net, on the screen she watches (DFM 179):');
+  {
+    const cf = contentFedSceneProblems();
+    cf.forEach(e => filmProblems.push({ set: 'content-fed', where: e, msgs: [e] }));
+    console.log('  content-fed scenes (' + CONTENT_FED_SCENES.join(', ') + '): ' +
+      (cf.length ? cf.length + ' PROBLEM(S)' : 'every pupil word comes from the lesson, none is a literal here') +
+      '\n  NOT SCANNED AT ALL, reported not fixed (DFM 222a — a finding in a signed-off lesson): ' +
+      'scenes/j2-l2.js and scenes/j3-l2.js carry FILM_MAP entries and the extractor\'s file ' +
+      'filter never reaches them.');
+  }
   const film = collectFilmStrings();
   film.strings.forEach(f => { f.key = filmKey(f); });
   const inScopeFilm = (f) => !only || f.lesson.indexOf(only) === 0 || ('film:' + f.set).indexOf(only) === 0;

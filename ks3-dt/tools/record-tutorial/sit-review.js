@@ -53,7 +53,21 @@ const EXPECT = {
   '2': { xp: 43, chunks: 9, presses: 14, marks: 7, badges: 2 },
   '3': { xp: 51, chunks: 8, presses: 12, marks: 8, badges: 3 },
   '4': { xp: 42, chunks: 6, presses: 8, marks: 7, badges: 1 },
-  '5': { xp: 42, chunks: 10, presses: 17, marks: 7, badges: 4 },
+  /* PRESSES RE-PINNED 17 -> 20, 23 Aug 2026, WITH THE EVIDENCE AND NOT ON TRUST.
+     Press Night gained proper kinds in `lib/walk-moves.js` this round (the
+     gallery floor and the review desk had none, so BOTH walkers fell through to
+     the generic `button` and sit-wrongpath 5 was walked out of the lesson). The
+     new movers take the route the lesson actually asks for — pick a studio,
+     write the review, file it, back to the floor — which is three turns more
+     than clicking the first primary button in sight.
+     WHAT PROVES THIS IS THE WALKER AND NOT THE LESSON: every other number in the
+     shape is UNCHANGED — xp 42, screens 10, marks 7, badges 4, errors 0 — and
+     those are the numbers that describe what a pupil gets. The same walk, run
+     earlier the same day with this round's content and the OLD movers, gave
+     17. Nothing a pupil does moved; the walker's own route did. (The same
+     discipline as the qa-j1-unchanged re-pin of 23 Aug: prove it, then pin it,
+     and write down why.) */
+  '5': { xp: 42, chunks: 10, presses: 20, marks: 7, badges: 4 },
   'S1': { xp: 30, chunks: 6, presses: 6, marks: 1, badges: 1 },
   /* J2 Lesson 1, pinned from a real run on 16 Aug 2026 — deterministic values
      only (DFM 199). The turn count is still reported, never asserted. */
@@ -847,9 +861,45 @@ const CASE_LOGS = {
         break;
       }
 
-      default:
-        note('STATE ' + st.kind + ' @ ' + ck + (st.text ? ' :: ' + st.text : ''));
-        await sleep(800);
+      /* ANY KIND THE SHARED LIBRARY CAN DRIVE, DRIVEN (23 Aug 2026).
+         This walker used to have no case for a kind it did not name, so a kind
+         added to `lib/walk-moves.js` for the OTHER walker left this one printing
+         "STATE gal-review" forty-five times and calling it stuck — which is DFM
+         238(a) turned round the other way, and I did it to myself: Press Night
+         got its own kinds for sit-wrongpath and this walk stopped dead at six
+         screens of ten. Recognising a state and acting on it are one fact.
+         THE PRESS COUNT IS MEASURED, NOT ASSUMED. The pinned shape counts what a
+         pupil PRESSES, and these screens used to be pressed through the generic
+         `button` case, which counted one each time. So the page counts the real
+         clicks the mover makes and that number is added — the pin keeps meaning
+         exactly what it meant (DFM 199). */
+      default: {
+        const mv = WALK.MOVES[st.kind];
+        if (!mv) {
+          note('STATE ' + st.kind + ' @ ' + ck + (st.text ? ' :: ' + st.text : ''));
+          await sleep(800);
+          break;
+        }
+        await sleep(GHOST_WAIT);
+        if (!shotOnce.has(st.kind)) { shotOnce.add(st.kind); await shot(ck + '-' + st.kind); }
+        const clicks = await page.evaluate(([src]) => {
+          let n = 0;
+          const count = () => { n++; };
+          document.addEventListener('click', count, true);
+          try { (new Function('return (' + src + ')')())(); } finally {
+            document.removeEventListener('click', count, true);
+          }
+          return n;
+        }, [String(mv)]);
+        /* ONE TURN, ONE PRESS — the same accounting the `button` case above has
+           always used, so the pinned number keeps measuring the same thing. A
+           turn that only types counts nothing, exactly as `input` counts
+           nothing. */
+        if (clicks > 0) seen.presses++;
+        note('SHARED MOVER ' + st.kind + ' @ ' + ck + ' (' + clicks + ' click(s))');
+        await sleep(WALK.SETTLE[st.kind] || 700);
+        break;
+      }
     }
   }
 

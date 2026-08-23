@@ -1,7 +1,7 @@
 {
  "lesson": "j1-02",
  "kind": "brief",
- "contentVersion": "2026-08-15d",
+ "contentVersion": "2026-08-23b",
  "shots": {
   "prep-flash": {
    "name": "prep-flash",
@@ -18,17 +18,17 @@
    },
    "inset": null,
    "says": "the same film frame, for the brief’s prepare section",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-23b",
    "px": "1440x768"
   },
   "glance-donow.png": {
    "name": "glance-donow.png",
    "chunkId": "_recap",
    "synthetic": true,
-   "textSnippet": "Which of these is the STRONGEST password?",
+   "textSnippet": "Not unlocked yet — your teacher controls it",
    "contentAnchor": null,
    "says": "the Do-Now, mid-question",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-23b",
    "chunkHash": null
   },
   "glance-briefing.png": {
@@ -37,7 +37,7 @@
    "textSnippet": "Trackers sensing every step you take",
    "contentAnchor": "Trackers sensing every step you take",
    "says": "the briefing card pupils read before anything is plugged in",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-23b",
    "chunkHash": "5d1fea5c8b11"
   },
   "glance-film.png": {
@@ -46,7 +46,7 @@
    "textSnippet": "Watch this film on your OWN computer — both of you, at the same time — and build the programs along with it on your own screen. Later in the film the program gets sent to the real micro:bit. When you ",
    "contentAnchor": "Watch this film on your OWN computer — both of you, at the same time — and build the programs along with it on your own screen. Later in the film the program gets sent to the real micro:bit. When you and your partner reach that part, pick ONE of your two computers to do it on, because you have one micro:bit between you.",
    "says": "the film screen with its four chapter buttons",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-23b",
    "chunkHash": "97441e72cfe0"
   },
   "glance-rung.png": {
@@ -55,7 +55,7 @@
    "textSnippet": "🔥 The real test: Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program on",
    "contentAnchor": "🔥 The real test: Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program onto the device — that is the word your teacher will use. The film button below replays exactly how, if you need it. Then press the real button B. Did the happy face appear? (If your device won't connect, the on-screen simulator counts while your teacher sorts it.)",
    "says": "a rung card — the challenge at the top, the real test underneath",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-23b",
    "chunkHash": "765dbf73e91e"
   },
   "brief-rung.png": {
@@ -64,7 +64,7 @@
    "textSnippet": "🔥 The real test: Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program on",
    "contentAnchor": "🔥 The real test: Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program onto the device — that is the word your teacher will use. The film button below replays exactly how, if you need it. Then press the real button B. Did the happy face appear? (If your device won't connect, the on-screen simulator counts while your teacher sorts it.)",
    "says": "a rung card showing the Debug Hint and its 2 XP price",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-23b",
    "chunkHash": "765dbf73e91e"
   },
   "glance-bank.png": {
@@ -73,8 +73,8 @@
    "textSnippet": "A build that lives on one computer is a build you can lose. In this step you learn the habit that protects every piece of work you ever make in DT: save it to your Google Drive — the Vault from Lesson",
    "contentAnchor": "A build that lives on one computer is a build you can lose. In this step you learn the habit that protects every piece of work you ever make in DT: save it to your Google Drive — the Vault from Lesson 1 — and it follows your login to ANY machine, even at home. The website will then genuinely check your Drive and only give the badge when the file is really there.",
    "says": "Bank Your Build — three steps, then the check",
-   "contentVersion": "2026-08-15d",
-   "chunkHash": "86af621ed3ba"
+   "contentVersion": "2026-08-23b",
+   "chunkHash": "46558cb3aab4"
   },
   "glance-puzzle.png": {
    "name": "glance-puzzle.png",
@@ -82,7 +82,7 @@
    "textSnippet": "How to build it: drag a block from Blocks across into Your program — or just click it, if you prefer. Drag the blocks up and down to change the order, and drag one back to Blocks to take it out again.",
    "contentAnchor": "🎯 When you shake it, a ghost appears on the screen, holds for one second, then the screen clears.",
    "says": "the block puzzle, before any block is placed",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-23b",
    "chunkHash": "e49be533775c"
   },
   "glance-packup.png": {
@@ -91,7 +91,7 @@
    "textSnippet": "Watch the tiny red light on the back. It fades from bright red to nothing — that is how you know your program has stopped. (If the USB lead is still plugged in, the light may then blink slowly. That i",
    "contentAnchor": "Watch the tiny red light on the back. It fades from bright red to nothing — that is how you know your program has stopped. (If the USB lead is still plugged in, the light may then blink slowly. That is normal: it just means the computer is still feeding it power. It stays off once you unplug the lead.)",
    "says": "the hand-back card with the annotated reset-button photograph",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-23b",
    "chunkHash": "4182bb7527c9"
   },
   "glance-selfeval.png": {
@@ -100,7 +100,7 @@
    "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
    "contentAnchor": "I can tell the difference between an input and an output.",
    "says": "the final screen — compulsory",
-   "contentVersion": "2026-08-15d",
+   "contentVersion": "2026-08-23b",
    "chunkHash": "287759bc1b55"
   }
  },

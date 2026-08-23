@@ -224,7 +224,12 @@
      "src": "assets/video/shared/save-to-drive.mp4",
      "open": true,
      "note": "The program saved in the film is just an example — do not copy it. You are saving your own program, make-it-move.hex."
-    }
+    },
+    "checkLabel": "Run the inspection",
+    "checking": "Looking inside your Drive for your file…",
+    "errorText": "The check could not reach your Drive — try again in a moment.",
+    "foundText": "The website found **{name}** in your DT Work folder",
+    "noFolderText": "The website could not find your School > DT Work folder. Build it right now in Drive — + New → Folder → \"School\", then \"DT Work\" inside it — and press the check button again. (The Files That Follow You side quest walks you through it too.)"
    }
   },
   {

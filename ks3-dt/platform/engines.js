@@ -791,9 +791,33 @@
               (im.caption ? '<figcaption>' + esc(im.caption) + '</figcaption>' : '') + '</figure>';
           }).join('') + '</div>'
         : '';
-      var d = el('<div class="dossier">' +
+      /* AN OPTIONAL FILM, ABOVE THE LINES (DFM 253a, 23 Aug 2026). His find on the
+         side quest's opening card: it "talks about clouds as if the pupils are
+         going to know what the cloud means". The fix he ordered is a concept
+         animation ON the card, so the briefing engine gains the film slot its
+         `video` field had promised and never had — the field existed in content
+         with ZERO readers in this engine, verified before it was wired.
+         CONFIG-GATED: a briefing that names no `video` produces exactly the DOM
+         it produced before, byte for byte, which is what keeps J1's five
+         signed-off lessons and both Year-One Lesson 1s untouched (DFM 176's
+         config-gate precedent, asserted by a control).
+         The player is the platform's own: controls, preload=metadata, playsinline
+         — the same element the video engine and every rung part player use, so a
+         pupil meets one film player on this platform and not two. */
+      var film = cfg.video
+        ? '<div class="dossier-film"><video controls preload="metadata" playsinline src="' +
+            esc(asset(cfg.video)) + '"></video></div>'
+        : '';
+      /* the card widens ONLY when it carries a film, by a class rather than by
+         :has(), so nothing depends on a selector a school browser may not have —
+         and a briefing with no film keeps the exact 660px card it has always
+         had. Rule 127: his own note that the pupil's video window should be
+         bigger; a 592px player inside the unwidened card would have been the
+         narrowest film on the platform. */
+      var d = el('<div class="dossier' + (cfg.video ? ' has-film' : '') + '">' +
         '<div class="dossier-top"><span class="dossier-clearance">' + esc(cfg.clearance || '') + '</span></div>' +
         '<h1 class="dossier-headline"></h1>' +
+        film +
         '<div class="dossier-lines"></div>' +
         photoStrip +
         '<button class="primary-btn dossier-cta" type="button" hidden>' + esc(cfg.cta || 'Continue') + '</button>' +
@@ -803,6 +827,25 @@
       var linesBox = d.querySelector('.dossier-lines');
       var cta = d.querySelector('.dossier-cta');
       var timers = [];
+      /* DFM 42/143 - A DEAD PLAYER MUST STILL SAY SOMETHING. The video engine
+         learned this on j3-02 (19 Aug 2026): a film that is SET and does not
+         load gives a broken player and not one word, which on a cover day with
+         nobody in the room is a dead screen. This card's own lines tell her to
+         watch the film first, so silence here would be worse than most. The
+         sentence is content-owned so it goes through the language gate and the
+         read-aloud ledger like every other pupil sentence (the DFM 190d/192g
+         precedent - a string hardcoded in an engine escapes both). */
+      var filmEl = d.querySelector('.dossier-film video');
+      if (filmEl) {
+        filmEl.addEventListener('error', function () {
+          if (d.querySelector('.dossier-film-failed')) return;
+          var f = el('<p class="dossier-film-failed" role="status">' +
+            esc((cfg.videoFilm && cfg.videoFilm.fallback) ||
+              'The film will not play just now. Carry on reading below - everything the film shows is said again on the cards that follow.') +
+            '</p>');
+          filmEl.insertAdjacentElement('afterend', f);
+        });
+      }
       /* DFM 104: the button is built hidden and revealed later, so the guard
          window has to start when it APPEARS, not when the card was built. */
       function showCta() {
@@ -3165,7 +3208,7 @@
     }
   };
 
-  /* ================= artifact (bank your build: HQ checks the REAL Drive) ==
+  /* ================= artifact (bank your build: the website checks the REAL Drive) ==
      Teaches the save-to-Drive flow for external tools (Damien's condition:
      pupils are SHOWN how), then genuinely verifies a fresh file of the right
      kind is inside School > DT Work. Never blocks the lesson - the badge is
@@ -3222,7 +3265,20 @@
           : '') +
         '<ol class="af-steps">' + steps + '</ol>' +
         '<div class="rung-actions">' +
-        '<button class="primary-btn" type="button">' + esc(cfg.checkLabel || 'Run the HQ Inspection') + '</button>' +
+        /* DFM 254, HIS RULING, 23 Aug 2026 ("i would have liked to fold it in"):
+           this engine spoke as HQ to a pupil who does not meet the word until
+           Lesson 4, and called her Drive folder "your Vault", which is Lesson 1's
+           own activity — the DFM 192(g) collision whose sweep reached the casework
+           engine and missed this one. Every replacement below is his, verbatim
+           from that entry's from-to table, and every one now has a CONTENT DOOR in
+           front of it (the drivecheck precedent), so the words a pupil reads meet
+           the language gate and the read-aloud ledger like every other pupil
+           sentence — a string hardcoded in an engine escapes both (DFM 190d/192g).
+           SCOPE, stated because the same words live elsewhere: the casework SHIP
+           block and Lesson 4's clue routine keep their HQ, because Lesson 4 is
+           where HQ is taught; Lesson 1's Vault engine is REPORTED in 254 and NOT
+           ruled on, so it is untouched. */
+        '<button class="primary-btn" type="button">' + esc(cfg.checkLabel || 'Run the inspection') + '</button>' +
         '<button class="ghost-btn" type="button" hidden>Continue without banking (ask your teacher)</button>' +
         '</div><div class="af-result"></div></div>');
       host.appendChild(c);
@@ -3247,16 +3303,19 @@
       skipBtn.onclick = function () { ctx.next(); };
       runBtn.onclick = function () {
         runBtn.disabled = true;
-        box.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>HQ is looking inside your Vault&hellip;</span></div>';
+        box.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
+          esc(cfg.checking || 'Looking inside your Drive for your file\u2026') + '</span></div>';
         ctx.call('artifactCheck', { lessonNum: String(ctx.lessonEntry.num), kinds: cfg.kinds || ['hex'], hours: cfg.hours || 3 }).then(function (r) {
           runBtn.disabled = false;
           tries++;
           if (!r || !r.ok) {
-            box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>The line to HQ dropped &mdash; try again in a moment.</span></div>';
+            box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
+              esc(cfg.errorText || 'The check could not reach your Drive \u2014 try again in a moment.') + '</span></div>';
             return;
           }
           if (r.found) {
-            box.innerHTML = '<div class="dc-row ok"><span class="dc-mark">&#10003;</span><span>HQ found <b>' + esc(r.name) + '</b> in your DT Work vault' +
+            box.innerHTML = '<div class="dc-row ok"><span class="dc-mark">&#10003;</span><span>' +
+              fmtBold(String(cfg.foundText || 'The website found **{name}** in your DT Work folder').replace('{name}', esc(r.name))) +
               (r.ageMin != null ? ' (saved ' + Number(r.ageMin) + ' min ago)' : '') + '.</span></div>' +
               (r.simulated ? '<p class="dc-sim">(Preview mode: this inspection is simulated &mdash; the live platform checks your real Drive.)</p>' : '') +
               '<p>' + esc(cfg.passText || 'Your build now follows your login anywhere. That is the whole point of the Vault.') + '</p>';
@@ -3265,9 +3324,9 @@
             skipBtn.hidden = true;
           } else {
             box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
-              (r.noFolder ? 'HQ could not find your School &gt; DT Work folder. Build it right now in Drive &mdash; + New &rarr; Folder &rarr; "School", then "DT Work" inside it &mdash; and press the check button again. (The Files That Follow You side quest walks you through it too.)'
+              (r.noFolder ? esc(cfg.noFolderText || 'The website could not find your School > DT Work folder. Build it right now in Drive \u2014 + New \u2192 Folder \u2192 "School", then "DT Work" inside it \u2014 and press the check button again. (The Files That Follow You side quest walks you through it too.)')
                 : 'No freshly-saved build found in DT Work yet.') + '</span></div>' +
-              '<p>' + esc(cfg.failText || 'Check each step above, then press ' + (cfg.checkLabel || 'Run the HQ Inspection') + ' again.') + '</p>';
+              '<p>' + esc(cfg.failText || 'Check each step above, then press ' + (cfg.checkLabel || 'Run the inspection') + ' again.') + '</p>';
             if (tries >= 2) skipBtn.hidden = false;
           }
         });
@@ -3624,7 +3683,7 @@
            this screen, not the exit door (gate finding, engagement lens) */
         afterBox.innerHTML = '<div class="rally-sealed">' +
           '<p class="rally-sealed-line">' + esc((cfg.suspense && cfg.suspense.sealed) || 'Teams are SEALED.') + '</p>' +
-          '<div class="rally-counter"><span class="panel-spinner"></span><span class="rally-counter-text">' + esc((cfg.suspense && cfg.suspense.waiting) || 'Scores are landing at HQ…') + '</span></div>' +
+          '<div class="rally-counter"><span class="panel-spinner"></span><span class="rally-counter-text">' + esc((cfg.suspense && cfg.suspense.waiting) || 'Scores are landing\u2026') + '</span></div>' +
           '<p class="rally-sub">' + esc((cfg.suspense && cfg.suspense.revealTease) || 'Eyes on the big screen.') + '</p></div>' +
           '<div class="rally-reveal"></div>' +
           '<div class="rung-actions"><button class="ghost-btn rally-continue" type="button">Continue to the exit check</button></div>';

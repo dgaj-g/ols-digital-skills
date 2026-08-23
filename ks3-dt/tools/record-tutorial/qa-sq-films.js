@@ -124,6 +124,79 @@ const films = [];
 
 check(films.length === 2, 'both build cards carry a captioned film (' + films.length + ')');
 
+/* ─────────────────────────────────────────────────────────────────────────
+   AND THE THIRD FILM, WHICH IS NOT ONE OF HIS (23 Aug 2026, DFM 253a).
+   The cloud explainer on the briefing card is PIPELINE-MADE — scenes/lS1.js,
+   recorded by lib/record.js with the frame and cursor laws enforced and the
+   207d take gate measured per beat — so the record-time laws really did run
+   over it, and `qa-harness-coverage` attributes it to the scene rather than to
+   this file (a scene covers only the films it declares).
+   What is left to check is what is true of any FINISHED film, plus the one
+   thing no record-time law can see: whether the words burned into it are still
+   the words in the lesson. Its captions are drawn into the frame by the
+   recorder, not overlaid afterwards by ffmpeg, so there is no build step that
+   could be re-run without them — the sidecar is written by the scene itself, as
+   it shows each one, and make-sq-cloud.js refuses to publish when the two
+   disagree. This holds the same line on every later run, so the check is not
+   merely a thing somebody remembered to do once. */
+{
+  const brief = (lesson.chunks || []).find(c => c.engine === 'briefing') || {};
+  const cfg = brief.config || {};
+  const want = cfg.videoFilm || {};
+  console.log('\n' + path.basename(String(cfg.video || '(none)')) + '   (' + (brief.id || '?') + ' / the briefing card)');
+  if (!cfg.video) {
+    check(false, 'the briefing card names a film');
+  } else {
+    const file = path.join(SHARED, path.basename(String(cfg.video)));
+    if (!fs.existsSync(file)) check(false, 'the film exists at ' + cfg.video);
+    else {
+      check(true, 'the film exists at ' + cfg.video);
+      const st = probe(file, 'stream=codec_type').split('\n').filter(Boolean);
+      check(st.length === 1 && st[0] === 'video',
+        'it is SILENT and video-only — every film on this platform is (DFM 139)', st.join('+'));
+      const dm = probe(file, 'stream=width,height').split('\n');
+      check(dm[0] === '1280' && dm[1] === '720', 'it is the platform frame, 1280x720', dm.join('x'));
+      const dur = parseFloat(probe(file, 'format=duration'));
+      check(dur > 40 && dur < 120,
+        'it is the length the six beats add up to (' + dur.toFixed(1) + 's)');
+      const side = file.replace(/\.mp4$/, '.captions.json');
+      if (!fs.existsSync(side)) {
+        check(false, 'the film records what it showed (' + path.basename(side) + ') — re-run make-sq-cloud.js');
+      } else {
+        const rows = (JSON.parse(fs.readFileSync(side, 'utf8')).burned || []);
+        const burned = rows.map(b => String(b.text));
+        const asked = (want.captions || []).map(String);
+        check(JSON.stringify(burned) === JSON.stringify(asked),
+          'the words shown in the film ARE the words in the lesson — an edited caption cannot ship un-filmed',
+          burned.length !== asked.length ? (burned.length + ' filmed v ' + asked.length + ' in content')
+            : 'first difference: ' + JSON.stringify((asked.find((w, i) => w !== burned[i]) || '')));
+        check(rows.every(r => r.to > r.from) && rows.every((r, i) => i === 0 || r.from >= rows[i - 1].to),
+          'every caption is timed, in order, and none overlaps the next');
+        check(rows.every(r => r.to <= dur + 0.5), 'and every one of them ends inside the film');
+        /* IN REAL PIXELS, INSIDE EACH CAPTION'S OWN WINDOW — the same check his
+           two own films get, on the same code path. A FIXED GRID does not work
+           here and the film taught me that: a caption cross-fade takes 300ms, a
+           sample at 62% of the running time landed inside one, and the gate
+           reported a missing caption on a film that is captioned end to end. A
+           gate that invents a fault is worse than no gate (DFM 146a) — so this
+           samples where the recorder says a caption WAS. */
+        const mids = rows.map(r => +(((r.from + r.to) / 2)).toFixed(2));
+        const seen = mids.map(t => captionBarAt(file, t));
+        const missing = seen.map((n, i) => n ? null : ((i + 1) + ' @' + mids[i] + 's')).filter(Boolean);
+        check(missing.length === 0,
+          'a caption really IS on screen in the middle of all ' + rows.length + ' of its windows',
+          'nothing found at: ' + missing.join(', '));
+        control(!!seen[0],
+          'it says YES at ' + mids[0] + 's, inside the first caption — so a missing caption would fail');
+      }
+      /* and the detector is proved the other way on this film too: the title
+         card, before the first caption, must have no box on it */
+      control(!captionBarAt(file, 0.6),
+        'the detector says NO on the title card at 0.6s, before any caption — it is not answering yes to everything');
+    }
+  }
+}
+
 for (const f of films) {
   const name = path.basename(f.clip.src);
   const file = path.join(SHARED, name);

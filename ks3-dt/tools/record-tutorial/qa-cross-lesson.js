@@ -417,13 +417,26 @@ console.log('\n== 8. both clouds are first-class DT homes (DFM 252) ==');
   const buildsSchool = (t) => /name it exactly:\s*School/i.test(t);
   check(buildsSchool(driveAll) && buildsSchool(oneAll), 'and both cards build the School folder above it');
 
-  /* (a) the app decides - stated once, and not contradicted anywhere */
-  check(/The app you made a file in tells you which cloud it lives in/i.test(oneAll),
-    'the which-cloud rule is the app-decides rule, in those words');
-  check(/Word, Excel or PowerPoint\s*(?:→|->)\s*OneDrive/i.test(oneAll),
+  /* (a) the app decides - stated once, and not contradicted anywhere.
+     RE-STAGED 23 Aug 2026 (DFM 253c). These three lines used to pin the EXACT
+     sentence his ruling killed — "Work made in Word, Excel or PowerPoint →
+     OneDrive" — arrows and all. A rule change re-stages every harness that
+     reads what it changed, not just the one in front of you (DFM 143b); left
+     alone, this guard would have insisted on the wording he rejected. The FACT
+     it holds is unchanged: the app decides, and both halves name their cloud. */
+  check(/think about the app you made the file in/i.test(oneAll),
+    'the which-cloud rule is still the app-decides rule');
+  check(/Word, Excel and PowerPoint save your work into OneDrive/i.test(oneAll),
     'its Microsoft half names OneDrive');
-  check(/Google Docs\s*(?:→|->)\s*Google Drive/i.test(oneAll),
+  check(/Google Docs saves your work into Google Drive/i.test(oneAll),
     'its Google half names Google Drive');
+  /* AND HIS ARROW LAW ON THE VERY STEP THAT WROTE IT (DFM 253c): the rule is a
+     sentence now, so no arrow may come back to it. */
+  const rule4 = String(((one.steps || [])[3] || {}).text || '');
+  check(rule4 && !/(?:→|->)/.test(rule4),
+    'and it is written out as sentences — no arrow stands for "goes to" in it (his law, DFM 253c)');
+  control(/(?:→|->)/.test('Work made in Word, Excel or PowerPoint → OneDrive.'),
+    'the sentence he rejected would fail that check — the arrow is what it is about');
 
   /* THE OVER-STEER HE OVERRULED must be dead on every surface of the lesson,
      not just the one sentence it was quoted from (DFM 150's sweep law). */
