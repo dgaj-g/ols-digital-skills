@@ -392,6 +392,69 @@ console.log('\n== 7. the side quest names ONE deadline, in every home it has =='
     'while homes that DO agree pass, whatever wording surrounds the fact (over-tightening guard)');
 }
 
+/* ------------------------------------------------------------------ *
+ * DFM 252 — BOTH CLOUDS CARRY THE SAME SPINE, AND NEITHER IS STEERED OVER
+ * THE OTHER. His ruling of 22 Aug: the app a file was made in decides its
+ * cloud; Word/Excel/PowerPoint work lives in OneDrive, Google-tool work in
+ * Google Drive; School -> DT Work is built in BOTH. The side quest's two
+ * cards are the only place a pupil is ever taught this, and they now state
+ * overlapping facts, so DFM 167(b) applies: one fact, held equal, or a
+ * harness fails. Controls both ways, including the exact over-steer he
+ * overruled.
+ * ------------------------------------------------------------------ */
+console.log('\n== 8. both clouds are first-class DT homes (DFM 252) ==');
+{
+  const sq = JSON.parse(fs.readFileSync(path.join(SRC, 'j1/lessons/j1-sq1.json'), 'utf8'));
+  const chunk = (id) => (sq.chunks || []).find(c => c.id === id) || { config: {} };
+  const drive = chunk('sq-drive').config, one = chunk('sq-onedrive').config;
+  const stepText = (cfg) => (cfg.steps || []).map(s => String(s.text || '')).join(' \n ');
+  const driveAll = stepText(drive), oneAll = stepText(one);
+
+  /* (b) the spine is built in BOTH clouds */
+  const buildsDTWork = (t) => /name (?:this one |it )?exactly:\s*DT Work/i.test(t);
+  check(buildsDTWork(driveAll), 'the Drive card builds DT Work inside School');
+  check(buildsDTWork(oneAll), 'the OneDrive card builds DT Work inside School TOO (his ruling)');
+  const buildsSchool = (t) => /name it exactly:\s*School/i.test(t);
+  check(buildsSchool(driveAll) && buildsSchool(oneAll), 'and both cards build the School folder above it');
+
+  /* (a) the app decides - stated once, and not contradicted anywhere */
+  check(/The app you made a file in tells you which cloud it lives in/i.test(oneAll),
+    'the which-cloud rule is the app-decides rule, in those words');
+  check(/Word, Excel or PowerPoint\s*(?:→|->)\s*OneDrive/i.test(oneAll),
+    'its Microsoft half names OneDrive');
+  check(/Google Docs\s*(?:→|->)\s*Google Drive/i.test(oneAll),
+    'its Google half names Google Drive');
+
+  /* THE OVER-STEER HE OVERRULED must be dead on every surface of the lesson,
+     not just the one sentence it was quoted from (DFM 150's sweep law). */
+  const whole = JSON.stringify(sq);
+  const STEER = [
+    [/everything you make in DT lives here/i, 'the Drive card\'s "Everything you make in DT lives here"'],
+    [/everything you make in DT\s*(?:→|->)\s*Google Drive/i, 'the old rule\'s "everything you make in DT -> Google Drive"']
+  ];
+  STEER.forEach(([rx, name]) => check(!rx.test(whole), 'the over-steer is gone: ' + name));
+
+  /* Neither cloud may be described as the one DT actually uses. */
+  check(/In DT you will use BOTH/i.test(oneAll),
+    'and the card says plainly that DT uses BOTH clouds');
+
+  /* The honest asymmetry (DFM 252d): only Drive is machine-checked, and the
+     briefing says so rather than implying both are. */
+  const briefLines = (chunk('sq-brief').config.lines || []).join(' ');
+  check(/check your Google Drive ones are really there/i.test(briefLines),
+    'the briefing names WHICH folders the website checks - the asymmetry is stated, not hidden');
+
+  /* Controls both ways (DFM 196). */
+  control(/everything you make in DT lives here/i.test(
+    'This is your DT home. Everything you make in DT lives here — and your teacher can find it.'),
+    'the pre-252 Drive sentence IS caught by the over-steer sweep');
+  control(!/name (?:this one |it )?exactly:\s*DT Work/i.test(
+    'Click + New → Folder and name it exactly: School. Now both of your clouds have the same tidy top level.'),
+    'the pre-252 OneDrive card, which stopped at School, FAILS the both-clouds spine check');
+  check(buildsDTWork('Open your School folder, then + New → Folder again, and name it exactly: DT Work.'),
+    'while the shipped OneDrive step passes it (over-tightening guard)');
+}
+
 console.log('\n=========================================');
 console.log(FAILS.length ? 'FAILURES:\n- ' + FAILS.join('\n- ') : 'ALL CROSS-LESSON CHECKS PASSED');
 process.exit(FAILS.length ? 1 : 0);
