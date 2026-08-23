@@ -147,9 +147,16 @@ const LANDMARKS = {
     ['the blueprint', '.std-blueprint, .std-blueprint-btn'],
     ['the QA desk', '.std-qadesk, .std-qa-row'],
     ['the READY gate', '.std-ready-btn'],
-    ['Press Night', '.gal-desk, .gal-floor, .gal-waiting, .gal-marquee-grid'],
-    ['the exit check', '.q-opt, .exit-q'],
-    ['the closing screen', '.se-row, .se-card, .se-submit']
+    ['Press Night', '.gal-desk, .gal-floor, .gal-waiting, .gal-marquee-grid', 'press'],
+    /* THE CHUNK QUALIFIER MATTERS ON THESE TWO, and its absence was a coverage
+       LIE (23 Aug 2026). `.q-opt` is the option class of every marked question
+       on the platform, so without a chunk this row ticked on the Do-Now at the
+       START of the hour and reported "the exit check ✓" on a walk that never
+       reached it — a landmark that can be satisfied by a different screen is not
+       a landmark (DFM 204's own point, turned on the list itself). Every other
+       lesson's rows already carry theirs; Lesson 5's did not. */
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']
   ],
   /* ---- J2 Lesson 1, 16 Aug 2026. Named from its own chunk list and the
      inspect engine's rendered DOM, not from the design document. The three
@@ -830,6 +837,16 @@ const WRONG = {
     here.forEach(s => seenLandmarks.add(s));
     await beWrong(where);
     const moved = await goRight();
+    /* KS3DT_WP_TRACE=1 prints the move and the state of every box on the screen.
+       It is off by default and it is here because it is what found the two
+       walker faults of 23 Aug: without seeing "3" sitting in a release-note
+       box, both read as lesson defects rather than walker ones. */
+    if (process.env.KS3DT_WP_TRACE) {
+      const dbg = await page.evaluate(() => Array.from(document.querySelectorAll(
+        '.chunk-host textarea, .chunk-host input')).filter(e => e.offsetParent !== null)
+        .map(e => (e.className || e.type) + '=' + JSON.stringify(String(e.value || '').slice(0, 40))));
+      log('    move: ' + moved + '  boxes: ' + JSON.stringify(dbg));
+    }
     /* 'stuck' is usually just EARLY — a card that renders on a timer, a badge
        popping, a chunk still mounting. qa-no-mute-locks learned the same lesson:
        wait and look again rather than declaring the walk over. */

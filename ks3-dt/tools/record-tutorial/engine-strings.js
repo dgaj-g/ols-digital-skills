@@ -105,6 +105,23 @@ function scanCode(src) {
 }
 const lineOf = (src, pos) => src.slice(0, pos).split('\n').length;
 
+/* WAIVED BY HIS RULING — literals he has SETTLED as shipped, so they are counted
+   and printed for ever without ever becoming a to-do (DFM 255, 23 Aug 2026:
+   "no just leave lesson 1 alone"). Matched on the TEXT rather than on a line
+   number, because a line number moves the next time anybody edits the file above
+   it and a waiver that drifts onto a different sentence is worse than none.
+   Every row carries the ruling and its date, so the count stays honest. */
+const WAIVED = [
+  { rule: 'DFM 255', dated: '23 August 2026',
+    why: 'Lesson 1\'s vault engine — HIS RULING, "no just leave lesson 1 alone"',
+    texts: [
+      '&#127919; Solo run cleared by HQ &mdash; reason each drop out in your head first.',
+      '&#127919; HQ closed the channel &mdash; finish the Vault on your own. Everything you have filed is safe.',
+      'HQ closed the channel &mdash; carry on solo, nothing is lost.'
+    ] }
+];
+const waivedText = (t) => WAIVED.find(w => w.texts.indexOf(String(t).trim()) !== -1) || null;
+
 /* MIGRATED = content owns the words and the engine literal is only the fallback.
    Two shapes count, and both are real in this codebase:
      cfg.x || 'text'              the casework pattern (round 4)
@@ -138,7 +155,7 @@ SOURCES.forEach(file => {
     const col = sp.start - (src.lastIndexOf('\n', sp.start - 1) + 1);
     rows.push({
       file, line: ln, engine: whose(ln - 1), text: t,
-      state: isFallback(line, col) ? 'MIGRATED' : 'OUTSTANDING'
+      state: waivedText(t) ? 'WAIVED' : (isFallback(line, col) ? 'MIGRATED' : 'OUTSTANDING')
     });
   });
 });
@@ -163,15 +180,30 @@ out.push('rather than merely unnoticed (audit gap G1).');
 out.push('');
 out.push('**MIGRATED** = the literal is only a FALLBACK behind a config lookup — content owns');
 out.push('the words and the gate sees them. **OUTSTANDING** = a bare literal the child reads');
-out.push('and no gate does.');
+out.push('and no gate does. **WAIVED** = he has SETTLED the wording as shipped, so it is');
+out.push('counted and printed for ever and is never a to-do (the ruling and its date are below).');
 out.push('');
 const totalOut = rows.filter(r => r.state === 'OUTSTANDING').length;
+const totalWaived = rows.filter(r => r.state === 'WAIVED').length;
 out.push('| | count |');
 out.push('|---|---|');
 out.push('| literals of 4+ words on pupil paths | ' + rows.length + ' |');
-out.push('| MIGRATED (content owns the words) | ' + (rows.length - totalOut) + ' |');
+out.push('| MIGRATED (content owns the words) | ' + (rows.length - totalOut - totalWaived) + ' |');
+out.push('| WAIVED BY HIS RULING (settled, never a to-do) | ' + totalWaived + ' |');
 out.push('| **OUTSTANDING** | **' + totalOut + '** |');
 out.push('');
+/* THE WAIVER TABLE, printed loudly rather than folded into the counts. A waiver
+   that could be granted silently would be the end of the inventory (the
+   qa-harness-coverage precedent, DFM 222b). */
+WAIVED.forEach(w => {
+  const found = rows.filter(r => r.state === 'WAIVED' && w.texts.indexOf(String(r.text).trim()) !== -1);
+  out.push('> **WAIVED BY HIS RULING ' + w.dated + ' — ' + w.rule + ':** ' + w.why + '.');
+  out.push('> ' + found.length + ' of ' + w.texts.length + ' literal(s) matched in the source. ' +
+    (found.length === w.texts.length ? 'All of them are still where the ruling left them.'
+      : '**A WAIVED LITERAL HAS MOVED OR CHANGED — check before trusting this count.**'));
+  found.forEach(r => out.push('> · `' + r.file + ':' + r.line + '` ' + r.text));
+  out.push('');
+});
 order.forEach(eng => {
   const list = byEngine[eng];
   const outs = list.filter(r => r.state === 'OUTSTANDING');

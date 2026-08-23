@@ -792,7 +792,11 @@
      }
     ],
     "help": "Shipping your game takes three steps. First, save the .sb3 from Scratch: open the File menu and choose 'Save to your computer'. Then drag that file into your Google Drive, into School, then DT Work. Last, press Check my Drive. The website really does look in your Drive, the same check as every build this term.",
-    "checkLabel": "Check my Drive"
+    "checkLabel": "Check my Drive",
+    "checking": "Looking inside your Drive for your file…",
+    "errorText": "The check could not reach your Drive — try again in a moment.",
+    "foundText": "The website found **{name}** in your DT Work folder",
+    "noFolderText": "The website could not find your School > DT Work folder. Build it right now in Drive — + New → Folder → \"School\", then \"DT Work\" inside it — and press the check button again. (The Files That Follow You side quest walks you through it too.)"
    }
   },
   {

@@ -36,6 +36,27 @@
    "click the primary button" fallback can reach it, or the walker clicks the
    wrong thing and reports a screen it never really worked. */
 function detectKind() {
+  /* WHAT "STILL NEEDS WRITING" MEANS, and it is not "is empty" (23 Aug 2026).
+     Several gates on this platform arm on a WORD COUNT, not on a keystroke: the
+     Jellyfish note wants six real words, and so does Press Night's review desk.
+     The old test was `!e.value` — so the moment the confused-pupil battery
+     dropped a three-word answer in to see the refusal, the box stopped looking
+     empty, the screen fell through to the generic `button` kind, and the walker
+     clicked a permanently locked tick for the rest of its budget. sit-wrongpath 4
+     reported three honest coverage failures for it and they read as a lesson
+     fault for months. A walker that cannot recognise an UNDER-filled control
+     tests the lesson no better than one that cannot recognise a finished one
+     (DFM 205). Short box (maxlength <= 40 — a name, a title): filled once it has
+     anything. Number box: needs a number. Anything else: needs a sentence.
+     IT IS INLINE, TWICE, ON PURPOSE — this function and the `input` mover are
+     serialised into the PAGE, where nothing in module scope exists. */
+  const needsWriting = (e) => {
+    const v = String(e.value || '').trim();
+    const ml = Number(e.getAttribute('maxlength') || 0);
+    if (e.type === 'number') return v === '';
+    if (e.tagName === 'INPUT' && ml && ml <= 40) return v.length < 2;
+    return v.split(/\s+/).filter(Boolean).length < 6;
+  };
   const q = s => document.querySelector(s);
   const vis = e => e && e.offsetParent !== null && !e.disabled;
 
@@ -47,6 +68,33 @@ function detectKind() {
   }
   if (vis(q('.dossier-cta'))) return { kind: 'dossier-cta' };
   if (q('.se-card')) return { kind: 'selfeval' };
+
+  /* ---- PRESS NIGHT (23 Aug 2026) ----------------------------------------
+     THE HOLE THIS CLOSES, and it is DFM 238(a) exactly. The gallery floor and
+     the review desk had no kind of their own, so the detector fell through to
+     the generic `button` and the generic mover clicked whatever button it found
+     first — which on the floor is the one that leaves the lesson. sit-review
+     never noticed because it has its own switch; sit-wrongpath 5 walked to the
+     gallery floor, was sent back to the hub and reported an honest coverage
+     failure ("never stood on the closing screen") for MONTHS with nobody
+     reading it as a walker fault. Recognising a state and acting on it are one
+     fact and they live in one home. */
+  if (q('.gal-desk')) {
+    const empty = Array.from(document.querySelectorAll('.gal-desk .gal-stem-input'))
+      .find(t => (t.value || '').trim().split(/\s+/).filter(Boolean).length < 5);
+    if (empty) return { kind: 'gal-write' };
+    if (vis(q('.gal-desk .gal-file-btn'))) return { kind: 'gal-file' };
+    return { kind: 'gal-back' };
+  }
+  if (q('.gal-floor')) {
+    if (vis(q('.gal-v2-save:not([disabled])'))) return { kind: 'gal-v2' };
+    if (vis(q('.gal-wrap:not([disabled])'))) return { kind: 'gal-wrap' };
+    if (q('.gal-v2-card.locked') &&
+        Array.from(document.querySelectorAll('.gal-marquee-card.clickable')).some(vis)) {
+      return { kind: 'gal-review' };
+    }
+    return { kind: 'gal-wait' };
+  }
 
   /* studio QA desk: expand a row → run its test → pick the outcome → READY */
   if (q('.std-qa-row')) {
@@ -178,7 +226,7 @@ function detectKind() {
     const host0 = q('.chunk-host');
     if (host0) {
       const ta0 = Array.from(host0.querySelectorAll('textarea, input[type=text], input[type=number], input:not([type])'))
-        .filter(vis).filter(e => !e.value);
+        .filter(vis).filter(needsWriting);
       if (ta0.length) return { kind: 'input', ph: ta0.map(e => e.placeholder || e.className).join(' | ') };
     }
   }
@@ -195,7 +243,7 @@ function detectKind() {
   const host = q('.chunk-host');
   if (!host) return { kind: 'nohost' };
   const ta = Array.from(host.querySelectorAll('textarea, input[type=text], input[type=number], input:not([type])'))
-    .filter(vis).filter(e => !e.value);
+    .filter(vis).filter(needsWriting);
   if (ta.length) return { kind: 'input', ph: ta.map(e => e.placeholder || e.className).join(' | ') };
   const b = Array.from(host.querySelectorAll('button')).filter(vis);
   if (!b.length) return { kind: 'stuck', text: (host.textContent || '').replace(/\s+/g, ' ').slice(0, 160) };
@@ -264,6 +312,48 @@ const MOVES = {
     else picked.click();   /* every line tried: unpick and let the walk re-detect */
   },
   'snap-done': () => { const b = document.querySelector('.snap-done button'); if (b) b.click(); },
+
+  /* ---- PRESS NIGHT: pick a studio, write the review, file it, then the V2
+     note and the wrap. Every one of these is a control the lesson itself tells
+     her to press, in the order it tells her. */
+  'gal-review': () => {
+    const vis2 = (e) => e && e.offsetParent !== null;
+    const mq = Array.from(document.querySelectorAll('.gal-marquee-card.clickable:not(.reviewed)'))
+      .filter(vis2)[0] || Array.from(document.querySelectorAll('.gal-marquee-card.clickable')).filter(vis2)[0];
+    if (mq) mq.click();
+  },
+  'gal-write': () => {
+    /* the desk refuses anything under five real words per line, on purpose —
+       so the walker writes a real sentence rather than padding (DFM 193a: the
+       machine never vets her words, but it does hold an honesty floor) */
+    const t = Array.from(document.querySelectorAll('.gal-desk .gal-stem-input'))
+      .find(x => (x.value || '').trim().split(/\s+/).filter(Boolean).length < 5);
+    if (!t) return;
+    t.value = t.getAttribute('data-stem') === 'wonder'
+      ? 'I wonder whether a second danger would make the middle harder'
+      : 'I liked the way the score jumps the moment you catch one';
+    t.dispatchEvent(new Event('input', { bubbles: true }));
+    t.dispatchEvent(new Event('change', { bubbles: true }));
+  },
+  'gal-file': () => { const b = document.querySelector('.gal-desk .gal-file-btn'); if (b) b.click(); },
+  'gal-back': () => { const b = document.querySelector('.gal-desk .std-back'); if (b) b.click(); },
+  'gal-v2': () => {
+    const t = document.querySelector('.gal-v2-card textarea');
+    if (t && (t.value || '').trim().split(/\s+/).filter(Boolean).length < 5) {
+      t.value = 'In version 2 I would add a second danger that moves faster';
+      t.dispatchEvent(new Event('input', { bubbles: true }));
+      t.dispatchEvent(new Event('change', { bubbles: true }));
+      return;
+    }
+    const b = document.querySelector('.gal-v2-save:not([disabled])');
+    if (b) b.click();
+  },
+  'gal-wrap': () => { const b = document.querySelector('.gal-wrap:not([disabled])'); if (b) b.click(); },
+  /* WAITING IS A STATE, NOT A STALL. On the floor with every pass spent and the
+     V2 note filed, the only thing left is the wrap — and if it is not lit yet
+     the honest move is to press nothing. Clicking the first button in sight
+     here is what walked the old walker out of the lesson. */
+  'gal-wait': () => {},
 
   /* THE BUILD CARD IS DRIVEN FROM THE LESSON'S OWN ANSWER KEY, and that is a
      deliberate difference from the snap desk. Correctness here is decided by
@@ -392,8 +482,15 @@ const MOVES = {
   },
   input: () => {
     const vis = e => e && e.offsetParent !== null && !e.disabled;
+    const needsWriting = (e) => {
+      const v = String(e.value || '').trim();
+      const ml = Number(e.getAttribute('maxlength') || 0);
+      if (e.type === 'number') return v === '';
+      if (e.tagName === 'INPUT' && ml && ml <= 40) return v.length < 2;
+      return v.split(/\s+/).filter(Boolean).length < 6;
+    };
     const t = Array.from(document.querySelectorAll('.chunk-host textarea, .chunk-host input[type=text], .chunk-host input[type=number], .chunk-host input:not([type])'))
-      .filter(vis).filter(e => !e.value)[0];
+      .filter(vis).filter(needsWriting)[0];
     if (!t) return;
     /* WHAT THE WALKER TYPES ENDS UP ON A SLIDE. Lesson 5's marquee lists the
        studio name, the game title and the one-line pitch a pupil wrote — and
@@ -420,7 +517,16 @@ const MOVES = {
       if (id === 'std-gt') return who.title || 'Apple Catcher';
       if (id === 'std-gh') return who.how || 'Arrow keys move the bowl. Catch the apples — miss three and it ends.';
       if (id === 'std-name') return who.studio || 'Golden Otter Games';
-      if (t.type === 'number' || /count|score|number|fish/.test(hint)) return '3';
+      /* A TEXTAREA IS NEVER A NUMBER BOX, and this line used to say otherwise
+         (23 Aug 2026). The heuristic matched the word "fish" ANYWHERE in the
+         class, the id or the placeholder — and Lesson 4's Jellyfish Job asks for
+         a release note in a textarea whose placeholder names the jellyfish. The
+         walker typed "3" into it, the six-word gate stayed locked for ever, and
+         sit-wrongpath 4 spent the rest of its budget on that one screen and
+         reported three coverage failures that read as lesson faults.
+         The type is the fact; the words were a guess (DFM 194c). */
+      if (t.type === 'number') return '3';
+      if (t.tagName === 'INPUT' && /\b(count|score|number|fish caught)\b/.test(hint)) return '3';
       if (/studio|sig|founder/.test(hint)) return (window.__studioIdentity || {}).studio || 'Golden Otter Games';
       if (/title|game name|call it/.test(hint)) return 'Apple Catcher';
       if (/how|play|pitch|one line|describe/.test(hint)) {
@@ -544,6 +650,8 @@ const SETTLE = {
   'pyrun-place': 260, 'pyrun-blank': 220, 'pyrun-run': 2600, 'pyrun-next': 700,
   'case-pin': 900, 'case-log': 400, 'case-close': 1200, 'case-stamped': 700, 'case-wait': 700,
   'std-expand': 700, 'std-run': 700, 'std-outcome': 900, 'std-ready': 1200,
+  'gal-review': 900, 'gal-write': 250, 'gal-file': 1200, 'gal-back': 700,
+  'gal-v2': 700, 'gal-wrap': 1100, 'gal-wait': 1400,
   parsons: 400, input: 400, loading: 700, button: 700, vault: 900, 'hold-sign': 1800,
   'std-sign': 1100, rally: 900, 'rally-after': 900, selfeval: 800
 };

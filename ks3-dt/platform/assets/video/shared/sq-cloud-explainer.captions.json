@@ -1,0 +1,34 @@
+{
+ "burned": [
+  {
+   "from": 3.24,
+   "to": 10.68,
+   "text": "You make a piece of work on a school computer. Where does it actually live?"
+  },
+  {
+   "from": 10.68,
+   "to": 22.7,
+   "text": "It is saved to a huge building far away, full of computers that never switch off. That building is what people mean by 'the cloud'."
+  },
+  {
+   "from": 22.7,
+   "to": 32.51,
+   "text": "Your computer switches off. Your work does not — it is not inside your computer at all."
+  },
+  {
+   "from": 32.51,
+   "to": 40.83,
+   "text": "Sign in on any device, anywhere, and the cloud shows you your work. Your files follow you."
+  },
+  {
+   "from": 40.83,
+   "to": 51.85,
+   "text": "Your school login comes with TWO clouds — Google Drive and OneDrive. They are separate buildings: a file saved in one is not in the other."
+  },
+  {
+   "from": 51.85,
+   "to": 62.1,
+   "text": "In this side quest you build the same two folders in both — and then your files follow you for the rest of your time at school."
+  }
+ ]
+}

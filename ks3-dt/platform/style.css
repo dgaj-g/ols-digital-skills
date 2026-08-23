@@ -523,6 +523,20 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 }
 .dossier-clearance { color: var(--gold-hi); font-family: var(--font-display); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.18em; }
 .dossier-headline { color: #fff; font-size: clamp(1.7rem, 4.5vw, 2.5rem); font-weight: 700; min-height: 1.3em; margin-bottom: 16px; }
+/* THE BRIEFING FILM (DFM 253a). Rendered only when the chunk names a `video`,
+   so every other briefing card is untouched — the card widens by the .has-film
+   class the engine adds, never by :has(), because a school browser is not a
+   place to find out which selectors it supports.
+   The player itself matches .video-card video exactly: one film player on this
+   platform, not two (rule 127's width note is why the card widens at all). */
+.dossier.has-film { max-width: min(860px, 94vw); }
+.dossier-film { margin: 0 0 20px; }
+.dossier-film video { width: 100%; border-radius: var(--r-md); background: #000; display: block; }
+.dossier-film-failed {
+  margin: 10px 0 0; padding: 10px 13px; border-radius: var(--r-sm);
+  background: rgba(255, 156, 138, 0.12); border: 1px solid rgba(255, 156, 138, 0.4);
+  color: #FFD9D1; font-size: 0.92rem; line-height: 1.45;
+}
 .dossier-line { color: rgba(234, 240, 252, 0.85); margin: 0 0 11px; opacity: 0; transform: translateY(8px); transition: opacity 0.5s ease, transform 0.5s ease; }
 .dossier-line.show { opacity: 1; transform: none; }
 /* DFM 192a — the emphasis Damien asked for on the hook's key words. The gold is

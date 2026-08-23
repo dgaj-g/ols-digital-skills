@@ -221,7 +221,22 @@ function declarations() {
       const key = legacy ? legacy[1].toUpperCase()
         : yearly[1].toLowerCase() + '-' + yearly[2].toUpperCase();
       const src = fs.readFileSync(path.join(scenesDir, f), 'utf8');
-      d.film[key] = { file: f, blocks: /BLOCKS_ON_CAMERA/.test(src) };
+      /* WHICH FILMS THE SCENE ACTUALLY RECORDS (23 Aug 2026). Until the side
+         quest, one lesson meant one source of films and "there is a scene file"
+         was the same statement as "everything this lesson ships was recorded by
+         the pipeline". The side quest broke that: it ships ONE pipeline film
+         (the cloud explainer) and TWO of his own screen captures, which have no
+         scene script and cannot have one. A scene file alone would therefore
+         have closed the cell for all three and stopped anyone asking who checks
+         the other two — silent coverage, the DFM 204/206 fault.
+         So a scene may DECLARE the films it records. Declaring is opt-in: a
+         scene that says nothing covers its lesson's films exactly as before, so
+         no existing row moves. */
+      const decl = /FILMS_RECORDED\s*=\s*\[([^\]]*)\]/.exec(src);
+      const records = decl
+        ? (decl[1].match(/['"]([^'"]+)['"]/g) || []).map(x => x.replace(/['"]/g, ''))
+        : null;
+      d.film[key] = { file: f, blocks: /BLOCKS_ON_CAMERA/.test(src), records: records };
     });
   }
 
@@ -382,20 +397,32 @@ function run() {
       const own = d.ownCaptureFilms[key];
       /* an own-capture harness only counts if it covers EVERY film the lesson
          ships — half a lesson's films checked is the DFM 204 fault */
-      const ownCoversAll = !!own && L.films.every(v => own.files.indexOf(v) !== -1);
       const wantScene = L.year === 'j1' ? 'l' + L.num + '.js' : L.year + '-l' + L.num + '.js';
-      row.cells.film = f ? (f.blocks ? 'covered' : 'covered, NO BLOCK MANIFEST')
-        : (ownCoversAll ? 'covered (own-capture: ' + own.harness + ')' : 'MISSING');
-      check(!!f || ownCoversAll, L.id + ' × film laws: its ' + L.films.length +
-        ' film(s) (' + L.films.join(', ') + ') are checked by something' +
-        (f ? ' — ' + f.file : ownCoversAll ? ' — ' + own.harness + ', his own captures, no scene script to record-time-check'
-          : ' — no scenes/' + wantScene + ' and no own-capture harness naming them, so nothing ever ran over them'));
+      /* EVERY FILM THE LESSON SHIPS IS ATTRIBUTED TO SOMETHING THAT CHECKS IT.
+         A scene covers the films it declares, or — when it declares none — all of
+         them, which is how every lesson before the side quest works. Anything the
+         scene does not cover must be named by an own-capture harness. */
+      const sceneCovers = (v) => !!f && (f.records ? f.records.indexOf(v) !== -1 : true);
+      const ownCovers = (v) => !!own && own.files.indexOf(v) !== -1;
+      const orphans = L.films.filter(v => !sceneCovers(v) && !ownCovers(v));
+      const ownCoversAll = !!own && L.films.every(ownCovers);
+      row.cells.film = orphans.length ? 'MISSING'
+        : (f && own ? 'covered (' + f.file + ' + ' + own.harness + ')'
+          : f ? (f.blocks ? 'covered' : 'covered, NO BLOCK MANIFEST')
+            : 'covered (own-capture: ' + own.harness + ')');
+      check(orphans.length === 0, L.id + ' × film laws: all ' + L.films.length +
+        ' film(s) (' + L.films.join(', ') + ') are checked by something — ' +
+        (orphans.length
+          ? ' — NOTHING covers ' + orphans.join(', ') + (f ? ' (scenes/' + f.file +
+              (f.records ? ' records only ' + f.records.join(', ') : '') + ')'
+            : ' (no scenes/' + wantScene + ')')
+          : [f ? f.file + (f.records ? ' (records ' + f.records.join(', ') + ')' : '') : null,
+             own ? own.harness + ' (his own captures, no scene script to record-time-check)' : null]
+              .filter(Boolean).join(' + ')));
       if (f) {
         check(f.blocks, L.id + ' × film blocks manifest: every block shown on camera declares where it is taught (DFM 207c)');
-      } else if (own && !ownCoversAll) {
-        check(false, L.id + ' × film laws: ' + own.harness + ' covers only ' + own.files.join(', ') +
-          ' — the lesson ships ' + L.films.join(', '));
       }
+      void ownCoversAll;
     } else row.cells.film = 'n/a';
 
     /* --- kits: only lessons that ship an .sb3 --- */
@@ -798,7 +825,38 @@ function controlWaiver() {
   process.exit(bad === 0 ? 0 : 1);
 }
 
-if (process.argv.includes('--control-year')) controlYear();
+/* THE ATTRIBUTION CONTROL (23 Aug 2026). The side quest is the first lesson whose
+   films come from two sources, and the rule that makes that safe is that a scene
+   covers only the films it DECLARES. This proves the rule bites: strip the
+   declaration down to nothing and the gate must name the films left with nobody
+   checking them. Without it, "covered (lS1.js + qa-sq-films.js)" would be a
+   sentence nobody had tested — and a coverage claim nobody tested is the DFM
+   204/206 fault the whole gate exists for. */
+function controlRecords() {
+  const os2 = require('os');
+  const tmp = fs.mkdtempSync(path.join(os2.tmpdir(), 'ks3dt-records-'));
+  const dst = path.join(tmp, 'tools');
+  fs.cpSync(HERE, dst, { recursive: true, filter: (p2) => !/node_modules/.test(p2) });
+  const scene = path.join(dst, 'scenes', 'lS1.js');
+  const src = fs.readFileSync(scene, 'utf8');
+  fs.writeFileSync(scene, src.replace(/const FILMS_RECORDED = \[[^\]]*\];/,
+    "const FILMS_RECORDED = ['nothing-at-all.mp4'];"));
+  const res = require('child_process').spawnSync(process.execPath, [__filename], {
+    encoding: 'utf8', env: Object.assign({}, process.env, { KS3DT_HARNESS_DIR: dst })
+  });
+  const out = (res.stdout || '') + (res.stderr || '');
+  const named = /NOTHING covers sq-cloud-explainer\.mp4/.test(out);
+  console.log('CONTROL — a scene that declares it records a film it does not');
+  console.log('  named the orphaned film: ' + named);
+  console.log('  (the two own-capture films stay covered, so only the pipeline one is orphaned)');
+  fs.rmSync(tmp, { recursive: true, force: true });
+  if (named) { console.log('\nCONTROL PASSED — a scene covers only what it declares.'); process.exit(0); }
+  console.log('\nCONTROL FAILED — the gate accepted a film nobody records.');
+  process.exit(1);
+}
+
+if (process.argv.includes('--control-records')) controlRecords();
+else if (process.argv.includes('--control-year')) controlYear();
 else if (process.argv.includes('--control-waiver')) controlWaiver();
 else if (process.argv.includes('--control')) control();
 else run();

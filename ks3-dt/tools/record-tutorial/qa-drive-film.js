@@ -120,8 +120,23 @@ const filmState = (page) => page.evaluate(() => {
     const b = document.querySelector('.rung-actions .primary-btn');
     return b ? (b.textContent || '').trim() : '';
   });
-  check(/Run the HQ Inspection/.test(l2run),
-    'and the check button is still found correctly, even though the film now sits above it: "' + l2run + '"');
+  /* RE-STAGED 23 Aug 2026 (DFM 254). This used to pin the literal "Run the HQ
+     Inspection", which his ruling replaced — so the assertion would have
+     insisted on the wording he killed (DFM 143b: a rule change re-stages every
+     harness that reads what it changed). What it is FOR is unchanged and is
+     what it now asserts: the RUN button is found by its class and not by
+     position, so the demo button sitting above it cannot be picked up instead
+     (the fault DFM 143a caught on the ladder intro). The label is read from the
+     lesson, so the two can never come apart (DFM 144). */
+  const l2label = (() => {
+    const L = JSON.parse(require('fs').readFileSync(path.join(process.env.HOME,
+      'Desktop/Claude Work/KS3 DT Platform/content-src/j1/lessons/j1-02.json'), 'utf8'));
+    const bank = (L.chunks || []).find(c => c.id === 'bank') || { config: {} };
+    return String(bank.config.checkLabel || '');
+  })();
+  check(l2label && l2run === l2label && !/Show me how/i.test(l2run),
+    'and the check button is still found correctly, even though the film now sits above it: "' +
+    l2run + '" (the label the lesson itself sets)');
 
   console.log('\n== 3. Lesson 3: a reminder, so it waits behind "Show me how" ==');
   m = await mountArtifact(page, 'j1-03.json', 'rig');
