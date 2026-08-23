@@ -932,13 +932,23 @@
              backstop once the clip's own running time has passed. Never before -
              that would give the tip away ahead of the demonstration. */
           var showNote = function () { note.hidden = false; };
+          /* THE BACKSTOP IS FOR "METADATA NEVER ARRIVES", AND ONLY THAT (fixed
+             23 Aug 2026). It used to be a flat 30-second timer that ran whether
+             metadata arrived or not - fine while the only clip was 13 seconds
+             long, and wrong the moment the side quest's 1:53 and 2:27 films
+             landed, because it popped the note halfway through the film and
+             broke the rule stated directly above it. The moment the real length
+             is known the guess is CANCELLED and replaced by it. A first attempt
+             at this fix read vid.duration at mount, where it is NaN, and so
+             changed nothing at all - caught before it shipped. */
+          var backstop = setTimeout(showNote, 30000);
           vid.addEventListener('ended', showNote);
           vid.addEventListener('error', showNote);
           vid.addEventListener('loadedmetadata', function () {
+            clearTimeout(backstop);
             var ms = ((vid.duration && isFinite(vid.duration)) ? vid.duration : 15) * 1000 + 1200;
             setTimeout(showNote, ms);
           });
-          setTimeout(showNote, 30000);   // last resort if metadata never arrives
         }
         App.armButton(ov.querySelector('.clip-close'), function () {   // DFM 104
           try { vid.pause(); } catch (e) {}
