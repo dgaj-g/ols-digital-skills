@@ -2914,13 +2914,63 @@
 
         function finish() {
           if (doneBox.hasAttribute('hidden') === false) return;
+          /* ---- THE DESK ANNOUNCES ITSELF — his finding, 25 Aug 2026 --------
+             Clearing the last pair used to set `hidden = false` and nothing
+             else: no motion, no scroll, no change of weight. On a card as tall
+             as this one the panel can appear entirely below the fold, so the
+             moment the hour is built around could pass without the pupil
+             seeing it happen. That is the DFM 42/146e family — a mode that
+             changes announces itself on screen — applied to the one moment
+             this activity exists for.
+             The entrance is the badge-moment family already used elsewhere: a
+             fade and a small rise, one gold border pulse, and the headline at
+             card-title weight so the panel READS as an arrival rather than as
+             more text. It is scrolled into view if any part of it is below the
+             fold. Under prefers-reduced-motion there is no motion at all and
+             the panel keeps exactly the same visual weight and the same
+             scroll-into-view — reduced motion is not reduced information.
+             The change is kept inside the snap card: snap is used by j2-02 and
+             by nothing else (verified), so no other lesson can move. */
           doneBox.hidden = false;
-          doneBox.innerHTML = '<p class="snap-verdict">' + fmtBold(cfg.doneText || '') + '</p>' +
+          doneBox.innerHTML = '<p class="snap-verdict snap-verdict-head">' + fmtBold(cfg.doneText || '') + '</p>' +
             '<button class="primary-btn" type="button">' + esc(cfg.continueLabel || 'Continue') + '</button>';
+          doneBox.classList.add('is-arriving');
+          try {
+            var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!reduced) {
+              /* forcing layout before the class lands is what makes the
+                 transition actually RUN rather than being coalesced away — the
+                 fault a rendered-pixel probe catches and a source read cannot */
+              void doneBox.offsetHeight;
+              doneBox.classList.add('is-in');
+            } else {
+              doneBox.classList.add('is-in');
+            }
+            var r = doneBox.getBoundingClientRect();
+            if (r.bottom > (window.innerHeight || 0) || r.top < 0) {
+              doneBox.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+            }
+          } catch (err) { doneBox.classList.add('is-in'); }
           speak(cfg.doneSay || '');
           var clean = firstTry;
           App.armButton(doneBox.querySelector('button'), function () {
-            finishChunk(ctx, { detail: 'snap=' + clean + '/' + pairs.length },
+            /* A STRING, NOT AN OBJECT — and it matters more than it looks.
+               `finishChunk` hands its second argument straight to
+               `ctx.awardBadge(badge, detail)`, which sends it to the server as
+               the event's DETAIL KEY. The server grants XP only when the key is
+               NEW (`detailAddsNew_`), which is the idempotency rule that stops a
+               re-read paying twice. Passing `{ detail: '…' }` stringified to
+               "[object Object]" — so the FIRST badge of the lesson wrote that,
+               and every LATER badge in the same lesson was judged "not new" and
+               ITS XP WAS SILENTLY DROPPED. Measured on the preview store, 25 Aug
+               2026: j3-02's record read xp 31 (badge one, 21, plus the exit's
+               flat 10) where the content promises 57 — and the badge pop had
+               already told the pupil the full number. Rule 35 on her own points,
+               and DFM 234's class exactly.
+               It reached only `snap` and `pyrun`, the two engines written in the
+               same 19 Aug round; every other finishChunk caller in this file
+               already passes a string. */
+            finishChunk(ctx, (chunk.id || 'snap') + '=' + clean + '/' + pairs.length,
               Math.min(Number(cfg.firstTryXp || 0) * clean, Number(cfg.firstTryXpCap || 0)));
           });
         }
@@ -2968,15 +3018,98 @@
         steps: cfg.steps, stepsClass: 'pyrun-intro-steps'
       }, cfg.beginLabel || 'Open the desk', function () { startBuild(); });
 
-      function startBuild() {
+      /* ---- THE OPTIONAL STRETCH TAIL — DFM 259, HIS RULING, 25 Aug 2026 ----
+         His words after sitting j2-02: "This lesson is too short for the hour,
+         I think and there is no stretch and challenge, which all lessons going
+         forward should absolutely have."
+         It is a CONFIG-GATED TAIL, so a pyrun chunk without `cfg.stretch`
+         renders byte-identically to the engine he has already sat — the
+         drivecheck / briefing-film precedent, and qa-pyrun's control proves it
+         rather than asserting it.
+         IT IS A REAL REFUSAL (K11d). The offer is its own card with two live
+         buttons, and "Finish here" really finishes: no nagging, no second ask,
+         no XP taken away for declining. A stretch that cannot be refused is not
+         a stretch, and the floor-pupil XP path depends on the refusal existing.
+         Taking it and not finishing it costs nothing either — the tail is the
+         same build card as any other, so a wrong run hands the lines back. */
+      var stretchTaken = false, stretchDone = false;
+
+      function offerStretch() {
+        var sx = cfg.stretch;
+        var o = (sx && sx.offer) || {};
         host.innerHTML = '';
-        var b = builds[at];
+        var c = el('<div class="card pyrun-offer-card">' +
+          '<span class="intro-kicker">' + esc(o.kicker || '') + '</span>' +
+          '<h2>' + esc(o.title || '') + '</h2>' +
+          '<p class="intro-lead">' + fmtBold(o.text || '') + '</p>' +
+          '<div class="rung-actions">' +
+          '<button class="primary-btn pyrun-take" type="button">' + esc(o.takeLabel || 'Try it') + '</button>' +
+          '<button class="ghost-btn pyrun-skip" type="button">' + esc(o.skipLabel || 'Finish here') + '</button>' +
+          '</div></div>');
+        host.appendChild(c);
+        App.armButton(c.querySelector('.pyrun-take'), function () {
+          stretchTaken = true;
+          startBuild(sx);
+        });
+        App.armButton(c.querySelector('.pyrun-skip'), function () { done(); });
+      }
+
+      function done() {
+        var xp = Math.min(Number(cfg.firstTryXp || 0) * cleanFirst, Number(cfg.firstTryXpCap || 0));
+        /* AND THE KEY IS THE CHUNK'S OWN ID, not the engine's name. The server's
+           idempotency rule keys on the text before the '=', so two chunks of the
+           SAME engine in one lesson wrote the same key — and the second one was
+           judged "not new", so its XP was dropped and its detail overwrote the
+           first's. J3 Lesson 2 is exactly that shape: `callsheet-a` and
+           `callsheet-b` are both pyrun, so the Call Sheet Printed badge has never
+           granted a point, and the teacher's Live tab lost the first chunk's
+           record as well. A chunk id is unique inside a lesson by construction,
+           so this closes the CLASS and not just the instance (DFM 167b) — a
+           lesson with two snap desks would have had the same fault. Nothing reads
+           these keys but the server's idempotency check and the Live tab's raw
+           ledger, both of which are better off with a name that says which
+           activity it came from. */
+        var detail = (chunk.id || 'py') + '=' + cleanFirst + '/' + builds.length + (stretchDone ? '+s' : '');
+        if (stretchDone) xp += Number((cfg.stretch && cfg.stretch.xp) || 0);
+        /* a STRING, for the reason spelled out on the snap desk's own call */
+        finishChunk(ctx, detail, xp);
+      }
+
+      function startBuild(stretchBuild) {
+        host.innerHTML = '';
+        var isStretch = !!stretchBuild;
+        var b = stretchBuild || builds[at];
         var lines = b.lines || [];
         var placed = [];                 // source indices, in her order
         var vals = {};                   // blank key -> typed value
         var attempts = 0;
+        /* ---- THE TRAY SHUFFLE — DFM 258, HIS RULING, 25 Aug 2026 -----------
+           His words, sitting j2-02's build: "the first four lines were the
+           correct ones for me, in that exact order, the lines on the left
+           should be shuffled and you should know this and apply this for ALL
+           similar activities."
+           He was right and it was worse than he saw: this tray had NO shuffle
+           at all — it rendered `lines[]` in authored order — while the snap
+           desk shuffles its Python column, marked-question options have
+           shuffled by law since 22 July, and parsons is authored-scrambled with
+           a permutation key. The tray was the one assembly surface on the
+           platform with no protection, and every build in BOTH Lesson 2s
+           authors its correct lines first, in program order, because that is
+           how the source stays readable.
+           THE GUARANTEE IS A DERANGEMENT, not merely "not the same order", and
+           the difference matters. A plain reshuffle can legitimately leave the
+           first four lines first and in order — rare, but a blocking gate that
+           fails once in a few hundred runs is a gate people learn to re-run
+           (DFM 146a). Requiring that NO line is served at its authored index
+           makes the property deterministic: the solution can never be served
+           first, in order, whatever the draw, so the harness can assert it
+           every time rather than usually.
+           Marking is output-based, so display order is free (spec §D); blanks
+           are keyed by `bl.key` and never by position, so nothing a pupil types
+           moves with the shuffle. */
+        var trayOrder = derangedOrder(lines.length);
 
-        var stepStrip = builds.length > 1
+        var stepStrip = (!isStretch && builds.length > 1)
           ? '<div class="pyrun-steps">' + builds.map(function (x, i) {
               return '<span class="pyrun-step' + (i < at ? ' done' : (i === at ? ' now' : '')) + '">' +
                 esc(x.tab || String(i + 1)) + '</span>';
@@ -3143,8 +3276,12 @@
         }
         function render() {
           tray.innerHTML = ''; prog.innerHTML = '';
-          lines.forEach(function (L, si) {
-            if (placed.indexOf(si) !== -1) return;
+          /* the tray is drawn in the SERVED order (DFM 258), not the authored
+             one; `si` stays the authored index everywhere else, so placement,
+             blanks and the assembled code are untouched by it */
+          trayOrder.forEach(function (si) {
+            var L = lines[si];
+            if (!L || placed.indexOf(si) !== -1) return;
             var n = el(lineHtml(L, 'in-tray', si));
             wire(n, si, false); wireBlanks(n);
             tray.appendChild(n);
@@ -3185,19 +3322,27 @@
               esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
               '<p class="pyrun-vsay">' + esc(ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay) : (cfg.notYetSay || PY_SAY.notYetSay)) + '</p>';
             if (ok) {
-              if (attempts === 1) cleanFirst++;
+              /* the stretch tail never counts towards the core first-try score:
+                 its own XP is the price he set, and a pupil who declines it must
+                 not read as having done the lesson less well (DFM 165's no-loss
+                 invariant applied to the detail string as well as the points) */
+              if (attempts === 1 && !isStretch) cleanFirst++;
+              if (isStretch) stretchDone = true;
               c.querySelectorAll('.pyrun-line').forEach(function (n) { n.disabled = true; });
               c.querySelectorAll('.pyrun-blank').forEach(function (n) { n.disabled = true; });
-              var moreLabel = (at + 1 < builds.length) ? (cfg.nextBuildLabel || 'Next build') : (cfg.continueLabel || 'Continue');
+              var lastCore = !isStretch && (at + 1 >= builds.length);
+              var moreLabel = isStretch ? (cfg.continueLabel || 'Continue')
+                : (lastCore
+                    ? (cfg.stretch ? (cfg.stretchNextLabel || 'Continue') : (cfg.continueLabel || 'Continue'))
+                    : (cfg.nextBuildLabel || 'Next build'));
               var go = el('<button class="primary-btn" type="button">' + esc(moreLabel) + '</button>');
               verdict.appendChild(go);
               App.armButton(go, function () {
+                if (isStretch) { done(); return; }
                 at++;
                 if (at < builds.length) startBuild();
-                else {
-                  finishChunk(ctx, { detail: 'py=' + cleanFirst + '/' + builds.length },
-                    Math.min(Number(cfg.firstTryXp || 0) * cleanFirst, Number(cfg.firstTryXpCap || 0)));
-                }
+                else if (cfg.stretch) offerStretch();
+                else done();
               });
             } else {
               runBtn.disabled = false;
@@ -4390,6 +4535,24 @@
      Honesty envelope (accepted, as L4): a pupil can lie-pick the pass
      outcome - mitigations are the QA-partner protocol (brief), teacher
      circulation, and Press Night itself: the class plays what you shipped. */
+  /* A SERVED ORDER IN WHICH NOTHING SITS WHERE IT WAS AUTHORED (DFM 258).
+     Used by the pyrun tray. Re-draws until the permutation is a derangement,
+     which a Fisher-Yates shuffle reaches about 37% of the time, so a handful of
+     draws is plenty; the fallback is a rotation, which is a derangement by
+     construction and can never loop. One or zero lines cannot be deranged and
+     are returned as they are — there is nothing to hide in a tray of one. */
+  function derangedOrder(n) {
+    var idx = [], i;
+    for (i = 0; i < n; i++) idx.push(i);
+    if (n < 2) return idx;
+    for (var tries = 0; tries < 32; tries++) {
+      var o = stdShuffle(idx);
+      var ok = true;
+      for (i = 0; i < n; i++) { if (o[i] === i) { ok = false; break; } }
+      if (ok) return o;
+    }
+    return idx.slice(1).concat(idx.slice(0, 1));
+  }
   function stdShuffle(a) {
     var out = a.slice();
     for (var i = out.length - 1; i > 0; i--) {

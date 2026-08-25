@@ -3271,6 +3271,37 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .snap-verdict { margin: 10px 0 14px; font-size: 1.02rem; line-height: 1.55; color: var(--ink); }
 .snap-verdict b { color: var(--ols-blue); }
 
+/* ---- THE DESK IS CLEAR: the panel ENTERS (his finding, 25 Aug 2026) ------
+   It used to appear with `hidden=false` and nothing else — no motion, no
+   scroll, no change of weight — so the moment the whole activity builds to
+   could happen below the fold, unseen. The entrance is the badge-moment
+   family: fade, a small rise, and one gold border pulse. The headline moves to
+   card-title weight so the panel reads as an arrival.
+   Under prefers-reduced-motion the panel is fully visible from the first
+   frame, at the SAME weight, with the same border — reduced motion removes the
+   movement, never the announcement (DFM 146e's own principle). */
+.snap-done.is-arriving {
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 0.34s ease-out, transform 0.34s cubic-bezier(0.34, 1.3, 0.64, 1);
+  border-radius: 12px; padding: 4px 14px 2px;
+  border: 2px solid rgba(var(--gold-rgb), 0.55);
+  background: rgba(var(--gold-rgb), 0.07);
+}
+.snap-done.is-arriving.is-in {
+  opacity: 1; transform: none;
+  animation: snapDoneGlow 1.05s ease-out 0.2s 1;
+}
+@keyframes snapDoneGlow {
+  0% { border-color: rgba(var(--gold-rgb), 0.55); box-shadow: 0 0 0 0 rgba(var(--gold-rgb), 0); }
+  45% { border-color: rgba(var(--gold-rgb), 1); box-shadow: 0 0 0 7px rgba(var(--gold-rgb), 0.22); }
+  100% { border-color: rgba(var(--gold-rgb), 0.55); box-shadow: 0 0 0 0 rgba(var(--gold-rgb), 0); }
+}
+.snap-verdict-head { font-size: 1.28rem; font-weight: 800; line-height: 1.4; margin: 12px 0 14px; }
+@media (prefers-reduced-motion: reduce) {
+  .snap-done.is-arriving { opacity: 1; transform: none; transition: none; }
+  .snap-done.is-arriving.is-in { animation: none; border-color: rgba(var(--gold-rgb), 0.85); }
+}
+
 /* ---- the build card (J2 Phase 2 and all four J3 builds) ---------------- */
 .pyrun-card { max-width: 760px; }
 .pyrun-steps { display: flex; gap: 7px; margin: 0 0 12px; flex-wrap: wrap; }

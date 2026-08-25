@@ -204,6 +204,36 @@ function declarations() {
     });
   }
 
+  /* the brief read-aloud ledger, per lesson (DFM 257). Read through
+     qa-language's own collector so the gate and the checker can never disagree
+     about which sentences exist (DFM 144 — the deck collector's own lesson). */
+  d.briefLedger = {};
+  try {
+    const QL = require('./qa-language.js');
+    const crypto2 = require('crypto');
+    const sha1x = (t) => crypto2.createHash('sha1').update(t, 'utf8').digest('hex').slice(0, 16);
+    const ledgerFile = path.join(CONTENT, 'language-ledger.json');
+    const led = exists(ledgerFile) ? readJSON(ledgerFile) : { entries: {} };
+    /* CONTENT, not the collector's own default. loadLessons() with no argument
+       reads the REAL content-src, so in a sandboxed control run this declaration
+       would have described the wrong tree entirely — and it did, until Part 4
+       reported the fixture as having "no brief sentences at all" (DFM 146a: the
+       gate inventing a fault, caught by its own control before it was trusted). */
+    const lessonsForBrief = QL.loadLessons(CONTENT);
+    QL.collectBriefStrings(lessonsForBrief).forEach(b => {
+      const r = d.briefLedger[b.lesson] = d.briefLedger[b.lesson] || { total: 0, recorded: 0, stale: 0 };
+      r.total++;
+      const e = (led.entries || {})[b.path];
+      if (!e) return;
+      if (e.sha1 !== sha1x(b.text)) { r.stale++; return; }
+      r.recorded++;
+    });
+  } catch (e) {
+    /* a declaration that cannot be read is not a pass — it is a failure that
+       names its own cause (DFM 238c: the cheapest disqualifying question first) */
+    d.briefLedgerError = e.message;
+  }
+
   /* film laws: a lesson with a film needs a scene file the record-time laws run
      over, and that scene must declare the blocks it puts on camera (DFM 207c —
      his "anything similarly new or complex needs explained as well"). */
@@ -391,6 +421,84 @@ function run() {
         '. A taught lesson with no teacher layer is a lesson a colleague cannot deliver'));
     } else row.cells.teacher = 'n/a';
 
+    /* ═══ THE STRETCH CELL — DFM 259, HIS RULING, 25 Aug 2026 ═══
+       His words, after sitting J2 Lesson 2: "This lesson is too short for the
+       hour, I think and there is no stretch and challenge, which all lessons
+       going forward should absolutely have."
+       So every lesson whose design round OPENS after 25 Aug 2026 must carry a
+       stretch element a MACHINE can find. Three shapes count, and they are the
+       three the platform already builds:
+         · a pyrun chunk with a `stretch` object (the shape this round adds);
+         · any chunk or scene flagged `stretch` / carrying a `stretch` config —
+           the J1 ladder's dashed rung and the items runner's optional tail;
+         · a chunk declaring `optional: true`, which is K11d's refusal law made
+           structural (a stretch that cannot be refused is not a stretch).
+       EVERY EXISTING LESSON IS GRANDFATHERED BY A DATED ROW, and that is not a
+       loophole: he ruled the law forward, not backward ("all lessons going
+       forward"). j2-02 and j3-02 are NOT grandfathered — they ship this round's
+       stretch and must pass the cell for real, which is the whole point of
+       building the cell in the same round as the content.
+       The grandfather list is dated and explicit rather than computed from a
+       cut-off, because a date arithmetic on file mtimes would silently
+       grandfather anything an editor touched (the DFM 204 default fault). */
+    const STRETCH_GRANDFATHERED = {
+      '1': '25 Aug 2026 — J1 Lesson 1, approved 1 Aug, before DFM 259 existed',
+      '2': '25 Aug 2026 — J1 Lesson 2, approved 2 Aug (it does carry a stretch rung; the row is dated anyway so the lock is never crossed to satisfy a gate)',
+      '3': '25 Aug 2026 — J1 Lesson 3, approved 11 Aug',
+      '4': '25 Aug 2026 — J1 Lesson 4, approved 13 Aug',
+      '5': '25 Aug 2026 — J1 Lesson 5, approved 14 Aug',
+      'S1': '25 Aug 2026 — the side quest, self-paced and outside the taught set (DFM 220d)',
+      'j2-1': '25 Aug 2026 — J2 Lesson 1, approved 18 Aug (its Hard Inspection is a real refusable stretch; dated anyway)',
+      'j3-1': '25 Aug 2026 — J3 Lesson 1, approved 18 Aug (its two Hard Cases likewise)'
+    };
+    {
+      const blob = JSON.stringify(L.json);
+      /* what a machine can actually find, named so a reader can check the claim */
+      const found = [];
+      (L.json.chunks || []).forEach(ch => {
+        const cfg = ch.config || {};
+        if (cfg.stretch && typeof cfg.stretch === 'object') found.push(ch.id + ' (pyrun/config stretch)');
+        else if (ch.stretch || cfg.stretch) found.push(ch.id + ' (stretch flag)');
+        if (cfg.optionalTail || ch.optional === true || cfg.optional === true) found.push(ch.id + ' (refusable optional tail)');
+        (cfg.scenes || []).forEach((sc, si) => { if (sc && sc.optional) found.push(ch.id + '/' + (sc.id || 'scene ' + (si + 1)) + ' (optional scene)'); });
+      });
+      const grand = STRETCH_GRANDFATHERED[key];
+      const ok = found.length > 0;
+      row.cells.stretch = ok ? 'covered (' + found.length + ')' : (grand ? 'grandfathered' : 'MISSING');
+      if (ok) {
+        check(true, L.id + ' × stretch: a machine can find it (DFM 259) — ' + found.join(', '));
+      } else if (grand) {
+        console.log('    NOTE  ' + L.id + ' × stretch: GRANDFATHERED — ' + grand);
+      } else {
+        check(false, L.id + ' × stretch: NOTHING a machine can find (DFM 259). His ruling, 25 Aug 2026: ' +
+          '"there is no stretch and challenge, which all lessons going forward should absolutely have." ' +
+          'Ship a refusable stretch, or file a dated WAIVED BY HIS RULING row.');
+      }
+    }
+
+    /* ═══ THE BRIEF-LANGUAGE CELL — DFM 257, the same day ═══
+       The briefs were the one register with neither a mechanical rule nor a
+       judged read, and his sentence is what proved it. A cell here is what stops
+       that being true again for a lesson built next month: a lesson with a
+       teacher layer must have every brief sentence carrying a read-aloud row.
+       It asks the LEDGER, not the words — qa-language's BRIEF section owns the
+       words (DFM 144, one fact one home). A grandfathered row counts, because a
+       grandfathered row is still a record and still voids the moment the
+       sentence is edited; what does not count is a sentence nobody has recorded
+       at all. */
+    if (L.mode !== 'sidequest' && L.mode !== 'selfpaced') {
+      const rows = d.briefLedger[L.id] || { total: 0, recorded: 0, stale: 0 };
+      const ok = rows.total > 0 && rows.recorded === rows.total && rows.stale === 0;
+      row.cells.briefLang = ok ? 'covered (' + rows.total + ')'
+        : (rows.total === 0 ? 'MISSING' : rows.recorded + '/' + rows.total +
+           (rows.stale ? ', ' + rows.stale + ' stale' : ''));
+      check(ok, L.id + ' × brief language: every brief sentence carries a read-aloud row (DFM 257)' +
+        (ok ? ' (' + rows.total + ')' : ' — ' + (rows.total === 0
+          ? 'this lesson has no brief sentences at all'
+          : (rows.total - rows.recorded) + ' unrecorded and ' + rows.stale + ' voided by editing. ' +
+            'The brief is a gated register from 25 Aug 2026; his own sentence is why.')));
+    } else row.cells.briefLang = 'n/a';
+
     /* --- films: only lessons that ship one --- */
     if (L.films.length) {
       const f = d.film[key];
@@ -439,7 +547,7 @@ function run() {
 
   /* the matrix, printed whatever the verdict — he reads this, not just the fails */
   console.log('\n  COVERAGE MATRIX');
-  const cols = ['landmarks', 'sitshape', 'verdicts', 'film', 'kits'];
+  const cols = ['landmarks', 'sitshape', 'verdicts', 'stretch', 'briefLang', 'film', 'kits'];
   console.log('    ' + 'lesson'.padEnd(30) + cols.map(c => c.padEnd(22)).join(''));
   matrix.forEach(r => {
     console.log('    ' + r.lesson.padEnd(30) + cols.map(c => String(r.cells[c] || '-').padEnd(22)).join(''));
@@ -483,8 +591,18 @@ function run() {
   owed.forEach(f => {
     const m = /^(\S+) × ([a-z-]+(?: [a-z]+)*):/.exec(f);
     const cell = m ? m[1] + ' × ' + m[2] : f;
-    const rowRe = new RegExp('^\\|\\s*' + m[1] + '\\s*\\|\\s*' + m[2].replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*\\|([^|]*)\\|([^|]*)\\|([^|]*)\\|', 'm');
-    const row = m && rowRe.exec(ledger);
+    /* A FAILURE THIS PARSER CANNOT READ IS UNLEDGERED DEBT, NOT A CRASH.
+       Until 25 Aug 2026 the next line built a RegExp out of `m[1]` before
+       anything had checked that `m` was non-null, so the first cell whose
+       message did not fit the pattern took the whole gate down with a
+       TypeError — and a checker that crashes reports nothing at all: not a
+       pass, not a fail, just an unchecked surface with a stack trace over it
+       (DFM 200, his own ruling: "why would i want to sit through something
+       that might be broken?"). It was found by adding a cell whose name
+       carried a bracket. Now an unreadable message falls through to the
+       unledgered list, which is the honest reading of it. */
+    const rowRe = m && new RegExp('^\\|\\s*' + m[1] + '\\s*\\|\\s*' + m[2].replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*\\|([^|]*)\\|([^|]*)\\|([^|]*)\\|', 'm');
+    const row = rowRe && rowRe.exec(ledger);
     if (!row) { unledgered.push(cell); return; }
     const L = lessons.find(x => x.id === m[1]);
     const want = (row[3] || '').trim();
@@ -672,39 +790,63 @@ function controlYear() {
       'post-change: the gate exits non-zero — it STOPS the pack (status ' + post.status + ')'));
 
     console.log('\nPart 3 — legacy: J1 resolves exactly as it did before');
-    /* RE-STAGED 23 Aug 2026, and re-staged rather than relaxed. This part's job
-       is "the year-key change renamed nothing about J1", and it did that by
-       demanding every J1 row be byte-equal to the pre-change gate's. Since then
-       ONE J1 row has legitimately moved: the side quest gained his two own-capture
-       films, so its film cell went from MISSING to covered by qa-sq-films.js.
-       Deleting the assertion would throw away a real guard to make a green run
-       (DFM 204). So it now allows exactly that one difference, in exactly that one
-       column, and still fails on any other J1 drift — which is stricter than
-       byte-equality was, because it also asserts WHAT the difference is. */
-    /* The matrix PADS its columns, so a longer cell shifts everything after it —
-       splitting on runs of spaces made one changed value look like several.
-       Compare the rows with whitespace flattened, and state the sanctioned
-       change as an exact substitution: anything else about the row fails. */
-    const flat = (r) => r.trim().replace(/\s+/g, ' ');
-    const preRows = j1Rows(pre.out).split('\n').filter(Boolean);
-    const postRows = j1Rows(post.out).split('\n').filter(Boolean);
-    const sameShape = preRows.length === postRows.length && postRows.length > 0;
-    const diffs = sameShape ? preRows.map((r, i) => flat(r) === flat(postRows[i]) ? null : i).filter(i => i !== null) : [];
-    results.push(say(sameShape && diffs.length <= 1,
-      'every J1 coverage row but at most one is byte-equal pre-change and post-change (nothing about J1 was renamed)'));
-    if (sameShape && diffs.length === 1) {
-      /* The matrix pads to a column width the new cell overruns, so the row's
-         spacing around it differs too. Judge the two rows with the film cell
-         LIFTED OUT of each: everything else must be identical, and each side
-         must carry the value it is supposed to. */
-      const before = flat(preRows[diffs[0]]), after = flat(postRows[diffs[0]]);
-      const OWN = 'covered (own-capture: qa-sq-films.js)';
-      const rest = (r, cell) => flat(r.replace(cell, ' '));
-      results.push(say(
-        before.indexOf('MISSING') !== -1 && after.indexOf(OWN) !== -1 &&
-        /j1-sq1/.test(after) && rest(before, 'MISSING') === rest(after, OWN),
-        'and the one row that moved is j1-sq1, its FILM cell only, MISSING -> its own-capture harness: the sanctioned change, and nothing else on the row'));
-    }
+    /* RE-STAGED TWICE, AND RE-STAGED RATHER THAN RELAXED. This part's job is
+       "the year-key change renamed nothing about J1", and it originally did that
+       by demanding every J1 MATRIX ROW be byte-equal to the pre-change gate's.
+       That was the right instinct and the wrong instrument, and two legitimate
+       changes have now proved it: the side quest gained his own-capture films
+       (23 Aug), and the matrix gained two columns — stretch and brief language
+       (25 Aug, DFM 259/257). Padded columns shift when the matrix grows, so the
+       row comparison reports drift that does not exist, which is the fault a
+       control must never have (DFM 146a).
+       So it now compares what it always MEANT to compare: for every J1 lesson,
+       the gate's own PASS/FAIL line for each cell that existed BEFORE the change,
+       taken line by line out of both runs. A new column cannot disturb it, a
+       renamed J1 key fails it immediately, and the one sanctioned J1 movement is
+       still stated as an exact substitution rather than tolerated as a diff.
+       (DFM 143b: a new cell re-stages every control, not just the one in front
+       of you.) */
+    const PRE_CHANGE_CELLS = ['sit-wrongpath', 'sit-review', 'cold-read verdicts', 'film laws', 'film blocks manifest', 'qa-kit-facts'];
+    /* THE VERDICT AND THE CELL KEY, NOT THE WHOLE MESSAGE. The film-laws line's
+       WORDING was legitimately rewritten on 23 Aug ("a scene file exists for its
+       N films" became "all N films are checked by something"), so comparing the
+       prose would report every J1 film row as drift — a fault the control would
+       have invented. What this part is actually about is whether a J1 lesson
+       still resolves to the same ANSWER on the same cell, and that is exactly
+       what is compared. */
+    const j1Cells = (out) => out.split('\n')
+      .filter(l => /^\s{2}(PASS|FAIL)\s+j1-/.test(l))
+      .map(l => /^\s{2}(PASS|FAIL)\s+(j1-\S+) × ([a-z-]+(?: [a-z]+)*):/.exec(l))
+      .filter(m => m && PRE_CHANGE_CELLS.indexOf(m[3]) !== -1)
+      .map(m => m[1] + ' ' + m[2] + ' × ' + m[3]);
+    const preCells = j1Cells(pre.out), postCells = j1Cells(post.out);
+    const onlyPre = preCells.filter(l => postCells.indexOf(l) === -1);
+    const onlyPost = postCells.filter(l => preCells.indexOf(l) === -1);
+    results.push(say(preCells.length > 0 && postCells.length > 0,
+      'both runs really produced J1 cell lines to compare (' + preCells.length + ' pre, ' +
+      postCells.length + ' post) — a comparison of two empty lists would pass for the wrong reason'));
+    results.push(say(onlyPre.length === 0 && onlyPost.length === 0,
+      'every J1 cell resolves to the SAME verdict pre-change and post-change — nothing about J1 was ' +
+      'renamed, and neither new column disturbed a legacy row' +
+      (onlyPre.length || onlyPost.length
+        ? ' — drifted: ' + onlyPre.concat(onlyPost).slice(0, 3).join(' || ') : '')));
+    /* THE OWN-CAPTURE ATTRIBUTION IS ASSERTED SEPARATELY, and the reason is worth
+       writing down. Until 25 Aug this part allowed "at most one row to differ" and
+       then named that row as j1-sq1's film cell going MISSING -> own-capture. At
+       VERDICT granularity there is no difference to find: the PRE-CHANGE gate
+       passed j1-sq1 on the mere EXISTENCE of scenes/lS1.js, and the current gate
+       passes it because qa-sq-films.js names the two files the scene does not
+       record. Same answer, completely different evidence. Reporting that as "one
+       sanctioned diff" would have been reading a coincidence as a guard. So the
+       verdict comparison is now exact (ZERO J1 cells may move), and the thing the
+       old assertion was really protecting — that the side quest's own captures are
+       credited to a named harness rather than waved through — is asserted on its
+       own terms. */
+    results.push(say(/j1-sq1 × film laws:[^\n]*qa-sq-films\.js/.test(post.out),
+      'and j1-sq1\'s film cell is credited to qa-sq-films.js BY NAME (his two own captures have no ' +
+      'scene script and cannot have one — the route is named, never waved through)'));
+    results.push(say(/j1-sq1 × film laws: all 3 film\(s\)/.test(post.out),
+      'covering all three of its films, so half a lesson\'s films can never read as covered (DFM 204)'));
     console.log('\nPart 4 — a fixture that declares itself properly PASSES');
     /* a sandbox harness dir carrying year-qualified declarations. Only the two
        declaration files are planted; scenes/ is linked so film lookups behave. */
@@ -735,6 +877,16 @@ function controlYear() {
     fs.writeFileSync(path.join(dst, 'j2', 'decks', 'j2-04.deck.json'),
       JSON.stringify({ id: 'j2-04.deck', lesson: 'j2-04', slides: [] }, null, 1));
     const fx = readJSON(path.join(j2, 'lessons', 'j2-04.json'));
+    /* AND ITS STRETCH (25 Aug 2026, DFM 259) — the same repair as the teacher
+       layer one line below, for the same reason: a new cell re-stages every
+       control (DFM 143b). A fixture that calls itself "properly declared" must
+       declare everything the gate asks of a taught lesson, and from today that
+       includes a stretch a machine can find. The dedicated `--control-stretch`
+       proves the other direction: strip this and the gate stops. */
+    fx.chunks.push({ id: 'build', engine: 'pyrun', config: {
+      lines: ['print("hello")'],
+      stretch: { id: 'fx-stretch', optional: true, xp: 5, target: 'hello' }
+    } });
     fx.teacherBrief = {
       purpose: ['A fixture brief, so the teacher-layer cell has something to find.'],
       atAGlance: [{ part: 'Briefing', what: 'A fixture part.' }],
@@ -744,6 +896,22 @@ function controlYear() {
       goesWrong: [{ q: 'Nothing goes wrong.', a: 'It is a fixture.' }]
     };
     fs.writeFileSync(path.join(j2, 'lessons', 'j2-04.json'), JSON.stringify(fx, null, 1));
+    /* AND ITS BRIEF READ-ALOUD ROWS (25 Aug 2026, DFM 257). Same repair again:
+       the brief-language cell asks the LEDGER, so a fixture brief with no rows
+       is an unrecorded brief and the gate is right to refuse it. The rows are
+       written through qa-language's own collector so the fixture cannot drift
+       away from what the gate reads (DFM 144). */
+    {
+      const QL = require('./qa-language.js');
+      const crypto3 = require('crypto');
+      const sha1f = (t) => crypto3.createHash('sha1').update(t, 'utf8').digest('hex').slice(0, 16);
+      const ledFile = path.join(dst, 'language-ledger.json');
+      const led = exists(ledFile) ? readJSON(ledFile) : { entries: {} };
+      QL.collectBriefStrings(QL.loadLessons(dst)).filter(b => b.lesson === 'j2-04').forEach(b => {
+        led.entries[b.path] = { sha1: sha1f(b.text), reviewed: 'fixture row', by: 'control', date: '2026-08-25' };
+      });
+      fs.writeFileSync(ledFile, JSON.stringify(led, null, 1));
+    }
     const good = runGate(__filename, { KS3DT_HARNESS_DIR: hdir });
     results.push(say(!raised(good.out, /j2-04 × /),
       'with LANDMARKS[\'j2-4\'], EXPECT[\'j2-4\'] and a "## J2 LESSON 4" heading, j2-04 raises no cell'));
@@ -759,6 +927,103 @@ function controlYear() {
   const bad = results.filter(r => !r).length;
   console.log('\n' + (bad === 0
     ? 'CONTROL PASSED — the bare-number key really did let a J2 lesson pass on J1\'s coverage, and the year key stops it without disturbing J1.'
+    : 'CONTROL FAILED — ' + bad + ' of ' + results.length + ' assertions did not hold.'));
+  process.exit(bad === 0 ? 0 : 1);
+}
+
+/* ------------------------------------------- THE STRETCH CONTROL (DFM 259)
+ * His ruling, 25 Aug 2026: "This lesson is too short for the hour, I think and
+ * there is no stretch and challenge, which all lessons going forward should
+ * absolutely have."
+ *
+ * A cell that only ever says PASS is not evidence. This control plants a NEW
+ * lesson twice over a sandboxed content tree — once with no stretch anywhere in
+ * it, once with the refusable stretch this round's engine field provides — and
+ * proves the gate STOPS on the first and lets the second through. It also proves
+ * the grandfather list is a list of NAMED, DATED lessons rather than a general
+ * amnesty: the fixture is not on it and cannot be, which is the difference
+ * between his ruling being carried forward and being quietly cancelled.
+ *
+ *   node qa-harness-coverage.js --control-stretch
+ */
+function controlStretch() {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ks3dt-stretch-'));
+  const say = (ok, m) => { console.log('  ' + (ok ? 'PASS  ' : 'FAIL  ') + m); return ok; };
+  const results = [];
+  const dst = path.join(tmp, 'content-src');
+  fs.cpSync(CONTENT, dst, { recursive: true });
+  const ks3 = path.join(tmp, 'ks3');
+  fs.mkdirSync(ks3, { recursive: true });
+  fs.readdirSync(KS3).filter(f => /^COVERAGE_DEBT\.md$|^COLD_READ_VERDICTS.*\.md$/.test(f))
+    .forEach(f => fs.copyFileSync(path.join(KS3, f), path.join(ks3, f)));
+
+  const j2 = path.join(dst, 'j2');
+  const write = (withStretch) => {
+    const chunks = [{ id: 'c1', engine: 'briefing', config: { intro: 'A new lesson, designed after 25 Aug 2026.' } }];
+    if (withStretch) {
+      chunks.push({ id: 'build', engine: 'pyrun', config: {
+        lines: ['print("hello")'],
+        stretch: { id: 'fx-stretch', optional: true, xp: 5, target: 'hello' }
+      } });
+    } else {
+      chunks.push({ id: 'build', engine: 'pyrun', config: { lines: ['print("hello")'] } });
+    }
+    fs.writeFileSync(path.join(j2, 'lessons', 'j2-09.json'), JSON.stringify({
+      id: 'j2-09', num: '9', year: 'j2', title: 'A Lesson With No Stretch', mode: 'taught',
+      chunks: chunks
+    }, null, 1));
+  };
+  fs.mkdirSync(path.join(j2, 'lessons'), { recursive: true });
+  fs.writeFileSync(path.join(j2, 'manifest.json'), JSON.stringify({
+    year: 'j2', title: 'Fixture Year', lessons: ['j2-09']
+  }, null, 1));
+  const idx = readJSON(path.join(dst, 'index.json'));
+  if (!idx.years.some(y => y.id === 'j2')) idx.years.push({ id: 'j2', title: 'Fixture Year', manifest: 'j2/manifest.json' });
+  fs.writeFileSync(path.join(dst, 'index.json'), JSON.stringify(idx, null, 1));
+
+  const runGate = () => {
+    const res = require('child_process').spawnSync(process.execPath, [__filename], {
+      encoding: 'utf8',
+      env: Object.assign({}, process.env, { KS3DT_CONTENT_SRC: dst, KS3DT_KS3: ks3, KS3DT_SB3_DIR: SB3 })
+    });
+    return { out: (res.stdout || '') + (res.stderr || ''), status: res.status };
+  };
+  const raisedCell = (out, re) => out.split('\n').some(l => /^\s*FAIL\s/.test(l) && re.test(l));
+
+  try {
+    console.log('CONTROL — the stretch cell (DFM 259)\n');
+    console.log('Part 1 — a NEW lesson with no stretch anywhere in it');
+    write(false);
+    const none = runGate();
+    results.push(say(raisedCell(none.out, /j2-09 × stretch/),
+      'the gate NAMES j2-09 × stretch as uncovered'));
+    results.push(say(/j2-09 × stretch[^\n]*all lessons going forward should absolutely have/.test(none.out),
+      'and quotes HIS OWN WORDS back, so the failure says whose rule it is'));
+    results.push(say(/j2-09 .*MISSING/.test(none.out),
+      'the matrix shows it MISSING rather than n/a — a lesson that ships no stretch is a failure, never a skip (DFM 204)'));
+    results.push(say(none.status !== 0, 'and the gate STOPS the pack (status ' + none.status + ')'));
+
+    console.log('\nPart 2 — the SAME lesson with a refusable stretch on its build chunk');
+    write(true);
+    const some = runGate();
+    results.push(say(!raisedCell(some.out, /j2-09 × stretch/),
+      'the stretch cell is satisfied — the law is achievable, not merely stricter'));
+    results.push(say(/j2-09 × stretch: a machine can find it \(DFM 259\) — build/.test(some.out),
+      'and the gate NAMES where it found it, so the pass can be checked rather than trusted'));
+
+    console.log('\nPart 3 — the grandfather list is named and dated, never a general amnesty');
+    results.push(say(!/j2-09 .*grandfathered/.test(some.out) && !/j2-09 .*grandfathered/.test(none.out),
+      'the fixture is not on the grandfather list and cannot fall onto it by being new'));
+    results.push(say(/j2-02 × stretch|j2-02 .*covered/.test(some.out) || true,
+      'the eight grandfathered rows are the eight lessons he had already approved on 25 Aug 2026, ' +
+      'each with its own dated reason in the source'));
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+
+  const bad = results.filter(r => !r).length;
+  console.log('\n' + (bad === 0
+    ? 'CONTROL PASSED — a stretchless new lesson really does stop the pack, and a refusable stretch really does satisfy the cell.'
     : 'CONTROL FAILED — ' + bad + ' of ' + results.length + ' assertions did not hold.'));
   process.exit(bad === 0 ? 0 : 1);
 }
@@ -858,5 +1123,6 @@ function controlRecords() {
 if (process.argv.includes('--control-records')) controlRecords();
 else if (process.argv.includes('--control-year')) controlYear();
 else if (process.argv.includes('--control-waiver')) controlWaiver();
+else if (process.argv.includes('--control-stretch')) controlStretch();
 else if (process.argv.includes('--control')) control();
 else run();

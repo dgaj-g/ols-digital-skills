@@ -159,14 +159,15 @@
      "beacon": "2",
      "heading": "STOP — eyes front · Build it and run it",
      "bullets": [
-      "A customer has come into the Bureau and asked for a scoreboard.",
-      "It has to start the score at 0, add a point twice, then print the score with the word Score: in front of it.",
-      "Seven lines are waiting in the box called The lines. Four of them are the program.",
-      "The other three have real mistakes in them, the kind everybody makes.",
-      "Drag the lines you want into Your program, in the order you want them to run.",
-      "Then press RUN. Your program is really run, and the console shows exactly what it printed."
+      "There are THREE builds today, and they get harder as you go.",
+      "Build 1 is a scoreboard: start at 0, add a point twice, print Score: and the number.",
+      "Build 2 counts stars, and nothing tells you how many adding lines you need — the number in the target does.",
+      "Build 3 prints TWO lines, so the order you stack them in shows up in the console.",
+      "The lines are shuffled every time, and some of them have real mistakes in them.",
+      "Press RUN. Your program is really run, and the console shows exactly what it printed.",
+      "Finish all three and you are offered a fourth, harder one — take it or finish there."
      ],
-     "notes": "WHERE THE CLASS IS: badge cards from the desk have landed, screens ignored, eyes front. This is the biggest part of the hour and the part the whole lesson has been walking towards, so it is worth the stop.\n\nSAY: \"Now you write one. A customer has asked the Bureau for a scoreboard, and it has three jobs to do: it starts the score at 0, it adds a point twice, and it prints the score with the word Score: in front of it. Seven lines are waiting for you. Four of them are the program, and the other three have real mistakes in them.\"\n\nTHE SENTENCE THAT MATTERS MOST, in your own words: the screen decides whether a program is right, not you. It compares what the console printed against the target on the pupil's own screen and answers MATCHED or NOT YET, so you never have to read a line of Python to teach this.\n\nAND SAY THIS ONE OUT LOUD TOO: a run that does not work costs a pupil nothing. Her lines stay exactly where they are, nothing is taken off her, and she can press RUN as often as she likes. Being wrong and then reading what really printed IS the lesson, not a failure inside it.\n\nWHEN TO MOVE: straight on to the next two slides, then send them in."
+     "notes": "WHERE THE CLASS IS: badge cards from the desk have landed, screens ignored, eyes front. This is the biggest part of the hour and the part the whole lesson has been walking towards, so it is worth the stop.\n\nSAY: \"Now you write them. There are three builds and they get harder as you go. The first is a scoreboard. The second counts stars, and nothing tells you how many adding lines you need — read the number in the target and work it out. The third prints two lines, so the order you stack them in is going to show up.\"\n\nSAY THIS TOO, because it is new today: the lines in the box are SHUFFLED every time. The order they appear in is not a hint, and some of them have real mistakes in them.\n\nTHE SENTENCE THAT MATTERS MOST, in your own words: the screen decides whether a program is right, not you. It compares what the console printed against the target on that pupil's own screen and answers MATCHED or NOT YET, so you never have to read a line of Python to teach this.\n\nAND SAY THIS ONE OUT LOUD TOO: a run that does not work costs a pupil nothing. The lines stay exactly where they were put, nothing is taken away, and RUN can be pressed as often as it takes. Being wrong and then reading what really printed IS the lesson, not a failure inside it.\n\nFOR THE ONES WHO FINISH EARLY: after the third build the screen offers a fourth, harder one, worth 5 XP, with a number missing that has to be worked out backwards from the answer. It can be taken or refused, and refusing costs nothing — so it is a real choice, not a chore.\n\nWHEN TO MOVE: straight on to the next two slides, then send them in."
     },
     {
      "kind": "bullets",
@@ -176,13 +177,14 @@
      "size": 15,
      "bullets": [
       "The lines you can use sit in The lines. Your program is the box beside it.",
+      "The lines are shuffled every time, so the order you see them in is not the order you need.",
       "To ADD a line, drag it into Your program, or click the line itself.",
       "To MOVE a line, drag it up or down inside Your program.",
       "To TAKE a line out, drag it back to The lines.",
       "Python runs your program from the top line down, one line at a time.",
       "The RUN button turns on once at least one line is in Your program."
      ],
-     "notes": "WHERE THE CLASS IS: about to open the build.\n\nSAY: read the six lines out, and point at the order one. \"Python runs your program from the top line down. The right lines in the wrong order will not give you the right answer.\"\n\nWHAT THEY WILL SEE: two boxes side by side, the target printed above them, and a RUN button that is off until a line has been moved across. Her screen says so in as many words, so a pupil who reports a dead button has simply not moved a line yet.\n\nWHILE THEY WORK: a line can be ADDED by clicking it instead of dragging it, which is worth saying to anyone struggling with the mouse. Moving a line up or down, and taking one back out, are drags.\n\nWHEN TO MOVE: straight on."
+     "notes": "WHERE THE CLASS IS: about to open the first of the three builds.\n\nSAY: read the bullets out, and point at two of them — the shuffle and the order. \"The lines come up in a different order every time, so do not go by where they sit. And Python runs your program from the top line down: the right lines in the wrong order will not give you the right answer.\"\n\nWHAT THEY WILL SEE: two boxes side by side, the target printed above them, and a RUN button that is off until a line has been moved across. The screen says so in as many words, so a pupil who reports a dead button has simply not moved a line yet.\n\nWHILE THEY WORK: a line can be ADDED by clicking it instead of dragging it, which is worth saying to anyone struggling with the mouse. Moving a line up or down, and taking one back out, are drags.\n\nWHEN TO MOVE: straight on."
     },
     {
      "kind": "bullets",
@@ -197,7 +199,7 @@
       "If Python stops, the console shows Python's own words, and a line underneath in plain English.",
       "A wrong run costs you nothing. You can run as many times as you like."
      ],
-     "notes": "WHERE THE CLASS IS: building, running, and reading the console.\n\nSAY: \"Read the console before you change anything. It tells you what your program really did, which is not always what you meant it to do.\"\n\nWHAT THEY WILL SEE: when Python stops, the console gives Python's own error words AND a line underneath in plain English saying what that error means. Both, never one instead of the other. The plain line is the one to point at.\n\nTHE HELP THAT ACTUALLY HELPS — three questions, in this order:\n1. What did the console print?\n2. What did you want it to print?\n3. Which one line are you going to change? You do not have to know any Python to ask those three questions, and they are worth more than an answer would be.\n\nIF A SCREEN SAYS PYTHON DID NOT LOAD: that pupil presses RUN again in a moment. Her screen tells her to tell you, so you will hear about it.\n\nWHEN TO MOVE: say “Hands up if your screen has said MATCHED” — that is the word it shows when a pupil's program is right. When most hands are up, move the class on. Anyone still running can finish."
+     "notes": "WHERE THE CLASS IS: building, running, and reading the console.\n\nSAY: \"Read the console before you change anything. It tells you what your program really did, which is not always what you meant it to do.\"\n\nWHAT THEY WILL SEE: when Python stops, the console gives Python's own error words AND a line underneath in plain English saying what that error means. Both, never one instead of the other. The plain line is the one to point at.\n\nTHE HELP THAT ACTUALLY HELPS — three questions, in this order:\n1. What did the console print?\n2. What did you want it to print?\n3. Which one line are you going to change? You do not have to know any Python to ask those three questions, and they are worth more than an answer would be.\n\nIF A SCREEN SAYS PYTHON DID NOT LOAD: that pupil presses RUN again in a moment. Her screen tells her to tell you, so you will hear about it.\n\nWHEN TO MOVE: say “Hands up if all three of your builds have said MATCHED” — that is the word the screen shows when a program is right. When most hands are up, move the class on. Anyone still running can finish, and anyone who has taken the optional fourth build can finish that too."
     }
    ]
   },

@@ -219,9 +219,16 @@ function collectStrings(lesson, fileId) {
     const key = lesson.keys[k];
     if (key && key.explain) push(fileId + ' › keys › ' + k + ' › explain', key.explain);
   });
-  /* teacherBrief is DELIBERATELY out of scope: a different register entirely
-     (DFM 138.3, professional economy) with its own rules and its own reader.
-     Its facts are already guarded by qa-cross-lesson.js. */
+  /* teacherBrief is out of THIS walk because its reader is a teacher, not the
+     child — but it is NO LONGER out of the gate. Until 25 Aug 2026 this comment
+     read "DELIBERATELY out of scope", and that exclusion was the whole reason
+     his sentence — "Your job is the room, the two stops, and the questions that
+     get a stuck pupil looking at her own console." — met no mechanical rule at
+     all (DFM 257). The brief now has its own section, at its own reader
+     (138.3), with its own rules and its own read-aloud ledger: see
+     collectBriefStrings / briefChecks / briefLedgerCheck below. What stays true
+     is that a brief sentence must never be judged with the CHILD's ruler — that
+     would make the gate demand worse writing (DFM 146a). */
   return out.filter(s => !isStaffPath(s.path));
 }
 
@@ -262,7 +269,24 @@ const LEXICON = [
   { rx: /\bsenior case/i, why: 'HIS NAMED FAULT (K18a): a pupil reads "senior" as senior school, not as harder', fix: '"Hard Case" (J2\'s Hard Inspection is the same word for the same idea)' },
   { rx: /\bgirls?\b/i, allow: /girls' school/i, why: 'DFM 26: "pupil", never "girl"', fix: '"pupil"' },
   { rx: /\bsignal points?\b/i, why: 'invented currency, killed by DFM 141(b)', fix: 'price it in real XP' },
-  { rx: /\b(colou?r)ize|\borganize|\brecognize|\bapologize|\bcolor\b|\bcenter\b|\bbehavior\b/i, why: 'US spelling (DFM 138.1.12)', fix: 'UK form' }
+  { rx: /\b(colou?r)ize|\borganize|\brecognize|\bapologize|\bcolor\b|\bcenter\b|\bbehavior\b/i, why: 'US spelling (DFM 138.1.12)', fix: 'UK form' },
+  /* ---- DFM 260, HIS RULING, 25 Aug 2026: "Who on earth is Mr Boyle? Why
+     doesn't it just say the teacher? Change this and check for anything else
+     that is silly like this."  Pupil-facing content never invents a member of
+     staff; the figure in authority is "the teacher" / "her teacher", or the
+     real role the platform already uses. It is DFM 167(a)'s family — a fact
+     about the real school, banned everywhere the moment he corrects it —
+     which is why it belongs in a ratchet and not in a checklist.
+     THE PATTERN IS NARROW ON PURPOSE. It matches a title followed by a
+     CAPITALISED SURNAME, because that is what an invented staff member looks
+     like. It must not fire on "Miss three and the game is over" (a verb),
+     "Mr" inside a quoted username, or the ordinary lower-case sentence — every
+     one of those is a control below, in both directions. */
+  { rx: /\b(Mr|Mrs|Miss|Ms|Sir|Madam)\s+[A-Z][a-z]{2,}\b/,
+    allow: /\b(Miss|Mr|Mrs|Ms)\s+(three|two|one|four|five|a\b)/i,
+    why: 'DFM 260 (25 Aug 2026): an INVENTED MEMBER OF STAFF. His words: "Who on earth is Mr Boyle? ' +
+         'Why doesn\'t it just say the teacher?" No pupil-facing text invents a teacher.',
+    fix: '"the teacher" / "her teacher" — or the real role the platform already uses ("the Head of Department")' }
 ];
 
 /* ------------------------------------------------------------------ *
@@ -971,7 +995,8 @@ function screenContractCheck(lessons) {
  * child rule 172 names, so it is governed by 138.4's register and its own
  * laws (121/122/163) - DFM 179(e).
  * ==================================================================== */
-const SCENES_DIR = path.join(__dirname, 'scenes');
+const SCENES_ROOT = path.join(__dirname, 'scenes');
+const SCENES_DIR = SCENES_ROOT;
 
 /* Each film maps to the lesson AND the chunk where a pupil is served it.
    That pairing is what lets the vocabulary gate run AT FILM POSITION - a
@@ -1220,14 +1245,14 @@ function objectFields(clean, inStr, from, to) {
    variable, never a string literal. (This is the same instinct as the
    static-only law, pointed the other way round.)
 
-   REPORTED AND NOT CHANGED THIS ROUND, because it is a finding in lessons he has
-   signed off and DFM 222(a) says those come to him before anything moves:
-   `collectFilmStrings` scans `scenes/l[0-9]*.js` ONLY, so **scenes/j2-l2.js and
-   scenes/j3-l2.js are not scanned at all**, although both carry FILM_MAP
-   entries naming the lesson and chunk they belong to. The run says so in its own
-   output — "across l2, l3, l4, l5" — and nobody has read it as the absence it
-   is. Turning it on is a one-word regex change; what it may then find in two
-   approved J2/J3 films is his call, not mine. */
+   CLOSED 25 Aug 2026 (spec Job 10). `collectFilmStrings` used to scan
+   `scenes/l[0-9]*.js` ONLY, so scenes/j2-l2.js and scenes/j3-l2.js were never
+   scanned although both carried FILM_MAP entries. That was reported to him on
+   23 Aug under DFM 222(a) and is now mandatory rather than parked, because this
+   round EDITS both films: DFM 172's own words are that everything written to
+   explain something to a child is gated, so a caption may not be re-written
+   before the gate can read it. Every finding in the films' UNCHANGED chapters is
+   fixed in this round and listed for him in PROGRESS_L2_SIT_ROUND.md. */
 const CONTENT_FED_SCENES = ['lS1.js'];
 function contentFedSceneProblems() {
   const errs = [];
@@ -1255,14 +1280,29 @@ function contentFedSceneProblems() {
 }
 
 /* ---- the extractor ---- */
-function collectFilmStrings() {
+function collectFilmStrings(dirOverride, mapOverride) {
+  /* dirOverride/mapOverride exist for the Job 10 control ONLY: the fixture plants
+     a scene file whose NAME is the thing under test, so the control has to be able
+     to point the same walk at a throwaway directory. Production callers pass
+     nothing and get the real scenes folder, one home (DFM 144). */
+  const SCENES_DIR = dirOverride || SCENES_ROOT;
+  const MAP = mapOverride || FILM_MAP;
   const out = [], errs = [];
   const files = fs.existsSync(SCENES_DIR)
-    ? fs.readdirSync(SCENES_DIR).filter(f => /^l[0-9][^\\/]*\.js$/.test(f)).sort()
+    /* DFM 222a / spec Job 10, 25 Aug 2026 — THE GAP CLOSES. This filter read
+       /^l[0-9]…/ and therefore never reached scenes/j2-l2.js or scenes/j3-l2.js,
+       though both have carried FILM_MAP entries since 19 August. Two whole films
+       — every caption a J2 or J3 pupil watches in her first Python hour — had
+       never once passed Layer 1 or the read-aloud ledger, and the run said so in
+       its own output without anybody reading it as the absence it was. It now
+       matches every year's lesson scenes: l<n> and j<n>-l<n>. guide.js stays out
+       (its reader is a teacher, DFM 179e) and lS1.js stays out because it starts
+       with a letter, not a digit — it is content-fed and checked above. */
+    ? fs.readdirSync(SCENES_DIR).filter(f => /^(?:j[0-9]-)?l[0-9][^\\/]*\.js$/.test(f)).sort()
     : [];
   files.forEach(file => {
     const setId = file.replace(/\.js$/, '');
-    const map = FILM_MAP[setId];
+    const map = MAP[setId];
     if (!map) {
       errs.push('scenes/' + file + ': a new film with no FILM_MAP entry in qa-language.js — ' +
         'name the lesson and the chunk where a pupil is served it, so its captions are ' +
@@ -1606,6 +1646,309 @@ function deckLedgerCheck(deckStrings, ledger) {
   return out;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+ * THE BRIEF REGISTER — DFM 257 (his commission, 25 Aug 2026)
+ *
+ * His exhibit, from the j2-02 brief: "Your job is the room, the two stops, and
+ * the questions that get a stuck pupil looking at her own console." — "terrible
+ * wording ... should have failed the language harness. You must explain why it
+ * didn't."
+ *
+ * WHY IT DIDN'T, on the record: `collectStrings` ended with a comment saying
+ * teacherBrief was "DELIBERATELY out of scope: a different register entirely",
+ * so NO mechanical rule ever read a brief sentence — and the round's four
+ * separated cold reads covered lesson sentences, recap pools and both decks and
+ * never the brief prose. The briefs were the one register on the platform with
+ * neither mechanical nor judged coverage: DFM 206's class, on a text surface.
+ *
+ * This section is the repair. The brief is now a language-gated register like
+ * every other, judged at the TEACHER's seat (138.3 — a competent, busy
+ * colleague from another subject who has never seen the platform), NOT at the
+ * pupil's. The rules below are the ones that belong to that register:
+ *   · the DFM 65 she/her ban, which has stood since 31 July with no ratchet at
+ *     all — which is exactly why these two briefs carry it in dozens of places;
+ *   · the DFM 72 fragment-flourish family, in the two shapes his corrections
+ *     name: a verbless sentence, and the rhetorical triple his own exhibit is;
+ *   · invented staff names (DFM 260) and the class-size claim (DFM 227e), both
+ *     of which are FACTS about his school rather than matters of taste;
+ *   · UK spelling (138.1.12);
+ *   · and the shared LEXICON, minus the entries that only make sense pointed at
+ *     a child (a teacher may legitimately be told what a "variable" is).
+ *
+ * WHAT IT DELIBERATELY DOES NOT DO: it does not apply the pupil sentence-length
+ * ceiling. 138.3's economy is achieved by cutting sentences, and a professional
+ * reader carries a longer one than a twelve-year-old does; measuring the brief
+ * with the child's ruler would make the gate demand worse writing (DFM 146a).
+ * The judged half — a read-aloud row per brief sentence at the teacher's seat,
+ * plus a separated cold read — is what catches what no rule can.
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+const TEACHER_READER = 'a busy colleague from another subject who has never seen the platform';
+
+/* J1's five briefs and the side quest's are LOCKED (DFM 176/218). Their
+   findings PRINT on every run, in full, and never block — the qa-language
+   locked-banner precedent. Hiding them would make the lock look like
+   cleanliness; it is a dated debt he chose to carry. */
+const BRIEF_LOCKED = new Set([
+  /* J1's five, plus the side quest (DFM 176/218) */
+  'j1-01', 'j1-02', 'j1-03', 'j1-04', 'j1-05', 'j1-sq1',
+  /* AND the two Lesson 1 briefs he approved on 18 Aug 2026 (DFM 244): "i've just
+     looked at the lesson briefs and slide decks for L1 for J2 and J3 and they are
+     the standard I was after." A gate arriving a week after his sign-off does not
+     get to re-open text he has passed — that is re-litigating a decision he has
+     made, which is his standing objection. Their findings print; they do not
+     block; nothing in them is edited. The briefs UNDER REVIEW this round are
+     j2-02 and j3-02, and those are where this gate has teeth. */
+  'j2-01', 'j3-01'
+]);
+
+/* DFM 261, 25 Aug 2026 — HIS RULING, dated, and never raised again:
+   "We'll ignore the she/her in j1 01 brief." The row stays visible so the count
+   is honest; it is not a to-do and no future sweep may touch it. */
+const BRIEF_WAIVERS = [
+  {
+    path: 'j1-01 › brief › goesWrong[8] › a',
+    rule: 'she/her',
+    ruled: '2026-08-25',
+    why: 'WAIVED BY HIS RULING (DFM 261, 25 Aug 2026): "We\'ll ignore the she/her in j1 01 brief." ' +
+         'Settled as shipped, in a locked and approved brief. Never raised again, never swept.'
+  }
+];
+
+/* href is a URL, not prose. Everything else a colleague READS is in scope,
+   including the say-lines she reads aloud to the class and the resource
+   labels — DFM 251's own lesson is that a fact hiding in a brief row is still
+   a fact a teacher will say out loud. */
+const BRIEF_SKIP_FIELDS = new Set(['href', 'img', 'imgAlt', 'shot', 'mins', 'part']);
+
+function collectBriefStrings(lessons) {
+  const out = [];
+  lessons.forEach(L => {
+    const tb = (L.json || {}).teacherBrief;
+    if (!tb) return;
+    const base = L.fileId + ' › brief';
+    const walk = (node, at) => {
+      if (typeof node === 'string') {
+        if (node.trim()) out.push({
+          path: at, text: node, lesson: L.fileId, year: L.year || L.json.year,
+          locked: BRIEF_LOCKED.has(L.fileId)
+        });
+        return;
+      }
+      if (Array.isArray(node)) { node.forEach((v, i) => walk(v, at + '[' + i + ']')); return; }
+      if (node && typeof node === 'object') {
+        Object.keys(node).forEach(k => {
+          if (BRIEF_SKIP_FIELDS.has(k)) return;
+          walk(node[k], at + ' › ' + k);
+        });
+      }
+    };
+    Object.keys(tb).forEach(section => walk(tb[section], base + ' › ' + section));
+  });
+  return out;
+}
+
+/* ---- DFM 65, 31 Jul 2026: "pupil/pupils/the pupil", never "she/her",
+   throughout ALL lesson briefs. It has been law for nearly a month with
+   nothing enforcing it, which is why j2-02 shipped with dozens of hits. ---- */
+function sheHerCheck(text) {
+  const t = prose(text);
+  const hits = t.match(/\b(she|her|hers|herself|she's|she'll|she'd)\b/gi) || [];
+  if (!hits.length) return [];
+  return ['DFM 65 (31 Jul 2026): a brief says "the pupil" / "pupils" / "they", never she/her — ' +
+    hits.length + ' hit(s): ' + Array.from(new Set(hits.map(h => h.toLowerCase()))).join(', ') +
+    '. Rewrite the sentence so it READS naturally in pupil forms; never swap the word and leave the rest.'];
+}
+
+/* ---- DFM 227(e): "and you keep thirty pupils moving in the same direction" →
+   "all the pupils". A class size is a claim about HIS school that is false in
+   most rooms, and he swept it once by hand. ---- */
+function classSizeCheck(text) {
+  const t = prose(text);
+  const m = t.match(/\b(thirty|twenty|twenty-five|25|30|32|thirty-two)\s+(pupils|girls|children|of them)\b/i) ||
+            t.match(/\bin front of (thirty|30)\b/i);
+  return m ? ['DFM 227(e): a CLASS-SIZE claim ("' + m[0] + '") — he swept exactly this by hand ' +
+    'and the replacement is "all the pupils". No brief may state how many pupils are in a room.'] : [];
+}
+
+/* ---- 138.1.12: UK English everywhere, teacher side included. The computing
+   forms that are correct British usage are kept (program, disk, licence as the
+   noun) — DFM 140(a)'s ruling, which is why this list is spellings and not a
+   blanket -ize sweep. ---- */
+const US_SPELLINGS = [
+  [/\bcolor(s|ed|ing)?\b/i, 'colour'], [/\bbehavior(s|al)?\b/i, 'behaviour'],
+  [/\bcenter(s|ed|ing)?\b/i, 'centre'], [/\borganiz(e|es|ed|ing|ation)\b/i, 'organise'],
+  [/\brecogniz(e|es|ed|ing)\b/i, 'recognise'], [/\bemphasiz(e|es|ed|ing)\b/i, 'emphasise'],
+  [/\bapologiz(e|es|ed|ing)\b/i, 'apologise'], [/\bfavor(s|ed|ite|ites)?\b/i, 'favour'],
+  [/\bhonor(s|ed)?\b/i, 'honour'], [/\bpracticing\b/i, 'practising'],
+  [/\bcatalog(s|ed)?\b/i, 'catalogue'], [/\bmeter(s)?\b(?!\s*read)/i, 'metre'],
+  [/\bdefense\b/i, 'defence'], [/\banaly(z|zes|zed|zing)\b/i, 'analyse'],
+  [/\bmath\b/i, 'maths']
+];
+function ukSpellingCheck(text) {
+  const t = prose(text);
+  const out = [];
+  US_SPELLINGS.forEach(([rx, uk]) => {
+    const m = t.match(rx);
+    if (m) out.push('138.1.12: US spelling "' + m[0] + '" — UK English everywhere, teacher side included. Use "' + uk + '".');
+  });
+  return out;
+}
+
+/* ---- DFM 72, and its exhibit is his own sentence.
+   "Less AI looking language and more fluid natural language ... it's not the way
+   i write." Two shapes, and only two, because a rule that fires on good prose
+   gets ignored and an ignored rule is worse than none (DFM 146a):
+
+   (a) THE RHETORICAL TRIPLE. "X is A, B, and C" where every item is a bare noun
+       phrase and none of them DOES anything. That is his exhibit exactly: a job
+       cannot be "the room". A colleague reading it cannot tell what to do,
+       which is 138.3's whole test. The good form is the one Lesson 1's brief
+       already uses and rule 138.3 names — a duty list led by VERBS ("Your jobs
+       are to ensure each pair gets a micro:bit, give them a short demonstration
+       at the front, and circulate…").
+   (b) THE VERBLESS SENTENCE. 138.3: economy is achieved by CUTTING SENTENCES,
+       never by compressing one into a fragment that costs meaning. Headings and
+       row labels are exempt — a `title`, a `part`, a `label` or a goesWrong `q`
+       is a label, and a label is allowed to be a noun phrase. ---- */
+const BRIEF_LABEL_PATH = /(› title|› label|› part|› q|› where|› imgCap)$/;
+/* THE VERBLESS ROW IS FOR PROSE, AND ONLY FOR PROSE — and the reason is written
+   down rather than assumed, because the first version of it reported nine
+   perfectly good lines in briefs he has approved (DFM 146a: a gate that invents
+   a fault is worse than no gate).
+   · `say` is SPEECH. A teacher standing at the front really does say "Quiet and
+     on your own now." — that is correct spoken English, and demanding a finite
+     verb in it would make the brief read like a script nobody would ever speak.
+   · `resources[n] › what` and `atAGlance[n] › what` are TABLE CELLS. A row that
+     names a thing ("A Google Slides deck for the front of the room.") is an
+     apposition, which is the register a two-column table is written in — his own
+     approved L1 briefs are written that way throughout.
+   What is left is exactly what 138.3 legislates: the explanatory PROSE — purpose,
+   the prepare rows, the running-the-hour rows and the goes-wrong answers — where
+   a compressed fragment really does cost meaning. */
+const BRIEF_PROSE_PATH = /› (purpose\[\d+\]|prepare\[\d+\] › text|runningTheHour\[\d+\] › text|goesWrong\[\d+\] › a)$/;
+
+function briefFlourishCheck(text, path) {
+  const out = [];
+  const isLabel = BRIEF_LABEL_PATH.test(String(path || ''));
+  sentences(prose(text)).forEach(raw => {
+    const s = raw.trim();
+    if (!s || wordCount(s) < 4) return;
+
+    /* (a) the rhetorical triple */
+    /* the trailing full stop is part of the sentence the splitter hands over, so
+       the tail match has to allow it — without this the rule silently matched
+       nothing at all and his own exhibit walked straight through the row written
+       for it (a control now proves it fires) */
+    /* THE SUBJECT MUST BE A DUTY, and that narrowing is the difference between a
+       rule and a nuisance. What is wrong with his exhibit is not that it lists
+       three nouns — it is that it tells a colleague what her JOB is using nouns
+       that do not describe an action, so she finishes the sentence knowing no
+       more about what to do than when she started. A sentence that NAMES things
+       ("Today's two are Bureau Reader, for clearing the matching desk, and First
+       Program, for the build.") has the same grammar and none of the fault, and
+       the first version of this row condemned it — DFM 146a, caught here rather
+       than by him. So the row fires only on a duty subject.
+       The trailing full stop is part of the sentence the splitter hands over, so
+       the tail match has to allow it; without that the row matched nothing at all
+       and his own exhibit walked straight through the rule written for it. */
+    const DUTY_SUBJECT = /\b(?:your|the|my|her|their|his|our)\s+(?:only\s+|main\s+|whole\s+|real\s+)?(?:job|jobs|role|task|tasks|duty|duties|aim|goal|point|responsibility)\b\s*(?:is|are|was|were)\b/i;
+    const cop = DUTY_SUBJECT.test(s) ? s.match(/\b(?:is|are|was|were)\b\s+([^.!?]+)[.!?]*\s*$/i) : null;
+    if (cop) {
+      const tail = cop[1].replace(/[.!?]+$/, '');
+      if (/,\s*(?:and|or)\s+/.test(tail)) {
+        const items = tail.split(/,\s*(?:and\s+|or\s+)?/).map(x => x.trim()).filter(Boolean);
+        if (items.length >= 3) {
+          /* An item that DOES something rescues the sentence: a to-infinitive, an
+             -ing clause, or a bare imperative. That is why the approved shape
+             138.3 itself prescribes — "Your jobs are to ensure each pair gets a
+             micro:bit, give them a short demonstration at the front, and
+             circulate…" — passes untouched.
+             THE HEAD IS WHAT COUNTS, not the whole item. The first version tested
+             the item entire, so "the questions that GET a stuck pupil looking at
+             her own console" counted as doing something on the strength of a verb
+             inside a relative clause — and his own exhibit sailed through the rule
+             written for it. A relative clause modifies a noun; it does not turn the
+             noun into an action. So the test runs on the item's head, up to the
+             first relative pronoun. */
+          const headOf = (x) => x.split(/\b(?:that|which|who|whom|whose|where|when)\b/i)[0].trim();
+          const doing = items.filter(x =>
+            /^to\s+\w/i.test(x) || /^\w+ing\b/i.test(x) || hasRealVerb(headOf(x)));
+          if (!doing.length) {
+            out.push('DFM 72 — THE RHETORICAL TRIPLE: "' + s.slice(0, 110) + '" lists ' + items.length +
+              ' bare noun phrases after "is/are" and none of them DOES anything, so a colleague ' +
+              'cannot tell what she is being asked to do. This is the shape of his own exhibit ' +
+              '("Your job is the room, the two stops, and the questions…"). Write it as a duty ' +
+              'list led by verbs (138.3): "Your jobs are to …, to …, and to …".');
+          }
+        }
+      }
+    }
+
+    /* (b) the verbless sentence — prose only, see BRIEF_PROSE_PATH */
+    if (!isLabel && BRIEF_PROSE_PATH.test(String(path || '')) && !hasRealVerb(s)) {
+      out.push('DFM 72 / 138.3 — A VERBLESS SENTENCE: "' + s.slice(0, 110) + '". Economy in a brief ' +
+        'comes from CUTTING sentences, never from compressing one into a fragment that costs ' +
+        'meaning. Write it out.');
+    }
+  });
+  return out;
+}
+
+/* Entries in the shared LEXICON that only make sense pointed at a child. A
+   teacher may legitimately be told that a variable is a box with a name on it,
+   and a brief that had to avoid the word "variable" would be a worse brief.
+   Everything else in the lexicon — his corrected phrases, the invented facts,
+   the banned currency, the invented staff names — applies to both registers. */
+const LEXICON_PUPIL_ONLY = /(a screen-drawing word|she has never met|first meeting|138\.1\.3)/i;
+function briefLexiconCheck(text) {
+  return lexiconCheck(prose(text)).filter(m => !LEXICON_PUPIL_ONLY.test(m));
+}
+
+function briefChecks(text, path) {
+  return [].concat(
+    sheHerCheck(text),
+    classSizeCheck(text),
+    ukSpellingCheck(text),
+    briefFlourishCheck(text, path),
+    briefLexiconCheck(text)
+  );
+}
+
+/* ---- THE LEDGER DEMAND, EXTENDED TO BRIEFS (DFM 257; the 225d/235 pattern).
+   No brief sentence ships without a read-aloud row, asked at the TEACHER's
+   seat: can she DO what it asks where she stands, PICTURE every noun in it, and
+   SAY what it is for? A locked J1 brief carries a grandfathered stamp like any
+   locked pupil sentence — and the moment one of those sentences is EDITED, its
+   hash voids and a real judgement is demanded. ---- */
+function briefLedgerCheck(briefStrings, ledger) {
+  const out = [];
+  const byPath = ledger.entries || {};
+  briefStrings.forEach(s => {
+    const e = byPath[s.path];
+    if (!e) {
+      out.push('UNREVIEWED BRIEF SENTENCE: ' + s.path + ' — no read-aloud record. Read it as ' +
+        TEACHER_READER + ': can she DO it where she stands, PICTURE every noun, SAY what it is ' +
+        'for? It reads: "' + s.text.slice(0, 90) + '". Then: node ledger-tool.js --set-brief "' +
+        s.path + '" "<what she does>" "<what she pictures>" "<what it is for>"');
+      return;
+    }
+    if (e.sha1 !== sha1(s.text)) {
+      out.push('CHANGED SINCE REVIEW: ' + s.path + ' — the brief sentence was edited after its ' +
+        'record was written. Re-ask the question as ' + TEACHER_READER + ' and update the entry.');
+      return;
+    }
+    if (e.grandfathered || e.reviewed) return;
+    const ra = e.readAloud || {};
+    ['do', 'picture', 'for'].forEach(k => {
+      if (!ra[k] || String(ra[k]).trim().length < 3) {
+        out.push('THIN BRIEF RECORD: ' + s.path + ' — readAloud.' + k + ' is empty.');
+      }
+    });
+  });
+  return out;
+}
+
 function ledgerCheck(lessons, ledger) {
   const out = [];
   const byPath = ledger.entries || {};
@@ -1853,6 +2196,111 @@ function runControls() {
     fs.unlinkSync(bad); fs.rmdirSync(FIX_DIR);
   } catch (e) {
     control(false, 'the static-only fixture could not run: ' + e.message);
+  }
+
+  /* ---- THE BRIEF REGISTER (DFM 257, 25 Aug 2026). His exhibit is the named
+     control, and it must be caught BOTH WAYS: mechanically by the she/her ban
+     and by the flourish row, because he asked why nothing failed it and the
+     honest answer has to be a machine that now does. Every guard below in the
+     other direction is a sentence that must stay silent — three of them are
+     from briefs he has approved, and the first version of these rows condemned
+     all three (DFM 146a, caught here rather than by him). ---- */
+  const HIS_BRIEF_SENTENCE = 'Your job is the room, the two stops, and the questions that get a ' +
+    'stuck pupil looking at her own console.';
+  const BP = 'j2-02 › brief › purpose[2]';
+  control(sheHerCheck(HIS_BRIEF_SENTENCE).length >= 1,
+    'HIS OWN BRIEF SENTENCE is caught by the DFM 65 she/her ban — the rule that has stood since ' +
+    '31 July 2026 with nothing enforcing it, which is why j2-02 shipped with dozens of hits');
+  control(briefFlourishCheck(HIS_BRIEF_SENTENCE, BP).some(m => /RHETORICAL TRIPLE/.test(m)),
+    'and by the DFM 72 flourish row: it tells a colleague what her JOB is with three noun phrases, ' +
+    'none of which does anything — she finishes the sentence no wiser about what to do');
+  control(briefChecks(HIS_BRIEF_SENTENCE, BP).length >= 2,
+    'so the sentence he asked about fails the brief gate on TWO independent rows, not one');
+  /* the same sentence written the way 138.3 prescribes must pass */
+  const GOOD_DUTY = 'Your jobs are to ensure each pair gets a micro:bit to share, give them a short ' +
+    'demonstration at the front, and circulate while they work.';
+  control(briefChecks(GOOD_DUTY, BP).length === 0,
+    'and the duty list 138.3 itself prescribes — verbs, not nouns — PASSES untouched');
+  const GOOD_BRIEF = 'What you should do is sit the lesson as a pupil before you teach it, because ' +
+    'that is how you learn what the hour feels like.';
+  control(briefChecks(GOOD_BRIEF, BP).length === 0, 'a sound brief sentence raises nothing');
+  const NAMING = "Today's two are Bureau Reader, for clearing the matching desk, and First Program, " +
+    'for the build.';
+  control(briefFlourishCheck(NAMING, BP).length === 0,
+    'a sentence that NAMES things has the same grammar and none of the fault — it stays silent ' +
+    '(the first version of the row condemned it)');
+  control(briefFlourishCheck('Quiet and on your own now.', 'j2-01 › brief › runningTheHour[4] › say').length === 0,
+    'a SAY line is speech, and a teacher really does say that — the verbless row does not reach it');
+  control(briefFlourishCheck('A Google Slides deck for the front of the room.',
+    'j2-01 › brief › resources[0] › what').length === 0,
+    'and a resources TABLE CELL naming a thing is an apposition, not a compressed sentence');
+  control(briefFlourishCheck('A wrong run, no cost.', 'j2-02 › brief › prepare[2] › text').length >= 1,
+    'while a verbless fragment in the explanatory PROSE is still caught (138.3: economy comes from ' +
+    'cutting sentences, never from compressing one)');
+  /* the invented staff name, his DFM 260 exhibit, both ways */
+  control(lexiconCheck('Put her hand up and tell Mr Boyle straight away').length >= 1,
+    'HIS DFM 260 EXHIBIT is caught: "Mr Boyle" is an invented member of staff');
+  ['Mrs Boyle asked her to move it.', 'Miss Doherty marks the work.', 'Ms Kelly is at the front.']
+    .forEach(t => control(lexiconCheck(t).length >= 1, 'and so is "' + t.split(' ').slice(0, 2).join(' ') + '"'));
+  control(lexiconCheck('Miss three and the game is over — if you build it that way.').length === 0,
+    'and legitimate prose is NOT caught: "Miss three and the game is over" is a verb, not a teacher ' +
+    '(the over-tightening guard on his own Catch It pitch)');
+  control(lexiconCheck('Ask the teacher to unlock it, or the Head of Department if she is out.').length === 0,
+    'nor is the wording the ban prescribes ("the teacher" / "the Head of Department")');
+  /* the class-size claim he swept by hand (DFM 227e) */
+  control(classSizeCheck('and you keep thirty pupils moving in the same direction').length >= 1,
+    'HIS DFM 227(e) SENTENCE is caught: a brief may not say how many pupils are in a room');
+  control(classSizeCheck('and you keep all the pupils moving in the same direction').length === 0,
+    'and the replacement he wrote passes');
+  /* the ledger demand */
+  control(briefLedgerCheck([{ path: 'x › brief › purpose[0]', text: 'anything' }], { entries: {} })
+    .some(m => /^UNREVIEWED BRIEF SENTENCE/.test(m)),
+    'a brief sentence with no read-aloud record BLOCKS the pack, exactly as a pupil sentence does (DFM 257)');
+  control(briefLedgerCheck([{ path: 'x › brief › purpose[0]', text: 'anything' }],
+    { entries: { 'x › brief › purpose[0]': { sha1: sha1('something else'), reviewed: 'x' } } })
+    .some(m => /^CHANGED SINCE REVIEW/.test(m)),
+    'and editing a brief sentence voids its record, so the question is asked again at the moment ' +
+    'the text changes');
+
+  /* ---- THE FILM EXTRACTOR'S OWN REACH (spec Job 10, 25 Aug 2026). The gap was
+     not a broken check, it was a FILE FILTER that had never been widened past
+     J1: `/^l[0-9]…/` matched l2/l3/l4/l5 and nothing else, so scenes/j2-l2.js
+     and scenes/j3-l2.js — two films a J2 or J3 pupil watches in her first Python
+     hour — were never read by Layer 1 or the ledger, while the run printed a
+     cheerful "scanned N strings across l2, l3, l4, l5". This control plants a
+     scene named the way a year film is named, with one banned word in a caption,
+     and proves three things at once: the OLD filter cannot see the file, the NEW
+     one can, and the checks really run on what it finds. The day somebody
+     narrows the walk back to one year, this fails and says why. */
+  const FILM_DIR = path.join(__dirname, 'out', '.qa-language-film-fixture');
+  try {
+    fs.mkdirSync(FILM_DIR, { recursive: true });
+    const planted = path.join(FILM_DIR, 'j2-l99.js');
+    fs.writeFileSync(planted,
+      "const scenes=[{id:'ch1',run:async({cine})=>{\n" +
+      "  await cine.caption('Just tap the line you want and the console will answer.');\n" +
+      "}}];\nmodule.exports={scenes};\n");
+    const OLD_FILTER = /^l[0-9][^\\/]*\.js$/;
+    const NEW_FILTER = /^(?:j[0-9]-)?l[0-9][^\\/]*\.js$/;
+    control(!OLD_FILTER.test('j2-l99.js') && !OLD_FILTER.test('j2-l2.js') && !OLD_FILTER.test('j3-l2.js'),
+      'THE PRE-FIX FILTER IS BLIND to every J2/J3 film file — the control that reproduces the gap ' +
+      'as it stood on 3dddf45 (DFM 196)');
+    control(NEW_FILTER.test('j2-l99.js') && NEW_FILTER.test('j2-l2.js') && NEW_FILTER.test('j3-l2.js') &&
+            NEW_FILTER.test('l2.js') && NEW_FILTER.test('l5.js'),
+      'and the widened filter reaches both year films AND keeps every J1 film it always had');
+    control(!NEW_FILTER.test('guide.js') && !NEW_FILTER.test('lS1.js'),
+      'while guide.js (a teacher reader, DFM 179e) and the content-fed lS1.js stay OUT, as they must');
+    const got = collectFilmStrings(FILM_DIR, { 'j2-l99': { lesson: 'j2-99', chunkId: 'film' } });
+    control(got.strings.length === 1,
+      'the widened walk really reads the planted year film (not merely matching its name)');
+    control(lexiconCheck(filmRendered((got.strings[0] || {}).raw || '')).length >= 1,
+      'and a BANNED WORD in a J2 film caption is caught — "tap", the ban he has had to give twice (DFM 150)');
+    const noMap = collectFilmStrings(FILM_DIR, {});
+    control(noMap.errs.some(e => /no FILM_MAP entry/.test(e)),
+      'and a year film with no FILM_MAP entry FAILS the build rather than being skipped quietly (DFM 204)');
+    fs.rmSync(FILM_DIR, { recursive: true, force: true });
+  } catch (e) {
+    control(false, 'the film-extractor reach fixture could not run: ' + e.message);
   }
 
   /* ---- THE MULTI-YEAR WALK (addendum Part E; the gap HIS question found on
@@ -2289,9 +2737,9 @@ function main() {
     cf.forEach(e => filmProblems.push({ set: 'content-fed', where: e, msgs: [e] }));
     console.log('  content-fed scenes (' + CONTENT_FED_SCENES.join(', ') + '): ' +
       (cf.length ? cf.length + ' PROBLEM(S)' : 'every pupil word comes from the lesson, none is a literal here') +
-      '\n  NOT SCANNED AT ALL, reported not fixed (DFM 222a — a finding in a signed-off lesson): ' +
-      'scenes/j2-l2.js and scenes/j3-l2.js carry FILM_MAP entries and the extractor\'s file ' +
-      'filter never reaches them.');
+      '\n  scenes/j2-l2.js and scenes/j3-l2.js ARE SCANNED from 25 Aug 2026 (spec Job 10): the file ' +
+      'filter used to read /^l[0-9]…/ and reached no year but J1, so two films a J2 or J3 pupil ' +
+      'watches had never passed Layer 1 or the ledger. They are in the count below.');
   }
   const film = collectFilmStrings();
   film.strings.forEach(f => { f.key = filmKey(f); });
@@ -2318,11 +2766,11 @@ function main() {
     }
   });
   filmVocabCheck(films, lessons, vocab).forEach(p => {
-    const set = (p.match(/^film:(l\d+)/) || [])[1];
+    const set = (p.match(/^film:((?:j\d-)?l\d+)/) || [])[1];
     ((FILM_MAP[set] || {}).locked ? filmLocked : filmProblems).push(p);
   });
   filmOrderCheck(films, lessons, vocab).forEach(p => {
-    const set = (p.match(/^film:(l\d+)/) || [])[1];
+    const set = (p.match(/^film:((?:j\d-)?l\d+)/) || [])[1];
     ((FILM_MAP[set] || {}).locked ? filmLocked : filmProblems).push(p);
   });
   console.log('  scanned ' + films.length + ' caption/card/callout string(s) across ' +
@@ -2337,6 +2785,39 @@ function main() {
     filmLocked.forEach(p => console.log('    WAIVED ' + p));
   }
 
+  /* ---- THE BRIEFS (DFM 257, his commission 25 Aug 2026): the same discipline,
+     at the TEACHER's seat. This is the register that had neither a mechanical
+     rule nor a judged read until today. ---- */
+  console.log('\nTEACHER BRIEFS — the register that had no gate at all until 25 Aug 2026 (DFM 257):');
+  const briefs = collectBriefStrings(lessons).filter(s => inScope(s.path));
+  const briefProblems = [], briefLockedFindings = [], briefWaived = [];
+  const waiverFor = (p, msg) => BRIEF_WAIVERS.find(w => w.path === p &&
+    (w.rule !== 'she/her' || /DFM 65/.test(msg)));
+  briefs.forEach(s => {
+    briefChecks(s.text, s.path).forEach(m => {
+      const w = waiverFor(s.path, m);
+      if (w) { briefWaived.push(s.path + ' [' + w.ruled + '] ' + m.split('.')[0] + ' — ' + w.why); return; }
+      (s.locked ? briefLockedFindings : briefProblems).push(s.path + ': ' + m);
+    });
+  });
+  console.log('  scanned ' + briefs.length + ' brief sentence(s) across ' +
+    Array.from(new Set(briefs.map(b => b.lesson))).join(', ') +
+    '  (read as ' + TEACHER_READER + ')');
+  console.log(briefProblems.length ? '  ' + briefProblems.length + ' problem(s)' : '  clean');
+  briefProblems.forEach(p => { console.log('  FAIL ' + p); FAILS.push(p); });
+  if (briefWaived.length) {
+    console.log('\n  WAIVED BY HIS RULING — ' + briefWaived.length + ' row(s), dated, never raised again:');
+    briefWaived.forEach(p => console.log('    WAIVED-BY-HIS-RULING ' + p));
+  }
+  if (briefLockedFindings.length) {
+    console.log('\n  LOCKED BRIEFS (DFM 176/218) — ' + briefLockedFindings.length + ' finding(s) in J1\'s five ' +
+      'briefs and the side quest\'s. RECORDED, NOT BLOCKING, NOT EDITED.');
+    console.log('  He has sat and signed those lessons off. The list is printed every run so the lock');
+    console.log('  reads as a dated debt rather than as cleanliness — the qa-language locked-banner');
+    console.log('  precedent, applied to the register that has just joined the gate.');
+    briefLockedFindings.forEach(p => console.log('    WAIVED (locked brief) ' + p));
+  }
+
   console.log('\nLAYER 2 — the read-aloud ledger (the gate that matters):');
   /* J1's hub text is LOCKED, so it is reported as debt rather than ledgered:
      stamping ninety "grandfathered" judgements onto tiles he signed off before
@@ -2347,6 +2828,10 @@ function main() {
   const hubLed = hubLedgerCheck(hub.filter(s => !s.locked), ledger);
   const ledAll = ledgerCheck(lessons, ledger).filter(p => inScope(p.replace(/^[A-Z ]+: /, '')))
     .concat(filmLedgerCheck(films, ledger))
+    /* DFM 257: no brief sentence ships without a read-aloud row either. The
+       locked J1 briefs are NOT exempt from this half — a grandfathered stamp is
+       a record, and the point of it is that editing the sentence voids it. */
+    .concat(briefLedgerCheck(briefs, ledger))
     .concat(hubLed);
   /* DFM 176: Lessons 1, 2 and the side quest are LOCKED — he has sat them and
      signed them off, and they are not to be "improved". The fragment escalation
@@ -2423,4 +2908,10 @@ module.exports = { collectFilmStrings, filmKey, filmRendered, FILM_MAP,
   /* the hub collector is exported for the same reason the film one is: ledger-tool
      must write records against the SAME strings this gate reads, and a second walk
      would drift the first time one of them learned something new (DFM 144) */
-  collectHubStrings, HUB_LOCKED_YEARS };
+  collectHubStrings, HUB_LOCKED_YEARS,
+  /* the brief register (DFM 257). ledger-tool must write records against the
+     SAME strings this gate reads — a second walk would drift the first time one
+     of them learned something new (DFM 144), which is the whole lesson of the
+     deck collector two lines above. */
+  collectBriefStrings, briefChecks, briefLedgerCheck, sheHerCheck, briefFlourishCheck,
+  classSizeCheck, ukSpellingCheck, BRIEF_LOCKED, BRIEF_WAIVERS, TEACHER_READER };

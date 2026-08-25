@@ -66,9 +66,17 @@ function badgeMax(chunk) {
       ? (cfg.pairs || []).length
       : (cfg.builds || []).length;
     const bonus = Math.min(per * units, cap || (per * units));
-    if (bonus) {
-      return { max: base + bonus, how: base + ' badge + ' + bonus + ' for first-try work (' +
-        per + ' x ' + units + ', capped at ' + (cap || 'nothing') + ')' };
+    /* THE OPTIONAL STRETCH TAIL IS PART OF THE SAME EVENT (DFM 259, 25 Aug 2026).
+       `cfg.stretch.xp` is added to the SAME finishChunk call as the first-try
+       bonus, so it rides the same badge award and the same 40-per-event cap. A
+       gate that measured the builds and not the tail would have passed a badge
+       nobody had measured — which is the exact class this file's own header
+       says an accumulating engine must declare itself out of. */
+    const stretchXp = Number(((cfg.stretch || {}).xp) || 0);
+    if (bonus || stretchXp) {
+      return { max: base + bonus + stretchXp, how: base + ' badge + ' + bonus + ' for first-try work (' +
+        per + ' x ' + units + ', capped at ' + (cap || 'nothing') + ')' +
+        (stretchXp ? ' + ' + stretchXp + ' for the optional stretch tail' : '') };
     }
   }
   return { max: base, how: base + ' badge' };
@@ -169,6 +177,23 @@ function controls() {
       pairs: [{}, {}, {}, {}, {}, {}] } }] } };
   res.push(say(audit(bonusFine).fails.length === 0,
     'and a snap badge of 15 + 6 still passes — the cap is a ceiling, not a wall'));
+
+  /* (2c) THE OPTIONAL STRETCH TAIL IS COUNTED (DFM 259, 25 Aug 2026). It rides
+     the SAME badge award as the first-try bonus, so a gate that measured the
+     builds and not the tail would pass a badge nobody had measured. Planted both
+     ways, and the second plant is the real j2-02 shape — 20 badge + 15 first-try
+     + 5 stretch = exactly 40 — so the day somebody nudges any one of those three
+     numbers, this gate says so before a pupil's badge pop does. */
+  const tailOver = { id: 'control-stretch', json: { chunks: [{ id: 'c', engine: 'pyrun',
+    badge: { xp: 30 }, config: { firstTryXp: 5, firstTryXpCap: 5, builds: [{}],
+      stretch: { xp: 10 } } }] } };
+  res.push(say(audit(tailOver).fails.length === 1 && /stretch tail/.test(audit(tailOver).fails[0]),
+    'a pyrun badge of 30 + 5 first-try + a 10-point stretch tail is caught at 45, and the message names the tail'));
+  const tailAtCap = { id: 'control-stretch-ok', json: { chunks: [{ id: 'c', engine: 'pyrun',
+    badge: { xp: 20 }, config: { firstTryXp: 5, firstTryXpCap: 15, builds: [{}, {}, {}],
+      stretch: { xp: 5 } } }] } };
+  res.push(say(audit(tailAtCap).fails.length === 0,
+    'and j2-02\'s real shape (20 + 15 + 5 = exactly 40) passes — every point it promises is a point the server stores'));
 
   /* (4) the per-LESSON ceiling bites independently of the per-event one */
   const fat = { id: 'control-lesson', json: { chunks: Array.from({ length: 4 }, (_, i) =>

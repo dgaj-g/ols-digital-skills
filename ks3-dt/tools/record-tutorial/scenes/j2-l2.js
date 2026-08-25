@@ -157,11 +157,11 @@ const scenes = [
     tailMs: 4200,
     run: async ({ page, cine }) => {
       await openStage(page, cine);
-      await cine.curtain({ kicker: 'CHAPTER 4', title: 'Reading a whole program', sub: 'four lines, from the top down' });
+      await cine.curtain({ kicker: 'CHAPTER 4', title: 'Reading a whole program', sub: 'three lines, from the top down' });
       await page.evaluate(([img, alt]) => window.pystage.pair({
         img: img, alt: alt, leftLabel: 'Scratch', rightLabel: 'Python', python: 'print("Score: " + str(score))'
       }), [IMG('say-join.png'), 'A purple Scratch say block holding a green join block, which holds the words Score: and the orange score variable']);
-      await page.evaluate(() => window.pystage.eyebrow('ONE MORE LINE, THEN THE WHOLE THING'));
+      await page.evaluate(() => window.pystage.eyebrow('ONE MORE LINE, THEN A WHOLE PROGRAM'));
       await page.waitForTimeout(800);
       await cine.lift();
       await assertLoaded(page, { blockLoaded: true });
@@ -169,32 +169,48 @@ const scenes = [
       await cine.caption('This block sticks two things together: the words <b>Score:</b> and whatever number is in the box. The Python line does that with a + sign.');
       await cine.caption('<b>str( )</b> turns a number into letters, so it can be joined to words. You do not have to remember that today &mdash; you only have to spot the line that does it.');
 
-      await page.evaluate(() => { window.pystage.hidePair(); window.pystage.eyebrow('THE WHOLE PROGRAM'); window.pystage.program('Your program'); window.pystage.consoleOpen('The console'); });
+      /* ---- THE WORKED EXAMPLE IS NEUTRAL — DFM 210, applied here 25 Aug 2026.
+         This chapter used to type build 1's exact four lines on camera, in
+         order, and print its exact answer (Score: 2). A pupil who watched the
+         film then met the same four lines in the tray with nothing left to work
+         out — the film did her build for her, which is the line DFM 210 draws
+         and which this file's own header already knew not to cross.
+         The demo is now a LIVES COUNTER that nobody builds: the same three
+         shapes (make a box, change what is in it, print it) on a program that
+         appears nowhere in the lesson. And it is PREDICT-then-REVEAL, so the
+         reading is hers before the console answers: she is asked what will come
+         out, the lines are read one at a time, and only then does the console
+         print. Every caption below is his, through the gate and the ledger. */
+      await page.evaluate(() => { window.pystage.hidePair(); window.pystage.eyebrow('A WHOLE PROGRAM'); window.pystage.program('Your program'); window.pystage.consoleOpen('The console'); });
       await cine.pause(700);
-      for (const t of ['score = 0', 'score = score + 1', 'score = score + 1', 'print("Score: " + str(score))']) {
+      for (const t of ['lives = 3', 'lives = lives + 1', 'print("Lives: " + str(lives))']) {
         await page.evaluate(l => window.pystage.addLine(l), t);
       }
       await cine.pause(900);
-      await cine.caption('Python runs your lines <b>from the top down</b>, one at a time. Read them in that order and you can say what will come out.');
-      for (let i = 0; i < 4; i++) { await page.evaluate(n => window.pystage.lit(n), i); await cine.pause(1100); }
+      await cine.caption('One last job: READING a whole program, the way Python runs it &mdash; top line first.');
+      await cine.caption('Read these three lines. What will the console print when they run?');
+      await cine.pause(2600);
+      for (let i = 0; i < 3; i++) { await page.evaluate(n => window.pystage.lit(n), i); await cine.pause(1100); }
       await page.evaluate(() => window.pystage.clearLit());
-      await page.evaluate(() => window.pystage.print(['Score: 2']));
+      await cine.caption('The box is called <b>lives</b>. It starts at 3, the next line adds 1, and the last line prints it.');
+      await page.evaluate(() => window.pystage.print(['Lives: 4']));
       await cine.pause(1300);
-      await assertLoaded(page, { rows: 4, console: 'Score: 2' });
-      await cine.caption('Box made. One added, twice. Then printed. <b>Score: 2</b> &mdash; and nothing typed the 2, the program worked it out.');
+      await assertLoaded(page, { rows: 3, console: 'Lives: 4' });
+      await cine.caption('<b>Lives: 4</b> &mdash; the console printed the box&rsquo;s NEW number.');
+      await cine.caption('In the lesson you build programs like this yourself, and the console checks every one.');
 
       await cine.card({
-        kicker: 'NOW IT IS YOUR TURN', title: 'Six blocks, then a program of your own',
+        kicker: 'NOW IT IS YOUR TURN', title: 'Six blocks, then programs of your own',
         lines: [
           'First the matching desk: six Scratch blocks, and the Python line that does the same job as each one',
-          'Then the build: seven lines, and <b>four</b> of them make the scoreboard you just watched',
+          'Then three builds, each one harder than the last, out of lines that are shuffled every time',
           'You press RUN and the console shows exactly what came out. A run that does not work costs you nothing'
         ]
       }, 10000);
       await cine.drop({});
       await cine.pause(1200);
     },
-    verify: async ({ page }) => { await assertLoaded(page, { rows: 4, console: 'Score: 2' }); }
+    verify: async ({ page }) => { await assertLoaded(page, { rows: 3, console: 'Lives: 4' }); }
   }
 ];
 

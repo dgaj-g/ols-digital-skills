@@ -86,11 +86,27 @@ const EXPECT = {
      shuffle cannot touch was identical on both runs and is pinned here. Pinning
      the 27 would have made this gate fail every other run for a reason that is
      the design working (DFM 199: pin only what does not move). */
-  'j2-2': { chunks: 8, presses: 8, marks: 7, badges: 2 },
+  /* RE-PINNED 25 Aug 2026 on the sit-fix round's evidence, measured twice:
+     three builds instead of one and the optional stretch TAKEN by the expert
+     walker. presses 8 -> 9 (the offer's own button), marks 7 -> 10 (two more
+     builds and the stretch, each a marking event). XP still not pinned, for the
+     unchanged reason below — and it now measures 66-67 rather than 28, because
+     the detail-key defect that was silently dropping this lesson's second badge
+     is fixed (see Engines.snap's finishChunk call). */
+  'j2-2': { chunks: 8, presses: 9, marks: 10, badges: 2 },
   /* J3 Lesson 2, measured 19 Aug 2026, IDENTICAL on a second run — every number
      including XP, because this lesson has no shuffled surface: four builds, each
      driven from the same key to the same answer. */
-  'j3-2': { xp: 31, chunks: 8, presses: 8, marks: 10, badges: 2 }
+  /* RE-PINNED 25 Aug 2026, measured twice and IDENTICAL both times including
+     XP. presses 8 -> 9 (the encore's own button), marks 10 -> 11 (the encore).
+     AND THE XP MOVED 31 -> 62, which is the whole lesson's real arithmetic
+     (21 + 31 + the exit's flat 10) rather than a number a defect had been
+     truncating: both of this lesson's badged chunks are `pyrun`, so both wrote
+     the detail key `py=`, and the server grants XP only on a NEW key — the Call
+     Sheet Printed badge had never granted a point. The key is the chunk's own id
+     now. The old 31 was a pinned shape agreeing with a fault, which is the
+     failure mode DFM 199 warns about in its own words. */
+  'j3-2': { xp: 62, chunks: 8, presses: 9, marks: 11, badges: 2 }
 };
 const OUT = path.join('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform',
   'qa-l2-l5-review', 'l' + NUM.toLowerCase() + (WHO === 'anya' ? '' : '-' + WHO));
@@ -906,6 +922,23 @@ const CASE_LOGS = {
   /* final XP + record */
   const xp = await page.evaluate(() => window.App && window.App.state ? Number(window.App.state.xp) : -1);
   note('\nFINAL XP: ' + xp);
+  /* AND WHAT THE RECORD ACTUALLY HOLDS (25 Aug 2026). `App.state.xp` is the
+     CLIENT'S view; the number that matters to a pupil is the one in her record,
+     which is what the year map, the clearance ladder and the Kit Locker all read.
+     DFM 234's law is that a behaviour implemented in two places is a contract —
+     and until today this walk reported one side of it and nothing checked the
+     other. It is REPORTED, not asserted: the dev store is a preview mimic, and
+     pinning a mimic's number would be exactly the mistake 234 was written about. */
+  const rec = await page.evaluate(() => {
+    try {
+      const db = JSON.parse(localStorage.getItem('ks3dt-dev') || '{}');
+      const p = db.pupils || {};
+      const k = Object.keys(p).find(x => (window.App && App.state && App.state.email)
+        ? x.indexOf(App.state.email) !== -1 : false) || Object.keys(p)[0];
+      return k ? { key: k, xp: p[k].xp, L: p[k].L } : null;
+    } catch (e) { return { error: String(e.message) }; }
+  });
+  note('RECORD (preview store, reported not pinned): ' + JSON.stringify(rec));
   note('TURNS: ' + turns + '  (reported, asserted by nothing — DFM 199: this is the walker\'s own ' +
     'loop counter and it counts the passes where it waits for an animation)');
   note('CONSOLE ERRORS: ' + (errs.length ? '\n' + errs.join('\n') : 'none'));
