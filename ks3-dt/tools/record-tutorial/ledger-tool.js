@@ -233,6 +233,76 @@ function main() {
     return;
   }
 
+  /* ---- the brief side (DFM 257, 25 Aug 2026). Same discipline as the film
+     side: the collector lives in qa-language.js and is imported, never copied. ---- */
+  const briefs = () => {
+    const { collectBriefStrings } = require('./qa-language.js');
+    return collectBriefStrings(loadAll());
+  };
+
+  if (cmd === '--missing-brief') {
+    const only = args[1];
+    const { TEACHER_READER } = require('./qa-language.js');
+    let n = 0;
+    briefs().filter(b => !only || b.lesson === only).forEach(b => {
+      const e = ledger.entries[b.path];
+      const stale = e && e.sha1 !== sha1(b.text);
+      if (e && !stale) return;
+      n++;
+      console.log('\n' + (stale ? 'CHANGED  ' : 'MISSING  ') + b.path + '   [read as ' + TEACHER_READER + ']');
+      console.log('  ' + b.text.replace(/\n/g, '\n  '));
+    });
+    console.log('\n' + n + ' brief sentence(s) need a record.');
+    return;
+  }
+
+  if (cmd === '--stale-brief-paths') {
+    const only = args[1];
+    briefs().filter(b => !only || b.lesson === only).forEach(b => {
+      const e = ledger.entries[b.path];
+      if (e && e.sha1 !== sha1(b.text)) console.log(b.path);
+    });
+    return;
+  }
+
+  if (cmd === '--set-brief') {
+    const [, p2, doIt, picture, forWhat] = args;
+    if (!p2 || !doIt || !picture || !forWhat) {
+      console.error('usage: --set-brief "<path>" "<what she does>" "<what she pictures>" "<what it is for>"');
+      process.exit(1);
+    }
+    const b = briefs().find(x => x.path === p2);
+    if (!b) { console.error('no such brief path: ' + p2); process.exit(1); }
+    ledger.entries[p2] = {
+      sha1: sha1(b.text),
+      readAloud: { do: doIt, picture: picture, for: forWhat },
+      by: 'opus-5', date: today()
+    };
+    save(ledger);
+    console.log('recorded ' + p2);
+    return;
+  }
+
+  if (cmd === '--grandfather-brief') {
+    const ids = args.slice(1);
+    if (!ids.length) { console.error('name the locked briefs, e.g. --grandfather-brief j1-01 j1-02'); process.exit(1); }
+    let n = 0;
+    briefs().filter(b => ids.includes(b.lesson)).forEach(b => {
+      if (ledger.entries[b.path] && ledger.entries[b.path].sha1 === sha1(b.text)) return;
+      ledger.entries[b.path] = {
+        sha1: sha1(b.text),
+        grandfathered: 'A BRIEF HE HAS SIGNED OFF. The brief register joined the language gate on ' +
+          '25 Aug 2026 (DFM 257); these sentences shipped and were approved before it existed, so no ' +
+          'read-aloud pass is claimed for them. Editing one voids this entry and demands a real judgement.',
+        by: 'opus-5', date: today()
+      };
+      n++;
+    });
+    save(ledger);
+    console.log('grandfathered ' + n + ' brief sentence(s) across ' + ids.join(', '));
+    return;
+  }
+
   /* ---- the film side. The extractor lives in qa-language.js and is imported,
      never copied: two readers of the same source would drift apart the first
      time one of them was taught something new (DFM 144). ---- */

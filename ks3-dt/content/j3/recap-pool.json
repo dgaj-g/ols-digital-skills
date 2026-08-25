@@ -74,7 +74,7 @@
     "Méabh's, because the machine was still signed in as her",
     "The next pupil's, because she is the one who did it",
     "Nobody's, because the school cannot tell who was at a machine",
-    "Mr Boyle's, because he is in charge of the room"
+    "The teacher's, because they are in charge of the room"
    ]
   },
   {
@@ -108,10 +108,10 @@
    "lesson": "j3-01",
    "topic": "Portfolio Zero",
    "thread": "kp-platform-j3",
-   "stem": "It is June. Mr Boyle puts the same twelve questions on the screen that Róisín answered in her very first DT lesson back in September. Why is she doing them a second time?",
+   "stem": "It is June. Her teacher puts the same twelve questions on the screen that Róisín answered in her very first DT lesson back in September. Why is she doing them a second time?",
    "options": [
     "So she can see for herself how much she has learned",
-    "So Mr Boyle can work out the mark for her report",
+    "So her teacher can work out the mark for her report",
     "So the teacher can decide which class she is in next year",
     "So the website knows which lessons to open for her"
    ]
@@ -121,7 +121,7 @@
    "lesson": "j3-01",
    "topic": "The Studio Code",
    "thread": "kp-platform-j3",
-   "stem": "Aoibhe comes in from break with a bottle of water and stands it beside the keyboard with the lid screwed on. Mr Boyle asks her to move it. Why?",
+   "stem": "Aoibhe comes in from break with a bottle of water and stands it beside the keyboard with the lid screwed on. Her teacher asks her to move it. Why?",
    "options": [
     "Nothing to drink goes near the machines, lid on or lid off",
     "Water is fine, but the bottle has to sit on the floor under the desk",

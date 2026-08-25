@@ -159,6 +159,17 @@ function detectKind() {
     if (q('.snap-block.picked')) return { kind: 'snap-try' };
     if (vis(q('.snap-block'))) return { kind: 'snap-pick' };
   }
+  /* THE OPTIONAL STRETCH OFFER (DFM 259, 25 Aug 2026). A card with two real
+     buttons and nothing else on it. It is taught to the DETECTOR and to the
+     MOVERS in the same edit, because DFM 238(a) is exactly the fault of doing
+     one without the other: six J2/J3 screens were once recognised and
+     unactionable, and every walker but sit-review stalled at the first room.
+     The right-path walker TAKES it (so the stretch content is really walked);
+     the confused-pupil walker DECLINES it (so the refusal is really exercised,
+     which is the half a stretch lives or dies on — K11d). */
+  if (q('.pyrun-offer-card')) {
+    if (vis(q('.pyrun-offer-card .pyrun-take'))) return { kind: 'pyrun-offer' };
+  }
   if (q('.pyrun-card')) {
     if (vis(q('.pyrun-verdict .primary-btn'))) return { kind: 'pyrun-next' };
     /* "THE TRAY IS NOT EMPTY" DOES NOT MEAN "STILL PLACING" (19 Aug 2026, found
@@ -396,6 +407,9 @@ const MOVES = {
   },
   'pyrun-run': () => { const b = document.querySelector('.pyrun-run:not([disabled])'); if (b) b.click(); },
   'pyrun-next': () => { const b = document.querySelector('.pyrun-verdict .primary-btn'); if (b) b.click(); },
+  /* the expert TAKES the optional stretch — otherwise the tail's own card,
+     lines and verdict would ship with nothing having ever stood on them */
+  'pyrun-offer': () => { const b = document.querySelector('.pyrun-offer-card .pyrun-take'); if (b) b.click(); },
 
   'q-opt': () => { const o = document.querySelector('.q-opt:not(:disabled)'); if (o) o.click(); },
   'q-next': () => { const b = document.querySelector('.q-feedback button'); if (b) b.click(); },
@@ -567,6 +581,13 @@ const MOVES = {
    offers: a decoy line the author put in the tray on purpose, a gap left empty,
    a number typed that is not the number asked for. */
 const WRONG_MOVES = {
+  /* THE REFUSAL. K11d's law is that a stretch which cannot be refused is not a
+     stretch, and a refusal nothing ever presses is a claim rather than a
+     behaviour. The confused pupil declines every offer, so "Finish here" really
+     finishing — no nagging, no second ask, nothing taken away — is walked on
+     every run rather than asserted in a comment. */
+  'pyrun-offer': () => { const b = document.querySelector('.pyrun-offer-card .pyrun-skip'); if (b) b.click(); },
+
   /* THE EMPTY GAP. J3's `blankEmptySay` refusal is the one control in either
      lesson that can be pressed before it is ready, so it is pressed. */
   'pyrun-blank': () => {

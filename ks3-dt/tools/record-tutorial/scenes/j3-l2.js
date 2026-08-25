@@ -52,6 +52,28 @@ async function assertStage(page, want) {
 const BLOCKS_ON_CAMERA = [];
 
 const scenes = [
+/* ---- THE WORKED EXAMPLE IS NEUTRAL — DFM 210, applied 25 Aug 2026 --------
+   Until today this film typed the pupils' own builds on camera, line for line:
+   ch1 and ch2 typed `print("THE HARBOUR LIGHT")` and `print("Doors open at 7")`
+   — builds 1 and 2's exact answers — and ch3 typed all three lines of build
+   3 and printed both of its target lines. A pupil who watched the film met
+   three of her four builds already done for her, which is exactly the line DFM
+   210 draws: the worked example is never the pupil's own build.
+   The film's demo house is now **THE RIVER STAGE, doors at 8**, and ch3's two
+   print lines say **Curtain up at** and **See you again at** rather than build
+   3's own **Tonight at** and **Thank you for coming to**. That last part is not
+   fussiness: renaming only the theatre would have left
+   `print("Tonight at " + venue)` on camera VERBATIM, which is a line of build 3
+   however different the string inside the box is. The same beats, the same line
+   shapes and the same captions survive, so what the film TEACHES is untouched
+   and what it HANDS OVER is gone. Builds 1–4 keep THE HARBOUR LIGHT and doors at 7 — they are the
+   pupil's own work, which is the point.
+   SCOPE, REPORTED RATHER THAN QUIET: the round's spec lists j3 ch1–ch2 under
+   NOT TOUCHED while Job 6b binds "no line of builds 1–3 typed on camera". Those
+   two sentences cannot both hold, because ch1 and ch2 are where builds 1 and 2
+   are typed. The binding requirement wins and the rename reaches all three
+   chapters; leaving ch1/ch2 would have fixed his finding for one build and left
+   it standing for two. */
   /* ------------------------------------------------------------------ ch1 */
   {
     id: 'ch1',
@@ -68,7 +90,7 @@ const scenes = [
       await cine.lift();
 
       await cine.caption('Python is a language for telling a computer what to do. You type it, one line at a time, and it does exactly what the lines say.');
-      await page.evaluate(() => window.pystage.addLine('print("THE HARBOUR LIGHT")'));
+      await page.evaluate(() => window.pystage.addLine('print("THE RIVER STAGE")'));
       await cine.pause(800);
       await cine.caption('That is a real line of Python. Nothing is hidden and nothing is clever &mdash; the whole language is lines like this one, stacked up.');
       await cine.caption('It is one of the most used languages in the world. A great deal of the software you use every day is written in it.');
@@ -93,16 +115,16 @@ const scenes = [
       await cine.lift();
 
       await cine.caption('<b>print</b> is the Python word for putting something on the console. The console is the strip where a program&rsquo;s words come out.');
-      await page.evaluate(() => window.pystage.addLine('print("THE HARBOUR LIGHT")'));
+      await page.evaluate(() => window.pystage.addLine('print("THE RIVER STAGE")'));
       await cine.pause(700);
-      await page.evaluate(() => window.pystage.print(['THE HARBOUR LIGHT']));
+      await page.evaluate(() => window.pystage.print(['THE RIVER STAGE']));
       await cine.pause(1100);
-      await assertStage(page, { rows: 1, console: 'THE HARBOUR LIGHT' });
+      await assertStage(page, { rows: 1, console: 'THE RIVER STAGE' });
       await cine.caption('Whatever sits inside the speech marks comes out <b>exactly</b> as you typed it. A capital letter in the wrong place is a different line to the console.');
 
-      await page.evaluate(() => window.pystage.addLine('print("Doors open at 7")'));
+      await page.evaluate(() => window.pystage.addLine('print("Doors open at 8")'));
       await cine.pause(700);
-      await page.evaluate(() => window.pystage.print(['THE HARBOUR LIGHT', 'Doors open at 7']));
+      await page.evaluate(() => window.pystage.print(['THE RIVER STAGE', 'Doors open at 8']));
       await cine.pause(1200);
       await assertStage(page, { rows: 2 });
       await cine.caption('Two print lines make two lines on the console, <b>in the order you stacked them</b>. Swap them round and the call sheet comes out wrong.');
@@ -152,15 +174,15 @@ const scenes = [
       await openStage(page, cine);
       await cine.ensureCursor(640, 620);
       await page.evaluate(() => { window.pystage.eyebrow('THE SAME BOX, IN PYTHON'); window.pystage.program('Your program'); window.pystage.consoleOpen('The console'); });
-      for (const t of ['venue = "THE HARBOUR LIGHT"', 'print("Tonight at " + venue)', 'print("Thank you for coming to " + venue)']) {
+      for (const t of ['venue = "THE RIVER STAGE"', 'print("Curtain up at " + venue)', 'print("See you again at " + venue)']) {
         await page.evaluate(l => window.pystage.addLine(l), t);
       }
       await cine.pause(800);
       await cine.caption('A line with <b>=</b> in it makes the box: the name on the left, what goes in it on the right. It does not mean &ldquo;is the same as&rdquo;.');
       await cine.caption('The two print lines then use that box. A <b>+</b> sticks two pieces together: the words in speech marks, then whatever is inside the box.');
-      await page.evaluate(() => window.pystage.print(['Tonight at THE HARBOUR LIGHT', 'Thank you for coming to THE HARBOUR LIGHT']));
+      await page.evaluate(() => window.pystage.print(['Curtain up at THE RIVER STAGE', 'See you again at THE RIVER STAGE']));
       await cine.pause(1300);
-      await assertStage(page, { rows: 3, consoleHas: 'Tonight at THE HARBOUR LIGHT' });
+      await assertStage(page, { rows: 3, consoleHas: 'Curtain up at THE RIVER STAGE' });
       await cine.caption('Typed once. Printed twice. That is the whole point of a box with a name on it.');
       await cine.drop({});
       await cine.pause(900);

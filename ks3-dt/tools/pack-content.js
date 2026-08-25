@@ -106,6 +106,31 @@ function xpCeilingGate() {
   console.log('xp-ceiling gate: PASSED (qa-xp-ceiling)');
 }
 
+/* THE TRAY-ORDER GATE (DFM 258, 25 Aug 2026). His words, sitting J2 Lesson 2:
+   "the first four lines were the correct ones for me, in that exact order, the
+   lines on the left should be shuffled and you should know this and apply this
+   for ALL similar activities." The pyrun tray had no shuffle at all, and every
+   build in both Lesson 2s authors its correct lines first. This gate mounts
+   every pyrun build of every year in a real browser and requires the served
+   order to be a DERANGEMENT of the authored one — a stronger promise than "not
+   the same", chosen so the check is deterministic rather than usually true
+   (DFM 146a). It also pins the two assembly surfaces that were already right,
+   so neither can drift into the same fault. No skip flag. */
+function trayOrderGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-tray-order.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-tray-order.js is missing - the tray-order gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error((res.stdout || '') + (res.stderr || ''));
+    console.error('\nPACK STOPPED: an assembly surface serves its answer in order (DFM 258).');
+    process.exit(1);
+  }
+  console.log('tray-order gate: PASSED (qa-tray-order)');
+}
+
 /* THE DECK-SHOT GATE (DFM 225b). Damien, 15 Aug 2026, on finding the Vault's
    inbox on three slides that named three other screens: "figure out how this
    happened and what you'll do (screenshot reading harness needed) to ensure it
@@ -399,13 +424,14 @@ function main() {
   tileTextGate();
   if (WALK_BUILD) {
     console.log('\n*** WALK BUILD — LOCAL PREVIEW ONLY, NOT SHIPPABLE ***');
-    console.log('    The language, XP, deck, brief, audit and coverage gates are NOT run.');
+    console.log('    The language, XP, tray-order, deck, brief, audit and coverage gates are NOT run.');
     console.log('    The content stamp will NOT move, so the next real pack still sees the');
     console.log('    source as changed. Run `node pack-content.js` with no flag to ship.\n');
   }
   if (!WALK_BUILD) {
     languageGate();
     xpCeilingGate();
+    trayOrderGate();
     deckShotGate();
     deckAnswerGate();
     briefShapeGate();
