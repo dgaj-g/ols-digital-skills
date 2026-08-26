@@ -282,6 +282,28 @@ const LEXICON = [
      like. It must not fire on "Miss three and the game is over" (a verb),
      "Mr" inside a quoted username, or the ordinary lower-case sentence — every
      one of those is a control below, in both directions. */
+  /* ---- DFM 266, HIS RULING, 26 Aug 2026: str( ) IS EXPLAINED BY WHAT IT LETS
+     HER DO, NEVER BY CHANGING WHAT THE NUMBER LOOKS LIKE.
+     His find, sitting the lesson: a pupil is told str( ) "turns a number into
+     letters" and then watches `Score: 2` print with the 2 still looking exactly
+     like a 2. The sentence contradicts her own screen, which is rule 35 on the
+     one line the lesson most needs her to believe. The truthful frame is
+     JOINING — str( ) WRAPS the number so the + can join it onto words — and
+     "wrap" is the standing verb, because str(score) visibly wraps the box's
+     name on the line in front of her.
+     THE PATTERN IS THE CLAIM, NOT THE WORD str. It has to be, because the claim
+     survives in sentences that never mention str( ) at all ("the number has to
+     be turned into text first", "a number turned into text before it can be
+     joined to words") — three of the nine live hits were exactly that shape.
+     It is narrow in the other direction: the VERB must be one of turn / change
+     / convert / make, so "the theatre's name goes into a variable", "typed into
+     the line that printed it" and "carries kp-variable forward into text code"
+     are all untouched. Measured before it shipped: 9 hits across the whole
+     content tree, every one of them a real hit, zero false positives. */
+  { rx: /\b(turn|turns|turned|turning|change|changes|changed|changing|convert|converts|converted|make|makes|made)\b[^.!?]{0,40}?\b(in)?to\s+(a\s+)?(letters|words|text|writing|string|word)\b/i,
+    why: 'DFM 266 (26 Aug 2026): str( ) does NOT change what a number looks like — his find is that ' +
+         '`Score: 2` prints with the 2 still looking like a 2, so the claim contradicts her own screen (35)',
+    fix: 'say what it LETS HER DO: "str( ) wraps the number so the + can join it onto words"' },
   { rx: /\b(Mr|Mrs|Miss|Ms|Sir|Madam)\s+[A-Z][a-z]{2,}\b/,
     allow: /\b(Miss|Mr|Mrs|Ms)\s+(three|two|one|four|five|a\b)/i,
     why: 'DFM 260 (25 Aug 2026): an INVENTED MEMBER OF STAFF. His words: "Who on earth is Mr Boyle? ' +
@@ -527,6 +549,32 @@ function lexiconCheck(text) {
     out.push('banned register: "' + (text.match(e.rx) || [''])[0] + '" — ' + e.why + ' → ' + e.fix);
   });
   return out;
+}
+
+/* ------------------------------------------------------------------ *
+ * THE EXTRAS ZONE PROMISES NOTHING — DFM 265(a), HIS RULING, 26 Aug 2026.
+ * His words: "I'm not sure that we should offer extra XP for students who are
+ * naturally brighter, as this might seem unfair to a 'normal' student."
+ * Optional work carries NO points, and the reason that matters for a RATCHET
+ * rather than a rule is his second sentence — the time-up one. A promise of
+ * points is what makes leaving a half-done job feel like a loss; with nothing
+ * promised, nothing is lost, and "Finish the lesson" is a free move. So the
+ * promise may never come back, and no gate has ever watched for it.
+ * SCOPED TO THE EXTRAS ZONE BY PATH, ON PURPOSE. "worth 5 XP" is TRUE and
+ * approved elsewhere — J1's ladder star is grandfathered by his own ruling, and
+ * a badge card legitimately says "the badge is worth 20 XP". A blanket ban
+ * would condemn approved, correct text, which is the DFM 146a fault. What is
+ * banned is a points claim inside a zone that pays none.
+ * ------------------------------------------------------------------ */
+const EXTRAS_PATH = /›\s*extras\s*›/;
+const XP_PROMISE = /\b(worth\s+)?\d+\s*XP\b/i;
+function extrasXpCheck(text, path) {
+  if (!EXTRAS_PATH.test(String(path))) return [];
+  const m = String(text).match(XP_PROMISE);
+  if (!m) return [];
+  return ['DEAD XP PROMISE IN THE EXTRAS ZONE: "' + m[0] + '" — DFM 265(a): optional extras carry NO ' +
+    'points. A promise here is exactly what makes a pupil who runs out of time feel she has lost ' +
+    'something → say what is true: "they add no points, nothing needs them"'];
 }
 
 function lengthCheck(rawText, reader) {
@@ -2036,6 +2084,42 @@ function runControls() {
   const C4 = 'Your catch-up job: prove your rig is tournament-grade, then log your best solo round.';
   control(lexiconCheck(C4).length >= 1, '"tournament-grade" fails the lexicon');
 
+  /* ---- DFM 266: str( ) TOLD TRUTHFULLY. His own caught caption is the control,
+     and the sentence that replaces it is the control in the other direction —
+     because a ban that also condemns the fix is not a ratchet, it is a trap. */
+  const C6 = 'str( ) turns a number into letters, so it can be joined to words. You do not have to ' +
+    'remember that today — you only have to spot the line that does it.';
+  control(lexiconCheck(C6).length >= 1,
+    'HIS CAUGHT CAPTION fails the lexicon ("turns a number into letters" — DFM 266)');
+  const C6b = 'You have tried to join a word to a number. Python will not do that on its own — the ' +
+    'number has to be turned into text first, with str( ) around it.';
+  control(lexiconCheck(C6b).length >= 1,
+    'and so does the shape that never says str( ) at all ("turned into text first")');
+  const C6c = 'So the line already wraps the sum in str( ) — that turns the answer into writing, and ' +
+    'then the + can stick it beside the words.';
+  control(lexiconCheck(C6c).length >= 1, 'and "turns the answer into writing" (j3 build 4\'s brief)');
+  const C6ok = 'str( ) wraps the number so the + can join it onto words. You do not have to remember ' +
+    'that today — you only have to spot the line that does it.';
+  control(lexiconCheck(C6ok).length === 0,
+    'THE REPLACEMENT PASSES — the ban condemns the claim, never the fix (over-tightening guard)');
+  const C6ok2 = "The theatre's name goes into a variable, and every word she printed was typed into " +
+    'the line that printed it.';
+  control(lexiconCheck(C6ok2).length === 0,
+    'and an ordinary "goes into / typed into" sentence still PASSES — the verb is what makes the claim');
+
+  /* ---- DFM 265(a): the dead XP promise cannot come back to the extras zone. */
+  const XP_PATH = 'j2-02 › extras › config › intro';
+  control(extrasXpCheck('It is worth 5 XP if you get the console to print the target.', XP_PATH).length >= 1,
+    'THE RETIRED STRETCH PROMISE fails inside the extras zone ("worth 5 XP" — DFM 265a)');
+  control(extrasXpCheck('Try the Bureau’s hard job — worth 5 XP', XP_PATH).length >= 1,
+    'and so does the button label that carried it');
+  control(extrasXpCheck('They add no points, nothing needs them, and you can stop whenever your ' +
+    'teacher calls time.', XP_PATH).length === 0, 'the honest wording PASSES');
+  control(extrasXpCheck('The badge is worth 20 XP, plus five more for each build that is right at ' +
+    'the first attempt.', 'j2-02 › build › config › intro').length === 0,
+    'and a TRUE points claim OUTSIDE the extras zone is untouched — J1’s grandfathered economy ' +
+    'and every badge card still say what they pay (DFM 146a)');
+
   const C5 = 'This is the hour that variable stops being a word and becomes something every single pupil ' +
     'has built with her own hands on the micro:bit she used a fortnight ago in the room next door, ' +
     'which is why it matters so much to all of us here today and always.';
@@ -2595,13 +2679,14 @@ function main() {
       const orderBearing = ORDER_BEARING.test(s.path);
       const plain = unbold(s.text);          // the child's text, never the markers
       const found = orderBearing
-        ? lexiconCheck(plain)
+        ? lexiconCheck(plain).concat(extrasXpCheck(plain, s.path))
         : [].concat(
             lengthCheck(plain, reader),
             dashChainCheck(plain),
             inlineSequenceCheck(plain),
             arrowChainCheck(plain),
-            lexiconCheck(plain)
+            lexiconCheck(plain),
+            extrasXpCheck(plain, s.path)
           );
       found.forEach(f => (isLocked ? locked : problems).push(s.path + ': ' + f));
     });

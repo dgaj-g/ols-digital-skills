@@ -49,8 +49,22 @@ const fxStamp = path.join(tmp, 'stamp.json');
 fs.cpSync(SRC, fxSrc, { recursive: true });
 fs.mkdirSync(fxOut, { recursive: true });
 
+/* THE OUTPUT IS READ IN FULL, OR THE GATE IS READING A DIFFERENT RUN (26 Aug 2026).
+   §5's control — "the language gate names the planted j9-01 and stops the pack" —
+   began failing while the pack was doing exactly that. The cause was in
+   pack-content.js and is fixed there: it printed the child harness's whole output
+   with `console.error` and then called `process.exit`, and on a stderr that is a
+   PIPE (which is what it is whenever a harness runs the pack) that write is
+   ASYNCHRONOUS and the exit throws away whatever has not drained — about 64KB in,
+   mid-sentence. The line really was printed; this file could not see it. A gate
+   condemning text it never received is DFM 146a arriving through the plumbing
+   instead of through a rule.
+   The explicit maxBuffer below was NOT the cause and is kept anyway, honestly
+   labelled: Node's default is 1MB, the pack's log is already 70KB and grows with
+   every lesson, and a limit nobody has stated is a cliff nobody will see coming. */
 const runPack = () => spawnSync(process.execPath, [PACK], {
   encoding: 'utf8',
+  maxBuffer: 64 * 1024 * 1024,
   env: { ...process.env, KS3DT_SRC: fxSrc, KS3DT_OUT: fxOut, KS3DT_STAMP: fxStamp },
 });
 const text = (r) => (r.stdout || '') + (r.stderr || '');
