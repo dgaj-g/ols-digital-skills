@@ -11,6 +11,14 @@ const { chromium } = require('./node_modules/playwright');
 const path = require('path');
 const fs = require('fs');
 const WALK = require('./lib/walk-moves.js');
+/* THE 267(f) AUDIT RIDES THE WALK. The nesting it looks for happens at RENDER,
+   so no grep can find it and no static harness can stand where it lives — but
+   this walker already stands on every screen of every lesson, in the real app,
+   every round. Asking the question here is what gives the law its reach; the
+   question itself lives in ONE home so both walkers and the probe say the same
+   thing (DFM 144). A hit is a FAILURE of the walk, never a note under a pass
+   (DFM 204). */
+const NI = require('./lib/nested-interactive.js');
 
 const NUM = String(process.argv[2] || '2').replace(/^J([23])-/i, 'j$1-');
 /* YEAR-QUALIFIED KEYS FROM 16 AUG 2026 (see sit-wrongpath.js for the reason J1
@@ -235,12 +243,20 @@ const CASE_LOGS = {
   let lastKey = '', same = 0, turns = 0;
   const seen = { chunks: new Set(), presses: 0, marks: 0, badges: 0 };
   const askedTexts = new Set();
+  const nestedHits = [];
 
   for (turns = 0; turns < 400; turns++) {
     const done = await page.evaluate(() => !!document.querySelector('.badge-pop-card.finish'));
     if (done) { await shot('LESSON-COMPLETE'); note('LESSON COMPLETE at turn ' + turns); break; }
 
     const ck = await chunkId();
+
+    /* ---- the 267(f) audit, on this screen, in this state ---- */
+    const nested = await page.evaluate(q => eval(q)(), NI.QUERY);
+    nested.forEach(f => {
+      const line = ck + ': ' + NI.describe(f);
+      if (nestedHits.indexOf(line) === -1) { nestedHits.push(line); note('NESTED-INTERACTIVE ' + line); }
+    });
 
     /* once per chunk: capture the ? help modal */
     if (ck !== '(none)' && !helpSeen.has(ck)) {
@@ -972,6 +988,12 @@ const CASE_LOGS = {
     });
   }
   if (errs.length) bad.push('console errors: expected none, got ' + errs.length);
+  /* DFM 267(f): an interactive control nested inside another one is a defect of
+     the same class as his Space bar, wherever the walk finds it. */
+  if (nestedHits.length) {
+    bad.push('nested interactive controls: expected none, found ' + nestedHits.length);
+    nestedHits.forEach(h => bad.push('  ' + h));
+  }
   /* A WALK THAT REACHED NOTHING IS NEVER A PASS, WHATEVER THE PIN SAYS
      (16 Aug 2026, and it caught itself). J3 Lesson 1 was pinned with a
      placeholder of all zeros while its numbers were still being measured; the

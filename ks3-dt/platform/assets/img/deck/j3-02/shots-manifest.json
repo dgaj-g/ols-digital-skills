@@ -6,13 +6,13 @@
    "kind": "app",
    "chunkId": "film",
    "selector": ".chunk-host .video-card",
-   "textSnippet": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is about four and a half minutes long, and it is in four parts — you can click the buttons underne",
-   "contentAnchor": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is about four and a half minutes long, and it is in four parts — you can click the buttons underneath to jump to any part while you are on this screen.",
-   "cardText": "First words in Python (the film) · Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is about four and a half minutes long, and it is in four parts — you can click the buttons underneath to jump to any part while you are on this screen. · What Python is · print, exactly · A box with a name on it · Reading an error without fear · Done watching",
+   "textSnippet": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is just under five minutes long, and it is in four parts — you can click the buttons underneath to",
+   "contentAnchor": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is just under five minutes long, and it is in four parts — you can click the buttons underneath to jump to any part while you are on this screen.",
+   "cardText": "First words in Python (the film) · Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is just under five minutes long, and it is in four parts — you can click the buttons underneath to jump to any part while you are on this screen. · What Python is · print, exactly · A box with a name on it (a variable) · Reading an error without fear · Done watching",
    "says": "the film screen with its four chapter buttons",
-   "contentVersion": "2026-08-26c",
+   "contentVersion": "2026-08-26d",
    "crop": null,
-   "chunkHash": "5914fd5bb984",
+   "chunkHash": "c5380ea6a633",
    "px": "1748x1600"
   },
   "build": {
@@ -24,9 +24,9 @@
    "contentAnchor": "How it works: to ADD a line, drag it into Your program, or click the line itself. To MOVE a line, drag it up or down inside Your program. To TAKE a line out, drag it back to The lines. Python runs your program from the top line down, one line at a time.",
    "cardText": "1 · TITLE · 2 · TIMES · Build 1. Print the name of the theatre at the top of the call sheet. · print( ) is the Python word for putting something on the console. Whatever sits inside the brackets and inside the speech marks comes out exactly as you typed it. · THE TARGET — MAKE THE CONSOLE PRINT EXACTLY THIS · THE HARBOUR LIGHT · How it works: to ADD a line, drag it into Your program, or click the line itself. To MOVE a line, drag it up or down inside Your program. To TAKE a line out, drag it bac",
    "says": "the first build before a line is moved: the target, the lines with their typing gap, and the empty program",
-   "contentVersion": "2026-08-26c",
+   "contentVersion": "2026-08-26d",
    "crop": null,
-   "chunkHash": "1ddb09900ef3",
+   "chunkHash": "76864e5d6a09",
    "px": "1572x1572"
   },
   "variable": {
@@ -38,9 +38,9 @@
    "contentAnchor": "How it works: to ADD a line, drag it into Your program, or click the line itself. To MOVE a line, drag it up or down inside Your program. To TAKE a line out, drag it back to The lines. Python runs your program from the top line down, one line at a time. A line that fills a box has to come above any line that uses it.",
    "cardText": "3 · VENUE · 4 · MONEY · Build 3. Put the theatre's name in a box, and use that box in both lines. · The name has to come out exactly the same in both lines, so you type it once, into the gap in the first line. That puts it into the box called venue. In a print line, a + sticks two pieces together: the words inside the speech marks, then whatever is in the box. · THE TARGET — MAKE THE CONSOLE PRINT EXACTLY THIS · Tonight at THE HARBOUR LIGHT · Thank you for coming to THE HARBOUR LIGHT · How it wo",
    "says": "the build that makes a variable, before a line is moved: the = line still in the tray",
-   "contentVersion": "2026-08-26c",
+   "contentVersion": "2026-08-26d",
    "crop": null,
-   "chunkHash": "b146f44bf4f3",
+   "chunkHash": "05f9a6ebe1f4",
    "px": "1572x2012"
   }
  }

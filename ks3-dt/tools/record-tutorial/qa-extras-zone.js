@@ -142,11 +142,28 @@ const MOUNT = `(function(chunk, review){
       check(a.length > 500, '  ' + L.core + ' really rendered (' + a.length + ' bytes)');
       /* the tray is SHUFFLED at mount (DFM 258), so the two renders can never be
          string-equal; what must be identical is the CARD's shape, which is what the
-         byte-identical promise is really about. The line set is compared as a SET. */
-      const shape = h => h.replace(/<button class="pyrun-line in-tray"[\s\S]*?<\/button>/g, '')
+         byte-identical promise is really about. The line set is compared as a SET.
+         AND THE PROMISE IS NARROWED, ON PURPOSE AND IN THE OPEN (DFM 267f, 26 Aug
+         2026). A line that carries a typing gap is deliberately NOT a <button> any
+         more — that was the whole fix for his Space bar — so the tray strip now
+         takes the line however it is tagged, and the tag change itself is asserted
+         two checks below rather than being quietly absorbed. A guard that widens its
+         own exemption to stay green stops being a guard (DFM 213). */
+      const shape = h => h.replace(/<(button|div)[^>]*class="pyrun-line[^"]*"[\s\S]*?<\/\1>/g, '')
                           .replace(/data-si="\d+"/g, '');
       check(shape(a) === shape(b),
         '  and its card is BYTE-IDENTICAL to the pre-change engine once the shuffled tray is set aside');
+      const tagsOf = h => Array.from(h.matchAll(/<(button|div)[^>]*class="pyrun-line([^"]*)"/g))
+        .map(m => ({ tag: m[1], gap: /has-blank/.test(m[2]) }));
+      const nowTags = tagsOf(a), oldTags = tagsOf(b);
+      check(nowTags.length === oldTags.length,
+        '  and it draws the same NUMBER of lines as the engine he sat (' + nowTags.length + ')');
+      check(oldTags.every(t => t.tag === 'button'),
+        '  CONTEXT: on ' + BASE_REF + ' every line — gap or no gap — was a <button>');
+      check(nowTags.filter(t => t.gap).every(t => t.tag === 'div') &&
+            nowTags.filter(t => !t.gap).every(t => t.tag === 'button'),
+        '  and the ONLY shape that changed is the one 267f changed: a gap-carrying line ' +
+        'is a div, every other line is still a real <button>');
       const lines = h => (h.match(/<code>([\s\S]*?)<\/code>/g) || []).sort().join('|');
       check(lines(a) === lines(b), '  and it serves exactly the same set of lines');
     }
@@ -447,13 +464,26 @@ const MOUNT = `(function(chunk, review){
     control(/\bXP\b/i.test('It is worth **5 XP** if you get the console to print the target.'),
       '  (and the test really catches the promise the V54 offer carried)');
 
-    /* the label and the card it delivers her to must say the SAME thing */
-    const closer = lesson.chunks.find(c => c.id === 'next');
-    const help = String((closer.config || {}).help || '');
-    const tail = String(ex.config.finishLabel).split('—').pop().trim();
-    check(help.toLowerCase().indexOf(tail.toLowerCase()) > -1,
-      '  the finish label\'s promise ("' + tail + '") is word for word what the card it ' +
-      'delivers her to says — one fact, one wording (DFM 144/167b)');
+    /* ONE FACT, ONE WORDING — RE-STAGED 26 Aug 2026 FOR HIS NEW LABEL (DFM 267a).
+       The V56 label ended in a promise about what came next ("two cards to read, then
+       the last two screens"), so this row checked that promise against the card it
+       delivered her to. His label makes no such promise: it names the situation she is
+       in and tells her what to click. What has to hold now is that the two surfaces
+       which DESCRIBE the control — her own help text, and the row a colleague reads
+       before the lesson — quote it word for word, so nobody is left describing a button
+       from memory. A stale re-statement of a button is how a teacher ends up telling a
+       room to press something that is not on the screen (DFM 147/251). */
+    const LABEL = String(ex.config.finishLabel);
+    const help = String(ex.config.help || '');
+    check(help.indexOf(LABEL) > -1,
+      '  the extras help QUOTES the finish control word for word ("' + LABEL + '")');
+    const briefText = JSON.stringify(lesson.teacherBrief || {});
+    check(briefText.indexOf(LABEL) > -1,
+      '  and so does the teacher brief, so a colleague names what the pupils can see');
+    check(!/Finish the lesson\b/.test(briefText) && !/Finish the lesson\b/.test(JSON.stringify(lesson.chunks)),
+      '  and the DEAD label is gone from every surface of this lesson (DFM 147)');
+    control(/Finish the lesson\b/.test('Tell the room to press **Finish the lesson**.'),
+      '  (and the test really catches the wording this ruling killed)');
 
     /* the jobs the hub lists are the jobs the answer keys can drive */
     ex.config.builds.forEach(b => {
