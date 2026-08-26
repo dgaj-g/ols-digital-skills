@@ -123,6 +123,15 @@ const LANDMARKS = {
     ['the side-quest briefing', '.dossier-cta, .briefing-card', 'sq-brief'],
     ['the Drive steps', '.confirm-step', 'sq-drive'],
     ['the folder check', '.dc-card, .dc-list, .dc-sim', 'sq-inspect'],
+    /* DFM 262's two rows. The Inspection blocks correctly, and a live run has no
+       back-navigation (DFM 142b) — so the film that TAUGHT the thing being
+       checked has to be reachable from the check itself, and from the failure
+       state above all, because that is where a pupil who has forgotten is
+       standing. Both are asserted, never reported (DFM 204): the second one is
+       only reachable because the preview's inspection is now made to fail once,
+       seeded above. */
+    ['the inspection\'s Show me how, on the INTRO card', '.intro-card .step-clip-btn', 'sq-inspect'],
+    ['the inspection\'s Show me how, on the FAILED card', '.dc-card .step-clip-btn', 'sq-inspect'],
     ['the OneDrive steps', '.confirm-step', 'sq-onedrive'],
     ['the exit check', '.q-opt, .exit-q', 'exit'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']
@@ -331,6 +340,15 @@ const WRONG = {
     const k = seed.cls + ':' + seed.key;
     db.pupils[k] = Object.assign(
       db.pupils[k] || { n: seed.name, cn: '', j: 1, xp: 0, g: '' }, { L });
+    /* THE SIDE QUEST'S INSPECTION IS MADE TO FAIL ONCE (DFM 262, 26 Aug 2026).
+       This is the confused-pupil walker: its whole job is to stand where a pupil
+       who got it wrong stands, and until today the preview's simulated check
+       always passed, so the FAILED-inspection card — the card his finding is
+       about — had never been stood on by anything. `driveFail: 1` fails the
+       first check and passes the second, which is the real journey rather than a
+       dead end: the walk still reaches the OneDrive card, the exit and the
+       closing screen. Preview-only; the deployed server is untouched. */
+    if (seed.target === 'S1') { db.sim = Object.assign({}, db.sim, { driveFail: 1 }); }
     localStorage.setItem('ks3dt-dev', JSON.stringify(db));
   }, { cls: CLASS, key: PUPIL_KEY, name: PUPIL_NAME,
        target: LESSON === 'S1' ? 'S1' : Number(LESSON_NUM) });

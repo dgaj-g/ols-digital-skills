@@ -946,6 +946,81 @@
     }
   };
 
+  /* ================= THE FILM OVERLAY — ONE HOME (DFM 144) ==================
+     DAMIEN, 3 Aug 2026 (rule 138.2): a step must never assume a digital skill a
+     pupil may simply not have. Where a step needs one — opening a browser tab —
+     the card carries a short clip that SHOWS it, and his follow-up note appears
+     once the clip has played.
+
+     HOISTED OUT OF `Engines.steps` ON 26 AUG 2026 (DFM 262). It was a closure
+     inside that engine's mount, which meant no other engine could offer a film
+     however badly a pupil needed one — and the Inspection is exactly that case:
+     it blocks correctly until the folders are really there, and a pupil who has
+     forgotten HOW cannot reach the build card's film again, because a live run
+     has no back-navigation by design (DFM 142b). His words: "we should allow the
+     pupil to rewatch the video on that card incase they've forgotten how to do
+     it, because they can't go back to the previous step".
+     NOTHING ABOUT ITS BEHAVIOUR CHANGES in the move — markup, the timing
+     backstop, the note reveal and the DFM 104 arming are byte-for-byte what they
+     were, and qa-clip-overlay proves the steps engine's cards identical against
+     the pre-change engine pulled out of git. */
+  function openClip(clip) {
+    var ov = el('<div class="ols-modal film-modal">' +
+      '<div class="ols-modal-card ols-modal-film">' +
+      '<h2>&#127909; ' + esc(clip.title || clip.label || 'Show me how') + '</h2>' +
+      '<video controls autoplay muted playsinline src="' + esc(asset(clip.src)) + '"></video>' +
+      (clip.note ? '<p class="clip-note" hidden>' + esc(clip.note) + '</p>' : '') +
+      '<div class="confirm-actions"><button class="primary-btn clip-close" type="button">' + esc(clip.close || 'Back to the step') + '</button></div>' +
+      '</div></div>');
+    document.body.appendChild(ov);
+    var vid = ov.querySelector('video');
+    var note = ov.querySelector('.clip-note');
+    if (note) {
+      /* his note goes on screen "after it plays" - but it must not depend on
+         a clean `ended`. A pupil can pause, and a browser can refuse to play
+         at all (autoplay/power policies). So: on ended, on error, and as a
+         backstop once the clip's own running time has passed. Never before -
+         that would give the tip away ahead of the demonstration. */
+      var showNote = function () { note.hidden = false; };
+      /* THE BACKSTOP IS FOR "METADATA NEVER ARRIVES", AND ONLY THAT (fixed
+         23 Aug 2026). It used to be a flat 30-second timer that ran whether
+         metadata arrived or not - fine while the only clip was 13 seconds
+         long, and wrong the moment the side quest's 1:53 and 2:27 films
+         landed, because it popped the note halfway through the film and
+         broke the rule stated directly above it. The moment the real length
+         is known the guess is CANCELLED and replaced by it. A first attempt
+         at this fix read vid.duration at mount, where it is NaN, and so
+         changed nothing at all - caught before it shipped. */
+      var backstop = setTimeout(showNote, 30000);
+      vid.addEventListener('ended', showNote);
+      vid.addEventListener('error', showNote);
+      vid.addEventListener('loadedmetadata', function () {
+        clearTimeout(backstop);
+        var ms = ((vid.duration && isFinite(vid.duration)) ? vid.duration : 15) * 1000 + 1200;
+        setTimeout(showNote, ms);
+      });
+    }
+    App.armButton(ov.querySelector('.clip-close'), function () {   // DFM 104
+      try { vid.pause(); } catch (e) {}
+      ov.remove();
+    });
+  }
+
+  /* THE GHOST CLIPROW, in one home too. The steps card has rendered this exact
+     markup since 3 Aug; the Inspection now renders the SAME markup so a pupil
+     meets a control she already recognises rather than a new one (138.1.3's
+     spirit — a thing she has met is not a thing she has to decode). */
+  function clipRowHtml(clip) {
+    if (!clip || !clip.src) return '';
+    return '<p class="step-cliprow"><button class="ghost-btn step-clip-btn" type="button">&#127909; ' +
+      esc(clip.label || 'Show me how') + '</button></p>';
+  }
+  function wireClipRow(root, clip) {
+    if (!root || !clip || !clip.src) return;
+    var b = root.querySelector('.step-clip-btn');
+    if (b) b.onclick = function () { openClip(clip); };
+  }
+
   /* ================= steps (guided ladder, with practice sims) ============ */
   Engines.steps = {
     mount: function (host, chunk, ctx) {
@@ -953,55 +1028,10 @@
       var i = 0;
       introCard(host, { kicker: chunk.title, title: chunk.badge ? chunk.badge.name : chunk.title, text: cfg.intro || '' }, 'Start', showStep);
 
-      /* DAMIEN, 3 Aug 2026 (rule 138.2): a step must never assume a digital
-         skill a pupil may simply not have. Where a step needs one - opening a
-         browser tab - the card carries a short clip that SHOWS it, and his
-         follow-up note appears once the clip has played. */
-      function openClip(clip) {
-        var ov = el('<div class="ols-modal film-modal">' +
-          '<div class="ols-modal-card ols-modal-film">' +
-          '<h2>&#127909; ' + esc(clip.title || clip.label || 'Show me how') + '</h2>' +
-          '<video controls autoplay muted playsinline src="' + esc(asset(clip.src)) + '"></video>' +
-          (clip.note ? '<p class="clip-note" hidden>' + esc(clip.note) + '</p>' : '') +
-          '<div class="confirm-actions"><button class="primary-btn clip-close" type="button">' + esc(clip.close || 'Back to the step') + '</button></div>' +
-          '</div></div>');
-        document.body.appendChild(ov);
-        var vid = ov.querySelector('video');
-        var note = ov.querySelector('.clip-note');
-        if (note) {
-          /* his note goes on screen "after it plays" - but it must not depend on
-             a clean `ended`. A pupil can pause, and a browser can refuse to play
-             at all (autoplay/power policies). So: on ended, on error, and as a
-             backstop once the clip's own running time has passed. Never before -
-             that would give the tip away ahead of the demonstration. */
-          var showNote = function () { note.hidden = false; };
-          /* THE BACKSTOP IS FOR "METADATA NEVER ARRIVES", AND ONLY THAT (fixed
-             23 Aug 2026). It used to be a flat 30-second timer that ran whether
-             metadata arrived or not - fine while the only clip was 13 seconds
-             long, and wrong the moment the side quest's 1:53 and 2:27 films
-             landed, because it popped the note halfway through the film and
-             broke the rule stated directly above it. The moment the real length
-             is known the guess is CANCELLED and replaced by it. A first attempt
-             at this fix read vid.duration at mount, where it is NaN, and so
-             changed nothing at all - caught before it shipped. */
-          var backstop = setTimeout(showNote, 30000);
-          vid.addEventListener('ended', showNote);
-          vid.addEventListener('error', showNote);
-          vid.addEventListener('loadedmetadata', function () {
-            clearTimeout(backstop);
-            var ms = ((vid.duration && isFinite(vid.duration)) ? vid.duration : 15) * 1000 + 1200;
-            setTimeout(showNote, ms);
-          });
-        }
-        App.armButton(ov.querySelector('.clip-close'), function () {   // DFM 104
-          try { vid.pause(); } catch (e) {}
-          ov.remove();
-        });
-      }
-      function wireClip(card, st) {
-        var b = card.querySelector('.step-clip-btn');
-        if (b) b.onclick = function () { openClip(st.clip); };
-      }
+      /* one home for the wiring too — this used to be the steps engine's own
+         four lines, and two copies of a handler drift the first time one of them
+         learns something (DFM 144) */
+      function wireClip(card, st) { wireClipRow(card, st.clip); }
 
       function showStep() {
         if (i >= cfg.steps.length) { rulesCheck(); return; }
@@ -1031,7 +1061,7 @@
               '" target="_blank" rel="noopener" download>' + esc(st.link.label || 'Download') + ' &#8595;</a></p>'
             : '') +
           (st.note ? '<p class="step-note">' + esc(st.note) + '</p>' : '') +
-          (st.clip && st.clip.src ? '<p class="step-cliprow"><button class="ghost-btn step-clip-btn" type="button">&#127909; ' + esc(st.clip.label || 'Show me how') + '</button></p>' : '') +
+          clipRowHtml(st.clip) +
           '<div class="step-action"></div></div>');
         host.innerHTML = '';
         host.appendChild(c);
@@ -1659,6 +1689,32 @@
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
       introCard(host, { kicker: chunk.title, title: cfg.cardTitle || 'The Inspection', text: cfg.intro || '' }, 'Run the inspection', run);
+      /* ---- THE ROUTE BACK TO THE FILM (DFM 262, his find, 25 Aug 2026) -------
+         The Inspection is right to block until the folders are really there, and
+         that is not what he objected to. What he objected to is that a pupil who
+         has forgotten HOW is stranded: a live run has no back-navigation by
+         design (DFM 142b, review mode is post-completion), so the film on the
+         previous card is out of reach at exactly the moment she needs it.
+         The row is config-gated — a drivecheck chunk with no `cfg.clip` renders
+         byte-identically to the engine he has already sat, and qa-clip-overlay
+         proves that against the pre-change engine rather than asserting it.
+         IT GOES ON THE INTRO **AND** ON THE FAILURE STATE, and the second half is
+         the one that matters: `run()` replaces the whole host, so a film on the
+         intro alone disappears the instant she presses the button and could never
+         reach the point of need. */
+      appendClipRow(host);
+
+      function appendClipRow(root) {
+        if (!cfg.clip || !cfg.clip.src) return;
+        var card = root.querySelector('.intro-card');
+        if (!card) return;
+        var lead = card.querySelectorAll('.intro-lead');
+        var row = el(clipRowHtml(cfg.clip));
+        var after = lead.length ? lead[lead.length - 1] : null;
+        if (after && after.parentNode) after.parentNode.insertBefore(row, after.nextSibling);
+        else card.appendChild(row);
+        wireClipRow(card, cfg.clip);
+      }
 
       function run() {
         host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
@@ -1671,7 +1727,9 @@
                 : esc(cfg.errorText || 'The website could not be reached just then. Nothing is lost — try again in a moment.')) +
               '</p><button class="primary-btn" type="button">Try again</button></div>');
             host.appendChild(errC);
-            errC.querySelector('button').onclick = function () { host.innerHTML = ''; run(); };
+            /* by class here too, for the same reason — this card carries one
+               button today and "today" is exactly how the fault above got in */
+            errC.querySelector('.primary-btn').onclick = function () { host.innerHTML = ''; run(); };
             return;
           }
           var results = { school: !!r.school, dtwork: !!r.dtwork };
@@ -1684,9 +1742,29 @@
             (r.simulated ? '<p class="dc-sim">(Preview mode: this inspection is simulated — the live platform checks your real Drive.)</p>' : '') +
             '<ul class="dc-list">' + rows + '</ul>' +
             '<p>' + esc(pass ? (cfg.passText || '') : (cfg.failText || '')) + '</p>' +
+            /* THE FAIL STATE ONLY. Her reading order becomes: what failed → what
+               to do → the route to being SHOWN → try again (138.1.11 — the
+               instruction lives where the need is). The PASS card gets no row
+               because she is through, and the could-not-run card gets none
+               because that is a network matter rather than a knowledge one:
+               offering a film to a pupil whose page cannot reach the server
+               would answer a question she is not asking. */
+            (pass ? '' : clipRowHtml(cfg.clip)) +
             '<button class="primary-btn" type="button">' + (pass ? 'Claim the badge' : 'Run the inspection again') + '</button></div>');
           host.appendChild(c2);
-          c2.querySelector('button').onclick = pass
+          if (!pass) wireClipRow(c2, cfg.clip);
+          /* BY CLASS, NEVER BY POSITION — and this line is the reason the rule
+             exists. It used to read `c2.querySelector('button')`, "the first
+             button in the card", which was true for as long as the card had one.
+             The film row lands ABOVE the button on the fail state, so the first
+             button became "Show me how" and the retry handler was wired to the
+             wrong control: "Run the inspection again" was left completely dead,
+             and a pupil who failed the check could never run it a second time.
+             That is DFM 143(a) word for word — the fault that killed "Start
+             climbing" when the ladder gained its film button — repeated by me in
+             the same file. The confused-pupil walker found it before it shipped:
+             it clicked the primary button 100 times and the screen never moved. */
+          c2.querySelector('.primary-btn').onclick = pass
             ? function () { finishChunk(ctx, 'sqdrive=pass'); }
             : function () { host.innerHTML = ''; run(); };
         });
