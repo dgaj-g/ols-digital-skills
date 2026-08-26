@@ -977,6 +977,29 @@
     if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
     var numStr = str_(p.lessonNum || '');
     if (!lessonAccessible_(s, cls, numStr)) return Promise.resolve({ ok: false, error: 'locked' });
+    /* ---- THE FAILED INSPECTION, STAGEABLE IN PREVIEW (DFM 262, 26 Aug 2026) ----
+       The simulated check has always answered PASS, which means the failure card
+       — the one his finding is actually about, because that is where a pupil is
+       stuck — could not be reached by any walker. A screen no walker can stand on
+       is an unchecked screen (DFM 204), and this one now carries a control.
+       `sim.driveFail` is a COUNTDOWN, not a switch: it fails that many checks and
+       then passes, which is the real pupil journey (get it wrong, fix it, pass)
+       rather than a dead end a walk could never leave. It fails on DT WORK with
+       School present, which is the commonest real failure and the only one that
+       renders both a tick and a cross.
+       IT IS PREVIEW-ONLY AND IT CHANGES NOTHING BY DEFAULT: with no flag set the
+       answer is the pass it always was, and `Code.gs.template` gains nothing at
+       all — the deployed server keeps checking the real Drive and is zero-diff.
+       That asymmetry is deliberate: DFM 234's law is that a behaviour in two
+       homes must be held equal, and this is not a behaviour, it is a way of
+       standing on a screen the real Drive would have to be broken to produce. */
+    var sim = s.sim || {};
+    if (num_(sim.driveFail) > 0) {
+      sim.driveFail = num_(sim.driveFail) - 1;
+      s.sim = sim;
+      save_(s);
+      return Promise.resolve({ ok: true, school: true, dtwork: false, simulated: true });
+    }
     return Promise.resolve({ ok: true, school: true, dtwork: true, simulated: true });
   }
 

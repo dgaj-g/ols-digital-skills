@@ -125,6 +125,50 @@ const films = [];
 check(films.length === 2, 'both build cards carry a captioned film (' + films.length + ')');
 
 /* ─────────────────────────────────────────────────────────────────────────
+   THE ONE-FILM TIE (DFM 262, 26 Aug 2026).
+   The Inspection now offers the SAME film the Drive build card offers, from a
+   `clip` on its own chunk — so the file is named in TWO places in the content.
+   That is the shape DFM 144/167(b) warns about: one fact in two homes drifts the
+   first time somebody edits one of them, and here the drift would be silent and
+   nasty. The Inspection would go on playing a film that no longer matches the
+   card the pupil is being sent back to, and — worse — the caption sidecar this
+   gate checks lives against sq-drive's array, so a drifted Inspection film would
+   be playing burned-in words NOTHING is comparing against.
+   So the two are held EQUAL, and the captions keep exactly one home: sq-drive's.
+   The Inspection deliberately carries no captions array of its own — the words
+   are burned into the mp4 and travel with it wherever it plays. */
+const inspect = (lesson.chunks || []).find(ch => ch.engine === 'drivecheck');
+const insClip = inspect && (inspect.config || {}).clip;
+if (insClip) {
+  const drive = films.find(f => f.chunk === 'sq-drive');
+  check(!!drive, 'the Drive build card still carries the film the Inspection points at');
+  if (drive) {
+    check(String(insClip.src) === String(drive.clip.src),
+      'ONE FILM, TWO BUTTONS: the Inspection\'s clip.src (' + insClip.src + ') is the SAME file as ' +
+      'sq-drive\'s step clip (' + drive.clip.src + ')');
+  }
+  check(!(insClip.captions || []).length,
+    'and the Inspection carries NO captions array of its own — the words are burned into the mp4 ' +
+    'and sq-drive stays their one home (DFM 144)');
+  check(!!insClip.close && /inspection/i.test(String(insClip.close)),
+    'the overlay\'s close label says where she RETURNS to ("' + insClip.close + '") — rule 35, and ' +
+    'it is true from both places the film can be opened');
+  /* CONTROL (DFM 196): the tie is run again over a DRIFTED copy of the same two
+     homes and must condemn it. The comparison is between the two content values,
+     never against a hardcoded filename — so editing EITHER home on its own is
+     what breaks it, which is the only version of this check worth having. */
+  const tie = (a, b) => String(a) === String(b);
+  control(drive ? !tie(drive.clip.src, 'assets/video/shared/DRIFTED.mp4') : false,
+    'a DRIFTED Inspection film is CAUGHT: point clip.src at another file and the tie fails, ' +
+    'naming both homes (sq-drive\'s step clip and sq-inspect\'s clip)');
+  control(drive ? tie(drive.clip.src, insClip.src) === true : false,
+    'and the shipped pair PASSES it — the tie is not merely strict (over-tightening guard)');
+} else {
+  check(false, 'the Inspection carries a clip (DFM 262 — a blocking check offers the route back ' +
+    'to the film that taught what it checks)');
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
    AND THE THIRD FILM, WHICH IS NOT ONE OF HIS (23 Aug 2026, DFM 253a).
    The cloud explainer on the briefing card is PIPELINE-MADE — scenes/lS1.js,
    recorded by lib/record.js with the frame and cursor laws enforced and the

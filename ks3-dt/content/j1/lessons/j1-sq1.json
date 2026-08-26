@@ -163,8 +163,15 @@
      }
     ],
     "passText": "Inspection PASSED. Your Vault is real, and it will follow you to every device you ever sign in on. That has earned you the Vault Builder badge — 20 XP. Press the button below to claim it, and the points are banked.",
-    "failText": "Not there yet — that's fixable in under a minute. Check the exact names and try the inspection again.",
-    "help": "Press the button and the website checks your real Drive for the two folders. If it fails, the message names what's missing — fix it in the Drive tab and run it again. You can retry as often as you like."
+    "failText": "Not there yet — that's fixable in under a minute. Check the exact names, and if you are not sure how to build the folders, Show me how below plays the film again. Then try the inspection again.",
+    "help": "Press the button and the website checks your real Drive for the two folders. If it fails, the message names what's missing — fix it in the Drive tab and run it again. You can retry as often as you like.",
+    "clip": {
+     "src": "assets/video/shared/sq-drive-build.mp4",
+     "label": "Show me how",
+     "title": "Getting into Drive and building your folders",
+     "close": "Back to the inspection",
+     "note": "The film shows the whole build — opening Drive, building School, and building DT Work inside it. The last part makes a test document; the inspection only checks the two folders."
+    }
    }
   },
   {
