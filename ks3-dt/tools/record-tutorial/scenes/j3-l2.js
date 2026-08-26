@@ -120,7 +120,7 @@ const scenes = [
       await page.evaluate(() => window.pystage.print(['THE RIVER STAGE']));
       await cine.pause(1100);
       await assertStage(page, { rows: 1, console: 'THE RIVER STAGE' });
-      await cine.caption('Whatever sits inside the speech marks comes out <b>exactly</b> as you typed it. A capital letter in the wrong place is a different line to the console.');
+      await cine.caption('Whatever sits inside the speech marks comes out <b>exactly</b> as you typed it. Change one capital letter and the console prints a different line &mdash; exactly what you typed, never what you meant.');
 
       await page.evaluate(() => window.pystage.addLine('print("Doors open at 8")'));
       await cine.pause(700);
@@ -137,12 +137,12 @@ const scenes = [
   /* ------------------------------------------------------------------ ch3 */
   {
     id: 'ch3',
-    label: 'A box with a name on it',
+    label: 'A box with a name on it (a variable)',
     tailMs: 1600,
     run: async ({ page, cine, log }) => {
       await page.goto(VBOX, { waitUntil: 'domcontentloaded' });
       await cine.install();
-      await cine.curtain({ kicker: 'CHAPTER 3', title: 'A box with a name on it', sub: 'one name, used twice' });
+      await cine.curtain({ kicker: 'CHAPTER 3', title: 'A box with a name on it (a variable)', sub: 'one name, used twice' });
       await cine.pause(2400);
       await cine.lift();
       await page.evaluate(() => window.vb.ready);
@@ -183,7 +183,7 @@ const scenes = [
       await page.evaluate(() => window.pystage.print(['Curtain up at THE RIVER STAGE', 'See you again at THE RIVER STAGE']));
       await cine.pause(1300);
       await assertStage(page, { rows: 3, consoleHas: 'Curtain up at THE RIVER STAGE' });
-      await cine.caption('Typed once. Printed twice. That is the whole point of a box with a name on it.');
+      await cine.caption('You typed the name once, and it printed twice. That is the whole point of a <b>variable</b> &mdash; a box with a name on it.');
       await cine.drop({});
       await cine.pause(900);
     },

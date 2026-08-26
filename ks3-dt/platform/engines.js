@@ -3315,10 +3315,30 @@
           }
           return lis.length;
         }
+        /* a finished card takes every line out of service. A real <button> has
+           `disabled`; a gap-carrying row is a div and has nothing of the kind, so
+           it says so the way an announced control must (aria-disabled) and every
+           handler asks before it acts. */
+        function outOfService(node) {
+          return !!(node.disabled || node.getAttribute('aria-disabled') === 'true');
+        }
         function wire(node, si, isPlaced) {
+          /* ENTER PLACES; SPACE NEVER DOES (DFM 267f). Only the gap-carrying rows
+             need this: a real <button> already does the right thing natively, and
+             adding a second Enter here would fire it twice. */
+          if (node.tagName !== 'BUTTON') {
+            node.addEventListener('keydown', function (e) {
+              if (outOfService(node)) return;
+              if (e.target && /input|textarea/i.test(e.target.tagName)) return;   /* she is typing */
+              if (e.key !== 'Enter') return;
+              e.preventDefault();
+              if (isPlaced) take(si); else put(si, null);
+            });
+          }
           node.addEventListener('pointerdown', function (e) {
             /* a press on a typing blank is TYPING, never a drag */
             if (e.target && /input/i.test(e.target.tagName)) return;
+            if (outOfService(node)) return;
             if (e.button != null && e.button !== 0) return;
             var sx = e.clientX, sy = e.clientY, moved = false;
             try { node.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
@@ -3359,6 +3379,7 @@
           });
           node.addEventListener('click', function (e) {
             if (e.target && /input/i.test(e.target.tagName)) return;
+            if (outOfService(node)) return;
             if (suppressClick) { suppressClick = false; return; }
             if (isPlaced) take(si); else put(si, null);
           });
@@ -3393,6 +3414,34 @@
           var hints = (L.blanks || []).map(function (bl) { return bl.label; }).filter(Boolean);
           var hint = hints.length
             ? '<span class="pyrun-blank-hint">' + esc(hints.join(' · ')) + '</span>' : '';
+
+          /* ---- THE SPACE BAR BELONGS TO TYPING — DFM 267(f), his find, 26 Aug 2026
+             He typed THE HARBOUR LIGHT into build 3's gap and the whole line threw
+             itself between The lines and Your program, twice — once per space.
+             THE CAUSE WAS THIS TAG. A line rendered as a `<button>`, and a typed
+             blank's `<input>` sat nested inside it: interactive content inside
+             interactive content, which HTML's own content model forbids. A button
+             owns the space bar, so Space activated the ANCESTOR, and the click it
+             synthesises carries the button as `e.target` — so the guard four
+             functions below ("a press on a typing blank is TYPING, never a drag"),
+             which reads `e.target`, could never see the input at all. The guard was
+             correct and unreachable.
+             THE LAW IT WRITES: no interactive input is ever nested inside an
+             interactive control. So a line that CARRIES A GAP is not a button: it is
+             a row that is tabbable, announced as a button, and placed by Enter —
+             while Space is left to the only thing a pupil could possibly mean by it
+             while her caret is in a box. A line with NO gap stays a real `<button>`,
+             because native keyboard behaviour is exactly right for those and there
+             is nothing to protect. `qa-nested-interactive` audits the rendered DOM of
+             every assembly card of every lesson (a grep cannot see this: the nesting
+             happens at render) and types his own sentence with real key presses. */
+          if ((L.blanks || []).length) {
+            var say = String(L.t || '').replace(/\s+/g, ' ').trim();
+            return '<div class="pyrun-line has-blank ' + cls + '" role="button" tabindex="0" ' +
+              'draggable="false" data-si="' + si + '" ' +
+              'aria-label="' + esc(say + ' — press Enter to move this line') + '">' +
+              '<code>' + t + '</code>' + hint + '</div>';
+          }
           return '<button class="pyrun-line ' + cls + '" type="button" draggable="false" data-si="' + si + '"><code>' + t + '</code>' + hint + '</button>';
         }
         function wireBlanks(root) {
@@ -3423,7 +3472,10 @@
           if (!tray.children.length) tray.appendChild(el('<p class="pt-empty">' + esc(cfg.trayEmpty || PY_SAY.trayEmpty) + '</p>'));
           placed.forEach(function (si, i) {
             var li = el('<li><span class="pyp-num">' + (i + 1) + '.</span>' + lineHtml(lines[si], 'placed', si) + '</li>');
-            wire(li.querySelector('button'), si, true); wireBlanks(li);
+            /* BY CLASS, never "the first button in the li" — a gap-carrying row is
+               not a <button> any more (DFM 267f), and the same habit is what killed
+               "Start climbing" and then "Run the inspection again" (DFM 143a). */
+            wire(li.querySelector('.pyrun-line'), si, true); wireBlanks(li);
             prog.appendChild(li);
           });
           if (!placed.length) prog.appendChild(el('<li class="pyp-empty">' + esc(cfg.progEmpty || PY_SAY.progEmpty) + '</li>'));
@@ -3460,7 +3512,13 @@
                  record (DFM 265a). The tick a finished job earns is on the hub, for
                  this sitting only, and it dies with the page. */
               if (attempts === 1 && !isExtra) cleanFirst++;
-              c.querySelectorAll('.pyrun-line').forEach(function (n) { n.disabled = true; });
+              c.querySelectorAll('.pyrun-line').forEach(function (n) {
+                n.disabled = true;                       /* a real <button> */
+                if (n.tagName !== 'BUTTON') {            /* a gap-carrying row (267f) */
+                  n.setAttribute('aria-disabled', 'true');
+                  n.removeAttribute('tabindex');
+                }
+              });
               c.querySelectorAll('.pyrun-blank').forEach(function (n) { n.disabled = true; });
               if (isExtra) {
                 doneJobs[b.id] = true;

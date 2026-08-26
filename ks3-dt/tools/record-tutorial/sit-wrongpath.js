@@ -28,6 +28,11 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
 const { AUDIT, EXPLAIN_PX } = require('./qa-no-mute-locks.js');
+/* THE 267(f) AUDIT RIDES THIS WALK TOO. The confused pupil stands in states the
+   happy path never reaches — half-typed boxes, refused gates — which is exactly
+   where an interactive control nested inside another one does its damage. One
+   home for the law, two walkers asking it (DFM 144/204). */
+const NI = require('./lib/nested-interactive.js');
 
 const args = process.argv.slice(2);
 const argOf = (n, d) => { const i = args.indexOf(n); return i === -1 ? d : args[i + 1]; };
@@ -308,6 +313,7 @@ const WRONG = {
   const consoleErrors = [];
   page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
   const findings = [];
+  const nestedHits = [];
   const visited = [];
   /* the text-box battery runs ONCE per screen. It wipes the box when it is done
      (so the next gate is met fresh), and running it every loop meant the walker
@@ -863,6 +869,14 @@ const WRONG = {
       return (h ? h.textContent : (document.title || 'screen')).trim().slice(0, 46);
     });
     if (visited[visited.length - 1] !== where) { visited.push(where); log('screen: ' + where); }
+
+    /* ---- the 267(f) audit, on this screen, in whatever state the wrong move
+       has just left it in ---- */
+    const nested = await page.evaluate(q => eval(q)(), NI.QUERY);
+    nested.forEach(f => {
+      const line = where + ': ' + NI.describe(f);
+      if (nestedHits.indexOf(line) === -1) { nestedHits.push(line); }
+    });
     /* record every required landmark that is on screen RIGHT NOW (DFM 204),
        in the CHUNK it belongs to where the list names one */
     const chunkNow = await page.evaluate(() => {
@@ -936,6 +950,7 @@ const WRONG = {
     consoleErrors.slice(0, 6).forEach(e => console.log('   ! ' + e.slice(0, 160)));
   }
 
+  nestedHits.forEach(h => findings.push(h));
   const uniq = Array.from(new Set(findings));
   if (EXPECT_FAIL) {
     if (!uniq.length) {

@@ -308,7 +308,42 @@ const LEXICON = [
     allow: /\b(Miss|Mr|Mrs|Ms)\s+(three|two|one|four|five|a\b)/i,
     why: 'DFM 260 (25 Aug 2026): an INVENTED MEMBER OF STAFF. His words: "Who on earth is Mr Boyle? ' +
          'Why doesn\'t it just say the teacher?" No pupil-facing text invents a teacher.',
-    fix: '"the teacher" / "her teacher" — or the real role the platform already uses ("the Head of Department")' }
+    fix: '"the teacher" / "her teacher" — or the real role the platform already uses ("the Head of Department")' },
+
+  /* ---- DFM 267(b), his find at the J3 Lesson 2 sit, 26 Aug 2026 ------------
+     The j3-02 brief said the passcode "comes from the Head of Department, Damien
+     Gartland". A brief is written to ANY colleague in ANY year and postholders
+     change, so the role alone is the durable truth — and a named person in a
+     brief is the DFM 260 fault wearing a real name instead of an invented one.
+     REPORTED RATHER THAN QUIET: the spec's verified fact said this was the only
+     name-in-brief on the platform. It was in FIVE homes (j1-01, j1-sq1, j2-01,
+     j3-01, j3-02); all five were swept in the same commit (DFM 150/167b), so
+     this ratchet blocks nothing today and exists so nothing comes back. */
+  { rx: /\bDamien\s+Gartland\b/i,
+    why: 'DFM 267(b): a brief names staff by ROLE, never by person — postholders change, the role does not',
+    fix: '"the Head of Department"' },
+  { rx: /\bHead of (Department|Year|Key Stage [0-9])\s*,?\s+[A-Z][a-z]{2,}\s+[A-Z][a-z]{2,}/,
+    why: 'DFM 267(b): a postholder named as well as their role — the name is the half that goes stale',
+    fix: 'the role on its own' },
+
+  /* ---- DFM 267(e)/(h), HIS EXHIBITS, 26 Aug 2026 --------------------------
+     Both of these are SETTLED corrections: the sentences that carried them have
+     been rewritten to his own text, and these two rows exist so they can never
+     come back (DFM 193d — a ratchet holds ground already won and can never
+     produce clarity; only reading does that).
+     They are deliberately narrow. "Exact matters here." is a two-word verbless
+     assertion no eleven-year-old can unpack, and it is banned as the literal it
+     is. The "…to the console" family is banned only in the sense he caught —
+     "to" meaning "as far as X is concerned" — so an ordinary sentence like
+     "Python writes it to the console" is untouched. A ban that also condemns its
+     own fix is a trap, not a ratchet (DFM 266's law). */
+  { rx: /\bexact matters here\b/i,
+    why: 'HIS EXHIBIT (DFM 267e): a verbless two-word assertion — grammatical, and unreadable at eleven',
+    fix: 'say what has to be exact and what happens if it is not' },
+  { rx: /\b(different|same|identical|another|new)\b[^.!?]{0,30}\bto the console\b/i,
+    why: 'HIS EXHIBIT (DFM 267h): "a different line TO the console" uses "to" to mean "as far as the ' +
+         'console is concerned" — an adult idiom. His words: "doesn\'t make sense"',
+    fix: 'say what the console DOES: "the console prints a different line"' }
 ];
 
 /* ------------------------------------------------------------------ *
@@ -2106,6 +2141,32 @@ function runControls() {
     'the line that printed it.';
   control(lexiconCheck(C6ok2).length === 0,
     'and an ordinary "goes into / typed into" sentence still PASSES — the verb is what makes the claim');
+
+  /* ---- DFM 267(b/e/h): HIS J3 LESSON 2 SIT. Every one of these is a sentence
+     that was live on his own screen on 26 August, and every one is followed by
+     the wording that replaced it, so the ratchet is proved not to condemn its
+     own fix. */
+  const C7 = 'The passcode comes from the Head of Department, Damien Gartland, and it is not your ' +
+    'C2k password.';
+  control(lexiconCheck(C7).length >= 1,
+    'HIS FIND fails the lexicon — a brief naming the postholder as well as the role (DFM 267b)');
+  const C7ok = 'The passcode comes from the Head of Department and is not your C2k password.';
+  control(lexiconCheck(C7ok).length === 0,
+    'and the role on its own PASSES — the ban is on the name, never on the role');
+  const C8 = 'Exact matters here. Change one capital letter and the console counts it as a different ' +
+    'line from The target.';
+  control(lexiconCheck(C8).length >= 1,
+    'HIS EXHIBIT "Exact matters here." fails the lexicon (DFM 267e)');
+  const C9 = 'A capital letter in the wrong place is a different line to the console.';
+  control(lexiconCheck(C9).length >= 1,
+    'HIS EXHIBIT — the film caption\'s "…to the console" idiom — fails the lexicon (DFM 267h)');
+  const C9ok = 'Change one capital letter and the console prints a different line — exactly what you ' +
+    'typed, never what you meant.';
+  control(lexiconCheck(C9ok).length === 0,
+    'and the caption that REPLACES it passes, though it still says "different line" (over-tightening guard)');
+  const C9ok2 = 'Python writes every printed line to the console as soon as the program runs.';
+  control(lexiconCheck(C9ok2).length === 0,
+    'and an ordinary "writes it to the console" sentence still passes — only the idiom is banned');
 
   /* ---- DFM 265(a): the dead XP promise cannot come back to the extras zone. */
   const XP_PATH = 'j2-02 › extras › config › intro';

@@ -3361,7 +3361,16 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   transition: border-color 0.12s, box-shadow 0.12s;
 }
 .pyrun-line:hover { border-color: var(--gold); box-shadow: 0 4px 14px rgba(23, 34, 59, 0.10); }
-.pyrun-line:disabled { cursor: default; opacity: 1; }
+/* A LINE WITH A TYPING GAP IS NOT A <button> (DFM 267f). It is a tabbable row
+   announced as one, so `:disabled` cannot reach it and `[aria-disabled]` is what
+   says it is out of service — the two selectors must stay together or a finished
+   card would keep half its lines looking live. The focus ring is drawn rather
+   than inherited, because a div has no button default worth relying on. */
+.pyrun-line:disabled, .pyrun-line[aria-disabled="true"] { cursor: default; opacity: 1; }
+.pyrun-line:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+/* the gap itself is a text box and must select and caret like one, whatever the
+   row around it says about selection */
+.pyrun-line .pyrun-blank { -webkit-user-select: text; user-select: text; }
 .pyrun-line.dragging { opacity: 0.35; }
 .pyrun-line code {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.95rem; color: #16305C;
