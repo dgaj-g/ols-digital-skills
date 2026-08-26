@@ -111,13 +111,13 @@
      {
       "icon": "📁",
       "title": "Create your School folder",
-      "text": "Click + New (top-left) → New folder. Name it exactly: School — capital S, nothing else. This is the top of your filing system, just like the Vault.",
+      "text": "Click + New (top-left) → New folder. Name it exactly: School — capital S, nothing else. You might see other folders in your Drive already — some you made yourself, and some were made for you by websites you use in class. Leave those as they are. From now on, every folder you make yourself will go inside School — your own filing home, just like the Vault. If the name comes out wrong, right-click the folder, click Rename, and fix it.",
       "confirm": "My School folder exists"
      },
      {
       "icon": "🎮",
       "title": "Create DT Work inside School",
-      "text": "Open your School folder (double-click it), then + New → New folder again. Name this one exactly: DT Work. This is your DT home on the Google side. Work you make with Google's tools lives here, and so do the files your DT lessons ask you to save. Your DT teacher can find it when you share it.",
+      "text": "Open your School folder (double-click it), then + New → New folder again. Name this one exactly: DT Work. This is your DT home on the Google side. Your DT work made with Google tools like Docs and Slides lives here, and so do the files your DT lessons ask you to save. Your DT teacher can find it when you share it. School can hold other subjects too: if you ever want a home for another class's work, make that subject's folder inside School the same way. Today, DT Work is the only folder you need.",
       "confirm": "DT Work is inside School"
      },
      {
@@ -264,13 +264,13 @@
      {
       "icon": "📁",
       "title": "Build a School folder here too",
-      "text": "Click + Create or upload, then Folder. Name it exactly: School - you can pick a folder colour too, if you like. Now both of your clouds have the same tidy top level - future-you will be very grateful.",
+      "text": "Click + Create or upload, then Folder. Name it exactly: School - you can pick a folder colour too, if you like. You might see folders here already — OneDrive and Teams make some of their own. Leave those as they are. Now both of your clouds have the same tidy top level - future-you will be very grateful. If the name comes out wrong, right-click the folder, click Rename, and fix it.",
       "confirm": "OneDrive has a School folder"
      },
      {
       "icon": "📁",
       "title": "And DT Work inside it",
-      "text": "Open your School folder, then click + Create or upload and Folder again, and name it exactly: DT Work. Now BOTH of your clouds have the same two folders. This one is your DT home on the Microsoft side - later in the course, the DT work you make in Word, Excel or PowerPoint will live here.",
+      "text": "Open your School folder, then click + Create or upload and Folder again, and name it exactly: DT Work. Now BOTH of your clouds have the same two folders. This one is your DT home on the Microsoft side - later in the course, the DT work you make in Word, Excel or PowerPoint will live here. And just like on the Google side, you can add a folder for any other subject inside School whenever you want one.",
       "confirm": "DT Work is inside School — in OneDrive too"
      },
      {
