@@ -3404,6 +3404,40 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .pyrun-vsay { margin: 0 0 4px; font-size: 0.96rem; line-height: 1.55; color: var(--ink); }
 .pyrun-verdict .primary-btn { margin-top: 10px; }
 
+/* ---- THE EXTRA JOBS ZONE (DFM 265, 26 Aug 2026) ------------------------
+   A hub of jobs that pay nothing, and a way out on every screen of it.
+   EVERY SURFACE HERE SETS BOTH ITS OWN INK AND ITS OWN GROUND. The studio QA
+   desk became light-on-light because a light plate inherited the dark shell's
+   text colour (DFM 207g), and nothing here may repeat that: qa-readability
+   measures the result in real pixels on every skin, and this is the source
+   ratchet under it. */
+.pyrun-hub { max-width: 760px; }
+.pyrun-jobs { display: flex; flex-direction: column; gap: 10px; margin: 4px 0 18px; }
+.pyrun-job {
+  display: block; width: 100%; text-align: left; cursor: pointer;
+  padding: 13px 16px; border-radius: 12px;
+  background: var(--field); color: var(--ink); border: 1.5px solid var(--line-l);
+  transition: border-color 0.14s ease, box-shadow 0.14s ease;
+}
+.pyrun-job:hover { border-color: var(--gold); box-shadow: 0 4px 14px rgba(23, 34, 59, 0.10); }
+.pyrun-job:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.pyrun-job-title {
+  display: block; font-size: 1.02rem; font-weight: 800; line-height: 1.4; color: var(--ols-blue);
+}
+.pyrun-job-whiff {
+  display: block; margin-top: 3px; font-size: 0.94rem; line-height: 1.5; color: var(--ink);
+}
+.pyrun-job-tick {
+  display: inline-block; margin-top: 7px; padding: 3px 10px; border-radius: 999px;
+  font-size: 0.74rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
+  background: rgba(46, 158, 99, 0.14); color: #1E6B45; border: 1px solid rgba(46, 158, 99, 0.5);
+}
+/* the way out, on every screen — held clear of whatever sits above it so the
+   two controls never read as part of the card's own work (DFM 207a's 10px
+   floor between two interactive controls, with room to spare) */
+.pyrun-exit-row { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line-l); }
+.pyrun-card .pyrun-exit-row { margin-top: 20px; }
+
 @media (prefers-reduced-motion: reduce) {
   .snap-block.snapped, .snap-py.snapped, .snap-block.bounce, .snap-py.bounce { animation: none; }
   .pyc-spin { animation: none; }

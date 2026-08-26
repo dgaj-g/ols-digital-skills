@@ -167,7 +167,7 @@ const scenes = [
       await assertLoaded(page, { blockLoaded: true });
 
       await cine.caption('This block sticks two things together: the words <b>Score:</b> and whatever number is in the box. The Python line does that with a + sign.');
-      await cine.caption('<b>str( )</b> turns a number into letters, so it can be joined to words. You do not have to remember that today &mdash; you only have to spot the line that does it.');
+      await cine.caption('<b>str( )</b> wraps the number so the + can join it onto words. You do not have to remember that today &mdash; you only have to spot the line that does it.');
 
       /* ---- THE WORKED EXAMPLE IS NEUTRAL — DFM 210, applied here 25 Aug 2026.
          This chapter used to type build 1's exact four lines on camera, in

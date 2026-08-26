@@ -426,9 +426,18 @@ function run() {
        hour, I think and there is no stretch and challenge, which all lessons
        going forward should absolutely have."
        So every lesson whose design round OPENS after 25 Aug 2026 must carry a
-       stretch element a MACHINE can find. Three shapes count, and they are the
-       three the platform already builds:
-         · a pyrun chunk with a `stretch` object (the shape this round adds);
+       stretch element a MACHINE can find. Four shapes count, and they are the
+       four the platform builds:
+         · an EXTRAS ZONE — a chunk in `extrasMode` (DFM 265, 26 Aug 2026). This
+           is the shape every lesson from J2/J3 L2 onward uses, and it satisfies
+           the cell MORE completely than the thing it replaced: the V54 stretch
+           was one refusable offer at the end of a badged chunk; the zone is a
+           hub of jobs, after the badge, with a way out on every screen. The cell
+           demands what makes it a stretch rather than a chore — jobs to do, and
+           a `finishLabel` to leave by — because a zone with neither would be an
+           empty room satisfying a gate;
+         · a pyrun chunk with a `stretch` object (the V54 shape, now retired from
+           J2/J3 L2 but still the ladder's in J1);
          · any chunk or scene flagged `stretch` / carrying a `stretch` config —
            the J1 ladder's dashed rung and the items runner's optional tail;
          · a chunk declaring `optional: true`, which is K11d's refusal law made
@@ -457,6 +466,14 @@ function run() {
       const found = [];
       (L.json.chunks || []).forEach(ch => {
         const cfg = ch.config || {};
+        if (cfg.extrasMode === true) {
+          /* not merely "the flag is present": a zone with no jobs, or with no way
+             out of one, is not a stretch — it is a trap with a label on it (265c) */
+          const jobs = (cfg.builds || []).length;
+          if (jobs > 0 && String(cfg.finishLabel || '').trim()) {
+            found.push(ch.id + ' (extras zone, ' + jobs + ' job' + (jobs === 1 ? '' : 's') + ', DFM 265)');
+          }
+        }
         if (cfg.stretch && typeof cfg.stretch === 'object') found.push(ch.id + ' (pyrun/config stretch)');
         else if (ch.stretch || cfg.stretch) found.push(ch.id + ' (stretch flag)');
         if (cfg.optionalTail || ch.optional === true || cfg.optional === true) found.push(ch.id + ' (refusable optional tail)');

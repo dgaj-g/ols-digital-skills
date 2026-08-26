@@ -220,15 +220,25 @@ const LANDMARKS = {
     ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'build'],
     ['NOT YET, with no line named', '.pyrun-verdict.is-notyet', 'build'],
     ['MATCHED', '.pyrun-verdict.is-matched', 'build'],
-    /* THE REFUSAL, WALKED (DFM 259 / K11d, 25 Aug 2026). A stretch that cannot
-       be refused is not a stretch, and a refusal nothing ever presses is a claim
-       rather than a behaviour. The confused-pupil walker stands on the offer card
-       and takes the way out; the expert walker takes the stretch instead, so both
-       halves of the choice are exercised on every run. The landmark is the SKIP
-       button rather than the stretch build, because this walker declines — a
-       landmark naming a state its own walk cannot reach is the DFM 146a fault
-       this file has already been caught by once. */
-    ['the optional stretch offer, with a real way out', '.pyrun-offer-card .pyrun-skip', 'build'],
+    /* THE EXTRA JOBS ZONE, WALKED AS HE DESCRIBED IT (DFM 265, 26 Aug 2026).
+       The V54 offer card is gone and its landmark with it; four rows replace it,
+       and every one names a state THIS walker really reaches, because a landmark
+       naming a state its own walk cannot produce is the DFM 146a fault this file
+       has already been caught by once.
+         1. the hub untouched — the list, before she has opened anything, with the
+            sentence on it that says these pay nothing;
+         2. the way out, ON A JOB CARD — 265(c)'s whole point is that it is not on
+            the hub only, so it is asserted where a pupil at time-up is standing;
+         3. the hub again with nothing ticked — she opened a job, abandoned it half
+            built, and came back to a list that records no progress for it;
+         4. the tray full again on re-entry is proved by qa-extras-zone in pixels;
+            what this walk proves is the ROUTE.
+       Then she presses Finish the lesson and the three rows below — the closing
+       card, the exit check and the evaluation — are what prove his time-up
+       scenario end to end: nothing after the zone is skipped by leaving it. */
+    ['the extra jobs hub, untouched', '.pyrun-hub .pyrun-job', 'extras'],
+    ['the way out, INSIDE a job (265c)', '.pyrun-card .pyrun-exit-row .pyrun-finish', 'extras'],
+    ['back on the hub after abandoning a job, with nothing ticked', '.pyrun-hub .pyrun-jobs', 'extras'],
     ['the what-you-did-next card', '.confirm-step', 'next'],
     ['the exit check', '.q-opt, .exit-q', 'exit'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']
@@ -254,8 +264,10 @@ const LANDMARKS = {
        as a decoy, and adding a number to a string is a TypeError, which is
        exactly the error the build's own errorWords answer. */
     ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'callsheet-b'],
-    /* THE REFUSAL, WALKED — see the note on j2-2's own row (DFM 259 / K11d) */
-    ['the encore offer, with a real way out', '.pyrun-offer-card .pyrun-skip', 'callsheet-b'],
+    /* THE ENCORE SHEET, WALKED — see the note on j2-2's own rows (DFM 265) */
+    ['the encore sheet, untouched', '.pyrun-hub .pyrun-job', 'extras'],
+    ['the way out, INSIDE a job (265c)', '.pyrun-card .pyrun-exit-row .pyrun-finish', 'extras'],
+    ['back on the encore sheet after abandoning a job, with nothing ticked', '.pyrun-hub .pyrun-jobs', 'extras'],
     ['the what-you-did-next card', '.confirm-step', 'next'],
     ['the exit check', '.q-opt, .exit-q', 'exit'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'selfeval']

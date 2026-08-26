@@ -3091,46 +3091,80 @@
       var builds = cfg.builds || [];
       var at = 0, cleanFirst = 0;
 
+      /* ---- THE EXTRA JOBS ZONE — DFM 265, HIS RULING, 26 Aug 2026 ---------
+         His two sentences, and they are one design: "I'm not sure that we should
+         offer extra XP for students who are naturally brighter, as this might
+         seem unfair to a 'normal' student" and "the teacher says it's nearly
+         time up and to finish — how can they leave their current task… so that
+         they can still claim their badge, carry out the exit question(s) and
+         completing their evaluation."
+         The V54 in-chunk stretch OFFER is dead and its `stretch` field with it.
+         An offer that interrupts the end of a badged chunk, promises points and
+         has one way onward is the wrong shape for optional work: the promise is
+         what makes leaving at time-up feel like a loss, and there was no way out
+         of a half-done stretch at all.
+         WHAT REPLACES IT is a zone of its own, AFTER the badge is banked, that
+         pays nothing and traps nobody: a hub of jobs, and a "Finish the lesson"
+         control on the hub AND inside every job, so the way out is on every
+         screen she can reach. Nothing is written to her record from here — the
+         chunk carries no badge, so `done` is `ctx.next()` and no more — which is
+         also what makes the zone free to render LIVE in review mode (265d), so
+         "come back when the lesson is finished" is true on screen rather than a
+         promise.
+         IT IS CONFIG-GATED, so a pyrun chunk without `extrasMode` renders
+         byte-identically to the engine he has already sat (the drivecheck /
+         briefing-film precedent), and qa-extras-zone proves that against the
+         pre-change engine pulled out of git rather than asserting it. */
+      var doneJobs = {};                 /* this sitting only — never a record */
+
+      if (cfg.extrasMode) { hub(); return; }
+
       introCard(host, {
         kicker: cfg.kicker, title: cfg.title, text: cfg.intro || '',
         steps: cfg.steps, stepsClass: 'pyrun-intro-steps'
       }, cfg.beginLabel || 'Open the desk', function () { startBuild(); });
 
-      /* ---- THE OPTIONAL STRETCH TAIL — DFM 259, HIS RULING, 25 Aug 2026 ----
-         His words after sitting j2-02: "This lesson is too short for the hour,
-         I think and there is no stretch and challenge, which all lessons going
-         forward should absolutely have."
-         It is a CONFIG-GATED TAIL, so a pyrun chunk without `cfg.stretch`
-         renders byte-identically to the engine he has already sat — the
-         drivecheck / briefing-film precedent, and qa-pyrun's control proves it
-         rather than asserting it.
-         IT IS A REAL REFUSAL (K11d). The offer is its own card with two live
-         buttons, and "Finish here" really finishes: no nagging, no second ask,
-         no XP taken away for declining. A stretch that cannot be refused is not
-         a stretch, and the floor-pupil XP path depends on the refusal existing.
-         Taking it and not finishing it costs nothing either — the tail is the
-         same build card as any other, so a wrong run hands the lines back. */
-      var stretchTaken = false, stretchDone = false;
-
-      function offerStretch() {
-        var sx = cfg.stretch;
-        var o = (sx && sx.offer) || {};
+      /* THE HUB. The intro sits ABOVE the jobs, not under them: DFM 151 —
+         "an instruction about HOW to interact belongs above the control, not
+         below it" — and what the intro says (these pay nothing, nothing needs
+         them, you can stop whenever your teacher calls time) is precisely what
+         she has to know BEFORE she picks one, not after.
+         In review mode the same card gains one sentence at the front, because
+         a pupil who has finished the lesson is in a different situation from one
+         who has just banked her badge, and the screen has to say which (DFM
+         146e: a mode that changes the rules announces itself). */
+      function hub() {
         host.innerHTML = '';
-        var c = el('<div class="card pyrun-offer-card">' +
-          '<span class="intro-kicker">' + esc(o.kicker || '') + '</span>' +
-          '<h2>' + esc(o.title || '') + '</h2>' +
-          '<p class="intro-lead">' + fmtBold(o.text || '') + '</p>' +
-          '<div class="rung-actions">' +
-          '<button class="primary-btn pyrun-take" type="button">' + esc(o.takeLabel || 'Try it') + '</button>' +
-          '<button class="ghost-btn pyrun-skip" type="button">' + esc(o.skipLabel || 'Finish here') + '</button>' +
+        var lead = (ctx.review && cfg.reviewIntro)
+          ? cfg.reviewIntro + '\n\n' + (cfg.intro || '')
+          : (cfg.intro || '');
+        var jobs = builds.map(function (b) {
+          return '<button class="pyrun-job" type="button" data-job="' + esc(b.id || '') + '">' +
+            '<b class="pyrun-job-title">' + esc(b.title || b.tab || '') + '</b>' +
+            '<span class="pyrun-job-whiff">' + esc(b.whiff || '') + '</span>' +
+            (doneJobs[b.id] ? '<span class="pyrun-job-tick">' + esc(cfg.doneTick || 'job done') + '</span>' : '') +
+            '</button>';
+        }).join('');
+        var c = el('<div class="card pyrun-hub">' +
+          '<span class="intro-kicker">' + esc(cfg.kicker || '') + '</span>' +
+          '<h2>' + esc(cfg.title || '') + '</h2>' +
+          '<p class="intro-lead">' + fmtBold(lead) + '</p>' +
+          '<div class="pyrun-jobs">' + jobs + '</div>' +
+          '<div class="rung-actions pyrun-exit-row">' +
+          '<button class="ghost-btn pyrun-finish" type="button">' + esc(finishLabel()) + '</button>' +
           '</div></div>');
         host.appendChild(c);
-        App.armButton(c.querySelector('.pyrun-take'), function () {
-          stretchTaken = true;
-          startBuild(sx);
+        c.querySelectorAll('.pyrun-job').forEach(function (btn) {
+          App.armButton(btn, function () {
+            var i = builds.findIndex(function (b) { return String(b.id) === btn.getAttribute('data-job'); });
+            if (i < 0) return;
+            at = i;
+            startBuild();
+          });
         });
-        App.armButton(c.querySelector('.pyrun-skip'), function () { done(); });
+        App.armButton(c.querySelector('.pyrun-finish'), function () { done(); });
       }
+      function finishLabel() { return cfg.finishLabel || 'Finish the lesson'; }
 
       function done() {
         var xp = Math.min(Number(cfg.firstTryXp || 0) * cleanFirst, Number(cfg.firstTryXpCap || 0));
@@ -3147,16 +3181,22 @@
            these keys but the server's idempotency check and the Live tab's raw
            ledger, both of which are better off with a name that says which
            activity it came from. */
-        var detail = (chunk.id || 'py') + '=' + cleanFirst + '/' + builds.length + (stretchDone ? '+s' : '');
-        if (stretchDone) xp += Number((cfg.stretch && cfg.stretch.xp) || 0);
+        var detail = (chunk.id || 'py') + '=' + cleanFirst + '/' + builds.length;
+        /* THE EXTRAS ZONE PAYS NOTHING AND RECORDS NOTHING (DFM 265a). No first-try
+           counting, no bonus, and a detail string that says only that she passed
+           through — the chunk carries no badge, so `finishChunk` takes the
+           no-badge branch and this never reaches the server at all. That is the
+           whole reason "Finish the lesson" is a free move at time-up: there is no
+           promise on this screen for leaving to break. */
+        if (cfg.extrasMode) { finishChunk(ctx, (chunk.id || 'extras') + '=extras', 0); return; }
         /* a STRING, for the reason spelled out on the snap desk's own call */
         finishChunk(ctx, detail, xp);
       }
 
-      function startBuild(stretchBuild) {
+      function startBuild() {
         host.innerHTML = '';
-        var isStretch = !!stretchBuild;
-        var b = stretchBuild || builds[at];
+        var isExtra = !!cfg.extrasMode;
+        var b = builds[at];
         var lines = b.lines || [];
         var placed = [];                 // source indices, in her order
         var vals = {};                   // blank key -> typed value
@@ -3187,7 +3227,10 @@
            moves with the shuffle. */
         var trayOrder = derangedOrder(lines.length);
 
-        var stepStrip = (!isStretch && builds.length > 1)
+        /* no step strip in the extras zone: three jobs in a row would read as a
+           sequence she has to finish, and the whole point is that she may do one,
+           or none, and leave whenever the room is told to finish */
+        var stepStrip = (!isExtra && builds.length > 1)
           ? '<div class="pyrun-steps">' + builds.map(function (x, i) {
               return '<span class="pyrun-step' + (i < at ? ' done' : (i === at ? ' now' : '')) + '">' +
                 esc(x.tab || String(i + 1)) + '</span>';
@@ -3209,8 +3252,21 @@
           '<button class="primary-btn pyrun-run" type="button" disabled>' + esc(cfg.runLabel || 'RUN my program') + '</button>' +
           '<div class="pyrun-console-host"></div>' +
           '<div class="pyrun-verdict" hidden></div>' +
+          /* DFM 265(c): THE WAY OUT IS ON EVERY SCREEN. Not on the hub only, and
+             not revealed once the job is finished — a pupil told "time up" is half
+             way through a tray, and that is exactly the screen the control has to
+             be on. Both controls are live from the moment the card mounts; neither
+             is ever disabled. */
+          (isExtra ? '<div class="rung-actions pyrun-exit-row">' +
+            '<button class="ghost-btn pyrun-back" type="button">' + esc(cfg.backLabel || 'Back') + '</button>' +
+            '<button class="ghost-btn pyrun-finish" type="button">' + esc(finishLabel()) + '</button>' +
+            '</div>' : '') +
           '</div>');
         host.appendChild(c);
+        if (isExtra) {
+          App.armButton(c.querySelector('.pyrun-back'), function () { hub(); });
+          App.armButton(c.querySelector('.pyrun-finish'), function () { done(); });
+        }
 
         var tray = c.querySelector('.pyt-list');
         var prog = c.querySelector('.pyp-list');
@@ -3400,26 +3456,36 @@
               esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
               '<p class="pyrun-vsay">' + esc(ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay) : (cfg.notYetSay || PY_SAY.notYetSay)) + '</p>';
             if (ok) {
-              /* the stretch tail never counts towards the core first-try score:
-                 its own XP is the price he set, and a pupil who declines it must
-                 not read as having done the lesson less well (DFM 165's no-loss
-                 invariant applied to the detail string as well as the points) */
-              if (attempts === 1 && !isStretch) cleanFirst++;
-              if (isStretch) stretchDone = true;
+              /* the extras zone counts nothing: no first-try score, no bonus, no
+                 record (DFM 265a). The tick a finished job earns is on the hub, for
+                 this sitting only, and it dies with the page. */
+              if (attempts === 1 && !isExtra) cleanFirst++;
               c.querySelectorAll('.pyrun-line').forEach(function (n) { n.disabled = true; });
               c.querySelectorAll('.pyrun-blank').forEach(function (n) { n.disabled = true; });
-              var lastCore = !isStretch && (at + 1 >= builds.length);
-              var moreLabel = isStretch ? (cfg.continueLabel || 'Continue')
-                : (lastCore
-                    ? (cfg.stretch ? (cfg.stretchNextLabel || 'Continue') : (cfg.continueLabel || 'Continue'))
-                    : (cfg.nextBuildLabel || 'Next build'));
+              if (isExtra) {
+                doneJobs[b.id] = true;
+                /* ONE back control, not two. The ghost that has been sitting in the
+                   exit row all along is PROMOTED to the primary action rather than a
+                   second button being added beside it — she has just finished the
+                   job, so going back to the list is the obvious next move, and a
+                   success screen carrying two identical buttons is clutter. The
+                   "Finish the lesson" ghost is untouched: both ways out stay live.
+                   The handler is not re-armed and does not need to be: it was armed
+                   BY CLASS at mount (DFM 143a — never "the first button in the
+                   card", the fault that killed "Start climbing" and then "Run the
+                   inspection again"), and only the class that styles it changes. */
+                var back = c.querySelector('.pyrun-back');
+                if (back) back.className = 'primary-btn pyrun-back';
+                return;
+              }
+              var lastCore = (at + 1 >= builds.length);
+              var moreLabel = lastCore ? (cfg.continueLabel || 'Continue')
+                                       : (cfg.nextBuildLabel || 'Next build');
               var go = el('<button class="primary-btn" type="button">' + esc(moreLabel) + '</button>');
               verdict.appendChild(go);
               App.armButton(go, function () {
-                if (isStretch) { done(); return; }
                 at++;
                 if (at < builds.length) startBuild();
-                else if (cfg.stretch) offerStretch();
                 else done();
               });
             } else {

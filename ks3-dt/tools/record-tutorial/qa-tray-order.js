@@ -84,6 +84,11 @@ function pyrunBuilds() {
         lesson: L.id, chunk: ch.id, build: b.id || ('builds[' + i + ']'),
         chunkJson: ch, index: i, stretch: false, lines: (b.lines || []).length
       }));
+      /* THE V54 STRETCH TAIL IS GONE (DFM 265, 26 Aug 2026). Its jobs live in an
+         `extras` chunk now, as ordinary entries in `builds`, which is why they are
+         already enumerated by the loop above and need nothing special here — K23's
+         law working as intended: derive the list, never type it. What DOES need
+         saying is how to reach one, and that is `trayOrder` below. */
       if (cfg.stretch) out.push({
         lesson: L.id, chunk: ch.id, build: cfg.stretch.id || 'stretch',
         chunkJson: ch, index: -1, stretch: true, lines: (cfg.stretch.lines || []).length
@@ -138,8 +143,18 @@ async function trayOrder(pg, chunk, buildIndex, stretch) {
       saveEvent: () => Promise.resolve({ ok: true }), markItem: () => Promise.resolve({ ok: true })
     });
     const wait = ms => new Promise(r => setTimeout(r, ms));
-    const open = host.querySelector('.intro-card button.primary-btn');
-    if (open) open.click();
+    await wait(40);
+    /* HOW A BUILD IS REACHED DEPENDS ON THE CHUNK (DFM 238a's law: recognising a
+       screen and being able to ACT on it are one fact). A core chunk opens on an
+       intro card with one button; the extras zone (DFM 265) opens on a HUB and the
+       job is behind its own button. Reading an empty tray and calling it a failed
+       derangement would be this gate reporting a fault the app does not have. */
+    const job = host.querySelector('.pyrun-hub .pyrun-job');
+    if (job) job.click();
+    else {
+      const open = host.querySelector('.intro-card button.primary-btn');
+      if (open) open.click();
+    }
     await wait(50);
     return Array.prototype.slice.call(host.querySelectorAll('.pyt-list .pyrun-line'))
       .map(n => Number(n.getAttribute('data-si')));

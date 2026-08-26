@@ -159,18 +159,31 @@ function detectKind() {
     if (q('.snap-block.picked')) return { kind: 'snap-try' };
     if (vis(q('.snap-block'))) return { kind: 'snap-pick' };
   }
-  /* THE OPTIONAL STRETCH OFFER (DFM 259, 25 Aug 2026). A card with two real
-     buttons and nothing else on it. It is taught to the DETECTOR and to the
-     MOVERS in the same edit, because DFM 238(a) is exactly the fault of doing
-     one without the other: six J2/J3 screens were once recognised and
-     unactionable, and every walker but sit-review stalled at the first room.
-     The right-path walker TAKES it (so the stretch content is really walked);
-     the confused-pupil walker DECLINES it (so the refusal is really exercised,
-     which is the half a stretch lives or dies on — K11d). */
-  if (q('.pyrun-offer-card')) {
-    if (vis(q('.pyrun-offer-card .pyrun-take'))) return { kind: 'pyrun-offer' };
+  /* THE EXTRA JOBS ZONE (DFM 265, 26 Aug 2026) — and the V54 stretch OFFER it
+     replaced, now deleted from this file along with the card it drove.
+     A detector that recognises a screen nothing renders any more is dead weight
+     that reads like coverage; `.pyrun-offer-card` exists in no engine and in no
+     lesson, so it goes in the same edit as the engine change.
+     WHAT REPLACES IT IS TAUGHT TO THE DETECTOR AND TO THE MOVERS TOGETHER,
+     because DFM 238(a) is exactly the fault of doing one without the other: six
+     J2/J3 screens were once recognised and unactionable, and every walker but
+     sit-review stalled at the first room.
+     The two walkers do OPPOSITE things here, and both halves matter (K11d):
+     the right-path walker takes every job and then finishes, so no job's card,
+     tray or verdict ever ships with nothing having stood on it; the
+     confused-pupil walker opens one, ABANDONS it half-built, and then presses
+     Finish the lesson from the hub — which is his own time-up scenario. */
+  if (q('.pyrun-hub')) {
+    const jobs = Array.prototype.slice.call(document.querySelectorAll('.pyrun-hub .pyrun-job'));
+    const left = jobs.filter(function (b) { return !b.querySelector('.pyrun-job-tick'); }).length;
+    return { kind: 'pyrun-hub', jobs: jobs.length, left: left };
   }
   if (q('.pyrun-card')) {
+    /* inside an extras job the way back is the exit row's own button, and after a
+       MATCH it is the one promoted to primary — so the verdict never carries a
+       primary button of its own there, and `pyrun-next` would find nothing */
+    const extraRow = q('.pyrun-card .pyrun-exit-row');
+    if (extraRow && vis(q('.pyrun-card .pyrun-back.primary-btn'))) return { kind: 'pyrun-job-done' };
     if (vis(q('.pyrun-verdict .primary-btn'))) return { kind: 'pyrun-next' };
     /* "THE TRAY IS NOT EMPTY" DOES NOT MEAN "STILL PLACING" (19 Aug 2026, found
        by the first real walk of j2-2). Parsons empties its tray, so tray-empty
@@ -190,9 +203,11 @@ function detectKind() {
     if (wantOrder) {
       const placed = Array.from(document.querySelectorAll('.pyp-list .pyrun-line'))
         .map(n => Number(n.getAttribute('data-si')));
-      if (wantOrder.some(si => placed.indexOf(Number(si)) === -1)) return { kind: 'pyrun-place' };
+      if (wantOrder.some(si => placed.indexOf(Number(si)) === -1)) {
+        return { kind: extraRow ? 'pyrun-extra-place' : 'pyrun-place' };
+      }
     } else if (q('.pyt-list .pyrun-line')) {
-      return { kind: 'pyrun-place' };
+      return { kind: extraRow ? 'pyrun-extra-place' : 'pyrun-place' };
     }
     const blank = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank'))
       .filter(vis).find(i => !i.value);
@@ -407,9 +422,24 @@ const MOVES = {
   },
   'pyrun-run': () => { const b = document.querySelector('.pyrun-run:not([disabled])'); if (b) b.click(); },
   'pyrun-next': () => { const b = document.querySelector('.pyrun-verdict .primary-btn'); if (b) b.click(); },
-  /* the expert TAKES the optional stretch — otherwise the tail's own card,
-     lines and verdict would ship with nothing having ever stood on them */
-  'pyrun-offer': () => { const b = document.querySelector('.pyrun-offer-card .pyrun-take'); if (b) b.click(); },
+  /* THE EXPERT TAKES EVERY EXTRA JOB, then leaves by the way out (DFM 265).
+     Otherwise three job cards, their trays and their verdicts would ship with
+     nothing having ever stood on them — and the walk would still print green,
+     because a zone nobody enters raises no findings. */
+  'pyrun-hub': () => {
+    const next = Array.prototype.slice.call(document.querySelectorAll('.pyrun-hub .pyrun-job'))
+      .find(function (b) { return !b.querySelector('.pyrun-job-tick'); });
+    if (next) { next.click(); return; }
+    const fin = document.querySelector('.pyrun-hub .pyrun-finish');
+    if (fin) fin.click();
+  },
+  'pyrun-job-done': () => { const b = document.querySelector('.pyrun-card .pyrun-back'); if (b) b.click(); },
+  /* an extras job is assembled EXACTLY as a core build is on the right path; the
+     kind is separate only so the CONFUSED pupil can behave differently in the
+     zone without touching how she behaves on a badged build (see WRONG_MOVES).
+     Aliased rather than copied — two copies of the placement rule would drift the
+     first time one of them was corrected (DFM 144). Assigned after the object is
+     built, at the foot of this file. */
 
   'q-opt': () => { const o = document.querySelector('.q-opt:not(:disabled)'); if (o) o.click(); },
   'q-next': () => { const b = document.querySelector('.q-feedback button'); if (b) b.click(); },
@@ -581,12 +611,38 @@ const MOVES = {
    offers: a decoy line the author put in the tray on purpose, a gap left empty,
    a number typed that is not the number asked for. */
 const WRONG_MOVES = {
-  /* THE REFUSAL. K11d's law is that a stretch which cannot be refused is not a
-     stretch, and a refusal nothing ever presses is a claim rather than a
-     behaviour. The confused pupil declines every offer, so "Finish here" really
-     finishing — no nagging, no second ask, nothing taken away — is walked on
-     every run rather than asserted in a comment. */
-  'pyrun-offer': () => { const b = document.querySelector('.pyrun-offer-card .pyrun-skip'); if (b) b.click(); },
+  /* THE REFUSAL, AND HIS TIME-UP SCENARIO, WALKED (DFM 265c, 26 Aug 2026).
+     K11d's law is that a stretch which cannot be refused is not a stretch, and a
+     refusal nothing ever presses is a claim rather than a behaviour. The V54
+     offer card had one button for that; the extras zone has two things to prove
+     instead, and this walker proves both on every run:
+       · she OPENS a job and ABANDONS it half-built, and the hub takes her back
+         with the job returned to its start (see `pyrun-extra-place` below);
+       · then she presses "Finish the lesson" from the hub — which is exactly
+         what he asked for: "the teacher says it's nearly time up and to finish —
+         how can they leave their current task". */
+  'pyrun-hub': () => {
+    const st = (window.__wpExtras = (window.__wpExtras || 0) + 1);
+    if (st === 1) {
+      const j = document.querySelector('.pyrun-hub .pyrun-job');
+      if (j) { j.click(); return; }
+    }
+    const fin = document.querySelector('.pyrun-hub .pyrun-finish');
+    if (fin) fin.click();
+  },
+  'pyrun-job-done': () => { const b = document.querySelector('.pyrun-card .pyrun-back'); if (b) b.click(); },
+  /* SHE GETS ONE LINE IN AND THEN WALKS OUT. That is the state DFM 265(c) is
+     about — not a finished job, a HALF-DONE one — and it is the only way to
+     prove the hub really puts it back to its start rather than remembering it. */
+  'pyrun-extra-place': () => {
+    const placed = document.querySelectorAll('.pyp-list .pyrun-line').length;
+    if (placed >= 1) {
+      const back = document.querySelector('.pyrun-card .pyrun-exit-row .pyrun-back');
+      if (back) { back.click(); return; }
+    }
+    const n = document.querySelector('.pyt-list .pyrun-line');
+    if (n) n.click();
+  },
 
   /* THE EMPTY GAP. J3's `blankEmptySay` refusal is the one control in either
      lesson that can be pressed before it is ready, so it is pressed. */
@@ -669,6 +725,7 @@ const SETTLE = {
   badge: 600, 'dossier-cta': 1100, confirm: 700, tour: 600, 'q-opt': 900, 'q-next': 700,
   'snap-pick': 350, 'snap-try': 750, 'snap-done': 700,
   'pyrun-place': 260, 'pyrun-blank': 220, 'pyrun-run': 2600, 'pyrun-next': 700,
+  'pyrun-hub': 700, 'pyrun-job-done': 700, 'pyrun-extra-place': 300,
   'case-pin': 900, 'case-log': 400, 'case-close': 1200, 'case-stamped': 700, 'case-wait': 700,
   'std-expand': 700, 'std-run': 700, 'std-outcome': 900, 'std-ready': 1200,
   'gal-review': 900, 'gal-write': 250, 'gal-file': 1200, 'gal-back': 700,
@@ -921,5 +978,8 @@ async function primeDevKeys(page, host) {
     };
   }, url);
 }
+
+/* ONE placement rule, two kinds pointing at it (see the note in MOVES). */
+MOVES['pyrun-extra-place'] = MOVES['pyrun-place'];
 
 module.exports = { detectKind, whereAmI, chunkNow, MOVES, WRONG_MOVES, SETTLE, ACTIONS, primeDevKeys };

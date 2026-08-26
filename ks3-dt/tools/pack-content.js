@@ -68,6 +68,18 @@ function validateLesson(src, file) {
    pupil-facing sentence, every build, with no way round it. A standard that
    depends on remembering it is not a standard (DFM 150), so the pack itself
    refuses to run when the harness fails. There is deliberately no skip flag. */
+/* ══ THE PACK'S OWN FAILURE MESSAGE MUST SURVIVE BEING READ (26 Aug 2026) ══
+   Every gate below prints its child's whole output and then exits, and that is
+   the message a person reads to know what to fix. `console.error` on a stderr
+   that is a PIPE — which is exactly what it is whenever a harness runs the pack
+   with spawnSync — is ASYNCHRONOUS, and `process.exit` does not wait for it: the
+   text is cut at the pipe's buffer, about 64KB, and the rest is thrown away.
+   Nothing said so. It surfaced when qa-year-folders' §5 control began failing:
+   the language gate really did name the planted `j9-01`, the pack really did
+   stop for that reason, and the gate reading the output could not see the line
+   because the log had grown past the cut. A gate condemning text it never
+   received is DFM 146a arriving through the plumbing rather than through a rule.
+   `fs.writeSync(2, …)` is synchronous, so the message is out before the exit. */
 function languageGate() {
   const harness = path.join(__dirname, 'record-tutorial', 'qa-language.js');
   if (!fs.existsSync(harness)) {
@@ -76,7 +88,7 @@ function languageGate() {
   }
   const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
   if (res.status !== 0) {
-    console.error((res.stdout || '') + (res.stderr || ''));
+    fs.writeSync(2, (res.stdout || '') + (res.stderr || '') + '\n');
     console.error('\nPACK STOPPED: the communication-of-language harness failed (DFM 172).');
     console.error('Fix the sentences, or record the read-aloud judgement, then pack again.');
     process.exit(1);
@@ -98,7 +110,7 @@ function xpCeilingGate() {
   }
   const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
   if (res.status !== 0) {
-    console.error((res.stdout || '') + (res.stderr || ''));
+    fs.writeSync(2, (res.stdout || '') + (res.stderr || '') + '\n');
     console.error('\nPACK STOPPED: a badge promises more XP than the deployed server will store (rule 35).');
     console.error('Lower the content\'s numbers — the server is not changed for this.');
     process.exit(1);
@@ -124,7 +136,7 @@ function trayOrderGate() {
   }
   const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
   if (res.status !== 0) {
-    console.error((res.stdout || '') + (res.stderr || ''));
+    fs.writeSync(2, (res.stdout || '') + (res.stderr || '') + '\n');
     console.error('\nPACK STOPPED: an assembly surface serves its answer in order (DFM 258).');
     process.exit(1);
   }
@@ -146,7 +158,7 @@ function deckShotGate() {
   }
   const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
   if (res.status !== 0) {
-    console.error((res.stdout || '') + (res.stderr || ''));
+    fs.writeSync(2, (res.stdout || '') + (res.stderr || '') + '\n');
     console.error('\nPACK STOPPED: a deck screenshot cannot prove which screen it shows (DFM 225b).');
     console.error('Re-capture it: node ks3-dt/tools/slides-deck/capture-deck-shots.js');
     process.exit(1);
@@ -168,7 +180,7 @@ function deckAnswerGate() {
   }
   const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
   if (res.status !== 0) {
-    console.error((res.stdout || '') + (res.stderr || ''));
+    fs.writeSync(2, (res.stdout || '') + (res.stderr || '') + '\n');
     console.error('\nPACK STOPPED: a slide carries a question or an answer a pupil is meant to work out (DFM 37).');
     process.exit(1);
   }
@@ -190,7 +202,7 @@ function briefShapeGate() {
   }
   const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
   if (res.status !== 0) {
-    console.error((res.stdout || '') + (res.stderr || ''));
+    fs.writeSync(2, (res.stdout || '') + (res.stderr || '') + '\n');
     console.error('\nPACK STOPPED: a teacher brief is not the shape he ruled (DFM 227).');
     process.exit(1);
   }
@@ -216,7 +228,7 @@ function auditGate() {
   }
   const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
   if (res.status !== 0) {
-    console.error((res.stdout || '') + (res.stderr || ''));
+    fs.writeSync(2, (res.stdout || '') + (res.stderr || '') + '\n');
     console.error('\nPACK STOPPED: a rule in DAMIEN_FEEDBACK_MASTER.md has no enforcement home.');
     console.error('Add its row to DFM_ENFORCEMENT_AUDIT.md (A harnessed / B judged / D standing');
     console.error('order / E his call / F gap), then pack again.');

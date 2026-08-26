@@ -86,14 +86,19 @@ const EXPECT = {
      shuffle cannot touch was identical on both runs and is pinned here. Pinning
      the 27 would have made this gate fail every other run for a reason that is
      the design working (DFM 199: pin only what does not move). */
-  /* RE-PINNED 25 Aug 2026 on the sit-fix round's evidence, measured twice:
-     three builds instead of one and the optional stretch TAKEN by the expert
-     walker. presses 8 -> 9 (the offer's own button), marks 7 -> 10 (two more
-     builds and the stretch, each a marking event). XP still not pinned, for the
-     unchanged reason below — and it now measures 66-67 rather than 28, because
-     the detail-key defect that was silently dropping this lesson's second badge
-     is fixed (see Engines.snap's finishChunk call). */
-  'j2-2': { chunks: 8, presses: 9, marks: 10, badges: 2 },
+  /* RE-PINNED 26 Aug 2026 on the extras-zone round's evidence, measured twice
+     and IDENTICAL both times. The V54 stretch OFFER is gone (DFM 265) and an
+     `extras` chunk stands in its place, so chunks 8 -> 9. The expert walker now
+     takes ALL THREE extra jobs and then leaves by "Finish the lesson", which is
+     where presses 9 -> 29 and marks 10 -> 12 come from: three jobs opened, each
+     one assembled, run and returned from, plus the way out. A zone nobody enters
+     would have printed green with three job cards nobody had ever stood on.
+     XP is still NOT pinned here, for the unchanged reason below (the snap desk
+     is shuffled, so how many pairs land first-try moves between runs) — and
+     nothing the extras zone does can move it anyway: the chunk carries no badge,
+     so it grants nothing and writes nothing (DFM 265a), which the record proves
+     by carrying `bureau=…;build=…` and no `extras` entry at all. */
+  'j2-2': { chunks: 9, presses: 29, marks: 12, badges: 2 },
   /* J3 Lesson 2, measured 19 Aug 2026, IDENTICAL on a second run — every number
      including XP, because this lesson has no shuffled surface: four builds, each
      driven from the same key to the same answer. */
@@ -106,7 +111,14 @@ const EXPECT = {
      Sheet Printed badge had never granted a point. The key is the chunk's own id
      now. The old 31 was a pinned shape agreeing with a fault, which is the
      failure mode DFM 199 warns about in its own words. */
-  'j3-2': { xp: 62, chunks: 8, presses: 9, marks: 11, badges: 2 }
+  /* RE-PINNED 26 Aug 2026, measured twice and IDENTICAL both times including XP.
+     chunks 8 -> 9 (the encore sheet is its own chunk now), presses 9 -> 28 and
+     marks 11 -> 13 (three jobs taken instead of one stretch), and **XP 62 -> 57**
+     — which is the five the encore used to pay, withdrawn by his own ruling
+     (DFM 265a). Nothing else moved: the record still reads
+     `callsheet-a=2/2;callsheet-b=2/2`, now without the `+s` tail and with no
+     `extras` entry, because the zone grants nothing and writes nothing. */
+  'j3-2': { xp: 57, chunks: 9, presses: 28, marks: 13, badges: 2 }
 };
 const OUT = path.join('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform',
   'qa-l2-l5-review', 'l' + NUM.toLowerCase() + (WHO === 'anya' ? '' : '-' + WHO));
