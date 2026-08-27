@@ -65,12 +65,13 @@
    "id": "j2-03",
    "num": 3,
    "title": "Chatbot Workshop",
-   "tagline": "You write a program that asks a question and answers you back.",
+   "tagline": "You write a program that asks a question, waits for the answer, and uses what was typed.",
    "block": "b2",
    "icon": "💬",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j2/lessons/j2-03.json"
   },
   {
    "id": "j2-04",

@@ -32,6 +32,9 @@ const index = {};
 lessons.forEach(L => L.strings.forEach(s => { index[s.path] = { text: s.text, kind: 'lesson' }; }));
 QL.collectHubStrings().strings.forEach(s => { index[s.path] = { text: s.text, kind: 'hub' }; });
 QL.collectBriefStrings(lessons).forEach(s => { index[s.path] = { text: s.text, kind: 'brief' }; });
+/* THE DECK TEXT TOO. It was missing here, so the one surface that is read from
+   the back of a room could only be recorded one node process at a time. */
+QL.collectDeckStrings().strings.forEach(s => { index[s.path] = { text: s.text, kind: 'deck' }; });
 const films = QL.collectFilmStrings();
 films.strings.forEach(f => {
   const key = QL.filmKey(f);

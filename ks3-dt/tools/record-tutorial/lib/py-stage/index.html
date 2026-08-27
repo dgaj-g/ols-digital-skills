@@ -42,6 +42,20 @@ html,body{width:1280px;height:720px;overflow:hidden;background:var(--navy);
 #conBody.err{color:var(--err)}
 #conBody .plain{display:block;margin-top:14px;font-family:"Segoe UI",system-ui,sans-serif;
   font-size:23px;color:var(--ink);line-height:1.5}
+#chat{background:#0B152B;border:1px solid var(--line);border-radius:14px;padding:22px 28px;min-height:170px}
+#chat h3{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  font-weight:700;margin-bottom:14px}
+#chatBody{display:flex;flex-direction:column;gap:11px}
+#chatBody .said{font-size:27px;line-height:1.45;padding:11px 18px;border-radius:14px;max-width:78%;
+  opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease}
+#chatBody .said.in{opacity:1;transform:none}
+#chatBody .said.bot{background:#16294F;border:1px solid #2E4A80;color:#DCE8FF}
+#chatBody .said.you{background:#3A2E06;border:1px solid var(--gold);color:#FFE9A8;align-self:flex-end}
+#chatBody .who{display:block;font-size:16px;letter-spacing:.08em;text-transform:uppercase;
+  font-weight:700;color:var(--muted);margin-bottom:4px}
+#chatWait{display:flex;align-items:center;gap:10px;margin-top:16px}
+#chatWait .wbar{width:11px;height:30px;background:var(--gold);border-radius:3px}
+#chatWait #waitSay{font-size:22px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700}
 .hidden{display:none!important}
 </style></head><body>
 <div id="stage">
@@ -52,6 +66,14 @@ html,body{width:1280px;height:720px;overflow:hidden;background:var(--navy);
   </div>
   <div class="panel hidden" id="progPanel"><h3 id="progLabel">Your program</h3><div id="prog"></div></div>
   <div id="con" class="hidden"><h3 id="conLabel">The console</h3><div id="conBody"></div></div>
+  <!-- THE CONVERSATION (J2 Lesson 3, 27 Aug 2026). The two Lesson 2 films never
+       needed one; a chatbot film needs nothing else. It is the same stage, with
+       one more panel, and neither Lesson 2 film calls any of it — so both render
+       exactly as they did (their scene files are untouched and qa-film-laws
+       re-reads them). -->
+  <div id="chat" class="hidden"><h3 id="chatLabel">The conversation</h3><div id="chatBody"></div>
+    <div id="chatWait" class="hidden"><span class="wbar"></span><span class="wbar"></span><span id="waitSay">waiting for an answer</span></div>
+  </div>
 </div>
 <script>
 (function(){
@@ -62,7 +84,8 @@ html,body{width:1280px;height:720px;overflow:hidden;background:var(--navy);
     ready:Promise.resolve(true),
     reset:function(){
       $('eyebrow').textContent='';show($('cols'),false);show($('progPanel'),false);
-      show($('con'),false);$('prog').innerHTML='';$('conBody').textContent='';
+      show($('con'),false);show($('chat'),false);show($('chatWait'),false);
+      $('chatBody').innerHTML='';$('prog').innerHTML='';$('conBody').textContent='';
       $('conBody').className='';$('blockImg').removeAttribute('src');$('pyline').textContent='';
     },
     eyebrow:function(t){$('eyebrow').textContent=t||''},
@@ -96,6 +119,17 @@ html,body{width:1280px;height:720px;overflow:hidden;background:var(--navy);
       var rows=$('prog').querySelectorAll('.row');
       for(var k=0;k<rows.length;k++)rows[k].classList.remove('lit');
     },
+    chatOpen:function(label){show($('chat'),true);$('chatLabel').textContent=label||'The conversation';
+      $('chatBody').innerHTML='';show($('chatWait'),false);},
+    say:async function(who,text,label){
+      var d=document.createElement('div');d.className='said '+(who==='you'?'you':'bot');
+      var w=document.createElement('span');w.className='who';w.textContent=label||(who==='you'?'The person typing':'The bot');
+      var t=document.createElement('span');t.textContent=text;
+      d.appendChild(w);d.appendChild(t);$('chatBody').appendChild(d);
+      await wait(40);d.classList.add('in');await wait(420);return true;
+    },
+    waiting:function(on,say){show($('chatWait'),!!on);if(say)$('waitSay').textContent=say;},
+    hideChat:function(){show($('chat'),false)},
     consoleOpen:function(label){show($('con'),true);$('conLabel').textContent=label||'The console';
       $('conBody').textContent='';$('conBody').className='';},
     print:async function(lines){
@@ -116,7 +150,9 @@ html,body{width:1280px;height:720px;overflow:hidden;background:var(--navy);
         rows:$('prog').querySelectorAll('.row').length,
         console:$('conBody').textContent.trim(),
         blockLoaded:!!($('blockImg').src&&$('blockImg').complete&&$('blockImg').naturalWidth>0),
-        python:$('pyline').textContent.trim()
+        python:$('pyline').textContent.trim(),
+        said:$('chatBody')?$('chatBody').querySelectorAll('.said').length:0,
+        waiting:$('chatWait')?!$('chatWait').classList.contains('hidden'):false
       };
     }
   };

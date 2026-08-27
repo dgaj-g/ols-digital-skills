@@ -151,7 +151,26 @@ const MACHINE_KEYS = new Set([
      judgement on either would have had someone write a judgement of a filename,
      which is a gate inventing work (DFM 146a). The zone's PUPIL sentence is
      `rule` / `clearSay` / `okSay`, and all three are checked. */
-  'art', 'breaks'
+  'art', 'breaks',
+  /* RUNNER v2 / THE PAIRED SET-PIECES (26 Aug 2026). Six more fields that are
+     machine values a pupil never reads, added with the SAME test the ones above
+     were added with: grep the shell for where the field reaches a screen, and
+     exempt it only when the answer is nowhere.
+       `who`     the briefing demo's speaker flag — 'bot' or 'you'. What she
+                 READS is the row's `label`, which is walked in full.
+       `slot`    the placeholder inside a code line ('____'), replaced by her
+                 own typing before anything renders.
+       `key`     a blank's internal name, used to join a gap to what she typed.
+       `probe`   / `mark` / `head` — how the feature checker OBSERVES a run.
+                 What she reads is the feature's `label` and its `nudge`.
+       `saveAs`  where her finished program is kept for the next chunk.
+       `probeAnswers` the fixed answers the silent checking pass types in. She
+                 never sees them; they exist so the checklist says the same
+                 thing every time she presses RUN.
+     Demanding a read-aloud judgement of 'bot' or 'QQTESTONE' would be the gate
+     inventing work (DFM 146a), and every one of these has a pupil-facing twin
+     that IS judged. */
+  'who', 'slot', 'key', 'probe', 'mark', 'saveAs', 'probeAnswers', 'introVideo', 'exitFace', 'head'
 ]);
 /* Order-bearing contracts: a wording change here can silently break an answer
    key, so they are checked by the LEXICON only - never by shape rules, and they
@@ -1102,7 +1121,17 @@ const FILM_MAP = {
      J2's own spine teaches the word "variable" — so this entry is what makes
      that claim checkable rather than asserted. */
   'j2-l2': { lesson: 'j2-02', chunkId: 'film' },
-  'j3-l2': { lesson: 'j3-02', chunkId: 'film' }
+  'j3-l2': { lesson: 'j3-02', chunkId: 'film' },
+  /* THE FOUR LESSON 3 FILMS (27 Aug 2026). Each lesson's film is served in TWO
+     PARTS at its own concept seam (DFM 168), each part a physically separate
+     file (DFM 170), so each half gets its own entry naming the chunk where a
+     pupil is actually handed it. J2's part B lands on `mybot`, the card where
+     she starts writing her own bot, because that is where what it shows is next
+     needed; J3's part B is a chunk of its own between the Match and the builds. */
+  'j2-l3': { lesson: 'j2-03', chunkId: 'film-a' },
+  'j2-l3-b': { lesson: 'j2-03', chunkId: 'mybot', sceneOf: 'j2-l3' },
+  'j3-l3': { lesson: 'j3-03', chunkId: 'film-a' },
+  'j3-l3-b': { lesson: 'j3-03', chunkId: 'film-b', sceneOf: 'j3-l3' }
 };
 /* Extra constants the extractor may resolve, beyond the ones it harvests
    from the file itself. Extend this the day a scene needs one. */

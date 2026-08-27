@@ -992,12 +992,12 @@
      part of what made this tab unreadable). Never rejects: a lesson with no
      content file yet still renders its progress column. */
   function lessonFeaturesFor(le) {
-    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null };
+    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null, builds: [] };
     if (!le || !le.file) return Promise.resolve(blank);
     var id = String(le.id);
     if (!liveFeatureCache[id]) {
       liveFeatureCache[id] = App.fetchContent(le.file).then(function (lesson) {
-        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null };
+        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null, builds: [] };
         (lesson.chunks || []).forEach(function (ch) {
           var cfg = ch.config || {};
           if (cfg.paired) f.paired = true;
@@ -1015,6 +1015,29 @@
           }
           if (ch.engine === 'studio' && cfg.phase === 'build') {
             f.studio = { title: String(cfg.introTitle || ch.title || 'The Studio Sprint') };
+          }
+          /* ═══ §F1 — THE LIVE TAB SHOWS THE BUILDING ═══
+             The planning audit's confirmed gap: `pyrun`, `snap`, `duel` and
+             `chatswap` all write a per-chunk record into the pupil's detail
+             ledger — `build=3/3`, `bureau=6/6`, `callsheet-a=2/2`,
+             `match=6/6` — and NOTHING on the teacher's screen ever read one.
+             A teacher watching a Python lesson saw a warm-up column, one exit
+             question and a self-rating, and nothing at all about the code the
+             class spent the hour writing. That is DFM 156(c) exactly — the
+             shape the casework and studio columns were built to close, left
+             open for every lesson that is not L4 or L5.
+             DETECTED FROM CONTENT AND NAMED BY THE CHUNK'S OWN TITLE, so a
+             lesson written next year inherits its column the day it exists
+             (DFM 156b/206) — and year-agnostic by construction, because it
+             reads chunks rather than lesson numbers (DFM 240). A chunk with no
+             BADGE writes nothing to the server, so it is not offered a column
+             it could never fill. */
+          if (['pyrun', 'snap', 'duel', 'chatswap'].indexOf(ch.engine) !== -1 && ch.badge && !cfg.extrasMode) {
+            f.builds.push({
+              id: String(ch.id),
+              title: String(cfg.title || ch.title || ch.id),
+              engine: String(ch.engine)
+            });
           }
           if (ch.engine === 'tournament') f.tournament = { title: String(cfg.title || ch.title || 'Tournament') };
           if (ch.engine === 'gallery') f.gallery = { title: String(ch.title || 'Press Night') };
@@ -1310,6 +1333,34 @@
       '</span>';
   }
 
+  /* One build chunk, read off the detail ledger by its own chunk id. Every one
+     of the four engines writes `<chunkId>=n/d`, and pyrun's may carry a `+s`
+     tail when a refusable extra build was taken (DFM 263's law: the key IS the
+     chunk id, unique inside a lesson by construction). */
+  function buildCell(a, b) {
+    var s = detailOf(a);
+    var m = new RegExp('(?:^|;)' + b.id.replace(/[^A-Za-z0-9_-]/g, '') + '=(\\d+)/(\\d+)(\\+s)?(?:;|$)').exec(s);
+    if (!m) return NOT_STARTED;
+    var fr = { n: Number(m[1]), d: Number(m[2]) };
+    var took = !!m[3];
+    var say;
+    if (b.engine === 'chatswap') {
+      say = [fr.n + ' of the ' + fr.d + ' parts of the Swap done — the bot handed over, the partner’s bot tested, ' +
+             'the report filed, and the Swap sealed. It pays the same however the bot behaved.'];
+    } else if (b.engine === 'duel') {
+      say = [fr.n + ' of ' + fr.d + ' rounds played. It pays for playing, never for being right — ' +
+             'how many she predicted correctly is private to her and her opponent.'];
+    } else {
+      say = [fr.n + ' of ' + fr.d + ' cleared first time.'];
+      say.push(fr.n === fr.d
+        ? 'Every one right on the first run.'
+        : 'The rest were cleared eventually — a wrong run costs nothing and RUN can be pressed as often as it takes.');
+      if (took) say.push('The refusable extra build was taken. It is worth no points.');
+    }
+    return '<span class="lc-actwrap" title="' + App.esc(say.join(' ')) + '">' + actCount(fr) +
+      (took ? ' <span class="lc-stretch">&#11088;</span>' : '') + '</span>';
+  }
+
   function activityCell(a, feat) {
     if (feat.casework) return caseworkCell(a);
     if (feat.studio) return studioCell(a);
@@ -1348,21 +1399,68 @@
      instant. Rule 42 - no silent waits - so the picker now stays on screen with
      the lesson NAMED as it loads, and only the part that is actually changing
      goes blank. */
+  /* THE DIAGNOSTIC LESSON, FOUND BY WHAT IT CONTAINS. Returns the delivered
+     lesson whose own content declares a baseline, or null when this class has
+     not delivered one yet — in which case the Baseline column simply has
+     nothing to show, which is the truth rather than a J1 lookup that happened
+     to work. Memoised per class snapshot, because it costs a content fetch per
+     delivered lesson on a cold cache (DFM 156f's law: test it COLD). */
+  var baselineMemo = null, baselineMemoKey = '';
+  /* §F4 — WHAT THE GUIDE IS ALLOWED TO CALL IT.
+     The Guide tab told every teacher in the school that the extra panel under
+     Misconception patterns is "The Licence Exam", on "Lesson 1". That is J1's
+     name for J1's diagnostic: J2's is the Skills Snapshot and J3's is Portfolio
+     Zero, and none of the three is guaranteed to sit in lesson one (DFM 240 —
+     a lesson's number is not its identity). The name is NOT copied into a table
+     here: it stays the one fact it already is, `cfg.staffTitle` in the lesson's
+     own content, and this is only the last answer the Live tab's own lookup
+     gave, remembered so a synchronous render can use it (DFM 144). Until it is
+     known the sentence says something true of every year and names nothing. */
+  var baselineFacts = null;
+  function baselineLessonFor(delivered) {
+    var k = (dashData && dashData.cls ? dashData.cls : '') + '|' + delivered.join(',');
+    if (baselineMemo && baselineMemoKey === k) return baselineMemo;
+    baselineMemoKey = k;
+    baselineMemo = Promise.all(delivered.map(function (n) {
+      return lessonFeaturesFor(liveByNum[n]).then(function (f) { return { n: n, f: f }; });
+    })).then(function (all) {
+      for (var i = 0; i < all.length; i++) {
+        if (all[i].f && all[i].f.baseline) {
+          var hit = { feat: all[i].f, le: liveByNum[all[i].n], num: all[i].n };
+          baselineFacts = { title: String(hit.feat.baseline.title || ''), num: String(hit.num) };
+          return hit;
+        }
+      }
+      return null;
+    });
+    return baselineMemo;
+  }
+
   function renderLiveTable() {
     var le = liveByNum[liveLessonNum];
     /* Lesson 1's content and keys come too, whatever lesson is showing: the
        Baseline column is on every view and its hover names the questions she
        got wrong, which needs the Licence Exam's own answer key. Both are cached
        after the first fetch. */
-    var l1 = liveByNum['1'];
-    Promise.all([
-      lessonFeaturesFor(le),
-      (le && le.id) ? getKeyinfo(le.id) : Promise.resolve(null),
-      lessonFeaturesFor(l1),
-      (l1 && l1.id) ? getKeyinfo(l1.id) : Promise.resolve(null)
-    ]).then(function (res) {
-      if (String(liveLessonNum) !== String(le ? le.num : '')) return;  // he changed it while we fetched
-      paintLive(le, res[0], res[1], { feat: res[2], keys: res[3] });
+    /* ═══ §F3 — A LESSON'S NUMBER IS NOT ITS IDENTITY (DFM 240) ═══
+       This line read `liveByNum['1']`: the diagnostic lesson fetched by the
+       literal number one. It has been correct only because all three years
+       happen to put their diagnostic in lesson 1 — the same coin-toss DFM 240
+       found in the brief's Print-the-delivery-script button, and the exact
+       thing the comment at staff.js:345 warns about. The CSV three hundred
+       lines below already had the honest rule: scan the DELIVERED lessons for
+       the one whose content carries `feat.baseline`. One fact, one rule
+       (DFM 144), and now both readers use it. */
+    baselineLessonFor(deliveredNumsOf(dashData)).then(function (bl) {
+      Promise.all([
+        lessonFeaturesFor(le),
+        (le && le.id) ? getKeyinfo(le.id) : Promise.resolve(null),
+        Promise.resolve(bl ? bl.feat : null),
+        (bl && bl.le && bl.le.id) ? getKeyinfo(bl.le.id) : Promise.resolve(null)
+      ]).then(function (res) {
+        if (String(liveLessonNum) !== String(le ? le.num : '')) return;  // he changed it while we fetched
+        paintLive(le, res[0], res[1], { feat: res[2], keys: res[3] });
+      });
     });
   }
 
@@ -1410,6 +1508,7 @@
       var warm = (a && Number(a[10]) > 0) ? (Number(a[9]) + '/' + Number(a[10])) : '&mdash;';
       var cells = '';
       if (act) cells += '<td class="lc-mark">' + activityCell(a, feat) + '</td>';
+      (feat.builds || []).forEach(function (b) { cells += '<td class="lc-mark">' + buildCell(a, b) + '</td>'; });
       if (showExit) cells += exitItems.map(function (it, i) { return '<td class="lc-mark">' + exitGlyph(a && a[3], i, it.id, keyItems) + '</td>'; }).join('');
       if (showPuzzle) cells += '<td class="lc-mark">' + puzzleGlyph(a) + '</td>';
       if (se) cells += '<td class="lc-mark">' + selfEvalGlyphs(a) + '</td>';
@@ -1493,6 +1592,9 @@
       '<th title="Points earned across the whole year, not just this lesson.">XP</th>' +
       '<th>Baseline</th><th>Progress</th><th>Warm-up</th>' +
       (act ? '<th>' + App.esc(act.title) + '</th>' : '') +
+      (feat.builds || []).map(function (b) {
+        return '<th title="' + App.esc(b.title) + '">' + App.esc(b.title) + '</th>';
+      }).join('') +
       (showExit ? exitItems.map(function (it, i) { return '<th title="' + App.esc(String(it.stem || '')) + '">Q' + (i + 1) + '</th>'; }).join('') : '') +
       (showPuzzle ? '<th>Build puzzle</th>' : '') +
       (se ? '<th>How did it go?</th>' : '') +
@@ -1598,6 +1700,32 @@
         '&mdash; still a closed case). <span class="lc-ship">&#128674;</span> means the fixed game reached her ' +
         'Drive' + (feat.casework.stretch ? '; <span class="lc-stretch">&#11088;</span> means she took the stretch job too' : '') + '.</p>');
     }
+    /* §F1's own legend. His standing law (DFM 156c): a number on a staff screen
+       with no key beside it is unreadable, so the column and the sentence that
+       explains it ship in the same commit. Each build is named by its own
+       title, because "3/3" over a heading a teacher has never seen is exactly
+       the fault this is fixing. */
+    (feat.builds || []).forEach(function (b) {
+      if (b.engine === 'chatswap') {
+        out.push('<p>The <b>' + App.esc(b.title) + '</b> column is the paired part of the hour: how many of its ' +
+          'four parts she got through &mdash; her bot handed over, her partner&rsquo;s bot tested, her report ' +
+          'filed, and the Swap sealed. <b class="lc-act all">4/4</b> is the whole thing. It pays a flat amount ' +
+          'for taking part and is <b>never</b> scored on how anybody&rsquo;s bot behaved, so a bot that fell ' +
+          'over does not show here as a failure. <span class="lc-dash">&ndash;</span> means she never reached it.</p>');
+      } else if (b.engine === 'duel') {
+        out.push('<p>The <b>' + App.esc(b.title) + '</b> column is how many of the six rounds she played. ' +
+          '<b class="lc-act all">6/6</b> is all of them. It pays for playing and never for being right: how many ' +
+          'she predicted correctly is private to her and the pupil she played, and it is not stored anywhere. ' +
+          '<span class="lc-dash">&ndash;</span> means she never reached it.</p>');
+      } else {
+        out.push('<p>The <b>' + App.esc(b.title) + '</b> column is the code she wrote: how many of its builds ' +
+          'she got right <b>on the first run</b>. <b class="lc-act all">3/3</b> means every one first time; ' +
+          '<b class="lc-act some">1/3</b> means the rest took more than one go, which costs her nothing and is ' +
+          'how programming is learned; <span class="lc-dash">&ndash;</span> means she has not started it. Hover ' +
+          'a number to read what happened. <span class="lc-stretch">&#11088;</span> means she also took the ' +
+          'refusable extra build, which is worth no points.</p>');
+      }
+    });
     if (feat.studio) {
       out.push('<p>The <b>' + App.esc(feat.studio.title) + '</b> column is her own game: how many of its QA tests ' +
         'passed. She cannot open her doors to the gallery until all four are green, so ' +
@@ -2284,6 +2412,11 @@
       delivered.forEach(function (n, i) {
         var f = feats[i] || {};
         head.push(pre(n) + ' status', pre(n) + ' exit');
+        /* §F1 on the export surface. DFM 157(f) is explicit that a CSV is a
+           stat surface and DFM 147 that a sweep reaches every surface that ever
+           SHOWS the thing — so the column the table just gained is here too,
+           under the chunk's own title rather than its storage key. */
+        (f.builds || []).forEach(function (b) { head.push(pre(n) + ' ' + b.title); });
         if (f.parsons) head.push(pre(n) + ' build puzzle');
         head.push(pre(n) + ' how did it go', pre(n) + ' how it felt', pre(n) + ' comment');
       });
@@ -2303,6 +2436,12 @@
             if (rc) exitTxt = rc.right + '/' + rc.total;
           }
           line.push(exitTxt);
+          /* the same numbers the table shows, in the same order as the header */
+          (f.builds || []).forEach(function (b) {
+            var bm = new RegExp('(?:^|;)' + b.id.replace(/[^A-Za-z0-9_-]/g, '') + '=(\\d+)/(\\d+)(\\+s)?(?:;|$)')
+              .exec(String((a && a[2]) || ''));
+            line.push(bm ? (bm[1] + '/' + bm[2] + (bm[3] ? ' + extra build' : '')) : '');
+          });
           if (f.parsons) {
             var m = /(?:^|;)ep=([01])(?:;|$)/.exec(String((a && a[2]) || ''));
             line.push(m ? (m[1] === '1' ? 'right' : 'not right') : '');
@@ -2885,7 +3024,27 @@
     renderGuideBody();
   }
 
+  /* the one sentence in the Guide that has to know which year is reading it */
+  function baselineSentence() {
+    if (baselineFacts && baselineFacts.title) {
+      return 'On Lesson ' + App.esc(baselineFacts.num) + ' one more panel sits underneath: <b>' +
+        App.esc(baselineFacts.title) + '</b>, question by question &mdash; which answers the class ' +
+        'chose in September, with the correct answer named on each.';
+    }
+    return 'On whichever lesson carries your class&rsquo;s baseline check &mdash; each year has its ' +
+      'own, with its own name and its own length &mdash; one more panel sits underneath: that check, ' +
+      'question by question, showing which answers the class chose in September with the correct ' +
+      'answer named on each.';
+  }
+
   function renderGuideBody() {
+    /* if the Live tab has already worked out which lesson holds the baseline,
+       say its real name; if not, ask, and come back once when the answer lands */
+    if (!baselineFacts && dashData && liveByNum && Object.keys(liveByNum).length) {
+      baselineLessonFor(deliveredNumsOf(dashData)).then(function (bl) {
+        if (bl && curTab === 'guide') renderGuideBody();
+      });
+    }
     var isHod = !!(classesData && Number(classesData.isHod));
     var archiveUrl = (classesData && classesData.archiveUrl) || '';
     var vid = App.asset(GUIDE_VIDEO);
@@ -3022,14 +3181,13 @@
       'together, so nobody is left partnerless by accident. <b>Match everyone waiting now</b> pairs the ' +
       'whole queue at once, and <b>Reset pairing</b> &mdash; which asks twice &mdash; releases every pair ' +
       'to finish alone; released pairs cannot be re-paired. A lesson with a class tournament shows its ' +
-      '<b>Tournament view</b> launch row here, and Lesson 5&rsquo;s Press Night gallery brings its own ' +
-      'review panel.</p>' +
+      '<b>Tournament view</b> launch row here, and a lesson that ends in a gallery &mdash; J1&rsquo;s ' +
+      'Press Night is the one built so far &mdash; brings its own review panel.</p>' +
       '<p><b>Misconception patterns</b>, at the bottom, follows the same Showing menu: for each exit-check ' +
       'question of the lesson you are viewing, it shows which wrong answers the class actually chose ' +
       '&mdash; each one labelled with the misunderstanding it usually signals, so you know what to ' +
-      're-teach and to whom. On Lesson 1 one more panel sits underneath: <b>The Licence Exam</b>, ' +
-      'question by question &mdash; which answers the class chose in September, with the correct answer ' +
-      'named on each. Hover over a pupil&rsquo;s Baseline score in the table to see which question ' +
+      're-teach and to whom. ' + baselineSentence() +
+      ' Hover over a pupil&rsquo;s Baseline score in the table to see which question ' +
       'numbers she got wrong.</p>' +
 
       '<h4>Absence</h4><p>A short list that is usually empty &mdash; and that is the good news it is ' +

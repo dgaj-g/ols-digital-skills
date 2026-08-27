@@ -1,0 +1,930 @@
+{
+ "id": "j3-03",
+ "year": "j3",
+ "num": 3,
+ "title": "Playlist Engine",
+ "tagline": "One name holds a whole set of things, and you write the program that manages them.",
+ "mode": "taught",
+ "durationMin": 60,
+ "objectives": [
+  "Make a list, and get one thing out of it by its position.",
+  "Add to a list, take something out of it, and put it in order.",
+  "Read a few lines of Python that use a list, and say what they will print."
+ ],
+ "chunks": [
+  {
+   "id": "callroom",
+   "engine": "briefing",
+   "title": "The Playlist Engine",
+   "minutes": 4,
+   "config": {
+    "clearance": "J3 · LESSON 3 OF 17",
+    "headline": "One name. A whole set of things inside it.",
+    "lines": [
+     "Last lesson every box held one thing: one name, one price, one number of seats. Today one box holds a whole set of things, in an order you decide. Python calls it a LIST.",
+     "The Studio's running order is a list. So is a seating plan, a cast, a shopping order and the set of songs a show plays between scenes. Once a set of things has one name, you can count it, add to it, take things out of it and put it in order — all without typing any of it out again.",
+     "**No music plays in this lesson, and none of these songs exist as sound.** A playlist here is a set of song TITLES you type, and the program you write manages the titles. Nothing you build today makes a noise.",
+     "You already have everything you need to start. A list is made the same way a box is made: a name, an = sign, and what goes in it. The only new part is what goes on the right of the =.",
+     "Here is the hour, in order.",
+     "First a short film with no sound, about six minutes, that shows a list as a rack of numbered boxes.",
+     "Then the Prediction Match. Somebody else in this room, at another computer, sees the same few lines of Python as you at the same moment. You both write down what you think it will print, you both lock it in, and then the code really runs.",
+     "You are not told who they are until the Match ends. You each get a call sign instead — a made-up name, like Director 3 — and that is the name on their screen and yours.",
+     "Then a second short film, then three builds where the program is finished for you less and less.",
+     "Then twelve minutes on your own Playlist Engine, with five songs you choose yourself.",
+     "It finishes with two short closing screens and a screen that asks you how the hour went."
+    ],
+    "cta": "Start the film",
+    "help": "This card types itself out. Read it through — your teacher may be reading it with the class — then click the button at the bottom. Nothing on this screen is marked."
+   }
+  },
+  {
+   "id": "film-a",
+   "engine": "video",
+   "title": "A list is a rack of boxes (the film)",
+   "minutes": 6,
+   "config": {
+    "src": "assets/video/j3/j3-l3-a.mp4",
+    "intro": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is in four parts, and you can click the buttons underneath to jump to any part while you are on this screen.",
+    "fallback": "If the film will not play, carry on — everything it shows is on the cards that come next, in writing. Tell whoever is in the room that the film would not play.",
+    "chapters": [
+     {
+      "t": 0,
+      "label": "One box, then a rack of them"
+     },
+     {
+      "t": 57,
+      "label": "Counting starts at 0"
+     },
+     {
+      "t": 113,
+      "label": "How many are in there?"
+     },
+     {
+      "t": 158,
+      "label": "Adding one on the end"
+     }
+    ],
+    "help": "Press play, or click one of the part buttons underneath the film to jump to that part. Everything the film shows is written again on the cards that follow, so you do not need to come back to it. Nothing here is marked."
+   }
+  },
+  {
+   "id": "match",
+   "engine": "duel",
+   "title": "The Prediction Match",
+   "minutes": 11,
+   "badge": {
+    "id": "j3-b7",
+    "name": "Prediction Match",
+    "icon": "assets/badges/id.png",
+    "xp": 12
+   },
+   "config": {
+    "kicker": "The Prediction Match",
+    "title": "Say what the code will do, before it does it",
+    "intro": "Reading code and knowing what it will do is a bigger skill than writing it, and the only way to practise it is to commit before you find out.\n\nSix rounds. Somebody else in this room sees the same few lines as you, at the same moment. You each write down what you think it will print, you both lock it in, and then the code really runs on this screen.\n\n**Getting one right is worth no points and getting one wrong costs you nothing.** The Match pays the same whatever you predict, as long as you play all six rounds. Being right is between you and your opponent.",
+    "steps": [
+     "You are given a **call sign** — a made-up name like Director 3. That is the only name your opponent sees, and theirs is the only one you see.",
+     "Both screens show the same code. You each pick what you think it prints and lock it in.",
+     "The code really runs, and both predictions sit beside the real answer.",
+     "**Rounds 5 and 6 are on things nobody has taught you yet.** They say so before you see them, and they are worth nothing either way."
+    ],
+    "beginLabel": "Take my seat",
+    "finishLabel": "Nearly time up? Click here to finish the rest of the lesson.",
+    "sideAfterMs": 8000,
+    "rounds": [
+     {
+      "id": "r1",
+      "ask": "What will this print, exactly?",
+      "lead": "A whole list, printed in one go. Look closely at what Python puts round it.",
+      "code": [
+       "playlist = [\"Opening Night\", \"Curtain Up\", \"Last Bus Home\"]",
+       "print(playlist)"
+      ],
+      "options": [
+       "['Opening Night', 'Curtain Up', 'Last Bus Home']",
+       "Opening Night Curtain Up Last Bus Home",
+       "Opening Night\nCurtain Up\nLast Bus Home",
+       "playlist"
+      ],
+      "teach": "Printing the whole list prints it the way Python writes a list down: square brackets round the outside, commas between, and speech marks round every title. It is one thing with one name, and that is what it looks like when you ask to see all of it."
+     },
+     {
+      "id": "r2",
+      "ask": "What will this print, exactly?",
+      "lead": "One box out of the rack. Count carefully, then type exactly what you think appears.",
+      "code": [
+       "playlist = [\"Opening Night\", \"Curtain Up\", \"Last Bus Home\"]",
+       "print(playlist[1])"
+      ],
+      "teach": "Counting starts at 0, so playlist[0] is Opening Night and playlist[1] is Curtain Up. The number in the square brackets is a POSITION, never a count — this is the single thing people get wrong most often, all year."
+     },
+     {
+      "id": "r3",
+      "ask": "What will this print, exactly?",
+      "lead": "A number this time.",
+      "code": [
+       "playlist = [\"Opening Night\", \"Curtain Up\", \"Last Bus Home\"]",
+       "print(len(playlist))"
+      ],
+      "options": [
+       "3",
+       "2",
+       "['Opening Night', 'Curtain Up', 'Last Bus Home']",
+       "len"
+      ],
+      "teach": "len( ) counts how many things are in the list, so it says 3. The last POSITION is 2, because counting starts at 0 — the count and the last position are always one apart, and mixing them up is what causes most list errors."
+     },
+     {
+      "id": "r4",
+      "ask": "What will this print, exactly?",
+      "lead": "Two lines that look similar and do completely different things.",
+      "code": [
+       "playlist = [\"Opening Night\", \"Curtain Up\"]",
+       "playlist.append(\"Last Bus Home\")",
+       "print(len(playlist))"
+      ],
+      "options": [
+       "3",
+       "1",
+       "2",
+       "Last Bus Home"
+      ],
+      "teach": ".append( ) adds a new thing on the END and leaves everything already there alone, so the list grows from 2 to 3. That is the difference between adding and replacing: playlist = [\"Last Bus Home\"] would have thrown the other two away and left one."
+     },
+     {
+      "id": "r5",
+      "guess": true,
+      "ask": "Have a guess. What will this print?",
+      "lead": "Nobody has shown you this yet. Look at it, decide what you think happens, and lock it in.",
+      "code": [
+       "playlist = [\"Opening Night\", \"Curtain Up\", \"Last Bus Home\"]",
+       "for song in playlist:",
+       "    print(song)"
+      ],
+      "options": [
+       "Opening Night\nCurtain Up\nLast Bus Home",
+       "['Opening Night', 'Curtain Up', 'Last Bus Home']",
+       "song song song",
+       "Opening Night"
+      ],
+      "teach": "This is a LOOP. It takes the list one thing at a time, puts each one into a box called song, and runs the indented line underneath once for each of them. Three titles in the list means three trips round, and three printed lines. You build one of these yourself in about ten minutes."
+     },
+     {
+      "id": "r6",
+      "guess": true,
+      "ask": "Have a guess. What will this print?",
+      "lead": "Nobody has shown you this either, and this one catches nearly everybody.",
+      "code": [
+       "playlist = [\"Curtain Up\", \"Opening Night\"]",
+       "answer = playlist.sort()",
+       "print(answer)"
+      ],
+      "options": [
+       "None",
+       "['Opening Night', 'Curtain Up']",
+       "['Curtain Up', 'Opening Night']",
+       "Opening Night"
+      ],
+      "teach": "This is the trap. .sort( ) really does put the list in order — but it does it to the list ITSELF and hands nothing back. So the box called answer gets None, which is Python's word for nothing at all. Sort the list, then print the LIST. The second film says the same thing again, now that you have watched it happen."
+     }
+    ],
+    "guessTag": "GUESS ROUND",
+    "guessSay": "Nobody has taught you this yet. Have a guess: no points either way, and the answer will teach you.",
+    "lockLabel": "Lock in my prediction",
+    "lockedNote": "Pick one, then lock it in. Nothing is shown until you do.",
+    "emptySay": "Pick one of the answers first, then lock it in.",
+    "typedLabel": "Type exactly what you think it will print",
+    "waitSay": "Your prediction is locked. Waiting for {signs}…",
+    "soloWaitSay": "Your prediction is locked. Running the code…",
+    "runningSay": "Running the code for real…",
+    "realTitle": "What it really printed",
+    "meWho": "You",
+    "noCommitSay": "(no prediction in time)",
+    "timeoutSay": "Your opponent did not lock one in, so the code has run anyway. Nothing is lost.",
+    "nextLabel": "Next round",
+    "lastLabel": "See how you did",
+    "revealArrivedSay": "The code has run.",
+    "sealingSay": "Closing the Match…",
+    "sealKicker": "MATCH OVER",
+    "sealTitle": "That is all six rounds.",
+    "scoreSay": "You were right before the reveal on **{right} of the {of}** scored rounds. That number is between you and your opponent — it is not posted anywhere.",
+    "revealSay": "You were playing against **{names}**.",
+    "sealSay": "The two rounds at the end were on things nobody had shown you. You have now watched both of them happen, which is a better way to meet a loop than being told about one.",
+    "doneLabel": "Continue",
+    "limitMs": 4000,
+    "words": {
+     "signPrefix": "",
+     "openingHead": "Opening the studio…",
+     "openingSay": "Checking who else in your class is ready to play right now…",
+     "waitHead": "Waiting for somebody to play against.",
+     "waitSay": "You are in the queue. The website is waiting for somebody else in your class to reach this screen. The moment one does, the two of you are matched and this screen changes by itself. Nothing is wrong: stay on this screen.",
+     "trioHoldHead": "You are one of the last three.",
+     "trioHoldSay": "There is an odd number left, so the last three of you play as a three instead of a pair. Waiting for the third one to arrive…",
+     "waitLongSay": "Waiting a while? Put your hand up. Your teacher can send you on to play against the House instead.",
+     "leaveLabel": "Nearly time up? Click here to finish the rest of the lesson.",
+     "leaveSay": "If your teacher calls time while you are waiting, you can leave here and finish the lesson. You lose nothing you have already earned — only the Match itself.",
+     "pairKicker": "MATCHED",
+     "pairTitle": "You have somebody to play against.",
+     "pairLead": "Your opponent for the Match is {sign}. They are at another computer in this room, and they see exactly the same code as you at exactly the same moment.",
+     "mineLine": "On their screen, you are {sign}.",
+     "secretPair": "You are not told who they really are until the Match ends. So keep real names out of anything you type here, including your own — your teacher can read every message that goes between the two of you.",
+     "pairClose": "Six rounds. You each write down what you think the code will print, you both lock it in, and then it really runs.",
+     "trioKicker": "A THREE",
+     "trioTitle": "You are playing as a three.",
+     "trioLead": "Your class has an odd number here, so the last three play together. Your group is {signs}.",
+     "secretTrio": "You are not told who they really are until the Match ends. So keep real names out of anything you type here, including your own — your teacher can read every message that goes between you.",
+     "trioClose": "Six rounds. All three of you lock in a prediction, and all three are shown side by side when the code runs.",
+     "matchButton": "Start the Match",
+     "soloKicker": "NO OPPONENT",
+     "soloTitle": "Nobody left to play against.",
+     "soloLine": "Everybody else in your class has already played, so you play against the House. The rounds are exactly the same and the code still really runs — there is simply nobody else's prediction beside yours.",
+     "soloButton": "Play the House",
+     "monitorBanner": "YOUR TEACHER CAN READ EVERY MESSAGE THAT GOES BETWEEN YOU.",
+     "chatPlaceholder": "Message your opponent…",
+     "chatSend": "Send",
+     "meWho": "You",
+     "chatOpenSay": "The line between you is open. Remember your teacher can read it."
+    },
+    "sideShow": {
+     "id": "margo",
+     "name": "Margo",
+     "mode": "monologue",
+     "alt": "Margo, a cartoon theatre critic in a fur stole, peering over half-moon glasses",
+     "art": {
+      "idle": "assets/img/j3/margo/margo-idle.webp",
+      "typing": "assets/img/j3/margo/margo-typing.webp",
+      "delighted": "assets/img/j3/margo/margo-rave.webp",
+      "offended": "assets/img/j3/margo/margo-offended.webp",
+      "devastated": "assets/img/j3/margo/margo-rave.webp"
+     },
+     "typingMs": 700,
+     "everyMs": 7000,
+     "open": "Ah. An empty stage. I am Margo, and I review whatever is put in front of me. At the moment that is nothing.",
+     "lines": [
+      "The silence continues. A bold artistic choice. Two stars.",
+      "I have now been staring at this waiting screen longer than I stayed for the second half of Hamlet.",
+      "Nothing is happening, and it is happening beautifully. One star.",
+      "In forty years of criticism I have never seen a stage this committed to being empty.",
+      "I would leave, but there is nowhere to leave to. I live here. This is my whole existence.",
+      "Half a star. And the half is generous."
+     ],
+     "echo": [
+      "\"{you}\". I shall be honest: I have no idea what to do with that."
+     ],
+     "exitFace": "delighted",
+     "exitLine": "THEY'RE HERE! Five stars! A triumph! I take back everything! Go, go — do not keep them waiting!",
+     "leaveLine": "Leaving early? Everybody's a critic. Off you go.",
+     "exitMs": 1800
+    },
+    "help": "Six rounds. Each one shows a few lines of Python; you pick what you think it will print and lock it in, then the code really runs and you see the true answer beside your prediction. Rounds 5 and 6 are on things nobody has taught you — they say so, and they are worth nothing either way. Your teacher can read any message that passes between you, so no real names. The grey button at the bottom takes you to the end of the lesson if your teacher calls time.",
+    "leaveTitle": "Leave the Match now?",
+    "leaveAsk": "You have played {done} of the {all} rounds. If you leave now the Match does not count and there is no badge for it. You can still finish the rest of the lesson.",
+    "leaveYes": "Leave the Match",
+    "lockedSay": "Your answer is locked in, so the buttons have stopped working. They stay locked until the code has run and both answers are shown."
+   }
+  },
+  {
+   "id": "film-b",
+   "engine": "video",
+   "title": "Taking things out, and putting them in order (the film)",
+   "minutes": 4,
+   "config": {
+    "src": "assets/video/j3/j3-l3-b.mp4",
+    "intro": "The second short film, again with no sound and again on your own screen. It picks up exactly where the Match left off, including the one that caught nearly everybody.",
+    "fallback": "If the film will not play, carry on — everything it shows is on the cards that come next, in writing. Tell whoever is in the room that the film would not play.",
+    "chapters": [
+     {
+      "t": 0,
+      "label": "Taking one out"
+     },
+     {
+      "t": 49,
+      "label": "The first three only"
+     },
+     {
+      "t": 129,
+      "label": "Putting them in order, and the trap"
+     }
+    ],
+    "help": "Press play, or click one of the part buttons underneath the film to jump to that part. Everything the film shows is written again on the cards that follow. Nothing here is marked."
+   }
+  },
+  {
+   "id": "assembly-1",
+   "engine": "pyrun",
+   "title": "Build 1: the house playlist",
+   "minutes": 5,
+   "config": {
+    "mode": "worked",
+    "kicker": "Build 1",
+    "title": "The Studio's own running order",
+    "intro": "Here is the whole shape of a playlist engine, on a running order that is not yours. Read it, press RUN, and watch what each line does to the rack.\n\nNothing on this card is for you to invent. It is here so that the shape is in front of you before you build one of your own.",
+    "beginLabel": "Open the desk",
+    "runLabel": "RUN this program",
+    "continueLabel": "Continue",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT YET",
+    "progLabel": "The program",
+    "matchedSay": "That is the whole shape: make it, add to it, take one out, then print the first three.",
+    "notYetSay": "Not yet. Read the console underneath: the real message from Python is there, and one plain line under it says what to look at.",
+    "shapeLabel": "Show me the shape",
+    "shapeKicker": "The shape",
+    "shapeTitle": "Make, add, remove, show",
+    "shapeClose": "Back to the program",
+    "shapeLead": "The same six lines with the titles left out. Every playlist engine in this lesson is this shape.",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "errorWords": {
+     "name": "Python does not know a box with that name. Check the spelling on this line matches the name you gave the list further up.",
+     "type": "Python has been asked to put two different kinds of thing together, and it will not. If you joined a number onto words with a +, put str( ) around the number first. If you sorted a list with both numbers and words in it, Python cannot say which of them comes first.",
+     "badinput": "Python could not read that line at all. Check the speech marks come in pairs, the brackets come in pairs, and the line starts where the lines around it start.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines inside the loop are not all lined up with each other. Every line inside a loop starts four spaces in, and they all start at the same place.",
+     "index": "You asked for a place in the list that is not there. Counting starts at 0, so the last place is one less than the number of things in the list.",
+     "attr": "There is no job with that name after the dot. Check the spelling of the word straight after the dot — append, remove, sort and insert are the ones you have.",
+     "timelimit": "That program was still going after a few seconds, so it was stopped. Something in it is repeating and never finishing.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark.",
+     "value": "Python could not use the thing in the brackets. If this was a remove line, the title has to match one that is really in the list, capital letters and all."
+    },
+    "chat": false,
+    "help": "Read the six lines, press RUN, and compare what the console printed with the target above it. Nothing on this card is typed by you. Show me the shape shows the same six lines with the titles taken out.",
+    "targetLead": "This is what it should print:",
+    "builds": [
+     {
+      "id": "a1",
+      "mode": "worked",
+      "chat": false,
+      "goalLine": "Run the Studio's own playlist engine and watch what each line does.",
+      "brief": "Six lines. The first makes the list, the next two change it, and the last three print the first three titles that are left.",
+      "lines": [
+       {
+        "t": "playlist = [\"Opening Night\", \"Curtain Up\", \"Last Bus Home\"]"
+       },
+       {
+        "t": "playlist.append(\"The Long Way Round\")"
+       },
+       {
+        "t": "playlist.remove(\"Curtain Up\")"
+       },
+       {
+        "t": "print(\"Now Playing - Top 3\")"
+       },
+       {
+        "t": "for song in playlist[0:3]:"
+       },
+       {
+        "t": "    print(song)"
+       }
+      ],
+      "target": [
+       "Now Playing - Top 3",
+       "Opening Night",
+       "Last Bus Home",
+       "The Long Way Round"
+      ],
+      "shape": [
+       "<list name> = [ things, in order ]",
+       "<list name>.append( one more )",
+       "<list name>.remove( one of them )",
+       "print( a heading )",
+       "for <one> in <list name>[0:3]:",
+       "    print( <one> )"
+      ],
+      "shapeNote": "The last two lines are a LOOP. It takes the first three titles one at a time and prints each one on its own line.",
+      "check": {
+       "kind": "target"
+      },
+      "matchedSay": "Exactly the four lines above. Curtain Up is gone because remove took it out, and The Long Way Round is there because append put it on the end.",
+      "notYetSay": "Not yet. Compare the console with the target, line by line, and find the first line where they differ."
+     }
+    ],
+    "waitingSay": "Your program has stopped and is waiting for you to type an answer. The box is just above this button. RUN wakes up again as soon as the program has finished."
+   }
+  },
+  {
+   "id": "assembly-2",
+   "engine": "parsons",
+   "title": "Build 2: put the rack in order",
+   "minutes": 5,
+   "config": {
+    "intro": "You get the four lines of a working playlist engine, out of order. Put them in the order that makes this happen: the list is made with three titles, one more is added on the end, one is taken out, and then the whole list is printed.\n\nClick a line on the left to move it across, or drag it. You get one go, and you are shown the working order afterwards either way.",
+    "item": {
+     "id": "j3t2-rack",
+     "prompt": "A working engine makes the list, adds one on the end, takes one out, and prints what is left at the end of all that.",
+     "blocks": [
+      "playlist.remove(\"Curtain Up\")",
+      "playlist = [\"Opening Night\", \"Curtain Up\", \"Last Bus Home\"]",
+      "print(playlist)",
+      "playlist.append(\"The Long Way Round\")"
+     ]
+    },
+    "doneText": "Correct. Nothing can be done to a list before it exists, and printing shows the list as it stands at that moment.",
+    "help": "Click a line on the left to move it into Your program, or drag it across. Click a line in Your program to send it back. Press Check my program when you are sure. You get one go, and the working order is shown to you afterwards whether you were right or not."
+   }
+  },
+  {
+   "id": "assembly-3",
+   "engine": "pyrun",
+   "title": "Build 3: fill the gaps",
+   "minutes": 4,
+   "badge": {
+    "id": "j3-b8",
+    "name": "Rack Assembled",
+    "icon": "assets/badges/bolt.png",
+    "xp": 12
+   },
+   "config": {
+    "kicker": "Build 3",
+    "title": "Three gaps, and two lines that do not belong",
+    "intro": "The same engine again, with three gaps in it. Two of the six lines on the left are real mistakes people make with lists — read them and leave them where they are.\n\nWhen it runs, the console should show one number: how many titles are in the list at the end.",
+    "beginLabel": "Open the desk",
+    "runLabel": "RUN my program",
+    "continueLabel": "Continue",
+    "howLine": "Move the lines you need into **Your program**, put them in the right order, then type into every gap.",
+    "trayLabel": "The lines",
+    "progLabel": "Your program",
+    "trayEmpty": "Every line has been moved across.",
+    "progEmpty": "Nothing here yet — click or drag a line across from The lines.",
+    "lockedNote": "RUN wakes up as soon as there is at least one line in Your program.",
+    "blankEmptySay": "One of the gaps is still empty. Type something into it, then press RUN again.",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT YET",
+    "matchedSay": "Three at the end: three to start with, one added, one taken out.",
+    "notYetSay": "Not yet. Read the console underneath, then check the target above your program.",
+    "targetLead": "This is what it should print:",
+    "shapeLabel": "Show me the shape",
+    "shapeKicker": "The shape",
+    "shapeTitle": "Make, add, remove, count",
+    "shapeClose": "Back to my program",
+    "shapeLead": "The same shape as the last two builds, with the titles left out.",
+    "firstTryXp": 6,
+    "firstTryXpCap": 6,
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "errorWords": {
+     "name": "Python does not know a box with that name. Check the spelling on this line matches the name you gave the list further up.",
+     "type": "Python has been asked to put two different kinds of thing together, and it will not. If you joined a number onto words with a +, put str( ) around the number first. If you sorted a list with both numbers and words in it, Python cannot say which of them comes first.",
+     "badinput": "Python could not read that line at all. Check the speech marks come in pairs, the brackets come in pairs, and the line starts where the lines around it start.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines inside the loop are not all lined up with each other. Every line inside a loop starts four spaces in, and they all start at the same place.",
+     "index": "You asked for a place in the list that is not there. Counting starts at 0, so the last place is one less than the number of things in the list.",
+     "attr": "There is no job with that name after the dot. Check the spelling of the word straight after the dot — append, remove, sort and insert are the ones you have.",
+     "timelimit": "That program was still going after a few seconds, so it was stopped. Something in it is repeating and never finishing.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark.",
+     "value": "Python could not use the thing in the brackets. If this was a remove line, the title has to match one that is really in the list, capital letters and all."
+    },
+    "help": "Move lines from The lines into Your program by clicking or dragging them. Not every line belongs — two of them are real mistakes. Type into every gap, then press RUN. Getting it right first time is worth more points.",
+    "builds": [
+     {
+      "id": "a3",
+      "check": {
+       "kind": "target"
+      },
+      "goalLine": "Make the console print how many titles are in the list at the end.",
+      "brief": "Four of these six lines make a working program. One of the other two uses a job that lists do not have, and one replaces a title at a position instead of adding a new one. Read them, then leave them where they are.",
+      "lines": [
+       {
+        "t": "playlist = [\"Opening Night\", \"Curtain Up\", \"Last Bus Home\"]"
+       },
+       {
+        "t": "playlist.append(\"____\")",
+        "blanks": [
+         {
+          "key": "a3a",
+          "slot": "____",
+          "size": 18,
+          "max": 40,
+          "ph": "",
+          "label": "a title of your own to add on the end"
+         }
+        ]
+       },
+       {
+        "t": "playlist.____(\"Curtain Up\")",
+        "blanks": [
+         {
+          "key": "a3b",
+          "slot": "____",
+          "size": 8,
+          "max": 12,
+          "ph": "",
+          "label": "the job that takes one out"
+         }
+        ]
+       },
+       {
+        "t": "print(len(____))",
+        "blanks": [
+         {
+          "key": "a3c",
+          "slot": "____",
+          "size": 10,
+          "max": 16,
+          "ph": "",
+          "label": "the name of the list"
+         }
+        ]
+       },
+       {
+        "t": "playlist.add(\"The Long Way Round\")"
+       },
+       {
+        "t": "playlist[3] = \"The Long Way Round\""
+       }
+      ],
+      "target": [
+       "3"
+      ],
+      "shape": [
+       "<list name> = [ things, in order ]",
+       "<list name>.append( one more )",
+       "<list name>.remove( one of them )",
+       "print( len( <list name> ) )"
+      ],
+      "matchedSay": "Three. The list started with three, gained one and lost one — and len( ) counted what was left.",
+      "notYetSay": "Not yet. If Python says there is no job with that name, look at the word after the dot on line 3."
+     }
+    ],
+    "waitingSay": "Your program has stopped and is waiting for you to type an answer. The box is just above this button. RUN wakes up again as soon as the program has finished."
+   }
+  },
+  {
+   "id": "engine",
+   "engine": "pyrun",
+   "title": "Your Playlist Engine",
+   "minutes": 12,
+   "badge": {
+    "id": "j3-b9",
+    "name": "Playlist Engine",
+    "icon": "assets/badges/id.png",
+    "xp": 15
+   },
+   "config": {
+    "mode": "editor",
+    "kicker": "Your Playlist Engine",
+    "title": "Twelve minutes, five songs, all yours",
+    "intro": "Everything up to here has run on somebody else's running order. This one is yours: five real songs you choose, and a program that does five different things to them.\n\nThere is no bank of ready-made lines on this card. You type it. The list on the right says the five things the engine has to do, and it fills in every time you press RUN.",
+    "beginLabel": "Open the editor",
+    "runLabel": "RUN my engine",
+    "continueLabel": "Continue",
+    "checklistLabel": "What your engine has to do",
+    "starterSay": "Not sure where to start? This puts the whole shape in for you, with every title still to type.",
+    "starterLabel": "Put the shape in for me",
+    "starterDoneSay": "It is in. Now type a real song title into every empty pair of speech marks, and make the one you remove match one of the five.",
+    "emptySay": "Your program is empty, so there is nothing to run. Type your first line, or use Put the shape in for me.",
+    "matchedLabel": "ALL FIVE",
+    "notYetLabel": "NOT YET",
+    "pendingLabel": "not checked yet",
+    "matchedSay": "Five out of five. That is a real program: it holds a set of things, changes it, orders it and shows part of it.",
+    "notYetSay": "Not all five yet. The list beside your program says which ones are there. Read the console for anything Python could not do.",
+    "shapeLabel": "Show me the shape",
+    "shapeKicker": "The shape",
+    "shapeTitle": "A playlist engine",
+    "shapeClose": "Back to my engine",
+    "shapeLead": "This is the shape, with every title left out. Your songs go in the gaps.",
+    "featureXp": 2,
+    "featureXpCap": 10,
+    "editor": {
+     "title": "Your engine",
+     "aria": "Type your playlist program here",
+     "lineWord": "line",
+     "linesWord": "lines"
+    },
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "errorWords": {
+     "name": "Python does not know a box with that name. Check the spelling on this line matches the name you gave the list further up.",
+     "type": "Python has been asked to put two different kinds of thing together, and it will not. If you joined a number onto words with a +, put str( ) around the number first. If you sorted a list with both numbers and words in it, Python cannot say which of them comes first.",
+     "badinput": "Python could not read that line at all. Check the speech marks come in pairs, the brackets come in pairs, and the line starts where the lines around it start.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines inside the loop are not all lined up with each other. Every line inside a loop starts four spaces in, and they all start at the same place.",
+     "index": "You asked for a place in the list that is not there. Counting starts at 0, so the last place is one less than the number of things in the list.",
+     "attr": "There is no job with that name after the dot. Check the spelling of the word straight after the dot — append, remove, sort and insert are the ones you have.",
+     "timelimit": "That program was still going after a few seconds, so it was stopped. Something in it is repeating and never finishing.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark.",
+     "value": "Python could not use the thing in the brackets. If this was a remove line, the title has to match one that is really in the list, capital letters and all."
+    },
+    "limitMs": 5000,
+    "help": "Type your program in the black box. The list on the right says the five things your engine has to do, and it fills in every time you press RUN. Nothing is typed for you unless you press Put the shape in for me, and nothing is corrected for you: read the console if Python stops. Show me the shape shows the pattern with every title taken out.",
+    "builds": [
+     {
+      "id": "engine",
+      "mode": "editor",
+      "saveAs": "l3playlist",
+      "goalLine": "Write a playlist engine that does five things to five songs of your own.",
+      "brief": "Start with five real song titles you would put in a show. Then make the program add one more, take one out, pick one at random to announce, put the whole list in order, and print the first three under a heading that says Now Playing.",
+      "starter": [
+       "import random",
+       "playlist = [\"\", \"\", \"\", \"\", \"\"]",
+       "playlist.append(\"\")",
+       "playlist.remove(\"\")",
+       "print(\"Tonight: \" + random.choice(playlist))",
+       "playlist.sort()",
+       "print(\"Now Playing - Top 3\")",
+       "for song in playlist[0:3]:",
+       "    print(song)"
+      ],
+      "editor": {
+       "title": "Your engine",
+       "aria": "Type your playlist program here"
+      },
+      "features": [
+       {
+        "id": "append",
+        "probe": "grew",
+        "mark": "\\.append\\(",
+        "label": "It ADDS a song, so the list ends up longer than the one you typed.",
+        "nudge": "Your list is not growing. Look for the line with append on it, and check the title you are adding is inside speech marks."
+       },
+       {
+        "id": "remove",
+        "probe": "shrank",
+        "mark": "\\.remove\\(",
+        "label": "It TAKES ONE OUT, so one of your songs is gone by the end.",
+        "nudge": "Nothing is being taken out. remove needs a title spelled exactly as it appears in your list — including the capital letters."
+       },
+       {
+        "id": "shuffle",
+        "probe": "varies",
+        "label": "It picks a song AT RANDOM and announces it.",
+        "nudge": "Your program prints the same thing every time. Look at whether random.choice is really being used, and whether the line above it imports random."
+       },
+       {
+        "id": "sort",
+        "probe": "ordered",
+        "label": "The list ends up in A to Z order.",
+        "nudge": "Your list is not in order at the end. Look at where your sort line is: anything that changes the list AFTER it can put it out of order again."
+       },
+       {
+        "id": "top3",
+        "probe": "block",
+        "head": "now playing",
+        "lines": 3,
+        "label": "It prints a Now Playing heading and then exactly THREE of your songs.",
+        "nudge": "Look at the two lines that print the top three: the heading has to say Now Playing, and the loop has to take the first three only."
+       }
+      ],
+      "shape": [
+       "import random",
+       "<list name> = [ five titles ]",
+       "<list name>.append( one more )",
+       "<list name>.remove( one of them )",
+       "print( a line that announces random.choice( <list name> ) )",
+       "<list name>.sort()",
+       "print( a heading with Now Playing in it )",
+       "for <one> in <list name>[0:3]:",
+       "    print( <one> )"
+      ],
+      "shapeNote": "The order matters: anything that changes the list after the sort line can put it out of order again.",
+      "matchedSay": "All five. Send your Now Playing card to the person you played against.",
+      "notYetSay": "Not all five yet. The list on the right says which. Read the console for anything Python could not do.",
+      "sendCard": {
+       "head": "now playing",
+       "lines": 3,
+       "title": "Your Now Playing card",
+       "lead": "This is the card your engine printed. Send it to the person you played against in the Match — they are still on the other end of that line.",
+       "noPartnerSay": "You played the House today, so there is nobody to send this to. The card is yours either way, and it came out of a program you wrote.",
+       "sendLabel": "Send my card",
+       "sendingLabel": "Sending…",
+       "sentLabel": "Sent",
+       "waitSay": "Sent. Waiting for theirs…",
+       "theirsTitle": "Their Now Playing card",
+       "arrivedSay": "Their card has arrived."
+      }
+     }
+    ],
+    "waitingSay": "Your program has stopped and is waiting for you to type an answer. The box is just above this button. RUN wakes up again as soon as the program has finished."
+   }
+  },
+  {
+   "id": "extras",
+   "engine": "pyrun",
+   "title": "The Studio's extra jobs",
+   "minutes": 0,
+   "config": {
+    "extrasMode": true,
+    "kicker": "Extra jobs",
+    "title": "The Studio's extra jobs",
+    "intro": "Three small jobs, and they are all optional. **None of them is worth any points**, nothing here is marked, and nothing you do on these screens is saved. They are here for anyone with minutes to spare.\n\nDo one, do all three, or do none. You can stop the moment your teacher says time is up.",
+    "reviewIntro": "**You have already finished this lesson.** These jobs still work, so you can come back and try them any time.",
+    "finishLabel": "Nearly time up? Click here to finish the rest of the lesson.",
+    "backLabel": "Back to the extra jobs",
+    "doneTick": "job done",
+    "runLabel": "RUN this",
+    "howLine": "Move the lines you need into **Your program**, fill in every gap, then press RUN.",
+    "trayLabel": "The lines",
+    "progLabel": "Your program",
+    "trayEmpty": "Every line has been moved across.",
+    "progEmpty": "Nothing here yet — click or drag a line across from The lines.",
+    "lockedNote": "RUN wakes up as soon as there is at least one line in Your program.",
+    "blankEmptySay": "One of the gaps is still empty. Type something into it, then press RUN again.",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT YET",
+    "matchedSay": "That works.",
+    "notYetSay": "Not yet. Read the console underneath and try again.",
+    "targetLead": "This is what it should print:",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "errorWords": {
+     "name": "Python does not know a box with that name. Check the spelling on this line matches the name you gave the list further up.",
+     "type": "Python has been asked to put two different kinds of thing together, and it will not. If you joined a number onto words with a +, put str( ) around the number first. If you sorted a list with both numbers and words in it, Python cannot say which of them comes first.",
+     "badinput": "Python could not read that line at all. Check the speech marks come in pairs, the brackets come in pairs, and the line starts where the lines around it start.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines inside the loop are not all lined up with each other. Every line inside a loop starts four spaces in, and they all start at the same place.",
+     "index": "You asked for a place in the list that is not there. Counting starts at 0, so the last place is one less than the number of things in the list.",
+     "attr": "There is no job with that name after the dot. Check the spelling of the word straight after the dot — append, remove, sort and insert are the ones you have.",
+     "timelimit": "That program was still going after a few seconds, so it was stopped. Something in it is repeating and never finishing.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark.",
+     "value": "Python could not use the thing in the brackets. If this was a remove line, the title has to match one that is really in the list, capital letters and all."
+    },
+    "help": "Three optional jobs. None of them is worth points and nothing here is saved. Pick one from the list, or press the grey button to go straight to the end of the lesson. If you leave a job half done it starts again from the beginning next time.",
+    "builds": [
+     {
+      "id": "j3x3-filter",
+      "check": {
+       "kind": "target"
+      },
+      "title": "Job 1 — only the ones by one artist",
+      "whiff": "A taste of next year: the program decides which ones to print.",
+      "goalLine": "Print only the titles that have the word Live in them.",
+      "brief": "A loop can look at each title and decide whether to print it. The word if is how a program chooses, and you meet it properly next year — here it is, doing one job.",
+      "lines": [
+       {
+        "t": "playlist = [\"Opening Night\", \"Curtain Up (Live)\", \"Last Bus Home\", \"The Long Way Round (Live)\"]"
+       },
+       {
+        "t": "for song in playlist:"
+       },
+       {
+        "t": "    if \"Live\" in song:"
+       },
+       {
+        "t": "        print(song)"
+       },
+       {
+        "t": "    print(song)"
+       }
+      ],
+      "target": [
+       "Curtain Up (Live)",
+       "The Long Way Round (Live)"
+      ],
+      "matchedSay": "Two lines out of four titles. The if line is what made the loop choose."
+     },
+     {
+      "id": "j3x3-reverse",
+      "check": {
+       "kind": "target"
+      },
+      "title": "Job 2 — play it backwards",
+      "whiff": "One line turns the whole running order round.",
+      "goalLine": "Print the list with the titles in the opposite order.",
+      "brief": "Lists have a job called reverse, and it works exactly like sort: it changes the list itself and hands nothing back.",
+      "lines": [
+       {
+        "t": "playlist = [\"Opening Night\", \"Curtain Up\", \"Last Bus Home\"]"
+       },
+       {
+        "t": "playlist.reverse()"
+       },
+       {
+        "t": "print(playlist)"
+       },
+       {
+        "t": "print(playlist.reverse())"
+       }
+      ],
+      "target": [
+       "['Last Bus Home', 'Curtain Up', 'Opening Night']"
+      ],
+      "matchedSay": "Reversed. And the line you left behind would have printed None, for exactly the same reason sort does."
+     },
+     {
+      "id": "j3x3-mixed",
+      "check": {
+       "kind": "target"
+      },
+      "title": "Job 3 — what else can go in a list?",
+      "whiff": "An experiment. Lists are not fussy.",
+      "goalLine": "Put a number and some words in the same list, and print each one on its own line.",
+      "brief": "A list will hold anything, and it will hold different kinds of thing at the same time. Build it and see what comes out.",
+      "lines": [
+       {
+        "t": "things = [\"Opening Night\", 3, \"Last Bus Home\"]"
+       },
+       {
+        "t": "for thing in things:"
+       },
+       {
+        "t": "    print(thing)"
+       },
+       {
+        "t": "print(things[3])"
+       }
+      ],
+      "target": [
+       "Opening Night",
+       "3",
+       "Last Bus Home"
+      ],
+      "matchedSay": "Three lines, and one of them is a number. A list does not care what is in it — but ask for a place that is not there and it stops."
+     }
+    ],
+    "waitingSay": "Your program has stopped and is waiting for you to type an answer. The box is just above this button. RUN wakes up again as soon as the program has finished."
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit check",
+   "minutes": 2,
+   "config": {
+    "kicker": "Exit check",
+    "cardTitle": "One question before you finish",
+    "readyLabel": "Ready",
+    "intro": "One last question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "items": [
+     {
+      "id": "j3x3-1",
+      "stem": "Your list holds five titles. You run the line `playlist.append(\"One More\")`. What is true afterwards?",
+      "options": [
+       "The list holds one title, because append replaced what was there",
+       "The list holds six titles, with One More on the end",
+       "The list holds five titles, and One More was printed instead",
+       "The list holds six titles, with One More at the front"
+      ]
+     }
+    ],
+    "help": "One marked question about the job you used most today. You are told whether you were right, and why, at the very end of the lesson — after the How did it go? screen."
+   }
+  },
+  {
+   "id": "exitp",
+   "engine": "parsons",
+   "title": "Build the loop",
+   "minutes": 1,
+   "config": {
+    "intro": "Last one, and it is three lines. Put them in the order that prints every title in the list, one on each line.\n\nClick a line on the left to move it across, or drag it. You get one go, and you are shown the working order afterwards either way.",
+    "item": {
+     "id": "j3x3-p",
+     "prompt": "A working loop needs the list to exist first, then the for line, then the printing line that sits inside it.",
+     "blocks": [
+      "for song in playlist:",
+      "    print(song)",
+      "playlist = [\"Opening Night\", \"Curtain Up\"]"
+     ]
+    },
+    "doneText": "Correct. The four spaces in front of the last line are what put it inside the loop.",
+    "help": "Click a line on the left to move it into Your program, or drag it across. Press Check my program when you are sure. You get one go, and the working order is shown to you afterwards whether you were right or not.",
+    "pre": true
+   }
+  },
+  {
+   "id": "close",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "alreadyFiled": "You have already sent this to your teacher. You can read back through it as often as you like, and nothing you click now will change what you sent.",
+    "offlineSay": "Your connection is playing up, so your answers are safe on this computer and will send by themselves. That is the lesson finished.",
+    "statements": [
+     "I can make a list, and get one thing out of it by its position.",
+     "I can add to a list, take something out of it and put it in order.",
+     "I can read a few lines of Python and say what they will print."
+    ],
+    "difficulty": true,
+    "comment": true,
+    "help": "Under each sentence, click the button that says how today really went. Then, at the bottom of the screen, click how hard the hour felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving — it is how your teacher hears from everyone, not just the loudest."
+   }
+  }
+ ],
+ "keysEnc": "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"
+}

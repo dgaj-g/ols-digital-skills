@@ -1353,10 +1353,28 @@ var CHAT_ARCHIVE_AFTER_DAYS = 7;
    codename get a mission call sign - the identity-reveal fiction holds from
    the very first lesson. */
 var PAIR_CALLSIGNS = ['Kestrel', 'Osprey', 'Merlin', 'Harrier', 'Nightjar', 'Skylark'];
-function callsignFill_(formed) {
-  var seed = Math.floor(Math.random() * PAIR_CALLSIGNS.length);
+/* PER-YEAR CALL SIGNS (K35(3), 26 Aug 2026). His ruling: "ok, but make sure they
+   are told what their codename is." A J1 pupil earns a CODENAME in Lesson 1 and
+   carries it into the Vault; a J2 or J3 pupil has never met that badge, so the
+   name has to come from somewhere, and a bird call sign belongs to J1's agent
+   fiction rather than to a workshop or a studio. Each year now draws from its own
+   pool, in its own world's words: J2 works at a bench, J3 works on a production.
+   J1's list and J1's behaviour are UNTOUCHED -- `callsignsFor_('j1')` returns the
+   same array, so the Vault's own pairs draw exactly what they drew yesterday. */
+var PAIR_CALLSIGNS_J2 = ['Spanner 7', 'Chisel 3', 'Hammer 5', 'Pliers 2',
+                         'Drill 9', 'Clamp 4', 'Ruler 6', 'Mallet 8'];
+var PAIR_CALLSIGNS_J3 = ['Director 3', 'Editor 5', 'Producer 2', 'Camera 4',
+                         'Sound 7', 'Lighting 6', 'Writer 9', 'Designer 8'];
+function callsignsFor_(year) {
+  if (str_(year) === 'j2') return PAIR_CALLSIGNS_J2;
+  if (str_(year) === 'j3') return PAIR_CALLSIGNS_J3;
+  return PAIR_CALLSIGNS;
+}
+function callsignFill_(formed, year) {
+  var pool = callsignsFor_(year);
+  var seed = Math.floor(Math.random() * pool.length);
   return formed.map(function (w, i) {
-    return str_(w.cn) || PAIR_CALLSIGNS[(seed + i) % PAIR_CALLSIGNS.length];
+    return str_(w.cn) || pool[(seed + i) % pool.length];
   });
 }
 
@@ -1486,6 +1504,7 @@ function pairStateFor_(reg, hit) {
    never counted in E, and never matched - see isClassOwner_. */
 function pairMatch_(cls, lessonId, numStr, stageIdx, reg, q) {
   var nowS = tsec_();
+  var pmYear = classYear_(cls);
   var owner = str_(classOwner_(cls)).toLowerCase();
   q.q = (q.q || []).filter(function (w) { return nowS - num_(w.p) <= PAIR_QUEUE_STALE_S; });
   /* Defensive: apiPairJoin sends the owner straight to solo so she should never
@@ -1520,7 +1539,7 @@ function pairMatch_(cls, lessonId, numStr, stageIdx, reg, q) {
     var pid = 'p' + tmin_() + '-' + Math.floor(Math.random() * 10000);
     reg.P[pid] = {
       m: formed.map(function (w) { return str_(w.e); }),
-      cn: callsignFill_(formed),
+      cn: callsignFill_(formed, pmYear),
       t: tmin_(), trio: formed.length === 3 ? 1 : 0, done: 0, rv: 0
     };
     pPut_(chPKey_(cls, pid), { seq: 0, ev: [], ls: [] });
@@ -1707,6 +1726,77 @@ function apiPairComplete(req) {
       }
     } catch (e) {} // transcript is best-effort; the reveal must never fail on it
     return { ok: true, names: names };
+  });
+}
+
+/* ==================== pairBlob: ONE THING TRAVELS ONCE (spec SS C3) ==========
+   THE CHOICE, RECORDED (K37, and it is why this round's paste is both files).
+   The Chatbot Swap hands a pupil's BOT to her partner and lets the partner
+   really chat with it. Two ways to do that:
+     (a) relay every message through the channel. The channel polls about every
+         two seconds each way, so a bot line would land ~4s after the tester
+         typed -- a conversation nobody would call a conversation, and the
+         builder's own program would be running on a machine that is not hers.
+     (b) hand the PROGRAM across once, and run it locally in the tester's own
+         Skulpt sandbox. Replies are instant, the timeout guard is the one that
+         is already there, and the channel goes back to carrying what it is good
+         at: short beats, at its own cadence.
+   (b) is the sturdy build, and it needs one thing the channel cannot give: a
+   place to put ~1KB of text that the OTHER member can read. Chunked chat frames
+   would have meant a protocol built on top of a 240-character cap that exists
+   precisely to stop that.
+
+   WHAT THIS IS, AND WHAT IT DELIBERATELY IS NOT. A slot is a small named value
+   inside ONE pair. `put` writes to the CALLER'S OWN member index -- never to a
+   named one -- so a pupil can only ever publish as herself; `get` reads any
+   member of the same pair, which is what makes both the pair swap and the trio
+   round-robin work with no extra rule. Same auth as the chat verbs (a member of
+   this pair, on an accessible lesson). Nothing here is marked, nothing is paid
+   on, and nothing crosses a class boundary.
+
+   STORAGE. The keys live inside the wiped 'pair:<cls>:' family, so deleteClass's
+   existing prefix wipe covers them, resetLesson drops them with the channels,
+   and the nightly sweep's pair: pass expires whatever is left -- the same three
+   routes the channels themselves already travel (DFM 248's storage law). Values
+   are capped at PAIR_BLOB_MAX so one pupil's paste can never eat the script-wide
+   quota, and the cap is REPORTED to the caller rather than silently truncating,
+   because a program cut in half would run and be wrong (DFM 157a: a limit that
+   lives in two places is a contract). */
+var PAIR_BLOB_MAX = 4096;      // chars per slot value
+var PAIR_BLOB_SLOTS = ['bot', 'report', 'card'];
+function blobPKey_(cls, pid, slot, mi) { return 'pair:' + cls + ':bl:' + pid + ':' + slot + ':' + mi; }
+
+function apiPairBlob(req) {
+  req = req || {};
+  var email = userEmail_();
+  if (!email) return { ok: false, error: 'not-signed-in' };
+  var cls = realClass_(req.classCode);
+  if (!cls) return { ok: false, error: 'unknown-class' };
+  var lessonId = str_(req.lessonId);
+  var year = classYear_(cls);
+  var numStr = lessonNum_(year, lessonId);
+  if (!numStr || !lessonAccessible_(cls, numStr, email)) return { ok: false, error: 'locked' };
+  var reg = pairReg_(cls, lessonId);
+  var hit = pairOf_(reg, email);
+  if (!hit || str_(hit.pid) !== str_(req.pid)) return { ok: false, error: 'not-your-pair' };
+  var slot = str_(req.slot);
+  if (PAIR_BLOB_SLOTS.indexOf(slot) === -1) return { ok: false, error: 'bad-slot' };
+  var members = (reg.P[hit.pid].m || []).length;
+
+  if (str_(req.op) === 'get') {
+    /* a named member of MY pair, bounds-checked against this pair's own size */
+    var mi = num_(req.mi);
+    if (mi < 0 || mi >= members) return { ok: false, error: 'bad-member' };
+    var got = pGet_(blobPKey_(cls, str_(hit.pid), slot, mi), null);
+    if (!got) return { ok: true, has: 0, v: '', mi: mi, t: 0 };
+    return { ok: true, has: 1, v: str_(got.v), mi: mi, t: num_(got.t) };
+  }
+  if (str_(req.op) !== 'put') return { ok: false, error: 'bad-op' };
+  var v = str_(req.v);
+  if (v.length > PAIR_BLOB_MAX) return { ok: false, error: 'too-big', max: PAIR_BLOB_MAX, was: v.length };
+  return withLock_(function () {
+    pPut_(blobPKey_(cls, str_(hit.pid), slot, num_(hit.mi)), { v: v, t: tsec_() });
+    return { ok: true, bytes: v.length, mi: num_(hit.mi), max: PAIR_BLOB_MAX };
   });
 }
 
@@ -2340,7 +2430,17 @@ function apiAdmin(req) {
         /* the channels belong to the registry's pids - collect them BEFORE the
            registry is deleted, or they orphan against the storage quota */
         var rsReg = jget_(sp_(), pairRegKey_(cls, str_(le.id)), null);
-        if (rsReg && rsReg.P) Object.keys(rsReg.P).forEach(function (rp) { sp_().deleteProperty(chPKey_(cls, rp)); });
+        if (rsReg && rsReg.P) Object.keys(rsReg.P).forEach(function (rp) {
+          sp_().deleteProperty(chPKey_(cls, rp));
+          /* the pairBlob slots belong to the same pids and orphan the same way
+             (spec SS C3's storage note): drop them in the same pass */
+          var rsN = ((rsReg.P[rp] || {}).m || []).length;
+          for (var rsS = 0; rsS < PAIR_BLOB_SLOTS.length; rsS++) {
+            for (var rsM = 0; rsM < rsN; rsM++) {
+              sp_().deleteProperty(blobPKey_(cls, rp, PAIR_BLOB_SLOTS[rsS], rsM));
+            }
+          }
+        });
         sp_().deleteProperty(pairRegKey_(cls, str_(le.id)));
         sp_().deleteProperty(pqPKey_(cls, str_(le.id)));
       });
@@ -2455,7 +2555,7 @@ function apiAdmin(req) {
         var pid2 = 'p' + tmin_() + '-' + Math.floor(Math.random() * 10000);
         pfReg.P[pid2] = {
           m: formed.map(function (w) { return str_(w.e); }),
-          cn: callsignFill_(formed),
+          cn: callsignFill_(formed, classYear_(cls)),
           t: tmin_(), trio: take === 3 ? 1 : 0, done: 0, rv: 0
         };
         pPut_(chPKey_(cls, pid2), { seq: 0, ev: [], ls: [] });

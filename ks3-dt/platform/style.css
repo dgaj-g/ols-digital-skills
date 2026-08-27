@@ -3495,3 +3495,480 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 @media (prefers-reduced-motion: reduce) {
   .fx-blueprint .fx-draft, .fx-greenroom .fx-lamp { animation: none; }
 }
+
+/* ==========================================================================
+   RUNNER v2 + THE PAIRED SET-PIECES (J2/J3 Lesson 3, spec §A/§C)
+   Every surface below is NEW, so every surface below sets its OWN ink on its
+   OWN ground and inherits nothing from the dark shell. That is DFM 207(g)
+   written as a habit rather than a memory: the studio QA desk was light text on
+   a light plate for weeks because a new plate forgot to say what colour its
+   words were, and qa-readability measures each of these on every skin.
+   ========================================================================== */
+
+/* ---- the conversation (PyRun.chat) -------------------------------------- */
+.pyx {
+  margin: 14px 0 0; border-radius: 12px; overflow: hidden;
+  background: #FFFFFF; border: 1.5px solid var(--line-l); color: var(--ink);
+}
+.pyx-bar {
+  display: flex; align-items: center; gap: 8px; padding: 7px 12px;
+  background: #EEF3FB; border-bottom: 1px solid var(--line-l);
+}
+.pyx-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ols-blue); flex: 0 0 auto; }
+.pyx-title {
+  font-size: 0.74rem; letter-spacing: 0.09em; text-transform: uppercase;
+  font-weight: 800; color: var(--ols-blue);
+}
+.pyx-log { padding: 12px 14px; max-height: 300px; overflow-y: auto; color: var(--ink); }
+.pyx-idle { margin: 0; font-size: 0.9rem; color: var(--muted); }
+.pyx-row {
+  display: flex; flex-direction: column; gap: 2px;
+  margin: 0 0 10px; padding: 9px 12px; border-radius: 12px; max-width: 88%;
+}
+.pyx-row:last-child { margin-bottom: 0; }
+.pyx-who {
+  font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase;
+  font-weight: 800; color: #4B5B79;
+}
+.pyx-text { font-size: 0.97rem; line-height: 1.5; color: var(--ink); white-space: pre-wrap; }
+.pyx-row.is-bot { background: #EDF3FD; border: 1px solid #CFDDF5; }
+.pyx-row.is-user { background: #FFF6DA; border: 1px solid #F0DCA0; margin-left: auto; }
+.pyx-row.is-side { background: #F3ECFB; border: 1px solid #DCCBF2; }
+.pyx-row.is-note { background: var(--field); border: 1px dashed var(--line-l); }
+.pyx-ask {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding: 11px 14px; border-top: 1px solid var(--line-l); background: var(--field);
+}
+.pyx-ask-lab { font-size: 0.82rem; font-weight: 700; color: var(--ink); flex: 0 0 auto; }
+.pyx-reply {
+  flex: 1 1 180px; min-width: 140px; padding: 9px 12px; font: inherit; font-size: 0.95rem;
+  color: var(--ink); background: #fff; border: 1.5px solid var(--line-l); border-radius: var(--r-sm);
+}
+.pyx-reply:focus { outline: 2px solid var(--ols-blue); outline-offset: 1px; }
+.pyx-reply.wants { border-color: var(--bad); background: var(--bad-soft); }
+.pyx-send { flex: 0 0 auto; padding: 9px 16px; }
+
+/* ---- the typed editor (PyRun.editor) ------------------------------------ */
+.pye {
+  margin: 0 0 12px; border-radius: 12px; overflow: hidden;
+  background: #0E1A30; border: 1.5px solid #2B3F63;
+}
+.pye-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 7px 12px; background: #16253F; border-bottom: 1px solid #2B3F63;
+}
+.pye-title {
+  font-size: 0.74rem; letter-spacing: 0.09em; text-transform: uppercase;
+  font-weight: 800; color: #B9C8E2;
+}
+.pye-count { font-size: 0.76rem; color: #8FA3C6; font-variant-numeric: tabular-nums; }
+.pye-body { display: flex; align-items: stretch; }
+.pye-nums {
+  margin: 0; padding: 12px 8px 12px 12px; text-align: right; user-select: none;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.92rem; line-height: 1.6; color: #6E819F; background: #0B1526;
+  border-right: 1px solid #24354F; overflow: hidden; min-width: 40px;
+}
+.pye-code {
+  flex: 1 1 auto; margin: 0; padding: 12px 14px; border: 0; resize: vertical;
+  min-height: 220px; background: #0E1A30; color: #EAF2FF;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.92rem; line-height: 1.6; white-space: pre; overflow-x: auto;
+}
+.pye-code:focus { outline: 2px solid var(--gold-hi); outline-offset: -2px; }
+.pye.is-locked .pye-code { color: #C3D3EE; background: #0A1424; }
+
+.pye-cols { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.pye-main { flex: 1 1 340px; min-width: 0; }
+.pye-side {
+  flex: 0 0 260px; background: #fff; color: var(--ink);
+  border: 1.5px solid var(--line-l); border-radius: var(--r-md); padding: 14px 16px;
+}
+@media (max-width: 720px) { .pye-side { flex: 1 1 100%; } }
+.pye-side h3 {
+  margin: 0 0 10px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 800; color: var(--ols-blue);
+}
+.pyf-list { list-style: none; margin: 0; padding: 0; }
+.pyf-item {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 9px 11px; margin: 0 0 8px; border-radius: var(--r-sm);
+  background: var(--field); border: 1px solid var(--line-l); color: var(--ink);
+}
+.pyf-item.is-matched { background: var(--good-soft); border-color: #B6E6CE; }
+.pyf-item.is-notyet { background: #FFF3E2; border-color: #F1D6A8; }
+.pyf-tag {
+  font-size: 0.68rem; letter-spacing: 0.09em; text-transform: uppercase;
+  font-weight: 800; color: #5B6579;
+}
+.pyf-item.is-matched .pyf-tag { color: #17734A; }
+.pyf-item.is-notyet .pyf-tag { color: #8A5A12; }
+.pyf-say { font-size: 0.88rem; line-height: 1.45; color: var(--ink); }
+.pyf-nudge {
+  font-size: 0.84rem; line-height: 1.45; color: #6B4A0E;
+  border-left: 3px solid var(--gold); padding-left: 9px; margin-top: 4px;
+}
+.pyf-count {
+  font-family: var(--font-display); font-weight: 800; font-size: 1.15rem;
+  color: var(--ols-blue); margin: 4px 0 6px; font-variant-numeric: tabular-nums;
+}
+.pye-starter { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line-l); }
+.pye-starter-say { margin: 0 0 8px; font-size: 0.86rem; line-height: 1.5; color: var(--ink); }
+.pye-starter-done { margin: 8px 0 0; font-size: 0.84rem; line-height: 1.45; color: #17734A; }
+.pye-first-note {
+  margin: 0 0 10px; padding: 9px 12px; border-radius: var(--r-sm);
+  background: #FFF6DA; border: 1px solid #F0DCA0; color: var(--ink);
+  font-size: 0.88rem; line-height: 1.5;
+}
+
+/* the palette: a served tray, shuffled at mount (DFM 258) */
+.pyp-palette { margin: 12px 0 0; }
+.pyp-palette h3 {
+  margin: 0 0 4px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 800; color: var(--gold-hi);
+}
+.pyp-palette-lead { margin: 0 0 9px; font-size: 0.87rem; line-height: 1.5; color: var(--text-d); }
+.pyp-palette-list { display: flex; flex-direction: column; gap: 7px; }
+.pyp-chip {
+  display: flex; flex-direction: column; gap: 3px; text-align: left; width: 100%;
+  padding: 9px 12px; border-radius: var(--r-sm); cursor: pointer;
+  background: #fff; border: 1.5px solid var(--line-l); color: var(--ink);
+  font: inherit; transition: border-color 0.14s ease, transform 0.14s ease;
+}
+.pyp-chip:hover:not(:disabled) { border-color: var(--ols-blue); transform: translateY(-1px); }
+.pyp-chip:disabled { opacity: 0.6; cursor: default; }
+.pyp-chip-name { font-size: 0.86rem; font-weight: 700; color: var(--ols-blue); }
+.pyp-chip-code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.84rem; color: var(--ink); word-break: break-word;
+}
+
+/* ---- the worked card ---------------------------------------------------- */
+.pyw-prog { margin: 12px 0; }
+.pyw-prog h3 {
+  margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 800; color: var(--gold-hi);
+}
+.pyw-list {
+  list-style: none; margin: 0; padding: 12px 14px; border-radius: 12px;
+  background: #0E1A30; border: 1.5px solid #2B3F63; counter-reset: pyw;
+}
+.pyw-line {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px;
+  padding: 3px 0; counter-increment: pyw; color: #EAF2FF;
+}
+.pyw-line::before {
+  content: counter(pyw); flex: 0 0 22px; text-align: right;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.84rem; color: #6E819F;
+}
+.pyw-line code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.92rem; line-height: 1.6; color: #EAF2FF; word-break: break-word;
+}
+.pyw-line.has-blank { background: rgba(255, 216, 77, 0.07); border-radius: 7px; }
+.py-style-card .py-styles { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+.py-style {
+  flex: 1 1 220px; display: flex; flex-direction: column; gap: 5px; text-align: left;
+  padding: 15px 17px; border-radius: var(--r-md); cursor: pointer; font: inherit;
+  background: #fff; border: 2px solid var(--line-l); color: var(--ink);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.py-style:hover { border-color: var(--gold); transform: translateY(-2px); }
+.py-style-name { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; color: var(--ols-blue); }
+.py-style-whiff { font-size: 0.88rem; line-height: 1.45; color: var(--muted); }
+.pyw-chosen { margin: 0 0 10px; font-size: 0.92rem; color: var(--text-d); }
+.pyw-stage { margin-top: 4px; }
+.swap-done-say { margin: 10px 0 0; font-size: 0.93rem; line-height: 1.55; color: var(--text-d); }
+
+/* ---- the help ladder: two ghosts, in the same place on every build ------- */
+.py-help-row { display: flex; flex-wrap: wrap; gap: 9px; margin: 12px 0 4px; }
+.py-shape-modal .ols-modal-card { max-width: 560px; }
+.py-shape-lead { margin: 0 0 12px; font-size: 0.95rem; line-height: 1.55; color: var(--ink); }
+.py-shape-code {
+  margin: 0 0 12px; padding: 13px 15px; border-radius: 11px; white-space: pre-wrap;
+  background: #0E1A30; color: #EAF2FF; border: 1px solid #2B3F63;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.93rem; line-height: 1.65;
+}
+.py-shape-note {
+  margin: 0 0 6px; font-size: 0.9rem; line-height: 1.5; color: #6B4A0E;
+  border-left: 3px solid var(--gold); padding-left: 11px;
+}
+
+/* ---- ARRIVAL (spec §C5 / K35(1b)) --------------------------------------
+   A sweep, the content coming in under it, and a glow that HOLDS. The glow is
+   the half that matters: a flash she was not looking at is a flash that did not
+   happen, so the border stays lit until she touches the thing that arrived. */
+@keyframes pk-sweep {
+  0%   { transform: translateX(-120%); opacity: 0; }
+  12%  { opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+@keyframes pk-risein {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes pk-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--gold-hi-rgb), 0.55); }
+  50%      { box-shadow: 0 0 0 7px rgba(var(--gold-hi-rgb), 0); }
+}
+.pk-arrive { position: relative; overflow: hidden; animation: pk-risein 0.42s cubic-bezier(0.2, 0.8, 0.25, 1); }
+.pk-arrive::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 216, 77, 0.72) 50%, transparent 70%);
+  animation: pk-sweep 0.75s cubic-bezier(0.3, 0.1, 0.2, 1) 1;
+}
+.pk-glow {
+  outline: 3px solid var(--gold-hi); outline-offset: 2px; border-radius: var(--r-md);
+  animation: pk-pulse 1.6s ease-in-out infinite;
+}
+/* reduced motion: the SAME event, said without movement — a solid high-contrast
+   frame and a filled corner tag, never a degraded version of the flash */
+.pk-arrive-quiet { position: relative; }
+.pk-arrive-quiet::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: rgba(255, 216, 77, 0.14);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pk-arrive, .pk-arrive::after, .pk-glow { animation: none !important; }
+  .pk-glow { outline: 4px solid var(--gold-hi); box-shadow: none; }
+}
+.pk-mine-chip {
+  margin: 0 0 8px; padding: 7px 11px; border-radius: 999px; display: inline-block;
+  background: rgba(var(--gold-rgb), 0.16); border: 1px solid rgba(var(--gold-rgb), 0.45);
+  color: var(--text-d); font-size: 0.84rem; font-weight: 600;
+}
+.pk-mine-chip b, .pk-mysign { color: var(--gold-hi); font-weight: 800; }
+.pw-side { margin: 14px 0 0; }
+.pw-out { margin: 16px 0 0; padding-top: 12px; border-top: 1px dashed var(--line-l); }
+.pw-out-say { margin: 0 0 9px; font-size: 0.88rem; line-height: 1.5; color: var(--muted); }
+
+/* ---- THE SIDE SHOW (K36) ------------------------------------------------ */
+.sideshow {
+  display: flex; gap: 14px; align-items: flex-start; text-align: left;
+  margin: 0; padding: 14px 16px; border-radius: var(--r-md);
+  background: #F3ECFB; border: 1.5px solid #DCCBF2; color: var(--ink);
+  animation: pk-risein 0.45s cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+.sideshow.is-leaving { opacity: 0; transform: translateY(8px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.ss-figure { flex: 0 0 132px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+/* the artwork sits in its own soft pool of light, never in a bordered box (the
+   house law for character art). 96px was too small to read a raised eyebrow. */
+.ss-stage {
+  position: relative; width: 132px; height: 150px;
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.ss-stage::before {
+  content: ''; position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%);
+  width: 128px; height: 128px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 252, 236, 0.95) 0%, rgba(250, 244, 255, 0.55) 46%, rgba(243, 236, 251, 0) 72%);
+}
+.ss-img {
+  position: relative; width: 132px; height: 150px; object-fit: contain;
+  image-rendering: auto; filter: drop-shadow(0 5px 7px rgba(64, 40, 104, 0.22));
+}
+@media (max-width: 560px) {
+  .ss-figure { flex: 0 0 100px; }
+  .ss-stage, .ss-img { width: 100px; height: 114px; }
+  .ss-stage::before { width: 96px; height: 96px; }
+}
+@media (prefers-reduced-motion: reduce) { .sideshow { animation: none; } }
+.ss-name {
+  font-family: var(--font-display); font-weight: 800; font-size: 0.82rem;
+  letter-spacing: 0.05em; text-transform: uppercase; color: #5B3C86;
+}
+.ss-body { flex: 1 1 auto; min-width: 0; }
+.ss-log { max-height: 190px; overflow-y: auto; }
+.ss-line {
+  margin: 0 0 7px; padding: 8px 11px; border-radius: 11px; font-size: 0.92rem; line-height: 1.5;
+  background: #fff; border: 1px solid #E2D6F3; color: var(--ink);
+}
+.ss-line.is-mine { background: #FFF6DA; border-color: #F0DCA0; margin-left: 22px; }
+.ss-line.is-exit { background: #EDE3FA; border-color: #CDB8EC; font-style: italic; }
+.ss-ask { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 8px; }
+.ss-ask-lab { font-size: 0.8rem; font-weight: 700; color: #5B3C86; flex: 0 0 auto; }
+.ss-say {
+  flex: 1 1 140px; min-width: 120px; padding: 8px 11px; font: inherit; font-size: 0.92rem;
+  color: var(--ink); background: #fff; border: 1.5px solid #DCCBF2; border-radius: var(--r-sm);
+}
+.ss-say.wants { border-color: var(--bad); background: var(--bad-soft); }
+/* the dark-theme treatment is on the ARTWORK and the light around it, never a
+   bordered panel (the house law for character art) */
+.sideshow { box-shadow: 0 0 34px rgba(180, 150, 235, 0.22); }
+
+/* ---- the Swap (§C3) ----------------------------------------------------- */
+.swap-card .swap-stage { margin: 12px 0 0; }
+.swap-report {
+  margin: 16px 0 0; padding: 15px 17px; border-radius: var(--r-md);
+  background: #fff; border: 1.5px solid var(--line-l); color: var(--ink);
+}
+.swap-report h3 { margin: 0 0 6px; font-size: 1rem; color: var(--ols-blue); }
+.swap-report-lead, .swap-report-note { margin: 0 0 11px; font-size: 0.9rem; line-height: 1.5; color: var(--ink); }
+.swap-report-note { color: var(--muted); }
+.swap-lab { display: block; margin: 0 0 5px; font-size: 0.86rem; font-weight: 700; color: var(--ink); }
+.swap-field {
+  display: block; width: 100%; margin: 0 0 13px; padding: 10px 12px; font: inherit; font-size: 0.95rem;
+  color: var(--ink); background: var(--field); border: 1.5px solid var(--line-l); border-radius: var(--r-sm);
+}
+.swap-field:focus { outline: 2px solid var(--ols-blue); outline-offset: 1px; }
+.swap-report-say { margin: 9px 0 0; font-size: 0.88rem; color: #8A2010; font-weight: 600; }
+.swap-feed {
+  margin: 12px 0; padding: 12px 14px; border-radius: 12px; max-height: 260px; overflow-y: auto;
+  background: #fff; border: 1.5px solid var(--line-l); color: var(--ink);
+}
+.swap-feed-idle { margin: 0; font-size: 0.9rem; color: var(--muted); }
+.swap-beat {
+  margin: 0 0 7px; padding: 7px 11px; border-radius: 10px; font-size: 0.92rem; line-height: 1.5;
+  color: var(--ink); background: var(--field); border: 1px solid var(--line-l);
+}
+.swap-beat.is-bot { background: #EDF3FD; border-color: #CFDDF5; }
+.swap-beat.is-tester { background: #FFF6DA; border-color: #F0DCA0; }
+.swap-myreport {
+  margin: 14px 0 0; padding: 14px 16px; border-radius: var(--r-md);
+  background: #FFF9E6; border: 1.5px solid #F0DCA0; color: var(--ink);
+}
+.swap-myreport h3 { margin: 0 0 7px; font-size: 0.95rem; color: #8A5A12; }
+.swap-report-text { margin: 0 0 11px; font-size: 0.97rem; line-height: 1.55; color: var(--ink); }
+.swap-noreport, .swap-seal-say, .swap-reveal { margin: 0 0 12px; font-size: 0.97rem; line-height: 1.55; color: var(--text-d); }
+.swap-exit-row, .duel-exit-row { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+.swap-side { margin: 12px 0 0; }
+
+/* ---- the Match (§C4) ---------------------------------------------------- */
+.duel-strip { display: flex; gap: 6px; margin: 0 0 12px; }
+.duel-pip {
+  flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 800; font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, 0.10); color: var(--muted-d);
+  border: 1px solid var(--line-d);
+}
+.duel-pip.done { background: rgba(var(--gold-rgb), 0.22); color: var(--gold-hi); border-color: rgba(var(--gold-rgb), 0.5); }
+.duel-pip.now { background: var(--gold); color: var(--accent-ink); border-color: var(--gold-hi); }
+.duel-pip.is-guess { border-style: dashed; }
+/* THE GUESS-ROUND BANNER: full width, its own colour, and it STAYS for the whole
+   round (K35(4) / DFM 146e — a toast that vanishes is not an announcement) */
+.duel-guess-banner {
+  margin: 0 0 14px; padding: 12px 16px; border-radius: var(--r-md);
+  background: #4B2E83; color: #F6EEFF; border: 2px solid #8B6DC7;
+  font-size: 0.97rem; line-height: 1.55;
+}
+.duel-guess-banner b {
+  display: inline-block; margin-right: 8px; padding: 2px 9px; border-radius: 999px;
+  background: #F6EEFF; color: #3A2166; font-size: 0.76rem; letter-spacing: 0.09em;
+  text-transform: uppercase; font-weight: 800;
+}
+.duel-card.is-guess { border-color: #8B6DC7; }
+.duel-goal { margin: 0 0 8px; }
+.duel-lead { margin: 0 0 12px; font-size: 0.95rem; line-height: 1.55; color: var(--text-d); }
+.duel-code {
+  margin: 0 0 14px; padding: 14px 16px; border-radius: 12px; white-space: pre-wrap;
+  background: #0E1A30; color: #EAF2FF; border: 1.5px solid #2B3F63;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.95rem; line-height: 1.7;
+}
+.duel-options { display: flex; flex-direction: column; gap: 9px; margin: 0 0 14px; }
+.duel-option {
+  text-align: left; padding: 12px 15px; border-radius: var(--r-sm); cursor: pointer; font: inherit;
+  background: #fff; border: 2px solid var(--line-l); color: var(--ink); font-size: 0.96rem;
+  white-space: pre-wrap;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+.duel-option:hover:not(:disabled) { border-color: var(--ols-blue); }
+.duel-option.is-picked { border-color: var(--gold); background: #FFF9E6; }
+.duel-option:disabled { opacity: 0.75; cursor: default; }
+.duel-typed { margin: 0 0 14px; }
+.duel-lab { display: block; margin: 0 0 6px; font-size: 0.88rem; font-weight: 700; color: var(--text-d); }
+.duel-say {
+  display: block; width: 100%; padding: 11px 13px; font-size: 0.95rem;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color: var(--ink); background: #fff; border: 1.5px solid var(--line-l); border-radius: var(--r-sm);
+  resize: vertical;
+}
+.duel-say:focus { outline: 2px solid var(--ols-blue); outline-offset: 1px; }
+.duel-locked-note { margin: 9px 0 0; font-size: 0.87rem; line-height: 1.5; color: var(--muted-d); }
+.duel-locked-note.is-wants { color: #FFC3B8; font-weight: 700; }
+.duel-wait { margin: 14px 0 0; padding: 12px 15px; border-radius: var(--r-md);
+  background: rgba(var(--gold-rgb), 0.10); border: 1px solid rgba(var(--gold-rgb), 0.35); }
+.duel-wait-say { margin: 0; font-size: 0.94rem; line-height: 1.55; color: var(--text-d); }
+.duel-reveal { margin: 14px 0 0; padding: 15px 17px; border-radius: var(--r-md);
+  background: #fff; border: 1.5px solid var(--line-l); color: var(--ink); }
+.duel-reveal h3 { margin: 0 0 8px; font-size: 0.95rem; color: var(--ols-blue); }
+.duel-real {
+  margin: 0 0 13px; padding: 12px 14px; border-radius: 11px; white-space: pre-wrap;
+  background: #0E1A30; color: #EAF2FF; border: 1px solid #2B3F63;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.94rem; line-height: 1.6;
+}
+.duel-real.is-err { background: #3A1620; color: #FFD9D2; border-color: #6B2A33; }
+.duel-preds { display: flex; flex-direction: column; gap: 8px; margin: 0 0 13px; }
+.duel-pred {
+  display: flex; flex-direction: column; gap: 3px; padding: 9px 12px; border-radius: var(--r-sm);
+  background: var(--field); border: 1.5px solid var(--line-l); color: var(--ink);
+}
+.duel-pred.is-right { background: var(--good-soft); border-color: #B6E6CE; }
+.duel-pred.is-wrong { background: #FFF3E2; border-color: #F1D6A8; }
+.duel-pred-who {
+  font-size: 0.7rem; letter-spacing: 0.09em; text-transform: uppercase; font-weight: 800; color: #4B5B79;
+}
+.duel-pred-text {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.92rem; line-height: 1.55; color: var(--ink); white-space: pre-wrap;
+}
+.duel-teach { margin: 0 0 12px; font-size: 0.96rem; line-height: 1.6; color: var(--ink); }
+.duel-timeout { margin: 0 0 11px; font-size: 0.92rem; line-height: 1.5; color: #8A5A12;
+  background: #FFF3E2; border: 1px solid #F1D6A8; border-radius: var(--r-sm); padding: 9px 12px; }
+.duel-score { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: var(--gold-hi); margin: 0 0 10px; }
+.duel-reveal-names, .duel-seal-say { margin: 0 0 12px; font-size: 0.97rem; line-height: 1.55; color: var(--text-d); }
+
+/* ---- the Now Playing card send (§E1) ------------------------------------ */
+.pye-cardsend { margin: 14px 0 0; padding: 14px 16px; border-radius: var(--r-md);
+  background: #fff; border: 1.5px solid var(--line-l); color: var(--ink); }
+.pye-cardsend h3 { margin: 0 0 8px; font-size: 0.95rem; color: var(--ols-blue); }
+.pye-card {
+  margin: 0 0 11px; padding: 13px 15px; border-radius: 11px; white-space: pre-wrap;
+  background: #16253F; color: #EAF2FF; border: 1px solid #2B3F63;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.95rem; line-height: 1.65;
+}
+.pye-card.is-theirs { background: #1F3357; }
+.pye-cardsay { margin: 0 0 10px; font-size: 0.92rem; line-height: 1.55; color: var(--ink); }
+.pye-waiting { margin: 12px 0 0; font-size: 0.9rem; color: var(--muted); }
+.pye-theirs { margin-top: 12px; }
+
+/* ---- the refusable extra build (§D3/§E2, under DFM 259 + 265) ------------ */
+.py-offer-free {
+  margin: 0 0 16px; padding: 10px 13px; border-radius: var(--r-sm);
+  background: rgba(var(--gold-rgb), 0.12); border: 1px solid rgba(var(--gold-rgb), 0.38);
+  color: var(--text-d); font-size: 0.93rem; line-height: 1.55;
+}
+.py-offer-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* ---- the briefing's scripted demo (§D1) --------------------------------- */
+.dossier-demo { margin: 18px 0 6px; }
+.dossier-demo .pyx-log { max-height: none; min-height: 96px; }
+.dossier-demo-note { margin: 9px 0 0; font-size: 0.88rem; line-height: 1.55; color: var(--muted-d); }
+
+/* ---- a film served at the point of building (DFM 168) ------------------- */
+.pyrun-intro-film { margin: 6px 0 16px; }
+.pyrun-intro-film video {
+  width: 100%; max-width: 100%; border-radius: var(--r-md);
+  background: #000; border: 1.5px solid var(--line-d); display: block;
+}
+.pyrun-intro-film-say { margin: 9px 0 0; font-size: 0.9rem; line-height: 1.55; color: var(--muted-d); }
+
+/* a parsons block that must show its own indentation (opt-in; every existing
+   puzzle renders exactly as it did) */
+.parsons-block.is-pre { white-space: pre-wrap; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+/* the reason a sleeping RUN is asleep, parked beside the button itself — never
+   under a console the pupil has to scroll past (DFM 205's "beside itself") */
+.pyrun-waitnote {
+  margin: 9px 0 0; padding: 9px 12px; border-radius: var(--r-sm);
+  background: var(--field); border: 1.5px solid var(--line-l);
+  color: var(--ink); font-size: 0.9rem; line-height: 1.5;
+}
+/* the reason the Match's options have stopped responding, sitting with them */
+.duel-optnote {
+  margin: 0 0 10px; padding: 8px 11px; border-radius: var(--r-sm);
+  background: var(--field); border: 1.5px solid var(--line-l);
+  color: var(--ink); font-size: 0.88rem; line-height: 1.5;
+}

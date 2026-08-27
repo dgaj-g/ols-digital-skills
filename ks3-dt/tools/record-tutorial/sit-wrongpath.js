@@ -64,7 +64,9 @@ const TILE = {
   'j2-1': /Lesson\s*1(?!\d)/i,
   'j3-1': /Lesson\s*1(?!\d)/i,
   'j2-2': /Lesson\s*2(?!\d)/i,
-  'j3-2': /Lesson\s*2(?!\d)/i
+  'j3-2': /Lesson\s*2(?!\d)/i,
+  'j2-3': /Lesson\s*3(?!\d)/i,
+  'j3-3': /Lesson\s*3(?!\d)/i
 };   /* the tile reads "Lesson 5Game Studio" — no space, so \b never fires */
 
 /* ---- REQUIRED COVERAGE (DFM 204, his ruling of 13 Aug 2026) ----
@@ -215,6 +217,64 @@ const LANDMARKS = {
      before it is ready and therefore the one that must explain itself
      (DFM 205). A walk that never stands on those has walked the happy path,
      which is exactly the blindness sit-wrongpath exists to end (DFM 194c). */
+  /* ---- J2 LESSON 3 (27 Aug 2026) ----------------------------------------
+     Every row names a surface THIS walker really reaches, alone, with no
+     partner in the room — the rule that has caught this file before. So the
+     Swap is checked by the two states a lone pupil genuinely lands in: the
+     WAITING card with the side show on it, and the SOLO seat she is put in when
+     no partner arrives. Neither is a second pupil's screen. */
+  'j2-3': [
+    ['the Do-Now', '.q-opt', '_recap'],
+    ['the workshop briefing', '.dossier-cta, .dossier', 'workshop'],
+    ['the film and its chapters', '.video-card, .vid-chapter', 'film-a'],
+    ['the worked example, read not built', '.pyw-card .pyw-prog', 'training-1'],
+    ['the ordering puzzle', '.parsons-card, .parsons-tray', 'training-2'],
+    ['the build tray with a gap in it', '.pyt-list .pyrun-line', 'training-3'],
+    ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'training-3'],
+    ['NOT YET, with no line named', '.pyrun-verdict.is-notyet', 'training-3'],
+    ['the editor, empty, before she types anything', '.pye-card .pye-code', 'mybot'],
+    ['the ready-made lines beside it', '.pyp-chip', 'mybot'],
+    ['the checklist that only ticks on a run', '.pyf-list .pyf-item', 'mybot'],
+    ['the free help row', '.py-help-row', 'mybot'],
+    /* THE WAIT, AND THE SIDE SHOW ON IT. A lone walker never gets a partner, so
+       this is the state she really stands in, and K36b's whole point is that
+       Fred appears here and nowhere else. A landmark for a paired screen this
+       walk cannot reach would be coverage claimed and not had (DFM 204). */
+    ['waiting for a partner', '.pair-wait .pw-status', 'chatswap'],
+    ['Fred, on the waiting card', '.sideshow .ss-img', 'chatswap'],
+    ['the solo seat, when nobody comes', '.swap-card', 'chatswap'],
+    ['the report form', '.swap-report', 'chatswap'],
+    ['the extra jobs hub, untouched', '.pyrun-hub .pyrun-job', 'extras'],
+    ['the way out, INSIDE a job (265c)', '.pyrun-card .pyrun-exit-row .pyrun-finish', 'extras'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'close']
+  ],
+  /* ---- J3 LESSON 3 (27 Aug 2026) ----------------------------------------
+     Same rule: the Match is checked by the states a pupil alone really reaches
+     — the wait with Margo on it, and the solo run she is given when no partner
+     arrives — never by a second pupil's committed answer. */
+  'j3-3': [
+    ['the Do-Now', '.q-opt', '_recap'],
+    ['the call-room briefing', '.dossier-cta, .dossier', 'callroom'],
+    ['the first film and its chapters', '.video-card, .vid-chapter', 'film-a'],
+    ['waiting for a partner', '.pair-wait .pw-status', 'match'],
+    ['Margo, on the waiting card', '.sideshow .ss-img', 'match'],
+    ['a round of the Match', '.duel-card .duel-code', 'match'],
+    ['the second film', '.video-card, .vid-chapter', 'film-b'],
+    ['the worked example, read not built', '.pyw-card .pyw-prog', 'assembly-1'],
+    ['the ordering puzzle', '.parsons-card, .parsons-tray', 'assembly-2'],
+    ['the build tray with a gap in it', '.pyt-list .pyrun-line', 'assembly-3'],
+    ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'assembly-3'],
+    ['NOT YET, with no line named', '.pyrun-verdict.is-notyet', 'assembly-3'],
+    ['the editor, empty, with nothing to drag into it', '.pye-card .pye-code', 'engine'],
+    ['the checklist that only ticks on a run', '.pyf-list .pyf-item', 'engine'],
+    ['the free help row', '.py-help-row', 'engine'],
+    ['the extra jobs hub, untouched', '.pyrun-hub .pyrun-job', 'extras'],
+    ['the way out, INSIDE a job (265c)', '.pyrun-card .pyrun-exit-row .pyrun-finish', 'extras'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing ordering puzzle', '.parsons-card, .parsons-tray', 'exitp'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'close']
+  ],
   'j2-2': [
     ['the Do-Now', '.q-opt', '_recap'],
     ['the Bureau briefing', '.dossier-cta, .dossier', 'briefing'],
@@ -337,7 +397,13 @@ const WRONG = {
     db.locks[seed.cls] = db.locks[seed.cls] || {};
     for (const n of ['1', '2', '3', '4', '5', 'S1']) db.locks[seed.cls][n] = { u: now, on: 1 };
     db.cfg[seed.cls] = db.cfg[seed.cls] || {};
-    db.cfg[seed.cls].pairing = { on: 0 };
+    /* PAIRING IS ON FOR A LESSON WHOSE OWN LANDMARK LIST NAMES THE WAITING
+       CARD. Switching it off everywhere meant the two Lesson 3 set-pieces went
+       straight to their solo seat, so the wait — and the character his ruling
+       put on it — could not be reached by this walk at all, and two landmarks
+       failed for a reason that was the harness's own configuration. The rule is
+       read off the list rather than written twice (DFM 144). */
+    db.cfg[seed.cls].pairing = { on: seed.pairing ? 1 : 0 };
     /* THE DO-NOW HAD NOTHING TO SERVE, SO THE WALK NEVER STOOD ON IT (19 Aug
        2026). Rule 134 gates every recap item on a lesson this pupil has
        COMPLETED, and this walker seeded `L: {}` — nothing completed — so from
@@ -369,6 +435,7 @@ const WRONG = {
     if (seed.target === 'S1') { db.sim = Object.assign({}, db.sim, { driveFail: 1 }); }
     localStorage.setItem('ks3dt-dev', JSON.stringify(db));
   }, { cls: CLASS, key: PUPIL_KEY, name: PUPIL_NAME,
+       pairing: (LANDMARKS[LESSON] || []).some(function (l) { return /pair-wait/.test(String(l[1])); }),
        target: LESSON === 'S1' ? 'S1' : Number(LESSON_NUM) });
   await page.reload({ waitUntil: 'domcontentloaded' });
   await sleep(2400);
@@ -860,7 +927,15 @@ const WRONG = {
      be mistaken for a walk that finished (DFM 204). */
   /* J2 Lesson 1 walks five inspection scenes with five zones each on top of an
      eighteen-question hour, so it needs the longest budget of the set. */
-  const MAX = LESSON === 'j2-1' ? 260 : LESSON === 'j3-1' ? 220
+  /* THE TWO LESSON 3s ARE THE LONGEST WALKS ON THE PLATFORM. Each carries a
+     paired set-piece that the walk now genuinely WAITS through (fourteen seconds
+     before the preview's partner arrives, on purpose, so the waiting card and
+     the character on it are really stood on), and J3 adds six committed rounds,
+     two films and a typed editor on top of twelve chunks. J3 Lesson 3 ran out
+     of loops at 110 and reported fourteen coverage failures for it — a walk that
+     runs out of budget must never be mistaken for a walk that finished. */
+  const MAX = LESSON === 'j3-3' ? 300 : LESSON === 'j2-3' ? 220
+    : LESSON === 'j2-1' ? 260 : LESSON === 'j3-1' ? 220
     : LESSON === "5" ? 160 : (LESSON === "1" ? 200 : (LESSON === "3" ? 170 : 110));
   let stuckRuns = 0;
   for (let i = 0; i < MAX; i++) {

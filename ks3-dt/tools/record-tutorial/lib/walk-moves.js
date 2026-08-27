@@ -173,6 +173,94 @@ function detectKind() {
      tray or verdict ever ships with nothing having stood on it; the
      confused-pupil walker opens one, ABANDONS it half-built, and then presses
      Finish the lesson from the hub — which is his own time-up scenario. */
+  /* ---- J2/J3 LESSON 3, and the reason this block exists ------------------
+     The expert walker ran 180 turns on ONE card of j2-03 and never left it: the
+     worked example opens a CONVERSATION, and a conversation has a reply box —
+     a surface that did not exist anywhere on the platform before this round, so
+     no kind matched it, so the walker fell through to the generic button
+     handler, which found nothing to press, and looped. That is the exact fault
+     recorded at the top of this file for Press Night, arriving again with a new
+     engine (DFM 204): a walk that stops is not a lesson that is covered.
+     THE CONVERSATION COMES FIRST, before any pyrun rule, because it is drawn
+     INSIDE a `.pyrun-card` and would otherwise be shadowed by the card's own
+     tray and RUN rules. */
+  /* WAITING FOR A PARTNER IS A STATE, NOT A STUCK SCREEN. The only control on
+     the waiting card is the ghost button that gives up and works alone, so a
+     walker with no rule for this card pressed it — and left the pair every
+     time, which is why neither Lesson 3 walk could ever reach its own paired
+     activity. A pupil waits; so does the walk. */
+  if (q('.pair-wait') && !q('.swap-card') && !q('.duel-card')) return { kind: 'pair-wait' };
+
+  if (vis(q('.pyx-ask .pyx-reply:not([disabled])'))) return { kind: 'pyx-reply' };
+
+  /* THE MATCH. Options first, then the typed rounds, then the reveal's own way
+     on — each a distinct state with a distinct control, so a stuck walker names
+     which one it stuck on rather than "a duel card". */
+  if (q('.duel-card')) {
+    /* ANSWER FIRST, THEN LOCK. The first cut asked whether the LOCK button was
+       armed before looking for an option to pick -- and lock only arms once an
+       answer exists, so the walker could never reach the picking branch, fell
+       through to a `.duel-goal` that is an <h2> and not a button at all, and
+       committed nothing for six rounds while the run still printed green. */
+    if (vis(q('.duel-next:not([disabled])'))) return { kind: 'duel-next' };
+    if (vis(q('.duel-done:not([disabled])'))) return { kind: 'duel-done' };
+    if (q('.duel-lock')) {
+      const opts = Array.from(document.querySelectorAll('.duel-options .duel-option'));
+      if (opts.length && !opts.some(o => o.classList.contains('is-picked'))) return { kind: 'duel-pick' };
+      const typed = q('.duel-say:not([disabled]):not([readonly])');
+      if (typed && !String(typed.value || '').trim()) return { kind: 'duel-type' };
+      if (vis(q('.duel-lock:not([disabled])'))) return { kind: 'duel-lock' };
+      return { kind: 'duel-wait' };
+    }
+    /* the way out is the LAST thing looked at, never the first: checking it
+       first made the expert walker leave the Match on its opening screen and
+       collect a badge for having predicted nothing */
+    if (vis(q('.duel-finish:not([disabled])'))) return { kind: 'duel-finish' };
+    return { kind: 'duel-wait' };
+  }
+
+  /* THE SWAP. Same discipline: the report form, the send, the seal and the
+     solo seat are four different screens and four different kinds. */
+  if (q('.swap-card')) {
+    if (vis(q('.swap-send-report:not([disabled])'))) {
+      const empty = Array.from(document.querySelectorAll('.swap-report .swap-field'))
+        .filter(vis).find(f => !String(f.value || '').trim());
+      if (empty) return { kind: 'swap-write' };
+      return { kind: 'swap-send' };
+    }
+    if (vis(q('.swap-report-btn:not([disabled])'))) return { kind: 'swap-report' };
+    if (vis(q('.swap-solo-go:not([disabled])')) || vis(q('.swap-solo-btn:not([disabled])'))) return { kind: 'swap-solo' };
+    if (vis(q('.swap-go:not([disabled])'))) return { kind: 'swap-go' };
+    if (vis(q('.swap-done:not([disabled])'))) return { kind: 'swap-done' };
+    /* last, for the same reason as the Match's */
+    if (vis(q('.swap-finish:not([disabled])'))) return { kind: 'swap-finish' };
+    return { kind: 'swap-wait' };
+  }
+
+  /* THE TYPED EDITOR. It has no tray to place from, so every pyrun rule below
+     would miss it. The starter button is taken FIRST when the box is empty,
+     because that is the route a pupil with nothing on the page is offered. */
+  /* AN EXPERT WRITES A PROGRAM. The first cut of this had the walker press the
+     ready-made-line chips, which is what a pupil who is stuck does, and it
+     never pressed RUN -- so the editor, its checklist and its verdict were
+     walked past rather than through. It now types ONE working program (from the
+     encrypted keys, never from the pupil's own screen) and runs it, which is
+     the only way the checklist can be proved to tick on a real run rather than
+     on a read. */
+  const pyeCard = Array.from(document.querySelectorAll('.pye-card'))
+    .find(n => n.tagName === 'DIV' && n.querySelector('.pye-code'));
+  if (pyeCard) {
+    const ta = pyeCard.querySelector('.pye-code');
+    const bid = pyeCard.getAttribute('data-build');
+    const key = window.__walkKey ? window.__walkKey(bid) : null;
+    const want = key && key.program ? String(key.program) : null;
+    if (want && String(ta.value || '') !== want) return { kind: 'pye-write', ph: bid || '' };
+    if (!want && !String(ta.value || '').trim() && vis(pyeCard.querySelector('.pyp-chip'))) return { kind: 'pye-chip' };
+    if (vis(q('.pye-send-card:not([disabled])'))) return { kind: 'pye-send' };
+    if (vis(pyeCard.querySelector('.pyrun-run:not([disabled])'))) return { kind: 'pye-run' };
+    if (vis(q('.pyrun-verdict .primary-btn'))) return { kind: 'pyrun-next' };
+  }
+
   if (q('.pyrun-hub')) {
     const jobs = Array.prototype.slice.call(document.querySelectorAll('.pyrun-hub .pyrun-job'));
     const left = jobs.filter(function (b) { return !b.querySelector('.pyrun-job-tick'); }).length;
@@ -209,9 +297,31 @@ function detectKind() {
     } else if (q('.pyt-list .pyrun-line')) {
       return { kind: extraRow ? 'pyrun-extra-place' : 'pyrun-place' };
     }
-    const blank = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank'))
+    const blank = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
       .filter(vis).find(i => !i.value);
     if (blank) return { kind: 'pyrun-blank', ph: blank.getAttribute('data-key') || '' };
+    /* A PRE-FILLED BLANK CAN STILL BE THE THING THAT IS WRONG. The worked
+       example ships with `naem` already typed into it -- the planted mistake the
+       whole card is about -- so "find a blank with no value in it" found nothing
+       and the walker pressed RUN on the same broken program for ever.
+       ONLY AFTER IT HAS REALLY FAILED. An expert sitting the lesson presses RUN,
+       reads what Python says, and then fixes the spelling; a walker that
+       corrected it before trying would sail past the one thing the card teaches
+       and prove that the planted mistake was never met. */
+    const failed = !!(q('.pyc.is-bad') || q('.pyrun-verdict.is-notyet'));
+    if (failed) {
+      const card2 = q('.pyrun-card');
+      const bid2 = card2 && card2.getAttribute('data-build');
+      const k2 = window.__walkKey ? window.__walkKey(bid2) : null;
+      const wrong = (k2 && k2.blanks)
+        ? Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+            .filter(vis).find(i => {
+              const kk = i.getAttribute('data-key');
+              return k2.blanks[kk] != null && String(i.value) !== String(k2.blanks[kk]);
+            })
+        : null;
+      if (wrong) return { kind: 'pyrun-blank-fix', ph: wrong.getAttribute('data-key') || '' };
+    }
     if (vis(q('.pyrun-run'))) return { kind: 'pyrun-run' };
   }
 
@@ -322,6 +432,85 @@ const MOVES = {
      content (DFM 225b's fault). It picks a block and tries each Python line it
      has not yet tried against THAT block, so the walk terminates in at most
      n tries per block and exercises the wrong path as well as the right one. */
+  /* ---- J2/J3 Lesson 3 ---------------------------------------------------- */
+  /* A REAL ANSWER, not a keystroke. The bot asks what she is called and what she
+     likes; an empty string would be answered by a bot that then prints "Hello "
+     and nothing, which is a screen no pupil produces. */
+  'pair-wait': () => {},
+  'pyx-reply': () => {
+    const box = document.querySelector('.pyx-ask .pyx-reply:not([disabled])');
+    if (!box) return;
+    window.__pyxN = (window.__pyxN || 0) + 1;
+    const words = ['Aoife', 'chips', 'Down', 'Art', 'green', 'Tuesday'];
+    box.value = words[window.__pyxN % words.length];
+    box.dispatchEvent(new Event('input', { bubbles: true }));
+    const send = document.querySelector('.pyx-ask .pyx-send:not([disabled])');
+    if (send) send.click();
+  },
+  /* THE EXPERT ANSWERS THE MATCH, and answers it RIGHT. The first cut picked
+     the first option it found and typed one fixed string, which scored 0 of 6
+     every run -- so the round's badge was never earned and the whole earning
+     path went untested while the walk printed green. */
+  'duel-pick': () => {
+    const card = document.querySelector('.duel-card');
+    const at = Number(card && card.getAttribute('data-round'));
+    const ans = window.__walkAnswers ? window.__walkAnswers() : null;
+    const want = (ans && !isNaN(at)) ? ans['r' + (at + 1)] : null;
+    const norm = x => String(x == null ? '' : x).replace(/\s+/g, ' ').trim().toLowerCase();
+    const opts = Array.from(document.querySelectorAll('.duel-options .duel-option'));
+    const hit = want != null ? opts.find(o => norm(o.getAttribute('data-v')) === norm(want)) : null;
+    const pick = hit || opts.find(o => !o.classList.contains('is-picked')) || opts[0];
+    if (pick) pick.click();
+  },
+  'duel-type': () => {
+    const t = document.querySelector('.duel-say:not([disabled]):not([readonly])');
+    if (!t) return;
+    const card = document.querySelector('.duel-card');
+    const at = Number(card && card.getAttribute('data-round'));
+    const ans = window.__walkAnswers ? window.__walkAnswers() : null;
+    const want = (ans && !isNaN(at)) ? ans['r' + (at + 1)] : null;
+    t.value = want != null ? String(want) : 'Curtain Up';
+    t.dispatchEvent(new Event('input', { bubbles: true }));
+  },
+  'duel-lock': () => { const b = document.querySelector('.duel-lock:not([disabled])'); if (b) b.click(); },
+  'duel-done': () => { const b = document.querySelector('.duel-done:not([disabled])'); if (b) b.click(); },
+  'duel-next': () => { const b = document.querySelector('.duel-next:not([disabled])'); if (b) b.click(); },
+  'duel-finish': () => { const b = document.querySelector('.duel-finish:not([disabled])'); if (b) b.click(); },
+  'duel-wait': () => {},
+  'swap-go': () => { const b = document.querySelector('.swap-go:not([disabled])'); if (b) b.click(); },
+  'swap-solo': () => { const b = document.querySelector('.swap-solo-go:not([disabled]), .swap-solo-btn:not([disabled])'); if (b) b.click(); },
+  'swap-report': () => { const b = document.querySelector('.swap-report-btn:not([disabled])'); if (b) b.click(); },
+  /* every box filled with a sentence a pupil could really have written — a
+     one-character report would tick the same gate and prove nothing */
+  'swap-write': () => {
+    const said = ['It asked my name and what I like.',
+                  'The first line made me laugh.',
+                  'It never used my second answer for anything.',
+                  'I would keep the ending.'];
+    Array.from(document.querySelectorAll('.swap-report .swap-field')).forEach((f, i) => {
+      if (String(f.value || '').trim()) return;
+      f.value = said[i % said.length];
+      f.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  },
+  'swap-send': () => { const b = document.querySelector('.swap-send-report:not([disabled])'); if (b) b.click(); },
+  'swap-done': () => { const b = document.querySelector('.swap-done:not([disabled])'); if (b) b.click(); },
+  'swap-finish': () => { const b = document.querySelector('.swap-finish:not([disabled])'); if (b) b.click(); },
+  'swap-wait': () => {},
+  'pye-starter': () => { const b = document.querySelector('.pye-starter-btn:not([disabled])'); if (b) b.click(); },
+  'pye-write': () => {
+    const card = Array.from(document.querySelectorAll('.pye-card'))
+      .find(n => n.tagName === 'DIV' && n.querySelector('.pye-code'));
+    if (!card) return;
+    const key = window.__walkKey ? window.__walkKey(card.getAttribute('data-build')) : null;
+    if (!key || !key.program) return;
+    const ta = card.querySelector('.pye-code');
+    ta.value = String(key.program);
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+  },
+  'pye-chip': () => { const c = document.querySelector('.pyp-chip'); if (c) c.click(); },
+  'pye-send': () => { const b = document.querySelector('.pye-send-card:not([disabled])'); if (b) b.click(); },
+  'pye-run': () => { const b = document.querySelector('.pyrun-run:not([disabled])'); if (b) b.click(); },
   'snap-pick': () => {
     const b = document.querySelector('.snap-block:not(.snapped)');
     if (b) b.click();
@@ -413,11 +602,26 @@ const MOVES = {
     const card = document.querySelector('.pyrun-card');
     const bid = card && card.getAttribute('data-build');
     const key = window.__walkKey ? window.__walkKey(bid) : null;
-    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank')).find(i => !i.value);
+    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+      .find(i => !i.value);
     if (!inp) return;
     const k = inp.getAttribute('data-key');
     const v = (key && key.blanks && key.blanks[k] != null) ? String(key.blanks[k]) : 'x';
     inp.value = v;
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+  },
+  'pyrun-blank-fix': () => {
+    const card = document.querySelector('.pyrun-card');
+    const bid = card && card.getAttribute('data-build');
+    const key = window.__walkKey ? window.__walkKey(bid) : null;
+    if (!key || !key.blanks) return;
+    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+      .find(i => {
+        const k = i.getAttribute('data-key');
+        return key.blanks[k] != null && String(i.value) !== String(key.blanks[k]);
+      });
+    if (!inp) return;
+    inp.value = String(key.blanks[inp.getAttribute('data-key')]);
     inp.dispatchEvent(new Event('input', { bubbles: true }));
   },
   'pyrun-run': () => { const b = document.querySelector('.pyrun-run:not([disabled])'); if (b) b.click(); },
@@ -731,6 +935,7 @@ const SETTLE = {
   'gal-review': 900, 'gal-write': 250, 'gal-file': 1200, 'gal-back': 700,
   'gal-v2': 700, 'gal-wrap': 1100, 'gal-wait': 1400,
   parsons: 400, input: 400, loading: 700, button: 700, vault: 900, 'hold-sign': 1800,
+  'pair-wait': 1300, 'swap-wait': 1200, 'duel-wait': 1200,
   'std-sign': 1100, rally: 900, 'rally-after': 900, selfeval: 800
 };
 
@@ -975,6 +1180,20 @@ async function primeDevKeys(page, host) {
         }
       }
       return (window.App && App.state && App.state.localKeys && App.state.localKeys[bid]) || null;
+    };
+    /* THE MATCH'S OWN ANSWERS. A commit-and-reveal round carries no build id on
+       its card, so they are found the way the walker finds everything else --
+       by asking its own key file, never the pupil's screen, which does not hold
+       them at all. Any key entry with an `answers` map is one. */
+    window.__walkAnswers = function () {
+      if (!all) return null;
+      for (const fid of Object.keys(all)) {
+        for (const k of Object.keys(all[fid] || {})) {
+          const e = all[fid][k];
+          if (e && e.answers) return e.answers;
+        }
+      }
+      return null;
     };
   }, url);
 }

@@ -221,6 +221,7 @@ window.OLS_TRANSPORT = {
         case 'pairSend':       g.apiPairSend(p); break;
         case 'pairChannel':    g.apiPairChannel(p); break;
         case 'pairComplete':   g.apiPairComplete(p); break;
+        case 'pairBlob':       g.apiPairBlob(p); break;
         case 'galleryOpen':    g.apiGalleryOpen(p); break;
         case 'galleryPost':    g.apiGalleryPost(p); break;
         case 'galleryFeed':    g.apiGalleryFeed(p); break;

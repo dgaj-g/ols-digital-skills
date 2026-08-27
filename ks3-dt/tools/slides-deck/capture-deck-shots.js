@@ -343,58 +343,37 @@ async function holdSign(page) {
 }
 
 /* one step of the walk, in sit-review's priority order, trimmed to Lesson 1 */
-async function stepOnce(page) {
-  const kind = await page.evaluate(() => {
-    const q = s => document.querySelector(s);
-    const vis = e => e && e.offsetParent !== null && !e.disabled;
-    if (q('.badge-pop button') && !q('.pair-pop')) return 'badge';
-    if (vis(q('.dossier-cta'))) return 'dossier';
-    if (q('.chunk-host .vault-file:not(.filed)') && vis(q('.chunk-host .vault-folder'))) return 'vault';
-    if (vis(q('.chunk-host .oath-sign:not([disabled])'))) return 'hold-sign';
-    if (vis(q('.chunk-host .q-feedback button'))) return 'q-next';
-    if (q('.chunk-host .q-opt:not([disabled])')) return 'q-opt';
-    if (q('.chunk-host .confirm-step:not(.ticked):not([disabled]):not(.locked)')) return 'confirm';
-    if (vis(q('.chunk-host .tour-callout button'))) return 'tour';
-    const host = q('.chunk-host');
-    if (!host) return 'nohost';
-    const ta = Array.from(host.querySelectorAll('textarea, input[type=text], input:not([type])'))
-      .filter(vis).filter(e => !e.value);
-    if (ta.length) return 'input';
-    if (Array.from(host.querySelectorAll('button')).filter(vis)
-      .some(b => b.classList.contains('primary-btn'))) return 'primary';
-    return 'stuck';
-  });
+/* ═══ ONE SET OF MOVES, SHARED WITH THE WALKERS (DFM 144) ══════════════════
+   This file used to carry its OWN copy of the step engine — a second, J1-shaped
+   list of what a screen might be and what to do about it. The night J2 and J3
+   Lesson 3 were built, `lib/walk-moves.js` gained nine new kinds (a conversation
+   reply, the Match, the Swap, the typed editor) and every one of them was
+   invisible here, so this file could not have reached a single screen of either
+   new lesson. A capture that cannot walk the lesson it photographs is a capture
+   that files a picture of the wrong screen, which is the exact fault this whole
+   file was rewritten to stop.
+   So the rules live in ONE place now, and the capture asks the same library the
+   two walkers ask. The only thing kept local is the settle time. */
+const WALK = require('../record-tutorial/lib/walk-moves.js');
 
-  switch (kind) {
-    case 'vault': { await vaultDrag(page); await sleep(900); return kind; }
-    case 'hold-sign': { await holdSign(page); await sleep(1800); return kind; }
-    case 'input':
-      await page.evaluate(() => {
-        const vis = e => e && e.offsetParent !== null && !e.disabled;
-        const t = Array.from(document.querySelectorAll('.chunk-host textarea, .chunk-host input[type=text], .chunk-host input:not([type])'))
-          .filter(vis).filter(e => !e.value)[0];
-        if (t) { t.value = 'Preview capture run.'; t.dispatchEvent(new Event('input', { bubbles: true })); }
-      });
-      await sleep(400); return kind;
-    default:
-      await page.evaluate(() => {
-        const q = s => document.querySelector(s);
-        const vis = e => e && e.offsetParent !== null && !e.disabled;
-        const pop = q('.badge-pop button'); if (pop && !q('.pair-pop')) return pop.click();
-        const dc = q('.dossier-cta'); if (vis(dc)) return dc.click();
-        const nx = Array.from(document.querySelectorAll('.chunk-host .q-feedback button')).filter(vis)[0];
-        if (nx) return nx.click();
-        const o = Array.from(document.querySelectorAll('.chunk-host .q-opt:not([disabled])')).filter(vis)[0];
-        if (o) return o.click();
-        const c = q('.chunk-host .confirm-step:not(.ticked):not([disabled]):not(.locked)');
-        if (c) return c.click();
-        const tour = q('.chunk-host .tour-callout button'); if (vis(tour)) return tour.click();
-        const b = Array.from(document.querySelectorAll('.chunk-host button')).filter(vis)
-          .find(e => e.classList.contains('primary-btn'));
-        if (b) return b.click();
-      });
-      await sleep(650); return kind;
+async function stepOnce(page) {
+  const st = await page.evaluate(WALK.detectKind);
+  const mv = WALK.MOVES[st.kind];
+  if (!mv) {
+    /* nothing shared knows this screen: press the primary button, exactly as
+       the old local engine did, so a new surface degrades rather than stops */
+    await page.evaluate(() => {
+      const vis = e => e && e.offsetParent !== null && !e.disabled;
+      const b = Array.from(document.querySelectorAll('.chunk-host button')).filter(vis)
+        .find(e => e.classList.contains('primary-btn'));
+      if (b) b.click();
+    });
+    await sleep(650);
+    return st.kind;
   }
+  await page.evaluate((src) => { (new Function('return (' + src + ')')())(); }, String(mv));
+  await sleep(WALK.SETTLE[st.kind] || 650);
+  return st.kind;
 }
 
 /* walk forward until the predicate is TRUE — and say so honestly if it is not */

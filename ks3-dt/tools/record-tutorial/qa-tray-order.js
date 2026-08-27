@@ -156,8 +156,14 @@ async function trayOrder(pg, chunk, buildIndex, stretch) {
       if (open) open.click();
     }
     await wait(50);
-    return Array.prototype.slice.call(host.querySelectorAll('.pyt-list .pyrun-line'))
-      .map(n => Number(n.getAttribute('data-si')));
+    return {
+      tray: Array.prototype.slice.call(host.querySelectorAll('.pyt-list .pyrun-line'))
+        .map(n => Number(n.getAttribute('data-si'))),
+      /* a WORKED card renders its program as fixed rows, not as a tray. It is
+         measured rather than declared: the exemption below is granted only when
+         the card really has no tray AND really has a program on it. */
+      worked: host.querySelectorAll('.pyw-line').length
+    };
   }, [chunk, buildIndex, !!stretch]);
 }
 
@@ -197,9 +203,26 @@ async function run() {
     const builds = pyrunBuilds();
     check(builds.length > 0, 'there are pyrun builds to measure at all (' + builds.length + ' found) — a walk that finds nothing must never read as a pass (DFM 204)');
     for (const b of builds) {
-      const orders = [];
+      const seen = [];
       for (let n = 0; n < MOUNTS; n++) {
-        orders.push(await trayOrder(pg, b.chunkJson, b.index, b.stretch));
+        seen.push(await trayOrder(pg, b.chunkJson, b.index, b.stretch));
+      }
+      const orders = seen.map(x => x.tray);
+      /* ═══ A WORKED CARD IS NOT AN ASSEMBLY SURFACE (26 Aug 2026) ═══
+         DFM 258's own words are "anything a pupil assembles an answer FROM".
+         A worked card assembles nothing: the program is on screen, complete and
+         in order, and its order IS what the card is teaching — shuffling it
+         would destroy the lesson to satisfy a gate (DFM 146a).
+         THE EXEMPTION IS MEASURED, NOT DECLARED, which is what stops it from
+         becoming the hole DFM 213 warns about: it is granted only when the
+         mount really renders NO tray line AND really renders program rows, and
+         it is PRINTED rather than skipped silently (DFM 204). A card that
+         claimed to be worked and drew a tray would fail here like any other. */
+      if (seen.every(x => x.tray.length === 0 && x.worked > 0)) {
+        console.log('  n/a  ' + b.lesson + ' › ' + b.chunk + ' › ' + b.build +
+          ' — a WORKED card: no tray at all, ' + seen[0].worked + ' program rows drawn, ' +
+          'nothing for a pupil to assemble and therefore nothing to shuffle');
+        continue;
       }
       const drawn = orders.filter(o => o.length === b.lines);
       const allDeranged = drawn.length === MOUNTS && drawn.every(isDerangement);
@@ -213,6 +236,60 @@ async function run() {
         'authored index' + (allDeranged ? '' : ' — served ' + JSON.stringify(orders)));
     }
     check(errs.length === 0, 'no page error while mounting any build' + (errs.length ? ': ' + errs[0] : ''));
+
+    /* ---------------- (a2) THE PALETTE IS A SERVED TRAY TOO ----------------
+       Spec §A2: "the bank order is not solution order (DFM 258 applies to the
+       palette as a served tray — shuffled at mount)". A bank of ready-made lines
+       listed in the order they go into the program is an answer sheet with a
+       different name, so it is measured with the same rule and the same MOUNTS. */
+    console.log('\n=== (a2) THE EDITOR PALETTE (a bank of lines is a tray) ===');
+    const palettes = [];
+    for (const L of lessons()) {
+      (L.json.chunks || []).forEach(ch => {
+        if (ch.engine !== 'pyrun') return;
+        ((ch.config || {}).builds || []).forEach((b, i) => {
+          if ((b.palette || []).length > 1) {
+            palettes.push({ lesson: L.json.id, chunk: ch.id, build: b.id || ('build ' + i),
+                            index: i, chunkJson: ch, n: b.palette.length });
+          }
+        });
+      });
+    }
+    check(palettes.length > 0, 'there are palettes to measure at all (' + palettes.length +
+      ' found) — a walk that finds nothing must never read as a pass (DFM 204)');
+    for (const b of palettes) {
+      const orders = [];
+      for (let n = 0; n < MOUNTS; n++) {
+        orders.push(await pg.evaluate(async ([ch, idx]) => {
+          document.body.innerHTML = '<div id="host"></div>';
+          const host = document.getElementById('host');
+          const cfg = JSON.parse(JSON.stringify(ch));
+          cfg.config.builds = cfg.config.builds.slice(idx);
+          window.Engines.pyrun.mount(host, cfg, {
+            chunk: cfg, review: false, catchup: false, draft: {},
+            awardBadge: () => Promise.resolve({ ok: true }), next: () => {},
+            saveEvent: () => Promise.resolve({ ok: true }), saveDraft: () => Promise.resolve({ ok: true }),
+            markItem: () => Promise.resolve({ ok: true })
+          });
+          const wait = ms => new Promise(r => setTimeout(r, ms));
+          await wait(30);
+          const open = host.querySelector('.intro-card button.primary-btn');
+          if (open) open.click();
+          await wait(60);
+          /* a REFUSABLE build is offered before it is opened (DFM 265's shape),
+             so the walk has to accept the offer to reach the bank behind it */
+          const yes = host.querySelector('.py-offer-yes');
+          if (yes) { yes.click(); await wait(60); }
+          return Array.prototype.slice.call(host.querySelectorAll('.pyp-chip'))
+            .map(n => Number(n.getAttribute('data-i')));
+        }, [b.chunkJson, b.index]));
+      }
+      const drawn = orders.filter(o => o.length === b.n);
+      check(drawn.length === MOUNTS && drawn.every(isDerangement),
+        b.lesson + ' › ' + b.chunk + ' › ' + b.build + ', ' + b.n + ' template line(s), mounted ' +
+        MOUNTS + '×: every mount serves a bank in which NO line sits at its authored index' +
+        (drawn.length === MOUNTS && drawn.every(isDerangement) ? '' : ' — served ' + JSON.stringify(orders)));
+    }
 
     /* ------------- (b) no ordering key is the identity permutation ------------- */
     console.log('\n=== (b) THE ORDERING PUZZLES (parsons is authored-scrambled by design) ===');
