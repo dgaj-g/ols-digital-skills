@@ -128,7 +128,150 @@
     "Water is fine, but she needed to ask a teacher before bringing it in",
     "Only fizzy drinks are banned near the machines, and water is not one"
    ]
+  },
+  {
+   "id": "r-j3-201",
+   "lesson": "j3-02",
+   "topic": "Printing an exact line",
+   "thread": "kp-py-basics",
+   "stem": "Sorcha needs the console to show the words Doors open at 7 and nothing else. Which line does that?",
+   "options": [
+    "It is a print line with the words inside speech marks inside the brackets",
+    "It is a print line with the words inside brackets and no speech marks",
+    "It is a line that has the words on their own and nothing round them",
+    "It is a line with an = sign and the words after it"
+   ]
+  },
+  {
+   "id": "r-j3-202",
+   "lesson": "j3-02",
+   "topic": "Using a variable twice",
+   "thread": "kp-py-basics",
+   "stem": "Aoife's program has `venue = \"The Harbour Light\"` near the top, and uses venue on four later lines. The show moves to a different theatre. How many lines does she change?",
+   "options": [
+    "One — the line with the = on it",
+    "Four — every line that mentions venue",
+    "Five — the one with the = and the four that use it",
+    "None — the program works it out"
+   ]
+  },
+  {
+   "id": "r-j3-203",
+   "lesson": "j3-02",
+   "topic": "A sum inside a printed line",
+   "thread": "kp-py-basics",
+   "stem": "A line reads `print(\"Seats left: \" + str(120 - 87))`. What does the console show?",
+   "options": [
+    "Seats left: 33",
+    "Seats left: 120 - 87",
+    "Seats left: ",
+    "33"
+   ]
+  },
+  {
+   "id": "r-j3-301",
+   "lesson": "j3-03",
+   "topic": "Where counting starts",
+   "thread": "kp-list",
+   "stem": "A list holds four titles. Which one does `playlist[2]` give you?",
+   "options": [
+    "It gives you the third one",
+    "It gives you the second one",
+    "It gives you the fourth one",
+    "It gives you all four, up to number 2"
+   ]
+  },
+  {
+   "id": "r-j3-302",
+   "lesson": "j3-03",
+   "topic": "Counting a list",
+   "thread": "kp-list",
+   "stem": "A list holds four titles. What does `len(playlist)` give you, and what is the LAST position in the list?",
+   "options": [
+    "4, and the last position is 3",
+    "4, and the last position is 4",
+    "3, and the last position is 4",
+    "4, and there is no last position"
+   ]
+  },
+  {
+   "id": "r-j3-303",
+   "lesson": "j3-03",
+   "topic": "Adding to a list",
+   "thread": "kp-list",
+   "stem": "Róisín's list holds five titles. She runs `playlist.append(\"One More\")`. How many titles does the list hold now?",
+   "options": [
+    "Six — the new one goes on the end",
+    "One — the new one replaces what was there",
+    "Five — the new one is printed instead",
+    "Six — the new one goes at the front"
+   ]
+  },
+  {
+   "id": "r-j3-304",
+   "lesson": "j3-03",
+   "topic": "The sort trap",
+   "thread": "kp-list",
+   "stem": "Ciara writes `order = playlist.sort()` and then prints order. The console shows None. What has happened?",
+   "options": [
+    "sort put the list in order and handed nothing back",
+    "sort could not put the list in order",
+    "sort emptied the list",
+    "sort needs a number in the brackets"
+   ]
+  },
+  {
+   "id": "r-j3-305",
+   "lesson": "j3-03",
+   "topic": "Reading a loop",
+   "thread": "kp-list",
+   "stem": "A list holds three titles, and a loop reads `for song in playlist:` with one printing line indented under it. How many lines appear on the console?",
+   "options": [
+    "Three lines appear, one for each title",
+    "One line appears, because the loop runs once",
+    "Four lines appear: three titles and one naming the list",
+    "No lines appear, because a loop does not print"
+   ]
+  },
+  {
+   "id": "r-j3-306",
+   "lesson": "j3-03",
+   "topic": "Taking one out",
+   "thread": "kp-list",
+   "stem": "Saoirse's `playlist.remove(\"curtain up\")` line is not taking anything out, and her list definitely holds Curtain Up. Why?",
+   "options": [
+    "The capital letters do not match",
+    "remove only works on the first title in a list",
+    "remove needs a position, not a title",
+    "The list has to be sorted first"
+   ]
+  },
+  {
+   "id": "r-j3-307",
+   "lesson": "j3-03",
+   "topic": "The first three only",
+   "thread": "kp-list",
+   "stem": "A list holds six titles. What does `playlist[0:3]` give you?",
+   "options": [
+    "It gives you the first three titles",
+    "It gives you the first four titles",
+    "It gives you the titles at positions 0 and 3 only",
+    "It gives you the whole list, starting at 0"
+   ]
+  },
+  {
+   "id": "r-j3-308",
+   "lesson": "j3-03",
+   "topic": "Why a list at all",
+   "thread": "kp-list",
+   "stem": "A show has forty songs. Why is one list better than forty separate boxes with forty names?",
+   "options": [
+    "One name lets you count them, order them and go through them all at once",
+    "Forty boxes would use too much of the computer's memory",
+    "Python only allows a small number of boxes in one program",
+    "There is no difference — a list is just forty boxes with one name"
+   ]
   }
  ],
- "keysEnc": "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"
+ "keysEnc": "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"
 }

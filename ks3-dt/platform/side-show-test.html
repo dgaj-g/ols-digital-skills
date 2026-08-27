@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fred and Margo — character check</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .sst-wrap { max-width: 1060px; margin: 0 auto; padding: 28px 20px 70px; }
+  .sst-h1 { font-family: var(--font-display, inherit); color: var(--text-d); margin: 0 0 6px; font-size: 1.5rem; }
+  .sst-lead { color: var(--muted-d); margin: 0 0 26px; font-size: 0.95rem; max-width: 66ch; line-height: 1.6; }
+  .sst-sec { margin: 0 0 34px; }
+  .sst-sec > h2 { color: var(--gold-hi); font-size: 1.02rem; margin: 0 0 4px; letter-spacing: 0.03em; }
+  .sst-sec > p { color: var(--muted-d); font-size: 0.88rem; margin: 0 0 14px; }
+  .sst-row { display: flex; flex-wrap: wrap; gap: 14px; }
+  .sst-cell {
+    background: #F3ECFB; border: 1.5px solid #DCCBF2; border-radius: var(--r-md, 14px);
+    padding: 12px; text-align: center; box-shadow: 0 0 34px rgba(180, 150, 235, 0.22);
+  }
+  .sst-cell .ss-stage { margin: 0 auto; }
+  .sst-cap { display: block; margin-top: 6px; font-size: 0.78rem; font-weight: 800;
+             letter-spacing: 0.05em; text-transform: uppercase; color: #5B3C86; }
+  .sst-big .ss-stage, .sst-big .ss-img { width: 300px; height: 340px; }
+  .sst-big .ss-stage::before { width: 290px; height: 290px; }
+  .sst-onwhite { background: #FFFFFF; border-color: var(--line-l); }
+  .sst-ondark { background: transparent; border: 1.5px dashed rgba(148,178,230,0.25); box-shadow: none; }
+  .sst-note { color: var(--muted-d); font-size: 0.84rem; line-height: 1.6; max-width: 74ch; }
+  .sst-note b { color: var(--text-d); }
+</style>
+</head>
+<body>
+<div class="sst-wrap">
+  <h1 class="sst-h1">Fred and Margo — character check</h1>
+  <p class="sst-lead">Both side-show characters, every expression they have, at the size they are
+  actually shown to a pupil and again large enough to judge. Nothing on this page is part of a
+  lesson: it exists so the artwork can be looked at on its own before either lesson is unlocked.</p>
+
+  <div class="sst-sec">
+    <h2>At the size a pupil sees them</h2>
+    <p>132&nbsp;pixels, on the lilac plate the side show actually uses.</p>
+    <div class="sst-row" id="ship"></div>
+  </div>
+
+  <div class="sst-sec">
+    <h2>Large enough to judge</h2>
+    <div class="sst-row sst-big" id="big"></div>
+  </div>
+
+  <div class="sst-sec">
+    <h2>On the other two surfaces they land on</h2>
+    <p>A white card, and the bare dark shell with no plate at all.</p>
+    <div class="sst-row" id="surfaces"></div>
+  </div>
+
+  <div class="sst-sec">
+    <h2>In place, running</h2>
+    <p>The real side show, with the real lines from Lesson&nbsp;3.</p>
+    <div id="live"></div>
+  </div>
+
+  <div class="sst-sec">
+    <h2>What to look for</h2>
+    <p class="sst-note">
+      Every picture here <b>moves</b> — Fred and Margo both blink, and the offended pair use a slow
+      one. If a picture is frozen, that is the fault. The five expressions are meant to be told
+      apart at 132&nbsp;pixels without reading a caption: <b>idle</b>, <b>typing</b> (eyes down on
+      the work), <b>delighted</b> (eyes become arcs), <b>offended</b> (one eyebrow up), and for Fred
+      <b>devastated</b> (the aerial gives up). Margo has no devastated state on purpose: her
+      Lesson&nbsp;3 exit is the rave.
+    </p>
+  </div>
+</div>
+
+<script>
+var CAST = [
+  { who: 'Fred', dir: 'assets/img/j2/fred/', file: 'fred-',
+    states: ['idle', 'typing', 'delighted', 'offended', 'devastated'] },
+  { who: 'Margo', dir: 'assets/img/j3/margo/', file: 'margo-',
+    states: ['idle', 'typing', 'rave', 'offended'] }
+];
+function cell(src, cap, cls) {
+  return '<div class="sst-cell ' + (cls || '') + '">' +
+         '<span class="ss-stage"><img class="ss-img" src="' + src + '" alt=""></span>' +
+         '<span class="sst-cap">' + cap + '</span></div>';
+}
+function fill(id, big) {
+  var h = '';
+  CAST.forEach(function (c) {
+    c.states.forEach(function (st) {
+      h += cell(c.dir + c.file + st + '.webp', c.who + ' &middot; ' + st);
+    });
+  });
+  document.getElementById(id).innerHTML = h;
+}
+fill('ship'); fill('big');
+document.getElementById('surfaces').innerHTML =
+  cell('assets/img/j2/fred/fred-idle.webp', 'Fred &middot; white card', 'sst-onwhite') +
+  cell('assets/img/j3/margo/margo-idle.webp', 'Margo &middot; white card', 'sst-onwhite') +
+  cell('assets/img/j2/fred/fred-offended.webp', 'Fred &middot; bare shell', 'sst-ondark') +
+  cell('assets/img/j3/margo/margo-rave.webp', 'Margo &middot; bare shell', 'sst-ondark');
+
+/* the live side show, built by hand so this page needs nothing but the CSS */
+function liveOne(name, dir, pre, alt, lines, cls) {
+  var art = { idle: pre + 'idle.webp', typing: pre + 'typing.webp' };
+  var box = document.createElement('div');
+  box.className = 'sideshow';
+  box.innerHTML = '<div class="ss-figure"><span class="ss-stage">' +
+    '<img class="ss-img" alt="' + alt + '" src="' + dir + art.idle + '"></span>' +
+    '<span class="ss-name">' + name + '</span></div>' +
+    '<div class="ss-body"><div class="ss-log" role="log"></div></div>';
+  document.getElementById('live').appendChild(box);
+  var img = box.querySelector('.ss-img'), log = box.querySelector('.ss-log'), i = 0;
+  function step() {
+    if (i >= lines.length) { i = 0; log.innerHTML = ''; }
+    var line = lines[i++];
+    img.src = dir + pre + 'typing.webp';
+    setTimeout(function () {
+      img.src = dir + pre + line[1] + '.webp';
+      var p = document.createElement('p');
+      p.className = 'ss-line';
+      p.textContent = line[0];
+      log.appendChild(p);
+      log.scrollTop = log.scrollHeight;
+      setTimeout(step, 2600);
+    }, 1100);
+  }
+  step();
+}
+liveOne('Fred', 'assets/img/j2/fred/', 'fred-', 'Fred, a home-made chatbot', [
+  ['Hello. I am Fred. I was built in about four minutes.', 'idle'],
+  ['I only know six sentences. This is one of them.', 'idle'],
+  ['Somebody said my jokes were predictable. I found that hurtful.', 'offended'],
+  ['You came back! Nobody ever comes back.', 'delighted'],
+  ['I am going to go and sit in a variable for a while.', 'devastated']
+]);
+liveOne('Margo', 'assets/img/j3/margo/', 'margo-', 'Margo, a theatre critic', [
+  ['Margo. Critic. I have reviewed nine hundred shows and enjoyed four.', 'idle'],
+  ['Show me your playlist. I shall be brief and I shall be honest.', 'idle'],
+  ['That running order? No. Simply no.', 'offended'],
+  ['Well. Five stars. I have never given five stars.', 'rave']
+]);
+</script>
+</body>
+</html>

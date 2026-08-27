@@ -18,6 +18,18 @@ const HALVES = {
   l5: [
     { file: 'half1.mp4', ids: ['ch1', 'ch2'], label: 'The idea' },
     { file: 'half2.mp4', ids: ['ch3', 'ch4'], label: 'The worked example & the tests' }
+  ],
+  /* J2/J3 Lesson 3 (27 Aug 2026). Both films are served in TWO places at their
+     own concept seam: part A opens the hour, part B lands on the card where what
+     it shows is next needed (DFM 168), and each part is a PHYSICALLY separate
+     file so a scrubber can never stray outside its own part (DFM 170). */
+  'j2-l3': [
+    { file: 'j2-l3-a.mp4', ids: ['ch1', 'ch2', 'ch3'], label: 'How a program waits for you' },
+    { file: 'j2-l3-b.mp4', ids: ['ch4', 'ch5'], label: 'Writing your own bot' }
+  ],
+  'j3-l3': [
+    { file: 'j3-l3-a.mp4', ids: ['ch1', 'ch2', 'ch3', 'ch4'], label: 'A list is a rack of boxes' },
+    { file: 'j3-l3-b.mp4', ids: ['ch5', 'ch6', 'ch7'], label: 'Taking things out, and putting them in order' }
   ]
 };
 

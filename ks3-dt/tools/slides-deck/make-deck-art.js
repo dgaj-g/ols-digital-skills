@@ -156,6 +156,49 @@ const THEMES = {
     ground: '#052220', panel: '#0B3A36', accent: '#4DE3A3', accent2: '#FFB43D',
     text: '#FFFFFF', dim: '#B6DED4',
     motif: 'callsheet'        /* punched holes + grain; fly ropes, sandbags, work lamp, clipboard */
+  },
+
+  /* ══════════════ THE TWO LESSON-3 THEMES (27 Aug 2026) ═════════════════════
+     Both palettes are COPIED, value for value, out of the lesson's own
+     `<lesson>.deck.json` theme block, exactly as the Lesson-2 pair are. If the
+     two ever drifted, the board's picture and the board's text would belong to
+     two different colour worlds and nothing would say so (DFM 144).
+
+     BEING DISTINCT was again the hard part, and both are separated by the two
+     things that survive the back of a room: GROUND VALUE and HUE FAMILY.
+
+     THE WORKSHOP (J2 Lesson 3) is the LIGHTEST ground in the whole set — slate
+     at 17% lightness, where every other deck sits between 4% and 10%. That
+     alone tells it from The Workbench beside it in the same year, which is a 9%
+     warm charcoal; and where the Workbench is a warm ground with a warm copper
+     accent and one cold hairline, this is a COLD ground with a warm lamp on it,
+     which is the opposite arrangement rather than a nearby one. The second
+     accent is Fred's own mint, so the board and the character she meets on her
+     screen are the same green.
+
+     THE CONTROL ROOM (J3 Lesson 3) is the only NEUTRAL near-black in the set —
+     every other ground is tinted (plum, teal, navy, olive, oxblood), this one
+     is not — and the only blue-and-magenta pairing anywhere in it. It could not
+     be taken for The Screening Room or The Call Sheet beside it in the same
+     year: one is plum and gold, the other dark teal, and both are rooms in a
+     theatre. This is a mixing desk, which is the lesson itself — a row of
+     things, in order, that you can take one out of and add one to.
+
+     AND NEITHER DRAWS A HORIZONTAL RULE. Every straight line in both motifs is
+     vertical or is a curve: the fault class he found on an approved deck ("a
+     faint background rule [that] lands on the first bullet's baseline and reads
+     as an accidental underline") is not allowed back in through a new theme. */
+  'j2-03': {
+    name: 'The Workshop',
+    ground: '#1E2630', panel: '#2B3644', accent: '#FFC15E', accent2: '#5FD6B4',
+    text: '#FFFFFF', dim: '#C9D4E2',
+    motif: 'workshop'         /* two speech bubbles + a bench lamp, its flex, hung tools */
+  },
+  'j3-03': {
+    name: 'The Control Room',
+    ground: '#08090F', panel: '#14161F', accent: '#5AA9FF', accent2: '#FF6EC7',
+    text: '#FFFFFF', dim: '#B9C2D6',
+    motif: 'desk'             /* a bank of faders at their own heights + a VU arc */
   }
 };
 
@@ -735,6 +778,149 @@ const MOTIFS = {
         `opacity="${(op * 1.7).toFixed(3)}"/>` +
         `</g>`;
       return lamp + ropes + cb;
+    }
+  },
+
+  /* J2 LESSON 3 — THE WORKSHOP. Somebody in a shed has built a machine that
+     talks back, and the hour is spent making one and then handing it to
+     somebody else to try. So the drawing is THE BENCH AT NIGHT: two speech
+     bubbles overlapping where the work is, the lamp that is the only light in
+     the room, its flex dropping out of frame, and a rack of tools hung behind. */
+  workshop: {
+    dust: (t, o) => {
+      const r = rng(o.seed);
+      let out = '';
+      /* A RACK OF HUNG TOOLS down the right of frame: each a vertical shaft
+         with a loop at the top, each a different length, the way tools actually
+         hang on a board. Kept faint — on a bullets slide a screenshot sits over
+         this column, and on every other slide it stays behind the heading. */
+      for (let i = 0; i < 7; i++) {
+        const x = 1046 + i * 52;
+        const len = 108 + ((i * 37) % 5) * 26;
+        out += `<circle cx="${x}" cy="88" r="11" fill="none" stroke="${t.accent2}" ` +
+          `stroke-width="5" opacity="0.13"/>`;
+        out += `<rect x="${x - 4}" y="99" width="8" height="${len}" rx="4" ` +
+          `fill="${t.accent2}" opacity="0.11"/>`;
+        out += `<rect x="${x - 13}" y="${99 + len - 26}" width="26" height="30" rx="7" ` +
+          `fill="${t.accent}" opacity="0.10"/>`;
+      }
+      /* SAWDUST, so the ground reads as a workshop under a lamp, not as glass. */
+      const n = Math.round(o.starCount * 0.8);
+      for (let i = 0; i < n; i++) {
+        out += ledDot(Math.round(r() * W), Math.round(r() * H),
+          (r() * 1.4 + 0.5).toFixed(2), t.dim, (r() * 0.10 + 0.03).toFixed(2));
+      }
+      return out;
+    },
+    lines: (t, op) => {
+      /* THE LAMP, hung top left as a bench lamp is, throwing down. Its stem
+         goes UP out of frame — a vertical, never a rule. */
+      const lamp =
+        `<ellipse cx="252" cy="10" rx="360" ry="252" fill="${t.accent}" ` +
+        `opacity="${(op * 1.2).toFixed(3)}" filter="url(#soft)"/>` +
+        `<rect x="248" y="-40" width="7" height="118" fill="${t.dim}" ` +
+        `opacity="${(op * 1.4).toFixed(3)}"/>` +
+        `<path d="M182,120 L322,120 L286,74 L218,74 Z" fill="${t.accent}" ` +
+        `opacity="${(op * 1.9).toFixed(3)}"/>`;
+      /* TWO SPEECH BUBBLES, overlapping, low left. The whole lesson is a program
+         that asks and a person who answers, so the machine's bubble is drawn in
+         the accent and the person's in the mint behind it, and they overlap
+         because that is what a conversation is. Outlines only — a filled bubble
+         at this size reads as a blob. */
+      const bx = 210, by = H - 232;
+      const bubbles =
+        `<g opacity="${(op * 1.5).toFixed(3)}">` +
+        `<path d="M${bx - 130},${by} q0,-58 74,-58 h150 q74,0 74,58 q0,58 -74,58 ` +
+        `h-108 l-52,44 v-44 q-64,-6 -64,-58 Z" fill="none" stroke="${t.accent}" ` +
+        `stroke-width="7" stroke-linejoin="round"/>` +
+        `<path d="M${bx + 92},${by + 128} q0,-50 64,-50 h132 q64,0 64,50 q0,50 -64,50 ` +
+        `h-96 l-46,38 v-38 q-54,-6 -54,-50 Z" fill="none" stroke="${t.accent2}" ` +
+        `stroke-width="7" stroke-linejoin="round"/>` +
+        `</g>`;
+      /* THREE DOTS inside the machine's bubble: the one thing on a screen that
+         says a program is thinking, and the state Fred is in most of the hour. */
+      let dots = `<g opacity="${(op * 2.0).toFixed(3)}">`;
+      for (let k = 0; k < 3; k++) {
+        dots += `<circle cx="${bx - 46 + k * 46}" cy="${by + 2}" r="11" fill="${t.accent}"/>`;
+      }
+      dots += `</g>`;
+      /* THE FLEX, dropping from the lamp and leaving frame at the bottom. A
+         curve, not a line. */
+      const flex =
+        `<path d="M252,120 Q214,300 268,470 T196,${H + 40}" fill="none" ` +
+        `stroke="${t.dim}" stroke-width="5" stroke-linecap="round" ` +
+        `opacity="${(op * 0.9).toFixed(3)}"/>`;
+      return lamp + flex + bubbles + dots;
+    }
+  },
+
+  /* J3 LESSON 3 — THE CONTROL ROOM. A playlist is a row of things in order that
+     you can take one out of, add one to and re-order, and the object that IS
+     that is a mixing desk: a bank of faders each at its own height, and the
+     needle that answers back when something plays. Every straight line in it is
+     a fader track, which is vertical by nature. */
+  desk: {
+    dust: (t, o) => {
+      const r = rng(o.seed);
+      let out = '';
+      /* THE FADER BANK down the right of frame — fourteen tracks, each with its
+         cap at its own height. A list, drawn. The heights come from the index,
+         so a rebuild is byte-identical. */
+      for (let i = 0; i < 14; i++) {
+        const x = 1004 + i * 32;
+        const cap = 160 + ((i * 53) % 11) * 20;
+        out += `<rect x="${x - 2}" y="120" width="4" height="300" rx="2" ` +
+          `fill="${t.dim}" opacity="0.12"/>`;
+        out += `<rect x="${x - 12}" y="${cap}" width="24" height="15" rx="4" ` +
+          `fill="${i % 4 === 0 ? t.accent2 : t.accent}" opacity="0.16"/>`;
+      }
+      /* ROOM DUST in the light off the monitors. */
+      const n = Math.round(o.starCount * 0.75);
+      for (let i = 0; i < n; i++) {
+        out += ledDot(Math.round(r() * W), Math.round(r() * H),
+          (r() * 1.3 + 0.5).toFixed(2), t.dim, (r() * 0.09 + 0.03).toFixed(2));
+      }
+      return out;
+    },
+    lines: (t, op) => {
+      /* THE GLOW off the desk itself: low and wide, from BELOW rather than
+         above, because a lit desk in a dark room throws light up at whoever is
+         standing at it. */
+      const glow =
+        `<ellipse cx="300" cy="${H + 40}" rx="440" ry="270" fill="${t.accent}" ` +
+        `opacity="${(op * 1.15).toFixed(3)}" filter="url(#soft)"/>`;
+      /* THE VU ARC, bottom left, needle over. An arc and a needle are both
+         recognisable in outline alone, and neither is a horizontal rule. */
+      const vx = 246, vy = H - 96;
+      const vu =
+        `<g opacity="${(op * 1.7).toFixed(3)}">` +
+        `<path d="M${vx - 168},${vy} A168,168 0 0 1 ${vx + 168},${vy}" fill="none" ` +
+        `stroke="${t.dim}" stroke-width="6" stroke-linecap="round"/>` +
+        `<path d="M${vx - 46},${vy - 152} A168,168 0 0 1 ${vx + 168},${vy}" fill="none" ` +
+        `stroke="${t.accent2}" stroke-width="6" stroke-linecap="round"/>` +
+        `<line x1="${vx}" y1="${vy}" x2="${vx + 96}" y2="${vy - 128}" ` +
+        `stroke="${t.text}" stroke-width="5" stroke-linecap="round"/>` +
+        `<circle cx="${vx}" cy="${vy}" r="13" fill="${t.accent}"/>` +
+        `</g>`;
+      /* FOUR TALL FADERS in the foreground, at four different heights, big
+         enough to read as objects rather than as texture. This is the list the
+         lesson is about, at the size a room can see it. */
+      let bank = `<g opacity="${(op * 1.5).toFixed(3)}">`;
+      [0, 1, 2, 3].forEach((k) => {
+        const x = 486 + k * 92;
+        const cap = 236 + [148, 44, 210, 96][k];
+        bank += `<rect x="${x - 4}" y="196" width="8" height="392" rx="4" ` +
+          `fill="${t.dim}" opacity="0.55"/>`;
+        bank += `<rect x="${x - 27}" y="${cap}" width="54" height="30" rx="9" ` +
+          `fill="${k === 2 ? t.accent2 : t.accent}"/>`;
+      });
+      bank += `</g>`;
+      /* THE SIGNAL, a curve leaving frame right — what the desk is for. */
+      const signal =
+        `<path d="M${vx + 190},${H - 176} Q560,${H - 262} 812,${H - 150} T${W + 40},${H - 300}" ` +
+        `fill="none" stroke="${t.accent}" stroke-width="7" stroke-linecap="round" ` +
+        `opacity="${(op * 1.0).toFixed(3)}"/>`;
+      return glow + signal + bank + vu;
     }
   }
 };

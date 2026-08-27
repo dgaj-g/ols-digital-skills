@@ -143,6 +143,31 @@ function trayOrderGate() {
   console.log('tray-order gate: PASSED (qa-tray-order)');
 }
 
+/* ═══ THE ITEM-VALIDITY GATE — §F2, AND IT IS THE AUDIT'S SERIOUS FIND ═══
+   `qa-item-validity.js` has existed and worked since 17 August. It was wired
+   into NOTHING: the planning audit grepped the whole repo for its name and
+   found only the file naming itself, so DFM 235's own gate — the one built
+   because "a checklist that exists is not a check" — was itself only a
+   checklist, running the day somebody remembered to type the command.
+   It blocks the pack from here. Every objective item in a lesson under active
+   review must carry a filed row answering DFM 233's five questions; a missing
+   row stops the pack, and so does a row filled in with nothing. */
+function itemValidityGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-item-validity.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-item-validity.js is missing - the item-validity gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    fs.writeSync(2, (res.stdout || '') + (res.stderr || '') + '\n');
+    console.error('\nPACK STOPPED: an objective item has no filed validity judgement (DFM 233/235).');
+    console.error('Answer the five questions for it in a COLD_READ_VERDICTS file. A tick is not a judgement.');
+    process.exit(1);
+  }
+  console.log('item-validity gate: PASSED (qa-item-validity)');
+}
+
 /* THE DECK-SHOT GATE (DFM 225b). Damien, 15 Aug 2026, on finding the Vault's
    inbox on three slides that named three other screens: "figure out how this
    happened and what you'll do (screenshot reading harness needed) to ensure it
@@ -447,6 +472,7 @@ function main() {
     deckShotGate();
     deckAnswerGate();
     briefShapeGate();
+    itemValidityGate();
     auditGate();
     coverageGate();
   }

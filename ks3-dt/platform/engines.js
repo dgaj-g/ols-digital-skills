@@ -43,9 +43,26 @@
      and defaults to 0, so every existing caller behaves identically. Anything
      that uses it must stay inside the server's 40-XP-per-event ceiling, which
      qa-xp-ceiling computes from the content and enforces at the pack. */
-  function finishChunk(ctx, detail, bonus) {
+  /* `earned` defaults to TRUE and only the two paired set-pieces pass it false.
+     THE FAULT IT FIXES: the Match and the Swap carry a way-out on every screen,
+     including the very first, and pressing it called straight through to here —
+     which awards the chunk's badge whenever the chunk has one. So a pupil could
+     open the Prediction Match, press the way out, and be handed twelve XP and a
+     badge for having predicted nothing, on a card whose own words say the Match
+     pays "as long as you play all six rounds". That is a sentence the screen
+     contradicts (DFM 35), and it is the kind of thing only a walk finds.
+     Leaving early still WORKS — the way out is never a trap (DFM 265c) — it
+     simply does not pay, it says so before she commits, and the detail is still
+     recorded so the Live tab shows how far she really got. */
+  function finishChunk(ctx, detail, bonus, earned) {
     if (ctx._finished) return;
     ctx._finished = true;
+    if (earned === false) {
+      var q = ctx.saveEvent({ xp: 0, detail: detail || '' });
+      if (q && q.then) q.then(function () { ctx.next(); }, function () { ctx.next(); });
+      else ctx.next();
+      return;
+    }
     if (ctx.chunk.badge) {
       var b = Number(bonus || 0)
         ? Object.assign({}, ctx.chunk.badge, { xp: Number(ctx.chunk.badge.xp || 0) + Number(bonus) })
@@ -71,7 +88,7 @@
      reuses them wholesale. */
   var PairKit = global.PairKit = {
     st: null, _pollT: null, _chT: null, _handler: null, _onPoll: null, _dock: null, _seen: null,
-    _onEnd: null,
+    _onEnd: null, _hooks: null,
 
     stop: function () {
       if (PairKit._pollT) { clearTimeout(PairKit._pollT); PairKit._pollT = null; }
@@ -79,8 +96,45 @@
       PairKit._handler = null; PairKit._onPoll = null; PairKit._dock = null; PairKit._onEnd = null;
     },
 
-    ensure: function (ctx, host, cb) {
+    /* ---- THE FIRST-MEETING WORDINGS ARE THE LESSON'S, NOT THE ENGINE'S -----
+       K32(b): J2 and J3 pupils never sat J1 Lesson 1, so their first paired
+       lesson gets the FULL introduction treatment — and in its own year's voice,
+       not the Vault's. Every sentence on the waiting card, the matched pop, the
+       trio pop and the solo notice can be supplied by the lesson, which is what
+       puts them through the language gate and the read-aloud ledger like every
+       other pupil sentence (DFM 190d: a string hardcoded in an engine escapes
+       that gate entirely).
+       EVERY FALLBACK BELOW IS J1'S OWN SHIPPED WORDING, so a lesson that
+       supplies nothing renders byte-identically to the Vault (qa-pairwords
+       proves it against the pre-change engine). */
+    _w: null,
+    say: function (k, dflt) {
+      var w = PairKit._w || {};
+      return w[k] == null ? dflt : String(w[k]);
+    },
+    /* the HTML twin: a lesson's sentence is ESCAPED (it is content, and content
+       is never markup), while the J1 default is passed through untouched so the
+       Vault's own entities render exactly as they always have */
+    sayHtml: function (k, dfltHtml) {
+      var w = PairKit._w || {};
+      return w[k] == null ? dfltHtml : esc(String(w[k]));
+    },
+    /* A lesson's sentence with a call sign dropped into it. The SENTENCE is
+       escaped (it is content) and the call sign goes in as its own bold element,
+       so no lesson can ever put markup on a pupil's screen and no call sign can
+       ever break the sentence around it. */
+    fill: function (k, dfltHtml, token, html) {
+      var w = PairKit._w || {};
+      if (w[k] == null) return dfltHtml;
+      var parts = String(w[k]).split(token);
+      var out = esc(parts[0] || '');
+      for (var i = 1; i < parts.length; i++) out += html + esc(parts[i] || '');
+      return out;
+    },
+    ensure: function (ctx, host, cb, words, hooks) {
       PairKit.stop();
+      PairKit._w = words || null;
+      PairKit._hooks = hooks || null;
       PairKit.st = null; PairKit._seen = {};
       if (ctx.review || ctx.catchup) { cb('solo'); return; }
       if (!Number(App.state.pairing)) { cb('social'); return; }
@@ -100,8 +154,26 @@
             '<div class="pw-radar"><span></span><span></span><span></span><i></i></div>' +
             '<h2>Waiting to be paired.</h2>' +
             '<p class="pw-status"></p>' +
-            '<p class="pw-hint" hidden></p></div>');
+            '<div class="pw-side"></div>' +
+            '<p class="pw-hint" hidden></p>' +
+            '<div class="pw-out"></div></div>');
           host.appendChild(box);
+          /* THE WAY OUT IS ON THE WAITING SCREEN (spec SS C3 phase 1). A pupil at
+             five-to-bell is never trapped waiting for a partner who may not
+             come: leaving forfeits only the paired half, and the card says so in
+             the lesson's own words. J1 supplies none of this, so the Vault's
+             waiting card renders exactly as it did. */
+          if (PairKit.say('leaveLabel', '')) {
+            var outBox = box.querySelector('.pw-out');
+            outBox.innerHTML = '<p class="pw-out-say">' + esc(PairKit.say('leaveSay', '')) + '</p>' +
+              '<button class="ghost-btn pw-leave" type="button">' + esc(PairKit.say('leaveLabel', '')) + '</button>';
+            App.armButton(outBox.querySelector('.pw-leave'), function () {
+              if (PairKit._hooks && PairKit._hooks.onWaitOver) PairKit._hooks.onWaitOver('left');
+              PairKit.stop();
+              if (box) box.remove();
+              cb('left');
+            });
+          }
         }
         var head = box.querySelector('h2');
         var stat = box.querySelector('.pw-status');
@@ -109,19 +181,26 @@
           /* DAMIEN, 31 Jul 2026 (rule 100): this card is up from the very first
              moment - the old blank gap while the first reply travelled was
              exactly the silent wait rule 42 forbids. */
-          head.textContent = 'Opening the Vault…';
-          stat.textContent = 'Checking who else is at the Vault right now…';
+          head.textContent = PairKit.say('openingHead', 'Opening the Vault…');
+          stat.textContent = PairKit.say('openingSay', 'Checking who else is at the Vault right now…');
         } else if (Number(r.trioHold)) {
-          head.textContent = 'You are one of the last three.';
-          stat.textContent = 'The last three pupils share one Vault as a three — waiting for your third partner to arrive…';
+          head.textContent = PairKit.say('trioHoldHead', 'You are one of the last three.');
+          stat.textContent = PairKit.say('trioHoldSay', 'The last three pupils share one Vault as a three — waiting for your third partner to arrive…');
         } else {
-          head.textContent = 'Waiting to be paired.';
-          stat.textContent = 'You are in the queue. The website is waiting for another pupil in your class to reach the Vault — the moment one does, you become partners and this screen changes by itself. Nothing is wrong: stay on this screen.';
+          head.textContent = PairKit.say('waitHead', 'Waiting to be paired.');
+          stat.textContent = PairKit.say('waitSay', 'You are in the queue. The website is waiting for another pupil in your class to reach the Vault — the moment one does, you become partners and this screen changes by itself. Nothing is wrong: stay on this screen.');
+        }
+        /* THE SIDE SHOW IS THE ENGINE'S, NOT THE WAITING ROOM'S (K36). PairKit
+           says only "she is still waiting, and this is how long for"; whether
+           anything entertaining happens, and what, belongs to the lesson. That
+           is what keeps J1's Vault exactly as it was — it passes no hook. */
+        if (PairKit._hooks && PairKit._hooks.onWaiting) {
+          PairKit._hooks.onWaiting(box.querySelector('.pw-side'), Date.now() - began, box);
         }
         var hint = box.querySelector('.pw-hint');
         if (Date.now() - began > 180000) {
           hint.hidden = false;
-          hint.textContent = 'Waiting a while? Wave your teacher over — they can clear you for a solo run.';
+          hint.textContent = PairKit.say('waitLongSay', 'Waiting a while? Wave your teacher over — they can clear you for a solo run.');
         }
       }
       function poll() {
@@ -133,21 +212,24 @@
           }
           if (r.state === 'off') { if (box) box.remove(); cb('social'); return; }
           if (r.state === 'solo') {
+            if (PairKit._hooks && PairKit._hooks.onWaitOver) PairKit._hooks.onWaitOver('solo');
             if (box) box.remove();
             // The gate released her alone: she is the last one at the Vault with
             // nobody left to match. Never silent - catch-up runs keep their own
             // banner and never reach here.
             PairKit._statePop({
-              kicker: 'NO PARTNER',
-              title: 'Nobody left to pair with.',
-              lines: ['Everyone else in your class has already been through the Vault, so you are ' +
-                      'doing this one solo &mdash; you make the calls yourself, and everything else ' +
-                      'works the same.'],
-              button: 'Open the Vault'
+              kicker: PairKit.say('soloKicker', 'NO PARTNER'),
+              title: PairKit.say('soloTitle', 'Nobody left to pair with.'),
+              lines: [PairKit.sayHtml('soloLine',
+                'Everyone else in your class has already been through the Vault, so you are ' +
+                'doing this one solo &mdash; you make the calls yourself, and everything else ' +
+                'works the same.')],
+              button: PairKit.say('soloButton', 'Open the Vault')
             }, function () { cb('solo'); });
             return;
           }
           if (r.state === 'paired') {
+            if (PairKit._hooks && PairKit._hooks.onWaitOver) PairKit._hooks.onWaitOver('matched');
             PairKit.st = {
               pid: String(r.pid), mi: Number(r.mi), members: (r.members || []).map(String),
               trio: !!Number(r.trio), seq: 0,
@@ -195,24 +277,40 @@
     _matchPop: function (cb) {
       var st = PairKit.st;
       if (!st) { cb(); return; }
+      var trio = st.members.length > 2;
       var partners = st.members.filter(function (_, i) { return i !== Number(st.mi); });
-      var tags = partners.map(function (cn) { return '<b>Agent ' + esc(String(cn)) + '</b>'; });
-      var secret = 'Who ' + (tags.length > 1 ? 'they really are stays' : 'she really is stays') +
+      var pre = PairKit.say('signPrefix', 'Agent ');
+      var tags = partners.map(function (cn) { return '<b>' + esc(pre + String(cn)) + '</b>'; });
+      /* HER OWN CALL SIGN IS SAID FIRST (DFM 103, and K35(3): "ok, but make sure
+         they are told what their codename is"). J1 supplies no `mineLine`, so
+         the Vault's pop is exactly the three paragraphs it has always been. */
+      var mine = String(st.members[Number(st.mi)] || '');
+      var mineTag = '<b class="pk-mysign">' + esc(pre + mine) + '</b>';
+      var mineHtml = PairKit.fill('mineLine', '', '{sign}', mineTag);
+      var secret = PairKit.sayHtml(trio ? 'secretTrio' : 'secretPair',
+        'Who ' + (trio ? 'they really are stays' : 'she really is stays') +
         ' secret until the Vault is sealed &mdash; so keep real names out of the message box, ' +
-        'including your own. Remember: your teacher can read every message.';
+        'including your own. Remember: your teacher can read every message.');
+      var lead = trio
+        ? PairKit.fill('trioLead',
+            'Your partners for this Vault are ' + tags.join(' and ') + '. Your class has an odd ' +
+            'number at the Vault, so the last three share one Vault together.',
+            '{signs}', tags.join(' and '))
+        : PairKit.fill('pairLead',
+            'Your partner for this Vault is ' + (tags[0] || '<b>another agent</b>') +
+            '. She is at another computer, looking at the same Vault as you.',
+            '{sign}', tags[0] || '');
+      var close = PairKit.sayHtml(trio ? 'trioClose' : 'pairClose',
+        trio ? 'Talk it through, agree, and take turns at the controls.'
+             : 'Talk it through, agree, then whoever holds the controls drops the file.');
+      var lines = [lead];
+      if (mineHtml) lines.push(mineHtml);
+      lines.push(secret, close);
       PairKit._statePop({
-        kicker: tags.length > 1 ? 'GROUP OF THREE' : 'PARTNER FOUND',
-        title: tags.length > 1 ? 'You’re a three!' : 'You’ve been paired!',
-        lines: tags.length > 1
-          ? ['Your partners for this Vault are ' + tags.join(' and ') + '. Your class has an odd ' +
-             'number at the Vault, so the last three share one Vault together.',
-             secret,
-             'Talk it through, agree, and take turns at the controls.']
-          : ['Your partner for this Vault is ' + (tags[0] || '<b>another agent</b>') +
-             '. She is at another computer, looking at the same Vault as you.',
-             secret,
-             'Talk it through, agree, then whoever holds the controls drops the file.'],
-        button: 'Open the Vault together'
+        kicker: PairKit.say(trio ? 'trioKicker' : 'pairKicker', trio ? 'GROUP OF THREE' : 'PARTNER FOUND'),
+        title: PairKit.say(trio ? 'trioTitle' : 'pairTitle', trio ? 'You’re a three!' : 'You’ve been paired!'),
+        lines: lines,
+        button: PairKit.say('matchButton', 'Open the Vault together')
       }, cb);
     },
 
@@ -255,6 +353,85 @@
       if (PairKit._handler) PairKit._handler(e);
     },
 
+    /* ---- pairBlob (spec SS C3): one thing travels once ---------------------
+       `put` publishes as ME; `get` reads a named member of my own pair. The
+       server refuses anything else, so this helper carries no rules of its own
+       (DFM 144: the rule lives in one home, and it is the server's). */
+    blob: function (ctx, op, slot, valueOrMi) {
+      var st = PairKit.st;
+      if (!st) return Promise.resolve({ ok: false, error: 'no-pair' });
+      var req = { lessonId: ctx.lesson.id, pid: st.pid, op: op, slot: slot };
+      if (op === 'put') req.v = String(valueOrMi == null ? '' : valueOrMi);
+      else req.mi = Number(valueOrMi);
+      return ctx.call('pairBlob', req);
+    },
+    /* the other members of my pair, in index order — the one derivation both the
+       swap's round-robin and the duel's reveal need */
+    others: function () {
+      var st = PairKit.st;
+      if (!st) return [];
+      var out = [];
+      for (var i = 0; i < st.members.length; i++) if (i !== Number(st.mi)) out.push(i);
+      return out;
+    },
+    /* ROUND-ROBIN PARTNER: in a pair this is simply the other one; in a trio it
+       is the NEXT member round, so A tests B, B tests C, C tests A — each tests
+       once and each is tested once (SS C3 phase 4). */
+    nextRound: function () {
+      var st = PairKit.st;
+      if (!st) return -1;
+      var n = st.members.length;
+      if (n < 2) return -1;
+      return (Number(st.mi) + 1) % n;
+    },
+    prevRound: function () {
+      var st = PairKit.st;
+      if (!st) return -1;
+      var n = st.members.length;
+      if (n < 2) return -1;
+      return (Number(st.mi) + n - 1) % n;
+    },
+
+    /* ---- ARRIVAL IS UNMISTAKABLE (K35(1b) / spec SS C5) -------------------
+       His words: "there needs to be a big flash or something on the screen to
+       signify that they have received a message, something unmistakable and
+       eye-catching."
+       Three things happen together, and they are one event: a bright SWEEP
+       across the thing that arrived, the new content ANIMATING IN under it, and
+       a GLOW that stays until she interacts with it. The glow is the half that
+       matters — a flash she was not looking at is a flash that did not happen.
+       K21 IS UNTOUCHED. That ruling bans ambient travelling motion as
+       atmosphere; an arrival is an EVENT, and an event may flash. The two are
+       distinguished by whether anything actually changed.
+       REDUCED MOTION gets the same information with no movement at all: the
+       banner swaps to a high-contrast state and the glow becomes a solid
+       border. Not a degraded version — the same event, said differently. */
+    arrive: function (node, opts) {
+      if (!node) return;
+      opts = opts || {};
+      var quiet = false;
+      try { quiet = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+      node.classList.remove('pk-arrive', 'pk-arrive-quiet', 'pk-glow');
+      /* force a reflow so a second arrival on the same node really replays */
+      void node.offsetWidth;
+      node.classList.add(quiet ? 'pk-arrive-quiet' : 'pk-arrive');
+      node.classList.add('pk-glow');
+      node.setAttribute('data-arrived', '1');
+      var clear = function () {
+        node.classList.remove('pk-glow');
+        node.removeAttribute('data-arrived');
+        node.removeEventListener('pointerdown', clear);
+        node.removeEventListener('keydown', clear);
+      };
+      node.addEventListener('pointerdown', clear);
+      node.addEventListener('keydown', clear);
+      if (opts.announce !== false) {
+        var live = node.querySelector('[data-arrive-live]');
+        if (live) live.textContent = String(opts.announce || '');
+      }
+      return clear;
+    },
+
     send: function (ctx, kind, text) {
       var st = PairKit.st;
       if (!st) return Promise.resolve({ ok: false, error: 'no-pair' });
@@ -274,12 +451,19 @@
     dock: function (mountEl, ctx) {
       var st = PairKit.st;
       var d = el('<div class="chat-dock">' +
-        '<div class="monitor-banner">&#128737;&#65039; MONITORED CHANNEL &mdash; Mission Command (your teacher) can read every message.</div>' +
+        '<div class="monitor-banner">&#128737;&#65039; ' +
+        PairKit.sayHtml('monitorBanner', 'MONITORED CHANNEL &mdash; Mission Command (your teacher) can read every message.') +
+        '</div>' +
+        (PairKit.say('mineChip', '') ? '<div class="pk-mine-chip">' +
+          PairKit.fill('mineChip', '', '{sign}',
+            '<b>' + esc(PairKit.say('signPrefix', 'Agent ') + String((st.members || [])[Number(st.mi)] || '')) + '</b>') +
+          '</div>' : '') +
         '<div class="turn-chip" hidden></div>' +
         '<div class="chat-log" aria-live="polite"></div>' +
         '<form class="chat-form">' +
-        '<input class="chat-input" type="text" maxlength="240" autocomplete="off" placeholder="Message your partner agent&hellip;">' +
-        '<button class="chat-send" type="submit">Send</button></form></div>');
+        '<input class="chat-input" type="text" maxlength="240" autocomplete="off" placeholder="' +
+        esc(PairKit.say('chatPlaceholder', 'Message your partner agent\u2026')) + '">' +
+        '<button class="chat-send" type="submit">' + esc(PairKit.say('chatSend', 'Send')) + '</button></form></div>');
       mountEl.appendChild(d);
       var log = d.querySelector('.chat-log');
       var input = d.querySelector('.chat-input');
@@ -290,7 +474,8 @@
         var mine = mi === st.mi;
         log.insertAdjacentHTML('beforeend',
           '<div class="chat-msg' + (mine ? ' mine' : '') + '">' +
-          '<span class="cm-who">' + esc(mine ? 'You' : 'Agent ' + (st.members[mi] || '?')) + '</span>' +
+          '<span class="cm-who">' + esc(mine ? PairKit.say('meWho', 'You')
+            : PairKit.say('signPrefix', 'Agent ') + (st.members[mi] || '?')) + '</span>' +
           '<span class="cm-text">' + esc(text) + '</span></div>');
         log.scrollTop = log.scrollHeight;
       }
@@ -316,7 +501,7 @@
           input.focus();
         });
       };
-      sys('Channel open. Say hello — and remember Mission Command can see this.');
+      sys(PairKit.sayHtml('chatOpenSay', 'Channel open. Say hello — and remember Mission Command can see this.'));
       return {
         sys: sys,
         setTurn: function (html, mine) {
@@ -644,12 +829,35 @@
     /* The shape the prototype gate proved, unchanged: one configure per run,
        output captured, execLimit as the guard. Resolves EITHER way — a program
        that fails is not an exception in this app, it is the lesson working. */
-    run: function (code, opts) {
+    run: function (code, opts) { return PyRun.start(code, opts).p; },
+
+    /* v1's shape, plus the three things runner v2 needs, all OPT-IN so a v1
+       caller (both Lesson 2s) configures Skulpt with exactly the same keys it
+       configured yesterday:
+         - opts.inputfun: a function(prompt) returning a PROMISE. Skulpt suspends
+           the program while it is pending, which is what makes input() a real
+           wait rather than a modal (proved in the sandbox at SS B1).
+         - opts.preamble: lines run BEFORE her program and hidden from the count.
+           The only caller is a harness walk seeding `random` so a pinned shape
+           can exist at all (DFM 199 -- never pin a number that can move).
+         - opts.epilogue: lines run AFTER, printing the probe block SS A4 reads.
+       ABANDONMENT IS NEVER A TRAP (DFM 143/265c). `start` hands back an
+       `abandon()` that REJECTS every pending input, so a pupil who leaves a
+       screen mid-conversation settles the run instead of leaving a suspended
+       program holding the page. It is why the resolver rejects rather than
+       simply never resolving: a promise nobody settles waits for ever. */
+    start: function (code, opts) {
       opts = opts || {};
       var limit = Number(opts.limitMs || PyRun.DEFAULT_LIMIT_MS);
-      return PyRun.load().then(function () {
+      var pending = [], dead = false;
+      function abandon() {
+        dead = true;
+        var q = pending.splice(0, pending.length);
+        q.forEach(function (rej) { try { rej(new Error('left this screen')); } catch (e) { /* settled */ } });
+      }
+      var p = PyRun.load().then(function () {
         var out = '';
-        Sk.configure({
+        var conf = {
           output: function (t) { out += t; },
           read: function (x) {
             if (Sk.builtinFiles === undefined || Sk.builtinFiles.files[x] === undefined) {
@@ -659,17 +867,39 @@
           },
           execLimit: limit,
           __future__: Sk.python3
-        });
+        };
+        if (opts.inputfun) {
+          conf.inputfunTakesPrompt = true;
+          conf.inputfun = function (prompt) {
+            if (dead) return Promise.reject(new Error('left this screen'));
+            return new Promise(function (res, rej) {
+              pending.push(rej);
+              Promise.resolve(opts.inputfun(String(prompt == null ? '' : prompt)))
+                .then(function (v) {
+                  var i = pending.indexOf(rej); if (i !== -1) pending.splice(i, 1);
+                  res(String(v == null ? '' : v));
+                }, function (e) {
+                  var i = pending.indexOf(rej); if (i !== -1) pending.splice(i, 1);
+                  rej(e);
+                });
+            });
+          };
+        }
+        Sk.configure(conf);
+        var pre = opts.preamble ? String(opts.preamble) + '\n' : '';
+        var post = opts.epilogue ? '\n' + String(opts.epilogue) : '';
+        var preLines = pre ? pre.split('\n').length - 1 : 0;
         return Sk.misceval.asyncToPromise(function () {
-          return Sk.importMainWithBody('<stdin>', false, code, true);
+          return Sk.importMainWithBody('<stdin>', false, pre + code + post, true);
         }).then(function () {
-          return { ok: true, out: out, err: '', limitMs: limit };
+          return { ok: true, out: out, err: '', limitMs: limit, preLines: preLines };
         }, function (e) {
-          return { ok: false, out: out, err: String(e), limitMs: limit };
+          return { ok: false, out: out, err: String(e), limitMs: limit, preLines: preLines };
         });
       }, function () {
-        return { ok: false, out: '', err: '', offline: true, limitMs: limit };
+        return { ok: false, out: '', err: '', offline: true, limitMs: limit, preLines: 0 };
       });
+      return { p: p, abandon: abandon };
     },
 
     /* Which plain-words line belongs to this error. The KEY is chosen here; the
@@ -698,10 +928,65 @@
       value: 'Python understood the line, but not the value it was given.',
       other: 'Python stopped at the line named above. Read that line again, slowly.'
     },
+    /* ---- v2: THE FINE KINDS, MEASURED IN THE SANDBOX (spec SS A5, K38a) ------
+       The prototype gate ran every mistake these two builds can really produce,
+       in the real serving origin, and the answer was not the one the design
+       assumed: **Skulpt never says IndentationError.** A stray leading space, a
+       loop body with no indent at all and a missing colon ALL arrive as the same
+       `SyntaxError: bad input`, an unclosed bracket arrives as `EOF in multi-line
+       statement`, and a mis-lined-up indent arrives as `unindent does not match`.
+       Three more classes these lessons produce every day -- IndexError from a
+       list position that is not there, AttributeError from `.add(` instead of
+       `.append(`, ZeroDivisionError -- had no kind at all and fell to the
+       generic. Authoring a line for IndentationError would have shipped a
+       sentence no pupil could ever reach WHILE leaving the stray-space case
+       reading the broken-quote line: wrong help, which is worse than none.
+       THE FINE KIND IS TRIED FIRST AND THE COARSE KIND IS THE FALLBACK, which is
+       what keeps j2-02 and j3-02 byte-identical: their `errorWords` maps carry
+       only the v1 keys, no fine key is ever found in them, and the lookup lands
+       exactly where it landed yesterday (qa-pyrun's control asserts it). */
+    /* There is deliberately NO table of "which coarse kind does this fine kind
+       fall back to". `errKind` already answers that question by running its own
+       regexes over the same text, and a second copy of the answer is a second
+       chance for the two to disagree (DFM 144) -- which is exactly what happened
+       when this file first carried one: it said `unindent -> indent`, while the
+       engine really returns `syntax` for Skulpt's own "unindent does not match"
+       wording, because the `indent` branch tests for IndentationError and Skulpt
+       never says it. The harness caught it before any content leaned on it, and
+       the fix is the table's deletion, not its correction. */
+    errKind2: function (errText) {
+      var s = String(errText || '');
+      if (/TimeLimitError/i.test(s)) return 'timelimit';
+      if (/ExternalError/i.test(s)) return 'abandoned';
+      if (/EOF in multi-line statement/i.test(s)) return 'eof';
+      if (/unindent does not match/i.test(s)) return 'unindent';
+      if (/IndentationError|TabError/i.test(s)) return 'unindent';
+      if (/SyntaxError/i.test(s)) return 'badinput';
+      if (/NameError/i.test(s)) return 'name';
+      if (/TypeError/i.test(s)) return 'type';
+      if (/IndexError/i.test(s)) return 'index';
+      if (/AttributeError/i.test(s)) return 'attr';
+      if (/ZeroDivisionError/i.test(s)) return 'zero';
+      if (/ValueError/i.test(s)) return 'value';
+      return 'other';
+    },
+    /* AND THERE IS DELIBERATELY NO SECOND FALLBACK TABLE FOR THE FINE KINDS.
+       One was written, with six sentences in it, and it was deleted the same
+       night: a new engine sentence that no gate reads is exactly the debt
+       `ENGINE_STRINGS_DEBT.md` exists to stop growing, and this round's rule was
+       that every string it adds is content-owned from birth. It costs nothing to
+       drop, because qa-pyrun already proves -- by RUNNING each chunk's own
+       decoys and watching what they raise -- that a lesson supplies words for
+       every kind it can really produce. A fine kind a lesson forgot falls to its
+       own COARSE sentence, which every chunk is likewise proved to carry, so the
+       floor under a pupil is a real sentence either way and never a blank
+       (DFM 42) and never raw Python. */
     plain: function (errText, words) {
-      var kind = PyRun.errKind(errText);
-      var w = (words && words[kind]) || PyRun.FALLBACK_WORDS[kind] || PyRun.FALLBACK_WORDS.other;
-      return { kind: kind, text: String(w) };
+      var fine = PyRun.errKind2(errText);
+      var coarse = PyRun.errKind(errText);
+      var w = (words && words[fine]) || (words && words[coarse]) ||
+        PyRun.FALLBACK_WORDS[coarse] || PyRun.FALLBACK_WORDS.other;
+      return { kind: fine, coarse: coarse, text: String(w) };
     },
 
     /* Expected-output comparison. Trailing spaces on a line and the final
@@ -716,6 +1001,25 @@
     matches: function (actual, expected) {
       var want = Array.isArray(expected) ? expected.join('\n') : expected;
       return PyRun.tidy(actual) === PyRun.tidy(want);
+    },
+
+    /* a one-line reason parked directly after a control that has gone to
+       sleep, and taken away the moment it wakes. Nothing else on the platform
+       needed one until a program could stop halfway through and wait. */
+    waitNote: function (btn, text) {
+      if (!btn) return;
+      var n = btn.parentNode && btn.parentNode.querySelector('.pyrun-waitnote');
+      if (!n) {
+        n = el('<p class="pyrun-waitnote" role="status"></p>');
+        btn.insertAdjacentElement('afterend', n);
+      }
+      n.textContent = String(text || '');
+      n.hidden = false;
+      return n;
+    },
+    clearWaitNote: function (btn) {
+      var n = btn && btn.parentNode && btn.parentNode.querySelector('.pyrun-waitnote');
+      if (n) n.remove();
     },
 
     /* ---- the console surface -------------------------------------------
@@ -773,6 +1077,435 @@
       };
       api.idle();
       return api;
+    },
+
+    /* ================= v2: THE CHAT TRANSCRIPT (spec SS A1a / K38e) ==========
+       A conversation is not a console. When a program asks a question, the
+       question and the answer belong in a labelled exchange the pupil can read
+       back -- her bot on one side, the person answering on the other, and FRED
+       in a bubble style of his own so a side show can never be mistaken for the
+       lesson.
+       THE REPLY BOX IS A SIBLING ROW AND NEVER NESTS (DFM 267f, his Space-bar
+       find). It sits in its own row beside its own Send button; nothing here
+       puts an <input> inside a <button> or an <a>, and qa-nested-interactive
+       audits the RENDERED DOM of this surface like every other. */
+    chat: function (host, labels) {
+      labels = labels || {};
+      var box = el('<div class="pyx">' +
+        '<div class="pyx-bar"><span class="pyx-dot"></span><span class="pyx-title">' +
+        esc(labels.title || 'The conversation') + '</span></div>' +
+        '<div class="pyx-log" role="log" aria-live="polite"></div>' +
+        '<div class="pyx-ask" hidden></div></div>');
+      host.appendChild(box);
+      var log = box.querySelector('.pyx-log');
+      var askRow = box.querySelector('.pyx-ask');
+      var api = {
+        node: box,
+        clear: function () {
+          log.innerHTML = '<p class="pyx-idle">' +
+            esc(labels.idle || 'Nothing has been said yet. Press RUN to start the conversation.') + '</p>';
+          askRow.hidden = true; askRow.innerHTML = '';
+        },
+        /* who: 'bot' | 'user' | 'side' | 'note' */
+        say: function (who, text, whoLabel) {
+          var first = log.querySelector('.pyx-idle');
+          if (first) log.innerHTML = '';
+          log.insertAdjacentHTML('beforeend',
+            '<div class="pyx-row is-' + esc(who) + '">' +
+            '<span class="pyx-who">' + esc(whoLabel || '') + '</span>' +
+            '<span class="pyx-text">' + esc(String(text)) + '</span></div>');
+          log.scrollTop = log.scrollHeight;
+        },
+        /* Ask, and resolve when she presses Send (or Enter in the box). The
+           returned promise is what the runtime suspends on. */
+        ask: function (prompt, whoLabel, sendLabel) {
+          api.say('bot', prompt, whoLabel || labels.botWho || 'The bot');
+          return new Promise(function (res) {
+            askRow.hidden = false;
+            askRow.innerHTML =
+              '<label class="pyx-ask-lab" for="pyx-reply">' + esc(labels.replyLabel || 'Your reply') + '</label>' +
+              '<input id="pyx-reply" class="pyx-reply" type="text" autocomplete="off" spellcheck="false" maxlength="40">' +
+              '<button class="primary-btn pyx-send" type="button">' + esc(sendLabel || labels.sendLabel || 'Send') + '</button>';
+            var inp = askRow.querySelector('.pyx-reply');
+            var btn = askRow.querySelector('.pyx-send');
+            var done = false;
+            function send() {
+              if (done) return;
+              var v = String(inp.value || '').trim();
+              if (!v) { inp.classList.add('wants'); inp.focus(); return; }
+              done = true;
+              askRow.hidden = true; askRow.innerHTML = '';
+              api.say('user', v, labels.userWho || 'You');
+              res(v);
+            }
+            btn.addEventListener('click', send);
+            inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); send(); } });
+            inp.focus();
+          });
+        },
+        closeAsk: function () { askRow.hidden = true; askRow.innerHTML = ''; }
+      };
+      api.clear();
+      return api;
+    },
+
+    /* ================= v2: THE FEATURE PROBES (spec SS A4) ===================
+       "the checker runs her program under seeded probes and ticks each of the
+       five features only when its OBSERVABLE EFFECT is real."
+       So nothing here reads her code to decide whether she got it right. Each
+       probe is a fact about a RUN:
+         inputs   -- the runtime really asked at least N questions
+         echoes   -- every answer the tester typed came back out in the printing
+         joins    -- one printed line carries ALL of the typed answers at once
+         grew     -- with the marked lines neutralised, the list ends up SHORTER
+         shrank   -- with the marked lines neutralised, the list ends up LONGER
+         ordered  -- the list ends the run in order, and has more than one thing
+         varies   -- two runs on two different seeds print different things
+         block    -- a heading line, then exactly N lines, each one of her own
+       `grew`/`shrank` neutralise a line by replacing it with `pass` at the same
+       indent -- the same substitution qa-pyrun uses on decoys, and the reason it
+       is a substitution and not a deletion is that deleting the only line in a
+       loop body would break the program instead of testing it.
+       WRONG STAYS WRONG. A probe that does not hold is NOT YET, and NOT YET
+       never names the line to change (DFM 210's family). */
+    PROBE_START: '<<<OLSPROBE>>>',
+    PROBE_END: '<<<OLSEND>>>',
+    EPILOGUE: [
+      'print("<<<OLSPROBE>>>")',
+      'for _olsk in globals():',
+      '    if _olsk[0:1] != "_":',
+      '        _olsv = globals()[_olsk]',
+      '        if isinstance(_olsv, list):',
+      '            print("L|" + _olsk + "|" + "~".join([str(_olsx) for _olsx in _olsv]))',
+      'print("<<<OLSEND>>>")'
+    ].join('\n'),
+
+    /* Split a run's stdout into what SHE sees and what the probe reported. The
+       pupil's console is never shown the probe block. */
+    splitProbe: function (out) {
+      var s = String(out == null ? '' : out);
+      var i = s.indexOf(PyRun.PROBE_START);
+      if (i === -1) return { text: s, lists: {} };
+      var j = s.indexOf(PyRun.PROBE_END, i);
+      var body = s.slice(i + PyRun.PROBE_START.length, j === -1 ? s.length : j);
+      var lists = {};
+      body.split('\n').forEach(function (line) {
+        var m = /^L\|([^|]*)\|([\s\S]*)$/.exec(line);
+        if (!m) return;
+        lists[m[1]] = m[2] === '' ? [] : m[2].split('~');
+      });
+      return { text: s.slice(0, i), lists: lists };
+    },
+
+    /* Neutralise every line matching `re`, keeping the block valid. */
+    neutralise: function (code, re) {
+      return String(code).split('\n').map(function (l) {
+        if (!re.test(l)) return l;
+        var indent = (/^[ \t]*/.exec(l) || [''])[0];
+        return indent + 'pass';
+      }).join('\n');
+    },
+
+    seedPreamble: function (seed) { return 'import random\nrandom.seed(' + Number(seed) + ')'; },
+
+    /* The biggest list a run ended with -- her playlist, whatever she named it. */
+    biggestList: function (lists) {
+      var best = null;
+      Object.keys(lists || {}).forEach(function (k) {
+        if (!best || lists[k].length > lists[best].length) best = k;
+      });
+      return best ? lists[best] : null;
+    }
+  };
+
+  /* ---- the feature checker: one run, a handful of honest comparisons -------
+     Every probe below answers a question about what HAPPENED, and the answers
+     are computed here rather than read off her source. The base run is seeded
+     so a harness walk can pin a shape (DFM 199); a pupil's own run is seeded
+     too, because a checker whose verdict changed between two identical presses
+     would be a fail state she could never diagnose (rule 35's family). The
+     `varies` probe is the one place a SECOND seed is used, and it is the only
+     honest way to observe that a program really picks at random. */
+  PyRun.checkFeatures = function (code, features, opts) {
+    opts = opts || {};
+    features = features || [];
+    var answers = (opts.answers || []).slice();
+    var limitMs = Number(opts.limitMs || 0) || undefined;
+    var seedA = Number(opts.seed == null ? 4 : opts.seed);
+    var seedB = seedA + 101;
+    var asked = [];
+    function resolver() {
+      var n = 0;
+      return function (prompt) {
+        asked.push(String(prompt));
+        var v = answers.length ? answers[n % answers.length] : 'x';
+        n++;
+        return Promise.resolve(v);
+      };
+    }
+    function once(src, seed) {
+      return PyRun.run(src, {
+        limitMs: limitMs,
+        preamble: PyRun.seedPreamble(seed),
+        epilogue: PyRun.EPILOGUE,
+        inputfun: resolver()
+      }).then(function (r) {
+        var sp = PyRun.splitProbe(r.out);
+        return { ok: r.ok, err: r.err, offline: r.offline, out: r.out, text: sp.text, lists: sp.lists };
+      });
+    }
+    var wantVaries = features.some(function (f) { return f.probe === 'varies'; });
+    var strips = features.filter(function (f) { return f.probe === 'grew' || f.probe === 'shrank'; });
+    var base = null, alt = null, stripped = {};
+    asked = [];
+    return once(code, seedA).then(function (r) {
+      base = r;
+      /* a program that could not run at all has no observable effects: every
+         feature is NOT YET and the console shows the real error (SS A5 level 0) */
+      if (!base.ok) return null;
+      if (!wantVaries) return null;
+      return once(code, seedB).then(function (r2) { alt = r2; });
+    }).then(function () {
+      if (!base.ok) return null;
+      return strips.reduce(function (ch, f) {
+        return ch.then(function () {
+          var re = new RegExp(String(f.mark || '\\.append\\('));
+          var src = PyRun.neutralise(code, re);
+          if (src === code) { stripped[f.id] = { same: true }; return; }
+          return once(src, seedA).then(function (r3) { stripped[f.id] = r3; });
+        });
+      }, Promise.resolve());
+    }).then(function () {
+      var baseList = base.ok ? PyRun.biggestList(base.lists) : null;
+      var results = features.map(function (f) {
+        if (!base.ok) return { id: f.id, ok: false };
+        var ok = false;
+        if (f.probe === 'inputs') {
+          ok = asked.length >= Number(f.min || 1);
+        } else if (f.probe === 'echoes') {
+          var wanted = (opts.answers || []).slice(0, Number(f.count || (opts.answers || []).length));
+          ok = wanted.length > 0 && wanted.every(function (a) { return base.text.indexOf(a) !== -1; });
+        } else if (f.probe === 'joins') {
+          var all = (opts.answers || []).slice(0, Number(f.count || (opts.answers || []).length));
+          ok = all.length > 1 && base.text.split('\n').some(function (line) {
+            return all.every(function (a) { return line.indexOf(a) !== -1; });
+          });
+        } else if (f.probe === 'grew') {
+          var g = stripped[f.id];
+          var gl = (g && !g.same && g.ok) ? PyRun.biggestList(g.lists) : null;
+          ok = !!(baseList && gl && baseList.length > gl.length);
+        } else if (f.probe === 'shrank') {
+          var h = stripped[f.id];
+          var hl = (h && !h.same && h.ok) ? PyRun.biggestList(h.lists) : null;
+          ok = !!(baseList && hl && baseList.length < hl.length);
+        } else if (f.probe === 'ordered') {
+          ok = !!(baseList && baseList.length > 1 && baseList.every(function (v, i) {
+            return i === 0 || String(baseList[i - 1]).toLowerCase() <= String(v).toLowerCase();
+          }));
+        } else if (f.probe === 'varies') {
+          ok = !!(alt && alt.ok && alt.text !== base.text);
+        } else if (f.probe === 'block') {
+          var head = String(f.head || '').toLowerCase();
+          var n = Number(f.lines || 3);
+          var rows = base.text.split('\n');
+          for (var i = 0; i < rows.length; i++) {
+            if (rows[i].toLowerCase().indexOf(head) === -1) continue;
+            var after = rows.slice(i + 1).filter(function (x) { return String(x).trim() !== ''; });
+            if (after.length < n) continue;
+            var take = after.slice(0, n);
+            var fromList = baseList && take.every(function (x) { return baseList.indexOf(x.trim()) !== -1; });
+            var distinct = {}; take.forEach(function (x) { distinct[x.trim()] = 1; });
+            if (fromList && Object.keys(distinct).length === n) { ok = true; break; }
+          }
+        }
+        return { id: f.id, ok: ok };
+      });
+      return { results: results, base: base, asked: asked.slice() };
+    });
+  };
+
+  /* ---- the typed editor surface (spec SS A2) --------------------------------
+     Monospace, line-numbered, a real Run and the same honest console. Tab puts
+     four spaces in rather than leaving the box, because a pupil who tabs out of
+     her own program mid-line has lost her place for a reason she cannot see.
+     PASTE IS ALLOWED: typing practice is not the gate, and a pupil who copies a
+     line she wrote two minutes ago is doing exactly what a programmer does. */
+  PyRun.editor = function (host, cfg) {
+    cfg = cfg || {};
+    var box = el('<div class="pye">' +
+      '<div class="pye-bar"><span class="pye-title">' + esc(cfg.title || 'Your program') + '</span>' +
+      '<span class="pye-count" aria-live="polite"></span></div>' +
+      '<div class="pye-body"><pre class="pye-nums" aria-hidden="true"></pre>' +
+      '<textarea class="pye-code" spellcheck="false" autocomplete="off" autocapitalize="off" ' +
+      'autocorrect="off" wrap="off" aria-label="' + esc(cfg.aria || 'Type your program here') + '"></textarea>' +
+      '</div></div>');
+    host.appendChild(box);
+    var ta = box.querySelector('.pye-code');
+    var nums = box.querySelector('.pye-nums');
+    var count = box.querySelector('.pye-count');
+    function paint() {
+      var n = ta.value.split('\n').length;
+      var out = '';
+      for (var i = 1; i <= n; i++) out += i + '\n';
+      nums.textContent = out;
+      count.textContent = String(n) + ' ' + (n === 1 ? (cfg.lineWord || 'line') : (cfg.linesWord || 'lines'));
+    }
+    ta.addEventListener('input', paint);
+    ta.addEventListener('scroll', function () { nums.scrollTop = ta.scrollTop; });
+    ta.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab') return;
+      e.preventDefault();
+      var a = ta.selectionStart, b = ta.selectionEnd;
+      ta.value = ta.value.slice(0, a) + '    ' + ta.value.slice(b);
+      ta.selectionStart = ta.selectionEnd = a + 4;
+      paint();
+    });
+    paint();
+    return {
+      node: box, area: ta,
+      value: function () { return ta.value; },
+      set: function (v) { ta.value = String(v == null ? '' : v); paint(); },
+      /* insert AT THE CARET, and leave the caret after what landed, so the very
+         next thing she types is the word she came to change (K38d's guided
+         first insert depends on this) */
+      insert: function (text) {
+        var t = String(text);
+        var a = ta.selectionStart, b = ta.selectionEnd;
+        var before = ta.value.slice(0, a);
+        var needsNl = before.length > 0 && !/\n$/.test(before);
+        var add = (needsNl ? '\n' : '') + t + '\n';
+        ta.value = before + add + ta.value.slice(b);
+        var pos = before.length + add.length;
+        ta.selectionStart = ta.selectionEnd = pos;
+        paint();
+        ta.focus();
+        return pos;
+      },
+      focus: function () { ta.focus(); },
+      lock: function () { ta.readOnly = true; box.classList.add('is-locked'); },
+      unlock: function () { ta.readOnly = false; box.classList.remove('is-locked'); }
+    };
+  };
+
+  /* ================= THE SIDE SHOW (K36, spec §C6) =========================
+     HIS REDESIGN, 26 Aug 2026: "I think you should make it comical, to give them
+     a giggle while they wait - it doesn't have to be about the lesson content,
+     it's just a wee side show thing that appears while they wait and disappears
+     when the message comes through and while they are working."
+     So this is ENTERTAINMENT, and it is deliberately not teaching. It appears at
+     GENUINE waits only — the pairing gate and the turn swap — never at the ~2s
+     relays, where a character popping in and out would be noise rather than a
+     giggle. It VANISHES the instant the match or the message lands, because the
+     flash is the event and a comedian standing in front of it is in the way.
+     SCRIPTED, NO AI (his standing ruling). Authored lines, plus the one trick
+     that makes a scripted bot feel alive: her own words fed back into comic
+     templates, on her own machine. NOTHING IS SAVED, NOTHING IS SENT, no XP —
+     and the character says so in voice rather than in a notice, because a notice
+     is the lesson talking and this is not the lesson.
+     ONE MACHINERY, TWO BITS (K36d). `chat` is Fred: she types, he answers.
+     `monologue` is Margo: she says nothing, the critic reviews the silence and
+     gets steadily more theatrical. Same appear/vanish rules, same art states,
+     same "I forget everything" honesty. */
+  var SideShow = global.SideShow = {
+    /* host: where it lives. cfg: the lesson's own content. */
+    mount: function (host, cfg) {
+      if (!host || !cfg) return { stop: function () {}, leave: function () {} };
+      cfg = cfg || {};
+      var art = cfg.art || {};
+      var beat = 0, typing = null, timer = null, gone = false;
+      var lines = (cfg.lines || []).slice();
+      var box = el('<div class="sideshow" data-side="' + esc(cfg.id || 'side') + '">' +
+        '<div class="ss-figure"><span class="ss-stage"><img class="ss-img" alt="' + esc(cfg.alt || '') + '" src="' +
+        esc(asset(art.idle || '')) + '"></span><span class="ss-name">' + esc(cfg.name || '') + '</span></div>' +
+        '<div class="ss-body"><div class="ss-log" role="log" aria-live="polite"></div>' +
+        (cfg.mode === 'chat'
+          ? '<div class="ss-ask"><label class="ss-ask-lab" for="ss-say">' + esc(cfg.replyLabel || 'Say something back') +
+            '</label><input id="ss-say" class="ss-say" type="text" autocomplete="off" maxlength="40">' +
+            '<button class="ghost-btn ss-send" type="button">' + esc(cfg.sendLabel || 'Say it') + '</button></div>'
+          : '') +
+        '</div></div>');
+      host.appendChild(box);
+      var log = box.querySelector('.ss-log');
+      var img = box.querySelector('.ss-img');
+      function face(state) {
+        var src = art[state] || art.idle;
+        if (src) img.src = asset(src);
+        box.setAttribute('data-face', state);
+      }
+      function say(text, state) {
+        if (gone) return;
+        face('typing');
+        clearTimeout(typing);
+        typing = setTimeout(function () {
+          if (gone) return;
+          log.insertAdjacentHTML('beforeend',
+            '<p class="ss-line">' + esc(String(text)) + '</p>');
+          log.scrollTop = log.scrollHeight;
+          face(state || 'idle');
+        }, Number(cfg.typingMs == null ? 700 : cfg.typingMs));
+      }
+      /* HER OWN WORDS, FED BACK. The only "intelligence" here is a template with
+         her sentence dropped into it, chosen in turn — which is exactly what a
+         scripted bot is, and exactly what the lesson has just taught her a
+         chatbot is. Nothing leaves this machine. */
+      function echo(said) {
+        var t = (cfg.echo || [])[beat % Math.max(1, (cfg.echo || []).length)] || '{you}';
+        return String(t).replace(/\{you\}/g, said);
+      }
+      say(cfg.open || '', 'idle');
+      if (cfg.mode !== 'chat') {
+        /* the critic reviews the silence, and gets worse about it */
+        var every = Number(cfg.everyMs || 7000);
+        timer = setInterval(function () {
+          if (gone || beat >= lines.length) { clearInterval(timer); return; }
+          say(lines[beat], 'idle');
+          beat++;
+        }, every);
+      } else {
+        var inp = box.querySelector('.ss-say');
+        var snd = box.querySelector('.ss-send');
+        var send = function () {
+          var v = String(inp.value || '').trim();
+          if (!v) { inp.classList.add('wants'); inp.focus(); return; }
+          inp.value = '';
+          log.insertAdjacentHTML('beforeend', '<p class="ss-line is-mine">' + esc(v) + '</p>');
+          log.scrollTop = log.scrollHeight;
+          var next = lines.length ? lines[beat % lines.length] : '';
+          say(beat % 2 === 1 ? echo(v) : (next || echo(v)), 'idle');
+          beat++;
+        };
+        snd.addEventListener('click', send);
+        inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); send(); } });
+      }
+      return {
+        node: box,
+        /* the match landed: one last line in character, then he is gone. The
+           delay is short on purpose — the flash is the event, and the exit is a
+           punchline, not a scene. */
+        leave: function (why) {
+          if (gone) return;
+          gone = true;
+          clearInterval(timer); clearTimeout(typing);
+          var line = (why === 'matched' ? cfg.exitLine : (cfg.leaveLine || cfg.exitLine)) || '';
+          var state = why === 'matched' ? (cfg.exitFace || 'devastated') : 'idle';
+          if (line) {
+            var src = art[state] || art.idle;
+            if (src) img.src = asset(src);
+            box.setAttribute('data-face', state);
+            log.insertAdjacentHTML('beforeend', '<p class="ss-line is-exit">' + esc(line) + '</p>');
+          }
+          var ask = box.querySelector('.ss-ask');
+          if (ask) ask.remove();
+          box.classList.add('is-leaving');
+          setTimeout(function () { if (box.parentNode) box.parentNode.removeChild(box); },
+            Number(cfg.exitMs == null ? 1400 : cfg.exitMs));
+        },
+        stop: function () {
+          gone = true;
+          clearInterval(timer); clearTimeout(typing);
+          if (box.parentNode) box.parentNode.removeChild(box);
+        }
+      };
     }
   };
 
@@ -814,11 +1547,28 @@
          had. Rule 127: his own note that the pupil's video window should be
          bigger; a 592px player inside the unwidened card would have been the
          narrowest film on the platform. */
+      /* ---- AN OPTIONAL SCRIPTED DEMO (spec §D1: "the DEMO bot's 20-second
+         turn on screen"). A briefing that TELLS a pupil what a chatbot is, on
+         the screen right before she builds one, is doing half the job: the other
+         half is twenty seconds of one actually happening. It is authored, it is
+         the same transcript every time, and it types itself out under the lines
+         so it reads as a demonstration rather than something she has to answer.
+         EVERY QUESTION IT ASKS IS ONE AN ELEVEN-YEAR-OLD CAN ANSWER WITHOUT
+         THINKING (K36a, his ruling: "make sure you don't ask questions that
+         might confuse them"). CONFIG-GATED: a briefing with no `demo` produces
+         exactly the DOM it produced before, byte for byte. */
+      var demo = (cfg.demo && cfg.demo.length)
+        ? '<div class="dossier-demo"><div class="pyx"><div class="pyx-bar">' +
+          '<span class="pyx-dot"></span><span class="pyx-title">' + esc(cfg.demoTitle || '') + '</span></div>' +
+          '<div class="pyx-log"></div></div>' +
+          (cfg.demoNote ? '<p class="dossier-demo-note">' + esc(cfg.demoNote) + '</p>' : '') + '</div>'
+        : '';
       var d = el('<div class="dossier' + (cfg.video ? ' has-film' : '') + '">' +
         '<div class="dossier-top"><span class="dossier-clearance">' + esc(cfg.clearance || '') + '</span></div>' +
         '<h1 class="dossier-headline"></h1>' +
         film +
         '<div class="dossier-lines"></div>' +
+        demo +
         photoStrip +
         '<button class="primary-btn dossier-cta" type="button" hidden>' + esc(cfg.cta || 'Continue') + '</button>' +
         '</div>');
@@ -853,16 +1603,39 @@
         cta.hidden = false;
         App.armButton(cta, function () { finishChunk(ctx); });
       }
+      /* the demo runs on its own clock, under the lines, and the safety net
+         reveals it whole if a throttled tab ever stalls the animation */
+      var demoLog = d.querySelector('.dossier-demo .pyx-log');
+      function demoRow(t) {
+        return '<div class="pyx-row is-' + (String(t.who) === 'you' ? 'user' : 'bot') + '">' +
+          '<span class="pyx-who">' + esc(t.label || '') + '</span>' +
+          '<span class="pyx-text">' + esc(t.text || '') + '</span></div>';
+      }
+      function demoAll() {
+        if (!demoLog) return;
+        demoLog.innerHTML = (cfg.demo || []).map(demoRow).join('');
+      }
+      function playDemo() {
+        if (!demoLog) return;
+        (cfg.demo || []).forEach(function (t, i) {
+          timers.push(setTimeout(function () {
+            demoLog.insertAdjacentHTML('beforeend', demoRow(t));
+            demoLog.scrollTop = demoLog.scrollHeight;
+          }, Number(cfg.demoStepMs || 1600) * i));
+        });
+      }
       function reveal() {
         timers.forEach(clearTimeout);
         headline.textContent = cfg.headline;
         linesBox.innerHTML = (cfg.lines || []).map(function (l) { return '<p class="dossier-line show">' + fmtBold(l) + '</p>'; }).join('');
+        demoAll();
         showCta();
       }
       /* Safety net: a backgrounded tab throttles timers, so the animation can
          stall and strand a pupil with no way on. Reveal everything regardless
          after the animation's own worst case. */
-      timers.push(setTimeout(reveal, 900 * ((cfg.lines || []).length + 1) + 6000));
+      timers.push(setTimeout(reveal, 900 * ((cfg.lines || []).length + 1) +
+        Number(cfg.demoStepMs || 1600) * (cfg.demo || []).length + 6000));
       // typewriter headline
       var hl = String(cfg.headline || ''), pos = 0;
       (function type() {
@@ -871,6 +1644,25 @@
           pos++;
           timers.push(setTimeout(type, 45));
         } else {
+          /* ON A CARD WITH A DEMO, THE WAY ON IS THERE FROM THE START. Five
+             lines animating in at 900ms each plus the demo behind them put the
+             Continue button about six and a half seconds away, which the
+             confused-pupil walk reports as a screen with nothing on it -- and
+             it is right to: a pupil who has read the card is held on it by an
+             animation she did not ask for. The lines still arrive one at a
+             time; she is simply never waiting on them (DFM 42/205). Only the
+             demo cards are affected, so every briefing already in a pupil's
+             hands behaves exactly as it did. */
+          /* AND A CAP ON EVERY BRIEFING, not just the demo ones. The lines
+             arrive one at a time at 900ms each, and J3 Lesson 3's call room has
+             ELEVEN of them — so its Continue button was twelve seconds away,
+             which the confused-pupil walk reported as a card with nothing on
+             it. It was right to. The lines still arrive at their own pace; the
+             way on simply stops being hostage to the last one. Four lines'
+             worth is the cap, which is under four seconds on every card in the
+             platform and changes nothing about how any of them look. */
+          var ctaAt = Math.min((cfg.lines || []).length, 4) * 900 + 700;
+          if (demoLog) showCta(); else timers.push(setTimeout(showCta, ctaAt));
           (cfg.lines || []).forEach(function (l, i) {
             timers.push(setTimeout(function () {
               var p = document.createElement('p');
@@ -879,7 +1671,20 @@
               /* capture p, never lastChild — throttled tabs batch rAF callbacks
                  and lastChild would point at the newest line for all of them */
               requestAnimationFrame(function () { p.classList.add('show'); });
-              if (i === cfg.lines.length - 1) timers.push(setTimeout(showCta, 700));
+              if (i === cfg.lines.length - 1) {
+                if (demoLog) {
+                  playDemo();
+                  /* THE WAY ON ARRIVES WITH THE DEMO, NOT AFTER IT. Holding it
+                     back until the last line had played left this card with
+                     nothing to press for about eleven seconds -- long enough
+                     that the confused-pupil walk gave up on it and called the
+                     lesson over, and long enough to strand a pupil who has
+                     already read the thing. The transcript keeps playing
+                     behind her; she is simply never held on a screen with no
+                     way off it (DFM 42/205). */
+                  timers.push(setTimeout(showCta, 700));
+                }   /* the non-demo CTA is armed above, on a cap */
+              }
             }, 900 * i));
           });
         }
@@ -2507,6 +3312,14 @@
          already holds. Gated on cfg.stacks, so every other lesson's puzzle keeps
          the single column it has today, markup for markup. */
       var STACKS = (cfg.stacks && cfg.stacks.length) ? cfg.stacks : null;
+      /* A PROGRAM WITH INDENTATION IN IT HAS TO SHOW ITS INDENTATION (26 Aug
+         2026). HTML collapses leading spaces, so a block reading four spaces
+         then `print(song)` drew flush left — and the card that then told a pupil
+         the four spaces are what put the line inside the loop would have been
+         pointing at something she could not see (rule 35). Config-gated: a
+         puzzle that does not ask for `pre` renders exactly the markup every
+         signed-off lesson's puzzle renders today. */
+      var PRE = cfg.pre ? ' is-pre' : '';
       /* one box per stack; single-column mode is simply one box with no ceiling */
       var boxes = STACKS ? STACKS.map(function () { return []; }) : [[]];
       var capOf = function (k) { return STACKS ? Number(STACKS[k].size) || 0 : Infinity; };
@@ -2764,7 +3577,7 @@
           progLists.forEach(function (l) { l.innerHTML = ''; });
           it.blocks.forEach(function (b, si) {
             if (boxOf(si) !== -1) return;
-            var n = el('<button class="parsons-block" type="button" draggable="false">' + esc(b) + '</button>');
+            var n = el('<button class="parsons-block' + PRE + '" type="button" draggable="false">' + esc(b) + '</button>');
             wireDrag(n, si, false);
             tray.appendChild(n);
           });
@@ -2784,7 +3597,7 @@
             var listEl = progLists[k];
             list.forEach(function (si, i) {
               var n = el('<li><span class="pp-num">' + (i + 1) + '.</span>' +
-                '<button class="parsons-block placed" type="button" draggable="false">' + esc(it.blocks[si]) + '</button></li>');
+                '<button class="parsons-block placed' + PRE + '" type="button" draggable="false">' + esc(it.blocks[si]) + '</button></li>');
               wireDrag(n.querySelector('button'), si, true);
               listEl.appendChild(n);
             });
@@ -3089,7 +3902,8 @@
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
       var builds = cfg.builds || [];
-      var at = 0, cleanFirst = 0;
+      var at = 0, cleanFirst = 0, featureFirst = 0;
+      var liveRun = null;      /* the run in flight, so leaving can abandon it */
 
       /* ---- THE EXTRA JOBS ZONE — DFM 265, HIS RULING, 26 Aug 2026 ---------
          His two sentences, and they are one design: "I'm not sure that we should
@@ -3119,9 +3933,22 @@
 
       if (cfg.extrasMode) { hub(); return; }
 
+      /* ---- A FILM AT THE POINT OF BUILDING (DFM 168, config-gated) --------
+         "when a film teaches a build, the film is served in parts, at the point
+         of building" — his own law from the Lesson 3 sit. This card's part is
+         the one that shows the move she is about to make, so it sits ON the card
+         that asks her to make it rather than eight minutes earlier. A pyrun
+         chunk that names no `introVideo` renders exactly the intro card it
+         rendered before, byte for byte. */
+      var introFilm = cfg.introVideo
+        ? '<div class="pyrun-intro-film"><video controls preload="metadata" playsinline src="' +
+          esc(asset(cfg.introVideo)) + '"></video>' +
+          (cfg.introVideoSay ? '<p class="pyrun-intro-film-say">' + esc(cfg.introVideoSay) + '</p>' : '') +
+          '</div>'
+        : '';
       introCard(host, {
         kicker: cfg.kicker, title: cfg.title, text: cfg.intro || '',
-        steps: cfg.steps, stepsClass: 'pyrun-intro-steps'
+        steps: cfg.steps, stepsClass: 'pyrun-intro-steps', extra: introFilm
       }, cfg.beginLabel || 'Open the desk', function () { startBuild(); });
 
       /* THE HUB. The intro sits ABOVE the jobs, not under them: DFM 151 —
@@ -3166,8 +3993,46 @@
       }
       function finishLabel() { return cfg.finishLabel || 'Finish the lesson'; }
 
+      /* ---- THE REFUSABLE EXTRA BUILD (spec §D3/§E2, under DFM 259 + 265) ----
+         DFM 265 killed the V54 stretch offer, and it named exactly what was
+         wrong with it: it promised points, it had one way onward, and there was
+         no way out of a half-done one. This is the same PLACE in the hour and
+         none of those three faults. It pays NOTHING; refusing is a control of
+         equal weight sitting beside accepting; and the extra build itself
+         carries "finish this part" on its own card, so a pupil told "time up"
+         half way through it banks her badge with one press. The extras hub
+         (265's own shape) is still there afterwards, so this lesson carries a
+         refusable stretch twice over. */
+      function offerExtra() {
+        var b = builds[at];
+        host.innerHTML = '';
+        var c = el('<div class="card py-offer-card">' +
+          '<span class="intro-kicker">' + esc(b.offerKicker || cfg.offerKicker || '') + '</span>' +
+          '<h2>' + esc(b.offerTitle || '') + '</h2>' +
+          '<p class="intro-lead">' + fmtBold(b.offerLead || '') + '</p>' +
+          '<p class="py-offer-free">' + fmtBold(b.offerFree || cfg.offerFree || '') + '</p>' +
+          '<div class="rung-actions py-offer-row">' +
+          '<button class="primary-btn py-offer-yes" type="button">' + esc(b.offerYes || cfg.offerYes || '') + '</button>' +
+          '<button class="ghost-btn py-offer-no" type="button">' + esc(b.offerNo || cfg.offerNo || '') + '</button>' +
+          '</div></div>');
+        host.appendChild(c);
+        App.armButton(c.querySelector('.py-offer-yes'), function () { startBuild(true); });
+        App.armButton(c.querySelector('.py-offer-no'), function () { done(); });
+      }
+
       function done() {
-        var xp = Math.min(Number(cfg.firstTryXp || 0) * cleanFirst, Number(cfg.firstTryXpCap || 0));
+        if (liveRun) { try { liveRun.abandon(); } catch (e) { /* already settled */ } liveRun = null; }
+        /* TWO WAYS TO EARN THE SAME BONUS, and which one applies is the chunk's
+           own shape rather than a flag. An assemble/worked chunk pays per BUILD
+           cleared first time (v1, untouched). A free build with feature probes
+           pays per FEATURE that was real on the very first RUN — because there is
+           only ever one "build" there, and paying it all-or-nothing would make a
+           four-of-five program worth the same as an empty box. Clean-run
+           weighting is what already pays first-try more, which is exactly why
+           none of the help in these lessons carries a price (K38c). */
+        var xp = Number(cfg.featureXp || 0)
+          ? Math.min(Number(cfg.featureXp) * featureFirst, Number(cfg.featureXpCap || 0))
+          : Math.min(Number(cfg.firstTryXp || 0) * cleanFirst, Number(cfg.firstTryXpCap || 0));
         /* AND THE KEY IS THE CHUNK'S OWN ID, not the engine's name. The server's
            idempotency rule keys on the text before the '=', so two chunks of the
            SAME engine in one lesson wrote the same key — and the second one was
@@ -3178,9 +4043,15 @@
            record as well. A chunk id is unique inside a lesson by construction,
            so this closes the CLASS and not just the instance (DFM 167b) — a
            lesson with two snap desks would have had the same fault. Nothing reads
-           these keys but the server's idempotency check and the Live tab's raw
-           ledger, both of which are better off with a name that says which
-           activity it came from. */
+           these keys but the server's idempotency check and the Live tab, both of
+           which are better off with a name that says which activity it came
+           from.
+           CORRECTED 27 Aug 2026 (§F1): this comment used to say "the Live tab's
+           RAW LEDGER", and there has never been a raw-ledger view in staff.js —
+           it described a surface that did not exist, which is DFM 194(c)'s law
+           in reverse (a code comment's claim is a hypothesis, never evidence).
+           There IS a reader now: the Live tab renders one column per build
+           chunk, named by the chunk's own title, and the CSV carries the same. */
         var detail = (chunk.id || 'py') + '=' + cleanFirst + '/' + builds.length;
         /* THE EXTRAS ZONE PAYS NOTHING AND RECORDS NOTHING (DFM 265a). No first-try
            counting, no bonus, and a detail string that says only that she passed
@@ -3193,7 +4064,550 @@
         finishChunk(ctx, detail, xp);
       }
 
-      function startBuild() {
+      /* ================= THE HELP LADDER (spec SS A5 / K38) =================
+         His direction, 26 Aug 2026: "There probably need to be a lot of hand
+         holding with this lesson in terms of hints and help, and above all,
+         clarity of instructions and interface."
+         Three rungs, on EVERY build step of both hours, and every one of them
+         FREE (K38c). There is no price label anywhere in these two lessons: the
+         clean-run weighting already pays a first-try program more, so charging
+         for help would be charging twice. J1's Debug Hint keeps its 2 XP where
+         it shipped and is not touched.
+           level 0  the honest console + the authored plain-words line (PyRun)
+           level 1  "Show me the shape" -- the structural pattern with EMPTY
+                    slots. Never her values, never the answer (DFM 210).
+           level 2  "Show me how" -- the film clip for this exact move, opened
+                    from wherever she is standing, INCLUDING the NOT YET state,
+                    because that is the moment she needs it (DFM 262).
+           level 3  (features only) a look-here nudge naming what to INSPECT.
+         Both buttons are rendered as ghosts in one row, so a pupil meets the
+         same two controls in the same place on every build step of both hours. */
+      function helpRowHtml(b) {
+        var bits = [];
+        if (b && b.shape && b.shape.length) {
+          bits.push('<button class="ghost-btn py-shape-btn" type="button">' +
+            esc(cfg.shapeLabel || 'Show me the shape') + '</button>');
+        }
+        var clip = (b && b.clip) || cfg.clip;
+        if (clip && clip.src) {
+          bits.push('<button class="ghost-btn py-clip-btn" type="button">&#127909; ' +
+            esc(clip.label || cfg.clipLabel || 'Show me how') + '</button>');
+        }
+        if (!bits.length) return '';
+        return '<div class="py-help-row">' + bits.join('') + '</div>';
+      }
+      function wireHelpRow(card, b) {
+        var sb = card.querySelector('.py-shape-btn');
+        if (sb) sb.onclick = function () { openShape(b); };
+        var cb = card.querySelector('.py-clip-btn');
+        var clip = (b && b.clip) || cfg.clip;
+        if (cb && clip) cb.onclick = function () { openClip(clip); };
+      }
+      function openShape(b) {
+        var ov = el('<div class="ols-modal py-shape-modal"><div class="ols-modal-card">' +
+          '<span class="intro-kicker">' + esc(cfg.shapeKicker || 'The shape') + '</span>' +
+          '<h2>' + esc(b.shapeTitle || cfg.shapeTitle || 'What this looks like') + '</h2>' +
+          '<p class="py-shape-lead">' + fmtBold(b.shapeLead || cfg.shapeLead || '') + '</p>' +
+          '<pre class="py-shape-code">' + esc((b.shape || []).join('\n')) + '</pre>' +
+          (b.shapeNote || cfg.shapeNote
+            ? '<p class="py-shape-note">' + fmtBold(b.shapeNote || cfg.shapeNote) + '</p>' : '') +
+          '<div class="confirm-actions"><button class="primary-btn py-shape-close" type="button">' +
+          esc(cfg.shapeClose || 'Back to my program') + '</button></div>' +
+          '</div></div>');
+        document.body.appendChild(ov);
+        App.armButton(ov.querySelector('.py-shape-close'), function () { ov.remove(); });
+      }
+
+      /* ================= WORKED MODE (spec SS D/E's stage-1 cards) ==========
+         An authored program she can READ, with the gaps she has to put right,
+         and a RUN that really runs it. When the program asks a question the
+         answer is typed into a transcript beside the console rather than into a
+         box that says "input" -- because what she is looking at IS a
+         conversation, and calling it one is the whole point of the hour.
+         The planted mistake is on the DEMO's program, never on her own build
+         (DFM 210): she reads a real Python error, fixes it herself, and runs it
+         clean. Nothing is pre-flagged and nothing auto-corrects. */
+      function startWorked() {
+        host.innerHTML = '';
+        var b = builds[at];
+        var picked = -1;
+        var attempts = 0;
+        var replies = [];
+        if (b.styles && b.styles.length && picked < 0) { pickStyle(); return; }
+        draw();
+
+        function pickStyle() {
+          var cards = b.styles.map(function (st, i) {
+            return '<button class="py-style" type="button" data-i="' + i + '">' +
+              '<b class="py-style-name">' + esc(st.name || '') + '</b>' +
+              '<span class="py-style-whiff">' + esc(st.whiff || '') + '</span></button>';
+          }).join('');
+          var c = el('<div class="card py-style-card">' +
+            '<span class="intro-kicker">' + esc(b.styleKicker || cfg.kicker || '') + '</span>' +
+            '<h2>' + esc(b.styleTitle || '') + '</h2>' +
+            '<p class="intro-lead">' + fmtBold(b.styleLead || '') + '</p>' +
+            '<div class="py-styles">' + cards + '</div></div>');
+          host.appendChild(c);
+          c.querySelectorAll('.py-style').forEach(function (btn) {
+            App.armButton(btn, function () { picked = Number(btn.getAttribute('data-i')); host.innerHTML = ''; draw(); });
+          });
+        }
+
+        function programLines() {
+          return (picked >= 0 ? b.styles[picked].lines : b.lines) || [];
+        }
+
+        function draw() {
+          var lines = programLines();
+          var vals = {};
+          var html = lines.map(function (L, i) {
+            var t = esc(String(L.t || ''));
+            (L.blanks || []).forEach(function (bl) {
+              /* A GAP CAN ARRIVE WITH SOMETHING ALREADY IN IT. That is how a
+                 planted mistake gets onto the screen without being pointed at:
+                 the demo program simply has a mis-typed box name in it, she
+                 presses RUN, and Python tells her. Nothing is pre-flagged, and
+                 the mistake is on the DEMO, never on her own build (DFM 210). */
+              if (bl.pre != null && vals[bl.key] == null) vals[bl.key] = String(bl.pre);
+              t = t.replace(esc(bl.slot || '____'),
+                '<input class="pyrun-blank" type="text" spellcheck="false" autocomplete="off" ' +
+                'data-key="' + esc(bl.key) + '" size="' + (Number(bl.size) || 8) + '" maxlength="' + (Number(bl.max) || 24) + '" ' +
+                (bl.pre != null ? 'value="' + esc(String(bl.pre)) + '" ' : '') +
+                'aria-label="' + esc(bl.label || 'type here') + '" placeholder="' + esc(bl.ph || '') + '">');
+            });
+            var hints = (L.blanks || []).map(function (bl) { return bl.label; }).filter(Boolean);
+            /* a row, never a control: nothing here nests an input inside a
+               button, and nothing here is clickable, so there is no keyboard
+               behaviour to protect (DFM 267f) */
+            return '<li class="pyw-line' + ((L.blanks || []).length ? ' has-blank' : '') + '">' +
+              '<code>' + t + '</code>' +
+              (hints.length ? '<span class="pyrun-blank-hint">' + esc(hints.join(' · ')) + '</span>' : '') +
+              '</li>';
+          }).join('');
+          var c = el('<div class="card pyrun-card pyw-card" data-build="' + esc(b.id || '') + '">' +
+            '<h2 class="pyrun-goal">' + fmtBold(b.goalLine || '') + '</h2>' +
+            (b.brief ? '<p class="pyrun-brief">' + fmtBold(b.brief) + '</p>' : '') +
+            (picked >= 0 && b.styles[picked].chosenSay
+              ? '<p class="pyw-chosen">' + fmtBold(b.styles[picked].chosenSay) + '</p>' : '') +
+            '<div class="pyw-prog"><h3>' + esc(cfg.progLabel || 'The program') + '</h3><ol class="pyw-list">' + html + '</ol></div>' +
+            helpRowHtml(b) +
+            '<button class="primary-btn pyrun-run" type="button">' + esc(cfg.runLabel || 'RUN this program') + '</button>' +
+            '<div class="pyw-stage"></div>' +
+            '<div class="pyrun-verdict" hidden></div>' +
+            '</div>');
+          host.appendChild(c);
+          wireHelpRow(c, b);
+          var stage = c.querySelector('.pyw-stage');
+          var chat = b.chat === false ? null : PyRun.chat(stage, cfg.chatLabels || {});
+          var con = PyRun.console(stage, cfg.consoleLabels || {});
+          var runBtn = c.querySelector('.pyrun-run');
+          var verdict = c.querySelector('.pyrun-verdict');
+          PyRun.load().catch(function () { /* reported honestly at RUN */ });
+          c.querySelectorAll('.pyrun-blank').forEach(function (inp) {
+            var k = inp.getAttribute('data-key');
+            inp.addEventListener('input', function () { vals[k] = inp.value; });
+            inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') ev.preventDefault(); });
+          });
+
+          function codeOf() {
+            return lines.map(function (L) {
+              var t = String(L.t || '');
+              (L.blanks || []).forEach(function (bl) {
+                t = t.replace(bl.slot || '____', String(vals[bl.key] == null ? '' : vals[bl.key]));
+              });
+              return t;
+            }).join('\n');
+          }
+          function emptyBlank() {
+            for (var i = 0; i < lines.length; i++) {
+              var bls = lines[i].blanks || [];
+              for (var k = 0; k < bls.length; k++) {
+                var v = vals[bls[k].key];
+                if (v == null || !String(v).trim()) return bls[k];
+              }
+            }
+            return null;
+          }
+
+          runBtn.onclick = function () {
+            var miss = emptyBlank();
+            if (miss) {
+              verdict.hidden = false;
+              verdict.className = 'pyrun-verdict is-note';
+              verdict.innerHTML = '<p>' + esc(cfg.blankEmptySay || PY_SAY.blankEmptySay) + '</p>';
+              var inp = c.querySelector('.pyrun-blank[data-key="' + miss.key + '"]');
+              if (inp) { inp.classList.add('wants'); inp.focus(); }
+              return;
+            }
+            verdict.hidden = true;
+            runBtn.disabled = true;
+            attempts++;
+            replies = [];
+            if (chat) chat.clear();
+            con.running();
+            /* A DISABLED RUN MUST SAY WHY IT IS DISABLED, AND SAY IT BESIDE
+               ITSELF. While the program is stopped on an input( ) the button is
+               asleep on purpose, and the confused-pupil walk found exactly what
+               that looks like from a pupil's chair: a button that will not act
+               with nothing next to it saying what to do (DFM 42/205). The first
+               attempt put the sentence in the verdict block, which on this card
+               sits UNDER the console and the conversation -- four hundred
+               pixels away, which is the "note two steps away" the rule is
+               written against. It goes immediately after the button. */
+            if (chat && cfg.waitingSay) PyRun.waitNote(runBtn, cfg.waitingSay);
+            liveRun = PyRun.start(codeOf(), {
+              limitMs: Number(cfg.limitMs || 0) || undefined,
+              inputfun: chat ? function (prompt) {
+                return chat.ask(prompt, cfg.botWho || (cfg.chatLabels || {}).botWho, cfg.sendLabel)
+                  .then(function (v) { replies.push(v); return v; });
+              } : undefined
+            });
+            liveRun.p.then(function (res) {
+              liveRun = null;
+              PyRun.clearWaitNote(runBtn);
+              if (chat) chat.closeAsk();
+              con.show(res, cfg.errorWords || {});
+              var ok = judge(res);
+              verdict.hidden = false;
+              verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
+              verdict.innerHTML = '<p class="pyrun-vtag">' +
+                esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
+                '<p class="pyrun-vsay">' + esc(ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay)
+                                                  : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay)) + '</p>';
+              if (!ok) { runBtn.disabled = false; return; }
+              if (attempts === 1 && !b.optional) cleanFirst++;
+              c.querySelectorAll('.pyrun-blank').forEach(function (n) { n.disabled = true; });
+              var last = (at + 1 >= builds.length);
+              var go = el('<button class="primary-btn" type="button">' +
+                esc(last ? (cfg.continueLabel || 'Continue') : (cfg.nextBuildLabel || 'Next step')) + '</button>');
+              verdict.appendChild(go);
+              App.armButton(go, function () { at++; if (at < builds.length) startBuild(); else done(); });
+            });
+          };
+
+          /* WHAT COUNTS AS RIGHT, and it is never "the program looked plausible".
+             `target`  the exact printing, v1's rule, for a card with no typing;
+             `clean`   it ran with no error at all -- the shape used where SHE
+                       supplies words the card cannot know in advance;
+             plus, on a conversation card, every answer she typed has to come
+             back out in the printing, because a bot that ignores what you said
+             is the fault the whole hour is about. */
+          function judge(res) {
+            if (!res.ok) return false;
+            var kind = String((b.check && b.check.kind) || (b.target ? 'target' : 'clean'));
+            if (kind === 'target') return PyRun.matches(res.out, b.target || []);
+            if (b.check && b.check.usesReplies) {
+              if (!replies.length) return false;
+              var text = String(res.out || '');
+              return replies.every(function (r) { return text.indexOf(r) !== -1; });
+            }
+            return true;
+          }
+        }
+      }
+
+      /* ================= EDITOR MODE (spec SS A2 / K35(5) / K38d,e) =========
+         HIS DESIGN, RULED: "could we have template lines for j2 and pure typing
+         for j3? there needs to be some progression between year groups don't you
+         think?" So one editor, two entry styles, chosen by the lesson:
+           palette  a bank of template lines. Clicking one puts it in AT THE
+                    CARET and she edits the words. The bank is SHUFFLED at mount,
+                    because a tray served in solution order is an answer sheet
+                    (DFM 258, applied to a palette as a served tray).
+           typed    plain typing. The scaffolding is the worked -> parsons ->
+                    faded ladder she has just climbed, never autocomplete.
+         NO BLANK PAGE (K38d). A typed build opens with a REFUSABLE one-click
+         starter: the shape she has been taught, carrying her own names and empty
+         slots. It is scaffolding, not the answer -- the finished house program
+         never appears (DFM 210).
+         THE CHECKLIST STAYS ON SCREEN BESIDE THE EDITOR (K38e), so what she is
+         being asked for is never one screen behind what she is typing. */
+      function startEditor() {
+        host.innerHTML = '';
+        var b = builds[at];
+        var attempts = 0;
+        var replies = [];
+        var feats = b.features || [];
+        var state = {};                       /* feature id -> true once matched */
+        var trayOrder = derangedOrder((b.palette || []).length);
+
+        var checklist = feats.map(function (f) {
+          return '<li class="pyf-item" data-f="' + esc(f.id) + '">' +
+            '<span class="pyf-tag">' + esc(b.pendingLabel || cfg.pendingLabel || 'not yet') + '</span>' +
+            '<span class="pyf-say">' + esc(f.label || '') + '</span>' +
+            '<span class="pyf-nudge" hidden></span></li>';
+        }).join('');
+
+        var paletteHtml = (b.palette && b.palette.length)
+          ? '<div class="pyp-palette"><h3>' + esc(b.paletteLabel || cfg.paletteLabel || 'Lines you can use') + '</h3>' +
+            '<p class="pyp-palette-lead">' + fmtBold(b.paletteLead || cfg.paletteLead || '') + '</p>' +
+            '<div class="pyp-palette-list">' + trayOrder.map(function (i) {
+              var t = b.palette[i];
+              return '<button class="pyp-chip" type="button" data-i="' + i + '">' +
+                '<b class="pyp-chip-name">' + esc(t.label || '') + '</b>' +
+                '<code class="pyp-chip-code">' + esc(t.line || '') + '</code></button>';
+            }).join('') + '</div></div>'
+          : '';
+
+        var c = el('<div class="card pyrun-card pye-card" data-build="' + esc(b.id || '') + '">' +
+          '<h2 class="pyrun-goal">' + fmtBold(b.goalLine || '') + '</h2>' +
+          (b.brief ? '<p class="pyrun-brief">' + fmtBold(b.brief) + '</p>' : '') +
+          '<div class="pye-cols">' +
+          '<div class="pye-main"><div class="pye-host"></div>' + paletteHtml + '</div>' +
+          '<aside class="pye-side"><h3>' + esc(b.checklistLabel || cfg.checklistLabel || 'What it has to do') + '</h3>' +
+          '<ol class="pyf-list">' + checklist + '</ol>' +
+          (b.starter && b.starter.length
+            ? '<div class="pye-starter"><p class="pye-starter-say">' + fmtBold(b.starterSay || cfg.starterSay || '') + '</p>' +
+              '<button class="ghost-btn pye-starter-btn" type="button">' + esc(b.starterLabel || cfg.starterLabel || 'Put the shape in for me') + '</button></div>'
+            : '') +
+          '</aside></div>' +
+          helpRowHtml(b) +
+          '<button class="primary-btn pyrun-run" type="button">' + esc(cfg.runLabel || 'RUN my program') + '</button>' +
+          '<div class="pyw-stage"></div>' +
+          '<div class="pyrun-verdict" hidden></div>' +
+          '</div>');
+        host.appendChild(c);
+        wireHelpRow(c, b);
+
+        var ed = PyRun.editor(c.querySelector('.pye-host'), b.editor || cfg.editor || {});
+        var stage = c.querySelector('.pyw-stage');
+        var chat = b.chat ? PyRun.chat(stage, cfg.chatLabels || {}) : null;
+        var con = PyRun.console(stage, cfg.consoleLabels || {});
+        var runBtn = c.querySelector('.pyrun-run');
+        var verdict = c.querySelector('.pyrun-verdict');
+        PyRun.load().catch(function () { /* reported honestly at RUN */ });
+
+        /* THE GUIDED FIRST INSERT (K38d). The first chip she clicks says what
+           just happened and what to do with it; after that they land quietly,
+           because a tip repeated on every click is noise. */
+        var firstInsert = true;
+        c.querySelectorAll('.pyp-chip').forEach(function (btn) {
+          btn.onclick = function () {
+            var t = b.palette[Number(btn.getAttribute('data-i'))];
+            ed.insert(String(t.line || ''));
+            if (firstInsert && (b.firstInsertSay || cfg.firstInsertSay)) {
+              firstInsert = false;
+              var note = c.querySelector('.pye-first-note');
+              if (!note) {
+                note = el('<p class="pye-first-note">' + fmtBold(b.firstInsertSay || cfg.firstInsertSay) + '</p>');
+                c.querySelector('.pye-main').insertBefore(note, c.querySelector('.pyp-palette'));
+              }
+            }
+          };
+        });
+        var sb = c.querySelector('.pye-starter-btn');
+        if (sb) {
+          sb.onclick = function () {
+            ed.set((b.starter || []).join('\n'));
+            sb.disabled = true;
+            var box = c.querySelector('.pye-starter');
+            if (box && (b.starterDoneSay || cfg.starterDoneSay)) {
+              box.insertAdjacentHTML('beforeend',
+                '<p class="pye-starter-done">' + fmtBold(b.starterDoneSay || cfg.starterDoneSay) + '</p>');
+            }
+            ed.focus();
+          };
+        }
+
+        function paintFeatures(results, ran) {
+          feats.forEach(function (f) {
+            var row = c.querySelector('.pyf-item[data-f="' + f.id + '"]');
+            if (!row) return;
+            var hit = (results || []).find(function (r) { return r.id === f.id; });
+            var ok = !!(hit && hit.ok);
+            if (ok) state[f.id] = true;
+            row.className = 'pyf-item ' + (ok ? 'is-matched' : (ran ? 'is-notyet' : ''));
+            row.querySelector('.pyf-tag').textContent = ok
+              ? (b.matchedLabel || cfg.matchedLabel || 'MATCHED')
+              : (ran ? (b.notYetLabel || cfg.notYetLabel || 'NOT YET')
+                     : (b.pendingLabel || cfg.pendingLabel || 'not yet'));
+            /* LEVEL 3 (K38b): a look-here nudge, and only ever a look-here. It
+               names what to INSPECT and never the line to change. */
+            var nu = row.querySelector('.pyf-nudge');
+            if (!ok && ran && f.nudge) { nu.hidden = false; nu.textContent = f.nudge; }
+            else { nu.hidden = true; nu.textContent = ''; }
+          });
+        }
+        paintFeatures([], false);
+
+        runBtn.onclick = function () {
+          var code = ed.value();
+          if (!String(code).trim()) {
+            /* THE EMPTY BOX EXPLAINS ITSELF (DFM 205) — never a silent refusal */
+            verdict.hidden = false;
+            verdict.className = 'pyrun-verdict is-note';
+            verdict.innerHTML = '<p>' + esc(b.emptySay || cfg.emptySay || PY_SAY.blankEmptySay) + '</p>';
+            ed.focus();
+            return;
+          }
+          verdict.hidden = true;
+          runBtn.disabled = true;
+          attempts++;
+          replies = [];
+          if (chat) chat.clear();
+          con.running();
+            /* A DISABLED RUN MUST SAY WHY IT IS DISABLED, AND SAY IT BESIDE
+               ITSELF. While the program is stopped on an input( ) the button is
+               asleep on purpose, and the confused-pupil walk found exactly what
+               that looks like from a pupil's chair: a button that will not act
+               with nothing next to it saying what to do (DFM 42/205). The first
+               attempt put the sentence in the verdict block, which on this card
+               sits UNDER the console and the conversation -- four hundred
+               pixels away, which is the "note two steps away" the rule is
+               written against. It goes immediately after the button. */
+            if (chat && cfg.waitingSay) PyRun.waitNote(runBtn, cfg.waitingSay);
+          /* HER RUN IS HER RUN. The conversation happens live, with her own
+             answers, in her own transcript. The VERDICT then comes from a second,
+             silent pass under fixed probe answers, so what the checklist reports
+             is the same every time she presses RUN and can never turn on a word
+             she happened to type (rule 35's family: a fail state she could not
+             diagnose is a trap). */
+          liveRun = PyRun.start(code, {
+            limitMs: Number(cfg.limitMs || 0) || undefined,
+            /* AND A PROGRAM THAT ASKS WHERE THERE IS NOWHERE TO ANSWER MUST
+               STOP, NOT HANG. With no chat on the card, `inputfun` used to be
+               left undefined, so the runtime suspended on the pupil's first
+               input( ) and never came back: the console sat on "running", RUN
+               stayed disabled, and there was no box anywhere on the screen to
+               type into. A dead screen with a dead button is the mute lock DFM
+               42/205 exist to forbid, and it is the exact state a pupil reaches
+               by writing the one line this year is about. It now abandons
+               immediately, which settles the run, re-arms RUN, and puts a real
+               sentence in the console. */
+            inputfun: chat ? function (prompt) {
+              return chat.ask(prompt, cfg.botWho || (cfg.chatLabels || {}).botWho, cfg.sendLabel)
+                .then(function (v) { replies.push(v); return v; });
+            } : function () { return Promise.reject(new Error('no-answer-here')); }
+          });
+          liveRun.p.then(function (res) {
+            liveRun = null;
+            PyRun.clearWaitNote(runBtn);
+            if (chat) chat.closeAsk();
+            con.show(res, cfg.errorWords || {});
+            if (!feats.length) { settle(res, PyRun.matches(res.out, b.target || []), []); return; }
+            PyRun.checkFeatures(code, feats, {
+              answers: b.probeAnswers || cfg.probeAnswers || [],
+              limitMs: Number(cfg.limitMs || 0) || undefined,
+              seed: Number(b.seed == null ? 4 : b.seed)
+            }).then(function (out) {
+              var results = out.results;
+              paintFeatures(results, true);
+              var all = results.every(function (r) { return r.ok; });
+              /* an OPTIONAL build never touches the bonus. It pays nothing, so
+                 letting its own first run overwrite the count would mean doing
+                 the extra one could LOWER what she earned — the exact unfairness
+                 DFM 265 exists to stop. */
+              if (attempts === 1 && !b.optional) featureFirst = results.filter(function (r) { return r.ok; }).length;
+              settle(res, all, results);
+            });
+          });
+        };
+
+        /* the Now Playing block, taken out of what her program really printed —
+           never re-composed from her list, so the card she sends is the card she
+           made (rule 35 on a thing that travels to another pupil) */
+        function cardText(res) {
+          var head = String((b.sendCard || {}).head || '').toLowerCase();
+          var rows = PyRun.tidy(res.out).split('\n');
+          for (var i = 0; i < rows.length; i++) {
+            if (rows[i].toLowerCase().indexOf(head) === -1) continue;
+            var after = rows.slice(i + 1).filter(function (x) { return String(x).trim() !== ''; });
+            return [rows[i]].concat(after.slice(0, Number((b.sendCard || {}).lines || 3))).join('\n');
+          }
+          return PyRun.tidy(res.out).split('\n').slice(0, 4).join('\n');
+        }
+        function drawCardSend(into, res) {
+          var sc = b.sendCard || {};
+          var text = cardText(res);
+          var box = el('<div class="pye-cardsend" data-arrive-live>' +
+            '<h3>' + esc(sc.title || '') + '</h3>' +
+            '<pre class="pye-card">' + esc(text) + '</pre>' +
+            '<p class="pye-cardsay">' + fmtBold(PairKit.st ? (sc.lead || '') : (sc.noPartnerSay || '')) + '</p>' +
+            (PairKit.st ? '<button class="ghost-btn pye-send-card" type="button">' + esc(sc.sendLabel || '') + '</button>' : '') +
+            '<div class="pye-theirs"></div></div>');
+          into.appendChild(box);
+          if (!PairKit.st) return;
+          var theirs = box.querySelector('.pye-theirs');
+          var btn = box.querySelector('.pye-send-card');
+          var pollT = null;
+          App.armButton(btn, function () {
+            btn.disabled = true;
+            btn.textContent = sc.sendingLabel || sc.sendLabel || '';
+            PairKit.blob(ctx, 'put', 'card', text).then(function () {
+              btn.textContent = sc.sentLabel || '';
+              theirs.innerHTML = '<p class="pye-waiting">' + esc(sc.waitSay || '') + '</p>';
+              (function tick() {
+                PairKit.blob(ctx, 'get', 'card', PairKit.nextRound()).then(function (r) {
+                  if (r && r.ok && Number(r.has) && String(r.v).trim()) {
+                    theirs.innerHTML = '<h3>' + esc(sc.theirsTitle || '') + '</h3>' +
+                      '<pre class="pye-card is-theirs">' + esc(String(r.v)) + '</pre>';
+                    PairKit.arrive(theirs, { announce: sc.arrivedSay || '' });
+                    return;
+                  }
+                  pollT = setTimeout(tick, 2500);
+                });
+              })();
+            });
+          });
+        }
+
+        function settle(res, ok, results) {
+          verdict.hidden = false;
+          verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
+          var n = (results || []).filter(function (r) { return r.ok; }).length;
+          var say = ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay)
+                       : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay);
+          verdict.innerHTML = '<p class="pyrun-vtag">' +
+            esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
+            (feats.length ? '<p class="pyf-count">' + esc(String(n) + ' / ' + String(feats.length)) + '</p>' : '') +
+            '<p class="pyrun-vsay">' + esc(say) + '</p>';
+          if (!ok) { runBtn.disabled = false; return; }
+          if (attempts === 1 && !feats.length) cleanFirst++;
+          /* HER PROGRAM HAS TO SURVIVE THE SCREEN IT WAS WRITTEN ON. The Swap is
+             three chunks later and needs the bot she built; the draft is where a
+             lesson's in-progress work already lives, it is class- and
+             lesson-scoped, and it survives a reload — which a variable in this
+             closure would not. The 8,000-character draft ceiling is the
+             server's, and it drops an oversized draft SILENTLY, so the write is
+             refused here where it can be seen rather than there where it cannot
+             (DFM 157a: a limit that lives in two places is a contract). */
+          if (b.saveAs && ctx.saveDraft) {
+            var keep = String(ed.value());
+            if (keep.length <= 3000) {
+              var d = ctx.draft || {};
+              d[String(b.saveAs)] = keep;
+              ctx.saveDraft(d);
+            }
+          }
+          ed.lock();
+          c.querySelectorAll('.pyp-chip').forEach(function (n2) { n2.disabled = true; });
+          var last = (at + 1 >= builds.length);
+          var go = el('<button class="primary-btn" type="button">' +
+            esc(last ? (cfg.continueLabel || 'Continue') : (cfg.nextBuildLabel || 'Next step')) + '</button>');
+          verdict.appendChild(go);
+          App.armButton(go, function () {
+            if (b.onDone && typeof cfg.onDoneHook === 'string') { /* reserved */ }
+            at++; if (at < builds.length) startBuild(); else done();
+          });
+          /* ---- THE CARD SEND (spec §E1's `card-send`, inside `engine`) ----
+             One more thing once the program really works, on the SAME screen
+             rather than a new one, because she is looking at the very thing she
+             is about to send. It travels through the channel that is still open
+             from the Match, and her partner's card arrives with the flash.
+             A pupil with no partner (solo, catch-up, pairing off) is told so
+             plainly and loses nothing — the card is hers either way. */
+          if (b.sendCard) drawCardSend(verdict, res);
+        }
+      }
+
+      function startBuild(accepted) {
+        /* leaving a card while a program is waiting at input() must settle that
+           program, never leave it suspended under the next screen (DFM 143/265c) */
+        if (liveRun) { try { liveRun.abandon(); } catch (e) { /* already settled */ } liveRun = null; }
+        if (builds[at] && builds[at].optional && !accepted) { offerExtra(); return; }
+        var mode = String((builds[at] || {}).mode || cfg.mode || 'assemble');
+        if (mode === 'worked') { startWorked(); return; }
+        if (mode === 'editor') { startEditor(); return; }
         host.innerHTML = '';
         var isExtra = !!cfg.extrasMode;
         var b = builds[at];
@@ -3260,13 +4674,20 @@
           (isExtra ? '<div class="rung-actions pyrun-exit-row">' +
             '<button class="ghost-btn pyrun-back" type="button">' + esc(cfg.backLabel || 'Back') + '</button>' +
             '<button class="ghost-btn pyrun-finish" type="button">' + esc(finishLabel()) + '</button>' +
-            '</div>' : '') +
+            '</div>'
+            /* AND THE SAME LAW ON A REFUSABLE EXTRA BUILD (265c): the way out is
+               on the card itself, live from the moment it mounts, so "nearly time
+               up" is one press away from the badge rather than a half-done tray */
+            : (b.optional ? '<div class="rung-actions pyrun-exit-row">' +
+              '<button class="ghost-btn pyrun-stop" type="button">' + esc(b.stopLabel || cfg.stopLabel || '') + '</button>' +
+              '</div>' : '')) +
           '</div>');
         host.appendChild(c);
         if (isExtra) {
           App.armButton(c.querySelector('.pyrun-back'), function () { hub(); });
           App.armButton(c.querySelector('.pyrun-finish'), function () { done(); });
         }
+        if (b.optional) App.armButton(c.querySelector('.pyrun-stop'), function () { done(); });
 
         var tray = c.querySelector('.pyt-list');
         var prog = c.querySelector('.pyp-list');
@@ -3274,6 +4695,15 @@
         var runBtn = c.querySelector('.pyrun-run');
         var lockedNote = c.querySelector('.pyrun-locked-note');
         var verdict = c.querySelector('.pyrun-verdict');
+        /* A FADED CARD CAN ALSO BE A CONVERSATION (opt-in, so both Lesson 2s
+           render byte-identically). The third rung of a worked -> assemble ->
+           faded ladder about a chatbot has to actually ask a question, or the
+           ladder stops teaching the thing it was built for one step from the
+           top. Where a card holds a conversation, what counts as RIGHT is that
+           the program ran clean and used what the person typed — an exact
+           expected-output compare cannot be authored against words she supplies. */
+        var chatB = b.chat ? PyRun.chat(c.querySelector('.pyrun-console-host'), cfg.chatLabels || {}) : null;
+        var repliesB = [];
         var con = PyRun.console(c.querySelector('.pyrun-console-host'), cfg.consoleLabels || {});
         /* warm the runtime while she is still reading, so RUN is not the first
            thing that ever waits on a megabyte (DFM 42's family) */
@@ -3497,11 +4927,32 @@
           }
           verdict.hidden = true;
           runBtn.disabled = true;
+          repliesB = [];
+          if (chatB) chatB.clear();
           con.running();
+          /* the assemble card owns a conversation too, and it was the one the
+             confused walk was actually standing on when it reported a sleeping
+             RUN with nothing beside it */
+          if (chatB && cfg.waitingSay) PyRun.waitNote(runBtn, cfg.waitingSay);
           attempts++;
-          PyRun.run(codeOf(), { limitMs: Number(cfg.limitMs || 0) || undefined }).then(function (res) {
+          liveRun = PyRun.start(codeOf(), {
+            limitMs: Number(cfg.limitMs || 0) || undefined,
+            inputfun: chatB ? function (prompt) {
+              return chatB.ask(prompt, cfg.botWho || (cfg.chatLabels || {}).botWho, cfg.sendLabel)
+                .then(function (v) { repliesB.push(v); return v; });
+            } : undefined
+          });
+          liveRun.p.then(function (res) {
+            liveRun = null;
+            PyRun.clearWaitNote(runBtn);
+            if (chatB) chatB.closeAsk();
             con.show(res, cfg.errorWords || {});
-            var ok = res.ok && PyRun.matches(res.out, b.target || []);
+            var kindB = String((b.check && b.check.kind) || (b.target ? 'target' : 'target'));
+            var ok;
+            if (kindB === 'clean') {
+              ok = res.ok && (!(b.check && b.check.usesReplies) ||
+                (repliesB.length > 0 && repliesB.every(function (r) { return String(res.out || '').indexOf(r) !== -1; })));
+            } else ok = res.ok && PyRun.matches(res.out, b.target || []);
             verdict.hidden = false;
             verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
             verdict.innerHTML = '<p class="pyrun-vtag">' +
@@ -3511,7 +4962,7 @@
               /* the extras zone counts nothing: no first-try score, no bonus, no
                  record (DFM 265a). The tick a finished job earns is on the hub, for
                  this sitting only, and it dies with the page. */
-              if (attempts === 1 && !isExtra) cleanFirst++;
+              if (attempts === 1 && !isExtra && !b.optional) cleanFirst++;
               c.querySelectorAll('.pyrun-line').forEach(function (n) {
                 n.disabled = true;                       /* a real <button> */
                 if (n.tagName !== 'BUTTON') {            /* a gap-carrying row (267f) */
@@ -3551,6 +5002,706 @@
             }
           });
         };
+      }
+    }
+  };
+
+  /* ================= chatswap — "The Chatbot Swap" (j2-03, spec §C3) =======
+     K37 named it. The design decision it rests on is recorded in DFM's K37 row
+     and worth restating where the code is: the bot's PROGRAM travels once and
+     runs LOCALLY on the tester's machine, rather than every message being
+     relayed through a channel that polls twice a second in each direction. A
+     relayed conversation lands about four seconds after you type, which nobody
+     would call a conversation; a local one answers instantly, and the builder
+     watches the beats arrive at the channel's own cadence — which is exactly
+     what a channel is good at.
+
+     EACH TESTS ONCE AND EACH IS TESTED ONCE, and the shape of that differs by
+     size, which is not an inconsistency: a PAIR takes two rounds (you test
+     mine, then I test yours), a TRIO takes one (A tests B, B tests C, C tests
+     A, all at the same moment). The invariant is the same either way.
+
+     A BOT BREAKING IS THE MECHANIC WORKING. The tester sees the real error in
+     the transcript, the report captures it, and the builder loses nothing for
+     it — the swap pays FLAT, on phases done, never on how well the bot behaved.
+     Nothing here is marked. */
+  Engines.chatswap = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var W = cfg.words || {};
+      var mode = null, side = null, sideAt = 0;
+      var phases = 0;                 /* what the detail key records */
+      var myCode = String((ctx.draft && ctx.draft.l3bot) || cfg.fallbackBot || '');
+      var partnerReport = null;
+      var reportSent = false;
+      var pollT = null, liveRun = null;
+      var sealed = false;
+
+      introCard(host, {
+        kicker: cfg.kicker, title: cfg.title, text: cfg.intro || '',
+        steps: cfg.steps, stepsClass: 'swap-intro-steps'
+      }, cfg.beginLabel || 'Open the door', gate);
+
+      function stopSide(why) { if (side) { side.leave(why || 'matched'); side = null; } }
+      function clearAll() {
+        if (pollT) { clearTimeout(pollT); pollT = null; }
+        if (liveRun) { try { liveRun.abandon(); } catch (e) { /* settled */ } liveRun = null; }
+      }
+      function finish(earned) {
+        clearAll(); stopSide('left'); PairKit.stop();
+        finishChunk(ctx, (chunk.id || 'chatswap') + '=' + phases + '/' + Number(cfg.phaseCount || 4), 0, earned);
+      }
+      /* the same law as the Match's: the way out works from every screen, it
+         says how far she has got before she commits to leaving, and a Swap she
+         did not do does not pay for a Swap she did */
+      function leave() {
+        var all = Number(cfg.phaseCount || 4);
+        if (phases >= all) { finish(true); return; }
+        App.confirm(cfg.leaveTitle || '', String(cfg.leaveAsk || '')
+          .replace('{done}', String(phases)).replace('{all}', String(all)),
+          cfg.leaveYes || '', function (yes) { if (yes) finish(false); });
+      }
+      function finishRow(extra) {
+        /* DFM 265(c) applied to a paired activity: the way out is on EVERY
+           screen she can reach, live from the moment it mounts, never revealed
+           only once something is finished. Leaving forfeits the swap and
+           nothing else, and the sentence says so. */
+        return '<div class="rung-actions swap-exit-row">' + (extra || '') +
+          '<button class="ghost-btn swap-finish" type="button">' + esc(cfg.finishLabel || '') + '</button></div>';
+      }
+      function wireFinish(root) {
+        var b = root.querySelector('.swap-finish');
+        if (b) App.armButton(b, function () { leave(); });
+      }
+
+      function gate() {
+        host.innerHTML = '';
+        PairKit.ensure(ctx, host, onMode, W, {
+          /* THE SIDE SHOW APPEARS AT A GENUINE WAIT AND NOWHERE ELSE (K36b).
+             Eight seconds is the threshold: shorter and he would flicker in and
+             out of a wait that was never long enough to be awkward, which is
+             the opposite of the point. */
+          onWaiting: function (slot, waitedMs) {
+            if (!slot || side || waitedMs < Number(cfg.sideAfterMs == null ? 8000 : cfg.sideAfterMs)) return;
+            sideAt = Date.now();
+            side = SideShow.mount(slot, cfg.sideShow || {});
+          },
+          onWaitOver: function (why) { stopSide(why); }
+        });
+      }
+
+      function onMode(m) {
+        mode = m;
+        if (m === 'left') { finish(false); return; }
+        if (m === 'paired') { publish(); return; }
+        soloSeat();
+      }
+
+      /* ---- phase 2: the handoff. One put, one get, no protocol. ---------- */
+      function publish() {
+        host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
+          esc(cfg.handingSay || '') + '</span></div>';
+        PairKit.blob(ctx, 'put', 'bot', myCode).then(function (r) {
+          if (r && r.ok) { phases = Math.max(phases, 1); rounds(); return; }
+          /* honest, and never a dead end: a refused handoff leaves her testing
+             her own bot rather than sitting on an error she cannot act on */
+          soloSeat(cfg.handoffFailSay || '');
+        });
+      }
+
+      /* Who tests whom, this round. A pair swaps; a trio goes round once. */
+      function plan() {
+        var st = PairKit.st;
+        var n = st ? st.members.length : 0;
+        if (n === 3) return [{ tester: Number(st.mi), builder: PairKit.nextRound() }];
+        if (n === 2) {
+          var other = PairKit.nextRound();
+          return [{ tester: 0, builder: 1 }, { tester: 1, builder: 0 }].map(function (r) {
+            return { tester: r.tester, builder: r.builder, other: other };
+          });
+        }
+        return [];
+      }
+      var roundIdx = 0;
+      function rounds() {
+        var rs = plan();
+        if (!rs.length) { soloSeat(); return; }
+        if (roundIdx >= rs.length) { seal(); return; }
+        var r = rs[roundIdx];
+        var me = Number(PairKit.st.mi);
+        if (Number(r.tester) === me) testerSeat(Number(r.builder));
+        else builderSeat(Number(r.tester));
+      }
+      function nextRound() { roundIdx++; rounds(); }
+
+      /* ---- phase 3: the tester's seat ----------------------------------- */
+      function testerSeat(builderMi, soloCode) {
+        clearAll();
+        host.innerHTML = '';
+        var solo = soloCode != null;
+        var code = solo ? soloCode : null;
+        var c = el('<div class="card swap-card swap-test">' +
+          '<span class="intro-kicker">' + esc(cfg.testKicker || '') + '</span>' +
+          '<h2>' + esc(solo ? (cfg.soloTestTitle || '') : (cfg.testTitle || '')) + '</h2>' +
+          '<p class="intro-lead">' + fmtBold(solo ? (cfg.soloTestLead || '') : (cfg.testLead || '')) + '</p>' +
+          '<div class="swap-stage"></div>' +
+          '<div class="swap-report" hidden></div>' +
+          finishRow('<button class="ghost-btn swap-report-btn" type="button">' +
+            esc(cfg.reportLabel || '') + '</button>') +
+          '</div>');
+        host.appendChild(c);
+        wireFinish(c);
+        var stage = c.querySelector('.swap-stage');
+        var chat = PyRun.chat(stage, cfg.chatLabels || {});
+        var con = PyRun.console(stage, cfg.consoleLabels || {});
+        var reportBtn = c.querySelector('.swap-report-btn');
+        reportBtn.disabled = true;
+
+        function start(src) {
+          chat.clear();
+          con.running();
+          liveRun = PyRun.start(src, {
+            limitMs: Number(cfg.limitMs || 0) || undefined,
+            inputfun: function (prompt) {
+              relay('bot', prompt);
+              return chat.ask(prompt, cfg.botWho || (cfg.chatLabels || {}).botWho, cfg.sendLabel)
+                .then(function (v) { relay('you', v); return v; });
+            }
+          });
+          liveRun.p.then(function (res) {
+            liveRun = null;
+            chat.closeAsk();
+            con.show(res, cfg.errorWords || {});
+            /* a bot that fell over is a FINDING, not a failure: the report is
+               armed either way, and the card says so */
+            (PyRun.tidy(res.out) || '').split('\n').forEach(function (line) {
+              if (line) relay('bot', line);
+            });
+            reportBtn.disabled = false;
+            phases = Math.max(phases, 2);
+            var note = el('<p class="swap-done-say">' + fmtBold(res.ok ? (cfg.testDoneSay || '') : (cfg.testBrokeSay || '')) + '</p>');
+            stage.appendChild(note);
+          });
+        }
+        function relay(who, text) {
+          if (solo || !PairKit.st) return;
+          var t = String(text).slice(0, 100);
+          PairKit.send(ctx, 'msg', (who === 'bot' ? (cfg.relayBot || 'bot') : (cfg.relayYou || 'tester')) + ': ' + t);
+        }
+
+        if (solo) { start(code); }
+        else {
+          stage.insertAdjacentHTML('afterbegin',
+            '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
+            esc(cfg.fetchingSay || '') + '</span></div>');
+          waitForBot(builderMi, function (src) {
+            var l = stage.querySelector('.panel-loading');
+            if (l) l.remove();
+            start(src);
+          });
+        }
+
+        App.armButton(reportBtn, function () { reportForm(c, builderMi, solo); });
+      }
+
+      /* The partner may still be finishing her bot: poll until it arrives, and
+         say so honestly while it does. NEVER-STRAND (spec §C3): after the held
+         timeout the screen offers the solo seat or Finish — nothing owed is lost. */
+      function waitForBot(builderMi, cb) {
+        var began = Date.now();
+        var hold = Number(cfg.holdMs == null ? 90000 : cfg.holdMs);
+        (function tick() {
+          PairKit.blob(ctx, 'get', 'bot', builderMi).then(function (r) {
+            if (r && r.ok && Number(r.has) && String(r.v).trim()) { cb(String(r.v)); return; }
+            if (Date.now() - began > hold) { stranded(); return; }
+            pollT = setTimeout(tick, 2500);
+          });
+        })();
+      }
+      function stranded() {
+        clearAll();
+        host.innerHTML = '';
+        var c = el('<div class="card swap-card swap-stranded">' +
+          '<h2>' + esc(cfg.strandedTitle || '') + '</h2>' +
+          '<p class="intro-lead">' + fmtBold(cfg.strandedSay || '') + '</p>' +
+          finishRow('<button class="primary-btn swap-solo-btn" type="button">' +
+            esc(cfg.strandedSoloLabel || '') + '</button>') + '</div>');
+        host.appendChild(c);
+        wireFinish(c);
+        App.armButton(c.querySelector('.swap-solo-btn'), function () { testerSeat(-1, myCode); });
+      }
+
+      /* ---- the report: two short fields, honesty floors only ------------- */
+      function reportForm(card, builderMi, solo) {
+        var box = card.querySelector('.swap-report');
+        box.hidden = false;
+        box.innerHTML =
+          '<h3>' + esc(cfg.reportTitle || '') + '</h3>' +
+          '<p class="swap-report-lead">' + fmtBold(cfg.reportLead || '') + '</p>' +
+          '<label class="swap-lab" for="swap-worked">' + esc(cfg.workedLabel || '') + '</label>' +
+          '<input id="swap-worked" class="swap-field" type="text" maxlength="100" autocomplete="off">' +
+          '<label class="swap-lab" for="swap-fix">' + esc(cfg.fixLabel || '') + '</label>' +
+          '<input id="swap-fix" class="swap-field" type="text" maxlength="100" autocomplete="off">' +
+          '<p class="swap-report-note">' + fmtBold(cfg.reportNote || '') + '</p>' +
+          '<button class="primary-btn swap-send-report" type="button">' + esc(cfg.sendReportLabel || '') + '</button>' +
+          '<p class="swap-report-say" hidden></p>';
+        var w = box.querySelector('#swap-worked'), f = box.querySelector('#swap-fix');
+        var say = box.querySelector('.swap-report-say');
+        App.armButton(box.querySelector('.swap-send-report'), function () {
+          /* HONESTY FLOORS ONLY (DFM 193a). The machine never judges a pupil's
+             own words for vocabulary or quality — it asks only that she wrote
+             something. Judging what she wrote is the teacher's job at the desk. */
+          var a = String(w.value || '').trim(), b = String(f.value || '').trim();
+          if (a.length < 3 || b.length < 3) {
+            say.hidden = false;
+            say.textContent = cfg.reportShortSay || '';
+            (a.length < 3 ? w : f).focus();
+            return;
+          }
+          var text = (cfg.workedTag || 'worked') + ': ' + a.slice(0, 100) + ' | ' +
+                     (cfg.fixTag || 'fix') + ': ' + b.slice(0, 100);
+          reportSent = true;
+          phases = Math.max(phases, 3);
+          if (solo || !PairKit.st) { afterReport(); return; }
+          /* the report travels TWICE, and each trip has its own reason: down the
+             MONITORED channel so it arrives with the flash and the teacher can
+             read it like every other thing one pupil sends another, and into the
+             blob so it survives a reload (a channel keeps only its last events) */
+          PairKit.blob(ctx, 'put', 'report', text).then(function () {
+            return PairKit.send(ctx, 'msg', (cfg.reportTag || 'REPORT') + ' ' + text);
+          }).then(function () { afterReport(); });
+        });
+      }
+      function afterReport() {
+        if (mode !== 'paired' || !PairKit.st) { seal(); return; }
+        var st = PairKit.st;
+        if (st.members.length === 2 && roundIdx === 0) { watchWait(); return; }
+        seal();
+      }
+
+      /* ---- phase 3b: the builder watches her own bot being used --------- */
+      function builderSeat(testerMi) {
+        clearAll();
+        host.innerHTML = '';
+        var c = el('<div class="card swap-card swap-watch">' +
+          '<span class="intro-kicker">' + esc(cfg.watchKicker || '') + '</span>' +
+          '<h2>' + esc(cfg.watchTitle || '') + '</h2>' +
+          '<p class="intro-lead">' + fmtBold(cfg.watchLead || '') + '</p>' +
+          '<div class="swap-feed" data-arrive-live aria-live="polite"><p class="swap-feed-idle">' +
+          esc(cfg.watchIdleSay || '') + '</p></div>' +
+          '<div class="swap-side"></div>' +
+          finishRow() + '</div>');
+        host.appendChild(c);
+        wireFinish(c);
+        var feed = c.querySelector('.swap-feed');
+        /* the turn swap is the OTHER genuine wait (K36b): she has nothing to do
+           but watch, and the beats arrive at the channel's own cadence */
+        if (!side && cfg.sideShow) side = SideShow.mount(c.querySelector('.swap-side'), cfg.sideShow);
+        PairKit.onEvent(function (e) {
+          if (String(e[2]) !== 'msg') return;
+          var t = String(e[3] || '');
+          if (t.indexOf(String(cfg.reportTag || 'REPORT')) === 0) { partnerReport = t; return; }
+          if (Number(e[1]) === Number(PairKit.st.mi)) return;
+          var idle = feed.querySelector('.swap-feed-idle');
+          if (idle) idle.remove();
+          var isBot = t.indexOf(String(cfg.relayBot || 'bot') + ':') === 0;
+          feed.insertAdjacentHTML('beforeend', '<p class="swap-beat is-' + (isBot ? 'bot' : 'tester') + '">' + esc(t) + '</p>');
+          feed.scrollTop = feed.scrollHeight;
+          stopSide('matched');
+          PairKit.arrive(feed, { announce: cfg.beatArrivedSay || '' });
+        });
+        PairKit.onPoll(function () {
+          if (!reportArrived()) return;
+          showMyReport(c, function () { roundIdx++; rounds(); });
+        });
+      }
+      function watchWait() {
+        var rs = plan();
+        var r = rs[1];
+        builderSeat(Number(r.tester));
+      }
+      function reportArrived() { return !!partnerReport; }
+
+      function showMyReport(card, cb) {
+        var box = el('<div class="swap-myreport" data-arrive-live></div>');
+        card.appendChild(box);
+        box.innerHTML = '<h3>' + esc(cfg.gotReportTitle || '') + '</h3>' +
+          '<p class="swap-report-text">' + esc(String(partnerReport).replace(String(cfg.reportTag || 'REPORT'), '').trim()) + '</p>' +
+          '<button class="primary-btn swap-go" type="button">' + esc(cfg.afterReportLabel || '') + '</button>';
+        PairKit.arrive(box, { announce: cfg.reportArrivedSay || '' });
+        App.armButton(box.querySelector('.swap-go'), function () { cb(); });
+      }
+
+      /* ---- phase 5: seal + reveal --------------------------------------- */
+      function seal() {
+        if (sealed) return;
+        sealed = true;
+        clearAll();
+        phases = Math.max(phases, Number(cfg.phaseCount || 4));
+        host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
+          esc(cfg.sealingSay || '') + '</span></div>';
+        var go = function (names) {
+          host.innerHTML = '';
+          var who = (names || []).filter(function (_, i) { return !PairKit.st || i !== Number(PairKit.st.mi); });
+          var c = el('<div class="card swap-card swap-seal">' +
+            '<span class="intro-kicker">' + esc(cfg.sealKicker || '') + '</span>' +
+            '<h2>' + esc(cfg.sealTitle || '') + '</h2>' +
+            (who.length ? '<p class="swap-reveal">' + fmtBold(String(cfg.revealSay || '').replace('{names}', who.join(' and '))) + '</p>' : '') +
+            (partnerReport
+              ? '<div class="swap-myreport"><h3>' + esc(cfg.gotReportTitle || '') + '</h3><p class="swap-report-text">' +
+                esc(String(partnerReport).replace(String(cfg.reportTag || 'REPORT'), '').trim()) + '</p></div>'
+              : '<p class="swap-noreport">' + fmtBold(cfg.noReportSay || '') + '</p>') +
+            '<p class="swap-seal-say">' + fmtBold(cfg.sealSay || '') + '</p>' +
+            '<button class="primary-btn swap-done" type="button">' + esc(cfg.doneLabel || '') + '</button>' +
+            '</div>');
+          host.appendChild(c);
+          App.armButton(c.querySelector('.swap-done'), function () { finish(); });
+        };
+        if (mode === 'paired' && PairKit.st) {
+          /* one last look for a report that may have landed while she was
+             filing hers, then seal — the reveal never waits on it */
+          PairKit.blob(ctx, 'get', 'report', PairKit.prevRound()).then(function (r) {
+            if (!partnerReport && r && r.ok && Number(r.has)) partnerReport = String(r.v);
+            return PairKit.complete(ctx);
+          }).then(function (r) { go((r && r.names) || null); });
+        } else go(null);
+      }
+
+      /* ---- solo / catch-up: the tester's seat, on her own bot ------------ */
+      function soloSeat(why) {
+        mode = mode === 'paired' ? mode : 'solo';
+        host.innerHTML = '';
+        var c = el('<div class="card swap-card swap-solo">' +
+          '<span class="intro-kicker">' + esc(cfg.soloKicker || '') + '</span>' +
+          '<h2>' + esc(cfg.soloTitle || '') + '</h2>' +
+          '<p class="intro-lead">' + fmtBold((why ? why + ' ' : '') + (cfg.soloLead || '')) + '</p>' +
+          finishRow('<button class="primary-btn swap-solo-go" type="button">' + esc(cfg.soloGoLabel || '') + '</button>') +
+          '</div>');
+        host.appendChild(c);
+        wireFinish(c);
+        App.armButton(c.querySelector('.swap-solo-go'), function () { testerSeat(-1, myCode); });
+      }
+    }
+  };
+
+  /* ================= duel — "The Prediction Match" (j3-03, spec §C4) =======
+     Six rounds. Both screens show the same few lines of Python; each pupil
+     commits privately; then the code REALLY RUNS and both predictions sit beside
+     the real output. Being right before the reveal is a point, and the point is
+     PRIVATE to the pair — never posted, never on a board.
+
+     XP NEVER TOUCHES A PREDICTION. The match pays flat, on finishing the six
+     rounds, and it says so before the first one. That is what makes a guess
+     round safe to offer at all, and it is why a wrong prediction can be left
+     standing: nothing is riding on it, so nothing has to be rescued. Nothing
+     is corrected in advance and nothing is re-guessed (DFM 210's family).
+
+     THE GUESS ROUNDS ANNOUNCE THEMSELVES (K35(4), his ruling: "ok but make it
+     super clear that it hasn't been taught yet"). Rounds 5 and 6 are on ground
+     nobody has taught, so before the snippet appears a full-width banner in its
+     own colour says exactly that — and it STAYS for the whole round, because a
+     mode that changes the rules announces itself for its duration and a toast
+     that vanishes in three seconds is not an announcement (DFM 146e). */
+  Engines.duel = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var W = cfg.words || {};
+      var rounds = cfg.rounds || [];
+      var at = 0, right = 0, done = 0;
+      var mode = null, side = null;
+      var pollT = null, sealed = false;
+      var mine = {}, theirs = {};      /* round index -> commit text, per member */
+
+      introCard(host, {
+        kicker: cfg.kicker, title: cfg.title, text: cfg.intro || '',
+        steps: cfg.steps, stepsClass: 'duel-intro-steps'
+      }, cfg.beginLabel || 'Take my seat', gate);
+
+      function stopSide(why) { if (side) { side.leave(why || 'matched'); side = null; } }
+      function clearPoll() { if (pollT) { clearTimeout(pollT); pollT = null; } }
+      function finish(earned) {
+        clearPoll(); stopSide('left'); PairKit.stop();
+        finishChunk(ctx, (chunk.id || 'duel') + '=' + done + '/' + rounds.length, 0, earned);
+      }
+      /* THE WAY OUT NEVER TRAPS HER AND NEVER LIES TO HER. It is on every screen
+         because a pupil at time-up has to be able to leave; it asks first when
+         rounds are still unplayed, says exactly how many she has done, and then
+         lets her go without the badge she has not earned. */
+      function leave() {
+        if (done >= rounds.length) { finish(true); return; }
+        App.confirm(cfg.leaveTitle || '', String(cfg.leaveAsk || '')
+          .replace('{done}', String(done)).replace('{all}', String(rounds.length)),
+          cfg.leaveYes || '', function (yes) { if (yes) finish(false); });
+      }
+      function finishRow(extra) {
+        return '<div class="rung-actions duel-exit-row">' + (extra || '') +
+          '<button class="ghost-btn duel-finish" type="button">' + esc(cfg.finishLabel || '') + '</button></div>';
+      }
+      function wireFinish(root) {
+        var b = root.querySelector('.duel-finish');
+        if (b) App.armButton(b, function () { leave(); });
+      }
+
+      function gate() {
+        host.innerHTML = '';
+        PairKit.ensure(ctx, host, onMode, W, {
+          onWaiting: function (slot, waitedMs) {
+            if (!slot || side || waitedMs < Number(cfg.sideAfterMs == null ? 8000 : cfg.sideAfterMs)) return;
+            side = SideShow.mount(slot, cfg.sideShow || {});
+          },
+          onWaitOver: function (why) { stopSide(why); }
+        });
+      }
+      function onMode(m) {
+        mode = m;
+        if (m === 'left') { finish(); return; }
+        if (m === 'paired') { PairKit.onEvent(onChannel); }
+        drawRound();
+      }
+
+      /* commits cross the channel as their own kind of line: `C<round>|<text>` */
+      function onChannel(e) {
+        if (String(e[2]) !== 'msg') return;
+        var t = String(e[3] || '');
+        var m = /^C(\d+)\|([\s\S]*)$/.exec(t);
+        if (!m) return;
+        var idx = Number(m[1]);
+        var who = Number(e[1]);
+        if (who === Number(PairKit.st.mi)) return;
+        if (!theirs[idx]) theirs[idx] = {};
+        theirs[idx][who] = m[2];
+        if (idx === at) maybeReveal();
+      }
+
+      function othersIn(idx) {
+        if (mode !== 'paired' || !PairKit.st) return true;
+        var need = PairKit.others();
+        var got = theirs[idx] || {};
+        for (var i = 0; i < need.length; i++) if (got[need[i]] == null) return false;
+        return true;
+      }
+
+      var revealTimer = null, revealShown = false;
+      /* THE REVEAL IS REACHED THROUGH A HANDLE, NOT BY NAME. `showReveal` is
+         declared inside `drawRound` — it closes over that round's card — and
+         this function lives one scope out, so calling it by name was a
+         ReferenceError every single time a partner's answer arrived. The effect
+         in a classroom: two pupils commit, the second one's answer lands, and
+         NOTHING happens; both sit looking at "waiting for your partner" until
+         the forty-five second timeout drags the round open. Every round, every
+         pair. The round hands its own reveal out as it draws itself. */
+      var revealNow = null;
+      function maybeReveal() {
+        if (revealShown) return;
+        if (!othersIn(at)) return;
+        if (!revealNow) return;
+        revealShown = true;
+        clearTimeout(revealTimer);
+        revealNow(false);
+      }
+
+      function drawRound() {
+        clearPoll();
+        revealShown = false;
+        clearTimeout(revealTimer);
+        if (at >= rounds.length) { seal(); return; }
+        var r = rounds[at];
+        host.innerHTML = '';
+        var guess = !!r.guess;
+        var strip = rounds.map(function (_, i) {
+          return '<span class="duel-pip' + (i < at ? ' done' : (i === at ? ' now' : '')) +
+            (rounds[i].guess ? ' is-guess' : '') + '">' + (i + 1) + '</span>';
+        }).join('');
+        var opts = (r.options || []).length
+          ? '<div class="duel-options">' + derangedOrder(r.options.length).map(function (i) {
+              return '<button class="duel-option" type="button" data-v="' + esc(r.options[i]) + '">' +
+                esc(r.options[i]) + '</button>';
+            }).join('') + '</div>'
+          : '<div class="duel-typed"><label class="duel-lab" for="duel-say">' + esc(cfg.typedLabel || '') + '</label>' +
+            '<textarea id="duel-say" class="duel-say" rows="3" spellcheck="false" autocomplete="off"></textarea></div>';
+        var c = el('<div class="card duel-card' + (guess ? ' is-guess' : '') + '" data-round="' + at + '">' +
+          '<div class="duel-strip">' + strip + '</div>' +
+          (guess
+            ? '<div class="duel-guess-banner" role="note"><b>' + esc(cfg.guessTag || '') + '</b> ' +
+              esc(cfg.guessSay || '') + '</div>'
+            : '') +
+          '<h2 class="duel-goal">' + fmtBold(r.ask || cfg.ask || '') + '</h2>' +
+          (r.lead ? '<p class="duel-lead">' + fmtBold(r.lead) + '</p>' : '') +
+          '<pre class="duel-code">' + esc((r.code || []).join('\n')) + '</pre>' +
+          opts +
+          '<button class="primary-btn duel-lock" type="button">' + esc(cfg.lockLabel || '') + '</button>' +
+          '<p class="duel-locked-note">' + esc(cfg.lockedNote || '') + '</p>' +
+          '<div class="duel-wait" hidden data-arrive-live></div>' +
+          '<div class="duel-reveal" hidden data-arrive-live></div>' +
+          finishRow() + '</div>');
+        host.appendChild(c);
+        wireFinish(c);
+        var picked = null;
+        c.querySelectorAll('.duel-option').forEach(function (b) {
+          App.armButton(b, function () {
+            c.querySelectorAll('.duel-option').forEach(function (o) { o.classList.remove('is-picked'); });
+            b.classList.add('is-picked');
+            picked = b.getAttribute('data-v');
+          });
+        });
+        var lock = c.querySelector('.duel-lock');
+        App.armButton(lock, function () {
+          var v = (r.options || []).length ? picked : String((c.querySelector('.duel-say') || {}).value || '').trim();
+          if (!v) {
+            /* the empty refusal explains itself and points at itself (DFM 205) */
+            var note = c.querySelector('.duel-locked-note');
+            note.classList.add('is-wants');
+            note.textContent = cfg.emptySay || '';
+            var t = c.querySelector('.duel-say');
+            if (t) t.focus();
+            return;
+          }
+          mine[at] = v;
+          lock.disabled = true;
+          /* THE OPTIONS SAY WHY THEY HAVE STOPPED WORKING, and they say it where
+             they are. Locking in disables all four of them, and the only
+             sentence about it sat under the lock button — three hundred pixels
+             from the option at the top, which is the "note two steps away" the
+             mute-lock rule is written against. A pupil who clicks a dead button
+             is owed a reason beside that button (DFM 42/205). */
+          var optBox = c.querySelector('.duel-options') || c.querySelector('.duel-typed');
+          if (optBox && !optBox.querySelector('.duel-optnote')) {
+            var on = el('<p class="duel-optnote" role="status"></p>');
+            on.textContent = cfg.lockedSay || '';
+            optBox.insertBefore(on, optBox.firstChild);
+          }
+          c.querySelectorAll('.duel-option').forEach(function (o) { o.disabled = true; });
+          var ta = c.querySelector('.duel-say');
+          if (ta) ta.readOnly = true;
+          var wait = c.querySelector('.duel-wait');
+          wait.hidden = false;
+          wait.innerHTML = '<p class="duel-wait-say">' + esc(waitSay()) + '</p>';
+          if (mode === 'paired' && PairKit.st) {
+            PairKit.send(ctx, 'msg', 'C' + at + '|' + String(v).slice(0, 120));
+            /* REVEAL ON TIMEOUT, SAID HONESTLY (spec §C4). A partner who has
+               wandered off must never freeze the room: after the held wait the
+               reveal happens anyway and the screen says why. */
+            revealTimer = setTimeout(function () {
+              if (revealShown) return;
+              revealShown = true;
+              showReveal(true);
+            }, Number(cfg.holdMs == null ? 45000 : cfg.holdMs));
+            maybeReveal();
+          } else {
+            revealShown = true;
+            setTimeout(function () { showReveal(false); }, 400);
+          }
+        });
+
+        function waitSay() {
+          if (mode !== 'paired' || !PairKit.st) return cfg.soloWaitSay || '';
+          var pre = PairKit.say('signPrefix', '');
+          var names = PairKit.others().map(function (i) { return pre + String(PairKit.st.members[i] || ''); });
+          return String(cfg.waitSay || '').replace('{signs}', names.join(' and '));
+        }
+
+        revealNow = showReveal;
+        function showReveal(timedOut) {
+          clearTimeout(revealTimer);
+          var box = c.querySelector('.duel-reveal');
+          var wait = c.querySelector('.duel-wait');
+          box.hidden = false;
+          box.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
+            esc(cfg.runningSay || '') + '</span></div>';
+          /* IT REALLY RUNS. The reveal is never an authored "answer" — the same
+             snippet the pupils just read is handed to Python and whatever comes
+             back is what the card shows. A seeded preamble keeps a walk pinnable
+             (DFM 199) without touching what she can see. */
+          PyRun.run((r.code || []).join('\n'), {
+            limitMs: Number(cfg.limitMs || 0) || undefined,
+            preamble: PyRun.seedPreamble(Number(r.seed == null ? 4 : r.seed))
+          }).then(function (res) {
+            wait.hidden = true;
+            var real = res.ok ? PyRun.tidy(res.out) : String(res.err);
+            var ok = judge(mine[at], real, r);
+            if (!r.guess && ok) right++;
+            done = at + 1;
+            var rowsHtml = '';
+            var pre = PairKit.say('signPrefix', '');
+            rowsHtml += predRow(cfg.meWho || '', mine[at], ok, true);
+            if (mode === 'paired' && PairKit.st) {
+              PairKit.others().forEach(function (i) {
+                var v = (theirs[at] || {})[i];
+                rowsHtml += predRow(pre + String(PairKit.st.members[i] || ''),
+                  v == null ? (cfg.noCommitSay || '') : v,
+                  v == null ? null : judge(v, real, r), false);
+              });
+            }
+            box.innerHTML =
+              (timedOut ? '<p class="duel-timeout">' + fmtBold(cfg.timeoutSay || '') + '</p>' : '') +
+              '<h3>' + esc(cfg.realTitle || '') + '</h3>' +
+              '<pre class="duel-real' + (res.ok ? '' : ' is-err') + '">' + esc(real) + '</pre>' +
+              '<div class="duel-preds">' + rowsHtml + '</div>' +
+              '<p class="duel-teach">' + fmtBold(r.teach || '') + '</p>' +
+              '<button class="primary-btn duel-next" type="button">' + esc(
+                at + 1 >= rounds.length ? (cfg.lastLabel || '') : (cfg.nextLabel || '')) + '</button>';
+            PairKit.arrive(box, { announce: cfg.revealArrivedSay || '' });
+            App.armButton(box.querySelector('.duel-next'), function () { at++; drawRound(); });
+          });
+        }
+      }
+
+      function predRow(who, text, ok, isMine) {
+        return '<div class="duel-pred' + (isMine ? ' is-mine' : '') +
+          (ok == null ? '' : (ok ? ' is-right' : ' is-wrong')) + '">' +
+          '<span class="duel-pred-who">' + esc(who) + '</span>' +
+          '<span class="duel-pred-text">' + esc(String(text)) + '</span></div>';
+      }
+
+      /* Right BEFORE the reveal, and it is compared the way a person would:
+         spaces and capitals forgiven, everything else exact. A typed prediction
+         only has to say what the program prints, not how she formatted it —
+         judging her on invisible characters would be a fail state she could
+         never diagnose (rule 35's family). */
+      function judge(said, real, r) {
+        if (said == null) return null;
+        var norm = function (x) {
+          return String(x == null ? '' : x).replace(/\r/g, '').split('\n')
+            .map(function (l) { return l.replace(/\s+/g, ' ').trim().toLowerCase(); })
+            .filter(function (l) { return l !== ''; }).join('\n');
+        };
+        /* JUDGED AGAINST WHAT PYTHON ACTUALLY PRINTED, and against nothing
+           else. This read `r.answer` first, with the real run only as a
+           fallback -- two homes for one fact (DFM 144), and the wrong one
+           winning: an author's typed answer that disagreed with the runtime
+           would have told a pupil she was wrong while the console in front of
+           her showed she was right. It also meant the six answers had to ship
+           in the public content, where anyone with a browser's own inspector
+           could read them BEFORE committing, which is the single thing this
+           round is built to prevent. The reveal runs the line for real; the
+           truth is what came out of it. */
+        return norm(said) === norm(real);
+      }
+
+      function seal() {
+        if (sealed) return;
+        sealed = true;
+        clearPoll();
+        host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
+          esc(cfg.sealingSay || '') + '</span></div>';
+        var scored = rounds.filter(function (x) { return !x.guess; }).length;
+        var go = function (names) {
+          host.innerHTML = '';
+          var who = (names || []).filter(function (_, i) { return !PairKit.st || i !== Number(PairKit.st.mi); });
+          var c = el('<div class="card duel-card duel-seal">' +
+            '<span class="intro-kicker">' + esc(cfg.sealKicker || '') + '</span>' +
+            '<h2>' + esc(cfg.sealTitle || '') + '</h2>' +
+            '<p class="duel-score">' + fmtBold(String(cfg.scoreSay || '')
+              .replace('{right}', String(right)).replace('{of}', String(scored))) + '</p>' +
+            (who.length ? '<p class="duel-reveal-names">' + fmtBold(String(cfg.revealSay || '').replace('{names}', who.join(' and '))) + '</p>' : '') +
+            '<p class="duel-seal-say">' + fmtBold(cfg.sealSay || '') + '</p>' +
+            '<button class="primary-btn duel-done" type="button">' + esc(cfg.doneLabel || '') + '</button></div>');
+          host.appendChild(c);
+          App.armButton(c.querySelector('.duel-done'), function () { finish(); });
+        };
+        if (mode === 'paired' && PairKit.st) {
+          PairKit.complete(ctx).then(function (r) { go((r && r.names) || null); });
+        } else go(null);
       }
     }
   };

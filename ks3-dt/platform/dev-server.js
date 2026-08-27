@@ -1613,7 +1613,7 @@
       while (pfQ.q.length >= 2) {
         var take = pfQ.q.length === 3 ? 3 : 2;
         var formed = pfQ.q.splice(0, take);
-        newPairD_(s, pfReg, formed.map(function (w) { return str_(w.e); }), callsignFillD_(formed), take === 3, false);
+        newPairD_(s, pfReg, formed.map(function (w) { return str_(w.e); }), callsignFillD_(formed, classYear_(s, cls)), take === 3, false);
         made++;
       }
       if (pfQ.q.length === 1) {
@@ -1769,7 +1769,35 @@
      the return path shows - single-tab demos stay complete. */
   var PAIR_PRESENT_MIN = 10, PAIR_QUEUE_STALE_S = 45, PAIR_MSG_MAX = 240, PAIR_EV_KEEP = 150, PAIR_TX_MAX = 500;
   var BOT_WAIT_S = 8;
+  /* HOW LONG THE PREVIEW'S PARTNER TAKES TO ARRIVE, and it is not a fixed
+     number any more. Both Lesson 3 activities put a side show on the waiting
+     card after eight seconds — his ruling, so a pupil who is genuinely waiting
+     has something to look at — and the preview's bot also arrived at eight
+     seconds, so in the preview the wait card and the character on it could
+     never be seen at all, by a pupil or by a walker. The wait is taken from the
+     lesson's OWN threshold rather than guessed here (DFM 144): whatever a card
+     says its side show appears at, the preview waits past it. */
+  function botWaitFor_(lesson) {
+    var ms = 0;
+    ((lesson && lesson.chunks) || []).forEach(function (c) {
+      var v = num_((c.config || {}).sideAfterMs);
+      if (v > ms) ms = v;
+    });
+    return ms > 0 ? Math.ceil(ms / 1000) + 6 : BOT_WAIT_S;
+  }
   var PAIR_CALLSIGNS = ['Kestrel', 'Osprey', 'Merlin', 'Harrier', 'Nightjar', 'Skylark'];
+  /* per-year pools, MIRRORING Code.gs.template (K35(3)). qa-pair-stores executes
+     the template's own functions against these, so a drift between the two homes
+     is a failing gate rather than a surprise on his screen (DFM 234a). */
+  var PAIR_CALLSIGNS_J2 = ['Spanner 7', 'Chisel 3', 'Hammer 5', 'Pliers 2',
+                           'Drill 9', 'Clamp 4', 'Ruler 6', 'Mallet 8'];
+  var PAIR_CALLSIGNS_J3 = ['Director 3', 'Editor 5', 'Producer 2', 'Camera 4',
+                           'Sound 7', 'Lighting 6', 'Writer 9', 'Designer 8'];
+  function callsignsForD_(year) {
+    if (str_(year) === 'j2') return PAIR_CALLSIGNS_J2;
+    if (str_(year) === 'j3') return PAIR_CALLSIGNS_J3;
+    return PAIR_CALLSIGNS;
+  }
   function tsecD_() { return Math.floor(Date.now() / 1000); }
   function plKey_(cls, lessonId) { return cls + '|' + lessonId; }
   function pairRegD_(s, cls, lessonId) {
@@ -1831,9 +1859,10 @@
       names: num_(P.rv) ? (P.n || []).map(str_) : null
     };
   }
-  function callsignFillD_(formed) {
-    var seed = Math.floor(Math.random() * PAIR_CALLSIGNS.length);
-    return formed.map(function (w, i) { return str_(w.cn) || PAIR_CALLSIGNS[(seed + i) % PAIR_CALLSIGNS.length]; });
+  function callsignFillD_(formed, year) {
+    var pool = callsignsForD_(year);
+    var seed = Math.floor(Math.random() * pool.length);
+    return formed.map(function (w, i) { return str_(w.cn) || pool[(seed + i) % pool.length]; });
   }
   function newPairD_(s, reg, members, cns, trio, bot) {
     var pid = 'p' + tmin_() + '-' + Math.floor(Math.random() * 10000);
@@ -1864,6 +1893,7 @@
       var entry = lessonEntry_(man, lessonId);
       var numStr = entry ? str_(entry.num) : '';
       if (!numStr || !lessonAccessible_(s, cls, numStr)) return { ok: false, error: 'locked' };
+      return lessonInfo_(s, year, lessonId).then(function (lesson) {
       var reg = pairRegD_(s, cls, lessonId);
       var hit = pairOfD_(reg, PUPIL_EMAIL);
       if (hit) { save_(s); return pairStateD_(reg, hit); }
@@ -1898,14 +1928,14 @@
       var E = Object.keys(expected).length;
       if (q.q.length >= 3 && E === 3) {
         var trioF = q.q.splice(0, 3);
-        newPairD_(s, reg, trioF.map(function (w) { return str_(w.e); }), callsignFillD_(trioF), true, false);
+        newPairD_(s, reg, trioF.map(function (w) { return str_(w.e); }), callsignFillD_(trioF, classYear_(s, cls)), true, false);
       } else if (q.q.length >= 2 && E !== 3) {
         var pairF = q.q.splice(0, 2);
-        newPairD_(s, reg, pairF.map(function (w) { return str_(w.e); }), callsignFillD_(pairF), false, false);
-      } else if (q.q.length === 1 && E <= 1 && nowS - num_(mine.t) >= BOT_WAIT_S) {
+        newPairD_(s, reg, pairF.map(function (w) { return str_(w.e); }), callsignFillD_(pairF, classYear_(s, cls)), false, false);
+      } else if (q.q.length === 1 && E <= 1 && nowS - num_(mine.t) >= botWaitFor_(lesson)) {
         // preview twist: a lone agent gets the simulated partner, never insta-solo
         q.q.splice(0, 1);
-        newPairD_(s, reg, [PUPIL_EMAIL, BOT_EMAIL], [callsignFillD_([mine])[0], 'Pixel (simulated)'], false, true);
+        newPairD_(s, reg, [PUPIL_EMAIL, BOT_EMAIL], [callsignFillD_([mine], classYear_(s, cls))[0], 'Pixel (simulated)'], false, true);
       }
       save_(s);
       var hit2 = pairOfD_(reg, PUPIL_EMAIL);
@@ -1913,6 +1943,7 @@
       var pos = 0;
       q.q.forEach(function (w, i) { if (str_(w.e) === PUPIL_EMAIL) pos = i + 1; });
       return { ok: true, state: 'wait', pos: num_(pos), waiting: num_(q.q.length), expected: num_(E), trioHold: E === 3 ? 1 : 0 };
+      });
     });
   }
 
@@ -1946,8 +1977,135 @@
   }
 
   /* ---- the simulated partner's brain: runs inside the pupil's channel polls ---- */
+  /* ---- Pixel's other two brains (27 Aug 2026) ------------------------------
+     The simulated partner was written for J1's Vault and knew nothing else, so
+     the moment a second and third paired activity existed, a lone pupil in the
+     preview got paired with a partner who talked about drops and folders and
+     never published a bot or committed a guess. A preview that pairs you with
+     somebody who cannot play is worse than one that does not pair you at all --
+     it looks like the activity is broken.
+
+     ONE CACHE PER LESSON, because `botInfoCache` was a single slot written by
+     the Vault brain and would have handed the Swap the Vault's config. */
+  var lessonCache = {};
+  function lessonInfo_(s, year, lessonId) {
+    if (lessonCache[lessonId]) return Promise.resolve(lessonCache[lessonId]);
+    return yearManifest_(year).then(function (man) {
+      var entry = lessonEntry_(man, lessonId);
+      if (!entry) return null;
+      return fetchContent_(str_(entry.file)).then(function (lesson) {
+        lessonCache[lessonId] = lesson;
+        return lesson;
+      });
+    }).catch(function () { return null; });
+  }
+  function chunkCfg_(lesson, engine) {
+    var out = null;
+    ((lesson && lesson.chunks) || []).forEach(function (c) {
+      if (str_(c.engine) === engine && !out) out = c.config || {};
+    });
+    return out;
+  }
+
+  /* THE SWAP. Pixel has to do exactly two things a partner does: put a bot in
+     its own blob slot so the pupil has something to test, and file a report so
+     the pupil has something to read back at the end. Its bot is deliberately a
+     WORKING one that is a bit thin -- it asks two questions and only uses one
+     of the answers -- because the pupil's job on that screen is to notice what
+     a bot does and does not do, and a flawless partner gives her nothing to
+     write down. */
+  var PIXEL_BOT =
+    'print("Hello. I am Pixel and I was made in a hurry.")\n' +
+    'name = input("What should I call you?")\n' +
+    'food = input("What is the best thing to eat after school?")\n' +
+    'print("Good to meet you, " + name + ".")\n' +
+    'print("I have written that down and I will forget it immediately.")\n';
+  var PIXEL_REPORT =
+    'It asked me my name and what I eat, and it used my name at the end. ' +
+    'It never used the food answer for anything, so that question did not earn its place. ' +
+    'The first line made me laugh. I would keep it.';
+
+  function swapBot_(s, cls, lessonId, pid, P, ch) {
+    /* the blob is the same store the real API writes: member 1 is Pixel */
+    var store = blobD_(s, pid);
+    var acted = false;
+    if (!store['bot:1']) { store['bot:1'] = { v: PIXEL_BOT, t: tsecD_() }; acted = true; }
+    var nowS = tsecD_();
+    if (!ch.bot.greeted && nowS - num_(ch.bot.startS) >= 2) {
+      ch.bot.greeted = 1; acted = true;
+      appendEvD_(ch, 1, 'msg', 'Pixel here. My bot is in - run it and be honest, I can take it.');
+    }
+    /* it files its report once the pupil has started relaying her test, which
+       is when a real partner would be finishing theirs */
+    var relayed = ch.ev.filter(function (e) { return num_(e[1]) === 0 && /^(bot|tester|you):/i.test(str_(e[3])); }).length;
+    if (relayed >= 2 && !store['report:1']) {
+      store['report:1'] = { v: PIXEL_REPORT, t: tsecD_() };
+      appendEvD_(ch, 1, 'msg', 'REPORT ' + PIXEL_REPORT);
+      acted = true;
+    }
+    return Promise.resolve(acted);
+  }
+
+  /* THE MATCH. Pixel commits its own `C<round>|<answer>` as soon as the pupil
+     commits hers -- never before, because the whole design of the round is that
+     neither of them can see the other until both have said. It reads the real
+     answers out of the lesson's own content and gets ONE of the six wrong (the
+     .sort( ) trap, which is the round the film says catches nearly everybody),
+     so the reveal has a disagreement in it worth looking at. */
+  function duelBot_(s, cls, lessonId, pid, P, ch, year) {
+    return yearManifest_(year).then(function (man) {
+      var entry = lessonEntry_(man, lessonId);
+      return Promise.all([lessonInfo_(s, year, lessonId), devKeysAll_()]).then(function (both) {
+        return { lesson: both[0], keys: (both[1] || {})[fileIdOf_(entry)] || {} };
+      });
+    }).then(function (got) {
+      var lesson = got.lesson;
+      var cfg = chunkCfg_(lesson, 'duel');
+      var rounds = (cfg && cfg.rounds) || [];
+      if (!rounds.length) return false;
+      /* THE ANSWERS ARE NOT IN THE LESSON ANY MORE. They were moved into the
+         encrypted keys block the night the packer caught them shipping in
+         plaintext, so the preview's partner reads them the same way the Vault's
+         does -- out of dev-keys.json, which never leaves this machine. */
+      var ans = ((got.keys || {})['j3-match'] || {}).answers || {};
+      var acted = false;
+      var nowS = tsecD_();
+      if (!ch.bot.greeted && nowS - num_(ch.bot.startS) >= 2) {
+        ch.bot.greeted = 1; acted = true;
+        appendEvD_(ch, 1, 'msg', 'Pixel here. I read Python slowly but I read it.');
+      }
+      var mine = {}, theirs = {};
+      ch.ev.forEach(function (e) {
+        var m = /^C(\d+)\|([\s\S]*)$/.exec(str_(e[3]));
+        if (!m) return;
+        (num_(e[1]) === 1 ? mine : theirs)[m[1]] = 1;
+      });
+      Object.keys(theirs).forEach(function (at) {
+        if (mine[at]) return;
+        var r = rounds[num_(at)];
+        if (!r) return;
+        /* the LAST round is the trap, and Pixel falls into it like everyone else */
+        var wrong = (num_(at) === rounds.length - 1);
+        var say = str_(ans[str_(r.id)] || '');
+        if (!say) return;              /* no key, no confident answer, no bluff */
+        if (wrong) {
+          var opts = (r.options || []).map(String).filter(function (o) { return o !== str_(ans[str_(r.id)]); });
+          say = opts.length ? opts[0] : 'I think it just prints the list.';
+        }
+        appendEvD_(ch, 1, 'msg', 'C' + at + '|' + say.slice(0, 120));
+        mine[at] = 1;
+        acted = true;
+      });
+      return acted;
+    }).catch(function () { return false; });
+  }
+
   function botThink_(s, cls, lessonId, pid, P, ch, year) {
     if (!ch.bot) return Promise.resolve(false);
+    /* which activity is this pair actually in? The lesson says, and asking it
+       is what stops the Vault brain talking about folders inside the Swap. */
+    if (lessonId === 'j2-03') return swapBot_(s, cls, lessonId, pid, P, ch);
+    if (lessonId === 'j3-03') return duelBot_(s, cls, lessonId, pid, P, ch, year);
     var acted = false;
     var nowS = tsecD_();
     if (!ch.bot.greeted && nowS - num_(ch.bot.startS) >= 2) {
@@ -2070,6 +2228,47 @@
         names: num_(P.rv) ? (P.n || []).map(str_) : null
       };
     });
+  }
+
+  /* ---- pairBlob (spec SS C3) — the mimic of the template's own verb -------
+     Same rules, same refusals, same cap: `put` writes to the CALLER'S OWN member
+     index, `get` reads any member of the same pair, bounds-checked. Slots live
+     in the shared blob under the pid, so two same-origin tabs really do hand a
+     program to each other. qa-pair-stores executes the TEMPLATE and this mimic
+     against one matrix and holds them equal (DFM 234a) — asserting the mimic
+     alone verifies nothing about the file he pastes. */
+  var PAIR_BLOB_MAX = 4096;
+  var PAIR_BLOB_SLOTS = ['bot', 'report', 'card'];
+  function blobD_(s, pid) {
+    if (!s.pbl) s.pbl = {};
+    if (!s.pbl[pid]) s.pbl[pid] = {};
+    return s.pbl[pid];
+  }
+  function doPairBlob(p) {
+    var s = load_();
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+    var lessonId = str_(p.lessonId);
+    var reg = pairRegD_(s, cls, lessonId);
+    var hit = pairOfD_(reg, PUPIL_EMAIL);
+    if (!hit || str_(hit.pid) !== str_(p.pid)) return Promise.resolve({ ok: false, error: 'not-your-pair' });
+    var slot = str_(p.slot);
+    if (PAIR_BLOB_SLOTS.indexOf(slot) === -1) return Promise.resolve({ ok: false, error: 'bad-slot' });
+    var members = (reg.P[hit.pid].m || []).length;
+    var store = blobD_(s, str_(hit.pid));
+    if (str_(p.op) === 'get') {
+      var mi = num_(p.mi);
+      if (mi < 0 || mi >= members) return Promise.resolve({ ok: false, error: 'bad-member' });
+      var got = store[slot + ':' + mi] || null;
+      if (!got) return Promise.resolve({ ok: true, has: 0, v: '', mi: mi, t: 0 });
+      return Promise.resolve({ ok: true, has: 1, v: str_(got.v), mi: mi, t: num_(got.t) });
+    }
+    if (str_(p.op) !== 'put') return Promise.resolve({ ok: false, error: 'bad-op' });
+    var v = str_(p.v);
+    if (v.length > PAIR_BLOB_MAX) return Promise.resolve({ ok: false, error: 'too-big', max: PAIR_BLOB_MAX, was: v.length });
+    store[slot + ':' + num_(hit.mi)] = { v: v, t: tsecD_() };
+    save_(s);
+    return Promise.resolve({ ok: true, bytes: v.length, mi: num_(hit.mi), max: PAIR_BLOB_MAX });
   }
 
   function doPairComplete(p) {
@@ -2378,6 +2577,7 @@
       case 'pairSend': return doPairSend(p);
       case 'pairChannel': return doPairChannel(p);
       case 'pairComplete': return doPairComplete(p);
+      case 'pairBlob': return doPairBlob(p);
       case 'galleryOpen': return doGalleryOpen(p);
       case 'galleryPost': return doGalleryPost(p);
       case 'galleryFeed': return doGalleryFeed(p);

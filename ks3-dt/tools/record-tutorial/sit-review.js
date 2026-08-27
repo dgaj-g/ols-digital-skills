@@ -107,6 +107,29 @@ const EXPECT = {
      so it grants nothing and writes nothing (DFM 265a), which the record proves
      by carrying `bureau=…;build=…` and no `extras` entry at all. */
   'j2-2': { chunks: 9, presses: 29, marks: 12, badges: 2 },
+  /* ══ J2 AND J3 LESSON 3, measured 27 Aug 2026, IDENTICAL ON TWO RUNS ══════
+     Every number here moved at least once during the night, and each move was a
+     fault this walk found rather than noise to be averaged away:
+       · the walker sat 180 turns on the worked example, because a conversation
+         reply box was a surface no kind matched;
+       · it could not fix the planted `naem`, because a worked card puts its
+         blanks in `.pyw-list` and the rule only looked in `.pyp-list`;
+       · it could not place a line in either gap-fill build, because no build in
+         either lesson carried an `order`;
+       · it clicked palette chips at random in the typed editors instead of
+         writing a program;
+       · it left the Prediction Match on its opening screen and was handed the
+         badge for predicting nothing;
+       · it typed the Match's typed round into `.duel-typed`, which is the row,
+         not the box;
+       · and it clicked `.pye-cardsend`, which is a div.
+     XP IS PINNED on both, unlike j2-2: neither lesson shuffles anything that
+     can change what a walk earns. J2's tray IS shuffled, but its builds are
+     judged by RUNNING the program, so the shuffle cannot move the score.
+     `ep=0` on J3 is the parsons walker's standing limitation (it clicks the tray
+     in the order it finds it), the same on every year — not a J3 fault. */
+  'j2-3': { xp: 58, chunks: 9, presses: 35, marks: 10, badges: 3 },
+  'j3-3': { xp: 55, chunks: 10, presses: 29, marks: 7, badges: 3 },
   /* J3 Lesson 2, measured 19 Aug 2026, IDENTICAL on a second run — every number
      including XP, because this lesson has no shuffled surface: four builds, each
      driven from the same key to the same answer. */
@@ -139,7 +162,8 @@ const GHOST_WAIT = 420;
    shipped before this file existed and was never retro-fitted. */
 const TITLES = { '1': 'Mission Control', '2': 'Make It Move', '3': 'Scoreboard Engineer', '4': 'The Broken Game', '5': 'Game Studio', 'S1': 'Files That Follow You',
   'j2-1': 'Welcome to the Workshop', 'j3-1': 'The Studio Opens',
-  'j2-2': 'Translation Bureau', 'j3-2': 'First Words in Python' };
+  'j2-2': 'Translation Bureau', 'j3-2': 'First Words in Python',
+  'j2-3': 'Chatbot Workshop', 'j3-3': 'Playlist Engine' };
 
 let shotN = 0;
 const shotOnce = new Set();   /* the Python screens repeat many turns; shoot each kind once */
@@ -940,7 +964,7 @@ const CASE_LOGS = {
            turn that only types counts nothing, exactly as `input` counts
            nothing. */
         if (clicks > 0) seen.presses++;
-        note('SHARED MOVER ' + st.kind + ' @ ' + ck + ' (' + clicks + ' click(s))');
+        note('SHARED MOVER ' + st.kind + ' @ ' + ck + ' (' + clicks + ' click(s))' + (st.dbg ? ' :: ' + st.dbg : ''));
         await sleep(WALK.SETTLE[st.kind] || 700);
         break;
       }

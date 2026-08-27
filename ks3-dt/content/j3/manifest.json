@@ -65,12 +65,13 @@
    "id": "j3-03",
    "num": 3,
    "title": "Playlist Engine",
-   "tagline": "You hold a whole set of data in one place, using lists.",
+   "tagline": "One name holds a whole set of things, and you write the program that manages them.",
    "block": "b2",
    "icon": "🎵",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j3/lessons/j3-03.json"
   },
   {
    "id": "j3-04",

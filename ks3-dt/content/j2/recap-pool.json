@@ -136,7 +136,124 @@
     "The lessons she has finished so far this year",
     "A list of the equipment in the DT room"
    ]
+  },
+  {
+   "id": "r-j2-201",
+   "lesson": "j2-02",
+   "topic": "Printing a line",
+   "thread": "kp-py-sequence",
+   "stem": "Aoibhe's program starts with the line `print(\"Match day\")`. What does that line do?",
+   "options": [
+    "Puts the words Match day on the console",
+    "Makes a box called Match day and leaves it empty",
+    "Waits for somebody to type the words Match day",
+    "Checks whether the words Match day are already on the console"
+   ]
+  },
+  {
+   "id": "r-j2-202",
+   "lesson": "j2-02",
+   "topic": "Making a variable",
+   "thread": "kp-py-variable",
+   "stem": "Saoirse types `lives = 3` as the first line of her program. What has that line done?",
+   "options": [
+    "Made a box called lives with 3 in it",
+    "Printed the number 3 on the console",
+    "Asked Python whether lives is the same as 3",
+    "Counted how many times the program has run"
+   ]
+  },
+  {
+   "id": "r-j2-203",
+   "lesson": "j2-02",
+   "topic": "Joining a number onto words",
+   "thread": "kp-py-variable",
+   "stem": "Sorcha's line `print(\"Score: \" + score)` stops with an error, and score holds the number 2. What does her line need?",
+   "options": [
+    "str( ) around score, so the + has words on both sides",
+    "Speech marks around score, so Python can read it",
+    "The + changed to a comma, because numbers do not use +",
+    "Nothing — the error is on a different line"
+   ]
+  },
+  {
+   "id": "r-j2-301",
+   "lesson": "j2-03",
+   "topic": "Asking a question in Python",
+   "thread": "kp-py-input",
+   "stem": "Róisín's program reaches the line `town = input(\"Where do you live?\")`. What happens on the screen next?",
+   "options": [
+    "The question appears and the program waits until she types an answer",
+    "The question appears and the program carries straight on to the next line",
+    "The words Where do you live? are put into the box called town",
+    "Nothing appears until the whole program has finished running"
+   ]
+  },
+  {
+   "id": "r-j2-302",
+   "lesson": "j2-03",
+   "topic": "What a chatbot really is",
+   "thread": "kp-py-input",
+   "stem": "A pupil says the chatbot she built yesterday is clever, because it knew her name. What is the honest answer?",
+   "options": [
+    "It was told her name by her, and it printed it back out",
+    "It looked her name up on the school system",
+    "It worked her name out from the way she typed",
+    "It remembered her name from the last time she used it"
+   ]
+  },
+  {
+   "id": "r-j2-303",
+   "lesson": "j2-03",
+   "topic": "Using an answer more than once",
+   "thread": "kp-py-input",
+   "stem": "Aoife's bot asks for a name once, and she wants it used in three different sentences. What does she need to do?",
+   "options": [
+    "Nothing extra — she uses the same box name in all three lines",
+    "Ask the same question three times, once before each sentence",
+    "Make three boxes and copy the answer into each one",
+    "Put the answer in speech marks so it can be used again"
+   ]
+  },
+  {
+   "id": "r-j2-304",
+   "lesson": "j2-03",
+   "topic": "Reading a Python error",
+   "thread": "kp-py-input",
+   "stem": "Ciara's program stops and the console says: NameError: name 'naem' is not defined. What has she most likely done?",
+   "options": [
+    "Spelled a box name differently in two places",
+    "Forgotten to put speech marks round some words",
+    "Joined a number onto words without str( )",
+    "Left a space at the front of one of her lines"
+   ]
+  },
+  {
+   "id": "r-j2-305",
+   "lesson": "j2-03",
+   "topic": "What input gives back",
+   "thread": "kp-py-input",
+   "stem": "A bot asks how old somebody is and they type 12. What is in the box afterwards?",
+   "options": [
+    "The 1 and the 2, kept as writing",
+    "The number 12, ready to be added to",
+    "Nothing, because 12 is not words",
+    "Both — Python keeps it as writing and as a number"
+   ]
+  },
+  {
+   "id": "r-j2-306",
+   "lesson": "j2-03",
+   "topic": "Writing a question somebody can answer",
+   "thread": "kp-py-input",
+   "stem": "Which of these is the best question for a chatbot that a classmate has ten seconds to answer?",
+   "options": [
+    "What is your favourite food?",
+    "What is the best thing that has ever happened to you?",
+    "What would you change about the school day, and why?",
+    "Describe your ideal weekend in one word"
+   ]
   }
  ],
- "keysEnc": "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"
+ "keysEnc": "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"
 }

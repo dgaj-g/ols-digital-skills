@@ -31,6 +31,7 @@
    Pure source/packed scan: no browser, no server needed.
    Usage: node qa-cross-lesson.js */
 const path = require('path');
+const crypto = require('crypto');
 const fs = require('fs');
 const SRC = path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/content-src');
 const PACKED = path.join(__dirname, '../../content');
@@ -172,54 +173,131 @@ const chapterNodes = (node, p, out) => {
   Object.keys(node).forEach(k => chapterNodes(node[k], p + ' › ' + k, out));
   return out;
 };
-let chapterHomes = 0;
-for (const f of lessonFiles) {
-  for (const [label, root] of [['source', SRC], ['packed', PACKED]]) {
-    const p = path.join(root, 'j1/lessons/' + f);
-    if (!fs.existsSync(p)) continue;
-    const L = JSON.parse(fs.readFileSync(p, 'utf8'));
-    const homes = [];
-    (L.chunks || []).forEach(c => chapterNodes(c.config || {}, f.replace(/\.json$/, '') + ' › ' + c.id + ' › config', homes));
-    if (!homes.length) continue;
-    if (label === 'source') chapterHomes += homes.length;
-    /* (a) every copy OF THE SAME FILM says the same thing.
-       RE-STAGED 12 Aug 2026 for the DFM 168 split: Lesson 5's film is now
-       served as two halves in two places — the idea at the masterclass chunk,
-       the worked example on the Studio Desk — so its two homes legitimately
-       carry DIFFERENT times. The rule was never "one lesson, one set of
-       numbers"; it is "one FILM, one set of numbers", and the drift it caught
-       (173 against 174) was two copies of the SAME film. Grouping by src keeps
-       exactly that tooth and loses nothing. */
-    const bySrc = {};
-    homes.forEach(h => { (bySrc[String(h.src || '')] = bySrc[String(h.src || '')] || []).push(h); });
-    Object.keys(bySrc).forEach(src => {
-      bySrc[src].slice(1).forEach(h => {
-        check(sameChapters(bySrc[src][0].chapters, h.chapters),
-          label + '/' + f + ': "' + h.path + '" carries the same chapter times as "' + bySrc[src][0].path +
-          '" — one film, one fact (DFM 144)');
-      });
-    });
-    /* (b) and each home says what the assembler measured out of THE FILE IT
-       SERVES — the full film, or the half it points at. A home that agreed with
-       its twin while both were wrong would still jump a pupil to the wrong
-       place, which is why this half is the one with teeth. */
-    homes.forEach(h => {
-      const src = String(h.src || '');
-      const set = (src.match(/assets\/video\/([^/]+)\//) || [])[1];
-      const cj = set && path.join(OUT, set, 'chapters.json');
-      if (!cj || !fs.existsSync(cj)) return;
-      const man = JSON.parse(fs.readFileSync(cj, 'utf8'));
-      const base = src.split('/').pop();
-      /* a published half is named "<set>-<the assembler's own name>" */
-      const part = (man.halves || []).find(x => base === set + '-' + String(x.file).split('/').pop());
-      const real = part ? (part.chapters || []) : (man.chapters || []);
-      check(sameChapters(real, h.chapters),
-        label + '/' + f + ': "' + h.path + '" matches the times the assembler measured for ' +
-        base + ' (' + real.map(c => c.t).join('/') + ')');
-    });
+/* EVERY YEAR, not just J1. This section was written when J1 was the only year
+   with a film and it walked `j1/lessons` by name, so when J2 and J3 got films of
+   their own their chapter times were checked by nobody -- and on 27 Aug 2026
+   three of the six sets in the J2/J3 Lesson 3 pair turned out to be placeholder
+   numbers that had never been anywhere near the finished video. A gate that
+   silently covers one year of three is the kind that reads as green while the
+   fault ships (DFM 206, DFM 213). */
+const YEARS = fs.readdirSync(SRC)
+  .filter(d => /^j\d+$/.test(d) && fs.existsSync(path.join(SRC, d, 'lessons')));
+
+/* the assembler's own manifests, indexed by the basename each one PUBLISHES --
+   the full film and every half. Looking a served file up by name is exact;
+   guessing the set from the folder in its URL is what let j2/j3 fall through a
+   silent `return`. */
+const MANIFESTS = {};
+if (fs.existsSync(OUT)) {
+  for (const set of fs.readdirSync(OUT)) {
+    const cj = path.join(OUT, set, 'chapters.json');
+    if (!fs.existsSync(cj)) continue;
+    const man = JSON.parse(fs.readFileSync(cj, 'utf8'));
+    const add = (file, chapters) => {
+      const b = String(file).split('/').pop();
+      if (!b) return;
+      MANIFESTS[b] = { set, chapters: chapters || [] };
+      /* a half is written as `parts/half1.mp4` and PUBLISHED as `l5-half1.mp4`,
+         so it is indexed under both names or Lesson 5 goes unchecked */
+      if (b.indexOf(set + '-') !== 0) MANIFESTS[set + '-' + b] = { set, chapters: chapters || [] };
+    };
+    add(man.file, man.chapters);
+    (man.halves || []).forEach(h => add(h.file, h.chapters));
+    (man.parts || []).forEach(h => add(h.file, h.chapters));
   }
 }
-check(chapterHomes >= 5, 'every chapter-time home in the year was found and checked (' + chapterHomes + ')');
+
+/* AND WHEN THE PLATFORM RENAMED IT ON THE WAY IN. J2 and J3's Lesson 2 films are
+   published as `j2-l2.mp4` while the assembler called them `j2-l2-tutorial.mp4`,
+   so nothing matched by name -- and matching by name is the wrong test anyway.
+   The question is whether the file a pupil is served IS the film those times
+   were measured from, and a hash answers that exactly, where a naming
+   convention only guesses. */
+const PLATFORM_VIDEO = path.join(__dirname, '../../platform/assets/video');
+const sha = (f) => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
+const BY_HASH = {};
+(function indexHashes() {
+  if (!fs.existsSync(OUT)) return;
+  for (const set of fs.readdirSync(OUT)) {
+    const cj = path.join(OUT, set, 'chapters.json');
+    if (!fs.existsSync(cj)) continue;
+    const man = JSON.parse(fs.readFileSync(cj, 'utf8'));
+    const one = (rel, chapters) => {
+      const f = path.join(OUT, set, String(rel));
+      if (!rel || !fs.existsSync(f)) return;
+      BY_HASH[sha(f)] = { set, chapters: chapters || [], asm: String(rel).split('/').pop() };
+    };
+    one(man.file, man.chapters);
+    (man.halves || []).forEach(h => one(h.file, h.chapters));
+  }
+})();
+
+let chapterHomes = 0, chapterChecked = 0;
+for (const year of YEARS) {
+  const dir = path.join(SRC, year, 'lessons');
+  const files = fs.readdirSync(dir).filter(f => /\.json$/.test(f) && !/\.bak/.test(f));
+  for (const f of files) {
+    for (const [label, root] of [['source', SRC], ['packed', PACKED]]) {
+      const p = path.join(root, year + '/lessons/' + f);
+      if (!fs.existsSync(p)) continue;
+      const L = JSON.parse(fs.readFileSync(p, 'utf8'));
+      const homes = [];
+      (L.chunks || []).forEach(c => chapterNodes(c.config || {}, f.replace(/\.json$/, '') + ' › ' + c.id + ' › config', homes));
+      if (!homes.length) continue;
+      if (label === 'source') chapterHomes += homes.length;
+      /* (a) every copy OF THE SAME FILM says the same thing.
+         RE-STAGED 12 Aug 2026 for the DFM 168 split: Lesson 5's film is now
+         served as two halves in two places — the idea at the masterclass chunk,
+         the worked example on the Studio Desk — so its two homes legitimately
+         carry DIFFERENT times. The rule was never "one lesson, one set of
+         numbers"; it is "one FILM, one set of numbers", and the drift it caught
+         (173 against 174) was two copies of the SAME film. Grouping by src keeps
+         exactly that tooth and loses nothing. */
+      const bySrc = {};
+      homes.forEach(h => { (bySrc[String(h.src || '')] = bySrc[String(h.src || '')] || []).push(h); });
+      Object.keys(bySrc).forEach(src => {
+        bySrc[src].slice(1).forEach(h => {
+          check(sameChapters(bySrc[src][0].chapters, h.chapters),
+            label + '/' + f + ': "' + h.path + '" carries the same chapter times as "' + bySrc[src][0].path +
+            '" — one film, one fact (DFM 144)');
+        });
+      });
+      /* (b) and each home says what the assembler measured out of THE FILE IT
+         SERVES — the full film, or the half it points at. A home that agreed
+         with its twin while both were wrong would still jump a pupil to the
+         wrong place, which is why this half is the one with teeth. */
+      homes.forEach(h => {
+        const src = String(h.src || '');
+        if (!/assets\/video\//.test(src)) return;
+        const base = src.split('/').pop();
+        const man = MANIFESTS[base];
+        /* NOT FOUND IS A FAULT, not a shrug. The old code returned quietly when
+           it could not guess the set, which is how two whole years went past. */
+        let found = man, how = base;
+        if (!found) {
+          const served = path.join(PLATFORM_VIDEO, src.replace(/^.*assets\/video\//, ''));
+          if (fs.existsSync(served)) {
+            const hit = BY_HASH[sha(served)];
+            if (hit) { found = hit; how = base + ' (renamed from ' + hit.asm + ', same bytes)'; }
+          }
+        }
+        /* NOT FOUND IS A FAULT, not a shrug. The old code returned quietly when
+           it could not guess the set, which is how two whole years went past. */
+        if (!found) {
+          check(false, label + '/' + f + ': "' + h.path + '" serves ' + base +
+            ', and no assembled film was found -- by name or by bytes -- to check its times against');
+          return;
+        }
+        chapterChecked++;
+        check(sameChapters(found.chapters, h.chapters),
+          label + '/' + f + ': "' + h.path + '" matches the times the assembler measured for ' +
+          how + ' (' + found.chapters.map(c => c.t).join('/') + ')');
+      });
+    }
+  }
+}
+check(chapterHomes >= 5, 'every chapter-time home was found (' + chapterHomes + ' across ' + YEARS.join(', ') + ')');
+check(chapterChecked >= 8, 'and each was checked against a real assembled film (' + chapterChecked + ' checks)');
 
 /* ------------------------------------------------------------------ *
  * 5. A LATER LESSON NEVER BRAND-NAMES AN EARLIER LESSON'S PROJECT

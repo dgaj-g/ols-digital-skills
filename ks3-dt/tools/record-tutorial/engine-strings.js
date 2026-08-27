@@ -23,6 +23,16 @@
  *
  * Usage:  node engine-strings.js            (rewrites ENGINE_STRINGS_DEBT.md)
  *         node engine-strings.js --print    (stdout only)
+ *         node engine-strings.js --check    A RATCHET. Compares today's count
+ *              with the one in the committed file and FAILS if it has risen.
+ *
+ * THE RATCHET (§F5, 27 Aug 2026). An inventory that only reports is an
+ * inventory a busy round walks straight past: this round's own engines added
+ * twelve literals before anyone looked, six of them a second fallback table
+ * that had no business existing. The rule for new work is that every sentence
+ * is content-owned from birth, and the only way that rule holds is if a rise is
+ * a FAILURE and not a diff nobody read. It can only ever go down: whatever the
+ * committed file says is the new ceiling.
  */
 const fs = require('fs');
 const path = require('path');
@@ -135,8 +145,19 @@ const isFallback = (line, at) => {
     /(\|\|\s*\()$/.test(before) ||
     /S\(\s*'[^']+'\s*,\s*$/.test(before) ||
     /S\(\s*"[^"]+"\s*,\s*$/.test(before) ||
+    /\.say(Html)?\(\s*'[^']+'\s*,\s*$/.test(before) ||
+    /\.say(Html)?\(\s*"[^"]+"\s*,\s*$/.test(before) ||
     /\?\s*$/.test(before) && /\|\|/.test(line);
 };
+
+/* PYTHON SOURCE IS NOT A SENTENCE. The pairing engine's probe assembles a few
+   lines of Python to walk `globals()` after a pupil's program runs, and this
+   file read `for _olsk in globals():` as prose a child is expected to
+   understand. The tell is the `_ols` prefix, which exists precisely so nothing
+   a pupil writes can collide with it -- no sentence on any card contains it. It
+   is marked CODE and PRINTED rather than dropped, because an exemption nobody
+   can see is worse than no exemption at all (DFM 213). */
+const isEngineCode = (t) => /_ols[a-z]/.test(t);
 
 let rows = [];
 SOURCES.forEach(file => {
@@ -155,7 +176,8 @@ SOURCES.forEach(file => {
     const col = sp.start - (src.lastIndexOf('\n', sp.start - 1) + 1);
     rows.push({
       file, line: ln, engine: whose(ln - 1), text: t,
-      state: waivedText(t) ? 'WAIVED' : (isFallback(line, col) ? 'MIGRATED' : 'OUTSTANDING')
+      state: waivedText(t) ? 'WAIVED' : isEngineCode(t) ? 'CODE'
+        : (isFallback(line, col) ? 'MIGRATED' : 'OUTSTANDING')
     });
   });
 });
@@ -185,10 +207,12 @@ out.push('counted and printed for ever and is never a to-do (the ruling and its 
 out.push('');
 const totalOut = rows.filter(r => r.state === 'OUTSTANDING').length;
 const totalWaived = rows.filter(r => r.state === 'WAIVED').length;
+const totalCode = rows.filter(r => r.state === 'CODE').length;
 out.push('| | count |');
 out.push('|---|---|');
 out.push('| literals of 4+ words on pupil paths | ' + rows.length + ' |');
-out.push('| MIGRATED (content owns the words) | ' + (rows.length - totalOut - totalWaived) + ' |');
+out.push('| MIGRATED (content owns the words) | ' + (rows.length - totalOut - totalWaived - totalCode) + ' |');
+out.push('| CODE (engine plumbing, not a sentence) | ' + totalCode + ' |');
 out.push('| WAIVED BY HIS RULING (settled, never a to-do) | ' + totalWaived + ' |');
 out.push('| **OUTSTANDING** | **' + totalOut + '** |');
 out.push('');
@@ -218,7 +242,32 @@ order.forEach(eng => {
   out.push('');
 });
 
-if (process.argv.includes('--print')) {
+if (process.argv.includes('--check')) {
+  const prev = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
+  const m = prev.match(/\|\s*\*\*OUTSTANDING\*\*\s*\|\s*\*\*(\d+)\*\*\s*\|/);
+  if (!m) {
+    console.log('FAIL  no committed OUTSTANDING count to ratchet against — run without --check first');
+    process.exit(1);
+  }
+  const ceiling = Number(m[1]);
+  const ok = totalOut <= ceiling;
+  console.log((ok ? 'PASS  ' : 'FAIL  ') + 'engine-string debt ' + totalOut + ' of a ceiling of ' + ceiling +
+    (totalOut < ceiling ? ' (down ' + (ceiling - totalOut) + ' — re-run without --check to lower the ceiling)'
+     : totalOut === ceiling ? ' (held)' : ' — NEW ENGINE SENTENCES. Every string a round adds is content-owned from birth (§F5).'));
+  if (!ok) {
+    /* name them, because "the number went up" is not a thing anyone can act on */
+    /* the committed table truncates a long sentence at 150 characters, so the
+       comparison is made on a prefix -- comparing full text against truncated
+       text reports every long sentence as new, which is a listing nobody can
+       act on */
+    const key = (t) => String(t).replace(/\|/g, '\\|').trim().slice(0, 140);
+    const cur = new Set(rows.filter(r => r.state === 'OUTSTANDING').map(r => key(r.text)));
+    const was = new Set((prev.match(/^\| OUTSTANDING \| `[^`]*` \| (.*) \|$/gm) || [])
+      .map(l => key(l.replace(/^\| OUTSTANDING \| `[^`]*` \| /, '').replace(/ \|$/, ''))));
+    Array.from(cur).filter(t => !was.has(t)).forEach(t => console.log('        NEW: ' + t.slice(0, 130)));
+  }
+  process.exit(ok ? 0 : 1);
+} else if (process.argv.includes('--print')) {
   console.log(out.join('\n'));
 } else {
   fs.writeFileSync(OUT, out.join('\n') + '\n');

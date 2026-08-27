@@ -1,0 +1,251 @@
+{
+ "id": "j3-03.deck",
+ "lesson": "j3-03",
+ "driveFileId": "",
+ "year": "j3",
+ "deckName": "KS3 DT · J3 Lesson 3 — Playlist Engine (Teacher Deck)",
+ "theme": {
+  "id": "control-room",
+  "name": "The Control Room",
+  "ground": "#08090F",
+  "panel": "#14161F",
+  "accent": "#5AA9FF",
+  "accent2": "#FF6EC7",
+  "text": "#FFFFFF",
+  "dim": "#B9C2D6",
+  "display": "IBM Plex Mono",
+  "body": "Inter"
+ },
+ "sections": [
+  {
+   "id": "opening",
+   "slides": [
+    {
+     "kind": "title",
+     "bg": "title",
+     "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+     "heading": "Lesson 3 · Playlist Engine",
+     "sub": "One name. A whole set of things. — J3 · Lesson 3 of 17",
+     "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link from Google Classroom. The lesson opens on the Do-Now — questions from the last two lessons that mark themselves as each pupil answers them. Nothing in it is graded and nothing about it is shown to the class.\n\nSAY: \"Log in, open the class link, and work through the warm-up on your own screen. When it hands you over to today's first card, stop and look up.\"\n\nWHY: it is revision, and it gives you a settled room to take the register in.\n\nWHEN TO MOVE: when most of the room is on today's first card, stop everybody, eyes front, and go on."
+    },
+    {
+     "kind": "objectives",
+     "bg": "section",
+     "heading": "In this lesson you will…",
+     "bullets": [
+      "Keep a whole set of things under one name.",
+      "Take one out, count them, add one on the end, and put them in order.",
+      "Say what a line of Python is going to print BEFORE it runs.",
+      "Write the program that runs a playlist, from nothing."
+     ],
+     "notes": "SAY these as written. The third one is the odd one out and it is deliberate: predicting is a skill in its own right, and the Match is fifteen minutes of practising it.\n\nWHY IT MATTERS: up to now one name has held one thing. Today one name holds twenty. Almost everything they will ever write afterwards depends on that.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "The one new idea today",
+     "bullets": [
+      "A name can hold a whole set of things at once, in order.",
+      "The places are numbered, and the numbering starts at 0.",
+      "You can take one out, count them, add one on, and sort them.",
+      "Everything else about writing Python is what you already do."
+     ],
+     "notes": "SAY it as written. The 0 is worth saying twice — it is the single thing this hour goes wrong on, and the film spends a whole part on it.\n\nDO NOT call it a list yet if you can help it. The film builds the picture first — a rack of numbered boxes — and the word lands better after the picture.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "How the hour is laid out",
+     "bullets": [
+      "A short film, then straight into the Match against a partner.",
+      "A second short film, then three builds.",
+      "Then twelve minutes writing the playlist engine — no pieces, you type it.",
+      "Two short screens at the end."
+     ],
+     "notes": "SAY it as written. The Match coming early is unusual and worth flagging, because a room that expects to build first will be thrown by it.\n\nWHY THE MATCH IS EARLY: it is fifteen minutes of reading Python closely, against somebody. Everything they build afterwards is easier for having done it.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "Two things before we start",
+     "bullets": [
+      "No music plays today. Nothing here makes a sound.",
+      "The playlist is a set of song names in a program — that is all.",
+      "In the Match you are guessing what Python will print, not racing.",
+      "Getting one wrong costs you nothing. There is no penalty anywhere in it."
+     ],
+     "notes": "SAY the first two now, before anybody asks. Every class asks whether real music plays, and the answer landing early saves you three interruptions later.\n\nSAY: \"The Match is not a race. You are working out what a line of Python is going to print, and you get as long as you need.\"\n\nWHEN TO MOVE: on to the film slide, then let them go."
+    }
+   ]
+  },
+  {
+   "id": "filma",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "The first film — on your own screen",
+     "bullets": [
+      "It plays on your own computer, not on the board.",
+      "No sound, so every word you need is written on the screen.",
+      "Four parts, and the buttons underneath jump to any part.",
+      "About three and a half minutes."
+     ],
+     "notes": "WHERE THE CLASS IS: about to start the first film on their own machines.\n\nSAY: \"On your screen, not mine. No sound at all. About three and a half minutes, four parts, and the buttons underneath let you go back to any of them.\"\n\nDO NOT play it on the board — it is written to be read at each pupil's own pace.\n\nWHILE IT RUNS: walk the room and check everybody is on it. You will want the room together for the next slide.\n\nWHEN TO MOVE: when most of the room is past it. Pull the stragglers up — the Match needs everybody at once."
+    }
+   ]
+  },
+  {
+   "id": "match",
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "1",
+     "heading": "STOP — eyes front · The Match",
+     "bullets": [
+      "You are about to be given a partner. The website chooses.",
+      "You are not told who they are, and they are not told who you are.",
+      "You each get a call sign — Director 3, Editor 5 — and that is what you are.",
+      "Six rounds. You both say what a line of Python will print.",
+      "You both commit first, THEN you see each other's. Nobody copies."
+     ],
+     "notes": "WHERE THE CLASS IS: first film finished, eyes front, everybody together. THIS SLIDE IS THE ONE TO SLOW DOWN ON, especially the first time you run a paired activity.\n\nSAY: \"In a moment the website pairs you with somebody else in this room. You do not choose and I do not choose — it pairs whoever is ready at the same time.\"\n\nTHEN SAY: \"You are not told who your partner is and they are not told who you are. You get a call sign instead — Director 3, Editor 5, and so on. The screen tells you yours.\"\n\nTHEN SAY, and this is the part that makes it work: \"You will both see the same line of Python. You each say what you think it prints. Neither of you sees the other's answer until you have BOTH said yours. So there is no point waiting to see what they put.\"\n\nTHEN SAY: \"Then the line actually runs, and you both find out.\"\n\nTWO OF THE SIX ROUNDS ARE DIFFERENT: on those, neither of you is given options — you type what you think it prints. The screen tells you when one of those is coming. Say so; a pupil who expects buttons and gets a typing box wastes half a minute working it out.\n\nIF THE CLASS IS AN ODD NUMBER: the website holds the last three and puts them in one group of three. You do not have to do anything.\n\nIF SOMEBODY IS STILL WAITING: they are not stuck — there is something to read while they wait — and you can release them to work alone from the Live tab with Solo run. Use it for a pupil genuinely stranded, not one who has waited forty seconds.\n\nWHEN TO MOVE: next slide, then send them in."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "What the Match looks like",
+     "bullets": [
+      "The line of Python is in the middle. Your call sign is at the top.",
+      "You choose or type what it prints, then press to commit.",
+      "It waits until you have both committed. Then both answers appear.",
+      "Then it RUNS the line, for real, and you see what it actually printed."
+     ],
+     "notes": "SAY it with the picture up.\n\nTHE ONE TO STRESS: the reveal is the line really running. It is not a stored answer and it is not marking — the class is watching Python do it.\n\nIF A PAIR DISAGREES AND BOTH ARE WRONG: that is the best thing that can happen and it is worth saying so. Nothing is deducted.\n\nWHAT YOU CAN SEE: on the Live tab, the Pairing panel shows who is paired with whom, by call sign with real names in brackets, and Channel opens what a pair has sent each other.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes."
+    }
+   ]
+  },
+  {
+   "id": "filmb",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "The second film",
+     "bullets": [
+      "Again on your own screen, again no sound.",
+      "It picks up exactly where the Match left off.",
+      "Three parts. About three and a half minutes.",
+      "It includes the one that caught nearly everybody."
+     ],
+     "notes": "WHERE THE CLASS IS: Match finished. Some pairs will be talking about the round that caught them — let that run for fifteen seconds, it is the point of the activity.\n\nSAY: \"Second film, same as the first: your screen, no sound, about three and a half minutes. It carries straight on from the Match, and it explains the one that caught most of the room.\"\n\nWHEN TO MOVE: when most of the room is past it."
+    }
+   ]
+  },
+  {
+   "id": "bench",
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "2",
+     "heading": "STOP — eyes front · The three builds",
+     "bullets": [
+      "Three builds, and they get harder.",
+      "The first is written for you: read it and run it.",
+      "The second is in pieces and you put it in order.",
+      "The third is the one that carries the badge.",
+      "All three RUN. If one stops, read the plain line under the red."
+     ],
+     "notes": "WHERE THE CLASS IS: second film finished, eyes front. One minute here saves you ten walking the room.\n\nSAY: \"Three builds. The first is already written — read it and run it. The second is in pieces. The third is yours to work out and it is the one that carries the badge.\"\n\nDO NOT walk anybody through the third from the front.\n\nSAY ABOUT ERRORS: \"When a program stops, Python puts up a red message and there is a plain English line underneath it. Read that line first.\"\n\nWHEN TO MOVE: next slide, then send them in."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "What a build screen looks like",
+     "bullets": [
+      "The program is on the left. The console is on the right.",
+      "RUN is at the bottom. Nothing happens until it is pressed.",
+      "The pieces in the second build are shuffled every time.",
+      "So the order you see them in is never the order they go in."
+     ],
+     "notes": "SAY it with the picture up, pointing at each part.\n\nTHE ONE TO STRESS: the pieces are shuffled every single time, for every pupil. Two pupils sitting together do not have the same starting order, so copying the shape off a neighbour's screen does not work — and that is worth saying out loud, kindly, once.\n\nWHEN TO MOVE: send them in."
+    }
+   ]
+  },
+  {
+   "id": "engine",
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "3",
+     "heading": "STOP — eyes front · The engine",
+     "bullets": [
+      "Twelve minutes. You type this one — there are no pieces to drag.",
+      "It has to make a playlist, add to it, count it, and print it in order.",
+      "The checklist beside it says what is still missing.",
+      "It only ticks after you RUN. The checklist watches your program work."
+     ],
+     "notes": "WHERE THE CLASS IS: the three builds finished, eyes front. This is the biggest block of the hour and the hardest, and the room needs to know what finished looks like.\n\nSAY: \"Twelve minutes and you are typing this one from scratch. No pieces to drag. Four things it has to do, and the checklist beside the box tells you which ones you have done.\"\n\nTHEN SAY: \"The checklist does not read your program. It runs it and watches what it does. So if you have written the right thing and it still says NOT YET — have you pressed RUN since you changed it?\"\n\nTHAT ONE SENTENCE answers most of what you will be asked in the next twelve minutes.\n\nWHEN TO MOVE: next slide, then walk the room."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "The editor, and what to do when it will not go",
+     "bullets": [
+      "You type into the box. It has line numbers, like real Python.",
+      "Tab moves you four spaces in — that is how lines go inside a loop.",
+      "The checklist is under it. It ticks as your program earns each one.",
+      "Stuck? The help on the card is free and costs you nothing."
+     ],
+     "notes": "SAY it with the picture up.\n\nABOUT THE HELP: everything on that card is free — no points are taken for opening any of it, and nobody is shown who used it. Say that plainly. A pupil who thinks help costs her something will sit and do nothing instead, which costs her more.\n\nABOUT INDENTING: Tab puts four spaces in. Pupils who have only ever dragged blocks have never had to indent anything, and this is the first hour they meet it.\n\nWHEN TO MOVE: send them in."
+    }
+   ]
+  },
+  {
+   "id": "finishing",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "The last three screens",
+     "bullets": [
+      "Two quick questions about lists. These ARE marked.",
+      "Then one short program to put back in order — also marked.",
+      "You are told how you did at the very end, not as you go.",
+      "Then How did it go? Nobody leaves without finishing it."
+     ],
+     "notes": "SAY: \"Two questions and one short ordering job. They are marked, and you find out at the end of them rather than in the middle.\"\n\nABOUT THE PRIVATE LINE in How did it go?: it goes to you and to nobody else.\n\nEXTRA JOBS: anyone finished early can open the extra jobs from the engine's closing card. They carry no points at all and they are open to everybody. Say so, or a pupil who thinks she is missing marks will rush what matters.\n\nWHEN TO MOVE: straight on to the closer."
+    }
+   ]
+  },
+  {
+   "id": "closer",
+   "slides": [
+    {
+     "kind": "closer",
+     "bg": "closer",
+     "heading": "Before you leave",
+     "sub": "See you in a fortnight.",
+     "bullets": [
+      "Finish How did it go? Nobody leaves without it.",
+      "Sign out every time. Anything the next person does looks like you.",
+      "Your playlist engine is saved. It will still be there next lesson."
+     ],
+     "notes": "SAY the sign-out line every lesson without exception. On shared C2k machines it is the single habit that matters most.\n\nSAY: \"Your engine is saved. You do not need to write it down or email it to yourself.\"\n\nLAST THING: if the Match went well, say so. It is the first time these pupils have worked against a partner they could not see, and a sentence about how they handled it makes the next one easier to run."
+    }
+   ]
+  }
+ ]
+}

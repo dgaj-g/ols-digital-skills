@@ -1,0 +1,1089 @@
+{
+ "id": "j2-03",
+ "year": "j2",
+ "num": 3,
+ "title": "Chatbot Workshop",
+ "tagline": "You write a program that asks a question, waits for the answer, and uses what was typed.",
+ "mode": "taught",
+ "durationMin": 60,
+ "objectives": [
+  "Write a line that asks a question and keeps the answer in a variable.",
+  "Use what somebody typed in what my program says back to them.",
+  "Read what Python says when it stops, and work out which line to change."
+ ],
+ "chunks": [
+  {
+   "id": "workshop",
+   "engine": "briefing",
+   "title": "The Chatbot Workshop",
+   "minutes": 4,
+   "config": {
+    "clearance": "J2 · LESSON 3 OF 17",
+    "headline": "Today your program talks back.",
+    "lines": [
+     "Every program you have run in here does exactly the same thing every time you press RUN. Today's does not. Today you build a chatbot.",
+     "A chatbot is a program that asks the person at the keyboard a question, waits for them to type an answer, and then uses what they typed in what it says next.",
+     "It is not clever and it is not alive. It follows a list of instructions somebody typed, in the same order, every single time. That list does three jobs over and over: ask a question, keep the answer in a variable, then print a reply that uses what is in the variable.",
+     "You met variables last lesson. A variable is a name with an = after it, and whatever you put on the right of the = is kept in it. Today the thing you keep is whatever the person typed.",
+     "One thing worth knowing before you start. Whatever somebody types is kept as WORDS, every single time, even if they type a number. That is why you can join it straight onto a sentence with a +.",
+     "Here is a small one running. Watch it once before you build your own.",
+     "Here is the hour, in order.",
+     "First a short film with no sound, then three training builds where the bot gets less and less finished for you.",
+     "Then twelve minutes on your own bot, with two questions you pick yourself.",
+     "Then the Chatbot Swap. Somebody else in this room, at another computer, gets your bot and tries to break it, and you get theirs. You will each write the other a short report about it.",
+     "You are not told who your partner is until the very end. You each get a call sign instead — a made-up name, like Spanner 7 — and that is the name on their screen and yours.",
+     "It finishes with one marked question and a screen that asks you how the hour went."
+    ],
+    "demoTitle": "A chatbot, running",
+    "demoStepMs": 1500,
+    "demo": [
+     {
+      "who": "bot",
+      "label": "The bot",
+      "text": "Hello. I am a chatbot. What is your first name?"
+     },
+     {
+      "who": "you",
+      "label": "The person typing",
+      "text": "Sorcha"
+     },
+     {
+      "who": "bot",
+      "label": "The bot",
+      "text": "Nice to meet you, Sorcha."
+     },
+     {
+      "who": "bot",
+      "label": "The bot",
+      "text": "What did you have for breakfast, Sorcha?"
+     },
+     {
+      "who": "you",
+      "label": "The person typing",
+      "text": "Toast"
+     },
+     {
+      "who": "bot",
+      "label": "The bot",
+      "text": "Toast is a good shout, Sorcha."
+     },
+     {
+      "who": "bot",
+      "label": "The bot",
+      "text": "Verdict: Sorcha likes toast, so Sorcha is alright by me."
+     }
+    ],
+    "demoNote": "Nothing in there is clever. Somebody typed those sentences, and typed the two places where the answers go. In an hour you will have typed both.",
+    "cta": "Start the film",
+    "help": "This card types itself out, and a small chatbot runs at the bottom of it. Read it through — your teacher may be reading it with the class — then click the button at the bottom. Nothing on this screen is marked."
+   }
+  },
+  {
+   "id": "film-a",
+   "engine": "video",
+   "title": "How a program waits for you (the film)",
+   "minutes": 5,
+   "config": {
+    "src": "assets/video/j2/j2-l3-a.mp4",
+    "intro": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is in three parts, and you can click the buttons underneath to jump to any part while you are on this screen.",
+    "fallback": "If the film will not play, carry on — everything it shows is on the cards that come next, in writing. Tell whoever is in the room that the film would not play.",
+    "chapters": [
+     {
+      "t": 0,
+      "label": "What a chatbot really is"
+     },
+     {
+      "t": 66,
+      "label": "The program stops and waits"
+     },
+     {
+      "t": 143,
+      "label": "Reading the whole program"
+     }
+    ],
+    "help": "Press play, or click one of the part buttons underneath the film to jump to that part. Everything the film shows is written again on the cards that follow, so you do not need to come back to it. Nothing here is marked."
+   }
+  },
+  {
+   "id": "training-1",
+   "engine": "pyrun",
+   "title": "Training build 1: the greeting",
+   "minutes": 8,
+   "config": {
+    "mode": "worked",
+    "kicker": "Training build 1",
+    "title": "A bot that says hello",
+    "intro": "Every chatbot on the planet is built out of the same three jobs, one after the other: ask, keep, reply. This first bot does each of them exactly once, so you can see all three at the same time.\n\nThe bot on this card is not finished. There is a real mistake in it, put there on purpose. You will press RUN, Python will tell you what is wrong, and you will put it right.",
+    "beginLabel": "Pick a style",
+    "runLabel": "RUN this bot",
+    "continueLabel": "Continue",
+    "nextBuildLabel": "Next build",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT YET",
+    "matchedSay": "That is a working chatbot. It asked, it kept your answer, and it used your answer in what it said back.",
+    "notYetSay": "Not yet. Read the console underneath: the real message from Python is there, and one line in plain words under it says what to look at.",
+    "blankEmptySay": "One of the boxes on the program is empty. Type something into it, then press RUN again.",
+    "progLabel": "The bot's program",
+    "shapeLabel": "Show me the shape",
+    "shapeKicker": "The shape",
+    "shapeTitle": "Ask, keep, reply",
+    "shapeLead": "Every chatbot in this lesson is these three jobs, in this order. The words change; the shape does not.",
+    "shapeClose": "Back to my bot",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "chatLabels": {
+     "title": "The conversation",
+     "idle": "Nothing has been said yet. Press RUN to start the conversation.",
+     "botWho": "The bot",
+     "userWho": "You",
+     "replyLabel": "Your reply",
+     "sendLabel": "Send"
+    },
+    "errorWords": {
+     "name": "Python does not know a box with that name. Check the spelling on this line matches the box name you made further up.",
+     "type": "You have joined a number onto words with a +. Put str( ) around the number first, so the + has words on both sides.",
+     "badinput": "Python could not read that line at all. Check the speech marks come in pairs, the brackets come in pairs, and the line starts at the left with no spaces in front of it.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines are not lined up with each other. Every line in this program starts at the left, with nothing in front of it.",
+     "timelimit": "That program was still going after a few seconds, so it was stopped. Something in it is repeating and never finishing.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "sendLabel": "Send",
+    "help": "This bot has three lines and one mistake. Choose a style, press RUN, and answer the bot's question in the box that appears. When Python stops, read the message in the console and the plain line under it, then change the wrong word on the program and press RUN again. Show me the shape tells you the three jobs a chatbot does, and never gives you the answer.",
+    "builds": [
+     {
+      "id": "t1",
+      "mode": "worked",
+      "goalLine": "Make this bot say hello, ask your name, and greet you by it.",
+      "brief": "Pick the style you want, then press RUN. Something in this bot is spelled wrong on purpose — Python will tell you where.",
+      "styleKicker": "Pick a style",
+      "styleTitle": "Which bot do you want to fix?",
+      "styleLead": "Both bots do exactly the same three jobs. They just say them differently. Pick the one you like.",
+      "styles": [
+       {
+        "name": "The Butler",
+        "whiff": "Very polite. Speaks in full sentences and never raises its voice.",
+        "chosenSay": "You picked **The Butler**. Its three lines are below.",
+        "lines": [
+         {
+          "t": "print(\"Good afternoon.\")"
+         },
+         {
+          "t": "____ = input(\"And what may I call you?\")",
+          "blanks": [
+           {
+            "key": "t1a",
+            "slot": "____",
+            "pre": "naem",
+            "size": 8,
+            "max": 16,
+            "label": "the name of the box the answer goes into"
+           }
+          ]
+         },
+         {
+          "t": "print(\"A pleasure, \" + name + \". Do sit down.\")"
+         }
+        ]
+       },
+       {
+        "name": "The Best Friend",
+        "whiff": "Delighted you turned up. Shouts a bit.",
+        "chosenSay": "You picked **The Best Friend**. Its three lines are below.",
+        "lines": [
+         {
+          "t": "print(\"HIYA! You are here!\")"
+         },
+         {
+          "t": "____ = input(\"Right, what is your name?\")",
+          "blanks": [
+           {
+            "key": "t1a",
+            "slot": "____",
+            "pre": "naem",
+            "size": 8,
+            "max": 16,
+            "label": "the name of the box the answer goes into"
+           }
+          ]
+         },
+         {
+          "t": "print(\"NO WAY, \" + name + \"! Brilliant to see you!\")"
+         }
+        ]
+       }
+      ],
+      "shape": [
+       "print( a greeting )",
+       "<box name> = input( a question )",
+       "print( a reply that uses <box name> )"
+      ],
+      "shapeNote": "input( ) is the new word today. It puts a question on the screen and then STOPS the program until somebody types an answer.",
+      "check": {
+       "kind": "clean",
+       "usesReplies": true
+      },
+      "matchedSay": "That is it. The box on line 2 and the box on line 3 now have the same name, so line 3 can find what you typed.",
+      "notYetSay": "Not yet. Read what Python said in the console, then look at the box name on line 2 and the box name on line 3."
+     }
+    ],
+    "waitingSay": "Your bot has stopped and is waiting for you to type an answer. The box is just above this button. RUN wakes up again as soon as the bot has finished."
+   }
+  },
+  {
+   "id": "training-2",
+   "engine": "parsons",
+   "title": "Training build 2: put it in order",
+   "minutes": 6,
+   "config": {
+    "intro": "You get the four lines of a working bot, out of order. Put them in the order that makes this happen: the bot says hello, asks what your favourite food is, replies using what you typed, and then signs off.\n\nClick a line on the left to move it across, or drag it. You get one go, and you are shown the working order afterwards either way.",
+    "item": {
+     "id": "j2t2-echo",
+     "prompt": "A working bot greets the person, asks one question, uses the answer in its reply, and then says one last line that uses no answer at all.",
+     "blocks": [
+      "print(\"Your answer is safe with me.\")",
+      "food = input(\"What is your favourite food?\")",
+      "print(\"Nice. I like \" + food + \" too.\")",
+      "print(\"Hello. Answer one question for me.\")"
+     ]
+    },
+    "doneText": "Correct. Ask, keep, reply — and nothing can use an answer before it has been given.",
+    "help": "Click a line on the left to move it into Your program, or drag it across. Click a line in Your program to send it back. Press Check my program when you are sure. You get one go, and the working order is shown to you afterwards whether you were right or not."
+   }
+  },
+  {
+   "id": "training-3",
+   "engine": "pyrun",
+   "title": "Training build 3: fill the gaps",
+   "minutes": 6,
+   "badge": {
+    "id": "j2-b7",
+    "name": "Bench Trained",
+    "icon": "assets/badges/bolt.png",
+    "xp": 14
+   },
+   "config": {
+    "kicker": "Training build 3",
+    "title": "Now you write the words",
+    "intro": "Two short bots, and this time the sentences are yours. The lines are on the left, out of order, and some of them do not belong. Move the ones you want across, then type into the gaps.\n\nNothing is typed for you and nothing is corrected for you. Press RUN and see what really happens.",
+    "beginLabel": "Open the bench",
+    "runLabel": "RUN my bot",
+    "howLine": "Move the lines you need into **Your program**, put them in the right order, then type into every gap.",
+    "trayLabel": "The lines",
+    "progLabel": "Your program",
+    "trayEmpty": "Every line has been moved across.",
+    "progEmpty": "Nothing here yet — click or drag a line across from The lines.",
+    "lockedNote": "RUN wakes up as soon as there is at least one line in Your program.",
+    "blankEmptySay": "One of the gaps is still empty. Type something into it, then press RUN again.",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT YET",
+    "matchedSay": "That works. Your bot asked, kept the answer, and used it.",
+    "notYetSay": "Not yet. Read the console: the real message from Python is there, and one plain line under it says what to look at.",
+    "continueLabel": "Continue",
+    "nextBuildLabel": "Next build",
+    "shapeLabel": "Show me the shape",
+    "shapeKicker": "The shape",
+    "shapeTitle": "Ask, keep, reply",
+    "shapeClose": "Back to my bot",
+    "shapeLead": "The same three jobs as the first two builds. Only the words are different.",
+    "firstTryXp": 4,
+    "firstTryXpCap": 8,
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "chatLabels": {
+     "title": "The conversation",
+     "idle": "Nothing has been said yet. Press RUN to start the conversation.",
+     "botWho": "The bot",
+     "userWho": "You",
+     "replyLabel": "Your reply",
+     "sendLabel": "Send"
+    },
+    "errorWords": {
+     "name": "Python does not know a box with that name. Check the spelling on this line matches the box name you made further up.",
+     "type": "You have joined a number onto words with a +. Put str( ) around the number first, so the + has words on both sides.",
+     "badinput": "Python could not read that line at all. Check the speech marks come in pairs, the brackets come in pairs, and the line starts at the left with no spaces in front of it.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines are not lined up with each other. Every line in this program starts at the left, with nothing in front of it.",
+     "timelimit": "That program was still going after a few seconds, so it was stopped. Something in it is repeating and never finishing.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "sendLabel": "Send",
+    "help": "Move lines from The lines into Your program by clicking or dragging them. Not every line belongs — some of them are real mistakes people make. Type into every gap, then press RUN and answer the bot in the box that appears. Show me the shape reminds you of the three jobs; it never gives you the answer. Getting a build right first time is worth more points.",
+    "builds": [
+     {
+      "id": "t3a",
+      "chat": true,
+      "check": {
+       "kind": "clean",
+       "usesReplies": true
+      },
+      "goalLine": "Build a bot that asks a question of your own and uses the answer in its reply.",
+      "brief": "Four of these six lines make a working bot. Two of them are real mistakes: one keeps the QUESTION in the box instead of the answer, and one asks the question but keeps nothing at all. Read them, then leave them where they are.",
+      "lines": [
+       {
+        "t": "print(\"Bench bot, ready.\")"
+       },
+       {
+        "t": "____ = input(\"____\")",
+        "blanks": [
+         {
+          "key": "t3a_box",
+          "slot": "____",
+          "size": 8,
+          "max": 16,
+          "ph": "",
+          "label": "a name for the box the answer goes into"
+         },
+         {
+          "key": "t3a_q",
+          "slot": "____",
+          "size": 30,
+          "max": 56,
+          "ph": "",
+          "label": "the question the bot asks — write your own"
+         }
+        ]
+       },
+       {
+        "t": "print(\"Nice one. \" + ____ + \" it is.\")",
+        "blanks": [
+         {
+          "key": "t3a_box2",
+          "slot": "____",
+          "size": 8,
+          "max": 16,
+          "ph": "",
+          "label": "the same box name as line 2"
+         }
+        ]
+       },
+       {
+        "t": "print(\"That is me finished.\")"
+       },
+       {
+        "t": "colour = \"What is your favourite colour?\""
+       },
+       {
+        "t": "input(\"What is your favourite colour?\")"
+       }
+      ],
+      "shape": [
+       "print( a greeting )",
+       "<box name> = input( a question )",
+       "print( a reply that uses <box name> )"
+      ],
+      "matchedSay": "Working. You wrote the question and the reply yourself.",
+      "notYetSay": "Not yet. Read the console. If the bot never asked you anything, the input( ) line is not in your program. If Python does not know a name, the two box names are not spelled the same."
+     },
+     {
+      "id": "t3b",
+      "chat": true,
+      "check": {
+       "kind": "clean",
+       "usesReplies": true
+      },
+      "goalLine": "Build a bot that asks your name once and uses it TWICE.",
+      "brief": "Three of these five lines make a working bot. One of the other two puts the WORD name on the screen instead of what you typed, and one spells the box with a capital letter, which Python treats as a different box altogether.",
+      "lines": [
+       {
+        "t": "name = input(\"What is your first name?\")"
+       },
+       {
+        "t": "print(\"Hello \" + ____ + \".\")",
+        "blanks": [
+         {
+          "key": "t3b1",
+          "slot": "____",
+          "size": 8,
+          "max": 16,
+          "ph": "",
+          "label": "the box you filled on line 1"
+         }
+        ]
+       },
+       {
+        "t": "print(\"I will not forget that, \" + ____ + \".\")",
+        "blanks": [
+         {
+          "key": "t3b2",
+          "slot": "____",
+          "size": 8,
+          "max": 16,
+          "ph": "",
+          "label": "the same box again"
+         }
+        ]
+       },
+       {
+        "t": "print(\"Hello \" + \"name\" + \".\")"
+       },
+       {
+        "t": "print(\"Hello \" + Name + \".\")"
+       }
+      ],
+      "shape": [
+       "<box name> = input( a question )",
+       "print( something + <box name> )",
+       "print( something else + <box name> )"
+      ],
+      "shapeNote": "Using a box twice does not empty it. It keeps what is in it until the program ends.",
+      "matchedSay": "That is the point of a box with a name: once it is filled you can use it as often as you like.",
+      "notYetSay": "Not yet. Read the console. If Python says it does not know a name, check the spelling in the gaps against line 1."
+     }
+    ],
+    "waitingSay": "Your bot has stopped and is waiting for you to type an answer. The box is just above this button. RUN wakes up again as soon as the bot has finished."
+   }
+  },
+  {
+   "id": "mybot",
+   "engine": "pyrun",
+   "title": "Your bot",
+   "minutes": 12,
+   "badge": {
+    "id": "j2-b8",
+    "name": "Bot Builder",
+    "icon": "assets/badges/id.png",
+    "xp": 16
+   },
+   "config": {
+    "mode": "editor",
+    "kicker": "Your bot",
+    "title": "Twelve minutes, one bot, all your own words",
+    "intro": "You have written three bots between you and the bench. This one is yours: you choose what it asks, and you write every word it says.\n\nWatch the two-minute film on this card first. It shows the two things people get stuck on — picking questions that are easy to answer, and writing a last line that uses both answers at once.",
+    "introVideo": "assets/video/j2/j2-l3-b.mp4",
+    "introVideoSay": "No sound. Two minutes. It builds a bot on a topic nobody in this room is using, so nothing in it is your answer.",
+    "beginLabel": "Open the editor",
+    "runLabel": "RUN my bot",
+    "continueLabel": "Continue",
+    "checklistLabel": "What your bot has to do",
+    "paletteLabel": "Ready-made lines",
+    "paletteLead": "Click a line and it lands in your program where the flashing bar is. Then change the words to yours.",
+    "firstInsertSay": "**That line is now in your program.** Everything between the speech marks is yours to change — click into it and type over it.",
+    "starterSay": "Not sure where to start? This puts the whole shape in for you, with the words still to write.",
+    "starterLabel": "Put the shape in for me",
+    "starterDoneSay": "It is in. Now change every sentence between the speech marks into your own words.",
+    "emptySay": "Your program is empty, so there is nothing to run. Click a ready-made line, or use Put the shape in for me.",
+    "matchedLabel": "ALL FOUR",
+    "notYetLabel": "NOT YET",
+    "pendingLabel": "not checked yet",
+    "matchedSay": "That is a working chatbot, and every word in it is yours. Somebody else in this room is about to try it.",
+    "notYetSay": "Not all three yet. The list beside your program says which ones are there. Read the console for anything Python could not do.",
+    "shapeLabel": "Show me the shape",
+    "shapeKicker": "The shape",
+    "shapeTitle": "A two-question bot",
+    "shapeClose": "Back to my bot",
+    "shapeLead": "This is the shape, with nothing filled in. Your words go in the gaps.",
+    "featureXp": 3,
+    "featureXpCap": 8,
+    "editor": {
+     "title": "Your bot",
+     "aria": "Type your chatbot program here",
+     "lineWord": "line",
+     "linesWord": "lines"
+    },
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "chatLabels": {
+     "title": "The conversation",
+     "idle": "Nothing has been said yet. Press RUN to start the conversation.",
+     "botWho": "The bot",
+     "userWho": "You",
+     "replyLabel": "Your reply",
+     "sendLabel": "Send"
+    },
+    "errorWords": {
+     "name": "Python does not know a box with that name. Check the spelling on this line matches the box name you made further up.",
+     "type": "You have joined a number onto words with a +. Put str( ) around the number first, so the + has words on both sides.",
+     "badinput": "Python could not read that line at all. Check the speech marks come in pairs, the brackets come in pairs, and the line starts at the left with no spaces in front of it.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines are not lined up with each other. Every line in this program starts at the left, with nothing in front of it.",
+     "timelimit": "That program was still going after a few seconds, so it was stopped. Something in it is repeating and never finishing.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "sendLabel": "Send",
+    "probeAnswers": [
+     "QQTESTONE",
+     "QQTESTTWO"
+    ],
+    "offerKicker": "One more, if you want it",
+    "offerFree": "This one is worth **no extra points**. It is here for anyone with time left over, and you can stop after it at any moment.",
+    "offerYes": "Yes, give me the extra one",
+    "offerNo": "No thanks, finish this part",
+    "stopLabel": "Nearly time up? Click here to finish the rest of the lesson.",
+    "help": "Type your program in the black box. The list on the right says the three things your bot has to do, and it fills in every time you press RUN. Click a ready-made line to drop it in, then change the words to yours. Press RUN and answer your own bot in the box that appears. Nothing is corrected for you: read the console if Python stops.",
+    "builds": [
+     {
+      "id": "mybot",
+      "saveAs": "l3bot",
+      "mode": "editor",
+      "goalLine": "Write a chatbot that asks TWO questions and uses both answers.",
+      "brief": "Pick two things you could ask anybody in this room and get an answer to straight away — a favourite food, a team, a subject, a film. Nothing that needs thinking about. Somebody else is going to answer these in about ten minutes. Whatever they type comes back as words, so it joins onto your sentences with a + and nothing else is needed.",
+      "palette": [
+       {
+        "label": "Say something",
+        "line": "print(\"Say something here.\")"
+       },
+       {
+        "label": "Ask a question and keep the answer",
+        "line": "answer1 = input(\"Ask your question here.\")"
+       },
+       {
+        "label": "Ask a second question and keep that answer",
+        "line": "answer2 = input(\"Ask your second question here.\")"
+       },
+       {
+        "label": "Reply using an answer",
+        "line": "print(\"Reply here, \" + answer1 + \", more here.\")"
+       },
+       {
+        "label": "Reply using the other answer",
+        "line": "print(\"Reply here, \" + answer2 + \", more here.\")"
+       },
+       {
+        "label": "A verdict that uses BOTH answers",
+        "line": "print(\"Verdict: \" + answer1 + \" and \" + answer2 + \" — that is a good pair.\")"
+       }
+      ],
+      "starter": [
+       "print(\"Hello. I am your bot. Two questions.\")",
+       "answer1 = input(\"Ask your question here.\")",
+       "print(\"Reply here, \" + answer1 + \", more here.\")",
+       "answer2 = input(\"Ask your second question here.\")",
+       "print(\"Reply here, \" + answer2 + \", more here.\")",
+       "print(\"Verdict: \" + answer1 + \" and \" + answer2 + \" — that is a good pair.\")"
+      ],
+      "editor": {
+       "title": "Your bot",
+       "aria": "Type your chatbot program here"
+      },
+      "features": [
+       {
+        "id": "asks",
+        "probe": "inputs",
+        "min": 2,
+        "label": "It asks TWO questions and waits for both answers.",
+        "nudge": "Look for two lines with input( ) in them. There is only one so far."
+       },
+       {
+        "id": "stores",
+        "probe": "echoes",
+        "label": "Both answers come back out in what the bot says.",
+        "nudge": "One of your answers never appears in the printing. Look at which box each print line is using."
+       },
+       {
+        "id": "verdict",
+        "probe": "joins",
+        "label": "One line at the end uses BOTH answers at once.",
+        "nudge": "Look at your last print line. It has to have both box names in it, joined on with +."
+       }
+      ],
+      "shape": [
+       "print( a greeting )",
+       "<box 1> = input( question one )",
+       "print( a reply using <box 1> )",
+       "<box 2> = input( question two )",
+       "print( a reply using <box 2> )",
+       "print( a verdict using <box 1> AND <box 2> )"
+      ],
+      "matchedSay": "Working, and every word yours. Keep it as it is — the next screen hands it to somebody else.",
+      "notYetSay": "Not all of them yet. The list on the right says which. Read the console for anything Python could not do.",
+      "chat": true
+     },
+     {
+      "id": "mybot-x",
+      "mode": "editor",
+      "optional": true,
+      "saveAs": "l3bot",
+      "offerTitle": "A third question, and a longer verdict",
+      "offerLead": "Your bot works. If you have time, add a THIRD question and make the verdict use all three answers in one sentence. It is the same three jobs one more time.",
+      "goalLine": "Add a third question, and a verdict that uses all three answers.",
+      "brief": "Everything you already wrote is still here. Add the third ask, the third reply, and put the third box into your verdict line.",
+      "palette": [
+       {
+        "label": "Say something",
+        "line": "print(\"Say something here.\")"
+       },
+       {
+        "label": "Ask a question and keep the answer",
+        "line": "answer1 = input(\"Ask your question here.\")"
+       },
+       {
+        "label": "Ask a second question and keep that answer",
+        "line": "answer2 = input(\"Ask your second question here.\")"
+       },
+       {
+        "label": "Reply using an answer",
+        "line": "print(\"Reply here, \" + answer1 + \", more here.\")"
+       },
+       {
+        "label": "Reply using the other answer",
+        "line": "print(\"Reply here, \" + answer2 + \", more here.\")"
+       },
+       {
+        "label": "A verdict that uses BOTH answers",
+        "line": "print(\"Verdict: \" + answer1 + \" and \" + answer2 + \" — that is a good pair.\")"
+       },
+       {
+        "label": "Ask a third question and keep that answer",
+        "line": "answer3 = input(\"Ask your third question here.\")"
+       },
+       {
+        "label": "A verdict that uses ALL THREE answers",
+        "line": "print(\"Verdict: \" + answer1 + \", \" + answer2 + \" and \" + answer3 + \". Good work.\")"
+       }
+      ],
+      "features": [
+       {
+        "id": "asks3",
+        "probe": "inputs",
+        "min": 3,
+        "label": "It asks THREE questions now.",
+        "nudge": "Look for three lines with input( ) in them."
+       },
+       {
+        "id": "joins3",
+        "probe": "joins",
+        "label": "One line uses all three answers at once.",
+        "nudge": "Your verdict line has to have all three box names in it, joined on with +."
+       }
+      ],
+      "probeAnswers": [
+       "QQTESTONE",
+       "QQTESTTWO",
+       "QQTESTTHREE"
+      ],
+      "shape": [
+       "<box 3> = input( question three )",
+       "print( a reply using <box 3> )",
+       "print( a verdict using <box 1>, <box 2> AND <box 3> )"
+      ],
+      "matchedSay": "Three questions, three answers, one verdict. That is a real bot.",
+      "notYetSay": "Not yet. The list on the right says which part is missing.",
+      "stopLabel": "Nearly time up? Click here to finish the rest of the lesson.",
+      "chat": true
+     }
+    ],
+    "waitingSay": "Your bot has stopped and is waiting for you to type an answer. The box is just above this button. RUN wakes up again as soon as the bot has finished."
+   }
+  },
+  {
+   "id": "chatswap",
+   "engine": "chatswap",
+   "title": "The Chatbot Swap",
+   "minutes": 11,
+   "badge": {
+    "id": "j2-b9",
+    "name": "Tested and Reported",
+    "icon": "assets/badges/bolt.png",
+    "xp": 12
+   },
+   "config": {
+    "kicker": "The Chatbot Swap",
+    "title": "Somebody else is about to use your bot",
+    "intro": "Every program in the world gets used by somebody who did not write it, and that is when you find out what is really wrong with it.\n\nSo: your bot goes to somebody else in this room, and their bot comes to you. You chat with theirs and then write them a short report — one thing that worked, and one thing you would change.\n\nNobody is marked on how their bot behaves. If it falls over while you are using it, that is a real find, and it goes in the report.",
+    "steps": [
+     "You are given a **call sign** — a made-up name like Spanner 7. That is the only name your partner sees, and theirs is the only one you see.",
+     "Your bot travels to them and theirs comes to you.",
+     "You chat with their bot, then fill in two short boxes about it.",
+     "Their report about your bot arrives on your screen, and both real names are shown at the very end."
+    ],
+    "beginLabel": "Open the workshop door",
+    "phaseCount": 4,
+    "finishLabel": "Nearly time up? Click here to finish the rest of the lesson.",
+    "sideAfterMs": 8000,
+    "handingSay": "Sending your bot across…",
+    "handoffFailSay": "Your bot could not be sent across just now.",
+    "fetchingSay": "Waiting for their bot to arrive…",
+    "testKicker": "The tester's seat",
+    "testTitle": "Their bot, and you are the one using it",
+    "testLead": "Answer it honestly, the way anybody would. Read what it says back to you. When it has finished, the report button underneath wakes up.",
+    "soloTestTitle": "Your own bot, from the other side",
+    "soloTestLead": "You are in the tester's seat on your own bot. Use it the way somebody who had never seen it would, then write the report you would want back.",
+    "testDoneSay": "That is their bot finished. Now tell them what you found.",
+    "testBrokeSay": "Their bot stopped early. That is a real find, and it is exactly what the report is for.",
+    "relayBot": "bot",
+    "relayYou": "tester",
+    "reportLabel": "Write the report",
+    "reportTitle": "Your report",
+    "reportLead": "Two boxes, one sentence each. Your partner reads this, and so does your teacher.",
+    "workedLabel": "One thing that worked",
+    "fixLabel": "One thing you would change, or one thing that went wrong",
+    "workedTag": "worked",
+    "fixTag": "change",
+    "reportNote": "Say it the way you would want it said to you. Nobody loses points for anything you write here.",
+    "reportShortSay": "Both boxes need a few words in them before this can go.",
+    "sendReportLabel": "Send my report",
+    "reportTag": "REPORT",
+    "watchKicker": "Your bot, in somebody else's hands",
+    "watchTitle": "Watch it work",
+    "watchLead": "Your partner is using your bot right now. Every line appears here a moment after it happens on their screen. You cannot help them, and that is the point: this is what your bot does without you.",
+    "watchIdleSay": "Nothing yet. The first line will appear here on its own.",
+    "beatArrivedSay": "A new line from your bot.",
+    "gotReportTitle": "Their report on your bot",
+    "reportArrivedSay": "Their report has arrived.",
+    "afterReportLabel": "Continue",
+    "strandedTitle": "Their bot has not arrived.",
+    "strandedSay": "Your partner has not finished theirs, or they have left the screen. Nothing you have done is lost. You can test your own bot instead, or finish the lesson here.",
+    "strandedSoloLabel": "Test my own bot instead",
+    "soloKicker": "On your own",
+    "soloTitle": "You are testing your own bot.",
+    "soloLead": "You take the tester's seat on your own bot: use it the way somebody who had never seen it would, then write the report you would want back.",
+    "soloGoLabel": "Take the tester's seat",
+    "sealingSay": "Closing the Swap…",
+    "sealKicker": "SWAP CLOSED",
+    "sealTitle": "That is the Swap finished.",
+    "revealSay": "Your partner was **{names}**.",
+    "noReportSay": "Their report did not arrive before the Swap closed. Yours was sent, and they will see it.",
+    "sealSay": "Your bot has now been used by somebody who did not build it. That is more than most programs get in a week.",
+    "doneLabel": "Continue",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "chatLabels": {
+     "title": "The conversation",
+     "idle": "Nothing has been said yet. Press RUN to start the conversation.",
+     "botWho": "The bot",
+     "userWho": "You",
+     "replyLabel": "Your reply",
+     "sendLabel": "Send"
+    },
+    "errorWords": {
+     "name": "Python does not know a box with that name. Check the spelling on this line matches the box name you made further up.",
+     "type": "You have joined a number onto words with a +. Put str( ) around the number first, so the + has words on both sides.",
+     "badinput": "Python could not read that line at all. Check the speech marks come in pairs, the brackets come in pairs, and the line starts at the left with no spaces in front of it.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines are not lined up with each other. Every line in this program starts at the left, with nothing in front of it.",
+     "timelimit": "That program was still going after a few seconds, so it was stopped. Something in it is repeating and never finishing.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "sendLabel": "Send",
+    "words": {
+     "signPrefix": "",
+     "openingHead": "Opening the workshop door…",
+     "openingSay": "Checking who else in your class has a bot ready right now…",
+     "waitHead": "Waiting for a partner.",
+     "waitSay": "You are in the queue. The website is waiting for somebody else in your class to finish their bot. The moment one does, the two of you become partners and this screen changes by itself. Nothing is wrong: stay on this screen.",
+     "trioHoldHead": "You are one of the last three.",
+     "trioHoldSay": "There is an odd number left, so the last three of you work as a three instead of a pair. Waiting for the third one to arrive…",
+     "waitLongSay": "Waiting a while? Put your hand up. Your teacher can send you on to test your own bot instead.",
+     "leaveLabel": "Nearly time up? Click here to finish the rest of the lesson.",
+     "leaveSay": "If your teacher calls time while you are waiting, you can leave here and finish the lesson. You lose nothing you have already earned — only the swap itself.",
+     "pairKicker": "PARTNER FOUND",
+     "pairTitle": "You have a partner.",
+     "pairLead": "Your partner for the Swap is {sign}. They are at another computer in this room, and they have just finished a bot too.",
+     "mineLine": "On their screen, you are {sign}.",
+     "secretPair": "You are not told who they really are until the Swap is finished. So keep real names out of anything you type here, including your own — your teacher can read every message that goes between the two of you.",
+     "pairClose": "You test their bot, they test yours, and you each write the other a short report.",
+     "trioKicker": "GROUP OF THREE",
+     "trioTitle": "You are a three.",
+     "trioLead": "Your class has an odd number at the door, so the last three work together. Your group is {signs}.",
+     "secretTrio": "You are not told who they really are until the Swap is finished. So keep real names out of anything you type here, including your own — your teacher can read every message that goes between you.",
+     "trioClose": "In a three, everybody tests one bot and everybody's bot gets tested once.",
+     "matchButton": "Start the Swap",
+     "soloKicker": "NO PARTNER",
+     "soloTitle": "Nobody left to swap with.",
+     "soloLine": "Everybody else in your class has already been through the Swap, so you do this part on your own. You take the tester's seat on your OWN bot, and you write the report yourself.",
+     "soloButton": "Test my own bot",
+     "monitorBanner": "YOUR TEACHER CAN READ EVERY MESSAGE THAT GOES BETWEEN YOU.",
+     "chatPlaceholder": "Message your partner…",
+     "chatSend": "Send",
+     "meWho": "You",
+     "chatOpenSay": "The line between the two of you is open. Remember your teacher can read it."
+    },
+    "sideShow": {
+     "id": "fred",
+     "name": "Fred",
+     "mode": "chat",
+     "alt": "Fred, a friendly cartoon chatbot with a boxy head and one raised eyebrow",
+     "art": {
+      "idle": "assets/img/j2/fred/fred-idle.webp",
+      "typing": "assets/img/j2/fred/fred-typing.webp",
+      "delighted": "assets/img/j2/fred/fred-delighted.webp",
+      "offended": "assets/img/j2/fred/fred-offended.webp",
+      "devastated": "assets/img/j2/fred/fred-devastated.webp"
+     },
+     "typingMs": 800,
+     "replyLabel": "Say something back",
+     "sendLabel": "Say it",
+     "open": "Soooooo, this waiting is a bit awkward and I don't like silence — I'm Fred, I'm a chatbot (I'm not real, but don't hurt my feelings). Who are you?",
+     "lines": [
+      "Right. Fair enough. I'll be honest, I don't know what to do with that.",
+      "I'm a chatbot. I have a handful of sentences and a lot of confidence.",
+      "You know I forget everything the second I leave? It's my best feature.",
+      "Nobody has ever asked ME what my favourite food is. Nobody.",
+      "This is going well. This is going really well. I think this is going well.",
+      "Am I doing chatting? I feel like I might be doing chatting."
+     ],
+     "echo": [
+      "\"{you}\". Wow. I'm going to think about that for the rest of my life, which is about ninety more seconds.",
+      "\"{you}\", you say. Bold. I respect it. I don't understand it.",
+      "Hold on — \"{you}\"? That's the best thing anybody has typed at me all day.",
+      "I'm writing \"{you}\" down. On nothing. With nothing. I have no hands."
+     ],
+     "exitFace": "devastated",
+     "exitLine": "Oh. Your partner's here. Off you go then. I'll just be… here. Forgetting you.",
+     "leaveLine": "Right, you're away. Grand. Absolutely grand.",
+     "exitMs": 1600
+    },
+    "help": "Your bot goes to somebody else in this room and theirs comes to you. Answer their bot in the box that appears, read what it says back, then click Write the report and fill in the two boxes. Your teacher can read everything that passes between you, so no real names. If your teacher calls time, the grey button at the bottom takes you straight to the end of the lesson.",
+    "leaveTitle": "Leave the Swap now?",
+    "leaveAsk": "You have done {done} of the {all} parts. If you leave now the Swap does not count and there is no badge for it. You can still finish the rest of the lesson.",
+    "leaveYes": "Leave the Swap"
+   }
+  },
+  {
+   "id": "extras",
+   "engine": "pyrun",
+   "title": "The Workshop's extra jobs",
+   "minutes": 0,
+   "config": {
+    "extrasMode": true,
+    "kicker": "Extra jobs",
+    "title": "The Workshop's extra jobs",
+    "intro": "Three small jobs, and they are all optional. **None of them is worth any points**, nothing here is marked, and nothing you do on these screens is saved. They are here for anyone with minutes to spare.\n\nDo one, do all three, or do none. You can stop the moment your teacher says time is up.",
+    "reviewIntro": "**You have already finished this lesson.** These jobs still work, so you can come back and try them any time.",
+    "finishLabel": "Nearly time up? Click here to finish the rest of the lesson.",
+    "backLabel": "Back to the extra jobs",
+    "doneTick": "job done",
+    "runLabel": "RUN this",
+    "howLine": "Move the lines you need into **Your program**, fill in every gap, then press RUN.",
+    "trayLabel": "The lines",
+    "progLabel": "Your program",
+    "trayEmpty": "Every line has been moved across.",
+    "progEmpty": "Nothing here yet — click or drag a line across from The lines.",
+    "lockedNote": "RUN wakes up as soon as there is at least one line in Your program.",
+    "blankEmptySay": "One of the gaps is still empty. Type something into it, then press RUN again.",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT YET",
+    "matchedSay": "That works.",
+    "notYetSay": "Not yet. Read the console underneath and try again.",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "chatLabels": {
+     "title": "The conversation",
+     "idle": "Nothing has been said yet. Press RUN to start the conversation.",
+     "botWho": "The bot",
+     "userWho": "You",
+     "replyLabel": "Your reply",
+     "sendLabel": "Send"
+    },
+    "errorWords": {
+     "name": "Python does not know a box with that name. Check the spelling on this line matches the box name you made further up.",
+     "type": "You have joined a number onto words with a +. Put str( ) around the number first, so the + has words on both sides.",
+     "badinput": "Python could not read that line at all. Check the speech marks come in pairs, the brackets come in pairs, and the line starts at the left with no spaces in front of it.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines are not lined up with each other. Every line in this program starts at the left, with nothing in front of it.",
+     "timelimit": "That program was still going after a few seconds, so it was stopped. Something in it is repeating and never finishing.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "sendLabel": "Send",
+    "help": "Three optional jobs. None of them is worth points and nothing here is saved. Pick one from the list, or press the grey button to go straight to the end of the lesson. If you leave a job half done it starts again from the beginning next time.",
+    "builds": [
+     {
+      "id": "j2x3-fourth",
+      "chat": true,
+      "check": {
+       "kind": "clean",
+       "usesReplies": true
+      },
+      "title": "Job 1 — a bot that asks about the weekend",
+      "whiff": "One question, one reply, all your own words.",
+      "goalLine": "Build a small bot that asks one question about the weekend and replies using the answer.",
+      "brief": "Same three jobs as always: ask, keep, reply. Write both sentences yourself.",
+      "lines": [
+       {
+        "t": "print(\"____\")",
+        "blanks": [
+         {
+          "key": "x1a",
+          "slot": "____",
+          "size": 26,
+          "max": 56,
+          "ph": "",
+          "label": "how your bot says hello"
+         }
+        ]
+       },
+       {
+        "t": "weekend = input(\"____\")",
+        "blanks": [
+         {
+          "key": "x1b",
+          "slot": "____",
+          "size": 26,
+          "max": 56,
+          "ph": "",
+          "label": "your question about the weekend"
+         }
+        ]
+       },
+       {
+        "t": "print(\"____\" + weekend + \"____\")",
+        "blanks": [
+         {
+          "key": "x1c",
+          "slot": "____",
+          "size": 16,
+          "max": 36,
+          "ph": "",
+          "label": "words before the answer"
+         },
+         {
+          "key": "x1d",
+          "slot": "____",
+          "size": 16,
+          "max": 36,
+          "ph": "",
+          "label": "words after the answer"
+         }
+        ]
+       },
+       {
+        "t": "weekend = \"your weekend\""
+       }
+      ],
+      "matchedSay": "Working. Ask, keep, reply — a third time, in your own words."
+     },
+     {
+      "id": "j2x3-flair",
+      "check": {
+       "kind": "target"
+      },
+      "title": "Job 2 — make it louder",
+      "whiff": "The same reply, dressed up.",
+      "goalLine": "Print a reply with a line of dashes above it and below it.",
+      "brief": "A bot that shouts a bit is easier to read on a screen full of text. Build these three lines in the right order.",
+      "lines": [
+       {
+        "t": "print(\"-----------------\")"
+       },
+       {
+        "t": "print(\"THAT IS A GREAT ANSWER\")"
+       },
+       {
+        "t": "print(\"-----------------\")"
+       },
+       {
+        "t": "print(\"-----------------\" + \"THAT IS A GREAT ANSWER\")"
+       }
+      ],
+      "target": [
+       "-----------------",
+       "THAT IS A GREAT ANSWER",
+       "-----------------"
+      ],
+      "matchedSay": "Three lines, exactly as the target shows them."
+     },
+     {
+      "id": "j2x3-str",
+      "check": {
+       "kind": "target"
+      },
+      "title": "Job 3 — the neater way to join words",
+      "whiff": "A shortcut real Python programmers use every day.",
+      "goalLine": "Print the same sentence twice: once the way you know, and once the neater way.",
+      "brief": "There is a shorter way to put a box inside a sentence. You put an f in front of the speech marks, and then you write the box name inside curly brackets, right where you want it. One of the four lines forgets the f — build the other three and see.",
+      "lines": [
+       {
+        "t": "team = \"Down\""
+       },
+       {
+        "t": "print(\"I support \" + team + \".\")"
+       },
+       {
+        "t": "print(f\"I support {team}.\")"
+       },
+       {
+        "t": "print(\"I support {team}.\")"
+       }
+      ],
+      "target": [
+       "I support Down.",
+       "I support Down."
+      ],
+      "matchedSay": "Both lines print the same thing. The second one is called an f-string, and you will meet it again next year."
+     }
+    ],
+    "waitingSay": "Your bot has stopped and is waiting for you to type an answer. The box is just above this button. RUN wakes up again as soon as the bot has finished."
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit check",
+   "minutes": 3,
+   "config": {
+    "kicker": "Exit check",
+    "cardTitle": "One question before you finish",
+    "readyLabel": "Ready",
+    "intro": "One last question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "items": [
+     {
+      "id": "j2x3-1",
+      "stem": "Your bot reaches the line name = input(\"What is your name?\"). What does Python do next?",
+      "options": [
+       "It puts the question on screen and carries straight on to the next line",
+       "It puts the question on screen and waits there until somebody types an answer",
+       "It fills the box with the question itself and moves on",
+       "It waits for the whole program to finish, then asks the question"
+      ]
+     }
+    ],
+    "help": "One marked question about the new Python word you used today. You are told whether you were right, and why, at the very end of the lesson — after the How did it go? screen."
+   }
+  },
+  {
+   "id": "close",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "alreadyFiled": "You have already sent this to your teacher. You can read back through it as often as you like, and nothing you click now will change what you sent.",
+    "offlineSay": "Your connection is playing up, so your answers are safe on this computer and will send by themselves. That is the lesson finished.",
+    "statements": [
+     "I can write a line that asks a question and keeps the answer.",
+     "I can use what somebody typed in the reply my program prints.",
+     "I can read what Python says when it stops, and work out what to change."
+    ],
+    "difficulty": true,
+    "comment": true,
+    "help": "Under each sentence, click the button that says how today really went. Then, at the bottom of the screen, click how hard the hour felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving — it is how your teacher hears from everyone, not just the loudest."
+   }
+  }
+ ],
+ "keysEnc": "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"
+}
