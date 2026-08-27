@@ -1783,7 +1783,12 @@
       var v = num_((c.config || {}).sideAfterMs);
       if (v > ms) ms = v;
     });
-    return ms > 0 ? Math.ceil(ms / 1000) + 6 : BOT_WAIT_S;
+    /* twelve seconds past the threshold, not six. Six left the side show a
+       six-second window to be seen in, and whether a walk (or a pupil glancing
+       up) caught it depended on where the pairing poll happened to land — so
+       the same walk reported the waiting card and the character on it on one
+       run and missed them on the next. */
+    return ms > 0 ? Math.ceil(ms / 1000) + 12 : BOT_WAIT_S;
   }
   var PAIR_CALLSIGNS = ['Kestrel', 'Osprey', 'Merlin', 'Harrier', 'Nightjar', 'Skylark'];
   /* per-year pools, MIRRORING Code.gs.template (K35(3)). qa-pair-stores executes

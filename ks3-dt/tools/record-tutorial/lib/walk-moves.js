@@ -815,6 +815,34 @@ const MOVES = {
    offers: a decoy line the author put in the tray on purpose, a gap left empty,
    a number typed that is not the number asked for. */
 const WRONG_MOVES = {
+  /* A CONFUSED PUPIL DOES NOT KNOW THE ANSWER, so she does not correct a gap the
+     moment Python complains — she reads the red, presses RUN again, and only
+     after a few goes does she get it right. The expert's `pyrun-blank-fix`
+     corrects it on the FIRST failure, which is right for that walker and wrong
+     for this one: dropped into this walk it shortened the failure window on J3
+     Lesson 2 so much that "the console after a run that did NOT work" was
+     reached on one run and missed on the next. A landmark that depends on how
+     fast the walker recovers is a landmark nobody can trust.
+     Three goes of pressing RUN on the broken thing, then she gets there. */
+  'pyrun-blank-fix': () => {
+    window.__blankFixN = (window.__blankFixN || 0) + 1;
+    if (window.__blankFixN <= 3) {
+      const run = document.querySelector('.pyrun-run:not([disabled])');
+      if (run) run.click();
+      return;
+    }
+    const card = document.querySelector('.pyrun-card');
+    const key = window.__walkKey ? window.__walkKey(card && card.getAttribute('data-build')) : null;
+    if (!key || !key.blanks) return;
+    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+      .find(i => {
+        const k = i.getAttribute('data-key');
+        return key.blanks[k] != null && String(i.value) !== String(key.blanks[k]);
+      });
+    if (!inp) return;
+    inp.value = String(key.blanks[inp.getAttribute('data-key')]);
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+  },
   /* THE REFUSAL, AND HIS TIME-UP SCENARIO, WALKED (DFM 265c, 26 Aug 2026).
      K11d's law is that a stretch which cannot be refused is not a stretch, and a
      refusal nothing ever presses is a claim rather than a behaviour. The V54

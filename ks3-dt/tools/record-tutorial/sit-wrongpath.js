@@ -934,7 +934,13 @@ const WRONG = {
      two films and a typed editor on top of twelve chunks. J3 Lesson 3 ran out
      of loops at 110 and reported fourteen coverage failures for it — a walk that
      runs out of budget must never be mistaken for a walk that finished. */
-  const MAX = LESSON === 'j3-3' ? 300 : LESSON === 'j2-3' ? 220
+  /* J2 Lesson 3 raised 220 -> 300 as well: the confused walker now presses RUN
+     on a broken program three times before it puts a gap right — which is what a
+     pupil does, and what keeps a failing console on screen long enough to be
+     stood on — and at 220 some runs finished the lesson while others ran out
+     two landmarks short. A gate that reports coverage differently on two
+     identical runs is a gate nobody can act on. */
+  const MAX = LESSON === 'j3-3' ? 300 : LESSON === 'j2-3' ? 300
     : LESSON === 'j2-1' ? 260 : LESSON === 'j3-1' ? 220
     : LESSON === "5" ? 160 : (LESSON === "1" ? 200 : (LESSON === "3" ? 170 : 110));
   let stuckRuns = 0;
