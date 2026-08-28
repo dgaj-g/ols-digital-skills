@@ -65,7 +65,7 @@
    "id": "j3-03",
    "num": 3,
    "title": "Playlist Engine",
-   "tagline": "One name holds a whole set of things, and you write the program that manages them.",
+   "tagline": "You write a program that keeps a list of songs. Your program can add a new song, take one out, put the songs in order, and print the whole list.",
    "block": "b2",
    "icon": "🎵",
    "status": "ready",

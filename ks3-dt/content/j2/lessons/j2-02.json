@@ -309,7 +309,9 @@
      }
     ],
     "help": "Drag the lines you want into Your program, in the order you want them to run, then press RUN. Your program is really run and the console shows exactly what it printed — and if Python stops, the console shows you Python's own words plus a plain-English explanation underneath. Three of the seven lines have real mistakes in them. You can run as many times as you like.",
-    "nextBuildLabel": "Next build"
+    "nextBuildLabel": "Next build",
+    "trayClickEject": false,
+    "takeBackLabel": "Put this line back"
    }
   },
   {
@@ -460,7 +462,9 @@
       ]
      }
     ],
-    "help": "Every job on this screen is extra. They add no points, and nothing later in the year needs them. Click a job to open it, build it the way you built the others, then press RUN. Two buttons are always on screen. Back to the extra jobs takes you to the list of jobs. The other one says “Nearly time up? Click here to finish the rest of the lesson.” Click that one whenever your teacher calls time, even half way through a job, and it takes you on to the rest of the hour."
+    "help": "Every job on this screen is extra. They add no points, and nothing later in the year needs them. Click a job to open it, build it the way you built the others, then press RUN. Two buttons are always on screen. Back to the extra jobs takes you to the list of jobs. The other one says “Nearly time up? Click here to finish the rest of the lesson.” Click that one whenever your teacher calls time, even half way through a job, and it takes you on to the rest of the hour.",
+    "trayClickEject": false,
+    "takeBackLabel": "Put this line back"
    }
   },
   {

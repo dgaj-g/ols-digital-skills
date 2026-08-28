@@ -19,6 +19,17 @@ const WALK = require('./lib/walk-moves.js');
    thing (DFM 144). A hit is a FAILURE of the walk, never a note under a pass
    (DFM 204). */
 const NI = require('./lib/nested-interactive.js');
+/* THE THREE AUDITS THAT RIDE EVERY SCREEN (J13b/c/d, DFM 271's derived coverage).
+   The walker already stands on every screen of every lesson — the DFM 206 gate
+   forces it — so the questions that used to depend on somebody remembering to
+   point a checker at a surface are asked HERE, on every screen, every run:
+     · can she READ it            (contrast, in real pixels, every text node)
+     · is anything EMPTY          (a visible container holding nothing)
+     · does a CLICK destroy work  (a body click on placed work)
+   Coverage stops being a to-do and becomes a property of walking. */
+const EE = require('./lib/empty-elements.js');
+const PW = require('./lib/placed-work.js');
+const CA = require('./lib/contrast-audit.js');
 
 const NUM = String(process.argv[2] || '2').replace(/^J([23])-/i, 'j$1-');
 /* YEAR-QUALIFIED KEYS FROM 16 AUG 2026 (see sit-wrongpath.js for the reason J1
@@ -268,6 +279,8 @@ const CASE_LOGS = {
   const seen = { chunks: new Set(), presses: 0, marks: 0, badges: 0 };
   const askedTexts = new Set();
   const nestedHits = [];
+  const emptyHits = [], clickHits = [], contrastHits = [];
+  const contrastSeen = new Set();
 
   for (turns = 0; turns < 400; turns++) {
     const done = await page.evaluate(() => !!document.querySelector('.badge-pop-card.finish'));
@@ -282,6 +295,22 @@ const CASE_LOGS = {
       if (nestedHits.indexOf(line) === -1) { nestedHits.push(line); note('NESTED-INTERACTIVE ' + line); }
     });
 
+    /* ---- J13(c): a VISIBLE container with nothing in it, on this screen ---- */
+    const empties = await page.evaluate(q => eval(q)(), EE.QUERY);
+    empties.forEach(f => {
+      const line = ck + ': ' + EE.describe(f);
+      if (emptyHits.indexOf(line) === -1) { emptyHits.push(line); note('EMPTY-CONTAINER ' + line); }
+    });
+
+    /* ---- J13(d): does a single body click destroy placed work? It CLICKS, and
+       it puts the work back if it was destroyed, so the walk it is riding is not
+       itself unbuilding the lesson it is measuring. ---- */
+    const placed = await page.evaluate(q => eval(q)(), PW.QUERY);
+    (placed.findings || []).forEach(f => {
+      const line = ck + ': ' + PW.describe(f);
+      if (clickHits.indexOf(line) === -1) { clickHits.push(line); note('CLICK-DESTROYS ' + line); }
+    });
+
     /* once per chunk: capture the ? help modal */
     if (ck !== '(none)' && !helpSeen.has(ck)) {
       helpSeen.add(ck);
@@ -289,6 +318,28 @@ const CASE_LOGS = {
       const t = await hostText();
       note('\n==== CHUNK ' + ck + ' ====\n' + t.slice(0, 3000));
       await shot(ck + '-enter');
+      /* ---- J13(b): CAN SHE READ IT — every rendered text node on this screen,
+         measured in real pixels off a screenshot the walker is taking anyway.
+         qa-readability keeps the per-THEME sweep; this is the half that makes
+         COVERAGE derived: a screen is measured because it was visited, not
+         because somebody remembered to add it to a list (DFM 271). ---- */
+      contrastSeen.add(ck);
+      try {
+        const rects = await page.evaluate(CA.COLLECT, [[], [], null]);
+        if (rects.length) {
+          const png = await page.screenshot({ fullPage: true });
+          const measured = await page.evaluate(CA.MEASURE,
+            ['data:image/png;base64,' + png.toString('base64'), rects]);
+          measured.forEach(m => {
+            if (m.skip || m.icon) return;
+            const floor = CA.floorFor(m);
+            if (m.ratio >= floor) return;
+            const line = ck + ': ' + m.sel + ' — ' + m.ratio + ':1 (needs ' + floor + '), ink ' +
+              m.ink + ' on ' + m.plate + '  "' + String(m.text || '').slice(0, 44) + '"';
+            if (contrastHits.indexOf(line) === -1) { contrastHits.push(line); note('UNREADABLE ' + line); }
+          });
+        }
+      } catch (e) { note('CONTRAST-AUDIT could not run on ' + ck + ': ' + e.message); }
       const helped = await page.evaluate(() => {
         const b = document.querySelector('#help-beacon');
         if (b && !b.hidden) { b.click(); return true; }
@@ -492,7 +543,14 @@ const CASE_LOGS = {
         }
         await shot(ck + '-parsons-placed');
         await page.evaluate(() => {
-          const b = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /check|lock|submit/i.test(x.textContent) && !x.disabled);
+          /* the card's own control first, and WORD BOUNDARIES on the fallback —
+             a substring test for "lock" also matches "Take it back to the
+             bLOCKs", which is how this walk spent every turn unbuilding the
+             program it had just built (27 Aug 2026). */
+          const own = document.querySelector('.chunk-host .parsons-check:not([disabled])');
+          if (own) { own.click(); return; }
+          const b = Array.from(document.querySelectorAll('.chunk-host button'))
+            .find(x => /\b(check|lock|submit)\b/i.test(x.textContent) && !x.disabled);
           if (b) b.click();
         });
         await sleep(1300);
@@ -1018,6 +1076,29 @@ const CASE_LOGS = {
     bad.push('nested interactive controls: expected none, found ' + nestedHits.length);
     nestedHits.forEach(h => bad.push('  ' + h));
   }
+  /* J13(b/c/d): the three derived audits. The DECLARED EXEMPTIONS are printed on
+     every run, whether or not anything was found — an exemption nobody prints
+     reads as a pass (DFM 204/213). */
+  note('\nDERIVED AUDITS — asked on all ' + contrastSeen.size + ' screen(s) this walk entered');
+  note('  contrast exemptions, declared: ' + CA.EXEMPTIONS.join(' · '));
+  note('  empty-container exemptions, declared: ' + EE.EXEMPTIONS.join(' · '));
+  if (emptyHits.length) {
+    bad.push('visible empty containers: expected none, found ' + emptyHits.length);
+    emptyHits.forEach(h => bad.push('  ' + h));
+  }
+  if (clickHits.length) {
+    bad.push('a single click destroyed placed work: expected never, found ' + clickHits.length);
+    clickHits.forEach(h => bad.push('  ' + h));
+  }
+  if (contrastHits.length) {
+    bad.push('text below its contrast floor: expected none, found ' + contrastHits.length);
+    contrastHits.forEach(h => bad.push('  ' + h));
+  }
+  fs.writeFileSync(path.join(OUT, '_derived-audits.json'), JSON.stringify({
+    lesson: NUM, screens: [...contrastSeen],
+    contrast: contrastHits, empty: emptyHits, click: clickHits,
+    exemptions: { contrast: CA.EXEMPTIONS, empty: EE.EXEMPTIONS }
+  }, null, 1) + '\n');
   /* A WALK THAT REACHED NOTHING IS NEVER A PASS, WHATEVER THE PIN SAYS
      (16 Aug 2026, and it caught itself). J3 Lesson 1 was pinned with a
      placeholder of all zeros while its numbers were still being measured; the

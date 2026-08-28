@@ -370,7 +370,9 @@
       "label": "Job 2 — count the press",
       "size": 2
      }
-    ]
+    ],
+    "trayClickEject": false,
+    "takeBackLabel": "Put this block back"
    }
   },
   {

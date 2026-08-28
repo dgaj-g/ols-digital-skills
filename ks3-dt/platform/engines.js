@@ -877,6 +877,40 @@
               Promise.resolve(opts.inputfun(String(prompt == null ? '' : prompt)))
                 .then(function (v) {
                   var i = pending.indexOf(rej); if (i !== -1) pending.splice(i, 1);
+                  /* ---- THE RUN CLOCK IS RESET AS THE ANSWER ARRIVES — DFM 269,
+                     his J2 Lesson 3 sit, 27 Aug 2026 ------------------------
+                     Skulpt's limit check is `Date.now() - Sk.execStart > Sk.execLimit`
+                     on every pass of the compiled block-dispatch loop, and
+                     `Sk.execStart` is set exactly ONCE per program. So while the
+                     program stood suspended at input(), the five-second budget was
+                     being spent on a twelve-year-old READING THE QUESTION AND
+                     TYPING — and every conversation answered at human speed died
+                     with TimeLimitError at whatever input line it was standing on.
+                     His three screenshots are three CORRECT programs, killed at
+                     lines 1, 2 and 3, his own pasted bot among them.
+                     Restarting the clock HERE — in the same promise chain that
+                     resolves the answer, before control goes back to the runtime —
+                     means each stretch of ACTUAL EXECUTION gets the full budget and
+                     none of the waiting is billed. The guard is not weakened: a
+                     genuine `while True: pass` never resolves an input, so nothing
+                     ever resets its clock and it still dies at the limit. That is
+                     what the budget exists to measure, and now it is the only thing
+                     it measures.
+                     IT LIVES IN THE ENGINE, NOT IN A UI LAYER, so every caller —
+                     worked, assemble, editor, the extras zone, and both Lesson 2s'
+                     v1 paths — inherits it identically (DFM 144: one fact, one
+                     home). `lastYield` is moved with it wherever the runtime is
+                     using one, for the same reason and by the same argument.
+                     Proved by RUNNING it: qa-pyrun §8 answers after 6.5 s and
+                     2.5 s and requires exact stdout, requires a real runaway to
+                     still die, and requires a 10,000-line loop to still finish —
+                     with the engine he sat as the failing control. */
+                  try {
+                    if (typeof Sk !== 'undefined') {
+                      Sk.execStart = Date.now();
+                      if (typeof Sk.lastYield !== 'undefined') Sk.lastYield = Date.now();
+                    }
+                  } catch (e) { /* no runtime to re-clock: the run is already over */ }
                   res(String(v == null ? '' : v));
                 }, function (e) {
                   var i = pending.indexOf(rej); if (i !== -1) pending.splice(i, 1);
@@ -1332,21 +1366,63 @@
      line she wrote two minutes ago is doing exactly what a programmer does. */
   PyRun.editor = function (host, cfg) {
     cfg = cfg || {};
-    var box = el('<div class="pye">' +
+    /* ---- SOFT WRAP, AND THE GUTTER STILL COUNTS LOGICAL LINES (K41b) -------
+       His find, 27 Aug 2026: the editor column was too narrow for his own
+       forty-character questions and they were CLIPPED SIDEWAYS — `wrap="off"`
+       plus a half-width column, so the end of her own sentence was somewhere off
+       the right of the box. Under the staged shape the editor is the full width
+       of the card and the text WRAPS, which means one logical line can occupy
+       two or three rows on screen. A gutter that prints one number per row would
+       then lie about which line Python is talking about, so it measures how many
+       rows each logical line really takes and pads itself to match: line 3 stays
+       beside line 3, wherever the wrap falls.
+       Gated, because a shape nothing is on should not change: an editor that
+       does not ask for `softWrap` renders exactly as it did. */
+    var soft = !!cfg.softWrap;
+    var box = el('<div class="pye' + (soft ? ' is-soft' : '') + '">' +
       '<div class="pye-bar"><span class="pye-title">' + esc(cfg.title || 'Your program') + '</span>' +
       '<span class="pye-count" aria-live="polite"></span></div>' +
       '<div class="pye-body"><pre class="pye-nums" aria-hidden="true"></pre>' +
       '<textarea class="pye-code" spellcheck="false" autocomplete="off" autocapitalize="off" ' +
-      'autocorrect="off" wrap="off" aria-label="' + esc(cfg.aria || 'Type your program here') + '"></textarea>' +
+      'autocorrect="off" wrap="' + (soft ? 'soft' : 'off') + '" aria-label="' +
+      esc(cfg.aria || 'Type your program here') + '"></textarea>' +
+      (soft ? '<div class="pye-mirror" aria-hidden="true"></div>' : '') +
       '</div></div>');
     host.appendChild(box);
     var ta = box.querySelector('.pye-code');
     var nums = box.querySelector('.pye-nums');
     var count = box.querySelector('.pye-count');
+    var mirror = box.querySelector('.pye-mirror');
+    /* how many screen rows each logical line takes, measured rather than
+       estimated — an estimated line count is the arithmetic DFM 164b names */
+    function rowsPerLine(lines) {
+      if (!mirror) return null;
+      var cs = getComputedStyle(ta);
+      mirror.style.font = cs.font;
+      mirror.style.letterSpacing = cs.letterSpacing;
+      mirror.style.padding = cs.padding;
+      mirror.style.width = ta.clientWidth + 'px';
+      mirror.innerHTML = '';
+      var kids = [];
+      lines.forEach(function (t) {
+        var d = document.createElement('div');
+        d.className = 'pye-mirror-line';
+        d.textContent = t === '' ? '​' : t;
+        mirror.appendChild(d);
+        kids.push(d);
+      });
+      var lh = parseFloat(cs.lineHeight) || 20;
+      return kids.map(function (d) { return Math.max(1, Math.round(d.offsetHeight / lh)); });
+    }
     function paint() {
-      var n = ta.value.split('\n').length;
+      var lines = ta.value.split('\n');
+      var n = lines.length;
       var out = '';
-      for (var i = 1; i <= n; i++) out += i + '\n';
+      var rows = soft ? rowsPerLine(lines) : null;
+      for (var i = 1; i <= n; i++) {
+        out += i + '\n';
+        if (rows) for (var k = 1; k < rows[i - 1]; k++) out += '\n';
+      }
       nums.textContent = out;
       count.textContent = String(n) + ' ' + (n === 1 ? (cfg.lineWord || 'line') : (cfg.linesWord || 'lines'));
     }
@@ -1624,10 +1700,36 @@
           }, Number(cfg.demoStepMs || 1600) * i));
         });
       }
+      /* ---- THE DEMO SITS UNDER THE SENTENCE THAT POINTS AT IT (F2, DFM 269's
+         round; rule 35 on POSITION) ----------------------------------------
+         His find, 27 Aug 2026: line 6 of the workshop card reads "Here is a small
+         one running. Watch it once before you build your own." — and the demo
+         rendered at the BOTTOM of the card, after six more lines. The sentence
+         pointed at something that was not there.
+         `demoAfterLine` is a 1-based line number; the demo block is MOVED into
+         the lines, directly under that line. A briefing that does not name it
+         renders byte-identically, which is what keeps every other briefing on
+         the platform exactly as it is (the config-gate precedent, asserted by a
+         control). */
+      var demoNode = d.querySelector('.dossier-demo');
+      var afterLine = Number(cfg.demoAfterLine || 0);
+      function positionDemo() {
+        if (!demoNode || !afterLine) return;
+        var ps = linesBox.querySelectorAll('.dossier-line');
+        if (!ps.length) return;
+        var anchor = ps[Math.min(afterLine, ps.length) - 1];
+        if (!anchor) return;
+        if (anchor.nextSibling === demoNode) return;
+        anchor.parentNode.insertBefore(demoNode, anchor.nextSibling);
+      }
       function reveal() {
         timers.forEach(clearTimeout);
         headline.textContent = cfg.headline;
+        /* the demo is held OUT of the way while the lines are rebuilt, then put
+           back where it belongs — otherwise setting innerHTML would delete it */
+        if (demoNode && demoNode.parentNode === linesBox) linesBox.removeChild(demoNode);
         linesBox.innerHTML = (cfg.lines || []).map(function (l) { return '<p class="dossier-line show">' + fmtBold(l) + '</p>'; }).join('');
+        positionDemo();
         demoAll();
         showCta();
       }
@@ -1668,11 +1770,20 @@
               var p = document.createElement('p');
               p.className = 'dossier-line'; p.innerHTML = fmtBold(l);
               linesBox.appendChild(p);
+              positionDemo();
               /* capture p, never lastChild — throttled tabs batch rAF callbacks
                  and lastChild would point at the newest line for all of them */
               requestAnimationFrame(function () { p.classList.add('show'); });
+              /* THE DEMO STARTS WHEN ITS OWN SENTENCE ARRIVES, not when the card
+                 finishes. A pupil who has just read "Here is a small one running"
+                 is looking at the demo; holding it back until six more lines have
+                 typed themselves out would point her at a still box. */
+              if (demoLog && afterLine && i === afterLine - 1) {
+                playDemo();
+                timers.push(setTimeout(showCta, 700));
+              }
               if (i === cfg.lines.length - 1) {
-                if (demoLog) {
+                if (demoLog && !afterLine) {
                   playDemo();
                   /* THE WAY ON ARRIVES WITH THE DEMO, NOT AFTER IT. Holding it
                      back until the last line had played left this card with
@@ -3328,7 +3439,12 @@
         for (var k = 0; k < boxes.length; k++) if (boxes[k].indexOf(si) !== -1) return k;
         return -1;
       };
-      introCard(host, { kicker: 'Exit check — part 2', title: cfg.title || 'Build the program', text: cfg.intro || '' }, 'Ready', build);
+      /* A NUMBERED SEQUENCE GETS ITS OWN LINES (DFM 171). The ordering cards were
+         numbering their steps inside `intro`, which the card renders as one run-on
+         paragraph — the fault the rule names. `introCard` has always been able to
+         draw an <ol>; the parsons card just never handed it one. */
+      introCard(host, { kicker: 'Exit check — part 2', title: cfg.title || 'Build the program',
+        text: cfg.intro || '', steps: cfg.steps || null, after: cfg.introAfter || null }, 'Ready', build);
 
       function build() {
         /* DAMIEN, 4 Aug 2026 (DFM 151). Three faults, all his:
@@ -3368,7 +3484,13 @@
           '<p class="parsons-target">&#127919; ' + esc(it.prompt) + '</p>' +
           '<p class="parsons-how">' + howLine + '</p>' +
           '<div class="parsons-cols">' +
-          '<div class="parsons-tray"><h3>Blocks</h3><div class="pt-list"></div></div>' +
+          /* THE TRAY HAS A NAME THE CONTENT OWNS (28 Aug 2026). It was hard-coded
+             to "Blocks" while both L3 lessons call them LINES on every other
+             surface, so the take-back button offered to send a line back to a place
+             the screen did not name — the separated read's finding, and the same
+             word that once had the walker pressing "Take it back to the bLOCKs".
+             The default is what shipped, so no locked lesson moves (DFM 221). */
+          '<div class="parsons-tray"><h3>' + esc(cfg.trayLabel || 'Blocks') + '</h3><div class="pt-list"></div></div>' +
           progSide +
           '</div>' +
           /* DFM 204, same family: born disabled with nothing saying why. */
@@ -3443,6 +3565,14 @@
            (DFM 146b). Pointer events also give a ghost that tracks the cursor
            with no transition, which is the lag-free feel his drag rule asks for.
            A press that never moves is still a CLICK, so both gestures work. */
+        /* DFM 272's config gate, default = the shipped behaviour, so every
+           signed-off lesson using this engine renders and behaves exactly as it
+           did until he says the word (DFM 221). */
+        var clickEjects = cfg.trayClickEject !== false;
+        /* ONE default, in one place (DFM 144): the parsons tray and the pyrun tray
+           are the same button to a pupil, so they cannot drift apart in the source. */
+        var takeBackLabel = String(cfg.takeBackLabel || PY_SAY.takeBack);
+
         var ghost = null;
         var suppressClick = false;   // set by a completed drag, eaten by its own click
 
@@ -3461,6 +3591,49 @@
         function moveGhost(g, x, y) {
           g.style.transform = 'translate(' + (x + Number(g.dataset.dx)) + 'px,' + (y + Number(g.dataset.dy)) + 'px)';
         }
+        /* ---- THE GEOMETRY IS READ ONCE, WHEN THE GESTURE STARTS ------------
+           His 27 Aug 2026 find: this was the laggy one. `showDropTarget` ran on
+           EVERY pointermove and, on every one of them, cleared and rebuilt the
+           marker and read a fresh rect for each box and each placed row — a
+           forced layout per block per mouse movement. Nothing moves under a
+           dragged ghost, so all of it is read once here and answered from the
+           cache for the rest of the gesture; the marker is then written ONLY
+           when the target it points at actually changes. Measured, both ways, by
+           `qa-drag-smooth` against the engine he sat. */
+        var geo = null, raf = 0, ptrX = 0, ptrY = 0, lastTarget = '';
+        function inRect(r, x, y) {
+          return !!r && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+        }
+        function midsOf(listEl) {
+          var out = [];
+          if (!listEl) return out;
+          Array.prototype.slice.call(listEl.querySelectorAll('li:not(.pp-empty)')).forEach(function (li) {
+            var b = li.getBoundingClientRect();
+            out.push(b.top + b.height / 2);
+          });
+          return out;
+        }
+        function snapGeometry() {
+          var g = {
+            tray: trayZone.getBoundingClientRect(),
+            prog: progZone.getBoundingClientRect(),
+            boxes: []
+          };
+          if (STACKS) {
+            Array.prototype.slice.call(c.querySelectorAll('.pp-box')).forEach(function (b) {
+              var k = Number(b.getAttribute('data-box'));
+              var listEl = b.querySelector('.pp-list');
+              g.boxes.push({ k: k, el: b, rect: b.getBoundingClientRect(), list: listEl, mids: midsOf(listEl) });
+            });
+          } else {
+            g.boxes.push({ k: 0, el: progZone, rect: g.prog, list: prog, mids: midsOf(prog) });
+          }
+          return g;
+        }
+        function indexFromMids(mids, y) {
+          for (var i = 0; i < mids.length; i++) if (y < mids[i]) return i;
+          return mids.length;
+        }
         function inside(el, x, y) {
           var r = el.getBoundingClientRect();
           return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
@@ -3468,46 +3641,68 @@
         /* which job is the pointer over? The whole labelled BOX is the target,
            not its inner list - his standing drag rule (DFM feedback_drag_quality:
            "drop on the WHOLE picture"), which is why single-column mode hit-tests
-           the panel rather than the <ol> too. */
-        function boxAt(x, y) {
+           the panel rather than the <ol> too. Answered from the cache during a
+           drag; the live read stays for the paths that are not one. */
+        function boxAt(x, y, g) {
           var hit = -1;
+          if (g) {
+            g.boxes.forEach(function (b) { if (inRect(b.rect, x, y)) hit = b.k; });
+            return hit;
+          }
           c.querySelectorAll('.pp-box').forEach(function (b) {
             if (inside(b, x, y)) hit = Number(b.getAttribute('data-box'));
           });
           return hit;
         }
-        function showDropTarget(x, y) {
-          clearMarks();
+        /* where the drop would land, as a value that can be COMPARED — so the
+           marker is only written when it changes */
+        function targetAt(x, y, g) {
           if (STACKS) {
-            var k = boxAt(x, y);
+            var k = boxAt(x, y, g);
             if (k !== -1) {
-              var boxEl = c.querySelector('.pp-box[data-box="' + k + '"]');
-              var full = boxes[k].length >= capOf(k) && boxOf(dragSi) !== k;
-              if (full) { boxEl.classList.add('drop-full'); return; }
-              var kl = boxEl.querySelectorAll('li:not(.pp-empty)');
-              if (!kl.length) { boxEl.classList.add('drop-empty'); return; }
-              var at2 = dropIndexAt(y, boxEl.querySelector('.pp-list'));
-              if (at2 >= kl.length) kl[kl.length - 1].classList.add('drop-after');
-              else kl[at2].classList.add('drop-before');
-              return;
+              var b = g.boxes.filter(function (bb) { return bb.k === k; })[0];
+              if (!b) return { kind: 'none' };
+              if (boxes[k].length >= capOf(k) && boxOf(dragSi) !== k) return { kind: 'full', k: k };
+              if (!b.mids.length) return { kind: 'empty', k: k };
+              return { kind: 'at', k: k, at: indexFromMids(b.mids, y) };
             }
-          } else if (inside(progZone, x, y)) {
-            var lis = prog.querySelectorAll('li:not(.pp-empty)');
-            if (!lis.length) { progZone.classList.add('drop-empty'); return; }
-            var at = dropIndexAt(y);
-            if (at >= lis.length) lis[lis.length - 1].classList.add('drop-after');
-            else lis[at].classList.add('drop-before');
+          } else if (inRect(g.prog, x, y)) {
+            var mids = g.boxes[0].mids;
+            if (!mids.length) return { kind: 'empty', k: 0 };
+            return { kind: 'at', k: 0, at: indexFromMids(mids, y) };
+          }
+          if (inRect(g.tray, x, y) && boxOf(dragSi) !== -1) return { kind: 'back' };
+          return { kind: 'none' };
+        }
+        function drawTarget(t, g) {
+          clearMarks();
+          if (t.kind === 'full') {
+            var bf = g.boxes.filter(function (b) { return b.k === t.k; })[0];
+            if (bf) bf.el.classList.add('drop-full');
             return;
           }
-          if (inside(trayZone, x, y) && boxOf(dragSi) !== -1) {
-            trayZone.classList.add('drop-back');
+          if (t.kind === 'empty') {
+            var be = g.boxes.filter(function (b) { return b.k === t.k; })[0];
+            if (be) (STACKS ? be.el : progZone).classList.add('drop-empty');
+            return;
           }
+          if (t.kind === 'at') {
+            var ba = g.boxes.filter(function (b) { return b.k === t.k; })[0];
+            if (!ba) return;
+            var kl = ba.list.querySelectorAll('li:not(.pp-empty)');
+            if (!kl.length) return;
+            if (t.at >= kl.length) kl[kl.length - 1].classList.add('drop-after');
+            else kl[t.at].classList.add('drop-before');
+            return;
+          }
+          if (t.kind === 'back') trayZone.classList.add('drop-back');
         }
-        function commitDrop(si, x, y) {
-          var k = STACKS ? boxAt(x, y) : (inside(progZone, x, y) ? 0 : -1);
+        function commitDrop(si, x, y, g) {
+          var k = STACKS ? boxAt(x, y, g) : (inRect(g && g.prog, x, y) || (!g && inside(progZone, x, y)) ? 0 : -1);
           if (k !== -1) {
+            var cached = g && g.boxes.filter(function (b) { return b.k === k; })[0];
             var listEl = STACKS ? c.querySelector('.pp-box[data-box="' + k + '"] .pp-list') : prog;
-            var at = dropIndexAt(y, listEl);
+            var at = cached ? indexFromMids(cached.mids, y) : dropIndexAt(y, listEl);
             var from = boxOf(si);
             /* dropping BELOW its own old position IN THE SAME box: the index
                shifts by one once the block is lifted out, or it lands one place
@@ -3517,7 +3712,7 @@
               if (cur !== -1 && at > cur) at -= 1;
             }
             moveInto(si, at, k);
-          } else if (inside(trayZone, x, y)) {
+          } else if (g ? inRect(g.tray, x, y) : inside(trayZone, x, y)) {
             takeOut(si);
           } else {
             render();            // dropped nowhere: put everything back as it was
@@ -3531,30 +3726,48 @@
             var sx = e.clientX, sy = e.clientY, moved = false;
             try { node.setPointerCapture(e.pointerId); } catch (err) { /* older engines */ }
 
+            /* one write per frame, and the marker only when the target moves */
+            function paint() {
+              raf = 0;
+              if (!ghost || !geo) return;
+              moveGhost(ghost, ptrX, ptrY);
+              var t = targetAt(ptrX, ptrY, geo);
+              var key = t.kind + ':' + (t.k == null ? '' : t.k) + ':' + (t.at == null ? '' : t.at);
+              if (key === lastTarget) return;
+              lastTarget = key;
+              drawTarget(t, geo);
+            }
             function onMove(ev) {
               if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 5) return;
               if (!moved) {
                 moved = true; dragSi = si;
                 node.classList.add('dragging');
                 ghost = makeGhost(node, ev.clientX, ev.clientY);
+                /* `.dragging` only changes opacity, so nothing has moved and
+                   these are the rects a live read would return */
+                geo = snapGeometry();
+                lastTarget = '';
               }
               ev.preventDefault();
-              moveGhost(ghost, ev.clientX, ev.clientY);
-              showDropTarget(ev.clientX, ev.clientY);
+              ptrX = ev.clientX; ptrY = ev.clientY;
+              if (!raf) raf = requestAnimationFrame(paint);
             }
             function onUp(ev) {
               node.removeEventListener('pointermove', onMove);
               node.removeEventListener('pointerup', onUp);
               node.removeEventListener('pointercancel', onUp);
               try { node.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+              if (raf) { cancelAnimationFrame(raf); raf = 0; }
               if (ghost) { ghost.remove(); ghost = null; }
               node.classList.remove('dragging');
               clearMarks();
+              lastTarget = '';
+              var g = geo; geo = null;
               /* A drag ends here. A press that never moved is left to the CLICK
                  handler below, so that keyboard activation (Enter or Space fires
                  click with no pointer events at all) keeps working - handling it
                  here instead locked out anyone not using a mouse. */
-              if (moved) { suppressClick = true; commitDrop(si, ev.clientX, ev.clientY); }
+              if (moved) { suppressClick = true; commitDrop(si, ev.clientX, ev.clientY, g); }
               dragSi = null;
             }
             node.addEventListener('pointermove', onMove);
@@ -3562,9 +3775,24 @@
             node.addEventListener('pointercancel', onUp);
           });
 
+          /* ENTER STAYS A DELIBERATE ACT (DFM 272). Where the body click no
+             longer removes, the keyboard must still be able to: `preventDefault`
+             cancels the button's own synthesised click so the block is taken out
+             exactly once. */
+          if (!clickEjects && isPlaced) {
+            node.addEventListener('keydown', function (e) {
+              if (locked || e.key !== 'Enter') return;
+              e.preventDefault();
+              takeOut(si);
+            });
+          }
           node.addEventListener('click', function () {
             if (locked) return;
             if (suppressClick) { suppressClick = false; return; }   // the tail of a drag
+            /* A SINGLE CLICK NEVER DESTROYS PLACED WORK (DFM 272) — the same law
+               and the same gate as the pyrun tray, because it is the same fault:
+               one gesture that both builds and unbuilds. */
+            if (isPlaced && !clickEjects) return;
             /* click-to-add drops into the first job with a space, box one first -
                which is also the order a keyboard user meets them in */
             if (isPlaced) takeOut(si);
@@ -3599,6 +3827,13 @@
               var n = el('<li><span class="pp-num">' + (i + 1) + '.</span>' +
                 '<button class="parsons-block placed' + PRE + '" type="button" draggable="false">' + esc(it.blocks[si]) + '</button></li>');
               wireDrag(n.querySelector('button'), si, true);
+              /* the labelled way back, a SIBLING of the block (DFM 272 + 267f) */
+              if (!clickEjects && !locked) {
+                var tb = el('<button class="ghost-btn take-back" type="button" aria-label="' +
+                  esc(takeBackLabel + ': ' + String(it.blocks[si])) + '">' + esc(takeBackLabel) + '</button>');
+                tb.addEventListener('click', function (e) { e.stopPropagation(); if (!locked) takeOut(si); });
+                n.appendChild(tb);
+              }
               listEl.appendChild(n);
             });
             if (!list.length) {
@@ -3678,7 +3913,8 @@
     trayEmpty: 'Every line is in your program.',
     progEmpty: 'Nothing here yet — drag or click a line across.',
     matchedSay: 'The console said exactly what the target asked for.',
-    notYetSay: 'The console did not say what the target asked for. Read what it really printed, change your program, and run it again.'
+    notYetSay: 'The console did not say what the target asked for. Read what it really printed, change your program, and run it again.',
+    takeBack: 'Put this line back'
   };
 
   /* ================= snap — MATCH A BLOCK TO ITS PYTHON TWIN ================
@@ -3946,6 +4182,12 @@
           (cfg.introVideoSay ? '<p class="pyrun-intro-film-say">' + esc(cfg.introVideoSay) + '</p>' : '') +
           '</div>'
         : '';
+      /* A STAGED BUILD CARRIES ITS OWN FIRST FACE (K41b), so a generic intro
+         card in front of it would be a second screen saying the same thing —
+         which is the wall in miniature. The PLAN face holds the kicker, the
+         title, the lead, the film and the three jobs, and it is the screen she
+         lands on. */
+      if ((builds[0] || {}).staged) { startBuild(); return; }
       introCard(host, {
         kicker: cfg.kicker, title: cfg.title, text: cfg.intro || '',
         steps: cfg.steps, stepsClass: 'pyrun-intro-steps', extra: introFilm
@@ -4503,54 +4745,6 @@
           });
         };
 
-        /* the Now Playing block, taken out of what her program really printed —
-           never re-composed from her list, so the card she sends is the card she
-           made (rule 35 on a thing that travels to another pupil) */
-        function cardText(res) {
-          var head = String((b.sendCard || {}).head || '').toLowerCase();
-          var rows = PyRun.tidy(res.out).split('\n');
-          for (var i = 0; i < rows.length; i++) {
-            if (rows[i].toLowerCase().indexOf(head) === -1) continue;
-            var after = rows.slice(i + 1).filter(function (x) { return String(x).trim() !== ''; });
-            return [rows[i]].concat(after.slice(0, Number((b.sendCard || {}).lines || 3))).join('\n');
-          }
-          return PyRun.tidy(res.out).split('\n').slice(0, 4).join('\n');
-        }
-        function drawCardSend(into, res) {
-          var sc = b.sendCard || {};
-          var text = cardText(res);
-          var box = el('<div class="pye-cardsend" data-arrive-live>' +
-            '<h3>' + esc(sc.title || '') + '</h3>' +
-            '<pre class="pye-card">' + esc(text) + '</pre>' +
-            '<p class="pye-cardsay">' + fmtBold(PairKit.st ? (sc.lead || '') : (sc.noPartnerSay || '')) + '</p>' +
-            (PairKit.st ? '<button class="ghost-btn pye-send-card" type="button">' + esc(sc.sendLabel || '') + '</button>' : '') +
-            '<div class="pye-theirs"></div></div>');
-          into.appendChild(box);
-          if (!PairKit.st) return;
-          var theirs = box.querySelector('.pye-theirs');
-          var btn = box.querySelector('.pye-send-card');
-          var pollT = null;
-          App.armButton(btn, function () {
-            btn.disabled = true;
-            btn.textContent = sc.sendingLabel || sc.sendLabel || '';
-            PairKit.blob(ctx, 'put', 'card', text).then(function () {
-              btn.textContent = sc.sentLabel || '';
-              theirs.innerHTML = '<p class="pye-waiting">' + esc(sc.waitSay || '') + '</p>';
-              (function tick() {
-                PairKit.blob(ctx, 'get', 'card', PairKit.nextRound()).then(function (r) {
-                  if (r && r.ok && Number(r.has) && String(r.v).trim()) {
-                    theirs.innerHTML = '<h3>' + esc(sc.theirsTitle || '') + '</h3>' +
-                      '<pre class="pye-card is-theirs">' + esc(String(r.v)) + '</pre>';
-                    PairKit.arrive(theirs, { announce: sc.arrivedSay || '' });
-                    return;
-                  }
-                  pollT = setTimeout(tick, 2500);
-                });
-              })();
-            });
-          });
-        }
-
         function settle(res, ok, results) {
           verdict.hidden = false;
           verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
@@ -4596,8 +4790,382 @@
              from the Match, and her partner's card arrives with the flash.
              A pupil with no partner (solo, catch-up, pairing off) is told so
              plainly and loses nothing — the card is hers either way. */
-          if (b.sendCard) drawCardSend(verdict, res);
+          if (b.sendCard) drawCardSend(verdict, res, b);
         }
+      }
+
+        /* the Now Playing block, taken out of what her program really printed —
+           never re-composed from her list, so the card she sends is the card she
+           made (rule 35 on a thing that travels to another pupil) */
+        function cardText(res, b) {
+          var head = String((b.sendCard || {}).head || '').toLowerCase();
+          var rows = PyRun.tidy(res.out).split('\n');
+          for (var i = 0; i < rows.length; i++) {
+            if (rows[i].toLowerCase().indexOf(head) === -1) continue;
+            var after = rows.slice(i + 1).filter(function (x) { return String(x).trim() !== ''; });
+            return [rows[i]].concat(after.slice(0, Number((b.sendCard || {}).lines || 3))).join('\n');
+          }
+          return PyRun.tidy(res.out).split('\n').slice(0, 4).join('\n');
+        }
+        function drawCardSend(into, res, b) {
+          var sc = b.sendCard || {};
+          var text = cardText(res, b);
+          var box = el('<div class="pye-cardsend" data-arrive-live>' +
+            '<h3>' + esc(sc.title || '') + '</h3>' +
+            '<pre class="pye-card">' + esc(text) + '</pre>' +
+            '<p class="pye-cardsay">' + fmtBold(PairKit.st ? (sc.lead || '') : (sc.noPartnerSay || '')) + '</p>' +
+            (PairKit.st ? '<button class="ghost-btn pye-send-card" type="button">' + esc(sc.sendLabel || '') + '</button>' : '') +
+            '<div class="pye-theirs"></div></div>');
+          into.appendChild(box);
+          if (!PairKit.st) return;
+          var theirs = box.querySelector('.pye-theirs');
+          var btn = box.querySelector('.pye-send-card');
+          var pollT = null;
+          App.armButton(btn, function () {
+            btn.disabled = true;
+            btn.textContent = sc.sendingLabel || sc.sendLabel || '';
+            PairKit.blob(ctx, 'put', 'card', text).then(function () {
+              btn.textContent = sc.sentLabel || '';
+              theirs.innerHTML = '<p class="pye-waiting">' + esc(sc.waitSay || '') + '</p>';
+              (function tick() {
+                PairKit.blob(ctx, 'get', 'card', PairKit.nextRound()).then(function (r) {
+                  if (r && r.ok && Number(r.has) && String(r.v).trim()) {
+                    theirs.innerHTML = '<h3>' + esc(sc.theirsTitle || '') + '</h3>' +
+                      '<pre class="pye-card is-theirs">' + esc(String(r.v)) + '</pre>';
+                    PairKit.arrive(theirs, { announce: sc.arrivedSay || '' });
+                    return;
+                  }
+                  pollT = setTimeout(tick, 2500);
+                });
+              })();
+            });
+          });
+        }
+
+
+      /* ================= THE STAGED EDITOR — K41, his 27 Aug 2026 order ======
+         His words, sitting the mybot card: "The interface needs a LOT of work
+         and a COMPLETE DESIGN RETHINK - it is a complete mess and a child in J2
+         is not going to have an earthly clue what they are supposed to do." …
+         "Put yourself in the position of a J2 student. This is just a wall, a
+         wall of too much information."
+         WHAT WAS ON THAT WALL, all at once: title, intro, film, palette, editor,
+         side checklist, starter, RUN, conversation, console and verdict — on the
+         platform's ONE dark card, because `.pye-card` is the class the sent-card
+         <pre> uses and the editor card wore it too. That collision is where the
+         navy-on-navy title and the invisible verdict text came from: the card
+         painted itself #16253F and `.pyrun-goal` kept `var(--ink)`, which is
+         #17223B. One class, two worlds (DFM 207g), and nothing measured it.
+         THE CODE PITCH IS APPROVED and is unchanged (K41a): two questions, two
+         variables, a reply that uses both. What changes is the SHAPE.
+
+         ONE JOB ON SCREEN AT A TIME (K41b):
+           FACE 1, THE PLAN — what she is making, the film that shows it, and the
+             three jobs in her own words, rendered FROM the build's feature list
+             so the plan and the checklist can never say different things (DFM
+             144). One button.
+           FACE 2, THE BENCH — the same three jobs as a compact strip that fills
+             in as she runs, the editor at FULL CARD WIDTH with soft wrap so a
+             sixty-character question is not clipped sideways, the refusable
+             starter, at most four job-named template lines, and RUN.
+           THE CONVERSATION EXISTS ONLY WHEN A RUN FIRST ASKS, and the console
+             only once a run has ended. Before that they are not empty panels
+             waiting to be understood; they are not there.
+           THE VERDICT — one row per job in the SAME words, a heading COMPUTED
+             from the feature list (never authored — his "ALL FOUR" over 3/3),
+             and "Next step".
+         LIGHT GROUND, DARK PANELS ONLY FOR CODE (K41c): the editor and the
+         console are dark because they are code surfaces; everything a pupil
+         READS is ink on the light card.
+         CONFIG-GATED on `staged`, and it is the only shape either L3 editor
+         build uses. Nothing else on the platform uses editor mode at all. */
+      function startEditorStaged() {
+        var b = builds[at];
+        var feats = b.features || [];
+        var firstInsert = true;
+        var keptCode = '';
+        var state = {};                       /* feature id -> true once matched */
+        var attempts = 0;
+        var replies = [];
+        var starterUsed = false;              /* the offer is a first-visit thing */
+
+        /* ---- THE COUNT IS COMPUTED, NEVER AUTHORED (J5, his "ALL FOUR" over
+           3/3). The engine picks the word; the WORDS are content, so they go
+           through the language gate like every other sentence a pupil reads
+           (DFM 192g). A lesson that forgets them gets the digit, which is true
+           and plain — a fallback nothing is meant to reach. */
+        function countWord(n) {
+          var words = cfg.countWords || b.countWords;
+          if (words && words[n]) return String(words[n]);
+          return String(n);
+        }
+        function fill(s, doneN) {
+          return String(s == null ? '' : s)
+            .replace(/\{n\}/g, countWord(feats.length))
+            .replace(/\{done\}/g, countWord(doneN == null ? 0 : doneN));
+        }
+
+        /* ---------------------------- FACE 1: THE PLAN --------------------- */
+        function plan() {
+          host.innerHTML = '';
+          var film = cfg.introVideo
+            ? '<div class="pye-plan-film"><video controls preload="metadata" playsinline src="' +
+              esc(asset(cfg.introVideo)) + '"></video>' +
+              (cfg.introVideoSay ? '<p class="pye-plan-say">' + esc(cfg.introVideoSay) + '</p>' : '') +
+              '</div>'
+            : '';
+          var jobs = feats.map(function (f) {
+            return '<li>' + esc(f.label || '') + '</li>';
+          }).join('');
+          var c = el('<div class="card pyrun-card pye-plan" data-build="' + esc(b.id || '') + '">' +
+            '<span class="intro-kicker">' + esc(cfg.kicker || '') + '</span>' +
+            '<h2>' + esc(cfg.title || '') + '</h2>' +
+            (cfg.intro ? '<p class="intro-lead">' + fmtBold(cfg.intro) + '</p>' : '') +
+            film +
+            '<h3 class="pye-plan-h">' + esc(cfg.planLabel || b.planLabel || '') + '</h3>' +
+            '<p class="pye-plan-goal">' + fmtBold(b.goalLine || '') + '</p>' +
+            '<ol class="pye-plan-list">' + jobs + '</ol>' +
+            (b.brief ? '<p class="pye-plan-brief">' + fmtBold(b.brief) + '</p>' : '') +
+            '<button class="primary-btn pye-start" type="button">' +
+            esc(cfg.startLabel || b.startLabel || 'Start writing') + '</button>' +
+            '</div>');
+          host.appendChild(c);
+          App.armButton(c.querySelector('.pye-start'), function () { bench(); });
+        }
+
+        /* ---------------------------- FACE 2: THE BENCH -------------------- */
+        function bench() {
+          host.innerHTML = '';
+          /* AT MOST FOUR TEMPLATE LINES, EACH NAMED BY THE JOB IT DOES (K41b).
+             The shipped palette was six lines of raw Python with no job on them —
+             a wall inside the wall. The cap is the engine's, so no future build
+             can quietly grow one back. Served shuffled, because a tray in
+             solution order is an answer sheet (DFM 258). */
+          var pal = (b.palette || []).slice(0, 4);
+          var palOrder = derangedOrder(pal.length);
+          var paletteHtml = pal.length
+            ? '<div class="pyp-palette"><h3>' + esc(b.paletteLabel || cfg.paletteLabel || '') + '</h3>' +
+              '<p class="pyp-palette-lead">' + fmtBold(b.paletteLead || cfg.paletteLead || '') + '</p>' +
+              '<div class="pyp-palette-list">' + palOrder.map(function (i) {
+                var t = pal[i];
+                return '<button class="pyp-chip" type="button" data-i="' + i + '">' +
+                  '<b class="pyp-chip-name">' + esc(t.label || '') + '</b>' +
+                  '<code class="pyp-chip-code">' + esc(t.line || '') + '</code></button>';
+              }).join('') + '</div></div>'
+            : '';
+          /* THE JOBS ARE NUMBERED HERE TOO. The plan face numbers them 1, 2, 3
+             and the template lines are named "Job 1", "Job 3" — so a strip with
+             no numbers on it would leave those labels pointing at something this
+             screen never names (rule 13 / 138.1.3). */
+          var jobs = feats.map(function (f, i) {
+            return '<li class="pyf-item" data-f="' + esc(f.id) + '">' +
+              '<span class="pyf-tag"><span class="pyf-num">' + (i + 1) + '</span>' +
+              esc(b.pendingLabel || cfg.pendingLabel || 'not yet') + '</span>' +
+              '<span class="pyf-say">' + esc(f.label || '') + '</span>' +
+              '<span class="pyf-nudge" hidden></span></li>';
+          }).join('');
+          var c = el('<div class="card pyrun-card pye-bench" data-build="' + esc(b.id || '') + '">' +
+            '<h2 class="pyrun-goal">' + fmtBold(b.goalLine || '') + '</h2>' +
+            '<h3 class="pye-strip-h">' + esc(b.checklistLabel || cfg.checklistLabel || '') + '</h3>' +
+            '<ol class="pyf-list pye-strip">' + jobs + '</ol>' +
+            '<div class="pye-host"></div>' +
+            (b.starter && b.starter.length && !starterUsed
+              ? '<div class="pye-starter"><p class="pye-starter-say">' + fmtBold(b.starterSay || cfg.starterSay || '') + '</p>' +
+                '<button class="ghost-btn pye-starter-btn" type="button">' +
+                esc(b.starterLabel || cfg.starterLabel || '') + '</button></div>'
+              : '') +
+            paletteHtml +
+            helpRowHtml(b) +
+            '<button class="primary-btn pyrun-run" type="button">' + esc(cfg.runLabel || 'RUN my program') + '</button>' +
+            '<div class="pyw-stage"></div>' +
+            '<div class="pyrun-verdict" hidden></div>' +
+            '</div>');
+          host.appendChild(c);
+          wireHelpRow(c, b);
+
+          var ed = PyRun.editor(c.querySelector('.pye-host'),
+            Object.assign({ softWrap: true }, b.editor || cfg.editor || {}));
+          if (keptCode) ed.set(keptCode);
+          var stage = c.querySelector('.pyw-stage');
+          var runBtn = c.querySelector('.pyrun-run');
+          var verdict = c.querySelector('.pyrun-verdict');
+          /* NOT CREATED YET, AND THAT IS THE POINT (K41b). A conversation panel
+             with nothing in it and a console saying "nothing has run yet" are two
+             more things to understand before she has written a line. */
+          var chat = null, con = null;
+          function needConsole() {
+            if (!con) con = PyRun.console(stage, cfg.consoleLabels || {});
+            return con;
+          }
+          function needChat() {
+            if (!chat) {
+              chat = PyRun.chat(stage, cfg.chatLabels || {});
+              /* THE CONVERSATION HAPPENED FIRST, SO IT READS FIRST. The console
+                 is created the moment RUN is pressed and the conversation only
+                 when the program first asks, so appending in creation order put
+                 the ANSWER above the questions that produced it — a transcript
+                 out of order is a screen that has to be decoded. */
+              if (con && con.node && chat.node) stage.insertBefore(chat.node, con.node);
+            }
+            return chat;
+          }
+          PyRun.load().catch(function () { /* reported honestly at RUN */ });
+
+          c.querySelectorAll('.pyp-chip').forEach(function (btn) {
+            btn.onclick = function () {
+              var t = pal[Number(btn.getAttribute('data-i'))];
+              ed.insert(String(t.line || ''));
+              if (firstInsert && (b.firstInsertSay || cfg.firstInsertSay)) {
+                firstInsert = false;
+                if (!c.querySelector('.pye-first-note')) {
+                  var note = el('<p class="pye-first-note">' + fmtBold(b.firstInsertSay || cfg.firstInsertSay) + '</p>');
+                  c.querySelector('.pyp-palette').insertAdjacentElement('afterend', note);
+                }
+              }
+            };
+          });
+          var sb = c.querySelector('.pye-starter-btn');
+          if (sb) {
+            sb.onclick = function () {
+              ed.set((b.starter || []).join('\n'));
+              starterUsed = true;
+              var box = c.querySelector('.pye-starter');
+              if (box) {
+                box.innerHTML = '<p class="pye-starter-done">' +
+                  fmtBold(b.starterDoneSay || cfg.starterDoneSay || '') + '</p>';
+              }
+              ed.focus();
+            };
+          }
+
+          function paintJobs(results, ran) {
+            feats.forEach(function (f) {
+              var row = c.querySelector('.pyf-item[data-f="' + f.id + '"]');
+              if (!row) return;
+              var hit = (results || []).find(function (r) { return r.id === f.id; });
+              var ok = !!(hit && hit.ok);
+              if (ok) state[f.id] = true;
+              row.className = 'pyf-item ' + (ok ? 'is-matched' : (ran ? 'is-notyet' : ''));
+              var num = row.querySelector('.pyf-num');
+              row.querySelector('.pyf-tag').textContent = ok
+                ? (b.doneLabel || cfg.doneLabel || 'done')
+                : (ran ? (b.notYetLabel || cfg.notYetLabel || 'NOT YET')
+                       : (b.pendingLabel || cfg.pendingLabel || 'not yet'));
+              if (num) row.querySelector('.pyf-tag').insertBefore(num, row.querySelector('.pyf-tag').firstChild);
+              var nu = row.querySelector('.pyf-nudge');
+              if (!ok && ran && f.nudge) { nu.hidden = false; nu.textContent = f.nudge; }
+              else { nu.hidden = true; nu.textContent = ''; }
+            });
+          }
+          paintJobs([], false);
+
+          runBtn.onclick = function () {
+            var code = ed.value();
+            if (!String(code).trim()) {
+              verdict.hidden = false;
+              verdict.className = 'pyrun-verdict is-note';
+              verdict.innerHTML = '<p>' + esc(b.emptySay || cfg.emptySay || PY_SAY.blankEmptySay) + '</p>';
+              ed.focus();
+              return;
+            }
+            keptCode = code;
+            verdict.hidden = true;
+            runBtn.disabled = true;
+            attempts++;
+            replies = [];
+            if (chat) chat.clear();
+            needConsole().running();
+            if (cfg.waitingSay) PyRun.waitNote(runBtn, cfg.waitingSay);
+            liveRun = PyRun.start(code, {
+              limitMs: Number(cfg.limitMs || 0) || undefined,
+              /* the conversation ARRIVES with the first question, which is also
+                 the first moment its label ("The conversation") means anything */
+              inputfun: function (prompt) {
+                return needChat().ask(prompt, cfg.botWho || (cfg.chatLabels || {}).botWho, cfg.sendLabel)
+                  .then(function (v) { replies.push(v); return v; });
+              }
+            });
+            liveRun.p.then(function (res) {
+              liveRun = null;
+              PyRun.clearWaitNote(runBtn);
+              if (chat) chat.closeAsk();
+              needConsole().show(res, cfg.errorWords || {});
+              if (!feats.length) { settleStaged(res, PyRun.matches(res.out, b.target || []), [], c, verdict, ed, runBtn); return; }
+              /* HER RUN IS HER RUN; the VERDICT is a second, silent pass under
+                 fixed probe answers, so what the jobs strip reports is the same
+                 every time and can never turn on a word she happened to type. */
+              PyRun.checkFeatures(code, feats, {
+                answers: b.probeAnswers || cfg.probeAnswers || [],
+                limitMs: Number(cfg.limitMs || 0) || undefined,
+                seed: Number(b.seed == null ? 4 : b.seed)
+              }).then(function (out) {
+                var results = out.results;
+                paintJobs(results, true);
+                var all = results.every(function (r) { return r.ok; });
+                if (attempts === 1 && !b.optional) featureFirst = results.filter(function (r) { return r.ok; }).length;
+                settleStaged(res, all, results, c, verdict, ed, runBtn);
+              });
+            });
+          };
+        }
+
+        function settleStaged(res, ok, results, c, verdict, ed, runBtn) {
+          var n = (results || []).filter(function (r) { return r.ok; }).length;
+          /* ---- THE HEADING IS COMPUTED FROM THE FEATURE LIST (J5) ----------
+             His exhibit: "ALL FOUR" printed over a count of 3/3, at the exact
+             moment of her success. The label was AUTHORED and the count was
+             derived, so the two could disagree and one day did. Now only one of
+             them is a fact and the other is made from it. */
+          var head = ok
+            ? fill(cfg.matchedAllLabel || b.matchedAllLabel || cfg.matchedLabel || 'MATCHED', n)
+            : fill(cfg.notYetLabel || 'NOT YET', n);
+          var say = ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay)
+                       : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay);
+          /* ONE ROW PER JOB, IN THE SAME WORDS AS THE PLAN AND THE STRIP — she
+             reads the same sentence in all three places (DFM 144). */
+          var rows = (results || []).map(function (r) {
+            var fi = -1;
+            var f = (b.features || []).filter(function (x, i) {
+              if (x.id === r.id) { fi = i; return true; } return false;
+            })[0] || {};
+            return '<li class="pyv-row ' + (r.ok ? 'is-matched' : 'is-notyet') + '">' +
+              '<span class="pyv-tag"><span class="pyf-num">' + (fi + 1) + '</span>' +
+              esc(r.ok ? (b.doneLabel || cfg.doneLabel || 'done')
+                : (b.notYetLabel || cfg.notYetLabel || 'NOT YET')) + '</span>' +
+              '<span class="pyv-say">' + esc(f.label || '') + '</span></li>';
+          }).join('');
+          verdict.hidden = false;
+          verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
+          verdict.innerHTML = '<p class="pyrun-vtag">' + esc(head) + '</p>' +
+            (rows ? '<ol class="pyv-list">' + rows + '</ol>' : '') +
+            '<p class="pyrun-vsay">' + esc(fill(say, n)) + '</p>';
+          if (!ok) { runBtn.disabled = false; return; }
+          if (attempts === 1 && !(b.features || []).length) cleanFirst++;
+          /* the Swap reads this draft — unchanged from the shape he approved */
+          if (b.saveAs && ctx.saveDraft) {
+            var keep = String(ed.value());
+            if (keep.length <= 3000) {
+              var d = ctx.draft || {};
+              d[String(b.saveAs)] = keep;
+              ctx.saveDraft(d);
+            }
+          }
+          ed.lock();
+          c.querySelectorAll('.pyp-chip').forEach(function (n2) { n2.disabled = true; });
+          var last = (at + 1 >= builds.length);
+          var go = el('<button class="primary-btn" type="button">' +
+            esc(last ? (cfg.continueLabel || 'Continue') : (cfg.nextBuildLabel || 'Next step')) + '</button>');
+          verdict.appendChild(go);
+          App.armButton(go, function () {
+            at++; if (at < builds.length) startBuild(); else done();
+          });
+          if (b.sendCard) drawCardSend(verdict, res, b);
+        }
+
+        /* THE OFFER CARD IS THE PLAN FOR AN OPTIONAL EXTRA (DFM 265's shape):
+           it has already said what the job is and let her refuse it, so a second
+           plan face would be a screen for nothing. */
+        if (b.optional) bench(); else plan();
       }
 
       function startBuild(accepted) {
@@ -4607,7 +5175,13 @@
         if (builds[at] && builds[at].optional && !accepted) { offerExtra(); return; }
         var mode = String((builds[at] || {}).mode || cfg.mode || 'assemble');
         if (mode === 'worked') { startWorked(); return; }
-        if (mode === 'editor') { startEditor(); return; }
+        if (mode === 'editor') {
+          /* K41's staged shape, config-gated per build; the wall shape is what
+             the unstaged path still renders, and nothing on the platform is on
+             it any more. */
+          if (builds[at] && builds[at].staged) { startEditorStaged(); return; }
+          startEditor(); return;
+        }
         host.innerHTML = '';
         var isExtra = !!cfg.extrasMode;
         var b = builds[at];
@@ -4654,9 +5228,41 @@
         var c = el('<div class="card pyrun-card" data-build="' + esc(b.id || '') + '">' +
           stepStrip +
           '<h2 class="pyrun-goal">' + fmtBold(b.goalLine || '') + '</h2>' +
+          /* ---- THE ACTION COMES FIRST, AND IT IS A REAL NUMBERED LIST -------
+             His verdict on training build 3a, 27 Aug 2026: "VERY confusing". The
+             card opened with a paragraph that described the two planted MISTAKES
+             before it had said what she was being asked to DO — DFM 151's own
+             fault ("the card must say what she is being asked to do, how she does
+             it, and what the finished thing should be", in that order), with a
+             sequence buried in prose, which DFM 171 renders one-per-line.
+             So the ACTIONS are a numbered list at the top of the card, and the
+             description of the mistakes follows them. A build that authors no
+             `actions` renders exactly as it did (config-gated, control asserted). */
+          ((b.actions && b.actions.length)
+            ? '<ol class="pyrun-actions">' +
+              b.actions.map(function (a) { return '<li>' + fmtBold(a) + '</li>'; }).join('') + '</ol>'
+            : '') +
           (b.brief ? '<p class="pyrun-brief">' + fmtBold(b.brief) + '</p>' : '') +
-          '<div class="pyrun-target"><p class="pyrun-target-lead">' + esc(cfg.targetLead || '') + '</p>' +
-          '<pre class="pyrun-target-out">' + esc((b.target || []).join('\n')) + '</pre></div>' +
+          /* ---- THE TARGET BLOCK RENDERS ONLY WHEN IT HAS SOMETHING IN IT ----
+             His find, 27 Aug 2026: "a wee white line" at the top of training
+             build 3a, right where a reader's eye starts. This block was drawn on
+             EVERY build — a lead paragraph and an expected-output <pre> — and a
+             build that is checked by RUNNING authors neither, so an empty orange
+             shell with a blank white strip in it shipped above the instruction
+             (DFM 42/184's empty-element class).
+             AN ABSENCE IS NOT AN ANSWER, so where the block goes the card now
+             SAYS, in words a pupil reads, that there is nothing to copy and how
+             the build is checked instead. The sentence is content-owned, so it
+             goes through the language gate and carries a read-aloud record like
+             every other pupil sentence (DFM 190d/192g).
+             A build that DOES author a target renders byte-identically — the
+             control asserts it, and eleven signed-off lessons depend on it. */
+          ((b.target && b.target.length)
+            ? '<div class="pyrun-target"><p class="pyrun-target-lead">' + esc(cfg.targetLead || '') + '</p>' +
+              '<pre class="pyrun-target-out">' + esc(b.target.join('\n')) + '</pre></div>'
+            : ((b.runCheckedSay || cfg.runCheckedSay)
+              ? '<p class="pyrun-runcheck">' + fmtBold(b.runCheckedSay || cfg.runCheckedSay) + '</p>'
+              : '')) +
           '<p class="pyrun-how">' + fmtBold(cfg.howLine || '') + '</p>' +
           '<div class="pyrun-cols">' +
           '<div class="pyrun-tray"><h3>' + esc(cfg.trayLabel || 'The lines') + '</h3><div class="pyt-list"></div></div>' +
@@ -4731,12 +5337,53 @@
           return null;
         }
 
+        /* ---- DFM 272's config gate ------------------------------------
+           The DEFAULT is the shipped behaviour, so every lesson that does not
+           name the field renders and behaves exactly as it did — which is what
+           keeps the two signed-off Lesson 2s untouched until he says the word
+           (DFM 221's report-never-fix rule, and the config-gate precedent that
+           has kept every locked lesson byte-identical since DFM 176). j2-03 and
+           j3-03 set it to false. */
+        var clickEjects = cfg.trayClickEject !== false;
+        var takeBackLabel = String(cfg.takeBackLabel || PY_SAY.takeBack);
+
         /* ---- pointer drag, with click as an equal citizen -------------- */
+        /* ---- AND IT IS MEASURED ON HOW IT FEELS (his 27 Aug 2026 find) ----
+           The shipped gesture read `getBoundingClientRect()` on both zones on
+           EVERY pointermove and wrote the ghost's transform synchronously on
+           every event. Each rect read forces the browser to lay the whole page
+           out again, mid-gesture, and a mouse reporting at 240 Hz then asks for
+           240 layouts and 240 style writes a second inside a 60 Hz frame. That
+           is the jank, and his question "was the harness shite?" was fair: the
+           old gate proved the drag WORKED and measured nothing about how it
+           felt, so it could never have failed on this.
+           NOTHING MOVES UNDER A DRAGGED GHOST, so every rect this gesture will
+           ever need is read ONCE, when the gesture starts, and the drop index is
+           computed from those cached midpoints for the rest of it. The ghost is
+           written inside requestAnimationFrame — one write per frame, whatever
+           the mouse's report rate. `qa-drag-smooth` counts both, on both
+           engines, with the engine he sat as the failing control, and proves in
+           the same run that the row still lands in exactly the same place. */
         var ghost = null, suppressClick = false;
-        function inside(node, x, y) {
-          var r = node.getBoundingClientRect();
-          return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+        var geo = null, raf = 0, ptrX = 0, ptrY = 0, lastZone = '';
+        function inRect(r, x, y) {
+          return !!r && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
         }
+        /* every rect the gesture needs, read once, at the moment it starts */
+        function snapGeometry() {
+          var mids = [];
+          Array.prototype.slice.call(prog.querySelectorAll('li:not(.pyp-empty)')).forEach(function (li) {
+            var b = li.getBoundingClientRect();
+            mids.push(b.top + b.height / 2);
+          });
+          return { prog: progZone.getBoundingClientRect(), tray: trayZone.getBoundingClientRect(), mids: mids };
+        }
+        function indexFromMids(mids, clientY) {
+          for (var i = 0; i < mids.length; i++) if (clientY < mids[i]) return i;
+          return mids.length;
+        }
+        /* the live read, kept for the paths that are NOT a drag (there is no
+           cached geometry when nothing is being dragged) */
         function dropIndexAt(clientY) {
           var lis = Array.prototype.slice.call(prog.querySelectorAll('li:not(.pyp-empty)'));
           for (var i = 0; i < lis.length; i++) {
@@ -4764,6 +5411,18 @@
               e.preventDefault();
               if (isPlaced) take(si); else put(si, null);
             });
+          } else if (!clickEjects && isPlaced) {
+            /* A REAL <button> WHOSE CLICK NO LONGER REMOVES STILL HAS TO ANSWER
+               ENTER (DFM 272's own wording: Enter is a deliberate act and it
+               stays). `preventDefault` on the keydown cancels the button's own
+               synthesised click, so the row is taken back exactly once. */
+            node.addEventListener('keydown', function (e) {
+              if (outOfService(node)) return;
+              if (e.target && /input|textarea/i.test(e.target.tagName)) return;
+              if (e.key !== 'Enter') return;
+              e.preventDefault();
+              take(si);
+            });
           }
           node.addEventListener('pointerdown', function (e) {
             /* a press on a typing blank is TYPING, never a drag */
@@ -4772,6 +5431,22 @@
             if (e.button != null && e.button !== 0) return;
             var sx = e.clientX, sy = e.clientY, moved = false;
             try { node.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+            /* ONE WRITE PER FRAME, and the zone highlight only when the zone
+               actually changes — a class written on every event is a style
+               invalidation on every event, for a screen that already looks
+               exactly like that. */
+            function paint() {
+              raf = 0;
+              if (!ghost || !geo) return;
+              ghost.style.transform = 'translate(' + (ptrX + Number(ghost.dataset.dx)) + 'px,' +
+                (ptrY + Number(ghost.dataset.dy)) + 'px)';
+              var zone = inRect(geo.prog, ptrX, ptrY) ? 'prog'
+                : (inRect(geo.tray, ptrX, ptrY) ? 'tray' : '');
+              if (zone === lastZone) return;
+              lastZone = zone;
+              progZone.classList.toggle('drop-here', zone === 'prog');
+              trayZone.classList.toggle('drop-back', zone === 'tray');
+            }
             function onMove(ev) {
               if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 6) return;
               if (!moved) {
@@ -4784,24 +5459,31 @@
                 ghost.dataset.dx = String(r.left - ev.clientX);
                 ghost.dataset.dy = String(r.top - ev.clientY);
                 document.body.appendChild(ghost);
+                /* `.dragging` only changes opacity, so nothing has moved and
+                   these rects are the same ones a live read would return */
+                geo = snapGeometry();
+                lastZone = '';
               }
-              ghost.style.transform = 'translate(' + (ev.clientX + Number(ghost.dataset.dx)) + 'px,' +
-                (ev.clientY + Number(ghost.dataset.dy)) + 'px)';
-              progZone.classList.toggle('drop-here', inside(progZone, ev.clientX, ev.clientY));
-              trayZone.classList.toggle('drop-back', inside(trayZone, ev.clientX, ev.clientY));
+              ptrX = ev.clientX; ptrY = ev.clientY;
+              if (!raf) raf = requestAnimationFrame(paint);
             }
             function onUp(ev) {
               node.removeEventListener('pointermove', onMove);
               node.removeEventListener('pointerup', onUp);
               node.removeEventListener('pointercancel', onUp);
               try { node.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+              if (raf) { cancelAnimationFrame(raf); raf = 0; }
               if (ghost) { ghost.remove(); ghost = null; }
               node.classList.remove('dragging');
               progZone.classList.remove('drop-here'); trayZone.classList.remove('drop-back');
+              lastZone = '';
+              var g = geo; geo = null;
               if (!moved) return;
               suppressClick = true;
-              if (inside(trayZone, ev.clientX, ev.clientY)) take(si);
-              else if (inside(progZone, ev.clientX, ev.clientY)) put(si, dropIndexAt(ev.clientY));
+              if (inRect(g && g.tray, ev.clientX, ev.clientY)) take(si);
+              else if (inRect(g && g.prog, ev.clientX, ev.clientY)) {
+                put(si, g ? indexFromMids(g.mids, ev.clientY) : dropIndexAt(ev.clientY));
+              }
             }
             node.addEventListener('pointermove', onMove);
             node.addEventListener('pointerup', onUp);
@@ -4811,6 +5493,18 @@
             if (e.target && /input/i.test(e.target.tagName)) return;
             if (outOfService(node)) return;
             if (suppressClick) { suppressClick = false; return; }
+            /* ---- A SINGLE CLICK NEVER DESTROYS PLACED WORK — DFM 272 -------
+               His find, 27 Aug 2026, on training build 3b: "the third line was
+               put back over to the left". He was typing into the gaps on the
+               lines around it; one stray click on a placed line's BODY threw it
+               back to the tray, silently, and the run then failed with an
+               honest error about a box name he had never mistyped. Placing and
+               removing were the same gesture, so the gesture that builds was
+               the gesture that unbuilds.
+               Removal is now a deliberate act: drag it back to the tray, press
+               Enter on it, or press its own labelled control. The body click
+               does nothing at all. */
+            if (isPlaced && !clickEjects) return;
             if (isPlaced) take(si); else put(si, null);
           });
         }
@@ -4906,6 +5600,22 @@
                not a <button> any more (DFM 267f), and the same habit is what killed
                "Start climbing" and then "Run the inspection again" (DFM 143a). */
             wire(li.querySelector('.pyrun-line'), si, true); wireBlanks(li);
+            /* THE LABELLED WAY BACK (DFM 272). It is a SIBLING of the row, never
+               a child of it: the row is a real <button> where it has no gap, and
+               a control inside a control is the fault 267(f) closed. It says what
+               it removes — the label plus the row's own line — so it is announced
+               rather than decoded (DFM 149's family). */
+            if (!clickEjects) {
+              var say = String(lines[si].t || '').replace(/\s+/g, ' ').trim();
+              var tb = el('<button class="ghost-btn take-back" type="button" aria-label="' +
+                esc(takeBackLabel + ': ' + say) + '">' + esc(takeBackLabel) + '</button>');
+              tb.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (outOfService(li.querySelector('.pyrun-line'))) return;
+                take(si);
+              });
+              li.appendChild(tb);
+            }
             prog.appendChild(li);
           });
           if (!placed.length) prog.appendChild(el('<li class="pyp-empty">' + esc(cfg.progEmpty || PY_SAY.progEmpty) + '</li>'));

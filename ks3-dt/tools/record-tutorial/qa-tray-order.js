@@ -280,6 +280,13 @@ async function run() {
              so the walk has to accept the offer to reach the bank behind it */
           const yes = host.querySelector('.py-offer-yes');
           if (yes) { yes.click(); await wait(60); }
+          /* A STAGED EDITOR SHOWS ITS PLAN FIRST (K41), and the bank of lines is
+             on the SECOND face — so a walk that stopped at the plan measured an
+             empty bank and reported a shuffle fault the card does not have
+             (DFM 146a). Press Start writing to reach the bench, exactly as she
+             does. */
+          const start = host.querySelector('.pye-start');
+          if (start) { start.click(); await wait(120); }
           return Array.prototype.slice.call(host.querySelectorAll('.pyp-chip'))
             .map(n => Number(n.getAttribute('data-i')));
         }, [b.chunkJson, b.index]));

@@ -32,7 +32,18 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
-const BASE_REF = 'b34f945';          /* the V52 build he is running — PINNED */
+/* THE BASE IS THE BUILD HE SAT, AND IT MOVES WITH EACH ROUND — 27 Aug 2026.
+   It used to be pinned at `b34f945` (V52), and the claim it made was "every
+   briefing card renders byte-identically to the V52 engine". That claim stopped
+   being true the moment a LATER round legitimately changed the engine — the V58
+   Continue-button cap did exactly that — so by 27 August this gate was reporting
+   two rounds of intended work as faults on j2-02, j2-03 and j3-03. Proved rather
+   than assumed: the gate was run from the 7d9c274 worktree, where it fails the
+   same three cards, so the failures were never this round's.
+   WHAT THE GATE IS FOR is the config-gate promise: THIS round's change touches
+   nothing it did not mean to touch. That question needs the base to be the build
+   he sat, and it needs re-pinning every round — which is the note below. */
+const BASE_REF = '7d9c274';          /* the build he sat, V58 — PINNED, re-pin each round */
 const REPO = path.join(__dirname, '..', '..', '..');
 const ENGINES = 'ks3-dt/platform/engines.js';
 const CONTENT = process.env.KS3DT_CONTENT_SRC ||
@@ -68,7 +79,9 @@ function briefingCards() {
         if (c.engine !== 'briefing') return;
         out.push({
           lesson: L.id, year: y.id, num: String(L.num), title: L.title, chunk: c.id, at: i,
-          video: (c.config || {}).video || null
+          video: (c.config || {}).video || null,
+          demoAfterLine: Number((c.config || {}).demoAfterLine || 0),
+          lines: ((c.config || {}).lines || []).length
         });
       });
     });
@@ -90,7 +103,7 @@ const PUPIL = { j1: 'anya', j2: 'aoife', j3: 'orla' };
     withFilm.map(c => c.lesson).join(', ') + ')');
 
   /* the engine as it was before the wire, run rather than described */
-  let baseEngine = null;
+  let baseEngine = null;   /* reassigned below for the second base */
   try {
     baseEngine = execFileSync('git', ['-C', REPO, 'show', BASE_REF + ':' + ENGINES], {
       encoding: 'utf8', maxBuffer: 32 * 1024 * 1024
@@ -99,8 +112,8 @@ const PUPIL = { j1: 'anya', j2: 'aoife', j3: 'orla' };
     check(false, 'the pre-change engine can be read out of git at ' + BASE_REF, e.message);
   }
   if (baseEngine) {
-    check(!/dossier-film/.test(baseEngine),
-      'and it really is the PRE-change engine — it has no film block in it (' + BASE_REF + ')');
+    check(!/demoAfterLine/.test(baseEngine),
+      'and it really is the engine he sat — it has no demoAfterLine in it (' + BASE_REF + ')');
   }
 
   const { chromium } = require('./node_modules/playwright');
@@ -150,15 +163,24 @@ const PUPIL = { j1: 'anya', j2: 'aoife', j3: 'orla' };
       await page.close();
       return { html: null, errs: ['no tile titled ' + JSON.stringify(card.title) + ' (saw ' + JSON.stringify(seen) + ')'] };
     }
-    /* wait for the card to finish typing itself out */
-    for (let i = 0; i < 60; i++) {
-      const done = await page.evaluate(() => {
-        const cta = document.querySelector('.dossier-cta');
-        return !!(cta && !cta.hidden);
-      });
-      if (done) break;
+    /* WAIT FOR THE CARD TO BE FINISHED, NOT FOR THE WAY OUT TO APPEAR.
+       This used to wait for `.dossier-cta` — and on a card carrying a demo the
+       CTA is shown IMMEDIATELY on purpose (DFM 42/205: she is never held on a
+       screen with nothing to press). So the DOM was read about two seconds in,
+       with one or two of twelve lines on screen, and the comparison was between
+       two half-drawn cards. A gate that measures a screen nobody is on is the
+       DFM 204 fault in miniature. It now waits for every authored line to have
+       landed, with the CTA as the backstop for cards that animate nothing. */
+    const wantLines = Number(card.lines || 0);
+    for (let i = 0; i < 80; i++) {
+      const st = await page.evaluate(() => ({
+        lines: document.querySelectorAll('.dossier-line').length,
+        cta: !!(document.querySelector('.dossier-cta') && !document.querySelector('.dossier-cta').hidden)
+      }));
+      if (st.cta && (!wantLines || st.lines >= wantLines)) break;
       await sleep(400);
     }
+    await sleep(600);
     const html = await page.evaluate(() => {
       const d = document.querySelector('.dossier');
       return d ? d.outerHTML : null;
@@ -178,15 +200,15 @@ const PUPIL = { j1: 'anya', j2: 'aoife', j3: 'orla' };
         '  base=' + (was.html ? 'ok' : 'MISSING ' + was.errs.join('; ')));
       continue;
     }
-    if (!card.video) {
+    if (card.video) filmSeen = { now: now.html, was: was.html, card: card };
+    if (!card.demoAfterLine) {
       check(now.html === was.html,
-        card.lesson + ' › ' + card.chunk + ': renders BYTE-IDENTICALLY to the pre-change engine',
+        card.lesson + ' › ' + card.chunk + ': renders BYTE-IDENTICALLY to the card he sat',
         now.html === was.html ? '' : 'first difference at character ' +
           [...now.html].findIndex((ch, i) => ch !== was.html[i]));
     } else {
-      filmSeen = { now: now.html, was: was.html, card: card };
       check(now.html !== was.html,
-        card.lesson + ' › ' + card.chunk + ': DOES differ from the pre-change engine — it is the one card with a film');
+        card.lesson + ' › ' + card.chunk + ': DOES differ — it is the one card that moves its demo');
     }
     check((now.errs || []).length === 0, card.lesson + ' › ' + card.chunk + ': zero page errors',
       (now.errs || []).join('; '));
@@ -206,15 +228,50 @@ const PUPIL = { j1: 'anya', j2: 'aoife', j3: 'orla' };
       'and it sits ABOVE the typed lines, which is where the card\'s second line sends her');
     check(/class="dossier has-film"/.test(h),
       'the card widens for it by a CLASS, not by a :has() selector a school browser may not have');
-    /* THE CONTROL, both ways: strip the film field and the very same card must
-       collapse back onto the pre-change DOM. */
-    control(filmSeen.was.indexOf('dossier-film') === -1,
-      'the SAME card, rendered by the pre-change engine, has no film block at all — so the block is genuinely the new thing');
-    const stripped = h.replace(/<div class="dossier-film">.*?<\/div>/s, '')
-      .replace(' has-film', '');
-    control(stripped === filmSeen.was,
-      'and with the film block and the widening class removed it is byte-identical to the old render — ' +
-      'the wire adds exactly the film and nothing else');
+    /* THE FILM WIRE'S CONTROL BELONGS TO ITS OWN ROUND, AND SO DOES ITS BASE.
+       This used to read the gate's single base — which is now the build he sat,
+       and the film has been shipping since V53, so the control was asking
+       whether a four-day-old engine lacked a five-day-old feature and failing
+       honestly. One pinned base per claim (DFM 196): the film's claim is about
+       the engine BEFORE the wire. */
+    /* THE FILM WIRE'S OWN CONTROL keeps its own base, because it is a claim about
+       a DIFFERENT round: the block was genuinely new at V53, and that stays true
+       whatever this engine does next. One pinned base per claim (DFM 196). */
+    const FILM_REF = 'b34f945';
+    let filmBase = null;
+    try {
+      filmBase = execFileSync('git', ['-C', REPO, 'show', FILM_REF + ':' + ENGINES],
+        { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
+    } catch (e) { /* reported */ }
+    control(!!filmBase && !/dossier-film/.test(filmBase),
+      'the engine BEFORE the film wire (' + FILM_REF + ') has no film block in it at all — ' +
+      'so the block on this card is genuinely the thing that round added');
+  }
+
+  /* ==== WHERE THE DEMO LANDED, read off the rendered card ================
+     His find, 27 Aug 2026: the workshop card's line 6 reads "Here is a small one
+     running. Watch it once before you build your own." and the demo rendered at
+     the BOTTOM of the card, after six more lines — a sentence pointing at
+     something that was not there (rule 35 on position). */
+  console.log('\nWHERE THE DEMO LANDED (F2)');
+  const moved = cards.filter(c => c.demoAfterLine)[0];
+  if (!moved) check(false, 'a card with demoAfterLine was found');
+  else {
+    const now = await dossierOf(moved, false);
+    const was = await dossierOf(moved, true);
+    const idx = (html) => {
+      const cut = html.indexOf('<div class="dossier-demo">');
+      return cut < 0 ? -1 : (html.slice(0, cut).match(/<p class="dossier-line/g) || []).length;
+    };
+    check(idx(now.html) === moved.demoAfterLine,
+      'the demo sits under line ' + idx(now.html) + ' — the line that points at it (asked for: ' +
+      moved.demoAfterLine + ')');
+    const total = (now.html.match(/<p class="dossier-line/g) || []).length;
+    check(total === moved.lines, 'and the whole card really was drawn before it was read (' +
+      total + ' of ' + moved.lines + ' lines)');
+    control(idx(was.html) === (was.html.match(/<p class="dossier-line/g) || []).length,
+      BASE_REF + ' really rendered the demo AFTER every line — his own exhibit, in the DOM (line ' +
+      idx(was.html) + ' of ' + (was.html.match(/<p class="dossier-line/g) || []).length + ')');
   }
 
   await browser.close();

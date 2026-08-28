@@ -359,6 +359,95 @@ function tileTextGate() {
   console.log('tile-text gate: PASSED - every built lesson\'s title and tagline match its tile');
 }
 
+/* ---- THE THREE GATES THIS ROUND ADDS (J13, his 27 Aug 2026 charter) --------
+   His demand was that the problems he found "will never happen again", and that
+   DFM 270 be MANDATORY rather than a rule that can be ignored. These three are
+   the machine half of that answer, and they stop the PACK — the thing that has
+   to run before anything can reach him — rather than printing a warning nobody
+   is obliged to read.
+   They are deliberately the cheap ones. The browser probes that carry the same
+   laws per screen (qa-click-safety, qa-empty-elements, qa-drag-smooth,
+   qa-staged-editor, and the walkers' own derived audits) live in the battery,
+   because a pack that needs a browser is a pack people learn to skip — and that
+   boundary is stated here rather than left to be discovered. */
+function coldReadGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-cold-read.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-cold-read.js is missing - the separation gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error((res.stdout || '') + (res.stderr || ''));
+    console.error('\nPACK STOPPED: a lesson under active review has no CURRENT cold read (DFM 270).');
+    console.error('  The verdicts must be filed by a FRESH context given only the rendered pupil');
+    console.error('  transcript and COLD_READ_CHECKLIST.md — never the spec, the diff or the');
+    console.error('  authoring conversation — and the verdict file must name the transcript hash');
+    console.error('  it was written against. A verdict written against text that has since changed');
+    console.error('  cannot be spent on today\'s.');
+    process.exit(1);
+  }
+  console.log('cold-read gate: PASSED (qa-cold-read) - current, separated, and every named candidate answered');
+}
+
+function numeralTieGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-numeral-tie.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-numeral-tie.js is missing - the numeral gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error((res.stdout || '') + (res.stderr || ''));
+    console.error('\nPACK STOPPED: an authored numeral disagrees with a count a machine derives.');
+    console.error('  His exhibit: "ALL FOUR" printed over a checklist of THREE, at the moment of');
+    console.error('  her success. Compute the count, or template it as {n} — never type it twice.');
+    process.exit(1);
+  }
+  console.log('numeral-tie gate: PASSED (qa-numeral-tie)');
+}
+
+function humanPaceGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-human-pace.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-human-pace.js is missing - the human-pace gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error((res.stdout || '') + (res.stderr || ''));
+    console.error('\nPACK STOPPED: a time constant has no row in HUMAN_PACE_INVENTORY.md (DFM 269).');
+    console.error('  A five-second budget spent on a twelve-year-old typing is what cost him an');
+    console.error('  hour. Every clock that can cut a pupil off says what it bounds and why it is');
+    console.error('  safe at the pace a real child works.');
+    process.exit(1);
+  }
+  console.log('human-pace gate: PASSED (qa-human-pace)');
+}
+
+/* THE TEXT-DAMAGE GATE (DFM 272's execution note (f), 27 Aug 2026). A machine
+   applied 109 judge-supplied rewrites and reported success while duplicating 18
+   sentences, beheading 12 and eating 6 whole. None of it showed in its own log.
+   The two detectors that found it are DERIVED from the content, so they keep
+   working on edits nobody thought to list. */
+function textDamageGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-text-damage.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-text-damage.js is missing - the text-damage gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error((res.stdout || '') + (res.stderr || ''));
+    console.error('\nPACK STOPPED: a pupil string is repeated, beheaded or eaten.');
+    console.error('  A text edit applied by machine is verified by a derived detector, never by');
+    console.error('  its own success count. Repair from the base text — never by writing a fresh');
+    console.error('  sentence over the damage — and declare a real exemption by name in the harness.');
+    process.exit(1);
+  }
+  console.log('text-damage gate: PASSED (qa-text-damage)');
+}
+
 function coverageGate() {
   const harness = path.join(__dirname, 'record-tutorial', 'qa-harness-coverage.js');
   if (!fs.existsSync(harness)) {
@@ -473,8 +562,15 @@ function main() {
     deckAnswerGate();
     briefShapeGate();
     itemValidityGate();
+    numeralTieGate();
+    humanPaceGate();
     auditGate();
+    textDamageGate();
     coverageGate();
+    /* LAST, because it is the one that reads the FINAL text: every other gate
+       above can still change what the transcript says, and a hash checked before
+       those runs would be a hash of something else. */
+    coldReadGate();
   }
   const stamp = WALK_BUILD ? null : versionGate();
   const sec = secret();

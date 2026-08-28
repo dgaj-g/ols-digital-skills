@@ -229,6 +229,80 @@ function pageRuntime() {
   };
   C.release = function () { if (C.dot) C.dot.style.transform = 'scale(1)'; };
 
+  /* ================= SUBJECT REGIONS — J13(g), his 27 Aug 2026 find =========
+     HIS EXHIBIT: in `j2-l3-a`, a caption discussing what the bot printed sat ON
+     TOP of the console it was discussing — and in the same film the console never
+     scrolled after "Green" was typed, so the output under discussion was off
+     screen when its caption showed.
+     HIS QUESTION, and it is the important one: "why is this happening again?"
+     THE HONEST ANSWER: it was not the same fault. The film laws measure captions
+     against the FRAME EDGES (DFM 201a) and against the CURSOR (192e/201b). The
+     family is DFM 141(a) — a caption never covers the thing it points at — but
+     nothing had ever measured a caption against the CONSOLE, because the console
+     was not a surface that existed when those laws were written. A law that
+     names its surfaces one at a time is a hand-kept list, and a hand-kept list is
+     what DFM 271 is about.
+     SO THE REGION IS DECLARED, AND THE RECORDER REFUSES A SCENE THAT SHOWS A
+     CONSOLE WITHOUT DECLARING ONE. A caption may not overlap a declared region
+     while that region has words in it. Nothing about "is it the subject" is
+     guessed: if the console is speaking, the caption gets out of its way. */
+  C.subjects = {};
+  C.subject = function (name, selector) { C.subjects[String(name)] = String(selector); };
+  C.clearSubjects = function () { C.subjects = {}; };
+  /* every declared region that is on screen AND has text in it right now */
+  C.liveSubjects = function () {
+    var out = [];
+    Object.keys(C.subjects).forEach(function (name) {
+      Array.prototype.slice.call(document.querySelectorAll(C.subjects[name])).forEach(function (n) {
+        var r = n.getBoundingClientRect();
+        if (r.width < 8 || r.height < 8) return;
+        var cs = getComputedStyle(n);
+        if (cs.display === 'none' || cs.visibility === 'hidden') return;
+        if (!(n.textContent || '').trim()) return;
+        out.push({ name: name, rect: r, text: (n.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 70) });
+      });
+    });
+    return out;
+  };
+  /* what a console looks like on any stage this platform films, so an
+     UNDECLARED one can be refused rather than silently allowed */
+  C.CONSOLE_LIKE = '#conBody, .pyc-body, [data-subject="console"]';
+  C.undeclaredConsole = function () {
+    var declared = Object.keys(C.subjects).map(function (k) { return C.subjects[k]; }).join(',');
+    var hit = null;
+    Array.prototype.slice.call(document.querySelectorAll(C.CONSOLE_LIKE)).forEach(function (n) {
+      if (hit) return;
+      var r = n.getBoundingClientRect();
+      if (r.width < 8 || r.height < 8) return;
+      var cs = getComputedStyle(n);
+      if (cs.display === 'none' || cs.visibility === 'hidden') return;
+      if (declared) { try { if (n.matches(declared) || n.closest(declared)) return; } catch (e) { /* fall through */ } }
+      hit = { law: 'UNDECLARED-SUBJECT', text: (n.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 70),
+        rect: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)] };
+    });
+    return hit;
+  };
+  /* does the box just drawn cover a region that is currently speaking? */
+  C.subjectClear = function (box) {
+    if (!box) return null;
+    var b = box.getBoundingClientRect();
+    var hit = null;
+    C.liveSubjects().forEach(function (s) {
+      if (hit) return;
+      var r = s.rect;
+      if (b.left < r.right && r.left < b.right && b.top < r.bottom && r.top < b.bottom) {
+        hit = {
+          law: 'CAPTION-OVER-SUBJECT',
+          text: s.text,
+          region: s.name,
+          rect: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)],
+          caption: [Math.round(b.left), Math.round(b.top), Math.round(b.width), Math.round(b.height)]
+        };
+      }
+    });
+    return hit;
+  };
+
   /* ---- lower-third caption ---- */
   C.showCaption = function (text, opts) {
     opts = opts || {};
@@ -253,6 +327,12 @@ function pageRuntime() {
     C.lastFaults = [];
     var capFault = C.frameFault(wrap, 'caption');
     if (capFault) { C.lastFaults.push(capFault); C.faults.push(capFault); }
+    /* J13(g): a caption may not cover a declared region that is speaking, and a
+       scene that shows a console without declaring one is refused outright */
+    var undec = C.undeclaredConsole();
+    if (undec) { C.lastFaults.push(undec); C.faults.push(undec); }
+    var subjFault = C.subjectClear(wrap);
+    if (subjFault) { C.lastFaults.push(subjFault); C.faults.push(subjFault); }
     C.cap = wrap;
     return C.animate(300, e => {
       wrap.style.opacity = String(e);
@@ -574,6 +654,19 @@ class Cinema {
     for (const f of faults) {
       this._violation(f, what);
       if (this.lawMode !== 'report') {
+        if (f.law === 'UNDECLARED-SUBJECT') {
+          throw new Error('UNDECLARED SUBJECT REGION on ' + what + ': this scene shows a console ' +
+            '("' + f.text + '" at ' + JSON.stringify(f.rect) + ') and never declared it. ' +
+            'Call `await cine.subject("console", "#conBody")` before the first caption — a film ' +
+            'cannot opt out of the caption-over-console law by saying nothing (J13g).');
+        }
+        if (f.law === 'CAPTION-OVER-SUBJECT') {
+          throw new Error('CAPTION OVER ITS OWN SUBJECT on ' + what + ': the caption box ' +
+            JSON.stringify(f.caption) + ' covers the declared "' + f.region + '" region ' +
+            JSON.stringify(f.rect) + ', which is speaking ("' + f.text + '"). ' +
+            'Move the caption (pos:"top"), or scroll the region so the words are clear of it ' +
+            '(DFM 141a: a caption never covers the thing it points at).');
+        }
         throw new Error('IN-FRAME LAW BROKEN on ' + what + ' [' + f.law + ']: "' + f.text +
           '" drawn at ' + JSON.stringify(f.rect) + ' in a ' + JSON.stringify(f.viewport) +
           ' frame. Re-author the beat (a callout cannot point at something off screen).');
@@ -681,6 +774,16 @@ class Cinema {
     await this.page.mouse.up();
     await this.page.evaluate(() => { window.__cine.dragging = false; window.__cine.release(); });
     await this.pause(500);
+  }
+
+  /* J13(g): declare what a scene is showing, so a caption can be kept off it and
+     an undeclared console can be refused. Declared per scene; `reset` clears. */
+  async subject(name, selector) {
+    await this.page.evaluate(([n, s]) => window.__cine.subject(n, s), [name, selector]);
+    this.log('subject region declared: ' + name + ' = ' + selector);
+  }
+  async clearSubjects() {
+    await this.page.evaluate(() => window.__cine.clearSubjects());
   }
 
   /* captions: hold = long enough to read twice (no narration -> reading IS the pacing) */

@@ -61,135 +61,28 @@ const HIS = [
   { sel: '.std-qa-q', what: 'the QA question ("What did the score actually do?")' },
   { sel: '.std-outcome', what: 'the answer buttons under a QA check' },
   { sel: '.std-qadesk .std-qa-tag', what: 'the "3 · THE QA DESK" heading' },
-  { sel: '.std-ready-btn.dim', what: 'the dimmed READY FOR GALLERY button' }
+  { sel: '.std-ready-btn.dim', what: 'the dimmed READY FOR GALLERY button' },
+  /* 27 AUGUST 2026 — his J2 Lesson 3 sit. Two more of his own, and they are
+     named here for the same reason the four above are: pointed at the build he
+     sat, each of these must be CAUGHT. `.pyw-chosen` is the Butler line he could
+     not see (the dark shell's text token on a light parchment card); the mybot
+     title is his "blue on blue" (navy ink on the one dark card, because the
+     editor card wore the sent-card <pre>'s class). */
+  { sel: '.pyw-chosen', what: 'the chosen-style line on the worked card (his invisible Butler line)' },
+  { sel: '.pye-bench .pyrun-goal, .pye-plan h2', what: 'the title of the bot card (his "blue on blue")' }
 ];
 
-/* ------------------------------------------------------------------ measuring */
-/* Runs IN THE PAGE against a decoded screenshot. For each element rect: build a
-   luminance histogram, take the modal bucket as the PLATE, then the farthest
-   bucket holding a real share of pixels as the TEXT CORE. Anti-aliased edge
-   pixels sit between the two and are ignored by construction. */
-const MEASURE = async ([dataUri, rects]) => {
-  const img = new Image();
-  await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = dataUri; });
-  const c = document.createElement('canvas');
-  c.width = img.width; c.height = img.height;
-  const g = c.getContext('2d', { willReadFrequently: true });
-  g.drawImage(img, 0, 0);
-  const dpr = img.width / window.innerWidth;
-
-  const lin = (v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
-  const lum = (r, gg, b) => 0.2126 * lin(r) + 0.7152 * lin(gg) + 0.0722 * lin(b);
-
-  return rects.map(R => {
-    /* SAMPLE THE INTERIOR, NOT THE EDGES. A pill-shaped button's bounding box
-       includes four corners that are NOT the button — they are whatever sits
-       behind it — and on one skin those corners outvoted the button's own
-       gradient, so the modal bucket came out as the panel and a perfectly
-       legible violet pill was condemned at 1.22:1 while the browser's own
-       colours give 6.55:1. Insetting by an eighth on each side keeps every
-       glyph (text never reaches its own border) and drops the corners. */
-    const inx = Math.round(R.w * dpr * 0.12), iny = Math.round(R.h * dpr * 0.12);
-    const x = Math.max(0, Math.round(R.x * dpr) + inx), y = Math.max(0, Math.round(R.y * dpr) + iny);
-    const w = Math.min(c.width - x, Math.round(R.w * dpr) - inx * 2);
-    const h = Math.min(c.height - y, Math.round(R.h * dpr) - iny * 2);
-    if (w < 2 || h < 2) return Object.assign({}, R, { skip: 'off screen' });
-    const d = g.getImageData(x, y, w, h).data;
-    const N = 48, buckets = [];
-    for (let i = 0; i < N; i++) buckets.push({ n: 0, r: 0, g: 0, b: 0 });
-    let total = 0;
-    for (let i = 0; i < d.length; i += 4) {
-      if (d[i + 3] < 250) continue;
-      const L = lum(d[i], d[i + 1], d[i + 2]);
-      const bi = Math.min(N - 1, Math.floor(L * N));
-      const b = buckets[bi];
-      b.n++; b.r += d[i]; b.g += d[i + 1]; b.b += d[i + 2]; total++;
-    }
-    if (!total) return Object.assign({}, R, { skip: 'nothing drawn' });
-    const meanOf = (b) => ({ r: b.r / b.n, g: b.g / b.n, b: b.b / b.n, L: lum(b.r / b.n, b.g / b.n, b.b / b.n) });
-    let plateI = 0;
-    buckets.forEach((b, i) => { if (b.n > buckets[plateI].n) plateI = i; });
-    const plate = meanOf(buckets[plateI]);
-
-    /* WHICH PIXELS ARE THE TEXT. The first cut took the bucket FARTHEST from the
-       plate, and on a gold button with dark ink that is the white highlight line
-       along its top edge — so it measured a bevel and called a perfectly readable
-       button unreadable. The browser already knows what colour the glyphs are
-       (including a colour inherited from four ancestors up), so computed colour
-       says WHAT TO LOOK FOR and the screenshot still says WHAT IS ACTUALLY THERE:
-       the contrast is measured between real plate pixels and real glyph pixels,
-       never between two numbers out of the stylesheet. */
-    const want = R.rgb || null;
-    const floorN = Math.max(18, total * 0.002);
-    let coreI = -1, best = 1e9;
-    buckets.forEach((b, i) => {
-      if (b.n < floorN || i === plateI) return;
-      const m = meanOf(b);
-      const d = want
-        ? Math.abs(m.r - want[0]) + Math.abs(m.g - want[1]) + Math.abs(m.b - want[2])
-        : -Math.abs(m.L - plate.L) * 1000;
-      if (d < best) { best = d; coreI = i; }
-    });
-    /* the glyphs are not on screen at all (covered, clipped, or no text drawn) */
-    if (coreI < 0) return Object.assign({}, R, { skip: 'no text pixels found' });
-    /* and if the nearest cluster is nothing like the colour the browser says the
-       text is, we are looking at something else — say so rather than invent a
-       number (tolerance is generous: anti-aliasing pulls glyph pixels toward the
-       plate, so a thin 11px face never renders at its pure colour) */
-    if (want && best > 240) return Object.assign({}, R, { skip: 'text pixels not distinguishable' });
-    const core = meanOf(buckets[coreI]);
-    const hi = Math.max(plate.L, core.L), lo = Math.min(plate.L, core.L);
-    const ratio = (hi + 0.05) / (lo + 0.05);
-    const hex = (p) => '#' + [p.r, p.g, p.b].map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
-    return Object.assign({}, R, { ratio: Math.round(ratio * 100) / 100, plate: hex(plate), ink: hex(core) });
-  });
-};
-
-/* the rects + type metrics of every text-bearing element now on screen */
-const COLLECT = ([extraSels, hisSels, rootSel]) => {
-  const out = [];
-  const seen = new Set();
-  const push = (el, forced) => {
-    if (seen.has(el)) return;
-    const r = el.getBoundingClientRect();
-    if (r.width < 8 || r.height < 6) return;
-    const cs = getComputedStyle(el);
-    if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) < 0.05) return;
-    const own = Array.from(el.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join(' ').trim();
-    if (!own && !forced) return;
-    seen.add(el);
-    const px = parseFloat(cs.fontSize) || 16;
-    const weight = Number(cs.fontWeight) || 400;
-    out.push({
-      sel: el.className && typeof el.className === 'string'
-        ? '.' + el.className.trim().split(/\s+/).slice(0, 3).join('.') : el.tagName.toLowerCase(),
-      text: (own || el.textContent || '').trim().slice(0, 48),
-      /* DOCUMENT coordinates, against a full-page screenshot. Viewport rects
-         silently dropped everything below the fold — and the QA desk is a long
-         screen, so his answer buttons and the READY button, the very surfaces he
-         could not read, were never measured while the run printed a clean pass. */
-      x: r.left + window.scrollX, y: r.top + window.scrollY, w: r.width, h: r.height,
-      px: px, weight: weight,
-      /* the colour the browser resolved for these glyphs, used only to FIND them */
-      rgb: (cs.color.match(/\d+/g) || ['0', '0', '0']).slice(0, 3).map(Number),
-      /* a glyph with no letters or digits in it is a MARK, not text — a star, a
-         spanner, a dropdown arrow. Holding an unlit star to a text floor is the
-         gate inventing a fault (DFM 146a); marks are judged at the 3:1 the
-         non-text rule asks for, and reported apart. */
-      icon: !/[a-z0-9]/i.test(own || el.textContent || ''),
-      large: px >= 24 || (px >= 18.66 && weight >= 700),
-      /* which of HIS named surfaces this element IS, decided by the browser's own
-         selector matching rather than by fuzzy class-name comparison */
-      his: (hisSels || []).filter(sel => { try { return el.matches(sel); } catch (e) { return false; } })
-    });
-  };
-  /* the host area only — the top bar and starfield are chrome, not lesson text */
-  const root = (rootSel && document.querySelector(rootSel)) ||
-    document.querySelector('.chunk-host') || document.body;
-  root.querySelectorAll('*').forEach(el => push(el, false));
-  (extraSels || []).forEach(s => document.querySelectorAll(s).forEach(el => push(el, true)));
-  return out;
-};
+/* ------------------------------------------------------------------ measuring
+   THE MEASUREMENT MOVED TO ONE HOME (DFM 271/144, 27 Aug 2026). It used to live
+   here and only here, so it could only ever be applied to the surfaces THIS file
+   drives to — and his invisible Butler line was on a screen no surface named.
+   `lib/contrast-audit.js` now owns the sampler, the collector, the floors and
+   the declared exemptions, and both walkers ask it the same question on every
+   screen of every lesson. This file keeps what it is for: the per-THEME sweep,
+   under every skin each year can wear. */
+const CA = require('./lib/contrast-audit.js');
+const MEASURE = CA.MEASURE;
+const COLLECT = CA.COLLECT;
 
 /* ------------------------------------------------------------------- the run */
 (async () => {
@@ -328,6 +221,38 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
     /* and the question renderer itself: the compass sits BEHIND twenty answered
        questions, so a drive that cannot answer one never gets there */
     + ', .chunk-host .q-feedback button, .chunk-host .q-opt';
+  /* ---- JUMP STRAIGHT TO A CHUNK, WHERE THE LESSON IS LONG ----------------
+     Some of these surfaces sit eight or nine screens into an hour, behind a
+     film, a conversation and three builds, and `advanceUntil` has to solve every
+     one of them before it can measure a colour. That is a lot of machinery
+     between this gate and the thing it is for — and when any of it stalls, the
+     gate crashes with "never reached", which is a coverage failure rather than a
+     colour finding.
+     The CLAIM here is about the rendered card, never about how a pupil got to
+     it: the walkers own the question of whether the route works, and they assert
+     it every run. So a surface may name its chunk and be taken there through the
+     app's own state, and its `must` list still proves it really arrived — a
+     drive that half-arrives measures a screen nobody is on (DFM 204). */
+  const jumpTo = async (chunkId) => {
+    const ok = await page.evaluate((id) => {
+      const s = window.App && window.App.state;
+      if (!s || !s.chunks) return 'no lesson open';
+      const i = s.chunks.findIndex(c => c.id === id);
+      if (i < 0) return 'no chunk called ' + id;
+      s.chunkIdx = i;
+      if (window.App.remountChunk) { window.App.remountChunk(); return true; }
+      return 'no remountChunk';
+    }, chunkId);
+    if (ok !== true) throw new Error('could not reach the chunk "' + chunkId + '": ' + ok);
+    await sleep(1400);
+    /* the chunk's own intro card, where it has one */
+    await page.evaluate(() => {
+      const b = document.querySelector('.chunk-host .intro-card .primary-btn, .chunk-host .primary-btn');
+      if (b && !b.disabled) b.click();
+    });
+    await sleep(900);
+  };
+
   const clickIn = async (sel, ms) => {
     await dismissBadge();
     const hit = await page.evaluate((s) => {
@@ -581,6 +506,96 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
         await page.waitForSelector('.pyrun-verdict.is-matched', { timeout: 30000 });
       }
     },
+    /* ---- J2 LESSON 3's OWN SCREENS (27 Aug 2026) — the surfaces that were on
+       NOBODY'S LIST, which is why his Butler line was never measured by anything.
+       DFM 271's answer is that coverage is derived from walking; the walkers now
+       measure every text node on every screen they enter (see lib/contrast-audit
+       and sit-review's derived pass). These rows are the per-THEME half: the same
+       surfaces, under every skin a J2 pupil can wear. ---- */
+    {
+      id: 'j2-worked', year: 'j2', cls: 'Demo-9A', as: 'aoife', lesson: '3',
+      what: 'the worked bot card after a style is picked (HIS Butler line, the goal, the brief)',
+      extras: ['.pyw-chosen', '.pyrun-goal', '.pyrun-brief', '.pyw-line code', '.pyrun-blank-hint',
+               '.py-shape-btn', '.pyrun-run', '.pyc-idle', '.pyx-idle'],
+      must: ['.pyw-card', '.pyw-chosen'],
+      drive: async () => {
+        await jumpTo('training-1');
+        await clickIn('.py-style', 1100);
+        await page.waitForSelector('.pyw-chosen', { timeout: 8000 });
+      }
+    },
+    {
+      id: 'j2-build-runcheck', year: 'j2', cls: 'Demo-9A', as: 'aoife', lesson: '3',
+      what: 'the training build with NO printed answer (the sentence that replaced his white strip)',
+      extras: ['.pyrun-goal', '.pyrun-actions li', '.pyrun-runcheck', '.pyrun-brief', '.pyrun-how',
+               '.pyrun-line code', '.pyrun-blank-hint', '.pyrun-locked-note', '.take-back', '.pyt-list h3'],
+      must: ['.pyrun-card', '.pyrun-runcheck', '.pyrun-actions'],
+      drive: async () => {
+        await jumpTo('training-3');
+        await page.waitForSelector('.pyrun-runcheck', { timeout: 10000 });
+        /* place one line so the labelled way back is on screen and measurable */
+        await page.evaluate(() => { const n = document.querySelector('.pyt-list .pyrun-line'); if (n) (n.querySelector('code') || n).click(); });
+        await sleep(400);
+      }
+    },
+    {
+      id: 'j2-mybot-plan', year: 'j2', cls: 'Demo-9A', as: 'aoife', lesson: '3',
+      what: 'the PLAN face of the rebuilt bot card (K41) — goal, the three jobs, one button',
+      extras: ['.intro-kicker', '.pye-plan h2', '.intro-lead', '.pye-plan-say', '.pye-plan-h',
+               '.pye-plan-goal', '.pye-plan-list li', '.pye-plan-brief', '.pye-start'],
+      must: ['.pye-plan', '.pye-plan-list', '.pye-start'],
+      drive: async () => {
+        await jumpTo('mybot');
+        await page.waitForSelector('.pye-plan', { timeout: 10000 });
+      }
+    },
+    {
+      id: 'j2-mybot-bench', year: 'j2', cls: 'Demo-9A', as: 'aoife', lesson: '3',
+      what: 'the BENCH face — the jobs strip, the editor, the palette, RUN',
+      extras: ['.pye-bench .pyrun-goal', '.pye-strip-h', '.pyf-tag', '.pyf-say', '.pyf-num',
+               '.pye-title', '.pye-count', '.pye-nums', '.pye-code',
+               '.pye-starter-say', '.pye-starter-btn', '.pyp-palette h3', '.pyp-palette-lead',
+               '.pyp-chip-name', '.pyp-chip-code', '.py-shape-btn', '.pyrun-run'],
+      must: ['.pye-bench', '.pye-strip', '.pye-code', '.pyp-chip'],
+      drive: async () => {
+        await jumpTo('mybot');
+        await page.waitForSelector('.pye-plan', { timeout: 10000 });
+        if (!await clickIn('.pye-start', 1200)) throw new Error('Start writing never armed');
+        await page.waitForSelector('.pye-bench .pye-code', { timeout: 8000 });
+      }
+    },
+    {
+      id: 'j2-mybot-verdict', year: 'j2', cls: 'Demo-9A', as: 'aoife', lesson: '3',
+      what: 'the VERDICT after a working run — the computed heading, one row per job, the hand-off sentence',
+      extras: ['.pyrun-vtag', '.pyv-tag', '.pyv-say', '.pyrun-vsay', '.pyf-num',
+               '.pyc-title', '.pyc-lead', '.pyc-out', '.pyx-title', '.pyx-who', '.pyx-text',
+               '.pyrun-verdict .primary-btn'],
+      must: ['.pyrun-verdict.is-matched', '.pyv-list', '.pyc-out'],
+      drive: async () => {
+        await jumpTo('mybot');
+        await page.waitForSelector('.pye-plan', { timeout: 10000 });
+        if (!await clickIn('.pye-start', 1200)) throw new Error('Start writing never armed');
+        await page.waitForSelector('.pye-bench .pye-code', { timeout: 8000 });
+        await page.evaluate(() => {
+          const ta = document.querySelector('.pye-code');
+          ta.value = 'a = input("What did you have for breakfast?")\nprint("Nice, " + a + ".")\n' +
+            'b = input("What is your favourite subject?")\nprint("I like " + b + " too.")\n' +
+            'print("Verdict: " + a + " and " + b + " — a good pair.")';
+          ta.dispatchEvent(new Event('input', { bubbles: true }));
+          document.querySelector('.pyrun-run').click();
+        });
+        for (let i = 0; i < 90; i++) {
+          const done = await page.evaluate(() => {
+            const inp = document.querySelector('.pyx-reply');
+            if (inp) { inp.value = 'toast'; document.querySelector('.pyx-send').click(); }
+            return !!document.querySelector('.pyrun-verdict.is-matched');
+          });
+          if (done) break;
+          await sleep(220);
+        }
+        await page.waitForSelector('.pyrun-verdict.is-matched', { timeout: 20000 });
+      }
+    },
     /* ---- J3 LESSON 1's OWN LANDMARK SCREENS (16 Aug 2026) ---------------
        Measured on The Screening Room and on both new J3 themes. The Compass
        result is the one screen in the lesson that could read as a verdict, so
@@ -760,7 +775,7 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
 
   /* ------------------------------------------------------------- the verdict */
   console.log('\nREADABILITY — rendered pixels, every skin (floors 4.5:1, or 3:1 for large text)\n');
-  const floorFor = (r) => (r.icon || r.large) ? 3.0 : 4.5;
+  const floorFor = CA.floorFor;
   const bad = rows.filter(r => r.ratio < floorFor(r) && !r.icon);
   const badMarks = rows.filter(r => r.icon && r.ratio < 3.0);
   /* group by element so twelve skins do not print as twelve separate faults */

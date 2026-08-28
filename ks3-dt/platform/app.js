@@ -632,7 +632,32 @@
     var txt = cfgH ? String((App.state.catchup && cfgH.soloHelp) ? cfgH.soloHelp : (cfgH.help || '')) : '';
     if (txt) {
       title.textContent = ch.title ? ('Help with: ' + ch.title) : 'Help';
-      body.innerHTML = '<p class="help-text">' + esc(txt) + '</p>';
+      /* A NUMBERED SEQUENCE GETS ITS OWN LINES HERE TOO (DFM 171, 28 Aug 2026). The
+         help panel put the whole string into ONE paragraph, so a card that wrote its
+         steps as "1. … 2. … 3. …" rendered them as run-on prose — the exact fault the
+         rule names, on the panel a pupil opens BECAUSE she is already stuck. Lines are
+         split on the newlines the content already writes; a run of lines that begin
+         with a number becomes a real <ol>, everything else stays a paragraph, and a
+         help string with no newlines in it renders byte-identically to before. */
+      body.innerHTML = (function (t) {
+        var out = [], list = [];
+        var flush = function () {
+          if (!list.length) return;
+          out.push('<ol class="help-steps">' + list.map(function (x) {
+            return '<li>' + esc(x.replace(/^\d+\.\s*/, '')) + '</li>';
+          }).join('') + '</ol>');
+          list = [];
+        };
+        String(t).split('\n').forEach(function (line) {
+          var L = line.trim();
+          if (!L) { flush(); return; }
+          if (/^\d+\.\s/.test(L)) { list.push(L); return; }
+          flush();
+          out.push('<p class="help-text">' + esc(L) + '</p>');
+        });
+        flush();
+        return out.join('');
+      })(txt);
       body.hidden = false;
       generic.hidden = true;
     } else {

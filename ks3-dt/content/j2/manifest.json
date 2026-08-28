@@ -65,7 +65,7 @@
    "id": "j2-03",
    "num": 3,
    "title": "Chatbot Workshop",
-   "tagline": "You write a program that asks a question, waits for the answer, and uses what was typed.",
+   "tagline": "You write a program that asks a question, waits for an answer, and uses that answer in its reply.",
    "block": "b2",
    "icon": "💬",
    "status": "ready",

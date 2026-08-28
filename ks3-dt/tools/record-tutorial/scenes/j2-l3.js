@@ -34,9 +34,27 @@ async function openStage(page, cine) {
   await page.waitForFunction(() => !!window.pystage, null, { timeout: 15000 });
   await page.evaluate(() => window.pystage.reset());
   await cine.install();
+  /* ---- J13(g): THE SUBJECT REGIONS ARE DECLARED, ONCE, HERE -------------
+     His find on this very film: a caption about what the bot printed sat ON TOP
+     of the console it was talking about. The film laws measured captions against
+     the frame edges and the cursor and had never been told the console exists,
+     so the fault could not be caught. A scene that shows a console and declares
+     nothing is now REFUSED by the recorder — no film can opt out by silence. */
+  /* the OUTPUT AREA, not the panel chrome. A panel heading that says "The
+     console" is not the console speaking, and holding a caption off a static
+     label would be the gate inventing a fault (DFM 146a). What must never be
+     covered is what the program actually printed, and what was actually said. */
+  await cine.subject('console', '#conBody');
+  await cine.subject('conversation', '#chatBody');
 }
 async function assertStage(page, want) {
   const p = await page.evaluate(() => window.pystage.probe());
+  /* the output a caption is about has to be ON SCREEN when the caption shows
+     (his "Green" find): the panels scroll, and the take proves they scrolled */
+  if (want.inView && !(p.chatAtEnd && p.conAtEnd)) {
+    throw new Error('the newest output is not in view — chat at end: ' + p.chatAtEnd +
+      ', console at end: ' + p.conAtEnd);
+  }
   if (want.rows != null && p.rows !== want.rows) throw new Error('program has ' + p.rows + ' line(s), wanted ' + want.rows);
   if (want.said != null && p.said !== want.said) throw new Error('conversation has ' + p.said + ' line(s), wanted ' + want.said);
   if (want.console != null && p.console !== want.console) throw new Error('console reads ' + JSON.stringify(p.console) + ', wanted ' + JSON.stringify(want.console));
@@ -74,20 +92,20 @@ const scenes = [
     await page.evaluate(() => window.pystage.say('bot', 'A dog. Good choice.'));
     await cine.pause(900);
     await assertStage(page, { said: 3 });
-    await cine.caption('Nothing about that is clever. Somebody typed every sentence it said, and typed the one place where your answer goes.');
+    await cine.caption('Nothing about that is clever. A person wrote every sentence the bot said, and the same person wrote the line that drops your answer into the middle of a sentence.');
     await page.evaluate(() => window.pystage.say('bot', 'What colour is your school bag?'));
     await cine.pause(600);
     await page.evaluate(() => window.pystage.say('you', 'Green'));
     await cine.pause(600);
     await page.evaluate(() => window.pystage.say('bot', 'Green it is. A dog and a green bag. Noted.'));
     await cine.pause(1100);
-    await assertStage(page, { said: 6 });
-    await cine.caption('It follows the same three jobs over and over: <b>ask</b> a question, <b>keep</b> the answer, <b>reply</b> using it. That is the whole hour.');
+    await assertStage(page, { said: 6, inView: true });
+    await cine.caption('It does the same three jobs every time: <b>ask</b> a question, <b>keep</b> the answer, then <b>reply</b> using that answer. Those three jobs are what you practise for the whole of this hour.');
     await cine.caption('Notice both questions. Anybody in your room could answer either of them in a second, without thinking. That is what makes them good questions for a bot.');
     await cine.drop({});
     await cine.pause(900);
   },
-  verify: async ({ page }) => { await assertStage(page, { said: 6 }); }
+  verify: async ({ page }) => { await assertStage(page, { said: 6, inView: true }); }
 },
 
 /* ------------------------------------------------------------------ ch2 */
@@ -109,11 +127,11 @@ const scenes = [
 
     const BEATS = [
       'A program runs down the page, one line at a time. This one prints <b>Hello!</b> and moves on.',
-      'Then it reaches <b>input( )</b> and it <b>STOPS</b>. Not pauses in the background &mdash; stops. Nothing after that line runs while it is waiting.',
+      'Then it reaches <b>input( )</b> and it <b>STOPS</b>. Nothing after that line runs while it is waiting.',
       'It waits for a person. Until somebody types an answer and presses Enter, the program stays exactly where it is.',
-      'What she typed goes into the box with <b>name</b> on it. That is a variable, the same kind of box you made last lesson.',
+      'What the person typed goes into the box called <b>name</b>. A box with a name on it is a variable &mdash; the same kind of box you made last lesson.',
       'The moment the answer is in, the program wakes up and carries on with the next line.',
-      'And the reply uses what she typed. The box keeps its word &mdash; using it does not empty it.'
+      'And the reply uses what the person typed. The box (a variable) still holds that answer: using an answer does not empty the box.'
     ];
     for (let i = 0; i < BEATS.length; i++) {
       await cine.captionShow(BEATS[i]);
@@ -161,13 +179,13 @@ const scenes = [
     }
     await cine.pause(900);
     await assertStage(page, { rows: 3 });
-    await cine.caption('Three lines, and each one is a job. The first <b>prints</b>. The second <b>asks and keeps</b>. The third <b>replies</b>, using what is in the box.');
-    await cine.caption('The <b>=</b> on the second line is what keeps the answer. input( ) asks the question; the equals sign puts what was typed into the box called <b>pet</b>.');
+    await cine.caption('Three lines, and each one is a job. The first line <b>prints</b> a greeting. The second <b>asks</b> a question and <b>keeps</b> the answer. The third <b>replies</b>, using what is in the box.');
+    await cine.caption('input( ) asks the question. The equals sign then puts what was typed into the box (a variable) called <b>pet</b>.');
     await page.evaluate(() => window.pystage.print(['Hello. One question.', 'A dog. Good choice.']));
     await cine.pause(1300);
-    await assertStage(page, { consoleHas: 'A dog. Good choice.' });
+    await assertStage(page, { consoleHas: 'A dog. Good choice.', inView: true });
 
-    await cine.caption('Now the mistake that will happen to you today, on purpose, in the very first build.');
+    await cine.caption('Now here is the mistake you will meet in the very first build. It was put there on purpose, so that you get to read a real Python message and put it right.');
     await page.evaluate(() => { window.pystage.program('The bot'); window.pystage.consoleOpen('The console'); });
     for (const t of ['print("Hello. One question.")', 'pte = input("Do you have a pet?")', 'print("A " + pet + ". Good choice.")']) {
       await page.evaluate(l => window.pystage.addLine(l), t);
@@ -180,14 +198,14 @@ const scenes = [
     await cine.pause(1500);
     await assertStage(page, { consoleHas: 'NameError' });
     await cine.caption('The box on line 2 is spelled <b>pte</b>. Line 3 asks for <b>pet</b>. To Python those are two different boxes, so it stops and says so.');
-    await cine.caption('The console shows you <b>Python&rsquo;s own words</b>, and one line in plain English underneath them. Never one instead of the other.');
+    await cine.caption('The console shows you <b>Python&rsquo;s own words</b>, and one line in plain English underneath them. You will always see both together.');
 
     await cine.card({
       kicker: 'NOW IT IS YOUR TURN', title: 'Three training builds, then a bot of your own',
       lines: [
         'The first build has a real mistake in it, put there on purpose &mdash; you press RUN, read what Python says, and put it right',
-        'Every build has two grey buttons for help, and <b>neither of them costs you anything</b>',
-        'At the end, somebody else in this room gets your bot and tries to break it'
+        'Every build has a grey button that says <b>Show me the shape</b>. You lose no points for using it.',
+        'At the end, somebody else in this room gets your bot and tries it out.'
       ]
     }, 10500);
     await cine.drop({});
@@ -217,7 +235,7 @@ const scenes = [
     await cine.pause(600);
     await page.evaluate(() => window.pystage.say('you', 'Chips'));
     await cine.pause(900);
-    await cine.caption('That took a second to answer. Remember your program <b>STOPS</b> until somebody types &mdash; so a question they have to think about leaves them staring at a frozen screen.');
+    await cine.caption('Remember your program <b>STOPS</b> until somebody types. A question they have to think about leaves them sitting there with nothing happening.');
     await page.evaluate(() => window.pystage.say('bot', 'What would you change about the school day, and why?'));
     await page.evaluate(() => window.pystage.waiting(true, 'still waiting'));
     await cine.pause(1800);
@@ -237,7 +255,7 @@ const scenes = [
   tailMs: 3600,
   run: async ({ page, cine }) => {
     await openStage(page, cine);
-    await cine.curtain({ kicker: 'PART 2 · CHAPTER 2', title: 'One line that uses both answers', sub: 'the verdict' });
+    await cine.curtain({ kicker: 'PART 2 · CHAPTER 2', title: 'One line that uses both answers', sub: 'the last line — the one that uses both answers' });
     await page.evaluate(() => { window.pystage.eyebrow('TWO BOXES, ONE SENTENCE'); window.pystage.program('The bot'); window.pystage.consoleOpen('The console'); });
     await page.waitForTimeout(700);
     await cine.lift();
@@ -248,22 +266,22 @@ const scenes = [
     }
     await cine.pause(900);
     await assertStage(page, { rows: 3 });
-    await cine.caption('Two questions means two boxes, and they need <b>different names</b>. Two boxes called the same thing is one box, and the second answer wipes out the first.');
+    await cine.caption('Your bot asks two questions, so it needs two boxes (two variables), and each box needs its own name. If both lines use the same name, Python keeps one box only &mdash; and the second answer replaces the first.');
     await cine.caption('The last line is the one to look at. It has <b>both</b> box names in it, joined onto the words with <b>+</b> signs.');
     await page.evaluate(() => window.pystage.lit(2));
     await cine.pause(900);
     await page.evaluate(() => window.pystage.print(['A dog and a green bag. Noted.']));
     await cine.pause(1300);
-    await assertStage(page, { consoleHas: 'A dog and a green bag' });
-    await cine.caption('One sentence, both answers. Every + sticks the next piece on the end &mdash; words, box, words, box, words.');
+    await assertStage(page, { consoleHas: 'A dog and a green bag', inView: true });
+    await cine.caption('One sentence can hold both answers. Every + sticks the next piece onto the end, and the pieces go in this order: words, then a box, then words, then a box, then words.');
 
     await cine.card({
-      kicker: 'THE LIST BESIDE YOUR PROGRAM', title: 'Three things, ticked by running it',
+      kicker: 'THE LIST ABOVE YOUR PROGRAM', title: 'Running your program is what ticks the three jobs',
       lines: [
         'It <b>asks twice</b> and waits for both answers',
-        'Both answers <b>come back out</b> in what the bot says',
-        'One line at the end uses <b>both at once</b>',
-        'The list fills in every time you press RUN. Nothing is read &mdash; your program is run.'
+        'The bot <b>says both of your answers</b> back to you',
+        'One line at the end uses both answers at once.',
+        'The list is ticked every time you press RUN. Nothing you type ticks it on its own. The program has to actually run.'
       ]
     }, 10000);
     await cine.drop({});

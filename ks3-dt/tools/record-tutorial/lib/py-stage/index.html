@@ -14,8 +14,14 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:1280px;height:720px;overflow:hidden;background:var(--navy);
   font-family:"Segoe UI",system-ui,-apple-system,sans-serif;color:var(--ink)}
-#stage{position:relative;width:1280px;height:720px;padding:64px 88px;display:flex;
-  flex-direction:column;gap:26px;justify-content:center}
+/* THE CAPTION BAND IS RESERVED (J13g, his 27 Aug find). The lower-third caption
+   is drawn at bottom:26px and stands about 100px tall, so a panel that grows into
+   that strip ends up UNDER the sentence discussing it. The stage keeps its hands
+   off the bottom 150px, and the output panels SCROLL instead of growing — which
+   is also his other find on the same film: after "Green" was typed the console
+   never scrolled, so the output the caption was discussing was off screen. */
+#stage{position:relative;width:1280px;height:720px;padding:44px 88px 214px;display:flex;
+  flex-direction:column;gap:20px;justify-content:center}
 .eyebrow{font-size:19px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);
   font-weight:700;min-height:24px}
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;min-height:250px}
@@ -25,7 +31,7 @@ html,body{width:1280px;height:720px;overflow:hidden;background:var(--navy);
 #blockImg{max-width:100%;max-height:190px;display:block;margin:0 auto;image-rendering:auto}
 .pyline{font-family:ui-monospace,Consolas,"Courier New",monospace;font-size:30px;
   color:var(--code);line-height:1.6;white-space:pre;letter-spacing:.01em}
-#prog{display:flex;flex-direction:column;gap:12px;min-height:200px;justify-content:center}
+#prog{display:flex;flex-direction:column;gap:10px;min-height:150px;justify-content:center;max-height:250px;overflow:hidden}
 #prog .row{font-family:ui-monospace,Consolas,"Courier New",monospace;font-size:31px;
   color:var(--code);background:#0E1B36;border-left:4px solid var(--line);
   border-radius:9px;padding:11px 20px;white-space:pre;opacity:0;transform:translateY(9px);
@@ -38,14 +44,16 @@ html,body{width:1280px;height:720px;overflow:hidden;background:var(--navy);
 #con h3{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
   font-weight:700;margin-bottom:12px}
 #conBody{font-family:ui-monospace,Consolas,"Courier New",monospace;font-size:28px;
-  line-height:1.55;white-space:pre-wrap;color:var(--ok);min-height:44px}
+  line-height:1.55;white-space:pre-wrap;color:var(--ok);min-height:44px;
+  max-height:150px;overflow-y:auto;scroll-behavior:smooth}
 #conBody.err{color:var(--err)}
 #conBody .plain{display:block;margin-top:14px;font-family:"Segoe UI",system-ui,sans-serif;
   font-size:23px;color:var(--ink);line-height:1.5}
 #chat{background:#0B152B;border:1px solid var(--line);border-radius:14px;padding:22px 28px;min-height:170px}
 #chat h3{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
   font-weight:700;margin-bottom:14px}
-#chatBody{display:flex;flex-direction:column;gap:11px}
+#chatBody{display:flex;flex-direction:column;gap:11px;
+  max-height:236px;overflow-y:auto;scroll-behavior:smooth;padding-right:6px}
 #chatBody .said{font-size:27px;line-height:1.45;padding:11px 18px;border-radius:14px;max-width:78%;
   opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease}
 #chatBody .said.in{opacity:1;transform:none}
@@ -126,7 +134,10 @@ html,body{width:1280px;height:720px;overflow:hidden;background:var(--navy);
       var w=document.createElement('span');w.className='who';w.textContent=label||(who==='you'?'The person typing':'The bot');
       var t=document.createElement('span');t.textContent=text;
       d.appendChild(w);d.appendChild(t);$('chatBody').appendChild(d);
-      await wait(40);d.classList.add('in');await wait(420);return true;
+      await wait(40);d.classList.add('in');
+      /* the newest line is VISIBLY scrolled to, so a caption about it is never
+         talking about something off screen (his "Green" find) */
+      $('chatBody').scrollTop=$('chatBody').scrollHeight;await wait(420);return true;
     },
     waiting:function(on,say){show($('chatWait'),!!on);if(say)$('waitSay').textContent=say;},
     hideChat:function(){show($('chat'),false)},
@@ -134,12 +145,13 @@ html,body{width:1280px;height:720px;overflow:hidden;background:var(--navy);
       $('conBody').textContent='';$('conBody').className='';},
     print:async function(lines){
       var b=$('conBody');b.className='';b.textContent='';
-      for(var i=0;i<lines.length;i++){b.textContent+=(i?'\n':'')+lines[i];await wait(500)}
+      for(var i=0;i<lines.length;i++){b.textContent+=(i?'\n':'')+lines[i];b.scrollTop=b.scrollHeight;await wait(500)}
       return true;
     },
     error:function(real,plain){
       var b=$('conBody');b.className='err';b.textContent=real;
       if(plain){var s=document.createElement('span');s.className='plain';s.textContent=plain;b.appendChild(s)}
+      b.scrollTop=b.scrollHeight;
     },
     /* the recorder PROVES the stage is not a blank rectangle before it trusts a
        take — the same discipline the variable-box scene uses (DFM 243's family:
@@ -152,7 +164,11 @@ html,body{width:1280px;height:720px;overflow:hidden;background:var(--navy);
         blockLoaded:!!($('blockImg').src&&$('blockImg').complete&&$('blockImg').naturalWidth>0),
         python:$('pyline').textContent.trim(),
         said:$('chatBody')?$('chatBody').querySelectorAll('.said').length:0,
-        waiting:$('chatWait')?!$('chatWait').classList.contains('hidden'):false
+        waiting:$('chatWait')?!$('chatWait').classList.contains('hidden'):false,
+        /* J13g: is the newest output actually IN VIEW, or has the panel scrolled
+           past it? A film that discusses what it cannot show is the fault. */
+        chatAtEnd:(function(){var b=$('chatBody');return !b||b.scrollHeight-b.scrollTop-b.clientHeight<6})(),
+        conAtEnd:(function(){var b=$('conBody');return !b||b.scrollHeight-b.scrollTop-b.clientHeight<6})()
       };
     }
   };

@@ -33,6 +33,12 @@ const { AUDIT, EXPLAIN_PX } = require('./qa-no-mute-locks.js');
    where an interactive control nested inside another one does its damage. One
    home for the law, two walkers asking it (DFM 144/204). */
 const NI = require('./lib/nested-interactive.js');
+/* the same three derived audits the expert walk carries (J13b/c/d). This walk
+   reaches states the expert one never does — the wrong move at every gate — so
+   an empty container or an unreadable line that only appears after a refusal is
+   caught HERE and nowhere else. */
+const EE = require('./lib/empty-elements.js');
+const PW = require('./lib/placed-work.js');
 
 const args = process.argv.slice(2);
 const argOf = (n, d) => { const i = args.indexOf(n); return i === -1 ? d : args[i + 1]; };
@@ -230,10 +236,25 @@ const LANDMARKS = {
     ['the worked example, read not built', '.pyw-card .pyw-prog', 'training-1'],
     ['the ordering puzzle', '.parsons-card, .parsons-tray', 'training-2'],
     ['the build tray with a gap in it', '.pyt-list .pyrun-line', 'training-3'],
-    ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'training-3'],
+    /* THE RED CONSOLE LIVES ON TRAINING BUILD 1, NOT BUILD 3 (28 Aug 2026). Build 3's
+       two decoys are "keeps the QUESTION in the box instead of the answer" and "asks the
+       question and keeps nothing at all" — both of them perfectly valid Python that
+       produce the WRONG WORDS, never an error. So a Python error is unreachable on that
+       card by design, and demanding it there asked the walk to reach a state the lesson
+       cannot show. Build 1 is where the planted mistake lives, and where Python really
+       stops. (J3's Build 3 keeps it, because its decoys DO raise — `playlist.add(...)`
+       is a job lists do not have.) The NOT YET verdict stays on build 3, where the wrong
+       words are what fails. */
+    ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'training-1'],
     ['NOT YET, with no line named', '.pyrun-verdict.is-notyet', 'training-3'],
-    ['the editor, empty, before she types anything', '.pye-card .pye-code', 'mybot'],
-    ['the ready-made lines beside it', '.pyp-chip', 'mybot'],
+    /* THE STAGED SHAPE IS TWO SCREENS (K41), and each is a screen a pupil
+       really stands on — so each owes its own landmark. The old single entry
+       named `.pye-card`, which the rebuilt card does not use at all: a landmark
+       pointing at a class nothing renders is coverage claimed and not had, which
+       is the DFM 204 fault this list exists to prevent committing. */
+    ['the PLAN face: what the bot has to do, before anything can be typed', '.pye-plan .pye-plan-list', 'mybot'],
+    ['the editor, empty, before she types anything', '.pye-bench .pye-code', 'mybot'],
+    ['the ready-made lines under it', '.pyp-chip', 'mybot'],
     ['the checklist that only ticks on a run', '.pyf-list .pyf-item', 'mybot'],
     ['the free help row', '.py-help-row', 'mybot'],
     /* THE WAIT, AND THE SIDE SHOW ON IT. A lone walker never gets a partner, so
@@ -266,7 +287,8 @@ const LANDMARKS = {
     ['the build tray with a gap in it', '.pyt-list .pyrun-line', 'assembly-3'],
     ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'assembly-3'],
     ['NOT YET, with no line named', '.pyrun-verdict.is-notyet', 'assembly-3'],
-    ['the editor, empty, with nothing to drag into it', '.pye-card .pye-code', 'engine'],
+    ['the PLAN face: the five jobs, before anything can be typed', '.pye-plan .pye-plan-list', 'engine'],
+    ['the editor, empty, with nothing to drag into it', '.pye-bench .pye-code', 'engine'],
     ['the checklist that only ticks on a run', '.pyf-list .pyf-item', 'engine'],
     ['the free help row', '.py-help-row', 'engine'],
     ['the extra jobs hub, untouched', '.pyrun-hub .pyrun-job', 'extras'],
@@ -374,6 +396,7 @@ const WRONG = {
   page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
   const findings = [];
   const nestedHits = [];
+  const emptyHits = [], clickHits = [];
   const visited = [];
   /* the text-box battery runs ONCE per screen. It wipes the box when it is done
      (so the next gate is met fresh), and running it every loop meant the walker
@@ -673,7 +696,18 @@ const WRONG = {
   const WALK = require('./lib/walk-moves.js');
   let wpPrimed = false;
   async function engineStep() {
-    if (!wpPrimed) { await WALK.primeDevKeys(page, BASE); wpPrimed = true; }
+    if (!wpPrimed) {
+      await WALK.primeDevKeys(page, BASE);
+      /* THE MOVES NEED TO KNOW WHICH LESSON THEY ARE WALKING (28 Aug 2026). Everything
+         this round added to `pyrun-place` was written for the two rebuilt L3 cards and
+         is gated on this: a signed-off lesson walks EXACTLY as it did at 7d9c274, which
+         is what DFM 221 requires and what three attempts to infer from the DOM failed to
+         deliver. Proved both ways: the base walker takes j2-2 to 15 of 15 against
+         tonight's platform, so the platform is innocent and the walker was the whole
+         fault. */
+      await page.evaluate(l => { window.__walkLesson = l; }, LESSON);
+      wpPrimed = true;
+    }
     const st = await page.evaluate(WALK.detectKind);
     /* THE WRONG MOVER FIRST (19 Aug 2026). Delegating to the shared movers fixed
        the stall, and introduced a subtler fault in its place: those movers drive
@@ -958,6 +992,17 @@ const WRONG = {
       const line = where + ': ' + NI.describe(f);
       if (nestedHits.indexOf(line) === -1) { nestedHits.push(line); }
     });
+    /* ---- J13(c) and J13(d), in the states only a wrong move reaches ---- */
+    const empties = await page.evaluate(q => eval(q)(), EE.QUERY);
+    empties.forEach(f => {
+      const line = where + ': ' + EE.describe(f);
+      if (emptyHits.indexOf(line) === -1) { emptyHits.push(line); log('EMPTY-CONTAINER ' + line); }
+    });
+    const placedNow = await page.evaluate(q => eval(q)(), PW.QUERY);
+    (placedNow.findings || []).forEach(f => {
+      const line = where + ': ' + PW.describe(f);
+      if (clickHits.indexOf(line) === -1) { clickHits.push(line); log('CLICK-DESTROYS ' + line); }
+    });
     /* record every required landmark that is on screen RIGHT NOW (DFM 204),
        in the CHUNK it belongs to where the list names one */
     const chunkNow = await page.evaluate(() => {
@@ -973,6 +1018,7 @@ const WRONG = {
     here.forEach(s => seenLandmarks.add(s));
     await beWrong(where);
     const moved = await goRight();
+
     /* KS3DT_WP_TRACE=1 prints the move and the state of every box on the screen.
        It is off by default and it is here because it is what found the two
        walker faults of 23 Aug: without seeing "3" sitting in a release-note
@@ -996,6 +1042,21 @@ const WRONG = {
     stuckRuns = 0;
     if (process.env.KS3DT_WP_TRACE) log('  move: ' + moved);
     await sleep(750);
+    /* SAMPLE AGAIN AFTER THE MOVE (28 Aug 2026). The landmark scan ran once per loop,
+       at the TOP — so a state that exists only BETWEEN two samples was never seen. Both
+       L3 walks reached nineteen of twenty-one landmarks and missed the same two, the red
+       console and the NOT YET verdict, because a failing run appears a moment after the
+       click and is gone again by the next scan: she really did stand on it, and the
+       harness blinked. Scanning again after the move settles halves the miss window, and
+       costs one evaluate per turn. A landmark that depends on how fast the walker moves
+       is a landmark nobody can trust. */
+    const after = await page.evaluate(rows => rows.filter(r => {
+      const e = document.querySelector('.chunk-host ' + r.sel.split(',').map(x => x.trim()).join(', .chunk-host '));
+      return e && e.offsetParent !== null;
+    }).map(r => r.key), (LANDMARKS[LESSON] || [])
+      .filter(l => !l[2] || l[2] === chunkNow)
+      .map(l => ({ sel: l[1], key: l[0] + '|' + l[1] })));
+    after.forEach(s => seenLandmarks.add(s));
   }
 
   const shot = path.join(__dirname, 'qa-l2-l5-review', 'l4-sit-fixes',
@@ -1032,6 +1093,27 @@ const WRONG = {
   }
 
   nestedHits.forEach(h => findings.push(h));
+  /* J13(c/d): the same two laws, in the states only a wrong move reaches. The
+     DECLARED exemptions print whether or not anything was found, because an
+     exemption nobody prints reads as a pass (DFM 204/213). */
+  console.log('\nDERIVED AUDITS (the confused walk)');
+  console.log('  empty-container exemptions, declared: ' + EE.EXEMPTIONS.join(' · '));
+  emptyHits.forEach(h => findings.push(h));
+  /* THE LOCKED LESSONS ARE ASSERTED AND WAIVED, NEVER SKIPPED (DFM 221 + 204, and the
+     spec's own S3 line: "the locked Lesson 2s stay gated — the ASSERTION still runs
+     there and prints their exposure as a waived finding, HIS WORD to apply"). The
+     click-ejects-placed-work trap is the shipped behaviour of every parsons tray that
+     has not been given `trayClickEject: false`, and turning it off across signed-off
+     lessons is his call, not mine. So on a locked lesson the finding is PRINTED, in
+     full, and does not fail the walk; on a lesson under review it fails it. */
+  const WALK_LOCKED = new Set(['1', '2', '3', '4', '5', 'S1', 'j2-1', 'j2-2', 'j3-1', 'j3-2']);
+  if (WALK_LOCKED.has(LESSON) && clickHits.length) {
+    console.log('\n' + clickHits.length + ' WAIVED FINDING(S) — a LOCKED and signed-off lesson, ' +
+      'printed rather than hidden, and one word from him applies the fix here too (DFM 221):');
+    clickHits.forEach(h => console.log('  - ' + h));
+  } else {
+    clickHits.forEach(h => findings.push(h));
+  }
   const uniq = Array.from(new Set(findings));
   if (EXPECT_FAIL) {
     if (!uniq.length) {

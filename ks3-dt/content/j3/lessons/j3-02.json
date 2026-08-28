@@ -167,7 +167,9 @@
       ]
      }
     ],
-    "help": "The target at the top of the card is exactly what the console has to print. Drag the lines you want into Your program, type into any gap, then press RUN. The console shows exactly what your program printed — and if Python stops, it shows Python's own words with a plain-English explanation underneath. You can run as many times as you like."
+    "help": "The target at the top of the card is exactly what the console has to print. Drag the lines you want into Your program, type into any gap, then press RUN. The console shows exactly what your program printed — and if Python stops, it shows Python's own words with a plain-English explanation underneath. You can run as many times as you like.",
+    "trayClickEject": false,
+    "takeBackLabel": "Put this line back"
    }
   },
   {
@@ -311,7 +313,9 @@
       ]
      }
     ],
-    "help": "The target at the top of the card is exactly what the console has to print. A line with = in it makes a box with a name on it (a variable); a line with print( ) puts something on the console. Drag the lines into the order you want, type into any gap, then press RUN. If Python stops, the console shows Python's own words with a plain-English explanation underneath. You can run as many times as you like."
+    "help": "The target at the top of the card is exactly what the console has to print. A line with = in it makes a box with a name on it (a variable); a line with print( ) puts something on the console. Drag the lines into the order you want, type into any gap, then press RUN. If Python stops, the console shows Python's own words with a plain-English explanation underneath. You can run as many times as you like.",
+    "trayClickEject": false,
+    "takeBackLabel": "Put this line back"
    }
   },
   {
@@ -468,7 +472,9 @@
       ]
      }
     ],
-    "help": "Every job on this screen is extra. They add no points, and nothing later in the year needs them. Click a job to open it, build it the way you built the four tonight, then press RUN. Two buttons are always on screen. Back to the encore sheet takes you to the list of jobs. The other one says “Nearly time up? Click here to finish the rest of the lesson.” Click that one whenever your teacher calls time, even half way through a job, and it takes you on to the rest of the hour."
+    "help": "Every job on this screen is extra. They add no points, and nothing later in the year needs them. Click a job to open it, build it the way you built the four tonight, then press RUN. Two buttons are always on screen. Back to the encore sheet takes you to the list of jobs. The other one says “Nearly time up? Click here to finish the rest of the lesson.” Click that one whenever your teacher calls time, even half way through a job, and it takes you on to the rest of the hour.",
+    "trayClickEject": false,
+    "takeBackLabel": "Put this line back"
    }
   },
   {

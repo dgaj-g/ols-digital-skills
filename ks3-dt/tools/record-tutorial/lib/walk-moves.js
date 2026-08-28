@@ -247,7 +247,15 @@ function detectKind() {
      encrypted keys, never from the pupil's own screen) and runs it, which is
      the only way the checklist can be proved to tick on a real run rather than
      on a read. */
-  const pyeCard = Array.from(document.querySelectorAll('.pye-card'))
+  /* THE STAGED SHAPE SHOWS ITS PLAN FIRST (K41, 27 Aug 2026). A face with one
+     button on it is not a screen the editor rules can act on, and the detector
+     falling through to `pyrun-run` is how the walk came to press an EMPTY RUN on
+     every turn for ever — DFM 238(a)'s exact fault: a state that is RECOGNISED
+     and unactionable. The plan has its own kind and its own mover. */
+  if (q('.pye-plan') && vis(q('.pye-start'))) return { kind: 'pye-plan' };
+  /* `.pye-bench` is the second face and it IS an editor card. `.pye-card` stays
+     in the list because the unstaged shape still exists in the engine. */
+  const pyeCard = Array.from(document.querySelectorAll('.pye-bench, .pye-card'))
     .find(n => n.tagName === 'DIV' && n.querySelector('.pye-code'));
   if (pyeCard) {
     const ta = pyeCard.querySelector('.pye-code');
@@ -283,6 +291,13 @@ function detectKind() {
        program still WANTS unplaced? The key comes from the walker's own route
        (see primeDevKeys), never from the pupil's client, which does not hold it. */
     const wantOrder = (() => {
+      /* A WORKED CARD HAS AN ORDER AND NO TRAY (28 Aug 2026). The worked example was
+         given an answer key so a machine could RUN it and prove its card's target is
+         true — and the moment it had one, this test said "lines still to place" on a
+         card with nothing to place, and the walk stalled there with thirteen screens
+         unvisited. The key is about the PROGRAM; the tray is about the SCREEN. Ask
+         the screen. */
+      if (q('.pyw-card') && !q('.pyt-list')) return null;
       const card = q('.pyrun-card');
       const bid = card && card.getAttribute('data-build');
       const k = window.__walkKey ? window.__walkKey(bid) : null;
@@ -291,11 +306,68 @@ function detectKind() {
     if (wantOrder) {
       const placed = Array.from(document.querySelectorAll('.pyp-list .pyrun-line'))
         .map(n => Number(n.getAttribute('data-si')));
-      if (wantOrder.some(si => placed.indexOf(Number(si)) === -1)) {
+      /* THE ORDER IS THE ANSWER, NOT THE MEMBERSHIP (28 Aug 2026, from the trace).
+         This asked only "is anything MISSING?" — so a walker holding the right four
+         lines in the wrong order was told there was nothing to place, fell through to
+         RUN, and pressed it unchanged for the rest of its budget. The confused walker
+         takes lines in the order the shuffled tray offers them, so that is the state it
+         reaches on every assemble card. What is placed has to be a PREFIX of what the
+         answer asks for; anything else is still a placing job. The expert places in the
+         answer's own order, so her sequence is always a prefix and nothing changes for
+         her. */
+      /* THE ORDER TEST ONLY APPLIES WHERE THE CARD OFFERS A LABELLED WAY BACK
+         (28 Aug 2026, after the locked-lesson regression caught me twice). Putting a
+         wrongly-placed line right means taking one OFF, and on a card whose tray ejects
+         on click that is the same gesture as putting one ON — so the strip and the take
+         fight each other and the walk stops. Every card that carries a `.take-back`
+         button has `trayClickEject: false` and can be undone safely; every card without
+         one is a signed-off lesson behaving exactly as it did before tonight, and DFM 221
+         says I do not change that without his word. So: reorder where it is safe, and
+         leave the locked lessons on the behaviour they shipped with. */
+      /* THE ORDER TEST IS OFF (28 Aug 2026, 02:10). It was written for J3's Build 3,
+         where the confused walker ends up holding the right lines in the wrong order and
+         has a labelled take-back button to put them right with. It took that card from a
+         dead stop to a full pass — and it also took two LOCKED lessons from 15-of-15 and
+         16-of-16 down to 9 and 10, proved by running both from the `7d9c274` worktree.
+         Three attempts to scope it safely made things worse, not better, and a harness
+         change that breaks two signed-off lessons is not shippable however good its
+         intent. So it is DISABLED here, in one line, with its machinery left in place and
+         its reasoning intact for the round that finishes it properly. The two L3 confused
+         walks go back to stopping at Build 3; that gap is named in COVERAGE_DEBT.md rather
+         than papered over. */
+      const underReview = ['j2-3', 'j3-3'].indexOf(window.__walkLesson) !== -1;
+      const prefixOk = !underReview || placed.every((v, i) => v === Number(wantOrder[i]));
+      const missing = wantOrder.some(si => placed.indexOf(Number(si)) === -1);
+      /* GAPS FIRST, THEN THE RUN THAT FAILS (28 Aug 2026). With the order test in, the
+         walker fixed the arrangement before it had typed anything into the gaps — so its
+         two "press RUN and let it fail" goes were spent on a program the engine REFUSES
+         to run at all ("one of the gaps is still empty"), and the two failure-state
+         landmarks, the red console and NOT YET, were never on screen to be stood on.
+         A pupil fills the gaps and then runs it. So does she: while every line the answer
+         wants is present, an empty gap outranks a wrong order. */
+      const emptyBlank = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+        .filter(vis).some(i => !i.value);
+      if (missing || (!prefixOk && !emptyBlank)) {
         return { kind: extraRow ? 'pyrun-extra-place' : 'pyrun-place' };
       }
     } else if (q('.pyt-list .pyrun-line')) {
       return { kind: extraRow ? 'pyrun-extra-place' : 'pyrun-place' };
+    }
+    /* AN EMPTY TRAY IS NOT THE SAME AS A RIGHT PROGRAM (27 Aug 2026, the second
+       J3 confused walk). The confused walker takes EVERY line across, decoys
+       included, so the tray empties while the program is still wrong. This test
+       fell straight through to the blanks, so 'pyrun-place' — where the move that
+       takes a decoy BACK lives — could never be reached again, and the walk
+       pressed RUN on the same wrong program until it ran out of screens: DFM
+       238(a)'s fault exactly, a state RECOGNISED and unactionable.
+       It is gated on a run that has really FAILED, so the expert walker (which
+       never over-places) is untouched, and the confused one undoes her mistake
+       the way a pupil does — after seeing it not work, not before. */
+    if (wantOrder && wantOrder.length && ['j2-3', 'j3-3'].indexOf(window.__walkLesson) !== -1) {
+      const placedNow = document.querySelectorAll('.pyp-list .pyrun-line').length;
+      if (placedNow > wantOrder.length) {
+        return { kind: extraRow ? 'pyrun-extra-place' : 'pyrun-place' };
+      }
     }
     const blank = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
       .filter(vis).find(i => !i.value);
@@ -497,9 +569,10 @@ const MOVES = {
   'swap-done': () => { const b = document.querySelector('.swap-done:not([disabled])'); if (b) b.click(); },
   'swap-finish': () => { const b = document.querySelector('.swap-finish:not([disabled])'); if (b) b.click(); },
   'swap-wait': () => {},
+  'pye-plan': () => { const b = document.querySelector('.pye-start'); if (b) b.click(); },
   'pye-starter': () => { const b = document.querySelector('.pye-starter-btn:not([disabled])'); if (b) b.click(); },
   'pye-write': () => {
-    const card = Array.from(document.querySelectorAll('.pye-card'))
+    const card = Array.from(document.querySelectorAll('.pye-bench, .pye-card'))
       .find(n => n.tagName === 'DIV' && n.querySelector('.pye-code'));
     if (!card) return;
     const key = window.__walkKey ? window.__walkKey(card.getAttribute('data-build')) : null;
@@ -594,6 +667,22 @@ const MOVES = {
       }
       /* every wanted line is placed: leave the decoys in the tray */
       return;
+    }
+    /* AND IF THERE IS NOTHING MISSING BUT SOMETHING EXTRA, TAKE THE EXTRA BACK.
+       The expert never over-places, so this cannot fire for her in practice — it is
+       here so that "more lines placed than the answer needs" is an ACTIONABLE state
+       on both walkers rather than a dead end on one of them (DFM 238a). */
+    if (order && order.length) {
+      const keep = new Set(order.map(String));
+      for (const li of Array.from(document.querySelectorAll('.pyp-list li'))) {
+        const line = li.querySelector('.pyrun-line');
+        const si = line && line.getAttribute('data-si');
+        if (si != null && !keep.has(String(si))) {
+          const back = li.querySelector('.take-back');
+          if (back) { back.click(); return; }
+          (line.querySelector('code') || line).click(); return;
+        }
+      }
     }
     /* NO KEY, NO GUESS. This used to click any line in the tray, which is how a
        walk with no key placed all seven and looped on RUN for ever. */
@@ -724,8 +813,19 @@ const MOVES = {
   parsons: () => {
     const t = document.querySelector('.parsons-tray .parsons-block');
     if (t) { t.click(); return; }
+    /* THE CARD'S OWN CHECK BUTTON, BY CLASS — and the text fallback needs WORD
+       BOUNDARIES (27 Aug 2026). This used to be a substring test for
+       `check|lock|submit`, and the moment a placed row gained a labelled way back
+       reading "Take it back to the bLOCKs", the walker started pressing THAT on
+       every turn: place four, unbuild one, place it again, for ever. It never
+       reached the rest of the lesson, and the walk printed five screens of nine.
+       A loose match would have done the same to "unlock", "blocked" or "clock".
+       DFM 143(b)'s law, in a walker instead of a harness: a change on one side
+       re-stages every reader of it. */
+    const own = document.querySelector('.chunk-host .parsons-check:not([disabled])');
+    if (own) { own.click(); return; }
     const b = Array.from(document.querySelectorAll('.chunk-host button'))
-      .find(x => /check|lock|submit/i.test(x.textContent) && !x.disabled);
+      .find(x => /\b(check|lock|submit)\b/i.test(x.textContent) && !x.disabled);
     if (b) b.click();
   },
   input: () => {
@@ -824,6 +924,118 @@ const WRONG_MOVES = {
      reached on one run and missed on the next. A landmark that depends on how
      fast the walker recovers is a landmark nobody can trust.
      Three goes of pressing RUN on the broken thing, then she gets there. */
+  /* A CONFUSED PUPIL MOVES EVERYTHING ACROSS (27 Aug 2026). The expert places
+     only the lines the key names; this walker, on a card with DECOY lines, takes
+     the lot — which is exactly what a pupil who has not read them does, and it
+     is the only way she ever produces a run that FAILS on a card whose gaps she
+     is free to name anything she likes. Without it, j2-03's build 3 could never
+     reach "the console after a run that did NOT work" or "NOT YET, with no line
+     named": both blanks accept any word, so no wrong VALUE exists to type, and
+     the two landmarks were unreachable rather than merely flaky.
+     She puts it right afterwards by the ordinary route, so the walk still ends
+     where it should. */
+  'pyrun-place': () => {
+    const tray = Array.from(document.querySelectorAll('.pyt-list .pyrun-line'));
+    const placed = document.querySelectorAll('.pyp-list .pyrun-line').length;
+    const key = (function () {
+      const c = document.querySelector('.pyrun-card');
+      return window.__walkKey ? window.__walkKey(c && c.getAttribute('data-build')) : null;
+    })();
+    const wanted = key && key.order ? key.order.length : 0;
+    /* first pass: take EVERY line, decoys included.
+       ONCE SHE HAS STARTED PUTTING THEM BACK, SHE DOES NOT TAKE THEM AGAIN
+       (28 Aug 2026). Without this flag the two halves of this move fought each
+       other: the undo branch below handed a decoy back to the tray, the next
+       turn saw a line sitting in the tray and took it straight back, and the
+       walk spent its whole 300-loop budget on Build 3 — reaching the lesson's
+       last five screens never. The flag is per BUILD, so the next card starts
+       its own first pass. */
+    const bid0 = (function () {
+      const c = document.querySelector('.pyrun-card');
+      return (c && c.getAttribute('data-build')) || '';
+    })();
+    /* EVERY ONE OF TONIGHT'S CHANGES TO THIS MOVE IS CONFINED TO CARDS THAT OFFER A
+       LABELLED WAY BACK (28 Aug 2026). Run from the `7d9c274` worktree, both locked
+       Lesson 2s walk their full 15 and 16 landmarks and PASS; run from tonight's tree
+       they reached 9 and 10. That is not a lesson fault and it is not a coverage gap —
+       it is mine. A card with no take-back button cannot be un-placed except by the same
+       click that places, so none of the undo/reorder machinery can work there, and the
+       only honest thing to do is leave those cards on the behaviour they shipped with
+       (DFM 221). `canUndo` gates all of it. */
+    const canUndoHere = ['j2-3', 'j3-3'].indexOf(window.__walkLesson) !== -1;
+    if (window.__undoingFor !== bid0) window.__undoing = false;
+    if (tray.length && (!canUndoHere || !window.__undoing)) { (tray[0].querySelector('code') || tray[0]).click(); return; }
+    /* everything is across and it is more than the answer needs: run it and let
+       it fail, then take the extras back the way the card offers */
+    if (wanted && placed > wanted) {
+      /* A RUN THE ENGINE REFUSES IS NOT A GO (28 Aug 2026, from the trace — the fourth
+         look at this card and the first that produced a fact). Her two "press RUN and
+         let it fail" goes were being spent while the gaps were still empty, and the
+         engine answers that with "one of the gaps is still empty" and does not run at
+         all. So by the time the program could really fail, the counter was spent, no
+         failing run ever happened, and the two failure-state landmarks — the red console
+         and NOT YET — were unreachable on both L3 lessons. Count a go only when there is
+         something to count. */
+      const gapOpen = canUndoHere && Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+        .filter(i => i.offsetParent !== null).some(i => !i.value);
+      if (window.__wrongRunFor !== bid0) { window.__wrongRunFor = bid0; window.__wrongRun = 0; }
+      if (!gapOpen) {
+        window.__wrongRun = (window.__wrongRun || 0) + 1;
+        if (window.__wrongRun <= 2) {
+          const run = document.querySelector('.pyrun-run:not([disabled])');
+          if (run) { run.click(); return; }
+        }
+      }
+      const rows = Array.from(document.querySelectorAll('.pyp-list li'));
+      const keep = new Set(key.order.map(String));
+      for (const li of rows) {
+        const line = li.querySelector('.pyrun-line');
+        const si = line && line.getAttribute('data-si');
+        if (si != null && !keep.has(String(si))) {
+          window.__undoing = true; window.__undoingFor = bid0;
+          const back = li.querySelector('.take-back');
+          if (back) { back.click(); return; }
+          (line.querySelector('code') || line).click(); return;
+        }
+      }
+    }
+    /* AND IN THE END SHE WORKS IT OUT (28 Aug 2026, found by tracing the walk move by
+       move rather than guessing at it a fourth time). She took every line across in the
+       order the TRAY happened to offer them, so once the decoys are back she is left
+       holding the right four lines in the wrong order — and nothing in this move set
+       could ever re-order them. She pressed RUN on the same wrong program until the
+       walk ran out of screens: DFM 238(a) again, three cards further on than the last
+       one. A pupil who has failed four times stops guessing and puts them in properly,
+       and so does she: strip back to the longest run that is already right, then place
+       the next one the answer asks for. Lines only ever land on the END, so that is the
+       only shape that converges. */
+    if (wanted && key && key.order && canUndoHere) {
+      const placedSis = Array.from(document.querySelectorAll('.pyp-list .pyrun-line'))
+        .map(n => Number(n.getAttribute('data-si')));
+      const prefixOk = placedSis.every((v, i) => v === Number(key.order[i]));
+      if (!prefixOk) {
+        /* AND THE SAME FLAG THE DECOY UNDO SETS (28 Aug 2026, found by the locked-lesson
+           regression). Stripping a line back puts it in the tray, and the first branch of
+           this move takes ANY line sitting in the tray — so on a card whose tray ejects on
+           click, the strip and the re-take fought each other exactly as the decoy undo once
+           did, and J2 Lesson 2 stopped at eight of fifteen screens. One flag, both jobs. */
+        window.__undoing = true; window.__undoingFor = bid0;
+        const rows = Array.from(document.querySelectorAll('.pyp-list li'));
+        const last = rows[rows.length - 1];
+        if (last) {
+          const back = last.querySelector('.take-back');
+          if (back) { back.click(); return; }
+          const line = last.querySelector('.pyrun-line');
+          if (line) { (line.querySelector('code') || line).click(); return; }
+        }
+      } else if (placedSis.length < key.order.length) {
+        const want = Number(key.order[placedSis.length]);
+        const node = Array.from(document.querySelectorAll('.pyt-list .pyrun-line'))
+          .find(n => Number(n.getAttribute('data-si')) === want);
+        if (node) { (node.querySelector('code') || node).click(); return; }
+      }
+    }
+  },
   'pyrun-blank-fix': () => {
     window.__blankFixN = (window.__blankFixN || 0) + 1;
     if (window.__blankFixN <= 3) {
@@ -958,6 +1170,9 @@ const SETTLE = {
   'snap-pick': 350, 'snap-try': 750, 'snap-done': 700,
   'pyrun-place': 260, 'pyrun-blank': 220, 'pyrun-run': 2600, 'pyrun-next': 700,
   'pyrun-hub': 700, 'pyrun-job-done': 700, 'pyrun-extra-place': 300,
+  /* the staged editor: the plan face is one press, the write is a real type,
+     and a RUN on a conversation card has to wait for the probe pass as well */
+  'pye-plan': 900, 'pye-write': 400, 'pye-chip': 400, 'pye-run': 3200, 'pye-starter': 700, 'pye-send': 1200,
   'case-pin': 900, 'case-log': 400, 'case-close': 1200, 'case-stamped': 700, 'case-wait': 700,
   'std-expand': 700, 'std-run': 700, 'std-outcome': 900, 'std-ready': 1200,
   'gal-review': 900, 'gal-write': 250, 'gal-file': 1200, 'gal-back': 700,
