@@ -31,6 +31,14 @@ async function openStage(page, cine) {
   await page.waitForFunction(() => !!window.pystage, null, { timeout: 15000 });
   await page.evaluate(() => window.pystage.reset());
   await cine.install();
+  /* J13(g): declared here too, PROACTIVELY, before he sits this lesson — the
+     same law on all four L3 films, not on the one that failed him. */
+  /* the OUTPUT AREA, not the panel chrome. A panel heading that says "The
+     console" is not the console speaking, and holding a caption off a static
+     label would be the gate inventing a fault (DFM 146a). What must never be
+     covered is what the program actually printed, and what was actually said. */
+  await cine.subject('console', '#conBody');
+  await cine.subject('conversation', '#chatBody');
 }
 async function assertStage(page, want) {
   const p = await page.evaluate(() => window.pystage.probe());
@@ -68,7 +76,7 @@ const scenes = [
     await openRack(page, cine);
     await cine.curtain({
       kicker: KICKER, title: 'One box, then a rack of them',
-      sub: 'one name over a whole set of things'
+      sub: 'one name for a whole set of things'
     });
     await cine.pause(2400);
     await cine.lift();
@@ -87,11 +95,11 @@ const scenes = [
     await page.evaluate(() => window.lr.play(2));
     await assertActor(page, log, 2, 'slot0', 110);
     await cine.pause(Math.max(700, cine.holdFor(C2) - (Date.now() - t2)));
-    const C3 = 'Three boxes, one shelf, and one label on the front. Every box on that shelf answers to the name <b>playlist</b>.';
+    const C3 = 'There are three boxes on one rack, and one label on the front of it. The whole rack has a single name, and that name is <b>playlist</b>.';
     await cine.captionShow(C3);
     await cine.pause(cine.holdFor(C3));
     await cine.captionHide();
-    await cine.caption('These are song <b>titles</b>, and nothing else. <b>No music plays in this lesson.</b> Your program manages the titles; it never makes a sound.');
+    await cine.caption('These are song <b>titles</b>, and nothing else. <b>No music plays in this lesson.</b> Your program moves these titles around, and it never makes a sound.');
     await cine.drop({});
     await cine.pause(1000);
   }
@@ -105,24 +113,24 @@ const scenes = [
   run: async ({ page, cine, log }) => {
     await openRack(page, cine);
     await page.evaluate(async () => { await window.lr.play(1); await window.lr.play(2); });
-    await cine.curtain({ kicker: 'CHAPTER 2', title: 'Counting starts at 0', sub: 'the one everybody gets wrong' });
+    await cine.curtain({ kicker: 'CHAPTER 2', title: 'Counting starts at 0', sub: 'the part everybody gets wrong at first' });
     await cine.pause(2200);
     await cine.lift();
 
-    const A1 = 'Every box on the shelf has a <b>position</b> stencilled under it. Look at the first one: it is <b>0</b>, not 1.';
+    const A1 = 'Every box on the rack has a <b>position</b> number painted under it. Look at the first one: it is <b>0</b>, not 1.';
     await cine.captionShow(A1);
     await cine.pause(cine.holdFor(A1));
-    const A2 = 'So <b>playlist[1]</b> is not the first box. The square brackets say <b>which position</b>, and the counting started at zero.';
+    const A2 = 'So <b>playlist[1]</b> is not the first box. The number in the square brackets is a position, and positions start at zero.';
     await cine.captionShow(A2);
     const a2 = Date.now();
     await page.evaluate(() => window.lr.play(3));
     await assertActor(page, log, 3, 'pointer', 110);
     await cine.pause(Math.max(700, cine.holdFor(A2) - (Date.now() - a2)));
-    const A3 = 'The pointer counts along: zero, one. It lands on the <b>second</b> box, and that is what comes back.';
+    const A3 = 'Count along the rack: zero, then one. You stop on the <b>second</b> box, and that is the title Python gives you.';
     await cine.captionShow(A3);
     await cine.pause(cine.holdFor(A3));
     await cine.captionHide();
-    await cine.caption('This is the single thing people get wrong all year. The number in the square brackets is a <b>position</b>, and it is never a count.');
+    await cine.caption('This is the mistake more people make than any other. The number in the square brackets is a <b>position</b>, and it is never a count.');
     await cine.drop({});
     await cine.pause(1000);
   }
@@ -131,26 +139,26 @@ const scenes = [
 /* ------------------------------------------------------------------ ch3 */
 {
   id: 'ch3',
-  label: 'How many are in there?',
+  label: 'How many things are in the list?',
   tailMs: 1600,
   run: async ({ page, cine, log }) => {
     await openRack(page, cine);
     await page.evaluate(async () => { await window.lr.play(1); await window.lr.play(2); await window.lr.play(3); });
-    await cine.curtain({ kicker: 'CHAPTER 3', title: 'How many are in there?', sub: 'len( ) counts the boxes' });
+    await cine.curtain({ kicker: 'CHAPTER 3', title: 'How many things are in the list?', sub: 'len( ) counts the boxes' });
     await cine.pause(2200);
     await cine.lift();
 
-    const B1 = '<b>len( )</b> is the Python word for &ldquo;how many&rdquo;. Give it the list and it counts the boxes on the shelf.';
+    const B1 = '<b>len( )</b> is the Python word for &ldquo;how many&rdquo;. Give it the list and it counts the boxes on the rack.';
     await cine.captionShow(B1);
     const b1 = Date.now();
     await page.evaluate(() => window.lr.play(4));
     await assertActor(page, log, 4, 'slot0', 110);
     await cine.pause(Math.max(700, cine.holdFor(B1) - (Date.now() - b1)));
-    const B2 = 'Three boxes, so it says <b>3</b>. Now look under the last one: it is numbered <b>2</b>.';
+    const B2 = 'There are three boxes, so len( ) gives <b>3</b>. Now look under the last box: it is numbered <b>2</b>.';
     await cine.captionShow(B2);
     await cine.pause(cine.holdFor(B2));
     await cine.captionHide();
-    await cine.caption('The count and the last position are <b>always one apart</b>, because the counting started at zero. Ask for playlist[3] on a shelf of three and the program stops.');
+    await cine.caption('The count and the last position are <b>always one apart</b>, because counting starts at zero. Ask for playlist[3] on a rack of three and the program stops.');
     await cine.drop({});
     await cine.pause(1000);
   }
@@ -164,20 +172,20 @@ const scenes = [
   run: async ({ page, cine, log }) => {
     await openRack(page, cine);
     await page.evaluate(async () => { await window.lr.play(1); await window.lr.play(2); await window.lr.play(3); await window.lr.play(4); });
-    await cine.curtain({ kicker: 'CHAPTER 4', title: 'Adding one on the end', sub: 'append, and what it does NOT do' });
+    await cine.curtain({ kicker: 'CHAPTER 4', title: 'Adding one on the end', sub: 'append puts one more box on the end' });
     await cine.pause(2200);
     await cine.lift();
 
-    const D1 = '<b>.append( )</b> puts a new box on the <b>end</b> of the shelf, and leaves everything already there exactly where it was.';
+    const D1 = '<b>.append( )</b> puts a new box on the <b>end</b> of the rack, and leaves everything already there exactly where it was.';
     await cine.captionShow(D1);
     const d1 = Date.now();
     await page.evaluate(() => window.lr.play(5));
     await assertActor(page, log, 5, 'slot3', 110);
     await cine.pause(Math.max(700, cine.holdFor(D1) - (Date.now() - d1)));
-    const D2 = 'Four boxes now, and the positions did not shuffle. The new one is <b>3</b>, and 0, 1 and 2 are the same boxes they were.';
+    const D2 = 'There are four boxes now, and nothing moved. The new box is number <b>3</b>, and boxes 0, 1 and 2 are exactly where they were.';
     await cine.captionShow(D2);
     await cine.pause(cine.holdFor(D2));
-    const D3 = 'And the whole shelf still answers to <b>one name</b>. That is the point of a list: everything you can do to it, you do to all of them at once.';
+    const D3 = 'And the whole rack still has <b>one name</b>. Having one name is the point of a list: you write that name, and Python knows every title on the rack.';
     await cine.captionShow(D3);
     const d3 = Date.now();
     await page.evaluate(() => window.lr.play(6));
@@ -186,12 +194,12 @@ const scenes = [
     await cine.captionHide();
 
     await cine.card({
-      kicker: 'NOW GO AND PLAY THE MATCH', title: 'Six rounds, and two of them are unfair on purpose',
+      kicker: 'NOW GO AND PLAY THE MATCH', title: 'There are six rounds, and the last two are on things nobody has taught you yet.',
       lines: [
         'Somebody else in this room sees the same code as you, at the same moment',
         'You both say what you think it will print, you both lock it in, and then <b>it really runs</b>',
-        '<b>Rounds 5 and 6 are on things nobody has taught you.</b> They say so before they start, and they are worth nothing either way',
-        'Come back here afterwards. The second film picks up on exactly those two'
+        '<b>Rounds 5 and 6 are on things nobody has taught you.</b> The screen tells you before each of them starts, and they are worth nothing either way',
+        'After the Match there is a second film, and it explains those last two rounds.'
       ]
     }, 11000);
     await cine.drop({});
@@ -209,7 +217,7 @@ const scenes = [
     await openStage(page, cine);
     await cine.curtain({
       kicker: KICKER + ' · PART 2', title: 'Taking one out',
-      sub: 'remove, and the one thing that catches it'
+      sub: 'remove, and the mistake that stops remove working'
     });
     await page.evaluate(() => { window.pystage.eyebrow('OFF THE SHELF'); window.pystage.program('The program'); window.pystage.consoleOpen('The console'); });
     await page.waitForTimeout(700);
@@ -223,8 +231,8 @@ const scenes = [
     await page.evaluate(() => window.pystage.print(["['Opening Night', 'Last Bus Home']"]));
     await cine.pause(1300);
     await assertStage(page, { rows: 3, consoleHas: 'Last Bus Home' });
-    await cine.caption('<b>.remove( )</b> takes a title off the shelf by <b>naming it</b>. Not by its position &mdash; by the words themselves.');
-    await cine.caption('Which is why it has to match <b>exactly</b>. A capital letter in the wrong place, or one extra space, and Python cannot find it and stops.');
+    await cine.caption('<b>.remove( )</b> takes a title off the rack. You give it the words of the title, not the position number.');
+    await cine.caption('So the title has to match <b>exactly</b>. One wrong capital letter, or one extra space, and Python cannot find the title. When that happens, your program stops.');
     await page.evaluate(() => { window.pystage.program('The program'); window.pystage.consoleOpen('The console'); });
     for (const t of ['playlist = ["Opening Night", "Curtain Up"]', 'playlist.remove("curtain up")']) {
       await page.evaluate(l => window.pystage.addLine(l), t);
@@ -236,7 +244,7 @@ const scenes = [
       'Python could not use the thing in the brackets. If this was a remove line, the title has to match one that is really in the list, capital letters and all.'));
     await cine.pause(1500);
     await assertStage(page, { consoleHas: 'ValueError' });
-    await cine.caption('Read the two out loud, side by side. The difference is nearly always one capital letter.');
+    await cine.caption('Put your remove line and the line that makes the list side by side, and read them both slowly. The difference is nearly always one capital letter.');
     await cine.drop({});
     await cine.pause(900);
   },
@@ -246,11 +254,11 @@ const scenes = [
 /* ------------------------------------------------------------------ ch6 */
 {
   id: 'ch6',
-  label: 'The first three only',
+  label: 'Taking just the first three',
   tailMs: 1400,
   run: async ({ page, cine }) => {
     await openStage(page, cine);
-    await cine.curtain({ kicker: 'PART 2 · CHAPTER 2', title: 'The first three only', sub: 'and a loop to print them' });
+    await cine.curtain({ kicker: 'PART 2 · CHAPTER 2', title: 'Taking just the first three', sub: 'and a loop to print them' });
     await page.evaluate(() => { window.pystage.eyebrow('NOW PLAYING'); window.pystage.program('The program'); window.pystage.consoleOpen('The console'); });
     await page.waitForTimeout(700);
     await cine.lift();
@@ -261,18 +269,23 @@ const scenes = [
     }
     await cine.pause(900);
     await assertStage(page, { rows: 4 });
-    await cine.caption('<b>playlist[0:3]</b> takes a slice off the shelf: start at position 0, stop <b>before</b> position 3. That is boxes 0, 1 and 2 &mdash; three of them.');
-    await cine.caption('The stopping number is <b>not included</b>. That is why a Top-3 line reads 0:3 and not 0:2.');
+    await cine.caption('<b>playlist[0:3]</b> gives you a copy of part of the rack: start at position 0, stop <b>before</b> position 3. That is boxes 0, 1 and 2 &mdash; three of them, and the rack itself is left alone.');
+    await cine.caption('The stopping number is <b>never included</b>. That is why you write 0:3 to get the first three, and not 0:2.');
     await page.evaluate(() => window.pystage.lit(2));
     await cine.pause(700);
-    await cine.caption('The <b>for</b> line is a loop. It takes those three one at a time, puts each one into a box called <b>song</b>, and runs the indented line underneath once for each.');
+    await cine.caption('The <b>for</b> line is a loop. It takes those three titles one at a time and puts each one into a box (a variable) called <b>song</b>. Then it runs the line underneath, once for every title. That line is the one pushed in by four spaces.');
     await page.evaluate(() => window.pystage.lit(3));
     await cine.pause(700);
     await cine.caption('Those four spaces are what put the print line <b>inside</b> the loop. Move it back to the left and it runs once, after the loop has finished.');
     await page.evaluate(() => window.pystage.print(['Now Playing - Top 3', 'Opening Night', 'Curtain Up', 'Last Bus Home']));
     await cine.pause(1400);
     await assertStage(page, { consoleHas: 'Last Bus Home' });
-    await cine.caption('Three titles in the slice, three trips round the loop, three lines on the console.');
+    /* THE CAPTION GOES ABOVE THE CONSOLE HERE (J13g). This beat names what the
+       console has just printed, and the console panel on this chapter reaches
+       into the lower third — so the sentence was sitting on the very output it
+       is about. Found by the proactive audit of this film BEFORE he sat it,
+       which is what the audit was ordered for. */
+    await cine.caption('There are three titles in the slice, so the loop goes round three times and prints three lines.', { pos: 'top' });
     await cine.drop({});
     await cine.pause(900);
   },
@@ -282,7 +295,7 @@ const scenes = [
 /* ------------------------------------------------------------------ ch7 */
 {
   id: 'ch7',
-  label: 'Putting them in order, and the trap',
+  label: 'Putting the titles in order, and the trap that catches people',
   tailMs: 4200,
   run: async ({ page, cine, log }) => {
     await openRack(page, cine);
@@ -291,13 +304,13 @@ const scenes = [
       await window.lr.play(4); await window.lr.play(5);
     });
     await cine.curtain({
-      kicker: 'PART 2 · CHAPTER 3', title: 'Putting them in order, and the trap',
-      sub: 'you met this one in the Match ' + DASH + ' now you know why'
+      kicker: 'PART 2 · CHAPTER 3', title: 'Putting the titles in order, and the trap that catches people',
+      sub: 'you met this in round 6 of the Match ' + DASH + ' here is why it happens'
     });
     await cine.pause(2400);
     await cine.lift();
 
-    const S1 = '<b>.sort( )</b> puts the shelf in order, A to Z. Watch what it moves: the <b>boxes</b>. The positions stay exactly where they are.';
+    const S1 = '<b>.sort( )</b> puts the rack in order, A to Z. Watch what it moves: the <b>boxes</b>. The positions stay exactly where they are.';
     await cine.captionShow(S1);
     const s1 = Date.now();
     await page.evaluate(() => window.lr.play(7));
@@ -311,21 +324,25 @@ const scenes = [
       throw new Error('the sort beat did not really order the rack: ' + JSON.stringify(order));
     }
     await cine.pause(Math.max(900, cine.holdFor(S1) - (Date.now() - s1)));
-    const S2 = 'And here is the trap. It does that <b>to the list itself</b>, and it hands back <b>nothing at all</b>.';
+    const S2 = 'And here is the trap. <b>.sort( )</b> changes the list itself, and it gives you <b>nothing back</b> to keep.';
     await cine.captionShow(S2);
     await cine.pause(cine.holdFor(S2));
-    const S3 = '<b>None</b> is Python&rsquo;s word for nothing. If you write <b>order = playlist.sort()</b>, the box called order gets None &mdash; and the shelf is sorted anyway.';
+    const S3 = '<b>None</b> is Python&rsquo;s word for nothing. If you write <b>order = playlist.sort()</b>, the box called order gets None &mdash; and the rack is sorted anyway.';
     await cine.captionShow(S3);
     await cine.pause(cine.holdFor(S3));
     await cine.captionHide();
-    await cine.caption('So: <b>sort the list, then print the LIST.</b> That is the whole fix, and <b>.reverse( )</b> behaves in exactly the same way.');
+    await cine.caption('Sort the list on one line, then print the list on the next. Written that way it works, and <b>.reverse( )</b> works exactly the same way.');
 
     await cine.card({
-      kicker: 'NOW BUILD YOUR OWN', title: 'Five songs, five things done to them',
+      kicker: 'NOW BUILD YOUR OWN', title: 'You choose five songs of your own, and your program does five jobs to them.',
       lines: [
-        '<b>Add</b> one, <b>take</b> one out, <b>announce</b> one at random, put them <b>in order</b>, print the <b>first three</b>',
-        'There is no bank of ready-made lines this time. You type it',
-        'The list beside your program ticks each of the five only when your program <b>really does it</b> &mdash; it is run, never read'
+        'Your engine does five jobs, in this order:',
+        '1. <b>add</b> a song on the end',
+        '2. <b>take one out</b>',
+        '3. <b>pick one at random</b> and announce it',
+        '4. put them <b>in order</b>',
+        '5. print the <b>first three</b>',
+        'There are no ready-made lines this time: you type the program yourself. The five jobs sit above the editor, and each one ticks only when your program really does that job.'
       ]
     }, 11000);
     await cine.drop({});

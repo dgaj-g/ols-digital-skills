@@ -58,9 +58,15 @@ const REPEAT_LIMIT = 3;
 
 let applied = 0, refusedBlank = 0, refusedRepeat = 0, refusedExisting = 0, failed = 0, replaced = 0;
 const seen = new Set();
-for (const r of rows) {
+for (const r of rows.slice().reverse()) {
   const v = r.v;
   if (!v || !v.path) { refusedBlank++; continue; }
+  /* THE LAST LINE WINS (28 Aug 2026). A separated reader is told to APPEND its top-up
+     rather than rewrite the file, so a path judged twice appears twice — and the later
+     line is the judgement made against the CURRENT text. Taking the first meant filing
+     yesterday's judgement of a sentence that had since been rewritten, which is the exact
+     staleness the hash rule exists to catch and could not, because the record is written
+     after the edit. The reader that spotted it said so in its own report. */
   if (seen.has(v.path)) continue;
   seen.add(v.path);
   const fields = [v.do, v.picture, v.for].map(x => String(x == null ? '' : x).trim());
@@ -77,7 +83,19 @@ for (const r of rows) {
   if (replacing) replaced++;
   if (DRY) { applied++; continue; }
   try {
-    execFileSync(process.execPath, [TOOL, '--set', v.path, fields[0], fields[1], fields[2]],
+    /* A FILM CAPTION IS A SENTENCE WRITTEN TO EXPLAIN SOMETHING TO A CHILD, exactly
+       like a card is (DFM 179), and it lives in the same ledger under a
+       content-addressed key — but it is written with a different flag. This file
+       only ever called `--set`, so every caption judgement a separated reader filed
+       was refused with "no such string path" and the round would have shipped with
+       62 captions unjudged. */
+    /* THREE REGISTERS, THREE FLAGS. A caption is `--set-film` and a brief sentence is
+       `--set-brief`; only a lesson string is a plain `--set`. Routing on one of the three
+       is how 62 caption judgements and then 18 brief judgements were refused in a single
+       night, each time with the count printed and nobody obliged to read it. */
+    const flag = /^film:/.test(v.path) ? '--set-film'
+      : (/ › brief › /.test(v.path) ? '--set-brief' : '--set');
+    execFileSync(process.execPath, [TOOL, flag, v.path, fields[0], fields[1], fields[2]],
       { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
     applied++;
   } catch (e) {

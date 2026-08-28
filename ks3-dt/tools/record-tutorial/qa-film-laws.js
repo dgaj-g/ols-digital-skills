@@ -145,6 +145,106 @@ const textRects = (page) => page.evaluate(() =>
   check(pillEnforce.length === 0, 'enforce mode parks the pointer clear of a callout pill',
     pillEnforce.length ? JSON.stringify(pillEnforce[0]) : 'no violations');
 
+  /* ================= THE CONSOLE IS A PROTECTED SUBJECT (J13g) ============
+     HIS FIND, 27 August 2026, on `j2-l3-a`: a caption discussing what the bot had
+     printed sat ON TOP of the console it was discussing — and his question was
+     the right one: "why is this happening again?"
+     THE HONEST ANSWER, and it is why this section exists: it was NOT the same
+     fault. The film laws measure a caption against the FRAME EDGES (201a) and
+     against the CURSOR (192e/201b). Their family is DFM 141(a) — a caption never
+     covers the thing it points at — but nothing had ever measured a caption
+     against the CONSOLE, because the console was not a surface when those laws
+     were written. A law that names its surfaces one at a time is a hand-kept
+     list, which is exactly what DFM 271 is about.
+     SO: a scene DECLARES what it is showing, and the recorder REFUSES to record a
+     scene that shows a console and declares nothing — a future film cannot opt
+     out by saying nothing. Both halves are proved here, both ways. */
+  console.log('\nSUBJECT REGIONS — the console a caption may not cover (J13g):');
+
+  /* a console-shaped panel, in the lower half where the caption lives */
+  /* the real shape: a titled panel whose OUTPUT AREA is the protected region.
+     The heading is deliberately outside it — a panel label that reads "The
+     console" is not the console speaking, and a gate that held a caption off a
+     static label would be inventing a fault (DFM 146a). */
+  const CONSOLE_HTML = '<div id="con" style="position:fixed;left:88px;right:88px;bottom:40px;' +
+    'background:#060D1F;border:1px solid #22355F;border-radius:14px;padding:22px 28px">' +
+    '<h3 style="color:#93A4C4;font:15px sans-serif;margin:0 0 12px">THE CONSOLE</h3>' +
+    '<div id="conBody" style="height:120px;color:#8BE58B;font:28px ui-monospace,monospace">' +
+    'A dog. Good choice.</div></div>';
+
+  const overReport = await withPage('report', async (page, cine) => {
+    await page.evaluate(h => { document.body.insertAdjacentHTML('beforeend', h); }, CONSOLE_HTML);
+    await cine.subject('console', '#conBody');
+    await cine.ensureCursor(120, 120);
+    await cine.captionShow('And the reply uses what she typed.');
+    return cine.violations.slice();
+  });
+  check(overReport.some(v => v.law === 'CAPTION-OVER-SUBJECT'),
+    'report mode REPRODUCES his fault: a caption drawn over a speaking console',
+    overReport.length ? JSON.stringify(overReport[0]) : 'nothing reported');
+
+  let threw = null;
+  try {
+    await withPage('enforce', async (page, cine) => {
+      await page.evaluate(h => { document.body.insertAdjacentHTML('beforeend', h); }, CONSOLE_HTML);
+      await cine.subject('console', '#conBody');
+      await cine.ensureCursor(120, 120);
+      await cine.caption('And the reply uses what she typed.', { hold: 1 });
+    });
+  } catch (e) { threw = e.message; }
+  check(threw && /CAPTION OVER ITS OWN SUBJECT/.test(threw),
+    'enforce mode REFUSES the take rather than shipping the frame', threw || 'it recorded happily');
+
+  /* the same console, but with the caption moved off it — must be silent */
+  const moved = await withPage('enforce', async (page, cine) => {
+    await page.evaluate(h => { document.body.insertAdjacentHTML('beforeend', h); }, CONSOLE_HTML);
+    await cine.subject('console', '#conBody');
+    await cine.ensureCursor(120, 640);
+    await cine.captionShow('And the reply uses what she typed.', { pos: 'top' });
+    return cine.violations.slice();
+  });
+  check(moved.length === 0, 'and a caption ABOVE the console raises nothing — the fix is legal',
+    moved.length ? JSON.stringify(moved[0]) : 'silent');
+
+  /* AND A CONSOLE THAT IS SILENT IS NOT A SUBJECT. A gate that condemned a
+     caption over an EMPTY console would be inventing a fault (DFM 146a). */
+  const empty = await withPage('enforce', async (page, cine) => {
+    await page.evaluate(h => { document.body.insertAdjacentHTML('beforeend',
+      h.replace('A dog. Good choice.', '')); }, CONSOLE_HTML);
+    await cine.subject('console', '#conBody');
+    await cine.ensureCursor(120, 120);
+    await cine.captionShow('An ordinary caption, over a console with nothing in it.');
+    return cine.violations.slice();
+  });
+  check(empty.length === 0, 'a console with nothing in it is not a subject — no fault invented',
+    empty.length ? JSON.stringify(empty[0]) : 'silent');
+
+  /* THE RECORDER REFUSES AN UNDECLARED CONSOLE */
+  let threw2 = null;
+  try {
+    await withPage('enforce', async (page, cine) => {
+      await page.evaluate(h => { document.body.insertAdjacentHTML('beforeend',
+        h.replace('bottom:40px', 'top:40px')); }, CONSOLE_HTML);
+      await cine.ensureCursor(120, 640);
+      await cine.caption('A caption in a scene that shows a console and declared nothing.', { hold: 1 });
+    });
+  } catch (e) { threw2 = e.message; }
+  check(threw2 && /UNDECLARED SUBJECT REGION/.test(threw2),
+    'a scene that SHOWS a console and declares none is refused outright — no silent opt-out',
+    threw2 || 'it recorded happily');
+
+  /* and declaring it makes the same scene legal */
+  const declared = await withPage('enforce', async (page, cine) => {
+    await page.evaluate(h => { document.body.insertAdjacentHTML('beforeend',
+      h.replace('bottom:40px', 'top:40px')); }, CONSOLE_HTML);
+    await cine.subject('console', '#conBody');
+    await cine.ensureCursor(120, 640);
+    await cine.captionShow('A caption in a scene that declared its console.');
+    return cine.violations.slice();
+  });
+  check(declared.length === 0, 'declaring the region makes the same scene legal',
+    declared.length ? JSON.stringify(declared[0]) : 'silent');
+
   /* ---------- the over-tightening guard ---------- */
   console.log('\nGUARD — a legal beat must not be reported:');
   const legal = await withPage('enforce', async (page, cine) => {

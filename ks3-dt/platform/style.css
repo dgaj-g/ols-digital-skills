@@ -3327,6 +3327,27 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.95rem; line-height: 1.55;
   color: #26313F; white-space: pre-wrap;
 }
+/* THE ACTION, AS A REAL NUMBERED LIST (DFM 135/151/171). His "VERY confusing"
+   card opened with a paragraph about the planted mistakes before it had said what
+   she was being asked to DO. One number per line, at the top of the card. */
+.pyrun-actions {
+  margin: 0 0 14px 1.15em; padding: 0;
+}
+.pyrun-actions li {
+  margin: 0 0 7px; line-height: 1.55; color: var(--ink); font-size: 0.97rem;
+}
+.pyrun-actions li b { color: var(--ols-blue); }
+
+/* WHERE THE TARGET BLOCK WOULD BE, ON A BUILD THAT IS CHECKED BY RUNNING.
+   His "wee white line" was an empty target shell on exactly these builds; the
+   block now renders only when it has content, and this sentence takes its place
+   so the space says something rather than sitting blank (DFM 42/184). Ink on
+   the light card, never a shell token (207g / J4). */
+.pyrun-runcheck {
+  font-size: 0.93rem; line-height: 1.5; margin: 0 0 14px; padding: 10px 14px; color: var(--ink);
+  background: var(--field); border: 1px dashed var(--line-l); border-left: 4px solid var(--line);
+  border-radius: 10px;
+}
 .pyrun-how {
   font-size: 0.95rem; line-height: 1.5; margin: 0 0 16px; padding: 10px 14px; color: var(--ink);
   background: rgba(var(--gold-rgb), 0.10); border: 1px solid rgba(var(--gold-rgb), 0.45); border-radius: 10px;
@@ -3389,6 +3410,17 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   cursor: grabbing; opacity: 0.96; box-shadow: 0 8px 22px rgba(23, 34, 59, 0.28); border-color: var(--gold);
 }
 .pyrun-prog.drop-here, .pyrun-tray.drop-back { border-color: var(--gold); background: rgba(var(--gold-rgb), 0.10); }
+/* THE LABELLED WAY BACK (DFM 272). Small and quiet — it must not compete with
+   the line it belongs to — but a real control with real ink on the light card,
+   never a shell token, and never so faint that a pupil cannot read what it does
+   (J4 / DFM 207g). It sits BESIDE the row, never inside it (267f). */
+.take-back {
+  flex: 0 0 auto; font-size: 0.76rem; line-height: 1.2; padding: 5px 9px; border-radius: 8px;
+  color: #4A5570; border: 1px solid var(--line-l); background: #fff; white-space: nowrap;
+}
+.take-back:hover { color: var(--ink); border-color: var(--gold); background: rgba(var(--gold-rgb), 0.10); }
+.take-back:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.pp-list li .take-back, .pyp-list li .take-back { margin-left: 4px; }
 /* the typed blank sits INSIDE the code line and still reads as code */
 .pyrun-blank {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.95rem;
@@ -3621,13 +3653,98 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   font-size: 0.88rem; line-height: 1.5;
 }
 
+/* ==== THE STAGED EDITOR — K41's two faces ===============================
+   His rejection, 27 Aug 2026: "This is just a wall, a wall of too much
+   information." The old editor card wore `.pye-card`, which is the class the
+   SENT-CARD <pre> uses, so the whole card painted itself #16253F while
+   `.pyrun-goal` kept `var(--ink)` (#17223B) — navy title on navy card, his
+   "blue on blue", and the verdict text invisible on the same ground.
+   LIGHT GROUND, DARK PANELS ONLY FOR CODE (K41c). The plan face and the bench
+   are ordinary light cards; the only dark surfaces are the editor and the
+   console, because those are code. Every string on both faces is on the
+   readability landmarks and is measured in real pixels on every skin. */
+.pye-plan, .pye-bench { max-width: 820px; }
+.pye-plan h2 { margin: 6px 0 10px; }
+.pye-plan-film { margin: 14px 0 16px; }
+.pye-plan-film video {
+  width: 100%; display: block; border-radius: var(--r-md);
+  background: #06101F; border: 1px solid var(--line-l);
+}
+.pye-plan-say {
+  margin: 8px 0 0; font-size: 0.88rem; line-height: 1.5; color: var(--muted);
+}
+.pye-plan-h {
+  margin: 18px 0 6px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 800; color: var(--ols-blue);
+}
+.pye-plan-goal { margin: 0 0 10px; font-size: 1.02rem; line-height: 1.5; color: var(--ink); font-weight: 700; }
+.pye-plan-list { margin: 0 0 14px 1.25em; padding: 0; }
+.pye-plan-list li { margin: 0 0 8px; line-height: 1.55; color: var(--ink); font-size: 0.98rem; }
+.pye-plan-brief { margin: 0 0 18px; font-size: 0.95rem; line-height: 1.6; color: var(--ink); }
+.pye-start { display: block; }
+
+/* THE JOBS AS A PINNED STRIP. Same three sentences as the plan and the verdict
+   (one fact, one wording — DFM 144), compact, and they fill in as she runs. */
+.pye-strip-h {
+  margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 800; color: var(--ols-blue);
+}
+.pyf-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 17px; height: 17px; margin-right: 6px; border-radius: 999px;
+  background: var(--ols-blue); color: #fff; font-size: 0.62rem; font-weight: 800;
+  font-variant-numeric: tabular-nums; vertical-align: text-bottom;
+}
+.pyf-item.is-matched .pyf-num { background: #17734A; }
+.pyv-row.is-matched .pyf-num { background: #17734A; }
+.pye-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; margin: 0 0 14px; }
+.pye-strip .pyf-item { margin: 0; }
+.pye-bench .pye-host { margin: 0 0 14px; }
+.pye-bench .pye { margin: 0; }
+.pye-bench .pye-code { min-height: 260px; }
+.pye-bench .pyp-palette { margin: 4px 0 0; }
+.pye-bench .pye-starter { margin-top: 0; border-top: 0; padding-top: 0; }
+.pye-bench .pyrun-run { margin-top: 16px; }
+
+/* SOFT WRAP: the sentence a pupil writes is never clipped sideways (K41b).
+   The mirror is a measuring surface only — it is never seen, and it exists so
+   the gutter can count LOGICAL lines rather than screen rows. */
+.pye.is-soft .pye-code { white-space: pre-wrap; overflow-x: hidden; word-break: break-word; }
+.pye-mirror {
+  position: absolute; visibility: hidden; pointer-events: none; left: -99999px; top: 0;
+  white-space: pre-wrap; word-break: break-word; box-sizing: border-box;
+}
+.pye-mirror-line { white-space: pre-wrap; word-break: break-word; }
+
+/* THE VERDICT, ONE ROW PER JOB — his "ALL FOUR" over 3/3 is why the heading is
+   computed from the feature list and never authored (J5). */
+.pyv-list { list-style: none; margin: 10px 0 12px; padding: 0; }
+.pyv-row {
+  display: flex; align-items: baseline; gap: 10px; padding: 8px 11px; margin: 0 0 7px;
+  border-radius: var(--r-sm); background: #fff; border: 1px solid var(--line-l); color: var(--ink);
+}
+.pyv-row.is-matched { background: var(--good-soft); border-color: #B6E6CE; }
+.pyv-row.is-notyet { background: #FFF3E2; border-color: #F1D6A8; }
+.pyv-tag {
+  flex: 0 0 auto; font-size: 0.68rem; letter-spacing: 0.09em; text-transform: uppercase;
+  font-weight: 800; color: #5B6579;
+}
+.pyv-row.is-matched .pyv-tag { color: #17734A; }
+.pyv-row.is-notyet .pyv-tag { color: #8A5A12; }
+.pyv-say { font-size: 0.92rem; line-height: 1.5; color: var(--ink); }
+
 /* the palette: a served tray, shuffled at mount (DFM 258) */
 .pyp-palette { margin: 12px 0 0; }
 .pyp-palette h3 {
   margin: 0 0 4px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
-  font-weight: 800; color: var(--gold-hi);
+  font-weight: 800; color: var(--ols-blue);
 }
-.pyp-palette-lead { margin: 0 0 9px; font-size: 0.87rem; line-height: 1.5; color: var(--text-d); }
+/* THE SAME SWEEP FOUND THIS ONE (J4). The palette only ever renders inside the
+   editor card, which was the platform's one dark card by accident and is a
+   LIGHT card under K41 — so the shell token here would have become a second
+   invisible line the day the card turned light. Ink, and the gold heading
+   above it goes with it. */
+.pyp-palette-lead { margin: 0 0 9px; font-size: 0.87rem; line-height: 1.5; color: var(--ink); }
 .pyp-palette-list { display: flex; flex-direction: column; gap: 7px; }
 .pyp-chip {
   display: flex; flex-direction: column; gap: 3px; text-align: left; width: 100%;
@@ -3677,7 +3794,12 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .py-style:hover { border-color: var(--gold); transform: translateY(-2px); }
 .py-style-name { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; color: var(--ols-blue); }
 .py-style-whiff { font-size: 0.88rem; line-height: 1.45; color: var(--muted); }
-.pyw-chosen { margin: 0 0 10px; font-size: 0.92rem; color: var(--text-d); }
+/* HIS INVISIBLE BUTLER LINE (DFM 207g, 27 Aug 2026). This sat on the LIGHT
+   parchment card and wore `--text-d` — the DARK SHELL's text token, #EAF0FC —
+   so a sentence written to be read was near-white on white. One class, two
+   worlds. Ink on a light card, always; the token is measured in real pixels
+   by qa-readability on every skin the year can wear. */
+.pyw-chosen { margin: 0 0 10px; font-size: 0.92rem; color: var(--ink); }
 .pyw-stage { margin-top: 4px; }
 .swap-done-say { margin: 10px 0 0; font-size: 0.93rem; line-height: 1.55; color: var(--text-d); }
 
@@ -3972,3 +4094,8 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   background: var(--field); border: 1.5px solid var(--line-l);
   color: var(--ink); font-size: 0.88rem; line-height: 1.5;
 }
+
+/* the help panel's numbered steps (DFM 171) — one step per line, numbers kept
+   beside the words they belong to */
+.help-steps { margin: .35rem 0 .6rem; padding-left: 1.35rem; }
+.help-steps li { margin: .3rem 0; line-height: 1.5; }

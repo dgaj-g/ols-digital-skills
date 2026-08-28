@@ -142,6 +142,22 @@ function main() {
       const e = ledger.entries[s.path];
       if (e && e.sha1 !== sha1(s.text)) console.log(s.path);
     }));
+    /* THE BRIEF AND THE DECK ARE IN THE SAME LEDGER AND WERE NOT IN THIS ANSWER
+       (28 Aug 2026). `ledger-apply` asks this for the list of records an edit has
+       VOIDED, and refuses any other path that already has one — so a re-judged
+       brief sentence came back "already-had-a-record" and the stale judgement
+       stayed. Eighteen of them, in one round. Whatever registers the ledger holds,
+       this has to answer for all of them. */
+    const Q = require('./qa-language.js');
+    const all = Q.loadLessons();
+    (Q.collectBriefStrings ? Q.collectBriefStrings(all) : []).forEach(s => {
+      const e = ledger.entries[s.path];
+      if (e && e.sha1 !== sha1(s.text)) console.log(s.path);
+    });
+    ((Q.collectDeckStrings ? Q.collectDeckStrings(all).strings : []) || []).forEach(s => {
+      const e = ledger.entries[s.path];
+      if (e && e.sha1 !== sha1(s.text)) console.log(s.path);
+    });
     return;
   }
 

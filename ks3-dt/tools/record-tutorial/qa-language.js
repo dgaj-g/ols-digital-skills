@@ -580,6 +580,102 @@ function fragmentCandidates(rawText) {
    PASSed). PITCHES ARE IN SCOPE — the L5 spec itself rewrote them for exactly
    this fault. Films are out of scope here: their captions are individually
    ledgered and judged. */
+/* ================= THE READ-FIRST CANDIDATE LIST — J13(a2) ================
+   HIS DEMAND, 27 August 2026: "I need to be confident that every single problem
+   that I identified will never happen again… I don't like the way that grammar
+   isn't checked."
+   THE HONEST BOUNDARY, said to him and repeated here so nobody re-argues it: a
+   mechanical grammar gate PASSES his own exhibit, because the sentence IS
+   grammatical, and shipping a gate that pretends to judge meaning is exactly
+   what DFM 146(a) forbids. Reading is the only catcher. What a machine CAN do is
+   make sure the reader cannot skim past the risky ones.
+   So these are REPORTERS, never auto-fails (the DFM 197/198 reporter-finds →
+   judge-decides shape). The gate emits the list BY NAME, and the pack refuses a
+   verdict file that does not answer every named candidate individually. The
+   judge reads everything; the machine guarantees that these cannot ride a
+   general pass.
+   THE FOUR NETS ARE HIS OWN FAULTS, generalised:
+     STACKED-WH        "…uses what they typed in what it says next."
+     BARE-DEMONSTRATIVE "That is the whole hour."
+     PREPOSITION-PILEUP "…typed in in what…"
+     NEGATION-FRAGMENT  "Never one instead of the other."
+   Plus every string on a BRAND-NEW SURFACE KIND, which is derived rather than
+   listed: a content key that exists now and did not exist in the build he sat
+   (DFM 271 — coverage comes from walking what exists). */
+const WH = '(what|which|who|whom|whose|where|when|why|how)';
+function readFirstCandidates(rawText) {
+  const raw = String(rawText);
+  const out = [];
+  const sents = sentences(fragNormalise(raw));
+  sents.forEach(s => {
+    const t = s.trim();
+    if (!t) return;
+    /* two or more wh-clauses inside ONE sentence, each introducing a clause */
+    const wh = (t.match(new RegExp('\\\\b' + WH + '\\\\b', 'gi')) || []).length;
+    if (wh >= 2 && wordCount(t) <= 40) out.push({ kind: 'STACKED-WH', text: t });
+    /* a clipped declarative opening on a bare demonstrative with no referent
+       inside the sentence: "That is the whole hour." */
+    if (/^(that|this)\s+(is|was|are|were)\b/i.test(t) && wordCount(t) <= 8) {
+      out.push({ kind: 'BARE-DEMONSTRATIVE', text: t });
+    }
+    /* two prepositions running together, or a preposition pile-up at a clause end */
+    if (/\b(in|on|at|to|of|for|with|into|onto|from|by)\s+(in|on|at|to|of|for|with|into|onto|from|by)\b/i.test(t)) {
+      out.push({ kind: 'PREPOSITION-PILEUP', text: t });
+    }
+    /* a negation-led fragment: it opens on Never/Not/No and has no real verb */
+    if (/^(never|not|no)\b/i.test(t) && !hasRealVerb(t) && wordCount(t) >= 2) {
+      out.push({ kind: 'NEGATION-FRAGMENT', text: t });
+    }
+  });
+  return out;
+}
+
+/* WHICH CONTENT KEYS ARE BRAND NEW, derived from the build he sat rather than
+   from a list somebody keeps (DFM 271). Every string under a key that did not
+   exist then is a candidate, because a surface nobody has ever read is exactly
+   where an unjudged sentence hides. */
+const NEW_SURFACE_BASE = process.env.KS3DT_SURFACE_BASE || '7d9c274';
+/* THE PACKER TRANSFORMS TWO SUBTREES, so comparing them across the two sides
+   would report the transformation as new surfaces: `keys` is encrypted into
+   `keysEnc` (every answer-key id would read as brand new), and `teacherBrief` is
+   folded into that same blob and stripped from the public file. Both are skipped
+   on both sides — a gate that reports its own plumbing as a finding is the noise
+   DFM 238(c) warns about, and noise is how a real fault gets skimmed past. */
+const SURFACE_SKIP = new Set(['keys', 'keysEnc', 'teacherBrief']);
+function keyNamesOf(obj, out) {
+  out = out || new Set();
+  if (Array.isArray(obj)) obj.forEach(v => keyNamesOf(v, out));
+  else if (obj && typeof obj === 'object') {
+    Object.keys(obj).forEach(k => {
+      out.add(k);
+      if (SURFACE_SKIP.has(k)) return;
+      keyNamesOf(obj[k], out);
+    });
+  }
+  return out;
+}
+function newSurfaceKeys() {
+  const { execFileSync } = require('child_process');
+  const repo = require('path').resolve(__dirname, '..', '..', '..');
+  const now = new Set(), was = new Set();
+  const years = ['j1', 'j2', 'j3'];
+  years.forEach(y => {
+    const dir = require('path').join(SRC, y, 'lessons');
+    if (!fs.existsSync(dir)) return;
+    fs.readdirSync(dir).filter(f => /\.json$/.test(f)).forEach(f => {
+      keyNamesOf(JSON.parse(fs.readFileSync(require('path').join(dir, f), 'utf8')), now);
+      try {
+        const old = execFileSync('git', ['-C', repo, 'show',
+          NEW_SURFACE_BASE + ':ks3-dt/content/' + y + '/lessons/' + f], { encoding: 'utf8', maxBuffer: 20 * 1024 * 1024 });
+        keyNamesOf(JSON.parse(old), was);
+      } catch (e) { /* a lesson that did not exist then contributes nothing */ }
+    });
+  });
+  const fresh = [];
+  now.forEach(k => { if (!was.has(k) && !SURFACE_SKIP.has(k)) fresh.push(k); });
+  return fresh.sort();
+}
+
 const fragInScope = (p) => !(
   isLabelPath(p) ||
   / › ticket$/.test(p) ||
@@ -696,7 +792,16 @@ function inlineSequenceCheck(rawText) {
       'paragraph and render as run-on prose. Author them as an array field (steps / introSteps / ' +
       'lines / testSteps) so each step gets its own line.'];
   }
-  if (/(^|[^0-9])1[.)]\s+\S[\s\S]*?[^0-9]2[.)]\s+\S/.test(text)) {
+  /* UNLESS EACH NUMBER ALREADY STARTS ITS OWN LINE (28 Aug 2026). The rule is about
+     what RENDERS, not about where the characters live: steps written one per line, in
+     a field whose renderer draws them one per line, are not run-on prose — they are the
+     thing the rule asks for. The help panel gained that renderer today, so a string
+     whose every marker opens a line is exempt, and one that runs them together in a
+     paragraph still fails. Checked against the renderer, never assumed: `App.showHelp`
+     splits on these newlines and builds an <ol>. */
+  const everyMarkerOpensALine = /\n\s*2[.)]\s/.test(text) &&
+    !/[^\n][ \t]+2[.)]\s/.test(text);
+  if (!everyMarkerOpensALine && /(^|[^0-9])1[.)]\s+\S[\s\S]*?[^0-9]2[.)]\s+\S/.test(text)) {
     return ['numbered sequence inside one string (DFM 171) — it renders as run-on prose. ' +
       'Author it as an array field (steps / testSteps / lines / setup / rules) so each number ' +
       'gets its own line.'];
@@ -3055,6 +3160,47 @@ function main() {
   console.log('    will be fine. 192b is enforced by that judgement, not by this list.');
   fragOpen.forEach(p => console.log('    CANDIDATE ' + p));
   fragLocked.forEach(p => console.log('    WAIVED (locked) ' + p));
+
+  /* ---- THE READ-FIRST CANDIDATE LIST (J13a2) — emitted BY NAME, and written
+     where the pack gate can read it. The judge must answer every one of these
+     individually; the pack refuses a verdict file that does not. ---- */
+  const fresh = newSurfaceKeys();
+  const readFirst = {};
+  lessons.forEach(L => {
+    if (!inScope(L.fileId)) return;
+    if (LOCKED.has(L.fileId)) return;                    /* locked: waived, printed below */
+    L.strings.forEach(st => {
+      if (!fragInScope(st.path)) return;
+      const hits = readFirstCandidates(st.text);
+      const key = String(st.path).split(' › ').pop().replace(/\[\d+\].*$/, '');
+      if (fresh.indexOf(key) !== -1) hits.push({ kind: 'NEW-SURFACE(' + key + ')', text: String(st.text).slice(0, 90) });
+      /* the FRAGMENT candidates keep their own list above and their own route
+         through the checklist (§C q11). Folding them in here would double one
+         class into two lists and bury the four shapes this net exists for. */
+      if (!hits.length) return;
+      (readFirst[L.fileId] = readFirst[L.fileId] || []).push({
+        path: st.path, kinds: hits.map(h => h.kind), text: String(st.text).replace(/\s+/g, ' ').slice(0, 160)
+      });
+    });
+  });
+  const rfTotal = Object.keys(readFirst).reduce((n, k) => n + readFirst[k].length, 0);
+  console.log('\n  READ-FIRST CANDIDATES (J13a2) — ' + rfTotal + ' sentence(s) the judge may not skim.');
+  console.log('    New surface keys since ' + NEW_SURFACE_BASE + ': ' + (fresh.join(', ') || 'none'));
+  console.log('    These are NOT failures. They are the sentences whose SHAPE has caught him out');
+  console.log('    before, plus every string on a surface kind nobody has ever read. The pack');
+  console.log('    refuses a cold-read verdict file that does not answer each one by name.');
+  Object.keys(readFirst).forEach(id => {
+    console.log('    ' + id + ' — ' + readFirst[id].length + ' candidate(s)');
+    readFirst[id].slice(0, 12).forEach(r =>
+      console.log('      READ-FIRST ' + r.path + ' [' + r.kinds.join(',') + ']\n        "' + r.text + '"'));
+    if (readFirst[id].length > 12) console.log('      … and ' + (readFirst[id].length - 12) + ' more (see out/read-first-candidates.json)');
+  });
+  try {
+    const outDir = require('path').join(__dirname, 'out');
+    fs.mkdirSync(outDir, { recursive: true });
+    fs.writeFileSync(require('path').join(outDir, 'read-first-candidates.json'),
+      JSON.stringify({ base: NEW_SURFACE_BASE, newKeys: fresh, byLesson: readFirst }, null, 1) + '\n');
+  } catch (e) { console.log('    (could not write out/read-first-candidates.json: ' + e.message + ')'); }
   console.log(led.length ? '  ' + led.length + ' unrecorded or stale sentence(s)' : '  every pupil sentence carries a record');
   led.slice(0, 40).forEach(p => { console.log('  FAIL ' + p); });
   if (led.length > 40) console.log('  … and ' + (led.length - 40) + ' more (run ledger-tool.js --missing for the full list)');
@@ -3080,6 +3226,9 @@ module.exports = { collectFilmStrings, filmKey, filmRendered, FILM_MAP,
      build he sat (7bba564) so the failure it catches there is filed as evidence
      before the fix it guards is credited. One implementation, two runs. */
   fragmentCandidates, hasRealVerb, collectStrings, fragInScope, loadLessons, inlineSequenceCheck,
+  /* J13(a2): the read-first nets are exported so the pack gate and the control
+     sweep run the SAME detector this gate runs (DFM 144) */
+  readFirstCandidates, newSurfaceKeys,
   /* the hub collector is exported for the same reason the film one is: ledger-tool
      must write records against the SAME strings this gate reads, and a second walk
      would drift the first time one of them learned something new (DFM 144) */

@@ -130,11 +130,36 @@ function engineTidyRule() {
       log('\n=== 1. ' + L.lesson.id + ' · ' + ch.id + ' — every build really produces its target ===');
       for (const b of (cfg.builds || [])) {
         const k = keys[b.id];
+        /* A BUILD WITH NO TRAY HAS NO ORDER TO KEEP (27 Aug 2026). This demanded
+           an `order` key from every pyrun build, including the ones a pupil TYPES
+           from nothing (mybot, the engine) and the ones she only READS (the worked
+           example) — neither of which has lines to put in order, so neither can
+           ever have one. It is the same fault this file already fixed once for
+           `errorWords` twelve lines below: a gate that demands content which can
+           never be true is manufacturing untruths (DFM 146a). A typed build is
+           walked from `key.program`; a read-only build is walked by pressing RUN.
+           So the demand is made of the builds that really carry a tray, and the
+           other two shapes are checked for the key they really need. */
+        const hasTray = (b.lines || []).length > 0 && !b.staged;
+        if (!hasTray) {
+          const typed = (b.palette || []).length > 0 || b.staged;
+          check(!!(k && (k.program || k.blanks)) || !typed,
+            b.id + ': a typed build carries a `program` key the walker can type');
+          continue;
+        }
         if (!k || !k.order) { check(false, b.id + ': no answer key with an `order` — no machine can walk this build'); continue; }
         const code = assemble(b.lines, k.order, k.blanks);
         const res = await run(code, Number(cfg.limitMs) || 5000);
         const want = await tidy((b.target || []).join('\n'));
         const got = await tidy(res.out);
+        /* A BUILD CHECKED BY RUNNING AUTHORS NO TARGET (DFM 42's run-checked card,
+           this round's J3). Comparing its output with an empty string asserted that
+           a working program prints nothing, and failed three correct builds. Where
+           there is no target the check is that it RAN. */
+        if (!(b.target || []).length) {
+          check(res.ok, b.id + ': run-checked, so it has no target to match — it only has to RUN' +
+            (res.ok ? '' : '  [err=' + String(res.err || '').slice(0, 90) + ']'));
+        } else
         check(res.ok && got === want,
           b.id + ': the authored order prints exactly the target' +
           (res.ok && got === want ? '' : '  [got ' + JSON.stringify(got) + (res.err ? ' err=' + res.err.slice(0, 70) : '') + ' want ' + JSON.stringify(want) + ']'));
@@ -157,6 +182,15 @@ function engineTidyRule() {
            reports a fault the lesson does not have is worse than no gate
            (DFM 146a), so the rule is the one that was actually meant. */
         const hasBlanks = (b.lines || []).some(l => (l.blanks || []).length);
+        /* A WORKED BUILD IS READ, NOT BUILT (28 Aug 2026, when the extras and the
+           worked example were given keys and RUN for the first time). Its card
+           says in so many words that nothing on it is for her to write, so it has
+           no decoys and no boxes and cannot have a fail state — demanding one is
+           the gate reporting a fault the lesson does not have (DFM 146a). */
+        if (b.mode === 'worked') {
+          check(decoys.length === 0 && !hasBlanks,
+            b.id + ': a worked example, so there is nothing on it to get wrong');
+        } else
         check(decoys.length > 0 || hasBlanks,
           b.id + ': carries a genuine fail state (' + decoys.length + ' decoy line(s)' +
           (hasBlanks ? ' + a typed box' : '') + ')');
@@ -182,6 +216,20 @@ function engineTidyRule() {
           const rev = k.order.slice().reverse();
           const rres = await run(assemble(b.lines, rev, k.blanks), Number(cfg.limitMs) || 5000);
           const rgot = await tidy(rres.out);
+          /* SOME PROGRAMS READ THE SAME BACKWARDS. The J2 extra that prints a
+             line of dashes, a sentence, and a line of dashes prints exactly the
+             same thing in reverse — so "the reversed order does NOT match" can
+             never fire on it, and reporting that as a failed control would be
+             the harness condemning a correct build for being symmetrical. Where
+             reversing genuinely cannot tell the two apart, the control is
+             swapped for one that can: dropping the last line must change the
+             output. The substitution is PRINTED, never silent (DFM 221). */
+          if (rres.ok && rgot === want) {
+            const short = await run(assemble(b.lines, k.order.slice(0, -1), k.blanks), Number(cfg.limitMs) || 5000);
+            const sgot = await tidy(short.out);
+            control(!short.ok || sgot !== want,
+              b.id + ': its output reads the same backwards, so the control is DROPPING a line instead — and that does NOT match');
+          } else
           control(!rres.ok || rgot !== want, b.id + ': the reversed order does NOT match');
         } else {
           const empty = await run(assemble(b.lines, k.order, {}), Number(cfg.limitMs) || 5000);
@@ -218,15 +266,48 @@ function engineTidyRule() {
 
   /* ---- 5. what a lesson must supply, or a pupil meets an engine literal - */
   log('\n=== 5. EVERY LESSON SUPPLIES ITS OWN PUPIL SENTENCES (DFM 192g) ===');
-  const NEED_PYRUN = ['targetLead', 'runLabel', 'howLine', 'lockedNote', 'matchedLabel', 'notYetLabel',
-    'notYetSay', 'trayEmpty', 'progEmpty', 'consoleLabels', 'errorWords'];
+  /* EVERY STRING THIS CHUNK CAN REALLY RENDER, AND NO MORE — the same correction
+     this file already made for `errorWords` (see the note in section 5 below).
+     The flat list demanded a tray's empty-state sentences from cards that have no
+     tray and a target lead from cards checked by RUNNING, and the only way to go
+     green was to author strings no pupil could ever read: dead config, which is
+     DFM 42/184's fault arriving through the back door of a harness. The engine's
+     own render sites are what decides:
+       trayEmpty / progEmpty / howLine / lockedNote   the assemble face (a tray)
+       targetLead                                     only where a build has a target
+       matchedLabel                                   any verdict, unless the chunk is
+                                                      staged and supplies matchedAllLabel
+       runLabel / notYetLabel / notYetSay / consoleLabels / errorWords   every pyrun */
+  const ALWAYS_PYRUN = ['runLabel', 'notYetLabel', 'notYetSay', 'consoleLabels', 'errorWords'];
+  const needPyrun = (cfg) => {
+    const builds = cfg.builds || [];
+    /* a WORKED build has lines on it, but she reads them: no tray, no drop zone,
+       and so no empty-tray or empty-program sentence to write */
+    const hasTray = builds.some(b => (b.lines || []).length > 0 && !b.staged && b.mode !== 'worked');
+    const hasTarget = builds.some(b => (b.target || []).length > 0);
+    const allStaged = builds.length > 0 && builds.every(b => b.staged);
+    const need = ALWAYS_PYRUN.slice();
+    if (hasTray) need.push('howLine', 'lockedNote', 'trayEmpty', 'progEmpty');
+    if (hasTarget) need.push('targetLead');
+    if (!(allStaged && cfg.matchedAllLabel)) need.push('matchedLabel');
+    return need;
+  };
   const NEED_SNAP = ['goalLine', 'howLine', 'pickBlockSay', 'pickPythonSay', 'rightSay', 'wrongSay', 'doneText'];
   for (const L of found) {
     for (const ch of L.uses) {
       const cfg = ch.config || {};
-      const need = ch.engine === 'pyrun' ? NEED_PYRUN : NEED_SNAP;
+      const need = ch.engine === 'pyrun' ? needPyrun(cfg) : NEED_SNAP;
       need.forEach(k => check(cfg[k] != null && String(cfg[k]).length > 0,
         L.lesson.id + ' · ' + ch.id + ': supplies ' + k));
+      /* A CHUNK THAT TURNS ON THE LABELLED WAY BACK MUST SUPPLY ITS WORDS
+         (DFM 272 + 192g). The engine carries a fallback so a forgotten field can
+         never render an empty button (DFM 42) — and this is the proof that no
+         pupil ever reads it, which is what an engine fallback owes. */
+      if (cfg.trayClickEject === false) {
+        check(cfg.takeBackLabel != null && String(cfg.takeBackLabel).trim().length > 3,
+          L.lesson.id + ' · ' + ch.id + ': turns OFF click-to-eject, so it supplies takeBackLabel — ' +
+          'the engine\'s own words are a fallback no pupil reads');
+      }
       if (ch.engine === 'pyrun') {
         const hasBlank = (cfg.builds || []).some(b => (b.lines || []).some(l => (l.blanks || []).length));
         if (hasBlank) check(!!cfg.blankEmptySay, L.lesson.id + ' · ' + ch.id + ': uses blanks, so it must supply blankEmptySay');
@@ -506,6 +587,138 @@ function engineTidyRule() {
     check(errs.length === 0, 'no uncaught page errors while driving either engine' +
       (errs.length ? '  [' + errs.slice(0, 2).join(' | ') + ']' : ''));
     await br.close();
+  }
+
+
+  /* ---- 8. THE RUN CLOCK — DFM 269, and it is the defect under most of his
+     J2 Lesson 3 hour (27 Aug 2026) --------------------------------------
+     Skulpt's own limit check, read out of the minified runtime rather than
+     recalled: the compiled block-dispatch loop carries
+         var $dateNow = Date.now();
+         if ($dateNow - Sk.execStart > Sk.execLimit) { throw TimeLimitError }
+     and `Sk.execStart` is set exactly ONCE per `importMainWithBody`
+     (`Sk.execStart = Sk.lastYield = new Date()`, gated by `Sk.dateSet`). So a
+     program that stops at `input()` keeps being billed while a twelve-year-old
+     reads the question, thinks, and types — and dies at whatever input line it
+     is standing on. His three screenshots show exactly that, on three CORRECT
+     programs, at lines 1, 2 and 3, his own pasted bot among them.
+     WHY NOTHING EVER SAW IT: every walker, probe and preview partner answers
+     input() in milliseconds. The prototype gate proved an UNANSWERED input
+     abandons cleanly and proved `while True: pass` dies at the limit. Nothing
+     ever answered SLOWLY. That is the gap class this section closes.
+     WHAT IT PROVES, by RUNNING the real engine rather than reading it:
+       (1) a two-input program whose answers arrive after 6.5 s and 2.5 s
+           completes, with exact stdout — nine seconds of human pace inside a
+           five-second budget;
+       (2) `while True: pass` STILL dies at about the limit — the guard is not
+           disarmed, only re-aimed at the program's own work;
+       (3) a for-loop printing 10,000 lines STILL completes — the budget was not
+           accidentally shrunk while it was being reset.
+     THE CONTROL (DFM 196): every one of these is run a second time against the
+     ENGINE HE SAT, taken from the pinned worktree of `7d9c274`, in the same
+     browser, driven the same way. (1) must FAIL there and (2) must still pass
+     there, or this gate is not measuring what it claims to. The worktree path
+     is env-overridable, and if it is not present the gate says so IN ITS OWN
+     OUTPUT and fails, rather than crediting the fix on an unrun control (the
+     DFM 200 rule: a checker that cannot run reports nothing, and nobody may
+     know that and still ship). */
+  log('\n=== 8. THE RUN CLOCK — A TIME BUDGET MEASURES THE PROGRAM, NEVER HER TYPING (DFM 269) ===');
+  {
+    const PREFIX_REF = process.env.KS3DT_PREFIX_ENGINES ||
+      path.join(process.env.HOME, 'Sites', 'ols-wt-j2l3sit', 'ks3-dt', 'platform', 'engines.js');
+
+    /* one page per engine build, with the REAL PyRun on it. Skulpt is loaded up
+       front and `PyRun._p` short-circuited, so `load()` never fetches — the
+       thing under test is `start()`, not the script tag. */
+    const clockPage = async (br, enginePath) => {
+      const pg = await br.newPage();
+      const errs = [];
+      pg.on('pageerror', e => errs.push(String(e.message)));
+      await pg.goto('about:blank');
+      await pg.evaluate(() => {
+        window.App = {
+          esc: s => String(s == null ? '' : s), asset: p => p,
+          armButton: (b, fn) => { if (b) b.onclick = fn; }, toast: () => {}
+        };
+      });
+      await pg.addScriptTag({ content: fs.readFileSync(enginePath, 'utf8') });
+      await pg.addScriptTag({ path: path.join(SKULPT, 'skulpt.min.js') });
+      await pg.addScriptTag({ path: path.join(SKULPT, 'skulpt-stdlib.js') });
+      await pg.evaluate(() => { window.PyRun._p = Promise.resolve(true); });
+      return { pg, errs };
+    };
+
+    /* HER PACE, IN REAL WALL-CLOCK SECONDS. The delays are real setTimeouts, not
+       a faked clock: the whole point is that the budget is measured against the
+       wall, so faking the wall would fake the test. */
+    const HUMAN = `(function (delays) {
+      var i = 0;
+      var code = 'name = input("What is your name?")\\n' +
+                 'print("Hello, " + name + ".")\\n' +
+                 'food = input("What did you have for breakfast?")\\n' +
+                 'print(name + " likes " + food + ".")';
+      return window.PyRun.start(code, {
+        inputfun: function () {
+          var wait = delays[i++] || 0;
+          return new Promise(function (res) { setTimeout(function () { res('Sorcha'); }, wait); });
+        }
+      }).p;
+    })`;
+
+    const RUNAWAY = `(function () {
+      return window.PyRun.start('while True:\\n    pass').p;
+    })`;
+
+    const BIGLOOP = `(function () {
+      return window.PyRun.start('for i in range(10000):\\n    print(i)').p;
+    })`;
+
+    const br8 = await chromium.launch({ headless: true });
+    const drive = async (enginePath, what) => {
+      const { pg, errs } = await clockPage(br8, enginePath);
+      const t0 = Date.now();
+      const human = await pg.evaluate(([src, d]) =>
+        (new Function('return (' + src + ')')())(d), [HUMAN, [6500, 2500]]);
+      const humanMs = Date.now() - t0;
+      const t1 = Date.now();
+      const runaway = await pg.evaluate((src) => (new Function('return (' + src + ')')())(), RUNAWAY);
+      const runawayMs = Date.now() - t1;
+      const big = await pg.evaluate((src) => (new Function('return (' + src + ')')())(), BIGLOOP);
+      await pg.close();
+      return { what, human, humanMs, runaway, runawayMs, big, errs };
+    };
+
+    const WANT = 'Hello, Sorcha.\nSorcha likes Sorcha.';
+    const fixed = await drive(ENGINES, 'the fixed engine');
+    check(fixed.human.ok, '(1) a two-input program answered after 6.5 s and 2.5 s COMPLETES' +
+      (fixed.human.ok ? ' (' + Math.round(fixed.humanMs / 100) / 10 + ' s of wall clock)'
+        : '  [' + String(fixed.human.err).slice(0, 90) + ']'));
+    check(String(fixed.human.out || '').indexOf(WANT) === 0 ||
+      String(fixed.human.out || '').trim() === WANT,
+      '(1) …and prints exactly what it should  [' + JSON.stringify(String(fixed.human.out || '').trim()) + ']');
+    check(!fixed.runaway.ok && /TimeLimitError/i.test(String(fixed.runaway.err)),
+      '(2) `while True: pass` STILL dies at the limit  [' + String(fixed.runaway.err).slice(0, 50) + ']');
+    check(fixed.runawayMs < 12000,
+      '(2) …and it dies at about the budget, not later  (' + Math.round(fixed.runawayMs / 100) / 10 + ' s)');
+    check(fixed.big.ok && String(fixed.big.out || '').split('\n').filter(Boolean).length === 10000,
+      '(3) a for-loop printing 10,000 lines still completes — the budget was not shrunk');
+    check(fixed.errs.length === 0, 'no uncaught page errors while driving the clock' +
+      (fixed.errs.length ? '  [' + fixed.errs.slice(0, 2).join(' | ') + ']' : ''));
+
+    log('--- 8b. CONTROLS, against the engine he sat (' + PREFIX_REF + ')');
+    if (!fs.existsSync(PREFIX_REF)) {
+      check(false, 'THE CONTROL COULD NOT RUN: no pre-fix engine at ' + PREFIX_REF +
+        ' — serve the DFM 196 worktree of 7d9c274, or set KS3DT_PREFIX_ENGINES. ' +
+        'An unrun control credits nothing (DFM 200).');
+    } else {
+      const pre = await drive(PREFIX_REF, 'the engine he sat');
+      control(!pre.human.ok && /TimeLimitError/i.test(String(pre.human.err)),
+        'the pre-fix engine KILLS his own conversation at human pace' +
+        '  [' + String(pre.human.err || 'it completed').slice(0, 70) + ']');
+      control(!pre.runaway.ok && /TimeLimitError/i.test(String(pre.runaway.err)),
+        'and it still killed a real runaway — so the fault was the CLOCK, never the guard');
+    }
+    await br8.close();
   }
 
   console.log('\n' + (FAILS.length ? 'qa-pyrun: ' + FAILS.length + ' FAILURE(S)\n - ' + FAILS.join('\n - ')

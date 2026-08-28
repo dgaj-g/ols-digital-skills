@@ -93,9 +93,9 @@
       "It plays on your own computer, not on the board.",
       "It has no sound, so every word you need is written on the screen.",
       "It is in three parts, and the buttons underneath jump to any part.",
-      "About four minutes. Watch it once, then go on."
+      "The film lasts just over four minutes. Watch it once, then move on to the next card."
      ],
-     "notes": "WHERE THE CLASS IS: about to start the film on their own machines, headphones not needed.\n\nSAY: \"The film is on your screen, not mine. It has no sound at all, so nothing is missed if the room is noisy. About four minutes. Watch it once and then keep going — you can come back to it later from the buttons underneath.\"\n\nDO NOT play it on the board. It is written to be read at each pupil's own pace, and reading it as a class removes the pausing that makes it work.\n\nWHILE IT RUNS: this is your minute to walk the room and check everybody is actually on it.\n\nWHEN TO MOVE: when most of the room is past it — the bench cards are self-explanatory, so the stragglers can catch up there."
+     "notes": "WHERE THE CLASS IS: about to start the film on their own machines, headphones not needed.\n\nSAY: \"The film is on your screen, not mine. It has no sound at all, so you will not miss anything if the room is noisy. Just over four minutes. Watch it once and then keep going — you can come back to it later from the grey Show me how button.\"\n\nDO NOT play it on the board. It is written to be read at each pupil's own pace, and reading it as a class removes the pausing that makes it work.\n\nWHILE IT RUNS: these four minutes are your chance to walk the room and check everybody is actually on it.\n\nWHEN TO MOVE: when most of the room is past it — the build cards explain themselves, so the stragglers can catch up there."
     }
    ]
   },
@@ -114,7 +114,7 @@
       "The third has gaps in it and you fill them in.",
       "Every one of them RUNS. If it stops, read the plain line under the red."
      ],
-     "notes": "WHERE THE CLASS IS: film finished, eyes front. One minute here saves you ten walking the room.\n\nSAY: \"Three training builds, and they get harder. The first one is already written for you — read it, run it, and watch what happens when it asks you something. The second one is in pieces and you put the pieces in order. The third has gaps and you fill them.\"\n\nTHEN SAY: \"All three of them actually run. When you press RUN the program does what it says, including stopping and waiting for you.\"\n\nDO NOT walk anybody through build three from the front. It is the one that carries the badge and it is meant to be worked out.\n\nWHEN TO MOVE: next slide, then send them in."
+     "notes": "WHERE THE CLASS IS: film finished, eyes front. One minute here saves you ten walking the room.\n\nSAY: \"Three training builds, and they get harder. The first one is already written for you — read it, run it, and watch what happens when it asks you something. The second one is in pieces and you put the pieces in order. The third has gaps and you fill them.\"\n\nTHEN SAY: \"All three of them actually run. When you press RUN the program does what it says, including stopping and waiting for you.\"\n\nDO NOT walk anybody through build three from the front. It is the one that is marked, and it is meant to be worked out.\n\nWHEN TO MOVE: next slide, then send them in."
     },
     {
      "kind": "bullets",
@@ -142,24 +142,25 @@
      "bullets": [
       "Twelve minutes. The bot is yours and every word in it is yours.",
       "It has to ask two things and use BOTH answers before it finishes.",
-      "There is a film on the card. Watch it first — it is under two minutes.",
-      "Ready-made lines are there if you want them. Using them is not cheating.",
+      "First, watch the film on the card called Your bot. It lasts just over two minutes.",
+      "You can use the four ready-made lines on the card. The name on each line tells you what that line does. Using them is not cheating.",
       "Somebody in this room is going to read every word you write."
      ],
-     "notes": "WHERE THE CLASS IS: the three training builds finished, eyes front. This is the biggest single block of the hour and the room needs to know what \"finished\" looks like before it starts.\n\nSAY: \"Twelve minutes. You are writing a chatbot and every word it says is yours. There are only two rules: it has to ask two things, and it has to use both answers before it finishes.\"\n\nTHEN SAY: \"There is a short film on that card and I want you to watch it first. It shows the two things people get stuck on.\"\n\nTHEN SAY, and say it plainly: \"Somebody else in this room is going to run your bot in about fifteen minutes and read every word of it. Write it for them.\"\n\nABOUT THE READY-MADE LINES: a pupil who cannot start can click a line and it lands in her program with the words still to change. Tell the room that is there and that using it is not cheating — the words are still hers.\n\nWHEN TO MOVE: next slide, then twelve minutes of walking the room."
+     "notes": "WHERE THE CLASS IS: the three training builds finished, eyes front. This is the biggest single block of the hour and the room needs to know what \"finished\" looks like before it starts.\n\nSAY: \"Twelve minutes. You are writing a chatbot and every word it says is yours. There are only two rules: it has to ask two things, and it has to use both answers before it finishes.\"\n\nTHEN SAY: \"There is a short film on that card and I want you to watch it first. It shows the two things people get stuck on.\"\n\nTHEN SAY, and say it plainly: \"Somebody else in this room is going to run your bot in about fifteen minutes and read every word of it. Write it for them.\"\n\nABOUT THE READY-MADE LINES: there are four, each named by the job it does, and a pupil who cannot start can click one and it lands in her program with the words still to change. Tell the room the ready-made lines are there, and that using them is not cheating — the words are still hers.\n\nWHEN TO MOVE: next slide, then twelve minutes of walking the room."
     },
     {
      "kind": "bullets",
      "bg": "section",
      "size": 15,
-     "heading": "The editor, and the checklist beside it",
+     "heading": "First you plan, then you type",
      "bullets": [
-      "You type into the box. It has line numbers, like real Python.",
-      "The ready-made lines are on the right. Click one and it drops in.",
-      "The checklist under it says what your bot still has to do.",
-      "It only ticks after you RUN — the checklist watches what your bot actually did."
+      "You see the PLAN first. It shows the goal, the film, and the three jobs. The jobs are in the order you do them.",
+      "Press the button marked Start writing. The card turns into the page where you type. Your three jobs sit along the top.",
+      "You type in the big box underneath. Keep typing if you need to. The box holds everything you write.",
+      "Four ready-made lines sit under the box. The name on each line tells you what that line does. Click one and it appears in your box.",
+      "The three jobs tick only after you press RUN. Each job ticks if your bot really does that job."
      ],
-     "notes": "SAY it with the picture up.\n\nTHE ONE TO STRESS: the checklist does not read her program, it watches her program RUN. So a pupil who has written the right thing but not pressed RUN still sees NOT YET, and that is correct rather than broken.\n\nIF SHE ASKS why it will not tick: \"Have you run it since you changed it?\" answers most of them.\n\nWHEN TO MOVE: send them in."
+     "notes": "SAY, with the slide up: \"The card starts by telling you what your bot has to do — three jobs, in order. When you press Start writing, that card turns into the page where you type, and those same three jobs move up to the top so you can see them the whole time.\"\n\nTHE ONE TO STRESS: the three jobs are not read off her program. They watch her program while it RUNS. So a pupil who has written the right thing but not pressed RUN still sees NOT YET, and that is correct rather than broken.\n\nIF SHE ASKS why it will not tick: \"Have you run it since you changed it?\" answers most of it.\n\nThe card deliberately shows one thing at a time. The conversation and the black message panel do not appear at all until a run needs them, so there are no empty boxes to make sense of.\n\nWHEN TO MOVE: send them in."
     }
    ]
   },

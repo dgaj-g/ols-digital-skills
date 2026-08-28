@@ -192,20 +192,20 @@
      "bullets": [
       "Twelve minutes. You type this one — there are no pieces to drag.",
       "It has to make a playlist, add to it, count it, and print it in order.",
-      "The checklist beside it says what is still missing.",
-      "It only ticks after you RUN. The checklist watches your program work."
+      "You see the PLAN first. It shows the goal and the five jobs in the order you do them.",
+      "Press the button marked Start writing. The card turns into the page where you type. Your five jobs sit along the top, and they tick only after you press RUN."
      ],
-     "notes": "WHERE THE CLASS IS: the three builds finished, eyes front. This is the biggest block of the hour and the hardest, and the room needs to know what finished looks like.\n\nSAY: \"Twelve minutes and you are typing this one from scratch. No pieces to drag. Four things it has to do, and the checklist beside the box tells you which ones you have done.\"\n\nTHEN SAY: \"The checklist does not read your program. It runs it and watches what it does. So if you have written the right thing and it still says NOT YET — have you pressed RUN since you changed it?\"\n\nTHAT ONE SENTENCE answers most of what you will be asked in the next twelve minutes.\n\nWHEN TO MOVE: next slide, then walk the room."
+     "notes": "WHERE THE CLASS IS: the three builds finished, eyes front. This is the biggest block of the hour and the hardest, and the room needs to know what finished looks like.\n\nSAY: \"Twelve minutes and you are typing this one from scratch. No pieces to drag. Five things it has to do, and they are listed across the top of the card so you can see which ones you have done.\"\n\nTHEN SAY: \"Those five are not read off your program. They watch your program while it runs. So if you have written the right thing and it still says NOT YET — have you pressed RUN since you changed it?\"\n\nTHAT ONE SENTENCE answers most of what you will be asked in the next twelve minutes.\n\nWHEN TO MOVE: next slide, then walk the room.\n\nABOUT THE TWO PARTS: the card shows one thing at a time. The plan says what she is making before anything can be typed; Start writing gives her the page where she types, and the black message panel does not appear until a run has ended."
     },
     {
      "kind": "bullets",
      "bg": "section",
      "size": 15,
-     "heading": "The editor, and what to do when it will not go",
+     "heading": "What to do when a job does not tick",
      "bullets": [
       "You type into the box. It has line numbers, like real Python.",
       "Tab moves you four spaces in — that is how lines go inside a loop.",
-      "The checklist is under it. It ticks as your program earns each one.",
+      "The five jobs are along the top. Each job ticks when your program really does that job.",
       "Stuck? The help on the card is free and costs you nothing."
      ],
      "notes": "SAY it with the picture up.\n\nABOUT THE HELP: everything on that card is free — no points are taken for opening any of it, and nobody is shown who used it. Say that plainly. A pupil who thinks help costs her something will sit and do nothing instead, which costs her more.\n\nABOUT INDENTING: Tab puts four spaces in. Pupils who have only ever dragged blocks have never had to indent anything, and this is the first hour they meet it.\n\nWHEN TO MOVE: send them in."
