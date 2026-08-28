@@ -1,0 +1,66 @@
+[wrongpath j2-2] opened: 🔤Lesson 2Translation BureauA bureau is 
+[wrongpath j2-2] screen: While everyone logs in…
+[wrongpath j2-2] screen: Órla scrolls down her year map on Monday and s
+[wrongpath j2-2]   wrong move: clicked 4 locked control(s) — each explained itself
+[wrongpath j2-2] screen: Saoirse's class gets to the DT room before the
+[wrongpath j2-2]   wrong move: clicked 4 locked control(s) — each explained itself
+[wrongpath j2-2] screen: Sorcha sits down in the DT room and her mouse 
+[wrongpath j2-2]   wrong move: clicked 4 locked control(s) — each explained itself
+[wrongpath j2-2] screen: Aoife finishes Lesson 2 and clicks the Kit Loc
+[wrongpath j2-2]   wrong move: clicked 4 locked control(s) — each explained itself
+[wrongpath j2-2] screen: Niamh answers a question in Lesson 3, then the
+[wrongpath j2-2]   wrong move: clicked 4 locked control(s) — each explained itself
+[wrongpath j2-2] screen: Brain warmed up
+[wrongpath j2-2] screen: OLS KS3 Digital Technology
+[wrongpath j2-2]   (nothing to click yet — waiting)
+[wrongpath j2-2] screen: From blocks to Python (the film)
+[wrongpath j2-2] screen: Six blocks, six lines of Python
+[wrongpath j2-2] screen: Your challenge: clear the desk. Match all six 
+[wrongpath j2-2] screen: Make a scoreboard, in Python
+[wrongpath j2-2] screen: Build the scoreboard. Four of these seven line
+[wrongpath j2-2]   wrong move: clicked 1 locked control(s) — each explained itself
+
+SCREENS THE CONFUSED PUPIL STOOD ON (13 distinct, 13 visits):
+   · While everyone logs in…
+   · Órla scrolls down her year map on Monday and s
+   · Saoirse's class gets to the DT room before the
+   · Sorcha sits down in the DT room and her mouse 
+   · Aoife finishes Lesson 2 and clicks the Kit Loc
+   · Niamh answers a question in Lesson 3, then the
+   · Brain warmed up
+   · OLS KS3 Digital Technology
+   · From blocks to Python (the film)
+   · Six blocks, six lines of Python
+   · Your challenge: clear the desk. Match all six 
+   · Make a scoreboard, in Python
+   · Build the scoreboard. Four of these seven line
+
+REQUIRED COVERAGE: 8 of 15 landmarks reached
+   ✓ the Do-Now
+   ✓ the Bureau briefing
+   ✓ the film and its chapters
+   ✓ the snap desk, untouched
+   ✓ a block picked, waiting for its twin
+   ✓ the build tray
+   ✓ the console after a run that did NOT work
+   ✓ NOT YET, with no line named
+   ✗ MATCHED
+   ✗ the extra jobs hub, untouched
+   ✗ the way out, INSIDE a job (265c)
+   ✗ back on the hub after abandoning a job, with nothing ticked
+   ✗ the what-you-did-next card
+   ✗ the exit check
+   ✗ the closing screen
+  gates tested per screen: every unactionable control clicked; every text box submitted empty and then with three words.
+
+DERIVED AUDITS (the confused walk)
+  empty-container exemptions, declared: not rendered (hidden / display:none / visibility:hidden / opacity ~0 / smaller than 8x6px) · a live region ([role=status] or [aria-live]) — it is meant to start empty · holds a picture, video, canvas, SVG or a control · painted with a background image
+
+sit-wrongpath j2-2: 7 FAILURE(S)
+  ✗ COVERAGE: the confused pupil never stood on MATCHED (.pyrun-verdict.is-matched). A walk that does not reach a screen has not checked it (DFM 204).
+  ✗ COVERAGE: the confused pupil never stood on the extra jobs hub, untouched (.pyrun-hub .pyrun-job). A walk that does not reach a screen has not checked it (DFM 204).
+  ✗ COVERAGE: the confused pupil never stood on the way out, INSIDE a job (265c) (.pyrun-card .pyrun-exit-row .pyrun-finish). A walk that does not reach a screen has not checked it (DFM 204).
+  ✗ COVERAGE: the confused pupil never stood on back on the hub after abandoning a job, with nothing ticked (.pyrun-hub .pyrun-jobs). A walk that does not reach a screen has not checked it (DFM 204).
+  ✗ COVERAGE: the confused pupil never stood on the what-you-did-next card (.confirm-step). A walk that does not reach a screen has not checked it (DFM 204).
+  ✗ COVERAGE: the confused pupil never stood on the exit check (.q-opt, .exit-q). A walk that does not reach a screen has not checked it (DFM 204).
+  ✗ COVERAGE: the confused pupil never stood on the closing screen (.se-row, .se-card, .se-submit). A walk that does not reach a screen has not checked it (DFM 204).

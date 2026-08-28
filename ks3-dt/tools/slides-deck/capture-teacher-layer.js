@@ -541,7 +541,22 @@ async function walkAndShoot(page, owed, take, budget) {
     /* the shell arms every control with a 350ms mount guard (DFM 104): a click
        fired the instant a button appears is deliberately swallowed */
     await sleep(420);
-    const mv = (WRONG && WALK.WRONG_MOVES[st.kind]) || WALK.MOVES[st.kind];
+    /* A CONFUSED MOVE MAY DECLINE THE CARD IT IS STANDING ON, AND THIS READER HAS TO
+       HEAR IT TOO (28 Aug 2026). `WRONG_MOVES` returns 'defer' on a card its extra
+       machinery cannot work — one that offers no labelled way back — and the ordinary
+       mover takes it instead. sit-wrongpath.js honours that; if this did not, the
+       --wrong pass would silently do nothing on such a card and the shot it was sent
+       for would go missing with no explanation (DFM 144: one law, every reader in
+       step). */
+    const wrongMv = WRONG && WALK.WRONG_MOVES[st.kind];
+    let mv = wrongMv || WALK.MOVES[st.kind];
+    if (wrongMv) {
+      let deferred = false;
+      try { deferred = await page.evaluate(wrongMv) === 'defer'; }
+      catch (e) { deferred = false; /* re-detected next turn */ }
+      if (!deferred) { await sleep(WALK.SETTLE[st.kind] || 700); continue; }
+      mv = WALK.MOVES[st.kind];
+    }
     if (mv) { try { await page.evaluate(mv); } catch (e) { /* re-detected next turn */ } }
     else if (WALK.ACTIONS[st.kind]) {
       try { await WALK.ACTIONS[st.kind](page); } catch (e) { /* re-detected next turn */ }
