@@ -698,14 +698,13 @@ const WRONG = {
   async function engineStep() {
     if (!wpPrimed) {
       await WALK.primeDevKeys(page, BASE);
-      /* THE MOVES NEED TO KNOW WHICH LESSON THEY ARE WALKING (28 Aug 2026). Everything
-         this round added to `pyrun-place` was written for the two rebuilt L3 cards and
-         is gated on this: a signed-off lesson walks EXACTLY as it did at 7d9c274, which
-         is what DFM 221 requires and what three attempts to infer from the DOM failed to
-         deliver. Proved both ways: the base walker takes j2-2 to 15 of 15 against
-         tonight's platform, so the platform is innocent and the walker was the whole
-         fault. */
-      await page.evaluate(l => { window.__walkLesson = l; }, LESSON);
+      /* THE MOVES DO NOT NEED TO KNOW WHICH LESSON THEY ARE WALKING (28 Aug 2026).
+         For one night they did: everything added to `pyrun-place` was gated on a list of
+         two lesson names. That list went stale the same night — his consistency ruling
+         gave every pyrun card in all six lessons a labelled way back — and while it was
+         stale it cost J2 Lesson 2 seven landmarks and J3 Lesson 2 eight. The gate is now
+         a question the mover asks the CARD it is standing on, so there is nothing here
+         to keep in step with the content (DFM 271). */
       wpPrimed = true;
     }
     const st = await page.evaluate(WALK.detectKind);
@@ -716,9 +715,25 @@ const WRONG = {
        build once — on a decoy the author planted, or a gap left empty — and then
        puts it right, so the three fail-state landmarks are really stood on and
        the walk still reaches the closing screen. */
-    const mv = st && (WALK.WRONG_MOVES[st.kind] || WALK.MOVES[st.kind]);
-    if (!mv) return null;
-    await page.evaluate(([src]) => { (new Function('return (' + src + ')')())(); }, [String(mv)]);
+    /* A CONFUSED MOVE MAY DECLINE THE CARD IT IS STANDING ON (28 Aug 2026). Some of
+       what this walker does — take every line across, then put the wrong ones back and
+       re-order the rest — only works where the card offers a labelled way back. On a
+       card that does not, the honest answer is not a lesson name in the mover; it is for
+       the mover to say so and for the ORDINARY move to take the card, exactly as it did
+       before this walker existed. It says so by returning 'defer'. One home for each
+       behaviour, and nothing here has to know which cards are which (DFM 144). */
+    const wrong = st && WALK.WRONG_MOVES[st.kind];
+    const plain = st && WALK.MOVES[st.kind];
+    if (!wrong && !plain) return null;
+    let deferred = false;
+    if (wrong) {
+      deferred = await page.evaluate(
+        ([src]) => (new Function('return (' + src + ')')())() === 'defer', [String(wrong)]);
+    }
+    if (!wrong || deferred) {
+      if (!plain) return null;
+      await page.evaluate(([src]) => { (new Function('return (' + src + ')')())(); }, [String(plain)]);
+    }
     await new Promise(r => setTimeout(r, WALK.SETTLE[st.kind] || 600));
     return 'engine:' + st.kind;
   }
@@ -974,8 +989,16 @@ const WRONG = {
      stood on — and at 220 some runs finished the lesson while others ran out
      two landmarks short. A gate that reports coverage differently on two
      identical runs is a gate nobody can act on. */
+  /* J2 LESSON 2 RAISED 110 -> 180 (28 Aug 2026). Nothing about the lesson changed:
+     the confused route reaches its cards now that the gate asks the CARD instead of
+     the lesson's name, and that route costs turns — she takes every line across,
+     runs it twice on a program that cannot work, hands the decoys back one at a
+     time and then puts the keepers in order. At 110 she got thirteen of fifteen
+     landmarks and stopped two screens from the end with the walk still moving
+     forward, which is a budget running out, not a walk finishing (DFM 204).
+     J3 Lesson 2 reaches all sixteen inside 110 and is left alone. */
   const MAX = LESSON === 'j3-3' ? 300 : LESSON === 'j2-3' ? 300
-    : LESSON === 'j2-1' ? 260 : LESSON === 'j3-1' ? 220
+    : LESSON === 'j2-1' ? 260 : LESSON === 'j3-1' ? 220 : LESSON === 'j2-2' ? 180
     : LESSON === "5" ? 160 : (LESSON === "1" ? 200 : (LESSON === "3" ? 170 : 110));
   let stuckRuns = 0;
   for (let i = 0; i < MAX; i++) {

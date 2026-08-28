@@ -324,19 +324,18 @@ function detectKind() {
          one is a signed-off lesson behaving exactly as it did before tonight, and DFM 221
          says I do not change that without his word. So: reorder where it is safe, and
          leave the locked lessons on the behaviour they shipped with. */
-      /* THE ORDER TEST IS OFF (28 Aug 2026, 02:10). It was written for J3's Build 3,
-         where the confused walker ends up holding the right lines in the wrong order and
-         has a labelled take-back button to put them right with. It took that card from a
-         dead stop to a full pass — and it also took two LOCKED lessons from 15-of-15 and
-         16-of-16 down to 9 and 10, proved by running both from the `7d9c274` worktree.
-         Three attempts to scope it safely made things worse, not better, and a harness
-         change that breaks two signed-off lessons is not shippable however good its
-         intent. So it is DISABLED here, in one line, with its machinery left in place and
-         its reasoning intact for the round that finishes it properly. The two L3 confused
-         walks go back to stopping at Build 3; that gap is named in COVERAGE_DEBT.md rather
-         than papered over. */
-      const underReview = ['j2-3', 'j3-3'].indexOf(window.__walkLesson) !== -1;
-      const prefixOk = !underReview || placed.every((v, i) => v === Number(wantOrder[i]));
+      /* AND THE GATE IS THE CARD, NOT THE LESSON'S NAME (28 Aug 2026, the fix).
+         For one night this read `['j2-3','j3-3'].indexOf(window.__walkLesson)`, because
+         when it was written those were the only two lessons whose cards offered a
+         labelled way back. Then he ruled that the click-cannot-destroy fix should go to
+         the four approved lessons for consistency — so EVERY pyrun card in all six now
+         carries a `.take-back` button, and the list became a stale enumeration of the
+         very thing it was standing in for (DFM 271: derived, never enumerated).
+         Ask the screen instead. A card offers a way back exactly when its placed rows
+         carry one, which is the same DOM fact `trayClickEject: false` produces — and it
+         is asked of THIS card, so a card that ever opts out is still safe. */
+      const wayBack = !!q('.pyp-list .take-back');
+      const prefixOk = !wayBack || placed.every((v, i) => v === Number(wantOrder[i]));
       const missing = wantOrder.some(si => placed.indexOf(Number(si)) === -1);
       /* GAPS FIRST, THEN THE RUN THAT FAILS (28 Aug 2026). With the order test in, the
          walker fixed the arrangement before it had typed anything into the gaps — so its
@@ -363,7 +362,14 @@ function detectKind() {
        It is gated on a run that has really FAILED, so the expert walker (which
        never over-places) is untouched, and the confused one undoes her mistake
        the way a pupil does — after seeing it not work, not before. */
-    if (wantOrder && wantOrder.length && ['j2-3', 'j3-3'].indexOf(window.__walkLesson) !== -1) {
+    /* THE WAY BACK IS NOT OPTIONAL (28 Aug 2026, the fix). This carried the same
+       stale lesson list, and that is precisely how J2 Lesson 2 died: the confused
+       move took all seven lines across on every lesson, and only two lessons were
+       allowed to recognise "more placed than the answer needs" as a state worth
+       acting on. Everywhere else the walk over-placed and then had nowhere to go
+       but RUN, for ever — DFM 238(a), recognised and unactionable, written by the
+       gate that was meant to prevent it. Same derived test as the order check. */
+    if (wantOrder && wantOrder.length && q('.pyp-list .take-back')) {
       const placedNow = document.querySelectorAll('.pyp-list .pyrun-line').length;
       if (placedNow > wantOrder.length) {
         return { kind: extraRow ? 'pyrun-extra-place' : 'pyrun-place' };
@@ -954,17 +960,38 @@ const WRONG_MOVES = {
       const c = document.querySelector('.pyrun-card');
       return (c && c.getAttribute('data-build')) || '';
     })();
-    /* EVERY ONE OF TONIGHT'S CHANGES TO THIS MOVE IS CONFINED TO CARDS THAT OFFER A
-       LABELLED WAY BACK (28 Aug 2026). Run from the `7d9c274` worktree, both locked
-       Lesson 2s walk their full 15 and 16 landmarks and PASS; run from tonight's tree
-       they reached 9 and 10. That is not a lesson fault and it is not a coverage gap —
-       it is mine. A card with no take-back button cannot be un-placed except by the same
-       click that places, so none of the undo/reorder machinery can work there, and the
-       only honest thing to do is leave those cards on the behaviour they shipped with
-       (DFM 221). `canUndo` gates all of it. */
-    const canUndoHere = ['j2-3', 'j3-3'].indexOf(window.__walkLesson) !== -1;
+    /* EVERY ONE OF THIS MOVE'S CHANGES IS CONFINED TO CARDS THAT OFFER A LABELLED WAY
+       BACK — AND THE CARD IS ASKED, NOT THE LESSON'S NAME (28 Aug 2026, the fix).
+       This read `['j2-3','j3-3'].indexOf(window.__walkLesson)` for one night, and the
+       expression it fed — `(!canUndoHere || !window.__undoing)` — INVERTED on the very
+       lessons it was written to protect: it left the risky half of this move (take every
+       line across, decoys included) fully on wherever the safe half (put them back,
+       re-order them) was off. Over-place, with no way back. That is how J2 Lesson 2 fell
+       from fifteen landmarks to eight, and it was mine, not the platform's.
+       Ask the SCREEN, in three states:
+         true  — placed rows carry a `.take-back`: the whole confused route is safe here.
+         false — something is placed and there is no way back: this move DECLINES, and
+                 the dispatcher runs the ordinary mover, so the card behaves exactly as
+                 it shipped (DFM 221).
+         null  — nothing placed yet, so the card cannot be asked. Place a line the ANSWER
+                 wants, which is safe on any card ever built, and ask again next turn. */
+    /* NO KEY, NO CONFUSED ROUTE. Everything below turns on knowing which lines the
+       answer wants, so that a decoy can be told from a keeper. Without the key there
+       is no such thing as a decoy, and the ordinary mover's own "NO KEY, NO GUESS"
+       rule is the right one — so decline rather than invent (DFM 146a). */
+    if (!wanted) return 'defer';
+    const wayBack = document.querySelector('.pyp-list li .pyrun-line')
+      ? !!document.querySelector('.pyp-list .take-back')
+      : null;
+    if (wayBack === false) return 'defer';
+    if (wayBack === null) {
+      const first = Number(key.order[0]);
+      const node = tray.find(n => Number(n.getAttribute('data-si')) === first);
+      if (node) { (node.querySelector('code') || node).click(); }
+      return;
+    }
     if (window.__undoingFor !== bid0) window.__undoing = false;
-    if (tray.length && (!canUndoHere || !window.__undoing)) { (tray[0].querySelector('code') || tray[0]).click(); return; }
+    if (tray.length && !window.__undoing) { (tray[0].querySelector('code') || tray[0]).click(); return; }
     /* everything is across and it is more than the answer needs: run it and let
        it fail, then take the extras back the way the card offers */
     if (wanted && placed > wanted) {
@@ -976,7 +1003,7 @@ const WRONG_MOVES = {
          failing run ever happened, and the two failure-state landmarks — the red console
          and NOT YET — were unreachable on both L3 lessons. Count a go only when there is
          something to count. */
-      const gapOpen = canUndoHere && Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+      const gapOpen = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
         .filter(i => i.offsetParent !== null).some(i => !i.value);
       if (window.__wrongRunFor !== bid0) { window.__wrongRunFor = bid0; window.__wrongRun = 0; }
       if (!gapOpen) {
@@ -1009,7 +1036,7 @@ const WRONG_MOVES = {
        and so does she: strip back to the longest run that is already right, then place
        the next one the answer asks for. Lines only ever land on the END, so that is the
        only shape that converges. */
-    if (wanted && key && key.order && canUndoHere) {
+    if (wanted && key && key.order) {
       const placedSis = Array.from(document.querySelectorAll('.pyp-list .pyrun-line'))
         .map(n => Number(n.getAttribute('data-si')));
       const prefixOk = placedSis.every((v, i) => v === Number(key.order[i]));
