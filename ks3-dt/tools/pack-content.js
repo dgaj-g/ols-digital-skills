@@ -480,6 +480,50 @@ function engineDebtGate() {
   console.log('engine-debt gate: ' + out.trim().split('\n')[0].replace(/^PASS\s+/, 'PASSED - '));
 }
 
+/* ---- THE DEPLOYED BUNDLE MUST BE CURRENT WITH ITS SOURCES ---------------
+   29 Aug 2026, and it is my own mistake made into a gate. Five readability
+   fixes were written AFTER the last `build-pathb.js` run and before the push,
+   so `PathB_Index.html` — the one file that actually gets deployed — was a
+   build of the tree as it stood twenty minutes earlier. Every gate passed,
+   because every gate reads the SERVED dev files (engines.js, style.css,
+   content/) and not the bundle. Nothing on the platform had ever asked "is the
+   thing you are about to paste made of the thing you just fixed?", so the
+   answer could be no and no machine would say a word. Version 60 shipped
+   without them and had to be cut again.
+   The check is the cheapest possible: rebuild, and require the bundle not to
+   move. A bundle that changes when you rebuild it was stale. */
+function bundleFreshGate() {
+  const builder = path.join(__dirname, '..', 'platform', 'server', 'build-pathb.js');
+  const bundle = path.join(__dirname, '..', 'platform', 'server', 'PathB_Index.html');
+  const gs = path.join(__dirname, '..', 'platform', 'server', 'PathB_Code.gs');
+  if (!fs.existsSync(builder) || !fs.existsSync(bundle)) {
+    console.error('build-pathb.js or PathB_Index.html is missing - the bundle gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  const crypto = require('crypto');
+  const sum = (f) => fs.existsSync(f)
+    ? crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex').slice(0, 16) : 'missing';
+  const beforeHtml = sum(bundle), beforeGs = sum(gs);
+  const res = require('child_process').spawnSync(process.execPath, [builder], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error((res.stdout || '') + (res.stderr || ''));
+    console.error('\nPACK STOPPED: build-pathb.js failed, so what would be deployed cannot be known.');
+    process.exit(1);
+  }
+  const afterHtml = sum(bundle), afterGs = sum(gs);
+  const moved = [];
+  if (beforeHtml !== afterHtml) moved.push('PathB_Index.html ' + beforeHtml + ' -> ' + afterHtml);
+  if (beforeGs !== afterGs) moved.push('PathB_Code.gs ' + beforeGs + ' -> ' + afterGs);
+  if (moved.length) {
+    console.error('\nPACK STOPPED: the deployable bundle was STALE — rebuilding it changed it.');
+    moved.forEach(m => console.error('    ' + m));
+    console.error('  The bundle has been rebuilt for you, so this pack is now consistent. Re-run it,');
+    console.error('  and commit the rebuilt bundle: what gets deployed must be made of what was fixed.');
+    process.exit(1);
+  }
+  console.log('bundle gate: PASSED - PathB_Index.html and PathB_Code.gs are a current build of this tree');
+}
+
 function coverageGate() {
   const harness = path.join(__dirname, 'record-tutorial', 'qa-harness-coverage.js');
   if (!fs.existsSync(harness)) {
@@ -597,6 +641,7 @@ function main() {
     numeralTieGate();
     humanPaceGate();
     engineDebtGate();
+    bundleFreshGate();
     auditGate();
     textDamageGate();
     coverageGate();
