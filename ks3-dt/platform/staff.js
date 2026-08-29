@@ -1033,9 +1033,21 @@
              BADGE writes nothing to the server, so it is not offered a column
              it could never fill. */
           if (['pyrun', 'snap', 'duel', 'chatswap'].indexOf(ch.engine) !== -1 && ch.badge && !cfg.extrasMode) {
+            /* ---- S11(b), his second sit: A COLUMN HEADER IS A NAME, NOT A
+               SENTENCE. The header took the chunk's CARD TITLE, and a card
+               title is written to be read by a pupil at the top of a screen —
+               so the Live tab printed "You have twelve minutes to build one
+               bot, in your own words." across a column two marks wide, and
+               "Somebody else is about to use your bot" beside it. A teacher
+               scanning a class at a glance cannot use that.
+               The header is now the chunk's own short name — the same words as
+               its tab and its kicker — and the full card title is on hover, so
+               nothing is lost, it is just no longer in the way. Derived from
+               the content in the same order everywhere (DFM 144). */
             f.builds.push({
               id: String(ch.id),
-              title: String(cfg.title || ch.title || ch.id),
+              title: String(cfg.tab || cfg.kicker || ch.title || ch.id),
+              full: String(cfg.title || ch.title || ch.id),
               engine: String(ch.engine)
             });
           }
@@ -1593,7 +1605,7 @@
       '<th>Baseline</th><th>Progress</th><th>Warm-up</th>' +
       (act ? '<th>' + App.esc(act.title) + '</th>' : '') +
       (feat.builds || []).map(function (b) {
-        return '<th title="' + App.esc(b.title) + '">' + App.esc(b.title) + '</th>';
+        return '<th class="lc-head" title="' + App.esc(b.full || b.title) + '">' + App.esc(b.title) + '</th>';
       }).join('') +
       (showExit ? exitItems.map(function (it, i) { return '<th title="' + App.esc(String(it.stem || '')) + '">Q' + (i + 1) + '</th>'; }).join('') : '') +
       (showPuzzle ? '<th>Build puzzle</th>' : '') +

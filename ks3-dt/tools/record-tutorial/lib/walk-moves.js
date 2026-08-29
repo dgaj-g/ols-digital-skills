@@ -1006,6 +1006,48 @@ const WRONG_MOVES = {
       const gapOpen = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
         .filter(i => i.offsetParent !== null).some(i => !i.value);
       if (window.__wrongRunFor !== bid0) { window.__wrongRunFor = bid0; window.__wrongRun = 0; }
+      /* ---- AND SHE ORDERS THE REAL LINES BEFORE SHE PRESSES RUN (29 Aug 2026) ----
+         THE LOTTERY, AND ITS CAUSE, MEASURED RATHER THAN GUESSED. She took every
+         line across in the order the TRAY offered them — a fresh derangement on
+         every render (DFM 258) — so whether the program she ran DIED or merely
+         printed the wrong thing was a coin toss: if `print("… " + box + " …")`
+         happened to land above the `box = input(…)` line, Python raised NameError
+         and the run died. Both outcomes used to satisfy "NOT YET, with no line
+         named", so the landmark looked flaky rather than unreachable.
+         THIS ROUND'S OWN FIX REMOVED ONE OF THOSE TWO ROUTES, and that is the
+         honest reason this is being made deliberate now: S2(b) means a run that
+         DIES no longer says NOT YET — it says the program stopped and marks
+         nothing wrong, which is right for a pupil and leaves this landmark
+         reachable by one route instead of two.
+         So the confused pupil gets the mistake she is really making. She is not
+         confused about ORDER — build 2 taught her that ten minutes ago — she is
+         confused about WHICH LINES BELONG. She puts the real lines in the order
+         she was taught, leaves the decoys she does not recognise on the end, and
+         presses RUN: the program runs every time, does the wrong thing every
+         time, and NOT YET is reached every time. Deterministic, and a truer
+         picture of the pupil than the shuffle was. */
+      const inOrder = (function () {
+        const sis = Array.from(document.querySelectorAll('.pyp-list .pyrun-line'))
+          .map(n => Number(n.getAttribute('data-si')));
+        return key.order.every((v, i) => Number(sis[i]) === Number(v));
+      })();
+      if (!gapOpen && !inOrder) {
+        /* one ordering step: strip back to the longest run that is already
+           right, then let the next turn place the next line the answer asks for.
+           Lines only ever land on the END, so this is the shape that converges —
+           the same argument as the branch below, applied before the run rather
+           than after it. */
+        const rows2 = Array.from(document.querySelectorAll('.pyp-list li'));
+        for (let i = 0; i < rows2.length; i++) {
+          const ln = rows2[i].querySelector('.pyrun-line');
+          const si = ln && Number(ln.getAttribute('data-si'));
+          if (i < key.order.length && si === Number(key.order[i])) continue;
+          window.__undoing = true; window.__undoingFor = bid0;
+          const back2 = rows2[i].querySelector('.take-back');
+          if (back2) { back2.click(); return; }
+          (ln.querySelector('code') || ln).click(); return;
+        }
+      }
       if (!gapOpen) {
         window.__wrongRun = (window.__wrongRun || 0) + 1;
         if (window.__wrongRun <= 2) {

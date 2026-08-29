@@ -27,7 +27,7 @@
      "You already have everything you need to start. A list is made the same way a box is made: a name, an = sign, and what goes in it. The only new part is what goes on the right of the = sign.",
      "Here is the hour, in order.",
      "1. You watch a short film with no sound. It shows a list as a rack of numbered boxes.",
-     "2. You play the Prediction Match. Somebody else in this room, at another computer, sees the same few lines of Python as you at the same moment. You both write down what you think the code will print. You both lock your answer in, and then the code really runs. You are not told who your opponent is until the Match ends. Instead you each get a call sign — a made-up name like Director 3. Your call sign is the name they see, and their call sign is the name you see.",
+     "2. You play the Prediction Match. Somebody else in this room, at another computer, sees the same few lines of Python as you, at the same moment. You each choose what you think the code will print. You both lock your answer in, and then the code really runs. You are not told who you are playing until the Match ends. Instead you each get a call sign, a made-up name like Director 3. Your call sign is the only name they see, and their call sign is the only name you see.",
      "3. You watch a second short film. After it come three builds. In the first the program is written for you; by the third you are filling in the gaps yourself.",
      "4. You get twelve minutes to build your own Playlist Engine, with five songs you choose yourself.",
      "5. You can try three extra jobs, if there is time.",
@@ -81,7 +81,7 @@
    "config": {
     "kicker": "The Prediction Match",
     "title": "Say what the code will do, before it does it",
-    "intro": "Working out what code will print, before you run it, is hard. The only way to get good at it is to say your answer before you find out.\n\nSix rounds. Somebody else in this room sees the same few lines as you, at the same moment. You each write down what you think it will print, you both lock it in, and then the code really runs on this screen.\n\n**Getting one right is worth no points and getting one wrong costs you nothing.** You get the same for the Match whatever you predict, as long as you play all six rounds. Being right is between you and your opponent.",
+    "intro": "Working out what code will print, before you run it, is hard. The only way to get good at it is to say your answer before you find out.\n\nThere are six rounds. Somebody else in this room sees the same few lines as you, at the same moment. You each choose what you think it will print, you both lock it in, and then the code really runs on this screen.\n\n**Getting one right is worth no points and getting one wrong costs you nothing.** You get the badge for the Match whatever you predict, as long as you play all six rounds. Being right is between you and your opponent.",
     "steps": [
      "You are given a **call sign** — a made-up name like Director 3. Your call sign is the only name they see, and their call sign is the only name you see.",
      "Both screens show the same code. You each pick what you think it prints and lock it in.",
@@ -228,12 +228,12 @@
      "pairLead": "Your opponent for the Match is {sign}. They are at another computer in this room, and they see exactly the same code as you at exactly the same moment.",
      "mineLine": "On their screen, you are {sign}.",
      "secretPair": "You are not told who they really are until the Match ends. So keep real names out of anything you type here, including your own — your teacher can read every message that goes between the two of you.",
-     "pairClose": "Six rounds. You each pick what you think the code will print, you both lock it in, and then it really runs.",
+     "pairClose": "There are six rounds. You each pick what you think the code will print, you both lock it in, and then it really runs.",
      "trioKicker": "A THREE",
      "trioTitle": "You are playing as a three.",
      "trioLead": "There is an odd number of you here, so the last three play together. Your group is {signs}.",
      "secretTrio": "You are not told who they really are until the Match ends. So keep real names out of anything you type here, including your own — your teacher can read every message that goes between you.",
-     "trioClose": "Six rounds. All three of you lock in a prediction, and all three predictions are shown side by side when the code runs.",
+     "trioClose": "There are six rounds. All three of you lock in a prediction, and all three predictions are shown side by side when the code runs.",
      "matchButton": "Start the Match",
      "soloKicker": "PLAYING THE COMPUTER",
      "soloTitle": "Everybody else has already played, so you play against the computer.",
@@ -276,7 +276,7 @@
      "leaveLine": "Leaving early? Off you go. I shall still be here.",
      "exitMs": 1800
     },
-    "help": "Six rounds. Each one shows a few lines of Python. You pick what you think it will print and lock it in, then the code really runs and the true answer appears beside your prediction. Rounds 5 and 6 are on things nobody has taught you; they say so on screen, and they are worth nothing either way. Your teacher can read any message that passes between you, so use no real names. The button at the bottom of the screen ends the Match and sends you on to the rest of the lesson.",
+    "help": "There are six rounds. Each one shows you a few lines of Python. You pick what you think it will print and lock it in. Then the code really runs, and the true answer appears beside your prediction. Rounds 5 and 6 are on things nobody has taught you. The screen says so before each of them, and they are worth nothing either way. Your teacher can read any message that passes between you, so do not type anybody’s real name. The button at the bottom of the screen stops the Match early and sends you on to the rest of the lesson. If you press it before the last round, the Match does not count.",
     "leaveTitle": "Leave the Match now?",
     "leaveAsk": "You have played {done} of the {all} rounds. If you leave now the Match does not count and there is no badge for it. You can still finish the rest of the lesson.",
     "leaveYes": "Leave the Match",
@@ -326,7 +326,7 @@
     "notYetLabel": "NOT YET",
     "progLabel": "The program",
     "matchedSay": "Those four steps are the whole shape of a playlist engine: make the list, add one, take one out, then print the first three.",
-    "notYetSay": "Not quite yet. Look at the console underneath. If Python stopped, its own message is there, with one line in plain English under it telling you where to look. If Python did not stop, then the program ran but printed the wrong thing: compare the console with the list above it, line by line.",
+    "notYetSay": "Not yet. Nothing on this card was typed by you, so this is not your mistake. Look at the console underneath. If Python stopped, Python’s own message is there, and under it there is one line in plain English telling you which line to look at. Read the console and the four lines above it side by side, and find the first line that is not the same. Then press RUN once more.",
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
     "shapeTitle": "Make it, add one, take one out, print it",
@@ -354,7 +354,7 @@
      "value": "Python could not use the thing in the brackets. If this was a remove line, the title has to match one that is really in the list, capital letters and all."
     },
     "chat": false,
-    "help": "Read the six lines, press RUN, and compare what the console printed with the list above it that says what it should print. Nothing on this card is typed by you. The button “Show me the shape” gives you the same six lines with the titles taken out.",
+    "help": "Read the six lines, press RUN, and compare what the console printed with the four lines above it that say what it should print. Nothing on this card is typed by you. The button “Show me the shape” gives you the same six lines with the titles taken out.",
     "targetLead": "This is what it should print:",
     "builds": [
      {
@@ -402,10 +402,12 @@
        "kind": "target"
       },
       "matchedSay": "Your console matches the four lines it should print. Curtain Up is gone because remove took it out, and The Long Way Round is there because append put it on the end.",
-      "notYetSay": "Not yet. Read the console and the list above it side by side, and find the first line that is not the same."
+      "notYetSay": "Not yet. Read the console and the four lines above it side by side, and find the first line that is not the same."
      }
     ],
-    "waitingSay": "Your program has stopped and is waiting for you to type an answer. Type it into the strip just above this button. RUN switches back on as soon as your program has finished."
+    "waitingSay": "Your program has stopped and is waiting for you to type an answer. Type it into the strip just above this button. RUN switches back on as soon as your program has finished.",
+    "runDiedSay": "The program stopped before it got to the end, so nothing could be checked. Nothing on this card was typed by you, so this is not your mistake. Read the console underneath to see what Python said, then press RUN once more.",
+    "notCheckedLabel": "could not be checked"
    }
   },
   {
@@ -436,7 +438,9 @@
      "Take one out.",
      "Print the whole list."
     ],
-    "introAfter": "Click a line in The lines to move it across, or drag it. You get one go, and you are shown the working order afterwards either way."
+    "introAfter": "Click a line in The lines to move it across, or drag it. You get one go, and you are shown the working order afterwards either way.",
+    "introKicker": "Build 2",
+    "checkLabel": "Check my program"
    }
   },
   {
@@ -467,7 +471,7 @@
     "matchedLabel": "IT WORKS",
     "notYetLabel": "NOT YET",
     "matchedSay": "The console says three. You started with three titles, added one and took one out.",
-    "notYetSay": "Not yet. Read the console underneath, then look again at the line above your program that says what it should print.",
+    "notYetSay": "Not yet. Read the console underneath. Then look again at the line above your program, the one that shows the number your program should print.",
     "targetLead": "This is what it should print:",
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
@@ -566,12 +570,14 @@
        "print( len( <list name> ) )"
       ],
       "matchedSay": "The answer is three. The list started with three, gained one and lost one — and len( ) counted what was left.",
-      "notYetSay": "Not quite yet. Read the message in the console. If it says Python does not know that word, look at the word straight after the dot on your remove line."
+      "notYetSay": "Not yet. Read the message in the console. If it says Python does not know that word, look at the word you typed straight after the dot on the line that takes a title out."
      }
     ],
     "waitingSay": "Your program has stopped and is waiting for you to type an answer. Type it into the strip just above this button. RUN switches back on as soon as your program has finished.",
     "trayClickEject": false,
-    "takeBackLabel": "Put this line back"
+    "takeBackLabel": "Put this line back",
+    "runDiedSay": "Your program stopped before it could be checked. Read the console underneath to see what Python said. Nothing has been marked wrong: the checking never ran at all.",
+    "notCheckedLabel": "could not be checked"
    }
   },
   {
@@ -589,18 +595,18 @@
     "mode": "editor",
     "kicker": "Your Playlist Engine",
     "title": "Twelve minutes to build your own Playlist Engine, with five songs you choose.",
-    "intro": "Every program so far has used somebody else's songs. This one is yours: five real songs you choose, and a program that does five different things to them.\n\nThere are no ready-made lines to drag across on this card: you type the program yourself. The list at the top of the card shows the five things your engine has to do, and it fills in every time you press RUN.",
+    "intro": "Every program so far has used somebody else’s songs. This one is yours: five real songs you choose, and a program that does five different things to them.\n\nThere are no ready-made lines to drag across on this card: you type the program yourself. At the top of the card are the five jobs your engine has to do. Every time you press RUN, each job your program really does says done.",
     "runLabel": "RUN my engine",
     "continueLabel": "Continue",
-    "checklistLabel": "What your engine has to do",
-    "starterSay": "Not sure where to start? The button below writes the whole shape into your editor, with every song title left blank for you to fill in.",
+    "checklistLabel": "The five jobs your engine has to do",
+    "starterSay": "Not sure where to start? Press the button below. It writes the whole shape into the box where you type your program, and leaves every song title blank for you to fill in.",
     "starterLabel": "Write the shape for me",
-    "starterDoneSay": "The shape is in your editor now. Type a real song title between every empty pair of speech marks. The title on your remove line has to be one of the five you typed, spelled exactly the same.",
+    "starterDoneSay": "The shape is in the box where you type your program. Type a real song title between every empty pair of speech marks. The title on your remove line has to be one you have already typed further up, spelled exactly the same, capital letters and all.",
     "emptySay": "Your program is empty, so there is nothing to run. Type your first line, or press the button that says “Write the shape for me”.",
     "notYetLabel": "NOT YET",
     "pendingLabel": "not checked yet",
-    "matchedSay": "That is five out of five. You have written a real program: it holds a set of things, changes them, puts them in order and shows the first three.",
-    "notYetSay": "Your engine is not doing all five jobs yet. The list at the top of this card shows which ones are working. If Python stopped, the console says why.",
+    "matchedSay": "All five jobs say done. You have written a real program: it holds your own song titles, adds one, takes one out, puts them in order and prints the first three.",
+    "notYetSay": "Your engine is not doing all five jobs yet. Look at the five jobs at the top of this card: the ones your program already does say done. If Python stopped, the console says why.",
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
     "shapeTitle": "A playlist engine",
@@ -636,14 +642,14 @@
      "value": "Python could not use the thing in the brackets. If this was a remove line, the title has to match one that is really in the list, capital letters and all."
     },
     "limitMs": 5000,
-    "help": "This card comes in two parts. Press “Start writing” and the second part opens: the five jobs along the top, and the black space underneath where you type your program. The list of jobs fills in every time you press RUN. Nothing is typed for you unless you press “Write the shape for me”, and nothing is corrected for you: read the console if Python stops. “Show me the shape” shows the pattern with every title taken out.",
+    "help": "This card comes in two parts. Press “Start writing” and the second part opens: the five jobs along the top, and the black space underneath where you type your program. Every time you press RUN, each job your program really does says done. Nothing is typed for you unless you press “Write the shape for me”, and nothing is corrected for you: read the console if Python stops. “Show me the shape” shows the pattern with every title taken out.",
     "builds": [
      {
       "id": "engine",
       "mode": "editor",
       "saveAs": "l3playlist",
       "goalLine": "Write a playlist engine that does five things to five songs of your own.",
-      "brief": "Start with five real song titles you would put in a show. The five jobs your engine has to do are numbered above, and each one ticks itself off as soon as your program starts doing it.",
+      "brief": "Start with five real song titles you would put in a show. The five jobs your engine has to do are numbered above, and each one says done as soon as your program really does that job.",
       "starter": [
        "import random",
        "playlist = [\"\", \"\", \"\", \"\", \"\"]",
@@ -707,8 +713,8 @@
        "    print( <one> )"
       ],
       "shapeNote": "The order matters: anything that changes the list after the sort line can put it out of order again.",
-      "matchedSay": "That is all five jobs working. If you played somebody in the Match, you can send them your Now Playing card.",
-      "notYetSay": "Your program is not doing every job yet. The list at the top of this card shows which jobs it is doing. Read the console for anything Python could not do.",
+      "matchedSay": "All five jobs say done. Your engine has printed a Now Playing card: the heading, and the three titles under it. If you played against somebody in the Match, you can send your card to them.",
+      "notYetSay": "Your engine is not doing all five jobs yet. Look at the five jobs at the top of this card: the ones your program already does say done. If Python stopped, the console says why.",
       "sendCard": {
        "head": "now playing",
        "lines": 3,
@@ -727,9 +733,11 @@
      }
     ],
     "waitingSay": "Your program has stopped and is waiting for you to type an answer. Type it into the strip just above this button. RUN switches back on as soon as your program has finished.",
-    "matchedAllLabel": "EVERY JOB WORKING",
+    "matchedAllLabel": "EVERY JOB DONE",
     "doneLabel": "done",
-    "startLabel": "Start writing"
+    "startLabel": "Start writing",
+    "runDiedSay": "Your engine stopped before it could be checked. Read the console underneath to see what Python said. None of the five jobs at the top has been marked wrong — they were never checked at all.",
+    "notCheckedLabel": "could not be checked"
    }
   },
   {
@@ -779,9 +787,9 @@
      "timelimit": "That program was still going after a few seconds, so it was stopped. Something in it is repeating and never finishing.",
      "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark.",
      "value": "Python could not use the thing in the brackets. If this was a remove line, the title has to match one that is really in the list, capital letters and all.",
-     "syntax": "Python could not read one of your lines. Look at the line named above, and check three things. Every bracket you opened is closed. Every speech mark has a partner. And any line that ends in a colon has the line under it pushed in by four spaces."
+     "syntax": "Python could not read one of your lines. Look at the line named above. Check that every bracket you opened is also closed, that every speech mark has a partner, and that any line under a colon starts four spaces in."
     },
-    "help": "Three optional jobs. None of them is worth points and nothing here is saved. Pick one from the list, or press the button at the bottom that starts “Running out of time?”. If you leave a job half done it starts again from the beginning next time.",
+    "help": "Three optional jobs. None of them is worth points and nothing here is saved. Pick one from the list, or press the button at the bottom that says “Leave the extra jobs and carry on with the lesson”. If you leave a job half done it starts again from the beginning next time.",
     "builds": [
      {
       "id": "j3x3-filter",
@@ -876,7 +884,11 @@
     ],
     "waitingSay": "Your program has stopped and is waiting for you to type an answer. Type it into the strip just above this button. RUN switches back on as soon as your program has finished.",
     "trayClickEject": false,
-    "takeBackLabel": "Put this line back"
+    "takeBackLabel": "Put this line back",
+    "runDiedSay": "Your program stopped before it could be checked. Read the console underneath to see what Python said. Nothing has been marked wrong: the checking never ran at all.",
+    "notCheckedLabel": "could not be checked",
+    "allDoneLabel": "That is all three — carry on with the lesson",
+    "allDoneSay": "**All three jobs are done.** Nothing here was marked and nothing was saved, so there is nothing left to do on this screen."
    }
   },
   {
@@ -886,9 +898,9 @@
    "minutes": 2,
    "config": {
     "kicker": "Exit check",
-    "cardTitle": "One question before you finish",
+    "cardTitle": "One marked question, and then a short puzzle to finish",
     "readyLabel": "Ready",
-    "intro": "One last question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "intro": "This question is marked. Your teacher sees how the class did on it, so answer it on your own. After it there is one short puzzle, and then one last screen asking how the hour went.",
     "items": [
      {
       "id": "j3x3-1",
@@ -925,7 +937,9 @@
     "pre": true,
     "trayClickEject": false,
     "takeBackLabel": "Put this line back",
-    "trayLabel": "The lines"
+    "trayLabel": "The lines",
+    "introKicker": "Exit check — part 2",
+    "checkLabel": "Check my program"
    }
   },
   {

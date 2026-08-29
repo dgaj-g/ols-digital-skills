@@ -139,14 +139,31 @@ const waivedText = (t) => WAIVED.find(w => w.texts.indexOf(String(t).trim()) !==
    The second was invisible to the first version of this file, so a migration
    that had actually happened still read as 32 OUTSTANDING rows. A debt list
    that cannot see work being done is a debt list nobody will trust. */
-const isFallback = (line, at) => {
+const isFallback = (line, at, prevLine) => {
+  /* THE `||` CAN BE ON THE LINE ABOVE (29 Aug 2026). Five parsons rows read
+     OUTSTANDING while the code beside them was `esc(cfg.lockedNote ||` with the
+     literal wrapped onto the next line — a migration that HAD happened, listed
+     as debt that had not. A ledger that cannot see work being done is a ledger
+     nobody trusts, and this is the second time that exact sentence has had to
+     be written here. So the reader looks at the end of the previous line too. */
   const before = line.slice(0, at);
-  return /(\|\|\s*)$/.test(before) ||
+  /* A CONCATENATION IS ONE EXPRESSION, HOWEVER MANY LINES IT TAKES. The parsons
+     how-to line is three strings joined with `+` inside one `own(cfg.howLine,
+     …)`, and its last fragment — "to take it out again." — read as a bare
+     literal all on its own, so a sentence that is content-owned twice over was
+     still being counted as debt. `prevLine` is therefore not one line but the
+     run of lines this literal is being joined onto. */
+  const runOn = at === (line.length - line.trimStart().length) &&
+    /(\|\|\s*|\|\|\s*\(|\+|,)\s*$/.test(String(prevLine || '')) &&
+    /\|\||own\(|S\(|\.say(Html)?\(/.test(String(prevLine || ''));
+  return runOn ||
+    /(\|\|\s*)$/.test(before) ||
     /(\|\|\s*\()$/.test(before) ||
     /S\(\s*'[^']+'\s*,\s*$/.test(before) ||
     /S\(\s*"[^"]+"\s*,\s*$/.test(before) ||
     /\.say(Html)?\(\s*'[^']+'\s*,\s*$/.test(before) ||
     /\.say(Html)?\(\s*"[^"]+"\s*,\s*$/.test(before) ||
+    /own\(\s*[A-Za-z0-9_.]+\s*,\s*$/.test(before) ||
     /\?\s*$/.test(before) && /\|\|/.test(line);
 };
 
@@ -159,13 +176,54 @@ const isFallback = (line, at) => {
    can see is worse than no exemption at all (DFM 213). */
 const isEngineCode = (t) => /_ols[a-z]/.test(t);
 
+/* ---- THE PROVED FALLBACK TABLES, DERIVED FROM THE CODE ------------------
+   `PY_SAY` and `FALLBACK_WORDS` are tables of sentences whose ONLY job is to
+   stand behind a config lookup, and both files say so at the top: "these exist
+   only so that a missing content key can never render a mute control", with
+   qa-pyrun proving by RUNNING each chunk's own decoys that a lesson supplies
+   every key it can reach. Their rows still read OUTSTANDING, because the
+   literal sits in an object and the `||` is somewhere else entirely — so
+   sixteen sentences no pupil can reach were being counted as debt beside
+   sixteen she could.
+   IT IS DERIVED, NOT LISTED (DFM 271): a table qualifies when the source uses
+   it in a fallback position — `|| NAME.key` or `|| NAME[expr]`, in any object
+   path — so a new table is recognised by being used that way, and a table that
+   stops being a fallback stops qualifying the same day. The rows are marked
+   MIGRATED and PRINTED, never dropped: an exemption nobody can see is worse
+   than no exemption (DFM 213). */
+function fallbackTables(src) {
+  const names = new Set();
+  const rx = /\|\|\s*(?:[A-Za-z_$][\w$]*\.)*([A-Z][A-Z0-9_]{2,})\s*[.[]/g;
+  let m;
+  while ((m = rx.exec(src))) names.add(m[1]);
+  /* where each qualifying table's own literal body starts and ends, so a row is
+     only excused when it really is INSIDE one */
+  const spans = [];
+  names.forEach((n) => {
+    const dec = new RegExp('(?:var|const|let)\\s+' + n + '\\s*=\\s*\\{|\\b' + n + '\\s*:\\s*\\{');
+    const at = src.search(dec);
+    if (at === -1) return;
+    let i = src.indexOf('{', at), depth = 0, end = -1;
+    for (let k = i; k < src.length; k++) {
+      if (src[k] === '{') depth++;
+      else if (src[k] === '}') { depth--; if (!depth) { end = k; break; } }
+    }
+    if (end > i) spans.push({ name: n, start: i, end: end });
+  });
+  return spans;
+}
+const inTable = (spans, pos) => (spans.find((s) => pos > s.start && pos < s.end) || null);
+
 let rows = [];
+const tableNote = [];
 SOURCES.forEach(file => {
   const p = path.join(PLATFORM, file);
   if (!fs.existsSync(p)) return;
   const src = fs.readFileSync(p, 'utf8');
   const whose = engineIndex(src);
   const lines = src.split('\n');
+  const tables = fallbackTables(src);
+  if (tables.length) tableNote.push(file + ': ' + tables.map(t => t.name).join(', '));
   scanCode(src).forEach(sp => {
     const t = sp.text.trim();
     if (words(t) < 4) return;
@@ -174,10 +232,19 @@ SOURCES.forEach(file => {
     const ln = lineOf(src, sp.start);
     const line = lines[ln - 1] || '';
     const col = sp.start - (src.lastIndexOf('\n', sp.start - 1) + 1);
+    const tbl = inTable(tables, sp.start);
+    /* the run of source this literal is being joined onto: walk back while the
+       line above ends in a `+`, so the whole expression is read at once */
+    let back = ln - 2, joined = '';
+    while (back >= 0 && back > ln - 8) {
+      joined = lines[back] + ' ' + joined;
+      if (!/\+\s*$/.test(lines[back])) break;
+      back--;
+    }
     rows.push({
-      file, line: ln, engine: whose(ln - 1), text: t,
+      file, line: ln, engine: whose(ln - 1), text: t, table: tbl && tbl.name,
       state: waivedText(t) ? 'WAIVED' : isEngineCode(t) ? 'CODE'
-        : (isFallback(line, col) ? 'MIGRATED' : 'OUTSTANDING')
+        : (tbl || isFallback(line, col, joined) ? 'MIGRATED' : 'OUTSTANDING')
     });
   });
 });
@@ -205,6 +272,13 @@ out.push('the words and the gate sees them. **OUTSTANDING** = a bare literal the
 out.push('and no gate does. **WAIVED** = he has SETTLED the wording as shipped, so it is');
 out.push('counted and printed for ever and is never a to-do (the ruling and its date are below).');
 out.push('');
+if (tableNote.length) {
+  out.push('> **PROVED FALLBACK TABLES, found by use rather than by name:** ' + tableNote.join(' · ') + '.');
+  out.push('> Every literal inside one is a fallback behind a config lookup, so it counts as MIGRATED');
+  out.push('> and is still listed row by row below. `qa-pyrun` proves, by RUNNING each chunk\'s own');
+  out.push('> decoys, that a lesson supplies every key it can reach — so these are not what a pupil reads.');
+  out.push('');
+}
 const totalOut = rows.filter(r => r.state === 'OUTSTANDING').length;
 const totalWaived = rows.filter(r => r.state === 'WAIVED').length;
 const totalCode = rows.filter(r => r.state === 'CODE').length;

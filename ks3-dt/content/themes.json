@@ -24,7 +24,7 @@
    "vars": {
     "--gold": "#FFA352",
     "--gold-hi": "#FFCB8E",
-    "--gold-deep": "#B3651C",
+    "--gold-deep": "#9E5919",
     "--gold-rgb": "255, 163, 82",
     "--gold-hi-rgb": "255, 203, 142",
     "--accent-ink": "#2A1502",
@@ -130,7 +130,7 @@
    "vars": {
     "--gold": "#FF7A59",
     "--gold-hi": "#FFAE96",
-    "--gold-deep": "#C24E2E",
+    "--gold-deep": "#B4482B",
     "--gold-rgb": "255, 122, 89",
     "--gold-hi-rgb": "255, 174, 150",
     "--accent-ink": "#33100A",
@@ -198,7 +198,7 @@
    "vars": {
     "--gold": "#4FD8EC",
     "--gold-hi": "#9FEFFB",
-    "--gold-deep": "#1C8FA5",
+    "--gold-deep": "#177586",
     "--gold-rgb": "79, 216, 236",
     "--gold-hi-rgb": "159, 239, 251",
     "--accent-ink": "#04262C",
@@ -232,7 +232,7 @@
    "vars": {
     "--gold": "#FF9E3D",
     "--gold-hi": "#FFC584",
-    "--gold-deep": "#BF6410",
+    "--gold-deep": "#A4560E",
     "--gold-rgb": "255, 158, 61",
     "--gold-hi-rgb": "255, 197, 132",
     "--accent-ink": "#2B1502",
@@ -266,7 +266,7 @@
    "vars": {
     "--gold": "#FF6FA5",
     "--gold-hi": "#FFA9C9",
-    "--gold-deep": "#C23A72",
+    "--gold-deep": "#BB386E",
     "--gold-rgb": "255, 111, 165",
     "--gold-hi-rgb": "255, 169, 201",
     "--accent-ink": "#300A1B",
@@ -300,7 +300,7 @@
    "vars": {
     "--gold": "#2FD4B4",
     "--gold-hi": "#82ECD8",
-    "--gold-deep": "#128271",
+    "--gold-deep": "#117868",
     "--gold-rgb": "47, 212, 180",
     "--gold-hi-rgb": "130, 236, 216",
     "--accent-ink": "#032420",
@@ -334,7 +334,7 @@
    "vars": {
     "--gold": "#F2E24A",
     "--gold-hi": "#FFF6A0",
-    "--gold-deep": "#A89310",
+    "--gold-deep": "#796A0C",
     "--gold-rgb": "242, 226, 74",
     "--gold-hi-rgb": "255, 246, 160",
     "--accent-ink": "#262102",
@@ -368,7 +368,7 @@
    "vars": {
     "--gold": "#5EE39C",
     "--gold-hi": "#A5F5C8",
-    "--gold-deep": "#1F9A5B",
+    "--gold-deep": "#197A48",
     "--gold-rgb": "94, 227, 156",
     "--gold-hi-rgb": "165, 245, 200",
     "--accent-ink": "#04220F",
@@ -400,7 +400,7 @@
    "vars": {
     "--gold": "#6FB4FF",
     "--gold-hi": "#A9D1FF",
-    "--gold-deep": "#2E6FC2",
+    "--gold-deep": "#2C6BBB",
     "--gold-rgb": "111, 180, 255",
     "--gold-hi-rgb": "169, 209, 255",
     "--accent-ink": "#071A30",
@@ -502,7 +502,7 @@
    "vars": {
     "--gold": "#FFC23A",
     "--gold-hi": "#FFD873",
-    "--gold-deep": "#A9761A",
+    "--gold-deep": "#8D6216",
     "--gold-rgb": "255, 194, 58",
     "--gold-hi-rgb": "255, 216, 115",
     "--accent-ink": "#16202B",
@@ -541,7 +541,7 @@
    "vars": {
     "--gold": "#F5C84E",
     "--gold-hi": "#FFE08A",
-    "--gold-deep": "#A8801A",
+    "--gold-deep": "#866615",
     "--gold-rgb": "245, 200, 78",
     "--gold-hi-rgb": "255, 224, 138",
     "--accent-ink": "#2A1108",
@@ -580,7 +580,7 @@
    "vars": {
     "--gold": "#A8C8D8",
     "--gold-hi": "#DCEEF7",
-    "--gold-deep": "#6C838F",
+    "--gold-deep": "#5A6D77",
     "--gold-rgb": "168, 200, 216",
     "--gold-hi-rgb": "220, 238, 247",
     "--accent-ink": "#14181C",
@@ -619,7 +619,7 @@
    "vars": {
     "--gold": "#7FD4E8",
     "--gold-hi": "#B7EBF7",
-    "--gold-deep": "#2C7A92",
+    "--gold-deep": "#2A738A",
     "--gold-rgb": "127, 212, 232",
     "--gold-hi-rgb": "183, 235, 247",
     "--accent-ink": "#06212B",
@@ -658,7 +658,7 @@
    "vars": {
     "--gold": "#F2C46B",
     "--gold-hi": "#FFE0A3",
-    "--gold-deep": "#A9761C",
+    "--gold-deep": "#8D6217",
     "--gold-rgb": "242, 196, 107",
     "--gold-hi-rgb": "255, 224, 163",
     "--accent-ink": "#231703",

@@ -850,7 +850,8 @@
      ]
     },
     "help": "Click blocks from the tray into your program, in the order the sentence describes. Check when you're sure — you'll be shown the working order if it's off.",
-    "doneText": "Correct — that program does exactly what the card asked."
+    "doneText": "Correct — that program does exactly what the card asked.",
+    "introKicker": "Exit check — part 2"
    }
   },
   {
