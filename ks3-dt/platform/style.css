@@ -2203,19 +2203,52 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .rally-timer-fill { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #FFD84D, #7DF08A); }
 .rally-timer-say { margin: 0 0 12px; color: #C7D6F2; font-size: 0.92rem; font-weight: 600; min-height: 1.3em; }
 .rally-timer-btn { min-width: 220px; }
-.rally-round.is-locked-go { opacity: 0.55; }
+
+/* ===== V62 PART A — HIS J1 FINDINGS, AND HIS WORD WAS "FIX THEM ALL" =======
+   Keying readability by SCREEN STATE turned the audit on hundreds of screens
+   nothing had ever measured, and it found 25 real faults on three lessons he
+   signed off weeks ago. They were printed and waived under DFM 221/273a; that
+   waiver is lifted for these findings, by his instruction. The machinery stays
+   — it is what catches the next batch.
+
+   AND THEY ARE MOSTLY ONE FAULT, WRITTEN THREE TIMES: a locked container that
+   fades ITSELF, words included. `opacity` on a wrapper is the cheapest way to
+   say "not yet" and the most expensive thing you can do to a sentence, because
+   it drags every colour inside it toward the plate at once — and the sentence
+   worst hit is always the one EXPLAINING the refusal, which is the sentence
+   she most needs. On J1 L3 "Run the timer first" measured 1.4:1, the least
+   readable thing on the screen. On J1 L5 "These four checks wake up the moment
+   you tick…" measured 1.9:1, and the QA checklist's own step numbers 1.05:1.
+   THE LAW, applied at each root below: a locked panel says it is locked with
+   its OWN plate, border and badge, and every word inside it stays at full
+   strength. Nothing here fades text.
+   ========================================================================== */
+/* WAS `opacity: 0.55` on the whole panel. It took FOUR sentences below the
+   floor in one line — the round label to 2.51:1, the +10/-10 steps to 1.63:1,
+   and the locked badge that explains the refusal to 1.4:1. The panel now reads
+   as asleep by its own colours: a darker plate, a muted border, flatter step
+   buttons. Every word in it is back at full strength (label 7.66:1, steps
+   14.85:1, badge 7.66:1). */
+.rally-round.is-locked-go { background: #060F24; border-color: #16274A; box-shadow: none; }
+.rally-round.is-locked-go .rally-step { border-color: #22345C; background: #0E1B3A; }
 .rally-locked-tag {
   position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
-  background: #16274A; color: #8FA5CE; border: 1px solid #2A4373;
+  /* the badge is the sentence that explains the refusal, so it is the LAST
+     thing that should be hard to read — lifted 5.93:1 -> 7.66:1 */
+  background: #16274A; color: #A8BCDD; border: 1px solid #2A4373;
   font-size: 0.6rem; font-weight: 800; letter-spacing: 0.06em;
   border-radius: 999px; padding: 2px 8px; white-space: nowrap; display: none;
 }
 .rally-round.is-locked-go .rally-locked-tag { display: inline-block; }
 .rally-console.is-locked .rally-locked-tag { display: none; }
+/* THESE TWO SIT ON THE WHITE CARD, not on the dark console beside them, and
+   they had been given the console's colours: pale blue on white at 1.47:1, and
+   her own total in bright #FFD84D gold on white at 1.38:1. The same
+   one-class-two-worlds trap the QA tag fell into. Card colours for a card. */
 .rally-total-row {
-  margin: 12px 0 0; text-align: center; color: #C7D6F2; font-weight: 700; font-size: 1rem;
+  margin: 12px 0 0; text-align: center; color: var(--ink); font-weight: 700; font-size: 1rem;
 }
-.rally-total { color: #FFD84D; font-size: 1.5rem; font-weight: 800; margin-left: 6px; }
+.rally-total { color: var(--gold-deep); font-size: 1.5rem; font-weight: 800; margin-left: 6px; }
 @media (prefers-reduced-motion: reduce) {
   .rally-timer-fill { transition: none !important; }
 }
@@ -2380,7 +2413,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .case-stamp { display: inline-block; font-family: var(--font-display); font-weight: 800;
   letter-spacing: 0.14em; border: 3px solid; border-radius: 6px; padding: 2px 10px;
   transform: rotate(-8deg); font-size: 0.8rem; }
-.case-stamp.gold { color: #A8830F; border-color: #A8830F; background: rgba(228,184,36,0.12); }
+/* J1 L4: the gold CASE CLOSED / JOB DONE stamps, 2.9:1 on the case board's
+   pale green plate. #A8830F is the value `--gold-deep` used to hold before it
+   was deepened this round — a literal left behind by the token that moved. */
+.case-stamp.gold { color: var(--gold-deep); border-color: var(--gold-deep); background: rgba(228,184,36,0.12); }
 .case-stamp.silver { color: #5E6B80; border-color: #8A96A8; background: rgba(138,150,168,0.14); }
 .case-stamp.mini { align-self: flex-end; font-size: 0.66rem; padding: 1px 7px; }
 .case-stamp.big { font-size: clamp(1.4rem, 4vw, 2rem); padding: 8px 22px; border-width: 5px;
@@ -2466,6 +2502,13 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .case-locked-note { margin: 8px 0 6px; color: #8C6D1F; font-size: 0.92rem; font-weight: 600;
   border-left: 3px solid var(--gold); padding-left: 10px; line-height: 1.45; }
 .case-locked-note[hidden] { display: none; }
+/* ONE CLASS, TWO WORLDS — the third time this exact trap has been found, and
+   the same answer as `.std-qadesk-head .std-qa-tag` got earlier. `#8C6D1F` is
+   a deep gold made for a LIGHT card; the studio's build phase renders this
+   note on `.std-desk`, the cyanotype blueprint panel, where it measured
+   1.9:1 — a refusal sentence again. On the dark desk it takes the dark
+   world's gold (9.39:1). */
+.std-desk .case-locked-note { color: var(--gold); border-left-color: var(--gold); }
 .case-locked-note.pulse { animation: lockedPulse 0.7s ease 2; }
 @keyframes lockedPulse {
   0%, 100% { transform: none; color: #8C6D1F; }
@@ -2586,7 +2629,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .std-qa-tag.fail { color: #8C2F1F; background: rgba(197,90,60,0.14); }
 
 .std-qadesk { border: 1px dashed rgba(120,170,255,0.45); border-radius: 12px; padding: 14px; margin-bottom: 18px; }
-.std-qadesk.locked { opacity: 0.55; }
+/* WAS `opacity: 0.55`, which faded the SEALED ribbon to 2.4:1. Locked now
+   reads as a fainter dashed frame over a darker well — the frame is the
+   signal, the words are not. */
+.std-qadesk.locked { border-color: rgba(120,170,255,0.22); background: rgba(0,0,0,0.20); }
 /* the "when do I use this?" line under each studio-desk zone heading (DFM 212).
    On the light kit/blueprint cards it takes the card's ink; inside the dark QA
    zone it takes the dark zone's, the same one-class-two-worlds trap the QA tag
@@ -2600,7 +2646,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
    straddling two worlds; here it takes the dark world's colours. */
 .std-qadesk-head .std-qa-tag { color: #CFE0FF; background: rgba(120, 170, 255, 0.22); }
 .std-qadesk-head p { margin: 4px 0 0; font-size: 0.9rem; }
-.std-sealed-ribbon { position: absolute; right: 0; top: 0; background: #24355C; color: #93A3C4;
+.std-sealed-ribbon { position: absolute; right: 0; top: 0; background: #24355C; color: #B9C7E4;
   font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; padding: 4px 10px; border-radius: 4px; }
 /* THE ROOT OF HIS "I CAN'T READ IT" (DFM 207g). This row paints a light parchment
    plate but never set a text colour, so everything inside INHERITED THE DARK
@@ -2613,14 +2659,20 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .std-qa-arrow { color: #5A6784; }
 .std-qa-row { background: linear-gradient(178deg, #FDFBF4 0%, #F3EFE2 100%); border-radius: 10px;
   margin-bottom: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-.std-qa-row.locked { opacity: 0.6; }
+/* WAS `opacity: 0.6`, and this one was the worst of the three: it put the
+   checklist's own step numbers 1, 2, 3, 4 at 1.05-1.1:1 — dark grey on dark
+   grey — and their four bold labels at 2.67:1. A locked row is now a duller
+   parchment with its lift taken away; the ink inside is untouched (13.15:1). */
+.std-qa-row.locked {
+  background: linear-gradient(178deg, #EFEADC 0%, #E4DFD0 100%); box-shadow: none;
+}
 .std-qa-head { display: flex; align-items: center; gap: 12px; width: 100%; border: none;
   background: none; font: inherit; text-align: left; padding: 12px 14px; cursor: pointer; color: var(--ink); }
 .std-qa-head:disabled { cursor: default; }
 .std-qa-head b { flex: 1; font-size: 0.98rem; }
 .std-qa-state { width: 34px; height: 34px; border-radius: 50%; flex: none; display: inline-flex;
   align-items: center; justify-content: center; font-weight: 800; font-size: 1rem;
-  background: #E4E8F2; color: #5A6784; border: 2px solid #C9CFDD; }
+  background: #E4E8F2; color: #4E5A75; border: 2px solid #C9CFDD; }
 .std-qa-state.pass { background: var(--good); border-color: var(--good); color: #fff; }
 .std-qa-state.fail { background: #C5573A; border-color: #C5573A; color: #fff; }
 .std-qa-row.pass { outline: 2px solid var(--good); outline-offset: -2px; }
@@ -2722,7 +2774,15 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .gal-desk { max-width: 620px; }
 .gal-desk-note { font-size: 0.9rem; color: #4A5670; }
 .gal-v2-zone .gal-v2-card, .gal-v2-card { margin: 0 0 14px; }
-.gal-v2-card.locked { opacity: 0.65; }
+/* THE SAME FAULT A FOURTH TIME, and the last of them. `opacity: 0.65` on a
+   white card standing over the dark blueprint floor dragged its own contents
+   toward the floor's navy: "YOUR V2 NOTE" measured 3.38:1 with a plate of
+   #9aa3b2, a grey that exists nowhere in the design — it is the card and the
+   floor averaged together. Locked now reads as a cooler plate inside a dashed
+   frame, and every word in it stays where it was (tag 6.37:1, body 13.97:1). */
+.gal-v2-card.locked {
+  background: #EEF1F7; border-style: dashed; border-color: #B9C3D6; box-shadow: none;
+}
 .gal-v2-card.done { outline: 2px solid var(--gold); outline-offset: -2px; }
 .gal-v2-final { background: #F4F6FA; border-radius: 8px; padding: 10px 12px; margin: 10px 0; }
 .gal-wrap { display: block; margin: 0 auto; }
@@ -4049,6 +4109,31 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 .swap-field:focus { outline: 2px solid var(--ols-blue); outline-offset: 1px; }
 .swap-report-say { margin: 9px 0 0; font-size: 0.88rem; color: #8A2010; font-weight: 600; }
+/* THE SENDING STATE (V62/B1). His words: "there should be a pulsing message to
+   indicate that it is being sent, just to show the pupil that something is
+   happening." The TEXT never pulses — only the mark beside it. A sentence
+   caught mid-fade is a sentence the readability audit measures as a blend
+   (DFM's settle law), and long before that it is a sentence a pupil is reading
+   through a flicker. The mark is a plain filled dot with no letters in it, so
+   it is judged at the 3:1 non-text floor, and it holds still under
+   prefers-reduced-motion rather than disappearing — the sentence is the
+   message; the pulse is only what makes it look alive. */
+.swap-sending[hidden] { display: none; }
+.swap-sending {
+  display: flex; align-items: center; gap: 9px;
+  margin: 11px 0 0; font-size: 0.9rem; font-weight: 600; color: var(--ols-blue);
+}
+.swap-sending-pulse {
+  flex: 0 0 auto; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--ols-blue); animation: swapSendPulse 1.05s ease-in-out infinite;
+}
+@keyframes swapSendPulse {
+  0%, 100% { transform: scale(0.55); opacity: 0.4; }
+  50%      { transform: scale(1);    opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .swap-sending-pulse { animation: none; opacity: 1; transform: none; }
+}
 .swap-feed {
   margin: 12px 0; padding: 12px 14px; border-radius: 12px; max-height: 260px; overflow-y: auto;
   background: #fff; border: 1.5px solid var(--line-l); color: var(--ink);

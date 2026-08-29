@@ -22,7 +22,7 @@ const SRC = process.env.KS3DT_SRC ||
   path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/content-src');
 const LEDGER_FILE = path.join(SRC, 'language-ledger.json');
 const sha1 = (s) => crypto.createHash('sha1').update(s, 'utf8').digest('hex').slice(0, 16);
-const today = () => '2026-08-25';
+const today = () => '2026-08-29';
 
 const rows = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 const ledger = JSON.parse(fs.readFileSync(LEDGER_FILE, 'utf8'));

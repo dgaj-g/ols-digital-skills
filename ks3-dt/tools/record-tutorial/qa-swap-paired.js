@@ -22,7 +22,8 @@
  *   S2  a chip DRAGGED into the editor lands on whole lines, never spliced
  *       into the middle of one — and a run that dies before the probes never
  *       tells her three true things are "NOT WORKING YET"
- *   S3  the offer card is readable, and it says the Swap is next either way
+ *   S3  the optional offer card is GONE — his call, V62/B3: the three extra
+ *       jobs at the end are enough, so mybot's verdict goes straight to the Swap
  *   S4  every rendered numbered list is left-aligned (DFM 274)
  *   S5  the tester's finished-with-their-bot line is readable
  *   S6  the builder's watch feed equals the tester's real conversation, IN
@@ -32,6 +33,20 @@
  *   S8  each report renders EXACTLY ONCE on each side, and both sides SEAL
  *   S9  nothing renders outside its own card
  *   S12 the waiting screen's long-wait hint has the button it promises
+ *   S13 the report a pupil is SHOWN is her PARTNER'S, never her own (V62/B2 —
+ *       her own REPORT came back down the channel and was stored as the
+ *       partner's, so "Their report on your bot" was her own words, and the
+ *       seal card repeated them. No assertion here had ever asked WHOSE text
+ *       it was, which is exactly how it survived a whole round of gates)
+ *   S14 the send has a visible SENDING state (V62/B1 — click went straight to
+ *       the paced queue with nothing on screen, and V61's pacing made the gap
+ *       longer, not shorter)
+ *   S15 the side show STAYS while she waits (V62/B4, DFM 275) — present on the
+ *       watch screen after the first beat and while the report is outstanding,
+ *       and never in the tester's seat, where she is working
+ *   S16 the side show's FIRST reply uses the words she typed (V62/B5 — Fred
+ *       asks her for a name and then answers the one question he asked with a
+ *       canned line, every single time, because beat starts at 0)
  *   plus: readability measured on EVERY distinct state either pupil stands on
  *
  * It writes to the dev store only (Demo-9A, two seeded demo pupils).
@@ -81,6 +96,14 @@ const EXPECTED_BEATS = [
   ['bot', 'So: The Quiet Girl and DT. Sorted.']
 ];
 
+/* S13's sentinels. The two reports must be tellable apart by TEXT alone, so
+   the assertion can name whose words are on the screen rather than counting
+   cards. Nothing else in the lesson contains either phrase. */
+const REPORT_TESTER = { worked: 'TESTERSIDE: it asked two easy questions and used both answers.',
+                        fix: 'TESTERSIDE: nothing - it worked exactly as it should.' };
+const REPORT_BUILDER = { worked: 'BUILDERSIDE: both questions were easy to answer.',
+                         fix: 'BUILDERSIDE: a full stop after the answers.' };
+
 async function shot(page, name) {
   try { await page.screenshot({ path: path.join(OUT, name + '.png'), fullPage: true }); } catch (e) {}
 }
@@ -88,6 +111,7 @@ async function shot(page, name) {
 /* ---- READABILITY, KEYED BY STATE (the second-sit fix) ------------------- */
 const stateSeen = new Set();
 const contrastHits = [], stepsHits = [], fitsHits = [];
+const sendingSeen = [];
 async function auditState(page, tag) {
   try {
     const sig = await page.evaluate(q => eval(q)(), SA.SIG);
@@ -357,7 +381,15 @@ async function runAndConverse(page, tag, replies) {
   await runAndConverse(B, 'B', ['Up', 'Maths']);
   await auditState(A, 'A:mybot-verdict');
 
-  /* ---- S3: the offer card ---------------------------------------------- */
+  /* ---- S3: THE OFFER CARD IS GONE (V62/B3, his call) --------------------
+     Until this round S3 asserted the offer card was READABLE and kept its
+     promise about the Swap. He has since ruled the card out altogether — "we
+     can completely remove the card between the activity that gets pupils to
+     create the bot and the card that explains the pairing activity… the three
+     extra jobs towards the end is more than enough". So the assertion inverts:
+     the card must NOT be there, and the verdict must lead straight into the
+     Swap. Inverting rather than deleting is deliberate — a deleted assertion
+     proves nothing, and this one now guards against the card coming back. */
   for (const [P, tag] of [[A, 'A'], [B, 'B']]) {
     await P.evaluate(() => { for (const b of document.querySelectorAll('.chunk-host button')) if (/Next step|Continue/i.test(b.textContent) && !b.disabled && b.offsetParent !== null) { b.click(); return; } });
     await sleep(1400);
@@ -365,15 +397,14 @@ async function runAndConverse(page, tag, replies) {
       const c = document.querySelector('.chunk-host .py-offer-card');
       return c ? { text: (c.innerText || '').replace(/\s+/g, ' ') } : null;
     });
-    if (!offer) { fail('S3', '[' + tag + '] the offer card never appeared'); continue; }
-    await auditState(P, tag + ':offer-card');
-    await shot(P, '03-offer-' + tag);
-    if (!/Swap/i.test(offer.text))
-      fail('S3', '[' + tag + '] the offer card never says the Chatbot Swap is next either way: ' +
+    await shot(P, '03-after-verdict-' + tag);
+    if (offer) {
+      fail('S3', '[' + tag + '] the optional offer card is still in the lesson — he removed it: ' +
         JSON.stringify(offer.text.slice(0, 140)));
-    else pass('S3', '[' + tag + '] the offer card keeps the briefing\'s promise about the Swap');
-    await P.evaluate(() => { const b = document.querySelector('.py-offer-no'); if (b) b.click(); });
-    await sleep(1300);
+      await auditState(P, tag + ':offer-card');
+      await P.evaluate(() => { const b = document.querySelector('.py-offer-no'); if (b) b.click(); });
+      await sleep(1300);
+    } else pass('S3', '[' + tag + '] no offer card — the verdict goes straight on');
   }
 
   /* ---- into the Swap ---------------------------------------------------- */
@@ -419,6 +450,56 @@ async function runAndConverse(page, tag, replies) {
       pass('S12', 'the waiting screen carries the button its hint promises');
     else log('  (S12 not applicable on this build: the hint names no button)');
   } else log('  (A did not land on the waiting card — pairing was immediate)');
+
+  /* ---- S16: THE SIDE SHOW'S FIRST REPLY USES HER WORDS (V62/B5) ---------
+     Fred's opening line asks her one question — "What should I call you? Make
+     a name up" — and then answers it with `lines[0]`, a canned sentence about
+     not knowing what to do with that, EVERY TIME. The mechanism is one
+     expression: `say(beat % 2 === 1 ? echo(v) : (next || echo(v)))` with `beat`
+     starting at 0, so the echo templates that actually carry her words fire on
+     the 2nd, 4th and 6th replies and never on the 1st. The one answer he asks
+     for is the one answer he never uses.
+     Measured HERE, on the waiting card, rather than on the watch screen: this
+     is where the side show mounts before any beat has arrived, so `beat` is
+     genuinely 0 and the first reply is a real first reply. It also keeps S16
+     independent of S15 — a build where Fred is killed by the first beat can
+     still be asked whether his first reply echoes. */
+  const NAME_SAID = 'Turnip';
+  let fredUp = false;
+  for (let i = 0; i < 24; i++) {
+    fredUp = await A.evaluate(() => !!document.querySelector('.chunk-host .sideshow .ss-say'));
+    if (fredUp) break;
+    await sleep(1000);
+  }
+  if (!fredUp) {
+    fail('S15a', 'the side show never appeared on the waiting card — a genuine wait with no side show (K36b)');
+  } else {
+    pass('S15a', 'the side show appears at a genuine wait');
+    await auditState(A, 'A:pair-wait-sideshow');
+    const opened = await A.evaluate(() => Array.from(document.querySelectorAll('.chunk-host .sideshow .ss-line'))
+      .map(n => (n.textContent || '').replace(/\s+/g, ' ').trim()));
+    const asksName = opened.some(l => /call you|your name|make a name/i.test(l));
+    await A.evaluate((w) => {
+      const inp = document.querySelector('.chunk-host .sideshow .ss-say');
+      const snd = document.querySelector('.chunk-host .sideshow .ss-send');
+      inp.value = w; inp.dispatchEvent(new Event('input', { bubbles: true }));
+      snd.click();
+    }, NAME_SAID);
+    await sleep(2600);
+    const said = await A.evaluate(() => Array.from(document.querySelectorAll('.chunk-host .sideshow .ss-line'))
+      .filter(n => !/is-mine/.test(n.className))
+      .map(n => (n.textContent || '').replace(/\s+/g, ' ').trim()));
+    const firstReply = said.length > 1 ? said[said.length - 1] : '';
+    log('[A] side show asked for a name: ' + asksName + '  first reply: ' + JSON.stringify(firstReply.slice(0, 110)));
+    await shot(A, '04b-sideshow-A');
+    if (!firstReply)
+      fail('S16', 'the side show never answered her first reply at all');
+    else if (firstReply.indexOf(NAME_SAID) === -1)
+      fail('S16', 'the side show ignores the very thing it asked her for: she typed ' +
+        JSON.stringify(NAME_SAID) + ' and the first reply back was ' + JSON.stringify(firstReply.slice(0, 130)) +
+        (asksName ? ' — and the opening line had just asked her what to call it' : ''));
+    else pass('S16', 'the side show\'s first reply uses the words she typed');
+  }
 
   await B.evaluate(() => { for (const b of document.querySelectorAll('.chunk-host button')) if (/Open the door|Open the workshop door/i.test(b.textContent) && !b.disabled) { b.click(); return; } });
   await sleep(1500);
@@ -502,6 +583,32 @@ async function runAndConverse(page, tag, replies) {
     else pass('S6b', 'the channel transcript holds every beat, so a late mount can be filled in');
   }
 
+  /* ---- S15(b): THE SIDE SHOW STAYS WHILE SHE WAITS (V62/B4, DFM 275) ----
+     Fred DOES mount on the watch screen — and `drawBeat` calls
+     `stopSide('matched')`, so the FIRST beat of her partner's conversation
+     kills him, at the exact moment her waiting begins rather than ends. His
+     ruling refines his own K36b: the side show goes when she is WORKING, or
+     when an arrival is the thing she must look at (the pairing match pop). It
+     does not go merely because a message moved. So: present on the watch screen
+     AFTER the beats have arrived, and present in the tester's seat NEVER. */
+  const sideOnWatch = await builder.evaluate(() => {
+    const box = document.querySelector('.chunk-host .sideshow');
+    return { there: !!box, leaving: !!(box && /is-leaving/.test(box.className)),
+             beats: document.querySelectorAll('.swap-beat').length };
+  });
+  log('[' + builderTag + '] side show on the watch screen after ' + sideOnWatch.beats +
+      ' beat(s): ' + (sideOnWatch.there ? (sideOnWatch.leaving ? 'LEAVING' : 'present') : 'GONE'));
+  if (sideOnWatch.beats < 1)
+    fail('S15b', 'no beats reached the watch screen, so whether the side show survives one cannot be measured');
+  else if (!sideOnWatch.there || sideOnWatch.leaving)
+    fail('S15b', 'the first beat killed the side show — she is left watching a feed tick along with ' +
+      'nothing beside her, which is the exact wait DFM 275 keeps him for');
+  else pass('S15b', 'the side show is still there after ' + sideOnWatch.beats + ' beat(s) on the watch screen');
+
+  const sideInSeat = await tester.evaluate(() => !!document.querySelector('.chunk-host .sideshow'));
+  if (sideInSeat) fail('S15c', 'the side show is in the TESTER\'s seat — that pupil is working, not waiting (DFM 275)');
+  else pass('S15c', 'no side show in the tester\'s seat');
+
   /* ---- S7: the report's second box allows a clean bill ------------------ */
   await tester.evaluate(() => { const b = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /Write the report/i.test(x.textContent) && !x.disabled); if (b) b.click(); });
   await sleep(1100);
@@ -530,6 +637,39 @@ async function runAndConverse(page, tag, replies) {
       if (s && !s.disabled) { s.click(); return true; }
       return false;
     }, [worked, fix]);
+    /* ---- S14: A VISIBLE SENDING STATE (V62/B1) -------------------------
+       His words: "there should be a pulsing message to indicate that it is
+       being sent, just to show the pupil that something is happening." The
+       send handler goes from click straight to `PairKit.blob(put)` and then
+       the paced channel queue with NOTHING on screen — and V61's pacing made
+       that gap LONGER, because the report now queues behind any beats still
+       going out. Polled fast, because the state is supposed to be transient:
+       a check that only looks once a second can miss a real one and would then
+       be reporting on its own reflexes rather than on the build (DFM 146a). */
+    if (ok) {
+      let sawSending = null;
+      for (let i = 0; i < 60; i++) {
+        const st = await P.evaluate(() => {
+          const vis = (e) => e && e.offsetParent !== null;
+          const note = document.querySelector('.chunk-host .swap-sending');
+          const btn = document.querySelector('.chunk-host .swap-send-report');
+          if (vis(note)) return { how: 'a sending message beside the button', text: (note.textContent || '').replace(/\s+/g, ' ').trim() };
+          if (btn && (btn.getAttribute('aria-busy') === 'true' || /is-sending/.test(btn.className)))
+            return { how: 'the button itself', text: (btn.textContent || '').replace(/\s+/g, ' ').trim() };
+          return null;
+        });
+        if (st) { sawSending = st; break; }
+        await sleep(50);
+      }
+      if (sawSending) {
+        pass('S14', '[' + tag + '] the send shows it is sending — ' + sawSending.how + ': ' +
+          JSON.stringify(String(sawSending.text).slice(0, 80)));
+        sendingSeen.push(tag);
+      } else {
+        fail('S14', '[' + tag + '] nothing on screen said the report was being sent — the click ' +
+          'goes straight into the paced queue and the pupil is given no sign anything is happening');
+      }
+    }
     if (!ok) {
       /* one retry, and only one: a form that is not there after two honest
          attempts is a finding, not a flake */
@@ -549,7 +689,27 @@ async function runAndConverse(page, tag, replies) {
     log('[' + tag + '] report ' + (ok ? 'sent' : 'COULD NOT BE SENT'));
     return ok;
   }
-  await sendReport(tester, testerTag, 'It asked two easy questions and used both answers.', 'Nothing — it worked exactly as it should.');
+  await sendReport(tester, testerTag, REPORT_TESTER.worked, REPORT_TESTER.fix);
+
+  /* ---- S13(c): AND NOTHING ARRIVES BEFORE IT IS SENT (V62/B2, at its root) -
+     The earliest moment the fault is visible, and the one that matters most.
+     The tester has just filed her report; her partner has not yet taken the
+     tester's seat, let alone written one. So there is NOTHING for her to be
+     shown, and any report card on this screen right now is her own coming back
+     down the channel. This is also the seal's poisoning caught at source:
+     `seal()` re-fetches the real report only `if (!partnerReport)`, so once
+     this wrong value is set the honest "their report did not arrive" line can
+     never be reached either. (The seal check further down can pass on a broken
+     build by luck — the partner's genuine report overwrites the wrong value if
+     it happens to land in time. Luck is not a gate.) */
+  await sleep(4000);
+  const tooSoon = await tester.evaluate(() => {
+    const box = document.querySelector('.chunk-host .swap-myreport');
+    return box ? ((box.querySelector('.swap-report-text') || {}).textContent || '').replace(/\s+/g, ' ').trim() : null;
+  });
+  if (tooSoon === null) pass('S13c', '[' + testerTag + '] no report card before the partner has written one');
+  else fail('S13c', '[' + testerTag + '] a report card appeared before the partner had written anything — ' +
+    'it is her own, echoed back off the channel: ' + JSON.stringify(String(tooSoon).slice(0, 120)));
   /* THE BUILDER READS HER REPORT AND TAKES THE TESTER'S SEAT — and the press has
      to wait out the platform's OWN one-press guard. `App.armButton` ignores a
      click in the first 350 ms after a control mounts (DFM 104, so a pupil cannot
@@ -579,7 +739,7 @@ async function runAndConverse(page, tag, replies) {
   await sleep(1500);
   await testPartnerBot(builder, builderTag, roleA === 'tester' ? B_ANSWERS : A_ANSWERS);
   await auditState(builder, builderTag + ':test-done');
-  await sendReport(builder, builderTag, 'Both questions were easy to answer.', 'A full stop after the answers.');
+  await sendReport(builder, builderTag, REPORT_BUILDER.worked, REPORT_BUILDER.fix);
 
   /* ---- S8: EXACTLY ONCE, ON EACH SIDE ---------------------------------
      Measured on V59: report cards multiplied 2→13 and 1→12 in 24 seconds, one
@@ -600,6 +760,39 @@ async function runAndConverse(page, tag, replies) {
       ') — one new card per poll tick is his infinite loop');
   else pass('S8', 'each report rendered exactly once on each side (A ' + maxA + ', B ' + maxB + ')');
 
+  /* ---- S13: THE REPORT SHE IS SHOWN IS HER PARTNER'S (V62/B2) -----------
+     He sat the Swap and found his own report under "Their report on your bot".
+     The fault is one line of ORDERING in the watch handler: the REPORT branch
+     returns before the "skip my own" sender filter ever runs, so her own report
+     comes back down the channel and is stored as `partnerReport`. It renders
+     under the partner's heading, it is announced as "Their report has arrived",
+     and it poisons the seal too, because `seal()` only fetches the real one
+     `if (!partnerReport)` — which is already wrongly set.
+     NOTHING IN THIS HARNESS HAD EVER ASKED WHOSE TEXT IT WAS. S8 counted the
+     cards and found exactly one on each side; one card holding the wrong
+     pupil's words passes a count. That is the hole this closes. */
+  for (const [P, tag] of [[tester, testerTag], [builder, builderTag]]) {
+    /* whose words they are is a one-word question, because the two reports were
+       written to be tellable apart by text alone */
+    const myTag = (tag === testerTag) ? 'TESTERSIDE' : 'BUILDERSIDE';
+    const theirTag = (tag === testerTag) ? 'BUILDERSIDE' : 'TESTERSIDE';
+    const shown = await P.evaluate(() => {
+      const box = document.querySelector('.chunk-host .swap-myreport');
+      if (!box) return null;
+      return { head: ((box.querySelector('h3') || {}).textContent || '').trim(),
+               text: ((box.querySelector('.swap-report-text') || {}).textContent || '').replace(/\s+/g, ' ').trim() };
+    });
+    if (!shown) { log('  (S13 [' + tag + '] no report card on screen at this point)'); continue; }
+    log('[' + tag + '] shown under ' + JSON.stringify(shown.head) + ': ' + JSON.stringify(shown.text.slice(0, 120)));
+    if (shown.text.indexOf(myTag) !== -1)
+      fail('S13', '[' + tag + '] is shown HER OWN report under ' + JSON.stringify(shown.head) +
+        ' — the words are the ones this account just sent: ' + JSON.stringify(shown.text.slice(0, 120)));
+    else if (shown.text.indexOf(theirTag) === -1)
+      fail('S13', '[' + tag + '] the report on screen is neither pupil\'s known text: ' +
+        JSON.stringify(shown.text.slice(0, 140)));
+    else pass('S13', '[' + tag + '] is shown her PARTNER\'s report, as the heading promises');
+  }
+
   /* ---- S8(b): the seal, on BOTH screens -------------------------------- */
   for (const [P, tag] of [[A, 'A'], [B, 'B']]) {
     for (let i = 0; i < 20; i++) {
@@ -607,18 +800,63 @@ async function runAndConverse(page, tag, replies) {
       if (sealed) break;
       await sleep(GUARD_MS);
       await P.evaluate(() => {
-        const b = Array.from(document.querySelectorAll('.chunk-host button, .swap-go'))
-          .find(x => x.offsetParent !== null && !x.disabled && !/Running out of time|leave/i.test(x.textContent));
+        /* THE SIDE SHOW IS NOT A CONTROL (V62/B4). Fred now stays on the watch
+           screen — DFM 275 — and his "Say it" button sits ABOVE the report's
+           Continue in the DOM. A loop that presses the first plausible button
+           therefore pressed FRED, twenty times, and reported that she "never
+           reached the seal card" when the way on had been sitting under him the
+           whole time. The way out is named rather than guessed: take
+           `.swap-go` when there is one, and never touch anything inside the
+           side show. */
+        const go = Array.from(document.querySelectorAll('.chunk-host .swap-go'))
+          .find(x => x.offsetParent !== null && !x.disabled);
+        if (go) { go.click(); return; }
+        const b = Array.from(document.querySelectorAll('.chunk-host button'))
+          .find(x => x.offsetParent !== null && !x.disabled && !x.closest('.sideshow') &&
+                     !/Running out of time|leave/i.test(x.textContent));
         if (b) b.click();
       });
       await sleep(1400);
     }
     const sealed = await P.evaluate(() => !!document.querySelector('.swap-seal'));
-    if (!sealed) fail('S8c', '[' + tag + '] never reached the seal card');
+    if (!sealed) {
+      /* A GATE THAT SAYS "NEVER REACHED" AND NOTHING ELSE IS HALF A GATE. What
+         is actually on her screen is the whole difference between a stuck
+         promise, a missing button and a wrong card — so it is read and printed
+         rather than guessed at from the outside. */
+      const stuck = await P.evaluate(() => ({
+        cards: Array.from(document.querySelectorAll('.chunk-host .card')).map(c => c.className),
+        spinner: ((document.querySelector('.chunk-host .panel-loading') || {}).textContent || '').replace(/\s+/g, ' ').trim(),
+        buttons: Array.from(document.querySelectorAll('.chunk-host button'))
+          .filter(b => b.offsetParent !== null)
+          .map(b => (b.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 40) + (b.disabled ? ' [disabled]' : '')),
+        html: (document.querySelector('.chunk-host') || {}).innerHTML ?
+          document.querySelector('.chunk-host').innerHTML.replace(/\s+/g, ' ').slice(0, 300) : ''
+      }));
+      await shot(P, '09-STUCK-' + tag);
+      log('  [' + tag + '] stuck on: cards=' + JSON.stringify(stuck.cards) +
+          ' spinner=' + JSON.stringify(stuck.spinner) + ' buttons=' + JSON.stringify(stuck.buttons));
+      log('  [' + tag + '] html: ' + stuck.html);
+      fail('S8c', '[' + tag + '] never reached the seal card — screen shows ' +
+        (stuck.spinner ? 'the closing spinner (' + JSON.stringify(stuck.spinner) + '), so seal() started and never finished'
+                       : JSON.stringify(stuck.cards) + ' with buttons ' + JSON.stringify(stuck.buttons)));
+    }
     else {
       pass('S8c', '[' + tag + '] reached the seal');
       await auditState(P, tag + ':seal');
       await shot(P, '09-seal-' + tag);
+      /* S13(b): and the seal repeats the SAME report, so a wrong one is wrong
+         twice. `seal()` re-fetches the real report only `if (!partnerReport)`,
+         which B2 had already filled with her own. */
+      const sealTxt = await P.evaluate(() => ((document.querySelector('.swap-seal .swap-report-text') || {}).textContent || '').replace(/\s+/g, ' ').trim());
+      if (!sealTxt) log('  (S13b [' + tag + '] the seal shows no report — the no-report line, not a wrong one)');
+      else {
+        const mineTag = (tag === testerTag) ? 'TESTERSIDE' : 'BUILDERSIDE';
+        if (sealTxt.indexOf(mineTag) !== -1)
+          fail('S13b', '[' + tag + '] the SEAL card repeats her own report back to her as the partner\'s: ' +
+            JSON.stringify(sealTxt.slice(0, 120)));
+        else pass('S13b', '[' + tag + '] the seal card carries the partner\'s report');
+      }
     }
   }
 

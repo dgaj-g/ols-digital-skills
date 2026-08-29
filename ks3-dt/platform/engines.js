@@ -1644,9 +1644,15 @@
          her sentence dropped into it, chosen in turn — which is exactly what a
          scripted bot is, and exactly what the lesson has just taught her a
          chatbot is. Nothing leaves this machine. */
-      function echo(said) {
-        var t = (cfg.echo || [])[beat % Math.max(1, (cfg.echo || []).length)] || '{you}';
-        return String(t).replace(/\{you\}/g, said);
+      var herName = '';
+      function fill(t, said) {
+        /* a template never survives to the screen: an unfilled {you} or {name}
+           is five characters of nonsense in front of a twelve-year-old */
+        return String(t || '').replace(/\{you\}/g, said).replace(/\{name\}/g, herName || said);
+      }
+      function pick(list, at) {
+        var a = list || [];
+        return a.length ? a[at % a.length] : '';
       }
       say(cfg.open || '', 'idle');
       if (cfg.mode !== 'chat') {
@@ -1654,21 +1660,55 @@
         var every = Number(cfg.everyMs || 7000);
         timer = setInterval(function () {
           if (gone || beat >= lines.length) { clearInterval(timer); return; }
-          say(lines[beat], 'idle');
+          /* THROUGH `fill` LIKE EVERY OTHER LINE. The monologue path used to
+             say its line raw, so a `{you}` or `{name}` authored into a
+             monologue would have rendered as those five or six characters on a
+             pupil's screen. Nothing authors one today — Margo's lines are
+             plain — and that is exactly the kind of thing that stays true until
+             the day somebody adds one. There is no name in a monologue (she is
+             never asked for one), so the placeholder resolves to nothing rather
+             than to a stray word. */
+          say(fill(lines[beat], ''), 'idle');
           beat++;
         }, every);
       } else {
         var inp = box.querySelector('.ss-say');
         var snd = box.querySelector('.ss-send');
+        /* ---- V62/B5: THE FIRST REPLY ANSWERS THE QUESTION HE ASKED --------
+           The opening line asks her one thing — "What should I call you?" —
+           and the shipped rhythm was
+             say(beat % 2 === 1 ? echo(v) : (next || echo(v)))
+           with `beat` starting at 0. So her FIRST reply, the made-up name he
+           has just asked for, took `lines[0]` — a canned sentence about not
+           knowing what to do with that — EVERY SINGLE TIME, and the templates
+           that actually carry her words fired on the 2nd, 4th and 6th. The one
+           answer he asks for was the one answer he never used.
+           Two counters rather than one parity test, which also fixes something
+           nobody had filed: `lines[beat % lines.length]` on even beats only
+           ever reached lines 0, 2 and 4, so half of the authored comedy — three
+           of Fred's six lines — could not be reached at all. Each list now
+           advances on its own, in the order it was written.
+           The name is kept, so `{name}` can be spent once later in the script:
+           a bot that asks your name and then never uses it is the fault he
+           filed, and using it twice would be creepier than not asking. */
+        var said = 0, lineAt = 0, echoAt = 0;
         var send = function () {
           var v = String(inp.value || '').trim();
           if (!v) { inp.classList.add('wants'); inp.focus(); return; }
           inp.value = '';
           log.insertAdjacentHTML('beforeend', '<p class="ss-line is-mine">' + esc(v) + '</p>');
           log.scrollTop = log.scrollHeight;
-          var next = lines.length ? lines[beat % lines.length] : '';
-          say(beat % 2 === 1 ? echo(v) : (next || echo(v)), 'idle');
-          beat++;
+          var reply;
+          if (said === 0) {
+            herName = v;
+            reply = fill(cfg.nameEcho || pick(cfg.echo, 0) || '{you}', v);
+          } else if (said % 2 === 1) {
+            reply = fill(pick(lines, lineAt++) || pick(cfg.echo, echoAt++) || '{you}', v);
+          } else {
+            reply = fill(pick(cfg.echo, echoAt++) || '{you}', v);
+          }
+          say(reply, 'idle');
+          said++; beat = said;
         };
         snd.addEventListener('click', send);
         inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); send(); } });
@@ -6062,6 +6102,9 @@
       }, cfg.beginLabel || 'Open the door', gate);
 
       function stopSide(why) { if (side) { side.leave(why || 'matched'); side = null; } }
+      /* an immediate removal with no exit line, for when the whole card is
+         going anyway (DFM 275) */
+      function dropSide() { if (side) { side.stop(); side = null; } }
       function clearAll() {
         if (pollT) { clearTimeout(pollT); pollT = null; }
         if (liveRun) { try { liveRun.abandon(); } catch (e) { /* settled */ } liveRun = null; }
@@ -6161,6 +6204,12 @@
       /* ---- phase 3: the tester's seat ----------------------------------- */
       function testerSeat(builderMi, soloCode) {
         clearAll();
+        /* DFM 275's other half: she is about to WORK, so the side show ends
+           here. `stop()` rather than `leave()` — the card is torn down in the
+           next line, so an exit line would be written into a box nobody ever
+           sees, and a handle left pointing at a removed node is how a side show
+           fails to mount the next time one is wanted. */
+        dropSide();
         host.innerHTML = '';
         var solo = soloCode != null;
         var code = solo ? soloCode : null;
@@ -6293,10 +6342,34 @@
           '<input id="swap-fix" class="swap-field" type="text" maxlength="100" autocomplete="off">' +
           '<p class="swap-report-note">' + fmtBold(cfg.reportNote || '') + '</p>' +
           '<button class="primary-btn swap-send-report" type="button">' + esc(cfg.sendReportLabel || '') + '</button>' +
+          /* ---- V62/B1: SOMETHING HAPPENS WHEN SHE PRESSES SEND -----------
+             His words: "there should be a pulsing message to indicate that it
+             is being sent, just to show the pupil that something is
+             happening." Until now the press went straight into
+             `PairKit.blob(put)` and then the paced channel queue with nothing
+             on screen at all — and V61 made that gap LONGER, not shorter,
+             because the report now waits its turn behind any beats still going
+             out. A pupil who sees nothing move presses again.
+             It is `aria-live="polite"`, so the sentence is spoken as well as
+             pulsed; the pulse is decoration and is hidden from the reader that
+             cannot see it. */
+          '<p class="swap-sending" hidden aria-live="polite">' +
+            '<span class="swap-sending-pulse" aria-hidden="true"></span>' +
+            '<span class="swap-sending-text"></span></p>' +
           '<p class="swap-report-say" hidden></p>';
         var w = box.querySelector('#swap-worked'), f = box.querySelector('#swap-fix');
         var say = box.querySelector('.swap-report-say');
-        App.armButton(box.querySelector('.swap-send-report'), function () {
+        var sending = box.querySelector('.swap-sending');
+        var sendingText = box.querySelector('.swap-sending-text');
+        var sendBtn = box.querySelector('.swap-send-report');
+        function showSending(on) {
+          sending.hidden = !on;
+          if (on) sendingText.textContent = cfg.sendingSay || '';
+          sendBtn.disabled = !!on;
+          if (on) sendBtn.setAttribute('aria-busy', 'true');
+          else sendBtn.removeAttribute('aria-busy');
+        }
+        App.armButton(sendBtn, function () {
           /* HONESTY FLOORS ONLY (DFM 193a). The machine never judges a pupil's
              own words for vocabulary or quality — it asks only that she wrote
              something. Judging what she wrote is the teacher's job at the desk. */
@@ -6311,7 +6384,9 @@
                      (cfg.fixTag || 'fix') + ': ' + b.slice(0, 100);
           reportSent = true;
           phases = Math.max(phases, 3);
+          say.hidden = true;
           if (solo || !PairKit.st) { afterReport(); return; }
+          showSending(true);
           /* the report travels TWICE, and each trip has its own reason: down the
              MONITORED channel so it arrives with the flash and the teacher can
              read it like every other thing one pupil sends another, and into the
@@ -6323,7 +6398,20 @@
                were — leaving the partner watching a screen that would never
                advance. Same queue, same order, nothing lost. */
             return PairKit.relay(ctx, 'msg', (cfg.reportTag || 'REPORT') + ' ' + text);
-          }).then(function () { afterReport(); });
+          }).then(function () { showSending(false); afterReport(); })
+            /* AND AN HONEST LINE IF IT DOES NOT GO. Before this there was no
+               catch at all: a send that failed left her looking at a button she
+               had already pressed, for ever, with no way to tell whether it had
+               worked. She is told plainly, and the button comes back so she can
+               press it again — the report she wrote is still in the two boxes,
+               untouched (DFM 138.7: never an instruction she cannot obey where
+               she sits, and never a dead end). */
+            .catch(function () {
+              showSending(false);
+              say.hidden = false;
+              say.textContent = cfg.sendFailSay || '';
+              sendBtn.focus();
+            });
         });
       }
       function afterReport() {
@@ -6334,7 +6422,10 @@
       }
 
       /* ---- phase 3b: the builder watches her own bot being used --------- */
-      function builderSeat(testerMi) {
+      /* `last` says this watch is the one AFTER she has already filed her own
+         report, so the Continue under the partner's report seals instead of
+         asking `rounds()` where to go next. See the note on `watchWait`. */
+      function builderSeat(testerMi, last) {
         clearAll();
         host.innerHTML = '';
         var c = el('<div class="card swap-card swap-watch">' +
@@ -6375,14 +6466,40 @@
           });
           feed.insertBefore(node, before);
           feed.scrollTop = feed.scrollHeight;
-          stopSide('matched');
+          /* ---- V62/B4, DFM 275: THE BEAT DOES NOT KILL THE SIDE SHOW ------
+             This line used to call `stopSide('matched')`, so the FIRST beat of
+             her partner's conversation ended the side show — at the exact
+             moment her waiting began rather than ended. His K36b sentence
+             ("vanishes the instant the match/message arrives") was written
+             about the PAIRING MATCH, where the flash is the event and a
+             comedian standing in front of it is in the way. Watching a feed
+             tick along is waiting, not working. Refined by his ruling of
+             29 Aug: the side show goes when she is WORKING (the tester's seat,
+             which has never had one) or when an arrival is the thing she must
+             look at (the match pop, where `onWaitOver` still ends it) — never
+             merely because a message moved. */
           PairKit.arrive(feed, { announce: cfg.beatArrivedSay || '' });
         }
         PairKit.onEvent(function (e) {
           if (String(e[2]) !== 'msg') return;
+          /* ---- V62/B2: WHOSE MESSAGE IS THIS? ASKED FIRST, ALWAYS ---------
+             He sat the Swap and found his OWN report under "Their report on
+             your bot". The whole fault was the order of these two lines: the
+             REPORT branch returned before the skip-my-own filter ever ran, so
+             her own report came back down the monitored channel and was stored
+             as `partnerReport`. It then rendered under the partner's heading,
+             was announced as "Their report has arrived", and poisoned the seal
+             too — `seal()` re-fetches the real one only `if (!partnerReport)`,
+             so the honest "their report did not arrive" line became
+             unreachable as well.
+             The filter is now the FIRST question asked of every message,
+             because "is this mine?" is true of a report exactly as it is true
+             of a beat, and a branch that answers before it has asked is a
+             branch that will get it wrong again. Gated by S13/S13c in
+             qa-swap-paired.js, which had never asked whose text it was. */
+          if (Number(e[1]) === Number(PairKit.st.mi)) return;
           var t = String(e[3] || '');
           if (t.indexOf(String(cfg.reportTag || 'REPORT')) === 0) { partnerReport = t; return; }
-          if (Number(e[1]) === Number(PairKit.st.mi)) return;
           drawBeat(Number(e[0]), t);
         });
         /* ---- S8: EXACTLY ONCE, AND THEN STOP ASKING ----------------------
@@ -6399,13 +6516,35 @@
           if (reportShown || !reportArrived()) return;
           reportShown = true;
           PairKit.onPoll(null);
-          showMyReport(c, function () { roundIdx++; rounds(); });
+          showMyReport(c, function () {
+            if (last) { seal(); return; }
+            roundIdx++; rounds();
+          });
         });
       }
+      /* ---- THE CONTINUE AFTER HER PARTNER'S REPORT SEALS, DIRECTLY -------
+         The pupil who takes the TESTER'S seat first files her report and is
+         sent here to watch her own bot being used — but `afterReport` reaches
+         this by SHORT-CIRCUIT, so `roundIdx` is still 0. Without `last`, her
+         Continue ran `roundIdx++; rounds()`, which resolved to round 1, where
+         she is the BUILDER again, and re-mounted the watch screen. The poll
+         there finds `partnerReport` already set, so it immediately draws the
+         SAME report card a second time; her second Continue takes `roundIdx`
+         past the end of the plan and seals. She gets there, by a route that
+         shows her one card twice and one press that appears to do nothing.
+         WHAT I FIRST WROTE HERE WAS WRONG, and it is worth leaving the
+         correction visible. I called this a dead end the B2 fix had uncovered,
+         and credited the harness with catching it — when what the harness had
+         actually caught was ITSELF, pressing Fred's "Say it" button twenty
+         times because DFM 275 had just put him on this screen above the
+         Continue. **A control settled it: with this flag forced off, the paired
+         sit still passes and both pupils still seal.** So this is a tidy-up of a
+         redundant screen, not the repair of a fault, and it is not credited as
+         one (DFM 196 — a fix nothing failed without is not a fix). */
       function watchWait() {
         var rs = plan();
         var r = rs[1];
-        builderSeat(Number(r.tester));
+        builderSeat(Number(r.tester), true);
       }
       function reportArrived() { return !!partnerReport; }
 
@@ -8396,7 +8535,18 @@
           '<p>' + esc((t.stretch && t.stretch.text) || '') + '</p>' +
           (stretchDone ? '<p class="std-note">&#10003; Noted: &ldquo;' + esc(stretchNote) + '&rdquo;</p>' :
             '<textarea class="std-stretch-note" maxlength="140" placeholder="' + esc((t.stretch && t.stretch.placeholder) || 'What did you add, and what does it change?') + '"></textarea>' +
-            '<p class="std-stretch-nudge"></p>' +
+            /* V62 PART A: FOUR VISIBLE EMPTY BOXES (DFM 42/184). These three
+               classes reserve a line of height so the card does not jump when a
+               nudge appears — which is right, but it left 500-600px strips of
+               nothing on screen with no way for anything to know they were
+               deliberate. They are what they always were: STATUS LINES. Saying
+               so out loud makes the reserved space declared rather than
+               mysterious, and it means the nudge is now ANNOUNCED when it
+               arrives instead of appearing in silence to a pupil using a
+               reader. The empty-container law exempts a real live region for
+               exactly this reason; it is a true label here, not a way round
+               the gate. */
+            '<p class="std-stretch-nudge" role="status" aria-live="polite"></p>' +
             '<button class="confirm-step std-stretch-confirm" type="button"><span class="confirm-box"></span><span>It works &mdash; I tested it</span></button>') +
           '</div>' +
 
@@ -8557,7 +8707,7 @@
              two places is a contract (DFM 157a). The box was the one lying. */
           '<input id="std-gh" class="std-sig-input" maxlength="90" autocomplete="off" placeholder="' + esc(m.howPlaceholder || 'e.g. Arrow keys to move. Catch sushi, dodge wasabi!') + '" value="' + esc(gh) + '">' +
           '<div class="gal-marquee-card preview"><span class="gal-mq-studio"></span><b class="gal-mq-title"></b><p class="gal-mq-how"></p></div>' +
-          '<p class="std-marquee-status"></p>' +
+          '<p class="std-marquee-status" role="status" aria-live="polite"></p>' +
           '<p class="case-locked-note"></p>' +
           '<button class="primary-btn std-doors locked" type="button" aria-disabled="true">' + esc(m.confirmLabel || 'OPEN THE DOORS') + '</button>' +
           '<button class="ghost-btn std-back" type="button">&larr; Back to the desk</button></div>');
@@ -8709,7 +8859,7 @@
             '<div class="card gal-v2-card"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
             '<p>' + esc((cfg.v2 && cfg.v2.promptNoReviews) || 'Every studio plans a version 2. What is the ONE thing yours would change, and why?') + '</p>' +
             '<textarea class="gal-v2-input" maxlength="200" placeholder="' + esc((cfg.v2 && cfg.v2.placeholder) || 'In version 2 I would... because...') + '">' + esc(v2) + '</textarea>' +
-            '<p class="gal-v2-nudge"></p>' +
+            '<p class="gal-v2-nudge" role="status" aria-live="polite"></p>' +
             '<button class="primary-btn gal-v2-save" type="button">File the note &amp; wrap up</button></div></div>');
           host.appendChild(c);
           ctx.call('galleryFeed', { lessonId: ctx.lesson.id }).then(function (r) {
@@ -8872,7 +9022,7 @@
         zone.innerHTML = '<div class="card gal-v2-card"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
           '<p>' + esc(prompt) + '</p>' +
           '<textarea class="gal-v2-input" maxlength="200" placeholder="' + esc((cfg.v2 && cfg.v2.placeholder) || 'In version 2 I would... because a review said...') + '">' + esc(v2) + '</textarea>' +
-          '<p class="gal-v2-nudge"></p>' +
+          '<p class="gal-v2-nudge" role="status" aria-live="polite"></p>' +
           '<button class="primary-btn gal-v2-save" type="button">File the V2 note</button></div>';
         zone.querySelector('.gal-v2-save').onclick = function () {
           var ta = zone.querySelector('.gal-v2-input');
@@ -8901,7 +9051,7 @@
             '<textarea class="gal-stem-input" data-stem="like" maxlength="200" placeholder="' + esc(cfg.likePlaceholder || 'name the exact bit you liked, and why it works') + '"></textarea>' +
             '<label class="std-sig-label">' + esc(stemWonder) + '</label>' +
             '<textarea class="gal-stem-input" data-stem="wonder" maxlength="200" placeholder="' + esc(cfg.wonderPlaceholder || 'a question or idea that could make version 2 even better') + '"></textarea>' +
-            '<p class="gal-v2-nudge"></p>' +
+            '<p class="gal-v2-nudge" role="status" aria-live="polite"></p>' +
             '<button class="primary-btn gal-file-btn" type="button">File the review &middot; signed</button>') +
           '<button class="ghost-btn std-back" type="button">&larr; Back to the floor</button></div>');
         host.appendChild(c);
