@@ -173,7 +173,21 @@ const EXPECT = {
      the value a fault produces is a fault with a certificate — which is exactly
      what DFM 199 asks to be guarded against, in the other direction.
      MEASURED TWICE EACH, IDENTICAL BOTH TIMES, before being written down. */
-  'j2-3': { xp: 68, chunks: 11, presses: 47, marks: 13, badges: 3 },
+  /* ⭐ RE-PINNED AGAIN 29 Aug 2026 (V62/B3), and only ONE number moved: presses
+     47 -> 41. He removed the optional offer card between the bot she builds and
+     the Swap — "we can completely remove the card… the three extra jobs towards
+     the end is more than enough" — so `mybot › builds[1]` and its four offer
+     strings are gone, and with them the offer screen, its decline button and the
+     presses it took to get past.
+     WHAT DID NOT MOVE IS THE POINT. `chunks` stays at ELEVEN, because the offer
+     was a CARD inside the mybot chunk and never a chunk of its own — the brief
+     expected a screen to disappear and one did, but not the number that counts
+     chunks, and pinning the expectation rather than the measurement would have
+     been the fault DFM 199 warns about. `xp` stays at 68 because the optional
+     build paid nothing, which is exactly why removing it was safe; marks stay at
+     13 and badges at 3.
+     MEASURED TWICE, IDENTICAL BOTH TIMES, before being written down. */
+  'j2-3': { xp: 68, chunks: 11, presses: 41, marks: 13, badges: 3 },
   'j3-3': { xp: 65, chunks: 13, presses: 48, marks: 11, badges: 3 },
   /* J3 Lesson 2, measured 19 Aug 2026, IDENTICAL on a second run — every number
      including XP, because this lesson has no shuffled surface: four builds, each

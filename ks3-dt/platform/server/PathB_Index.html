@@ -2211,19 +2211,52 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .rally-timer-fill { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #FFD84D, #7DF08A); }
 .rally-timer-say { margin: 0 0 12px; color: #C7D6F2; font-size: 0.92rem; font-weight: 600; min-height: 1.3em; }
 .rally-timer-btn { min-width: 220px; }
-.rally-round.is-locked-go { opacity: 0.55; }
+
+/* ===== V62 PART A \2014  HIS J1 FINDINGS, AND HIS WORD WAS "FIX THEM ALL" =======
+   Keying readability by SCREEN STATE turned the audit on hundreds of screens
+   nothing had ever measured, and it found 25 real faults on three lessons he
+   signed off weeks ago. They were printed and waived under DFM 221/273a; that
+   waiver is lifted for these findings, by his instruction. The machinery stays
+   \2014  it is what catches the next batch.
+
+   AND THEY ARE MOSTLY ONE FAULT, WRITTEN THREE TIMES: a locked container that
+   fades ITSELF, words included. `opacity` on a wrapper is the cheapest way to
+   say "not yet" and the most expensive thing you can do to a sentence, because
+   it drags every colour inside it toward the plate at once \2014  and the sentence
+   worst hit is always the one EXPLAINING the refusal, which is the sentence
+   she most needs. On J1 L3 "Run the timer first" measured 1.4:1, the least
+   readable thing on the screen. On J1 L5 "These four checks wake up the moment
+   you tick\2026 " measured 1.9:1, and the QA checklist's own step numbers 1.05:1.
+   THE LAW, applied at each root below: a locked panel says it is locked with
+   its OWN plate, border and badge, and every word inside it stays at full
+   strength. Nothing here fades text.
+   ========================================================================== */
+/* WAS `opacity: 0.55` on the whole panel. It took FOUR sentences below the
+   floor in one line \2014  the round label to 2.51:1, the +10/-10 steps to 1.63:1,
+   and the locked badge that explains the refusal to 1.4:1. The panel now reads
+   as asleep by its own colours: a darker plate, a muted border, flatter step
+   buttons. Every word in it is back at full strength (label 7.66:1, steps
+   14.85:1, badge 7.66:1). */
+.rally-round.is-locked-go { background: #060F24; border-color: #16274A; box-shadow: none; }
+.rally-round.is-locked-go .rally-step { border-color: #22345C; background: #0E1B3A; }
 .rally-locked-tag {
   position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
-  background: #16274A; color: #8FA5CE; border: 1px solid #2A4373;
+  /* the badge is the sentence that explains the refusal, so it is the LAST
+     thing that should be hard to read \2014  lifted 5.93:1 -> 7.66:1 */
+  background: #16274A; color: #A8BCDD; border: 1px solid #2A4373;
   font-size: 0.6rem; font-weight: 800; letter-spacing: 0.06em;
   border-radius: 999px; padding: 2px 8px; white-space: nowrap; display: none;
 }
 .rally-round.is-locked-go .rally-locked-tag { display: inline-block; }
 .rally-console.is-locked .rally-locked-tag { display: none; }
+/* THESE TWO SIT ON THE WHITE CARD, not on the dark console beside them, and
+   they had been given the console's colours: pale blue on white at 1.47:1, and
+   her own total in bright #FFD84D gold on white at 1.38:1. The same
+   one-class-two-worlds trap the QA tag fell into. Card colours for a card. */
 .rally-total-row {
-  margin: 12px 0 0; text-align: center; color: #C7D6F2; font-weight: 700; font-size: 1rem;
+  margin: 12px 0 0; text-align: center; color: var(--ink); font-weight: 700; font-size: 1rem;
 }
-.rally-total { color: #FFD84D; font-size: 1.5rem; font-weight: 800; margin-left: 6px; }
+.rally-total { color: var(--gold-deep); font-size: 1.5rem; font-weight: 800; margin-left: 6px; }
 @media (prefers-reduced-motion: reduce) {
   .rally-timer-fill { transition: none !important; }
 }
@@ -2388,7 +2421,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .case-stamp { display: inline-block; font-family: var(--font-display); font-weight: 800;
   letter-spacing: 0.14em; border: 3px solid; border-radius: 6px; padding: 2px 10px;
   transform: rotate(-8deg); font-size: 0.8rem; }
-.case-stamp.gold { color: #A8830F; border-color: #A8830F; background: rgba(228,184,36,0.12); }
+/* J1 L4: the gold CASE CLOSED / JOB DONE stamps, 2.9:1 on the case board's
+   pale green plate. #A8830F is the value `--gold-deep` used to hold before it
+   was deepened this round \2014  a literal left behind by the token that moved. */
+.case-stamp.gold { color: var(--gold-deep); border-color: var(--gold-deep); background: rgba(228,184,36,0.12); }
 .case-stamp.silver { color: #5E6B80; border-color: #8A96A8; background: rgba(138,150,168,0.14); }
 .case-stamp.mini { align-self: flex-end; font-size: 0.66rem; padding: 1px 7px; }
 .case-stamp.big { font-size: clamp(1.4rem, 4vw, 2rem); padding: 8px 22px; border-width: 5px;
@@ -2474,6 +2510,13 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .case-locked-note { margin: 8px 0 6px; color: #8C6D1F; font-size: 0.92rem; font-weight: 600;
   border-left: 3px solid var(--gold); padding-left: 10px; line-height: 1.45; }
 .case-locked-note[hidden] { display: none; }
+/* ONE CLASS, TWO WORLDS \2014  the third time this exact trap has been found, and
+   the same answer as `.std-qadesk-head .std-qa-tag` got earlier. `#8C6D1F` is
+   a deep gold made for a LIGHT card; the studio's build phase renders this
+   note on `.std-desk`, the cyanotype blueprint panel, where it measured
+   1.9:1 \2014  a refusal sentence again. On the dark desk it takes the dark
+   world's gold (9.39:1). */
+.std-desk .case-locked-note { color: var(--gold); border-left-color: var(--gold); }
 .case-locked-note.pulse { animation: lockedPulse 0.7s ease 2; }
 @keyframes lockedPulse {
   0%, 100% { transform: none; color: #8C6D1F; }
@@ -2594,7 +2637,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .std-qa-tag.fail { color: #8C2F1F; background: rgba(197,90,60,0.14); }
 
 .std-qadesk { border: 1px dashed rgba(120,170,255,0.45); border-radius: 12px; padding: 14px; margin-bottom: 18px; }
-.std-qadesk.locked { opacity: 0.55; }
+/* WAS `opacity: 0.55`, which faded the SEALED ribbon to 2.4:1. Locked now
+   reads as a fainter dashed frame over a darker well \2014  the frame is the
+   signal, the words are not. */
+.std-qadesk.locked { border-color: rgba(120,170,255,0.22); background: rgba(0,0,0,0.20); }
 /* the "when do I use this?" line under each studio-desk zone heading (DFM 212).
    On the light kit/blueprint cards it takes the card's ink; inside the dark QA
    zone it takes the dark zone's, the same one-class-two-worlds trap the QA tag
@@ -2608,7 +2654,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
    straddling two worlds; here it takes the dark world's colours. */
 .std-qadesk-head .std-qa-tag { color: #CFE0FF; background: rgba(120, 170, 255, 0.22); }
 .std-qadesk-head p { margin: 4px 0 0; font-size: 0.9rem; }
-.std-sealed-ribbon { position: absolute; right: 0; top: 0; background: #24355C; color: #93A3C4;
+.std-sealed-ribbon { position: absolute; right: 0; top: 0; background: #24355C; color: #B9C7E4;
   font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; padding: 4px 10px; border-radius: 4px; }
 /* THE ROOT OF HIS "I CAN'T READ IT" (DFM 207g). This row paints a light parchment
    plate but never set a text colour, so everything inside INHERITED THE DARK
@@ -2621,14 +2667,20 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .std-qa-arrow { color: #5A6784; }
 .std-qa-row { background: linear-gradient(178deg, #FDFBF4 0%, #F3EFE2 100%); border-radius: 10px;
   margin-bottom: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-.std-qa-row.locked { opacity: 0.6; }
+/* WAS `opacity: 0.6`, and this one was the worst of the three: it put the
+   checklist's own step numbers 1, 2, 3, 4 at 1.05-1.1:1 \2014  dark grey on dark
+   grey \2014  and their four bold labels at 2.67:1. A locked row is now a duller
+   parchment with its lift taken away; the ink inside is untouched (13.15:1). */
+.std-qa-row.locked {
+  background: linear-gradient(178deg, #EFEADC 0%, #E4DFD0 100%); box-shadow: none;
+}
 .std-qa-head { display: flex; align-items: center; gap: 12px; width: 100%; border: none;
   background: none; font: inherit; text-align: left; padding: 12px 14px; cursor: pointer; color: var(--ink); }
 .std-qa-head:disabled { cursor: default; }
 .std-qa-head b { flex: 1; font-size: 0.98rem; }
 .std-qa-state { width: 34px; height: 34px; border-radius: 50%; flex: none; display: inline-flex;
   align-items: center; justify-content: center; font-weight: 800; font-size: 1rem;
-  background: #E4E8F2; color: #5A6784; border: 2px solid #C9CFDD; }
+  background: #E4E8F2; color: #4E5A75; border: 2px solid #C9CFDD; }
 .std-qa-state.pass { background: var(--good); border-color: var(--good); color: #fff; }
 .std-qa-state.fail { background: #C5573A; border-color: #C5573A; color: #fff; }
 .std-qa-row.pass { outline: 2px solid var(--good); outline-offset: -2px; }
@@ -2730,7 +2782,15 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .gal-desk { max-width: 620px; }
 .gal-desk-note { font-size: 0.9rem; color: #4A5670; }
 .gal-v2-zone .gal-v2-card, .gal-v2-card { margin: 0 0 14px; }
-.gal-v2-card.locked { opacity: 0.65; }
+/* THE SAME FAULT A FOURTH TIME, and the last of them. `opacity: 0.65` on a
+   white card standing over the dark blueprint floor dragged its own contents
+   toward the floor's navy: "YOUR V2 NOTE" measured 3.38:1 with a plate of
+   #9aa3b2, a grey that exists nowhere in the design \2014  it is the card and the
+   floor averaged together. Locked now reads as a cooler plate inside a dashed
+   frame, and every word in it stays where it was (tag 6.37:1, body 13.97:1). */
+.gal-v2-card.locked {
+  background: #EEF1F7; border-style: dashed; border-color: #B9C3D6; box-shadow: none;
+}
 .gal-v2-card.done { outline: 2px solid var(--gold); outline-offset: -2px; }
 .gal-v2-final { background: #F4F6FA; border-radius: 8px; padding: 10px 12px; margin: 10px 0; }
 .gal-wrap { display: block; margin: 0 auto; }
@@ -4057,6 +4117,31 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 .swap-field:focus { outline: 2px solid var(--ols-blue); outline-offset: 1px; }
 .swap-report-say { margin: 9px 0 0; font-size: 0.88rem; color: #8A2010; font-weight: 600; }
+/* THE SENDING STATE (V62/B1). His words: "there should be a pulsing message to
+   indicate that it is being sent, just to show the pupil that something is
+   happening." The TEXT never pulses \2014  only the mark beside it. A sentence
+   caught mid-fade is a sentence the readability audit measures as a blend
+   (DFM's settle law), and long before that it is a sentence a pupil is reading
+   through a flicker. The mark is a plain filled dot with no letters in it, so
+   it is judged at the 3:1 non-text floor, and it holds still under
+   prefers-reduced-motion rather than disappearing \2014  the sentence is the
+   message; the pulse is only what makes it look alive. */
+.swap-sending[hidden] { display: none; }
+.swap-sending {
+  display: flex; align-items: center; gap: 9px;
+  margin: 11px 0 0; font-size: 0.9rem; font-weight: 600; color: var(--ols-blue);
+}
+.swap-sending-pulse {
+  flex: 0 0 auto; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--ols-blue); animation: swapSendPulse 1.05s ease-in-out infinite;
+}
+@keyframes swapSendPulse {
+  0%, 100% { transform: scale(0.55); opacity: 0.4; }
+  50%      { transform: scale(1);    opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .swap-sending-pulse { animation: none; opacity: 1; transform: none; }
+}
 .swap-feed {
   margin: 12px 0; padding: 12px 14px; border-radius: 12px; max-height: 260px; overflow-y: auto;
   background: #fff; border: 1.5px solid var(--line-l); color: var(--ink);
@@ -7785,9 +7870,15 @@ window.OLS_TRANSPORT = {
          her sentence dropped into it, chosen in turn \u2014 which is exactly what a
          scripted bot is, and exactly what the lesson has just taught her a
          chatbot is. Nothing leaves this machine. */
-      function echo(said) {
-        var t = (cfg.echo || [])[beat % Math.max(1, (cfg.echo || []).length)] || '{you}';
-        return String(t).replace(/\{you\}/g, said);
+      var herName = '';
+      function fill(t, said) {
+        /* a template never survives to the screen: an unfilled {you} or {name}
+           is five characters of nonsense in front of a twelve-year-old */
+        return String(t || '').replace(/\{you\}/g, said).replace(/\{name\}/g, herName || said);
+      }
+      function pick(list, at) {
+        var a = list || [];
+        return a.length ? a[at % a.length] : '';
       }
       say(cfg.open || '', 'idle');
       if (cfg.mode !== 'chat') {
@@ -7795,21 +7886,55 @@ window.OLS_TRANSPORT = {
         var every = Number(cfg.everyMs || 7000);
         timer = setInterval(function () {
           if (gone || beat >= lines.length) { clearInterval(timer); return; }
-          say(lines[beat], 'idle');
+          /* THROUGH `fill` LIKE EVERY OTHER LINE. The monologue path used to
+             say its line raw, so a `{you}` or `{name}` authored into a
+             monologue would have rendered as those five or six characters on a
+             pupil's screen. Nothing authors one today \u2014 Margo's lines are
+             plain \u2014 and that is exactly the kind of thing that stays true until
+             the day somebody adds one. There is no name in a monologue (she is
+             never asked for one), so the placeholder resolves to nothing rather
+             than to a stray word. */
+          say(fill(lines[beat], ''), 'idle');
           beat++;
         }, every);
       } else {
         var inp = box.querySelector('.ss-say');
         var snd = box.querySelector('.ss-send');
+        /* ---- V62/B5: THE FIRST REPLY ANSWERS THE QUESTION HE ASKED --------
+           The opening line asks her one thing \u2014 "What should I call you?" \u2014
+           and the shipped rhythm was
+             say(beat % 2 === 1 ? echo(v) : (next || echo(v)))
+           with `beat` starting at 0. So her FIRST reply, the made-up name he
+           has just asked for, took `lines[0]` \u2014 a canned sentence about not
+           knowing what to do with that \u2014 EVERY SINGLE TIME, and the templates
+           that actually carry her words fired on the 2nd, 4th and 6th. The one
+           answer he asks for was the one answer he never used.
+           Two counters rather than one parity test, which also fixes something
+           nobody had filed: `lines[beat % lines.length]` on even beats only
+           ever reached lines 0, 2 and 4, so half of the authored comedy \u2014 three
+           of Fred's six lines \u2014 could not be reached at all. Each list now
+           advances on its own, in the order it was written.
+           The name is kept, so `{name}` can be spent once later in the script:
+           a bot that asks your name and then never uses it is the fault he
+           filed, and using it twice would be creepier than not asking. */
+        var said = 0, lineAt = 0, echoAt = 0;
         var send = function () {
           var v = String(inp.value || '').trim();
           if (!v) { inp.classList.add('wants'); inp.focus(); return; }
           inp.value = '';
           log.insertAdjacentHTML('beforeend', '<p class="ss-line is-mine">' + esc(v) + '</p>');
           log.scrollTop = log.scrollHeight;
-          var next = lines.length ? lines[beat % lines.length] : '';
-          say(beat % 2 === 1 ? echo(v) : (next || echo(v)), 'idle');
-          beat++;
+          var reply;
+          if (said === 0) {
+            herName = v;
+            reply = fill(cfg.nameEcho || pick(cfg.echo, 0) || '{you}', v);
+          } else if (said % 2 === 1) {
+            reply = fill(pick(lines, lineAt++) || pick(cfg.echo, echoAt++) || '{you}', v);
+          } else {
+            reply = fill(pick(cfg.echo, echoAt++) || '{you}', v);
+          }
+          say(reply, 'idle');
+          said++; beat = said;
         };
         snd.addEventListener('click', send);
         inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); send(); } });
@@ -12203,6 +12328,9 @@ window.OLS_TRANSPORT = {
       }, cfg.beginLabel || 'Open the door', gate);
 
       function stopSide(why) { if (side) { side.leave(why || 'matched'); side = null; } }
+      /* an immediate removal with no exit line, for when the whole card is
+         going anyway (DFM 275) */
+      function dropSide() { if (side) { side.stop(); side = null; } }
       function clearAll() {
         if (pollT) { clearTimeout(pollT); pollT = null; }
         if (liveRun) { try { liveRun.abandon(); } catch (e) { /* settled */ } liveRun = null; }
@@ -12302,6 +12430,12 @@ window.OLS_TRANSPORT = {
       /* ---- phase 3: the tester's seat ----------------------------------- */
       function testerSeat(builderMi, soloCode) {
         clearAll();
+        /* DFM 275's other half: she is about to WORK, so the side show ends
+           here. `stop()` rather than `leave()` \u2014 the card is torn down in the
+           next line, so an exit line would be written into a box nobody ever
+           sees, and a handle left pointing at a removed node is how a side show
+           fails to mount the next time one is wanted. */
+        dropSide();
         host.innerHTML = '';
         var solo = soloCode != null;
         var code = solo ? soloCode : null;
@@ -12434,10 +12568,34 @@ window.OLS_TRANSPORT = {
           '<input id="swap-fix" class="swap-field" type="text" maxlength="100" autocomplete="off">' +
           '<p class="swap-report-note">' + fmtBold(cfg.reportNote || '') + '</p>' +
           '<button class="primary-btn swap-send-report" type="button">' + esc(cfg.sendReportLabel || '') + '</button>' +
+          /* ---- V62/B1: SOMETHING HAPPENS WHEN SHE PRESSES SEND -----------
+             His words: "there should be a pulsing message to indicate that it
+             is being sent, just to show the pupil that something is
+             happening." Until now the press went straight into
+             `PairKit.blob(put)` and then the paced channel queue with nothing
+             on screen at all \u2014 and V61 made that gap LONGER, not shorter,
+             because the report now waits its turn behind any beats still going
+             out. A pupil who sees nothing move presses again.
+             It is `aria-live="polite"`, so the sentence is spoken as well as
+             pulsed; the pulse is decoration and is hidden from the reader that
+             cannot see it. */
+          '<p class="swap-sending" hidden aria-live="polite">' +
+            '<span class="swap-sending-pulse" aria-hidden="true"></span>' +
+            '<span class="swap-sending-text"></span></p>' +
           '<p class="swap-report-say" hidden></p>';
         var w = box.querySelector('#swap-worked'), f = box.querySelector('#swap-fix');
         var say = box.querySelector('.swap-report-say');
-        App.armButton(box.querySelector('.swap-send-report'), function () {
+        var sending = box.querySelector('.swap-sending');
+        var sendingText = box.querySelector('.swap-sending-text');
+        var sendBtn = box.querySelector('.swap-send-report');
+        function showSending(on) {
+          sending.hidden = !on;
+          if (on) sendingText.textContent = cfg.sendingSay || '';
+          sendBtn.disabled = !!on;
+          if (on) sendBtn.setAttribute('aria-busy', 'true');
+          else sendBtn.removeAttribute('aria-busy');
+        }
+        App.armButton(sendBtn, function () {
           /* HONESTY FLOORS ONLY (DFM 193a). The machine never judges a pupil's
              own words for vocabulary or quality \u2014 it asks only that she wrote
              something. Judging what she wrote is the teacher's job at the desk. */
@@ -12452,7 +12610,9 @@ window.OLS_TRANSPORT = {
                      (cfg.fixTag || 'fix') + ': ' + b.slice(0, 100);
           reportSent = true;
           phases = Math.max(phases, 3);
+          say.hidden = true;
           if (solo || !PairKit.st) { afterReport(); return; }
+          showSending(true);
           /* the report travels TWICE, and each trip has its own reason: down the
              MONITORED channel so it arrives with the flash and the teacher can
              read it like every other thing one pupil sends another, and into the
@@ -12464,7 +12624,20 @@ window.OLS_TRANSPORT = {
                were \u2014 leaving the partner watching a screen that would never
                advance. Same queue, same order, nothing lost. */
             return PairKit.relay(ctx, 'msg', (cfg.reportTag || 'REPORT') + ' ' + text);
-          }).then(function () { afterReport(); });
+          }).then(function () { showSending(false); afterReport(); })
+            /* AND AN HONEST LINE IF IT DOES NOT GO. Before this there was no
+               catch at all: a send that failed left her looking at a button she
+               had already pressed, for ever, with no way to tell whether it had
+               worked. She is told plainly, and the button comes back so she can
+               press it again \u2014 the report she wrote is still in the two boxes,
+               untouched (DFM 138.7: never an instruction she cannot obey where
+               she sits, and never a dead end). */
+            .catch(function () {
+              showSending(false);
+              say.hidden = false;
+              say.textContent = cfg.sendFailSay || '';
+              sendBtn.focus();
+            });
         });
       }
       function afterReport() {
@@ -12475,7 +12648,10 @@ window.OLS_TRANSPORT = {
       }
 
       /* ---- phase 3b: the builder watches her own bot being used --------- */
-      function builderSeat(testerMi) {
+      /* `last` says this watch is the one AFTER she has already filed her own
+         report, so the Continue under the partner's report seals instead of
+         asking `rounds()` where to go next. See the note on `watchWait`. */
+      function builderSeat(testerMi, last) {
         clearAll();
         host.innerHTML = '';
         var c = el('<div class="card swap-card swap-watch">' +
@@ -12516,14 +12692,40 @@ window.OLS_TRANSPORT = {
           });
           feed.insertBefore(node, before);
           feed.scrollTop = feed.scrollHeight;
-          stopSide('matched');
+          /* ---- V62/B4, DFM 275: THE BEAT DOES NOT KILL THE SIDE SHOW ------
+             This line used to call `stopSide('matched')`, so the FIRST beat of
+             her partner's conversation ended the side show \u2014 at the exact
+             moment her waiting began rather than ended. His K36b sentence
+             ("vanishes the instant the match/message arrives") was written
+             about the PAIRING MATCH, where the flash is the event and a
+             comedian standing in front of it is in the way. Watching a feed
+             tick along is waiting, not working. Refined by his ruling of
+             29 Aug: the side show goes when she is WORKING (the tester's seat,
+             which has never had one) or when an arrival is the thing she must
+             look at (the match pop, where `onWaitOver` still ends it) \u2014 never
+             merely because a message moved. */
           PairKit.arrive(feed, { announce: cfg.beatArrivedSay || '' });
         }
         PairKit.onEvent(function (e) {
           if (String(e[2]) !== 'msg') return;
+          /* ---- V62/B2: WHOSE MESSAGE IS THIS? ASKED FIRST, ALWAYS ---------
+             He sat the Swap and found his OWN report under "Their report on
+             your bot". The whole fault was the order of these two lines: the
+             REPORT branch returned before the skip-my-own filter ever ran, so
+             her own report came back down the monitored channel and was stored
+             as `partnerReport`. It then rendered under the partner's heading,
+             was announced as "Their report has arrived", and poisoned the seal
+             too \u2014 `seal()` re-fetches the real one only `if (!partnerReport)`,
+             so the honest "their report did not arrive" line became
+             unreachable as well.
+             The filter is now the FIRST question asked of every message,
+             because "is this mine?" is true of a report exactly as it is true
+             of a beat, and a branch that answers before it has asked is a
+             branch that will get it wrong again. Gated by S13/S13c in
+             qa-swap-paired.js, which had never asked whose text it was. */
+          if (Number(e[1]) === Number(PairKit.st.mi)) return;
           var t = String(e[3] || '');
           if (t.indexOf(String(cfg.reportTag || 'REPORT')) === 0) { partnerReport = t; return; }
-          if (Number(e[1]) === Number(PairKit.st.mi)) return;
           drawBeat(Number(e[0]), t);
         });
         /* ---- S8: EXACTLY ONCE, AND THEN STOP ASKING ----------------------
@@ -12540,13 +12742,35 @@ window.OLS_TRANSPORT = {
           if (reportShown || !reportArrived()) return;
           reportShown = true;
           PairKit.onPoll(null);
-          showMyReport(c, function () { roundIdx++; rounds(); });
+          showMyReport(c, function () {
+            if (last) { seal(); return; }
+            roundIdx++; rounds();
+          });
         });
       }
+      /* ---- THE CONTINUE AFTER HER PARTNER'S REPORT SEALS, DIRECTLY -------
+         The pupil who takes the TESTER'S seat first files her report and is
+         sent here to watch her own bot being used \u2014 but `afterReport` reaches
+         this by SHORT-CIRCUIT, so `roundIdx` is still 0. Without `last`, her
+         Continue ran `roundIdx++; rounds()`, which resolved to round 1, where
+         she is the BUILDER again, and re-mounted the watch screen. The poll
+         there finds `partnerReport` already set, so it immediately draws the
+         SAME report card a second time; her second Continue takes `roundIdx`
+         past the end of the plan and seals. She gets there, by a route that
+         shows her one card twice and one press that appears to do nothing.
+         WHAT I FIRST WROTE HERE WAS WRONG, and it is worth leaving the
+         correction visible. I called this a dead end the B2 fix had uncovered,
+         and credited the harness with catching it \u2014 when what the harness had
+         actually caught was ITSELF, pressing Fred's "Say it" button twenty
+         times because DFM 275 had just put him on this screen above the
+         Continue. **A control settled it: with this flag forced off, the paired
+         sit still passes and both pupils still seal.** So this is a tidy-up of a
+         redundant screen, not the repair of a fault, and it is not credited as
+         one (DFM 196 \u2014 a fix nothing failed without is not a fix). */
       function watchWait() {
         var rs = plan();
         var r = rs[1];
-        builderSeat(Number(r.tester));
+        builderSeat(Number(r.tester), true);
       }
       function reportArrived() { return !!partnerReport; }
 
@@ -14537,7 +14761,18 @@ window.OLS_TRANSPORT = {
           '<p>' + esc((t.stretch && t.stretch.text) || '') + '</p>' +
           (stretchDone ? '<p class="std-note">&#10003; Noted: &ldquo;' + esc(stretchNote) + '&rdquo;</p>' :
             '<textarea class="std-stretch-note" maxlength="140" placeholder="' + esc((t.stretch && t.stretch.placeholder) || 'What did you add, and what does it change?') + '"></textarea>' +
-            '<p class="std-stretch-nudge"></p>' +
+            /* V62 PART A: FOUR VISIBLE EMPTY BOXES (DFM 42/184). These three
+               classes reserve a line of height so the card does not jump when a
+               nudge appears \u2014 which is right, but it left 500-600px strips of
+               nothing on screen with no way for anything to know they were
+               deliberate. They are what they always were: STATUS LINES. Saying
+               so out loud makes the reserved space declared rather than
+               mysterious, and it means the nudge is now ANNOUNCED when it
+               arrives instead of appearing in silence to a pupil using a
+               reader. The empty-container law exempts a real live region for
+               exactly this reason; it is a true label here, not a way round
+               the gate. */
+            '<p class="std-stretch-nudge" role="status" aria-live="polite"></p>' +
             '<button class="confirm-step std-stretch-confirm" type="button"><span class="confirm-box"></span><span>It works &mdash; I tested it</span></button>') +
           '</div>' +
 
@@ -14698,7 +14933,7 @@ window.OLS_TRANSPORT = {
              two places is a contract (DFM 157a). The box was the one lying. */
           '<input id="std-gh" class="std-sig-input" maxlength="90" autocomplete="off" placeholder="' + esc(m.howPlaceholder || 'e.g. Arrow keys to move. Catch sushi, dodge wasabi!') + '" value="' + esc(gh) + '">' +
           '<div class="gal-marquee-card preview"><span class="gal-mq-studio"></span><b class="gal-mq-title"></b><p class="gal-mq-how"></p></div>' +
-          '<p class="std-marquee-status"></p>' +
+          '<p class="std-marquee-status" role="status" aria-live="polite"></p>' +
           '<p class="case-locked-note"></p>' +
           '<button class="primary-btn std-doors locked" type="button" aria-disabled="true">' + esc(m.confirmLabel || 'OPEN THE DOORS') + '</button>' +
           '<button class="ghost-btn std-back" type="button">&larr; Back to the desk</button></div>');
@@ -14850,7 +15085,7 @@ window.OLS_TRANSPORT = {
             '<div class="card gal-v2-card"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
             '<p>' + esc((cfg.v2 && cfg.v2.promptNoReviews) || 'Every studio plans a version 2. What is the ONE thing yours would change, and why?') + '</p>' +
             '<textarea class="gal-v2-input" maxlength="200" placeholder="' + esc((cfg.v2 && cfg.v2.placeholder) || 'In version 2 I would... because...') + '">' + esc(v2) + '</textarea>' +
-            '<p class="gal-v2-nudge"></p>' +
+            '<p class="gal-v2-nudge" role="status" aria-live="polite"></p>' +
             '<button class="primary-btn gal-v2-save" type="button">File the note &amp; wrap up</button></div></div>');
           host.appendChild(c);
           ctx.call('galleryFeed', { lessonId: ctx.lesson.id }).then(function (r) {
@@ -15013,7 +15248,7 @@ window.OLS_TRANSPORT = {
         zone.innerHTML = '<div class="card gal-v2-card"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
           '<p>' + esc(prompt) + '</p>' +
           '<textarea class="gal-v2-input" maxlength="200" placeholder="' + esc((cfg.v2 && cfg.v2.placeholder) || 'In version 2 I would... because a review said...') + '">' + esc(v2) + '</textarea>' +
-          '<p class="gal-v2-nudge"></p>' +
+          '<p class="gal-v2-nudge" role="status" aria-live="polite"></p>' +
           '<button class="primary-btn gal-v2-save" type="button">File the V2 note</button></div>';
         zone.querySelector('.gal-v2-save').onclick = function () {
           var ta = zone.querySelector('.gal-v2-input');
@@ -15042,7 +15277,7 @@ window.OLS_TRANSPORT = {
             '<textarea class="gal-stem-input" data-stem="like" maxlength="200" placeholder="' + esc(cfg.likePlaceholder || 'name the exact bit you liked, and why it works') + '"></textarea>' +
             '<label class="std-sig-label">' + esc(stemWonder) + '</label>' +
             '<textarea class="gal-stem-input" data-stem="wonder" maxlength="200" placeholder="' + esc(cfg.wonderPlaceholder || 'a question or idea that could make version 2 even better') + '"></textarea>' +
-            '<p class="gal-v2-nudge"></p>' +
+            '<p class="gal-v2-nudge" role="status" aria-live="polite"></p>' +
             '<button class="primary-btn gal-file-btn" type="button">File the review &middot; signed</button>') +
           '<button class="ghost-btn std-back" type="button">&larr; Back to the floor</button></div>');
         host.appendChild(c);
