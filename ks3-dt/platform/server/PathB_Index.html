@@ -3645,7 +3645,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .pyx-row:last-child { margin-bottom: 0; }
 .pyx-who {
   font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase;
-  font-weight: 800; color: #4B5B79;
+  /* deepened 29 Aug 2026: a 0.72rem uppercase face renders well short of its own
+     hex once anti-aliasing has pulled it toward the plate \2014  measured at 2.35:1
+     on the conversation panel, where it names who is speaking. */
+  font-weight: 800; color: #2E3C57;
 }
 .pyx-text { font-size: 0.97rem; line-height: 1.5; color: var(--ink); white-space: pre-wrap; }
 .pyx-row.is-bot { background: #EDF3FD; border: 1px solid #CFDDF5; }
@@ -4084,10 +4087,17 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
   font-size: 0.78rem; font-weight: 800; font-variant-numeric: tabular-nums;
-  background: rgba(255, 255, 255, 0.10); color: var(--muted-d);
-  border: 1px solid var(--line-d);
+  /* THE MATCH'S ROUND PIPS WERE DARK-SHELL TOKENS ON A LIGHT CARD \2014  the same
+     one-class-two-worlds fault as the Butler line, measured at 2.03:1 on the
+     state-keyed audit. The pip is a numbered marker a pupil counts her way
+     through the six rounds with, so the number has to be readable in every one
+     of its three states. */
+  background: rgba(26, 58, 107, 0.07); color: #39476A;
+  border: 1px solid var(--line-l);
 }
-.duel-pip.done { background: rgba(var(--gold-rgb), 0.22); color: var(--gold-hi); border-color: rgba(var(--gold-rgb), 0.5); }
+/* `--gold-hi` is the DARK shell's bright gold; on the pip's pale gold plate it
+   is gold on gold. The done pip wears the deep gold that reads on a light card. */
+.duel-pip.done { background: rgba(var(--gold-rgb), 0.22); color: var(--gold-deep); border-color: rgba(var(--gold-rgb), 0.5); }
 .duel-pip.now { background: var(--gold); color: var(--accent-ink); border-color: var(--gold-hi); }
 .duel-pip.is-guess { border-style: dashed; }
 /* THE GUESS-ROUND BANNER: full width, its own colour, and it STAYS for the whole
@@ -4130,8 +4140,12 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   resize: vertical;
 }
 .duel-say:focus { outline: 2px solid var(--ols-blue); outline-offset: 1px; }
-.duel-locked-note { margin: 9px 0 0; font-size: 0.87rem; line-height: 1.5; color: var(--muted-d); }
-.duel-locked-note.is-wants { color: #FFC3B8; font-weight: 700; }
+/* three more dark-shell tokens on the Match's light card, all found by standing
+   on states nothing had measured: the note under the options (2.03:1), its
+   wants-you state (a pale salmon written for a navy plate), and the score line
+   in gold-hi at 1.38:1 \2014  the sentence that tells her how she did. */
+.duel-locked-note { margin: 9px 0 0; font-size: 0.87rem; line-height: 1.5; color: var(--muted); }
+.duel-locked-note.is-wants { color: #96240C; font-weight: 700; }
 .duel-wait { margin: 14px 0 0; padding: 12px 15px; border-radius: var(--r-md);
   background: rgba(var(--gold-rgb), 0.10); border: 1px solid rgba(var(--gold-rgb), 0.35); }
 .duel-wait-say { margin: 0; font-size: 0.94rem; line-height: 1.55; color: var(--ink); }
@@ -4161,7 +4175,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .duel-teach { margin: 0 0 12px; font-size: 0.96rem; line-height: 1.6; color: var(--ink); }
 .duel-timeout { margin: 0 0 11px; font-size: 0.92rem; line-height: 1.5; color: #8A5A12;
   background: #FFF3E2; border: 1px solid #F1D6A8; border-radius: var(--r-sm); padding: 9px 12px; }
-.duel-score { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: var(--gold-hi); margin: 0 0 10px; }
+.duel-score { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: var(--gold-deep); margin: 0 0 10px; }
 /* the Match's own copies of the same one-class-two-worlds fault, swept while
    the sweep was running rather than left to be found by his next sit */
 .duel-reveal-names, .duel-seal-say { margin: 0 0 12px; font-size: 0.97rem; line-height: 1.55; color: var(--ink); }
