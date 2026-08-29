@@ -448,6 +448,38 @@ function textDamageGate() {
   console.log('text-damage gate: PASSED (qa-text-damage)');
 }
 
+/* ---- THE ENGINE-STRINGS LEDGER IS A GATE NOW (S1, 29 Aug 2026) ----------
+   "Exit check — part 2" walked onto a new pupil card while it was sitting on
+   line 119 of ENGINE_STRINGS_DEBT.md marked OUTSTANDING, and had been for days.
+   Nothing read the file. That is DFM 235 exactly — a rule that is not run is
+   not a rule — and it is worse than an unwritten rule, because everyone
+   involved believed the debt was being managed.
+   TWO HALVES, and this is the cheap one: the SOURCE ratchet. Whatever the
+   committed ledger says is the ceiling; a round that adds an engine sentence
+   fails the pack and is told which sentence. The expensive half — is a lesson
+   RENDERING one of these on a pupil's screen — rides the walkers, where a
+   browser already is, and is ratcheted per lesson so old debt on a signed-off
+   lesson prints rather than re-opening his approval (DFM 221/273a). */
+function engineDebtGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'engine-strings.js');
+  if (!fs.existsSync(harness)) {
+    console.error('engine-strings.js is missing - the engine-debt ledger cannot be checked, so the pack stops.');
+    process.exit(1);
+  }
+  const res = require('child_process').spawnSync(process.execPath, [harness, '--check'], { encoding: 'utf8' });
+  const out = (res.stdout || '') + (res.stderr || '');
+  if (res.status !== 0) {
+    console.error(out);
+    console.error('\nPACK STOPPED: this round added a pupil sentence that lives in engine code.');
+    console.error('  A literal inside an engine is invisible to the language gate: no banned-word');
+    console.error('  sweep, no read-aloud record, no ledger row anybody reads. Every sentence a');
+    console.error('  round adds is content-owned from birth — put it behind a config lookup and');
+    console.error('  let the lesson say it. The ledger can only ever go down.');
+    process.exit(1);
+  }
+  console.log('engine-debt gate: ' + out.trim().split('\n')[0].replace(/^PASS\s+/, 'PASSED - '));
+}
+
 function coverageGate() {
   const harness = path.join(__dirname, 'record-tutorial', 'qa-harness-coverage.js');
   if (!fs.existsSync(harness)) {
@@ -564,6 +596,7 @@ function main() {
     itemValidityGate();
     numeralTieGate();
     humanPaceGate();
+    engineDebtGate();
     auditGate();
     textDamageGate();
     coverageGate();

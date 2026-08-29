@@ -39,6 +39,14 @@ const NI = require('./lib/nested-interactive.js');
    caught HERE and nowhere else. */
 const EE = require('./lib/empty-elements.js');
 const PW = require('./lib/placed-work.js');
+/* THE READABILITY LAW NOW RIDES BOTH WALKERS (29 Aug 2026, second-sit fault
+   class A). It rode sit-review only — and sit-review crosses the Chatbot Swap
+   SOLO, so every paired-only screen was structurally invisible to the one walk
+   carrying the law. Three of his eleven faults lived there. */
+const CA = require('./lib/contrast-audit.js');
+const SA = require('./lib/state-audit.js');
+const LD = require('./lib/ledger.js');
+const RD = require('./lib/rendered-debt.js');
 
 const args = process.argv.slice(2);
 const argOf = (n, d) => { const i = args.indexOf(n); return i === -1 ? d : args[i + 1]; };
@@ -397,6 +405,10 @@ const WRONG = {
   const findings = [];
   const nestedHits = [];
   const emptyHits = [], clickHits = [];
+  const contrastHits = [], stepsHits = [], fitsHits = [];
+  const stateSeen = new Set(), debtSeen = new Set();
+  const LEDGER_ROWS = LD.outstanding();
+  const LEDGER_TEXTS = LEDGER_ROWS.map(r => r.text);
   const visited = [];
   /* the text-box battery runs ONCE per screen. It wipes the box when it is done
      (so the next gate is met fresh), and running it every loop meant the walker
@@ -1026,6 +1038,50 @@ const WRONG = {
       const line = where + ': ' + PW.describe(f);
       if (clickHits.indexOf(line) === -1) { clickHits.push(line); log('CLICK-DESTROYS ' + line); }
     });
+    /* ---- DFM 274 and fits-its-card, in the states only a wrong move reaches ---- */
+    const stepsNow = await page.evaluate(q => eval(q)(), SA.STEPS_QUERY);
+    stepsNow.forEach(f => {
+      const line = where + ': ' + SA.describeSteps(f);
+      if (stepsHits.indexOf(line) === -1) { stepsHits.push(line); log('STEPS-NOT-LEFT ' + line); }
+    });
+    const fitsNow = await page.evaluate(q => eval(q)(), SA.FITS_QUERY);
+    fitsNow.forEach(f => {
+      const line = where + ': ' + SA.describeFits(f);
+      if (fitsHits.indexOf(line) === -1) { fitsHits.push(line); log('OVERFLOWS-CARD ' + line); }
+    });
+    if (LEDGER_TEXTS.length) {
+      const debtNow2 = await page.evaluate(q => eval(q), LD.QUERY(LEDGER_TEXTS));
+      debtNow2.forEach(t => {
+        const row = (LEDGER_ROWS.find(r => r.text === t) || {}).at || '?';
+        if (!debtSeen.has(t)) { debtSeen.add(t); log('ENGINE-DEBT-ON-SCREEN ' + LD.describe(row, t)); }
+      });
+    }
+    /* ---- CAN SHE READ IT, IN THIS STATE. Keyed by the screen's own signature,
+       so a refusal state that only the confused walk reaches is measured once
+       and measured properly (the offer card and the seal card are exactly this
+       shape). ---- */
+    try {
+      const sig = await page.evaluate(q => eval(q)(), SA.SIG);
+      if (!stateSeen.has(sig)) {
+        stateSeen.add(sig);
+        await SA.settle(page);
+        const overlay = await SA.overlayRoot(page);
+        const rects = await page.evaluate(CA.COLLECT, [[], [], overlay]);
+        if (rects.length) {
+          const png = await SA.measureShot(page, overlay);
+          const measured = await page.evaluate(CA.MEASURE,
+            ['data:image/png;base64,' + png.toString('base64'), rects]);
+          measured.forEach(m => {
+            if (m.skip || m.icon) return;
+            const floor = CA.floorFor(m);
+            if (m.ratio >= floor) return;
+            const line = where + ': ' + m.sel + ' — ' + m.ratio + ':1 (needs ' + floor + '), ink ' +
+              m.ink + ' on ' + m.plate + '  "' + String(m.text || '').slice(0, 44) + '"';
+            if (contrastHits.indexOf(line) === -1) { contrastHits.push(line); log('UNREADABLE ' + line); }
+          });
+        }
+      }
+    } catch (e) { log('CONTRAST-AUDIT could not run at ' + where + ': ' + e.message); }
     /* record every required landmark that is on screen RIGHT NOW (DFM 204),
        in the CHUNK it belongs to where the list names one */
     const chunkNow = await page.evaluate(() => {
@@ -1119,9 +1175,36 @@ const WRONG = {
   /* J13(c/d): the same two laws, in the states only a wrong move reaches. The
      DECLARED exemptions print whether or not anything was found, because an
      exemption nobody prints reads as a pass (DFM 204/213). */
-  console.log('\nDERIVED AUDITS (the confused walk)');
+  console.log('\nDERIVED AUDITS (the confused walk) — ' + stateSeen.size + ' distinct screen state(s)');
   console.log('  empty-container exemptions, declared: ' + EE.EXEMPTIONS.join(' · '));
-  emptyHits.forEach(h => findings.push(h));
+  console.log('  contrast exemptions, declared: ' + CA.EXEMPTIONS.join(' · '));
+  console.log('  state-audit exemptions, declared: ' + SA.EXEMPTIONS.join(' · '));
+  console.log('  ledger exemptions, declared: ' + LD.EXEMPTIONS.join(' · '));
+  /* the same law as sit-review's: a LOCKED lesson's newly-measured exposure is
+     printed in full and does not fail the walk (DFM 221/273a). The steps law is
+     the one exception, and it is HIS: DFM 274 applies "even though they're
+     locked", in his own words, so a centred numbered list fails everywhere. */
+  const LOCKED_AUDIT = new Set(['1', '2', '3', '4', '5', 'S1', 'j2-1', 'j2-2', 'j3-1', 'j3-2']);
+  stepsHits.forEach(h => findings.push(h));
+  if (LOCKED_AUDIT.has(LESSON) && (emptyHits.length + contrastHits.length + fitsHits.length)) {
+    console.log('\n' + (emptyHits.length + contrastHits.length + fitsHits.length) +
+      ' WAIVED FINDING(S) — ' + LESSON + ' is LOCKED and signed off, so these are PRINTED rather than' +
+      ' fixed (DFM 221/273a). They are real, and one word from him applies the fixes here too:');
+    [...emptyHits, ...contrastHits, ...fitsHits].forEach(h => console.log('  - ' + h));
+  } else {
+    emptyHits.forEach(h => findings.push(h));
+    contrastHits.forEach(h => findings.push(h));
+    fitsHits.forEach(h => findings.push(h));
+  }
+  /* THE LEDGER RATCHET, on the confused walk's own screens. Old debt prints;
+     debt that has reached a card it never reached before is a finding. */
+  const debtList = [...debtSeen];
+  const debtVerdict = RD.check('wrongpath:' + LESSON, debtList);
+  console.log('\nENGINE-DEBT ON SCREEN — ' + debtList.length + ' outstanding ledger sentence(s) rendered');
+  debtList.forEach(d => console.log('  · ' + d));
+  if (debtVerdict.unset) console.log('  (no ceiling committed yet — run qa-engine-debt.js to write ENGINE_STRINGS_RENDERED.md)');
+  debtVerdict.fresh.forEach(t => findings.push('NEW DEBT ON SCREEN: ' + t));
+  RD.write('wrongpath:' + LESSON, debtList);
   /* THE LOCKED LESSONS ARE ASSERTED AND WAIVED, NEVER SKIPPED (DFM 221 + 204, and the
      spec's own S3 line: "the locked Lesson 2s stay gated — the ASSERTION still runs
      there and prints their exposure as a waived finding, HIS WORD to apply"). The

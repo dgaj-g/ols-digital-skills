@@ -30,6 +30,23 @@ const NI = require('./lib/nested-interactive.js');
 const EE = require('./lib/empty-elements.js');
 const PW = require('./lib/placed-work.js');
 const CA = require('./lib/contrast-audit.js');
+/* THE SECOND-SIT LAWS (29 Aug 2026, J2_L3_SIT2_FIXES_SPEC S1/S4/S9). Three of
+   his eleven faults lived on screens NO gate had ever measured, and the reason
+   was the key: readability was asked once per CHUNK, at the state the walker
+   happened to enter on, so the offer card, the tester's finished line and the
+   seal card — all LATER states of chunks that had already been "measured" —
+   were structurally invisible. Coverage is now keyed by STATE. The same module
+   carries the two laws that had no gate at all: a numbered steps list is
+   left-aligned (DFM 274, his ruling) and nothing a card renders may stick out
+   past that card's edge. */
+const SA = require('./lib/state-audit.js');
+/* AND THE DEBT LEDGER STOPS BEING A MEMO (S1). "Exit check — part 2" shipped
+   onto a new pupil card while sitting on line 119 of ENGINE_STRINGS_DEBT.md
+   marked OUTSTANDING. Nothing read the file. Now the walk does, on every state
+   it stands on, against a committed baseline of what each lesson already
+   renders — so old debt is printed and NEW debt fails (DFM 221 + DFM 235). */
+const LD = require('./lib/ledger.js');
+const RD = require('./lib/rendered-debt.js');
 
 const NUM = String(process.argv[2] || '2').replace(/^J([23])-/i, 'j$1-');
 /* YEAR-QUALIFIED KEYS FROM 16 AUG 2026 (see sit-wrongpath.js for the reason J1
@@ -139,8 +156,25 @@ const EXPECT = {
      judged by RUNNING the program, so the shuffle cannot move the score.
      `ep=0` on J3 is the parsons walker's standing limitation (it clicks the tray
      in the order it finds it), the same on every year — not a J3 fault. */
-  'j2-3': { xp: 58, chunks: 9, presses: 35, marks: 10, badges: 3 },
-  'j3-3': { xp: 55, chunks: 10, presses: 29, marks: 7, badges: 3 },
+  /* ⭐ RE-PINNED 29 Aug 2026, and the reason matters more than the numbers.
+     Both walks now reach the END of their lesson — j2-3 eleven screens where it
+     was pinned at NINE, j3-3 thirteen where it was pinned at TEN — and both bank
+     the exit check they never used to reach (xp 58 → 68 and 55 → 65, marks
+     10 → 13 and 7 → 11; badges unchanged at 3, because the two extra screens
+     carry none).
+     WHAT CHANGED IS THE FAULT HE FILED. The extras zone was a dead end: with all
+     three jobs done, the only way onward was a grey line beginning "Running out
+     of time?", written for a pupil ABANDONING the zone and offered to one who
+     had finished it. He met that as a pupil; the WALKER met it as a wall, and
+     stopped there. S11(a) promotes the exit row to a real primary button once
+     every job shows done, and both walks now simply carry on.
+     So the old pin was a photograph of a stalled walk, and because it was
+     pinned, every run since has reported "the shape holds". A number pinned at
+     the value a fault produces is a fault with a certificate — which is exactly
+     what DFM 199 asks to be guarded against, in the other direction.
+     MEASURED TWICE EACH, IDENTICAL BOTH TIMES, before being written down. */
+  'j2-3': { xp: 68, chunks: 11, presses: 47, marks: 13, badges: 3 },
+  'j3-3': { xp: 65, chunks: 13, presses: 48, marks: 11, badges: 3 },
   /* J3 Lesson 2, measured 19 Aug 2026, IDENTICAL on a second run — every number
      including XP, because this lesson has no shuffled surface: four builds, each
      driven from the same key to the same answer. */
@@ -280,7 +314,13 @@ const CASE_LOGS = {
   const askedTexts = new Set();
   const nestedHits = [];
   const emptyHits = [], clickHits = [], contrastHits = [];
+  const stepsHits = [], fitsHits = [];
   const contrastSeen = new Set();
+  /* STATE, not chunk: the fault class this round exists to kill */
+  const stateSeen = new Set();
+  const debtSeen = new Set();
+  const LEDGER_ROWS = LD.outstanding();
+  const LEDGER_TEXTS = LEDGER_ROWS.map(r => r.text);
 
   for (turns = 0; turns < 400; turns++) {
     const done = await page.evaluate(() => !!document.querySelector('.badge-pop-card.finish'));
@@ -311,23 +351,46 @@ const CASE_LOGS = {
       if (clickHits.indexOf(line) === -1) { clickHits.push(line); note('CLICK-DESTROYS ' + line); }
     });
 
-    /* once per chunk: capture the ? help modal */
-    if (ck !== '(none)' && !helpSeen.has(ck)) {
-      helpSeen.add(ck);
-      seen.chunks.add(ck);
-      const t = await hostText();
-      note('\n==== CHUNK ' + ck + ' ====\n' + t.slice(0, 3000));
-      await shot(ck + '-enter');
-      /* ---- J13(b): CAN SHE READ IT — every rendered text node on this screen,
-         measured in real pixels off a screenshot the walker is taking anyway.
-         qa-readability keeps the per-THEME sweep; this is the half that makes
-         COVERAGE derived: a screen is measured because it was visited, not
-         because somebody remembered to add it to a list (DFM 271). ---- */
+    /* ---- DFM 274: every rendered numbered list, left-aligned, in this state ---- */
+    const steps = await page.evaluate(q => eval(q)(), SA.STEPS_QUERY);
+    steps.forEach(f => {
+      const line = ck + ': ' + SA.describeSteps(f);
+      if (stepsHits.indexOf(line) === -1) { stepsHits.push(line); note('STEPS-NOT-LEFT ' + line); }
+    });
+
+    /* ---- does everything on this screen stay inside its own card? ---- */
+    const fits = await page.evaluate(q => eval(q)(), SA.FITS_QUERY);
+    fits.forEach(f => {
+      const line = ck + ': ' + SA.describeFits(f);
+      if (fitsHits.indexOf(line) === -1) { fitsHits.push(line); note('OVERFLOWS-CARD ' + line); }
+    });
+
+    /* ---- is this screen rendering a sentence the ledger still calls OUTSTANDING? ---- */
+    if (LEDGER_TEXTS.length) {
+      const debt = await page.evaluate(q => eval(q), LD.QUERY(LEDGER_TEXTS));
+      debt.forEach(t => {
+        const row = (LEDGER_ROWS.find(r => r.text === t) || {}).at || '?';
+        const line = ck + ': ' + LD.describe(row, t);
+        if (!debtSeen.has(line)) { debtSeen.add(line); note('ENGINE-DEBT-ON-SCREEN ' + line); }
+      });
+    }
+
+    /* ---- CAN SHE READ IT — ONCE PER STATE, NOT ONCE PER CHUNK ------------
+       The whole of fault class (A) from his second sit. The offer card, the
+       tester's finished-with-their-bot line and the seal card are all LATER
+       states of chunks this walk had already ticked off, so measuring on entry
+       measured everything except the three screens he could not read. The key
+       is now a signature of the screen itself (lib/state-audit.js). ---- */
+    const sig = await page.evaluate(q => eval(q)(), SA.SIG);
+    if (!stateSeen.has(sig)) {
+      stateSeen.add(sig);
       contrastSeen.add(ck);
       try {
-        const rects = await page.evaluate(CA.COLLECT, [[], [], null]);
+        await SA.settle(page);
+        const overlay = await SA.overlayRoot(page);
+        const rects = await page.evaluate(CA.COLLECT, [[], [], overlay]);
         if (rects.length) {
-          const png = await page.screenshot({ fullPage: true });
+          const png = await SA.measureShot(page, overlay);
           const measured = await page.evaluate(CA.MEASURE,
             ['data:image/png;base64,' + png.toString('base64'), rects]);
           measured.forEach(m => {
@@ -340,6 +403,20 @@ const CASE_LOGS = {
           });
         }
       } catch (e) { note('CONTRAST-AUDIT could not run on ' + ck + ': ' + e.message); }
+    }
+
+    /* once per chunk: capture the ? help modal */
+    if (ck !== '(none)' && !helpSeen.has(ck)) {
+      helpSeen.add(ck);
+      seen.chunks.add(ck);
+      const t = await hostText();
+      note('\n==== CHUNK ' + ck + ' ====\n' + t.slice(0, 3000));
+      await shot(ck + '-enter');
+      /* ---- J13(b): CAN SHE READ IT — every rendered text node on this screen,
+         measured in real pixels off a screenshot the walker is taking anyway.
+         qa-readability keeps the per-THEME sweep; this is the half that makes
+         COVERAGE derived: a screen is measured because it was visited, not
+         because somebody remembered to add it to a list (DFM 271). ---- */
       const helped = await page.evaluate(() => {
         const b = document.querySelector('#help-beacon');
         if (b && !b.hidden) { b.click(); return true; }
@@ -1070,6 +1147,7 @@ const CASE_LOGS = {
     });
   }
   if (errs.length) bad.push('console errors: expected none, got ' + errs.length);
+  const LOCKED = new Set(['1', '2', '3', '4', '5', 'S1', 'j2-1', 'j2-2', 'j3-1', 'j3-2']);
   /* DFM 267(f): an interactive control nested inside another one is a defect of
      the same class as his Space bar, wherever the walk finds it. */
   if (nestedHits.length) {
@@ -1079,25 +1157,82 @@ const CASE_LOGS = {
   /* J13(b/c/d): the three derived audits. The DECLARED EXEMPTIONS are printed on
      every run, whether or not anything was found — an exemption nobody prints
      reads as a pass (DFM 204/213). */
-  note('\nDERIVED AUDITS — asked on all ' + contrastSeen.size + ' screen(s) this walk entered');
+  note('\nDERIVED AUDITS — asked on all ' + stateSeen.size + ' distinct SCREEN STATE(S) this walk stood on');
+  note('  (readability is keyed by state, not by chunk — the second-sit fix: ' + contrastSeen.size +
+       ' chunk(s), ' + stateSeen.size + ' states)');
   note('  contrast exemptions, declared: ' + CA.EXEMPTIONS.join(' · '));
   note('  empty-container exemptions, declared: ' + EE.EXEMPTIONS.join(' · '));
-  if (emptyHits.length) {
-    bad.push('visible empty containers: expected none, found ' + emptyHits.length);
-    emptyHits.forEach(h => bad.push('  ' + h));
+  note('  state-audit exemptions, declared: ' + SA.EXEMPTIONS.join(' · '));
+  note('  ledger exemptions, declared: ' + LD.EXEMPTIONS.join(' · '));
+  /* ---- A LOCKED LESSON'S EXPOSURE IS PRINTED, NOT FIXED (DFM 221 + 273a) ----
+     Keying readability by STATE instead of by chunk turned the audit on hundreds
+     of screens nobody had ever measured, and it found real faults on lessons he
+     signed off weeks ago — ten on Lesson 3, four on Lesson 4, eleven on Lesson 5.
+     Failing those walks would re-open his approvals, and he ruled on 28 August
+     that approvals are never re-opened and that a locked lesson's exposure is
+     REPORTED until he says the word. So on a locked lesson every finding is
+     printed IN FULL and the walk does not fail; on a lesson under review it
+     fails it. This is the same shape sit-wrongpath already uses for the
+     click-destroys-placed-work trap, and for the same reason. */
+  const waived = LOCKED.has(NUM);
+  const findingsOut = [];
+  if (emptyHits.length) findingsOut.push(['visible empty containers: expected none, found ' + emptyHits.length, emptyHits]);
+  if (clickHits.length) findingsOut.push(['a single click destroyed placed work: expected never, found ' + clickHits.length, clickHits]);
+  if (contrastHits.length) findingsOut.push(['text below its contrast floor: expected none, found ' + contrastHits.length, contrastHits]);
+  if (findingsOut.length && waived) {
+    note('\n' + findingsOut.reduce((a, f) => a + f[1].length, 0) + ' WAIVED FINDING(S) — ' + NUM +
+      ' is LOCKED and signed off, so these are PRINTED rather than fixed (DFM 221/273a).');
+    note('  They are real, and one word from him applies the fixes here too:');
+    findingsOut.forEach(f => { note('  · ' + f[0]); f[1].forEach(h => note('    - ' + h)); });
+  } else {
+    findingsOut.forEach(f => { bad.push(f[0]); f[1].forEach(h => bad.push('  ' + h)); });
   }
-  if (clickHits.length) {
-    bad.push('a single click destroyed placed work: expected never, found ' + clickHits.length);
-    clickHits.forEach(h => bad.push('  ' + h));
+  /* DFM 274, his own ruling of 28 Aug 2026 — and it applies to the locked
+     lessons too, in his words, so this is a FAILURE on every lesson and not a
+     printed note on the ones already signed off. */
+  if (stepsHits.length) {
+    bad.push('a numbered steps list is not left-aligned (DFM 274): found ' + stepsHits.length);
+    stepsHits.forEach(h => bad.push('  ' + h));
   }
-  if (contrastHits.length) {
-    bad.push('text below its contrast floor: expected none, found ' + contrastHits.length);
-    contrastHits.forEach(h => bad.push('  ' + h));
+  /* fits-its-card is a NEW law (S9) meeting old screens, so it follows the same
+     locked-lesson rule as readability: printed in full, never a silent pass, and
+     it fails only a lesson under review. J1 Lesson 3's LED panel is the first
+     thing it found — a decorative strip that bleeds 12px past its card on
+     purpose — which is exactly why a law this young does not get to re-open a
+     signed-off lesson on its own say-so (DFM 221/273a). */
+  if (fitsHits.length && LOCKED.has(NUM)) {
+    note('\n' + fitsHits.length + ' WAIVED FINDING(S) — ' + NUM + ' is LOCKED, so an element ' +
+      'that renders outside its card is PRINTED here rather than changed:');
+    fitsHits.forEach(h => note('  - ' + h));
+  } else if (fitsHits.length) {
+    bad.push('an element renders outside its own card: found ' + fitsHits.length);
+    fitsHits.forEach(h => bad.push('  ' + h));
   }
+  /* THE LEDGER GATE (S1). Debt this lesson ALREADY renders is printed on every
+     run and never silently carried; debt it did not render before is a failure,
+     because that is a new engine sentence walking onto a pupil card — the exact
+     path "Exit check — part 2" took. His approvals are never re-opened
+     (DFM 273a), so the baseline is what the shipped build already showed. */
+  const debtNow = [...debtSeen].map(l => l.replace(/^[^:]*: /, ''));
+  const debtVerdict = RD.check(NUM, debtNow);
+  note('\nENGINE-DEBT ON SCREEN — ' + debtNow.length + ' outstanding ledger sentence(s) rendered by ' + NUM);
+  debtNow.forEach(d => note('  · ' + d));
+  if (debtVerdict.unset) note('  (no ceiling committed yet — run qa-engine-debt.js to write ENGINE_STRINGS_RENDERED.md)');
+  if (debtVerdict.fresh.length) {
+    bad.push('a sentence still OUTSTANDING on ENGINE_STRINGS_DEBT.md reached a pupil card that ' +
+      'did not render it before: ' + debtVerdict.fresh.length);
+    debtVerdict.fresh.forEach(h => bad.push('  NEW DEBT ON SCREEN: ' + h));
+  }
+  if (debtVerdict.gone.length) {
+    note('  (' + debtVerdict.gone.length + ' baseline row(s) no longer rendered — re-run ' +
+      'qa-engine-debt.js to lower the ceiling)');
+  }
+  RD.write(NUM, debtNow);
   fs.writeFileSync(path.join(OUT, '_derived-audits.json'), JSON.stringify({
-    lesson: NUM, screens: [...contrastSeen],
+    lesson: NUM, chunks: [...contrastSeen], states: stateSeen.size,
     contrast: contrastHits, empty: emptyHits, click: clickHits,
-    exemptions: { contrast: CA.EXEMPTIONS, empty: EE.EXEMPTIONS }
+    steps: stepsHits, fits: fitsHits, engineDebt: debtNow, newDebt: debtVerdict.fresh,
+    exemptions: { contrast: CA.EXEMPTIONS, empty: EE.EXEMPTIONS, state: SA.EXEMPTIONS, ledger: LD.EXEMPTIONS }
   }, null, 1) + '\n');
   /* A WALK THAT REACHED NOTHING IS NEVER A PASS, WHATEVER THE PIN SAYS
      (16 Aug 2026, and it caught itself). J3 Lesson 1 was pinned with a

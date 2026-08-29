@@ -89,10 +89,77 @@
   var PairKit = global.PairKit = {
     st: null, _pollT: null, _chT: null, _handler: null, _onPoll: null, _dock: null, _seen: null,
     _onEnd: null, _hooks: null,
+    /* ---- WHAT THE CHANNEL HAS SAID, KEPT (S6b, 28 Aug 2026) --------------
+       A beat that arrived while no screen was listening used to be GONE. The
+       channel dispatched it, `_seen` marked it, and if the pupil was between
+       screens at that moment — still filling in her report while her partner's
+       run had already started — she lost the start of her own bot's session
+       for ever, with nothing on any screen to say so. There was no backfill
+       because there was nothing to back-fill FROM.
+       So the pairing keeps its own transcript, in sequence order, and a screen
+       that registers late is handed the whole thing (see `onEvent`). It is the
+       CLIENT route on purpose: the channel already stores the messages, the
+       server's own history is what fills this after a reload, and nothing on
+       the server side had to move for it. */
+    _log: null,
+    LOG_KEEP: 300,
+    transcript: function () { return (PairKit._log || []).slice(); },
+
+    /* ---- THE PACED SEND QUEUE (S6a) -------------------------------------
+       THE ROOT CAUSE, found in the server and confirmed on both sides
+       (dev-server.js `doPairSend`, PathB_Code.gs `apiPairSend`): a member may
+       send at most ONE channel message per second, and the refusal is
+       `{ok:false, error:'too-fast'}` — silent, because the Swap's relay never
+       read the reply. A bot that asks two questions and prints three lines
+       fires seven sends inside two seconds, so most of them never existed:
+       that is his missing second question and every missing printed line.
+       `send` is left exactly as it is, because the chat dock depends on its
+       immediate answer and shows its own "one message a second" toast to a
+       pupil who is TYPING — a deliberate act she can simply repeat. A machine
+       relay is not: a beat that is refused must be sent, not lost. So machine
+       traffic goes through `relay`, which holds one in flight at a time, waits
+       out the server's own limit, and retries. Order is therefore the order it
+       was queued, which is what makes the watch feed's sequence honest. */
+    RELAY_GAP_MS: 1100,
+    _q: null, _qT: null, _qBusy: false,
+    relay: function (ctx, kind, text) {
+      return new Promise(function (done) {
+        PairKit._q = PairKit._q || [];
+        PairKit._q.push({ ctx: ctx, kind: kind, text: String(text || ''), done: done, tries: 0 });
+        PairKit._pump();
+      });
+    },
+    _pump: function () {
+      if (PairKit._qBusy || !PairKit._q || !PairKit._q.length) return;
+      if (!PairKit.st) {                       /* the pair is gone: settle, never hang */
+        PairKit._q.splice(0, PairKit._q.length).forEach(function (j) { j.done({ ok: false, error: 'no-pair' }); });
+        return;
+      }
+      PairKit._qBusy = true;
+      var j = PairKit._q[0];
+      var again = function () {
+        PairKit._qBusy = false;
+        PairKit._qT = setTimeout(function () { PairKit._pump(); }, PairKit.RELAY_GAP_MS);
+      };
+      PairKit.send(j.ctx, j.kind, j.text).then(function (r) {
+        if (r && r.ok) { PairKit._q.shift(); j.done(r); return again(); }
+        /* the server's own rate limit: wait it out. Anything else is a real
+           refusal and is reported rather than retried for ever — a queue that
+           never empties is its own kind of silent failure (DFM 42). */
+        if (r && r.error === 'too-fast' && ++j.tries < 12) return again();
+        PairKit._q.shift(); j.done(r || { ok: false, error: 'transport' });
+        return again();
+      }, function () {
+        if (++j.tries < 12) return again();
+        PairKit._q.shift(); j.done({ ok: false, error: 'transport' });
+        return again();
+      });
+    },
 
     stop: function () {
       if (PairKit._pollT) { clearTimeout(PairKit._pollT); PairKit._pollT = null; }
       if (PairKit._chT) { clearTimeout(PairKit._chT); PairKit._chT = null; }
+      if (PairKit._qT) { clearTimeout(PairKit._qT); PairKit._qT = null; }
       PairKit._handler = null; PairKit._onPoll = null; PairKit._dock = null; PairKit._onEnd = null;
     },
 
@@ -136,6 +203,7 @@
       PairKit._w = words || null;
       PairKit._hooks = hooks || null;
       PairKit.st = null; PairKit._seen = {};
+      PairKit._log = []; PairKit._q = []; PairKit._qBusy = false;
       if (ctx.review || ctx.catchup) { cb('solo'); return; }
       if (!Number(App.state.pairing)) { cb('social'); return; }
       var stageIdx = Number(App.state.chunkIdx);
@@ -198,9 +266,29 @@
           PairKit._hooks.onWaiting(box.querySelector('.pw-side'), Date.now() - began, box);
         }
         var hint = box.querySelector('.pw-hint');
-        if (Date.now() - began > 180000) {
+        if (Date.now() - began > PairKit.WAIT_HINT_MS) {
           hint.hidden = false;
           hint.textContent = PairKit.say('waitLongSay', 'Waiting a while? Wave your teacher over — they can clear you for a solo run.');
+          /* ⭐ HIS RULING, 28 Aug 2026 (S12). The Swap's long-wait hint told her
+             to "press the button below and test your own bot instead" — and the
+             only button below LEFT the Swap. A sentence that names a control
+             that is not there is rule 35 broken by the screen itself, and it is
+             worse than saying nothing, because she will look for it.
+             The button is CONTENT-GATED: J1's Vault supplies no `waitOwnLabel`,
+             so the Vault's waiting card renders byte for byte as it always has
+             (the same gate that keeps every other lesson's wording its own). */
+          if (PairKit.say('waitOwnLabel', '') && !box.querySelector('.pw-own')) {
+            var ownBox = box.querySelector('.pw-out');
+            ownBox.insertAdjacentHTML('afterbegin',
+              '<button class="primary-btn pw-own" type="button">' +
+              esc(PairKit.say('waitOwnLabel', '')) + '</button>');
+            App.armButton(box.querySelector('.pw-own'), function () {
+              if (PairKit._hooks && PairKit._hooks.onWaitOver) PairKit._hooks.onWaitOver('own');
+              PairKit.stop();
+              if (box) box.remove();
+              cb('own');
+            });
+          }
         }
       }
       function poll() {
@@ -314,7 +402,21 @@
       }, cb);
     },
 
-    onEvent: function (fn) { PairKit._handler = fn; },
+    /* the long-wait threshold, named rather than buried, so it has one home,
+       a row in HUMAN_PACE_INVENTORY.md, and a harness can wind it forward to
+       stand on the state it produces instead of waiting three real minutes */
+    WAIT_HINT_MS: 180000,
+
+    /* A SCREEN THAT ARRIVES LATE IS TOLD WHAT IT MISSED (S6b). Registering a
+       handler replays the pairing's transcript into it, in sequence order, so
+       the watch feed is built from the same code path whether a beat arrived a
+       minute ago or a moment ago. The caller de-duplicates by sequence, which
+       is what makes "exactly once, in order" true of both halves at once. */
+    onEvent: function (fn) {
+      PairKit._handler = fn;
+      if (!fn) return;
+      (PairKit._log || []).forEach(function (e) { try { fn(e); } catch (err) { /* one bad beat never stops the rest */ } });
+    },
     onPoll: function (fn) { PairKit._onPoll = fn; },
     /* AUDIT FIX C-11: the teacher's "Reset pairing" now DISSOLVES pairs instead
        of deleting the registry, and says so on the channel (dis:1). Without this
@@ -349,6 +451,11 @@
       var seq = Number(e[0]);
       if (PairKit._seen[seq]) return;
       PairKit._seen[seq] = 1;
+      /* kept BEFORE it is delivered, so a screen that mounts one tick later
+         gets it too — the whole of S6b in one line */
+      PairKit._log = PairKit._log || [];
+      PairKit._log.push(e);
+      if (PairKit._log.length > PairKit.LOG_KEEP) PairKit._log = PairKit._log.slice(-PairKit.LOG_KEEP);
       if (PairKit._dock) PairKit._dock(e);
       if (PairKit._handler) PairKit._handler(e);
     },
@@ -841,6 +948,9 @@
            The only caller is a harness walk seeding `random` so a pinned shape
            can exist at all (DFM 199 -- never pin a number that can move).
          - opts.epilogue: lines run AFTER, printing the probe block SS A4 reads.
+         - opts.onOut: called with each fragment the program prints, as it is
+           printed. The Swap uses it to relay a conversation in the order it
+           really happened; everything else ignores it and is untouched.
        ABANDONMENT IS NEVER A TRAP (DFM 143/265c). `start` hands back an
        `abandon()` that REJECTS every pending input, so a pupil who leaves a
        screen mid-conversation settles the run instead of leaving a suspended
@@ -858,7 +968,17 @@
       var p = PyRun.load().then(function () {
         var out = '';
         var conf = {
-          output: function (t) { out += t; },
+          /* `onOut` IS OPT-IN, AND IT EXISTS FOR ONE REASON (S6a). The Chatbot
+             Swap's builder watches her own bot being used on somebody else's
+             machine, and until this round the printed lines only reached her as
+             one clump AFTER the run finished — so the order she saw could never
+             be the order it happened in. Skulpt calls `output` per write rather
+             than per print, so the caller does the line-buffering; a caller that
+             asks for nothing gets exactly the run it got yesterday. */
+          output: function (t) {
+            out += t;
+            if (opts.onOut) { try { opts.onOut(t); } catch (e) { /* a relay must never stop a run */ } }
+          },
           read: function (x) {
             if (Sk.builtinFiles === undefined || Sk.builtinFiles.files[x] === undefined) {
               throw 'File not found: ' + x;
@@ -3443,8 +3563,22 @@
          numbering their steps inside `intro`, which the card renders as one run-on
          paragraph — the fault the rule names. `introCard` has always been able to
          draw an <ol>; the parsons card just never handed it one. */
-      introCard(host, { kicker: 'Exit check — part 2', title: cfg.title || 'Build the program',
-        text: cfg.intro || '', steps: cfg.steps || null, after: cfg.introAfter || null }, 'Ready', build);
+      /* ⭐ S1 — HIS SECOND SIT, AND THE ONE THAT SHOULD HAVE BEEN IMPOSSIBLE.
+         "Exit check — part 2" was hard-coded here, and it had been sitting on
+         line 119 of ENGINE_STRINGS_DEBT.md marked OUTSTANDING for days. On 27
+         August a NEW card — j2-03's "Training build 2" — mounted this engine,
+         and the parked string walked straight onto a pupil's screen saying she
+         was in an exit check when she was in a training build. We knew, and
+         knowing changed nothing: the ledger was a memo no gate read. It is a
+         gate now (lib/ledger.js, both walkers, ratcheted per lesson).
+         The kicker is the CONTENT'S, defaulting to the chunk's own title, so a
+         card can never again be labelled by whichever lesson happened to mount
+         the engine first. Lesson 3's exit check names its own kicker, so it
+         renders exactly the words it renders today. */
+      introCard(host, { kicker: cfg.introKicker || chunk.title || '',
+        title: cfg.title || 'Build the program',
+        text: cfg.intro || '', steps: cfg.steps || null, after: cfg.introAfter || null },
+        cfg.readyLabel || 'Ready', build);
 
       function build() {
         /* DAMIEN, 4 Aug 2026 (DFM 151). Three faults, all his:
@@ -3459,18 +3593,39 @@
            - "Tap a block to add it" used the banned word (DFM 150), and he
              expected to DRAG. Dragging is built; clicking still works. */
         var howMany = it.blocks.length;
+        /* CONTENT OWNS THESE TWO SENTENCES NOW (S1's ledger sweep). They named
+           "blocks" while both L3 lessons call them LINES on every other surface,
+           and they named "Your program" while the tray beside them is whatever
+           `trayLabel` says — two more places for one screen to call one thing
+           two names, which is the fault `trayLabel` was added to close. The
+           count is TEMPLATED as {n} and never typed twice (DFM's numeral-tie
+           law, J5: compute the count or template it, never author it). Both
+           defaults are the shipped wording, so a lesson that names neither
+           renders exactly as it does today. */
+        /* THE LESSON'S SENTENCE IS ESCAPED; THE SHIPPED DEFAULT IS NOT. The
+           same rule PairKit already uses for its own first-meeting wordings: a
+           lesson may never put markup on a pupil's screen, and the default —
+           which carries its own entities and its own <b> — renders exactly the
+           markup every signed-off puzzle renders today (DFM 176). `**bold**`
+           is the authoring form for a lesson that wants emphasis. */
+        var own = function (v, dflt) {
+          return v == null ? String(dflt) : fmtBold(String(v));
+        };
+        var fillN = function (t) { return String(t).replace(/\{n\}/g, String(howMany)); };
         var goalLine = STACKS
-          ? 'Your challenge: build the program yourself. Move all ' + howMany +
-            ' blocks across &mdash; this scoreboard is <b>TWO separate stacks</b>, so build each job in its own box:'
-          : 'Your challenge: build the program yourself. Move all ' + howMany +
-            ' blocks across into <em>Your program</em>, and put them in the order that makes this happen:';
+          ? fillN(own(cfg.goalLineStacks, 'Your challenge: build the program yourself. Move all {n}' +
+            ' blocks across &mdash; this scoreboard is <b>TWO separate stacks</b>, so build each job in its own box:'))
+          : fillN(own(cfg.goalLine, 'Your challenge: build the program yourself. Move all {n}' +
+            ' blocks across into <em>Your program</em>, and put them in the order that makes this happen:'));
+        /* the same sweep: content owns the how-to line, and the default is the
+           shipped sentence word for word so no locked puzzle moves (DFM 176) */
         var howLine = STACKS
-          ? '<b>How to build it:</b> drag each block into the right job &mdash; or click it to drop it into ' +
+          ? own(cfg.howLineStacks, '<b>How to build it:</b> drag each block into the right job &mdash; or click it to drop it into ' +
             'the first empty space. Drag blocks up and down inside a job, and drag one back to <b>Blocks</b> ' +
-            'to take it out again.'
-          : '<b>How to build it:</b> drag a block from <b>Blocks</b> across into ' +
+            'to take it out again.')
+          : own(cfg.howLine, '<b>How to build it:</b> drag a block from <b>Blocks</b> across into ' +
             '<b>Your program</b> &mdash; or just click it, if you prefer. Drag the blocks up and down to change ' +
-            'the order, and drag one back to <b>Blocks</b> to take it out again.';
+            'the order, and drag one back to <b>Blocks</b> to take it out again.');
         var progSide = STACKS
           ? '<div class="parsons-prog is-stacked"><h3>Your program</h3>' +
             STACKS.map(function (st, k) {
@@ -3496,7 +3651,15 @@
           /* DFM 204, same family: born disabled with nothing saying why. */
           '<p class="case-locked-note parsons-locked-note">' + esc(cfg.lockedNote ||
             'Click every block from the tray into your program, then this button wakes up.') + '</p>' +
-          '<button class="primary-btn parsons-check" type="button" disabled>Check my program</button>' +
+          /* THE CHECK BUTTON'S NAME IS THE CONTENT'S (29 Aug 2026, the cold
+             reader's find). The help text tells her to press "Check my program"
+             and the label was an engine literal, so the name she is sent to
+             looking for appeared nowhere in the transcript anybody judges — the
+             reader could not confirm the button exists, and neither could a
+             machine. The default is the shipped wording, so no locked puzzle
+             moves (DFM 176). */
+          '<button class="primary-btn parsons-check" type="button" disabled>' +
+          esc(cfg.checkLabel || 'Check my program') + '</button>' +
           '<div class="q-feedback" hidden></div></div>');
         host.appendChild(c);
         var tray = c.querySelector('.pt-list');
@@ -3909,6 +4072,17 @@
     wrongSay: 'Not a pair. Both go back — look at them again and try another one.',
     rightSay: 'That is a pair. Both are locked in.',
     lockedNote: 'Move at least one line into your program, then RUN wakes up.',
+    /* S2(b), his second J2 L3 sit. A program holding two real input() lines
+       died on a spliced line, and the checklist reported ALL THREE jobs "NOT
+       WORKING YET" — including "Your bot asks two questions", which was TRUE.
+       The probes never ran, because the probe pass dies on the same line the
+       live run died on; so the card was not reporting a result, it was
+       reporting the absence of one, in the words of a failure. A screen that
+       blames a pupil for something it did not measure is rule 35's family at
+       its worst. Nothing is claimed now: the run stopped, and the console says
+       why. */
+    runDiedSay: 'Your program stopped before it could be checked — read the console.',
+    notCheckedLabel: 'not checked',
     blankEmptySay: 'One of the boxes is still empty. Type something into it, then press RUN.',
     trayEmpty: 'Every line is in your program.',
     progEmpty: 'Nothing here yet — drag or click a line across.',
@@ -4214,13 +4388,28 @@
             (doneJobs[b.id] ? '<span class="pyrun-job-tick">' + esc(cfg.doneTick || 'job done') + '</span>' : '') +
             '</button>';
         }).join('');
+        /* ---- S11(a): A FINISHED SET IS NOT A DEAD END --------------------
+           His second sit: all three extra jobs ticked, and the only way onward
+           was still a quiet grey line at the bottom that begins "Running out of
+           time?" — a sentence written for a pupil who is ABANDONING the zone,
+           offered to one who has finished it. She had done everything the
+           screen asked and the screen had nothing to say about it.
+           No silent auto-advance (that would take the choice off her, and this
+           zone's whole promise is that she decides): the row PROMOTES. One
+           primary button, saying what is true — that is all three — and one
+           click. Content-gated on `allDoneLabel`, so a pyrun zone that does not
+           supply one renders exactly the row it renders today. */
+        var allDone = builds.length > 0 && builds.every(function (bb) { return doneJobs[bb.id]; });
+        var promoted = allDone && (cfg.allDoneLabel || '');
         var c = el('<div class="card pyrun-hub">' +
           '<span class="intro-kicker">' + esc(cfg.kicker || '') + '</span>' +
           '<h2>' + esc(cfg.title || '') + '</h2>' +
           '<p class="intro-lead">' + fmtBold(lead) + '</p>' +
           '<div class="pyrun-jobs">' + jobs + '</div>' +
-          '<div class="rung-actions pyrun-exit-row">' +
-          '<button class="ghost-btn pyrun-finish" type="button">' + esc(finishLabel()) + '</button>' +
+          (promoted ? '<p class="pyrun-alldone-say">' + fmtBold(cfg.allDoneSay || '') + '</p>' : '') +
+          '<div class="rung-actions pyrun-exit-row' + (promoted ? ' is-alldone' : '') + '">' +
+          '<button class="' + (promoted ? 'primary-btn' : 'ghost-btn') + ' pyrun-finish" type="button">' +
+          esc(promoted ? cfg.allDoneLabel : finishLabel()) + '</button>' +
           '</div></div>');
         host.appendChild(c);
         c.querySelectorAll('.pyrun-job').forEach(function (btn) {
@@ -4564,6 +4753,63 @@
          never appears (DFM 210).
          THE CHECKLIST STAYS ON SCREEN BESIDE THE EDITOR (K38e), so what she is
          being asked for is never one screen behind what she is typing. */
+      /* ---- ONE CHIP, ONE ROUTE IN (S2a, DFM 144) -------------------------
+         Both editor faces draw the same palette chip and both wire it the same
+         way, so the markup and the wiring live in ONE place. They did not, and
+         the cost was exactly the fault he met: the fix would have had to be
+         written twice and one of the two would have been missed. */
+      function chipHtml(t, i) {
+        /* DRAGGABLE="FALSE" IS THE FIX ON THIS SIDE. The chip was wired for
+           CLICK only; a pupil who DRAGGED one handed the job to the browser's
+           own text-drag, which splices the raw characters at the drop caret —
+           straight through the middle of a working line, past `ed.insert()`'s
+           newline discipline. That is his merged line 3 and the SyntaxError
+           after it. Marking the chip and its parts undraggable stops the
+           browser inventing a drag; the editor below accepts a real one. */
+        return '<button class="pyp-chip" type="button" draggable="false" data-i="' + i + '">' +
+          '<b class="pyp-chip-name" draggable="false">' + esc(t.label || '') + '</b>' +
+          '<code class="pyp-chip-code" draggable="false">' + esc(t.line || '') + '</code></button>';
+      }
+      /* `put(i)` is the card's own insert-and-say-so; everything below just
+         decides when to call it, so a click and a drag can never diverge. */
+      function wireChips(card, ed, put) {
+        var dragging = null;
+        card.querySelectorAll('.pyp-chip').forEach(function (btn) {
+          btn.onclick = function () { put(btn.getAttribute('data-i')); };
+          btn.addEventListener('dragstart', function (e) {
+            dragging = btn.getAttribute('data-i');
+            try {
+              e.dataTransfer.effectAllowed = 'copy';
+              e.dataTransfer.setData('text/x-ols-chip', String(dragging));
+            } catch (err) { /* a browser that refuses custom types still has `dragging` */ }
+          });
+          btn.addEventListener('dragend', function () { dragging = null; });
+        });
+        if (!ed || !ed.area) return;
+        /* THE EDITOR TAKES THE DROP ITSELF. Without this the textarea's default
+           handler runs, and the default handler IS the splice. A drop carrying
+           anything else — a file, text from another page — is left alone: it is
+           not a chip and this card has no business claiming it. */
+        ['dragenter', 'dragover'].forEach(function (evt) {
+          ed.area.addEventListener(evt, function (e) {
+            if (dragging == null) return;
+            e.preventDefault();
+            try { e.dataTransfer.dropEffect = 'copy'; } catch (err) { /* older engine */ }
+            ed.area.classList.add('is-chip-drop');
+          });
+        });
+        ed.area.addEventListener('dragleave', function () { ed.area.classList.remove('is-chip-drop'); });
+        ed.area.addEventListener('drop', function (e) {
+          if (dragging == null) return;
+          e.preventDefault();
+          ed.area.classList.remove('is-chip-drop');
+          var i = dragging; dragging = null;
+          /* the caret may be sitting mid-line where the pointer left it;
+             `insert()` normalises to whole-line boundaries either way */
+          put(i);
+        });
+      }
+
       function startEditor() {
         host.innerHTML = '';
         var b = builds[at];
@@ -4585,9 +4831,7 @@
             '<p class="pyp-palette-lead">' + fmtBold(b.paletteLead || cfg.paletteLead || '') + '</p>' +
             '<div class="pyp-palette-list">' + trayOrder.map(function (i) {
               var t = b.palette[i];
-              return '<button class="pyp-chip" type="button" data-i="' + i + '">' +
-                '<b class="pyp-chip-name">' + esc(t.label || '') + '</b>' +
-                '<code class="pyp-chip-code">' + esc(t.line || '') + '</code></button>';
+              return chipHtml(t, i);
             }).join('') + '</div></div>'
           : '';
 
@@ -4623,20 +4867,20 @@
            just happened and what to do with it; after that they land quietly,
            because a tip repeated on every click is noise. */
         var firstInsert = true;
-        c.querySelectorAll('.pyp-chip').forEach(function (btn) {
-          btn.onclick = function () {
-            var t = b.palette[Number(btn.getAttribute('data-i'))];
-            ed.insert(String(t.line || ''));
-            if (firstInsert && (b.firstInsertSay || cfg.firstInsertSay)) {
-              firstInsert = false;
-              var note = c.querySelector('.pye-first-note');
-              if (!note) {
-                note = el('<p class="pye-first-note">' + fmtBold(b.firstInsertSay || cfg.firstInsertSay) + '</p>');
-                c.querySelector('.pye-main').insertBefore(note, c.querySelector('.pyp-palette'));
-              }
+        function putChip(i) {
+          var t = b.palette[Number(i)];
+          if (!t) return;
+          ed.insert(String(t.line || ''));
+          if (firstInsert && (b.firstInsertSay || cfg.firstInsertSay)) {
+            firstInsert = false;
+            var note = c.querySelector('.pye-first-note');
+            if (!note) {
+              note = el('<p class="pye-first-note">' + fmtBold(b.firstInsertSay || cfg.firstInsertSay) + '</p>');
+              c.querySelector('.pye-main').insertBefore(note, c.querySelector('.pyp-palette'));
             }
-          };
-        });
+          }
+        }
+        wireChips(c, ed, putChip);
         var sb = c.querySelector('.pye-starter-btn');
         if (sb) {
           sb.onclick = function () {
@@ -4651,22 +4895,25 @@
           };
         }
 
-        function paintFeatures(results, ran) {
+        function paintFeatures(results, ran, stopped) {
           feats.forEach(function (f) {
             var row = c.querySelector('.pyf-item[data-f="' + f.id + '"]');
             if (!row) return;
             var hit = (results || []).find(function (r) { return r.id === f.id; });
             var ok = !!(hit && hit.ok);
             if (ok) state[f.id] = true;
-            row.className = 'pyf-item ' + (ok ? 'is-matched' : (ran ? 'is-notyet' : ''));
+            row.className = 'pyf-item ' + (ok ? 'is-matched' : (stopped ? 'is-stopped' : (ran ? 'is-notyet' : '')));
             row.querySelector('.pyf-tag').textContent = ok
               ? (b.matchedLabel || cfg.matchedLabel || 'MATCHED')
-              : (ran ? (b.notYetLabel || cfg.notYetLabel || 'NOT YET')
-                     : (b.pendingLabel || cfg.pendingLabel || 'not yet'));
+              : (stopped ? (b.notCheckedLabel || cfg.notCheckedLabel || PY_SAY.notCheckedLabel)
+                 : (ran ? (b.notYetLabel || cfg.notYetLabel || 'NOT YET')
+                        : (b.pendingLabel || cfg.pendingLabel || 'not yet')));
             /* LEVEL 3 (K38b): a look-here nudge, and only ever a look-here. It
                names what to INSPECT and never the line to change. */
             var nu = row.querySelector('.pyf-nudge');
-            if (!ok && ran && f.nudge) { nu.hidden = false; nu.textContent = f.nudge; }
+            /* a nudge on a run that never ran is a hint about a fault that has
+               not been shown to exist — never on a stopped run */
+            if (!ok && ran && !stopped && f.nudge) { nu.hidden = false; nu.textContent = f.nudge; }
             else { nu.hidden = true; nu.textContent = ''; }
           });
         }
@@ -4726,6 +4973,11 @@
             PyRun.clearWaitNote(runBtn);
             if (chat) chat.closeAsk();
             con.show(res, cfg.errorWords || {});
+            /* THE RUN DIED, SO NOTHING WAS MEASURED, SO NOTHING IS CLAIMED
+               (S2b). The probe pass runs the SAME source and dies on the SAME
+               line, so every probe would come back false and the checklist
+               would print three failures over work that was fine. */
+            if (!res.ok) { runStopped(res); return; }
             if (!feats.length) { settle(res, PyRun.matches(res.out, b.target || []), []); return; }
             PyRun.checkFeatures(code, feats, {
               answers: b.probeAnswers || cfg.probeAnswers || [],
@@ -4744,6 +4996,21 @@
             });
           });
         };
+
+        /* A RUN THAT NEVER RAN IS NOT AN ATTEMPT AGAINST HER. `attempts` was
+           already counted when RUN was pressed, and the bonus is paid on what
+           was real "on the very first RUN" — so leaving the count up would mean
+           a syntax error on press one silently cost her the whole bonus for
+           every press after it (DFM 265's family: never a price she cannot see
+           and did not choose). */
+        function runStopped(res) {
+          attempts = Math.max(0, attempts - 1);
+          paintFeatures([], false, true);
+          verdict.hidden = false;
+          verdict.className = 'pyrun-verdict is-note';
+          verdict.innerHTML = '<p>' + esc(b.runDiedSay || cfg.runDiedSay || PY_SAY.runDiedSay) + '</p>';
+          runBtn.disabled = false;
+        }
 
         function settle(res, ok, results) {
           verdict.hidden = false;
@@ -4948,9 +5215,7 @@
               '<p class="pyp-palette-lead">' + fmtBold(b.paletteLead || cfg.paletteLead || '') + '</p>' +
               '<div class="pyp-palette-list">' + palOrder.map(function (i) {
                 var t = pal[i];
-                return '<button class="pyp-chip" type="button" data-i="' + i + '">' +
-                  '<b class="pyp-chip-name">' + esc(t.label || '') + '</b>' +
-                  '<code class="pyp-chip-code">' + esc(t.line || '') + '</code></button>';
+                return chipHtml(t, i);
               }).join('') + '</div></div>'
             : '';
           /* THE JOBS ARE NUMBERED HERE TOO. The plan face numbers them 1, 2, 3
@@ -5011,18 +5276,17 @@
           }
           PyRun.load().catch(function () { /* reported honestly at RUN */ });
 
-          c.querySelectorAll('.pyp-chip').forEach(function (btn) {
-            btn.onclick = function () {
-              var t = pal[Number(btn.getAttribute('data-i'))];
-              ed.insert(String(t.line || ''));
-              if (firstInsert && (b.firstInsertSay || cfg.firstInsertSay)) {
-                firstInsert = false;
-                if (!c.querySelector('.pye-first-note')) {
-                  var note = el('<p class="pye-first-note">' + fmtBold(b.firstInsertSay || cfg.firstInsertSay) + '</p>');
-                  c.querySelector('.pyp-palette').insertAdjacentElement('afterend', note);
-                }
+          wireChips(c, ed, function (i) {
+            var t = pal[Number(i)];
+            if (!t) return;
+            ed.insert(String(t.line || ''));
+            if (firstInsert && (b.firstInsertSay || cfg.firstInsertSay)) {
+              firstInsert = false;
+              if (!c.querySelector('.pye-first-note')) {
+                var note = el('<p class="pye-first-note">' + fmtBold(b.firstInsertSay || cfg.firstInsertSay) + '</p>');
+                c.querySelector('.pyp-palette').insertAdjacentElement('afterend', note);
               }
-            };
+            }
           });
           var sb = c.querySelector('.pye-starter-btn');
           if (sb) {
@@ -5038,22 +5302,23 @@
             };
           }
 
-          function paintJobs(results, ran) {
+          function paintJobs(results, ran, stopped) {
             feats.forEach(function (f) {
               var row = c.querySelector('.pyf-item[data-f="' + f.id + '"]');
               if (!row) return;
               var hit = (results || []).find(function (r) { return r.id === f.id; });
               var ok = !!(hit && hit.ok);
               if (ok) state[f.id] = true;
-              row.className = 'pyf-item ' + (ok ? 'is-matched' : (ran ? 'is-notyet' : ''));
+              row.className = 'pyf-item ' + (ok ? 'is-matched' : (stopped ? 'is-stopped' : (ran ? 'is-notyet' : '')));
               var num = row.querySelector('.pyf-num');
               row.querySelector('.pyf-tag').textContent = ok
                 ? (b.doneLabel || cfg.doneLabel || 'done')
-                : (ran ? (b.notYetLabel || cfg.notYetLabel || 'NOT YET')
-                       : (b.pendingLabel || cfg.pendingLabel || 'not yet'));
+                : (stopped ? (b.notCheckedLabel || cfg.notCheckedLabel || PY_SAY.notCheckedLabel)
+                   : (ran ? (b.notYetLabel || cfg.notYetLabel || 'NOT YET')
+                          : (b.pendingLabel || cfg.pendingLabel || 'not yet')));
               if (num) row.querySelector('.pyf-tag').insertBefore(num, row.querySelector('.pyf-tag').firstChild);
               var nu = row.querySelector('.pyf-nudge');
-              if (!ok && ran && f.nudge) { nu.hidden = false; nu.textContent = f.nudge; }
+              if (!ok && ran && !stopped && f.nudge) { nu.hidden = false; nu.textContent = f.nudge; }
               else { nu.hidden = true; nu.textContent = ''; }
             });
           }
@@ -5090,6 +5355,21 @@
               PyRun.clearWaitNote(runBtn);
               if (chat) chat.closeAsk();
               needConsole().show(res, cfg.errorWords || {});
+              /* S2(b) — HIS "FIXES NOT RECOGNISED". This is the card he sat.
+                 The run died on the spliced line, the probe pass died with it,
+                 and the strip told him three jobs were NOT WORKING YET while
+                 two of them were plainly done. Nothing is measured here, so
+                 nothing is claimed; the console already says exactly what
+                 Python said and one plain line under it says what to look at. */
+              if (!res.ok) {
+                attempts = Math.max(0, attempts - 1);
+                paintJobs([], false, true);
+                verdict.hidden = false;
+                verdict.className = 'pyrun-verdict is-note';
+                verdict.innerHTML = '<p>' + esc(b.runDiedSay || cfg.runDiedSay || PY_SAY.runDiedSay) + '</p>';
+                runBtn.disabled = false;
+                return;
+              }
               if (!feats.length) { settleStaged(res, PyRun.matches(res.out, b.target || []), [], c, verdict, ed, runBtn); return; }
               /* HER RUN IS HER RUN; the VERDICT is a second, silent pass under
                  fixed probe answers, so what the jobs strip reports is the same
@@ -5263,6 +5543,35 @@
             : ((b.runCheckedSay || cfg.runCheckedSay)
               ? '<p class="pyrun-runcheck">' + fmtBold(b.runCheckedSay || cfg.runCheckedSay) + '</p>'
               : '')) +
+          /* ---- S10: A FREE-WRITING CARD SHOWS WHAT FINISHED LOOKS LIKE -----
+             His second sit, on the weekend job: "unreadable as a task". The
+             card had no picture of success. A build with a TARGET shows the
+             exact output it is aiming at; a build whose words are HERS can show
+             no such thing — and the answer had been to show nothing, so she was
+             left with three gap labels floating over a program and no idea what
+             a finished run was supposed to look like.
+             So a free-writing card carries ONE WAY IT COULD GO: a short worked
+             exchange in the same shape as the conversation panel below it, and
+             labelled, unmissably, as one way and not the way (DFM 210 — the
+             finished answer never appears, and this is somebody else's bot
+             talking about somebody else's weekend). Content-owned and
+             config-gated: a build that names no `example` renders byte for byte
+             as it does today, which is what keeps eleven signed-off lessons
+             where they are. */
+          ((b.example && b.example.lines && b.example.lines.length)
+            ? '<div class="pyrun-example">' +
+              '<p class="pyrun-example-lead">' + fmtBold(b.example.lead || '') + '</p>' +
+              '<div class="pyrun-example-log">' + b.example.lines.map(function (ln) {
+                var mine = String(ln.who || 'bot') === 'you';
+                return '<div class="pyx-row is-' + (mine ? 'user' : 'bot') + '">' +
+                  '<span class="pyx-who">' + esc(mine
+                    ? ((cfg.chatLabels || {}).userWho || 'You')
+                    : ((cfg.chatLabels || {}).botWho || 'The bot')) + '</span>' +
+                  '<span class="pyx-text">' + esc(String(ln.text || '')) + '</span></div>';
+              }).join('') + '</div>' +
+              (b.example.after ? '<p class="pyrun-example-after">' + fmtBold(b.example.after) + '</p>' : '') +
+              '</div>'
+            : '') +
           '<p class="pyrun-how">' + fmtBold(cfg.howLine || '') + '</p>' +
           '<div class="pyrun-cols">' +
           '<div class="pyrun-tray"><h3>' + esc(cfg.trayLabel || 'The lines') + '</h3><div class="pyt-list"></div></div>' +
@@ -5804,6 +6113,11 @@
         mode = m;
         if (m === 'left') { finish(false); return; }
         if (m === 'paired') { publish(); return; }
+        /* S12: she stopped waiting and asked to test her own bot. It goes
+           through the SOLO SEAT rather than straight into the test, because a
+           mode that changes the rules announces itself (DFM 146e) — the card
+           says what is happening before it happens, in the lesson's words. */
+        if (m === 'own') { soloSeat(cfg.ownBotSay || ''); return; }
         soloSeat();
       }
 
@@ -5870,8 +6184,28 @@
         function start(src) {
           chat.clear();
           con.running();
+          /* ---- S6a: A PRINTED LINE IS RELAYED WHEN IT IS PRINTED -----------
+             The shipped engine relayed every question as it was asked and every
+             reply as it was typed, but split the WHOLE console output at the end
+             of the run and sent it as one burst. So the builder's feed always
+             read: both questions, both replies, then every printed sentence in a
+             clump — and conversation order was structurally impossible for any
+             bot that prints between questions, which is every bot this lesson
+             teaches. Skulpt calls `output` per write, so the fragments are held
+             until a newline and relayed a whole line at a time: what she reads
+             on her own screen is what her partner reads on theirs. */
+          var outBuf = '';
           liveRun = PyRun.start(src, {
             limitMs: Number(cfg.limitMs || 0) || undefined,
+            onOut: function (chunk) {
+              outBuf += String(chunk == null ? '' : chunk);
+              var i;
+              while ((i = outBuf.indexOf('\n')) !== -1) {
+                var line = outBuf.slice(0, i);
+                outBuf = outBuf.slice(i + 1);
+                if (line.trim()) relay('bot', line);
+              }
+            },
             inputfun: function (prompt) {
               relay('bot', prompt);
               return chat.ask(prompt, cfg.botWho || (cfg.chatLabels || {}).botWho, cfg.sendLabel)
@@ -5882,11 +6216,11 @@
             liveRun = null;
             chat.closeAsk();
             con.show(res, cfg.errorWords || {});
+            /* a last line with no newline after it is still a line she read */
+            if (outBuf.trim()) { relay('bot', outBuf); }
+            outBuf = '';
             /* a bot that fell over is a FINDING, not a failure: the report is
                armed either way, and the card says so */
-            (PyRun.tidy(res.out) || '').split('\n').forEach(function (line) {
-              if (line) relay('bot', line);
-            });
             reportBtn.disabled = false;
             phases = Math.max(phases, 2);
             var note = el('<p class="swap-done-say">' + fmtBold(res.ok ? (cfg.testDoneSay || '') : (cfg.testBrokeSay || '')) + '</p>');
@@ -5896,7 +6230,12 @@
         function relay(who, text) {
           if (solo || !PairKit.st) return;
           var t = String(text).slice(0, 100);
-          PairKit.send(ctx, 'msg', (who === 'bot' ? (cfg.relayBot || 'bot') : (cfg.relayYou || 'tester')) + ': ' + t);
+          /* THROUGH THE QUEUE, NEVER STRAIGHT AT THE CHANNEL. The server allows
+             one message per member per second and refuses the rest silently;
+             the queue holds one in flight, waits the limit out and retries, so
+             the beats arrive in the order they happened and none is lost. */
+          return PairKit.relay(ctx, 'msg',
+            (who === 'bot' ? (cfg.relayBot || 'bot') : (cfg.relayYou || 'tester')) + ': ' + t);
         }
 
         if (solo) { start(code); }
@@ -5978,7 +6317,12 @@
              read it like every other thing one pupil sends another, and into the
              blob so it survives a reload (a channel keeps only its last events) */
           PairKit.blob(ctx, 'put', 'report', text).then(function () {
-            return PairKit.send(ctx, 'msg', (cfg.reportTag || 'REPORT') + ' ' + text);
+            /* THE REPORT QUEUES BEHIND THE BEATS, and that is the point: fired
+               straight at the channel it could land inside the one-second
+               window a relay had just used and be refused exactly as the beats
+               were — leaving the partner watching a screen that would never
+               advance. Same queue, same order, nothing lost. */
+            return PairKit.relay(ctx, 'msg', (cfg.reportTag || 'REPORT') + ' ' + text);
           }).then(function () { afterReport(); });
         });
       }
@@ -6007,21 +6351,54 @@
         /* the turn swap is the OTHER genuine wait (K36b): she has nothing to do
            but watch, and the beats arrive at the channel's own cadence */
         if (!side && cfg.sideShow) side = SideShow.mount(c.querySelector('.swap-side'), cfg.sideShow);
+        /* ---- ONE BEAT, ONE PLACE, ONE TIME (S6) --------------------------
+           The feed is built by SEQUENCE rather than by arrival: every beat
+           carries the channel's own per-message number, so a beat replayed into
+           a screen that mounted late lands where it belongs instead of at the
+           bottom, and a beat delivered twice is drawn once. Appending on
+           arrival was fine while arrival order was send order — and the paced
+           queue is what makes that true again — but a feed that can only ever
+           append cannot be back-filled, and being back-fillable is half of what
+           S6 is for. */
+        var beatSeen = {};
+        function drawBeat(seq, t) {
+          if (beatSeen[seq]) return;
+          beatSeen[seq] = 1;
+          var idle = feed.querySelector('.swap-feed-idle');
+          if (idle) idle.remove();
+          var isBot = t.indexOf(String(cfg.relayBot || 'bot') + ':') === 0;
+          var node = el('<p class="swap-beat is-' + (isBot ? 'bot' : 'tester') + '" data-seq="' + seq + '">' + esc(t) + '</p>');
+          var before = null;
+          Array.prototype.some.call(feed.querySelectorAll('.swap-beat'), function (n) {
+            if (Number(n.getAttribute('data-seq')) > seq) { before = n; return true; }
+            return false;
+          });
+          feed.insertBefore(node, before);
+          feed.scrollTop = feed.scrollHeight;
+          stopSide('matched');
+          PairKit.arrive(feed, { announce: cfg.beatArrivedSay || '' });
+        }
         PairKit.onEvent(function (e) {
           if (String(e[2]) !== 'msg') return;
           var t = String(e[3] || '');
           if (t.indexOf(String(cfg.reportTag || 'REPORT')) === 0) { partnerReport = t; return; }
           if (Number(e[1]) === Number(PairKit.st.mi)) return;
-          var idle = feed.querySelector('.swap-feed-idle');
-          if (idle) idle.remove();
-          var isBot = t.indexOf(String(cfg.relayBot || 'bot') + ':') === 0;
-          feed.insertAdjacentHTML('beforeend', '<p class="swap-beat is-' + (isBot ? 'bot' : 'tester') + '">' + esc(t) + '</p>');
-          feed.scrollTop = feed.scrollHeight;
-          stopSide('matched');
-          PairKit.arrive(feed, { announce: cfg.beatArrivedSay || '' });
+          drawBeat(Number(e[0]), t);
         });
+        /* ---- S8: EXACTLY ONCE, AND THEN STOP ASKING ----------------------
+           His worst fault, and the mechanism was three lines: `onPoll` fired
+           every two seconds, `reportArrived()` stayed true for ever once the
+           report had landed, and `showMyReport` APPENDED a fresh card each
+           time. Measured on V59: 2→13 cards on one screen and 1→12 on the
+           other in twenty-four seconds, growing without limit, drowning the
+           feed underneath. A latch, and the poll takes itself off the moment
+           the card is drawn — a handler that has done its one job has no
+           business still being registered (DFM 143's family). */
+        var reportShown = false;
         PairKit.onPoll(function () {
-          if (!reportArrived()) return;
+          if (reportShown || !reportArrived()) return;
+          reportShown = true;
+          PairKit.onPoll(null);
           showMyReport(c, function () { roundIdx++; rounds(); });
         });
       }
@@ -6033,6 +6410,10 @@
       function reportArrived() { return !!partnerReport; }
 
       function showMyReport(card, cb) {
+        /* belt as well as braces: even if some future caller forgets the latch
+           above, one card can only ever hold one report (DFM 144 — the fact has
+           one home, and this is it) */
+        if (card.querySelector('.swap-myreport')) return;
         var box = el('<div class="swap-myreport" data-arrive-live></div>');
         card.appendChild(box);
         box.innerHTML = '<h3>' + esc(cfg.gotReportTitle || '') + '</h3>' +

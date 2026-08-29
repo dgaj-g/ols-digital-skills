@@ -372,7 +372,8 @@
      }
     ],
     "trayClickEject": false,
-    "takeBackLabel": "Put this block back"
+    "takeBackLabel": "Put this block back",
+    "introKicker": "Exit check — part 2"
    }
   },
   {

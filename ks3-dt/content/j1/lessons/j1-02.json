@@ -283,7 +283,8 @@
     },
     "help": "Click blocks from the tray into your program, in the order the sentence describes. Check when you're sure — you'll be shown the working order if it's off.",
     "trayClickEject": false,
-    "takeBackLabel": "Put this block back"
+    "takeBackLabel": "Put this block back",
+    "introKicker": "Exit check — part 2"
    }
   },
   {

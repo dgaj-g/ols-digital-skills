@@ -40,7 +40,14 @@
   --ols-blue-dark: #122A4F;
   --gold: #E4B824;
   --gold-hi: #FFD84D;
-  --gold-deep: #A8830F;
+  /* DEEPENED 29 Aug 2026, and it is the same law that fixed the Butler line.
+     `--gold-deep` is the token every gold SENTENCE on a light card wears — the
+     XP line in a badge pop, the waiting card's hint, the codename, the recap
+     score — and at #A8830F those sentences render at about 4.4:1 once
+     anti-aliasing has pulled them toward the plate, just under the 4.5 floor.
+     Measured on real pixels, on states nothing had ever stood on. One token,
+     one home, every one of them fixed at once (DFM 144). */
+  --gold-deep: #7A5D00;
   --gold-rgb: 228, 184, 36;
   --gold-hi-rgb: 255, 216, 77;
   --accent-ink: #231A02;
@@ -490,6 +497,19 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 }
 .card h1, .card h2, .card h3 { color: var(--ols-blue); }
 .intro-card { text-align: center; }
+/* ⭐ DFM 274 — A NUMBERED STEPS LIST IS LEFT-ALIGNED, EVERYWHERE. HIS RULING,
+   28 August 2026, on the Swap's four-step list: each line was ragged around its
+   own middle because the shared intro card centres all of its text and only the
+   inspection engine had ever been given an override — the stylesheet's own
+   comment above `.insp-intro-steps` admits exactly that. He ruled the fix
+   applies to the locked lessons too ("even though they're locked. So you can
+   implement those fixes as well"), an explicit DFM 221 exception for this class.
+   IT IS FIXED AT THE ROOT AND DERIVED, NOT LISTED (DFM 271): the rule is asked
+   of the ELEMENT, `ol`, so a numbered list on a screen nobody has written yet is
+   covered by existing — where a hand list of five class names would go stale the
+   first time a sixth engine drew one. Both walkers now assert the computed
+   text-align of every rendered <ol> on every state they stand on. */
+ol { text-align: left; }
 .intro-kicker {
   /* THE SMALL-CAPS LABEL ON EVERY CARD IN THE PLATFORM ("CONTRACT · Catch It",
      "CASE 01", "THE JOB"). It painted --gold-deep on a --gold tint: two shades of
@@ -607,11 +627,18 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
   animation: spin 0.7s linear infinite;
 }
 .q-opt.right { border-color: var(--good); background: var(--good-soft); opacity: 1; }
-.q-opt.right .q-letter { background: var(--good); }
+/* MEASURED, NOT ASSUMED (29 Aug 2026). The state-keyed readability audit
+   stood on a marked question — a state the old chunk-entry measurement never
+   reached — and the letter in the green tile came back at 2.37:1 against a
+   4.5:1 floor: white type on mid-green. It has been that way on every question
+   in every lesson since the engine was written, and nothing had ever looked at
+   the ANSWERED state. Dark ink on the same green, so the tile still reads as
+   "right" at a glance and the letter is legible in it. */
+.q-opt.right .q-letter { background: var(--good); color: #06301C; }
 .q-opt.wrong { border-color: var(--bad); background: var(--bad-soft); opacity: 1; }
-.q-opt.wrong .q-letter { background: var(--bad); }
+.q-opt.wrong .q-letter { background: var(--bad); color: #2B0703; }
 .q-opt.reveal { border-color: var(--good); opacity: 1; }
-.q-opt.reveal .q-letter { background: var(--good); }
+.q-opt.reveal .q-letter { background: var(--good); color: #06301C; }
 .q-opt.logged { border-color: rgba(26, 58, 107, 0.4); background: #F0F4FB; opacity: 1; }
 .q-logged { margin-left: auto; color: var(--ols-blue); font-weight: 700; font-size: 0.85rem; animation: rise 0.3s ease; }
 .q-feedback { margin-top: 16px; border-radius: var(--r-md); padding: 15px 17px; animation: rise 0.3s ease; }
@@ -620,7 +647,10 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .q-feedback.neutral { background: #F0F4FB; }
 .q-verdict { font-family: var(--font-display); font-weight: 700; margin: 0 0 6px; }
 .q-feedback.good .q-verdict { color: #1E9459; }
-.q-feedback.bad .q-verdict { color: var(--bad); }
+/* the wrong-answer verdict was `--bad` on `--bad-soft`, two shades of one
+     colour, at 2.99:1 — measured on a state the chunk-entry audit never stood
+     on. Deeper red on the same soft plate: it still reads as the red one. */
+.q-feedback.bad .q-verdict { color: #96240C; }
 .q-explain { margin: 0 0 12px; color: var(--ink); }
 
 /* ============ steps ============ */
@@ -847,7 +877,11 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .exit-fb.bad { background: var(--bad-soft); }
 .exit-fb-verdict { font-family: var(--font-display); font-weight: 700; margin: 0 0 4px; }
 .exit-fb.good .exit-fb-verdict { color: #1E9459; }
-.exit-fb.bad .exit-fb-verdict { color: var(--bad); }
+/* the exit check's own copy of the wrong-answer verdict: `--bad` on `--bad-soft`,
+   two shades of one colour, measured at 2.99:1 on the state the walker stands on
+   after a wrong answer. Same fix as `.q-feedback.bad .q-verdict` — the fault was
+   in two homes, so it took two lines. */
+.exit-fb.bad .exit-fb-verdict { color: #96240C; }
 .exit-fb-ans { font-weight: 600; margin: 0 0 4px; }
 .exit-fb-why { color: var(--muted); margin: 0; font-size: 0.94rem; }
 .exit-done .primary-btn { margin-top: 10px; width: 100%; }
@@ -1113,6 +1147,15 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0 0 10
 .live-elsewhere .strip-jump:hover { text-decoration-thickness: 2px; }
 .live-elsewhere .strip-jump:focus-visible { outline: 2px solid var(--bad); outline-offset: 2px; border-radius: 3px; }
 .dash-table td.lc-mark { white-space: nowrap; font-size: 0.95rem; letter-spacing: 0.06em; }
+/* THE HEADER ROW HAS ITS OWN LAW NOW (S11b). A build column is two or three
+   marks wide and its heading is two or three words: it wraps inside its own
+   width, sits on the bottom edge so every heading in the row shares one
+   baseline whether it took one line or two, and is capped so no single column
+   can push the class off the right of the screen. The full card title stays,
+   on hover. */
+.dash-table th.lc-head {
+  white-space: normal; vertical-align: bottom; max-width: 15ch; line-height: 1.25;
+}
 /* the name column carries the remove button, the full name and the flag: give it
    room, or a flagged pupil's row grows to five lines and the table stops scanning */
 /* wide enough for the name on one line and BOTH flags on the next: a pupil
@@ -1697,7 +1740,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 /* Staff panel is a TEACHER surface: pin it to brand gold so a pupil's equipped
    Agent Kit theme never restyles the admin tools (projector consistency). */
 .staff-modal {
-  --gold: #E4B824; --gold-hi: #FFD84D; --gold-deep: #A8830F;
+  --gold: #E4B824; --gold-hi: #FFD84D; --gold-deep: #7A5D00;
   --gold-rgb: 228, 184, 36; --gold-hi-rgb: 255, 216, 77; --accent-ink: #231A02;
 }
 
@@ -3366,12 +3409,21 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 .pyt-list { display: flex; flex-direction: column; gap: 8px; }
 .pyp-list { list-style: none; margin: 0; padding-left: 0; display: flex; flex-direction: column; gap: 9px; }
-.pyp-list li { display: flex; align-items: center; gap: 10px; padding-left: 0; }
+/* S9, his second sit: the weekend job carries two 26-character gap boxes AND a
+   "Put this line back" button on one row, and the row ran off the edge of the
+   card it was drawn on — part of the program he was building was outside the
+   thing it was on. Three fixes, all of them about letting the row give way:
+   the row WRAPS, so the take-back drops underneath instead of pushing sideways;
+   the code line may shrink below its content width (a flex item's `min-width`
+   defaults to `auto`, which is what pinned it open); and the gap boxes are
+   capped at the width they actually have. `align-items: flex-start` because a
+   wrapped row baseline-aligned to its tallest child reads as a stagger. */
+.pyp-list li { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px; padding-left: 0; }
 .pyp-num {
   flex: 0 0 28px; text-align: right; color: var(--muted); font-weight: 700;
   font-variant-numeric: tabular-nums; font-size: 0.95rem;
 }
-.pyp-list li .pyrun-line { flex: 1 1 auto; }
+.pyp-list li .pyrun-line { flex: 1 1 auto; min-width: 0; }
 .pyp-empty {
   list-style: none; color: var(--muted); font-size: 0.86rem; font-style: italic; margin: 2px 0; padding: 6px 0;
 }
@@ -3405,6 +3457,12 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   color: var(--muted); font-style: italic;
 }
 .pyrun-line.dragging .pyrun-blank-hint { opacity: 0.5; }
+/* AND THE THIRD ONE THE SAME AUDIT FOUND. The gap label wears `--muted`, which
+   is correct on the white line rows of the tray — but the WORKED card draws its
+   program on a dark navy plate, and the same class landed there at 2.57:1. The
+   hint is scoped to the plate it is on rather than given a second token
+   (DFM 144: the fact is "which ground am I on", and it has one home). */
+.pyw-line .pyrun-blank-hint { color: #AFC1E0; }
 .pyrun-ghost {
   position: fixed; left: 0; top: 0; margin: 0; z-index: 60; pointer-events: none; transition: none;
   cursor: grabbing; opacity: 0.96; box-shadow: 0 8px 22px rgba(23, 34, 59, 0.28); border-color: var(--gold);
@@ -3426,10 +3484,29 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.95rem;
   color: #0F2547; background: #FFFBEA; border: none; border-bottom: 2.5px solid var(--gold);
   border-radius: 4px 4px 0 0; padding: 1px 5px; min-width: 3.5em; text-align: center;
+  /* a `size` attribute is an INTRINSIC width, and an intrinsic width cannot
+     shrink: two size-26 boxes on one row is what pushed his weekend job past
+     the card's edge. The authored size still sets how wide it WANTS to be; this
+     says how wide it may actually get (S9). */
+  max-width: 100%; box-sizing: border-box;
 }
 .pyrun-blank:focus { outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.28); }
 .pyrun-blank::placeholder { color: #8A7A47; opacity: 1; }
 .pyrun-blank.wants { box-shadow: 0 0 0 3px rgba(196, 68, 58, 0.34); background: #FFF2F0; }
+/* S10 — ONE WAY IT COULD GO. A free-writing card's picture of success: it uses
+   the conversation panel's own bubbles, because it is showing her the very
+   thing her own run will draw, and it is fenced and labelled so it can never be
+   mistaken for the words she is supposed to type. Dashed, not solid: this is an
+   illustration, not a target. */
+.pyrun-example {
+  margin: 12px 0 4px; padding: 12px 14px; border-radius: var(--r-md);
+  background: var(--field); border: 1.5px dashed var(--line-l);
+}
+.pyrun-example-lead {
+  margin: 0 0 10px; font-size: 0.86rem; line-height: 1.45; font-weight: 700; color: var(--muted);
+}
+.pyrun-example-log .pyx-row { max-width: 92%; }
+.pyrun-example-after { margin: 10px 0 0; font-size: 0.88rem; line-height: 1.5; color: var(--ink); }
 .pyrun-run { margin-top: 14px; }
 .pyrun-locked-note { margin-top: 12px; }
 .pyrun-verdict { margin: 14px 0 0; padding: 12px 14px; border-radius: 11px; }
@@ -3560,7 +3637,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .pyx-row:last-child { margin-bottom: 0; }
 .pyx-who {
   font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase;
-  font-weight: 800; color: #4B5B79;
+  /* deepened 29 Aug 2026: a 0.72rem uppercase face renders well short of its own
+     hex once anti-aliasing has pulled it toward the plate — measured at 2.35:1
+     on the conversation panel, where it names who is speaking. */
+  font-weight: 800; color: #2E3C57;
 }
 .pyx-text { font-size: 0.97rem; line-height: 1.5; color: var(--ink); white-space: pre-wrap; }
 .pyx-row.is-bot { background: #EDF3FD; border: 1px solid #CFDDF5; }
@@ -3593,7 +3673,12 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   font-size: 0.74rem; letter-spacing: 0.09em; text-transform: uppercase;
   font-weight: 800; color: #B9C8E2;
 }
-.pye-count { font-size: 0.76rem; color: #8FA3C6; font-variant-numeric: tabular-nums; }
+/* the line counter is a 0.76rem face on a navy bar, and a thin small face never
+   renders at its pure colour — the pixel audit measured the glyphs a pupil
+   really sees at 3.89:1, not the 6:1 the two hex values promise. Lighter and a
+   shade heavier, so the ANTI-ALIASED core clears the floor rather than the
+   theoretical one (DFM 146b: measure the pixels, not the stylesheet). */
+.pye-count { font-size: 0.76rem; font-weight: 600; color: #A8BAD8; font-variant-numeric: tabular-nums; }
 .pye-body { display: flex; align-items: stretch; }
 .pye-nums {
   margin: 0; padding: 12px 8px 12px 12px; text-align: right; user-select: none;
@@ -3753,7 +3838,15 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   font: inherit; transition: border-color 0.14s ease, transform 0.14s ease;
 }
 .pyp-chip:hover:not(:disabled) { border-color: var(--ols-blue); transform: translateY(-1px); }
-.pyp-chip:disabled { opacity: 0.6; cursor: default; }
+/* A FINISHED CARD'S CHIPS ARE STILL READ. Fading the whole control to 0.6 took
+   its label to 3.6:1 — she can still see the lines she used, and a pupil
+   re-reading her own finished work is exactly who this card is for at that
+   moment. The chip says "not live" with its plate and its cursor instead. */
+.pyp-chip:disabled {
+  cursor: default; opacity: 1; background: var(--field);
+  border-color: var(--line-l); box-shadow: none;
+}
+.pyp-chip:disabled .pyp-chip-name { color: #2C4A85; }
 .pyp-chip-name { font-size: 0.86rem; font-weight: 700; color: var(--ols-blue); }
 .pyp-chip-code {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -3762,9 +3855,13 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 
 /* ---- the worked card ---------------------------------------------------- */
 .pyw-prog { margin: 12px 0; }
+/* the same audit, the same card: "THE BOT'S PROGRAM" was `--gold-hi` — a
+   token for a DARK plate — sitting on the light parchment above the dark plate,
+   at 1.48:1. One class, two worlds, again (DFM 207g's family). The deep gold
+   reads on parchment and still says gold. */
 .pyw-prog h3 {
   margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
-  font-weight: 800; color: var(--gold-hi);
+  font-weight: 800; color: #7A5D00;
 }
 .pyw-list {
   list-style: none; margin: 0; padding: 12px 14px; border-radius: 12px;
@@ -3801,7 +3898,15 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
    by qa-readability on every skin the year can wear. */
 .pyw-chosen { margin: 0 0 10px; font-size: 0.92rem; color: var(--ink); }
 .pyw-stage { margin-top: 4px; }
-.swap-done-say { margin: 10px 0 0; font-size: 0.93rem; line-height: 1.55; color: var(--text-d); }
+/* HIS SECOND-SIT FAULT, AND IT IS THE BUTLER LINE AGAIN (S5, 28 Aug 2026).
+   Measured at 1.16:1 against a 4.5:1 floor by the two-account rig: the line
+   that tells the tester she has finished with her partner's bot wore
+   `--text-d`, the DARK SHELL's text token, on the light parchment card. The
+   fault class was closed in the harness on 27 August; its COVERAGE was not,
+   because readability was asked once per chunk and this is a later state of a
+   chunk already ticked off. Both halves are fixed now: ink on a light card, and
+   the measurement is keyed by state (lib/state-audit.js). */
+.swap-done-say { margin: 10px 0 0; font-size: 0.93rem; line-height: 1.55; color: var(--ink); }
 
 /* ---- the help ladder: two ghosts, in the same place on every build ------- */
 .py-help-row { display: flex; flex-wrap: wrap; gap: 9px; margin: 12px 0 4px; }
@@ -3898,7 +4003,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 @media (prefers-reduced-motion: reduce) { .sideshow { animation: none; } }
 .ss-name {
   font-family: var(--font-display); font-weight: 800; font-size: 0.82rem;
-  letter-spacing: 0.05em; text-transform: uppercase; color: #5B3C86;
+  letter-spacing: 0.05em; text-transform: uppercase; color: #2A1745;
 }
 .ss-body { flex: 1 1 auto; min-width: 0; }
 .ss-log { max-height: 190px; overflow-y: auto; }
@@ -3909,7 +4014,16 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .ss-line.is-mine { background: #FFF6DA; border-color: #F0DCA0; margin-left: 22px; }
 .ss-line.is-exit { background: #EDE3FA; border-color: #CDB8EC; font-style: italic; }
 .ss-ask { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 8px; }
-.ss-ask-lab { font-size: 0.8rem; font-weight: 700; color: #5B3C86; flex: 0 0 auto; }
+/* Fred's two small purple labels are 0.8rem faces on a pale lilac plate, and a
+   small face never renders at its pure colour — the pixel audit read the glyphs
+   a pupil really sees at 2.4:1 and 2.9:1. Deepened until the BLENDED pixels
+   clear the floor, hue kept, because the side show is still the side show. */
+.ss-ask-lab { font-size: 0.8rem; font-weight: 700; color: #2A1745; flex: 0 0 auto; }
+/* `.card .ghost-btn` is two classes and wins on specificity, so Fred's send
+   button kept the shell's mid-blue on his pale lilac plate — 3.1:1 once the
+   glyphs are measured rather than the stylesheet. Matched specificity, full
+   ink, and enough margin that a frame caught mid-animation still clears. */
+.card .ss-send, .sideshow .ss-send { color: #17223B; }
 .ss-say {
   flex: 1 1 140px; min-width: 120px; padding: 8px 11px; font: inherit; font-size: 0.92rem;
   color: var(--ink); background: #fff; border: 1.5px solid #DCCBF2; border-radius: var(--r-sm);
@@ -3952,7 +4066,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 .swap-myreport h3 { margin: 0 0 7px; font-size: 0.95rem; color: #8A5A12; }
 .swap-report-text { margin: 0 0 11px; font-size: 0.97rem; line-height: 1.55; color: var(--ink); }
-.swap-noreport, .swap-seal-say, .swap-reveal { margin: 0 0 12px; font-size: 0.97rem; line-height: 1.55; color: var(--text-d); }
+/* THE SEAL CARD, SWEPT WITH IT. Nothing had ever measured these three either
+   — the seal is the LAST state of the Swap, and no walker had ever stood on it
+   paired. Same token, same light card, same answer. */
+.swap-noreport, .swap-seal-say, .swap-reveal { margin: 0 0 12px; font-size: 0.97rem; line-height: 1.55; color: var(--ink); }
 .swap-exit-row, .duel-exit-row { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; }
 .swap-side { margin: 12px 0 0; }
 
@@ -3962,10 +4079,17 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
   font-size: 0.78rem; font-weight: 800; font-variant-numeric: tabular-nums;
-  background: rgba(255, 255, 255, 0.10); color: var(--muted-d);
-  border: 1px solid var(--line-d);
+  /* THE MATCH'S ROUND PIPS WERE DARK-SHELL TOKENS ON A LIGHT CARD — the same
+     one-class-two-worlds fault as the Butler line, measured at 2.03:1 on the
+     state-keyed audit. The pip is a numbered marker a pupil counts her way
+     through the six rounds with, so the number has to be readable in every one
+     of its three states. */
+  background: rgba(26, 58, 107, 0.07); color: #39476A;
+  border: 1px solid var(--line-l);
 }
-.duel-pip.done { background: rgba(var(--gold-rgb), 0.22); color: var(--gold-hi); border-color: rgba(var(--gold-rgb), 0.5); }
+/* `--gold-hi` is the DARK shell's bright gold; on the pip's pale gold plate it
+   is gold on gold. The done pip wears the deep gold that reads on a light card. */
+.duel-pip.done { background: rgba(var(--gold-rgb), 0.22); color: var(--gold-deep); border-color: rgba(var(--gold-rgb), 0.5); }
 .duel-pip.now { background: var(--gold); color: var(--accent-ink); border-color: var(--gold-hi); }
 .duel-pip.is-guess { border-style: dashed; }
 /* THE GUESS-ROUND BANNER: full width, its own colour, and it STAYS for the whole
@@ -3982,7 +4106,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 .duel-card.is-guess { border-color: #8B6DC7; }
 .duel-goal { margin: 0 0 8px; }
-.duel-lead { margin: 0 0 12px; font-size: 0.95rem; line-height: 1.55; color: var(--text-d); }
+.duel-lead { margin: 0 0 12px; font-size: 0.95rem; line-height: 1.55; color: var(--ink); }
 .duel-code {
   margin: 0 0 14px; padding: 14px 16px; border-radius: 12px; white-space: pre-wrap;
   background: #0E1A30; color: #EAF2FF; border: 1.5px solid #2B3F63;
@@ -4000,7 +4124,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .duel-option.is-picked { border-color: var(--gold); background: #FFF9E6; }
 .duel-option:disabled { opacity: 0.75; cursor: default; }
 .duel-typed { margin: 0 0 14px; }
-.duel-lab { display: block; margin: 0 0 6px; font-size: 0.88rem; font-weight: 700; color: var(--text-d); }
+.duel-lab { display: block; margin: 0 0 6px; font-size: 0.88rem; font-weight: 700; color: var(--ink); }
 .duel-say {
   display: block; width: 100%; padding: 11px 13px; font-size: 0.95rem;
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -4008,11 +4132,15 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   resize: vertical;
 }
 .duel-say:focus { outline: 2px solid var(--ols-blue); outline-offset: 1px; }
-.duel-locked-note { margin: 9px 0 0; font-size: 0.87rem; line-height: 1.5; color: var(--muted-d); }
-.duel-locked-note.is-wants { color: #FFC3B8; font-weight: 700; }
+/* three more dark-shell tokens on the Match's light card, all found by standing
+   on states nothing had measured: the note under the options (2.03:1), its
+   wants-you state (a pale salmon written for a navy plate), and the score line
+   in gold-hi at 1.38:1 — the sentence that tells her how she did. */
+.duel-locked-note { margin: 9px 0 0; font-size: 0.87rem; line-height: 1.5; color: var(--muted); }
+.duel-locked-note.is-wants { color: #96240C; font-weight: 700; }
 .duel-wait { margin: 14px 0 0; padding: 12px 15px; border-radius: var(--r-md);
   background: rgba(var(--gold-rgb), 0.10); border: 1px solid rgba(var(--gold-rgb), 0.35); }
-.duel-wait-say { margin: 0; font-size: 0.94rem; line-height: 1.55; color: var(--text-d); }
+.duel-wait-say { margin: 0; font-size: 0.94rem; line-height: 1.55; color: var(--ink); }
 .duel-reveal { margin: 14px 0 0; padding: 15px 17px; border-radius: var(--r-md);
   background: #fff; border: 1.5px solid var(--line-l); color: var(--ink); }
 .duel-reveal h3 { margin: 0 0 8px; font-size: 0.95rem; color: var(--ols-blue); }
@@ -4039,8 +4167,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .duel-teach { margin: 0 0 12px; font-size: 0.96rem; line-height: 1.6; color: var(--ink); }
 .duel-timeout { margin: 0 0 11px; font-size: 0.92rem; line-height: 1.5; color: #8A5A12;
   background: #FFF3E2; border: 1px solid #F1D6A8; border-radius: var(--r-sm); padding: 9px 12px; }
-.duel-score { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: var(--gold-hi); margin: 0 0 10px; }
-.duel-reveal-names, .duel-seal-say { margin: 0 0 12px; font-size: 0.97rem; line-height: 1.55; color: var(--text-d); }
+.duel-score { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: var(--gold-deep); margin: 0 0 10px; }
+/* the Match's own copies of the same one-class-two-worlds fault, swept while
+   the sweep was running rather than left to be found by his next sit */
+.duel-reveal-names, .duel-seal-say { margin: 0 0 12px; font-size: 0.97rem; line-height: 1.55; color: var(--ink); }
 
 /* ---- the Now Playing card send (§E1) ------------------------------------ */
 .pye-cardsend { margin: 14px 0 0; padding: 14px 16px; border-radius: var(--r-md);
@@ -4060,7 +4190,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .py-offer-free {
   margin: 0 0 16px; padding: 10px 13px; border-radius: var(--r-sm);
   background: rgba(var(--gold-rgb), 0.12); border: 1px solid rgba(var(--gold-rgb), 0.38);
-  color: var(--text-d); font-size: 0.93rem; line-height: 1.55;
+  color: var(--ink); font-size: 0.93rem; line-height: 1.55;
 }
 .py-offer-row { display: flex; flex-wrap: wrap; gap: 10px; }
 
