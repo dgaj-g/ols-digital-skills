@@ -342,7 +342,7 @@ const scenes = [
         '3. <b>pick one at random</b> and announce it',
         '4. put them <b>in order</b>',
         '5. print the <b>first three</b>',
-        'There are no ready-made lines this time: you type the program yourself. The five jobs sit above the editor, and each one ticks only when your program really does that job.'
+        'There are no ready-made lines this time: you type the program yourself. The five jobs sit above the box where you type, and each one says done only when your program really does that job.'
       ]
     }, 11000);
     await cine.drop({});

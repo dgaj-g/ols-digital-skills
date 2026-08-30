@@ -185,7 +185,7 @@ const scenes = [
     await cine.pause(1300);
     await assertStage(page, { consoleHas: 'A dog. Good choice.', inView: true });
 
-    await cine.caption('Now here is the mistake you will meet in the very first build. It was put there on purpose, so that you get to read a real Python message and put it right.');
+    await cine.caption('The very first build has a mistake like this one, with different words. It is there on purpose, so that you get to read a real Python message and put it right.');
     await page.evaluate(() => { window.pystage.program('The bot'); window.pystage.consoleOpen('The console'); });
     for (const t of ['print("Hello. One question.")', 'pte = input("Do you have a pet?")', 'print("A " + pet + ". Good choice.")']) {
       await page.evaluate(l => window.pystage.addLine(l), t);
@@ -204,7 +204,7 @@ const scenes = [
       kicker: 'NOW IT IS YOUR TURN', title: 'Three training builds, then a bot of your own',
       lines: [
         'The first build has a real mistake in it, put there on purpose &mdash; you press RUN, read what Python says, and put it right',
-        'Every build has a grey button that says <b>Show me the shape</b>. You lose no points for using it.',
+        'Where you type Python lines yourself, there is a grey button that says <b>Show me the shape</b>. You lose no points for using it.',
         'At the end, somebody else in this room gets your bot and tries it out.'
       ]
     }, 10500);
@@ -240,7 +240,7 @@ const scenes = [
     await page.evaluate(() => window.pystage.waiting(true, 'still waiting'));
     await cine.pause(1800);
     await assertStage(page, { said: 3 });
-    await cine.caption('That one is a good question and a terrible bot question. Pick things anybody in your room could answer straight away: a food, a team, a subject, a film.');
+    await cine.caption('A question somebody has to think about is a good question and a terrible bot question. Pick things anybody in your room could answer straight away: a food, a team, a subject, a film.');
     await page.evaluate(() => window.pystage.waiting(false));
     await cine.drop({});
     await cine.pause(900);
@@ -278,9 +278,9 @@ const scenes = [
     await cine.card({
       kicker: 'THE LIST ABOVE YOUR PROGRAM', title: 'Running your program is what ticks the three jobs',
       lines: [
-        'It <b>asks twice</b> and waits for both answers',
-        'The bot <b>says both of your answers</b> back to you',
-        'One line at the end uses both answers at once.',
+        'Your bot <b>asks two questions</b>',
+        'It <b>keeps each answer</b> in its own box (its own variable)',
+        'Its <b>last line uses both answers</b>',
         'The list is ticked every time you press RUN. Nothing you type ticks it on its own. The program has to actually run.'
       ]
     }, 10000);

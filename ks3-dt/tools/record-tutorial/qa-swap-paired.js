@@ -619,7 +619,17 @@ async function runAndConverse(page, tag, replies) {
   log('[' + testerTag + '] report labels: ' + JSON.stringify(labels));
   await auditState(tester, testerTag + ':report-form');
   const second = labels[1] || '';
-  if (!/if you would change nothing|change nothing/i.test(second))
+  /* WHAT S7 IS ACTUALLY FOR, restated after it fired on a GOOD change. His fault
+     was a report box that forced her to criticise a bot that worked. The fix is
+     that the label offers her the other road — say what made it work so well —
+     and this check was written as `/if you would change nothing/`, which is one
+     PHRASING of that, not the thing itself. The moment the label was reworded to
+     "If there is nothing you would change…" — the same offer, read more easily —
+     the gate called it a regression. A gate pinned to a form of words punishes
+     the next improvement to those words (DFM 146a's family). It now asks the
+     question the fault was about: does the second box mention CHANGE and mention
+     that NOTHING is an allowed answer? */
+  if (!(/\bchange\b/i.test(second) && /\bnothing\b/i.test(second)))
     fail('S7', 'the report\'s second box still forces a criticism: ' + JSON.stringify(second));
   else pass('S7', 'the report\'s second box allows a clean bill');
 
