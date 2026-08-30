@@ -345,9 +345,9 @@
      "name": "Python does not know a box (a variable) with that name. Check the spelling on this line matches the name you gave the list further up.",
      "type": "Python has been asked to put two different kinds of thing together, and it will not. If you joined a number onto words with a +, put str( ) around the number first — that is what lets the + join it on. If you sorted a list with both numbers and words in it, Python cannot say which of them comes first.",
      "badinput": "Python could not read that line at all. Check the speech marks come in pairs, the brackets come in pairs, and the line starts where the lines around it start.",
-     "eof": "You opened a bracket or a speech mark on that line and never closed it. Look for one with no partner.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
      "unindent": "The lines inside the loop are not all lined up with each other. Every line inside a loop starts four spaces in, and they all start at the same place.",
-     "index": "You asked for a position in the list that is not there. Counting starts at 0, so the last position is one less than the number of things in the list.",
+     "index": "That line asks for a position in the list that is not there. Counting starts at 0, so the last position is one less than the number of things in the list.",
      "attr": "Python does not know that word after the dot. Check the spelling of the word straight after the dot — append, remove and sort are the ones you have.",
      "timelimit": "That program was still going after a few seconds, so it was stopped. Something in it is repeating and never finishing.",
      "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark.",
@@ -595,7 +595,7 @@
     "mode": "editor",
     "kicker": "Your Playlist Engine",
     "title": "Twelve minutes to build your own Playlist Engine, with five songs you choose.",
-    "intro": "Every program so far has used somebody else’s songs. This one is yours: five real songs you choose, and a program that does five different things to them.\n\nThere are no ready-made lines to drag across on this card: you type the program yourself. At the top of the card are the five jobs your engine has to do. Every time you press RUN, each job your program really does says done.",
+    "intro": "Every program so far has used somebody else’s songs. This one is yours: five real songs you choose, and a program that does five different things to them.\n\nThere are no ready-made lines to drag across on this card: you type the program yourself. At the top of the card are the five jobs your engine has to do. Every time you press RUN, each job says done as soon as your program really does that job.",
     "runLabel": "RUN my engine",
     "continueLabel": "Continue",
     "checklistLabel": "The five jobs your engine has to do",
@@ -606,7 +606,7 @@
     "notYetLabel": "NOT YET",
     "pendingLabel": "not checked yet",
     "matchedSay": "All five jobs say done. You have written a real program: it holds your own song titles, adds one, takes one out, puts them in order and prints the first three.",
-    "notYetSay": "Your engine is not doing all five jobs yet. Look at the five jobs at the top of this card: the ones your program already does say done. If Python stopped, the console says why.",
+    "notYetSay": "Your engine is not doing all five jobs yet. Look at the five jobs at the top of this card. The jobs that say done are the ones your program already does. If Python stopped, the console says why.",
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
     "shapeTitle": "A playlist engine",
@@ -642,7 +642,7 @@
      "value": "Python could not use the thing in the brackets. If this was a remove line, the title has to match one that is really in the list, capital letters and all."
     },
     "limitMs": 5000,
-    "help": "This card comes in two parts. Press “Start writing” and the second part opens: the five jobs along the top, and the black space underneath where you type your program. Every time you press RUN, each job your program really does says done. Nothing is typed for you unless you press “Write the shape for me”, and nothing is corrected for you: read the console if Python stops. “Show me the shape” shows the pattern with every title taken out.",
+    "help": "This card comes in two parts. Press “Start writing” and the second part opens: the five jobs along the top, and the black space underneath where you type your program. Every time you press RUN, each job says done as soon as your program really does that job. Nothing is typed for you unless you press “Write the shape for me”, and nothing is corrected for you: read the console if Python stops. “Show me the shape” shows the pattern with every title taken out.",
     "builds": [
      {
       "id": "engine",
@@ -714,12 +714,12 @@
       ],
       "shapeNote": "The order matters: anything that changes the list after the sort line can put it out of order again.",
       "matchedSay": "All five jobs say done. Your engine has printed a Now Playing card: the heading, and the three titles under it. If you played against somebody in the Match, you can send your card to them.",
-      "notYetSay": "Your engine is not doing all five jobs yet. Look at the five jobs at the top of this card: the ones your program already does say done. If Python stopped, the console says why.",
+      "notYetSay": "Your engine is not doing all five jobs yet. Look at the five jobs at the top of this card. The jobs that say done are the ones your program already does. If Python stopped, the console says why.",
       "sendCard": {
        "head": "now playing",
        "lines": 3,
        "title": "Your Now Playing card",
-       "lead": "This is the card your engine printed. Send it to the person you played against in the Match — their screen is still linked to yours.",
+       "lead": "This is the card your engine printed. Send it to whoever you played against in the Match — their screen is still linked to yours.",
        "noPartnerSay": "You played the computer today, so there is nobody to send this to. The card is yours either way, and it came out of a program you wrote.",
        "sendLabel": "Send my card",
        "sendingLabel": "Sending…",
@@ -887,7 +887,7 @@
     "takeBackLabel": "Put this line back",
     "runDiedSay": "Your program stopped before it could be checked. Read the console underneath to see what Python said. Nothing has been marked wrong: the checking never ran at all.",
     "notCheckedLabel": "could not be checked",
-    "allDoneLabel": "That is all three — carry on with the lesson",
+    "allDoneLabel": "You have finished all three jobs — carry on with the lesson",
     "allDoneSay": "**All three jobs are done.** Nothing here was marked and nothing was saved, so there is nothing left to do on this screen."
    }
   },
