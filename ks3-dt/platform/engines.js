@@ -6686,6 +6686,30 @@
         mode = m;
         if (m === 'left') { finish(); return; }
         if (m === 'paired') { PairKit.onEvent(onChannel); }
+        /* ---- SHE STOPPED WAITING AND ASKED TO PLAY THE COMPUTER -----------
+           The one-player Match already existed and already worked: any mode
+           that is not `paired` simply draws the rounds. What was missing was a
+           way for her to REACH it. The long-wait card sent her to a teacher,
+           and failing that to the exit — and the exit says the Match "does not
+           count and there is no badge for it", after the lesson opened by
+           promising her the badge for playing all six rounds. On a cover day,
+           or catching up alone, that promise was unkeepable. The Swap has had
+           this button since V61; the Match simply supplied no `waitOwnLabel`,
+           which is the key PairKit gates it on.
+           IT ANNOUNCES ITSELF (DFM 146e), because a mode that changes the rules
+           always does — and in its OWN words, because the server-released solo
+           card says "everybody else has already played", which is untrue here:
+           nobody has, she just stopped waiting. Config-gated on `ownTitle`, so
+           a lesson that supplies no such strings behaves exactly as before. */
+        if (m === 'own' && PairKit.say('ownTitle', '')) {
+          PairKit._statePop({
+            kicker: PairKit.say('ownKicker', ''),
+            title: PairKit.say('ownTitle', ''),
+            lines: [PairKit.sayHtml('ownLine', '')],
+            button: PairKit.say('ownButton', '')
+          }, function () { drawRound(); });
+          return;
+        }
         drawRound();
       }
 

@@ -270,6 +270,11 @@ const LANDMARKS = {
        Fred appears here and nowhere else. A landmark for a paired screen this
        walk cannot reach would be coverage claimed and not had (DFM 204). */
     ['waiting for a partner', '.pair-wait .pw-status', 'chatswap'],
+    /* AND THE WAY OUT OF WAITING (V62c). Not "is there a button" but "is there a
+       button that lets her do the activity ALONE" — the Swap has had one since
+       V61 and the Match had none, so a girl on a cover day was offered only the
+       exit, which costs her the badge the lesson opened by promising her. */
+    ['the way to do it alone, offered on a long wait', '.pair-wait .pw-own', 'chatswap'],
     ['Fred, on the waiting card', '.sideshow .ss-img', 'chatswap'],
     ['the solo seat, when nobody comes', '.swap-card', 'chatswap'],
     ['the report form', '.swap-report', 'chatswap'],
@@ -287,6 +292,7 @@ const LANDMARKS = {
     ['the call-room briefing', '.dossier-cta, .dossier', 'callroom'],
     ['the first film and its chapters', '.video-card, .vid-chapter', 'film-a'],
     ['waiting for a partner', '.pair-wait .pw-status', 'match'],
+    ['the way to do it alone, offered on a long wait', '.pair-wait .pw-own', 'match'],
     ['Margo, on the waiting card', '.sideshow .ss-img', 'match'],
     ['a round of the Match', '.duel-card .duel-code', 'match'],
     ['the second film', '.video-card, .vid-chapter', 'film-b'],
@@ -483,6 +489,19 @@ const WRONG = {
   }, TILE[LESSON].source);
   if (!opened) { console.error('could not find the Lesson ' + LESSON + ' tile'); await browser.close(); process.exit(2); }
   await page.evaluate(v => { window.__WP_TRACE = v; }, !!process.env.KS3DT_WP_TRACE);
+  /* ---- THE LONG WAIT IS THREE REAL MINUTES, SO THE CLOCK IS WOUND FORWARD ----
+     A lone walker on a paired activity reaches the waiting card easily; what she
+     could never reach was the state THREE MINUTES LATER, where the card offers
+     her a way to do the activity by herself. That state was invisible to every
+     walk on this platform, which is how J3's Prediction Match came to promise a
+     badge it then had no way of letting her earn. `WAIT_HINT_MS` is a named
+     constant for exactly this; it is kept wound down for the whole walk because
+     PairKit is re-created each time the gate is re-entered. */
+  await page.evaluate(() => {
+    setInterval(function () {
+      if (window.PairKit && PairKit.WAIT_HINT_MS > 2000) PairKit.WAIT_HINT_MS = 1500;
+    }, 300);
+  });
   await sleep(3000);
   log('opened: ' + opened.replace(/\s+/g, ' '));
 
