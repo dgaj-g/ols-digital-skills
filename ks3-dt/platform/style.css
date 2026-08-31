@@ -4003,6 +4003,14 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .pk-arrive { position: relative; overflow: hidden; animation: pk-risein 0.42s cubic-bezier(0.2, 0.8, 0.25, 1); }
 .pk-arrive::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
+  /* HIS FIND, 31 Aug 2026: "that awful yellow shade… on each what-it-really-
+     printed section". The sweep runs ONCE for 0.75s — and then, with no base
+     opacity and no fill-mode, the pseudo-element reverts to its natural style:
+     this 72% gold band PARKED across the middle of the card, permanently, on
+     every card that ever arrived. The keyframes start and end at opacity 0, so
+     the base opacity says 0 too; the sweep is unchanged, and when it finishes
+     the band is gone instead of parked. */
+  opacity: 0;
   background: linear-gradient(105deg, transparent 30%, rgba(255, 216, 77, 0.72) 50%, transparent 70%);
   animation: pk-sweep 0.75s cubic-bezier(0.3, 0.1, 0.2, 1) 1;
 }

@@ -91,6 +91,10 @@
     var mesh = new THREE.Mesh(new THREE.PlaneGeometry((c.width / c.height) * h, h), mat);
     mesh.userData.aspect = c.width / c.height;
     mesh.userData.h = h;
+    /* the film law's eye: every label is a SUBJECT a caption must not cover.
+       Tagged here, in the one factory all stage text is born from, so no
+       scene and no beat can forget one (stage-subjects.js has the story). */
+    mesh.userData.subjectText = text;
     return mesh;
   }
   function glow(colour, size) {
@@ -286,7 +290,16 @@
     var head = label('The console', { colour: '#93A4C4', h: 0.26, fs: 64 });
     head.position.set(-2.6, 0.44, 0.14);
     g.add(head);
-    g.position.set(PROG_X, -2.95, 0);
+    /* THE LOWER THIRD BELONGS TO THE CAPTION (31 Aug 2026). At -2.95 the whole
+       console — the thing the DOM-stage film law guards most jealously — sat
+       inside the caption band on this canvas stage, and five ch2 captions
+       covered its "Hello!" the moment the strengthened law could see it.
+       A first lift to -2.38 cleared the two-line captions and left "Hello!"
+       under every three-line one. The program above is fixed at three lines
+       (its lowest slab bottoms out around -0.7), so the console sits at -1.95:
+       its text clears the tallest caption band with margin, and its slab top
+       stays half a unit under the program's last line. */
+    g.position.set(PROG_X, -1.95, 0);
     g.visible = false;
     scene.add(g);
     consoleSlab = g;
@@ -421,6 +434,7 @@
 
   /* ---------- render loop + the API record.js drives ---------- */
   var drawn = false;
+  window.__installStageSubjects(THREE, scene, camera, renderer);
   function tick() { renderer.render(scene, camera); drawn = true; requestAnimationFrame(tick); }
   tick();
 

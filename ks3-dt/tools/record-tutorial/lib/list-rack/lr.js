@@ -84,6 +84,10 @@
     var mesh = new THREE.Mesh(new THREE.PlaneGeometry((c.width / c.height) * h, h),
       new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }));
     mesh.userData.h = h;
+    /* the film law's eye: every label is a SUBJECT a caption must not cover.
+       Tagged here, in the one factory all stage text is born from, so no
+       scene and no beat can forget one (stage-subjects.js has the story). */
+    mesh.userData.subjectText = text;
     return mesh;
   }
   function glow(colour, size) {
@@ -193,8 +197,24 @@
     }
   }
 
-  var rackPlate = label('playlist', { plate: '#E4B824', colour: '#231A02', h: 0.78, fs: 128 });
-  rackPlate.position.set(0, -2.45, 1.3);
+  var rackPlate = label('playlist', { plate: '#E4B824', colour: '#231A02', h: 0.5, fs: 128 });
+  /* THE LOWER THIRD BELONGS TO THE CAPTION (31 Aug 2026). At -2.45 this tag
+     projected into the caption band, and sixteen captions across five chapters
+     sat on top of it — including the very sentences describing it. Damien
+     caught it on screen; the strengthened film law now catches it in the
+     render (16 of the 17 collisions in the report sweep were this one mesh).
+     A first lift to -2.05 cleared the two-line captions and still collided
+     with every three-line one (13 hits, one unmoving rect), and there is no
+     honest slot between the numbers row and the caption band. So the tag now
+     hangs ON the shelf edge itself — which is exactly what the narration
+     calls it: "one label on the front of it". */
+  /* at the shelf's LEFT END, like a real rack label: -1.55 parked it on the
+     "0" and still clipped the "1" (the STAGE-TEXT-OVER-TEXT law caught both).
+     And ch4's append RE-SPACES the numbers ("0" slides to -3.53), so the tag
+     is sized at h 0.5 and tucked at -4.5: on the board, clear of the numbers
+     in BOTH the three-box and four-box layouts. The overlap law proved each
+     wrong placement before this one. */
+  rackPlate.position.set(-4.5, -0.88, 1.3);
   rackPlate.renderOrder = 4;
   rackPlate.scale.setScalar(0.01);
   rackPlate.visible = false;
@@ -216,7 +236,7 @@
   onePlate.visible = false;
   scene.add(onePlate);
   var oneNote = label('a box with a name on it (a variable)', { colour: '#93A4C4', h: 0.36, fs: 74 });
-  oneNote.position.set(0, -2.55, 1.2);
+  oneNote.position.set(0, -2.12, 1.2);   /* same band, same reason as rackPlate */
   oneNote.visible = false;
   scene.add(oneNote);
 
@@ -461,6 +481,7 @@
   };
 
   var drawn = false;
+  window.__installStageSubjects(THREE, scene, camera, renderer);
   function tick() { renderer.render(scene, camera); drawn = true; requestAnimationFrame(tick); }
   tick();
 

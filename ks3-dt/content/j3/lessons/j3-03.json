@@ -175,7 +175,7 @@
       "ask": "Have a guess. What will this print?",
       "lead": "Nobody has shown you this either, and this one catches nearly everybody.",
       "code": [
-       "playlist = [\"Curtain Up\", \"Opening Night\"]",
+       "playlist = [\"Opening Night\", \"Curtain Up\"]",
        "answer = playlist.sort()",
        "print(answer)"
       ],
@@ -185,7 +185,7 @@
        "['Curtain Up', 'Opening Night']",
        "Opening Night"
       ],
-      "teach": "This one has a trap in it. .sort( ) really does put the list in order — but it changes the list itself and gives you nothing back. So the box called answer gets None, which is Python's word for nothing at all. Sort the list, then print the LIST. The second film says the same thing again, now that you have watched it happen."
+      "teach": "This one has a trap in it. .sort( ) really did put the list in order — the list itself is now ['Curtain Up', 'Opening Night']. But .sort( ) hands nothing back, so the box called answer gets None, Python's word for nothing. The box called answer never holds the playlist. To see a sorted list, put playlist.sort() on a line of its own, then print(playlist). The second film shows this again, now that you have watched it happen."
      }
     ],
     "guessTag": "GUESS ROUND",
@@ -511,10 +511,15 @@
      {
       "id": "a3",
       "check": {
-       "kind": "target"
+       "kind": "target",
+       "uses": [
+        "playlist.append(",
+        "playlist.remove("
+       ],
+       "usesSay": "Your program printed the right number, but not the way this card asks. The job is to use all four working lines — the append line and the remove line must both be in your program."
       },
       "goalLine": "Make the console print how many titles are in the list at the end.",
-      "brief": "Four of these six lines make a working program. Read the other two and leave them where they are. One of them uses a word that lists do not have. The other asks for position 3, and a list of three has no position 3.",
+      "brief": "Four of these six lines make the working program, and your job is to use all four. Read the other two and leave them where they are. One of them uses a word that lists do not have. The other asks for position 3, and a list of three has no position 3. The append line adds a brand-new title, and you make that title up yourself.",
       "lines": [
        {
         "t": "playlist = [\"Opening Night\", \"Curtain Up\", \"Last Bus Home\"]"
@@ -600,7 +605,7 @@
     "mode": "editor",
     "kicker": "Your Playlist Engine",
     "title": "Twelve minutes to build your own Playlist Engine, with five songs you choose.",
-    "intro": "Every program so far has used somebody else’s songs. This one is yours: five real songs you choose, and a program that does five different things to them.\n\nThere are no ready-made lines to drag across on this card: you type the program yourself. At the top of the card are the five jobs your engine has to do. Every time you press RUN, each job says done as soon as your program really does that job.",
+    "intro": "Every program so far has used somebody else’s songs. This one is yours: five real songs you choose, and a program that does five different things to them.\n\nOne of the jobs uses Python nobody has shown you yet, so here it is. import random, on the very first line, switches on Python's picking tools. random.choice(playlist) then picks one title from the list at random — it can be a different one every run.\n\nThere are no ready-made lines to drag across on this card: you type the program yourself. At the top of the card are the five jobs your engine has to do. Every time you press RUN, each job says done as soon as your program really does that job.",
     "runLabel": "RUN my engine",
     "continueLabel": "Continue",
     "checklistLabel": "The five jobs your engine has to do",
@@ -635,13 +640,13 @@
      "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
     },
     "errorWords": {
-     "name": "Python does not know a box (a variable) with that name. Check the spelling on this line matches the name you gave the list further up.",
+     "name": "Python does not know a box (a variable) with that name. Check the spelling against the name you gave the list — and if the missing name is random, check your first line says import random.",
      "type": "Python has been asked to put two different kinds of thing together, and it will not. If you joined a number onto words with a +, put str( ) around the number first. If you sorted a list with both numbers and words in it, Python cannot say which of them comes first.",
      "badinput": "Python could not read that line at all. Check the speech marks come in pairs, the brackets come in pairs, and the line starts where the lines around it start.",
      "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
      "unindent": "The lines inside the loop are not all lined up with each other. Every line inside a loop starts four spaces in, and they all start at the same place.",
      "index": "You asked for a position in the list that is not there. Counting starts at 0, so the last position is one less than the number of things in the list.",
-     "attr": "Python does not know that word after the dot. Check the spelling of the word straight after the dot — append, remove and sort are the ones you have.",
+     "attr": "Python does not know that word after the dot. Check the spelling of the word straight after the dot: after your list’s name it is append, remove or sort, and after random it is choice.",
      "timelimit": "That program was still going after a few seconds, so it was stopped. Something in it is repeating and never finishing.",
      "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark.",
      "value": "Python could not use the thing in the brackets. If this was a remove line, the title has to match one that is really in the list, capital letters and all."
@@ -689,7 +694,7 @@
         "id": "shuffle",
         "probe": "varies",
         "label": "It picks a song AT RANDOM and prints a line about it.",
-        "nudge": "Your program prints the same song every time. Check that random.choice is on the line that prints Tonight, and that the very first line of your program says import random."
+        "nudge": "Nothing in your program picks a song at random yet. Check that random.choice is on the line that prints Tonight, and that the very first line of your program says import random."
        },
        {
         "id": "sort",
@@ -794,7 +799,7 @@
      "value": "Python could not use the thing in the brackets. If this was a remove line, the title has to match one that is really in the list, capital letters and all.",
      "syntax": "Python could not read one of your lines. Look at the line named above. Check that every bracket you opened is also closed, that every speech mark has a partner, and that any line under a colon starts four spaces in."
     },
-    "help": "Three optional jobs. None of them is worth points and nothing here is saved. Pick one from the list, or press the button at the bottom that says “Leave the extra jobs and carry on with the lesson”. If you leave a job half done it starts again from the beginning next time.",
+    "help": "There are three optional jobs. None of them is worth points and nothing here is saved. Pick one from the list, or press the button at the bottom that says “Leave the extra jobs and carry on with the lesson”. If you leave a job half done it starts again from the beginning next time.",
     "builds": [
      {
       "id": "j3x3-filter",
@@ -918,7 +923,7 @@
       ]
      }
     ],
-    "help": "One marked question about append. You are told whether you were right, and why, at the very end of the lesson — after the How did it go? screen."
+    "help": "There is one marked question about append. You are told whether you were right, and why, at the very end of the lesson — after the How did it go? screen."
    }
   },
   {

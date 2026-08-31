@@ -4744,7 +4744,8 @@
               verdict.innerHTML = '<p class="pyrun-vtag">' +
                 esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
                 '<p class="pyrun-vsay">' + esc(ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay)
-                                                  : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay)) + '</p>';
+                                                  : (judge.usesMissing ? ((b.check && b.check.usesSay) || b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay)
+                                                                       : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay))) + '</p>';
               if (!ok) { runBtn.disabled = false; return; }
               if (attempts === 1 && !b.optional) cleanFirst++;
               c.querySelectorAll('.pyrun-blank').forEach(function (n) { n.disabled = true; });
@@ -4766,6 +4767,19 @@
           function judge(res) {
             if (!res.ok) return false;
             var kind = String((b.check && b.check.kind) || (b.target ? 'target' : 'clean'));
+            /* check.uses, HERE TOO (31 Aug 2026). The first patch for his
+               two-line find went on the OTHER marking site, and the control
+               probe placed two lines, printed 3, and was told IT WORKS — the
+               len card judges through THIS function. Both sites now ask the
+               same question; the control is what caught the difference. */
+            if (b.check && b.check.uses && b.check.uses.length) {
+              var codeNow = codeOf();
+              if (b.check.uses.some(function (frag) { return codeNow.indexOf(frag) === -1; })) {
+                judge.usesMissing = true;
+                return false;
+              }
+            }
+            judge.usesMissing = false;
             if (kind === 'target') return PyRun.matches(res.out, b.target || []);
             if (b.check && b.check.usesReplies) {
               if (!replies.length) return false;
@@ -6012,11 +6026,29 @@
               ok = res.ok && (!(b.check && b.check.usesReplies) ||
                 (repliesB.length > 0 && repliesB.every(function (r) { return String(res.out || '').indexOf(r) !== -1; })));
             } else ok = res.ok && PyRun.matches(res.out, b.target || []);
+            /* HIS FIND, 31 Aug 2026, sitting the len card: the target is "3",
+               and the two-line program — build the list, print len of it —
+               prints 3. A pupil who spots that beats a card marked on OUTPUT
+               ALONE, and the card's own brief claims four lines make the
+               program. `check.uses` closes it, CONFIG-GATED: a build that
+               names no `uses` marks exactly as before, byte for byte. When the
+               output matches but a named line is missing, the card says THAT,
+               honestly, with its own sentence — never the generic not-working
+               line, because her program did work; it just did not do the job
+               the card asked for. */
+            var usesMissing = false;
+            if (ok && b.check && b.check.uses && b.check.uses.length) {
+              var codeNow = codeOf();
+              usesMissing = b.check.uses.some(function (frag) { return codeNow.indexOf(frag) === -1; });
+              if (usesMissing) ok = false;
+            }
             verdict.hidden = false;
             verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
             verdict.innerHTML = '<p class="pyrun-vtag">' +
               esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
-              '<p class="pyrun-vsay">' + esc(ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay) : (cfg.notYetSay || PY_SAY.notYetSay)) + '</p>';
+              '<p class="pyrun-vsay">' + esc(ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay)
+                : (usesMissing ? ((b.check && b.check.usesSay) || cfg.notYetSay || PY_SAY.notYetSay)
+                               : (cfg.notYetSay || PY_SAY.notYetSay))) + '</p>';
             if (ok) {
               /* the extras zone counts nothing: no first-try score, no bonus, no
                  record (DFM 265a). The tick a finished job earns is on the hub, for
