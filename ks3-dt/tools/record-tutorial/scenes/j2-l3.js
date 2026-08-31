@@ -129,7 +129,11 @@ const scenes = [
       'A program runs down the page, one line at a time. This one prints <b>Hello!</b> and moves on.',
       'Then it reaches <b>input( )</b> and it <b>STOPS</b>. Nothing after that line runs while it is waiting.',
       'It waits for a person. Until somebody types an answer and presses Enter, the program stays exactly where it is.',
-      'What the person typed goes into the box called <b>name</b>. A box with a name on it is a variable &mdash; the same kind of box you made last lesson.',
+      /* one line shorter (31 Aug 2026): at four lines this caption reached
+         the console's "Hello!" at the bottom, and sent to the top it reached
+         print("Hello!") — the program's first line. Neither band holds four
+         lines on this stage, so the sentence lost a line instead. */
+      'What the person typed goes into the box called <b>name</b> &mdash; a variable, like the box you made last lesson.',
       'The moment the answer is in, the program wakes up and carries on with the next line.',
       'And the reply uses what the person typed. The box (a variable) still holds that answer: using an answer does not empty the box.'
     ];

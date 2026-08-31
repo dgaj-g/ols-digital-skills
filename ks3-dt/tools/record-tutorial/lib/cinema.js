@@ -262,6 +262,20 @@ function pageRuntime() {
         out.push({ name: name, rect: r, text: (n.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 70) });
       });
     });
+    /* AND EVERYTHING A WEBGL STAGE PUBLISHES (31 Aug 2026). A canvas stage's
+       text lives in no DOM rectangle, so on the rack stage this law read an
+       empty page and let a caption sit on the "playlist" name tag — the very
+       thing that caption was pointing at. Stages now project every visible
+       label to screen pixels (stage-subjects.js) and the law reads them here,
+       exactly as it reads DOM. */
+    try {
+      if (typeof window.__stageSubjects === 'function') {
+        window.__stageSubjects().forEach(function (sub) {
+          if (!sub || !sub.rect || sub.rect.width < 8 || sub.rect.height < 8) return;
+          out.push({ name: sub.name || 'stage', rect: sub.rect, text: sub.text || '' });
+        });
+      }
+    } catch (e) { /* a stage mid-teardown publishes nothing */ }
     return out;
   };
   /* what a console looks like on any stage this platform films, so an
@@ -281,6 +295,52 @@ function pageRuntime() {
         rect: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)] };
     });
     return hit;
+  };
+  /* THE LAW FAILS CLOSED ON A STAGE IT CANNOT SEE (31 Aug 2026). A film
+     stage that is one full-bleed canvas and publishes no subject rects is a
+     stage where every caption-law check silently passes on an empty page —
+     which is precisely how the rack stage shipped a caption sitting on the
+     tag it described. In enforce mode such a stage now refuses to be
+     captioned at all: blindness is a failure, never a pass. */
+  C.unseenStage = function () {
+    if (typeof window.__stageSubjects === 'function') return null;
+    var hit = null;
+    Array.prototype.slice.call(document.querySelectorAll('canvas')).forEach(function (n) {
+      if (hit) return;
+      var r = n.getBoundingClientRect();
+      if (r.width < innerWidth * 0.5 || r.height < innerHeight * 0.5) return;
+      var cs = getComputedStyle(n);
+      if (cs.display === 'none' || cs.visibility === 'hidden') return;
+      hit = { law: 'UNSEEN-STAGE', text: 'a full-bleed canvas stage that publishes no subject rects',
+        rect: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)] };
+    });
+    return hit;
+  };
+  /* AND A STAGE MAY NOT COVER ITS OWN TEXT (31 Aug 2026). Moving the rack's
+     name tag out of the caption band parked it on top of a position number —
+     the same fault as caption-over-subject, committed by the stage against
+     itself, and no law watched for it. Now one does: any two stage-published
+     text rects that materially overlap fail the render. Text exists to be
+     read; nothing readable may sit on anything readable. */
+  C.stageTextOverlap = function () {
+    if (typeof window.__stageSubjects !== 'function') return null;
+    var subs;
+    try { subs = window.__stageSubjects(); } catch (e) { return null; }
+    if (!subs || subs.length < 2) return null;
+    for (var i = 0; i < subs.length; i++) for (var j = i + 1; j < subs.length; j++) {
+      var a = subs[i].rect, b = subs[j].rect;
+      var w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+      var h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+      if (w <= 0 || h <= 0) continue;
+      var overlap = w * h, smaller = Math.min(a.width * a.height, b.width * b.height);
+      if (smaller > 0 && overlap / smaller > 0.15) {
+        return { law: 'STAGE-TEXT-OVER-TEXT',
+          text: '"' + subs[i].text + '" and "' + subs[j].text + '"',
+          rect: [Math.round(Math.max(a.left, b.left)), Math.round(Math.max(a.top, b.top)),
+                 Math.round(w), Math.round(h)] };
+      }
+    }
+    return null;
   };
   /* does the box just drawn cover a region that is currently speaking? */
   C.subjectClear = function (box) {
@@ -331,6 +391,10 @@ function pageRuntime() {
        scene that shows a console without declaring one is refused outright */
     var undec = C.undeclaredConsole();
     if (undec) { C.lastFaults.push(undec); C.faults.push(undec); }
+    var unseen = C.unseenStage();
+    if (unseen) { C.lastFaults.push(unseen); C.faults.push(unseen); }
+    var tot = C.stageTextOverlap();
+    if (tot) { C.lastFaults.push(tot); C.faults.push(tot); }
     var subjFault = C.subjectClear(wrap);
     if (subjFault) { C.lastFaults.push(subjFault); C.faults.push(subjFault); }
     C.cap = wrap;
@@ -659,6 +723,20 @@ class Cinema {
             '("' + f.text + '" at ' + JSON.stringify(f.rect) + ') and never declared it. ' +
             'Call `await cine.subject("console", "#conBody")` before the first caption — a film ' +
             'cannot opt out of the caption-over-console law by saying nothing (J13g).');
+        }
+        if (f.law === 'UNSEEN-STAGE') {
+          throw new Error('UNSEEN STAGE on ' + what + ': this scene captions over ' + f.text +
+            ' at ' + JSON.stringify(f.rect) + '. The caption law reads subject rects, and this ' +
+            'stage publishes none, so every check would pass on an empty page — the exact hole ' +
+            'that put a caption on top of the rack\'s "playlist" tag. Load ../stage-subjects.js, ' +
+            'tag each label mesh (userData.subjectText) and call __installStageSubjects(...) ' +
+            'before the render loop. A stage the law cannot see refuses captions; it never ' +
+            'passes by blindness.');
+        }
+        if (f.law === 'STAGE-TEXT-OVER-TEXT') {
+          throw new Error('STAGE TEXT OVER ITS OWN TEXT on ' + what + ': ' + f.text +
+            ' overlap at ' + JSON.stringify(f.rect) + '. Text exists to be read; move one of ' +
+            'them — nothing readable may sit on anything readable.');
         }
         if (f.law === 'CAPTION-OVER-SUBJECT') {
           throw new Error('CAPTION OVER ITS OWN SUBJECT on ' + what + ': the caption box ' +

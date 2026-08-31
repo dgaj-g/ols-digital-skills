@@ -301,7 +301,12 @@ const scenes = [
     await openRack(page, cine);
     await page.evaluate(async () => {
       await window.lr.play(1); await window.lr.play(2); await window.lr.play(3);
-      await window.lr.play(4); await window.lr.play(5);
+      /* beat 6 INCLUDED (31 Aug 2026): it is the beat that fades the
+         .append( ) code line out. This chapter's setup used to jump 5 -> 7,
+         so playlist.sort() was drawn ON TOP of playlist.append(...) for the
+         whole chapter — a pile-up that shipped unseen until the film law
+         learned to read the stage (STAGE-TEXT-OVER-TEXT, 3 hits, one rect). */
+      await window.lr.play(4); await window.lr.play(5); await window.lr.play(6);
     });
     await cine.curtain({
       kicker: 'PART 2 · CHAPTER 3', title: 'Putting the titles in order, and the trap that catches people',
