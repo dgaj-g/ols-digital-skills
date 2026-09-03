@@ -93,9 +93,9 @@
       "It plays on your own computer, not on the board.",
       "No sound, so every word you need is written on the screen.",
       "Four parts, and the buttons underneath jump to any part.",
-      "About three and a half minutes."
+      "Just under four minutes."
      ],
-     "notes": "WHERE THE CLASS IS: about to start the first film on their own machines.\n\nSAY: \"On your screen, not mine. No sound at all. About three and a half minutes, four parts, and the buttons underneath let you go back to any of them.\"\n\nDO NOT play it on the board — it is written to be read at each pupil's own pace.\n\nWHILE IT RUNS: walk the room and check everybody is on it. You will want the room together for the next slide.\n\nWHEN TO MOVE: when most of the room is past it. Pull the stragglers up — the Match needs everybody at once."
+     "notes": "WHERE THE CLASS IS: about to start the first film on their own machines.\n\nSAY: \"On your screen, not mine. No sound at all. Just under four minutes, four parts, and the buttons underneath let you go back to any of them.\"\n\nDO NOT play it on the board — it is written to be read at each pupil's own pace.\n\nWHILE IT RUNS: walk the room and check everybody is on it. You will want the room together for the next slide.\n\nWHEN TO MOVE: when most of the room is past it. Pull the stragglers up — the Match needs everybody at once."
     }
    ]
   },
@@ -114,7 +114,7 @@
       "Six rounds. You both say what a line of Python will print.",
       "You both commit first, THEN you see each other's. Nobody copies."
      ],
-     "notes": "WHERE THE CLASS IS: first film finished, eyes front, everybody together. THIS SLIDE IS THE ONE TO SLOW DOWN ON, especially the first time you run a paired activity.\n\nSAY: \"In a moment the website pairs you with somebody else in this room. You do not choose and I do not choose — it pairs whoever is ready at the same time.\"\n\nTHEN SAY: \"You are not told who your partner is and they are not told who you are. You get a call sign instead — Director 3, Editor 5, and so on. The screen tells you yours.\"\n\nTHEN SAY, and this is the part that makes it work: \"You will both see the same line of Python. You each say what you think it prints. Neither of you sees the other's answer until you have BOTH said yours. So there is no point waiting to see what they put.\"\n\nTHEN SAY: \"Then the line actually runs, and you both find out.\"\n\nTWO OF THE SIX ROUNDS ARE DIFFERENT: on those, neither of you is given options — you type what you think it prints. The screen tells you when one of those is coming. Say so; a pupil who expects buttons and gets a typing box wastes half a minute working it out.\n\nIF THE CLASS IS AN ODD NUMBER: the website holds the last three and puts them in one group of three. You do not have to do anything.\n\nIF SOMEBODY IS STILL WAITING: they are not stuck — there is something to read while they wait — and you can release them to work alone from the Live tab with Solo run. Use it for a pupil genuinely stranded, not one who has waited forty seconds.\n\nWHEN TO MOVE: next slide, then send them in."
+     "notes": "WHERE THE CLASS IS: first film finished, eyes front, everybody together. THIS SLIDE IS THE ONE TO SLOW DOWN ON, especially the first time you run a paired activity.\n\nSAY: \"In a moment the website pairs you with somebody else in this room. You do not choose and I do not choose — it pairs whoever is ready at the same time.\"\n\nTHEN SAY: \"You are not told who your partner is and they are not told who you are. You get a call sign instead — Director 3, Editor 5, and so on. The screen tells you yours.\"\n\nTHEN SAY, and this is the part that makes it work: \"You will both see the same line of Python. You each say what you think it prints. Neither of you sees the other's answer until you have BOTH said yours. So there is no point waiting to see what they put.\"\n\nTHEN SAY: \"Then the line actually runs, and you both find out.\"\n\nONE ROUND HAS NO OPTIONS: on round 2 neither pupil is given answers to choose from — they type what they think it prints. Say so; a pupil who expects buttons and gets a typing box wastes half a minute working it out.\n\nTHE LAST TWO ROUNDS ARE MEANT TO BE GOT WRONG. Rounds 5 and 6 are on a loop and on sort, and nothing has taught either. Each one puts a GUESS ROUND banner up before it starts, saying nobody has taught this yet and there are no points either way. Expect a room full of wrong answers there and say beforehand that this is the design, not a test — round 6 in particular catches nearly everybody, and the second film explains it straight afterwards.\n\nIF THE CLASS IS AN ODD NUMBER: the website holds the last three and puts them in one group of three. You do not have to do anything.\n\nIF SOMEBODY IS STILL WAITING: they are not stuck, and they do not need you. A cartoon theatre critic called Margo keeps them company, and after a short wait the screen itself offers \"Play the computer\" — that pupil then plays all six rounds on their own screen and keeps the badge. Nothing here needs a teacher to release it, which is what makes it safe on a cover day.\n\nWHEN TO MOVE: next slide, then send them in."
     },
     {
      "kind": "bullets",
@@ -127,7 +127,7 @@
       "It waits until you have both committed. Then both answers appear.",
       "Then it RUNS the line, for real, and you see what it actually printed."
      ],
-     "notes": "SAY it with the picture up.\n\nTHE ONE TO STRESS: the reveal is the line really running. It is not a stored answer and it is not marking — the class is watching Python do it.\n\nIF A PAIR DISAGREES AND BOTH ARE WRONG: that is the best thing that can happen and it is worth saying so. Nothing is deducted.\n\nWHAT YOU CAN SEE: on the Live tab, the Pairing panel shows who is paired with whom, by call sign with real names in brackets, and Channel opens what a pair has sent each other.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes."
+     "notes": "SAY the bullets aloud, naming each part of the screen as you reach it.\n\nTHE ONE TO STRESS: the reveal is the line really running. It is not a stored answer and it is not marking — the class is watching Python do it.\n\nIF A PAIR DISAGREES AND BOTH ARE WRONG: that is the best thing that can happen and it is worth saying so. Nothing is deducted.\n\nWHAT YOU CAN SEE: on the Live tab, the Pairing panel shows who is paired with whom, by call sign with real names in brackets, and Channel opens what a pair has sent each other.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes."
     }
    ]
   },
@@ -142,10 +142,10 @@
      "bullets": [
       "Again on your own screen, again no sound.",
       "It picks up exactly where the Match left off.",
-      "Three parts. About three and a half minutes.",
+      "Three parts. Just under four minutes.",
       "It includes the one that caught nearly everybody."
      ],
-     "notes": "WHERE THE CLASS IS: Match finished. Some pairs will be talking about the round that caught them — let that run for fifteen seconds, it is the point of the activity.\n\nSAY: \"Second film, same as the first: your screen, no sound, about three and a half minutes. It carries straight on from the Match, and it explains the one that caught most of the room.\"\n\nWHEN TO MOVE: when most of the room is past it."
+     "notes": "WHERE THE CLASS IS: Match finished. Some pairs will be talking about the round that caught them — let that run for fifteen seconds, it is the point of the activity.\n\nSAY: \"Second film, same as the first: your screen, no sound, just under four minutes. It carries straight on from the Match, and it explains the one that caught most of the room.\"\n\nWHEN TO MOVE: when most of the room is past it."
     }
    ]
   },
@@ -164,7 +164,7 @@
       "The third is the one that carries the badge.",
       "All three RUN. If one stops, read the plain line under the red."
      ],
-     "notes": "WHERE THE CLASS IS: second film finished, eyes front. One minute here saves you ten walking the room.\n\nSAY: \"Three builds. The first is already written — read it and run it. The second is in pieces. The third is yours to work out and it is the one that carries the badge.\"\n\nDO NOT walk anybody through the third from the front.\n\nSAY ABOUT ERRORS: \"When a program stops, Python puts up a red message and there is a plain English line underneath it. Read that line first.\"\n\nWHEN TO MOVE: next slide, then send them in."
+     "notes": "WHERE THE CLASS IS: second film finished, eyes front. One minute here saves you ten walking the room.\n\nSAY: \"Three builds. The first is already written — read it and run it. The second is in pieces. The third is yours to work out and it is the one that carries the badge.\"\n\nABOUT THE THIRD BUILD: six lines are on the card and four of them make the working program — the job is to use all four. Two are there to be read and left alone: one uses a word lists do not have, and one asks for position 3 in a list of three. The title added by the append line is the pupil's own to invent, so no two programs read the same. And a pupil who prints the right number using only two lines is refused by the card itself, with a message saying which lines the job asks for — so \"but it printed 3\" is answered on screen before it reaches you.\n\nDO NOT walk anybody through the third from the front.\n\nSAY ABOUT ERRORS: \"When a program stops, Python puts up a red message and there is a plain English line underneath it. Read that line first.\"\n\nWHEN TO MOVE: next slide, then send them in."
     },
     {
      "kind": "bullets",
@@ -177,7 +177,7 @@
       "The pieces in the second build are shuffled every time.",
       "So the order you see them in is never the order they go in."
      ],
-     "notes": "SAY it with the picture up, pointing at each part.\n\nTHE ONE TO STRESS: the pieces are shuffled every single time, for every pupil. Two pupils sitting together do not have the same starting order, so copying the shape off a neighbour's screen does not work — and that is worth saying out loud, kindly, once.\n\nWHEN TO MOVE: send them in."
+     "notes": "SAY the bullets aloud, naming each part of the screen as you reach it.\n\nTHE ONE TO STRESS: the pieces are shuffled every single time, for every pupil. Two pupils sitting together do not have the same starting order, so copying the shape off a neighbour's screen does not work — and that is worth saying out loud, kindly, once.\n\nWHEN TO MOVE: send them in."
     }
    ]
   },
@@ -191,11 +191,12 @@
      "heading": "STOP — eyes front · The engine",
      "bullets": [
       "Twelve minutes. You type this one — there are no pieces to drag.",
-      "It has to make a playlist, add to it, count it, and print it in order.",
+      "Five jobs: add a song, take one out, pick one at random, put them in A to Z order, and print Now Playing with the first three.",
+      "The random one uses Python nobody has shown you. The card teaches it before you need it.",
       "You see the PLAN first. It shows the goal and the five jobs in the order you do them.",
       "Press the button marked Start writing. The card turns into the page where you type. Your five jobs sit along the top, and they tick only after you press RUN."
      ],
-     "notes": "WHERE THE CLASS IS: the three builds finished, eyes front. This is the biggest block of the hour and the hardest, and the room needs to know what finished looks like.\n\nSAY: \"Twelve minutes and you are typing this one from scratch. No pieces to drag. Five things it has to do, and they are listed across the top of the card so you can see which ones you have done.\"\n\nTHEN SAY: \"Those five are not read off your program. They watch your program while it runs. So if you have written the right thing and it still says NOT YET — have you pressed RUN since you changed it?\"\n\nTHAT ONE SENTENCE answers most of what you will be asked in the next twelve minutes.\n\nWHEN TO MOVE: next slide, then walk the room.\n\nABOUT THE TWO PARTS: the card shows one thing at a time. The plan says what she is making before anything can be typed; Start writing gives her the page where she types, and the black message panel does not appear until a run has ended."
+     "notes": "WHERE THE CLASS IS: the three builds finished, eyes front. This is the biggest block of the hour and the hardest, and the room needs to know what finished looks like.\n\nSAY: \"Twelve minutes and you are typing this one from scratch. No pieces to drag. Five things it has to do, and they are listed across the top of the card so you can see which ones you have done.\"\n\nTHEN SAY: \"Those five are not read off your program. They watch your program while it runs. So if you have written the right thing and it still says NOT YET — have you pressed RUN since you changed it?\"\n\nTHAT ONE SENTENCE answers most of what you will be asked in the next twelve minutes.\n\nTHE ONE PIECE OF NEW PYTHON: the third job picks a song at random, and nothing before this hour has taught that. The card teaches it at the top, in two lines — import random on the very first line of the program, and random.choice(playlist) to pick one title out. You do not need to teach it from the front; you do need to know it is there, because it is the job pupils ask about.\n\nWHEN TO MOVE: next slide, then walk the room.\n\nABOUT THE TWO PARTS: the card shows one thing at a time. The plan says what she is making before anything can be typed; Start writing gives her the page where she types, and the black message panel does not appear until a run has ended."
     },
     {
      "kind": "bullets",
@@ -208,7 +209,7 @@
       "The five jobs are along the top. Each job ticks when your program really does that job.",
       "Stuck? The help on the card is free and costs you nothing."
      ],
-     "notes": "SAY it with the picture up.\n\nABOUT THE HELP: everything on that card is free — no points are taken for opening any of it, and nobody is shown who used it. Say that plainly. A pupil who thinks help costs her something will sit and do nothing instead, which costs her more.\n\nABOUT INDENTING: Tab puts four spaces in. Pupils who have only ever dragged blocks have never had to indent anything, and this is the first hour they meet it.\n\nWHEN TO MOVE: send them in."
+     "notes": "SAY the bullets aloud, naming each part of the card as you reach it.\n\nABOUT THE HELP: everything on that card is free — no points are taken for opening any of it, and nobody is shown who used it. Say that plainly. A pupil who thinks help costs her something will sit and do nothing instead, which costs her more.\n\nIF THE RANDOM JOB WILL NOT TICK, it is one of two things and the card's own nudge says both: the first line of the program has to read import random, and the line that prints Tonight has to use random.choice. Ask which of the two is missing rather than reading the program yourself.\n\nABOUT INDENTING: Tab puts four spaces in. Pupils who have only ever dragged blocks have never had to indent anything, and this is the first hour they meet it.\n\nWHEN TO MOVE: send them in."
     }
    ]
   },
@@ -221,12 +222,13 @@
      "size": 15,
      "heading": "The last three screens",
      "bullets": [
-      "Two quick questions about lists. These ARE marked.",
+      "First a screen of three extra jobs. They are optional and none of them is marked.",
+      "Then one question about append. That one IS marked.",
       "Then one short program to put back in order — also marked.",
       "You are told how you did at the very end, not as you go.",
       "Then How did it go? Nobody leaves without finishing it."
      ],
-     "notes": "SAY: \"Two questions and one short ordering job. They are marked, and you find out at the end of them rather than in the middle.\"\n\nABOUT THE PRIVATE LINE in How did it go?: it goes to you and to nobody else.\n\nEXTRA JOBS: anyone finished early can open the extra jobs from the engine's closing card. They carry no points at all and they are open to everybody. Say so, or a pupil who thinks she is missing marks will rush what matters.\n\nWHEN TO MOVE: straight on to the closer."
+     "notes": "SAY: \"One question and one short ordering job. They are marked, and you find out at the end of them rather than in the middle.\"\n\nABOUT THE PRIVATE LINE in How did it go?: it goes to you and to nobody else.\n\nEXTRA JOBS: every pupil lands on the extra-jobs screen after the engine — it is not a reward for finishing early. There are three of them, they carry no points at all, nothing there is marked or saved, and a button on it carries a pupil straight on. Say so, or a pupil who thinks she is missing marks will rush what matters.\n\nWHEN TO MOVE: straight on to the closer."
     }
    ]
   },

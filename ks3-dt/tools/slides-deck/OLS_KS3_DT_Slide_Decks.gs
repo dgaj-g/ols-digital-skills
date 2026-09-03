@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-08-26 from contentVersion 2026-08-26d.
+ * Built 2026-09-03 from contentVersion 2026-09-03a.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -1756,6 +1756,243 @@ var DECKS = {
    }
   ]
  },
+ "j2-03": {
+  "id": "j2-03.deck",
+  "lesson": "j2-03",
+  "driveFileId": "",
+  "year": "j2",
+  "deckName": "KS3 DT · J2 Lesson 3 — Chatbot Workshop (Teacher Deck)",
+  "theme": {
+   "id": "workshop-slate",
+   "name": "The Workshop",
+   "ground": "#1E2630",
+   "panel": "#2B3644",
+   "accent": "#FFC15E",
+   "accent2": "#5FD6B4",
+   "text": "#FFFFFF",
+   "dim": "#C9D4E2",
+   "display": "Bitter",
+   "body": "Inter"
+  },
+  "sections": [
+   {
+    "id": "opening",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 3 · Chatbot Workshop",
+      "sub": "Your program asks. Somebody answers. — J2 · Lesson 3 of 17",
+      "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link from Google Classroom. The lesson does not open on today's work — it opens on the Do-Now, a short set of questions from the last two lessons that mark themselves as each pupil answers them. Nothing in it is graded and nothing about it is shown to the class.\n\nSAY: \"Log in, open the class link, and work through the warm-up on your own screen. When it hands you over to today's first card, stop and look up.\"\n\nWHY: it is revision, and it gives you a settled room to take the register in.\n\nWHEN TO MOVE: when most of the room is sitting on today's first card, stop everybody, eyes front, and go on."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "In this lesson you will…",
+      "bullets": [
+       "Make a program stop and wait for somebody to type something.",
+       "Keep what was typed, and use it later in the same program.",
+       "Write a chatbot of your own, in your own words.",
+       "Test somebody else's chatbot, and write down what you found."
+      ],
+      "notes": "SAY these as they are written. All four are things she will have DONE by the end of the hour, not things she will have heard about.\n\nWHY IT MATTERS: every program these pupils have written so far did exactly the same thing every time it ran. From today a program can do something different depending on what a person types into it. That is the whole hour in one sentence, and it is worth saying out loud.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The one new idea today",
+      "bullets": [
+       "A program can STOP in the middle and wait for a person.",
+       "Whatever that person types is kept in a name, like any other value.",
+       "The rest of the program can then use it.",
+       "Nothing else about writing Python changes today."
+      ],
+      "notes": "SAY: \"There is one new idea today and everything else is what you already do. A program can stop halfway through, wait for somebody to type something, and then carry on using whatever was typed.\"\n\nDO NOT put the word input( ) on the board yet. The film shows it happening before it is named, and a pupil who has seen it happen understands the word when it arrives. Naming it here costs you that.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "How the hour is laid out",
+      "bullets": [
+       "A short film on your own screen, then three training builds.",
+       "Then twelve minutes writing a chatbot that is yours.",
+       "Then you swap: you test a partner's bot and they test yours.",
+       "Two short screens at the end, and both are quick."
+      ],
+      "notes": "SAY it as written. Pupils work far better when they know the shape of the hour, and the Swap in particular is easier to run if the room already knows it is coming.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "Two things before we start",
+      "bullets": [
+       "Everything you write today is read by somebody else in this room.",
+       "So write your bot's words the way you would speak to a person here.",
+       "Nothing you type is marked for spelling.",
+       "If your program stops with a red message, that is normal. Read the plain line underneath it."
+      ],
+      "notes": "SAY the first two as a pair, and mean them. The Swap is the reason: a pupil's own sentences will be read by a classmate within the hour, and saying so now is worth more than any rule said afterwards.\n\nSAY: \"If your program stops and Python puts up a message, that is not you being told off. Every one of those messages has a plain English line under it saying what to look at. Read that line.\"\n\nWHEN TO MOVE: straight on to the film slide, then let them go."
+     }
+    ]
+   },
+   {
+    "id": "film",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The film — on your own screen",
+      "bullets": [
+       "It plays on your own computer, not on the board.",
+       "It has no sound, so every word you need is written on the screen.",
+       "It is in three parts, and the buttons underneath jump to any part.",
+       "The film lasts just over four minutes. Watch it once, then move on to the next card."
+      ],
+      "notes": "WHERE THE CLASS IS: about to start the film on their own machines, headphones not needed.\n\nSAY: \"The film is on your screen, not mine. It has no sound at all, so you will not miss anything if the room is noisy. Just over four minutes. Watch it once and then keep going. Everything the film shows is written again on the cards after it, so you will not lose anything by moving on.\"\n\nDO NOT play it on the board. It is written to be read at each pupil's own pace, and reading it as a class removes the pausing that makes it work.\n\nWHILE IT RUNS: these four minutes are your chance to walk the room and check everybody is actually on it.\n\nWHEN TO MOVE: when most of the room is past it — the build cards explain themselves, so the stragglers can catch up there."
+     }
+    ]
+   },
+   {
+    "id": "bench",
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "STOP — eyes front · The training builds",
+      "bullets": [
+       "Three builds, and they get harder as you go.",
+       "The first one is already written: read it and run it.",
+       "The second is in pieces and you put it in order.",
+       "The third has gaps in it and you fill them in.",
+       "Every one of them RUNS. If it stops, read the plain line under the red."
+      ],
+      "notes": "WHERE THE CLASS IS: film finished, eyes front. One minute here saves you ten walking the room.\n\nSAY: \"Three training builds, and they get harder. The first one is already written for you — read it, run it, and watch what happens when it asks you something. The second one is in pieces and you put the pieces in order. The third has gaps and you fill them.\"\n\nTHEN SAY: \"All three of them actually run. When you press RUN the program does what it says, including stopping and waiting for you.\"\n\nDO NOT walk anybody through build three from the front. It is the one that is marked, and it is meant to be worked out.\n\nWHEN TO MOVE: next slide, then send them in."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "What a build screen looks like",
+      "bullets": [
+       "The program is on the left. The console — where it talks — is on the right.",
+       "RUN is at the bottom. Nothing happens until it is pressed.",
+       "When the program asks a question, a box appears and the program waits.",
+       "Type an answer, press the button, and the program carries on."
+      ],
+      "notes": "SAY the bullets aloud, naming each part of the screen as you reach it. Most of the questions you will be asked in the next ten minutes are answered by this slide.\n\nTHE ONE TO STRESS: the program WAITS. A pupil who does not realise the program has stopped on purpose thinks it has crashed.\n\nWHEN TO MOVE: send them in. Walk the room."
+     }
+    ]
+   },
+   {
+    "id": "mybot",
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "2",
+      "heading": "STOP — eyes front · Your own bot",
+      "bullets": [
+       "Twelve minutes. The bot is yours and every word in it is yours.",
+       "It has to ask two things and use BOTH answers before it finishes.",
+       "First, watch the film on the card called Your bot. It lasts just over two minutes.",
+       "You can use the four ready-made lines on the card. The name on each line tells you what that line does. Using them is not cheating.",
+       "Somebody in this room is going to read every word you write."
+      ],
+      "notes": "WHERE THE CLASS IS: the three training builds finished, eyes front. This is the biggest single block of the hour and the room needs to know what \"finished\" looks like before it starts.\n\nSAY: \"Twelve minutes. You are writing a chatbot and every word it says is yours. There are only two rules: it has to ask two things, and it has to use both answers before it finishes.\"\n\nTHEN SAY: \"There is a short film on that card and I want you to watch it first. It shows the two things people get stuck on.\"\n\nTHEN SAY, and say it plainly: \"Somebody else in this room is going to run your bot in about fifteen minutes and read every word of it. Write it for them.\"\n\nABOUT THE READY-MADE LINES: there are four, each named by the job it does, and a pupil who cannot start can click one and it lands in her program with the words still to change. Tell the room the ready-made lines are there, and that using them is not cheating — the words are still hers.\n\nWHEN TO MOVE: next slide, then twelve minutes of walking the room."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "First you plan, then you type",
+      "bullets": [
+       "You see the PLAN first. It shows the goal, the film, and the three jobs. The jobs are in the order you do them.",
+       "Press the button marked Start writing. The card turns into the page where you type. Your three jobs sit along the top.",
+       "You type in the big box underneath. Keep typing if you need to. The box holds everything you write.",
+       "Four ready-made lines sit under the box. The name on each line tells you what that line does. Click one and it appears in your box.",
+       "The three jobs tick only after you press RUN. Each job ticks if your bot really does that job."
+      ],
+      "notes": "SAY, with the slide up: \"The card starts by telling you what your bot has to do — three jobs, in order. When you press Start writing, that card turns into the page where you type, and those same three jobs move up to the top so you can see them the whole time.\"\n\nTHE ONE TO STRESS: the three jobs are not read off her program. They watch her program while it RUNS. So a pupil who has written the right thing but not pressed RUN still sees NOT YET, and that is correct rather than broken.\n\nIF SHE ASKS why it will not tick: \"Have you run it since you changed it?\" answers most of it.\n\nThe card deliberately shows one thing at a time. The conversation and the black message panel do not appear at all until a run needs them, so there are no empty boxes to make sense of.\n\nWHEN TO MOVE: send them in."
+     }
+    ]
+   },
+   {
+    "id": "swap",
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "3",
+      "heading": "STOP — eyes front · The Swap",
+      "bullets": [
+       "You are about to be given a partner. The website chooses.",
+       "You are not told who they are, and they are not told who you are.",
+       "You each get a call sign — Spanner 7, Chisel 3 — and that is what you are.",
+       "You run their bot. They run yours. Then you each write a short report.",
+       "The report goes to them. Write the one you would want back."
+      ],
+      "notes": "WHERE THE CLASS IS: bots written, eyes front. THIS SLIDE IS THE ONE TO SLOW DOWN ON, especially the first time you run a paired activity.\n\nSAY: \"In a moment the website is going to pair you with somebody else in this room. You do not choose, and I do not choose — it pairs whoever is ready at the same time.\"\n\nTHEN SAY: \"You are not told who your partner is and they are not told who you are. You are each given a call sign instead — you might be Spanner 7 and they might be Chisel 3. The screen tells you yours. Use it.\"\n\nTHEN SAY: \"You run their bot, they run yours, and then you each write a short report back. Write the report you would want to get.\"\n\nWHY NO REAL NAMES: an honest report is much easier to write, and much easier to read, when neither pupil knows whose it is. Say that out loud — pupils find it reassuring rather than strange.\n\nIF THE CLASS IS AN ODD NUMBER: the website holds the last three pupils and puts them in one group of three, so nobody is left waiting for a partner who is not coming. You do not have to do anything.\n\nIF SOMEBODY IS STILL WAITING: they are not stuck, and they do not need you. A cartoon chatbot called Fred keeps them company, and after a short wait the screen itself offers \"Test my own bot instead\" — which takes that pupil through the whole Swap alone, on their own bot, badge included. The same offer appears for a pupil whose partner's bot never arrives. Nothing on this screen needs a teacher to release it, which is what makes it safe on a cover day.\n\nWHEN TO MOVE: next slide, then send them in."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "What the Swap looks like",
+      "bullets": [
+       "Your call sign is at the top. Your partner's is beside it.",
+       "Their bot runs on your screen exactly as they wrote it.",
+       "You answer its questions like anybody would.",
+       "Then two spaces: one thing that worked, and one thing you would change.",
+       "Their report on YOUR bot comes back to you a moment later."
+      ],
+      "notes": "SAY the bullets aloud, naming each part of the screen as you reach it.\n\nTHE ONE TO STRESS: they are TESTING, not marking. The two spaces are deliberately not a grade and there is no score anywhere on the screen.\n\nTWO PAUSES THAT ARE NOT FAULTS: when a pupil sends a report the screen reads \"Sending your report…\" while it travels, and the report that comes back is the one their partner wrote about their bot, which lands a moment behind. Neither is a freeze.\n\nWHAT YOU CAN SEE: on the Live tab, the Pairing panel shows who is paired with whom, by call sign with real names in brackets, and Channel opens what a pair has actually sent each other. Use it if you need it — and tell the class it exists, because a pupil who knows the teacher can read it writes a better report.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes."
+     }
+    ]
+   },
+   {
+    "id": "finishing",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The last two screens",
+      "bullets": [
+       "First a screen of three extra jobs. They are optional and none of them is marked.",
+       "Then one question about what input( ) does. That one IS marked.",
+       "You are told whether you were right, and why, at the very end.",
+       "Then How did it go? — two ratings and a private line to me.",
+       "Nobody leaves without finishing that one."
+      ],
+      "notes": "SAY: \"One question, it is marked, and you find out how you did at the end of it, not in the middle.\"\n\nABOUT THE PRIVATE LINE: it goes to you and to nobody else. Pupils use it properly when they are told that plainly.\n\nEXTRA JOBS: every pupil lands on the extra-jobs screen after the Swap — it is not a reward for finishing early. There are three of them, they are worth no points at all, nothing there is marked or saved, and there is a button to carry straight on. Say so — a pupil who thinks she is missing marks will rush the ones that matter.\n\nWHEN TO MOVE: straight on to the closer."
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Finish How did it go? Nobody leaves without it.",
+       "Sign out every time. Anything the next person does looks like you.",
+       "Your bot is saved. It will still be there next lesson."
+      ],
+      "notes": "SAY the sign-out line every lesson without exception. On shared C2k machines it is the single habit that matters most.\n\nSAY: \"Your bot is saved. You do not need to write it down or email it to yourself.\"\n\nLAST THING: if the room has been noisy about the Swap, it is worth one sentence — \"the reports you wrote each other were better than I expected\" — said honestly. It sets up the next paired lesson."
+     }
+    ]
+   }
+  ]
+ },
  "j3-01": {
   "id": "j3-01.deck",
   "lesson": "j3-01",
@@ -2281,6 +2518,259 @@ var DECKS = {
        "Chair in, area tidy, nothing left beside your machine."
       ],
       "notes": "WHERE THE CLASS IS: on the last screen, then packing up.\n\nSAY: \"Last screen. Three sentences to rate, one choice about how hard the hour felt, and a comment box that comes to me and nobody else.\"\n\nNOBODY LEAVES WITHOUT FINISHING How did it go? It is compulsory, and it is how you hear from the pupils who never put a hand up. After a first hour of real code it matters more than usual: a pupil who found it hard will often say so here and nowhere else.\n\nTHEN SAY: \"Sign out. Chair in. Nothing left beside your machine.\"\n\nWHY: they were taught this rule in Lesson 1 and know it perfectly well, so hold them to it here.\n\nWHEN TO MOVE: dismiss when the room is signed out and tidy."
+     }
+    ]
+   }
+  ]
+ },
+ "j3-03": {
+  "id": "j3-03.deck",
+  "lesson": "j3-03",
+  "driveFileId": "",
+  "year": "j3",
+  "deckName": "KS3 DT · J3 Lesson 3 — Playlist Engine (Teacher Deck)",
+  "theme": {
+   "id": "control-room",
+   "name": "The Control Room",
+   "ground": "#08090F",
+   "panel": "#14161F",
+   "accent": "#5AA9FF",
+   "accent2": "#FF6EC7",
+   "text": "#FFFFFF",
+   "dim": "#B9C2D6",
+   "display": "IBM Plex Mono",
+   "body": "Inter"
+  },
+  "sections": [
+   {
+    "id": "opening",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 3 · Playlist Engine",
+      "sub": "One name. A whole set of things. — J3 · Lesson 3 of 17",
+      "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link from Google Classroom. The lesson opens on the Do-Now — questions from the last two lessons that mark themselves as each pupil answers them. Nothing in it is graded and nothing about it is shown to the class.\n\nSAY: \"Log in, open the class link, and work through the warm-up on your own screen. When it hands you over to today's first card, stop and look up.\"\n\nWHY: it is revision, and it gives you a settled room to take the register in.\n\nWHEN TO MOVE: when most of the room is on today's first card, stop everybody, eyes front, and go on."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "In this lesson you will…",
+      "bullets": [
+       "Keep a whole set of things under one name.",
+       "Take one out, count them, add one on the end, and put them in order.",
+       "Say what a line of Python is going to print BEFORE it runs.",
+       "Write the program that runs a playlist, from nothing."
+      ],
+      "notes": "SAY these as written. The third one is the odd one out and it is deliberate: predicting is a skill in its own right, and the Match is fifteen minutes of practising it.\n\nWHY IT MATTERS: up to now one name has held one thing. Today one name holds twenty. Almost everything they will ever write afterwards depends on that.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The one new idea today",
+      "bullets": [
+       "A name can hold a whole set of things at once, in order.",
+       "The places are numbered, and the numbering starts at 0.",
+       "You can take one out, count them, add one on, and sort them.",
+       "Everything else about writing Python is what you already do."
+      ],
+      "notes": "SAY it as written. The 0 is worth saying twice — it is the single thing this hour goes wrong on, and the film spends a whole part on it.\n\nDO NOT call it a list yet if you can help it. The film builds the picture first — a rack of numbered boxes — and the word lands better after the picture.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "How the hour is laid out",
+      "bullets": [
+       "A short film, then straight into the Match against a partner.",
+       "A second short film, then three builds.",
+       "Then twelve minutes writing the playlist engine — no pieces, you type it.",
+       "Two short screens at the end."
+      ],
+      "notes": "SAY it as written. The Match coming early is unusual and worth flagging, because a room that expects to build first will be thrown by it.\n\nWHY THE MATCH IS EARLY: it is fifteen minutes of reading Python closely, against somebody. Everything they build afterwards is easier for having done it.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "Two things before we start",
+      "bullets": [
+       "No music plays today. Nothing here makes a sound.",
+       "The playlist is a set of song names in a program — that is all.",
+       "In the Match you are guessing what Python will print, not racing.",
+       "Getting one wrong costs you nothing. There is no penalty anywhere in it."
+      ],
+      "notes": "SAY the first two now, before anybody asks. Every class asks whether real music plays, and the answer landing early saves you three interruptions later.\n\nSAY: \"The Match is not a race. You are working out what a line of Python is going to print, and you get as long as you need.\"\n\nWHEN TO MOVE: on to the film slide, then let them go."
+     }
+    ]
+   },
+   {
+    "id": "filma",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The first film — on your own screen",
+      "bullets": [
+       "It plays on your own computer, not on the board.",
+       "No sound, so every word you need is written on the screen.",
+       "Four parts, and the buttons underneath jump to any part.",
+       "Just under four minutes."
+      ],
+      "notes": "WHERE THE CLASS IS: about to start the first film on their own machines.\n\nSAY: \"On your screen, not mine. No sound at all. Just under four minutes, four parts, and the buttons underneath let you go back to any of them.\"\n\nDO NOT play it on the board — it is written to be read at each pupil's own pace.\n\nWHILE IT RUNS: walk the room and check everybody is on it. You will want the room together for the next slide.\n\nWHEN TO MOVE: when most of the room is past it. Pull the stragglers up — the Match needs everybody at once."
+     }
+    ]
+   },
+   {
+    "id": "match",
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "STOP — eyes front · The Match",
+      "bullets": [
+       "You are about to be given a partner. The website chooses.",
+       "You are not told who they are, and they are not told who you are.",
+       "You each get a call sign — Director 3, Editor 5 — and that is what you are.",
+       "Six rounds. You both say what a line of Python will print.",
+       "You both commit first, THEN you see each other's. Nobody copies."
+      ],
+      "notes": "WHERE THE CLASS IS: first film finished, eyes front, everybody together. THIS SLIDE IS THE ONE TO SLOW DOWN ON, especially the first time you run a paired activity.\n\nSAY: \"In a moment the website pairs you with somebody else in this room. You do not choose and I do not choose — it pairs whoever is ready at the same time.\"\n\nTHEN SAY: \"You are not told who your partner is and they are not told who you are. You get a call sign instead — Director 3, Editor 5, and so on. The screen tells you yours.\"\n\nTHEN SAY, and this is the part that makes it work: \"You will both see the same line of Python. You each say what you think it prints. Neither of you sees the other's answer until you have BOTH said yours. So there is no point waiting to see what they put.\"\n\nTHEN SAY: \"Then the line actually runs, and you both find out.\"\n\nONE ROUND HAS NO OPTIONS: on round 2 neither pupil is given answers to choose from — they type what they think it prints. Say so; a pupil who expects buttons and gets a typing box wastes half a minute working it out.\n\nTHE LAST TWO ROUNDS ARE MEANT TO BE GOT WRONG. Rounds 5 and 6 are on a loop and on sort, and nothing has taught either. Each one puts a GUESS ROUND banner up before it starts, saying nobody has taught this yet and there are no points either way. Expect a room full of wrong answers there and say beforehand that this is the design, not a test — round 6 in particular catches nearly everybody, and the second film explains it straight afterwards.\n\nIF THE CLASS IS AN ODD NUMBER: the website holds the last three and puts them in one group of three. You do not have to do anything.\n\nIF SOMEBODY IS STILL WAITING: they are not stuck, and they do not need you. A cartoon theatre critic called Margo keeps them company, and after a short wait the screen itself offers \"Play the computer\" — that pupil then plays all six rounds on their own screen and keeps the badge. Nothing here needs a teacher to release it, which is what makes it safe on a cover day.\n\nWHEN TO MOVE: next slide, then send them in."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "What the Match looks like",
+      "bullets": [
+       "The line of Python is in the middle. Your call sign is at the top.",
+       "You choose or type what it prints, then press to commit.",
+       "It waits until you have both committed. Then both answers appear.",
+       "Then it RUNS the line, for real, and you see what it actually printed."
+      ],
+      "notes": "SAY the bullets aloud, naming each part of the screen as you reach it.\n\nTHE ONE TO STRESS: the reveal is the line really running. It is not a stored answer and it is not marking — the class is watching Python do it.\n\nIF A PAIR DISAGREES AND BOTH ARE WRONG: that is the best thing that can happen and it is worth saying so. Nothing is deducted.\n\nWHAT YOU CAN SEE: on the Live tab, the Pairing panel shows who is paired with whom, by call sign with real names in brackets, and Channel opens what a pair has sent each other.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes."
+     }
+    ]
+   },
+   {
+    "id": "filmb",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The second film",
+      "bullets": [
+       "Again on your own screen, again no sound.",
+       "It picks up exactly where the Match left off.",
+       "Three parts. Just under four minutes.",
+       "It includes the one that caught nearly everybody."
+      ],
+      "notes": "WHERE THE CLASS IS: Match finished. Some pairs will be talking about the round that caught them — let that run for fifteen seconds, it is the point of the activity.\n\nSAY: \"Second film, same as the first: your screen, no sound, just under four minutes. It carries straight on from the Match, and it explains the one that caught most of the room.\"\n\nWHEN TO MOVE: when most of the room is past it."
+     }
+    ]
+   },
+   {
+    "id": "bench",
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "2",
+      "heading": "STOP — eyes front · The three builds",
+      "bullets": [
+       "Three builds, and they get harder.",
+       "The first is written for you: read it and run it.",
+       "The second is in pieces and you put it in order.",
+       "The third is the one that carries the badge.",
+       "All three RUN. If one stops, read the plain line under the red."
+      ],
+      "notes": "WHERE THE CLASS IS: second film finished, eyes front. One minute here saves you ten walking the room.\n\nSAY: \"Three builds. The first is already written — read it and run it. The second is in pieces. The third is yours to work out and it is the one that carries the badge.\"\n\nABOUT THE THIRD BUILD: six lines are on the card and four of them make the working program — the job is to use all four. Two are there to be read and left alone: one uses a word lists do not have, and one asks for position 3 in a list of three. The title added by the append line is the pupil's own to invent, so no two programs read the same. And a pupil who prints the right number using only two lines is refused by the card itself, with a message saying which lines the job asks for — so \"but it printed 3\" is answered on screen before it reaches you.\n\nDO NOT walk anybody through the third from the front.\n\nSAY ABOUT ERRORS: \"When a program stops, Python puts up a red message and there is a plain English line underneath it. Read that line first.\"\n\nWHEN TO MOVE: next slide, then send them in."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "What a build screen looks like",
+      "bullets": [
+       "The program is on the left. The console is on the right.",
+       "RUN is at the bottom. Nothing happens until it is pressed.",
+       "The pieces in the second build are shuffled every time.",
+       "So the order you see them in is never the order they go in."
+      ],
+      "notes": "SAY the bullets aloud, naming each part of the screen as you reach it.\n\nTHE ONE TO STRESS: the pieces are shuffled every single time, for every pupil. Two pupils sitting together do not have the same starting order, so copying the shape off a neighbour's screen does not work — and that is worth saying out loud, kindly, once.\n\nWHEN TO MOVE: send them in."
+     }
+    ]
+   },
+   {
+    "id": "engine",
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "3",
+      "heading": "STOP — eyes front · The engine",
+      "bullets": [
+       "Twelve minutes. You type this one — there are no pieces to drag.",
+       "Five jobs: add a song, take one out, pick one at random, put them in A to Z order, and print Now Playing with the first three.",
+       "The random one uses Python nobody has shown you. The card teaches it before you need it.",
+       "You see the PLAN first. It shows the goal and the five jobs in the order you do them.",
+       "Press the button marked Start writing. The card turns into the page where you type. Your five jobs sit along the top, and they tick only after you press RUN."
+      ],
+      "notes": "WHERE THE CLASS IS: the three builds finished, eyes front. This is the biggest block of the hour and the hardest, and the room needs to know what finished looks like.\n\nSAY: \"Twelve minutes and you are typing this one from scratch. No pieces to drag. Five things it has to do, and they are listed across the top of the card so you can see which ones you have done.\"\n\nTHEN SAY: \"Those five are not read off your program. They watch your program while it runs. So if you have written the right thing and it still says NOT YET — have you pressed RUN since you changed it?\"\n\nTHAT ONE SENTENCE answers most of what you will be asked in the next twelve minutes.\n\nTHE ONE PIECE OF NEW PYTHON: the third job picks a song at random, and nothing before this hour has taught that. The card teaches it at the top, in two lines — import random on the very first line of the program, and random.choice(playlist) to pick one title out. You do not need to teach it from the front; you do need to know it is there, because it is the job pupils ask about.\n\nWHEN TO MOVE: next slide, then walk the room.\n\nABOUT THE TWO PARTS: the card shows one thing at a time. The plan says what she is making before anything can be typed; Start writing gives her the page where she types, and the black message panel does not appear until a run has ended."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "What to do when a job does not tick",
+      "bullets": [
+       "You type into the box. It has line numbers, like real Python.",
+       "Tab moves you four spaces in — that is how lines go inside a loop.",
+       "The five jobs are along the top. Each job ticks when your program really does that job.",
+       "Stuck? The help on the card is free and costs you nothing."
+      ],
+      "notes": "SAY the bullets aloud, naming each part of the card as you reach it.\n\nABOUT THE HELP: everything on that card is free — no points are taken for opening any of it, and nobody is shown who used it. Say that plainly. A pupil who thinks help costs her something will sit and do nothing instead, which costs her more.\n\nIF THE RANDOM JOB WILL NOT TICK, it is one of two things and the card's own nudge says both: the first line of the program has to read import random, and the line that prints Tonight has to use random.choice. Ask which of the two is missing rather than reading the program yourself.\n\nABOUT INDENTING: Tab puts four spaces in. Pupils who have only ever dragged blocks have never had to indent anything, and this is the first hour they meet it.\n\nWHEN TO MOVE: send them in."
+     }
+    ]
+   },
+   {
+    "id": "finishing",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The last three screens",
+      "bullets": [
+       "First a screen of three extra jobs. They are optional and none of them is marked.",
+       "Then one question about append. That one IS marked.",
+       "Then one short program to put back in order — also marked.",
+       "You are told how you did at the very end, not as you go.",
+       "Then How did it go? Nobody leaves without finishing it."
+      ],
+      "notes": "SAY: \"One question and one short ordering job. They are marked, and you find out at the end of them rather than in the middle.\"\n\nABOUT THE PRIVATE LINE in How did it go?: it goes to you and to nobody else.\n\nEXTRA JOBS: every pupil lands on the extra-jobs screen after the engine — it is not a reward for finishing early. There are three of them, they carry no points at all, nothing there is marked or saved, and a button on it carries a pupil straight on. Say so, or a pupil who thinks she is missing marks will rush what matters.\n\nWHEN TO MOVE: straight on to the closer."
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Finish How did it go? Nobody leaves without it.",
+       "Sign out every time. Anything the next person does looks like you.",
+       "Your playlist engine is saved. It will still be there next lesson."
+      ],
+      "notes": "SAY the sign-out line every lesson without exception. On shared C2k machines it is the single habit that matters most.\n\nSAY: \"Your engine is saved. You do not need to write it down or email it to yourself.\"\n\nLAST THING: if the Match went well, say so. It is the first time these pupils have worked against a partner they could not see, and a sentence about how they handled it makes the next one easier to run."
      }
     ]
    }
@@ -2933,8 +3423,10 @@ function createLesson4Deck() { return createDeck_('j1-04'); }
 function createLesson5Deck() { return createDeck_('j1-05'); }
 function createJ2Lesson1Deck() { return createDeck_('j2-01'); }
 function createJ2Lesson2Deck() { return createDeck_('j2-02'); }
+function createJ2Lesson3Deck() { return createDeck_('j2-03'); }
 function createJ3Lesson1Deck() { return createDeck_('j3-01'); }
 function createJ3Lesson2Deck() { return createDeck_('j3-02'); }
+function createJ3Lesson3Deck() { return createDeck_('j3-03'); }
 
 function rebuildLesson1Deck() { return rebuildDeck_('j1-01'); }
 function rebuildLesson2Deck() { return rebuildDeck_('j1-02'); }
@@ -2943,8 +3435,10 @@ function rebuildLesson4Deck() { return rebuildDeck_('j1-04'); }
 function rebuildLesson5Deck() { return rebuildDeck_('j1-05'); }
 function rebuildJ2Lesson1Deck() { return rebuildDeck_('j2-01'); }
 function rebuildJ2Lesson2Deck() { return rebuildDeck_('j2-02'); }
+function rebuildJ2Lesson3Deck() { return rebuildDeck_('j2-03'); }
 function rebuildJ3Lesson1Deck() { return rebuildDeck_('j3-01'); }
 function rebuildJ3Lesson2Deck() { return rebuildDeck_('j3-02'); }
+function rebuildJ3Lesson3Deck() { return rebuildDeck_('j3-03'); }
 
 /* ===================== the proofs (DFM 225b, standing) ====================
    A deck is never handed over on the strength of the code that built it. Slide
@@ -3033,8 +3527,10 @@ function exportLesson4Proofs() { return exportDeckProofs_('j1-04'); }
 function exportLesson5Proofs() { return exportDeckProofs_('j1-05'); }
 function exportJ2Lesson1Proofs() { return exportDeckProofs_('j2-01'); }
 function exportJ2Lesson2Proofs() { return exportDeckProofs_('j2-02'); }
+function exportJ2Lesson3Proofs() { return exportDeckProofs_('j2-03'); }
 function exportJ3Lesson1Proofs() { return exportDeckProofs_('j3-01'); }
 function exportJ3Lesson2Proofs() { return exportDeckProofs_('j3-02'); }
+function exportJ3Lesson3Proofs() { return exportDeckProofs_('j3-03'); }
 
 /* EVERY PROOF SET IN ONE RUN, and the list is DERIVED from the deck data rather
    than typed. It used to be a hardcoded array of five, which was true on the day

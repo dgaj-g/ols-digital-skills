@@ -21,8 +21,15 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..', '..');
-const PACKED = path.join(ROOT, 'content');
-const OUT = path.join(__dirname, 'OLS_KS3_DT_Slide_Decks.gs');
+/* Both roots are overridable, and ONLY so that qa-staff-docs.js can prove this
+   file is fresh (DFM 279 rule 5). It rebuilds from content-src into a scratch
+   file and compares bytes, because the pack runs its gates BEFORE it writes
+   content/, so a freshness check reading the packed decks would be checking the
+   state of the previous pack. Decks carry no `keys`, so packing is a re-serialise
+   and the two roots produce identical output. Unset, the behaviour is exactly
+   what the runbook says: read packed content, write the committed .gs. */
+const PACKED = process.env.KS3DT_DECK_ROOT || path.join(ROOT, 'content');
+const OUT = process.env.KS3DT_DECK_GS_OUT || path.join(__dirname, 'OLS_KS3_DT_Slide_Decks.gs');
 const PAGES = 'https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/';
 
 function decks() {
