@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-09-03 from contentVersion 2026-09-03a.
+ * Built 2026-09-03 from contentVersion 2026-09-03b.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -1759,7 +1759,7 @@ var DECKS = {
  "j2-03": {
   "id": "j2-03.deck",
   "lesson": "j2-03",
-  "driveFileId": "",
+  "driveFileId": "1JiMgC5cFh6CMTgZRFFbfw3KxghKSvpxx7xpxPwkOV9c",
   "year": "j2",
   "deckName": "KS3 DT · J2 Lesson 3 — Chatbot Workshop (Teacher Deck)",
   "theme": {
@@ -2526,7 +2526,7 @@ var DECKS = {
  "j3-03": {
   "id": "j3-03.deck",
   "lesson": "j3-03",
-  "driveFileId": "",
+  "driveFileId": "1glDSt7CwXDAuQJoybk4ULDBHfturzfKuor2q9zB_3cQ",
   "year": "j3",
   "deckName": "KS3 DT · J3 Lesson 3 — Playlist Engine (Teacher Deck)",
   "theme": {
