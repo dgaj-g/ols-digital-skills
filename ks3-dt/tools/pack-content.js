@@ -239,6 +239,42 @@ function briefShapeGate() {
   console.log('brief-shape gate: PASSED (qa-brief-shape)');
 }
 
+/* THE STAFF-DOCS GATE (DFM 279, his 31 Aug 2026 ruling). He opened the slide
+   deck from the J2 Lesson 3 brief and the link was dead — a bare DECK_URL
+   placeholder that staff.js rendered as an ordinary "open it" link, in front of
+   the teachers this platform has been handed to. His ruling: a lesson is not
+   FINISHED at pupil-content approval; its brief and its deck are part of the
+   same deliverable, and a link that does not work is never rendered. This gate
+   is the machine that replaces remembering it: an approved lesson whose brief is
+   missing, whose links are bare placeholders or dead, or whose deck no longer
+   matches its own run sheet, stops the pack — and every _PENDING link prints as
+   standing debt on every pack, so a pending link cannot be forgotten quietly. */
+function staffDocsGate() {
+  const harness = path.join(__dirname, 'record-tutorial', 'qa-staff-docs.js');
+  if (!fs.existsSync(harness)) {
+    console.error('qa-staff-docs.js is missing - the staff-docs gate cannot run, so the pack stops.');
+    process.exit(1);
+  }
+  /* the live-link check needs the network. OFFLINE is opt-in and never silent:
+     the harness prints its own warning, and it is echoed here too, because a
+     pack that skipped it must say so where the pack's own output is read. */
+  const args = [harness];
+  if (process.argv.includes('--offline')) args.push('--offline');
+  const res = require('child_process').spawnSync(process.execPath, args, { encoding: 'utf8' });
+  const out = (res.stdout || '') + (res.stderr || '');
+  if (res.status !== 0) {
+    fs.writeSync(2, out + '\n');
+    console.error('\nPACK STOPPED: an approved lesson\'s staff docs are not part of it (DFM 279).');
+    console.error('A brief must be whole, its links must be real and must answer, its run sheet and');
+    console.error('its deck must describe the same hour, and the .gs must be made of those deck words.');
+    process.exit(1);
+  }
+  out.split('\n')
+    .filter(l => /PENDING LINK|--offline|NOT FETCHED|EXEMPT/.test(l))
+    .forEach(l => console.log(l.replace(/^\s+/, '  ')));
+  console.log('staff-docs gate: PASSED (qa-staff-docs)');
+}
+
 /* THE AUDIT GATE (audit gap G7; DFM 195b). Damien: "you've logged rulings as a
    rule. this makes no sense to me. does it have a harness?" Not every rule can
    have one — but no rule may exist without declaring WHICH of the three homes
@@ -626,7 +662,7 @@ function main() {
   tileTextGate();
   if (WALK_BUILD) {
     console.log('\n*** WALK BUILD — LOCAL PREVIEW ONLY, NOT SHIPPABLE ***');
-    console.log('    The language, XP, tray-order, deck, brief, audit and coverage gates are NOT run.');
+    console.log('    The language, XP, tray-order, deck, brief, staff-docs, audit and coverage gates are NOT run.');
     console.log('    The content stamp will NOT move, so the next real pack still sees the');
     console.log('    source as changed. Run `node pack-content.js` with no flag to ship.\n');
   }
@@ -637,6 +673,7 @@ function main() {
     deckShotGate();
     deckAnswerGate();
     briefShapeGate();
+    staffDocsGate();
     itemValidityGate();
     numeralTieGate();
     humanPaceGate();

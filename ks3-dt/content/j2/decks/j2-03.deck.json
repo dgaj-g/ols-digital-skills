@@ -95,7 +95,7 @@
       "It is in three parts, and the buttons underneath jump to any part.",
       "The film lasts just over four minutes. Watch it once, then move on to the next card."
      ],
-     "notes": "WHERE THE CLASS IS: about to start the film on their own machines, headphones not needed.\n\nSAY: \"The film is on your screen, not mine. It has no sound at all, so you will not miss anything if the room is noisy. Just over four minutes. Watch it once and then keep going — you can come back to it later from the grey Show me how button.\"\n\nDO NOT play it on the board. It is written to be read at each pupil's own pace, and reading it as a class removes the pausing that makes it work.\n\nWHILE IT RUNS: these four minutes are your chance to walk the room and check everybody is actually on it.\n\nWHEN TO MOVE: when most of the room is past it — the build cards explain themselves, so the stragglers can catch up there."
+     "notes": "WHERE THE CLASS IS: about to start the film on their own machines, headphones not needed.\n\nSAY: \"The film is on your screen, not mine. It has no sound at all, so you will not miss anything if the room is noisy. Just over four minutes. Watch it once and then keep going. Everything the film shows is written again on the cards after it, so you will not lose anything by moving on.\"\n\nDO NOT play it on the board. It is written to be read at each pupil's own pace, and reading it as a class removes the pausing that makes it work.\n\nWHILE IT RUNS: these four minutes are your chance to walk the room and check everybody is actually on it.\n\nWHEN TO MOVE: when most of the room is past it — the build cards explain themselves, so the stragglers can catch up there."
     }
    ]
   },
@@ -127,7 +127,7 @@
       "When the program asks a question, a box appears and the program waits.",
       "Type an answer, press the button, and the program carries on."
      ],
-     "notes": "SAY it while the picture is up, pointing at each part. Most of the questions you will be asked in the next ten minutes are answered by this slide.\n\nTHE ONE TO STRESS: the program WAITS. A pupil who does not realise the program has stopped on purpose thinks it has crashed.\n\nWHEN TO MOVE: send them in. Walk the room."
+     "notes": "SAY the bullets aloud, naming each part of the screen as you reach it. Most of the questions you will be asked in the next ten minutes are answered by this slide.\n\nTHE ONE TO STRESS: the program WAITS. A pupil who does not realise the program has stopped on purpose thinks it has crashed.\n\nWHEN TO MOVE: send them in. Walk the room."
     }
    ]
   },
@@ -179,7 +179,7 @@
       "You run their bot. They run yours. Then you each write a short report.",
       "The report goes to them. Write the one you would want back."
      ],
-     "notes": "WHERE THE CLASS IS: bots written, eyes front. THIS SLIDE IS THE ONE TO SLOW DOWN ON, especially the first time you run a paired activity.\n\nSAY: \"In a moment the website is going to pair you with somebody else in this room. You do not choose, and I do not choose — it pairs whoever is ready at the same time.\"\n\nTHEN SAY: \"You are not told who your partner is and they are not told who you are. You are each given a call sign instead — you might be Spanner 7 and they might be Chisel 3. The screen tells you yours. Use it.\"\n\nTHEN SAY: \"You run their bot, they run yours, and then you each write a short report back. Write the report you would want to get.\"\n\nWHY NO REAL NAMES: an honest report is much easier to write, and much easier to read, when neither pupil knows whose it is. Say that out loud — pupils find it reassuring rather than strange.\n\nIF THE CLASS IS AN ODD NUMBER: the website holds the last three pupils and puts them in one group of three, so nobody is left waiting for a partner who is not coming. You do not have to do anything.\n\nIF SOMEBODY IS STILL WAITING: they are not stuck — there is something on their screen to read while they wait, and you can release them to work alone from the Live tab with Solo run. Do that for a pupil who is genuinely stranded, not for one who has been waiting forty seconds.\n\nWHEN TO MOVE: next slide, then send them in."
+     "notes": "WHERE THE CLASS IS: bots written, eyes front. THIS SLIDE IS THE ONE TO SLOW DOWN ON, especially the first time you run a paired activity.\n\nSAY: \"In a moment the website is going to pair you with somebody else in this room. You do not choose, and I do not choose — it pairs whoever is ready at the same time.\"\n\nTHEN SAY: \"You are not told who your partner is and they are not told who you are. You are each given a call sign instead — you might be Spanner 7 and they might be Chisel 3. The screen tells you yours. Use it.\"\n\nTHEN SAY: \"You run their bot, they run yours, and then you each write a short report back. Write the report you would want to get.\"\n\nWHY NO REAL NAMES: an honest report is much easier to write, and much easier to read, when neither pupil knows whose it is. Say that out loud — pupils find it reassuring rather than strange.\n\nIF THE CLASS IS AN ODD NUMBER: the website holds the last three pupils and puts them in one group of three, so nobody is left waiting for a partner who is not coming. You do not have to do anything.\n\nIF SOMEBODY IS STILL WAITING: they are not stuck, and they do not need you. A cartoon chatbot called Fred keeps them company, and after a short wait the screen itself offers \"Test my own bot instead\" — which takes that pupil through the whole Swap alone, on their own bot, badge included. The same offer appears for a pupil whose partner's bot never arrives. Nothing on this screen needs a teacher to release it, which is what makes it safe on a cover day.\n\nWHEN TO MOVE: next slide, then send them in."
     },
     {
      "kind": "bullets",
@@ -190,9 +190,10 @@
       "Your call sign is at the top. Your partner's is beside it.",
       "Their bot runs on your screen exactly as they wrote it.",
       "You answer its questions like anybody would.",
-      "Then four short boxes: what it asked, what it did well, what to fix, one kind line."
+      "Then two spaces: one thing that worked, and one thing you would change.",
+      "Their report on YOUR bot comes back to you a moment later."
      ],
-     "notes": "SAY it with the picture up.\n\nTHE ONE TO STRESS: they are TESTING, not marking. The four boxes are deliberately not a grade and there is no score anywhere on the screen.\n\nWHAT YOU CAN SEE: on the Live tab, the Pairing panel shows who is paired with whom, by call sign with real names in brackets, and Channel opens what a pair has actually sent each other. Use it if you need it — and tell the class it exists, because a pupil who knows the teacher can read it writes a better report.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes."
+     "notes": "SAY the bullets aloud, naming each part of the screen as you reach it.\n\nTHE ONE TO STRESS: they are TESTING, not marking. The two spaces are deliberately not a grade and there is no score anywhere on the screen.\n\nTWO PAUSES THAT ARE NOT FAULTS: when a pupil sends a report the screen reads \"Sending your report…\" while it travels, and the report that comes back is the one their partner wrote about their bot, which lands a moment behind. Neither is a freeze.\n\nWHAT YOU CAN SEE: on the Live tab, the Pairing panel shows who is paired with whom, by call sign with real names in brackets, and Channel opens what a pair has actually sent each other. Use it if you need it — and tell the class it exists, because a pupil who knows the teacher can read it writes a better report.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes."
     }
    ]
   },
@@ -205,12 +206,13 @@
      "size": 15,
      "heading": "The last two screens",
      "bullets": [
-      "Three quick questions about what input( ) does. These ARE marked.",
+      "First a screen of three extra jobs. They are optional and none of them is marked.",
+      "Then one question about what input( ) does. That one IS marked.",
       "You are told whether you were right, and why, at the very end.",
       "Then How did it go? — two ratings and a private line to me.",
       "Nobody leaves without finishing that one."
      ],
-     "notes": "SAY: \"Three questions, they are marked, and you find out how you did at the end of them, not in the middle.\"\n\nABOUT THE PRIVATE LINE: it goes to you and to nobody else. Pupils use it properly when they are told that plainly.\n\nEXTRA JOBS: anyone finished early can open the extra jobs from the Swap's closing card. They are worth no points at all, they are open to everybody, and nothing is lost by ignoring them. Say so — a pupil who thinks she is missing marks will rush the ones that matter.\n\nWHEN TO MOVE: straight on to the closer."
+     "notes": "SAY: \"One question, it is marked, and you find out how you did at the end of it, not in the middle.\"\n\nABOUT THE PRIVATE LINE: it goes to you and to nobody else. Pupils use it properly when they are told that plainly.\n\nEXTRA JOBS: every pupil lands on the extra-jobs screen after the Swap — it is not a reward for finishing early. There are three of them, they are worth no points at all, nothing there is marked or saved, and there is a button to carry straight on. Say so — a pupil who thinks she is missing marks will rush the ones that matter.\n\nWHEN TO MOVE: straight on to the closer."
     }
    ]
   },
