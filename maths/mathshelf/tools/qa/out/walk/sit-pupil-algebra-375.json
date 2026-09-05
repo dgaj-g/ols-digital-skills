@@ -3,8 +3,8 @@
  "scope": "algebra",
  "width": 375,
  "tier": "preview",
- "contentHash": "3104e2a0dbdf",
- "when": "2026-09-05T17:39:05.986Z",
+ "contentHash": "90fb7de5c142",
+ "when": "2026-09-05T17:57:22.428Z",
  "states": [
   {
    "surface": "cover",
@@ -33,7 +33,7 @@
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS"
    }
   },
@@ -49,7 +49,7 @@
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS"
    }
   },
@@ -67,7 +67,7 @@
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS",
     "click-safety": "PASS"
    }
@@ -82,11 +82,11 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS",
     "click-safety": "PASS"
    }
@@ -101,11 +101,11 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS",
     "click-safety": "PASS"
    }
@@ -120,11 +120,11 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS",
     "click-safety": "PASS"
    }
@@ -139,11 +139,11 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS",
     "click-safety": "PASS"
    }
@@ -158,11 +158,11 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS",
     "click-safety": "PASS"
    }
@@ -177,11 +177,11 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS",
     "click-safety": "PASS"
    }
@@ -194,9 +194,9 @@
    "section": 0,
    "book": "algebra",
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -266,7 +266,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -285,7 +285,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -304,7 +304,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -323,7 +323,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -342,7 +342,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -361,7 +361,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -380,7 +380,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -413,7 +413,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -431,7 +431,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -450,7 +450,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -469,7 +469,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -488,7 +488,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -507,7 +507,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -526,7 +526,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -545,7 +545,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -564,7 +564,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -634,7 +634,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -653,7 +653,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -672,7 +672,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -691,7 +691,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -710,7 +710,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -729,7 +729,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -748,7 +748,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -818,7 +818,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -837,7 +837,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -856,7 +856,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -875,7 +875,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -894,7 +894,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -913,7 +913,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -932,7 +932,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -965,7 +965,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -983,7 +983,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -1002,7 +1002,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -1021,7 +1021,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -1040,7 +1040,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -1059,7 +1059,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -1078,7 +1078,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "FAIL",
     "mute-locks": "PASS",
@@ -1097,7 +1097,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "FAIL",
     "mute-locks": "PASS",
@@ -1116,7 +1116,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "FAIL",
     "mute-locks": "PASS",

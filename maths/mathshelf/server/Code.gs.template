@@ -419,6 +419,27 @@ function apiSave(req) {
     var name = String(getName_(who) || '');
     var found = findRow_(rec.name, who, act);
     var rowIdx = found ? found.row : dataSheet_().getLastRow() + 1;
+
+    /* THE TEACHER'S VERDICT IS NOT THE PUPIL'S TO OVERWRITE.
+       An inked mark lives inside the state, and a pupil's client saves the
+       WHOLE state — so a teacher who inked a question while the pupil still had
+       the book open lost her judgement the moment the pupil typed one more
+       line. Nothing on any screen would have said so; the mark simply reverted,
+       which is worse than never saving, because she has no reason to look
+       again. So every `ovr` already stored is merged forward here, on the one
+       write path, where no caller can forget it (DFM 145 / rule 13). */
+    if (found) {
+      var prev = parseJson_(found.vals[5]);
+      var next = parseJson_(state);
+      if (prev && next && prev.qs && next.qs) {
+        var qk = Object.keys(prev.qs);
+        for (var qi = 0; qi < qk.length; qi++) {
+          var pq = prev.qs[qk[qi]];
+          if (pq && pq.ovr && next.qs[qk[qi]]) next.qs[qk[qi]].ovr = pq.ovr;
+        }
+        state = JSON.stringify(next);
+      }
+    }
     writeRow_(rowIdx, rec.name, who, name, act, summary, state);
     SpreadsheetApp.flush();
     return { ok: true, saved: true, at: nowIso_(), len: Number(state.length) };
