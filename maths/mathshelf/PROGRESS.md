@@ -56,15 +56,13 @@ here.
 
 ## WHAT IS LEFT, in the order to do it
 
-1. **Three surfaces the pupil walk does not reach yet.** `sit-pupil` finishes
-   cleanly (90s per book per width, zero console errors) and its own
-   required-set check reports the gap honestly:
-   `dock`, `self-eval` and `book-end` are declared in `GJ.app.surfaces` and the
-   walk never records standing on them. The route needs three additions in
-   `walkBook` (`tools/qa/sit-pupil.js`): record the dock's sub-kind alongside
-   each question state, open the end-of-exercise self-evaluation card, and walk
-   past the last exercise to the tally page. Until then `--full` is red, by its
-   own design, and that is the correct verdict.
+1. **The three walkers, clean, at one commit.** They now press the app's own
+   controls (`tools/qa/lib/drive.js`) and record the state the app was actually
+   in, so a walk is worth what it says. Each run has been finding real faults
+   and the run after a fix has to be a fresh one — a walker launched before an
+   edit keeps testing the old code. Watch for two things in the log: `expected
+   X, stood on Y` notes (honest, and settled at the end of the walk) and any
+   `the browser tab died part-way` line, which is the rig, not the app.
 2. **`node tools/qa/control.js`** — every control FIRED, every over-tightening
    PASSED. Every node-tier gate is now green under its own controls; the eight
    browser-tier gates (colour law, fonts, numpad, waits, click-safety,
