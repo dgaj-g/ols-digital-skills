@@ -4,7 +4,7 @@
  "width": 375,
  "tier": "preview",
  "contentHash": "e9e7ff463c0a",
- "when": "2026-09-05T19:50:12.944Z",
+ "when": "2026-09-05T20:01:20.673Z",
  "states": [
   {
    "surface": "cover",
@@ -847,9 +847,9 @@
   },
   {
    "surface": "movie",
-   "state": "end",
+   "state": "step-n",
    "expected": "end",
-   "stood": true,
+   "stood": false,
    "width": 375,
    "section": 3,
    "audits": {

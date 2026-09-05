@@ -4,7 +4,7 @@
  "width": 375,
  "tier": "preview",
  "contentHash": "e9e7ff463c0a",
- "when": "2026-09-05T19:40:36.514Z",
+ "when": "2026-09-05T19:59:45.072Z",
  "states": [
   {
    "surface": "cover",
@@ -1446,9 +1446,9 @@
   },
   {
    "surface": "question",
-   "state": "checked-right",
+   "state": "mid-attempt",
    "expected": "checked-right",
-   "stood": true,
+   "stood": false,
    "width": 375,
    "qid": "q22",
    "section": 5,
