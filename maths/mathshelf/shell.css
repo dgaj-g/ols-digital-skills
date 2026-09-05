@@ -244,7 +244,9 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
   font-family: var(--f-mono); font-size: 13px; color: var(--chalk-muted);
   border: 1px solid var(--line-glow); background: var(--glass); border-radius: 7px; padding: 7px 12px;
 }
-.stat-chip b { color: var(--gold-hi); font-weight: 600; }
+ /* A NUMBER IS DATA, NOT PRESTIGE. Gold on a value makes the value look like
+    a status; the count of pupils in a class is neither. */
+.stat-chip b { color: var(--chalk); font-weight: 600; }
 .toolbtn {
   font: 500 14px var(--f-ui); color: var(--chalk); background: var(--glass);
   border: 1px solid var(--line-glow); border-radius: 7px; padding: 10px 15px; min-height: 40px; cursor: pointer;
@@ -392,3 +394,7 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
 .ticks-series { font-family: var(--f-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--chalk-muted); margin: 8px 0 4px; }
 .tickbox { display: inline-flex; align-items: center; gap: 8px; margin: 0 12px 6px 0; min-height: 40px; }
 .tick-band { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .08em; color: var(--chalk-muted); border: 1px solid var(--line-glow); border-radius: 4px; padding: 2px 6px; }
+
+/* the class page's own legend IS a key to marks, so it wears marking colours
+   legitimately and says so */
+.cp-legend { }
