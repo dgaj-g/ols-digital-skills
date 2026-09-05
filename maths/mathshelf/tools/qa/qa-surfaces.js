@@ -36,6 +36,8 @@ const CONTROLS = [
     mustFail: /no data-surface/ },
   { id: 'registered-never-rendered', kind: 'fixture', plant: 'fixture-surface-ghost',
     mustFail: /registers .* but nothing renders it/ },
+  { id: 'state-nothing-writes', kind: 'fixture', plant: 'fixture-surface-dead-state',
+    mustFail: /no file ever writes it/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -145,6 +147,31 @@ Object.keys(REG).forEach(id => {
   g.check(REG[id].length > 0, id, 'contract',
     'GJ.app.surfaces registers "' + id + '" with no states — a surface with no state cannot be walked state by state');
 });
+
+/* ---- (5) a state nothing ever WRITES ------------------------------------
+   A surface that renders is not the same as a surface that says which of its
+   states it is in. Five of the seven question kinds went from "fresh" to
+   marked without ever stamping data-state, and book-contents was stamped once
+   in the markup and never again - so "mid-book" and "finished" were declared,
+   counted in the coverage matrix, and rendered by nothing. A state that no
+   file ever writes cannot be stood on, and a matrix that counts it lies. */
+{
+  /* the registry's own declaration is cut out first: every state is named
+     there by definition, so leaving it in would let the list vouch for itself */
+  const decl = /GJ\.app\.surfaces\s*=\s*\{[\s\S]*?\n  \};/;
+  const SRC = ['script.js', 'jotter.js', 'staff.js', 'player.js', 'staff-pages.js', 'index.html']
+    .filter(f => A.exists(A.app(f)))
+    .map(f => A.read(A.app(f)).replace(decl, ''))
+    .join('\n');
+  Object.keys(REG).forEach(id => {
+    (REG[id] || []).forEach(st => {
+      const esc = st.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const written = new RegExp("'" + esc + "'").test(SRC) || new RegExp('"' + esc + '"').test(SRC);
+      g.check(written, id + ':' + st, 'contract',
+        'GJ.app.surfaces claims the state "' + st + '" on "' + id + '" and no file ever writes it - a state nothing sets cannot be stood on, and the coverage matrix counts it anyway');
+    });
+  });
+}
 
 g.note('registry: ' + Object.keys(REG).length + ' surfaces, ' +
   Object.keys(REG).reduce((n, k) => n + REG[k].length, 0) + ' states');

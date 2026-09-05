@@ -75,6 +75,12 @@
   /* WHAT THE SERVER SAID, IN WORDS. The markbook used to print the server's own
      code on a teacher's screen - "not-configured", "bad-act", "no-row" - which
      is a thing to look up, not a thing to act on. */
+  /* the screen this markbook page is on, so a state can be written on it */
+  function SURF(name, state) {
+    var r = document.querySelector('[data-surface="' + name + '"]');
+    if (r && window.GJ && window.GJ.setState) window.GJ.setState(r, name, state);
+    return r;
+  }
   function SAYS(code, fallback) {
     return (window.GJ_STRINGS && window.GJ_STRINGS.serverSays)
       ? window.GJ_STRINGS.serverSays(code, fallback) : fallback;
@@ -88,7 +94,7 @@
 
   /* clipboard: navigator.clipboard → execCommand textarea → show the text */
   function copyText(text, msgEl, okMsg) {
-    function done() { if (msgEl) msgEl.textContent = okMsg || 'Copied.'; }
+    function done() { if (msgEl) msgEl.textContent = okMsg || 'Copied.'; SURF('set-up', 'csv-copied'); }
     function legacy() {
       var ta = document.createElement('textarea');
       ta.value = text; ta.setAttribute('readonly', '');
@@ -97,7 +103,8 @@
       var ok = false;
       try { ok = document.execCommand('copy'); } catch (e) {}
       ta.remove();
-      if (ok) done(); else if (msgEl) msgEl.textContent = TT('copyByHand', { text: text });
+      if (ok) done();
+      else if (msgEl) { msgEl.textContent = TT('copyByHand', { text: text }); SURF('set-up', 'csv-fallback-box'); }
     }
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, legacy);
     else legacy();
@@ -212,6 +219,7 @@
         if (!r || !r.ok) {
           passcode = null;
           clearBusy(body.querySelector('#st-msg'), SAYS(r && r.error, 'That passcode was not accepted.'));
+          SURF('staff-cover', 'passcode-wrong');
           return;
         }
         classes = r.classes || [];
@@ -288,7 +296,7 @@
             cb.disabled = true;
             call('setActs', { className: c.name, acts: acts }).then(function (r) {
               cb.disabled = false;
-              if (r && r.ok) { c.acts = acts; cmsg.textContent = a.title + (cb.checked ? ' is now on ' : ' removed from ') + c.name + '’s shelf.'; }
+              if (r && r.ok) { c.acts = acts; SURF('set-up', 'tickboxes'); cmsg.textContent = a.title + (cb.checked ? ' is now on ' : ' removed from ') + c.name + '’s shelf.'; }
               else { cb.checked = !cb.checked; cmsg.textContent = SAYS(r && r.error, TT('couldNotSave')); }
             }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.textContent = TT('couldNotSave'); });
           });
@@ -313,6 +321,7 @@
         delB.setAttribute('aria-label', TT('deleteClassAria', { 'class': c.name }));
         delB.style.marginLeft = '6px';
         delB.addEventListener('click', function () {
+          SURF('set-up', 'delete-armed');
           openConfirm('Delete ' + c.name + '?',
             'This deletes ' + c.name + ' and all its work from the markbook. This cannot be undone.',
             'Delete class', function (yes) {
@@ -342,6 +351,7 @@
       var nm = body.querySelector('#st-newclass').value.trim();
       if (!nm) { cmsg.textContent = TT('nameTheClass'); return; }
       addB.disabled = true;
+      SURF('set-up', 'add-class-busy');
       busyCard(cmsg, 'Adding ' + esc(nm) + '&hellip; this can take a moment');
       call('addClass', { className: nm }).then(function (r) {
         addB.disabled = false;
@@ -361,6 +371,7 @@
 
   function showQr(name) {
     var back = el('div', 'gj-modal-backdrop gj-modal-zstack');
+    SURF('set-up', 'link-qr-modal');
     var card = el('div', 'gj-modal gj-qr');
     card.innerHTML = '<h2>' + esc(name) + '</h2><canvas id="st-qr" width="260" height="260"></canvas>' +
       '<p class="ui-msg" style="word-break:break-all">' + esc(classLink(name)) + '</p>' +
@@ -615,7 +626,7 @@
     acts.forEach(function (a) {
       var b = el('button', 'toolbtn' + (view.act === a.id ? ' on' : ''), esc(a.title));
       b.setAttribute('aria-pressed', view.act === a.id ? 'true' : 'false');
-      b.addEventListener('click', function () { view.act = a.id; showClassPage(); });
+      b.addEventListener('click', function () { view.act = a.id; SURF('class-page', 'book-switch'); showClassPage(); });
       sw.appendChild(b);
     });
     body.appendChild(sw);
@@ -834,6 +845,13 @@
         th.addEventListener('click', function () { showQuestionView(qlist[i].q.id); });
       });
       grid.querySelectorAll('td.cell').forEach(function (td) {
+        /* a cell she is on, before she opens it: which pupil and which question
+           the grid is pointing at is a state of the screen, and the walk needs
+           to be able to stand on it */
+        td.setAttribute('tabindex', '0');
+        var onCell = function () { SURF('exercise-view', 'cell-focus'); };
+        td.addEventListener('mouseenter', onCell);
+        td.addEventListener('focus', onCell);
         td.addEventListener('click', function () {
           showJotterPage(td.getAttribute('data-email'), { q: td.getAttribute('data-qid') });
         });
@@ -916,6 +934,12 @@
       '<span class="glyph-un">—</span> not started';
     body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(orient); body.appendChild(legend); body.appendChild(wall);
     shell({ body: body, surface: 'full-grid', state: 'loaded', live: true, crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'Full grid' }] });
+    /* the grid is wider and taller than the screen; once she has scrolled it,
+       the pupil column and the question row are stuck to the edges and that is
+       a different screen to read */
+    body.addEventListener('scroll', function () {
+      SURF('full-grid', (body.scrollTop > 4 || body.scrollLeft > 4) ? 'sticky-scroll' : 'loaded');
+    }, { passive: true });
 
     var qlist = questionList(view.act);
 
@@ -1022,11 +1046,13 @@
     // the flick bar — physical "turn to the next jotter", with an always-visible axis label
     var flick = el('div', 'flick-bar');
     var bPrev = el('button', 'flick-btn' + (prevP ? '' : ' is-off'), '‹ ' + (prevP ? esc(prevP.name.split(' ')[0]) : 'first'));
+    /* turning to the next jotter is its own state: the page she is leaving is
+       still on screen while the next one is fetched */
     var axis = ctx.qlabel ? (esc(ctx.qlabel) + ' · across the class') : ((roster[idx] ? esc(roster[idx].name.split(' ')[0]) : 'this pupil') + '’s book');
     var lbl = el('span', 'flick-label', axis + (idx >= 0 ? ' · ' + (idx + 1) + ' of ' + roster.length : ''));
     var bNext = el('button', 'flick-btn' + (nextP ? '' : ' is-off'), (nextP ? esc(nextP.name.split(' ')[0]) : 'last') + ' ›');
     if (prevP) bPrev.addEventListener('click', function () { showJotterPage(prevP.email, ctx); });
-    if (nextP) bNext.addEventListener('click', function () { showJotterPage(nextP.email, ctx); });
+    if (nextP) bNext.addEventListener('click', function () { SURF('book-view', 'flicking'); showJotterPage(nextP.email, ctx); });
     flick.appendChild(bPrev); flick.appendChild(lbl); flick.appendChild(bNext);
 
     var msg = el('p', 'ui-msg', esc(TT('fetchingBook')));
@@ -1112,7 +1138,7 @@
         // ── send my eye to what needs it: a folded "worth a look" corner where the
         //    engine was unsure (answer-only, or a wrong route it couldn't name). Advisory only. ──
         var worthLook = (res.st === 'amber') || (res.st === 'err' && !res.dx);
-        if (worthLook && rec.ovr == null) wrap.classList.add('worth-look');
+        if (worthLook && rec.ovr == null) { wrap.classList.add('worth-look'); SURF('book-view', 'worth-a-look-open'); }
 
         // ── the verdict as a PENCIL mark she inks in PEN — no three-button panel ──
         function vGlyph(s) {
@@ -1152,7 +1178,7 @@
             if (reteach.disabled) return; reteach.disabled = true;
             call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId + '::' + q.id }).then(function (r3) {
               reteach.disabled = false;
-              if (r3 && r3.ok) { reteach.textContent = TT('reteachSent'); reteach.classList.add('is-sent'); }
+              if (r3 && r3.ok) { reteach.textContent = TT('reteachSent'); reteach.classList.add('is-sent'); SURF('book-view', 'reteach-sent'); }
               else { reteach.disabled = false; inkMsg.textContent = (r3 && r3.error) || TT('reteachFailed'); }
             }).catch(function () { reteach.disabled = false; inkMsg.textContent = TT('reteachFailed'); });
           });
@@ -1172,6 +1198,7 @@
               if (view.jotterCache) delete view.jotterCache[email];   // the cached jotter is now stale; re-fetch on flick-back
               if (rec.ovr == null && worthLook) wrap.classList.add('worth-look'); else wrap.classList.remove('worth-look');
               paintVerdict();
+              SURF('book-view', val === 1 ? 'inked-mine-tick' : val === 0 ? 'inked-mine-cross' : 'inked-app');
               inkMsg.textContent = (val === 1) ? 'Inked right — full marks. Your mark wins on the Wall.' : (val === 0) ? 'Inked wrong. Your mark wins on the Wall.' : 'Back to the app’s mark.';
               ink.hidden = true; vmark.setAttribute('aria-expanded', 'false');
             } else inkMsg.textContent = (r2 && r2.error) || TT('saveFailedMark');
@@ -1187,7 +1214,14 @@
         ink.appendChild(icTick); ink.appendChild(icCross); ink.appendChild(icAuto); ink.appendChild(inkMsg);
         bodyEl.appendChild(ink);
         vmark.setAttribute('aria-expanded', 'false');
-        vmark.addEventListener('click', function () { ink.hidden = !ink.hidden; vmark.setAttribute('aria-expanded', String(!ink.hidden)); });
+        vmark.addEventListener('click', function () {
+          ink.hidden = !ink.hidden;
+          vmark.setAttribute('aria-expanded', String(!ink.hidden));
+          /* the book view says the ink control is open, and the question view
+             says the same when she is inking one question across the class */
+          SURF('book-view', ink.hidden ? 'pencil' : 'ink-control-open');
+          SURF('question-view', ink.hidden ? 'loaded' : 'ink-open');
+        });
 
         page.appendChild(wrap);
       });
@@ -1259,6 +1293,7 @@
 
   function showStarter(piles) {
     var idx = 0;
+    SURF('slips', 'starter-board');
     var over = el('div', 'starter-overlay');
     function paint() {
       var p = piles[idx];
