@@ -66,9 +66,19 @@ g.exempt(['a face is judged by whether it LOADS and whether something uses it; h
   try {
     const page = await S.openApp(browser, { width: 1280 });
     await page.evaluate(() => document.fonts.ready);
-    const seen = await page.evaluate((live) => {
+    /* ASK THE FACE TO LOAD, THEN ASK WHETHER IT DID. check() alone answers a
+       different question - "has the browser already painted with this?" - and
+       a headless page is never painted, so a face that downloads perfectly
+       well reported as missing. load() resolves with the faces that matched;
+       an empty list is a face the page declares and cannot fetch, which is
+       exactly the fault this gate is for. */
+    const seen = await page.evaluate(async (live) => {
       const out = { loaded: {}, used: {} };
-      live.forEach(f => { out.loaded[f] = document.fonts.check('16px "' + f + '"'); });
+      for (const f of live) {
+        let got = [];
+        try { got = await document.fonts.load('16px "' + f + '"'); } catch (e) { got = []; }
+        out.loaded[f] = (got && got.length > 0) || document.fonts.check('16px "' + f + '"');
+      }
       const pick = (sel) => { const e = document.querySelector(sel); return e ? getComputedStyle(e).fontFamily : null; };
       out.used.display = pick('.gj-wordmark, .shelf-title');
       out.used.ui = pick('.btn-gold, .toolbtn, body');

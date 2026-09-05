@@ -154,6 +154,12 @@ gates.forEach(file => {
         env = (plant(dir) || {}).env || {};
       }
 
+      /* A WALKER'S CONTROL IS PROVED ON ONE BOOK AT ONE WIDTH. The battery asks
+         one question - can this gate be made to say no? - and a walk of every
+         book at every width answers it no better than a walk of one, while
+         costing half an hour a control. The FULL walk is what `run.js --full`
+         is for, and it is a different question. */
+      if (/^sit-/.test(file)) env = Object.assign({ MS_WIDTHS: '1280', MS_BOOK: A.books()[0] }, env);
       let server = null;
       if (needsBrowser(file)) {
         server = serveSandbox(dir);

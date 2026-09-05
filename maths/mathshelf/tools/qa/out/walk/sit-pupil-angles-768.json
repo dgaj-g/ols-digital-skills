@@ -3,8 +3,8 @@
  "scope": "angles",
  "width": 768,
  "tier": "preview",
- "contentHash": "194fae268de5",
- "when": "2026-09-05T18:30:47.563Z",
+ "contentHash": "e9e7ff463c0a",
+ "when": "2026-09-05T20:04:25.393Z",
  "states": [
   {
    "surface": "cover",
@@ -24,6 +24,8 @@
   {
    "surface": "book-contents",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "section": 0,
    "audits": {
@@ -40,6 +42,8 @@
   {
    "surface": "movie",
    "state": "end",
+   "expected": "end",
+   "stood": true,
    "width": 768,
    "section": 0,
    "audits": {
@@ -56,6 +60,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "c1",
    "section": 0,
@@ -75,6 +81,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "c1",
    "section": 0,
@@ -94,6 +102,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "c2",
    "section": 0,
@@ -113,6 +123,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "c2",
    "section": 0,
@@ -132,6 +144,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "c3",
    "section": 0,
@@ -151,6 +165,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "c3",
    "section": 0,
@@ -170,6 +186,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "c4",
    "section": 0,
@@ -189,6 +207,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "c4",
    "section": 0,
@@ -208,6 +228,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "m1",
    "section": 0,
@@ -227,6 +249,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "m1",
    "section": 0,
@@ -246,6 +270,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "m2",
    "section": 0,
@@ -265,6 +291,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "m2",
    "section": 0,
@@ -284,6 +312,8 @@
   {
    "surface": "self-eval",
    "state": "open",
+   "expected": "open",
+   "stood": true,
    "width": 768,
    "section": 0,
    "book": "angles",
@@ -301,6 +331,8 @@
   {
    "surface": "self-eval",
    "state": "saved",
+   "expected": "saved",
+   "stood": true,
    "width": 768,
    "section": 0,
    "book": "angles",
@@ -318,6 +350,8 @@
   {
    "surface": "book-contents",
    "state": "mid-book",
+   "expected": "mid-book",
+   "stood": true,
    "width": 768,
    "section": 1,
    "audits": {
@@ -334,6 +368,8 @@
   {
    "surface": "movie",
    "state": "end",
+   "expected": "end",
+   "stood": true,
    "width": 768,
    "section": 1,
    "audits": {
@@ -350,6 +386,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q5",
    "section": 1,
@@ -388,6 +426,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q5",
    "section": 1,
@@ -407,6 +447,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q6",
    "section": 1,
@@ -426,6 +468,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q6",
    "section": 1,
@@ -445,6 +489,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q7",
    "section": 1,
@@ -464,6 +510,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q7",
    "section": 1,
@@ -483,6 +531,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q8",
    "section": 1,
@@ -502,6 +552,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q8",
    "section": 1,
@@ -521,6 +573,8 @@
   {
    "surface": "self-eval",
    "state": "open",
+   "expected": "open",
+   "stood": true,
    "width": 768,
    "section": 1,
    "book": "angles",
@@ -538,6 +592,8 @@
   {
    "surface": "self-eval",
    "state": "saved",
+   "expected": "saved",
+   "stood": true,
    "width": 768,
    "section": 1,
    "book": "angles",
@@ -555,6 +611,8 @@
   {
    "surface": "book-contents",
    "state": "mid-book",
+   "expected": "mid-book",
+   "stood": true,
    "width": 768,
    "section": 2,
    "audits": {
@@ -571,6 +629,8 @@
   {
    "surface": "movie",
    "state": "end",
+   "expected": "end",
+   "stood": true,
    "width": 768,
    "section": 2,
    "audits": {
@@ -587,6 +647,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q9",
    "section": 2,
@@ -625,6 +687,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q9",
    "section": 2,
@@ -644,6 +708,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q10",
    "section": 2,
@@ -663,6 +729,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q10",
    "section": 2,
@@ -682,6 +750,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q11",
    "section": 2,
@@ -701,6 +771,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q11",
    "section": 2,
@@ -720,6 +792,8 @@
   {
    "surface": "self-eval",
    "state": "open",
+   "expected": "open",
+   "stood": true,
    "width": 768,
    "section": 2,
    "book": "angles",
@@ -737,6 +811,8 @@
   {
    "surface": "self-eval",
    "state": "saved",
+   "expected": "saved",
+   "stood": true,
    "width": 768,
    "section": 2,
    "book": "angles",
@@ -754,6 +830,8 @@
   {
    "surface": "book-contents",
    "state": "mid-book",
+   "expected": "mid-book",
+   "stood": true,
    "width": 768,
    "section": 3,
    "audits": {
@@ -769,7 +847,9 @@
   },
   {
    "surface": "movie",
-   "state": "end",
+   "state": "step-n",
+   "expected": "end",
+   "stood": false,
    "width": 768,
    "section": 3,
    "audits": {
@@ -786,6 +866,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q12",
    "section": 3,
@@ -824,6 +906,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q12",
    "section": 3,
@@ -843,6 +927,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q13",
    "section": 3,
@@ -862,6 +948,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q13",
    "section": 3,
@@ -881,6 +969,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q14",
    "section": 3,
@@ -900,6 +990,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q14",
    "section": 3,
@@ -919,6 +1011,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q15",
    "section": 3,
@@ -938,6 +1032,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q15",
    "section": 3,
@@ -957,6 +1053,8 @@
   {
    "surface": "self-eval",
    "state": "open",
+   "expected": "open",
+   "stood": true,
    "width": 768,
    "section": 3,
    "book": "angles",
@@ -974,6 +1072,8 @@
   {
    "surface": "self-eval",
    "state": "saved",
+   "expected": "saved",
+   "stood": true,
    "width": 768,
    "section": 3,
    "book": "angles",
@@ -991,6 +1091,8 @@
   {
    "surface": "book-contents",
    "state": "mid-book",
+   "expected": "mid-book",
+   "stood": true,
    "width": 768,
    "section": 4,
    "audits": {
@@ -1007,6 +1109,8 @@
   {
    "surface": "movie",
    "state": "end",
+   "expected": "end",
+   "stood": true,
    "width": 768,
    "section": 4,
    "audits": {
@@ -1014,7 +1118,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "PASS",
+    "colour": "FAIL",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS"
@@ -1023,6 +1127,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q16",
    "section": 4,
@@ -1032,7 +1138,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "PASS",
+    "colour": "FAIL",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
@@ -1051,7 +1157,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "PASS",
+    "colour": "FAIL",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
@@ -1061,6 +1167,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q16",
    "section": 4,
@@ -1070,7 +1178,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "PASS",
+    "colour": "FAIL",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
@@ -1080,6 +1188,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q17",
    "section": 4,
@@ -1089,7 +1199,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "PASS",
+    "colour": "FAIL",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
@@ -1099,6 +1209,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q17",
    "section": 4,
@@ -1108,7 +1220,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "PASS",
+    "colour": "FAIL",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
@@ -1118,6 +1230,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q18",
    "section": 4,
@@ -1127,7 +1241,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "PASS",
+    "colour": "FAIL",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
@@ -1137,6 +1251,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q18",
    "section": 4,
@@ -1146,7 +1262,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "PASS",
+    "colour": "FAIL",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
@@ -1156,6 +1272,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q19",
    "section": 4,
@@ -1165,7 +1283,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "PASS",
+    "colour": "FAIL",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
@@ -1175,6 +1293,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q19",
    "section": 4,
@@ -1184,7 +1304,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "PASS",
+    "colour": "FAIL",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
@@ -1194,6 +1314,8 @@
   {
    "surface": "self-eval",
    "state": "open",
+   "expected": "open",
+   "stood": true,
    "width": 768,
    "section": 4,
    "book": "angles",
@@ -1202,7 +1324,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "PASS",
+    "colour": "FAIL",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS"
@@ -1211,6 +1333,8 @@
   {
    "surface": "self-eval",
    "state": "saved",
+   "expected": "saved",
+   "stood": true,
    "width": 768,
    "section": 4,
    "book": "angles",
@@ -1219,7 +1343,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "PASS",
+    "colour": "FAIL",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS"
@@ -1228,6 +1352,8 @@
   {
    "surface": "book-contents",
    "state": "mid-book",
+   "expected": "mid-book",
+   "stood": true,
    "width": 768,
    "section": 5,
    "audits": {
@@ -1244,6 +1370,8 @@
   {
    "surface": "movie",
    "state": "end",
+   "expected": "end",
+   "stood": true,
    "width": 768,
    "section": 5,
    "audits": {
@@ -1260,6 +1388,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q20",
    "section": 5,
@@ -1297,7 +1427,9 @@
   },
   {
    "surface": "question",
-   "state": "checked-right",
+   "state": "mid-attempt",
+   "expected": "checked-right",
+   "stood": false,
    "width": 768,
    "qid": "q20",
    "section": 5,
@@ -1316,7 +1448,7 @@
   },
   {
    "surface": "dock",
-   "state": "chips",
+   "state": "keyboard-hidden",
    "width": 768,
    "qid": "q20",
    "section": 5,
@@ -1336,6 +1468,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q21",
    "section": 5,
@@ -1354,7 +1488,7 @@
   },
   {
    "surface": "dock",
-   "state": "chips",
+   "state": "keyboard-hidden",
    "width": 768,
    "qid": "q21",
    "section": 5,
@@ -1374,6 +1508,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q21",
    "section": 5,
@@ -1392,7 +1528,7 @@
   },
   {
    "surface": "dock",
-   "state": "chips",
+   "state": "keyboard-hidden",
    "width": 768,
    "qid": "q21",
    "section": 5,
@@ -1412,6 +1548,8 @@
   {
    "surface": "question",
    "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
    "width": 768,
    "qid": "q22",
    "section": 5,
@@ -1430,7 +1568,7 @@
   },
   {
    "surface": "dock",
-   "state": "chips",
+   "state": "keyboard-hidden",
    "width": 768,
    "qid": "q22",
    "section": 5,
@@ -1450,6 +1588,8 @@
   {
    "surface": "question",
    "state": "checked-right",
+   "expected": "checked-right",
+   "stood": true,
    "width": 768,
    "qid": "q22",
    "section": 5,
@@ -1468,7 +1608,7 @@
   },
   {
    "surface": "dock",
-   "state": "chips",
+   "state": "keyboard-hidden",
    "width": 768,
    "qid": "q22",
    "section": 5,
@@ -1488,6 +1628,8 @@
   {
    "surface": "book-contents",
    "state": "mid-book",
+   "expected": "mid-book",
+   "stood": true,
    "width": 768,
    "section": 6,
    "audits": {
@@ -1504,6 +1646,8 @@
   {
    "surface": "book-end",
    "state": "partial",
+   "expected": "partial",
+   "stood": true,
    "width": 768,
    "book": "angles",
    "audits": {
@@ -1520,6 +1664,8 @@
   {
    "surface": "shelf",
    "state": "in-progress",
+   "expected": "in-progress",
+   "stood": true,
    "width": 768,
    "audits": {
     "empty": "PASS",
