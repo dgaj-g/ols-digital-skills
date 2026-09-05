@@ -78,8 +78,15 @@ async function walkBook(page, book, width, sidecar, transcript) {
   const say = (s) => { if (s && String(s).trim()) transcript.push(String(s).trim()); };
   const record = async (surface, state, extra) => {
     await W.settle(page);
+    /* WHAT IS WRITTEN DOWN IS WHAT WAS ON SCREEN, read off the DOM contract.
+       Naming the state the walk MEANT to reach filed rows for screens it had
+       never stood on - and coverage counted every one of them. */
+    const seen = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, [surface, (extra && extra.qid) || null]);
+    const real = (seen && seen.ok && seen.state) || null;
+    g.check(real === state, surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + width, 'walk',
+      'the walk expected "' + state + '" and the app was in "' + (real || '(no such surface on screen)') + '" - a state nobody stood on is not covered');
     const a = await AUD.run(page, { clickSafety: surface === 'question' });
-    const row = Object.assign({ surface, state, width }, extra || {}, { audits: a.verdicts });
+    const row = Object.assign({ surface, state: real || state, expected: state, stood: real === state, width }, extra || {}, { audits: a.verdicts });
     sidecar.states.push(row);
     /* THE DOCK IS ITS OWN SURFACE. It is what she works with — the pad, the
        tray, the chips, the arrows — and it changes sub-kind from question to

@@ -67,10 +67,18 @@ g.exempt(['the attempt model is proved on one question per kind, not on all 48: 
         g.check(/checked-wrong-2|locked/.test(st.state), book + ' > ' + qid, 'attempts',
           'after two wrong answers the question is in state "' + st.state + '" — it should be locked');
 
-        /* a third Check is impossible */
+        /* a third Check is impossible — measured on what the app RECORDED,
+           because a renderer may grey the Check, take it away, or leave it and
+           ignore it, and all three are honest as long as no third attempt is
+           taken */
+        const attBefore = await page.evaluate((s, id) => eval(s)(id), W.ATTEMPT_COUNT, qid);
         const third = await page.evaluate((s, id) => eval(s)(id), W.CHECK, qid);
-        g.check(!third.ok || third.disabled, book + ' > ' + qid, 'attempts',
-          'a third Check was accepted after two wrong attempts');
+        await W.settle(page);
+        const attAfter = await page.evaluate((s, id) => eval(s)(id), W.ATTEMPT_COUNT, qid);
+        g.check(!attAfter.ok || !attBefore.ok || attAfter.n <= attBefore.n, book + ' > ' + qid, 'attempts',
+          'a third Check was accepted after two wrong attempts (' + attBefore.n + ' -> ' + attAfter.n + ')');
+        g.check(!third.ok, book + ' > ' + qid, 'attempts',
+          'the Check button was still pressable after two wrong attempts');
 
         /* a reload restores the locked state, not a fresh board */
         await page.reload({ waitUntil: 'domcontentloaded' });

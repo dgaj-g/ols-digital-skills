@@ -104,12 +104,62 @@ const ANSWER = `((args) => {
     return { ok: true, how: 'typed the reading on the pad' };
   }
 
+  /* THE WRITTEN ROUTE IS TYPED, LINE BY LINE, THE WAY SHE TYPES IT. Priming
+     the record instead put an attempt in the model that the renderer never
+     showed and the Check never saw: the Check stayed correctly disabled
+     ("Write a line of working first.") and the walk recorded the question as
+     still fresh. The composer takes real keydowns for the characters its own
+     pad offers, so the walker sends those, and presses the pad for the one
+     token a keyboard cannot make. */
+  if (attempt.L && attempt.L.length) {
+    /* the line she writes is composed in the DOCK, not inside the question
+       card - the dock is its own surface, and it is where the keypad lives */
+    const dock = document.querySelector('[data-surface="dock"]');
+    const host = root.querySelector('.compose') ? root : (dock && dock.querySelector('.compose') ? dock : null);
+    if (!host) return { ok: false, why: 'no compose box for ' + qid + ' in the question or the dock' };
+    const compose = host.querySelector('.compose');
+    const padKey = (label) => [...host.querySelectorAll('.keypad button')]
+      .filter((b) => (b.textContent || '').trim() === label)[0];
+    const key = (k) => compose.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true }));
+    compose.focus();
+    for (const line of attempt.L) {
+      /* the marker takes x^2 and x² alike; the pupil's pad only makes x² */
+      const t = String(line.t || '').replace(/\^2/g, '\u00b2');
+      for (let i = 0; i < t.length; i++) {
+        if (t[i] === 'x' && t[i + 1] === '\u00b2') {
+          const sq = padKey('x\u00b2');
+          if (sq) { sq.click(); i++; continue; }
+        }
+        key(t[i]);
+      }
+      key('Enter');
+    }
+    return { ok: true, how: 'typed the working, line by line' };
+  }
+
   if (!window.GJ || !window.GJ.app || !window.GJ.app.__prime) return { ok: false, why: 'no answer channel (is this the live tier?)' };
   const primed = window.GJ.app.__prime(qid, attempt);
-  return { ok: !!primed, how: 'primed the written route' };
+  return { ok: !!primed, how: 'primed the record (no typed route for this kind)' };
 })`;
 
 /* PRESS CHECK on one question, and say what the button was called */
+/* WHAT STATE IS THIS SCREEN ACTUALLY IN. Read off the DOM contract, never
+   named by the walker: a walk that writes down the state it MEANT to reach
+   records a screen it may never have stood on, and a coverage matrix built
+   from those rows is a matrix that lies. */
+const STATE_OF = `((args) => {
+  const [surface, qid] = args;
+  let roots = [...document.querySelectorAll('[data-surface="' + surface + '"]')];
+  if (qid) roots = roots.filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid);
+  const vis = roots.filter((r) => {
+    if (r.hidden) return false;
+    const cs = getComputedStyle(r); const b = r.getBoundingClientRect();
+    return cs.display !== 'none' && cs.visibility !== 'hidden' && b.width > 2 && b.height > 2;
+  });
+  const r = vis[0] || roots[0];
+  return r ? { ok: true, state: r.getAttribute('data-state'), visible: vis.length > 0 } : { ok: false };
+})`;
+
 const CHECK = `((qid) => {
   const root = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
     .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid)[0];
@@ -121,8 +171,29 @@ const CHECK = `((qid) => {
   const disabled = btn.disabled || btn.getAttribute('aria-disabled') === 'true';
   const why = btn.getAttribute('data-locked-why') || '';
   if (disabled) return { ok: false, disabled: true, label, why };
+  /* A BUTTON SHE CANNOT SEE IS A BUTTON SHE CANNOT PRESS. A renderer is
+     entitled to take the Check away rather than grey it out, and it does
+     exactly that once a question is marked; a walker that reaches into a
+     hidden row and clicks anyway is not walking, it is inventing a fault. */
+  const cs = getComputedStyle(btn);
+  const box = btn.getBoundingClientRect();
+  if (btn.closest('[hidden]') || cs.display === 'none' || cs.visibility === 'hidden' ||
+      Number(cs.opacity) < 0.05 || box.width < 1 || box.height < 1) {
+    return { ok: false, unreachable: true, label, why: why || 'the Check is not on screen' };
+  }
   btn.click();
   return { ok: true, label };
+})`;
+
+/* how many attempts the app itself has recorded for a question - read from the
+   app's own state through the preview-only channel, never counted off the
+   screen, because what the model holds is what the next save will carry */
+const ATTEMPT_COUNT = `((qid) => {
+  const g = window.GJ && window.GJ.app;
+  if (!g || typeof g.__state !== 'function') return { ok: false, why: 'no preview state channel' };
+  const st = g.__state();
+  const rec = st && st.qs && st.qs[qid];
+  return { ok: true, n: (rec && rec.att && rec.att.length) || 0, locked: !!(rec && rec.lock) };
 })`;
 
 /* the help strip: is it there, and does it lead with her own slip */
@@ -186,4 +257,4 @@ const ACTIONS = {
   backToShelf: `(() => { const b = document.getElementById('act-back'); if (b) { b.click(); return true; } return false; })`
 };
 
-module.exports = { DETECT_KIND, QUESTION_ID, QUESTIONS_ON_SCREEN, ANSWER, CHECK, HELP_STRIP, ACTIONS, settle };
+module.exports = { DETECT_KIND, QUESTION_ID, QUESTIONS_ON_SCREEN, ANSWER, CHECK, ATTEMPT_COUNT, STATE_OF, HELP_STRIP, ACTIONS, settle };

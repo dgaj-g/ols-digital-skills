@@ -16,8 +16,14 @@ function attempts() {
     try {
       const right = MA.correct(M, r.book, r.question);
       const wrong = MA.corrupt(M, r.book, r.question);
-      if (right) out['right:' + r.qid] = right;
-      if (wrong) out['wrong:' + r.qid] = wrong;
+      /* KEYED BY BOOK AND QUESTION, because eighteen of the thirty question
+         ids appear in BOTH books: keyed by qid alone the angles table
+         overwrote the algebra one, and the walker spent every run answering
+         algebra questions with an angles pupil's working - which the composer
+         quietly refused, leaving the question "fresh" and the walk claiming a
+         state it had never stood on. */
+      if (right) out['right:' + r.book + ':' + r.qid] = right;
+      if (wrong) out['wrong:' + r.book + ':' + r.qid] = wrong;
     } catch (e) {}
   });
   return out;
@@ -27,7 +33,14 @@ async function openApp(browser, opts) {
   opts = opts || {};
   const page = await B.newPage(browser, opts);
   await page.evaluateOnNewDocument((t) => {
-    window.__modelAttempt = (qid, wrong) => (t[(wrong ? 'wrong:' : 'right:') + qid] || null);
+    /* the book comes off the question's own root (the DOM contract puts it
+       there), so a caller never has to know which book it is looking at */
+    window.__modelAttempt = (qid, wrong) => {
+      const root = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+        .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid)[0];
+      const book = root ? (root.getAttribute('data-book') || '') : '';
+      return t[(wrong ? 'wrong:' : 'right:') + book + ':' + qid] || null;
+    };
   }, attempts());
   await page.goto(BASE + '?class=demo&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
   await W.settle(page);
