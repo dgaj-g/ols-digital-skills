@@ -88,6 +88,18 @@ here.
 6. **Close:** `HANDOVER.md`'s "What is live" table, PR #22 retitled, the memory
    note, and the done message with the eight-line smoke list.
 
+## STILL OWED AFTER THIS SESSION (not part of P0-P5, and not forgotten)
+
+- **The silent captioned tutorial film** for the teacher, and the teacher guide
+  it sits in. His standing law is that this platform lives or dies by ease of
+  use and beauty, and that those two are deliverables, not extras. The cold read
+  is the half of it that is built; the film is not.
+- **The Handling Data book** (Colette's third). `statcore` does not exist yet;
+  `qa-selftests` reports it as NOT BUILT rather than passing over it, and the
+  shelf will offer it unticked to every class the day it lands.
+- **A vocabulary per book** (`tools/qa/vocab/<book>.json`), which is what would
+  wake the define-before-use rule. It is on the debt ledger with its reason.
+
 ---
 
 ## THE BASELINE (the FLOORS — they may only rise)
