@@ -11,7 +11,7 @@ the resume point. Nothing in a chat window is needed to continue.
 # 1. the worktree (recreate it if /tmp was cleared)
 git -C ~/Sites/ols-digital-skills worktree add /tmp/gj-wt draft/issue-24-25-maths-m2-revision
 cd /tmp/gj-wt/maths/mathshelf
-node tools/qa/install-hooks.js            # every commit then runs the fast tier
+node tools/qa/install-hooks.js            # SAYS NO in a linked worktree, on purpose
 
 # 2. the two preview servers (nohup, never the preview tool)
 nohup python3 tools/qa/serve-preview.py /tmp/gj-wt                        8099 &
@@ -50,7 +50,9 @@ localStorage first so the demo class re-seeds; always `?nointro`.
 | P4 the DONE list | **in progress** — see below. |
 | P5 deploy | **not started.** Nothing is live yet; MAIN Version 25 is still the deployed app. |
 
-`node tools/qa/run.js` (the fast tier, 20+ gates) is **GREEN** at the last commit.
+`node tools/qa/run.js` (the fast tier, 20+ gates) is run by hand before each
+commit — see the ordering decision below about why the hook is not installed
+here.
 
 ## WHAT IS LEFT, in the order to do it
 
@@ -104,9 +106,13 @@ the walker can no longer disagree about what a correct attempt is.
 
 ## ORDERING DECISIONS (recorded, so they are not re-argued)
 
-1. The pre-commit hook was written in P0.a and **installed the moment `--fast`
-   was first green**. Installing it earlier would have blocked the five-minute
-   WIP checkpoints the standing law requires. `--no-verify` has not been used.
+1. The pre-commit hook is written and committed (`tools/qa/hooks/pre-commit`)
+   but is **NOT installed in this worktree, deliberately**. A linked worktree
+   shares `.git/hooks` with the main checkout, which may hold another session's
+   work, and installing there would run the MathShelf gates on that session's
+   commits. `install-hooks.js` now detects this and refuses, naming the
+   override. The fast tier is run by hand before each commit instead;
+   `--no-verify` has not been used, and there is nothing to bypass.
 2. `git mv maths/glass-jotter maths/mathshelf` happened as the first act of P1
    rather than after P0.d, because several P0 gates are RED BY DESIGN until the
    thing they guard exists — that is what harness-first means — and waiting
