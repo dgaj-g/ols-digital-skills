@@ -507,6 +507,10 @@ const FIXTURE_CSS = `
 .book { background-attachment: fixed; }
 [data-work] { background: #07100F !important; }
 .stat-chip b { color: #C8102E; }
+/* and a marking colour on a decoration the PUPIL sees: the markbook chip above
+   is only on a teacher's screen, and the colour law walks her screens too */
+.contents-chip { color: #C8102E; }
+.gj-wordmark { color: #C8102E; }
 `;
 
 const FIXTURE_RENDERERS = `/* fixture-renderers.js — planted by a control, never shipped.
