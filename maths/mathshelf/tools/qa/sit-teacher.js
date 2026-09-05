@@ -207,6 +207,86 @@ async function walk(page, width, projector, sidecar, transcript) {
   await new Promise(r => setTimeout(r, 1600));
   await record('full-grid', 'loaded');
   say(await page.evaluate(() => (document.querySelector('.wall-legend') || {}).innerText || ''));
+
+  /* ── THE SCREENS INSIDE THE SCREENS ────────────────────────────────
+     Everything above is a teacher arriving somewhere. What she then DOES
+     there - switch book, run her eye along a row, ink a verdict, flick to the
+     next jotter, throw the slips on the board, tick a book on - are states of
+     their own, and until this block existed they were written by the app and
+     walked by nobody. */
+  const wait = (ms) => new Promise(r => setTimeout(r, ms || 900));
+
+  /* the grid, scrolled off its own header */
+  await page.evaluate(() => { const b = document.querySelector('.st-body') || document.scrollingElement; if (b) { b.scrollTop = 60; b.scrollLeft = 60; b.dispatchEvent(new Event('scroll')); } });
+  await wait(500);
+  await record('full-grid', 'sticky-scroll');
+
+  /* back to the class page, and a different book */
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await wait(1200);
+  const switched = await page.evaluate(() => {
+    const b = [...document.querySelectorAll('.cp-books button')].filter(x => x.getAttribute('aria-pressed') !== 'true')[0];
+    if (!b) return false; b.click(); return true;
+  });
+  if (switched) { await wait(1400); await record('class-page', 'book-switch'); }
+
+  /* a cell under her eye, before she opens it */
+  await page.evaluate(() => { const c = document.querySelector('.excard'); if (c) c.click(); });
+  await wait(1300);
+  const hovered = await page.evaluate(() => {
+    const td = document.querySelector('.grid td.cell');
+    if (!td) return false; td.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true })); return true;
+  });
+  if (hovered) { await wait(400); await record('exercise-view', 'cell-focus'); }
+
+  /* a pupil's book, and the ink */
+  await page.evaluate(() => { const td = document.querySelector('.grid td.cell'); if (td) td.click(); });
+  await wait(1600);
+  const inkOpen = await page.evaluate(() => { const v = document.querySelector('.vmark'); if (!v) return false; v.click(); return true; });
+  if (inkOpen) {
+    await wait(600);
+    await record('book-view', 'ink-control-open');
+    for (const [sel, state] of [['.ic-tick', 'inked-mine-tick'], ['.ic-cross', 'inked-mine-cross'], ['.ic-auto', 'inked-app']]) {
+      const pressed = await page.evaluate((s2) => { const b = document.querySelector(s2); if (!b || b.disabled) return false; b.click(); return true; }, sel);
+      if (!pressed) continue;
+      await wait(1200);
+      await record('book-view', state);
+      await page.evaluate(() => { const v = document.querySelector('.vmark'); if (v) v.click(); });
+      await wait(400);
+    }
+  }
+  const flicked = await page.evaluate(() => {
+    const b = [...document.querySelectorAll('.flick-btn')].filter(x => !/is-off/.test(x.className))[0];
+    if (!b) return false; b.click(); return true;
+  });
+  if (flicked) { await wait(1500); await record('book-view', 'flicking'); }
+  const reteached = await page.evaluate(() => { const b = document.querySelector('.jp-reteach'); if (!b || b.disabled) return false; b.click(); return true; });
+  if (reteached) { await wait(1400); await record('book-view', 'reteach-sent'); }
+
+  /* the slips, thrown on the board */
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await wait(1200);
+  await page.evaluate(() => { const b = [...document.querySelectorAll('.toolbtn')].filter(x => /Slips/.test(x.textContent))[0]; if (b) b.click(); });
+  await wait(1700);
+  const started = await page.evaluate(() => {
+    const b = [...document.querySelectorAll('button')].filter(x => /starter/i.test(x.textContent || ''))[0];
+    if (!b) return false; b.click(); return true;
+  });
+  if (started) { await wait(1200); await record('slips', 'starter-board'); await page.evaluate(() => { const c = [...document.querySelectorAll('button')].filter(x => /close|done|back/i.test(x.textContent || ''))[0]; if (c) c.click(); }); await wait(600); }
+
+  /* Set-up: a book ticked on, the link and its QR, the CSV */
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await wait(1400);
+  const ticked = await page.evaluate(() => { const cb = document.querySelector('.tick-row input[type=checkbox], .ticks input[type=checkbox]'); if (!cb) return false; cb.click(); return true; });
+  if (ticked) { await wait(1400); await record('set-up', 'tickboxes'); }
+  const qr = await page.evaluate(() => { const b = [...document.querySelectorAll('button')].filter(x => (x.textContent || '').trim() === 'QR')[0]; if (!b) return false; b.click(); return true; });
+  if (qr) { await wait(1200); await record('set-up', 'link-qr-modal'); await page.evaluate(() => { const c = [...document.querySelectorAll('button')].filter(x => /close|done/i.test(x.textContent || ''))[0]; if (c) c.click(); }); await wait(600); }
+  const csv = await page.evaluate(() => { const b = [...document.querySelectorAll('button, .toolbtn')].filter(x => /CSV/i.test(x.textContent || ''))[0]; if (!b) return false; b.click(); return true; });
+  if (csv) {
+    await wait(1200);
+    const st = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, ['set-up', null]);
+    if (st && st.ok && /csv/.test(st.state || '')) await record('set-up', st.state);
+  }
 }
 
 (async () => {
