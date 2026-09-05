@@ -22,6 +22,11 @@ var ROOT = path.resolve(__dirname, '..');
 var CONTENT_PATH = path.join(ROOT, 'content-algebra.js');
 var MATHCORE_PATH = path.join(ROOT, 'mathcore.js');
 
+/* WHAT THIS LINT RE-DERIVES, declared so the coverage machine can prove that
+   every authored question of every kind is re-derived by something (L5/DFM 206).
+   A kind added to the pack and not added here fails coverage by name. */
+const KINDS = ['subst', 'simplify', 'expand', 'solve', 'form'];
+
 var failures = [];
 function fail(where, msg) { failures.push(where + ': ' + msg); }
 

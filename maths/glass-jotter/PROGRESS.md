@@ -24,6 +24,10 @@ install onward runs `--fast`.
 | gate.control | fired at | log |
 |---|---|---|
 | qa-surfaces.root-without-attribute | 45b03ed (the whole tree is the pre-fix state: no DOM contract existed) | out/qa-surfaces.log |
+| qa-human-pace.unrecorded-clock | 45b03ed (28 clocks, no inventory) — fixed by writing MATHS_HUMAN_PACE_INVENTORY.md | out/qa-human-pace.log |
+| qa-cache-scope.key-without-class | 45b03ed — and it OVER-TIGHTENED (it condemned the legitimate whole-store key by its variable NAME). Narrowed to resolve the constant first; the whole-store key is now a printed exemption. | out/qa-cache-scope.log |
+| qa-coverage.control-declaration | 45b03ed (no gate declared KINDS; 48 truth cells had nothing to close them) — fixed by adding KINDS to both lints and validate-all | out/qa-coverage.log |
+| qa-two-homes.addclass-field-parity | shipped tree passes; the pinned `95cc8ec^` control is run by `--control` | out/qa-two-homes.log |
 
 ## Phase log
 - [x] P0.a skeleton: run.js (tiers, derived gate list, two matrices), lib/browser.js
@@ -33,7 +37,32 @@ install onward runs `--fast`.
       48 questions, 8 kinds, 12 movies, 2 books), lib/state-audit.js (adapted),
       lib/placed-work.js (adapted to [data-placed] + the two-press),
       lib/contrast-audit.js + empty-elements.js + nested-interactive.js (verbatim).
-- [ ] P0.b qa-surfaces (written, RED against 45b03ed as designed) + qa-coverage
+- [x] P0.b qa-surfaces (written; RED against 45b03ed as designed — the DOM contract lands with P1)
+      + qa-coverage (the machine of Part 3: 416 cells derived; truth 48/48 and
+      human-pace 28/28 closed; the rest wait on the walkers and the deploy gates)
+- [ ] P0.d gates written so far: qa-selftests, qa-content-source, qa-period-budget,
+      qa-human-pace, qa-cache-scope, qa-two-homes
 - [ ] P0.c fixtures
 - [ ] P0.d the node-only gates
 - [ ] P1 rebrand · P2 staff IA · P3 login · P4 the DONE list · P5 deploy
+
+
+## FINDINGS (each with its control, harness first)
+
+### F1 — the server does not enforce the tickbox gate on save/load  (found by qa-two-homes, 5 Sept)
+`apiSave` and `apiLoad` check that the class exists and the act name is valid, but
+NOT that the class has that book ticked. The pupil UI never offers an unticked
+book, so nothing reachable by accident — but the platform's own law (gates design
+G-F3, and the `hello` law "a pupil NEVER receives a disabled activity's content
+gate as openable") is not enforced where it has to be, on the server.
+- control fired: qa-two-homes.tickbox-not-enforced at 45b03ed (out/qa-two-homes.log)
+- fix: lands with P3's data-side guard, which is the same request path.
+
+### F2 — the relay and the shared secret do not exist yet  (by design, P3)
+- control fired: qa-two-homes.relay at 45b03ed.
+
+### F3 — qa-cache-scope invented a fault on its first run (L6)
+It read the variable NAME at the call site and condemned `LSKEY`, which is the
+single whole-store key and is class-qualified inside its own object. Narrowed:
+the constant is resolved to its literal first, and the whole-store key is a
+printed exemption. The shipped tree is its permanent pass-control.
