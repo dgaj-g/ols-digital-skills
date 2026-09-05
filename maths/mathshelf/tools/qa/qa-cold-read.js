@@ -89,13 +89,23 @@ need.forEach(who => {
     'the verdict file has no judged rows — prose about the reading is not the reading, and he has to be able to open the file and see what was said about any line');
   g.note(who + ': ' + rows.length + ' judged rows against hash ' + hash);
 
-  /* every read-first candidate answered by path */
+  /* EVERY READ-FIRST CANDIDATE ANSWERED, IN THE VERDICT THAT COULD ANSWER IT.
+     This asked every verdict file for every candidate, including candidates
+     whose sentence is not in that transcript at all - so the teacher verdict
+     was failed for not judging a pupil sentence it was never shown, and no
+     judge could ever have satisfied it. A candidate is asked of the verdict
+     whose TRANSCRIPT carries the sentence; a candidate that appears in no
+     transcript is a hole in what the judge was handed, and is reported as
+     that, against the transcript rather than against the judge. */
   if (A.exists(A.out('read-first.json'))) {
     const cands = JSON.parse(A.read(A.out('read-first.json'))).filter(c => !c.locked);
-    const unanswered = cands.filter(c => verdict.indexOf(c.path) < 0);
+    const mine = cands.filter(c => transcript.indexOf(c.path) >= 0 ||
+      (c.text && transcript.indexOf(String(c.text).slice(0, 40)) >= 0));
+    const unanswered = mine.filter(c => verdict.indexOf(c.path) < 0);
     g.check(unanswered.length === 0, who, 'cold-read',
-      unanswered.length + ' read-first candidate(s) the language gate named are not answered in the verdict — those are exactly the sentences that must not ride a general pass (first: ' +
+      unanswered.length + ' read-first candidate(s) the language gate named are in this transcript and not answered in the verdict — those are exactly the sentences that must not ride a general pass (first: ' +
       (unanswered[0] ? unanswered[0].path : '') + ')');
+    g.note(who + ': ' + mine.length + ' of ' + cands.length + ' read-first candidates are in this transcript');
   }
 
   /* a per-item block for every question in a book under review */
@@ -106,4 +116,18 @@ need.forEach(who => {
       missing.length + ' question(s) have no per-item block in the verdict (first: ' + (missing[0] ? missing[0].qid : '') + ') — a tick is not a judgement');
   }
 });
+/* AND EVERY CANDIDATE REACHED A JUDGE AT ALL. A sentence the language gate
+   flagged for a human to read, that appears in no transcript, has not been
+   judged by anybody - and that is a hole in what the judge is handed, not a
+   fault in the judging. It is asked once, here, of the transcripts together. */
+if (A.exists(A.out('read-first.json'))) {
+  const cands = JSON.parse(A.read(A.out('read-first.json'))).filter(c => !c.locked);
+  const all = need.map(w => A.exists(A.out('transcript/_' + w + '.md')) ? A.read(A.out('transcript/_' + w + '.md')) : '').join('\n');
+  const orphans = cands.filter(c => all.indexOf(c.path) < 0 &&
+    !(c.text && all.indexOf(String(c.text).slice(0, 40)) >= 0));
+  g.check(orphans.length === 0, 'the transcripts', 'cold-read',
+    orphans.length + ' sentence(s) the language gate flagged for a human to read reach no transcript, so no judge has seen them (first: ' +
+    (orphans[0] ? orphans[0].path : '') + ')');
+}
+
 g.done();

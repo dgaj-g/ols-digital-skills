@@ -53,13 +53,44 @@ function oldText() {
   });
   return out;
 }
+/* WHAT A JUDGE IS HANDED HAS TO BE WHAT IS ON THE SCREEN. Two things were
+   wrong with this list and the judge said so, which is what a separated judge
+   is for: the sentences carried their template holes ({value}, {book}) rather
+   than a value a reader would actually see, and a sentence the language gate
+   had flagged for a human to read reached no transcript at all if its text
+   predated v4 - so nobody had ever read the ones most in need of reading. */
+const SAMPLE = {
+  value: '65', book: 'Angles', name: 'Aoife', 'class': '10A-Maths', title: 'Angles',
+  n: '3', count: '3', total: '8', mark: '2', marks: '3', step: '2', q: 'Q4',
+  verdict: 'right', text: 'ols.link/10a', email: 'aoife.gartland@c2ken.net',
+  date: 'Friday', label: 'Ex 2 - Angles on a straight line', act: 'Angles'
+};
+function fill(t) {
+  return String(t).replace(/\{([a-zA-Z]+)\}/g, (m, k) =>
+    (Object.prototype.hasOwnProperty.call(SAMPLE, k) ? SAMPLE[k] : m));
+}
 function v4Transcript() {
   const p2 = A.app('strings.js');
   if (!A.exists(p2)) return [];
   const before = oldText();
   const out = [];
+  const seen = new Set();
   const S = require('./lib/strings.js');
-  S.appStrings().forEach(r => { if (!before.has(r.text.trim())) out.push(r.path + '  ::  ' + r.text); });
+  S.appStrings().forEach(r => {
+    if (before.has(r.text.trim())) return;
+    seen.add(r.path);
+    out.push(r.path + '  ::  ' + fill(r.text));
+  });
+  /* and every sentence flagged for a human read, whether or not this build
+     wrote it: a flagged sentence that no judge sees is the one that matters */
+  const rf = A.out('read-first.json');
+  if (A.exists(rf)) {
+    JSON.parse(A.read(rf)).filter(c => !c.locked).forEach(c => {
+      if (seen.has(c.path) || !c.text) return;
+      seen.add(c.path);
+      out.push(c.path + '  ::  ' + fill(c.text) + '   [carried from the approved build, flagged for a read]');
+    });
+  }
   return out;
 }
 

@@ -175,11 +175,11 @@
       removedLastStep: 'Removed your last step.',
       angleStepHeading: 'Work out ∠{name}',
       angleSizeLabel: 'Size of angle {name}',
-      angleSizePlaceholder: 'the size, e.g. 65',
+      angleSizePlaceholder: 'the size in degrees',
       angleSizeHint: 'Type the size — a number, or a sum like 180−124.',
       angleChooseReasonSub: 'Then choose the reason — it earns its own mark:',
       angleNeedSize: 'First type the size of the angle above.',
-      angleUnreadable: 'That does not read as a number yet — type a number, or a calculation like 180−65.',
+      angleUnreadable: 'That does not read as a number yet. Put in the size in degrees, or a sum that works it out.',
       angleOutOfRange: 'An angle here is between 0° and 360° — check the size.',
 
       /* the last of the migration: sentences that used to live on a render path */
@@ -188,7 +188,7 @@
       selfEvalSavedIdle: 'Saved as you go — your teacher sees this on her class list.',
       angleWorkOut: 'Work out ∠',
       angleSizeHintLine: 'Type the size — a number, or a sum like 180−124.',
-      angleUnreadableLine: 'That does not read as a number yet — type a number, or a calculation like 180−65.',
+      angleUnreadableLine: 'That does not read as a number yet. Put in the size in degrees, or a sum that works it out.',
       amberNoWorkingLine: 'Right answer — but with no working shown, you can’t earn the working marks.',
       angleChooseReasonPrompt: 'Now choose the reason below ↓ — it earns its own mark.'
     },
@@ -255,7 +255,6 @@
       loadingGrid: 'Loading the full grid…',
       gridOrient: 'Each cell is one pupil and one question. Look for the reds, then open a cell to read that pupil\'s book.',
       cellNotStarted: 'Not started',
-      cellUntouched: 'Not started',
       cellRight: 'Right — working and answer both sound',
       cellAmber: 'Answer only, no working shown',
       cellAmber2: 'Answer only — no working shown',
