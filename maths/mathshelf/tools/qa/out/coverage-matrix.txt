@@ -2,40 +2,36 @@
   COVERAGE MATRIX (content hash e9e7ff463c0a, tier fast)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  21      204
-  colour        72      153
-  consequence   72      153
+  click-safety  24      201
+  colour        84      141
+  consequence   84      141
   deploy        3
-  empty         72      153
-  geometry      72      153
+  empty         84      141
+  geometry      84      141
   human-pace    28
   movie         12      24
-  nested        72      153
+  nested        84      141
   readability   0       225
   strings       0       225
   truth         48
   two-homes     13
   verdict       0       1
-  walk-right    138     6
+  walk-right    144
   walk-wrong    58      86
 
-  CELLS NOTHING CLOSES (1536)
+  CELLS NOTHING CLOSES (1467)
   family      cell                                                     why
   ----------  ----------------------------------------------  -------  ---
   walk-wrong  algebra > s1 > q1 (subst) @375 × walk-wrong     MISSING
-  walk-right  algebra > s1 > q1 (subst) @768 × walk-right     MISSING
   walk-wrong  algebra > s1 > q1 (subst) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s1 > q1 (subst) @1280 × walk-wrong    MISSING
   walk-wrong  algebra > s1 > q2 (subst) @375 × walk-wrong     MISSING
-  walk-right  algebra > s1 > q2 (subst) @768 × walk-right     MISSING
   walk-wrong  algebra > s1 > q2 (subst) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s1 > q2 (subst) @1280 × walk-wrong    MISSING
   walk-wrong  algebra > s1 > q3 (subst) @375 × walk-wrong     MISSING
-  walk-right  algebra > s1 > q3 (subst) @768 × walk-right     MISSING
   walk-wrong  algebra > s1 > q3 (subst) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s1 > q3 (subst) @1280 × walk-wrong    MISSING
   walk-wrong  algebra > s1 > q4 (subst) @375 × walk-wrong     MISSING
-  walk-right  algebra > s1 > q4 (subst) @768 × walk-right     MISSING
   walk-wrong  algebra > s1 > q4 (subst) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s1 > q4 (subst) @1280 × walk-wrong    MISSING
   walk-wrong  algebra > s2 > q5 (simplify) @375 × walk-wrong  MISSING
@@ -73,15 +69,19 @@
   walk-wrong  algebra > s6 > q21 (solve) @375 × walk-wrong    MISSING
   walk-wrong  algebra > s6 > q22 (solve) @375 × walk-wrong    MISSING
   walk-wrong  algebra > s6 > q23 (form) @375 × walk-wrong     MISSING
-  walk-right  algebra > s6 > q23 (form) @768 × walk-right     MISSING
   walk-wrong  algebra > s6 > q23 (form) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s6 > q23 (form) @1280 × walk-wrong    MISSING
   walk-wrong  algebra > s6 > q24 (form) @375 × walk-wrong     MISSING
-  walk-right  algebra > s6 > q24 (form) @768 × walk-right     MISSING
   walk-wrong  algebra > s6 > q24 (form) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s6 > q24 (form) @1280 × walk-wrong    MISSING
   walk-wrong  angles > s2 > q5 (reasoned) @375 × walk-wrong   MISSING
   walk-wrong  angles > s2 > q5 (reasoned) @768 × walk-wrong   MISSING
+  walk-wrong  angles > s2 > q6 (reasoned) @375 × walk-wrong   MISSING
+  walk-wrong  angles > s2 > q6 (reasoned) @768 × walk-wrong   MISSING
+  walk-wrong  angles > s2 > q7 (reasoned) @375 × walk-wrong   MISSING
+  walk-wrong  angles > s2 > q7 (reasoned) @768 × walk-wrong   MISSING
+  walk-wrong  angles > s2 > q8 (reasoned) @375 × walk-wrong   MISSING
+  walk-wrong  angles > s2 > q8 (reasoned) @768 × walk-wrong   MISSING
 
   DEBT LEDGER (printed every run)
   cell                     owner / phase            file                state

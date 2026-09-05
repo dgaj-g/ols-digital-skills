@@ -111,7 +111,6 @@ const ANSWER = `((args) => {
     const famOf = (s) => (/\\u00b2|\\^2/.test(s) ? 'x\\u00b2 terms' : /x/.test(s) ? 'x terms' : 'numbers');
     const binFor = (label) => all('.simp-bins > div').filter((b) => txt(b).toLowerCase().indexOf(String(label).toLowerCase()) === 0)[0]
       || all('.simp-bins > div').filter((b) => txt(b).toLowerCase().indexOf(String(label).toLowerCase()) >= 0)[0];
-    const bins = all('.simp-bins > div');
     let missorted = false, guard = 0;
     while (guard++ < 30) {
       const tile = all('[data-tray^="simplify-tray-"] button')[0];
@@ -119,8 +118,12 @@ const ANSWER = `((args) => {
       const want = famOf(txt(tile));
       let bin = binFor(want);
       if (!bin) return { ok: false, why: 'no "' + want + '" bin on ' + qid };
+      /* the bins are re-created after every placement, so "the other bin" has
+         to be looked up NOW: holding the list from before the first placement
+         meant the mis-sort clicked a detached node, did nothing at all, and
+         the walk reported a wrong answer it had never given */
       if (wrong && !missorted) {
-        const other = bins.filter((b) => b !== bin)[0];
+        const other = all('.simp-bins > div').filter((b) => b !== bin)[0];
         if (other) { bin = other; missorted = true; }
       }
       tile.click();
