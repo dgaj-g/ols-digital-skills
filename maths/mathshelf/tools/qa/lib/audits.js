@@ -147,7 +147,12 @@ const CONSEQUENCE = `(() => {
        do the opposite: show her which one she chose and how it was marked.
        The first cut asked the question in every state and condemned the
        feedback itself. */
-    if (/checked|locked/.test(state)) return;
+    /* asked ONLY while she is still choosing. Listing the states that count as
+       "after" was fragile - the day the question gained a "help-strip" state
+       the rule started condemning the marking feedback again, which is the
+       exact over-tightening this comment already records. The rule is asked in
+       the states where she has not answered yet, and nowhere else. */
+    if (!/^(fresh|mid-attempt|resume-mid)$/.test(state)) return;
     root.querySelectorAll('[data-tray], .jq-options, .classify-row').forEach((tray) => {
       /* LIKE WITH LIKE. An option group's OPTIONS must look the same as each
          other; the punctuation and labels sitting among them are not options
