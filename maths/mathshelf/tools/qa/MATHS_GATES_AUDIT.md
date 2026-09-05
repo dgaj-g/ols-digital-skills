@@ -88,7 +88,7 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | 21 | qa-two-attempts | third-attempt |
 | 22 | qa-waits | control-with-no-busy-state, outbox-dropped-on-reload |
 | 23 | qa-strings-ledger | literal-on-a-render-path |
-| 24 | qa-surfaces | root-without-attribute, registered-never-rendered |
+| 24 | qa-surfaces | root-without-attribute, registered-never-rendered, state-nothing-writes |
 | 25 | qa-manifest | front-door-cut-as-me, missing-proof-row |
 | 27 | qa-content-source | question-without-src |
 | 28 | qa-period-budget | over-budget-book |
