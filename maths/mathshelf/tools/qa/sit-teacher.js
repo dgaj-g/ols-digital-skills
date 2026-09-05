@@ -258,11 +258,14 @@ async function walk(page, width, projector, sidecar, transcript) {
   if (inkOpen) {
     await wait(600);
     await record('book-view', 'ink-control-open');
+    say(await page.evaluate(() => (document.querySelector('.ic-label') || {}).textContent || ''));
+    [...await page.evaluate(() => [...document.querySelectorAll('.ink-control button')].map(b => (b.textContent || '').trim()))].forEach(say);
     for (const [sel, state] of [['.ic-tick', 'inked-mine-tick'], ['.ic-cross', 'inked-mine-cross'], ['.ic-auto', 'inked-app']]) {
       const pressed = await page.evaluate((s2) => { const b = document.querySelector(s2); if (!b || b.disabled) return false; b.click(); return true; }, sel);
       if (!pressed) continue;
       await wait(1200);
       await record('book-view', state);
+      say(await page.evaluate(() => (document.querySelector('.ink-msg') || {}).textContent || ''));
       await page.evaluate(() => { const v = document.querySelector('.verdict-mark'); if (v) v.click(); });
       await wait(400);
     }
@@ -284,15 +287,26 @@ async function walk(page, width, projector, sidecar, transcript) {
     const b = [...document.querySelectorAll('button')].filter(x => /starter/i.test(x.textContent || ''))[0];
     if (!b) return false; b.click(); return true;
   });
-  if (started) { await wait(1200); await record('slips', 'starter-board'); await page.evaluate(() => { const c = [...document.querySelectorAll('button')].filter(x => /close|done|back/i.test(x.textContent || ''))[0]; if (c) c.click(); }); await wait(600); }
+  if (started) {
+    await wait(1200);
+    await record('slips', 'starter-board');
+    say(await page.evaluate(() => (document.querySelector('.starter-h') || {}).textContent || ''));
+    say(await page.evaluate(() => (document.querySelector('.starter-q') || {}).textContent || '')); await page.evaluate(() => { const c = [...document.querySelectorAll('button')].filter(x => /close|done|back/i.test(x.textContent || ''))[0]; if (c) c.click(); }); await wait(600); }
 
   /* Set-up: a book ticked on, the link and its QR, the CSV */
   await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
   await wait(1400);
   const ticked = await page.evaluate(() => { const cb = document.querySelector('.acts-ticks input[type=checkbox]'); if (!cb) return false; cb.click(); return true; });
-  if (ticked) { await wait(1400); await record('set-up', 'tickboxes'); }
+  if (ticked) {
+    await wait(1400);
+    await record('set-up', 'tickboxes');
+    say(await page.evaluate(() => (document.querySelector('.st-classes-msg, .ui-msg') || {}).textContent || ''));
+  }
   const qr = await page.evaluate(() => { const b = [...document.querySelectorAll('button')].filter(x => (x.textContent || '').trim() === 'QR')[0]; if (!b) return false; b.click(); return true; });
-  if (qr) { await wait(1200); await record('set-up', 'link-qr-modal'); await page.evaluate(() => { const c = [...document.querySelectorAll('button')].filter(x => /close|done/i.test(x.textContent || ''))[0]; if (c) c.click(); }); await wait(600); }
+  if (qr) {
+    await wait(1200);
+    await record('set-up', 'link-qr-modal');
+    say(await page.evaluate(() => (document.querySelector('.gj-qr p, .gj-qr .ui-msg') || {}).textContent || '')); await page.evaluate(() => { const c = [...document.querySelectorAll('button')].filter(x => /close|done/i.test(x.textContent || ''))[0]; if (c) c.click(); }); await wait(600); }
   const csv = await page.evaluate(() => { const b = [...document.querySelectorAll('button, .toolbtn')].filter(x => /CSV/i.test(x.textContent || ''))[0]; if (!b) return false; b.click(); return true; });
   if (csv) {
     await wait(1200);
