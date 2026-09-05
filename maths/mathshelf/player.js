@@ -248,6 +248,12 @@
       '<button class="btn-pencil mc-fwd" aria-label="Next step">▶</button>' +
       '<div class="movie-dots"></div></div>';
     host.appendChild(root);
+    /* THE DOM CONTRACT (gates design 2.4). The film declares itself and which
+       step it is on, so a walker can stand on every one of them and the caption
+       laws can be measured against what the step actually wrote. Nothing a
+       pupil sees changes. */
+    if (window.GJ && window.GJ.surface) window.GJ.surface(root, 'movie', 'step-n');
+    root.setAttribute('data-work', '');
     root.querySelector('.movie-head-title').textContent = movie.title || '';
 
     var stage = root.querySelector('.movie-stage');
@@ -434,6 +440,20 @@
     function showCaption(i) {
       capNum.textContent = i + 1;
       capText.textContent = movie.steps[i].say || '';
+      /* WHICH STATE THE FILM IS IN, and WHAT THIS STEP TOUCHED. The second one
+         is what lets the caption-over-its-subject law be measured at all: a
+         step declares the things it wrote, ticked, arced or plotted, and a step
+         that touches nothing declares that explicitly rather than saying
+         nothing (the UNSEEN-STAGE rule - silence has to fail closed). */
+      if (window.GJ && window.GJ.setState) {
+        window.GJ.setState(root, 'movie',
+          REDUCED ? 'reduced-motion' : (i >= movie.steps.length - 1 ? 'end' : 'step-n'));
+      }
+      var subjects = (movie.steps[i].do || []).map(function (op) {
+        var k = Object.keys(op)[0];
+        return k ? '.ml-' + k : '';
+      }).filter(Boolean);
+      root.setAttribute('data-step-subjects', subjects.join(','));
     }
 
     function goto(i, instant) {
@@ -454,6 +474,7 @@
       return pr.then(function () {
         stepIdx = i;
         showCaption(i);
+        if (instant && window.GJ && window.GJ.setState) window.GJ.setState(root, 'movie', 'instant');
         renderDots();
         var pr3 = Promise.resolve();
         movie.steps[i].do.forEach(function (op) { pr3 = pr3.then(function () { return applyOp(op, !!instant); }); });

@@ -48,14 +48,19 @@
     'book-end': ['partial', 'complete'],
     /* the markbook */
     'staff-cover': ['passcode-empty', 'passcode-wrong', 'busy', 'open'],
-    'class-page': ['loading-cold', 'empty-class', 'live', 'no-flags', 'book-switch'],
+    'class-page': ['loading-cold', 'empty-class', 'live', 'no-flags', 'book-switch', 'error'],
     'exercise-view': ['loaded', 'cell-focus'],
     'question-view': ['loading-progressive', 'loaded', 'ink-open'],
     'book-view': ['pencil', 'ink-control-open', 'inked-mine-tick', 'inked-mine-cross', 'inked-app', 'flicking', 'worth-a-look-open', 'reteach-sent'],
     slips: ['ranked', 'starter-board'],
     'full-grid': ['loaded', 'sticky-scroll'],
-    'set-up': ['classes', 'add-class-busy', 'delete-armed', 'tickboxes', 'link-qr-modal', 'csv-copied', 'csv-fallback-box'],
-    'staff-error': ['shown']
+    /* AN ERROR IS A STATE, NOT A SCREEN. The design pack listed `staff-error`
+       as a surface of its own; building it that way would have taken a teacher
+       AWAY from what she was doing to read a sentence about it. A failed admin
+       call is surfaced where she already is, with its reason, so `error` is a
+       state of the screen she is on. The registry says what the app renders,
+       and this is what it renders. */
+    'set-up': ['classes', 'add-class-busy', 'delete-armed', 'tickboxes', 'link-qr-modal', 'csv-copied', 'csv-fallback-box', 'error']
   };
   /* put a screen's name on its root, and say which state it is in */
   function surface(el, id, state) {
@@ -1096,7 +1101,7 @@
         if (viaNudge) {
           var nudgeNote = document.createElement('p');
           nudgeNote.className = 'wh-nudge-note';
-          nudgeNote.textContent = '★ Your teacher suggested watching this method.';
+          nudgeNote.textContent = T.nudgeBannerStar;
           host.appendChild(nudgeNote);
         }
         // lead with THIS pupil's own slip (their flagged line + the misconception the
@@ -1232,22 +1237,24 @@
     var ev = current.state.evals[sec.id] || { conf: 0, skills: {}, note: '' };
     if (!ev.skills) ev.skills = {};
     var card = seEl('div', 'selfeval');
+    surface(card, 'self-eval', 'open');
     var savedLine, savedTimer = null;
     function persist() {
       ev.ts = Math.floor(Date.now() / 1000); current.state.evals[sec.id] = ev; scheduleSave();
+      setState(card, 'self-eval', 'saved');
       if (savedLine) {                                  // active confirmation each tap, so it's clear it saved
-        savedLine.textContent = '✓ Saved — your teacher sees this on her class list.';
+        savedLine.textContent = T.selfEvalSavedFlash;
         savedLine.classList.add('se-saved-flash');
         clearTimeout(savedTimer);
         savedTimer = setTimeout(function () {
           savedLine.classList.remove('se-saved-flash');
-          savedLine.textContent = 'Saved as you tap — your teacher sees this on her class list.';
+          savedLine.textContent = T.selfEvalSavedIdle;
         }, 1800);
       }
     }
 
     var h = seEl('p', 'se-head');
-    h.innerHTML = 'Exercise finished &mdash; how did that go? <span class="se-opt">optional</span>';
+    h.innerHTML = esc(T.selfEvalHeading) + ' <span class="se-opt">' + esc(T.selfEvalOptional) + '</span>';
     card.appendChild(h);
 
     card.appendChild(seEl('p', 'se-label', 'How confident do you feel now?'));
@@ -1315,7 +1322,7 @@
     });
     card.appendChild(noteWrap);
 
-    savedLine = seEl('p', 'se-saved', 'Saved as you tap — your teacher sees this on her class list.');
+    savedLine = seEl('p', 'se-saved', T.selfEvalSavedIdle);
     card.appendChild(savedLine);
     return card;
   }
@@ -1327,6 +1334,8 @@
       : pct >= 80 ? 'Nearly there — look back at the crosses.'
       : pct >= 50 ? 'Good — go back over the questions the red pen marked.'
       : 'Plenty to talk about in class — your teacher can see exactly where.';
+    /* the end of the book: the tally and, when it is all right, the gold star */
+    surface(main, 'book-end', (sum.marks[1] && sum.marks[0] === sum.marks[1]) ? 'complete' : 'partial');
     main.innerHTML = '<div class="tally-page">' +
       '<p class="sec-walt">' + current.act.title + ' · marks so far</p>' +
       '<div class="tally-big">' + sum.marks[0] + ' / ' + sum.marks[1] + '</div>' +

@@ -2025,6 +2025,7 @@ window.OLS_TRANSPORT = {
       promptAddBoth: 'Add how much to both sides?',
       promptDivideBoth: 'Divide both sides by?',
       promptMultiplyBoth: 'Multiply both sides by?',
+      applyBtn: 'Apply',
 
       /* the jotter: angle reasoning steps */
       angleOneOpenHint: 'One angle is dashed on the diagram \u2014 choose it, give its size, and choose the reason.',
@@ -2039,6 +2040,15 @@ window.OLS_TRANSPORT = {
       angleNeedSize: 'First type the size of the angle above.',
       angleUnreadable: 'That does not read as a number yet \u2014 type a number, or a calculation like 180\u221265.',
       angleOutOfRange: 'An angle here is between 0\u00b0 and 360\u00b0 \u2014 check the size.',
+
+      /* the last of the migration: sentences that used to live on a render path */
+      nudgeBannerStar: '\u2605 Your teacher suggested watching this method.',
+      selfEvalSavedFlash: '\u2713 Saved \u2014 your teacher sees this on her class list.',
+      selfEvalSavedIdle: 'Saved as you go \u2014 your teacher sees this on her class list.',
+      angleWorkOut: 'Work out \u2220',
+      angleSizeHintLine: 'Type the size \u2014 a number, or a sum like 180\u2212124.',
+      angleUnreadableLine: 'That does not read as a number yet \u2014 type a number, or a calculation like 180\u221265.',
+      amberNoWorkingLine: 'Right answer \u2014 but with no working shown, you can\u2019t earn the working marks.',
       angleChooseReasonPrompt: 'Now choose the reason below \u2193 \u2014 it earns its own mark.'
     },
 
@@ -2066,6 +2076,49 @@ window.OLS_TRANSPORT = {
       csvCopied: 'Copied. Paste it into a spreadsheet.',
       csvFallback: 'Your browser would not let the page copy for you. Select the text below and copy it yourself.',
       setUpHint: 'Tick the books this class should see.',
+
+      /* the markbook's own words */
+      selfEvalHeading: 'Exercise finished \u2014 how did that go?',
+      selfEvalOptional: 'optional',
+      overConfident: 'Over-confident \u2014 confidence high, working weaker',
+      quietlyExcelling: 'Quietly excelling \u2014 doing well, low confidence',
+      cellWrongAtStep: 'Wrong at step {step}',
+      cellWrongFirstSlip: 'Wrong \u2014 first slip at step {step}',
+      markedAria: 'Marked {verdict}',
+      workingLabel: 'Working',
+      reteachTitle: 'Sends this exercise\u2019s worked example ({title}) to this pupil',
+      closeMarkbook: 'Close the markbook',
+      whereYouAre: 'Where you are',
+      whichBook: 'Which book',
+      needsYouAria: 'Pupils who need you now',
+      nobodyStuck: 'Nobody is stuck in {book} right now.',
+      copyByHand: 'Copy this by hand: {text}',
+      couldNotSave: 'We could not save that.',
+      copyLink: 'Copy link',
+      deleteClassAria: 'Delete {class}',
+      nameTheClass: 'Give the class a name first.',
+      loadingGrid: 'Loading the full grid\u2026',
+      gridOrient: 'Each cell is one pupil and one question. Look for the reds, then open a cell to read that pupil\'s book.',
+      cellNotStarted: 'Not started',
+      cellUntouched: 'Not started',
+      cellRight: 'Right \u2014 working and answer both sound',
+      cellAmber: 'Answer only, no working shown',
+      cellAmber2: 'Answer only \u2014 no working shown',
+      fetchingBook: 'Fetching this pupil\'s book\u2026',
+      pencilPosture: 'These marks are the app\'s. Tap or click any mark to change it to yours \u2014 yours is the one that counts.',
+      openedExample: 'Opened the worked example after getting stuck',
+      reteachBtn: 'Show them this method again \u2192',
+      reteachSent: 'Sent \u2713 \u2014 this pupil sees it next time',
+      reteachFailed: 'We could not send that.',
+      saving: 'Saving\u2026',
+      saveFailedMark: 'We could not save that \u2014 choose the mark again to try once more.',
+      inkYes: '\u2713 mine',
+      inkNo: '\u2717 mine',
+      inkUse: 'use the app\u2019s mark',
+      inkYourMark: 'Your mark:',
+      readingEveryBook: 'Reading every book\u2026',
+      starterBtn: 'Next-lesson starter \u25b6',
+      csvCopiedFull: 'CSV copied \u2014 paste it straight into a spreadsheet.',
       seriesKs3: 'KS3 \u00b7 M2',
       seriesGcse: 'GCSE \u00b7 M3 & M4'
     }
@@ -4790,6 +4843,12 @@ window.OLS_TRANSPORT = {
       '<button class="btn-pencil mc-fwd" aria-label="Next step">\u25b6</button>' +
       '<div class="movie-dots"></div></div>';
     host.appendChild(root);
+    /* THE DOM CONTRACT (gates design 2.4). The film declares itself and which
+       step it is on, so a walker can stand on every one of them and the caption
+       laws can be measured against what the step actually wrote. Nothing a
+       pupil sees changes. */
+    if (window.GJ && window.GJ.surface) window.GJ.surface(root, 'movie', 'step-n');
+    root.setAttribute('data-work', '');
     root.querySelector('.movie-head-title').textContent = movie.title || '';
 
     var stage = root.querySelector('.movie-stage');
@@ -4976,6 +5035,20 @@ window.OLS_TRANSPORT = {
     function showCaption(i) {
       capNum.textContent = i + 1;
       capText.textContent = movie.steps[i].say || '';
+      /* WHICH STATE THE FILM IS IN, and WHAT THIS STEP TOUCHED. The second one
+         is what lets the caption-over-its-subject law be measured at all: a
+         step declares the things it wrote, ticked, arced or plotted, and a step
+         that touches nothing declares that explicitly rather than saying
+         nothing (the UNSEEN-STAGE rule - silence has to fail closed). */
+      if (window.GJ && window.GJ.setState) {
+        window.GJ.setState(root, 'movie',
+          REDUCED ? 'reduced-motion' : (i >= movie.steps.length - 1 ? 'end' : 'step-n'));
+      }
+      var subjects = (movie.steps[i].do || []).map(function (op) {
+        var k = Object.keys(op)[0];
+        return k ? '.ml-' + k : '';
+      }).filter(Boolean);
+      root.setAttribute('data-step-subjects', subjects.join(','));
     }
 
     function goto(i, instant) {
@@ -4996,6 +5069,7 @@ window.OLS_TRANSPORT = {
       return pr.then(function () {
         stepIdx = i;
         showCaption(i);
+        if (instant && window.GJ && window.GJ.setState) window.GJ.setState(root, 'movie', 'instant');
         renderDots();
         var pr3 = Promise.resolve();
         movie.steps[i].do.forEach(function (op) { pr3 = pr3.then(function () { return applyOp(op, !!instant); }); });
@@ -6018,11 +6092,13 @@ window.OLS_TRANSPORT = {
       var placed = {};
       var hasSub = cur.L.some(function (l) { return l.op === 'sub'; });
       var hasAns = cur.L.some(function (l) { return l.op === 'ans'; });
+      var exprTrayId = 'subst-expr-' + q.id;
 
-      var instr = el('p', 'ui-msg', 'Substitute: tap each letter to put its number in.');
+      var instr = el('p', 'ui-msg', T.substIntro);
       ui.appendChild(instr);
       var exprBox = el('div', 'subst-expr');
       exprBox.style.cssText = 'font-family:Georgia,serif;font-size:1.55rem;color:#14213A;margin:6px 0 12px;line-height:2';
+      exprBox.setAttribute('data-tray', exprTrayId);
       ui.appendChild(exprBox);
       var givenRow = el('div', 'subst-givens');
       givenRow.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px';
@@ -6044,6 +6120,8 @@ window.OLS_TRANSPORT = {
             var sp = el('span', 'subst-tok', done ? substValStr(given[t.letter]) : t.letter);
             sp.style.cssText = done ? 'color:#14213A;font-weight:600'
               : 'color:#7A3B5E;border-bottom:2px dashed #C58CA0;cursor:pointer;padding:0 3px';
+            sp.setAttribute('data-tray-item', '');
+            if (done) sp.setAttribute('data-placed', '');
             if (!done) sp.addEventListener('click', function () {
               placed[t.letter] = true; renderExpr();
               if (uniq.every(function (u) { return placed[u]; })) commitMethod();
@@ -6057,7 +6135,7 @@ window.OLS_TRANSPORT = {
       }
       function renderGivens() {
         givenRow.innerHTML = '';
-        var gl = el('span', '', 'given:'); gl.style.cssText = 'font-family:monospace;font-size:.72rem;color:#7d7a72';
+        var gl = el('span', '', T.substGivenLabel); gl.style.cssText = 'font-family:monospace;font-size:.72rem;color:#7d7a72';
         givenRow.appendChild(gl);
         uniq.forEach(function (L) {
           var c = el('span', '', L + ' = ' + gjRtostr(given[L]));
@@ -6069,7 +6147,8 @@ window.OLS_TRANSPORT = {
         cur.L.push({ op: 'sub', t: substLineStr(toks, given, placed), s: Math.round((Date.now() - cur.t0) / 1000) });
         redrawCurrent();
         checkBtn.disabled = true;                       // not ready until the value is keyed
-        instr.textContent = 'Now work it out, then write the value:';
+        setLockedWhy(checkBtn, T.substAnswerPrompt);
+        instr.textContent = T.substMethodPrompt;
         exprBox.style.display = 'none'; givenRow.style.display = 'none';
         showAnswer();
         save();
@@ -6079,17 +6158,20 @@ window.OLS_TRANSPORT = {
         if (v) cur.L.push({ op: 'ans', t: v, s: Math.round((Date.now() - cur.t0) / 1000) });
         redrawCurrent();
         checkBtn.disabled = !v;                         // "Mark my working" lights up once a value is written
+        setLockedWhy(checkBtn, v ? null : T.substAnswerPrompt);
         save();
       }
       function showAnswer() {
         answerHost.innerHTML = '';
-        answerHost.appendChild(el('p', 'ui-msg', 'Now work it out, then tap the value:'));
-        makeNumPad(answerHost, { label: 'The value', onChange: syncAns });
+        answerHost.appendChild(el('p', 'ui-msg', T.substAnswerPrompt));
+        window.GJ.setState(dock, 'dock', 'numpad');
+        makeNumPad(answerHost, { label: T.substValueLabel, onChange: syncAns });
       }
 
+      window.GJ.setState(dock, 'dock', 'tray');
       renderExpr(); renderGivens();
       if (hasSub) {                                     // resume: method already committed
-        instr.textContent = 'Now work it out, then write the value:';
+        instr.textContent = T.substMethodPrompt;
         exprBox.style.display = 'none'; givenRow.style.display = 'none';
         if (!hasAns) showAnswer();
       }
@@ -6102,6 +6184,7 @@ window.OLS_TRANSPORT = {
     function buildSimplifyUI() {
       ui.innerHTML = '';
       dock.hidden = false;
+      window.GJ.setState(dock, 'dock', 'tray');
       var terms = parseTerms(q.start);
       var order = ['x2', 'x', 'num'], fams = [];
       terms.forEach(function (t) { if (fams.indexOf(t.fam) < 0) fams.push(t.fam); });
@@ -6109,9 +6192,11 @@ window.OLS_TRANSPORT = {
       var famLabel = { x2: 'x\u00b2 terms', x: 'x terms', num: 'numbers' };
       var bins = {}; fams.forEach(function (f) { bins[f] = []; });
       var placed = {}, sel = null;
+      var trayId = 'simplify-tray-' + q.id;
 
-      ui.appendChild(el('p', 'ui-msg', 'Sort each term into its family, then combine.'));
+      ui.appendChild(el('p', 'ui-msg', T.simplifyIntro));
       var tilesRow = el('div', 'simp-tiles'); tilesRow.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px;min-height:44px';
+      tilesRow.setAttribute('data-tray', trayId);
       ui.appendChild(tilesRow);
       var binsRow = el('div', 'simp-bins'); binsRow.style.cssText = 'display:flex;gap:12px;flex-wrap:wrap';
       ui.appendChild(binsRow);
@@ -6125,10 +6210,11 @@ window.OLS_TRANSPORT = {
           any = true;
           var b = el('button', '', t.tile); b.type = 'button';
           b.style.cssText = 'font-family:Georgia,serif;font-size:1.3rem;padding:6px 15px;border-radius:8px;cursor:pointer;color:#5b2c46;border:2px solid ' + (sel === idx ? '#7A3B5E' : '#C58CA0') + ';background:' + (sel === idx ? '#F3E6EC' : '#fff');
+          b.setAttribute('data-tray-item', '');
           b.addEventListener('click', function () { sel = (sel === idx ? null : idx); renderTiles(); });
           tilesRow.appendChild(b);
         });
-        if (!any) tilesRow.appendChild(el('span', 'ui-msg', sel == null ? 'All sorted \u2014 now combine.' : ''));
+        if (!any) tilesRow.appendChild(el('span', 'ui-msg', sel == null ? T.allSortedNowCombine : ''));
       }
       function renderBins() {
         binsRow.innerHTML = '';
@@ -6136,7 +6222,13 @@ window.OLS_TRANSPORT = {
           var bin = el('div', ''); bin.style.cssText = 'min-width:118px;border:2px dashed ' + (sel != null ? '#7A3B5E' : '#C58CA0') + ';border-radius:10px;padding:8px 10px;background:#FBF7F9;cursor:' + (sel != null ? 'pointer' : 'default');
           var lab = el('div', '', famLabel[f]); lab.style.cssText = 'font-family:monospace;font-size:.68rem;color:#7d7a72;margin-bottom:6px;text-transform:uppercase'; bin.appendChild(lab);
           var row = el('div', ''); row.style.cssText = 'min-height:26px;font-family:Georgia,serif;font-size:1.15rem;color:#14213A';
-          bins[f].forEach(function (idx, k) { row.appendChild(document.createTextNode((k ? '  ' : '') + terms[idx].tile)); });
+          row.setAttribute('data-tray-row', '');
+          bins[f].forEach(function (idx, k) {
+            if (k) row.appendChild(document.createTextNode('  '));
+            var t = el('span', '', terms[idx].tile);
+            t.setAttribute('data-placed', ''); t.setAttribute('data-from', trayId);
+            row.appendChild(t);
+          });
           bin.appendChild(row);
           bin.addEventListener('click', function () { if (sel != null) { bins[f].push(sel); placed[sel] = f; sel = null; renderTiles(); renderBins(); renderCombine(); } });
           binsRow.appendChild(bin);
@@ -6145,7 +6237,7 @@ window.OLS_TRANSPORT = {
       function renderCombine() {
         combineWrap.innerHTML = '';
         if (!terms.every(function (t, idx) { return placed[idx] != null; })) return;
-        var cb = el('button', 'btn-stamp', 'Combine these terms'); cb.type = 'button';
+        var cb = el('button', 'btn-stamp', T.combineTermsBtn); cb.type = 'button';
         cb.addEventListener('click', function () {
           var c2 = 0, c1 = 0, c0 = 0;
           (bins.x2 || []).forEach(function (idx) { c2 += terms[idx].value; });
@@ -6166,10 +6258,11 @@ window.OLS_TRANSPORT = {
     function buildExpandUI() {
       ui.innerHTML = '';
       dock.hidden = false;
+      window.GJ.setState(dock, 'dock', 'tray');
       var fc = q.fc;
       if (!fc || !fc.cells) { buildAlgebraUI(); return; }   // safety: fall back if unscaffolded
       var chosen = [null, null];
-      ui.appendChild(el('p', 'ui-msg', 'Multiply every term \u2014 tap the right product for each box.'));
+      ui.appendChild(el('p', 'ui-msg', T.expandIntro));
       var grid = el('div', 'exp-grid'); grid.style.cssText = 'display:flex;flex-direction:column;gap:16px;margin:8px 0';
       ui.appendChild(grid);
       function maybeCommit() {
@@ -6179,18 +6272,23 @@ window.OLS_TRANSPORT = {
         redrawCurrent(); save();
       }
       fc.cells.forEach(function (cell, ci) {
+        var trayId = 'expand-tray-' + q.id + '-' + ci;
         var row = el('div', ''); row.style.cssText = 'display:flex;flex-direction:column;gap:6px';
         var head = el('div', ''); head.style.cssText = 'font-family:Georgia,serif;font-size:1.3rem;color:#14213A;display:flex;align-items:center;gap:10px';
+        head.setAttribute('data-tray-row', '');
         head.appendChild(el('span', '', fc.a + ' \u00d7 ' + fc.terms[ci] + ' ='));
         var slot = el('span', ''); slot.style.cssText = 'min-width:54px;min-height:38px;display:inline-flex;align-items:center;justify-content:center;border:2px dashed #C58CA0;border-radius:8px;padding:0 10px;color:#B07D10';
         head.appendChild(slot); row.appendChild(head);
         var tray = el('div', ''); tray.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap';
+        tray.setAttribute('data-tray', trayId);
         shuffleArr(cell.tiles).forEach(function (tt) {
           var b = el('button', '', tt); b.type = 'button';
           b.style.cssText = 'font-family:Georgia,serif;font-size:1.15rem;padding:6px 14px;border-radius:8px;border:2px solid #1A3A6B;background:#fff;color:#1A3A6B;cursor:pointer';
+          b.setAttribute('data-tray-item', '');
           b.addEventListener('click', function () {
             chosen[ci] = tt;
             slot.textContent = tt; slot.style.borderStyle = 'solid'; slot.style.color = '#14213A';
+            slot.setAttribute('data-placed', ''); slot.setAttribute('data-from', trayId);
             tray.querySelectorAll('button').forEach(function (x) { x.style.background = '#fff'; x.style.color = '#1A3A6B'; });
             b.style.background = '#1A3A6B'; b.style.color = '#fff';
             maybeCommit();
@@ -6207,13 +6305,17 @@ window.OLS_TRANSPORT = {
          either side). FORM first picks the equation, then solves it. \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
     function buildFormScaffold() {
       ui.innerHTML = ''; dock.hidden = false;
+      window.GJ.setState(dock, 'dock', 'tray');
       var fc = q.fc;
       if (!fc || !fc.choices) { buildAlgebraUI(); return; }
-      ui.appendChild(el('p', 'ui-msg', 'Form the equation \u2014 which one matches the situation?'));
+      ui.appendChild(el('p', 'ui-msg', T.formChooseEquation));
       var row = el('div', ''); row.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin:6px 0';
+      var trayId = 'form-choices-' + q.id;
+      row.setAttribute('data-tray', trayId);
       shuffleArr(fc.choices).forEach(function (ch) {
         var b = el('button', '', ch); b.type = 'button';
         b.style.cssText = 'font-family:Georgia,serif;font-size:1.2rem;padding:9px 15px;border-radius:8px;border:2px solid #1A3A6B;background:#fff;color:#14213A;cursor:pointer;text-align:left';
+        b.setAttribute('data-tray-item', '');
         b.addEventListener('click', function () {
           cur.L = cur.L.filter(function (l) { return l.op !== 'form'; });
           cur.L.push({ op: 'form', t: ch, s: Math.round((Date.now() - cur.t0) / 1000) });
@@ -6228,16 +6330,18 @@ window.OLS_TRANSPORT = {
       var M = window.GJ_MATH;
       if (q.type === 'form' && !cur.L.some(function (l) { return l.op === 'form'; })) { buildFormScaffold(); return; }
       ui.innerHTML = ''; dock.hidden = false;
-      ui.appendChild(el('p', 'ui-msg', 'Choose a move \u2014 the app writes the next line and checks it balances.'));
+      window.GJ.setState(dock, 'dock', 'chips');
+      ui.appendChild(el('p', 'ui-msg', T.solveChooseMove));
       var chipRow = el('div', 'solve-chips'); chipRow.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin:6px 0'; ui.appendChild(chipRow);
+      chipRow.setAttribute('data-tray', 'solve-moves-' + q.id);
       var opHost = el('div', 'solve-op'); ui.appendChild(opHost);
       function lastLine() { for (var i = cur.L.length - 1; i >= 0; i--) { if (cur.L[i].t) return cur.L[i].t; } return q.start || ''; }
       function applyMove(kind, operandStr) {
         var prev = lastLine();
         var candidate = solveStep(prev, kind, operandStr);
-        if (!candidate) { flashMsg('Tap a number for that move first.'); return; }
+        if (!candidate) { flashMsg(T.solveNeedNumber); window.GJ.setState(dock, 'dock', 'nudge-pad'); return; }
         var gate = M.eqStep(prev, candidate);
-        if (!gate || (gate.ok !== 'sound' && gate.ok !== 'identity')) { flashMsg('That move doesn\u2019t keep it balanced \u2014 try another.'); return; }
+        if (!gate || (gate.ok !== 'sound' && gate.ok !== 'identity')) { flashMsg(T.solveMoveUnbalanced); window.GJ.setState(dock, 'dock', 'nudge-pad'); return; }
         var opLabel = kind === 'expand' ? 'exp' : kind === 'subx' ? ('\u2212' + (operandStr || '') + 'x')
           : (({ '-': '\u2212', '+': '+', '*': '\u00d7', '/': '\u00f7' }[kind]) + (operandStr || ''));
         cur.L.push({ op: opLabel, t: candidate, s: Math.round((Date.now() - cur.t0) / 1000) });
@@ -6248,28 +6352,31 @@ window.OLS_TRANSPORT = {
         opHost.innerHTML = '';
         if (c.noOperand) { applyMove(c.kind, null); return; }
         opHost.appendChild(el('p', 'ui-msg', c.prompt));
+        window.GJ.setState(dock, 'dock', 'numpad-fraction');
         var pad = makeNumPad(opHost, { fraction: true, onCommit: function (v) { applyMove(c.kind, v); } });
-        var go = el('button', 'btn-stamp', 'Apply'); go.type = 'button'; go.style.marginTop = '8px';
+        var go = el('button', 'btn-stamp', T.applyBtn); go.type = 'button'; go.style.marginTop = '8px';
         go.addEventListener('click', function () { applyMove(c.kind, pad.value()); });
         opHost.appendChild(go);
       }
       function renderChips() {
         chipRow.innerHTML = ''; opHost.innerHTML = '';
+        window.GJ.setState(dock, 'dock', 'chips');
         var line = lastLine();
         if (!line || line.indexOf('=') < 0) return;
         var bothX = false, sides = line.split('=');
         var Lp = M.parse(sides[0]), Rp = M.parse(sides[1]);
         if (Lp.ok && Rp.ok && Lp.ast.lhs && Rp.ast.lhs) { var Lc = Lp.ast.lhs.poly, Rc = Rp.ast.lhs.poly; if (Lc && Rc && Lc.c1 && Rc.c1 && Lc.c1.n !== 0 && Rc.c1.n !== 0) bothX = true; }
         var chips = [];
-        if (line.indexOf('(') >= 0) chips.push({ label: 'Expand brackets', kind: 'expand', noOperand: true });
-        if (bothX) chips.push({ label: 'Take \u25a1x off both sides', kind: 'subx', prompt: 'Take how many x off both sides?' });
-        chips.push({ label: '\u2212 subtract', kind: '-', prompt: 'Subtract how much from both sides?' });
-        chips.push({ label: '+ add', kind: '+', prompt: 'Add how much to both sides?' });
-        chips.push({ label: '\u00f7 divide', kind: '/', prompt: 'Divide both sides by?' });
-        chips.push({ label: '\u00d7 multiply', kind: '*', prompt: 'Multiply both sides by?' });
+        if (line.indexOf('(') >= 0) chips.push({ label: T.chipExpandBrackets, kind: 'expand', noOperand: true });
+        if (bothX) chips.push({ label: T.chipTakeXBothSides, kind: 'subx', prompt: T.promptTakeXBothSides });
+        chips.push({ label: T.chipSubtract, kind: '-', prompt: T.promptSubtractBoth });
+        chips.push({ label: T.chipAdd, kind: '+', prompt: T.promptAddBoth });
+        chips.push({ label: T.chipDivide, kind: '/', prompt: T.promptDivideBoth });
+        chips.push({ label: T.chipMultiply, kind: '*', prompt: T.promptMultiplyBoth });
         chips.forEach(function (c) {
           var btn = el('button', 'chip', c.label); btn.type = 'button';
           btn.style.cssText = 'font-family:Georgia,serif;font-size:1rem;padding:7px 13px;border-radius:8px;border:1.5px solid #1A3A6B;background:#fff;color:#1A3A6B;cursor:pointer';
+          btn.setAttribute('data-tray-item', '');
           btn.addEventListener('click', function () { pickOp(c); });
           chipRow.appendChild(btn);
         });
@@ -6349,14 +6456,14 @@ window.OLS_TRANSPORT = {
       var activeArc = dgm.arcEl(nm); if (activeArc) activeArc.classList.remove('arc-tappable');   // it's active now, not waiting
 
       // STEP 1 \u2014 the size, entered inline:  \u2220PVR = [ __ ] \u00b0
-      stepHost.appendChild(el('p', 'sc-head', 'Work out \u2220' + esc(nm)));
+      stepHost.appendChild(el('p', 'sc-head', T.angleWorkOut + esc(nm)));
       var row = el('div', 'sc-row');
       row.appendChild(el('span', 'sc-eq', '\u2220' + esc(nm) + ' ='));
       var fieldHost = el('span', 'sc-field');
       row.appendChild(fieldHost);
       row.appendChild(el('span', 'sc-eq', '\u00b0'));
       stepHost.appendChild(row);
-      stepHost.appendChild(el('p', 'sc-hint', 'Type the size \u2014 a number, or a sum like 180\u2212124.'));
+      stepHost.appendChild(el('p', 'sc-hint', T.angleSizeHintLine));
       stepComposer = makeComposer(stepHost, {
         fieldHost: fieldHost,
         pad: 'number',
@@ -6400,7 +6507,7 @@ window.OLS_TRANSPORT = {
         if (!raw) { scMsg.textContent = 'First type the size of the angle above.'; stepComposer.focus(); return false; }
         var calcStr = raw.replace(/\u2212/g, '-').replace(/\u00d7/g, '*').replace(/\u00f7/g, '/');
         var evald = window.GJ_MATH.evalCalc(calcStr);
-        if (!evald.ok) { scMsg.textContent = 'I can\u2019t read that \u2014 type a number, or a calculation like 180\u221265.'; stepComposer.focus(); return false; }
+        if (!evald.ok) { scMsg.textContent = T.angleUnreadableLine; stepComposer.focus(); return false; }
         var val = evald.val.d === 1 ? evald.val.n : evald.val.n / evald.val.d;
         if (val < 0 || val > 360) { scMsg.textContent = 'An angle here is between 0\u00b0 and 360\u00b0 \u2014 check the size.'; stepComposer.focus(); return false; }
         if (!chosenReason) { scMsg.textContent = 'Now choose the reason below \u2193 \u2014 it earns its own mark.'; return false; }
@@ -6534,7 +6641,7 @@ window.OLS_TRANSPORT = {
         var tally = el('div', 'mk-tally' + mkState, 'Working ' + mk[0] + '/' + mkMax[0] + ' \u00b7 Answer ' + mk[1] + '/' + mkMax[1]);
         feedback.appendChild(tally);
 
-        if (amber) feedback.appendChild(el('p', 'amber-note', 'Right answer \u2014 but with no working shown, you can\u2019t earn the working marks.'));
+        if (amber) feedback.appendChild(el('p', 'amber-note', T.amberNoWorkingLine));
 
         var bucket = done ? 'perfect' : amber ? 'amber' : secondGone ? 'fail' : 'partial';
         if (done && mk[0] === mkMax[0]) bucket = 'perfect';
@@ -6856,7 +6963,7 @@ window.OLS_TRANSPORT = {
       var ok = false;
       try { ok = document.execCommand('copy'); } catch (e) {}
       ta.remove();
-      if (ok) done(); else if (msgEl) msgEl.textContent = 'Copy this by hand: ' + text;
+      if (ok) done(); else if (msgEl) msgEl.textContent = TT('copyByHand', { text: text });
     }
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, legacy);
     else legacy();
@@ -6887,7 +6994,7 @@ window.OLS_TRANSPORT = {
     bar.appendChild(mark);
 
     var crumb = el('nav', 'staff-crumb');
-    crumb.setAttribute('aria-label', 'Where you are');
+    crumb.setAttribute('aria-label', TT('whereYouAre'));
     (opts.crumbs || []).forEach(function (c, i) {
       if (i) crumb.appendChild(document.createTextNode('  \u203a  '));
       if (c.go) {
@@ -6906,7 +7013,7 @@ window.OLS_TRANSPORT = {
       live.innerHTML = '<i aria-hidden="true"></i>Live';
       right.appendChild(live);
     }
-    var closeB = el('button', 'toolbtn', 'Close the markbook');
+    var closeB = el('button', 'toolbtn', esc(TT('closeMarkbook')));
     closeB.addEventListener('click', closeMarkbook);
     right.appendChild(closeB);
     bar.appendChild(right);
@@ -7048,8 +7155,8 @@ window.OLS_TRANSPORT = {
             call('setActs', { className: c.name, acts: acts }).then(function (r) {
               cb.disabled = false;
               if (r && r.ok) { c.acts = acts; cmsg.textContent = a.title + (cb.checked ? ' is now on ' : ' removed from ') + c.name + '\u2019s shelf.'; }
-              else { cb.checked = !cb.checked; cmsg.textContent = (r && r.error) || 'Could not save that.'; }
-            }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.textContent = 'Could not save that.'; });
+              else { cb.checked = !cb.checked; cmsg.textContent = (r && r.error) || TT('couldNotSave'); }
+            }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.textContent = TT('couldNotSave'); });
           });
           lab.appendChild(cb);
           lab.appendChild(document.createTextNode(a.title));
@@ -7062,14 +7169,14 @@ window.OLS_TRANSPORT = {
         var actions = el('td', '');
         var wallB = el('button', 'toolbtn', 'Open the markbook');
         wallB.addEventListener('click', function () { view.cls = c.name; showClassPage(); });
-        var linkB = el('button', 'btn-pencil', 'Copy link');
+        var linkB = el('button', 'btn-pencil', esc(TT('copyLink')));
         linkB.style.marginLeft = '6px';
         linkB.addEventListener('click', function () { copyText(classLink(c.name), cmsg, 'Link for ' + c.name + ' copied.'); });
         var qrB = el('button', 'btn-pencil', 'QR');
         qrB.style.marginLeft = '6px';
         qrB.addEventListener('click', function () { showQr(c.name); });
         var delB = el('button', 'btn-pencil', '&times;');
-        delB.setAttribute('aria-label', 'Delete ' + c.name);
+        delB.setAttribute('aria-label', TT('deleteClassAria', { 'class': c.name }));
         delB.style.marginLeft = '6px';
         delB.addEventListener('click', function () {
           openConfirm('Delete ' + c.name + '?',
@@ -7081,7 +7188,7 @@ window.OLS_TRANSPORT = {
               call('deleteClass', { className: c.name }).then(function (r) {
                 if (r && r.ok) { classes = classes.filter(function (x) { return x.name !== c.name; }); render(); clearBusy(cmsg, c.name + ' deleted.'); }
                 else { delB.disabled = false; clearBusy(cmsg, (r && r.error) || 'Could not delete.'); }
-              }).catch(function () { delB.disabled = false; clearBusy(cmsg, 'Could not reach the server.'); });
+              }).catch(function () { delB.disabled = false; clearBusy(cmsg, ''); staffError(TT('noServer'), cmsg); });
             });
         });
         actions.appendChild(wallB); actions.appendChild(linkB); actions.appendChild(qrB); actions.appendChild(delB);
@@ -7099,7 +7206,7 @@ window.OLS_TRANSPORT = {
     addB.addEventListener('click', function () {
       if (addB.disabled) return;
       var nm = body.querySelector('#st-newclass').value.trim();
-      if (!nm) { cmsg.textContent = 'Give the class a name first.'; return; }
+      if (!nm) { cmsg.textContent = TT('nameTheClass'); return; }
       addB.disabled = true;
       busyCard(cmsg, 'Adding ' + esc(nm) + '&hellip; this can take a moment');
       call('addClass', { className: nm }).then(function (r) {
@@ -7350,8 +7457,8 @@ window.OLS_TRANSPORT = {
     out.appendChild(el('div', 'jp-read', read));
     var fl = el('div', 'jp-flags');
     if (flag) fl.appendChild(el('span', 'jp-flag jp-' + flag.kind, (flag.kind === 'support' ? 'Needs support' : 'Ready for stretch') + ' \u00b7 ' + esc(flag.reasons.join(' \u00b7 '))));
-    if (conf === 'over') fl.appendChild(el('span', 'jp-flag jp-over', 'Over-confident \u2014 confidence high, working weaker'));
-    if (conf === 'under') fl.appendChild(el('span', 'jp-flag jp-under', 'Quietly excelling \u2014 doing well, low confidence'));
+    if (conf === 'over') fl.appendChild(el('span', 'jp-flag jp-over', esc(TT('overConfident'))));
+    if (conf === 'under') fl.appendChild(el('span', 'jp-flag jp-under', esc(TT('quietlyExcelling'))));
     if (fl.children.length) out.appendChild(fl);
     return out;
   }
@@ -7370,7 +7477,7 @@ window.OLS_TRANSPORT = {
     /* the book switcher */
     var sw = el('div', 'cp-books');
     sw.setAttribute('role', 'group');
-    sw.setAttribute('aria-label', 'Which book');
+    sw.setAttribute('aria-label', TT('whichBook'));
     acts.forEach(function (a) {
       var b = el('button', 'toolbtn' + (view.act === a.id ? ' on' : ''), esc(a.title));
       b.setAttribute('aria-pressed', view.act === a.id ? 'true' : 'false');
@@ -7383,7 +7490,7 @@ window.OLS_TRANSPORT = {
     body.appendChild(strip);
 
     var needs = el('section', 'needs');
-    needs.setAttribute('aria-label', 'Pupils who need you now');
+    needs.setAttribute('aria-label', TT('needsYouAria'));
     needs.appendChild(el('p', 'needs-lbl', esc(TT('needsYouLabel'))));
     var needsRow = el('div', 'needs-row');
     needs.appendChild(needsRow);
@@ -7451,7 +7558,7 @@ window.OLS_TRANSPORT = {
       var flags = window.GJ_STAFF_PAGES.needsYou(pupils, qlist, bookTitle(view.act));
       needsRow.innerHTML = '';
       if (!flags.length) {
-        needsRow.appendChild(el('p', 'needs-none', 'Nobody is stuck in ' + esc(bookTitle(view.act)) + ' right now.'));
+        needsRow.appendChild(el('p', 'needs-none', esc(TT('nobodyStuck', { book: bookTitle(view.act) }))));
         window.GJ.setState(root, 'class-page', 'no-flags');
       }
       flags.forEach(function (f) {
@@ -7573,12 +7680,12 @@ window.OLS_TRANSPORT = {
         t.push('<tr><td class="nm">' + esc(p.name || p.email) + '</td>');
         qlist.forEach(function (item) {
           var c = ((p.summary || {}).qs || {})[item.q.id];
-          var glyph = '<span class="g-un">\u2014</span>', title = 'Not started';
+          var glyph = '<span class="g-un">\u2014</span>', title = TT('cellNotStarted');
           if (c) {
             var st = c.ovr === 1 ? 'ok' : c.ovr === 0 ? 'err' : c.st;
             if (st === 'ok') { glyph = '<span class="g-ok">\u2713</span>'; title = 'Right'; }
-            else if (st === 'amber') { glyph = '<span class="g-am">\u25d0</span>'; title = 'Answer only, no working shown'; }
-            else if (st === 'err') { glyph = '<span class="g-err">\u2717' + (c.errAt ? '<sup>' + c.errAt + '</sup>' : '') + '</span>'; title = 'Wrong at step ' + (c.errAt || '?') + (c.dx ? ' \u2014 ' + (DX_NAMES[c.dx] || c.dx) : ''); }
+            else if (st === 'amber') { glyph = '<span class="g-am">\u25d0</span>'; title = TT('cellAmber'); }
+            else if (st === 'err') { glyph = '<span class="g-err">\u2717' + (c.errAt ? '<sup>' + c.errAt + '</sup>' : '') + '</span>'; title = TT('cellWrongAtStep', { step: c.errAt || '?' }) + (c.dx ? ' \u2014 ' + (DX_NAMES[c.dx] || c.dx) : ''); }
             else { glyph = '<span class="g-now">\u25cf</span>'; title = ((p.summary.upd && (now - p.summary.upd) < 60) ? 'Working right now' : 'In progress'); }
             if (c.ovr != null) title += ' \u00b7 your mark';
           }
@@ -7662,10 +7769,10 @@ window.OLS_TRANSPORT = {
       b.addEventListener('click', t[1]);
       tools.appendChild(b);
     });
-    var msg = el('p', 'ui-msg', 'Loading the wall\u2026');
+    var msg = el('p', 'ui-msg', esc(TT('loadingGrid')));
     msg.style.marginTop = '26px';   // clear the tab + tools rows so the wait-card isn't crammed against them
     var wall = el('div', 'wall');
-    var orient = el('p', 'wall-orient', 'Start here: each cell is one pupil \u00d7 one question. Spot the reds, then tap a cell to open that pupil\u2019s jotter.');
+    var orient = el('p', 'wall-orient', esc(TT('gridOrient')));
     var legend = el('p', 'wall-legend');
     legend.setAttribute('data-mark', '');
     legend.innerHTML = '<span class="glyph-ok">\u2713</span> correct &middot; ' +
@@ -7688,12 +7795,12 @@ window.OLS_TRANSPORT = {
         t.push('<tr><td class="pupil-name">' + esc(p.name || p.email) + '</td>');
         qlist.forEach(function (item) {
           var cell = p.summary && p.summary.qs && p.summary.qs[item.q.id];
-          var glyph = '<span class="glyph-un">\u2014</span>', title = 'Untouched';
+          var glyph = '<span class="glyph-un">\u2014</span>', title = TT('cellUntouched');
           if (cell) {
             var st = cell.ovr === 1 ? 'ok' : cell.ovr === 0 ? 'err' : cell.st;
-            if (st === 'ok') { glyph = '<span class="glyph-ok">\u2713</span>'; title = 'Correct \u2014 working and answer both sound'; }
-            else if (st === 'amber') { glyph = '<span class="glyph-amber">\u25d0</span>'; title = 'Answer only \u2014 no working shown'; }
-            else if (st === 'err') { glyph = '<span class="glyph-err">\u2717' + (cell.errAt ? '<sub>' + cell.errAt + '</sub>' : '') + '</span>'; title = 'Wrong \u2014 first slip at step ' + (cell.errAt || '?') + (cell.dx ? ' \u2014 ' + (DX_NAMES[cell.dx] || cell.dx) : ''); }
+            if (st === 'ok') { glyph = '<span class="glyph-ok">\u2713</span>'; title = TT('cellRight'); }
+            else if (st === 'amber') { glyph = '<span class="glyph-amber">\u25d0</span>'; title = TT('cellAmber2'); }
+            else if (st === 'err') { glyph = '<span class="glyph-err">\u2717' + (cell.errAt ? '<sub>' + cell.errAt + '</sub>' : '') + '</span>'; title = TT('cellWrongFirstSlip', { step: cell.errAt || '?' }) + (cell.dx ? ' \u2014 ' + (DX_NAMES[cell.dx] || cell.dx) : ''); }
             else if (st === 'open') {
               var live = p.summary.upd && (now - p.summary.upd) < 60;
               glyph = '<span class="glyph-live">\u25cf</span>'; title = live ? 'Working right now' : 'In progress';
@@ -7788,7 +7895,7 @@ window.OLS_TRANSPORT = {
     if (nextP) bNext.addEventListener('click', function () { showJotterPage(nextP.email, ctx); });
     flick.appendChild(bPrev); flick.appendChild(lbl); flick.appendChild(bNext);
 
-    var msg = el('p', 'ui-msg', 'Fetching the jotter\u2026');
+    var msg = el('p', 'ui-msg', esc(TT('fetchingBook')));
     var page = el('div', 'jotter');
     body.appendChild(flick); body.appendChild(msg); body.appendChild(page);
     shell({ body: body, surface: 'book-view', state: 'pencil', crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'A pupil\u2019s book' }] });
@@ -7805,7 +7912,7 @@ window.OLS_TRANSPORT = {
 
       page.appendChild(jotterHeader(state, r.name));
       // the posture line, shown once at the top: the whole pencil/ink model in one sentence
-      page.appendChild(el('div', 'jp-posture', 'These marks are the app\u2019s. Tap or click any mark to change it to yours \u2014 yours is the one that counts.'));
+      page.appendChild(el('div', 'jp-posture', esc(TT('pencilPosture'))));
 
       questionList(view.act).forEach(function (item) {
         var q = item.q;
@@ -7866,7 +7973,7 @@ window.OLS_TRANSPORT = {
           if (v.dx) bodyEl.appendChild(el('p', 'ui-msg', esc(DX_NAMES[v.dx] || v.dx)));
         });
 
-        if (state.help && state.help[q.id]) bodyEl.appendChild(el('p', 'jp-help', 'Opened the worked example after getting stuck'));
+        if (state.help && state.help[q.id]) bodyEl.appendChild(el('p', 'jp-help', esc(TT('openedExample'))));
 
         // \u2500\u2500 send my eye to what needs it: a folded "worth a look" corner where the
         //    engine was unsure (answer-only, or a wrong route it couldn't name). Advisory only. \u2500\u2500
@@ -7890,13 +7997,13 @@ window.OLS_TRANSPORT = {
           var effSt = inked ? (rec.ovr.q === 1 ? 'ok' : 'err') : res.st;
           vmark.className = 'verdict-mark ' + (inked ? 'is-inked' : 'is-pencil');
           vmark.innerHTML = vGlyph(effSt);
-          vmark.setAttribute('aria-label', 'Marked ' + (effSt === 'ok' ? 'correct' : effSt === 'amber' ? 'answer only' : effSt === 'err' ? 'wrong' : 'in progress') + (inked ? ' by you' : ' by the app \u2014 tap to make it yours'));
+          vmark.setAttribute('aria-label', TT('markedAria', { verdict: (effSt === 'ok' ? 'right' : effSt === 'amber' ? 'answer only' : effSt === 'err' ? 'wrong' : 'in progress') }) + (inked ? ' by you' : ' by the app'));
           if (tallyEl) {
             var m0 = res.verdict.mk[0], m1 = res.verdict.mk[1];
             if (inked && rec.ovr.q === 1) { m0 = mkMax[0]; m1 = mkMax[1]; }      // right = full working + answer marks
             else if (inked && rec.ovr.q === 0) { m0 = 0; m1 = 0; }
             tallyEl.className = 'staff-tally ' + (effSt === 'ok' ? 'mk-correct' : effSt === 'amber' ? 'mk-amber' : effSt === 'err' ? 'mk-wrong' : 'mk-open');
-            tallyEl.textContent = 'Working ' + m0 + '/' + mkMax[0] + ' \u00b7 Answer ' + m1 + '/' + mkMax[1] + tallyTail;
+            tallyEl.textContent = TT('workingLabel') + ' ' + m0 + '/' + mkMax[0] + ' \u00b7 Answer ' + m1 + '/' + mkMax[1] + tallyTail;
           }
         }
         paintVerdict();
@@ -7905,15 +8012,15 @@ window.OLS_TRANSPORT = {
 
         // the one genuinely pedagogical action, promoted to a standing intent-named move
         if (item.secId && item.secHasMovie && (res.st === 'err' || res.st === 'amber')) {
-          var reteach = el('button', 'jp-reteach', 'Show them this method again \u2192');
-          reteach.title = 'Sends this exercise\u2019s worked example (' + esc(String(item.label).split('\u00b7')[0].trim()) + ') to the pupil the next time they open their book.';
+          var reteach = el('button', 'jp-reteach', esc(TT('reteachBtn')));
+          reteach.title = TT('reteachTitle', { title: String(item.label).split('\u00b7')[0].trim() });
           reteach.addEventListener('click', function () {
             if (reteach.disabled) return; reteach.disabled = true;
             call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId + '::' + q.id }).then(function (r3) {
               reteach.disabled = false;
-              if (r3 && r3.ok) { reteach.textContent = 'Sent \u2713 \u2014 they\u2019ll see it next time'; reteach.classList.add('is-sent'); }
-              else { reteach.disabled = false; inkMsg.textContent = (r3 && r3.error) || 'Could not send.'; }
-            }).catch(function () { reteach.disabled = false; inkMsg.textContent = 'Could not send.'; });
+              if (r3 && r3.ok) { reteach.textContent = TT('reteachSent'); reteach.classList.add('is-sent'); }
+              else { reteach.disabled = false; inkMsg.textContent = (r3 && r3.error) || TT('reteachFailed'); }
+            }).catch(function () { reteach.disabled = false; inkMsg.textContent = TT('reteachFailed'); });
           });
           vrow.appendChild(reteach);
         }
@@ -7923,7 +8030,7 @@ window.OLS_TRANSPORT = {
         // it also carries the "couldn't save" slot so a network hiccup has somewhere to land.
         var ink = el('div', 'ink-control'); ink.hidden = true;
         function setOvr(val, btn) {
-          if (btn.disabled) return; btn.disabled = true; inkMsg.textContent = 'Saving\u2026';
+          if (btn.disabled) return; btn.disabled = true; inkMsg.textContent = TT('saving');
           call('override', { className: view.cls, act: view.act, email: email, q: q.id, idx: 'q', val: val }).then(function (r2) {
             btn.disabled = false;
             if (r2 && r2.ok) {
@@ -7933,16 +8040,16 @@ window.OLS_TRANSPORT = {
               paintVerdict();
               inkMsg.textContent = (val === 1) ? 'Inked right \u2014 full marks. Your mark wins on the Wall.' : (val === 0) ? 'Inked wrong. Your mark wins on the Wall.' : 'Back to the app\u2019s mark.';
               ink.hidden = true; vmark.setAttribute('aria-expanded', 'false');
-            } else inkMsg.textContent = (r2 && r2.error) || 'Couldn\u2019t save \u2014 tap the mark to try again.';
-          }).catch(function () { btn.disabled = false; inkMsg.textContent = 'Couldn\u2019t save \u2014 tap the mark to try again.'; });
+            } else inkMsg.textContent = (r2 && r2.error) || TT('saveFailedMark');
+          }).catch(function () { btn.disabled = false; inkMsg.textContent = TT('saveFailedMark'); });
         }
-        var icTick = el('button', 'ic-tick', '\u2713 mine');
-        var icCross = el('button', 'ic-cross', '\u2717 mine');
-        var icAuto = el('button', 'ic-auto btn-pencil', 'use the app\u2019s mark');
+        var icTick = el('button', 'ic-tick', esc(TT('inkYes')));
+        var icCross = el('button', 'ic-cross', esc(TT('inkNo')));
+        var icAuto = el('button', 'ic-auto btn-pencil', esc(TT('inkUse')));
         icTick.addEventListener('click', function () { setOvr(1, icTick); });
         icCross.addEventListener('click', function () { setOvr(0, icCross); });
         icAuto.addEventListener('click', function () { setOvr(null, icAuto); });
-        ink.appendChild(el('span', 'ic-label', 'Your mark:'));
+        ink.appendChild(el('span', 'ic-label', esc(TT('inkYourMark'))));
         ink.appendChild(icTick); ink.appendChild(icCross); ink.appendChild(icAuto); ink.appendChild(inkMsg);
         bodyEl.appendChild(ink);
         vmark.setAttribute('aria-expanded', 'false');
@@ -7973,7 +8080,7 @@ window.OLS_TRANSPORT = {
 
   function showPile() {
     var body = el('div', '');
-    var msg = el('p', 'ui-msg', 'Reading every jotter\u2026');
+    var msg = el('p', 'ui-msg', esc(TT('readingEveryBook')));
     body.appendChild(msg);
     var list = el('div', '');
     body.appendChild(list);
@@ -8002,7 +8109,7 @@ window.OLS_TRANSPORT = {
           ? 'No marked working errors to pile up \u2014 but ' + amberCount + ' answer' + (amberCount > 1 ? 's' : '') + ' came in with no working shown (the amber \u25d0 cells on the Wall), so there\u2019s nothing to mark here. Worth chasing the missing working.'
           : 'No marked errors in this class yet \u2014 the pile is empty.';
       if (keys.length) {
-        var starterB = el('button', 'btn-stamp gold', 'Next-lesson starter \u25b6');
+        var starterB = el('button', 'btn-stamp gold', esc(TT('starterBtn')));
         starterB.addEventListener('click', function () { showStarter(keys.slice(0, 3).map(function (k) { return piles[k]; })); });
         list.appendChild(starterB);
       }
@@ -8077,9 +8184,19 @@ window.OLS_TRANSPORT = {
         return r.map(function (c) { return '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"'; }).join(',');
       }).join('\n');
       copyText(csv, msg, 'CSV for ' + view.cls + ' copied \u2014 paste into Excel.');
-      alertBar('CSV copied to the clipboard \u2014 paste straight into Excel.');
+      alertBar(TT('csvCopiedFull'));
     });
   }
+  /* a failed admin call is surfaced WHERE SHE ALREADY IS, with its reason */
+  function staffError(msg, msgEl) {
+    var r = document.getElementById('scr-staff');
+    if (r && window.GJ && window.GJ.setState) {
+      window.GJ.setState(r, r.getAttribute('data-surface') || 'set-up', 'error');
+    }
+    if (msgEl) msgEl.textContent = msg;
+    else alertBar(msg);
+  }
+
   function alertBar(text) {
     var n = el('div', '');
     n.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#14213A;color:#FAF7F0;font-family:var(--f-stationery);font-size:13px;padding:10px 18px;border-radius:4px;z-index:600';
@@ -8155,14 +8272,19 @@ window.OLS_TRANSPORT = {
     'book-end': ['partial', 'complete'],
     /* the markbook */
     'staff-cover': ['passcode-empty', 'passcode-wrong', 'busy', 'open'],
-    'class-page': ['loading-cold', 'empty-class', 'live', 'no-flags', 'book-switch'],
+    'class-page': ['loading-cold', 'empty-class', 'live', 'no-flags', 'book-switch', 'error'],
     'exercise-view': ['loaded', 'cell-focus'],
     'question-view': ['loading-progressive', 'loaded', 'ink-open'],
     'book-view': ['pencil', 'ink-control-open', 'inked-mine-tick', 'inked-mine-cross', 'inked-app', 'flicking', 'worth-a-look-open', 'reteach-sent'],
     slips: ['ranked', 'starter-board'],
     'full-grid': ['loaded', 'sticky-scroll'],
-    'set-up': ['classes', 'add-class-busy', 'delete-armed', 'tickboxes', 'link-qr-modal', 'csv-copied', 'csv-fallback-box'],
-    'staff-error': ['shown']
+    /* AN ERROR IS A STATE, NOT A SCREEN. The design pack listed `staff-error`
+       as a surface of its own; building it that way would have taken a teacher
+       AWAY from what she was doing to read a sentence about it. A failed admin
+       call is surfaced where she already is, with its reason, so `error` is a
+       state of the screen she is on. The registry says what the app renders,
+       and this is what it renders. */
+    'set-up': ['classes', 'add-class-busy', 'delete-armed', 'tickboxes', 'link-qr-modal', 'csv-copied', 'csv-fallback-box', 'error']
   };
   /* put a screen's name on its root, and say which state it is in */
   function surface(el, id, state) {
@@ -9203,7 +9325,7 @@ window.OLS_TRANSPORT = {
         if (viaNudge) {
           var nudgeNote = document.createElement('p');
           nudgeNote.className = 'wh-nudge-note';
-          nudgeNote.textContent = '\u2605 Your teacher suggested watching this method.';
+          nudgeNote.textContent = T.nudgeBannerStar;
           host.appendChild(nudgeNote);
         }
         // lead with THIS pupil's own slip (their flagged line + the misconception the
@@ -9339,22 +9461,24 @@ window.OLS_TRANSPORT = {
     var ev = current.state.evals[sec.id] || { conf: 0, skills: {}, note: '' };
     if (!ev.skills) ev.skills = {};
     var card = seEl('div', 'selfeval');
+    surface(card, 'self-eval', 'open');
     var savedLine, savedTimer = null;
     function persist() {
       ev.ts = Math.floor(Date.now() / 1000); current.state.evals[sec.id] = ev; scheduleSave();
+      setState(card, 'self-eval', 'saved');
       if (savedLine) {                                  // active confirmation each tap, so it's clear it saved
-        savedLine.textContent = '\u2713 Saved \u2014 your teacher sees this on her class list.';
+        savedLine.textContent = T.selfEvalSavedFlash;
         savedLine.classList.add('se-saved-flash');
         clearTimeout(savedTimer);
         savedTimer = setTimeout(function () {
           savedLine.classList.remove('se-saved-flash');
-          savedLine.textContent = 'Saved as you tap \u2014 your teacher sees this on her class list.';
+          savedLine.textContent = T.selfEvalSavedIdle;
         }, 1800);
       }
     }
 
     var h = seEl('p', 'se-head');
-    h.innerHTML = 'Exercise finished &mdash; how did that go? <span class="se-opt">optional</span>';
+    h.innerHTML = esc(T.selfEvalHeading) + ' <span class="se-opt">' + esc(T.selfEvalOptional) + '</span>';
     card.appendChild(h);
 
     card.appendChild(seEl('p', 'se-label', 'How confident do you feel now?'));
@@ -9422,7 +9546,7 @@ window.OLS_TRANSPORT = {
     });
     card.appendChild(noteWrap);
 
-    savedLine = seEl('p', 'se-saved', 'Saved as you tap \u2014 your teacher sees this on her class list.');
+    savedLine = seEl('p', 'se-saved', T.selfEvalSavedIdle);
     card.appendChild(savedLine);
     return card;
   }
@@ -9434,6 +9558,8 @@ window.OLS_TRANSPORT = {
       : pct >= 80 ? 'Nearly there \u2014 look back at the crosses.'
       : pct >= 50 ? 'Good \u2014 go back over the questions the red pen marked.'
       : 'Plenty to talk about in class \u2014 your teacher can see exactly where.';
+    /* the end of the book: the tally and, when it is all right, the gold star */
+    surface(main, 'book-end', (sum.marks[1] && sum.marks[0] === sum.marks[1]) ? 'complete' : 'partial');
     main.innerHTML = '<div class="tally-page">' +
       '<p class="sec-walt">' + current.act.title + ' \u00b7 marks so far</p>' +
       '<div class="tally-big">' + sum.marks[0] + ' / ' + sum.marks[1] + '</div>' +

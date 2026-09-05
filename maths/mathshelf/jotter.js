@@ -1319,14 +1319,14 @@
       var activeArc = dgm.arcEl(nm); if (activeArc) activeArc.classList.remove('arc-tappable');   // it's active now, not waiting
 
       // STEP 1 — the size, entered inline:  ∠PVR = [ __ ] °
-      stepHost.appendChild(el('p', 'sc-head', 'Work out ∠' + esc(nm)));
+      stepHost.appendChild(el('p', 'sc-head', T.angleWorkOut + esc(nm)));
       var row = el('div', 'sc-row');
       row.appendChild(el('span', 'sc-eq', '∠' + esc(nm) + ' ='));
       var fieldHost = el('span', 'sc-field');
       row.appendChild(fieldHost);
       row.appendChild(el('span', 'sc-eq', '°'));
       stepHost.appendChild(row);
-      stepHost.appendChild(el('p', 'sc-hint', 'Type the size — a number, or a sum like 180−124.'));
+      stepHost.appendChild(el('p', 'sc-hint', T.angleSizeHintLine));
       stepComposer = makeComposer(stepHost, {
         fieldHost: fieldHost,
         pad: 'number',
@@ -1370,7 +1370,7 @@
         if (!raw) { scMsg.textContent = 'First type the size of the angle above.'; stepComposer.focus(); return false; }
         var calcStr = raw.replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/');
         var evald = window.GJ_MATH.evalCalc(calcStr);
-        if (!evald.ok) { scMsg.textContent = 'I can’t read that — type a number, or a calculation like 180−65.'; stepComposer.focus(); return false; }
+        if (!evald.ok) { scMsg.textContent = T.angleUnreadableLine; stepComposer.focus(); return false; }
         var val = evald.val.d === 1 ? evald.val.n : evald.val.n / evald.val.d;
         if (val < 0 || val > 360) { scMsg.textContent = 'An angle here is between 0° and 360° — check the size.'; stepComposer.focus(); return false; }
         if (!chosenReason) { scMsg.textContent = 'Now choose the reason below ↓ — it earns its own mark.'; return false; }
@@ -1504,7 +1504,7 @@
         var tally = el('div', 'mk-tally' + mkState, 'Working ' + mk[0] + '/' + mkMax[0] + ' · Answer ' + mk[1] + '/' + mkMax[1]);
         feedback.appendChild(tally);
 
-        if (amber) feedback.appendChild(el('p', 'amber-note', 'Right answer — but with no working shown, you can’t earn the working marks.'));
+        if (amber) feedback.appendChild(el('p', 'amber-note', T.amberNoWorkingLine));
 
         var bucket = done ? 'perfect' : amber ? 'amber' : secondGone ? 'fail' : 'partial';
         if (done && mk[0] === mkMax[0]) bucket = 'perfect';

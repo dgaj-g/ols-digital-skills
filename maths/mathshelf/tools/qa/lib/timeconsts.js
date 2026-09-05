@@ -30,7 +30,11 @@ function scan(file, rel) {
     while ((m = reT.exec(l))) add(m[3], m[1]);
     const reC = /\b([A-Z][A-Z0-9_]*(?:MS|POLL|DEBOUNCE|DELAY|TIMEOUT|IDLE|WAIT|WARN|GRACE|HOLD|EVERY|SECS?))\s*=\s*(\d+)/g;
     while ((m = reC.exec(l))) add(m[2], 'const ' + m[1]);
-    const reS = /\b(\d+)\s*\*\s*1000\b/g;
+    /* `N * 1000` is N seconds - but only when it is the WHOLE product. In
+       `15 * 60 * 1000` the `60 * 1000` is a minute, not a clock of its own, and
+       recording it made the inventory demand a row for something nobody wrote.
+       The product rule below owns any expression with more than two factors. */
+    const reS = /(?<![\d\s*])\b(\d+)\s*\*\s*1000\b/g;
     while ((m = reS.exec(l))) add(Number(m[1]) * 1000, 'seconds literal');
     const reU = /Utilities\.sleep\(\s*(\d+)/g;
     while ((m = reU.exec(l))) add(m[1], 'Utilities.sleep');
@@ -40,8 +44,22 @@ function scan(file, rel) {
        to the one gate whose job is to know where every clock is. Any number on
        a line that talks about time is a clock. */
     if (/\b(setTimeout|setInterval|wait|delay|poll|debounce|timeout|idle|sleep|backoff|ms\b)/i.test(l)) {
+      /* A PRODUCT IS ONE CLOCK. `15 * 60 * 1000` is fifteen minutes, not three
+         separate budgets of 15, 60 and 1000 - and reporting it as three sent a
+         build hunting for two clocks that do not exist. The product is worked
+         out and recorded once. */
+      /* the WHOLE product, longest first, so `15 * 60 * 1000` is read as one
+         clock of 900000 and never also as a pair of 60 * 1000 */
+      const reProd = /(\d+)\s*\*\s*(\d+)\s*\*\s*(\d+)|(\d+)\s*\*\s*(\d+)/g;
+      let consumed = l;
+      let pm;
+      while ((pm = reProd.exec(l))) {
+        const v = pm[1] ? Number(pm[1]) * Number(pm[2]) * Number(pm[3]) : Number(pm[4]) * Number(pm[5]);
+        add(v, 'product');
+        consumed = consumed.split(pm[0]).join(' ');
+      }
       const reN = /(?<![\w.])(\d{2,})(?![\w.])/g;
-      while ((m = reN.exec(l))) add(m[1], 'time-bearing line');
+      while ((m = reN.exec(consumed))) add(m[1], 'time-bearing line');
     }
   });
   return out;

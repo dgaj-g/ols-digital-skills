@@ -1,25 +1,25 @@
 
-  COVERAGE MATRIX (content hash 30c77e5f843b, tier fast)
+  COVERAGE MATRIX (content hash 3104e2a0dbdf, tier fast)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  2       220
-  colour        14      208
-  consequence   15      207
-  deploy        1       2
-  empty         13      209
-  geometry      15      207
+  click-safety  2       223
+  colour        14      211
+  consequence   15      210
+  deploy        3
+  empty         13      212
+  geometry      15      210
   human-pace    25      4
   movie         12      24
-  nested        15      207
-  readability   0       222
-  strings       0       222
+  nested        15      210
+  readability   0       225
+  strings       0       225
   truth         48
   two-homes     11      2
   verdict       0       1
   walk-right    0       144
   walk-wrong    42      102
 
-  CELLS NOTHING CLOSES (1981)
+  CELLS NOTHING CLOSES (2003)
   family      cell                                                      why
   ----------  -----------------------------------------------  -------  ---
   walk-right  algebra > s1 > q1 (subst) @375 × walk-right      MISSING

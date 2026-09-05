@@ -63,8 +63,10 @@ loadTemplate(data, TPL);
 data.call('initJotter')();
 
 /* FRONT DOOR: execute-as-User, relays to DATA */
+const DATA_URL = 'https://script.google.com/macros/s/MOCK-DATA/exec';
 const front = makeEnv({
-  active: PUPIL, effective: PUPIL, passcode: PW, props: { relaySecret: SECRET },
+  active: PUPIL, effective: PUPIL, passcode: PW,
+  props: { relaySecret: SECRET, dataUrl: DATA_URL },
   relayTo: (url, params) => {
     let payload = {};
     try { payload = JSON.parse((params && params.payload) || '{}'); } catch (e) {}
@@ -231,6 +233,30 @@ const admin = (env, req) => env.call('apiAdmin')(req);
     data.as(PUPIL);
     const keep = data.call('apiLoad')({ classCode: '10A-Maths', act: 'angles' });
     g.check(keep.ok === true, 'deleteClass', 'two-homes', 'deleting one class removed another class\'s rows');
+  }
+
+  /* --- 'wall' — the markbook's own read, in both homes ------------------ */
+  {
+    data.as(TA);
+    const w = admin(data, { passcode: PW, sub: 'wall', className: '10A-Maths', act: 'angles' });
+    g.check(w.ok === true && Array.isArray(w.pupils), 'wall', 'two-homes',
+      'the server refused the class read the markbook polls every twenty seconds: ' + JSON.stringify(w).slice(0, 90));
+    const ow = await ocall('admin', { passcode: 'demo', sub: 'wall', className: 'demo', act: 'angles' });
+    g.check(ow.ok === true && Array.isArray(ow.pupils), 'wall', 'two-homes',
+      'the offline stub does not answer the class read the server answers — the preview would show a markbook the deploy could not');
+  }
+
+  /* --- 'call' — the relay's own front door, exercised end to end ------- */
+  {
+    const src = A.read(TPL);
+    g.check(/function\s+apiCall/.test(src), 'call', 'two-homes',
+      'there is no apiCall on the front door — the client has nothing to call, and every data call would have to reach the data deployment directly');
+    front.state.active = PUPIL;
+    const r = front.call('apiCall')({ action: 'hello', payload: { classCode: '10A-Maths' } });
+    g.check(r && r.ok === true, 'call', 'two-homes',
+      'a call through the front door did not come back: ' + JSON.stringify(r));
+    g.check(JSON.stringify(r || {}).indexOf(SECRET) < 0, 'call', 'two-homes',
+      'the shared secret came back through the relay — a secret the client can see is not a secret');
   }
 
   /* --- 'classes' / scoping — the twenty assertions, absorbed ----------- */
