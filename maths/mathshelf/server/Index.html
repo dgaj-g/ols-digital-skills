@@ -666,7 +666,21 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
   color: var(--pencil);
   margin-left: auto;
   padding-left: var(--sq);
+  /* IT WRAPS, RATHER THAN RUNNING OFF THE PAGE. On a laptop the reason sits in
+     the margin on one line and nowrap keeps it tidy; on a phone the same rule
+     pushed "(Angles on a straight line add up to 180 degrees)" 89px past the
+     right edge of the paper, so a pupil could not read the reason she had just
+     chosen. The line is what has to fit; tidiness comes second. */
   white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .wline .wl-margin-note {
+    white-space: normal;
+    margin-left: 0;
+    padding-left: 0;
+    flex-basis: 100%;
+  }
+  .wline { flex-wrap: wrap; }
 }
 .wline .wl-mark { position: absolute; left: calc(var(--sq) * -2.4); top: 2px; width: calc(var(--sq) * 1.4); height: calc(var(--sq) * 1.2); }
 .wline.pencil { color: var(--pencil); }            /* the given/start line */
@@ -1991,6 +2005,9 @@ window.OLS_TRANSPORT = {
 
       /* the jotter: the shared check control */
       checkWorkingBtn: 'Mark my working',
+      checkLockedWhy: 'This one is finished.',
+      checkNeedsLineWhy: 'Write a line of working first.',
+      checkNeedsAngleWhy: 'Work out the angle you were asked for first.',
       cancelBtn: 'Cancel',
       addedToJotter: '\u2713 Added to your jotter.',
       checkFailedSaved: 'Something went wrong marking this \u2014 your working is saved for your teacher.',
@@ -6619,6 +6636,16 @@ window.OLS_TRANSPORT = {
       cur.steps.forEach(function (s) { renderStepLine(s, {}); });
       var ready = isAngles ? !!established[q.target] : cur.L.length > 0;
       checkBtn.disabled = !ready || rec.lock;
+      /* A CONTROL THAT WILL NOT ACT SAYS WHY, BESIDE ITSELF (amendment 8.8).
+         A greyed-out Check with nothing next to it is a pupil deciding the app
+         is broken; the reason is short, specific and in her own words. */
+      if (checkBtn.disabled) {
+        checkBtn.setAttribute('data-locked-why', rec.lock
+          ? T.checkLockedWhy
+          : (isAngles ? T.checkNeedsAngleWhy : T.checkNeedsLineWhy));
+      } else {
+        checkBtn.removeAttribute('data-locked-why');
+      }
       if (undoBtn) undoBtn.hidden = rec.lock || (isAngles ? cur.steps.length === 0 : cur.L.length === 0);
       attemptNote.textContent = rec.att.length === 1 ? 'Second attempt \u2014 your first try stays on the page.' : '';
       if (refreshTappable) refreshTappable();   // single chokepoint: keep the dashed "tappable" marks honest (clears them on lock)
