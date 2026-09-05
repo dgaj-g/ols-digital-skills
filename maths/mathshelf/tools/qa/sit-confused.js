@@ -133,7 +133,7 @@ g.exempt(AUD.EXEMPTIONS.concat([
           await W.settle(page);
           await page.evaluate((s, id) => eval(s)(id), W.CHECK, qid);
           await W.settle(page);
-          await W.leaves(page, 'question', qid, ['fresh', 'mid-attempt']);
+          await W.leaves(page, 'question', qid, ['fresh', 'mid-attempt'], 8000);
           await record(page, sidecar, 'question', 'checked-wrong-1', { qid, book, section: si, width });
 
           /* help is EARNED at two wrong, not one */
@@ -153,7 +153,7 @@ g.exempt(AUD.EXEMPTIONS.concat([
             await W.settle(page);
             await page.evaluate((s, id) => eval(s)(id), W.CHECK, qid);
             await W.settle(page);
-            await W.leaves(page, 'question', qid, ['fresh', 'mid-attempt', 'checked-wrong-1']);
+            await W.leaves(page, 'question', qid, ['fresh', 'mid-attempt', 'checked-wrong-1'], 8000);
           }
           await record(page, sidecar, 'question', 'checked-wrong-2', { qid, book, section: si, width });
 
