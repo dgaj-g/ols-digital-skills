@@ -142,7 +142,12 @@ const CONSEQUENCE = `(() => {
         out.push({ law: 'option-pressed-at-mount', qid: root.getAttribute('data-qid') });
       });
     }
-    /* every option in a group looks the same: colour never hints */
+    /* EVERY OPTION LOOKS THE SAME - UNTIL SHE HAS ANSWERED. Colour must never
+       hint at which option is right while she is choosing. After Check it must
+       do the opposite: show her which one she chose and how it was marked.
+       The first cut asked the question in every state and condemned the
+       feedback itself. */
+    if (/checked|locked/.test(state)) return;
     root.querySelectorAll('[data-tray], .jq-options, .classify-row').forEach((tray) => {
       /* LIKE WITH LIKE. An option group's OPTIONS must look the same as each
          other; the punctuation and labels sitting among them are not options
