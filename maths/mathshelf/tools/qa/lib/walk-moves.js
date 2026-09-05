@@ -12,10 +12,11 @@
  * THE ANSWER CHANNEL. A walker cannot rotate a protractor knob and read a dual
  * scale, and pretending it can would make the walk a fiction. So the answer
  * comes from `dev/model-attempts.js` - the same attempts `dev/validate-all.js`
- * proves mark full - primed into the page as `window.__modelAttempt(qid)` and
- * handed to the app's own preview-only `GJ.app.__prime`. Everything after that
- * is the real app: the real Check, the real marking engine, the real feedback,
- * the real states. The channel exists ONLY on the preview tier.
+ * proves mark full - handed to the page as `window.__modelAttempt(book, qid)`
+ * and PLAYED on the app's own controls by lib/drive.js: tiles sorted, products
+ * picked, move chips pressed, arcs tapped. Everything after that is the real
+ * app: the real Check, the real marking engine, the real feedback, the real
+ * states.
  *
  * Every page function below takes no arguments and returns a plain value, so it
  * can be handed to page.evaluate as source and read in the log as what it does.
@@ -169,17 +170,28 @@ const ACTIONS = {
     return { ok: true, label: (chips[i].textContent || '').trim() };
   })`,
   sectionCount: `(() => document.querySelectorAll('#act-contents button').length)`,
+  /* WATCH THE FILM THROUGH, ONE STEP AT A TIME. The step control is an arrow
+     with no word in it, so matching button TEXT found only "Play" - which
+     starts the film running on its own reading clock and hands back before it
+     has moved. The film therefore sat on the state it mounts in ("instant",
+     because mounting jumps to step one with no animation) and the walk never
+     saw a step, let alone the end. */
   playMovieToEnd: `(async () => {
     const movie = document.querySelector('[data-surface="movie"], .movie');
     if (!movie) return { steps: 0, why: 'no movie on this exercise' };
+    const fwd = () => movie.querySelector('.mc-fwd') ||
+      [...movie.querySelectorAll('button')].filter(b => /next step/i.test(b.getAttribute('aria-label') || ''))[0] ||
+      [...movie.querySelectorAll('button')].filter(b => /next|start|again/i.test(b.textContent || ''))[0];
     let steps = 0;
     for (let i = 0; i < 60; i++) {
-      const next = [...movie.querySelectorAll('button')]
-        .filter(b => /next|play|start|again/i.test(b.textContent || '') && !b.disabled)[0];
-      if (!next) break;
-      next.click();
+      const b = fwd();
+      if (!b || b.disabled) break;
+      const before = movie.getAttribute('data-state');
+      b.click();
       steps++;
-      await new Promise(r => setTimeout(r, 120));
+      await new Promise(r => setTimeout(r, 160));
+      if (movie.getAttribute('data-state') === 'end') break;
+      if (before === movie.getAttribute('data-state') && i > 2 && before !== 'step-n') break;
     }
     return { steps: steps, state: movie.getAttribute('data-state') };
   })`,
