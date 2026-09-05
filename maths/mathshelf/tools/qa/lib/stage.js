@@ -68,11 +68,18 @@ async function openExercise(page, book, sectionIdx) {
   return page.evaluate(s => eval(s)(), W.QUESTIONS_ON_SCREEN);
 }
 
+/* answer, check, and WAIT FOR THE MARKING TO LAND: a verdict is drawn one line
+   at a time with a beat between each, so reading the state straight after the
+   press reads the state before the marking finished. Returns what the drive
+   said, so a caller can tell a question that cannot be got wrong from one that
+   simply was not answered. */
 async function answer(page, qid, wrong) {
-  await page.evaluate((s, a) => eval(s)(a), W.ANSWER, [qid, !!wrong]);
+  const a = await page.evaluate((s, arg) => eval(s)(arg), W.ANSWER, [qid, !!wrong]);
   await W.settle(page);
   await page.evaluate((s, id) => eval(s)(id), W.CHECK, qid);
   await W.settle(page);
+  await W.leaves(page, 'question', qid, ['fresh', 'mid-attempt'], 8000);
+  return a;
 }
 
 module.exports = { openApp, openExercise, answer, BASE, attempts };

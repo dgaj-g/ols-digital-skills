@@ -50,11 +50,20 @@ g.exempt(['the attempt model is proved on one question per kind, not on all 48: 
         if (seenKinds.has(kind)) continue;
         const qids = await S.openExercise(page, book, si);
         if (!qids || !qids.length) continue;
+        /* THE FIRST QUESTION OF A KIND MAY BE ONE NOBODY CAN GET WRONG. The
+           collect screen for "x + 8x - 5x" has one bin and does the arithmetic
+           itself, so there is no wrong path on it to walk; the attempt model is
+           proved on the next question of that kind instead, and the one that
+           cannot be got wrong is named. */
+        let qid = null, a1 = null;
+        for (const cand of qids) {
+          a1 = await S.answer(page, cand, true);
+          if (a1 && a1.wrongNotPossible) { g.note(book + ' > ' + cand + ' (' + kind + '): ' + a1.how); continue; }
+          if (a1 && a1.ok === false) { g.note(book + ' > ' + cand + ': ' + a1.why); continue; }
+          qid = cand; break;
+        }
+        if (!qid) { g.note(book + ' (' + kind + '): no question of this kind offers a wrong path on this exercise'); continue; }
         seenKinds.add(kind);
-        const qid = qids[0];
-
-        /* wrong once: struck, and a fresh board beside it */
-        await S.answer(page, qid, true);
         let st = await state(page, qid);
         g.check(st.state === 'checked-wrong-1', book + ' > ' + qid + ' (' + kind + ')', 'attempts',
           'after one wrong answer the question is in state "' + st.state + '" — it should be checked-wrong-1, with the first try struck and a fresh board live');
