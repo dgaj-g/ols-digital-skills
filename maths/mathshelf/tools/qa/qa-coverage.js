@@ -34,7 +34,12 @@ const { contentHash, fileHash, sha1 } = require('./lib/hash.js');
 const TC = require('./lib/timeconsts.js');
 
 const TIER = 'fast';
-const ORDER = 11;
+/* LAST, NOT ELEVENTH. The matrix is judged against what the walkers closed, and
+   at the full tier the walkers run at 60-62 - so running at 11 judged every
+   walker cell before the walk that closes it had happened, and a full run could
+   never be green: two thousand cells reported missing by a gate that had simply
+   been asked too early. It is also the right place to PRINT a summary. */
+const ORDER = 95;
 const COVERS = { books: '*', kinds: '*', surfaces: '*', widths: [375, 768, 1280], projector: true, tier: ['preview', 'built'], cells: ['coverage'] };
 const CONTROLS = [
   { id: 'control-book', kind: 'fixture', plant: 'fixture-book', mustFail: /fixture .* x (truth|walk-right|verdict)/ },
