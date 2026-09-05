@@ -234,12 +234,6 @@
     "locked": false
   },
   {
-    "path": "strings.js > pupil > angleSizePlaceholder",
-    "kind": "FRAGMENT-CHAIN",
-    "text": "the size, e.g. 65",
-    "locked": false
-  },
-  {
     "path": "strings.js > teacher > serverNotSet",
     "kind": "PREPOSITION-PILEUP",
     "text": "That book is not switched on for this class.",

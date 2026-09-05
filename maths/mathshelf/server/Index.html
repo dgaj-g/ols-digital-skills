@@ -2049,11 +2049,11 @@ window.OLS_TRANSPORT = {
       removedLastStep: 'Removed your last step.',
       angleStepHeading: 'Work out \u2220{name}',
       angleSizeLabel: 'Size of angle {name}',
-      angleSizePlaceholder: 'the size, e.g. 65',
+      angleSizePlaceholder: 'the size in degrees',
       angleSizeHint: 'Type the size \u2014 a number, or a sum like 180\u2212124.',
       angleChooseReasonSub: 'Then choose the reason \u2014 it earns its own mark:',
       angleNeedSize: 'First type the size of the angle above.',
-      angleUnreadable: 'That does not read as a number yet \u2014 type a number, or a calculation like 180\u221265.',
+      angleUnreadable: 'That does not read as a number yet. Put in the size in degrees, or a sum that works it out.',
       angleOutOfRange: 'An angle here is between 0\u00b0 and 360\u00b0 \u2014 check the size.',
 
       /* the last of the migration: sentences that used to live on a render path */
@@ -2062,7 +2062,7 @@ window.OLS_TRANSPORT = {
       selfEvalSavedIdle: 'Saved as you go \u2014 your teacher sees this on her class list.',
       angleWorkOut: 'Work out \u2220',
       angleSizeHintLine: 'Type the size \u2014 a number, or a sum like 180\u2212124.',
-      angleUnreadableLine: 'That does not read as a number yet \u2014 type a number, or a calculation like 180\u221265.',
+      angleUnreadableLine: 'That does not read as a number yet. Put in the size in degrees, or a sum that works it out.',
       amberNoWorkingLine: 'Right answer \u2014 but with no working shown, you can\u2019t earn the working marks.',
       angleChooseReasonPrompt: 'Now choose the reason below \u2193 \u2014 it earns its own mark.'
     },
@@ -2129,7 +2129,6 @@ window.OLS_TRANSPORT = {
       loadingGrid: 'Loading the full grid\u2026',
       gridOrient: 'Each cell is one pupil and one question. Look for the reds, then open a cell to read that pupil\'s book.',
       cellNotStarted: 'Not started',
-      cellUntouched: 'Not started',
       cellRight: 'Right \u2014 working and answer both sound',
       cellAmber: 'Answer only, no working shown',
       cellAmber2: 'Answer only \u2014 no working shown',
@@ -7954,7 +7953,7 @@ window.OLS_TRANSPORT = {
         t.push('<tr><td class="pupil-name">' + esc(p.name || p.email) + '</td>');
         qlist.forEach(function (item) {
           var cell = p.summary && p.summary.qs && p.summary.qs[item.q.id];
-          var glyph = '<span class="glyph-un">\u2014</span>', title = TT('cellUntouched');
+          var glyph = '<span class="glyph-un">\u2014</span>', title = TT('cellNotStarted');
           if (cell) {
             var st = cell.ovr === 1 ? 'ok' : cell.ovr === 0 ? 'err' : cell.st;
             if (st === 'ok') { glyph = '<span class="glyph-ok">\u2713</span>'; title = TT('cellRight'); }

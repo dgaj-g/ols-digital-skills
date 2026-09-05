@@ -953,7 +953,7 @@
         t.push('<tr><td class="pupil-name">' + esc(p.name || p.email) + '</td>');
         qlist.forEach(function (item) {
           var cell = p.summary && p.summary.qs && p.summary.qs[item.q.id];
-          var glyph = '<span class="glyph-un">—</span>', title = TT('cellUntouched');
+          var glyph = '<span class="glyph-un">—</span>', title = TT('cellNotStarted');
           if (cell) {
             var st = cell.ovr === 1 ? 'ok' : cell.ovr === 0 ? 'err' : cell.st;
             if (st === 'ok') { glyph = '<span class="glyph-ok">✓</span>'; title = TT('cellRight'); }
