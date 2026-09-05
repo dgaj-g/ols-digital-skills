@@ -31,6 +31,27 @@ section below (A–F). A rule with no home is a rule with no enforcement.
 | `9a585aa^` | before `@layer reset` — the unlayered `body.gj p{margin:0}` trap. DERIVED: `git log -S'@layer reset' --format=%h -1 -- style.css` | qa-geometry (m) |
 | `9a585aa^` | before the flick prefetch cache invalidation. DERIVED: `git log -S'delete view.jotterCache'` | qa-pencil-ink |
 
+## WHAT THE CONTROL BATTERY CHANGED (5 September, second pass)
+
+Running `control.js` end to end is what turned the gate system from a set of
+gates into a set of gates that have each been made to say no. Nine faults were
+in the harness itself, and each of them meant a rule that could not have failed:
+
+| what was wrong | what it meant |
+|---|---|
+| the coverage matrix read its surface registry from a sidecar another gate writes | run alone, the whole surface half of the matrix vanished and the totals still printed GREEN |
+| the fresh-build comparison copied the app folder flat | the assembler could never find its two repo-root inputs, so the strongest pre-deploy question had never once been asked |
+| the model-attempt table was keyed by question id alone | eighteen ids are shared between the two books, so algebra questions were answered with an angles pupil's working |
+| the walkers wrote down the state they meant to reach | a drive that silently did nothing still filed a row saying she had stood there |
+| five of seven question kinds never stamped `data-state` | every gate reading the DOM contract on a question read "fresh" for a question that had just been marked |
+| the object-entry scanner split on every comma | twenty of the app's own sentences never parsed, so qa-language had never read one with a comma in it |
+| qa-needs-you read `c.q` and `c.reason` | fields no chip has ever carried: the check could not fail |
+| qa-earned-stays compared two values both empty | which is exactly what the fault it guards against looks like |
+| the pre-commit hook was installed in `$GIT_DIR/hooks` of a linked worktree | git reads the shared hooks directory, so the hook had never run |
+
+Every control's evidence is written to `tools/qa/out/control/<gate>.<id>.log` on
+each run, and the CONTROL MATRIX prints whatever the verdict.
+
 ## APPROVALS — a book is UNDER REVIEW unless this table says otherwise
 
 | thing | status | date |
