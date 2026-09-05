@@ -32,7 +32,10 @@ what makes her full name appear on her very first visit with nothing to type.
 3. `MS_PROBE_LIVE=1 node tools/qa/qa-build.js` — after the push — so the live
    asset probe reads what pupils will read.
 4. Set the two script properties, once, in Project Settings → Script Properties:
-   - `relaySecret` — a long random string. It never leaves the server.
+   - `relaySecret` — a long random string. It never leaves the server. Make one
+     with `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`
+     and paste it straight into the property; it does not belong in this repo,
+     in a commit message, or in a chat window.
    - `dataUrl` — filled in at step 3 below, once the DATA `/exec` exists.
 
 ## 1 · DATA (do this one FIRST)
