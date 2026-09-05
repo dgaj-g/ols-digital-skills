@@ -219,6 +219,12 @@ Each keeps the correct thing it condemned as its permanent pass-control.
   once a question is marked. Asking the questions the other way round reported
   seventeen marked questions as controls that would not act and would not say
   why.
+- **Do not edit the app while a full run is walking it.** The sidecars a walk
+  writes carry the content hash they were taken at, and at the full tier a
+  stale sidecar counts as absent - so a fix committed mid-run invalidates the
+  evidence that run had already gathered, and the coverage matrix reports
+  thousands of cells nobody stood on. The run is a photograph; changing the
+  subject halfway through gets you neither picture.
 - **There is no requestAnimationFrame in a headless page.** Not a throttled
   one - none. Any promise that waits on a frame waits for ever, and the app
   code that does it is the code a walk can never get past.

@@ -1,8 +1,8 @@
 # MathShelf — the TEACHER transcript
 
-TRANSCRIPT HASH: 5d48fe3b51e76de0
-sentences: 31
-taken: 2026-09-05 20:34:03
+TRANSCRIPT HASH: 995a4c620abbbcf9
+sentences: 40
+taken: 2026-09-05 21:20:19
 
 This is every sentence a teacher reads, in the order they meet it,
 as it was RENDERED on the running app. Nothing here is source.
@@ -39,3 +39,12 @@ Look at the size of the marked angle. What type of angle is it?
 The method itself is where Aisling needs a hand — worth reteaching, not just re-checking.
 These marks are the app's. Tap or click any mark to change it to yours — yours is the one that counts.
 ✓ correct · ◐ answer only · ✗ wrong (small number = the step it broke at) · ● working now · — not started
+Your mark:
+✓ mine
+✗ mine
+use the app’s mark
+Inked right — full marks. Your mark wins on the Wall.
+Inked wrong. Your mark wins on the Wall.
+Back to the app’s mark.
+Spot the slip · starter 1 of 2
+Where has this gone wrong — and what should the line say?
