@@ -38,3 +38,12 @@ in its own run; this row is here so the silence is on the record too._
 | rule | what is missing | what it would take | owner / phase |
 |---|---|---|---|
 | define-before-use (`qa-language`) | there is no `tools/qa/vocab/<book>.json` for any book, so the rule reads nothing and the gate notes it every run | a vocabulary per book: each term with the plain-words phrase its film must say first. Writing one for Angles or Algebra means re-opening approved prompts if a term turns out to be used before it is explained, which is rule 30's business and his call | a content session, after the deploy — the control proves the detector works against a planted vocabulary |
+
+## Cells the app itself makes impossible
+
+_Not debt, and not a fault: a screen that cannot be got wrong has no wrong path
+to walk, and the walk says so rather than inventing one._
+
+| cell | why it cannot be walked |
+|---|---|
+| algebra q5 × walk-wrong | "x + 8x − 5x" is three terms of one family, so the collect screen has ONE bin and the app does the arithmetic once the tiles are sorted. A pupil cannot mis-sort, and so cannot get this question wrong on this screen. `sit-confused` reports it and moves on; the other three collect questions have two families and a real wrong answer. |
