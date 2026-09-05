@@ -27,7 +27,7 @@
      only a badge saying who it is for. A new book arrives unticked everywhere. */
   var ACTIVITIES = [
     { id: 'angles',  title: 'Angles',  sub: 'The Geometry Set', accent: '#0E7490', livery: 'teal', band: 'KS3 \u00b7 M2', series: 'KS3 (M2)', meta: 'Ex. M2\u00b701 \u00b7 CCEA M2', motif: 'protractor' },
-    { id: 'algebra', title: 'Algebra', sub: 'Ink & Balance',    accent: '#7A3E8F', livery: 'plum', band: 'KS3 \u00b7 M2', series: 'KS3 (M2)', meta: 'Ex. M2\u00b702 \u00b7 CCEA M2', motif: 'radical' }
+    { id: 'algebra', title: 'Algebra', sub: 'Letters & Balance',    accent: '#7A3E8F', livery: 'plum', band: 'KS3 \u00b7 M2', series: 'KS3 (M2)', meta: 'Ex. M2\u00b702 \u00b7 CCEA M2', motif: 'radical' }
   ];
 
   /* ═════════ THE DOM CONTRACT (gates design 2.4) ═══════════════════
@@ -367,6 +367,13 @@
       }
       case 'setname': s.names[OFFLINE_EMAIL] = String(p.name || '').slice(0, 40); lsSave(s); return ok({});
       case 'load': {
+        /* THE TICKBOX GATE, in the second home too. A book this class does not
+           have is closed, not merely hidden, and the preview has to refuse it
+           exactly as the server does or the preview is telling a lie about the
+           deployed app (DFM 234a - both of this platform's live-only bugs were
+           this class). */
+        var regL = s.classes.filter(function (c) { return c.name === cls; })[0];
+        if (regL && regL.acts && !regL.acts[p.act]) return Promise.resolve({ ok: false, error: 'not-set' });
         var r2 = row(cls, OFFLINE_EMAIL, p.act);
         var nkey = String(p.act) + '|' + OFFLINE_EMAIL.toLowerCase();
         var nud = (s.nudges && s.nudges[cls] && s.nudges[cls][nkey]) || '';
@@ -374,6 +381,8 @@
         return ok({ state: r2 && r2.state ? r2.state : null, nudge: nud });
       }
       case 'save': {
+        var regS = s.classes.filter(function (c) { return c.name === cls; })[0];
+        if (regS && regS.acts && !regS.acts[p.act]) return Promise.resolve({ ok: false, error: 'not-set' });
         s.data[cls] = s.data[cls] || {}; s.data[cls][OFFLINE_EMAIL] = s.data[cls][OFFLINE_EMAIL] || {};
         s.data[cls][OFFLINE_EMAIL][p.act] = { state: p.state, summary: p.summary };
         lsSave(s); return ok({});

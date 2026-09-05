@@ -60,17 +60,43 @@ while ((cm = reConst.exec(client))) consts[cm[1]] = cm[2];
 const WHOLE_STORE = 'gj-offline-v1';
 g.exempt(['the single whole-store key "' + WHOLE_STORE + '" is exempt: it holds one object whose own shape is data[class][email][act], so it IS class-qualified']);
 
+/* A KEY BUILT BY A FUNCTION IS STILL A KEY. The outbox calls outboxKey(act),
+   and that function's own body is `'outbox:' + BOOT.classCode + ':' + email +
+   ':' + actId` - properly class-qualified. Reading only the call site condemned
+   it three times over, which is a gate inventing a fault (L6). So a call to a
+   local function is followed into that function's body and the same question is
+   asked there. A builder this cannot resolve is REPORTED as unresolved, never
+   silently passed. */
+function builderBody(name) {
+  const re = new RegExp('function\\s+' + name + '\\s*\\([^)]*\\)\\s*\\{([\\s\\S]*?)\\n  \\}');
+  const m = re.exec(client);
+  return m ? m[1] : null;
+}
+const CLASS_QUALIFIED = /class|BOOT\.classCode|cls|CLASS/;
+
 [/localStorage\.(?:setItem|getItem|removeItem)\(\s*([^,)]+)/g].forEach(re => {
   let m;
   while ((m = re.exec(client))) {
     const expr = m[1].trim();
     const literal = /^'([^']*)'$/.test(expr) ? expr.slice(1, -1) : consts[expr];
     if (literal === WHOLE_STORE) continue;
-    if (/class|BOOT\.classCode|cls|CLASS/.test(expr)) continue;
-    if (literal && /:/.test(literal) === false && /class/i.test(literal)) continue;
+    if (CLASS_QUALIFIED.test(expr)) continue;
+    const call = /^([A-Za-z_$][\w$]*)\s*\(/.exec(expr);
+    if (call) {
+      const body = builderBody(call[1]);
+      if (body == null) {
+        g.fail('script.js', 'cache-scope',
+          'a localStorage key is built by ' + call[1] + '() and this gate cannot read that function - resolve it or inline the key, because an unread key is an unchecked key');
+        continue;
+      }
+      if (CLASS_QUALIFIED.test(body)) { g.pass(call[1] + '() builds a class-qualified key'); continue; }
+      g.fail('script.js', 'cache-scope',
+        call[1] + '() builds a localStorage key with no class in it - a draft made in one class would resume in another (DFM 249)');
+      continue;
+    }
     g.fail('script.js', 'cache-scope',
       'a localStorage key is not qualified by the class (' + expr.slice(0, 60) +
-      (literal ? ' = "' + literal + '"' : '') + ') — a draft made in one class would resume in another (DFM 249)');
+      (literal ? ' = "' + literal + '"' : '') + ') - a draft made in one class would resume in another (DFM 249)');
   }
 });
 g.note('outbox keys present: ' + outbox);

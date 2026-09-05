@@ -620,7 +620,18 @@ body.gj .jq-feedback { margin-top: calc(var(--sq) * 0.9); }
 /* a freshly written step: positive UI flash (sage, NOT marking-green — it isn't a mark) */
 .ui-msg.flash-ok { color: var(--stretch-sage); font-weight: 600; }
 .wline.just-added { animation: step-land 1.3s ease-out; }
-@keyframes step-land { 0% { background: rgba(47, 143, 107, 0.18); } 100% { background: transparent; } }
+/* THE COMPOSITOR WHITELIST: only transform, opacity, background-position and
+   the stroke-dash properties may move. Animating `background` repaints the
+   element every frame; on a school Chromebook that is the difference between a
+   line landing and a page stuttering. The same flash, done on an overlay whose
+   OPACITY moves, costs nothing. */
+.just-added { position: relative; }
+.just-added::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: rgba(47, 143, 107, 0.18);
+  animation: step-land 1.3s ease-out forwards;
+}
+@keyframes step-land { 0% { opacity: 1; } 100% { opacity: 0; } }
 
 /* tick / cross marks are SVG paths drawn at pen speed */
 .mark-tick path, .mark-cross path, .box-draw rect, .box-draw path {

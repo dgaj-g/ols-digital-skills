@@ -1,6 +1,31 @@
 /**
  * ============================================================
- * The Glass Jotter -- OLS Maths M2 Revision Platform
+ * MathShelf -- OLS Maths revision platform
+ * ONE PROJECT, TWO DEPLOYMENTS (MATHS_V4_DESIGN section 7)
+ *
+ *   FRONT DOOR   execute as: USER ACCESSING   the only /exec anybody visits
+ *     doGet serves the client with BOOT = the pupil's VERIFIED email and her
+ *     FULL REAL NAME, read from her own Google token on the very first visit
+ *     (autoName_). Every data call the client makes lands on apiCall, which
+ *     relays it server-to-server to the DATA deployment carrying a shared
+ *     secret and the email THIS deployment verified. The client sees neither.
+ *
+ *   DATA         execute as: ME (the deployer)   never handed to a pupil again
+ *     Keeps the private bound Sheet, the marking storage, the per-teacher
+ *     scoping and the class registry. Accepts a call only with the shared
+ *     secret, and trusts the relayed email only because the secret proves the
+ *     caller is the front door.
+ *
+ * WHY, in one line: full line-by-line working cannot live in ScriptProperties
+ * at class scale, so the store has to be the owner's Sheet (execute-as-Me);
+ * but a pupil's real name can only be read with the PUPIL's own token
+ * (execute-as-User). Two deployments is what buys both, and it is what kills
+ * the "Is this you? / name on the second login" flow for good.
+ *
+ * THE DEPLOY LANDMINE: the deployment dialog LIES about "Execute as". Read the
+ * MANIFEST before every version cut and verify in the Executions log after.
+ * server/DEPLOY.md is the ordered checklist; server/DEPLOY_LOG.md is the record.
+ * ------------------------------------------------------------
  * Path B backend (login-gated, served by Apps Script / HtmlService)
  * NAMED CLASS BOARDS (GG model, execute as: ME) -- each class has its own
  * link (...?class=NAME), its own Working Wall, and a per-class map of which
@@ -59,35 +84,51 @@ function initJotter() {
   return 'Ready. Set your own staffPasscode in the Config tab, then add classes from the STAFF panel.';
 }
 
-/* ---------- serve the page (inject the class + the real /exec URL) ---------- */
+/* ============================================================
+   THE FRONT DOOR
+   ============================================================ */
+
 /* The page runs in a sandboxed iframe, so it cannot read its own /exec URL or
-   the ?class= parameter; we capture both here and inject them via the
-   window.OLS_BOOT scriptlet that build-pathb.js places at the top of Index. */
+   the ?class= parameter; both are captured here and injected through the
+   window.OLS_BOOT scriptlet that build-pathb.js places at the top of Index.
+   On the FRONT DOOR (execute-as-User) Session is the PUPIL, so her verified
+   email and her real name go into BOOT with the page -- she is known before
+   the cover has finished drawing, on the very first visit. */
 function doGet(e) {
-  // companion "name probe": this is hit (hidden iframe) on the EXECUTE-AS-USER
-  // deployment so getOAuthToken() is the PUPIL's token. Guarded to only write when
-  // actually running as the accessing user (so the execute-as-me main deployment,
-  // if ever hit with ?probe, never writes the deployer's name).
-  if (e && e.parameter && e.parameter.probe) { return autoNameProbe_(e); }
   var t = HtmlService.createTemplateFromFile('Index');
   t.classCode = (e && e.parameter && e.parameter['class']) ? String(e.parameter['class']) : 'default';
   t.baseUrl = ScriptApp.getService().getUrl();
+  var who = userEmail_();
+  t.email = String(who || '');
+  var nm = '';
+  /* only ask Google who she is when this deployment is really running AS her:
+     on the data deployment getEffectiveUser is the deployer, and reading that
+     name would put MY name on every pupil's cover. */
+  if (who && normEmail_(effectiveEmail_()) === normEmail_(who)) nm = autoName_();
+  t.name = String(nm || '');
+  t.firstVisit = nm ? 'no' : 'unknown';
   return t.evaluate()
-    .setTitle('The Glass Jotter \u2014 OLS Maths')
+    .setTitle('OLS \u2014 MathShelf')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
     .setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
 
 /* ============================================================ helpers ============================================================ */
-function userEmail_() { try { return Session.getActiveUser().getEmail() || ''; } catch (e) { return ''; } }
+function userEmail_() {
+  /* on the DATA deployment a relayed call carries the email the FRONT DOOR
+     verified; everywhere else it is this execution's own signed-in user */
+  if (RELAY_EMAIL) return RELAY_EMAIL;
+  try { return Session.getActiveUser().getEmail() || ''; } catch (e) { return ''; }
+}
 function effectiveEmail_() { try { return Session.getEffectiveUser().getEmail() || ''; } catch (e) { return ''; } }
-
-/* ---------- pupil auto-name (companion: execute-as-user) ---------- */
 function sp_() { return PropertiesService.getScriptProperties(); }
-function autoNameKey_(email) { return 'autoname:' + String(email || '').trim().toLowerCase(); }
-/* Fetch the signed-in user's real name from the OIDC userinfo endpoint. Needs the
-   userinfo.profile scope and an execute-as-user deployment (so getOAuthToken() is
-   the pupil's token). Returns "First Surname" or '' on any failure. */
+
+/* ---------- the pupil's real name, from her own token ----------
+   OIDC userinfo with ScriptApp.getOAuthToken(). Under execute-as-User that
+   token is the PUPIL's, so this returns her full name on her first ever visit.
+   Needs the userinfo.profile scope. Returns '' on any failure, and '' is a
+   real answer: some staff accounts carry no name, and the cover then asks for
+   one once. It never guesses a name from an email address. */
 function autoName_() {
   try {
     var resp = UrlFetchApp.fetch('https://openidconnect.googleapis.com/v1/userinfo', {
@@ -100,39 +141,84 @@ function autoName_() {
     return full.trim();
   } catch (e) { return ''; }
 }
-/* Companion endpoint (doGet ?probe=1, execute-as-user): stash the pupil's real name
-   in ScriptProperties for the main (execute-as-me) app to read. The guard ensures we
-   only write when truly running as the accessing user. Returns a 1-line page. */
-function autoNameProbe_(e) {
-  var ok = false, nm = '';
+
+/* ============================================================
+   THE RELAY
+   ============================================================
+   Every data call from the client lands on apiCall HERE, on the front door.
+   The front door knows who she is (Session, execute-as-User) and knows the
+   shared secret (a ScriptProperty of this one project). It POSTs both to the
+   DATA deployment. Neither the secret nor the data URL is ever sent to the
+   browser: qa-two-homes walks every return value, every BOOT field and the
+   built Index.html to prove it. */
+var RELAY_EMAIL = '';                       /* set only inside a relayed call */
+function relaySecret_() { return String(sp_().getProperty('relaySecret') || ''); }
+function dataUrl_() { return String(sp_().getProperty('dataUrl') || ''); }
+
+function apiCall(req) {
+  req = req || {};
+  var who = userEmail_();
+  if (!who) return { ok: false, error: 'not-signed-in' };
+  var url = dataUrl_(), secret = relaySecret_();
+  if (!url || !secret) return { ok: false, error: 'not-configured' };
+  var payload = { secret: secret, email: who, action: String(req.action || ''), payload: req.payload || {} };
   try {
-    var who = userEmail_();
-    if (who && effectiveEmail_().toLowerCase() === who.toLowerCase()) {   // running AS the pupil
-      nm = autoName_();
-      if (nm) { sp_().setProperty(autoNameKey_(who), nm); ok = true; }
-    }
-  } catch (err) { ok = false; }
-  // popup-free, full-page return: bounce the whole tab back to the class link via a
-  // user-tapped target="_top" anchor (NEVER location.href, which white-screens the bound
-  // sandbox). Open-redirect guarded to script.google.com only.
-  var ret = (e && e.parameter && e.parameter.ret) ? String(e.parameter.ret) : '';
-  if (ret && ret.indexOf('https://script.google.com/') === 0) {
-    var html = '<!doctype html><meta charset="utf-8"><title>Saved</title>'
-      + '<style>body{font:16px system-ui;padding:2rem;text-align:center;color:#1A3A6B}a{display:inline-block;margin-top:1rem;padding:.7rem 1.4rem;background:#1A3A6B;color:#fff;text-decoration:none;border-radius:8px;font-weight:600}</style>'
-      + '<p>' + (ok ? ('Saved your name' + (nm ? (', ' + nm.split(' ')[0]) : '') + '.') : 'All set.') + '</p>'
-      + '<a href=' + JSON.stringify(ret) + ' target="_top">Open your book</a>'
-      + '<script>try{document.links[0].click();}catch(e){}<\/script>';
-    return HtmlService.createHtmlOutput(html).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    var resp = UrlFetchApp.fetch(url, {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true,
+      followRedirects: true
+    });
+    if (resp.getResponseCode() !== 200) return { ok: false, error: 'relay-failed' };
+    var out = JSON.parse(resp.getContentText());
+    /* belt and braces: nothing that came back may carry the secret onward */
+    if (out && typeof out === 'object') { delete out.secret; delete out.dataUrl; }
+    return out;
+  } catch (err) {
+    return { ok: false, error: 'relay-failed' };
   }
-  var pg = '<!doctype html><meta charset="utf-8"><title>ok</title>'
-    + '<p style="font:14px system-ui;padding:1rem">' + (ok ? 'Saved your name. ' : '') + 'You can close this tab.</p>';
-  return HtmlService.createHtmlOutput(pg).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
-/* Main app (execute-as-me): read the name the companion stashed for this caller. */
-function apiAutoName() {
-  var who = userEmail_(); if (!who) return { ok: false, error: 'not-signed-in' };
-  return { ok: true, name: String(sp_().getProperty(autoNameKey_(who)) || '') };
+
+/* the DATA deployment's ear. doPost is what the front door reaches; apiRelay is
+   the same logic as a plain function, so both homes can be EXECUTED under test
+   without a network (DFM 234a). */
+function doPost(e) {
+  var body = {};
+  try { body = JSON.parse((e && e.postData && e.postData.contents) || '{}'); } catch (err) { body = {}; }
+  var out = apiRelay(body);
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
+
+function apiRelay(body) {
+  body = body || {};
+  var secret = relaySecret_();
+  /* THE GUARD. Without it this deployment would answer anybody who found the
+     URL, as any pupil they cared to name. A constant-time compare is not worth
+     the pretence here (the value is not user-supplied and the endpoint is
+     domain-restricted), but the guard itself is not optional. */
+  if (!secret) return { ok: false, error: 'no-secret-configured' };
+  if (String(body.secret || '') !== secret) return { ok: false, error: 'bad-secret' };
+  var email = normEmail_(body.email);
+  if (!email) return { ok: false, error: 'no-email' };
+  var action = String(body.action || '');
+  var p = body.payload || {};
+  RELAY_EMAIL = email;
+  try {
+    switch (action) {
+      case 'whoami':  return apiWhoAmI();
+      case 'hello':   return apiHello({ classCode: p.classCode });
+      case 'load':    return apiLoad({ classCode: p.classCode, act: p.act });
+      case 'save':    return apiSave({ classCode: p.classCode, act: p.act, state: p.state, summary: p.summary });
+      case 'setname': return apiSetName({ name: p.name });
+      case 'admin':   return apiAdmin(p);
+      default:        return { ok: false, error: 'unknown-action' };
+    }
+  } finally {
+    RELAY_EMAIL = '';
+  }
+}
+
 function normEmail_(e) { return String(e || '').trim().toLowerCase(); }
 /* PER-TEACHER SCOPING. The shared staffPasscode lets any staff member in; who
    they ARE (their verified active email, the same identity the pupil API trusts)
@@ -151,7 +237,23 @@ function dataSheet_() { return SpreadsheetApp.getActiveSpreadsheet().getSheetByN
 function ready_() { var ss = SpreadsheetApp.getActiveSpreadsheet(); return !!(ss.getSheetByName(DATA_TAB) && ss.getSheetByName(CONFIG_TAB)); }
 function nowIso_() { return new Date().toISOString(); }
 function actOk_(a) { return ACTS.indexOf(String(a || '')) > -1; }
-function coerceActs_(a) { a = a || {}; return { angles: !!a.angles, algebra: !!a.algebra }; }
+/* DERIVED FROM ACTS, never re-typed. The first version named angles and algebra
+   literally, so a third book added to ACTS could be ticked in the markbook and
+   silently dropped on the way to the Sheet -- the book could never be switched
+   on at all. A new book arrives UNTICKED everywhere (an absent key reads false),
+   which is the rule; being un-tickable is a bug. */
+function coerceActs_(a) {
+  a = a || {};
+  var out = {};
+  for (var i = 0; i < ACTS.length; i++) out[ACTS[i]] = !!a[ACTS[i]];
+  return out;
+}
+/* THE TICKBOX GATE, ON THE SERVER. A book this class does not have is CLOSED,
+   not merely hidden: the shelf never offers it, and the server refuses it too. */
+function actTicked_(rec, act) {
+  var acts = coerceActs_(rec && rec.acts);
+  return !!acts[act];
+}
 function sanitizeClass_(name) { return String(name || '').trim().replace(/[^A-Za-z0-9_\- ]/g, '').replace(/\s+/g, '-').slice(0, 40); }
 function cleanName_(s) { return String(s || '').replace(/[\u0000-\u001f<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60); }
 function nameKey_(email) { return 'name:' + String(email || '').trim().toLowerCase(); }
@@ -159,6 +261,18 @@ function parseJson_(raw) { try { var o = JSON.parse(String(raw || '')); return (
 
 /* One row per pupil per activity. Per-row try/catch so a malformed row can
    never break a lookup (it is simply skipped). */
+/* has this pupil ever saved anything in this class? Used only to decide whether
+   to show the one quiet line about Google's permission screen. */
+function haveAnyRow_(cls, email) {
+  try {
+    var vals = dataSheet_().getDataRange().getValues();
+    for (var i = 1; i < vals.length; i++) {
+      if (String(vals[i][0]) === String(cls) && String(vals[i][1]).toLowerCase() === String(email).toLowerCase()) return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
 function findRow_(cls, email, act) {
   var vals = dataSheet_().getDataRange().getValues();
   var who = String(email || '').toLowerCase();
@@ -267,7 +381,24 @@ function apiHello(req) {
       if (actOk_(act)) summaries[act] = parseJson_(vals[i][4]);
     } catch (e) { /* skip bad row */ }
   }
-  return { ok: true, email: String(who), name: String(getName_(who) || sp_().getProperty(autoNameKey_(who)) || ''), nameFromSp: (!getName_(who) && !!sp_().getProperty(autoNameKey_(who))), classCode: String(rec.name), acts: coerceActs_(rec.acts), summaries: summaries, autonameUrl: String(getConfig_('autonameUrl') || '') };
+  /* THE NAME, and where it comes from now. The front door read it from her own
+     Google token before the page was even served, and BOOT carried it with the
+     client, so hello does not have to guess. What hello adds is the name she
+     has ALREADY been saved under, when there is one: a pupil who typed a name
+     once keeps it. The auto-name companion, its hidden probe, its consent
+     bounce and its ScriptProperties name bridge are gone.
+     firstVisit is what the cover uses to show the one quiet line about Google's
+     permission screen -- true when we have never written a row for her. */
+  var stored = String(getName_(who) || '');
+  return {
+    ok: true,
+    email: String(who),
+    name: stored || String(req.bootName || ''),
+    firstVisit: !stored && !haveAnyRow_(rec.name, who),
+    classCode: String(rec.name),
+    acts: coerceActs_(rec.acts),
+    summaries: summaries
+  };
 }
 
 function apiSave(req) {
@@ -276,6 +407,7 @@ function apiSave(req) {
   var who = userEmail_(); if (!who) return { ok: false, error: 'not-signed-in' };
   var rec = findClass_(req.classCode); if (!rec) return { ok: false, error: 'unknown-class' };
   var act = String(req.act || ''); if (!actOk_(act)) return { ok: false, error: 'bad-act' };
+  if (!actTicked_(rec, act)) return { ok: false, error: 'not-set' };
   // accept either a pre-stringified state or an object (the offline stub and
   // the live client may differ); the LENGTH check is on the stored string.
   var state = (typeof req.state === 'string') ? req.state : JSON.stringify(req.state || {});
@@ -299,6 +431,7 @@ function apiLoad(req) {
   var who = userEmail_(); if (!who) return { ok: false, error: 'not-signed-in' };
   var rec = findClass_(req.classCode); if (!rec) return { ok: false, error: 'unknown-class' };
   var act = String(req.act || ''); if (!actOk_(act)) return { ok: false, error: 'bad-act' };
+  if (!actTicked_(rec, act)) return { ok: false, error: 'not-set' };
   var found = findRow_(rec.name, who, act);
   // deliver any teacher nudge once, then clear it (best-effort, lock-free like the
   // rest of apiLoad). Read even when there is no saved row yet, so a nudge sent

@@ -71,7 +71,9 @@ const INPUTS = {
   'shared style.css':   path.join(ROOT, 'style.css'),
   'fonts.css':          path.join(ACT, 'assets', 'fonts', 'fonts.css'),
   'activity style.css': path.join(ACT, 'style.css'),
+  'shell.css':          path.join(ACT, 'shell.css'),
   'qrcode.min.js':      path.join(ACT, 'qrcode.min.js'),
+  'strings.js':         path.join(ACT, 'strings.js'),
   'mathcore.js':        path.join(ACT, 'mathcore.js'),
   'anglecore.js':       path.join(ACT, 'anglecore.js'),
   'content-angles.js':  path.join(ACT, 'content-angles.js'),
@@ -96,8 +98,13 @@ const indexHtml  = read('index.html');
 const sharedCss  = read('shared style.css');
 const fontsCss   = read('fonts.css');
 const actCss     = read('activity style.css');
+const shellCss   = read('shell.css');
 const qrcodeJs   = read('qrcode.min.js');
-const moduleJs   = ['mathcore.js', 'anglecore.js', 'content-angles.js', 'content-algebra.js',
+const stringsJs  = read('strings.js');
+/* THE LOAD ORDER IS THE ONE index.html USES, and qa-build proves the two lists
+   are the same set in both directions: a book added to index.html and not here
+   would ship a deployed app that silently lacks it. */
+const moduleJs   = ['strings.js', 'mathcore.js', 'anglecore.js', 'content-angles.js', 'content-algebra.js',
                     'player.js', 'jotter.js', 'staff.js', 'script.js'].map(function (k) { return [k, read(k)]; });
 const introJsRaw = read('intro-loader.js');
 const codeTemplate = read('Code.gs.template');
@@ -177,7 +184,9 @@ const cssOut =
   '/* ===== assets/fonts/fonts.css ===== */' + NL +
   asciiCss(resolveCssUrls(fontsCss, GHACT + '/assets/fonts/fonts.css')) + NL +
   '/* ===== activity style.css ===== */' + NL +
-  asciiCss(resolveCssUrls(actCss, GHACT + '/style.css'));
+  asciiCss(resolveCssUrls(actCss, GHACT + '/style.css')) + NL +
+  '/* ===== shell.css (the v4 identity layer, LAST so it wins) ===== */' + NL +
+  asciiCss(resolveCssUrls(shellCss, GHACT + '/shell.css'));
 if (new RegExp('</style', 'i').test(cssOut)) {
   console.error('ERROR: inlined CSS contains a literal </style - it would close the <style> block early');
   process.exit(1);
@@ -198,21 +207,26 @@ if (introJs === introJsRaw) {
    Injected AFTER qrcode, BEFORE mathcore, so script.js finds OLS_TRANSPORT
    defined when it boots. Accepts the class under either key. ---- */
 const shim = `
+/* ONE DOOR. Every call goes to apiCall on the FRONT DOOR deployment, which
+   verifies who is asking and relays it to the DATA deployment with the shared
+   secret. The client knows neither the secret nor the data URL, and cannot:
+   it only ever names an action and a payload. */
 window.OLS_TRANSPORT = {
   call: function (p) {
     return new Promise(function (resolve, reject) {
       var g = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
       var cls = (p.classCode != null) ? p.classCode : p['class'];
+      var payload;
       switch (p.action) {
-        case 'whoami':  g.apiWhoAmI(); break;
-        case 'hello':   g.apiHello({ classCode: cls }); break;
-        case 'load':    g.apiLoad({ classCode: cls, act: p.act }); break;
-        case 'save':    g.apiSave({ classCode: cls, act: p.act, state: p.state, summary: p.summary }); break;
-        case 'setname': g.apiSetName({ classCode: cls, name: p.name }); break;
-        case 'autoname': g.apiAutoName(); break;
-        case 'admin':   g.apiAdmin({ passcode: p.passcode, sub: p.sub, className: p.className, acts: p.acts, act: p.act, email: p.email, q: p.q, idx: p.idx, val: p.val, sec: p.sec }); break;
-        default: reject(new Error('unknown action ' + p.action));
+        case 'whoami':  payload = {}; break;
+        case 'hello':   payload = { classCode: cls, bootName: (window.OLS_BOOT && window.OLS_BOOT.name) || '' }; break;
+        case 'load':    payload = { classCode: cls, act: p.act }; break;
+        case 'save':    payload = { classCode: cls, act: p.act, state: p.state, summary: p.summary }; break;
+        case 'setname': payload = { classCode: cls, name: p.name }; break;
+        case 'admin':   payload = { passcode: p.passcode, sub: p.sub, className: p.className, acts: p.acts, act: p.act, email: p.email, q: p.q, idx: p.idx, val: p.val, sec: p.sec }; break;
+        default: reject(new Error('unknown action ' + p.action)); return;
       }
+      g.apiCall({ action: p.action, payload: payload });
     });
   }
 };`;
@@ -239,13 +253,13 @@ const out = `<!doctype html>
 <base target="_top">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>MathShelf &mdash; OLS Maths</title>
+<title>OLS &mdash; MathShelf</title>
 <style>
 ${cssOut}
 </style>
 </head>
 ${bodyOpen}
-<script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" }; window.OLS_ASSET_BASE = "${GHACT}/";</script>
+<script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>", email: "<?= email ?>", name: "<?= name ?>", firstVisit: "<?= firstVisit ?>" }; window.OLS_ASSET_BASE = "${GHACT}/";</script>
 ${asciiHtml(body)}
 ${scriptsHtml}
 </body>
