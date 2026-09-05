@@ -95,6 +95,15 @@ g.exempt(AUD.EXEMPTIONS.concat([
       const nSec = await page.evaluate(s => eval(s)(), W.ACTIONS.sectionCount);
 
       for (let si = 0; si < nSec; si++) {
+        /* a fresh document per exercise: see the note in sit-pupil.js */
+        if (si > 0) {
+          await page.goto(BASE + '?class=demo&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
+          await W.settle(page);
+          await page.evaluate(() => document.getElementById('cover-open').click());
+          await W.settle(page);
+          await page.evaluate((s, id) => eval(s)(id), W.ACTIONS.openBook, book);
+          await W.settle(page);
+        }
         const o = await page.evaluate((s, i) => eval(s)(i), W.ACTIONS.openSection, si);
         if (!o.ok) continue;
         await W.settle(page);

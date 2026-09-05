@@ -100,6 +100,20 @@ async function walkBook(page, book, width, sidecar, transcript) {
   g.note(book + ' @' + width + ': ' + nSec + ' exercises');
 
   for (let si = 0; si < nSec; si++) {
+    /* A FRESH DOCUMENT PER EXERCISE. Priming an attempt re-renders the whole
+       exercise, diagrams and all, so walking a book of six exercises in one
+       page churns several hundred SVG mounts through one renderer — and on the
+       fourth book that renderer took the whole browser down with it. A walk
+       that cannot finish proves nothing, so the page is recycled between
+       exercises. It costs a second each and it is why the walk completes. */
+    if (si > 0) {
+      await page.goto(BASE + '?class=demo&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
+      await W.settle(page);
+      await page.evaluate(() => document.getElementById('cover-open').click());
+      await W.settle(page);
+      await page.evaluate((s, id) => eval(s)(id), W.ACTIONS.openBook, book);
+      await W.settle(page);
+    }
     const opened = await page.evaluate((s, i) => eval(s)(i), W.ACTIONS.openSection, si);
     if (!opened.ok) continue;
     await W.settle(page);
