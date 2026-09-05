@@ -64,8 +64,11 @@ localStorage first so the demo class re-seeds; always `?nointro`.
    past the last exercise to the tally page. Until then `--full` is red, by its
    own design, and that is the correct verdict.
 2. **`node tools/qa/control.js`** — every control FIRED, every over-tightening
-   PASSED. The machinery works (proved on `qa-cache-scope`); the remaining
-   plants in `tools/qa/fixtures/plants.js` need aiming at the current source.
+   PASSED. Every node-tier gate is now green under its own controls; the eight
+   browser-tier gates (colour law, fonts, numpad, waits, click-safety,
+   preview-honest, staff-relock, two-attempts and the three walkers) have not
+   been run through the battery yet. `qa-cold-read`'s over-tightening is red
+   until the separated judge has filed its verdicts, which is step 3.
 3. **The separated cold read.** Run `node tools/qa/extract-transcript.js`, then
    hand a FRESH context (a subagent that has seen nothing of this build) ONLY
    `tools/qa/out/transcript/_teacher.md`, `_v4.md` and
@@ -132,6 +135,15 @@ the walker can no longer disagree about what a correct attempt is.
 | F15 | the film's step dots stuck 2px out of the film at 375px | sit-pupil @375 | they wrap |
 | F16 | the walker was pressing a correctly-disabled Check on every classify and protractor question and calling the result "checked-right" | the walker's own Check reading its `data-locked-why` | the walker now presses the option card and types on the pad, the way she does |
 
+| F17 | the coverage matrix **silently dropped its whole surface half** whenever qa-surfaces had not run first (a control sandbox, or `--only`): the registry was read from a sidecar that gate writes, and the totals still printed GREEN | the control battery | the registry is parsed from `GJ.app.surfaces` in the source; the sidecar only reports drift |
+| F18 | qa-repo-prod's strongest question — is the committed server pair the same as a fresh build? — **had never once been asked**: it copied the app folder flat, the assembler could not find its two repo-root inputs, and the build failed every time | the control battery | the scratch keeps the repo's shape; the comparison now runs, and the committed pair does match |
+| F19 | the walker's model-attempt table was keyed by question id alone, and **eighteen of the thirty ids appear in both books** — so every algebra question was answered with an angles pupil's working, and quietly refused | the walkers recording what was on screen | keyed by book and question; `sit-confused`'s duplicate copy of the table deleted |
+| F20 | **the walkers wrote down the state they meant to reach**, not the state the app was in, so a drive that silently did nothing still filed a row saying she had stood there — and coverage counted every one | itself, once it read `data-state` | `record()` reads the DOM contract, records what it saw, and fails on a mismatch |
+| F21 | **five of the seven question kinds never said what state they were in.** Only classify and protractor stamped `data-state`; substitute, collect, expand, solve, form and the angles route went from `fresh` to marked in silence | the honest walkers | every kind now stamps mid-attempt, checked-right, amber, checked-wrong-1/2 and locked-restore |
+| F22 | **qa-language had never read a sentence with a comma in it.** The copied entry scanner split on every comma, so twenty of the app's own pupil sentences — the longest ones — never parsed | qa-language's own control | the scanner steps over quoted text; 162 readable sentences became 188 |
+| F23 | qa-needs-you's "a flag that never clears" check read `c.q` and `c.reason`, fields no chip has ever carried, so it could not have failed | the control battery | reads `c.qid` and `c.why` |
+| F24 | qa-earned-stays' "her work is still hers" check compared two values that were both empty when the row had been orphaned — which is exactly the fault | the control battery | it insists there was work there before it says the work came back |
+
 ## GATES THAT INVENTED A FAULT AND WERE NARROWED (L6)
 
 Each keeps the correct thing it condemned as its permanent pass-control.
@@ -164,3 +176,12 @@ Each keeps the correct thing it condemned as its permanent pass-control.
   start, so a walker launched before an edit keeps testing the old code. Kill
   the old run before believing a new one.
 - A backtick inside a template-literal comment silently ends the literal.
+- **A walk that names its own states is not a walk.** Four of the eight faults
+  above were invisible until `record()` started reading `data-state` instead of
+  being told it. A harness that reports what it intended is a harness that
+  agrees with itself.
+- **A control sandbox has to keep the repo's shape.** Two gates read files from
+  the repo root; a flat copy of the app folder made both of them fail for the
+  wrong reason, and one of them had been failing that way in every run.
+- The dock is rendered INSIDE the question root, so a query across "the
+  question and the dock" returns every control twice.
