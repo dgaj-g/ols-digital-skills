@@ -1,0 +1,1161 @@
+{
+ "walker": "sit-pupil",
+ "scope": "algebra",
+ "width": 375,
+ "tier": "preview",
+ "contentHash": "3104e2a0dbdf",
+ "when": "2026-09-05T17:39:05.986Z",
+ "states": [
+  {
+   "surface": "cover",
+   "state": "preview",
+   "width": 375,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "book-contents",
+   "state": "fresh",
+   "width": 375,
+   "section": 0,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "FAIL",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "end",
+   "width": 375,
+   "section": 0,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "FAIL",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q1",
+   "section": 0,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "FAIL",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q1",
+   "section": 0,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "FAIL",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q2",
+   "section": 0,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "FAIL",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q2",
+   "section": 0,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "FAIL",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q3",
+   "section": 0,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "FAIL",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q3",
+   "section": 0,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "FAIL",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q4",
+   "section": 0,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "FAIL",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q4",
+   "section": 0,
+   "book": "algebra",
+   "audits": {
+    "empty": "FAIL",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "book-contents",
+   "state": "mid-book",
+   "width": 375,
+   "section": 1,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "end",
+   "width": 375,
+   "section": 1,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q5",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q5",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q6",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q6",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q7",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q7",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q8",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q8",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "book-contents",
+   "state": "mid-book",
+   "width": 375,
+   "section": 2,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "end",
+   "width": 375,
+   "section": 2,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q9",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q9",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q10",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q10",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q11",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q11",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q12",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q12",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "book-contents",
+   "state": "mid-book",
+   "width": 375,
+   "section": 3,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "end",
+   "width": 375,
+   "section": 3,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q13",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q13",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q14",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q14",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q15",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q15",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q16",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q16",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "book-contents",
+   "state": "mid-book",
+   "width": 375,
+   "section": 4,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "end",
+   "width": 375,
+   "section": 4,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q17",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q17",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q18",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q18",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q19",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q19",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q20",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q20",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "book-contents",
+   "state": "mid-book",
+   "width": 375,
+   "section": 5,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "end",
+   "width": 375,
+   "section": 5,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q21",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q21",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q22",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q22",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q23",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q23",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "FAIL",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "width": 375,
+   "qid": "q24",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "FAIL",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "checked-right",
+   "width": 375,
+   "qid": "q24",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "FAIL",
+    "steps": "PASS",
+    "colour": "FAIL",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "book-contents",
+   "state": "mid-book",
+   "width": 375,
+   "section": 6,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "shelf",
+   "state": "in-progress",
+   "width": 375,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  }
+ ],
+ "consoleErrors": 0
+}

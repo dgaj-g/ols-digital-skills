@@ -862,7 +862,17 @@ body.dragging-active, body.dragging-active * {
   .shelf-row { justify-content: center; }
   /* on a phone, let diagrams reclaim the margin gutter + body padding so the
      figure (and its tap targets) are as large as the screen allows */
-  .jq-diagram, .prot-wrap { margin-left: calc(var(--sq) * -2.4); margin-right: calc(var(--sq) * -0.6); }
+  /* THE DIAGRAM RECLAIMS THE Q-NUMBER GUTTER ON A PHONE, AND STOPS THERE.
+     The angle figures are unreadable at 375px inside the question's text
+     column, so they take the margin column back — but the first cut took 2.4
+     squares when the gutter is worth less than that at this width, and the
+     figure ran 13px off the left edge of the page. Part of a diagram a pupil
+     cannot see is worse than a smaller one. */
+  .jq-diagram, .prot-wrap { margin-left: calc(var(--sq) * -1.6); margin-right: calc(var(--sq) * -0.6); }
+  /* inside a film the diagram has no margin column to reclaim: the film IS the
+     card, and a figure hanging off its edge is a figure with a piece missing */
+  .movie .jq-diagram, .movie .prot-wrap { margin-left: 0; margin-right: 0; }
+  .movie .jq-diagram svg, .movie .prot-wrap svg { max-width: 100% !important; }
   .jq-diagram svg, .prot-wrap svg { max-width: none !important; }
   .act-paper { padding-left: calc(var(--sq) * 0.6); padding-right: calc(var(--sq) * 0.6); }
 }

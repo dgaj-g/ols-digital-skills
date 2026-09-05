@@ -42,10 +42,14 @@
     if (why) el.setAttribute('data-locked-why', why); else el.removeAttribute('data-locked-why');
   }
 
+  /* A MESSAGE SLOT IS A LIVE REGION, and it says so by construction. It starts
+     empty on purpose — that is what a live region is for — and it is why the
+     empty-container audit has to be able to tell it from a hole in the page. */
   function el(tag, cls, html) {
     var d = document.createElement(tag);
     if (cls) d.className = cls;
     if (html != null) d.innerHTML = html;
+    if (cls && /\b(ui-msg|jq-feedback|sc-msg|amber-note)\b/.test(cls) && !html) d.setAttribute('role', 'status');
     return d;
   }
   function sv(tag, attrs) {
@@ -540,7 +544,13 @@
       p.push('<text data-pos="' + d + '" x="' + ox.toFixed(1) + '" y="' + oy.toFixed(1) + '" text-anchor="middle" class="prot-num' + endCls + '">' + d + '</text>');
       p.push('<text data-pos="' + d + '" x="' + ix.toFixed(1) + '" y="' + iy.toFixed(1) + '" text-anchor="middle" class="prot-num inner' + endCls + '">' + (180 - d) + '</text>');
     }
-    p.push('<g class="prot-centre"><circle cx="0" cy="0" r="3.5" fill="none" stroke="#C8102E" stroke-width="1.4"/><line x1="-10" y1="0" x2="10" y2="0" stroke="#C8102E" stroke-width="1"/><line x1="0" y1="-10" x2="0" y2="7" stroke="#C8102E" stroke-width="1"/></g>');
+    /* THE CENTRE MARK IS NOT A MARK. It was drawn in #C8102E, which on this
+       platform means WRONG and nothing else — so a pupil lining up her
+       protractor was looking at the colour her mistakes are drawn in. The
+       affordance is unchanged (a small crosshair at the centre); only the
+       colour moves, to the navy the rest of the instrument is drawn in. The
+       renderer's BEHAVIOUR is untouched and qa-v3-shape proves it. */
+    p.push('<g class="prot-centre"><circle cx="0" cy="0" r="3.5" fill="none" stroke="#1A3A6B" stroke-width="1.4"/><line x1="-10" y1="0" x2="10" y2="0" stroke="#1A3A6B" stroke-width="1"/><line x1="0" y1="-10" x2="0" y2="7" stroke="#1A3A6B" stroke-width="1"/></g>');
     /* a turning knob at BOTH baseline ends, so one is always reachable even
        when an arm or the pupil's hand covers the other */
     function knob(hx) {
