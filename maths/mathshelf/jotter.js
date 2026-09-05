@@ -971,7 +971,13 @@
       ui.appendChild(instr);
       var exprBox = el('div', 'subst-expr');
       exprBox.style.cssText = 'font-family:Georgia,serif;font-size:1.55rem;color:#14213A;margin:6px 0 12px;line-height:2';
-      exprBox.setAttribute('data-tray', exprTrayId);
+      /* NOT A TRAY. The expression IS the question — `3a - d` with its letters
+         waiting to be filled in. A tray is a group of OPTIONS, served shuffled,
+         where choosing wrong is possible; there is nothing to shuffle here and
+         nothing to give away. Calling it one made the consequence law compare a
+         tappable letter against the multiplication sign beside it and report a
+         colour hint. */
+      exprBox.setAttribute('data-tray-row', exprTrayId);
       ui.appendChild(exprBox);
       var givenRow = el('div', 'subst-givens');
       givenRow.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px';

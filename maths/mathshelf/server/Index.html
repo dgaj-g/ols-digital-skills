@@ -1113,7 +1113,17 @@ body.dragging-active, body.dragging-active * {
   .shelf-row { justify-content: center; }
   /* on a phone, let diagrams reclaim the margin gutter + body padding so the
      figure (and its tap targets) are as large as the screen allows */
-  .jq-diagram, .prot-wrap { margin-left: calc(var(--sq) * -2.4); margin-right: calc(var(--sq) * -0.6); }
+  /* THE DIAGRAM RECLAIMS THE Q-NUMBER GUTTER ON A PHONE, AND STOPS THERE.
+     The angle figures are unreadable at 375px inside the question's text
+     column, so they take the margin column back \2014  but the first cut took 2.4
+     squares when the gutter is worth less than that at this width, and the
+     figure ran 13px off the left edge of the page. Part of a diagram a pupil
+     cannot see is worse than a smaller one. */
+  .jq-diagram, .prot-wrap { margin-left: calc(var(--sq) * -1.6); margin-right: calc(var(--sq) * -0.6); }
+  /* inside a film the diagram has no margin column to reclaim: the film IS the
+     card, and a figure hanging off its edge is a figure with a piece missing */
+  .movie .jq-diagram, .movie .prot-wrap { margin-left: 0; margin-right: 0; }
+  .movie .jq-diagram svg, .movie .prot-wrap svg { max-width: 100% !important; }
   .jq-diagram svg, .prot-wrap svg { max-width: none !important; }
   .act-paper { padding-left: calc(var(--sq) * 0.6); padding-right: calc(var(--sq) * 0.6); }
 }
@@ -1320,6 +1330,15 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .jotter-q.worth-look::after { content: 'worth a look'; position: absolute; top: 0; right: 0;
   font-family: var(--f-stationery); font-size: 10px; color: #8A6A12; background: #FBF4E2;
   border: 1px solid var(--foil-lo); border-top: none; border-right: none; border-bottom-left-radius: 9px; padding: 3px 9px; }
+
+
+/* the step dots belong INSIDE the film, and at 375px they were two pixels past
+   its edge \2014  small, and exactly the kind of thing nobody sees until a gate
+   measures it */
+@media (max-width: 520px) {
+  .movie-dots { flex-wrap: wrap; max-width: 100%; }
+  .movie-controls { flex-wrap: wrap; row-gap: 6px; }
+}
 
 /* ===== shell.css (the v4 identity layer, LAST so it wins) ===== */
 /* \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 
@@ -1538,12 +1557,19 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
 }
 .contents-strip button[aria-current="true"] { color: #fff; border-color: var(--gold); }
 
-/* \2500 \2500  WORK SURFACES stay LIGHT, whatever the shell does \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500  */
+/* \2500 \2500  WORK SURFACES stay LIGHT, whatever the shell does \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 
+   [data-work] declares "anything drawn here must end up on a light ground";
+   it does NOT paint one. The colour law walks up to the nearest painted
+   ancestor, so a column inside the paper inherits the paper \2014  and does not
+   become a card with an invisible edge that a diagram can be condemned for
+   crossing. The surfaces that ARE cards paint themselves, below. */
 [data-work] {
-  background: var(--paper);
   color: var(--ink);
 }
-.act-paper, .jq-body, .movie, .paper, .panel {
+/* the question body is a COLUMN inside the paper, not a card of its own: it
+   inherits the paper's ground rather than painting a second one, so a phone
+   diagram reclaiming the margin gutter is not crossing an edge that exists */
+.act-paper, .movie, .paper, .panel {
   background: var(--paper);
   color: var(--ink);
 }
@@ -1923,6 +1949,8 @@ window.OLS_TRANSPORT = {
       opening: 'Opening {book}\u2026',
       nudgeBanner: 'Your teacher suggested watching this method.',
       selfEvalSaved: 'Saved. Your teacher sees this on her class list.',
+      selfEvalHeading: 'Exercise finished \u2014 how did that go?',
+      selfEvalOptional: 'optional',
       saveWaiting: 'Still saving your work\u2026',
       saveRetry: 'Try again',
       saveHeldLocal: 'Your work is safe on this device and will be sent as soon as the page can reach the server.',
@@ -1950,7 +1978,7 @@ window.OLS_TRANSPORT = {
 
       /* protractor questions (measure the angle) */
       protractorCheckBtn: 'Mark my measurement',
-      protractorInstructions: 'Put the small red centre mark on the corner. Turn the protractor with a rotate knob at either end, until 0 sits along one arm, then read where the other arm crosses.',
+      protractorInstructions: 'Put the small crosshair at the centre of the protractor on the corner. Turn the protractor with a rotate knob at either end, until 0 sits along one arm, then read where the other arm crosses.',
       protractorReadTrueWrongScale: 'You read the other scale \u2014 use the one that starts at 0 on the arm you lined up. The true size is {value}\u00b0.',
       protractorReadTrueGeneric: 'Not quite \u2014 line the centre on the corner and 0 along an arm, then read again. The true size is {value}\u00b0.',
       protractorScaleRetry: 'Close \u2014 but check you are reading the scale that starts at 0 on your lined-up arm. One more go.',
@@ -2078,8 +2106,6 @@ window.OLS_TRANSPORT = {
       setUpHint: 'Tick the books this class should see.',
 
       /* the markbook's own words */
-      selfEvalHeading: 'Exercise finished \u2014 how did that go?',
-      selfEvalOptional: 'optional',
       overConfident: 'Over-confident \u2014 confidence high, working weaker',
       quietlyExcelling: 'Quietly excelling \u2014 doing well, low confidence',
       cellWrongAtStep: 'Wrong at step {step}',
@@ -5179,10 +5205,14 @@ window.OLS_TRANSPORT = {
     if (why) el.setAttribute('data-locked-why', why); else el.removeAttribute('data-locked-why');
   }
 
+  /* A MESSAGE SLOT IS A LIVE REGION, and it says so by construction. It starts
+     empty on purpose \u2014 that is what a live region is for \u2014 and it is why the
+     empty-container audit has to be able to tell it from a hole in the page. */
   function el(tag, cls, html) {
     var d = document.createElement(tag);
     if (cls) d.className = cls;
     if (html != null) d.innerHTML = html;
+    if (cls && /\b(ui-msg|jq-feedback|sc-msg|amber-note)\b/.test(cls) && !html) d.setAttribute('role', 'status');
     return d;
   }
   function sv(tag, attrs) {
@@ -5677,7 +5707,13 @@ window.OLS_TRANSPORT = {
       p.push('<text data-pos="' + d + '" x="' + ox.toFixed(1) + '" y="' + oy.toFixed(1) + '" text-anchor="middle" class="prot-num' + endCls + '">' + d + '</text>');
       p.push('<text data-pos="' + d + '" x="' + ix.toFixed(1) + '" y="' + iy.toFixed(1) + '" text-anchor="middle" class="prot-num inner' + endCls + '">' + (180 - d) + '</text>');
     }
-    p.push('<g class="prot-centre"><circle cx="0" cy="0" r="3.5" fill="none" stroke="#C8102E" stroke-width="1.4"/><line x1="-10" y1="0" x2="10" y2="0" stroke="#C8102E" stroke-width="1"/><line x1="0" y1="-10" x2="0" y2="7" stroke="#C8102E" stroke-width="1"/></g>');
+    /* THE CENTRE MARK IS NOT A MARK. It was drawn in #C8102E, which on this
+       platform means WRONG and nothing else \u2014 so a pupil lining up her
+       protractor was looking at the colour her mistakes are drawn in. The
+       affordance is unchanged (a small crosshair at the centre); only the
+       colour moves, to the navy the rest of the instrument is drawn in. The
+       renderer's BEHAVIOUR is untouched and qa-v3-shape proves it. */
+    p.push('<g class="prot-centre"><circle cx="0" cy="0" r="3.5" fill="none" stroke="#1A3A6B" stroke-width="1.4"/><line x1="-10" y1="0" x2="10" y2="0" stroke="#1A3A6B" stroke-width="1"/><line x1="0" y1="-10" x2="0" y2="7" stroke="#1A3A6B" stroke-width="1"/></g>');
     /* a turning knob at BOTH baseline ends, so one is always reachable even
        when an arm or the pupil's hand covers the other */
     function knob(hx) {
@@ -6098,7 +6134,13 @@ window.OLS_TRANSPORT = {
       ui.appendChild(instr);
       var exprBox = el('div', 'subst-expr');
       exprBox.style.cssText = 'font-family:Georgia,serif;font-size:1.55rem;color:#14213A;margin:6px 0 12px;line-height:2';
-      exprBox.setAttribute('data-tray', exprTrayId);
+      /* NOT A TRAY. The expression IS the question \u2014 `3a - d` with its letters
+         waiting to be filled in. A tray is a group of OPTIONS, served shuffled,
+         where choosing wrong is possible; there is nothing to shuffle here and
+         nothing to give away. Calling it one made the consequence law compare a
+         tappable letter against the multiplication sign beside it and report a
+         colour hint. */
+      exprBox.setAttribute('data-tray-row', exprTrayId);
       ui.appendChild(exprBox);
       var givenRow = el('div', 'subst-givens');
       givenRow.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px';

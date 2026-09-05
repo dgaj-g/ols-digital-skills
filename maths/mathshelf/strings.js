@@ -59,6 +59,8 @@
       opening: 'Opening {book}…',
       nudgeBanner: 'Your teacher suggested watching this method.',
       selfEvalSaved: 'Saved. Your teacher sees this on her class list.',
+      selfEvalHeading: 'Exercise finished — how did that go?',
+      selfEvalOptional: 'optional',
       saveWaiting: 'Still saving your work…',
       saveRetry: 'Try again',
       saveHeldLocal: 'Your work is safe on this device and will be sent as soon as the page can reach the server.',
@@ -214,8 +216,6 @@
       setUpHint: 'Tick the books this class should see.',
 
       /* the markbook's own words */
-      selfEvalHeading: 'Exercise finished — how did that go?',
-      selfEvalOptional: 'optional',
       overConfident: 'Over-confident — confidence high, working weaker',
       quietlyExcelling: 'Quietly excelling — doing well, low confidence',
       cellWrongAtStep: 'Wrong at step {step}',

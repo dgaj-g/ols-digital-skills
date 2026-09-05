@@ -42,11 +42,16 @@ if (!master || !audit) {
 }
 
 /* the numbered rulings */
+/* A RULING THAT WRAPS IS STILL A RULING. The first cut read the bold title only
+   when it fitted on one line, and quietly did not hold the six rulings whose
+   titles wrap — in the one gate whose entire job is to prove nothing is
+   unheld. The number and the bold title are matched across the whole file. */
 const rules = [];
-master.split('\n').forEach(l => {
-  const m = /^(\d+)\.\s+\*\*(.+?)\*\*/.exec(l.trim());
-  if (m) rules.push({ n: Number(m[1]), text: m[2] });
-});
+{
+  const re = /(?:^|\n)(\d+)\.\s+\*\*([\s\S]*?)\*\*/g;
+  let m;
+  while ((m = re.exec(master))) rules.push({ n: Number(m[1]), text: m[2].replace(/\s+/g, ' ').trim() });
+}
 g.check(rules.length > 0, 'MATHS_FEEDBACK_MASTER.md', 'audit', 'no numbered rulings found — the file exists but nothing in it is a rule');
 
 /* the status sections */
