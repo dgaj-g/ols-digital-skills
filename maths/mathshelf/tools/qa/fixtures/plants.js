@@ -537,9 +537,15 @@ const FIXTURE_RENDERERS = `/* fixture-renderers.js — planted by a control, nev
     /* the answer, on the page, before she has done anything */
     d.innerHTML = '<span data-truth>42</span>' +
       '<div data-tray="fx"><span data-tray-item style="background:#1F7A33">right</span><span data-tray-item>wrong</span></div>' +
+      /* a free-text box where a maths answer is typed */
+      '<input type="text" class="fx-free" value="">' +
+      /* placed work a SINGLE press throws away */
+      '<div data-tray="fx2" class="fx-board"><span class="fx-placed" data-placed data-from="fx2">3</span></div>' +
       '<p class="ui-msg"></p>' +
       '<button disabled>Check</button>';
     document.body.appendChild(d);
+    var placed = d.querySelector('.fx-placed');
+    if (placed) placed.addEventListener('click', function () { placed.remove(); });
     console.error('fixture-renderers planted a console error');
   });
 })();

@@ -78,7 +78,12 @@ g.exempt(['the attempt model is proved on one question per kind, not on all 48: 
         g.check(!st.truth, book + ' > ' + qid, 'attempts',
           'the true answer is on the page after ONE wrong attempt — she has one more go, and it is worth nothing if the answer is already there');
 
-        /* wrong twice: locked, and only now the truth */
+        /* wrong twice: locked, and only now the truth.
+           The renderer keeps attempt one on the page and rebuilds the board for
+           attempt two on a short delay, so driving the instant the first
+           verdict lands drives a board that is about to be replaced. */
+        await new Promise(r => setTimeout(r, 900));
+        await W.settle(page);
         await S.answer(page, qid, true);
         st = await state(page, qid);
         g.check(/checked-wrong-2|locked/.test(st.state), book + ' > ' + qid, 'attempts',
