@@ -106,7 +106,9 @@ function doGet(e) {
      name would put MY name on every pupil's cover. */
   if (who && normEmail_(effectiveEmail_()) === normEmail_(who)) nm = autoName_();
   t.name = String(nm || '');
-  t.firstVisit = nm ? 'no' : 'unknown';
+  /* the cover shows one quiet line about Google's permission screen the first
+     time somebody arrives; after that it never mentions it again */
+  t.firstVisit = (who && !getName_(who)) ? 'yes' : 'no';
   return t.evaluate()
     .setTitle('OLS \u2014 MathShelf')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
@@ -422,11 +424,11 @@ function apiSave(req) {
 
     /* THE TEACHER'S VERDICT IS NOT THE PUPIL'S TO OVERWRITE.
        An inked mark lives inside the state, and a pupil's client saves the
-       WHOLE state — so a teacher who inked a question while the pupil still had
+       WHOLE state, so a teacher who inked a question while the pupil still had
        the book open lost her judgement the moment the pupil typed one more
        line. Nothing on any screen would have said so; the mark simply reverted,
        which is worse than never saving, because she has no reason to look
-       again. So every `ovr` already stored is merged forward here, on the one
+       again. So every 'ovr' already stored is merged forward here, on the one
        write path, where no caller can forget it (DFM 145 / rule 13). */
     if (found) {
       var prev = parseJson_(found.vals[5]);

@@ -645,6 +645,18 @@
     hi.textContent = T.coverWelcome || 'Welcome';
     msg.textContent = T.coverGetting || '';
 
+    /* HER NAME IS ALREADY HERE. The front door read it from her own Google
+       token before this page was served and put it in BOOT, so the cover shows
+       it on the first paint rather than after a round trip. Waiting for hello
+       would put a blank where her name goes for a second or so on the very
+       visit this whole architecture exists for. hello confirms it a moment
+       later, and a name she has saved herself wins. */
+    if (BOOT.name) {
+      me.name = String(BOOT.name);
+      nameOut.textContent = me.name;
+      setState(root, 'cover', BOOT.firstVisit === 'yes' ? 'first-visit' : 'returning');
+    }
+
     call('whoami').then(function () { return call('hello', {}); }).then(function (r) {
       if (!r || !r.ok) {
         setState(root, 'cover', r && r.error === 'unknown-class' ? 'wrong-class' : 'returning');

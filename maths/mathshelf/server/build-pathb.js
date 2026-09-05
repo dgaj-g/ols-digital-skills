@@ -162,6 +162,81 @@ function resolveCssUrls(css, sheetAbsUrl) {
   });
 }
 
+/* ---- THE FACES TRAVEL WITH THE PAGE -------------------------------------
+   SHIPPING IS NOT DELIVERING (DFM 239). The deployed page used to ask
+   github.io for its woff2 files -- and GitHub Pages serves the MAIN branch,
+   which has never carried this folder, so every one of those requests has been
+   answering 404 and the live app has been rendering in whatever face the
+   machine happened to have. qa-build's live-asset probe is what found it.
+   Nobody would have reported it: a page in the wrong font still works.
+
+   A font is not an optional asset: the layout is measured for these
+   letterforms and the maths glyphs (U+2212, U+00D7, U+00B0, U+00B2) are only
+   guaranteed in these files. So they are carried IN the page as data: URIs.
+   It costs about 220KB on a 540KB page and removes an entire class of
+   "it worked in the preview" from the deploy for good.
+   The films and the crest stay as URLs: they are large, they are optional, and
+   the crest is on a path Pages really does serve. */
+function inlineFonts(css) {
+  /* ONE BLOCK PER FILE, NOT ONE PER WEIGHT. Every family here is a single
+     VARIABLE font: the API serves the same file for 400, 500, 600 and 700 and
+     pins the weight per @font-face. Inlining naively wrote the same 46KB of
+     base64 three times and doubled the page. The blocks that share a file are
+     merged into one with a weight RANGE, which is what a variable font wants
+     anyway, and the bytes appear exactly once. */
+  const missing = [];
+  const blocks = css.match(/@font-face\s*\{[^}]*\}/g) || [];
+  const groups = new Map();
+  blocks.forEach(b => {
+    const file = (/url\(\s*['"]?([^'")]+)['"]?\s*\)/.exec(b) || [])[1];
+    const family = (/font-family:\s*['"]?([^;'"]+)['"]?/.exec(b) || [])[1];
+    const style = (/font-style:\s*([^;]+)/.exec(b) || [])[1] || 'normal';
+    const weight = Number((/font-weight:\s*(\d+)/.exec(b) || [])[1] || 400);
+    const range = (/unicode-range:\s*([^;}]+)/.exec(b) || [])[1];
+    if (!file || /^(data:|https?:)/i.test(file)) return;
+    const key = family + '|' + style.trim() + '|' + file;
+    const g0 = groups.get(key) || { file, family, style: style.trim(), range, min: weight, max: weight, blocks: [] };
+    g0.min = Math.min(g0.min, weight); g0.max = Math.max(g0.max, weight);
+    g0.blocks.push(b);
+    groups.set(key, g0);
+  });
+  let inlined = 0;
+  let out = css;
+  groups.forEach(g0 => {
+    const abs = path.join(ACT, 'assets', 'fonts', g0.file.split('?')[0]);
+    if (!fs.existsSync(abs)) { missing.push(g0.file); return; }
+    const b64 = fs.readFileSync(abs).toString('base64');
+    const merged = '@font-face {' + NL +
+      '  font-family: ' + "'" + g0.family + "';" + NL +
+      '  font-style: ' + g0.style + ';' + NL +
+      '  font-weight: ' + (g0.min === g0.max ? g0.min : g0.min + ' ' + g0.max) + ';' + NL +
+      '  font-display: swap;' + NL +
+      '  src: url(data:font/woff2;base64,' + b64 + ') format(' + "'woff2'" + ');' + NL +
+      (g0.range ? '  unicode-range:' + g0.range + ';' + NL : '') +
+      '}';
+    /* the first block of the group becomes the merged one; the rest go */
+    out = out.replace(g0.blocks[0], merged);
+    g0.blocks.slice(1).forEach(b => { out = out.replace(b, '/* merged into the block above (same variable file) */'); });
+    inlined++;
+  });
+  if (missing.length) {
+    console.error('ERROR: fonts.css asks for ' + missing.length + ' file(s) that are not on disk: ' + missing.join(', '));
+    process.exit(1);
+  }
+  if (!inlined) {
+    console.error('ERROR: no font file was inlined - fonts.css has no local url() left, so the deployed page would have no faces at all');
+    process.exit(1);
+  }
+  /* and nothing local may be left asking the network for a face */
+  const stragglers = (out.match(/url\(\s*['"]?(?!data:|https?:)[^'")]+\)/g) || []);
+  if (stragglers.length) {
+    console.error('ERROR: ' + stragglers.length + ' font url() still points at a file rather than carrying it: ' + stragglers.slice(0, 3).join(', '));
+    process.exit(1);
+  }
+  console.log('Inlined ' + inlined + ' font file(s) into the page (one block per file, weight ranges merged)');
+  return out;
+}
+
 /* ---- 1. Code.gs (template is already ASCII; guard + verbatim copy) ---- */
 guardAscii('Code.gs', codeTemplate);
 
@@ -182,8 +257,8 @@ body = body.replace(/(src|href|poster)=(["'])assets[/]/g, '$1=$2' + GHACT + '/as
 const cssOut =
   '/* ===== shared (repo root) style.css ===== */' + NL +
   asciiCss(resolveCssUrls(sharedCss, GH + '/style.css')) + NL +
-  '/* ===== assets/fonts/fonts.css ===== */' + NL +
-  asciiCss(resolveCssUrls(fontsCss, GHACT + '/assets/fonts/fonts.css')) + NL +
+  '/* ===== assets/fonts/fonts.css (faces INLINED, see below) ===== */' + NL +
+  asciiCss(inlineFonts(fontsCss)) + NL +
   '/* ===== activity style.css ===== */' + NL +
   asciiCss(resolveCssUrls(actCss, GHACT + '/style.css')) + NL +
   '/* ===== shell.css (the v4 identity layer, LAST so it wins) ===== */' + NL +
@@ -254,6 +329,8 @@ const out = `<!doctype html>
 <base target="_top">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="data:,">
+<meta name="description" content="Maths books for Our Lady's Grammar School.">
 <title>OLS &mdash; MathShelf</title>
 <style>
 ${cssOut}
