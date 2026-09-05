@@ -26,7 +26,14 @@ function pup() {
   throw new Error('puppeteer not found (set NODE_PATH="$(npm root -g)")\n  ' + tries.join('\n  '));
 }
 
-const FLAGS = ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage', '--font-render-hinting=none'];
+/* THE LAST THREE ARE WHAT MAKES THE FILM RUN. A page that Chrome thinks is in
+   the background gets no requestAnimationFrame at all, and the film's count-up
+   animation resolves on rAF - so the player's "busy" latch never cleared, the
+   Next arrow did nothing, and every walk of every film stopped at step three
+   while reporting the walk as fine. */
+const FLAGS = ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage', '--font-render-hinting=none',
+  '--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows',
+  '--disable-renderer-backgrounding'];
 
 async function launch(opts) {
   return await pup().launch({ headless: 'new', args: FLAGS, ...(opts || {}) });
@@ -54,6 +61,9 @@ async function newPage(browser, o) {
     page.__errors.push(m.text());
   });
   page.on('pageerror', (e) => page.__errors.push('pageerror: ' + (e && e.message ? e.message : String(e))));
+  /* and the page is brought to the front: in headless, a tab that is not the
+     active one is not composited, and an uncomposited tab gets no rAF either */
+  try { await page.bringToFront(); } catch (e) {}
   page.on('requestfailed', (r) => {
     const u = r.url();
     /* a failed request for something the page needs is a console error in every
