@@ -179,9 +179,13 @@ async function walkBook(page, book, width, sidecar, transcript) {
      whole run to something that is not a fault in the app at all. A walk that
      cannot finish proves nothing, so the browser is replaced between widths and
      a page that dies is REPORTED and the walk carries on. */
+  /* A FRESH BROWSER PER BOOK, not per width. Sixty-odd states of audits is
+     several hundred evaluate calls through one renderer, and the SECOND book at
+     a given width was where it kept dying. A walk that cannot finish proves
+     nothing; a browser costs a second and a half. */
   for (const width of WIDTHS) {
-    const browser = await B.launch();
     for (const book of books) {
+      const browser = await B.launch();
       const page = await B.newPage(browser, { width });
       await page.evaluateOnNewDocument((table) => {
         /* the answer channel, primed before the app boots */
@@ -223,8 +227,8 @@ async function walkBook(page, book, width, sidecar, transcript) {
       }
       g.note(book + ' @' + width + ': stood on ' + sidecar.states.length + ' states, ' + page.__errors.length + ' console errors');
       await page.close();
+      await browser.close();
     }
-    await browser.close();
   }
 
   /* THE REQUIRED SURFACE SET, derived from the app's own registry (L3): a walk
