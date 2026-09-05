@@ -26,6 +26,9 @@ const B = require('./lib/browser.js');
 const W = require('./lib/walk-moves.js');
 const AUD = require('./lib/audits.js');
 const S = require('./lib/stage.js');
+
+/* every state this walk set out to stand on, settled when the walk is done */
+const AIMED = [];
 const { contentHash } = require('./lib/hash.js');
 
 /* ONE SENTENCE PER FINDING, and it NAMES THE THING. The first cut printed the
@@ -176,6 +179,18 @@ g.exempt(AUD.EXEMPTIONS.concat([
       await browser.close();
     }
   }
+
+  /* EVERY STATE THIS WALK AIMED AT, settled once. A drive that quietly did
+     nothing shows up here and nowhere else: the walk meant to stand on
+     question:checked-wrong-2 on every question and never once did. */
+  const stoodOn = new Set();
+  fs.readdirSync(A.out('walk')).filter(f => /^sit-confused/.test(f)).forEach(f => {
+    JSON.parse(A.read(A.out('walk/' + f))).states.forEach(st => stoodOn.add(st.surface + ':' + st.state));
+  });
+  [...new Set(AIMED.map(a => a.surface + ':' + a.state))].forEach(key => {
+    g.check(stoodOn.has(key), key, 'coverage',
+      'the walk aimed at ' + key + ' and never once stood on it — the drive is not doing what it says');
+  });
   g.done();
 })().catch(e => {
   console.log('  FAIL  sit-confused x crash: ' + (e && e.stack ? e.stack : e));
@@ -189,8 +204,12 @@ async function record(page, sidecar, surface, state, extra) {
      a row saying she had stood there - and the coverage matrix counted it. */
   const seen = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, [surface, (extra && extra.qid) || null]);
   const real = (seen && seen.ok && seen.state) || null;
-  g.check(real === state, surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + (extra && extra.width), 'walk',
-    'the walk expected "' + state + '" and the app was in "' + (real || '(no such surface on screen)') + '" - a state nobody stood on is not covered');
+  /* not there at all is a failure now; a different state is recorded as what
+     it is and settled at the end of the walk (see AIMED) */
+  g.check(!!real, surface + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + (extra && extra.width), 'walk',
+    'the walk went to record "' + state + '" and no ' + surface + ' was on screen at all');
+  if (real && real !== state) g.note('expected ' + surface + ':' + state + ', stood on ' + surface + ':' + real + (extra && extra.qid ? ' (' + extra.qid + ')' : ''));
+  AIMED.push({ surface, state, got: real });
   const a = await AUD.run(page, { clickSafety: true });
   sidecar.states.push(Object.assign({ surface, state: real || state, expected: state, stood: real === state }, extra || {}, { audits: a.verdicts }));
   Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {

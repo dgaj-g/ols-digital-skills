@@ -30,6 +30,10 @@ const { Gate, matrix } = require('./lib/report.js');
 const B = require('./lib/browser.js');
 const W = require('./lib/walk-moves.js');
 const AUD = require('./lib/audits.js');
+const S = require('./lib/stage.js');
+
+/* every state any walk in this run set out to stand on, settled at the end */
+const AIMED = [];
 const { contentHash } = require('./lib/hash.js');
 
 /* ONE SENTENCE PER FINDING, and it NAMES THE THING. The first cut printed the
@@ -83,8 +87,16 @@ async function walkBook(page, book, width, sidecar, transcript) {
        never stood on - and coverage counted every one of them. */
     const seen = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, [surface, (extra && extra.qid) || null]);
     const real = (seen && seen.ok && seen.state) || null;
-    g.check(real === state, surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + width, 'walk',
-      'the walk expected "' + state + '" and the app was in "' + (real || '(no such surface on screen)') + '" - a state nobody stood on is not covered');
+    /* A SCREEN THAT IS NOT THERE IS A FAILURE HERE AND NOW; a screen that is
+       there in a DIFFERENT state is recorded as what it is and settled at the
+       end of the walk, where "this state was never stood on" is the verdict
+       that means something. Failing every mismatch on the spot would report
+       one honest landing (a film that plays instantly under reduced motion)
+       as dozens of faults. */
+    g.check(!!real, surface + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + width, 'walk',
+      'the walk went to record "' + state + '" and no ' + surface + ' was on screen at all');
+    if (real && real !== state) g.note('expected ' + surface + ':' + state + ', stood on ' + surface + ':' + real + (extra && extra.qid ? ' (' + extra.qid + ')' : ''));
+    AIMED.push({ surface, state, got: real });
     const a = await AUD.run(page, { clickSafety: surface === 'question' });
     const row = Object.assign({ surface, state: real || state, expected: state, stood: real === state, width }, extra || {}, { audits: a.verdicts });
     sidecar.states.push(row);
@@ -240,7 +252,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
 /* ------------------------------------------------------------------ main */
 (async () => {
   const books = A.books().filter(b => !ONLY_BOOK || b === ONLY_BOOK);
-  const attempts = buildAttempts();
+  const attempts = S.attempts();   /* ONE HOME: dev/model-attempts.js, through lib/stage.js */
   A.ensureOut('walk');
   A.ensureOut('transcript');
 
@@ -260,7 +272,12 @@ async function walkBook(page, book, width, sidecar, transcript) {
       const page = await B.newPage(browser, { width });
       await page.evaluateOnNewDocument((table) => {
         /* the answer channel, primed before the app boots */
-        window.__modelAttempt = (qid, wrong) => (table[(wrong ? 'wrong:' : 'right:') + qid] || null);
+        window.__modelAttempt = (qid, wrong) => {
+          const r = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+            .filter((x) => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === qid)[0];
+          const bk = r ? (r.getAttribute('data-book') || '') : '';
+          return table[(wrong ? 'wrong:' : 'right:') + bk + ':' + qid] || null;
+        };
       }, attempts);
       await page.goto(BASE + '?class=demo&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
       await W.settle(page);
@@ -317,24 +334,25 @@ async function walkBook(page, book, width, sidecar, transcript) {
       'the pupil walk never reached this surface — a walk that stands on fewer screens than the app declares is short, and short coverage is a failure');
   });
 
+  /* AND EVERY STATE THE WALK AIMED AT. This is where a drive that quietly did
+     nothing is caught: the walk meant to stand on question:checked-right and
+     the app was in question:fresh every single time. */
+  const stoodOn = new Set();
+  fs.readdirSync(A.out('walk')).filter(f => /^sit-pupil/.test(f)).forEach(f => {
+    JSON.parse(A.read(A.out('walk/' + f))).states.forEach(s => stoodOn.add(s.surface + ':' + s.state));
+  });
+  [...new Set(AIMED.map(a => a.surface + ':' + a.state))].forEach(key => {
+    g.check(stoodOn.has(key), key, 'coverage',
+      'the walk aimed at ' + key + ' every time and never once stood on it — the drive is not doing what it says');
+  });
+
   g.done();
 })().catch(e => {
   console.log('  FAIL  sit-pupil x crash: ' + (e && e.stack ? e.stack : e));
   process.exit(1);
 });
 
-/* every question's right and wrong attempt, computed once under node */
-function buildAttempts() {
-  const M = require(A.app('mathcore.js'));
-  const MA = require(A.app('dev/model-attempts.js'));
-  const out = {};
-  A.grid().forEach(r => {
-    try {
-      const right = MA.correct(M, r.book, r.question);
-      const wrong = MA.corrupt(M, r.book, r.question);
-      if (right) out['right:' + r.qid] = right;
-      if (wrong) out['wrong:' + r.qid] = wrong;
-    } catch (e) { /* the lints own authoring faults; a walker does not */ }
-  });
-  return out;
-}
+/* buildAttempts() lived here. It keyed by question id alone, and eighteen of
+   the thirty ids appear in BOTH books, so it answered algebra questions with an
+   angles pupil's working. There is one home for a model attempt and
+   lib/stage.js reads it. */
