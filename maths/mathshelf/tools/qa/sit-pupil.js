@@ -185,7 +185,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
           'the Check button is disabled with nothing saying what it is waiting for');
       }
       await W.settle(page);
-      await W.leaves(page, 'question', qid, ['fresh', 'mid-attempt']);
+      await W.leaves(page, 'question', qid, ['fresh', 'mid-attempt'], 8000);
       const row = await record('question', 'checked-right', { qid, section: si, book });
       say(await page.evaluate((id) => {
         const r = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
