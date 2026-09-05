@@ -9,11 +9,15 @@
  * both callers import them.
  *
  * The attempt shapes are the client's own stored shapes, so what the walker
- * primes is exactly what a pupil's own working would have left behind:
+ * plays on the app's own controls leaves behind exactly what a pupil's own
+ * working would have:
  *   reasoned   { steps: [{ ang, val, rsn }] }
  *   classify   { pick: '<option>' }
  *   protractor { read: <degrees> }
  *   algebra    { L: [{ op, t }], fin: '<last line>' }
+ *   solve/form  the same, plus `moves`: the chips she presses and the number
+ *               she keys for each - a rail question cannot be answered by
+ *               knowing the last line alone
  *
  * `corrupt(book, q)` returns the SAME shape carrying that kind's own classic
  * slip, so a walk of the wrong path is a walk of a real misconception rather
