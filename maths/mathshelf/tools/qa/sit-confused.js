@@ -160,6 +160,14 @@ g.exempt(AUD.EXEMPTIONS.concat([
           /* after two, the help is there and leads with her own slip */
           const helpAfterTwo = await page.evaluate((s, id) => eval(s)(id), W.HELP_STRIP, qid);
           if (helpAfterTwo.present) {
+            /* the help being OFFERED is part of checked-wrong-2; the state is
+               the help being OPEN, so the walk opens it the way she would */
+            await page.evaluate((id) => {
+              const w = document.querySelector('.want-how[data-help-for="' + id + '"]');
+              const b = w && w.querySelector('button');
+              if (b) b.click();
+            }, qid);
+            await W.settle(page);
             await record(page, sidecar, 'question', 'help-strip', { qid, book, section: si, width });
           }
 

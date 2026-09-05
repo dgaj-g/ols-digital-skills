@@ -1146,11 +1146,12 @@
       }
       return null;
     }
-    function reveal() {
-      wrap.hidden = false;
-      var r = qRoot();
-      if (r) window.GJ.setState(r, 'question', 'help-strip');
-    }
+    /* OFFERING HELP IS NOT A STATE; HAVING IT OPEN IS. After two wrong attempts
+       the question IS "checked-wrong-2" and the strip appearing is part of that
+       screen, not a different one - stamping here overwrote the verdict state
+       the moment it was written. The state belongs to the strip being OPEN,
+       which is a genuinely different thing to read. */
+    function reveal() { wrap.hidden = false; }
     function open(viaNudge) {
       reveal();
       if (!mounted) {
@@ -1174,6 +1175,8 @@
         mounted = true; recordHelp(q.id);
       }
       host.hidden = false; wrap.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
+      var r = qRoot();
+      if (r) window.GJ.setState(r, 'question', 'help-strip');
     }
     function close() { host.hidden = true; wrap.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
     btn.addEventListener('click', function () { if (host.hidden) open(); else close(); });
