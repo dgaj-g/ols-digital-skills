@@ -3,35 +3,39 @@
   cell family   closed  missing  debt
   ------------  ------  -------  ----
   click-safety  21      204
-  colour        73      152
-  consequence   73      152
+  colour        72      153
+  consequence   72      153
   deploy        3
-  empty         73      152
-  geometry      73      152
+  empty         72      153
+  geometry      72      153
   human-pace    28
   movie         12      24
-  nested        73      152
+  nested        72      153
   readability   0       225
   strings       0       225
   truth         48
   two-homes     13
   verdict       0       1
-  walk-right    142     2
+  walk-right    138     6
   walk-wrong    58      86
 
-  CELLS NOTHING CLOSES (1527)
+  CELLS NOTHING CLOSES (1536)
   family      cell                                                     why
   ----------  ----------------------------------------------  -------  ---
   walk-wrong  algebra > s1 > q1 (subst) @375 × walk-wrong     MISSING
+  walk-right  algebra > s1 > q1 (subst) @768 × walk-right     MISSING
   walk-wrong  algebra > s1 > q1 (subst) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s1 > q1 (subst) @1280 × walk-wrong    MISSING
   walk-wrong  algebra > s1 > q2 (subst) @375 × walk-wrong     MISSING
+  walk-right  algebra > s1 > q2 (subst) @768 × walk-right     MISSING
   walk-wrong  algebra > s1 > q2 (subst) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s1 > q2 (subst) @1280 × walk-wrong    MISSING
   walk-wrong  algebra > s1 > q3 (subst) @375 × walk-wrong     MISSING
+  walk-right  algebra > s1 > q3 (subst) @768 × walk-right     MISSING
   walk-wrong  algebra > s1 > q3 (subst) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s1 > q3 (subst) @1280 × walk-wrong    MISSING
   walk-wrong  algebra > s1 > q4 (subst) @375 × walk-wrong     MISSING
+  walk-right  algebra > s1 > q4 (subst) @768 × walk-right     MISSING
   walk-wrong  algebra > s1 > q4 (subst) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s1 > q4 (subst) @1280 × walk-wrong    MISSING
   walk-wrong  algebra > s2 > q5 (simplify) @375 × walk-wrong  MISSING
@@ -78,10 +82,6 @@
   walk-wrong  algebra > s6 > q24 (form) @1280 × walk-wrong    MISSING
   walk-wrong  angles > s2 > q5 (reasoned) @375 × walk-wrong   MISSING
   walk-wrong  angles > s2 > q5 (reasoned) @768 × walk-wrong   MISSING
-  walk-wrong  angles > s2 > q6 (reasoned) @375 × walk-wrong   MISSING
-  walk-wrong  angles > s2 > q6 (reasoned) @768 × walk-wrong   MISSING
-  walk-wrong  angles > s2 > q7 (reasoned) @375 × walk-wrong   MISSING
-  walk-wrong  angles > s2 > q7 (reasoned) @768 × walk-wrong   MISSING
 
   DEBT LEDGER (printed every run)
   cell                     owner / phase            file                state
