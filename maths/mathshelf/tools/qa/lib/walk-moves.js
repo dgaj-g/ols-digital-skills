@@ -195,19 +195,23 @@ const ACTIONS = {
       const c = movie.querySelector('.cap-num, .ml-cap-n, [data-cap-n]');
       return c ? (c.textContent || '').trim() : String(movie.getAttribute('data-state'));
     };
-    let steps = 0;
-    for (let i = 0; i < 40; i++) {
+    let steps = 0, stuck = 0;
+    for (let i = 0; i < 60; i++) {
       if (movie.getAttribute('data-state') === 'end') break;
       const b = fwd();
       if (!b || b.disabled) break;
       const was = capNo();
       b.click();
       steps++;
-      for (let t = 0; t < 40; t++) {
+      for (let t = 0; t < 60; t++) {
         await new Promise(r => setTimeout(r, 100));
         if (capNo() !== was || movie.getAttribute('data-state') === 'end') break;
       }
-      if (capNo() === was && movie.getAttribute('data-state') !== 'end') break;
+      /* a press the player was too busy to take is normal, not the end of the
+         film: it is refused outright while the last step is still drawing. Give
+         up only when several presses in a row change nothing. */
+      if (capNo() === was && movie.getAttribute('data-state') !== 'end') { if (++stuck >= 4) break; }
+      else stuck = 0;
     }
     return { steps: steps, state: movie.getAttribute('data-state') };
   })`,
