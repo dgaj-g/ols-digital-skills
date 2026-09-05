@@ -217,7 +217,14 @@ async function walk(page, width, projector, sidecar, transcript) {
   const wait = (ms) => new Promise(r => setTimeout(r, ms || 900));
 
   /* the grid, scrolled off its own header */
-  await page.evaluate(() => { const b = document.querySelector('.st-body') || document.scrollingElement; if (b) { b.scrollTop = 60; b.scrollLeft = 60; b.dispatchEvent(new Event('scroll')); } });
+  await page.evaluate(() => {
+    /* the grid scrolls inside whichever element actually overflows, so find one
+       rather than guessing at a class name */
+    const cands = [...document.querySelectorAll('div, main, section')]
+      .filter((e) => e.scrollHeight > e.clientHeight + 8 || e.scrollWidth > e.clientWidth + 8);
+    const b = cands[cands.length - 1] || document.scrollingElement;
+    if (b) { b.scrollTop = 60; b.scrollLeft = 60; b.dispatchEvent(new Event('scroll', { bubbles: true })); }
+  });
   await wait(500);
   await record('full-grid', 'sticky-scroll');
 
@@ -277,7 +284,7 @@ async function walk(page, width, projector, sidecar, transcript) {
   /* Set-up: a book ticked on, the link and its QR, the CSV */
   await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
   await wait(1400);
-  const ticked = await page.evaluate(() => { const cb = document.querySelector('.tick-row input[type=checkbox], .ticks input[type=checkbox]'); if (!cb) return false; cb.click(); return true; });
+  const ticked = await page.evaluate(() => { const cb = document.querySelector('.acts-ticks input[type=checkbox]'); if (!cb) return false; cb.click(); return true; });
   if (ticked) { await wait(1400); await record('set-up', 'tickboxes'); }
   const qr = await page.evaluate(() => { const b = [...document.querySelectorAll('button')].filter(x => (x.textContent || '').trim() === 'QR')[0]; if (!b) return false; b.click(); return true; });
   if (qr) { await wait(1200); await record('set-up', 'link-qr-modal'); await page.evaluate(() => { const c = [...document.querySelectorAll('button')].filter(x => /close|done/i.test(x.textContent || ''))[0]; if (c) c.click(); }); await wait(600); }
