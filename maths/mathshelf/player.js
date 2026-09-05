@@ -232,7 +232,13 @@
       pulse: function (nm, on) { if (arcEls[nm]) arcEls[nm].classList.toggle('pulse', on !== false); },
       overlay: function (ptNames, colour, instant) { // Z / F / U shape tracing
         var pts = ptNames.map(function (n) { var p = P(n); return p.x + ',' + p.y; }).join(' ');
+        /* THE TRACE IS AN ORNAMENT, AND IT SAYS SO. "Trace the F shape" draws a
+           gold line over the diagram: gold decorates, it never marks and never
+           carries a value, and the colour law can only know that if the mark-up
+           says it. Without this the trace read as gold on a reading surface on
+           every angles question the film had run over. */
         var pl = sv('polyline', { points: pts, fill: 'none', stroke: colour || '#E4B824', 'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.55 });
+        pl.setAttribute('data-ornament', '');
         svg.appendChild(pl);
         return drawStroke(pl, instant).then(function () { return pl; });
       },
