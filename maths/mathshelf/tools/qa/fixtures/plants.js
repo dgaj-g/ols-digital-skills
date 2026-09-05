@@ -159,6 +159,101 @@ const PLANTS = {
       "            why: '', rank: 3 });");
   },
 
+  /* ── the record itself, broken two ways ──────────────────────────── */
+  'fixture-audit-orphan': (dir) => {
+    const f = path.join(dir, 'tools/qa/MATHS_FEEDBACK_MASTER.md');
+    fs.appendFileSync(f, '\n99. **A ruling with no home anywhere.** Planted by a control.\n');
+  },
+  'fixture-audit-ghost': (dir) => {
+    edit(dir, 'tools/qa/MATHS_GATES_AUDIT.md', '| 1 | qa-language | must-fail-exhibits, must-pass-exemplars |',
+      '| 1 | qa-a-gate-that-does-not-exist | must-fail-exhibits |');
+  },
+
+  /* ── a book loaded by the page and forgotten by the assembler ─────── */
+  'fixture-build-missing-input': (dir) => {
+    write(dir, 'content-fixture-book.js', '(function(){})();');
+    edit(dir, 'index.html', '  <script src="strings.js"></script>',
+      '  <script src="content-fixture-book.js"></script>\n  <script src="strings.js"></script>');
+  },
+
+  /* ── a server that loses her work, or re-keys her row ─────────────── */
+  'fixture-server-wipe': (dir) => {
+    edit(dir, 'server/Code.gs.template', 'function adminSetActs_(req, ctx) {',
+      'function adminSetActs_(req, ctx) {\n  /* planted: unticking deletes the rows */\n  try { var sh = dataSheet_(); for (var z = sh.getLastRow(); z > 1; z--) sh.deleteRow(z); } catch (e) {}');
+  },
+  'fixture-server-rekey': (dir) => {
+    edit(dir, 'server/Code.gs.template', "        if (String(vals[i][1]).toLowerCase() === who.toLowerCase() && String(vals[i][2]) !== name) {",
+      "        if (String(vals[i][1]).toLowerCase() === who.toLowerCase()) {\n          sh.getRange(i + 1, 2).setValue(name + '@nowhere');   /* planted: the row is re-keyed */\n        }\n        if (false) {");
+  },
+  /* ── and one that lets a pupil's save carry the teacher's mark away ── */
+  'fixture-server-clobber': (dir) => {
+    edit(dir, 'server/Code.gs.template', '    if (found) {\n      var prev = parseJson_(found.vals[5]);',
+      '    if (false) {\n      var prev = parseJson_(found.vals[5]);');
+  },
+
+  /* ── a face that will not load, and a dead one still named ────────── */
+  'fixture-font-missing': (dir) => {
+    const f = path.join(dir, 'assets/fonts/fonts.css');
+    const css = fs.readFileSync(f, 'utf8');
+    fs.writeFileSync(f, css.replace(/@font-face\s*\{[^}]*Schibsted[^}]*\}/g, '/* planted: the face is gone */'));
+  },
+  'fixture-dead-font': (dir) => {
+    fs.appendFileSync(path.join(dir, 'shell.css'), "\n.planted { font-family: 'Caveat', cursive; }\n");
+  },
+
+  /* ── a dock pinned over the board ────────────────────────────────── */
+  'fixture-css-sticky-dock': (dir) => {
+    fs.appendFileSync(path.join(dir, 'shell.css'), '\n.dock { position: sticky !important; bottom: 0; }\n');
+  },
+
+  /* ── a preview that says nothing, and a live tier that answers for her ── */
+  'fixture-no-banner': (dir) => {
+    edit(dir, 'script.js', "    b.id = 'gj-preview-banner';", "    return;   /* planted: no banner */\n    b.id = 'gj-preview-banner';");
+  },
+  'fixture-live-channel': (dir) => {
+    edit(dir, 'script.js', '  if (!window.OLS_TRANSPORT) {\n    GJ.app.__prime', '  if (true) {\n    GJ.app.__prime');
+  },
+  'fixture-no-outbox': (dir) => {
+    edit(dir, 'script.js', '  function outboxReplay(actId, serverState) {', '  function outboxReplayDISABLED(actId, serverState) {');
+    edit(dir, 'script.js', '      var held = outboxReplay(a.id, raw);', '      var held = null;');
+  },
+
+  /* ── a tree nobody can name, and a pair that is not the tree's ────── */
+  'fixture-dirty-tree': (dir) => {
+    fs.appendFileSync(path.join(dir, 'style.css'), '\n/* planted: an uncommitted edit */\n');
+  },
+  'fixture-stale-pair': (dir) => {
+    fs.appendFileSync(path.join(dir, 'server/Index.html'), '<!-- planted: the built pair is stale -->\n');
+  },
+
+  /* ── an exercise pushed onto the generic self-evaluation chips ────── */
+  'fixture-selfeval-fallback': (dir) => {
+    edit(dir, 'script.js', "  var SELF_EVAL_TRIPS = {", "  var SELF_EVAL_TRIPS = {\n    _planted: {},");
+    edit(dir, 'script.js', "    angles: {", "    anglesPLANTED: {");
+  },
+
+  /* ── a floor quietly lowered ─────────────────────────────────────── */
+  'fixture-floor-drop': (dir) => {
+    edit(dir, 'tools/qa/MATHS_GATES_AUDIT.md', '| mathcore.selfTest | 73 |', '| mathcore.selfTest | 999 |');
+  },
+
+  /* ── a markbook that does not re-lock, and one that remembers the passcode ── */
+  'fixture-no-relock': (dir) => {
+    edit(dir, 'staff.js', '    passcode = null;', '    /* planted: the passcode is kept */');
+  },
+  'fixture-persist-passcode': (dir) => {
+    edit(dir, 'staff.js', '  function closeMarkbook(why) {', "  function closeMarkbook(why) {\n    try { localStorage.setItem('staffPasscode', passcode); } catch (e) {}   /* planted */");
+  },
+
+  /* ── a locked renderer whose marking moved ───────────────────────── */
+  'fixture-engine-mark': (dir) => {
+    const f = path.join(dir, 'tools/qa/fixtures/v3-shape.json');
+    const j = JSON.parse(fs.readFileSync(f, 'utf8'));
+    const k = Object.keys(j)[0];
+    if (j[k] && j[k].mk) j[k].mk = [99, 99];
+    fs.writeFileSync(f, JSON.stringify(j, null, 1));
+  },
+
   /* ── a stale walker sidecar: a walk done three changes ago ────────── */
   'sidecar.stale.json': (dir) => {
     write(dir, 'tools/qa/out/walk/sit-pupil-angles-1280.json', JSON.stringify({
