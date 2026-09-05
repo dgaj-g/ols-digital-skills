@@ -996,7 +996,12 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 .starter-h { font-family: var(--f-stationery); font-size: 1.05rem; font-weight: 700; letter-spacing: 0.05em;
   text-transform: uppercase; color: var(--foil-lo); margin: 0 0 calc(var(--sq) * 1.1); }
 .starter-line { font-family: var(--f-maths); font-size: clamp(28px, 5vw, 54px); line-height: 1.15; margin: 0; }
-.starter-q { font-family: var(--f-hand); font-size: clamp(22px, 3vw, 34px); color: var(--marking-red); margin-top: var(--sq); }
+/* THE STARTER'S QUESTION IS A QUESTION, NOT A MARK. It was drawn in marking
+   red - the colour that means WRONG - on a card thrown up in front of the whole
+   class. Nothing on that card has been marked: it asks the room where the line
+   went wrong. It wears the "needs a word" mauve, which is the colour that was
+   pushed away from marking red for exactly this. */
+.starter-q { font-family: var(--f-hand); font-size: clamp(22px, 3vw, 34px); color: var(--support-rose); margin-top: var(--sq); }
 
 /* mini jotter pages for Sweep view */
 .sweep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--sq); }
@@ -4879,7 +4884,13 @@ window.OLS_TRANSPORT = {
       pulse: function (nm, on) { if (arcEls[nm]) arcEls[nm].classList.toggle('pulse', on !== false); },
       overlay: function (ptNames, colour, instant) { // Z / F / U shape tracing
         var pts = ptNames.map(function (n) { var p = P(n); return p.x + ',' + p.y; }).join(' ');
+        /* THE TRACE IS AN ORNAMENT, AND IT SAYS SO. "Trace the F shape" draws a
+           gold line over the diagram: gold decorates, it never marks and never
+           carries a value, and the colour law can only know that if the mark-up
+           says it. Without this the trace read as gold on a reading surface on
+           every angles question the film had run over. */
         var pl = sv('polyline', { points: pts, fill: 'none', stroke: colour || '#E4B824', 'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.55 });
+        pl.setAttribute('data-ornament', '');
         svg.appendChild(pl);
         return drawStroke(pl, instant).then(function () { return pl; });
       },
@@ -9476,6 +9487,7 @@ window.OLS_TRANSPORT = {
       });
       if (strip) {
         strip._qid = q.id;                                            // so a nudge can open the RIGHT question's strip
+        strip.setAttribute('data-help-for', q.id);                    // and so anything reading the page can tell whose help this is
         jotter.appendChild(strip);
         strips.push(strip);
         if (supportEarned(current.state.qs[q.id])) strip._reveal();   // already earned on re-entry
@@ -9514,12 +9526,21 @@ window.OLS_TRANSPORT = {
     /* the question says the help is on offer, and the film says it was the
        teacher who suggested it: both are states the registry claims, and until
        now nothing wrote either of them */
-    function qRoot() { return wrap.closest ? wrap.closest('[data-surface="question"]') : null; }
-    function reveal() {
-      wrap.hidden = false;
-      var r = qRoot();
-      if (r) window.GJ.setState(r, 'question', 'help-strip');
+    /* the strip is appended to the jotter, NOT inside the question's own root,
+       so it has to find its question by id rather than by climbing */
+    function qRoot() {
+      var all = document.querySelectorAll('[data-surface="question"]');
+      for (var i = 0; i < all.length; i++) {
+        if (all[i].getAttribute('data-qid') === q.id) return all[i];
+      }
+      return null;
     }
+    /* OFFERING HELP IS NOT A STATE; HAVING IT OPEN IS. After two wrong attempts
+       the question IS "checked-wrong-2" and the strip appearing is part of that
+       screen, not a different one - stamping here overwrote the verdict state
+       the moment it was written. The state belongs to the strip being OPEN,
+       which is a genuinely different thing to read. */
+    function reveal() { wrap.hidden = false; }
     function open(viaNudge) {
       reveal();
       if (!mounted) {
@@ -9543,6 +9564,8 @@ window.OLS_TRANSPORT = {
         mounted = true; recordHelp(q.id);
       }
       host.hidden = false; wrap.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
+      var r = qRoot();
+      if (r) window.GJ.setState(r, 'question', 'help-strip');
     }
     function close() { host.hidden = true; wrap.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
     btn.addEventListener('click', function () { if (host.hidden) open(); else close(); });
