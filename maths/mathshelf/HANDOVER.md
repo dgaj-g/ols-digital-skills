@@ -27,8 +27,12 @@ node tools/qa/run.js --full       # the walkers, three widths, both tiers
 node tools/qa/run.js --book angles   # scope the WALKERS; nothing else narrows
 ```
 
-`tools/qa/install-hooks.js` puts the fast tier on `pre-commit`. `--no-verify` is
-not used here.
+`tools/qa/install-hooks.js` puts the fast tier on `pre-commit` — but **it says
+no in a linked worktree, on purpose**: git reads a linked worktree's hooks from
+the shared `.git/hooks`, and this repository is worked in from more than one
+place at a time, so installing there would run the MathShelf gates on another
+session's commits. In a worktree, run `node tools/qa/run.js` yourself before
+each commit. `--no-verify` is not used here.
 
 - **`tools/qa/MATHS_FEEDBACK_MASTER.md`** — every ruling he has made, numbered,
   dated, in his words. Read it before writing a sentence a pupil will see.
@@ -46,6 +50,19 @@ The two things most likely to catch you out:
 2. **Every screen declares itself** (`data-surface` / `data-state`), and
    `GJ.app.surfaces` in `script.js` is the app's own statement of what it can
    render. Both directions are checked.
+
+And two rules the second pass of the control battery paid for:
+
+3. **A walk records what was on screen, never what it meant to reach.**
+   `record()` reads `data-state` off the root and the walk settles up at the
+   end: every state it aimed at has to have been stood on at least once. Four
+   real faults were invisible until this was true, including five of the seven
+   question kinds never stamping their state at all.
+4. **The walker presses the app's own controls** (`tools/qa/lib/drive.js`): it
+   taps letters into an expression, sorts tiles into family bins, picks a
+   product per grid cell, plays the move rail chip by chip, taps an arc and
+   chooses a reason. If you add a question kind with a new scaffold, it needs a
+   branch there — otherwise the walk cannot answer it, and will say so.
 
 ## Verify
 
