@@ -29,3 +29,12 @@ the machine's, not mine._
 
 | cell | reason | owner / phase | file | sha1 | waiver |
 |---|---|---|---|---|---|
+
+## Rules that exist and have no data to hold yet
+
+_A rule with nothing to read is not a rule that passed. `qa-language` says so
+in its own run; this row is here so the silence is on the record too._
+
+| rule | what is missing | what it would take | owner / phase |
+|---|---|---|---|
+| define-before-use (`qa-language`) | there is no `tools/qa/vocab/<book>.json` for any book, so the rule reads nothing and the gate notes it every run | a vocabulary per book: each term with the plain-words phrase its film must say first. Writing one for Angles or Algebra means re-opening approved prompts if a term turns out to be used before it is explained, which is rule 30's business and his call | a content session, after the deploy — the control proves the detector works against a planted vocabulary |
