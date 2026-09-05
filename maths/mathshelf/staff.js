@@ -1204,8 +1204,14 @@
             } else inkMsg.textContent = (r2 && r2.error) || TT('saveFailedMark');
           }).catch(function () { btn.disabled = false; inkMsg.textContent = TT('saveFailedMark'); });
         }
+        /* THESE TWO ARE MARKS. The tick and the cross in the ink control are
+           the mark she is about to make, drawn in the colour it will be made
+           in - the one place a marking colour belongs outside a mark already
+           made. They say so, the way every other mark on this platform does. */
         var icTick = el('button', 'ic-tick', esc(TT('inkYes')));
+        icTick.setAttribute('data-mark', '');
         var icCross = el('button', 'ic-cross', esc(TT('inkNo')));
+        icCross.setAttribute('data-mark', '');
         var icAuto = el('button', 'ic-auto btn-pencil', esc(TT('inkUse')));
         icTick.addEventListener('click', function () { setOvr(1, icTick); });
         icCross.addEventListener('click', function () { setOvr(0, icCross); });

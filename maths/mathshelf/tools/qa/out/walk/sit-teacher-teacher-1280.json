@@ -4,8 +4,8 @@
  "width": 1280,
  "projector": false,
  "tier": "preview",
- "contentHash": "84d92546b752",
- "when": "2026-09-05T20:32:50.632Z",
+ "contentHash": "2f56b46167a6",
+ "when": "2026-09-05T21:16:34.233Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -186,6 +186,70 @@
   {
    "surface": "exercise-view",
    "state": "cell-focus",
+   "width": 1280,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "book-view",
+   "state": "ink-control-open",
+   "width": 1280,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "FAIL",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "book-view",
+   "state": "inked-mine-tick",
+   "width": 1280,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "book-view",
+   "state": "inked-mine-cross",
+   "width": 1280,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "book-view",
+   "state": "inked-app",
    "width": 1280,
    "projector": false,
    "audits": {
