@@ -1,8 +1,8 @@
 # MathShelf — the TEACHER transcript
 
-TRANSCRIPT HASH: 1f8aac6c5abefb35
+TRANSCRIPT HASH: 853f7cde3bef01c3
 sentences: 31
-taken: 2026-09-05 17:39:24
+taken: 2026-09-05 20:08:24
 
 This is every sentence a teacher reads, in the order they meet it,
 as it was RENDERED on the running app. Nothing here is source.
@@ -37,5 +37,5 @@ Know your angles
 Identify and measure acute, obtuse and reflex angles accurately.
 Look at the size of the marked angle. What type of angle is it?
 The method itself is where Aisling needs a hand — worth reteaching, not just re-checking.
-These marks are the app’s. Tap or click any mark to change it to yours — yours is the one that counts.
+These marks are the app's. Tap or click any mark to change it to yours — yours is the one that counts.
 ✓ correct · ◐ answer only · ✗ wrong (small number = the step it broke at) · ● working now · — not started
