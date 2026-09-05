@@ -1,16 +1,16 @@
 {
  "walker": "sit-teacher",
  "scope": "teacher",
- "width": 1280,
+ "width": 768,
  "projector": false,
  "tier": "preview",
  "contentHash": "194fae268de5",
- "when": "2026-09-05T18:54:15.819Z",
+ "when": "2026-09-05T18:53:37.381Z",
  "states": [
   {
    "surface": "staff-cover",
    "state": "passcode-empty",
-   "width": 1280,
+   "width": 768,
    "projector": false,
    "audits": {
     "empty": "PASS",
@@ -26,7 +26,7 @@
   {
    "surface": "staff-cover",
    "state": "passcode-empty",
-   "width": 1280,
+   "width": 768,
    "projector": false,
    "audits": {
     "empty": "PASS",
@@ -42,7 +42,7 @@
   {
    "surface": "set-up",
    "state": "classes",
-   "width": 1280,
+   "width": 768,
    "projector": false,
    "audits": {
     "empty": "PASS",
@@ -58,7 +58,7 @@
   {
    "surface": "class-page",
    "state": "live",
-   "width": 1280,
+   "width": 768,
    "projector": false,
    "audits": {
     "empty": "PASS",
@@ -74,7 +74,7 @@
   {
    "surface": "exercise-view",
    "state": "loaded",
-   "width": 1280,
+   "width": 768,
    "projector": false,
    "audits": {
     "empty": "PASS",
@@ -90,7 +90,7 @@
   {
    "surface": "question-view",
    "state": "loaded",
-   "width": 1280,
+   "width": 768,
    "projector": false,
    "audits": {
     "empty": "PASS",
@@ -106,7 +106,7 @@
   {
    "surface": "book-view",
    "state": "pencil",
-   "width": 1280,
+   "width": 768,
    "projector": false,
    "audits": {
     "empty": "PASS",
@@ -122,7 +122,7 @@
   {
    "surface": "slips",
    "state": "ranked",
-   "width": 1280,
+   "width": 768,
    "projector": false,
    "audits": {
     "empty": "PASS",
@@ -138,7 +138,7 @@
   {
    "surface": "full-grid",
    "state": "loaded",
-   "width": 1280,
+   "width": 768,
    "projector": false,
    "audits": {
     "empty": "PASS",

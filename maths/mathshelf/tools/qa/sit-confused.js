@@ -25,6 +25,7 @@ const { Gate } = require('./lib/report.js');
 const B = require('./lib/browser.js');
 const W = require('./lib/walk-moves.js');
 const AUD = require('./lib/audits.js');
+const S = require('./lib/stage.js');
 const { contentHash } = require('./lib/hash.js');
 
 /* ONE SENTENCE PER FINDING, and it NAMES THE THING. The first cut printed the
@@ -71,7 +72,7 @@ g.exempt(AUD.EXEMPTIONS.concat([
 
 (async () => {
   const books = A.books().filter(b => !ONLY_BOOK || b === ONLY_BOOK);
-  const attempts = buildAttempts();
+  const attempts = S.attempts();   /* ONE HOME: the same table the pupil walk and the validator use */
   A.ensureOut('walk');
   /* a fresh browser per width: see the note in sit-pupil.js */
   /* A FRESH BROWSER PER BOOK, not per width. Sixty-odd states of audits is
@@ -83,7 +84,12 @@ g.exempt(AUD.EXEMPTIONS.concat([
       const browser = await B.launch();
       const page = await B.newPage(browser, { width });
       await page.evaluateOnNewDocument((table) => {
-        window.__modelAttempt = (qid, wrong) => (table[(wrong ? 'wrong:' : 'right:') + qid] || null);
+        window.__modelAttempt = (qid, wrong) => {
+          const root = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+            .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid)[0];
+          const book = root ? (root.getAttribute('data-book') || '') : '';
+          return table[(wrong ? 'wrong:' : 'right:') + book + ':' + qid] || null;
+        };
       }, attempts);
       await page.goto(BASE + '?class=demo&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
       await W.settle(page);
@@ -142,10 +148,18 @@ g.exempt(AUD.EXEMPTIONS.concat([
             await record(page, sidecar, 'question', 'help-strip', { qid, book, section: si, width });
           }
 
-          /* --- a third Check is impossible --- */
+          /* --- a third Check is impossible ---
+             measured on what the APP RECORDED, not on the button: a renderer
+             may grey the Check, hide it, or leave it there and ignore it, and
+             all three are honest as long as no third attempt is taken. */
+          const before = await page.evaluate((s, id) => eval(s)(id), W.ATTEMPT_COUNT, qid);
           const third = await page.evaluate((s, id) => eval(s)(id), W.CHECK, qid);
-          g.check(!third.ok || third.disabled, 'question:checked-wrong-2 > ' + qid + ' @' + width, 'attempts',
-            'a third Check was accepted after two wrong attempts — two is the whole model, and a third would let her guess her way through');
+          await W.settle(page);
+          const after = await page.evaluate((s, id) => eval(s)(id), W.ATTEMPT_COUNT, qid);
+          g.check(!after.ok || !before.ok || after.n <= before.n, 'question:checked-wrong-2 > ' + qid + ' @' + width, 'attempts',
+            'a third Check was accepted after two wrong attempts (' + before.n + ' -> ' + after.n + ') — two is the whole model, and a third would let her guess her way through');
+          g.check(!third.ok, 'question:checked-wrong-2 > ' + qid + ' @' + width, 'attempts',
+            'the Check button was still pressable after two wrong attempts — it must be disabled, taken away, or say why it is waiting');
         }
       }
 
@@ -166,25 +180,22 @@ g.exempt(AUD.EXEMPTIONS.concat([
 
 async function record(page, sidecar, surface, state, extra) {
   await W.settle(page);
+  /* WHAT IS WRITTEN DOWN IS WHAT WAS ON SCREEN. The walk used to record the
+     state it MEANT to reach, so a drive that silently did nothing still filed
+     a row saying she had stood there - and the coverage matrix counted it. */
+  const seen = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, [surface, (extra && extra.qid) || null]);
+  const real = (seen && seen.ok && seen.state) || null;
+  g.check(real === state, surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + (extra && extra.width), 'walk',
+    'the walk expected "' + state + '" and the app was in "' + (real || '(no such surface on screen)') + '" - a state nobody stood on is not covered');
   const a = await AUD.run(page, { clickSafety: true });
-  sidecar.states.push(Object.assign({ surface, state }, extra || {}, { audits: a.verdicts }));
+  sidecar.states.push(Object.assign({ surface, state: real || state, expected: state, stood: real === state }, extra || {}, { audits: a.verdicts }));
   Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {
     g.fail(surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + (extra && extra.width), k,
       describe(f));
   }));
 }
 
-function buildAttempts() {
-  const M = require(A.app('mathcore.js'));
-  const MA = require(A.app('dev/model-attempts.js'));
-  const out = {};
-  A.grid().forEach(r => {
-    try {
-      const right = MA.correct(M, r.book, r.question);
-      const wrong = MA.corrupt(M, r.book, r.question);
-      if (right) out['right:' + r.qid] = right;
-      if (wrong) out['wrong:' + r.qid] = wrong;
-    } catch (e) { /* authoring faults belong to the lints */ }
-  });
-  return out;
-}
+/* buildAttempts() lived here and quietly disagreed with dev/model-attempts.js:
+   it keyed by question id alone, so the angles table overwrote the algebra
+   one for the eighteen ids the two books share. There is ONE home for a model
+   attempt and lib/stage.js reads it. */

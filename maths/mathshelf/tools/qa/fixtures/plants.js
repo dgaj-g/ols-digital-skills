@@ -366,14 +366,23 @@ const PLANTS = {
 
   /* ── a deploy log that says the wrong thing about the manifest ────── */
   'DEPLOY_LOG.bad.md': (dir) => {
+    /* the log's paired-row law is asked POST-DEPLOY, which is the only moment
+       it can be asked at: before the cut there are no rows to pair */
     write(dir, 'server/DEPLOY_LOG.md',
       '# control\n\n| date | deployment | version | executeAs (as READ from the manifest) | commit | md5 Index | md5 Code |\n|---|---|---|---|---|---|---|\n' +
       '| 2026-09-05 | DATA | 26 | USER_DEPLOYING | deadbee | aaa | bbb |\n' +
       '| 2026-09-05 | FRONT DOOR | 1 | USER_DEPLOYING | deadbee | aaa | bbb |\n');
+    return { env: { MS_POST_DEPLOY: '1' } };
   },
 
   /* ── a cold-read verdict filed against text that has since changed ── */
   'verdicts.bad.md': (dir) => {
+    /* the sandbox is wiped of evidence, so the control supplies BOTH halves:
+       a transcript with a hash of its own, and a verdict filed against a
+       different one, carrying no judged row. Without the transcript the gate
+       would fail for having nothing to be handed, which is a different no. */
+    write(dir, 'tools/qa/out/transcript/_teacher.md',
+      '# the teacher transcript (control)\n\nTRANSCRIPT HASH: abc123abc123abc1\n\nThe markbook opens on the class page.\n');
     write(dir, 'tools/qa/MATHS_COLD_READ_VERDICTS_TEACHER.md',
       '# control\n\nTRANSCRIPT HASH: 0000000000000000\n\n| VERDICT | where | the sentence | why |\n|---|---|---|---|\n');
   }
