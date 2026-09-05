@@ -14,9 +14,8 @@ cd /tmp/gj-wt/maths/mathshelf
 node tools/qa/install-hooks.js            # every commit then runs the fast tier
 
 # 2. the two preview servers (nohup, never the preview tool)
-nohup python3 /tmp/gj-serve.py    /tmp/gj-wt                        8099 &   # the source tier
-nohup python3 /tmp/serve-built.py /tmp/gj-wt/maths/mathshelf/server 8100 &   # the BUILT tier
-#    (both scripts are in /tmp; if they are gone, see "the two servers" below)
+nohup python3 tools/qa/serve-preview.py /tmp/gj-wt                        8099 &
+nohup python3 tools/qa/serve-built.py   /tmp/gj-wt/maths/mathshelf/server 8100 &
 
 # 3. where things stand
 export NODE_PATH="$(npm root -g)"
@@ -27,13 +26,12 @@ node tools/qa/sit-teacher.js
 node tools/qa/control.js                  # every gate made to say no
 ```
 
-**The two servers.** `/tmp/gj-serve.py` is a threading `SimpleHTTPRequestHandler`
-rooted at the worktree with `Cache-Control: no-store`.
-`/tmp/serve-built.py` is the same but rooted at `server/`, serving `Index.html`
-at `/` with the Apps Script scriptlets filled in (`<?= classCode ?>` → `demo`,
-`<?= name ?>` → `Aoife Gartland`, and so on) so the BUILT tier can be walked
-exactly like the preview. Recreating either takes two minutes; both are listed
-here because they are the only pieces of the rig that do not live in the repo.
+**The two servers** are committed at `tools/qa/serve-preview.py` and
+`tools/qa/serve-built.py`. The first serves the worktree with `no-store`; the
+second serves the BUILT `Index.html` at `/` with the Apps Script scriptlets
+filled in (`<?= classCode ?>` → `demo`, `<?= name ?>` → `Aoife Gartland`), so
+the deployed artefact can be walked exactly like the preview. They are in the
+repo on purpose: a rig that lives in /tmp is a rig that is gone after a reboot.
 
 Preview URLs: `http://localhost:8099/maths/mathshelf/index.html?class=demo&nointro`
 and `http://localhost:8100/`. Staff passcode in the preview is `demo`; clear
