@@ -150,6 +150,12 @@ the walker can no longer disagree about what a correct attempt is.
 | F23 | qa-needs-you's "a flag that never clears" check read `c.q` and `c.reason`, fields no chip has ever carried, so it could not have failed | the control battery | reads `c.qid` and `c.why` |
 | F24 | qa-earned-stays' "her work is still hers" check compared two values that were both empty when the row had been orphaned — which is exactly the fault | the control battery | it insists there was work there before it says the work came back |
 
+| F25 | the pre-commit hook was installed in `$GIT_DIR/hooks` of a **linked worktree**, which git never reads — it had sat there since it was written and had never once run, while the record said every commit ran the fast tier | looking, after the control battery made the claim worth checking | the installer now names the directory git really reads (the SHARED one), refuses unless told outright, and the fast tier is run by hand |
+| F26 | `book-contents` was stamped "fresh" once in the markup and never again, so "mid-book" and "finished" were declared and rendered by nothing | the honest walkers | the contents page counts her own locked questions and says which of the three it is |
+| F27 | seven places printed the **server's own error code** onto a teacher's screen — "not-configured" at ten to nine on a Tuesday | reading the deploy path for what a first visit does | every code the server can return has one sentence; anything unlisted falls back to the caller's own words |
+| F28 | **twenty-four states** the registry claimed and nothing ever wrote — a third of the whole registry, counted as coverage cells all along | the new qa-surfaces rule, written the moment F21 showed the shape of the fault | each one written where it happens; the gate cuts the registry out of its own evidence first |
+| F29 | **the film froze at step three and the Next arrow did nothing.** The angle count-up is the one animation driven by requestAnimationFrame; a page the browser is not painting gets no frames, the promise never settled, and the player's busy latch never cleared | the walker watching a film the way she does, one step arrow at a time | a backstop timer finishes the count where the frames do not come |
+
 ## GATES THAT INVENTED A FAULT AND WERE NARROWED (L6)
 
 Each keeps the correct thing it condemned as its permanent pass-control.
@@ -191,3 +197,11 @@ Each keeps the correct thing it condemned as its permanent pass-control.
   wrong reason, and one of them had been failing that way in every run.
 - The dock is rendered INSIDE the question root, so a query across "the
   question and the dock" returns every control twice.
+- **Ask "can she see it?" before "is it disabled?"** A renderer is entitled to
+  take a control away rather than grey it out, and this one does exactly that
+  once a question is marked. Asking the questions the other way round reported
+  seventeen marked questions as controls that would not act and would not say
+  why.
+- **There is no requestAnimationFrame in a headless page.** Not a throttled
+  one - none. Any promise that waits on a frame waits for ever, and the app
+  code that does it is the code a walk can never get past.
