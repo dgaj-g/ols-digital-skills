@@ -1,0 +1,2 @@
+GSAP 3.13.0 (gsap.min.js) — (c) 2025 GreenSock/Webflow. Free no-charge Standard License: https://gsap.com/standard-license
+Vendored for offline/self-contained use per repo policy.
