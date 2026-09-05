@@ -146,16 +146,39 @@ const HELP_STRIP = `(() => {
 /* SETTLE — the screen has stopped moving. Deliberately not a fixed sleep: a
    fixed sleep is either too short on a busy machine or wasted on a quick one,
    and a screenshot taken mid-animation is a picture of a blend, not a colour. */
+/* AN ANIMATION THAT NEVER ENDS IS NOT THE PAGE STILL SETTLING. This waited for
+   every running animation to stop, and the shell has decorations that loop for
+   ever - so every single call ran its whole budget, about 1.9 seconds, several
+   hundred times in a walk. That was most of the walk's clock. A looping
+   animation is excluded by its own iteration count. */
 async function settle(page, tries) {
-  await new Promise(r => setTimeout(r, 180));
-  for (let i = 0; i < (tries || 12); i++) {
+  await new Promise(r => setTimeout(r, 120));
+  /* AND A PAGE THAT IS NEVER PAINTED HAS NO ANIMATIONS TO WAIT FOR. Headless
+     Chrome does not composite these pages: requestAnimationFrame never fires
+     and the document timeline does not advance, so a CSS animation is reported
+     as "running" for ever and every settle spent its whole budget. Ask the
+     timeline whether time is passing at all; where it is not, wait a beat for
+     the DOM work and carry on. */
+  try {
+    const moving = await page.evaluate(() => new Promise((res) => {
+      const t0 = document.timeline ? document.timeline.currentTime : null;
+      if (t0 == null) return res(true);
+      setTimeout(() => res(document.timeline.currentTime !== t0), 90);
+    }));
+    if (!moving) { await new Promise(r => setTimeout(r, 90)); return; }
+  } catch (e) { return; }
+  for (let i = 0; i < (tries || 10); i++) {
     let n = 0;
     try {
       n = await page.evaluate(() => (document.getAnimations ? document.getAnimations() : [])
-        .filter(a => a.playState === 'running').length);
+        .filter((a) => {
+          if (a.playState !== 'running') return false;
+          const it = (a.effect && a.effect.getTiming && a.effect.getTiming().iterations);
+          return !(it === Infinity || it > 100);
+        }).length);
     } catch (e) { return; }
-    if (!n) { await new Promise(r => setTimeout(r, 120)); return; }
-    await new Promise(r => setTimeout(r, 140));
+    if (!n) { await new Promise(r => setTimeout(r, 90)); return; }
+    await new Promise(r => setTimeout(r, 110));
   }
 }
 
@@ -195,23 +218,24 @@ const ACTIONS = {
       const c = movie.querySelector('.cap-num, .ml-cap-n, [data-cap-n]');
       return c ? (c.textContent || '').trim() : String(movie.getAttribute('data-state'));
     };
-    let steps = 0, stuck = 0;
-    for (let i = 0; i < 60; i++) {
+    /* The player refuses a press outright while it is still drawing the last
+       step, so pressing once and then waiting spends the whole wait on a press
+       that was never taken. Press again every few hundred milliseconds instead:
+       an extra press costs nothing and the step lands as soon as the player is
+       free. */
+    let steps = 0;
+    for (let i = 0; i < 40; i++) {
       if (movie.getAttribute('data-state') === 'end') break;
       const b = fwd();
       if (!b || b.disabled) break;
       const was = capNo();
-      b.click();
-      steps++;
-      for (let t = 0; t < 60; t++) {
-        await new Promise(r => setTimeout(r, 100));
-        if (capNo() !== was || movie.getAttribute('data-state') === 'end') break;
+      let moved = false;
+      for (let t = 0; t < 60 && !moved; t++) {
+        if (t % 6 === 0) { const bb = fwd(); if (bb && !bb.disabled) { bb.click(); steps++; } }
+        await new Promise(r => setTimeout(r, 60));
+        if (capNo() !== was || movie.getAttribute('data-state') === 'end') moved = true;
       }
-      /* a press the player was too busy to take is normal, not the end of the
-         film: it is refused outright while the last step is still drawing. Give
-         up only when several presses in a row change nothing. */
-      if (capNo() === was && movie.getAttribute('data-state') !== 'end') { if (++stuck >= 4) break; }
-      else stuck = 0;
+      if (!moved) break;
     }
     return { steps: steps, state: movie.getAttribute('data-state') };
   })`,
