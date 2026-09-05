@@ -33,6 +33,25 @@ function objectEntries(file, declRe) {
   let depth = 0, key = null, start = 0;
   for (let i = 0; i < body.length; i++) {
     const ch = body[i];
+    /* A COMMA INSIDE A SENTENCE IS NOT A SEPARATOR. The copied scanner split
+       on every comma at depth 0, so 'Tap the values in order, smallest first.'
+       ended an entry halfway through and the value never parsed as a string at
+       all. Twenty of the app's own pupil sentences were dropped that way, and
+       qa-language has therefore never read a sentence with a comma in it - the
+       longest and most explanatory ones in the whole app. This is the one
+       place this copy departs from the verbatim original, and it departs by
+       stepping over quoted text rather than by changing what a key is. */
+    if (ch === "'" || ch === '"' || ch === '`') {
+      const quote = ch;
+      let j = i + 1;
+      while (j < body.length) {
+        if (body[j] === '\\') { j += 2; continue; }
+        if (body[j] === quote) break;
+        j++;
+      }
+      i = j;
+      continue;
+    }
     if (depth === 0 && key === null) {
       const rest = body.slice(i);
       const k = /^\s*['"]?([A-Za-z0-9_-]+)['"]?\s*:/.exec(rest);

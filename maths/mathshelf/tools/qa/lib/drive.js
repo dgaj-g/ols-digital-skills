@@ -31,7 +31,9 @@ const ANSWER = `((args) => {
   const kind = root.getAttribute('data-kind');
   const book = root.getAttribute('data-book') || '';
   const dock = document.querySelector('[data-surface="dock"]');
-  const scope = () => [root, dock].filter(Boolean);
+  /* the dock is rendered INSIDE the question root, so searching both scopes
+     returned every control twice and "the other bin" was the same bin again */
+  const scope = () => (dock && !root.contains(dock) ? [root, dock] : [root]);
   const all = (sel) => scope().reduce((acc, s) => acc.concat([...s.querySelectorAll(sel)]), []);
   const one = (sel) => all(sel)[0] || null;
   const T = (window.GJ_STRINGS && window.GJ_STRINGS.pupil) || {};
@@ -116,11 +118,11 @@ const ANSWER = `((args) => {
       if (!tile) break;
       const want = famOf(txt(tile));
       let bin = binFor(want);
+      if (!bin) return { ok: false, why: 'no "' + want + '" bin on ' + qid };
       if (wrong && !missorted) {
         const other = bins.filter((b) => b !== bin)[0];
         if (other) { bin = other; missorted = true; }
       }
-      if (!bin) return { ok: false, why: 'no "' + want + '" bin on ' + qid };
       tile.click();
       bin.click();
     }
