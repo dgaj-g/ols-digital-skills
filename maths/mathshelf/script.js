@@ -45,7 +45,17 @@
     question: ['fresh', 'mid-attempt', 'checked-right', 'checked-wrong-1', 'checked-wrong-2', 'locked-restore', 'resume-mid', 'amber', 'help-strip'],
     dock: ['numpad', 'numpad-fraction', 'nudge-pad', 'tray', 'chips', 'keyboard-hidden', 'disabled-explained'],
     'self-eval': ['open', 'saved'],
-    'book-end': ['partial', 'complete']
+    'book-end': ['partial', 'complete'],
+    /* the markbook */
+    'staff-cover': ['passcode-empty', 'passcode-wrong', 'busy', 'open'],
+    'class-page': ['loading-cold', 'empty-class', 'live', 'no-flags', 'book-switch'],
+    'exercise-view': ['loaded', 'cell-focus'],
+    'question-view': ['loading-progressive', 'loaded', 'ink-open'],
+    'book-view': ['pencil', 'ink-control-open', 'inked-mine-tick', 'inked-mine-cross', 'inked-app', 'flicking', 'worth-a-look-open', 'reteach-sent'],
+    slips: ['ranked', 'starter-board'],
+    'full-grid': ['loaded', 'sticky-scroll'],
+    'set-up': ['classes', 'add-class-busy', 'delete-armed', 'tickboxes', 'link-qr-modal', 'csv-copied', 'csv-fallback-box'],
+    'staff-error': ['shown']
   };
   /* put a screen's name on its root, and say which state it is in */
   function surface(el, id, state) {

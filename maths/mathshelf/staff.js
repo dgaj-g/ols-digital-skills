@@ -62,6 +62,12 @@
   var isAdmin = false;     // true => deploy owner (HOD): sees every class
   var view = { cls: null, act: 'angles', wallTimer: null, wallSeq: 0, wallData: null };
 
+  /* every teacher sentence comes from the one table (rule 23) */
+  function TT(k, vals) {
+    var t = (window.GJ_STRINGS && window.GJ_STRINGS.teacher && window.GJ_STRINGS.teacher[k]) || '';
+    return (window.GJ_STRINGS && window.GJ_STRINGS.fill) ? window.GJ_STRINGS.fill(t, vals) : t;
+  }
+
   function call(sub, extra) {
     var p = { passcode: passcode, sub: sub };
     Object.keys(extra || {}).forEach(function (k) { p[k] = extra[k]; });
@@ -93,30 +99,81 @@
 
   function stopPolling() { clearInterval(view.wallTimer); view.wallTimer = null; }
 
-  function shell(title, bodyEl, backFn) {
+  /* ═══ THE MARKBOOK'S CHROME ══════════════════════════════════════
+     Dark glass at the top, light panels underneath: the shell/surface split.
+     The breadcrumb is always visible, because a teacher who cannot see where
+     she is cannot get back. `surfaceId`/`state` put the screen's name on its
+     own root so a machine can prove every one of them was walked. */
+  function shell(opts) {
     stopPolling();
     root.innerHTML = '';
-    var head = el('div', 'staff-head');
-    if (backFn) {
-      var back = el('button', 'btn-pencil btn-back', '&larr; Back');
-      back.addEventListener('click', backFn);
-      head.appendChild(back);
-    }
-    head.appendChild(el('h1', '', esc(title)));
-    var closeB = el('button', 'btn-pencil btn-back', 'Close markbook');
-    closeB.style.marginLeft = 'auto';
-    closeB.addEventListener('click', function () {
-      stopPolling();
-      window.GJ.app.showScreen('cover');
+    armRelock();
+
+    var bar = el('div', 'staff-topbar');
+    var mark = el('span', 'gj-wordmark');
+    mark.innerHTML = 'Math<b>Shelf</b>';
+    bar.appendChild(mark);
+
+    var crumb = el('nav', 'staff-crumb');
+    crumb.setAttribute('aria-label', 'Where you are');
+    (opts.crumbs || []).forEach(function (c, i) {
+      if (i) crumb.appendChild(document.createTextNode('  \u203a  '));
+      if (c.go) {
+        var a = el('button', 'crumb-link', esc(c.label));
+        a.addEventListener('click', c.go);
+        crumb.appendChild(a);
+      } else {
+        crumb.appendChild(el('span', 'crumb-here', esc(c.label)));
+      }
     });
-    head.appendChild(closeB);
-    root.appendChild(head);
+    bar.appendChild(crumb);
+
+    var right = el('div', 'staff-right');
+    if (opts.live) {
+      var live = el('span', 'live');
+      live.innerHTML = '<i aria-hidden="true"></i>Live';
+      right.appendChild(live);
+    }
+    var closeB = el('button', 'toolbtn', 'Close the markbook');
+    closeB.addEventListener('click', closeMarkbook);
+    right.appendChild(closeB);
+    bar.appendChild(right);
+    root.appendChild(bar);
+
     var main = el('div', 'staff-main');
-    main.appendChild(bodyEl);
+    main.appendChild(opts.body);
     root.appendChild(main);
+
+    window.GJ.surface(root, opts.surface || 'class-page', opts.state || 'loaded');
     window.GJ.app.showScreen('staff');
     window.scrollTo(0, 0);
   }
+
+  /* ═══ THE MARKBOOK RE-GATES WHEN IT IS LEFT (gates G-H4) ══════════
+     On a smartboard the class is looking at the front of the room. Leaving the
+     markbook, or leaving it alone for fifteen minutes, closes it and asks for
+     the passcode again; the passcode itself is never written to this device on
+     the live tier. */
+  var IDLE_RELOCK = 15 * 60 * 1000;
+  var idleTimer = null;
+  function armRelock() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(function () { closeMarkbook('idle'); }, IDLE_RELOCK);
+  }
+  function closeMarkbook(why) {
+    stopPolling();
+    clearTimeout(idleTimer);
+    passcode = null;
+    classes = [];
+    view.wallData = null;
+    root.innerHTML = '';               /* no class data left in the DOM */
+    relockReason = why === 'idle' ? 'idle' : 'left';
+    window.GJ.app.showScreen('cover');
+  }
+  var relockReason = null;
+  ['pointerdown', 'keydown'].forEach(function (ev) {
+    document.addEventListener(ev, function () { if (passcode) armRelock(); }, true);
+  });
 
   /* ═══ gate ════════════════════════════════════════════════════════ */
   function open() {
@@ -129,7 +186,7 @@
       'aria-label="Staff passcode" />' +
       '<button id="st-go" class="btn-stamp">Open the markbook</button></div>' +
       '<p id="st-msg" class="ui-msg" role="alert"></p>';
-    shell('The Markbook', body, null);
+    shell({ body: body, surface: 'staff-cover', state: 'passcode-empty', crumbs: [{ label: 'The markbook' }] });
     var go = body.querySelector('#st-go');
     function unlock() {
       if (go.disabled) return;
@@ -179,8 +236,8 @@
       '<span id="st-cmsg" class="ui-msg" role="status"></span></div>' +
       '<table class="ledger"><thead><tr><th>Class</th><th>Pupils</th><th>Books on the shelf</th><th></th></tr></thead>' +
       '<tbody id="st-rows"></tbody></table>' +
-      '<p class="ui-msg" style="margin-top:var(--sq)">Tick a book to put it on that class’s shelf. Pupils see ticked books only.</p>';
-    shell('The Markbook · ' + (isAdmin ? 'All classes' : 'Your classes'), body, null);
+      '<p class="ui-msg" style="margin-top:var(--sq)">' + esc(TT('setUpHint')) + ' A book that is not ticked is closed for that class: pupils see it on the shelf, marked as not set yet, and cannot open it.</p>';
+    shell({ body: body, surface: 'set-up', state: 'classes', crumbs: [{ label: isAdmin ? 'All classes' : 'Your classes' }] });
     var rows = body.querySelector('#st-rows');
     var cmsg = body.querySelector('#st-cmsg');
 
@@ -193,7 +250,21 @@
         var tr = document.createElement('tr');
         var ticks = el('td', '');
         var tickWrap = el('div', 'acts-ticks');
+        /* GROUPED BY SERIES, WITH THE AUDIENCE BAND ON EVERY ROW. The tickboxes
+           ARE the level system (rule 17): there is no class "level" field and
+           there never will be, so what a teacher needs beside each book is who
+           it is for. A J3 class gets the KS3 books; an S1 GCSE class gets the
+           GCSE ones; nothing has to be administered to make that true. */
+        var groups = {};
         window.GJ.app.activities.forEach(function (a) {
+          var key = a.series || 'Other';
+          (groups[key] = groups[key] || []).push(a);
+        });
+        Object.keys(groups).sort().forEach(function (key) {
+          tickWrap.appendChild(el('p', 'ticks-series', esc(key)));
+          groups[key].forEach(addTick);
+        });
+        function addTick(a) {
           var lab = el('label', 'tickbox');
           var cb = document.createElement('input');
           cb.type = 'checkbox';
@@ -210,13 +281,15 @@
           });
           lab.appendChild(cb);
           lab.appendChild(document.createTextNode(a.title));
+          var band = el('span', 'tick-band', esc(a.band || ''));
+          lab.appendChild(band);
           tickWrap.appendChild(lab);
-        });
+        }
         ticks.appendChild(tickWrap);
 
         var actions = el('td', '');
-        var wallB = el('button', 'btn-pencil', 'Working Wall');
-        wallB.addEventListener('click', function () { view.cls = c.name; showWall(); });
+        var wallB = el('button', 'toolbtn', 'Open the markbook');
+        wallB.addEventListener('click', function () { view.cls = c.name; showClassPage(); });
         var linkB = el('button', 'btn-pencil', 'Copy link');
         linkB.style.marginLeft = '6px';
         linkB.addEventListener('click', function () { copyText(classLink(c.name), cmsg, 'Link for ' + c.name + ' copied.'); });
@@ -260,7 +333,10 @@
       call('addClass', { className: nm }).then(function (r) {
         addB.disabled = false;
         if (r && r.ok) {
-          classes.push({ name: r.name, acts: r.acts || { angles: true, algebra: true }, count: 0 });
+          /* A NEW CLASS ARRIVES WITH NOTHING TICKED, whatever the server sent:
+             the teacher chooses what her class sees, and a book nobody chose is
+             a book nobody meant. */
+          classes.push({ name: r.name, acts: r.acts || {}, count: 0 });
           body.querySelector('#st-newclass').value = '';
           render();
           clearBusy(cmsg, r.name + ' added with both books on its shelf — untick any you want to hold back, then copy its link.');
@@ -297,10 +373,24 @@
     var out = [];
     pack.sections.forEach(function (sec, si) {
       sec.questions.forEach(function (q, qi) {
-        out.push({ q: q, label: 'Ex ' + (si + 1) + ' · Q' + (qi + 1), secId: sec.id, secHasMovie: !!sec.movie });
+        out.push({
+          q: q,
+          label: 'Ex ' + (si + 1) + ' \u00b7 Q' + (qi + 1),
+          /* EVERY NUMBER NAMES ITS HOME (DFM 156c). A cell, a bar or a chip
+             that says only "Q3" is unreadable the moment two books are on, so
+             the exercise and the question travel with the item itself. */
+          exLabel: 'Ex ' + (si + 1) + ' \u00b7 ' + sec.title,
+          qLabel: 'Q' + (qi + 1),
+          secIdx: si, secId: sec.id, secTitle: sec.title, secWalt: sec.walt || '',
+          secHasMovie: !!sec.movie
+        });
       });
     });
     return out;
+  }
+  function bookTitle(actId) {
+    var a = window.GJ.app.activities.filter(function (x) { return x.id === actId; })[0];
+    return a ? a.title : actId;
   }
   function markState(actId, state, q) {
     var rec = state && state.qs && state.qs[q.id];
@@ -415,296 +505,17 @@
     return null;
   }
 
-  function showInsights() {
-    var body = el('div', '');
-    var actTabs = el('div', 'check-row');
-    window.GJ.app.activities.forEach(function (a) {
-      var b = el('button', view.act === a.id ? 'btn-stamp' : 'btn-pencil', a.title);
-      b.addEventListener('click', function () { view.act = a.id; showInsights(); });
-      actTabs.appendChild(b);
-    });
-    body.appendChild(actTabs);
-    var host = el('div', 'ins-host');
-    var msg = el('p', 'ui-msg', '');
-    msg.style.marginTop = '20px';
-    host.appendChild(msg);
-    body.appendChild(host);
-    shell(view.cls + ' · Class Insights', body, function () { showWall(); });
-    busyCard(msg, 'Reading the class&hellip; this can take a moment');
-    call('wall', { className: view.cls, act: view.act }).then(function (r) {
-      if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load insights.'); return; }
-      view.wallData = r.pupils || [];
-      host.innerHTML = '';
-      renderInsights(host, view.wallData);
-    }).catch(function () { clearBusy(msg, 'Could not reach the server — try again.'); });
-  }
+  /* THE CLASS INSIGHTS SCREEN IS DISSOLVED (MATHS_V4_DESIGN section 5).
+     Everything it showed - who is struggling, who is ready for more, the
+     commonest slip, how far the class has got - is now on the CLASS PAGE,
+     which is the first screen a teacher meets, rather than on a separate
+     screen she had to know to look for. A number nobody navigates to is a
+     number nobody reads.
+     The SAME-QUESTION SWEEP is likewise superseded by the question view,
+     which is reached by pressing a question's own column header. */
 
-  function renderInsights(host, pupils) {
-    var qlist = questionList(view.act);
-    var pack = window.GJ.app.content(view.act);
-    var total = qlist.length;
-    var rows = (pupils || []).map(function (p) { return { p: p, st: pupilStats(p, qlist) }; })
-      .filter(function (x) { return x.st.attempted > 0; });
-    if (!rows.length) { host.appendChild(el('p', 'ui-msg', 'No pupil has opened this activity yet — share the class link to get started.')); return; }
-    var times = rows.map(function (x) { return x.st.avgTime; }).filter(function (t) { return t > 0; }).sort(function (a, b) { return a - b; });
-    var medianTime = times.length ? times[Math.floor(times.length / 2)] : 0;
-    rows.forEach(function (x) { x.flag = pupilFlag(x.st, medianTime, total); x.conf = confidenceFlag(x.st); });
-
-    /* class band */
-    var avgMethod = insAvg(rows.map(function (x) { return x.st.methodMax ? x.st.methodGot / x.st.methodMax : null; }));
-    var avgAcc = insAvg(rows.map(function (x) { return x.st.accMax ? x.st.accGot / x.st.accMax : null; }));
-    var avgConf = insAvg(rows.map(function (x) { return x.st.avgConf; }));
-    var doneCells = rows.reduce(function (a, x) { return a + x.st.finished; }, 0);
-    var pctComplete = Math.round(100 * doneCells / (rows.length * total || 1));
-    var nSupport = rows.filter(function (x) { return x.flag && x.flag.kind === 'support'; }).length;
-    var nStretch = rows.filter(function (x) { return x.flag && x.flag.kind === 'stretch'; }).length;
-    host.appendChild(insH('How ' + view.cls + ' is doing'));
-    var band = el('div', 'ins-band');
-    band.innerHTML =
-      insTile(rows.length, 'pupils started') +
-      insTile(pctComplete + '%', 'questions finished') +
-      insTile(insPct(avgMethod), 'working') +
-      insTile(insPct(avgAcc), 'answer') +
-      insTile(avgConf != null ? avgConf.toFixed(1) : '—', 'avg confidence /3') +
-      insTile(nSupport, 'need support') +
-      insTile(nStretch, 'ready for stretch');
-    host.appendChild(band);
-
-    /* hardest questions — where the working breaks */
-    var qstats = qlist.map(function (item) {
-      var t = { item: item, ok: 0, amber: 0, err: 0, firstTry: 0, retried: 0, touched: 0, dx: {}, errAt: {} };
-      rows.forEach(function (x) {
-        var c = (x.p.summary.qs || {})[item.q.id];
-        if (!c || c.st === 'un') return;
-        var st = c.ovr === 1 ? 'ok' : c.ovr === 0 ? 'err' : c.st;
-        if (st === 'open') return;
-        t.touched++;
-        if (st === 'ok') { t.ok++; if (c.a1 === 1) t.firstTry++; else t.retried++; }
-        else if (st === 'amber') t.amber++;
-        else if (st === 'err') { t.err++; if (c.dx) t.dx[c.dx] = (t.dx[c.dx] || 0) + 1; if (c.errAt) t.errAt[c.errAt] = (t.errAt[c.errAt] || 0) + 1; }
-      });
-      t.struggle = t.err * 3 + t.amber * 2 + t.retried;   // wrong answers lead, then answer-only, then retries
-      return t;
-    }).filter(function (t) { return t.touched > 0 && t.struggle > 0; });
-    qstats.sort(function (a, b) { return b.struggle - a.struggle; });
-    var hardest = qstats.slice(0, 8);
-    host.appendChild(insH('Where the class is struggling'));
-    if (!hardest.length) {
-      host.appendChild(el('p', 'ui-msg', 'No struggle spots yet — every finished question is sound so far.'));
-    } else {
-      var qt = ['<table class="ins-table"><thead><tr><th>Question</th><th>Got it</th><th>Wrong</th><th>Answer-only</th><th>Most common slip</th><th>Trips at</th></tr></thead><tbody>'];
-      hardest.forEach(function (t) {
-        var dxTop = insTop(t.dx), atTop = insTop(t.errAt);
-        qt.push('<tr class="ins-row" data-qid="' + esc(t.item.q.id) + '" tabindex="0" role="button" aria-expanded="false"><td class="ins-q"><b>' + esc(t.item.label) + '</b> <span class="ins-caret" aria-hidden="true">&#9656;</span><span class="ins-qp">' + esc(String(t.item.q.prompt || '').slice(0, 48)) + '</span></td>' +
-          '<td>' + t.ok + (t.retried ? ' <span class="ins-dim">(' + t.firstTry + ' 1st)</span>' : '') + '</td>' +
-          '<td class="ins-bad">' + (t.err || '') + '</td>' +
-          '<td>' + (t.amber || '') + '</td>' +
-          '<td>' + (dxTop ? esc(DX_NAMES[dxTop.key] || dxTop.key) + ' &times;' + dxTop.n : '<span class="ins-dim">&mdash;</span>') + '</td>' +
-          '<td>' + (atTop ? 'step ' + esc(String(atTop.key)) : '<span class="ins-dim">&mdash;</span>') + '</td></tr>');
-      });
-      qt.push('</tbody></table>');
-      var qd = el('div', 'wall'); qd.innerHTML = qt.join(''); host.appendChild(qd);
-      host.appendChild(el('p', 'ins-hint', 'Tap a question to see the exact working step the class breaks on.'));
-      wireDrill(qd, hardest);
-    }
-
-    /* self-eval: which "I can…" skills the class found hardest */
-    var canMap = {};
-    pack.sections.forEach(function (sec) { (sec.cans || []).forEach(function (can) { canMap[can.id] = can.text; }); });
-    var canTally = {};
-    rows.forEach(function (x) {
-      var evals = x.p.summary.evals || {};
-      Object.keys(evals).forEach(function (secId) {
-        var sk = (evals[secId] && evals[secId].skills) || {};
-        Object.keys(sk).forEach(function (cid) {
-          var v = sk[cid], tt = canTally[cid] = canTally[cid] || { hard: 0, n: 0 };
-          tt.n++; if (v === 1 || v === 2) tt.hard++;
-        });
-      });
-    });
-    var hardSkills = Object.keys(canTally).map(function (cid) {
-      var tt = canTally[cid]; return { text: canMap[cid] || cid, n: tt.n, pct: tt.n ? Math.round(100 * tt.hard / tt.n) : 0 };
-    }).filter(function (s) { return s.n > 0 && s.pct > 0; }).sort(function (a, b) { return b.pct - a.pct; }).slice(0, 5);
-    if (hardSkills.length) {
-      host.appendChild(insH('What pupils told you (self-review)'));
-      var sl = el('div', 'ins-skills');
-      hardSkills.forEach(function (s) {
-        sl.appendChild(el('div', 'ins-skill',
-          '<span class="ins-skill-bar"><span style="width:' + s.pct + '%"></span></span>' +
-          '<span class="ins-skill-txt">' + esc(s.text) + '</span>' +
-          '<span class="ins-skill-pct">' + s.pct + '% found tricky</span>'));
-      });
-      host.appendChild(sl);
-    }
-
-    /* flag board */
-    host.appendChild(insH('Pupils to look at'));
-    var fb = el('div', 'ins-flags');
-    fb.appendChild(flagCol('Needs support', 'support', rows.filter(function (x) { return x.flag && x.flag.kind === 'support'; })));
-    fb.appendChild(flagCol('Ready for stretch', 'stretch', rows.filter(function (x) { return x.flag && x.flag.kind === 'stretch'; })));
-    host.appendChild(fb);
-
-    /* confidence vs performance */
-    var over = rows.filter(function (x) { return x.conf === 'over'; });
-    var under = rows.filter(function (x) { return x.conf === 'under'; });
-    if (over.length || under.length) {
-      host.appendChild(insH('Confidence vs. performance'));
-      var cv = el('div', 'ins-flags');
-      if (over.length) cv.appendChild(confCol('Over-confident', 'high confidence, weaker working — worth a check-in', over));
-      if (under.length) cv.appendChild(confCol('Quietly excelling', 'doing well but low confidence — reassure and stretch', under));
-      host.appendChild(cv);
-    }
-
-    host.appendChild(el('p', 'ui-msg', 'Flags are a starting point from this activity, not a verdict — tap a name to open the pupil’s jotter.'));
-  }
-
-  /* Deep drill-down (full-state tier): tap a struggling-question row to fetch every
-     pupil's working once and show the EXACT step the class breaks on. Heavy fetch is
-     opt-in and cached for the life of this Insights view (one open at a time). */
-  function wireDrill(qd, hardest) {
-    var fsPromise = null;                         // fullStates() fetched once per Insights view
-    var byId = {};
-    hardest.forEach(function (h) { byId[h.item.q.id] = h.item; });
-    function toggle(tr) {
-      var qid = tr.getAttribute('data-qid'), item = byId[qid];
-      if (!item) return;
-      var next = tr.nextSibling;
-      if (next && next.className === 'ins-drill-row' && next.getAttribute('data-for') === qid) {
-        next.remove(); tr.classList.remove('open'); tr.setAttribute('aria-expanded', 'false'); return;
-      }
-      Array.prototype.forEach.call(qd.querySelectorAll('tr.ins-drill-row'), function (r) { r.remove(); });
-      Array.prototype.forEach.call(qd.querySelectorAll('tr.ins-row.open'), function (r) { r.classList.remove('open'); r.setAttribute('aria-expanded', 'false'); });
-      tr.classList.add('open'); tr.setAttribute('aria-expanded', 'true');
-      var drow = document.createElement('tr');
-      drow.className = 'ins-drill-row'; drow.setAttribute('data-for', qid);
-      var cell = document.createElement('td'); cell.colSpan = 6; cell.className = 'ins-drill';
-      cell.innerHTML = '<div class="panel-loading"><span class="panel-spinner" aria-hidden="true"></span><span>Reading every pupil&rsquo;s working&hellip;</span></div>';
-      drow.appendChild(cell);
-      tr.parentNode.insertBefore(drow, tr.nextSibling);
-      (fsPromise || (fsPromise = fullStates())).then(function (all) {
-        renderDrill(cell, item, all);
-      }).catch(function () { cell.innerHTML = '<p class="ui-msg">Could not read the jotters — try again.</p>'; fsPromise = null; });
-    }
-    qd.addEventListener('click', function (e) {
-      var tr = e.target.closest && e.target.closest('tr.ins-row');
-      if (tr && qd.contains(tr)) toggle(tr);
-    });
-    qd.addEventListener('keydown', function (e) {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      var tr = e.target.closest && e.target.closest('tr.ins-row');
-      if (tr && qd.contains(tr)) { e.preventDefault(); toggle(tr); }
-    });
-  }
-
-  function normCluster(s) { return String(s == null ? '' : s).replace(/\s+/g, '').toLowerCase(); }
-  function isFirstTry(r) {
-    // mirror the P1 a1 contract EXACTLY: right on the FIRST (and only) attempt.
-    // a1 = (att.length===1 && effective-ok); the caller already guarantees st==='ok'
-    // (override folded in), so a single attempt is all that distinguishes 1st-try
-    // from retried — an overridden-correct pupil who needed 2+ attempts is a retry.
-    return !!(r.rec && r.rec.att && r.rec.att.length === 1);
-  }
-  function renderDrill(cell, item, all) {
-    var q = item.q;
-    var first = 0, retry = 0, amber = 0, err = 0;
-    var mGot = 0, mMax = 0, aGot = 0, aMax = 0;
-    var methodCredit = 0, soundNoReach = 0, unpinned = 0, finished = 0, helpPulled = 0;
-    var slips = {};                                // key → { count, label, example, dx }
-    all.forEach(function (p) {
-      var r = markState(view.act, p.state, q);
-      if (!r || r.st === 'un' || r.st === 'open') return;
-      finished++;
-      if (p.state && p.state.help && p.state.help[q.id]) helpPulled++;   // pupil opened "Want to see how?" here
-      var v = r.verdict;
-      if (v && v.mkMax) {
-        if (v.mkMax[0]) { mGot += (v.mk && v.mk[0]) || 0; mMax += v.mkMax[0]; }
-        if (v.mkMax[1]) { aGot += (v.mk && v.mk[1]) || 0; aMax += v.mkMax[1]; }
-      }
-      if (r.st === 'ok') { if (isFirstTry(r)) first++; else retry++; }
-      else if (r.st === 'amber') amber++;
-      else if (r.st === 'err') {
-        err++;
-        var ovrWrong = !!(r.rec && r.rec.ovr && r.rec.ovr.q === 0);   // teacher marked it wrong: don't credit method against their judgement
-        if (!ovrWrong && v && v.mk && v.mk[0] > 0) methodCredit++;     // honour working: slipped on the answer but method still earned credit
-        if (r.cluster) {
-          var key = r.dx ? 'dx:' + r.dx : 'c:' + normCluster(r.cluster);
-          var s = slips[key] = slips[key] || { count: 0, label: r.dx ? (DX_NAMES[r.dx] || r.dx) : 'Same wrong line', example: r.cluster, dx: r.dx || null };
-          s.count++;
-          if (!s.dx && r.dx) { s.dx = r.dx; s.label = DX_NAMES[r.dx] || r.dx; }
-        } else {
-          // err but no single line flagged. Only claim "right method" when the
-          // working really is sound: not teacher-marked-wrong, method marks earned,
-          // and no bad line/step. Otherwise it's an error we can't pin to a line
-          // (incl. an override-to-wrong or a locked blank) — label it neutrally.
-          var anyBad = (v && (v.perLine || v.perStep) || []).some(function (x) { return x.ok === 0 || x.val === 0 || x.rsn === 0; });
-          if (!ovrWrong && v && v.mk && v.mk[0] > 0 && !anyBad) soundNoReach++;
-          else unpinned++;
-        }
-      }
-    });
-
-    if (!finished) { cell.innerHTML = '<p class="ui-msg">No finished attempts at this question yet.</p>'; return; }
-    var out = el('div', 'drill');
-    out.appendChild(el('p', 'drill-sub', esc(item.label) + ' — ' + finished + ' finished. ' + esc(String(q.prompt || '').slice(0, 90))));
-
-    /* outcome mix — honours working (answer-only is its own bucket) */
-    var mix = el('div', 'drill-mix');
-    mix.innerHTML =
-      drillChip(first, 'right first try', 'ok') +
-      drillChip(retry, 'right on a retry', 'mid') +
-      drillChip(amber, 'answer only (no working)', 'amber') +
-      drillChip(err, 'not yet', 'bad');
-    out.appendChild(mix);
-
-    /* the exact breaking step — grouped by misconception / literal wrong line, ranked */
-    out.appendChild(el('h4', 'drill-h', 'Where they break'));
-    var keys = Object.keys(slips).sort(function (a, b) { return slips[b].count - slips[a].count; });
-    if (!keys.length && !soundNoReach && !unpinned) {
-      out.appendChild(el('p', 'ui-msg', 'No marked working errors — slips here are answer-only or already corrected.'));
-    } else {
-      var ul = el('div', 'drill-slips');
-      keys.forEach(function (k) {
-        var s = slips[k];
-        ul.appendChild(el('div', 'drill-slip',
-          '<span class="drill-count">' + s.count + '</span>' +
-          '<span class="drill-line">' + esc(s.example) + '</span>' +
-          '<span class="drill-why">' + esc(s.label) + '</span>'));
-      });
-      if (soundNoReach) ul.appendChild(el('div', 'drill-slip',
-        '<span class="drill-count">' + soundNoReach + '</span>' +
-        '<span class="drill-line ins-dim">working sound&hellip;</span>' +
-        '<span class="drill-why">right working, final answer not reached</span>'));
-      if (unpinned) ul.appendChild(el('div', 'drill-slip',
-        '<span class="drill-count">' + unpinned + '</span>' +
-        '<span class="drill-line ins-dim">&mdash;</span>' +
-        '<span class="drill-why">slip not pinned to a line &mdash; check their jotter</span>'));
-      out.appendChild(ul);
-    }
-    if (err && methodCredit) out.appendChild(el('p', 'drill-note',
-      methodCredit + ' of the ' + err + ' who went wrong still earned working marks — their working was partly sound.'));
-    if (helpPulled) out.appendChild(el('p', 'drill-note drill-help',
-      helpPulled + (helpPulled === 1 ? ' pupil' : ' pupils') + ' opened the worked example on this question.'));
-
-    /* method vs accuracy split for this question, class-wide */
-    var mPct = mMax ? Math.round(100 * mGot / mMax) : null;
-    var aPct = aMax ? Math.round(100 * aGot / aMax) : null;
-    var bars = el('div', 'drill-bars');
-    bars.appendChild(drillBar('Working', mPct));
-    bars.appendChild(drillBar('Answer', aPct));
-    out.appendChild(bars);
-
-    cell.innerHTML = ''; cell.appendChild(out);
-  }
-  function drillChip(n, label, kind) {
-    return '<span class="drill-chip drill-' + kind + '"><b>' + n + '</b> ' + esc(label) + '</span>';
-  }
-  function drillBar(label, pct) {
-    var d = el('div', 'drill-bar');
-    d.innerHTML = '<span class="drill-bar-txt">' + esc(label) + '</span>' +
-      '<span class="ins-skill-bar"><span style="width:' + (pct == null ? 0 : pct) + '%"></span></span>' +
-      '<span class="drill-bar-pct">' + (pct == null ? '—' : pct + '%') + '</span>';
-    return d;
-  }
+  /* the drill helpers went with the Insights screen: the class page's own
+     exercise cards carry the proportions and the named slip now. */
 
   function flagCol(title, kind, list) {
     var col = el('div', 'ins-flagcol ins-' + kind);
@@ -774,17 +585,301 @@
   }
 
   /* ═══ the Working Wall ════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════════
+     S1 · THE CLASS PAGE — the markbook's front door
+     ═══════════════════════════════════════════════════════════════
+     In the order a teacher's questions actually come: how did the class do,
+     who needs me, then this exercise. The 24-column grid is one press away
+     and is no longer the first thing anybody meets. */
+  function showClassPage() {
+    var body = el('div', 'cp');
+    var acts = window.GJ.app.activities.filter(function (a) { return true; });
+
+    /* the book switcher */
+    var sw = el('div', 'cp-books');
+    sw.setAttribute('role', 'group');
+    sw.setAttribute('aria-label', 'Which book');
+    acts.forEach(function (a) {
+      var b = el('button', 'toolbtn' + (view.act === a.id ? ' on' : ''), esc(a.title));
+      b.setAttribute('aria-pressed', view.act === a.id ? 'true' : 'false');
+      b.addEventListener('click', function () { view.act = a.id; showClassPage(); });
+      sw.appendChild(b);
+    });
+    body.appendChild(sw);
+
+    var strip = el('div', 'cp-strip');
+    body.appendChild(strip);
+
+    var needs = el('section', 'needs');
+    needs.setAttribute('aria-label', 'Pupils who need you now');
+    needs.appendChild(el('p', 'needs-lbl', esc(TT('needsYouLabel'))));
+    var needsRow = el('div', 'needs-row');
+    needs.appendChild(needsRow);
+    body.appendChild(needs);
+
+    var cards = el('div', 'excards');
+    body.appendChild(cards);
+
+    /* THE LEGEND IS PERMANENT. A smartboard has no hover, so a meaning that
+       lives in a title attribute is a meaning nobody in the room can reach. */
+    var legend = el('p', 'cp-legend');
+    legend.innerHTML =
+      '<span class="lg-ok">\u25a0</span> right &nbsp; ' +
+      '<span class="lg-am">\u25a0</span> answer only, no working shown &nbsp; ' +
+      '<span class="lg-err">\u25a0</span> wrong &nbsp; ' +
+      '<span class="lg-now">\u25a0</span> working now &nbsp; ' +
+      '<span class="lg-un">\u25a0</span> not started';
+    body.appendChild(legend);
+
+    var tools = el('div', 'toolrow');
+    [['Full grid', showWall], ['Slips and starter', showPile], ['Download CSV', exportCsv], ['Set-up', showClasses]]
+      .forEach(function (t) {
+        var b = el('button', 'toolbtn', esc(t[0]));
+        b.addEventListener('click', t[1]);
+        tools.appendChild(b);
+      });
+    body.appendChild(tools);
+
+    shell({
+      body: body, surface: 'class-page', state: 'loading-cold', live: true,
+      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls }]
+    });
+
+    /* the cold first switch says WHICH class it is loading, by name, before
+       the fetch starts — never a bare spinner (DFM 42/161) */
+    strip.textContent = TT('loadingClass', { 'class': view.cls });
+
+    var qlist = questionList(view.act);
+    var pack = window.GJ.app.content(view.act);
+
+    function paint(pupils) {
+      window.GJ.setState(root, 'class-page', pupils.length ? 'live' : 'empty-class');
+      pupils = pupils.slice().sort(function (a, b) { return (a.name || '').localeCompare(b.name || ''); });
+
+      /* the stat strip — every number named */
+      var started = 0, finished = 0;
+      pupils.forEach(function (p) {
+        var sum = p.summary || {};
+        if (sum.done) started++;
+        if (sum.done && sum.total && sum.done === sum.total) finished++;
+      });
+      strip.innerHTML = '';
+      [[pupils.length, 'pupils in ' + view.cls],
+       [started, 'started ' + bookTitle(view.act)],
+       [finished, 'finished ' + bookTitle(view.act)]].forEach(function (row) {
+        var c = el('span', 'stat-chip');
+        c.innerHTML = '<b>' + row[0] + '</b> ' + esc(row[1]);
+        strip.appendChild(c);
+      });
+
+      /* who needs you, by name, with the reason on the chip */
+      var flags = window.GJ_STAFF_PAGES.needsYou(pupils, qlist, bookTitle(view.act));
+      needsRow.innerHTML = '';
+      if (!flags.length) {
+        needsRow.appendChild(el('p', 'needs-none', 'Nobody is stuck in ' + esc(bookTitle(view.act)) + ' right now.'));
+        window.GJ.setState(root, 'class-page', 'no-flags');
+      }
+      flags.forEach(function (f) {
+        var chip = el('button', 'pupilchip');
+        chip.innerHTML = '<span class="dot" aria-hidden="true"></span>' +
+          '<span class="who">' + esc(f.name) + '</span>' +
+          '<span class="why">' + esc(f.why) + '</span>';
+        chip.addEventListener('click', function () { showJotterPage(f.email, { q: f.qid }); });
+        needsRow.appendChild(chip);
+      });
+
+      /* one card per exercise */
+      cards.innerHTML = '';
+      pack.sections.forEach(function (sec, si) {
+        var mine = qlist.filter(function (i) { return i.secId === sec.id; });
+        var st = window.GJ_STAFF_PAGES.exerciseStats(pupils, sec, si, DX_NAMES);
+        var card = el('button', 'excard staff-panel');
+        card.setAttribute('aria-label', 'Ex ' + (si + 1) + ', ' + sec.title + ', in ' + bookTitle(view.act));
+        var total = Math.max(1, st.ok + st.amber + st.err + st.open + st.un);
+        var pc = function (n) { return (100 * n / total) + '%'; };
+        card.innerHTML =
+          '<span class="exno">Ex ' + (si + 1) + ' \u00b7 ' + esc(bookTitle(view.act)) + '</span>' +
+          '<h4>' + esc(sec.title) + '</h4>' +
+          '<p class="walt">' + esc(sec.walt || '') + '</p>' +
+          '<span class="propbar" role="img" aria-label="' +
+            st.ok + ' right, ' + st.amber + ' answer only, ' + st.err + ' wrong, ' +
+            st.open + ' working now, ' + st.un + ' not started">' +
+            '<i class="p-ok" style="width:' + pc(st.ok) + '"></i>' +
+            '<i class="p-am" style="width:' + pc(st.amber) + '"></i>' +
+            '<i class="p-err" style="width:' + pc(st.err) + '"></i>' +
+            '<i class="p-now" style="width:' + pc(st.open) + '"></i>' +
+            '<i class="p-un" style="width:' + pc(st.un) + '"></i>' +
+          '</span>' +
+          (st.slip
+            ? '<span class="slipline"><span class="k">Most common slip in Ex ' + (si + 1) + '</span>' +
+              '<span class="n">' + esc(st.slip) + ' \u00d7' + st.slipN + '</span></span>'
+            : '<span class="slipline"><span class="k">No repeated slip in Ex ' + (si + 1) + ' yet</span></span>') +
+          '<span class="qdots" role="img" aria-label="one mark per question in this exercise">' +
+            st.dots.map(function (d) {
+              var cls = !d.seen ? '' : d.bad > d.ok ? ' bad' : d.mixed ? ' mixed' : ' ok';
+              return '<i class="' + cls.trim() + '" title="' + esc(d.label) + '"></i>';
+            }).join('') +
+          '</span>';
+        card.addEventListener('click', function () { showExercise(si); });
+        cards.appendChild(card);
+      });
+    }
+
+    loadWall(paint);
+  }
+
+  /* one loader for every screen that needs the class's summaries */
+  function loadWall(paint) {
+    var seq = ++view.wallSeq;
+    function pull() {
+      call('wall', { className: view.cls, act: view.act }).then(function (r) {
+        if (seq !== view.wallSeq) return;
+        if (!r || !r.ok) return;
+        view.wallData = r.pupils || [];
+        paint(view.wallData);
+      }).catch(function () {});
+    }
+    pull();
+    view.wallTimer = setInterval(pull, 20000);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     S2 · THE EXERCISE VIEW — one exercise, pupils down, questions across
+     ═══════════════════════════════════════════════════════════════ */
+  function showExercise(si) {
+    var pack = window.GJ.app.content(view.act);
+    var sec = pack.sections[si];
+    if (!sec) return showClassPage();
+    var qlist = questionList(view.act).filter(function (i) { return i.secId === sec.id; });
+
+    var body = el('div', '');
+    var head = el('div', 'exhead');
+    head.innerHTML = '<h3>' + esc(sec.title) + '</h3>' +
+      '<p class="ex-walt">' + esc(sec.walt || '') + '</p>';
+    body.appendChild(head);
+    var grid = el('div', 'grid staff-panel');
+    body.appendChild(grid);
+    var legend = el('p', 'cp-legend');
+    legend.innerHTML =
+      '<span class="lg-ok">\u2713</span> right &nbsp; ' +
+      '<span class="lg-am">\u25d0</span> answer only &nbsp; ' +
+      '<span class="lg-err">\u2717</span> wrong, with the step it broke at &nbsp; ' +
+      '<span class="lg-now">\u25cf</span> working now &nbsp; ' +
+      '<span class="lg-un">\u2014</span> not started';
+    body.appendChild(legend);
+
+    shell({
+      body: body, surface: 'exercise-view', state: 'loaded', live: true,
+      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: showClassPage },
+               { label: bookTitle(view.act), go: showClassPage },
+               { label: 'Ex ' + (si + 1) + ' \u00b7 ' + sec.title }]
+    });
+
+    function paint(pupils) {
+      pupils = pupils.slice().sort(function (a, b) { return (a.name || '').localeCompare(b.name || ''); });
+      var now = Math.floor(Date.now() / 1000);
+      var t = ['<table><thead><tr><th class="nm">Pupil</th>'];
+      qlist.forEach(function (item) {
+        var st = window.GJ_STAFF_PAGES.exerciseStats(pupils, { questions: [item.q] }, si, DX_NAMES);
+        var tot = Math.max(1, st.ok + st.amber + st.err + st.open + st.un);
+        t.push('<th scope="col">' + esc(item.qLabel) +
+          '<span class="gist">' + esc(String(item.q.prompt || '').slice(0, 46)) + '</span>' +
+          '<span class="mini" role="img" aria-label="' + st.ok + ' right of ' + tot + ' in ' + esc(item.qLabel) + '">' +
+            '<i class="p-ok" style="width:' + (100 * st.ok / tot) + '%"></i>' +
+            '<i class="p-am" style="width:' + (100 * st.amber / tot) + '%"></i>' +
+            '<i class="p-err" style="width:' + (100 * st.err / tot) + '%"></i>' +
+          '</span></th>');
+      });
+      t.push('</tr></thead><tbody>');
+      pupils.forEach(function (p) {
+        t.push('<tr><td class="nm">' + esc(p.name || p.email) + '</td>');
+        qlist.forEach(function (item) {
+          var c = ((p.summary || {}).qs || {})[item.q.id];
+          var glyph = '<span class="g-un">\u2014</span>', title = 'Not started';
+          if (c) {
+            var st = c.ovr === 1 ? 'ok' : c.ovr === 0 ? 'err' : c.st;
+            if (st === 'ok') { glyph = '<span class="g-ok">\u2713</span>'; title = 'Right'; }
+            else if (st === 'amber') { glyph = '<span class="g-am">\u25d0</span>'; title = 'Answer only, no working shown'; }
+            else if (st === 'err') { glyph = '<span class="g-err">\u2717' + (c.errAt ? '<sup>' + c.errAt + '</sup>' : '') + '</span>'; title = 'Wrong at step ' + (c.errAt || '?') + (c.dx ? ' \u2014 ' + (DX_NAMES[c.dx] || c.dx) : ''); }
+            else { glyph = '<span class="g-now">\u25cf</span>'; title = ((p.summary.upd && (now - p.summary.upd) < 60) ? 'Working right now' : 'In progress'); }
+            if (c.ovr != null) title += ' \u00b7 your mark';
+          }
+          t.push('<td class="cell" data-email="' + esc(p.email) + '" data-qid="' + esc(item.q.id) + '" title="' + esc(title) + '" aria-label="' + esc((p.name || p.email) + ', ' + item.qLabel + ': ' + title) + '">' + glyph + '</td>');
+        });
+        t.push('</tr>');
+      });
+      t.push('</tbody></table>');
+      grid.innerHTML = t.join('');
+      grid.querySelectorAll('th[scope="col"]').forEach(function (th, i) {
+        th.style.cursor = 'pointer';
+        th.addEventListener('click', function () { showQuestionView(qlist[i].q.id); });
+      });
+      grid.querySelectorAll('td.cell').forEach(function (td) {
+        td.addEventListener('click', function () {
+          showJotterPage(td.getAttribute('data-email'), { q: td.getAttribute('data-qid') });
+        });
+      });
+    }
+    loadWall(paint);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     S3 · THE QUESTION VIEW — every pupil's working for one question
+     ═══════════════════════════════════════════════════════════════ */
+  function showQuestionView(qid) {
+    var qlist = questionList(view.act);
+    var item = qlist.filter(function (i) { return i.q.id === qid; })[0] || qlist[0];
+    var body = el('div', '');
+    var head = el('div', 'exhead');
+    head.innerHTML = '<h3>' + esc(item.qLabel) + ' \u00b7 ' + esc(item.secTitle) + '</h3>' +
+      '<p class="q-prompt">' + esc(item.q.prompt || '') + '</p>';
+    body.appendChild(head);
+    var msg = el('p', 'ui-msg', '');
+    body.appendChild(msg);
+    var col = el('div', 'qv-col');
+    body.appendChild(col);
+
+    shell({
+      body: body, surface: 'question-view', state: 'loading-progressive',
+      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: showClassPage },
+               { label: 'Ex ' + (item.secIdx + 1) + ' \u00b7 ' + item.secTitle, go: function () { showExercise(item.secIdx); } },
+               { label: item.qLabel }]
+    });
+
+    var roster = (view.wallData || []).slice().sort(function (a, b) { return (a.name || '').localeCompare(b.name || ''); });
+    msg.textContent = TT('readingBooks', { done: 0, total: roster.length });
+    var done = 0;
+    roster.forEach(function (p) {
+      call('jotter', { className: view.cls, act: view.act, email: p.email }).then(function (r) {
+        done++;
+        msg.textContent = done < roster.length ? TT('readingBooks', { done: done, total: roster.length }) : '';
+        if (done >= roster.length) window.GJ.setState(root, 'question-view', 'loaded');
+        if (!r || !r.ok) return;
+        var st = null; try { st = JSON.parse(r.state || '{}'); } catch (e) {}
+        var m = markState(view.act, st, item.q);
+        var card = el('div', 'qv-card staff-panel');
+        card.setAttribute('data-email', p.email);
+        var lines = (m.last && m.last.L) || [];
+        card.innerHTML = '<p class="qv-who">' + esc(p.name || p.email) + '</p>' +
+          (lines.length
+            ? '<ol class="qv-lines">' + lines.map(function (l) { return '<li>' + esc(pretty(l.t || '')) + '</li>'; }).join('') + '</ol>'
+            : '<p class="qv-none">Nothing written for ' + esc(item.qLabel) + ' yet.</p>');
+        col.appendChild(card);
+      }).catch(function () { done++; });
+    });
+  }
+
   function showWall() {
     var body = el('div', '');
     var actTabs = el('div', 'check-row');
     window.GJ.app.activities.forEach(function (a) {
       var b = el('button', view.act === a.id ? 'btn-stamp' : 'btn-pencil', a.title);
-      b.addEventListener('click', function () { view.act = a.id; showWall(); });
+      b.addEventListener('click', function () { view.act = a.id; showClassPage(); });
       actTabs.appendChild(b);
     });
     var tools = el('div', 'check-row');
-    [['Class Insights', showInsights], ['Marking Pile', showPile], ['Same-Question Sweep', showSweep], ['Copy CSV', exportCsv]].forEach(function (t) {
-      var b = el('button', 'btn-pencil', t[0]);
+    [['Back to the class page', showClassPage], ['Slips and starter', showPile], ['Download CSV', exportCsv]].forEach(function (t) {
+      var b = el('button', 'toolbtn', t[0]);
       b.addEventListener('click', t[1]);
       tools.appendChild(b);
     });
@@ -799,7 +894,7 @@
       '<span class="glyph-live">●</span> working now &middot; ' +
       '<span class="glyph-un">—</span> not started';
     body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(orient); body.appendChild(legend); body.appendChild(wall);
-    shell(view.cls + ' · Working Wall', body, function () { showClasses(); });
+    shell({ body: body, surface: 'full-grid', state: 'loaded', live: true, crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'Full grid' }] });
 
     var qlist = questionList(view.act);
 
@@ -916,7 +1011,7 @@
     var msg = el('p', 'ui-msg', 'Fetching the jotter…');
     var page = el('div', 'jotter');
     body.appendChild(flick); body.appendChild(msg); body.appendChild(page);
-    shell(view.cls + ' · Jotter Page', body, function () { showWall(); });
+    shell({ body: body, surface: 'book-view', state: 'pencil', crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'A pupil\u2019s book' }] });
 
     busyCard(msg, 'Fetching the jotter&hellip; this can take a moment');
     fetchJotter(email).then(function (r) {
@@ -1102,7 +1197,7 @@
     body.appendChild(msg);
     var list = el('div', '');
     body.appendChild(list);
-    shell(view.cls + ' · Marking Pile', body, function () { showWall(); });
+    shell({ body: body, surface: 'slips', state: 'ranked', crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'Slips' }] });
 
     busyCard(msg, 'Reading every jotter&hellip; this can take a moment');
     fullStates().then(function (all) {
@@ -1164,63 +1259,6 @@
   }
 
   /* ═══ Same-Question Sweep ═════════════════════════════════════════ */
-  function showSweep() {
-    var body = el('div', '');
-    var picker = el('div', 'check-row');
-    var grid = el('div', 'sweep-grid');
-    var msg = el('p', 'ui-msg', 'Pick a question — every pupil’s page opens at it, side by side.');
-    body.appendChild(picker); body.appendChild(msg); body.appendChild(grid);
-    shell(view.cls + ' · Same-Question Sweep', body, function () { showWall(); });
-
-    var sel = document.createElement('select');
-    sel.style.cssText = 'font-family:var(--f-stationery);font-size:14px;padding:8px;border:1.5px solid var(--navy);border-radius:4px';
-    questionList(view.act).forEach(function (item) {
-      var o = document.createElement('option');
-      o.value = item.q.id; o.textContent = item.label + ' — ' + item.q.prompt.slice(0, 60);
-      sel.appendChild(o);
-    });
-    picker.appendChild(sel);
-    var go = el('button', 'btn-stamp', 'Show all working');
-    picker.appendChild(go);
-
-    go.addEventListener('click', function () {
-      if (go.disabled) return;
-      go.disabled = true;
-      busyCard(msg, 'Reading every jotter&hellip; this can take a moment');
-      fullStates().then(function (all) {
-        go.disabled = false;
-        clearBusy(msg, '');
-        grid.innerHTML = '';
-        var q = questionList(view.act).filter(function (i) { return i.q.id === sel.value; })[0].q;
-        var shown = 0;
-        all.sort(function (a, b) { return (a.name || '').localeCompare(b.name || ''); });
-        all.forEach(function (p) {
-          var res = markState(view.act, p.state, q);
-          if (res.st === 'un') return;
-          shown++;
-          var per = (res.verdict && (res.verdict.perLine || res.verdict.perStep)) || [];
-          var last = res.last || {};
-          var lines = (last.L || []).map(function (l, i) {
-            var v = per[i] || {};
-            return '<div class="' + (v.ok === 0 ? 'wavy' : '') + '">' + (v.ok === 1 ? '✓ ' : v.ok === 2 ? '(✓) ' : v.ok === 0 ? '✗ ' : '· ') + esc(pretty(l.t)) + '</div>';
-          }).join('');
-          lines += (last.steps || []).map(function (s, i) {
-            var v = per[i] || {};
-            return '<div class="' + (v.val === 0 ? 'wavy' : '') + '">' + (v.val === 1 ? '✓ ' : '✗ ') + '∠' + esc(s.ang) + ' = ' + esc(String(s.val)) + '°</div>';
-          }).join('');
-          if (last.pick != null) lines += '<div>' + (last.pick === q.classify ? '✓ ' : '✗ ') + esc(last.pick) + '</div>';
-          if (last.read != null) lines += '<div>' + (Math.abs(last.read - q.value) <= (q.tol || 3) ? '✓ ' : '✗ ') + 'measured ' + esc(String(last.read)) + '°</div>';
-          var badge = res.st === 'ok' ? '<span class="glyph-ok">✓</span>' : res.st === 'amber' ? '<span class="glyph-amber">◐</span>' : res.st === 'err' ? '<span class="glyph-err">✗</span>' : '<span class="glyph-live">●</span>';
-          var card = el('div', 'mini-jotter', '<div class="mj-name">' + badge + ' ' + esc(p.name || p.email) + '</div>' + (lines || '<span class="ui-msg">no lines yet</span>'));
-          card.addEventListener('click', function () { showJotterPage(p.email); });
-          grid.appendChild(card);
-        });
-        msg.textContent = shown ? shown + ' pages open at ' + sel.selectedOptions[0].textContent.split(' — ')[0] + '. Tap a page to open the full jotter.' : 'Nobody has touched that question yet.';
-      });
-    });
-  }
-
-  /* ═══ CSV ═════════════════════════════════════════════════════════ */
   function exportCsv() {
     var msg = el('span', 'ui-msg');
     fullStates().then(function (all) {
