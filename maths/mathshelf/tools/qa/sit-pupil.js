@@ -81,6 +81,21 @@ async function walkBook(page, book, width, sidecar, transcript) {
     const a = await AUD.run(page, { clickSafety: surface === 'question' });
     const row = Object.assign({ surface, state, width }, extra || {}, { audits: a.verdicts });
     sidecar.states.push(row);
+    /* THE DOCK IS ITS OWN SURFACE. It is what she works with — the pad, the
+       tray, the chips, the arrows — and it changes sub-kind from question to
+       question, so it has to be recorded where it is standing rather than
+       assumed to be covered because the question above it was. */
+    if (surface === 'question') {
+      const dock = await page.evaluate(() => {
+        const d = document.querySelector('[data-surface="dock"]');
+        if (!d || d.hidden) return null;
+        const r = d.getBoundingClientRect();
+        return (r.width > 2 && r.height > 2) ? d.getAttribute('data-state') : null;
+      });
+      if (dock) {
+        sidecar.states.push(Object.assign({ surface: 'dock', state: dock, width }, extra || {}, { audits: a.verdicts }));
+      }
+    }
     Object.keys(a.findings).forEach(k => {
       (a.findings[k] || []).forEach(f => {
         g.fail(surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + width, k,
@@ -133,6 +148,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
 
     /* every question on the exercise */
     const qids = await page.evaluate(s => eval(s)(), W.QUESTIONS_ON_SCREEN);
+    const finishedSection = qids.length > 0;
     for (const qid of qids) {
       say(await page.evaluate((id) => {
         const r = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
@@ -156,6 +172,54 @@ async function walkBook(page, book, width, sidecar, transcript) {
           .filter(x => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === id)[0];
         return r ? (r.querySelector('.jq-feedback, .mk-comment, .jq-tally') || {}).textContent || '' : '';
       }, qid));
+    }
+
+    /* THE SELF-EVALUATION CARD. It appears once every question on the exercise
+       is finished — which is exactly what the walk has just done — and it is a
+       surface a pupil reads and writes on, so it is walked like any other. */
+    if (finishedSection) {
+      const se = await page.evaluate(() => {
+        const c = document.querySelector('[data-surface="self-eval"]');
+        if (!c) return null;
+        c.scrollIntoView({ block: 'center' });
+        return { state: c.getAttribute('data-state'), head: (c.querySelector('.se-head') || {}).textContent || '' };
+      });
+      if (se) {
+        say(se.head);
+        await record('self-eval', 'open', { section: si, book });
+        /* pressing a confidence chip saves it, and the card says so */
+        const saved = await page.evaluate(() => {
+          const c = document.querySelector('[data-surface="self-eval"]');
+          const b = c && c.querySelector('button');
+          if (!b) return false;
+          b.click();
+          return true;
+        });
+        if (saved) {
+          await W.settle(page);
+          await record('self-eval', 'saved', { section: si, book });
+          say(await page.evaluate(() => (document.querySelector('[data-surface="self-eval"] .se-saved, [data-surface="self-eval"] p') || {}).textContent || ''));
+        }
+      }
+    }
+  }
+
+  /* THE END OF THE BOOK. The last chip on the contents strip is her tally, and
+     when every mark is hers the gold star is on it. A book she can finish and
+     a screen nobody walked are not the same thing. */
+  {
+    const chips = await page.evaluate(s => eval(s)(), W.ACTIONS.sectionCount);
+    await page.evaluate((s, i) => eval(s)(i), W.ACTIONS.openSection, chips - 1);
+    await W.settle(page);
+    const end = await page.evaluate(() => {
+      const e = document.querySelector('[data-surface="book-end"]');
+      return e ? { state: e.getAttribute('data-state'), text: (e.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 160) } : null;
+    });
+    if (end) {
+      say(end.text);
+      await record('book-end', end.state || 'partial', { book });
+    } else {
+      g.note(book + ' @' + width + ': the last contents chip did not open a tally page');
     }
   }
 
