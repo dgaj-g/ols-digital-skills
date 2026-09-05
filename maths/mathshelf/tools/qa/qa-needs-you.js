@@ -49,7 +49,7 @@ g.exempt([
 function offlineHome() {
   const sandbox = makeWindow();
   vm.createContext(sandbox);
-  ['mathcore.js', 'anglecore.js', 'content-angles.js', 'content-algebra.js', 'player.js', 'jotter.js', 'staff.js', 'script.js']
+  ['mathcore.js', 'anglecore.js', 'content-angles.js', 'content-algebra.js', 'player.js', 'jotter.js', 'strings.js', 'staff-pages.js', 'staff.js', 'script.js']
     .forEach(f => {
       const p = A.app(f);
       if (fs.existsSync(p)) vm.runInContext(fs.readFileSync(p, 'utf8'), sandbox, { filename: f });
@@ -67,6 +67,11 @@ if (!stub || !stub.GJ || !stub.GJ.app) {
 /* ═══════════════════ (A) the v4 chip function, if it exists yet ════════ */
 function findChipFn() {
   const tries = [
+    /* WHERE IT ACTUALLY LIVES. The flag arithmetic is in staff-pages.js as
+       GJ_STAFF_PAGES.needsYou, so a gate that looked only at staff.js reported
+       that the class page had no computable definition of a flag while it had
+       one, six lines away. */
+    () => stub.GJ_STAFF_PAGES && stub.GJ_STAFF_PAGES.needsYou,
     () => stub.needsYou, () => stub.needsYouChips,
     () => stub.GJ && stub.GJ.staff && stub.GJ.staff.needsYou,
     () => stub.GJ && stub.GJ.staff && stub.GJ.staff.needsYouChips,
@@ -101,7 +106,21 @@ if (!chipFn) {
       });
       return sum;
     }
-    function callChips(summary) { return chipFn(bookId, summary, pack); }
+    /* THE REAL CONTRACT, read from staff-pages.js rather than guessed:
+         needsYou(pupils, qlist, bookTitle, now) -> [{ email, name, qid, why, rank }]
+       where qlist rows carry the exercise and question labels the reason is
+       built from. A gate that guesses a signature and fails is a gate reporting
+       its own ignorance as a fault (L6). */
+    function makeQlist() {
+      return rows.map((r, i) => ({
+        q: r.question,
+        exLabel: 'Ex ' + (pack.sections.findIndex(x => x.id === r.section) + 1) + ' \u00b7 ' + r.section,
+        qLabel: 'Q' + (i + 1)
+      }));
+    }
+    function callChips(summary) {
+      return chipFn([{ email: 'p@c2ken.net', name: 'A Pupil', summary: summary }], makeQlist(), pack.title || bookId);
+    }
 
     let chips = null, callErr = null;
     try { const out = callChips(makeSummary(flagged.qid)); if (Array.isArray(out)) chips = out; }
@@ -114,20 +133,20 @@ if (!chipFn) {
         '. The contract has changed since this gate was written and this gate needs updating to match it, not the other way round');
     } else {
       /* (a) every chip carries a non-empty reason */
-      const noReason = chips.filter(c => !c || typeof c.reason !== 'string' || !c.reason.trim());
+      const noReason = chips.filter(c => !c || typeof c.why !== 'string' || !c.why.trim());
       g.check(noReason.length === 0, 'chip', 'needs-you',
         noReason.length + ' of ' + chips.length + ' chips carry a chip with no reason at all — a flag a teacher cannot explain is a flag she cannot act on');
 
       /* the chip for the one flagged question */
-      const mine = chips.filter(c => c && (c.q === flagged.qid || (typeof c.reason === 'string' && c.reason.indexOf(flagged.qid) >= 0)));
+      const mine = chips.filter(c => c && (c.qid === flagged.qid));
       g.check(mine.length > 0, 'chip', 'needs-you',
         'the one question this gate marked wrong twice (' + flagged.qid + ') raised no "Needs you now" chip at all');
       if (mine.length) {
-        const reason = mine[0].reason || '';
+        const reason = mine[0].why || '';
         /* (b) the reason names a book AND an exercise AND a question */
         const namesBook = new RegExp(bookId, 'i').test(reason) || (pack && pack.title && new RegExp(pack.title, 'i').test(reason));
-        const namesExercise = !!flagged.section && reason.indexOf(flagged.section) >= 0;
-        const namesQuestion = reason.indexOf(flagged.qid) >= 0;
+        const namesExercise = /\bEx\s*\d/.test(reason);
+        const namesQuestion = /\bQ\d/.test(reason);
         g.check(namesBook, 'chip', 'needs-you', 'the chip\'s reason "' + reason + '" does not name the book it is about');
         g.check(namesExercise, 'chip', 'needs-you', 'the chip\'s reason "' + reason + '" does not name the exercise (section) it is about');
         g.check(namesQuestion, 'chip', 'needs-you', 'the chip\'s reason "' + reason + '" does not name the question it is about');
@@ -152,24 +171,28 @@ if (!chipFn) {
 /* support / stretch / the dominant-slip label, in staff.js's own
    "Class Insights" section — must read the summary's own named fields
    (st, errAt, dx, mk, t), never a raw positional index into a cell */
-const rawStaff = A.read(A.app('staff.js'));
-const SECTION_HEADER = '/* ═══ ';   /* staff.js's own consistent section-comment marker */
-const secStart = rawStaff.indexOf(SECTION_HEADER + 'Class Insights');
-const secEnd = secStart >= 0 ? rawStaff.indexOf(SECTION_HEADER, secStart + SECTION_HEADER.length) : -1;
-g.check(secStart >= 0 && secEnd > secStart, 'staff.js', 'needs-you',
-  'this gate could not find the "Class Insights" analytics section in staff.js between two of its own section-header comments — the markbook\'s source has moved and this half of the gate is reading nothing');
-
-if (secStart >= 0 && secEnd > secStart) {
-  const section = rawStaff.slice(secStart, secEnd);
+/* WHERE THE ARITHMETIC LIVES NOW. The Class Insights screen was DISSOLVED into
+   the class page (MATHS_V4_DESIGN section 5), so the flags, the proportions and
+   the dominant slip are computed in staff-pages.js and rendered by staff.js.
+   A gate still looking for a section comment that no longer exists is reading
+   nothing and calling it a pass, which is the exact fault DFM 206 is about. */
+const rawStaff = A.read(A.app('staff.js')) +
+  (A.exists(A.app('staff-pages.js')) ? A.read(A.app('staff-pages.js')) : '');
+{
+  const section = rawStaff;
   ['st', 'errAt', 'dx', 'mk', 't'].forEach(field => {
     const re = new RegExp('\\.' + field + '\\b');
-    g.check(re.test(section), 'insights', 'needs-you',
-      'the Class Insights section never reads a "' + field + '" field by name — if support, stretch, or the dominant-slip label do not read the summary\'s own named fields, this gate cannot tell they are reading the right thing at all');
+    g.check(re.test(section), 'the class page', 'needs-you',
+      'nothing in the markbook reads a "' + field + '" field by name — if the flags, the proportions and the named slip do not read the summary\'s own named fields, this gate cannot tell they are reading the right thing at all');
   });
+  /* A SUMMARY CELL is read by name; a local tuple is not a summary cell. The
+     first cut of this rule matched any `row[0]`, and condemned a three-line
+     display list built two lines above its own use - a gate inventing a fault
+     (L6). The names that actually hold a stored cell are the ones checked. */
   const stripped = A.stripComments(section);
-  const rawIndexHit = /\b(c|cell|rec|row|item)\[[0-9]+\]/.exec(stripped);
-  g.check(!rawIndexHit, 'insights', 'needs-you',
-    'the Class Insights section indexes a summary cell positionally ("' + (rawIndexHit && rawIndexHit[0]) + '") instead of by name — a stat read by position has no stable home once a question is added or reordered');
+  const rawIndexHit = /\b(cell|rec|summary|sum|qs)\[[0-9]+\]/.exec(stripped);
+  g.check(!rawIndexHit, 'the class page', 'needs-you',
+    'the markbook reads a stored summary cell positionally ("' + (rawIndexHit && rawIndexHit[0]) + '") instead of by name — a stat read by position has no stable home once a question is added or reordered');
 }
 
 /* every label the teacher reads resolves through DX_NAMES, never a raw code */

@@ -36,3 +36,5 @@ The key is the address: `file :: nearest function :: value`.
 | `server/Code.gs.template :: adminSetActs_ :: 15000` | The same lock wait, for ticking or unticking a book. |
 | `server/Code.gs.template :: adminOverride_ :: 15000` | The same lock wait, for changing a mark. |
 | `server/Code.gs.template :: adminNudge_ :: 15000` | The same lock wait, for sending a pupil to a method film. |
+| `staff.js :: shell :: 900000` | Fifteen minutes of no keyboard and no pointer, after which the markbook closes itself and asks for the passcode again. It bounds how long a class's names and marks can sit on a smartboard with nobody at the desk. It never touches a pupil: this clock runs on a teacher's own screen and closes a screen she has walked away from. |
+| `staff.js :: pull :: 20000` | How often the class page asks the server what the class has done. A teacher's screen refreshing itself; a pupil's work is never lost by arriving between two polls, because the poll only reads. |

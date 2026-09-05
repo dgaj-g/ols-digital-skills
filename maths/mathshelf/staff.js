@@ -90,7 +90,7 @@
       var ok = false;
       try { ok = document.execCommand('copy'); } catch (e) {}
       ta.remove();
-      if (ok) done(); else if (msgEl) msgEl.textContent = 'Copy this by hand: ' + text;
+      if (ok) done(); else if (msgEl) msgEl.textContent = TT('copyByHand', { text: text });
     }
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, legacy);
     else legacy();
@@ -121,7 +121,7 @@
     bar.appendChild(mark);
 
     var crumb = el('nav', 'staff-crumb');
-    crumb.setAttribute('aria-label', 'Where you are');
+    crumb.setAttribute('aria-label', TT('whereYouAre'));
     (opts.crumbs || []).forEach(function (c, i) {
       if (i) crumb.appendChild(document.createTextNode('  \u203a  '));
       if (c.go) {
@@ -140,7 +140,7 @@
       live.innerHTML = '<i aria-hidden="true"></i>Live';
       right.appendChild(live);
     }
-    var closeB = el('button', 'toolbtn', 'Close the markbook');
+    var closeB = el('button', 'toolbtn', esc(TT('closeMarkbook')));
     closeB.addEventListener('click', closeMarkbook);
     right.appendChild(closeB);
     bar.appendChild(right);
@@ -282,8 +282,8 @@
             call('setActs', { className: c.name, acts: acts }).then(function (r) {
               cb.disabled = false;
               if (r && r.ok) { c.acts = acts; cmsg.textContent = a.title + (cb.checked ? ' is now on ' : ' removed from ') + c.name + '’s shelf.'; }
-              else { cb.checked = !cb.checked; cmsg.textContent = (r && r.error) || 'Could not save that.'; }
-            }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.textContent = 'Could not save that.'; });
+              else { cb.checked = !cb.checked; cmsg.textContent = (r && r.error) || TT('couldNotSave'); }
+            }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.textContent = TT('couldNotSave'); });
           });
           lab.appendChild(cb);
           lab.appendChild(document.createTextNode(a.title));
@@ -296,14 +296,14 @@
         var actions = el('td', '');
         var wallB = el('button', 'toolbtn', 'Open the markbook');
         wallB.addEventListener('click', function () { view.cls = c.name; showClassPage(); });
-        var linkB = el('button', 'btn-pencil', 'Copy link');
+        var linkB = el('button', 'btn-pencil', esc(TT('copyLink')));
         linkB.style.marginLeft = '6px';
         linkB.addEventListener('click', function () { copyText(classLink(c.name), cmsg, 'Link for ' + c.name + ' copied.'); });
         var qrB = el('button', 'btn-pencil', 'QR');
         qrB.style.marginLeft = '6px';
         qrB.addEventListener('click', function () { showQr(c.name); });
         var delB = el('button', 'btn-pencil', '&times;');
-        delB.setAttribute('aria-label', 'Delete ' + c.name);
+        delB.setAttribute('aria-label', TT('deleteClassAria', { 'class': c.name }));
         delB.style.marginLeft = '6px';
         delB.addEventListener('click', function () {
           openConfirm('Delete ' + c.name + '?',
@@ -315,7 +315,7 @@
               call('deleteClass', { className: c.name }).then(function (r) {
                 if (r && r.ok) { classes = classes.filter(function (x) { return x.name !== c.name; }); render(); clearBusy(cmsg, c.name + ' deleted.'); }
                 else { delB.disabled = false; clearBusy(cmsg, (r && r.error) || 'Could not delete.'); }
-              }).catch(function () { delB.disabled = false; clearBusy(cmsg, 'Could not reach the server.'); });
+              }).catch(function () { delB.disabled = false; clearBusy(cmsg, ''); staffError(TT('noServer'), cmsg); });
             });
         });
         actions.appendChild(wallB); actions.appendChild(linkB); actions.appendChild(qrB); actions.appendChild(delB);
@@ -333,7 +333,7 @@
     addB.addEventListener('click', function () {
       if (addB.disabled) return;
       var nm = body.querySelector('#st-newclass').value.trim();
-      if (!nm) { cmsg.textContent = 'Give the class a name first.'; return; }
+      if (!nm) { cmsg.textContent = TT('nameTheClass'); return; }
       addB.disabled = true;
       busyCard(cmsg, 'Adding ' + esc(nm) + '&hellip; this can take a moment');
       call('addClass', { className: nm }).then(function (r) {
@@ -584,8 +584,8 @@
     out.appendChild(el('div', 'jp-read', read));
     var fl = el('div', 'jp-flags');
     if (flag) fl.appendChild(el('span', 'jp-flag jp-' + flag.kind, (flag.kind === 'support' ? 'Needs support' : 'Ready for stretch') + ' · ' + esc(flag.reasons.join(' · '))));
-    if (conf === 'over') fl.appendChild(el('span', 'jp-flag jp-over', 'Over-confident — confidence high, working weaker'));
-    if (conf === 'under') fl.appendChild(el('span', 'jp-flag jp-under', 'Quietly excelling — doing well, low confidence'));
+    if (conf === 'over') fl.appendChild(el('span', 'jp-flag jp-over', esc(TT('overConfident'))));
+    if (conf === 'under') fl.appendChild(el('span', 'jp-flag jp-under', esc(TT('quietlyExcelling'))));
     if (fl.children.length) out.appendChild(fl);
     return out;
   }
@@ -604,7 +604,7 @@
     /* the book switcher */
     var sw = el('div', 'cp-books');
     sw.setAttribute('role', 'group');
-    sw.setAttribute('aria-label', 'Which book');
+    sw.setAttribute('aria-label', TT('whichBook'));
     acts.forEach(function (a) {
       var b = el('button', 'toolbtn' + (view.act === a.id ? ' on' : ''), esc(a.title));
       b.setAttribute('aria-pressed', view.act === a.id ? 'true' : 'false');
@@ -617,7 +617,7 @@
     body.appendChild(strip);
 
     var needs = el('section', 'needs');
-    needs.setAttribute('aria-label', 'Pupils who need you now');
+    needs.setAttribute('aria-label', TT('needsYouAria'));
     needs.appendChild(el('p', 'needs-lbl', esc(TT('needsYouLabel'))));
     var needsRow = el('div', 'needs-row');
     needs.appendChild(needsRow);
@@ -685,7 +685,7 @@
       var flags = window.GJ_STAFF_PAGES.needsYou(pupils, qlist, bookTitle(view.act));
       needsRow.innerHTML = '';
       if (!flags.length) {
-        needsRow.appendChild(el('p', 'needs-none', 'Nobody is stuck in ' + esc(bookTitle(view.act)) + ' right now.'));
+        needsRow.appendChild(el('p', 'needs-none', esc(TT('nobodyStuck', { book: bookTitle(view.act) }))));
         window.GJ.setState(root, 'class-page', 'no-flags');
       }
       flags.forEach(function (f) {
@@ -807,12 +807,12 @@
         t.push('<tr><td class="nm">' + esc(p.name || p.email) + '</td>');
         qlist.forEach(function (item) {
           var c = ((p.summary || {}).qs || {})[item.q.id];
-          var glyph = '<span class="g-un">\u2014</span>', title = 'Not started';
+          var glyph = '<span class="g-un">\u2014</span>', title = TT('cellNotStarted');
           if (c) {
             var st = c.ovr === 1 ? 'ok' : c.ovr === 0 ? 'err' : c.st;
             if (st === 'ok') { glyph = '<span class="g-ok">\u2713</span>'; title = 'Right'; }
-            else if (st === 'amber') { glyph = '<span class="g-am">\u25d0</span>'; title = 'Answer only, no working shown'; }
-            else if (st === 'err') { glyph = '<span class="g-err">\u2717' + (c.errAt ? '<sup>' + c.errAt + '</sup>' : '') + '</span>'; title = 'Wrong at step ' + (c.errAt || '?') + (c.dx ? ' \u2014 ' + (DX_NAMES[c.dx] || c.dx) : ''); }
+            else if (st === 'amber') { glyph = '<span class="g-am">\u25d0</span>'; title = TT('cellAmber'); }
+            else if (st === 'err') { glyph = '<span class="g-err">\u2717' + (c.errAt ? '<sup>' + c.errAt + '</sup>' : '') + '</span>'; title = TT('cellWrongAtStep', { step: c.errAt || '?' }) + (c.dx ? ' \u2014 ' + (DX_NAMES[c.dx] || c.dx) : ''); }
             else { glyph = '<span class="g-now">\u25cf</span>'; title = ((p.summary.upd && (now - p.summary.upd) < 60) ? 'Working right now' : 'In progress'); }
             if (c.ovr != null) title += ' \u00b7 your mark';
           }
@@ -896,10 +896,10 @@
       b.addEventListener('click', t[1]);
       tools.appendChild(b);
     });
-    var msg = el('p', 'ui-msg', 'Loading the wall…');
+    var msg = el('p', 'ui-msg', esc(TT('loadingGrid')));
     msg.style.marginTop = '26px';   // clear the tab + tools rows so the wait-card isn't crammed against them
     var wall = el('div', 'wall');
-    var orient = el('p', 'wall-orient', 'Start here: each cell is one pupil × one question. Spot the reds, then tap a cell to open that pupil’s jotter.');
+    var orient = el('p', 'wall-orient', esc(TT('gridOrient')));
     var legend = el('p', 'wall-legend');
     legend.setAttribute('data-mark', '');
     legend.innerHTML = '<span class="glyph-ok">✓</span> correct &middot; ' +
@@ -922,12 +922,12 @@
         t.push('<tr><td class="pupil-name">' + esc(p.name || p.email) + '</td>');
         qlist.forEach(function (item) {
           var cell = p.summary && p.summary.qs && p.summary.qs[item.q.id];
-          var glyph = '<span class="glyph-un">—</span>', title = 'Untouched';
+          var glyph = '<span class="glyph-un">—</span>', title = TT('cellUntouched');
           if (cell) {
             var st = cell.ovr === 1 ? 'ok' : cell.ovr === 0 ? 'err' : cell.st;
-            if (st === 'ok') { glyph = '<span class="glyph-ok">✓</span>'; title = 'Correct — working and answer both sound'; }
-            else if (st === 'amber') { glyph = '<span class="glyph-amber">◐</span>'; title = 'Answer only — no working shown'; }
-            else if (st === 'err') { glyph = '<span class="glyph-err">✗' + (cell.errAt ? '<sub>' + cell.errAt + '</sub>' : '') + '</span>'; title = 'Wrong — first slip at step ' + (cell.errAt || '?') + (cell.dx ? ' — ' + (DX_NAMES[cell.dx] || cell.dx) : ''); }
+            if (st === 'ok') { glyph = '<span class="glyph-ok">✓</span>'; title = TT('cellRight'); }
+            else if (st === 'amber') { glyph = '<span class="glyph-amber">◐</span>'; title = TT('cellAmber2'); }
+            else if (st === 'err') { glyph = '<span class="glyph-err">✗' + (cell.errAt ? '<sub>' + cell.errAt + '</sub>' : '') + '</span>'; title = TT('cellWrongFirstSlip', { step: cell.errAt || '?' }) + (cell.dx ? ' — ' + (DX_NAMES[cell.dx] || cell.dx) : ''); }
             else if (st === 'open') {
               var live = p.summary.upd && (now - p.summary.upd) < 60;
               glyph = '<span class="glyph-live">●</span>'; title = live ? 'Working right now' : 'In progress';
@@ -1022,7 +1022,7 @@
     if (nextP) bNext.addEventListener('click', function () { showJotterPage(nextP.email, ctx); });
     flick.appendChild(bPrev); flick.appendChild(lbl); flick.appendChild(bNext);
 
-    var msg = el('p', 'ui-msg', 'Fetching the jotter…');
+    var msg = el('p', 'ui-msg', esc(TT('fetchingBook')));
     var page = el('div', 'jotter');
     body.appendChild(flick); body.appendChild(msg); body.appendChild(page);
     shell({ body: body, surface: 'book-view', state: 'pencil', crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'A pupil\u2019s book' }] });
@@ -1039,7 +1039,7 @@
 
       page.appendChild(jotterHeader(state, r.name));
       // the posture line, shown once at the top: the whole pencil/ink model in one sentence
-      page.appendChild(el('div', 'jp-posture', 'These marks are the app’s. Tap or click any mark to change it to yours — yours is the one that counts.'));
+      page.appendChild(el('div', 'jp-posture', esc(TT('pencilPosture'))));
 
       questionList(view.act).forEach(function (item) {
         var q = item.q;
@@ -1100,7 +1100,7 @@
           if (v.dx) bodyEl.appendChild(el('p', 'ui-msg', esc(DX_NAMES[v.dx] || v.dx)));
         });
 
-        if (state.help && state.help[q.id]) bodyEl.appendChild(el('p', 'jp-help', 'Opened the worked example after getting stuck'));
+        if (state.help && state.help[q.id]) bodyEl.appendChild(el('p', 'jp-help', esc(TT('openedExample'))));
 
         // ── send my eye to what needs it: a folded "worth a look" corner where the
         //    engine was unsure (answer-only, or a wrong route it couldn't name). Advisory only. ──
@@ -1124,13 +1124,13 @@
           var effSt = inked ? (rec.ovr.q === 1 ? 'ok' : 'err') : res.st;
           vmark.className = 'verdict-mark ' + (inked ? 'is-inked' : 'is-pencil');
           vmark.innerHTML = vGlyph(effSt);
-          vmark.setAttribute('aria-label', 'Marked ' + (effSt === 'ok' ? 'correct' : effSt === 'amber' ? 'answer only' : effSt === 'err' ? 'wrong' : 'in progress') + (inked ? ' by you' : ' by the app — tap to make it yours'));
+          vmark.setAttribute('aria-label', TT('markedAria', { verdict: (effSt === 'ok' ? 'right' : effSt === 'amber' ? 'answer only' : effSt === 'err' ? 'wrong' : 'in progress') }) + (inked ? ' by you' : ' by the app'));
           if (tallyEl) {
             var m0 = res.verdict.mk[0], m1 = res.verdict.mk[1];
             if (inked && rec.ovr.q === 1) { m0 = mkMax[0]; m1 = mkMax[1]; }      // right = full working + answer marks
             else if (inked && rec.ovr.q === 0) { m0 = 0; m1 = 0; }
             tallyEl.className = 'staff-tally ' + (effSt === 'ok' ? 'mk-correct' : effSt === 'amber' ? 'mk-amber' : effSt === 'err' ? 'mk-wrong' : 'mk-open');
-            tallyEl.textContent = 'Working ' + m0 + '/' + mkMax[0] + ' · Answer ' + m1 + '/' + mkMax[1] + tallyTail;
+            tallyEl.textContent = TT('workingLabel') + ' ' + m0 + '/' + mkMax[0] + ' · Answer ' + m1 + '/' + mkMax[1] + tallyTail;
           }
         }
         paintVerdict();
@@ -1139,15 +1139,15 @@
 
         // the one genuinely pedagogical action, promoted to a standing intent-named move
         if (item.secId && item.secHasMovie && (res.st === 'err' || res.st === 'amber')) {
-          var reteach = el('button', 'jp-reteach', 'Show them this method again →');
-          reteach.title = 'Sends this exercise’s worked example (' + esc(String(item.label).split('·')[0].trim()) + ') to the pupil the next time they open their book.';
+          var reteach = el('button', 'jp-reteach', esc(TT('reteachBtn')));
+          reteach.title = TT('reteachTitle', { title: String(item.label).split('\u00b7')[0].trim() });
           reteach.addEventListener('click', function () {
             if (reteach.disabled) return; reteach.disabled = true;
             call('nudge', { className: view.cls, act: view.act, email: email, sec: item.secId + '::' + q.id }).then(function (r3) {
               reteach.disabled = false;
-              if (r3 && r3.ok) { reteach.textContent = 'Sent ✓ — they’ll see it next time'; reteach.classList.add('is-sent'); }
-              else { reteach.disabled = false; inkMsg.textContent = (r3 && r3.error) || 'Could not send.'; }
-            }).catch(function () { reteach.disabled = false; inkMsg.textContent = 'Could not send.'; });
+              if (r3 && r3.ok) { reteach.textContent = TT('reteachSent'); reteach.classList.add('is-sent'); }
+              else { reteach.disabled = false; inkMsg.textContent = (r3 && r3.error) || TT('reteachFailed'); }
+            }).catch(function () { reteach.disabled = false; inkMsg.textContent = TT('reteachFailed'); });
           });
           vrow.appendChild(reteach);
         }
@@ -1157,7 +1157,7 @@
         // it also carries the "couldn't save" slot so a network hiccup has somewhere to land.
         var ink = el('div', 'ink-control'); ink.hidden = true;
         function setOvr(val, btn) {
-          if (btn.disabled) return; btn.disabled = true; inkMsg.textContent = 'Saving…';
+          if (btn.disabled) return; btn.disabled = true; inkMsg.textContent = TT('saving');
           call('override', { className: view.cls, act: view.act, email: email, q: q.id, idx: 'q', val: val }).then(function (r2) {
             btn.disabled = false;
             if (r2 && r2.ok) {
@@ -1167,16 +1167,16 @@
               paintVerdict();
               inkMsg.textContent = (val === 1) ? 'Inked right — full marks. Your mark wins on the Wall.' : (val === 0) ? 'Inked wrong. Your mark wins on the Wall.' : 'Back to the app’s mark.';
               ink.hidden = true; vmark.setAttribute('aria-expanded', 'false');
-            } else inkMsg.textContent = (r2 && r2.error) || 'Couldn’t save — tap the mark to try again.';
-          }).catch(function () { btn.disabled = false; inkMsg.textContent = 'Couldn’t save — tap the mark to try again.'; });
+            } else inkMsg.textContent = (r2 && r2.error) || TT('saveFailedMark');
+          }).catch(function () { btn.disabled = false; inkMsg.textContent = TT('saveFailedMark'); });
         }
-        var icTick = el('button', 'ic-tick', '✓ mine');
-        var icCross = el('button', 'ic-cross', '✗ mine');
-        var icAuto = el('button', 'ic-auto btn-pencil', 'use the app’s mark');
+        var icTick = el('button', 'ic-tick', esc(TT('inkYes')));
+        var icCross = el('button', 'ic-cross', esc(TT('inkNo')));
+        var icAuto = el('button', 'ic-auto btn-pencil', esc(TT('inkUse')));
         icTick.addEventListener('click', function () { setOvr(1, icTick); });
         icCross.addEventListener('click', function () { setOvr(0, icCross); });
         icAuto.addEventListener('click', function () { setOvr(null, icAuto); });
-        ink.appendChild(el('span', 'ic-label', 'Your mark:'));
+        ink.appendChild(el('span', 'ic-label', esc(TT('inkYourMark'))));
         ink.appendChild(icTick); ink.appendChild(icCross); ink.appendChild(icAuto); ink.appendChild(inkMsg);
         bodyEl.appendChild(ink);
         vmark.setAttribute('aria-expanded', 'false');
@@ -1207,7 +1207,7 @@
 
   function showPile() {
     var body = el('div', '');
-    var msg = el('p', 'ui-msg', 'Reading every jotter…');
+    var msg = el('p', 'ui-msg', esc(TT('readingEveryBook')));
     body.appendChild(msg);
     var list = el('div', '');
     body.appendChild(list);
@@ -1236,7 +1236,7 @@
           ? 'No marked working errors to pile up — but ' + amberCount + ' answer' + (amberCount > 1 ? 's' : '') + ' came in with no working shown (the amber ◐ cells on the Wall), so there’s nothing to mark here. Worth chasing the missing working.'
           : 'No marked errors in this class yet — the pile is empty.';
       if (keys.length) {
-        var starterB = el('button', 'btn-stamp gold', 'Next-lesson starter ▶');
+        var starterB = el('button', 'btn-stamp gold', esc(TT('starterBtn')));
         starterB.addEventListener('click', function () { showStarter(keys.slice(0, 3).map(function (k) { return piles[k]; })); });
         list.appendChild(starterB);
       }
@@ -1311,9 +1311,19 @@
         return r.map(function (c) { return '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"'; }).join(',');
       }).join('\n');
       copyText(csv, msg, 'CSV for ' + view.cls + ' copied — paste into Excel.');
-      alertBar('CSV copied to the clipboard — paste straight into Excel.');
+      alertBar(TT('csvCopiedFull'));
     });
   }
+  /* a failed admin call is surfaced WHERE SHE ALREADY IS, with its reason */
+  function staffError(msg, msgEl) {
+    var r = document.getElementById('scr-staff');
+    if (r && window.GJ && window.GJ.setState) {
+      window.GJ.setState(r, r.getAttribute('data-surface') || 'set-up', 'error');
+    }
+    if (msgEl) msgEl.textContent = msg;
+    else alertBar(msg);
+  }
+
   function alertBar(text) {
     var n = el('div', '');
     n.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#14213A;color:#FAF7F0;font-family:var(--f-stationery);font-size:13px;padding:10px 18px;border-radius:4px;z-index:600';

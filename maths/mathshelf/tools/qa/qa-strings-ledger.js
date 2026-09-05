@@ -71,7 +71,13 @@ function isSentence(t) {
   if (/^(https?:|#|\.|\/|data:)/.test(s)) return false;          /* a url, a selector, a path */
   if (/^[A-Z_]+$/.test(s)) return false;                          /* a code */
   if (/^&[a-z]+;$/.test(s)) return false;                         /* an entity on its own */
-  if (/^<[a-z]/.test(s)) return false;                            /* markup */
+  if (/^<[a-z]/.test(s)) return false;                             /* markup */
+  /* A GLYPH IS NOT A SENTENCE, AND A NAME IS NOT PROSE. '\\u2605' is a star;
+     'Math<b>Shelf</b>' is the wordmark, which is a NAME and is held by qa-voice.
+     Counting either as unmigrated would send a build hunting for wording that
+     does not exist. */
+  if (/^\\u[0-9a-fA-F]{4}$/.test(s)) return false;
+  if (/^Math<b>Shelf<\/b>$/.test(s)) return false;
   return true;
 }
 
