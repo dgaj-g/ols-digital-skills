@@ -219,11 +219,16 @@ async function walk(page, width, projector, sidecar, transcript) {
   /* the grid, scrolled off its own header */
   await page.evaluate(() => {
     /* the grid scrolls inside whichever element actually overflows, so find one
-       rather than guessing at a class name */
+       rather than guessing at a class name - and the listener is on the element
+       the markbook attached it to, so the event is dispatched on every
+       candidate rather than only the innermost */
     const cands = [...document.querySelectorAll('div, main, section')]
       .filter((e) => e.scrollHeight > e.clientHeight + 8 || e.scrollWidth > e.clientWidth + 8);
-    const b = cands[cands.length - 1] || document.scrollingElement;
-    if (b) { b.scrollTop = 60; b.scrollLeft = 60; b.dispatchEvent(new Event('scroll', { bubbles: true })); }
+    cands.concat([document.scrollingElement]).forEach((b) => {
+      if (!b) return;
+      b.scrollTop = 60; b.scrollLeft = 60;
+      b.dispatchEvent(new Event('scroll', { bubbles: true }));
+    });
   });
   await wait(500);
   await record('full-grid', 'sticky-scroll');
@@ -249,7 +254,7 @@ async function walk(page, width, projector, sidecar, transcript) {
   /* a pupil's book, and the ink */
   await page.evaluate(() => { const td = document.querySelector('.grid td.cell'); if (td) td.click(); });
   await wait(1600);
-  const inkOpen = await page.evaluate(() => { const v = document.querySelector('.vmark'); if (!v) return false; v.click(); return true; });
+  const inkOpen = await page.evaluate(() => { const v = document.querySelector('.verdict-mark'); if (!v) return false; v.click(); return true; });
   if (inkOpen) {
     await wait(600);
     await record('book-view', 'ink-control-open');
@@ -258,7 +263,7 @@ async function walk(page, width, projector, sidecar, transcript) {
       if (!pressed) continue;
       await wait(1200);
       await record('book-view', state);
-      await page.evaluate(() => { const v = document.querySelector('.vmark'); if (v) v.click(); });
+      await page.evaluate(() => { const v = document.querySelector('.verdict-mark'); if (v) v.click(); });
       await wait(400);
     }
   }
