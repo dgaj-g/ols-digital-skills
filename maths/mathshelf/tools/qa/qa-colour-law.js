@@ -31,7 +31,10 @@ const ORDER = 70;
 const COVERS = { books: '*', kinds: '*', surfaces: '*', widths: [375, 768, 1280], projector: false, tier: ['preview'], cells: ['colour'] };
 const CONTROLS = [
   { id: 'marking-colour-as-decoration', kind: 'fixture', plant: 'fixture-css', mustFail: /marking-colour-outside-a-mark/ },
-  { id: 'dark-work-surface', kind: 'fixture', plant: 'fixture-css', mustFail: /work-surface-not-light/ },
+  /* the work-surface law proves itself in its own run: a dark ground is put on a
+     live work surface, measured, and taken away, and the law must say no while
+     it is there and yes once it is gone */
+  { id: 'dark-work-surface', kind: 'self-probe', mustFail: /work-surface-not-light/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -58,6 +61,39 @@ g.exempt(['a colour that paints nothing is not judged: the colour property on an
         await S.answer(page, qids[1] || qids[0], true);
         a = await AUD.run(page, {});
         report(g, 'question:checked-wrong-1', width, a);
+      }
+      /* THE DETECTOR PROVES ITSELF, HERE, IN THIS RUN. A dark work surface is
+         planted in the live page, measured, and taken away again: the law has
+         to say no while it is there and yes once it is gone. This is a
+         self-probe rather than a sandbox control because the thing being
+         proved is a MEASUREMENT of the running page, and the shortest honest
+         distance to that is the page in front of us. */
+      if (width === 1280) {
+        const planted = await page.evaluate(() => {
+          const el = [...document.querySelectorAll('[data-work]')]
+            .filter((e) => { const r = e.getBoundingClientRect(); return r.width > 4 && r.height > 4; })[0];
+          if (!el) return false;
+          el.setAttribute('data-was-bg', el.style.backgroundColor || '');
+          el.style.backgroundColor = '#07100F';
+          el.id = el.id || 'gj-selfprobe-work';
+          return true;
+        });
+        if (planted) {
+          const probe = await AUD.run(page, {});
+          const saw = (probe.findings.colour || []).some(f => f.law === 'work-surface-not-light');
+          g.check(saw, 'the work-surface detector', 'colour-law',
+            'a work surface was made dark in the live page and the law did not say so - the detector is not measuring anything');
+          await page.evaluate(() => {
+            const el = document.querySelector('[data-was-bg]');
+            if (el) { el.style.backgroundColor = el.getAttribute('data-was-bg'); el.removeAttribute('data-was-bg'); }
+          });
+          const after = await AUD.run(page, {});
+          const gone = !(after.findings.colour || []).some(f => f.law === 'work-surface-not-light');
+          g.check(gone, 'the work-surface detector', 'colour-law',
+            'the law still reports a dark work surface after the dark ground was taken away - it is condemning something else');
+        } else {
+          g.note('no work surface was on screen to prove the detector against');
+        }
       }
       g.note('swept the shell and a marked question at ' + width);
       await page.close();

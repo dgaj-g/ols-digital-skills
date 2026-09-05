@@ -172,7 +172,15 @@ gates.forEach(file => {
         }
         if (!up) throw new Error('the sandbox server never answered on ' + server.base);
       }
-      const r = runGate(dir, file, env);
+      let r = runGate(dir, file, env);
+      /* ONE RETRY, AND ONLY FOR A RIG FAILURE. A control that could not open a
+         page has told us nothing about the gate; a control that opened one and
+         did not fire has. The retry is for the first kind only, and it is
+         named in the log so a flaky rig cannot hide behind it. */
+      if (server && /Navigation timeout|ERR_CONNECTION|Target closed|detached Frame/i.test(r.out)) {
+        r.out += '\n  ..    the page did not open; the control was run a second time\n';
+        r = runGate(dir, file, env);
+      }
       if (server) { try { process.kill(-server.child.pid); } catch (e) { try { server.child.kill(); } catch (e2) {} } }
       const said = c.mustFail ? c.mustFail.test(r.out) : false;
       const fired = r.status !== 0 && said;
