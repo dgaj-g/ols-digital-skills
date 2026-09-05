@@ -46,17 +46,25 @@ g.exempt(['the attempt model is proved on one question per kind, not on all 48: 
     for (const book of A.books()) {
       const pack = A.content()[book];
       for (let si = 0; si < pack.sections.length; si++) {
-        const kind = A.kindOf(pack.sections[si].questions[0] || {});
-        if (seenKinds.has(kind)) continue;
+        /* A SECTION IS NOT ONE KIND. Taking the kind from the section's FIRST
+           question missed "form" entirely: the two form questions sit at the
+           end of a section that opens with three solves, so the attempt model
+           was never once proved on the kind that asks her to build the
+           equation before she solves it. */
+        const kindsHere = [...new Set((pack.sections[si].questions || []).map(q => A.kindOf(q)))]
+          .filter(k => !seenKinds.has(k));
+        if (!kindsHere.length) continue;
         const qids = await S.openExercise(page, book, si);
         if (!qids || !qids.length) continue;
+        const kind = kindsHere[0];
+        const wanted = new Set((pack.sections[si].questions || []).filter(q => A.kindOf(q) === kind).map(q => q.id));
         /* THE FIRST QUESTION OF A KIND MAY BE ONE NOBODY CAN GET WRONG. The
            collect screen for "x + 8x - 5x" has one bin and does the arithmetic
            itself, so there is no wrong path on it to walk; the attempt model is
            proved on the next question of that kind instead, and the one that
            cannot be got wrong is named. */
         let qid = null, a1 = null;
-        for (const cand of qids) {
+        for (const cand of qids.filter(x => wanted.has(x))) {
           a1 = await S.answer(page, cand, true);
           if (a1 && a1.wrongNotPossible) { g.note(book + ' > ' + cand + ' (' + kind + '): ' + a1.how); continue; }
           if (a1 && a1.ok === false) { g.note(book + ' > ' + cand + ': ' + a1.why); continue; }
