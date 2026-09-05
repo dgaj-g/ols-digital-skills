@@ -24,6 +24,7 @@ The key is the address: `file :: nearest function :: value`.
 | `staff.js :: load :: 20000` | How often the markbook asks the server what the class has done. It is a teacher's screen refreshing itself; a pupil's work is never lost by arriving between two polls. |
 | `staff.js :: alertBar :: 3500` | How long a confirmation stays on the teacher’s screen. The thing it confirms has already happened. |
 | `player.js :: paperWrite :: 40` | The extra frame after a line is written before the next step, so two steps never overlap. |
+| `player.js :: tick :: 250` | The backstop on the angle count-up, which is the one animation driven by requestAnimationFrame. A page the browser is not painting gets no frames, so the count would never finish and the film would freeze with the Next arrow doing nothing. This clock finishes the count where the frames do not come; it bounds the app, never the child, and the number on screen is the same either way. |
 | `player.js :: paperGrid :: 340` | How long one cell of a multiplication grid takes to appear. Film timing. |
 | `player.js :: paperBalance :: 720` | How long the balance beam takes to tip. Film timing. |
 | `player.js :: doStamp :: 240` | How long a stamp takes to land. Zero when the film is rebuilt instantly (a goto, or reduced motion). |
