@@ -1133,7 +1133,15 @@
     host.className = 'want-how-body';
     host.hidden = true;
     var mounted = false;
-    function reveal() { wrap.hidden = false; }
+    /* the question says the help is on offer, and the film says it was the
+       teacher who suggested it: both are states the registry claims, and until
+       now nothing wrote either of them */
+    function qRoot() { return wrap.closest ? wrap.closest('[data-surface="question"]') : null; }
+    function reveal() {
+      wrap.hidden = false;
+      var r = qRoot();
+      if (r) window.GJ.setState(r, 'question', 'help-strip');
+    }
     function open(viaNudge) {
       reveal();
       if (!mounted) {
@@ -1150,6 +1158,10 @@
         var movieHost = document.createElement('div');
         host.appendChild(movieHost);                 // mount() clears its host, so give the movie its own
         window.GJ_PLAYER.mount(movieHost, sec.movie, { accent: current.act.accent });
+        if (viaNudge) {
+          var film = movieHost.querySelector('[data-surface="movie"]');
+          if (film) window.GJ.setState(film, 'movie', 'nudge-banner');
+        }
         mounted = true; recordHelp(q.id);
       }
       host.hidden = false; wrap.classList.add('open'); btn.setAttribute('aria-expanded', 'true');

@@ -40,6 +40,15 @@
      2.4: data-locked-why); clearing it when re-enabled keeps it honest. */
   function setLockedWhy(el, why) {
     if (why) el.setAttribute('data-locked-why', why); else el.removeAttribute('data-locked-why');
+    /* AND THE DOCK SAYS SO. "A control that will not act says why beside
+       itself" is only half the contract: the screen also has to be in a state
+       that names it, or nothing can walk the case. */
+    var dk = document.querySelector('[data-surface="dock"]');
+    if (!dk || !window.GJ || !window.GJ.setState) return;
+    if (why) { dk.setAttribute('data-was-state', dk.getAttribute('data-state') || ''); window.GJ.setState(dk, 'dock', 'disabled-explained'); }
+    else if (dk.getAttribute('data-state') === 'disabled-explained') {
+      window.GJ.setState(dk, 'dock', dk.getAttribute('data-was-state') || 'chips');
+    }
   }
 
   /* A MESSAGE SLOT IS A LIVE REGION, and it says so by construction. It starts
@@ -186,6 +195,10 @@
     function maybeHidePad() {
       if (!isNumberPad || pad.style.display === 'none') return;
       pad.style.display = 'none';
+      /* the dock says what it is showing, and once the pad is gone it is not
+         showing a pad any more */
+      var dk = document.querySelector('[data-surface="dock"]');
+      if (dk && window.GJ && window.GJ.setState) window.GJ.setState(dk, 'dock', 'keyboard-hidden');
       if (opts.onPadHidden) opts.onPadHidden();
     }
 
@@ -1631,6 +1644,7 @@
     } else {
       // resume an open attempt if one was mid-flight
       if (rec.att.length && !rec.att[rec.att.length - 1].res) {
+        window.GJ.setState(wrap, 'question', 'resume-mid');
         var open = rec.att.pop();
         cur.L = open.L || [];
         cur.steps = open.steps || [];

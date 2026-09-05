@@ -128,7 +128,9 @@ const ATTEMPT_COUNT = `((qid) => {
 
 /* the help strip: is it there, and does it lead with her own slip */
 const HELP_STRIP = `(() => {
-  const w = document.querySelector('.support-strip, [data-help-strip]');
+  /* the strip is .want-how - "Want to see how?" - and this looked for a class
+     name the app has never had, so it reported "no help on screen" every time */
+  const w = document.querySelector('.want-how, .support-strip, [data-help-strip]');
   if (!w || w.hidden) return { present: false };
   const btn = w.querySelector('button');
   return {

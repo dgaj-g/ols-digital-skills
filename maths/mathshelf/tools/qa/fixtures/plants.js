@@ -192,6 +192,12 @@ const PLANTS = {
       "    /* THE STRIP, REMOVED: planted */");
   },
 
+  /* ── a state the registry claims and no file ever writes ────────── */
+  'fixture-surface-dead-state': (dir) => {
+    edit(dir, 'script.js', "    slips: ['ranked', 'starter-board'],",
+      "    slips: ['ranked', 'starter-board', 'never-written-anywhere'],");
+  },
+
   /* ── a data deployment that serves a book the class does not have ── */
   'fixture-data-no-tickgate': (dir) => {
     const src = path.join(dir, 'server/Code.gs.template');
