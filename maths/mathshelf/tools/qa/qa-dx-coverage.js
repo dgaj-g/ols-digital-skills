@@ -79,15 +79,25 @@ A.grid().forEach(r => {
 });
 g.note(packCodes.size + ' distinct codes authored across the packs');
 
-/* ---- 3. codes emitted by an engine: mathcore.js / anglecore.js only ------ */
+/* ---- 3. codes emitted by MARKING CODE -----------------------------------
+   WHICH FILES COUNT, and why the first cut of this list was wrong. A slip is
+   "reachable" if any code that marks a pupil's attempt can emit it. The two
+   engines are the obvious homes - but the protractor renderer marks its own
+   question (it decides whether she read the wrong scale or misplaced the
+   protractor), and it lives in jotter.js. Naming only the engines condemned
+   WRONG_SCALE and MISREAD as unreachable while they were being emitted six
+   lines from a pupil's screen: a gate inventing a fault (L6). The list is the
+   files that can mark, and a new renderer that marks joins it. */
 const engineCodes = new Set();
-['mathcore.js', 'anglecore.js'].forEach(f => {
+['mathcore.js', 'anglecore.js', 'jotter.js', 'jotter-stats.js', 'statcore.js']
+  .filter(f => A.exists(A.app(f)))
+  .forEach(f => {
   const src = stripComments(A.read(A.app(f)));
   const re = /['"]([A-Z][A-Z0-9_]*)['"]/g;
   let m;
   while ((m = re.exec(src))) { if (Object.prototype.hasOwnProperty.call(DX_NAMES, m[1])) engineCodes.add(m[1]); }
 });
-g.note('engine-emitted codes seen in mathcore.js/anglecore.js: ' + ([...engineCodes].sort().join(', ') || '(none)'));
+g.note('codes emitted by marking code: ' + ([...engineCodes].sort().join(', ') || '(none)'));
 
 /* ---- 4. every DX_NAMES code is authored in a pack OR emitted by an engine */
 codes.forEach(code => {

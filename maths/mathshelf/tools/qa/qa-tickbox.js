@@ -192,15 +192,26 @@ const ocall = stub.GJ.app.call;
   g.check(helloStub.ok === true && helloStub.acts && helloStub.acts.algebra === false, 'hello', 'tickbox',
     'the offline stub\'s hello still reports algebra as open after unticking it');
 
-  /* KNOWN OPEN FINDING mirrored in the stub: 'load' never checks acts either,
-     and always returns ok:true — so "row survives" and "load returns the same
-     content" collapse into the one check the stub's single-pupil store can
-     make: does load, unticked, still return byte-identical content */
+  /* THE TWO HALVES OF AN UNTICK, and they are different questions.
+     (1) the book is CLOSED: the stub refuses load, exactly as the server does.
+     (2) her work SURVIVES: the row is still in the store, byte for byte.
+     The first cut of this check asked the second question THROUGH the door the
+     first question had just closed, so closing it correctly read as losing her
+     work. The store is read directly instead - which is the only honest way to
+     ask "is it still there" of a thing you have just made unreachable. */
   const loadStubUnticked = await ocall('load', { act: 'algebra' });
   g.check(loadStubUnticked.ok === false, 'load', 'tickbox',
-    'the offline stub also served an unticked book\'s state (the same KNOWN OPEN FINDING as the server, fixed in a later phase)');
-  g.check(loadStubUnticked.state === stubState, 'load', 'tickbox',
-    'the offline stub\'s content for an unticked book changed instead of surviving untouched — an untick must never look like it lost the pupil\'s work');
+    'the offline stub served an unticked book\'s state - a book this class does not have is closed, not merely hidden');
+  const rawStore = JSON.parse(stub.localStorage.getItem('gj-offline-v1') || '{}');
+  let kept = null;
+  Object.keys(rawStore.data || {}).forEach(cls => {
+    Object.keys(rawStore.data[cls] || {}).forEach(em => {
+      const r = rawStore.data[cls][em] && rawStore.data[cls][em].algebra;
+      if (r && r.state) kept = r.state;
+    });
+  });
+  g.check(kept === stubState, 'load', 'tickbox',
+    'the offline stub\'s stored content for an unticked book changed instead of surviving untouched - an untick must never look like it lost the pupil\'s work');
 
   await ocall('admin', { passcode: 'demo', sub: 'setActs', className: 'demo', acts: { angles: true, algebra: true } });
   const loadStubRetick = await ocall('load', { act: 'algebra' });

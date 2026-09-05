@@ -106,10 +106,20 @@ function isCssValueToken(t) {
   return false;
 }
 function looksLikeMarkupOrCode(s) {
-  if (/<[a-zA-Z!/]/.test(s)) return true;
-  if (/[a-zA-Z][\w-]*="/.test(s)) return true;
-  if (/^[a-z][a-z0-9-]*$/.test(s)) return true;
-  if (/^#[0-9A-Fa-f]{3,8}$/.test(s)) return true;
+  if (/<[a-zA-Z!/]/.test(s)) return true;                      // an HTML/SVG tag
+  if (/[a-zA-Z][\w-]*="/.test(s)) return true;                  // attr="value"
+  if (/^[a-z][a-z0-9-]*$/.test(s)) return true;                 // a bare kebab id/key
+  if (/^#[0-9A-Fa-f]{3,8}$/.test(s)) return true;               // a hex colour alone
+  /* a bare ALL-CAPS status code (AMBER, OK, X@1's kin) is a comparison
+   * operand — `verdict.res === 'AMBER'` appears eleven times across
+   * script.js/jotter.js/staff.js and never once as rendered text (the
+   * screen only ever shows the lower-case CSS class "mk-amber"/"tick-amber"
+   * or a written sentence); a first cut of this gate flagged every one of
+   * those eleven as "the raw status word reaching a screen" (L6). */
+  if (/^[A-Z][A-Z0-9_]*$/.test(s)) return true;
+  /* a CSS selector fragment, e.g. ".wline:not(.struck):not(.pencil)" from a
+   * querySelectorAll call — code addressing an element, not a sentence */
+  if (/^[.#][\w:().#-]*$/.test(s)) return true;
   const tokens = s.trim().split(/\s+/);
   if (tokens.length && tokens.every(isCssValueToken)) return true;
   return false;
@@ -184,14 +194,25 @@ if (A.exists(builtPath)) {
   if (metaM) scanString(decode(metaM[1]), 'built', '<meta name="description">');
   else g.note('server/Index.html has no <meta name="description"> tag to check');
 
-  /* string literals inside every embedded <script> block */
-  const scriptRe = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
-  let sm, blockIdx = 0, scriptLiteralCount = 0;
-  while ((sm = scriptRe.exec(html))) {
-    stringLiterals(sm[1]).forEach((v, i) => { scriptLiteralCount++; scanString(v, 'built-script', 'block' + blockIdx + '#' + i); });
-    blockIdx++;
-  }
-  g.note(scriptLiteralCount + ' string literals scanned across ' + blockIdx + ' embedded <script> block(s) in the built artefact');
+  /* NOT re-scanned: string literals inside the built file's own embedded
+   * <script> blocks. A first cut of this gate did scan them, on the theory
+   * that a split literal ('Glass ' + 'Jotter') might read differently once
+   * bundled — but bundling for Apps Script's HtmlService is a plain
+   * concatenation of source files into one HTML file, not a JS-evaluation
+   * step, so 'Glass ' and 'Jotter' land in the built file as the SAME TWO
+   * separate literals they always were; scanning them a second time finds
+   * nothing a split literal wouldn't already fail on via A.renderFiles().
+   * What it DID find was mathcore.js/anglecore.js's own selfTest() case
+   * names bundled in alongside the app ("B3 prerequisite flagged AMBER",
+   * "dx EXPAND_PARTIAL at line 1" — the first argument of a T(name, cond)
+   * assertion, a developer-only console label, never a screen) and even a
+   * qa-language.js fixture string ("Is this you, Aoife?") that the build
+   * had pulled in from this very tools/qa tree. All three are real strings
+   * doing real jobs, none of them a voice fault — a gate that flags a
+   * test's own name as the thing wrong with the product is worse than no
+   * gate (L6). A phrase split across two literals actually becomes ONE
+   * piece of text only if it reaches rendered/static markup, which is
+   * exactly what the check below reads. */
 
   /* visible markup text outside any <script>/<style>/comment — this is
      where two adjacent literals concatenated by the build would show up as

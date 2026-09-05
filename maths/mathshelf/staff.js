@@ -346,7 +346,7 @@
     SUB_INSTEAD_DIV: 'Subtracted instead of dividing', DIV_BEFORE_SUB: 'Divided before subtracting',
     SIGN_FLIP_MOVE: 'Sign not flipped moving a term', COLLECT_X_NUM: 'Collected x-terms with numbers',
     NEG_MUL_SIGN: 'Negative × negative slip', BOTHSIDES_ONE_SIDE: 'Operated on one side only',
-    SWAP_NOFLIP: 'Swapped sides without care', ALT_CORR_SWAP: 'Alternate/corresponding confused',
+    ALT_CORR_SWAP: 'Mixed up alternate and corresponding angles',
     COINT_EQUAL: 'Treated interior (U) angles as equal', TRI_SUM_360: 'Used 360° in a triangle',
     STRAIGHT_360: 'Used 360° on a straight line', VOP_SUPP: 'Mixed up vertically opposite with the straight-line pair',
     WRONG_SCALE: 'Read the wrong protractor scale', MISREAD: 'Misread / misplaced the protractor'
@@ -930,7 +930,7 @@
 
       page.appendChild(jotterHeader(state, r.name));
       // the posture line, shown once at the top: the whole pencil/ink model in one sentence
-      page.appendChild(el('div', 'jp-posture', 'These are the app’s first-pass marks, in pencil. Tap any mark to ink your own — your mark always wins.'));
+      page.appendChild(el('div', 'jp-posture', 'These marks are the app’s. Tap or click any mark to change it to yours — yours is the one that counts.'));
 
       questionList(view.act).forEach(function (item) {
         var q = item.q;

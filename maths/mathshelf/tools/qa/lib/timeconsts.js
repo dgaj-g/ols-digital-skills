@@ -28,7 +28,7 @@ function scan(file, rel) {
     let m;
     const reT = /\b(setTimeout|setInterval)\s*\(([\s\S]*?),\s*(\d+)\s*\)/g;
     while ((m = reT.exec(l))) add(m[3], m[1]);
-    const reC = /\b([A-Z][A-Z0-9_]*(?:MS|POLL|DEBOUNCE|DELAY|TIMEOUT|IDLE|WAIT|EVERY|SECS?))\s*=\s*(\d+)/g;
+    const reC = /\b([A-Z][A-Z0-9_]*(?:MS|POLL|DEBOUNCE|DELAY|TIMEOUT|IDLE|WAIT|WARN|GRACE|HOLD|EVERY|SECS?))\s*=\s*(\d+)/g;
     while ((m = reC.exec(l))) add(m[2], 'const ' + m[1]);
     const reS = /\b(\d+)\s*\*\s*1000\b/g;
     while ((m = reS.exec(l))) add(Number(m[1]) * 1000, 'seconds literal');
