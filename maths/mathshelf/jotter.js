@@ -1456,6 +1456,16 @@
       cur.steps.forEach(function (s) { renderStepLine(s, {}); });
       var ready = isAngles ? !!established[q.target] : cur.L.length > 0;
       checkBtn.disabled = !ready || rec.lock;
+      /* A CONTROL THAT WILL NOT ACT SAYS WHY, BESIDE ITSELF (amendment 8.8).
+         A greyed-out Check with nothing next to it is a pupil deciding the app
+         is broken; the reason is short, specific and in her own words. */
+      if (checkBtn.disabled) {
+        checkBtn.setAttribute('data-locked-why', rec.lock
+          ? T.checkLockedWhy
+          : (isAngles ? T.checkNeedsAngleWhy : T.checkNeedsLineWhy));
+      } else {
+        checkBtn.removeAttribute('data-locked-why');
+      }
       if (undoBtn) undoBtn.hidden = rec.lock || (isAngles ? cur.steps.length === 0 : cur.L.length === 0);
       attemptNote.textContent = rec.att.length === 1 ? 'Second attempt — your first try stays on the page.' : '';
       if (refreshTappable) refreshTappable();   // single chokepoint: keep the dashed "tappable" marks honest (clears them on lock)

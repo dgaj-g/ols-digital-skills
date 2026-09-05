@@ -415,7 +415,21 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
   color: var(--pencil);
   margin-left: auto;
   padding-left: var(--sq);
+  /* IT WRAPS, RATHER THAN RUNNING OFF THE PAGE. On a laptop the reason sits in
+     the margin on one line and nowrap keeps it tidy; on a phone the same rule
+     pushed "(Angles on a straight line add up to 180 degrees)" 89px past the
+     right edge of the paper, so a pupil could not read the reason she had just
+     chosen. The line is what has to fit; tidiness comes second. */
   white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .wline .wl-margin-note {
+    white-space: normal;
+    margin-left: 0;
+    padding-left: 0;
+    flex-basis: 100%;
+  }
+  .wline { flex-wrap: wrap; }
 }
 .wline .wl-mark { position: absolute; left: calc(var(--sq) * -2.4); top: 2px; width: calc(var(--sq) * 1.4); height: calc(var(--sq) * 1.2); }
 .wline.pencil { color: var(--pencil); }            /* the given/start line */

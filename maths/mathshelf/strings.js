@@ -101,6 +101,9 @@
 
       /* the jotter: the shared check control */
       checkWorkingBtn: 'Mark my working',
+      checkLockedWhy: 'This one is finished.',
+      checkNeedsLineWhy: 'Write a line of working first.',
+      checkNeedsAngleWhy: 'Work out the angle you were asked for first.',
       cancelBtn: 'Cancel',
       addedToJotter: '✓ Added to your jotter.',
       checkFailedSaved: 'Something went wrong marking this — your working is saved for your teacher.',
