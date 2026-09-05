@@ -1456,6 +1456,7 @@
       cur.steps.forEach(function (s) { renderStepLine(s, {}); });
       var ready = isAngles ? !!established[q.target] : cur.L.length > 0;
       checkBtn.disabled = !ready || rec.lock;
+      if (!rec.lock && (cur.L.length || cur.steps.length)) window.GJ.setState(wrap, 'question', 'mid-attempt');
       /* A CONTROL THAT WILL NOT ACT SAYS WHY, BESIDE ITSELF (amendment 8.8).
          A greyed-out Check with nothing next to it is a pupil deciding the app
          is broken; the reason is short, specific and in her own words. */
@@ -1558,6 +1559,13 @@
           }
         }
 
+        /* THE SCREEN SAYS WHAT STATE IT IS IN. Only the classify and
+           protractor renderers stamped this; the five scaffolded kinds went
+           from "fresh" to marked without ever saying so, so every gate and
+           every walk that reads the DOM contract on a question read "fresh"
+           for a question that had just been marked full. */
+        window.GJ.setState(wrap, 'question',
+          done ? 'checked-right' : amber ? 'amber' : (secondGone ? 'checked-wrong-2' : 'checked-wrong-1'));
         if (done || amber || secondGone) {
           rec.lock = true;
           rec.fin = attempt.fin || null;
@@ -1619,6 +1627,7 @@
         feedback.appendChild(el('div', 'mk-tally' + mkState2, 'Working ' + verdict.mk[0] + '/' + mkMax2[0] + ' · Answer ' + verdict.mk[1] + '/' + mkMax2[1]));
       }
       checkRow.hidden = true;
+      window.GJ.setState(wrap, 'question', 'locked-restore');
     } else {
       // resume an open attempt if one was mid-flight
       if (rec.att.length && !rec.att[rec.att.length - 1].res) {
