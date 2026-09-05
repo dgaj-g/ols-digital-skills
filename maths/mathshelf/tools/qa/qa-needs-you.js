@@ -36,7 +36,7 @@ const COVERS = {
 };
 const CONTROLS = [
   { id: 'chip-without-reason', kind: 'fixture', plant: 'fixture-needs-you', mustFail: /with no reason/ },
-  { id: 'chip-that-never-clears', kind: 'fixture', plant: 'fixture-needs-you', mustFail: /still flagged/ },
+  { id: 'chip-that-never-clears', kind: 'fixture', plant: 'fixture-needs-you-sticky', mustFail: /still flagged/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -159,7 +159,10 @@ if (!chipFn) {
       if (!chipsCleared) {
         g.fail('chip', 'needs-you', 'needsYouChips could not be re-run with the flagged question fixed' + (clearErr ? (': ' + clearErr.message) : '') + ' — a flag that cannot be re-checked cannot be proven to clear');
       } else {
-        const stillThere = chipsCleared.some(c => c && (c.q === flagged.qid || (typeof c.reason === 'string' && c.reason.indexOf(flagged.qid) >= 0)));
+        /* the contract is { email, name, qid, why, rank } - this used to read
+           c.q and c.reason, fields no chip has ever carried, so the check could
+           not have failed however long a flag stayed up */
+        const stillThere = chipsCleared.some(c => c && (c.qid === flagged.qid || (typeof c.why === 'string' && c.why.indexOf(flagged.qid) >= 0)));
         g.check(!stillThere, 'chip', 'needs-you',
           'the chip for ' + flagged.qid + ' is still flagged after the pupil got it right — a flag that never clears trains a teacher to ignore the whole panel');
       }

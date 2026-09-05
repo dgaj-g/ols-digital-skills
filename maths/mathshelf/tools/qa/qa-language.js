@@ -42,9 +42,9 @@ const COVERS = { books: '*', kinds: '*', surfaces: '*', widths: [], projector: f
 const CONTROLS = [
   { id: 'must-fail-exhibits', kind: 'self-probe', mustFail: /the net did not catch/ },
   { id: 'must-pass-exemplars', kind: 'self-probe', mustFail: /the net condemned an approved sentence/ },
-  { id: 'bare-gesture', kind: 'fixture', plant: 'fixture-strings', mustFail: /as if there were only one way in/ },
+  { id: 'bare-gesture', kind: 'fixture', plant: 'fixture-strings-table', mustFail: /as if there were only one way in/ },
   { id: 'numeral-tie', kind: 'fixture', plant: 'fixture-book', mustFail: /but there are/ },
-  { id: 'define-before-use', kind: 'fixture', plant: 'fixture-book', mustFail: /before anything has explained it/ },
+  { id: 'define-before-use', kind: 'fixture', plant: 'fixture-vocab', mustFail: /before anything has explained it/ },
   { id: 'ledger-edited-sentence', kind: 'fixture', plant: 'fixture-ledger', mustFail: /has changed since it was judged/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];

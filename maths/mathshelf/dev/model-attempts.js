@@ -78,6 +78,30 @@ function algebraCorrectLines(M, q) {
   return lines;
 }
 
+/* THE ROUTE SHE TAKES, not just the line she ends on. The solve and form
+   questions are answered on a rail of move chips - "subtract from both sides",
+   and a number - so a walker that only knows the final line cannot answer one
+   at all. These are the chips to press, in order, and they are derived here
+   for the same reason the lines are: one home, or the validator and the walker
+   drift apart without either saying so. */
+function algebraMoves(M, q) {
+  if (q.type !== 'solve' && q.type !== 'form') return null;
+  var startStr = q.type === 'form' ? q.form.accept[0] : q.start;
+  var moves = [];
+  if (q.type === 'form') moves.push({ kind: 'form', operand: startStr });
+  if (/\(/.test(startStr)) moves.push({ kind: 'expand', operand: null });
+  var pp = M.parse(startStr);
+  var Lc = M.canonSide(pp.ast.lhs), Rc = M.canonSide(pp.ast.rhs);
+  var a = M.rsub(Lc.c1 || M.rat(0, 1), Rc.c1 || M.rat(0, 1));
+  if (Rc.c1 && Rc.c1.n) moves.push({ kind: 'subx', operand: rat(Rc.c1) });
+  if (Lc.c0 && Lc.c0.n) {
+    var c = Lc.c0;
+    moves.push({ kind: c.n > 0 ? '-' : '+', operand: rat({ n: Math.abs(c.n), d: c.d }) });
+  }
+  if (a.n !== 0 && !(a.n === 1 && a.d === 1)) moves.push({ kind: '/', operand: rat(a) });
+  return moves;
+}
+
 /* ------------------------------------------------------------ the public */
 function kindOf(q) { return q.kind || q.type || 'reasoned'; }
 
@@ -90,7 +114,10 @@ function correct(M, book, q) {
     return steps ? { steps: steps } : null;
   }
   var lines = algebraCorrectLines(M, q);
-  return { L: lines, fin: lines[lines.length - 1].t };
+  var out = { L: lines, fin: lines[lines.length - 1].t };
+  var mv = algebraMoves(M, q);
+  if (mv) out.moves = mv;
+  return out;
 }
 
 /* the kind's own classic slip, not noise: a walk of the wrong path has to be a
@@ -122,4 +149,4 @@ function corrupt(M, book, q) {
   return { L: [{ op: 'rw', t: broken }], fin: broken };
 }
 
-module.exports = { correct, corrupt, kindOf, angleModelRoute, algebraCorrectLines };
+module.exports = { correct, corrupt, kindOf, angleModelRoute, algebraCorrectLines, algebraMoves };

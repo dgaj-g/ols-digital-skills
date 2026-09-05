@@ -25,7 +25,7 @@ const COVERS = { books: '*', kinds: '*', surfaces: '*', widths: [], projector: f
 const CONTROLS = [
   { id: 'unrecorded-clock', kind: 'mutation', mustFail: /no inventory row/ },
   { id: 'stale-row', kind: 'fixture', plant: 'fixture-pace-stale', mustFail: /names a clock that no longer exists/ },
-  { id: 'budget-on-a-child', kind: 'mutation', mustFail: /times a pupil/ },
+  { id: 'budget-on-a-child', kind: 'mutation', plant: 'fixture-pace-budget', mustFail: /times a pupil/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 

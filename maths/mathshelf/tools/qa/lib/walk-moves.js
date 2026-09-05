@@ -66,81 +66,10 @@ const QUESTIONS_ON_SCREEN = `(() => {
    model attempt goes in, the app's own Check button is pressed. What differs
    per kind is nothing here - and that is the point of routing every kind
    through the engine the validator already proved. */
-const ANSWER = `((args) => {
-  const [qid, wrong] = args;
-  const attempt = window.__modelAttempt(qid, wrong);
-  if (!attempt) return { ok: false, why: 'no model attempt for ' + qid };
-  const rootOf = (id) => [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
-    .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === id)[0];
-  const root = rootOf(qid);
-  if (!root) return { ok: false, why: qid + ' is not on screen' };
-  const kind = root.getAttribute('data-kind');
-
-  /* SOME QUESTIONS ARE ANSWERED THE WAY SHE ANSWERS THEM. A classify question
-     is a row of cards she presses; a protractor reading is typed on the pad.
-     Priming those into the record did nothing visible at all — the renderer
-     restores from the record only once the question is locked — so the walker
-     was pressing a Check that was correctly still disabled, and calling the
-     result "checked-right". A walk that does not do what she does is a walk of
-     something else. For these two kinds the walker uses the app's own
-     controls; for the rest, where the answer is a written route, the model
-     attempt is primed and the app's own Check marks it. */
-  if (kind === 'classify' && attempt.pick) {
-    const want = String(attempt.pick).toLowerCase();
-    const card = [...root.querySelectorAll('button')]
-      .filter((b) => (b.textContent || '').trim().toLowerCase() === want)[0];
-    if (!card) return { ok: false, why: 'no option card reads "' + attempt.pick + '" on ' + qid };
-    card.click();
-    return { ok: true, how: 'pressed the option card' };
-  }
-  if (kind === 'protractor' && attempt.read != null) {
-    const digits = String(attempt.read).split('');
-    const keys = [...root.querySelectorAll('button')].filter((b) => /^[0-9]$/.test((b.textContent || '').trim()));
-    if (!keys.length) return { ok: false, why: 'no number pad on ' + qid };
-    digits.forEach((d) => {
-      const k = keys.filter((b) => (b.textContent || '').trim() === d)[0];
-      if (k) k.click();
-    });
-    return { ok: true, how: 'typed the reading on the pad' };
-  }
-
-  /* THE WRITTEN ROUTE IS TYPED, LINE BY LINE, THE WAY SHE TYPES IT. Priming
-     the record instead put an attempt in the model that the renderer never
-     showed and the Check never saw: the Check stayed correctly disabled
-     ("Write a line of working first.") and the walk recorded the question as
-     still fresh. The composer takes real keydowns for the characters its own
-     pad offers, so the walker sends those, and presses the pad for the one
-     token a keyboard cannot make. */
-  if (attempt.L && attempt.L.length) {
-    /* the line she writes is composed in the DOCK, not inside the question
-       card - the dock is its own surface, and it is where the keypad lives */
-    const dock = document.querySelector('[data-surface="dock"]');
-    const host = root.querySelector('.compose') ? root : (dock && dock.querySelector('.compose') ? dock : null);
-    if (!host) return { ok: false, why: 'no compose box for ' + qid + ' in the question or the dock' };
-    const compose = host.querySelector('.compose');
-    const padKey = (label) => [...host.querySelectorAll('.keypad button')]
-      .filter((b) => (b.textContent || '').trim() === label)[0];
-    const key = (k) => compose.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true }));
-    compose.focus();
-    for (const line of attempt.L) {
-      /* the marker takes x^2 and x² alike; the pupil's pad only makes x² */
-      const t = String(line.t || '').replace(/\^2/g, '\u00b2');
-      for (let i = 0; i < t.length; i++) {
-        if (t[i] === 'x' && t[i + 1] === '\u00b2') {
-          const sq = padKey('x\u00b2');
-          if (sq) { sq.click(); i++; continue; }
-        }
-        key(t[i]);
-      }
-      key('Enter');
-    }
-    return { ok: true, how: 'typed the working, line by line' };
-  }
-
-  if (!window.GJ || !window.GJ.app || !window.GJ.app.__prime) return { ok: false, why: 'no answer channel (is this the live tier?)' };
-  const primed = window.GJ.app.__prime(qid, attempt);
-  return { ok: !!primed, how: 'primed the record (no typed route for this kind)' };
-})`;
+/* ANSWERING is a whole job of its own - five of the seven kinds are answered
+   on a scaffold, not with a keystroke - so it lives in lib/drive.js and is
+   re-exported here, where every walker already looks for it. */
+const { ANSWER } = require('./drive.js');
 
 /* PRESS CHECK on one question, and say what the button was called */
 /* WHAT STATE IS THIS SCREEN ACTUALLY IN. Read off the DOM contract, never

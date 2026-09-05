@@ -78,7 +78,8 @@ admin({ passcode: PW, sub: 'override', className: 'Earned', act: 'angles', email
   let st = null; try { st = JSON.parse(back.state); } catch (e) {}
   g.check(st && st.qs.c1.ovr && st.qs.c1.ovr.q === 1, 'shelf', 'earned-stays',
     'the teacher\'s inked verdict did not survive the untick');
-  g.check(st && st.qs.c1.mk && st.qs.c1.mk[1] === 1, 'shelf', 'earned-stays',
+  const keep = (st && st.qs && st.qs.c1) || null;
+  g.check(!!keep && keep.mk && keep.mk[1] === 1, 'shelf', 'earned-stays',
     'her own marks did not survive the untick');
 }
 
@@ -88,8 +89,12 @@ admin({ passcode: PW, sub: 'override', className: 'Earned', act: 'angles', email
   const beforeName = env.call('apiLoad')({ classCode: 'Earned', act: 'angles' }).state;
   env.call('apiSetName')({ name: 'Aoife M Gartland' });
   const after = env.call('apiLoad')({ classCode: 'Earned', act: 'angles' });
-  g.check(after.ok && after.state === beforeName, 'setname', 'earned-stays',
-    'writing a name orphaned her row — the work is no longer hers, and nothing on any screen would say why');
+  /* `after.state === beforeName` alone passes when BOTH are empty, which is
+     exactly what an orphaned row looks like: the check has to insist there is
+     work there before it can say the work came back */
+  g.check(after.ok && !!beforeName && after.state === beforeName, 'setname', 'earned-stays',
+    'writing a name orphaned her row — the work is no longer hers, and nothing on any screen would say why' +
+    (beforeName ? '' : ' (her state was empty before the rename, so there was nothing for this check to hold)'));
 }
 
 /* ---- "use the app's mark" restores, and never touches her marks -------- */
@@ -99,9 +104,10 @@ admin({ passcode: PW, sub: 'override', className: 'Earned', act: 'angles', email
   admin({ passcode: PW, sub: 'override', className: 'Earned', act: 'angles', email: PUPIL, q: 'c1', idx: 'q', val: null });
   const jt = admin({ passcode: PW, sub: 'jotter', className: 'Earned', act: 'angles', email: PUPIL });
   let st = null; try { st = JSON.parse(jt.state || '{}'); } catch (e) {}
-  g.check(st && !st.qs.c1.ovr, 'book-view:inked-app', 'earned-stays',
-    '"use the app\'s mark" did not clear the teacher\'s ink');
-  g.check(st && st.qs.c1.mk && st.qs.c1.mk[1] === 1, 'book-view', 'earned-stays',
+  const c1 = (st && st.qs && st.qs.c1) || null;
+  g.check(!!c1 && !c1.ovr, 'book-view:inked-app', 'earned-stays',
+    '"use the app\'s mark" did not clear the teacher\'s ink' + (c1 ? '' : ' — her row could not be read back at all'));
+  g.check(!!c1 && c1.mk && c1.mk[1] === 1, 'book-view', 'earned-stays',
     'a full cycle of inking changed the PUPIL\'s own marks — the ink is the teacher\'s layer, never a rewrite of her work');
 }
 

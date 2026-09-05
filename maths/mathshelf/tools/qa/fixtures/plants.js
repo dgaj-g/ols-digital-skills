@@ -140,6 +140,39 @@ const PLANTS = {
       "        /* THE STUB'S TICKBOX GATE, REMOVED. */");
   },
 
+  /* ── a sentence that names a gesture as if there were one way in ── */
+  'fixture-strings-table': (dir) => {
+    edit(dir, 'strings.js', '    pupil: {',
+      "    pupil: {\n      __plantedGesture: 'Tap the values in order, smallest first.',");
+  },
+
+  /* ── a word the film never explains, with a vocabulary that says so ── */
+  'fixture-vocab': (dir) => {
+    write(dir, 'tools/qa/vocab/angles.json', JSON.stringify({
+      angle: { phrase: 'the amount of turn between two lines that meet' }
+    }, null, 1));
+  },
+
+  /* ── a flag that stays up after she has put the thing right ─────── */
+  'fixture-needs-you-sticky': (dir) => {
+    edit(dir, 'staff-pages.js', "        if (st === 'err' && (c.at || 0) >= 2) {",
+      "        if ((c.at || 0) >= 1) {   /* planted: the flag never clears */");
+  },
+
+  /* ── an admin sub that reads a class name and never checks whose ── */
+  'fixture-staff-no-guard': (dir) => {
+    edit(dir, 'server/Code.gs.template',
+      'function adminDeleteClass_(req, ctx) {\n  var g = guardClass_(req.className, ctx); if (!g.ok) return g;\n  var del = String(g.rec.name);',
+      'function adminDeleteClass_(req, ctx) {\n  /* THE GUARD, REMOVED: planted */\n  var g = { ok: true, rec: { name: req.className } };\n  var del = String(g.rec.name);');
+  },
+
+  /* ── a clock that times the pupil on the path that marks her work ── */
+  'fixture-pace-budget': (dir) => {
+    edit(dir, 'jotter.js',
+      '    function runCheck() {\n      if (rec.lock) return;',
+      '    function runCheck() {\n      if (rec.lock) return;\n      if (Date.now() - t0 > 60000) { rec.lock = true; return; }   /* planted: a budget on a child */');
+  },
+
   /* ── a new book that arrives already ticked for every old class ──── */
   'fixture-server-default-true': (dir) => {
     edit(dir, 'server/Code.gs.template',
@@ -272,8 +305,11 @@ const PLANTS = {
       'function adminSetActs_(req, ctx) {\n  /* planted: unticking deletes the rows */\n  try { var sh = dataSheet_(); for (var z = sh.getLastRow(); z > 1; z--) sh.deleteRow(z); } catch (e) {}');
   },
   'fixture-server-rekey': (dir) => {
-    edit(dir, 'server/Code.gs.template', "        if (String(vals[i][1]).toLowerCase() === who.toLowerCase() && String(vals[i][2]) !== name) {",
-      "        if (String(vals[i][1]).toLowerCase() === who.toLowerCase()) {\n          sh.getRange(i + 1, 2).setValue(name + '@nowhere');   /* planted: the row is re-keyed */\n        }\n        if (false) {");
+    /* the row is re-keyed to a new email as she is renamed, so her work is
+       still in the sheet and no longer hers */
+    edit(dir, 'server/Code.gs.template',
+      "          var rng = sh.getRange(i + 1, 3); rng.setNumberFormat('@'); rng.setValue(name);",
+      "          var rng = sh.getRange(i + 1, 3); rng.setNumberFormat('@'); rng.setValue(name);\n          sh.getRange(i + 1, 2).setValue(name.toLowerCase().replace(/ /g, '.') + '@nowhere.invalid');   /* planted: re-keyed */");
   },
   /* ── and one that lets a pupil's save carry the teacher's mark away ── */
   'fixture-server-clobber': (dir) => {

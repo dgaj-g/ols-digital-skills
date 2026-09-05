@@ -33,8 +33,11 @@ const COVERS = {
   tier: ['built'], cells: ['authority']
 };
 const CONTROLS = [
-  { id: 'sub-without-guard', kind: 'mutation', mustFail: /with no guardClass_/ },
-  { id: 'pre-scoping', kind: 'ref', ref: 'bbeffa3^', mustFail: /another teacher/ },
+  { id: 'sub-without-guard', kind: 'mutation', plant: 'fixture-staff-no-guard', mustFail: /with no guardClass_/ },
+  /* the pre-fix server, pinned by hash: before 18 June a passcode holder could
+     reach any class by typing its name, and the guard that stopped it lives on
+     the SERVER, so that is the file the ref replaces */
+  { id: 'pre-scoping', kind: 'ref', ref: 'bbeffa3^', path: 'server/Code.gs.template', mustFail: /another teacher/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
