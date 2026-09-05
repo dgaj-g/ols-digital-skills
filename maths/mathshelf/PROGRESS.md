@@ -157,6 +157,10 @@ the walker can no longer disagree about what a correct attempt is.
 | F28 | **twenty-four states** the registry claimed and nothing ever wrote — a third of the whole registry, counted as coverage cells all along | the new qa-surfaces rule, written the moment F21 showed the shape of the fault | each one written where it happens; the gate cuts the registry out of its own evidence first |
 | F29 | **the film froze at step three and the Next arrow did nothing.** The angle count-up is the one animation driven by requestAnimationFrame; a page the browser is not painting gets no frames, the promise never settled, and the player's busy latch never cleared | the walker watching a film the way she does, one step arrow at a time | a backstop timer finishes the count where the frames do not come |
 
+| F30 | **every browser-tier control was reading the wrong tree** — the fault was planted in a sandbox copy and the gate was then pointed at `localhost:8099`, the real worktree, so eleven gates' controls passed honestly and could never have fired | the battery, once the node tier was clean | each browser control gets its own preview server on its own sandbox |
+| F31 | qa-fonts reported **Schibsted Grotesk — the interface face on every screen — as not loading.** `document.fonts.check()` asks whether the browser has already painted with a face, and a headless page is never painted | the browser battery | the gate asks the face to LOAD, which is the question it means |
+| F32 | the film's gold F/Z/U tracing line read to the colour law as **gold on a reading surface**, on every angles question the film had run over | the walk, at three widths | the trace declares itself an ornament; the film is unchanged (the three colours are meant to accumulate) |
+
 ## GATES THAT INVENTED A FAULT AND WERE NARROWED (L6)
 
 Each keeps the correct thing it condemned as its permanent pass-control.
