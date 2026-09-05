@@ -70,9 +70,43 @@ const ANSWER = `((args) => {
   const [qid, wrong] = args;
   const attempt = window.__modelAttempt(qid, wrong);
   if (!attempt) return { ok: false, why: 'no model attempt for ' + qid };
+  const rootOf = (id) => [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+    .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === id)[0];
+  const root = rootOf(qid);
+  if (!root) return { ok: false, why: qid + ' is not on screen' };
+  const kind = root.getAttribute('data-kind');
+
+  /* SOME QUESTIONS ARE ANSWERED THE WAY SHE ANSWERS THEM. A classify question
+     is a row of cards she presses; a protractor reading is typed on the pad.
+     Priming those into the record did nothing visible at all — the renderer
+     restores from the record only once the question is locked — so the walker
+     was pressing a Check that was correctly still disabled, and calling the
+     result "checked-right". A walk that does not do what she does is a walk of
+     something else. For these two kinds the walker uses the app's own
+     controls; for the rest, where the answer is a written route, the model
+     attempt is primed and the app's own Check marks it. */
+  if (kind === 'classify' && attempt.pick) {
+    const want = String(attempt.pick).toLowerCase();
+    const card = [...root.querySelectorAll('button')]
+      .filter((b) => (b.textContent || '').trim().toLowerCase() === want)[0];
+    if (!card) return { ok: false, why: 'no option card reads "' + attempt.pick + '" on ' + qid };
+    card.click();
+    return { ok: true, how: 'pressed the option card' };
+  }
+  if (kind === 'protractor' && attempt.read != null) {
+    const digits = String(attempt.read).split('');
+    const keys = [...root.querySelectorAll('button')].filter((b) => /^[0-9]$/.test((b.textContent || '').trim()));
+    if (!keys.length) return { ok: false, why: 'no number pad on ' + qid };
+    digits.forEach((d) => {
+      const k = keys.filter((b) => (b.textContent || '').trim() === d)[0];
+      if (k) k.click();
+    });
+    return { ok: true, how: 'typed the reading on the pad' };
+  }
+
   if (!window.GJ || !window.GJ.app || !window.GJ.app.__prime) return { ok: false, why: 'no answer channel (is this the live tier?)' };
   const primed = window.GJ.app.__prime(qid, attempt);
-  return { ok: !!primed };
+  return { ok: !!primed, how: 'primed the written route' };
 })`;
 
 /* PRESS CHECK on one question, and say what the button was called */
