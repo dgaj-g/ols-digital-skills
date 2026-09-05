@@ -192,6 +192,15 @@ const PLANTS = {
       "    /* THE STRIP, REMOVED: planted */");
   },
 
+  /* ── the work surface, made dark ─────────────────────────────────
+     An EDIT, not an append: edit() throws if the line it is replacing is not
+     there, so the plant cannot quietly do nothing. An appended !important rule
+     had been landing somewhere the page never read. */
+  'fixture-css-dark-work': (dir) => {
+    edit(dir, 'shell.css', '.act-paper { background: var(--paper); color: var(--ink); }',
+      '.act-paper { background: #07100F; color: var(--ink); }   /* planted: a dark work surface */');
+  },
+
   /* ── a state the registry claims and no file ever writes ────────── */
   'fixture-surface-dead-state': (dir) => {
     edit(dir, 'script.js', "    slips: ['ranked', 'starter-board'],",
@@ -505,7 +514,9 @@ const FIXTURE_CSS = `
 .excard { --fixture: 1; }
 @keyframes fixture-expensive { from { background: #fff; } to { background: #000; } }
 .book { background-attachment: fixed; }
-[data-work] { background: #07100F !important; }
+/* the work surface, made dark - named three ways so no later rule can win it
+   back, because a plant that is quietly overridden proves nothing */
+[data-work], .act-paper, .jq-body { background-color: #07100F !important; background-image: none !important; }
 .stat-chip b { color: #C8102E; }
 /* and a marking colour on a decoration the PUPIL sees: the markbook chip above
    is only on a teacher's screen, and the colour law walks her screens too */

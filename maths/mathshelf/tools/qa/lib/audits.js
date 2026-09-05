@@ -177,6 +177,26 @@ const BUSY_CONTRACT = `(() => {
   return out;
 })`;
 
+/* KEEP ONE OF EACH KIND, NOT THE FIRST SIX. Trimming a state's findings to the
+   first six hid whole classes of fault behind six of another: a planted dark
+   work surface was invisible because six marking-colour findings came first in
+   the same list. Findings are grouped by their own law and up to three of each
+   are kept, with the rest counted, so nothing disappears in silence. */
+function trim(list) {
+  const byLaw = new Map();
+  list.forEach((f) => {
+    const k = String((f && (f.law || f.kind)) || 'finding');
+    if (!byLaw.has(k)) byLaw.set(k, []);
+    byLaw.get(k).push(f);
+  });
+  const out = [];
+  byLaw.forEach((v, k) => {
+    out.push(...v.slice(0, 3));
+    if (v.length > 3) out.push({ law: k, more: v.length - 3, sel: '(and ' + (v.length - 3) + ' more of the same)' });
+  });
+  return out;
+}
+
 async function run(page, opts) {
   opts = opts || {};
   const verdicts = {};
@@ -186,7 +206,7 @@ async function run(page, opts) {
       const r = await page.evaluate(s => eval(s)(), src);
       const list = Array.isArray(r) ? r : (r && r.findings) || [];
       verdicts[name] = list.length ? 'FAIL' : 'PASS';
-      if (list.length) findings[name] = list.slice(0, 6);
+      if (list.length) findings[name] = trim(list);
     } catch (e) {
       /* A DETACHED FRAME IS NOT A FAULT IN THE PAGE. It means the walker asked
          while the page was navigating under it. Asked once more, on the page
@@ -198,7 +218,7 @@ async function run(page, opts) {
           const r2 = await page.evaluate(s2 => eval(s2)(), src);
           const list2 = Array.isArray(r2) ? r2 : (r2 && r2.findings) || [];
           verdicts[name] = list2.length ? 'FAIL' : 'PASS';
-          if (list2.length) findings[name] = list2.slice(0, 6);
+          if (list2.length) findings[name] = trim(list2);
           return;
         } catch (e2) { /* fall through to the crash below */ }
       }
