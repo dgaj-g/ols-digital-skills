@@ -34,8 +34,8 @@ const COVERS = {
   tier: ['preview', 'built'], cells: ['tickbox']
 };
 const CONTROLS = [
-  { id: 'setacts-wipes-rows', kind: 'fixture', plant: 'fixture-server', mustFail: /lost the pupil's work/ },
-  { id: 'new-book-defaults-true', kind: 'mutation', mustFail: /arrives ticked/ },
+  { id: 'setacts-wipes-rows', kind: 'fixture', plant: 'fixture-server-wipe', mustFail: /lost the pupil's work/ },
+  { id: 'new-book-defaults-true', kind: 'mutation', plant: 'fixture-server-default-true', mustFail: /arrives ticked/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 

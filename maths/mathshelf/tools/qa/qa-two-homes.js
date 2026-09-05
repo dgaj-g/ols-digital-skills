@@ -37,7 +37,7 @@ const CONTROLS = [
   { id: 'addclass-field-parity', kind: 'ref', ref: '95cc8ec^', mustFail: /addClass x two-homes/ },
   { id: 'data-without-secret-guard', kind: 'fixture', plant: 'fixture-server', mustFail: /accepted a call with no secret/ },
   { id: 'stub-serves-unticked-book', kind: 'fixture', plant: 'fixture-server', mustFail: /unticked/ },
-  { id: 'secret-in-a-return-value', kind: 'fixture', plant: 'fixture-server', mustFail: /the shared secret/ },
+  { id: 'secret-in-a-return-value', kind: 'fixture', plant: 'fixture-server-secret-leak', mustFail: /the shared secret/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
