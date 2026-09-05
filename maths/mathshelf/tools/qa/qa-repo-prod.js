@@ -53,9 +53,25 @@ g.check(!/\[ahead |\[behind /.test(sb), 'the branch', 'repo-prod',
 
 /* ---- 3. the committed pair equals a fresh build ------------------------ */
 {
-  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'mathshelf-fresh-'));
+  /* THE SCRATCH KEEPS THE REPO'S SHAPE. The assembler reads two of its inputs
+     from the repo ROOT - style.css and assets/intro-loader.js - so a flat copy
+     of the app folder can never build: this check used to report "a fresh
+     build of the tree failed" every single time, which meant the strongest
+     pre-deploy guarantee there is (what he pastes is what the repo holds) had
+     never once been made. The app goes back to maths/mathshelf and the two
+     root files come with it; the rest of assets/ is film nobody reads here. */
+  const base = fs.mkdtempSync(path.join(os.tmpdir(), 'mathshelf-fresh-'));
+  const scratch = path.join(base, 'maths', 'mathshelf');
   try {
+    fs.mkdirSync(scratch, { recursive: true });
     execFileSync('cp', ['-R', A.APP + '/', scratch + '/']);
+    const root = git(['rev-parse', '--show-toplevel']);
+    if (root) ['style.css', 'assets/intro-loader.js'].forEach(rel => {
+      const src = path.join(root, rel);
+      if (!fs.existsSync(src)) return;
+      fs.mkdirSync(path.dirname(path.join(base, rel)), { recursive: true });
+      execFileSync('cp', [src, path.join(base, rel)]);
+    });
     const r = spawnSync(process.execPath, [path.join(scratch, 'server/build-pathb.js')], { cwd: scratch, encoding: 'utf8', maxBuffer: 32e6 });
     g.check(r.status === 0, 'a fresh build', 'repo-prod', 'a fresh build of the tree failed: ' + (r.stderr || '').slice(0, 200));
     ['server/Index.html', 'server/Code.gs'].forEach(rel => {
@@ -64,7 +80,7 @@ g.check(!/\[ahead |\[behind /.test(sb), 'the branch', 'repo-prod',
       g.check(a === b, rel, 'repo-prod',
         'the committed ' + rel + ' differs from a fresh build of the same tree — the pair he pastes is not the pair the repo holds');
     });
-  } finally { try { fs.rmSync(scratch, { recursive: true, force: true }); } catch (e) {} }
+  } finally { try { fs.rmSync(base, { recursive: true, force: true }); } catch (e) {} }
 }
 
 /* ---- 4. the handover names what is live -------------------------------- */

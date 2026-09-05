@@ -22,6 +22,25 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
+function gitify(dir) {
+  /* A CONTROL THAT CANNOT RUN IS RED, and every question qa-repo-prod asks is
+     a question about a git repository - so the sandbox has to be one. The copy
+     carries no .git (cp -R of the app folder never could), so the plant makes
+     the sandbox a repository of its own and commits the tree as it stands.
+     What each plant does AFTER this call is what the gate is being asked to
+     see: an edit left uncommitted, or a built pair committed already stale. */
+  const G = ['-c', 'user.email=control@mathshelf.invalid', '-c', 'user.name=control'];
+  /* the repository is initialised at the SANDBOX ROOT, not at the app folder,
+     because a gate that resolves anything from the repo root (the assembler's
+     shared style.css, for one) would otherwise resolve it inside the app and
+     quietly read the wrong file */
+  const up = path.resolve(dir, '..', '..');
+  const root = /mathshelf-control-/.test(path.basename(up)) ? up : dir;
+  execFileSync('git', ['init', '-q'], { cwd: root });
+  execFileSync('git', G.concat(['add', '-A']), { cwd: root });
+  execFileSync('git', G.concat(['commit', '-q', '-m', 'control sandbox']), { cwd: root });
+}
+
 function write(dir, rel, text) {
   const p = path.join(dir, rel);
   fs.mkdirSync(path.dirname(p), { recursive: true });
@@ -95,6 +114,14 @@ const PLANTS = {
       "  var T = (window.GJ_STRINGS && window.GJ_STRINGS.pupil) || {};\n" +
       "  function __fixtureLiteral(el) { el.textContent = 'Tap the values in order, smallest first.'; }\n" +
       "  function __fixtureDeadName(el) { el.textContent = 'The Glass' + ' Jotter'; }");
+    /* THE SPLIT IS THE WHOLE POINT. Neither half of 'The Glass' + ' Jotter'
+       is a dead name on its own, so a gate that only reads string literals
+       finds nothing; the phrase exists only once the two halves have been
+       rendered whole. The plant therefore also puts the rendered result into
+       the BUILT artefact's markup, which is where such a phrase actually
+       surfaces, and which is why qa-voice reads server/Index.html at all. */
+    edit(dir, 'server/Index.html', '<body class="activity gj">',
+      '<body class="activity gj">\n<p class="fixture-dead-name">The Glass Jotter</p>');
   },
 
   /* ── a renderer that gives the answer away, or destroys placed work ─ */
@@ -226,10 +253,17 @@ const PLANTS = {
 
   /* ── a tree nobody can name, and a pair that is not the tree's ────── */
   'fixture-dirty-tree': (dir) => {
+    gitify(dir);
     fs.appendFileSync(path.join(dir, 'style.css'), '\n/* planted: an uncommitted edit */\n');
   },
   'fixture-stale-pair': (dir) => {
+    /* committed WITH the damage, so the tree is clean and the only thing wrong
+       is that the built pair no longer matches a fresh build of its own source
+       - which is the question the fresh-build comparison exists to ask, and it
+       is only asked at the tier that asks it */
     fs.appendFileSync(path.join(dir, 'server/Index.html'), '<!-- planted: the built pair is stale -->\n');
+    gitify(dir);
+    return { env: { MS_TIER_RUN: 'full' } };
   },
 
   /* ── an exercise pushed onto the generic self-evaluation chips ────── */
