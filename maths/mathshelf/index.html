@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>OLS — MathShelf</title>
+  <meta name="description" content="Maths books for Our Lady's Grammar School." />
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="shell.css" />
+</head>
+<body class="activity gj">
+
+  <!-- ════ THE SHELL · the blackboard, after dark ════
+       One fixed layer behind everything (body::before paints the ramp; this
+       SVG is the gold construction). It is ornament: nothing here is a thing
+       anybody has to read, and nothing here is ever a status. -->
+  <svg class="gj-construction" data-ornament aria-hidden="true" viewBox="0 0 1240 800" fill="none" preserveAspectRatio="xMidYMid slice">
+    <g stroke="#E4B824" stroke-opacity=".16" stroke-width="1.2">
+      <circle cx="1050" cy="145" r="150" />
+      <path d="M1050 -5 L1180 70 L1180 220 L1050 295 L920 220 L920 70 Z" />
+      <path d="M60 640 A210 210 0 0 1 480 640" />
+      <path d="M60 640 H480" />
+      <path d="M270 640 L400 525" />
+      <path d="M760 700 C 860 695, 920 650, 950 600 C 985 540, 995 510, 1080 495" />
+      <path d="M120 240 h90 M165 195 v90" />
+      <path d="M1140 600 h60 M1140 625 h60 M1152 588 v50 M1188 588 v50" />
+    </g>
+    <g stroke="#E4B824" stroke-opacity=".34" stroke-width="1.4">
+      <path d="M270 640 L455 555" />
+    </g>
+  </svg>
+
+  <!-- ════ SCREEN · THE COVER (the front door) ════ -->
+  <section id="scr-cover" class="gj-screen scr-cover" data-surface="cover" data-state="busy">
+    <div class="cover-desk">
+      <p class="cover-over" data-centred>Our Lady's Grammar School &middot; Newry</p>
+      <h1 class="cover-mark gj-wordmark" data-centred data-ornament>Math<b>Shelf</b></h1>
+      <div class="cover-rule" data-ornament aria-hidden="true"></div>
+
+      <div class="welcome" id="cover-welcome">
+        <p class="hi" id="cover-hi"></p>
+        <p class="nm" id="cover-name-out"></p>
+
+        <!-- the rare path: the account gave no name, so she writes it once -->
+        <div id="cover-fallback" hidden>
+          <label class="cover-field-label" for="cover-name">Your name</label>
+          <input id="cover-name" class="cover-field" type="text" autocomplete="name" maxlength="40"
+                 spellcheck="false" aria-label="Your first name and surname" />
+        </div>
+
+        <!-- the staff way in shares this spot -->
+        <div id="cover-staffbox" hidden>
+          <label class="cover-field-label" for="cover-pass">Staff passcode</label>
+          <input id="cover-pass" class="cover-field" type="password" autocomplete="current-password"
+                 aria-label="Staff passcode" />
+        </div>
+
+        <button id="cover-open" class="btn-gold" data-busy-for="open">Open your books</button>
+        <button id="cover-switch" class="btn-quiet" hidden>Not you? Switch account</button>
+      </div>
+
+      <p class="cover-first" id="cover-first" hidden></p>
+      <p class="cover-msg" id="cover-msg" role="alert"></p>
+      <button id="cover-staff" class="btn-quiet" aria-label="Staff area">Staff</button>
+    </div>
+  </section>
+
+  <!-- ════ SCREEN · THE SHELF ════ -->
+  <section id="scr-shelf" class="gj-screen scr-shelf" data-surface="shelf" data-state="some-ticked" hidden>
+    <header class="shelf-head">
+      <p class="shelf-eyebrow">Our Lady's Grammar School &middot; Mathematics</p>
+      <h1 class="shelf-title gj-wordmark" data-ornament>Math<b>Shelf</b></h1>
+      <p class="shelf-plain" id="shelf-greeting"></p>
+      <p class="shelf-plain" id="shelf-instruction"></p>
+    </header>
+    <main>
+      <div id="shelf-tiles" class="shelf-row"></div>
+      <p class="shelf-plain" id="shelf-note"></p>
+    </main>
+  </section>
+
+  <!-- ════ SCREEN · INSIDE A BOOK ════ -->
+  <section id="scr-activity" class="gj-screen scr-activity" data-surface="book-contents" data-state="fresh" hidden>
+    <header class="act-bar">
+      <button id="act-back" class="btn-back">&larr; The shelf</button>
+      <div class="act-bar-titles">
+        <p class="act-bar-eyebrow" id="act-eyebrow"></p>
+        <h1 class="act-bar-title" id="act-title"></h1>
+      </div>
+      <div class="act-instrument" id="act-instrument" data-ornament aria-hidden="true"></div>
+    </header>
+    <nav id="act-contents" class="contents-strip" aria-label="Exercises"></nav>
+    <main id="act-main" class="act-paper" data-work></main>
+  </section>
+
+  <!-- ════ SCREEN · THE MARKBOOK — rendered by staff.js ════ -->
+  <section id="scr-staff" class="gj-screen scr-staff" hidden></section>
+
+  <div id="gj-modal-root"></div>
+
+  <footer class="act-footer">
+    <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+    <span>OLS Digital Skills</span>
+  </footer>
+
+  <script src="qrcode.min.js"></script>
+  <script src="strings.js"></script>
+  <script src="mathcore.js"></script>
+  <script src="anglecore.js"></script>
+  <script src="content-angles.js"></script>
+  <script src="content-algebra.js"></script>
+  <script src="player.js"></script>
+  <script src="jotter.js"></script>
+  <script src="staff.js"></script>
+  <script src="script.js"></script>
+  <script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
