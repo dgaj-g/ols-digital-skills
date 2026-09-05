@@ -1136,7 +1136,15 @@
     /* the question says the help is on offer, and the film says it was the
        teacher who suggested it: both are states the registry claims, and until
        now nothing wrote either of them */
-    function qRoot() { return wrap.closest ? wrap.closest('[data-surface="question"]') : null; }
+    /* the strip is appended to the jotter, NOT inside the question's own root,
+       so it has to find its question by id rather than by climbing */
+    function qRoot() {
+      var all = document.querySelectorAll('[data-surface="question"]');
+      for (var i = 0; i < all.length; i++) {
+        if (all[i].getAttribute('data-qid') === q.id) return all[i];
+      }
+      return null;
+    }
     function reveal() {
       wrap.hidden = false;
       var r = qRoot();

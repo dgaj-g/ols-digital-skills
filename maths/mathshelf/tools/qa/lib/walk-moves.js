@@ -130,10 +130,16 @@ const ATTEMPT_COUNT = `((qid) => {
 })`;
 
 /* the help strip: is it there, and does it lead with her own slip */
-const HELP_STRIP = `(() => {
+const HELP_STRIP = `((qid) => {
   /* the strip is .want-how - "Want to see how?" - and this looked for a class
-     name the app has never had, so it reported "no help on screen" every time */
-  const w = document.querySelector('.want-how, .support-strip, [data-help-strip]');
+     name the app has never had, so it reported "no help on screen" every time.
+     It is also asked OF A QUESTION: four questions sit on one exercise, each
+     with its own strip, and looking at the first one in the document reported
+     the help another question had already earned. */
+  const root = qid ? [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+    .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid)[0] : document;
+  if (!root) return { present: false, why: 'question ' + qid + ' is not on screen' };
+  const w = root.querySelector('.want-how, .support-strip, [data-help-strip]');
   if (!w || w.hidden) return { present: false };
   const btn = w.querySelector('button');
   return {

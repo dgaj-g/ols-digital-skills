@@ -137,7 +137,7 @@ g.exempt(AUD.EXEMPTIONS.concat([
           await record(page, sidecar, 'question', 'checked-wrong-1', { qid, book, section: si, width });
 
           /* help is EARNED at two wrong, not one */
-          const helpAfterOne = await page.evaluate(s => eval(s)(), W.HELP_STRIP);
+          const helpAfterOne = await page.evaluate((s, id) => eval(s)(id), W.HELP_STRIP, qid);
           g.check(!helpAfterOne.present, 'question:checked-wrong-1 > ' + qid + ' @' + width, 'support',
             '"' + (helpAfterOne.label || 'the method help') + '" is visible after ONE wrong attempt — help is earned at two');
 
@@ -158,7 +158,7 @@ g.exempt(AUD.EXEMPTIONS.concat([
           await record(page, sidecar, 'question', 'checked-wrong-2', { qid, book, section: si, width });
 
           /* after two, the help is there and leads with her own slip */
-          const helpAfterTwo = await page.evaluate(s => eval(s)(), W.HELP_STRIP);
+          const helpAfterTwo = await page.evaluate((s, id) => eval(s)(id), W.HELP_STRIP, qid);
           if (helpAfterTwo.present) {
             await record(page, sidecar, 'question', 'help-strip', { qid, book, section: si, width });
           }
