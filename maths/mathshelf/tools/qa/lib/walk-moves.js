@@ -136,10 +136,11 @@ const HELP_STRIP = `((qid) => {
      It is also asked OF A QUESTION: four questions sit on one exercise, each
      with its own strip, and looking at the first one in the document reported
      the help another question had already earned. */
-  const root = qid ? [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
-    .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid)[0] : document;
-  if (!root) return { present: false, why: 'question ' + qid + ' is not on screen' };
-  const w = root.querySelector('.want-how, .support-strip, [data-help-strip]');
+  /* the strip is a sibling of the question, not a child of it, so it is found
+     by whose help it is rather than by where it sits */
+  const w = qid
+    ? document.querySelector('.want-how[data-help-for="' + qid + '"], [data-help-strip][data-help-for="' + qid + '"]')
+    : document.querySelector('.want-how, .support-strip, [data-help-strip]');
   if (!w || w.hidden) return { present: false };
   const btn = w.querySelector('button');
   return {
