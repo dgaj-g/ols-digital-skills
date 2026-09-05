@@ -9258,6 +9258,16 @@ window.OLS_TRANSPORT = {
     tally.textContent = 'My marks';
     tally.addEventListener('click', function () { renderSection(pack.sections.length); });
     nav.appendChild(tally);
+    /* WHICH STATE THE CONTENTS PAGE IS IN. It was stamped "fresh" once, in
+       index.html, and never again - so "mid-book" and "finished" were declared
+       in the registry and rendered by nothing, and a walk that opened the sixth
+       exercise of a half-finished book still read "fresh". */
+    var qTotal = 0, qDone = 0;
+    pack.sections.forEach(function (sec) {
+      sec.questions.forEach(function (q) { qTotal++; var r = current.state.qs[q.id]; if (r && r.lock) qDone++; });
+    });
+    window.GJ.setState(S.activity, 'book-contents',
+      qDone === 0 ? 'fresh' : (qTotal && qDone >= qTotal ? 'finished' : 'mid-book'));
     renderInstrument();
   }
 
