@@ -71,6 +71,27 @@ function sandbox() {
   return dir;
 }
 
+/* A BROWSER GATE READS A SERVER, NOT A FOLDER. Planting a fault in the sandbox
+   proves nothing if the gate then opens http://localhost:8099 and reads the
+   REAL worktree - which is exactly what every browser-tier control was doing:
+   the fault was in the copy and the gate was looking at the original, so it
+   passed, honestly, every time. Each browser control gets its own server on
+   its own sandbox, and the gate is pointed at it. */
+function needsBrowser(file) {
+  try { return /require\(['"]\.\/lib\/browser\.js['"]\)/.test(fs.readFileSync(A.qa(file), 'utf8')); }
+  catch (e) { return false; }
+}
+let PORT = 8300;
+function serveSandbox(dir) {
+  /* dir is <sandbox>/maths/mathshelf; the server serves the sandbox ROOT so the
+     page sits at the same path it does in the repo */
+  const root = path.resolve(dir, '..', '..');
+  const port = ++PORT;
+  const py = A.qa('serve-preview.py');
+  const child = require('child_process').spawn('python3', [py, root, String(port)], { stdio: 'ignore', detached: true });
+  return { child, base: 'http://localhost:' + port + '/maths/mathshelf/index.html' };
+}
+
 function runGate(dir, gateFile, env) {
   const r = spawnSync(process.execPath, [path.join(dir, 'tools/qa', gateFile)], {
     cwd: dir, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
@@ -133,7 +154,20 @@ gates.forEach(file => {
         env = (plant(dir) || {}).env || {};
       }
 
+      let server = null;
+      if (needsBrowser(file)) {
+        server = serveSandbox(dir);
+        env = Object.assign({}, env, { MS_BASE: server.base });
+        /* wait for the server to answer before the gate asks it for a page */
+        let up = false;
+        for (let t = 0; t < 40 && !up; t++) {
+          try { execFileSync('curl', ['-sf', '-o', '/dev/null', '--max-time', '1', server.base]); up = true; }
+          catch (e) { try { execFileSync('sleep', ['0.15']); } catch (e2) {} }
+        }
+        if (!up) throw new Error('the sandbox server never answered on ' + server.base);
+      }
       const r = runGate(dir, file, env);
+      if (server) { try { process.kill(-server.child.pid); } catch (e) { try { server.child.kill(); } catch (e2) {} } }
       const said = c.mustFail ? c.mustFail.test(r.out) : false;
       const fired = r.status !== 0 && said;
       rows.push([name, id, fired ? 'FIRED' : 'DID NOT FIRE',
