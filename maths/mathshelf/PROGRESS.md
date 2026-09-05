@@ -72,7 +72,14 @@ correct attempt is.
 | F6 | the message voices (`.msg-validation`, `.sc-msg`, `.act-load-error`) wore AMBER — a marking colour with one meaning — while the stylesheet's own opening rule says UI errors never do | qa-colour-law, on the walkers | moved to `--support-rose` |
 | F7 | the v3 cover's navy radial survived the re-skin and painted over the whole blackboard shell: correct in every token, NAVY in the pixels | the colour law, measured in rendered pixels | the dead v3 cover/shelf CSS deleted; screens paint no ground of their own |
 | F8 | `SWAP_NOFLIP` was a misconception nobody could trigger, and `ALT_CORR_SWAP` was named in two words | qa-dx-coverage | one deleted, one rewritten |
-| F9 | the protractor's centre mark is drawn in MARKING RED inside a locked v3 renderer | the colour law | REPORTED, not changed — a locked renderer needs his word (rule 30) |
+| F9 | the protractor's centre mark was drawn in MARKING RED — the colour that means WRONG — so a pupil lining up her protractor was looking at the colour her mistakes are drawn in | qa-colour-law | the COLOUR moved to navy (the behaviour is untouched and qa-v3-shape proves it); the instruction no longer says "red" |
+| F10 | a pupil's next save WIPED the teacher's inked verdict: she marks a question, the pupil types one more line, and the mark reverts with nothing on any screen saying so | qa-pencil-ink, under the mocked server | every stored `ovr` is merged forward on the one write path in `apiSave` |
+| F11 | **the live site has never served this folder**: every vendored font the deployed page asked github.io for was answering 404, so MathShelf and the Glass Jotter before it have been rendering in whatever face the machine had | qa-build's live-asset probe, with its known-absent control | the five faces are carried IN the page as data: URIs, one block per file with merged weight ranges (+215KB, and one whole class of "it worked in the preview" gone) |
+| F12 | the reason note ran 89px off the right edge of the paper at 375px — a pupil could not read the reason she had just chosen | sit-pupil @375 | it wraps on a phone |
+| F13 | a disabled Check said nothing about what it was waiting for | sit-pupil, mute-locks | `data-locked-why` with three plain sentences |
+| F14 | the gold box-draw and the gold star read as marks wearing the wrong colour | qa-colour-law | they declare themselves `data-celebrate` |
+| F15 | the film's step dots stuck 2px out of the film at 375px | sit-pupil @375 | they wrap |
+
 
 ## Gates that invented a fault and were narrowed (L6 — each keeps its pass-control)
 - qa-cache-scope read a variable NAME and condemned the legitimate whole-store key.
