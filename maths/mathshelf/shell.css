@@ -304,3 +304,91 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
 .scr-cover, .scr-shelf, .scr-activity, .scr-staff { background: transparent; background-image: none; }
 /* the paper a pupil works on stays paper */
 .act-paper { background: var(--paper); color: var(--ink); }
+
+/* ══ THE MARKBOOK ═══════════════════════════════════════════════════
+   Dark glass chrome, light panels for every number. A teacher reads data on
+   paper; the drama is behind it, never on it. */
+.staff-main { padding: 0 clamp(14px, 3vw, 32px) 40px; }
+.crumb-link { font: inherit; color: var(--teal-glow); background: none; border: none; padding: 6px 2px; min-height: 40px; cursor: pointer; text-decoration: none; }
+.crumb-link:hover { text-decoration: underline; }
+.crumb-here { color: var(--chalk); }
+
+.cp-books { display: flex; gap: 8px; padding: 22px 0 4px; flex-wrap: wrap; }
+.cp-books .toolbtn.on { background: var(--plum); color: #fff; border-color: var(--plum); }
+.cp-strip { display: flex; gap: 10px; padding: 14px 0 4px; flex-wrap: wrap; color: var(--chalk-muted); }
+
+.needs {
+  margin: 18px 0 6px; background: var(--glass); border: 1px solid var(--line-glow);
+  border-left: 3px solid var(--teal-glow); border-radius: 10px; padding: 14px 18px;
+}
+.needs-lbl { font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--teal-glow); margin-bottom: 10px; }
+.needs-row { display: flex; flex-wrap: wrap; }
+.needs-none { color: var(--chalk-muted); font-size: 14px; }
+.pupilchip {
+  display: inline-flex; align-items: center; gap: 9px; border-radius: 8px; padding: 10px 13px;
+  margin: 0 8px 8px 0; background: var(--panel); color: var(--ink); cursor: pointer;
+  border: 1px solid transparent; min-height: 44px; text-align: left; font: inherit;
+}
+.pupilchip:hover, .pupilchip:focus-visible { border-color: var(--gold); }
+.pupilchip .who { font-weight: 600; font-size: 14px; }
+.pupilchip .why { font-size: 13px; color: var(--pencil); }
+.pupilchip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--now); flex: none; }
+
+.excards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap: 16px; padding: 18px 0 8px; }
+.excard {
+  background: var(--panel); color: var(--ink); border-radius: 10px; padding: 18px 20px 16px;
+  cursor: pointer; border: 1px solid transparent; box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  text-align: left; font: inherit; display: block; width: 100%;
+}
+.excard:hover, .excard:focus-visible { border-color: var(--gold); }
+.excard .exno { font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; color: var(--plum); text-transform: uppercase; display: block; }
+.excard h4 { font-family: var(--f-display); font-size: 21px; font-weight: 600; margin: 2px 0; color: var(--ink); }
+.excard .walt { font-size: 13px; color: var(--pencil); margin-bottom: 12px; }
+.propbar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--hairline); }
+.propbar i { display: block; height: 10px; }
+.p-ok { background: var(--marking-green); } .p-am { background: var(--amber-flag); }
+.p-err { background: var(--marking-red); }  .p-now { background: var(--now); } .p-un { background: #D8D4CA; }
+.slipline { display: flex; align-items: baseline; gap: 8px; margin-top: 11px; font-size: 14px; }
+.slipline .k { font-family: var(--f-mono); font-size: 12px; color: var(--pencil); }
+.slipline .n { font-family: var(--f-mono); font-size: 12px; color: var(--marking-red); }
+.qdots { display: flex; gap: 5px; margin-top: 12px; }
+.qdots i { width: 22px; height: 5px; border-radius: 3px; background: #D8D4CA; }
+.qdots i.ok { background: var(--marking-green); } .qdots i.mixed { background: var(--amber-flag); } .qdots i.bad { background: var(--marking-red); }
+
+/* the legend is PERMANENT: a smartboard has no hover, so a meaning that lives
+   in a tooltip is a meaning nobody in the room can reach */
+.cp-legend { padding: 10px 0 8px; font-family: var(--f-mono); font-size: 12.5px; color: var(--chalk-muted); }
+.lg-ok { color: #4ADE80; } .lg-am { color: #FBBF24; } .lg-err { color: #F87171; }
+.lg-now { color: #60A5FA; } .lg-un { color: #9FB4AF; }
+.toolrow { display: flex; align-items: center; gap: 8px; padding: 20px 0 30px; border-top: 1px solid var(--line-glow); margin-top: 20px; flex-wrap: wrap; }
+
+/* S2 the exercise view */
+.exhead { padding: 22px 0 6px; }
+.exhead h3 { font-family: var(--f-display); font-size: clamp(20px, 4vw, 27px); font-weight: 600; color: #fff; }
+.ex-walt, .q-prompt { color: var(--chalk-muted); font-size: 14px; margin-top: 4px; }
+.grid { margin: 14px 0 20px; border-radius: 10px; overflow: auto; background: var(--panel); color: var(--ink); }
+.grid table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.grid th, .grid td { border-bottom: 1px solid var(--hairline); padding: 9px 14px; text-align: center; }
+.grid th { font: 600 13px var(--f-ui); color: var(--ink); vertical-align: bottom; }
+.grid th .gist { display: block; font-family: var(--f-maths); font-weight: 400; font-size: 13.5px; color: var(--pencil); max-width: 190px; }
+.grid th .mini { display: flex; height: 4px; border-radius: 2px; overflow: hidden; background: var(--hairline); margin-top: 7px; }
+.grid th .mini i { display: block; height: 4px; }
+.grid td.nm, .grid th.nm { text-align: left; font-weight: 600; position: sticky; left: 0; background: var(--panel); min-width: 170px; }
+.g-ok { color: var(--marking-green); font-weight: 700; }
+.g-am { color: var(--amber-flag); font-weight: 700; }
+.g-err { color: var(--marking-red); font-weight: 700; }
+.g-err sup { font-family: var(--f-mono); font-size: 10px; }
+.g-now { color: var(--now); } .g-un { color: #C9C4B8; }
+.grid tr:hover td { background: var(--paper); }
+
+/* S3 the question view */
+.qv-col { display: grid; gap: 14px; padding-bottom: 24px; }
+.qv-card { padding: 14px 18px; }
+.qv-who { font-weight: 600; font-size: 15px; color: var(--ink); }
+.qv-lines { margin: 8px 0 0 18px; font-family: var(--f-maths); font-size: 16px; color: var(--ink); text-align: left; }
+.qv-none { font-size: 14px; color: var(--pencil); margin-top: 6px; }
+
+/* set-up: the tickboxes, grouped by series, each with who the book is for */
+.ticks-series { font-family: var(--f-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--chalk-muted); margin: 8px 0 4px; }
+.tickbox { display: inline-flex; align-items: center; gap: 8px; margin: 0 12px 6px 0; min-height: 40px; }
+.tick-band { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .08em; color: var(--chalk-muted); border: 1px solid var(--line-glow); border-radius: 4px; padding: 2px 6px; }

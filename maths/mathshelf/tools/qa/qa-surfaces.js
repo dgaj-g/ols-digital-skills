@@ -88,7 +88,7 @@ g.note(statics.length + ' static roots in index.html, ' + statics.filter(s => s.
 
 /* ---- (2) every id used anywhere in the client is in the registry -------- */
 const used = new Map();      /* id -> Set(states) */
-const srcFiles = A.renderFiles().concat([A.app('index.html')]);
+const srcFiles = A.renderFiles().concat([A.app('index.html'), A.app('staff-pages.js')]).filter(f => A.exists(f));
 srcFiles.forEach(f => {
   const src = /\.js$/.test(f) ? stripComments(A.read(f)) : A.read(f);
   let r;
@@ -103,12 +103,26 @@ srcFiles.forEach(f => {
     if (!used.has(r[1])) used.set(r[1], new Set());
     if (r[2]) used.get(r[1]).add(r[2]);
   }
-  /* a state set on its own, on a root whose surface the same function names */
+  /* a state set on its own, on a root whose surface the same call names */
   const reState = /setState\(\s*[A-Za-z_$][\w$.]*\s*,\s*'([a-z-]+)'\s*,\s*'([a-z0-9-]+)'/g;
   while ((r = reState.exec(src))) {
     if (!used.has(r[1])) used.set(r[1], new Set());
     used.get(r[1]).add(r[2]);
   }
+  /* THE SHAPE THE MARKBOOK ACTUALLY USES. Its screens are built by one `shell`
+     helper that takes an options object, so the id and the state are named as
+     `surface: 'x', state: 'y'` and reach the DOM through a variable. Reading
+     only the direct-call form left thirteen real, rendered screens looking
+     unrendered - the gate would have been demanding that a whole markbook be
+     deleted from the registry. A gate has to read the code that exists. */
+  const reOpts = /surface:\s*'([a-z-]+)'\s*,\s*state:\s*'([a-z0-9-]+)'/g;
+  while ((r = reOpts.exec(src))) {
+    if (!used.has(r[1])) used.set(r[1], new Set());
+    used.get(r[1]).add(r[2]);
+  }
+  /* and the fallbacks a helper names for itself */
+  const reFallback = /opts\.(?:surface|state)\s*\|\|\s*'([a-z0-9-]+)'/g;
+  while ((r = reFallback.exec(src))) { if (!used.has(r[1]) && /-/.test(r[1])) used.set(r[1], new Set()); }
 });
 
 used.forEach((states, id) => {

@@ -74,6 +74,7 @@ const INPUTS = {
   'shell.css':          path.join(ACT, 'shell.css'),
   'qrcode.min.js':      path.join(ACT, 'qrcode.min.js'),
   'strings.js':         path.join(ACT, 'strings.js'),
+  'staff-pages.js':     path.join(ACT, 'staff-pages.js'),
   'mathcore.js':        path.join(ACT, 'mathcore.js'),
   'anglecore.js':       path.join(ACT, 'anglecore.js'),
   'content-angles.js':  path.join(ACT, 'content-angles.js'),
@@ -105,7 +106,7 @@ const stringsJs  = read('strings.js');
    are the same set in both directions: a book added to index.html and not here
    would ship a deployed app that silently lacks it. */
 const moduleJs   = ['strings.js', 'mathcore.js', 'anglecore.js', 'content-angles.js', 'content-algebra.js',
-                    'player.js', 'jotter.js', 'staff.js', 'script.js'].map(function (k) { return [k, read(k)]; });
+                    'player.js', 'jotter.js', 'staff-pages.js', 'staff.js', 'script.js'].map(function (k) { return [k, read(k)]; });
 const introJsRaw = read('intro-loader.js');
 const codeTemplate = read('Code.gs.template');
 

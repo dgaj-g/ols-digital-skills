@@ -110,7 +110,7 @@ function clientFiles() {
     .map(f => app(f));
 }
 function renderFiles() {
-  return ['script.js', 'jotter.js', 'staff.js', 'player.js', 'strings.js', 'jotter-stats.js', 'statchart.js']
+  return ['script.js', 'jotter.js', 'staff.js', 'staff-pages.js', 'player.js', 'strings.js', 'jotter-stats.js', 'statchart.js']
     .map(f => app(f)).filter(p => fs.existsSync(p));
 }
 

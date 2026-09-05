@@ -54,5 +54,57 @@
   "book-end": [
     "partial",
     "complete"
+  ],
+  "staff-cover": [
+    "passcode-empty",
+    "passcode-wrong",
+    "busy",
+    "open"
+  ],
+  "class-page": [
+    "loading-cold",
+    "empty-class",
+    "live",
+    "no-flags",
+    "book-switch"
+  ],
+  "exercise-view": [
+    "loaded",
+    "cell-focus"
+  ],
+  "question-view": [
+    "loading-progressive",
+    "loaded",
+    "ink-open"
+  ],
+  "book-view": [
+    "pencil",
+    "ink-control-open",
+    "inked-mine-tick",
+    "inked-mine-cross",
+    "inked-app",
+    "flicking",
+    "worth-a-look-open",
+    "reteach-sent"
+  ],
+  "slips": [
+    "ranked",
+    "starter-board"
+  ],
+  "full-grid": [
+    "loaded",
+    "sticky-scroll"
+  ],
+  "set-up": [
+    "classes",
+    "add-class-busy",
+    "delete-armed",
+    "tickboxes",
+    "link-qr-modal",
+    "csv-copied",
+    "csv-fallback-box"
+  ],
+  "staff-error": [
+    "shown"
   ]
 }
