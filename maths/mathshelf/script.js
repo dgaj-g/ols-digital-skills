@@ -73,6 +73,38 @@
   GJ.surface = surface;
   GJ.setState = setState;
 
+  /* ── WHAT IS ALLOWED TO WEAR A MARKING COLOUR ────────────────────
+     The colour law is closed: #C8102E means WRONG, #1F7A33 means RIGHT,
+     #B07D10 means ANSWER ONLY, and none of them ever means anything else.
+     qa-colour-law measures that in rendered pixels and needs to know which
+     elements are marks — so the classes that carry a marking colour, which are
+     already a closed set in the stylesheet, stamp themselves.
+     ONE HOME, and it keeps itself right: an observer stamps anything the app
+     renders later, so a mark added next year is declared by existing rather
+     than by somebody remembering to add an attribute (DFM 144/271). */
+  var MARK_CLASSES = ('.mark-tick,.mark-cross,.wl-mark,.mk-tally,.mk-comment,.staff-tally,' +
+    '.glyph-ok,.glyph-err,.glyph-amber,.glyph-live,.glyph-un,.wall-legend,.cp-legend,' +
+    '.g-ok,.g-am,.g-err,.g-now,.g-un,.p-ok,.p-am,.p-err,.p-now,.p-un,.propbar,.qdots,.mini,' +
+    '.tally-hand,.box-draw,.err-box,.jq-tally,.jq-feedback,.mk-line,.pile-line,.pile-count,.slip-count,.wl-sub,.col-dx-slip');
+  function stampMarks(root) {
+    try {
+      (root || document).querySelectorAll(MARK_CLASSES).forEach(function (el) {
+        if (!el.hasAttribute('data-mark')) el.setAttribute('data-mark', '');
+      });
+    } catch (e) {}
+  }
+  GJ.stampMarks = stampMarks;
+  if (typeof MutationObserver === 'function') {
+    new MutationObserver(function (recs) {
+      for (var i = 0; i < recs.length; i++) {
+        for (var j = 0; j < recs[i].addedNodes.length; j++) {
+          var n = recs[i].addedNodes[j];
+          if (n && n.nodeType === 1) { stampMarks(n.parentNode || n); break; }
+        }
+      }
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  }
+
   var T = (window.GJ_STRINGS && window.GJ_STRINGS.pupil) || {};
   var TT = (window.GJ_STRINGS && window.GJ_STRINGS.teacher) || {};
   var fill = (window.GJ_STRINGS && window.GJ_STRINGS.fill) || function (s) { return s; };
@@ -1382,6 +1414,31 @@
     if (current.dirty) flushSave();
     renderShelf(); show('shelf');
   });
+
+  /* ═══ THE PREVIEW'S ANSWER CHANNEL ══════════════════════════════
+     A walker cannot type into a protractor. What it CAN do is put a real
+     attempt - the same attempt dev/validate-all.js proves marks full - into
+     the question's own record and then press the app's own Check button, so
+     the marking, the feedback and every state the pupil would see are the real
+     ones. The attempts come from dev/model-attempts.js, which is the ONE home
+     both the validator and the walker read (DFM 144).
+
+     IT IS INERT ON THE LIVE TIER. window.OLS_TRANSPORT exists only in the
+     deployed app; when it does, this hook is not installed at all, so nothing
+     a pupil can reach has an answer channel (qa-preview-honest proves it). */
+  if (!window.OLS_TRANSPORT) {
+    GJ.app.__prime = function (qid, attempt) {
+      if (!current.act || !current.state) return false;
+      var rec = current.state.qs[qid] || { att: [], lock: false };
+      rec.att = (rec.att || []).concat([attempt]);
+      rec.at = rec.att.length;
+      current.state.qs[qid] = rec;
+      renderSection(current.section);
+      return true;
+    };
+    GJ.app.__section = function (i) { renderSection(i); };
+    GJ.app.__state = function () { return current.state; };
+  }
 
   /* ── public surface (per INTERFACES.md) ───────────────────────── */
   /* MERGED, never replaced: GJ.app.surfaces is declared at the top of this file

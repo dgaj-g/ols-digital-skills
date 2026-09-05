@@ -56,7 +56,11 @@ const QUERY = `(function () {
   document.querySelectorAll(TAGS.join(',')).forEach(function (el) {
     if (el.hasAttribute('hidden')) return;
     if (el.closest('[hidden]')) return;
-    if (el.closest('[role="status"], [aria-live]')) return;
+    /* ADAPTER (maths): role="alert" is a live region too - it is announced
+       more urgently, but it is still a container that is SUPPOSED to start
+       empty and fill when something happens. Naming only role="status" made
+       the audit report every message slot in the markbook as "nothing". */
+    if (el.closest('[role="status"], [role="alert"], [aria-live]')) return;
     if ((el.textContent || '').trim() !== '') return;
     if (el.querySelector('img, svg, video, canvas, input, button, select, textarea, a[href]')) return;
     var r = el.getBoundingClientRect();

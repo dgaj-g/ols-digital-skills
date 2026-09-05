@@ -7,10 +7,15 @@
 (function () {
   'use strict';
 
+  /* A MESSAGE SLOT IS A LIVE REGION, and it says so by construction rather than
+     at forty call sites. It starts empty on purpose: that is what a live region
+     is for, and it is why the empty-container audit must be able to tell it
+     from a hole in the page. */
   function el(tag, cls, html) {
     var d = document.createElement(tag);
     if (cls) d.className = cls;
     if (html != null) d.innerHTML = html;
+    if (cls && /\bui-msg\b/.test(cls) && !html) d.setAttribute('role', 'status');
     return d;
   }
   function esc(s) {
@@ -111,6 +116,7 @@
 
     var bar = el('div', 'staff-topbar');
     var mark = el('span', 'gj-wordmark');
+    mark.setAttribute('data-ornament', '');
     mark.innerHTML = 'Math<b>Shelf</b>';
     bar.appendChild(mark);
 
@@ -234,7 +240,7 @@
       'style="font-family:var(--f-stationery);font-size:15px;padding:10px;border:1.5px solid var(--navy);border-radius:4px;max-width:240px" aria-label="New class name" />' +
       '<button id="st-add" class="btn-stamp">Add a class</button>' +
       '<span id="st-cmsg" class="ui-msg" role="status"></span></div>' +
-      '<table class="ledger"><thead><tr><th>Class</th><th>Pupils</th><th>Books on the shelf</th><th></th></tr></thead>' +
+      '<table class="ledger"><thead><tr><th>Class</th><th>Pupils</th><th>Books on the shelf</th><th>What you can do</th></tr></thead>' +
       '<tbody id="st-rows"></tbody></table>' +
       '<p class="ui-msg" style="margin-top:var(--sq)">' + esc(TT('setUpHint')) + ' A book that is not ticked is closed for that class: pupils see it on the shelf, marked as not set yet, and cannot open it.</p>';
     shell({ body: body, surface: 'set-up', state: 'classes', crumbs: [{ label: isAdmin ? 'All classes' : 'Your classes' }] });
@@ -623,6 +629,9 @@
     /* THE LEGEND IS PERMANENT. A smartboard has no hover, so a meaning that
        lives in a title attribute is a meaning nobody in the room can reach. */
     var legend = el('p', 'cp-legend');
+    /* the key to the marks IS marking: it wears the marking colours on purpose,
+       and it says so, so the colour law can tell it from decoration */
+    legend.setAttribute('data-mark', '');
     legend.innerHTML =
       '<span class="lg-ok">\u25a0</span> right &nbsp; ' +
       '<span class="lg-am">\u25a0</span> answer only, no working shown &nbsp; ' +
@@ -701,7 +710,7 @@
           '<span class="exno">Ex ' + (si + 1) + ' \u00b7 ' + esc(bookTitle(view.act)) + '</span>' +
           '<h4>' + esc(sec.title) + '</h4>' +
           '<p class="walt">' + esc(sec.walt || '') + '</p>' +
-          '<span class="propbar" role="img" aria-label="' +
+          '<span class="propbar" data-mark role="img" aria-label="' +
             st.ok + ' right, ' + st.amber + ' answer only, ' + st.err + ' wrong, ' +
             st.open + ' working now, ' + st.un + ' not started">' +
             '<i class="p-ok" style="width:' + pc(st.ok) + '"></i>' +
@@ -712,9 +721,9 @@
           '</span>' +
           (st.slip
             ? '<span class="slipline"><span class="k">Most common slip in Ex ' + (si + 1) + '</span>' +
-              '<span class="n">' + esc(st.slip) + ' \u00d7' + st.slipN + '</span></span>'
+              '<span class="n" data-mark>' + esc(st.slip) + ' \u00d7' + st.slipN + '</span></span>'
             : '<span class="slipline"><span class="k">No repeated slip in Ex ' + (si + 1) + ' yet</span></span>') +
-          '<span class="qdots" role="img" aria-label="one mark per question in this exercise">' +
+          '<span class="qdots" data-mark role="img" aria-label="one mark per question in this exercise">' +
             st.dots.map(function (d) {
               var cls = !d.seen ? '' : d.bad > d.ok ? ' bad' : d.mixed ? ' mixed' : ' ok';
               return '<i class="' + cls.trim() + '" title="' + esc(d.label) + '"></i>';
@@ -760,6 +769,9 @@
     var grid = el('div', 'grid staff-panel');
     body.appendChild(grid);
     var legend = el('p', 'cp-legend');
+    /* the key to the marks IS marking: it wears the marking colours on purpose,
+       and it says so, so the colour law can tell it from decoration */
+    legend.setAttribute('data-mark', '');
     legend.innerHTML =
       '<span class="lg-ok">\u2713</span> right &nbsp; ' +
       '<span class="lg-am">\u25d0</span> answer only &nbsp; ' +
@@ -784,7 +796,7 @@
         var tot = Math.max(1, st.ok + st.amber + st.err + st.open + st.un);
         t.push('<th scope="col">' + esc(item.qLabel) +
           '<span class="gist">' + esc(String(item.q.prompt || '').slice(0, 46)) + '</span>' +
-          '<span class="mini" role="img" aria-label="' + st.ok + ' right of ' + tot + ' in ' + esc(item.qLabel) + '">' +
+          '<span class="mini" data-mark role="img" aria-label="' + st.ok + ' right of ' + tot + ' in ' + esc(item.qLabel) + '">' +
             '<i class="p-ok" style="width:' + (100 * st.ok / tot) + '%"></i>' +
             '<i class="p-am" style="width:' + (100 * st.amber / tot) + '%"></i>' +
             '<i class="p-err" style="width:' + (100 * st.err / tot) + '%"></i>' +
@@ -804,7 +816,7 @@
             else { glyph = '<span class="g-now">\u25cf</span>'; title = ((p.summary.upd && (now - p.summary.upd) < 60) ? 'Working right now' : 'In progress'); }
             if (c.ovr != null) title += ' \u00b7 your mark';
           }
-          t.push('<td class="cell" data-email="' + esc(p.email) + '" data-qid="' + esc(item.q.id) + '" title="' + esc(title) + '" aria-label="' + esc((p.name || p.email) + ', ' + item.qLabel + ': ' + title) + '">' + glyph + '</td>');
+          t.push('<td class="cell" data-mark data-email="' + esc(p.email) + '" data-qid="' + esc(item.q.id) + '" title="' + esc(title) + '" aria-label="' + esc((p.name || p.email) + ', ' + item.qLabel + ': ' + title) + '">' + glyph + '</td>');
         });
         t.push('</tr>');
       });
@@ -835,6 +847,7 @@
       '<p class="q-prompt">' + esc(item.q.prompt || '') + '</p>';
     body.appendChild(head);
     var msg = el('p', 'ui-msg', '');
+    msg.setAttribute('role', 'status');   /* a live region starts empty on purpose */
     body.appendChild(msg);
     var col = el('div', 'qv-col');
     body.appendChild(col);
@@ -888,6 +901,7 @@
     var wall = el('div', 'wall');
     var orient = el('p', 'wall-orient', 'Start here: each cell is one pupil × one question. Spot the reds, then tap a cell to open that pupil’s jotter.');
     var legend = el('p', 'wall-legend');
+    legend.setAttribute('data-mark', '');
     legend.innerHTML = '<span class="glyph-ok">✓</span> correct &middot; ' +
       '<span class="glyph-amber">◐</span> answer only &middot; ' +
       '<span class="glyph-err">✗</span> wrong <span class="wl-sub">(small number = the step it broke at)</span> &middot; ' +
@@ -920,7 +934,7 @@
             }
             if (cell.ovr != null) title += ' · teacher override';
           }
-          t.push('<td class="cell" data-email="' + esc(p.email) + '" data-qlabel="' + esc(item.label) + '" title="' + esc(title) + '">' + glyph + '</td>');
+          t.push('<td class="cell" data-mark data-email="' + esc(p.email) + '" data-qlabel="' + esc(item.label) + '" title="' + esc(title) + '">' + glyph + '</td>');
         });
         t.push('</tr>');
       });

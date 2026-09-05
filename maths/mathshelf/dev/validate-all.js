@@ -13,6 +13,10 @@ require('../content-angles.js');
 require('../content-algebra.js');
 var A = global.GJ_ANGLES;
 var PACK = global.GJ_CONTENT;
+/* ONE HOME for what a correct attempt looks like: this validator and the pupil
+   walker import the SAME builders, so they can never disagree about what they
+   are proving (DFM 144). */
+var MA = require('./model-attempts.js');
 
 /* WHAT THIS VALIDATOR PROVES A MODEL AND A CORRUPTED ATTEMPT FOR, declared so
    the coverage machine can prove every question of every kind has its (A)/(B)
@@ -23,22 +27,7 @@ var rows = [], fails = 0;
 function rat(x) { return x && x.d ? (x.d === 1 ? x.n : x.n + '/' + x.d) : x; }
 
 /* ---------- ANGLES ---------- */
-function angleModelRoute(q) {
-  var known = {}, steps = [];
-  Object.keys(q.diagram.angles).forEach(function (k) { if (q.diagram.angles[k].given) known[k] = true; });
-  var targets = Array.isArray(q.target) ? q.target : [q.target];
-  function done() { return targets.every(function (t) { return known[t]; }); }
-  var guard = 0;
-  while (!done() && guard++ < 80) {
-    var e = (q.graph || []).filter(function (ed) {
-      return !known[ed.find] && ed.from.every(function (f) { return known[f]; });
-    })[0];
-    if (!e) return null;
-    known[e.find] = true;
-    steps.push({ ang: e.find, val: q.diagram.angles[e.find].value, rsn: e.rule });
-  }
-  return done() ? steps : null;
-}
+var angleModelRoute = MA.angleModelRoute;
 
 PACK.angles.sections.forEach(function (sec) {
   sec.questions.forEach(function (q) {
@@ -77,52 +66,7 @@ PACK.angles.sections.forEach(function (sec) {
 });
 
 /* ---------- ALGEBRA ---------- */
-function algebraCorrectLines(q) {
-  // canonical correct working derived from the answer, independent of authoring
-  if (q.type === 'subst') {
-    var vars = {}; Object.keys(q.given || {}).forEach(function (k) { vars[k] = q.given[k]; });
-    return [{ op: 'rw', t: rat(q.answer.val) }];
-  }
-  if (q.type === 'expand' || q.type === 'simplify') {
-    var c = q.answer.canon, parts = [];
-    if (c.c2 && c.c2.n) parts.push((Math.abs(c.c2.n) === 1 && c.c2.d === 1 ? (c.c2.n < 0 ? '-' : '') : rat(c.c2)) + 'x^2');
-    if (c.c1 && c.c1.n) parts.push((parts.length && c.c1.n > 0 ? '+' : '') + (Math.abs(c.c1.n) === 1 && c.c1.d === 1 ? (c.c1.n < 0 ? '-' : '') + 'x' : rat(c.c1) + 'x'));
-    if (c.c0 && c.c0.n) parts.push((parts.length && c.c0.n > 0 ? '+' : '') + rat(c.c0));
-    return [{ op: 'rw', t: parts.join(' ') || '0' }];
-  }
-  // solve / form: produce a genuine multi-line balance route ending x = answer
-  var ans = q.answer.x;
-  var startStr = q.type === 'form' ? (q.form.accept[0]) : q.start;
-  var lines = [];
-  if (q.type === 'form') lines.push({ op: 'rw', t: startStr });
-  // expand if bracketed
-  if (/\(/.test(startStr)) {
-    var p = M.parse(startStr);
-    var L = M.canonSide(p.ast.lhs), R = M.canonSide(p.ast.rhs);
-    lines.push({ op: 'exp', t: sideStr(L) + ' = ' + sideStr(R) });
-  }
-  // collapse straight to x = ans (each step the engine accepts because solution set is preserved)
-  // do it as: move all to get ax = b, then x = ans
-  var pp = M.parse(q.type === 'form' ? startStr : startStr);
-  var Lc = M.canonSide(pp.ast.lhs), Rc = M.canonSide(pp.ast.rhs);
-  // ax + b = cx + d  ->  x = ans ; we just assert x = ans as the final line,
-  // and one intermediate "(a-c)x = d-b" so method marks are visible
-  var a = M.rsub(Lc.c1 || M.rat(0,1), Rc.c1 || M.rat(0,1));
-  var b = M.rsub(Rc.c0 || M.rat(0,1), Lc.c0 || M.rat(0,1));
-  if (a.n !== 0) {
-    lines.push({ op: 'mv', t: sideStr({ c1: a, c0: M.rat(0,1) }) + ' = ' + rat(b) });
-    lines.push({ op: '/', t: 'x = ' + rat(ans) });
-  } else {
-    lines.push({ op: 'rw', t: 'x = ' + rat(ans) });
-  }
-  return lines;
-}
-function sideStr(c) {
-  var parts = [];
-  if (c.c1 && c.c1.n) parts.push((Math.abs(c.c1.n) === 1 && c.c1.d === 1 ? (c.c1.n < 0 ? '-' : '') : rat(c.c1)) + 'x');
-  if (c.c0 && c.c0.n) parts.push((parts.length && c.c0.n > 0 ? '+' : '') + rat(c.c0));
-  return parts.join(' ') || '0';
-}
+function algebraCorrectLines(q) { return MA.algebraCorrectLines(M, q); }
 
 PACK.algebra.sections.forEach(function (sec) {
   sec.questions.forEach(function (q) {
