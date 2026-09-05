@@ -141,7 +141,13 @@ g.exempt(AUD.EXEMPTIONS.concat([
           g.check(!helpAfterOne.present, 'question:checked-wrong-1 > ' + qid + ' @' + width, 'support',
             '"' + (helpAfterOne.label || 'the method help') + '" is visible after ONE wrong attempt — help is earned at two');
 
-          /* --- attempt two, wrong again --- */
+          /* --- attempt two, wrong again ---
+             the renderer keeps attempt one on the page and rebuilds the board
+             for attempt two on a short delay ("one more attempt"), so driving
+             the instant the first verdict lands drives a board that is about to
+             be replaced */
+          await new Promise(r => setTimeout(r, 900));
+          await W.settle(page);
           const a2 = await page.evaluate((s, args) => eval(s)(args), W.ANSWER, [qid, true]);
           if (a2.ok) {
             await W.settle(page);
