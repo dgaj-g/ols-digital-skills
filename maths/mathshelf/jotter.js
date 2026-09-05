@@ -10,6 +10,37 @@
 
   var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var SVGNS = 'http://www.w3.org/2000/svg';
+  var T = (window.GJ_STRINGS && window.GJ_STRINGS.pupil) || {};
+  var fill = (window.GJ_STRINGS && window.GJ_STRINGS.fill) || function (s) { return s; };
+
+  /* which section (book > section) a question lives in — read from the pack
+     itself so no extra wiring is needed from script.js to know it (DOM
+     contract, gates design 2.4: data-section on every question root) */
+  function sectionIdFor(actId, qid) {
+    var pack = window.GJ_CONTENT && window.GJ_CONTENT[actId];
+    if (!pack || !pack.sections) return '';
+    for (var i = 0; i < pack.sections.length; i++) {
+      var sec = pack.sections[i];
+      var qs = sec.questions || [];
+      for (var j = 0; j < qs.length; j++) { if (qs[j].id === qid) return sec.id; }
+    }
+    return '';
+  }
+  /* the question root's fixed identity attributes (gates design 2.4): these
+     never change once mounted, unlike data-state which moves with the
+     attempt. */
+  function tagQuestionRoot(wrap, q, hooks) {
+    window.GJ.surface(wrap, 'question', 'fresh');
+    wrap.setAttribute('data-kind', q.kind || q.type || 'reasoned');
+    wrap.setAttribute('data-qid', q.id);
+    wrap.setAttribute('data-book', hooks.actId || '');
+    wrap.setAttribute('data-section', sectionIdFor(hooks.actId, q.id));
+  }
+  /* born-or-made-disabled controls carry a plain-English reason (gates design
+     2.4: data-locked-why); clearing it when re-enabled keeps it honest. */
+  function setLockedWhy(el, why) {
+    if (why) el.setAttribute('data-locked-why', why); else el.removeAttribute('data-locked-why');
+  }
 
   function el(tag, cls, html) {
     var d = document.createElement(tag);
@@ -103,10 +134,10 @@
     var compose = el('div', 'compose');
     compose.setAttribute('tabindex', '0');
     compose.setAttribute('role', 'textbox');
-    compose.setAttribute('aria-label', opts.label || 'Write the next step of working');
+    compose.setAttribute('aria-label', opts.label || T.composeDefaultLabel);
     var content = el('span', 'compose-text');
     var caret = el('span', 'caret');
-    var ph = el('span', 'ph', opts.placeholder || 'write the new line here');
+    var ph = el('span', 'ph', opts.placeholder || T.composeDefaultPlaceholder);
     compose.appendChild(content); compose.appendChild(caret); compose.appendChild(ph);
     (opts.fieldHost || host).appendChild(compose);   // fieldHost lets the input sit inline (e.g. ∠PVR = [__] °); keypad still goes to host
 
@@ -131,7 +162,7 @@
       if (k === COMMIT) {
         var gb = el('button', 'key key-go key-wide');
         gb.type = 'button';
-        gb.textContent = opts.commitLabel || '✓ Done';
+        gb.textContent = opts.commitLabel || T.composeDefaultCommit;
         gb.addEventListener('click', function () { if (locked) return; if (opts.onCommit) opts.onCommit(buf.trim()); });
         pad.appendChild(gb);
         return;
@@ -148,7 +179,11 @@
     // The on-screen buttons fire click (not keydown), so any keydown here proves a
     // real keyboard — hide the pad the instant one arrives. Touch-only users never
     // fire a keydown, so they keep the pad. No device guessing.
-    function maybeHidePad() { if (isNumberPad) pad.style.display = 'none'; }
+    function maybeHidePad() {
+      if (!isNumberPad || pad.style.display === 'none') return;
+      pad.style.display = 'none';
+      if (opts.onPadHidden) opts.onPadHidden();
+    }
 
     function render() {
       content.textContent = buf;
@@ -181,9 +216,10 @@
       clear: function () { buf = ''; render(); },
       set: function (v) { buf = v; render(); },
       focus: function () { compose.focus(); },
-      setLocked: function (v) {
+      setLocked: function (v, why) {
         locked = v;
         compose.setAttribute('aria-disabled', v ? 'true' : 'false');
+        setLockedWhy(compose, v ? (why || opts.lockedWhy || null) : null);
         if (pad.style.display !== 'none') { pad.style.pointerEvents = v ? 'none' : ''; pad.style.opacity = v ? '0.4' : ''; }
       },
       root: compose
@@ -234,10 +270,11 @@
     var wrap = el('div', 'numpad');
     wrap.setAttribute('tabindex', '0');
     wrap.setAttribute('role', 'group');
-    wrap.setAttribute('aria-label', opts.label || 'Enter a number');
+    wrap.setAttribute('aria-label', opts.label || T.numpadDefaultLabel);
     wrap.style.cssText = 'margin-top:6px;outline:none';
     var slot = el('div', 'numpad-slot');
     slot.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;min-width:84px;min-height:46px;padding:2px 14px;font-family:Georgia,serif;font-size:1.7rem;color:#14213A;border:2px solid #7A3B5E;border-radius:10px;background:#fff;box-shadow:0 0 0 4px rgba(122,59,94,.10)';
+    slot.setAttribute('data-centred', '');
     wrap.appendChild(slot);
     var pad = el('div', 'keypad keypad-num');
     pad.style.cssText = 'margin-top:8px';
@@ -368,8 +405,11 @@
     if (!rec.att) rec.att = [];
     var t0 = Date.now();
     var wrap = el('div', 'jotter-q');
+    tagQuestionRoot(wrap, q, hooks);
     var margin = el('div', 'jq-margin', 'Q' + hooks.number);
+    margin.setAttribute('data-mark', '');
     var body = el('div', 'jq-body');
+    body.setAttribute('data-work', '');
     wrap.appendChild(margin); wrap.appendChild(body);
     host.appendChild(wrap);
     body.appendChild(el('p', 'jq-prompt', esc(q.prompt) + ' <span class="q-marks">[1 mark]</span>'));
@@ -378,12 +418,15 @@
     window.GJ_PLAYER.renderDiagram(dwrap, q.diagram, {});
     var pick = null;
     var cards = el('div', 'reason-cards');
+    var trayId = 'classify-options-' + q.id;
+    cards.setAttribute('data-tray', trayId);
     body.appendChild(cards);
     var feedback = el('div', 'jq-feedback');
     var checkRow = el('div', 'check-row');
-    var checkBtn = el('button', 'btn-stamp', 'Mark my answer');
+    var checkBtn = el('button', 'btn-stamp', T.classifyCheckBtn);
     checkBtn.type = 'button';
     checkBtn.disabled = true;
+    setLockedWhy(checkBtn, 'Choose an answer first.');
     checkRow.appendChild(checkBtn);
     body.appendChild(checkRow);
     body.appendChild(feedback);
@@ -395,12 +438,15 @@
         b.type = 'button';
         b.textContent = o.charAt(0).toUpperCase() + o.slice(1);
         b.setAttribute('aria-pressed', 'false');
+        b.setAttribute('data-tray-item', '');
         b.addEventListener('click', function () {
           if (rec.lock) return;
           cards.querySelectorAll('.reason-card').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
           b.setAttribute('aria-pressed', 'true');
           pick = o;
           checkBtn.disabled = false;
+          setLockedWhy(checkBtn, null);
+          window.GJ.setState(wrap, 'question', 'mid-attempt');
         });
         cards.appendChild(b);
       });
@@ -409,20 +455,33 @@
       var right = last.pick === q.classify;
       feedback.innerHTML = '';
       var mk = el('span', 'wl-mark');
+      mk.setAttribute('data-mark', '');
       mk.style.cssText = 'position:static;display:inline-block;width:26px;height:22px;vertical-align:middle';
       feedback.appendChild(mk);
       drawMark(mk, right ? 'tick' : 'cross');
-      feedback.appendChild(el('span', 'mk-tally ' + (right ? 'mk-correct' : 'mk-wrong'), ' ' + (right ? '1/1' : '0/1')));
+      var tally = el('span', 'mk-tally ' + (right ? 'mk-correct' : 'mk-wrong'), ' ' + (right ? '1/1' : '0/1'));
+      tally.setAttribute('data-mark', '');
+      feedback.appendChild(tally);
       if (rec.lock) {
-        feedback.appendChild(el('p', 'mk-comment ' + (right ? 'mk-correct' : 'mk-wrong'), right ? commentFor(q.id, 'perfect', 'classify') : commentFor(q.id, 'fail', 'classify')));
-        if (!right) feedback.appendChild(el('p', 'ui-msg', 'You answered “' + esc(last.pick) + '” — your teacher can see this and will pick it up in class.'));
+        window.GJ.setState(wrap, 'question', right ? 'checked-right' : (rec.att.length >= 2 ? 'checked-wrong-2' : 'checked-wrong-1'));
+        var comment = el('p', 'mk-comment ' + (right ? 'mk-correct' : 'mk-wrong'), right ? commentFor(q.id, 'perfect', 'classify') : commentFor(q.id, 'fail', 'classify'));
+        comment.setAttribute('data-mark', '');
+        feedback.appendChild(comment);
+        if (!right) feedback.appendChild(el('p', 'ui-msg', fill(T.classifyYourAnswer, { answer: esc(last.pick) })));
         checkRow.hidden = true;
-        cards.querySelectorAll('.reason-card').forEach(function (x) { x.disabled = true; });
-        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally ' + (right ? 'mk-correct' : 'mk-wrong') + '" style="font-size:18px">' + (right ? '1' : '0') + '/1</div>';
+        setLockedWhy(checkBtn, 'This question is already marked.');
+        cards.querySelectorAll('.reason-card').forEach(function (x) {
+          x.disabled = true;
+          setLockedWhy(x, 'This question is already marked.');
+          if (x.textContent.toLowerCase() === String(last.pick).toLowerCase()) { x.setAttribute('data-placed', ''); x.setAttribute('data-from', trayId); }
+        });
+        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally ' + (right ? 'mk-correct' : 'mk-wrong') + '" data-mark style="font-size:18px">' + (right ? '1' : '0') + '/1</div>';
       } else if (!instant) {
-        feedback.appendChild(el('p', 'ui-msg', 'Not that one — look again at its size against 90° and 180°. One more attempt.'));
+        window.GJ.setState(wrap, 'question', 'checked-wrong-1');
+        feedback.appendChild(el('p', 'ui-msg', T.classifyTryAgain));
         pick = null;
         checkBtn.disabled = true;
+        setLockedWhy(checkBtn, 'Choose an answer to try again.');
         cards.querySelectorAll('.reason-card').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
       }
       if (!instant) feedback.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
@@ -437,7 +496,7 @@
       checkBtn.disabled = true;
     });
     renderOptions();
-    if (rec.lock && rec.att.length) finish(rec.att[rec.att.length - 1], true);
+    if (rec.lock && rec.att.length) { window.GJ.setState(wrap, 'question', 'locked-restore'); finish(rec.att[rec.att.length - 1], true); }
     return { qid: q.id };
   }
 
@@ -500,8 +559,11 @@
     var t0 = Date.now();
 
     var wrap = el('div', 'jotter-q');
+    tagQuestionRoot(wrap, q, hooks);
     var margin = el('div', 'jq-margin', 'Q' + hooks.number);
+    margin.setAttribute('data-mark', '');
     var body = el('div', 'jq-body');
+    body.setAttribute('data-work', '');
     wrap.appendChild(margin); wrap.appendChild(body);
     host.appendChild(wrap);
     body.appendChild(el('p', 'jq-prompt', esc(q.prompt) + ' <span class="q-marks">[1 mark]</span>'));
@@ -511,6 +573,8 @@
     body.appendChild(pwrap);
     var svg = sv('svg', { viewBox: '0 0 ' + VBW + ' ' + VBH, class: 'protractor-canvas' });
     svg.style.cssText = 'touch-action:none;max-width:540px;width:100%;display:block;margin:0 auto';
+    svg.setAttribute('data-work', '');
+    svg.setAttribute('data-centred', '');
     pwrap.appendChild(svg);
 
     var V = q.vertex || [252, 212], L = q.armLen || 130;
@@ -584,6 +648,7 @@
     function onDown(e, mode) {
       if (rec.lock) return;
       e.preventDefault();
+      window.GJ.setState(wrap, 'question', 'mid-attempt');
       var pp = toSvg(e);
       document.body.classList.add('dragging-active');
       drag = { mode: mode, p: pp, cx: state.cx, cy: state.cy, rot: state.rot, ang: Math.atan2(pp.y - state.cy, pp.x - state.cx) };
@@ -599,15 +664,19 @@
       h.addEventListener('pointerdown', function (e) { e.stopPropagation(); onDown(e, 'rotate'); });
     });
 
-    body.appendChild(el('p', 'ui-msg', 'Line the small red centre mark on the corner, then use a rotate knob (at either end) to turn the protractor so 0 sits along one arm, and read where the other arm crosses.'));
+    body.appendChild(el('p', 'ui-msg', T.protractorInstructions));
     var compHost = el('div', '');
     body.appendChild(compHost);
-    var composer = makeComposer(compHost, { pad: 'number', label: 'Your measurement in degrees', placeholder: 'the size you measure, in degrees', onCommit: function () { runCheck(); } });
+    var composer = makeComposer(compHost, {
+      pad: 'number', label: T.protractorMeasureLabel, placeholder: T.protractorMeasurePlaceholder,
+      lockedWhy: 'This question is already marked.',
+      onCommit: function () { runCheck(); }
+    });
 
     var msgEl = el('p', 'ui-msg');
     body.appendChild(msgEl);
     var checkRow = el('div', 'check-row');
-    var checkBtn = el('button', 'btn-stamp', 'Mark my measurement');
+    var checkBtn = el('button', 'btn-stamp', T.protractorCheckBtn);
     checkBtn.type = 'button';
     checkRow.appendChild(checkBtn);
     body.appendChild(checkRow);
@@ -620,20 +689,36 @@
       var res = protractorMark(q, last.read);
       feedback.innerHTML = '';
       var mk = el('span', 'wl-mark');
+      mk.setAttribute('data-mark', '');
       mk.style.cssText = 'position:static;display:inline-block;width:26px;height:22px;vertical-align:middle';
       feedback.appendChild(mk);
       drawMark(mk, res.ok ? 'tick' : 'cross');
-      feedback.appendChild(el('span', 'mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong'), ' ' + (res.ok ? '1/1' : '0/1') + (res.ok ? '' : ' · you measured ' + last.read + '°')));
+      var tally = el('span', 'mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong'),
+        ' ' + (res.ok ? '1/1' : '0/1') + (res.ok ? '' : fill(T.measuredReadout, { value: last.read })));
+      tally.setAttribute('data-mark', '');
+      feedback.appendChild(tally);
       if (rec.lock) {
-        if (res.ok) feedback.appendChild(el('p', 'mk-comment mk-correct', commentFor(q.id, 'perfect', 'protractor')));
-        else if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', 'You read the other scale — use the one that starts at 0 on the arm you lined up. The true size is ' + q.value + '°.'));
-        else feedback.appendChild(el('p', 'ui-msg', 'Not quite — line the centre on the corner and 0 along an arm, then read again. The true size is ' + q.value + '°.'));
+        window.GJ.setState(wrap, 'question', res.ok ? 'checked-right' : (rec.att.length >= 2 ? 'checked-wrong-2' : 'checked-wrong-1'));
+        if (res.ok) {
+          var comment = el('p', 'mk-comment mk-correct', commentFor(q.id, 'perfect', 'protractor'));
+          comment.setAttribute('data-mark', '');
+          feedback.appendChild(comment);
+        } else if (res.dx === 'WRONG_SCALE') {
+          var truthWS = el('p', 'amber-note', fill(T.protractorReadTrueWrongScale, { value: q.value }));
+          truthWS.setAttribute('data-truth', '');
+          feedback.appendChild(truthWS);
+        } else {
+          var truthG = el('p', 'ui-msg', fill(T.protractorReadTrueGeneric, { value: q.value }));
+          truthG.setAttribute('data-truth', '');
+          feedback.appendChild(truthG);
+        }
         checkRow.hidden = true;
-        composer.setLocked(true);   // functionally lock: no more typing once correct or out of attempts (also on reload)
-        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong') + '" style="font-size:18px">' + (res.ok ? '1' : '0') + '/1</div>';
+        composer.setLocked(true, 'This question is already marked.');   // functionally lock: no more typing once correct or out of attempts (also on reload)
+        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong') + '" data-mark style="font-size:18px">' + (res.ok ? '1' : '0') + '/1</div>';
       } else if (!instant) {
-        if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', 'Close — but check you are reading the scale that starts at 0 on your lined-up arm. One more go.'));
-        else feedback.appendChild(el('p', 'ui-msg', 'Line it up carefully and read again — one more attempt.'));
+        window.GJ.setState(wrap, 'question', 'checked-wrong-1');
+        if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', T.protractorScaleRetry));
+        else feedback.appendChild(el('p', 'ui-msg', T.protractorLineUpRetry));
         composer.clear();
       }
       if (!instant) feedback.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
@@ -643,8 +728,8 @@
       if (rec.lock) return;
       var raw = composer.value();
       var read = parseInt(raw, 10);
-      if (raw === '' || isNaN(read)) { flash('Type the size you measured first.'); return; }
-      if (read < 0 || read > 180) { flash('A protractor measures up to 180° — read the size again.'); return; }
+      if (raw === '' || isNaN(read)) { flash(T.protractorTypeFirst); return; }
+      if (read < 0 || read > 180) { flash(T.protractorMaxRange); return; }
       var res = protractorMark(q, read);
       var att = { read: read, dur: Math.round((Date.now() - t0) / 1000), res: res.ok ? 'OK' : 'X@1' };
       if (res.dx) att.dx = res.dx;
@@ -655,7 +740,7 @@
     }
     checkBtn.addEventListener('click', runCheck);
 
-    if (rec.lock && rec.att.length) finish(rec.att[rec.att.length - 1], true);
+    if (rec.lock && rec.att.length) { window.GJ.setState(wrap, 'question', 'locked-restore'); finish(rec.att[rec.att.length - 1], true); }
     else composer.focus();   // ready to type the measurement without a second tap
     return { qid: q.id };
   }
@@ -672,8 +757,11 @@
 
     var wrap = el('div', 'jotter-q');
     wrap.id = 'jq-' + q.id;
+    tagQuestionRoot(wrap, q, hooks);
     var margin = el('div', 'jq-margin', 'Q' + hooks.number);
+    margin.setAttribute('data-mark', '');
     var body = el('div', 'jq-body');
+    body.setAttribute('data-work', '');
     wrap.appendChild(margin); wrap.appendChild(body);
     host.appendChild(wrap);
 
@@ -700,10 +788,11 @@
     // the keys at once. Sticky degrades to inline where unsupported; a locked question's
     // dock is empty (ui wiped, checkRow hidden) so docks never stack.
     var dock = el('div', 'dock');
+    window.GJ.surface(dock, 'dock', 'chips');   // overwritten below the moment a builder actually renders (same tick, before paint)
     dock.hidden = true;                 // shown only while a question is active (a builder reveals it)
     dock.appendChild(ui);
     var checkRow = el('div', 'check-row');
-    var checkBtn = el('button', 'btn-stamp', 'Mark my working');
+    var checkBtn = el('button', 'btn-stamp', T.checkWorkingBtn);
     checkBtn.type = 'button';
     var attemptNote = el('span', 'attempt-note', '');
     checkRow.appendChild(checkBtn); checkRow.appendChild(attemptNote);
@@ -716,7 +805,10 @@
     function renderLine(line, opts2) {
       opts2 = opts2 || {};
       var row = el('div', 'wline' + (opts2.cls ? ' ' + opts2.cls : ''));
+      row.setAttribute('data-placed', '');   // a committed working line is placed work (gates design 2.4)
+      row.setAttribute('data-mark', '');     // its own colour (wavy underline / grey follow-through) is a verdict
       var markHolder = el('span', 'wl-mark');
+      markHolder.setAttribute('data-mark', '');
       row.appendChild(markHolder);
       row.appendChild(el('span', 'wl-eq', esc(pretty(line.t))));
       var note = marginNote(line.op);
@@ -739,7 +831,10 @@
       var rsn = bank.filter(function (r) { return r.id === st.rsn; })[0];
       var calcBit = st.calc ? ' <span class="wl-margin-note">(' + esc(pretty(st.calc)) + ')</span>' : '';
       var row = el('div', 'wline' + (opts2.cls ? ' ' + opts2.cls : ''));
+      row.setAttribute('data-placed', '');   // a committed reasoning step is placed work (gates design 2.4)
+      row.setAttribute('data-mark', '');
       row.appendChild(el('span', 'wl-mark'));
+      row.querySelector('.wl-mark').setAttribute('data-mark', '');
       row.innerHTML += '<span class="wl-eq">∠' + esc(st.ang) + ' = ' + esc(String(st.val)) + '°</span>' +
         calcBit + '<span class="wl-margin-note">(' + (rsn ? esc(rsn.text) : '?') + ')</span>';
       (opts2.into || linesEl).appendChild(row);
@@ -752,30 +847,32 @@
     function buildAlgebraUI() {
       ui.innerHTML = '';
       dock.hidden = false;
+      window.GJ.setState(dock, 'dock', 'chips');
       // "both sides" only makes sense for equations; substitute/simplify/expand
       // have a single expression, so ask a neutral "next step" there instead.
       var isEquation = q.type === 'solve' || q.type === 'form';
 
       // LINE FIRST — the line is the primary act; the move is an optional annotation.
-      ui.appendChild(el('p', 'ui-msg', 'Write your next line of working:'));
+      ui.appendChild(el('p', 'ui-msg', T.algebraNextLine));
       var compHost = el('div', 'dock-line');
       ui.appendChild(compHost);
       composer = makeComposer(compHost, {
-        placeholder: 'your next line, then “add line”',
-        commitLabel: 'add line',
+        placeholder: T.algebraLinePlaceholder,
+        commitLabel: T.addLineBtn,
         onCommit: commitAlgebraLine
       });
 
       // THE MOVE — an optional tag for the margin, secondary to the line above.
       var moveWrap = el('div', 'move-annot');
-      moveWrap.appendChild(el('div', 'ui-msg msg-status',
-        (isEquation ? 'What are you doing to both sides?' : 'What’s your next step?') + ' — tag the move (optional)'));
+      moveWrap.appendChild(el('div', 'ui-msg msg-status', isEquation ? T.moveAnnotationEquation : T.moveAnnotationGeneric));
       var strip = el('div', 'chip-strip');
+      var trayId = 'algebra-moves-' + q.id;
+      strip.setAttribute('data-tray', trayId);
       var CHIPS = [
-        { id: '+', label: '+ add' }, { id: '-', label: '− subtract' },
-        { id: '*', label: '× multiply' }, { id: '/', label: '÷ divide' },
-        { id: 'exp', label: 'Expand brackets' }, { id: 'col', label: 'Collect terms' },
-        { id: 'rw', label: 'Just rewrite' }
+        { id: '+', label: T.chipAdd }, { id: '-', label: T.chipSubtract },
+        { id: '*', label: T.chipMultiply }, { id: '/', label: T.chipDivide },
+        { id: 'exp', label: T.chipExpandBrackets }, { id: 'col', label: T.chipCollectTerms },
+        { id: 'rw', label: T.chipJustRewrite }
       ];
       var operandHost = el('div', '');
       CHIPS.forEach(function (c) {
@@ -783,6 +880,7 @@
         b.type = 'button';
         b.textContent = c.label;
         b.setAttribute('aria-pressed', 'false');
+        b.setAttribute('data-tray-item', '');
         b.addEventListener('click', function () {
           strip.querySelectorAll('.chip').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
           b.setAttribute('aria-pressed', 'true');
@@ -790,7 +888,7 @@
           if (c.id === '+' || c.id === '-' || c.id === '*' || c.id === '/') {
             pendingOp = { kind: c.id, operand: '' };
             var opc = makeComposer(operandHost, {
-              label: 'How much?', placeholder: 'how much? e.g. 15 or 3x', commitLabel: 'next →',
+              label: T.moveOperandLabel, placeholder: T.moveOperandPlaceholder, commitLabel: T.moveOperandNext,
               onCommit: function () { composer.focus(); }   // "next" on the operand jumps back to the line field
             });
             opc.root.classList.add('compose-mini');
@@ -807,12 +905,12 @@
       moveWrap.appendChild(operandHost);
       ui.appendChild(moveWrap);
 
-      undoBtn = el('button', 'btn-pencil', '↶ remove last line');
+      undoBtn = el('button', 'btn-pencil', T.removeLastLineBtn);
       undoBtn.type = 'button';
       undoBtn.style.marginTop = '8px';
       undoBtn.hidden = true;   // shown by redrawCurrent once a line exists
       undoBtn.addEventListener('click', function () {
-        if (cur.L.pop()) flashMsg('Removed your last line.', true);
+        if (cur.L.pop()) flashMsg(T.removedLastLine, true);
         redrawCurrent();
         save();
       });
@@ -821,10 +919,10 @@
 
     function commitAlgebraLine(text) {
       if (!text) return;
-      if (text.length > 60) { flashMsg('That line is too long for the page — split it into two steps.'); return; }
+      if (text.length > 60) { flashMsg(T.lineTooLong); return; }
       var parsed = window.GJ_MATH.parse(text);
-      if (!parsed.ok) { flashMsg('I can’t read that line — check it and try again. (' + (parsed.err || 'unreadable') + ')'); return; }
-      if (cur.L.length >= 12) { flashMsg('That’s a full page — press Check.'); return; }
+      if (!parsed.ok) { flashMsg(fill(T.lineUnreadable, { reason: parsed.err || 'unreadable' })); return; }
+      if (cur.L.length >= 12) { flashMsg(T.pageFull); return; }
       var op = 'rw';
       if (pendingOp) {
         if (pendingOp.kind === 'exp') op = 'exp';
@@ -857,11 +955,13 @@
       var placed = {};
       var hasSub = cur.L.some(function (l) { return l.op === 'sub'; });
       var hasAns = cur.L.some(function (l) { return l.op === 'ans'; });
+      var exprTrayId = 'subst-expr-' + q.id;
 
-      var instr = el('p', 'ui-msg', 'Substitute: tap each letter to put its number in.');
+      var instr = el('p', 'ui-msg', T.substIntro);
       ui.appendChild(instr);
       var exprBox = el('div', 'subst-expr');
       exprBox.style.cssText = 'font-family:Georgia,serif;font-size:1.55rem;color:#14213A;margin:6px 0 12px;line-height:2';
+      exprBox.setAttribute('data-tray', exprTrayId);
       ui.appendChild(exprBox);
       var givenRow = el('div', 'subst-givens');
       givenRow.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px';
@@ -883,6 +983,8 @@
             var sp = el('span', 'subst-tok', done ? substValStr(given[t.letter]) : t.letter);
             sp.style.cssText = done ? 'color:#14213A;font-weight:600'
               : 'color:#7A3B5E;border-bottom:2px dashed #C58CA0;cursor:pointer;padding:0 3px';
+            sp.setAttribute('data-tray-item', '');
+            if (done) sp.setAttribute('data-placed', '');
             if (!done) sp.addEventListener('click', function () {
               placed[t.letter] = true; renderExpr();
               if (uniq.every(function (u) { return placed[u]; })) commitMethod();
@@ -896,7 +998,7 @@
       }
       function renderGivens() {
         givenRow.innerHTML = '';
-        var gl = el('span', '', 'given:'); gl.style.cssText = 'font-family:monospace;font-size:.72rem;color:#7d7a72';
+        var gl = el('span', '', T.substGivenLabel); gl.style.cssText = 'font-family:monospace;font-size:.72rem;color:#7d7a72';
         givenRow.appendChild(gl);
         uniq.forEach(function (L) {
           var c = el('span', '', L + ' = ' + gjRtostr(given[L]));
@@ -908,7 +1010,8 @@
         cur.L.push({ op: 'sub', t: substLineStr(toks, given, placed), s: Math.round((Date.now() - cur.t0) / 1000) });
         redrawCurrent();
         checkBtn.disabled = true;                       // not ready until the value is keyed
-        instr.textContent = 'Now work it out, then write the value:';
+        setLockedWhy(checkBtn, T.substAnswerPrompt);
+        instr.textContent = T.substMethodPrompt;
         exprBox.style.display = 'none'; givenRow.style.display = 'none';
         showAnswer();
         save();
@@ -918,17 +1021,20 @@
         if (v) cur.L.push({ op: 'ans', t: v, s: Math.round((Date.now() - cur.t0) / 1000) });
         redrawCurrent();
         checkBtn.disabled = !v;                         // "Mark my working" lights up once a value is written
+        setLockedWhy(checkBtn, v ? null : T.substAnswerPrompt);
         save();
       }
       function showAnswer() {
         answerHost.innerHTML = '';
-        answerHost.appendChild(el('p', 'ui-msg', 'Now work it out, then tap the value:'));
-        makeNumPad(answerHost, { label: 'The value', onChange: syncAns });
+        answerHost.appendChild(el('p', 'ui-msg', T.substAnswerPrompt));
+        window.GJ.setState(dock, 'dock', 'numpad');
+        makeNumPad(answerHost, { label: T.substValueLabel, onChange: syncAns });
       }
 
+      window.GJ.setState(dock, 'dock', 'tray');
       renderExpr(); renderGivens();
       if (hasSub) {                                     // resume: method already committed
-        instr.textContent = 'Now work it out, then write the value:';
+        instr.textContent = T.substMethodPrompt;
         exprBox.style.display = 'none'; givenRow.style.display = 'none';
         if (!hasAns) showAnswer();
       }
@@ -941,6 +1047,7 @@
     function buildSimplifyUI() {
       ui.innerHTML = '';
       dock.hidden = false;
+      window.GJ.setState(dock, 'dock', 'tray');
       var terms = parseTerms(q.start);
       var order = ['x2', 'x', 'num'], fams = [];
       terms.forEach(function (t) { if (fams.indexOf(t.fam) < 0) fams.push(t.fam); });
@@ -948,9 +1055,11 @@
       var famLabel = { x2: 'x² terms', x: 'x terms', num: 'numbers' };
       var bins = {}; fams.forEach(function (f) { bins[f] = []; });
       var placed = {}, sel = null;
+      var trayId = 'simplify-tray-' + q.id;
 
-      ui.appendChild(el('p', 'ui-msg', 'Sort each term into its family, then combine.'));
+      ui.appendChild(el('p', 'ui-msg', T.simplifyIntro));
       var tilesRow = el('div', 'simp-tiles'); tilesRow.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px;min-height:44px';
+      tilesRow.setAttribute('data-tray', trayId);
       ui.appendChild(tilesRow);
       var binsRow = el('div', 'simp-bins'); binsRow.style.cssText = 'display:flex;gap:12px;flex-wrap:wrap';
       ui.appendChild(binsRow);
@@ -964,10 +1073,11 @@
           any = true;
           var b = el('button', '', t.tile); b.type = 'button';
           b.style.cssText = 'font-family:Georgia,serif;font-size:1.3rem;padding:6px 15px;border-radius:8px;cursor:pointer;color:#5b2c46;border:2px solid ' + (sel === idx ? '#7A3B5E' : '#C58CA0') + ';background:' + (sel === idx ? '#F3E6EC' : '#fff');
+          b.setAttribute('data-tray-item', '');
           b.addEventListener('click', function () { sel = (sel === idx ? null : idx); renderTiles(); });
           tilesRow.appendChild(b);
         });
-        if (!any) tilesRow.appendChild(el('span', 'ui-msg', sel == null ? 'All sorted — now combine.' : ''));
+        if (!any) tilesRow.appendChild(el('span', 'ui-msg', sel == null ? T.allSortedNowCombine : ''));
       }
       function renderBins() {
         binsRow.innerHTML = '';
@@ -975,7 +1085,13 @@
           var bin = el('div', ''); bin.style.cssText = 'min-width:118px;border:2px dashed ' + (sel != null ? '#7A3B5E' : '#C58CA0') + ';border-radius:10px;padding:8px 10px;background:#FBF7F9;cursor:' + (sel != null ? 'pointer' : 'default');
           var lab = el('div', '', famLabel[f]); lab.style.cssText = 'font-family:monospace;font-size:.68rem;color:#7d7a72;margin-bottom:6px;text-transform:uppercase'; bin.appendChild(lab);
           var row = el('div', ''); row.style.cssText = 'min-height:26px;font-family:Georgia,serif;font-size:1.15rem;color:#14213A';
-          bins[f].forEach(function (idx, k) { row.appendChild(document.createTextNode((k ? '  ' : '') + terms[idx].tile)); });
+          row.setAttribute('data-tray-row', '');
+          bins[f].forEach(function (idx, k) {
+            if (k) row.appendChild(document.createTextNode('  '));
+            var t = el('span', '', terms[idx].tile);
+            t.setAttribute('data-placed', ''); t.setAttribute('data-from', trayId);
+            row.appendChild(t);
+          });
           bin.appendChild(row);
           bin.addEventListener('click', function () { if (sel != null) { bins[f].push(sel); placed[sel] = f; sel = null; renderTiles(); renderBins(); renderCombine(); } });
           binsRow.appendChild(bin);
@@ -984,7 +1100,7 @@
       function renderCombine() {
         combineWrap.innerHTML = '';
         if (!terms.every(function (t, idx) { return placed[idx] != null; })) return;
-        var cb = el('button', 'btn-stamp', 'Combine these terms'); cb.type = 'button';
+        var cb = el('button', 'btn-stamp', T.combineTermsBtn); cb.type = 'button';
         cb.addEventListener('click', function () {
           var c2 = 0, c1 = 0, c0 = 0;
           (bins.x2 || []).forEach(function (idx) { c2 += terms[idx].value; });
@@ -1005,10 +1121,11 @@
     function buildExpandUI() {
       ui.innerHTML = '';
       dock.hidden = false;
+      window.GJ.setState(dock, 'dock', 'tray');
       var fc = q.fc;
       if (!fc || !fc.cells) { buildAlgebraUI(); return; }   // safety: fall back if unscaffolded
       var chosen = [null, null];
-      ui.appendChild(el('p', 'ui-msg', 'Multiply every term — tap the right product for each box.'));
+      ui.appendChild(el('p', 'ui-msg', T.expandIntro));
       var grid = el('div', 'exp-grid'); grid.style.cssText = 'display:flex;flex-direction:column;gap:16px;margin:8px 0';
       ui.appendChild(grid);
       function maybeCommit() {
@@ -1018,18 +1135,23 @@
         redrawCurrent(); save();
       }
       fc.cells.forEach(function (cell, ci) {
+        var trayId = 'expand-tray-' + q.id + '-' + ci;
         var row = el('div', ''); row.style.cssText = 'display:flex;flex-direction:column;gap:6px';
         var head = el('div', ''); head.style.cssText = 'font-family:Georgia,serif;font-size:1.3rem;color:#14213A;display:flex;align-items:center;gap:10px';
+        head.setAttribute('data-tray-row', '');
         head.appendChild(el('span', '', fc.a + ' × ' + fc.terms[ci] + ' ='));
         var slot = el('span', ''); slot.style.cssText = 'min-width:54px;min-height:38px;display:inline-flex;align-items:center;justify-content:center;border:2px dashed #C58CA0;border-radius:8px;padding:0 10px;color:#B07D10';
         head.appendChild(slot); row.appendChild(head);
         var tray = el('div', ''); tray.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap';
+        tray.setAttribute('data-tray', trayId);
         shuffleArr(cell.tiles).forEach(function (tt) {
           var b = el('button', '', tt); b.type = 'button';
           b.style.cssText = 'font-family:Georgia,serif;font-size:1.15rem;padding:6px 14px;border-radius:8px;border:2px solid #1A3A6B;background:#fff;color:#1A3A6B;cursor:pointer';
+          b.setAttribute('data-tray-item', '');
           b.addEventListener('click', function () {
             chosen[ci] = tt;
             slot.textContent = tt; slot.style.borderStyle = 'solid'; slot.style.color = '#14213A';
+            slot.setAttribute('data-placed', ''); slot.setAttribute('data-from', trayId);
             tray.querySelectorAll('button').forEach(function (x) { x.style.background = '#fff'; x.style.color = '#1A3A6B'; });
             b.style.background = '#1A3A6B'; b.style.color = '#fff';
             maybeCommit();
@@ -1046,13 +1168,17 @@
          either side). FORM first picks the equation, then solves it. ───────── */
     function buildFormScaffold() {
       ui.innerHTML = ''; dock.hidden = false;
+      window.GJ.setState(dock, 'dock', 'tray');
       var fc = q.fc;
       if (!fc || !fc.choices) { buildAlgebraUI(); return; }
-      ui.appendChild(el('p', 'ui-msg', 'Form the equation — which one matches the situation?'));
+      ui.appendChild(el('p', 'ui-msg', T.formChooseEquation));
       var row = el('div', ''); row.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin:6px 0';
+      var trayId = 'form-choices-' + q.id;
+      row.setAttribute('data-tray', trayId);
       shuffleArr(fc.choices).forEach(function (ch) {
         var b = el('button', '', ch); b.type = 'button';
         b.style.cssText = 'font-family:Georgia,serif;font-size:1.2rem;padding:9px 15px;border-radius:8px;border:2px solid #1A3A6B;background:#fff;color:#14213A;cursor:pointer;text-align:left';
+        b.setAttribute('data-tray-item', '');
         b.addEventListener('click', function () {
           cur.L = cur.L.filter(function (l) { return l.op !== 'form'; });
           cur.L.push({ op: 'form', t: ch, s: Math.round((Date.now() - cur.t0) / 1000) });
@@ -1067,16 +1193,18 @@
       var M = window.GJ_MATH;
       if (q.type === 'form' && !cur.L.some(function (l) { return l.op === 'form'; })) { buildFormScaffold(); return; }
       ui.innerHTML = ''; dock.hidden = false;
-      ui.appendChild(el('p', 'ui-msg', 'Choose a move — the app writes the next line and checks it balances.'));
+      window.GJ.setState(dock, 'dock', 'chips');
+      ui.appendChild(el('p', 'ui-msg', T.solveChooseMove));
       var chipRow = el('div', 'solve-chips'); chipRow.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin:6px 0'; ui.appendChild(chipRow);
+      chipRow.setAttribute('data-tray', 'solve-moves-' + q.id);
       var opHost = el('div', 'solve-op'); ui.appendChild(opHost);
       function lastLine() { for (var i = cur.L.length - 1; i >= 0; i--) { if (cur.L[i].t) return cur.L[i].t; } return q.start || ''; }
       function applyMove(kind, operandStr) {
         var prev = lastLine();
         var candidate = solveStep(prev, kind, operandStr);
-        if (!candidate) { flashMsg('Tap a number for that move first.'); return; }
+        if (!candidate) { flashMsg(T.solveNeedNumber); window.GJ.setState(dock, 'dock', 'nudge-pad'); return; }
         var gate = M.eqStep(prev, candidate);
-        if (!gate || (gate.ok !== 'sound' && gate.ok !== 'identity')) { flashMsg('That move doesn’t keep it balanced — try another.'); return; }
+        if (!gate || (gate.ok !== 'sound' && gate.ok !== 'identity')) { flashMsg(T.solveMoveUnbalanced); window.GJ.setState(dock, 'dock', 'nudge-pad'); return; }
         var opLabel = kind === 'expand' ? 'exp' : kind === 'subx' ? ('−' + (operandStr || '') + 'x')
           : (({ '-': '−', '+': '+', '*': '×', '/': '÷' }[kind]) + (operandStr || ''));
         cur.L.push({ op: opLabel, t: candidate, s: Math.round((Date.now() - cur.t0) / 1000) });
@@ -1087,28 +1215,31 @@
         opHost.innerHTML = '';
         if (c.noOperand) { applyMove(c.kind, null); return; }
         opHost.appendChild(el('p', 'ui-msg', c.prompt));
+        window.GJ.setState(dock, 'dock', 'numpad-fraction');
         var pad = makeNumPad(opHost, { fraction: true, onCommit: function (v) { applyMove(c.kind, v); } });
-        var go = el('button', 'btn-stamp', 'Apply'); go.type = 'button'; go.style.marginTop = '8px';
+        var go = el('button', 'btn-stamp', T.applyBtn); go.type = 'button'; go.style.marginTop = '8px';
         go.addEventListener('click', function () { applyMove(c.kind, pad.value()); });
         opHost.appendChild(go);
       }
       function renderChips() {
         chipRow.innerHTML = ''; opHost.innerHTML = '';
+        window.GJ.setState(dock, 'dock', 'chips');
         var line = lastLine();
         if (!line || line.indexOf('=') < 0) return;
         var bothX = false, sides = line.split('=');
         var Lp = M.parse(sides[0]), Rp = M.parse(sides[1]);
         if (Lp.ok && Rp.ok && Lp.ast.lhs && Rp.ast.lhs) { var Lc = Lp.ast.lhs.poly, Rc = Rp.ast.lhs.poly; if (Lc && Rc && Lc.c1 && Rc.c1 && Lc.c1.n !== 0 && Rc.c1.n !== 0) bothX = true; }
         var chips = [];
-        if (line.indexOf('(') >= 0) chips.push({ label: 'Expand brackets', kind: 'expand', noOperand: true });
-        if (bothX) chips.push({ label: 'Take □x off both sides', kind: 'subx', prompt: 'Take how many x off both sides?' });
-        chips.push({ label: '− subtract', kind: '-', prompt: 'Subtract how much from both sides?' });
-        chips.push({ label: '+ add', kind: '+', prompt: 'Add how much to both sides?' });
-        chips.push({ label: '÷ divide', kind: '/', prompt: 'Divide both sides by?' });
-        chips.push({ label: '× multiply', kind: '*', prompt: 'Multiply both sides by?' });
+        if (line.indexOf('(') >= 0) chips.push({ label: T.chipExpandBrackets, kind: 'expand', noOperand: true });
+        if (bothX) chips.push({ label: T.chipTakeXBothSides, kind: 'subx', prompt: T.promptTakeXBothSides });
+        chips.push({ label: T.chipSubtract, kind: '-', prompt: T.promptSubtractBoth });
+        chips.push({ label: T.chipAdd, kind: '+', prompt: T.promptAddBoth });
+        chips.push({ label: T.chipDivide, kind: '/', prompt: T.promptDivideBoth });
+        chips.push({ label: T.chipMultiply, kind: '*', prompt: T.promptMultiplyBoth });
         chips.forEach(function (c) {
           var btn = el('button', 'chip', c.label); btn.type = 'button';
           btn.style.cssText = 'font-family:Georgia,serif;font-size:1rem;padding:7px 13px;border-radius:8px;border:1.5px solid #1A3A6B;background:#fff;color:#1A3A6B;cursor:pointer';
+          btn.setAttribute('data-tray-item', '');
           btn.addEventListener('click', function () { pickOp(c); });
           chipRow.appendChild(btn);
         });

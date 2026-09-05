@@ -32,6 +32,24 @@ const W = require('./lib/walk-moves.js');
 const AUD = require('./lib/audits.js');
 const { contentHash } = require('./lib/hash.js');
 
+/* ONE SENTENCE PER FINDING, and it NAMES THE THING. The first cut printed the
+   law and nothing else - "marking-colour-outside-a-mark", forty times - which
+   tells a reader what rule broke and nothing about where to look. */
+function describe(f) {
+  const bits = [];
+  if (f.law) bits.push(f.law);
+  if (f.sel) bits.push(f.sel);
+  if (f.tag) bits.push('<' + f.tag + '>' + (f.cls || ''));
+  if (f.container) bits.push(f.inner + ' inside ' + f.container);
+  if (f.prop) bits.push('(' + f.prop + ': ' + f.colour + ')');
+  if (f.over) bits.push('overflows ' + f.card + ' by ' + f.over + 'px');
+  if (f.qid) bits.push('on ' + f.qid);
+  if (f.ratio != null) bits.push(f.ratio + ':1');
+  if (!bits.length) bits.push(JSON.stringify(f).slice(0, 100));
+  if (f.text) bits.push('["' + String(f.text).slice(0, 50) + '"]');
+  return bits.join('  ');
+}
+
 const TIER = 'full';
 const ORDER = 60;
 const COVERS = {
@@ -66,8 +84,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
     Object.keys(a.findings).forEach(k => {
       (a.findings[k] || []).forEach(f => {
         g.fail(surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + width, k,
-          (f.law || f.sel || f.tag || f.container || JSON.stringify(f).slice(0, 80)) +
-          (f.text ? '  ["' + String(f.text).slice(0, 50) + '"]' : ''));
+          describe(f));
       });
     });
     return row;
@@ -104,7 +121,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
     const qids = await page.evaluate(s => eval(s)(), W.QUESTIONS_ON_SCREEN);
     for (const qid of qids) {
       say(await page.evaluate((id) => {
-        const r = [...document.querySelectorAll('[data-surface="question"], .jq')]
+        const r = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
           .filter(x => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === id)[0];
         return r ? (r.querySelector('.jq-prompt, .q-prompt, p') || {}).textContent || '' : '';
       }, qid));
@@ -121,7 +138,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
       await W.settle(page);
       const row = await record('question', 'checked-right', { qid, section: si, book });
       say(await page.evaluate((id) => {
-        const r = [...document.querySelectorAll('[data-surface="question"], .jq')]
+        const r = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
           .filter(x => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === id)[0];
         return r ? (r.querySelector('.jq-feedback, .mk-comment, .jq-tally') || {}).textContent || '' : '';
       }, qid));

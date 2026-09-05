@@ -24,7 +24,7 @@
 
 /* what kind of question is on screen — asked of the DOM, most specific first */
 const DETECT_KIND = `(() => {
-  const root = document.querySelector('[data-surface="question"], .jq');
+  const root = document.querySelector('[data-surface="question"], .jotter-q');
   if (!root) return null;
   const k = root.getAttribute('data-kind');
   if (k) return k;
@@ -41,7 +41,7 @@ const DETECT_KIND = `(() => {
 
 /* the question root's own identity, for the sidecar */
 const QUESTION_ID = `(() => {
-  const root = document.querySelector('[data-surface="question"], .jq');
+  const root = document.querySelector('[data-surface="question"], .jotter-q');
   if (!root) return null;
   return {
     qid: root.getAttribute('data-qid'),
@@ -55,7 +55,7 @@ const QUESTION_ID = `(() => {
 /* every question now on screen, in order — the section renders them all */
 const QUESTIONS_ON_SCREEN = `(() => {
   const out = [];
-  document.querySelectorAll('[data-surface="question"], .jq').forEach((r) => {
+  document.querySelectorAll('[data-surface="question"], .jotter-q').forEach((r) => {
     const qid = r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '');
     if (qid) out.push(qid);
   });
@@ -77,7 +77,7 @@ const ANSWER = `((args) => {
 
 /* PRESS CHECK on one question, and say what the button was called */
 const CHECK = `((qid) => {
-  const root = [...document.querySelectorAll('[data-surface="question"], .jq')]
+  const root = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
     .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid)[0];
   if (!root) return { ok: false, why: 'question ' + qid + ' is not on screen' };
   const btn = [...root.querySelectorAll('button')]

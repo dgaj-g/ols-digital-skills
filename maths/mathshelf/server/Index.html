@@ -395,7 +395,13 @@ body.gj :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
 .ui-msg { font-family: var(--f-stationery); font-size: 14px; color: var(--pencil); min-height: var(--sq); }
 /* the three message voices (proposal \a7 5c) \2014  none of them is marking-red: a message is
    never a wrong mark. info = neutral; validation = needs action (amber left-rule); status = quiet italic. */
-.ui-msg.msg-validation { color: var(--amber-flag); border-left: 3px solid var(--amber-flag); padding-left: 8px; }
+/* A MESSAGE IS NOT A MARK. This file's own opening rule says UI errors are
+   never a marking colour, and amber means exactly one thing on this platform:
+   "answer only, no working shown". A validation line that wore it taught the
+   colour a second meaning, which is the one thing the closed colour law exists
+   to stop. --support-rose is the tone that was defined for precisely this: it
+   carries attention and is deliberately nowhere near the marking three. */
+.ui-msg.msg-validation { color: var(--support-rose); border-left: 3px solid var(--support-rose); padding-left: 8px; }
 .ui-msg.msg-status { font-style: italic; }
 
 /* \2550 \2550 \2550  SCREEN \b7  THE COVER and THE SHELF \2014  now shell.css \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 
@@ -812,7 +818,7 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 .step-card .sc-field { display: inline-flex; min-width: 96px; }
 .step-card .sc-field .compose { width: 100%; min-height: calc(var(--sq) * 1.2); border-bottom-color: var(--navy); }
 .step-card .sc-hint { font-family: var(--f-stationery); font-size: 12px; color: var(--pencil); margin: 3px 0 0; }
-.step-card .sc-msg { font-family: var(--f-stationery); font-size: 13.5px; font-weight: 600; color: var(--amber-flag); min-height: 18px; margin: 10px 0 0; }
+.step-card .sc-msg { font-family: var(--f-stationery); font-size: 13.5px; font-weight: 600; color: var(--support-rose); min-height: 18px; margin: 10px 0 0; }
 
 /* reason picker \2014  grouped then randomised */
 .reasons { margin-top: calc(var(--sq) * 0.5); }
@@ -1080,7 +1086,7 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 @keyframes gj-spin { to { transform: rotate(360deg); } }
 @keyframes gj-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
 @media (prefers-reduced-motion: reduce) { .panel-loading, .panel-spinner, .spinner { animation: none; } }
-.act-load-error { text-align: center; color: var(--amber-flag); font-weight: 700; margin: 28px auto; max-width: 480px; line-height: 1.4; }
+.act-load-error { text-align: center; color: var(--support-rose); font-weight: 700; margin: 28px auto; max-width: 480px; line-height: 1.4; }
 
 /* selection lock while dragging (protractor drag etc.) */
 body.dragging-active, body.dragging-active * {
@@ -1562,7 +1568,9 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
   font-family: var(--f-mono); font-size: 13px; color: var(--chalk-muted);
   border: 1px solid var(--line-glow); background: var(--glass); border-radius: 7px; padding: 7px 12px;
 }
-.stat-chip b { color: var(--gold-hi); font-weight: 600; }
+ /* A NUMBER IS DATA, NOT PRESTIGE. Gold on a value makes the value look like
+    a status; the count of pupils in a class is neither. */
+.stat-chip b { color: var(--chalk); font-weight: 600; }
 .toolbtn {
   font: 500 14px var(--f-ui); color: var(--chalk); background: var(--glass);
   border: 1px solid var(--line-glow); border-radius: 7px; padding: 10px 15px; min-height: 40px; cursor: pointer;
@@ -1710,6 +1718,10 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
 .ticks-series { font-family: var(--f-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--chalk-muted); margin: 8px 0 4px; }
 .tickbox { display: inline-flex; align-items: center; gap: 8px; margin: 0 12px 6px 0; min-height: 40px; }
 .tick-band { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .08em; color: var(--chalk-muted); border: 1px solid var(--line-glow); border-radius: 4px; padding: 2px 6px; }
+
+/* the class page's own legend IS a key to marks, so it wears marking colours
+   legitimately and says so */
+.cp-legend { }
 
 </style>
 </head>
@@ -1913,7 +1925,121 @@ window.OLS_TRANSPORT = {
       selfEvalSaved: 'Saved. Your teacher sees this on her class list.',
       saveWaiting: 'Still saving your work\u2026',
       saveRetry: 'Try again',
-      saveHeldLocal: 'Your work is safe on this device and will be sent as soon as the page can reach the server.'
+      saveHeldLocal: 'Your work is safe on this device and will be sent as soon as the page can reach the server.',
+
+      /* the jotter: the composer and number-pad widgets (default labels \u2014 most
+         callers pass their own, but these are the ones actually reached) */
+      composeDefaultLabel: 'Write the next step of working',
+      composeDefaultPlaceholder: 'write the new line here',
+      composeDefaultCommit: '\u2713 Done',
+      numpadDefaultLabel: 'Enter a number',
+
+      /* the movie player */
+      movieWorkedExample: 'Worked example',
+      moviePrevStep: 'Previous step',
+      movieNextStep: 'Next step',
+      moviePlayLabel: 'Play',
+      moviePlayBtn: '\u25b6 Play',
+      moviePauseBtn: '\u275a\u275a Pause',
+      movieReplayBtn: '\u21ba Replay',
+
+      /* classify questions (choose the type of angle) */
+      classifyCheckBtn: 'Mark my answer',
+      classifyYourAnswer: 'You answered \u201c{answer}\u201d \u2014 your teacher can see this and will pick it up in class.',
+      classifyTryAgain: 'Not that one \u2014 look again at its size against 90\u00b0 and 180\u00b0. One more attempt.',
+
+      /* protractor questions (measure the angle) */
+      protractorCheckBtn: 'Mark my measurement',
+      protractorInstructions: 'Put the small red centre mark on the corner. Turn the protractor with a rotate knob at either end, until 0 sits along one arm, then read where the other arm crosses.',
+      protractorReadTrueWrongScale: 'You read the other scale \u2014 use the one that starts at 0 on the arm you lined up. The true size is {value}\u00b0.',
+      protractorReadTrueGeneric: 'Not quite \u2014 line the centre on the corner and 0 along an arm, then read again. The true size is {value}\u00b0.',
+      protractorScaleRetry: 'Close \u2014 but check you are reading the scale that starts at 0 on your lined-up arm. One more go.',
+      protractorLineUpRetry: 'Line it up carefully and read again \u2014 one more attempt.',
+      protractorTypeFirst: 'Type the size you measured first.',
+      protractorMaxRange: 'A protractor measures up to 180\u00b0 \u2014 read the size again.',
+      protractorMeasureLabel: 'Your measurement in degrees',
+      protractorMeasurePlaceholder: 'the size you measure, in degrees',
+      measuredReadout: ' \u00b7 you measured {value}\u00b0',
+
+      /* the jotter: the shared check control */
+      checkWorkingBtn: 'Mark my working',
+      cancelBtn: 'Cancel',
+      addedToJotter: '\u2713 Added to your jotter.',
+      checkFailedSaved: 'Something went wrong marking this \u2014 your working is saved for your teacher.',
+      amberNoWorking: 'Right answer \u2014 but with no working shown, you can\u2019t earn the working marks.',
+      lineWrongNoReveal: 'The line in the red box is where it went wrong \u2014 nothing is given away. One more attempt.',
+
+      /* the jotter: algebra free-writing (expand/simplify fallback and rewrite) */
+      algebraNextLine: 'Write your next line of working:',
+      removeLastLineBtn: '\u21b6 remove last line',
+      removedLastLine: 'Removed your last line.',
+      lineTooLong: 'That line is too long for the page \u2014 split it into two steps.',
+      lineUnreadable: 'That line does not read as maths yet \u2014 check it and try again. ({reason})',
+      pageFull: 'That is a full page \u2014 press Mark my working.',
+      addToWorkingBtn: 'Add to my working',
+      secondAttemptNote: 'Second attempt \u2014 your first try stays on the page.',
+      algebraLinePlaceholder: 'your next line, then \u201cadd line\u201d',
+      addLineBtn: 'add line',
+
+      /* the jotter: the move-chip annotation (algebra free-writing + solve) \u2014
+         the four arithmetic chips and "expand brackets" are the same tool in
+         both places, so one label serves both */
+      moveAnnotationEquation: 'What are you doing to both sides? \u2014 tag the move (optional)',
+      moveAnnotationGeneric: 'What\u2019s your next step? \u2014 tag the move (optional)',
+      chipAdd: '+ add',
+      chipSubtract: '\u2212 subtract',
+      chipMultiply: '\u00d7 multiply',
+      chipDivide: '\u00f7 divide',
+      chipExpandBrackets: 'Expand brackets',
+      chipCollectTerms: 'Collect terms',
+      chipJustRewrite: 'Just rewrite',
+      moveOperandLabel: 'How much?',
+      moveOperandPlaceholder: 'how much? e.g. 15 or 3x',
+      moveOperandNext: 'next \u2192',
+
+      /* the jotter: substitution questions */
+      substIntro: 'Choose each letter below to put its number in.',
+      substGivenLabel: 'given:',
+      substMethodPrompt: 'Now work it out, then write the value:',
+      substAnswerPrompt: 'Now work it out, then enter the value:',
+      substValueLabel: 'The value',
+
+      /* the jotter: simplify (collect like terms into bins) */
+      simplifyIntro: 'Sort each term into its family, then combine.',
+      allSortedNowCombine: 'All sorted \u2014 now combine.',
+      combineTermsBtn: 'Combine these terms',
+
+      /* the jotter: expand (multiply out a bracket) */
+      expandIntro: 'Multiply every term \u2014 choose the right product for each box.',
+
+      /* the jotter: form an equation, then solve it */
+      formChooseEquation: 'Form the equation \u2014 which one matches the situation?',
+
+      /* the jotter: solve (the move-chip rail) */
+      solveChooseMove: 'Choose a move \u2014 you will see the next line, already checked for balance.',
+      solveNeedNumber: 'Enter a number for that move first.',
+      solveMoveUnbalanced: 'That move doesn\u2019t keep it balanced \u2014 try another.',
+      chipTakeXBothSides: 'Take \u25a1x off both sides',
+      promptTakeXBothSides: 'Take how many x off both sides?',
+      promptSubtractBoth: 'Subtract how much from both sides?',
+      promptAddBoth: 'Add how much to both sides?',
+      promptDivideBoth: 'Divide both sides by?',
+      promptMultiplyBoth: 'Multiply both sides by?',
+
+      /* the jotter: angle reasoning steps */
+      angleOneOpenHint: 'One angle is dashed on the diagram \u2014 choose it, give its size, and choose the reason.',
+      angleMultiOpenHint: 'Choose a dashed angle on the diagram, give its size and reason, then work your way to {target}.',
+      removeLastStepBtn: '\u21b6 remove last step',
+      removedLastStep: 'Removed your last step.',
+      angleStepHeading: 'Work out \u2220{name}',
+      angleSizeLabel: 'Size of angle {name}',
+      angleSizePlaceholder: 'the size, e.g. 65',
+      angleSizeHint: 'Type the size \u2014 a number, or a sum like 180\u2212124.',
+      angleChooseReasonSub: 'Then choose the reason \u2014 it earns its own mark:',
+      angleNeedSize: 'First type the size of the angle above.',
+      angleUnreadable: 'That does not read as a number yet \u2014 type a number, or a calculation like 180\u221265.',
+      angleOutOfRange: 'An angle here is between 0\u00b0 and 360\u00b0 \u2014 check the size.',
+      angleChooseReasonPrompt: 'Now choose the reason below \u2193 \u2014 it earns its own mark.'
     },
 
     /* \u2500\u2500 what a teacher reads \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
@@ -4947,6 +5073,37 @@ window.OLS_TRANSPORT = {
 
   var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var SVGNS = 'http://www.w3.org/2000/svg';
+  var T = (window.GJ_STRINGS && window.GJ_STRINGS.pupil) || {};
+  var fill = (window.GJ_STRINGS && window.GJ_STRINGS.fill) || function (s) { return s; };
+
+  /* which section (book > section) a question lives in \u2014 read from the pack
+     itself so no extra wiring is needed from script.js to know it (DOM
+     contract, gates design 2.4: data-section on every question root) */
+  function sectionIdFor(actId, qid) {
+    var pack = window.GJ_CONTENT && window.GJ_CONTENT[actId];
+    if (!pack || !pack.sections) return '';
+    for (var i = 0; i < pack.sections.length; i++) {
+      var sec = pack.sections[i];
+      var qs = sec.questions || [];
+      for (var j = 0; j < qs.length; j++) { if (qs[j].id === qid) return sec.id; }
+    }
+    return '';
+  }
+  /* the question root's fixed identity attributes (gates design 2.4): these
+     never change once mounted, unlike data-state which moves with the
+     attempt. */
+  function tagQuestionRoot(wrap, q, hooks) {
+    window.GJ.surface(wrap, 'question', 'fresh');
+    wrap.setAttribute('data-kind', q.kind || q.type || 'reasoned');
+    wrap.setAttribute('data-qid', q.id);
+    wrap.setAttribute('data-book', hooks.actId || '');
+    wrap.setAttribute('data-section', sectionIdFor(hooks.actId, q.id));
+  }
+  /* born-or-made-disabled controls carry a plain-English reason (gates design
+     2.4: data-locked-why); clearing it when re-enabled keeps it honest. */
+  function setLockedWhy(el, why) {
+    if (why) el.setAttribute('data-locked-why', why); else el.removeAttribute('data-locked-why');
+  }
 
   function el(tag, cls, html) {
     var d = document.createElement(tag);
@@ -5040,10 +5197,10 @@ window.OLS_TRANSPORT = {
     var compose = el('div', 'compose');
     compose.setAttribute('tabindex', '0');
     compose.setAttribute('role', 'textbox');
-    compose.setAttribute('aria-label', opts.label || 'Write the next step of working');
+    compose.setAttribute('aria-label', opts.label || T.composeDefaultLabel);
     var content = el('span', 'compose-text');
     var caret = el('span', 'caret');
-    var ph = el('span', 'ph', opts.placeholder || 'write the new line here');
+    var ph = el('span', 'ph', opts.placeholder || T.composeDefaultPlaceholder);
     compose.appendChild(content); compose.appendChild(caret); compose.appendChild(ph);
     (opts.fieldHost || host).appendChild(compose);   // fieldHost lets the input sit inline (e.g. \u2220PVR = [__] \u00b0); keypad still goes to host
 
@@ -5068,7 +5225,7 @@ window.OLS_TRANSPORT = {
       if (k === COMMIT) {
         var gb = el('button', 'key key-go key-wide');
         gb.type = 'button';
-        gb.textContent = opts.commitLabel || '\u2713 Done';
+        gb.textContent = opts.commitLabel || T.composeDefaultCommit;
         gb.addEventListener('click', function () { if (locked) return; if (opts.onCommit) opts.onCommit(buf.trim()); });
         pad.appendChild(gb);
         return;
@@ -5085,7 +5242,11 @@ window.OLS_TRANSPORT = {
     // The on-screen buttons fire click (not keydown), so any keydown here proves a
     // real keyboard \u2014 hide the pad the instant one arrives. Touch-only users never
     // fire a keydown, so they keep the pad. No device guessing.
-    function maybeHidePad() { if (isNumberPad) pad.style.display = 'none'; }
+    function maybeHidePad() {
+      if (!isNumberPad || pad.style.display === 'none') return;
+      pad.style.display = 'none';
+      if (opts.onPadHidden) opts.onPadHidden();
+    }
 
     function render() {
       content.textContent = buf;
@@ -5118,9 +5279,10 @@ window.OLS_TRANSPORT = {
       clear: function () { buf = ''; render(); },
       set: function (v) { buf = v; render(); },
       focus: function () { compose.focus(); },
-      setLocked: function (v) {
+      setLocked: function (v, why) {
         locked = v;
         compose.setAttribute('aria-disabled', v ? 'true' : 'false');
+        setLockedWhy(compose, v ? (why || opts.lockedWhy || null) : null);
         if (pad.style.display !== 'none') { pad.style.pointerEvents = v ? 'none' : ''; pad.style.opacity = v ? '0.4' : ''; }
       },
       root: compose
@@ -5171,10 +5333,11 @@ window.OLS_TRANSPORT = {
     var wrap = el('div', 'numpad');
     wrap.setAttribute('tabindex', '0');
     wrap.setAttribute('role', 'group');
-    wrap.setAttribute('aria-label', opts.label || 'Enter a number');
+    wrap.setAttribute('aria-label', opts.label || T.numpadDefaultLabel);
     wrap.style.cssText = 'margin-top:6px;outline:none';
     var slot = el('div', 'numpad-slot');
     slot.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;min-width:84px;min-height:46px;padding:2px 14px;font-family:Georgia,serif;font-size:1.7rem;color:#14213A;border:2px solid #7A3B5E;border-radius:10px;background:#fff;box-shadow:0 0 0 4px rgba(122,59,94,.10)';
+    slot.setAttribute('data-centred', '');
     wrap.appendChild(slot);
     var pad = el('div', 'keypad keypad-num');
     pad.style.cssText = 'margin-top:8px';
@@ -5305,8 +5468,11 @@ window.OLS_TRANSPORT = {
     if (!rec.att) rec.att = [];
     var t0 = Date.now();
     var wrap = el('div', 'jotter-q');
+    tagQuestionRoot(wrap, q, hooks);
     var margin = el('div', 'jq-margin', 'Q' + hooks.number);
+    margin.setAttribute('data-mark', '');
     var body = el('div', 'jq-body');
+    body.setAttribute('data-work', '');
     wrap.appendChild(margin); wrap.appendChild(body);
     host.appendChild(wrap);
     body.appendChild(el('p', 'jq-prompt', esc(q.prompt) + ' <span class="q-marks">[1 mark]</span>'));
@@ -5315,12 +5481,15 @@ window.OLS_TRANSPORT = {
     window.GJ_PLAYER.renderDiagram(dwrap, q.diagram, {});
     var pick = null;
     var cards = el('div', 'reason-cards');
+    var trayId = 'classify-options-' + q.id;
+    cards.setAttribute('data-tray', trayId);
     body.appendChild(cards);
     var feedback = el('div', 'jq-feedback');
     var checkRow = el('div', 'check-row');
-    var checkBtn = el('button', 'btn-stamp', 'Mark my answer');
+    var checkBtn = el('button', 'btn-stamp', T.classifyCheckBtn);
     checkBtn.type = 'button';
     checkBtn.disabled = true;
+    setLockedWhy(checkBtn, 'Choose an answer first.');
     checkRow.appendChild(checkBtn);
     body.appendChild(checkRow);
     body.appendChild(feedback);
@@ -5332,12 +5501,15 @@ window.OLS_TRANSPORT = {
         b.type = 'button';
         b.textContent = o.charAt(0).toUpperCase() + o.slice(1);
         b.setAttribute('aria-pressed', 'false');
+        b.setAttribute('data-tray-item', '');
         b.addEventListener('click', function () {
           if (rec.lock) return;
           cards.querySelectorAll('.reason-card').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
           b.setAttribute('aria-pressed', 'true');
           pick = o;
           checkBtn.disabled = false;
+          setLockedWhy(checkBtn, null);
+          window.GJ.setState(wrap, 'question', 'mid-attempt');
         });
         cards.appendChild(b);
       });
@@ -5346,20 +5518,33 @@ window.OLS_TRANSPORT = {
       var right = last.pick === q.classify;
       feedback.innerHTML = '';
       var mk = el('span', 'wl-mark');
+      mk.setAttribute('data-mark', '');
       mk.style.cssText = 'position:static;display:inline-block;width:26px;height:22px;vertical-align:middle';
       feedback.appendChild(mk);
       drawMark(mk, right ? 'tick' : 'cross');
-      feedback.appendChild(el('span', 'mk-tally ' + (right ? 'mk-correct' : 'mk-wrong'), ' ' + (right ? '1/1' : '0/1')));
+      var tally = el('span', 'mk-tally ' + (right ? 'mk-correct' : 'mk-wrong'), ' ' + (right ? '1/1' : '0/1'));
+      tally.setAttribute('data-mark', '');
+      feedback.appendChild(tally);
       if (rec.lock) {
-        feedback.appendChild(el('p', 'mk-comment ' + (right ? 'mk-correct' : 'mk-wrong'), right ? commentFor(q.id, 'perfect', 'classify') : commentFor(q.id, 'fail', 'classify')));
-        if (!right) feedback.appendChild(el('p', 'ui-msg', 'You answered \u201c' + esc(last.pick) + '\u201d \u2014 your teacher can see this and will pick it up in class.'));
+        window.GJ.setState(wrap, 'question', right ? 'checked-right' : (rec.att.length >= 2 ? 'checked-wrong-2' : 'checked-wrong-1'));
+        var comment = el('p', 'mk-comment ' + (right ? 'mk-correct' : 'mk-wrong'), right ? commentFor(q.id, 'perfect', 'classify') : commentFor(q.id, 'fail', 'classify'));
+        comment.setAttribute('data-mark', '');
+        feedback.appendChild(comment);
+        if (!right) feedback.appendChild(el('p', 'ui-msg', fill(T.classifyYourAnswer, { answer: esc(last.pick) })));
         checkRow.hidden = true;
-        cards.querySelectorAll('.reason-card').forEach(function (x) { x.disabled = true; });
-        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally ' + (right ? 'mk-correct' : 'mk-wrong') + '" style="font-size:18px">' + (right ? '1' : '0') + '/1</div>';
+        setLockedWhy(checkBtn, 'This question is already marked.');
+        cards.querySelectorAll('.reason-card').forEach(function (x) {
+          x.disabled = true;
+          setLockedWhy(x, 'This question is already marked.');
+          if (x.textContent.toLowerCase() === String(last.pick).toLowerCase()) { x.setAttribute('data-placed', ''); x.setAttribute('data-from', trayId); }
+        });
+        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally ' + (right ? 'mk-correct' : 'mk-wrong') + '" data-mark style="font-size:18px">' + (right ? '1' : '0') + '/1</div>';
       } else if (!instant) {
-        feedback.appendChild(el('p', 'ui-msg', 'Not that one \u2014 look again at its size against 90\u00b0 and 180\u00b0. One more attempt.'));
+        window.GJ.setState(wrap, 'question', 'checked-wrong-1');
+        feedback.appendChild(el('p', 'ui-msg', T.classifyTryAgain));
         pick = null;
         checkBtn.disabled = true;
+        setLockedWhy(checkBtn, 'Choose an answer to try again.');
         cards.querySelectorAll('.reason-card').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
       }
       if (!instant) feedback.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
@@ -5374,7 +5559,7 @@ window.OLS_TRANSPORT = {
       checkBtn.disabled = true;
     });
     renderOptions();
-    if (rec.lock && rec.att.length) finish(rec.att[rec.att.length - 1], true);
+    if (rec.lock && rec.att.length) { window.GJ.setState(wrap, 'question', 'locked-restore'); finish(rec.att[rec.att.length - 1], true); }
     return { qid: q.id };
   }
 
@@ -5437,8 +5622,11 @@ window.OLS_TRANSPORT = {
     var t0 = Date.now();
 
     var wrap = el('div', 'jotter-q');
+    tagQuestionRoot(wrap, q, hooks);
     var margin = el('div', 'jq-margin', 'Q' + hooks.number);
+    margin.setAttribute('data-mark', '');
     var body = el('div', 'jq-body');
+    body.setAttribute('data-work', '');
     wrap.appendChild(margin); wrap.appendChild(body);
     host.appendChild(wrap);
     body.appendChild(el('p', 'jq-prompt', esc(q.prompt) + ' <span class="q-marks">[1 mark]</span>'));
@@ -5448,6 +5636,8 @@ window.OLS_TRANSPORT = {
     body.appendChild(pwrap);
     var svg = sv('svg', { viewBox: '0 0 ' + VBW + ' ' + VBH, class: 'protractor-canvas' });
     svg.style.cssText = 'touch-action:none;max-width:540px;width:100%;display:block;margin:0 auto';
+    svg.setAttribute('data-work', '');
+    svg.setAttribute('data-centred', '');
     pwrap.appendChild(svg);
 
     var V = q.vertex || [252, 212], L = q.armLen || 130;
@@ -5521,6 +5711,7 @@ window.OLS_TRANSPORT = {
     function onDown(e, mode) {
       if (rec.lock) return;
       e.preventDefault();
+      window.GJ.setState(wrap, 'question', 'mid-attempt');
       var pp = toSvg(e);
       document.body.classList.add('dragging-active');
       drag = { mode: mode, p: pp, cx: state.cx, cy: state.cy, rot: state.rot, ang: Math.atan2(pp.y - state.cy, pp.x - state.cx) };
@@ -5536,15 +5727,19 @@ window.OLS_TRANSPORT = {
       h.addEventListener('pointerdown', function (e) { e.stopPropagation(); onDown(e, 'rotate'); });
     });
 
-    body.appendChild(el('p', 'ui-msg', 'Line the small red centre mark on the corner, then use a rotate knob (at either end) to turn the protractor so 0 sits along one arm, and read where the other arm crosses.'));
+    body.appendChild(el('p', 'ui-msg', T.protractorInstructions));
     var compHost = el('div', '');
     body.appendChild(compHost);
-    var composer = makeComposer(compHost, { pad: 'number', label: 'Your measurement in degrees', placeholder: 'the size you measure, in degrees', onCommit: function () { runCheck(); } });
+    var composer = makeComposer(compHost, {
+      pad: 'number', label: T.protractorMeasureLabel, placeholder: T.protractorMeasurePlaceholder,
+      lockedWhy: 'This question is already marked.',
+      onCommit: function () { runCheck(); }
+    });
 
     var msgEl = el('p', 'ui-msg');
     body.appendChild(msgEl);
     var checkRow = el('div', 'check-row');
-    var checkBtn = el('button', 'btn-stamp', 'Mark my measurement');
+    var checkBtn = el('button', 'btn-stamp', T.protractorCheckBtn);
     checkBtn.type = 'button';
     checkRow.appendChild(checkBtn);
     body.appendChild(checkRow);
@@ -5557,20 +5752,36 @@ window.OLS_TRANSPORT = {
       var res = protractorMark(q, last.read);
       feedback.innerHTML = '';
       var mk = el('span', 'wl-mark');
+      mk.setAttribute('data-mark', '');
       mk.style.cssText = 'position:static;display:inline-block;width:26px;height:22px;vertical-align:middle';
       feedback.appendChild(mk);
       drawMark(mk, res.ok ? 'tick' : 'cross');
-      feedback.appendChild(el('span', 'mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong'), ' ' + (res.ok ? '1/1' : '0/1') + (res.ok ? '' : ' \u00b7 you measured ' + last.read + '\u00b0')));
+      var tally = el('span', 'mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong'),
+        ' ' + (res.ok ? '1/1' : '0/1') + (res.ok ? '' : fill(T.measuredReadout, { value: last.read })));
+      tally.setAttribute('data-mark', '');
+      feedback.appendChild(tally);
       if (rec.lock) {
-        if (res.ok) feedback.appendChild(el('p', 'mk-comment mk-correct', commentFor(q.id, 'perfect', 'protractor')));
-        else if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', 'You read the other scale \u2014 use the one that starts at 0 on the arm you lined up. The true size is ' + q.value + '\u00b0.'));
-        else feedback.appendChild(el('p', 'ui-msg', 'Not quite \u2014 line the centre on the corner and 0 along an arm, then read again. The true size is ' + q.value + '\u00b0.'));
+        window.GJ.setState(wrap, 'question', res.ok ? 'checked-right' : (rec.att.length >= 2 ? 'checked-wrong-2' : 'checked-wrong-1'));
+        if (res.ok) {
+          var comment = el('p', 'mk-comment mk-correct', commentFor(q.id, 'perfect', 'protractor'));
+          comment.setAttribute('data-mark', '');
+          feedback.appendChild(comment);
+        } else if (res.dx === 'WRONG_SCALE') {
+          var truthWS = el('p', 'amber-note', fill(T.protractorReadTrueWrongScale, { value: q.value }));
+          truthWS.setAttribute('data-truth', '');
+          feedback.appendChild(truthWS);
+        } else {
+          var truthG = el('p', 'ui-msg', fill(T.protractorReadTrueGeneric, { value: q.value }));
+          truthG.setAttribute('data-truth', '');
+          feedback.appendChild(truthG);
+        }
         checkRow.hidden = true;
-        composer.setLocked(true);   // functionally lock: no more typing once correct or out of attempts (also on reload)
-        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong') + '" style="font-size:18px">' + (res.ok ? '1' : '0') + '/1</div>';
+        composer.setLocked(true, 'This question is already marked.');   // functionally lock: no more typing once correct or out of attempts (also on reload)
+        margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally ' + (res.ok ? 'mk-correct' : 'mk-wrong') + '" data-mark style="font-size:18px">' + (res.ok ? '1' : '0') + '/1</div>';
       } else if (!instant) {
-        if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', 'Close \u2014 but check you are reading the scale that starts at 0 on your lined-up arm. One more go.'));
-        else feedback.appendChild(el('p', 'ui-msg', 'Line it up carefully and read again \u2014 one more attempt.'));
+        window.GJ.setState(wrap, 'question', 'checked-wrong-1');
+        if (res.dx === 'WRONG_SCALE') feedback.appendChild(el('p', 'amber-note', T.protractorScaleRetry));
+        else feedback.appendChild(el('p', 'ui-msg', T.protractorLineUpRetry));
         composer.clear();
       }
       if (!instant) feedback.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
@@ -5580,8 +5791,8 @@ window.OLS_TRANSPORT = {
       if (rec.lock) return;
       var raw = composer.value();
       var read = parseInt(raw, 10);
-      if (raw === '' || isNaN(read)) { flash('Type the size you measured first.'); return; }
-      if (read < 0 || read > 180) { flash('A protractor measures up to 180\u00b0 \u2014 read the size again.'); return; }
+      if (raw === '' || isNaN(read)) { flash(T.protractorTypeFirst); return; }
+      if (read < 0 || read > 180) { flash(T.protractorMaxRange); return; }
       var res = protractorMark(q, read);
       var att = { read: read, dur: Math.round((Date.now() - t0) / 1000), res: res.ok ? 'OK' : 'X@1' };
       if (res.dx) att.dx = res.dx;
@@ -5592,7 +5803,7 @@ window.OLS_TRANSPORT = {
     }
     checkBtn.addEventListener('click', runCheck);
 
-    if (rec.lock && rec.att.length) finish(rec.att[rec.att.length - 1], true);
+    if (rec.lock && rec.att.length) { window.GJ.setState(wrap, 'question', 'locked-restore'); finish(rec.att[rec.att.length - 1], true); }
     else composer.focus();   // ready to type the measurement without a second tap
     return { qid: q.id };
   }
@@ -5609,8 +5820,11 @@ window.OLS_TRANSPORT = {
 
     var wrap = el('div', 'jotter-q');
     wrap.id = 'jq-' + q.id;
+    tagQuestionRoot(wrap, q, hooks);
     var margin = el('div', 'jq-margin', 'Q' + hooks.number);
+    margin.setAttribute('data-mark', '');
     var body = el('div', 'jq-body');
+    body.setAttribute('data-work', '');
     wrap.appendChild(margin); wrap.appendChild(body);
     host.appendChild(wrap);
 
@@ -5637,10 +5851,11 @@ window.OLS_TRANSPORT = {
     // the keys at once. Sticky degrades to inline where unsupported; a locked question's
     // dock is empty (ui wiped, checkRow hidden) so docks never stack.
     var dock = el('div', 'dock');
+    window.GJ.surface(dock, 'dock', 'chips');   // overwritten below the moment a builder actually renders (same tick, before paint)
     dock.hidden = true;                 // shown only while a question is active (a builder reveals it)
     dock.appendChild(ui);
     var checkRow = el('div', 'check-row');
-    var checkBtn = el('button', 'btn-stamp', 'Mark my working');
+    var checkBtn = el('button', 'btn-stamp', T.checkWorkingBtn);
     checkBtn.type = 'button';
     var attemptNote = el('span', 'attempt-note', '');
     checkRow.appendChild(checkBtn); checkRow.appendChild(attemptNote);
@@ -5653,7 +5868,10 @@ window.OLS_TRANSPORT = {
     function renderLine(line, opts2) {
       opts2 = opts2 || {};
       var row = el('div', 'wline' + (opts2.cls ? ' ' + opts2.cls : ''));
+      row.setAttribute('data-placed', '');   // a committed working line is placed work (gates design 2.4)
+      row.setAttribute('data-mark', '');     // its own colour (wavy underline / grey follow-through) is a verdict
       var markHolder = el('span', 'wl-mark');
+      markHolder.setAttribute('data-mark', '');
       row.appendChild(markHolder);
       row.appendChild(el('span', 'wl-eq', esc(pretty(line.t))));
       var note = marginNote(line.op);
@@ -5676,7 +5894,10 @@ window.OLS_TRANSPORT = {
       var rsn = bank.filter(function (r) { return r.id === st.rsn; })[0];
       var calcBit = st.calc ? ' <span class="wl-margin-note">(' + esc(pretty(st.calc)) + ')</span>' : '';
       var row = el('div', 'wline' + (opts2.cls ? ' ' + opts2.cls : ''));
+      row.setAttribute('data-placed', '');   // a committed reasoning step is placed work (gates design 2.4)
+      row.setAttribute('data-mark', '');
       row.appendChild(el('span', 'wl-mark'));
+      row.querySelector('.wl-mark').setAttribute('data-mark', '');
       row.innerHTML += '<span class="wl-eq">\u2220' + esc(st.ang) + ' = ' + esc(String(st.val)) + '\u00b0</span>' +
         calcBit + '<span class="wl-margin-note">(' + (rsn ? esc(rsn.text) : '?') + ')</span>';
       (opts2.into || linesEl).appendChild(row);
@@ -5689,30 +5910,32 @@ window.OLS_TRANSPORT = {
     function buildAlgebraUI() {
       ui.innerHTML = '';
       dock.hidden = false;
+      window.GJ.setState(dock, 'dock', 'chips');
       // "both sides" only makes sense for equations; substitute/simplify/expand
       // have a single expression, so ask a neutral "next step" there instead.
       var isEquation = q.type === 'solve' || q.type === 'form';
 
       // LINE FIRST \u2014 the line is the primary act; the move is an optional annotation.
-      ui.appendChild(el('p', 'ui-msg', 'Write your next line of working:'));
+      ui.appendChild(el('p', 'ui-msg', T.algebraNextLine));
       var compHost = el('div', 'dock-line');
       ui.appendChild(compHost);
       composer = makeComposer(compHost, {
-        placeholder: 'your next line, then \u201cadd line\u201d',
-        commitLabel: 'add line',
+        placeholder: T.algebraLinePlaceholder,
+        commitLabel: T.addLineBtn,
         onCommit: commitAlgebraLine
       });
 
       // THE MOVE \u2014 an optional tag for the margin, secondary to the line above.
       var moveWrap = el('div', 'move-annot');
-      moveWrap.appendChild(el('div', 'ui-msg msg-status',
-        (isEquation ? 'What are you doing to both sides?' : 'What\u2019s your next step?') + ' \u2014 tag the move (optional)'));
+      moveWrap.appendChild(el('div', 'ui-msg msg-status', isEquation ? T.moveAnnotationEquation : T.moveAnnotationGeneric));
       var strip = el('div', 'chip-strip');
+      var trayId = 'algebra-moves-' + q.id;
+      strip.setAttribute('data-tray', trayId);
       var CHIPS = [
-        { id: '+', label: '+ add' }, { id: '-', label: '\u2212 subtract' },
-        { id: '*', label: '\u00d7 multiply' }, { id: '/', label: '\u00f7 divide' },
-        { id: 'exp', label: 'Expand brackets' }, { id: 'col', label: 'Collect terms' },
-        { id: 'rw', label: 'Just rewrite' }
+        { id: '+', label: T.chipAdd }, { id: '-', label: T.chipSubtract },
+        { id: '*', label: T.chipMultiply }, { id: '/', label: T.chipDivide },
+        { id: 'exp', label: T.chipExpandBrackets }, { id: 'col', label: T.chipCollectTerms },
+        { id: 'rw', label: T.chipJustRewrite }
       ];
       var operandHost = el('div', '');
       CHIPS.forEach(function (c) {
@@ -5720,6 +5943,7 @@ window.OLS_TRANSPORT = {
         b.type = 'button';
         b.textContent = c.label;
         b.setAttribute('aria-pressed', 'false');
+        b.setAttribute('data-tray-item', '');
         b.addEventListener('click', function () {
           strip.querySelectorAll('.chip').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
           b.setAttribute('aria-pressed', 'true');
@@ -5727,7 +5951,7 @@ window.OLS_TRANSPORT = {
           if (c.id === '+' || c.id === '-' || c.id === '*' || c.id === '/') {
             pendingOp = { kind: c.id, operand: '' };
             var opc = makeComposer(operandHost, {
-              label: 'How much?', placeholder: 'how much? e.g. 15 or 3x', commitLabel: 'next \u2192',
+              label: T.moveOperandLabel, placeholder: T.moveOperandPlaceholder, commitLabel: T.moveOperandNext,
               onCommit: function () { composer.focus(); }   // "next" on the operand jumps back to the line field
             });
             opc.root.classList.add('compose-mini');
@@ -5744,12 +5968,12 @@ window.OLS_TRANSPORT = {
       moveWrap.appendChild(operandHost);
       ui.appendChild(moveWrap);
 
-      undoBtn = el('button', 'btn-pencil', '\u21b6 remove last line');
+      undoBtn = el('button', 'btn-pencil', T.removeLastLineBtn);
       undoBtn.type = 'button';
       undoBtn.style.marginTop = '8px';
       undoBtn.hidden = true;   // shown by redrawCurrent once a line exists
       undoBtn.addEventListener('click', function () {
-        if (cur.L.pop()) flashMsg('Removed your last line.', true);
+        if (cur.L.pop()) flashMsg(T.removedLastLine, true);
         redrawCurrent();
         save();
       });
@@ -5758,10 +5982,10 @@ window.OLS_TRANSPORT = {
 
     function commitAlgebraLine(text) {
       if (!text) return;
-      if (text.length > 60) { flashMsg('That line is too long for the page \u2014 split it into two steps.'); return; }
+      if (text.length > 60) { flashMsg(T.lineTooLong); return; }
       var parsed = window.GJ_MATH.parse(text);
-      if (!parsed.ok) { flashMsg('I can\u2019t read that line \u2014 check it and try again. (' + (parsed.err || 'unreadable') + ')'); return; }
-      if (cur.L.length >= 12) { flashMsg('That\u2019s a full page \u2014 press Check.'); return; }
+      if (!parsed.ok) { flashMsg(fill(T.lineUnreadable, { reason: parsed.err || 'unreadable' })); return; }
+      if (cur.L.length >= 12) { flashMsg(T.pageFull); return; }
       var op = 'rw';
       if (pendingOp) {
         if (pendingOp.kind === 'exp') op = 'exp';
@@ -6549,10 +6773,15 @@ window.OLS_TRANSPORT = {
 (function () {
   'use strict';
 
+  /* A MESSAGE SLOT IS A LIVE REGION, and it says so by construction rather than
+     at forty call sites. It starts empty on purpose: that is what a live region
+     is for, and it is why the empty-container audit must be able to tell it
+     from a hole in the page. */
   function el(tag, cls, html) {
     var d = document.createElement(tag);
     if (cls) d.className = cls;
     if (html != null) d.innerHTML = html;
+    if (cls && /\bui-msg\b/.test(cls) && !html) d.setAttribute('role', 'status');
     return d;
   }
   function esc(s) {
@@ -6653,6 +6882,7 @@ window.OLS_TRANSPORT = {
 
     var bar = el('div', 'staff-topbar');
     var mark = el('span', 'gj-wordmark');
+    mark.setAttribute('data-ornament', '');
     mark.innerHTML = 'Math<b>Shelf</b>';
     bar.appendChild(mark);
 
@@ -6776,7 +7006,7 @@ window.OLS_TRANSPORT = {
       'style="font-family:var(--f-stationery);font-size:15px;padding:10px;border:1.5px solid var(--navy);border-radius:4px;max-width:240px" aria-label="New class name" />' +
       '<button id="st-add" class="btn-stamp">Add a class</button>' +
       '<span id="st-cmsg" class="ui-msg" role="status"></span></div>' +
-      '<table class="ledger"><thead><tr><th>Class</th><th>Pupils</th><th>Books on the shelf</th><th></th></tr></thead>' +
+      '<table class="ledger"><thead><tr><th>Class</th><th>Pupils</th><th>Books on the shelf</th><th>What you can do</th></tr></thead>' +
       '<tbody id="st-rows"></tbody></table>' +
       '<p class="ui-msg" style="margin-top:var(--sq)">' + esc(TT('setUpHint')) + ' A book that is not ticked is closed for that class: pupils see it on the shelf, marked as not set yet, and cannot open it.</p>';
     shell({ body: body, surface: 'set-up', state: 'classes', crumbs: [{ label: isAdmin ? 'All classes' : 'Your classes' }] });
@@ -7165,6 +7395,9 @@ window.OLS_TRANSPORT = {
     /* THE LEGEND IS PERMANENT. A smartboard has no hover, so a meaning that
        lives in a title attribute is a meaning nobody in the room can reach. */
     var legend = el('p', 'cp-legend');
+    /* the key to the marks IS marking: it wears the marking colours on purpose,
+       and it says so, so the colour law can tell it from decoration */
+    legend.setAttribute('data-mark', '');
     legend.innerHTML =
       '<span class="lg-ok">\u25a0</span> right &nbsp; ' +
       '<span class="lg-am">\u25a0</span> answer only, no working shown &nbsp; ' +
@@ -7243,7 +7476,7 @@ window.OLS_TRANSPORT = {
           '<span class="exno">Ex ' + (si + 1) + ' \u00b7 ' + esc(bookTitle(view.act)) + '</span>' +
           '<h4>' + esc(sec.title) + '</h4>' +
           '<p class="walt">' + esc(sec.walt || '') + '</p>' +
-          '<span class="propbar" role="img" aria-label="' +
+          '<span class="propbar" data-mark role="img" aria-label="' +
             st.ok + ' right, ' + st.amber + ' answer only, ' + st.err + ' wrong, ' +
             st.open + ' working now, ' + st.un + ' not started">' +
             '<i class="p-ok" style="width:' + pc(st.ok) + '"></i>' +
@@ -7254,9 +7487,9 @@ window.OLS_TRANSPORT = {
           '</span>' +
           (st.slip
             ? '<span class="slipline"><span class="k">Most common slip in Ex ' + (si + 1) + '</span>' +
-              '<span class="n">' + esc(st.slip) + ' \u00d7' + st.slipN + '</span></span>'
+              '<span class="n" data-mark>' + esc(st.slip) + ' \u00d7' + st.slipN + '</span></span>'
             : '<span class="slipline"><span class="k">No repeated slip in Ex ' + (si + 1) + ' yet</span></span>') +
-          '<span class="qdots" role="img" aria-label="one mark per question in this exercise">' +
+          '<span class="qdots" data-mark role="img" aria-label="one mark per question in this exercise">' +
             st.dots.map(function (d) {
               var cls = !d.seen ? '' : d.bad > d.ok ? ' bad' : d.mixed ? ' mixed' : ' ok';
               return '<i class="' + cls.trim() + '" title="' + esc(d.label) + '"></i>';
@@ -7302,6 +7535,9 @@ window.OLS_TRANSPORT = {
     var grid = el('div', 'grid staff-panel');
     body.appendChild(grid);
     var legend = el('p', 'cp-legend');
+    /* the key to the marks IS marking: it wears the marking colours on purpose,
+       and it says so, so the colour law can tell it from decoration */
+    legend.setAttribute('data-mark', '');
     legend.innerHTML =
       '<span class="lg-ok">\u2713</span> right &nbsp; ' +
       '<span class="lg-am">\u25d0</span> answer only &nbsp; ' +
@@ -7326,7 +7562,7 @@ window.OLS_TRANSPORT = {
         var tot = Math.max(1, st.ok + st.amber + st.err + st.open + st.un);
         t.push('<th scope="col">' + esc(item.qLabel) +
           '<span class="gist">' + esc(String(item.q.prompt || '').slice(0, 46)) + '</span>' +
-          '<span class="mini" role="img" aria-label="' + st.ok + ' right of ' + tot + ' in ' + esc(item.qLabel) + '">' +
+          '<span class="mini" data-mark role="img" aria-label="' + st.ok + ' right of ' + tot + ' in ' + esc(item.qLabel) + '">' +
             '<i class="p-ok" style="width:' + (100 * st.ok / tot) + '%"></i>' +
             '<i class="p-am" style="width:' + (100 * st.amber / tot) + '%"></i>' +
             '<i class="p-err" style="width:' + (100 * st.err / tot) + '%"></i>' +
@@ -7346,7 +7582,7 @@ window.OLS_TRANSPORT = {
             else { glyph = '<span class="g-now">\u25cf</span>'; title = ((p.summary.upd && (now - p.summary.upd) < 60) ? 'Working right now' : 'In progress'); }
             if (c.ovr != null) title += ' \u00b7 your mark';
           }
-          t.push('<td class="cell" data-email="' + esc(p.email) + '" data-qid="' + esc(item.q.id) + '" title="' + esc(title) + '" aria-label="' + esc((p.name || p.email) + ', ' + item.qLabel + ': ' + title) + '">' + glyph + '</td>');
+          t.push('<td class="cell" data-mark data-email="' + esc(p.email) + '" data-qid="' + esc(item.q.id) + '" title="' + esc(title) + '" aria-label="' + esc((p.name || p.email) + ', ' + item.qLabel + ': ' + title) + '">' + glyph + '</td>');
         });
         t.push('</tr>');
       });
@@ -7377,6 +7613,7 @@ window.OLS_TRANSPORT = {
       '<p class="q-prompt">' + esc(item.q.prompt || '') + '</p>';
     body.appendChild(head);
     var msg = el('p', 'ui-msg', '');
+    msg.setAttribute('role', 'status');   /* a live region starts empty on purpose */
     body.appendChild(msg);
     var col = el('div', 'qv-col');
     body.appendChild(col);
@@ -7430,6 +7667,7 @@ window.OLS_TRANSPORT = {
     var wall = el('div', 'wall');
     var orient = el('p', 'wall-orient', 'Start here: each cell is one pupil \u00d7 one question. Spot the reds, then tap a cell to open that pupil\u2019s jotter.');
     var legend = el('p', 'wall-legend');
+    legend.setAttribute('data-mark', '');
     legend.innerHTML = '<span class="glyph-ok">\u2713</span> correct &middot; ' +
       '<span class="glyph-amber">\u25d0</span> answer only &middot; ' +
       '<span class="glyph-err">\u2717</span> wrong <span class="wl-sub">(small number = the step it broke at)</span> &middot; ' +
@@ -7462,7 +7700,7 @@ window.OLS_TRANSPORT = {
             }
             if (cell.ovr != null) title += ' \u00b7 teacher override';
           }
-          t.push('<td class="cell" data-email="' + esc(p.email) + '" data-qlabel="' + esc(item.label) + '" title="' + esc(title) + '">' + glyph + '</td>');
+          t.push('<td class="cell" data-mark data-email="' + esc(p.email) + '" data-qlabel="' + esc(item.label) + '" title="' + esc(title) + '">' + glyph + '</td>');
         });
         t.push('</tr>');
       });
@@ -7941,6 +8179,46 @@ window.OLS_TRANSPORT = {
   }
   GJ.surface = surface;
   GJ.setState = setState;
+
+  /* \u2500\u2500 WHAT IS ALLOWED TO WEAR A MARKING COLOUR \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+     The colour law is closed: #C8102E means WRONG, #1F7A33 means RIGHT,
+     #B07D10 means ANSWER ONLY, and none of them ever means anything else.
+     qa-colour-law measures that in rendered pixels and needs to know which
+     elements are marks \u2014 so the classes that carry a marking colour, which are
+     already a closed set in the stylesheet, stamp themselves.
+     ONE HOME, and it keeps itself right: an observer stamps anything the app
+     renders later, so a mark added next year is declared by existing rather
+     than by somebody remembering to add an attribute (DFM 144/271). */
+  var MARK_CLASSES = ('.mark-tick,.mark-cross,.wl-mark,.mk-tally,.mk-comment,.staff-tally,' +
+    '.glyph-ok,.glyph-err,.glyph-amber,.glyph-live,.glyph-un,.wall-legend,.cp-legend,' +
+    '.g-ok,.g-am,.g-err,.g-now,.g-un,.p-ok,.p-am,.p-err,.p-now,.p-un,.propbar,.qdots,.mini,' +
+    '.tally-hand,.box-draw,.err-box,.jq-tally,.jq-feedback,.mk-line,.pile-line,.pile-count,.slip-count,.wl-sub,.col-dx-slip,.chip-ticks,.attempt-note,.amber-note,.mark-tick,.mk-amber,.flash-ok');
+  function stampMarks(root) {
+    try {
+      (root || document).querySelectorAll(MARK_CLASSES).forEach(function (el) {
+        if (!el.hasAttribute('data-mark')) el.setAttribute('data-mark', '');
+      });
+    } catch (e) {}
+  }
+  GJ.stampMarks = stampMarks;
+  if (typeof MutationObserver === 'function') {
+    /* CLASS CHANGES COUNT TOO. A mark is often appended plain and given its
+       verdict class a moment later (`row.classList.add('mk-wrong')`), which is
+       not a childList mutation at all - so watching only for added nodes left
+       exactly the elements this stamp exists for unstamped. */
+    new MutationObserver(function (recs) {
+      var roots = [];
+      for (var i = 0; i < recs.length; i++) {
+        var r = recs[i];
+        if (r.type === 'attributes' && r.target && r.target.nodeType === 1) { roots.push(r.target.parentNode || r.target); continue; }
+        for (var j = 0; j < r.addedNodes.length; j++) {
+          var n = r.addedNodes[j];
+          if (n && n.nodeType === 1) { roots.push(n.parentNode || n); break; }
+        }
+      }
+      for (var k = 0; k < roots.length; k++) stampMarks(roots[k]);
+    }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
 
   var T = (window.GJ_STRINGS && window.GJ_STRINGS.pupil) || {};
   var TT = (window.GJ_STRINGS && window.GJ_STRINGS.teacher) || {};
@@ -9251,6 +9529,31 @@ window.OLS_TRANSPORT = {
     if (current.dirty) flushSave();
     renderShelf(); show('shelf');
   });
+
+  /* \u2550\u2550\u2550 THE PREVIEW'S ANSWER CHANNEL \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+     A walker cannot type into a protractor. What it CAN do is put a real
+     attempt - the same attempt dev/validate-all.js proves marks full - into
+     the question's own record and then press the app's own Check button, so
+     the marking, the feedback and every state the pupil would see are the real
+     ones. The attempts come from dev/model-attempts.js, which is the ONE home
+     both the validator and the walker read (DFM 144).
+
+     IT IS INERT ON THE LIVE TIER. window.OLS_TRANSPORT exists only in the
+     deployed app; when it does, this hook is not installed at all, so nothing
+     a pupil can reach has an answer channel (qa-preview-honest proves it). */
+  if (!window.OLS_TRANSPORT) {
+    GJ.app.__prime = function (qid, attempt) {
+      if (!current.act || !current.state) return false;
+      var rec = current.state.qs[qid] || { att: [], lock: false };
+      rec.att = (rec.att || []).concat([attempt]);
+      rec.at = rec.att.length;
+      current.state.qs[qid] = rec;
+      renderSection(current.section);
+      return true;
+    };
+    GJ.app.__section = function (i) { renderSection(i); };
+    GJ.app.__state = function () { return current.state; };
+  }
 
   /* \u2500\u2500 public surface (per INTERFACES.md) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
   /* MERGED, never replaced: GJ.app.surfaces is declared at the top of this file

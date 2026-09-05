@@ -85,7 +85,7 @@
   var MARK_CLASSES = ('.mark-tick,.mark-cross,.wl-mark,.mk-tally,.mk-comment,.staff-tally,' +
     '.glyph-ok,.glyph-err,.glyph-amber,.glyph-live,.glyph-un,.wall-legend,.cp-legend,' +
     '.g-ok,.g-am,.g-err,.g-now,.g-un,.p-ok,.p-am,.p-err,.p-now,.p-un,.propbar,.qdots,.mini,' +
-    '.tally-hand,.box-draw,.err-box,.jq-tally,.jq-feedback,.mk-line,.pile-line,.pile-count,.slip-count,.wl-sub,.col-dx-slip');
+    '.tally-hand,.box-draw,.err-box,.jq-tally,.jq-feedback,.mk-line,.pile-line,.pile-count,.slip-count,.wl-sub,.col-dx-slip,.chip-ticks,.attempt-note,.amber-note,.mark-tick,.mk-amber,.flash-ok');
   function stampMarks(root) {
     try {
       (root || document).querySelectorAll(MARK_CLASSES).forEach(function (el) {
@@ -95,14 +95,22 @@
   }
   GJ.stampMarks = stampMarks;
   if (typeof MutationObserver === 'function') {
+    /* CLASS CHANGES COUNT TOO. A mark is often appended plain and given its
+       verdict class a moment later (`row.classList.add('mk-wrong')`), which is
+       not a childList mutation at all - so watching only for added nodes left
+       exactly the elements this stamp exists for unstamped. */
     new MutationObserver(function (recs) {
+      var roots = [];
       for (var i = 0; i < recs.length; i++) {
-        for (var j = 0; j < recs[i].addedNodes.length; j++) {
-          var n = recs[i].addedNodes[j];
-          if (n && n.nodeType === 1) { stampMarks(n.parentNode || n); break; }
+        var r = recs[i];
+        if (r.type === 'attributes' && r.target && r.target.nodeType === 1) { roots.push(r.target.parentNode || r.target); continue; }
+        for (var j = 0; j < r.addedNodes.length; j++) {
+          var n = r.addedNodes[j];
+          if (n && n.nodeType === 1) { roots.push(n.parentNode || n); break; }
         }
       }
-    }).observe(document.documentElement, { childList: true, subtree: true });
+      for (var k = 0; k < roots.length; k++) stampMarks(roots[k]);
+    }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
   }
 
   var T = (window.GJ_STRINGS && window.GJ_STRINGS.pupil) || {};
