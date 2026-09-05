@@ -1,0 +1,58 @@
+{
+  "cover": [
+    "first-visit",
+    "returning",
+    "fallback-name",
+    "wrong-class",
+    "preview",
+    "busy",
+    "staff"
+  ],
+  "shelf": [
+    "none-ticked",
+    "some-ticked",
+    "locked-spine",
+    "star-earned",
+    "in-progress"
+  ],
+  "book-contents": [
+    "fresh",
+    "mid-book",
+    "finished"
+  ],
+  "movie": [
+    "step-n",
+    "end",
+    "instant",
+    "reduced-motion",
+    "nudge-banner"
+  ],
+  "question": [
+    "fresh",
+    "mid-attempt",
+    "checked-right",
+    "checked-wrong-1",
+    "checked-wrong-2",
+    "locked-restore",
+    "resume-mid",
+    "amber",
+    "help-strip"
+  ],
+  "dock": [
+    "numpad",
+    "numpad-fraction",
+    "nudge-pad",
+    "tray",
+    "chips",
+    "keyboard-hidden",
+    "disabled-explained"
+  ],
+  "self-eval": [
+    "open",
+    "saved"
+  ],
+  "book-end": [
+    "partial",
+    "complete"
+  ]
+}
