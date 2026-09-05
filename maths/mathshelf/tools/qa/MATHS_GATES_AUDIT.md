@@ -46,34 +46,65 @@ section below (A–F). A rule with no home is a rule with no enforcement.
 
 | rule | gate | controls |
 |---|---|---|
-_(filled by the build; `qa-audit.js` requires every HARNESSED row to name a gate that exists and a CONTROLS id that exists in that gate's source.)_
+| 1 | qa-language | must-fail-exhibits, must-pass-exemplars |
+| 4 | qa-colour-law (rides the walkers, tools/qa/lib/audits.js) | over-tightening |
+| 5 | dev/lint-content-angles.js (protractor distinguishability) | over-tightening |
+| 6 | qa-numpad | over-tightening |
+| 7 | qa-numpad | over-tightening |
+| 8 | sit-confused | always-on-help-strip |
+| 9 (the wording of the feedback) | qa-language | must-fail-exhibits |
+| 10 | qa-two-homes | addclass-field-parity |
+| 11 | sit-pupil | over-tightening |
+| 12 | qa-self-eval | over-tightening |
+| 13 | qa-two-homes | data-without-secret-guard |
+| 14 | qa-two-homes | over-tightening |
+| 15 | qa-voice | dead-name, split-literal-in-built-artefact |
+| 16 | qa-colour-law (rides the walkers) + qa-compositor | banned-pair, expensive-keyframe |
+| 17 | qa-tickbox | setacts-wipes-rows, new-book-defaults-true |
+| 18 (sentence difficulty, mechanically) | qa-language | must-fail-exhibits |
+| 19 | qa-language | bare-gesture |
+| 20 | qa-click-safety (lib/placed-work.js, rides the walkers) | over-tightening |
+| 21 | sit-confused | third-attempt-accepted |
+| 22 | qa-waits (rides the walkers) + the outbox in script.js | over-tightening |
+| 23 | qa-strings-ledger | literal-on-a-render-path |
+| 24 | qa-surfaces | root-without-attribute, registered-never-rendered |
+| 25 | qa-manifest | front-door-cut-as-me, missing-proof-row |
+| 27 | qa-content-source | question-without-src |
+| 28 | qa-period-budget | over-budget-book |
+| 29 | qa-language | must-pass-exemplars |
 
 ## B. JUDGED — the rule is a judgement, and the judgement is machine-gated
 
 | rule | where the judgement is filed |
 |---|---|
-| 18 one reading age | `MATHS_COLD_READ_VERDICTS_*.md`, gated by `qa-cold-read.js` |
-| 9 feedback fits the kind | the per-item block, §5 of `COLD_READ_CHECKLIST.md` |
+| 3 | the content audit of 25 Jun 2026; `qa-text-damage` pins every string against `45b03ed` |
+| 18 (the reading itself) | `MATHS_COLD_READ_VERDICTS_*.md`, gated by `qa-cold-read.js` |
+| 9 (does the feedback fit what she did) | the per-item block, section 5 of `COLD_READ_CHECKLIST.md` |
 
 ## C. THE COLD-READ CHECKLIST
 
 The judge is handed `tools/qa/COLD_READ_CHECKLIST.md` and the transcript, and
-nothing else. Author is never judge (DFM 270).
+nothing else. Author is never judge (DFM 270). Rule 30 lives here too: an
+approved book is reported on, never re-opened.
 
 ## D. STANDING ORDERS — no gate is possible; the order stands
 
 | rule | order |
 |---|---|
-| 3 | content is verbatim MEP; no content edit without his word |
-| 30 | an approved thing is reported on, never re-opened |
+| 2 | WALT stays; it is the department's own heading and pupils know it |
+| 26 | the live smoke list is his eyes, after any server change, recorded in `server/DEPLOY_LOG.md` |
+| 30 (an approved thing is reported on) | an approved thing is reported on, never re-opened |
 
 ## E. HIS CALLS / SETTLED
 
+_His calls are recorded in `MATHS_FEEDBACK_MASTER.md` with their dates and his
+own words. A call that is also HELD BY A GATE is filed under A, and a call that
+is a standing order is filed under D — a rule filed twice is a rule two people
+think somebody else is holding. Nothing is filed here that is filed there._
+
 | rule | the call |
 |---|---|
-| 15 | the name is MathShelf, spelled so |
-| 17 | no class "level" field; the tickboxes are the mechanism |
-| 2 | WALT stays |
+_(none: every settled call this platform has is either harnessed or a standing order.)_
 
 ## F. GAPS — each with an owner and a phase
 

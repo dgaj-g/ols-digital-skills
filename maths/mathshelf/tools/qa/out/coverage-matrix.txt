@@ -8,18 +8,18 @@
   deploy        3
   empty         13      212
   geometry      15      210
-  human-pace    25      4
+  human-pace    27
   movie         12      24
   nested        15      210
   readability   0       225
   strings       0       225
   truth         48
-  two-homes     11      2
+  two-homes     13
   verdict       0       1
   walk-right    0       144
   walk-wrong    42      102
 
-  CELLS NOTHING CLOSES (2003)
+  CELLS NOTHING CLOSES (1997)
   family      cell                                                      why
   ----------  -----------------------------------------------  -------  ---
   walk-right  algebra > s1 > q1 (subst) @375 × walk-right      MISSING

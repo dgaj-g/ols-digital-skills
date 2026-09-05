@@ -1,0 +1,19 @@
+#!/bin/sh
+# MathShelf — every commit runs the fast tier.
+#
+# A gate that only runs when somebody remembers is a gate that stops running.
+# This is the cheapest tier (no browser, under a minute) and it holds the laws
+# that can be broken by a single careless edit: the engines' own contracts, the
+# content lints, the language nets, the strings ledger, both server homes, the
+# clocks, the colour tokens, the DOM contract and coverage itself.
+#
+# --no-verify is not used on this platform. If a commit ever has to go in red,
+# PROGRESS.md says so and why, and the next commit runs clean.
+APP="$(git rev-parse --show-toplevel)/maths/mathshelf"
+[ -d "$APP" ] || exit 0
+echo "MathShelf: running the fast gate tier before this commit..."
+NODE_PATH="$(npm root -g)" node "$APP/tools/qa/run.js" || {
+  echo ""
+  echo "A gate is red. Fix it, or say in PROGRESS.md why this commit goes in anyway."
+  exit 1
+}

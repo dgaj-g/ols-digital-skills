@@ -214,12 +214,19 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
 }
 .contents-strip button[aria-current="true"] { color: #fff; border-color: var(--gold); }
 
-/* ── WORK SURFACES stay LIGHT, whatever the shell does ──────────── */
+/* ── WORK SURFACES stay LIGHT, whatever the shell does ──────────────
+   [data-work] declares "anything drawn here must end up on a light ground";
+   it does NOT paint one. The colour law walks up to the nearest painted
+   ancestor, so a column inside the paper inherits the paper — and does not
+   become a card with an invisible edge that a diagram can be condemned for
+   crossing. The surfaces that ARE cards paint themselves, below. */
 [data-work] {
-  background: var(--paper);
   color: var(--ink);
 }
-.act-paper, .jq-body, .movie, .paper, .panel {
+/* the question body is a COLUMN inside the paper, not a card of its own: it
+   inherits the paper's ground rather than painting a second one, so a phone
+   diagram reclaiming the margin gutter is not crossing an edge that exists */
+.act-paper, .movie, .paper, .panel {
   background: var(--paper);
   color: var(--ink);
 }

@@ -86,7 +86,7 @@
 
       /* protractor questions (measure the angle) */
       protractorCheckBtn: 'Mark my measurement',
-      protractorInstructions: 'Put the small red centre mark on the corner. Turn the protractor with a rotate knob at either end, until 0 sits along one arm, then read where the other arm crosses.',
+      protractorInstructions: 'Put the small crosshair at the centre of the protractor on the corner. Turn the protractor with a rotate knob at either end, until 0 sits along one arm, then read where the other arm crosses.',
       protractorReadTrueWrongScale: 'You read the other scale — use the one that starts at 0 on the arm you lined up. The true size is {value}°.',
       protractorReadTrueGeneric: 'Not quite — line the centre on the corner and 0 along an arm, then read again. The true size is {value}°.',
       protractorScaleRetry: 'Close — but check you are reading the scale that starts at 0 on your lined-up arm. One more go.',

@@ -42,6 +42,8 @@ const EXEMPTIONS = [
   'fits-its-card: absolutely or fixed positioned elements — a drag ghost is meant to leave its card',
   'fits-its-card: anything inside a container whose own overflow-x is auto/scroll/hidden',
   'fits-its-card: an element whose parent already overflows is not reported twice — the outermost offender is',
+  'fits-its-card: only an element with a ground of its own (a background, a border or an image) counts as a card — a column with no drawn edge is not a boundary anything can leave',
+  'fits-its-card: measured against the card\'s BORDER box, because a maths diagram deliberately reclaims the question\'s margin gutter on a phone — leaving the card is the fault, using its padding is the design',
   'readability is measured only once the page\'s own animations have stopped — a card still rising is a blend, not a colour',
   'while a modal or a badge pop is open, the OVERLAY is measured and the dimmed page behind it is not',
   'position:fixed and position:sticky chrome is taken out of the measuring picture — in a full-page capture it paints across the middle of the page, over content no pupil ever sees it cover'
@@ -150,12 +152,36 @@ const FITS_QUERY = `(() => {
   const nameOf = (e) => e.tagName.toLowerCase() +
     (typeof e.className === 'string' && e.className.trim()
       ? '.' + e.className.trim().split(/\\s+/).slice(0, 3).join('.') : '');
+  /* A CARD IS SOMETHING WITH A VISIBLE GROUND. The question body carries data-work so
+     the colour law can hold it to being light, but it has no background and no
+     border of its own: it is a column inside the paper, not a card. Treating it
+     as one condemned every phone diagram for leaving a boundary that is not
+     drawn anywhere. The card a thing must stay inside is the nearest thing a
+     pupil can actually see the edge of. */
+  const hasGround = (e) => {
+    const cs = getComputedStyle(e);
+    const bg = cs.backgroundColor;
+    const painted = bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent';
+    const bordered = parseFloat(cs.borderLeftWidth || 0) > 0 || parseFloat(cs.borderTopWidth || 0) > 0;
+    return painted || bordered || cs.backgroundImage !== 'none';
+  };
   document.querySelectorAll(CARDS).forEach((card) => {
     if (!vis(card)) return;
+    if (!hasGround(card)) return;
     const cs = getComputedStyle(card);
     const cr = card.getBoundingClientRect();
-    const left = cr.left + parseFloat(cs.borderLeftWidth || 0) + parseFloat(cs.paddingLeft || 0);
-    const right = cr.right - parseFloat(cs.borderRightWidth || 0) - parseFloat(cs.paddingRight || 0);
+    /* ADAPTER (maths): measured against the card's BORDER box, not its content
+       box. KS3 DT used the content box because there, a card's padding is space
+       the card is offering its contents. Here the phone layout DELIBERATELY
+       lets a diagram reclaim the question's margin gutter — that optimisation
+       was made on 14 June 2026 because the angle figures were unreadable at
+       375px otherwise, and it is approved and live. Measuring against the
+       content box condemned every one of those diagrams: 273 findings for a
+       thing that has never left its card and never scrolled the page. The
+       question this law asks is "does it leave the card", and the card's edge
+       is its border. */
+    const left = cr.left;
+    const right = cr.right;
     const offenders = [];
     card.querySelectorAll('*').forEach((e) => {
       if (!vis(e)) return;
