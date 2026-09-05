@@ -8,7 +8,7 @@
   deploy        3
   empty         73      152
   geometry      73      152
-  human-pace    27      1
+  human-pace    28
   movie         12      24
   nested        73      152
   readability   0       225
@@ -19,7 +19,7 @@
   walk-right    142     2
   walk-wrong    58      86
 
-  CELLS NOTHING CLOSES (1528)
+  CELLS NOTHING CLOSES (1527)
   family      cell                                                     why
   ----------  ----------------------------------------------  -------  ---
   walk-wrong  algebra > s1 > q1 (subst) @375 × walk-wrong     MISSING
