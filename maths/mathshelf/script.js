@@ -778,7 +778,9 @@
       call('admin', { passcode: v, sub: 'classes' }).then(function (r) {
         if (r && r.ok) { window.GJ_STAFF.enterWith(v, r); return; }
         openBtn.disabled = false;
-        msg.textContent = (r && r.error) ? String(r.error) : (TT.passcodeWrong || '');
+        msg.textContent = (window.GJ_STRINGS && window.GJ_STRINGS.serverSays)
+          ? window.GJ_STRINGS.serverSays(r && r.error, TT.passcodeWrong || '')
+          : (TT.passcodeWrong || '');
         pass.focus(); pass.select();
       }).catch(function () {
         openBtn.disabled = false;

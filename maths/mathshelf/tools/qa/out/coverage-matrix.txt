@@ -1,22 +1,22 @@
 
-  COVERAGE MATRIX (content hash 58d6bc5badf4, tier fast)
+  COVERAGE MATRIX (content hash 5c92ad3493e0, tier fast)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
   click-safety  19      206
-  colour        68      157
-  consequence   68      157
+  colour        70      155
+  consequence   70      155
   deploy        3
-  empty         68      157
-  geometry      68      157
+  empty         70      155
+  geometry      70      155
   human-pace    27
-  movie         24      12
-  nested        68      157
+  movie         12      24
+  nested        70      155
   readability   0       225
   strings       0       225
   truth         48
   two-homes     13
   verdict       0       1
-  walk-right    142     2
+  walk-right    144
   walk-wrong    58      86
 
   CELLS NOTHING CLOSES (1542)
@@ -68,11 +68,9 @@
   walk-wrong  algebra > s5 > q20 (solve) @768 × walk-wrong    MISSING
   walk-wrong  algebra > s6 > q21 (solve) @375 × walk-wrong    MISSING
   walk-wrong  algebra > s6 > q22 (solve) @375 × walk-wrong    MISSING
-  walk-right  algebra > s6 > q23 (form) @375 × walk-right     MISSING
   walk-wrong  algebra > s6 > q23 (form) @375 × walk-wrong     MISSING
   walk-wrong  algebra > s6 > q23 (form) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s6 > q23 (form) @1280 × walk-wrong    MISSING
-  walk-right  algebra > s6 > q24 (form) @375 × walk-right     MISSING
   walk-wrong  algebra > s6 > q24 (form) @375 × walk-wrong     MISSING
   walk-wrong  algebra > s6 > q24 (form) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s6 > q24 (form) @1280 × walk-wrong    MISSING
@@ -82,6 +80,8 @@
   walk-wrong  angles > s2 > q6 (reasoned) @768 × walk-wrong   MISSING
   walk-wrong  angles > s2 > q7 (reasoned) @375 × walk-wrong   MISSING
   walk-wrong  angles > s2 > q7 (reasoned) @768 × walk-wrong   MISSING
+  walk-wrong  angles > s2 > q8 (reasoned) @375 × walk-wrong   MISSING
+  walk-wrong  angles > s2 > q8 (reasoned) @768 × walk-wrong   MISSING
 
   DEBT LEDGER (printed every run)
   cell                     owner / phase            file                state
