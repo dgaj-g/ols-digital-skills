@@ -72,6 +72,13 @@
     var t = (window.GJ_STRINGS && window.GJ_STRINGS.teacher && window.GJ_STRINGS.teacher[k]) || '';
     return (window.GJ_STRINGS && window.GJ_STRINGS.fill) ? window.GJ_STRINGS.fill(t, vals) : t;
   }
+  /* WHAT THE SERVER SAID, IN WORDS. The markbook used to print the server's own
+     code on a teacher's screen - "not-configured", "bad-act", "no-row" - which
+     is a thing to look up, not a thing to act on. */
+  function SAYS(code, fallback) {
+    return (window.GJ_STRINGS && window.GJ_STRINGS.serverSays)
+      ? window.GJ_STRINGS.serverSays(code, fallback) : fallback;
+  }
 
   function call(sub, extra) {
     var p = { passcode: passcode, sub: sub };
@@ -204,7 +211,7 @@
         go.disabled = false;
         if (!r || !r.ok) {
           passcode = null;
-          clearBusy(body.querySelector('#st-msg'), (r && r.error) || 'That passcode was not accepted.');
+          clearBusy(body.querySelector('#st-msg'), SAYS(r && r.error, 'That passcode was not accepted.'));
           return;
         }
         classes = r.classes || [];
@@ -282,7 +289,7 @@
             call('setActs', { className: c.name, acts: acts }).then(function (r) {
               cb.disabled = false;
               if (r && r.ok) { c.acts = acts; cmsg.textContent = a.title + (cb.checked ? ' is now on ' : ' removed from ') + c.name + '’s shelf.'; }
-              else { cb.checked = !cb.checked; cmsg.textContent = (r && r.error) || TT('couldNotSave'); }
+              else { cb.checked = !cb.checked; cmsg.textContent = SAYS(r && r.error, TT('couldNotSave')); }
             }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.textContent = TT('couldNotSave'); });
           });
           lab.appendChild(cb);
@@ -314,7 +321,7 @@
               busyCard(cmsg, 'Deleting ' + esc(c.name) + '&hellip; this can take a moment');
               call('deleteClass', { className: c.name }).then(function (r) {
                 if (r && r.ok) { classes = classes.filter(function (x) { return x.name !== c.name; }); render(); clearBusy(cmsg, c.name + ' deleted.'); }
-                else { delB.disabled = false; clearBusy(cmsg, (r && r.error) || 'Could not delete.'); }
+                else { delB.disabled = false; clearBusy(cmsg, SAYS(r && r.error, 'Could not delete.')); }
               }).catch(function () { delB.disabled = false; clearBusy(cmsg, ''); staffError(TT('noServer'), cmsg); });
             });
         });
@@ -347,7 +354,7 @@
           render();
           clearBusy(cmsg, r.name + ' added with both books on its shelf — untick any you want to hold back, then copy its link.');
           reloadClasses().then(render);
-        } else clearBusy(cmsg, (r && r.error) || 'Could not add that class.');
+        } else clearBusy(cmsg, SAYS(r && r.error, 'Could not add that class.'));
       }).catch(function () { addB.disabled = false; clearBusy(cmsg, 'Could not reach the server.'); });
     });
   }
@@ -970,7 +977,7 @@
       var token = ++view.wallSeq;
       call('wall', { className: view.cls, act: view.act }).then(function (r) {
         if (token !== view.wallSeq) return;
-        if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load the wall.'); return; }
+        if (!r || !r.ok) { clearBusy(msg, SAYS(r && r.error, 'Could not load the wall.')); return; }
         view.wallData = r.pupils || [];
         view.jotterCache = {};               // fresh wall data invalidates any pre-fetched jotters
         paint(view.wallData);
@@ -1030,7 +1037,7 @@
     busyCard(msg, 'Fetching the jotter&hellip; this can take a moment');
     fetchJotter(email).then(function (r) {
       if (nextP) fetchJotter(nextP.email);    // pre-fetch one ahead so the next flick is instant
-      if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load.'); return; }
+      if (!r || !r.ok) { clearBusy(msg, SAYS(r && r.error, 'Could not load.')); return; }
       var state = null;
       try { state = JSON.parse(r.state); } catch (e) {}
       clearBusy(msg, (r.name || email) + ' · ' + (view.act === 'angles' ? 'Angles' : 'Algebra') +

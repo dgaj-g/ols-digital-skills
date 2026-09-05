@@ -2065,6 +2065,22 @@ window.OLS_TRANSPORT = {
       passcodeWrong: 'That passcode was not accepted.',
       openMarkbook: 'Open the markbook',
       noServer: 'We could not reach the server. Try again.',
+      /* WHAT THE SERVER SAID, IN WORDS. Every one of these is a code the
+         server can return, and the markbook used to print the code itself on
+         a teacher's screen - "not-configured" at ten to nine on a Tuesday. A
+         code is a thing to look up; a sentence is a thing to act on. */
+      serverNotInitialised: 'This markbook has not been set up yet. Open Set-up and add a class first.',
+      serverNotSignedIn: 'Google did not say who you are. Reload the page and sign in again.',
+      serverBadName: 'That name could not be saved. Letters and spaces only.',
+      serverUnknownClass: 'There is no class with that code. Check the link, or the code on the board.',
+      serverNotSet: 'That book is not switched on for this class. Tick it on in Set-up.',
+      serverBadPasscode: 'That passcode was not accepted.',
+      serverNotYourClass: 'That class was made by another teacher, so it is not yours to change.',
+      serverExists: 'There is already a class with that name.',
+      serverNotFound: 'That could not be found. Reload the page and try again.',
+      serverUnreachableStore: 'The app cannot reach its own store, so nothing was saved and nothing was lost. Tell Damien the front door is not joined to the data deployment.',
+      serverTooBig: 'There is more working in this book than one save can carry. Tell Damien before the class writes any more.',
+      serverUnknownAction: 'The app asked for something this server does not know about. Reload the page.',
       signedInAs: 'Signed in as {email}',
       loadingClass: 'Loading {class}\u2026',
       readingBooks: 'Reading {done} of {total} books\u2026',
@@ -2134,6 +2150,39 @@ window.OLS_TRANSPORT = {
       return (vals && vals[k] != null) ? String(vals[k]) : m;
     });
   };
+
+  /* one code -> one sentence. Anything not on this list is not shown raw: the
+     caller's own fallback sentence is used instead, because a teacher reading
+     "bad-act" learns nothing she can act on. */
+  var SERVER_SAYS = {
+    'not-initialised': 'serverNotInitialised',
+    'not-signed-in': 'serverNotSignedIn',
+    'bad-name': 'serverBadName',
+    'no-name': 'serverBadName',
+    'unknown-class': 'serverUnknownClass',
+    'not-set': 'serverNotSet',
+    'bad-act': 'serverNotSet',
+    'bad-passcode': 'serverBadPasscode',
+    'not-your-class': 'serverNotYourClass',
+    'exists': 'serverExists',
+    'no-row': 'serverNotFound',
+    'no-question': 'serverNotFound',
+    'no-email': 'serverNotSignedIn',
+    'bad-secret': 'serverUnreachableStore',
+    'no-secret-configured': 'serverUnreachableStore',
+    'not-configured': 'serverUnreachableStore',
+    'relay-failed': 'serverUnreachableStore',
+    'state-too-big': 'serverTooBig',
+    'summary-too-big': 'serverTooBig',
+    'unknown-action': 'serverUnknownAction',
+    'unknown-sub': 'serverUnknownAction'
+  };
+  window.GJ_STRINGS.serverSays = function (code, fallback) {
+    var key = SERVER_SAYS[String(code || '')];
+    var t = window.GJ_STRINGS.teacher || {};
+    return (key && t[key]) || fallback || t.noServer || '';
+  };
+
 })();
 
 </script>
@@ -6983,6 +7032,13 @@ window.OLS_TRANSPORT = {
     var t = (window.GJ_STRINGS && window.GJ_STRINGS.teacher && window.GJ_STRINGS.teacher[k]) || '';
     return (window.GJ_STRINGS && window.GJ_STRINGS.fill) ? window.GJ_STRINGS.fill(t, vals) : t;
   }
+  /* WHAT THE SERVER SAID, IN WORDS. The markbook used to print the server's own
+     code on a teacher's screen - "not-configured", "bad-act", "no-row" - which
+     is a thing to look up, not a thing to act on. */
+  function SAYS(code, fallback) {
+    return (window.GJ_STRINGS && window.GJ_STRINGS.serverSays)
+      ? window.GJ_STRINGS.serverSays(code, fallback) : fallback;
+  }
 
   function call(sub, extra) {
     var p = { passcode: passcode, sub: sub };
@@ -7115,7 +7171,7 @@ window.OLS_TRANSPORT = {
         go.disabled = false;
         if (!r || !r.ok) {
           passcode = null;
-          clearBusy(body.querySelector('#st-msg'), (r && r.error) || 'That passcode was not accepted.');
+          clearBusy(body.querySelector('#st-msg'), SAYS(r && r.error, 'That passcode was not accepted.'));
           return;
         }
         classes = r.classes || [];
@@ -7193,7 +7249,7 @@ window.OLS_TRANSPORT = {
             call('setActs', { className: c.name, acts: acts }).then(function (r) {
               cb.disabled = false;
               if (r && r.ok) { c.acts = acts; cmsg.textContent = a.title + (cb.checked ? ' is now on ' : ' removed from ') + c.name + '\u2019s shelf.'; }
-              else { cb.checked = !cb.checked; cmsg.textContent = (r && r.error) || TT('couldNotSave'); }
+              else { cb.checked = !cb.checked; cmsg.textContent = SAYS(r && r.error, TT('couldNotSave')); }
             }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.textContent = TT('couldNotSave'); });
           });
           lab.appendChild(cb);
@@ -7225,7 +7281,7 @@ window.OLS_TRANSPORT = {
               busyCard(cmsg, 'Deleting ' + esc(c.name) + '&hellip; this can take a moment');
               call('deleteClass', { className: c.name }).then(function (r) {
                 if (r && r.ok) { classes = classes.filter(function (x) { return x.name !== c.name; }); render(); clearBusy(cmsg, c.name + ' deleted.'); }
-                else { delB.disabled = false; clearBusy(cmsg, (r && r.error) || 'Could not delete.'); }
+                else { delB.disabled = false; clearBusy(cmsg, SAYS(r && r.error, 'Could not delete.')); }
               }).catch(function () { delB.disabled = false; clearBusy(cmsg, ''); staffError(TT('noServer'), cmsg); });
             });
         });
@@ -7258,7 +7314,7 @@ window.OLS_TRANSPORT = {
           render();
           clearBusy(cmsg, r.name + ' added with both books on its shelf \u2014 untick any you want to hold back, then copy its link.');
           reloadClasses().then(render);
-        } else clearBusy(cmsg, (r && r.error) || 'Could not add that class.');
+        } else clearBusy(cmsg, SAYS(r && r.error, 'Could not add that class.'));
       }).catch(function () { addB.disabled = false; clearBusy(cmsg, 'Could not reach the server.'); });
     });
   }
@@ -7881,7 +7937,7 @@ window.OLS_TRANSPORT = {
       var token = ++view.wallSeq;
       call('wall', { className: view.cls, act: view.act }).then(function (r) {
         if (token !== view.wallSeq) return;
-        if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load the wall.'); return; }
+        if (!r || !r.ok) { clearBusy(msg, SAYS(r && r.error, 'Could not load the wall.')); return; }
         view.wallData = r.pupils || [];
         view.jotterCache = {};               // fresh wall data invalidates any pre-fetched jotters
         paint(view.wallData);
@@ -7941,7 +7997,7 @@ window.OLS_TRANSPORT = {
     busyCard(msg, 'Fetching the jotter&hellip; this can take a moment');
     fetchJotter(email).then(function (r) {
       if (nextP) fetchJotter(nextP.email);    // pre-fetch one ahead so the next flick is instant
-      if (!r || !r.ok) { clearBusy(msg, (r && r.error) || 'Could not load.'); return; }
+      if (!r || !r.ok) { clearBusy(msg, SAYS(r && r.error, 'Could not load.')); return; }
       var state = null;
       try { state = JSON.parse(r.state); } catch (e) {}
       clearBusy(msg, (r.name || email) + ' \u00b7 ' + (view.act === 'angles' ? 'Angles' : 'Algebra') +
@@ -9040,7 +9096,9 @@ window.OLS_TRANSPORT = {
       call('admin', { passcode: v, sub: 'classes' }).then(function (r) {
         if (r && r.ok) { window.GJ_STAFF.enterWith(v, r); return; }
         openBtn.disabled = false;
-        msg.textContent = (r && r.error) ? String(r.error) : (TT.passcodeWrong || '');
+        msg.textContent = (window.GJ_STRINGS && window.GJ_STRINGS.serverSays)
+          ? window.GJ_STRINGS.serverSays(r && r.error, TT.passcodeWrong || '')
+          : (TT.passcodeWrong || '');
         pass.focus(); pass.select();
       }).catch(function () {
         openBtn.disabled = false;

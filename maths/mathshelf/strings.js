@@ -201,6 +201,22 @@
       passcodeWrong: 'That passcode was not accepted.',
       openMarkbook: 'Open the markbook',
       noServer: 'We could not reach the server. Try again.',
+      /* WHAT THE SERVER SAID, IN WORDS. Every one of these is a code the
+         server can return, and the markbook used to print the code itself on
+         a teacher's screen - "not-configured" at ten to nine on a Tuesday. A
+         code is a thing to look up; a sentence is a thing to act on. */
+      serverNotInitialised: 'This markbook has not been set up yet. Open Set-up and add a class first.',
+      serverNotSignedIn: 'Google did not say who you are. Reload the page and sign in again.',
+      serverBadName: 'That name could not be saved. Letters and spaces only.',
+      serverUnknownClass: 'There is no class with that code. Check the link, or the code on the board.',
+      serverNotSet: 'That book is not switched on for this class. Tick it on in Set-up.',
+      serverBadPasscode: 'That passcode was not accepted.',
+      serverNotYourClass: 'That class was made by another teacher, so it is not yours to change.',
+      serverExists: 'There is already a class with that name.',
+      serverNotFound: 'That could not be found. Reload the page and try again.',
+      serverUnreachableStore: 'The app cannot reach its own store, so nothing was saved and nothing was lost. Tell Damien the front door is not joined to the data deployment.',
+      serverTooBig: 'There is more working in this book than one save can carry. Tell Damien before the class writes any more.',
+      serverUnknownAction: 'The app asked for something this server does not know about. Reload the page.',
       signedInAs: 'Signed in as {email}',
       loadingClass: 'Loading {class}…',
       readingBooks: 'Reading {done} of {total} books…',
@@ -270,4 +286,37 @@
       return (vals && vals[k] != null) ? String(vals[k]) : m;
     });
   };
+
+  /* one code -> one sentence. Anything not on this list is not shown raw: the
+     caller's own fallback sentence is used instead, because a teacher reading
+     "bad-act" learns nothing she can act on. */
+  var SERVER_SAYS = {
+    'not-initialised': 'serverNotInitialised',
+    'not-signed-in': 'serverNotSignedIn',
+    'bad-name': 'serverBadName',
+    'no-name': 'serverBadName',
+    'unknown-class': 'serverUnknownClass',
+    'not-set': 'serverNotSet',
+    'bad-act': 'serverNotSet',
+    'bad-passcode': 'serverBadPasscode',
+    'not-your-class': 'serverNotYourClass',
+    'exists': 'serverExists',
+    'no-row': 'serverNotFound',
+    'no-question': 'serverNotFound',
+    'no-email': 'serverNotSignedIn',
+    'bad-secret': 'serverUnreachableStore',
+    'no-secret-configured': 'serverUnreachableStore',
+    'not-configured': 'serverUnreachableStore',
+    'relay-failed': 'serverUnreachableStore',
+    'state-too-big': 'serverTooBig',
+    'summary-too-big': 'serverTooBig',
+    'unknown-action': 'serverUnknownAction',
+    'unknown-sub': 'serverUnknownAction'
+  };
+  window.GJ_STRINGS.serverSays = function (code, fallback) {
+    var key = SERVER_SAYS[String(code || '')];
+    var t = window.GJ_STRINGS.teacher || {};
+    return (key && t[key]) || fallback || t.noServer || '';
+  };
+
 })();
