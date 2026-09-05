@@ -1098,6 +1098,7 @@
       });
       if (strip) {
         strip._qid = q.id;                                            // so a nudge can open the RIGHT question's strip
+        strip.setAttribute('data-help-for', q.id);                    // and so anything reading the page can tell whose help this is
         jotter.appendChild(strip);
         strips.push(strip);
         if (supportEarned(current.state.qs[q.id])) strip._reveal();   // already earned on re-entry
