@@ -156,11 +156,17 @@ async function walkBook(page, book, width, sidecar, transcript) {
 (async () => {
   const books = A.books().filter(b => !ONLY_BOOK || b === ONLY_BOOK);
   const attempts = buildAttempts();
-  const browser = await B.launch();
   A.ensureOut('walk');
   A.ensureOut('transcript');
 
+  /* A FRESH BROWSER PER WIDTH. One browser walking every book at every width
+     runs several thousand page.evaluate calls through one renderer, and on the
+     fourth book that renderer died mid-walk — "detached Frame" — losing the
+     whole run to something that is not a fault in the app at all. A walk that
+     cannot finish proves nothing, so the browser is replaced between widths and
+     a page that dies is REPORTED and the walk carries on. */
   for (const width of WIDTHS) {
+    const browser = await B.launch();
     for (const book of books) {
       const page = await B.newPage(browser, { width });
       await page.evaluateOnNewDocument((table) => {
@@ -183,7 +189,15 @@ async function walkBook(page, book, width, sidecar, transcript) {
       await W.settle(page);
       transcript.push(await page.evaluate(() => (document.getElementById('shelf-instruction') || {}).textContent || ''));
 
-      await walkBook(page, book, width, sidecar, transcript);
+      try {
+        await walkBook(page, book, width, sidecar, transcript);
+      } catch (e) {
+        if (/detached Frame|Target closed|Session closed/i.test(String(e && e.message))) {
+          g.fail(book + ' @' + width, 'walk',
+            'the browser tab died part-way through this walk (' + String(e.message).slice(0, 60) +
+            ') — the walk is incomplete, and an incomplete walk is not a pass');
+        } else { throw e; }
+      }
 
       sidecar.consoleErrors = page.__errors.length;
       g.check(page.__errors.length === 0, book + ' @' + width, 'console',
@@ -196,8 +210,8 @@ async function walkBook(page, book, width, sidecar, transcript) {
       g.note(book + ' @' + width + ': stood on ' + sidecar.states.length + ' states, ' + page.__errors.length + ' console errors');
       await page.close();
     }
+    await browser.close();
   }
-  await browser.close();
 
   /* THE REQUIRED SURFACE SET, derived from the app's own registry (L3): a walk
      that reached fewer surfaces than the app declares is SHORT, and short

@@ -72,10 +72,10 @@ g.exempt(AUD.EXEMPTIONS.concat([
 (async () => {
   const books = A.books().filter(b => !ONLY_BOOK || b === ONLY_BOOK);
   const attempts = buildAttempts();
-  const browser = await B.launch();
   A.ensureOut('walk');
-
+  /* a fresh browser per width: see the note in sit-pupil.js */
   for (const width of WIDTHS) {
+    const browser = await B.launch();
     for (const book of books) {
       const page = await B.newPage(browser, { width });
       await page.evaluateOnNewDocument((table) => {
@@ -143,8 +143,8 @@ g.exempt(AUD.EXEMPTIONS.concat([
       g.note(book + ' @' + width + ': stood on ' + sidecar.states.length + ' wrong-path states, ' + page.__errors.length + ' console errors');
       await page.close();
     }
+    await browser.close();
   }
-  await browser.close();
   g.done();
 })().catch(e => {
   console.log('  FAIL  sit-confused x crash: ' + (e && e.stack ? e.stack : e));
