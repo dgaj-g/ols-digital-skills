@@ -61,7 +61,122 @@
       selfEvalSaved: 'Saved. Your teacher sees this on her class list.',
       saveWaiting: 'Still saving your work…',
       saveRetry: 'Try again',
-      saveHeldLocal: 'Your work is safe on this device and will be sent as soon as the page can reach the server.'
+      saveHeldLocal: 'Your work is safe on this device and will be sent as soon as the page can reach the server.',
+
+      /* the jotter: the composer and number-pad widgets (default labels — most
+         callers pass their own, but these are the ones actually reached) */
+      composeDefaultLabel: 'Write the next step of working',
+      composeDefaultPlaceholder: 'write the new line here',
+      composeDefaultCommit: '✓ Done',
+      numpadDefaultLabel: 'Enter a number',
+
+      /* the movie player */
+      movieWorkedExample: 'Worked example',
+      moviePrevStep: 'Previous step',
+      movieNextStep: 'Next step',
+      moviePlayLabel: 'Play',
+      moviePlayBtn: '▶ Play',
+      moviePauseBtn: '❚❚ Pause',
+      movieReplayBtn: '↺ Replay',
+
+      /* classify questions (choose the type of angle) */
+      classifyCheckBtn: 'Mark my answer',
+      classifyYourAnswer: 'You answered “{answer}” — your teacher can see this and will pick it up in class.',
+      classifyTryAgain: 'Not that one — look again at its size against 90° and 180°. One more attempt.',
+
+      /* protractor questions (measure the angle) */
+      protractorCheckBtn: 'Mark my measurement',
+      protractorInstructions: 'Put the small red centre mark on the corner. Turn the protractor with a rotate knob at either end, until 0 sits along one arm, then read where the other arm crosses.',
+      protractorReadTrueWrongScale: 'You read the other scale — use the one that starts at 0 on the arm you lined up. The true size is {value}°.',
+      protractorReadTrueGeneric: 'Not quite — line the centre on the corner and 0 along an arm, then read again. The true size is {value}°.',
+      protractorScaleRetry: 'Close — but check you are reading the scale that starts at 0 on your lined-up arm. One more go.',
+      protractorLineUpRetry: 'Line it up carefully and read again — one more attempt.',
+      protractorTypeFirst: 'Type the size you measured first.',
+      protractorMaxRange: 'A protractor measures up to 180° — read the size again.',
+      protractorMeasureLabel: 'Your measurement in degrees',
+      protractorMeasurePlaceholder: 'the size you measure, in degrees',
+      measuredReadout: ' · you measured {value}°',
+
+      /* the jotter: the shared check control */
+      checkWorkingBtn: 'Mark my working',
+      cancelBtn: 'Cancel',
+      addedToJotter: '✓ Added to your jotter.',
+      checkFailedSaved: 'Something went wrong marking this — your working is saved for your teacher.',
+      amberNoWorking: 'Right answer — but with no working shown, you can’t earn the working marks.',
+      lineWrongNoReveal: 'The line in the red box is where it went wrong — nothing is given away. One more attempt.',
+
+      /* the jotter: algebra free-writing (expand/simplify fallback and rewrite) */
+      algebraNextLine: 'Write your next line of working:',
+      removeLastLineBtn: '↶ remove last line',
+      removedLastLine: 'Removed your last line.',
+      lineTooLong: 'That line is too long for the page — split it into two steps.',
+      lineUnreadable: 'That line does not read as maths yet — check it and try again. ({reason})',
+      pageFull: 'That is a full page — press Mark my working.',
+      addToWorkingBtn: 'Add to my working',
+      secondAttemptNote: 'Second attempt — your first try stays on the page.',
+      algebraLinePlaceholder: 'your next line, then “add line”',
+      addLineBtn: 'add line',
+
+      /* the jotter: the move-chip annotation (algebra free-writing + solve) —
+         the four arithmetic chips and "expand brackets" are the same tool in
+         both places, so one label serves both */
+      moveAnnotationEquation: 'What are you doing to both sides? — tag the move (optional)',
+      moveAnnotationGeneric: 'What’s your next step? — tag the move (optional)',
+      chipAdd: '+ add',
+      chipSubtract: '− subtract',
+      chipMultiply: '× multiply',
+      chipDivide: '÷ divide',
+      chipExpandBrackets: 'Expand brackets',
+      chipCollectTerms: 'Collect terms',
+      chipJustRewrite: 'Just rewrite',
+      moveOperandLabel: 'How much?',
+      moveOperandPlaceholder: 'how much? e.g. 15 or 3x',
+      moveOperandNext: 'next →',
+
+      /* the jotter: substitution questions */
+      substIntro: 'Choose each letter below to put its number in.',
+      substGivenLabel: 'given:',
+      substMethodPrompt: 'Now work it out, then write the value:',
+      substAnswerPrompt: 'Now work it out, then enter the value:',
+      substValueLabel: 'The value',
+
+      /* the jotter: simplify (collect like terms into bins) */
+      simplifyIntro: 'Sort each term into its family, then combine.',
+      allSortedNowCombine: 'All sorted — now combine.',
+      combineTermsBtn: 'Combine these terms',
+
+      /* the jotter: expand (multiply out a bracket) */
+      expandIntro: 'Multiply every term — choose the right product for each box.',
+
+      /* the jotter: form an equation, then solve it */
+      formChooseEquation: 'Form the equation — which one matches the situation?',
+
+      /* the jotter: solve (the move-chip rail) */
+      solveChooseMove: 'Choose a move — you will see the next line, already checked for balance.',
+      solveNeedNumber: 'Enter a number for that move first.',
+      solveMoveUnbalanced: 'That move doesn’t keep it balanced — try another.',
+      chipTakeXBothSides: 'Take □x off both sides',
+      promptTakeXBothSides: 'Take how many x off both sides?',
+      promptSubtractBoth: 'Subtract how much from both sides?',
+      promptAddBoth: 'Add how much to both sides?',
+      promptDivideBoth: 'Divide both sides by?',
+      promptMultiplyBoth: 'Multiply both sides by?',
+      applyBtn: 'Apply',
+
+      /* the jotter: angle reasoning steps */
+      angleOneOpenHint: 'One angle is dashed on the diagram — choose it, give its size, and choose the reason.',
+      angleMultiOpenHint: 'Choose a dashed angle on the diagram, give its size and reason, then work your way to {target}.',
+      removeLastStepBtn: '↶ remove last step',
+      removedLastStep: 'Removed your last step.',
+      angleStepHeading: 'Work out ∠{name}',
+      angleSizeLabel: 'Size of angle {name}',
+      angleSizePlaceholder: 'the size, e.g. 65',
+      angleSizeHint: 'Type the size — a number, or a sum like 180−124.',
+      angleChooseReasonSub: 'Then choose the reason — it earns its own mark:',
+      angleNeedSize: 'First type the size of the angle above.',
+      angleUnreadable: 'That does not read as a number yet — type a number, or a calculation like 180−65.',
+      angleOutOfRange: 'An angle here is between 0° and 360° — check the size.',
+      angleChooseReasonPrompt: 'Now choose the reason below ↓ — it earns its own mark.'
     },
 
     /* ── what a teacher reads ───────────────────────────────────────── */

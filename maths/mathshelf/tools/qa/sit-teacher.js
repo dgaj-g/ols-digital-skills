@@ -31,6 +31,24 @@ const W = require('./lib/walk-moves.js');
 const AUD = require('./lib/audits.js');
 const { contentHash } = require('./lib/hash.js');
 
+/* ONE SENTENCE PER FINDING, and it NAMES THE THING. The first cut printed the
+   law and nothing else - "marking-colour-outside-a-mark", forty times - which
+   tells a reader what rule broke and nothing about where to look. */
+function describe(f) {
+  const bits = [];
+  if (f.law) bits.push(f.law);
+  if (f.sel) bits.push(f.sel);
+  if (f.tag) bits.push('<' + f.tag + '>' + (f.cls || ''));
+  if (f.container) bits.push(f.inner + ' inside ' + f.container);
+  if (f.prop) bits.push('(' + f.prop + ': ' + f.colour + ')');
+  if (f.over) bits.push('overflows ' + f.card + ' by ' + f.over + 'px');
+  if (f.qid) bits.push('on ' + f.qid);
+  if (f.ratio != null) bits.push(f.ratio + ':1');
+  if (!bits.length) bits.push(JSON.stringify(f).slice(0, 100));
+  if (f.text) bits.push('["' + String(f.text).slice(0, 50) + '"]');
+  return bits.join('  ');
+}
+
 const TIER = 'full';
 const ORDER = 62;
 const COVERS = {
@@ -68,7 +86,7 @@ async function walk(page, width, projector, sidecar, transcript) {
     sidecar.states.push({ surface: s.surface || fallbackSurface, state: s.state || fallbackState, width, projector: !!projector, audits: a.verdicts });
     Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {
       g.fail((s.surface || fallbackSurface) + ':' + (s.state || fallbackState) + ' @' + width + (projector ? 'x720' : ''), k,
-        (f.law || f.sel || f.tag || JSON.stringify(f).slice(0, 80)) + (f.text ? '  ["' + String(f.text).slice(0, 50) + '"]' : ''));
+        describe(f));
     }));
   };
 

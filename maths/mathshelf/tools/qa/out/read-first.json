@@ -196,5 +196,29 @@
     "kind": "BARE-DEMONSTRATIVE",
     "text": "This is the preview copy of MathShelf.",
     "locked": false
+  },
+  {
+    "path": "strings.js > pupil > classifyTryAgain",
+    "kind": "NEGATION-FRAGMENT",
+    "text": "Not that one — look again at its size against 90° and 180°.",
+    "locked": false
+  },
+  {
+    "path": "strings.js > pupil > classifyTryAgain",
+    "kind": "FRAGMENT-RUN",
+    "text": "Not that one — look again at its size against 90° and 180°.  /  One more attempt.",
+    "locked": false
+  },
+  {
+    "path": "strings.js > pupil > moveAnnotationGeneric",
+    "kind": "FRAGMENT-RUN",
+    "text": "What’s your next step?  /  — tag the move (optional)",
+    "locked": false
+  },
+  {
+    "path": "strings.js > pupil > moveOperandPlaceholder",
+    "kind": "FRAGMENT-RUN",
+    "text": "how much?  /  e.g. 15 or 3x",
+    "locked": false
   }
 ]

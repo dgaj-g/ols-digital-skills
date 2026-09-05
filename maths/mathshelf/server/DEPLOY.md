@@ -1,71 +1,89 @@
-# MathShelf — Path B deploy (Damien's recipe)
+# MathShelf — the deploy checklist
 
-GG-model class board: **Execute as Me**, within-domain sign-in gate. ~10 minutes once.
+**One project, two deployments.** Do them in this order, and read the manifest
+before each version cut.
 
-## 1. Build the two paste files
+> **THE DEPLOYMENT DIALOG LIES.** On 24 June 2026 a version was cut while the
+> dialog displayed "Execute as: Me" and the manifest said `USER_ACCESSING`; every
+> pupil in the school then ran the app as the deployer. The dialog is not
+> evidence. Never trust it. Read `appsscript.json` in the editor, with your own
+> eyes, immediately before each cut, and write down what it said.
 
-```
-cd ~/Sites/ols-digital-skills/maths/mathshelf
-node server/build-pathb.js
-```
+| | what it is | executeAs | who has access | who ever visits it |
+|---|---|---|---|---|
+| **DATA** | the existing main `/exec`. Owns the bound Sheet, the marking store, the class registry and the per-teacher scoping. | `USER_DEPLOYING` (Me) | Anyone within the domain | nobody — only the front door, server to server |
+| **FRONT DOOR** | a NEW deployment. Serves the page, reads the pupil's own name from her own Google token, and relays every data call to DATA. | `USER_ACCESSING` (User) | Anyone within `c2ken.net` | every pupil and every teacher |
 
-Produces `server/Code.gs` + `server/Index.html` (pure ASCII — safe to paste).
-The build fails loudly if any input file is missing; fix and re-run.
+**Why two.** Full line-by-line working cannot live in ScriptProperties at class
+scale, so the store has to be the owner's private Sheet — and that needs
+execute-as-Me. But a pupil's real name can only be read with the PUPIL's own
+token — and that needs execute-as-User. Two deployments buys both, and it is
+what makes her full name appear on her very first visit with nothing to type.
 
-## 2. Create the Sheet + script
+---
 
-1. In the **school** Google Drive, create a Sheet: `OLS Maths — MathShelf (data)`.
-2. Extensions → Apps Script.
-3. **NAME THE PROJECT FIRST** — click "Untitled project" → `OLS Maths — MathShelf`.
-   Do this **before running anything**: the OAuth consent screen shows the project
-   name, and renaming after consent doesn't propagate.
-4. Replace the editor's `Code.gs` contents with `server/Code.gs`.
-5. File → New → HTML file, named exactly `Index` (Apps Script adds `.html`).
-   Replace its contents with `server/Index.html`. Save both.
+## Before you start
 
-## 3. Initialise + passcode
+1. `git push` first. The built page pulls its fonts, the crest and the intro
+   films from the pushed github.io site: **shipping is not delivering**, and a
+   version cut before the push serves a page whose assets 404.
+2. `node tools/qa/run.js --full` green, and `node tools/qa/run.js --control`
+   green, at the commit you are about to deploy.
+3. `MS_PROBE_LIVE=1 node tools/qa/qa-build.js` — after the push — so the live
+   asset probe reads what pupils will read.
+4. Set the two script properties, once, in Project Settings → Script Properties:
+   - `relaySecret` — a long random string. It never leaves the server.
+   - `dataUrl` — filled in at step 3 below, once the DATA `/exec` exists.
 
-1. In the editor, select `initJotter` in the function dropdown → **Run**.
-   Accept the one-time OAuth consent (this is the only consent click).
-2. Check the Sheet now has **Config** and **Data** tabs.
-3. In **Config**, change `staffPasscode` from `CHANGE-ME-XXXX` to the real one.
-   (Server compares it trimmed + case-insensitive.)
+## 1 · DATA (do this one FIRST)
 
-## 4. Deploy
+The front door has nothing to relay to until this exists.
 
-1. Deploy → New deployment → type **Web app**.
-2. Execute as: **Me**. Who has access: **Anyone within c2ken.net** (the sign-in gate).
-3. Deploy → copy the `/exec` URL.
-4. **Record it in `docs/deployed-apps.md`** (name, owner, date) and commit — future
-   sessions can't recover it otherwise.
+1. Open the Apps Script project (`1otJG5454zR6a0WKZW23czKnehxtQ3Oj6CrrRWYys1H4bPxZOoaZ3qPmC`).
+2. Paste the built `server/Code.gs` into `Code.gs` and the built
+   `server/Index.html` into the HTML file named exactly `Index`.
+3. **Open `appsscript.json` and read it.** It must say
+   `"executeAs": "USER_DEPLOYING"`. Write down what it actually said.
+4. Save. Deploy → Manage deployments → the existing MAIN deployment → edit →
+   **New version** → Deploy. The `/exec` does not change.
+5. Record the row in `DEPLOY_LOG.md`: date, `DATA`, the version number, the
+   executeAs **as you read it in the manifest**, the commit, and the two md5s
+   (`node tools/qa/qa-build.js` prints them).
+6. Open Executions and confirm a `doPost` or `apiRelay` row completes. Paste
+   that line into `DEPLOY_LOG.md` as the proof row.
+7. Copy the DATA `/exec` URL into the `dataUrl` script property.
 
-## 5. Classes + verify
+## 2 · FRONT DOOR
 
-1. Open the **bare `/exec` URL** (no `?class=`) — this is the TEACHER landing: a
-   staff cover (STAFF stamp, your derived name on the Name line) with the
-   **passcode field built in** — type the passcode and **Open the Markbook** goes
-   straight to your classes (no separate gate). Pupil prompts (name box, class,
-   subject) are stripped here. (Fallback from any board, incl. a class link:
-   **triple-tap the crest** to open Staff.)
-2. Add a class, tick its activities, copy the class link / QR
-   (links look like `…/exec?class=10B-Maths`).
-3. Verify as a pupil: open a **class link** in a normal signed-in C2k browser profile —
-   the cover shows **no STAFF stamp** (pupils never see it), name asked once, shelf
-   shows only the ticked tiles.
+1. **Edit `appsscript.json` in the editor** and change `"executeAs"` to
+   `"USER_ACCESSING"`. Save.
+2. **Read it again.** It must now say `USER_ACCESSING`. Write down what it said.
+3. Deploy → **New deployment** → Web app → Execute as: **User accessing the web
+   app** → Who has access: **Anyone within c2ken.net** → Deploy.
+4. Record the row in `DEPLOY_LOG.md`: date, `FRONT DOOR`, version, the executeAs
+   as READ, the same commit, the same md5s.
+5. Open the new `/exec` once yourself so the one-time permission screen is
+   accepted, then open Executions and confirm `doGet` completes **and** that a
+   relayed `apiCall` completes. Paste both lines in as proof rows.
+6. Put the manifest back to `USER_DEPLOYING` and save, so the next DATA cut
+   starts from the state step 1.3 expects.
 
-**Pupils get the per-class link; you get the bare `/exec`.** The STAFF stamp is hidden
-on class links so it can't confuse pupils. Pupils sign in with their C2k account (their
-verified email is captured automatically); they type their display **name** once only —
-Apps Script's `Session.getActiveUser()` exposes the email but not the name, and C2k
-emails aren't real names, so the one-time name is what makes your markbook read
-"Méabh O'Hare" instead of an email. It then follows them to any device.
+## 3 · Afterwards
 
-## 6. Re-deploys (every code change)
+1. Retitle the Apps Script project and the Sheet to **OLS — MathShelf**.
+2. Delete the `autonameUrl` row from the Config tab. The auto-name companion,
+   its hidden probe and its consent bounce are retired; nothing reads that row.
+3. Retire the companion deployment (Version 21). Nothing points at it.
+4. In Set-up, regenerate the class link and QR for every class — they now point
+   at the FRONT DOOR `/exec`. The old links stop working, and the old Sheet data
+   is untouched.
+5. `MS_POST_DEPLOY=1 node tools/qa/qa-manifest.js` and
+   `MS_POST_DEPLOY=1 node tools/qa/qa-repo-prod.js` — both green.
+6. Damien walks the eight-line live smoke list at the foot of `DEPLOY_LOG.md`,
+   and the audit row flips to approved only when the log carries his line.
 
-```
-node server/build-pathb.js
-```
+## If something is wrong afterwards
 
-Paste **both** files again, then: Deploy → **Manage deployments** → ✏️ →
-Version: **New version** → Deploy. The `/exec` URL stays the same.
-**Never** create a second deployment — that mints a new URL and orphans the QR codes.
+Both deployments are versioned. Manage deployments → edit → pick the previous
+version → Deploy. The Sheet is untouched by a rollback: a pupil's work is in the
+Sheet, not in the deployment.

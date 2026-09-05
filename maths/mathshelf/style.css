@@ -144,7 +144,13 @@ body.gj :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
 .ui-msg { font-family: var(--f-stationery); font-size: 14px; color: var(--pencil); min-height: var(--sq); }
 /* the three message voices (proposal §5c) — none of them is marking-red: a message is
    never a wrong mark. info = neutral; validation = needs action (amber left-rule); status = quiet italic. */
-.ui-msg.msg-validation { color: var(--amber-flag); border-left: 3px solid var(--amber-flag); padding-left: 8px; }
+/* A MESSAGE IS NOT A MARK. This file's own opening rule says UI errors are
+   never a marking colour, and amber means exactly one thing on this platform:
+   "answer only, no working shown". A validation line that wore it taught the
+   colour a second meaning, which is the one thing the closed colour law exists
+   to stop. --support-rose is the tone that was defined for precisely this: it
+   carries attention and is deliberately nowhere near the marking three. */
+.ui-msg.msg-validation { color: var(--support-rose); border-left: 3px solid var(--support-rose); padding-left: 8px; }
 .ui-msg.msg-status { font-style: italic; }
 
 /* ═══ SCREEN · THE COVER and THE SHELF — now shell.css ════════════
@@ -561,7 +567,7 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 .step-card .sc-field { display: inline-flex; min-width: 96px; }
 .step-card .sc-field .compose { width: 100%; min-height: calc(var(--sq) * 1.2); border-bottom-color: var(--navy); }
 .step-card .sc-hint { font-family: var(--f-stationery); font-size: 12px; color: var(--pencil); margin: 3px 0 0; }
-.step-card .sc-msg { font-family: var(--f-stationery); font-size: 13.5px; font-weight: 600; color: var(--amber-flag); min-height: 18px; margin: 10px 0 0; }
+.step-card .sc-msg { font-family: var(--f-stationery); font-size: 13.5px; font-weight: 600; color: var(--support-rose); min-height: 18px; margin: 10px 0 0; }
 
 /* reason picker — grouped then randomised */
 .reasons { margin-top: calc(var(--sq) * 0.5); }
@@ -829,7 +835,7 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 @keyframes gj-spin { to { transform: rotate(360deg); } }
 @keyframes gj-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
 @media (prefers-reduced-motion: reduce) { .panel-loading, .panel-spinner, .spinner { animation: none; } }
-.act-load-error { text-align: center; color: var(--amber-flag); font-weight: 700; margin: 28px auto; max-width: 480px; line-height: 1.4; }
+.act-load-error { text-align: center; color: var(--support-rose); font-weight: 700; margin: 28px auto; max-width: 480px; line-height: 1.4; }
 
 /* selection lock while dragging (protractor drag etc.) */
 body.dragging-active, body.dragging-active * {

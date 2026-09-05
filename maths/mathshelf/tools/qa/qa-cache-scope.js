@@ -21,8 +21,8 @@ const TIER = 'fast';
 const ORDER = 47;
 const COVERS = { books: '*', kinds: [], surfaces: [], widths: [], projector: false, tier: ['preview', 'built'], cells: ['two-homes'] };
 const CONTROLS = [
-  { id: 'cacheservice-planted', kind: 'mutation', mustFail: /CacheService/ },
-  { id: 'key-without-class', kind: 'mutation', mustFail: /not qualified by the class/ },
+  { id: 'cacheservice-planted', kind: 'mutation', plant: 'fixture-cacheservice', mustFail: /CacheService/ },
+  { id: 'key-without-class', kind: 'mutation', plant: 'fixture-key-without-class', mustFail: /no class in it/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 

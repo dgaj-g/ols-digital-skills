@@ -38,7 +38,15 @@ const COLOUR_LAW = `(() => {
     if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) < 0.05) return;
     const r = el.getBoundingClientRect();
     if (r.width < 2 || r.height < 2) return;
+    /* A COLOUR THAT PAINTS NOTHING IS NOT A COLOUR. `color` on an element with
+       no text of its own paints no glyph - the expand grid's empty product
+       cells inherit a colour and draw nothing with it - so judging them was the
+       gate inventing a fault (L6). Backgrounds, borders, fills and strokes are
+       judged wherever they are, because those DO paint. */
+    const ownText = [...el.childNodes].filter(n => n.nodeType === 3)
+      .map(n => n.textContent.trim()).join('').trim();
     ['color', 'backgroundColor', 'borderTopColor', 'fill', 'stroke'].forEach((prop) => {
+      if (prop === 'color' && !ownText) return;
       const c = seen(el, prop, cs[prop]);
       if (!c) return;
       if (c === SENTINEL) out.push({ law: 'sentinel', sel: name(el), prop, colour: c });
@@ -121,7 +129,7 @@ const MUTE_LOCKS = `(() => {
 /* the consequence laws that can be read off the DOM without moving anything */
 const CONSEQUENCE = `(() => {
   const out = [];
-  document.querySelectorAll('[data-surface="question"], .jq').forEach((root) => {
+  document.querySelectorAll('[data-surface="question"], .jotter-q').forEach((root) => {
     const state = root.getAttribute('data-state') || '';
     const locked = /checked-wrong-2|locked|checked-right/.test(state);
     /* the truth is never on the page before the question locks */
