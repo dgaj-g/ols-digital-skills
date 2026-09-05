@@ -22,7 +22,7 @@ const TIER = 'fast';
 const ORDER = 20;
 const COVERS = { books: '*', kinds: '*', surfaces: [], widths: [], projector: false, tier: ['preview'], cells: ['selftest'] };
 const CONTROLS = [
-  { id: 'mutated-engine', kind: 'mutation', mustFail: /selfTest: .* of .* cases failed/ },
+  { id: 'mutated-engine', kind: 'mutation', plant: 'fixture-engine-broken', mustFail: /selfTest: .* of .* cases failed/ },
   { id: 'lowered-floor', kind: 'fixture', plant: 'fixture-floor-drop', mustFail: /below its floor/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];

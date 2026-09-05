@@ -35,8 +35,12 @@ const COVERS = {
   tier: ['preview', 'built'], cells: ['store-scale']
 };
 const CONTROLS = [
-  { id: 'oversize-cell', kind: 'fixture', plant: 'fixture-state-huge', mustFail: /cell cap/ },
-  { id: 'summary-too-fat', kind: 'fixture', plant: 'fixture-state-huge', mustFail: /summary/ },
+  /* the mock's own hostility is proved in the gate's own run: a 60,000-character
+     cell must THROW where Google throws, and a mock that goes quiet instead
+     would let every other check here pass by being useless */
+  { id: 'oversize-cell', kind: 'self-probe', mustFail: /cell cap/ },
+  { id: 'state-too-long-to-save', kind: 'fixture', plant: 'fixture-book-huge', mustFail: /STATE_MAX is 45,000/ },
+  { id: 'summary-too-fat', kind: 'fixture', plant: 'fixture-fat-summary', mustFail: /summary built from the largest plausible state/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
