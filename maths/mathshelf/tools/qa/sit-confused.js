@@ -74,9 +74,13 @@ g.exempt(AUD.EXEMPTIONS.concat([
   const attempts = buildAttempts();
   A.ensureOut('walk');
   /* a fresh browser per width: see the note in sit-pupil.js */
+  /* A FRESH BROWSER PER BOOK, not per width. Sixty-odd states of audits is
+     several hundred evaluate calls through one renderer, and the SECOND book at
+     a given width was where it kept dying. A walk that cannot finish proves
+     nothing; a browser costs a second and a half. */
   for (const width of WIDTHS) {
-    const browser = await B.launch();
     for (const book of books) {
+      const browser = await B.launch();
       const page = await B.newPage(browser, { width });
       await page.evaluateOnNewDocument((table) => {
         window.__modelAttempt = (qid, wrong) => (table[(wrong ? 'wrong:' : 'right:') + qid] || null);
@@ -151,8 +155,8 @@ g.exempt(AUD.EXEMPTIONS.concat([
       fs.writeFileSync(A.out('walk/sit-confused-' + book + '-' + width + '.json'), JSON.stringify(sidecar, null, 1));
       g.note(book + ' @' + width + ': stood on ' + sidecar.states.length + ' wrong-path states, ' + page.__errors.length + ' console errors');
       await page.close();
+      await browser.close();
     }
-    await browser.close();
   }
   g.done();
 })().catch(e => {
