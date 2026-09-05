@@ -100,17 +100,20 @@ const CHECK = `((qid) => {
   const label = (btn.textContent || '').trim();
   const disabled = btn.disabled || btn.getAttribute('aria-disabled') === 'true';
   const why = btn.getAttribute('data-locked-why') || '';
-  if (disabled) return { ok: false, disabled: true, label, why };
-  /* A BUTTON SHE CANNOT SEE IS A BUTTON SHE CANNOT PRESS. A renderer is
-     entitled to take the Check away rather than grey it out, and it does
-     exactly that once a question is marked; a walker that reaches into a
-     hidden row and clicks anyway is not walking, it is inventing a fault. */
+  /* REACHABILITY IS ASKED FIRST. A renderer is entitled to take the Check away
+     rather than grey it out, and it does exactly that once a question is
+     marked - the button is left disabled inside a hidden row. Asking "is it
+     disabled?" before "can she see it?" reported every marked question as a
+     control that will not act and will not say why, which is a law about a
+     control she can SEE. And a walker that reaches into a hidden row and
+     clicks anyway is not walking, it is inventing a fault. */
   const cs = getComputedStyle(btn);
   const box = btn.getBoundingClientRect();
   if (btn.closest('[hidden]') || cs.display === 'none' || cs.visibility === 'hidden' ||
       Number(cs.opacity) < 0.05 || box.width < 1 || box.height < 1) {
     return { ok: false, unreachable: true, label, why: why || 'the Check is not on screen' };
   }
+  if (disabled) return { ok: false, disabled: true, label, why };
   btn.click();
   return { ok: true, label };
 })`;
@@ -184,16 +187,27 @@ const ACTIONS = {
     const fwd = () => movie.querySelector('.mc-fwd') ||
       [...movie.querySelectorAll('button')].filter(b => /next step/i.test(b.getAttribute('aria-label') || ''))[0] ||
       [...movie.querySelectorAll('button')].filter(b => /next|start|again/i.test(b.textContent || ''))[0];
+    /* A STEP TAKES AS LONG AS IT TAKES. The player ignores a press while it is
+       still animating the last one, so pressing on a fixed clock swallowed most
+       of them and the film stopped part-way with the walk calling it the end.
+       Press, then wait for the caption number to move, then press again. */
+    const capNo = () => {
+      const c = movie.querySelector('.cap-num, .ml-cap-n, [data-cap-n]');
+      return c ? (c.textContent || '').trim() : String(movie.getAttribute('data-state'));
+    };
     let steps = 0;
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 40; i++) {
+      if (movie.getAttribute('data-state') === 'end') break;
       const b = fwd();
       if (!b || b.disabled) break;
-      const before = movie.getAttribute('data-state');
+      const was = capNo();
       b.click();
       steps++;
-      await new Promise(r => setTimeout(r, 160));
-      if (movie.getAttribute('data-state') === 'end') break;
-      if (before === movie.getAttribute('data-state') && i > 2 && before !== 'step-n') break;
+      for (let t = 0; t < 40; t++) {
+        await new Promise(r => setTimeout(r, 100));
+        if (capNo() !== was || movie.getAttribute('data-state') === 'end') break;
+      }
+      if (capNo() === was && movie.getAttribute('data-state') !== 'end') break;
     }
     return { steps: steps, state: movie.getAttribute('data-state') };
   })`,

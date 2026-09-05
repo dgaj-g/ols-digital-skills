@@ -1,25 +1,25 @@
 
-  COVERAGE MATRIX (content hash 22df18f906b8, tier fast)
+  COVERAGE MATRIX (content hash e9e7ff463c0a, tier fast)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  19      206
-  colour        70      155
-  consequence   70      155
+  click-safety  21      204
+  colour        73      152
+  consequence   73      152
   deploy        3
-  empty         70      155
-  geometry      70      155
-  human-pace    27
+  empty         73      152
+  geometry      73      152
+  human-pace    27      1
   movie         12      24
-  nested        70      155
+  nested        73      152
   readability   0       225
   strings       0       225
   truth         48
   two-homes     13
   verdict       0       1
-  walk-right    144
+  walk-right    142     2
   walk-wrong    58      86
 
-  CELLS NOTHING CLOSES (1542)
+  CELLS NOTHING CLOSES (1528)
   family      cell                                                     why
   ----------  ----------------------------------------------  -------  ---
   walk-wrong  algebra > s1 > q1 (subst) @375 × walk-wrong     MISSING
@@ -69,9 +69,11 @@
   walk-wrong  algebra > s6 > q21 (solve) @375 × walk-wrong    MISSING
   walk-wrong  algebra > s6 > q22 (solve) @375 × walk-wrong    MISSING
   walk-wrong  algebra > s6 > q23 (form) @375 × walk-wrong     MISSING
+  walk-right  algebra > s6 > q23 (form) @768 × walk-right     MISSING
   walk-wrong  algebra > s6 > q23 (form) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s6 > q23 (form) @1280 × walk-wrong    MISSING
   walk-wrong  algebra > s6 > q24 (form) @375 × walk-wrong     MISSING
+  walk-right  algebra > s6 > q24 (form) @768 × walk-right     MISSING
   walk-wrong  algebra > s6 > q24 (form) @768 × walk-wrong     MISSING
   walk-wrong  algebra > s6 > q24 (form) @1280 × walk-wrong    MISSING
   walk-wrong  angles > s2 > q5 (reasoned) @375 × walk-wrong   MISSING
@@ -80,8 +82,6 @@
   walk-wrong  angles > s2 > q6 (reasoned) @768 × walk-wrong   MISSING
   walk-wrong  angles > s2 > q7 (reasoned) @375 × walk-wrong   MISSING
   walk-wrong  angles > s2 > q7 (reasoned) @768 × walk-wrong   MISSING
-  walk-wrong  angles > s2 > q8 (reasoned) @375 × walk-wrong   MISSING
-  walk-wrong  angles > s2 > q8 (reasoned) @768 × walk-wrong   MISSING
 
   DEBT LEDGER (printed every run)
   cell                     owner / phase            file                state

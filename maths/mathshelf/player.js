@@ -207,14 +207,25 @@
         if (opts2.italic) lbl.style.fontStyle = 'italic';
         if (REDUCED || opts2.instant) { lbl.textContent = target + '°'; return Promise.resolve(); }
         var t0 = null, dur = opts2.dur || 600;
+        /* THE COUNT-UP FINISHES EVEN WHERE THERE ARE NO FRAMES. This is the one
+           animation in the player driven by requestAnimationFrame, and a page
+           Chrome is not compositing gets no frames at all - so the promise
+           never settled, the player's "busy" latch never cleared, and the Next
+           arrow silently did nothing for the rest of the film. The timer below
+           is a backstop, not a second animation: whichever finishes first
+           leaves the same number on the screen. */
         return new Promise(function (res) {
+          var done = false;
+          function finish() { if (done) return; done = true; lbl.textContent = target + '°'; res(); }
           function tick(ts) {
+            if (done) return;
             if (!t0) t0 = ts;
             var f = Math.min(1, (ts - t0) / dur);
             lbl.textContent = Math.round(target * f) + '°';
-            if (f < 1) requestAnimationFrame(tick); else res();
+            if (f < 1) requestAnimationFrame(tick); else finish();
           }
           requestAnimationFrame(tick);
+          setTimeout(finish, dur + 250);
         });
       },
       setText: function (nm, text) { if (valEls[nm]) valEls[nm].textContent = text; },
