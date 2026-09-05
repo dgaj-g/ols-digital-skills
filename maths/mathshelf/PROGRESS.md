@@ -64,11 +64,14 @@ here.
    X, stood on Y` notes (honest, and settled at the end of the walk) and any
    `the browser tab died part-way` line, which is the rig, not the app.
 2. **`node tools/qa/control.js`** — every control FIRED, every over-tightening
-   PASSED. Every node-tier gate is now green under its own controls; the eight
-   browser-tier gates (colour law, fonts, numpad, waits, click-safety,
-   preview-honest, staff-relock, two-attempts and the three walkers) have not
-   been run through the battery yet. `qa-cold-read`'s over-tightening is red
-   until the separated judge has filed its verdicts, which is step 3.
+   PASSED. **The node tier is done: 28 gates green, 65 controls fired, one red
+   — `qa-cold-read`'s over-tightening, which stays red until the separated
+   judge has filed its verdicts (step 3).** The browser tier (colour law,
+   fonts, numpad, waits, click-safety, preview-honest, staff-relock,
+   two-attempts and the three walkers) runs its battery on its own: each
+   browser control now gets its own preview server on its own sandbox, and it
+   must not be run at the same time as a walk — both want the machine, and a
+   control that fails under load has told you nothing.
 3. **The separated cold read.** Run `node tools/qa/extract-transcript.js`, then
    hand a FRESH context (a subagent that has seen nothing of this build) ONLY
    `tools/qa/out/transcript/_teacher.md`, `_v4.md` and
