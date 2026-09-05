@@ -182,6 +182,23 @@ async function settle(page, tries) {
   }
 }
 
+/* WAIT FOR THE APP TO FINISH MARKING. A verdict is drawn one line at a time,
+   with a beat between each, so pressing Check and reading the state straight
+   after reads the state before the marking landed. This waits for the screen
+   to leave the states it was in, and gives up rather than hanging. */
+async function leaves(page, surface, qid, from, ms) {
+  const until = Date.now() + (ms || 4000);
+  while (Date.now() < until) {
+    let st = null;
+    try { st = await page.evaluate((s, args) => eval(s)(args), STATE_OF, [surface, qid || null]); }
+    catch (e) { return null; }
+    const now = st && st.ok ? st.state : null;
+    if (now && from.indexOf(now) < 0) return now;
+    await new Promise(r => setTimeout(r, 80));
+  }
+  return null;
+}
+
 /* ACTIONS on the shell, named as a teacher or a pupil would name them */
 const ACTIONS = {
   openBook: `((bookId) => {
@@ -242,4 +259,4 @@ const ACTIONS = {
   backToShelf: `(() => { const b = document.getElementById('act-back'); if (b) { b.click(); return true; } return false; })`
 };
 
-module.exports = { DETECT_KIND, QUESTION_ID, QUESTIONS_ON_SCREEN, ANSWER, CHECK, ATTEMPT_COUNT, STATE_OF, HELP_STRIP, ACTIONS, settle };
+module.exports = { DETECT_KIND, QUESTION_ID, QUESTIONS_ON_SCREEN, ANSWER, CHECK, ATTEMPT_COUNT, STATE_OF, HELP_STRIP, ACTIONS, settle, leaves };
