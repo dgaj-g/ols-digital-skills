@@ -68,6 +68,24 @@ The front door has nothing to relay to until this exists.
 6. Put the manifest back to `USER_DEPLOYING` and save, so the next DATA cut
    starts from the state step 1.3 expects.
 
+## WHAT A PUPIL SEES THE FIRST TIME, and the one thing that can stop it
+
+The front door runs as the USER, so the first time a pupil opens it Google asks
+her to allow the app. **One project means one manifest**, so the consent screen
+lists every scope the project declares — including the bound spreadsheet, which
+only the DATA side ever touches. That is not avoidable without splitting the
+project in two, and the two-deployment design is what buys her real name.
+
+The scopes she will be asked for: her email address, her basic profile (this is
+the one that carries her full first name), the ability for the script to call
+out to the web (the relay), and the bound spreadsheet.
+
+**If she gets a 403 instead of a consent screen**, C2k has not pre-trusted the
+app for pupil accounts — the same wall the auto-name companion hit. That is a
+C2k-side allow-list, not a code change: nothing in this repo can fix it, and
+the app cannot read her name until it is lifted. Smoke-test with a REAL pupil
+account before telling a class it is ready.
+
 ## 3 · Afterwards
 
 1. Retitle the Apps Script project and the Sheet to **OLS — MathShelf**.
