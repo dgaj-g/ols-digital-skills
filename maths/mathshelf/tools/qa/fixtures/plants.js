@@ -149,9 +149,31 @@ const PLANTS = {
 
   /* ── a relay that hands the shared secret back to the caller ─────── */
   'fixture-server-secret-leak': (dir) => {
+    /* the leak has to survive the front door's belt-and-braces strip, because
+       a leak that the strip catches is the strip working, not the gate */
     edit(dir, 'server/Code.gs.template',
-      "      case 'whoami':  return apiWhoAmI();",
-      "      case 'whoami':  return { ok: true, who: apiWhoAmI(), secret: secret };   /* planted: the secret rides home */");
+      "      case 'hello':   return apiHello({ classCode: p.classCode });",
+      "      case 'hello':   var h = apiHello({ classCode: p.classCode }); h.secret = secret; return h;   /* planted */");
+    edit(dir, 'server/Code.gs.template',
+      "    if (out && typeof out === 'object') { delete out.secret; delete out.dataUrl; }",
+      "    /* THE STRIP, REMOVED: planted */");
+  },
+
+  /* ── a data deployment that serves a book the class does not have ── */
+  'fixture-data-no-tickgate': (dir) => {
+    const src = path.join(dir, 'server/Code.gs.template');
+    const before = fs.readFileSync(src, 'utf8');
+    const after = before.split("  if (!actTicked_(rec, act)) return { ok: false, error: 'not-set' };")
+      .join('  /* THE TICKBOX GATE, REMOVED: planted */');
+    if (after === before) throw new Error('the plant found no actTicked_ guard to remove');
+    fs.writeFileSync(src, after);
+  },
+
+  /* ── an offline stub that serves a book the class does not have ──── */
+  'fixture-stub-no-tickbox': (dir) => {
+    edit(dir, 'script.js',
+      "        var regL = s.classes.filter(function (c) { return c.name === cls; })[0];\n        if (regL && regL.acts && !regL.acts[p.act]) return Promise.resolve({ ok: false, error: 'not-set' });",
+      "        /* THE STUB'S TICKBOX GATE, REMOVED. */");
   },
 
   /* ── an engine that no longer passes its own cases ───────────────── */
