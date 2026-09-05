@@ -8343,7 +8343,7 @@ window.OLS_TRANSPORT = {
   var MARK_CLASSES = ('.mark-tick,.mark-cross,.wl-mark,.mk-tally,.mk-comment,.staff-tally,' +
     '.glyph-ok,.glyph-err,.glyph-amber,.glyph-live,.glyph-un,.wall-legend,.cp-legend,' +
     '.g-ok,.g-am,.g-err,.g-now,.g-un,.p-ok,.p-am,.p-err,.p-now,.p-un,.propbar,.qdots,.mini,' +
-    '.tally-hand,.box-draw,.err-box,.jq-tally,.jq-feedback,.mk-line,.pile-line,.pile-count,.slip-count,.wl-sub,.col-dx-slip,.chip-ticks,.attempt-note,.amber-note,.mark-tick,.mk-amber,.flash-ok');
+    '.tally-hand,.err-box,.jq-tally,.jq-feedback,.mk-line,.pile-line,.pile-count,.slip-count,.wl-sub,.col-dx-slip,.chip-ticks,.attempt-note,.amber-note,.mark-tick,.mk-amber,.flash-ok');
   function stampMarks(root) {
     try {
       (root || document).querySelectorAll(MARK_CLASSES).forEach(function (el) {
@@ -8351,6 +8351,21 @@ window.OLS_TRANSPORT = {
       });
     } catch (e) {}
   }
+  /* THE CELEBRATION IS NOT A MARK. The gold box drawn round a right final
+     answer, and the gold star on a finished book, are the two places gold is
+     allowed to mean something \u2014 and what it means is "well done", not a
+     verdict. They declare themselves so the colour law can tell them from a
+     mark wearing the wrong colour. */
+  var CELEBRATE_CLASSES = '.box-draw,.book-star,.tally-star,.celebrate';
+  function stampCelebrations(root) {
+    try {
+      (root || document).querySelectorAll(CELEBRATE_CLASSES).forEach(function (el) {
+        if (!el.hasAttribute('data-celebrate')) el.setAttribute('data-celebrate', '');
+      });
+    } catch (e) {}
+  }
+  var stampMarksOnly = stampMarks;
+  stampMarks = function (root) { stampMarksOnly(root); stampCelebrations(root); };
   GJ.stampMarks = stampMarks;
   if (typeof MutationObserver === 'function') {
     /* CLASS CHANGES COUNT TOO. A mark is often appended plain and given its
