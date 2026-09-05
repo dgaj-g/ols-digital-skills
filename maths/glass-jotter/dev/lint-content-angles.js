@@ -20,6 +20,11 @@ require('../anglecore.js');
 require('../mathcore.js');
 require('../content-angles.js');
 
+/* WHAT THIS LINT RE-DERIVES, declared so the coverage machine can prove that
+   every authored question of every kind is re-derived by something (L5/DFM 206).
+   A kind added to the pack and not added here fails coverage by name. */
+const KINDS = ['classify', 'protractor', 'reasoned'];
+
 var pack = global.GJ_CONTENT.angles;
 var A = global.GJ_ANGLES;
 var problems = [];

@@ -14,6 +14,11 @@ require('../content-algebra.js');
 var A = global.GJ_ANGLES;
 var PACK = global.GJ_CONTENT;
 
+/* WHAT THIS VALIDATOR PROVES A MODEL AND A CORRUPTED ATTEMPT FOR, declared so
+   the coverage machine can prove every question of every kind has its (A)/(B)
+   pair (L5/DFM 206). A kind added to a pack and not added here fails coverage. */
+const KINDS = ['classify', 'protractor', 'reasoned', 'subst', 'simplify', 'expand', 'solve', 'form'];
+
 var rows = [], fails = 0;
 function rat(x) { return x && x.d ? (x.d === 1 ? x.n : x.n + '/' + x.d) : x; }
 
