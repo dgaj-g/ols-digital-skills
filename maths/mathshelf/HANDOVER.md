@@ -1,76 +1,112 @@
 # MathShelf — session handover
 
-**What it is:** an extensible, login-gated Maths M2 revision platform for OLS (J3 / CCEA M2),
-built from inbox issues #24 (Angles) + #25 (Algebra). Pupils solve **line by line** in a
-digital exercise book; the engine marks like a CCEA examiner; teachers get a live markbook
-(Working Wall / Jotter Page drill-down with override / Marking Pile / Same-Question Sweep).
-Read `DESIGN.md` and `INTERFACES.md` for the full design + module contracts. Add a new topic
-via `ADDING_A_TOPIC.md` (manifest-driven).
+**What it is:** the OLS maths platform. Pupils open a shelf of books and work
+through exercises line by line; the engines mark like a CCEA examiner; teachers
+get a live markbook that answers their questions in the order they ask them.
+Built from inbox issues #24 (Angles) and #25 (Algebra), on branch
+`draft/issue-24-25-maths-m2-revision`, PR #22.
 
-## Status (16 Jun 2026) — login-gated POLISH done (Option A); still NOT deployed
-Damien chose **Option A** (polish only — keep the type-once name; NO architecture change, so
-the Sheet + Working Wall are preserved). Done + committed: `cf0f5cf` (guard spinner, gold
-busyCards on teacher flows, two-tap confirm) and `21c6d9d` (pupil **openActivity** now opens at
-once with the gold "Opening your book…" wait-card + an `.act-load-error` fallback; **addClass**
-shows the gold busyCard). `server/Index.html` rebuilt; `Code.gs` unchanged. Verified offline
-end-to-end (cover guard, shelf, open-activity card, teacher unlock/add-class busyCards, delete
-confirm; no console errors). NEXT: first deployment (`server/DEPLOY.md`) + PR #22 review/merge.
+Read `DESIGN.md` and `INTERFACES.md` for the module contracts, `ADDING_A_TOPIC.md`
+to add a book, `server/DEPLOY.md` before any deploy, and `PROGRESS.md` for where
+the current build got to.
 
-## Status (14 Jun 2026) — COMPLETE, on draft PR #22, NOT merged, NOT deployed
-Branch `draft/issue-24-25-maths-m2-revision`, repo `dgaj-g/ols-digital-skills`. Everything is
-committed + pushed. Latest work, in order:
-1. Full platform: shell (login → class shelf → activities), Path B server + assembler,
-   two activities (Angles, Algebra), 12 animated method movies, teacher markbook.
-2. Angles **draggable protractor** measure questions (Ex.1 m1/m2): drag onto vertex, rotate
-   with a knob at EITHER end, read the dual scale, type the size. Genuine fail state;
-   "read the wrong scale" (180−v) caught.
-3. Protractor **reading aid**: when seated on the vertex, the numbers each arm crosses pop
-   into focus (both scales, navy + halo) with a gold marker at the exact crossing — aids
-   reading without revealing the answer (pops both scales, only when correctly placed).
-4. **Phone optimisation** of the angle DIAGRAMS (were unreadable on mobile): `renderDiagram`
-   in `player.js` now auto-fits the viewBox to the figure (getBBox), counter-scales labels
-   to a constant ~13px on-screen size (`data-basesize` + ResizeObserver), widens arc tap
-   targets (42u hit band), `svg width:100%`; phone CSS lets `.jq-diagram`/`.prot-wrap`
-   reclaim the margin gutter. Algebra verified fine on phone (text/HTML UI, already
-   responsive — no diagram fixes needed there).
+---
 
-## ⚠️ Branch / worktree gotcha (READ THIS to resume)
-The main repo working tree `~/Sites/ols-digital-skills` is being shared by other concurrent
-build sessions and may be on a DIFFERENT branch (e.g. a chemistry build) with their
-uncommitted work — DO NOT clobber it. This work was done in an **isolated git worktree at
-`/tmp/gj-wt`** checked out to the maths branch. To resume:
-- If `/tmp/gj-wt` still exists: `cd /tmp/gj-wt/maths/mathshelf` and work there. Preview is
-  the `gj-wt` launch config on **port 8099** (`http://localhost:8099/maths/mathshelf/`).
-- If `/tmp/gj-wt` is gone (e.g. after reboot): recreate it —
-  `git -C ~/Sites/ols-digital-skills worktree add /tmp/gj-wt draft/issue-24-25-maths-m2-revision`
-  then add a launch.json config serving `/tmp/gj-wt` on a free port, or
-- If no other session is using the main tree (check `git -C ~/Sites/ols-digital-skills status`):
-  just `git checkout draft/issue-24-25-maths-m2-revision` there and use port 8098.
+## The gate system (read this before changing anything)
 
-## Verify (all currently pass)
+Nothing on this platform is done until the gate that guards it is green **and**
+its control has been seen to fire. That is not a style preference; it is the
+answer to a specific problem, in Damien's words on 5 September 2026: *"so that
+I will have less or no work to do to make repeated changes, which is something
+I'm finding far too time-consuming."*
+
 ```
-cd <worktree-or-main>/maths/mathshelf
-node mathcore.js && node -e "require('./mathcore.js').selfTest()"   # 73 cases
-node dev/test-anglecore.js          # ALL GREEN, 72 cases
-node dev/lint-content-angles.js     # PASS (geometry re-measured, every edge re-proven)
-node dev/lint-content-algebra.js    # PASS
-node dev/validate-all.js            # 48/48 questions sound (correct→full marks, wrong→caught)
-node server/build-pathb.js          # regenerate server/Code.gs + Index.html (commit these)
+node tools/qa/run.js              # the fast tier: every commit runs this
+node tools/qa/run.js --control    # every gate is made to say no, and seen to
+node tools/qa/run.js --full       # the walkers, three widths, both tiers
+node tools/qa/run.js --book angles   # scope the WALKERS; nothing else narrows
 ```
-Browser QA: preview → mount every movie + question, watch console (zero errors); check 375 /
-768 / 1280px. Diagram labels must stay ~13px and tappable on phone.
 
-## Outstanding / next steps (none blocking)
-- **Review**: Damien reviews on the local preview. Nothing required to "finish" — it's done.
-- **Deploy (when Damien says go)**: login-gated tier is NOT live. Follow `server/DEPLOY.md`
-  (create Sheet, paste `server/Code.gs`, name project first, deploy execute-as-Me /
-  within-domain, set staffPasscode, record `/exec` in `docs/deployed-apps.md`). One OAuth
-  consent click from Damien. Then `/publish 24` (Path-B variant) drafts the teacher email.
-- **Cleanup when done**: `git worktree remove /tmp/gj-wt` (unlocks the branch) and remove the
-  `gj-wt` config from `.claude/launch.json`.
-- Offline demo: staff passcode `demo` seeds a fake class for demoing the markbook.
+`tools/qa/install-hooks.js` puts the fast tier on `pre-commit`. `--no-verify` is
+not used here.
 
-## Flags carried from the build (for Mary's spot-check)
-Brackets-both-sides + past-paper-style questions are authored (no source supplied);
-"Interior angles (U shape)" uses the teacher's WALT wording. All answers independently
-re-derived correct.
+- **`tools/qa/MATHS_FEEDBACK_MASTER.md`** — every ruling he has made, numbered,
+  dated, in his words. Read it before writing a sentence a pupil will see.
+- **`tools/qa/MATHS_GATES_AUDIT.md`** — where each of those rules is HELD, plus
+  the floors, the pinned refs and the approvals. `qa-audit.js` proves every rule
+  has exactly one home.
+- **`tools/qa/COLD_READ_CHECKLIST.md`** — what the separated judge is handed.
+- **`tools/qa/MATHS_COVERAGE_DEBT.md`** — the only place a coverage cell may be
+  owed, and the freeze that stops you editing a file whose coverage you owe.
+
+The two things most likely to catch you out:
+1. **Coverage is DERIVED.** Adding a book, a kind, a surface or a state
+   automatically creates cells; `qa-coverage` fails naming any cell nothing
+   closes. There is no list to update — that is the point.
+2. **Every screen declares itself** (`data-surface` / `data-state`), and
+   `GJ.app.surfaces` in `script.js` is the app's own statement of what it can
+   render. Both directions are checked.
+
+## Verify
+
+```
+cd maths/mathshelf
+node -e "require('./mathcore.js').selfTest()"   # 73 cases
+node dev/test-anglecore.js                       # 72, ALL GREEN
+node dev/lint-content-angles.js                  # PASS
+node dev/lint-content-algebra.js                 # PASS
+node dev/validate-all.js                         # 48 of 48 sound
+node dev/test-server-scoping.js                  # 20 passed
+node server/build-pathb.js                       # regenerate the deploy pair
+```
+
+Preview (never the preview tool — a dev server goes up with nohup):
+```
+nohup python3 /tmp/gj-serve.py /tmp/gj-wt 8099 &
+http://localhost:8099/maths/mathshelf/index.html?class=demo&nointro
+```
+Staff passcode in the preview is `demo`. Clear localStorage first so the demo
+class re-seeds, and always use `?nointro`.
+
+## What is live
+
+_(filled in by the deploy; `qa-repo-prod` post-deploy requires the commit and
+both /exec URLs to be named here)_
+
+| | /exec | version | executeAs |
+|---|---|---|---|
+| FRONT DOOR (everybody) | — | — | USER_ACCESSING |
+| DATA (nobody; the relay only) | — | — | USER_DEPLOYING |
+
+Apps Script project `1otJG5454zR6a0WKZW23czKnehxtQ3Oj6CrrRWYys1H4bPxZOoaZ3qPmC`,
+Sheet `164nmiqGLLr2SktTuPnZy70KQZL9Us4CItMW5VnbCyMY`, both titled
+"OLS — MathShelf". Staff passcode `0lsMaths26*`.
+
+## Worktree gotcha (read this to resume)
+
+The main working tree `~/Sites/ols-digital-skills` is shared by other concurrent
+sessions and may hold their uncommitted work. **Do not clobber it.** This work is
+done in an isolated worktree:
+
+```
+git -C ~/Sites/ols-digital-skills worktree add /tmp/gj-wt draft/issue-24-25-maths-m2-revision
+cd /tmp/gj-wt/maths/mathshelf
+node tools/qa/install-hooks.js
+```
+
+The KS3 DT platform (`ks3-dt/`) is **read-only** in every respect. Every module
+copied out of it carries a header line naming the source path, commit and date,
+and no gate here requires across trees: the maths gates run when that tree is
+absent.
+
+## The three books
+
+| book | audience | status |
+|---|---|---|
+| Angles | KS3 · M2 | approved, live since 28 Jun 2026, content verbatim MEP |
+| Algebra | KS3 · M2 | approved, live since 28 Jun 2026, content verbatim MEP |
+| Handling Data (Colette's) | GCSE · M3 & M4 | designed, not built — `MATHS_STATS_OPUS_PROMPT_GATED.txt` |
+
+Angles and Algebra are **approved**: their content is reported on, never
+re-opened (rule 30). `6 + b = 6 + 7 = 13` is verbatim-correct MEP and must never
+be "fixed".

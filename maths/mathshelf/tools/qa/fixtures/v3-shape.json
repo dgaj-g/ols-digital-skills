@@ -1,0 +1,338 @@
+{
+ "algebra/q1": {
+  "res": "AMBER",
+  "mk": [
+   0,
+   1
+  ]
+ },
+ "algebra/q2": {
+  "res": "AMBER",
+  "mk": [
+   0,
+   1
+  ]
+ },
+ "algebra/q3": {
+  "res": "AMBER",
+  "mk": [
+   0,
+   1
+  ]
+ },
+ "algebra/q4": {
+  "res": "AMBER",
+  "mk": [
+   0,
+   1
+  ]
+ },
+ "algebra/q5": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "algebra/q6": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "algebra/q7": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "algebra/q8": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "algebra/q9": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "algebra/q10": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "algebra/q11": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "algebra/q12": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "algebra/q13": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "algebra/q14": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "algebra/q15": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "algebra/q16": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "algebra/q17": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "algebra/q18": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "algebra/q19": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "algebra/q20": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "algebra/q21": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "algebra/q22": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "algebra/q23": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "algebra/q24": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "angles/c1": {
+  "res": "OK",
+  "mk": [
+   0,
+   1
+  ]
+ },
+ "angles/c2": {
+  "res": "OK",
+  "mk": [
+   0,
+   1
+  ]
+ },
+ "angles/c3": {
+  "res": "OK",
+  "mk": [
+   0,
+   1
+  ]
+ },
+ "angles/c4": {
+  "res": "OK",
+  "mk": [
+   0,
+   1
+  ]
+ },
+ "angles/m1": {
+  "res": "OK",
+  "mk": [
+   0,
+   1
+  ]
+ },
+ "angles/m2": {
+  "res": "OK",
+  "mk": [
+   0,
+   1
+  ]
+ },
+ "angles/q5": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "angles/q6": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "angles/q7": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "angles/q8": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "angles/q9": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "angles/q10": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "angles/q11": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "angles/q12": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "angles/q13": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "angles/q14": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "angles/q15": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "angles/q16": {
+  "res": "OK",
+  "mk": [
+   1,
+   1
+  ]
+ },
+ "angles/q17": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "angles/q18": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "angles/q19": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "angles/q20": {
+  "res": "OK",
+  "mk": [
+   3,
+   1
+  ]
+ },
+ "angles/q21": {
+  "res": "OK",
+  "mk": [
+   2,
+   1
+  ]
+ },
+ "angles/q22": {
+  "res": "OK",
+  "mk": [
+   3,
+   1
+  ]
+ }
+}

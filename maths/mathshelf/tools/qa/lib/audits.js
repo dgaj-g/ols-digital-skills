@@ -144,7 +144,11 @@ const CONSEQUENCE = `(() => {
     }
     /* every option in a group looks the same: colour never hints */
     root.querySelectorAll('[data-tray], .jq-options, .classify-row').forEach((tray) => {
-      const items = [...tray.children].filter(c => c.getBoundingClientRect().width > 2);
+      /* LIKE WITH LIKE. An option group's OPTIONS must look the same as each
+         other; the punctuation and labels sitting among them are not options
+         and were never meant to match. */
+      const all = [...tray.children].filter(c => c.getBoundingClientRect().width > 2);
+      const items = all.filter(c => c.matches('[data-tray-item], .tile, .chip, button, [role=button], label'));
       const colours = new Set(items.map(c => getComputedStyle(c).backgroundColor + '|' + getComputedStyle(c).borderTopColor));
       if (items.length > 1 && colours.size > 1) {
         out.push({ law: 'options-do-not-look-alike', qid: root.getAttribute('data-qid'), n: colours.size });
@@ -174,6 +178,20 @@ async function run(page, opts) {
       verdicts[name] = list.length ? 'FAIL' : 'PASS';
       if (list.length) findings[name] = list.slice(0, 6);
     } catch (e) {
+      /* A DETACHED FRAME IS NOT A FAULT IN THE PAGE. It means the walker asked
+         while the page was navigating under it. Asked once more, on the page
+         that is actually there, it is a real answer either way — and a gate
+         that reported the race as a finding would be reporting its own timing. */
+      if (/detached Frame|Execution context was destroyed/i.test(String(e && e.message))) {
+        try {
+          await new Promise(r => setTimeout(r, 300));
+          const r2 = await page.evaluate(s2 => eval(s2)(), src);
+          const list2 = Array.isArray(r2) ? r2 : (r2 && r2.findings) || [];
+          verdicts[name] = list2.length ? 'FAIL' : 'PASS';
+          if (list2.length) findings[name] = list2.slice(0, 6);
+          return;
+        } catch (e2) { /* fall through to the crash below */ }
+      }
       verdicts[name] = 'CRASH';
       findings[name] = [{ error: String(e && e.message || e) }];
     }

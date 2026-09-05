@@ -1079,3 +1079,12 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .jotter-q.worth-look::after { content: 'worth a look'; position: absolute; top: 0; right: 0;
   font-family: var(--f-stationery); font-size: 10px; color: #8A6A12; background: #FBF4E2;
   border: 1px solid var(--foil-lo); border-top: none; border-right: none; border-bottom-left-radius: 9px; padding: 3px 9px; }
+
+
+/* the step dots belong INSIDE the film, and at 375px they were two pixels past
+   its edge — small, and exactly the kind of thing nobody sees until a gate
+   measures it */
+@media (max-width: 520px) {
+  .movie-dots { flex-wrap: wrap; max-width: 100%; }
+  .movie-controls { flex-wrap: wrap; row-gap: 6px; }
+}
