@@ -46,9 +46,26 @@ const rows = [];
 let failures = 0;
 A.ensureOut('control');
 
+/* THE SANDBOX KEEPS THE REPO'S SHAPE. A flat copy of the app folder is not the
+   tree the app is built from: the assembler reads two of its inputs from the
+   REPO ROOT (style.css and assets/intro-loader.js), so in a flat sandbox a
+   fresh build could never run and the control that asks whether the committed
+   pair is stale could never fire. The sandbox therefore puts the app back at
+   maths/mathshelf and carries those two files - and only those two, because
+   assets/ is thirteen megabytes of film and none of it is read here. */
 function sandbox() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'mathshelf-control-'));
+  const base = fs.mkdtempSync(path.join(os.tmpdir(), 'mathshelf-control-'));
+  const dir = path.join(base, 'maths', 'mathshelf');
+  fs.mkdirSync(dir, { recursive: true });
   execFileSync('cp', ['-R', A.APP + '/', dir + '/']);
+  if (REPO) {
+    [['style.css', 'style.css'], ['assets/intro-loader.js', 'assets/intro-loader.js']].forEach(([rel, to]) => {
+      const src = path.join(REPO, rel);
+      if (!fs.existsSync(src)) return;
+      fs.mkdirSync(path.dirname(path.join(base, to)), { recursive: true });
+      execFileSync('cp', [src, path.join(base, to)]);
+    });
+  }
   /* the sandbox never inherits a previous run's evidence */
   try { fs.rmSync(path.join(dir, 'tools/qa/out'), { recursive: true, force: true }); } catch (e) {}
   return dir;
