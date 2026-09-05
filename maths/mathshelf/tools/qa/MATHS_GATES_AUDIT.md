@@ -128,6 +128,21 @@ think somebody else is holding. Nothing is filed here that is filed there._
 |---|---|
 _(none: every settled call this platform has is either harnessed or a standing order.)_
 
+## CONTROLS NOT YET PROVED — named, not quietly dropped
+
+Every gate below PASSES on the shipped tree and has other controls that fire.
+What is not yet proved is that these particular controls can make them say no:
+the planted fault is not reaching the page the gate reads, and the cause is in
+the control plumbing rather than in the gate. Recorded here rather than
+weakened, hidden, or marked green.
+
+| gate | control | what is known |
+|---|---|---|
+| qa-numpad | free-text-box | the `fixture-renderers` plant demonstrably writes its script and its tag into a sandbox, and a hand-served sandbox shows the planted free-text box on the page; through `control.js` the same plant produces no console error and no box, so the fixture script is not executing in that run |
+| qa-click-safety | single-press-lift | same plant, same symptom |
+| qa-waits | control-with-no-busy-state, outbox-dropped-on-reload | not yet investigated |
+| qa-fonts | face-removed | the plant removes a face file; with the gate now asking the face to LOAD rather than whether it was painted, the control needs re-aiming at that question |
+
 ## F. GAPS — each with an owner and a phase
 
 | rule | gap | owner / phase |
