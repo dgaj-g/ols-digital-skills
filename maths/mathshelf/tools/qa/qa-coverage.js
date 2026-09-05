@@ -206,8 +206,33 @@ A.movies().forEach(m => {
 
 /* --- the surface × state × width families ------------------------------- */
 const RIDERS = ['geometry', 'readability', 'colour', 'consequence', 'click-safety', 'empty', 'nested', 'strings'];
+/* THE REGISTRY IS READ FROM THE SOURCE, NOT FROM A SIDECAR. It used to be
+   loaded from out/surfaces.json, which qa-surfaces writes as the first gate of
+   a full run - so in a run where qa-surfaces had not gone first (a control
+   sandbox, or --only) the whole surface x state x width half of this matrix
+   silently disappeared and the totals still printed GREEN. A coverage matrix
+   that shrinks when it is run alone is a coverage matrix that lies, so the
+   registry is parsed here from GJ.app.surfaces the same way qa-surfaces parses
+   it; the sidecar is kept only to say when the two have drifted apart. */
 let REG = {};
-if (A.exists(A.out('surfaces.json'))) REG = JSON.parse(A.read(A.out('surfaces.json')));
+{
+  const entries = objectEntries(A.app('script.js'), /GJ\.app\.surfaces\s*=\s*/);
+  if (entries) {
+    Object.keys(entries).forEach(k => {
+      const states = []; const re = /'([^']+)'/g; let m;
+      while ((m = re.exec(entries[k]))) states.push(m[1]);
+      REG[k] = states;
+    });
+  } else {
+    g.fail('app', 'coverage', 'script.js declares no GJ.app.surfaces registry, so no surface can be counted as covered');
+  }
+  const side = A.out('surfaces.json');
+  if (A.exists(side)) {
+    const j = JSON.parse(A.read(side));
+    const drift = Object.keys(REG).filter(k => !j[k]).concat(Object.keys(j).filter(k => !REG[k]));
+    if (drift.length) g.note('out/surfaces.json disagrees with the source registry on: ' + drift.join(', ') + ' - the source is what is counted');
+  }
+}
 Object.keys(REG).forEach(surface => {
   (REG[surface] || []).forEach(state => {
     WIDTHS.forEach(w => {

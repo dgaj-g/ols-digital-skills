@@ -35,7 +35,7 @@ const CONTROLS = [
   { id: 'root-without-attribute', kind: 'fixture', plant: 'fixture-surface-root',
     mustFail: /no data-surface/ },
   { id: 'registered-never-rendered', kind: 'fixture', plant: 'fixture-surface-ghost',
-    mustFail: /registered .* but nothing renders it/ },
+    mustFail: /registers .* but nothing renders it/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 

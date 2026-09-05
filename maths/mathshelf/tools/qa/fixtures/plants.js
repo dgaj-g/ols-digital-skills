@@ -43,7 +43,7 @@ const PLANTS = {
 
   /* ── a book nobody walks, and a kind nobody lints ────────────────── */
   'fixture-book': (dir) => {
-    write(dir, 'content-fixture.js', FIXTURE_BOOK);
+    write(dir, 'tools/qa/fixtures/content-fixture.js', FIXTURE_BOOK);
     /* the fixture pack is loaded ONLY when MS_FIXTURE_BOOK=1, and it is never in
        index.html, never in ACTIVITIES and never in the assembler's inputs */
     return { env: { MS_FIXTURE_BOOK: '1' } };
@@ -56,7 +56,13 @@ const PLANTS = {
       '<section id="scr-shelf" class="gj-screen scr-shelf" hidden>');
   },
   'fixture-surface-ghost': (dir) => {
-    edit(dir, 'script.js', "    'staff-error': ['shown']", "    'staff-error': ['shown'],\n    'fixture-screen': ['never-rendered']");
+    edit(dir, 'script.js', "    slips: ['ranked', 'starter-board'],",
+      "    slips: ['ranked', 'starter-board'],\n    'fixture-screen': ['never-rendered'],");
+    /* two different laws are broken by one ghost: the registry OVER-CLAIMS (a
+       name with no screen behind it) and the coverage matrix gains a row no
+       walk can ever close. The second is only a fault at the tier that
+       requires the walk, so the plant runs the gate there. */
+    return { env: { MS_TIER_RUN: 'full' } };
   },
 
   /* ── a gate that cannot say what it covers ───────────────────────── */
@@ -260,6 +266,11 @@ const PLANTS = {
       walker: 'sit-pupil', scope: 'angles', width: 1280, tier: 'preview',
       contentHash: 'staleaaaaaaa', when: '2026-01-01T00:00:00Z', states: [], consoleErrors: 0
     }, null, 1));
+    /* staleness is only a FAULT at the tier that requires a fresh walk: at
+       --fast a sidecar older than the content is reported, not failed, and the
+       gate says so in its own exemption. So the control runs the gate at the
+       tier the rule lives at, which is the only tier the rule can be tested at */
+    return { env: { MS_TIER_RUN: 'full' } };
   },
 
   /* ── a deploy log that says the wrong thing about the manifest ────── */
@@ -290,9 +301,10 @@ function plantRef(dir, repoRoot, ref, rel) {
 
 /* ------------------------------------------------------------- the plants */
 const FIXTURE_BOOK = `/* content-fixture.js — THE BOOK NOBODY WALKS.
-   Never in index.html, never in ACTIVITIES, never in the assembler's inputs:
-   qa-build fails if a fixture file reaches the artefact, and only a control
-   ever loads it. Every item below is a named fault a gate must condemn. */
+   Never in index.html, never in ACTIVITIES, never in the assembler's inputs.
+   It lives in tools/qa/fixtures/ and is loaded ONLY when a control sets
+   MS_FIXTURE_BOOK=1, so it can never reach a build. Every item below is a
+   named fault a gate must condemn, and the comment beside it says which. */
 (function () {
   var C = (window.GJ_CONTENT = window.GJ_CONTENT || {});
   C.fixture = {
@@ -300,19 +312,26 @@ const FIXTURE_BOOK = `/* content-fixture.js — THE BOOK NOBODY WALKS.
     title: 'Fixture - never shipped',
     engine: 'stats',
     cover: { accent: 'moss', motif: 'curve' },
+    /* no authoredNarration: the pack narrates a method and declares nothing */
     sections: [{
       id: 's1',
-      title: 'Six questions',                    /* numeral-tie: there are two */
-      walt: 'A fixture exercise, never shipped.',
+      title: 'Six questions',                    /* numeral-tie: there are three */
+      walt: '... and then read the median off the curve.',   /* tail-verbatim */
       movie: { title: 'Fixture film', steps: [{ say: 'A fixture caption.' }] },
+      /* no src on the movie, and none on any question below */
       questions: [
         { id: 'fx1', kind: 'fixture', marks: [1, 1],
-          prompt: 'Tap the values in order.',   /* a bare gesture, and a kind nobody lints */
+          prompt: 'Tap the values in order.',    /* a bare gesture, and a kind nobody lints */
           answer: { val: { n: 1, d: 1 } },
-          dx: { '1': 'DX_NOT_REAL' } },
-        { id: 'fx2', kind: 'fixture', marks: [9, 9],
-          prompt: 'Plot at the upper class boundaries, then read off the median from the curve using the rule which is the thing that you slide up the axis until it meets the line you drew.',
-          answer: { val: { n: 2, d: 1 } } }
+          dx: { '1': 'DX_NOT_REAL' } },          /* a code that is not in DX_NAMES */
+        { id: 'fx2', kind: 'fixture', marks: [9, 9],     /* marks out of range */
+          prompt: 'Solve 3x + 12 - 5 = 7 and then work out 3 x 4.',
+          /* an ASCII hyphen doing a minus sign, and a letter x doing multiplication */
+          answer: { val: { n: 2, d: 1 } } },
+        { id: 'fx3', kind: 'fixture', marks: [4, 5],     /* marks out of range, and it takes the book over its period */
+          prompt: 'Draw the line and then read the median from the curve and then read the median from the curve.',
+          /* splice duplication: the same six words twice inside one sentence */
+          answer: { val: { n: 3, d: 1 } } }
       ]
     }]
   };

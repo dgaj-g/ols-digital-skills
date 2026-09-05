@@ -3,8 +3,8 @@
  "scope": "algebra",
  "width": 768,
  "tier": "preview",
- "contentHash": "90fb7de5c142",
- "when": "2026-09-05T18:02:28.667Z",
+ "contentHash": "194fae268de5",
+ "when": "2026-09-05T18:29:48.065Z",
  "states": [
   {
    "surface": "cover",
@@ -73,6 +73,25 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "tray",
+   "width": 768,
+   "qid": "q1",
+   "section": 0,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
    "width": 768,
@@ -206,6 +225,40 @@
    }
   },
   {
+   "surface": "self-eval",
+   "state": "open",
+   "width": 768,
+   "section": 0,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "self-eval",
+   "state": "saved",
+   "width": 768,
+   "section": 0,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
    "surface": "book-contents",
    "state": "mid-book",
    "width": 768,
@@ -257,8 +310,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "tray",
+   "width": 768,
+   "qid": "q5",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q5",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "tray",
    "width": 768,
    "qid": "q5",
    "section": 1,
@@ -295,8 +386,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "tray",
+   "width": 768,
+   "qid": "q6",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q6",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "tray",
    "width": 768,
    "qid": "q6",
    "section": 1,
@@ -333,8 +462,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "tray",
+   "width": 768,
+   "qid": "q7",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q7",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "tray",
    "width": 768,
    "qid": "q7",
    "section": 1,
@@ -371,8 +538,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "tray",
+   "width": 768,
+   "qid": "q8",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q8",
+   "section": 1,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "tray",
    "width": 768,
    "qid": "q8",
    "section": 1,
@@ -441,8 +646,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "tray",
+   "width": 768,
+   "qid": "q9",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q9",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "tray",
    "width": 768,
    "qid": "q9",
    "section": 2,
@@ -479,8 +722,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "tray",
+   "width": 768,
+   "qid": "q10",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q10",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "tray",
    "width": 768,
    "qid": "q10",
    "section": 2,
@@ -517,8 +798,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "tray",
+   "width": 768,
+   "qid": "q11",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q11",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "tray",
    "width": 768,
    "qid": "q11",
    "section": 2,
@@ -555,8 +874,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "tray",
+   "width": 768,
+   "qid": "q12",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q12",
+   "section": 2,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "tray",
    "width": 768,
    "qid": "q12",
    "section": 2,
@@ -625,8 +982,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q13",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q13",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
    "width": 768,
    "qid": "q13",
    "section": 3,
@@ -663,8 +1058,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q14",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q14",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
    "width": 768,
    "qid": "q14",
    "section": 3,
@@ -701,8 +1134,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q15",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q15",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
    "width": 768,
    "qid": "q15",
    "section": 3,
@@ -739,8 +1210,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q16",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q16",
+   "section": 3,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
    "width": 768,
    "qid": "q16",
    "section": 3,
@@ -809,8 +1318,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q17",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q17",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
    "width": 768,
    "qid": "q17",
    "section": 4,
@@ -847,8 +1394,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q18",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q18",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
    "width": 768,
    "qid": "q18",
    "section": 4,
@@ -885,8 +1470,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q19",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q19",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
    "width": 768,
    "qid": "q19",
    "section": 4,
@@ -923,8 +1546,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q20",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q20",
+   "section": 4,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
    "width": 768,
    "qid": "q20",
    "section": 4,
@@ -993,8 +1654,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q21",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q21",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
    "width": 768,
    "qid": "q21",
    "section": 5,
@@ -1031,8 +1730,46 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q22",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
+   "width": 768,
+   "qid": "q22",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
    "width": 768,
    "qid": "q22",
    "section": 5,
@@ -1069,6 +1806,25 @@
    }
   },
   {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q23",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
    "surface": "question",
    "state": "checked-right",
    "width": 768,
@@ -1080,7 +1836,26 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "FAIL",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q23",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
@@ -1099,7 +1874,26 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "FAIL",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q24",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
@@ -1118,7 +1912,26 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "FAIL",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "click-safety": "PASS"
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "chips",
+   "width": 768,
+   "qid": "q24",
+   "section": 5,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
@@ -1130,6 +1943,22 @@
    "state": "mid-book",
    "width": 768,
    "section": 6,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS"
+   }
+  },
+  {
+   "surface": "book-end",
+   "state": "partial",
+   "width": 768,
+   "book": "algebra",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
