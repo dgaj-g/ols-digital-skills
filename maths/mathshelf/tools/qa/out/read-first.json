@@ -210,6 +210,18 @@
     "locked": false
   },
   {
+    "path": "strings.js > pupil > protractorReadTrueGeneric",
+    "kind": "NEGATION-FRAGMENT",
+    "text": "Not quite — line the centre on the corner and 0 along an arm, then read again.",
+    "locked": false
+  },
+  {
+    "path": "strings.js > pupil > protractorMeasurePlaceholder",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "the size you measure, in degrees",
+    "locked": false
+  },
+  {
     "path": "strings.js > pupil > moveAnnotationGeneric",
     "kind": "FRAGMENT-RUN",
     "text": "What’s your next step?  /  — tag the move (optional)",
@@ -219,6 +231,12 @@
     "path": "strings.js > pupil > moveOperandPlaceholder",
     "kind": "FRAGMENT-RUN",
     "text": "how much?  /  e.g. 15 or 3x",
+    "locked": false
+  },
+  {
+    "path": "strings.js > pupil > angleSizePlaceholder",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "the size, e.g. 65",
     "locked": false
   }
 ]

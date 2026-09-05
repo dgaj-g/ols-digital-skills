@@ -123,6 +123,10 @@ g.exempt(AUD.EXEMPTIONS.concat([
           /* --- attempt one, wrong --- */
           const a1 = await page.evaluate((s, args) => eval(s)(args), W.ANSWER, [qid, true]);
           if (!a1.ok) { g.note('no wrong attempt for ' + qid + ': ' + a1.why); continue; }
+          /* some screens make a wrong answer impossible - every term in one
+             family, so the app does the collecting - and that is a fact about
+             the app, not a failed walk */
+          if (a1.wrongNotPossible) { g.note(qid + ': ' + a1.how); continue; }
           await W.settle(page);
           await page.evaluate((s, id) => eval(s)(id), W.CHECK, qid);
           await W.settle(page);
