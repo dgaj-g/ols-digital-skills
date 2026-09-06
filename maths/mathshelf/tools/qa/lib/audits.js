@@ -201,6 +201,108 @@ function trim(list) {
   return out;
 }
 
+/* ── THE OVERLAP LAW ────────────────────────────────────────────────────────
+   Two pieces of text may not sit on top of one another. There was no rule for
+   this at all until 6 Sept 2026, when he opened the shelf and found "LETTERS &
+   BALANCE" running underneath the KS3 chip on its own book cover (F37): the chip
+   was position:absolute, so it occupied no space, and the series line ran clean
+   through it. Nothing measured geometry BETWEEN elements - qa-surfaces asks
+   whether a thing stays inside its card, never whether it lands on its
+   neighbour.
+
+   WHAT IS DELIBERATELY NOT A COLLISION, because a gate that calls these faults
+   is a gate nobody can keep green:
+     - a parent and its own child (the parent's box contains the child by
+       definition);
+     - anything inside [data-ornament] - decoration is allowed to sit under text
+       and frequently should;
+     - a dialog and the page it covers - covering the page is what a modal is
+       for; the pair is only judged when both are inside the same dialog, or
+       both outside every dialog;
+     - hidden, aria-hidden, and boxes under 3px of overlap in either direction,
+       which is a rounding artefact and not a reader's problem. */
+const OVERLAP = `(() => {
+  const own = (el) => Array.from(el.childNodes).filter(n => n.nodeType === 3)
+    .map(n => n.textContent.trim()).join(' ').trim();
+  const vis = (el) => {
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) < 0.05) return false;
+    /* the preview banner is the HARNESS telling him this is not the school copy;
+       it is not part of the product and is not on the deployed page at all */
+    if (el.closest('[hidden], [aria-hidden="true"], [data-ornament], .gj-preview-banner')) return false;
+    /* THE INSIDE OF A DRAWING IS THE DRAWING'S BUSINESS. A protractor's scale
+       numbers sit on a curve and their boxes touch by a few pixels all the way
+       round; so do the labels on an angle figure. That is a picture being a
+       picture, not two interface elements landing on each other, and every one
+       of the 208 findings this law produced on its first full walk was a
+       protractor. Figures are judged by the geometry audit and the colour law,
+       which know what they are looking at. */
+    if (el.ownerSVGElement || el.closest('svg')) return false;
+    const r = el.getBoundingClientRect();
+    return r.width > 2 && r.height > 2;
+  };
+  const nameOf = (el) => el.tagName.toLowerCase() +
+    (typeof el.className === 'string' && el.className.trim()
+      ? '.' + el.className.trim().split(/\\s+/).slice(0, 2).join('.') : '');
+  const items = [];
+  document.querySelectorAll('body *').forEach((el) => {
+    const t = own(el);
+    if (!t || !/[a-z0-9]/i.test(t)) return;
+    if (!vis(el)) return;
+    const r = el.getBoundingClientRect();
+    /* WHICH LAYER IS THIS ON. A modal, a dialog, or any fixed panel that covers
+       the viewport is a layer of its own: it is MEANT to sit over the page, and
+       comparing what is on it with what is under it condemns every overlay the
+       platform has. The starter board is exactly that - position:fixed, inset:0
+       - and it produced eight collisions with the markbook behind it. */
+    let layer = el.closest('[role="dialog"], [role="alertdialog"], dialog');
+    if (!layer) {
+      let n = el;
+      while (n && n.nodeType === 1) {
+        const cs = getComputedStyle(n);
+        /* A PINNED BAR IS A LAYER TOO. A sticky contents strip or a fixed action
+           bar is MEANT to sit over what scrolls beneath it; comparing the two
+           reports the scroll position, not a fault. Either a full-viewport
+           overlay, or anything pinned. */
+        if (cs.position === 'sticky' || cs.position === 'fixed') { layer = n; break; }
+        if (cs.position === 'absolute') {
+          const nr = n.getBoundingClientRect();
+          if (nr.width >= window.innerWidth * 0.8 && nr.height >= window.innerHeight * 0.8) { layer = n; break; }
+        }
+        n = n.parentElement;
+      }
+    }
+    items.push({ el: el, t: t, r: r, dlg: layer });
+  });
+  const out = [];
+  for (let i = 0; i < items.length; i++) {
+    for (let j = i + 1; j < items.length; j++) {
+      const a = items[i], b = items[j];
+      if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
+      if (a.dlg !== b.dlg) continue;
+      const ox = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left);
+      const oy = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top);
+      if (ox < 3 || oy < 3) continue;
+      /* TWO INLINE NEIGHBOURS IN ONE PARAGRAPH ARE NOT A COLLISION. An inline
+         box is as tall as its line, so two spans on neighbouring lines of the
+         same wrapped sentence overlap by a few pixels of leading every time -
+         and a gate that calls that a fault condemns every sentence with a bold
+         word in it. Inline siblings sharing a parent are judged only if one
+         genuinely sits ON the other: a third of the smaller box, not an edge. */
+      const inlineA = /^inline/.test(getComputedStyle(a.el).display);
+      const inlineB = /^inline/.test(getComputedStyle(b.el).display);
+      const area = ox * oy;
+      const smaller = Math.min(a.r.width * a.r.height, b.r.width * b.r.height) || 1;
+      if (inlineA && inlineB && area / smaller < 0.34) continue;
+      out.push({ collision: true,
+        one: nameOf(a.el), two: nameOf(b.el),
+        by: Math.round(ox) + 'x' + Math.round(oy) + 'px',
+        text: a.t.slice(0, 30) + '  /  ' + b.t.slice(0, 30) });
+    }
+  }
+  return out;
+})`;
+
 async function run(page, opts) {
   opts = opts || {};
   const verdicts = {};
@@ -238,27 +340,147 @@ async function run(page, opts) {
   await q('mute-locks', MUTE_LOCKS);
   await q('consequence', CONSEQUENCE);
   await q('waits', BUSY_CONTRACT);
+  await q('overlap', OVERLAP);
   if (opts.clickSafety) await q('click-safety', placed.QUERY);
+  /* READABILITY IS NOT OPTIONAL, AND THAT IS THE WHOLE POINT (F35).
+     It used to be a separate call "the caller decides how often it is worth
+     taking one" - and no caller ever decided. The module sat in lib/ from 28
+     August, written for exactly the fault it then failed to catch, while three
+     walkers listed `readability` among the cells they covered and none of them
+     ever invoked it. A law you have to remember to run is not a law. It costs
+     one screenshot per state; that is the price of knowing the screen can be
+     read, and it is cheap. */
+  if (opts.readability !== false) {
+    const rd = await readability(page);
+    verdicts.readability = rd.verdict;
+    if (rd.findings && rd.findings.length) findings.readability = rd.findings;
+  }
   return { verdicts, findings };
+}
+
+/* the words a contrast finding is reported in - the ratio it got, the floor it
+   owed, and the colours, because "1.04:1" is the fault and "white on white" is
+   the reason */
+/* the words a collision is reported in */
+function describeOverlap(f) {
+  if (f && f.error) return 'the overlap pass crashed: ' + f.error;
+  return 'two pieces of text sit on top of one another by ' + f.by + ' — ' +
+    f.one + ' and ' + f.two + '  ["' + String(f.text || '') + '"]';
+}
+
+function describeContrast(f) {
+  if (f && f.error) return 'the readability pass crashed: ' + f.error;
+  if (f && f.indistinguishable) {
+    return '"' + String(f.text || f.sel || '').trim().slice(0, 40) +
+      '" cannot be told apart from the surface behind it — the sampler could not separate one glyph pixel from the plate, and neither can a reader';
+  }
+  const got = (f.ratio == null) ? '?' : (Math.round(f.ratio * 100) / 100);
+  const floor = contrast.floorFor(f);
+  const what = (f.text || '').trim().slice(0, 40) || f.sel || 'a piece of text';
+  return '"' + what + '" is ' + got + ':1 against what is actually behind it, and owes ' +
+    floor + ':1' + (f.icon ? ' (a mark, judged at the non-text floor)' : f.large ? ' (large text)' : '') +
+    ' — ' + (f.via ? f.via : 'measured in rendered pixels, not in the stylesheet');
 }
 
 /* the readability audit needs a picture, so it is its own call: the caller
    decides how often it is worth taking one */
 async function readability(page) {
   try {
-    const rects = await page.evaluate((s) => eval(s)([[], [], '[data-surface]']), contrast.COLLECT.toString());
-    if (!rects.length) return { verdict: 'PASS', findings: [] };
+    /* THE ROOT IS THE SURFACE SHE IS LOOKING AT (F35a). This asked for
+       '[data-surface]', and querySelector hands back the FIRST one in the
+       document - #scr-cover, which is `hidden` on every screen but the cover.
+       So the audit collected nothing, and "nothing" went through the filter
+       below as a clean pass. It measured zero elements on every state of every
+       walk and reported PASS on all of them, including a table of white text on
+       a white ground. The root is now the visible surface, and body is the
+       fallback rather than the first hidden div. */
+    const rects = await page.evaluate((s) => {
+      const vis = (e) => {
+        if (!e || e.hidden) return false;
+        const cs = getComputedStyle(e);
+        if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+        const r = e.getBoundingClientRect();
+        return r.width > 8 && r.height > 8;
+      };
+      const on = Array.from(document.querySelectorAll('[data-surface]')).filter(vis);
+      window.__mzRoot = on.length ? on[on.length - 1] : document.body;
+      window.__mzRoot.setAttribute('data-mz-root', '1');
+      return eval(s)([[], [], '[data-mz-root]']);
+    }, contrast.COLLECT.toString());
+    await page.evaluate(() => { const e = document.querySelector('[data-mz-root]'); if (e) e.removeAttribute('data-mz-root'); });
+    /* A MEASUREMENT OF NOTHING IS NOT A PASS. Returning PASS here is what let
+       the audit sleep through every screen it was written for. */
+    if (!rects.length) return { verdict: 'EMPTY', findings: [{ error: 'the readability pass found no text to measure on this state — a pass made of nothing is not a pass' }], measured: 0 };
     const shot = await page.screenshot({ encoding: 'base64' });
     const measured = await page.evaluate(async (args) => {
       const fn = eval('(' + args[0] + ')');
       return await fn(['data:image/png;base64,' + args[1], args[2]]);
     }, [contrast.MEASURE.toString(), shot, rects]);
-    const bad = measured.filter(r => r.ratio != null && r.ratio < contrast.floorFor(r));
-    return { verdict: bad.length ? 'FAIL' : 'PASS', findings: bad.slice(0, 8), measured: measured.length };
+    /* WHAT THE SAMPLER CANNOT SEPARATE IS ASKED AGAIN, IN THE BROWSER'S OWN
+       COLOURS (F35b). The module's exemptions called these "a skip with its
+       reason" - but a skip is silence, and silence is what let white-on-white
+       through. Failing them all outright is the other error: an 11px label on a
+       gradient is hard to sample and perfectly easy to read, and a gate that
+       condemns it is inventing a fault (L6). So a row the pixels could not
+       resolve is measured a second way - computed colour composited through its
+       ancestors, which is exactly the "inherited from four ancestors up" case
+       this whole platform got wrong - and reported as such. Pixels first,
+       because they see gradients and overlays; computed second, because it
+       always has an answer; silence never. */
+    const fallback = await page.evaluate(() => {
+      const parse = (c) => { const m = (c || '').match(/rgba?\(([^)]+)\)/); if (!m) return null;
+        const p = m[1].split(',').map(parseFloat); return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 }; };
+      const over = (f, b) => ({ r: f.r * f.a + b.r * (1 - f.a), g: f.g * f.a + b.g * (1 - f.a), b: f.b * f.a + b.b * (1 - f.a), a: 1 });
+      const lin = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+      const lum = (c) => 0.2126 * lin(c.r) + 0.7152 * lin(c.g) + 0.0722 * lin(c.b);
+      const ratio = (a, b) => { const l1 = lum(a), l2 = lum(b), hi = Math.max(l1, l2), lo = Math.min(l1, l2); return (hi + 0.05) / (lo + 0.05); };
+      /* A GRADIENT IS NOT A COLOUR, AND GUESSING ONE IS HOW A GATE INVENTS A
+         FAULT. Walking ancestors for a background-COLOR skips straight past a
+         book cover painted with linear-gradient() and lands on the page white -
+         which reported white-on-teal as 1:1 and would have condemned every
+         cover on the shelf. If anything between the glyphs and the ground is
+         painted with an image, this measurement has no answer and says so; the
+         pixel pass is the one that can see gradients, and it already did. */
+      const groundOf = (el) => { const st = []; let n = el;
+        while (n && n.nodeType === 1) {
+          const cs = getComputedStyle(n);
+          if (cs.backgroundImage && cs.backgroundImage !== 'none') return null;
+          const c = parse(cs.backgroundColor);
+          if (c && c.a > 0) { st.push(c); if (c.a >= 1) break; } n = n.parentElement; }
+        let base = { r: 255, g: 255, b: 255, a: 1 };
+        for (let i = st.length - 1; i >= 0; i--) base = over(st[i], base);
+        return base; };
+      const out = {};
+      document.querySelectorAll('*').forEach((el) => {
+        const own = Array.from(el.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join(' ').trim();
+        if (!own) return;
+        const r = el.getBoundingClientRect(); if (r.width < 8 || r.height < 6) return;
+        /* ornaments are not text and are judged by the colour law, not here */
+        if (el.closest('[data-ornament]')) return;
+        const cs = getComputedStyle(el);
+        const fg = parse(cs.color); if (!fg) return;
+        const bg = groundOf(el); if (!bg) return;
+        out[Math.round(r.left) + ':' + Math.round(r.top) + ':' + own.slice(0, 24)] =
+          Math.round(ratio(over(fg, bg), bg) * 100) / 100;
+      });
+      return out;
+    });
+    const keyOf = (r) => Math.round(r.x - window.scrollX || r.x) + ':' + Math.round(r.y) + ':' + String(r.text || '').slice(0, 24);
+    const resolved = measured.map((r) => {
+      if (r.ratio != null || !(r.skip === 'text pixels not distinguishable' || r.skip === 'no text pixels found')) return r;
+      const k = Math.round(r.x) + ':' + Math.round(r.y) + ':' + String(r.text || '').slice(0, 24);
+      const cr = fallback[k];
+      if (cr == null) return Object.assign({}, r, { unmeasured: true });
+      return Object.assign({}, r, { ratio: cr, via: 'computed colour, composited through its ancestors' });
+    });
+    const bad = resolved.filter(r => r.ratio != null && r.ratio < contrast.floorFor(r));
+    return { verdict: bad.length ? 'FAIL' : 'PASS', findings: bad.slice(0, 8),
+      measured: resolved.length, byPixels: resolved.filter(r => r.ratio != null && !r.via).length,
+      byComputed: resolved.filter(r => r.via).length, unmeasured: resolved.filter(r => r.unmeasured).length };
   } catch (e) {
     return { verdict: 'CRASH', findings: [{ error: String(e && e.message || e) }] };
   }
 }
 
-module.exports = { run, readability, COLOUR_LAW, MUTE_LOCKS, CONSEQUENCE, BUSY_CONTRACT,
+module.exports = { run, readability, describeContrast, describeOverlap, OVERLAP, COLOUR_LAW, MUTE_LOCKS, CONSEQUENCE, BUSY_CONTRACT,
   EXEMPTIONS: [].concat(empty.EXEMPTIONS || [], stateAudit.EXEMPTIONS || [], placed.EXEMPTIONS || [], contrast.EXEMPTIONS || []) };

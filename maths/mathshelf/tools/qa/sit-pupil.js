@@ -64,6 +64,9 @@ const COVERS = {
 const CONTROLS = [
   { id: 'unreachable-planted-fault', kind: 'fixture', plant: 'fixture-book', mustFail: /never reached/ },
   { id: 'console-error', kind: 'fixture', plant: 'fixture-renderers', mustFail: /console error/ },
+  /* the chip put back in the corner it used to float in, where a long series
+     name runs underneath it — the shelf fault of 6 Sept 2026 */
+  { id: 'text-under-a-floating-chip', kind: 'fixture', plant: 'fixture-overlapping-chip', mustFail: /on top of one another/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -123,7 +126,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
     Object.keys(a.findings).forEach(k => {
       (a.findings[k] || []).forEach(f => {
         g.fail(surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + width, k,
-          describe(f));
+          k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : describe(f));
       });
     });
     return row;

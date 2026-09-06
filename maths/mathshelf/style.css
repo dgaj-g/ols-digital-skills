@@ -35,7 +35,7 @@
   --page-edge: #EFE9DC;
   /* pastoral / positive-UI tones — deliberately NOT the marking three, so a self-rating or a
      "saved" flash can never be misread as a mark (proposal §5a) */
-  --support-rose: #A8507A;    /* "needs a word" — mauve, pushed away from marking red */
+  --support-rose: #8E3E64;    /* "needs a word" — mauve, pushed away from marking red; darkened 6 Sept 2026, the old #A8507A measured 3.4:1 on paper */
   --stretch-sage: #2F8F6B;    /* "ready for stretch" + positive UI confirmation flash */
 
   --f-display: 'Fraunces', Georgia, 'Times New Roman', serif;
@@ -93,6 +93,7 @@ body.gj :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
     calc(var(--sq) * 4) calc(var(--sq) * 4),
     var(--sq) var(--sq),
     var(--sq) var(--sq);
+  color: var(--ink);
 }
 
 /* paper grain — data-uri turbulence, barely-there */
@@ -174,8 +175,8 @@ body.gj :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
   border-bottom: 1px solid var(--line-glow);
 }
 .act-bar-titles { flex: 1; min-width: 0; }
-.act-bar-eyebrow { font-family: var(--f-stationery); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(250,247,240,0.75); }
-body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc(var(--sq) * 1.4); }
+.act-bar-eyebrow { font-family: var(--f-stationery); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--chalk-muted); }
+body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc(var(--sq) * 1.4); }
 .act-instrument { width: 96px; flex: none; }
 
 .contents-strip {
@@ -238,6 +239,7 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
   box-shadow: 1px 1px 0 var(--page-edge), 2px 2px 0 #fff, 3px 3px 0 var(--page-edge);
   margin-bottom: calc(var(--sq) * 1.5);
   overflow: hidden;
+  color: var(--ink);
 }
 .movie-head {
   display: flex;
@@ -376,6 +378,7 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
   background-size: var(--sq) var(--sq);
   box-shadow: 1px 1px 0 var(--page-edge), 2px 2px 0 #fff, 3px 3px 0 var(--page-edge);
   margin-bottom: calc(var(--sq) * 1.5);
+  color: var(--ink);
 }
 .jotter::before {            /* the functional margin rule */
   content: '';
@@ -688,6 +691,7 @@ body.gj .jq-feedback { margin-top: calc(var(--sq) * 0.9); }
   background: var(--cream);
   background-image: linear-gradient(rgba(27, 90, 135, 0.12) 1px, transparent 1px);
   background-size: 100% calc(var(--sq) * 1.5);
+  color: var(--ink);
 }
 .staff-head {
   display: flex;
@@ -698,13 +702,19 @@ body.gj .jq-feedback { margin-top: calc(var(--sq) * 0.9); }
   border-bottom: 4px solid var(--foil);
 }
 body.gj .staff-head h1 { color: var(--cream); font-size: 22px; }
-.staff-head .ui-msg { color: rgba(250,247,240,0.7); }
+.staff-head .ui-msg { color: rgba(250,247,240,0.86); }
 .staff-main { max-width: 1180px; margin: 0 auto; padding: var(--sq); }
 
+/* A LIGHT SURFACE DECLARES ITS OWN INK. This table set its ground and inherited
+   its text colour from whatever it happened to sit inside - which on the staff
+   page was the shell's own text token. White on #FFFEFA: 1.04:1. He opened the
+   markbook and could not read a single class name (F36). Every ground from here
+   states the colour of the words on it, in the same rule. */
 .ledger {
   width: 100%;
   border-collapse: collapse;
   background: #FFFEFA;
+  color: var(--ink);
   font-size: 14px;
 }
 .ledger th {
@@ -722,7 +732,9 @@ body.gj .staff-head h1 { color: var(--cream); font-size: 22px; }
 
 /* the Working Wall grid */
 .wall { overflow-x: auto; }
-.wall table { border-collapse: collapse; background: #FFFEFA; }
+.wall table { border-collapse: collapse; background: #FFFEFA;
+  color: var(--ink);
+}
 .wall th, .wall td { border: 1px solid var(--page-edge); padding: 4px 6px; text-align: center; }
 .wall th { font-family: var(--f-stationery); font-size: 10.5px; color: var(--navy); }
 .wall td.pupil-name { text-align: left; font-family: var(--f-maths); font-size: 13.5px; white-space: nowrap; }
@@ -776,6 +788,7 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
   border-left: 4px solid var(--marking-red);
   padding: calc(var(--sq) * 0.5) var(--sq);
   margin-bottom: calc(var(--sq) * 0.5);
+  color: var(--ink);
 }
 .pile-count { font-family: var(--f-display); font-weight: 640; font-size: 26px; color: var(--marking-red); }
 .pile-what { flex: 1; }
@@ -787,6 +800,7 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
   background: var(--cream);
   display: grid; place-items: center;
   padding: calc(var(--sq) * 2);
+  color: var(--ink);
 }
 .starter-card { max-width: 900px; text-align: center; }
 .starter-h { font-family: var(--f-stationery); font-size: 1.05rem; font-weight: 700; letter-spacing: 0.05em;
@@ -809,6 +823,7 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
   position: relative;
   font-size: 14px;
   box-shadow: 1px 1px 0 var(--page-edge);
+  color: var(--ink);
 }
 .mini-jotter::before { content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 1.5px; background: var(--margin-rose); }
 .mini-jotter .mj-name { font-family: var(--f-stationery); font-size: 11px; color: var(--navy); margin-bottom: 4px; }
@@ -834,6 +849,7 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
   max-height: 86vh;
   overflow: auto;
   padding: calc(var(--sq) * 1.2);
+  color: var(--ink);
 }
 .gj-modal h2 { font-size: 22px; margin-bottom: calc(var(--sq) * 0.5); }
 .gj-modal-zstack { z-index: 500; }  /* QR / confirm above the staff panel */
@@ -940,7 +956,9 @@ body.dragging-active, body.dragging-active * {
 .want-how-body { margin-top: 8px; }
 body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; font-weight: 600; color: #8A6A12; background: #FBF4E2; border: 1.5px solid var(--foil-lo); border-radius: 8px; padding: 8px 12px; margin: 0 0 12px; }
 /* the pupil's own slip, surfaced at the top of the pull (after two wrong tries) */
-.wh-slip { background: #FBF4E2; border: 1.5px solid var(--foil-lo); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; }
+.wh-slip { background: #FBF4E2; border: 1.5px solid var(--foil-lo); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;
+  color: var(--ink);
+}
 .wh-slip .wh-slip-h { font-family: var(--f-stationery); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: #8A6A12; margin: 0 0 6px; }  /* scoped past body.gj p { margin:0 } */
 /* HER OWN LINE, QUOTED - NOT MARKED AGAIN. The card is headed "Where it went
    wrong" and names the slip underneath; the line itself was drawn in marking
@@ -956,6 +974,7 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
   background: #FFFEFA; border: 1.5px solid var(--page-edge); border-left: 4px solid var(--foil);
   border-radius: 10px; padding: 14px 16px; margin: 18px 0 8px;
   box-shadow: 0 4px 14px rgba(26, 58, 107, 0.08);
+  color: var(--ink);
 }
 .se-head { font-family: var(--f-display); font-weight: 800; color: var(--navy); font-size: 1.06rem; margin: 0; }
 .se-opt { font-family: var(--f-stationery); font-weight: 600; font-size: 0.7em; color: var(--pencil);
@@ -992,7 +1011,9 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .ins-h { font-family: var(--f-display); color: var(--navy); font-size: 1.15rem; margin: 22px 0 10px; }
 .ins-band { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
 .ins-tile { background: #FFFEFA; border: 1.5px solid var(--page-edge); border-top: 3px solid var(--foil);
-  border-radius: 8px; padding: 11px 13px; display: flex; flex-direction: column; gap: 2px; }
+  border-radius: 8px; padding: 11px 13px; display: flex; flex-direction: column; gap: 2px;
+  color: var(--ink);
+}
 .ins-big { font-family: var(--f-display); font-weight: 800; color: var(--navy); font-size: 1.5rem; line-height: 1.05; }
 .ins-small { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); }
 .ins-table td.ins-q { text-align: left; max-width: 260px; }
@@ -1007,12 +1028,16 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .ins-skill-txt { font-family: var(--f-maths); color: var(--ink); font-size: 0.95rem; }
 .ins-skill-pct { font-family: var(--f-stationery); font-size: 0.78rem; color: var(--pencil); white-space: nowrap; }
 .ins-flags { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; align-items: start; }
-.ins-flagcol { background: #FFFEFA; border: 1.5px solid var(--page-edge); border-radius: 10px; padding: 12px 14px; }
+.ins-flagcol { background: #FFFEFA; border: 1.5px solid var(--page-edge); border-radius: 10px; padding: 12px 14px;
+  color: var(--ink);
+}
 .ins-flagcol.ins-support { border-left: 4px solid #C0506A; }
 .ins-flagcol.ins-stretch { border-left: 4px solid #2F8F6B; }
 .ins-flagh { font-family: var(--f-display); color: var(--navy); font-size: 1rem; margin: 0 0 8px; }
 .ins-flagrow { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; text-align: left;
-  background: #FAF7F0; border: 1px solid var(--page-edge); border-radius: 7px; padding: 7px 10px; margin-bottom: 6px; cursor: pointer; }
+  background: #FAF7F0; border: 1px solid var(--page-edge); border-radius: 7px; padding: 7px 10px; margin-bottom: 6px; cursor: pointer;
+  color: var(--ink);
+}
 .ins-flagrow:hover { background: rgba(26, 58, 107, 0.06); }
 .ins-name { font-family: var(--f-maths); font-size: 0.98rem; color: var(--navy); font-weight: 600; }
 .ins-reason { font-family: var(--f-stationery); font-size: 0.76rem; color: var(--pencil); }
@@ -1023,7 +1048,9 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .ins-caret { color: var(--pencil); font-size: 0.7rem; display: inline-block; transition: transform 0.15s; }
 .ins-row.open .ins-caret { transform: rotate(90deg); color: var(--navy); }
 #scr-staff .ins-hint { font-family: var(--f-stationery); font-size: 0.74rem; color: var(--pencil); margin: 6px 0 0; }  /* scoped past body.gj p { margin:0 } */
-.ins-drill { padding: 0 !important; background: #FBF8F1; }
+.ins-drill { padding: 0 !important; background: #FBF8F1;
+  color: var(--ink);
+}
 .drill { padding: 14px 16px; border-left: 4px solid var(--foil); text-align: left; }
 #scr-staff .drill-sub { font-family: var(--f-stationery); font-size: 0.8rem; color: var(--pencil); margin: 0 0 12px; }  /* scoped past body.gj p { margin:0 } */
 .drill-mix { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
@@ -1036,7 +1063,9 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .drill-h { font-family: var(--f-display); color: var(--navy); font-size: 0.98rem; margin: 0 0 8px; }
 .drill-slips { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
 .drill-slip { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 12px;
-  background: #FFFEFA; border: 1px solid var(--page-edge); border-radius: 7px; padding: 7px 11px; }
+  background: #FFFEFA; border: 1px solid var(--page-edge); border-radius: 7px; padding: 7px 11px;
+  color: var(--ink);
+}
 .drill-count { font-family: var(--f-display); font-weight: 800; color: var(--marking-red); font-size: 1.1rem; text-align: center; }
 .drill-line { font-family: var(--f-maths); font-size: 1rem; color: var(--ink); overflow-wrap: anywhere; }
 .drill-why { font-family: var(--f-stationery); font-size: 0.76rem; color: var(--pencil); text-align: right; white-space: nowrap; }
@@ -1090,7 +1119,9 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 
 /* the ink control — opens AT the mark, one tap to choose */
 .ink-control { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 8px;
-  padding: 8px 10px; background: #FFFEFA; border: 1px solid var(--page-edge); border-radius: 8px; }
+  padding: 8px 10px; background: #FFFEFA; border: 1px solid var(--page-edge); border-radius: 8px;
+  color: var(--ink);
+}
 .ink-control[hidden] { display: none; }   /* a class selector beats the UA [hidden] rule, so restore it */
 .ic-label { font-family: var(--f-stationery); font-size: 0.82rem; color: var(--pencil); }
 .ink-control button { font-family: var(--f-stationery); font-size: 0.9rem; padding: 6px 13px; border-radius: 6px; border: 1.5px solid; }

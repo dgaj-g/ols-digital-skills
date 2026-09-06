@@ -60,6 +60,10 @@ const COVERS = {
 const CONTROLS = [
   { id: 'hover-only-legend', kind: 'fixture', plant: 'fixture-staff', mustFail: /only on hover/ },
   { id: 'unlabelled-stat', kind: 'fixture', plant: 'fixture-staff', mustFail: /names no exercise/ },
+  /* THE ONE HE FOUND HIMSELF. The markbook's class names were white on white and
+     every gate was green; the readability audit existed, in lib/, and nothing
+     called it. This plants that fault back and the walk has to see it. */
+  { id: 'invisible-class-names', kind: 'fixture', plant: 'fixture-invisible-text', mustFail: /against what is actually behind it/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -86,7 +90,7 @@ async function walk(page, width, projector, sidecar, transcript) {
     sidecar.states.push({ surface: s.surface || fallbackSurface, state: s.state || fallbackState, width, projector: !!projector, audits: a.verdicts });
     Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {
       g.fail((s.surface || fallbackSurface) + ':' + (s.state || fallbackState) + ' @' + width + (projector ? 'x720' : ''), k,
-        describe(f));
+        k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : describe(f));
     }));
   };
 

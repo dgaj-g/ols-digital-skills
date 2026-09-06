@@ -1,88 +1,90 @@
 
-  COVERAGE MATRIX (content hash 3a4c1f41b6cc, tier fast)
+  COVERAGE MATRIX (content hash baa2e1be2b98, tier fast)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  64      161
-  colour        115     110
-  consequence   115     110
+  click-safety  108     117
+  colour        108     117
+  consequence   108     117
   deploy        3
-  empty         115     110
-  geometry      115     110
+  empty         108     117
+  geometry      108     117
   human-pace    28
   movie         36
-  mute-locks    115     110
-  nested        115     110
-  steps         115     110
+  mute-locks    108     117
+  nested        108     117
+  overlap       82      143
+  readability   92      133
+  steps         108     117
   truth         48
   two-homes     13
   verdict       1
-  waits         115     110
-  walk-right    144
+  waits         108     117
+  walk-right    142     2
   walk-wrong    144
 
-  CELLS NOTHING CLOSES (1041)
-  family        cell                                              why
-  ------------  ---------------------------------------  -------  ---
-  geometry      cover:first-visit @375 × geometry        MISSING
-  colour        cover:first-visit @375 × colour          MISSING
-  consequence   cover:first-visit @375 × consequence     MISSING
-  click-safety  cover:first-visit @375 × click-safety    MISSING
-  empty         cover:first-visit @375 × empty           MISSING
-  nested        cover:first-visit @375 × nested          MISSING
-  steps         cover:first-visit @375 × steps           MISSING
-  mute-locks    cover:first-visit @375 × mute-locks      MISSING
-  waits         cover:first-visit @375 × waits           MISSING
-  geometry      cover:first-visit @768 × geometry        MISSING
-  colour        cover:first-visit @768 × colour          MISSING
-  consequence   cover:first-visit @768 × consequence     MISSING
-  click-safety  cover:first-visit @768 × click-safety    MISSING
-  empty         cover:first-visit @768 × empty           MISSING
-  nested        cover:first-visit @768 × nested          MISSING
-  steps         cover:first-visit @768 × steps           MISSING
-  mute-locks    cover:first-visit @768 × mute-locks      MISSING
-  waits         cover:first-visit @768 × waits           MISSING
-  geometry      cover:first-visit @1280 × geometry       MISSING
-  colour        cover:first-visit @1280 × colour         MISSING
-  consequence   cover:first-visit @1280 × consequence    MISSING
-  click-safety  cover:first-visit @1280 × click-safety   MISSING
-  empty         cover:first-visit @1280 × empty          MISSING
-  nested        cover:first-visit @1280 × nested         MISSING
-  steps         cover:first-visit @1280 × steps          MISSING
-  mute-locks    cover:first-visit @1280 × mute-locks     MISSING
-  waits         cover:first-visit @1280 × waits          MISSING
-  geometry      cover:returning @375 × geometry          MISSING
-  colour        cover:returning @375 × colour            MISSING
-  consequence   cover:returning @375 × consequence       MISSING
-  click-safety  cover:returning @375 × click-safety      MISSING
-  empty         cover:returning @375 × empty             MISSING
-  nested        cover:returning @375 × nested            MISSING
-  steps         cover:returning @375 × steps             MISSING
-  mute-locks    cover:returning @375 × mute-locks        MISSING
-  waits         cover:returning @375 × waits             MISSING
-  geometry      cover:returning @768 × geometry          MISSING
-  colour        cover:returning @768 × colour            MISSING
-  consequence   cover:returning @768 × consequence       MISSING
-  click-safety  cover:returning @768 × click-safety      MISSING
-  empty         cover:returning @768 × empty             MISSING
-  nested        cover:returning @768 × nested            MISSING
-  steps         cover:returning @768 × steps             MISSING
-  mute-locks    cover:returning @768 × mute-locks        MISSING
-  waits         cover:returning @768 × waits             MISSING
-  geometry      cover:returning @1280 × geometry         MISSING
-  colour        cover:returning @1280 × colour           MISSING
-  consequence   cover:returning @1280 × consequence      MISSING
-  click-safety  cover:returning @1280 × click-safety     MISSING
-  empty         cover:returning @1280 × empty            MISSING
-  nested        cover:returning @1280 × nested           MISSING
-  steps         cover:returning @1280 × steps            MISSING
-  mute-locks    cover:returning @1280 × mute-locks       MISSING
-  waits         cover:returning @1280 × waits            MISSING
-  geometry      cover:fallback-name @375 × geometry      MISSING
-  colour        cover:fallback-name @375 × colour        MISSING
-  consequence   cover:fallback-name @375 × consequence   MISSING
-  click-safety  cover:fallback-name @375 × click-safety  MISSING
-  empty         cover:fallback-name @375 × empty         MISSING
-  nested        cover:fallback-name @375 × nested        MISSING
+  CELLS NOTHING CLOSES (1331)
+  family        cell                                                  why
+  ------------  -------------------------------------------  -------  ---
+  walk-right    algebra > s6 > q23 (form) @768 × walk-right  MISSING
+  walk-right    algebra > s6 > q24 (form) @768 × walk-right  MISSING
+  geometry      cover:first-visit @375 × geometry            MISSING
+  colour        cover:first-visit @375 × colour              MISSING
+  consequence   cover:first-visit @375 × consequence         MISSING
+  click-safety  cover:first-visit @375 × click-safety        MISSING
+  empty         cover:first-visit @375 × empty               MISSING
+  nested        cover:first-visit @375 × nested              MISSING
+  steps         cover:first-visit @375 × steps               MISSING
+  mute-locks    cover:first-visit @375 × mute-locks          MISSING
+  waits         cover:first-visit @375 × waits               MISSING
+  readability   cover:first-visit @375 × readability         MISSING
+  overlap       cover:first-visit @375 × overlap             MISSING
+  geometry      cover:first-visit @768 × geometry            MISSING
+  colour        cover:first-visit @768 × colour              MISSING
+  consequence   cover:first-visit @768 × consequence         MISSING
+  click-safety  cover:first-visit @768 × click-safety        MISSING
+  empty         cover:first-visit @768 × empty               MISSING
+  nested        cover:first-visit @768 × nested              MISSING
+  steps         cover:first-visit @768 × steps               MISSING
+  mute-locks    cover:first-visit @768 × mute-locks          MISSING
+  waits         cover:first-visit @768 × waits               MISSING
+  readability   cover:first-visit @768 × readability         MISSING
+  overlap       cover:first-visit @768 × overlap             MISSING
+  geometry      cover:first-visit @1280 × geometry           MISSING
+  colour        cover:first-visit @1280 × colour             MISSING
+  consequence   cover:first-visit @1280 × consequence        MISSING
+  click-safety  cover:first-visit @1280 × click-safety       MISSING
+  empty         cover:first-visit @1280 × empty              MISSING
+  nested        cover:first-visit @1280 × nested             MISSING
+  steps         cover:first-visit @1280 × steps              MISSING
+  mute-locks    cover:first-visit @1280 × mute-locks         MISSING
+  waits         cover:first-visit @1280 × waits              MISSING
+  readability   cover:first-visit @1280 × readability        MISSING
+  overlap       cover:first-visit @1280 × overlap            MISSING
+  geometry      cover:returning @375 × geometry              MISSING
+  colour        cover:returning @375 × colour                MISSING
+  consequence   cover:returning @375 × consequence           MISSING
+  click-safety  cover:returning @375 × click-safety          MISSING
+  empty         cover:returning @375 × empty                 MISSING
+  nested        cover:returning @375 × nested                MISSING
+  steps         cover:returning @375 × steps                 MISSING
+  mute-locks    cover:returning @375 × mute-locks            MISSING
+  waits         cover:returning @375 × waits                 MISSING
+  readability   cover:returning @375 × readability           MISSING
+  overlap       cover:returning @375 × overlap               MISSING
+  geometry      cover:returning @768 × geometry              MISSING
+  colour        cover:returning @768 × colour                MISSING
+  consequence   cover:returning @768 × consequence           MISSING
+  click-safety  cover:returning @768 × click-safety          MISSING
+  empty         cover:returning @768 × empty                 MISSING
+  nested        cover:returning @768 × nested                MISSING
+  steps         cover:returning @768 × steps                 MISSING
+  mute-locks    cover:returning @768 × mute-locks            MISSING
+  waits         cover:returning @768 × waits                 MISSING
+  readability   cover:returning @768 × readability           MISSING
+  overlap       cover:returning @768 × overlap               MISSING
+  geometry      cover:returning @1280 × geometry             MISSING
+  colour        cover:returning @1280 × colour               MISSING
+  consequence   cover:returning @1280 × consequence          MISSING
 
   DEBT LEDGER (printed every run)
   cell                     owner / phase            file                state

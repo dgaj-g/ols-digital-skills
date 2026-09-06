@@ -247,7 +247,9 @@
     var scopeNote = isAdmin
       ? 'You are the markbook owner &mdash; you can see and manage every class.'
       : 'Showing the classes you created &mdash; each teacher sees only their own.';
-    if (meEmail) scopeNote += ' <span style="opacity:.65">(' + esc(meEmail) + ')</span>';
+    /* opacity .65 on an already-muted grey measured 3.4:1 - quiet is a smaller
+       size and a lighter weight, never a colour faded until it cannot be read */
+    if (meEmail) scopeNote += ' <span class="quiet-note">(' + esc(meEmail) + ')</span>';
     body.innerHTML =
       '<p class="ui-msg" style="margin-bottom:var(--sq)">' + scopeNote + '</p>' +
       '<div class="check-row" style="margin-bottom:var(--sq)">' +
