@@ -196,6 +196,20 @@ no instruction on it still passes said-twice honestly; a whole walk that never
 found one means the law is asleep, and that is the only shape of failure F35a
 could ever have shown.
 
+**A width you did not walk is a width you did not test.** The three laws were
+proved at 1280 and called done. The shipped tree's own `over-tightening`
+control - which walks 375, 768 and 1280 - then failed on the shelf: the book
+series line was 3.49:1 on a tablet and 4.39:1 on a phone while reading clean on
+a laptop (F40). Run `node tools/qa/run.js --full` before saying a visual law is
+green, or say which widths you actually walked.
+
+**And a control that fails for the wrong reason is worse than no control.**
+Three of them read DID NOT FIRE while every law they guard was working: the
+sandbox carried a hardcoded list of repo-root files, `index.html` had grown one
+more, and every browser control was walking a page that 404'd on the crest
+(F41). The failure looked like a broken gate, so the real answer never arrived.
+Read the evidence in `tools/qa/out/control/` before believing a DID NOT FIRE.
+
 The common lesson, and the reason all three were missing: **every gate here read
 a PART — a file, a string, a rule, an element. None of them read the finished
 screen the way she meets it.** Readability, overlap and said-twice are the first

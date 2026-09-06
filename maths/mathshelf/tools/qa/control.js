@@ -59,11 +59,25 @@ function sandbox() {
   fs.mkdirSync(dir, { recursive: true });
   execFileSync('cp', ['-R', A.APP + '/', dir + '/']);
   if (REPO) {
-    [['style.css', 'style.css'], ['assets/intro-loader.js', 'assets/intro-loader.js']].forEach(([rel, to]) => {
+    /* THE PAGE SAYS WHAT IT NEEDS; DO NOT KEEP A SECOND LIST. This was two
+       hardcoded paths, and index.html quietly grew a third - ../../assets/
+       crest.png - so every browser control ran against a page that 404'd on the
+       crest. Seven console errors, on every state, on every control: the walk
+       failed for the missing file instead of for the planted fault, and three
+       controls read DID NOT FIRE while the laws they guard were working
+       perfectly. A control that fails for the wrong reason is worse than no
+       control, because it looks like the gate is broken. The list is now read
+       out of the page itself, so it cannot fall behind it again. */
+    const idx = fs.readFileSync(path.join(A.APP, 'index.html'), 'utf8');
+    const wanted = new Set();
+    (idx.match(/(?:src|href)="\.\.\/\.\.\/[^"]+"/g) || []).forEach(m => {
+      wanted.add(m.replace(/^(?:src|href)="\.\.\/\.\.\//, '').replace(/"$/, '').split(/[?#]/)[0]);
+    });
+    wanted.forEach(rel => {
       const src = path.join(REPO, rel);
       if (!fs.existsSync(src)) return;
-      fs.mkdirSync(path.dirname(path.join(base, to)), { recursive: true });
-      execFileSync('cp', [src, path.join(base, to)]);
+      fs.mkdirSync(path.dirname(path.join(base, rel)), { recursive: true });
+      execFileSync('cp', [src, path.join(base, rel)]);
     });
   }
   /* the sandbox never inherits a previous run's evidence */

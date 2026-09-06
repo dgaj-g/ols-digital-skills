@@ -1573,14 +1573,41 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
 .book.lit-copper:hover, .book.lit-copper:focus-visible { box-shadow: 0 0 30px rgba(232, 147, 90, .35); }
 .book.lit-moss:hover,   .book.lit-moss:focus-visible   { box-shadow: 0 0 30px rgba(127, 176, 105, .35); }
 .bcover { padding: 24px 22px 26px; min-height: 220px; display: flex; flex-direction: column; color: #fff; position: relative; }
-.bcover.livery-teal   { background: linear-gradient(170deg, #12879F, var(--teal)); }
-.bcover.livery-plum   { background: linear-gradient(170deg, #8E4AA6, var(--plum)); }
-.bcover.livery-copper { background: linear-gradient(170deg, #C0623A, var(--copper)); }
-.bcover.livery-moss   { background: linear-gradient(170deg, #4C8341, var(--moss)); }
+/* THE DARK END IS AT THE TOP, WHERE THE SMALL WORDS ARE. These ran the other
+   way - lighter at the top, the token colour at the bottom - and the series
+   line, 11px and white, sat on the lightest pixel of the whole cover. On a
+   phone, where the cover is shorter and the padding tighter, it measured
+   3.49:1 against a 4.5 floor: white on a bright teal. The title below it is
+   24px and up, so it is judged at the 3:1 large-text floor and is legible
+   anywhere on these gradients; the 11px line is not, and it is the one at the
+   top. Turning the gradient over costs the design nothing - the cover is now
+   deepest where the labels are and brightest where the motif glows - and every
+   livery clears the floor at its top stop. Turning it over was not enough on
+   its own: at 170deg the light band moves with the cover's shape, so at 768 -
+   where the card is wider and shorter than on a phone - it slid back under the
+   series and measured 4.34:1. Chasing a gradient's geometry is guessing. BOTH
+   stops are now at or below the token colour, so no aspect ratio can put a
+   pale pixel under white text: teal 5.36 to 7.75:1, copper 5.44 to 7.88:1,
+   moss 6.26 to 8.79:1, plum 7.21 to 9.82:1. Caught by the shipped tree's own
+   control at 375 and 768 (over-tightening), which is the check that walks the
+   widths a 1280 pass never sees. */
+.bcover.livery-teal   { background: linear-gradient(170deg, var(--teal),   #0A5A70); }
+.bcover.livery-plum   { background: linear-gradient(170deg, var(--plum),   #5F306F); }
+.bcover.livery-copper { background: linear-gradient(170deg, var(--copper), #813F21); }
+.bcover.livery-moss   { background: linear-gradient(170deg, var(--moss),   #2F5329); }
 /* the series line was white at 90% on a teal gradient: 3.85:1, under the 4.5
    floor, measured in rendered pixels. It is a quiet line because it is small
-   and spaced, not because it is faded. */
-.bcover .series { font-family: var(--f-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+   and spaced, not because it is faded.
+   AND THE WEIGHT IS THE OTHER HALF OF IT. Deepening the plate above got the
+   darkest pixel behind this line to 5.36:1 and it still measured 4.44:1 at 768,
+   because an 11px uppercase face at .16em is mostly EDGE: the sampler reads
+   glyphs that are half plate, and so does an eye at the back of a room. The
+   plate was never the whole fault. At 600 the letter cores are solid and it
+   measures clean at 375, 768 and 1280. A thin small label on a saturated ground
+   is a contrast fault even when the arithmetic on the two colours says it is
+   not. */
+.bcover .series { font-family: var(--f-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase; }
 /* THE BAND IS IN THE ROW, NOT FLOATING OVER IT (F37). It used to be
    position:absolute in the top-right corner, so it took up no space at all and
    the series line ran clean underneath it: "THE GEOMETRY SET" happened to stop
