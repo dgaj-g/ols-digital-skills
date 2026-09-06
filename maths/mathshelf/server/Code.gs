@@ -171,11 +171,12 @@ function apiCall(req) {
        gets a 200 of HTML it cannot parse. Proved on 6 Sept 2026 -- apiCall
        completed, and the Executions log showed NO doPost row to match it.
        ScriptApp.getOAuthToken() is the caller's own token (the pupil's, under
-       execute-as-User), and she is in c2ken.net, so the door opens for her.
-       It authenticates only: DATA still runs as ME, and still refuses anyone
-       who cannot present the secret. Redirects stay followed -- a web app
-       answers a POST with a 302 to googleusercontent, and turning that off
-       would break the good path along with the bad. */
+       execute-as-User). It is sent for the day DATA is domain-restricted again;
+       it is NOT what opens the door today -- Google answers a bearer of these
+       scopes with 401, and DATA is therefore published to Anyone with the
+       shared secret as its lock (see THE GUARD, below). Redirects stay
+       followed -- a web app answers a POST with a 302 to googleusercontent,
+       and turning that off would break the good path along with the bad. */
     var resp = UrlFetchApp.fetch(url, {
       method: 'post',
       contentType: 'application/json',
@@ -207,10 +208,17 @@ function doPost(e) {
 function apiRelay(body) {
   body = body || {};
   var secret = relaySecret_();
-  /* THE GUARD. Without it this deployment would answer anybody who found the
-     URL, as any pupil they cared to name. A constant-time compare is not worth
-     the pretence here (the value is not user-supplied and the endpoint is
-     domain-restricted), but the guard itself is not optional. */
+  /* THE GUARD, AND IT IS THE ONLY ONE. This deployment is published to Anyone,
+     because a domain-restricted one cannot be reached server-to-server at all:
+     UrlFetch carries no session, and a bearer token minted by
+     ScriptApp.getOAuthToken() is answered with 401 unless the caller also holds
+     a Drive scope -- which would put "see and download all your Drive files" on
+     every pupil's consent screen (proved 6 Sept 2026, RELAYDIAG code=401).
+     So the secret is the whole lock. It is 256 bits, it lives only in a script
+     property, and the URL that goes with it is never sent to a browser:
+     qa-two-homes walks every return value, every BOOT field and the built
+     Index.html to prove that. Without this check the endpoint would answer
+     anybody who found the URL, as any pupil they cared to name. */
   if (!secret) return { ok: false, error: 'no-secret-configured' };
   if (String(body.secret || '') !== secret) return { ok: false, error: 'bad-secret' };
   var email = normEmail_(body.email);

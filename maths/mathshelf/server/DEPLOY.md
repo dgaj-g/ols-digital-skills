@@ -11,7 +11,7 @@ before each version cut.
 
 | | what it is | executeAs | who has access | who ever visits it |
 |---|---|---|---|---|
-| **DATA** | the existing main `/exec`. Owns the bound Sheet, the marking store, the class registry and the per-teacher scoping. | `USER_DEPLOYING` (Me) | Anyone within the domain | nobody — only the front door, server to server |
+| **DATA** | the main `/exec`. Owns the bound Sheet, the marking store, the class registry and the per-teacher scoping. | `USER_DEPLOYING` (Me) | **Anyone, including anonymous** — see below | nobody — only the front door, server to server |
 | **FRONT DOOR** | a NEW deployment. Serves the page, reads the pupil's own name from her own Google token, and relays every data call to DATA. | `USER_ACCESSING` (User) | Anyone within `c2ken.net` | every pupil and every teacher |
 
 **Why two.** Full line-by-line working cannot live in ScriptProperties at class
@@ -59,7 +59,8 @@ The front door has nothing to relay to until this exists.
 ## 2 · FRONT DOOR
 
 1. **Edit `appsscript.json` in the editor** and change `"executeAs"` to
-   `"USER_ACCESSING"`. Save.
+   `"USER_ACCESSING"` **and `"access"` to `"DOMAIN"`**. Save. (The repo copy is
+   the DATA manifest: `USER_DEPLOYING` + `ANYONE_ANONYMOUS`. Both fields move.)
 2. **Read it again.** It must now say `USER_ACCESSING`. Write down what it said.
 3. Deploy → **New deployment** → Web app → Execute as: **User accessing the web
    app** → Who has access: **Anyone within c2ken.net** → Deploy.
@@ -68,8 +69,32 @@ The front door has nothing to relay to until this exists.
 5. Open the new `/exec` once yourself so the one-time permission screen is
    accepted, then open Executions and confirm `doGet` completes **and** that a
    relayed `apiCall` completes. Paste both lines in as proof rows.
-6. Put the manifest back to `USER_DEPLOYING` and save, so the next DATA cut
-   starts from the state step 1.3 expects.
+6. Put the manifest back to `USER_DEPLOYING` + `ANYONE_ANONYMOUS` and save, so
+   the next DATA cut starts from the state step 1.3 expects.
+
+## WHY DATA IS PUBLISHED TO ANYONE, AND WHY THAT IS SAFE
+
+A web app published to "Anyone within the domain" cannot be called
+server-to-server. `UrlFetchApp` carries no session, so Google answers with the
+sign-in page and `doPost` never runs; a bearer token from
+`ScriptApp.getOAuthToken()` is answered **401** unless the caller's manifest
+also asks for a Drive scope — which would put *"See and download all your
+Google Drive files"* on every pupil's consent screen. Proved on 6 Sept 2026:
+`RELAYDIAG code=401`, and before that an Executions log with an `apiCall` row
+and no `doPost` row beside it.
+
+So DATA is published to Anyone and **the shared secret is the whole lock**:
+
+- it is 256 bits of URL-safe random, generated with
+  `python3 -c "import secrets;print(secrets.token_urlsafe(32))"`;
+- it lives only in a script property of this one project — never in this repo,
+  never in a commit message, never in a chat window;
+- the DATA URL that goes with it is never sent to a browser: `qa-two-homes`
+  walks every return value, every BOOT field and the built `Index.html`;
+- `apiRelay` refuses any call whose secret does not match, and refuses every
+  call if no secret is configured at all.
+
+The FRONT DOOR — the only `/exec` anybody visits — stays `DOMAIN`.
 
 ## WHAT A PUPIL SEES THE FIRST TIME, and the one thing that can stop it
 
