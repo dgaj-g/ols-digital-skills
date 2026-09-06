@@ -99,6 +99,13 @@ here.
   shelf will offer it unticked to every class the day it lands.
 - **A vocabulary per book** (`tools/qa/vocab/<book>.json`), which is what would
   wake the define-before-use rule. It is on the debt ledger with its reason.
+- **The eight-item live smoke list** in `server/DEPLOY_LOG.md`. It is his,
+  because it cannot be anyone else's: Apps Script serves the app inside a
+  cross-origin sandboxed iframe, so a synthetic click reaches the outer document
+  and stops. The deploy is proved as far as the automation can reach - the
+  Executions chain, the composited cover, the artefact over HTTP - and the eight
+  presses are the part that needs a person. The audit row flips to approved when
+  the log carries `smoke: Damien, <date>, 1-8`.
 
 ---
 
