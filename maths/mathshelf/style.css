@@ -36,7 +36,7 @@
   /* pastoral / positive-UI tones — deliberately NOT the marking three, so a self-rating or a
      "saved" flash can never be misread as a mark (proposal §5a) */
   --support-rose: #8E3E64;    /* "needs a word" — mauve, pushed away from marking red; darkened 6 Sept 2026, the old #A8507A measured 3.4:1 on paper */
-  --stretch-sage: #2F8F6B;    /* "ready for stretch" + positive UI confirmation flash */
+  --stretch-sage: #26765A;    /* "ready for stretch" + positive UI confirmation flash; darkened 6 Sept 2026 - the old #2F8F6B put "Saved - your teacher sees this" at 3.95:1 on the jotter, under the 4.5 floor, and the pupil walk found it the moment the contrast law could be believed */
 
   --f-display: 'Fraunces', Georgia, 'Times New Roman', serif;
   --f-maths: 'STIX Two Text', 'Cambria', Georgia, serif;

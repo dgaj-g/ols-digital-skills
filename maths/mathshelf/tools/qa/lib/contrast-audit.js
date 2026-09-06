@@ -170,8 +170,14 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
       vr = Math.min(vr, ar.right); vb = Math.min(vb, ar.bottom);
     }
     const vw = vr - vx, vh = vb - vy;
+    /* A ROW IS TRIMMED, NOT THROWN AWAY. Dropping anything more than
+       forty-five per cent clipped was my own over-tightening and it emptied
+       whole screens: on a phone a question card sits inside a scroller, most
+       rows are partly outside it, and the pass reported "no text to measure" on
+       state after state - the F35a failure, reintroduced by the fix for it.
+       The sample is already confined to the visible part, so being clipped is
+       not a reason to refuse; being too small to sample is. */
     if (vw < 8 || vh < 6) return;
-    if ((vw * vh) / ((r.width * r.height) || 1) < 0.55) return;
     try {
       const mid = document.elementFromPoint(
         Math.min(window.innerWidth - 1, Math.max(0, vx + vw / 2)),
