@@ -36,7 +36,23 @@ const FLAGS = ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage', '--fo
   '--disable-renderer-backgrounding'];
 
 async function launch(opts) {
-  return await pup().launch({ headless: 'new', args: FLAGS, ...(opts || {}) });
+  /* THE FIRST PICTURE OF A COLD PAGE IS THE SLOW ONE. Puppeteer's default
+     protocol timeout is 30s and the very first Page.captureScreenshot on a
+     freshly opened markbook can pass it on a loaded machine - and when it does,
+     the readability pass reports a CRASH, which reads exactly like a broken
+     gate. The work is real; the budget was optimistic. */
+  /* THE SHELL, BECAUSE THE NEW HEADLESS CANNOT TAKE A PICTURE ON THIS MACHINE.
+     Chrome for Testing 146 under `headless: 'new'` never returns from
+     Page.captureScreenshot here - not on the markbook, not on the shelf, not on
+     a page containing nothing but <h1>hi</h1>, and not with a vanilla launch
+     carrying no flags of ours at all. Everything else works: navigation,
+     evaluate, clicks. Only the picture never comes. `headless: 'shell'` - the
+     older implementation, which is what this rig used before - takes it in
+     milliseconds. Proved by launching all three side by side on a blank page.
+     MS_HEADLESS overrides it, so the day the new one is fixed this is one
+     environment variable, not a hunt. */
+  const mode = process.env.MS_HEADLESS || 'shell';
+  return await pup().launch({ headless: mode, args: FLAGS, protocolTimeout: 180000, ...(opts || {}) });
 }
 
 async function newPage(browser, o) {

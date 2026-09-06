@@ -4,8 +4,8 @@
  "width": 1280,
  "projector": true,
  "tier": "preview",
- "contentHash": "3d790e626874",
- "when": "2026-09-06T16:41:27.691Z",
+ "contentHash": "b7edfa35e105",
+ "when": "2026-09-06T20:42:31.206Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -100,7 +100,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 53
+    "readability": 41
    }
   },
   {
@@ -124,7 +124,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 109
+    "readability": 101
    }
   },
   {
@@ -148,7 +148,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 34
+    "readability": 22
    }
   },
   {
@@ -172,7 +172,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 97
+    "readability": 40
    }
   },
   {
@@ -220,7 +220,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 374
+    "readability": 297
    }
   },
   {
@@ -244,7 +244,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 374
+    "readability": 339
    }
   },
   {
@@ -268,7 +268,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 62
+    "readability": 34
    }
   },
   {
@@ -292,7 +292,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 81
+    "readability": 75
    }
   },
   {
@@ -316,7 +316,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 125
+    "readability": 43
    }
   },
   {
@@ -340,7 +340,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 121
+    "readability": 45
    }
   },
   {
@@ -364,7 +364,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 120
+    "readability": 44
    }
   },
   {
@@ -388,7 +388,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 121
+    "readability": 45
    }
   },
   {
@@ -412,7 +412,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 269
+    "readability": 55
    }
   },
   {
@@ -436,7 +436,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 269
+    "readability": 55
    }
   },
   {
@@ -460,7 +460,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 21
+    "readability": 6
    }
   }
  ],
