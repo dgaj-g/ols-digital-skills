@@ -143,11 +143,12 @@ weakened, hidden, or marked green.
 | qa-waits | control-with-no-busy-state, outbox-dropped-on-reload | not yet investigated |
 | qa-fonts | face-removed | the plant removes a face file; with the gate now asking the face to LOAD rather than whether it was painted, the control needs re-aiming at that question |
 
-## THE TWO LAWS ADDED ON 6 SEPTEMBER 2026, AND WHY THEY WERE MISSING
+## THE THREE LAWS ADDED ON 6 SEPTEMBER 2026, AND WHY THEY WERE MISSING
 
 He opened the deployed markbook and could not read it: white class names on a
 white table, a chip sitting on top of a book's series line, and a shell so dark
-he asked why. Twenty-six gates were green. The reason is written up as F35-F38 in
+he asked why, and a question that told him the same thing twice in two wordings.
+Twenty-six gates were green. The reason is written up as F35-F39 in
 `PROGRESS.md`, and it is worth stating plainly here because it is a lesson about
 gates rather than about CSS:
 
@@ -170,8 +171,37 @@ stays inside its card; nothing asked whether it lands on its neighbour. Control:
 `text-under-a-floating-chip` puts the band back in the corner it used to float
 in.
 
-Both are in the coverage RIDERS, so every walked state must produce a verdict for
-them or the matrix says so.
+**3. SAID-TWICE — the screen must not tell her the same thing twice.**
+Twenty-eight gates read the strings table; `qa-strings-ledger` proves every
+string is used and `qa-language` proves each one is rule-138 plain. Not one of
+them read the SCREEN, so two different strings saying one thing, painted at the
+same moment in two places, was invisible to all of them. The law walks every
+instruction line on every recorded state. It invented four faults before it was
+honest (F39a) and each narrowing is now a rule: instruction lines only, inside
+one question or one book only, nothing under 25 characters or 5 words, and a
+pair must be identical or exactly one token apart. Control:
+`told-twice-in-two-wordings` puts his own repeated line back into the
+substitution board and the pupil walk has to see it.
+
+All three are in the coverage RIDERS, so every walked state must produce a
+verdict for them or the matrix says so.
+
+**And a verdict is not evidence — a count is.** The readability audit reported
+PASS on every state of every walk while measuring nothing at all, and PASS is
+what a green matrix is made of. Both laws that can measure nothing now carry the
+number of things they looked at out with the verdict, the walk adds those up,
+and it fails if the total is zero: `readability x awake` on the teacher walk,
+`readability x awake` and `said-twice x awake` on the pupil walk. A screen with
+no instruction on it still passes said-twice honestly; a whole walk that never
+found one means the law is asleep, and that is the only shape of failure F35a
+could ever have shown.
+
+The common lesson, and the reason all three were missing: **every gate here read
+a PART — a file, a string, a rule, an element. None of them read the finished
+screen the way she meets it.** Readability, overlap and said-twice are the first
+three laws on this platform that measure the composition rather than its
+ingredients. Any future fault he finds by looking at the live site should be
+checked against that sentence first.
 
 ## F. GAPS — each with an owner and a phase
 

@@ -87,10 +87,10 @@ async function walk(page, width, projector, sidecar, transcript) {
     await W.settle(page);
     const s = (await state()) || {};
     const a = await AUD.run(page, { clickSafety: true });
-    sidecar.states.push({ surface: s.surface || fallbackSurface, state: s.state || fallbackState, width, projector: !!projector, audits: a.verdicts });
+    sidecar.states.push({ surface: s.surface || fallbackSurface, state: s.state || fallbackState, width, projector: !!projector, audits: a.verdicts, measured: a.measured });
     Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {
       g.fail((s.surface || fallbackSurface) + ':' + (s.state || fallbackState) + ' @' + width + (projector ? 'x720' : ''), k,
-        k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : describe(f));
+        k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : describe(f));
     }));
   };
 
@@ -355,6 +355,21 @@ async function walk(page, width, projector, sidecar, transcript) {
   });
   need.forEach(s => g.check(reached.has(s), s, 'coverage',
     'the teacher walk never reached this screen — a walk that stands on fewer screens than the markbook has is short, and short coverage is a failure'));
+
+  /* THE LAW HE PAID FOR HAS TO HAVE BEEN AWAKE. The markbook fault was white
+     text on a white table, and the readability audit reported PASS on every
+     state of every walk while measuring nothing at all (F35a). A verdict is
+     not evidence; a count is. Said-twice is not asserted here - a staff screen
+     legitimately carries no instruction line - it is asserted on the pupil
+     walk, where the instruction lines live. */
+  const looked = {};
+  fs.readdirSync(A.out('walk')).filter(f => /^sit-teacher/.test(f)).forEach(f => {
+    JSON.parse(A.read(A.out('walk/' + f))).states.forEach(st => {
+      Object.keys(st.measured || {}).forEach(k => { looked[k] = (looked[k] || 0) + st.measured[k]; });
+    });
+  });
+  g.check(looked.readability > 0, 'readability', 'awake',
+    'the readability law reported a verdict on every state of the teacher walk and never once measured a piece of text — that is exactly the shape of the fault he found on the live markbook');
 
   g.done();
 })().catch(e => {

@@ -74,6 +74,8 @@ A one-time macOS file-access popup may appear the first time you touch files/scr
 - If only client files changed and `Code.gs` is unchanged vs the live version, you only need to update
   **Index.html** in the editor (confirm: `git diff --quiet <liveSHA> HEAD -- maths/mathshelf/server/Code.gs`).
 - Drive the Apps Script editor (project id `1otJG5454zR6a0WKZW23czKnehxtQ3Oj6CrrRWYys1H4bPxZOoaZ3qPmC`):
+  **SUPERSEDED 6 Sept 2026** - that project is retired; the live one is
+  `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`. Read `HANDOVER.md`, not this file.
   fetch the built file from `raw.githubusercontent.com/dgaj-g/ols-digital-skills/<SHA>/maths/mathshelf/server/Index.html`
   (assemble the URL from fragments — the MCP filter blocks contiguous token URLs), `monaco.editor.getModels()`
   → pick the model whose value starts `<!doctype` → `setValue`. Save with **Cmd+S** (it often needs a

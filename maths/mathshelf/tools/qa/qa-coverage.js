@@ -222,7 +222,7 @@ A.movies().forEach(m => {
    text on a white table, which he found himself the first time he opened the
    markbook. It is back, and lib/audits.js now runs it on every recorded state so
    it CAN be closed. */
-const RIDERS = ['geometry', 'colour', 'consequence', 'click-safety', 'empty', 'nested', 'steps', 'mute-locks', 'waits', 'readability', 'overlap'];
+const RIDERS = ['geometry', 'colour', 'consequence', 'click-safety', 'empty', 'nested', 'steps', 'mute-locks', 'waits', 'readability', 'overlap', 'said-twice'];
 /* THE REGISTRY IS READ FROM THE SOURCE, NOT FROM A SIDECAR. It used to be
    loaded from out/surfaces.json, which qa-surfaces writes as the first gate of
    a full run - so in a run where qa-surfaces had not gone first (a control

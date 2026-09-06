@@ -291,6 +291,15 @@ const PLANTS = {
       ".bcover .band {\n  position: absolute; top: 18px; right: 16px;");
   },
 
+  /* ── THE ONE HE FOUND HIMSELF (F39). The substitution board told her to work
+     it out in the instruction line at the top AND again beside the number pad,
+     in two different wordings. This puts the top line back. ── */
+  'fixture-said-twice': (dir) => {
+    edit(dir, 'jotter.js',
+      "        instr.textContent = '';\n        exprBox.style.display = 'none'; givenRow.style.display = 'none';\n        showAnswer();",
+      "        instr.textContent = 'Now work it out, then write the value:';\n        exprBox.style.display = 'none'; givenRow.style.display = 'none';\n        showAnswer();");
+  },
+
   /* ── a per-user cache holding something two people must both see ─── */
   'fixture-cacheservice': (dir) => {
     edit(dir, 'server/Code.gs.template', 'function apiWhoAmI() {',

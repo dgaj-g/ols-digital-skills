@@ -42,7 +42,11 @@ what makes her full name appear on her very first visit with nothing to type.
 
 The front door has nothing to relay to until this exists.
 
-1. Open the Apps Script project (`1otJG5454zR6a0WKZW23czKnehxtQ3Oj6CrrRWYys1H4bPxZOoaZ3qPmC`).
+1. Open the Apps Script project (`1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`), bound to
+   the Sheet `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y`, both titled
+   "OLS - MathShelf". **Not `1otJG5454zR6a0WKZW23czKnehxtQ3Oj6CrrRWYys1H4bPxZOoaZ3qPmC`** - that project is
+   RETIRED (its OAuth client still carries the dead name); see the last
+   section of `DEPLOY_LOG.md`.
 2. Paste the built `server/Code.gs` into `Code.gs` and the built
    `server/Index.html` into the HTML file named exactly `Index`.
 3. **Open `appsscript.json` and read it.** It must say
@@ -62,8 +66,12 @@ The front door has nothing to relay to until this exists.
    `"USER_ACCESSING"` **and `"access"` to `"DOMAIN"`**. Save. (The repo copy is
    the DATA manifest: `USER_DEPLOYING` + `ANYONE_ANONYMOUS`. Both fields move.)
 2. **Read it again.** It must now say `USER_ACCESSING`. Write down what it said.
-3. Deploy → **New deployment** → Web app → Execute as: **User accessing the web
-   app** → Who has access: **Anyone within c2ken.net** → Deploy.
+3. **Updating the front door that already exists** (the normal case - every
+   class link points at its `/exec`, so the URL must not change): Deploy →
+   Manage deployments → the existing FRONT DOOR deployment → edit → **New
+   version** → Deploy. Only when creating it from nothing: Deploy → **New
+   deployment** → Web app → Execute as: **User accessing the web app** → Who has
+   access: **Anyone within c2ken.net** → Deploy.
 4. Record the row in `DEPLOY_LOG.md`: date, `FRONT DOOR`, version, the executeAs
    as READ, the same commit, the same md5s.
 5. Open the new `/exec` once yourself so the one-time permission screen is

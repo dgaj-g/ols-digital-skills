@@ -64,6 +64,21 @@ And two rules the second pass of the control battery paid for:
    chooses a reason. If you add a question kind with a new scaffold, it needs a
    branch there — otherwise the walk cannot answer it, and will say so.
 
+And one rule the live site paid for, on 6 September 2026:
+
+5. **Read the finished screen, not its ingredients.** Twenty-six gates were
+   green when he opened the deployed app and found white text on white, a chip
+   sitting on a book's series line, and a question that told him the same thing
+   twice in two wordings. Every gate read a PART — a file, a string, a rule, an
+   element. Three laws now read the composition: `readability` (rendered-pixel
+   contrast), `overlap` (no two text boxes on one another) and `said-twice` (no
+   instruction repeated inside one question). All three run from `run()` on
+   every recorded state, all three are coverage RIDERS, and each has a control
+   that plants his own fault back: `invisible-class-names`,
+   `text-under-a-floating-chip`, `told-twice-in-two-wordings`. When he finds a
+   fault by *looking* at the live site, ask first whether a law that reads the
+   whole screen would have caught it.
+
 ## Verify
 
 ```

@@ -303,14 +303,96 @@ const OVERLAP = `(() => {
   return out;
 })`;
 
+/* ── THE SAME SENTENCE, ONCE ────────────────────────────────────────────────
+   A screen may not say the same thing twice. He found "Now work it out, then
+   write the value:" sitting directly above "Now work it out, then enter the
+   value:" - one instruction, printed twice, in two wordings, one of them
+   nowhere near the box it was about (F39). Nothing measured it: qa-language
+   reads each string on its own and every string was fine; the walkers checked
+   the state stamps and the state was correct.
+
+   WHAT IS NOT A REPEAT, because a gate that calls these faults is unusable:
+     - short labels and numbers - a keypad has ten of them, a grid has hundreds;
+       only sentences are judged, and a sentence here is 18 characters or more;
+     - a heading repeated as its own breadcrumb, or any pair where one is inside
+       the other;
+     - anything inside a drawing, an ornament, or a hidden subtree. */
+const SAME_TWICE = `(() => {
+  const norm = (t) => t.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\\s+/g, ' ').trim();
+  const own = (el) => Array.from(el.childNodes).filter(n => n.nodeType === 3)
+    .map(n => n.textContent.trim()).join(' ').trim();
+  /* ONE QUESTION AT A TIME. A contents page lists every question in the book,
+     and twelve substitution questions each carry their own "Choose each letter
+     below to put its number in." - twelve legitimate copies of one sentence,
+     one per question. Comparing across a whole page called all twelve a fault
+     (404 findings on the first walk). The fault he found was one QUESTION
+     saying the same thing twice, so that is the box the comparison lives in. */
+  const boxOf = (el) => el.closest('[data-qid], [data-book], .book, li') || el.closest('[data-surface]') || document.body;
+  const seen = new Map();
+  const out = [];
+  let looked = 0;
+  /* INSTRUCTIONS ONLY, AND THE APP SAYS WHICH THOSE ARE. Judging every sentence
+     on the page condemned an exercise heading beside its own navigation chip,
+     a self-evaluation list, and two books' shelf marks - three inventions in
+     three passes. the ui-msg class is this platform's own class for "a sentence
+     telling her what to do", and both halves of the fault he found wore it. An
+     instruction may not be given twice; a heading echoed by the chip that
+     scrolls to it is not a fault, it is a signpost. */
+  document.querySelectorAll('.ui-msg').forEach((el) => {
+    if (el.closest('[hidden], [aria-hidden="true"], [data-ornament], .gj-preview-banner')) return;
+    if (el.ownerSVGElement || el.closest('svg')) return;
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) < 0.05) return;
+    const t = own(el);
+    /* a SENTENCE, not a label. "Ex. M2-02 . CCEA M2" and "Ex. M2-01 . CCEA M2"
+       are one character apart and are two different books' shelf marks. */
+    if (t.length < 25) return;
+    const r = el.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return;
+    const k = norm(t);
+    if (!k || k.split(' ').length < 5) return;
+    /* IDENTICAL, OR ONE WORD APART. A first-words fingerprint was too blunt: a
+       self-evaluation list where every line opens "I can use angles in ..."
+       read as ten repeats of one sentence, which is a gate inventing a fault.
+       What a reworded instruction actually looks like is two sentences of the
+       same length differing in a single word - "then WRITE the value" against
+       "then ENTER the value". Two words apart is a list; one word apart is the
+       same sentence twice. */
+    const box = boxOf(el);
+    if (!seen.has(box)) seen.set(box, []);
+    const inBox = seen.get(box);
+    const words = k.split(' ');
+    let hit = null;
+    for (const prior of inBox) {
+      if (prior.el.contains(el) || el.contains(prior.el)) continue;
+      if (prior.words.length !== words.length) continue;
+      let diff = 0;
+      for (let i = 0; i < words.length && diff < 2; i++) if (words[i] !== prior.words[i]) diff++;
+      if (diff < 2) { hit = prior; break; }
+    }
+    looked++;
+    if (hit) out.push({ twice: true, text: t.slice(0, 60), also: own(hit.el).slice(0, 60) });
+    else inBox.push({ el: el, words: words });
+  });
+  /* HOW MANY IT LOOKED AT, NOT JUST WHAT IT FOUND. A screen with no
+     instruction on it - the shelf, the cover - is not a fault, so this is a
+     PASS. But a law that measures nothing on EVERY screen is asleep, and that
+     is exactly how the readability audit slept through the fault it was
+     written for (F35a). The count travels with the verdict so the walk can
+     settle up at the end and say whether the law was ever awake. */
+  return { findings: out, measured: looked };
+})`;
+
 async function run(page, opts) {
   opts = opts || {};
   const verdicts = {};
   const findings = {};
+  const measured = {};
   async function q(name, src) {
     try {
       const r = await page.evaluate(s => eval(s)(), src);
       const list = Array.isArray(r) ? r : (r && r.findings) || [];
+      if (r && typeof r.measured === 'number') measured[name] = r.measured;
       verdicts[name] = list.length ? 'FAIL' : 'PASS';
       if (list.length) findings[name] = trim(list);
     } catch (e) {
@@ -323,6 +405,7 @@ async function run(page, opts) {
           await new Promise(r => setTimeout(r, 300));
           const r2 = await page.evaluate(s2 => eval(s2)(), src);
           const list2 = Array.isArray(r2) ? r2 : (r2 && r2.findings) || [];
+          if (r2 && typeof r2.measured === 'number') measured[name] = r2.measured;
           verdicts[name] = list2.length ? 'FAIL' : 'PASS';
           if (list2.length) findings[name] = trim(list2);
           return;
@@ -341,6 +424,7 @@ async function run(page, opts) {
   await q('consequence', CONSEQUENCE);
   await q('waits', BUSY_CONTRACT);
   await q('overlap', OVERLAP);
+  await q('said-twice', SAME_TWICE);
   if (opts.clickSafety) await q('click-safety', placed.QUERY);
   /* READABILITY IS NOT OPTIONAL, AND THAT IS THE WHOLE POINT (F35).
      It used to be a separate call "the caller decides how often it is worth
@@ -353,14 +437,21 @@ async function run(page, opts) {
   if (opts.readability !== false) {
     const rd = await readability(page);
     verdicts.readability = rd.verdict;
+    if (typeof rd.measured === 'number') measured.readability = rd.measured;
     if (rd.findings && rd.findings.length) findings.readability = rd.findings;
   }
-  return { verdicts, findings };
+  return { verdicts, findings, measured };
 }
 
 /* the words a contrast finding is reported in - the ratio it got, the floor it
    owed, and the colours, because "1.04:1" is the fault and "white on white" is
    the reason */
+/* the words a repeat is reported in */
+function describeSaidTwice(f) {
+  if (f && f.error) return 'the said-twice pass crashed: ' + f.error;
+  return 'the screen says the same thing twice — "' + f.text + '" and "' + f.also + '"';
+}
+
 /* the words a collision is reported in */
 function describeOverlap(f) {
   if (f && f.error) return 'the overlap pass crashed: ' + f.error;
@@ -482,5 +573,5 @@ async function readability(page) {
   }
 }
 
-module.exports = { run, readability, describeContrast, describeOverlap, OVERLAP, COLOUR_LAW, MUTE_LOCKS, CONSEQUENCE, BUSY_CONTRACT,
+module.exports = { run, readability, describeContrast, describeOverlap, describeSaidTwice, OVERLAP, SAME_TWICE, COLOUR_LAW, MUTE_LOCKS, CONSEQUENCE, BUSY_CONTRACT,
   EXEMPTIONS: [].concat(empty.EXEMPTIONS || [], stateAudit.EXEMPTIONS || [], placed.EXEMPTIONS || [], contrast.EXEMPTIONS || []) };

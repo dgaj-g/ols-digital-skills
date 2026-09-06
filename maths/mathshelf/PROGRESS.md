@@ -181,6 +181,8 @@ the walker can no longer disagree about what a correct attempt is.
 | F37 | **the audience chip floated over the series name.** `.bcover .band` was `position: absolute`, so it took no space and "LETTERS & BALANCE" ran clean underneath it. Nothing measured geometry BETWEEN elements at all - the geometry audit asks only whether a thing stays inside its card | him, on the live shelf | the chip is in the flow beside the series; a new overlap law walks every visible text box and fails on any pair that lands on another |
 | F38 | **the name WAS read, and then thrown away.** `doGet` put her real name in BOOT from her own Google token - the userinfo call returns 200 with `"name": "D Gartland", "given_name": "D", "family_name": "Gartland"`, measured 6 Sept 2026 - and the cover painted it. Then `hello` came back and `me.name = r.name \|\| ''` overwrote it with what the Sheet held, which for a pupil who has never typed a name is nothing. A good name was wiped by an empty one and she was asked to write it herself | a probe that asked Google the question the app asks and printed the answer | `r.name \|\| me.name \|\| ''` - a name she saved wins, and nothing is not a name she saved |
 | F38a | the guard around `autoName_` (`getEffectiveUser` vs `getActiveUser`) was blamed for this first and removed. It was NOT the cause - the probe shows both return the same address - but the guard protected a case that cannot happen (the data deployment serves no page) and could only ever have done harm, so it stays gone. Recorded because a wrong diagnosis that got as far as a deploy belongs on the record next to the right one |
+| F39 | **the substitution board told her the same thing twice, in two wordings.** `commitMethod()` wrote "Now work it out, then write the value:" into the instruction line at the top of the question, and `showAnswer()` put "Now work it out, then enter the value:" directly above the number pad. One sentence, two spellings, and the top one nowhere near the box it was talking about. Twenty-eight gates read the strings table, and none of them read the SCREEN | him, on the live substitution question | the prompt belongs beside the box it is about, once; a new said-twice law walks every instruction line on every recorded state and fails on a pair inside one question that is identical or one word apart |
+| F39a | the said-twice law invented four faults before it was honest: the contents page (404 findings - every exercise title matched every other), the self-evaluation list, the shelf marks, and an exercise heading against its own nav chip. Each narrowing is a rule now: it reads only instruction lines (the ui-msg class, this platform's own class for a sentence addressed to the reader), it compares only inside one question or one book, it ignores anything under 25 characters or 5 words, and a pair must be identical or exactly one token apart. A law that cries wolf is a law he turns off |
 
 ## GATES THAT INVENTED A FAULT AND WERE NARROWED (L6)
 
@@ -259,6 +261,34 @@ Each keeps the correct thing it condemned as its permanent pass-control.
 - NEW HOME: Sheet "OLS - MathShelf" `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y`
   (copied 6 Sept 2026 from `164nmiqGLLr2SktTuPnZy70KQZL9Us4CItMW5VnbCyMY`).
   The old Sheet and the old script project are to be retired, not deleted.
+
+## 6 SEPT 2026, AFTERNOON — THE FOUR FAULTS HE FOUND BY LOOKING
+
+He opened the deployed app and found, in one sitting: a markbook he could not
+read, a chip sitting on a book's series line, a shell too dark to work in, a
+cover asking him to type a name the app already knew, and a question that told
+him the same thing twice. Twenty-six gates were green. Written up as F35-F39.
+
+What went out in response:
+
+- **the shell relit** to light (his ruling: *"B - lighter background, the other
+  one looks terrible"*): `--board-0/1/2`, `--chalk`, `--chalk-muted`,
+  `--gold-ink`, `--link` retuned, nine hardcoded `#fff` shell-text rules moved
+  onto `var(--chalk)`, and seventeen light grounds in `style.css` given an ink
+  of their own in the same rule as their ground.
+- **the name kept**: `me.name = r.name || me.name || ''` — a name she saved
+  wins, and nothing is not a name she saved (F38).
+- **the chip put in the flow** beside the series, not floating over it (F37).
+- **a line that is waiting says so**: `.is-waiting` breathes and carries a
+  spinner, on all five call sites, and does neither under
+  `prefers-reduced-motion`. His words: *"when it says things like 'Checking the
+  passcode...' they should be pulsing to indicate something is happening"*.
+- **the instruction given once**, beside the box it is about (F39).
+
+And three laws that read the finished screen rather than its parts —
+`readability`, `overlap`, `said-twice` — each with a control that plants his own
+fault back, each a coverage RIDER, and each carrying a count of what it looked
+at so a law that measures nothing cannot report green.
 
 ## WHAT WAS DONE TO THE OLD PROJECT (retired, not deleted)
 

@@ -67,6 +67,9 @@ const CONTROLS = [
   /* the chip put back in the corner it used to float in, where a long series
      name runs underneath it — the shelf fault of 6 Sept 2026 */
   { id: 'text-under-a-floating-chip', kind: 'fixture', plant: 'fixture-overlapping-chip', mustFail: /on top of one another/ },
+  /* the substitution board told her twice, in two wordings — the repeated
+     line of 6 Sept 2026, put back where she met it */
+  { id: 'told-twice-in-two-wordings', kind: 'fixture', plant: 'fixture-said-twice', mustFail: /says the same thing twice/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -106,7 +109,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
        closed. The audit is a no-op where there is no placed work, so it costs
        nothing to ask it everywhere and it closes the cell honestly. */
     const a = await AUD.run(page, { clickSafety: true });
-    const row = Object.assign({ surface, state: real || state, expected: state, stood: real === state, width }, extra || {}, { audits: a.verdicts });
+    const row = Object.assign({ surface, state: real || state, expected: state, stood: real === state, width }, extra || {}, { audits: a.verdicts, measured: a.measured });
     sidecar.states.push(row);
     /* THE DOCK IS ITS OWN SURFACE. It is what she works with — the pad, the
        tray, the chips, the arrows — and it changes sub-kind from question to
@@ -126,7 +129,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
     Object.keys(a.findings).forEach(k => {
       (a.findings[k] || []).forEach(f => {
         g.fail(surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + width, k,
-          k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : describe(f));
+          k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : describe(f));
       });
     });
     return row;
@@ -376,6 +379,23 @@ async function walkBook(page, book, width, sidecar, transcript) {
   [...new Set(AIMED.map(a => a.surface + ':' + a.state))].forEach(key => {
     g.check(stoodOn.has(key), key, 'coverage',
       'the walk aimed at ' + key + ' every time and never once stood on it — the drive is not doing what it says');
+  });
+
+  /* AND EVERY LAW THAT COUNTS WHAT IT LOOKED AT HAS TO HAVE LOOKED AT
+     SOMETHING. A screen with no instruction line on it is not a fault, so
+     said-twice passes there honestly - but if it measured nothing on every
+     state of every walk, it is not passing, it is asleep. That is precisely how
+     the readability audit slept through the fault it was written for (F35a),
+     and the only thing that would have shown it is a count. */
+  const looked = {};
+  fs.readdirSync(A.out('walk')).filter(f => /^sit-pupil/.test(f)).forEach(f => {
+    JSON.parse(A.read(A.out('walk/' + f))).states.forEach(st => {
+      Object.keys(st.measured || {}).forEach(k => { looked[k] = (looked[k] || 0) + st.measured[k]; });
+    });
+  });
+  ['said-twice', 'readability'].forEach(k => {
+    g.check(looked[k] > 0, k, 'awake',
+      'the ' + k + ' law reported a verdict on every state of the walk and never once measured anything — a law that looks at nothing cannot fail, and a gate that cannot fail is not a gate');
   });
 
   g.done();
