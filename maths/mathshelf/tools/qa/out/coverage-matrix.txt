@@ -1,91 +1,91 @@
 
-  COVERAGE MATRIX (content hash 2565cd25e9ee, tier fast)
+  COVERAGE MATRIX (content hash a9207b5f8ced, tier fast)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  108     117
-  colour        108     117
-  consequence   108     117
+  click-safety  115     110
+  colour        115     110
+  consequence   115     110
   deploy        3
-  empty         108     117
-  geometry      108     117
+  empty         115     110
+  geometry      115     110
   human-pace    28
   movie         36
-  mute-locks    108     117
-  nested        108     117
-  overlap       82      143
-  readability   92      133
-  said-twice    36      189
-  steps         108     117
+  mute-locks    115     110
+  nested        115     110
+  overlap       107     118
+  readability   102     123
+  said-twice    74      151
+  steps         115     110
   truth         48
   two-homes     13
   verdict       1
-  waits         108     117
-  walk-right    142     2
+  waits         115     110
+  walk-right    144
   walk-wrong    144
 
-  CELLS NOTHING CLOSES (1520)
-  family        cell                                                  why
-  ------------  -------------------------------------------  -------  ---
-  walk-right    algebra > s6 > q23 (form) @768 × walk-right  MISSING
-  walk-right    algebra > s6 > q24 (form) @768 × walk-right  MISSING
-  geometry      cover:first-visit @375 × geometry            MISSING
-  colour        cover:first-visit @375 × colour              MISSING
-  consequence   cover:first-visit @375 × consequence         MISSING
-  click-safety  cover:first-visit @375 × click-safety        MISSING
-  empty         cover:first-visit @375 × empty               MISSING
-  nested        cover:first-visit @375 × nested              MISSING
-  steps         cover:first-visit @375 × steps               MISSING
-  mute-locks    cover:first-visit @375 × mute-locks          MISSING
-  waits         cover:first-visit @375 × waits               MISSING
-  readability   cover:first-visit @375 × readability         MISSING
-  overlap       cover:first-visit @375 × overlap             MISSING
-  said-twice    cover:first-visit @375 × said-twice          MISSING
-  geometry      cover:first-visit @768 × geometry            MISSING
-  colour        cover:first-visit @768 × colour              MISSING
-  consequence   cover:first-visit @768 × consequence         MISSING
-  click-safety  cover:first-visit @768 × click-safety        MISSING
-  empty         cover:first-visit @768 × empty               MISSING
-  nested        cover:first-visit @768 × nested              MISSING
-  steps         cover:first-visit @768 × steps               MISSING
-  mute-locks    cover:first-visit @768 × mute-locks          MISSING
-  waits         cover:first-visit @768 × waits               MISSING
-  readability   cover:first-visit @768 × readability         MISSING
-  overlap       cover:first-visit @768 × overlap             MISSING
-  said-twice    cover:first-visit @768 × said-twice          MISSING
-  geometry      cover:first-visit @1280 × geometry           MISSING
-  colour        cover:first-visit @1280 × colour             MISSING
-  consequence   cover:first-visit @1280 × consequence        MISSING
-  click-safety  cover:first-visit @1280 × click-safety       MISSING
-  empty         cover:first-visit @1280 × empty              MISSING
-  nested        cover:first-visit @1280 × nested             MISSING
-  steps         cover:first-visit @1280 × steps              MISSING
-  mute-locks    cover:first-visit @1280 × mute-locks         MISSING
-  waits         cover:first-visit @1280 × waits              MISSING
-  readability   cover:first-visit @1280 × readability        MISSING
-  overlap       cover:first-visit @1280 × overlap            MISSING
-  said-twice    cover:first-visit @1280 × said-twice         MISSING
-  geometry      cover:returning @375 × geometry              MISSING
-  colour        cover:returning @375 × colour                MISSING
-  consequence   cover:returning @375 × consequence           MISSING
-  click-safety  cover:returning @375 × click-safety          MISSING
-  empty         cover:returning @375 × empty                 MISSING
-  nested        cover:returning @375 × nested                MISSING
-  steps         cover:returning @375 × steps                 MISSING
-  mute-locks    cover:returning @375 × mute-locks            MISSING
-  waits         cover:returning @375 × waits                 MISSING
-  readability   cover:returning @375 × readability           MISSING
-  overlap       cover:returning @375 × overlap               MISSING
-  said-twice    cover:returning @375 × said-twice            MISSING
-  geometry      cover:returning @768 × geometry              MISSING
-  colour        cover:returning @768 × colour                MISSING
-  consequence   cover:returning @768 × consequence           MISSING
-  click-safety  cover:returning @768 × click-safety          MISSING
-  empty         cover:returning @768 × empty                 MISSING
-  nested        cover:returning @768 × nested                MISSING
-  steps         cover:returning @768 × steps                 MISSING
-  mute-locks    cover:returning @768 × mute-locks            MISSING
-  waits         cover:returning @768 × waits                 MISSING
-  readability   cover:returning @768 × readability           MISSING
+  CELLS NOTHING CLOSES (1382)
+  family        cell                                             why
+  ------------  --------------------------------------  -------  ---
+  geometry      cover:first-visit @375 × geometry       MISSING
+  colour        cover:first-visit @375 × colour         MISSING
+  consequence   cover:first-visit @375 × consequence    MISSING
+  click-safety  cover:first-visit @375 × click-safety   MISSING
+  empty         cover:first-visit @375 × empty          MISSING
+  nested        cover:first-visit @375 × nested         MISSING
+  steps         cover:first-visit @375 × steps          MISSING
+  mute-locks    cover:first-visit @375 × mute-locks     MISSING
+  waits         cover:first-visit @375 × waits          MISSING
+  readability   cover:first-visit @375 × readability    MISSING
+  overlap       cover:first-visit @375 × overlap        MISSING
+  said-twice    cover:first-visit @375 × said-twice     MISSING
+  geometry      cover:first-visit @768 × geometry       MISSING
+  colour        cover:first-visit @768 × colour         MISSING
+  consequence   cover:first-visit @768 × consequence    MISSING
+  click-safety  cover:first-visit @768 × click-safety   MISSING
+  empty         cover:first-visit @768 × empty          MISSING
+  nested        cover:first-visit @768 × nested         MISSING
+  steps         cover:first-visit @768 × steps          MISSING
+  mute-locks    cover:first-visit @768 × mute-locks     MISSING
+  waits         cover:first-visit @768 × waits          MISSING
+  readability   cover:first-visit @768 × readability    MISSING
+  overlap       cover:first-visit @768 × overlap        MISSING
+  said-twice    cover:first-visit @768 × said-twice     MISSING
+  geometry      cover:first-visit @1280 × geometry      MISSING
+  colour        cover:first-visit @1280 × colour        MISSING
+  consequence   cover:first-visit @1280 × consequence   MISSING
+  click-safety  cover:first-visit @1280 × click-safety  MISSING
+  empty         cover:first-visit @1280 × empty         MISSING
+  nested        cover:first-visit @1280 × nested        MISSING
+  steps         cover:first-visit @1280 × steps         MISSING
+  mute-locks    cover:first-visit @1280 × mute-locks    MISSING
+  waits         cover:first-visit @1280 × waits         MISSING
+  readability   cover:first-visit @1280 × readability   MISSING
+  overlap       cover:first-visit @1280 × overlap       MISSING
+  said-twice    cover:first-visit @1280 × said-twice    MISSING
+  geometry      cover:returning @375 × geometry         MISSING
+  colour        cover:returning @375 × colour           MISSING
+  consequence   cover:returning @375 × consequence      MISSING
+  click-safety  cover:returning @375 × click-safety     MISSING
+  empty         cover:returning @375 × empty            MISSING
+  nested        cover:returning @375 × nested           MISSING
+  steps         cover:returning @375 × steps            MISSING
+  mute-locks    cover:returning @375 × mute-locks       MISSING
+  waits         cover:returning @375 × waits            MISSING
+  readability   cover:returning @375 × readability      MISSING
+  overlap       cover:returning @375 × overlap          MISSING
+  said-twice    cover:returning @375 × said-twice       MISSING
+  geometry      cover:returning @768 × geometry         MISSING
+  colour        cover:returning @768 × colour           MISSING
+  consequence   cover:returning @768 × consequence      MISSING
+  click-safety  cover:returning @768 × click-safety     MISSING
+  empty         cover:returning @768 × empty            MISSING
+  nested        cover:returning @768 × nested           MISSING
+  steps         cover:returning @768 × steps            MISSING
+  mute-locks    cover:returning @768 × mute-locks       MISSING
+  waits         cover:returning @768 × waits            MISSING
+  readability   cover:returning @768 × readability      MISSING
+  overlap       cover:returning @768 × overlap          MISSING
+  said-twice    cover:returning @768 × said-twice       MISSING
 
   DEBT LEDGER (printed every run)
   cell                     owner / phase            file                state
