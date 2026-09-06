@@ -316,7 +316,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
       /* the cover, then in */
       await W.settle(page);
       const coverState = await page.evaluate(() => (document.querySelector('[data-surface="cover"]') || {}).getAttribute('data-state'));
-      const coverAudit = await AUD.run(page, {});
+      const coverAudit = await AUD.run(page, { clickSafety: true });
       sidecar.states.push({ surface: 'cover', state: coverState || 'returning', width, audits: coverAudit.verdicts });
       transcript.push(await page.evaluate(() => (document.getElementById('cover-name-out') || {}).textContent || ''));
       transcript.push(await page.evaluate(() => (document.getElementById('cover-open') || {}).textContent || ''));

@@ -82,7 +82,7 @@ async function walk(page, width, projector, sidecar, transcript) {
   const record = async (fallbackSurface, fallbackState) => {
     await W.settle(page);
     const s = (await state()) || {};
-    const a = await AUD.run(page, {});
+    const a = await AUD.run(page, { clickSafety: true });
     sidecar.states.push({ surface: s.surface || fallbackSurface, state: s.state || fallbackState, width, projector: !!projector, audits: a.verdicts });
     Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {
       g.fail((s.surface || fallbackSurface) + ':' + (s.state || fallbackState) + ' @' + width + (projector ? 'x720' : ''), k,
