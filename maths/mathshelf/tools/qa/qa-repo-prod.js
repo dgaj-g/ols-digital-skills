@@ -87,10 +87,22 @@ g.check(!/\[ahead |\[behind /.test(sb), 'the branch', 'repo-prod',
 {
   const p = A.app('HANDOVER.md');
   const md = A.exists(p) ? A.read(p) : '';
-  const head = git(['rev-parse', '--short', 'HEAD']) || '';
+  /* THE COMMIT THAT IS LIVE IS NOT ALWAYS HEAD. A commit cannot contain its own
+     hash, so "HANDOVER names HEAD" is a rule no clean tree can ever satisfy: the
+     commit that writes the hash changes the hash. What the handover owes the
+     next person is the commit the DEPLOYED artefacts were built from, which the
+     log's last rows name - so that is what is asked for here, plus proof that
+     the commit is genuinely in this branch's history rather than a hash
+     somebody typed. Narrowed 6 Sept 2026 (L6). */
+  const logMd = A.exists(A.app('server/DEPLOY_LOG.md')) ? A.read(A.app('server/DEPLOY_LOG.md')) : '';
+  const logRows = logMd.split('\n').filter(l => /^\|\s*20\d\d-\d\d-\d\d/.test(l))
+    .map(l => l.split('|').map(x => x.trim()));
+  const liveCommit = logRows.length ? logRows[logRows.length - 1][5] : '';
   if (process.env.MS_POST_DEPLOY === '1') {
-    g.check(md.indexOf(head) >= 0, 'HANDOVER.md', 'repo-prod',
-      'the handover does not name the commit that is live (' + head + ') — the next person to open this has no way to know what they are looking at');
+    g.check(!!liveCommit && md.indexOf(liveCommit) >= 0, 'HANDOVER.md', 'repo-prod',
+      'the handover does not name the commit that is live (' + (liveCommit || 'the log names none') + ') — the next person to open this has no way to know what they are looking at');
+    g.check(!!liveCommit && (git(['merge-base', '--is-ancestor', liveCommit, 'HEAD']) !== null), 'HANDOVER.md', 'repo-prod',
+      'the commit the handover and the log name (' + liveCommit + ') is not in this branch\'s history — a deploy from a commit nobody can check out is a deploy nobody can go back to');
     g.check((md.match(/\/exec/g) || []).length >= 2, 'HANDOVER.md', 'repo-prod',
       'the handover does not carry both /exec URLs — there are two deployments now, and only one of them is the one anybody visits');
   } else {
