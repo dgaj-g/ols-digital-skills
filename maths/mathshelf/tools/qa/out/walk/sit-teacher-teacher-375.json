@@ -4,8 +4,8 @@
  "width": 375,
  "projector": false,
  "tier": "preview",
- "contentHash": "84d92546b752",
- "when": "2026-09-05T21:15:06.200Z",
+ "contentHash": "9d965ba88088",
+ "when": "2026-09-06T08:13:38.552Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -209,7 +209,7 @@
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
-    "colour": "FAIL",
+    "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS"

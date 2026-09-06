@@ -157,6 +157,22 @@ async function walkBook(page, book, width, sidecar, transcript) {
     say(await page.evaluate(() => (document.querySelector('.sec-title') || {}).textContent || ''));
 
     /* the film, to its end */
+    /* THE TWO STATES A FILM REACHES WITHOUT BEING WATCHED. Jumping to a step
+       with a dot renders it with no animation ("instant"), and a pupil who has
+       asked her machine for less motion gets the whole film that way
+       ("reduced-motion"). Both are states the app declares and neither is on
+       the route of someone who watches the film through, so the walk goes and
+       stands on them before it plays the film properly. */
+    const jumped = await page.evaluate(() => {
+      const m = document.querySelector('[data-surface="movie"], .movie');
+      const dot = m && [...m.querySelectorAll('button, .ml-dot, [class*="dot"]')]
+        .filter((b) => !/mc-(fwd|back|play)/.test(b.className))[1];
+      if (!dot) return false;
+      dot.click();
+      return true;
+    });
+    if (jumped) { await W.settle(page); await record('movie', 'instant', { section: si }); }
+
     const movie = await page.evaluate(async (s) => await eval(s)(), W.ACTIONS.playMovieToEnd);
     if (movie.steps) {
       await record('movie', 'end', { section: si });
@@ -267,10 +283,17 @@ async function walkBook(page, book, width, sidecar, transcript) {
      several hundred evaluate calls through one renderer, and the SECOND book at
      a given width was where it kept dying. A walk that cannot finish proves
      nothing; a browser costs a second and a half. */
-  for (const width of WIDTHS) {
+  /* ONE PASS WITH MOTION TURNED DOWN. A pupil who has asked her machine for
+     less motion is served the whole film without animation, and that is a
+     state the app declares - so one width is walked that way rather than the
+     state being left for nobody to stand on. */
+  const PASSES = WIDTHS.map(w => ({ width: w, reduced: false }));
+  PASSES.push({ width: 1280, reduced: true });
+  for (const pass of PASSES) {
+    const width = pass.width;
     for (const book of books) {
       const browser = await B.launch();
-      const page = await B.newPage(browser, { width });
+      const page = await B.newPage(browser, { width, reducedMotion: pass.reduced });
       await page.evaluateOnNewDocument((table) => {
         /* the answer channel, primed before the app boots */
         window.__modelAttempt = (qid, wrong) => {
@@ -309,7 +332,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
       sidecar.consoleErrors = page.__errors.length;
       g.check(page.__errors.length === 0, book + ' @' + width, 'console',
         page.__errors.length + ' console error(s) during the walk — first: ' + (page.__errors[0] || ''));
-      fs.writeFileSync(A.out('walk/sit-pupil-' + book + '-' + width + '.json'), JSON.stringify(sidecar, null, 1));
+      fs.writeFileSync(A.out('walk/sit-pupil-' + book + '-' + width + (pass.reduced ? '-reduced' : '') + '.json'), JSON.stringify(sidecar, null, 1));
       if (width === 1280) {
         fs.writeFileSync(A.out('transcript/' + book + '.txt'),
           transcript.filter(Boolean).filter((v, i, arr) => arr.indexOf(v) === i).join('\n') + '\n');

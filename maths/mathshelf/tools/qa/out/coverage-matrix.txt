@@ -1,9 +1,9 @@
 
-  COVERAGE MATRIX (content hash 9d965ba88088, tier fast)
+  COVERAGE MATRIX (content hash 9d965ba88088, tier full)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
   click-safety  27      198
-  colour        108     117
+  colour        111     114
   consequence   111     114
   deploy        3
   empty         111     114
@@ -19,7 +19,7 @@
   walk-right    144
   walk-wrong    144
 
-  CELLS NOTHING CLOSES (1245)
+  CELLS NOTHING CLOSES (1242)
   family        cell                                                  why
   ------------  -------------------------------------------  -------  ---
   movie         algebra > s1 > movie:instant × movie         MISSING

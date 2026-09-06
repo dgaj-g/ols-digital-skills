@@ -131,7 +131,11 @@ const CONSEQUENCE = `(() => {
   const out = [];
   document.querySelectorAll('[data-surface="question"], .jotter-q').forEach((root) => {
     const state = root.getAttribute('data-state') || '';
-    const locked = /checked-wrong-2|locked|checked-right/.test(state);
+    /* help-strip counts as after: the method help is only ever offered once
+       she has been wrong twice, so a question showing it has already locked.
+       Naming the states that count as "after" is what broke when the question
+       gained that state, so the list is written once, here, beside the law. */
+    const locked = /checked-wrong-2|locked|checked-right|amber|help-strip/.test(state);
     /* the truth is never on the page before the question locks */
     if (!locked && root.querySelector('[data-truth]')) {
       out.push({ law: 'truth-before-lock', qid: root.getAttribute('data-qid') });
