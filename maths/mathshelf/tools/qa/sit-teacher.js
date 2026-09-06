@@ -58,8 +58,15 @@ const COVERS = {
   cells: ['teacher-walk', 'geometry', 'readability', 'colour', 'empty', 'nested', 'strings']
 };
 const CONTROLS = [
-  { id: 'hover-only-legend', kind: 'fixture', plant: 'fixture-staff', mustFail: /only on hover/ },
-  { id: 'unlabelled-stat', kind: 'fixture', plant: 'fixture-staff', mustFail: /names no exercise/ },
+  /* the phrase this waited for - "only on hover" - is not what the gate says
+     and has not been for some time; the gate fired every run and the control
+     read DID NOT FIRE. A control that quotes a sentence must quote the one the
+     gate actually prints. */
+  { id: 'hover-only-legend', kind: 'fixture', plant: 'fixture-staff', mustFail: /a smartboard has no hover/ },
+  /* and this one planted the LEGEND fault and waited for the exercise-card
+     message, which that plant cannot produce. Two controls sharing one plant is
+     how a gate goes years without being asked its own question. */
+  { id: 'unlabelled-stat', kind: 'fixture', plant: 'fixture-unlabelled-stat', mustFail: /names no exercise/ },
   /* THE ONE HE FOUND HIMSELF. The markbook's class names were white on white and
      every gate was green; the readability audit existed, in lib/, and nothing
      called it. This plants that fault back and the walk has to see it. */

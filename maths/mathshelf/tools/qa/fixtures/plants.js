@@ -281,7 +281,16 @@ const PLANTS = {
      the exact fault of 6 Sept 2026, planted so the readability audit has to
      prove it can still see it. ─────────────────────────────────────────── */
   'fixture-invisible-text': (dir) => {
-    edit(dir, 'style.css', "  background: #FFFEFA;\n  color: var(--ink);", "  background: #FFFEFA;");
+    /* IT HAS TO STILL PLANT THE FAULT. This used to delete `color: var(--ink)`
+       from .ledger, which was exactly the fault on 6 September - a light ground
+       with no ink, inheriting the shell's near-white chalk. Then the relight
+       gave seventeen light grounds an ink of their own, so the table inherited
+       a dark colour from elsewhere and deleting this line changed nothing: the
+       control ran GREEN against a fault it was no longer planting, and read as
+       "the gate passed a planted fault" when the gate was fine. The plant now
+       states the fault outright - the words the same colour as the table they
+       are on - which is what a reader actually meets. */
+    edit(dir, 'style.css', "  background: #FFFEFA;\n  color: var(--ink);", "  background: #FFFEFA;\n  color: #FFFEFA;");
   },
 
   /* ── a chip that floats over its neighbour: the band put back into the
@@ -314,6 +323,12 @@ const PLANTS = {
      SURFACES, so the control ran green for four months while saying nothing. ── */
   'fixture-unreachable-surface': (dir) => {
     edit(dir, 'script.js', "    surface(card, 'self-eval', 'open');", "    /* plant: never declared */");
+  },
+
+  /* ── an exercise card that names no exercise: the number with no home ── */
+  'fixture-unlabelled-stat': (dir) => {
+    edit(dir, 'staff.js', "'<span class=\"exno\">Ex ' + (si + 1) + ' \\u00b7 ' + esc(bookTitle(view.act)) + '</span>' +",
+      "'<span class=\"exno\">' + esc(bookTitle(view.act)) + '</span>' +");
   },
 
   /* ── a per-user cache holding something two people must both see ─── */
