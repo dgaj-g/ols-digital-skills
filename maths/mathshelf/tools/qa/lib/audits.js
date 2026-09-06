@@ -569,8 +569,17 @@ async function readability(page) {
           const r = e.getBoundingClientRect();
           return r.width >= window.innerWidth * 0.9 && r.height >= window.innerHeight * 0.9;
         });
-      window.__mzRoot = covering.length ? covering[covering.length - 1]
-        : (on.length ? on[on.length - 1] : document.body);
+      /* AND OTHERWISE THE WHOLE PAGE, NOT THE LAST SURFACE IN IT. Rooting on the
+         last [data-surface] in document order picks whichever screen the app
+         happens to declare last - on a phone that is the DOCK, a strip at the
+         bottom of a 2687px page - so on every question state the audit measured
+         thirteen rows of tray, none of them on screen, and reported "no text to
+         measure". That is F35a again in a different hat: the root chosen by
+         document order rather than by what she is looking at. There is no need
+         to choose at all. Every row is already skipped if it is hidden, covered
+         by something else, or clipped away to nothing, so the page itself is
+         the honest root and it measures more, not less. */
+      window.__mzRoot = covering.length ? covering[covering.length - 1] : document.body;
       window.__mzRoot.setAttribute('data-mz-root', '1');
       return eval(s)([[], [], '[data-mz-root]']);
     }, contrast.COLLECT.toString());

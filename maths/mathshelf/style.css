@@ -248,9 +248,16 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
   padding: calc(var(--sq) * 0.4) var(--sq);
   border-bottom: 1px solid var(--page-edge);
 }
+/* WEIGHT, FOR THE SAME REASON THE SHELF'S SERIES LINE NEEDED IT. Cream on
+   either book accent is 5.92:1 (teal) or 7.51:1 (plum) on paper, and this
+   measured 3.71:1 in rendered pixels: at 10.5px with 0.12em tracking the
+   glyphs are mostly edge, so half of what a reader - or a sampler - sees is
+   the plate showing through. The arithmetic on two colours is not the whole
+   story for a small tracked capital. */
 .movie-head-badge {
   font-family: var(--f-stationery);
   font-size: 10.5px;
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--cream);

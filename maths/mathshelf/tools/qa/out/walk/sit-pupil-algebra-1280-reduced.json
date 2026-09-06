@@ -3,8 +3,8 @@
  "scope": "algebra",
  "width": 1280,
  "tier": "preview",
- "contentHash": "b7edfa35e105",
- "when": "2026-09-06T21:14:04.402Z",
+ "contentHash": "cca273d3f191",
+ "when": "2026-09-06T23:38:17.516Z",
  "states": [
   {
    "surface": "cover",
@@ -44,11 +44,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 31
    }
   },
   {
@@ -70,11 +70,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 31
    }
   },
   {
@@ -96,11 +96,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 0
+    "readability": 34
    }
   },
   {
@@ -124,11 +124,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 0
+    "readability": 34
    }
   },
   {
@@ -150,7 +150,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    }
   },
   {
@@ -174,11 +174,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 0
+    "readability": 28
    }
   },
   {
@@ -200,7 +200,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    }
   },
   {
@@ -224,11 +224,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 28
    }
   },
   {
@@ -252,11 +252,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 28
    }
   },
   {
@@ -280,11 +280,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 28
    }
   },
   {
@@ -308,11 +308,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 23
    }
   },
   {
@@ -336,11 +336,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 23
    }
   },
   {
@@ -364,11 +364,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 23
    }
   },
   {
@@ -392,11 +392,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 25
    }
   },
   {
@@ -420,11 +420,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 25
    }
   },
   {
@@ -448,11 +448,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 25
    }
   },
   {
@@ -476,11 +476,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 0
+    "readability": 25
    }
   },
   {
@@ -507,7 +507,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 21
+    "readability": 32
    }
   },
   {
@@ -530,11 +530,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 21
+    "readability": 32
    }
   },
   {
@@ -556,11 +556,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 28
    }
   },
   {
@@ -582,11 +582,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 28
    }
   },
   {
@@ -608,11 +608,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 0
+    "readability": 32
    }
   },
   {
@@ -636,11 +636,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 0
+    "readability": 32
    }
   },
   {
@@ -662,7 +662,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    }
   },
   {
@@ -686,11 +686,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 0
+    "readability": 32
    }
   },
   {
@@ -712,7 +712,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    }
   },
   {
@@ -736,11 +736,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 27
    }
   },
   {
@@ -764,11 +764,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 27
    }
   },
   {
@@ -792,11 +792,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 27
    }
   },
   {
@@ -820,11 +820,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 28
    }
   },
   {
@@ -848,11 +848,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 28
    }
   },
   {
@@ -876,11 +876,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 28
    }
   },
   {
@@ -904,11 +904,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 30
    }
   },
   {
@@ -932,11 +932,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 30
    }
   },
   {
@@ -960,11 +960,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 30
    }
   },
   {
@@ -988,11 +988,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 0
+    "readability": 30
    }
   },
   {
@@ -1019,7 +1019,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 21
+    "readability": 32
    }
   },
   {
@@ -1042,11 +1042,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 21
+    "readability": 32
    }
   },
   {
@@ -1068,11 +1068,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 32
    }
   },
   {
@@ -1094,11 +1094,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 32
    }
   },
   {
@@ -1120,11 +1120,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 29
    }
   },
   {
@@ -1148,11 +1148,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 29
    }
   },
   {
@@ -1174,7 +1174,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    }
   },
   {
@@ -1198,11 +1198,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 40
    }
   },
   {
@@ -1224,7 +1224,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    }
   },
   {
@@ -1248,11 +1248,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 30
    }
   },
   {
@@ -1276,11 +1276,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 30
    }
   },
   {
@@ -1304,11 +1304,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 30
    }
   },
   {
@@ -1332,11 +1332,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 25
    }
   },
   {
@@ -1360,11 +1360,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 25
    }
   },
   {
@@ -1388,11 +1388,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 25
    }
   },
   {
@@ -1416,11 +1416,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 0
+    "readability": 30
    }
   },
   {
@@ -1444,11 +1444,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 0
+    "readability": 30
    }
   },
   {
@@ -1472,11 +1472,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 0
+    "readability": 30
    }
   },
   {
@@ -1500,11 +1500,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 0,
-    "readability": 0
+    "readability": 31
    }
   },
   {
@@ -1531,7 +1531,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 21
+    "readability": 32
    }
   },
   {
@@ -1554,11 +1554,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 0,
-    "readability": 21
+    "readability": 32
    }
   },
   {
@@ -1580,11 +1580,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 31
    }
   },
   {
@@ -1606,11 +1606,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 31
    }
   },
   {
@@ -1632,11 +1632,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 0
+    "readability": 37
    }
   },
   {
@@ -1660,11 +1660,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 0
+    "readability": 37
    }
   },
   {
@@ -1686,7 +1686,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    }
   },
   {
@@ -1710,11 +1710,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 0
+    "readability": 39
    }
   },
   {
@@ -1736,7 +1736,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    }
   },
   {
@@ -1760,11 +1760,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 35
    }
   },
   {
@@ -1788,11 +1788,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 35
    }
   },
   {
@@ -1816,11 +1816,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 35
    }
   },
   {
@@ -1844,11 +1844,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 29
    }
   },
   {
@@ -1872,11 +1872,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 29
    }
   },
   {
@@ -1900,11 +1900,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 29
    }
   },
   {
@@ -1928,11 +1928,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 32
    }
   },
   {
@@ -1956,11 +1956,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 32
    }
   },
   {
@@ -1984,11 +1984,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 32
    }
   },
   {
@@ -2012,11 +2012,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 0
+    "readability": 31
    }
   },
   {
@@ -2043,7 +2043,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 21
+    "readability": 30
    }
   },
   {
@@ -2066,11 +2066,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 21
+    "readability": 30
    }
   },
   {
@@ -2092,11 +2092,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 33
    }
   },
   {
@@ -2118,11 +2118,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 33
    }
   },
   {
@@ -2144,11 +2144,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 41
    }
   },
   {
@@ -2172,11 +2172,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 41
    }
   },
   {
@@ -2198,7 +2198,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    }
   },
   {
@@ -2222,11 +2222,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 39
    }
   },
   {
@@ -2248,7 +2248,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    }
   },
   {
@@ -2272,11 +2272,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 31
    }
   },
   {
@@ -2300,11 +2300,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 31
    }
   },
   {
@@ -2328,11 +2328,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 31
    }
   },
   {
@@ -2356,11 +2356,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 33
    }
   },
   {
@@ -2384,11 +2384,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 33
    }
   },
   {
@@ -2412,11 +2412,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 33
    }
   },
   {
@@ -2440,11 +2440,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 0
+    "readability": 37
    }
   },
   {
@@ -2468,11 +2468,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 0
+    "readability": 37
    }
   },
   {
@@ -2496,11 +2496,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 0
+    "readability": 37
    }
   },
   {
@@ -2524,11 +2524,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 0,
-    "readability": 0
+    "readability": 36
    }
   },
   {
@@ -2555,7 +2555,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 21
+    "readability": 33
    }
   },
   {
@@ -2578,11 +2578,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 0,
-    "readability": 21
+    "readability": 33
    }
   },
   {
@@ -2604,11 +2604,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 33
    }
   },
   {
@@ -2630,11 +2630,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 33
    }
   },
   {
@@ -2656,11 +2656,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 38
    }
   },
   {
@@ -2684,11 +2684,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 38
    }
   },
   {
@@ -2710,7 +2710,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    }
   },
   {
@@ -2734,11 +2734,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 0
+    "readability": 36
    }
   },
   {
@@ -2760,7 +2760,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    }
   },
   {
@@ -2784,11 +2784,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 28
    }
   },
   {
@@ -2812,11 +2812,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 28
    }
   },
   {
@@ -2840,11 +2840,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
-    "readability": 0
+    "readability": 28
    }
   },
   {
@@ -2868,11 +2868,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 32
    }
   },
   {
@@ -2896,11 +2896,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 32
    }
   },
   {
@@ -2924,11 +2924,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 2,
-    "readability": 0
+    "readability": 32
    }
   },
   {
@@ -2952,11 +2952,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 0
+    "readability": 33
    }
   },
   {
@@ -2980,11 +2980,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 0
+    "readability": 33
    }
   },
   {
@@ -3008,11 +3008,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 0
+    "readability": 33
    }
   },
   {
@@ -3036,11 +3036,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "EMPTY"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 0,
-    "readability": 0
+    "readability": 31
    }
   },
   {
@@ -3067,7 +3067,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 21
+    "readability": 32
    }
   },
   {
@@ -3090,11 +3090,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 0,
-    "readability": 21
+    "readability": 32
    }
   },
   {
@@ -3120,7 +3120,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 4
+    "readability": 18
    }
   },
   {
@@ -3146,7 +3146,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 4
+    "readability": 18
    }
   },
   {
@@ -3171,7 +3171,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 16
+    "readability": 17
    }
   }
  ],
