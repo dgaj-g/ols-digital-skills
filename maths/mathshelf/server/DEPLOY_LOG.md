@@ -12,6 +12,10 @@ log showing the deployment actually ran.
 |---|---|---|---|---|---|---|
 | 2026-09-06 11:50 | DATA | Version 3 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | 4517a44 | 2b1dd79c6f82c132c53fa52a70aa0d70 | e80ab2c3f9c0af414487fcc188a2e970 |
 | 2026-09-06 11:57 | FRONT DOOR | Version 4 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 4517a44 | 2b1dd79c6f82c132c53fa52a70aa0d70 | e80ab2c3f9c0af414487fcc188a2e970 |
+| 2026-09-06 14:15 | FRONT DOOR | Version 5 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | f85e74b | cc1f3c18faf93930158925cb3ac5ce8b | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-06 14:18 | DATA | Version 6 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | f85e74b | cc1f3c18faf93930158925cb3ac5ce8b | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-06 14:35 | FRONT DOOR | Version 7 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 4683ad1 | bd46039afafdbde77a5d76cdf7701550 | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-06 14:38 | DATA | Version 8 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | 4683ad1 | bd46039afafdbde77a5d76cdf7701550 | d09615a9abc0998de9e5b7ec4ea4239a |
 
 ## Proof rows
 
@@ -39,6 +43,24 @@ The `doPost` row is the one that matters and the one that was missing all
 morning (F33, F34): an `apiCall` with no `doPost` beside it is a relay talking
 to a sign-in page. The same chain ran again at 11:57:33-11:57:41, before the
 shared secret was rotated, and again after it - so the rotation is proved too.
+
+**Versions 5-7, 6 September 2026 afternoon.** The relight and the two new laws
+(readability, overlap) went out as Version 5 / Version 6, both from `f85e74b`.
+Version 7 was the front door only, from `4683ad1`, on the reasoning that DATA
+serves no page and its `Code.gs` was byte-identical. `qa-manifest` refused it:
+"the two deployments were cut from different commits - both artefacts come from
+ONE build". It is right and the reasoning was wrong - the DATA version still
+carries a snapshot of the whole project, `Index.html` included, and a pair that
+does not match is a pair nobody can reason about later. Version 8 cuts DATA from
+the same commit.
+
+Proved on the live cover after Version 7, which is what the whole two-deployment
+design exists for:
+
+```
+Welcome
+D Gartland          ← read from her own Google token, nothing typed
+```
 
 ### What is live, in one line each
 
