@@ -296,8 +296,14 @@ const PLANTS = {
      in two different wordings. This puts the top line back. ── */
   'fixture-said-twice': (dir) => {
     edit(dir, 'jotter.js',
-      "        instr.textContent = '';\n        exprBox.style.display = 'none'; givenRow.style.display = 'none';\n        showAnswer();",
+      "        instr.remove();\n        exprBox.style.display = 'none'; givenRow.style.display = 'none';\n        showAnswer();",
       "        instr.textContent = 'Now work it out, then write the value:';\n        exprBox.style.display = 'none'; givenRow.style.display = 'none';\n        showAnswer();");
+    /* THE PLANT HAS TO MATCH THE CODE IT PLANTS INTO. This anchored on
+       `instr.textContent = ''` and the fix for the empty-paragraph fault
+       changed that line to `instr.remove()`, so the edit silently found
+       nothing, the control errored before it ever ran the gate, and no log was
+       written at all. A plant that no longer applies is a control that has
+       quietly stopped existing. */
   },
 
   /* ── A SCREEN THE APP CLAIMS AND THE WALK CAN NEVER REACH. The card still
