@@ -1040,7 +1040,12 @@
         redrawCurrent();
         checkBtn.disabled = true;                       // not ready until the value is keyed
         setLockedWhy(checkBtn, T.substAnswerPrompt);
-        instr.textContent = T.substMethodPrompt;
+        /* THE SAME INSTRUCTION, ONCE. This line used to say "Now work it out,
+           then write the value:" while showAnswer() put "Now work it out, then
+           enter the value:" directly above the box - the same sentence twice, in
+           two wordings, one of them nowhere near the thing it was talking about
+           (F39). The prompt belongs beside the box it is about. */
+        instr.textContent = '';
         exprBox.style.display = 'none'; givenRow.style.display = 'none';
         showAnswer();
         save();
@@ -1063,7 +1068,7 @@
       window.GJ.setState(dock, 'dock', 'tray');
       renderExpr(); renderGivens();
       if (hasSub) {                                     // resume: method already committed
-        instr.textContent = T.substMethodPrompt;
+        instr.textContent = '';
         exprBox.style.display = 'none'; givenRow.style.display = 'none';
         if (!hasAns) showAnswer();
       }

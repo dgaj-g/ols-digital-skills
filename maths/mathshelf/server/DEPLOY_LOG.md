@@ -16,6 +16,7 @@ log showing the deployment actually ran.
 | 2026-09-06 14:18 | DATA | Version 6 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | f85e74b | cc1f3c18faf93930158925cb3ac5ce8b | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-06 14:35 | FRONT DOOR | Version 7 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 4683ad1 | bd46039afafdbde77a5d76cdf7701550 | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-06 14:38 | DATA | Version 8 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | 4683ad1 | bd46039afafdbde77a5d76cdf7701550 | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-06 14:52 | DATA | Version 9 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | c921fec | 8a6dbac0e19b2f4b3f772494b551b2be | d09615a9abc0998de9e5b7ec4ea4239a |
 
 ## Proof rows
 

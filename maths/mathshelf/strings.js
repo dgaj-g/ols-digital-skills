@@ -141,7 +141,6 @@
       /* the jotter: substitution questions */
       substIntro: 'Choose each letter below to put its number in.',
       substGivenLabel: 'given:',
-      substMethodPrompt: 'Now work it out, then write the value:',
       substAnswerPrompt: 'Now work it out, then enter the value:',
       substValueLabel: 'The value',
 

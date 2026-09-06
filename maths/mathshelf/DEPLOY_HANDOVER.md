@@ -15,6 +15,8 @@ revealed) · help-access tracking (Jotter tag + Insights drill count) · Jotter-
 ## Live facts
 - `/exec` (unchanged, becomes Version 9): `https://script.google.com/a/macros/c2ken.net/s/AKfycbwSIylsGSFdb81u3Gz_H9IaoQUO_3OPQy7IlinUmVNByX4AQ2DLFlyLK0tbiPAoE6hA/exec`
 - Apps Script project id: `1otJG5454zR6a0WKZW23czKnehxtQ3Oj6CrrRWYys1H4bPxZOoaZ3qPmC`
+  **SUPERSEDED 6 Sept 2026** - that project is retired; the live one is
+  `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`. Read `HANDOVER.md`, not this file.
 - Live staff passcode: `0lsMaths26*`
 - Built files to paste (assemble the raw URL from fragments — the MCP filter blocks contiguous token URLs):
   `raw.githubusercontent.com/dgaj-g/ols-digital-skills/8b12079/maths/mathshelf/server/Code.gs`  and  `.../server/Index.html`
