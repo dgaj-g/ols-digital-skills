@@ -346,9 +346,22 @@ async function walk(page, width, projector, sidecar, transcript) {
   fs.writeFileSync(A.out('transcript/teacher.txt'),
     transcript.filter(Boolean).filter((v, i, arr) => arr.indexOf(v) === i).join('\n') + '\n');
 
-  /* the REQUIRED teacher surface set, from the app's own registry (L3) */
-  const reg = A.exists(A.out('surfaces.json')) ? JSON.parse(A.read(A.out('surfaces.json'))) : {};
+  /* the REQUIRED teacher surface set, from the app's own registry (L3).
+     THE SAME HOLE THE PUPIL WALK HAD: this read a file another gate writes, and
+     the control sandbox deletes that folder before every run. With no file the
+     register was {}, every surface filtered out, and the check counted nothing
+     and passed. script.js is the app's own statement of what it can render and
+     it is always there. */
+  let reg = A.exists(A.out('surfaces.json')) ? JSON.parse(A.read(A.out('surfaces.json'))) : {};
+  if (!Object.keys(reg).length) {
+    const src = A.read(A.app('script.js'));
+    const block = (src.match(/GJ\.app\.surfaces\s*=\s*\{([\s\S]*?)\n\s*\};/) || [])[1] || '';
+    reg = {};
+    (block.match(/^\s*'?[-a-zA-Z]+'?\s*:/gm) || []).forEach(m => { reg[m.replace(/[\s':]/g, '')] = true; });
+  }
   const need = COVERS.surfaces.filter(s => reg[s]);
+  g.check(need.length > 0, 'surfaces', 'coverage',
+    'the walk could not find out which screens the markbook says it has, so it checked none of them — a coverage check made of nothing is not a pass');
   const reached = new Set();
   fs.readdirSync(A.out('walk')).filter(f => /^sit-teacher/.test(f)).forEach(f => {
     JSON.parse(A.read(A.out('walk/' + f))).states.forEach(s => reached.add(s.surface));

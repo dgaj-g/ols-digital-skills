@@ -373,9 +373,27 @@ async function walkBook(page, book, width, sidecar, transcript) {
   /* THE REQUIRED SURFACE SET, derived from the app's own registry (L3): a walk
      that reached fewer surfaces than the app declares is SHORT, and short
      coverage is a failure, never a note. */
-  const reg = A.exists(A.out('surfaces.json')) ? JSON.parse(A.read(A.out('surfaces.json'))) : {};
+  /* THE APP'S OWN DECLARATION, AND A FALLBACK THAT IS NOT SILENCE. This read
+     out/surfaces.json and nothing else - a file another gate writes, which the
+     control sandbox deletes before every run. With no file the register was {},
+     every surface filtered out, and the check counted nothing and passed. That
+     is why `unreachable-planted-fault` had never once fired: not the plant, not
+     the gate, an empty list. The declaration is read from script.js when the
+     file is not there, because script.js is the app's own statement of what it
+     can render and it is always present. */
+  let reg = A.exists(A.out('surfaces.json')) ? JSON.parse(A.read(A.out('surfaces.json'))) : {};
+  if (!Object.keys(reg).length) {
+    const src = A.read(A.app('script.js'));
+    const block = (src.match(/GJ\.app\.surfaces\s*=\s*\{([\s\S]*?)\n\s*\};/) || [])[1] || '';
+    reg = {};
+    (block.match(/^\s*'?[-a-zA-Z]+'?\s*:/gm) || []).forEach(m => {
+      reg[m.replace(/[\s':]/g, '')] = true;
+    });
+  }
   const pupilSurfaces = ['cover', 'shelf', 'book-contents', 'movie', 'question', 'dock', 'self-eval', 'book-end']
     .filter(s => reg[s]);
+  g.check(pupilSurfaces.length > 0, 'surfaces', 'coverage',
+    'the walk could not find out which screens the app says it has, so it checked none of them — a coverage check made of nothing is not a pass');
   const reached = new Set();
   fs.readdirSync(A.out('walk')).filter(f => /^sit-pupil/.test(f)).forEach(f => {
     JSON.parse(A.read(A.out('walk/' + f))).states.forEach(s => reached.add(s.surface));
