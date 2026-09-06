@@ -679,7 +679,13 @@
         msg.textContent = (r && r.error === 'unknown-class') ? (T.coverWrongClass || '') : (T.coverNoServer || '');
         return;
       }
-      me.email = r.email; me.name = r.name || ''; me.acts = r.acts || {};
+      /* AN ABSENT SAVED NAME IS NOT A SAVED NAME (F38). This overwrote the name
+         the front door had just read from her own Google token with whatever the
+         Sheet held - and when the Sheet held nothing, it wiped a perfectly good
+         "D Gartland" and put the "write your name" box in front of her. The
+         comment above says a name she has saved herself wins, and it should;
+         nothing is not a name she saved. */
+      me.email = r.email; me.name = r.name || me.name || ''; me.acts = r.acts || {};
       me.summaries = r.summaries || {}; me.offline = !!r.offline;
       openBtn.disabled = false;
       msg.textContent = '';
