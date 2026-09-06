@@ -47,3 +47,19 @@ to walk, and the walk says so rather than inventing one._
 | cell | why it cannot be walked |
 |---|---|
 | algebra q5 × walk-wrong | "x + 8x − 5x" is three terms of one family, so the collect screen has ONE bin and the app does the arithmetic once the tiles are sorted. A pupil cannot mis-sort, and so cannot get this question wrong on this screen. `sit-confused` reports it and moves on; the other three collect questions have two families and a real wrong answer. |
+
+## States the app declares and no walk has yet stood on (6 Sept 2026)
+
+_Written down rather than left as a red nobody reads. Each is a real screen the
+app can render; none is a fault found. The walkers reach 40 of the 77 states in
+the registry; these are the rest, with what it would take to walk each._
+
+| cell | what it would take | owner / phase |
+|---|---|---|
+| `cover:first-visit`, `cover:returning`, `cover:fallback-name`, `cover:wrong-class`, `cover:busy`, `cover:staff` | a cover pass that clears storage between each and drives a bad class code, a slow server and the staff route | the next session — cheap, one small walker |
+| `class-page:loading-cold`, `class-page:empty-class`, `class-page:no-flags`, `class-page:error`, `set-up:error` | a class with no pupils, a class with nothing flagged, and a mocked server error; the teacher walk drives a seeded demo class only | the next session |
+| `question:amber`, `question:locked-restore`, `question:resume-mid` | answer-with-no-working, then a reload mid-attempt; the model attempts always show working, so amber needs an attempt written for it | the next session — needs one new model attempt |
+| `dock:numpad`, `dock:numpad-fraction`, `dock:nudge-pad`, `dock:disabled-explained`, `dock:keyboard-hidden` | the dock is recorded once per question and only reports the state it happens to be in; it needs recording again after each dock change | the next session |
+| `movie:nudge-banner`, `movie:reduced-motion` on the confused/teacher walks | a teacher nudge delivered to a pupil, and the reduced-motion pass extended past sit-pupil | the next session |
+| `set-up:add-class-busy`, `set-up:delete-armed`, `set-up:csv-copied`, `set-up:csv-fallback-box`, `set-up:link-qr-modal`, `set-up:tickboxes` | the teacher walk drives these but the demo store answers instantly, so the busy states pass through faster than a record can catch them | the next session — record on the way in, not after |
+| `book-view:flicking`, `book-view:worth-a-look-open`, `class-page:book-switch`, `question-view:ink-open`, `question-view:loading-progressive`, `full-grid:sticky-scroll` | driven by the teacher walk; each depends on demo data that happens not to produce the condition (a second book ticked, an amber verdict to fold a corner on) | the next session — needs a richer demo class |

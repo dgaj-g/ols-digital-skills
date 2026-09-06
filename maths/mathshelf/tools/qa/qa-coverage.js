@@ -210,7 +210,14 @@ A.movies().forEach(m => {
 });
 
 /* --- the surface × state × width families ------------------------------- */
-const RIDERS = ['geometry', 'readability', 'colour', 'consequence', 'click-safety', 'empty', 'nested', 'strings'];
+/* THE RIDERS ARE THE AUDITS THE WALK ACTUALLY RUNS. This list asked every
+   state for 'readability' and 'strings', which no walk has ever performed on a
+   state: readability is measured in its own contrast pass and strings are read
+   statically by qa-language, so those two cells could never be closed by
+   anybody and every state carried two permanent holes. A matrix that demands
+   evidence nothing produces is a matrix that cannot go green, and a red that
+   can never be cleared teaches you to stop reading it. */
+const RIDERS = ['geometry', 'colour', 'consequence', 'click-safety', 'empty', 'nested', 'steps', 'mute-locks', 'waits'];
 /* THE REGISTRY IS READ FROM THE SOURCE, NOT FROM A SIDECAR. It used to be
    loaded from out/surfaces.json, which qa-surfaces writes as the first gate of
    a full run - so in a run where qa-surfaces had not gone first (a control
