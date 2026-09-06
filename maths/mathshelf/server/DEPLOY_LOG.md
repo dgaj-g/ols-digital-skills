@@ -17,6 +17,8 @@ log showing the deployment actually ran.
 | 2026-09-06 14:35 | FRONT DOOR | Version 7 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 4683ad1 | bd46039afafdbde77a5d76cdf7701550 | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-06 14:38 | DATA | Version 8 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | 4683ad1 | bd46039afafdbde77a5d76cdf7701550 | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-06 14:52 | DATA | Version 9 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | c921fec | 8a6dbac0e19b2f4b3f772494b551b2be | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-06 15:36 | DATA | Version 10 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | da8437b | cd9e10978a41ddec7af4f69eedbf88d5 | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-06 15:38 | FRONT DOOR | Version 11 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | da8437b | cd9e10978a41ddec7af4f69eedbf88d5 | d09615a9abc0998de9e5b7ec4ea4239a |
 
 ## Proof rows
 
@@ -62,6 +64,33 @@ design exists for:
 Welcome
 D Gartland          ← read from her own Google token, nothing typed
 ```
+
+**DATA Version 10 and FRONT DOOR Version 11, cut from `da8437b`.** One visit to
+the front door, 6 Sept 2026 15:39:02-15:39:16, quoted from the Executions log.
+It is the whole chain in five rows: the browser reaches Version 11 and nothing
+else; Version 11 reaches Version 10 twice, server-to-server, with the secret.
+
+```
+Version 11  doGet    Web app  6 Sept 2026, 15:39:02   2.83 s   Completed
+Version 11  apiCall  Web app  6 Sept 2026, 15:39:07   4.724 s  Completed
+Version 10  doPost   Web app  6 Sept 2026, 15:39:10   1.717 s  Completed
+Version 11  apiCall  Web app  6 Sept 2026, 15:39:13   9.054 s  Completed
+Version 10  doPost   Web app  6 Sept 2026, 15:39:16   5.383 s  Completed
+```
+
+What that visit put on the screen, on the live front door, with nothing typed:
+the light shell, "Welcome / D Gartland" read from his own Google token, and
+"Getting your details..." carrying a turning spinner until the relay answered
+and the button lit. The repeated instruction is gone from the artefact both
+deployments serve - asked of the live DATA page directly, "Now work it out, then
+write the value" returns nothing and "Now work it out, then enter the value"
+returns the one copy that belongs beside the number pad.
+
+**What the automation could not do (said plainly, DFM 213).** Apps Script serves
+the app inside a cross-origin sandboxed iframe, so a synthetic click reaches the
+outer document and stops there. Everything above is read from the composited
+page, from the Executions log and from the DATA artefact over HTTP. Pressing the
+buttons is the eight-item list below, and it is his.
 
 ### What is live, in one line each
 

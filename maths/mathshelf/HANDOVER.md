@@ -102,12 +102,12 @@ class re-seeds, and always use `?nointro`.
 
 ## What is live
 
-**Live since 6 September 2026, from commit `4683ad1`.**
+**Live since 6 September 2026, from commit `da8437b`.**
 
 | | /exec | version | executeAs | who can reach it |
 |---|---|---|---|---|
-| FRONT DOOR (everybody) | `https://script.google.com/a/macros/c2ken.net/s/AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP/exec` | Version 7, 14:35 | USER_ACCESSING | anyone in `c2ken.net` |
-| DATA (nobody; the relay only) | `https://script.google.com/macros/s/AKfycbyO6pQnLHujpost5Otxe9oJB2iFdbno3Kxxw5RU51A9prKiqDMrIm__UWuLEDn2f4wo/exec` | Version 8, 14:38 | USER_DEPLOYING | anyone who holds the shared secret — see `server/DEPLOY.md` |
+| FRONT DOOR (everybody) | `https://script.google.com/a/macros/c2ken.net/s/AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP/exec` | Version 11, 15:38 | USER_ACCESSING | anyone in `c2ken.net` |
+| DATA (nobody; the relay only) | `https://script.google.com/macros/s/AKfycbyO6pQnLHujpost5Otxe9oJB2iFdbno3Kxxw5RU51A9prKiqDMrIm__UWuLEDn2f4wo/exec` | Version 10, 15:36 | USER_DEPLOYING | anyone who holds the shared secret — see `server/DEPLOY.md` |
 
 Apps Script project `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`,
 Sheet `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y`, both titled
