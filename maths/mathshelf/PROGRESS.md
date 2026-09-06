@@ -173,6 +173,7 @@ the walker can no longer disagree about what a correct attempt is.
 | F31 | qa-fonts reported **Schibsted Grotesk — the interface face on every screen — as not loading.** `document.fonts.check()` asks whether the browser has already painted with a face, and a headless page is never painted | the browser battery | the gate asks the face to LOAD, which is the question it means |
 | F32 | the film's gold F/Z/U tracing line read to the colour law as **gold on a reading surface**, on every angles question the film had run over | the walk, at three widths | the trace declares itself an ornament; the film is unchanged (the three colours are meant to accumulate) |
 | F33 | **the relay never reached the data deployment at all.** DATA is published to "Anyone within the domain", and the front door's `UrlFetchApp.fetch` carried no credentials: Google answered it with the sign-in page instead of running `doPost`. Every pupil would have met a dead cover on the first morning | the live Executions log, after the front door was cut - `apiCall` completed and there was NO `doPost` row to match it | the relay presents `ScriptApp.getOAuthToken()` as a bearer; the caller is the pupil, and she is in the domain. qa-two-homes already printed the blind spot in its own NOT MEASURED line: "the relay hop is exercised sandbox-to-sandbox; the real network is not called" |
+| F34 | **the bearer did not open the door either: `RELAYDIAG code=401`.** A web app published to "Anyone within the domain" cannot be called server-to-server at all - `UrlFetchApp` carries no session, and a token from `ScriptApp.getOAuthToken()` is refused unless the caller also holds a Drive scope, which would put "see and download all your Drive files" on every pupil's consent screen | a temporary `console.log` of the response code, run from the editor against the live DATA deployment | DATA is published to **Anyone**, and the shared secret (256 bits, script property only, URL never sent to a browser) is the whole lock - written up in `server/DEPLOY.md` under WHY DATA IS PUBLISHED TO ANYONE |
 
 ## GATES THAT INVENTED A FAULT AND WERE NARROWED (L6)
 
@@ -229,3 +230,25 @@ Each keeps the correct thing it condemned as its permanent pass-control.
 - **There is no requestAnimationFrame in a headless page.** Not a throttled
   one - none. Any promise that waits on a frame waits for ever, and the app
   code that does it is the code a walk can never get past.
+
+## 6 SEPT 2026 — THE DEPLOY, AND WHY IT MOVED HOUSE
+
+- FRONT DOOR cut on the old project as Version 27 (10:46). It served the page,
+  but the relay never arrived: no `doPost` row beside the `apiCall` row. Cause
+  (F33): the OAuth grant on the deployer's account dated from 18 June and had
+  never carried `script.external_request`, so `UrlFetchApp.fetch` threw before
+  it reached the network. The relay now sends the caller's bearer as well.
+- Removing that stale grant put the consent screen back in front of us, and the
+  consent screen read **"OLS Maths - Glass Jotter (Unverified)"** - a dead name
+  on the first screen a pupil ever sees. The name is held on the OAuth client
+  Apps Script minted in June; renaming the script does not touch it, and a
+  reload proved it was not a cache.
+- Damien's call: rebuild in a project whose consent screen is right. Taken the
+  cheaper road to the same place - COPY THE SHEET. A copied spreadsheet brings
+  its bound script with it as a NEW project with a NEW OAuth client, so the
+  consent name is the new name, the script stays BOUND (no `openById`, no code
+  change, no widening of `spreadsheets.currentonly` onto pupils), and the Sheet
+  gets the rename it was owed anyway.
+- NEW HOME: Sheet "OLS - MathShelf" `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y`
+  (copied 6 Sept 2026 from `164nmiqGLLr2SktTuPnZy70KQZL9Us4CItMW5VnbCyMY`).
+  The old Sheet and the old script project are to be retired, not deleted.
