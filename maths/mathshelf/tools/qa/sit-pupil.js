@@ -97,7 +97,12 @@ async function walkBook(page, book, width, sidecar, transcript) {
       'the walk went to record "' + state + '" and no ' + surface + ' was on screen at all');
     if (real && real !== state) g.note('expected ' + surface + ':' + state + ', stood on ' + surface + ':' + real + (extra && extra.qid ? ' (' + extra.qid + ')' : ''));
     AIMED.push({ surface, state, got: real });
-    const a = await AUD.run(page, { clickSafety: surface === 'question' });
+    /* EVERY RIDER ON EVERY STATE. Running the click-safety audit only on
+       question screens meant it never reported a pass anywhere else, and the
+       coverage matrix counts a rider that did not report as a cell nobody
+       closed. The audit is a no-op where there is no placed work, so it costs
+       nothing to ask it everywhere and it closes the cell honestly. */
+    const a = await AUD.run(page, { clickSafety: true });
     const row = Object.assign({ surface, state: real || state, expected: state, stood: real === state, width }, extra || {}, { audits: a.verdicts });
     sidecar.states.push(row);
     /* THE DOCK IS ITS OWN SURFACE. It is what she works with — the pad, the

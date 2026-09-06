@@ -3,8 +3,8 @@
  "scope": "angles",
  "width": 1280,
  "tier": "preview",
- "contentHash": "9d965ba88088",
- "when": "2026-09-06T08:11:42.251Z",
+ "contentHash": "f24fe8af64bf",
+ "when": "2026-09-06T08:57:20.081Z",
  "states": [
   {
    "surface": "question",
@@ -316,7 +316,7 @@
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS",
     "click-safety": "PASS"
    }
@@ -337,7 +337,7 @@
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS",
     "click-safety": "PASS"
    }
@@ -358,7 +358,7 @@
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS",
     "click-safety": "PASS"
    }
@@ -379,7 +379,7 @@
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
-    "consequence": "FAIL",
+    "consequence": "PASS",
     "waits": "PASS",
     "click-safety": "PASS"
    }

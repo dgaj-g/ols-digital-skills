@@ -628,6 +628,9 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
   color: var(--debug-tint);
   margin-top: calc(var(--sq) * 0.25);
 }
+/* the film's own "remember this" remark: the teacher's-pen emphasis at the end
+   of a worked example. It is not a mark, so it does not wear a mark's colour. */
+.ml-note { font-family: var(--f-hand); font-size: 21px; color: var(--support-rose); margin-top: calc(var(--sq) * 0.25); }
 .amber-note { font-family: var(--f-stationery); font-size: 12px; color: var(--amber-flag); }
 /* colour the score + comment by outcome: green correct, amber answer-only, red wrong */
 .mk-tally.mk-correct, .mk-comment.mk-correct { color: var(--marking-green); }
