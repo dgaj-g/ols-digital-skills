@@ -59,16 +59,31 @@ function oldText() {
    than a value a reader would actually see, and a sentence the language gate
    had flagged for a human to read reached no transcript at all if its text
    predated v4 - so nobody had ever read the ones most in need of reading. */
+/* EVERY placeholder the string tables use, derived once from the tables
+   themselves - a hole left unfilled shows the judge a raw brace and gets read,
+   fairly, as a fault on the screen. The list below is checked against the
+   tables at run time and the gate says so if a new hole appears. */
 const SAMPLE = {
-  value: '65', book: 'Angles', name: 'Aoife', 'class': '10A-Maths', title: 'Angles',
-  n: '3', count: '3', total: '8', mark: '2', marks: '3', step: '2', q: 'Q4',
-  verdict: 'right', text: 'ols.link/10a', email: 'aoife.gartland@c2ken.net',
-  date: 'Friday', label: 'Ex 2 - Angles on a straight line', act: 'Angles'
+  answer: '62', book: 'Angles', 'class': '10A-Maths', done: '5', email: 'aoife.gartland@c2ken.net',
+  exercise: 'Ex 2', got: '6', max: '8', minutes: '20', name: 'Aoife',
+  question: 'Q4', reason: 'angles on a straight line add to 180', step: '2',
+  target: 'a', text: 'ols.link/10a', title: 'Angles', total: '8',
+  value: '65', verdict: 'right'
 };
 function fill(t) {
   return String(t).replace(/\{([a-zA-Z]+)\}/g, (m, k) =>
     (Object.prototype.hasOwnProperty.call(SAMPLE, k) ? SAMPLE[k] : m));
 }
+/* a hole with no sample value would print as a raw brace, so the gate says so
+   rather than handing the judge something no pupil will ever see */
+function unfilledHoles() {
+  const S = require('./lib/strings.js');
+  const holes = new Set();
+  S.appStrings().forEach(r => (String(r.text).match(/\{([a-zA-Z]+)\}/g) || [])
+    .forEach(h => { const k = h.slice(1, -1); if (!Object.prototype.hasOwnProperty.call(SAMPLE, k)) holes.add(k); }));
+  return [...holes];
+}
+
 function v4Transcript() {
   const p2 = A.app('strings.js');
   if (!A.exists(p2)) return [];
@@ -95,6 +110,11 @@ function v4Transcript() {
 }
 
 A.ensureOut('transcript');
+{
+  const holes = unfilledHoles();
+  g.check(holes.length === 0, 'the transcript', 'verdict',
+    'no example value for ' + holes.join(', ') + ' - the judge would read a raw brace and call it a fault on the screen, which is the harness\'s fault and not the app\'s');
+}
 {
   const rows = v4Transcript();
   if (rows.length) {
