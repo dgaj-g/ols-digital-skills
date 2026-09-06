@@ -77,11 +77,12 @@ strings.js > pupil > removeLastStepBtn  ::  ↶ remove last step
 strings.js > pupil > removedLastStep  ::  Removed your last step.
 strings.js > pupil > angleStepHeading  ::  Work out ∠Aoife
 strings.js > pupil > angleSizeLabel  ::  Size of angle Aoife
-strings.js > pupil > angleUnreadable  ::  That does not read as a number yet — type a number, or a calculation like 180−65.
+strings.js > pupil > angleSizePlaceholder  ::  the size in degrees
+strings.js > pupil > angleUnreadable  ::  That does not read as a number yet. Put in the size in degrees, or a sum that works it out.
 strings.js > pupil > nudgeBannerStar  ::  ★ Your teacher suggested watching this method.
 strings.js > pupil > selfEvalSavedFlash  ::  ✓ Saved — your teacher sees this on her class list.
 strings.js > pupil > selfEvalSavedIdle  ::  Saved as you go — your teacher sees this on her class list.
-strings.js > pupil > angleUnreadableLine  ::  That does not read as a number yet — type a number, or a calculation like 180−65.
+strings.js > pupil > angleUnreadableLine  ::  That does not read as a number yet. Put in the size in degrees, or a sum that works it out.
 strings.js > teacher > passcodeChecking  ::  Checking the passcode…
 strings.js > teacher > openMarkbook  ::  Open the markbook
 strings.js > teacher > noServer  ::  We could not reach the server. Try again.
@@ -129,7 +130,6 @@ strings.js > teacher > deleteClassAria  ::  Delete 10A-Maths
 strings.js > teacher > loadingGrid  ::  Loading the full grid…
 strings.js > teacher > gridOrient  ::  Each cell is one pupil and one question. Look for the reds, then open a cell to read that pupil's book.
 strings.js > teacher > cellNotStarted  ::  Not started
-strings.js > teacher > cellUntouched  ::  Not started
 strings.js > teacher > cellRight  ::  Right — working and answer both sound
 strings.js > teacher > cellAmber  ::  Answer only, no working shown
 strings.js > teacher > fetchingBook  ::  Fetching this pupil's book…
@@ -144,4 +144,3 @@ strings.js > teacher > csvCopiedFull  ::  CSV copied — paste it straight into 
 strings.js > teacher > seriesKs3  ::  KS3 · M2
 strings.js > teacher > seriesGcse  ::  GCSE · M3 & M4
 strings.js > pupil > classifyTryAgain  ::  Not that one — look again at its size against 90° and 180°.   [carried from the approved build, flagged for a read]
-strings.js > pupil > angleSizePlaceholder  ::  the size, e.g. 65   [carried from the approved build, flagged for a read]
