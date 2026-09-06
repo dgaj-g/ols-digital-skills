@@ -252,3 +252,26 @@ Each keeps the correct thing it condemned as its permanent pass-control.
 - NEW HOME: Sheet "OLS - MathShelf" `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y`
   (copied 6 Sept 2026 from `164nmiqGLLr2SktTuPnZy70KQZL9Us4CItMW5VnbCyMY`).
   The old Sheet and the old script project are to be retired, not deleted.
+
+## WHAT WAS DONE TO THE OLD PROJECT (retired, not deleted)
+
+`1otJG5454zR6a0WKZW23czKnehxtQ3Oj6CrrRWYys1H4bPxZOoaZ3qPmC`, renamed in the
+editor to **"MathShelf - RETIRED 6 Sept 2026 - see the new project"** so two
+projects cannot be confused for one another. All THREE of its live deployments
+are ARCHIVED, so nothing can land on a MathShelf that writes to the old Sheet:
+
+- the front door cut this morning (Version 27),
+- the old main `/exec` (Version 26, `DATA - MathShelf v4`),
+- the auto-name companion (Version 21) - the retirement the charter asked for.
+
+The `autonameUrl` row is deleted from the new Sheet's Config tab; nothing reads
+it any more.
+
+## WHAT THE HARNESS COULD NOT DRIVE (said plainly, DFM 213)
+
+The served page runs inside Apps Script's sandboxed iframe, and keystrokes sent
+by the browser automation do not reach it: clicks land and focus moves, but the
+staff passcode box stays empty. So the eight-item smoke list is still HIS to
+run - the server chain is proved from the Executions log, the interface is not
+proved from a driven keyboard. This is a limit of the driving surface, not a
+finding about the app.
