@@ -101,10 +101,16 @@ function doGet(e) {
   var who = userEmail_();
   t.email = String(who || '');
   var nm = '';
-  /* only ask Google who she is when this deployment is really running AS her:
-     on the data deployment getEffectiveUser is the deployer, and reading that
-     name would put MY name on every pupil's cover. */
-  if (who && normEmail_(effectiveEmail_()) === normEmail_(who)) nm = autoName_();
+  /* ASK GOOGLE WHO SHE IS. There used to be a guard here comparing
+     getEffectiveUser with getActiveUser, meant to stop the DATA deployment
+     printing the deployer's name on a pupil's cover. But doGet is only ever
+     served by the FRONT DOOR - the data deployment has no page and is reached
+     only by doPost - so it guarded a case that cannot happen, and when
+     getEffectiveUser came back empty in the deployed context it silently killed
+     the name lookup for everybody and dropped every pupil into "write it once"
+     (F38, 6 Sept 2026, his first visit). The KS3 DT platform, which has always
+     filled the name in, has no such guard. Neither does this. */
+  if (who) nm = autoName_();
   t.name = String(nm || '');
   /* the cover shows one quiet line about Google's permission screen the first
      time somebody arrives; after that it never mentions it again */

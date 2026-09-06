@@ -230,7 +230,7 @@ async function record(page, sidecar, surface, state, extra) {
   sidecar.states.push(Object.assign({ surface, state: real || state, expected: state, stood: real === state }, extra || {}, { audits: a.verdicts }));
   Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {
     g.fail(surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + (extra && extra.width), k,
-      describe(f));
+      k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : describe(f));
   }));
 }
 

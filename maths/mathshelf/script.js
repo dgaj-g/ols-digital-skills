@@ -870,9 +870,13 @@
 
       var cover = document.createElement('div');
       cover.className = 'bcover' + (out ? ' livery-' + a.livery : '');
+      /* the series and its audience band share ONE row, so a long series name
+         shortens instead of running under the chip (F37) */
       cover.innerHTML =
-        '<span class="series">' + esc(a.sub) + '</span>' +
-        '<span class="band">' + esc(a.band) + '</span>' +
+        '<span class="head">' +
+          '<span class="series">' + esc(a.sub) + '</span>' +
+          '<span class="band">' + esc(a.band) + '</span>' +
+        '</span>' +
         '<span class="title">' + esc(a.title) + '</span>' +
         '<span class="motif" data-ornament>' + bookMotif(a.motif) + '</span>';
       card.appendChild(cover);

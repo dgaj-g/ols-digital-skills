@@ -143,6 +143,36 @@ weakened, hidden, or marked green.
 | qa-waits | control-with-no-busy-state, outbox-dropped-on-reload | not yet investigated |
 | qa-fonts | face-removed | the plant removes a face file; with the gate now asking the face to LOAD rather than whether it was painted, the control needs re-aiming at that question |
 
+## THE TWO LAWS ADDED ON 6 SEPTEMBER 2026, AND WHY THEY WERE MISSING
+
+He opened the deployed markbook and could not read it: white class names on a
+white table, a chip sitting on top of a book's series line, and a shell so dark
+he asked why. Twenty-six gates were green. The reason is written up as F35-F38 in
+`PROGRESS.md`, and it is worth stating plainly here because it is a lesson about
+gates rather than about CSS:
+
+**1. READABILITY — "can she read it?", measured in rendered pixels.**
+`lib/contrast-audit.js` had been in this repo since 28 August, ported from the
+KS3 DT platform, written for exactly this fault. `lib/audits.js` offered it as a
+call the caller "decides how often it is worth" making. No caller ever decided;
+three walkers listed `readability` among their cells and none of them invoked
+it. It also could not have worked if they had: its root was the FIRST
+`[data-surface]` in the document, which is the hidden cover, so it collected
+nothing — and returned PASS for nothing. It now runs from `run()` on every
+recorded state, refuses to call an empty measurement a pass, and asks a second
+way (computed colour composited through ancestors) wherever the pixel sampler
+cannot separate glyph from plate. Control: `invisible-class-names` plants his own
+fault back into `.ledger` and the teacher walk has to see it.
+
+**2. OVERLAP — no two pieces of text may sit on one another.**
+There was no rule of any kind for this. The geometry audit asks whether a thing
+stays inside its card; nothing asked whether it lands on its neighbour. Control:
+`text-under-a-floating-chip` puts the band back in the corner it used to float
+in.
+
+Both are in the coverage RIDERS, so every walked state must produce a verdict for
+them or the matrix says so.
+
 ## F. GAPS — each with an owner and a phase
 
 | rule | gap | owner / phase |

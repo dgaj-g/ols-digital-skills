@@ -276,6 +276,21 @@ const PLANTS = {
       "    legend.setAttribute('data-mark', '');\n    legend.setAttribute('title', 'the key is only on hover');\n    legend.innerHTML = '';   /* the key, hidden */ var _unused =");
   },
 
+  /* ── THE FAULT HE FOUND HIMSELF: a light ground that inherits the shell's
+     own text colour, so the markbook's class names are white on white. This is
+     the exact fault of 6 Sept 2026, planted so the readability audit has to
+     prove it can still see it. ─────────────────────────────────────────── */
+  'fixture-invisible-text': (dir) => {
+    edit(dir, 'style.css', "  background: #FFFEFA;\n  color: var(--ink);", "  background: #FFFEFA;");
+  },
+
+  /* ── a chip that floats over its neighbour: the band put back into the
+     corner it used to occupy, where a long series name runs underneath it ── */
+  'fixture-overlapping-chip': (dir) => {
+    edit(dir, 'shell.css', ".bcover .band {\n  flex: 0 0 auto;",
+      ".bcover .band {\n  position: absolute; top: 18px; right: 16px;");
+  },
+
   /* ── a per-user cache holding something two people must both see ─── */
   'fixture-cacheservice': (dir) => {
     edit(dir, 'server/Code.gs.template', 'function apiWhoAmI() {',

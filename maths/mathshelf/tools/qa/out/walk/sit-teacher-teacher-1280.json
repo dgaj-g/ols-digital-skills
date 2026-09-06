@@ -4,8 +4,8 @@
  "width": 1280,
  "projector": false,
  "tier": "preview",
- "contentHash": "3a4c1f41b6cc",
- "when": "2026-09-06T09:33:03.798Z",
+ "contentHash": "baa2e1be2b98",
+ "when": "2026-09-06T12:02:59.020Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -20,7 +20,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -36,7 +39,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -52,7 +58,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -68,7 +77,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -84,7 +96,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -100,7 +115,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -116,7 +134,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -132,7 +153,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -148,7 +172,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -164,7 +191,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -180,7 +210,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -196,7 +229,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -212,7 +248,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -228,7 +267,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -244,7 +286,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -260,7 +305,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -276,7 +324,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -292,7 +343,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -308,7 +362,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   }
  ],

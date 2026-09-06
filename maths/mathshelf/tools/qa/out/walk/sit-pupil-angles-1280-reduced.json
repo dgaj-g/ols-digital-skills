@@ -3,8 +3,8 @@
  "scope": "angles",
  "width": 1280,
  "tier": "preview",
- "contentHash": "3a4c1f41b6cc",
- "when": "2026-09-06T09:16:53.096Z",
+ "contentHash": "baa2e1be2b98",
+ "when": "2026-09-06T12:23:14.440Z",
  "states": [
   {
    "surface": "cover",
@@ -18,7 +18,10 @@
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
-    "waits": "PASS"
+    "waits": "PASS",
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -37,7 +40,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -56,7 +61,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -75,7 +82,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -96,7 +105,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -117,7 +128,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -138,7 +151,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -159,7 +174,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -180,7 +197,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -201,7 +220,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -222,7 +243,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -243,7 +266,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -264,7 +289,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -285,7 +312,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -306,7 +335,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -327,7 +358,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -347,7 +380,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -367,7 +402,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -386,7 +423,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -405,7 +444,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -424,7 +465,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -445,7 +488,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -464,7 +509,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -485,7 +532,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -506,7 +555,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -527,7 +578,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -548,7 +601,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -569,7 +624,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -590,7 +647,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -611,7 +670,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -631,7 +692,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -651,7 +714,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -670,7 +735,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -689,7 +756,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -708,7 +777,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -729,7 +800,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -748,7 +821,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -769,7 +844,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -790,7 +867,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -811,7 +890,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -832,7 +913,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -853,7 +936,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -873,7 +958,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -893,7 +980,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -912,7 +1001,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -931,7 +1022,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -950,7 +1043,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -971,7 +1066,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -990,7 +1087,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1011,7 +1110,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1032,7 +1133,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1053,7 +1156,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1074,7 +1179,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1095,7 +1202,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1116,7 +1225,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1137,7 +1248,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1157,7 +1270,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1177,7 +1292,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1196,7 +1313,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1215,7 +1334,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1234,7 +1355,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1255,7 +1378,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1274,7 +1399,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1295,7 +1422,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1316,7 +1445,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1337,7 +1468,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1358,7 +1491,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1379,7 +1514,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1400,7 +1537,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1421,7 +1560,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1441,7 +1582,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1461,7 +1604,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1480,7 +1625,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1499,7 +1646,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1518,7 +1667,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1539,7 +1690,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1558,7 +1711,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1579,7 +1734,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1598,7 +1755,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1619,7 +1778,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1638,7 +1799,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1659,7 +1822,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1678,7 +1843,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1699,7 +1866,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1718,7 +1887,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1739,7 +1910,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1758,7 +1931,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1777,7 +1952,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1796,7 +1973,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   },
   {
@@ -1814,7 +1993,9 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "click-safety": "PASS"
+    "overlap": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
    }
   }
  ],

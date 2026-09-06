@@ -41,7 +41,7 @@
 const EXEMPTIONS = [
   'not rendered (display:none / visibility:hidden / opacity < 0.05 / smaller than 8x6px)',
   'no text of its own (the words belong to a child element, which is measured instead)',
-  'glyphs the sampler cannot separate from their plate — printed as a skip with its reason',
+  'glyphs the sampler cannot separate from their plate are asked again in computed colour, composited through their ancestors — and a ground painted with a gradient or an image is refused rather than guessed at, because guessing it reported white-on-teal as 1:1 (6 Sept 2026)',
   'marks with no letters or digits in them are judged at the 3:1 non-text floor and reported apart'
 ];
 

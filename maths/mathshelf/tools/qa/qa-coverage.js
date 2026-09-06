@@ -210,14 +210,19 @@ A.movies().forEach(m => {
 });
 
 /* --- the surface × state × width families ------------------------------- */
-/* THE RIDERS ARE THE AUDITS THE WALK ACTUALLY RUNS. This list asked every
-   state for 'readability' and 'strings', which no walk has ever performed on a
-   state: readability is measured in its own contrast pass and strings are read
-   statically by qa-language, so those two cells could never be closed by
-   anybody and every state carried two permanent holes. A matrix that demands
-   evidence nothing produces is a matrix that cannot go green, and a red that
-   can never be cleared teaches you to stop reading it. */
-const RIDERS = ['geometry', 'colour', 'consequence', 'click-safety', 'empty', 'nested', 'steps', 'mute-locks', 'waits'];
+/* THE RIDERS ARE THE AUDITS THE WALK ACTUALLY RUNS - AND THE FIX IS TO MAKE THE
+   WALK RUN THEM, NOT TO STOP ASKING (F35). On 6 Sept 2026 this list was cut down
+   because 'readability' and 'strings' "could never be closed by anybody", and a
+   red that can never be cleared teaches you to stop reading it. That reasoning
+   was half right and the half that was wrong cost him the whole morning: strings
+   really are read statically by qa-language and do not belong here, but
+   readability was a real measurement, ported on 28 August, sitting unused in
+   lib/contrast-audit.js while three walkers listed it among their cells. Deleting
+   the demand turned the light off over the exact fault it was written for: white
+   text on a white table, which he found himself the first time he opened the
+   markbook. It is back, and lib/audits.js now runs it on every recorded state so
+   it CAN be closed. */
+const RIDERS = ['geometry', 'colour', 'consequence', 'click-safety', 'empty', 'nested', 'steps', 'mute-locks', 'waits', 'readability', 'overlap'];
 /* THE REGISTRY IS READ FROM THE SOURCE, NOT FROM A SIDECAR. It used to be
    loaded from out/surfaces.json, which qa-surfaces writes as the first gate of
    a full run - so in a run where qa-surfaces had not gone first (a control
