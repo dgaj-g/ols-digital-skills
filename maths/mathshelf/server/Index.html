@@ -548,7 +548,11 @@ body.gj .act-bar-title { color: var(--cream); font-size: 22px; line-height: calc
 @keyframes glow-pass { from { background-position: 120% 0; } to { background-position: -60% 0; } }
 
 .movie-balance { max-width: 320px; margin: 0 auto calc(var(--sq) * 0.5); }
-.ml-eq { white-space: nowrap; }
+/* AN EQUATION THAT WILL NOT WRAP SPILLS OFF A PHONE. "2x + 4x = (x + x) + (x
+   + x + x + x)" ran three pixels past the edge of the film at 375. It wraps at
+   a space now, the way a line of working wraps in a book, and never inside a
+   term - overflow-wrap stays normal so a bracketed group is never split. */
+.ml-eq { white-space: normal; overflow-wrap: normal; max-width: 100%; }
 .ml-margin { font-family: var(--f-stationery); font-size: 13px; color: var(--pencil); margin-left: calc(var(--sq) * 0.5); }
 
 /* theorem stamp (movies + jotter feedback) */
