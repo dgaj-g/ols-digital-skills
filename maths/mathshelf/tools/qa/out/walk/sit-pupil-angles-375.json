@@ -3,8 +3,8 @@
  "scope": "angles",
  "width": 375,
  "tier": "preview",
- "contentHash": "2565cd25e9ee",
- "when": "2026-09-06T15:00:20.412Z",
+ "contentHash": "a9207b5f8ced",
+ "when": "2026-09-06T16:07:11.602Z",
  "states": [
   {
    "surface": "cover",
@@ -2397,7 +2397,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 0,

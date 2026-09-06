@@ -163,10 +163,29 @@ const CONSEQUENCE = `(() => {
          and were never meant to match. */
       const all = [...tray.children].filter(c => c.getBoundingClientRect().width > 2);
       const items = all.filter(c => c.matches('[data-tray-item], .tile, .chip, button, [role=button], label'));
-      const colours = new Set(items.map(c => getComputedStyle(c).backgroundColor + '|' + getComputedStyle(c).borderTopColor));
-      if (items.length > 1 && colours.size > 1) {
-        out.push({ law: 'options-do-not-look-alike', qid: root.getAttribute('data-qid'), n: colours.size });
-      }
+      /* THE ONE SHE HAS PICKED IS ALLOWED TO LOOK PICKED. The rule forbids
+         colour that hints which option is RIGHT; it was reading any colour
+         difference at all, and the moment the walk began standing on the
+         working board it condemned the filled tile that says "this is the one
+         you chose" - which she must be able to see, and which follows her
+         choice whether it is right or wrong (proved by driving the same
+         question wrong: the fill moved to the wrong tile). So the comparison
+         is made among options in the SAME pressed state. That is only possible
+         because the option now says which state it is in - aria-pressed - and
+         it only got that because this rule fired here. A screen reader was
+         being told nothing at all. */
+      const groups = new Map();
+      items.forEach((c) => {
+        const key = c.getAttribute('aria-pressed') || c.getAttribute('aria-checked') || 'none';
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(c);
+      });
+      groups.forEach((group) => {
+        const colours = new Set(group.map(c => getComputedStyle(c).backgroundColor + '|' + getComputedStyle(c).borderTopColor));
+        if (group.length > 1 && colours.size > 1) {
+          out.push({ law: 'options-do-not-look-alike', qid: root.getAttribute('data-qid'), n: colours.size });
+        }
+      });
     });
   });
   return out;

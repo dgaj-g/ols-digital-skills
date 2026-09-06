@@ -300,6 +300,16 @@ const PLANTS = {
       "        instr.textContent = 'Now work it out, then write the value:';\n        exprBox.style.display = 'none'; givenRow.style.display = 'none';\n        showAnswer();");
   },
 
+  /* ── A SCREEN THE APP CLAIMS AND THE WALK CAN NEVER REACH. The card still
+     renders; it simply stops declaring itself, so `GJ.app.surfaces` still lists
+     self-eval and no walk ever stands on it. This is the fault the settle-up
+     check exists for, and it is the one the old plant here could not produce:
+     `fixture-book` adds a whole extra BOOK, and the walk's check is about
+     SURFACES, so the control ran green for four months while saying nothing. ── */
+  'fixture-unreachable-surface': (dir) => {
+    edit(dir, 'script.js', "    surface(card, 'self-eval', 'open');", "    /* plant: never declared */");
+  },
+
   /* ── a per-user cache holding something two people must both see ─── */
   'fixture-cacheservice': (dir) => {
     edit(dir, 'server/Code.gs.template', 'function apiWhoAmI() {',

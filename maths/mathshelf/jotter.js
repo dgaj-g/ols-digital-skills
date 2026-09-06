@@ -1044,8 +1044,12 @@
            then write the value:" while showAnswer() put "Now work it out, then
            enter the value:" directly above the box - the same sentence twice, in
            two wordings, one of them nowhere near the thing it was talking about
-           (F39). The prompt belongs beside the box it is about. */
-        instr.textContent = '';
+           (F39). The prompt belongs beside the box it is about.
+           REMOVED, not blanked. Emptying it left a `.ui-msg` paragraph with
+           nothing in it holding open a line of space, which the empty-element
+           law condemns and is right to - the walk only found it once it began
+           standing on the working board at all. */
+        instr.remove();
         exprBox.style.display = 'none'; givenRow.style.display = 'none';
         showAnswer();
         save();
@@ -1068,7 +1072,7 @@
       window.GJ.setState(dock, 'dock', 'tray');
       renderExpr(); renderGivens();
       if (hasSub) {                                     // resume: method already committed
-        instr.textContent = '';
+        instr.remove();
         exprBox.style.display = 'none'; givenRow.style.display = 'none';
         if (!hasAns) showAnswer();
       }
@@ -1182,12 +1186,21 @@
           var b = el('button', '', tt); b.type = 'button';
           b.style.cssText = 'font-family:Georgia,serif;font-size:1.15rem;padding:6px 14px;border-radius:8px;border:2px solid #1A3A6B;background:#fff;color:#1A3A6B;cursor:pointer';
           b.setAttribute('data-tray-item', '');
+          /* THE CHOICE SAYS SO, NOT JUST SHOWS SO. The filled tile was the only
+             record that she had picked anything - inline style and nothing
+             else - so a screen reader announced three identical buttons and a
+             gate could not tell "she chose this" from "this is the right one".
+             aria-pressed is what a toggle owes both of them. */
+          b.setAttribute('aria-pressed', 'false');
           b.addEventListener('click', function () {
             chosen[ci] = tt;
             slot.textContent = tt; slot.style.borderStyle = 'solid'; slot.style.color = '#14213A';
             slot.setAttribute('data-placed', ''); slot.setAttribute('data-from', trayId);
-            tray.querySelectorAll('button').forEach(function (x) { x.style.background = '#fff'; x.style.color = '#1A3A6B'; });
+            tray.querySelectorAll('button').forEach(function (x) {
+              x.style.background = '#fff'; x.style.color = '#1A3A6B'; x.setAttribute('aria-pressed', 'false');
+            });
             b.style.background = '#1A3A6B'; b.style.color = '#fff';
+            b.setAttribute('aria-pressed', 'true');
             maybeCommit();
           });
           tray.appendChild(b);

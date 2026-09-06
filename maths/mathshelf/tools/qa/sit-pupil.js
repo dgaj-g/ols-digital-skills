@@ -62,7 +62,13 @@ const COVERS = {
   cells: ['walk-right', 'movie', 'geometry', 'readability', 'colour', 'consequence', 'click-safety', 'empty', 'nested', 'strings']
 };
 const CONTROLS = [
-  { id: 'unreachable-planted-fault', kind: 'fixture', plant: 'fixture-book', mustFail: /never reached/ },
+  /* THE CONTROL THAT RAN GREEN AND MEANT NOTHING. It planted `fixture-book` - a
+     whole extra BOOK - against a check that asks whether every declared SURFACE
+     was stood on. A book is not a surface, so the walk passed, the matrix read
+     DID NOT FIRE, and the reason was never in the gate. It now plants a screen
+     the app still declares and the walk can no longer reach, which is the
+     sentence the check actually holds. */
+  { id: 'unreachable-planted-fault', kind: 'fixture', plant: 'fixture-unreachable-surface', mustFail: /never reached/ },
   { id: 'console-error', kind: 'fixture', plant: 'fixture-renderers', mustFail: /console error/ },
   /* the chip put back in the corner it used to float in, where a long series
      name runs underneath it — the shelf fault of 6 Sept 2026 */
@@ -206,6 +212,16 @@ async function walkBook(page, book, width, sidecar, transcript) {
       const answered = await page.evaluate((s, args) => eval(s)(args), W.ANSWER, [qid, false]);
       if (!answered.ok) { g.note('could not answer ' + qid + ': ' + answered.why); continue; }
       await W.settle(page);
+      /* THE SCREEN BETWEEN THE WORKING AND THE VERDICT, WHICH THE WALK USED TO
+         JUMP OVER. It went straight from question:fresh to the press of Check,
+         so the board a pupil actually sits in front of - her working placed, her
+         value keyed, nothing marked yet - was never recorded and no law was ever
+         asked about it. That is the exact screen Damien was looking at when he
+         found the substitution question telling him the same thing twice: the
+         said-twice control ran GREEN against a correctly planted fault, because
+         the walk never stood where the fault was. A law can only be as good as
+         the screens the walk stands on. */
+      await record('question', 'mid-attempt', { qid, section: si, book });
       const checked = await page.evaluate((s, id) => eval(s)(id), W.CHECK, qid);
       if (checked.disabled) {
         g.check(!!checked.why, 'question:fresh > ' + qid + ' @' + width, 'mute-lock',
