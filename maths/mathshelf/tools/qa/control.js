@@ -47,12 +47,11 @@ let failures = 0;
 A.ensureOut('control');
 
 /* THE SANDBOX KEEPS THE REPO'S SHAPE. A flat copy of the app folder is not the
-   tree the app is built from: the assembler reads two of its inputs from the
-   REPO ROOT (style.css and assets/intro-loader.js), so in a flat sandbox a
-   fresh build could never run and the control that asks whether the committed
-   pair is stale could never fire. The sandbox therefore puts the app back at
-   maths/mathshelf and carries those two files - and only those two, because
-   assets/ is thirteen megabytes of film and none of it is read here. */
+   tree the app is built from: the assembler and the page both read inputs from
+   the REPO ROOT (style.css, assets/), so in a flat sandbox a fresh build could
+   never run and the control that asks whether the committed pair is stale could
+   never fire. The sandbox therefore puts the app back at maths/mathshelf and
+   carries what the page names, plus the folders those named files live in. */
 function sandbox() {
   const base = fs.mkdtempSync(path.join(os.tmpdir(), 'mathshelf-control-'));
   const dir = path.join(base, 'maths', 'mathshelf');
@@ -73,11 +72,26 @@ function sandbox() {
     (idx.match(/(?:src|href)="\.\.\/\.\.\/[^"]+"/g) || []).forEach(m => {
       wanted.add(m.replace(/^(?:src|href)="\.\.\/\.\.\//, '').replace(/"$/, '').split(/[?#]/)[0]);
     });
+    /* AND A LOADER FETCHES ITS NEIGHBOURS. assets/intro-loader.js asks for
+       intro.mp4 and intro-portrait.mp4 by bare filename - they are named
+       nowhere in index.html, so a list built from the page alone misses them,
+       and every walk in every sandbox logged a 404 for the film. The comment
+       that used to sit here said assets/ was "thirteen megabytes of film and
+       none of it is read here". It is read. Carrying the whole folder costs a
+       local copy of 13MB per control - milliseconds - and buys a sandbox that
+       is actually the tree the gate is written against. A named file brings its
+       folder with it; a file at the root comes on its own. */
+    const carry = new Set();
     wanted.forEach(rel => {
+      const dirOf = path.dirname(rel);
+      carry.add(dirOf === '.' ? rel : dirOf);
+    });
+    carry.forEach(rel => {
       const src = path.join(REPO, rel);
       if (!fs.existsSync(src)) return;
-      fs.mkdirSync(path.dirname(path.join(base, rel)), { recursive: true });
-      execFileSync('cp', [src, path.join(base, rel)]);
+      const dest = path.join(base, rel);
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      execFileSync('cp', ['-R', src, dest]);
     });
   }
   /* the sandbox never inherits a previous run's evidence */
