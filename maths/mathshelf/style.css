@@ -876,7 +876,21 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 .spinner { width: 18px; height: 18px; border-width: 3px; display: inline-block; vertical-align: -3px; margin-right: 8px; }
 @keyframes gj-spin { to { transform: rotate(360deg); } }
 @keyframes gj-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-@media (prefers-reduced-motion: reduce) { .panel-loading, .panel-spinner, .spinner { animation: none; } }
+/* A LINE THAT IS WAITING SAYS SO WITHOUT WORDS. A turning mark and a slow
+   breath, so "Checking the passcode..." reads as work in progress rather than a
+   screen that has stopped. The mark is drawn, not typed, so a screen reader
+   hears only the sentence. */
+.is-waiting { display: inline-flex; align-items: center; gap: 9px; animation: gj-breathe 1.5s ease-in-out infinite; }
+.is-waiting::before {
+  content: ''; width: 14px; height: 14px; flex: 0 0 auto; border-radius: 50%;
+  border: 2px solid rgba(26, 58, 107, .25); border-top-color: var(--navy);
+  animation: gj-spin .7s linear infinite;
+}
+/* the cover's message is a block in its own right - inline-flex would pull it
+   up beside the Staff link underneath it */
+.cover-msg.is-waiting { display: flex; justify-content: center; }
+@keyframes gj-breathe { 0%, 100% { opacity: 1; } 50% { opacity: .58; } }
+@media (prefers-reduced-motion: reduce) { .panel-loading, .panel-spinner, .spinner, .is-waiting, .is-waiting::before { animation: none; } }
 .act-load-error { text-align: center; color: var(--support-rose); font-weight: 700; margin: 28px auto; max-width: 480px; line-height: 1.4; }
 
 /* selection lock while dragging (protractor drag etc.) */

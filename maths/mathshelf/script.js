@@ -653,12 +653,22 @@
     var isTeacherLanding = (!BOOT.classCode || BOOT.classCode === 'default');
     if (isTeacherLanding) return staffCover();
 
+    /* A MESSAGE THAT IS WAITING HAS TO LOOK LIKE IT IS WAITING (his ruling,
+       6 Sept 2026: "Checking the passcode..." sat there as flat grey text and
+       read as a dead screen). The staff side already had a pulsing gold
+       wait-card; the cover - the first screen every pupil ever sees - had
+       nothing. `waiting` adds a turning mark and a slow breath; `settled`
+       takes them away. Both are switched off under prefers-reduced-motion,
+       where the words alone do the work. */
+    var waiting = function (el, text) { if (!el) return; el.classList.add('is-waiting'); el.textContent = text || ''; };
+    var settled = function (el, text) { if (!el) return; el.classList.remove('is-waiting'); el.textContent = text || ''; };
+
     /* ---- a pupil on a real class link ---- */
     staffOval.hidden = false;
     setState(root, 'cover', 'busy');
     openBtn.disabled = true;
     hi.textContent = T.coverWelcome || 'Welcome';
-    msg.textContent = T.coverGetting || '';
+    waiting(msg, T.coverGetting || '');
 
     /* HER NAME IS ALREADY HERE. The front door read it from her own Google
        token before this page was served and put it in BOOT, so the cover shows
@@ -688,7 +698,7 @@
       me.email = r.email; me.name = r.name || me.name || ''; me.acts = r.acts || {};
       me.summaries = r.summaries || {}; me.offline = !!r.offline;
       openBtn.disabled = false;
-      msg.textContent = '';
+      settled(msg, '');
 
       if (me.offline) {
         setState(root, 'cover', 'preview');
@@ -709,12 +719,12 @@
         setState(root, 'cover', 'fallback-name');
         nameOut.textContent = '';
         fallback.hidden = false;
-        msg.textContent = T.coverNamePrompt || '';
+        settled(msg, T.coverNamePrompt || '');
       }
     }).catch(function () {
       setState(root, 'cover', 'returning');
       openBtn.disabled = false;
-      msg.textContent = T.coverNoServer || '';
+      settled(msg, T.coverNoServer || '');
     });
 
     openBtn.addEventListener('click', function () {
@@ -723,16 +733,16 @@
       if (!nm) {
         var input = coverEl('cover-name');
         nm = (input.value || '').trim();
-        if (!nm) { msg.textContent = T.coverNameMissing || ''; input.focus(); return; }
+        if (!nm) { settled(msg, T.coverNameMissing || ''); input.focus(); return; }
       }
       openBtn.disabled = true;
-      msg.textContent = T.coverBusy || '';
+      waiting(msg, T.coverBusy || '');
       var fin = function () {
         me.name = nm;
         renderShelf();
         show('shelf');
         openBtn.disabled = false;
-        msg.textContent = '';
+        settled(msg, '');
       };
       if (nm !== me.name) call('setname', { name: nm }).then(fin, fin); else fin();
     });
