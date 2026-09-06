@@ -406,7 +406,11 @@
     }
 
     function doNote(op, instant) {
-      var n = el('div', op.note.red ? 'mk-comment' : 'ui-msg', op.note.text);
+      /* A NOTE IN A FILM IS A REMARK, NOT A MARK. This borrowed the marking
+         comment's class, and a marking comment with no outcome on it renders
+         in the debug sentinel - a loud magenta that exists so it can never
+         reach a screen unnoticed. Ten film notes had been rendering in it. */
+      var n = el('div', op.note.red ? 'ml-note' : 'ui-msg', op.note.text);
       stage.appendChild(n);
       if (instant || REDUCED) return Promise.resolve();
       n.style.opacity = 0; n.getBoundingClientRect();
