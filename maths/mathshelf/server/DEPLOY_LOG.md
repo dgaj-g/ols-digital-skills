@@ -19,6 +19,8 @@ log showing the deployment actually ran.
 | 2026-09-06 14:52 | DATA | Version 9 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | c921fec | 8a6dbac0e19b2f4b3f772494b551b2be | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-06 15:36 | DATA | Version 10 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | da8437b | cd9e10978a41ddec7af4f69eedbf88d5 | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-06 15:38 | FRONT DOOR | Version 11 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | da8437b | cd9e10978a41ddec7af4f69eedbf88d5 | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-06 16:31 | DATA | Version 12 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | 24ca0c7 | 4eecea6d75d05330211de3f7ebfe7aff | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-06 16:32 | FRONT DOOR | Version 13 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 24ca0c7 | 4eecea6d75d05330211de3f7ebfe7aff | d09615a9abc0998de9e5b7ec4ea4239a |
 
 ## Proof rows
 
@@ -91,6 +93,23 @@ the app inside a cross-origin sandboxed iframe, so a synthetic click reaches the
 outer document and stops there. Everything above is read from the composited
 page, from the Executions log and from the DATA artefact over HTTP. Pressing the
 buttons is the eight-item list below, and it is his.
+
+**DATA Version 12 and FRONT DOOR Version 13, cut from `24ca0c7`.** The shelf's
+book series line was failing the contrast floor on a phone and a tablet while
+reading clean on a laptop, and the pass that called the visual laws green had
+been run at 1280 only (F40). Both halves re-cut from one commit, same two
+`/exec` URLs, same deployment ids.
+
+Read back off the live DATA page over HTTP, which is the artefact both
+deployments serve:
+
+```
+.bcover.livery-teal { background: linear-gradient(170deg, var(--teal), #0A5A70); }
+.bcover .series { font-family: var(--f-mono); font-size: 11px; font-weight: 600; ... }
+```
+
+Measured on the built page at all three widths before the cut: 375 PASS, 768
+PASS, 1280 PASS, 15 pieces of text read on each.
 
 ### What is live, in one line each
 
