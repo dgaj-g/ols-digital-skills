@@ -165,9 +165,21 @@ function apiCall(req) {
   if (!url || !secret) return { ok: false, error: 'not-configured' };
   var payload = { secret: secret, email: who, action: String(req.action || ''), payload: req.payload || {} };
   try {
+    /* THE BEARER IS NOT OPTIONAL. DATA is published to "Anyone within the
+       domain", and a plain UrlFetch carries no credentials at all: Google
+       answers it with the sign-in page, not with doPost, and the front door
+       gets a 200 of HTML it cannot parse. Proved on 6 Sept 2026 -- apiCall
+       completed, and the Executions log showed NO doPost row to match it.
+       ScriptApp.getOAuthToken() is the caller's own token (the pupil's, under
+       execute-as-User), and she is in c2ken.net, so the door opens for her.
+       It authenticates only: DATA still runs as ME, and still refuses anyone
+       who cannot present the secret. Redirects stay followed -- a web app
+       answers a POST with a 302 to googleusercontent, and turning that off
+       would break the good path along with the bad. */
     var resp = UrlFetchApp.fetch(url, {
       method: 'post',
       contentType: 'application/json',
+      headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
       payload: JSON.stringify(payload),
       muteHttpExceptions: true,
       followRedirects: true
