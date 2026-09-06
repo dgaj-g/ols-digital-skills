@@ -291,7 +291,16 @@ const OVERLAP = `(() => {
         n = n.parentElement;
       }
     }
-    items.push({ el: el, t: t, r: r, dlg: layer });
+    /* THE LINES IT ACTUALLY OCCUPIES, NOT THE BOX AROUND THEM. An inline
+       element that wraps has a bounding rect which is the UNION of its line
+       boxes - a tall rectangle spanning the full column - so two spans of one
+       wrapped sentence appear to overlap almost completely while nothing on
+       screen touches anything. That is where "Same wrong line: c = 117 / c =
+       117 overlap by 203x16px" came from, on a slips board that is perfectly
+       laid out when you look at it. getClientRects() gives the boxes the text
+       is really in, one per line. */
+    const lines = (typeof el.getClientRects === 'function' ? Array.from(el.getClientRects()) : []).filter(q => q.width > 1 && q.height > 1);
+    items.push({ el: el, t: t, r: r, rects: lines.length ? lines : [r], dlg: layer });
   });
   const out = [];
   for (let i = 0; i < items.length; i++) {
@@ -299,8 +308,13 @@ const OVERLAP = `(() => {
       const a = items[i], b = items[j];
       if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
       if (a.dlg !== b.dlg) continue;
-      const ox = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left);
-      const oy = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top);
+      /* the worst real collision between any line of A and any line of B */
+      let ox = 0, oy = 0, best = 0;
+      a.rects.forEach((ra) => b.rects.forEach((rb) => {
+        const px = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left);
+        const py = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+        if (px > 2 && py > 2 && px * py > best) { best = px * py; ox = px; oy = py; }
+      }));
       if (ox < 3 || oy < 3) continue;
       /* TWO INLINE NEIGHBOURS IN ONE PARAGRAPH ARE NOT A COLLISION. An inline
          box is as tall as its line, so two spans on neighbouring lines of the
@@ -311,12 +325,18 @@ const OVERLAP = `(() => {
       const inlineA = /^inline/.test(getComputedStyle(a.el).display);
       const inlineB = /^inline/.test(getComputedStyle(b.el).display);
       const area = ox * oy;
-      const smaller = Math.min(a.r.width * a.r.height, b.r.width * b.r.height) || 1;
-      if (inlineA && inlineB && area / smaller < 0.34) continue;
-      out.push({ collision: true,
-        one: nameOf(a.el), two: nameOf(b.el),
+      const smallLine = Math.min(
+        Math.min.apply(null, a.rects.map(q => q.width * q.height)),
+        Math.min.apply(null, b.rects.map(q => q.width * q.height))) || 1;
+      if (inlineA && inlineB && area / smallLine < 0.34) continue;
+      /* A FINDING WITH NOTHING IN IT IS NOT A FINDING. One of these came out as
+         "overlap by undefined - undefined and undefined" and told nobody
+         anything; every field is now filled or the pair is dropped. */
+      const one = nameOf(a.el), two = nameOf(b.el);
+      if (!one || !two || !isFinite(ox) || !isFinite(oy)) continue;
+      out.push({ collision: true, one: one, two: two,
         by: Math.round(ox) + 'x' + Math.round(oy) + 'px',
-        text: a.t.slice(0, 30) + '  /  ' + b.t.slice(0, 30) });
+        text: (a.t || '').slice(0, 30) + '  /  ' + (b.t || '').slice(0, 30) });
     }
   }
   return out;
@@ -487,9 +507,16 @@ function describeContrast(f) {
   const got = (f.ratio == null) ? '?' : (Math.round(f.ratio * 100) / 100);
   const floor = contrast.floorFor(f);
   const what = (f.text || '').trim().slice(0, 40) || f.sel || 'a piece of text';
+  /* WHERE IT IS, NOT JUST WHAT IT SAYS. "Angles is 1.03:1" cost an hour of
+     arguing with a number: there are several Angles on that screen and the
+     message named none of them. The selector and the box are the difference
+     between a finding you can check and a finding you can only believe. */
+  const where = (f.sel ? '  <' + f.sel + '>' : '') +
+    (f.rect ? ' at ' + Math.round(f.rect.x) + ',' + Math.round(f.rect.y) +
+      ' ' + Math.round(f.rect.w) + 'x' + Math.round(f.rect.h) : '');
   return '"' + what + '" is ' + got + ':1 against what is actually behind it, and owes ' +
     floor + ':1' + (f.icon ? ' (a mark, judged at the non-text floor)' : f.large ? ' (large text)' : '') +
-    ' — ' + (f.via ? f.via : 'measured in rendered pixels, not in the stylesheet');
+    ' — ' + (f.via ? f.via : 'measured in rendered pixels, not in the stylesheet') + where;
 }
 
 /* the readability audit needs a picture, so it is its own call: the caller
@@ -513,7 +540,37 @@ async function readability(page) {
         return r.width > 8 && r.height > 8;
       };
       const on = Array.from(document.querySelectorAll('[data-surface]')).filter(vis);
-      window.__mzRoot = on.length ? on[on.length - 1] : document.body;
+      /* AND IF SOMETHING IS COVERING THE WHOLE SCREEN, THAT IS THE SCREEN. The
+         starter board is position:fixed across the viewport: the surface behind
+         it is still the last [data-surface], so the audit rooted on a page that
+         is entirely hidden, found every one of its rows covered, and reported
+         "no text to measure" - which, with the occlusion rule above now working,
+         is the honest consequence of asking the wrong question. This law already
+         said in its own exemptions that while an overlay is open the OVERLAY is
+         measured and the page behind it is not; this is where that sentence
+         becomes code. */
+      /* ANY element, not a list of the ones we thought of. The starter board is
+         a plain `.starter-overlay` - position:fixed, inset:0, no role, no
+         data-surface - so a selector list missed it and the audit went on
+         measuring the page underneath, which is entirely covered. Ask the
+         document what is on top, not a list of the names we remembered. */
+      const covering = Array.from(document.body.getElementsByTagName('*'))
+        .filter(vis)
+        .filter((e) => {
+          /* FIXED ONLY, AND IT HAS TO HAVE WORDS ON IT. Allowing `absolute` and
+             scanning every element found, at 1280x720, ordinary page-height
+             wrappers that cover the viewport without being overlays at all -
+             and rooting on one of those measured nothing on twenty states. An
+             overlay is pinned to the viewport and has something written on it;
+             anything else is just a big box. */
+          const cs = getComputedStyle(e);
+          if (cs.position !== 'fixed') return false;
+          if (!(e.textContent || '').trim()) return false;
+          const r = e.getBoundingClientRect();
+          return r.width >= window.innerWidth * 0.9 && r.height >= window.innerHeight * 0.9;
+        });
+      window.__mzRoot = covering.length ? covering[covering.length - 1]
+        : (on.length ? on[on.length - 1] : document.body);
       window.__mzRoot.setAttribute('data-mz-root', '1');
       return eval(s)([[], [], '[data-mz-root]']);
     }, contrast.COLLECT.toString());
@@ -521,11 +578,51 @@ async function readability(page) {
     /* A MEASUREMENT OF NOTHING IS NOT A PASS. Returning PASS here is what let
        the audit sleep through every screen it was written for. */
     if (!rects.length) return { verdict: 'EMPTY', findings: [{ error: 'the readability pass found no text to measure on this state — a pass made of nothing is not a pass' }], measured: 0 };
-    const shot = await page.screenshot({ encoding: 'base64' });
+    /* THE PICTURE AND THE COORDINATES MUST BE IN THE SAME FRAME. The collector
+       records every row in DOCUMENT coordinates; this took a VIEWPORT picture
+       and handed the two to the sampler as if they matched. On any screen the
+       walk had scrolled, every sample landed one scroll-offset away from the
+       text it was judging - which is where "Angles is 1.03:1" came from on a
+       markbook that is navy-on-cream and legible across a room, and why the
+       same screen passed when I reproduced it un-scrolled. It invents faults
+       and hides them in the same breath, and the hiding is the worse half.
+       A full-page picture was the other way to square it and it times out on
+       the full grid, which is a wide table; the viewport is also the honest
+       unit, because it is what she is looking at. So the offset travels with
+       the picture and the sampler subtracts it. */
+    const view = await page.evaluate(() => ({ sx: window.scrollX, sy: window.scrollY }));
+    /* A STILL FRAME, OR NO FRAME AT ALL. Headless Chrome does not composite
+       these pages, and asked for a picture of one carrying infinite CSS
+       animations - the nine on the staff cover, the breathing wait-lines and
+       their spinners added on 6 September - Page.captureScreenshot simply never
+       returns. Three minutes, then a timeout reported as "the readability pass
+       crashed", which reads exactly like a broken gate and is really a page
+       that will not hold still. Animation is paused for the length of the
+       exposure and started again straight after: paused, not finished and not
+       cancelled, because a cancelled spinner is a spinner this gate has
+       destroyed rather than measured. */
+    await page.addStyleTag({ id: 'mz-freeze', content:
+      '*, *::before, *::after { animation-play-state: paused !important; transition: none !important; }' }).catch(() => {});
+    /* AND A BOUNDED EXPOSURE. On the staff cover at 375, Page.captureScreenshot
+       never returns - not for thirty seconds and not for three minutes - and
+       an unbounded wait turns one unphotographable screen into a walk that
+       looks hung. What that screen is doing to the compositor is not yet
+       known and is written up as open work; what is known is that a gate must
+       fail in a way you can read. Twenty seconds, then the pass says it could
+       not take the picture and moves on, and the row is NOT MEASURED rather
+       than a pass made of nothing. */
+    const shot = await Promise.race([
+      page.screenshot({ encoding: 'base64' }),
+      new Promise((_, rej) => setTimeout(() => rej(new Error(
+        'the picture never came back: this screen does not produce a frame in headless Chrome, so it cannot be measured in pixels')), 20000))
+    ]);
+    await page.evaluate(() => {
+      const f = document.getElementById('mz-freeze'); if (f) f.remove();
+    }).catch(() => {});
     const measured = await page.evaluate(async (args) => {
       const fn = eval('(' + args[0] + ')');
-      return await fn(['data:image/png;base64,' + args[1], args[2]]);
-    }, [contrast.MEASURE.toString(), shot, rects]);
+      return await fn(['data:image/png;base64,' + args[1], args[2], args[3]]);
+    }, [contrast.MEASURE.toString(), shot, rects, view]);
     /* WHAT THE SAMPLER CANNOT SEPARATE IS ASKED AGAIN, IN THE BROWSER'S OWN
        COLOURS (F35b). The module's exemptions called these "a skip with its
        reason" - but a skip is silence, and silence is what let white-on-white

@@ -48,13 +48,22 @@ const EXEMPTIONS = [
 /* the floor this row has to clear */
 const floorFor = (r) => (r.icon || r.large) ? 3.0 : 4.5;
 
-const MEASURE = async ([dataUri, rects]) => {
+const MEASURE = async ([dataUri, rects, view]) => {
   const img = new Image();
   await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = dataUri; });
   const c = document.createElement('canvas');
   c.width = img.width; c.height = img.height;
   const g = c.getContext('2d', { willReadFrequently: true });
   g.drawImage(img, 0, 0);
+  /* THE PICTURE IS THE VIEWPORT; THE ROWS ARE THE DOCUMENT. The rows above are
+     recorded at `r.left + scrollX, r.top + scrollY` so that nothing below the
+     fold is silently dropped. The picture is what the window was showing when
+     it was taken. Those are two different origins, and for a long time they
+     were treated as one: on any scrolled screen every sample landed a scroll
+     offset away from the glyphs it was judging. The offset comes in with the
+     picture now, and a row that was genuinely outside the window is reported
+     as off screen rather than measured against whatever happened to be there. */
+  const sx = (view && view.sx) || 0, sy = (view && view.sy) || 0;
   const dpr = img.width / window.innerWidth;
 
   const lin = (v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
@@ -69,7 +78,7 @@ const MEASURE = async ([dataUri, rects]) => {
        colours give 6.55:1. Insetting by an eighth on each side keeps every
        glyph (text never reaches its own border) and drops the corners. */
     const inx = Math.round(R.w * dpr * 0.12), iny = Math.round(R.h * dpr * 0.12);
-    const x = Math.max(0, Math.round(R.x * dpr) + inx), y = Math.max(0, Math.round(R.y * dpr) + iny);
+    const x = Math.max(0, Math.round((R.x - sx) * dpr) + inx), y = Math.max(0, Math.round((R.y - sy) * dpr) + iny);
     const w = Math.min(c.width - x, Math.round(R.w * dpr) - inx * 2);
     const h = Math.min(c.height - y, Math.round(R.h * dpr) - iny * 2);
     if (w < 2 || h < 2) return Object.assign({}, R, { skip: 'off screen' });
@@ -136,6 +145,39 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
     if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) < 0.05) return;
     const own = Array.from(el.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join(' ').trim();
     if (!own && !forced) return;
+    /* TEXT SOMETHING ELSE IS SITTING ON TOP OF CANNOT BE MEASURED HERE. The
+       crumb "Classes" scrolls under the fixed preview banner, and the picture
+       at that spot is the banner - so the sampler compared a blue link against
+       a blue bar and reported 1.12:1 on a link that is perfectly legible where
+       you actually see it. Whether a bar covering content is itself a fault is
+       a question for the geometry law, which owns overlap; what is certain is
+       that this law cannot judge glyphs it cannot see. Asking the document what
+       is really on top at that point is the only honest test, and it is the
+       browser's own answer, not a guess. */
+    /* AND ONLY THE PART OF IT THAT IS ACTUALLY PAINTED. A cell in the markbook's
+       grid is clipped by the table's own scroller: its box runs off past the
+       clip, and the sampler was averaging pixels from beyond the edge - which
+       is how a 13.5px line in --pencil, better than 8:1 on white in the
+       stylesheet, was reported at 3.4:1. The row is trimmed to what its
+       clipping ancestors actually show; when almost nothing is left there is
+       nothing to judge and it is skipped with a reason rather than guessed at. */
+    let vx = r.left, vy = r.top, vr = r.right, vb = r.bottom;
+    for (let anc = el.parentElement; anc && anc !== document.documentElement; anc = anc.parentElement) {
+      const acs = getComputedStyle(anc);
+      if (!/(auto|scroll|hidden|clip)/.test(acs.overflowX + ' ' + acs.overflowY)) continue;
+      const ar = anc.getBoundingClientRect();
+      vx = Math.max(vx, ar.left); vy = Math.max(vy, ar.top);
+      vr = Math.min(vr, ar.right); vb = Math.min(vb, ar.bottom);
+    }
+    const vw = vr - vx, vh = vb - vy;
+    if (vw < 8 || vh < 6) return;
+    if ((vw * vh) / ((r.width * r.height) || 1) < 0.55) return;
+    try {
+      const mid = document.elementFromPoint(
+        Math.min(window.innerWidth - 1, Math.max(0, vx + vw / 2)),
+        Math.min(window.innerHeight - 1, Math.max(0, vy + vh / 2)));
+      if (mid && mid !== el && !el.contains(mid) && !mid.contains(el)) return;
+    } catch (e) { /* a browser that will not answer is not a reason to condemn */ }
     seen.add(el);
     const px = parseFloat(cs.fontSize) || 16;
     const weight = Number(cs.fontWeight) || 400;
@@ -147,7 +189,7 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
          silently dropped everything below the fold — and the QA desk is a long
          screen, so his answer buttons and the READY button, the very surfaces he
          could not read, were never measured while the run printed a clean pass. */
-      x: r.left + window.scrollX, y: r.top + window.scrollY, w: r.width, h: r.height,
+      x: vx + window.scrollX, y: vy + window.scrollY, w: vw, h: vh,
       px: px, weight: weight,
       /* the colour the browser resolved for these glyphs, used only to FIND them */
       rgb: (cs.color.match(/\d+/g) || ['0', '0', '0']).slice(0, 3).map(Number),

@@ -803,8 +803,15 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
   color: var(--ink);
 }
 .starter-card { max-width: 900px; text-align: center; }
+/* GOLD AS INK, NOT GOLD AS DECORATION. This was --foil-lo (#B8860B) on cream:
+   3.03:1, against a 4.5 floor, on the card he throws up in front of the whole
+   class - and the projector pass exists precisely because every teacher screen
+   must read from the back of the room. 1.05rem bold is 16.8px, a fraction under
+   the 18.66px where the large-text floor of 3:1 would apply, so it owes the full
+   4.5. --gold-ink is the token that already exists for gold that has to be read
+   rather than admired: 5.96:1 here. The foil stays where it decorates. */
 .starter-h { font-family: var(--f-stationery); font-size: 1.05rem; font-weight: 700; letter-spacing: 0.05em;
-  text-transform: uppercase; color: var(--foil-lo); margin: 0 0 calc(var(--sq) * 1.1); }
+  text-transform: uppercase; color: var(--gold-ink); margin: 0 0 calc(var(--sq) * 1.1); }
 .starter-line { font-family: var(--f-maths); font-size: clamp(28px, 5vw, 54px); line-height: 1.15; margin: 0; }
 /* THE STARTER'S QUESTION IS A QUESTION, NOT A MARK. It was drawn in marking
    red - the colour that means WRONG - on a card thrown up in front of the whole

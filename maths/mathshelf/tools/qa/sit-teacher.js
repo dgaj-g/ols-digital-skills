@@ -88,6 +88,18 @@ async function walk(page, width, projector, sidecar, transcript) {
     const s = (await state()) || {};
     const a = await AUD.run(page, { clickSafety: true });
     sidecar.states.push({ surface: s.surface || fallbackSurface, state: s.state || fallbackState, width, projector: !!projector, audits: a.verdicts, measured: a.measured });
+    /* A PICTURE OF THE THING IT CONDEMNED. A contrast finding is a number, and a
+       number cannot be argued with or agreed with - "Angles is 1.03:1" read as
+       white-on-white on a screen that is navy-on-cream when you look at it, and
+       the only way to know which of us was right was to go and look. The walk
+       now saves the screen it was measuring, beside the finding, every time. */
+    const anyVisual = (a.findings.readability || a.findings.overlap || []).length;
+    if (anyVisual) {
+      const tag = ((s.surface || fallbackSurface) + '-' + (s.state || fallbackState) + '-' + width).replace(/[^a-z0-9-]/gi, '');
+      try { fs.mkdirSync(A.out('shots'), { recursive: true }); } catch (e) {}
+      try { await page.screenshot({ path: A.out('shots/' + tag + '.png') }); } catch (e) {}
+      g.note('picture of that screen: tools/qa/out/shots/' + tag + '.png');
+    }
     Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {
       g.fail((s.surface || fallbackSurface) + ':' + (s.state || fallbackState) + ' @' + width + (projector ? 'x720' : ''), k,
         k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : describe(f));
