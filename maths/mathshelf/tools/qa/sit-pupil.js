@@ -132,6 +132,15 @@ async function walkBook(page, book, width, sidecar, transcript) {
         sidecar.states.push(Object.assign({ surface: 'dock', state: dock, width }, extra || {}, { audits: a.verdicts }));
       }
     }
+    /* A PICTURE OF THE THING IT CONDEMNED, as the teacher and confused walks do.
+       A contrast finding is a number, and a number cannot be argued with or
+       agreed with until you can see the screen it was made from. */
+    if ((a.findings.readability || a.findings.overlap || []).length) {
+      const tag = (surface + '-' + (real || state) + '-' + width + (extra && extra.qid ? '-' + extra.qid : '')).replace(/[^a-z0-9-]/gi, '');
+      try { fs.mkdirSync(A.out('shots'), { recursive: true }); } catch (e) {}
+      try { await page.screenshot({ path: A.out('shots/pupil-' + tag + '.png') }); } catch (e) {}
+      g.note('picture of that screen: tools/qa/out/shots/pupil-' + tag + '.png');
+    }
     Object.keys(a.findings).forEach(k => {
       (a.findings[k] || []).forEach(f => {
         /* the raw row behind a finding, when you are arguing with a number */

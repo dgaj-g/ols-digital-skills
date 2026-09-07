@@ -108,6 +108,8 @@ async function walk(page, width, projector, sidecar, transcript) {
       g.note('picture of that screen: tools/qa/out/shots/' + tag + '.png');
     }
     Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {
+      /* the raw row behind a finding, when you are arguing with a number */
+      if (process.env.MS_DEBUG_FINDINGS) g.note('RAW ' + k + ' ' + JSON.stringify(f));
       g.fail((s.surface || fallbackSurface) + ':' + (s.state || fallbackState) + ' @' + width + (projector ? 'x720' : ''), k,
         k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : describe(f));
     }));
