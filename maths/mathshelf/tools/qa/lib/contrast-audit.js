@@ -123,7 +123,17 @@ const MEASURE = async ([dataUri, rects, view]) => {
        never between two numbers out of the stylesheet. */
     const want = R.rgb || null;
     const floorN = Math.max(18, total * 0.002);
-    let coreI = -1, best = 1e9;
+    /* THE CORES, NOT THE EDGES. This took the bucket whose mean was NEAREST the
+       colour the browser says the text is - and for a thin or short string the
+       nearest cluster is a pale blend of ink and paper, which is how "Added to
+       your jotter." came back at 1.16:1 in green on white. Antialiasing only
+       ever pulls glyph pixels TOWARDS the plate, so among the clusters that
+       are recognisably the text's own colour the honest one is the FARTHEST
+       from the plate: those are the pixels in the middle of a stroke, which is
+       what a reader's eye lands on. The nearest-mean rule stays as the
+       admission test - a cluster nothing like the ink is still not the text -
+       and the choice among the survivors is now made on depth. */
+    let coreI = -1, best = 1e9, deepest = -1;
     buckets.forEach((b, i) => {
       if (b.n < floorN || i === plateI) return;
       const m = meanOf(b);
@@ -131,6 +141,10 @@ const MEASURE = async ([dataUri, rects, view]) => {
         ? Math.abs(m.r - want[0]) + Math.abs(m.g - want[1]) + Math.abs(m.b - want[2])
         : -Math.abs(m.L - plate.L) * 1000;
       if (d < best) { best = d; coreI = i; }
+      if (want && d <= 150) {
+        const away = Math.abs(m.L - plate.L);
+        if (away > deepest) { deepest = away; coreI = i; }
+      }
     });
     /* the glyphs are not on screen at all (covered, clipped, or no text drawn) */
     if (coreI < 0) return Object.assign({}, R, { skip: 'no text pixels found' });
@@ -162,6 +176,18 @@ const MEASURE = async ([dataUri, rects, view]) => {
     if (R.bg) {
       const d = Math.abs(plate.r - R.bg[0]) + Math.abs(plate.g - R.bg[1]) + Math.abs(plate.b - R.bg[2]);
       if (d > 90) return Object.assign({}, R, { skip: 'the plate is not this element\'s own ground: the sample is of other pixels' });
+    }
+    /* AND THERE HAS TO BE ENOUGH INK TO AVERAGE. A short string in a roomy box
+       is mostly plate: "✓ Added to your jotter." is green on paper and reads
+       perfectly, and the cluster the sampler called its text was a handful of
+       antialiased edge pixels that averaged towards the paper - 1.16:1 on a
+       line you can read across a table. Where the ink is under one and a half
+       per cent of what was sampled, the mean is a rumour and the computed
+       colour answers instead. Every fault this law has caught for real - a
+       disabled button, a stamp in a tight oval, a bin label filling its box -
+       carries far more ink than that. */
+    if (buckets[coreI].n < total * 0.015) {
+      return Object.assign({}, R, { skip: 'text pixels not distinguishable' });
     }
     const core = meanOf(buckets[coreI]);
     const hi = Math.max(plate.L, core.L), lo = Math.min(plate.L, core.L);
