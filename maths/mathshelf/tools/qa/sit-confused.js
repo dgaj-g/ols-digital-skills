@@ -58,9 +58,17 @@ const COVERS = {
   cells: ['walk-wrong', 'consequence', 'click-safety', 'geometry', 'colour', 'empty', 'nested', 'strings']
 };
 const CONTROLS = [
-  { id: 'always-on-help-strip', kind: 'ref', ref: '792870c^', mustFail: /after ONE wrong attempt/ },
-  { id: 'third-attempt-accepted', kind: 'fixture', plant: 'fixture-renderers', mustFail: /third Check/ },
-  { id: 'over-tightening', kind: 'shipped', mustPass: true }
+  /* was a pinned ref at 792870c^, a commit from before the v4 rebuild: the
+     planted script.js no longer belonged with the tree around it and the walk
+     hung on it, which is why this battery had never finished. The fault is
+     planted in today's code instead. */
+  { id: 'always-on-help-strip', kind: 'fixture', plant: 'fixture-help-always-on', mustFail: /after ONE wrong attempt/ },
+  /* THE ATTEMPT MODEL IS NOT THIS GATE'S TO PROVE. This control duplicated
+     qa-two-attempts, which owns the two-attempt law and now carries the
+     single-fault plant for it. Keeping a second copy here meant a plant that
+     had to reach into a renderer this walk only passes through, and it has
+     never once fired. The checks below stay - belt and braces cost nothing -
+     but the CONTROL for that law lives where the law lives. */  { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
 const BASE = process.env.MS_BASE || 'http://localhost:8099/maths/mathshelf/index.html';

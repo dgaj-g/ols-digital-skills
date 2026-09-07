@@ -183,6 +183,25 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
     if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) < 0.05) return;
     const own = Array.from(el.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join(' ').trim();
     if (!own && !forced) return;
+    /* A CARD STILL RISING IS A BLEND, NOT A COLOUR. This module has claimed in
+       its own exemption list from the beginning that readability is measured
+       only once the page's animations have stopped, and it has never once
+       checked. "Added to your jotter." is a confirmation that FADES, and it was
+       measured mid-fade at 1.16:1; the question prompt re-renders after a wrong
+       attempt and was caught rising at 2.18:1, on text that is navy on paper.
+       An element that is moving, or inside something moving, is not yet the
+       thing a reader sees. The walk stands on the same screen again later. */
+    try {
+      if (typeof el.getAnimations === 'function') {
+        const live = el.getAnimations({ subtree: true })
+          .filter(a => a.playState === 'running' || a.playState === 'pending');
+        if (live.length) return;
+      }
+      for (let anc = el; anc && anc !== document.documentElement; anc = anc.parentElement) {
+        if (typeof anc.getAnimations !== 'function') break;
+        if (anc.getAnimations().some(a => a.playState === 'running' || a.playState === 'pending')) return;
+      }
+    } catch (e) { /* a browser that cannot say is not a reason to condemn */ }
     /* TEXT SOMETHING ELSE IS SITTING ON TOP OF CANNOT BE MEASURED HERE. The
        crumb "Classes" scrolls under the fixed preview banner, and the picture
        at that spot is the banner - so the sampler compared a blue link against

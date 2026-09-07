@@ -26,7 +26,7 @@
   /* ── the closed marking set: each colour means ONE thing, only on the jotter ── */
   --marking-red: #C8102E;     /* a WRONG step/answer — never UI chrome, box-draw or tally default */
   --marking-green: #1F7A33;   /* a CORRECT mark — the one green, was a hardcoded hex in 6 places */
-  --amber-flag: #B07D10;      /* ANSWER ONLY — no working shown */
+  --amber-flag: #7A5A05;      /* ANSWER ONLY — no working shown; darkened 7 Sept 2026 - the old #B07D10 put "Close — but check you are reading the scale" at 3.57:1, and that sentence is the one she reads when she is nearly right. Marks in this colour owe 3:1 and clear it easily either way */
   --debug-tint: #B500C8;      /* a verdict with NO outcome modifier: a loud magenta that appears
                                  nowhere else, so a forgotten verdict shows as a BUG, not a red lie */
   --pencil: #474D57;
