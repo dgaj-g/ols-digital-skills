@@ -114,10 +114,31 @@ function serveSandbox(dir) {
   /* dir is <sandbox>/maths/mathshelf; the server serves the sandbox ROOT so the
      page sits at the same path it does in the repo */
   const root = path.resolve(dir, '..', '..');
-  const port = ++PORT;
+  /* A PORT SOMETHING ELSE IS ALREADY ANSWERING ON IS NOT OUR PORT. The counter
+     restarts at 8300 every run, and a battery that was interrupted leaves its
+     detached servers behind - so the next run's server failed to bind, the
+     "is it up?" curl succeeded against the STALE one, and the walk tested a
+     sandbox from hours earlier. Two teacher controls read DID NOT FIRE for
+     exactly that: one was talking to a tree with another control's fixture
+     renderers in it. Step over anything already listening. */
+  let port = ++PORT;
+  for (let guard = 0; guard < 60; guard++) {
+    let taken = false;
+    try { execFileSync('curl', ['-sf', '-o', '/dev/null', '--max-time', '1', 'http://localhost:' + port + '/']); taken = true; }
+    catch (e) { taken = false; }
+    if (!taken) break;
+    port = ++PORT;
+  }
+  /* AND PROVE IT IS OURS. A free port can still be claimed between the check
+     and the spawn. The sandbox carries a token nobody else's copy has, and the
+     server does not count as up until it hands that token back. */
+  const token = 'mz-' + Math.random().toString(36).slice(2) + '-' + port;
+  try { fs.writeFileSync(path.join(dir, 'mz-sandbox-token.txt'), token); } catch (e) {}
   const py = A.qa('serve-preview.py');
   const child = require('child_process').spawn('python3', [py, root, String(port)], { stdio: 'ignore', detached: true });
-  return { child, base: 'http://localhost:' + port + '/maths/mathshelf/index.html' };
+  return { child, token: token,
+    tokenUrl: 'http://localhost:' + port + '/maths/mathshelf/mz-sandbox-token.txt',
+    base: 'http://localhost:' + port + '/maths/mathshelf/index.html' };
 }
 
 function runGate(dir, gateFile, env) {
@@ -202,8 +223,10 @@ gates.forEach(file => {
            so if the server truly never comes. */
         let up = false;
         for (let t = 0; t < 100 && !up; t++) {
-          try { execFileSync('curl', ['-sf', '-o', '/dev/null', '--max-time', '2', server.base]); up = true; }
-          catch (e) { try { execFileSync('sleep', ['0.3']); } catch (e2) {} }
+          try {
+            const got = execFileSync('curl', ['-sf', '--max-time', '2', server.tokenUrl], { encoding: 'utf8' }).trim();
+            if (got === server.token) up = true;
+          } catch (e) { try { execFileSync('sleep', ['0.3']); } catch (e2) {} }
         }
         if (!up) throw new Error('the sandbox server never answered on ' + server.base);
       }
