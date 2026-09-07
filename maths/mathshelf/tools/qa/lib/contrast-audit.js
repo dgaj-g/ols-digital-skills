@@ -124,7 +124,19 @@ const MEASURE = async ([dataUri, rects, view]) => {
        text is, we are looking at something else — say so rather than invent a
        number (tolerance is generous: anti-aliasing pulls glyph pixels toward the
        plate, so a thin 11px face never renders at its pure colour) */
-    if (want && best > 240) return Object.assign({}, R, { skip: 'text pixels not distinguishable' });
+    /* HOW GENEROUS IS TOO GENEROUS. 240 let through clusters that are nothing
+       like the ink: "b = 6" - five characters at 16px in a roomy chip, declared
+       #5B2C46 on #F3E6EC, better than 8:1 - handed back #9E7D8F, a blend
+       halfway to the plate, at a distance of 221, and the pass reported 3.01:1
+       on text that is perfectly solid. The measured evidence separates the two
+       cases cleanly: where a thin face genuinely renders light, the cluster is
+       only tens away from its ink (the 11px theorem stamp, declared #0E7490,
+       gave back #25819A - a distance of 46); where the sampler has found a
+       blend rather than the glyphs, it is over two hundred. 150 sits between
+       them with room on both sides. Past it, the row is not judged in pixels -
+       it is asked again in computed colour, which is what this module has
+       always promised for glyphs it cannot separate from their plate. */
+    if (want && best > 150) return Object.assign({}, R, { skip: 'text pixels not distinguishable' });
     const core = meanOf(buckets[coreI]);
     const hi = Math.max(plate.L, core.L), lo = Math.min(plate.L, core.L);
     const ratio = (hi + 0.05) / (lo + 0.05);
