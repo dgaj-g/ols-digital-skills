@@ -25,6 +25,8 @@ log showing the deployment actually ran.
 | 2026-09-07 08:52 | FRONT DOOR | Version 15 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | a12c3e3 | e05e11db1449ae4c310719d11d83deec | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-07 09:07 | DATA | Version 17 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | f75d554 | bfde48984b1d5c5accd1181c4daea28d | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-07 09:09 | FRONT DOOR | Version 18 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | f75d554 | bfde48984b1d5c5accd1181c4daea28d | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-07 18:09 | DATA | Version 19 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | c6f55e3 | 44c51c70564a4f22082f9deaf837ebe7 | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-07 18:11 | FRONT DOOR | Version 20 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | c6f55e3 | 44c51c70564a4f22082f9deaf837ebe7 | d09615a9abc0998de9e5b7ec4ea4239a |
 
 ## Proof rows
 
@@ -133,6 +135,16 @@ one you are about to change.
 Proved live on Version 18 after the cut: the cover read "Welcome / D Gartland"
 with nothing typed, "Getting your details..." turned its spinner until the relay
 answered, and the button lit.
+
+**DATA Version 19 and FRONT DOOR Version 20, cut from `c6f55e3`.** The last
+three fixes the gates found: the amber near-miss note, the bins' family labels,
+and the heading on the card she reads after two wrong tries. Both deployments
+selected BY DEPLOYMENT ID this time, not by position in the list - see the note
+on Version 16 above.
+
+Read back off the live data `/exec` after the cut: `color:#4a4842` (the bin
+labels), `--amber-flag: #7A5A05`, `color: #6E5104` (the help-strip heading), all
+present and matching the built pair byte for byte.
 
 ### What is live, in one line each
 
