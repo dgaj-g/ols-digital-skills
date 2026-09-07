@@ -122,7 +122,20 @@ async function walk(page, width, projector, sidecar, transcript) {
   await record('staff-cover', 'passcode-empty');
   say(await page.evaluate(() => (document.querySelector('#scr-staff .ui-msg') || {}).textContent || ''));
 
-  await page.evaluate(() => { const i = document.querySelector('#st-pass'); i.value = 'not-the-passcode'; document.querySelector('#st-go').click(); });
+  /* WAIT FOR THE BOX BEFORE TYPING IN IT. The same race stage.js had: on a cold
+     first run the passcode screen is not always painted when settle returns, so
+     this died with "Cannot set properties of null" - which reads as a broken
+     gate and is really a hurry. hover-only-legend is the FIRST teacher control
+     in every battery, so it was the one that hit it, every time, and its plant
+     was never the problem. Fixing it in stage.js was not enough: this walk logs
+     in itself and never calls stage.openApp. */
+  await page.waitForFunction(() => !!document.querySelector('#st-pass') && !!document.querySelector('#st-go'),
+    { timeout: 20000 }).catch(() => {});
+  await page.evaluate(() => {
+    const i = document.querySelector('#st-pass');
+    if (!i) throw new Error('the staff passcode box never appeared — the markbook never opened, so nothing below this was walked');
+    i.value = 'not-the-passcode'; document.querySelector('#st-go').click();
+  });
   await new Promise(r => setTimeout(r, 400));
   const stillOnCover = await page.evaluate(() => !!document.querySelector('#st-pass'));
   g.check(stillOnCover, 'staff-cover:passcode-wrong @' + width, 'waits',

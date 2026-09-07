@@ -373,7 +373,7 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--act-ink, var(--act-accent, var(--teal)));
+  color: var(--act-accent-deep, var(--act-accent, var(--teal)));
   border: 2px solid currentColor;
   border-radius: 50% / 42%;
   padding: 8px 16px;

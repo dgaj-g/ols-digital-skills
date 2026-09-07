@@ -26,8 +26,8 @@
      tickboxes ARE the level system (rule 17), so a book needs no class field,
      only a badge saying who it is for. A new book arrives unticked everywhere. */
   var ACTIVITIES = [
-    { id: 'angles',  title: 'Angles',  sub: 'The Geometry Set', accent: '#0E7490', ink: '#0A5A70', livery: 'teal', band: 'KS3 \u00b7 M2', series: 'KS3 (M2)', meta: 'Ex. M2\u00b701 \u00b7 CCEA M2', motif: 'protractor' },
-    { id: 'algebra', title: 'Algebra', sub: 'Letters & Balance',    accent: '#7A3E8F', ink: '#5F306F', livery: 'plum', band: 'KS3 \u00b7 M2', series: 'KS3 (M2)', meta: 'Ex. M2\u00b702 \u00b7 CCEA M2', motif: 'radical' }
+    { id: 'angles',  title: 'Angles',  sub: 'The Geometry Set', accent: '#0E7490', accentDeep: '#0A5A70', livery: 'teal', band: 'KS3 \u00b7 M2', series: 'KS3 (M2)', meta: 'Ex. M2\u00b701 \u00b7 CCEA M2', motif: 'protractor' },
+    { id: 'algebra', title: 'Algebra', sub: 'Letters & Balance',    accent: '#7A3E8F', accentDeep: '#5F306F', livery: 'plum', band: 'KS3 \u00b7 M2', series: 'KS3 (M2)', meta: 'Ex. M2\u00b702 \u00b7 CCEA M2', motif: 'radical' }
   ];
 
   /* ═════════ THE DOM CONTRACT (gates design 2.4) ═══════════════════
@@ -948,10 +948,10 @@
        11px tracked capital it does not survive its own rendering - the theorem
        stamp declared #0E7490 and the screen gave back #25819A, because a letter
        that thin is more edge than core, and 5.4:1 on paper measured 4.3:1 in
-       pixels. --act-ink is the same hue with enough depth left after that loss.
+       pixels. --act-accent-deep is the same hue with enough depth left after that loss.
        Weight alone did not close it; this is the second half of the same lesson
        as .bcover .series. */
-    document.documentElement.style.setProperty('--act-ink', a.ink || a.accent);
+    document.documentElement.style.setProperty('--act-accent-deep', a.accentDeep || a.accent);
     document.getElementById('act-eyebrow').textContent = pack.sections.length + ' exercises · ' + a.sub;
     document.getElementById('act-title').textContent = a.title;
     /* Open the book at once with a gold wait-card so the tap never feels dead

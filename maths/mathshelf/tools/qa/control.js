@@ -193,10 +193,17 @@ gates.forEach(file => {
         server = serveSandbox(dir);
         env = Object.assign({}, env, { MS_BASE: server.base });
         /* wait for the server to answer before the gate asks it for a page */
+        /* SIX SECONDS IS NOT LONG ENOUGH ON A BUSY MACHINE. Forty tries at 0.15s
+           gave the sandbox's own server six seconds to bind, and with a battery
+           of walks already running it sometimes did not make it: the walk then
+           died with ERR_CONNECTION_REFUSED and the matrix read DID NOT FIRE for
+           a law that was working perfectly. A control that fails because the
+           harness was in a hurry teaches nothing. Thirty seconds, and it says
+           so if the server truly never comes. */
         let up = false;
-        for (let t = 0; t < 40 && !up; t++) {
-          try { execFileSync('curl', ['-sf', '-o', '/dev/null', '--max-time', '1', server.base]); up = true; }
-          catch (e) { try { execFileSync('sleep', ['0.15']); } catch (e2) {} }
+        for (let t = 0; t < 100 && !up; t++) {
+          try { execFileSync('curl', ['-sf', '-o', '/dev/null', '--max-time', '2', server.base]); up = true; }
+          catch (e) { try { execFileSync('sleep', ['0.3']); } catch (e2) {} }
         }
         if (!up) throw new Error('the sandbox server never answered on ' + server.base);
       }
