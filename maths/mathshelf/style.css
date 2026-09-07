@@ -378,7 +378,12 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
   border-radius: 50% / 42%;
   padding: 8px 16px;
   transform: rotate(-3deg);
-  opacity: 0.9;
+  /* AND THE BASE RULE FADED IT TOO. Fixing the keyframe to land at 1 changed
+     nothing, because the stamp is 90% before any animation runs: the entrance
+     was only ever restoring it to the fade it already had. This is the whole
+     reason a stamp declared #0E7490 measured 4.3:1 - it is not #0E7490 on the
+     page, it is nine tenths of it. Full strength now; the deeper ink stays,
+     because an 11px tracked capital still loses to its own edges. */
 }
 .stamp-in { animation: stamp-in 180ms var(--ease-stamp) both; }
 /* AN ENTRANCE THAT NEVER QUITE ARRIVES. This finished at 0.9 and stayed there,

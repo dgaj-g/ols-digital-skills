@@ -1027,7 +1027,10 @@
       }
       function renderGivens() {
         givenRow.innerHTML = '';
-        var gl = el('span', '', T.substGivenLabel); gl.style.cssText = 'font-family:monospace;font-size:.72rem;color:#7d7a72';
+        var gl = el('span', '', T.substGivenLabel); /* the same 4.04:1 grey the bin labels wore, on the label that names what she
+           has been GIVEN - found by reading the file rather than by the gate, which
+           had not walked a state where this one shows */
+        gl.style.cssText = 'font-family:monospace;font-size:.72rem;color:#57544d';
         givenRow.appendChild(gl);
         uniq.forEach(function (L) {
           var c = el('span', '', L + ' = ' + gjRtostr(given[L]));
