@@ -331,6 +331,42 @@ const PLANTS = {
       "'<span class=\"exno\">' + esc(bookTitle(view.act)) + '</span>' +");
   },
 
+  /* ── HELP THAT IS NOT EARNED. "Want to see how?" is built hidden and shown
+     only after two wrong attempts; this shows it from the start, which is the
+     fault the confused walk exists to catch. It replaces a control that planted
+     a script.js from `792870c^` - a commit from before the v4 rebuild. That
+     file no longer belongs with the rest of the tree, and the walk hung on it
+     for twenty minutes at nought per cent, which is why the confused battery
+     had never once finished. A plant belongs in the code as it is today. ── */
+  'fixture-help-always-on': (dir) => {
+    edit(dir, 'script.js', "    wrap.hidden = true;                          // earned (2 wrong attempts) or nudged before it appears",
+      "    wrap.hidden = false;   /* plant: help given away before it is earned */");
+  },
+
+  /* ── A THIRD GO. The attempt cap is `rec.att.length >= 2`; this pushes it to
+     three, so a pupil can guess once more. It replaces `fixture-renderers` on
+     this control - that plant mounts a whole fixture question which is
+     deliberately faulty in half a dozen other ways, and the confused walk
+     reported those instead of the one the control is asking about. A control
+     should plant ONE fault, or it cannot tell you which one it caught. ── */
+  'fixture-third-attempt': (dir) => {
+    /* THE STATE MUST STILL BE REACHABLE. Pushing the cap to three stopped the
+       walk ever standing on checked-wrong-2 - and the attempt checks LIVE at
+       that state, so the gate reported a coverage miss instead of the fault.
+       A plant that removes the screen the law is written on has not planted the
+       fault; it has hidden the law. The board is left pressable instead: the
+       question is marked as usual and the Check row simply does not retire.
+       AND THE WORKING AREA HAS TO SURVIVE WITH IT. Leaving the row on screen
+       while `ui.innerHTML = ''` still wiped the board gave a Check button with
+       nothing to check - pressable, useless, and invisible to a law that asks
+       whether a third attempt was ACCEPTED. A faithful plant leaves her able to
+       do the thing the law forbids, or the law has nothing to refuse. */
+    edit(dir, 'jotter.js', "          rec.lock = true;\n          rec.fin = attempt.fin || null;",
+      "          rec.lock = false;   /* plant: a third go */\n          rec.fin = attempt.fin || null;");
+    edit(dir, 'jotter.js', "          ui.innerHTML = '';\n          checkRow.hidden = true;\n          dock.hidden = true;",
+      "          /* plant: the working area is left standing */\n          checkRow.hidden = false;   /* plant: the board never retires */\n          dock.hidden = false;");
+  },
+
   /* ── a per-user cache holding something two people must both see ─── */
   'fixture-cacheservice': (dir) => {
     edit(dir, 'server/Code.gs.template', 'function apiWhoAmI() {',

@@ -30,7 +30,17 @@ const TIER = 'full';
 const ORDER = 76;
 const COVERS = { books: '*', kinds: '*', surfaces: ['question'], widths: [1280], projector: false, tier: ['preview'], cells: ['attempts'] };
 const CONTROLS = [
-  { id: 'third-attempt', kind: 'fixture', plant: 'fixture-renderers', mustFail: /a third Check/ },
+  /* fixture-renderers mounts a fixture question that is deliberately faulty in
+     half a dozen ways at once, so this gate failed on the double-press check
+     and never reached the one the control is asking about. A control must plant
+     ONE fault or its verdict names nothing. fixture-third-attempt leaves the
+     real question exactly as it is except that the board does not retire. */
+  /* THE GATE NAMES THIS FAULT THREE WAYS and any of them is a real no: the
+     third Check accepted, the button still pressable, or - the route this plant
+     takes, by leaving the record unlocked - a reload handing her a fresh board.
+     A control that quotes only one of a gate's sentences is a control that will
+     read DID NOT FIRE the day the gate catches the fault by another road. */
+  { id: 'third-attempt', kind: 'fixture', plant: 'fixture-third-attempt', mustFail: /a third Check|still pressable|reload her way to a third go/ },
   { id: 'double-press-spends-an-attempt', kind: 'self-probe', mustFail: /a double press spent/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];

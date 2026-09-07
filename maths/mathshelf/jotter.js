@@ -1132,7 +1132,7 @@
              a point to its own edges, which is the same tax the shelf's series line
              and the theorem stamp paid today. #57544d is 7.11:1 on paper and clears
              the floor on the screen, which is the only place it counts. */
-          lab.style.cssText = 'font-family:monospace;font-size:.68rem;color:#57544d;margin-bottom:6px;text-transform:uppercase'; bin.appendChild(lab);
+          lab.style.cssText = 'font-family:monospace;font-size:.68rem;color:#4a4842;margin-bottom:6px;text-transform:uppercase'; bin.appendChild(lab);
           var row = el('div', ''); row.style.cssText = 'min-height:26px;font-family:Georgia,serif;font-size:1.15rem;color:#14213A';
           row.setAttribute('data-tray-row', '');
           bins[f].forEach(function (idx, k) {
