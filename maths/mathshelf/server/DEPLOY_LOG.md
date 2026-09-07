@@ -21,6 +21,10 @@ log showing the deployment actually ran.
 | 2026-09-06 15:38 | FRONT DOOR | Version 11 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | da8437b | cd9e10978a41ddec7af4f69eedbf88d5 | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-06 16:31 | DATA | Version 12 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | 24ca0c7 | 4eecea6d75d05330211de3f7ebfe7aff | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-06 16:32 | FRONT DOOR | Version 13 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 24ca0c7 | 4eecea6d75d05330211de3f7ebfe7aff | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-07 08:50 | DATA | Version 14 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | a12c3e3 | e05e11db1449ae4c310719d11d83deec | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-07 08:52 | FRONT DOOR | Version 15 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | a12c3e3 | e05e11db1449ae4c310719d11d83deec | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-07 09:07 | DATA | Version 17 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | f75d554 | bfde48984b1d5c5accd1181c4daea28d | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-07 09:09 | FRONT DOOR | Version 18 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | f75d554 | bfde48984b1d5c5accd1181c4daea28d | d09615a9abc0998de9e5b7ec4ea4239a |
 
 ## Proof rows
 
@@ -110,6 +114,25 @@ deployments serve:
 
 Measured on the built page at all three widths before the cut: 375 PASS, 768
 PASS, 1280 PASS, 15 pieces of text read on each.
+
+**DATA Version 17 and FRONT DOOR Version 18, cut from `f75d554`, 7 Sept.** Two
+cuts in the morning: Versions 14/15 carried the seven fixes the gates found
+overnight, and 17/18 the two more found by reading the files after the gates had
+gone quiet. Same two `/exec` URLs throughout, same deployment ids.
+
+**Version 16 was a mis-click, and it is on the record because it was.** The
+Manage-deployments list re-orders itself between openings, and the row that
+looks like the front door is sometimes the data endpoint: selecting by POSITION
+put a version on the wrong deployment. No harm done - the manifest was in its
+data state at the time, so the extra cut was simply a duplicate, and an
+anonymous fetch of the data `/exec` confirmed the relay was never broken. The
+rule that follows: **read the Deployment ID before touching the pencil, every
+time.** The list is not a stable order and the dialog will not tell you which
+one you are about to change.
+
+Proved live on Version 18 after the cut: the cover read "Welcome / D Gartland"
+with nothing typed, "Getting your details..." turned its spinner until the relay
+answered, and the button lit.
 
 ### What is live, in one line each
 
