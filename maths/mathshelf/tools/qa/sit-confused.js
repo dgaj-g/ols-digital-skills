@@ -228,7 +228,15 @@ async function record(page, sidecar, surface, state, extra) {
   AIMED.push({ surface, state, got: real });
   const a = await AUD.run(page, { clickSafety: true });
   sidecar.states.push(Object.assign({ surface, state: real || state, expected: state, stood: real === state }, extra || {}, { audits: a.verdicts }));
+  /* A PICTURE OF THE THING IT CONDEMNED, same as the teacher walk. */
+  if ((a.findings.readability || a.findings.overlap || []).length) {
+    const tag = (surface + '-' + state + '-' + (extra && extra.width)).replace(/[^a-z0-9-]/gi, '');
+    try { fs.mkdirSync(A.out('shots'), { recursive: true }); } catch (e) {}
+    try { await page.screenshot({ path: A.out('shots/conf-' + tag + '.png') }); } catch (e) {}
+    g.note('picture of that screen: tools/qa/out/shots/conf-' + tag + '.png');
+  }
   Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {
+    if (process.env.MS_DEBUG_FINDINGS) g.note('RAW ' + k + ' ' + JSON.stringify(f));
     g.fail(surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + (extra && extra.width), k,
       k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : describe(f));
   }));

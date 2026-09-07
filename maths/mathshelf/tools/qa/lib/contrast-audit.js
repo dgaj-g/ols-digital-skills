@@ -77,8 +77,22 @@ const MEASURE = async ([dataUri, rects, view]) => {
        legible violet pill was condemned at 1.22:1 while the browser's own
        colours give 6.55:1. Insetting by an eighth on each side keeps every
        glyph (text never reaches its own border) and drops the corners. */
+    /* A ROW THAT SCROLLED OFF THE PICTURE IS NOT AT THE TOP OF IT. Clamping the
+       subtracted coordinate to zero took every row above the fold and sampled it
+       at the top-left corner of the screenshot instead - which on a scrolled
+       question page is blank paper, so a cream label on a grey button came back
+       as cream on cream at 1.17:1. The picture is the viewport; a row outside it
+       was not photographed and cannot be judged from this frame. It is skipped
+       with a reason, and the walk will meet it again on a state where it is on
+       screen. Clamping was mine, and it invented the worst-looking finding of
+       the night. */
     const inx = Math.round(R.w * dpr * 0.12), iny = Math.round(R.h * dpr * 0.12);
-    const x = Math.max(0, Math.round((R.x - sx) * dpr) + inx), y = Math.max(0, Math.round((R.y - sy) * dpr) + iny);
+    const rx = Math.round((R.x - sx) * dpr), ry = Math.round((R.y - sy) * dpr);
+    const rw = Math.round(R.w * dpr), rh = Math.round(R.h * dpr);
+    if (rx + rw < 2 || ry + rh < 2 || rx > c.width - 2 || ry > c.height - 2) {
+      return Object.assign({}, R, { skip: 'not in the picture: this row was scrolled out of the viewport when the frame was taken' });
+    }
+    const x = Math.max(0, rx + inx), y = Math.max(0, ry + iny);
     const w = Math.min(c.width - x, Math.round(R.w * dpr) - inx * 2);
     const h = Math.min(c.height - y, Math.round(R.h * dpr) - iny * 2);
     if (w < 2 || h < 2) return Object.assign({}, R, { skip: 'off screen' });
@@ -137,6 +151,18 @@ const MEASURE = async ([dataUri, rects, view]) => {
        it is asked again in computed colour, which is what this module has
        always promised for glyphs it cannot separate from their plate. */
     if (want && best > 150) return Object.assign({}, R, { skip: 'text pixels not distinguishable' });
+    /* and a label with a painted mark inside it (see `painted` above) is judged
+       in pixels only while the cluster really is its own ink */
+    if (R.painted && want && best > 60) {
+      return Object.assign({}, R, { skip: 'text pixels not distinguishable' });
+    }
+    /* THE PLATE HAS TO BE THE ELEMENT'S OWN GROUND. See the note on `bg` above:
+       a navy button sampled as white paper is a sample of the wrong pixels, and
+       every one of those came back at about 1.1:1 - the look of blank paper. */
+    if (R.bg) {
+      const d = Math.abs(plate.r - R.bg[0]) + Math.abs(plate.g - R.bg[1]) + Math.abs(plate.b - R.bg[2]);
+      if (d > 90) return Object.assign({}, R, { skip: 'the plate is not this element\'s own ground: the sample is of other pixels' });
+    }
     const core = meanOf(buckets[coreI]);
     const hi = Math.max(plate.L, core.L), lo = Math.min(plate.L, core.L);
     const ratio = (hi + 0.05) / (lo + 0.05);
@@ -211,6 +237,34 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
       px: px, weight: weight,
       /* the colour the browser resolved for these glyphs, used only to FIND them */
       rgb: (cs.color.match(/\d+/g) || ['0', '0', '0']).slice(0, 3).map(Number),
+      /* AND THE GROUND THE ELEMENT PAINTS FOR ITSELF, when it paints one. A
+         button with a navy background whose sample comes back as white paper
+         has not been sampled at all - the pixels belong to something else. This
+         is the only check that catches it when BOTH the text and the wrong
+         plate are near-white, where a colour-distance test cannot: cream text
+         reads as cream-on-white at 1.17:1 and looks, to the arithmetic, like a
+         real fault. */
+      /* DOES THIS LABEL CONTAIN A COLOURED MARK OF ITS OWN? The confidence
+         buttons read "Confident" in navy and carry a green status dot beside
+         the word. The sampler took the dot for the text and measured green on
+         cream at 3.76:1 - a fair reading of a DOT, which is a mark and owes 3:1,
+         and a nonsense reading of the label, which is navy on cream at better
+         than 11:1. Where a label contains something painted, the pixels cannot
+         be trusted to isolate its glyphs and the computed colour answers. */
+      painted: (() => {
+        const kids = el.querySelectorAll('*');
+        for (let i = 0; i < kids.length; i++) {
+          const kc = getComputedStyle(kids[i]);
+          const m = (kc.backgroundColor || '').match(/\d+/g);
+          if (m && m.length >= 3 && !(m.length > 3 && Number(m[3]) === 0)) return true;
+          if (kc.backgroundImage && kc.backgroundImage !== 'none') return true;
+        }
+        return false;
+      })(),
+      bg: (() => { const m = (cs.backgroundColor || '').match(/\d+/g);
+        if (!m || m.length < 3) return null;
+        if (m.length > 3 && Number(m[3]) === 0) return null;
+        return m.slice(0, 3).map(Number); })(),
       /* a glyph with no letters or digits in it is a MARK, not text — a star, a
          spanner, a dropdown arrow. Holding an unlit star to a text floor is the
          gate inventing a fault (DFM 146a); marks are judged at the 3:1 the

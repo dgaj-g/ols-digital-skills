@@ -531,7 +531,7 @@ async function readability(page) {
        walk and reported PASS on all of them, including a table of white text on
        a white ground. The root is now the visible surface, and body is the
        fallback rather than the first hidden div. */
-    const rects = await page.evaluate((s) => {
+    const recollect = () => page.evaluate((s) => {
       const vis = (e) => {
         if (!e || e.hidden) return false;
         const cs = getComputedStyle(e);
@@ -581,11 +581,20 @@ async function readability(page) {
          the honest root and it measures more, not less. */
       window.__mzRoot = covering.length ? covering[covering.length - 1] : document.body;
       window.__mzRoot.setAttribute('data-mz-root', '1');
-      return eval(s)([[], [], '[data-mz-root]']);
+      /* THE SCROLL IS READ IN THE SAME TICK AS THE RECTS. Reading it afterwards
+         was a race: on question:checked-wrong-1 the app scrolls to bring the
+         verdict into view, and a scroll still in flight meant the rows were
+         measured at one offset and the picture taken at another - so every row
+         on the screen came back at about 1.1:1, which is what blank paper looks
+         like. One tick, one frame of reference. */
+      const rows = eval(s)([[], [], '[data-mz-root]']);
+      return { rows: rows, sx: window.scrollX, sy: window.scrollY };
     }, contrast.COLLECT.toString());
+    let collected = await recollect();
     await page.evaluate(() => { const e = document.querySelector('[data-mz-root]'); if (e) e.removeAttribute('data-mz-root'); });
     /* A MEASUREMENT OF NOTHING IS NOT A PASS. Returning PASS here is what let
        the audit sleep through every screen it was written for. */
+    const rects = collected.rows || [];
     if (!rects.length) return { verdict: 'EMPTY', findings: [{ error: 'the readability pass found no text to measure on this state — a pass made of nothing is not a pass' }], measured: 0 };
     /* THE PICTURE AND THE COORDINATES MUST BE IN THE SAME FRAME. The collector
        records every row in DOCUMENT coordinates; this took a VIEWPORT picture
@@ -599,7 +608,18 @@ async function readability(page) {
        the full grid, which is a wide table; the viewport is also the honest
        unit, because it is what she is looking at. So the offset travels with
        the picture and the sampler subtracts it. */
-    const view = await page.evaluate(() => ({ sx: window.scrollX, sy: window.scrollY }));
+    /* AND THE PAGE MUST BE AT REST. If it moved after the collect, the ROWS are
+       stale as well as the offset, so the whole collect is taken again - not
+       just the number patched. Eight tries at 150ms is more than any scroll
+       this app starts. */
+    let view = { sx: collected.sx, sy: collected.sy };
+    for (let settle = 0; settle < 8; settle++) {
+      const now = await page.evaluate(() => ({ sx: window.scrollX, sy: window.scrollY }));
+      if (now.sx === view.sx && now.sy === view.sy) break;
+      await new Promise(r => setTimeout(r, 150));
+      collected = await recollect();
+      view = { sx: collected.sx, sy: collected.sy };
+    }
     /* A STILL FRAME, OR NO FRAME AT ALL. Headless Chrome does not composite
        these pages, and asked for a picture of one carrying infinite CSS
        animations - the nine on the staff cover, the breathing wait-lines and
