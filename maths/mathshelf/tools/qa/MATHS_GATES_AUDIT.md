@@ -196,6 +196,29 @@ no instruction on it still passes said-twice honestly; a whole walk that never
 found one means the law is asleep, and that is the only shape of failure F35a
 could ever have shown.
 
+**A LAW MEASURED IN PIXELS MUST BE MADE TO PROVE ITS OWN PIXELS.** The contrast
+law was believed for a day and a half and it was wrong in five separate ways, all
+of which made blank paper look like a fault at about 1.1:1 and, worse, could
+have hidden a real one just as easily. The picture was the viewport while the
+boxes were in document coordinates; the scroll offset was read a tick after the
+boxes; a row scrolled off the frame was clamped to its top-left corner; the
+plate was never checked against the element's own ground; and - the one that
+mattered - it measured the EDGES of letters rather than their cores, because it
+took the cluster nearest the declared colour and antialiasing only ever pulls
+glyph pixels towards the paper (F42, F42a).
+
+Two rules came out of it and they are worth more than the fixes:
+
+1. **Photograph what you condemn.** Every walker now saves the screen beside the
+   finding (`tools/qa/out/shots/`), and every contrast finding names its element
+   and its box. Three false findings were settled by looking at the picture in
+   under a minute each, after an hour of arguing with a number that named
+   nothing. `MS_DEBUG_FINDINGS=1` prints the raw row a finding was made of.
+2. **Prove the law still bites AFTER you narrow it, not only before.** Every
+   narrowing here was followed by planting white-on-white in the markbook again.
+   A law loosened until it stops complaining is worse than no law, and there is
+   no way to tell the two apart except by making it say no on demand.
+
 **A width you did not walk is a width you did not test.** The three laws were
 proved at 1280 and called done. The shipped tree's own `over-tightening`
 control - which walks 375, 768 and 1280 - then failed on the shelf: the book
