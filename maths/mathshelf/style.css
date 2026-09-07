@@ -125,7 +125,15 @@ body.gj :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
   transition: transform 90ms var(--ease-stamp), box-shadow 90ms var(--ease-stamp);
 }
 .btn-stamp:active { transform: translateY(1px); box-shadow: 0 0 0 var(--navy-deep); }
-.btn-stamp:disabled { background: var(--pencil); box-shadow: none; cursor: default; opacity: 0.55; }
+/* A BUTTON THAT IS NOT READY YET STILL HAS TO SAY WHAT IT WILL DO. This faded
+   the WHOLE control to 55%, which took "Mark my working" - the one action on
+   the page - down to 2.57:1. WCAG has no contrast requirement for an inactive
+   control, so a gate reading the standard alone would let it stand; but she has
+   to be able to read what she is working towards, and a pupil who cannot make
+   out the button cannot know what pressing it is for. The signal that it is not
+   ready is the grey ground and the dead cursor, not words she has to squint at.
+   Cream on pencil, unfaded: 7.96:1. */
+.btn-stamp:disabled { background: var(--pencil); box-shadow: none; cursor: default; }
 .btn-stamp.gold { background: linear-gradient(105deg, var(--foil-hi), var(--foil) 45%, var(--foil-lo)); color: var(--navy-deep); box-shadow: 0 2px 0 var(--foil-lo); }
 
 .btn-pencil {
@@ -354,13 +362,18 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
 .ml-margin { font-family: var(--f-stationery); font-size: 13px; color: var(--pencil); margin-left: calc(var(--sq) * 0.5); }
 
 /* theorem stamp (movies + jotter feedback) */
+/* Weight, for the same reason .bcover .series and .movie-head-badge needed it:
+   an 11px tracked capital is more edge than core. It was NOT what fixed this
+   one - the 4.3:1 reading came from the stamp-in animation ending at 0.9 and
+   staying there - but a small tracked capital is better with it either way. */
 .theorem-stamp {
   display: inline-block;
   font-family: var(--f-stationery);
   font-size: 11px;
+  font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--act-accent, var(--teal));
+  color: var(--act-ink, var(--act-accent, var(--teal)));
   border: 2px solid currentColor;
   border-radius: 50% / 42%;
   padding: 8px 16px;
@@ -368,9 +381,15 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
   opacity: 0.9;
 }
 .stamp-in { animation: stamp-in 180ms var(--ease-stamp) both; }
+/* AN ENTRANCE THAT NEVER QUITE ARRIVES. This finished at 0.9 and stayed there,
+   so every theorem stamp on the film's end card - "Angles in a triangle add up
+   to 180 degrees", the sentence the whole clip exists to leave her with - sat
+   permanently at nine tenths and measured 4.3:1 against a 4.5 floor, where the
+   two colours give 5.92:1. Nobody would catch a ten per cent fade by eye; that
+   is the entire reason the law is measured in pixels. It lands at 1 now. */
 @keyframes stamp-in {
   0% { transform: rotate(-3deg) scale(1.5); opacity: 0; }
-  100% { transform: rotate(-3deg) scale(1); opacity: 0.9; }
+  100% { transform: rotate(-3deg) scale(1); opacity: 1; }
 }
 
 /* ═══ THE JOTTER PAGE (working pane) ═══════════════════════════════ */

@@ -134,6 +134,8 @@ async function walkBook(page, book, width, sidecar, transcript) {
     }
     Object.keys(a.findings).forEach(k => {
       (a.findings[k] || []).forEach(f => {
+        /* the raw row behind a finding, when you are arguing with a number */
+        if (process.env.MS_DEBUG_FINDINGS) g.note('RAW ' + k + ' ' + JSON.stringify(f));
         g.fail(surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + width, k,
           k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : describe(f));
       });
