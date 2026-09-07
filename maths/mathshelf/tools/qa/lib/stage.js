@@ -50,7 +50,19 @@ async function openApp(browser, opts) {
     await W.settle(page);
     await page.evaluate(() => document.getElementById('cover-staff').click());
     await W.settle(page);
-    await page.evaluate(() => { const i = document.querySelector('#st-pass'); i.value = 'demo'; document.querySelector('#st-go').click(); });
+    /* WAIT FOR THE BOX BEFORE TYPING IN IT. This set #st-pass the moment settle
+       returned, and on a cold first run of a battery the passcode screen is not
+       always painted yet: the walk died with "Cannot set properties of null",
+       which reads as a broken gate and is really a race. The FIRST teacher
+       control in every run was the one that hit it, so hover-only-legend failed
+       for a reason that had nothing to do with its plant. */
+    await page.waitForFunction(() => !!document.querySelector('#st-pass') && !!document.querySelector('#st-go'),
+      { timeout: 15000 }).catch(() => {});
+    await page.evaluate(() => {
+      const i = document.querySelector('#st-pass');
+      if (!i) throw new Error('the staff passcode box never appeared — the markbook did not open, so nothing below this was walked');
+      i.value = 'demo'; document.querySelector('#st-go').click();
+    });
     await new Promise(r => setTimeout(r, 1200));
     return page;
   }
