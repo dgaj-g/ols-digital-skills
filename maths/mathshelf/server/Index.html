@@ -237,7 +237,7 @@ body.landing {
   /* \2500 \2500  the closed marking set: each colour means ONE thing, only on the jotter \2500 \2500  */
   --marking-red: #C8102E;     /* a WRONG step/answer \2014  never UI chrome, box-draw or tally default */
   --marking-green: #1F7A33;   /* a CORRECT mark \2014  the one green, was a hardcoded hex in 6 places */
-  --amber-flag: #B07D10;      /* ANSWER ONLY \2014  no working shown */
+  --amber-flag: #7A5A05;      /* ANSWER ONLY \2014  no working shown; darkened 7 Sept 2026 - the old #B07D10 put "Close \2014  but check you are reading the scale" at 3.57:1, and that sentence is the one she reads when she is nearly right. Marks in this colour owe 3:1 and clear it easily either way */
   --debug-tint: #B500C8;      /* a verdict with NO outcome modifier: a loud magenta that appears
                                  nowhere else, so a forgotten verdict shows as a BUG, not a red lie */
   --pencil: #474D57;
@@ -1222,7 +1222,12 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .wh-slip { background: #FBF4E2; border: 1.5px solid var(--foil-lo); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;
   color: var(--ink);
 }
-.wh-slip .wh-slip-h { font-family: var(--f-stationery); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: #8A6A12; margin: 0 0 6px; }  /* scoped past body.gj p { margin:0 } */
+.wh-slip .wh-slip-h { font-family: var(--f-stationery); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: #6E5104; margin: 0 0 6px; }  /* scoped past body.gj p { margin:0 } */
+/* WHERE IT WENT WRONG is the heading on the card a pupil reads after two
+   wrong tries - the least-walked screen and the one she most needs. It was
+   #8A6A12 on the slip's warm cream and measured 3.57:1 against a 4.5 floor;
+   a 0.74rem tracked capital pays the same tax as the shelf's series line, so
+   the paper figure has to carry the loss. #6E5104 is 7.32:1 on paper. */
 /* HER OWN LINE, QUOTED - NOT MARKED AGAIN. The card is headed "Where it went
    wrong" and names the slip underneath; the line itself was drawn in marking
    red, which is a mark's colour on something that is not a mark, and it is not
@@ -6513,7 +6518,7 @@ window.OLS_TRANSPORT = {
              a point to its own edges, which is the same tax the shelf's series line
              and the theorem stamp paid today. #57544d is 7.11:1 on paper and clears
              the floor on the screen, which is the only place it counts. */
-          lab.style.cssText = 'font-family:monospace;font-size:.68rem;color:#57544d;margin-bottom:6px;text-transform:uppercase'; bin.appendChild(lab);
+          lab.style.cssText = 'font-family:monospace;font-size:.68rem;color:#4a4842;margin-bottom:6px;text-transform:uppercase'; bin.appendChild(lab);
           var row = el('div', ''); row.style.cssText = 'min-height:26px;font-family:Georgia,serif;font-size:1.15rem;color:#14213A';
           row.setAttribute('data-tray-row', '');
           bins[f].forEach(function (idx, k) {
