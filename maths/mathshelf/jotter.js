@@ -1121,7 +1121,15 @@
         binsRow.innerHTML = '';
         fams.forEach(function (f) {
           var bin = el('div', ''); bin.style.cssText = 'min-width:118px;border:2px dashed ' + (sel != null ? '#7A3B5E' : '#C58CA0') + ';border-radius:10px;padding:8px 10px;background:#FBF7F9;cursor:' + (sel != null ? 'pointer' : 'default');
-          var lab = el('div', '', famLabel[f]); lab.style.cssText = 'font-family:monospace;font-size:.68rem;color:#7d7a72;margin-bottom:6px;text-transform:uppercase'; bin.appendChild(lab);
+          var lab = el('div', '', famLabel[f]); /* the bin's family name - X TERMS, X² TERMS, NUMBERS - told her which pile
+             each tile belongs in, at 4.04:1 before the screen had even drawn it,
+             under the 4.5 floor. A 10.9px uppercase monospace label is not
+             decoration: it is the whole instruction for the sort. #6a675f (5.32:1
+             on paper) still rendered at 4.3 - a 10.9px tracked capital loses about
+             a point to its own edges, which is the same tax the shelf's series line
+             and the theorem stamp paid today. #57544d is 7.11:1 on paper and clears
+             the floor on the screen, which is the only place it counts. */
+          lab.style.cssText = 'font-family:monospace;font-size:.68rem;color:#57544d;margin-bottom:6px;text-transform:uppercase'; bin.appendChild(lab);
           var row = el('div', ''); row.style.cssText = 'min-height:26px;font-family:Georgia,serif;font-size:1.15rem;color:#14213A';
           row.setAttribute('data-tray-row', '');
           bins[f].forEach(function (idx, k) {
