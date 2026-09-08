@@ -1130,7 +1130,13 @@
        view','ink-open')` sat in the handler below asking for a root that was
        never on screen. The screen now carries the name it is being read as. */
     var sweep = !!ctx.qlabel;
-    shell({ body: body, surface: sweep ? 'question-view' : 'book-view', state: sweep ? 'loaded' : 'pencil',
+    /* BOTH NAMES WRITTEN OUT, because a gate reads this file. qa-surfaces asks
+       the source which screens it renders, and it asks by reading the pair
+       `surface: 'x', state: 'y'` - so a ternary inside the call left the whole
+       markbook's book view looking like a screen nothing draws. The pair is
+       chosen first and named in full on both sides. */
+    var jv = sweep ? { surface: 'question-view', state: 'loaded' } : { surface: 'book-view', state: 'pencil' };
+    shell({ body: body, surface: jv.surface, state: jv.state,
       crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } },
         { label: sweep ? ctx.qlabel + ' \u00b7 across the class' : 'A pupil\u2019s book' }] });
 

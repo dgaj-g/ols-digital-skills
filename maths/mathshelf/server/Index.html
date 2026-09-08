@@ -2516,6 +2516,7 @@ window.OLS_TRANSPORT = {
       passcodeWrong: 'That passcode was not accepted.',
       openMarkbook: 'Open the markbook',
       noServer: 'We could not reach the server. Try again.',
+      wallStale: 'This class page could not be refreshed. What you see is the last it loaded.',
       /* WHAT THE SERVER SAID, IN WORDS. Every one of these is a code the
          server can return, and the markbook used to print the code itself on
          a teacher's screen - "not-configured" at ten to nine on a Tuesday. A
@@ -8109,32 +8110,37 @@ function statsBoard(q, wrong) {
            space above runs out the stagger continues BELOW the track, which is
            empty, rather than giving up and letting two labels sit on one
            another. */
-        var r = recs[i], row = 0, box = null, guard = 0;
+        /* AND NEVER OFF THE BOARD. The stagger goes up and then down, and the
+           downward rows could run past the bottom of the layer - where the
+           layer's own clip hid the label from the pupil while its box still
+           landed on the prompt of the question below, which is what the overlap
+           law reported. A row that would leave the board is not offered at all
+           and the search carries on to the next one. Clamping the answer
+           afterwards was the wrong shape and made it worse: it threw away the
+           free slot the search had just found and stacked five box-plot labels
+           on top of one another. */
+        var r = recs[i], row = 0, box = null, firstLegal = null;
         var maxUp = Math.max(0, Math.floor((r.wantY - r.h) / rowH));
-        while (guard++ < 40) {
+        for (row = 0; row < 40; row++) {
           var top = (row <= maxUp)
             ? r.wantY - row * rowH
             : r.wantY + (row - maxUp) * rowH;
-          box = { l: r.wantX - r.w / 2, t: top - r.h, r: r.wantX + r.w / 2, b: top };
+          var cand = { l: r.wantX - r.w / 2, t: top - r.h, r: r.wantX + r.w / 2, b: top };
+          if (cand.t < 0 || cand.b > layerH) continue;
+          if (!firstLegal) firstLegal = cand;
           var hit = false;
           for (var j = 0; j < placed.length; j++) {
             var q2 = placed[j];
-            if (box.l < q2.r && box.r > q2.l && box.t < q2.b && box.b > q2.t) { hit = true; break; }
+            if (cand.l < q2.r && cand.r > q2.l && cand.t < q2.b && cand.b > q2.t) { hit = true; break; }
           }
-          if (!hit) break;
-          row++;
+          if (!hit) { box = cand; break; }
         }
-        /* AND NEVER OFF THE BOARD. The stagger goes up and then down, and on a
-           tall board with several readouts the downward rows can run past the
-           bottom of the layer - where the layer's own clip hides the label
-           from the pupil while its box still lands on the prompt of the
-           question below, which is what the overlap law reported. The final
-           place is clamped to the layer: a label a reader cannot see is not a
-           label, and one that leaves its board is not on its board. */
-        var b = Math.min(Math.max(box.b, r.h), Math.max(r.h, layerH));
-        box = { l: box.l, t: b - r.h, r: box.r, b: b };
+        /* every row on the board is taken: put it in the first one that fits
+           the board at all and let the overlap law say so - a label off the
+           board is one she cannot read, which is worse than one she can */
+        if (!box) box = firstLegal || { l: r.wantX - r.w / 2, t: 0, r: r.wantX + r.w / 2, b: r.h };
         r.el.style.left = r.wantX + 'px';
-        r.el.style.top = b + 'px';
+        r.el.style.top = box.b + 'px';
         placed.push(box);
       }
     }
@@ -13346,6 +13352,12 @@ function statsBoard(q, wrong) {
       if (go.disabled) return;
       go.disabled = true;
       busyCard(body.querySelector('#st-msg'), 'Checking the passcode&hellip; this can take a moment');
+      /* THE WAIT IS ITS OWN SCREEN, AND IT WAS NEVER NAMED. The cover declared
+         `busy` and `open` in the registry and no code ever set either, so the
+         only states it could ever be in were "empty" and "wrong" - a teacher
+         waiting on a slow school line was on a screen the app had no word for.
+         It says which one it is on now. */
+      SURF('staff-cover', 'busy');
       var tryPass = body.querySelector('#st-pass').value;
       passcode = tryPass;
       call('classes').then(function (r) {
@@ -13358,6 +13370,7 @@ function statsBoard(q, wrong) {
         }
         classes = r.classes || [];
         meEmail = r.me || ''; isAdmin = !!r.isAdmin;
+        SURF('staff-cover', 'open');
         showClasses();
       }).catch(function () {
         go.disabled = false; passcode = null;
@@ -13921,12 +13934,22 @@ function statsBoard(q, wrong) {
   function loadWall(paint) {
     var seq = ++view.wallSeq;
     function pull() {
+      /* A CLASS PAGE THAT CANNOT BE LOADED SAID NOTHING. This swallowed both
+         the refused answer and the thrown one, so a teacher whose line had
+         dropped sat looking at figures twenty seconds old with no word that
+         they were not being refreshed - and `class-page:error`, a state the
+         app declares, could never be reached because nothing ever set it.
+         `staffError` already puts the failure on WHICHEVER surface she is on,
+         which is this one. */
       call('wall', { className: view.cls, act: view.act }).then(function (r) {
         if (seq !== view.wallSeq) return;
-        if (!r || !r.ok) return;
+        if (!r || !r.ok) return staffError(SAYS(r && r.error, TT('wallStale')));
         view.wallData = r.pupils || [];
         paint(view.wallData);
-      }).catch(function () {});
+      }).catch(function () {
+        if (seq !== view.wallSeq) return;
+        staffError(TT('wallStale'));
+      });
     }
     pull();
     view.wallTimer = setInterval(pull, 20000);
@@ -14110,8 +14133,13 @@ function statsBoard(q, wrong) {
     /* the grid is wider and taller than the screen; once she has scrolled it,
        the pupil column and the question row are stuck to the edges and that is
        a different screen to read */
-    body.addEventListener('scroll', function () {
-      SURF('full-grid', (body.scrollTop > 4 || body.scrollLeft > 4) ? 'sticky-scroll' : 'loaded');
+    /* ON THE ELEMENT THAT ACTUALLY SCROLLS. This listened on `body` - its own
+       unclassed wrapper - and read THAT element's scrollLeft, but nothing in
+       the stylesheet ever lets that div overflow: `.wall` is the box with
+       `overflow-x: auto`, so the grid scrolled one level down from where the
+       listener was asking and the condition never went true at any width. */
+    wall.addEventListener('scroll', function () {
+      SURF('full-grid', (wall.scrollTop > 4 || wall.scrollLeft > 4) ? 'sticky-scroll' : 'loaded');
     }, { passive: true });
 
     var qlist = questionList(view.act);
@@ -14225,13 +14253,26 @@ function statsBoard(q, wrong) {
     var lbl = el('span', 'flick-label', axis + (idx >= 0 ? ' \u00b7 ' + (idx + 1) + ' of ' + roster.length : ''));
     var bNext = el('button', 'flick-btn' + (nextP ? '' : ' is-off'), (nextP ? esc(nextP.name.split(' ')[0]) : 'last') + ' \u203a');
     if (prevP) bPrev.addEventListener('click', function () { showJotterPage(prevP.email, ctx); });
-    if (nextP) bNext.addEventListener('click', function () { SURF('book-view', 'flicking'); showJotterPage(nextP.email, ctx); });
+    /* the flick is a book-view state; the question view declares no such state
+       and inventing one would owe a walk on a screen nobody asked for */
+    if (nextP) bNext.addEventListener('click', function () { if (!ctx.qlabel) SURF('book-view', 'flicking'); showJotterPage(nextP.email, ctx); });
     flick.appendChild(bPrev); flick.appendChild(lbl); flick.appendChild(bNext);
 
     var msg = el('p', 'ui-msg', esc(TT('fetchingBook')));
     var page = el('div', 'jotter');
     body.appendChild(flick); body.appendChild(msg); body.appendChild(page);
-    shell({ body: body, surface: 'book-view', state: 'pencil', crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'A pupil\u2019s book' }] });
+    /* WHICH SCREEN THIS IS DEPENDS ON HOW SHE GOT HERE. Opened from a pupil's
+       row this is that pupil's book; opened from a cell in the question view it
+       is ONE question across the class, which is a different screen with a
+       different question in it - and the app has always said so in the flick
+       bar's own label. The surface was hardcoded to `book-view` either way, so
+       the question view's own ink state could never be set: `SURF('question-
+       view','ink-open')` sat in the handler below asking for a root that was
+       never on screen. The screen now carries the name it is being read as. */
+    var sweep = !!ctx.qlabel;
+    shell({ body: body, surface: sweep ? 'question-view' : 'book-view', state: sweep ? 'loaded' : 'pencil',
+      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } },
+        { label: sweep ? ctx.qlabel + ' \u00b7 across the class' : 'A pupil\u2019s book' }] });
 
     busyCard(msg, 'Fetching the jotter&hellip; this can take a moment');
     fetchJotter(email).then(function (r) {
@@ -14915,7 +14956,17 @@ function statsBoard(q, wrong) {
               rec.att.push({ L: [{ op: 'rw', t: wrong, s: 30 }], dur: 45 });
             }
             var okL = workLine
-              ? [{ op: 'rw', t: workLine, s: 25 }, { op: 'rw', t: ansLine, s: 45 }]
+              ? (profile === 'amber'
+                  /* THE AMBER PUPIL WRITES THE ANSWER AND NOTHING ELSE, and on
+                     a substitution that is exactly what an amber verdict IS
+                     (mathcore: a right answer on one line). She was showing
+                     full working on every question in the demo class, so the
+                     one profile named for the verdict never produced it, and
+                     book-view:worth-a-look-open - a fact about WHICH pupil's
+                     book is open - was left to a coin flip further down the
+                     book. Her row now reads the way her name says it does. */
+                  ? [{ op: 'rw', t: ansLine, s: 30 }]
+                  : [{ op: 'rw', t: workLine, s: 25 }, { op: 'rw', t: ansLine, s: 45 }])
               : [{ op: 'rw', t: ansLine, s: 30 }];
             rec.att.push({ L: okL, fin: ansLine, dur: 40 });
             rec.fin = ansLine;

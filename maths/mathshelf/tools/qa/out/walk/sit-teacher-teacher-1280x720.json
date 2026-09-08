@@ -5,7 +5,7 @@
  "projector": true,
  "tier": "preview",
  "contentHash": "2e14708be645",
- "when": "2026-09-08T13:36:15.854Z",
+ "when": "2026-09-08T14:19:56.054Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -272,8 +272,8 @@
    }
   },
   {
-   "surface": "full-grid",
-   "state": "loaded",
+   "surface": "slips",
+   "state": "ranked",
    "width": 1280,
    "projector": true,
    "audits": {
@@ -292,7 +292,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 361
+    "readability": 34
    }
   },
   {
@@ -316,7 +316,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 36
+    "readability": 43
    }
   },
   {
@@ -340,31 +340,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 76
-   }
-  },
-  {
-   "surface": "book-view",
-   "state": "worth-a-look-open",
-   "width": 1280,
-   "projector": true,
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 1,
-    "readability": 44
+    "readability": 102
    }
   },
   {
@@ -384,11 +360,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "PASS"
+    "readability": "FAIL"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 45
+    "readability": 43
    }
   },
   {
@@ -412,7 +388,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 44
+    "readability": 41
    }
   },
   {
@@ -436,7 +412,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 43
+    "readability": 40
    }
   },
   {
@@ -460,12 +436,12 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 44
+    "readability": 41
    }
   },
   {
    "surface": "book-view",
-   "state": "pencil",
+   "state": "flicking",
    "width": 1280,
    "projector": true,
    "audits": {
@@ -484,7 +460,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 47
+    "readability": 41
    }
   },
   {
@@ -744,11 +720,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "PASS"
+    "readability": "FAIL"
    },
    "measured": {
     "said-twice": 1,
-    "readability": 44
+    "readability": 43
    }
   },
   {

@@ -1,8 +1,8 @@
 # MathShelf — the TEACHER transcript
 
-TRANSCRIPT HASH: 53544fd9f778172b
+TRANSCRIPT HASH: 139fec1799fa49d7
 sentences: 42
-taken: 2026-09-08 12:44:46
+taken: 2026-09-08 14:05:29
 
 This is every sentence a teacher reads, in the order they meet it,
 as it was RENDERED on the running app. Nothing here is source.
@@ -49,4 +49,4 @@ Back to the app’s mark.
 Spot the slip · starter 1 of 2
 Where has this gone wrong — and what should the line say?
 You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net)
-http://localhost:8428/maths/mathshelf/index.html?class=demo
+http://127.0.0.1:8201/maths/mathshelf/index.html?class=demo

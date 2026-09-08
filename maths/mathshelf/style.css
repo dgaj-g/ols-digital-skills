@@ -26,6 +26,11 @@
   /* ── the closed marking set: each colour means ONE thing, only on the jotter ── */
   --marking-red: #C8102E;     /* a WRONG step/answer — never UI chrome, box-draw or tally default */
   --marking-green: #1F7A33;   /* a CORRECT mark — the one green, was a hardcoded hex in 6 places */
+  /* the SAME green, one step darker, for green WORDS rather than a green mark.
+     A tick is a shape and owes 3:1; "Working 0/0 · Answer 1/1" is a sentence at
+     15px on the markbook's tinted panel and owes 4.5 — it measured 4.16. The
+     mark's colour is untouched: the colour law is about the marks. */
+  --marking-green-ink: #15602A;
   --amber-flag: #7A5A05;      /* ANSWER ONLY — no working shown; darkened 7 Sept 2026 - the old #B07D10 put "Close — but check you are reading the scale" at 3.57:1, and that sentence is the one she reads when she is nearly right. Marks in this colour owe 3:1 and clear it easily either way */
   --debug-tint: #B500C8;      /* a verdict with NO outcome modifier: a loud magenta that appears
                                  nowhere else, so a forgotten verdict shows as a BUG, not a red lie */
@@ -683,7 +688,7 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
 /* the STAFF markbook's own tally is her DATA, not simulated handwriting — the mono face, never a script one
    (proposal §5c). Same neutral-base + outcome-modifier discipline so a correct pupil never reads red. */
 .staff-tally { font-family: var(--f-stationery); font-size: 15px; color: var(--debug-tint); }
-.staff-tally.mk-correct { color: var(--marking-green); }
+.staff-tally.mk-correct { color: var(--marking-green-ink); }
 .staff-tally.mk-amber { color: var(--amber-flag); }
 .staff-tally.mk-wrong { color: var(--marking-red); }
 .staff-tally.mk-open { color: var(--pencil); }   /* in-progress: neutral, never red */

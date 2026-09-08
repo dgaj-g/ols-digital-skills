@@ -1208,7 +1208,9 @@
     function writeLine(name, value) {
       var row = el('div', 'wline stat-wline');
       row.setAttribute('data-placed', '');
-      row.textContent = fill(T().statLineOne, { name: name, value: value });
+      /* the board's own number, not the raw intersection behind it */
+      var F = (window.GJ_STATCHART && window.GJ_STATCHART.fmtNum) || String;
+      row.textContent = fill(T().statLineOne, { name: name, value: (typeof value === 'number' ? F(value) : value) });
       lines.appendChild(row);
     }
     function nameOf(a) {
@@ -1270,7 +1272,10 @@
         };
         ctx.dock.appendChild(nudgePad(ctx, { axis: 'x', onNudge: function (dx) {
           var sq = (q.chart.sq || { x: 1 }).x || 1;
-          ax = (ax == null ? q.chart.x.min : ax) + dx * sq;
+          /* and the same at both ends of the other axis */
+          var xA = q.chart.x || {};
+          var xLo = Number(xA.min != null ? xA.min : 0), xHi = Number(xA.max != null ? xA.max : 0);
+          ax = Math.max(xLo, Math.min(xHi, (ax == null ? xLo : ax) + dx * sq));
           dropAcross(ax);
           syncX();
           ctx.changed();
@@ -1305,7 +1310,15 @@
          never again. */
       ctx.dock.appendChild(nudgePad(ctx, { axis: 'y', onNudge: function (dx, dy) {
         var sq = (q.chart.sq || { y: 1 }).y || 1;
-        h = h + dy * sq;
+        /* THE RULE STOPS AT THE EDGE OF THE GRAPH. It did not: holding the down
+           arrow at the bottom carried the rule off the board into negative
+           frequencies, where it meets no curve at all - so the reading came back
+           empty and the working line she had just written read
+           "median = {value}", a sentence with a hole in it on a pupil's screen.
+           A rule you can push off the paper is not a rule. */
+        var yA = q.chart.y || {};
+        var yLo = Number(yA.min != null ? yA.min : 0), yHi = Number(yA.max != null ? yA.max : h);
+        h = Math.max(yLo, Math.min(yHi, h + dy * sq));
         ctx.setStage('sliding');
         dropRule(h);
         done.disabled = !h;

@@ -4,8 +4,8 @@
  "width": 375,
  "projector": false,
  "tier": "preview",
- "contentHash": "0b72e4d165b2",
- "when": "2026-09-08T13:30:58.106Z",
+ "contentHash": "2e14708be645",
+ "when": "2026-09-08T14:18:07.026Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -272,8 +272,8 @@
    }
   },
   {
-   "surface": "full-grid",
-   "state": "sticky-scroll",
+   "surface": "slips",
+   "state": "ranked",
    "width": 375,
    "projector": false,
    "audits": {
@@ -292,7 +292,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 126
+    "readability": 26
    }
   },
   {
@@ -316,7 +316,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 29
+    "readability": 28
    }
   },
   {
@@ -340,7 +340,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 43
+    "readability": 40
    }
   },
   {
@@ -460,31 +460,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 36
-   }
-  },
-  {
-   "surface": "book-view",
-   "state": "reteach-sent",
-   "width": 375,
-   "projector": false,
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 1,
-    "readability": 36
+    "readability": 29
    }
   },
   {
