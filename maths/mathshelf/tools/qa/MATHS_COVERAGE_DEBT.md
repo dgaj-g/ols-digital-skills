@@ -21,6 +21,16 @@ Format (one row per cell):
 | angles × period-budget | 24 Core questions predate the one-period 26-unit rule and are approved and live as Version 25 | locked content, rule 30 | content-angles.js | (any) | WAIVED BY HIS RULING 28 Jun 2026 |
 | algebra × period-budget | 24 Core questions predate the one-period 26-unit rule and are approved and live as Version 25 | locked content, rule 30 | content-algebra.js | (any) | WAIVED BY HIS RULING 28 Jun 2026 |
 
+## Waived on 8 Sept 2026 — Book C shipped on Damien's ruling ("Book C ships NOW")
+
+_Three walker findings from the full run at `927a760` (16 minutes, every other gate green). Each is photographed in `tools/qa/out/shots/` and is the first work of the next cut. None stops a pupil using the book._
+
+| cell | reason | owner / phase | file | sha1 | waiver |
+|---|---|---|---|---|---|
+| question:checked-wrong-1 @375 × readability | Algebra q2 prompt "Given a = 3 and d = −4…" measured 3.08:1 on a phone after a wrong attempt — an APPROVED book (rule 30), and the same re-rendering moment the sampler once misread (F42); picture `conf-question-checked-wrong-1-375.png` | next cut; Angles/Algebra are reported on, never re-opened | (any) | (any) | WAIVED BY HIS RULING 8 Sept 2026 |
+| question:checked-right @375 × readability | Book C s6 q32: an unchosen reason chip fades to 40% after Check (`.chip:disabled`) and measures 2.13:1 — text she no longer has to read, but text; picture `pupil-question-checked-right-375-q32.png` | next cut (Book A's): unchosen chips keep full ink after Check | (any) | (any) | WAIVED BY HIS RULING 8 Sept 2026 |
+| book-contents:mid-book @375 × overlap | Book C, Exercise 4 opening on a phone: a stray "0" read-out from a board below the fold sits on the next question's prompt by 18×18px; the label-waits-for-its-board fix of 19:15 narrowed but did not cure it; picture `pupil-book-contents-mid-book-375.png` | next cut (Book A's): relayout once the board has size | (any) | (any) | WAIVED BY HIS RULING 8 Sept 2026 |
+
 ## Open debt — surfaces the v4 design names that the build has not reached yet
 
 _Each row is deleted as the surface lands. The DONE list refuses a deploy with a
