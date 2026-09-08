@@ -201,6 +201,26 @@ const MEASURE = async ([dataUri, rects, view]) => {
 const COLLECT = ([extraSels, hisSels, rootSel]) => {
   const out = [];
   const seen = new Set();
+  /* THE BARS THAT SIT ON TOP OF THE PAGE WHILE IT SCROLLS. The preview banner
+     is stuck to the top of the window, and a chip scrolled half under it was
+     measured across both: navy glyphs averaged with a blue bar came back at
+     2.02:1 on a reason chip that is perfectly legible in the half you can see.
+     The occlusion test below asks what is on top at the row's MIDDLE, which is
+     the right question for a row that is covered, and no question at all for a
+     row that is covered by a third. A bar is only counted here when it is
+     opaque, pinned to the window, and runs the full width - so the part it
+     hides is a clean band off the top or the bottom of the row, and the rest is
+     still measured. What a bar covering the page COSTS a reader is the geometry
+     law's business; this law only has to stop judging pixels it cannot see. */
+  const bars = Array.from(document.body.getElementsByTagName('*')).filter((e) => {
+    const cs = getComputedStyle(e);
+    if (cs.position !== 'fixed' && cs.position !== 'sticky') return false;
+    if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) < 0.95) return false;
+    const m = (cs.backgroundColor || '').match(/[\d.]+/g);
+    if (!m || (m.length > 3 && Number(m[3]) < 0.9)) return false;
+    const r = e.getBoundingClientRect();
+    return r.width >= window.innerWidth * 0.9 && r.height >= 4 && r.height < window.innerHeight * 0.5;
+  });
   const push = (el, forced) => {
     if (seen.has(el)) return;
     const r = el.getBoundingClientRect();
@@ -252,6 +272,14 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
       vx = Math.max(vx, ar.left); vy = Math.max(vy, ar.top);
       vr = Math.min(vr, ar.right); vb = Math.min(vb, ar.bottom);
     }
+    /* and trimmed again by any bar standing over it */
+    for (const bar of bars) {
+      if (bar === el || bar.contains(el) || el.contains(bar)) continue;
+      const br = bar.getBoundingClientRect();
+      if (br.right <= vx || br.left >= vr) continue;
+      if (br.top <= vy && br.bottom > vy && br.bottom < vb) vy = br.bottom;
+      else if (br.bottom >= vb && br.top < vb && br.top > vy) vb = br.top;
+    }
     const vw = vr - vx, vh = vb - vy;
     /* A ROW IS TRIMMED, NOT THROWN AWAY. Dropping anything more than
        forty-five per cent clipped was my own over-tightening and it emptied
@@ -281,7 +309,19 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
       x: vx + window.scrollX, y: vy + window.scrollY, w: vw, h: vh,
       px: px, weight: weight,
       /* the colour the browser resolved for these glyphs, used only to FIND them */
-      rgb: (cs.color.match(/\d+/g) || ['0', '0', '0']).slice(0, 3).map(Number),
+      /* AND FOR A GLYPH DRAWN IN SVG, THAT COLOUR IS ITS FILL. `color` is what
+         CSS resolves for HTML text; an <svg><text> is painted with `fill`, and
+         `color` on it is whatever it happened to inherit. On the shelf that
+         inherited value is white, so the sampler went looking for white pixels
+         inside a dark italic "x" on a pale plate, found the antialiased rim -
+         which really is nearly white - and reported the emblem at 1.01:1 on a
+         glyph you can read across a room. It then said the same thing at three
+         widths on two states, which is a gate inventing a fault and hiding a
+         real one in the same breath: white was ALSO what it would report if
+         the fill were genuinely wrong. The paint is read where the browser
+         actually put it. */
+      rgb: (((el.ownerSVGElement && /^rgb/.test(cs.fill || '')) ? cs.fill : cs.color)
+        .match(/\d+/g) || ['0', '0', '0']).slice(0, 3).map(Number),
       /* AND THE GROUND THE ELEMENT PAINTS FOR ITSELF, when it paints one. A
          button with a navy background whose sample comes back as white paper
          has not been sampled at all - the pixels belong to something else. This

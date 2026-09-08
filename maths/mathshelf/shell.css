@@ -491,7 +491,10 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
 .qv-none { font-size: 14px; color: var(--pencil); margin-top: 6px; }
 
 /* set-up: the tickboxes, grouped by series, each with who the book is for */
-.ticks-series { font-family: var(--f-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--chalk-muted); margin: 8px 0 4px; }
+/* 11px in the muted chalk measured 4.31:1 against a 4.5 floor, the same fault
+   the band below had: small, letter-spaced, upper-case type is thinner on the
+   glass than its size suggests, so it takes the darker ink too. */
+.ticks-series { font-family: var(--f-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #3B4A63; margin: 8px 0 4px; }
 .tickbox { display: inline-flex; align-items: center; gap: 8px; margin: 0 12px 6px 0; min-height: 40px; }
 /* 10.5px in a muted grey measured 4.31:1 against a 4.5 floor — small type needs darker ink, not the same ink */
 .tick-band { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .08em; color: #3B4A63; border: 1px solid var(--line-glow); border-radius: 4px; padding: 2px 6px; }

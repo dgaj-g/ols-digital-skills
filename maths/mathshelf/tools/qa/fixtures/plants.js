@@ -116,6 +116,20 @@ const PLANTS = {
       '.book.not-set .motif text, .book.not-set .motif path { fill: #E4B824 !important; stroke: #E4B824 !important; }\n');
   },
 
+  /* ── a glyph drawn in SVG, in almost the colour of its own plate ─────
+     The emblem on a locked spine is an <svg><text>, and a glyph in SVG is
+     painted with `fill`, not `color`. The sampler was reading `color` - which
+     on that element is only whatever it inherited - so it hunted for the wrong
+     pixels and reported the emblem at 1.01:1 whatever colour it was really
+     drawn in: it said the same thing about a legible dark "x" as it would
+     about an invisible one. This plant draws the emblem in #C9D2DF, one step
+     off the plate it sits on, and the gate has to say so. */
+  'fixture-css-svg-glyph-in-plate': (dir) => {
+    fs.appendFileSync(path.join(dir, 'shell.css'),
+      '\n/* planted by a control, never shipped */\n' +
+      '.book.not-set .motif text { fill: #C9D2DF !important; }\n');
+  },
+
   /* ── the link-and-QR modal's message slot, as it was ──────────────────
      Written with innerHTML rather than through el(), so the helper that stamps
      role="status" on a live region never ran: an empty <p> with no role is a
