@@ -43,9 +43,9 @@ Ex.4 Reading the curve: median, quartiles, IQR
 WALT · Estimate the median, quartiles and interquartile range from a cumulative frequency curve
 Exercise 4 · Reading the curve: median, quartiles, IQR
 The cumulative frequency graph shows the marks of 112 candidates in an examination. Use the graph to estimate the median and the interquartile range. The pass mark is 36. What percentage of candidates passed? [5 marks]
-Readings 1/2 · Values 3/3
+Readings 2/2 · Values 3/3Clean read-off.
 The cumulative frequency graph shows the weekly wage of 184 people. Use the graph to estimate the median. Then estimate the percentage of people who earn more than £640 per week. [3 marks]
-Readings 1/1 · Values 2/2
+Readings 1/1 · Values 2/2The rule at the right height, and read carefully.
 The cumulative frequency graph shows the distances thrown by 50 competitors in a javelin competition. Use the graph to estimate the median distance thrown and the interquartile range. [3 marks]
 Readings 0/1 · Values 2/2
 The cumulative frequency graph shows the heights of 50 boys. Use the graph to estimate how many boys are taller than 167 cm. [3 marks]
@@ -66,7 +66,7 @@ Judgements 2/2You weighed the evidence, not the claim.
 The box plots show the age distributions of two cities, A and B. Complete the sentence: 75% of the people in city A are aged over ___. [1 mark]
 Answers 1/1Every box filled, and filled right.
 The cumulative frequency graph shows the time that 100 students spent doing homework during one week. Use the graph to estimate the median. The least time was 2 hours and the greatest time was 24 hours — draw a box plot for this information. [4 marks]
-Box 2/2 · Whiskers 2/2
+Box 2/2 · Whiskers 2/2Neat, and the box says what it should.
 The table shows information about the times, in minutes, that some boys took to complete a puzzle: interquartile range 8, minimum 12, median 18, upper quartile 23, maximum 29. Work out the lower quartile. [1 mark]
 Answers 1/1Worked out and written in.
 In a group of 11 pupils, the number of days absent from school was recorded: 12, 6, 5, 2, 8, 2, 3, 11, 4, 10, 7. Draw a box plot for this data. [4 marks]
@@ -85,4 +85,4 @@ Reasons 3/3 · Judgements 2/2Good — you said why.
 Charlie asked 10 Year 7 students what they think about school. Decide whether each of these conclusions is fair to draw from his survey. [2 marks]
 My marks
 Handling Data · marks so far
-Handling Data · marks so far74 / 94Good — go back over the questions the red pen marked.27 of 33 questions checked · your whole book is on your teacher’s copy
+Handling Data · marks so far86 / 94Nearly there — look back at the crosses.30 of 33 questions checked · your whole book is on your teacher’s copy

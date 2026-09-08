@@ -237,6 +237,11 @@ body.landing {
   /* \2500 \2500  the closed marking set: each colour means ONE thing, only on the jotter \2500 \2500  */
   --marking-red: #C8102E;     /* a WRONG step/answer \2014  never UI chrome, box-draw or tally default */
   --marking-green: #1F7A33;   /* a CORRECT mark \2014  the one green, was a hardcoded hex in 6 places */
+  /* the SAME green, one step darker, for green WORDS rather than a green mark.
+     A tick is a shape and owes 3:1; "Working 0/0 \b7  Answer 1/1" is a sentence at
+     15px on the markbook's tinted panel and owes 4.5 \2014  it measured 4.16. The
+     mark's colour is untouched: the colour law is about the marks. */
+  --marking-green-ink: #15602A;
   --amber-flag: #7A5A05;      /* ANSWER ONLY \2014  no working shown; darkened 7 Sept 2026 - the old #B07D10 put "Close \2014  but check you are reading the scale" at 3.57:1, and that sentence is the one she reads when she is nearly right. Marks in this colour owe 3:1 and clear it easily either way */
   --debug-tint: #B500C8;      /* a verdict with NO outcome modifier: a loud magenta that appears
                                  nowhere else, so a forgotten verdict shows as a BUG, not a red lie */
@@ -894,7 +899,7 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
 /* the STAFF markbook's own tally is her DATA, not simulated handwriting \2014  the mono face, never a script one
    (proposal \a7 5c). Same neutral-base + outcome-modifier discipline so a correct pupil never reads red. */
 .staff-tally { font-family: var(--f-stationery); font-size: 15px; color: var(--debug-tint); }
-.staff-tally.mk-correct { color: var(--marking-green); }
+.staff-tally.mk-correct { color: var(--marking-green-ink); }
 .staff-tally.mk-amber { color: var(--amber-flag); }
 .staff-tally.mk-wrong { color: var(--marking-red); }
 .staff-tally.mk-open { color: var(--pencil); }   /* in-progress: neutral, never red */
@@ -8119,27 +8124,38 @@ function statsBoard(q, wrong) {
            afterwards was the wrong shape and made it worse: it threw away the
            free slot the search had just found and stacked five box-plot labels
            on top of one another. */
+        /* AND SIDEWAYS AS WELL AS UP. Two cuts of a box plot can sit within a
+           few pixels of one another on a phone - "lower quartile" and "median"
+           overlapped by twelve - and no row above or below is free either,
+           because they are the same two labels in every row. The board is wider
+           than the pair, so the search also slides each label along its own
+           row; the wanted place is tried first, so nothing moves that does not
+           have to. */
         var r = recs[i], row = 0, box = null, firstLegal = null;
         var maxUp = Math.max(0, Math.floor((r.wantY - r.h) / rowH));
-        for (row = 0; row < 40; row++) {
+        var DX = [0, 10, -10, 20, -20, 32, -32, 46, -46, 62, -62, 80, -80];
+        for (row = 0; row < 40 && !box; row++) {
           var top = (row <= maxUp)
             ? r.wantY - row * rowH
             : r.wantY + (row - maxUp) * rowH;
-          var cand = { l: r.wantX - r.w / 2, t: top - r.h, r: r.wantX + r.w / 2, b: top };
-          if (cand.t < 0 || cand.b > layerH) continue;
-          if (!firstLegal) firstLegal = cand;
-          var hit = false;
-          for (var j = 0; j < placed.length; j++) {
-            var q2 = placed[j];
-            if (cand.l < q2.r && cand.r > q2.l && cand.t < q2.b && cand.b > q2.t) { hit = true; break; }
+          for (var d = 0; d < DX.length; d++) {
+            var cx = Math.max(r.w / 2, Math.min(layerW - r.w / 2, r.wantX + DX[d]));
+            var cand = { l: cx - r.w / 2, t: top - r.h, r: cx + r.w / 2, b: top, x: cx };
+            if (cand.t < 0 || cand.b > layerH) continue;
+            if (!firstLegal) firstLegal = cand;
+            var hit = false;
+            for (var j = 0; j < placed.length; j++) {
+              var q2 = placed[j];
+              if (cand.l < q2.r && cand.r > q2.l && cand.t < q2.b && cand.b > q2.t) { hit = true; break; }
+            }
+            if (!hit) { box = cand; break; }
           }
-          if (!hit) { box = cand; break; }
         }
         /* every row on the board is taken: put it in the first one that fits
            the board at all and let the overlap law say so - a label off the
            board is one she cannot read, which is worse than one she can */
-        if (!box) box = firstLegal || { l: r.wantX - r.w / 2, t: 0, r: r.wantX + r.w / 2, b: r.h };
-        r.el.style.left = r.wantX + 'px';
+        if (!box) box = firstLegal || { l: r.wantX - r.w / 2, t: 0, r: r.wantX + r.w / 2, b: r.h, x: r.wantX };
+        r.el.style.left = (box.x == null ? r.wantX : box.x) + 'px';
         r.el.style.top = box.b + 'px';
         placed.push(box);
       }
@@ -8694,7 +8710,11 @@ function statsBoard(q, wrong) {
     return handle;
   }
 
-  var API = { render: render };
+  /* THE NUMBER, WRITTEN THE WAY THE BOARD WRITES IT. The read-out beside the
+     rule has always shown two decimal places at most; the working line the
+     pupil commits was printing the raw intersection - "median = 10.3125" under
+     a board that says 10.31. One number, one shape, one place it is decided. */
+  var API = { render: render, fmtNum: fmtNum };
   if (typeof window !== 'undefined') window.GJ_STATCHART = API;
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
 })();
@@ -12239,7 +12259,9 @@ function statsBoard(q, wrong) {
     function writeLine(name, value) {
       var row = el('div', 'wline stat-wline');
       row.setAttribute('data-placed', '');
-      row.textContent = fill(T().statLineOne, { name: name, value: value });
+      /* the board's own number, not the raw intersection behind it */
+      var F = (window.GJ_STATCHART && window.GJ_STATCHART.fmtNum) || String;
+      row.textContent = fill(T().statLineOne, { name: name, value: (typeof value === 'number' ? F(value) : value) });
       lines.appendChild(row);
     }
     function nameOf(a) {
@@ -12301,7 +12323,10 @@ function statsBoard(q, wrong) {
         };
         ctx.dock.appendChild(nudgePad(ctx, { axis: 'x', onNudge: function (dx) {
           var sq = (q.chart.sq || { x: 1 }).x || 1;
-          ax = (ax == null ? q.chart.x.min : ax) + dx * sq;
+          /* and the same at both ends of the other axis */
+          var xA = q.chart.x || {};
+          var xLo = Number(xA.min != null ? xA.min : 0), xHi = Number(xA.max != null ? xA.max : 0);
+          ax = Math.max(xLo, Math.min(xHi, (ax == null ? xLo : ax) + dx * sq));
           dropAcross(ax);
           syncX();
           ctx.changed();
@@ -12336,7 +12361,15 @@ function statsBoard(q, wrong) {
          never again. */
       ctx.dock.appendChild(nudgePad(ctx, { axis: 'y', onNudge: function (dx, dy) {
         var sq = (q.chart.sq || { y: 1 }).y || 1;
-        h = h + dy * sq;
+        /* THE RULE STOPS AT THE EDGE OF THE GRAPH. It did not: holding the down
+           arrow at the bottom carried the rule off the board into negative
+           frequencies, where it meets no curve at all - so the reading came back
+           empty and the working line she had just written read
+           "median = {value}", a sentence with a hole in it on a pupil's screen.
+           A rule you can push off the paper is not a rule. */
+        var yA = q.chart.y || {};
+        var yLo = Number(yA.min != null ? yA.min : 0), yHi = Number(yA.max != null ? yA.max : h);
+        h = Math.max(yLo, Math.min(yHi, h + dy * sq));
         ctx.setStage('sliding');
         dropRule(h);
         done.disabled = !h;
@@ -14270,7 +14303,13 @@ function statsBoard(q, wrong) {
        view','ink-open')` sat in the handler below asking for a root that was
        never on screen. The screen now carries the name it is being read as. */
     var sweep = !!ctx.qlabel;
-    shell({ body: body, surface: sweep ? 'question-view' : 'book-view', state: sweep ? 'loaded' : 'pencil',
+    /* BOTH NAMES WRITTEN OUT, because a gate reads this file. qa-surfaces asks
+       the source which screens it renders, and it asks by reading the pair
+       `surface: 'x', state: 'y'` - so a ternary inside the call left the whole
+       markbook's book view looking like a screen nothing draws. The pair is
+       chosen first and named in full on both sides. */
+    var jv = sweep ? { surface: 'question-view', state: 'loaded' } : { surface: 'book-view', state: 'pencil' };
+    shell({ body: body, surface: jv.surface, state: jv.state,
       crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } },
         { label: sweep ? ctx.qlabel + ' \u00b7 across the class' : 'A pupil\u2019s book' }] });
 

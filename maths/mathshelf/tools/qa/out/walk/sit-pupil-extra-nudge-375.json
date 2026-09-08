@@ -3,8 +3,8 @@
  "scope": "extra",
  "width": 375,
  "tier": "preview",
- "contentHash": "2e14708be645",
- "when": "2026-09-08T14:09:38.054Z",
+ "contentHash": "6b76bf207c1e",
+ "when": "2026-09-08T14:48:26.559Z",
  "states": [
   {
    "surface": "movie",
@@ -27,7 +27,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 92
+    "readability": 15
    }
   }
  ],

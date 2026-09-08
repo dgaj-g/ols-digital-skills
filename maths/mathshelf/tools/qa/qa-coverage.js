@@ -149,6 +149,10 @@ if (A.exists(A.qa('MATHS_COVERAGE_DEBT.md'))) {
 }
 const outOfReach = (label, surface, state) => {
   if (impossible.has(label)) return impossible.get(label);
+  /* a row may name the whole screen, or the screen at one width: the rider is
+     not part of what makes a screen reachable */
+  const noRider = String(label).replace(/\s+×\s+[a-z-]+$/, '');
+  if (impossible.has(noRider)) return impossible.get(noRider);
   if (surface && state && impossible.has(surface + ':' + state)) return impossible.get(surface + ':' + state);
   return null;
 };
