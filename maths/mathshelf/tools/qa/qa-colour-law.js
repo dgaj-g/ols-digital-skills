@@ -4,7 +4,11 @@
  * G-C2. The closed colour law is the oldest rule on this platform and the one
  * a re-skin is most likely to break without anybody noticing, because a colour
  * that has taken a second meaning still looks fine:
- *   #C8102E means WRONG. #1F7A33 means RIGHT. #B07D10 means ANSWER ONLY.
+ *   --marking-red means WRONG. --marking-green means RIGHT. --amber-flag
+ *   means ANSWER ONLY. The three are named by TOKEN and read off the running
+ *   document, because on 7 September 2026 the amber was darkened from #B07D10
+ *   to #7A5A05 and the typed list in lib/audits.js kept policing the old hex -
+ *   so for a day the answer-only colour was watched by nothing (fixed 8 Sept).
  *   Gold celebrates and decorates; it is never a status and never a mark.
  *   Copper is ink; it is never a status.
  *   #B500C8 — the debug sentinel — never reaches a screen at all.
@@ -31,6 +35,10 @@ const ORDER = 70;
 const COVERS = { books: '*', kinds: '*', surfaces: '*', widths: [375, 768, 1280], projector: false, tier: ['preview'], cells: ['colour'] };
 const CONTROLS = [
   { id: 'marking-colour-as-decoration', kind: 'fixture', plant: 'fixture-css', mustFail: /marking-colour-outside-a-mark/ },
+  /* THE AMBER SPECIFICALLY. The control above plants the marking RED, which was
+     watched all along; this one plants the CURRENT --amber-flag on a shelf
+     label, so the set being derived from the tokens is what makes it fire. */
+  { id: 'amber-outside-a-mark', kind: 'fixture', plant: 'fixture-css-amber', mustFail: /marking-colour-outside-a-mark/ },
   /* the work-surface law proves itself in its own run: a dark ground is put on a
      live work surface, measured, and taken away, and the law must say no while
      it is there and yes once it is gone */

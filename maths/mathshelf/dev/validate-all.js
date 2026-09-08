@@ -11,7 +11,16 @@ var M = require('../mathcore.js');
 require('../anglecore.js');
 require('../content-angles.js');
 require('../content-algebra.js');
+/* the stats engine and whichever Handling Data packs exist. A pack that is not
+   built yet is simply not there; a pack that is there is proved question by
+   question, RESERVE INCLUDED - a question hidden from a class is still a
+   question this platform will one day put in front of one. */
+require('../statcore.js');
+['content-stats-collect.js', 'content-stats-averages.js', 'content-stats-quartiles.js'].forEach(function (f) {
+  try { require('../' + f); } catch (e) { /* not authored yet */ }
+});
 var A = global.GJ_ANGLES;
+var ST = global.GJ_STATS;
 var PACK = global.GJ_CONTENT;
 /* ONE HOME for what a correct attempt looks like: this validator and the pupil
    walker import the SAME builders, so they can never disagree about what they
@@ -21,7 +30,8 @@ var MA = require('./model-attempts.js');
 /* WHAT THIS VALIDATOR PROVES A MODEL AND A CORRUPTED ATTEMPT FOR, declared so
    the coverage machine can prove every question of every kind has its (A)/(B)
    pair (L5/DFM 206). A kind added to a pack and not added here fails coverage. */
-const KINDS = ['classify', 'protractor', 'reasoned', 'subst', 'simplify', 'expand', 'solve', 'form'];
+const KINDS = ['classify', 'protractor', 'reasoned', 'subst', 'simplify', 'expand', 'solve', 'form',
+  'qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'];
 
 var rows = [], fails = 0;
 function rat(x) { return x && x.d ? (x.d === 1 ? x.n : x.n + '/' + x.d) : x; }
@@ -89,6 +99,39 @@ PACK.algebra.sections.forEach(function (sec) {
     }
     rows.push([label, q.type + ' → ' + (q.answer.x ? 'x=' + rat(q.answer.x) : q.answer.val ? rat(q.answer.val) : 'expr'), aOk ? 'OK [' + v.mk + ']' : (v.res + ' [' + v.mk + '/' + q.marks + ']  <-- CHECK'), bDesc + (bOk ? '' : '  <-- WRONG ACCEPTED')]);
     if (!aOk || !bOk) fails++;
+  });
+});
+
+/* ---------- HANDLING DATA ----------
+   Same two questions as every other kind, through the LIVE engine: does a
+   model board mark OK with full marks, and is that kind's own classic slip
+   actually caught and NAMED? The model and the corrupted board come from
+   dev/model-attempts.js - the one home the pupil walker also reads, so the
+   validator and the walk can never be proving different things. */
+['stats-collect', 'stats-averages', 'stats-quartiles'].forEach(function (actId) {
+  var pack = PACK[actId];
+  if (!pack) return;
+  pack.sections.forEach(function (sec) {
+    /* the UNFILTERED array on purpose: Reserve is authored content and is proved */
+    (sec.questions || []).forEach(function (q) {
+      var label = actId.replace('stats-', '') + '/' + q.id;
+      var right = MA.correct(M, actId, q);
+      if (!right) { rows.push([label, q.kind, 'NO-MODEL', '-']); fails++; return; }
+      var v = ST.check(q, right, pack.rules);
+      var aOk = v.res === 'OK' && v.mk[0] === (q.marks[0] || 0) && v.mk[1] === (q.marks[1] || 0);
+      var bad = MA.corrupt(M, actId, q);
+      var bOk = false, bDesc = 'no corrupted board';
+      if (bad) {
+        var vb = ST.check(q, bad, pack.rules);
+        bOk = vb.res !== 'OK';
+        var namedDx = (vb.perLine || []).map(function (l) { return l.dx; }).filter(Boolean)[0];
+        bDesc = 'wrong caught (' + vb.res + (namedDx ? ', ' + namedDx : ', unnamed') + ')';
+        if (!bOk) bDesc = 'WRONG ACCEPTED';
+      }
+      rows.push([label, q.kind + (q.reserve ? ' (reserve)' : '') + ' → ' + ST.gist(q),
+        aOk ? 'OK [' + v.mk + ']' : 'UNDERMARK [' + v.mk + '/' + q.marks + ']', bDesc]);
+      if (!aOk || !bOk) fails++;
+    });
   });
 });
 

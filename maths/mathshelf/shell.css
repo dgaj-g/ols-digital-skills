@@ -45,7 +45,18 @@
      fails the 4.5 floor and the 3.0 large floor both. Anything that has to be
      READ in gold wears --gold-ink; --gold and --gold-hi stay for rules, edges
      and marks, which is what the colour law always said gold was for. */
-  --gold-ink: #7A5A05;
+  /* MOVED 8 September 2026, and here is the clash it settles. On 7 Sept the
+     marking amber was darkened to #7A5A05 so a near-miss note would clear its
+     contrast floor - and --gold-ink was ALREADY that exact hex. The wordmark's
+     "Shelf", the cover mark and the shelf star were therefore wearing the one
+     colour on this platform that means "answer only, no working shown". Two
+     meanings, one colour, and the moment lib/audits.js was corrected to police
+     the new amber it would have condemned the wordmark, rightly. So the gold
+     that has to be READ moves one hue away from the marking amber: a deeper,
+     yellower antique gold, 6.2:1 on the panel and 6.0:1 on the paper, and not
+     equal to any colour in the closed marking set. --amber-flag does not move:
+     it was tuned for its own floor a day earlier. */
+  --gold-ink: #6F6108;
   --glow-gold: 0 1px 0 rgba(26, 58, 107, .10);
 
   /* ── work surfaces: light, calm, unchanged in meaning ── */

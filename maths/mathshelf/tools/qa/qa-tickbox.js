@@ -125,12 +125,23 @@ g.check(loadAfterRetick.ok === true && loadAfterRetick.state === initialState, '
 
 /* ═══════════════════ a NEW book: mutate a COPY of the template ═════════ */
 const rawSrc = A.read(TPL);
-const ORIG_ACTS = "var ACTS = ['angles', 'algebra'];";
-const MUT_ACTS = "var ACTS = ['angles', 'algebra', 'geometry'];";
-g.check(rawSrc.indexOf(ORIG_ACTS) >= 0, 'mutation harness', 'tickbox',
-  'this gate could not find the exact "' + ORIG_ACTS + '" line in server/Code.gs.template to replace — the ACTS declaration has moved and this gate is silently testing nothing');
-const mutatedSrc = rawSrc.replace(ORIG_ACTS, MUT_ACTS);
-g.check(mutatedSrc !== rawSrc && mutatedSrc.indexOf(MUT_ACTS) >= 0, 'mutation harness', 'tickbox',
+/* THE ANCHOR IS READ, NEVER TYPED. This gate mutates the server's ACTS array to
+   prove a book added after the code was written can still be ticked - and the
+   anchor was the literal line "var ACTS = ['angles', 'algebra'];", so the day a
+   third book was added (8 Sept 2026) the replace matched nothing and the gate
+   went on measuring an unmutated server. It now finds the declaration wherever
+   it is and appends one id to whatever is already there. */
+const ACTS_RE = /var ACTS = \[[^\]]*\];/;
+function actsLines(src) {
+  const m = ACTS_RE.exec(src);
+  if (!m) return null;
+  return { orig: m[0], mut: m[0].replace(/\];$/, ", 'geometry'];") };
+}
+const ACTS_PAIR = actsLines(rawSrc) || { orig: '\u0000nothing', mut: '\u0000nothing' };
+g.check(rawSrc.indexOf(ACTS_PAIR.orig) >= 0, 'mutation harness', 'tickbox',
+  'this gate could not find the exact "' + ACTS_PAIR.orig + '" line in server/Code.gs.template to replace — the ACTS declaration has moved and this gate is silently testing nothing');
+const mutatedSrc = rawSrc.replace(ACTS_PAIR.orig, ACTS_PAIR.mut);
+g.check(mutatedSrc !== rawSrc && mutatedSrc.indexOf(ACTS_PAIR.mut) >= 0, 'mutation harness', 'tickbox',
   'the ACTS string-replace did not actually change the template source — this measurement would silently test the unmutated two-book server instead of a server with a new book');
 
 const data2 = makeEnv({ active: TEACHER, effective: TEACHER, passcode: PW });

@@ -59,7 +59,12 @@ const TPL = A.app('server/Code.gs.template');
 function offlineHome() {
   const sandbox = makeWindow();
   vm.createContext(sandbox);
-  ['mathcore.js', 'anglecore.js', 'content-angles.js', 'content-algebra.js', 'player.js', 'jotter.js', 'staff.js', 'script.js']
+  /* DERIVED FROM index.html, never typed (L5): a book added to the page and
+     forgotten here booted a stub with no pack, and summarise() threw on a
+     book that is perfectly well formed. */
+  (A.read(A.app('index.html')).match(/<script src="([^"]+\.js)"><\/script>/g) || [])
+    .map(tag => /src="([^"]+)"/.exec(tag)[1])
+    .filter(f => f.indexOf('/') === -1 && f !== 'qrcode.min.js')
     .forEach(f => {
       const p = A.app(f);
       if (fs.existsSync(p)) vm.runInContext(fs.readFileSync(p, 'utf8'), sandbox, { filename: f });

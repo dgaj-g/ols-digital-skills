@@ -34,7 +34,7 @@ const S = require('./lib/stage.js');
 
 /* every state any walk in this run set out to stand on, settled at the end */
 const AIMED = [];
-const { contentHash } = require('./lib/hash.js');
+const { bookHash } = require('./lib/hash.js');
 
 /* ONE SENTENCE PER FINDING, and it NAMES THE THING. The first cut printed the
    law and nothing else - "marking-colour-outside-a-mark", forty times - which
@@ -326,7 +326,13 @@ async function walkBook(page, book, width, sidecar, transcript) {
      state the app declares - so one width is walked that way rather than the
      state being left for nobody to stand on. */
   const PASSES = WIDTHS.map(w => ({ width: w, reduced: false }));
-  PASSES.push({ width: 1280, reduced: true });
+  /* SHARDING ARGUMENT ONLY (package SPEED, 8 Sept): this used to push the
+     reduced-motion pass unconditionally, so a run sharded to one width still
+     silently re-walked 1280 reduced every time — three shards writing the
+     same sidecar filename. Gated on 1280 actually being asked for: an
+     unsharded run (WIDTHS has all three) behaves exactly as before, and a
+     1280-only shard still carries the reduced pass it always did. */
+  if (WIDTHS.includes(1280)) PASSES.push({ width: 1280, reduced: true });
   for (const pass of PASSES) {
     const width = pass.width;
     for (const book of books) {
@@ -343,7 +349,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
       }, attempts);
       await page.goto(BASE + '?class=demo&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
       await W.settle(page);
-      const sidecar = { walker: 'sit-pupil', scope: book, width, tier: 'preview', contentHash: contentHash(A.APP), when: new Date().toISOString(), states: [], consoleErrors: 0 };
+      const sidecar = { walker: 'sit-pupil', scope: book, width, tier: 'preview', contentHash: bookHash(A.APP, book), when: new Date().toISOString(), states: [], consoleErrors: 0 };
       const transcript = [];
 
       /* the cover, then in */

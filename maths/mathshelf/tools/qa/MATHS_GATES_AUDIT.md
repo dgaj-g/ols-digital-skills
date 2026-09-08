@@ -12,9 +12,9 @@ section below (A–F). A rule with no home is a rule with no enforcement.
 |---|---|---|
 | mathcore.selfTest | 73 | 45b03ed, 5 Sept 2026 |
 | dev/test-anglecore.js | 72 | 45b03ed, 5 Sept 2026 |
-| dev/validate-all.js | 48 | 45b03ed, 5 Sept 2026 |
+| dev/validate-all.js | 81 | 45b03ed, 5 Sept 2026 |
 | dev/test-server-scoping.js | 20 | 45b03ed, 5 Sept 2026 |
-| dev/test-statcore.js | 80 | not yet built (Handling Data C) |
+| dev/test-statcore.js | 156 | Handling Data C, 8 Sept 2026 (design floor 80; rises to 120+ with books A and B) |
 
 ## PINNED REFS — the pre-fix states the controls are served from
 

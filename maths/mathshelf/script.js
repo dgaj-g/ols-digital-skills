@@ -35,6 +35,21 @@
     { id: 'stats-quartiles', title: 'Handling Data', sub: 'Quartiles, curves and box plots', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'curve' }
   ];
 
+  /* WHAT THE OFFLINE STUB THINKS A CLASS HAS, shaped exactly as the server
+     shapes it (server/Code.gs.template: ACTS, LEGACY_ON, coerceActs_). The two
+     homes are one contract and qa-two-homes / qa-tickbox hold them together: a
+     stub that hands back two keys where the server hands back three shows a
+     preview shelf that is not the shelf the class will get. Derived from
+     ACTIVITIES, so a new book needs no line here at all. */
+  var LEGACY_ON = { angles: true, algebra: true };
+  function actIds() { return ACTIVITIES.map(function (a) { return a.id; }); }
+  function coerceActs(a) {
+    a = a || {};
+    var out = {};
+    actIds().forEach(function (id) { out[id] = !!a[id]; });
+    return out;
+  }
+
   /* ═════════ THE DOM CONTRACT (gates design 2.4) ═══════════════════
      Every screen and every materially different state of one declares itself,
      so coverage can be DERIVED from what exists instead of typed into a list
@@ -160,7 +175,7 @@
   var OFFLINE_TEACHER = 'demo.teacher@c2ken.net';
   function store() {
     var s = lsLoad();
-    s.classes = s.classes || [{ name: BOOT.classCode, acts: { angles: true, algebra: true } }];
+    s.classes = s.classes || [{ name: BOOT.classCode, acts: coerceActs(LEGACY_ON) }];
     s.data = s.data || {};   // data[class][email][act] = {state, summary}
     s.names = s.names || {};
     s.classes.forEach(function (c) { if (c && c.owner == null) c.owner = OFFLINE_TEACHER; });
@@ -396,7 +411,7 @@
 
   function seedDemo(s) {
     if (s.data[DEMO_CLASS]) return;
-    s.classes.push({ name: DEMO_CLASS, acts: { angles: true, algebra: true }, owner: OFFLINE_TEACHER });
+    s.classes.push({ name: DEMO_CLASS, acts: coerceActs(LEGACY_ON), owner: OFFLINE_TEACHER });
     s.data[DEMO_CLASS] = {};
     DEMO_PUPILS.forEach(function (p, i) {
       var email = p[0].toLowerCase().replace(/[^a-z]+/g, '.') + '@c2ken.net';
@@ -436,7 +451,7 @@
           email: OFFLINE_EMAIL,
           name: s.names[OFFLINE_EMAIL] || 'Aoife Gartland',
           firstVisit: !s.names[OFFLINE_EMAIL],
-          acts: (reg && reg.acts) || { angles: true, algebra: true },
+          acts: coerceActs((reg && reg.acts) || LEGACY_ON),
           summaries: sums, offline: true
         });
       }
@@ -478,7 +493,7 @@
             if (!nm) return Promise.resolve({ ok: false, error: 'Give the class a name first.' });
             if (s.classes.some(function (c) { return c.name.toLowerCase() === nm.toLowerCase(); }))
               return Promise.resolve({ ok: false, error: 'That class already exists.' });
-            var nacts = { angles: true, algebra: true };
+            var nacts = coerceActs(LEGACY_ON);
             s.classes.push({ name: nm, acts: nacts, owner: OFFLINE_TEACHER }); lsSave(s);
             return ok({ name: nm, acts: nacts });
           }

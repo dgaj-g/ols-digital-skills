@@ -99,7 +99,17 @@ const LEXICON = [
     why: 'praises a neat copy of work she may not have written' },
   { id: 'is-this-you', re: /\bis this you\b/i, registers: ['pupil'],
     why: 'asks her a question the screen already knows the answer to' },
-  { id: 'girl', re: /\bgirls?\b/i, unless: /girls'\s+school/i, registers: ['pupil'],
+  /* NAMING THE READER, not naming a person in a question. The law is that the
+     app never addresses her as what she is - "Well done, girls!" - and that is
+     a VOCATIVE. An exam scenario in Colette's own words ("Some girls did a
+     sponsored swim to raise money for charity") names the people in the
+     question, not the reader, and rewriting a sourced stem would break the
+     rule that content comes only from her files. So the test is the vocative
+     one: the word next to a comma, an exclamation, or "you". Narrowed 8 Sept
+     2026 and proved still to bite: "Well done, girls!", "You girls" and
+     "girls, look at this" all fail exactly as before. */
+  { id: 'girl', re: /\bgirls?\s*[,!]|\byou\s+girls?\b/i,
+    unless: /girls'\s+school/i, registers: ['pupil'],
     why: 'names the reader by what she is rather than talking to her' },
   { id: 'us-spelling', re: /\b(color|colors|center|centers|meters|liters|organize|analyze|math)\b/,
     unless: /MathShelf/, registers: ['pupil', 'teacher'],

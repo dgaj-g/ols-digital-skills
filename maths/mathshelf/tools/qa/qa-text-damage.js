@@ -54,6 +54,7 @@ const g = new Gate('qa-text-damage');
 g.exempt([
   'a string with no whitespace in it (an id, a dx code, a hex colour, a lone "…" loading placeholder) is not prose and is not checked — a rewrite tool damages sentences, not tokens',
   'a book with no approved commit on record (a brand-new book) has nothing to compare against and is skipped for TRUNCATION only, with the skip printed on every run (DFM 213)',
+  'the provenance fields (src, authoredNarration) are not read as prose: they never reach a screen, and two citations from one source file are meant to look alike',
   'the "prompt" and "start" fields are per-question instruction templates, not authored narrative — SURVIVOR REPORT does not compare them against each other (see the note at TEMPLATE_FIELDS)'
 ]);
 
@@ -119,7 +120,20 @@ function walkPack(obj, p, out) {
     });
     return;
   }
-  if (obj && typeof obj === 'object') { Object.keys(obj).forEach(k => walkPack(obj[k], (p ? p + '.' : '') + k, out)); }
+  if (obj && typeof obj === 'object') {
+    Object.keys(obj).forEach(k => {
+      /* PROVENANCE IS NOT PROSE. `src` cites where a question came from and
+         `authoredNarration` lists what the build wrote rather than copied;
+         neither ever reaches a screen, and citations from ONE source file are
+         SUPPOSED to look alike ("MMcK.pdf p2 Q1", "MMcK.pdf p2 Q2"). Comparing
+         them as sentences reported thirty near-duplicates on a book whose
+         every question is honestly sourced, which is a gate inventing a fault
+         (L6). Added 8 September 2026, with the near-duplicate rule proved
+         still to bite on two prompts one word apart. */
+      if (k === 'src' || k === 'authoredNarration') return;
+      walkPack(obj[k], (p ? p + '.' : '') + k, out);
+    });
+  }
 }
 
 const C = A.content();
