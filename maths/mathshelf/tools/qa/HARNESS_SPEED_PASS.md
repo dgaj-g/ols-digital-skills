@@ -183,3 +183,67 @@ in that gate (`B.close is not a function` — `lib/browser.js` exports no
   orchestrator's PROGRESS.md restriction) written for real — `--changed`
   degrades safely to "run everything" until a human/orchestrator adds that
   line after a real green battery.
+
+## UPDATE — the serial baseline finished, and what its diff actually shows
+
+The serial `--full --book angles` baseline (run from the pre-pool `run.js`
+extracted at `49ffbfd`) finished at **21:48** wall clock (135.57s user, 22.51s
+system) — against the pooled run's **4:30** (111s user, 21s system). A real,
+same-book, ~5x wall-clock speedup, not just a lower CPU-second count.
+
+**The RESULTS and COVERAGE matrices are NOT cell-for-cell identical between
+the two runs — and the reason is now known, not guessed at.** Both runs'
+angles sidecars carry a `contentHash` (STALE-check) note in their own log:
+the pooled run's angles sidecars went STALE **during its own 4:30 run** —
+`sidecar sit-confused-angles-1280.json is STALE (08c40334965b != c845bade66f4)`
+— because a concurrent package edited a file in this book's shared-client set
+(`script.js`/`jotter.js`/`style.css`/etc.) while the pool was still draining.
+The serial run's own sidecars were consumed within seconds of being written
+(its `qa-coverage` runs immediately after its own last gate), so almost none
+of its evidence sat exposed long enough to go stale the same way (7 STALE
+notes total, none of them angles; the pooled run logged 36, several of them
+angles). Every family NOT derived from walker sidecars — `truth`, `two-homes`,
+`human-pace`, `verdict`, `deploy` — is bit-for-bit identical between the two
+runs, which is what you would expect if the coverage LOGIC is unchanged and
+only the walker EVIDENCE differs. The non-walker RESULTS rows that flipped
+(`qa-text-damage`, `qa-voice`, `qa-store-scale`, `qa-two-attempts`,
+`qa-cold-read`'s fail count) are gates that loop over every book's content,
+and Book C content was being actively written by another package in the
+~17-minute gap between the two runs starting — not something either run's
+code caused.
+
+**This is a real, previously-undocumented cost of pooling, and it belongs in
+the ledger, not swept under "tree drift":** because `qa-coverage` now waits
+for the WHOLE pool to drain before it runs, a shard that finishes early has
+its evidence sit exposed to a concurrent edit for the REST of the pool's
+wall-clock time — whereas a serial run's most recent gate is consumed within
+seconds. On a quiet tree this costs nothing. On a tree with several packages
+committing every few minutes (this build, this week), it measurably raised
+the odds that a walker's own evidence goes stale before qa-coverage gets to
+read it, through no fault of the walk itself. **Recommend**: if a pooled
+`--full` run reports unexpectedly low coverage, check `out/*.log` for
+"is STALE" before suspecting the walk — rerun on a quieter moment, or, as a
+future improvement neither designed nor built this pass, let `qa-coverage`
+run once per book as soon as that book's shards drain, rather than once at
+the very end for every book together.
+
+**Time note**: this pass badly overran its 60-minute wall-clock budget — a
+background wait on the serial baseline (via the Monitor tool) returned after
+a real gap of roughly three and a half hours, not the expected ~15-20 minutes,
+for reasons outside this session's visibility (the environment, not the
+harness). All measurement above through "THE NUMBERS" was gathered inside the
+real 60 minutes; this UPDATE section and the two paragraphs above it were
+written after the gap, using the serial run's own timestamped output, once it
+came back. By the time it did, `sit-pupil.js` and `sit-teacher.js` had picked
+up substantial further work from another package (Book C walker support,
+~424 and ~80 uncommitted lines respectively) sitting UNCOMMITTED in the same
+shared file — this package's own lines (`bookHash(...)`, the two
+`WIDTHS.includes(...)` sharding gates) are still present and were re-verified
+by direct grep, but this session deliberately did NOT commit either file, to
+avoid committing another package's in-progress work under this message. Only
+`HANDOVER.md`'s pointer line and this file are committed by this pass;
+`run.js`, `control.js`, `lib/hash.js`, `qa-coverage.js` and `sit-confused.js`
+were already committed (verified byte-identical against HEAD, see the commit
+message); `sit-pupil.js` and `sit-teacher.js` carry this package's two changes
+each but are left for whoever next commits that file to include, since they
+are not this session's to commit alone any more.
