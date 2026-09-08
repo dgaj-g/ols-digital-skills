@@ -76,9 +76,26 @@ const SAMPLE = {
   list: '4, 7, 7, 9, 12, 15, 21', a: '9', b: '12', unit: 'minutes',
   x: '30', y: '18'
 };
-function fill(t) {
-  return String(t).replace(/\{([a-zA-Z]+)\}/g, (m, k) =>
-    (Object.prototype.hasOwnProperty.call(SAMPLE, k) ? SAMPLE[k] : m));
+/* ONE HOLE, THREE DIFFERENT WORDS. `{name}` is a pupil's own name on the cover,
+   the name of a CUT on a Handling Data screen ("That's my median"), and the
+   label of an angle in the geometry book ("Work out ∠x"). Filling all three with
+   "Aoife" handed the separated judge ten sentences reading "Now choose the
+   Aoife." and "Work out ∠Aoife", and the judge quite properly failed every one
+   of them - for a fault the harness had made, on screens where no pupil will
+   ever see anything of the kind. The sample is chosen by the string it is going
+   into, and a key with no rule keeps the pupil's name. */
+const NAME_BY_KEY = [
+  [/^stat/, 'median'],
+  [/^angle/, 'x']
+];
+function fill(t, key) {
+  return String(t).replace(/\{([a-zA-Z]+)\}/g, (m, k) => {
+    if (k === 'name' && key) {
+      const rule = NAME_BY_KEY.filter(r => r[0].test(String(key).split(/[>.\s]+/).pop() || ''))[0];
+      if (rule) return rule[1];
+    }
+    return Object.prototype.hasOwnProperty.call(SAMPLE, k) ? SAMPLE[k] : m;
+  });
 }
 /* a hole with no sample value would print as a raw brace, so the gate says so
    rather than handing the judge something no pupil will ever see */
@@ -100,7 +117,7 @@ function v4Transcript() {
   S.appStrings().forEach(r => {
     if (before.has(r.text.trim())) return;
     seen.add(r.path);
-    out.push(r.path + '  ::  ' + fill(r.text));
+    out.push(r.path + '  ::  ' + fill(r.text, r.path));
   });
   /* and every sentence flagged for a human read, whether or not this build
      wrote it: a flagged sentence that no judge sees is the one that matters */
@@ -109,7 +126,7 @@ function v4Transcript() {
     JSON.parse(A.read(rf)).filter(c => !c.locked).forEach(c => {
       if (seen.has(c.path) || !c.text) return;
       seen.add(c.path);
-      out.push(c.path + '  ::  ' + fill(c.text) + '   [carried from the approved build, flagged for a read]');
+      out.push(c.path + '  ::  ' + fill(c.text, c.path) + '   [carried from the approved build, flagged for a read]');
     });
   }
   return out;
