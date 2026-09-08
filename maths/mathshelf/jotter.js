@@ -136,6 +136,27 @@
     judge: {
       perfect: ['You weighed the evidence, not the claim.', 'Fair reading of what the sample can say.', 'Good — you said why.'],
       fail: ['We’ll talk this one through in class.', 'Watch the worked example again — think about who was left out.']
+    },
+    /* IN ORDER FIRST, THEN THE CUTS - a question answered by putting values in
+       order is not a question with a curve in it, and must never be praised for
+       one (rule 9, the 23-Jun content-fit lesson) */
+    order: {
+      perfect: ['In order first, then the cuts — that is the whole method.',
+                'Every value in the right place.', 'Counted to the right positions.'],
+      fail: ['We’ll put one of these in order together in class.',
+             'Watch the worked example again — the order comes first.']
+    },
+    table: {
+      perfect: ['The running total, row by row.', 'Each row built on the one above it.',
+                'The last total reaches the number of people — that is the check.'],
+      fail: ['We’ll fill one of these in together in class.',
+             'Watch the worked example again — each row adds the next frequency.']
+    },
+    values: {
+      perfect: ['Worked out and written in.', 'Every box filled, and filled right.',
+                'Neatly done.'],
+      fail: ['We’ll work through one of these in class.',
+             'Watch the worked example again, then try the idea in class.']
     }
   };
   function commentFor(qid, bucket, kind) {

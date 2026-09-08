@@ -164,8 +164,34 @@ absent.
 |---|---|---|
 | Angles | KS3 · M2 | approved, live since 28 Jun 2026, content verbatim MEP |
 | Algebra | KS3 · M2 | approved, live since 28 Jun 2026, content verbatim MEP |
-| Handling Data (Colette's) | GCSE · M3 & M4 | designed, not built — `MATHS_STATS_OPUS_PROMPT_GATED.txt` |
+| Handling Data · Quartiles, curves and box plots | GCSE · M3 & M4 | BUILT 8 Sept 2026 — Book C of Colette's series, 33 questions (26 Core interaction units, 7 held in Reserve), six worked-example films |
+| Handling Data · Collecting and displaying | GCSE · M3 & M4 | designed (`MATHS_STATS_DESIGN.md` §18.1), not built |
+| Handling Data · Averages | GCSE · M3 & M4 | designed (`MATHS_STATS_DESIGN.md` §18.2), not built |
 
 Angles and Algebra are **approved**: their content is reported on, never
 re-opened (rule 30). `6 + b = 6 + 7 = 13` is verbatim-correct MEP and must never
 be "fixed".
+
+**The Handling Data books work differently in three ways**, and all three are
+in `INTERFACES.md`:
+1. A pupil BUILDS the answer - an ordered row, a running-total column, plotted
+   points and a curve, a read-off, a box plot, a comparison, a judgement - and
+   `statcore.js` marks it one MARKING UNIT at a time, with its own follow-through
+   per unit. `statcore.js`'s unit table is the single home of what each unit is
+   worth, which mark it pays for, and whether a hollow tick earns it.
+2. Every question root says which BOARD it is on (`data-stage`) and which boards
+   it can show (`data-stages`), so a walk stands on every one of them and
+   `qa-coverage` derives a cell per question x stage x width. A question
+   declares only the boards ITS OWN data can reach.
+3. **A book is not entirely client-only.** `server/Code.gs.template` keeps
+   `var ACTS` and refuses any other act id, so a new book needs its id there
+   before it can save a mark. That one line is the whole server change;
+   everything else in the server and in the offline stub derives from it. It
+   also means a new book's deploy carries a server change, and therefore his
+   eight-item live smoke list, not just the book's own.
+
+A question marked `reserve: true` is authored, linted, validated and WALKED
+like any other, and is simply not put in front of a class: the shelf, the
+markbook's list and the summary skip it. In the preview, `?reserve=1` puts them
+on screen (inert on the deployed tier - `qa-preview-honest` proves it), which is
+how every one of them has walk cells.

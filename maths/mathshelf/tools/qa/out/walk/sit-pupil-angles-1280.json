@@ -3,8 +3,8 @@
  "scope": "angles",
  "width": 1280,
  "tier": "preview",
- "contentHash": "41efb3fc346a",
- "when": "2026-09-08T06:29:50.392Z",
+ "contentHash": "ff26703871b5",
+ "when": "2026-09-08T08:02:46.864Z",
  "states": [
   {
    "surface": "cover",
@@ -112,6 +112,7 @@
    "qid": "c1",
    "section": 0,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -196,6 +197,7 @@
    "qid": "c2",
    "section": 0,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -280,6 +282,7 @@
    "qid": "c3",
    "section": 0,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -364,6 +367,7 @@
    "qid": "c4",
    "section": 0,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -448,6 +452,7 @@
    "qid": "m1",
    "section": 0,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -532,6 +537,7 @@
    "qid": "m2",
    "section": 0,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -748,6 +754,7 @@
    "qid": "q5",
    "section": 1,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -774,6 +781,7 @@
    "qid": "q5",
    "section": 1,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -854,6 +862,7 @@
    "qid": "q6",
    "section": 1,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -938,6 +947,7 @@
    "qid": "q7",
    "section": 1,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1022,6 +1032,7 @@
    "qid": "q8",
    "section": 1,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1238,6 +1249,7 @@
    "qid": "q9",
    "section": 2,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1264,6 +1276,7 @@
    "qid": "q9",
    "section": 2,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1344,6 +1357,7 @@
    "qid": "q10",
    "section": 2,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1428,6 +1442,7 @@
    "qid": "q11",
    "section": 2,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1644,6 +1659,7 @@
    "qid": "q12",
    "section": 3,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1670,6 +1686,7 @@
    "qid": "q12",
    "section": 3,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1750,6 +1767,7 @@
    "qid": "q13",
    "section": 3,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1834,6 +1852,7 @@
    "qid": "q14",
    "section": 3,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1918,6 +1937,7 @@
    "qid": "q15",
    "section": 3,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2134,6 +2154,7 @@
    "qid": "q16",
    "section": 4,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2160,6 +2181,7 @@
    "qid": "q16",
    "section": 4,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2240,6 +2262,7 @@
    "qid": "q17",
    "section": 4,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2324,6 +2347,7 @@
    "qid": "q18",
    "section": 4,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2408,6 +2432,7 @@
    "qid": "q19",
    "section": 4,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2624,6 +2649,7 @@
    "qid": "q20",
    "section": 5,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2650,6 +2676,7 @@
    "qid": "q20",
    "section": 5,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2774,6 +2801,7 @@
    "qid": "q21",
    "section": 5,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2800,6 +2828,7 @@
    "qid": "q21",
    "section": 5,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2924,6 +2953,7 @@
    "qid": "q22",
    "section": 5,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2950,6 +2980,7 @@
    "qid": "q22",
    "section": 5,
    "book": "angles",
+   "stages": "",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
