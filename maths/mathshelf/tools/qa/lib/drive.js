@@ -239,7 +239,11 @@ const ANSWER = `((args) => {
       if (!bd || !bd.toPx || !bd.svg) return { ok: false, why: 'no board handle for ' + qid };
       for (let i = 0; i < pts.length; i++) {
         const on = (bd.points && bd.points()) || [];
-        if (on.some((p) => Number(p[0]) === Number(pts[i][0]) && Number(p[1]) === Number(pts[i][1]))) continue;
+        /* compare where the point WILL LAND, not where the model asked for it:
+           a midpoint of 2.5 lands on 3 once the board has snapped it, and a
+           guard that compares the two decided the point was still missing */
+        const want = bd.snap ? bd.snap(Number(pts[i][0]), Number(pts[i][1])) : [Number(pts[i][0]), Number(pts[i][1])];
+        if (on.some((p) => Number(p[0]) === Number(want[0]) && Number(p[1]) === Number(want[1]))) continue;
         const px = bd.toPx(Number(pts[i][0]), Number(pts[i][1]));
         if (!pressGrid(bd.svg, px[0], px[1])) return { ok: false, why: 'the board has no screen transform yet for ' + qid };
         const s = maybeStop('placed point ' + i); if (s) return s;

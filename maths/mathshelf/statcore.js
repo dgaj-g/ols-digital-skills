@@ -743,7 +743,9 @@
     var exact = sameSet(got, want);
     var dx = null, note = null, earnedOverride = null;
     if (!exact) {
+      var startPt = (q.startPoint === undefined) ? (r.startPoint !== false) : q.startPoint;
       var mids = classes.map(function (c, i) { return [rdiv(radd(R(c.lo), R(c.hi)), rint(2)), rint(cf[i])]; });
+      if (startPt && classes.length) mids.unshift([R(classes[0].lo), rint(0)]);
       var lows = classes.map(function (c, i) { return [R(c.lo), rint(cf[i])]; });
       var freqs = classes.map(function (c, i) { return [R(c.hi), rint(Number(c.f) || 0)]; });
       var swap = want.map(function (p) { return [p[1], p[0]]; });
@@ -1320,11 +1322,16 @@ function cfplotBoard(q, wrong) {
   var rules = rulesOf(q, RULES);
   var want = expectedPoints(q, rules).map(function (p) { return [rnum2(p[0]), rnum2(p[1])]; });
   if (!wrong) return { pts: want, joined: true };
+  /* THE SLIP HAS TO BE ANSWERABLE. Plotting at the midpoints is the classic
+     fault, but she still places the same NUMBER of points - including the
+     start point where the book plots one - or the Join never lights and the
+     board can never be checked at all. */
   var cf = cumulate(q.classes || []);
-  return {
-    pts: (q.classes || []).map(function (c, i) { return [(Number(c.lo) + Number(c.hi)) / 2, cf[i]]; }),
-    joined: true
-  };
+  var start = (q.startPoint === undefined) ? (rules.startPoint !== false) : q.startPoint;
+  var mid = [];
+  if (start && (q.classes || []).length) mid.push([Number(q.classes[0].lo), 0]);
+  (q.classes || []).forEach(function (c, i) { mid.push([(Number(c.lo) + Number(c.hi)) / 2, cf[i]]); });
+  return { pts: mid, joined: true };
 }
 function snapTo(x, sq) { return Math.round(x / sq) * sq; }
 function cfreadBoard(q, wrong) {
@@ -1600,8 +1607,8 @@ function statsBoard(q, wrong) {
     T('PT2 POINTS weighs 2', v.perLine[0].w === 2 && v.perLine[0].earned === 2);
     v = check(PL, { S: { pts: goodPts, joined: false } });
     T('PT3 not joined earns no curve mark', okAt(v, 1, 0) && v.mk[1] === 0);
-    v = check(PL, { S: { pts: [[2.5, 8], [7.5, 21], [12.5, 35], [17.5, 40]], joined: true } });
-    T('PT4 midpoints named', dxAt(v, 0, 'PLOT_MIDPOINT'));
+    v = check(PL, { S: { pts: [[0, 0], [2.5, 8], [7.5, 21], [12.5, 35], [17.5, 40]], joined: true } });
+    T('PT4 midpoints named (the start point still plotted)', dxAt(v, 0, 'PLOT_MIDPOINT'));
     T('PT5 curve through their own points is hollow and earns', okAt(v, 1, 2) && v.mk[1] === 1);
     v = check(PL, { S: { pts: [[0, 8], [5, 21], [10, 35], [15, 40]], joined: true } });
     T('PT6 lower boundaries named', dxAt(v, 0, 'PLOT_LOWER_BOUND'));

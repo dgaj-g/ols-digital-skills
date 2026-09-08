@@ -579,6 +579,10 @@
         dot.setAttribute('fill', 'var(--pencil)');
         gpt.appendChild(sv('line', { x1: px - 6, y1: py - 6, x2: px + 6, y2: py + 6, stroke: 'var(--pencil)', 'stroke-width': 1 }));
       }
+      /* a ghost is looked at, never pressed: the struck first attempt sits at
+         the very positions her second go has to press, and an unclickable
+         ghost is the difference between being able to answer twice and not */
+      if (ghost) gpt.style.pointerEvents = 'none';
       return { g: gpt, dot: dot };
     }
     function pointDrag(index) {
@@ -621,6 +625,12 @@
       var p = toPx(ax);
       var glyph = drawPointGlyph(p[0], p[1], !!o.ghost);
       gPoints.appendChild(glyph.g);
+      /* A GHOST IS NOT A POINT. The struck first attempt is drawn on the same
+         board so she can see what she did, but it is not part of what she has
+         placed: counted among the points it made her second go look finished
+         before she had started it, so the Join never lit and the question could
+         not be answered twice. It draws, and nothing else knows about it. */
+      if (o.ghost) { relayout(); return -1; }
       var hit = (o.ghost || opts.readOnly) ? null : addHit(p[0], p[1], 'point', gPoints);
       var idx = st.points.length;
       st.points.push(ax);
@@ -666,6 +676,9 @@
       var px = sorted.map(function (p) { return toPx(p); });
       var d = monotonePath(px);
       var target = o.ghost ? gGhostCurve : gCurve;
+      /* the struck curve is looked at, never pressed - a 2px stroke across the
+         board would otherwise swallow the taps her second go is made of */
+      if (o.ghost) target.style.pointerEvents = 'none';
       if (!o.ghost) { if (st.curveEl) { st.curveEl.remove(); st.curveEl = null; } }
       var path = sv('path', { d: d, fill: 'none', 'stroke-width': o.ghost ? 1.6 : 2.2 });
       path.style.color = o.ghost ? 'var(--pencil)' : 'var(--copper)';
