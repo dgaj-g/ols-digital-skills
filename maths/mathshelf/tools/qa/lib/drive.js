@@ -168,6 +168,10 @@ const ANSWER = `((args) => {
           const rowBtn = all('[data-row-pos]').filter((b) => Number(b.getAttribute('data-row-pos')) === pos[pi])[0];
           if (!rowBtn) return { ok: false, why: 'no row tile at position ' + pos[pi] + ' on ' + qid };
           rowBtn.click();
+          /* "picking" - one value chosen, the read-out showing, nothing
+             committed - is a board of its own and lives only between these
+             two presses */
+          const sp = maybeStop('chose a value for ' + cutName); if (sp) return sp;
         }
         const commit = all('.btn-quiet').filter((b) => !b.classList.contains('stat-undo'))[0];
         if (!commit) return { ok: false, why: 'no commit button for ' + cutName + ' on ' + qid };
@@ -296,6 +300,29 @@ const ANSWER = `((args) => {
       return null;
     }
 
+    /* THE SELECTION STAGES. "selected" and "marker-selected" are the boards the
+       two-press law lives on: the first press on placed work SELECTS it and
+       says "press it again to put it back". No route through answering ever
+       lands there, so when the walk asks for one, the drive makes the
+       selection deliberately - one press, which changes nothing - and stops. */
+    const wantsSelection = /(^|:)(selected|marker-selected)$/.test(String(uptoStage || ''));
+    if (wantsSelection) {
+      const placed = all('[data-placed]').filter((e) => e.tagName === 'BUTTON' && !e.disabled)[0];
+      if (placed) {
+        placed.click();
+        return { ok: true, how: 'pressed placed work once, which selects it', stage: curStage() };
+      }
+      /* a box plot's "marker-selected" comes BEFORE anything is placed: she
+         chooses a marker out of the tray, and that choice is the board */
+      const trayItem = all('[data-tray^="boxplot-markers-"] [data-tray-item]').filter((e) => !e.disabled)[0];
+      if (trayItem) {
+        trayItem.click();
+        return { ok: true, how: 'chose a marker out of the tray', stage: curStage() };
+      }
+      /* a plotted point selects ITSELF the moment it is placed, so there is
+         nothing to press first: fall through and answer normally */
+    }
+
     if (kind === 'qlist') {
       const r = pressQlist((attempt.S || {}), packQ);
       if (r) return r;
@@ -415,6 +442,12 @@ const ANSWER = `((args) => {
         const chip = [...tray.querySelectorAll('[data-tray-item]')].filter((b) => txt(b) === wantText)[0];
         if (!chip) return { ok: false, why: 'no chip reads "' + wantText + '" for claim ' + ci + ' on ' + qid };
         chip.click();
+        /* "reason-open" - a claim called not fair, its reason picker open and
+           nothing chosen - is a board of its own, and it lives only between
+           these two presses */
+        if (!claim.options && want.fair === false && want.why) {
+          const sr = maybeStop('called claim ' + ci + ' not fair'); if (sr) return sr;
+        }
         if (!claim.options && want.fair === false && want.why) {
           const rtray = root.querySelector('[data-tray="judge-why-' + ci + '-' + qid + '"]');
           if (!rtray) return { ok: false, why: 'no reason bank for claim ' + ci + ' on ' + qid };
