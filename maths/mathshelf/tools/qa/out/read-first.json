@@ -198,6 +198,30 @@
     "locked": false
   },
   {
+    "path": "strings.js > pupil > statTryAgain",
+    "kind": "NEGATION-FRAGMENT",
+    "text": "Not quite.",
+    "locked": false
+  },
+  {
+    "path": "strings.js > pupil > statCftableWhy",
+    "kind": "PREPOSITION-PILEUP",
+    "text": "Put a running total in at least one row first.",
+    "locked": false
+  },
+  {
+    "path": "strings.js > pupil > statNotFair",
+    "kind": "NEGATION-FRAGMENT",
+    "text": "Not fair",
+    "locked": false
+  },
+  {
+    "path": "strings.js > pupil > statValuesWhy",
+    "kind": "PREPOSITION-PILEUP",
+    "text": "Put a number in at least one box first.",
+    "locked": false
+  },
+  {
     "path": "strings.js > pupil > classifyTryAgain",
     "kind": "NEGATION-FRAGMENT",
     "text": "Not that one — look again at its size against 90° and 180°.",

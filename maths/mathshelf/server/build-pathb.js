@@ -77,10 +77,14 @@ const INPUTS = {
   'staff-pages.js':     path.join(ACT, 'staff-pages.js'),
   'mathcore.js':        path.join(ACT, 'mathcore.js'),
   'anglecore.js':       path.join(ACT, 'anglecore.js'),
+  'statcore.js':        path.join(ACT, 'statcore.js'),
+  'statchart.js':       path.join(ACT, 'statchart.js'),
   'content-angles.js':  path.join(ACT, 'content-angles.js'),
   'content-algebra.js': path.join(ACT, 'content-algebra.js'),
+  'content-stats-quartiles.js': path.join(ACT, 'content-stats-quartiles.js'),
   'player.js':          path.join(ACT, 'player.js'),
   'jotter.js':          path.join(ACT, 'jotter.js'),
+  'jotter-stats.js':    path.join(ACT, 'jotter-stats.js'),
   'staff.js':           path.join(ACT, 'staff.js'),
   'script.js':          path.join(ACT, 'script.js'),
   'intro-loader.js':    path.join(ROOT, 'assets', 'intro-loader.js'),
@@ -105,8 +109,13 @@ const stringsJs  = read('strings.js');
 /* THE LOAD ORDER IS THE ONE index.html USES, and qa-build proves the two lists
    are the same set in both directions: a book added to index.html and not here
    would ship a deployed app that silently lacks it. */
-const moduleJs   = ['strings.js', 'mathcore.js', 'anglecore.js', 'content-angles.js', 'content-algebra.js',
-                    'player.js', 'jotter.js', 'staff-pages.js', 'staff.js', 'script.js'].map(function (k) { return [k, read(k)]; });
+/* THE ORDER IS index.html's, and qa-build proves the two agree: a script the
+   page loads that this list forgets is a book the deployed app silently
+   lacks. */
+const moduleJs   = ['strings.js', 'mathcore.js', 'anglecore.js', 'statcore.js',
+                    'content-angles.js', 'content-algebra.js', 'content-stats-quartiles.js',
+                    'statchart.js', 'player.js', 'jotter.js', 'jotter-stats.js',
+                    'staff-pages.js', 'staff.js', 'script.js'].map(function (k) { return [k, read(k)]; });
 const introJsRaw = read('intro-loader.js');
 const codeTemplate = read('Code.gs.template');
 

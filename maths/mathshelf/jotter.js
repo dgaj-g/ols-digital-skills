@@ -117,6 +117,25 @@
     },
     protractor: {
       perfect: ['Measured spot on.', 'Neatly lined up — an accurate reading.', 'Bang on — careful measuring.']
+    },
+    /* the handling-data kinds: praise what she actually did, never "working"
+       or "lines" on a board she built by pressing (rule 9) */
+    plot: {
+      perfect: ['Points on the boundaries, curve through them — that is the whole method.',
+                'Every point where it belongs.', 'A smooth curve through every point.'],
+      fail: ['We’ll plot one of these together in class.', 'Watch the worked example again, then try the idea in class.']
+    },
+    read: {
+      perfect: ['Clean read-off.', 'The rule at the right height, and read carefully.', 'Read exactly where it should be.'],
+      fail: ['We’ll read one of these off together in class.', 'Watch the worked example again — it is the height that decides it.']
+    },
+    box: {
+      perfect: ['A tidy box plot — every mark earned.', 'Five markers, all where they belong.', 'Neat, and the box says what it should.'],
+      fail: ['We’ll build one of these together in class.', 'Watch the worked example again, then try it in class.']
+    },
+    judge: {
+      perfect: ['You weighed the evidence, not the claim.', 'Fair reading of what the sample can say.', 'Good — you said why.'],
+      fail: ['We’ll talk this one through in class.', 'Watch the worked example again — think about who was left out.']
     }
   };
   function commentFor(qid, bucket, kind) {
@@ -770,6 +789,11 @@
 
   /* ═════════ mount ═════════════════════════════════════════════════ */
   function mount(host, q, savedRec, hooks) {
+    /* the Handling Data kinds live in jotter-stats.js — one line, and the v3
+       renderers below are untouched (qa-v3-shape proves their verdicts) */
+    if (window.GJ_JOTTER_STATS && window.GJ_JOTTER_STATS.handles(q.kind)) {
+      return window.GJ_JOTTER_STATS.mount(host, q, savedRec, hooks);
+    }
     if (q.kind === 'classify') return mountClassify(host, q, savedRec, hooks);
     if (q.kind === 'protractor') return mountProtractor(host, q, savedRec, hooks);
     var actId = hooks.actId;
@@ -1570,7 +1594,8 @@
         var amber = verdict.res === 'AMBER';
         var secondGone = rec.att.length >= 2;
         var mkState = done ? ' mk-correct' : amber ? ' mk-amber' : ' mk-wrong';   // colour the score by outcome, not always red
-        var tally = el('div', 'mk-tally' + mkState, 'Working ' + mk[0] + '/' + mkMax[0] + ' · Answer ' + mk[1] + '/' + mkMax[1]);
+        var lb = (verdict && verdict.mkLabels) || ['Working', 'Answer'];
+        var tally = el('div', 'mk-tally' + mkState, lb[0] + ' ' + mk[0] + '/' + mkMax[0] + ' · ' + lb[1] + ' ' + mk[1] + '/' + mkMax[1]);
         feedback.appendChild(tally);
 
         if (amber) feedback.appendChild(el('p', 'amber-note', T.amberNoWorkingLine));
@@ -1666,7 +1691,8 @@
         var mkMax2 = verdict.mkMax || q.marks;
         var mkState2 = verdict.res === 'OK' ? ' mk-correct' : verdict.res === 'AMBER' ? ' mk-amber' : ' mk-wrong';
         margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally' + mkState2 + '" style="font-size:18px">' + (verdict.mk[0] + verdict.mk[1]) + '/' + (mkMax2[0] + mkMax2[1]) + '</div>';
-        feedback.appendChild(el('div', 'mk-tally' + mkState2, 'Working ' + verdict.mk[0] + '/' + mkMax2[0] + ' · Answer ' + verdict.mk[1] + '/' + mkMax2[1]));
+        var lb2 = verdict.mkLabels || ['Working', 'Answer'];
+        feedback.appendChild(el('div', 'mk-tally' + mkState2, lb2[0] + ' ' + verdict.mk[0] + '/' + mkMax2[0] + ' · ' + lb2[1] + ' ' + verdict.mk[1] + '/' + mkMax2[1]));
       }
       checkRow.hidden = true;
       window.GJ.setState(wrap, 'question', 'locked-restore');
@@ -1693,5 +1719,15 @@
     return { qid: q.id };
   }
 
-  window.GJ_JOTTER = { mount: mount };
+  /* ONE HOME for the pieces both renderers use. jotter-stats.js reads them
+     from here rather than carrying its own copy of a mark, a comment bank, a
+     number pad or the shuffle — a second copy is a second thing to go stale. */
+  window.GJ_JOTTER = {
+    mount: mount,
+    el: el, sv: sv, esc: esc, pretty: pretty,
+    drawMark: drawMark, commentFor: commentFor, shuffle: shuffle,
+    makeNumPad: makeNumPad, setLockedWhy: setLockedWhy,
+    tagQuestionRoot: tagQuestionRoot, sectionIdFor: sectionIdFor,
+    REDUCED: REDUCED, COMMENTS: COMMENTS
+  };
 })();

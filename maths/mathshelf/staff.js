@@ -398,7 +398,8 @@
     var pack = window.GJ.app.content(actId);
     var out = [];
     pack.sections.forEach(function (sec, si) {
-      sec.questions.forEach(function (q, qi) {
+      var core = window.GJ.app.coreQuestions ? window.GJ.app.coreQuestions(sec) : (sec.questions || []);
+      core.forEach(function (q, qi) {
         out.push({
           q: q,
           label: 'Ex ' + (si + 1) + ' \u00b7 Q' + (qi + 1),
@@ -431,7 +432,7 @@
         var pok = Math.abs((last.read || 0) - q.value) <= (q.tol || 3);
         verdict = { res: pok ? 'OK' : 'X@1', mk: [0, pok ? 1 : 0], mkMax: [0, 1], perLine: [{ dx: pok ? null : (last.dx || 'MISREAD') }] };
       } else {
-        verdict = actId === 'angles' ? window.GJ_ANGLES.checkSteps(q, last.steps || []) : window.GJ_MATH.checkQuestion(q, last);
+        verdict = window.GJ.app.engineFor(actId, q).check(q, last);
       }
     } catch (e) { return { st: 'un' }; }
     var out = {
@@ -457,6 +458,9 @@
     return out;
   }
 
+  /* GJ_STATS brings its own names for the handling-data slips; they are MERGED
+     into this one map at load, never re-typed here, so a teacher reads one
+     table and a code has exactly one plain-English sentence. */
   var DX_NAMES = {
     EXPAND_PARTIAL: 'Expanded only the first term', EXPAND_SIGN: 'Sign slip when expanding',
     SUB_INSTEAD_DIV: 'Subtracted instead of dividing', DIV_BEFORE_SUB: 'Divided before subtracting',
@@ -467,6 +471,11 @@
     STRAIGHT_360: 'Used 360° on a straight line', VOP_SUPP: 'Mixed up vertically opposite with the straight-line pair',
     WRONG_SCALE: 'Read the wrong protractor scale', MISREAD: 'Misread / misplaced the protractor'
   };
+  if (window.GJ_STATS && window.GJ_STATS.DX_NAMES) {
+    Object.keys(window.GJ_STATS.DX_NAMES).forEach(function (k) {
+      if (!DX_NAMES[k]) DX_NAMES[k] = window.GJ_STATS.DX_NAMES[k];
+    });
+  }
 
   /* ═══ Class Insights — analytics from the cheap wall summary ═══════════
      Reads only the per-question summary the Working Wall already polls
