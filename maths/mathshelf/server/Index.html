@@ -4705,7 +4705,9 @@ window.OLS_TRANSPORT = {
     var exact = sameSet(got, want);
     var dx = null, note = null, earnedOverride = null;
     if (!exact) {
+      var startPt = (q.startPoint === undefined) ? (r.startPoint !== false) : q.startPoint;
       var mids = classes.map(function (c, i) { return [rdiv(radd(R(c.lo), R(c.hi)), rint(2)), rint(cf[i])]; });
+      if (startPt && classes.length) mids.unshift([R(classes[0].lo), rint(0)]);
       var lows = classes.map(function (c, i) { return [R(c.lo), rint(cf[i])]; });
       var freqs = classes.map(function (c, i) { return [R(c.hi), rint(Number(c.f) || 0)]; });
       var swap = want.map(function (p) { return [p[1], p[0]]; });
@@ -5282,11 +5284,16 @@ function cfplotBoard(q, wrong) {
   var rules = rulesOf(q, RULES);
   var want = expectedPoints(q, rules).map(function (p) { return [rnum2(p[0]), rnum2(p[1])]; });
   if (!wrong) return { pts: want, joined: true };
+  /* THE SLIP HAS TO BE ANSWERABLE. Plotting at the midpoints is the classic
+     fault, but she still places the same NUMBER of points - including the
+     start point where the book plots one - or the Join never lights and the
+     board can never be checked at all. */
   var cf = cumulate(q.classes || []);
-  return {
-    pts: (q.classes || []).map(function (c, i) { return [(Number(c.lo) + Number(c.hi)) / 2, cf[i]]; }),
-    joined: true
-  };
+  var start = (q.startPoint === undefined) ? (rules.startPoint !== false) : q.startPoint;
+  var mid = [];
+  if (start && (q.classes || []).length) mid.push([Number(q.classes[0].lo), 0]);
+  (q.classes || []).forEach(function (c, i) { mid.push([(Number(c.lo) + Number(c.hi)) / 2, cf[i]]); });
+  return { pts: mid, joined: true };
 }
 function snapTo(x, sq) { return Math.round(x / sq) * sq; }
 function cfreadBoard(q, wrong) {
@@ -5354,7 +5361,18 @@ function boxTruthFive(q) {
 function boxplotBoard(q, wrong) {
   var five = boxTruthFive(q) || {};
   var pos = {};
-  ['min', 'Q1', 'Q2', 'Q3', 'max'].forEach(function (k) { pos[k] = rstr2(five[k]); });
+  /* A MARKER GOES ON THE GRID. A cut read off a curve is an exact rational
+     (37/6 on the javelin curve) and no pupil can put a marker there: she
+     places it on the nearest small square, and the engine marks a curve-read
+     box plot to the reading tolerance. So the model board is what she can
+     actually place. */
+  var sq = Number((q.scale && q.scale.sq) || 1) || 1;
+  ['min', 'Q1', 'Q2', 'Q3', 'max'].forEach(function (k) {
+    var v = five[k];
+    var n = (v && v.d !== undefined) ? v.n / v.d : Number(v);
+    if (isNaN(n)) { pos[k] = rstr2(v); return; }
+    pos[k] = String(q.from ? Math.round(n / sq) * sq : (Math.round(n * 1e6) / 1e6));
+  });
   var out = { pos: pos, drawn: true };
   if (q.from) {
     var stageQ = JSON.parse(JSON.stringify(q));
@@ -5551,8 +5569,8 @@ function statsBoard(q, wrong) {
     T('PT2 POINTS weighs 2', v.perLine[0].w === 2 && v.perLine[0].earned === 2);
     v = check(PL, { S: { pts: goodPts, joined: false } });
     T('PT3 not joined earns no curve mark', okAt(v, 1, 0) && v.mk[1] === 0);
-    v = check(PL, { S: { pts: [[2.5, 8], [7.5, 21], [12.5, 35], [17.5, 40]], joined: true } });
-    T('PT4 midpoints named', dxAt(v, 0, 'PLOT_MIDPOINT'));
+    v = check(PL, { S: { pts: [[0, 0], [2.5, 8], [7.5, 21], [12.5, 35], [17.5, 40]], joined: true } });
+    T('PT4 midpoints named (the start point still plotted)', dxAt(v, 0, 'PLOT_MIDPOINT'));
     T('PT5 curve through their own points is hollow and earns', okAt(v, 1, 2) && v.mk[1] === 1);
     v = check(PL, { S: { pts: [[0, 8], [5, 21], [10, 35], [15, 40]], joined: true } });
     T('PT6 lower boundaries named', dxAt(v, 0, 'PLOT_LOWER_BOUND'));
@@ -7411,7 +7429,11 @@ function statsBoard(q, wrong) {
                and 75 (n = 100, split50 rule): Q1 = 37/6, median = 165/16,
                Q3 = 455/32 \u2014 exact chord values, re-derived independently in
                the proof script and matched against GJ_STATS.curveX. */
-            given: { min: 2, Q1: '37/6', Q2: '165/16', Q3: '455/32', max: 24 },
+            /* the least and the greatest are printed on the paper; the three cuts are
+               what she reads off her own curve, so they are NOT given here -
+               statcore derives them from the curve and marks them to the
+               reading tolerance (DESIGN 6.3) */
+            given: { min: 2, max: 24 },
             scale: { min: 0, max: 25, step: 5, sq: 1 },
             src: 'Statistics M7 (1).pdf Q31(b)(c)' },
           { id: 'q27', kind: 'values', marks: [0, 1], reserve: true,
@@ -7454,7 +7476,11 @@ function statsBoard(q, wrong) {
             { say: 'For example \u2014 a hypothesis you could test: girls spend more time on social media than boys.',
               do: [{ write: { text: 'Girls spend more time on social media than boys.' } }] },
             { say: 'You cannot ask everyone, so a hypothesis is tested on a sample \u2014 not the whole population.',
-              do: [{ stamp: { text: 'A hypothesis is tested on a SAMPLE, not the whole population.' } }] },
+              do: [/* WRITTEN, NOT STAMPED. A stamp is laid OVER the film, and with three of
+                 them on one screen the first sat on the hypothesis line above it -
+                 the overlap law caught it. The two questions to ask of a sample
+                 (below) are the stamps this beat is for; this one is a line. */
+              { write: { text: 'A hypothesis is tested on a sample, not on the whole population.' } }] },
             { say: 'A sample only gives a fair test if it is big enough, and if it does not leave any group out.',
               do: [{ note: { red: true, text: 'A fair sample is big enough, and does not leave any group out.' } }] },
             { say: 'So always ask, of any sample: how many were asked?',
@@ -8114,6 +8140,10 @@ function statsBoard(q, wrong) {
         dot.setAttribute('fill', 'var(--pencil)');
         gpt.appendChild(sv('line', { x1: px - 6, y1: py - 6, x2: px + 6, y2: py + 6, stroke: 'var(--pencil)', 'stroke-width': 1 }));
       }
+      /* a ghost is looked at, never pressed: the struck first attempt sits at
+         the very positions her second go has to press, and an unclickable
+         ghost is the difference between being able to answer twice and not */
+      if (ghost) gpt.style.pointerEvents = 'none';
       return { g: gpt, dot: dot };
     }
     function pointDrag(index) {
@@ -8156,6 +8186,12 @@ function statsBoard(q, wrong) {
       var p = toPx(ax);
       var glyph = drawPointGlyph(p[0], p[1], !!o.ghost);
       gPoints.appendChild(glyph.g);
+      /* A GHOST IS NOT A POINT. The struck first attempt is drawn on the same
+         board so she can see what she did, but it is not part of what she has
+         placed: counted among the points it made her second go look finished
+         before she had started it, so the Join never lit and the question could
+         not be answered twice. It draws, and nothing else knows about it. */
+      if (o.ghost) { relayout(); return -1; }
       var hit = (o.ghost || opts.readOnly) ? null : addHit(p[0], p[1], 'point', gPoints);
       var idx = st.points.length;
       st.points.push(ax);
@@ -8201,6 +8237,9 @@ function statsBoard(q, wrong) {
       var px = sorted.map(function (p) { return toPx(p); });
       var d = monotonePath(px);
       var target = o.ghost ? gGhostCurve : gCurve;
+      /* the struck curve is looked at, never pressed - a 2px stroke across the
+         board would otherwise swallow the taps her second go is made of */
+      if (o.ghost) target.style.pointerEvents = 'none';
       if (!o.ghost) { if (st.curveEl) { st.curveEl.remove(); st.curveEl = null; } }
       var path = sv('path', { d: d, fill: 'none', 'stroke-width': o.ghost ? 1.6 : 2.2 });
       path.style.color = o.ghost ? 'var(--pencil)' : 'var(--copper)';
@@ -9530,8 +9569,15 @@ function statsBoard(q, wrong) {
     wrap.appendChild(slot);
     var pad = el('div', 'keypad keypad-num');
     pad.style.cssText = 'margin-top:8px';
-    var KEYS = opts.fraction ? ['7', '8', '9', '4', '5', '6', '1', '2', '3', '\u2212', '0', '/', '\u232b']
-      : ['7', '8', '9', '4', '5', '6', '1', '2', '3', '\u2212', '0', '\u232b'];
+    /* A DECIMAL POINT WHERE DECIMALS ARE THE ANSWER. Handling Data asks for
+       1.5 of a mark and 3.7 g; without a point on the pad those questions
+       cannot be answered at all, and tap-first means there is no other way in
+       (rule 6). The v3 callers pass neither flag and get the pad they had. */
+    var KEYS = ['7', '8', '9', '4', '5', '6', '1', '2', '3'];
+    KEYS.push('\u2212', '0');
+    if (opts.decimal) KEYS.push('.');
+    if (opts.fraction) KEYS.push('/');
+    KEYS.push('\u232b');
     function render() { slot.textContent = buf; }
     function change() { render(); if (opts.onChange) opts.onChange(buf); }
     function press(k) {
@@ -9556,6 +9602,7 @@ function statsBoard(q, wrong) {
       if (/^[0-9]$/.test(k)) { e.preventDefault(); press(k); return; }
       if (k === '-') { e.preventDefault(); press('\u2212'); return; }
       if (k === '/' && opts.fraction) { e.preventDefault(); press('/'); return; }
+      if (k === '.' && opts.decimal) { e.preventDefault(); press('.'); return; }
     });
     host.appendChild(wrap);
     render();
@@ -11023,7 +11070,12 @@ function statsBoard(q, wrong) {
     function drop(name) { var i = own.indexOf(name); if (i > -1) own.splice(i, 1); }
     if (q.kind === 'qlist') {
       var cuts = (q.ask || ['Q1', 'Q2', 'Q3', 'IQR']).filter(function (a) { return a !== 'IQR'; });
-      if (!cuts.length) { drop('picking'); drop('cut-committed'); }
+      if (!cuts.length) {
+        drop('picking'); drop('cut-committed');
+        /* with no cuts to mark, the pad opens the moment the last value lands:
+           "the row complete and nothing else yet" is not a board that happens */
+        drop('ordered');
+      }
       else if (cuts.length < 2) drop('cut-committed');
       if ((q.ask || []).indexOf('IQR') === -1) drop('iqr');
     }
@@ -11034,7 +11086,10 @@ function statsBoard(q, wrong) {
          kind's general order, or the walk would go looking for a board three
          asks further on than the one she is sitting at. */
       var asks = q.ask || [];
-      var out = ['parked'], seenRead = 0;
+      /* a question that opens on a read AT a value never parks the rule on the
+         frequency axis: the vertical rule is the tool from the first moment */
+      var firstIsAtX = asks[0] && asks[0].type === 'atX';
+      var out = firstIsAtX ? [] : ['parked'], seenRead = 0;
       asks.forEach(function (a, i) {
         if (a === 'IQR') { if (out.indexOf('iqr') === -1) out.push('iqr'); }
         else if (a && a.type === 'atX') { if (out.indexOf('at-x') === -1) out.push('at-x'); }
@@ -11097,36 +11152,42 @@ function statsBoard(q, wrong) {
      position the answer would put it in. */
   function derange(items, answerKeys, key, seed) {
     if (items.length < 2) return items.slice();
-    var i, out, tries = 0, ok;
-    for (tries = 0; tries < 60; tries++) {
-      out = shuffle(items, seed + ':' + tries);
-      ok = true;
-      for (i = 0; i < out.length; i++) {
-        if (answerKeys[i] !== undefined && key(out[i]) === answerKeys[i]) { ok = false; break; }
-      }
-      if (ok) return out;
-    }
-    /* EVERY ROTATION, THEN THE REVERSE. A shuffle cannot always find a
-       derangement when two tiles carry the SAME value (a repeated time, two
-       equal marks) - so the fallback tries each rotation in turn and then the
-       reversal, and takes the first that leaves no item where the answer would
-       put it. Giving up and shipping the answer order is the one thing this
-       must never do. */
-    function deranged(list) {
+    function inPlace(list) {
+      var hits = [];
       for (var k = 0; k < list.length; k++) {
-        if (answerKeys[k] !== undefined && key(list[k]) === answerKeys[k]) return false;
+        if (answerKeys[k] !== undefined && key(list[k]) === answerKeys[k]) hits.push(k);
       }
-      return true;
+      return hits;
     }
-    for (i = 1; i < items.length; i++) {
-      out = items.slice(i).concat(items.slice(0, i));
-      if (deranged(out)) return out;
+    var out = shuffle(items, seed), tries;
+    /* A SHUFFLE, THEN A REPAIR. A list with four equal values (three nines and
+       a nine, in one of Colette's own puzzle-time lists) has four positions the
+       answer order would accept, so a random shuffle keeps landing on one and
+       sixty more shuffles do not help. So: shuffle once, then walk the
+       positions that DID land in the answer order and swap each with a
+       position where neither item would then be in place. That finds a
+       derangement whenever one exists, and never ships the answer order. */
+    for (tries = 0; tries < 8; tries++) {
+      var hits = inPlace(out);
+      if (!hits.length) return out;
+      var moved = false;
+      for (var h = 0; h < hits.length; h++) {
+        var i = hits[h];
+        for (var j = 0; j < out.length; j++) {
+          if (j === i) continue;
+          var a = out[i], b = out[j];
+          if (answerKeys[j] !== undefined && key(a) === answerKeys[j]) continue;
+          if (answerKeys[i] !== undefined && key(b) === answerKeys[i]) continue;
+          out[i] = b; out[j] = a; moved = true;
+          break;
+        }
+      }
+      if (!moved) break;
     }
-    out = items.slice().reverse();
-    if (deranged(out)) return out;
-    /* every arrangement leaves at least one item in place (a tray of two equal
-       values, say): report it by leaving the shuffle in, never the answer order */
-    return shuffle(items, seed + ':last');
+    /* every arrangement leaves at least one item where the answer would put it
+       (a tray of two equal values, say): the shuffle stands, never the answer
+       order, and the gate will say so rather than this pretending otherwise */
+    return out;
   }
   function ascendingKeys(values) {
     return values.slice().sort(function (a, b) { return Number(a) - Number(b); });
@@ -11157,7 +11218,6 @@ function statsBoard(q, wrong) {
   function twoPress(ctx, node, onReturn) {
     installClear();
     node.setAttribute('data-placed', '');
-    node.setAttribute('aria-pressed', 'false');
     node.addEventListener('click', function (e) {
       if (ctx.locked()) return;
       e.stopPropagation();
@@ -11170,7 +11230,9 @@ function statsBoard(q, wrong) {
       ctx.selected = node;
       SELECTED_CTX = ctx;
       node.classList.add('is-selected');
-      node.setAttribute('aria-pressed', 'true');
+      /* aria-CURRENT: this is the item she has picked up, not an answer she
+         has pressed - the consequence law watches aria-pressed for the latter */
+      node.setAttribute('aria-current', 'true');
       ctx.say(T().statPutBack);
       ctx.setStage(ctx.selectedStage || 'selected');
     });
@@ -11247,7 +11309,7 @@ function statsBoard(q, wrong) {
         if (SELECTED_CTX === ctx) SELECTED_CTX = null;
         if (!ctx.selected) return;
         ctx.selected.classList.remove('is-selected');
-        ctx.selected.setAttribute('aria-pressed', 'false');
+        ctx.selected.removeAttribute('aria-current');
         ctx.selected = null;
       },
       say: function (text) { msg.textContent = text || ''; },
@@ -11268,8 +11330,9 @@ function statsBoard(q, wrong) {
       if (saveTimer) clearTimeout(saveTimer);
       saveTimer = setTimeout(function () { hooks.onSave(q.id, rec); }, 400);
     }
+    var settling = false;      /* true while a verdict is being drawn */
     function onChange() {
-      if (rec.lock) return;
+      if (rec.lock || settling) return;
       var r = kind.ready();
       checkBtn.disabled = !r.ok;
       setLockedWhy(checkBtn, r.ok ? null : r.why);
@@ -11313,6 +11376,7 @@ function statsBoard(q, wrong) {
       feedback.appendChild(tally);
 
       if (rec.lock) {
+        settling = true;
         window.GJ.setState(wrap, 'question',
           right ? 'checked-right' : (rec.att.length >= 2 ? 'checked-wrong-2' : 'checked-wrong-1'));
         var comment = el('p', 'mk-comment ' + (right ? 'mk-correct' : 'mk-wrong'),
@@ -11325,13 +11389,26 @@ function statsBoard(q, wrong) {
         checkRow.hidden = true;
         kind.lock(verdict);
         /* the truth appears ONLY now, and never before */
-        if (kind.showTruth) kind.showTruth();
+        try { if (kind.showTruth) kind.showTruth(); } finally { settling = false; }
         ctx.say('');
       } else if (!instant) {
+        /* THE VERDICT IS THE STATE. Building the fresh board for her second go
+           runs the kind's own change handler, which would stamp "mid-attempt"
+           over the verdict that has just been drawn - so the state is set once
+           the board is settled, and the handler is held while it settles. */
+        settling = true;
+        try {
+          kind.reset();
+          if (kind.ghost) kind.ghost(ghost, att);
+        } finally {
+          /* WHATEVER HAPPENS, THE BOARD COMES BACK TO LIFE. The flag that
+             holds the change handler while a verdict is drawn must be cleared
+             even if drawing the struck first attempt throws - otherwise her
+             second go is on a board that has stopped listening, and the Check
+             never lights again. */
+          settling = false;
+        }
         window.GJ.setState(wrap, 'question', 'checked-wrong-1');
-        /* attempt 1 stays on the page, struck through, under attempt 2's board */
-        kind.reset();
-        if (kind.ghost) kind.ghost(ghost, att);
         checkBtn.disabled = true;
         setLockedWhy(checkBtn, kind.ready().why);
         ctx.say(T().statTryAgain);
@@ -11381,9 +11458,13 @@ function statsBoard(q, wrong) {
       setLockedWhy(checkBtn, r0.why);
     }
 
-    /* \u2500\u2500 the drive channel (preview tier only, exactly as GJ.app.__state) \u2500 */
+    /* \u2500\u2500 the drive channel (preview tier only, exactly as GJ.app.__state) \u2500
+       A GETTER, not a snapshot: her second attempt is drawn on a NEW board, and
+       a handle taken once at mount goes on answering questions about the board
+       she has finished with - which is how a walk came to believe every point
+       was already placed and press nothing. */
     if (!window.OLS_TRANSPORT && kind.board) {
-      wrap.__statBoard = kind.board();
+      Object.defineProperty(wrap, '__statBoard', { get: function () { return kind.board(); }, configurable: true });
     }
 
     return { qid: q.id };
@@ -11452,8 +11533,11 @@ function statsBoard(q, wrong) {
           if (ctx.locked()) return;
           ctx.clearSelection();
           order.push(o.i);
-          render();
+          /* the stage BEFORE the render, so the dock - which knows whether the
+             next board is the cuts, the pad or the finished row - has the last
+             word rather than being overwritten by this line */
           ctx.setStage(order.length === values().length ? 'ordered' : 'ordering');
+          render();
           ctx.changed();
         });
         trayWrap.appendChild(b);
@@ -11567,11 +11651,13 @@ function statsBoard(q, wrong) {
       }
       if (wantsIqr) {
         window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
-        ctx.setStage('iqr');
+        /* the last board: the pad is open and, once a value is in it, the
+           Check is lit and she is ready */
+        ctx.setStage(iqr ? 'ready' : 'iqr');
         ctx.say(T().statQlistIqr);
         pad = makeNumPad(ctx.dock, {
-          label: T().statIqr, fraction: true,
-          onChange: function (v) { iqr = v; ctx.changed(); }
+          label: T().statIqr, fraction: true, decimal: true,
+          onChange: function (v) { iqr = v; ctx.setStage(v ? 'ready' : 'iqr'); ctx.changed(); }
         });
         pad.set(iqr);
         return;
@@ -11719,7 +11805,7 @@ function statsBoard(q, wrong) {
       window.GJ.setState(ctx.dock, 'dock', 'numpad');
       ctx.say(rowLabel(open));
       pad = makeNumPad(ctx.dock, {
-        label: rowLabel(open),
+        label: rowLabel(open), decimal: true,
         onChange: function (v) { cf[open] = v; paint(); ctx.changed(); }
       });
       pad.set(cf[open] || '');
@@ -11834,7 +11920,7 @@ function statsBoard(q, wrong) {
       window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
       ctx.say(slot(id).label);
       pad = makeNumPad(ctx.dock, {
-        label: slot(id).label, fraction: true,
+        label: slot(id).label, fraction: true, decimal: true,
         onChange: function (val) { v[id] = val; paint(); ctx.changed(); }
       });
       pad.set(v[id] || '');
@@ -12137,7 +12223,7 @@ function statsBoard(q, wrong) {
         window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
         ctx.say(T().statReadIqr);
         var doneI = el('button', 'btn-quiet', T().statThatsMine);
-        pad = makeNumPad(ctx.dock, { label: T().statIqr, fraction: true,
+        pad = makeNumPad(ctx.dock, { label: T().statIqr, fraction: true, decimal: true,
           onChange: function (v) {
             iqr = v;
             /* THE COMMIT HAS TO NOTICE. It used to be disabled at render time
@@ -12183,7 +12269,7 @@ function statsBoard(q, wrong) {
         } }));
         var padWrap = el('div', 'stat-answer');
         ctx.dock.appendChild(padWrap);
-        pad = makeNumPad(padWrap, { label: wantLabel(a), onChange: function (v) {
+        pad = makeNumPad(padWrap, { label: wantLabel(a), decimal: true, onChange: function (v) {
           answer = v; answers['atX@' + a.x] = v; syncX(); ctx.changed();
         } });
         pad.set(answers['atX@' + a.x] || '');
@@ -12236,7 +12322,11 @@ function statsBoard(q, wrong) {
     }
 
     return {
-      start: function () { fictionLine(ctx, T().statRuleFiction); build(); ctx.setStage('parked'); },
+      start: function () {
+        ctx.setStage('parked');
+        fictionLine(ctx, T().statRuleFiction);
+        build();                       /* paint() then says which ask she is on */
+      },
       reset: function () { idx = 0; reads = {}; iqr = ''; answer = ''; h = 0; ax = null; lines.innerHTML = ''; build(); },
       restore: function (S) {
         S = S || {};
@@ -12398,7 +12488,12 @@ function statsBoard(q, wrong) {
         b.type = 'button';
         b.textContent = markerLabel(o.role);
         b.setAttribute('data-tray-item', '');
-        b.setAttribute('aria-pressed', sel === o.role ? 'true' : 'false');
+        /* aria-CURRENT, not aria-pressed: choosing which marker to place next
+           is picking the current item out of a set, not pressing an answer.
+           The consequence law watches aria-pressed inside a tray because a
+           pressed option at mount is an answer given away, and a marker she
+           has picked up is not one. */
+        if (sel === o.role) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
         b.addEventListener('click', function (e) {
           e.stopPropagation();
           if (ctx.locked()) return;
@@ -12575,7 +12670,7 @@ function statsBoard(q, wrong) {
       ctx.dock.innerHTML = '';
       window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
       var pad = makeNumPad(ctx.dock, {
-        label: T().statCompareValue, fraction: true,
+        label: T().statCompareValue, fraction: true, decimal: true,
         onChange: function (val) {
           store.v = store.v || [];
           store.v[i] = val;
@@ -12586,6 +12681,10 @@ function statsBoard(q, wrong) {
       pads[key] = pad;
     }
     function render() {
+      var ok1 = s1.who && s1.who2 && s1.ctx && s1.v && s1.v[0] && s1.v[1];
+      var ok2 = s2.who && s2.size && s2.meas && s2.cons && s2.v && s2.v[0] && s2.v[1];
+      var touched = s1.who || s2.who || (s1.v && s1.v[0]) || (s2.v && s2.v[0]);
+      ctx.setStage((ok1 && ok2) ? 'ready' : (touched ? 'building' : 'empty'));
       sentences.innerHTML = '';
       var l1 = el('p', 'stat-sentence');
       l1.appendChild(document.createTextNode(''));
