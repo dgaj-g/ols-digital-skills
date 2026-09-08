@@ -5,6 +5,32 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ---
 
+## 8 SEPT 2026, 20:04 — BOOK C IS LIVE (the resume point for Books A and B)
+
+FRONT DOOR Version 22 and DATA Version 21, both from `15bf8ab`, both selected by
+Deployment ID, manifest read before each cut; proof rows in `server/DEPLOY_LOG.md`.
+Deployed by the Fable review session on Damien's ruling of 16:30 ("Book C ships
+NOW") after this build session was stopped at 19:05.
+
+What was proved at `15bf8ab`: `--fast` 26 gates green; `--full` in 16 minutes
+(pooled, `MS_WORKERS=6`), every coverage cell closed; the separated cold read
+re-filed against the current transcript (108 sentences: 87 pass, 21 rewrite,
+0 fail); three phone-width walker findings WAIVED on his ruling with their
+pictures (`MATHS_COVERAGE_DEBT.md`, "Waived on 8 Sept 2026"). The whole control
+battery runs after the deploy and is reported in `tools/qa/out/control/`.
+
+FIRST WORK OF THE NEXT CUT (Book A's), in this order: the stray "0" read-out on
+the Exercise 4 opening at 375 (`pupil-book-contents-mid-book-375.png`); the
+unchosen reason chip fading after Check (`.chip:disabled` on `.chip-reason`);
+the 21 REWRITE rows of `MATHS_COLD_READ_VERDICTS_stats-quartiles.md` (the
+"Ex.1" contents-strip abbreviation and the bare "IQR" heading first). None is a
+reason to hold Book A.
+
+THE RULE THIS SESSION PAID FOR: a book's DONE list is the BOOK'S OWN cells plus
+no regression elsewhere; a red on an old screen is a waived debt row, never a
+fix inside a book build; the whole battery never blocks a deploy. It is in the
+prompt's TIME section now.
+
 ## HOW TO RESUME, in order
 
 ```bash
