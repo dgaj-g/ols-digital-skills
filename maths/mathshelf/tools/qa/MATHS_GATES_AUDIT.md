@@ -153,9 +153,13 @@ weakened, hidden, or marked green.
 Whole battery, pooled (`MS_WORKERS=6`): **87 controls FIRED, 40 over-tightening
 checks PASSED, 6 self-probes proved, 7 did not fire.** Run in the background
 AFTER the Book C deploy, as the TIME rule says; reported here, not waited for.
-Evidence: `tools/qa/out/control/<gate>.<id>.log`. None of the seven is a fault
-in the app a pupil meets; each is a control whose plant no longer reaches its
-gate, and each is the next harness session's, not a book's.
+Evidence: `tools/qa/out/control/<gate>.<id>.log`. Five of the seven are controls whose plant no longer reaches its gate — the
+next harness session's, not a book's. The other two are the walkers' own
+"the shipped tree must pass" checks, red on phone-width readability findings of
+the SAME THREE CLASSES as the rows waived on 8 Sept (an unchosen chip fading
+after Check; a prompt measured in the moment it re-renders after a wrong
+attempt; a small label on the paper), on other questions. The waiver covered
+three cells; the next cut fixes the classes.
 
 | gate | control | verdict | note |
 |---|---|---|---|
@@ -164,6 +168,8 @@ gate, and each is the next harness session's, not a book's.
 | qa-fonts | face-removed | DID NOT FIRE | the gate passed a planted fault; known since v4 (see the table above) |
 | qa-waits | control-with-no-busy-state | DID NOT FIRE | the gate passed a planted fault; known since v4 (see the table above) |
 | qa-waits | outbox-dropped-on-reload | DID NOT FIRE | the gate passed a planted fault; known since v4 (see the table above) |
+| sit-pupil | over-tightening | RED | the shipped tree fails its own walk in the sandbox, on ONE phone-width readability finding: a class-interval label "30 < x ≤ 40" on Book C q13 after Check at 3.09:1 — the same class as the waived rows (a small label on the paper, measured at 375) |
+| sit-confused | over-tightening | RED | two phone-width readability findings of the classes already waived: an Algebra prompt straight after a wrong attempt at 2.18:1 (q3), and an unchosen judge chip "Stay the same" after Check at 2.18:1 (Book C q8) |
 
 ## THE THREE LAWS ADDED ON 6 SEPTEMBER 2026, AND WHY THEY WERE MISSING
 
