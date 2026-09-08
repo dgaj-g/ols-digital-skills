@@ -12,8 +12,10 @@ Quartiles 3/3 · Interquartile range 1/1Every point where it belongs.
 11 people took part in a puzzle. The times they took, in minutes, are shown below: 8, 3, 7, 8, 9, 13, 4, 9, 9, 10, 9. Find the lower quartile and the upper quartile. [2 marks]
 Quartiles 1/1 · Interquartile range 1/1A smooth curve through every point.
 Here are the ages of 15 people: 24, 26, 29, 30, 31, 36, 36, 37, 39, 40, 43, 48, 50, 51, 55. Work out the interquartile range of the ages. [2 marks]
+Quartiles 1/1 · Interquartile range 1/1Points on the boundaries, curve through them — that is the whole method.
 Decide whether the statement about spread is fair. These wages were listed: £202, £212, £221, £242, £250, £250, £260, £284. A wage of £110 was left off. Say what happens to each average and to the range when it is added. [5 marks]
 Reasons 1/1 · Judgements 4/4Fair reading of what the sample can say.
+Exercise finished — how did that go? optional
 Ex.2 Cumulative frequency tables
 WALT · Build a cumulative frequency table from a frequency table
 Exercise 2 · Cumulative frequency tables
@@ -22,7 +24,6 @@ Running totals 3/3 · Total 1/1A smooth curve through every point.
 The marks in an examination, out of 80, are grouped below for 112 candidates. Complete the cumulative frequency column. [4 marks]
 Running totals 3/3 · Total 1/1Every point where it belongs.
 In a survey, people were asked to state their weekly wage. The results for 184 people are grouped below. The first two rows have already been filled in. Complete the rest of the cumulative frequency column. [4 marks]
-Exercise finished — how did that go? optional
 Ex.3 Drawing the cumulative frequency curve
 WALT · Draw a cumulative frequency curve from a table
 Exercise 3 · Drawing the cumulative frequency curve
@@ -43,8 +44,11 @@ Ex.5 Box plots — drawing and comparing
 WALT · Draw and compare box plots
 Exercise 5 · Box plots — drawing and comparing
 The table shows some information about the heights, in cm, of some plants. Draw a box plot for this information. [2 marks]
+Box 1/1 · Whiskers 1/1Five markers, all where they belong.
 The table shows some information about the weights, in grams, of some potatoes: range 101 g, lower quartile 110 g, median 132 g, upper quartile 162 g, maximum 185 g. Work out the lowest weight, then draw a box plot for this information. [2 marks]
+Box 1/1 · Whiskers 1/1Neat, and the box says what it should.
 The times, in seconds, of 15 students running a race are shown below: 52, 54, 54, 55, 58, 58, 59, 60, 60, 61, 61, 64, 67, 70, 75. Draw a box plot for this information. [2 marks]
+Box 1/1 · Whiskers 1/1A tidy box plot — every mark earned.
 Some girls did a sponsored swim to raise money for charity. The table shows the amounts of money they raised: least £10, lower quartile £16, median £25, upper quartile £42, greatest £45. Draw a box plot for this information. [2 marks]
 The box plots show the age distributions of two cities, A and B. Decide which city has the greater interquartile range, and which city’s people are generally older. [2 marks]
 Reasons 0/0 · Judgements 2/2You weighed the evidence, not the claim.
@@ -61,4 +65,4 @@ Three pupils each tried to find something out from a small sample. George asked 
 Reasons 3/3 · Judgements 2/2Good — you said why.
 My marks
 Handling Data · marks so far
-Handling Data · marks so far47 / 68Good — go back over the questions the red pen marked.14 of 22 questions checked · your whole book is on your teacher’s copy
+Handling Data · marks so far57 / 68Nearly there — look back at the crosses.19 of 22 questions checked · your whole book is on your teacher’s copy

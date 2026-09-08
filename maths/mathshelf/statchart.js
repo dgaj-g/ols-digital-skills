@@ -489,56 +489,57 @@
     // overlap a neighbour into a second row - never SAME_TWICE, never on top
     // of one another.
     function layoutLabels() {
+      /* WHERE A MOVING LABEL GOES. Three things have to be true at once and
+         they used to be settled in three different coordinate spaces: the
+         layer is measured in CSS pixels while toPx gives viewBox units; a
+         label must stay ON the board it labels; and no two labels may sit on
+         one another - which is the whole reason these are HTML and not SVG
+         text (the overlap law exempts everything inside an SVG). So: scale,
+         clamp, then stagger upward using the box that was actually placed. */
       var ids = Object.keys(st.labels);
-      var boxes = [];
-      var i;
-      /* THE LAYER IS IN CSS PIXELS, THE BOARD IS IN VIEWBOX UNITS. toPx gives
-         viewBox units; the HTML label sits on a layer measured in CSS pixels,
-         so a scaled board put every label in the wrong place - and one at the
-         origin landed below the board entirely, on the marking tally. Multiply
-         by the board's own screen scale, and keep every label inside the layer
-         so it can never sit on something that is not the board. */
+      if (!ids.length) return;
       var sc = st.lastScale || 1;
       var layerW = htmlLayer.clientWidth || (st.geo.vbw * sc);
       var layerH = htmlLayer.clientHeight || (st.geo.vbh * sc);
+      var i, recs = [];
       for (i = 0; i < ids.length; i++) {
         var rec = st.labels[ids[i]];
         var p = toPx(rec.axisAt);
-        rec.baseX = p[0] * sc; rec.baseY = p[1] * sc - 10; rec.dy = 0;
-        rec.limitW = layerW; rec.limitH = layerH;
+        rec.el.style.left = '0px';
+        rec.el.style.top = '0px';
+        rec.w = rec.el.offsetWidth || 40;
+        rec.h = rec.el.offsetHeight || 16;
+        rec.wantX = Math.max(rec.w / 2, Math.min(p[0] * sc, layerW - rec.w / 2));
+        rec.wantY = Math.max(rec.h, Math.min(p[1] * sc - 10, layerH));
+        recs.push(rec);
       }
-      // apply base position first so offsetWidth/Height are measurable
-      for (i = 0; i < ids.length; i++) {
-        var rec2 = st.labels[ids[i]];
-        rec2.el.style.left = rec2.baseX + 'px';
-        rec2.el.style.top = rec2.baseY + 'px';
-      }
-      // now stagger: sort by x, push a later label down a row if its box
-      // would meet an earlier one already placed at the same row
-      var order = ids.slice().sort(function (a, b) { return st.labels[a].baseX - st.labels[b].baseX; });
-      var placed = [];
+      recs.sort(function (a, b) { return a.wantX - b.wantX; });
       var rowH = LABEL_TARGET_PX + 6;
-      for (i = 0; i < order.length; i++) {
-        var r = st.labels[order[i]];
-        var w = r.el.offsetWidth || 30, h = r.el.offsetHeight || 16;
-        var row = 0, collided = true;
-        while (collided) {
-          collided = false;
-          var top = r.baseY - row * rowH;
-          var rect = { l: r.baseX - w / 2, t: top - h, r: r.baseX + w / 2, b: top };
+      var placed = [];
+      for (i = 0; i < recs.length; i++) {
+        /* UP FIRST, THEN DOWN. On a phone the five box-plot labels are wider
+           than the board, so two rows above the scale are not enough; when the
+           space above runs out the stagger continues BELOW the track, which is
+           empty, rather than giving up and letting two labels sit on one
+           another. */
+        var r = recs[i], row = 0, box = null, guard = 0;
+        var maxUp = Math.max(0, Math.floor((r.wantY - r.h) / rowH));
+        while (guard++ < 40) {
+          var top = (row <= maxUp)
+            ? r.wantY - row * rowH
+            : Math.min(layerH, r.wantY + (row - maxUp) * rowH);
+          box = { l: r.wantX - r.w / 2, t: top - r.h, r: r.wantX + r.w / 2, b: top };
+          var hit = false;
           for (var j = 0; j < placed.length; j++) {
-            var pr = placed[j];
-            if (rect.l < pr.r && rect.r > pr.l && rect.t < pr.b && rect.b > pr.t) { collided = true; break; }
+            var q2 = placed[j];
+            if (box.l < q2.r && box.r > q2.l && box.t < q2.b && box.b > q2.t) { hit = true; break; }
           }
-          if (collided) row++;
+          if (!hit) break;
+          row++;
         }
-        r.dy = row * rowH;
-        /* never outside the board: a label is a label ON something */
-        var topPx = Math.max(h, Math.min(r.baseY - r.dy, (r.limitH || 1e6)));
-        var leftPx = Math.max(w / 2, Math.min(r.baseX, (r.limitW || 1e6) - w / 2));
-        r.el.style.top = topPx + 'px';
-        r.el.style.left = leftPx + 'px';
-        placed.push({ l: r.baseX - w / 2, t: (r.baseY - r.dy) - h, r: r.baseX + w / 2, b: r.baseY - r.dy });
+        r.el.style.left = r.wantX + 'px';
+        r.el.style.top = box.b + 'px';
+        placed.push(box);
       }
     }
 
