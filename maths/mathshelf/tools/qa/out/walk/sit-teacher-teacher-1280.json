@@ -4,8 +4,8 @@
  "width": 1280,
  "projector": false,
  "tier": "preview",
- "contentHash": "8968f37925c3",
- "when": "2026-09-08T12:35:27.370Z",
+ "contentHash": "0b72e4d165b2",
+ "when": "2026-09-08T13:21:49.816Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -725,6 +725,78 @@
    "measured": {
     "said-twice": 3,
     "readability": 57
+   }
+  },
+  {
+   "surface": "class-page",
+   "state": "error",
+   "width": 1280,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 0,
+    "readability": 20
+   }
+  },
+  {
+   "surface": "staff-cover",
+   "state": "busy",
+   "width": 1280,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 1,
+    "readability": 8
+   }
+  },
+  {
+   "surface": "staff-cover",
+   "state": "open",
+   "width": 1280,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 2,
+    "readability": 42
    }
   }
  ],

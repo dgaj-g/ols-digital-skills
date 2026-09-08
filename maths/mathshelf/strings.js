@@ -320,6 +320,7 @@
       passcodeWrong: 'That passcode was not accepted.',
       openMarkbook: 'Open the markbook',
       noServer: 'We could not reach the server. Try again.',
+      wallStale: 'This class page could not be refreshed. What you see is the last it loaded.',
       /* WHAT THE SERVER SAID, IN WORDS. Every one of these is a code the
          server can return, and the markbook used to print the code itself on
          a teacher's screen - "not-configured" at ten to nine on a Tuesday. A

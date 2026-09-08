@@ -328,18 +328,22 @@ async function walk(page, width, projector, sidecar, transcript) {
      parent of `.wall` — so that is named explicitly rather than left to a
      generic overflow search to happen to find (the search stays too, as a
      second line, in case a future layout moves the listener). */
-  await page.evaluate(() => {
+  const scrolled = await page.evaluate(() => {
     const wall = document.querySelector('.wall');
-    const named = wall ? wall.parentElement : null;
     const cands = [...document.querySelectorAll('*')]
       .filter((e) => e.scrollHeight > e.clientHeight + 8 || e.scrollWidth > e.clientWidth + 8);
-    (named ? [named] : []).concat(cands).concat([document.scrollingElement, document.documentElement, document.body]).forEach((b) => {
+    (wall ? [wall] : []).concat(cands).concat([document.scrollingElement, document.documentElement, document.body]).forEach((b) => {
       if (!b) return;
       b.scrollTop = 300; b.scrollLeft = 300;
       b.dispatchEvent(new Event('scroll', { bubbles: true }));
     });
+    return wall ? { w: wall.scrollWidth, c: wall.clientWidth, left: wall.scrollLeft } : null;
   });
   await wait(500);
+  if (scrolled && scrolled.left < 5) {
+    g.note('full-grid:sticky-scroll @' + width + ': the grid did not move — .wall is ' +
+      scrolled.w + 'px of content in a ' + scrolled.c + 'px box, so there is nothing to scroll at this width');
+  }
   {
     const st = await page.evaluate(() => {
       const su = document.querySelector('[data-surface="full-grid"]');
@@ -663,13 +667,134 @@ async function walk(page, width, projector, sidecar, transcript) {
   if (armed) {
     await wait(400);
     await record('set-up', 'delete-armed');
+    /* ONE PRESS, NOT THE REST OF THE WALK. This replaced the app's own call
+       and never put it back, so every screen after it in the route was reading
+       a refused server - which is why the full grid below had no cells in it
+       and the probe that needs one reported the screen missing instead of the
+       fault. Saved and restored around the press. */
     await page.evaluate(() => {
+      window.__origCall = window.GJ.app.call;
       window.GJ.app.call = function () { return Promise.reject(new Error('qa-mock: the network refused this one press')); };
     });
     await page.evaluate(() => { const ok = document.getElementById('gj-cf-ok'); if (ok) ok.click(); });
     await wait(600);
     const st3 = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, ['set-up', null]);
     if (st3 && st3.ok && st3.state === 'error') await record('set-up', 'error');
+    await page.evaluate(() => { if (window.__origCall) { window.GJ.app.call = window.__origCall; window.__origCall = null; } });
+  }
+
+  /* ── THE LAST THREE SCREENS NOTHING HAD EVER STOOD ON ───────────────────
+     All three were written up on 8 Sept as states the app declared and no
+     code path could ever set. Each has a path now, and each is walked here,
+     at the END of the route, so nothing above it changes shape underneath a
+     probe that was already passing.
+
+     question-view:ink-open. The question view's own cards are display markup
+     with no ink control on them; the ink lives in showJotterPage, which the
+     FULL GRID opens in its "one question across the class" mode - and that
+     screen is the question view, which is what it now says it is. So the
+     route is the full grid, a cell, then the mark. */
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await wait(1300);
+  /* THE SEEDED CLASS, BY NAME. The cold open at the top of this walk takes the
+     LAST row and that is the seeded class with twelve pupils in it - but by the
+     time the route reaches here the delete probe above has left
+     "qa-scratch-v4states" behind (its confirm is answered by a refused call on
+     purpose), and THAT is now the last row: an empty class, whose full grid has
+     no cell to press. The two classes this walk makes for itself are named, so
+     they are named here rather than counted around. */
+  const openSeeded = () => page.evaluate(() => {
+    const rows = [...document.querySelectorAll('#st-rows tr')].filter((r) => {
+      const nm = ((r.querySelector('td b') || {}).textContent || '').trim();
+      return nm && nm !== 'demo' && !/^qa-scratch/.test(nm);
+    });
+    const row = rows[rows.length - 1];
+    const btn = row && [...row.querySelectorAll('button')].filter((b) => /Open the markbook/.test(b.textContent))[0];
+    if (!btn) return false; btn.click(); return true;
+  });
+  const backIn = await openSeeded();
+  if (backIn) {
+    await wait(1500);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('.toolbtn')].filter(x => /Full grid/.test(x.textContent))[0]; if (b) b.click(); });
+    await wait(1700);
+    const sweptIn = await page.evaluate(() => {
+      const td = document.querySelector('.wall td.cell');
+      if (!td) return false; td.click(); return true;
+    });
+    if (!sweptIn) g.note('question-view:ink-open @' + width + ': no cell in the full grid to open one question across the class');
+    else {
+      await wait(1800);
+      const inked = await page.evaluate(() => { const v = document.querySelector('.verdict-mark'); if (!v) return false; v.click(); return true; });
+      if (!inked) g.note('question-view:ink-open @' + width + ': the swept question carried no verdict mark to press');
+      else {
+        await wait(700);
+        const stIk = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, ['question-view', null]);
+        if (stIk && stIk.ok && stIk.state === 'ink-open') await record('question-view', 'ink-open');
+        else g.note('question-view:ink-open @' + width + ': the swept question read "' + (stIk && stIk.state) + '" after the mark was pressed');
+      }
+    }
+  }
+
+  /* class-page:error. The wall refuses while she is looking at the class page.
+     `window.GJ.app.call` is script.js's own published hook and staff.js's own
+     `call()` always goes through it, so refusing ONE sub-action there is the
+     same front door a dropped line arrives through - the same argument the
+     set-up:error probe above already stands on. */
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await wait(1300);
+  await page.evaluate(() => {
+    const orig = window.GJ.app.call;
+    window.GJ.app.__origCall = orig;
+    window.GJ.app.call = function (action, p) {
+      if (p && p.sub === 'wall') return Promise.reject(new Error('qa-mock: the wall refused this one press'));
+      return orig.apply(this, arguments);
+    };
+  });
+  const openedForError = await openSeeded();
+  if (openedForError) {
+    await wait(1500);
+    const stErr = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, ['class-page', null]);
+    if (stErr && stErr.ok && stErr.state === 'error') await record('class-page', 'error');
+    else g.note('class-page:error @' + width + ': the class page read "' + (stErr && stErr.state) + '" with the wall refusing');
+  }
+  await page.evaluate(() => { if (window.GJ.app.__origCall) window.GJ.app.call = window.GJ.app.__origCall; });
+
+  /* staff-cover:busy and staff-cover:open. The cover sets busy the moment the
+     press lands and open the moment the answer does; on the offline stub both
+     are gone inside a microtask, so the line is SLOWED - which is the very
+     condition the busy state exists for. `open` is drawn and then written
+     over in the same breath by showClasses(), so it is read off the state log
+     the same way "flicking" and "book-switch" are. */
+  await page.evaluate(() => localStorage.clear());
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await W.settle(page);
+  await page.evaluate(() => {
+    const orig = window.GJ.app.call;
+    window.GJ.app.call = function () {
+      const p = orig.apply(this, arguments);
+      return new Promise((res, rej) => setTimeout(() => p.then(res, rej), 700));
+    };
+  });
+  await page.evaluate(() => document.getElementById('cover-staff').click());
+  await W.settle(page);
+  await page.waitForFunction(() => !!document.querySelector('#st-pass') && !!document.querySelector('#st-go'),
+    { timeout: 20000 }).catch(() => {});
+  await armLog();
+  const pressedSlow = await page.evaluate(() => {
+    const i = document.querySelector('#st-pass');
+    if (!i) return false;
+    i.value = 'demo'; document.querySelector('#st-go').click();
+    return true;
+  });
+  if (!pressedSlow) g.note('staff-cover:busy @' + width + ': the passcode box never came back after the reload');
+  else {
+    await wait(250);   /* well inside the mock's 700ms, so the wait is still on screen */
+    const stBusy = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, ['staff-cover', null]);
+    if (stBusy && stBusy.ok && stBusy.state === 'busy') await record('staff-cover', 'busy');
+    else g.note('staff-cover:busy @' + width + ': read "' + (stBusy && stBusy.state) + '" while the passcode was still in flight');
+    await wait(1600);
+    if (await drewState('staff-cover', 'open')) await recordKnown('staff-cover', 'open');
+    else g.note('staff-cover:open @' + width + ': the cover never drew "open" when the passcode was accepted');
   }
 }
 

@@ -4,8 +4,8 @@
  "width": 375,
  "projector": false,
  "tier": "preview",
- "contentHash": "8968f37925c3",
- "when": "2026-09-08T12:35:13.451Z",
+ "contentHash": "0b72e4d165b2",
+ "when": "2026-09-08T13:30:58.106Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -273,7 +273,7 @@
   },
   {
    "surface": "full-grid",
-   "state": "loaded",
+   "state": "sticky-scroll",
    "width": 375,
    "projector": false,
    "audits": {
@@ -724,6 +724,102 @@
    },
    "measured": {
     "said-twice": 3,
+    "readability": 32
+   }
+  },
+  {
+   "surface": "question-view",
+   "state": "ink-open",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 1,
+    "readability": 29
+   }
+  },
+  {
+   "surface": "class-page",
+   "state": "error",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 0,
+    "readability": 20
+   }
+  },
+  {
+   "surface": "staff-cover",
+   "state": "busy",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 1,
+    "readability": 8
+   }
+  },
+  {
+   "surface": "staff-cover",
+   "state": "open",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 2,
     "readability": 32
    }
   }

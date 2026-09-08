@@ -711,7 +711,12 @@ async function readability(page) {
         /* ornaments are not text and are judged by the colour law, not here */
         if (el.closest('[data-ornament]')) return;
         const cs = getComputedStyle(el);
-        const fg = parse(cs.color); if (!fg) return;
+        /* AND A GLYPH DRAWN IN SVG IS PAINTED WITH ITS FILL. The same fault the
+           pixel collector had: asked for `color`, an <svg><text> hands back
+           whatever it inherited, so the protractor's own "180" - teal, with a
+           white halo behind it - was answered as a pale inherited colour on a
+           pale plate and reported at 1.09:1. */
+        const fg = parse((el.ownerSVGElement && /^rgb/.test(cs.fill || '')) ? cs.fill : cs.color); if (!fg) return;
         const bg = groundOf(el); if (!bg) return;
         /* KEYED IN THE SAME FRAME THE ROWS WERE COLLECTED IN. The collector
            records DOCUMENT coordinates; this indexed by VIEWPORT ones, so on

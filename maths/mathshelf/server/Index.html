@@ -8124,8 +8124,17 @@ function statsBoard(q, wrong) {
           if (!hit) break;
           row++;
         }
+        /* AND NEVER OFF THE BOARD. The stagger goes up and then down, and on a
+           tall board with several readouts the downward rows can run past the
+           bottom of the layer - where the layer's own clip hides the label
+           from the pupil while its box still lands on the prompt of the
+           question below, which is what the overlap law reported. The final
+           place is clamped to the layer: a label a reader cannot see is not a
+           label, and one that leaves its board is not on its board. */
+        var b = Math.min(Math.max(box.b, r.h), Math.max(r.h, layerH));
+        box = { l: box.l, t: b - r.h, r: box.r, b: b };
         r.el.style.left = r.wantX + 'px';
-        r.el.style.top = box.b + 'px';
+        r.el.style.top = b + 'px';
         placed.push(box);
       }
     }

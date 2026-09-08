@@ -3,8 +3,8 @@
  "scope": "stats-quartiles",
  "width": 768,
  "tier": "preview",
- "contentHash": "1b1b0df61ae6",
- "when": "2026-09-08T12:32:13.808Z",
+ "contentHash": "1d4d205e526f",
+ "when": "2026-09-08T12:54:24.771Z",
  "states": [
   {
    "surface": "question",
@@ -1155,7 +1155,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    }
   },
   {
