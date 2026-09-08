@@ -68,7 +68,13 @@ const SAMPLE = {
   exercise: 'Ex 2', got: '6', max: '8', minutes: '20', name: 'Aoife',
   question: 'Q4', reason: 'angles on a straight line add to 180', step: '2',
   target: 'a', text: 'ols.link/10a', title: 'Angles', total: '8',
-  value: '65', verdict: 'right'
+  value: '65', verdict: 'right',
+  /* the Handling Data book's own holes, filled with what its screens really
+     put in them: an ordered list, the two neighbours a halfway position is
+     averaged from, the unit a cumulative row counts up to, and a point read
+     off the curve */
+  list: '4, 7, 7, 9, 12, 15, 21', a: '9', b: '12', unit: 'minutes',
+  x: '30', y: '18'
 };
 function fill(t) {
   return String(t).replace(/\{([a-zA-Z]+)\}/g, (m, k) =>

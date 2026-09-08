@@ -1,92 +1,92 @@
 
-  COVERAGE MATRIX (content hash 9bbf3990819d, tier full)
+  COVERAGE MATRIX (content hash 8968f37925c3, tier full)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  204     21
-  colour        204     21
-  consequence   204     21
+  click-safety  0       225
+  colour        0       225
+  consequence   0       225
   deploy        3
-  empty         204     21
-  geometry      204     21
+  empty         0       225
+  geometry      0       225
   human-pace    30
-  movie         54
-  mute-locks    204     21
-  nested        204     21
-  overlap       204     21
-  readability   196     29
-  said-twice    204     21
-  steps         204     21
+  movie         0       54
+  mute-locks    0       225
+  nested        0       225
+  overlap       0       225
+  readability   0       225
+  said-twice    0       225
+  steps         0       225
   truth         81
   two-homes     13
   verdict       1       1
-  waits         204     21
-  walk-right    240     3
-  walk-stage    1047
-  walk-wrong    243
+  waits         0       225
+  walk-right    0       243
+  walk-stage    0       474
+  walk-wrong    0       243
 
-  CELLS NOTHING CLOSES (264)
-  family        cell                                                              why
-  ------------  -------------------------------------------------------  -------  ---
-  walk-right    stats-quartiles > s5 > q26 (boxplot) @375 × walk-right   MISSING
-  walk-right    stats-quartiles > s5 > q26 (boxplot) @768 × walk-right   MISSING
-  walk-right    stats-quartiles > s5 > q26 (boxplot) @1280 × walk-right  MISSING
-  readability   shelf:none-ticked @375 × readability                     MISSING
-  readability   shelf:none-ticked @768 × readability                     MISSING
-  readability   shelf:none-ticked @1280 × readability                    MISSING
-  readability   shelf:locked-spine @375 × readability                    MISSING
-  readability   shelf:locked-spine @768 × readability                    MISSING
-  readability   shelf:locked-spine @1280 × readability                   MISSING
-  geometry      question:amber @375 × geometry                           MISSING
-  colour        question:amber @375 × colour                             MISSING
-  consequence   question:amber @375 × consequence                        MISSING
-  click-safety  question:amber @375 × click-safety                       MISSING
-  empty         question:amber @375 × empty                              MISSING
-  nested        question:amber @375 × nested                             MISSING
-  steps         question:amber @375 × steps                              MISSING
-  mute-locks    question:amber @375 × mute-locks                         MISSING
-  waits         question:amber @375 × waits                              MISSING
-  readability   question:amber @375 × readability                        MISSING
-  overlap       question:amber @375 × overlap                            MISSING
-  said-twice    question:amber @375 × said-twice                         MISSING
-  geometry      question:amber @768 × geometry                           MISSING
-  colour        question:amber @768 × colour                             MISSING
-  consequence   question:amber @768 × consequence                        MISSING
-  click-safety  question:amber @768 × click-safety                       MISSING
-  empty         question:amber @768 × empty                              MISSING
-  nested        question:amber @768 × nested                             MISSING
-  steps         question:amber @768 × steps                              MISSING
-  mute-locks    question:amber @768 × mute-locks                         MISSING
-  waits         question:amber @768 × waits                              MISSING
-  readability   question:amber @768 × readability                        MISSING
-  overlap       question:amber @768 × overlap                            MISSING
-  said-twice    question:amber @768 × said-twice                         MISSING
-  geometry      question:amber @1280 × geometry                          MISSING
-  colour        question:amber @1280 × colour                            MISSING
-  consequence   question:amber @1280 × consequence                       MISSING
-  click-safety  question:amber @1280 × click-safety                      MISSING
-  empty         question:amber @1280 × empty                             MISSING
-  nested        question:amber @1280 × nested                            MISSING
-  steps         question:amber @1280 × steps                             MISSING
-  mute-locks    question:amber @1280 × mute-locks                        MISSING
-  waits         question:amber @1280 × waits                             MISSING
-  readability   question:amber @1280 × readability                       MISSING
-  overlap       question:amber @1280 × overlap                           MISSING
-  said-twice    question:amber @1280 × said-twice                        MISSING
-  geometry      staff-cover:busy @375 × geometry                         MISSING
-  colour        staff-cover:busy @375 × colour                           MISSING
-  consequence   staff-cover:busy @375 × consequence                      MISSING
-  click-safety  staff-cover:busy @375 × click-safety                     MISSING
-  empty         staff-cover:busy @375 × empty                            MISSING
-  nested        staff-cover:busy @375 × nested                           MISSING
-  steps         staff-cover:busy @375 × steps                            MISSING
-  mute-locks    staff-cover:busy @375 × mute-locks                       MISSING
-  waits         staff-cover:busy @375 × waits                            MISSING
-  readability   staff-cover:busy @375 × readability                      MISSING
-  overlap       staff-cover:busy @375 × overlap                          MISSING
-  said-twice    staff-cover:busy @375 × said-twice                       MISSING
-  geometry      staff-cover:busy @768 × geometry                         MISSING
-  colour        staff-cover:busy @768 × colour                           MISSING
-  consequence   staff-cover:busy @768 × consequence                      MISSING
+  CELLS NOTHING CLOSES (3715)
+  family      cell                                                      why
+  ----------  -----------------------------------------------  -------  ---
+  walk-right  algebra > s1 > q1 (subst) @375 × walk-right      MISSING
+  walk-wrong  algebra > s1 > q1 (subst) @375 × walk-wrong      MISSING
+  walk-right  algebra > s1 > q1 (subst) @768 × walk-right      MISSING
+  walk-wrong  algebra > s1 > q1 (subst) @768 × walk-wrong      MISSING
+  walk-right  algebra > s1 > q1 (subst) @1280 × walk-right     MISSING
+  walk-wrong  algebra > s1 > q1 (subst) @1280 × walk-wrong     MISSING
+  walk-right  algebra > s1 > q2 (subst) @375 × walk-right      MISSING
+  walk-wrong  algebra > s1 > q2 (subst) @375 × walk-wrong      MISSING
+  walk-right  algebra > s1 > q2 (subst) @768 × walk-right      MISSING
+  walk-wrong  algebra > s1 > q2 (subst) @768 × walk-wrong      MISSING
+  walk-right  algebra > s1 > q2 (subst) @1280 × walk-right     MISSING
+  walk-wrong  algebra > s1 > q2 (subst) @1280 × walk-wrong     MISSING
+  walk-right  algebra > s1 > q3 (subst) @375 × walk-right      MISSING
+  walk-wrong  algebra > s1 > q3 (subst) @375 × walk-wrong      MISSING
+  walk-right  algebra > s1 > q3 (subst) @768 × walk-right      MISSING
+  walk-wrong  algebra > s1 > q3 (subst) @768 × walk-wrong      MISSING
+  walk-right  algebra > s1 > q3 (subst) @1280 × walk-right     MISSING
+  walk-wrong  algebra > s1 > q3 (subst) @1280 × walk-wrong     MISSING
+  walk-right  algebra > s1 > q4 (subst) @375 × walk-right      MISSING
+  walk-wrong  algebra > s1 > q4 (subst) @375 × walk-wrong      MISSING
+  walk-right  algebra > s1 > q4 (subst) @768 × walk-right      MISSING
+  walk-wrong  algebra > s1 > q4 (subst) @768 × walk-wrong      MISSING
+  walk-right  algebra > s1 > q4 (subst) @1280 × walk-right     MISSING
+  walk-wrong  algebra > s1 > q4 (subst) @1280 × walk-wrong     MISSING
+  walk-right  algebra > s2 > q5 (simplify) @375 × walk-right   MISSING
+  walk-wrong  algebra > s2 > q5 (simplify) @375 × walk-wrong   MISSING
+  walk-right  algebra > s2 > q5 (simplify) @768 × walk-right   MISSING
+  walk-wrong  algebra > s2 > q5 (simplify) @768 × walk-wrong   MISSING
+  walk-right  algebra > s2 > q5 (simplify) @1280 × walk-right  MISSING
+  walk-wrong  algebra > s2 > q5 (simplify) @1280 × walk-wrong  MISSING
+  walk-right  algebra > s2 > q6 (simplify) @375 × walk-right   MISSING
+  walk-wrong  algebra > s2 > q6 (simplify) @375 × walk-wrong   MISSING
+  walk-right  algebra > s2 > q6 (simplify) @768 × walk-right   MISSING
+  walk-wrong  algebra > s2 > q6 (simplify) @768 × walk-wrong   MISSING
+  walk-right  algebra > s2 > q6 (simplify) @1280 × walk-right  MISSING
+  walk-wrong  algebra > s2 > q6 (simplify) @1280 × walk-wrong  MISSING
+  walk-right  algebra > s2 > q7 (simplify) @375 × walk-right   MISSING
+  walk-wrong  algebra > s2 > q7 (simplify) @375 × walk-wrong   MISSING
+  walk-right  algebra > s2 > q7 (simplify) @768 × walk-right   MISSING
+  walk-wrong  algebra > s2 > q7 (simplify) @768 × walk-wrong   MISSING
+  walk-right  algebra > s2 > q7 (simplify) @1280 × walk-right  MISSING
+  walk-wrong  algebra > s2 > q7 (simplify) @1280 × walk-wrong  MISSING
+  walk-right  algebra > s2 > q8 (simplify) @375 × walk-right   MISSING
+  walk-wrong  algebra > s2 > q8 (simplify) @375 × walk-wrong   MISSING
+  walk-right  algebra > s2 > q8 (simplify) @768 × walk-right   MISSING
+  walk-wrong  algebra > s2 > q8 (simplify) @768 × walk-wrong   MISSING
+  walk-right  algebra > s2 > q8 (simplify) @1280 × walk-right  MISSING
+  walk-wrong  algebra > s2 > q8 (simplify) @1280 × walk-wrong  MISSING
+  walk-right  algebra > s3 > q9 (expand) @375 × walk-right     MISSING
+  walk-wrong  algebra > s3 > q9 (expand) @375 × walk-wrong     MISSING
+  walk-right  algebra > s3 > q9 (expand) @768 × walk-right     MISSING
+  walk-wrong  algebra > s3 > q9 (expand) @768 × walk-wrong     MISSING
+  walk-right  algebra > s3 > q9 (expand) @1280 × walk-right    MISSING
+  walk-wrong  algebra > s3 > q9 (expand) @1280 × walk-wrong    MISSING
+  walk-right  algebra > s3 > q10 (expand) @375 × walk-right    MISSING
+  walk-wrong  algebra > s3 > q10 (expand) @375 × walk-wrong    MISSING
+  walk-right  algebra > s3 > q10 (expand) @768 × walk-right    MISSING
+  walk-wrong  algebra > s3 > q10 (expand) @768 × walk-wrong    MISSING
+  walk-right  algebra > s3 > q10 (expand) @1280 × walk-right   MISSING
+  walk-wrong  algebra > s3 > q10 (expand) @1280 × walk-wrong   MISSING
 
   DEBT LEDGER (printed every run)
   cell                     owner / phase            file                state

@@ -42,7 +42,8 @@ const EXEMPTIONS = [
   'not rendered (display:none / visibility:hidden / opacity < 0.05 / smaller than 8x6px)',
   'no text of its own (the words belong to a child element, which is measured instead)',
   'glyphs the sampler cannot separate from their plate are asked again in computed colour, composited through their ancestors — and a ground painted with a gradient or an image is refused rather than guessed at, because guessing it reported white-on-teal as 1:1 (6 Sept 2026)',
-  'marks with no letters or digits in them are judged at the 3:1 non-text floor and reported apart'
+  'marks with no letters or digits in them are judged at the 3:1 non-text floor and reported apart',
+  'a row is trimmed by any opaque full-width bar pinned to the window (the preview banner), and a row left less than three-fifths showing is not judged at all — a sliver of ascenders is not the line a reader sees'
 ];
 
 /* the floor this row has to clear */
@@ -273,6 +274,7 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
       vr = Math.min(vr, ar.right); vb = Math.min(vb, ar.bottom);
     }
     /* and trimmed again by any bar standing over it */
+    const beforeBars = vb - vy;
     for (const bar of bars) {
       if (bar === el || bar.contains(el) || el.contains(bar)) continue;
       const br = bar.getBoundingClientRect();
@@ -280,6 +282,15 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
       if (br.top <= vy && br.bottom > vy && br.bottom < vb) vy = br.bottom;
       else if (br.bottom >= vb && br.top < vb && br.top > vy) vb = br.top;
     }
+    /* AND A ROW MOSTLY BEHIND A BAR IS NOT A ROW THIS LAW CAN JUDGE. Trimming
+       alone was not enough: the contents strip slides half under the preview
+       banner, and the sliver left showing is the top of the letters with the
+       bodies of them hidden - so the sampler was judging the ascenders of
+       "Ex.2 Straight lines and full turns" and calling a navy chip 1.22:1. What
+       is left has to be most of the row or it is not the row. Whether a bar
+       ought to be covering words at all is the geometry law's question; this
+       one only has to stop answering it in the wrong units. */
+    if (vb - vy < beforeBars * 0.6) return;
     const vw = vr - vx, vh = vb - vy;
     /* A ROW IS TRIMMED, NOT THROWN AWAY. Dropping anything more than
        forty-five per cent clipped was my own over-tightening and it emptied
