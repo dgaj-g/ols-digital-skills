@@ -219,7 +219,12 @@ async function walkBook(page, book, width, sidecar, transcript) {
           .filter(x => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === id)[0];
         return r ? (r.querySelector('.jq-prompt, .q-prompt, p') || {}).textContent || '' : '';
       }, qid));
-      await record('question', 'fresh', { qid, section: si, book });
+      /* WHAT THIS QUESTION SAYS IT CAN SHOW, written into the sidecar so
+         coverage derives its cells from the app's own declaration rather than
+         from a kind's general list - the boards a particular question can
+         reach are its own (jotter-stats.js stagesFor). */
+      const declared = await page.evaluate((s2, id) => eval(s2)(id), W.STAGES_OF, qid);
+      await record('question', 'fresh', { qid, section: si, book, stages: declared.stages.join(' ') });
 
       /* THE ANSWER SIGNATURE IS NOT ON THE PAGE. What she has to bring - the
          pairing of boundary and total, the read-off, the five numbers, the
@@ -238,7 +243,6 @@ async function walkBook(page, book, width, sidecar, transcript) {
          before the cuts - and the drive plays the model attempt up to each in
          turn so every law is asked of every one of them. A kind that declares
          no stages (the v3 kinds) takes the single answer it always took. */
-      const declared = await page.evaluate((s2, id) => eval(s2)(id), W.STAGES_OF, qid);
       const visited = [];
       if (declared.stage) visited.push(declared.stage);
       let answered;

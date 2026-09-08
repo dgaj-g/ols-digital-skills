@@ -1,8 +1,8 @@
 # MathShelf — the stats-quartiles transcript
 
-TRANSCRIPT HASH: 4c1b0c68bc1ac376
-sentences: 58
-taken: 2026-09-08 07:03:20
+TRANSCRIPT HASH: 8599316e17687320
+sentences: 64
+taken: 2026-09-08 07:33:36
 
 This is every sentence a pupil reads, in the order they meet it,
 as it was RENDERED on the running app. Nothing here is source.
@@ -28,9 +28,11 @@ Ex.2 Cumulative frequency tables
 WALT · Build a cumulative frequency table from a frequency table
 Exercise 2 · Cumulative frequency tables
 The times that 100 students spent doing homework during one week are grouped below. Complete the cumulative frequency column. [4 marks]
-Running totals 1/3 · Total 0/1
+Running totals 3/3 · Total 1/1A smooth curve through every point.
 The marks in an examination, out of 80, are grouped below for 112 candidates. Complete the cumulative frequency column. [4 marks]
+Running totals 3/3 · Total 1/1Every point where it belongs.
 In a survey, people were asked to state their weekly wage. The results for 184 people are grouped below. The first two rows have already been filled in. Complete the rest of the cumulative frequency column. [4 marks]
+Exercise finished — how did that go? optional
 Ex.3 Drawing the cumulative frequency curve
 WALT · Draw a cumulative frequency curve from a table
 Exercise 3 · Drawing the cumulative frequency curve
@@ -38,14 +40,15 @@ The times that 100 students spent doing homework during one week are shown in th
 Points 2/2 · Curve 1/1Points on the boundaries, curve through them — that is the whole method.
 The marks in an examination, out of 80, are shown in the table below for 112 candidates. Draw the cumulative frequency graph for this information. [2 marks]
 Points 1/1 · Curve 1/1Every point where it belongs.
-Exercise finished — how did that go? optional
 Ex.4 Reading the curve: median, quartiles, IQR
 WALT · Estimate the median, quartiles and interquartile range from a cumulative frequency curve
 Exercise 4 · Reading the curve: median, quartiles, IQR
 The cumulative frequency graph shows the marks of 112 candidates in an examination. Use the graph to estimate the median and the interquartile range. The pass mark is 36. What percentage of candidates passed? [5 marks]
+Readings 1/2 · Values 3/3
 The cumulative frequency graph shows the weekly wage of 184 people. Use the graph to estimate the median. Then estimate the percentage of people who earn more than £640 per week. [3 marks]
-Readings 1/1 · Values 1/2
+Readings 1/1 · Values 2/2
 The cumulative frequency graph shows the distances thrown by 50 competitors in a javelin competition. Use the graph to estimate the median distance thrown and the interquartile range. [3 marks]
+Readings 0/1 · Values 2/2
 Ex.5 Box plots — drawing and comparing
 WALT · Draw and compare box plots
 Exercise 5 · Box plots — drawing and comparing
@@ -66,3 +69,6 @@ Jean and Joyce are both pupils at Eastwood Girls High School. They want to know 
 Reasons 2/2 · Judgements 2/2Fair reading of what the sample can say.
 Three pupils each tried to find something out from a small sample. George asked 10 people in his class how much they spend on coffee. Mrs Martin posted a questionnaire to 100 people chosen at random across the whole country to find out what food people in her town like. Charlie asked 10 Year 7 students what they think of school. Decide whether each survey gives a fair picture, and why. [5 marks]
 Reasons 3/3 · Judgements 2/2Good — you said why.
+My marks
+Handling Data · marks so far
+Handling Data · marks so far47 / 68Good — go back over the questions the red pen marked.14 of 22 questions checked · your whole book is on your teacher’s copy

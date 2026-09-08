@@ -180,11 +180,30 @@
     return values.slice().sort(function (a, b) { return Number(a) - Number(b); });
   }
 
+  /* A PRESS ANYWHERE ELSE CLEARS THE SELECTION, and it has to be heard on the
+     DOCUMENT, not on the question's own body: the press that clears it may
+     land anywhere on the page, and the placed-work audit clears its own
+     selection by clicking document.body. Heard only on the question body, that
+     clearing never arrived - so the audit's NEXT press landed on a tile this
+     file still thought was selected, and the second press of a two-press put
+     it back. One listener for the whole page, holding whichever question owns
+     the live selection. */
+  var SELECTED_CTX = null;
+  var CLEAR_INSTALLED = false;
+  function installClear() {
+    if (CLEAR_INSTALLED || typeof document === 'undefined') return;
+    CLEAR_INSTALLED = true;
+    document.addEventListener('click', function () {
+      if (SELECTED_CTX) SELECTED_CTX.clearSelection();
+    });
+  }
+
   /* ── two-press on placed work (Part 8.1) ────────────────────────────── */
   /* The first press SELECTS and says so beside the thing; the second press
      puts it back; a press anywhere else clears the selection. A single press
      never destroys placed work. */
   function twoPress(ctx, node, onReturn) {
+    installClear();
     node.setAttribute('data-placed', '');
     node.setAttribute('aria-pressed', 'false');
     node.addEventListener('click', function (e) {
@@ -197,6 +216,7 @@
       }
       ctx.clearSelection();
       ctx.selected = node;
+      SELECTED_CTX = ctx;
       node.classList.add('is-selected');
       node.setAttribute('aria-pressed', 'true');
       ctx.say(T().statPutBack);
@@ -272,6 +292,7 @@
       dock: dock, msg: msg, selected: null, selectedStage: null,
       locked: function () { return !!rec.lock; },
       clearSelection: function () {
+        if (SELECTED_CTX === ctx) SELECTED_CTX = null;
         if (!ctx.selected) return;
         ctx.selected.classList.remove('is-selected');
         ctx.selected.setAttribute('aria-pressed', 'false');

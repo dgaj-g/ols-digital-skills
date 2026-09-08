@@ -42,7 +42,12 @@ async function openApp(browser, opts) {
       return t[(wrong ? 'wrong:' : 'right:') + book + ':' + qid] || null;
     };
   }, attempts());
-  await page.goto(BASE + '?class=demo&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  /* RESERVE IS WALKED. A question held back for the class that finishes early
+     is authored, linted and validated like any other, and Part 8.13 says it is
+     walkable in the PREVIEW under ?reserve=1 - inert on the deployed tier,
+     which qa-preview-honest proves. Without it every reserve question is a
+     coverage cell nothing can ever close. */
+  await page.goto(BASE + '?class=demo&nointro&reserve=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
   await W.settle(page);
   if (opts.staff) {
     await page.evaluate(() => localStorage.clear());
