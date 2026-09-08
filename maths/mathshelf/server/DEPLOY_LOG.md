@@ -27,6 +27,8 @@ log showing the deployment actually ran.
 | 2026-09-07 09:09 | FRONT DOOR | Version 18 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | f75d554 | bfde48984b1d5c5accd1181c4daea28d | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-07 18:09 | DATA | Version 19 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | c6f55e3 | 44c51c70564a4f22082f9deaf837ebe7 | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-07 18:11 | FRONT DOOR | Version 20 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | c6f55e3 | 44c51c70564a4f22082f9deaf837ebe7 | d09615a9abc0998de9e5b7ec4ea4239a |
+| 2026-09-08 19:58 | DATA | Version 21 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | 15bf8ab | 122eedb38f4eaa42350aad6439b51b22 | fb45387250d97d2473767540d6dbbba3 |
+| 2026-09-08 20:02 | FRONT DOOR | Version 22 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 15bf8ab | 122eedb38f4eaa42350aad6439b51b22 | fb45387250d97d2473767540d6dbbba3 |
 
 ## Proof rows
 
@@ -146,8 +148,38 @@ Read back off the live data `/exec` after the cut: `color:#4a4842` (the bin
 labels), `--amber-flag: #7A5A05`, `color: #6E5104` (the help-strip heading), all
 present and matching the built pair byte for byte.
 
+**DATA Version 21 and FRONT DOOR Version 22, cut from `15bf8ab`, 8 Sept 2026 —
+Handling Data Book C (`stats-quartiles`).** Deployed by Fable 5.1 driving Chrome
+on Damien's ruling of 16:30 ("Book C ships NOW"), after the build session was
+stopped at 19:05 for spending its afternoon re-running checks. `Code.gs` changed
+for the first time since v4: the server's `ACTS` list gained `stats-quartiles`
+(a book is not client-only — a save for an unlisted id is refused), so this
+deploy carries a SERVER change and the eight-item smoke list below applies in
+full. Both deployments selected BY DEPLOYMENT ID. The manifest was read in the
+editor before each cut and put back to `USER_DEPLOYING` + `ANYONE_ANONYMOUS`
+after the front-door cut.
+
+Proved before the cut, at `15bf8ab`: `--fast` 26 gates green; `--full` in 16
+minutes with every coverage cell closed; the separated cold read re-filed by a
+fresh judge against the current transcript (108 sentences: 87 pass, 21
+rewrite, 0 fail — the rewrites are the next cut's work); three phone-width
+walker findings recorded as dated waivers in `MATHS_COVERAGE_DEBT.md` with
+their pictures (an Algebra prompt at 3.08:1 after a wrong attempt; a Book C
+reason chip fading after Check; a stray read-out on the Exercise 4 opening).
+
+Proof rows, quoted from the Executions log after one visit to the front door
+at 20:04 on 8 Sept 2026 — the browser reaches Version 22 and nothing else;
+Version 22 reaches Version 21 server-to-server with the secret:
+
+```
+Version 22  doGet    Web app  8 Sept 2026, 20:04:08  3.345 s  Completed
+Version 22  apiCall  Web app  8 Sept 2026, 20:04:14  5.911 s  Completed
+Version 21  doPost   Web app  8 Sept 2026, 20:04:17  2.244 s  Completed
+```
+
 ### What is live, in one line each
 
+- **Live since 8 Sept 2026 20:04, from commit `15bf8ab`: FRONT DOOR Version 22, DATA Version 21 — Handling Data Book C on the shelf, arriving UNTICKED.**
 - **Project** `OLS - MathShelf`, script id `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`
 - **Sheet** `OLS - MathShelf`, id `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y` (bound)
 - **FRONT DOOR** (the only link anybody opens)
