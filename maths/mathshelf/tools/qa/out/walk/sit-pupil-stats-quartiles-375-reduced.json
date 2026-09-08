@@ -3,8 +3,8 @@
  "scope": "stats-quartiles",
  "width": 375,
  "tier": "preview",
- "contentHash": "1b1b0df61ae6",
- "when": "2026-09-08T12:30:50.603Z",
+ "contentHash": "0d91d98edd3e",
+ "when": "2026-09-08T13:13:44.352Z",
  "states": [
   {
    "surface": "cover",
@@ -6245,7 +6245,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "FAIL",
+    "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"

@@ -531,32 +531,37 @@
            space above runs out the stagger continues BELOW the track, which is
            empty, rather than giving up and letting two labels sit on one
            another. */
-        var r = recs[i], row = 0, box = null, guard = 0;
+        /* AND NEVER OFF THE BOARD. The stagger goes up and then down, and the
+           downward rows could run past the bottom of the layer - where the
+           layer's own clip hid the label from the pupil while its box still
+           landed on the prompt of the question below, which is what the overlap
+           law reported. A row that would leave the board is not offered at all
+           and the search carries on to the next one. Clamping the answer
+           afterwards was the wrong shape and made it worse: it threw away the
+           free slot the search had just found and stacked five box-plot labels
+           on top of one another. */
+        var r = recs[i], row = 0, box = null, firstLegal = null;
         var maxUp = Math.max(0, Math.floor((r.wantY - r.h) / rowH));
-        while (guard++ < 40) {
+        for (row = 0; row < 40; row++) {
           var top = (row <= maxUp)
             ? r.wantY - row * rowH
             : r.wantY + (row - maxUp) * rowH;
-          box = { l: r.wantX - r.w / 2, t: top - r.h, r: r.wantX + r.w / 2, b: top };
+          var cand = { l: r.wantX - r.w / 2, t: top - r.h, r: r.wantX + r.w / 2, b: top };
+          if (cand.t < 0 || cand.b > layerH) continue;
+          if (!firstLegal) firstLegal = cand;
           var hit = false;
           for (var j = 0; j < placed.length; j++) {
             var q2 = placed[j];
-            if (box.l < q2.r && box.r > q2.l && box.t < q2.b && box.b > q2.t) { hit = true; break; }
+            if (cand.l < q2.r && cand.r > q2.l && cand.t < q2.b && cand.b > q2.t) { hit = true; break; }
           }
-          if (!hit) break;
-          row++;
+          if (!hit) { box = cand; break; }
         }
-        /* AND NEVER OFF THE BOARD. The stagger goes up and then down, and on a
-           tall board with several readouts the downward rows can run past the
-           bottom of the layer - where the layer's own clip hides the label
-           from the pupil while its box still lands on the prompt of the
-           question below, which is what the overlap law reported. The final
-           place is clamped to the layer: a label a reader cannot see is not a
-           label, and one that leaves its board is not on its board. */
-        var b = Math.min(Math.max(box.b, r.h), Math.max(r.h, layerH));
-        box = { l: box.l, t: b - r.h, r: box.r, b: b };
+        /* every row on the board is taken: put it in the first one that fits
+           the board at all and let the overlap law say so - a label off the
+           board is one she cannot read, which is worse than one she can */
+        if (!box) box = firstLegal || { l: r.wantX - r.w / 2, t: 0, r: r.wantX + r.w / 2, b: r.h };
         r.el.style.left = r.wantX + 'px';
-        r.el.style.top = b + 'px';
+        r.el.style.top = box.b + 'px';
         placed.push(box);
       }
     }

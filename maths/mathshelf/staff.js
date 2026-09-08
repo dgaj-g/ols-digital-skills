@@ -212,6 +212,12 @@
       if (go.disabled) return;
       go.disabled = true;
       busyCard(body.querySelector('#st-msg'), 'Checking the passcode&hellip; this can take a moment');
+      /* THE WAIT IS ITS OWN SCREEN, AND IT WAS NEVER NAMED. The cover declared
+         `busy` and `open` in the registry and no code ever set either, so the
+         only states it could ever be in were "empty" and "wrong" - a teacher
+         waiting on a slow school line was on a screen the app had no word for.
+         It says which one it is on now. */
+      SURF('staff-cover', 'busy');
       var tryPass = body.querySelector('#st-pass').value;
       passcode = tryPass;
       call('classes').then(function (r) {
@@ -224,6 +230,7 @@
         }
         classes = r.classes || [];
         meEmail = r.me || ''; isAdmin = !!r.isAdmin;
+        SURF('staff-cover', 'open');
         showClasses();
       }).catch(function () {
         go.disabled = false; passcode = null;
@@ -787,12 +794,22 @@
   function loadWall(paint) {
     var seq = ++view.wallSeq;
     function pull() {
+      /* A CLASS PAGE THAT CANNOT BE LOADED SAID NOTHING. This swallowed both
+         the refused answer and the thrown one, so a teacher whose line had
+         dropped sat looking at figures twenty seconds old with no word that
+         they were not being refreshed - and `class-page:error`, a state the
+         app declares, could never be reached because nothing ever set it.
+         `staffError` already puts the failure on WHICHEVER surface she is on,
+         which is this one. */
       call('wall', { className: view.cls, act: view.act }).then(function (r) {
         if (seq !== view.wallSeq) return;
-        if (!r || !r.ok) return;
+        if (!r || !r.ok) return staffError(SAYS(r && r.error, TT('wallStale')));
         view.wallData = r.pupils || [];
         paint(view.wallData);
-      }).catch(function () {});
+      }).catch(function () {
+        if (seq !== view.wallSeq) return;
+        staffError(TT('wallStale'));
+      });
     }
     pull();
     view.wallTimer = setInterval(pull, 20000);
@@ -976,8 +993,13 @@
     /* the grid is wider and taller than the screen; once she has scrolled it,
        the pupil column and the question row are stuck to the edges and that is
        a different screen to read */
-    body.addEventListener('scroll', function () {
-      SURF('full-grid', (body.scrollTop > 4 || body.scrollLeft > 4) ? 'sticky-scroll' : 'loaded');
+    /* ON THE ELEMENT THAT ACTUALLY SCROLLS. This listened on `body` - its own
+       unclassed wrapper - and read THAT element's scrollLeft, but nothing in
+       the stylesheet ever lets that div overflow: `.wall` is the box with
+       `overflow-x: auto`, so the grid scrolled one level down from where the
+       listener was asking and the condition never went true at any width. */
+    wall.addEventListener('scroll', function () {
+      SURF('full-grid', (wall.scrollTop > 4 || wall.scrollLeft > 4) ? 'sticky-scroll' : 'loaded');
     }, { passive: true });
 
     var qlist = questionList(view.act);
@@ -1091,13 +1113,26 @@
     var lbl = el('span', 'flick-label', axis + (idx >= 0 ? ' · ' + (idx + 1) + ' of ' + roster.length : ''));
     var bNext = el('button', 'flick-btn' + (nextP ? '' : ' is-off'), (nextP ? esc(nextP.name.split(' ')[0]) : 'last') + ' ›');
     if (prevP) bPrev.addEventListener('click', function () { showJotterPage(prevP.email, ctx); });
-    if (nextP) bNext.addEventListener('click', function () { SURF('book-view', 'flicking'); showJotterPage(nextP.email, ctx); });
+    /* the flick is a book-view state; the question view declares no such state
+       and inventing one would owe a walk on a screen nobody asked for */
+    if (nextP) bNext.addEventListener('click', function () { if (!ctx.qlabel) SURF('book-view', 'flicking'); showJotterPage(nextP.email, ctx); });
     flick.appendChild(bPrev); flick.appendChild(lbl); flick.appendChild(bNext);
 
     var msg = el('p', 'ui-msg', esc(TT('fetchingBook')));
     var page = el('div', 'jotter');
     body.appendChild(flick); body.appendChild(msg); body.appendChild(page);
-    shell({ body: body, surface: 'book-view', state: 'pencil', crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'A pupil\u2019s book' }] });
+    /* WHICH SCREEN THIS IS DEPENDS ON HOW SHE GOT HERE. Opened from a pupil's
+       row this is that pupil's book; opened from a cell in the question view it
+       is ONE question across the class, which is a different screen with a
+       different question in it - and the app has always said so in the flick
+       bar's own label. The surface was hardcoded to `book-view` either way, so
+       the question view's own ink state could never be set: `SURF('question-
+       view','ink-open')` sat in the handler below asking for a root that was
+       never on screen. The screen now carries the name it is being read as. */
+    var sweep = !!ctx.qlabel;
+    shell({ body: body, surface: sweep ? 'question-view' : 'book-view', state: sweep ? 'loaded' : 'pencil',
+      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } },
+        { label: sweep ? ctx.qlabel + ' \u00b7 across the class' : 'A pupil\u2019s book' }] });
 
     busyCard(msg, 'Fetching the jotter&hellip; this can take a moment');
     fetchJotter(email).then(function (r) {
