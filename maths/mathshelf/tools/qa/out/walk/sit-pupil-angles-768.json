@@ -3,12 +3,31 @@
  "scope": "angles",
  "width": 768,
  "tier": "preview",
- "contentHash": "c455316b9c10",
- "when": "2026-09-08T08:23:30.340Z",
+ "contentHash": "f0a02a1fceaf",
+ "when": "2026-09-08T10:51:46.665Z",
  "states": [
   {
    "surface": "cover",
    "state": "preview",
+   "width": 768,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   }
+  },
+  {
+   "surface": "shelf",
+   "state": "some-ticked",
    "width": 768,
    "audits": {
     "empty": "PASS",
@@ -496,7 +515,7 @@
     "readability": "PASS"
    },
    "measured": {
-    "said-twice": 2,
+    "said-twice": 3,
     "readability": 27
    }
   },
@@ -524,8 +543,8 @@
     "readability": "PASS"
    },
    "measured": {
-    "said-twice": 2,
-    "readability": 58
+    "said-twice": 3,
+    "readability": 59
    }
   },
   {
@@ -553,8 +572,8 @@
     "readability": "PASS"
    },
    "measured": {
-    "said-twice": 2,
-    "readability": 58
+    "said-twice": 3,
+    "readability": 59
    }
   },
   {
@@ -581,8 +600,8 @@
     "readability": "PASS"
    },
    "measured": {
-    "said-twice": 2,
-    "readability": 58
+    "said-twice": 4,
+    "readability": 59
    }
   },
   {
@@ -609,8 +628,8 @@
     "readability": "PASS"
    },
    "measured": {
-    "said-twice": 2,
-    "readability": 58
+    "said-twice": 4,
+    "readability": 59
    }
   },
   {
@@ -636,8 +655,8 @@
     "readability": "PASS"
    },
    "measured": {
-    "said-twice": 2,
-    "readability": 36
+    "said-twice": 4,
+    "readability": 37
    }
   },
   {
@@ -663,8 +682,55 @@
     "readability": "PASS"
    },
    "measured": {
-    "said-twice": 2,
-    "readability": 36
+    "said-twice": 4,
+    "readability": 37
+   }
+  },
+  {
+   "surface": "question",
+   "state": "locked-restore",
+   "qid": "c1",
+   "section": 0,
+   "book": "angles",
+   "width": 768,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   }
+  },
+  {
+   "surface": "shelf",
+   "state": "in-progress",
+   "expected": "in-progress",
+   "stood": true,
+   "width": 768,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 0,
+    "readability": 20
    }
   },
   {

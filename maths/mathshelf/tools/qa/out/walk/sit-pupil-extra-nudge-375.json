@@ -1,0 +1,35 @@
+{
+ "walker": "sit-pupil",
+ "scope": "extra",
+ "width": 375,
+ "tier": "preview",
+ "contentHash": "c789d740dc1a",
+ "when": "2026-09-08T10:55:18.987Z",
+ "states": [
+  {
+   "surface": "movie",
+   "state": "nudge-banner",
+   "width": 375,
+   "book": "algebra",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 4,
+    "readability": 92
+   }
+  }
+ ],
+ "consoleErrors": 0
+}

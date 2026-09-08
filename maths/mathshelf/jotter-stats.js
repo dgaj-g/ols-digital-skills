@@ -326,9 +326,16 @@
     function saveOpen() {
       if (rec.lock) return;
       var open = { S: kind.state(), t0: t0 };
-      if (rec.att.length && !rec.att[rec.att.length - 1].res) rec.att[rec.att.length - 1] = open;
-      else rec.att.push(open);
+      var fresh = !(rec.att.length && !rec.att[rec.att.length - 1].res);
+      if (fresh) rec.att.push(open); else rec.att[rec.att.length - 1] = open;
+      /* THE FIRST MARK ON A BOARD IS SAVED AT ONCE. Everything after it is on a
+         400 ms debounce so a run of presses is not a run of requests - but if
+         the very first press waits too, a pupil whose Chromebook drops out
+         between placing her first value and her second comes back to a blank
+         board, and the app has no record that she ever started. It is also why
+         a reload before Check drew "fresh" and never "resume-mid". */
       if (saveTimer) clearTimeout(saveTimer);
+      if (fresh) { hooks.onSave(q.id, rec); return; }
       saveTimer = setTimeout(function () { hooks.onSave(q.id, rec); }, 400);
     }
     var settling = false;      /* true while a verdict is being drawn */

@@ -35,7 +35,7 @@ const S = require('./lib/stage.js');
 
 /* every state any walk in this run set out to stand on, settled at the end */
 const AIMED = [];
-const { bookHash } = require('./lib/hash.js');
+const { bookHash, contentHash } = require('./lib/hash.js');
 
 /* ONE SENTENCE PER FINDING, and it NAMES THE THING. The first cut printed the
    law and nothing else - "marking-colour-outside-a-mark", forty times - which
@@ -71,6 +71,9 @@ const CONTROLS = [
      sentence the check actually holds. */
   { id: 'unreachable-planted-fault', kind: 'fixture', plant: 'fixture-unreachable-surface', mustFail: /never reached/ },
   { id: 'console-error', kind: 'fixture', plant: 'fixture-renderers', mustFail: /console error/ },
+  /* the shelf a class sees when a book is not ticked for it: found on 8 Sept
+     2026 by the first walk ever to stand on it (package V4-STATES) */
+  { id: 'locked-spine-unreadable', kind: 'fixture', plant: 'fixture-css-locked-spine', mustFail: /against what is actually behind it/ },
   /* the chip put back in the corner it used to float in, where a long series
      name runs underneath it — the shelf fault of 6 Sept 2026 */
   { id: 'text-under-a-floating-chip', kind: 'fixture', plant: 'fixture-overlapping-chip', mustFail: /on top of one another/ },
@@ -174,6 +177,13 @@ async function walkBook(page, book, width, sidecar, transcript) {
       await W.settle(page);
       await page.evaluate(() => document.getElementById('cover-open').click());
       await W.settle(page);
+      /* shelf:in-progress — THE ONE MOMENT A BOOK IS OPEN BUT NOT DONE. This
+         walker always finishes what it starts (it answers every question
+         right), so the shelf never sees this book again once it is complete -
+         the only honest place to stand on "started, not finished" is the
+         instant between exercise 1 landing and exercise 2 opening, which the
+         per-exercise reload already passes through on its way back in. */
+      if (si === 1) await record('shelf', 'in-progress');
       await page.evaluate((s, id) => eval(s)(id), W.ACTIONS.openBook, book);
       await W.settle(page);
     }
@@ -226,6 +236,29 @@ async function walkBook(page, book, width, sidecar, transcript) {
       const declared = await page.evaluate((s2, id) => eval(s2)(id), W.STAGES_OF, qid);
       await record('question', 'fresh', { qid, section: si, book, stages: declared.stages.join(' ') });
 
+      /* dock:disabled-explained — WHAT NOTHING WAS DONE FOR HER YET LOOKS
+         LIKE. Pressing Check on a fresh question with nothing placed is a
+         real thing a pupil does (an impatient tap before she has written
+         anything), and setLockedWhy answers it by putting the dock into
+         "disabled-explained" beside the Check button that will not act. CHECK
+         is a no-op when it is disabled — it never presses a live button — so
+         asking it here costs nothing and never touches the answer that
+         follows. */
+      {
+        const preCheck = await page.evaluate((s, id) => eval(s)(id), W.CHECK, qid);
+        if (preCheck.disabled) {
+          await W.settle(page);
+          const dockNow = await page.evaluate(() => {
+            const d = document.querySelector('[data-surface="dock"]');
+            return d && !d.hidden ? d.getAttribute('data-state') : null;
+          });
+          if (dockNow === 'disabled-explained') {
+            const a = await AUD.run(page, { clickSafety: true });
+            sidecar.states.push(Object.assign({ surface: 'dock', state: dockNow, qid, section: si, book, width }, { audits: a.verdicts }));
+          }
+        }
+      }
+
       /* THE ANSWER SIGNATURE IS NOT ON THE PAGE. What she has to bring - the
          pairing of boundary and total, the read-off, the five numbers, the
          cuts, the verdicts - may not appear anywhere on a fresh question, in
@@ -264,6 +297,40 @@ async function walkBook(page, book, width, sidecar, transcript) {
       }
       if (!answered || !answered.ok) { g.note('could not answer ' + qid + ': ' + ((answered && answered.why) || 'no answer')); continue; }
       await W.settle(page);
+
+      /* dock:keyboard-hidden — FOOLPROOF KEYBOARD RULE, WALKED. jotter.js's
+         own comment names it: the on-screen number pad is for devices with no
+         keyboard, and the pad is retired the instant a real keydown arrives on
+         the compose field it belongs to. This question may not be carrying a
+         number pad at all (most kinds are not), so the probe is a no-op
+         everywhere else - it only fires the once a numpad-bearing kind puts
+         one on screen, and does not touch the answer already placed. */
+      {
+        const dockBefore = await page.evaluate(() => {
+          const d = document.querySelector('[data-surface="dock"]');
+          return d && !d.hidden ? d.getAttribute('data-state') : null;
+        });
+        if (dockBefore === 'numpad' || dockBefore === 'numpad-fraction') {
+          const fired = await page.evaluate(() => {
+            const c = document.querySelector('.compose');
+            if (!c) return false;
+            c.dispatchEvent(new KeyboardEvent('keydown', { key: '5', bubbles: true }));
+            return true;
+          });
+          if (fired) {
+            await W.settle(page);
+            const dockAfter = await page.evaluate(() => {
+              const d = document.querySelector('[data-surface="dock"]');
+              return d ? d.getAttribute('data-state') : null;
+            });
+            if (dockAfter === 'keyboard-hidden') {
+              const a = await AUD.run(page, { clickSafety: true });
+              sidecar.states.push(Object.assign({ surface: 'dock', state: dockAfter, qid, section: si, book, width }, { audits: a.verdicts }));
+            }
+          }
+        }
+      }
+
       /* THE SCREEN BETWEEN THE WORKING AND THE VERDICT, WHICH THE WALK USED TO
          JUMP OVER. It went straight from question:fresh to the press of Check,
          so the board a pupil actually sits in front of - her working placed, her
@@ -317,6 +384,48 @@ async function walkBook(page, book, width, sidecar, transcript) {
         }
       }
     }
+
+    /* question:locked-restore — REOPENING WHAT SHE ALREADY FINISHED. Every
+       question in this exercise is locked now (checked right, first attempt),
+       and the app mounts a locked question with its marks already drawn the
+       instant she comes back to it — a screen only a RETURN visit shows, never
+       the visit that made it. The contents chip is right here, already open;
+       standing on it costs one more click, on the first exercise only.
+       SOME KINDS DRAW IT AND PASS STRAIGHT THROUGH IT. mountClassify and
+       mountProtractor's own `finish()` sets "locked-restore" and then, in the
+       SAME synchronous call, sets the real verdict state over it - a restore
+       is drawn by calling the exact function a fresh Check calls, and that
+       function always ends by saying what the mark is. The reasoned/algebra
+       kind does not do this (its own restore branch is the last word), so
+       which of the two this lands on depends on which kind qids[0] happens to
+       be. A one-line patch on setAttribute, in place only for this one
+       reopen, reads what was drawn rather than only what is left standing -
+       the same problem the walk itself solves for the app's own faults, not
+       a way around it. */
+    if (si === 0 && qids.length) {
+      await page.evaluate(() => {
+        window.__stateLog = [];
+        if (window.__setAttrPatched) return;
+        window.__setAttrPatched = true;
+        const orig = Element.prototype.setAttribute;
+        Element.prototype.setAttribute = function (name, value) {
+          if (name === 'data-state') window.__stateLog.push({ surface: this.getAttribute('data-surface'), state: value });
+          return orig.apply(this, arguments);
+        };
+      });
+      const reopened = await page.evaluate((s, i) => eval(s)(i), W.ACTIONS.openSection, si);
+      if (reopened.ok) {
+        await W.settle(page);
+        const log = await page.evaluate(() => window.__stateLog || []);
+        const drew = log.some((e) => e.surface === 'question' && e.state === 'locked-restore');
+        if (drew) {
+          const a = await AUD.run(page, { clickSafety: true });
+          sidecar.states.push({ surface: 'question', state: 'locked-restore', qid: qids[0], section: si, book, width, audits: a.verdicts });
+        } else {
+          await record('question', 'locked-restore', { qid: qids[0], section: si, book });
+        }
+      }
+    }
   }
 
   /* THE END OF THE BOOK. The last chip on the contents strip is her tally, and
@@ -343,6 +452,323 @@ async function walkBook(page, book, width, sidecar, transcript) {
   await W.settle(page);
   await record('shelf', await page.evaluate(() => (document.querySelector('[data-surface="shelf"]') || {}).getAttribute
     ? document.querySelector('[data-surface="shelf"]').getAttribute('data-state') : 'some-ticked'));
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+ * THE STATES NO WALK HAD EVER STOOD ON (package V4-STATES, 8 Sept 2026).
+ *
+ * The five probes below stand on cover/shelf/movie/question states that the
+ * ordinary walk above never reaches, because reaching them needs something
+ * the ordinary walk cannot offer without stopping being an ordinary walk: a
+ * server that answers SLOWLY, a class nobody has ticked a book for, a nudge
+ * a teacher sent, a question left mid-line. None of them touch script.js or
+ * any other app file — every one drives the app through a door the app
+ * already has open (the offline transport contract in localStorage's
+ * 'gj-offline-v1', or the `window.OLS_TRANSPORT` hook script.js's own `call`
+ * already checks for before it falls back to the offline stub).
+ *
+ * Each probe writes its own sidecar, `sit-pupil-extra-<width>.json`, matching
+ * the naming both sit-pupil's own post-walk checks and qa-coverage read
+ * ("sit-pupil*"). Its scope is 'extra' (not a book id), so qa-coverage
+ * measures it against the whole-app content hash, same as sit-teacher's.
+ */
+const LSKEY_MIRROR = 'gj-offline-v1';   /* script.js's own constant, read not edited */
+const OFFLINE_EMAIL_MIRROR = 'you@offline.preview';   /* ditto */
+
+function newExtraSidecar(width) {
+  return { walker: 'sit-pupil', scope: 'extra', width, tier: 'preview', contentHash: contentHash(A.APP), when: new Date().toISOString(), states: [], consoleErrors: 0 };
+}
+/* the same tail `record()` runs, for a probe standing outside walkBook's own
+   per-book sidecar */
+async function auditAndPush(page, sidecar, surface, state, extra) {
+  const a = await AUD.run(page, { clickSafety: true });
+  sidecar.states.push(Object.assign({ surface, state }, extra || {}, { audits: a.verdicts, measured: a.measured }));
+  Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {
+    g.fail(surface + ':' + state + (extra && extra.width ? ' @' + extra.width : ''), k,
+      k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : JSON.stringify(f).slice(0, 140));
+  }));
+}
+
+/* ---- cover: busy, first-visit, returning, fallback-name, wrong-class, staff
+   A REAL SLOW SERVER, NOT A FAST ONE READ EARLY. `call()` in script.js asks
+   `window.OLS_TRANSPORT` before it ever tries the offline stub, so a mock
+   installed here (before script.js runs at all, via evaluateOnNewDocument)
+   is the SAME hook the deployed app itself will use one day — not a hack
+   around the offline preview, the other half of it. Its `hello` shape
+   controls which of cover's four settled states she lands in; a long delay
+   before it resolves is what lets the walk stand on "busy" on the way
+   through, honestly, rather than asserting a state nobody could observe. */
+async function coverStatesPass() {
+  const scenarios = [
+    { state: 'wrong-class', hello: { ok: false, error: 'unknown-class' } },
+    { state: 'first-visit', hello: { ok: true, email: 'qa-cover@offline.preview', name: 'QA Cover Pupil', firstVisit: true, acts: { angles: true, algebra: true, 'stats-quartiles': true }, summaries: {}, offline: false } },
+    { state: 'returning', hello: { ok: true, email: 'qa-cover@offline.preview', name: 'QA Cover Pupil', firstVisit: false, acts: { angles: true, algebra: true, 'stats-quartiles': true }, summaries: {}, offline: false } },
+    { state: 'fallback-name', hello: { ok: true, email: 'qa-cover@offline.preview', name: '', firstVisit: false, acts: { angles: true, algebra: true, 'stats-quartiles': true }, summaries: {}, offline: false } }
+  ];
+  for (const width of WIDTHS) {
+    const sidecar = newExtraSidecar(width);
+    for (const sc of scenarios) {
+      const browser = await B.launch();
+      const page = await B.newPage(browser, { width });
+      /* a slow line on EVERY scenario: the same mock proves cover:busy on the
+         way through each one, so a dedicated busy-only pass is not needed */
+      await page.evaluateOnNewDocument((hello) => {
+        window.OLS_TRANSPORT = {
+          call: function (p) {
+            return new Promise(function (resolve) {
+              setTimeout(function () {
+                if (p.action === 'whoami') return resolve({ ok: true, email: hello.email });
+                if (p.action === 'hello') return resolve(hello);
+                if (p.action === 'setname') return resolve({ ok: true });
+                resolve({ ok: false, error: 'qa-mock: this cover probe never needed ' + p.action });
+              }, 650);
+            });
+          }
+        };
+      }, sc.hello);
+      await page.goto(BASE + '?class=qa-cover-' + sc.state + '&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
+      /* read IMMEDIATELY: the mock's 650ms delay has not elapsed yet, so the
+         cover is still on "busy" — the same synchronous state script.js's
+         bootCover() sets before it ever asks the transport for anything */
+      const busyState = await page.evaluate(() => (document.querySelector('[data-surface="cover"]') || {}).getAttribute('data-state'));
+      if (busyState === 'busy') await auditAndPush(page, sidecar, 'cover', 'busy', { width });
+      await W.settle(page);
+      await new Promise((r) => setTimeout(r, 700));   /* past the mock's delay */
+      await W.settle(page);
+      const settledState = await page.evaluate(() => (document.querySelector('[data-surface="cover"]') || {}).getAttribute('data-state'));
+      g.check(settledState === sc.state, 'cover:' + sc.state + ' @' + width, 'walk',
+        'the mocked hello response meant to settle the cover on "' + sc.state + '" but it read "' + settledState + '"');
+      if (settledState) await auditAndPush(page, sidecar, 'cover', settledState, { width });
+      await page.close(); await browser.close();
+    }
+
+    /* cover:staff — the teacher's OWN front door, not the "Staff" button off a
+       pupil's cover. isTeacherLanding (script.js) is true only when the class
+       code is empty or "default", and it renders on #scr-cover itself - a
+       state sit-teacher's own walk never stands on, because it always logs in
+       from a class link and never from the bare teacher landing. */
+    {
+      const browser = await B.launch();
+      const page = await B.newPage(browser, { width });
+      await page.goto(BASE + '?nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
+      await W.settle(page);
+      const state = await page.evaluate(() => (document.querySelector('[data-surface="cover"]') || {}).getAttribute('data-state'));
+      g.check(state === 'staff', 'cover:staff @' + width, 'walk', 'landing with no class code produced cover state "' + state + '", not "staff"');
+      if (state) await auditAndPush(page, sidecar, 'cover', state, { width });
+      await page.close(); await browser.close();
+    }
+
+    sidecar.consoleErrors = 0;
+    fs.writeFileSync(A.out('walk/sit-pupil-extra-cover-' + width + '.json'), JSON.stringify(sidecar, null, 1));
+    g.note('cover probe @' + width + ': stood on ' + sidecar.states.length + ' extra states');
+  }
+}
+
+/* ---- shelf: none-ticked, locked-spine (some-ticked/in-progress/star-earned
+   are stood on by the ordinary walk above). A CLASS THE OFFLINE STUB HAS
+   NEVER SEEN GETS EVERY BOOK ON (script.js's own `store()`, for the preview
+   only, so a walk can reach a book at all) - which is exactly why neither of
+   these two is reachable through it. Seeding the SAME localStorage shape
+   `store()` itself reads, before script.js's first read of it, is the
+   offline transport's own contract, not a way around it. */
+async function shelfLockStatesPass() {
+  const seeds = [
+    { state: 'none-ticked', acts: {} },
+    { state: 'locked-spine', acts: { angles: true } }
+  ];
+  for (const width of WIDTHS) {
+    const sidecar = newExtraSidecar(width);
+    for (const sd of seeds) {
+      const browser = await B.launch();
+      const page = await B.newPage(browser, { width });
+      await page.evaluateOnNewDocument((key, acts) => {
+        try {
+          localStorage.setItem(key, JSON.stringify({
+            classes: [{ name: 'qa-shelf-' + Object.keys(acts).length, acts: acts, owner: 'qa@offline.preview' }],
+            data: {}, names: {}
+          }));
+        } catch (e) {}
+      }, LSKEY_MIRROR, sd.acts);
+      await page.goto(BASE + '?class=qa-shelf-' + Object.keys(sd.acts).length + '&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
+      await W.settle(page);
+      await page.evaluate(() => { const b = document.getElementById('cover-open'); if (b && !b.disabled) b.click(); });
+      await W.settle(page);
+      const state = await page.evaluate(() => (document.querySelector('[data-surface="shelf"]') || {}).getAttribute('data-state'));
+      g.check(state === sd.state, 'shelf:' + sd.state + ' @' + width, 'walk',
+        'a class seeded with acts ' + JSON.stringify(sd.acts) + ' produced shelf state "' + state + '", not "' + sd.state + '"');
+      if (state) await auditAndPush(page, sidecar, 'shelf', state, { width });
+      await page.close(); await browser.close();
+    }
+    fs.writeFileSync(A.out('walk/sit-pupil-extra-shelf-' + width + '.json'), JSON.stringify(sidecar, null, 1));
+    g.note('shelf-lock probe @' + width + ': stood on ' + sidecar.states.length + ' extra states');
+  }
+}
+
+/* ---- movie:nudge-banner — a teacher's nudge, landing on a pupil's cover.
+   `window.GJ.app.call` is script.js's OWN published hook (`Object.assign
+   (GJ.app, {call: call, ...})`, "public surface, per INTERFACES.md") - the
+   identical function a teacher's "send help" button calls, so seeding the
+   nudge through it is the app's own front door, driven, not a shortcut round
+   it. The nudge is one-shot and section-scoped, so it is read back on the
+   VERY NEXT open of that book - exactly what this probe then does. */
+async function movieNudgeProbe() {
+  const books = A.books().filter((b) => !ONLY_BOOK || b === ONLY_BOOK);
+  const book = books[0];
+  if (!book) return;
+  for (const width of WIDTHS) {
+    const sidecar = newExtraSidecar(width);
+    const browser = await B.launch();
+    const page = await B.newPage(browser, { width });
+    /* THE STATE LOG. player.js's own mount() calls goto(0, true) as part of
+       settling on its first frame, and that call sets "instant" on the SAME
+       element inside a promise chain that resolves microtasks after the
+       nudge-banner stamp this probe is standing on - overwriting it, in the
+       same way redrawCurrent() overwrites resume-mid (see below). The film
+       IS drawn "nudge-banner" first; nothing later ever draws it that way
+       again, so the log is the only honest read. */
+    await page.evaluateOnNewDocument(() => {
+      window.__stateLog = [];
+      const orig = Element.prototype.setAttribute;
+      Element.prototype.setAttribute = function (name, value) {
+        if (name === 'data-state') window.__stateLog.push({ surface: this.getAttribute('data-surface'), state: value });
+        return orig.apply(this, arguments);
+      };
+    });
+    await page.goto(BASE + '?class=demo&nointro&reserve=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await W.settle(page);
+    await page.evaluate(() => document.getElementById('cover-open').click());
+    await W.settle(page);
+    const secId = await page.evaluate((id) => {
+      const pack = window.GJ_CONTENT && window.GJ_CONTENT[id];
+      const sec = pack && (pack.sections || []).filter((s) => s.movie)[0];
+      return sec ? sec.id : null;
+    }, book);
+    if (secId) {
+      const sent = await page.evaluate((args) => {
+        const [bookId, sec, email] = args;
+        if (!window.GJ || !window.GJ.app || typeof window.GJ.app.call !== 'function') return { ok: false, why: 'no GJ.app.call' };
+        return window.GJ.app.call('admin', { passcode: 'demo', sub: 'nudge', className: 'demo', act: bookId, email: email, sec: sec })
+          .then((r) => ({ ok: !!(r && r.ok) })).catch((e) => ({ ok: false, why: String(e) }));
+      }, [book, secId, OFFLINE_EMAIL_MIRROR]);
+      if (sent.ok) {
+        await page.evaluate(() => { window.__stateLog = []; });
+        const opened = await page.evaluate((s, id) => eval(s)(id), W.ACTIONS.openBook, book);
+        if (opened.ok) {
+          await W.settle(page);
+          const log = await page.evaluate(() => window.__stateLog || []);
+          const drew = log.some((e) => e.surface === 'movie' && e.state === 'nudge-banner');
+          g.check(drew, 'movie:nudge-banner @' + width, 'walk',
+            'seeding a teacher nudge for the first movie section never once drew "nudge-banner" (drew: ' + JSON.stringify([...new Set(log.filter((e) => e.surface === 'movie').map((e) => e.state))]) + ')');
+          if (drew) await auditAndPush(page, sidecar, 'movie', 'nudge-banner', { width, book });
+        }
+      } else {
+        g.note('movie:nudge-banner @' + width + ': could not seed the nudge (' + (sent.why || 'admin call refused') + ')');
+      }
+    } else {
+      g.note('movie:nudge-banner @' + width + ': ' + book + ' has no section carrying a method movie to nudge toward');
+    }
+    fs.writeFileSync(A.out('walk/sit-pupil-extra-nudge-' + width + '.json'), JSON.stringify(sidecar, null, 1));
+    await page.close(); await browser.close();
+  }
+}
+
+/* ---- question:resume-mid — full working placed, never checked, reloaded.
+   jotter.js's own save() persists the open attempt (an `att` entry with no
+   `res`) the instant a line is committed - Check is a SEPARATE press, always
+   - and mount() reads exactly that back as "resume-mid" when it is not yet
+   locked. So: place the working, wait out the autosave debounce
+   (scheduleSave's own floor is 1.5s), reload without ever pressing Check,
+   and stand on what mount() does with what was left. A dedicated probe, not
+   a step in the ordinary walk, because the ordinary walk's whole job is to
+   finish what it starts. */
+async function resumeMidProbe() {
+  const books = A.books().filter((b) => !ONLY_BOOK || b === ONLY_BOOK);
+  const book = books[0];
+  if (!book) return;
+  const attempts = S.attempts();
+  for (const width of WIDTHS) {
+    const sidecar = newExtraSidecar(width);
+    const browser = await B.launch();
+    const page = await B.newPage(browser, { width });
+    await page.evaluateOnNewDocument((table) => {
+      window.__modelAttempt = (qid, wrong) => {
+        const r = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+          .filter((x) => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === qid)[0];
+        const bk = r ? (r.getAttribute('data-book') || '') : '';
+        return table[(wrong ? 'wrong:' : 'right:') + bk + ':' + qid] || null;
+      };
+    }, attempts);
+    /* THE STATE LOG, PLANTED BEFORE EVERY LOAD (evaluateOnNewDocument survives
+       the reload this probe does). mount()'s own restore branch sets
+       "resume-mid", pops the open attempt into `cur`, and calls
+       redrawCurrent() to draw it - which sets "mid-attempt" unconditionally
+       whenever cur holds anything, the same tick, overwriting the very state
+       just drawn. Reading the log is how the walk stands on what mount()
+       actually did rather than only on what redrawCurrent() left standing a
+       moment later - the same class of fault as locked-restore's, in the
+       opposite direction (this one draws right, then a GENERIC redraw undoes
+       the label). */
+    await page.evaluateOnNewDocument(() => {
+      window.__stateLog = [];
+      const orig = Element.prototype.setAttribute;
+      Element.prototype.setAttribute = function (name, value) {
+        if (name === 'data-state') window.__stateLog.push({ surface: this.getAttribute('data-surface'), state: value });
+        return orig.apply(this, arguments);
+      };
+    });
+    const openToSection0 = async () => {
+      await page.goto(BASE + '?class=qa-resume-mid&nointro&reserve=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
+      await W.settle(page);
+      await page.evaluate(() => document.getElementById('cover-open').click());
+      await W.settle(page);
+      /* THE RESET GOES BEFORE openBook, NOT AFTER. openBook's own click
+         handler kicks off openActivity()'s `call('load',...).then(...)`,
+         and that .then() - which is where mount() actually runs, restore
+         branch included - is a MICROTASK: it has already settled by the time
+         W.settle()'s own round trip back to Node returns, well before this
+         line ever ran. Resetting after openBook (the first cut of this
+         probe) wiped the one recording of "resume-mid" mount() ever draws,
+         then re-mounted the question a SECOND time via an explicit
+         openSection(0) - by which point rec.att had already been popped
+         empty by the FIRST (automatic) mount, so the second one correctly,
+         and misleadingly, drew "fresh". firstOpenSection(pack) lands on
+         section 0 on its own here regardless (nothing in this book is ever
+         locked), so the explicit reopen was never needed either. */
+      await page.evaluate(() => { window.__stateLog = []; });
+      const opened = await page.evaluate((s, id) => eval(s)(id), W.ACTIONS.openBook, book);
+      if (!opened.ok) return false;
+      await W.settle(page);
+      const qidsNow = await page.evaluate((s) => eval(s)(), W.QUESTIONS_ON_SCREEN);
+      return qidsNow.length > 0;
+    };
+    if (await openToSection0()) {
+      const qids = await page.evaluate((s) => eval(s)(), W.QUESTIONS_ON_SCREEN);
+      const qid = qids[0];
+      if (qid) {
+        const declared = await page.evaluate((s2, id) => eval(s2)(id), W.STAGES_OF, qid);
+        if (!declared.stages.length) {   /* a v3 kind: one shot, no stage board to leave half-drawn */
+          const answered = await page.evaluate((s2, args) => eval(s2)(args), W.ANSWER, [qid, false]);
+          if (answered && answered.ok) {
+            await W.settle(page);
+            await new Promise((r) => setTimeout(r, 2200));   /* past scheduleSave's 1.5s floor */
+            if (await openToSection0()) {
+              const log = await page.evaluate(() => window.__stateLog || []);
+              const drew = log.some((e) => e.surface === 'question' && e.state === 'resume-mid');
+              g.check(drew, 'question:resume-mid > ' + qid + ' @' + width, 'walk',
+                'placing full working and reloading before Check never once drew "resume-mid" (drew: ' + JSON.stringify([...new Set(log.filter((e) => e.surface === 'question').map((e) => e.state))]) + ')');
+              if (drew) await auditAndPush(page, sidecar, 'question', 'resume-mid', { width, qid, book, section: 0 });
+            }
+          } else {
+            g.note('question:resume-mid @' + width + ': could not place working on ' + qid);
+          }
+        } else {
+          g.note('question:resume-mid @' + width + ': ' + qid + ' is a staged kind, skipped for this probe');
+        }
+      }
+    }
+    fs.writeFileSync(A.out('walk/sit-pupil-extra-resume-' + width + '.json'), JSON.stringify(sidecar, null, 1));
+    await page.close(); await browser.close();
+  }
 }
 
 /* ------------------------------------------------------------------ main */
@@ -374,9 +800,20 @@ async function walkBook(page, book, width, sidecar, transcript) {
      unsharded run (WIDTHS has all three) behaves exactly as before, and a
      1280-only shard still carries the reduced pass it always did. */
   if (WIDTHS.includes(1280)) PASSES.push({ width: 1280, reduced: true });
+  /* movie:reduced-motion AT EVERY WIDTH, NOT ONLY 1280. qa-coverage keys every
+     surface:state cell by width, so a reduced-motion pass run at one width
+     only closes the cell at that width and leaves it MISSING at the other
+     two — which is exactly what the coverage debt ledger recorded (package
+     V4-STATES, 8 Sept). The cell itself is not book-scoped, so ONE book is
+     enough to close it; restricting these two new passes to books[0] keeps
+     the added cost to two small walks instead of tripling every width's. */
+  if (books.length) {
+    if (WIDTHS.includes(375)) PASSES.push({ width: 375, reduced: true, books: [books[0]] });
+    if (WIDTHS.includes(768)) PASSES.push({ width: 768, reduced: true, books: [books[0]] });
+  }
   for (const pass of PASSES) {
     const width = pass.width;
-    for (const book of books) {
+    for (const book of (pass.books || books)) {
       const browser = await B.launch();
       const page = await B.newPage(browser, { width, reducedMotion: pass.reduced });
       await page.evaluateOnNewDocument((table) => {
@@ -404,6 +841,19 @@ async function walkBook(page, book, width, sidecar, transcript) {
       await W.settle(page);
       transcript.push(await page.evaluate(() => (document.getElementById('shelf-instruction') || {}).textContent || ''));
 
+      /* shelf:some-ticked — THE FIRST LOOK AT THE SHELF, before any book has
+         a mark on it. Every browser this walk opens is a fresh profile with
+         nothing saved, so this is the one honest place to stand on "every
+         book ticked, none of them started" - the walk goes on to finish
+         every book it opens, so nothing later ever lands here again. */
+      {
+        const shelfState = await page.evaluate(() => (document.querySelector('[data-surface="shelf"]') || {}).getAttribute('data-state'));
+        if (shelfState) {
+          const a = await AUD.run(page, { clickSafety: true });
+          sidecar.states.push({ surface: 'shelf', state: shelfState, width, audits: a.verdicts });
+        }
+      }
+
       try {
         await walkBook(page, book, width, sidecar, transcript);
       } catch (e) {
@@ -426,6 +876,24 @@ async function walkBook(page, book, width, sidecar, transcript) {
       await page.close();
       await browser.close();
     }
+  }
+
+  /* THE FOUR EXTRA PROBES, ONCE PER RUN — NOT ONCE PER SHARD. run.js shards
+     this walker by book × width (package SPEED, 8 Sept): a full run is nine
+     separate processes, MS_BOOK and MS_WIDTHS both narrowed. None of these
+     four probes is book-scoped (cover, shelf and the movie/question states
+     they stand on do not vary by which book is open), so running them on
+     every shard would pay their cost up to nine times for the same three
+     cells. They run on the shard carrying the FIRST book only — which still
+     gets one run per width, because width is what MS_WIDTHS actually narrows
+     — and whenever this file is run whole (no MS_BOOK at all: a manual
+     invocation, or the "content pack unreadable" single-task fallback). */
+  const CANONICAL_BOOK = A.books()[0] || null;
+  if (!ONLY_BOOK || ONLY_BOOK === CANONICAL_BOOK) {
+    await coverStatesPass();
+    await shelfLockStatesPass();
+    await movieNudgeProbe();
+    await resumeMidProbe();
   }
 
   /* THE REQUIRED SURFACE SET, derived from the app's own registry (L3): a walk

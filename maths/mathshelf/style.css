@@ -1240,7 +1240,11 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .stat-svg-label { font-family: var(--f-maths); color: var(--ink); user-select: none; }
 
 /* labels that MOVE are HTML over the board, so the overlap law can judge them */
-.stat-label-layer { position: absolute; inset: 0; pointer-events: none; }
+/* A LABEL BELONGS TO ITS BOARD. Clipped to the layer, so one can never paint
+   outside the board and land on the next question's prompt - which is what the
+   overlap law caught it doing on a phone. The stagger keeps them inside; this
+   is the guarantee that it cannot fail quietly. */
+.stat-label-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .stat-label {
   position: absolute; transform: translate(-50%, -100%); white-space: nowrap;
   font-family: var(--f-stationery, var(--f-ui)); font-size: 13px; line-height: 1.15;

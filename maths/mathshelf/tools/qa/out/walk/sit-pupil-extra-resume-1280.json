@@ -1,0 +1,37 @@
+{
+ "walker": "sit-pupil",
+ "scope": "extra",
+ "width": 1280,
+ "tier": "preview",
+ "contentHash": "c789d740dc1a",
+ "when": "2026-09-08T10:55:31.602Z",
+ "states": [
+  {
+   "surface": "question",
+   "state": "resume-mid",
+   "width": 1280,
+   "qid": "q1",
+   "book": "algebra",
+   "section": 0,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 25
+   }
+  }
+ ],
+ "consoleErrors": 0
+}

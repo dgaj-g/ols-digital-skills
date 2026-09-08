@@ -48,18 +48,37 @@ to walk, and the walk says so rather than inventing one._
 |---|---|
 | algebra q5 × walk-wrong | "x + 8x − 5x" is three terms of one family, so the collect screen has ONE bin and the app does the arithmetic once the tiles are sorted. A pupil cannot mis-sort, and so cannot get this question wrong on this screen. `sit-confused` reports it and moves on; the other three collect questions have two families and a real wrong answer. |
 
-## States the app declares and no walk has yet stood on (6 Sept 2026)
+## States the app declares and no walk has yet stood on (8 Sept 2026, package V4-STATES)
 
 _Written down rather than left as a red nobody reads. Each is a real screen the
-app can render; none is a fault found. The walkers reach 40 of the 77 states in
-the registry; these are the rest, with what it would take to walk each._
+app can render; none is a fault found. Of the 33 rows the 6 Sept table carried
+(32 states plus one width-partial), 26 now have a walker standing on them —
+`sit-pupil.js`'s cover pass, shelf-lock pass, movie-nudge probe and resume-mid
+probe, and `sit-teacher.js`'s widened set-up/class-page/book-view/question-view
+routes. The dock row is gone outright: every one of its five states was
+already being reached (by sit-confused's wrong-path drive and sit-pupil's own
+questions) — the 6 Sept note about it was stale, not a fault.
 
-| cell | what it would take | owner / phase |
+Two faults were found on the way, not invented by the walk: `shelf:none-ticked`
+and `shelf:locked-spine` both fail readability on the not-set book card's
+series band and its "x" motif (never checked before because nothing had ever
+stood on either state), and `set-up:link-qr-modal`'s `#st-qmsg` paragraph is an
+empty non-live-region (built by raw innerHTML, so it never got the `role=
+"status"` the `el()` helper gives every other `.ui-msg`). Both are staff.js /
+CSS faults, not walker faults, and neither is mine to fix this session — flagged
+separately. The cell itself is still closed: the walker stood there and the
+audit gave an honest verdict, which is what coverage asks for.
+
+What remains is five states with no code path that ever sets them, confirmed by
+reading every `setState`/`SURF`/`shell(...)` call in the app for each surface,
+plus two more that a code path DOES exist for but the walk could not stand on
+honestly this session:
+
+| cell | why nothing can stand on it | owner / phase |
 |---|---|---|
-| `cover:first-visit`, `cover:returning`, `cover:fallback-name`, `cover:wrong-class`, `cover:busy`, `cover:staff` | a cover pass that clears storage between each and drives a bad class code, a slow server and the staff route | the next session — cheap, one small walker |
-| `class-page:loading-cold`, `class-page:empty-class`, `class-page:no-flags`, `class-page:error`, `set-up:error` | a class with no pupils, a class with nothing flagged, and a mocked server error; the teacher walk drives a seeded demo class only | the next session |
-| `question:amber`, `question:locked-restore`, `question:resume-mid` | answer-with-no-working, then a reload mid-attempt; the model attempts always show working, so amber needs an attempt written for it | the next session — needs one new model attempt |
-| `dock:numpad`, `dock:numpad-fraction`, `dock:nudge-pad`, `dock:disabled-explained`, `dock:keyboard-hidden` | the dock is recorded once per question and only reports the state it happens to be in; it needs recording again after each dock change | the next session |
-| `movie:nudge-banner`, `movie:reduced-motion` on the confused/teacher walks | a teacher nudge delivered to a pupil, and the reduced-motion pass extended past sit-pupil | the next session |
-| `set-up:add-class-busy`, `set-up:delete-armed`, `set-up:csv-copied`, `set-up:csv-fallback-box`, `set-up:link-qr-modal`, `set-up:tickboxes` | the teacher walk drives these but the demo store answers instantly, so the busy states pass through faster than a record can catch them | the next session — record on the way in, not after |
-| `book-view:flicking`, `book-view:worth-a-look-open`, `class-page:book-switch`, `question-view:ink-open`, `question-view:loading-progressive`, `full-grid:sticky-scroll` | driven by the teacher walk; each depends on demo data that happens not to produce the condition (a second book ticked, an amber verdict to fold a corner on) | the next session — needs a richer demo class |
+| `question:amber` | AMBER needs a model attempt with exactly one working line (`mathcore.js` line 514, `lines.length===1`); every attempt in `dev/model-attempts.js` shows full working by design, and that file is shared with `dev/validate-all.js` and not owned by this package. Needs one new attempt written there. | content/model-attempts session |
+| `staff-cover:busy`, `staff-cover:open` | declared in `GJ.app.surfaces` (script.js) but no `setState`/`SURF` call anywhere in the app ever names them for the `staff-cover` surface — only `passcode-empty` (index.html) and `passcode-wrong` (staff.js:222) are ever set. Needs staff.js to actually render a busy state while the passcode call is in flight and an "open" state once it settles, or the two rows to come out of the registry. | staff.js, not owned this session |
+| `class-page:error` | `staffError()` (staff.js:1409) is the only code that ever sets a surface to `error`, and its one call site (staff.js:336) is the delete-class catch handler, reached only from the `set-up` surface — no code path fails while `class-page` is current (`loadWall`'s own catch, staff.js:775, swallows the rejection silently and never calls `staffError`). Needs staff.js's class-page load to surface a failure the same way set-up does. | staff.js, not owned this session |
+| `question-view:ink-open` | `.qv-card` (staff.js, S3 "The Question View") is built as plain display markup with no click handler and no `.verdict-mark` button; the only `.verdict-mark` in the app lives inside `showJotterPage()` (S2, book-view), and that function's own `shell()` call hardcodes `surface:'book-view'` regardless of how it was reached — including its own "across the class" sweep mode (`ctx.qlabel`). The `SURF('question-view','ink-open')` sitting in that same click handler (staff.js ~1272) can accordingly never fire while `question-view` is the current surface. Needs question-view's own cards to carry the ink control, or the handler's SURF call to be reachable some other way. | staff.js, not owned this session |
+| `full-grid:sticky-scroll` | `showWall()`'s scroll listener is on `body` (its own local, unclassed wrapper div, staff.js ~975), and checks THAT element's own `scrollTop`/`scrollLeft` — but `body` carries no CSS enabling it to overflow at all (an empty class name, `el('div', '')`), so it never scrolls no matter how the content inside it does. The grid genuinely overflows — `.wall` (`body`'s own child) confirmed scrollable at 375px in testing — but scroll happens there, one level down from where the listener is asking, so the condition it checks never goes true. Confirmed by scrolling `.wall` directly (a real, non-zero `scrollLeft`) and watching `full-grid` stay on `loaded` regardless. Needs the listener moved to `.wall`, or `body` given the CSS to be the scrolling element the listener assumes it is. | staff.js / style.css, not owned this session |
+| `book-view:worth-a-look-open` | reachable in principle (`res.st==='amber' \|\| (res.st==='err' && !res.dx)`, staff.js ~1183) but the demo class's per-question amber/undx-wrong assignment is a deterministic coin flip seeded per pupil+book (script.js `synthState`'s own PRNG) — not a fault, just not guaranteed to land inside the one exercise this walk's route reaches. Widening the search to the full grid (all 24 questions, far better odds) was tried and reverted: the full grid's cells open `showJotterPage` with a different ctx shape (`{qlabel}`, the "sweep" mode) than the exercise grid's (`{q}`), and whatever renders differently under sweep mode broke the six ink-control states that follow it in the same walk — trading one probable cell for six confirmed ones was the wrong trade. Needs either a fixed (non-random) amber question in the demo seed, or the sweep-mode rendering difference tracked down so the full grid can be used safely. | the next session — demo data or a sweep-mode fix |

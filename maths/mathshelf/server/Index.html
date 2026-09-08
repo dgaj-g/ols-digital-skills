@@ -1814,7 +1814,17 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
 .book.not-set { cursor: default; }
 .book.not-set .bcover { background: linear-gradient(170deg, #DDE3EC, #C9D2DF); }
 .book.not-set .title { color: #33415C; }
-.book.not-set .series, .book.not-set .band { color: #47566F; }
+/* A BOOK SHE CANNOT OPEN IS STILL A BOOK SHE READS. The locked spine kept the
+   open cover's colours on a pale ground: the audience band measured 4.12:1
+   against a 4.5 floor and the motif's own letter 1.01:1 against a 3:1 one -
+   invisible. No walk had ever stood on a shelf with an unticked book, so
+   nothing had ever measured it (found 8 Sept 2026 by the first walk that did;
+   control: sit-pupil.locked-spine-unreadable). The band and the series now
+   wear the title's ink, and the motif is drawn in it too rather than in a gold
+   that says nothing on this ground. */
+.book.not-set .series, .book.not-set .band { color: #33415C; }
+.book.not-set .motif text { fill: #33415C; }
+.book.not-set .motif path { stroke: #33415C; }
 
 /* \2500 \2500  CHROME on an open book \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500  */
 .act-bar {
@@ -13479,7 +13489,13 @@ function statsBoard(q, wrong) {
     card.innerHTML = '<h2>' + esc(name) + '</h2><canvas id="st-qr" width="260" height="260"></canvas>' +
       '<p class="ui-msg" style="word-break:break-all">' + esc(classLink(name)) + '</p>' +
       '<div class="check-row"><button class="btn-stamp" id="st-qr-copy">Copy link</button>' +
-      '<button class="btn-pencil" id="st-qr-close">Close</button></div><p class="ui-msg" id="st-qmsg"></p>';
+      /* A LIVE REGION SAYS SO. This slot is written as markup rather than through
+         el(), so the helper that stamps role="status" on a message slot never ran
+         - and an empty <p> with no role is a hole in the page as far as any audit
+         (or any screen reader) can tell. It sits in the one modal a teacher opens
+         to get a class link (found 8 Sept 2026; control:
+         sit-teacher.qr-modal-empty-live-region). */
+        '<button class="btn-pencil" id="st-qr-close">Close</button></div><p class="ui-msg" id="st-qmsg" role="status"></p>';
     back.appendChild(card);
     document.getElementById('gj-modal-root').appendChild(back);
     if (window.QRCode && window.QRCode.toCanvas) {

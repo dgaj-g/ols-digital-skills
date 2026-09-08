@@ -1,0 +1,57 @@
+{
+ "walker": "sit-pupil",
+ "scope": "extra",
+ "width": 768,
+ "tier": "preview",
+ "contentHash": "c789d740dc1a",
+ "when": "2026-09-08T10:55:22.865Z",
+ "states": [
+  {
+   "surface": "shelf",
+   "state": "none-ticked",
+   "width": 768,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "FAIL"
+   },
+   "measured": {
+    "said-twice": 0,
+    "readability": 20
+   }
+  },
+  {
+   "surface": "shelf",
+   "state": "locked-spine",
+   "width": 768,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "FAIL"
+   },
+   "measured": {
+    "said-twice": 0,
+    "readability": 20
+   }
+  }
+ ],
+ "consoleErrors": 0
+}

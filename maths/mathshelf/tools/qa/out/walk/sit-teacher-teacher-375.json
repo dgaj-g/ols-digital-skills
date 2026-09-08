@@ -4,8 +4,8 @@
  "width": 375,
  "projector": false,
  "tier": "preview",
- "contentHash": "1c8f38cb50aa",
- "when": "2026-09-08T08:30:45.250Z",
+ "contentHash": "c0d96583f66a",
+ "when": "2026-09-08T11:03:42.827Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -81,6 +81,30 @@
   },
   {
    "surface": "class-page",
+   "state": "loading-cold",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 0,
+    "readability": 28
+   }
+  },
+  {
+   "surface": "class-page",
    "state": "live",
    "width": 375,
    "projector": false,
@@ -125,6 +149,30 @@
    "measured": {
     "said-twice": 0,
     "readability": 40
+   }
+  },
+  {
+   "surface": "question-view",
+   "state": "loading-progressive",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 0,
+    "readability": 35
    }
   },
   {
@@ -244,12 +292,12 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 79
+    "readability": 126
    }
   },
   {
    "surface": "class-page",
-   "state": "live",
+   "state": "book-switch",
    "width": 375,
    "projector": false,
    "audits": {
@@ -393,7 +441,7 @@
   },
   {
    "surface": "book-view",
-   "state": "pencil",
+   "state": "flicking",
    "width": 375,
    "projector": false,
    "audits": {
@@ -461,6 +509,222 @@
    "measured": {
     "said-twice": 1,
     "readability": 6
+   }
+  },
+  {
+   "surface": "set-up",
+   "state": "tickboxes",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 32
+   }
+  },
+  {
+   "surface": "set-up",
+   "state": "link-qr-modal",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 4,
+    "readability": 4
+   }
+  },
+  {
+   "surface": "set-up",
+   "state": "csv-copied",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 2,
+    "readability": 33
+   }
+  },
+  {
+   "surface": "set-up",
+   "state": "csv-fallback-box",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 33
+   }
+  },
+  {
+   "surface": "class-page",
+   "state": "empty-class",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 0,
+    "readability": 24
+   }
+  },
+  {
+   "surface": "class-page",
+   "state": "no-flags",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 0,
+    "readability": 24
+   }
+  },
+  {
+   "surface": "set-up",
+   "state": "add-class-busy",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 22
+   }
+  },
+  {
+   "surface": "set-up",
+   "state": "delete-armed",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 4,
+    "readability": 4
+   }
+  },
+  {
+   "surface": "set-up",
+   "state": "error",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 32
    }
   }
  ],

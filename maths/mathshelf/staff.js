@@ -378,7 +378,13 @@
     card.innerHTML = '<h2>' + esc(name) + '</h2><canvas id="st-qr" width="260" height="260"></canvas>' +
       '<p class="ui-msg" style="word-break:break-all">' + esc(classLink(name)) + '</p>' +
       '<div class="check-row"><button class="btn-stamp" id="st-qr-copy">Copy link</button>' +
-      '<button class="btn-pencil" id="st-qr-close">Close</button></div><p class="ui-msg" id="st-qmsg"></p>';
+      /* A LIVE REGION SAYS SO. This slot is written as markup rather than through
+         el(), so the helper that stamps role="status" on a message slot never ran
+         - and an empty <p> with no role is a hole in the page as far as any audit
+         (or any screen reader) can tell. It sits in the one modal a teacher opens
+         to get a class link (found 8 Sept 2026; control:
+         sit-teacher.qr-modal-empty-live-region). */
+        '<button class="btn-pencil" id="st-qr-close">Close</button></div><p class="ui-msg" id="st-qmsg" role="status"></p>';
     back.appendChild(card);
     document.getElementById('gj-modal-root').appendChild(back);
     if (window.QRCode && window.QRCode.toCanvas) {
