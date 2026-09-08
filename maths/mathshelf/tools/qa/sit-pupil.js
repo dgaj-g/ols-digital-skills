@@ -246,7 +246,12 @@ async function walkBook(page, book, width, sidecar, transcript) {
         const r = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
           .filter(x => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === id)[0];
         if (!r) return [];
-        return [...r.querySelectorAll('.stat-claim-text, .stat-plot-label, .stat-sentence, .stat-fiction')]
+        /* NOT .stat-sentence: that is a frame with chips and empty boxes in it,
+           and read as text before she has answered it comes out as "BoysGirls"
+           and "( against )" - which the judge quite properly called the worst
+           item in the book. What she reads there is the words she chooses; the
+           frame itself is a control. */
+        return [...r.querySelectorAll('.stat-claim-text, .stat-plot-label, .stat-fiction')]
           .map(e => (e.textContent || '').replace(/\s+/g, ' ').trim()).filter(Boolean);
       }, qid)).forEach(say);
       /* WHAT THIS QUESTION SAYS IT CAN SHOW, written into the sidecar so
