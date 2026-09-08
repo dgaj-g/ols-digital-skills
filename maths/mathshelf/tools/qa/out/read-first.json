@@ -332,7 +332,7 @@
   {
     "path": "stats-quartiles > s6 > q32 > prompt",
     "kind": "FRAGMENT-RUN",
-    "text": "Three pupils each tried to find something out from a small sample.  /  Mrs Martin posted a questionnaire to 100 people chosen at random across the whole country to find out what food people in her town like.  /  Decide whether each survey gives a fair picture, and why.",
+    "text": "Three people each tried to find something out from a small sample.  /  Mrs Martin posted a questionnaire to 100 people chosen at random across the whole country to find out what food people in her town like.  /  Decide whether each survey gives a fair picture, and why.",
     "locked": false
   },
   {

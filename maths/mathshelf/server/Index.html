@@ -4554,7 +4554,9 @@ window.OLS_TRANSPORT = {
       dx: dx,
       mk: mk,
       mkMax: [marks[0] || 0, marks[1] || 0],
-      mkLabels: MK_LABELS[q.kind] || ['Working', 'Answer']
+      mkLabels: MK_LABELS[q.kind] || ['Working', 'Answer'],
+      /* this book writes its tally in words: "Quartiles 3 of 3", never "3/3" */
+      mkOf: true
     };
   }
 
@@ -7539,7 +7541,7 @@ function statsBoard(q, wrong) {
             ],
             src: 'Statistics M7 (1).pdf Q28(a)(b)' },
           { id: 'q32', kind: 'judge', marks: [3, 2],
-            prompt: 'Three pupils each tried to find something out from a small sample. George asked 10 people in his class how much they spend on coffee. Mrs Martin posted a questionnaire to 100 people chosen at random across the whole country to find out what food people in her town like. Charlie asked 10 Year 7 students what they think of school. Decide whether each survey gives a fair picture, and why.',
+            prompt: 'Three people each tried to find something out from a small sample. George asked 10 people in his class how much they spend on coffee. Mrs Martin posted a questionnaire to 100 people chosen at random across the whole country to find out what food people in her town like. Charlie asked 10 Year 7 students what they think of school. Decide whether each survey gives a fair picture, and why.',
             claims: [
               { text: 'George\u2019s survey tells him how much people generally spend on coffee.', fair: false,
                 why: 'SMALL', alsoWhy: ['BIASED'] },
@@ -9407,16 +9409,16 @@ function statsBoard(q, wrong) {
     /* the handling-data kinds: praise what she actually did, never "working"
        or "lines" on a board she built by pressing (rule 9) */
     plot: {
-      perfect: ['Points on the boundaries, curve through them \u2014 that is the whole method.',
+      perfect: ['You plotted the points, then drew the curve through them.',
                 'Every point where it belongs.', 'A smooth curve through every point.'],
       fail: ['We\u2019ll plot one of these together in class.', 'Watch the worked example again, then try the idea in class.']
     },
     read: {
-      perfect: ['Clean read-off.', 'The rule at the right height, and read carefully.', 'Read exactly where it should be.'],
+      perfect: ['Clean read-off.', 'You put the rule at the right height and read it carefully.', 'Read exactly where it should be.'],
       fail: ['We\u2019ll read one of these off together in class.', 'Watch the worked example again \u2014 it is the height that decides it.']
     },
     box: {
-      perfect: ['A tidy box plot \u2014 every mark earned.', 'Five markers, all where they belong.', 'Neat, and the box says what it should.'],
+      perfect: ['A tidy box plot \u2014 every mark earned.', 'All five markers are where they belong.', 'Neat, and the box says what it should.'],
       fail: ['We\u2019ll build one of these together in class.', 'Watch the worked example again, then try it in class.']
     },
     judge: {
@@ -9427,19 +9429,19 @@ function statsBoard(q, wrong) {
        order is not a question with a curve in it, and must never be praised for
        one (rule 9, the 23-Jun content-fit lesson) */
     order: {
-      perfect: ['In order first, then the cuts \u2014 that is the whole method.',
+      perfect: ['You put them in order, then found the cuts.',
                 'Every value in the right place.', 'Counted to the right positions.'],
       fail: ['We\u2019ll put one of these in order together in class.',
              'Watch the worked example again \u2014 the order comes first.']
     },
     table: {
       perfect: ['The running total, row by row.', 'Each row built on the one above it.',
-                'The last total reaches the number of people \u2014 that is the check.'],
+                'Your last total matched the number of people.'],
       fail: ['We\u2019ll fill one of these in together in class.',
              'Watch the worked example again \u2014 each row adds the next frequency.']
     },
     values: {
-      perfect: ['Worked out and written in.', 'Every box filled, and filled right.',
+      perfect: ['Worked out and written in.', 'You filled in every box, and got them all right.',
                 'Neatly done.'],
       fail: ['We\u2019ll work through one of these in class.',
              'Watch the worked example again, then try the idea in class.']
@@ -10910,7 +10912,15 @@ function statsBoard(q, wrong) {
         var secondGone = rec.att.length >= 2;
         var mkState = done ? ' mk-correct' : amber ? ' mk-amber' : ' mk-wrong';   // colour the score by outcome, not always red
         var lb = (verdict && verdict.mkLabels) || ['Working', 'Answer'];
-        var tally = el('div', 'mk-tally' + mkState, lb[0] + ' ' + mk[0] + '/' + mkMax[0] + ' \u00b7 ' + lb[1] + ' ' + mk[1] + '/' + mkMax[1]);
+        /* "3 of 3", NOT "3/3", WHERE THE BOOK ASKS FOR IT. A slash between two
+           numbers is a fraction on a maths screen, and the separated read said
+           so: "Quartiles 3/3" is read once as three thirds before it is read as
+           three out of three. The approved books say it with a slash and are not
+           reopened (rule 30); a book whose engine asks for the words gets the
+           words, which is the form the cold-read checklist's own exemplar uses
+           ("Points 1 of 1 \u00b7 Curve 0 of 1"). */
+        var sep = (verdict && verdict.mkOf) ? ' of ' : '/';
+        var tally = el('div', 'mk-tally' + mkState, lb[0] + ' ' + mk[0] + sep + mkMax[0] + ' \u00b7 ' + lb[1] + ' ' + mk[1] + sep + mkMax[1]);
         feedback.appendChild(tally);
 
         if (amber) feedback.appendChild(el('p', 'amber-note', T.amberNoWorkingLine));
@@ -11007,7 +11017,8 @@ function statsBoard(q, wrong) {
         var mkState2 = verdict.res === 'OK' ? ' mk-correct' : verdict.res === 'AMBER' ? ' mk-amber' : ' mk-wrong';
         margin.innerHTML = 'Q' + hooks.number + '<div class="mk-tally' + mkState2 + '" style="font-size:18px">' + (verdict.mk[0] + verdict.mk[1]) + '/' + (mkMax2[0] + mkMax2[1]) + '</div>';
         var lb2 = verdict.mkLabels || ['Working', 'Answer'];
-        feedback.appendChild(el('div', 'mk-tally' + mkState2, lb2[0] + ' ' + verdict.mk[0] + '/' + mkMax2[0] + ' \u00b7 ' + lb2[1] + ' ' + verdict.mk[1] + '/' + mkMax2[1]));
+        var sep2 = verdict.mkOf ? ' of ' : '/';
+        feedback.appendChild(el('div', 'mk-tally' + mkState2, lb2[0] + ' ' + verdict.mk[0] + sep2 + mkMax2[0] + ' \u00b7 ' + lb2[1] + ' ' + verdict.mk[1] + sep2 + mkMax2[1]));
       }
       checkRow.hidden = true;
       window.GJ.setState(wrap, 'question', 'locked-restore');
