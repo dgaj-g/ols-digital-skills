@@ -103,6 +103,30 @@ const PLANTS = {
   },
 
   /* ── CSS that breaks a law the pixels are measured against ────────── */
+  /* ── the locked spine, as it was before 8 Sept 2026 ──────────────────
+     A book a class does not have is drawn on a pale gradient, and the audience
+     band and the motif were left in the colours the OPEN cover uses: the band
+     measured 4.12:1 against a 4.5 floor and the motif's letter 1.01:1 against
+     a 3:1 one - invisible. No walk had ever stood on a shelf with an unticked
+     book, so nothing had ever measured it. This plant puts both colours back. */
+  'fixture-css-locked-spine': (dir) => {
+    fs.appendFileSync(path.join(dir, 'shell.css'),
+      '\n/* planted by a control, never shipped */\n' +
+      '.book.not-set .series, .book.not-set .band { color: #47566F !important; }\n' +
+      '.book.not-set .motif text, .book.not-set .motif path { fill: #E4B824 !important; stroke: #E4B824 !important; }\n');
+  },
+
+  /* ── the link-and-QR modal's message slot, as it was ──────────────────
+     Written with innerHTML rather than through el(), so the helper that stamps
+     role="status" on a live region never ran: an empty <p> with no role is a
+     hole in the page as far as any audit can tell, and it sat in the one modal
+     a teacher opens to get a class link. */
+  'fixture-staff-qr-live-region': (dir) => {
+    edit(dir, 'staff.js',
+      '<p class="ui-msg" id="st-qmsg" role="status"></p>',
+      '<p class="ui-msg" id="st-qmsg"></p>');
+  },
+
   'fixture-css': (dir) => {
     fs.appendFileSync(path.join(dir, 'shell.css'), FIXTURE_CSS);
   },

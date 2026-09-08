@@ -266,7 +266,17 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
 .book.not-set { cursor: default; }
 .book.not-set .bcover { background: linear-gradient(170deg, #DDE3EC, #C9D2DF); }
 .book.not-set .title { color: #33415C; }
-.book.not-set .series, .book.not-set .band { color: #47566F; }
+/* A BOOK SHE CANNOT OPEN IS STILL A BOOK SHE READS. The locked spine kept the
+   open cover's colours on a pale ground: the audience band measured 4.12:1
+   against a 4.5 floor and the motif's own letter 1.01:1 against a 3:1 one -
+   invisible. No walk had ever stood on a shelf with an unticked book, so
+   nothing had ever measured it (found 8 Sept 2026 by the first walk that did;
+   control: sit-pupil.locked-spine-unreadable). The band and the series now
+   wear the title's ink, and the motif is drawn in it too rather than in a gold
+   that says nothing on this ground. */
+.book.not-set .series, .book.not-set .band { color: #33415C; }
+.book.not-set .motif text { fill: #33415C; }
+.book.not-set .motif path { stroke: #33415C; }
 
 /* ── CHROME on an open book ─────────────────────────────────────── */
 .act-bar {

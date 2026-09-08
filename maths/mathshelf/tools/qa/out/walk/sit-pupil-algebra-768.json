@@ -3,12 +3,31 @@
  "scope": "algebra",
  "width": 768,
  "tier": "preview",
- "contentHash": "7e7412e7e566",
- "when": "2026-09-08T08:23:02.392Z",
+ "contentHash": "e781d1d660ed",
+ "when": "2026-09-08T10:51:19.228Z",
  "states": [
   {
    "surface": "cover",
    "state": "preview",
+   "width": 768,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   }
+  },
+  {
+   "surface": "shelf",
+   "state": "some-ticked",
    "width": 768,
    "audits": {
     "empty": "PASS",
@@ -540,6 +559,53 @@
    "measured": {
     "said-twice": 1,
     "readability": 34
+   }
+  },
+  {
+   "surface": "question",
+   "state": "locked-restore",
+   "qid": "q1",
+   "section": 0,
+   "book": "algebra",
+   "width": 768,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   }
+  },
+  {
+   "surface": "shelf",
+   "state": "in-progress",
+   "expected": "in-progress",
+   "stood": true,
+   "width": 768,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 0,
+    "readability": 20
    }
   },
   {

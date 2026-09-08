@@ -29,6 +29,7 @@ const { Gate } = require('./lib/report.js');
 const B = require('./lib/browser.js');
 const W = require('./lib/walk-moves.js');
 const AUD = require('./lib/audits.js');
+const S = require('./lib/stage.js');
 const { contentHash } = require('./lib/hash.js');
 
 /* ONE SENTENCE PER FINDING, and it NAMES THE THING. The first cut printed the
@@ -63,6 +64,9 @@ const CONTROLS = [
      read DID NOT FIRE. A control that quotes a sentence must quote the one the
      gate actually prints. */
   { id: 'hover-only-legend', kind: 'fixture', plant: 'fixture-staff', mustFail: /a smartboard has no hover/ },
+  /* the link-and-QR modal's own message slot, found on 8 Sept 2026 by the first
+     walk ever to open it (package V4-STATES) */
+  { id: 'qr-modal-empty-live-region', kind: 'fixture', plant: 'fixture-staff-qr-live-region', mustFail: /<p>\.ui-msg/ },
   /* and this one planted the LEGEND fault and waited for the exercise-card
      message, which that plant cannot produce. Two controls sharing one plant is
      how a gate goes years without being asked its own question. */
@@ -113,6 +117,42 @@ async function walk(page, width, projector, sidecar, transcript) {
       g.fail((s.surface || fallbackSurface) + ':' + (s.state || fallbackState) + ' @' + width + (projector ? 'x720' : ''), k,
         k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : describe(f));
     }));
+  };
+  /* record a row directly, from a state already known — used where reading
+     the live DOM afterward would report a DIFFERENT, later screen (see
+     armLog/drewState below) rather than the one this call actually stood on */
+  const recordKnown = async (surface, knownState, extra) => {
+    const a = await AUD.run(page, { clickSafety: true });
+    sidecar.states.push(Object.assign({ surface, state: knownState, width, projector: !!projector }, extra || {}, { audits: a.verdicts, measured: a.measured }));
+    Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {
+      g.fail(surface + ':' + knownState + ' @' + width + (projector ? 'x720' : ''), k,
+        k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : describe(f));
+    }));
+  };
+
+  /* THE STATE LOG (package V4-STATES, 8 Sept). A HANDFUL OF STATES ARE SET
+     AND OVERWRITTEN IN THE SAME BREATH: "book-switch" (SURF then
+     showClassPage()) and "flicking" (SURF then showJotterPage()) both call a
+     function that re-renders the whole panel and stamps ITS OWN state over
+     the one just set - all inside the one click handler, no async gap a
+     settle() or a wait() could ever land inside. Patching setAttribute once,
+     for the life of this page, is how the walk stands on what the app
+     actually drew rather than only on what a tick later left standing - the
+     same problem the audits solve for the app's own faults, applied to the
+     walk's own reading of the DOM. */
+  const armLog = () => page.evaluate(() => {
+    window.__stateLog = [];
+    if (window.__setAttrPatched) return;
+    window.__setAttrPatched = true;
+    const orig = Element.prototype.setAttribute;
+    Element.prototype.setAttribute = function (name, value) {
+      if (name === 'data-state') window.__stateLog.push({ surface: this.getAttribute('data-surface'), state: value });
+      return orig.apply(this, arguments);
+    };
+  });
+  const drewState = async (surface, wantState) => {
+    const log = await page.evaluate(() => window.__stateLog || []);
+    return log.some((e) => e.surface === surface && e.state === wantState);
   };
 
   /* --- the cover, wrong passcode first --- */
@@ -168,15 +208,22 @@ async function walk(page, width, projector, sidecar, transcript) {
     const b = bs[bs.length - 1];
     if (!b) return null;
     b.click();
-    /* read the strip in the SAME TICK as the press: a round trip owns its
-       waiting state, and a spinner that appears later is a screen that went
-       dead in between (DFM 42/161) */
+    /* read the strip AND the surface's own state in the SAME TICK as the
+       press: a round trip owns its waiting state, and a spinner (or a
+       "loading-cold" nobody wrote down) that appears later is a screen that
+       went dead in between (DFM 42/161). The offline "wall" call resolves in
+       one microtask - so a SEPARATE evaluate() taken even a beat later, after
+       the round trip back to Node, reads "live" every time; this is the one
+       state class-page:loading-cold can ever be caught in. */
     const strip = document.querySelector('.cp-strip');
-    return strip ? strip.textContent : '';
+    const su = document.querySelector('[data-surface="class-page"]');
+    return { strip: strip ? strip.textContent : '', state: su ? su.getAttribute('data-state') : null };
   });
-  g.check(cold != null && /Loading/i.test(cold) && cold.length > 10, 'class-page:loading-cold @' + width, 'waits',
-    'the class page did not say which class it was loading, by name, in the same tick as the press (it said: "' + String(cold).slice(0, 60) + '")');
-  say(cold);
+  const coldText = cold ? cold.strip : null;
+  g.check(coldText != null && /Loading/i.test(coldText) && coldText.length > 10, 'class-page:loading-cold @' + width, 'waits',
+    'the class page did not say which class it was loading, by name, in the same tick as the press (it said: "' + String(coldText).slice(0, 60) + '")');
+  say(coldText);
+  if (cold && cold.state === 'loading-cold') await recordKnown('class-page', 'loading-cold');
   await new Promise(r => setTimeout(r, 1500));
   await record('class-page', 'live');
 
@@ -217,10 +264,32 @@ async function walk(page, width, projector, sidecar, transcript) {
   say(await page.evaluate(() => (document.querySelector('.ex-walt') || {}).textContent || ''));
 
   /* --- a column header -> the question view --- */
-  await page.evaluate(() => { const th = document.querySelector('.grid th[scope="col"]'); if (th) th.click(); });
+  const qvOpen = await page.evaluate(() => {
+    const th = document.querySelector('.grid th[scope="col"]');
+    if (!th) return null;
+    th.click();
+    /* read the surface's own state in the SAME TICK as the press: mounting
+       reads "loading-progressive" and stays there through every one of the
+       class's own "jotter" fetches - each one an offline call away, so a
+       SEPARATE evaluate() a beat later always reads "loaded" instead */
+    const su = document.querySelector('[data-surface="question-view"]');
+    return su ? su.getAttribute('data-state') : null;
+  });
+  if (qvOpen === 'loading-progressive') await recordKnown('question-view', 'loading-progressive');
   await new Promise(r => setTimeout(r, 1500));
   await record('question-view', 'loaded');
   say(await page.evaluate(() => (document.querySelector('.q-prompt') || {}).textContent || ''));
+  /* question-view:ink-open — LOOKED FOR AND NOT FOUND (confirmed by reading,
+     not just by this probe failing to find it). `.qv-card` (staff.js, S3 The
+     Question View) is built as plain display markup and carries no click
+     handler and no `.verdict-mark` button anywhere - the only place
+     `.verdict-mark` exists is inside showJotterPage() (S2, book-view), whose
+     own shell() call hardcodes `surface:'book-view'` regardless of how it
+     was reached (even its own "across the class" sweep mode, `ctx.qlabel`,
+     leaves the surface as book-view). SURF('question-view','ink-open')
+     sits in that same handler and can accordingly never fire while
+     'question-view' is the current surface. Recorded as debt, not chased
+     further as a probe fault. */
 
   /* --- back, then a cell -> a pupil's book --- */
   await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Ex\s*\d/.test(b.textContent))[0]; if (c) c.click(); });
@@ -254,31 +323,49 @@ async function walk(page, width, projector, sidecar, transcript) {
      walked by nobody. */
   const wait = (ms) => new Promise(r => setTimeout(r, ms || 900));
 
-  /* the grid, scrolled off its own header */
+  /* the grid, scrolled off its own header. staff.js's own scroll listener is
+     on the plain, unclassed div showWall() builds as its `body` — the direct
+     parent of `.wall` — so that is named explicitly rather than left to a
+     generic overflow search to happen to find (the search stays too, as a
+     second line, in case a future layout moves the listener). */
   await page.evaluate(() => {
-    /* the grid scrolls inside whichever element actually overflows, so find one
-       rather than guessing at a class name - and the listener is on the element
-       the markbook attached it to, so the event is dispatched on every
-       candidate rather than only the innermost */
-    const cands = [...document.querySelectorAll('div, main, section')]
+    const wall = document.querySelector('.wall');
+    const named = wall ? wall.parentElement : null;
+    const cands = [...document.querySelectorAll('*')]
       .filter((e) => e.scrollHeight > e.clientHeight + 8 || e.scrollWidth > e.clientWidth + 8);
-    cands.concat([document.scrollingElement]).forEach((b) => {
+    (named ? [named] : []).concat(cands).concat([document.scrollingElement, document.documentElement, document.body]).forEach((b) => {
       if (!b) return;
-      b.scrollTop = 60; b.scrollLeft = 60;
+      b.scrollTop = 300; b.scrollLeft = 300;
       b.dispatchEvent(new Event('scroll', { bubbles: true }));
     });
   });
   await wait(500);
-  await record('full-grid', 'sticky-scroll');
+  {
+    const st = await page.evaluate(() => {
+      const su = document.querySelector('[data-surface="full-grid"]');
+      return su ? su.getAttribute('data-state') : null;
+    });
+    if (st === 'sticky-scroll') await recordKnown('full-grid', 'sticky-scroll');
+    else await record('full-grid', 'sticky-scroll');
+  }
 
   /* back to the class page, and a different book */
   await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Classes/.test(b.textContent))[0]; if (c) c.click(); });
   await wait(1200);
+  await armLog();
   const switched = await page.evaluate(() => {
     const b = [...document.querySelectorAll('.cp-books button')].filter(x => x.getAttribute('aria-pressed') !== 'true')[0];
     if (!b) return false; b.click(); return true;
   });
-  if (switched) { await wait(1400); await record('class-page', 'book-switch'); }
+  if (switched) {
+    await wait(1400);
+    /* SURF('class-page','book-switch') is set, then showClassPage() re-renders
+       the whole panel and stamps its own "loading-cold" over it - all inside
+       the one click handler, no async gap a wait() could land inside. The log
+       is what saw it drawn. */
+    if (await drewState('class-page', 'book-switch')) await recordKnown('class-page', 'book-switch');
+    else await record('class-page', 'book-switch');
+  }
 
   /* a cell under her eye, before she opens it */
   await page.evaluate(() => { const c = document.querySelector('.excard'); if (c) c.click(); });
@@ -289,9 +376,32 @@ async function walk(page, width, projector, sidecar, transcript) {
   });
   if (hovered) { await wait(400); await record('exercise-view', 'cell-focus'); }
 
-  /* a pupil's book, and the ink */
-  await page.evaluate(() => { const td = document.querySelector('.grid td.cell'); if (td) td.click(); });
+  /* a pupil's book, and the ink. book-view:worth-a-look-open (an amber verdict,
+     or a wrong one the engine could not name) is a fact about WHICH pupil's
+     book this is, not about anything pressed - so the cell picked here is an
+     amber one where the grid has one, and the FIRST cell otherwise (the
+     ordinary route, kept for every width the grid has no amber cell at all).
+     Tried widening this to the full grid (many more questions, a better
+     chance of one amber cell) and it cost six other states below - the full
+     grid opens showJotterPage with a DIFFERENT ctx shape (`{qlabel}`, the
+     "sweep" mode, vs `{q}` here), and whatever it renders differently broke
+     the ink-control probes that follow. Kept narrow rather than trade a
+     probable state for six confirmed ones. */
+  const openedAmber = await page.evaluate(() => {
+    const td = [...document.querySelectorAll('.grid td.cell')].filter((c) => c.querySelector('.g-am'))[0] || document.querySelector('.grid td.cell');
+    if (!td) return false;
+    td.click();
+    return true;
+  });
   await wait(1600);
+  if (openedAmber) {
+    const wl = await page.evaluate(() => {
+      const su = document.querySelector('[data-surface="book-view"]');
+      return su ? su.getAttribute('data-state') : null;
+    });
+    if (wl === 'worth-a-look-open') await recordKnown('book-view', 'worth-a-look-open');
+    else g.note('book-view:worth-a-look-open @' + width + ': the book opened here read "' + wl + '", not "worth-a-look-open" (no amber/undx-wrong cell on this grid)');
+  }
   const inkOpen = await page.evaluate(() => { const v = document.querySelector('.verdict-mark'); if (!v) return false; v.click(); return true; });
   if (inkOpen) {
     await wait(600);
@@ -308,11 +418,18 @@ async function walk(page, width, projector, sidecar, transcript) {
       await wait(400);
     }
   }
+  await armLog();
   const flicked = await page.evaluate(() => {
     const b = [...document.querySelectorAll('.flick-btn')].filter(x => !/is-off/.test(x.className))[0];
     if (!b) return false; b.click(); return true;
   });
-  if (flicked) { await wait(1500); await record('book-view', 'flicking'); }
+  if (flicked) {
+    await wait(1500);
+    /* the same overwrite-in-the-same-breath as book-switch: SURF('book-view',
+       'flicking') then showJotterPage() stamps 'pencil' straight over it */
+    if (await drewState('book-view', 'flicking')) await recordKnown('book-view', 'flicking');
+    else await record('book-view', 'flicking');
+  }
   const reteached = await page.evaluate(() => { const b = document.querySelector('.jp-reteach'); if (!b || b.disabled) return false; b.click(); return true; });
   if (reteached) { await wait(1400); await record('book-view', 'reteach-sent'); }
 
@@ -329,7 +446,19 @@ async function walk(page, width, projector, sidecar, transcript) {
     await wait(1200);
     await record('slips', 'starter-board');
     say(await page.evaluate(() => (document.querySelector('.starter-h') || {}).textContent || ''));
-    say(await page.evaluate(() => (document.querySelector('.starter-q') || {}).textContent || '')); await page.evaluate(() => { const c = [...document.querySelectorAll('button')].filter(x => /close|done|back/i.test(x.textContent || ''))[0]; if (c) c.click(); }); await wait(600); }
+    say(await page.evaluate(() => (document.querySelector('.starter-q') || {}).textContent || ''));
+    /* THE CLOSE BUTTON HAS A NAME OF ITS OWN (#sr-close). Matching "close" as
+       loose text across every button on the page found "Close the markbook"
+       first - it sorts earlier in the DOM than the overlay staff.js appends
+       to document.body - and clicking it logged the walk out of the markbook
+       entirely, silently failing every set-up and book-view probe after this
+       point in the walk (nothing downstream could find the screen it needed,
+       because the walk was back on the passcode screen). Found standing up
+       set-up:add-class-busy and set-up:delete-armed below: neither state had
+       ever been recorded and this is why. */
+    await page.evaluate(() => { const c = document.getElementById('sr-close'); if (c) c.click(); });
+    await wait(600);
+  }
 
   /* Set-up: a book ticked on, the link and its QR, the CSV */
   await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
@@ -344,12 +473,203 @@ async function walk(page, width, projector, sidecar, transcript) {
   if (qr) {
     await wait(1200);
     await record('set-up', 'link-qr-modal');
-    say(await page.evaluate(() => (document.querySelector('.gj-qr p, .gj-qr .ui-msg') || {}).textContent || '')); await page.evaluate(() => { const c = [...document.querySelectorAll('button')].filter(x => /close|done/i.test(x.textContent || ''))[0]; if (c) c.click(); }); await wait(600); }
-  const csv = await page.evaluate(() => { const b = [...document.querySelectorAll('button, .toolbtn')].filter(x => /CSV/i.test(x.textContent || ''))[0]; if (!b) return false; b.click(); return true; });
-  if (csv) {
+    say(await page.evaluate(() => (document.querySelector('.gj-qr p, .gj-qr .ui-msg') || {}).textContent || ''));
+    /* #st-qr-close by id — the same "close the markbook" mismatch as the
+       starter board's close button, and it broke the CSV probe the same way:
+       every button after this one found nothing, because the walk was
+       logged out before it ever got there. */
+    await page.evaluate(() => { const c = document.getElementById('st-qr-close'); if (c) c.click(); });
+    await wait(600);
+  }
+  /* set-up:csv-copied / set-up:csv-fallback-box — despite the name (this
+     state predates the "Copy link" button and was never renamed), copyText()
+     hardcodes `SURF('set-up', ...)` regardless of which caller invoked it -
+     so the state only ever actually lands when copyText() is called WHILE
+     'set-up' is the current surface, which is the "Copy link" button on this
+     classes list, not exportCsv()'s "Download CSV" (that lives on the class
+     page and the full grid, where SURF('set-up',...) finds no element and
+     silently no-ops - confirmed by reading copyText() and every one of its
+     three call sites). navigator.clipboard's own permission in headless
+     Chrome is unreliable (silently pending, or refused with no user gesture
+     bridging the two calls), which is why the two paths inside copyText()
+     are forced here rather than left to chance. */
+  await page.evaluate(() => { if (navigator.clipboard) navigator.clipboard.writeText = () => Promise.resolve(); });
+  const linkOk = await page.evaluate(() => {
+    const row = document.querySelector('#st-rows tr');
+    const b = row && row.querySelectorAll('td:last-child button')[1];
+    if (!b) return false; b.click(); return true;
+  });
+  if (linkOk) {
+    await wait(900);
+    const st1 = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, ['set-up', null]);
+    if (st1 && st1.ok && st1.state === 'csv-copied') await record('set-up', 'csv-copied');
+    else g.note('set-up:csv-copied @' + width + ': read "' + (st1 && st1.state) + '" after the copy-link press instead');
+  } else {
+    g.note('set-up:csv-copied @' + width + ': no class row / "Copy link" button on screen to press');
+  }
+  await page.evaluate(() => {
+    if (navigator.clipboard) navigator.clipboard.writeText = () => Promise.reject(new Error('qa-mock: clipboard refused'));
+    const origExec = document.execCommand ? document.execCommand.bind(document) : null;
+    document.execCommand = function (cmd) { if (cmd === 'copy') return false; return origExec ? origExec.apply(document, arguments) : false; };
+  });
+  const linkFallback = await page.evaluate(() => {
+    const row = document.querySelector('#st-rows tr');
+    const b = row && row.querySelectorAll('td:last-child button')[1];
+    if (!b) return false; b.click(); return true;
+  });
+  if (linkFallback) {
+    await wait(900);
+    const st2 = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, ['set-up', null]);
+    if (st2 && st2.ok && st2.state === 'csv-fallback-box') await record('set-up', 'csv-fallback-box');
+    else g.note('set-up:csv-fallback-box @' + width + ': read "' + (st2 && st2.state) + '" after the forced-failure copy-link press instead');
+  } else {
+    g.note('set-up:csv-fallback-box @' + width + ': no class row / "Copy link" button on screen to press');
+  }
+
+  /* class-page:empty-class, then class-page:no-flags — two facts about WHICH
+     class is open, not about anything pressed once she is there. "demo" is
+     the pupil-default class this very page created for itself the moment it
+     first loaded ?class=demo (script.js's own `store()`), before staff login
+     ever touched it, and localStorage.clear() + reload at the top of this
+     walk recreated it exactly the same way, with every book on and nobody's
+     work under it yet - the one class here nobody has to seed by hand.
+     empty-class is stood on FIRST, while that is still true; a pupil is then
+     driven through one question, correctly, first try (so no flag condition
+     — wrong-twice, pulled-help, stuck-open — is ever met), on a SECOND page
+     in this SAME browser (same profile, same localStorage, so her save
+     lands where this page can see it), and no-flags is stood on after. */
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await wait(1200);
+  /* empty-class IS DRAWN, THEN OVERWRITTEN IN THE SAME PAINT. staff.js's
+     paint(pupils) sets class-page to "empty-class" when there are no
+     pupils, and separately — unconditionally on `!flags.length`, not on
+     whether there were any pupils to flag in the first place — sets
+     "no-flags" right after: zero pupils trivially has zero flags, so a
+     class with nobody in it never settles on "empty-class", it settles on
+     "no-flags" having drawn "empty-class" for one line first. The log
+     catches what was actually drawn. */
+  await armLog();
+  const openedDemo = await page.evaluate(() => {
+    const rows = [...document.querySelectorAll('#st-rows tr')];
+    const row = rows.filter((r) => (r.querySelector('td b') || {}).textContent === 'demo')[0];
+    const btn = row && [...row.querySelectorAll('button')].filter((b) => /Open the markbook/.test(b.textContent))[0];
+    if (!btn) return false;
+    btn.click();
+    return true;
+  });
+  if (openedDemo) {
+    await wait(1500);
+    if (await drewState('class-page', 'empty-class')) await recordKnown('class-page', 'empty-class');
+    else {
+      const stE = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, ['class-page', null]);
+      g.note('class-page:empty-class @' + width + ': never drew "empty-class" — the "demo" class settled on "' + (stE && stE.state) + '"');
+    }
+    const bookForDemo = await page.evaluate(() => (window.GJ && window.GJ.app && window.GJ.app.activities && window.GJ.app.activities[0] && window.GJ.app.activities[0].id) || 'angles');
+
+    const attempts = S.attempts();
+    const pupilPage = await page.browser().newPage();
+    await pupilPage.evaluateOnNewDocument((table) => {
+      window.__modelAttempt = (qid, wrong) => {
+        const r = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+          .filter((x) => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === qid)[0];
+        const bk = r ? (r.getAttribute('data-book') || '') : '';
+        return table[(wrong ? 'wrong:' : 'right:') + bk + ':' + qid] || null;
+      };
+    }, attempts);
+    try {
+      await pupilPage.goto(BASE + '?class=demo&nointro&reserve=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
+      await W.settle(pupilPage);
+      await pupilPage.evaluate(() => { const b = document.getElementById('cover-open'); if (b && !b.disabled) b.click(); });
+      await W.settle(pupilPage);
+      const opened = await pupilPage.evaluate((s, id) => eval(s)(id), W.ACTIONS.openBook, bookForDemo);
+      if (opened.ok) {
+        await W.settle(pupilPage);
+        await pupilPage.evaluate((s, i) => eval(s)(i), W.ACTIONS.openSection, 0);
+        await W.settle(pupilPage);
+        const qids = await pupilPage.evaluate((s) => eval(s)(), W.QUESTIONS_ON_SCREEN);
+        if (qids[0]) {
+          const answered = await pupilPage.evaluate((s2, args) => eval(s2)(args), W.ANSWER, [qids[0], false]);
+          if (answered && answered.ok) {
+            await W.settle(pupilPage);
+            await pupilPage.evaluate((s, id) => eval(s)(id), W.CHECK, qids[0]);
+            await new Promise((r) => setTimeout(r, 1800));   /* past scheduleSave's floor, so her mark is on disk */
+          }
+        }
+      }
+    } catch (e) { g.note('class-page:no-flags @' + width + ': could not drive the pupil (' + String(e.message || e).slice(0, 80) + ')'); }
+    await pupilPage.close();
+
+    await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
     await wait(1200);
-    const st = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, ['set-up', null]);
-    if (st && st.ok && /csv/.test(st.state || '')) await record('set-up', st.state);
+    const reopenedDemo = await page.evaluate(() => {
+      const rows = [...document.querySelectorAll('#st-rows tr')];
+      const row = rows.filter((r) => (r.querySelector('td b') || {}).textContent === 'demo')[0];
+      const btn = row && [...row.querySelectorAll('button')].filter((b) => /Open the markbook/.test(b.textContent))[0];
+      if (!btn) return false;
+      btn.click();
+      return true;
+    });
+    if (reopenedDemo) {
+      await wait(1500);
+      const stF = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, ['class-page', null]);
+      if (stF && stF.ok && stF.state === 'no-flags') await record('class-page', 'no-flags');
+      else g.note('class-page:no-flags @' + width + ': the demo class read "' + (stF && stF.state) + '" after one correct answer, not "no-flags"');
+    }
+  }
+
+  /* set-up:add-class-busy — a throwaway class, made and torn down here so the
+     add/delete flow can be walked without leaving anything behind for a real
+     class list to trip over. The busy state is set synchronously, before the
+     (offline, near-instant) admin call resolves — same-tick capture, same
+     reasoning as class-page:loading-cold above. */
+  /* back to Classes first — the no-flags drive above left this page on the
+     "demo" class-page, and #st-newclass/#st-add/#st-rows only exist on the
+     set-up screen. */
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await wait(1200);
+  const addResult = await page.evaluate(() => {
+    const input = document.querySelector('#st-newclass');
+    const btn = document.querySelector('#st-add');
+    if (!input || !btn) return null;
+    input.value = 'qa-scratch-v4states';
+    btn.click();
+    const su = document.querySelector('[data-surface="set-up"]');
+    return su ? su.getAttribute('data-state') : null;
+  });
+  if (addResult === 'add-class-busy') await recordKnown('set-up', 'add-class-busy');
+  else g.note('set-up:add-class-busy @' + width + ': same-tick read was "' + addResult + '", not "add-class-busy" (#st-newclass/#st-add on screen: ' + (addResult !== null) + ')');
+  await wait(1500);
+
+  /* set-up:delete-armed, then set-up:error — the confirm dialog holds
+     "delete-armed" open (no async gap: it is WAITING on her, not on a
+     server), so a plain read after the click is honest here. Confirming it
+     is where set-up:error lives: window.GJ.app.call is script.js's own
+     published hook (`Object.assign(GJ.app, {call: call, ...})`), and
+     staff.js's own `call()` wrapper always calls through it — so replacing
+     it for this one press is the same front door a real network failure
+     would arrive through, not a way around the offline stub. The class is
+     thrown away either way: deleted for real if the ordinary path is taken,
+     left behind (harmless, this browser profile ends with the page) if the
+     mocked one is. */
+  const armed = await page.evaluate(() => {
+    const rows = [...document.querySelectorAll('#st-rows tr')];
+    const row = rows.filter((r) => /qa-scratch-v4states/.test((r.textContent || '')))[0];
+    const del = row && [...row.querySelectorAll('button')].filter((b) => (b.textContent || '').trim() === '×')[0];
+    if (!del) return false;
+    del.click();
+    return true;
+  });
+  if (!armed) g.note('set-up:delete-armed @' + width + ': no row for "qa-scratch-v4states" with a delete (×) button — was it added?');
+  if (armed) {
+    await wait(400);
+    await record('set-up', 'delete-armed');
+    await page.evaluate(() => {
+      window.GJ.app.call = function () { return Promise.reject(new Error('qa-mock: the network refused this one press')); };
+    });
+    await page.evaluate(() => { const ok = document.getElementById('gj-cf-ok'); if (ok) ok.click(); });
+    await wait(600);
+    const st3 = await page.evaluate((s2, args) => eval(s2)(args), W.STATE_OF, ['set-up', null]);
+    if (st3 && st3.ok && st3.state === 'error') await record('set-up', 'error');
   }
 }
 
