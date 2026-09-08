@@ -20,13 +20,23 @@ A topic is **one file**: `content-<topic>.js`, which attaches
 the same examiner-style marking, the same Working Wall and override and Marking
 Pile all work on it automatically, because they iterate `GJ_CONTENT[actId]`.
 
-There are **two marking engines** already built; pick the one your topic needs:
+There are **three marking engines** already built; pick the one your topic needs:
 
 | Engine | Marks | Use it for |
 |---|---|---|
 | `mathcore.js` (`GJ_MATH.checkQuestion`) | typed algebra working, line by line — exact-rational equivalence, any valid route, dx misconceptions | equations, expanding, factorising, substitution, sequences-as-formulae, anything where pupils **type maths** |
 | `anglecore.js` (`GJ_ANGLES.checkSteps`) | angle chains on a diagram — value + named reason per step, follow-through, prerequisite check | anything that is **find-the-value-on-a-diagram with a reason** (bearings, circle theorems, polygons) |
+| `statcore.js` (`GJ_STATS.check`) | a BUILT artefact rather than typed working - an ordered list and its cuts, a cumulative-frequency column, plotted points and a curve, a read-off, a box plot, a comparison, a judgement, number-pad slots - marked one MARKING UNIT at a time, with follow-through per unit | anything the pupil constructs by pressing: handling data, and any later topic where the answer is a picture she builds |
 | `kind: 'classify'` (built into `jotter.js`) | pick-the-right-label from the full option set, two attempts | "what type of … is this?" recognition questions |
+
+A pack says which engine it wants with `engine: 'math'|'angles'|'stats'`, and
+`GJ.app.engineFor(actId, q)` is the ONE place that reads it - the summary, the
+markbook and the slip card all go through it.
+
+**A book is not quite client-only.** `server/Code.gs.template` keeps
+`var ACTS = [...]`, and the server refuses any act id that is not in it, so a
+new book cannot save a mark until its id is added there. That one line is the
+whole server change; everything else in the server derives from it.
 
 If a topic needs a genuinely new interaction (e.g. a number line, a probability
 tree), that's a bigger job — a new `kind` and a new branch in `jotter.js` +

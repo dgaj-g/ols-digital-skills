@@ -27,6 +27,24 @@ node tools/qa/run.js --full       # the walkers, three widths, both tiers
 node tools/qa/run.js --book angles   # scope the WALKERS; nothing else narrows
 ```
 
+**Speed (package SPEED, 8 Sept 2026 — detail in `tools/qa/HARNESS_SPEED_PASS.md`).**
+At the `--full` tier, `run.js` and `control.js` run their gates/controls through
+a pool of `MS_WORKERS` processes (default 6 — set the env var to change it); the
+fast-tier gates still run first, serially, and `qa-coverage` still runs LAST,
+alone. `sit-pupil`/`sit-confused` shard across the pool by book × width and
+`sit-teacher` by width; every worker gets its own preview server and port, and
+the results/coverage matrices print in the same declared order regardless of
+which order the pool actually finished them in. `control.js --changed` narrows
+the control battery to gates this commit could plausibly have broken (its own
+file, what it requires, or a book it COVERS whose files changed), derived from
+`git diff` against the commit recorded in PROGRESS.md as `controls: green
+<date> <commit>` — with no such line it runs everything, same as today. And
+`lib/hash.js` now exports `bookHash(APP, bookId)`: a walker sidecar for one
+book is stamped with the hash of THAT book's own pack, engine and renderer,
+plus the shared client — never the whole app directory — so adding a file no
+book loads yet (mid-build, as `statcore.js`/`statchart.js`/`jotter-stats.js`
+all were on 8 Sept) can no longer invalidate every other book's evidence.
+
 `tools/qa/install-hooks.js` puts the fast tier on `pre-commit` — but **it says
 no in a linked worktree, on purpose**: git reads a linked worktree's hooks from
 the shared `.git/hooks`, and this repository is worked in from more than one

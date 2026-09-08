@@ -21,7 +21,7 @@
 'use strict';
 
 const ANSWER = `((args) => {
-  const [qid, wrong] = args;
+  const [qid, wrong, uptoStage] = args;
   const attempt = window.__modelAttempt(qid, wrong);
   if (!attempt) return { ok: false, why: 'no model attempt for ' + qid };
   const rootOf = (id) => [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
@@ -71,6 +71,325 @@ const ANSWER = `((args) => {
     });
     return ok;
   };
+
+  /* ── STATS: the board is answered by pressing the app's own controls,
+       never by writing state (DESIGN §4.0 "the drive channel"). A stats
+       question can sit at any of its declared stages, so every kind's press
+       loop checks after each atomic press whether the walker only asked to be
+       driven up to a named stage, and stops there. ───────────────────────── */
+  const STAT_KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'];
+  if (STAT_KINDS.indexOf(kind) > -1) {
+    const curStage = () => root.getAttribute('data-stage');
+    const stagesOfRoot = () => (root.getAttribute('data-stages') || '').split(' ').filter(Boolean);
+    /* a stage is "reached" once the board has moved to it or past it - the
+       stage list is in order, so an index comparison is enough, and it means
+       a walker that asks for an EARLIER stage than the one already showing
+       (a re-drive on a partly-answered board) is told it is already there */
+    const reachedStage = (target) => {
+      if (!target) return false;
+      const list = stagesOfRoot();
+      const ci = list.indexOf(curStage()), ti = list.indexOf(target);
+      return ci > -1 && ti > -1 && ci >= ti;
+    };
+    const maybeStop = (how) => (reachedStage(uptoStage) ? { ok: true, how: how, stage: curStage() } : null);
+    if (reachedStage(uptoStage)) return { ok: true, how: 'already standing on ' + uptoStage, stage: curStage() };
+
+    /* the SVG board's own geometry, replicated ONLY for the case the drive
+       channel cannot reach: a two-stage boxplot's final scale is built after
+       mount (jotter-stats.js snapshots root.__statBoard once, at mount, and a
+       two-stage item has not built its plot board yet at that moment) so this
+       is worked out from the pack's own scale spec instead - the same formula
+       statchart.js uses for a 1-D scale (buildScaleGeometry + toPx) */
+    const SQ_UNIT = 24;
+    const scaleGeom = (c) => {
+      const min = (c && c.min != null) ? Number(c.min) : 0;
+      const sq = (c && c.sq != null) ? Number(c.sq) : ((c && c.step != null) ? Number(c.step) : 1);
+      return { min: min, sq: sq || 1, plotX0: 30, trackY: 96 };
+    };
+    const toPxScale = (g, x) => [g.plotX0 + (x - g.min) / g.sq * SQ_UNIT, g.trackY];
+    const svgPointToClient = (svg, x, y) => {
+      const pt = svg.createSVGPoint(); pt.x = x; pt.y = y;
+      const ctm = svg.getScreenCTM();
+      if (!ctm) return null;
+      const p = pt.matrixTransform(ctm);
+      return { x: p.x, y: p.y };
+    };
+    /* a real pointer press on the board itself - the SVG's own pointerdown
+       listener (statchart.js onGridTap) does the rest, including the snap */
+    const pressGrid = (svg, x, y) => {
+      const c = svgPointToClient(svg, x, y);
+      if (!c) return false;
+      svg.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: c.x, clientY: c.y, pointerId: 1, isPrimary: true, button: 0 }));
+      return true;
+    };
+    const nudge = (glyph, times) => {
+      for (let i = 0; i < times; i++) {
+        const b = all('.nudge-pad button').filter((x) => txt(x) === glyph)[0];
+        if (!b) return 'no "' + glyph + '" nudge key on ' + qid;
+        b.click();
+      }
+      return null;
+    };
+    const thatsMine = () => all('.btn-quiet').filter((b) => /that.?s my/i.test(txt(b)))[0];
+
+    /* ── qlist: tray tiles smallest first, then the cuts, then the IQR ──── */
+    function pressQlist(S, pq) {
+      const values = (pq && pq.values) || [];
+      const order = S.order || [];
+      for (let oi = 0; oi < order.length; oi++) {
+        const want = String(values[order[oi]]);
+        const tile = all('[data-tray^="qlist-tiles-"] [data-tray-item]').filter((b) => txt(b) === want)[0];
+        if (!tile) return { ok: false, why: 'no tray tile reads "' + want + '" on ' + qid };
+        tile.click();
+        const s1 = maybeStop('placed the tile "' + want + '"'); if (s1) return s1;
+      }
+      const picks = S.picks || {};
+      const askOrder = (pq && pq.ask) ? pq.ask.filter((a) => a !== 'IQR') : Object.keys(picks);
+      for (let ci = 0; ci < askOrder.length; ci++) {
+        const cutName = askOrder[ci];
+        const pos = picks[cutName];
+        if (!pos || !pos.length) continue;
+        for (let pi = 0; pi < pos.length; pi++) {
+          const rowBtn = all('[data-row-pos]').filter((b) => Number(b.getAttribute('data-row-pos')) === pos[pi])[0];
+          if (!rowBtn) return { ok: false, why: 'no row tile at position ' + pos[pi] + ' on ' + qid };
+          rowBtn.click();
+        }
+        const commit = all('.btn-quiet').filter((b) => !b.classList.contains('stat-undo'))[0];
+        if (!commit) return { ok: false, why: 'no commit button for ' + cutName + ' on ' + qid };
+        commit.click();
+        const s2 = maybeStop('committed ' + cutName); if (s2) return s2;
+      }
+      if (S.iqr) {
+        const pad = one('.numpad');
+        if (!pad || !padType(pad, S.iqr)) return { ok: false, why: 'could not key the IQR on ' + qid };
+      }
+      return null;
+    }
+
+    /* ── cftable: open each editable row and key its running total ──────── */
+    function pressCftable(S, pq) {
+      const cf = S.cf || [];
+      const classes = (pq && pq.classes) || [];
+      const pre = (pq && pq.prefill) || [];
+      for (let i = 0; i < classes.length; i++) {
+        if (pre.indexOf(i) > -1) continue;
+        if (cf[i] == null || cf[i] === '') continue;
+        let k = 0;
+        for (let j = 0; j < i; j++) if (pre.indexOf(j) === -1) k++;
+        const btn = all('.stat-table .stat-cell')[k];
+        if (!btn) return { ok: false, why: 'no cell for row ' + i + ' on ' + qid };
+        btn.click();
+        const pad = one('.numpad');
+        if (!pad || !padType(pad, cf[i])) return { ok: false, why: 'could not key row ' + i + ' on ' + qid };
+        const s = maybeStop('filled row ' + i); if (s) return s;
+      }
+      return null;
+    }
+
+    /* ── values: open each labelled box and key its value ───────────────── */
+    function pressValues(S, pq) {
+      const v = S.v || {};
+      const order = (pq && (pq.order || (pq.slots || []).map((s2) => s2.id))) || Object.keys(v);
+      for (let i = 0; i < order.length; i++) {
+        const id = order[i];
+        if (v[id] == null || v[id] === '') continue;
+        const btn = all('.stat-slots .stat-cell')[i];
+        if (!btn) return { ok: false, why: 'no slot for "' + id + '" on ' + qid };
+        btn.click();
+        const pad = one('.numpad');
+        if (!pad || !padType(pad, v[id])) return { ok: false, why: 'could not key "' + id + '" on ' + qid };
+        const s = maybeStop('filled "' + id + '"'); if (s) return s;
+      }
+      return null;
+    }
+
+    /* ── cfplot: press the grid at every point, then join them ──────────── */
+    function pressCfplot(S) {
+      const pts = S.pts || [];
+      const bd = root.__statBoard;
+      if (!bd || !bd.toPx || !bd.svg) return { ok: false, why: 'no board handle for ' + qid };
+      for (let i = 0; i < pts.length; i++) {
+        const px = bd.toPx(Number(pts[i][0]), Number(pts[i][1]));
+        if (!pressGrid(bd.svg, px[0], px[1])) return { ok: false, why: 'the board has no screen transform yet for ' + qid };
+        const s = maybeStop('placed point ' + i); if (s) return s;
+      }
+      if (S.joined) {
+        const join = one('.stat-join');
+        if (!join) return { ok: false, why: 'no Join button on ' + qid };
+        if (join.disabled) return { ok: false, why: 'Join the points is disabled on ' + qid };
+        join.click();
+      }
+      return null;
+    }
+
+    /* ── cfread: nudge the rule to each convention height, commit, repeat ── */
+    function pressCfread(S, pq) {
+      const asks = (pq && pq.ask) || [];
+      const sq = (pq && pq.chart && pq.chart.sq) || { x: 1, y: 1 };
+      const xMin = (pq && pq.chart && pq.chart.x && pq.chart.x.min) || 0;
+      for (let ai = 0; ai < asks.length; ai++) {
+        const a = asks[ai];
+        if (a === 'IQR') {
+          const pad = one('.numpad');
+          if (!pad || !padType(pad, S.iqr || '')) return { ok: false, why: 'could not key the IQR on ' + qid };
+          const commit = thatsMine();
+          if (!commit) return { ok: false, why: 'no commit for the IQR on ' + qid };
+          commit.click();
+        } else if (a && typeof a === 'object' && a.type === 'atX') {
+          const targetX = Number(a.x);
+          const stepsX = Math.round((targetX - Number(xMin)) / (Number(sq.x) || 1));
+          const bad = nudge(stepsX < 0 ? '◀' : '▶', Math.abs(stepsX));
+          if (bad) return { ok: false, why: bad };
+          const pad = one('.stat-answer .numpad') || one('.numpad');
+          if (!pad || !padType(pad, S.answer || '')) return { ok: false, why: 'could not key the reading on ' + qid };
+          const commit = thatsMine();
+          if (!commit) return { ok: false, why: 'no commit for the reading on ' + qid };
+          commit.click();
+        } else {
+          const read = (S.reads || {})[a];
+          const targetH = read ? Number(read.h) : 0;
+          const stepsY = Math.round(targetH / (Number(sq.y) || 1));
+          const bad = nudge(stepsY < 0 ? '▼' : '▲', Math.abs(stepsY));
+          if (bad) return { ok: false, why: bad };
+          const commit = thatsMine();
+          if (!commit) return { ok: false, why: 'no commit for "' + a + '" on ' + qid };
+          commit.click();
+        }
+        const s = maybeStop('committed the "' + (typeof a === 'string' ? a : a.type) + '" ask'); if (s) return s;
+      }
+      return null;
+    }
+
+    if (kind === 'qlist') {
+      const r = pressQlist((attempt.S || {}), packQ);
+      if (r) return r;
+      return { ok: true, how: 'ordered the row smallest first, picked every cut, keyed the IQR', stage: curStage() };
+    }
+    if (kind === 'cftable') {
+      const r = pressCftable((attempt.S || {}), packQ);
+      if (r) return r;
+      return { ok: true, how: 'opened each row and keyed its running total', stage: curStage() };
+    }
+    if (kind === 'values') {
+      const r = pressValues((attempt.S || {}), packQ);
+      if (r) return r;
+      return { ok: true, how: 'opened every box and keyed its value', stage: curStage() };
+    }
+    if (kind === 'cfplot') {
+      const r = pressCfplot(attempt.S || {});
+      if (r) return r;
+      return { ok: true, how: 'pressed the grid at every point, then joined them', stage: curStage() };
+    }
+    if (kind === 'cfread') {
+      const r = pressCfread((attempt.S || {}), packQ);
+      if (r) return r;
+      return { ok: true, how: 'nudged the rule to each convention height and committed every reading', stage: curStage() };
+    }
+    if (kind === 'boxplot') {
+      const S = attempt.S || {};
+      const stageKind = packQ && packQ.from ? (packQ.from === 'curve' ? 'cfread' : packQ.from) : null;
+      if (stageKind && !root.querySelector('.stat-plot svg.stat-board')) {
+        const stageS = S.stage || {};
+        const r = stageKind === 'qlist' ? pressQlist(stageS, packQ)
+          : stageKind === 'values' ? pressValues(stageS, packQ)
+          : pressCfread(stageS, packQ);
+        if (r) return r;
+        const s0 = maybeStop('finished the "' + stageKind + '" stage'); if (s0) return s0;
+        const next = one('.stat-next');
+        if (!next) return { ok: false, why: 'no "Next: draw the box plot" button on ' + qid };
+        if (next.disabled) return { ok: false, why: 'the stage is not ready to move on for ' + qid };
+        next.click();
+      }
+      const s1 = maybeStop('reached the box-plot board'); if (s1) return s1;
+      const MARKER_LABEL = { min: T.statLowest, Q1: T.statLowerQuartile, Q2: T.statMedian, Q3: T.statUpperQuartile, max: T.statHighest };
+      const pos = S.pos || {};
+      const svg = one('.stat-plot svg.stat-board');
+      if (!svg) return { ok: false, why: 'no box-plot board on ' + qid };
+      const geom = scaleGeom((packQ && packQ.scale) || {});
+      const roles = ['min', 'Q1', 'Q2', 'Q3', 'max'];
+      for (let ri = 0; ri < roles.length; ri++) {
+        const role = roles[ri];
+        if (pos[role] == null || pos[role] === '') continue;
+        const wantLabel = MARKER_LABEL[role];
+        const marker = all('[data-tray^="boxplot-markers-"] [data-tray-item]').filter((b) => txt(b) === wantLabel)[0];
+        if (!marker) return { ok: false, why: 'no tray marker reads "' + wantLabel + '" on ' + qid };
+        marker.click();
+        const px = toPxScale(geom, Number(pos[role]));
+        if (!pressGrid(svg, px[0], px[1])) return { ok: false, why: 'the box-plot scale has no screen transform yet for ' + qid };
+        const s2 = maybeStop('placed the "' + role + '" marker'); if (s2) return s2;
+      }
+      const draw = one('.stat-draw');
+      if (!draw) return { ok: false, why: 'no "Draw the box plot" button on ' + qid };
+      if (draw.disabled) return { ok: false, why: 'the box plot is not ready to draw on ' + qid };
+      draw.click();
+      return { ok: true, how: 'placed every marker on the scale, then drew the box plot', stage: curStage() };
+    }
+    if (kind === 'compare') {
+      const S = attempt.S || {};
+      const s1 = S.s1 || {}, s2 = S.s2 || {};
+      const clickChip = (trayId, wantText) => {
+        const tray = root.querySelector('[data-tray="' + trayId + '"]');
+        if (!tray) return 'no chip group "' + trayId + '" on ' + qid;
+        const chip = [...tray.querySelectorAll('[data-tray-item]')].filter((b) => txt(b) === wantText)[0];
+        if (!chip) return 'no chip reads "' + wantText + '" in "' + trayId + '" on ' + qid;
+        chip.click();
+        return null;
+      };
+      const cell = (si, ci) => {
+        const s3 = root.querySelectorAll('.stat-sentence')[si];
+        return s3 ? s3.querySelectorAll('.stat-cell')[ci] : null;
+      };
+      const keyCell = (si, ci, val) => {
+        const b = cell(si, ci);
+        if (!b) return 'no value box ' + (ci + 1) + ' in sentence ' + (si + 1) + ' on ' + qid;
+        b.click();
+        const pad = one('.numpad');
+        if (!pad || !padType(pad, val || '')) return 'could not key value ' + (ci + 1) + ' of sentence ' + (si + 1) + ' on ' + qid;
+        return null;
+      };
+      let err;
+      if ((err = clickChip('compare-who1-' + qid, s1.who))) return { ok: false, why: err };
+      if ((err = clickChip('compare-who1b-' + qid, s1.who2))) return { ok: false, why: err };
+      if ((err = clickChip('compare-ctx-' + qid, s1.ctx))) return { ok: false, why: err };
+      if ((err = keyCell(0, 0, (s1.v || [])[0]))) return { ok: false, why: err };
+      if ((err = keyCell(0, 1, (s1.v || [])[1]))) return { ok: false, why: err };
+      const s5 = maybeStop('finished the first sentence'); if (s5) return s5;
+      if ((err = clickChip('compare-who2-' + qid, s2.who))) return { ok: false, why: err };
+      if ((err = clickChip('compare-size-' + qid, s2.size === 'larger' ? T.statCmpLarger : T.statCmpSmaller))) return { ok: false, why: err };
+      if ((err = clickChip('compare-meas-' + qid, s2.meas === 'range' ? T.statRange : T.statIqr))) return { ok: false, why: err };
+      if ((err = keyCell(1, 0, (s2.v || [])[0]))) return { ok: false, why: err };
+      if ((err = keyCell(1, 1, (s2.v || [])[1]))) return { ok: false, why: err };
+      if ((err = clickChip('compare-cons-' + qid, s2.cons === 'more' ? T.statCmpMore : T.statCmpLess))) return { ok: false, why: err };
+      return { ok: true, how: 'pressed one chip per bracket and keyed both values in each sentence', stage: curStage() };
+    }
+    if (kind === 'judge') {
+      const S = attempt.S || {};
+      const j = S.j || [];
+      const claims = (packQ && packQ.claims) || [];
+      const reasons = (packQ && packQ.reasons) || [];
+      for (let ci = 0; ci < j.length; ci++) {
+        const want = j[ci] || {};
+        const claim = claims[ci] || {};
+        const tray = root.querySelector('[data-tray="judge-' + ci + '-' + qid + '"]');
+        if (!tray) return { ok: false, why: 'no chip group for claim ' + ci + ' on ' + qid };
+        const wantText = claim.options ? want.v : (want.fair ? T.statFairToSay : T.statNotFair);
+        const chip = [...tray.querySelectorAll('[data-tray-item]')].filter((b) => txt(b) === wantText)[0];
+        if (!chip) return { ok: false, why: 'no chip reads "' + wantText + '" for claim ' + ci + ' on ' + qid };
+        chip.click();
+        if (!claim.options && want.fair === false && want.why) {
+          const rtray = root.querySelector('[data-tray="judge-why-' + ci + '-' + qid + '"]');
+          if (!rtray) return { ok: false, why: 'no reason bank for claim ' + ci + ' on ' + qid };
+          const rsn = reasons.filter((r) => r.id === want.why)[0];
+          if (!rsn) return { ok: false, why: 'the reason bank has no "' + want.why + '" on ' + qid };
+          const rchip = [...rtray.querySelectorAll('[data-tray-item]')].filter((b) => txt(b) === rsn.text)[0];
+          if (!rchip) return { ok: false, why: 'no reason chip reads "' + rsn.text + '" on ' + qid };
+          rchip.click();
+        }
+        const s6 = maybeStop('judged claim ' + ci); if (s6) return s6;
+      }
+      return { ok: true, how: 'judged every claim, and gave a reason where it was called not fair', stage: curStage() };
+    }
+  }
 
   /* ── ONE PRESS: the option card ───────────────────────────────── */
   if (kind === 'classify' && attempt.pick) {

@@ -59,7 +59,8 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | Angles (content + v3 renderers) | APPROVED — live as MAIN Version 25 | 28 Jun 2026 |
 | Algebra (content + v3 renderers) | APPROVED — live as MAIN Version 25 | 28 Jun 2026 |
 | v4 MathShelf (the shell, the markbook, the login) | PENDING | — |
-| Handling Data A / B / C | PENDING (not built) | — |
+| Handling Data C (Quartiles, curves and box plots) | PENDING HIS SMOKE | 8 Sept 2026 |
+| Handling Data A / B | PENDING (not built) | — |
 
 ---
 
@@ -94,6 +95,10 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | 28 | qa-period-budget | over-budget-book |
 | 29 | qa-language | must-pass-exemplars |
 | 30 (the locked renderers' marking) | qa-v3-shape | a-mark-moved |
+
+| 31 | qa-colour-law | amber-outside-a-mark |
+| 32 | qa-tickbox | new-book-defaults-true |
+| 33 | qa-language | must-fail-exhibits, must-pass-exemplars |
 
 ## B. JUDGED — the rule is a judgement, and the judgement is machine-gated
 

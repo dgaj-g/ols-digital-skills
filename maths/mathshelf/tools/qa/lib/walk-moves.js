@@ -37,8 +37,87 @@ const DETECT_KIND = `(() => {
   if (root.querySelector('.term-bin')) return 'simplify';
   if (root.querySelector('.grid-pick')) return 'expand';
   if (root.querySelector('.subst-tap')) return 'subst';
+  /* the eight Handling Data kinds - jotter-stats.js's tagQuestionRoot already
+     stamps data-kind for every one of them (jotter.js's tagQuestionRoot sets
+     it from q.kind generically), so the branch above catches every stats
+     question in the ordinary case. These are the fallback, asked of the
+     screen's own furniture, for the day that attribute is missing. */
+  if (root.querySelector('[data-tray^="qlist-tiles-"]')) return 'qlist';
+  if (root.querySelector('.stat-join')) return 'cfplot';
+  if (root.querySelector('.stat-board-host') && root.querySelector('.nudge-pad')) return 'cfread';
+  if (root.querySelector('[data-tray^="boxplot-markers-"]')) return 'boxplot';
+  if (root.querySelector('.stat-sentence')) return 'compare';
+  if (root.querySelector('.stat-claim')) return 'judge';
+  if (root.querySelector('.stat-slots')) return 'values';
+  if (root.querySelector('.stat-table')) return 'cftable';
   return 'unknown';
 })`;
+
+/* the question root's own stages (DESIGN §4.0): data-stages lists every
+   stage the kind can show, data-stage says which one is showing now. A
+   walker iterates the first and stands on each by driving to it with
+   ANSWER(qid, wrong, stageName) (see drive.js). Not a stats-only function -
+   any kind may carry the attribute one day - so it simply reports nothing
+   for a question that has none. */
+const STAGES_OF = `((qid) => {
+  const root = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+    .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid)[0];
+  if (!root) return { stages: [], stage: null };
+  return {
+    stages: (root.getAttribute('data-stages') || '').split(' ').filter(Boolean),
+    stage: root.getAttribute('data-stage') || null
+  };
+})`;
+
+/* MOVES / WRONG_MOVES — what the right route and that kind's own classic
+   slip actually ARE, per stats kind. These are plain descriptions, not page
+   functions: the pressing itself is a whole job (five of the eight kinds are
+   answered on a scaffold, not a keystroke) and lives in lib/drive.js's
+   ANSWER, exactly as the written kinds already do (see the file banner
+   above) - a second copy of the route here would be a second truth the day
+   a renderer's controls change. What IS true per kind, and worth a walker
+   naming when it logs what it did, is what "right" and "that kind's own
+   slip" MEAN - and that comes straight from dev/model-attempts.js's own
+   correct()/corrupt() pair, which drive.js plays. */
+const MOVES = {
+  qlist: 'order the tray tiles smallest first, pick every asked cut, key the IQR',
+  cftable: 'open each editable row and key its running cumulative total',
+  cfplot: 'press the grid at every true point, then join them',
+  cfread: 'nudge the rule to each convention height (or the given x), commit every reading',
+  boxplot: 'press a tray marker then the scale, five times, then draw the box plot',
+  compare: 'press one chip per bracket and key both values in each sentence',
+  judge: 'press the true verdict chip per claim, and the authored reason where it is not fair',
+  values: 'open every labelled box and key its true value'
+};
+const WRONG_MOVES = {
+  /* the pattern dev/model-attempts.js's own corrupt() plays for that kind -
+     a real misconception, not an arbitrary wrong keystroke */
+  qlist: 'the lower and upper quartile picked the wrong way round (or, with one cut, one position short)',
+  cftable: 'the raw frequencies copied straight down the column, never cumulated',
+  cfplot: 'plotted at the class midpoints instead of the upper class boundaries',
+  cfread: 'read at half the AXIS maximum, on every asked item, instead of the convention height',
+  boxplot: 'the whiskers and the quartiles confused (min/Q1 and Q3/max swapped)',
+  compare: 'the right numbers, the context word flipped (higher median called the wrong way)',
+  judge: 'the first authored not-fair claim accepted as fair (or its options flipped to a wrong one)',
+  values: 'the first slot keyed one out from its true value'
+};
+
+/* SETTLE — a chart-based board (cfplot/cfread/boxplot) assembles its curve
+   or box on a CSS stroke-dashoffset transition (statchart.js), up to 900ms.
+   The shared settle() below already copes with a page that never composites
+   under headless:'shell' (its own comment explains why), but a transition is
+   cosmetic - the point/marker DATA is already final the instant it is
+   pressed, only the drawn line is still travelling - so a chart board gets
+   one further fixed wait long enough for the slowest draw before a
+   screenshot or a "has it stopped moving" read is trusted. */
+async function settleChart(page, tries) {
+  await settle(page, tries);
+  await new Promise((r) => setTimeout(r, 950));
+}
+const SETTLE = {
+  qlist: settle, cftable: settle, values: settle, compare: settle, judge: settle,
+  cfplot: settleChart, cfread: settleChart, boxplot: settleChart
+};
 
 /* the question root's own identity, for the sidecar */
 const QUESTION_ID = `(() => {
@@ -266,4 +345,7 @@ const ACTIONS = {
   backToShelf: `(() => { const b = document.getElementById('act-back'); if (b) { b.click(); return true; } return false; })`
 };
 
-module.exports = { DETECT_KIND, QUESTION_ID, QUESTIONS_ON_SCREEN, ANSWER, CHECK, ATTEMPT_COUNT, STATE_OF, HELP_STRIP, ACTIONS, settle, leaves };
+module.exports = {
+  DETECT_KIND, QUESTION_ID, QUESTIONS_ON_SCREEN, STAGES_OF, ANSWER, CHECK, ATTEMPT_COUNT,
+  STATE_OF, HELP_STRIP, ACTIONS, settle, leaves, MOVES, WRONG_MOVES, SETTLE
+};

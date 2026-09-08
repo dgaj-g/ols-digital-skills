@@ -54,6 +54,7 @@ Calibration. Every one of these reached a screen and failed HIS read, or a separ
 | *"Plot at the upper class boundaries"* in a question stem | Tells her the method the question is testing. |
 | *"Slide the rule to n/2"* | An expression she has never seen written; the film said "half the total". |
 | *"…and then uses what they typed in what it says next."* / *"That is the whole hour."* / *"Exact matters here."* / *"Four fixes, one game."* (his KS3 DT exhibits) | Preposition pile-ups, bare demonstratives, verbless fragments on commas — grammatical, unreadable aloud. |
+| *"Well done, girls!"* · *"You girls have finished."* | Names the reader by what she is instead of talking to her. Say what she did: "Every value in the right place." |
 | *"Found the studio"* / *"before the rally"* / *"thirty seconds of protection"* | A word with two meanings; an event name used as shared context the screen never gave; an abstract metaphor where a concrete action belongs. |
 
 ## 3b. THE MUST-PASS EXEMPLARS — approved tone
@@ -66,6 +67,7 @@ If your judgement would fail these, it is set too harshly.
 - *"Your maths books live here. Your teacher chooses which ones are out."* (the one shelf line)
 - A CCEA stem quoted as the paper prints it — *"Use the graph to estimate the median."* — **provided** the film before it defined "median" and "the graph" is the thing on her screen. Exam phrasing is allowed to be the exam's; it is never allowed to be undefined.
 - *"Your teacher suggested watching this method."* · *"Points 1 of 1 · Curve 0 of 1"*
+- *"Some girls did a sponsored swim to raise money for charity."* — a CCEA scenario names the people IN the question. Naming the reader is the fault ("Well done, girls!"); naming a person in a stem is the paper's own wording and Colette's source.
 
 ---
 
