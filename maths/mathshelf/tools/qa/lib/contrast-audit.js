@@ -296,6 +296,14 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
       vx = Math.max(vx, ar.left); vy = Math.max(vy, ar.top);
       vr = Math.min(vr, ar.right); vb = Math.min(vb, ar.bottom);
     }
+    /* AND TO THE PICTURE ITSELF, BEFORE THE BARS ARE CONSIDERED. The frame is
+       the viewport, and the sampler clamps to it anyway - so a row hanging off
+       the top of the screen was compared against a bar it did not overlap IN
+       VIEWPORT TERMS while the pixels it was judged on came from behind that
+       very bar. An 85px table cell half above the fold came back at 3.08:1 with
+       the preview banner's blue named as its plate. */
+    vy = Math.max(vy, 0); vb = Math.min(vb, window.innerHeight);
+    if (vb - vy < 6) return;
     /* and trimmed again by any bar standing over it */
     const beforeBars = vb - vy;
     for (const bar of bars) {
