@@ -1451,7 +1451,11 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .stat-svg-label { font-family: var(--f-maths); color: var(--ink); user-select: none; }
 
 /* labels that MOVE are HTML over the board, so the overlap law can judge them */
-.stat-label-layer { position: absolute; inset: 0; pointer-events: none; }
+/* A LABEL BELONGS TO ITS BOARD. Clipped to the layer, so one can never paint
+   outside the board and land on the next question's prompt - which is what the
+   overlap law caught it doing on a phone. The stagger keeps them inside; this
+   is the guarantee that it cannot fail quietly. */
+.stat-label-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .stat-label {
   position: absolute; transform: translate(-50%, -100%); white-space: nowrap;
   font-family: var(--f-stationery, var(--f-ui)); font-size: 13px; line-height: 1.15;
@@ -11335,9 +11339,16 @@ function statsBoard(q, wrong) {
     function saveOpen() {
       if (rec.lock) return;
       var open = { S: kind.state(), t0: t0 };
-      if (rec.att.length && !rec.att[rec.att.length - 1].res) rec.att[rec.att.length - 1] = open;
-      else rec.att.push(open);
+      var fresh = !(rec.att.length && !rec.att[rec.att.length - 1].res);
+      if (fresh) rec.att.push(open); else rec.att[rec.att.length - 1] = open;
+      /* THE FIRST MARK ON A BOARD IS SAVED AT ONCE. Everything after it is on a
+         400 ms debounce so a run of presses is not a run of requests - but if
+         the very first press waits too, a pupil whose Chromebook drops out
+         between placing her first value and her second comes back to a blank
+         board, and the app has no record that she ever started. It is also why
+         a reload before Check drew "fresh" and never "resume-mid". */
       if (saveTimer) clearTimeout(saveTimer);
+      if (fresh) { hooks.onSave(q.id, rec); return; }
       saveTimer = setTimeout(function () { hooks.onSave(q.id, rec); }, 400);
     }
     var settling = false;      /* true while a verdict is being drawn */
