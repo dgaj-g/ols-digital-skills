@@ -350,9 +350,13 @@
       feedback.innerHTML = '';
       renderUnits(verdict, unitsHost);
 
-      var tally = el('div', 'mk-tally ' + (right ? 'mk-correct' : 'mk-wrong'),
-        esc(verdict.mkLabels[0]) + ' ' + verdict.mk[0] + '/' + verdict.mkMax[0] +
-        ' · ' + esc(verdict.mkLabels[1]) + ' ' + verdict.mk[1] + '/' + verdict.mkMax[1]);
+      /* A BAND WORTH NOTHING IS NOT SHOWN. "Reasons 0/0" is a line a pupil has
+         to read and then discard; a question that pays no method mark simply
+         has no method line. */
+      var bands = [];
+      if (verdict.mkMax[0] > 0) bands.push(esc(verdict.mkLabels[0]) + ' ' + verdict.mk[0] + '/' + verdict.mkMax[0]);
+      if (verdict.mkMax[1] > 0) bands.push(esc(verdict.mkLabels[1]) + ' ' + verdict.mk[1] + '/' + verdict.mkMax[1]);
+      var tally = el('div', 'mk-tally ' + (right ? 'mk-correct' : 'mk-wrong'), bands.join(' · '));
       tally.setAttribute('data-mark', '');
       feedback.appendChild(tally);
 
@@ -433,12 +437,17 @@
     return { qid: q.id };
   }
 
+  /* WHAT SHE ACTUALLY DID. A comment bank keyed by kind is the whole of rule 9:
+     a pupil who put seven numbers in order must never be told her curve was
+     smooth, and one who filled a table must never be praised for her points. */
   function commentKind(kind) {
     if (kind === 'cfplot') return 'plot';
     if (kind === 'cfread') return 'read';
     if (kind === 'boxplot' || kind === 'compare') return 'box';
     if (kind === 'judge') return 'judge';
-    return 'plot';
+    if (kind === 'qlist') return 'order';
+    if (kind === 'cftable') return 'table';
+    return 'values';
   }
 
   var BUILD = {};
