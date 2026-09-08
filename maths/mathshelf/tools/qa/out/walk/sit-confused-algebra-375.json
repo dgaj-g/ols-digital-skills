@@ -3,8 +3,8 @@
  "scope": "algebra",
  "width": 375,
  "tier": "preview",
- "contentHash": "f95e400b542a",
- "when": "2026-09-08T11:12:53.580Z",
+ "contentHash": "165c5335b6f3",
+ "when": "2026-09-08T12:13:42.869Z",
  "states": [
   {
    "surface": "question",
@@ -171,7 +171,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "PASS"
+    "readability": "FAIL"
    }
   },
   {
