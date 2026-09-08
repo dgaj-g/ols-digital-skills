@@ -24,9 +24,14 @@ under "After the Book C battery"; three of the seven were already known from v4
 (qa-colour-law amber-outside-a-mark: `fixture-css-amber` does not exist), and
 none is a pupil-facing fault. Harness work for a later session, never a book's.
 
-FIRST WORK OF THE NEXT CUT (Book A's), in this order: the stray "0" read-out on
-the Exercise 4 opening at 375 (`pupil-book-contents-mid-book-375.png`); the
-unchosen reason chip fading after Check (`.chip:disabled` on `.chip-reason`);
+FIRST WORK OF THE NEXT CUT (Book A's), in this order — fix the CLASS, not the
+cell, because the battery's over-tightening walks found the same three classes
+on other questions (q13's "30 < x ≤ 40" label at 3.09:1; q8's unchosen chip
+"Stay the same" at 2.18:1; Algebra q3's prompt at 2.18:1 straight after a wrong
+attempt): every chip keeps full ink after Check (`.chip:disabled` opacity on
+`.chip-reason` and the judge chips); the stray "0" read-out on the Exercise 4
+opening at 375 (`pupil-book-contents-mid-book-375.png`); the small labels on
+the paper at 375 (class intervals, tick numbers) checked at their rendered size;
 the 21 REWRITE rows of `MATHS_COLD_READ_VERDICTS_stats-quartiles.md` (the
 "Ex.1" contents-strip abbreviation and the bare "IQR" heading first). None is a
 reason to hold Book A.
