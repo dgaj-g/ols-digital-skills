@@ -428,6 +428,19 @@
 
   /* ---------- the tally labels a pupil and a teacher read ---------- */
 
+  /* WHAT THE SECOND BAND IS CALLED DEPENDS ON WHAT WAS ASKED. A list question
+     that asks only for the two quartiles carries its accuracy mark on the LAST
+     cut, not on an interquartile range nobody asked for - and the tally was
+     printing "Interquartile range 1 of 1" on a question with no IQR in it
+     (separated read, 8 Sept 2026). The band's name is the name of the unit
+     that carries it. */
+  function mkLabelsFor(q, units) {
+    var labs = MK_LABELS[q && q.kind] || ['Working', 'Answer'];
+    if (!q || q.kind !== 'qlist' || !units) return labs;
+    var acc = units.filter(function (u) { return u.band === 'accuracy'; })[0];
+    return [labs[0], acc ? acc.label : labs[1]];
+  }
+
   var MK_LABELS = {
     qlist: ['Quartiles', 'Interquartile range'],
     cftable: ['Running totals', 'Total'],
@@ -569,7 +582,7 @@
       dx: dx,
       mk: mk,
       mkMax: [marks[0] || 0, marks[1] || 0],
-      mkLabels: MK_LABELS[q.kind] || ['Working', 'Answer'],
+      mkLabels: mkLabelsFor(q, units),
       /* this book writes its tally in words: "Quartiles 3 of 3", never "3/3" */
       mkOf: true
     };

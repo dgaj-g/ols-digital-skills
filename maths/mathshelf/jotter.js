@@ -134,7 +134,7 @@
       fail: ['We’ll build one of these together in class.', 'Watch the worked example again, then try it in class.']
     },
     judge: {
-      perfect: ['You weighed the evidence, not the claim.', 'Fair reading of what the sample can say.', 'Good — you said why.'],
+      perfect: ['You weighed the evidence, not the claim.', 'Fair reading of what the figures can say.', 'Good — you said why.'],
       fail: ['We’ll talk this one through in class.', 'Watch the worked example again — think about who was left out.']
     },
     /* IN ORDER FIRST, THEN THE CUTS - a question answered by putting values in
