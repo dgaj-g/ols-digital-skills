@@ -74,6 +74,11 @@ const CONTROLS = [
   /* the shelf a class sees when a book is not ticked for it: found on 8 Sept
      2026 by the first walk ever to stand on it (package V4-STATES) */
   { id: 'locked-spine-unreadable', kind: 'fixture', plant: 'fixture-css-locked-spine', mustFail: /against what is actually behind it/ },
+  /* AND THE SAME SCREEN, WITH ONLY THE EMBLEM WRONG. The plant above moves
+     two things at once, so it fired on the band alone while the emblem's
+     reading was nonsense - the sampler was asking `color` of a glyph that is
+     painted with `fill`. This one moves nothing but the SVG glyph. */
+  { id: 'svg-glyph-lost-in-its-plate', kind: 'fixture', plant: 'fixture-css-svg-glyph-in-plate', mustFail: /against what is actually behind it/ },
   /* the chip put back in the corner it used to float in, where a long series
      name runs underneath it — the shelf fault of 6 Sept 2026 */
   { id: 'text-under-a-floating-chip', kind: 'fixture', plant: 'fixture-overlapping-chip', mustFail: /on top of one another/ },
