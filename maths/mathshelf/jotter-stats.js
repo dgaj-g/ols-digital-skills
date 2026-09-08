@@ -51,7 +51,9 @@
   var STAGES = {
     qlist: ['tray', 'ordering', 'selected', 'ordered', 'picking', 'cut-committed', 'iqr', 'ready'],
     cftable: ['empty', 'filling', 'ready'],
-    cfplot: ['empty', 'placing', 'selected', 'placed', 'joined'],
+    /* a point is SELECTED the moment it is placed (that is what lets her nudge
+       it), so "some points, nothing selected" is not a board this kind shows */
+    cfplot: ['empty', 'selected', 'placed', 'joined'],
     cfread: ['parked', 'sliding', 'committed', 'at-x', 'iqr', 'ready'],
     boxplot: ['tray', 'marker-selected', 'placing', 'placed', 'drawn'],
     compare: ['empty', 'building', 'ready'],
@@ -96,9 +98,28 @@
       out.push('ready');
       own = out;
     }
+    if (q.kind === 'values') {
+      var slotCount = (q.order || (q.slots || [])).length;
+      if (slotCount < 2) drop('filling');
+    }
     if (q.kind === 'judge') {
-      var anyReason = (q.claims || []).some(function (c) { return !c.options && c.fair === false; });
+      var claims = q.claims || [];
+      var anyReason = claims.some(function (c) { return !c.options && c.fair === false; });
       if (!anyReason) drop('reason-open');
+      /* "judging" - a claim decided and nothing else open - is only a board of
+         its own when some claim does NOT open a reason picker the moment it is
+         pressed; where every claim is a not-fair one, the reason picker is
+         what she sees and "judging" never happens */
+      var everyClaimAsksWhy = claims.length > 0 &&
+        claims.every(function (c) { return !c.options && c.fair === false; });
+      if (everyClaimAsksWhy) drop('judging');
+      /* IN THE ORDER SHE MEETS THEM. When the FIRST claim is one she has to
+         give a reason for, the reason picker is the board she sees before any
+         "some judged, nothing open" board exists. */
+      else if (claims[0] && !claims[0].options && claims[0].fair === false) {
+        var iJ = own.indexOf('judging'), iR = own.indexOf('reason-open');
+        if (iJ > -1 && iR > -1) { own[iJ] = 'reason-open'; own[iR] = 'judging'; }
+      }
     }
     if (q.kind === 'boxplot' && q.from) {
       var first = q.from === 'curve' ? 'cfread' : q.from;
@@ -106,7 +127,7 @@
       for (k in q) if (q.hasOwnProperty(k) && k !== 'kind' && k !== 'from') stageQ[k] = q[k];
       stageQ.kind = first;
       var pre = stagesFor(stageQ).map(function (s2) { return first + ':' + s2; });
-      return pre.concat(['stage-done']).concat(own);
+      return pre.concat(own);
     }
     return own;
   }
@@ -279,7 +300,11 @@
       var r = kind.ready();
       checkBtn.disabled = !r.ok;
       setLockedWhy(checkBtn, r.ok ? null : r.why);
-      if (r.ok) ctx.setStage(stages[stages.length - 1]);
+      /* WHICH BOARD SHE IS LOOKING AT IS THE KIND'S OWN BUSINESS. This used to
+         stamp the last stage the moment the Check lit, which wrote "ready" over
+         "filling" on the first cell of a table and made every board between
+         them unreachable - and a stage nothing can stand on is a coverage cell
+         nothing can close. */
       window.GJ.setState(wrap, 'question', 'mid-attempt');
       saveOpen();
     }
@@ -570,6 +595,7 @@
         return;
       }
       window.GJ.setState(ctx.dock, 'dock', 'chips');
+      ctx.setStage('ready');
     }
     function writeLine(cut) {
       var row = el('div', 'wline stat-wline');
@@ -661,6 +687,7 @@
       return q.classHead || (q.chart && q.chart.x && q.chart.x.label) || T().statClassColumn;
     }
     function render() {
+      stage();
       table.innerHTML = '';
       var thead = el('thead');
       var hr = el('tr');
@@ -686,7 +713,7 @@
           b.addEventListener('click', function (e) {
             e.stopPropagation();
             if (ctx.locked()) return;
-            open = i; render(); ctx.setStage('filling'); ctx.changed();
+            open = i; render(); ctx.changed();
           });
           td.appendChild(b);
         }
@@ -725,7 +752,17 @@
       });
       ctx.dock.appendChild(next);
     }
+    function stage() {
+      var filled = 0, openRows = 0;
+      classes.forEach(function (c, i) {
+        if (pre.indexOf(i) > -1) return;
+        openRows++;
+        if (cf[i]) filled++;
+      });
+      ctx.setStage(!filled ? 'empty' : (filled < openRows ? 'filling' : 'ready'));
+    }
     function paint() {
+      stage();
       var cells = table.querySelectorAll('.stat-cell');
       var k = 0;
       classes.forEach(function (c, i) {
@@ -782,6 +819,7 @@
       return { id: id, label: id };
     }
     function render() {
+      stage();
       host.innerHTML = '';
       order.forEach(function (id, i) {
         var line = el('div', 'stat-slot');
@@ -794,7 +832,7 @@
         b.addEventListener('click', function (e) {
           e.stopPropagation();
           if (ctx.locked()) return;
-          open = i; render(); ctx.setStage('filling'); ctx.changed();
+          open = i; render(); ctx.changed();
         });
         line.appendChild(b);
         if (slot(id).unit) line.appendChild(el('span', 'stat-slot-unit', esc(slot(id).unit)));
@@ -825,7 +863,12 @@
         ctx.dock.appendChild(next);
       }
     }
+    function stage() {
+      var filled = order.filter(function (id) { return !!v[id]; }).length;
+      ctx.setStage(!filled ? 'empty' : (filled < order.length ? 'filling' : 'ready'));
+    }
     function paint() {
+      stage();
       var cells = host.querySelectorAll('.stat-cell');
       order.forEach(function (id, i) {
         if (!cells[i]) return;
@@ -938,28 +981,31 @@
           if (ctx.locked()) return;
           if (bd.points().length >= maxPts) { ctx.say(T().statPlotEnough); return; }
           sel = bd.addPoint(x, y, { select: true });
-          after('placing');
+          after();
         },
         onChange: function (evt) {
           if (!evt) return;
           if (evt.type === 'point-select') sel = evt.i;
           if (evt.type === 'point-move') sel = evt.i;
-          after(null);
+          after();
         }
       });
       if (bd.needsScroll()) ctx.say(T().statScrollGraph);
-      after(null);
+      after();
     }
-    function after(stage) {
+    function after() {
       var n = bd.points().length;
       if (joined) bd.curveThrough('all');
-      if (sel > -1 && bd.points()[sel]) {
+      var selected = sel > -1 && bd.points()[sel];
+      if (selected) {
         var p = bd.points()[sel];
         bd.readout(fill(T().statPointReadout, { x: p[0], y: p[1] }), p);
-        ctx.setStage('selected');
       } else bd.clearReadout();
-      if (stage) ctx.setStage(n >= maxPts ? 'placed' : stage);
-      if (joined) ctx.setStage('joined');
+      /* ONE ANSWER, not three overwriting each other */
+      ctx.setStage(joined ? 'joined'
+        : n >= maxPts ? 'placed'
+        : selected ? 'selected'
+        : n ? 'selected' : 'empty');
       renderDock();
       ctx.changed();
     }
@@ -974,12 +1020,12 @@
             var p = bd.points()[sel];
             bd.movePoint(sel, p[0] + dx * sq.x, p[1] + dy * sq.y);
             if (joined) bd.curveThrough('all');
-            after(null);
+            after();
           },
           onRemove: function () {
             bd.removePoint(sel);
             sel = -1; joined = false; bd.clearCurve();
-            after('placing');
+            after();
           }
         }));
       } else {
@@ -994,8 +1040,7 @@
         if (ctx.locked() || join.disabled) return;
         joined = true;
         bd.curveThrough('all');
-        ctx.setStage('joined');
-        after(null);
+        after();
       });
       ctx.dock.appendChild(join);
       ctx.say(n < maxPts ? T().statPlotPlaceWhy : (joined ? '' : T().statPlotJoinWhy));
@@ -1010,7 +1055,7 @@
         (S.pts || []).forEach(function (pt) { bd.addPoint(Number(pt[0]), Number(pt[1])); });
         joined = !!S.joined;
         sel = -1;
-        after(null);
+        after();
       },
       state: function () { return { pts: bd ? bd.points() : [], joined: joined }; },
       ready: function () {
@@ -1104,7 +1149,7 @@
       ctx.dock.innerHTML = '';
       pad = null;
       var a = current();
-      if (!a) { window.GJ.setState(ctx.dock, 'dock', 'chips'); ctx.say(''); return; }
+      if (!a) { window.GJ.setState(ctx.dock, 'dock', 'chips'); ctx.say(''); ctx.setStage('ready'); return; }
       if (a === 'IQR') {
         ctx.setStage('iqr');
         window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
@@ -1299,6 +1344,9 @@
     function onStageChange() {
       if (stageDone) return;
       var r = stage.ready();
+      /* the first stage FINISHED but not yet moved on from is a board of its
+         own - "Next: draw the box plot" lit, her working still on the page */
+      if (r.ok) ctx.setStage(stageKind + ':ready');
       renderStageGate(r);
       ctx.changed();
     }
@@ -1314,7 +1362,6 @@
         if (next.disabled) return;
         stageDone = true;
         if (stage.lock) stage.lock();
-        ctx.setStage('stage-done');
         buildPlot();
         ctx.changed();
       });
@@ -1355,6 +1402,7 @@
       });
       fictionLine(ctx, T().statTrayFiction);
       ctx.say(T().statBoxChooseMarker);
+      ctx.setStage('tray');
       paint();
     }
     function renderTray() {
@@ -1393,6 +1441,11 @@
       });
     }
     function paint() {
+      var placedCount = FIVE.filter(function (r) { return pos[r] !== undefined; }).length;
+      ctx.setStage(drawn ? 'drawn'
+        : placedCount === 5 ? 'placed'
+        : sel ? 'marker-selected'
+        : placedCount ? 'placing' : 'tray');
       renderTray();
       var on = bd.markers();
       FIVE.forEach(function (r) {
@@ -1703,6 +1756,12 @@
         host.appendChild(card);
       });
       window.GJ.setState(ctx.dock, 'dock', 'chips');
+      var done = claims.every(function (c, i) {
+        if (c.options) return !!j[i].v;
+        if (j[i].fair === undefined || j[i].fair === null) return false;
+        return j[i].fair !== false || !!j[i].why;
+      });
+      if (done) ctx.setStage('ready');
     }
     function pressed(i, text) {
       var c = claims[i];
