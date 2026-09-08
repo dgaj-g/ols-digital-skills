@@ -1115,7 +1115,11 @@
     return handle;
   }
 
-  var API = { render: render };
+  /* THE NUMBER, WRITTEN THE WAY THE BOARD WRITES IT. The read-out beside the
+     rule has always shown two decimal places at most; the working line the
+     pupil commits was printing the raw intersection - "median = 10.3125" under
+     a board that says 10.31. One number, one shape, one place it is decided. */
+  var API = { render: render, fmtNum: fmtNum };
   if (typeof window !== 'undefined') window.GJ_STATCHART = API;
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
 })();

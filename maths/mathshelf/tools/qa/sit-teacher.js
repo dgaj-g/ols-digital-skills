@@ -334,15 +334,25 @@ async function walk(page, width, projector, sidecar, transcript) {
      about the screen. The grid carries its own book tabs; the widest one is
      chosen here before the scroll, so the same probe answers at every width. */
   const widest = await page.evaluate(async () => {
-    const tabs = [...document.querySelectorAll('.check-row button')];
+    const tabsOf = () => [...document.querySelectorAll('.check-row button')];
+    const startedOn = (tabsOf().filter((t) => t.getAttribute('aria-pressed') === 'true')[0] || {}).textContent;
     let best = null;
-    for (const t of tabs) {
+    for (let i = 0; i < tabsOf().length; i++) {
+      const t = tabsOf()[i];
       t.click();
       await new Promise((r) => setTimeout(r, 900));
       const w = document.querySelector('.wall');
       const over = w ? w.scrollWidth - w.clientWidth : -1;
-      if (!best || over > best.over) best = { name: (t.textContent || '').trim(), over: over };
-      if (over > 40) break;
+      if (!best || over > best.over) best = { name: (t.textContent || '').trim(), over: over, i: i };
+      if (over > 40) return best;
+    }
+    /* NOTHING OVERFLOWS: PUT THE BOOK BACK. Leaving the grid on whichever book
+       was measured last changed the book for the whole of the rest of the route
+       - and the two probes below it, which need this class's amber cell in
+       ALGEBRA, then read an Angles grid and reported their screens missing. */
+    if (startedOn) {
+      const back = tabsOf().filter((t) => (t.textContent || '').trim() === String(startedOn).trim())[0];
+      if (back) { back.click(); await new Promise((r) => setTimeout(r, 900)); }
     }
     return best;
   });

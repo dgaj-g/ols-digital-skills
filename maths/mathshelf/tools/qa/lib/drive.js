@@ -137,6 +137,19 @@ const ANSWER = `((args) => {
       }
       return null;
     };
+    /* PUTTING THE TOOL BACK, WHICH IS NOT A SCREEN ANYBODY STANDS ON. The
+       ordinary nudge stops the moment the wanted stage is reached, which is right for a press
+       that answers something; parking the rule answers nothing, so it presses
+       to the end of the axis without stopping. Pressing past the end does
+       nothing - the app's own clamp - so a count one axis long is exact. */
+    const nudgeRaw = (glyph, times) => {
+      for (let i = 0; i < times; i++) {
+        const b = all('.nudge-pad button').filter((x) => txt(x) === glyph)[0];
+        if (!b) return 'no "' + glyph + '" nudge key on ' + qid;
+        b.click();
+      }
+      return null;
+    };
     const thatsMine = () => all('.btn-quiet').filter((b) => /that.?s my/i.test(txt(b)))[0];
 
     /* ── qlist: tray tiles smallest first, then the cuts, then the IQR ──── */
@@ -261,6 +274,12 @@ const ANSWER = `((args) => {
       const asks = (pq && pq.ask) || [];
       const sq = (pq && pq.chart && pq.chart.sq) || { x: 1, y: 1 };
       const xMin = (pq && pq.chart && pq.chart.x && pq.chart.x.min) || 0;
+      const ax = (pq && pq.chart && pq.chart.x) || {};
+      const ay = (pq && pq.chart && pq.chart.y) || {};
+      /* one whole axis, in squares, plus a margin: the count that parks the
+         rule wherever it has been left */
+      const parkY = Math.ceil((Number(ay.max || 0) - Number(ay.min || 0)) / (Number(sq.y) || 1)) + 2;
+      const parkX = Math.ceil((Number(ax.max || 0) - Number(ax.min || 0)) / (Number(sq.x) || 1)) + 2;
       for (let ai = 0; ai < asks.length; ai++) {
         if (all('.stat-wline').length > ai) continue;               /* already committed */
         /* the board for THIS ask, before anything is done on it */
@@ -288,6 +307,7 @@ const ANSWER = `((args) => {
         } else if (a && typeof a === 'object' && a.type === 'atX') {
           const targetX = Number(a.x);
           const stepsX = Math.round((targetX - Number(xMin)) / (Number(sq.x) || 1));
+          const p0 = nudgeRaw('◀', parkX); if (p0) return { ok: false, why: p0 };
           const bad0 = nudge(stepsX < 0 ? '◀' : '▶', Math.abs(stepsX));
           if (bad0 === 'STOP') return { ok: true, how: 'moved the rule across', stage: curStage() };
           if (bad0) return { ok: false, why: bad0 };
@@ -299,6 +319,16 @@ const ANSWER = `((args) => {
           const read = (S.reads || {})[a];
           const targetH = read ? Number(read.h) : 0;
           const stepsY = Math.round(targetH / (Number(sq.y) || 1));
+          /* FROM WHERE IT IS, NOT FROM WHERE IT STARTED. This pressed an
+             ABSOLUTE number of steps up the axis - which is only right if the
+             rule is parked. The drive is called once per declared stage on the
+             same board, and the "sliding" stage deliberately stops the rule
+             half way up: the next call then added the whole count on top of
+             that and read the curve at the wrong height, so a box plot drawn
+             perfectly off those readings was marked wrong. It reported
+             "Box 2/2 · Whiskers 2/2" and a red verdict in the same breath,
+             which is exactly how it was found. The rule is parked first. */
+          const p0 = nudgeRaw('▼', parkY); if (p0) return { ok: false, why: p0 };
           const bad0 = nudge(stepsY < 0 ? '▼' : '▲', Math.abs(stepsY));
           if (bad0 === 'STOP') return { ok: true, how: 'moved the rule up the frequency axis', stage: curStage() };
           if (bad0) return { ok: false, why: bad0 };

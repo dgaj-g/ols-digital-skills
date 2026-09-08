@@ -1,92 +1,92 @@
 
-  COVERAGE MATRIX (content hash 2e14708be645, tier fast)
+  COVERAGE MATRIX (content hash 2e14708be645, tier full)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  215     10
-  colour        215     10
-  consequence   215     10
+  click-safety  216     9
+  colour        216     9
+  consequence   216     9
   deploy        3
-  empty         215     10
-  geometry      215     10
+  empty         216     9
+  geometry      216     9
   human-pace    30
   movie         54
-  mute-locks    215     10
-  nested        215     10
-  overlap       215     10
-  readability   215     10
-  said-twice    215     10
-  steps         215     10
+  mute-locks    216     9
+  nested        216     9
+  overlap       216     9
+  readability   216     9
+  said-twice    216     9
+  steps         216     9
   truth         81
   two-homes     13
   verdict       1       1
-  waits         215     10
+  waits         216     9
   walk-right    240     3
   walk-stage    1047
   walk-wrong    243
 
-  CELLS NOTHING CLOSES (124)
+  CELLS NOTHING CLOSES (112)
   family        cell                                                              why
   ------------  -------------------------------------------------------  -------  ---
   walk-right    stats-quartiles > s5 > q26 (boxplot) @375 × walk-right   MISSING
   walk-right    stats-quartiles > s5 > q26 (boxplot) @768 × walk-right   MISSING
   walk-right    stats-quartiles > s5 > q26 (boxplot) @1280 × walk-right  MISSING
-  geometry      staff-cover:busy @768 × geometry                         MISSING
-  colour        staff-cover:busy @768 × colour                           MISSING
-  consequence   staff-cover:busy @768 × consequence                      MISSING
-  click-safety  staff-cover:busy @768 × click-safety                     MISSING
-  empty         staff-cover:busy @768 × empty                            MISSING
-  nested        staff-cover:busy @768 × nested                           MISSING
-  steps         staff-cover:busy @768 × steps                            MISSING
-  mute-locks    staff-cover:busy @768 × mute-locks                       MISSING
-  waits         staff-cover:busy @768 × waits                            MISSING
-  readability   staff-cover:busy @768 × readability                      MISSING
-  overlap       staff-cover:busy @768 × overlap                          MISSING
-  said-twice    staff-cover:busy @768 × said-twice                       MISSING
-  geometry      staff-cover:open @768 × geometry                         MISSING
-  colour        staff-cover:open @768 × colour                           MISSING
-  consequence   staff-cover:open @768 × consequence                      MISSING
-  click-safety  staff-cover:open @768 × click-safety                     MISSING
-  empty         staff-cover:open @768 × empty                            MISSING
-  nested        staff-cover:open @768 × nested                           MISSING
-  steps         staff-cover:open @768 × steps                            MISSING
-  mute-locks    staff-cover:open @768 × mute-locks                       MISSING
-  waits         staff-cover:open @768 × waits                            MISSING
-  readability   staff-cover:open @768 × readability                      MISSING
-  overlap       staff-cover:open @768 × overlap                          MISSING
-  said-twice    staff-cover:open @768 × said-twice                       MISSING
-  geometry      class-page:error @768 × geometry                         MISSING
-  colour        class-page:error @768 × colour                           MISSING
-  consequence   class-page:error @768 × consequence                      MISSING
-  click-safety  class-page:error @768 × click-safety                     MISSING
-  empty         class-page:error @768 × empty                            MISSING
-  nested        class-page:error @768 × nested                           MISSING
-  steps         class-page:error @768 × steps                            MISSING
-  mute-locks    class-page:error @768 × mute-locks                       MISSING
-  waits         class-page:error @768 × waits                            MISSING
-  readability   class-page:error @768 × readability                      MISSING
-  overlap       class-page:error @768 × overlap                          MISSING
-  said-twice    class-page:error @768 × said-twice                       MISSING
-  geometry      question-view:ink-open @768 × geometry                   MISSING
-  colour        question-view:ink-open @768 × colour                     MISSING
-  consequence   question-view:ink-open @768 × consequence                MISSING
-  click-safety  question-view:ink-open @768 × click-safety               MISSING
-  empty         question-view:ink-open @768 × empty                      MISSING
-  nested        question-view:ink-open @768 × nested                     MISSING
-  steps         question-view:ink-open @768 × steps                      MISSING
-  mute-locks    question-view:ink-open @768 × mute-locks                 MISSING
-  waits         question-view:ink-open @768 × waits                      MISSING
-  readability   question-view:ink-open @768 × readability                MISSING
-  overlap       question-view:ink-open @768 × overlap                    MISSING
-  said-twice    question-view:ink-open @768 × said-twice                 MISSING
-  geometry      book-view:flicking @1280 × geometry                      MISSING
-  colour        book-view:flicking @1280 × colour                        MISSING
-  consequence   book-view:flicking @1280 × consequence                   MISSING
-  click-safety  book-view:flicking @1280 × click-safety                  MISSING
-  empty         book-view:flicking @1280 × empty                         MISSING
-  nested        book-view:flicking @1280 × nested                        MISSING
-  steps         book-view:flicking @1280 × steps                         MISSING
-  mute-locks    book-view:flicking @1280 × mute-locks                    MISSING
-  waits         book-view:flicking @1280 × waits                         MISSING
+  geometry      book-view:worth-a-look-open @375 × geometry              MISSING
+  colour        book-view:worth-a-look-open @375 × colour                MISSING
+  consequence   book-view:worth-a-look-open @375 × consequence           MISSING
+  click-safety  book-view:worth-a-look-open @375 × click-safety          MISSING
+  empty         book-view:worth-a-look-open @375 × empty                 MISSING
+  nested        book-view:worth-a-look-open @375 × nested                MISSING
+  steps         book-view:worth-a-look-open @375 × steps                 MISSING
+  mute-locks    book-view:worth-a-look-open @375 × mute-locks            MISSING
+  waits         book-view:worth-a-look-open @375 × waits                 MISSING
+  readability   book-view:worth-a-look-open @375 × readability           MISSING
+  overlap       book-view:worth-a-look-open @375 × overlap               MISSING
+  said-twice    book-view:worth-a-look-open @375 × said-twice            MISSING
+  geometry      book-view:worth-a-look-open @768 × geometry              MISSING
+  colour        book-view:worth-a-look-open @768 × colour                MISSING
+  consequence   book-view:worth-a-look-open @768 × consequence           MISSING
+  click-safety  book-view:worth-a-look-open @768 × click-safety          MISSING
+  empty         book-view:worth-a-look-open @768 × empty                 MISSING
+  nested        book-view:worth-a-look-open @768 × nested                MISSING
+  steps         book-view:worth-a-look-open @768 × steps                 MISSING
+  mute-locks    book-view:worth-a-look-open @768 × mute-locks            MISSING
+  waits         book-view:worth-a-look-open @768 × waits                 MISSING
+  readability   book-view:worth-a-look-open @768 × readability           MISSING
+  overlap       book-view:worth-a-look-open @768 × overlap               MISSING
+  said-twice    book-view:worth-a-look-open @768 × said-twice            MISSING
+  geometry      book-view:worth-a-look-open @1280 × geometry             MISSING
+  colour        book-view:worth-a-look-open @1280 × colour               MISSING
+  consequence   book-view:worth-a-look-open @1280 × consequence          MISSING
+  click-safety  book-view:worth-a-look-open @1280 × click-safety         MISSING
+  empty         book-view:worth-a-look-open @1280 × empty                MISSING
+  nested        book-view:worth-a-look-open @1280 × nested               MISSING
+  steps         book-view:worth-a-look-open @1280 × steps                MISSING
+  mute-locks    book-view:worth-a-look-open @1280 × mute-locks           MISSING
+  waits         book-view:worth-a-look-open @1280 × waits                MISSING
+  readability   book-view:worth-a-look-open @1280 × readability          MISSING
+  overlap       book-view:worth-a-look-open @1280 × overlap              MISSING
+  said-twice    book-view:worth-a-look-open @1280 × said-twice           MISSING
+  geometry      book-view:reteach-sent @375 × geometry                   MISSING
+  colour        book-view:reteach-sent @375 × colour                     MISSING
+  consequence   book-view:reteach-sent @375 × consequence                MISSING
+  click-safety  book-view:reteach-sent @375 × click-safety               MISSING
+  empty         book-view:reteach-sent @375 × empty                      MISSING
+  nested        book-view:reteach-sent @375 × nested                     MISSING
+  steps         book-view:reteach-sent @375 × steps                      MISSING
+  mute-locks    book-view:reteach-sent @375 × mute-locks                 MISSING
+  waits         book-view:reteach-sent @375 × waits                      MISSING
+  readability   book-view:reteach-sent @375 × readability                MISSING
+  overlap       book-view:reteach-sent @375 × overlap                    MISSING
+  said-twice    book-view:reteach-sent @375 × said-twice                 MISSING
+  geometry      book-view:reteach-sent @768 × geometry                   MISSING
+  colour        book-view:reteach-sent @768 × colour                     MISSING
+  consequence   book-view:reteach-sent @768 × consequence                MISSING
+  click-safety  book-view:reteach-sent @768 × click-safety               MISSING
+  empty         book-view:reteach-sent @768 × empty                      MISSING
+  nested        book-view:reteach-sent @768 × nested                     MISSING
+  steps         book-view:reteach-sent @768 × steps                      MISSING
+  mute-locks    book-view:reteach-sent @768 × mute-locks                 MISSING
+  waits         book-view:reteach-sent @768 × waits                      MISSING
 
   DEBT LEDGER (printed every run)
   cell                     owner / phase            file                state
