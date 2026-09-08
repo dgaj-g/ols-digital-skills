@@ -1,92 +1,56 @@
 
-  COVERAGE MATRIX (content hash 6b76bf207c1e, tier full)
+  COVERAGE MATRIX (content hash 994c4e275e20, tier full)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  219     6
-  colour        219     6
-  consequence   219     6
+  click-safety  225
+  colour        225
+  consequence   225
   deploy        3
-  empty         219     6
-  geometry      219     6
+  empty         225
+  geometry      225
   human-pace    30
   movie         54
-  mute-locks    219     6
-  nested        219     6
-  overlap       219     6
-  readability   219     6
-  said-twice    219     6
-  steps         219     6
+  mute-locks    225
+  nested        225
+  overlap       225
+  readability   225
+  said-twice    225
+  steps         225
   truth         81
   two-homes     13
-  verdict       1       1
-  waits         219     6
+  verdict       2
+  waits         225
   walk-right    243
   walk-stage    1047
-  walk-wrong    243
+  walk-wrong    219     24
 
-  CELLS NOTHING CLOSES (73)
-  family        cell                                                 why
-  ------------  ------------------------------------------  -------  ---
-  geometry      book-view:flicking @375 × geometry          MISSING
-  colour        book-view:flicking @375 × colour            MISSING
-  consequence   book-view:flicking @375 × consequence       MISSING
-  click-safety  book-view:flicking @375 × click-safety      MISSING
-  empty         book-view:flicking @375 × empty             MISSING
-  nested        book-view:flicking @375 × nested            MISSING
-  steps         book-view:flicking @375 × steps             MISSING
-  mute-locks    book-view:flicking @375 × mute-locks        MISSING
-  waits         book-view:flicking @375 × waits             MISSING
-  readability   book-view:flicking @375 × readability       MISSING
-  overlap       book-view:flicking @375 × overlap           MISSING
-  said-twice    book-view:flicking @375 × said-twice        MISSING
-  geometry      book-view:flicking @768 × geometry          MISSING
-  colour        book-view:flicking @768 × colour            MISSING
-  consequence   book-view:flicking @768 × consequence       MISSING
-  click-safety  book-view:flicking @768 × click-safety      MISSING
-  empty         book-view:flicking @768 × empty             MISSING
-  nested        book-view:flicking @768 × nested            MISSING
-  steps         book-view:flicking @768 × steps             MISSING
-  mute-locks    book-view:flicking @768 × mute-locks        MISSING
-  waits         book-view:flicking @768 × waits             MISSING
-  readability   book-view:flicking @768 × readability       MISSING
-  overlap       book-view:flicking @768 × overlap           MISSING
-  said-twice    book-view:flicking @768 × said-twice        MISSING
-  geometry      book-view:flicking @1280 × geometry         MISSING
-  colour        book-view:flicking @1280 × colour           MISSING
-  consequence   book-view:flicking @1280 × consequence      MISSING
-  click-safety  book-view:flicking @1280 × click-safety     MISSING
-  empty         book-view:flicking @1280 × empty            MISSING
-  nested        book-view:flicking @1280 × nested           MISSING
-  steps         book-view:flicking @1280 × steps            MISSING
-  mute-locks    book-view:flicking @1280 × mute-locks       MISSING
-  waits         book-view:flicking @1280 × waits            MISSING
-  readability   book-view:flicking @1280 × readability      MISSING
-  overlap       book-view:flicking @1280 × overlap          MISSING
-  said-twice    book-view:flicking @1280 × said-twice       MISSING
-  geometry      book-view:reteach-sent @375 × geometry      MISSING
-  colour        book-view:reteach-sent @375 × colour        MISSING
-  consequence   book-view:reteach-sent @375 × consequence   MISSING
-  click-safety  book-view:reteach-sent @375 × click-safety  MISSING
-  empty         book-view:reteach-sent @375 × empty         MISSING
-  nested        book-view:reteach-sent @375 × nested        MISSING
-  steps         book-view:reteach-sent @375 × steps         MISSING
-  mute-locks    book-view:reteach-sent @375 × mute-locks    MISSING
-  waits         book-view:reteach-sent @375 × waits         MISSING
-  readability   book-view:reteach-sent @375 × readability   MISSING
-  overlap       book-view:reteach-sent @375 × overlap       MISSING
-  said-twice    book-view:reteach-sent @375 × said-twice    MISSING
-  geometry      book-view:reteach-sent @768 × geometry      MISSING
-  colour        book-view:reteach-sent @768 × colour        MISSING
-  consequence   book-view:reteach-sent @768 × consequence   MISSING
-  click-safety  book-view:reteach-sent @768 × click-safety  MISSING
-  empty         book-view:reteach-sent @768 × empty         MISSING
-  nested        book-view:reteach-sent @768 × nested        MISSING
-  steps         book-view:reteach-sent @768 × steps         MISSING
-  mute-locks    book-view:reteach-sent @768 × mute-locks    MISSING
-  waits         book-view:reteach-sent @768 × waits         MISSING
-  readability   book-view:reteach-sent @768 × readability   MISSING
-  overlap       book-view:reteach-sent @768 × overlap       MISSING
-  said-twice    book-view:reteach-sent @768 × said-twice    MISSING
+  CELLS NOTHING CLOSES (24)
+  family      cell                                                             why
+  ----------  ------------------------------------------------------  -------  ---
+  walk-wrong  algebra > s4 > q13 (solve) @768 × walk-wrong            MISSING
+  walk-wrong  algebra > s4 > q14 (solve) @1280 × walk-wrong           MISSING
+  walk-wrong  angles > s1 > c1 (classify) @375 × walk-wrong           MISSING
+  walk-wrong  angles > s1 > c1 (classify) @768 × walk-wrong           MISSING
+  walk-wrong  angles > s1 > c1 (classify) @1280 × walk-wrong          MISSING
+  walk-wrong  angles > s1 > c2 (classify) @375 × walk-wrong           MISSING
+  walk-wrong  angles > s1 > c2 (classify) @768 × walk-wrong           MISSING
+  walk-wrong  angles > s1 > c2 (classify) @1280 × walk-wrong          MISSING
+  walk-wrong  angles > s1 > c3 (classify) @375 × walk-wrong           MISSING
+  walk-wrong  angles > s1 > c3 (classify) @768 × walk-wrong           MISSING
+  walk-wrong  angles > s1 > c3 (classify) @1280 × walk-wrong          MISSING
+  walk-wrong  angles > s1 > c4 (classify) @375 × walk-wrong           MISSING
+  walk-wrong  angles > s1 > c4 (classify) @768 × walk-wrong           MISSING
+  walk-wrong  angles > s1 > c4 (classify) @1280 × walk-wrong          MISSING
+  walk-wrong  angles > s1 > m1 (protractor) @375 × walk-wrong         MISSING
+  walk-wrong  angles > s1 > m1 (protractor) @768 × walk-wrong         MISSING
+  walk-wrong  angles > s1 > m1 (protractor) @1280 × walk-wrong        MISSING
+  walk-wrong  angles > s1 > m2 (protractor) @375 × walk-wrong         MISSING
+  walk-wrong  angles > s1 > m2 (protractor) @768 × walk-wrong         MISSING
+  walk-wrong  angles > s1 > m2 (protractor) @1280 × walk-wrong        MISSING
+  walk-wrong  angles > s4 > q13 (reasoned) @768 × walk-wrong          MISSING
+  walk-wrong  angles > s4 > q14 (reasoned) @1280 × walk-wrong         MISSING
+  walk-wrong  stats-quartiles > s3 > q13 (cfplot) @768 × walk-wrong   MISSING
+  walk-wrong  stats-quartiles > s3 > q14 (cfplot) @1280 × walk-wrong  MISSING
 
   DEBT LEDGER (printed every run)
   cell                     owner / phase            file                state

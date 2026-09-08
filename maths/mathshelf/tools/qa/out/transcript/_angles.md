@@ -1,8 +1,8 @@
 # MathShelf — the angles transcript
 
-TRANSCRIPT HASH: 542d469f6964cd26
-sentences: 60
-taken: 2026-09-08 15:19:26
+TRANSCRIPT HASH: f8c89de919b53ac3
+sentences: 54
+taken: 2026-09-08 15:27:09
 
 This is every sentence a pupil reads, in the order they meet it,
 as it was RENDERED on the running app. Nothing here is source.
@@ -62,9 +62,3 @@ Ex.6 Putting it together
 WALT · Revise angle facts and use these in problem solving.
 Exercise 6 · Putting it together
 PQRS is a parallelogram. Work out angles a, b and c. Give a reason for each step. [4 marks]
-The two horizontal lines are parallel. Work out the size of angle x. Give a reason for each step. [3 marks]
-DEF is a straight line and BC is parallel to DE. Work out the size of angle x. Give a reason for each step. [4 marks]
-Working 3/3 · Answer 1/1Neat, clear working.
-My marks
-Angles · marks so far
-Angles · marks so far50 / 54Nearly there — look back at the crosses.23 of 24 questions checked · your whole book is on your teacher’s copy

@@ -39,4 +39,4 @@ Back to the app’s mark.
 Spot the slip · starter 1 of 2
 Where has this gone wrong — and what should the line say?
 You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net)
-http://127.0.0.1:8201/maths/mathshelf/index.html?class=demo
+http://localhost:8424/maths/mathshelf/index.html?class=demo

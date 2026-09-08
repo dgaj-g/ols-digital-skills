@@ -210,7 +210,16 @@ const MEASURE = async ([dataUri, rects, view]) => {
     if (want && (R.op == null || R.op >= 0.99)) {
       const wantL = lum(want[0], want[1], want[2]);
       const owed = Math.abs(plate.L - wantL);
-      if (owed > 0.02 && Math.abs(plate.L - core.L) < owed * 0.5) {
+      /* HOW FAR IS FAR ENOUGH. Half was not: a claim in ink on paper (15.5:1
+         declared) came back at 3.02:1 and a reason chip at 2.13:1 - both long
+         lines wrapped in roomy boxes, where the ink is a small share of what is
+         sampled and the deepest cluster the admission test allows is still an
+         edge. Three tenths of the way from the plate to the ink is an edge;
+         three quarters is a stroke. The faults this law has caught for real -
+         a disabled control, a stamp in a tight oval, a glyph in its own plate's
+         colour - all have a declared colour that is ITSELF close to the plate,
+         so `owed` is small and this test never runs on them. */
+      if (owed > 0.02 && Math.abs(plate.L - core.L) < owed * 0.75) {
         return Object.assign({}, R, { skip: 'text pixels not distinguishable' });
       }
     }
