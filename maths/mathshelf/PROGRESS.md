@@ -389,6 +389,43 @@ control battery's own record (PROGRESS F-series, 7 Sept) already has all
 fourteen controls green at this commit. The battery that counts is the one
 before the deploy.
 
+## Where Book C got to (8 September 2026)
+
+Green under their own proofs, at HEAD:
+- `node dev/test-statcore.js` — **156 cases**, floor raised from 80.
+- `node dev/lint-content-stats.js` — PASS: 6 sections, 33 questions, 51 movie
+  steps, 94 marks, every answer re-derived independently of the engine.
+- `node dev/validate-all.js` — **81 questions**, model and corrupted attempt
+  each through the live engine; floor raised from 48.
+- `node tools/qa/run.js --fast` — green (the only red is the uncommitted tree
+  between commits).
+- In a real browser, at 375, 768 and 1280: all 33 questions mount across all
+  eight kinds, each declaring its stages, each with a Check that says what it
+  is waiting for, none showing the truth before Check, zero console errors; and
+  all 33 re-draw read-only for the teacher (13 of 13 board kinds draw a board).
+  A `qlist` question was driven end to end by hand — tray deranged, ordered,
+  three cuts committed with their read-outs, the IQR keyed wrong, marked
+  "Quartiles 3/3 · Interquartile range 0/1", first attempt struck and a fresh
+  board offered.
+
+Two engine limits the validator found, fixed rather than designed around:
+1. **Two reads at two values in one question.** `markAtXAnswer` read a single
+   top-level `S.answer`, so a second `atX` ask could never be marked. Reads and
+   answers are now keyed `atX@<x>`, and the CF notes' "above 167 cm" and
+   "below 153 cm" can both be asked.
+2. **A box plot built from a curve** whose least and greatest are printed while
+   its three cuts are read off the graph: `boxTruth` treated `given` as the
+   whole truth and never fell through to the curve, so such a question could
+   only ever be marked follow-through.
+
+And one thing the design said would not be needed: **a book is not entirely
+client-only.** `server/Code.gs.template` keeps `var ACTS` and refuses any other
+act id (`bad-act`), so without its id the book could not save a mark, appear on
+the Working Wall or be drilled into. `qa-store-scale` found it. The id is added,
+every other two-book default in the server derives from `ACTS`, and the offline
+stub is shaped the same way from `ACTIVITIES`. It means this deploy carries a
+server change, so his eight-item live smoke list applies, not just the book's.
+
 ## Notes to whoever picks this up
 - `node dev/test-statcore.js` is the engine's own proof and takes under a second.
 - The engine's unit table (`UNITS` / `unitsOf`) is the ONE home of band, weight
