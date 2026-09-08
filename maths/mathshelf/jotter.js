@@ -335,8 +335,15 @@
     wrap.appendChild(slot);
     var pad = el('div', 'keypad keypad-num');
     pad.style.cssText = 'margin-top:8px';
-    var KEYS = opts.fraction ? ['7', '8', '9', '4', '5', '6', '1', '2', '3', '−', '0', '/', '⌫']
-      : ['7', '8', '9', '4', '5', '6', '1', '2', '3', '−', '0', '⌫'];
+    /* A DECIMAL POINT WHERE DECIMALS ARE THE ANSWER. Handling Data asks for
+       1.5 of a mark and 3.7 g; without a point on the pad those questions
+       cannot be answered at all, and tap-first means there is no other way in
+       (rule 6). The v3 callers pass neither flag and get the pad they had. */
+    var KEYS = ['7', '8', '9', '4', '5', '6', '1', '2', '3'];
+    KEYS.push('−', '0');
+    if (opts.decimal) KEYS.push('.');
+    if (opts.fraction) KEYS.push('/');
+    KEYS.push('⌫');
     function render() { slot.textContent = buf; }
     function change() { render(); if (opts.onChange) opts.onChange(buf); }
     function press(k) {
@@ -361,6 +368,7 @@
       if (/^[0-9]$/.test(k)) { e.preventDefault(); press(k); return; }
       if (k === '-') { e.preventDefault(); press('−'); return; }
       if (k === '/' && opts.fraction) { e.preventDefault(); press('/'); return; }
+      if (k === '.' && opts.decimal) { e.preventDefault(); press('.'); return; }
     });
     host.appendChild(wrap);
     render();

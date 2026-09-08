@@ -454,7 +454,11 @@
                and 75 (n = 100, split50 rule): Q1 = 37/6, median = 165/16,
                Q3 = 455/32 — exact chord values, re-derived independently in
                the proof script and matched against GJ_STATS.curveX. */
-            given: { min: 2, Q1: '37/6', Q2: '165/16', Q3: '455/32', max: 24 },
+            /* the least and the greatest are printed on the paper; the three cuts are
+               what she reads off her own curve, so they are NOT given here -
+               statcore derives them from the curve and marks them to the
+               reading tolerance (DESIGN 6.3) */
+            given: { min: 2, max: 24 },
             scale: { min: 0, max: 25, step: 5, sq: 1 },
             src: 'Statistics M7 (1).pdf Q31(b)(c)' },
           { id: 'q27', kind: 'values', marks: [0, 1], reserve: true,
@@ -497,7 +501,11 @@
             { say: 'For example — a hypothesis you could test: girls spend more time on social media than boys.',
               do: [{ write: { text: 'Girls spend more time on social media than boys.' } }] },
             { say: 'You cannot ask everyone, so a hypothesis is tested on a sample — not the whole population.',
-              do: [{ stamp: { text: 'A hypothesis is tested on a SAMPLE, not the whole population.' } }] },
+              do: [/* WRITTEN, NOT STAMPED. A stamp is laid OVER the film, and with three of
+                 them on one screen the first sat on the hypothesis line above it -
+                 the overlap law caught it. The two questions to ask of a sample
+                 (below) are the stamps this beat is for; this one is a line. */
+              { write: { text: 'A hypothesis is tested on a sample, not on the whole population.' } }] },
             { say: 'A sample only gives a fair test if it is big enough, and if it does not leave any group out.',
               do: [{ note: { red: true, text: 'A fair sample is big enough, and does not leave any group out.' } }] },
             { say: 'So always ask, of any sample: how many were asked?',
