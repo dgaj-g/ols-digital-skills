@@ -540,27 +540,38 @@
            afterwards was the wrong shape and made it worse: it threw away the
            free slot the search had just found and stacked five box-plot labels
            on top of one another. */
+        /* AND SIDEWAYS AS WELL AS UP. Two cuts of a box plot can sit within a
+           few pixels of one another on a phone - "lower quartile" and "median"
+           overlapped by twelve - and no row above or below is free either,
+           because they are the same two labels in every row. The board is wider
+           than the pair, so the search also slides each label along its own
+           row; the wanted place is tried first, so nothing moves that does not
+           have to. */
         var r = recs[i], row = 0, box = null, firstLegal = null;
         var maxUp = Math.max(0, Math.floor((r.wantY - r.h) / rowH));
-        for (row = 0; row < 40; row++) {
+        var DX = [0, 10, -10, 20, -20, 32, -32, 46, -46, 62, -62, 80, -80];
+        for (row = 0; row < 40 && !box; row++) {
           var top = (row <= maxUp)
             ? r.wantY - row * rowH
             : r.wantY + (row - maxUp) * rowH;
-          var cand = { l: r.wantX - r.w / 2, t: top - r.h, r: r.wantX + r.w / 2, b: top };
-          if (cand.t < 0 || cand.b > layerH) continue;
-          if (!firstLegal) firstLegal = cand;
-          var hit = false;
-          for (var j = 0; j < placed.length; j++) {
-            var q2 = placed[j];
-            if (cand.l < q2.r && cand.r > q2.l && cand.t < q2.b && cand.b > q2.t) { hit = true; break; }
+          for (var d = 0; d < DX.length; d++) {
+            var cx = Math.max(r.w / 2, Math.min(layerW - r.w / 2, r.wantX + DX[d]));
+            var cand = { l: cx - r.w / 2, t: top - r.h, r: cx + r.w / 2, b: top, x: cx };
+            if (cand.t < 0 || cand.b > layerH) continue;
+            if (!firstLegal) firstLegal = cand;
+            var hit = false;
+            for (var j = 0; j < placed.length; j++) {
+              var q2 = placed[j];
+              if (cand.l < q2.r && cand.r > q2.l && cand.t < q2.b && cand.b > q2.t) { hit = true; break; }
+            }
+            if (!hit) { box = cand; break; }
           }
-          if (!hit) { box = cand; break; }
         }
         /* every row on the board is taken: put it in the first one that fits
            the board at all and let the overlap law say so - a label off the
            board is one she cannot read, which is worse than one she can */
-        if (!box) box = firstLegal || { l: r.wantX - r.w / 2, t: 0, r: r.wantX + r.w / 2, b: r.h };
-        r.el.style.left = r.wantX + 'px';
+        if (!box) box = firstLegal || { l: r.wantX - r.w / 2, t: 0, r: r.wantX + r.w / 2, b: r.h, x: r.wantX };
+        r.el.style.left = (box.x == null ? r.wantX : box.x) + 'px';
         r.el.style.top = box.b + 'px';
         placed.push(box);
       }
