@@ -1,15 +1,15 @@
 {
  "walker": "sit-pupil",
  "scope": "stats-quartiles",
- "width": 375,
+ "width": 768,
  "tier": "preview",
  "contentHash": "afd5f9018ff2",
- "when": "2026-09-08T06:48:58.073Z",
+ "when": "2026-09-08T06:49:02.463Z",
  "states": [
   {
    "surface": "cover",
    "state": "preview",
-   "width": 375,
+   "width": 768,
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -30,7 +30,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 0,
    "audits": {
     "empty": "PASS",
@@ -48,7 +48,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 107
+    "readability": 29
    }
   },
   {
@@ -56,7 +56,7 @@
    "state": "instant",
    "expected": "instant",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 0,
    "audits": {
     "empty": "PASS",
@@ -74,7 +74,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 107
+    "readability": 29
    }
   },
   {
@@ -82,7 +82,7 @@
    "state": "end",
    "expected": "end",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 0,
    "audits": {
     "empty": "PASS",
@@ -100,7 +100,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 16
+    "readability": 31
    }
   },
   {
@@ -108,7 +108,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -128,13 +128,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 16
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -158,7 +158,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -179,13 +179,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 16
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -210,7 +210,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -231,13 +231,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 16
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -262,7 +262,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -283,13 +283,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 16
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -314,7 +314,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -335,13 +335,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 16
+    "readability": 32
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -366,7 +366,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -387,13 +387,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 16
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -418,7 +418,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -439,13 +439,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 16
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -470,7 +470,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -491,13 +491,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 16
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -522,7 +522,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -543,13 +543,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 16
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "numpad-fraction",
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -574,7 +574,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -594,13 +594,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 16
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "numpad-fraction",
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -624,7 +624,7 @@
    "state": "checked-right",
    "expected": "checked-right",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -644,13 +644,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 30
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q1",
    "section": 0,
    "book": "stats-quartiles",
@@ -674,7 +674,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -694,13 +694,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 30
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -724,7 +724,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -745,13 +745,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 30
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -776,7 +776,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -797,13 +797,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 30
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -828,7 +828,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -849,13 +849,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 30
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -880,7 +880,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -901,13 +901,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 30
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -932,7 +932,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -953,13 +953,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 30
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -984,7 +984,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -1005,13 +1005,13 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 30
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -1036,7 +1036,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -1057,13 +1057,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 30
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -1088,7 +1088,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -1109,13 +1109,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 30
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -1140,7 +1140,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -1160,13 +1160,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 30
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -1190,7 +1190,7 @@
    "state": "checked-right",
    "expected": "checked-right",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -1210,13 +1210,13 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 32
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q2",
    "section": 0,
    "book": "stats-quartiles",
@@ -1240,7 +1240,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1260,13 +1260,13 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 32
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1290,7 +1290,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1311,13 +1311,13 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 32
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1342,7 +1342,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1363,13 +1363,13 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 32
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1394,7 +1394,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1415,13 +1415,13 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 32
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1446,7 +1446,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1467,13 +1467,13 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 32
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1498,7 +1498,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1519,13 +1519,13 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 32
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1550,7 +1550,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1571,13 +1571,13 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 32
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1602,7 +1602,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1623,13 +1623,13 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 32
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1654,7 +1654,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1675,13 +1675,13 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 32
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1706,7 +1706,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1726,13 +1726,13 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 32
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1756,7 +1756,7 @@
    "state": "checked-right",
    "expected": "checked-right",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1776,13 +1776,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q3",
    "section": 0,
    "book": "stats-quartiles",
@@ -1806,7 +1806,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -1826,13 +1826,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -1856,7 +1856,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -1877,13 +1877,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -1908,7 +1908,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -1929,13 +1929,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -1960,7 +1960,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -1981,13 +1981,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -2012,7 +2012,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -2033,13 +2033,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -2064,7 +2064,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -2085,117 +2085,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
-   "qid": "q4",
-   "section": 0,
-   "book": "stats-quartiles",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 375,
-   "qid": "q4",
-   "section": 0,
-   "book": "stats-quartiles",
-   "stage": "selected",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "FAIL",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 1,
-    "readability": 24
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 375,
-   "qid": "q4",
-   "section": 0,
-   "book": "stats-quartiles",
-   "stage": "selected",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "FAIL",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 375,
-   "qid": "q4",
-   "section": 0,
-   "book": "stats-quartiles",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 1,
-    "readability": 24
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -2220,7 +2116,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -2241,13 +2137,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -2272,7 +2168,111 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
+   "qid": "q4",
+   "section": 0,
+   "book": "stats-quartiles",
+   "stage": "ready",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 1,
+    "readability": 33
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "disabled-explained",
+   "width": 768,
+   "qid": "q4",
+   "section": 0,
+   "book": "stats-quartiles",
+   "stage": "ready",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "mid-attempt",
+   "expected": "mid-attempt",
+   "stood": true,
+   "width": 768,
+   "qid": "q4",
+   "section": 0,
+   "book": "stats-quartiles",
+   "stage": "selected",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "FAIL",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 1,
+    "readability": 33
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "disabled-explained",
+   "width": 768,
+   "qid": "q4",
+   "section": 0,
+   "book": "stats-quartiles",
+   "stage": "selected",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "FAIL",
+    "readability": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "mid-attempt",
+   "expected": "mid-attempt",
+   "stood": true,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -2292,13 +2292,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -2322,7 +2322,7 @@
    "state": "mid-attempt",
    "expected": "checked-right",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -2342,13 +2342,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q4",
    "section": 0,
    "book": "stats-quartiles",
@@ -2372,7 +2372,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2392,13 +2392,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2422,7 +2422,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2443,13 +2443,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2474,7 +2474,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2495,13 +2495,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2526,7 +2526,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2547,13 +2547,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2578,7 +2578,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2599,13 +2599,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2630,7 +2630,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2650,13 +2650,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 33
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2680,7 +2680,7 @@
    "state": "checked-right",
    "expected": "checked-right",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2700,13 +2700,13 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 19
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q8",
    "section": 0,
    "book": "stats-quartiles",
@@ -2730,7 +2730,7 @@
    "state": "mid-book",
    "expected": "mid-book",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 1,
    "audits": {
     "empty": "PASS",
@@ -2748,7 +2748,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 31
+    "readability": 27
    }
   },
   {
@@ -2756,8 +2756,165 @@
    "state": "instant",
    "expected": "instant",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 1,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 27
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "end",
+   "expected": "end",
+   "stood": true,
+   "width": 768,
+   "section": 1,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 30
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "expected": "fresh",
+   "stood": true,
+   "width": 768,
+   "qid": "q9",
+   "section": 1,
+   "book": "stats-quartiles",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 30
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "disabled-explained",
+   "width": 768,
+   "qid": "q9",
+   "section": 1,
+   "book": "stats-quartiles",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "fresh",
+   "expected": "mid-attempt",
+   "stood": false,
+   "width": 768,
+   "qid": "q9",
+   "section": 1,
+   "book": "stats-quartiles",
+   "stage": "empty",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 30
+   }
+  },
+  {
+   "surface": "dock",
+   "state": "disabled-explained",
+   "width": 768,
+   "qid": "q9",
+   "section": 1,
+   "book": "stats-quartiles",
+   "stage": "empty",
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "mid-attempt",
+   "expected": "mid-attempt",
+   "stood": true,
+   "width": 768,
+   "qid": "q9",
+   "section": 1,
+   "book": "stats-quartiles",
+   "stage": "ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2778,166 +2935,9 @@
    }
   },
   {
-   "surface": "movie",
-   "state": "end",
-   "expected": "end",
-   "stood": true,
-   "width": 375,
-   "section": 1,
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 3,
-    "readability": 17
-   }
-  },
-  {
-   "surface": "question",
-   "state": "fresh",
-   "expected": "fresh",
-   "stood": true,
-   "width": 375,
-   "qid": "q9",
-   "section": 1,
-   "book": "stats-quartiles",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 3,
-    "readability": 17
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 375,
-   "qid": "q9",
-   "section": 1,
-   "book": "stats-quartiles",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "fresh",
-   "expected": "mid-attempt",
-   "stood": false,
-   "width": 375,
-   "qid": "q9",
-   "section": 1,
-   "book": "stats-quartiles",
-   "stage": "empty",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 3,
-    "readability": 17
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 375,
-   "qid": "q9",
-   "section": 1,
-   "book": "stats-quartiles",
-   "stage": "empty",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 375,
-   "qid": "q9",
-   "section": 1,
-   "book": "stats-quartiles",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 3,
-    "readability": 17
-   }
-  },
-  {
    "surface": "dock",
    "state": "numpad",
-   "width": 375,
+   "width": 768,
    "qid": "q9",
    "section": 1,
    "book": "stats-quartiles",
@@ -2962,7 +2962,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q9",
    "section": 1,
    "book": "stats-quartiles",
@@ -2983,13 +2983,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 17
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "numpad",
-   "width": 375,
+   "width": 768,
    "qid": "q9",
    "section": 1,
    "book": "stats-quartiles",
@@ -3014,7 +3014,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q9",
    "section": 1,
    "book": "stats-quartiles",
@@ -3034,13 +3034,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 17
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "numpad",
-   "width": 375,
+   "width": 768,
    "qid": "q9",
    "section": 1,
    "book": "stats-quartiles",
@@ -3064,7 +3064,7 @@
    "state": "checked-wrong-1",
    "expected": "checked-right",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q9",
    "section": 1,
    "book": "stats-quartiles",
@@ -3084,13 +3084,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 26
+    "readability": 39
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q9",
    "section": 1,
    "book": "stats-quartiles",
@@ -3114,7 +3114,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q10",
    "section": 1,
    "book": "stats-quartiles",
@@ -3134,13 +3134,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 26
+    "readability": 39
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q10",
    "section": 1,
    "book": "stats-quartiles",
@@ -3164,7 +3164,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q10",
    "section": 1,
    "book": "stats-quartiles",
@@ -3185,13 +3185,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 26
+    "readability": 39
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q10",
    "section": 1,
    "book": "stats-quartiles",
@@ -3216,7 +3216,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q10",
    "section": 1,
    "book": "stats-quartiles",
@@ -3237,13 +3237,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 26
+    "readability": 39
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q10",
    "section": 1,
    "book": "stats-quartiles",
@@ -3268,7 +3268,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q10",
    "section": 1,
    "book": "stats-quartiles",
@@ -3289,13 +3289,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 26
+    "readability": 39
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q10",
    "section": 1,
    "book": "stats-quartiles",
@@ -3320,7 +3320,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q10",
    "section": 1,
    "book": "stats-quartiles",
@@ -3340,13 +3340,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 26
+    "readability": 39
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q10",
    "section": 1,
    "book": "stats-quartiles",
@@ -3370,7 +3370,7 @@
    "state": "checked-wrong-1",
    "expected": "checked-right",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q10",
    "section": 1,
    "book": "stats-quartiles",
@@ -3390,13 +3390,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 27
+    "readability": 46
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q10",
    "section": 1,
    "book": "stats-quartiles",
@@ -3420,7 +3420,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q11",
    "section": 1,
    "book": "stats-quartiles",
@@ -3440,13 +3440,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 27
+    "readability": 46
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q11",
    "section": 1,
    "book": "stats-quartiles",
@@ -3470,7 +3470,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q11",
    "section": 1,
    "book": "stats-quartiles",
@@ -3491,13 +3491,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 27
+    "readability": 46
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q11",
    "section": 1,
    "book": "stats-quartiles",
@@ -3522,7 +3522,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q11",
    "section": 1,
    "book": "stats-quartiles",
@@ -3543,13 +3543,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 27
+    "readability": 46
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q11",
    "section": 1,
    "book": "stats-quartiles",
@@ -3574,7 +3574,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q11",
    "section": 1,
    "book": "stats-quartiles",
@@ -3595,13 +3595,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 27
+    "readability": 46
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q11",
    "section": 1,
    "book": "stats-quartiles",
@@ -3626,7 +3626,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q11",
    "section": 1,
    "book": "stats-quartiles",
@@ -3646,13 +3646,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 27
+    "readability": 46
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q11",
    "section": 1,
    "book": "stats-quartiles",
@@ -3676,7 +3676,7 @@
    "state": "checked-wrong-1",
    "expected": "checked-right",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q11",
    "section": 1,
    "book": "stats-quartiles",
@@ -3696,13 +3696,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 24
+    "readability": 49
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q11",
    "section": 1,
    "book": "stats-quartiles",
@@ -3726,7 +3726,7 @@
    "state": "mid-book",
    "expected": "mid-book",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 2,
    "audits": {
     "empty": "PASS",
@@ -3744,7 +3744,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 46
+    "readability": 27
    }
   },
   {
@@ -3752,7 +3752,7 @@
    "state": "instant",
    "expected": "instant",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 2,
    "audits": {
     "empty": "PASS",
@@ -3770,7 +3770,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 46
+    "readability": 27
    }
   },
   {
@@ -3778,7 +3778,7 @@
    "state": "end",
    "expected": "end",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 2,
    "audits": {
     "empty": "PASS",
@@ -3796,7 +3796,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 14
+    "readability": 28
    }
   },
   {
@@ -3804,7 +3804,7 @@
    "state": "mid-attempt",
    "expected": "fresh",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -3824,13 +3824,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 14
+    "readability": 28
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -3854,7 +3854,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -3875,13 +3875,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 14
+    "readability": 28
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -3906,7 +3906,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -3914,7 +3914,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -3927,13 +3927,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 14
+    "readability": 28
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -3941,7 +3941,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -3958,7 +3958,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -3966,7 +3966,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -3979,13 +3979,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 14
+    "readability": 28
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -3993,7 +3993,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4010,7 +4010,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -4018,7 +4018,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4031,13 +4031,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 14
+    "readability": 28
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -4045,7 +4045,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4062,7 +4062,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -4070,7 +4070,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4083,13 +4083,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 14
+    "readability": 27
    }
   },
   {
    "surface": "dock",
    "state": "nudge-pad",
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -4097,7 +4097,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4114,14 +4114,14 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4134,20 +4134,20 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 14
+    "readability": 27
    }
   },
   {
    "surface": "dock",
    "state": "nudge-pad",
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4164,7 +4164,7 @@
    "state": "checked-right",
    "expected": "checked-right",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -4184,13 +4184,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 27
+    "readability": 29
    }
   },
   {
    "surface": "dock",
    "state": "nudge-pad",
-   "width": 375,
+   "width": 768,
    "qid": "q12",
    "section": 2,
    "book": "stats-quartiles",
@@ -4214,7 +4214,7 @@
    "state": "mid-attempt",
    "expected": "fresh",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4234,13 +4234,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 27
+    "readability": 29
    }
   },
   {
    "surface": "dock",
    "state": "nudge-pad",
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4264,7 +4264,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4285,13 +4285,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 27
+    "readability": 29
    }
   },
   {
    "surface": "dock",
    "state": "nudge-pad",
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4316,7 +4316,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4324,7 +4324,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4337,13 +4337,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 27
+    "readability": 29
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4351,7 +4351,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4368,7 +4368,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4376,7 +4376,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4389,13 +4389,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 27
+    "readability": 29
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4403,7 +4403,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4420,7 +4420,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4428,7 +4428,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4441,13 +4441,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 27
+    "readability": 29
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4455,7 +4455,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4472,7 +4472,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4480,7 +4480,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4493,13 +4493,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 27
+    "readability": 29
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4507,7 +4507,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4524,14 +4524,14 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4544,20 +4544,20 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 27
+    "readability": 29
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4574,7 +4574,7 @@
    "state": "checked-right",
    "expected": "checked-right",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4594,13 +4594,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 21
+    "readability": 47
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q13",
    "section": 2,
    "book": "stats-quartiles",
@@ -4624,7 +4624,7 @@
    "state": "open",
    "expected": "open",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 2,
    "book": "stats-quartiles",
    "audits": {
@@ -4643,7 +4643,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 19
+    "readability": 34
    }
   },
   {
@@ -4651,7 +4651,7 @@
    "state": "saved",
    "expected": "saved",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 2,
    "book": "stats-quartiles",
    "audits": {
@@ -4670,7 +4670,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 19
+    "readability": 34
    }
   },
   {
@@ -4678,12 +4678,12 @@
    "state": "mid-book",
    "expected": "mid-book",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 3,
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4696,7 +4696,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 39
+    "readability": 34
    }
   },
   {
@@ -4704,12 +4704,12 @@
    "state": "instant",
    "expected": "instant",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 3,
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4722,7 +4722,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 39
+    "readability": 34
    }
   },
   {
@@ -4730,12 +4730,12 @@
    "state": "end",
    "expected": "end",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 3,
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4748,7 +4748,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 40
+    "readability": 35
    }
   },
   {
@@ -4756,14 +4756,14 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q15",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4776,20 +4776,20 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 40
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q15",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4806,7 +4806,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q15",
    "section": 3,
    "book": "stats-quartiles",
@@ -4814,7 +4814,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4827,13 +4827,13 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 40
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q15",
    "section": 3,
    "book": "stats-quartiles",
@@ -4841,7 +4841,7 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
@@ -4858,7 +4858,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q15",
    "section": 3,
    "book": "stats-quartiles",
@@ -4866,26 +4866,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 52
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q15",
    "section": 3,
    "book": "stats-quartiles",
@@ -4893,13 +4893,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -4910,7 +4910,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q15",
    "section": 3,
    "book": "stats-quartiles",
@@ -4918,26 +4918,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 52
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q15",
    "section": 3,
    "book": "stats-quartiles",
@@ -4945,13 +4945,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -4962,7 +4962,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q15",
    "section": 3,
    "book": "stats-quartiles",
@@ -4970,26 +4970,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 52
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q15",
    "section": 3,
    "book": "stats-quartiles",
@@ -4997,13 +4997,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5014,7 +5014,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q15",
    "section": 3,
    "book": "stats-quartiles",
@@ -5022,26 +5022,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 52
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q15",
    "section": 3,
    "book": "stats-quartiles",
@@ -5049,13 +5049,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5066,46 +5066,46 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 53
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5116,7 +5116,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
@@ -5124,26 +5124,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 53
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
@@ -5151,13 +5151,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5168,7 +5168,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
@@ -5176,26 +5176,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 53
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
@@ -5203,13 +5203,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5220,7 +5220,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
@@ -5228,26 +5228,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 53
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
@@ -5255,13 +5255,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5272,7 +5272,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
@@ -5280,26 +5280,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 53
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
@@ -5307,13 +5307,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5324,7 +5324,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
@@ -5332,26 +5332,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 53
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
@@ -5359,13 +5359,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5376,7 +5376,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
@@ -5384,26 +5384,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 53
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
@@ -5411,13 +5411,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5428,46 +5428,46 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 4,
-    "readability": 53
+    "readability": 35
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5478,46 +5478,46 @@
    "state": "checked-wrong-1",
    "expected": "checked-right",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 4
+    "readability": 6
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q16",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5528,46 +5528,46 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 16
+    "readability": 24
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5578,7 +5578,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
@@ -5586,26 +5586,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 5,
-    "readability": 16
+    "readability": 24
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
@@ -5613,13 +5613,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5630,7 +5630,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
@@ -5638,26 +5638,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 6,
-    "readability": 16
+    "readability": 24
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
@@ -5665,13 +5665,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5682,7 +5682,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
@@ -5690,26 +5690,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 6,
-    "readability": 16
+    "readability": 24
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
@@ -5717,13 +5717,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5734,7 +5734,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
@@ -5742,26 +5742,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 6,
-    "readability": 16
+    "readability": 24
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
@@ -5769,13 +5769,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5786,7 +5786,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
@@ -5794,26 +5794,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 6,
-    "readability": 16
+    "readability": 24
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
@@ -5821,13 +5821,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5838,7 +5838,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
@@ -5846,26 +5846,26 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 6,
-    "readability": 16
+    "readability": 24
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
@@ -5873,13 +5873,13 @@
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5890,46 +5890,46 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 6,
-    "readability": 16
+    "readability": 24
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5940,46 +5940,46 @@
    "state": "mid-attempt",
    "expected": "checked-right",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
    },
    "measured": {
     "said-twice": 6,
-    "readability": 16
+    "readability": 24
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q17",
    "section": 3,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
-    "geometry": "FAIL",
+    "geometry": "PASS",
     "steps": "PASS",
     "colour": "PASS",
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -5990,7 +5990,7 @@
    "state": "mid-book",
    "expected": "mid-book",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 4,
    "audits": {
     "empty": "PASS",
@@ -6008,7 +6008,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 32
    }
   },
   {
@@ -6016,7 +6016,7 @@
    "state": "instant",
    "expected": "instant",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 4,
    "audits": {
     "empty": "PASS",
@@ -6034,7 +6034,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 32
    }
   },
   {
@@ -6042,7 +6042,7 @@
    "state": "end",
    "expected": "end",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 4,
    "audits": {
     "empty": "PASS",
@@ -6060,7 +6060,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 34
    }
   },
   {
@@ -6068,7 +6068,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6088,13 +6088,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6118,7 +6118,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6139,13 +6139,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6170,7 +6170,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6191,13 +6191,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6222,7 +6222,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6243,13 +6243,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6274,7 +6274,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6295,13 +6295,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6326,7 +6326,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6347,13 +6347,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "tray",
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6378,7 +6378,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6398,13 +6398,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6428,7 +6428,7 @@
    "state": "mid-attempt",
    "expected": "checked-right",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6448,13 +6448,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q19",
    "section": 4,
    "book": "stats-quartiles",
@@ -6478,7 +6478,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6498,13 +6498,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6528,7 +6528,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6549,13 +6549,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6580,7 +6580,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6601,13 +6601,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6632,7 +6632,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6653,13 +6653,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6684,7 +6684,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6705,13 +6705,13 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6736,7 +6736,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6757,13 +6757,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6788,7 +6788,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6809,13 +6809,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6840,7 +6840,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6861,13 +6861,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6892,7 +6892,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6913,13 +6913,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6944,7 +6944,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6965,13 +6965,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -6996,7 +6996,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -7016,13 +7016,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -7046,7 +7046,7 @@
    "state": "mid-attempt",
    "expected": "checked-right",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -7066,13 +7066,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q20",
    "section": 4,
    "book": "stats-quartiles",
@@ -7096,7 +7096,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7116,13 +7116,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7146,7 +7146,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7167,13 +7167,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7198,7 +7198,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7219,13 +7219,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7250,7 +7250,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7271,13 +7271,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7302,7 +7302,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7323,13 +7323,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7354,7 +7354,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7375,13 +7375,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7406,7 +7406,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7427,13 +7427,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7458,7 +7458,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7479,13 +7479,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7510,7 +7510,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7531,13 +7531,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7562,7 +7562,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7583,13 +7583,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7614,7 +7614,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7635,13 +7635,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7666,7 +7666,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7687,13 +7687,13 @@
    },
    "measured": {
     "said-twice": 7,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7718,7 +7718,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7739,13 +7739,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7770,7 +7770,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7791,13 +7791,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7822,7 +7822,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7843,13 +7843,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7874,7 +7874,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7894,13 +7894,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7924,7 +7924,7 @@
    "state": "mid-attempt",
    "expected": "checked-right",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7944,13 +7944,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q21",
    "section": 4,
    "book": "stats-quartiles",
@@ -7974,7 +7974,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -7994,13 +7994,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8024,7 +8024,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8045,13 +8045,13 @@
    },
    "measured": {
     "said-twice": 5,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8076,7 +8076,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8097,13 +8097,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8128,7 +8128,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8149,13 +8149,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8180,7 +8180,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8201,13 +8201,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8232,7 +8232,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8253,13 +8253,13 @@
    },
    "measured": {
     "said-twice": 7,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8284,7 +8284,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8304,13 +8304,13 @@
    },
    "measured": {
     "said-twice": 7,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8334,7 +8334,7 @@
    "state": "mid-attempt",
    "expected": "checked-right",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8354,13 +8354,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q22",
    "section": 4,
    "book": "stats-quartiles",
@@ -8384,7 +8384,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8404,13 +8404,13 @@
    },
    "measured": {
     "said-twice": 7,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8434,7 +8434,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8455,13 +8455,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8486,7 +8486,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8507,13 +8507,13 @@
    },
    "measured": {
     "said-twice": 7,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8538,7 +8538,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8559,13 +8559,13 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8590,7 +8590,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8611,13 +8611,13 @@
    },
    "measured": {
     "said-twice": 7,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8642,7 +8642,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8662,13 +8662,13 @@
    },
    "measured": {
     "said-twice": 7,
-    "readability": 14
+    "readability": 34
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8692,7 +8692,7 @@
    "state": "checked-right",
    "expected": "checked-right",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8712,13 +8712,13 @@
    },
    "measured": {
     "said-twice": 8,
-    "readability": 16
+    "readability": 31
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q24",
    "section": 4,
    "book": "stats-quartiles",
@@ -8742,7 +8742,7 @@
    "state": "mid-book",
    "expected": "mid-book",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 5,
    "audits": {
     "empty": "PASS",
@@ -8760,7 +8760,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 17
+    "readability": 25
    }
   },
   {
@@ -8768,7 +8768,7 @@
    "state": "instant",
    "expected": "instant",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 5,
    "audits": {
     "empty": "PASS",
@@ -8786,7 +8786,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 17
+    "readability": 25
    }
   },
   {
@@ -8794,7 +8794,7 @@
    "state": "end",
    "expected": "end",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 5,
    "audits": {
     "empty": "PASS",
@@ -8812,7 +8812,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 12
+    "readability": 25
    }
   },
   {
@@ -8820,7 +8820,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -8840,13 +8840,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 12
+    "readability": 25
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -8870,7 +8870,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -8891,13 +8891,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 12
+    "readability": 25
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -8922,7 +8922,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -8943,13 +8943,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 12
+    "readability": 25
    }
   },
   {
    "surface": "dock",
    "state": "chips",
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -8974,7 +8974,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -8995,13 +8995,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 12
+    "readability": 25
    }
   },
   {
    "surface": "dock",
    "state": "chips",
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -9026,7 +9026,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -9047,13 +9047,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 12
+    "readability": 25
    }
   },
   {
    "surface": "dock",
    "state": "chips",
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -9078,7 +9078,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -9098,13 +9098,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 12
+    "readability": 25
    }
   },
   {
    "surface": "dock",
    "state": "chips",
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -9128,7 +9128,7 @@
    "state": "checked-right",
    "expected": "checked-right",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -9148,13 +9148,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q29",
    "section": 5,
    "book": "stats-quartiles",
@@ -9178,7 +9178,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9198,13 +9198,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9228,7 +9228,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9249,13 +9249,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9280,7 +9280,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9301,13 +9301,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9332,7 +9332,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9353,13 +9353,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9384,7 +9384,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9405,13 +9405,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9436,7 +9436,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9456,13 +9456,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9486,7 +9486,7 @@
    "state": "checked-right",
    "expected": "checked-right",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9506,13 +9506,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q30",
    "section": 5,
    "book": "stats-quartiles",
@@ -9536,7 +9536,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9556,13 +9556,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9586,7 +9586,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9607,13 +9607,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9638,7 +9638,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9659,13 +9659,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9690,7 +9690,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9711,13 +9711,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9742,7 +9742,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9763,13 +9763,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9794,7 +9794,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9814,13 +9814,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 22
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9844,7 +9844,7 @@
    "state": "checked-right",
    "expected": "checked-right",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9864,13 +9864,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 14
+    "readability": 23
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q31",
    "section": 5,
    "book": "stats-quartiles",
@@ -9894,7 +9894,7 @@
    "state": "fresh",
    "expected": "fresh",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -9914,13 +9914,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 23
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -9944,7 +9944,7 @@
    "state": "fresh",
    "expected": "mid-attempt",
    "stood": false,
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -9965,13 +9965,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 23
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -9996,7 +9996,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -10017,13 +10017,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 23
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -10048,7 +10048,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -10069,13 +10069,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 23
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -10100,7 +10100,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -10121,13 +10121,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 23
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -10152,7 +10152,7 @@
    "state": "mid-attempt",
    "expected": "mid-attempt",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -10172,13 +10172,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 23
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -10202,7 +10202,7 @@
    "state": "checked-right",
    "expected": "checked-right",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -10222,13 +10222,13 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 15
+    "readability": 24
    }
   },
   {
    "surface": "dock",
    "state": "disabled-explained",
-   "width": 375,
+   "width": 768,
    "qid": "q32",
    "section": 5,
    "book": "stats-quartiles",
@@ -10252,7 +10252,7 @@
    "state": "open",
    "expected": "open",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 5,
    "book": "stats-quartiles",
    "audits": {
@@ -10271,7 +10271,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 19
+    "readability": 29
    }
   },
   {
@@ -10279,7 +10279,7 @@
    "state": "saved",
    "expected": "saved",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 5,
    "book": "stats-quartiles",
    "audits": {
@@ -10298,7 +10298,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 19
+    "readability": 29
    }
   },
   {
@@ -10306,7 +10306,7 @@
    "state": "mid-book",
    "expected": "mid-book",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "section": 6,
    "audits": {
     "empty": "PASS",
@@ -10324,7 +10324,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 9
+    "readability": 12
    }
   },
   {
@@ -10332,7 +10332,7 @@
    "state": "partial",
    "expected": "partial",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "book": "stats-quartiles",
    "audits": {
     "empty": "PASS",
@@ -10350,7 +10350,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 9
+    "readability": 12
    }
   },
   {
@@ -10358,7 +10358,7 @@
    "state": "in-progress",
    "expected": "in-progress",
    "stood": true,
-   "width": 375,
+   "width": 768,
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -10375,7 +10375,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 18
+    "readability": 20
    }
   }
  ],

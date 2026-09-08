@@ -8,7 +8,9 @@ Built from inbox issues #24 (Angles) and #25 (Algebra), on branch
 
 Read `DESIGN.md` and `INTERFACES.md` for the module contracts, `ADDING_A_TOPIC.md`
 to add a book, `server/DEPLOY.md` before any deploy, and `PROGRESS.md` for where
-the current build got to.
+the current build got to (the harness-speed pass of 8 Sept — MS_WORKERS,
+`--changed`, the per-book hash — is written up in full in
+`tools/qa/HARNESS_SPEED_PASS.md` rather than in PROGRESS.md itself).
 
 ---
 

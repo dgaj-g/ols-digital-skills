@@ -147,7 +147,9 @@ const READ_TRAYS = `(() => {
       await page.close();
     }
   } finally {
-    await B.close(browser);
+    /* lib/browser.js exports launch/newPage only; the browser is puppeteer's
+       own object and closes itself */
+    try { await browser.close(); } catch (e) { /* already gone */ }
   }
   g.done();
 })();

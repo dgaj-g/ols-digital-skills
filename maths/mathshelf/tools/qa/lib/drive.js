@@ -122,21 +122,35 @@ const ANSWER = `((args) => {
       svg.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: c.x, clientY: c.y, pointerId: 1, isPrimary: true, button: 0 }));
       return true;
     };
+    /* MOVING THE RULE IS A SCREEN OF ITS OWN. "sliding" - the rule moved, the
+       drop line and the read-out showing, nothing committed - is a board a
+       pupil sits at and a stage the kind declares, and it exists only BETWEEN
+       presses. So the stop is checked after every press, not only after every
+       commit; otherwise the walk blows through it inside one call and the
+       settle-up rightly says it was never stood on. */
     const nudge = (glyph, times) => {
       for (let i = 0; i < times; i++) {
         const b = all('.nudge-pad button').filter((x) => txt(x) === glyph)[0];
         if (!b) return 'no "' + glyph + '" nudge key on ' + qid;
         b.click();
+        if (reachedStage(uptoStage)) return 'STOP';
       }
       return null;
     };
     const thatsMine = () => all('.btn-quiet').filter((b) => /that.?s my/i.test(txt(b)))[0];
 
     /* ── qlist: tray tiles smallest first, then the cuts, then the IQR ──── */
+    /* THE DRIVE IS RESUMABLE. It is called once per declared stage on the SAME
+       board, so every press is "do what is not yet done": a tile already in the
+       row is skipped, a cut already committed is skipped, a value already keyed
+       is not keyed twice. Without this, the second call replays the first from
+       the beginning and fails looking for a tile that is no longer in the tray
+       - which is exactly what the first pooled walk of Book C reported. */
     function pressQlist(S, pq) {
       const values = (pq && pq.values) || [];
       const order = S.order || [];
       for (let oi = 0; oi < order.length; oi++) {
+        if (all('[data-row-pos]').length > oi) continue;          /* already placed */
         const want = String(values[order[oi]]);
         const tile = all('[data-tray^="qlist-tiles-"] [data-tray-item]').filter((b) => txt(b) === want)[0];
         if (!tile) return { ok: false, why: 'no tray tile reads "' + want + '" on ' + qid };
@@ -146,6 +160,7 @@ const ANSWER = `((args) => {
       const picks = S.picks || {};
       const askOrder = (pq && pq.ask) ? pq.ask.filter((a) => a !== 'IQR') : Object.keys(picks);
       for (let ci = 0; ci < askOrder.length; ci++) {
+        if (all('.stat-wline').length > ci) continue;              /* already committed */
         const cutName = askOrder[ci];
         const pos = picks[cutName];
         if (!pos || !pos.length) continue;
@@ -161,7 +176,11 @@ const ANSWER = `((args) => {
       }
       if (S.iqr) {
         const pad = one('.numpad');
-        if (!pad || !padType(pad, S.iqr)) return { ok: false, why: 'could not key the IQR on ' + qid };
+        if (!pad) return { ok: false, why: 'could not key the IQR on ' + qid };
+        const slot = pad.querySelector('.numpad-slot');
+        if (!slot || txt(slot) !== String(S.iqr)) {
+          if (!padType(pad, S.iqr)) return { ok: false, why: 'could not key the IQR on ' + qid };
+        }
       }
       return null;
     }
@@ -178,6 +197,7 @@ const ANSWER = `((args) => {
         for (let j = 0; j < i; j++) if (pre.indexOf(j) === -1) k++;
         const btn = all('.stat-table .stat-cell')[k];
         if (!btn) return { ok: false, why: 'no cell for row ' + i + ' on ' + qid };
+        if (txt(btn) === String(cf[i])) continue;                  /* already keyed */
         btn.click();
         const pad = one('.numpad');
         if (!pad || !padType(pad, cf[i])) return { ok: false, why: 'could not key row ' + i + ' on ' + qid };
@@ -195,6 +215,7 @@ const ANSWER = `((args) => {
         if (v[id] == null || v[id] === '') continue;
         const btn = all('.stat-slots .stat-cell')[i];
         if (!btn) return { ok: false, why: 'no slot for "' + id + '" on ' + qid };
+        if (txt(btn) === String(v[id])) continue;                  /* already keyed */
         btn.click();
         const pad = one('.numpad');
         if (!pad || !padType(pad, v[id])) return { ok: false, why: 'could not key "' + id + '" on ' + qid };
@@ -209,6 +230,8 @@ const ANSWER = `((args) => {
       const bd = root.__statBoard;
       if (!bd || !bd.toPx || !bd.svg) return { ok: false, why: 'no board handle for ' + qid };
       for (let i = 0; i < pts.length; i++) {
+        const on = (bd.points && bd.points()) || [];
+        if (on.some((p) => Number(p[0]) === Number(pts[i][0]) && Number(p[1]) === Number(pts[i][1]))) continue;
         const px = bd.toPx(Number(pts[i][0]), Number(pts[i][1]));
         if (!pressGrid(bd.svg, px[0], px[1])) return { ok: false, why: 'the board has no screen transform yet for ' + qid };
         const s = maybeStop('placed point ' + i); if (s) return s;
@@ -216,8 +239,7 @@ const ANSWER = `((args) => {
       if (S.joined) {
         const join = one('.stat-join');
         if (!join) return { ok: false, why: 'no Join button on ' + qid };
-        if (join.disabled) return { ok: false, why: 'Join the points is disabled on ' + qid };
-        join.click();
+        if (!join.disabled) join.click();                          /* disabled here means already joined */
       }
       return null;
     }
@@ -228,32 +250,46 @@ const ANSWER = `((args) => {
       const sq = (pq && pq.chart && pq.chart.sq) || { x: 1, y: 1 };
       const xMin = (pq && pq.chart && pq.chart.x && pq.chart.x.min) || 0;
       for (let ai = 0; ai < asks.length; ai++) {
+        if (all('.stat-wline').length > ai) continue;               /* already committed */
         const a = asks[ai];
+        /* a commit button is only genuinely pressed if the app has actually
+           enabled it - clicking a disabled button fires no handler at all,
+           and a walker that clicks it anyway and calls that success has
+           reported a screen it never really stood on. Where it never enables
+           after the value it is asking for has been keyed, that is the
+           app's own bug (its onChange never re-renders the dock to re-read
+           its own disabled flag), not a route this drive can take round. */
+        const clickCommit = (why) => {
+          const commit = thatsMine();
+          if (!commit) return 'no commit ' + why + ' on ' + qid;
+          if (commit.disabled) return 'the commit ' + why + ' never enables on ' + qid + ' after the value was keyed - jotter-stats.js never re-renders the dock on that pad onChange';
+          commit.click();
+          return null;
+        };
         if (a === 'IQR') {
           const pad = one('.numpad');
           if (!pad || !padType(pad, S.iqr || '')) return { ok: false, why: 'could not key the IQR on ' + qid };
-          const commit = thatsMine();
-          if (!commit) return { ok: false, why: 'no commit for the IQR on ' + qid };
-          commit.click();
+          const bad = clickCommit('for the IQR');
+          if (bad) return { ok: false, why: bad };
         } else if (a && typeof a === 'object' && a.type === 'atX') {
           const targetX = Number(a.x);
           const stepsX = Math.round((targetX - Number(xMin)) / (Number(sq.x) || 1));
-          const bad = nudge(stepsX < 0 ? '◀' : '▶', Math.abs(stepsX));
-          if (bad) return { ok: false, why: bad };
+          const bad0 = nudge(stepsX < 0 ? '◀' : '▶', Math.abs(stepsX));
+          if (bad0 === 'STOP') return { ok: true, how: 'moved the rule across', stage: curStage() };
+          if (bad0) return { ok: false, why: bad0 };
           const pad = one('.stat-answer .numpad') || one('.numpad');
           if (!pad || !padType(pad, S.answer || '')) return { ok: false, why: 'could not key the reading on ' + qid };
-          const commit = thatsMine();
-          if (!commit) return { ok: false, why: 'no commit for the reading on ' + qid };
-          commit.click();
+          const bad = clickCommit('for the reading');
+          if (bad) return { ok: false, why: bad };
         } else {
           const read = (S.reads || {})[a];
           const targetH = read ? Number(read.h) : 0;
           const stepsY = Math.round(targetH / (Number(sq.y) || 1));
-          const bad = nudge(stepsY < 0 ? '▼' : '▲', Math.abs(stepsY));
+          const bad0 = nudge(stepsY < 0 ? '▼' : '▲', Math.abs(stepsY));
+          if (bad0 === 'STOP') return { ok: true, how: 'moved the rule up the frequency axis', stage: curStage() };
+          if (bad0) return { ok: false, why: bad0 };
+          const bad = clickCommit('for "' + a + '"');
           if (bad) return { ok: false, why: bad };
-          const commit = thatsMine();
-          if (!commit) return { ok: false, why: 'no commit for "' + a + '" on ' + qid };
-          commit.click();
         }
         const s = maybeStop('committed the "' + (typeof a === 'string' ? a : a.type) + '" ask'); if (s) return s;
       }
@@ -311,7 +347,10 @@ const ANSWER = `((args) => {
         const role = roles[ri];
         if (pos[role] == null || pos[role] === '') continue;
         const wantLabel = MARKER_LABEL[role];
-        const marker = all('[data-tray^="boxplot-markers-"] [data-tray-item]').filter((b) => txt(b) === wantLabel)[0];
+        const inTray = all('[data-tray^="boxplot-markers-"] [data-tray-item]');
+        const already = inTray.filter((b) => txt(b).indexOf(wantLabel) === 0 && /\u2713/.test(txt(b)))[0];
+        if (already) continue;                                     /* already on the scale */
+        const marker = inTray.filter((b) => txt(b) === wantLabel)[0];
         if (!marker) return { ok: false, why: 'no tray marker reads "' + wantLabel + '" on ' + qid };
         marker.click();
         const px = toPxScale(geom, Number(pos[role]));
@@ -379,10 +418,20 @@ const ANSWER = `((args) => {
         if (!claim.options && want.fair === false && want.why) {
           const rtray = root.querySelector('[data-tray="judge-why-' + ci + '-' + qid + '"]');
           if (!rtray) return { ok: false, why: 'no reason bank for claim ' + ci + ' on ' + qid };
-          const rsn = reasons.filter((r) => r.id === want.why)[0];
-          if (!rsn) return { ok: false, why: 'the reason bank has no "' + want.why + '" on ' + qid };
-          const rchip = [...rtray.querySelectorAll('[data-tray-item]')].filter((b) => txt(b) === rsn.text)[0];
-          if (!rchip) return { ok: false, why: 'no reason chip reads "' + rsn.text + '" on ' + qid };
+          /* the chips carry their id, so the drive never has to match a
+             sentence; the bank itself is the engine's unless the question
+             authored its own (DESIGN 6.6, one home) */
+          let rchip = [...rtray.querySelectorAll('[data-tray-item]')]
+            .filter((b) => b.getAttribute('data-reason') === want.why)[0];
+          if (!rchip) {
+            const bank = (reasons && reasons.length) ? reasons
+              : Object.keys((window.GJ_STATS && window.GJ_STATS.REASONS) || {})
+                  .map((id) => ({ id: id, text: window.GJ_STATS.REASONS[id] }));
+            const rsn = bank.filter((r) => r.id === want.why)[0];
+            if (!rsn) return { ok: false, why: 'the reason bank has no "' + want.why + '" on ' + qid };
+            rchip = [...rtray.querySelectorAll('[data-tray-item]')].filter((b) => txt(b) === rsn.text)[0];
+          }
+          if (!rchip) return { ok: false, why: 'no reason chip for "' + want.why + '" on ' + qid };
           rchip.click();
         }
         const s6 = maybeStop('judged claim ' + ci); if (s6) return s6;

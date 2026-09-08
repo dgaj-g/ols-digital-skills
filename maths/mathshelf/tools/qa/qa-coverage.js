@@ -148,6 +148,7 @@ if (fs.existsSync(walkDir)) {
 }
 const stood = new Set();          /* "surface:state" and "surface:state@width" */
 const perQuestion = new Set();    /* "qid:state@width" */
+const perStage = new Set();       /* "qid:stage@width" */
 const audits = new Map();         /* "surface:state@width" -> Set(audit names that PASSED) */
 sidecars.forEach(j => {
   (j.states || []).forEach(s => {
@@ -155,6 +156,11 @@ sidecars.forEach(j => {
     stood.add(base);
     stood.add(base + '@' + j.width);
     if (s.qid) perQuestion.add(s.qid + ':' + s.state + '@' + j.width);
+    /* A STAGE IS A SCREEN. The in-between boards of a stats question - points
+       placed but not joined, markers placed but the box not drawn - are where
+       a fault hides, so each one a walk stood on is written down and each one
+       a kind DECLARES owes a cell (DESIGN 4.0, [Review, 7 Sept 2026]). */
+    if (s.qid && s.stage) perStage.add(s.qid + ':' + s.stage + '@' + j.width);
     const key = base + '@' + j.width;
     if (!audits.has(key)) audits.set(key, new Set());
     Object.keys(s.audits || {}).forEach(a => { if (s.audits[a] === 'PASS') audits.get(key).add(a); });
@@ -210,6 +216,41 @@ A.grid().forEach(q => {
     if (FULL && !okW) g.fail(label, 'walk-wrong', 'nothing stood on this question answered wrong twice at this width');
   });
 });
+/* --- walk-stage: every board the kind says it can show --------------------
+   Derived from the app's own declaration, never a typed list: the renderer
+   puts `data-stages` on the question root and the walk records the `data-stage`
+   it was actually standing on, so a kind that grows a stage grows a cell. */
+const STAGES_BY_KIND = (() => {
+  const p2 = A.app('jotter-stats.js');
+  if (!A.exists(p2)) return null;
+  const src = stripComments(A.read(p2));
+  const m = /(?:const|var|let)\s+STAGES\s*=\s*\{([\s\S]*?)\n  \};/.exec(src);
+  if (!m) return null;
+  const out = {};
+  (m[1].match(/([a-zA-Z]+)\s*:\s*\[([^\]]*)\]/g) || []).forEach(row => {
+    const mm = /([a-zA-Z]+)\s*:\s*\[([^\]]*)\]/.exec(row);
+    out[mm[1]] = (mm[2].match(/'([^']+)'/g) || []).map(x => x.slice(1, -1));
+  });
+  return out;
+})();
+if (STAGES_BY_KIND) {
+  A.grid().forEach(q => {
+    const declared = STAGES_BY_KIND[q.kind];
+    if (!declared || !declared.length) return;
+    WIDTHS.forEach(w => {
+      declared.forEach(stg => {
+        const label = q.book + ' > ' + q.section + ' > ' + q.qid + ' × ' + stg + ' @' + w;
+        const ok = cell('walk-stage', { label: label + ' × walk-stage', book: q.book, kind: q.kind, width: w },
+          perStage.has(q.qid + ':' + stg + '@' + w) ? ['sit-pupil'] : null);
+        if (FULL && !ok) g.fail(label, 'walk-stage', 'never stood on stage ' + stg + ' of this question at this width');
+      });
+    });
+  });
+} else if (A.exists(A.app('jotter-stats.js'))) {
+  g.fail('jotter-stats.js', 'declaration',
+    'no STAGES table could be read — the stats kinds cannot say which boards they show, so nothing can prove a walk stood on them');
+}
+
 A.movies().forEach(m => {
   ['end', 'instant', 'reduced-motion'].forEach(st => {
     const label = m.book + ' > ' + m.section + ' > movie:' + st;
