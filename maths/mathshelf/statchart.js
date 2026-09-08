@@ -492,10 +492,20 @@
       var ids = Object.keys(st.labels);
       var boxes = [];
       var i;
+      /* THE LAYER IS IN CSS PIXELS, THE BOARD IS IN VIEWBOX UNITS. toPx gives
+         viewBox units; the HTML label sits on a layer measured in CSS pixels,
+         so a scaled board put every label in the wrong place - and one at the
+         origin landed below the board entirely, on the marking tally. Multiply
+         by the board's own screen scale, and keep every label inside the layer
+         so it can never sit on something that is not the board. */
+      var sc = st.lastScale || 1;
+      var layerW = htmlLayer.clientWidth || (st.geo.vbw * sc);
+      var layerH = htmlLayer.clientHeight || (st.geo.vbh * sc);
       for (i = 0; i < ids.length; i++) {
         var rec = st.labels[ids[i]];
         var p = toPx(rec.axisAt);
-        rec.baseX = p[0]; rec.baseY = p[1] - 10; rec.dy = 0;
+        rec.baseX = p[0] * sc; rec.baseY = p[1] * sc - 10; rec.dy = 0;
+        rec.limitW = layerW; rec.limitH = layerH;
       }
       // apply base position first so offsetWidth/Height are measurable
       for (i = 0; i < ids.length; i++) {
@@ -523,7 +533,11 @@
           if (collided) row++;
         }
         r.dy = row * rowH;
-        r.el.style.top = (r.baseY - r.dy) + 'px';
+        /* never outside the board: a label is a label ON something */
+        var topPx = Math.max(h, Math.min(r.baseY - r.dy, (r.limitH || 1e6)));
+        var leftPx = Math.max(w / 2, Math.min(r.baseX, (r.limitW || 1e6) - w / 2));
+        r.el.style.top = topPx + 'px';
+        r.el.style.left = leftPx + 'px';
         placed.push({ l: r.baseX - w / 2, t: (r.baseY - r.dy) - h, r: r.baseX + w / 2, b: r.baseY - r.dy });
       }
     }

@@ -149,6 +149,7 @@ if (fs.existsSync(walkDir)) {
 const stood = new Set();          /* "surface:state" and "surface:state@width" */
 const perQuestion = new Set();    /* "qid:state@width" */
 const perStage = new Set();       /* "qid:stage@width" */
+const declaredStages = new Map();  /* qid -> [stage...], as the question declared it */
 const audits = new Map();         /* "surface:state@width" -> Set(audit names that PASSED) */
 sidecars.forEach(j => {
   (j.states || []).forEach(s => {
@@ -161,6 +162,8 @@ sidecars.forEach(j => {
        a fault hides, so each one a walk stood on is written down and each one
        a kind DECLARES owes a cell (DESIGN 4.0, [Review, 7 Sept 2026]). */
     if (s.qid && s.stage) perStage.add(s.qid + ':' + s.stage + '@' + j.width);
+    /* the question's OWN declaration, recorded where it was read */
+    if (s.qid && s.stages) declaredStages.set(s.qid, String(s.stages).split(' ').filter(Boolean));
     const key = base + '@' + j.width;
     if (!audits.has(key)) audits.set(key, new Set());
     Object.keys(s.audits || {}).forEach(a => { if (s.audits[a] === 'PASS') audits.get(key).add(a); });
@@ -235,7 +238,12 @@ const STAGES_BY_KIND = (() => {
 })();
 if (STAGES_BY_KIND) {
   A.grid().forEach(q => {
-    const declared = STAGES_BY_KIND[q.kind];
+    /* THE QUESTION'S OWN LIST FIRST. A kind's table is every board the KIND
+       has; a particular question reaches only the ones its own data allows,
+       and demanding the rest would be a cell nothing can ever close. The kind
+       table is the fallback for a question no walk reached at all, so a book
+       nobody walked still shows its cells as missing rather than vanishing. */
+    const declared = declaredStages.get(q.qid) || STAGES_BY_KIND[q.kind];
     if (!declared || !declared.length) return;
     WIDTHS.forEach(w => {
       declared.forEach(stg => {
