@@ -228,18 +228,6 @@
     "locked": false
   },
   {
-    "path": "stats-quartiles > s3 > movie > step2 > say",
-    "kind": "FRAGMENT-CHAIN",
-    "text": "Upper class limit along the bottom, cumulative frequency up the side.",
-    "locked": false
-  },
-  {
-    "path": "stats-quartiles > s3 > movie > step6 > say",
-    "kind": "FRAGMENT-CHAIN",
-    "text": "Nineteen more boys, so the total reaches 37.",
-    "locked": false
-  },
-  {
     "path": "stats-quartiles > s3 > q13 > prompt",
     "kind": "FRAGMENT-CHAIN",
     "text": "The marks in an examination, out of 80, are shown in the table below for 112 candidates.",
@@ -255,24 +243,6 @@
     "path": "stats-quartiles > s4 > q15 > prompt",
     "kind": "FRAGMENT-RUN",
     "text": "The cumulative frequency graph shows the marks of 112 candidates in an examination.  /  What percentage of candidates passed?",
-    "locked": false
-  },
-  {
-    "path": "stats-quartiles > s5 > movie > step4 > say",
-    "kind": "FRAGMENT-CHAIN",
-    "text": "Five markers, one box plot.",
-    "locked": false
-  },
-  {
-    "path": "stats-quartiles > s5 > movie > step4 > say",
-    "kind": "FRAGMENT-RUN",
-    "text": "And the median, 28.  /  Five markers, one box plot.",
-    "locked": false
-  },
-  {
-    "path": "stats-quartiles > s5 > movie > step6 > say",
-    "kind": "FRAGMENT-CHAIN",
-    "text": "Quartiles 16 and 25, median 20.",
     "locked": false
   },
   {

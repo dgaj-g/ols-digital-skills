@@ -4,8 +4,8 @@
  "width": 375,
  "projector": false,
  "tier": "preview",
- "contentHash": "6b76bf207c1e",
- "when": "2026-09-08T15:01:34.042Z",
+ "contentHash": "994c4e275e20",
+ "when": "2026-09-08T15:31:00.205Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -388,7 +388,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 27
+    "readability": 29
    }
   },
   {
@@ -412,7 +412,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 27
+    "readability": 29
    }
   },
   {
@@ -436,7 +436,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 27
+    "readability": 29
    }
   },
   {
@@ -460,12 +460,36 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 27
+    "readability": 29
    }
   },
   {
    "surface": "book-view",
-   "state": "pencil",
+   "state": "flicking",
+   "width": 375,
+   "projector": false,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 1,
+    "readability": 28
+   }
+  },
+  {
+   "surface": "book-view",
+   "state": "reteach-sent",
    "width": 375,
    "projector": false,
    "audits": {

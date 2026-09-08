@@ -377,8 +377,12 @@
          to read and then discard; a question that pays no method mark simply
          has no method line. */
       var bands = [];
-      if (verdict.mkMax[0] > 0) bands.push(esc(verdict.mkLabels[0]) + ' ' + verdict.mk[0] + '/' + verdict.mkMax[0]);
-      if (verdict.mkMax[1] > 0) bands.push(esc(verdict.mkLabels[1]) + ' ' + verdict.mk[1] + '/' + verdict.mkMax[1]);
+      /* "3 of 3", not "3/3": a slash between two numbers on a maths screen is
+         read once as a fraction before it is read as a score (the separated
+         read, 8 Sept 2026). The engine says which form its book wants. */
+      var sep = verdict.mkOf ? ' of ' : '/';
+      if (verdict.mkMax[0] > 0) bands.push(esc(verdict.mkLabels[0]) + ' ' + verdict.mk[0] + sep + verdict.mkMax[0]);
+      if (verdict.mkMax[1] > 0) bands.push(esc(verdict.mkLabels[1]) + ' ' + verdict.mk[1] + sep + verdict.mkMax[1]);
       var tally = el('div', 'mk-tally ' + (right ? 'mk-correct' : 'mk-wrong'), bands.join(' · '));
       tally.setAttribute('data-mark', '');
       feedback.appendChild(tally);
