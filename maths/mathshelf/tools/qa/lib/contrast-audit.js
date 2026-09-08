@@ -43,7 +43,9 @@ const EXEMPTIONS = [
   'no text of its own (the words belong to a child element, which is measured instead)',
   'glyphs the sampler cannot separate from their plate are asked again in computed colour, composited through their ancestors — and a ground painted with a gradient or an image is refused rather than guessed at, because guessing it reported white-on-teal as 1:1 (6 Sept 2026)',
   'marks with no letters or digits in them are judged at the 3:1 non-text floor and reported apart',
-  'a row is trimmed by any opaque full-width bar pinned to the window (the preview banner), and a row left less than three-fifths showing is not judged at all — a sliver of ascenders is not the line a reader sees'
+  'a row is trimmed by any opaque full-width bar pinned to the window (the preview banner), and a row left less than three-fifths showing is not judged at all — a sliver of ascenders is not the line a reader sees',
+  'a glyph run turned on its side (an axis title up the edge of a graph) is answered in computed colour, not in pixels — its bounding box is nearly all plate whichever way it is sampled',
+  'at full opacity, a sampled core less than halfway from the plate to the colour the browser declares is an edge and not a stroke: the row is answered in computed colour instead — a faded control, which really is painted paler than it is declared, is still judged in pixels'
 ];
 
 /* the floor this row has to clear */
@@ -109,6 +111,7 @@ const MEASURE = async ([dataUri, rects, view]) => {
       b.n++; b.r += d[i]; b.g += d[i + 1]; b.b += d[i + 2]; total++;
     }
     if (!total) return Object.assign({}, R, { skip: 'nothing drawn' });
+    if (R.rot) return Object.assign({}, R, { skip: 'text pixels not distinguishable' });
     const meanOf = (b) => ({ r: b.r / b.n, g: b.g / b.n, b: b.b / b.n, L: lum(b.r / b.n, b.g / b.n, b.b / b.n) });
     let plateI = 0;
     buckets.forEach((b, i) => { if (b.n > buckets[plateI].n) plateI = i; });
@@ -191,6 +194,26 @@ const MEASURE = async ([dataUri, rects, view]) => {
       return Object.assign({}, R, { skip: 'text pixels not distinguishable' });
     }
     const core = meanOf(buckets[coreI]);
+    /* AND THE CORES CANNOT BE PALER THAN THE INK. At full opacity, antialiasing
+       moves the EDGES of a glyph towards the plate and leaves the middle of the
+       stroke at its own colour - so a cluster sitting less than halfway from the
+       plate to the colour the browser says the text is has not found the middle
+       of anything. That is what "✓ Added to your jotter." (sage on white, 5.5:1)
+       came back as at 1.96:1, and a fifteen-pixel claim in ink on paper at
+       3.02:1: short lines in roomy boxes, where the ink is a small share of what
+       was sampled and the deepest cluster the admission test allows is still an
+       edge. The row is not condemned on that; it is asked again in computed
+       colour, which is what this module promises for glyphs it cannot separate.
+       The test is only made where the paint is at full strength: a faded control
+       really IS rendered paler than its declared colour, and that is a fault
+       this law must keep catching. */
+    if (want && (R.op == null || R.op >= 0.99)) {
+      const wantL = lum(want[0], want[1], want[2]);
+      const owed = Math.abs(plate.L - wantL);
+      if (owed > 0.02 && Math.abs(plate.L - core.L) < owed * 0.5) {
+        return Object.assign({}, R, { skip: 'text pixels not distinguishable' });
+      }
+    }
     const hi = Math.max(plate.L, core.L), lo = Math.min(plate.L, core.L);
     const ratio = (hi + 0.05) / (lo + 0.05);
     const hex = (p) => '#' + [p.r, p.g, p.b].map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
@@ -279,6 +302,8 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
       if (bar === el || bar.contains(el) || el.contains(bar)) continue;
       const br = bar.getBoundingClientRect();
       if (br.right <= vx || br.left >= vr) continue;
+      /* wholly behind it — there is nothing left to judge */
+      if (br.top <= vy && br.bottom >= vb) return;
       if (br.top <= vy && br.bottom > vy && br.bottom < vb) vy = br.bottom;
       else if (br.bottom >= vb && br.top < vb && br.top > vy) vb = br.top;
     }
@@ -333,6 +358,23 @@ const COLLECT = ([extraSels, hisSels, rootSel]) => {
          actually put it. */
       rgb: (((el.ownerSVGElement && /^rgb/.test(cs.fill || '')) ? cs.fill : cs.color)
         .match(/\d+/g) || ['0', '0', '0']).slice(0, 3).map(Number),
+      /* AND WHETHER THE GLYPHS ARE TURNED ON THEIR SIDE. A rotated run - the
+         "Cumulative frequency" up the side of every graph - has a bounding box
+         that is nearly all plate whichever way you sample it, so the deepest
+         cluster inside it is an antialiased blend and the pass reported 3.07:1
+         on a label that is ink on paper at better than twelve to one. Sampling
+         cannot answer this one; the computed colour can, and that path already
+         exists for exactly this. */
+      /* the opacity these glyphs are actually painted at, all the way up */
+      op: (() => { let o = 1; for (let n = el; n && n.nodeType === 1; n = n.parentElement) {
+        const v = Number(getComputedStyle(n).opacity); if (!isNaN(v)) o *= v; } return o; })(),
+      rot: (() => {
+        try {
+          if (!el.ownerSVGElement || typeof el.getScreenCTM !== 'function') return false;
+          const m = el.getScreenCTM();
+          return !!m && (Math.abs(m.b) > 0.01 || Math.abs(m.c) > 0.01);
+        } catch (e) { return false; }
+      })(),
       /* AND THE GROUND THE ELEMENT PAINTS FOR ITSELF, when it paints one. A
          button with a navy background whose sample comes back as white paper
          has not been sampled at all - the pixels belong to something else. This

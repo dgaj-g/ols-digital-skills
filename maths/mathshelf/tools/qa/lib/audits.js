@@ -713,8 +713,15 @@ async function readability(page) {
         const cs = getComputedStyle(el);
         const fg = parse(cs.color); if (!fg) return;
         const bg = groundOf(el); if (!bg) return;
-        out[Math.round(r.left) + ':' + Math.round(r.top) + ':' + own.slice(0, 24)] =
-          Math.round(ratio(over(fg, bg), bg) * 100) / 100;
+        /* KEYED IN THE SAME FRAME THE ROWS WERE COLLECTED IN. The collector
+           records DOCUMENT coordinates; this indexed by VIEWPORT ones, so on
+           any screen the walk had scrolled nothing matched and every row the
+           pixels could not resolve came back "unmeasured" - silence, which is
+           the one answer this module says it never gives. Both keys are
+           written; an unscrolled page writes the same one twice. */
+        const cr = Math.round(ratio(over(fg, bg), bg) * 100) / 100;
+        out[Math.round(r.left) + ':' + Math.round(r.top) + ':' + own.slice(0, 24)] = cr;
+        out[Math.round(r.left + window.scrollX) + ':' + Math.round(r.top + window.scrollY) + ':' + own.slice(0, 24)] = cr;
       });
       return out;
     });

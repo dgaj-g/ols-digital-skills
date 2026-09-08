@@ -61,21 +61,21 @@ strings.js > pupil > statQlistCommit  ::  That’s my Aoife
 strings.js > pupil > statQlistCommitWhy  ::  Choose a value in the row first.
 strings.js > pupil > statQlistIqr  ::  Work out the interquartile range.
 strings.js > pupil > statQlistIqrWhy  ::  Work out the interquartile range first.
-strings.js > pupil > statQlistTruth  ::  In order: {list}
+strings.js > pupil > statQlistTruth  ::  In order: 4, 7, 7, 9, 12, 15, 21
 strings.js > pupil > statPickOne  ::  Aoife = 65
-strings.js > pupil > statPickPair  ::  Aoife = ({a} + {b}) ÷ 2 = 65
+strings.js > pupil > statPickPair  ::  Aoife = (9 + 12) ÷ 2 = 65
 strings.js > pupil > statLineOne  ::  Aoife = 65
-strings.js > pupil > statLinePair  ::  Aoife = ({a} + {b}) ÷ 2 = 65
+strings.js > pupil > statLinePair  ::  Aoife = (9 + 12) ÷ 2 = 65
 strings.js > pupil > statCftableStart  ::  Choose a box in the last column and put its running total in.
-strings.js > pupil > statCftableRow  ::  Cumulative frequency up to 65 {unit}
+strings.js > pupil > statCftableRow  ::  Cumulative frequency up to 65 minutes
 strings.js > pupil > statCftableWhy  ::  Put a running total in at least one row first.
-strings.js > pupil > statCftableTruth  ::  Running totals: {list}
+strings.js > pupil > statCftableTruth  ::  Running totals: 4, 7, 7, 9, 12, 15, 21
 strings.js > pupil > statPlotPlaceWhy  ::  Place every point first.
 strings.js > pupil > statPlotJoinWhy  ::  Join the points first.
 strings.js > pupil > statJoinPoints  ::  Join the points
 strings.js > pupil > statPlotJoinedAlready  ::  The points are joined.
 strings.js > pupil > statPlotEnough  ::  You have all the points you need — move one instead.
-strings.js > pupil > statPointReadout  ::  ({x}, {y})
+strings.js > pupil > statPointReadout  ::  (30, 18)
 strings.js > pupil > statScrollGraph  ::  Scroll the graph sideways to see all of it.
 strings.js > pupil > statNudgeLabel  ::  Move it one square
 strings.js > pupil > statNudgeLeft  ::  One square left
@@ -87,7 +87,7 @@ strings.js > pupil > statReadFind  ::  Find the Aoife.
 strings.js > pupil > statReadWhy  ::  Find every value you were asked for first.
 strings.js > pupil > statReadMoveWhy  ::  Move the rule to the height you need first.
 strings.js > pupil > statReadIqr  ::  Work out the interquartile range.
-strings.js > pupil > statReadAtX  ::  Move the rule across to {x}.
+strings.js > pupil > statReadAtX  ::  Move the rule across to 30.
 strings.js > pupil > statReadAtXWhy  ::  Move the rule across and put your answer in first.
 strings.js > pupil > statValueReadout  ::  65
 strings.js > pupil > statCfReadout  ::  65

@@ -4,8 +4,8 @@
  "width": 768,
  "projector": false,
  "tier": "preview",
- "contentHash": "9bbf3990819d",
- "when": "2026-09-08T11:20:41.735Z",
+ "contentHash": "8968f37925c3",
+ "when": "2026-09-08T12:35:18.121Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -672,7 +672,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,
@@ -720,7 +720,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 3,

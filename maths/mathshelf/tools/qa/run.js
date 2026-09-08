@@ -228,7 +228,13 @@ async function main() {
   } else {
     /* --full: fast-tier gates first (cheap, disqualifying), then everything
        else through the pool, then qa-coverage alone, last. */
-    const fastFirst = list.filter(g => g.tier === 'fast');
+    /* AND NOT COVERAGE TWICE. qa-coverage declares TIER 'fast' because it is
+       cheap and it belongs in the one-second run, but at the full tier that put
+       it in this list AS WELL as in the run-alone slot below - so it ran first
+       against the LAST run's sidecars, printed a RED nobody should read, and
+       then ran again properly at the end. The header has always said it runs
+       last, alone; now it does. */
+    const fastFirst = list.filter(g => g.tier === 'fast' && g.name !== 'qa-coverage');
     const coverage = list.filter(g => g.name === 'qa-coverage');
     const pooled = list.filter(g => g.tier === 'full' && g.name !== 'qa-coverage');
 
