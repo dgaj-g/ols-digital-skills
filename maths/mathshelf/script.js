@@ -333,7 +333,17 @@
               rec.att.push({ L: [{ op: 'rw', t: wrong, s: 30 }], dur: 45 });
             }
             var okL = workLine
-              ? [{ op: 'rw', t: workLine, s: 25 }, { op: 'rw', t: ansLine, s: 45 }]
+              ? (profile === 'amber'
+                  /* THE AMBER PUPIL WRITES THE ANSWER AND NOTHING ELSE, and on
+                     a substitution that is exactly what an amber verdict IS
+                     (mathcore: a right answer on one line). She was showing
+                     full working on every question in the demo class, so the
+                     one profile named for the verdict never produced it, and
+                     book-view:worth-a-look-open - a fact about WHICH pupil's
+                     book is open - was left to a coin flip further down the
+                     book. Her row now reads the way her name says it does. */
+                  ? [{ op: 'rw', t: ansLine, s: 30 }]
+                  : [{ op: 'rw', t: workLine, s: 25 }, { op: 'rw', t: ansLine, s: 45 }])
               : [{ op: 'rw', t: ansLine, s: 30 }];
             rec.att.push({ L: okL, fin: ansLine, dur: 40 });
             rec.fin = ansLine;

@@ -56,6 +56,7 @@ const g = new Gate('qa-coverage');
 g.exempt([
   'at the --fast tier a walker sidecar may be older than the content and is REPORTED, not failed; at --full a stale sidecar counts as absent',
   'a cell with a row in MATHS_COVERAGE_DEBT.md is printed as debt on every run and is not counted as closed',
+  'a screen the app itself cannot reach — a row under "Cells the app itself makes impossible" in MATHS_COVERAGE_DEBT.md, with its reason — is printed every run and is not owed; a row there that a walker DID stand on is a fault, because the table is then untrue',
   'the fixture book is loaded only when a control asks for it, and never by the shipped app'
 ]);
 
@@ -125,6 +126,33 @@ debt.forEach(d => {
 });
 const owed = new Set(debt.map(d => d.cell));
 
+/* ═══════════════════════════════════ 2b. what the app cannot reach ═══════
+   A SCREEN WITH NO WAY IN IS NOT A CELL ANYBODY OWES. The ledger has carried
+   this table since the collect question with one bin was found - a question a
+   pupil cannot get wrong has no wrong path to walk - and nothing read it, so
+   the row said one thing and the matrix went on saying another. It is read
+   here, by `surface:state` or by a whole cell label, and every row is printed.
+   The table has to stay true both ways: a row claiming a screen is out of
+   reach that a walker HAS stood on is a fault of its own. */
+const impossible = new Map();
+if (A.exists(A.qa('MATHS_COVERAGE_DEBT.md'))) {
+  let inTable = false;
+  A.read(A.qa('MATHS_COVERAGE_DEBT.md')).split('\n').forEach(l => {
+    if (/^##\s/.test(l)) inTable = /Cells the app itself makes impossible/i.test(l);
+    if (!inTable) return;
+    const cols = l.split('|').map(x => x.trim());
+    if (cols.length !== 4) return;                 /* "| cell | why |" splits to 4 */
+    const key = cols[1].replace(/`/g, ''), why = cols[2];
+    if (!key || /^-+$/.test(key) || /^cell$/i.test(key) || !why || /^why /i.test(why)) return;
+    impossible.set(key, why);
+  });
+}
+const outOfReach = (label, surface, state) => {
+  if (impossible.has(label)) return impossible.get(label);
+  if (surface && state && impossible.has(surface + ':' + state)) return impossible.get(surface + ':' + state);
+  return null;
+};
+
 /* ═══════════════════════════════════════════ 3. the sidecars ═══════════ */
 const walkDir = A.out('walk');
 const sidecars = [];
@@ -176,8 +204,17 @@ const WIDTHS = [375, 768, 1280];
 function cell(name, ctx, closedBy, note) {
   const key = (ctx.label || name);
   const isOwed = owed.has(key) || owed.has((ctx.book || '') + ' × ' + name);
-  rows.push([name, key, closedBy && closedBy.length ? closedBy.join(' ') : (isOwed ? 'DEBT' : 'MISSING'), note || '']);
+  const gone = outOfReach(key, ctx.surface, ctx.state);
+  if (gone && closedBy && closedBy.length) {
+    g.fail(key, 'coverage',
+      'the ledger says this screen cannot be reached — "' + String(gone).slice(0, 90) +
+      '" — and a walker stood on it anyway: take the row out');
+  }
+  rows.push([name, key,
+    closedBy && closedBy.length ? closedBy.join(' ') : gone ? 'OUT OF REACH' : (isOwed ? 'DEBT' : 'MISSING'),
+    note || (gone ? String(gone).slice(0, 60) : '')]);
   if (closedBy && closedBy.length) return true;
+  if (gone) return true;
   if (isOwed) return true;
   return false;
 }
@@ -315,7 +352,7 @@ Object.keys(REG).forEach(surface => {
       const got = audits.get(key) || new Set();
       RIDERS.forEach(r => {
         const label = surface + ':' + state + ' @' + w + ' × ' + r;
-        const ok = cell(r, { label, surface, width: w }, got.has(r) ? ['walker'] : null);
+        const ok = cell(r, { label, surface, state, width: w }, got.has(r) ? ['walker'] : null);
         if (FULL && !ok) g.fail(surface + ':' + state + ' @' + w, r,
           got.size ? 'the walker stood here but the ' + r + ' audit did not report a pass' : 'nothing stood on this state at this width');
       });
@@ -394,8 +431,13 @@ const detail = missingRows.length
 const debtRows = debt.map(d => [d.cell, d.owner, d.file, /WAIVED/.test(d.waiver) ? 'WAIVED' : 'OPEN']);
 const debtOut = debtRows.length ? matrix('DEBT LEDGER (printed every run)', ['cell', 'owner / phase', 'file', 'state'], debtRows) : '';
 A.ensureOut();
-fs.writeFileSync(A.out('coverage-matrix.txt'), summary + detail + debtOut);
-console.log(summary + detail + debtOut);
+/* and the screens with no way in, printed whether or not anything failed: an
+   exemption nobody prints reads as a pass */
+const reachRows = [...impossible.entries()].map(([k, why]) => [k, String(why).slice(0, 96)]);
+const reachOut = reachRows.length
+  ? matrix('OUT OF REACH (printed every run)', ['cell', 'why nothing can stand on it'], reachRows) : '';
+fs.writeFileSync(A.out('coverage-matrix.txt'), summary + detail + debtOut + reachOut);
+console.log(summary + detail + debtOut + reachOut);
 
 g.note(rows.length + ' cells; ' + missingRows.length + ' with nothing to close them; ' + debt.length + ' debt rows');
 g.done();

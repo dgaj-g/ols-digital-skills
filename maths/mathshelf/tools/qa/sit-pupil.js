@@ -686,6 +686,92 @@ async function movieNudgeProbe() {
    and stand on what mount() does with what was left. A dedicated probe, not
    a step in the ordinary walk, because the ordinary walk's whole job is to
    finish what it starts. */
+/* ---- question:amber — the answer written down, and nothing else.
+   mathcore's AMBER is a RIGHT final answer on ONE line ("if (lines.length ===
+   1) return AMBER"), so the only way to stand on this screen is to leave the
+   working out. Every attempt in dev/model-attempts.js shows full working by
+   design, and it is right that it does: that file is the one home for what a
+   CORRECT attempt looks like, and it is shared with dev/validate-all.js, which
+   proves the engine marks those full. The answer-only attempt is therefore made
+   HERE, out of the correct one, by dropping every line but the last - which is
+   exactly the working a pupil leaves who writes the answer down and stops. */
+async function amberProbe() {
+  const attempts = S.attempts();
+  /* THE ANSWER, WITHOUT THE WORKING. mathcore's AMBER is a right answer on ONE
+     line, and on a substitution the working line is the one the pupil makes by
+     tapping each letter to put its value in. So this is the ordinary drive with
+     that loop left out: the value is keyed on the question's own pad and
+     nothing else is touched. It is not a shortcut round the app - it is a pupil
+     who writes the answer down and stops, which is exactly the pupil the amber
+     verdict exists for. dev/model-attempts.js is not the place for it: that file
+     is the one home for what a CORRECT attempt looks like, and it is shared
+     with dev/validate-all.js, which proves the engine marks those full. */
+  const cands = Object.keys(attempts).filter((k) => {
+    const a = attempts[k];
+    return k.indexOf('right:') === 0 && a && a.fin != null && !a.moves;
+  }).slice(0, 10);
+  if (!cands.length) { g.note('question:amber: no question in any book is answered by keying a value'); return; }
+  for (const width of WIDTHS) {
+    const sidecar = newExtraSidecar(width);
+    let stood = false; const tried = [];
+    for (const key of cands) {
+      if (stood) break;
+      const book = key.split(':')[1];
+      const qid = key.split(':')[2];
+      const value = attempts[key].fin;
+      const browser = await B.launch();
+      const page = await B.newPage(browser, { width });
+      try {
+        await page.goto(BASE + '?class=qa-amber&nointro&reserve=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
+        await W.settle(page);
+        await page.evaluate(() => { const b = document.getElementById('cover-open'); if (b && !b.disabled) b.click(); });
+        await W.settle(page);
+        const opened = await page.evaluate((s2, id) => eval(s2)(id), W.ACTIONS.openBook, book);
+        if (opened.ok) {
+          for (let si = 0; si < 12 && !stood; si++) {
+            const ok = await page.evaluate((s2, i2) => eval(s2)(i2), W.ACTIONS.openSection, si);
+            if (!ok || ok.ok === false) break;
+            await W.settle(page);
+            const qids = await page.evaluate((s2) => eval(s2)(), W.QUESTIONS_ON_SCREEN);
+            if (qids.indexOf(qid) < 0) continue;
+            const keyed = await page.evaluate((args) => {
+              const root = [...document.querySelectorAll('[data-surface="question"]')]
+                .filter((r) => r.getAttribute('data-qid') === args.qid)[0];
+              if (!root) return 'not on screen';
+              if (root.getAttribute('data-kind') !== 'subst') return 'kind is ' + root.getAttribute('data-kind');
+              const pad = root.querySelector('.subst-answer .numpad') || root.querySelector('.numpad');
+              if (!pad) return 'no value pad';
+              const keys = [...pad.querySelectorAll('.keypad button, button.key, button')];
+              const press = (label) => {
+                const b = keys.filter((x) => (x.textContent || '').trim() === label)[0];
+                if (!b) return false; b.click(); return true;
+              };
+              const digits = String(args.value).replace(/-/g, '\u2212');
+              for (const ch of digits) { if (!press(ch === '\u2212' ? '\u2212' : ch)) return 'no key for "' + ch + '"'; }
+              return 'ok';
+            }, { qid, value });
+            if (keyed !== 'ok') { tried.push(book + ':' + qid + ' — ' + keyed); break; }
+            await W.settle(page);
+            await page.evaluate((s2, id) => eval(s2)(id), W.CHECK, qid);
+            await new Promise((r) => setTimeout(r, 1500));
+            const st = await page.evaluate((id) => {
+              const r = [...document.querySelectorAll('[data-surface="question"]')]
+                .filter((x) => x.getAttribute('data-qid') === id)[0];
+              return r ? r.getAttribute('data-state') : null;
+            }, qid);
+            if (st === 'amber') { await auditAndPush(page, sidecar, 'question', 'amber', { width, book, qid }); stood = true; }
+            else tried.push(book + ':' + qid + ' read "' + st + '"');
+            break;
+          }
+        }
+      } catch (e) { tried.push(book + ':' + qid + ' threw ' + String(e.message || e).slice(0, 60)); }
+      await page.close(); await browser.close();
+    }
+    if (!stood) g.note('question:amber @' + width + ': nothing settled on amber — ' + tried.join('; '));
+    fs.writeFileSync(A.out('walk/sit-pupil-extra-amber-' + width + '.json'), JSON.stringify(sidecar, null, 1));
+  }
+}
+
 async function resumeMidProbe() {
   const books = A.books().filter((b) => !ONLY_BOOK || b === ONLY_BOOK);
   const book = books[0];
@@ -899,6 +985,7 @@ async function resumeMidProbe() {
     await shelfLockStatesPass();
     await movieNudgeProbe();
     await resumeMidProbe();
+    await amberProbe();
   }
 
   /* THE REQUIRED SURFACE SET, derived from the app's own registry (L3): a walk
