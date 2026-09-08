@@ -1,5 +1,5 @@
 
-  COVERAGE MATRIX (content hash 389577f0a6af, tier fast)
+  COVERAGE MATRIX (content hash 070c45112224, tier fast)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
   click-safety  118     107
@@ -8,7 +8,7 @@
   deploy        3
   empty         118     107
   geometry      118     107
-  human-pace    28
+  human-pace    30
   movie         36
   mute-locks    118     107
   nested        118     107

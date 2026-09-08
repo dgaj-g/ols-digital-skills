@@ -27,7 +27,12 @@
      only a badge saying who it is for. A new book arrives unticked everywhere. */
   var ACTIVITIES = [
     { id: 'angles',  title: 'Angles',  sub: 'The Geometry Set', accent: '#0E7490', accentDeep: '#0A5A70', livery: 'teal', band: 'KS3 \u00b7 M2', series: 'KS3 (M2)', meta: 'Ex. M2\u00b701 \u00b7 CCEA M2', motif: 'protractor' },
-    { id: 'algebra', title: 'Algebra', sub: 'Letters & Balance',    accent: '#7A3E8F', accentDeep: '#5F306F', livery: 'plum', band: 'KS3 \u00b7 M2', series: 'KS3 (M2)', meta: 'Ex. M2\u00b702 \u00b7 CCEA M2', motif: 'radical' }
+    { id: 'algebra', title: 'Algebra', sub: 'Letters & Balance',    accent: '#7A3E8F', accentDeep: '#5F306F', livery: 'plum', band: 'KS3 \u00b7 M2', series: 'KS3 (M2)', meta: 'Ex. M2\u00b702 \u00b7 CCEA M2', motif: 'radical' },
+    /* THE HANDLING DATA SERIES. Three copper books, one strand: A collects and
+       displays, B summarises with averages, C compares whole distributions.
+       They read in that order on the shelf; C is built first because it is what
+       was asked for, so A and B slot in ABOVE this line as they are built. */
+    { id: 'stats-quartiles', title: 'Handling Data', sub: 'Quartiles, curves and box plots', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'curve' }
   ];
 
   /* ═════════ THE DOM CONTRACT (gates design 2.4) ═══════════════════
@@ -254,14 +259,14 @@
     var doneRatio = { strong: 1, mid: 0.75, weak: 0.45, amber: 0.85, live: 0.5 }[profile] || 0.6;
     var errRate = { strong: 0.08, mid: 0.3, weak: 0.55, amber: 0.15, live: 0.3 }[profile] || 0.3;
     var qi = 0, qn = 0;
-    pack.sections.forEach(function (sec) { qn += sec.questions.length; });
+    pack.sections.forEach(function (sec) { qn += coreQs(sec).length; });
     var todo = Math.round(qn * doneRatio);
     var seed = 0;
     function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
     seed = profile.length * 7 + actId.length * 13;
 
     pack.sections.forEach(function (sec) {
-      sec.questions.forEach(function (q) {
+      coreQs(sec).forEach(function (q) {
         qi++;
         if (qi > todo) return;
         var makeErr = rnd() < errRate;
@@ -377,7 +382,7 @@
     var conf = ({ strong: 3, mid: 2, weak: 1, amber: 3, live: 2 })[profile] || 2;
     var evals = {};
     pack.sections.forEach(function (sec, si) {
-      var done = sec.questions.length && sec.questions.every(function (q) { var r = stt.qs[q.id]; return r && r.lock; });
+      var done = coreQs(sec).length && coreQs(sec).every(function (q) { var r = stt.qs[q.id]; return r && r.lock; });
       if (!done) return;
       var skills = {};
       (sec.cans || []).forEach(function (can, ci) {
@@ -544,11 +549,40 @@
   }
 
   /* ═════════ summary building (shared with demo seeder) ═══════════ */
+  /* WHICH ENGINE MARKS THIS BOOK, in one place. Three call sites used to ask
+     `actId === 'angles'` and pick between two engines; a third engine would
+     have had to be added to each of them, and the one that was missed would
+     have marked a box plot with the algebra parser. The pack says which engine
+     it wants; the two jotter-local kinds (classify, protractor) are marked
+     where they are rendered and never reach here. */
+  function engineFor(actId, q) {
+    var pack = window.GJ_CONTENT[actId] || {};
+    var eng = pack.engine || (actId === 'angles' ? 'angles' : 'math');
+    if (eng === 'stats' && window.GJ_STATS) {
+      return { check: function (qq, att) { return window.GJ_STATS.check(qq, att, pack.rules); } };
+    }
+    if (eng === 'angles') {
+      return { check: function (qq, att) { return window.GJ_ANGLES.checkSteps(qq, (att && att.steps) || []); } };
+    }
+    return { check: function (qq, att) { return window.GJ_MATH.checkQuestion(qq, att); } };
+  }
+
+  /* RESERVE. A question marked `reserve:true` is authored, linted, validated and
+     walked like any other, and is simply not put in front of a class: the shelf,
+     the markbook's list and the summary skip it. In the PREVIEW only, `?reserve=1`
+     puts them on screen so every one of them has a walk; on the deployed tier
+     window.OLS_TRANSPORT exists and the flag does nothing at all. */
+  var SHOW_RESERVE = !window.OLS_TRANSPORT && /[?&]reserve=1/.test(location.search);
+  function coreQs(sec) {
+    var qs = (sec && sec.questions) || [];
+    return SHOW_RESERVE ? qs : qs.filter(function (q) { return !q.reserve; });
+  }
+
   function summarise(actId, state, name) {
     var pack = window.GJ_CONTENT[actId];
     var sum = { v: 1, act: actId, name: name || '', marks: [0, 0], done: 0, total: 0, upd: Math.floor(Date.now() / 1000), qs: {} };
     pack.sections.forEach(function (sec) {
-      sec.questions.forEach(function (q) {
+      coreQs(sec).forEach(function (q) {
         sum.total++;
         var rec = state.qs[q.id];
         var mkMax = (q.marks[0] + q.marks[1]);
@@ -565,9 +599,7 @@
             verdict = { res: pok ? 'OK' : 'X@1', mk: [0, pok ? 1 : 0], mkMax: [0, 1],
               perLine: pok ? [] : [{ ok: 0, dx: last.dx || 'MISREAD' }] };
           } else {
-            verdict = (actId === 'angles')
-              ? window.GJ_ANGLES.checkSteps(q, last.steps || [])
-              : window.GJ_MATH.checkQuestion(q, last);
+            verdict = engineFor(actId, q).check(q, last);
           }
         } catch (e) { verdict = null; }
         var cell = { st: 'open' };
@@ -991,7 +1023,7 @@
   function firstOpenSection(pack) {
     for (var i = 0; i < pack.sections.length; i++) {
       var sec = pack.sections[i];
-      var allDone = sec.questions.every(function (q) {
+      var allDone = coreQs(sec).every(function (q) {
         var rec = current.state.qs[q.id];
         return rec && rec.lock;
       });
@@ -1002,7 +1034,7 @@
 
   function sectionTicks(sec) {
     var done = 0;
-    sec.questions.forEach(function (q) {
+    coreQs(sec).forEach(function (q) {
       var rec = current.state.qs[q.id];
       if (rec && rec.lock) done++;
     });
@@ -1033,7 +1065,7 @@
        exercise of a half-finished book still read "fresh". */
     var qTotal = 0, qDone = 0;
     pack.sections.forEach(function (sec) {
-      sec.questions.forEach(function (q) { qTotal++; var r = current.state.qs[q.id]; if (r && r.lock) qDone++; });
+      coreQs(sec).forEach(function (q) { qTotal++; var r = current.state.qs[q.id]; if (r && r.lock) qDone++; });
     });
     window.GJ.setState(S.activity, 'book-contents',
       qDone === 0 ? 'fresh' : (qTotal && qDone >= qTotal ? 'finished' : 'mid-book'));
@@ -1045,7 +1077,7 @@
     var el = document.getElementById('act-instrument');
     var total = 0, done = 0;
     pack.sections.forEach(function (sec) {
-      sec.questions.forEach(function (q) { total++; var r = current.state.qs[q.id]; if (r && r.lock) done++; });
+      coreQs(sec).forEach(function (q) { total++; var r = current.state.qs[q.id]; if (r && r.lock) done++; });
     });
     var frac = total ? done / total : 0;
     if (current.act.id === 'angles') {
@@ -1106,7 +1138,7 @@
     function refreshFooter() { buildSectionFooter(footer, sec, i, pack); }
 
     var strips = [];
-    sec.questions.forEach(function (q, qi) {
+    coreQs(sec).forEach(function (q, qi) {
       var holder = document.createElement('div');
       jotter.appendChild(holder);
       // content-safe support: a pupil-pullable "Want to see how?" that replays the
@@ -1239,7 +1271,7 @@
     if (!rec || !rec.att || !rec.att.length) return null;
     var last = rec.att[rec.att.length - 1], verdict;
     try {
-      verdict = current.act.id === 'angles' ? window.GJ_ANGLES.checkSteps(q, last.steps || []) : window.GJ_MATH.checkQuestion(q, last);
+      verdict = engineFor(current.act.id, q).check(q, last);
     } catch (e) { return null; }
     var line = null, dx = null;
     if (verdict.perLine) {
@@ -1275,7 +1307,7 @@
      Never blocking — the pupil can always just press Next. */
   function buildSectionFooter(footer, sec, i, pack) {
     footer.innerHTML = '';
-    var complete = sec.questions.length > 0 && sectionTicks(sec) === sec.questions.length;
+    var complete = coreQs(sec).length > 0 && sectionTicks(sec) === coreQs(sec).length;
     if (complete && sec.cans && sec.cans.length) footer.appendChild(buildSelfEvalCard(sec));
     var nextRow = document.createElement('div');
     nextRow.className = 'check-row';
@@ -1314,6 +1346,15 @@
       s5: ['gathering the letters', 'the signs when moving a term', 'the arithmetic', 'something else'],
       s6: ['expanding the brackets first', 'doing the same to both sides', 'the signs', 'something else'],
       _: ['the method', 'the signs', 'the arithmetic', 'something else']
+    },
+    'stats-quartiles': {
+      s1: ['putting the list in order', 'finding the right position', 'taking one away from the other', 'something else'],
+      s2: ['the running total', 'starting again on a row', 'the total at the end', 'something else'],
+      s3: ['which value goes across', 'which value goes up', 'the scale on the axes', 'something else'],
+      s4: ['what height to read at', 'reading across to the scale', 'the scale on the axes', 'something else'],
+      s5: ['which marker goes where', 'reading the scale', 'drawing the box', 'something else'],
+      s6: ['who was asked', 'how many were asked', 'what a sample can tell you', 'something else'],
+      _: ['the method', 'reading the scale', 'the arithmetic', 'something else']
     }
   };
   function tripsFor(sec) {
@@ -1560,6 +1601,8 @@
     activities: ACTIVITIES,
     content: function (id) { return window.GJ_CONTENT[id]; },
     summarise: summarise,
+    engineFor: engineFor,
+    coreQuestions: coreQs,
     save: scheduleSave,
     showScreen: show,
     fmtRat: fmtRat

@@ -326,3 +326,70 @@ staff passcode box stays empty. So the eight-item smoke list is still HIS to
 run - the server chain is proved from the Executions log, the interface is not
 proved from a driven keyboard. This is a limit of the driving surface, not a
 finding about the app.
+
+---
+
+# HANDLING DATA — BOOKS C, A, B (started 8 September 2026)
+
+The build of the GCSE Handling Data series onto the live MathShelf, from
+`Claude Work/Maths/MATHS_STATS_DESIGN.md`, `MATHS_GATES_DESIGN.md` Part 8 and
+`MATHS_STATS_OPUS_PROMPT_GATED.txt` (8 Sept revision). Book C first, then A,
+then B; one deploy per book.
+
+## Preconditions, verified 8 Sept 2026 before any change
+- v4 IS live: `maths/mathshelf` on the tip `a237177`; HANDOVER.md "What is live"
+  and `server/DEPLOY_LOG.md` carry the FRONT DOOR (Version 20, execute-as-User)
+  and DATA (Version 19, execute-as-Me) rows from commit `c6f55e3`.
+- Colette's sources present: twelve files plus `SOURCE_INVENTORY.md`.
+- The gate system exists and `run.js --fast` is GREEN — 26 gates, 1.1 s.
+  `content-fixture.js` correctly absent (plants.js writes it into the sandbox).
+- Baseline `--full` and `--control` started in the background BEFORE any edit,
+  so the photograph is of the unchanged tree.
+
+## Work packages (TIME c) — by file ownership
+| package | owner | files | state |
+|---|---|---|---|
+| ENGINE | this session | `statcore.js`, `dev/test-statcore.js` | GREEN — 154 selfTest cases, floor 80 |
+| CHART | sonnet subagent | `statchart.js` | running |
+| LINT | sonnet subagent | `dev/lint-content-stats.js` | running |
+| SOURCES | sonnet subagent | `stats_sources/GRAPHICAL_READS.md` (outside the repo tree) | running |
+| RENDER | this session | `jotter-stats.js` | in hand |
+| CONTENT-C, WALK, SPEED, V4-STATES | queued behind the baseline battery | | |
+
+## The baseline run, and what it is and is not worth (8 Sept 2026)
+
+`run.js --fast` was GREEN on the unchanged tree (26 gates, 1.1 s) before a byte
+was touched. `run.js --full` then ran for **35 minutes** (budget: 20) and ended
+RED on two gates:
+
+- **qa-repo-prod** — the seven files this build had created by then were
+  uncommitted. That is mine, not the tree's.
+- **qa-coverage** — 3,027 cells, every walker-ridden family reading `0 closed`.
+  **This number is not the pre-existing red, and it is not a fault in the app.**
+  All eighteen walker sidecars were declared STALE: `contentHash` (lib/hash.js)
+  hashes EVERY `.js`/`.css`/`.html` in the app directory, and this session
+  created `statcore.js`, `statchart.js` and `jotter-stats.js` while the walk was
+  running — files nothing loads yet. Each new file moved the hash, so every
+  sidecar written before it counted as absent. The walkers themselves were
+  green: sit-pupil 868 checks, sit-confused 852, sit-teacher 94, zero failures.
+
+Two things follow, and both are written down rather than absorbed:
+
+1. **The rule "never edit the app while a full walk is running" includes ADDING
+   a file the app does not load.** I read it as being about edits to what the
+   page serves; the content hash does not. The authoritative baseline is the
+   next `--full`, run on a quiescent tree.
+2. **A harness finding for package SPEED:** one content hash over the whole app
+   directory means any new file invalidates every sidecar of every book. Hashing
+   per book (which SPEED's brief already asks for) also fixes this.
+
+The baseline `--control` was started and then **killed deliberately**: it would
+have been a photograph of a tree that was about to change under it, and the
+control battery's own record (PROGRESS F-series, 7 Sept) already has all
+fourteen controls green at this commit. The battery that counts is the one
+before the deploy.
+
+## Notes to whoever picks this up
+- `node dev/test-statcore.js` is the engine's own proof and takes under a second.
+- The engine's unit table (`UNITS` / `unitsOf`) is the ONE home of band, weight
+  and `ftEarns` per marking unit; the selfTest pins every one of them (UT1–UT9).

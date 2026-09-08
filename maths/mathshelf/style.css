@@ -30,6 +30,16 @@
   --debug-tint: #B500C8;      /* a verdict with NO outcome modifier: a loud magenta that appears
                                  nowhere else, so a forgotten verdict shows as a BUG, not a red lie */
   --pencil: #474D57;
+  /* ── Handling Data: an accent is a GROUND (STATS §4.0). Copper is fine as a
+     ground, a dot, a ring or a curve; anything under 18px that must be READ in
+     the book's colour wears --copper-ink (8.3:1 on white, 7.6:1 on paper),
+     because an 11px tracked capital renders about a whole ratio point lighter
+     than the stylesheet declares. And a gridline is a thing she COUNTS, so it
+     has a floor of its own: major >= 3:1 against the paper, minor >= 1.5:1.
+     The mockup's #E8E4DB minors measured 1.17:1 and vanished on a projector. */
+  --copper-ink: #7E3B1C;
+  --grid-major: #979083;
+  --grid-minor: #CFC9BC;
   --teal: #0F6B66;          /* Angles — The Geometry Set */
   --plum: #7A3B5E;          /* Algebra — Ink & Balance  */
   --page-edge: #EFE9DC;
@@ -1207,3 +1217,115 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
   .movie-dots { flex-wrap: wrap; max-width: 100%; }
   .movie-controls { flex-wrap: wrap; row-gap: 6px; }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HANDLING DATA — the stat boards, their trays, docks and marked rows.
+   Every board is PAPER on the light shell. Nothing that is read is faded:
+   a placed marker keeps full ink and gains a tick, a disabled control wears
+   the platform's own cream-on-pencil, and the only thing that fades is the
+   struck ghost of a first attempt, which carries no words.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.stat-q .stat-msg { margin: 6px 0 8px; color: var(--pencil); font-size: 14.5px; }
+.stat-fiction { margin: 4px 0 10px; color: var(--pencil); font-size: 14.5px; }
+.stat-boards { margin: 6px 0 10px; }
+.stat-board-host { margin: 6px 0 10px; }
+.stat-given { margin: 8px 0 6px; }
+
+/* the board itself is paper, whatever the shell does */
+.stat-board-frame { background: var(--panel); border: 1px solid var(--hairline); border-radius: 8px; }
+.stat-board { display: block; width: 100%; height: auto; background: var(--panel); color: var(--ink); }
+.stat-board text, .stat-svg-label { fill: currentColor; }
+.stat-svg-label { font-family: var(--f-maths); color: var(--ink); user-select: none; }
+
+/* labels that MOVE are HTML over the board, so the overlap law can judge them */
+.stat-label-layer { position: absolute; inset: 0; pointer-events: none; }
+.stat-label {
+  position: absolute; transform: translate(-50%, -100%); white-space: nowrap;
+  font-family: var(--f-stationery, var(--f-ui)); font-size: 13px; line-height: 1.15;
+  color: var(--ink); background: var(--panel); padding: 1px 5px; border-radius: 4px;
+  pointer-events: none;
+}
+/* the read-out is the book's own colour, and at this size it wears the deeper ink */
+.stat-label[data-label-kind="readout"], .stat-label[data-label-kind="drop"] { color: var(--copper-ink); }
+
+/* trays and tiles */
+.stat-tray { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.stat-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; min-height: 46px; }
+.stat-tile {
+  min-width: 46px; min-height: 46px; padding: 6px 12px; border: 1.5px solid var(--copper);
+  border-radius: 8px; background: var(--panel); color: var(--ink);
+  font-family: var(--f-maths); font-size: 18px; cursor: pointer;
+}
+.stat-tile.is-selected, .stat-tray-marker.is-selected { box-shadow: 0 0 0 3px var(--copper); }
+.stat-tile.is-picked { border-color: var(--copper-ink); border-width: 2.5px; }
+.stat-tile.is-cut { color: var(--pencil); }
+.stat-tile:disabled { background: var(--panel); color: var(--ink); cursor: default; opacity: 1; }
+.stat-tray-marker {
+  min-height: 46px; padding: 8px 12px; border: 1.5px solid var(--copper); border-radius: 8px;
+  background: var(--panel); color: var(--ink);
+  font: 500 13px var(--f-stationery, var(--f-ui)); cursor: pointer;
+}
+.stat-tray-marker.is-placed { border-style: dashed; color: var(--copper-ink); }
+.stat-tray-marker:disabled { opacity: 1; cursor: default; }
+
+/* the read-out, the written lines and the marked rows */
+.stat-readout { margin: 6px 0; font-family: var(--f-maths); font-size: 15px; color: var(--copper-ink); min-height: 20px; }
+.stat-lines { margin: 8px 0; }
+.stat-wline { font-family: var(--f-maths); font-size: 16px; color: var(--ink); padding: 3px 0; }
+.stat-units { margin: 8px 0; }
+.stat-unit { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+.stat-unit .wl-mark { position: static; display: inline-block; width: 26px; height: 22px; }
+.stat-unit-label { color: var(--ink); font-size: 14.5px; }
+.stat-unit-note { color: var(--pencil); font-size: 13px; }
+.stat-truth { margin: 8px 0; color: var(--pencil); font-size: 14px; }
+
+/* tables and number-pad slots */
+.stat-table { border-collapse: collapse; margin: 8px 0; }
+.stat-table th, .stat-table td { border: 1px solid var(--hairline); padding: 6px 12px; text-align: center; color: var(--ink); }
+.stat-table th { font: 600 13.5px var(--f-stationery, var(--f-ui)); background: var(--paper); }
+.stat-cell {
+  min-width: 60px; min-height: 46px; border: 1.5px dashed var(--copper); border-radius: 6px;
+  background: var(--panel); color: var(--ink); font-family: var(--f-maths); font-size: 17px; cursor: pointer;
+}
+.stat-cell[data-placed] { border-style: solid; }
+.stat-cell.is-open { box-shadow: 0 0 0 3px rgba(166, 82, 43, .18); }
+.stat-cell:disabled { opacity: 1; cursor: default; }
+.stat-cell-fixed { font-family: var(--f-maths); font-size: 17px; color: var(--pencil); }
+.stat-slots { margin: 8px 0; }
+.stat-slot { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+.stat-slot-label { color: var(--ink); font-size: 15px; }
+.stat-slot-unit { color: var(--pencil); font-size: 14px; }
+
+/* the dock's own controls */
+.stat-dock .nudge-pad { display: inline-grid; grid-template-columns: repeat(5, 48px); gap: 6px; margin: 6px 0; }
+.nudge-pad .key { min-width: 48px; min-height: 48px; }
+.btn-quiet {
+  min-height: 46px; padding: 10px 16px; margin: 6px 8px 6px 0; border: 1.5px solid var(--copper);
+  border-radius: 8px; background: var(--panel); color: var(--copper-ink);
+  font: 600 14px var(--f-stationery, var(--f-ui)); cursor: pointer;
+}
+.btn-quiet:disabled { background: var(--pencil); color: var(--cream); border-color: var(--pencil); cursor: default; opacity: 1; }
+.stat-answer { display: inline-block; vertical-align: top; }
+
+/* claims, chips and sentences */
+.stat-claims { margin: 8px 0; }
+.stat-claim { border: 1px solid var(--hairline); border-radius: 8px; padding: 10px 12px; margin: 8px 0; background: var(--panel); }
+.stat-claim-text { margin: 0 0 8px; color: var(--ink); font-size: 15px; }
+.stat-chips { display: inline-flex; flex-wrap: wrap; gap: 6px; margin: 2px 4px; }
+.stat-reasons { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.stat-chips .chip, .stat-reasons .chip { min-height: 44px; }
+.stat-chips .chip:disabled, .stat-reasons .chip:disabled { opacity: 1; cursor: default; }
+.stat-chips .chip[aria-pressed="true"] { background: var(--copper); color: var(--cream); border-color: var(--copper); }
+.stat-sentences { margin: 10px 0; }
+.stat-sentence { margin: 10px 0; color: var(--ink); font-size: 15px; line-height: 2.2; }
+.stat-plot-label { margin: 8px 0 2px; color: var(--ink); font: 600 14px var(--f-stationery, var(--f-ui)); }
+
+/* the struck first attempt — the ONE thing that fades, and it carries no words */
+.stat-ghost { margin: 4px 0; }
+.stat-ghost .struck { text-decoration: line-through; color: var(--pencil); }
+
+/* the teacher's read-only copy of one pupil's artefact */
+.stat-readonly { margin: 6px 0; }
+.stat-board-small .stat-board { max-width: 320px; }
