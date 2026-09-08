@@ -103,7 +103,7 @@ g.exempt(AUD.EXEMPTIONS.concat([
           return table[(wrong ? 'wrong:' : 'right:') + book + ':' + qid] || null;
         };
       }, attempts);
-      await page.goto(BASE + '?class=demo&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
+      await page.goto(BASE + '?class=demo&nointro&reserve=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
       await W.settle(page);
       await page.evaluate(() => document.getElementById('cover-open').click());
       await W.settle(page);
@@ -119,7 +119,7 @@ g.exempt(AUD.EXEMPTIONS.concat([
       for (let si = 0; si < nSec; si++) {
         /* a fresh document per exercise: see the note in sit-pupil.js */
         if (si > 0) {
-          await page.goto(BASE + '?class=demo&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
+          await page.goto(BASE + '?class=demo&nointro&reserve=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
           await W.settle(page);
           await page.evaluate(() => document.getElementById('cover-open').click());
           await W.settle(page);

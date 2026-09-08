@@ -239,7 +239,10 @@
       var sq = num(c.sq, num(c.step, 1));
       var step = num(c.step, sq);
       var nSq = Math.max(1, Math.round((max - min) / sq));
-      var marginLeft = 30, marginRight = 30, marginTop = 92, marginBottom = 34, trackH = 8;
+      /* ROOM FOR THE LABELS. Five marker labels on a phone are wider than the
+         scale they sit on, so the stagger needs rows above AND below the
+         track; these margins are what those rows live in. */
+      var marginLeft = 30, marginRight = 30, marginTop = 110, marginBottom = 78, trackH = 8;
       var plotW = nSq * SQ_UNIT;
       return {
         isScale: true,
@@ -514,7 +517,13 @@
         recs.push(rec);
       }
       recs.sort(function (a, b) { return a.wantX - b.wantX; });
-      var rowH = LABEL_TARGET_PX + 6;
+      /* THE PITCH IS WHAT A LABEL ACTUALLY MEASURES, not what its font size
+         says: a 13px face in a padded box is 18px tall, and stepping by 19
+         left an eight-pixel overlap between two rows - which is exactly what
+         the overlap law reported. */
+      var tallest = 0;
+      for (i = 0; i < recs.length; i++) tallest = Math.max(tallest, recs[i].h);
+      var rowH = tallest + 5;
       var placed = [];
       for (i = 0; i < recs.length; i++) {
         /* UP FIRST, THEN DOWN. On a phone the five box-plot labels are wider
@@ -527,7 +536,7 @@
         while (guard++ < 40) {
           var top = (row <= maxUp)
             ? r.wantY - row * rowH
-            : Math.min(layerH, r.wantY + (row - maxUp) * rowH);
+            : r.wantY + (row - maxUp) * rowH;
           box = { l: r.wantX - r.w / 2, t: top - r.h, r: r.wantX + r.w / 2, b: top };
           var hit = false;
           for (var j = 0; j < placed.length; j++) {
