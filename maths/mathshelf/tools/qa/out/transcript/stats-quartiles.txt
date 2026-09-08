@@ -69,8 +69,6 @@ Some girls did a sponsored swim to raise money for charity. The table shows the 
 Compare the amounts of money the girls raised with the amounts of money the boys raised in the sponsored swim. [2 marks]
 Girls
 Boys
-BoysGirls had the higher median ( against ), so on average BoysGirls were lessmore.
-BoysGirls had the smallerlargerrangeinterquartile range ( against ), so theirs were lessmore consistent.
 Average 0 of 1 · Spread 1 of 1
 The box plots show the age distributions of two cities, A and B. Decide which city has the greater interquartile range, and which city’s people are generally older. [2 marks]
 Which city has the greater interquartile range?
@@ -99,7 +97,7 @@ Standing outside a church and asking the people going in tells Joyce about the w
 Reasons 2 of 2 · Judgements 2 of 2Fair reading of what the sample can say.
 Three people each tried to find something out from a small sample. George asked 10 people in his class how much they spend on coffee. Mrs Martin posted a questionnaire to 100 people chosen at random across the whole country to find out what food people in her town like. Charlie asked 10 Year 7 students what they think of school. Decide whether each survey gives a fair picture, and why. [5 marks]
 George’s survey tells him how much people generally spend on coffee.
-Posting the questionnaire to 100 people across the country will tell Mrs Martin what food to serve in her local restaurant.
+Posting the questionnaire to 100 people across the country will tell Mrs Martin what food people in her town like.
 Charlie’s survey tells him what all students at his school think about school.
 Reasons 3 of 3 · Judgements 2 of 2Good — you said why.
 Charlie asked 10 Year 7 students what they think about school. Decide whether each of these conclusions is fair to draw from his survey. [2 marks]
