@@ -180,6 +180,162 @@
     "locked": true
   },
   {
+    "path": "stats-quartiles > s1 > movie > step3 > say",
+    "kind": "FRAGMENT-RUN",
+    "text": "Position of the median = (n + 1) ÷ 2.  /  Ring the 4th value.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s1 > movie > step4 > say",
+    "kind": "FRAGMENT-RUN",
+    "text": "Position of the lower quartile = (n + 1) ÷ 4 = 8 ÷ 4 = 2.  /  Ring the 2nd value.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s1 > movie > step5 > say",
+    "kind": "FRAGMENT-RUN",
+    "text": "Position of the upper quartile = (n + 1) ÷ 4 × 3 = 2 × 3 = 6.  /  Ring the 6th value.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s1 > q2 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "The speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s1 > q6 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "The ages of 11 trees, from youngest to oldest, are shown below.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s1 > q7 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "The scores, from lowest to highest, are shown below.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s1 > q8 > prompt",
+    "kind": "STACKED-WH",
+    "text": "Say what happens to each average and to the range when it is added.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s2 > q10 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "The marks in an examination, out of 80, are grouped below for 112 candidates.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s3 > movie > step2 > say",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "Upper class limit along the bottom, cumulative frequency up the side.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s3 > movie > step6 > say",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "Nineteen more boys, so the total reaches 37.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s3 > q13 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "The marks in an examination, out of 80, are shown in the table below for 112 candidates.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s3 > q14 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "In a survey, 184 people stated their weekly wage, grouped below.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s4 > q15 > prompt",
+    "kind": "FRAGMENT-RUN",
+    "text": "The cumulative frequency graph shows the marks of 112 candidates in an examination.  /  What percentage of candidates passed?",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s5 > movie > step4 > say",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "Five markers, one box plot.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s5 > movie > step4 > say",
+    "kind": "FRAGMENT-RUN",
+    "text": "And the median, 28.  /  Five markers, one box plot.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s5 > movie > step6 > say",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "Quartiles 16 and 25, median 20.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s5 > q19 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "The table shows some information about the heights, in cm, of some plants.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s5 > q20 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "The table shows some information about the weights, in grams, of some potatoes: range 101 g, lower quartile 110 g, median 132 g, upper quartile 162 g, maximum 185 g.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s5 > q21 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "The times, in seconds, of 15 students running a race are shown below: 52, 54, 54, 55, 58, 58, 59, 60, 60, 61, 61, 64, 67, 70, 75.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s5 > q24 > prompt",
+    "kind": "STACKED-WH",
+    "text": "The box plots show the age distributions of two cities, A and B. Decide which city has the greater interquartile range, and which city’s people are generally older.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s5 > q27 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "The table shows information about the times, in minutes, that some boys took to complete a puzzle: interquartile range 8, minimum 12, median 18, upper quartile 23, maximum 29.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s6 > q29 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "Decide whether his survey gives a fair picture of the town, and why.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s6 > q30 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "Decide whether this survey gives a fair picture of everyone, and why.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s6 > q31 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "Decide whether each survey gives a fair picture of the town, and why.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s6 > q32 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "Decide whether each survey gives a fair picture, and why.",
+    "locked": false
+  },
+  {
+    "path": "stats-quartiles > s6 > q32 > prompt",
+    "kind": "FRAGMENT-RUN",
+    "text": "Three pupils each tried to find something out from a small sample.  /  Mrs Martin posted a questionnaire to 100 people chosen at random across the whole country to find out what food people in her town like.  /  Decide whether each survey gives a fair picture, and why.",
+    "locked": false
+  },
+  {
     "path": "strings.js > pupil > coverSwitch",
     "kind": "NEGATION-FRAGMENT",
     "text": "Not you?",

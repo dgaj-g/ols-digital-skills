@@ -157,6 +157,11 @@ function qlistBoard(S, q, wrong) {
     if (out.iqr) out.iqr = rstr({ n: -truth.IQR.n, d: truth.IQR.d });
   } else if (picks[cuts[0]]) {
     out.picks[cuts[0]] = [Math.max(0, picks[cuts[0]][0] - 1)];
+  } else if (out.iqr) {
+    /* a question that asks only for the interquartile range: the slip is the
+       one every class makes, the RANGE given instead */
+    var sorted = vals.slice().sort(function (a, b) { return Number(a) - Number(b); });
+    out.iqr = String(Number(sorted[sorted.length - 1]) - Number(sorted[0]));
   }
   return out;
 }
@@ -181,7 +186,7 @@ function cfreadBoard(S, q, wrong) {
   var rules = packRules(q) || S.DEFAULT_RULES;
   var heights = S.readHeights(Number(q.n) || 0, rules.curveRule);
   var sqx = ((q.chart || {}).sq || {}).x || 1;
-  var reads = {}, answer = '', iqr = '';
+  var reads = {}, answers = {}, answer = '', iqr = '';
   (q.ask || []).forEach(function (a) {
     if (typeof a === 'string') {
       if (a === 'IQR') {
@@ -197,15 +202,19 @@ function cfreadBoard(S, q, wrong) {
     if (a && a.type === 'atX') {
       var cf = S.curveY(q.curve, a.x);
       var cfv = cf ? rnum(cf) : null;
+      reads['atX@' + a.x] = { x: a.x, cf: cfv };
       reads.atX = { x: a.x, cf: cfv };
       var N = Number(q.n) || 0;
-      if (a.want === 'countBelow') answer = String(cfv);
-      else if (a.want === 'countAbove') answer = String(N - cfv);
-      else if (a.want === 'pctBelow') answer = String(Math.round((cfv / N) * 100));
-      else if (a.want === 'pctAbove') answer = String(Math.round(((N - cfv) / N) * 100));
+      var v2 = '';
+      if (a.want === 'countBelow') v2 = String(cfv);
+      else if (a.want === 'countAbove') v2 = String(N - cfv);
+      else if (a.want === 'pctBelow') v2 = String(Math.round((cfv / N) * 100));
+      else if (a.want === 'pctAbove') v2 = String(Math.round(((N - cfv) / N) * 100));
+      answers['atX@' + a.x] = v2;
+      answer = v2;
     }
   });
-  if (!wrong) return { reads: reads, iqr: iqr, answer: answer };
+  if (!wrong) return { reads: reads, answers: answers, iqr: iqr, answer: answer };
   /* half the AXIS, not half the total — the slip the axis invites */
   var axis = ((q.chart || {}).y || {}).max;
   var bad = JSON.parse(JSON.stringify(reads));
@@ -215,10 +224,19 @@ function cfreadBoard(S, q, wrong) {
     var xx = S.curveX(q.curve, axis / 2);
     bad[k].x = xx ? snapTo(rnum(xx), sqx) : bad[k].x;
   });
-  return { reads: bad, iqr: iqr, answer: answer };
+  return { reads: bad, answers: answers, iqr: iqr, answer: answer };
 }
 function boxTruthFive(S, q) {
   var rules = packRules(q) || S.DEFAULT_RULES;
+  if (q.from === 'curve' && q.curve) {
+    var h = S.readHeights(Number(q.n) || 0, rules.curveRule);
+    var o = {
+      min: (q.given || {}).min, max: (q.given || {}).max,
+      Q1: S.curveX(q.curve, h.Q1), Q2: S.curveX(q.curve, h.median), Q3: S.curveX(q.curve, h.Q3)
+    };
+    ['Q1', 'Q2', 'Q3'].forEach(function (k) { if ((q.given || {})[k] !== undefined) o[k] = q.given[k]; });
+    return o;
+  }
   if (q.given) return q.given;
   if (q.from === 'qlist') {
     var f = S.fiveNumber(q.values || [], rules.quartileRule);

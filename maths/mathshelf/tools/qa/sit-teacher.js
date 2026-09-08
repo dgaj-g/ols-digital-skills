@@ -358,8 +358,11 @@ async function walk(page, width, projector, sidecar, transcript) {
   A.ensureOut('walk');
   A.ensureOut('transcript');
   const transcript = [];
-  const passes = WIDTHS.map(w => ({ width: w, projector: false }))
-    .concat([{ width: PROJECTOR.width, height: PROJECTOR.height, projector: true }]);
+  const passes = WIDTHS.map(w => ({ width: w, projector: false }));
+  /* SHARDING ARGUMENT ONLY (package SPEED, 8 Sept): gated the same way as
+     sit-pupil's reduced-motion pass, and for the same reason — a run sharded
+     to one width must not also silently redo the projector pass every time. */
+  if (WIDTHS.includes(PROJECTOR.width)) passes.push({ width: PROJECTOR.width, height: PROJECTOR.height, projector: true });
 
   for (const pass of passes) {
     const page = await B.newPage(browser, { width: pass.width, height: pass.height });

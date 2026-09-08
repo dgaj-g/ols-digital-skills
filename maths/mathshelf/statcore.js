@@ -806,7 +806,7 @@
     (q.ask || []).forEach(function (a) {
       if (typeof a === 'string') {
         if (a === 'IQR') {
-          per.push(markReadIqr(q, S, r, units[ui++], heights, reads));
+          per.push(markReadIqr(q, S, r, units[ui++], heights, reads, tolX));
           return;
         }
         var uR = units[ui++], uV = units[ui++];
@@ -828,7 +828,10 @@
       }
       if (a && a.type === 'atX') {
         var uRX = units[ui++], uCF = units[ui++], uA = units[ui++];
-        var at = (reads.atX && (reads.atX.x !== undefined ? reads.atX : reads.atX[a.x])) || reads.atX || {};
+        /* a question may ask for TWO reads at two values (the CF notes ask at
+           167 cm and at 153 cm), so each is stored under its own key and the
+           bare `atX` slot is kept for the single-read shape */
+        var at = reads['atX@' + a.x] || (reads.atX && reads.atX.x !== undefined ? reads.atX : {}) || {};
         var gx = R(at.x), gcf = R(at.cf);
         var wantX = R(a.x);
         if (!gx) per.push(row(uRX, 0, null, 'the rule was not moved'));
@@ -862,7 +865,9 @@
   }
 
   function markAtXAnswer(q, S, a, u, trueCf, theirCf, n) {
-    var given = R(S.answer !== undefined ? S.answer : (S.reads && S.reads.answer));
+    var answers = S.answers || {};
+    var raw = answers['atX@' + a.x] !== undefined ? answers['atX@' + a.x] : S.answer;
+    var given = R(raw);
     if (!given) return row(u, 0, null, 'left blank');
     var N = rint(n);
     function fromCf(cf) {
@@ -889,14 +894,20 @@
   }
   function roundWhole(r) { return rint(Math.round(rnum(r))); }
 
-  function markReadIqr(q, S, r, u, heights, reads) {
+  /* An interquartile range read off a curve is the difference of TWO estimates,
+     and the scheme allows a small square either way on each of them - so the
+     difference is allowed two. Exactness here would fail every pupil and every
+     model attempt alike: on a grid of 2 the true quartiles of the javelin curve
+     fall at 80.7 and 85.4, which no pupil can key and no board can show. */
+  function markReadIqr(q, S, r, u, heights, reads, tolX) {
     var given = R(S.iqr);
     if (!given) return row(u, 0, null, 'left blank');
     var trueQ1 = curveX(q.curve, heights.Q1), trueQ3 = curveX(q.curve, heights.Q3);
     var truth = (trueQ1 && trueQ3) ? rsub(trueQ3, trueQ1) : null;
     var mineQ1 = R(reads.Q1 && reads.Q1.x), mineQ3 = R(reads.Q3 && reads.Q3.x);
     var mine = (mineQ1 && mineQ3) ? rsub(mineQ3, mineQ1) : null;
-    if (truth && eqR(given, truth)) return row(u, 1, null, null);
+    var band = tolX ? rmul(rint(2), tolX) : rint(0);
+    if (truth && within(given, truth, band)) return row(u, 1, null, null);
     if (mine && eqR(given, mine)) return row(u, 2, null, 'from your own readings');
     if (mineQ1 && mineQ3 && eqR(given, radd(mineQ3, mineQ1))) return row(u, 0, 'IQR_ADDED', null);
     if (mineQ1 && mineQ3 && eqR(given, rsub(mineQ1, mineQ3))) return row(u, 0, 'IQR_NEGATED', null);
@@ -910,6 +921,23 @@
   var FIVE = ['min', 'Q1', 'Q2', 'Q3', 'max'];
 
   function boxTruth(q, r) {
+    /* FROM A CURVE the paper gives the least and the greatest and she reads the
+       three cuts off her own graph, so the truth is half printed and half
+       derived - taking q.given alone left the three quartiles undefined and no
+       box could ever be right. */
+    if (q.from === 'curve' && q.curve) {
+      var heights = readHeights(Number(q.n) || 0, r.curveRule);
+      var o2 = {
+        min: R(q.given && q.given.min), max: R(q.given && q.given.max),
+        Q1: curveX(q.curve, heights.Q1), Q2: curveX(q.curve, heights.median), Q3: curveX(q.curve, heights.Q3)
+      };
+      if (q.given) {
+        if (q.given.Q1 !== undefined) o2.Q1 = R(q.given.Q1);
+        if (q.given.Q2 !== undefined) o2.Q2 = R(q.given.Q2);
+        if (q.given.Q3 !== undefined) o2.Q3 = R(q.given.Q3);
+      }
+      return o2;
+    }
     if (q.given) {
       var out = {}, i;
       for (i = 0; i < FIVE.length; i++) out[FIVE[i]] = R(q.given[FIVE[i]]);
@@ -965,6 +993,13 @@
 
   function markBoxplot(q, S, r, units) {
     var per = [], stageRows = [];
+    /* a box plot built from HER OWN read-offs carries the curve's tolerance on
+       its three cuts: she is placing an estimate, not a printed number */
+    var boxTol = (q.from === 'curve')
+      ? rmul(R(r.readTol == null ? 1 : r.readTol) || rint(1),
+             R((q.chart && q.chart.sq && q.chart.sq.x) || (q.scale && q.scale.sq) || 1) || rint(1))
+      : rint(0);
+
     if (q.from) {
       var stageQ = {}, k;
       for (k in q) if (q.hasOwnProperty(k)) stageQ[k] = q[k];
@@ -997,7 +1032,7 @@
     return per;
 
     function markGroup(keys) {
-      var allTrue = truth && keys.every(function (k2) { return got[k2] && truth[k2] && eqR(got[k2], truth[k2]); });
+      var allTrue = truth && keys.every(function (k2) { return got[k2] && truth[k2] && within(got[k2], truth[k2], boxTol); });
       if (allTrue) return 1;
       var allMine = mine && keys.every(function (k2) { return got[k2] && mine[k2] && eqR(got[k2], mine[k2]); });
       if (allMine) return 2;
@@ -1386,7 +1421,10 @@
     v = check(RDq3, { S: { reads: { Q1: { h: 60, x: 15 }, Q3: { h: 20, x: 5 } }, iqr: '-10' } });
     T('RD23 quartile heights swapped', dxAt(v, 0, 'READ_Q_SWAPPED'));
     v = check(RDq3, { S: { reads: { Q1: { h: 20, x: 6 }, Q3: { h: 60, x: 15 } }, iqr: '9' } });
-    T('RD24 IQR follows through from their own reads', okAt(v, 4, 2));
+    T('RD24 a read a square out still subtracts to a right IQR', okAt(v, 4, 1));
+    v = check(RDq3, { S: { reads: { Q1: { h: 20, x: 2 }, Q3: { h: 60, x: 15 } }, iqr: '13' } });
+    T('RD24a IQR follows through from their own reads when they are further out', okAt(v, 4, 2));
+    T('RD24b a followed-through IQR earns nothing itself', v.perLine[4].earned === 0);
     v = check(RDq3, { S: { reads: { Q1: { h: 5, x: 5 }, Q3: { h: 60, x: 15 } }, iqr: '10' } });
     T('RD25 reading the wrong axis', dxAt(v, 0, 'READ_WRONG_AXIS'));
     var RDx = { id: 'rdx', kind: 'cfread', marks: [1, 2], n: 80, curve: RDq.curve, chart: RDq.chart,

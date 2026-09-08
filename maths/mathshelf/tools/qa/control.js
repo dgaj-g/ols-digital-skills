@@ -25,10 +25,11 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { spawnSync, execFileSync } = require('child_process');
+const { spawnSync, spawn, execFile, execFileSync } = require('child_process');
 const A = require('./lib/app.js');
 const { matrix } = require('./lib/report.js');
 const { coversOf, controlsOf } = require('./lib/decl.js');
+const { bookHash } = require('./lib/hash.js');
 const { PLANTS, plantRef } = require('./fixtures/plants.js');
 
 const REPO = (() => {
@@ -36,13 +37,84 @@ const REPO = (() => {
   catch (e) { return null; }
 })();
 const ONLY = process.argv.includes('--only') ? process.argv[process.argv.indexOf('--only') + 1] : null;
+const CHANGED = process.argv.includes('--changed');
+const WORKERS = Math.max(1, parseInt(process.env.MS_WORKERS || '6', 10));
 
 const gates = fs.readdirSync(A.QA)
   .filter(f => /^(qa-|sit-|extract-).*\.js$/.test(f))
   .filter(f => !ONLY || f === ONLY + '.js')
   .sort();
 
-const rows = [];
+/* ═══════════════════════════ --changed (package SPEED, 8 Sept 2026) ═══════
+ * "Runs only the controls that this commit could have affected." Never a
+ * typed list (L5): derived from `git diff --name-only <last recorded green>`
+ * against three signals a gate's own source already carries — its own file,
+ * what it requires (lib/, fixtures/plants.js — a plant changing can change
+ * what every mutation-kind control does), and what its COVERS names. With no
+ * recorded green (the line `controls: green <date> <commit>` in PROGRESS.md,
+ * read-only from here — see HANDOVER.md) it runs everything, same as today. */
+function lastRecordedGreen() {
+  let txt = '';
+  try { txt = fs.readFileSync(A.app('PROGRESS.md'), 'utf8'); } catch (e) { return null; }
+  const m = /controls:\s*green\s+(\S+)\s+([0-9a-f]{6,40})/i.exec(txt);
+  return m ? { date: m[1], commit: m[2] } : null;
+}
+function changedFilesSince(commit) {
+  if (!REPO) return null;
+  try {
+    const raw = execFileSync('git', ['diff', '--name-only', commit], { cwd: A.APP, encoding: 'utf8' });
+    const appRel = path.relative(REPO, A.APP).split(path.sep).join('/') + '/';
+    return raw.split('\n').map(s => s.trim()).filter(Boolean)
+      .filter(p => p.startsWith(appRel)).map(p => p.slice(appRel.length));
+  } catch (e) { return null; }
+}
+/* the file set one book's walk depends on — the SAME derivation bookHash uses,
+   read back out rather than re-typed, so the two can never disagree */
+function bookFileSet(bookId) {
+  const shared = ['script.js', 'jotter.js', 'player.js', 'strings.js', 'style.css', 'shell.css', 'index.html'];
+  let packName = 'content-' + bookId + '.js';
+  try {
+    fs.readdirSync(A.APP).filter(f => /^content-.*\.js$/.test(f)).forEach(f => {
+      const src = fs.readFileSync(A.app(f), 'utf8');
+      if (new RegExp('GJ_CONTENT(?:\\.' + bookId + '\\b|\\[[\'"]' + bookId + '[\'"]\\])').test(src)) packName = f;
+    });
+  } catch (e) {}
+  const set = new Set([packName].concat(shared));
+  if (/angle/.test(packName)) set.add('anglecore.js');
+  else if (/stat/.test(packName)) { set.add('statcore.js'); set.add('statchart.js'); set.add('jotter-stats.js'); }
+  else set.add('mathcore.js');
+  return set;
+}
+function requiresOf(file) {
+  let src = ''; try { src = fs.readFileSync(A.qa(file), 'utf8'); } catch (e) { return []; }
+  const out = [];
+  (src.match(/require\(\s*'\.\/[^']+'\s*\)/g) || []).forEach(m => {
+    const rel = m.slice(m.indexOf("'./") + 2, -2);   /* './lib/foo.js' -> 'lib/foo.js' */
+    out.push(rel.replace(/^\.\//, ''));
+  });
+  return out;
+}
+function gateAffected(file, covers, changed) {
+  if (changed === null) return true;                       /* can't compute the diff: run it */
+  if (changed.includes('tools/qa/' + file)) return true;
+  if (requiresOf(file).some(r => changed.includes('tools/qa/' + r))) return true;
+  if (changed.includes('tools/qa/fixtures/plants.js')) return true;   /* a plant changed: every mutation control is in question */
+  if (covers) {
+    const books = (covers.books === '*') ? (A.books ? (() => { try { return A.books(); } catch (e) { return []; } })() : []) : (covers.books || []);
+    if (books.some(b => { const fs2 = bookFileSet(b); return changed.some(c => fs2.has(c)); })) return true;
+  }
+  return false;
+}
+const CHANGE_BASE = CHANGED ? lastRecordedGreen() : null;
+const CHANGED_FILES = CHANGE_BASE ? changedFilesSince(CHANGE_BASE.commit) : null;
+if (CHANGED) {
+  console.log(CHANGE_BASE
+    ? '--changed: diffing against controls: green ' + CHANGE_BASE.date + ' ' + CHANGE_BASE.commit +
+      (CHANGED_FILES === null ? '  (diff failed — running everything)' : '  (' + CHANGED_FILES.length + ' file(s) changed)')
+    : '--changed: no recorded green in PROGRESS.md — running everything');
+}
+
+const rows = [];   /* filled by JOB INDEX, never by completion order — see runPool below */
 let failures = 0;
 A.ensureOut('control');
 

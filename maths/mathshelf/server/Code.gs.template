@@ -59,7 +59,19 @@
 var DATA_TAB   = 'Data';
 var CONFIG_TAB = 'Config';
 var HEADERS = ['Class', 'Email', 'Name', 'Act', 'Summary', 'State', 'Updated'];
-var ACTS = ['angles', 'algebra'];
+/* EVERY BOOK THE SERVER WILL ACCEPT. A book is otherwise client-only, and the
+   design said so - but the server keeps this whitelist and refuses any act id
+   that is not in it ('bad-act'), so a new book cannot save a mark, cannot
+   appear on the Working Wall and cannot be drilled into until its id is here.
+   qa-store-scale found it on 8 September 2026, the day Handling Data was added.
+   The id is the ONLY line a new book needs; everything else below is derived
+   from this array, and a book arrives UNTICKED everywhere because an absent
+   key reads false (rule 17). */
+var ACTS = ['angles', 'algebra', 'stats-quartiles'];
+/* the two books every class had before the tickboxes existed. A class stored
+   in the old shape, and a brand-new class, get these two ON and every later
+   book OFF - which is what "a new book arrives unticked" means on the server. */
+var LEGACY_ON = { angles: true, algebra: true };
 // Client prunes towards 40k (DESIGN section 5); 45k gives save headroom so a
 // pupil mid-prune never loses work. Summary must stay small -- the Working
 // Wall polls every pupil's Summary every ~20s.
@@ -350,7 +362,7 @@ function getClasses_() {
   var out = [];
   for (var i = 0; i < raw.length; i++) {
     var c = raw[i];
-    if (typeof c === 'string') { out.push({ name: c, acts: { angles: true, algebra: true }, owner: '' }); continue; }
+    if (typeof c === 'string') { out.push({ name: c, acts: coerceActs_(LEGACY_ON), owner: '' }); continue; }
     var nm = String((c && c.name) || '');
     if (nm) out.push({ name: nm, acts: coerceActs_(c && c.acts), owner: normEmail_(c && c.owner) });
   }
@@ -400,7 +412,8 @@ function apiHello(req) {
   if (!ready_()) return { ok: false, error: 'not-initialised' };
   var who = userEmail_(); if (!who) return { ok: false, error: 'not-signed-in' };
   var rec = findClass_(req.classCode); if (!rec) return { ok: false, error: 'unknown-class' };
-  var summaries = { angles: null, algebra: null };
+  var summaries = {};
+  for (var si = 0; si < ACTS.length; si++) summaries[ACTS[si]] = null;
   var vals = dataSheet_().getDataRange().getValues();
   for (var i = 1; i < vals.length; i++) {
     try {
@@ -574,7 +587,7 @@ function adminAddClass_(req, ctx) {
     }
     // both tiles on by default so a fresh class link works immediately;
     // the teacher unticks from the staff panel to stage topics.
-    var acts = req.acts ? coerceActs_(req.acts) : { angles: true, algebra: true };
+    var acts = req.acts ? coerceActs_(req.acts) : coerceActs_(LEGACY_ON);
     reg.push({ name: nm, acts: acts, owner: normEmail_(ctx.who) });
     setClasses_(reg);
     return { ok: true, name: String(nm), acts: acts };

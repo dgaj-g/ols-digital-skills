@@ -975,7 +975,10 @@
   BUILD.cfread = function (ctx) {
     var q = ctx.q;
     var asks = (q.ask || []).slice();
-    var idx = 0, reads = {}, iqr = '', answer = '', h = 0, ax = null, bd = null, pad = null;
+    /* `answers` and the `atX@<x>` keys, because one question may ask for two
+       reads at two different values (the CF notes ask at 167 cm and at 153) */
+    var idx = 0, reads = {}, answers = {}, iqr = '', h = 0, ax = null, bd = null, pad = null;
+    var answer = '';
 
     var boardWrap = el('div', 'stat-board-host');
     boardWrap.setAttribute('data-work', '');
@@ -1066,17 +1069,21 @@
         } }));
         var padWrap = el('div', 'stat-answer');
         ctx.dock.appendChild(padWrap);
-        pad = makeNumPad(padWrap, { label: wantLabel(a), onChange: function (v) { answer = v; ctx.changed(); } });
-        pad.set(answer);
+        pad = makeNumPad(padWrap, { label: wantLabel(a), onChange: function (v) {
+          answer = v; answers['atX@' + a.x] = v; ctx.changed();
+        } });
+        pad.set(answers['atX@' + a.x] || '');
         var doneX = el('button', 'btn-quiet', T().statThatsMine);
         doneX.type = 'button';
-        doneX.disabled = (ax == null || !answer);
+        doneX.disabled = (ax == null || !answers['atX@' + a.x]);
         if (doneX.disabled) setLockedWhy(doneX, T().statReadAtXWhy);
         doneX.addEventListener('click', function (e) {
           e.stopPropagation();
           if (doneX.disabled) return;
-          reads.atX = { x: ax, cf: dropAcross(ax) };
-          writeLine(wantLabel(a), answer);
+          var cfAt = dropAcross(ax);
+          reads['atX@' + a.x] = { x: ax, cf: cfAt };
+          reads.atX = { x: ax, cf: cfAt };
+          writeLine(wantLabel(a), answers['atX@' + a.x]);
           idx++; ctx.setStage('committed'); paint(); ctx.changed();
         });
         ctx.dock.appendChild(doneX);
@@ -1113,22 +1120,22 @@
       reset: function () { idx = 0; reads = {}; iqr = ''; answer = ''; h = 0; ax = null; lines.innerHTML = ''; build(); },
       restore: function (S) {
         S = S || {};
-        reads = S.reads || {}; iqr = S.iqr || ''; answer = S.answer || '';
+        reads = S.reads || {}; answers = S.answers || {}; iqr = S.iqr || ''; answer = S.answer || '';
         idx = asks.filter(function (a) {
           if (a === 'IQR') return !!iqr;
-          if (isAtX(a)) return !!reads.atX;
+          if (isAtX(a)) return !!reads['atX@' + a.x];
           return !!reads[a];
         }).length;
         lines.innerHTML = '';
         build();
         asks.slice(0, idx).forEach(function (a) {
           if (a === 'IQR') writeLine(T().statIqr, iqr);
-          else if (isAtX(a)) writeLine(wantLabel(a), answer);
+          else if (isAtX(a)) writeLine(wantLabel(a), answers['atX@' + a.x] || answer);
           else if (reads[a]) { writeLine(nameOf(a), reads[a].x); bd.annotate('tick', [reads[a].x, q.chart.y.min]); }
         });
         paint();
       },
-      state: function () { return { reads: reads, iqr: iqr, answer: answer }; },
+      state: function () { return { reads: reads, answers: answers, iqr: iqr, answer: answer }; },
       ready: function () {
         if (idx < asks.length) return { ok: false, why: T().statReadWhy };
         return { ok: true };

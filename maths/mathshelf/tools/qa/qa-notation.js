@@ -159,11 +159,32 @@ ledger.split('\n').forEach(l => {
 g.note('locked (waived) books: ' + ([...waivedBooks].join(', ') || '(none)'));
 
 /* ================================================================ RULES */
+/* A HYPHEN INSIDE A WORD IS A HYPHEN, NOT A MINUS. "re-read", "midpoint-plotting"
+   and "back-to-back" are English; a minus sign sits between OPERANDS. The rule
+   below therefore skips a match where the hyphen has no space on either side,
+   both sides are letters, and at least one of the two runs is a word rather
+   than a single-letter variable - so "x-1", "a-b" and "2x-3" still fire and
+   "re-read" does not. This narrowing was made on 8 September 2026, when a
+   book's provenance notes ("Statistics M7 (1).pdf ... re-read from the graph")
+   read as maths to `mathsBearing` because of "M7", and the gate asked for a
+   minus sign in the middle of an English word. Proved still to bite afterwards
+   (addendum C): planting "5 - 3", "x-1" and "a-b" all fail as before. */
+function hyphenatedWord(value, idx) {
+  if (value[idx] !== '-') return false;
+  if (value[idx - 1] === ' ' || value[idx + 1] === ' ') return false;
+  let i = idx - 1, left = '';
+  while (i >= 0 && /[A-Za-z]/.test(value[i])) { left = value[i] + left; i--; }
+  let j = idx + 1, right = '';
+  while (j < value.length && /[A-Za-z]/.test(value[j])) { right += value[j]; j++; }
+  if (!left || !right) return false;
+  return left.length > 1 || right.length > 1;
+}
 function checkAsciiOp(value, surface, path) {
   if (!mathsBearing(value)) return;
   const re = /([0-9A-Za-z)])\s*([\-*^])\s*([0-9A-Za-z(])/g;
   let m;
   while ((m = re.exec(value))) {
+    if (m[2] === '-' && hyphenatedWord(value, m.index + m[0].indexOf('-'))) continue;
     const opName = m[2] === '-' ? 'minus sign (−)' : m[2] === '*' ? 'multiplication sign (×)' : 'exponent (²)';
     g.fail(surface + ' :: ' + path, 'notation',
       'an ASCII "' + m[2] + '" sits between "' + m[1] + '" and "' + m[3] + '" where the ' + opName + ' is meant — replace it with the proper symbol  [' + value.slice(0, 90) + ']');

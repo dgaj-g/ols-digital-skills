@@ -30,7 +30,7 @@ const path = require('path');
 const A = require('./lib/app.js');
 const { Gate, matrix } = require('./lib/report.js');
 const { coversOf, controlsOf, objectEntries, stripComments } = require('./lib/decl.js');
-const { contentHash, fileHash, sha1 } = require('./lib/hash.js');
+const { contentHash, bookHash, fileHash, sha1 } = require('./lib/hash.js');
 const TC = require('./lib/timeconsts.js');
 
 const TIER = 'fast';
@@ -128,11 +128,20 @@ const owed = new Set(debt.map(d => d.cell));
 /* ═══════════════════════════════════════════ 3. the sidecars ═══════════ */
 const walkDir = A.out('walk');
 const sidecars = [];
+/* which sidecars are BOOK-scoped (sit-pupil, sit-confused: scope is a real book
+   id, hashed per book) vs whole-app (sit-teacher: scope is 'teacher', it walks
+   every book on one screen and is measured against the whole app, same as
+   before) — a.books() throws only if a content pack is unreadable, in which
+   case every book-scoped gate has already failed loudly elsewhere in this run */
+let BOOK_IDS = [];
+try { BOOK_IDS = A.books(); } catch (e) { /* left empty: falls back to contentHash below */ }
+const hashFor = (scope) => BOOK_IDS.includes(scope) ? bookHash(A.APP, scope) : HASH;
 if (fs.existsSync(walkDir)) {
   fs.readdirSync(walkDir).filter(f => /\.json$/.test(f)).forEach(f => {
     let j; try { j = JSON.parse(fs.readFileSync(path.join(walkDir, f), 'utf8')); } catch (e) { return; }
-    const stale = j.contentHash !== HASH;
-    if (stale && FULL) { g.note('sidecar ' + f + ' is STALE (' + j.contentHash + ' != ' + HASH + ') and counts as absent'); return; }
+    const want = hashFor(j.scope);
+    const stale = j.contentHash !== want;
+    if (stale && FULL) { g.note('sidecar ' + f + ' is STALE (' + j.contentHash + ' != ' + want + ') and counts as absent'); return; }
     if (stale) g.note('sidecar ' + f + ' is stale (reported, not failed, at the fast tier)');
     sidecars.push(j);
   });

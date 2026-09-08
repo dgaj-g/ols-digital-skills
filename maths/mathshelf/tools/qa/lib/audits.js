@@ -22,7 +22,24 @@ const contrast = require('./contrast-audit.js');
 
 /* the colour law, in computed pixels, over the whole rendered screen */
 const COLOUR_LAW = `(() => {
-  const MARK = ['rgb(200, 16, 46)', 'rgb(31, 122, 51)', 'rgb(176, 125, 16)'];   /* red, green, amber */
+  /* THE MARKING SET IS DERIVED FROM THE TOKENS, never typed here (L5). It was
+     typed here, and on 7 September 2026 the amber token was darkened from
+     #B07D10 to #7A5A05 while this list kept policing the old hex - so for a
+     day the answer-only colour was watched by nothing at all. A fact has one
+     home: style.css declares the three marking colours, and this law reads
+     them off the running document. */
+  const tok = (n) => {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+    if (!v) return null;
+    const m = /^#([0-9a-f]{6})$/i.exec(v);
+    if (m) {
+      const h = m[1];
+      return 'rgb(' + parseInt(h.slice(0, 2), 16) + ', ' + parseInt(h.slice(2, 4), 16) + ', ' + parseInt(h.slice(4, 6), 16) + ')';
+    }
+    const r = /rgba?\(([^)]+)\)/.exec(v);
+    return r ? 'rgb(' + r[1].split(',').slice(0, 3).map(x => x.trim()).join(', ') + ')' : null;
+  };
+  const MARK = ['--marking-red', '--marking-green', '--amber-flag'].map(tok).filter(Boolean);
   const GOLD = ['rgb(228, 184, 36)', 'rgb(255, 216, 77)'];
   const SENTINEL = 'rgb(181, 0, 200)';
   const out = [];

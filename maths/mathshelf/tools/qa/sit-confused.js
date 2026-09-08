@@ -29,7 +29,7 @@ const S = require('./lib/stage.js');
 
 /* every state this walk set out to stand on, settled when the walk is done */
 const AIMED = [];
-const { contentHash } = require('./lib/hash.js');
+const { bookHash } = require('./lib/hash.js');
 
 /* ONE SENTENCE PER FINDING, and it NAMES THE THING. The first cut printed the
    law and nothing else - "marking-colour-outside-a-mark", forty times - which
@@ -108,7 +108,7 @@ g.exempt(AUD.EXEMPTIONS.concat([
       await W.settle(page);
 
       const sidecar = { walker: 'sit-confused', scope: book, width, tier: 'preview',
-        contentHash: contentHash(A.APP), when: new Date().toISOString(), states: [], consoleErrors: 0 };
+        contentHash: bookHash(A.APP, book), when: new Date().toISOString(), states: [], consoleErrors: 0 };
 
       const opened = await page.evaluate((s, id) => eval(s)(id), W.ACTIONS.openBook, book);
       if (!opened.ok) { g.note('skipping ' + book + ': ' + opened.why); await page.close(); continue; }
