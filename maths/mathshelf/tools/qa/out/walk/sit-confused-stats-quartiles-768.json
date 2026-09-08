@@ -3,8 +3,8 @@
  "scope": "stats-quartiles",
  "width": 768,
  "tier": "preview",
- "contentHash": "2e13b6033adf",
- "when": "2026-09-08T07:34:10.912Z",
+ "contentHash": "1ebf664ee414",
+ "when": "2026-09-08T07:44:33.684Z",
  "states": [
   {
    "surface": "question",
@@ -696,7 +696,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "FAIL",
+    "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -720,7 +720,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "FAIL",
+    "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -744,7 +744,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "FAIL",
+    "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -768,7 +768,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "FAIL",
+    "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -792,7 +792,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "FAIL",
+    "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -816,7 +816,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "FAIL",
+    "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -840,7 +840,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "FAIL",
+    "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -864,7 +864,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "FAIL",
+    "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -888,7 +888,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "FAIL",
+    "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -936,7 +936,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -960,7 +960,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
@@ -984,7 +984,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
