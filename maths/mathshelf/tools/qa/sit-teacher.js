@@ -328,35 +328,12 @@ async function walk(page, width, projector, sidecar, transcript) {
      parent of `.wall` — so that is named explicitly rather than left to a
      generic overflow search to happen to find (the search stays too, as a
      second line, in case a future layout moves the listener). */
-  /* THE WIDEST BOOK IN THE GRID. At 1280 the book this route happens to be on
-     is 1116px of table in a 1116px box - nothing to scroll, so the state is not
-     reachable on it at that width, and it is a fact about the book rather than
-     about the screen. The grid carries its own book tabs; the widest one is
-     chosen here before the scroll, so the same probe answers at every width. */
-  const widest = await page.evaluate(async () => {
-    const tabsOf = () => [...document.querySelectorAll('.check-row button')];
-    const startedOn = (tabsOf().filter((t) => t.getAttribute('aria-pressed') === 'true')[0] || {}).textContent;
-    let best = null;
-    for (let i = 0; i < tabsOf().length; i++) {
-      const t = tabsOf()[i];
-      t.click();
-      await new Promise((r) => setTimeout(r, 900));
-      const w = document.querySelector('.wall');
-      const over = w ? w.scrollWidth - w.clientWidth : -1;
-      if (!best || over > best.over) best = { name: (t.textContent || '').trim(), over: over, i: i };
-      if (over > 40) return best;
-    }
-    /* NOTHING OVERFLOWS: PUT THE BOOK BACK. Leaving the grid on whichever book
-       was measured last changed the book for the whole of the rest of the route
-       - and the two probes below it, which need this class's amber cell in
-       ALGEBRA, then read an Angles grid and reported their screens missing. */
-    if (startedOn) {
-      const back = tabsOf().filter((t) => (t.textContent || '').trim() === String(startedOn).trim())[0];
-      if (back) { back.click(); await new Promise((r) => setTimeout(r, 900)); }
-    }
-    return best;
-  });
-  if (widest) g.note('full-grid @' + width + ': widest book "' + widest.name + '" overflows its box by ' + widest.over + 'px');
+  /* A BOOK TAB INSIDE THE GRID IS A WAY OUT OF IT. Tried choosing the widest
+     book here first, so the state would be reachable at 1280 as well: every one
+     of those tabs calls showClassPage(), so the first press left the full grid
+     altogether and the rest of the route ran on whatever book was pressed last.
+     The grid is measured as she finds it, and where it fits the screen the
+     ledger says so rather than the walk pretending otherwise. */
   await wait(900);
   const scrolled = await page.evaluate(() => {
     const wall = document.querySelector('.wall');

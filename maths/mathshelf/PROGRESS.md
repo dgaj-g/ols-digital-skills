@@ -473,3 +473,62 @@ All-books `--full` 10-12 minutes (budget 20). `MS_WORKERS` defaults to 6;
 - `node dev/test-statcore.js` is the engine's own proof and takes under a second.
 - The engine's unit table (`UNITS` / `unitsOf`) is the ONE home of band, weight
   and `ftEarns` per marking unit; the selfTest pins every one of them (UT1–UT9).
+
+## 8 September, the afternoon: what the new walks found in v4
+
+Package V4-STATES put walkers on thirty-odd screens nobody had ever stood on.
+Standing on a screen is how a law gets asked about it, and eleven things came
+back. Six were faults in the app, three were the contrast law saying things that
+were not true, and two were the walker's own.
+
+**In the app**
+
+1. A book a class has not been given was drawn in the gold of a lit book: its
+   emblem measured 1.01 to 1 against its own plate.
+2. The markbook's QR panel announced nothing to a screen reader, because the
+   line it announces into was written away every time the panel opened.
+3. The Set-up series headings were 11px in the muted chalk at 4.31 to 1.
+4. The teacher's cover never said it was waiting, and never said it was in.
+5. A class page that could not be refreshed said nothing at all.
+6. The full grid's scroll listener was on a div that cannot scroll.
+7. Opening one question across the class was drawn as the book view, so the
+   question view's own ink control could never be reached.
+8. **The reading rule had no floor.** Holding the down arrow at the bottom
+   carried it off the graph into negative frequencies, where it crosses no
+   curve - so the reading came back empty and the working line the pupil had
+   just committed read `median = {value}` on her own screen.
+9. The same line printed the raw intersection - `median = 10.3125` - under a
+   board whose own read-out says 10.31.
+10. Two box-plot labels could sit on one another on a phone when no row above
+    or below was free either.
+11. The demo class's amber pupil showed full working on every question, so the
+    one verdict her profile exists to demonstrate never appeared.
+
+**In the contrast law** (each narrowed at the rule, each proved to still bite by
+planting the fault back)
+
+- A glyph drawn in SVG is painted with `fill`, not `color`: the sampler was
+  hunting for white pixels inside a dark italic "x" and reporting 1.01 to 1 on a
+  letter you can read across a room - and would have said the same about an
+  invisible one.
+- A row behind the preview banner was judged on pixels nobody can see: trimmed
+  where the bar cuts it, dropped where the bar covers it, and clamped to the
+  picture before either.
+- A glyph run turned on its side, and a sampled core paler than the ink can be
+  at full opacity, are answered in computed colour instead of in pixels.
+
+**In the walker**
+
+- The rule nudge pressed an absolute number of steps up the axis, which is only
+  right if the rule is parked - and the drive is called once per stage on the
+  same board. A box plot drawn perfectly off those readings came back
+  "Box 2/2 · Whiskers 2/2" and a red verdict in the same breath.
+- sit-teacher replaced the app's own `call` to prove `set-up:error` and never
+  put it back, so every screen after it in the route was reading a refused
+  server.
+
+Coverage per rider family: **204 closed / 21 missing** after V4-STATES, and now
+**every one of those 21 is answered** - twenty walked, and `question:amber`
+recorded as a screen the app's own place-all-then-check law puts out of reach
+(the value pad does not exist until the letters are placed, so a one-line right
+answer cannot be written). `qa-coverage` reads that table now and prints it.

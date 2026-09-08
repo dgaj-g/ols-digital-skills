@@ -4,7 +4,7 @@
  "width": 375,
  "tier": "preview",
  "contentHash": "5f6e4195c2f9",
- "when": "2026-09-08T14:34:40.533Z",
+ "when": "2026-09-08T14:53:54.899Z",
  "states": [
   {
    "surface": "question",
@@ -963,7 +963,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    }
   },
   {
