@@ -43,6 +43,11 @@
      ACTIVITIES, so a new book needs no line here at all. */
   var LEGACY_ON = { angles: true, algebra: true };
   function actIds() { return ACTIVITIES.map(function (a) { return a.id; }); }
+  function allActsOn() {
+    var out = {};
+    actIds().forEach(function (id) { out[id] = true; });
+    return out;
+  }
   function coerceActs(a) {
     a = a || {};
     var out = {};
@@ -175,7 +180,12 @@
   var OFFLINE_TEACHER = 'demo.teacher@c2ken.net';
   function store() {
     var s = lsLoad();
-    s.classes = s.classes || [{ name: BOOT.classCode, acts: coerceActs(LEGACY_ON) }];
+    /* THE PREVIEW'S OWN CLASS carries every book. It exists only where there is
+       no server (window.OLS_TRANSPORT is absent), it is never a class anybody
+       teaches, and it is the only way a walk can reach a book at all: a real
+       class gets a new book UNTICKED and a teacher turns it on (rule 17), which
+       is the server's business and is proved there by qa-tickbox. */
+    s.classes = s.classes || [{ name: BOOT.classCode, acts: allActsOn() }];
     s.data = s.data || {};   // data[class][email][act] = {state, summary}
     s.names = s.names || {};
     s.classes.forEach(function (c) { if (c && c.owner == null) c.owner = OFFLINE_TEACHER; });
@@ -364,6 +374,21 @@
           } else {
             rec.att.push({ read: q.value + (rnd() < 0.5 ? 1 : (rnd() < 0.5 ? -2 : 0)), dur: 28, res: 'OK' });
           }
+        } else if (window.GJ_STATS && window.GJ_STATS.isStatKind(q.kind)) {
+          /* the handling-data books: a model board, or that kind's own classic
+             slip, from the engine's ONE home for both (statcore.modelBoard) -
+             so the markbook demo shows named slips on day one rather than
+             noise, and shows exactly the slips the walkers walk. */
+          var board = window.GJ_STATS.modelBoard(q, makeErr, pack.rules);
+          if (!board) { delete st.qs[q.id]; return; }
+          var v0 = window.GJ_STATS.check(q, { S: board }, pack.rules);
+          rec.att.push({ S: board, dur: 60 + Math.round(rnd() * 60), res: v0.res });
+          if (makeErr && rnd() < (profile === 'weak' ? 0.3 : 0.7)) {
+            var good = window.GJ_STATS.modelBoard(q, false, pack.rules);
+            rec.att.push({ S: good, dur: 45, res: 'OK' });
+          } else if (makeErr) {
+            rec.att.push({ S: board, dur: 40, res: v0.res });
+          }
         } else {
           var steps = modelAngleSteps(q);
           if (!steps) return;
@@ -411,7 +436,11 @@
 
   function seedDemo(s) {
     if (s.data[DEMO_CLASS]) return;
-    s.classes.push({ name: DEMO_CLASS, acts: coerceActs(LEGACY_ON), owner: OFFLINE_TEACHER });
+    /* THE DEMO CLASS IS A FIXTURE, NOT A CLASS. A real class gets a new book
+       UNTICKED (rule 17) and a teacher turns it on; the demo class exists so
+       the preview and the markbook demo have every book on screen, and so the
+       walkers can reach one at all. Every book, on. */
+    s.classes.push({ name: DEMO_CLASS, acts: allActsOn(), owner: OFFLINE_TEACHER });
     s.data[DEMO_CLASS] = {};
     DEMO_PUPILS.forEach(function (p, i) {
       var email = p[0].toLowerCase().replace(/[^a-z]+/g, '.') + '@c2ken.net';

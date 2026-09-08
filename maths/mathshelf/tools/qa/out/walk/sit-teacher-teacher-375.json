@@ -4,8 +4,8 @@
  "width": 375,
  "projector": false,
  "tier": "preview",
- "contentHash": "08c40334965b",
- "when": "2026-09-08T05:45:49.011Z",
+ "contentHash": "23b5e41e6381",
+ "when": "2026-09-08T06:16:03.617Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -76,7 +76,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 24
+    "readability": 32
    }
   },
   {
@@ -100,7 +100,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 27
+    "readability": 28
    }
   },
   {
@@ -220,7 +220,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 60
+    "readability": 55
    }
   },
   {
@@ -244,7 +244,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 86
+    "readability": 79
    }
   },
   {
@@ -268,7 +268,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 28
+    "readability": 29
    }
   },
   {

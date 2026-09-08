@@ -86,7 +86,7 @@
       statAlreadyMarked: 'This question is already marked.',
       statTryAgain: 'Not quite. Your first go stays above — one more attempt.',
       statPutBack: 'Press it again to put it back.',
-      statRemoveLast: '↶ remove last',
+      statRemoveLast: 'Remove the last one',
       statNextRow: 'next ↓',
       statThatsMine: 'That’s my answer',
       statThatsMyOne: 'That’s my {name}',
@@ -309,6 +309,10 @@
 
     /* ── what a teacher reads ───────────────────────────────────────── */
     teacher: {
+      /* when a pupil's own board cannot be re-drawn on this screen - a saved
+         record from a version of the book that no longer exists, say. It says
+         what is missing and does not pretend the work is not there. */
+      artefactUndrawable: 'Her work is saved, but this screen could not re-draw the board.',
       passcodeLabel: 'Staff passcode',
       passcodeEmpty: 'Enter the staff passcode.',
       passcodeChecking: 'Checking the passcode…',

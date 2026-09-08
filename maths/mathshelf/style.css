@@ -1329,3 +1329,7 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 /* the teacher's read-only copy of one pupil's artefact */
 .stat-readonly { margin: 6px 0; }
 .stat-board-small .stat-board { max-width: 320px; }
+
+/* the teacher's copy of a pupil's board: reading size, never interactive */
+.qv-artefact, .jp-artefact { margin: 6px 0 10px; max-width: 420px; }
+.qv-artefact .stat-board-frame, .jp-artefact .stat-board-frame { border: 1px solid var(--hairline); }
