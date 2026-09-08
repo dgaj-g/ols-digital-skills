@@ -82,3 +82,23 @@ number. They are not renumbered here; a gate cites `L7` and means that.
     (DFM 57). Nothing else on any surface is named in a design word.
 30. **Approvals are never re-opened.** (DFM 273a) The Angles and Algebra content
     is approved and live; a finding on it is REPORTED and waits for his word.
+31. **A colour means one thing, and the law reads the colour from the token.**
+    (8 Sept 2026, applied by this build) `--amber-flag` was darkened on 7 Sept
+    and `lib/audits.js` went on policing the old hex, so the answer-only colour
+    was watched by nothing; worse, `--gold-ink` was the SAME hex, so the
+    wordmark wore the colour that means "answer only". `--gold-ink` moved to a
+    dark gold that is not a marking colour (measured 5.73:1 on the shell at
+    375, 768 and 1280) and the marking set is now read off the running
+    document's tokens.
+32. **A book is not entirely client-only.** (8 Sept 2026, found by
+    `qa-store-scale`) The server keeps `var ACTS` and refuses any other act id,
+    so a new book needs its id there before it can save a mark, reach the
+    Working Wall or be drilled into. That one line is the whole server change,
+    and every other two-book default in the server and in the offline stub is
+    now derived from it.
+33. **A gate that reports a fault that is not one is fixed at the rule, and
+    proved to still bite afterwards.** (8 Sept 2026) A hyphen inside an English
+    word is not a minus sign; a question that names people in a scenario is not
+    naming the reader; a citation is not prose. Each narrowing carries its
+    reason where the rule is, and each was re-planted with the fault it exists
+    for and seen to fail.

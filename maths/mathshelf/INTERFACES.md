@@ -109,6 +109,75 @@ summary = {v:1, act, name, marks:[got,max], done:n, total:n, upd:epochSec,
 script.js exposes to jotter/staff: `GJ.app.save(state)` (debounced ≤1/10 s, builds summary),
 `GJ.app.content(actId)`, `GJ.app.boot` = `{classCode, baseUrl, email, name, acts}`.
 
+## window.GJ_STATS (statcore.js — pure, no DOM; reuses GJ_MATH's rationals)
+
+The Handling Data engine. Everything is an exact rational `{n,d}`; chart
+coordinates are integers in small-square units, so snapping and tolerance are
+integer comparisons.
+
+```
+GJ_STATS.quartiles(values, rule)      -> {Q1,Q2,Q3,IQR,sorted,pos,expressible}
+GJ_STATS.quartilePositions(n, rule)   -> {Q1,Q2,Q3}   1-indexed, may be halves
+GJ_STATS.positionsExpressible(n,rule) -> bool         a quarter position cannot be pointed at
+GJ_STATS.fiveNumber(values, rule)     -> {min,Q1,Q2,Q3,max}
+GJ_STATS.cumulate(classes)            -> [cf…]
+GJ_STATS.curveX(curve, h)             -> {n,d}|null   x where the CHORD reaches height h
+GJ_STATS.curveY(curve, x)             -> {n,d}|null   the chord's height at x
+GJ_STATS.curveMonotone(curve)         -> bool
+GJ_STATS.readHeights(n, rule)         -> {median,Q1,Q3}
+GJ_STATS.expectedPoints(q, rules)     -> [[x,y]…]     the points a cfplot expects
+GJ_STATS.unitsOf(q, rules)            -> [{id,label,band,w,ftEarns}…]   THE unit table
+GJ_STATS.check(q, att, rules)         -> {perLine:[{unit,label,band,w,ok,dx,note,earned}…],
+                                          res:'OK'|'X@n', errAt, dx, mk, mkMax, mkLabels}
+GJ_STATS.modelBoard(q, wrong, rules)  -> the S a right (or classically wrong) attempt leaves
+GJ_STATS.gist(q)                      -> <= 28 chars for the exercise grid
+GJ_STATS.DX_NAMES / REASONS / MK_LABELS / DEFAULT_RULES / FT_RULE_IDS
+GJ_STATS.selfTest()                   -> {pass, count, failures}
+```
+
+**The unit table is the one home** of what each marking unit is worth (`w`),
+which mark it can pay for (`band`), and whether a follow-through tick earns it
+(`ftEarns`). The pupil's tally, the teacher's rows and the lint's
+reachable-marks rule all read it, and the selfTest pins every flag.
+
+## Stats content pack — `window.GJ_CONTENT['stats-quartiles']` (and -collect, -averages)
+
+```
+{ id, engine:'stats', rules:{quartileRule:'n+1', curveRule:'split50', startPoint,
+    curveStyle, readTol, plotTol}, authoredNarration:[…], sections:[
+  { id, title, walt, cans:[…], movie:{title, mode, src, steps:[{say, do:[op…]}]},
+    questions:[ { id, kind, marks:[m,a], prompt, src, reserve?, …kind-specific } ] } ] }
+```
+Kinds and their stored `S`:
+```
+qlist    {order:[idx…], picks:{Q1:[i]|[i,j], …}, iqr:'11'}
+cftable  {cf:['8','21',…]}                        prefill:[rowIdx] rows are given
+cfplot   {pts:[[x,y]…], joined:bool}              startPoint per pack or per question
+cfread   {reads:{median:{h,x}, 'atX@36':{x,cf}…}, answers:{'atX@36':'32'}, iqr}
+boxplot  {pos:{min,Q1,Q2,Q3,max}, drawn, stage?}  from:'qlist'|'values'|'curve'
+compare  {s1:{who,who2,ctx,v:[a,b]}, s2:{who,size,cons,meas,v:[a,b]}}
+judge    {j:[{fair,why} | {v}]}                   claims may carry their own options
+values   {v:{slotId:'84'}}                        slots may carry a closed ft.rule id
+```
+
+## window.GJ_STATCHART (statchart.js)
+- `render(host, chart|scale, opts)` → handle `{svg, toPx, toAxis, snap, addPoint, movePoint,
+  removePoint, points, curveThrough, clearCurve, rule, ruleX, drop, readout, clearReadout,
+  scale, marker, moveMarker, removeMarker, markers, box, clearBox, ring, bracket, annotate,
+  selectPoint, selectMarker, needsScroll, relayout, destroy}`.
+  `opts`: `readOnly`, `snapDivisor`, `onChange(evt)`, `onGridTap(x, y)`.
+  Labels that MOVE are HTML over the board (`.stat-label[data-board-label]`) so the overlap
+  law can judge them; SVG text is inked by `fill: currentColor`; every label renders at
+  13 CSS px or more after the counter-scale, and a board scrolls sideways rather than let a
+  small square fall under 12 px.
+
+## window.GJ_JOTTER_STATS (jotter-stats.js)
+- `handles(kind)`, `mount(host, q, savedRec, hooks)` — the same contract as `GJ_JOTTER.mount`;
+  jotter.js dispatches to it in one line and the v3 renderers are untouched.
+- `renderReadOnly(host, q, att, verdict)` — the teacher's copy of a pupil's board.
+- `STAGES` / `stagesFor(q)` — the named in-between boards; every question root carries
+  `data-stage` and `data-stages`, and the walk stands on every one.
+
 ## window.GJ_PLAYER (player.js)
 - `mount(el, movie)` → controller `{play, pause, step(+1|-1), goto(n), destroy, onend(cb)}`.
 - `renderDiagram(el, diagram, opts)` → handle `{showValue(ang), pulse(ang), arcEl(ang), …}` —
