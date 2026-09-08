@@ -1,5 +1,5 @@
 
-  COVERAGE MATRIX (content hash f928a701eaff, tier full)
+  COVERAGE MATRIX (content hash 2ff58d073cfa, tier full)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
   click-safety  112     113

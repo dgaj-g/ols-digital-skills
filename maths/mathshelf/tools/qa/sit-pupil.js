@@ -170,7 +170,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
        that cannot finish proves nothing, so the page is recycled between
        exercises. It costs a second each and it is why the walk completes. */
     if (si > 0) {
-      await page.goto(BASE + '?class=demo&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
+      await page.goto(BASE + '?class=demo&nointro&reserve=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
       await W.settle(page);
       await page.evaluate(() => document.getElementById('cover-open').click());
       await W.settle(page);
@@ -388,7 +388,7 @@ async function walkBook(page, book, width, sidecar, transcript) {
           return table[(wrong ? 'wrong:' : 'right:') + bk + ':' + qid] || null;
         };
       }, attempts);
-      await page.goto(BASE + '?class=demo&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
+      await page.goto(BASE + '?class=demo&nointro&reserve=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
       await W.settle(page);
       const sidecar = { walker: 'sit-pupil', scope: book, width, tier: 'preview', contentHash: bookHash(A.APP, book), when: new Date().toISOString(), states: [], consoleErrors: 0 };
       const transcript = [];

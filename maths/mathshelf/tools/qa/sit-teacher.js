@@ -366,7 +366,7 @@ async function walk(page, width, projector, sidecar, transcript) {
 
   for (const pass of passes) {
     const page = await B.newPage(browser, { width: pass.width, height: pass.height });
-    await page.goto(BASE + '?class=demo&nointro', { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.goto(BASE + '?class=demo&nointro&reserve=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
     await W.settle(page);
     const sidecar = { walker: 'sit-teacher', scope: 'teacher', width: pass.width, projector: !!pass.projector,
       tier: 'preview', contentHash: contentHash(A.APP), when: new Date().toISOString(), states: [], consoleErrors: 0 };

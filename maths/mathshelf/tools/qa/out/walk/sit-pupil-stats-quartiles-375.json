@@ -3,8 +3,8 @@
  "scope": "stats-quartiles",
  "width": 375,
  "tier": "preview",
- "contentHash": "1ebf664ee414",
- "when": "2026-09-08T07:44:01.158Z",
+ "contentHash": "efd4089d9249",
+ "when": "2026-09-08T07:51:56.320Z",
  "states": [
   {
    "surface": "cover",
@@ -2550,11 +2550,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 0,
-    "readability": 18
+    "readability": 19
    }
   },
   {
@@ -2576,7 +2576,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    }
   },
   {
@@ -2603,7 +2603,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 23
+    "readability": 22
    }
   },
   {
@@ -2630,7 +2630,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 23
+    "readability": 22
    }
   },
   {
@@ -8976,7 +8976,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 12
    }
   },
   {
@@ -9027,7 +9027,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 12
    }
   },
   {
@@ -9079,7 +9079,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 12
    }
   },
   {
@@ -9131,7 +9131,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 12
    }
   },
   {
@@ -9183,7 +9183,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 12
    }
   },
   {
@@ -9234,7 +9234,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 12
    }
   },
   {
@@ -9284,7 +9284,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 14
+    "readability": 13
    }
   },
   {
@@ -9588,11 +9588,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 14
    }
   },
   {
@@ -9614,7 +9614,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "FAIL"
+    "readability": "PASS"
    }
   },
   {
