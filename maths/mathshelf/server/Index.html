@@ -795,7 +795,12 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
 }
 .protractor-tool { cursor: grab; }
 .protractor-tool:active { cursor: grabbing; }
-.prot-num { font-family: var(--f-stationery); font-size: 10px; fill: var(--teal); font-weight: 600; transition: fill 130ms ease, font-weight 130ms ease; paint-order: stroke; stroke: rgba(255,254,250,0.85); stroke-width: 1.6; }
+/* THE SCALE NUMBERS ARE READ, SO THEY OWE 4.5. They were drawn in the livery
+   teal and measured 4.41-4.46 against the protractor's own face - under the
+   floor by a hair, and invisible to the law until the sampler learned that an
+   SVG glyph is painted with its fill and not its colour (8 Sept 2026). One step
+   darker clears it; the livery itself is untouched. */
+.prot-num { font-family: var(--f-stationery); font-size: 10px; fill: #0B6076; font-weight: 600; transition: fill 130ms ease, font-weight 130ms ease; paint-order: stroke; stroke: rgba(255,254,250,0.85); stroke-width: 1.6; }
 .prot-num.inner { fill: #8A5A2B; }
 .prot-num.end { font-size: 8.5px; }
 /* a number an angle arm crosses: emphasise by COLOUR + weight + halo only \2014  never by
@@ -4413,6 +4418,19 @@ window.OLS_TRANSPORT = {
 
   /* ---------- the tally labels a pupil and a teacher read ---------- */
 
+  /* WHAT THE SECOND BAND IS CALLED DEPENDS ON WHAT WAS ASKED. A list question
+     that asks only for the two quartiles carries its accuracy mark on the LAST
+     cut, not on an interquartile range nobody asked for - and the tally was
+     printing "Interquartile range 1 of 1" on a question with no IQR in it
+     (separated read, 8 Sept 2026). The band's name is the name of the unit
+     that carries it. */
+  function mkLabelsFor(q, units) {
+    var labs = MK_LABELS[q && q.kind] || ['Working', 'Answer'];
+    if (!q || q.kind !== 'qlist' || !units) return labs;
+    var acc = units.filter(function (u) { return u.band === 'accuracy'; })[0];
+    return [labs[0], acc ? acc.label : labs[1]];
+  }
+
   var MK_LABELS = {
     qlist: ['Quartiles', 'Interquartile range'],
     cftable: ['Running totals', 'Total'],
@@ -4554,7 +4572,7 @@ window.OLS_TRANSPORT = {
       dx: dx,
       mk: mk,
       mkMax: [marks[0] || 0, marks[1] || 0],
-      mkLabels: MK_LABELS[q.kind] || ['Working', 'Answer'],
+      mkLabels: mkLabelsFor(q, units),
       /* this book writes its tally in words: "Quartiles 3 of 3", never "3/3" */
       mkOf: true
     };
@@ -7545,7 +7563,7 @@ function statsBoard(q, wrong) {
             claims: [
               { text: 'George\u2019s survey tells him how much people generally spend on coffee.', fair: false,
                 why: 'SMALL', alsoWhy: ['BIASED'] },
-              { text: 'Posting the questionnaire to 100 people across the country will tell Mrs Martin what food to serve in her local restaurant.', fair: false,
+              { text: 'Posting the questionnaire to 100 people across the country will tell Mrs Martin what food people in her town like.', fair: false,
                 why: 'WRONG_POP' },
               { text: 'Charlie\u2019s survey tells him what all students at his school think about school.', fair: false,
                 why: 'WRONG_POP', alsoWhy: ['SMALL', 'BIASED'] }
@@ -8090,6 +8108,18 @@ function statsBoard(q, wrong) {
       var sc = st.lastScale || 1;
       var layerW = htmlLayer.clientWidth || (st.geo.vbw * sc);
       var layerH = htmlLayer.clientHeight || (st.geo.vbh * sc);
+      /* A LABEL WITH NO BOARD UNDER IT IS NOT A LABEL. On the exercise page the
+         boards below the fold are laid out after their labels are made, so the
+         layer is momentarily nothing at all - and a label placed on a layer of
+         no height sits at the collapsed board's origin, which on a phone is on
+         top of the next question's prompt. That is what the overlap law kept
+         reporting on book-contents. It waits for its board: relayout() runs
+         again when the host has a size, and puts it back. */
+      if (!(layerH > 8) || !(layerW > 8)) {
+        for (var h = 0; h < ids.length; h++) st.labels[ids[h]].el.hidden = true;
+        return;
+      }
+      for (var v = 0; v < ids.length; v++) st.labels[ids[v]].el.hidden = false;
       var i, recs = [];
       for (i = 0; i < ids.length; i++) {
         var rec = st.labels[ids[i]];
@@ -9422,7 +9452,7 @@ function statsBoard(q, wrong) {
       fail: ['We\u2019ll build one of these together in class.', 'Watch the worked example again, then try it in class.']
     },
     judge: {
-      perfect: ['You weighed the evidence, not the claim.', 'Fair reading of what the sample can say.', 'Good \u2014 you said why.'],
+      perfect: ['You weighed the evidence, not the claim.', 'Fair reading of what the figures can say.', 'Good \u2014 you said why.'],
       fail: ['We\u2019ll talk this one through in class.', 'Watch the worked example again \u2014 think about who was left out.']
     },
     /* IN ORDER FIRST, THEN THE CUTS - a question answered by putting values in

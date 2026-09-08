@@ -108,11 +108,53 @@ I judged `_stats-quartiles.md` — the pupil transcript of the Handling Data boo
 | PASS | line 117 — My marks screen | Handling Data · marks so far | Plain heading. |
 | REWRITE | line 118 — end-of-book summary | Handling Data · marks so far 86 / 94 Nearly there — look back at the crosses. 30 of 33 questions checked · your whole book is on your teacher's copy | The score and the "your teacher's copy" reassurance are fine and true to the screen. But "the crosses" is not vocabulary this screen has given her anywhere — §1's own named screen vocabulary is "the marks drawn beside her work," never "crosses," and nothing on any prior screen tells her what a cross looks like or where it sits. Where I am unsure, the rule is FAIL. → "Nearly there — look back at the ones marked wrong." |
 
+## The read-first candidate prompts, judged by path (DFM 270 / §7)
+
+Every prompt (question stem) in this transcript, judged in its own row and named by its full path so the pack can match it — including all eighteen the language gate flagged as read-first candidates, starting with `stats-quartiles > s1 > q2 > prompt`.
+
+| verdict | where it is (path + line) | the sentence | why |
+|---|---|---|---|
+| REWRITE | stats-quartiles > s1 > q1 > prompt — line 18 | Seven students sat a test. Here are their results: 58%, 61%, 64%, 66%, 67%, 68%, 70%. Find the median, the lower quartile, the upper quartile and the interquartile range. [4 marks] | Same fault as the line-18 row above: asks for four named statistics she has not yet met in plain words. → "Seven students sat a test. Here are their results: 58%, 61%, 64%, 66%, 67%, 68%, 70%. Find the median (the middle value), the lower quartile and the upper quartile (the values a quarter and three-quarters of the way through the list), and the interquartile range (the gap between them). [4 marks]" |
+| PASS | stats-quartiles > s1 > q2 > prompt — line 20 | The speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. Find the median, the lower quartile, the upper quartile and the interquartile range. [4 marks] | Real, anchored scenario (a speed camera, real mph values); the terms are established from q1's fix; one clear ask. |
+| PASS | stats-quartiles > s1 > q3 > prompt — line 22 | 11 people took part in a puzzle. The times they took, in minutes, are shown below: 8, 3, 7, 8, 9, 13, 4, 9, 9, 10, 9. Find the lower quartile and the upper quartile. [2 marks] | The sentence itself is clean — anchored, one clear ask (only the two named quartiles). The fault at this item lives downstream, in the marks tally (line 23), which shows a field for a value never asked for here; that is a wiring fault, not a wording one, and is judged separately at line 22–23 above and in the per-item block for this question. |
+| PASS | stats-quartiles > s1 > q4 > prompt — line 24 | Here are the ages of 15 people: 24, 26, 29, 30, 31, 36, 36, 37, 39, 40, 43, 48, 50, 51, 55. Work out the interquartile range of the ages. [2 marks] | Anchored, clear, single asked-for value. |
+| PASS | stats-quartiles > s1 > q5 > prompt — line 26 | 11 students guessed the number of jelly beans in a jar. Here are their guesses: 400, 673, 850, 900, 1001, 1200, 1222, 1280, 1350, 1371, 2600. Work out the interquartile range of the guesses. [2 marks] | Anchored, believable, one clear ask. |
+| PASS | stats-quartiles > s1 > q6 > prompt — line 28 | The ages of 11 trees, from youngest to oldest, are shown below. Two are missing: [ ], 26, 30, 43, 49, 49, 55, 58, [ ], 76, 90. The range of the ages is 73 years. The interquartile range of the ages is 30 years. Find the two missing ages. [2 marks] | A real reverse problem, self-consistent under one ordering; long but every clause earns its place. |
+| PASS | stats-quartiles > s1 > q7 > prompt — line 30 | Seven judges scored a joke out of 10. The scores, from lowest to highest, are shown below. Some are missing: 1.1, [ ], 1.8, [ ], 2.7, 5.1, 6.5. The median score is half the interquartile range. The interquartile range is two thirds of the range. Find the two missing scores. [2 marks] | Anchored, light scenario; two unknowns, two stated relationships — solvable, nothing telegraphed. |
+| PASS | stats-quartiles > s1 > q8 > prompt — line 32 | Decide whether the statement about spread is fair. These wages were listed: £202, £212, £221, £242, £250, £250, £260, £284. A wage of £110 was left off. Say what happens to each average and to the range when it is added. [5 marks] | The stem itself is fine — a real wage list, a fair judgement task, action stated up front. The fault at this item lives in the closing feedback (line 38), which borrows "the sample" from Exercise 6's vocabulary; that is judged separately at line 32–38 above and in the per-item block for this question. |
+| PASS | stats-quartiles > s2 > q9 > prompt — line 43 | The times that 100 students spent doing homework during one week are grouped below. Complete the cumulative frequency column. [4 marks] | Anchored, real number of students, action stated clearly; term now established via the Exercise 2 WALT fix. |
+| PASS | stats-quartiles > s2 > q10 > prompt — line 45 | The marks in an examination, out of 80, are grouped below for 112 candidates. Complete the cumulative frequency column. [4 marks] | Anchored, real, clear action. |
+| PASS | stats-quartiles > s2 > q11 > prompt — line 47 | In a survey, people were asked to state their weekly wage. The results for 184 people are grouped below. The first two rows have already been filled in. Complete the rest of the cumulative frequency column. [4 marks] | Clean prose, real numbers, action first; the honest statement that the first two rows are already done is a fair scaffold, not a giveaway. |
+| PASS | stats-quartiles > s3 > q12 > prompt — line 51 | The times that 100 students spent doing homework during one week are shown in the table below. Draw the cumulative frequency graph for this information. [3 marks] | Action-first, anchored, continues the same dataset for good continuity. |
+| PASS | stats-quartiles > s3 > q13 > prompt — line 53 | The marks in an examination, out of 80, are shown in the table below for 112 candidates. Draw the cumulative frequency graph for this information. [2 marks] | Anchored, clear. |
+| PASS | stats-quartiles > s3 > q14 > prompt — line 55 | In a survey, 184 people stated their weekly wage, grouped below. Draw the cumulative frequency graph for this information. [3 marks] | Anchored, clear. |
+| PASS | stats-quartiles > s4 > q15 > prompt — line 60 | The cumulative frequency graph shows the marks of 112 candidates in an examination. Use the graph to estimate the median and the interquartile range. The pass mark is 36. What percentage of candidates passed? [5 marks] | Anchored, real pass mark; three separate reads asked for in plain order; doesn't leak the method — "the rule" is introduced in the line straight after, not in this stem. |
+| PASS | stats-quartiles > s4 > q16 > prompt — line 63 | The cumulative frequency graph shows the weekly wage of 184 people. Use the graph to estimate the median. Then estimate the percentage of people who earn more than £640 per week. [3 marks] | Anchored, clear two-part ask, action ordered with "Then." |
+| PASS | stats-quartiles > s4 > q17 > prompt — line 65 | The cumulative frequency graph shows the distances thrown by 50 competitors in a javelin competition. Use the graph to estimate the median distance thrown and the interquartile range. [3 marks] | Anchored, real (javelin, competitors), clear. |
+| PASS | stats-quartiles > s4 > q18 > prompt — line 67 | The cumulative frequency graph shows the heights of 50 boys. Use the graph to estimate how many boys are taller than 167 cm. [3 marks] | Anchored, clear single ask. No completion feedback follows this stem anywhere in the transcript — noted in the per-item block, not a wording fault. |
+| PASS | stats-quartiles > s5 > q19 > prompt — line 71 | The table shows some information about the heights, in cm, of some plants. Draw a box plot for this information. [2 marks] | Anchored, real, action first. |
+| PASS | stats-quartiles > s5 > q20 > prompt — line 74 | The table shows some information about the weights, in grams, of some potatoes: range 101 g, lower quartile 110 g, median 132 g, upper quartile 162 g, maximum 185 g. Work out the lowest weight, then draw a box plot for this information. [2 marks] | Anchored; action-first structure (work it out, THEN draw) is exactly what §4 asks for. |
+| PASS | stats-quartiles > s5 > q21 > prompt — line 76 | The times, in seconds, of 15 students running a race are shown below: 52, 54, 54, 55, 58, 58, 59, 60, 60, 61, 61, 64, 67, 70, 75. Draw a box plot for this information. [2 marks] | Anchored, real, a raw list she must reduce herself. |
+| PASS | stats-quartiles > s5 > q22 > prompt — line 78 | Some girls did a sponsored swim to raise money for charity. The table shows the amounts of money they raised: least £10, lower quartile £16, median £25, upper quartile £42, greatest £45. Draw a box plot for this information. [2 marks] | The checklist's own approved naming-in-a-scenario exemplar, word for word (§3b). No feedback follows this stem — noted in the per-item block. |
+| REWRITE | stats-quartiles > s5 > q23 > prompt — line 79 | Compare the amounts of money the girls raised with the amounts of money the boys raised in the sponsored swim. [2 marks] | The boys' figures are never given anywhere in this transcript — only the girls' five-figure summary (q22) ever appears. She cannot picture the noun she is asked to compare against — §2 test 2 fails outright. → "Here are the amounts the boys raised, shown as a box plot next to the girls'. Compare the amounts the girls raised with the amounts the boys raised in the sponsored swim. [2 marks]" |
+| PASS | stats-quartiles > s5 > q24 > prompt — line 83 | The box plots show the age distributions of two cities, A and B. Decide which city has the greater interquartile range, and which city's people are generally older. [2 marks] | Properly anchored — "The box plots show..." tells her plainly that two diagrams are in front of her, exactly what q23 was missing. |
+| PASS | stats-quartiles > s5 > q25 > prompt — line 87 | The box plots show the age distributions of two cities, A and B. Complete the sentence: 75% of the people in city A are aged over ___. [1 mark] | Properly anchored, reuses the same established box plots, one defensible answer under the standard convention. |
+| PASS | stats-quartiles > s5 > q26 > prompt — line 89 | The cumulative frequency graph shows the time that 100 students spent doing homework during one week. Use the graph to estimate the median. The least time was 2 hours and the greatest time was 24 hours — draw a box plot for this information. [4 marks] | Anchored, continues the same dataset from earlier exercises; long, but each clause is load-bearing — it is giving her the two extra numbers she needs for the whiskers. |
+| PASS | stats-quartiles > s5 > q27 > prompt — line 91 | The table shows information about the times, in minutes, that some boys took to complete a puzzle: interquartile range 8, minimum 12, median 18, upper quartile 23, maximum 29. Work out the lower quartile. [1 mark] | Anchored, single well-targeted deduction from the given summary statistics. |
+| PASS | stats-quartiles > s5 > q28 > prompt — line 93 | In a group of 11 pupils, the number of days absent from school was recorded: 12, 6, 5, 2, 8, 2, 3, 11, 4, 10, 7. Draw a box plot for this data. [4 marks] | Anchored, believable, a raw list she must reduce herself. |
+| PASS | stats-quartiles > s6 > q29 > prompt — line 98 | Jack is a pupil at Northfield Boys School. He wants to know how many times a month the people in his town go to a football match, so he asks 600 pupils in his school. Decide whether his survey gives a fair picture of the town, and why. [2 marks] | Anchored, named; "He" points cleanly back to "Jack" on the clause before; uses "survey," not the jargon word "sample." |
+| PASS | stats-quartiles > s6 > q30 > prompt — line 101 | A questionnaire about mobile phone use was given to 20 people who left a supermarket between 10 am and 11 am on a Monday morning. Decide whether this survey gives a fair picture of everyone, and why. [2 marks] | Anchored, concrete (a place, a time window). |
+| PASS | stats-quartiles > s6 > q31 > prompt — line 104 | Jean and Joyce are both pupils at Eastwood Girls High School. They want to know how many times a month, on average, people in their town go to church. Jean asks 300 pupils in her school; Joyce stands outside her local church and asks 300 people on their way in. Decide whether each survey gives a fair picture of the town, and why. [4 marks] | Anchored throughout; "They" points to "Jean and Joyce," each later "her" points to the named girl just before it. |
+| PASS | stats-quartiles > s6 > q32 > prompt — line 108 | Three people each tried to find something out from a small sample. George asked 10 people in his class how much they spend on coffee. Mrs Martin posted a questionnaire to 100 people chosen at random across the whole country to find out what food people in her town like. Charlie asked 10 Year 7 students what they think of school. Decide whether each survey gives a fair picture, and why. [5 marks] | Long, but each of the three named scenarios is anchored and self-contained; "sample" is by now established from the Exercise 6 WALT. |
+| PASS | stats-quartiles > s6 > q33 > prompt — line 113 | Charlie asked 10 Year 7 students what they think about school. Decide whether each of these conclusions is fair to draw from his survey. [2 marks] | Anchored; "his" points to "Charlie," restated by name on the same line, so no ambiguity at all. No feedback follows this stem — noted in the per-item block. |
+
+---
+
 ## The per-item blocks
 
 ### stats-quartiles > s1 (Exercise 1: Quartiles and the interquartile range from a list)
 
-**q1 — line 18, seven students' test scores, [4 marks]**
+**stats-quartiles > s1 > q1 — line 18, seven students' test scores, [4 marks]**
 1. One defensible answer: yes, an odd-sized (7) ordered set has unambiguous quartile positions under one convention.
 2. Anchored: yes, a class test, believable percentages.
 3. Measures anything: yes, it's the opening item — establishes the method cold.
@@ -125,7 +167,7 @@ I judged `_stats-quartiles.md` — the pupil transcript of the Handling Data boo
 10. Wrong-state teaches without giving away: not verifiable from this attempt.
 Pronoun check: no scenario pronouns; data-only stem. No fault.
 
-**q2 — line 20, 11 cars' speeds, [4 marks]**
+**stats-quartiles > s1 > q2 — line 20, 11 cars' speeds, [4 marks]**
 1. One answer: yes, 11 sorted values, clean positions.
 2. Anchored: yes — a speed camera, real mph values.
 3. Measures anything: yes, repeats the method with a different dataset shape (11 not 7).
@@ -138,7 +180,7 @@ Pronoun check: no scenario pronouns; data-only stem. No fault.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
-**q3 — line 22, 11 puzzle-times, [2 marks]** — **the sharpest fault in the book**
+**stats-quartiles > s1 > q3 — line 22, 11 puzzle-times, [2 marks]** — **the sharpest fault in the book**
 1. One answer: yes for the two quantities actually asked (LQ, UQ).
 2. Anchored: yes, a puzzle, real times in minutes.
 3. Measures anything: yes.
@@ -151,7 +193,7 @@ Pronoun check: none. No fault.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault. **Fix: correct the tally to "Lower quartile 1 of 1 · Upper quartile 1 of 1" with no interquartile-range field.**
 
-**q4 — line 24, 15 people's ages, [2 marks]**
+**stats-quartiles > s1 > q4 — line 24, 15 people's ages, [2 marks]**
 1. One answer: yes.
 2. Anchored: yes, real ages.
 3. Measures anything: yes.
@@ -164,7 +206,7 @@ Pronoun check: none. No fault. **Fix: correct the tally to "Lower quartile 1 of 
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
-**q5 — line 26, 11 students' jelly-bean guesses, [2 marks]**
+**stats-quartiles > s1 > q5 — line 26, 11 students' jelly-bean guesses, [2 marks]**
 1. One answer: yes.
 2. Anchored: yes, a believable classroom guessing game, with one clear extreme value (2600) that gives the item some bite.
 3. Measures anything: yes — the outlier makes this a slightly sharper test than q4.
@@ -177,7 +219,7 @@ Pronoun check: none. No fault.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
-**q6 — line 28, 11 trees' ages, two missing, [2 marks]**
+**stats-quartiles > s1 > q6 — line 28, 11 trees' ages, two missing, [2 marks]**
 1. One answer: yes — range (73) and IQR (30) between them pin down both missing values under one consistent ordering.
 2. Anchored: yes, tree ages.
 3. Measures anything: yes — this is a proper reverse-engineering item, harder and more discriminating than q1–q5.
@@ -190,7 +232,7 @@ Pronoun check: none. No fault.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
-**q7 — line 30, seven judges' joke scores, two missing, [2 marks]**
+**stats-quartiles > s1 > q7 — line 30, seven judges' joke scores, two missing, [2 marks]**
 1. One answer: yes, given "median = half the IQR" and "IQR = two-thirds the range" as two equations in two unknowns.
 2. Anchored: yes, a joke competition, light and plausible.
 3. Measures anything: yes — genuinely the hardest item in the exercise (algebraic relationships between statistics, not just read-and-order).
@@ -203,7 +245,7 @@ Pronoun check: none. No fault.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
-**q8 — lines 32–38, wages with an outlier added, [5 marks]**
+**stats-quartiles > s1 > q8 — lines 32–38, wages with an outlier added, [5 marks]**
 1. One answer: yes for each of the four direction-of-change judgements and the range-vs-IQR claim, given the fixed dataset.
 2. Anchored: yes, real wage figures in pounds.
 3. Measures anything: yes — tests whether she knows how mean, median, mode and range each respond to one new low value, a genuinely different skill from q1–q7.
@@ -218,7 +260,7 @@ Pronoun check: none. No fault other than the feedback mismatch already flagged.
 
 ### stats-quartiles > s2 (Exercise 2: Cumulative frequency tables)
 
-**q1 — line 43, 100 students' homework times, [4 marks]**
+**stats-quartiles > s2 > q9 — line 43, 100 students' homework times, [4 marks]**
 1. One answer: yes, mechanical running-total completion.
 2. Anchored: yes.
 3. Measures anything: yes, opens the new skill cleanly.
@@ -231,8 +273,8 @@ Pronoun check: none. No fault other than the feedback mismatch already flagged.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
-**q2 — line 45, 112 candidates' exam marks, [4 marks]**
-1–3, 5–6: as q1, sound.
+**stats-quartiles > s2 > q10 — line 45, 112 candidates' exam marks, [4 marks]**
+1–3, 5–6: as q9, sound.
 4. Hand-over: no.
 7. Misconceptions: not verifiable.
 8. Marks fair: plausible.
@@ -240,24 +282,24 @@ Pronoun check: none. No fault.
 10. Not verifiable.
 Pronoun check: none. No fault.
 
-**q3 — line 47, 184 people's wages, [4 marks]**
+**stats-quartiles > s2 > q11 — line 47, 184 people's wages, [4 marks]**
 1. One answer: yes, mechanical.
 2. Anchored: yes.
-3. Measures anything: a little less than q1/q2, since "the first two rows have already been filled in" removes some of the task.
+3. Measures anything: a little less than q9/q10, since "the first two rows have already been filled in" removes some of the task.
 4. Hand-over: partially — starting rows are pre-filled, which is stated openly in the stem rather than hidden, so this is honest rather than a giveaway.
 5. Point: finish a partly-started running total.
 6. Telegraph: none beyond the honest pre-fill.
 7. Misconceptions: not verifiable.
 8. Marks fair: not verifiable — **no completion feedback appears for this question anywhere in the transcript.**
-9. Feedback fits: **cannot assess — there is none.** Either she never checked this question, or the app failed to show a result. Given the book's own summary later says "30 of 33 questions checked," at least this one may simply be one of the three left unattempted — but that leaves three unaccounted for among four candidate gaps (this item, s4 q4, s5 q4, s6 q5), which is worth checking against the real session rather than assumed.
+9. Feedback fits: **cannot assess — there is none.** Either she never checked this question, or the app failed to show a result. Given the book's own summary later says "30 of 33 questions checked," at least this one may simply be one of the three left unattempted — but that leaves three unaccounted for among four candidate gaps (this item, s4 q18, s5 q22, s6 q33), which is worth checking against the real session rather than assumed.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
 ### stats-quartiles > s3 (Exercise 3: Drawing the cumulative frequency curve)
 
-**q1 — line 51, 100 students' homework times, curve, [3 marks]**
+**stats-quartiles > s3 > q12 — line 51, 100 students' homework times, curve, [3 marks]**
 1. One answer: yes, up to normal plotting tolerance.
-2. Anchored: yes, continues q1's dataset from Exercise 2 — good continuity.
+2. Anchored: yes, continues q9's dataset from Exercise 2 — good continuity.
 3. Measures anything: yes, new skill (plotting + curve).
 4. Hand-over: no.
 5. Point: plot cumulative frequency points and draw a curve through them.
@@ -268,15 +310,15 @@ Pronoun check: none. No fault.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
-**q2 — line 53, 112 candidates' marks, curve, [2 marks]**
-As q1, sound throughout; "Points 1 of 1 · Curve 1 of 1" matches [2 marks]; feedback "Every point where it belongs" fits. No fault.
+**stats-quartiles > s3 > q13 — line 53, 112 candidates' marks, curve, [2 marks]**
+As q12, sound throughout; "Points 1 of 1 · Curve 1 of 1" matches [2 marks]; feedback "Every point where it belongs" fits. No fault.
 
-**q3 — line 55, 184 people's wages, curve, [3 marks]**
-As q1, sound throughout; "Points 2 of 2 · Curve 1 of 1" matches [3 marks]; feedback "A smooth curve through every point" fits. No fault.
+**stats-quartiles > s3 > q14 — line 55, 184 people's wages, curve, [3 marks]**
+As q12, sound throughout; "Points 2 of 2 · Curve 1 of 1" matches [3 marks]; feedback "A smooth curve through every point" fits. No fault.
 
 ### stats-quartiles > s4 (Exercise 4: Reading the curve — median, quartiles, IQR)
 
-**q1 — line 60, 112 candidates' exam graph, median/IQR/pass %, [5 marks]**
+**stats-quartiles > s4 > q15 — line 60, 112 candidates' exam graph, median/IQR/pass %, [5 marks]**
 1. One answer: yes, within normal reading tolerance for an estimate from a curve.
 2. Anchored: yes, real pass mark (36), real candidate count.
 3. Measures anything: yes — three separate reads off one curve (median, IQR, then a percentage-passed calculation), genuinely the most demanding item so far.
@@ -289,31 +331,31 @@ As q1, sound throughout; "Points 2 of 2 · Curve 1 of 1" matches [3 marks]; feed
 10. Wrong-state: not verifiable, correct attempt shown.
 Pronoun check: none. No fault.
 
-**q2 — line 63, 184 people's wages, median + %>£640, [3 marks]**
-As q1's pattern; anchored, sound; "Readings 1 of 1 · Values 2 of 2" matches [3 marks]; feedback "You put the rule at the right height and read it carefully" fits. No fault.
+**stats-quartiles > s4 > q16 — line 63, 184 people's wages, median + %>£640, [3 marks]**
+As q15's pattern; anchored, sound; "Readings 1 of 1 · Values 2 of 2" matches [3 marks]; feedback "You put the rule at the right height and read it carefully" fits. No fault.
 
-**q3 — line 65, 50 javelin competitors, median distance + IQR, [3 marks]**
+**stats-quartiles > s4 > q17 — line 65, 50 javelin competitors, median distance + IQR, [3 marks]**
 1–6 as above, sound.
 9. Feedback fits: **this attempt is wrong or partial** — "Readings 0 of 1 · Values 2 of 2" carries no praise sentence, which is correct behaviour (never force-praise a wrong attempt) rather than a fault.
 10. Wrong-state teaches without giving away: cannot confirm from text alone whether true positions appear only after a second attempt, or whether the film is one press away — this needs checking against the running app, not just the transcript.
 Pronoun check: none. No fault.
 
-**q4 — line 67, 50 boys' heights, how many taller than 167cm, [3 marks]**
+**stats-quartiles > s4 > q18 — line 67, 50 boys' heights, how many taller than 167cm, [3 marks]**
 1. One answer: yes.
 2. Anchored: yes, real heights.
-3. Measures anything: yes — this is a "read a count from the curve" item, a different final step from q1–q3's median/IQR reads.
+3. Measures anything: yes — this is a "read a count from the curve" item, a different final step from q15–q17's median/IQR reads.
 4. Hand-over: no.
 5. Point: read the cumulative frequency at 167cm and work out how many are above it.
 6. Telegraph: none.
 7. Misconceptions: not verifiable.
-8. Marks fair: not verifiable — **no completion feedback appears for this question anywhere in the transcript**, same gap as s2 q3.
+8. Marks fair: not verifiable — **no completion feedback appears for this question anywhere in the transcript**, same gap as s2 q11.
 9. Feedback fits: cannot assess — none shown.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
 ### stats-quartiles > s5 (Exercise 5: Box plots — drawing and comparing)
 
-**q1 — line 71, plants' heights, [2 marks]**
+**stats-quartiles > s5 > q19 — line 71, plants' heights, [2 marks]**
 1. One answer: yes.
 2. Anchored: yes.
 3. Measures anything: yes, opens the new skill.
@@ -326,21 +368,21 @@ Pronoun check: none. No fault.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
-**q2 — line 74, potatoes' weights, find lowest weight then box plot, [2 marks]**
+**stats-quartiles > s5 > q20 — line 74, potatoes' weights, find lowest weight then box plot, [2 marks]**
 1. One answer: yes — lowest weight = maximum − range, unambiguous.
 2. Anchored: yes.
-3. Measures anything: yes — adds a calculation step (find the minimum) before the plotting step, more demanding than q1.
+3. Measures anything: yes — adds a calculation step (find the minimum) before the plotting step, more demanding than q19.
 4. Hand-over: no.
 5. Point: derive the missing minimum, then plot all five markers.
 6. Telegraph: none — doesn't hint "subtract the range from the maximum."
 7. Misconceptions: not verifiable.
-8. Marks fair: plausible for 2 marks (though this genuinely covers two skills — calculating and plotting — for the same mark total as q1's plotting-only task; worth a second look at whether 2 marks is enough here).
+8. Marks fair: plausible for 2 marks (though this genuinely covers two skills — calculating and plotting — for the same mark total as q19's plotting-only task; worth a second look at whether 2 marks is enough here).
 9. Feedback fits what she did: undermined by the sentence-level fault (line 75) — "the box says what it should" personifies the diagram rather than describing what she did.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault beyond the flagged sentence.
 
-**q3 — line 76, 15 students' race times, [2 marks]**
-1. One answer: yes, a raw ordered list rather than given summary statistics — she has to find the five values herself first, a step up from q1/q2.
+**stats-quartiles > s5 > q21 — line 76, 15 students' race times, [2 marks]**
+1. One answer: yes, a raw ordered list rather than given summary statistics — she has to find the five values herself first, a step up from q19/q20.
 2. Anchored: yes.
 3. Measures anything: yes.
 4. Hand-over: no.
@@ -352,7 +394,7 @@ Pronoun check: none. No fault beyond the flagged sentence.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
-**q4 — line 78, girls' sponsored swim, box plot, [2 marks]**
+**stats-quartiles > s5 > q22 — line 78, girls' sponsored swim, box plot, [2 marks]**
 1. One answer: yes, given summary statistics.
 2. Anchored: yes — the approved naming exemplar itself.
 3. Measures anything: yes.
@@ -360,12 +402,12 @@ Pronoun check: none. No fault.
 5. Point: plot a box plot from given summary statistics.
 6. Telegraph: none.
 7. Misconceptions: not verifiable.
-8. Marks fair: not verifiable — **no completion feedback appears for this specific question**; the transcript moves straight to q5's stem. Since q5 gets its own, differently-shaped tally ("Average/Spread," not "Box/Whiskers"), q4's own mark for the box plot itself appears to go unreported.
+8. Marks fair: not verifiable — **no completion feedback appears for this specific question**; the transcript moves straight to q23's stem. Since q23 gets its own, differently-shaped tally ("Average/Spread," not "Box/Whiskers"), q22's own mark for the box plot itself appears to go unreported.
 9. Feedback fits: cannot assess — none shown for this question specifically.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault on the sentence itself.
 
-**q5 — line 79, compare girls' and boys' amounts raised, [2 marks]**
+**stats-quartiles > s5 > q23 — line 79, compare girls' and boys' amounts raised, [2 marks]**
 1. One answer: not assessable as written — see below.
 2. Anchored: **no** — see the sentence table, line 79. The boys' figures are never given anywhere in this transcript, so there is nothing on screen for her to compare the girls' figures against, in words at least.
 3. Measures anything: cannot say — the comparison itself (which group raised more, which was more spread out) is a fine skill to test, but not while one side of the comparison is invisible.
@@ -378,7 +420,7 @@ Pronoun check: none. No fault on the sentence itself.
 10. Wrong-state: not verifiable.
 Pronoun check: none. **Fault: the stem must tell her the boys' box plot is there before asking her to use it — see the fix at line 79.**
 
-**q6 — line 83, two cities A and B, IQR + which is older, [2 marks]**
+**stats-quartiles > s5 > q24 — line 83, two cities A and B, IQR + which is older, [2 marks]**
 1. One answer: yes, reading two box plots.
 2. Anchored: yes, and properly so — "The box plots show..." establishes both diagrams are present.
 3. Measures anything: yes — two separate judgements (spread, and central tendency) from the same pair of diagrams.
@@ -391,7 +433,7 @@ Pronoun check: none. **Fault: the stem must tell her the boys' box plot is there
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
-**q7 — line 87, city A, 75% aged over ___, [1 mark]**
+**stats-quartiles > s5 > q25 — line 87, city A, 75% aged over ___, [1 mark]**
 1. One answer: yes, the lower quartile of city A — defensible under the standard convention.
 2. Anchored: yes, reuses the same two established box plots.
 3. Measures anything: a single, well-targeted reading, fine for 1 mark.
@@ -404,7 +446,7 @@ Pronoun check: none. No fault.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault beyond the flagged sentence.
 
-**q8 — line 89, 100 students' homework, median + box plot with given min/max, [4 marks]**
+**stats-quartiles > s5 > q26 — line 89, 100 students' homework, median + box plot with given min/max, [4 marks]**
 1. One answer: yes.
 2. Anchored: yes, continues the same dataset from Exercises 2–4 — good continuity across the book.
 3. Measures anything: yes — combines a curve-reading step (median) with a plotting step (box plot), pulling together two skills from earlier in the book.
@@ -413,12 +455,12 @@ Pronoun check: none. No fault beyond the flagged sentence.
 6. Telegraph: no.
 7. Misconceptions: not verifiable.
 8. Marks fair: "Box 2 of 2 · Whiskers 2 of 2" (4 marks) is plausible.
-9. Feedback fits what she did: undermined by the sentence-level fault (line 90) — same personification as q2.
+9. Feedback fits what she did: undermined by the sentence-level fault (line 90) — same personification as q20.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault beyond the flagged sentence.
 
-**q9 — line 91, boys' puzzle times, find lower quartile, [1 mark]**
-1. One answer: yes, lower quartile = median − IQR/2... actually deducible from the other four given statistics under one consistent five-number summary.
+**stats-quartiles > s5 > q27 — line 91, boys' puzzle times, find lower quartile, [1 mark]**
+1. One answer: yes, lower quartile deducible from the other four given statistics under one consistent five-number summary.
 2. Anchored: yes.
 3. Measures anything: a single well-targeted deduction, fine for 1 mark.
 4. Hand-over: no.
@@ -430,10 +472,10 @@ Pronoun check: none. No fault beyond the flagged sentence.
 10. Wrong-state: not verifiable.
 Pronoun check: none. No fault.
 
-**q10 — line 93, 11 pupils' absence days, [4 marks]**
+**stats-quartiles > s5 > q28 — line 93, 11 pupils' absence days, [4 marks]**
 1. One answer: yes, from a raw list.
 2. Anchored: yes, believable.
-3. Measures anything: yes — another raw-list-to-five-number-summary item, like q3, at a higher mark value.
+3. Measures anything: yes — another raw-list-to-five-number-summary item, like q21, at a higher mark value.
 4. Hand-over: no.
 5. Point: find the five-number summary from raw data and plot it.
 6. Telegraph: no.
@@ -445,7 +487,7 @@ Pronoun check: none. No fault.
 
 ### stats-quartiles > s6 (Exercise 6: Samples — what you can and can't say)
 
-**q1 — line 98, Jack's football survey, [2 marks]**
+**stats-quartiles > s6 > q29 — line 98, Jack's football survey, [2 marks]**
 1. One answer: yes — his survey (only his own school, all boys, one town's football fans) is a defensibly unfair sample.
 2. Anchored: yes, named ("Jack," "Northfield Boys School").
 3. Measures anything: yes — a genuine bias-spotting judgement.
@@ -458,13 +500,13 @@ Pronoun check: none. No fault.
 10. Wrong-state: not verifiable.
 Pronoun check: "He" (line 98) points to "Jack," named two words earlier. No fault.
 
-**q2 — line 101, mobile phone survey outside a supermarket, [2 marks]**
-As q1's pattern — anchored (place and time given), sound judgement task, feedback fits ("You weighed the evidence, not the claim"). No fault.
+**stats-quartiles > s6 > q30 — line 101, mobile phone survey outside a supermarket, [2 marks]**
+As q29's pattern — anchored (place and time given), sound judgement task, feedback fits ("You weighed the evidence, not the claim"). No fault.
 
-**q3 — line 104, Jean and Joyce, church survey, [4 marks]**
+**stats-quartiles > s6 > q31 — line 104, Jean and Joyce, church survey, [4 marks]**
 1. One answer: yes for each of the two surveys (both are unfair samples of the town, for different reasons — school-only, and self-selected churchgoers).
 2. Anchored: yes, named throughout.
-3. Measures anything: yes — two different flavours of sampling bias in one item, more demanding than q1/q2.
+3. Measures anything: yes — two different flavours of sampling bias in one item, more demanding than q29/q30.
 4. Hand-over: no.
 5. Point: compare two different flawed sampling methods aimed at the same question.
 6. Telegraph: no.
@@ -474,7 +516,7 @@ As q1's pattern — anchored (place and time given), sound judgement task, feedb
 10. Wrong-state: not verifiable.
 Pronoun check: "They" (line 104) points to "Jean and Joyce"; "her" (×2) points to each girl named on the same line. No fault.
 
-**q4 — line 108, George, Mrs Martin, Charlie, [5 marks]**
+**stats-quartiles > s6 > q32 — line 108, George, Mrs Martin, Charlie, [5 marks]**
 1. One answer: yes for each of the three judgements — a class-only sample, a nationally-random sample used to answer a local question, and a same-year-group sample.
 2. Anchored: yes, three named scenarios.
 3. Measures anything: yes — three different bias types in one item (too narrow, right method wrong population, too narrow again), the most demanding judgement item in the exercise.
@@ -487,10 +529,10 @@ Pronoun check: "They" (line 104) points to "Jean and Joyce"; "her" (×2) points 
 10. Wrong-state: not verifiable.
 Pronoun check: none needed beyond names already given. No fault.
 
-**q5 — line 113, Charlie, two conclusions to judge, [2 marks]**
+**stats-quartiles > s6 > q33 — line 113, Charlie, two conclusions to judge, [2 marks]**
 1. One answer: yes — one conclusion (a rough idea of Year 7 opinion) is fair, the other (proof about "all students") is not.
 2. Anchored: yes, restates "Charlie" by name.
-3. Measures anything: yes — tests the specific distinction between a reasonable inference and an overreach from the same small sample, a sharper test than q1–q4's broader "fair or not" judgements.
+3. Measures anything: yes — tests the specific distinction between a reasonable inference and an overreach from the same small sample, a sharper test than q29–q32's broader "fair or not" judgements.
 4. Hand-over: no.
 5. Point: tell a fair inference from a sample apart from an unfair overreach, using the same data as before.
 6. Telegraph: no.
@@ -502,4 +544,4 @@ Pronoun check: "his" (line 113) points to "Charlie," named on the same line. No 
 
 ---
 
-**Note on the four unfooted questions.** Four stems in this transcript — s2 q3 (line 47), s4 q4 (line 67), s5 q4 (line 78), s6 q5 (line 113) — are followed by no completion tally or feedback at all, unlike every other question in the book. The book's own closing line says "30 of 33 questions checked," which accounts for three gaps, not four. Either one of these four was in fact checked and its feedback simply isn't in this render, or the count on the marks screen is one out. I could not resolve this from the transcript alone and did not guess; it is worth checking against the live session before this book ships.
+**Note on the four unfooted questions.** Four stems in this transcript — s2 q11 (line 47), s4 q18 (line 67), s5 q22 (line 78), s6 q33 (line 113) — are followed by no completion tally or feedback at all, unlike every other question in the book. The book's own closing line says "30 of 33 questions checked," which accounts for three gaps, not four. Either one of these four was in fact checked and its feedback simply isn't in this render, or the count on the marks screen is one out. I could not resolve this from the transcript alone and did not guess; it is worth checking against the live session before this book ships.

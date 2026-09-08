@@ -504,6 +504,18 @@
       var sc = st.lastScale || 1;
       var layerW = htmlLayer.clientWidth || (st.geo.vbw * sc);
       var layerH = htmlLayer.clientHeight || (st.geo.vbh * sc);
+      /* A LABEL WITH NO BOARD UNDER IT IS NOT A LABEL. On the exercise page the
+         boards below the fold are laid out after their labels are made, so the
+         layer is momentarily nothing at all - and a label placed on a layer of
+         no height sits at the collapsed board's origin, which on a phone is on
+         top of the next question's prompt. That is what the overlap law kept
+         reporting on book-contents. It waits for its board: relayout() runs
+         again when the host has a size, and puts it back. */
+      if (!(layerH > 8) || !(layerW > 8)) {
+        for (var h = 0; h < ids.length; h++) st.labels[ids[h]].el.hidden = true;
+        return;
+      }
+      for (var v = 0; v < ids.length; v++) st.labels[ids[v]].el.hidden = false;
       var i, recs = [];
       for (i = 0; i < ids.length; i++) {
         var rec = st.labels[ids[i]];
