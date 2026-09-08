@@ -17,7 +17,12 @@ What was proved at `15bf8ab`: `--fast` 26 gates green; `--full` in 16 minutes
 re-filed against the current transcript (108 sentences: 87 pass, 21 rewrite,
 0 fail); three phone-width walker findings WAIVED on his ruling with their
 pictures (`MATHS_COVERAGE_DEBT.md`, "Waived on 8 Sept 2026"). The whole control
-battery runs after the deploy and is reported in `tools/qa/out/control/`.
+battery ran after the deploy (20:05–20:51, pooled): 87 fired, 40 over-tightening
+passed, 6 self-probes proved, 7 did not fire — listed in `MATHS_GATES_AUDIT.md`
+under "After the Book C battery"; three of the seven were already known from v4
+(qa-waits ×2, qa-fonts), one is a declared control with no plant written
+(qa-colour-law amber-outside-a-mark: `fixture-css-amber` does not exist), and
+none is a pupil-facing fault. Harness work for a later session, never a book's.
 
 FIRST WORK OF THE NEXT CUT (Book A's), in this order: the stray "0" read-out on
 the Exercise 4 opening at 375 (`pupil-book-contents-mid-book-375.png`); the

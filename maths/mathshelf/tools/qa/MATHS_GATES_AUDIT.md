@@ -148,6 +148,23 @@ weakened, hidden, or marked green.
 | qa-waits | control-with-no-busy-state, outbox-dropped-on-reload | not yet investigated |
 | qa-fonts | face-removed | the plant removes a face file; with the gate now asking the face to LOAD rather than whether it was painted, the control needs re-aiming at that question |
 
+### After the Book C battery — 8 Sept 2026, 20:05–20:51, at `daca300`
+
+Whole battery, pooled (`MS_WORKERS=6`): **87 controls FIRED, 40 over-tightening
+checks PASSED, 6 self-probes proved, 7 did not fire.** Run in the background
+AFTER the Book C deploy, as the TIME rule says; reported here, not waited for.
+Evidence: `tools/qa/out/control/<gate>.<id>.log`. None of the seven is a fault
+in the app a pupil meets; each is a control whose plant no longer reaches its
+gate, and each is the next harness session's, not a book's.
+
+| gate | control | verdict | note |
+|---|---|---|---|
+| extract-transcript | no-walk-no-transcript | DID NOT FIRE | the gate passed a planted fault; new after Book C |
+| qa-colour-law | amber-outside-a-mark | CANNOT RUN | no plant named fixture-css-amber; new after Book C |
+| qa-fonts | face-removed | DID NOT FIRE | the gate passed a planted fault; known since v4 (see the table above) |
+| qa-waits | control-with-no-busy-state | DID NOT FIRE | the gate passed a planted fault; known since v4 (see the table above) |
+| qa-waits | outbox-dropped-on-reload | DID NOT FIRE | the gate passed a planted fault; known since v4 (see the table above) |
+
 ## THE THREE LAWS ADDED ON 6 SEPTEMBER 2026, AND WHY THEY WERE MISSING
 
 He opened the deployed markbook and could not read it: white class names on a
