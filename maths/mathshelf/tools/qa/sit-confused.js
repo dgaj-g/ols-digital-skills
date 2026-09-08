@@ -146,8 +146,21 @@ g.exempt(AUD.EXEMPTIONS.concat([
              wrong work on the board and the Check not yet pressed, which is
              the only moment it can be asked at all. */
           {
-            const per = await page.evaluate((s2, args) => eval(s2)(args), P.PERSISTS, [qid]);
-            if (!per.ok) g.fail('question:mid-attempt > ' + qid + ' @' + width, 'consequence', per.why);
+            /* THE KINDS THIS LAW IS ABOUT. A wrong PLACEMENT is a thing on a
+               board - a point, a marker, a tile - and only the Handling Data
+               kinds have one. On a written kind the "board" is a line of
+               working that is meant to change as she writes it, and asking
+               this there reported the app doing its job as a fault. */
+            const isStats = await page.evaluate((id) => {
+              const r = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+                .filter((x) => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === id)[0];
+              const k = r ? r.getAttribute('data-kind') : '';
+              return ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'].indexOf(k) > -1;
+            }, qid);
+            if (isStats) {
+              const per = await page.evaluate((s2, args) => eval(s2)(args), P.PERSISTS, [qid]);
+              if (!per.ok) g.fail('question:mid-attempt > ' + qid + ' @' + width, 'consequence', per.why);
+            }
           }
           await page.evaluate((s, id) => eval(s)(id), W.CHECK, qid);
           await W.settle(page);

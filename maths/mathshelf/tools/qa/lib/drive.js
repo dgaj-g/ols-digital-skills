@@ -157,6 +157,10 @@ const ANSWER = `((args) => {
         tile.click();
         const s1 = maybeStop('placed the tile "' + want + '"'); if (s1) return s1;
       }
+      /* the row complete, nothing chosen yet - and, where the only ask is the
+         interquartile range, the pad open with nothing in it. Both are boards
+         she sits at, and both live between two presses. */
+      const sOrdered = maybeStop('placed every value in the row'); if (sOrdered) return sOrdered;
       const picks = S.picks || {};
       const askOrder = (pq && pq.ask) ? pq.ask.filter((a) => a !== 'IQR') : Object.keys(picks);
       for (let ci = 0; ci < askOrder.length; ci++) {
@@ -255,6 +259,8 @@ const ANSWER = `((args) => {
       const xMin = (pq && pq.chart && pq.chart.x && pq.chart.x.min) || 0;
       for (let ai = 0; ai < asks.length; ai++) {
         if (all('.stat-wline').length > ai) continue;               /* already committed */
+        /* the board for THIS ask, before anything is done on it */
+        const sAsk = maybeStop('reached the next reading'); if (sAsk) return sAsk;
         const a = asks[ai];
         /* a commit button is only genuinely pressed if the app has actually
            enabled it - clicking a disabled button fires no handler at all,

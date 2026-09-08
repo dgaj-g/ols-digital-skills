@@ -78,7 +78,7 @@ const SIGNATURE = `((args) => {
     .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid)[0];
   if (!root) return { ok: false, why: qid + ' is not on screen' };
   const state = root.getAttribute('data-state') || '';
-  if (state !== 'fresh') return { ok: true, why: null };   /* the law is asked on question:fresh only */
+  if (state !== 'fresh') return { ok: true, why: null };
   const kind = root.getAttribute('data-kind');
   const book = root.getAttribute('data-book') || '';
   let packQ = null;
@@ -88,107 +88,62 @@ const SIGNATURE = `((args) => {
   } catch (e) { return { ok: false, why: 'could not read the pack for ' + qid }; }
   if (!packQ) return { ok: false, why: 'no pack question found for ' + qid };
   const GS = window.GJ_STATS;
-  if (!GS) return { ok: false, why: 'no GJ_STATS engine on the page to derive the signature from' };
-  const rulesOf = () => {
-    try {
-      const p = window.GJ_CONTENT && window.GJ_CONTENT[book];
-      return (p && p.rules) || GS.DEFAULT_RULES;
-    } catch (e) { return GS.DEFAULT_RULES; }
-  };
-  const rstr = (r) => (r == null ? '' : (r.d === undefined ? String(r) : (r.d === 1 ? String(r.n) : String(Math.round((r.n / r.d) * 1e6) / 1e6))));
+  if (!GS) return { ok: false, why: 'no GJ_STATS engine on the page to derive the truth from' };
 
-  /* the values that must NOT be on the page (as she will read them, once
-     Check has been pressed) - one string per fact she has to bring */
-  let signature = [];
-  /* the exempt containers - what the paper itself prints (§4.0's own list),
-     scoped to elements rather than to strings: the exemption is by WHERE a
-     number sits, not by coincidence with a number that happens to be given */
-  const exemptRoots = [];
+  /* WHERE A LEAK CAN ACTUALLY BE, and nowhere else.
+   *
+   * The first cut of this probe asked whether any truth VALUE appeared
+   * ANYWHERE in the question, and reported the paper's own printed list as a
+   * leak on every qlist in the book - which it is not: DESIGN 4.0 says in so
+   * many words that what the paper prints is given, and for most kinds the
+   * secret is not a number at all but a PAIRING (which boundary goes with
+   * which total) or a CHOICE (which of the printed values is the median).
+   * Neither can be searched for as a string, and pretending otherwise made the
+   * law shout on every screen and so mean nothing on any of them.
+   *
+   * So this asks the two questions that CAN be answered - and they are the two
+   * the design's own control plants against:
+   *   1. the true positions are not drawn before the question locks
+   *      ([data-truth] is what draws them), and
+   *   2. no READ-OUT is showing a true value at mount: the read-out is the one
+   *      place on a board that speaks, and DESIGN 4.0 says it prints HER
+   *      placement, never the answer. */
+  const truthEls = root.querySelectorAll('[data-truth]');
+  if (truthEls.length) {
+    return { ok: false, why: 'an answer value is on the page before Check: the true positions are drawn on ' + qid };
+  }
+  const rstr = (r) => (r == null ? '' : (r.d === undefined ? String(r) : (r.d === 1 ? String(r.n) : String(Math.round((r.n / r.d) * 1e6) / 1e6))));
+  const rules = (() => {
+    try { const p = window.GJ_CONTENT && window.GJ_CONTENT[book]; return (p && p.rules) || GS.DEFAULT_RULES; }
+    catch (e) { return GS.DEFAULT_RULES; }
+  })();
+  let truth = [];
   try {
     if (kind === 'qlist') {
-      const truth = GS.quartiles((packQ.values || []), (rulesOf().quartileRule || 'n+1'));
-      if (truth) {
-        const sorted = truth.sorted ? truth.sorted.map((r) => rstr(r)) : [];
-        signature = sorted.concat(['Q1', 'Q2', 'Q3', 'IQR'].map((k) => rstr(truth[k])).filter(Boolean));
-        /* the raw list, unordered, as printed, is exempt - only the SORTED
-           order and the cuts are the secret */
-      }
-      /* the raw tray tiles carry the given values, unordered; they are not
-         part of the signature at all (they are what she is handed) */
-      root.querySelectorAll('[data-tray^="qlist-tiles-"]').forEach((t) => exemptRoots.push(t));
+      const q = GS.quartiles(packQ.values || [], rules.quartileRule);
+      if (q) truth = ['Q1', 'Q2', 'Q3', 'IQR'].map((k) => rstr(q[k]));
     } else if (kind === 'cftable') {
-      const truth = GS.cumulate(packQ.classes || []);
-      signature = (truth || []).map(String);
-      root.querySelectorAll('.stat-table').forEach((t) => exemptRoots.push(t));   /* the printed frequencies */
+      truth = (GS.cumulate(packQ.classes || []) || []).map(String);
     } else if (kind === 'cfplot') {
-      const want = GS.expectedPoints ? GS.expectedPoints(packQ, rulesOf()) : [];
-      /* the signature is the PAIRING of a boundary with its total - both
-         numbers alone are given (the class table prints them both); it is
-         only the two together, as a point, that is the secret, so the
-         search string is the pair joined as the board's own read-out would
-         show it */
-      signature = (want || []).map((p) => rstr(p[0]) + ',' + rstr(p[1]));
-      root.querySelectorAll('.stat-given').forEach((t) => exemptRoots.push(t));   /* the class table, both columns */
+      truth = (GS.expectedPoints(packQ, rules) || []).map((p) => rstr(p[0]) + ', ' + rstr(p[1]));
     } else if (kind === 'cfread') {
-      const rules = rulesOf();
-      const heights = GS.readHeights ? GS.readHeights(Number(packQ.n) || 0, rules.curveRule) : {};
-      const asks = (packQ.ask || []).filter((a) => typeof a === 'string' && a !== 'IQR');
-      asks.forEach((a) => {
-        const h = heights[a === 'median' ? 'median' : a];
-        const x = h && GS.curveX ? GS.curveX(packQ.curve, h) : null;
-        if (x) signature.push(rstr(x));
-      });
-      /* n and the drawn curve are given; the axis numbers at majors are the
-         chart furniture, not the answer */
-    } else if (kind === 'boxplot') {
-      let truth = packQ.given || null;
-      if (!truth && packQ.from === 'qlist') {
-        const f = GS.fiveNumber ? GS.fiveNumber(packQ.values || [], rulesOf().quartileRule || 'n+1') : null;
-        truth = f ? { min: f.min, Q1: f.Q1, Q2: f.Q2, Q3: f.Q3, max: f.max } : null;
-      }
-      if (!packQ.given && truth) {
-        /* only a DERIVED five-number summary is a secret - a "given" one is
-           printed on the paper and is exempt outright */
-        signature = ['min', 'Q1', 'Q2', 'Q3', 'max'].map((k) => rstr(truth[k])).filter(Boolean);
-      }
-    } else if (kind === 'compare') {
-      /* both summaries are given (printed on the two plots); the secret is
-         which WORD she must pick - context, size, consistency - which is
-         author text, not a derivable number, so nothing is checked here
-         beyond the two summaries staying exempt */
-      root.querySelectorAll('.stat-board, .stat-plot-label').forEach((t) => exemptRoots.push(t));
-    } else if (kind === 'judge') {
-      (packQ.claims || []).forEach((c) => {
-        if (c.options) signature.push(String(c.verdict));
-        else if (c.fair === false) signature.push(String(c.why || ''));
-      });
-      root.querySelectorAll('.stat-claim-text').forEach((t) => exemptRoots.push(t));   /* the scenario and the claims */
-    } else if (kind === 'values') {
-      signature = (packQ.slots || []).map((s) => rstr(s.answer)).filter(Boolean);
+      const h = GS.readHeights(Number(packQ.n) || 0, rules.curveRule);
+      truth = ['median', 'Q1', 'Q3'].map((k) => {
+        const x = GS.curveX(packQ.curve, h[k === 'median' ? 'median' : k]);
+        return x ? rstr(x) : '';
+      }).filter(Boolean);
+    } else if (kind === 'boxplot' && packQ.from) {
+      truth = [];
     }
-  } catch (e) { return { ok: false, why: 'could not derive the signature for ' + qid + ': ' + (e && e.message) }; }
+  } catch (e) { return { ok: false, why: 'could not derive the truth for ' + qid + ': ' + e.message }; }
 
-  signature = signature.filter((s) => s && String(s).trim() && String(s).trim() !== '0');
-  if (!signature.length) return { ok: true, why: null };
-
-  const inExempt = (node) => exemptRoots.some((ex) => ex === node || ex.contains(node));
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
-  let n;
-  while ((n = walker.nextNode())) {
-    if (inExempt(n.parentNode)) continue;
-    const t = (n.textContent || '').trim();
+  const speaking = [...root.querySelectorAll('.stat-label, .stat-readout, [data-board-label]')];
+  for (let i = 0; i < speaking.length; i++) {
+    const t = (speaking[i].textContent || '').replace(/\s+/g, ' ').trim();
     if (!t) continue;
-    for (const s of signature) {
-      if (t.indexOf(s) > -1) return { ok: false, why: 'an answer value is on the page before Check: "' + s + '" (in "' + t.slice(0, 60) + '")' };
-    }
-  }
-  const all = root.querySelectorAll('*');
-  for (const el of all) {
-    if (inExempt(el)) continue;
-    for (const attr of el.attributes || []) {
-      if (/^(class|id|style|data-tray|data-tray-item|data-placed|aria-pressed|data-state|data-stage|data-stages|data-qid|data-kind|data-book|data-section|data-work|data-mark|role|type)$/.test(attr.name)) continue;
-      for (const s of signature) {
-        if (String(attr.value).indexOf(s) > -1) return { ok: false, why: 'an answer value is on the page before Check: "' + s + '" (in ' + el.tagName.toLowerCase() + '[' + attr.name + ']' + ')' };
+    for (let j = 0; j < truth.length; j++) {
+      if (truth[j] && t.indexOf(truth[j]) > -1) {
+        return { ok: false, why: 'an answer value is on the page before Check: "' + t + '" on ' + qid };
       }
     }
   }

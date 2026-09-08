@@ -1392,7 +1392,18 @@ function boxTruthFive(q) {
 function boxplotBoard(q, wrong) {
   var five = boxTruthFive(q) || {};
   var pos = {};
-  ['min', 'Q1', 'Q2', 'Q3', 'max'].forEach(function (k) { pos[k] = rstr2(five[k]); });
+  /* A MARKER GOES ON THE GRID. A cut read off a curve is an exact rational
+     (37/6 on the javelin curve) and no pupil can put a marker there: she
+     places it on the nearest small square, and the engine marks a curve-read
+     box plot to the reading tolerance. So the model board is what she can
+     actually place. */
+  var sq = Number((q.scale && q.scale.sq) || 1) || 1;
+  ['min', 'Q1', 'Q2', 'Q3', 'max'].forEach(function (k) {
+    var v = five[k];
+    var n = (v && v.d !== undefined) ? v.n / v.d : Number(v);
+    if (isNaN(n)) { pos[k] = rstr2(v); return; }
+    pos[k] = String(q.from ? Math.round(n / sq) * sq : (Math.round(n * 1e6) / 1e6));
+  });
   var out = { pos: pos, drawn: true };
   if (q.from) {
     var stageQ = JSON.parse(JSON.stringify(q));

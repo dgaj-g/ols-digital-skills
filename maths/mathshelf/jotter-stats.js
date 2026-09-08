@@ -71,7 +71,12 @@
     function drop(name) { var i = own.indexOf(name); if (i > -1) own.splice(i, 1); }
     if (q.kind === 'qlist') {
       var cuts = (q.ask || ['Q1', 'Q2', 'Q3', 'IQR']).filter(function (a) { return a !== 'IQR'; });
-      if (!cuts.length) { drop('picking'); drop('cut-committed'); }
+      if (!cuts.length) {
+        drop('picking'); drop('cut-committed');
+        /* with no cuts to mark, the pad opens the moment the last value lands:
+           "the row complete and nothing else yet" is not a board that happens */
+        drop('ordered');
+      }
       else if (cuts.length < 2) drop('cut-committed');
       if ((q.ask || []).indexOf('IQR') === -1) drop('iqr');
     }
@@ -82,7 +87,10 @@
          kind's general order, or the walk would go looking for a board three
          asks further on than the one she is sitting at. */
       var asks = q.ask || [];
-      var out = ['parked'], seenRead = 0;
+      /* a question that opens on a read AT a value never parks the rule on the
+         frequency axis: the vertical rule is the tool from the first moment */
+      var firstIsAtX = asks[0] && asks[0].type === 'atX';
+      var out = firstIsAtX ? [] : ['parked'], seenRead = 0;
       asks.forEach(function (a, i) {
         if (a === 'IQR') { if (out.indexOf('iqr') === -1) out.push('iqr'); }
         else if (a && a.type === 'atX') { if (out.indexOf('at-x') === -1) out.push('at-x'); }
@@ -205,7 +213,6 @@
   function twoPress(ctx, node, onReturn) {
     installClear();
     node.setAttribute('data-placed', '');
-    node.setAttribute('aria-pressed', 'false');
     node.addEventListener('click', function (e) {
       if (ctx.locked()) return;
       e.stopPropagation();
@@ -218,7 +225,9 @@
       ctx.selected = node;
       SELECTED_CTX = ctx;
       node.classList.add('is-selected');
-      node.setAttribute('aria-pressed', 'true');
+      /* aria-CURRENT: this is the item she has picked up, not an answer she
+         has pressed - the consequence law watches aria-pressed for the latter */
+      node.setAttribute('aria-current', 'true');
       ctx.say(T().statPutBack);
       ctx.setStage(ctx.selectedStage || 'selected');
     });
@@ -295,7 +304,7 @@
         if (SELECTED_CTX === ctx) SELECTED_CTX = null;
         if (!ctx.selected) return;
         ctx.selected.classList.remove('is-selected');
-        ctx.selected.setAttribute('aria-pressed', 'false');
+        ctx.selected.removeAttribute('aria-current');
         ctx.selected = null;
       },
       say: function (text) { msg.textContent = text || ''; },
@@ -500,8 +509,11 @@
           if (ctx.locked()) return;
           ctx.clearSelection();
           order.push(o.i);
-          render();
+          /* the stage BEFORE the render, so the dock - which knows whether the
+             next board is the cuts, the pad or the finished row - has the last
+             word rather than being overwritten by this line */
           ctx.setStage(order.length === values().length ? 'ordered' : 'ordering');
+          render();
           ctx.changed();
         });
         trayWrap.appendChild(b);
@@ -615,11 +627,13 @@
       }
       if (wantsIqr) {
         window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
-        ctx.setStage('iqr');
+        /* the last board: the pad is open and, once a value is in it, the
+           Check is lit and she is ready */
+        ctx.setStage(iqr ? 'ready' : 'iqr');
         ctx.say(T().statQlistIqr);
         pad = makeNumPad(ctx.dock, {
-          label: T().statIqr, fraction: true,
-          onChange: function (v) { iqr = v; ctx.changed(); }
+          label: T().statIqr, fraction: true, decimal: true,
+          onChange: function (v) { iqr = v; ctx.setStage(v ? 'ready' : 'iqr'); ctx.changed(); }
         });
         pad.set(iqr);
         return;
@@ -767,7 +781,7 @@
       window.GJ.setState(ctx.dock, 'dock', 'numpad');
       ctx.say(rowLabel(open));
       pad = makeNumPad(ctx.dock, {
-        label: rowLabel(open),
+        label: rowLabel(open), decimal: true,
         onChange: function (v) { cf[open] = v; paint(); ctx.changed(); }
       });
       pad.set(cf[open] || '');
@@ -882,7 +896,7 @@
       window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
       ctx.say(slot(id).label);
       pad = makeNumPad(ctx.dock, {
-        label: slot(id).label, fraction: true,
+        label: slot(id).label, fraction: true, decimal: true,
         onChange: function (val) { v[id] = val; paint(); ctx.changed(); }
       });
       pad.set(v[id] || '');
@@ -1185,7 +1199,7 @@
         window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
         ctx.say(T().statReadIqr);
         var doneI = el('button', 'btn-quiet', T().statThatsMine);
-        pad = makeNumPad(ctx.dock, { label: T().statIqr, fraction: true,
+        pad = makeNumPad(ctx.dock, { label: T().statIqr, fraction: true, decimal: true,
           onChange: function (v) {
             iqr = v;
             /* THE COMMIT HAS TO NOTICE. It used to be disabled at render time
@@ -1231,7 +1245,7 @@
         } }));
         var padWrap = el('div', 'stat-answer');
         ctx.dock.appendChild(padWrap);
-        pad = makeNumPad(padWrap, { label: wantLabel(a), onChange: function (v) {
+        pad = makeNumPad(padWrap, { label: wantLabel(a), decimal: true, onChange: function (v) {
           answer = v; answers['atX@' + a.x] = v; syncX(); ctx.changed();
         } });
         pad.set(answers['atX@' + a.x] || '');
@@ -1284,7 +1298,11 @@
     }
 
     return {
-      start: function () { fictionLine(ctx, T().statRuleFiction); build(); ctx.setStage('parked'); },
+      start: function () {
+        ctx.setStage('parked');
+        fictionLine(ctx, T().statRuleFiction);
+        build();                       /* paint() then says which ask she is on */
+      },
       reset: function () { idx = 0; reads = {}; iqr = ''; answer = ''; h = 0; ax = null; lines.innerHTML = ''; build(); },
       restore: function (S) {
         S = S || {};
@@ -1446,7 +1464,12 @@
         b.type = 'button';
         b.textContent = markerLabel(o.role);
         b.setAttribute('data-tray-item', '');
-        b.setAttribute('aria-pressed', sel === o.role ? 'true' : 'false');
+        /* aria-CURRENT, not aria-pressed: choosing which marker to place next
+           is picking the current item out of a set, not pressing an answer.
+           The consequence law watches aria-pressed inside a tray because a
+           pressed option at mount is an answer given away, and a marker she
+           has picked up is not one. */
+        if (sel === o.role) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
         b.addEventListener('click', function (e) {
           e.stopPropagation();
           if (ctx.locked()) return;
@@ -1623,7 +1646,7 @@
       ctx.dock.innerHTML = '';
       window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
       var pad = makeNumPad(ctx.dock, {
-        label: T().statCompareValue, fraction: true,
+        label: T().statCompareValue, fraction: true, decimal: true,
         onChange: function (val) {
           store.v = store.v || [];
           store.v[i] = val;
@@ -1634,6 +1657,10 @@
       pads[key] = pad;
     }
     function render() {
+      var ok1 = s1.who && s1.who2 && s1.ctx && s1.v && s1.v[0] && s1.v[1];
+      var ok2 = s2.who && s2.size && s2.meas && s2.cons && s2.v && s2.v[0] && s2.v[1];
+      var touched = s1.who || s2.who || (s1.v && s1.v[0]) || (s2.v && s2.v[0]);
+      ctx.setStage((ok1 && ok2) ? 'ready' : (touched ? 'building' : 'empty'));
       sentences.innerHTML = '';
       var l1 = el('p', 'stat-sentence');
       l1.appendChild(document.createTextNode(''));
