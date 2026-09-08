@@ -584,7 +584,12 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
 }
 .protractor-tool { cursor: grab; }
 .protractor-tool:active { cursor: grabbing; }
-.prot-num { font-family: var(--f-stationery); font-size: 10px; fill: var(--teal); font-weight: 600; transition: fill 130ms ease, font-weight 130ms ease; paint-order: stroke; stroke: rgba(255,254,250,0.85); stroke-width: 1.6; }
+/* THE SCALE NUMBERS ARE READ, SO THEY OWE 4.5. They were drawn in the livery
+   teal and measured 4.41-4.46 against the protractor's own face - under the
+   floor by a hair, and invisible to the law until the sampler learned that an
+   SVG glyph is painted with its fill and not its colour (8 Sept 2026). One step
+   darker clears it; the livery itself is untouched. */
+.prot-num { font-family: var(--f-stationery); font-size: 10px; fill: #0B6076; font-weight: 600; transition: fill 130ms ease, font-weight 130ms ease; paint-order: stroke; stroke: rgba(255,254,250,0.85); stroke-width: 1.6; }
 .prot-num.inner { fill: #8A5A2B; }
 .prot-num.end { font-size: 8.5px; }
 /* a number an angle arm crosses: emphasise by COLOUR + weight + halo only — never by

@@ -545,7 +545,7 @@
             claims: [
               { text: 'George’s survey tells him how much people generally spend on coffee.', fair: false,
                 why: 'SMALL', alsoWhy: ['BIASED'] },
-              { text: 'Posting the questionnaire to 100 people across the country will tell Mrs Martin what food to serve in her local restaurant.', fair: false,
+              { text: 'Posting the questionnaire to 100 people across the country will tell Mrs Martin what food people in her town like.', fair: false,
                 why: 'WRONG_POP' },
               { text: 'Charlie’s survey tells him what all students at his school think about school.', fair: false,
                 why: 'WRONG_POP', alsoWhy: ['SMALL', 'BIASED'] }

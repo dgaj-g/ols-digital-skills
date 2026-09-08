@@ -1,56 +1,92 @@
 
-  COVERAGE MATRIX (content hash 994c4e275e20, tier full)
+  COVERAGE MATRIX (content hash 59f52206bf58, tier full)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  225
-  colour        225
-  consequence   225
+  click-safety  195     30
+  colour        195     30
+  consequence   195     30
   deploy        3
-  empty         225
-  geometry      225
+  empty         195     30
+  geometry      195     30
   human-pace    30
   movie         54
-  mute-locks    225
-  nested        225
-  overlap       225
-  readability   225
-  said-twice    225
-  steps         225
+  mute-locks    195     30
+  nested        195     30
+  overlap       195     30
+  readability   195     30
+  said-twice    195     30
+  steps         195     30
   truth         81
   two-homes     13
   verdict       2
-  waits         225
+  waits         195     30
   walk-right    243
   walk-stage    1047
   walk-wrong    219     24
 
-  CELLS NOTHING CLOSES (24)
-  family      cell                                                             why
-  ----------  ------------------------------------------------------  -------  ---
-  walk-wrong  algebra > s4 > q13 (solve) @768 × walk-wrong            MISSING
-  walk-wrong  algebra > s4 > q14 (solve) @1280 × walk-wrong           MISSING
-  walk-wrong  angles > s1 > c1 (classify) @375 × walk-wrong           MISSING
-  walk-wrong  angles > s1 > c1 (classify) @768 × walk-wrong           MISSING
-  walk-wrong  angles > s1 > c1 (classify) @1280 × walk-wrong          MISSING
-  walk-wrong  angles > s1 > c2 (classify) @375 × walk-wrong           MISSING
-  walk-wrong  angles > s1 > c2 (classify) @768 × walk-wrong           MISSING
-  walk-wrong  angles > s1 > c2 (classify) @1280 × walk-wrong          MISSING
-  walk-wrong  angles > s1 > c3 (classify) @375 × walk-wrong           MISSING
-  walk-wrong  angles > s1 > c3 (classify) @768 × walk-wrong           MISSING
-  walk-wrong  angles > s1 > c3 (classify) @1280 × walk-wrong          MISSING
-  walk-wrong  angles > s1 > c4 (classify) @375 × walk-wrong           MISSING
-  walk-wrong  angles > s1 > c4 (classify) @768 × walk-wrong           MISSING
-  walk-wrong  angles > s1 > c4 (classify) @1280 × walk-wrong          MISSING
-  walk-wrong  angles > s1 > m1 (protractor) @375 × walk-wrong         MISSING
-  walk-wrong  angles > s1 > m1 (protractor) @768 × walk-wrong         MISSING
-  walk-wrong  angles > s1 > m1 (protractor) @1280 × walk-wrong        MISSING
-  walk-wrong  angles > s1 > m2 (protractor) @375 × walk-wrong         MISSING
-  walk-wrong  angles > s1 > m2 (protractor) @768 × walk-wrong         MISSING
-  walk-wrong  angles > s1 > m2 (protractor) @1280 × walk-wrong        MISSING
-  walk-wrong  angles > s4 > q13 (reasoned) @768 × walk-wrong          MISSING
-  walk-wrong  angles > s4 > q14 (reasoned) @1280 × walk-wrong         MISSING
-  walk-wrong  stats-quartiles > s3 > q13 (cfplot) @768 × walk-wrong   MISSING
-  walk-wrong  stats-quartiles > s3 > q14 (cfplot) @1280 × walk-wrong  MISSING
+  CELLS NOTHING CLOSES (384)
+  family        cell                                                             why
+  ------------  ------------------------------------------------------  -------  ---
+  walk-wrong    algebra > s4 > q13 (solve) @768 × walk-wrong            MISSING
+  walk-wrong    algebra > s4 > q14 (solve) @1280 × walk-wrong           MISSING
+  walk-wrong    angles > s1 > c1 (classify) @375 × walk-wrong           MISSING
+  walk-wrong    angles > s1 > c1 (classify) @768 × walk-wrong           MISSING
+  walk-wrong    angles > s1 > c1 (classify) @1280 × walk-wrong          MISSING
+  walk-wrong    angles > s1 > c2 (classify) @375 × walk-wrong           MISSING
+  walk-wrong    angles > s1 > c2 (classify) @768 × walk-wrong           MISSING
+  walk-wrong    angles > s1 > c2 (classify) @1280 × walk-wrong          MISSING
+  walk-wrong    angles > s1 > c3 (classify) @375 × walk-wrong           MISSING
+  walk-wrong    angles > s1 > c3 (classify) @768 × walk-wrong           MISSING
+  walk-wrong    angles > s1 > c3 (classify) @1280 × walk-wrong          MISSING
+  walk-wrong    angles > s1 > c4 (classify) @375 × walk-wrong           MISSING
+  walk-wrong    angles > s1 > c4 (classify) @768 × walk-wrong           MISSING
+  walk-wrong    angles > s1 > c4 (classify) @1280 × walk-wrong          MISSING
+  walk-wrong    angles > s1 > m1 (protractor) @375 × walk-wrong         MISSING
+  walk-wrong    angles > s1 > m1 (protractor) @768 × walk-wrong         MISSING
+  walk-wrong    angles > s1 > m1 (protractor) @1280 × walk-wrong        MISSING
+  walk-wrong    angles > s1 > m2 (protractor) @375 × walk-wrong         MISSING
+  walk-wrong    angles > s1 > m2 (protractor) @768 × walk-wrong         MISSING
+  walk-wrong    angles > s1 > m2 (protractor) @1280 × walk-wrong        MISSING
+  walk-wrong    angles > s4 > q13 (reasoned) @768 × walk-wrong          MISSING
+  walk-wrong    angles > s4 > q14 (reasoned) @1280 × walk-wrong         MISSING
+  walk-wrong    stats-quartiles > s3 > q13 (cfplot) @768 × walk-wrong   MISSING
+  walk-wrong    stats-quartiles > s3 > q14 (cfplot) @1280 × walk-wrong  MISSING
+  geometry      cover:first-visit @375 × geometry                       MISSING
+  colour        cover:first-visit @375 × colour                         MISSING
+  consequence   cover:first-visit @375 × consequence                    MISSING
+  click-safety  cover:first-visit @375 × click-safety                   MISSING
+  empty         cover:first-visit @375 × empty                          MISSING
+  nested        cover:first-visit @375 × nested                         MISSING
+  steps         cover:first-visit @375 × steps                          MISSING
+  mute-locks    cover:first-visit @375 × mute-locks                     MISSING
+  waits         cover:first-visit @375 × waits                          MISSING
+  readability   cover:first-visit @375 × readability                    MISSING
+  overlap       cover:first-visit @375 × overlap                        MISSING
+  said-twice    cover:first-visit @375 × said-twice                     MISSING
+  geometry      cover:first-visit @768 × geometry                       MISSING
+  colour        cover:first-visit @768 × colour                         MISSING
+  consequence   cover:first-visit @768 × consequence                    MISSING
+  click-safety  cover:first-visit @768 × click-safety                   MISSING
+  empty         cover:first-visit @768 × empty                          MISSING
+  nested        cover:first-visit @768 × nested                         MISSING
+  steps         cover:first-visit @768 × steps                          MISSING
+  mute-locks    cover:first-visit @768 × mute-locks                     MISSING
+  waits         cover:first-visit @768 × waits                          MISSING
+  readability   cover:first-visit @768 × readability                    MISSING
+  overlap       cover:first-visit @768 × overlap                        MISSING
+  said-twice    cover:first-visit @768 × said-twice                     MISSING
+  geometry      cover:first-visit @1280 × geometry                      MISSING
+  colour        cover:first-visit @1280 × colour                        MISSING
+  consequence   cover:first-visit @1280 × consequence                   MISSING
+  click-safety  cover:first-visit @1280 × click-safety                  MISSING
+  empty         cover:first-visit @1280 × empty                         MISSING
+  nested        cover:first-visit @1280 × nested                        MISSING
+  steps         cover:first-visit @1280 × steps                         MISSING
+  mute-locks    cover:first-visit @1280 × mute-locks                    MISSING
+  waits         cover:first-visit @1280 × waits                         MISSING
+  readability   cover:first-visit @1280 × readability                   MISSING
+  overlap       cover:first-visit @1280 × overlap                       MISSING
+  said-twice    cover:first-visit @1280 × said-twice                    MISSING
 
   DEBT LEDGER (printed every run)
   cell                     owner / phase            file                state
