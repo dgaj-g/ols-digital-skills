@@ -569,7 +569,9 @@
       dx: dx,
       mk: mk,
       mkMax: [marks[0] || 0, marks[1] || 0],
-      mkLabels: MK_LABELS[q.kind] || ['Working', 'Answer']
+      mkLabels: MK_LABELS[q.kind] || ['Working', 'Answer'],
+      /* this book writes its tally in words: "Quartiles 3 of 3", never "3/3" */
+      mkOf: true
     };
   }
 
