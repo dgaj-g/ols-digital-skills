@@ -5,7 +5,7 @@
  "projector": false,
  "tier": "preview",
  "contentHash": "6b76bf207c1e",
- "when": "2026-09-08T14:57:06.616Z",
+ "when": "2026-09-08T15:02:55.809Z",
  "states": [
   {
    "surface": "staff-cover",
@@ -272,8 +272,8 @@
    }
   },
   {
-   "surface": "class-page",
-   "state": "live",
+   "surface": "full-grid",
+   "state": "sticky-scroll",
    "width": 768,
    "projector": false,
    "audits": {
@@ -291,8 +291,8 @@
     "readability": "PASS"
    },
    "measured": {
-    "said-twice": 0,
-    "readability": 37
+    "said-twice": 1,
+    "readability": 272
    }
   },
   {

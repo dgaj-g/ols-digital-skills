@@ -1,30 +1,30 @@
 
-  COVERAGE MATRIX (content hash 6b76bf207c1e, tier fast)
+  COVERAGE MATRIX (content hash 6b76bf207c1e, tier full)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  217     8
-  colour        217     8
-  consequence   217     8
+  click-safety  219     6
+  colour        219     6
+  consequence   219     6
   deploy        3
-  empty         217     8
-  geometry      217     8
+  empty         219     6
+  geometry      219     6
   human-pace    30
   movie         54
-  mute-locks    217     8
-  nested        217     8
-  overlap       217     8
-  readability   217     8
-  said-twice    217     8
-  steps         217     8
+  mute-locks    219     6
+  nested        219     6
+  overlap       219     6
+  readability   219     6
+  said-twice    219     6
+  steps         219     6
   truth         81
   two-homes     13
   verdict       1       1
-  waits         217     8
+  waits         219     6
   walk-right    243
   walk-stage    1047
   walk-wrong    243
 
-  CELLS NOTHING CLOSES (97)
+  CELLS NOTHING CLOSES (73)
   family        cell                                                 why
   ------------  ------------------------------------------  -------  ---
   geometry      book-view:flicking @375 × geometry          MISSING

@@ -412,6 +412,29 @@ async function walk(page, width, projector, sidecar, transcript) {
     });
     if (wl === 'worth-a-look-open') await recordKnown('book-view', 'worth-a-look-open');
     else g.note('book-view:worth-a-look-open @' + width + ': the book opened here read "' + wl + '", not "worth-a-look-open" (no amber/undx-wrong cell on this grid)');
+    /* AND THEN BACK TO THE FIRST CELL FOR EVERYTHING BELOW. The amber cell
+       belongs to whichever pupil happens to carry the amber verdict, and the
+       four probes after this one need a pupil with a jotter to flick out of and
+       an exercise to send back to: opening Grainne's book and leaving it open
+       cost `flicking` and `reteach-sent` at all three widths. The amber book is
+       stood on, recorded, and then the ordinary route resumes where it was. */
+    /* BACK THE WAY THERE IS A WAY BACK. A pupil's book carries no "Ex n" crumb -
+       that one belongs to the question view - so clicking for it did nothing and
+       the amber pupil's book stayed open under everything below, which is what
+       cost `flicking` (her Previous button is the live one, and only Next
+       announces the flick) and `reteach-sent` (her question had nothing to send
+       back). The class page is the crumb that exists here; the first exercise
+       card and its first cell are the ordinary route resumed. */
+    await page.evaluate(() => {
+      const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Classes/.test(b.textContent))[0];
+      if (c) c.click();
+    });
+    await wait(1400);
+    await page.evaluate(() => { const card = document.querySelector('.excard'); if (card) card.click(); });
+    await wait(1600);
+    const backOnGrid = await page.evaluate(() => { const td = document.querySelector('.grid td.cell'); if (!td) return false; td.click(); return true; });
+    if (!backOnGrid) g.note('book-view @' + width + ': could not get back to an exercise grid after the amber book, so the flick and reteach probes below ran on it');
+    await wait(1600);
   }
   const inkOpen = await page.evaluate(() => { const v = document.querySelector('.verdict-mark'); if (!v) return false; v.click(); return true; });
   if (inkOpen) {

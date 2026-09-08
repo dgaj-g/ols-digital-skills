@@ -234,6 +234,21 @@ async function walkBook(page, book, width, sidecar, transcript) {
           .filter(x => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === id)[0];
         return r ? (r.querySelector('.jq-prompt, .q-prompt, p') || {}).textContent || '' : '';
       }, qid));
+      /* AND THE WORDS THE QUESTION PUTS ON THE PAGE BESIDE ITS STEM. A judgement
+         question prints the claims she has to weigh; a comparison prints the
+         name of each plot she is comparing. Those are sentences a pupil reads,
+         and the transcript is meant to be every sentence a pupil reads - it was
+         carrying only the stem, so the separated judge was handed "decide
+         whether the statement about spread is fair" with no statement anywhere
+         on the page and failed it three times over for a hole the walk had made
+         itself. A judge can only be as good as the screen it is shown. */
+      (await page.evaluate((id) => {
+        const r = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+          .filter(x => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === id)[0];
+        if (!r) return [];
+        return [...r.querySelectorAll('.stat-claim-text, .stat-plot-label, .stat-sentence, .stat-fiction')]
+          .map(e => (e.textContent || '').replace(/\s+/g, ' ').trim()).filter(Boolean);
+      }, qid)).forEach(say);
       /* WHAT THIS QUESTION SAYS IT CAN SHOW, written into the sidecar so
          coverage derives its cells from the app's own declaration rather than
          from a kind's general list - the boards a particular question can

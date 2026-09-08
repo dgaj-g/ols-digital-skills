@@ -541,7 +541,7 @@
             ],
             src: 'Statistics M7 (1).pdf Q28(a)(b)' },
           { id: 'q32', kind: 'judge', marks: [3, 2],
-            prompt: 'Three pupils each tried to find something out from a small sample. George asked 10 people in his class how much they spend on coffee. Mrs Martin posted a questionnaire to 100 people chosen at random across the whole country to find out what food people in her town like. Charlie asked 10 Year 7 students what they think of school. Decide whether each survey gives a fair picture, and why.',
+            prompt: 'Three people each tried to find something out from a small sample. George asked 10 people in his class how much they spend on coffee. Mrs Martin posted a questionnaire to 100 people chosen at random across the whole country to find out what food people in her town like. Charlie asked 10 Year 7 students what they think of school. Decide whether each survey gives a fair picture, and why.',
             claims: [
               { text: 'George’s survey tells him how much people generally spend on coffee.', fair: false,
                 why: 'SMALL', alsoWhy: ['BIASED'] },
