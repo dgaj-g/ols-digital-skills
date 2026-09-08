@@ -415,6 +415,17 @@
     });
     return out;
   }
+  /* WHAT THE QUESTION IS, IN ONE LINE. A prompt's first 46 characters read as
+     the scenario ("The cumulative frequency graph shows the marks of 112 ca…"),
+     which is the same opening on every question of a section; the stats engine
+     says what the pupil actually DOES. */
+  function gistOf(q) {
+    if (window.GJ_STATS && window.GJ_STATS.MK_LABELS[q.kind]) {
+      try { return window.GJ_STATS.gist(q); } catch (e) { /* fall through */ }
+    }
+    return String(q.prompt || '').slice(0, 46);
+  }
+
   function bookTitle(actId) {
     var a = window.GJ.app.activities.filter(function (x) { return x.id === actId; })[0];
     return a ? a.title : actId;
@@ -824,7 +835,7 @@
         var st = window.GJ_STAFF_PAGES.exerciseStats(pupils, { questions: [item.q] }, si, DX_NAMES);
         var tot = Math.max(1, st.ok + st.amber + st.err + st.open + st.un);
         t.push('<th scope="col">' + esc(item.qLabel) +
-          '<span class="gist">' + esc(String(item.q.prompt || '').slice(0, 46)) + '</span>' +
+          '<span class="gist">' + esc(gistOf(item.q)) + '</span>' +
           '<span class="mini" data-mark role="img" aria-label="' + st.ok + ' right of ' + tot + ' in ' + esc(item.qLabel) + '">' +
             '<i class="p-ok" style="width:' + (100 * st.ok / tot) + '%"></i>' +
             '<i class="p-am" style="width:' + (100 * st.amber / tot) + '%"></i>' +
@@ -909,10 +920,21 @@
         var card = el('div', 'qv-card staff-panel');
         card.setAttribute('data-email', p.email);
         var lines = (m.last && m.last.L) || [];
-        card.innerHTML = '<p class="qv-who">' + esc(p.name || p.email) + '</p>' +
-          (lines.length
-            ? '<ol class="qv-lines">' + lines.map(function (l) { return '<li>' + esc(pretty(l.t || '')) + '</li>'; }).join('') + '</ol>'
-            : '<p class="qv-none">Nothing written for ' + esc(item.qLabel) + ' yet.</p>');
+        /* A HANDLING DATA QUESTION LEAVES NO LINES - it leaves a board. Her own
+           artefact is re-drawn from her record at reading size, with the app's
+           first-pass marks on it and the unit rows beneath (DESIGN 9). */
+        if (m.last && m.last.S && window.GJ_JOTTER_STATS) {
+          card.innerHTML = '<p class="qv-who">' + esc(p.name || p.email) + '</p>';
+          var artefact = el('div', 'qv-artefact');
+          card.appendChild(artefact);
+          try { window.GJ_JOTTER_STATS.renderReadOnly(artefact, item.q, m.last, m.verdict); }
+          catch (e) { card.appendChild(el('p', 'qv-none', esc(TT('artefactUndrawable')))); }
+        } else {
+          card.innerHTML = '<p class="qv-who">' + esc(p.name || p.email) + '</p>' +
+            (lines.length
+              ? '<ol class="qv-lines">' + lines.map(function (l) { return '<li>' + esc(pretty(l.t || '')) + '</li>'; }).join('') + '</ol>'
+              : '<p class="qv-none">Nothing written for ' + esc(item.qLabel) + ' yet.</p>');
+        }
         col.appendChild(card);
       }).catch(function () { done++; });
     });
@@ -1106,6 +1128,16 @@
         });
         var per = (res.verdict && (res.verdict.perLine || res.verdict.perStep)) || [];
         var last = res.last || {};
+        /* the board she built, re-drawn and annotated. The per-unit ticks on it
+           are the app's own first pass and are READ-ONLY: a teacher who
+           disagrees inks the QUESTION, exactly as she does on an algebra
+           route (DESIGN 9, and the v2/v4 pencil-ink contract). */
+        if (last.S && window.GJ_JOTTER_STATS) {
+          var board = el('div', 'jp-artefact');
+          bodyEl.appendChild(board);
+          try { window.GJ_JOTTER_STATS.renderReadOnly(board, q, last, res.verdict); }
+          catch (e) { bodyEl.appendChild(el('p', 'ui-msg', esc(TT('artefactUndrawable')))); }
+        }
         (last.L || []).forEach(function (l, i) {
           var v = per[i] || {};
           var mark = v.ok === 1 ? '<span class="glyph-ok">✓</span>' : v.ok === 2 ? '<span class="glyph-ok" style="opacity:.55">✓</span>' : v.ok === 0 ? '<span class="glyph-err">✗</span>' : '';

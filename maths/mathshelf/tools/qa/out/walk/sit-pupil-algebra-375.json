@@ -3,8 +3,8 @@
  "scope": "algebra",
  "width": 375,
  "tier": "preview",
- "contentHash": "389577f0a6af",
- "when": "2026-09-08T05:16:47.325Z",
+ "contentHash": "d1b1186a327e",
+ "when": "2026-09-08T06:18:02.887Z",
  "states": [
   {
    "surface": "cover",
@@ -3171,7 +3171,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 17
+    "readability": 19
    }
   }
  ],

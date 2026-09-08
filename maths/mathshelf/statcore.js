@@ -1248,6 +1248,237 @@
   }
   function capitalise(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
+
+  /* ---------- what a MODEL board looks like, and what a slip looks like ----
+     ONE HOME (DFM 144). Three callers need this and must never disagree:
+     dev/validate-all.js proves the model marks full, tools/qa's walker plays it
+     on the real controls, and script.js's demo seed fills the markbook with
+     work that has authentic slips in it. It lives here because knowing what a
+     right answer looks like is the engine's job. */
+  var RULES = null;
+  function rnum2(r) { return r && r.d ? r.n / r.d : Number(r); }
+  function rstr2(r) {
+    if (r == null) return '';
+    if (r.d === undefined) return String(r);
+    return r.d === 1 ? String(r.n) : String(Math.round((r.n / r.d) * 1e6) / 1e6);
+  }
+  function isStatKind(k) { return KINDS_LIST.indexOf(k) > -1; }
+  var KINDS_LIST = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'];
+  function modelBoard(q, wrong, rules) {
+    RULES = rules || null;
+    return statsBoard(q, !!wrong);
+  }
+/* ----------------------------------------------------------------- stats */
+/* The Handling Data kinds store what she BUILT, not a line she wrote, so a
+   model attempt is the finished board: the ordered row and its cuts, the
+   running totals, the plotted points, the rule heights and readings, the five
+   markers, the two sentences, the verdicts. `corrupt` returns the same board
+   carrying that kind's own classic slip, so a walk of the wrong path is a walk
+   of a real misconception. */
+function isStatKind(k) {
+  return ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'].indexOf(k) > -1;
+}
+
+function qlistBoard(q, wrong) {
+  var vals = (q.values || []).slice();
+  var idx = vals.map(function (v, i) { return i; })
+    .sort(function (a, b) { return Number(vals[a]) - Number(vals[b]); });
+  var n = idx.length;
+  var rule = rulesOf(q, RULES).quartileRule;
+  var pos = quartilePositions(n, rule);
+  var picks = {}, cuts = (q.ask || ['Q1', 'Q2', 'Q3', 'IQR']).filter(function (a) { return a !== 'IQR'; });
+  cuts.forEach(function (c) {
+    var p = pos[c];
+    picks[c] = (p.d === 1) ? [p.n - 1] : [Math.floor(p.n / p.d) - 1, Math.floor(p.n / p.d)];
+  });
+  var truth = quartiles(vals, rule);
+  var out = { order: idx, picks: picks, iqr: '' };
+  if ((q.ask || []).indexOf('IQR') > -1) out.iqr = rstr2(truth.IQR);
+  if (!wrong) return out;
+  /* the classic slip: the lower and upper quartile the wrong way round */
+  if (picks.Q1 && picks.Q3) {
+    var t = out.picks.Q1; out.picks = JSON.parse(JSON.stringify(picks));
+    out.picks.Q1 = picks.Q3; out.picks.Q3 = t;
+    if (out.iqr) out.iqr = rstr2({ n: -truth.IQR.n, d: truth.IQR.d });
+  } else if (picks[cuts[0]]) {
+    out.picks[cuts[0]] = [Math.max(0, picks[cuts[0]][0] - 1)];
+  } else if (out.iqr) {
+    /* a question that asks only for the interquartile range: the slip is the
+       one every class makes, the RANGE given instead */
+    var sorted = vals.slice().sort(function (a, b) { return Number(a) - Number(b); });
+    out.iqr = String(Number(sorted[sorted.length - 1]) - Number(sorted[0]));
+  }
+  return out;
+}
+function cftableBoard(q, wrong) {
+  var truth = cumulate(q.classes || []);
+  if (!wrong) return { cf: truth.map(String) };
+  /* the frequencies copied straight down, which is the whole misconception */
+  return { cf: (q.classes || []).map(function (c) { return String(c.f); }) };
+}
+function cfplotBoard(q, wrong) {
+  var rules = rulesOf(q, RULES);
+  var want = expectedPoints(q, rules).map(function (p) { return [rnum2(p[0]), rnum2(p[1])]; });
+  if (!wrong) return { pts: want, joined: true };
+  var cf = cumulate(q.classes || []);
+  return {
+    pts: (q.classes || []).map(function (c, i) { return [(Number(c.lo) + Number(c.hi)) / 2, cf[i]]; }),
+    joined: true
+  };
+}
+function snapTo(x, sq) { return Math.round(x / sq) * sq; }
+function cfreadBoard(q, wrong) {
+  var rules = rulesOf(q, RULES);
+  var heights = readHeights(Number(q.n) || 0, rules.curveRule);
+  var sqx = ((q.chart || {}).sq || {}).x || 1;
+  var reads = {}, answers = {}, answer = '', iqr = '';
+  (q.ask || []).forEach(function (a) {
+    if (typeof a === 'string') {
+      if (a === 'IQR') {
+        var x1 = curveX(q.curve, heights.Q1), x3 = curveX(q.curve, heights.Q3);
+        if (x1 && x3) iqr = String(snapTo(rnum2(x3), sqx) - snapTo(rnum2(x1), sqx));
+        return;
+      }
+      var h = heights[a === 'median' ? 'median' : a];
+      var x = curveX(q.curve, h);
+      reads[a] = { h: rnum2(h), x: x ? snapTo(rnum2(x), sqx) : null };
+      return;
+    }
+    if (a && a.type === 'atX') {
+      var cf = curveY(q.curve, a.x);
+      var cfv = cf ? rnum2(cf) : null;
+      reads['atX@' + a.x] = { x: a.x, cf: cfv };
+      reads.atX = { x: a.x, cf: cfv };
+      var N = Number(q.n) || 0;
+      var v2 = '';
+      if (a.want === 'countBelow') v2 = String(cfv);
+      else if (a.want === 'countAbove') v2 = String(N - cfv);
+      else if (a.want === 'pctBelow') v2 = String(Math.round((cfv / N) * 100));
+      else if (a.want === 'pctAbove') v2 = String(Math.round(((N - cfv) / N) * 100));
+      answers['atX@' + a.x] = v2;
+      answer = v2;
+    }
+  });
+  if (!wrong) return { reads: reads, answers: answers, iqr: iqr, answer: answer };
+  /* half the AXIS, not half the total — the slip the axis invites */
+  var axis = ((q.chart || {}).y || {}).max;
+  var bad = JSON.parse(JSON.stringify(reads));
+  Object.keys(bad).forEach(function (k) {
+    if (k === 'atX' || !axis) return;
+    bad[k].h = axis / 2;
+    var xx = curveX(q.curve, axis / 2);
+    bad[k].x = xx ? snapTo(rnum2(xx), sqx) : bad[k].x;
+  });
+  return { reads: bad, answers: answers, iqr: iqr, answer: answer };
+}
+function boxTruthFive(q) {
+  var rules = rulesOf(q, RULES);
+  if (q.from === 'curve' && q.curve) {
+    var h = readHeights(Number(q.n) || 0, rules.curveRule);
+    var o = {
+      min: (q.given || {}).min, max: (q.given || {}).max,
+      Q1: curveX(q.curve, h.Q1), Q2: curveX(q.curve, h.median), Q3: curveX(q.curve, h.Q3)
+    };
+    ['Q1', 'Q2', 'Q3'].forEach(function (k) { if ((q.given || {})[k] !== undefined) o[k] = q.given[k]; });
+    return o;
+  }
+  if (q.given) return q.given;
+  if (q.from === 'qlist') {
+    var f = fiveNumber(q.values || [], rules.quartileRule);
+    return f ? { min: f.min, Q1: f.Q1, Q2: f.Q2, Q3: f.Q3, max: f.max } : null;
+  }
+  return q.answer || null;
+}
+function boxplotBoard(q, wrong) {
+  var five = boxTruthFive(q) || {};
+  var pos = {};
+  ['min', 'Q1', 'Q2', 'Q3', 'max'].forEach(function (k) { pos[k] = rstr2(five[k]); });
+  var out = { pos: pos, drawn: true };
+  if (q.from) {
+    var stageQ = JSON.parse(JSON.stringify(q));
+    stageQ.kind = q.from === 'curve' ? 'cfread' : q.from;
+    delete stageQ.from;
+    out.stage = statsBoard(stageQ, false);
+  }
+  if (!wrong) return out;
+  /* the whiskers and the quartiles confused */
+  var bad = JSON.parse(JSON.stringify(out));
+  var t = bad.pos.min; bad.pos.min = bad.pos.Q1; bad.pos.Q1 = t;
+  var u = bad.pos.max; bad.pos.max = bad.pos.Q3; bad.pos.Q3 = u;
+  return bad;
+}
+function spreadOf(sum, meas) {
+  return meas === 'range' ? (Number(sum.max) - Number(sum.min)) : (Number(sum.Q3) - Number(sum.Q1));
+}
+function compareBoard(q, wrong) {
+  var A0 = (q.plots || [])[0] || { label: 'A', summary: {} };
+  var B0 = (q.plots || [])[1] || { label: 'B', summary: {} };
+  var words = ((q.context || {}).words || []);
+  var mA = Number(A0.summary.Q2), mB = Number(B0.summary.Q2);
+  var who = mA > mB ? A0.label : B0.label;
+  var v1 = who === A0.label ? [String(mA), String(mB)] : [String(mB), String(mA)];
+  var sA = spreadOf(A0.summary, 'iqr'), sB = spreadOf(B0.summary, 'iqr');
+  var who2 = sA > sB ? A0.label : B0.label;
+  var v2 = who2 === A0.label ? [String(sA), String(sB)] : [String(sB), String(sA)];
+  var out = {
+    s1: { who: who, who2: who, ctx: words[0], v: v1 },
+    s2: { who: who2, size: 'larger', cons: 'less', meas: 'iqr', v: v2 }
+  };
+  if (!wrong) return out;
+  /* the comparison right, the meaning in context wrong */
+  var bad = JSON.parse(JSON.stringify(out));
+  bad.s1.ctx = words[1];
+  return bad;
+}
+function judgeBoard(q, wrong) {
+  var j = (q.claims || []).map(function (c) {
+    if (c.options) return { v: c.verdict };
+    return { fair: c.fair, why: c.fair === false ? c.why : null };
+  });
+  if (!wrong) return { j: j };
+  var bad = JSON.parse(JSON.stringify(j));
+  var i;
+  for (i = 0; i < (q.claims || []).length; i++) {
+    var c = q.claims[i];
+    if (c.options) {
+      var other = c.options.filter(function (o) { return o !== c.verdict; })[0];
+      if (other) { bad[i] = { v: other }; return { j: bad }; }
+    } else if (c.fair === false) {
+      bad[i] = { fair: true, why: null };                 /* a biased claim accepted */
+      return { j: bad };
+    }
+  }
+  return { j: bad };
+}
+function valuesBoard(q, wrong) {
+  var order = q.order || (q.slots || []).map(function (s) { return s.id; });
+  var v = {};
+  order.forEach(function (id) {
+    var slot = (q.slots || []).filter(function (s) { return s.id === id; })[0] || {};
+    v[id] = rstr2(slot.answer);
+  });
+  if (!wrong) return { v: v };
+  var bad = JSON.parse(JSON.stringify(v));
+  var first = order[0];
+  bad[first] = String(Number(bad[first] || 0) + 1);
+  return { v: bad };
+}
+function statsBoard(q, wrong) {
+  switch (q.kind) {
+    case 'qlist': return qlistBoard(q, wrong);
+    case 'cftable': return cftableBoard(q, wrong);
+    case 'cfplot': return cfplotBoard(q, wrong);
+    case 'cfread': return cfreadBoard(q, wrong);
+    case 'boxplot': return boxplotBoard(q, wrong);
+    case 'compare': return compareBoard(q, wrong);
+    case 'judge': return judgeBoard(q, wrong);
+    case 'values': return valuesBoard(q, wrong);
+    default: return null;
+  }
+}
+
+
+
   /* ---------- selfTest ---------- */
 
   function selfTest() {
@@ -1623,6 +1854,8 @@
     readHeights: readHeights,
     expectedPoints: expectedPoints,
     unitsOf: unitsOf,
+    modelBoard: modelBoard,
+    isStatKind: isStatKind,
     check: check,
     gist: gist,
     rat: R,

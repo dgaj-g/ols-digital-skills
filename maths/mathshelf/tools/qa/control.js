@@ -213,17 +213,32 @@ function serveSandbox(dir) {
     base: 'http://localhost:' + port + '/maths/mathshelf/index.html' };
 }
 
-function runGate(dir, gateFile, env) {
-  const r = spawnSync(process.execPath, [path.join(dir, 'tools/qa', gateFile)], {
-    cwd: dir, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
-    env: Object.assign({}, process.env, { MS_TIER_RUN: 'control' }, env || {})
+/* ASYNC gate run, for the pool — spawnSync would block every other worker in
+   this single-threaded process, which is the whole difference between a pool
+   and a queue with extra steps. */
+function runGateAsync(dir, gateFile, env) {
+  return new Promise((resolve) => {
+    const child = spawn(process.execPath, [path.join(dir, 'tools/qa', gateFile)], {
+      cwd: dir, env: Object.assign({}, process.env, { MS_TIER_RUN: 'control' }, env || {})
+    });
+    let out = '';
+    child.stdout.on('data', d => { out += d; });
+    child.stderr.on('data', d => { out += d; });
+    child.on('error', (e) => resolve({ status: null, out, error: e }));
+    child.on('close', (code) => resolve({ status: code, out, error: null }));
   });
-  return { status: r.status, out: (r.stdout || '') + (r.stderr || ''), error: r.error };
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function curlOkAsync(args) {
+  return new Promise((resolve) => execFile('curl', args, (err, stdout) => resolve(err ? null : stdout)));
 }
 
 console.log('MathShelf controls — every gate must be seen to say no');
-console.log('app: ' + A.APP + (REPO ? '   repo: ' + REPO : '   (no git repo: pinned-ref controls cannot run)'));
+console.log('app: ' + A.APP + (REPO ? '   repo: ' + REPO : '   (no git repo: pinned-ref controls cannot run)') +
+  '   MS_WORKERS=' + WORKERS);
 
+/* ═══════════════════════════════ THE JOB LIST, in DECLARATION ORDER ═══════ */
+const jobs = [];   /* each job writes to rows[job.rowIndex] — never rows.push from inside the pool */
 gates.forEach(file => {
   const name = file.replace(/\.js$/, '');
   const p = A.qa(file);
@@ -232,102 +247,108 @@ gates.forEach(file => {
   if (!covers) { rows.push([name, '(declaration)', 'NO COVERS', 'a gate that cannot say what it covers covers nothing']); failures++; return; }
   if (!controls || !controls.length) { rows.push([name, '(declaration)', 'NO CONTROLS', 'a gate that has never said no is a decoration']); failures++; return; }
 
+  const affected = !CHANGED || gateAffected(file, covers, CHANGED_FILES);
   controls.forEach(c => {
     const id = c.id || '(unnamed)';
-    let dir = null;
-    try {
-      if (c.mustPass || c.kind === 'shipped') {
-        /* OVER-TIGHTENING: the shipped tree, unplanted, must PASS */
-        const r = runGate(A.APP, file, {});
-        const fired = r.status === 0;
-        rows.push([name, id, fired ? 'PASSES (over-tightening)' : 'RED', fired ? '' : 'the shipped tree fails its own gate']);
-        fs.writeFileSync(A.out('control/' + name + '.' + id + '.log'), r.out);
-        if (!fired) failures++;
-        return;
-      }
-
-      if (c.kind === 'self-probe') {
-        /* the gate proves its own detector, in its own run, and says so */
-        const r = runGate(A.APP, file, {});
-        const named = c.mustFail ? new RegExp(c.mustFail.source.replace(/^\^|\$$/g, '')).source : '';
-        const has = fs.readFileSync(p, 'utf8').indexOf(named.slice(0, 24).replace(/\\/g, '')) >= 0;
-        rows.push([name, id, has ? 'SELF-PROVES' : 'RED', has ? '' : 'the gate does not carry the self-probe it declares']);
-        fs.writeFileSync(A.out('control/' + name + '.' + id + '.log'), r.out);
-        if (!has) failures++;
-        return;
-      }
-
-      dir = sandbox();
-      let env = {};
-
-      if (c.kind === 'ref') {
-        if (!REPO) throw new Error('a pinned-ref control needs a git repository, and there is none');
-        /* which file the ref replaces: the gate says so, or it is the client */
-        const rel = c.path || guessRefPath(name);
-        plantRef(dir, REPO, c.ref, rel);
-      } else if (c.kind === 'mutation') {
-        const plant = PLANTS[c.plant || mutationPlant(name)];
-        if (!plant) throw new Error('no plant named ' + (c.plant || mutationPlant(name)));
-        env = (plant(dir) || {}).env || {};
-      } else {
-        const plant = PLANTS[c.plant];
-        if (!plant) throw new Error('no plant named ' + String(c.plant));
-        env = (plant(dir) || {}).env || {};
-      }
-
-      /* A WALKER'S CONTROL IS PROVED ON ONE BOOK AT ONE WIDTH. The battery asks
-         one question - can this gate be made to say no? - and a walk of every
-         book at every width answers it no better than a walk of one, while
-         costing half an hour a control. The FULL walk is what `run.js --full`
-         is for, and it is a different question. */
-      if (/^sit-/.test(file)) env = Object.assign({ MS_WIDTHS: '1280', MS_BOOK: A.books()[0] }, env);
-      let server = null;
-      if (needsBrowser(file)) {
-        server = serveSandbox(dir);
-        env = Object.assign({}, env, { MS_BASE: server.base });
-        /* wait for the server to answer before the gate asks it for a page */
-        /* SIX SECONDS IS NOT LONG ENOUGH ON A BUSY MACHINE. Forty tries at 0.15s
-           gave the sandbox's own server six seconds to bind, and with a battery
-           of walks already running it sometimes did not make it: the walk then
-           died with ERR_CONNECTION_REFUSED and the matrix read DID NOT FIRE for
-           a law that was working perfectly. A control that fails because the
-           harness was in a hurry teaches nothing. Thirty seconds, and it says
-           so if the server truly never comes. */
-        let up = false;
-        for (let t = 0; t < 100 && !up; t++) {
-          try {
-            const got = execFileSync('curl', ['-sf', '--max-time', '2', server.tokenUrl], { encoding: 'utf8' }).trim();
-            if (got === server.token) up = true;
-          } catch (e) { try { execFileSync('sleep', ['0.3']); } catch (e2) {} }
-        }
-        if (!up) throw new Error('the sandbox server never answered on ' + server.base);
-      }
-      let r = runGate(dir, file, env);
-      /* ONE RETRY, AND ONLY FOR A RIG FAILURE. A control that could not open a
-         page has told us nothing about the gate; a control that opened one and
-         did not fire has. The retry is for the first kind only, and it is
-         named in the log so a flaky rig cannot hide behind it. */
-      if (server && /Navigation timeout|ERR_CONNECTION|Target closed|detached Frame/i.test(r.out)) {
-        r.out += '\n  ..    the page did not open; the control was run a second time\n';
-        r = runGate(dir, file, env);
-      }
-      if (server) { try { process.kill(-server.child.pid); } catch (e) { try { server.child.kill(); } catch (e2) {} } }
-      const said = c.mustFail ? c.mustFail.test(r.out) : false;
-      const fired = r.status !== 0 && said;
-      rows.push([name, id, fired ? 'FIRED' : 'DID NOT FIRE',
-        fired ? '' : (r.status === 0 ? 'the gate passed a planted fault' : 'the gate failed, but not with "' + String(c.mustFail) + '"')]);
-      fs.writeFileSync(A.out('control/' + name + '.' + id + '.log'), r.out);
-      if (!fired) failures++;
-    } catch (e) {
-      /* A CONTROL THAT CANNOT RUN IS RED. Not a skip: a skip is how a gate
-         comes to be trusted for a year without ever having been proved. */
-      rows.push([name, id, 'CANNOT RUN', String(e && e.message || e).slice(0, 90)]);
-      failures++;
-    } finally {
-      if (dir) { try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) {} }
-    }
+    if (!affected) { rows.push([name, id, 'SKIPPED (--changed)', 'neither this gate, what it requires, nor a book it covers changed since the recorded green']); return; }
+    const rowIndex = rows.length;
+    rows.push(null);   /* reserved: filled by this job, wherever in the pool it actually runs */
+    jobs.push({ file, name, p, c, id, rowIndex });
   });
 });
+
+/* ═══════════════════════════════════ ONE JOB, run async ═══════════════════ */
+async function runJob(job) {
+  const { file, name, p, c, id, rowIndex } = job;
+  let dir = null;
+  const setRow = (arr) => { rows[rowIndex] = arr; };
+  try {
+    if (c.mustPass || c.kind === 'shipped') {
+      /* OVER-TIGHTENING: the shipped tree, unplanted, must PASS */
+      const r = await runGateAsync(A.APP, file, {});
+      const fired = r.status === 0;
+      setRow([name, id, fired ? 'PASSES (over-tightening)' : 'RED', fired ? '' : 'the shipped tree fails its own gate']);
+      fs.writeFileSync(A.out('control/' + name + '.' + id + '.log'), r.out);
+      if (!fired) failures++;
+      return;
+    }
+
+    if (c.kind === 'self-probe') {
+      /* the gate proves its own detector, in its own run, and says so */
+      const r = await runGateAsync(A.APP, file, {});
+      const named = c.mustFail ? new RegExp(c.mustFail.source.replace(/^\^|\$$/g, '')).source : '';
+      const has = fs.readFileSync(p, 'utf8').indexOf(named.slice(0, 24).replace(/\\/g, '')) >= 0;
+      setRow([name, id, has ? 'SELF-PROVES' : 'RED', has ? '' : 'the gate does not carry the self-probe it declares']);
+      fs.writeFileSync(A.out('control/' + name + '.' + id + '.log'), r.out);
+      if (!has) failures++;
+      return;
+    }
+
+    dir = sandbox();
+    let env = {};
+
+    if (c.kind === 'ref') {
+      if (!REPO) throw new Error('a pinned-ref control needs a git repository, and there is none');
+      /* which file the ref replaces: the gate says so, or it is the client */
+      const rel = c.path || guessRefPath(name);
+      plantRef(dir, REPO, c.ref, rel);
+    } else if (c.kind === 'mutation') {
+      const plant = PLANTS[c.plant || mutationPlant(name)];
+      if (!plant) throw new Error('no plant named ' + (c.plant || mutationPlant(name)));
+      env = (plant(dir) || {}).env || {};
+    } else {
+      const plant = PLANTS[c.plant];
+      if (!plant) throw new Error('no plant named ' + String(c.plant));
+      env = (plant(dir) || {}).env || {};
+    }
+
+    /* A WALKER'S CONTROL IS PROVED ON ONE BOOK AT ONE WIDTH. The battery asks
+       one question - can this gate be made to say no? - and a walk of every
+       book at every width answers it no better than a walk of one, while
+       costing half an hour a control. The FULL walk is what `run.js --full`
+       is for, and it is a different question. */
+    if (/^sit-/.test(file)) env = Object.assign({ MS_WIDTHS: '1280', MS_BOOK: A.books()[0] }, env);
+    let server = null;
+    if (needsBrowser(file)) {
+      server = serveSandbox(dir);
+      env = Object.assign({}, env, { MS_BASE: server.base });
+      /* wait for the server to answer before the gate asks it for a page —
+         ASYNC, so a slow-to-bind sandbox stalls only this job's worker slot,
+         never the other MS_WORKERS jobs running alongside it. Thirty seconds,
+         same budget as before pooling, and it says so if it never comes. */
+      let up = false;
+      for (let t = 0; t < 100 && !up; t++) {
+        const got = await curlOkAsync(['-sf', '--max-time', '2', server.tokenUrl]);
+        if (got && got.trim() === server.token) up = true;
+        else await sleep(300);
+      }
+      if (!up) throw new Error('the sandbox server never answered on ' + server.base);
+    }
+    let r = await runGateAsync(dir, file, env);
+    /* ONE RETRY, AND ONLY FOR A RIG FAILURE. A control that could not open a
+       page has told us nothing about the gate; a control that opened one and
+       did not fire has. The retry is for the first kind only, and it is
+       named in the log so a flaky rig cannot hide behind it. */
+    if (server && /Navigation timeout|ERR_CONNECTION|Target closed|detached Frame/i.test(r.out)) {
+      r.out += '\n  ..    the page did not open; the control was run a second time\n';
+      r = await runGateAsync(dir, file, env);
+    }
+    if (server) { try { process.kill(-server.child.pid); } catch (e) { try { server.child.kill(); } catch (e2) {} } }
+    const said = c.mustFail ? c.mustFail.test(r.out) : false;
+    const fired = r.status !== 0 && said;
+    setRow([name, id, fired ? 'FIRED' : 'DID NOT FIRE',
+      fired ? '' : (r.status === 0 ? 'the gate passed a planted fault' : 'the gate failed, but not with "' + String(c.mustFail) + '"')]);
+    fs.writeFileSync(A.out('control/' + name + '.' + id + '.log'), r.out);
+    if (!fired) failures++;
+  } catch (e) {
+    /* A CONTROL THAT CANNOT RUN IS RED. Not a skip: a skip is how a gate
+       comes to be trusted for a year without ever having been proved. */
+    setRow([name, id, 'CANNOT RUN', String(e && e.message || e).slice(0, 90)]);
+    failures++;
+  } finally {
+    if (dir) { try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) {} }
+  }
+}
 
 /* which shipped file a pinned pre-fix ref stands in for, per gate */
 function guessRefPath(gate) {
@@ -346,12 +367,28 @@ function mutationPlant(gate) {
   return 'fixture-book';
 }
 
-console.log(matrix('CONTROL MATRIX — a gate is only as good as the no it can be made to say',
-  ['gate', 'control', 'verdict', 'why not'], rows));
-
-if (failures) {
-  console.log('  RED — ' + failures + ' control(s) did not fire. Evidence in tools/qa/out/control/.');
-  process.exit(1);
+/* ═══════════════════ THE POOL: MS_WORKERS jobs at a time ══════════════════
+ * Every job writes to its own reserved rows[rowIndex], so the matrix prints
+ * in the exact order it always did regardless of which order the pool
+ * actually finishes them in — that is what makes it diffable against a
+ * serial baseline (package SPEED, 8 Sept 2026). */
+async function runPool(list, n, workerFn) {
+  let i = 0;
+  const lane = async () => { while (i < list.length) { const job = list[i++]; await workerFn(job); } };
+  await Promise.all(new Array(Math.min(n, Math.max(1, list.length))).fill(0).map(lane));
 }
-console.log('  GREEN — every control fired and every over-tightening check passed (' + rows.length + ' controls).');
-process.exit(0);
+
+(async () => {
+  await runPool(jobs, WORKERS, runJob);
+
+  console.log(matrix('CONTROL MATRIX — a gate is only as good as the no it can be made to say',
+    ['gate', 'control', 'verdict', 'why not'], rows));
+
+  if (failures) {
+    console.log('  RED — ' + failures + ' control(s) did not fire. Evidence in tools/qa/out/control/.');
+    process.exit(1);
+  }
+  console.log('  GREEN — every control fired and every over-tightening check passed (' + rows.length + ' controls).' +
+    (CHANGED ? '' : '  Record this as `controls: green ' + new Date().toISOString().slice(0, 10) + ' <this commit>` in PROGRESS.md to enable --changed.'));
+  process.exit(0);
+})();
