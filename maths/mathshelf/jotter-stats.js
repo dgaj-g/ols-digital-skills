@@ -153,36 +153,42 @@
      position the answer would put it in. */
   function derange(items, answerKeys, key, seed) {
     if (items.length < 2) return items.slice();
-    var i, out, tries = 0, ok;
-    for (tries = 0; tries < 60; tries++) {
-      out = shuffle(items, seed + ':' + tries);
-      ok = true;
-      for (i = 0; i < out.length; i++) {
-        if (answerKeys[i] !== undefined && key(out[i]) === answerKeys[i]) { ok = false; break; }
-      }
-      if (ok) return out;
-    }
-    /* EVERY ROTATION, THEN THE REVERSE. A shuffle cannot always find a
-       derangement when two tiles carry the SAME value (a repeated time, two
-       equal marks) - so the fallback tries each rotation in turn and then the
-       reversal, and takes the first that leaves no item where the answer would
-       put it. Giving up and shipping the answer order is the one thing this
-       must never do. */
-    function deranged(list) {
+    function inPlace(list) {
+      var hits = [];
       for (var k = 0; k < list.length; k++) {
-        if (answerKeys[k] !== undefined && key(list[k]) === answerKeys[k]) return false;
+        if (answerKeys[k] !== undefined && key(list[k]) === answerKeys[k]) hits.push(k);
       }
-      return true;
+      return hits;
     }
-    for (i = 1; i < items.length; i++) {
-      out = items.slice(i).concat(items.slice(0, i));
-      if (deranged(out)) return out;
+    var out = shuffle(items, seed), tries;
+    /* A SHUFFLE, THEN A REPAIR. A list with four equal values (three nines and
+       a nine, in one of Colette's own puzzle-time lists) has four positions the
+       answer order would accept, so a random shuffle keeps landing on one and
+       sixty more shuffles do not help. So: shuffle once, then walk the
+       positions that DID land in the answer order and swap each with a
+       position where neither item would then be in place. That finds a
+       derangement whenever one exists, and never ships the answer order. */
+    for (tries = 0; tries < 8; tries++) {
+      var hits = inPlace(out);
+      if (!hits.length) return out;
+      var moved = false;
+      for (var h = 0; h < hits.length; h++) {
+        var i = hits[h];
+        for (var j = 0; j < out.length; j++) {
+          if (j === i) continue;
+          var a = out[i], b = out[j];
+          if (answerKeys[j] !== undefined && key(a) === answerKeys[j]) continue;
+          if (answerKeys[i] !== undefined && key(b) === answerKeys[i]) continue;
+          out[i] = b; out[j] = a; moved = true;
+          break;
+        }
+      }
+      if (!moved) break;
     }
-    out = items.slice().reverse();
-    if (deranged(out)) return out;
-    /* every arrangement leaves at least one item in place (a tray of two equal
-       values, say): report it by leaving the shuffle in, never the answer order */
-    return shuffle(items, seed + ':last');
+    /* every arrangement leaves at least one item where the answer would put it
+       (a tray of two equal values, say): the shuffle stands, never the answer
+       order, and the gate will say so rather than this pretending otherwise */
+    return out;
   }
   function ascendingKeys(values) {
     return values.slice().sort(function (a, b) { return Number(a) - Number(b); });
@@ -325,8 +331,9 @@
       if (saveTimer) clearTimeout(saveTimer);
       saveTimer = setTimeout(function () { hooks.onSave(q.id, rec); }, 400);
     }
+    var settling = false;      /* true while a verdict is being drawn */
     function onChange() {
-      if (rec.lock) return;
+      if (rec.lock || settling) return;
       var r = kind.ready();
       checkBtn.disabled = !r.ok;
       setLockedWhy(checkBtn, r.ok ? null : r.why);
@@ -370,6 +377,7 @@
       feedback.appendChild(tally);
 
       if (rec.lock) {
+        settling = true;
         window.GJ.setState(wrap, 'question',
           right ? 'checked-right' : (rec.att.length >= 2 ? 'checked-wrong-2' : 'checked-wrong-1'));
         var comment = el('p', 'mk-comment ' + (right ? 'mk-correct' : 'mk-wrong'),
@@ -382,13 +390,26 @@
         checkRow.hidden = true;
         kind.lock(verdict);
         /* the truth appears ONLY now, and never before */
-        if (kind.showTruth) kind.showTruth();
+        try { if (kind.showTruth) kind.showTruth(); } finally { settling = false; }
         ctx.say('');
       } else if (!instant) {
+        /* THE VERDICT IS THE STATE. Building the fresh board for her second go
+           runs the kind's own change handler, which would stamp "mid-attempt"
+           over the verdict that has just been drawn - so the state is set once
+           the board is settled, and the handler is held while it settles. */
+        settling = true;
+        try {
+          kind.reset();
+          if (kind.ghost) kind.ghost(ghost, att);
+        } finally {
+          /* WHATEVER HAPPENS, THE BOARD COMES BACK TO LIFE. The flag that
+             holds the change handler while a verdict is drawn must be cleared
+             even if drawing the struck first attempt throws - otherwise her
+             second go is on a board that has stopped listening, and the Check
+             never lights again. */
+          settling = false;
+        }
         window.GJ.setState(wrap, 'question', 'checked-wrong-1');
-        /* attempt 1 stays on the page, struck through, under attempt 2's board */
-        kind.reset();
-        if (kind.ghost) kind.ghost(ghost, att);
         checkBtn.disabled = true;
         setLockedWhy(checkBtn, kind.ready().why);
         ctx.say(T().statTryAgain);
@@ -438,9 +459,13 @@
       setLockedWhy(checkBtn, r0.why);
     }
 
-    /* ── the drive channel (preview tier only, exactly as GJ.app.__state) ─ */
+    /* ── the drive channel (preview tier only, exactly as GJ.app.__state) ─
+       A GETTER, not a snapshot: her second attempt is drawn on a NEW board, and
+       a handle taken once at mount goes on answering questions about the board
+       she has finished with - which is how a walk came to believe every point
+       was already placed and press nothing. */
     if (!window.OLS_TRANSPORT && kind.board) {
-      wrap.__statBoard = kind.board();
+      Object.defineProperty(wrap, '__statBoard', { get: function () { return kind.board(); }, configurable: true });
     }
 
     return { qid: q.id };

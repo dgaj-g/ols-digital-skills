@@ -55,6 +55,13 @@ const PERSISTS = `(async (args) => {
     const msg = ((root.querySelector('.ui-msg, .stat-msg') || {}).textContent || '').trim();
     return { S: JSON.stringify(S), classes: classes, msg: msg };
   };
+  /* LET THE RECORD CATCH UP FIRST. The app saves an unfinished board on a
+     400 ms debounce (jotter-stats.js saveOpen, and its human-pace row), so a
+     first read taken the instant the last press lands sees the record BEFORE
+     that save and the second sees it after - which is the record catching up
+     with a board that never moved, not a board that moved. The law is about
+     the BOARD: wait for the save to land, then watch. */
+  await new Promise((r) => setTimeout(r, 700));
   const before = snap();
   await new Promise((r) => setTimeout(r, 500));
   const after = snap();
