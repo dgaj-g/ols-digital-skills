@@ -1,92 +1,92 @@
 
-  COVERAGE MATRIX (content hash 59f52206bf58, tier full)
+  COVERAGE MATRIX (content hash a1b3c01b8b6c, tier full)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  195     30
-  colour        195     30
-  consequence   195     30
+  click-safety  91      134
+  colour        91      134
+  consequence   91      134
   deploy        3
-  empty         195     30
-  geometry      195     30
+  empty         91      134
+  geometry      91      134
   human-pace    30
   movie         54
-  mute-locks    195     30
-  nested        195     30
-  overlap       195     30
-  readability   195     30
-  said-twice    195     30
-  steps         195     30
+  mute-locks    91      134
+  nested        91      134
+  overlap       91      134
+  readability   91      134
+  said-twice    91      134
+  steps         91      134
   truth         81
   two-homes     13
   verdict       2
-  waits         195     30
+  waits         91      134
   walk-right    243
   walk-stage    1047
-  walk-wrong    219     24
+  walk-wrong    216     27
 
-  CELLS NOTHING CLOSES (384)
-  family        cell                                                             why
-  ------------  ------------------------------------------------------  -------  ---
-  walk-wrong    algebra > s4 > q13 (solve) @768 × walk-wrong            MISSING
-  walk-wrong    algebra > s4 > q14 (solve) @1280 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > c1 (classify) @375 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > c1 (classify) @768 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > c1 (classify) @1280 × walk-wrong          MISSING
-  walk-wrong    angles > s1 > c2 (classify) @375 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > c2 (classify) @768 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > c2 (classify) @1280 × walk-wrong          MISSING
-  walk-wrong    angles > s1 > c3 (classify) @375 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > c3 (classify) @768 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > c3 (classify) @1280 × walk-wrong          MISSING
-  walk-wrong    angles > s1 > c4 (classify) @375 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > c4 (classify) @768 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > c4 (classify) @1280 × walk-wrong          MISSING
-  walk-wrong    angles > s1 > m1 (protractor) @375 × walk-wrong         MISSING
-  walk-wrong    angles > s1 > m1 (protractor) @768 × walk-wrong         MISSING
-  walk-wrong    angles > s1 > m1 (protractor) @1280 × walk-wrong        MISSING
-  walk-wrong    angles > s1 > m2 (protractor) @375 × walk-wrong         MISSING
-  walk-wrong    angles > s1 > m2 (protractor) @768 × walk-wrong         MISSING
-  walk-wrong    angles > s1 > m2 (protractor) @1280 × walk-wrong        MISSING
-  walk-wrong    angles > s4 > q13 (reasoned) @768 × walk-wrong          MISSING
-  walk-wrong    angles > s4 > q14 (reasoned) @1280 × walk-wrong         MISSING
-  walk-wrong    stats-quartiles > s3 > q13 (cfplot) @768 × walk-wrong   MISSING
-  walk-wrong    stats-quartiles > s3 > q14 (cfplot) @1280 × walk-wrong  MISSING
-  geometry      cover:first-visit @375 × geometry                       MISSING
-  colour        cover:first-visit @375 × colour                         MISSING
-  consequence   cover:first-visit @375 × consequence                    MISSING
-  click-safety  cover:first-visit @375 × click-safety                   MISSING
-  empty         cover:first-visit @375 × empty                          MISSING
-  nested        cover:first-visit @375 × nested                         MISSING
-  steps         cover:first-visit @375 × steps                          MISSING
-  mute-locks    cover:first-visit @375 × mute-locks                     MISSING
-  waits         cover:first-visit @375 × waits                          MISSING
-  readability   cover:first-visit @375 × readability                    MISSING
-  overlap       cover:first-visit @375 × overlap                        MISSING
-  said-twice    cover:first-visit @375 × said-twice                     MISSING
-  geometry      cover:first-visit @768 × geometry                       MISSING
-  colour        cover:first-visit @768 × colour                         MISSING
-  consequence   cover:first-visit @768 × consequence                    MISSING
-  click-safety  cover:first-visit @768 × click-safety                   MISSING
-  empty         cover:first-visit @768 × empty                          MISSING
-  nested        cover:first-visit @768 × nested                         MISSING
-  steps         cover:first-visit @768 × steps                          MISSING
-  mute-locks    cover:first-visit @768 × mute-locks                     MISSING
-  waits         cover:first-visit @768 × waits                          MISSING
-  readability   cover:first-visit @768 × readability                    MISSING
-  overlap       cover:first-visit @768 × overlap                        MISSING
-  said-twice    cover:first-visit @768 × said-twice                     MISSING
-  geometry      cover:first-visit @1280 × geometry                      MISSING
-  colour        cover:first-visit @1280 × colour                        MISSING
-  consequence   cover:first-visit @1280 × consequence                   MISSING
-  click-safety  cover:first-visit @1280 × click-safety                  MISSING
-  empty         cover:first-visit @1280 × empty                         MISSING
-  nested        cover:first-visit @1280 × nested                        MISSING
-  steps         cover:first-visit @1280 × steps                         MISSING
-  mute-locks    cover:first-visit @1280 × mute-locks                    MISSING
-  waits         cover:first-visit @1280 × waits                         MISSING
-  readability   cover:first-visit @1280 × readability                   MISSING
-  overlap       cover:first-visit @1280 × overlap                       MISSING
-  said-twice    cover:first-visit @1280 × said-twice                    MISSING
+  CELLS NOTHING CLOSES (1635)
+  family        cell                                                              why
+  ------------  -------------------------------------------------------  -------  ---
+  walk-wrong    stats-quartiles > s5 > q25 (values) @375 × walk-wrong    MISSING
+  walk-wrong    stats-quartiles > s5 > q25 (values) @768 × walk-wrong    MISSING
+  walk-wrong    stats-quartiles > s5 > q25 (values) @1280 × walk-wrong   MISSING
+  walk-wrong    stats-quartiles > s5 > q26 (boxplot) @375 × walk-wrong   MISSING
+  walk-wrong    stats-quartiles > s5 > q26 (boxplot) @768 × walk-wrong   MISSING
+  walk-wrong    stats-quartiles > s5 > q26 (boxplot) @1280 × walk-wrong  MISSING
+  walk-wrong    stats-quartiles > s5 > q27 (values) @375 × walk-wrong    MISSING
+  walk-wrong    stats-quartiles > s5 > q27 (values) @768 × walk-wrong    MISSING
+  walk-wrong    stats-quartiles > s5 > q27 (values) @1280 × walk-wrong   MISSING
+  walk-wrong    stats-quartiles > s5 > q28 (boxplot) @375 × walk-wrong   MISSING
+  walk-wrong    stats-quartiles > s5 > q28 (boxplot) @768 × walk-wrong   MISSING
+  walk-wrong    stats-quartiles > s5 > q28 (boxplot) @1280 × walk-wrong  MISSING
+  walk-wrong    stats-quartiles > s6 > q29 (judge) @375 × walk-wrong     MISSING
+  walk-wrong    stats-quartiles > s6 > q29 (judge) @768 × walk-wrong     MISSING
+  walk-wrong    stats-quartiles > s6 > q29 (judge) @1280 × walk-wrong    MISSING
+  walk-wrong    stats-quartiles > s6 > q30 (judge) @375 × walk-wrong     MISSING
+  walk-wrong    stats-quartiles > s6 > q30 (judge) @768 × walk-wrong     MISSING
+  walk-wrong    stats-quartiles > s6 > q30 (judge) @1280 × walk-wrong    MISSING
+  walk-wrong    stats-quartiles > s6 > q31 (judge) @375 × walk-wrong     MISSING
+  walk-wrong    stats-quartiles > s6 > q31 (judge) @768 × walk-wrong     MISSING
+  walk-wrong    stats-quartiles > s6 > q31 (judge) @1280 × walk-wrong    MISSING
+  walk-wrong    stats-quartiles > s6 > q32 (judge) @375 × walk-wrong     MISSING
+  walk-wrong    stats-quartiles > s6 > q32 (judge) @768 × walk-wrong     MISSING
+  walk-wrong    stats-quartiles > s6 > q32 (judge) @1280 × walk-wrong    MISSING
+  walk-wrong    stats-quartiles > s6 > q33 (judge) @375 × walk-wrong     MISSING
+  walk-wrong    stats-quartiles > s6 > q33 (judge) @768 × walk-wrong     MISSING
+  walk-wrong    stats-quartiles > s6 > q33 (judge) @1280 × walk-wrong    MISSING
+  geometry      cover:first-visit @375 × geometry                        MISSING
+  colour        cover:first-visit @375 × colour                          MISSING
+  consequence   cover:first-visit @375 × consequence                     MISSING
+  click-safety  cover:first-visit @375 × click-safety                    MISSING
+  empty         cover:first-visit @375 × empty                           MISSING
+  nested        cover:first-visit @375 × nested                          MISSING
+  steps         cover:first-visit @375 × steps                           MISSING
+  mute-locks    cover:first-visit @375 × mute-locks                      MISSING
+  waits         cover:first-visit @375 × waits                           MISSING
+  readability   cover:first-visit @375 × readability                     MISSING
+  overlap       cover:first-visit @375 × overlap                         MISSING
+  said-twice    cover:first-visit @375 × said-twice                      MISSING
+  geometry      cover:first-visit @768 × geometry                        MISSING
+  colour        cover:first-visit @768 × colour                          MISSING
+  consequence   cover:first-visit @768 × consequence                     MISSING
+  click-safety  cover:first-visit @768 × click-safety                    MISSING
+  empty         cover:first-visit @768 × empty                           MISSING
+  nested        cover:first-visit @768 × nested                          MISSING
+  steps         cover:first-visit @768 × steps                           MISSING
+  mute-locks    cover:first-visit @768 × mute-locks                      MISSING
+  waits         cover:first-visit @768 × waits                           MISSING
+  readability   cover:first-visit @768 × readability                     MISSING
+  overlap       cover:first-visit @768 × overlap                         MISSING
+  said-twice    cover:first-visit @768 × said-twice                      MISSING
+  geometry      cover:first-visit @1280 × geometry                       MISSING
+  colour        cover:first-visit @1280 × colour                         MISSING
+  consequence   cover:first-visit @1280 × consequence                    MISSING
+  click-safety  cover:first-visit @1280 × click-safety                   MISSING
+  empty         cover:first-visit @1280 × empty                          MISSING
+  nested        cover:first-visit @1280 × nested                         MISSING
+  steps         cover:first-visit @1280 × steps                          MISSING
+  mute-locks    cover:first-visit @1280 × mute-locks                     MISSING
+  waits         cover:first-visit @1280 × waits                          MISSING
 
   DEBT LEDGER (printed every run)
   cell                     owner / phase            file                state

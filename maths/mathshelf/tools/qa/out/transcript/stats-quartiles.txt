@@ -10,7 +10,7 @@ Quartiles 3 of 3 · Interquartile range 1 of 1You put them in order, then found 
 The speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. Find the median, the lower quartile, the upper quartile and the interquartile range. [4 marks]
 Quartiles 3 of 3 · Interquartile range 1 of 1Every value in the right place.
 11 people took part in a puzzle. The times they took, in minutes, are shown below: 8, 3, 7, 8, 9, 13, 4, 9, 9, 10, 9. Find the lower quartile and the upper quartile. [2 marks]
-Quartiles 1 of 1 · Interquartile range 1 of 1Counted to the right positions.
+Quartiles 1 of 1 · Upper quartile 1 of 1Counted to the right positions.
 Here are the ages of 15 people: 24, 26, 29, 30, 31, 36, 36, 37, 39, 40, 43, 48, 50, 51, 55. Work out the interquartile range of the ages. [2 marks]
 Quartiles 1 of 1 · Interquartile range 1 of 1You put them in order, then found the cuts.
 11 students guessed the number of jelly beans in a jar. Here are their guesses: 400, 673, 850, 900, 1001, 1200, 1222, 1280, 1350, 1371, 2600. Work out the interquartile range of the guesses. [2 marks]
@@ -25,7 +25,7 @@ The mean wage will
 The modal wage will
 The median wage will
 The range of the wages will
-Reasons 1 of 1 · Judgements 4 of 4Fair reading of what the sample can say.
+Reasons 1 of 1 · Judgements 4 of 4Fair reading of what the figures can say.
 Exercise finished — how did that go? optional
 Ex.2 Cumulative frequency tables
 WALT · Build a cumulative frequency table from a frequency table
@@ -94,7 +94,7 @@ Reasons 1 of 1 · Judgements 1 of 1You weighed the evidence, not the claim.
 Jean and Joyce are both pupils at Eastwood Girls High School. They want to know how many times a month, on average, people in their town go to church. Jean asks 300 pupils in her school; Joyce stands outside her local church and asks 300 people on their way in. Decide whether each survey gives a fair picture of the town, and why. [4 marks]
 Asking 300 pupils in her own school tells Jean about the whole town.
 Standing outside a church and asking the people going in tells Joyce about the whole town.
-Reasons 2 of 2 · Judgements 2 of 2Fair reading of what the sample can say.
+Reasons 2 of 2 · Judgements 2 of 2Fair reading of what the figures can say.
 Three people each tried to find something out from a small sample. George asked 10 people in his class how much they spend on coffee. Mrs Martin posted a questionnaire to 100 people chosen at random across the whole country to find out what food people in her town like. Charlie asked 10 Year 7 students what they think of school. Decide whether each survey gives a fair picture, and why. [5 marks]
 George’s survey tells him how much people generally spend on coffee.
 Posting the questionnaire to 100 people across the country will tell Mrs Martin what food people in her town like.
