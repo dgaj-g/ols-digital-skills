@@ -24,6 +24,7 @@ const A = require('./lib/app.js');
 const { Gate } = require('./lib/report.js');
 const B = require('./lib/browser.js');
 const W = require('./lib/walk-moves.js');
+const P = require('./lib/stat-probes.js');
 const AUD = require('./lib/audits.js');
 const S = require('./lib/stage.js');
 
@@ -139,6 +140,15 @@ g.exempt(AUD.EXEMPTIONS.concat([
              the app, not a failed walk */
           if (a1.wrongNotPossible) { g.note(qid + ': ' + a1.how); continue; }
           await W.settle(page);
+          /* A WRONG PLACEMENT PERSISTS. Nothing may move it, colour it, or say
+             anything about it before she presses Check: no snap-back, no
+             colour hint, no helpful correction on a timer. Asked with the
+             wrong work on the board and the Check not yet pressed, which is
+             the only moment it can be asked at all. */
+          {
+            const per = await page.evaluate((s2, args) => eval(s2)(args), P.PERSISTS, [qid]);
+            if (!per.ok) g.fail('question:mid-attempt > ' + qid + ' @' + width, 'consequence', per.why);
+          }
           await page.evaluate((s, id) => eval(s)(id), W.CHECK, qid);
           await W.settle(page);
           await W.leaves(page, 'question', qid, ['fresh', 'mid-attempt'], 8000);

@@ -517,6 +517,133 @@ const PLANTS = {
     return { env: { MS_POST_DEPLOY: '1' } };
   },
 
+  /* ══ THE STATS CONTROLS TABLE (DESIGN §11.3, [Review, 7 Sept 2026]) ═════
+     One fault each, in today's jotter-stats.js / statcore.js / statchart.js
+     / style.css / lib/drive.js, on the sandbox copy only. Every plant here
+     leaves the screen the law is written on reachable (rule 4 of the four
+     rules for writing controls): a wrong point still gets placed, a chip
+     still gets pressed, a Check still gets reached - only the one thing the
+     law forbids is now also true. ─────────────────────────────────────── */
+
+  /* ── engine contract: a follow-through tick that should not earn, now does ── */
+  'stats-ftearns-flipped': (dir) => {
+    edit(dir, 'statcore.js',
+      "if (c === 'IQR') out.push(U('IQR', CUT_LABEL.IQR, 'accuracy', 1, false));",
+      "if (c === 'IQR') out.push(U('IQR', CUT_LABEL.IQR, 'accuracy', 1, true));   /* planted: ftEarns flipped */");
+  },
+
+  /* ── the marking engine that agrees with any attempt at all ────────── */
+  'stats-accepts-everything': (dir) => {
+    edit(dir, 'statcore.js',
+      "  function check(q, att, rules) {\n    var r = rulesOf(q, rules);",
+      "  function check(q, att, rules) {\n    var u2 = unitsOf(q, rulesOf(q, rules));\n    return settle(q, u2.map(function (u) { return row(u, 1, null, null); }), u2);   /* planted: accepts everything */\n    var r = rulesOf(q, rules);");
+  },
+
+  /* ── the hollow true-position rings drawn at mount, before she has tried ── */
+  'stats-truth-before-lock': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "    } else {\n      kind.start();\n      var r0 = kind.ready();\n      setLockedWhy(checkBtn, r0.why);\n    }",
+      "    } else {\n      kind.start();\n      if (kind.showTruth) kind.showTruth();   /* planted: the truth is drawn before she has tried */\n      var r0 = kind.ready();\n      setLockedWhy(checkBtn, r0.why);\n    }");
+  },
+
+  /* ── a tray marker tinted so it stands out before she has chosen anything ── */
+  'stats-colour-hint': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "        b.setAttribute('aria-pressed', sel === o.role ? 'true' : 'false');",
+      "        b.setAttribute('aria-pressed', sel === o.role ? 'true' : 'false');\n        if (o.role === 'Q2') b.style.background = '#FFE9A8';   /* planted: colour hints the median marker */");
+  },
+
+  /* ── a comparison chip pressed for her before she has touched the board ── */
+  'stats-option-pressed': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "          b.setAttribute('aria-pressed', current === x.o ? 'true' : 'false');",
+      "          b.setAttribute('aria-pressed', (current === x.o || x.o === options[0]) ? 'true' : 'false');   /* planted: one chip pressed at mount */");
+  },
+
+  /* ── a wrong plotted point that quietly snaps to the nearest true boundary ── */
+  'stats-snap-back': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "        onGridTap: function (x, y) {\n          if (ctx.locked()) return;\n          if (bd.points().length >= maxPts) { ctx.say(T().statPlotEnough); return; }\n          sel = bd.addPoint(x, y, { select: true });\n          after('placing');\n        },",
+      "        onGridTap: function (x, y) {\n          if (ctx.locked()) return;\n          if (bd.points().length >= maxPts) { ctx.say(T().statPlotEnough); return; }\n          sel = bd.addPoint(x, y, { select: true });\n          (function (i, px, py) {   /* planted: a wrong point snaps to the nearest true boundary a moment later */\n            setTimeout(function () {\n              var xs = (q.classes || []).map(function (c) { return Number(c.hi); });\n              if (!xs.length || !bd.points()[i]) return;\n              var nearest = xs.reduce(function (p, c) { return Math.abs(c - px) < Math.abs(p - px) ? c : p; }, xs[0]);\n              if (nearest !== px) { bd.movePoint(i, nearest, py); after(null); }\n            }, 200);\n          })(sel, x, y);\n          after('placing');\n        },");
+  },
+
+  /* ── a tray shuffle disabled, so it comes out in the answer order ────── */
+  'stats-sorted-tray': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "  function derange(items, answerKeys, key, seed) {\n    if (items.length < 2) return items.slice();",
+      "  function derange(items, answerKeys, key, seed) {\n    return items.slice();   /* planted: shuffle disabled */\n    if (items.length < 2) return items.slice();");
+  },
+
+  /* ── the read-out printing the first true coordinate before she has placed one ── */
+  'stats-signature-leak': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "      if (sel > -1 && bd.points()[sel]) {\n        var p = bd.points()[sel];\n        bd.readout(fill(T().statPointReadout, { x: p[0], y: p[1] }), p);\n        ctx.setStage('selected');\n      } else bd.clearReadout();",
+      "      if (sel > -1 && bd.points()[sel]) {\n        var p = bd.points()[sel];\n        bd.readout(fill(T().statPointReadout, { x: p[0], y: p[1] }), p);\n        ctx.setStage('selected');\n      } else {\n        var want0 = window.GJ_STATS.expectedPoints(q, packRulesOf(ctx) || window.GJ_STATS.DEFAULT_RULES)[0];   /* planted: leaks the first true point at mount */\n        if (want0) bd.readout(fill(T().statPointReadout, { x: want0[0].n / want0[0].d, y: want0[1].n / want0[1].d }), null);\n        else bd.clearReadout();\n      }");
+  },
+
+  /* ── the select-on-first-press branch made a return-to-tray ──────────── */
+  'stats-single-press-lift': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "    node.addEventListener('click', function (e) {\n      if (ctx.locked()) return;\n      e.stopPropagation();\n      if (ctx.selected === node) {\n        ctx.clearSelection();\n        onReturn();\n        return;\n      }",
+      "    node.addEventListener('click', function (e) {\n      if (ctx.locked()) return;\n      e.stopPropagation();\n      onReturn();   /* planted: a single press destroys placed work */\n      return;\n      if (ctx.selected === node) {\n        ctx.clearSelection();\n        onReturn();\n        return;\n      }");
+  },
+
+  /* ── a free-text box on the IQR line, where only a number pad may be ─── */
+  'stats-free-text': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "        pad = makeNumPad(ctx.dock, {\n          label: T().statIqr, fraction: true,\n          onChange: function (v) { iqr = v; ctx.changed(); }\n        });\n        pad.set(iqr);\n        return;\n      }",
+      "        pad = makeNumPad(ctx.dock, {\n          label: T().statIqr, fraction: true,\n          onChange: function (v) { iqr = v; ctx.changed(); }\n        });\n        pad.set(iqr);\n        var free = document.createElement('input');   /* planted: a free-text box on the IQR line */\n        free.type = 'text';\n        free.className = 'fx-free-iqr';\n        ctx.dock.appendChild(free);\n        return;\n      }");
+  },
+
+  /* ── the lock left false and the board left standing after two wrong goes ── */
+  'stats-third-attempt': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "      if (verdict.res === 'OK' || rec.att.length >= 2) rec.lock = true;",
+      "      if (verdict.res === 'OK') rec.lock = true;   /* planted: never locks after two wrong attempts */");
+  },
+
+  /* ── a disabled Join button that says nothing about why ──────────────── */
+  'stats-mute-lock': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "      if (join.disabled) setLockedWhy(join, n < maxPts ? T().statPlotPlaceWhy : T().statPlotJoinedAlready);",
+      "      /* planted: no reason given for the disabled Join button */");
+  },
+
+  /* ── a small board label inked in the glow, not the ink, of copper ───── */
+  'stats-label-fill-light': (dir) => {
+    edit(dir, 'style.css',
+      '.stat-label[data-label-kind="readout"], .stat-label[data-label-kind="drop"] { color: var(--copper-ink); }',
+      '.stat-label[data-label-kind="readout"], .stat-label[data-label-kind="drop"] { color: var(--copper-glow); }   /* planted: light ink on a small label */');
+  },
+
+  /* ── the label stagger disabled, so board labels sit on top of one another ── */
+  'stats-labels-unstaggered': (dir) => {
+    edit(dir, 'statchart.js',
+      'var row = 0, collided = true;',
+      'var row = 0, collided = false;   /* planted: stagger disabled */');
+  },
+
+  /* ── the fiction line's own guard removed, so it can be told twice ───── */
+  'stats-told-twice': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "    if (ctx.body.querySelector('[data-fiction]')) return;",
+      "    /* planted: the guard removed, so the fiction line can be told twice */");
+  },
+
+  /* ── the major gridline painted the colour of the paper it sits on ───── */
+  'stats-grid-invisible': (dir) => {
+    edit(dir, 'style.css',
+      '  --grid-major: #979083;',
+      '  --grid-major: var(--panel);   /* planted: the grid cannot be seen */');
+  },
+
+  /* ── the drive that stops before the last stage and records nothing ──── */
+  'stats-stage-skipped': (dir) => {
+    edit(dir, 'tools/qa/lib/drive.js',
+      "      if (S.joined) {\n        const join = one('.stat-join');\n        if (!join) return { ok: false, why: 'no Join button on ' + qid };\n        if (!join.disabled) join.click();                          /* disabled here means already joined */\n      }\n      return null;\n    }",
+      "      return null;   /* planted: the drive stops before \"joined\" and records nothing */\n      if (S.joined) {\n        const join = one('.stat-join');\n        if (!join) return { ok: false, why: 'no Join button on ' + qid };\n        if (!join.disabled) join.click();                          /* disabled here means already joined */\n      }\n      return null;\n    }");
+  },
+
   /* ── a cold-read verdict filed against text that has since changed ── */
   'verdicts.bad.md': (dir) => {
     /* the sandbox is wiped of evidence, so the control supplies BOTH halves:
@@ -574,6 +701,12 @@ const FIXTURE_BOOK = `/* content-fixture.js — THE BOOK NOBODY WALKS.
     title: 'Fixture - never shipped',
     engine: 'stats',
     cover: { accent: 'moss', motif: 'curve' },
+    /* the "rules" fault of the ten below: curveStyle differs from the real
+       stats-quartiles pack's default ('smooth') on purpose. Every OTHER key
+       matches the real pack, so it never perturbs the qlist/cfread fixture
+       questions' own arithmetic (curveStyle is cosmetic, read nowhere in the
+       lint's re-derivation) - only the whole-pack deep-equal check sees it. */
+    rules: { quartileRule: 'n+1', curveRule: 'split50', startPoint: true, curveStyle: 'linear', readTol: 1, plotTol: 0 },
     /* no authoredNarration: the pack narrates a method and declares nothing */
     sections: [{
       id: 's1',
@@ -594,6 +727,97 @@ const FIXTURE_BOOK = `/* content-fixture.js — THE BOOK NOBODY WALKS.
           prompt: 'Draw the line and then read the median from the curve and then read the median from the curve.',
           /* splice duplication: the same six words twice inside one sentence */
           answer: { val: { n: 3, d: 1 } } }
+      ]
+    }, {
+      /* ── §11.1's ten single-fault stats questions ─────────────────────
+         Every one of the ten sentences dev/lint-content-stats.js prints
+         (§11.1's own list, quoted in the DESIGN table) is planted here, once,
+         each on a fixture question with a real stats kind so the stats lint
+         actually reaches it (fx1-fx3 above carry kind:'fixture', which this
+         lint does not know - they are a different lint's fixture and are not
+         touched). Eight of the ten are per-question; the "movie" sentence is
+         a fault about THIS section's own film (it never names a question id)
+         and the "rules" sentence is a fault about the whole PACK's rules
+         object (§ below) - both are still exactly one planted cause each. */
+      id: 's2',
+      title: 'Ten single-fault stats questions (DESIGN §11.1)',
+      walt: 'Every question below carries exactly one authoring fault, matching one of the ten sentences dev/lint-content-stats.js prints.',
+      movie: {
+        title: 'Fixture film with a bad rule height',
+        /* fault 6: "movie: rule op at h = ... is not a convention height".
+           The table op gives the movie its own n (running total 20, via the
+           plot op that reads it); split50's convention heights for n=20 are
+           10, 5 and 15 - the rule op below sits at 7, none of them. */
+        steps: [
+          { say: 'A fixture table of ages.', do: [{ table: { head: ['Age', 'Frequency'], rows: [['1', 5], ['2', 5], ['3', 5], ['4', 5]] } }] },
+          { say: 'Plot the running total.', do: [{ plot: { x: 4, y: 20 } }] },
+          { say: 'A second point, for padding.' },
+          { say: 'Move the rule to a height that is not a convention height.', do: [{ rule: { h: 7 } }] },
+          { say: 'A padding caption.' },
+          { say: 'The last padding caption.' }
+        ]
+      },
+      questions: [
+        /* fault 1: "answer: authored ... but re-derived ...". n=7 under the
+           default n+1 rule puts Q1 at the 2nd ordered value (5); the authored
+           answer says 999. */
+        { id: 'q101', kind: 'qlist', marks: [1, 1], src: 'fixture',
+          prompt: 'Order the list and find the lower quartile.',
+          values: [3, 5, 7, 9, 11, 13, 15], ask: ['Q1'],
+          answer: { Q1: { n: 999, d: 1 } } },
+        /* fault 2: "dx: \\"READ_HALF_AXIS\\" equals the truth". n=100 (>50, so
+           split50's base is n itself), median height = n/2 = 50, and the
+           y-axis maximum is also 100 - so half the axis exactly equals the
+           true convention height, and a pupil reading the axis midpoint by
+           habit could not be told apart from one reading it correctly. */
+        { id: 'q102', kind: 'cfread', marks: [0, 1], src: 'fixture',
+          prompt: 'Estimate the median from the curve.',
+          n: 100, ask: ['median'],
+          chart: { x: { min: 0, max: 100, step: 25 }, y: { min: 0, max: 100, step: 25 }, sq: { x: 1, y: 1 } },
+          curve: [[0, 0], [25, 25], [50, 50], [75, 75], [100, 100]] },
+        /* fault 3: "qlist: n = ... leaves a quartile between two tiles".
+           n=6 (6 mod 4 = 2): the median's (n+1)/2 = 3.5 position is fine, but
+           a quartile position falls a quarter of the way between two tiles,
+           which no pair of adjacent tiles can express. */
+        { id: 'q103', kind: 'qlist', marks: [1, 1], src: 'fixture',
+          prompt: 'Order the list and find the median.',
+          values: [1, 2, 3, 4, 5, 6], ask: ['Q2'] },
+        /* fault 4: "plot: (..., ...) is off the grid". sq.x = 2 but the class
+           boundaries (15, 31) are odd - neither true point lands on a grid
+           intersection a pupil could actually tap. */
+        { id: 'q104', kind: 'cfplot', marks: [1, 1], src: 'fixture',
+          prompt: 'Plot the cumulative frequency curve.',
+          classes: [{ lo: 0, hi: 15, f: 5 }, { lo: 15, hi: 31, f: 8 }],
+          chart: { x: { min: 0, max: 32, step: 8 }, y: { min: 0, max: 20, step: 5 }, sq: { x: 2, y: 1 }, major: 4 } },
+        /* fault 5: "curve: too bendy at h = ...". A wild jump between two of
+           the authored curve points (5 to 90) pulls the independent monotone
+           spline more than half a square away from the straight chord at the
+           asked height - the curve she is shown could not be re-derived from
+           a re-drawing of her own authored points. (The added atX ask costs
+           the same half-unit q104's cfplot does, so the fixture book's own
+           period-budget total - a whole number before these ten questions
+           existed - stays a whole number; it asks nothing this fault needs
+           and, with no q.answer authored, the atX re-derivation is a no-op.) */
+        { id: 'q105', kind: 'cfread', marks: [0, 1], src: 'fixture',
+          prompt: 'Estimate the lower quartile from the curve.',
+          n: 100, ask: ['Q1', { type: 'atX', x: 20, want: 'countBelow' }],
+          chart: { x: { min: 0, max: 40, step: 10 }, y: { min: 0, max: 120, step: 20 }, sq: { x: 1, y: 1 } },
+          curve: [[0, 0], [10, 5], [20, 90], [30, 95], [40, 100]] },
+        /* fault 7: "prompt: telegraphs \\"...\\"". The banned phrase "n/2" is
+           spelled out for her, which the marking already does for itself. */
+        { id: 'q106', kind: 'values', marks: [0, 1], src: 'fixture',
+          prompt: 'Find the median (use n/2 to find its position).',
+          slots: [{ id: 'a', label: 'Median', answer: { n: 5, d: 1 } }] },
+        /* fault 8: "values: a non-terminating answer with no dp". 1/3 never
+           terminates in decimal, and no slot or question dp is given. */
+        { id: 'q107', kind: 'values', marks: [0, 1], src: 'fixture',
+          prompt: 'Work out the mean.',
+          slots: [{ id: 'a', label: 'Mean', answer: { n: 1, d: 3 } }] },
+        /* fault 10: "marks: [m,a] cannot be earned". One accuracy-band slot
+           can earn at most 1 mark; the question claims 3. */
+        { id: 'q108', kind: 'values', marks: [0, 3], src: 'fixture',
+          prompt: 'Work out the total.',
+          slots: [{ id: 'a', label: 'Total', answer: { n: 5, d: 1 } }] }
       ]
     }]
   };

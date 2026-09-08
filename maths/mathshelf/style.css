@@ -1299,7 +1299,7 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .stat-slot-unit { color: var(--pencil); font-size: 14px; }
 
 /* the dock's own controls */
-.stat-dock .nudge-pad { display: inline-grid; grid-template-columns: repeat(5, 48px); gap: 6px; margin: 6px 0; }
+.stat-dock .nudge-pad { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; max-width: 100%; }
 .nudge-pad .key { min-width: 48px; min-height: 48px; }
 .btn-quiet {
   min-height: 46px; padding: 10px 16px; margin: 6px 8px 6px 0; border: 1.5px solid var(--copper);

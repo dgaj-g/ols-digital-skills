@@ -101,6 +101,7 @@
       statRange: 'range',
       statLowest: 'Lowest',
       statHighest: 'Highest',
+      statClassColumn: 'Group',
       statFrequency: 'Frequency',
       statCumulativeFrequency: 'Cumulative frequency',
       statReading: 'reading',

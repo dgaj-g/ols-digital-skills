@@ -1,91 +1,92 @@
 
-  COVERAGE MATRIX (content hash 6a965ebba9ab, tier fast)
+  COVERAGE MATRIX (content hash b6776008b8df, tier fast)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  120     105
-  colour        120     105
-  consequence   120     105
+  click-safety  127     98
+  colour        127     98
+  consequence   127     98
   deploy        3
-  empty         120     105
-  geometry      120     105
+  empty         127     98
+  geometry      127     98
   human-pace    30
   movie         54
-  mute-locks    120     105
-  nested        120     105
-  overlap       120     105
-  readability   120     105
-  said-twice    120     105
-  steps         120     105
+  mute-locks    127     98
+  nested        127     98
+  overlap       127     98
+  readability   127     98
+  said-twice    127     98
+  steps         127     98
   truth         81
   two-homes     13
   verdict       1       1
-  waits         120     105
-  walk-right    216     27
-  walk-wrong    216     27
+  waits         127     98
+  walk-right    228     15
+  walk-stage    243     240
+  walk-wrong    228     15
 
-  CELLS NOTHING CLOSES (1315)
-  family        cell                                                              why
-  ------------  -------------------------------------------------------  -------  ---
-  walk-right    stats-quartiles > s5 > q25 (values) @375 × walk-right    MISSING
-  walk-wrong    stats-quartiles > s5 > q25 (values) @375 × walk-wrong    MISSING
-  walk-right    stats-quartiles > s5 > q25 (values) @768 × walk-right    MISSING
-  walk-wrong    stats-quartiles > s5 > q25 (values) @768 × walk-wrong    MISSING
-  walk-right    stats-quartiles > s5 > q25 (values) @1280 × walk-right   MISSING
-  walk-wrong    stats-quartiles > s5 > q25 (values) @1280 × walk-wrong   MISSING
-  walk-right    stats-quartiles > s5 > q26 (boxplot) @375 × walk-right   MISSING
-  walk-wrong    stats-quartiles > s5 > q26 (boxplot) @375 × walk-wrong   MISSING
-  walk-right    stats-quartiles > s5 > q26 (boxplot) @768 × walk-right   MISSING
-  walk-wrong    stats-quartiles > s5 > q26 (boxplot) @768 × walk-wrong   MISSING
-  walk-right    stats-quartiles > s5 > q26 (boxplot) @1280 × walk-right  MISSING
-  walk-wrong    stats-quartiles > s5 > q26 (boxplot) @1280 × walk-wrong  MISSING
-  walk-right    stats-quartiles > s5 > q27 (values) @375 × walk-right    MISSING
-  walk-wrong    stats-quartiles > s5 > q27 (values) @375 × walk-wrong    MISSING
-  walk-right    stats-quartiles > s5 > q27 (values) @768 × walk-right    MISSING
-  walk-wrong    stats-quartiles > s5 > q27 (values) @768 × walk-wrong    MISSING
-  walk-right    stats-quartiles > s5 > q27 (values) @1280 × walk-right   MISSING
-  walk-wrong    stats-quartiles > s5 > q27 (values) @1280 × walk-wrong   MISSING
-  walk-right    stats-quartiles > s5 > q28 (boxplot) @375 × walk-right   MISSING
-  walk-wrong    stats-quartiles > s5 > q28 (boxplot) @375 × walk-wrong   MISSING
-  walk-right    stats-quartiles > s5 > q28 (boxplot) @768 × walk-right   MISSING
-  walk-wrong    stats-quartiles > s5 > q28 (boxplot) @768 × walk-wrong   MISSING
-  walk-right    stats-quartiles > s5 > q28 (boxplot) @1280 × walk-right  MISSING
-  walk-wrong    stats-quartiles > s5 > q28 (boxplot) @1280 × walk-wrong  MISSING
-  walk-right    stats-quartiles > s6 > q29 (judge) @375 × walk-right     MISSING
-  walk-wrong    stats-quartiles > s6 > q29 (judge) @375 × walk-wrong     MISSING
-  walk-right    stats-quartiles > s6 > q29 (judge) @768 × walk-right     MISSING
-  walk-wrong    stats-quartiles > s6 > q29 (judge) @768 × walk-wrong     MISSING
-  walk-right    stats-quartiles > s6 > q29 (judge) @1280 × walk-right    MISSING
-  walk-wrong    stats-quartiles > s6 > q29 (judge) @1280 × walk-wrong    MISSING
-  walk-right    stats-quartiles > s6 > q30 (judge) @375 × walk-right     MISSING
-  walk-wrong    stats-quartiles > s6 > q30 (judge) @375 × walk-wrong     MISSING
-  walk-right    stats-quartiles > s6 > q30 (judge) @768 × walk-right     MISSING
-  walk-wrong    stats-quartiles > s6 > q30 (judge) @768 × walk-wrong     MISSING
-  walk-right    stats-quartiles > s6 > q30 (judge) @1280 × walk-right    MISSING
-  walk-wrong    stats-quartiles > s6 > q30 (judge) @1280 × walk-wrong    MISSING
-  walk-right    stats-quartiles > s6 > q31 (judge) @375 × walk-right     MISSING
-  walk-wrong    stats-quartiles > s6 > q31 (judge) @375 × walk-wrong     MISSING
-  walk-right    stats-quartiles > s6 > q31 (judge) @768 × walk-right     MISSING
-  walk-wrong    stats-quartiles > s6 > q31 (judge) @768 × walk-wrong     MISSING
-  walk-right    stats-quartiles > s6 > q31 (judge) @1280 × walk-right    MISSING
-  walk-wrong    stats-quartiles > s6 > q31 (judge) @1280 × walk-wrong    MISSING
-  walk-right    stats-quartiles > s6 > q32 (judge) @375 × walk-right     MISSING
-  walk-wrong    stats-quartiles > s6 > q32 (judge) @375 × walk-wrong     MISSING
-  walk-right    stats-quartiles > s6 > q32 (judge) @768 × walk-right     MISSING
-  walk-wrong    stats-quartiles > s6 > q32 (judge) @768 × walk-wrong     MISSING
-  walk-right    stats-quartiles > s6 > q32 (judge) @1280 × walk-right    MISSING
-  walk-wrong    stats-quartiles > s6 > q32 (judge) @1280 × walk-wrong    MISSING
-  walk-right    stats-quartiles > s6 > q33 (judge) @375 × walk-right     MISSING
-  walk-wrong    stats-quartiles > s6 > q33 (judge) @375 × walk-wrong     MISSING
-  walk-right    stats-quartiles > s6 > q33 (judge) @768 × walk-right     MISSING
-  walk-wrong    stats-quartiles > s6 > q33 (judge) @768 × walk-wrong     MISSING
-  walk-right    stats-quartiles > s6 > q33 (judge) @1280 × walk-right    MISSING
-  walk-wrong    stats-quartiles > s6 > q33 (judge) @1280 × walk-wrong    MISSING
-  geometry      cover:first-visit @375 × geometry                        MISSING
-  colour        cover:first-visit @375 × colour                          MISSING
-  consequence   cover:first-visit @375 × consequence                     MISSING
-  click-safety  cover:first-visit @375 × click-safety                    MISSING
-  empty         cover:first-visit @375 × empty                           MISSING
-  nested        cover:first-visit @375 × nested                          MISSING
+  CELLS NOTHING CLOSES (1447)
+  family      cell                                                                   why
+  ----------  ------------------------------------------------------------  -------  ---
+  walk-right  stats-quartiles > s5 > q25 (values) @375 × walk-right         MISSING
+  walk-wrong  stats-quartiles > s5 > q25 (values) @375 × walk-wrong         MISSING
+  walk-right  stats-quartiles > s5 > q25 (values) @768 × walk-right         MISSING
+  walk-wrong  stats-quartiles > s5 > q25 (values) @768 × walk-wrong         MISSING
+  walk-right  stats-quartiles > s5 > q25 (values) @1280 × walk-right        MISSING
+  walk-wrong  stats-quartiles > s5 > q25 (values) @1280 × walk-wrong        MISSING
+  walk-right  stats-quartiles > s5 > q26 (boxplot) @375 × walk-right        MISSING
+  walk-wrong  stats-quartiles > s5 > q26 (boxplot) @375 × walk-wrong        MISSING
+  walk-right  stats-quartiles > s5 > q26 (boxplot) @768 × walk-right        MISSING
+  walk-wrong  stats-quartiles > s5 > q26 (boxplot) @768 × walk-wrong        MISSING
+  walk-right  stats-quartiles > s5 > q26 (boxplot) @1280 × walk-right       MISSING
+  walk-wrong  stats-quartiles > s5 > q26 (boxplot) @1280 × walk-wrong       MISSING
+  walk-right  stats-quartiles > s5 > q27 (values) @375 × walk-right         MISSING
+  walk-wrong  stats-quartiles > s5 > q27 (values) @375 × walk-wrong         MISSING
+  walk-right  stats-quartiles > s5 > q27 (values) @768 × walk-right         MISSING
+  walk-wrong  stats-quartiles > s5 > q27 (values) @768 × walk-wrong         MISSING
+  walk-right  stats-quartiles > s5 > q27 (values) @1280 × walk-right        MISSING
+  walk-wrong  stats-quartiles > s5 > q27 (values) @1280 × walk-wrong        MISSING
+  walk-right  stats-quartiles > s5 > q28 (boxplot) @375 × walk-right        MISSING
+  walk-wrong  stats-quartiles > s5 > q28 (boxplot) @375 × walk-wrong        MISSING
+  walk-right  stats-quartiles > s5 > q28 (boxplot) @768 × walk-right        MISSING
+  walk-wrong  stats-quartiles > s5 > q28 (boxplot) @768 × walk-wrong        MISSING
+  walk-right  stats-quartiles > s5 > q28 (boxplot) @1280 × walk-right       MISSING
+  walk-wrong  stats-quartiles > s5 > q28 (boxplot) @1280 × walk-wrong       MISSING
+  walk-right  stats-quartiles > s6 > q33 (judge) @375 × walk-right          MISSING
+  walk-wrong  stats-quartiles > s6 > q33 (judge) @375 × walk-wrong          MISSING
+  walk-right  stats-quartiles > s6 > q33 (judge) @768 × walk-right          MISSING
+  walk-wrong  stats-quartiles > s6 > q33 (judge) @768 × walk-wrong          MISSING
+  walk-right  stats-quartiles > s6 > q33 (judge) @1280 × walk-right         MISSING
+  walk-wrong  stats-quartiles > s6 > q33 (judge) @1280 × walk-wrong         MISSING
+  walk-stage  stats-quartiles > s1 > q3 × iqr @375 × walk-stage             MISSING
+  walk-stage  stats-quartiles > s1 > q3 × iqr @768 × walk-stage             MISSING
+  walk-stage  stats-quartiles > s1 > q3 × iqr @1280 × walk-stage            MISSING
+  walk-stage  stats-quartiles > s1 > q4 × picking @375 × walk-stage         MISSING
+  walk-stage  stats-quartiles > s1 > q4 × cut-committed @375 × walk-stage   MISSING
+  walk-stage  stats-quartiles > s1 > q4 × iqr @375 × walk-stage             MISSING
+  walk-stage  stats-quartiles > s1 > q4 × picking @768 × walk-stage         MISSING
+  walk-stage  stats-quartiles > s1 > q4 × cut-committed @768 × walk-stage   MISSING
+  walk-stage  stats-quartiles > s1 > q4 × iqr @768 × walk-stage             MISSING
+  walk-stage  stats-quartiles > s1 > q4 × picking @1280 × walk-stage        MISSING
+  walk-stage  stats-quartiles > s1 > q4 × cut-committed @1280 × walk-stage  MISSING
+  walk-stage  stats-quartiles > s1 > q4 × iqr @1280 × walk-stage            MISSING
+  walk-stage  stats-quartiles > s1 > q5 × tray @375 × walk-stage            MISSING
+  walk-stage  stats-quartiles > s1 > q5 × ordering @375 × walk-stage        MISSING
+  walk-stage  stats-quartiles > s1 > q5 × selected @375 × walk-stage        MISSING
+  walk-stage  stats-quartiles > s1 > q5 × ordered @375 × walk-stage         MISSING
+  walk-stage  stats-quartiles > s1 > q5 × picking @375 × walk-stage         MISSING
+  walk-stage  stats-quartiles > s1 > q5 × cut-committed @375 × walk-stage   MISSING
+  walk-stage  stats-quartiles > s1 > q5 × iqr @375 × walk-stage             MISSING
+  walk-stage  stats-quartiles > s1 > q5 × ready @375 × walk-stage           MISSING
+  walk-stage  stats-quartiles > s1 > q5 × tray @768 × walk-stage            MISSING
+  walk-stage  stats-quartiles > s1 > q5 × ordering @768 × walk-stage        MISSING
+  walk-stage  stats-quartiles > s1 > q5 × selected @768 × walk-stage        MISSING
+  walk-stage  stats-quartiles > s1 > q5 × ordered @768 × walk-stage         MISSING
+  walk-stage  stats-quartiles > s1 > q5 × picking @768 × walk-stage         MISSING
+  walk-stage  stats-quartiles > s1 > q5 × cut-committed @768 × walk-stage   MISSING
+  walk-stage  stats-quartiles > s1 > q5 × iqr @768 × walk-stage             MISSING
+  walk-stage  stats-quartiles > s1 > q5 × ready @768 × walk-stage           MISSING
+  walk-stage  stats-quartiles > s1 > q5 × tray @1280 × walk-stage           MISSING
+  walk-stage  stats-quartiles > s1 > q5 × ordering @1280 × walk-stage       MISSING
 
   DEBT LEDGER (printed every run)
   cell                     owner / phase            file                state

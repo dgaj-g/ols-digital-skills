@@ -168,6 +168,17 @@ const FITS_QUERY = `(() => {
   document.querySelectorAll(CARDS).forEach((card) => {
     if (!vis(card)) return;
     if (!hasGround(card)) return;
+    /* A CARD THAT SCROLLS IS NOT A CARD THAT SPILLS. The loop below already
+       exempts anything inside a scroller BETWEEN the element and the card, but
+       never asked whether the card ITSELF is one - and a cumulative-frequency
+       board is exactly that: rather than let a small square fall under 12px and
+       become uncountable, the board keeps its size and its own frame scrolls
+       sideways, with a line on screen saying so (DESIGN 4.0, the phone rule).
+       That is content she can reach, which is what this law is about; before
+       this line it was reported as 773px of spill. The law still bites on a
+       card that does NOT scroll - which is every card on this platform bar the
+       stat board's frame. */
+    if (ownsOverflow(card)) return;
     const cs = getComputedStyle(card);
     const cr = card.getBoundingClientRect();
     /* ADAPTER (maths): measured against the card's BORDER box, not its content

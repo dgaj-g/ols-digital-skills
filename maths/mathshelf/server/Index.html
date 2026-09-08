@@ -1541,6 +1541,10 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .stat-readonly { margin: 6px 0; }
 .stat-board-small .stat-board { max-width: 320px; }
 
+/* the teacher's copy of a pupil's board: reading size, never interactive */
+.qv-artefact, .jp-artefact { margin: 6px 0 10px; max-width: 420px; }
+.qv-artefact .stat-board-frame, .jp-artefact .stat-board-frame { border: 1px solid var(--hairline); }
+
 /* ===== shell.css (the v4 identity layer, LAST so it wins) ===== */
 /* \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 
    MATHSHELF \b7  "THE BLACKBOARD, AFTER DARK"
@@ -2261,7 +2265,7 @@ window.OLS_TRANSPORT = {
       statAlreadyMarked: 'This question is already marked.',
       statTryAgain: 'Not quite. Your first go stays above \u2014 one more attempt.',
       statPutBack: 'Press it again to put it back.',
-      statRemoveLast: '\u21b6 remove last',
+      statRemoveLast: 'Remove the last one',
       statNextRow: 'next \u2193',
       statThatsMine: 'That\u2019s my answer',
       statThatsMyOne: 'That\u2019s my {name}',
@@ -2276,6 +2280,7 @@ window.OLS_TRANSPORT = {
       statRange: 'range',
       statLowest: 'Lowest',
       statHighest: 'Highest',
+      statClassColumn: 'Group',
       statFrequency: 'Frequency',
       statCumulativeFrequency: 'Cumulative frequency',
       statReading: 'reading',
@@ -2484,6 +2489,10 @@ window.OLS_TRANSPORT = {
 
     /* \u2500\u2500 what a teacher reads \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
     teacher: {
+      /* when a pupil's own board cannot be re-drawn on this screen - a saved
+         record from a version of the book that no longer exists, say. It says
+         what is missing and does not pretend the work is not there. */
+      artefactUndrawable: 'Her work is saved, but this screen could not re-draw the board.',
       passcodeLabel: 'Staff passcode',
       passcodeEmpty: 'Enter the staff passcode.',
       passcodeChecking: 'Checking the passcode\u2026',
@@ -5201,6 +5210,237 @@ window.OLS_TRANSPORT = {
   }
   function capitalise(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
+
+  /* ---------- what a MODEL board looks like, and what a slip looks like ----
+     ONE HOME (DFM 144). Three callers need this and must never disagree:
+     dev/validate-all.js proves the model marks full, tools/qa's walker plays it
+     on the real controls, and script.js's demo seed fills the markbook with
+     work that has authentic slips in it. It lives here because knowing what a
+     right answer looks like is the engine's job. */
+  var RULES = null;
+  function rnum2(r) { return r && r.d ? r.n / r.d : Number(r); }
+  function rstr2(r) {
+    if (r == null) return '';
+    if (r.d === undefined) return String(r);
+    return r.d === 1 ? String(r.n) : String(Math.round((r.n / r.d) * 1e6) / 1e6);
+  }
+  function isStatKind(k) { return KINDS_LIST.indexOf(k) > -1; }
+  var KINDS_LIST = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'];
+  function modelBoard(q, wrong, rules) {
+    RULES = rules || null;
+    return statsBoard(q, !!wrong);
+  }
+/* ----------------------------------------------------------------- stats */
+/* The Handling Data kinds store what she BUILT, not a line she wrote, so a
+   model attempt is the finished board: the ordered row and its cuts, the
+   running totals, the plotted points, the rule heights and readings, the five
+   markers, the two sentences, the verdicts. `corrupt` returns the same board
+   carrying that kind's own classic slip, so a walk of the wrong path is a walk
+   of a real misconception. */
+function isStatKind(k) {
+  return ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'].indexOf(k) > -1;
+}
+
+function qlistBoard(q, wrong) {
+  var vals = (q.values || []).slice();
+  var idx = vals.map(function (v, i) { return i; })
+    .sort(function (a, b) { return Number(vals[a]) - Number(vals[b]); });
+  var n = idx.length;
+  var rule = rulesOf(q, RULES).quartileRule;
+  var pos = quartilePositions(n, rule);
+  var picks = {}, cuts = (q.ask || ['Q1', 'Q2', 'Q3', 'IQR']).filter(function (a) { return a !== 'IQR'; });
+  cuts.forEach(function (c) {
+    var p = pos[c];
+    picks[c] = (p.d === 1) ? [p.n - 1] : [Math.floor(p.n / p.d) - 1, Math.floor(p.n / p.d)];
+  });
+  var truth = quartiles(vals, rule);
+  var out = { order: idx, picks: picks, iqr: '' };
+  if ((q.ask || []).indexOf('IQR') > -1) out.iqr = rstr2(truth.IQR);
+  if (!wrong) return out;
+  /* the classic slip: the lower and upper quartile the wrong way round */
+  if (picks.Q1 && picks.Q3) {
+    var t = out.picks.Q1; out.picks = JSON.parse(JSON.stringify(picks));
+    out.picks.Q1 = picks.Q3; out.picks.Q3 = t;
+    if (out.iqr) out.iqr = rstr2({ n: -truth.IQR.n, d: truth.IQR.d });
+  } else if (picks[cuts[0]]) {
+    out.picks[cuts[0]] = [Math.max(0, picks[cuts[0]][0] - 1)];
+  } else if (out.iqr) {
+    /* a question that asks only for the interquartile range: the slip is the
+       one every class makes, the RANGE given instead */
+    var sorted = vals.slice().sort(function (a, b) { return Number(a) - Number(b); });
+    out.iqr = String(Number(sorted[sorted.length - 1]) - Number(sorted[0]));
+  }
+  return out;
+}
+function cftableBoard(q, wrong) {
+  var truth = cumulate(q.classes || []);
+  if (!wrong) return { cf: truth.map(String) };
+  /* the frequencies copied straight down, which is the whole misconception */
+  return { cf: (q.classes || []).map(function (c) { return String(c.f); }) };
+}
+function cfplotBoard(q, wrong) {
+  var rules = rulesOf(q, RULES);
+  var want = expectedPoints(q, rules).map(function (p) { return [rnum2(p[0]), rnum2(p[1])]; });
+  if (!wrong) return { pts: want, joined: true };
+  var cf = cumulate(q.classes || []);
+  return {
+    pts: (q.classes || []).map(function (c, i) { return [(Number(c.lo) + Number(c.hi)) / 2, cf[i]]; }),
+    joined: true
+  };
+}
+function snapTo(x, sq) { return Math.round(x / sq) * sq; }
+function cfreadBoard(q, wrong) {
+  var rules = rulesOf(q, RULES);
+  var heights = readHeights(Number(q.n) || 0, rules.curveRule);
+  var sqx = ((q.chart || {}).sq || {}).x || 1;
+  var reads = {}, answers = {}, answer = '', iqr = '';
+  (q.ask || []).forEach(function (a) {
+    if (typeof a === 'string') {
+      if (a === 'IQR') {
+        var x1 = curveX(q.curve, heights.Q1), x3 = curveX(q.curve, heights.Q3);
+        if (x1 && x3) iqr = String(snapTo(rnum2(x3), sqx) - snapTo(rnum2(x1), sqx));
+        return;
+      }
+      var h = heights[a === 'median' ? 'median' : a];
+      var x = curveX(q.curve, h);
+      reads[a] = { h: rnum2(h), x: x ? snapTo(rnum2(x), sqx) : null };
+      return;
+    }
+    if (a && a.type === 'atX') {
+      var cf = curveY(q.curve, a.x);
+      var cfv = cf ? rnum2(cf) : null;
+      reads['atX@' + a.x] = { x: a.x, cf: cfv };
+      reads.atX = { x: a.x, cf: cfv };
+      var N = Number(q.n) || 0;
+      var v2 = '';
+      if (a.want === 'countBelow') v2 = String(cfv);
+      else if (a.want === 'countAbove') v2 = String(N - cfv);
+      else if (a.want === 'pctBelow') v2 = String(Math.round((cfv / N) * 100));
+      else if (a.want === 'pctAbove') v2 = String(Math.round(((N - cfv) / N) * 100));
+      answers['atX@' + a.x] = v2;
+      answer = v2;
+    }
+  });
+  if (!wrong) return { reads: reads, answers: answers, iqr: iqr, answer: answer };
+  /* half the AXIS, not half the total \u2014 the slip the axis invites */
+  var axis = ((q.chart || {}).y || {}).max;
+  var bad = JSON.parse(JSON.stringify(reads));
+  Object.keys(bad).forEach(function (k) {
+    if (k === 'atX' || !axis) return;
+    bad[k].h = axis / 2;
+    var xx = curveX(q.curve, axis / 2);
+    bad[k].x = xx ? snapTo(rnum2(xx), sqx) : bad[k].x;
+  });
+  return { reads: bad, answers: answers, iqr: iqr, answer: answer };
+}
+function boxTruthFive(q) {
+  var rules = rulesOf(q, RULES);
+  if (q.from === 'curve' && q.curve) {
+    var h = readHeights(Number(q.n) || 0, rules.curveRule);
+    var o = {
+      min: (q.given || {}).min, max: (q.given || {}).max,
+      Q1: curveX(q.curve, h.Q1), Q2: curveX(q.curve, h.median), Q3: curveX(q.curve, h.Q3)
+    };
+    ['Q1', 'Q2', 'Q3'].forEach(function (k) { if ((q.given || {})[k] !== undefined) o[k] = q.given[k]; });
+    return o;
+  }
+  if (q.given) return q.given;
+  if (q.from === 'qlist') {
+    var f = fiveNumber(q.values || [], rules.quartileRule);
+    return f ? { min: f.min, Q1: f.Q1, Q2: f.Q2, Q3: f.Q3, max: f.max } : null;
+  }
+  return q.answer || null;
+}
+function boxplotBoard(q, wrong) {
+  var five = boxTruthFive(q) || {};
+  var pos = {};
+  ['min', 'Q1', 'Q2', 'Q3', 'max'].forEach(function (k) { pos[k] = rstr2(five[k]); });
+  var out = { pos: pos, drawn: true };
+  if (q.from) {
+    var stageQ = JSON.parse(JSON.stringify(q));
+    stageQ.kind = q.from === 'curve' ? 'cfread' : q.from;
+    delete stageQ.from;
+    out.stage = statsBoard(stageQ, false);
+  }
+  if (!wrong) return out;
+  /* the whiskers and the quartiles confused */
+  var bad = JSON.parse(JSON.stringify(out));
+  var t = bad.pos.min; bad.pos.min = bad.pos.Q1; bad.pos.Q1 = t;
+  var u = bad.pos.max; bad.pos.max = bad.pos.Q3; bad.pos.Q3 = u;
+  return bad;
+}
+function spreadOf(sum, meas) {
+  return meas === 'range' ? (Number(sum.max) - Number(sum.min)) : (Number(sum.Q3) - Number(sum.Q1));
+}
+function compareBoard(q, wrong) {
+  var A0 = (q.plots || [])[0] || { label: 'A', summary: {} };
+  var B0 = (q.plots || [])[1] || { label: 'B', summary: {} };
+  var words = ((q.context || {}).words || []);
+  var mA = Number(A0.summary.Q2), mB = Number(B0.summary.Q2);
+  var who = mA > mB ? A0.label : B0.label;
+  var v1 = who === A0.label ? [String(mA), String(mB)] : [String(mB), String(mA)];
+  var sA = spreadOf(A0.summary, 'iqr'), sB = spreadOf(B0.summary, 'iqr');
+  var who2 = sA > sB ? A0.label : B0.label;
+  var v2 = who2 === A0.label ? [String(sA), String(sB)] : [String(sB), String(sA)];
+  var out = {
+    s1: { who: who, who2: who, ctx: words[0], v: v1 },
+    s2: { who: who2, size: 'larger', cons: 'less', meas: 'iqr', v: v2 }
+  };
+  if (!wrong) return out;
+  /* the comparison right, the meaning in context wrong */
+  var bad = JSON.parse(JSON.stringify(out));
+  bad.s1.ctx = words[1];
+  return bad;
+}
+function judgeBoard(q, wrong) {
+  var j = (q.claims || []).map(function (c) {
+    if (c.options) return { v: c.verdict };
+    return { fair: c.fair, why: c.fair === false ? c.why : null };
+  });
+  if (!wrong) return { j: j };
+  var bad = JSON.parse(JSON.stringify(j));
+  var i;
+  for (i = 0; i < (q.claims || []).length; i++) {
+    var c = q.claims[i];
+    if (c.options) {
+      var other = c.options.filter(function (o) { return o !== c.verdict; })[0];
+      if (other) { bad[i] = { v: other }; return { j: bad }; }
+    } else if (c.fair === false) {
+      bad[i] = { fair: true, why: null };                 /* a biased claim accepted */
+      return { j: bad };
+    }
+  }
+  return { j: bad };
+}
+function valuesBoard(q, wrong) {
+  var order = q.order || (q.slots || []).map(function (s) { return s.id; });
+  var v = {};
+  order.forEach(function (id) {
+    var slot = (q.slots || []).filter(function (s) { return s.id === id; })[0] || {};
+    v[id] = rstr2(slot.answer);
+  });
+  if (!wrong) return { v: v };
+  var bad = JSON.parse(JSON.stringify(v));
+  var first = order[0];
+  bad[first] = String(Number(bad[first] || 0) + 1);
+  return { v: bad };
+}
+function statsBoard(q, wrong) {
+  switch (q.kind) {
+    case 'qlist': return qlistBoard(q, wrong);
+    case 'cftable': return cftableBoard(q, wrong);
+    case 'cfplot': return cfplotBoard(q, wrong);
+    case 'cfread': return cfreadBoard(q, wrong);
+    case 'boxplot': return boxplotBoard(q, wrong);
+    case 'compare': return compareBoard(q, wrong);
+    case 'judge': return judgeBoard(q, wrong);
+    case 'values': return valuesBoard(q, wrong);
+    default: return null;
+  }
+}
+
+
+
   /* ---------- selfTest ---------- */
 
   function selfTest() {
@@ -5576,6 +5816,8 @@ window.OLS_TRANSPORT = {
     readHeights: readHeights,
     expectedPoints: expectedPoints,
     unitsOf: unitsOf,
+    modelBoard: modelBoard,
+    isStatKind: isStatKind,
     check: check,
     gist: gist,
     rat: R,
@@ -6751,7 +6993,7 @@ window.OLS_TRANSPORT = {
       's1 movie: connective narration around MMcK p1 Example 3 (the ordering beat, then the three rings and the subtraction) \u2014 the closing line on what the IQR is for paraphrases MMcK p7\u2019s comparison notes ("the middle 50%... excludes the extremely high and extremely low values")',
       's1 q8 claim 1: reworded as the negation of MMcK p8 Q12(e) ("The interquartile range is a better measure of spread than the range") so the judge kind\u2019s fair:false + reason mechanic can collect a why \u2014 the engine only offers a reason step on a claim marked not fair, and Q12(e) as printed is a statement to affirm, not reject',
       's2 movie: the definition of cumulative frequency is lightly cleaned up from the source\u2019s own line ("Cumulative Frequency means the number of times a value, or something less that it occurs")',
-      's3 movie: the classic midpoint-plotting slip is taught through the caption and the one red note only \u2014 there is no "wrong point in pencil, then crossed" op in the movie whitelist, so the beat is verbal, not drawn; the start-point caption paraphrases the source\u2019s margin note "No one under 130cm"',
+      's3 movie: the classic midpoint-plotting slip is taught through the caption and the one red note only \u2014 there is no "draw the wrong point, then cross it" op in the movie whitelist, so the beat is verbal, not drawn; the start-point caption paraphrases the source\u2019s margin note "No one under 130cm"',
       's4 movie curve (intermediate points): CF notes Example 2 (80 plants) prints no class table, only the four worked answers (median 9, lower quartile 6, upper quartile 13, IQR 7) and a hand-drawn curve; the movie\u2019s curve points (0,0),(3,3),(6,20),(9,40),(13,60),(18,74),(24,80) are authored to reproduce those four answers exactly under split50 with n = 80 (median read at height 40, lower quartile at 20, upper at 60), the shape taken from the hand-drawn image',
       's4 movie: "read from half the total, not half the axis" is a paraphrase of the standing warning, not a source quote',
       's5 movie: the closing note on range and spread quotes MMcK p7\u2019s comparison method notes ("A large range means the data is more spread out... a smaller range means... the results are more consistent")',
@@ -7241,9 +7483,9 @@ window.OLS_TRANSPORT = {
           { id: 'q31', kind: 'judge', marks: [2, 2],
             prompt: 'Jean and Joyce are both pupils at Eastwood Girls High School. They want to know how many times a month, on average, people in their town go to church. Jean asks 300 pupils in her school; Joyce stands outside her local church and asks 300 people on their way in. Decide whether each survey gives a fair picture of the town, and why.',
             claims: [
-              { text: 'Jean\u2019s survey tells her how often people in her town go to church.', fair: false,
+              { text: 'Asking 300 pupils in her own school tells Jean about the whole town.', fair: false,
                 why: 'WRONG_POP', alsoWhy: ['BIASED'] },
-              { text: 'Joyce\u2019s survey tells her how often people in her town go to church.', fair: false,
+              { text: 'Standing outside a church and asking the people going in tells Joyce about the whole town.', fair: false,
                 why: 'BIASED' }
             ],
             src: 'Statistics M7 (1).pdf Q28(a)(b)' },
@@ -11259,11 +11501,18 @@ window.OLS_TRANSPORT = {
     function classText(c) {
       return c.text || (c.lo + ' < ' + (q.symbol || 'x') + ' \u2264 ' + c.hi);
     }
+    /* A COLUMN WITH NO HEADING IS A COLUMN SHE HAS TO GUESS AT, and an empty
+       <th> is a hole in the table the empty-elements audit rightly names. The
+       pack's own wording first, then the chart's axis label, then the plain
+       word. */
+    function classHead() {
+      return q.classHead || (q.chart && q.chart.x && q.chart.x.label) || T().statClassColumn;
+    }
     function render() {
       table.innerHTML = '';
       var thead = el('thead');
       var hr = el('tr');
-      hr.appendChild(el('th', null, esc(q.classHead || '')));
+      hr.appendChild(el('th', null, esc(classHead())));
       hr.appendChild(el('th', null, esc(T().statFrequency)));
       hr.appendChild(el('th', null, esc(T().statCumulativeFrequency)));
       thead.appendChild(hr); table.appendChild(thead);
@@ -11516,7 +11765,7 @@ window.OLS_TRANSPORT = {
       tableWrap.innerHTML = '';
       var t = el('table', 'stat-table');
       var hr = el('tr');
-      hr.appendChild(el('th', null, esc(q.classHead || '')));
+      hr.appendChild(el('th', null, esc(q.classHead || (q.chart && q.chart.x && q.chart.x.label) || T().statClassColumn)));
       hr.appendChild(el('th', null, esc(T().statFrequency)));
       hr.appendChild(el('th', null, esc(T().statCumulativeFrequency)));
       t.appendChild(hr);
@@ -12213,8 +12462,15 @@ window.OLS_TRANSPORT = {
     var host = el('div', 'stat-claims');
     ctx.boardHost.appendChild(host);
 
+    /* THE REASON BANK IS THE ENGINE'S, unless this question authored its own.
+       DESIGN 6.6 fixes the ids and the plain-words sentences in one place; a
+       pack that repeated them in every judge question would be eight copies to
+       go stale. A question may still carry its own bank when the source's
+       wording differs. */
     function reasonBank() {
-      return (q.reasons || []).map(function (r) { return r; });
+      if (q.reasons && q.reasons.length) return q.reasons.slice();
+      var bank = (window.GJ_STATS && window.GJ_STATS.REASONS) || {};
+      return Object.keys(bank).map(function (id) { return { id: id, text: bank[id] }; });
     }
     function render() {
       host.innerHTML = '';
@@ -12253,6 +12509,7 @@ window.OLS_TRANSPORT = {
               b.type = 'button';
               b.textContent = r.text;
               b.setAttribute('data-tray-item', '');
+              b.setAttribute('data-reason', r.id);
               b.setAttribute('aria-pressed', j[i].why === r.id ? 'true' : 'false');
               b.addEventListener('click', function (e) {
                 e.stopPropagation();
@@ -12940,6 +13197,17 @@ window.OLS_TRANSPORT = {
     });
     return out;
   }
+  /* WHAT THE QUESTION IS, IN ONE LINE. A prompt's first 46 characters read as
+     the scenario ("The cumulative frequency graph shows the marks of 112 ca\u2026"),
+     which is the same opening on every question of a section; the stats engine
+     says what the pupil actually DOES. */
+  function gistOf(q) {
+    if (window.GJ_STATS && window.GJ_STATS.MK_LABELS[q.kind]) {
+      try { return window.GJ_STATS.gist(q); } catch (e) { /* fall through */ }
+    }
+    return String(q.prompt || '').slice(0, 46);
+  }
+
   function bookTitle(actId) {
     var a = window.GJ.app.activities.filter(function (x) { return x.id === actId; })[0];
     return a ? a.title : actId;
@@ -13349,7 +13617,7 @@ window.OLS_TRANSPORT = {
         var st = window.GJ_STAFF_PAGES.exerciseStats(pupils, { questions: [item.q] }, si, DX_NAMES);
         var tot = Math.max(1, st.ok + st.amber + st.err + st.open + st.un);
         t.push('<th scope="col">' + esc(item.qLabel) +
-          '<span class="gist">' + esc(String(item.q.prompt || '').slice(0, 46)) + '</span>' +
+          '<span class="gist">' + esc(gistOf(item.q)) + '</span>' +
           '<span class="mini" data-mark role="img" aria-label="' + st.ok + ' right of ' + tot + ' in ' + esc(item.qLabel) + '">' +
             '<i class="p-ok" style="width:' + (100 * st.ok / tot) + '%"></i>' +
             '<i class="p-am" style="width:' + (100 * st.amber / tot) + '%"></i>' +
@@ -13434,10 +13702,21 @@ window.OLS_TRANSPORT = {
         var card = el('div', 'qv-card staff-panel');
         card.setAttribute('data-email', p.email);
         var lines = (m.last && m.last.L) || [];
-        card.innerHTML = '<p class="qv-who">' + esc(p.name || p.email) + '</p>' +
-          (lines.length
-            ? '<ol class="qv-lines">' + lines.map(function (l) { return '<li>' + esc(pretty(l.t || '')) + '</li>'; }).join('') + '</ol>'
-            : '<p class="qv-none">Nothing written for ' + esc(item.qLabel) + ' yet.</p>');
+        /* A HANDLING DATA QUESTION LEAVES NO LINES - it leaves a board. Her own
+           artefact is re-drawn from her record at reading size, with the app's
+           first-pass marks on it and the unit rows beneath (DESIGN 9). */
+        if (m.last && m.last.S && window.GJ_JOTTER_STATS) {
+          card.innerHTML = '<p class="qv-who">' + esc(p.name || p.email) + '</p>';
+          var artefact = el('div', 'qv-artefact');
+          card.appendChild(artefact);
+          try { window.GJ_JOTTER_STATS.renderReadOnly(artefact, item.q, m.last, m.verdict); }
+          catch (e) { card.appendChild(el('p', 'qv-none', esc(TT('artefactUndrawable')))); }
+        } else {
+          card.innerHTML = '<p class="qv-who">' + esc(p.name || p.email) + '</p>' +
+            (lines.length
+              ? '<ol class="qv-lines">' + lines.map(function (l) { return '<li>' + esc(pretty(l.t || '')) + '</li>'; }).join('') + '</ol>'
+              : '<p class="qv-none">Nothing written for ' + esc(item.qLabel) + ' yet.</p>');
+        }
         col.appendChild(card);
       }).catch(function () { done++; });
     });
@@ -13631,6 +13910,16 @@ window.OLS_TRANSPORT = {
         });
         var per = (res.verdict && (res.verdict.perLine || res.verdict.perStep)) || [];
         var last = res.last || {};
+        /* the board she built, re-drawn and annotated. The per-unit ticks on it
+           are the app's own first pass and are READ-ONLY: a teacher who
+           disagrees inks the QUESTION, exactly as she does on an algebra
+           route (DESIGN 9, and the v2/v4 pencil-ink contract). */
+        if (last.S && window.GJ_JOTTER_STATS) {
+          var board = el('div', 'jp-artefact');
+          bodyEl.appendChild(board);
+          try { window.GJ_JOTTER_STATS.renderReadOnly(board, q, last, res.verdict); }
+          catch (e) { bodyEl.appendChild(el('p', 'ui-msg', esc(TT('artefactUndrawable')))); }
+        }
         (last.L || []).forEach(function (l, i) {
           var v = per[i] || {};
           var mark = v.ok === 1 ? '<span class="glyph-ok">\u2713</span>' : v.ok === 2 ? '<span class="glyph-ok" style="opacity:.55">\u2713</span>' : v.ok === 0 ? '<span class="glyph-err">\u2717</span>' : '';
@@ -13970,6 +14259,26 @@ window.OLS_TRANSPORT = {
     { id: 'stats-quartiles', title: 'Handling Data', sub: 'Quartiles, curves and box plots', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'curve' }
   ];
 
+  /* WHAT THE OFFLINE STUB THINKS A CLASS HAS, shaped exactly as the server
+     shapes it (server/Code.gs.template: ACTS, LEGACY_ON, coerceActs_). The two
+     homes are one contract and qa-two-homes / qa-tickbox hold them together: a
+     stub that hands back two keys where the server hands back three shows a
+     preview shelf that is not the shelf the class will get. Derived from
+     ACTIVITIES, so a new book needs no line here at all. */
+  var LEGACY_ON = { angles: true, algebra: true };
+  function actIds() { return ACTIVITIES.map(function (a) { return a.id; }); }
+  function allActsOn() {
+    var out = {};
+    actIds().forEach(function (id) { out[id] = true; });
+    return out;
+  }
+  function coerceActs(a) {
+    a = a || {};
+    var out = {};
+    actIds().forEach(function (id) { out[id] = !!a[id]; });
+    return out;
+  }
+
   /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 THE DOM CONTRACT (gates design 2.4) \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
      Every screen and every materially different state of one declares itself,
      so coverage can be DERIVED from what exists instead of typed into a list
@@ -14095,7 +14404,12 @@ window.OLS_TRANSPORT = {
   var OFFLINE_TEACHER = 'demo.teacher@c2ken.net';
   function store() {
     var s = lsLoad();
-    s.classes = s.classes || [{ name: BOOT.classCode, acts: { angles: true, algebra: true } }];
+    /* THE PREVIEW'S OWN CLASS carries every book. It exists only where there is
+       no server (window.OLS_TRANSPORT is absent), it is never a class anybody
+       teaches, and it is the only way a walk can reach a book at all: a real
+       class gets a new book UNTICKED and a teacher turns it on (rule 17), which
+       is the server's business and is proved there by qa-tickbox. */
+    s.classes = s.classes || [{ name: BOOT.classCode, acts: allActsOn() }];
     s.data = s.data || {};   // data[class][email][act] = {state, summary}
     s.names = s.names || {};
     s.classes.forEach(function (c) { if (c && c.owner == null) c.owner = OFFLINE_TEACHER; });
@@ -14284,6 +14598,21 @@ window.OLS_TRANSPORT = {
           } else {
             rec.att.push({ read: q.value + (rnd() < 0.5 ? 1 : (rnd() < 0.5 ? -2 : 0)), dur: 28, res: 'OK' });
           }
+        } else if (window.GJ_STATS && window.GJ_STATS.isStatKind(q.kind)) {
+          /* the handling-data books: a model board, or that kind's own classic
+             slip, from the engine's ONE home for both (statcore.modelBoard) -
+             so the markbook demo shows named slips on day one rather than
+             noise, and shows exactly the slips the walkers walk. */
+          var board = window.GJ_STATS.modelBoard(q, makeErr, pack.rules);
+          if (!board) { delete st.qs[q.id]; return; }
+          var v0 = window.GJ_STATS.check(q, { S: board }, pack.rules);
+          rec.att.push({ S: board, dur: 60 + Math.round(rnd() * 60), res: v0.res });
+          if (makeErr && rnd() < (profile === 'weak' ? 0.3 : 0.7)) {
+            var good = window.GJ_STATS.modelBoard(q, false, pack.rules);
+            rec.att.push({ S: good, dur: 45, res: 'OK' });
+          } else if (makeErr) {
+            rec.att.push({ S: board, dur: 40, res: v0.res });
+          }
         } else {
           var steps = modelAngleSteps(q);
           if (!steps) return;
@@ -14331,7 +14660,11 @@ window.OLS_TRANSPORT = {
 
   function seedDemo(s) {
     if (s.data[DEMO_CLASS]) return;
-    s.classes.push({ name: DEMO_CLASS, acts: { angles: true, algebra: true }, owner: OFFLINE_TEACHER });
+    /* THE DEMO CLASS IS A FIXTURE, NOT A CLASS. A real class gets a new book
+       UNTICKED (rule 17) and a teacher turns it on; the demo class exists so
+       the preview and the markbook demo have every book on screen, and so the
+       walkers can reach one at all. Every book, on. */
+    s.classes.push({ name: DEMO_CLASS, acts: allActsOn(), owner: OFFLINE_TEACHER });
     s.data[DEMO_CLASS] = {};
     DEMO_PUPILS.forEach(function (p, i) {
       var email = p[0].toLowerCase().replace(/[^a-z]+/g, '.') + '@c2ken.net';
@@ -14371,7 +14704,7 @@ window.OLS_TRANSPORT = {
           email: OFFLINE_EMAIL,
           name: s.names[OFFLINE_EMAIL] || 'Aoife Gartland',
           firstVisit: !s.names[OFFLINE_EMAIL],
-          acts: (reg && reg.acts) || { angles: true, algebra: true },
+          acts: coerceActs((reg && reg.acts) || LEGACY_ON),
           summaries: sums, offline: true
         });
       }
@@ -14413,7 +14746,7 @@ window.OLS_TRANSPORT = {
             if (!nm) return Promise.resolve({ ok: false, error: 'Give the class a name first.' });
             if (s.classes.some(function (c) { return c.name.toLowerCase() === nm.toLowerCase(); }))
               return Promise.resolve({ ok: false, error: 'That class already exists.' });
-            var nacts = { angles: true, algebra: true };
+            var nacts = coerceActs(LEGACY_ON);
             s.classes.push({ name: nm, acts: nacts, owner: OFFLINE_TEACHER }); lsSave(s);
             return ok({ name: nm, acts: nacts });
           }

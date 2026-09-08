@@ -1,0 +1,50 @@
+{
+ "quartile": {
+  "phrase": "the quartiles only make sense once it is in order",
+  "definedIn": "s1"
+ },
+ "lower quartile": {
+  "phrase": "position of the lower quartile",
+  "definedIn": "s1"
+ },
+ "upper quartile": {
+  "phrase": "position of the upper quartile",
+  "definedIn": "s1"
+ },
+ "median": {
+  "phrase": "position of the median",
+  "definedIn": "s1"
+ },
+ "interquartile range": {
+  "phrase": "the interquartile range covers the middle 50% of the data",
+  "definedIn": "s1"
+ },
+ "range": {
+  "phrase": "cannot distort it the way the range can",
+  "definedIn": "s1"
+ },
+ "cumulative frequency": {
+  "phrase": "cumulative frequency is the number of times a value",
+  "definedIn": "s2"
+ },
+ "box plot": {
+  "phrase": "five markers, one box plot",
+  "definedIn": "s5"
+ },
+ "whiskers": {
+  "phrase": "these become the whiskers",
+  "definedIn": "s5"
+ },
+ "hypothesis": {
+  "phrase": "a hypothesis is a statement that may or may not be true",
+  "definedIn": "s6"
+ },
+ "sample": {
+  "phrase": "tested on a sample",
+  "definedIn": "s6"
+ },
+ "population": {
+  "phrase": "not the whole population",
+  "definedIn": "s6"
+ }
+}

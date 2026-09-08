@@ -29,6 +29,7 @@ const A = require('./lib/app.js');
 const { Gate, matrix } = require('./lib/report.js');
 const B = require('./lib/browser.js');
 const W = require('./lib/walk-moves.js');
+const P = require('./lib/stat-probes.js');
 const AUD = require('./lib/audits.js');
 const S = require('./lib/stage.js');
 
@@ -220,8 +221,44 @@ async function walkBook(page, book, width, sidecar, transcript) {
       }, qid));
       await record('question', 'fresh', { qid, section: si, book });
 
-      const answered = await page.evaluate((s, args) => eval(s)(args), W.ANSWER, [qid, false]);
-      if (!answered.ok) { g.note('could not answer ' + qid + ': ' + answered.why); continue; }
+      /* THE ANSWER SIGNATURE IS NOT ON THE PAGE. What she has to bring - the
+         pairing of boundary and total, the read-off, the five numbers, the
+         cuts, the verdicts - may not appear anywhere on a fresh question, in
+         any text node or any attribute. Asked HERE and only here: on every
+         later stage the read-out prints HER OWN placement, which is her value
+         and not a hint (DESIGN 4.0, "Given data, and the answer signature"). */
+      {
+        const sig = await page.evaluate((s2, args) => eval(s2)(args), P.SIGNATURE, [qid]);
+        if (!sig.ok) g.fail('question:fresh > ' + qid + ' @' + width, 'consequence', sig.why);
+      }
+
+      /* EVERY BOARD SHE SITS IN FRONT OF, not just the first and the last.
+         A stats kind shows three to five in-between boards - points placed but
+         not joined, markers placed but the box not drawn, the ordered row
+         before the cuts - and the drive plays the model attempt up to each in
+         turn so every law is asked of every one of them. A kind that declares
+         no stages (the v3 kinds) takes the single answer it always took. */
+      const declared = await page.evaluate((s2, id) => eval(s2)(id), W.STAGES_OF, qid);
+      const visited = [];
+      if (declared.stage) visited.push(declared.stage);
+      let answered;
+      if (declared.stages.length) {
+        for (const stg of declared.stages) {
+          answered = await page.evaluate((s2, args) => eval(s2)(args), W.ANSWER, [qid, false, stg]);
+          if (!answered.ok) break;
+          await W.settle(page);
+          const now = await page.evaluate((s2, id) => eval(s2)(id), W.STAGES_OF, qid);
+          if (now.stage && visited.indexOf(now.stage) === -1) visited.push(now.stage);
+          await record('question', 'mid-attempt', { qid, section: si, book, stage: now.stage });
+        }
+        if (answered && answered.ok) {
+          const settled = P.STAGE_SETTLE(qid, declared.stages, visited);
+          if (!settled.ok) g.fail('question > ' + qid + ' @' + width, 'consequence', settled.why);
+        }
+      } else {
+        answered = await page.evaluate((s2, args) => eval(s2)(args), W.ANSWER, [qid, false]);
+      }
+      if (!answered || !answered.ok) { g.note('could not answer ' + qid + ': ' + ((answered && answered.why) || 'no answer')); continue; }
       await W.settle(page);
       /* THE SCREEN BETWEEN THE WORKING AND THE VERDICT, WHICH THE WALK USED TO
          JUMP OVER. It went straight from question:fresh to the press of Check,

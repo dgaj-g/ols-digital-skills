@@ -58,12 +58,54 @@
     judge: ['empty', 'judging', 'reason-open', 'ready'],
     values: ['empty', 'filling', 'ready']
   };
-  /* a two-stage box plot prefixes the first kind's stages with its name */
+  /* WHAT THIS QUESTION CAN ACTUALLY SHOW. The kind's list above is every board
+     the kind HAS; a particular question shows only the ones its own data
+     reaches - a reading question with one ask never sits at "committed", a
+     judge question whose every claim is a three-way choice never opens a
+     reason picker - and declaring a board that cannot happen would have the
+     coverage matrix demand a screen nobody can stand on. */
   function stagesFor(q) {
     var own = (STAGES[q.kind] || []).slice();
+    function drop(name) { var i = own.indexOf(name); if (i > -1) own.splice(i, 1); }
+    if (q.kind === 'qlist') {
+      var cuts = (q.ask || ['Q1', 'Q2', 'Q3', 'IQR']).filter(function (a) { return a !== 'IQR'; });
+      if (!cuts.length) { drop('picking'); drop('cut-committed'); }
+      else if (cuts.length < 2) drop('cut-committed');
+      if ((q.ask || []).indexOf('IQR') === -1) drop('iqr');
+    }
+    if (q.kind === 'cfread') {
+      /* IN THE ORDER SHE MEETS THEM. A reading question's boards are its own
+         asks, one after another - the rule sliding, a value keyed, a rule
+         moved across - so the list is built from `ask` rather than from the
+         kind's general order, or the walk would go looking for a board three
+         asks further on than the one she is sitting at. */
+      var asks = q.ask || [];
+      var out = ['parked'], seenRead = 0;
+      asks.forEach(function (a, i) {
+        if (a === 'IQR') { if (out.indexOf('iqr') === -1) out.push('iqr'); }
+        else if (a && a.type === 'atX') { if (out.indexOf('at-x') === -1) out.push('at-x'); }
+        else {
+          if (out.indexOf('sliding') === -1) out.push('sliding');
+          seenRead++;
+          /* a committed reading is a board of its own only when another
+             READING follows it - otherwise the next ask's own board is what
+             she is looking at the moment she commits */
+          if (seenRead > 1 && out.indexOf('committed') === -1) out.splice(out.indexOf('sliding') + 1, 0, 'committed');
+        }
+      });
+      out.push('ready');
+      own = out;
+    }
+    if (q.kind === 'judge') {
+      var anyReason = (q.claims || []).some(function (c) { return !c.options && c.fair === false; });
+      if (!anyReason) drop('reason-open');
+    }
     if (q.kind === 'boxplot' && q.from) {
       var first = q.from === 'curve' ? 'cfread' : q.from;
-      var pre = (STAGES[first] || []).map(function (s) { return first + ':' + s; });
+      var stageQ = {}, k;
+      for (k in q) if (q.hasOwnProperty(k) && k !== 'kind' && k !== 'from') stageQ[k] = q[k];
+      stageQ.kind = first;
+      var pre = stagesFor(stageQ).map(function (s2) { return first + ':' + s2; });
       return pre.concat(['stage-done']).concat(own);
     }
     return own;
@@ -91,10 +133,27 @@
       }
       if (ok) return out;
     }
-    /* a rotation is a derangement whenever every key is distinct, and is the
-       honest fallback rather than giving up and shipping the answer order */
-    out = items.slice();
-    return out.slice(1).concat(out.slice(0, 1));
+    /* EVERY ROTATION, THEN THE REVERSE. A shuffle cannot always find a
+       derangement when two tiles carry the SAME value (a repeated time, two
+       equal marks) - so the fallback tries each rotation in turn and then the
+       reversal, and takes the first that leaves no item where the answer would
+       put it. Giving up and shipping the answer order is the one thing this
+       must never do. */
+    function deranged(list) {
+      for (var k = 0; k < list.length; k++) {
+        if (answerKeys[k] !== undefined && key(list[k]) === answerKeys[k]) return false;
+      }
+      return true;
+    }
+    for (i = 1; i < items.length; i++) {
+      out = items.slice(i).concat(items.slice(0, i));
+      if (deranged(out)) return out;
+    }
+    out = items.slice().reverse();
+    if (deranged(out)) return out;
+    /* every arrangement leaves at least one item in place (a tray of two equal
+       values, say): report it by leaving the shuffle in, never the answer order */
+    return shuffle(items, seed + ':last');
   }
   function ascendingKeys(values) {
     return values.slice().sort(function (a, b) { return Number(a) - Number(b); });
@@ -594,11 +653,18 @@
     function classText(c) {
       return c.text || (c.lo + ' < ' + (q.symbol || 'x') + ' ≤ ' + c.hi);
     }
+    /* A COLUMN WITH NO HEADING IS A COLUMN SHE HAS TO GUESS AT, and an empty
+       <th> is a hole in the table the empty-elements audit rightly names. The
+       pack's own wording first, then the chart's axis label, then the plain
+       word. */
+    function classHead() {
+      return q.classHead || (q.chart && q.chart.x && q.chart.x.label) || T().statClassColumn;
+    }
     function render() {
       table.innerHTML = '';
       var thead = el('thead');
       var hr = el('tr');
-      hr.appendChild(el('th', null, esc(q.classHead || '')));
+      hr.appendChild(el('th', null, esc(classHead())));
       hr.appendChild(el('th', null, esc(T().statFrequency)));
       hr.appendChild(el('th', null, esc(T().statCumulativeFrequency)));
       thead.appendChild(hr); table.appendChild(thead);
@@ -851,7 +917,7 @@
       tableWrap.innerHTML = '';
       var t = el('table', 'stat-table');
       var hr = el('tr');
-      hr.appendChild(el('th', null, esc(q.classHead || '')));
+      hr.appendChild(el('th', null, esc(q.classHead || (q.chart && q.chart.x && q.chart.x.label) || T().statClassColumn)));
       hr.appendChild(el('th', null, esc(T().statFrequency)));
       hr.appendChild(el('th', null, esc(T().statCumulativeFrequency)));
       t.appendChild(hr);
@@ -1043,10 +1109,18 @@
         ctx.setStage('iqr');
         window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
         ctx.say(T().statReadIqr);
-        pad = makeNumPad(ctx.dock, { label: T().statIqr, fraction: true,
-          onChange: function (v) { iqr = v; ctx.changed(); } });
-        pad.set(iqr);
         var doneI = el('button', 'btn-quiet', T().statThatsMine);
+        pad = makeNumPad(ctx.dock, { label: T().statIqr, fraction: true,
+          onChange: function (v) {
+            iqr = v;
+            /* THE COMMIT HAS TO NOTICE. It used to be disabled at render time
+               and never looked at again, so keying the value left the button
+               dead and the question could not be finished at all. */
+            doneI.disabled = !iqr;
+            setLockedWhy(doneI, iqr ? null : T().statQlistIqrWhy);
+            ctx.changed();
+          } });
+        pad.set(iqr);
         doneI.type = 'button';
         doneI.disabled = !iqr;
         if (!iqr) setLockedWhy(doneI, T().statQlistIqrWhy);
@@ -1062,21 +1136,32 @@
       if (isAtX(a)) {
         window.GJ.setState(ctx.dock, 'dock', 'nudge-pad');
         ctx.say(fill(T().statReadAtX, { x: a.x }));
+        var doneX = el('button', 'btn-quiet', T().statThatsMine);
+        /* THE COMMIT KEEPS LOOKING. It was judged once, when the dock was
+           built, and never again - so moving the rule and keying the answer
+           left it dead and the question could not be finished at all. And the
+           dock is NOT rebuilt while she is working in it: moving the rule
+           redraws the BOARD, because rebuilding the dock would throw away the
+           pad she is typing into, mid-number. */
+        var syncX = function () {
+          doneX.disabled = (ax == null || !answers['atX@' + a.x]);
+          setLockedWhy(doneX, doneX.disabled ? T().statReadAtXWhy : null);
+        };
         ctx.dock.appendChild(nudgePad(ctx, { axis: 'x', onNudge: function (dx) {
           var sq = (q.chart.sq || { x: 1 }).x || 1;
           ax = (ax == null ? q.chart.x.min : ax) + dx * sq;
-          paint(); ctx.changed();
+          dropAcross(ax);
+          syncX();
+          ctx.changed();
         } }));
         var padWrap = el('div', 'stat-answer');
         ctx.dock.appendChild(padWrap);
         pad = makeNumPad(padWrap, { label: wantLabel(a), onChange: function (v) {
-          answer = v; answers['atX@' + a.x] = v; ctx.changed();
+          answer = v; answers['atX@' + a.x] = v; syncX(); ctx.changed();
         } });
         pad.set(answers['atX@' + a.x] || '');
-        var doneX = el('button', 'btn-quiet', T().statThatsMine);
         doneX.type = 'button';
-        doneX.disabled = (ax == null || !answers['atX@' + a.x]);
-        if (doneX.disabled) setLockedWhy(doneX, T().statReadAtXWhy);
+        syncX();
         doneX.addEventListener('click', function (e) {
           e.stopPropagation();
           if (doneX.disabled) return;
@@ -1091,13 +1176,21 @@
       }
       window.GJ.setState(ctx.dock, 'dock', 'nudge-pad');
       ctx.say(fill(T().statReadFind, { name: nameOf(a) }));
+      var done = el('button', 'btn-quiet', fill(T().statThatsMyOne, { name: nameOf(a) }));
+      /* THE DOCK IS NOT REBUILT WHILE SHE IS WORKING IN IT. Moving the rule
+         redraws the BOARD and re-reads the commit; rebuilding the whole dock
+         would throw away the pad she was typing into mid-number, and it was
+         also how a commit button came to be judged once at render time and
+         never again. */
       ctx.dock.appendChild(nudgePad(ctx, { axis: 'y', onNudge: function (dx, dy) {
         var sq = (q.chart.sq || { y: 1 }).y || 1;
         h = h + dy * sq;
         ctx.setStage('sliding');
-        paint(); ctx.changed();
+        dropRule(h);
+        done.disabled = !h;
+        setLockedWhy(done, h ? null : T().statReadMoveWhy);
+        ctx.changed();
       } }));
-      var done = el('button', 'btn-quiet', fill(T().statThatsMyOne, { name: nameOf(a) }));
       done.type = 'button';
       done.disabled = !h;
       if (done.disabled) setLockedWhy(done, T().statReadMoveWhy);
@@ -1548,8 +1641,15 @@
     var host = el('div', 'stat-claims');
     ctx.boardHost.appendChild(host);
 
+    /* THE REASON BANK IS THE ENGINE'S, unless this question authored its own.
+       DESIGN 6.6 fixes the ids and the plain-words sentences in one place; a
+       pack that repeated them in every judge question would be eight copies to
+       go stale. A question may still carry its own bank when the source's
+       wording differs. */
     function reasonBank() {
-      return (q.reasons || []).map(function (r) { return r; });
+      if (q.reasons && q.reasons.length) return q.reasons.slice();
+      var bank = (window.GJ_STATS && window.GJ_STATS.REASONS) || {};
+      return Object.keys(bank).map(function (id) { return { id: id, text: bank[id] }; });
     }
     function render() {
       host.innerHTML = '';
@@ -1588,6 +1688,7 @@
               b.type = 'button';
               b.textContent = r.text;
               b.setAttribute('data-tray-item', '');
+              b.setAttribute('data-reason', r.id);
               b.setAttribute('aria-pressed', j[i].why === r.id ? 'true' : 'false');
               b.addEventListener('click', function (e) {
                 e.stopPropagation();
