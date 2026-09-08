@@ -426,6 +426,49 @@ every other two-book default in the server derives from `ACTS`, and the offline
 stub is shaped the same way from `ACTIVITIES`. It means this deploy carries a
 server change, so his eight-item live smoke list applies, not just the book's.
 
+## The walk of Book C, and the twenty faults it found (8 September 2026)
+
+Green at HEAD, each proved by running it:
+- `dev/test-statcore.js` 156 cases · `dev/lint-content-stats.js` PASS ·
+  `dev/validate-all.js` 81 of 81 · `run.js --fast` 26 gates.
+- `sit-pupil` on Book C: **590 checks, 0 failed**, 538 states stood on, no
+  console errors. `sit-confused`: 199 checks, 0 failed. `qa-two-attempts`,
+  `qa-tray-order`, `qa-click-safety`, `qa-colour-law`, `qa-numpad`,
+  `qa-build`, `qa-manifest`: green.
+
+What the walk found that reading could not. Every one is fixed at the root and
+every one would have met a class:
+1. **No decimal point on the number pad.** The two questions whose answers are
+   1.5 and 1.8 could not be answered at all, and tap-first means there is no
+   other way in.
+2. **A commit that never enabled.** A reading question's "That's my answer" was
+   judged once when the dock was built and never again.
+3. **The dock rebuilt itself under her hands** on every nudge, throwing away
+   the pad she was typing into mid-number.
+4. **A judge question had no reason bank**, so a claim called not fair could
+   never be given one.
+5. **A single press could put placed work back** - DFM 272 itself - because the
+   clearing click was heard only on the question's own body.
+6. **The struck first attempt was counted as work already placed**, so a second
+   go could not be finished; and it took the presses her second go was made of.
+7. **A tray could still come out in the answer order** when values repeat.
+8. **Five box-plot labels sat on one another** on a phone.
+9. **Feedback did not fit the kind**: a list question praised for its curve.
+10. **A book is not client-only** (the server's ACTS list).
+...and ten more of the same shape, each in its own commit message.
+
+Two gates were also saying things that were not true and were fixed at the
+rule, each re-planted with the fault it exists for: a card that SCROLLS is not
+a card that spills; a hyphen inside an English word is not a minus sign; a
+question that names people in a scenario is not naming the reader; a citation
+is not prose.
+
+## The harness, after package SPEED
+`--fast` 1.19 s. `--full --book angles` **4:30 pooled against 21:48 serial**.
+All-books `--full` 10-12 minutes (budget 20). `MS_WORKERS` defaults to 6;
+`control.js --changed` exists and runs everything until PROGRESS carries a
+`controls: green <date> <commit>` line. Detail in `tools/qa/HARNESS_SPEED_PASS.md`.
+
 ## Notes to whoever picks this up
 - `node dev/test-statcore.js` is the engine's own proof and takes under a second.
 - The engine's unit table (`UNITS` / `unitsOf`) is the ONE home of band, weight
