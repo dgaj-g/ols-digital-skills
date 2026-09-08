@@ -328,6 +328,26 @@ async function walk(page, width, projector, sidecar, transcript) {
      parent of `.wall` — so that is named explicitly rather than left to a
      generic overflow search to happen to find (the search stays too, as a
      second line, in case a future layout moves the listener). */
+  /* THE WIDEST BOOK IN THE GRID. At 1280 the book this route happens to be on
+     is 1116px of table in a 1116px box - nothing to scroll, so the state is not
+     reachable on it at that width, and it is a fact about the book rather than
+     about the screen. The grid carries its own book tabs; the widest one is
+     chosen here before the scroll, so the same probe answers at every width. */
+  const widest = await page.evaluate(async () => {
+    const tabs = [...document.querySelectorAll('.check-row button')];
+    let best = null;
+    for (const t of tabs) {
+      t.click();
+      await new Promise((r) => setTimeout(r, 900));
+      const w = document.querySelector('.wall');
+      const over = w ? w.scrollWidth - w.clientWidth : -1;
+      if (!best || over > best.over) best = { name: (t.textContent || '').trim(), over: over };
+      if (over > 40) break;
+    }
+    return best;
+  });
+  if (widest) g.note('full-grid @' + width + ': widest book "' + widest.name + '" overflows its box by ' + widest.over + 'px');
+  await wait(900);
   const scrolled = await page.evaluate(() => {
     const wall = document.querySelector('.wall');
     const cands = [...document.querySelectorAll('*')]
