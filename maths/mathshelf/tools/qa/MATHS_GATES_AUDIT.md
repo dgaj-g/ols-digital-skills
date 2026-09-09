@@ -148,6 +148,17 @@ weakened, hidden, or marked green.
 | qa-waits | control-with-no-busy-state, outbox-dropped-on-reload | not yet investigated |
 | qa-fonts | face-removed | the plant removes a face file; with the gate now asking the face to LOAD rather than whether it was painted, the control needs re-aiming at that question |
 
+### After the front-door fix — 9 Sept 2026, 22:07–22:52, at `15ceb30`
+
+Whole battery, pooled: **88 controls FIRED** (one more than 8 Sept: the new
+`front-door-touches-the-sheet`), **41 over-tightening checks PASSED** (sit-pupil's
+now passes — the disabled-chip fix cleared it), **6 self-probes proved, 6 did not
+fire**: the same five harness-plumbing controls as 8 Sept (extract-transcript
+`no-walk-no-transcript`, qa-colour-law `amber-outside-a-mark` with no plant
+written, qa-fonts `face-removed`, qa-waits ×2) and sit-confused's own
+"the shipped tree must pass" check, red on one phone-width readability finding
+of the dimmed-after-Check class already waived. None is a pupil-facing fault.
+
 ### After the Book C battery — 8 Sept 2026, 20:05–20:51, at `daca300`
 
 Whole battery, pooled (`MS_WORKERS=6`): **87 controls FIRED, 40 over-tightening
