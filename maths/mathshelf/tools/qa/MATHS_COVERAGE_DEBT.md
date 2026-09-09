@@ -33,6 +33,9 @@ _Three walker findings from the full run at `927a760` (16 minutes, every other g
 
 | question:checked-wrong-1 @1280 × readability | Angles m2 (the protractor): its scale number "180" measured 1.09:1 at 1280 after a wrong attempt in the 9 Sept fix run and passed in the 8 Sept run — the protractor numbers wear a white halo (paint-order stroke) and the sampler reads the halo; an APPROVED book (rule 30); picture `conf-question-checked-wrong-1-1280.png` | next harness session: the sampler and the protractor's halo | (any) | (any) | WAIVED BY HIS RULING 8 Sept 2026 |
 
+| question:checked-right @1280 × readability | Book C s6 q32: a judged claim's card text ("Charlie's survey tells him what all students…") measured 3.02:1 after Check at 1280 in the 9 Sept fix run — the "dimmed after Check" class: what she has answered is faded; picture `pupil-question-checked-right-1280-q32.png` | next cut (Book A's): nothing that carries words is dimmed after Check — the chosen state is shown by fill or a mark, never by fading the rest | (any) | (any) | WAIVED BY HIS RULING 8 Sept 2026 |
+| question:checked-wrong-1 @375 × readability | Book C s3 q14: the class-interval label "200 < x ≤ 300" in the table cell measured 3.07:1 on a phone after a wrong attempt — the struck first attempt is drawn as a 35% ghost and the ghost carries the TABLE's words, which the design said it must not (§4.0: the ghost carries points and markers only); picture `conf-question-checked-wrong-1-375.png` | next cut (Book A's): the ghost never carries words | (any) | (any) | WAIVED BY HIS RULING 8 Sept 2026 |
+
 ## Open debt — surfaces the v4 design names that the build has not reached yet
 
 _Each row is deleted as the surface lands. The DONE list refuses a deploy with a
