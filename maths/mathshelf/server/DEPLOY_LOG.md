@@ -29,6 +29,8 @@ log showing the deployment actually ran.
 | 2026-09-07 18:11 | FRONT DOOR | Version 20 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | c6f55e3 | 44c51c70564a4f22082f9deaf837ebe7 | d09615a9abc0998de9e5b7ec4ea4239a |
 | 2026-09-08 19:58 | DATA | Version 21 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | 15bf8ab | 122eedb38f4eaa42350aad6439b51b22 | fb45387250d97d2473767540d6dbbba3 |
 | 2026-09-08 20:02 | FRONT DOOR | Version 22 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 15bf8ab | 122eedb38f4eaa42350aad6439b51b22 | fb45387250d97d2473767540d6dbbba3 |
+| 2026-09-09 22:01 | DATA | Version 23 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | 300dfc4 | 2221999671673d818adb24e3bd07b7ca | 6c2eb7d561a77ab149f8f1163c885abc |
+| 2026-09-09 22:03 | FRONT DOOR | Version 24 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 300dfc4 | 2221999671673d818adb24e3bd07b7ca | 6c2eb7d561a77ab149f8f1163c885abc |
 
 ## Proof rows
 
@@ -177,9 +179,47 @@ Version 22  apiCall  Web app  8 Sept 2026, 20:04:14  5.911 s  Completed
 Version 21  doPost   Web app  8 Sept 2026, 20:04:17  2.244 s  Completed
 ```
 
+**DATA Version 23 and FRONT DOOR Version 24, cut from `300dfc4`, 9 Sept 2026 —
+the front door never touches the Sheet.** Damien's smoke test with two REAL
+pupil accounts (21:03–21:08, the `doGet … Failed` rows below) met
+`Exception: You do not have permission to access the requested document
+(line 342, file "Code")`: under execute-as-User `doGet` ran as the pupil and
+`getName_` reached the deployer's Sheet through `getConfig_`. His own visits had
+always sailed through because the Sheet is his — which is why no earlier smoke
+had met it. `doGet` is Sheet-free now (`t.firstVisit = 'no'`; the cover reads
+first-visit from `hello`, which runs on DATA). Harness first: `qa-two-homes`
+builds its front-door world with `sheetAccess:false`, EXECUTES `doGet` as a
+pupil, and carries the pre-fix line as its control
+(`front-door-touches-the-sheet`, seen to fire). Same cut: the markbook's wait
+card breathes (its 2% scale pulse was invisible), a tickbox that is saving says
+so on the class line, and a disabled chip keeps full ink (`.chip:disabled`
+was 40% opacity — 2.18:1 after Check).
+
+Proved at `300dfc4` before the cut: `--fast` 26 gates green; `--full` twice (16
+min each) with every coverage cell closed; the v4 shell and the teacher layer
+re-read by fresh judges; four more phone-width findings of the dimmed-after-
+Check class recorded as dated waivers with their pictures.
+
+Proof rows, quoted from the Executions log. NOTE the log labels every row by
+the deployment's CURRENT version, so rows from earlier today also read
+"Version 24" / "Version 23"; the times are what date them.
+
+```
+Version 24  doGet    Web app  9 Sept 2026, 22:04:26  1.974 s  Completed      <- the deployer's visit after the cut
+Version 24  doGet    Web app  9 Sept 2026, 21:08:24  2.087 s  Failed         <- a pupil account, before the fix
+Version 24  doGet    Web app  9 Sept 2026, 21:06:48  1.621 s  Failed         <- a pupil account, before the fix
+Version 23  doPost   Web app  9 Sept 2026, 21:06:14  4.924 s  Completed      <- the relay, unchanged code, before the fix
+Version 24  apiCall  Web app  9 Sept 2026, 21:06:11  9.628 s  Completed
+```
+
+The relay path (`apiCall` → `doPost`) is unchanged and its chain is proved above
+and on 8 Sept. **The pupil path itself can only be proved by a pupil account**:
+the deployer cannot reproduce the refusal, so the fix is proved under the
+two-homes mock (the exact exception, as a pupil) and by his next pupil login.
+
 ### What is live, in one line each
 
-- **Live since 8 Sept 2026 20:04, from commit `15bf8ab`: FRONT DOOR Version 22, DATA Version 21 — Handling Data Book C on the shelf, arriving UNTICKED.**
+- **Live since 9 Sept 2026 22:04, from commit `300dfc4`: FRONT DOOR Version 24, DATA Version 23 — the front door never touches the Sheet; Handling Data Book C on the shelf.**
 - **Project** `OLS - MathShelf`, script id `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`
 - **Sheet** `OLS - MathShelf`, id `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y` (bound)
 - **FRONT DOOR** (the only link anybody opens)
