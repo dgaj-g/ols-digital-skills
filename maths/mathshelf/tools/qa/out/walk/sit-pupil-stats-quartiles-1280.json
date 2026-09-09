@@ -3,8 +3,8 @@
  "scope": "stats-quartiles",
  "width": 1280,
  "tier": "preview",
- "contentHash": "15bef4549f42",
- "when": "2026-09-09T20:20:14.778Z",
+ "contentHash": "697f84d208d1",
+ "when": "2026-09-09T20:39:29.152Z",
  "states": [
   {
    "surface": "cover",
@@ -7736,7 +7736,7 @@
    },
    "measured": {
     "said-twice": 6,
-    "readability": 30
+    "readability": 31
    }
   },
   {
@@ -14068,11 +14068,11 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "PASS"
+    "readability": "FAIL"
    },
    "measured": {
     "said-twice": 0,
-    "readability": 21
+    "readability": 22
    }
   },
   {
@@ -14094,7 +14094,7 @@
     "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
-    "readability": "PASS"
+    "readability": "FAIL"
    }
   },
   {

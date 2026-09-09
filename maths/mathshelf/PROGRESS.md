@@ -36,6 +36,13 @@ the 21 REWRITE rows of `MATHS_COLD_READ_VERDICTS_stats-quartiles.md` (the
 "Ex.1" contents-strip abbreviation and the bare "IQR" heading first). None is a
 reason to hold Book A.
 
+WHAT THE 9 SEPT FIX RUNS ADDED TO THAT LIST (same class, now named exactly):
+the struck first attempt is drawn as a 35% ghost and the ghost carries the
+TABLE's words (q14's "200 < x ≤ 300" at 3.07:1) — the design's own §4.0 says
+the ghost carries points and markers only; and a judged claim's card text is
+dimmed after Check (q32 at 1280, 3.02:1). One rule closes both: nothing that
+carries words is ever dimmed; the state is shown by a fill or a mark.
+
 THE RULE THIS SESSION PAID FOR: a book's DONE list is the BOOK'S OWN cells plus
 no regression elsewhere; a red on an old screen is a waived debt row, never a
 fix inside a book build; the whole battery never blocks a deploy. It is in the
