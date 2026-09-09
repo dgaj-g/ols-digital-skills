@@ -31,6 +31,8 @@ _Three walker findings from the full run at `927a760` (16 minutes, every other g
 | question:checked-right @375 × readability | Book C s6 q32: an unchosen reason chip fades to 40% after Check (`.chip:disabled`) and measures 2.13:1 — text she no longer has to read, but text; picture `pupil-question-checked-right-375-q32.png` | next cut (Book A's): unchosen chips keep full ink after Check | (any) | (any) | WAIVED BY HIS RULING 8 Sept 2026 |
 | book-contents:mid-book @375 × overlap | Book C, Exercise 4 opening on a phone: a stray "0" read-out from a board below the fold sits on the next question's prompt by 18×18px; the label-waits-for-its-board fix of 19:15 narrowed but did not cure it; picture `pupil-book-contents-mid-book-375.png` | next cut (Book A's): relayout once the board has size | (any) | (any) | WAIVED BY HIS RULING 8 Sept 2026 |
 
+| question:checked-wrong-1 @1280 × readability | Angles m2 (the protractor): its scale number "180" measured 1.09:1 at 1280 after a wrong attempt in the 9 Sept fix run and passed in the 8 Sept run — the protractor numbers wear a white halo (paint-order stroke) and the sampler reads the halo; an APPROVED book (rule 30); picture `conf-question-checked-wrong-1-1280.png` | next harness session: the sampler and the protractor's halo | (any) | (any) | WAIVED BY HIS RULING 8 Sept 2026 |
+
 ## Open debt — surfaces the v4 design names that the build has not reached yet
 
 _Each row is deleted as the surface lands. The DONE list refuses a deploy with a

@@ -184,6 +184,7 @@ strings.js > pupil > selfEvalSavedIdle  ::  Saved as you go — your teacher see
 strings.js > pupil > angleUnreadableLine  ::  That does not read as a number yet. Put in the size in degrees, or a sum that works it out.
 strings.js > teacher > artefactUndrawable  ::  Her work is saved, but this screen could not re-draw the board.
 strings.js > teacher > passcodeChecking  ::  Checking the passcode…
+strings.js > teacher > tickSaving  ::  Saving Angles for 10A-Maths…
 strings.js > teacher > openMarkbook  ::  Open the markbook
 strings.js > teacher > noServer  ::  We could not reach the server. Try again.
 strings.js > teacher > wallStale  ::  This class page could not be refreshed. What you see is the last it loaded.
