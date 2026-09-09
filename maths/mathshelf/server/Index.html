@@ -1134,7 +1134,14 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
   background: linear-gradient(180deg, #FFF3CF, #FCE7A0);
   border: 2px solid var(--foil); border-radius: 12px;
   color: var(--navy); font-weight: 800; font-size: 1.02rem; line-height: 1.25;
-  box-shadow: 0 6px 18px rgba(26, 58, 107, 0.18); animation: gj-pulse 1.4s ease-in-out infinite;
+  box-shadow: 0 6px 18px rgba(26, 58, 107, 0.18);
+  /* A PULSE NOBODY CAN SEE IS NOT A PULSE. This card grew and shrank by two per
+     cent, which is "technically animated, humanly static" - his words on
+     9 Sept 2026: "Checking the passcode..." still read as flat text. It now
+     breathes the way the cover's waiting line does (opacity 1 -> .58), with
+     the turning mark beside it, and both stop under prefers-reduced-motion
+     where the words do the work. */
+  animation: gj-breathe 1.5s ease-in-out infinite;
 }
 .panel-spinner, .spinner {
   border-radius: 50%; flex: 0 0 auto;
@@ -2523,6 +2530,7 @@ window.OLS_TRANSPORT = {
       passcodeLabel: 'Staff passcode',
       passcodeEmpty: 'Enter the staff passcode.',
       passcodeChecking: 'Checking the passcode\u2026',
+      tickSaving: 'Saving {book} for {cls}\u2026',
       passcodeWrong: 'That passcode was not accepted.',
       openMarkbook: 'Open the markbook',
       noServer: 'We could not reach the server. Try again.',
@@ -13521,11 +13529,18 @@ function statsBoard(q, wrong) {
             var acts = {};
             window.GJ.app.activities.forEach(function (a2) { acts[a2.id] = a2.id === a.id ? cb.checked : !!(c.acts && c.acts[a2.id]); });
             cb.disabled = true;
+            /* A TICK THAT IS SAVING SAYS SO. The box greyed out while the call
+               ran and nothing else moved, so the teacher read a fault (his
+               words, 9 Sept 2026). The class line now breathes with the words
+               while the server answers, then settles on what happened. */
+            cmsg.classList.add('is-waiting');
+            cmsg.textContent = TT('tickSaving', { book: a.title, cls: c.name });
             call('setActs', { className: c.name, acts: acts }).then(function (r) {
               cb.disabled = false;
+              cmsg.classList.remove('is-waiting');
               if (r && r.ok) { c.acts = acts; SURF('set-up', 'tickboxes'); cmsg.textContent = a.title + (cb.checked ? ' is now on ' : ' removed from ') + c.name + '\u2019s shelf.'; }
               else { cb.checked = !cb.checked; cmsg.textContent = SAYS(r && r.error, TT('couldNotSave')); }
-            }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.textContent = TT('couldNotSave'); });
+            }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.classList.remove('is-waiting'); cmsg.textContent = TT('couldNotSave'); });
           });
           lab.appendChild(cb);
           lab.appendChild(document.createTextNode(a.title));

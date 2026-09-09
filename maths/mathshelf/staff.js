@@ -303,11 +303,18 @@
             var acts = {};
             window.GJ.app.activities.forEach(function (a2) { acts[a2.id] = a2.id === a.id ? cb.checked : !!(c.acts && c.acts[a2.id]); });
             cb.disabled = true;
+            /* A TICK THAT IS SAVING SAYS SO. The box greyed out while the call
+               ran and nothing else moved, so the teacher read a fault (his
+               words, 9 Sept 2026). The class line now breathes with the words
+               while the server answers, then settles on what happened. */
+            cmsg.classList.add('is-waiting');
+            cmsg.textContent = TT('tickSaving', { book: a.title, cls: c.name });
             call('setActs', { className: c.name, acts: acts }).then(function (r) {
               cb.disabled = false;
+              cmsg.classList.remove('is-waiting');
               if (r && r.ok) { c.acts = acts; SURF('set-up', 'tickboxes'); cmsg.textContent = a.title + (cb.checked ? ' is now on ' : ' removed from ') + c.name + '’s shelf.'; }
               else { cb.checked = !cb.checked; cmsg.textContent = SAYS(r && r.error, TT('couldNotSave')); }
-            }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.textContent = TT('couldNotSave'); });
+            }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.classList.remove('is-waiting'); cmsg.textContent = TT('couldNotSave'); });
           });
           lab.appendChild(cb);
           lab.appendChild(document.createTextNode(a.title));
