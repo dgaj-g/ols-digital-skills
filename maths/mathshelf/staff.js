@@ -308,7 +308,7 @@
                words, 9 Sept 2026). The class line now breathes with the words
                while the server answers, then settles on what happened. */
             cmsg.classList.add('is-waiting');
-            cmsg.textContent = TT('tickSaving', { book: a.title, cls: c.name });
+            cmsg.textContent = TT('tickSaving', { book: a.title, 'class': c.name });
             call('setActs', { className: c.name, acts: acts }).then(function (r) {
               cb.disabled = false;
               cmsg.classList.remove('is-waiting');

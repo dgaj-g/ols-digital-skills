@@ -317,7 +317,7 @@
       passcodeLabel: 'Staff passcode',
       passcodeEmpty: 'Enter the staff passcode.',
       passcodeChecking: 'Checking the passcode…',
-      tickSaving: 'Saving {book} for {cls}…',
+      tickSaving: 'Saving {book} for {class}…',
       passcodeWrong: 'That passcode was not accepted.',
       openMarkbook: 'Open the markbook',
       noServer: 'We could not reach the server. Try again.',

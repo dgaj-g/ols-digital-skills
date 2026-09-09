@@ -738,7 +738,12 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
   min-height: 40px;
 }
 .chip[aria-pressed="true"] { background: var(--navy); color: var(--cream); }
-.chip:disabled { opacity: 0.4; cursor: default; }
+/* A CHIP SHE CAN NO LONGER PRESS IS STILL A CHIP SHE CAN READ. Fading the
+   whole control to 40% put "Increase" and "Decrease" at 2.18:1 after Check
+   (9 Sept 2026), the same fault as the faded Mark button before it. The
+   off state is the pencil colour and a hairline edge at full ink; the one she
+   chose keeps its navy fill. */
+.chip:disabled { opacity: 1; color: var(--pencil); border-color: var(--hairline); cursor: default; }
 
 /* operand mini-pad + maths keypad */
 .keypad {
@@ -2530,7 +2535,7 @@ window.OLS_TRANSPORT = {
       passcodeLabel: 'Staff passcode',
       passcodeEmpty: 'Enter the staff passcode.',
       passcodeChecking: 'Checking the passcode\u2026',
-      tickSaving: 'Saving {book} for {cls}\u2026',
+      tickSaving: 'Saving {book} for {class}\u2026',
       passcodeWrong: 'That passcode was not accepted.',
       openMarkbook: 'Open the markbook',
       noServer: 'We could not reach the server. Try again.',
@@ -13534,7 +13539,7 @@ function statsBoard(q, wrong) {
                words, 9 Sept 2026). The class line now breathes with the words
                while the server answers, then settles on what happened. */
             cmsg.classList.add('is-waiting');
-            cmsg.textContent = TT('tickSaving', { book: a.title, cls: c.name });
+            cmsg.textContent = TT('tickSaving', { book: a.title, 'class': c.name });
             call('setActs', { className: c.name, acts: acts }).then(function (r) {
               cb.disabled = false;
               cmsg.classList.remove('is-waiting');
