@@ -156,8 +156,15 @@ now passes — the disabled-chip fix cleared it), **6 self-probes proved, 6 did 
 fire**: the same five harness-plumbing controls as 8 Sept (extract-transcript
 `no-walk-no-transcript`, qa-colour-law `amber-outside-a-mark` with no plant
 written, qa-fonts `face-removed`, qa-waits ×2) and sit-confused's own
-"the shipped tree must pass" check, red on one phone-width readability finding
-of the dimmed-after-Check class already waived. None is a pupil-facing fault.
+"the shipped tree must pass" check. Read its log before believing the label
+it was given yesterday: on `question:checked-wrong-1 @375` THREE unrelated
+elements — an Algebra prompt, "✓ Added to your jotter.", and the judge chip
+"Increase" — all measure 2.18:1 (the confirmation 1.96:1), and the chip still
+does after `.chip:disabled` was given full ink. One number on three unrelated
+elements is not three faults: it is the second attempt's board measured while
+it fades in after "one more attempt" (the F42 "caught rising" class, at the
+phone width only). A walker timing fault for the next harness session; the
+chip rule stands on its own merits. None is a pupil-facing fault.
 
 ### After the Book C battery — 8 Sept 2026, 20:05–20:51, at `daca300`
 
