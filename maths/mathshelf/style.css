@@ -923,7 +923,14 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
   background: linear-gradient(180deg, #FFF3CF, #FCE7A0);
   border: 2px solid var(--foil); border-radius: 12px;
   color: var(--navy); font-weight: 800; font-size: 1.02rem; line-height: 1.25;
-  box-shadow: 0 6px 18px rgba(26, 58, 107, 0.18); animation: gj-pulse 1.4s ease-in-out infinite;
+  box-shadow: 0 6px 18px rgba(26, 58, 107, 0.18);
+  /* A PULSE NOBODY CAN SEE IS NOT A PULSE. This card grew and shrank by two per
+     cent, which is "technically animated, humanly static" - his words on
+     9 Sept 2026: "Checking the passcode..." still read as flat text. It now
+     breathes the way the cover's waiting line does (opacity 1 -> .58), with
+     the turning mark beside it, and both stop under prefers-reduced-motion
+     where the words do the work. */
+  animation: gj-breathe 1.5s ease-in-out infinite;
 }
 .panel-spinner, .spinner {
   border-radius: 50%; flex: 0 0 auto;

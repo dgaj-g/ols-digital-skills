@@ -81,7 +81,14 @@ function makeEnv(opts) {
       getEffectiveUser: () => ({ getEmail: () => state.effective })
     },
     SpreadsheetApp: {
-      getActiveSpreadsheet: () => ({
+      /* A PUPIL CANNOT OPEN THE DEPLOYER'S SHEET. Under execute-as-User the
+         bound Sheet is somebody else's document, and every SpreadsheetApp call
+         throws exactly this. The front-door world is built with
+         sheetAccess:false so that a Sheet read on the pupil's path fails here,
+         under test, instead of on a phone in a classroom (9 Sept 2026). */
+      getActiveSpreadsheet: () => (opts.sheetAccess === false
+        ? (() => { throw new Error('You do not have permission to access the requested document.'); })()
+        : {
         getSheetByName: (n) => (n === 'Config' ? configSheet : n === 'Data' ? dataSheet : null),
         insertSheet: (n) => (n === 'Config' ? configSheet : dataSheet)
       }),

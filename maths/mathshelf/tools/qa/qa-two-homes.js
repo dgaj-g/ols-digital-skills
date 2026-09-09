@@ -38,6 +38,8 @@ const CONTROLS = [
   { id: 'data-without-secret-guard', kind: 'fixture', plant: 'fixture-server', mustFail: /accepted a call with no secret/ },
   { id: 'data-serves-unticked-book', kind: 'fixture', plant: 'fixture-data-no-tickgate', mustFail: /unticked/ },
   { id: 'secret-in-a-return-value', kind: 'fixture', plant: 'fixture-server-secret-leak', mustFail: /the shared secret/ },
+  /* the 9 Sept fault, planted back: a Config read on the pupil's own page */
+  { id: 'front-door-touches-the-sheet', kind: 'fixture', plant: 'fixture-front-door-reads-sheet', mustFail: /touched the Sheet as a pupil/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -65,7 +67,7 @@ data.call('initJotter')();
 /* FRONT DOOR: execute-as-User, relays to DATA */
 const DATA_URL = 'https://script.google.com/macros/s/MOCK-DATA/exec';
 const front = makeEnv({
-  active: PUPIL, effective: PUPIL, passcode: PW,
+  active: PUPIL, effective: PUPIL, passcode: PW, sheetAccess: false,
   props: { relaySecret: SECRET, dataUrl: DATA_URL },
   relayTo: (url, params) => {
     let payload = {};
@@ -296,6 +298,17 @@ const admin = (env, req) => env.call('apiAdmin')(req);
         'the shared secret appears in a value the client can read — a secret that reaches the browser is not a secret');
     }
     /* the front door's own laws */
+    /* THE PAGE IS SERVED TO A PUPIL WHO CANNOT OPEN THE SHEET. Executed, not
+       grepped: doGet runs in the front-door world, whose SpreadsheetApp throws
+       the permission error a pupil really gets. On 9 Sept 2026 the deployed
+       doGet read a Config value through getName_ and every pupil on every
+       class link met "You do not have permission to access the requested
+       document" - the deployer never did, because the Sheet is his. */
+    front.state.active = PUPIL;
+    let served = null, refused = null;
+    try { served = front.call('doGet')({ parameter: { class: '10A-Maths' } }); } catch (e) { refused = String(e && e.message || e); }
+    g.check(!refused, 'front door', 'two-homes',
+      'the front door touched the Sheet as a pupil: doGet threw "' + refused + '" - under execute-as-User the Sheet is the deployer\'s and every pupil is refused; anything that needs it goes through the relay');
     const fdGet = /function\s+doGet/.test(src) && /autoName_/.test(src);
     g.check(fdGet, 'front door', 'two-homes', 'doGet does not read the pupil\'s own name — the first visit would not know who she is');
     front.state.active = PUPIL;

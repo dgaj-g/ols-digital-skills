@@ -126,7 +126,17 @@ function doGet(e) {
   t.name = String(nm || '');
   /* the cover shows one quiet line about Google's permission screen the first
      time somebody arrives; after that it never mentions it again */
-  t.firstVisit = (who && !getName_(who)) ? 'yes' : 'no';
+  /* THE FRONT DOOR NEVER TOUCHES THE SHEET. Under execute-as-User this
+     function runs as the PUPIL, and the bound Sheet belongs to the deployer:
+     the getName_ that used to sit here reached SpreadsheetApp and threw
+     "You do not have permission to access the requested document" for every
+     pupil who ever opened a class link (9 Sept 2026, line 342 - the Config
+     read), while the deployer's own visits sailed through, which is why no
+     smoke test had met it. Anything that needs the Sheet goes through the
+     relay; the cover learns whether this is her first visit from `hello`,
+     which runs on the DATA side. qa-two-homes now executes doGet as a pupil
+     who cannot open the Sheet, so this cannot come back. */
+  t.firstVisit = 'no';
   return t.evaluate()
     .setTitle('OLS \u2014 MathShelf')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')

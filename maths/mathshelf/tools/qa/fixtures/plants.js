@@ -218,6 +218,13 @@ const PLANTS = {
       '  for (var i = 0; i < ACTS.length; i++) out[ACTS[i]] = a[ACTS[i]] !== false;   /* planted: true unless explicitly false */');
   },
 
+  /* ── THE 9 SEPT FAULT: the pupil's own page reads the deployer's Sheet. The
+     pre-fix line, put back exactly as it was. ── */
+  'fixture-front-door-reads-sheet': (dir) => {
+    edit(dir, 'server/Code.gs.template', "  t.firstVisit = 'no';",
+      "  t.firstVisit = (who && !getName_(who)) ? 'yes' : 'no';   /* planted: the front door reads Config as the pupil */");
+  },
+
   /* ── a relay that hands the shared secret back to the caller ─────── */
   'fixture-server-secret-leak': (dir) => {
     /* the leak has to survive the front door's belt-and-braces strip, because
