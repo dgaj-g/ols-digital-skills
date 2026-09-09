@@ -122,12 +122,12 @@ class re-seeds, and always use `?nointro`.
 
 ## What is live
 
-**Live since 8 September 2026 20:04, from commit `15bf8ab` — Handling Data Book C (`stats-quartiles`) is on the shelf, unticked for every class.**
+**Live since 9 September 2026 22:04, from commit `300dfc4` — the front door never touches the Sheet (every pupil had been refused at the door on 9 Sept); Handling Data Book C (`stats-quartiles`) is on the shelf.**
 
 | | /exec | version | executeAs | who can reach it |
 |---|---|---|---|---|
-| FRONT DOOR (everybody) | `https://script.google.com/a/macros/c2ken.net/s/AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP/exec` | Version 22, 8 Sept 20:02 | USER_ACCESSING | anyone in `c2ken.net` |
-| DATA (nobody; the relay only) | `https://script.google.com/macros/s/AKfycbyO6pQnLHujpost5Otxe9oJB2iFdbno3Kxxw5RU51A9prKiqDMrIm__UWuLEDn2f4wo/exec` | Version 21, 8 Sept 19:58 | USER_DEPLOYING | anyone who holds the shared secret — see `server/DEPLOY.md` |
+| FRONT DOOR (everybody) | `https://script.google.com/a/macros/c2ken.net/s/AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP/exec` | Version 24, 9 Sept 22:03 | USER_ACCESSING | anyone in `c2ken.net` |
+| DATA (nobody; the relay only) | `https://script.google.com/macros/s/AKfycbyO6pQnLHujpost5Otxe9oJB2iFdbno3Kxxw5RU51A9prKiqDMrIm__UWuLEDn2f4wo/exec` | Version 23, 9 Sept 22:01 | USER_DEPLOYING | anyone who holds the shared secret — see `server/DEPLOY.md` |
 
 Apps Script project `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`,
 Sheet `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y`, both titled

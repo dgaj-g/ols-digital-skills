@@ -5,6 +5,16 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ---
 
+## 9 SEPT 2026, 22:04 — THE FRONT DOOR NEVER TOUCHES THE SHEET (V24 / V23 from `300dfc4`)
+
+Damien's smoke with two real pupil accounts: every pupil met "You do not have
+permission to access the requested document (line 342)". `doGet` ran as the
+pupil and read Config through `getName_`. Fixed (Sheet-free doGet), harness
+first (`qa-two-homes` executes doGet as a pupil without Sheet access; control
+`front-door-touches-the-sheet` fired). Same cut: the wait card breathes, a
+saving tick says so, disabled chips keep full ink. Both versions cut by Fable,
+proof in `server/DEPLOY_LOG.md`. His pupil login is the proof of the pupil path.
+
 ## 8 SEPT 2026, 20:04 — BOOK C IS LIVE (the resume point for Books A and B)
 
 FRONT DOOR Version 22 and DATA Version 21, both from `15bf8ab`, both selected by
@@ -42,6 +52,13 @@ TABLE's words (q14's "200 < x ≤ 300" at 3.07:1) — the design's own §4.0 say
 the ghost carries points and markers only; and a judged claim's card text is
 dimmed after Check (q32 at 1280, 3.02:1). One rule closes both: nothing that
 carries words is ever dimmed; the state is shown by a fill or a mark.
+
+TWO JUDGE FAILS ON BOOK C THAT ARE THE HARNESS'S, NOT THE BOOK'S (9 Sept): the
+shell re-read failed s4 q15 for "no pass mark" — the pack's prompt says "The pass
+mark is 36." and the extractor dropped the middle sentence of a three-sentence
+prompt, so the judge never saw it (an extract-transcript fault to fix next
+harness session); and s1 q8's "when it is added" has its antecedent in the
+sentence before ("A wage of £110 was left off."). Neither prompt was changed.
 
 THE RULE THIS SESSION PAID FOR: a book's DONE list is the BOOK'S OWN cells plus
 no regression elsewhere; a red on an old screen is a waived debt row, never a
