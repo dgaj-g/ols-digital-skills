@@ -1,8 +1,8 @@
 # MathShelf — the TEACHER transcript
 
-TRANSCRIPT HASH: 93e87394fa08bf67
+TRANSCRIPT HASH: d141eb38da65d7e3
 sentences: 42
-taken: 2026-09-11 08:25:55
+taken: 2026-09-11 08:48:05
 
 This is every sentence a teacher reads, in the order they meet it,
 as it was RENDERED on the running app. Nothing here is source.
@@ -43,10 +43,10 @@ Your mark:
 ✓ mine
 ✗ mine
 use the app’s mark
-Inked right — full marks. Your mark wins on the Wall.
-Inked wrong. Your mark wins on the Wall.
+Marked right — full marks. Your mark is the one pupils and staff now see.
+Marked wrong. Your mark is the one pupils and staff now see.
 Back to the app’s mark.
 Spot the slip · starter 1 of 2
 Where has this gone wrong — and what should the line say?
 You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net)
-http://localhost:8424/maths/mathshelf/index.html?class=demo
+http://localhost/maths/mathshelf/index.html?class=demo
