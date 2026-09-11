@@ -31,6 +31,7 @@ const { matrix } = require('./lib/report.js');
 const { coversOf, controlsOf } = require('./lib/decl.js');
 const { bookHash } = require('./lib/hash.js');
 const { PLANTS, plantRef } = require('./fixtures/plants.js');
+const budget = require('./lib/budget.js');
 
 const REPO = (() => {
   try { return execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd: A.APP, encoding: 'utf8' }).trim(); }
@@ -234,6 +235,13 @@ function curlOkAsync(args) {
 }
 
 console.log('MathShelf controls — every gate must be seen to say no');
+console.log(budget.line());
+if (budget.refusal()) {
+  /* THE BUDGET CLOCK (leash L1): the control battery is the other expensive
+     tier, and it refuses on the same stamp run.js --full refuses on */
+  console.log('REFUSED — ' + budget.refusal());
+  process.exit(1);
+}
 console.log('app: ' + A.APP + (REPO ? '   repo: ' + REPO : '   (no git repo: pinned-ref controls cannot run)') +
   '   MS_WORKERS=' + WORKERS);
 
