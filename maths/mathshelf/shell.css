@@ -262,21 +262,8 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
 .bbar i { display: block; height: 3px; }
 .bmeta { padding: 12px 16px 14px; font-size: 13px; color: var(--chalk-muted); display: flex; align-items: center; gap: 8px; }
 .bmeta .star { color: var(--gold-ink); font-size: 15px; }
-/* a book the teacher has not set: unlit, padlocked, still legible */
-.book.not-set { cursor: default; }
-.book.not-set .bcover { background: linear-gradient(170deg, #DDE3EC, #C9D2DF); }
-.book.not-set .title { color: #33415C; }
-/* A BOOK SHE CANNOT OPEN IS STILL A BOOK SHE READS. The locked spine kept the
-   open cover's colours on a pale ground: the audience band measured 4.12:1
-   against a 4.5 floor and the motif's own letter 1.01:1 against a 3:1 one -
-   invisible. No walk had ever stood on a shelf with an unticked book, so
-   nothing had ever measured it (found 8 Sept 2026 by the first walk that did;
-   control: sit-pupil.locked-spine-unreadable). The band and the series now
-   wear the title's ink, and the motif is drawn in it too rather than in a gold
-   that says nothing on this ground. */
-.book.not-set .series, .book.not-set .band { color: #33415C; }
-.book.not-set .motif text { fill: #33415C; }
-.book.not-set .motif path { stroke: #33415C; }
+/* the locked spine is RETIRED (his ruling 36, 11 Sept 2026): a book the class
+   does not have is not on the shelf at all, so there is nothing to style */
 
 /* ── CHROME on an open book ─────────────────────────────────────── */
 .act-bar {

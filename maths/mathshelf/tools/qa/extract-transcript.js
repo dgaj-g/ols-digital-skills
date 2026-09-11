@@ -74,7 +74,10 @@ const SAMPLE = {
      averaged from, the unit a cumulative row counts up to, and a point read
      off the curve */
   list: '4, 7, 7, 9, 12, 15, 21', a: '9', b: '12', unit: 'minutes',
-  x: '30', y: '18'
+  x: '30', y: '18',
+  /* the stage instructions' live counts (11 Sept 2026): "3 still to place",
+     "2 of 5 placed" */
+  n: '3', m: '5'
 };
 /* ONE HOLE, THREE DIFFERENT WORDS. `{name}` is a pupil's own name on the cover,
    the name of a CUT on a Handling Data screen ("That's my median"), and the

@@ -266,7 +266,7 @@
       '<span id="st-cmsg" class="ui-msg" role="status"></span></div>' +
       '<table class="ledger"><thead><tr><th>Class</th><th>Pupils</th><th>Books on the shelf</th><th>What you can do</th></tr></thead>' +
       '<tbody id="st-rows"></tbody></table>' +
-      '<p class="ui-msg" style="margin-top:var(--sq)">' + esc(TT('setUpHint')) + ' A book that is not ticked is closed for that class: pupils see it on the shelf, marked as not set yet, and cannot open it.</p>';
+      '<p class="ui-msg" style="margin-top:var(--sq)">' + esc(TT('setUpHint')) + ' ' + esc(TT('setUpClosedHint')) + '</p>';
     shell({ body: body, surface: 'set-up', state: 'classes', crumbs: [{ label: isAdmin ? 'All classes' : 'Your classes' }] });
     var rows = body.querySelector('#st-rows');
     var cmsg = body.querySelector('#st-cmsg');
@@ -362,7 +362,10 @@
                class line used to breathe quietly with .is-waiting; it now
                becomes the same gold wait-card the passcode screen uses, in the
                same tick as the change event - never after the call starts. */
-            busyCard(cmsg, TT('tickSaving', { book: a.title, 'class': c.name }));
+            /* busyCard takes html, and a class name is the teacher's own free
+               text - escape it, the way every other html-taking call site
+               in this file already does */
+            busyCard(cmsg, TT('tickSaving', { book: esc(a.title), 'class': esc(c.name) }));
             runTickSync(c);
           });
           lab.appendChild(cb);

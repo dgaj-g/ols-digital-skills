@@ -274,7 +274,9 @@ async function walkBook(page, book, width, sidecar, transcript) {
         const lastClear = ops.map((op, k) => op.clear ? k : -1).filter(k => k >= 0).pop();
         const live = ops.slice(lastClear == null ? 0 : lastClear + 1);
         const rings = live.filter(op => op.ring).map(op => op.ring);
-        const boxes = live.filter(op => op.box).map(op => op.box);
+        /* a `box` with a line is the gold frame round written text; a bare
+           `box` is the box PLOT assembling on a scale, which statchart draws */
+        const boxes = live.filter(op => op.box && op.box.line != null).map(op => op.box);
         const stage = document.querySelector('.movie .movie-stage');
         if (!stage) return { rings: rings.length, boxes: boxes.length, drawn: 0, problems: ['no stage'] };
         const lines = [...stage.querySelectorAll('.movie-line')];
@@ -425,9 +427,9 @@ async function walkBook(page, book, width, sidecar, transcript) {
           }
           /* THE CONTROL SHE NEEDS NEXT IS WITHIN REACH (ruling 42): on a plot
              the action row sits directly under the board - never below the
-             data table, a screen away. 80 px allows the marked rows' margins
+             data table, a screen away. 160 px allows the marked rows and a note under the board
              and nothing else. */
-          if (b && b.kind === 'cfplot' && b.dockGap !== null && b.dockGap > 80)
+          if (b && b.kind === 'cfplot' && b.dockGap !== null && b.dockGap > 160)
             g.fail('question > ' + qid + ' @' + width, 'reach', 'the action row sits ' + b.dockGap + ' px below the board on ' + qid + ' — the control for the current stage is directly under the board, never a screen away');
           await W.settle(page);
           const now = await page.evaluate((s2, id) => eval(s2)(id), W.STAGES_OF, qid);
