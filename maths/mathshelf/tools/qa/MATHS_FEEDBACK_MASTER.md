@@ -103,34 +103,34 @@ number. They are not renumbered here; a gate cites `L7` and means that.
     reason where the rule is, and each was re-planted with the fault it exists
     for and seen to fail.
 
-31. **Every waiting line moves, everywhere, including the markbook.** (9 and
+34. **Every waiting line moves, everywhere, including the markbook.** (9 and
     11 Sept 2026) "'Checking the passcode…' is still not pulsing on the staff
     login screen (although 'Getting your details' works for the pupil side)."
     A breath the eye cannot see is not a breath: prove it in rendered frames.
-32. **A saving message is pronounced, not a whisper.** (11 Sept 2026) "'Saving
+35. **A saving message is pronounced, not a whisper.** (11 Sept 2026) "'Saving
     Handling Data for test12…' is better, but it needs to be in a more
     pronounced font." The gold wait card is the affordance for every save.
-33. **A book that is not ticked does not appear on the pupil's shelf at all.**
+36. **A book that is not ticked does not appear on the pupil's shelf at all.**
     (11 Sept 2026) "I want any book that isn't ticked on the staff side not to
     appear on the student side at all, only those that are ticked." The locked
     spine with "Not set yet" is retired; an empty shelf keeps its one line.
-34. **A tick reacts at once.** (11 Sept 2026) "Ticking and unticking takes quite
+37. **A tick reacts at once.** (11 Sept 2026) "Ticking and unticking takes quite
     a long time to react." The box flips immediately and the card says it is
     saving; the server round trip is reported in seconds, and what is Google's
     is said to be Google's.
-35. **A film is paced for reading.** (11 Sept 2026) "It travels too quickly from
+38. **A film is paced for reading.** (11 Sept 2026) "It travels too quickly from
     step to step when the play button is pressed." Dwell after each step's
     drawing: at least 1.2 s and 0.35 s a word.
-36. **A film draws what its caption says.** (11 Sept 2026) "When you say to ring
+39. **A film draws what its caption says.** (11 Sept 2026) "When you say to ring
     the 4th value and then ring the second value, it would be good to see a wee
     animation of it being ringed." A `ring` on a written list draws a copper
     ring around that value, at pen speed. "The gold border at the end encroaches
     on the text": a box is measured from the text it boxes, never guessed.
-37. **Every question shows its stages, and which one she is on.** (11 Sept 2026)
+40. **Every question shows its stages, and which one she is on.** (11 Sept 2026)
     "I think it would be really helpful if I could see the clear stages and
     which stage I'm working on, and that the text could pulse or colour or
     animate to indicate the next stage or the next thing I'm supposed to do."
-38. **Instructions say what to do, in full, before the control that does it.**
+41. **Instructions say what to do, in full, before the control that does it.**
     (11 Sept 2026) "We are asked to choose the lowest value first, but it isn't
     completely clear that we are supposed to keep clicking to put them in
     order." "'That's my median' is hard to comprehend without first being told
@@ -138,7 +138,7 @@ number. They are not renumbered here; a gate cites `L7` and means that.
     points' should be more pronounced." "Strengthen instruction throughout, add
     more colour and animation so that it is really clear what the user is
     supposed to do."
-39. **The control she needs next is within reach.** (11 Sept 2026) "There is a
+42. **The control she needs next is within reach.** (11 Sept 2026) "There is a
     huge amount to scroll on the graph in Exercise 3 before I can join the
     dots." The action for the current stage sits directly under the board.
 
