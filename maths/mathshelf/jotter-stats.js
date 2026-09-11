@@ -147,6 +147,52 @@
     judge: 'statCheckJudge', values: 'statCheckValues'
   };
 
+  /* ── THE STAGE STRIP: the stages, SHOWN (DESIGN 4.0, Correction 11 Sept
+     2026). His words: "it would be really helpful if I could see the clear
+     stages and which stage I'm working on". A pill groups the boards a
+     pupil experiences as ONE act (the ordered row is one act however many
+     tiles are in it); the strip is derived from the SAME stage list the root
+     declares, so the two can never disagree, and the walker asserts that the
+     lit pill is the one the root's data-stage belongs to. A kind whose pills
+     are its ASKS (cfread) or its SENTENCES (compare) lights them itself
+     through ctx.setPill, because its boards are shared between the acts. */
+  function pillsFor(q, stages) {
+    var t = T();
+    var out = [];
+    function pill(name, list) { out.push({ name: name, stages: list.filter(function (s2) { return stages.indexOf(s2) > -1; }) }); }
+    function has(s2) { return stages.indexOf(s2) > -1; }
+    var kind = q.kind;
+    if (kind === 'qlist') {
+      /* the completed row IS the start of the cuts: the pick instruction is
+         showing the moment the last tile lands, so that board is the cuts' */
+      pill(t.statPillOrder, ['tray', 'ordering', 'selected'].concat(has('picking') ? [] : ['ordered']));
+      if (has('picking')) pill(t.statPillCuts, ['ordered', 'picking', 'cut-committed']);
+      if (has('iqr')) pill(t.statPillIqr, ['iqr']);
+    } else if (kind === 'cftable') pill(t.statPillCftable, ['empty', 'filling']);
+    else if (kind === 'values') pill(t.statPillValues, ['empty', 'filling']);
+    else if (kind === 'cfplot') { pill(t.statPillPlot, ['empty', 'selected']); pill(t.statPillJoin, ['placed', 'joined']); }
+    else if (kind === 'cfread') {
+      (q.ask || []).forEach(function (a) {
+        if (a === 'IQR') pill(t.statPillIqr, ['iqr']);
+        else if (a && a.type === 'atX') pill(fill(t.statPillReadAt, { x: a.x }), ['at-x']);
+        else pill(fill(t.statPillRead, { name: readName(a) }), ['parked', 'sliding', 'committed']);
+      });
+    }
+    else if (kind === 'boxplot') { pill(t.statPillBoxPlace, ['tray', 'marker-selected', 'placing']); pill(t.statPillBoxDraw, ['placed', 'drawn']); }
+    /* both sentences are "building" boards: the kind lights the pill itself */
+    else if (kind === 'compare') { pill(t.statPillCompare1, ['empty', 'building']); pill(t.statPillCompare2, ['building']); }
+    else if (kind === 'judge') pill(t.statPillJudge, ['empty', 'judging', 'reason-open']);
+    /* the finished board belongs to the last act */
+    if (out.length && has('ready')) out[out.length - 1].stages.push('ready');
+    return out;
+  }
+  /* the plain name of a reading ask, shared by the pill and the instruction */
+  function readName(a) {
+    var t = T();
+    var m = { median: t.statMedian, Q1: t.statLowerQuartile, Q2: t.statMedian, Q3: t.statUpperQuartile, IQR: t.statIqr };
+    return (typeof a === 'string' && m[a]) || (typeof a === 'string' ? a : t.statReading);
+  }
+
   /* ── derangement: a tray never comes out in the answer order ────────── */
   /* `items` are objects; `key` returns the value the ANSWER order is written
      in. A derangement is the strong form of the law: no item may sit in the
@@ -256,7 +302,7 @@
     if (!rec.att) rec.att = [];
     var t0 = Date.now();
 
-    var wrap = el('div', 'jotter-q stat-q');
+    var wrap = el('div', 'jotter-q stat-q stat-q-' + q.kind);
     wrap.id = 'jq-' + q.id;
     tagQuestionRoot(wrap, q, hooks);
     var stages = stagesFor(q);
@@ -274,9 +320,74 @@
     body.appendChild(el('p', 'jq-prompt',
       esc(q.prompt) + ' <span class="q-marks">[' + marksTotal + (marksTotal === 1 ? ' mark' : ' marks') + ']</span>'));
 
+    /* THE STRIP: numbered pills, the current one filled copper, done ones a
+       copper ring with a tick, upcoming ones a pencil outline. It is READ,
+       so it is not data-ornament. A two-stage item shows the first kind's
+       pills then the second's (the prefixed stages map onto them). */
+    var strip = null, pills = [], curPill = -1, beatTimer = null;
+    function pillsOf() {
+      if (q.kind === 'boxplot' && q.from) {
+        var first = q.from === 'curve' ? 'cfread' : q.from;
+        var stageQ = {}, k2;
+        for (k2 in q) if (q.hasOwnProperty(k2) && k2 !== 'kind' && k2 !== 'from') stageQ[k2] = q[k2];
+        stageQ.kind = first;
+        var pre = pillsFor(stageQ, stages.filter(function (s2) { return s2.indexOf(first + ':') === 0; })
+          .map(function (s2) { return s2.slice(first.length + 1); }));
+        pre.forEach(function (p2) { p2.stages = p2.stages.map(function (s2) { return first + ':' + s2; }); });
+        return pre.concat(pillsFor(q, stages));
+      }
+      return pillsFor(q, stages);
+    }
+    pills = pillsOf();
+    if (pills.length > 1) {
+      strip = el('div', 'stage-strip');
+      strip.setAttribute('role', 'list');
+      body.appendChild(strip);
+    }
+    function renderStrip() {
+      if (!strip) return;
+      strip.innerHTML = '';
+      pills.forEach(function (p2, i) {
+        var pl = el('span', 'stage-pill ' + (i < curPill ? 'is-done' : i === curPill ? 'is-now' : 'is-next'));
+        pl.setAttribute('role', 'listitem');
+        pl.setAttribute('data-pill-stages', p2.stages.join(' '));
+        if (i === curPill) pl.setAttribute('aria-current', 'step');
+        var n = el('span', 'stage-pill-n', i < curPill ? '\u2713' : String(i + 1));
+        n.setAttribute('aria-hidden', 'true');
+        pl.appendChild(n);
+        pl.appendChild(el('span', 'stage-pill-name', esc(p2.name)));
+        strip.appendChild(pl);
+      });
+    }
+    /* ONE ATTENTION BEAT when a stage begins - two breaths, then still. A
+       screen that nags is a screen she stops reading, so nothing pulses for
+       ever; under prefers-reduced-motion the stylesheet skips the beat. */
+    function beat() {
+      var pl = strip && strip.querySelector('.stage-pill.is-now');
+      [pl, msg].forEach(function (n) { if (n) { n.classList.remove('is-beat'); void n.offsetWidth; n.classList.add('is-beat'); } });
+      clearTimeout(beatTimer);
+      beatTimer = setTimeout(function () { [pl, msg].forEach(function (n) { if (n) n.classList.remove('is-beat'); }); }, 2500);
+    }
+    function pillOfStage(s2) {
+      for (var i = 0; i < pills.length; i++) if (pills[i].stages.indexOf(s2) > -1) return i;
+      return curPill < 0 ? 0 : curPill;
+    }
+    function setPill(i, quiet) {
+      if (!pills.length) return;
+      i = Math.max(0, Math.min(pills.length - 1, i));
+      if (i === curPill) return;
+      var first = curPill < 0;
+      curPill = i;
+      wrap.setAttribute('data-stage-label', pills[i].name);
+      renderStrip();
+      if (!first && !quiet) beat();
+    }
+
     /* the one live message slot: a stage instruction REPLACES the last one
-       rather than stacking, so no question ever says the same thing twice */
-    var msg = el('p', 'ui-msg stat-msg');
+       rather than stacking, so no question ever says the same thing twice.
+       It is the CURRENT INSTRUCTION - body size, a copper bar - and it names
+       the whole act before the control that does it. */
+    var msg = el('p', 'ui-msg stat-msg stage-now');
     body.appendChild(msg);
 
     var ghost = el('div', 'stat-ghost');           /* attempt 1, struck through */
@@ -314,12 +425,18 @@
         ctx.selected = null;
       },
       say: function (text) { msg.textContent = text || ''; },
-      setStage: function (s) { if (stages.indexOf(s) > -1) wrap.setAttribute('data-stage', s); },
+      setStage: function (s) {
+        if (stages.indexOf(s) === -1) return;
+        wrap.setAttribute('data-stage', s);
+        setPill(pillOfStage(s));
+      },
+      setPill: function (i) { setPill(i); },
       changed: function () { onChange(); }
     };
     body.addEventListener('click', function () { ctx.clearSelection(); });
 
     var kind = BUILD[q.kind](ctx);
+    setPill(pillOfStage(stages[0]), true);
 
     /* ── the open attempt, so a reload lands on resume-mid ───────────── */
     var saveTimer = null;
@@ -342,6 +459,11 @@
     function onChange() {
       if (rec.lock || settling) return;
       var r = kind.ready();
+      /* ONE GOLD GLOW when the Check lights, then still (DESIGN 4.0) */
+      if (r.ok && checkBtn.disabled) {
+        checkBtn.classList.remove('glow-once'); void checkBtn.offsetWidth; checkBtn.classList.add('glow-once');
+        setTimeout(function () { checkBtn.classList.remove('glow-once'); }, 1300);
+      }
       checkBtn.disabled = !r.ok;
       setLockedWhy(checkBtn, r.ok ? null : r.why);
       /* WHICH BOARD SHE IS LOOKING AT IS THE KIND'S OWN BUSINESS. This used to
@@ -425,6 +547,7 @@
         setLockedWhy(checkBtn, kind.ready().why);
         ctx.say(T().statTryAgain);
         wrap.setAttribute('data-stage', stages[0]);
+        curPill = -1; setPill(pillOfStage(stages[0]), true);
       }
       if (!instant) {
         var fr = feedback.getBoundingClientRect();
@@ -636,12 +759,12 @@
       pad = null;
       if (order.length < values().length) {
         window.GJ.setState(ctx.dock, 'dock', 'tray');
-        ctx.say(T().statQlistOrder);
+        ctx.say(fill(T().statStageQlistOrder, { n: values().length - order.length }));
         return;
       }
       if (cutIdx < cuts.length) {
         window.GJ.setState(ctx.dock, 'dock', 'chips');
-        ctx.say(fill(T().statQlistPick, { name: cutName(cuts[cutIdx]) }));
+        ctx.say(fill(T().statStageQlistPick, { name: cutName(cuts[cutIdx]) }));
         var commit = el('button', 'btn-quiet', fill(T().statQlistCommit, { name: cutName(cuts[cutIdx]) }));
         commit.type = 'button';
         commit.disabled = !pending.length;
@@ -666,7 +789,7 @@
         /* the last board: the pad is open and, once a value is in it, the
            Check is lit and she is ready */
         ctx.setStage(iqr ? 'ready' : 'iqr');
-        ctx.say(T().statQlistIqr);
+        ctx.say(T().statStageIqr);
         pad = makeNumPad(ctx.dock, {
           label: T().statIqr, fraction: true, decimal: true,
           onChange: function (v) { iqr = v; ctx.setStage(v ? 'ready' : 'iqr'); ctx.changed(); }
@@ -690,7 +813,7 @@
     function render() { renderTray(); renderRow(); renderReadout(); renderDock(); }
 
     return {
-      start: function () { render(); ctx.say(T().statQlistOrder); },
+      start: function () { render(); },
       reset: function () { order = []; picks = {}; pending = []; iqr = ''; cutIdx = 0; committed = []; lines.innerHTML = ''; render(); },
       restore: function (S) {
         S = S || {};
@@ -809,13 +932,12 @@
     function renderDock() {
       ctx.dock.innerHTML = '';
       pad = null;
+      ctx.say(T().statStageCftable);
       if (open < 0) {
         window.GJ.setState(ctx.dock, 'dock', 'chips');
-        ctx.say(T().statCftableStart);
         return;
       }
       window.GJ.setState(ctx.dock, 'dock', 'numpad');
-      ctx.say(rowLabel(open));
       pad = makeNumPad(ctx.dock, {
         label: rowLabel(open), decimal: true,
         onChange: function (v) { cf[open] = v; paint(); ctx.changed(); }
@@ -1033,8 +1155,13 @@
     var boardWrap = el('div', 'stat-board-host');
     boardWrap.setAttribute('data-work', '');
     ctx.boardHost.appendChild(boardWrap);
+    /* THE TABLE IS BESIDE THE CHART, NEVER BETWEEN THE CHART AND ITS
+       CONTROLS (his Exercise 3, 11 Sept 2026: "a huge amount to scroll on
+       the graph before I can join the dots"). It sits after the dock in the
+       flow, so on a phone the Join button is directly under the board; from
+       768px the stylesheet lifts it into a column beside the chart. */
     var tableWrap = el('div', 'stat-given');
-    ctx.boardHost.appendChild(tableWrap);
+    ctx.body.insertBefore(tableWrap, ctx.body.querySelector('.check-row'));
 
     function givenTable() {
       tableWrap.innerHTML = '';
@@ -1123,7 +1250,7 @@
         after();
       });
       ctx.dock.appendChild(join);
-      ctx.say(n < maxPts ? T().statPlotPlaceWhy : (joined ? '' : T().statPlotJoinWhy));
+      ctx.say(n < maxPts ? fill(T().statStageCfplotPlace, { n: n, m: maxPts }) : (joined ? '' : T().statStageCfplotJoin));
     }
 
     return {
@@ -1235,7 +1362,7 @@
       if (a === 'IQR') {
         ctx.setStage('iqr');
         window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
-        ctx.say(T().statReadIqr);
+        ctx.say(T().statStageIqr);
         var doneI = el('button', 'btn-quiet', T().statThatsMine);
         pad = makeNumPad(ctx.dock, { label: T().statIqr, fraction: true, decimal: true,
           onChange: function (v) {
@@ -1262,7 +1389,7 @@
       }
       if (isAtX(a)) {
         window.GJ.setState(ctx.dock, 'dock', 'nudge-pad');
-        ctx.say(fill(T().statReadAtX, { x: a.x }));
+        ctx.say(fill(T().statStageCfreadAtX, { x: a.x }));
         var doneX = el('button', 'btn-quiet', T().statThatsMine);
         /* THE COMMIT KEEPS LOOKING. It was judged once, when the dock was
            built, and never again - so moving the rule and keying the answer
@@ -1305,7 +1432,7 @@
         return;
       }
       window.GJ.setState(ctx.dock, 'dock', 'nudge-pad');
-      ctx.say(fill(T().statReadFind, { name: nameOf(a) }));
+      ctx.say(fill(T().statStageCfread, { name: nameOf(a) }));
       var done = el('button', 'btn-quiet', fill(T().statThatsMyOne, { name: nameOf(a) }));
       /* THE DOCK IS NOT REBUILT WHILE SHE IS WORKING IN IT. Moving the rule
          redraws the BOARD and re-reads the commit; rebuilding the whole dock
@@ -1484,13 +1611,14 @@
       bd = window.GJ_STATCHART.render(boardWrap, q.scale, {
         onGridTap: function (x) {
           if (ctx.locked()) return;
-          if (!sel) { ctx.say(T().statBoxChooseMarker); return; }
+          /* a press on the scale with no marker chosen: the instruction
+             already says "choose a marker, then..." - it stays, with its
+             live count, rather than being replaced by a shorter hint */
+          if (!sel) return;
           pos[sel] = x;
-          var placed = sel;
           sel = null;
           ctx.setStage(Object.keys(pos).length === 5 ? 'placed' : 'placing');
           paint(); ctx.changed();
-          ctx.say(fill(T().statBoxPlaced, { name: markerLabel(placed), value: x }));
         },
         onChange: function (evt) {
           if (!evt || ctx.locked()) return;
@@ -1498,7 +1626,6 @@
         }
       });
       fictionLine(ctx, T().statTrayFiction);
-      ctx.say(T().statBoxChooseMarker);
       ctx.setStage('tray');
       paint();
     }
@@ -1573,8 +1700,8 @@
         paint(); ctx.changed();
       });
       ctx.dock.appendChild(draw);
-      if (Object.keys(pos).length < 5) ctx.say(sel ? T().statBoxPlaceOnScale : T().statBoxChooseMarker);
-      else if (!drawn) ctx.say(T().statBoxDrawWhy);
+      if (Object.keys(pos).length < 5) ctx.say(fill(T().statStageBoxPlace, { n: Object.keys(pos).length }));
+      else if (!drawn) ctx.say(T().statStageBoxDraw);
     }
 
     return {
@@ -1710,6 +1837,8 @@
       var ok2 = s2.who && s2.size && s2.meas && s2.cons && s2.v && s2.v[0] && s2.v[1];
       var touched = s1.who || s2.who || (s1.v && s1.v[0]) || (s2.v && s2.v[0]);
       ctx.setStage((ok1 && ok2) ? 'ready' : (touched ? 'building' : 'empty'));
+      ctx.setPill(ok1 ? 1 : 0);
+      ctx.say(ok1 ? T().statStageCompare2 : T().statStageCompare1);
       sentences.innerHTML = '';
       var l1 = el('p', 'stat-sentence');
       l1.appendChild(document.createTextNode(''));
@@ -1763,7 +1892,6 @@
       });
       render();
       window.GJ.setState(ctx.dock, 'dock', 'chips');
-      ctx.say(T().statCompareStart);
     }
 
     return {
@@ -1877,7 +2005,11 @@
     }
 
     return {
-      start: function () { render(); ctx.say(T().statJudgeStart); },
+      start: function () {
+        render();
+        var allOptions = claims.length > 0 && claims.every(function (c) { return !!c.options; });
+        ctx.say(allOptions ? T().statStageJudgeOptions : T().statStageJudge);
+      },
       reset: function () { j = claims.map(function () { return {}; }); render(); },
       restore: function (S) { j = (S && S.j) || claims.map(function () { return {}; }); render(); },
       state: function () { return { j: j }; },

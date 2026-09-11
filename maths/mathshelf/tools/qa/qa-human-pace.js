@@ -24,6 +24,7 @@ const ORDER = 46;
 const COVERS = { books: '*', kinds: '*', surfaces: '*', widths: [], projector: false, tier: ['preview', 'built'], cells: ['human-pace'] };
 const CONTROLS = [
   { id: 'unrecorded-clock', kind: 'mutation', mustFail: /no inventory row/ },
+  { id: 'film-too-fast', kind: 'fixture', plant: 'fixture-pace-fast-film', mustFail: /player\.js :: readTime :: 850 x human-pace: no inventory row/ },
   { id: 'stale-row', kind: 'fixture', plant: 'fixture-pace-stale', mustFail: /names a clock that no longer exists/ },
   { id: 'budget-on-a-child', kind: 'mutation', plant: 'fixture-pace-budget', mustFail: /times a pupil/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }

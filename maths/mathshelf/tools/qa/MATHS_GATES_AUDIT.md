@@ -100,6 +100,16 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | 32 | qa-tickbox | new-book-defaults-true |
 | 33 | qa-language | must-fail-exhibits, must-pass-exemplars |
 
+| 34 | qa-waits | wait-card-still |
+| 35 | qa-waits | tick-waits |
+| 36 | qa-tickbox | shelf-shows-unticked |
+| 37 | qa-waits | tick-waits |
+| 38 | qa-human-pace | film-too-fast |
+| 39 | sit-pupil | film-ring-draws-nothing, film-box-on-the-glyphs |
+| 40 | sit-pupil | stage-strip-behind, stage-without-a-beat, check-without-a-glow |
+| 41 (the sentences, mechanically) | qa-language | must-fail-exhibits, must-pass-exemplars |
+| 42 | sit-pupil | table-between-board-and-dock |
+
 ## B. JUDGED — the rule is a judgement, and the judgement is machine-gated
 
 | rule | where the judgement is filed |
@@ -107,6 +117,7 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | 3 | the content audit of 25 Jun 2026; `qa-text-damage` pins every string against `45b03ed` |
 | 18 (the reading itself) | `MATHS_COLD_READ_VERDICTS_*.md`, gated by `qa-cold-read.js` |
 | 9 (does the feedback fit what she did) | the per-item block, section 5 of `COLD_READ_CHECKLIST.md` |
+| 41 (the reading: does the instruction name the whole act before the control) | `MATHS_COLD_READ_VERDICTS_stats-quartiles.md`, re-filed on the polish cut of 11 Sept 2026, gated by `qa-cold-read.js` |
 
 ## C. THE COLD-READ CHECKLIST
 
@@ -288,14 +299,7 @@ checked against that sentence first.
 
 ## F. GAPS — each with an owner and a phase
 
+_Rulings 34–42 (his of 11 Sept 2026) moved to A and B on the Book C polish cut, 11 Sept 2026 — each with the control that proves it._
+
 | rule | gap | owner / phase |
 |---|---|---|
-| 34 | the markbook's wait card is not seen to move; needs a rendered-frame proof and a control | the Book C polish cut (`MATHS_BOOKC_POLISH_PROMPT.txt`) |
-| 35 | the saving line is a plain `.ui-msg`; becomes the gold wait card | the Book C polish cut |
-| 36 | unticked books render as locked spines; the shelf must omit them; `qa-tickbox`'s shelf half and the registry's `locked-spine` state change with it | the Book C polish cut |
-| 37 | a tick waits for the relay before it moves; optimistic tick + a measured round trip | the Book C polish cut |
-| 38 | film dwell is 0.2 s a word, floor 0.85 s; becomes 0.35 s a word, floor 1.2 s, with inventory rows | the Book C polish cut |
-| 39 | `ring` in paper mode draws nothing; the gold `box` is not measured from its text | the Book C polish cut |
-| 40 | no stage strip; `data-stage` has no visible twin | the Book C polish cut |
-| 41 | stage instructions are terse; the commit verbs are unexplained | the Book C polish cut (the strings, then the cold read) |
-| 42 | the cfplot action row sits below the table, a screen away from the board | the Book C polish cut |

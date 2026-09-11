@@ -977,8 +977,15 @@
 
     // =====================================================================
     // ring / bracket - decorative highlight over already-plotted points
-    // (the qlist "circle the middle two" beat; deviation noted in the
-    // build report - see statchart's header comment).
+    // (the qlist "circle the middle two" beat). This ring only ever knows
+    // about a CHART POINT (st.points[i]) - it has no idea what a written
+    // paper line is, and never did. Ruling 39 (11 Sept 2026) needed a ring
+    // on a WRITTEN line too ("ring the 4th value" in an ordered list, mode
+    // 'paper', no chart in sight) - that one lives in player.js's own
+    // paperRing(), a separate function against a separate model (the
+    // .ml-val spans a written line splits itself into), not a call to this
+    // one. The two rings share a look (copper ellipse, pen-speed draw) and
+    // nothing else - no deviation left open here.
     // =====================================================================
     function ring(i) {
       var pt = st.points[i];

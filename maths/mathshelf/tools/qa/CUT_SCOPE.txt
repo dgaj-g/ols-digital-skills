@@ -31,3 +31,11 @@ server/Code.gs
 server/DEPLOY_LOG.md
 HANDOVER.md
 PROGRESS.md
+# ruling 36 retires a shelf state the pupil walker expects; its shelf pass and one control change with it
+tools/qa/sit-pupil.js
+# the TIME rules say a red on an old screen is a WAIVED ledger row; the walkers must honour the ledger for a --full to be green at all
+tools/qa/sit-confused.js
+# ruling 38 (film pace) is held by qa-human-pace; its film-too-fast control lives there
+tools/qa/qa-human-pace.js
+# rulings 34/35/37 (wait-card breath, tick reacts at once) are held by qa-waits; its wait-card-still and tick-waits controls live there
+tools/qa/qa-waits.js

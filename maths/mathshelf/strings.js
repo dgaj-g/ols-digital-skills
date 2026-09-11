@@ -48,8 +48,6 @@
       shelfGreetingMorning: 'Good morning',
       shelfGreetingAfternoon: 'Good afternoon',
       shelfPlain: 'Your maths books live here. Your teacher chooses which ones are out.',
-      shelfNotSet: 'Not set yet',
-      shelfNotSetNote: 'A book that is not set yet is one your teacher has not put out for this class.',
       shelfMore: 'Your teacher will add more books to this shelf during the year.',
       shelfMarks: '{got} of {max} marks · {done} of {total} answered',
 
@@ -88,8 +86,8 @@
       statPutBack: 'Press it again to put it back.',
       statRemoveLast: 'Remove the last one',
       statNextRow: 'next ↓',
-      statThatsMine: 'That’s my answer',
-      statThatsMyOne: 'That’s my {name}',
+      statThatsMine: '✓ That’s my answer',
+      statThatsMyOne: '✓ That’s my {name}',
       /* the two fictions */
       statRuleFiction: 'The rule is the line that crosses the graph. Move it up the frequency axis to the height you need, then read where it meets the curve.',
       statTrayFiction: 'Five markers — put each one on the scale where it belongs.',
@@ -106,13 +104,10 @@
       statCumulativeFrequency: 'Cumulative frequency',
       statReading: 'reading',
       /* the ordered list and its cuts */
-      statQlistOrder: 'Choose the values in order, smallest first.',
       statQlistOrderWhy: 'Put every value in the row first.',
-      statQlistPick: 'Now choose the {name}.',
       statQlistPickWhy: 'Choose each value you were asked for first.',
-      statQlistCommit: 'That’s my {name}',
+      statQlistCommit: '✓ That’s my {name}',
       statQlistCommitWhy: 'Choose a value in the row first.',
-      statQlistIqr: 'Work out the interquartile range.',
       statQlistIqrWhy: 'Work out the interquartile range first.',
       statQlistTruth: 'In order: {list}',
       statPickOne: '{name} = {value}',
@@ -120,14 +115,13 @@
       statLineOne: '{name} = {value}',
       statLinePair: '{name} = ({a} + {b}) ÷ 2 = {value}',
       /* the cumulative frequency column */
-      statCftableStart: 'Choose a box in the last column and put its running total in.',
       statCftableRow: 'Cumulative frequency up to {value} {unit}',
       statCftableWhy: 'Put a running total in at least one row first.',
       statCftableTruth: 'Running totals: {list}',
       /* plotting and joining */
       statPlotPlaceWhy: 'Place every point first.',
       statPlotJoinWhy: 'Join the points first.',
-      statJoinPoints: 'Join the points',
+      statJoinPoints: '✓ Join the points',
       statPlotJoinedAlready: 'The points are joined.',
       statPlotEnough: 'You have all the points you need — move one instead.',
       statPointReadout: '({x}, {y})',
@@ -140,11 +134,8 @@
       statNudgeDown: 'One square down',
       statRemovePoint: 'Take this point off',
       /* reading the curve */
-      statReadFind: 'Find the {name}.',
       statReadWhy: 'Find every value you were asked for first.',
       statReadMoveWhy: 'Move the rule to the height you need first.',
-      statReadIqr: 'Work out the interquartile range.',
-      statReadAtX: 'Move the rule across to {x}.',
       statReadAtXWhy: 'Move the rule across and put your answer in first.',
       statValueReadout: '{value}',
       statCfReadout: '{value}',
@@ -153,17 +144,13 @@
       statPctAbove: 'Percentage above',
       statPctBelow: 'Percentage below',
       /* the box plot */
-      statBoxChooseMarker: 'Choose a marker.',
-      statBoxPlaceOnScale: 'Now press the scale where it belongs.',
-      statBoxPlaced: '{name} at {value}',
       statBoxPlaceWhy: 'Put all five markers on the scale first.',
-      statDrawBoxPlot: 'Draw the box plot',
+      statDrawBoxPlot: '✓ Draw the box plot',
       statBoxDrawWhy: 'Draw the box plot first.',
       statBoxDrawnAlready: 'The box plot is drawn.',
       statBoxStageWhy: 'Finish the first part first.',
       statNextDrawBox: 'Next: draw the box plot',
       /* comparing two distributions */
-      statCompareStart: 'Finish both sentences.',
       statCompareWhy: 'Finish both sentences first.',
       statCompareValue: 'Value',
       statCmpHigherMedian: 'had the higher median',
@@ -178,7 +165,6 @@
       statCmpLess: 'less',
       statCmpConsistent: 'consistent',
       /* weighing a claim */
-      statJudgeStart: 'Decide about each claim.',
       statFairToSay: 'Fair to say',
       statNotFair: 'Not fair',
       statJudgeDecideWhy: 'Decide every claim first.',
@@ -186,6 +172,40 @@
       /* number-pad answers */
       statValuesStart: 'Choose a box and put your answer in.',
       statValuesWhy: 'Put a number in at least one box first.',
+
+      /* THE STAGE STRIP AND THE CURRENT INSTRUCTION (DESIGN 4.0, Correction
+         11 Sept 2026 — his first live test of Book C). A pill is two or three
+         words; an instruction names the whole act, how many, and what happens
+         next; every {n} is a live count. The instruction table in the design
+         is the source of every sentence here. */
+      statPillOrder: 'Put in order',
+      statPillCuts: 'Mark the cuts',
+      statPillIqr: 'Find the IQR',
+      statPillCftable: 'Fill the running total',
+      statPillValues: 'Work out the values',
+      statPillPlot: 'Plot the points',
+      statPillJoin: 'Join the points',
+      statPillRead: 'Read the {name}',
+      statPillReadAt: 'Read at {x}',
+      statPillBoxPlace: 'Place the markers',
+      statPillBoxDraw: 'Draw the plot',
+      statPillCompare1: 'The averages',
+      statPillCompare2: 'The spread',
+      statPillJudge: 'Decide each one',
+      statStageQlistOrder: 'Build the ordered list. Choose the smallest value first, then the next smallest, and keep going until every value is in the row. ({n} still to place.)',
+      statStageQlistPick: 'Now choose the value you think is the {name}. If it sits between two values, choose both. Then press ✓ That’s my {name}.',
+      statStageIqr: 'Enter the interquartile range on the pad, then press ✓.',
+      statStageCftable: 'Fill in the running total from the top row down: each box is the total so far plus that row’s frequency. Choose a box, then use the pad.',
+      statStageCfplotPlace: 'Put a point on the grid for every row of the table. Choose a spot to place a point; choose a placed point to move it with the arrows. ({n} of {m} placed.)',
+      statStageCfplotJoin: 'Every point is placed. Join them to draw the curve: press ✓ Join the points.',
+      statStageCfread: 'Move the rule up the frequency axis to the height for the {name}, then read where it meets the curve. Press ✓ That’s my {name} to keep it.',
+      statStageCfreadAtX: 'Move the rule along the bottom axis to {x}, and read the total where it meets the curve. Then enter the answer on the pad.',
+      statStageBoxPlace: 'Choose a marker, then choose where it belongs on the scale. All five go on. ({n} of 5 placed.)',
+      statStageBoxDraw: 'All five markers are on the scale. Press ✓ Draw the box plot.',
+      statStageCompare1: 'Finish the first sentence: choose the group with the higher median, then enter both medians.',
+      statStageCompare2: 'Finish the second sentence: choose the measure, the group and the two values.',
+      statStageJudge: 'For each statement choose Fair to say or Not fair. If you choose Not fair, choose the reason as well.',
+      statStageJudgeOptions: 'Choose what happens to each one.',
       numpadDefaultLabel: 'Enter a number',
 
       /* the movie player */
@@ -318,6 +338,11 @@
       passcodeEmpty: 'Enter the staff passcode.',
       passcodeChecking: 'Checking the passcode…',
       tickSaving: 'Saving {book} for {class}…',
+      /* the outcome of a tick, named (rule 23): these used to be built by
+         string concatenation on the render path itself, invisible to any
+         language gate */
+      tickOn: '{book} is now on {class}’s shelf.',
+      tickOff: '{book} removed from {class}’s shelf.',
       passcodeWrong: 'That passcode was not accepted.',
       openMarkbook: 'Open the markbook',
       noServer: 'We could not reach the server. Try again.',
