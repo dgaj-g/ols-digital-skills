@@ -5,7 +5,7 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ---
 
-## 11 SEPT 2026, evening — STEWARD RE-CUT OF EXERCISE 3'S CHART: PROVED IN THE TREE, NOT YET LIVE
+## 11 SEPT 2026, evening — STEWARD RE-CUT OF EXERCISE 3'S CHART: PROVED IN THE TREE AT `f1ca1f2`, NOT YET LIVE
 
 Fable's review of the polish cut (the steward brief, 11 Sept): repo == prod,
 the manifest, the cold-read hashes, the leashes and the nine rulings all
@@ -83,9 +83,16 @@ judge the rule to the grid's resolution, half a small square strictly, in
 statcore with selfTest rows and a dated DESIGN 4.4/6.2 correction). How the
 09:47 full run closed q17 walk-right on the same engine is not explained;
 the sidecar it used is gone. The whole-tree `--full` (all books; the shared
-files moved every book's content hash) and its verdict are recorded in the
-paragraph below this one. Then build-pathb → commit → push → the pair pasted →
-DATA and FRONT DOOR as new versions by Deployment ID. The front-door cut needs
+files moved every book's content hash) ran 21:04–21:20: the three walkers
+GREEN (592 / 202 / 52), qa-cold-read GREEN (hash 3893784d), qa-coverage
+GREEN with every cell closed and the nine rows printed as debt, every other
+gate GREEN; qa-repo-prod red only until the commit. The pair rebuilt
+(build-pathb, qa-build), committed as `f1ca1f2` and pushed; `--fast` green at
+the record commit. Deploy: the pair pasted → DATA and FRONT DOOR as new
+versions by Deployment ID — Damien's two manifest edits; brief
+`Maths/MATHS_BOOKC_RECUT_DEPLOY_PROMPT.txt`, or "cut it" in the steward
+session. Time: 19:31 → 21:2x on a 120-minute clock, of which the A/B walk
+that proved the nine cells were not this cut's took 25. The front-door cut needs
 Damien's two-line manifest edit (USER_ACCESSING + DOMAIN, then back), which
 the desktop app refuses Claude; until that cut, prod is the polish cut
 (V26/V25) and the squeeze is live on tablets and laptops.
