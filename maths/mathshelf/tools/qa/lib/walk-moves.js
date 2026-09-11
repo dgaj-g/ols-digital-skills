@@ -96,9 +96,20 @@ const BEAT_OF = `((qid) => {
      against the boards' bottom, in CSS px - nothing tall may sit between */
   const boards = root.querySelector('.stat-board-host') || root.querySelector('.stat-boards'), dock = root.querySelector('[data-surface="dock"]');
   const gap = (boards && dock && !dock.hidden) ? Math.round(dock.getBoundingClientRect().top - boards.getBoundingClientRect().bottom) : null;
+  /* how much narrower the board's frame is than its body, in CSS px: a frame
+     narrower than the CHART is the 12px-square law on a phone (allowed); a
+     frame narrower than the BODY is a side column squeezing the grid */
+  const frame = root.querySelector('.stat-board-frame'), body = root.querySelector('.jq-body');
+  const frameW = frame ? Math.round(frame.getBoundingClientRect().width) : null;
+  const bcs = body ? getComputedStyle(body) : null;
+  const bodyW = body ? Math.round(body.clientWidth - parseFloat(bcs.paddingLeft || 0) - parseFloat(bcs.paddingRight || 0)) : null;
   return {
     kind: root.getAttribute('data-kind') || null,
     dockGap: gap,
+    boardFrame: frameW,
+    bodyWidth: bodyW,
+    boardHidden: frame ? (frame.scrollWidth - frame.clientWidth) : null,
+    boardSqueeze: (frameW !== null && bodyW !== null) ? bodyW - frameW : null,
     label: root.getAttribute('data-stage-label') || null,
     strip: !!root.querySelector('.stage-strip'),
     beating: !!(pill && pill.classList.contains('is-beat')),

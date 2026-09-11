@@ -1,5 +1,5 @@
 
-  COVERAGE MATRIX (content hash 1e57bcd2ae75, tier fast)
+  COVERAGE MATRIX (content hash cd31e63f7362, tier full)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
   click-safety  222
@@ -27,18 +27,27 @@
   every cell is closed.
 
   DEBT LEDGER (printed every run)
-  cell                                          owner / phase                                                                                                                                  file                state
-  --------------------------------------------  ---------------------------------------------------------------------------------------------------------------------------------------------  ------------------  ------
-  angles × source                               locked content, rule 30                                                                                                                        content-angles.js   WAIVED
-  algebra × source                              locked content, rule 30                                                                                                                        content-algebra.js  WAIVED
-  angles × period-budget                        locked content, rule 30                                                                                                                        content-angles.js   WAIVED
-  algebra × period-budget                       locked content, rule 30                                                                                                                        content-algebra.js  WAIVED
-  question:checked-wrong-1 @375 × readability   next cut; Angles/Algebra are reported on, never re-opened                                                                                      (any)               WAIVED
-  question:checked-right @375 × readability     next cut (Book A's): unchosen chips keep full ink after Check                                                                                  (any)               WAIVED
-  book-contents:mid-book @375 × overlap         next cut (Book A's): relayout once the board has size                                                                                          (any)               WAIVED
-  question:checked-wrong-1 @1280 × readability  next harness session: the sampler and the protractor's halo                                                                                    (any)               WAIVED
-  question:checked-right @1280 × readability    next cut (Book A's): nothing that carries words is dimmed after Check — the chosen state is shown by fill or a mark, never by fading the rest  (any)               WAIVED
-  question:checked-wrong-1 @375 × readability   next cut (Book A's): the ghost never carries words                                                                                             (any)               WAIVED
+  cell                                                     owner / phase                                                                                                                                  file                state
+  -------------------------------------------------------  ---------------------------------------------------------------------------------------------------------------------------------------------  ------------------  ------
+  angles × source                                          locked content, rule 30                                                                                                                        content-angles.js   WAIVED
+  algebra × source                                         locked content, rule 30                                                                                                                        content-algebra.js  WAIVED
+  angles × period-budget                                   locked content, rule 30                                                                                                                        content-angles.js   WAIVED
+  algebra × period-budget                                  locked content, rule 30                                                                                                                        content-algebra.js  WAIVED
+  question:checked-wrong-1 @375 × readability              next cut; Angles/Algebra are reported on, never re-opened                                                                                      (any)               WAIVED
+  question:checked-right @375 × readability                next cut (Book A's): unchosen chips keep full ink after Check                                                                                  (any)               WAIVED
+  book-contents:mid-book @375 × overlap                    next cut (Book A's): relayout once the board has size                                                                                          (any)               WAIVED
+  question:checked-wrong-1 @1280 × readability             next harness session: the sampler and the protractor's halo                                                                                    (any)               WAIVED
+  question:checked-right @1280 × readability               next cut (Book A's): nothing that carries words is dimmed after Check — the chosen state is shown by fill or a mark, never by fading the rest  (any)               WAIVED
+  question:checked-wrong-1 @375 × readability              next cut (Book A's): the ghost never carries words                                                                                             (any)               WAIVED
+  stats-quartiles > s4 > q17 (cfread) @375 × walk-right    the next Book C fix session — Book A's opening list, P0                                                                                        (any)               WAIVED
+  stats-quartiles > s4 > q17 (cfread) @768 × walk-right    the next Book C fix session — Book A's opening list, P0                                                                                        (any)               WAIVED
+  stats-quartiles > s4 > q17 (cfread) @1280 × walk-right   the next Book C fix session — Book A's opening list, P0                                                                                        (any)               WAIVED
+  stats-quartiles > s4 > q18 (cfread) @375 × walk-right    next harness session                                                                                                                           (any)               WAIVED
+  stats-quartiles > s4 > q18 (cfread) @768 × walk-right    next harness session                                                                                                                           (any)               WAIVED
+  stats-quartiles > s4 > q18 (cfread) @1280 × walk-right   next harness session                                                                                                                           (any)               WAIVED
+  stats-quartiles > s5 > q23 (compare) @375 × walk-right   next harness session                                                                                                                           (any)               WAIVED
+  stats-quartiles > s5 > q23 (compare) @768 × walk-right   next harness session                                                                                                                           (any)               WAIVED
+  stats-quartiles > s5 > q23 (compare) @1280 × walk-right  next harness session                                                                                                                           (any)               WAIVED
 
   OUT OF REACH (printed every run)
   cell                           why nothing can stand on it

@@ -1162,6 +1162,28 @@
        768px the stylesheet lifts it into a column beside the chart. */
     var tableWrap = el('div', 'stat-given');
     ctx.body.insertBefore(tableWrap, ctx.body.querySelector('.check-row'));
+    /* THE CHART GETS THE WHOLE BODY BEFORE ANYTHING SITS BESIDE IT (steward
+       re-cut, 11 Sept 2026). The stylesheet lifts the table beside the chart
+       from 768px, but a chart keeps every small square at 12px (statchart law
+       6) and so has a width of its own: when the body could not hold that
+       width, the 20px gap and the table side by side, the grid was squeezed
+       to 268 of its 347px at 1280 and 176 at 768, and the right-hand classes
+       lived behind a sideways scroll nobody was told about. The decision is
+       MEASURED, never a breakpoint: beside when the body can hold both, after
+       the dock when it cannot, re-measured whenever the body's width changes.
+       (`stat-stack` on the body turns the side column off; style.css.) */
+    function layoutGiven() {
+      var table = tableWrap.firstElementChild;
+      if (!bd || !table || !ctx.body.clientWidth) return;
+      var bcs = getComputedStyle(ctx.body);
+      var inner = ctx.body.clientWidth - parseFloat(bcs.paddingLeft || 0) - parseFloat(bcs.paddingRight || 0);
+      var need = bd.minWidth() + 20 + table.getBoundingClientRect().width;
+      var stack = inner < need + 2;
+      if (ctx.body.classList.contains('stat-stack') !== stack) ctx.body.classList.toggle('stat-stack', stack);
+    }
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(function () { layoutGiven(); }).observe(ctx.body);
+    }
 
     function givenTable() {
       tableWrap.innerHTML = '';
@@ -1197,6 +1219,7 @@
           after();
         }
       });
+      layoutGiven();
       if (bd.needsScroll()) ctx.say(T().statScrollGraph);
       after();
     }

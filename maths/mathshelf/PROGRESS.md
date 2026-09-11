@@ -5,6 +5,91 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ---
 
+## 11 SEPT 2026, evening — STEWARD RE-CUT OF EXERCISE 3'S CHART: PROVED IN THE TREE, NOT YET LIVE
+
+Fable's review of the polish cut (the steward brief, 11 Sept): repo == prod,
+the manifest, the cold-read hashes, the leashes and the nine rulings all
+verified; Exercise 1 (strip, instructions, "✓ That's my …", the film's three
+rings at pen speed, dwell measured at 5.6 / 6.9 / 8.4 / 7.7 / 8.4 s a step, the
+gold box 8 px clear of its glyphs), the tick flipping in 4 ms, the "removed
+from demo's shelf" line and the unticked book absent from the pupil shelf all
+seen in the preview. ONE fault, a pupil's on Monday: ruling 42's side column
+was a bare 768px breakpoint (`grid-template-columns: minmax(0,1fr)
+max-content`), and a chart keeps its squares at 12 px (statchart law 6), so
+the table took its 408 px and the grid was SQUEEZED — 268 of its 347 px at
+1280 (his laptop), 176 at 768 — with the right-hand classes behind a sideways
+scroll inside the frame that nothing announces. Phones (375) were untouched:
+their body was already narrower than the chart, which is the law-6 sideways
+scroll the design accepts.
+
+Harness first, then the fix, all inside a fresh 120-minute clock
+(`cut-start.json` re-stamped at `5df902e`; `CUT_SCOPE.txt` names the files):
+- LAW (`sit-pupil`, beside the ruling-42 reach check): a `cfplot` board that
+  hides grid behind a sideways scroll while its body had the room fails —
+  `BEAT_OF` now reports the frame's hidden width and the body's content
+  width. Control `board-squeezed-beside-the-table` plants the bare breakpoint
+  back (`stats-board-squeezed`) and must fail; the audit's row 42 names it.
+- FIX 1 (`jotter-stats.js` `layoutGiven`, `style.css`): the table sits beside
+  the chart only when the body's content box can hold `bd.minWidth()` + 20 +
+  the table; otherwise `stat-stack` on the body keeps it after the dock. The
+  decision is measured on build and by a ResizeObserver on the body.
+- FIX 2 (`statchart.js`): a board is drawn at its own law-6 width and never
+  stretched — the svg scales at a fixed aspect, so a frame filling a 718 px
+  body drew this grid 2,500 px tall on a laptop. `frame.style.maxWidth` =
+  law-6 width + the 1 px border each side. Every board on a laptop is now
+  the size every phone walk already passed.
+- FIX 3 (`style.css`): the given table wraps its headings (max 320 px, 8 px
+  cell padding, class intervals never broken), so 347 + 20 + 320 fits a 698 px
+  body: beside on a laptop, stacked on a tablet, unchanged on a phone.
+  Measured after the fix: 1024/1280 beside, 0 px hidden; 768 stacked, 0 px
+  hidden; 375 as before (258 px frame, 91 px of law-6 scroll).
+- Docs corrected: DEPLOY_LOG's what-is-live line (was still V24/V23) and the
+  front-door row's time (18:49, not 09:57); PROGRESS's resume block no longer
+  names /tmp; DESIGN §4.0 carries the dated correction.
+- NOT changed, for the record: the boxplot scale boards hide 54 px at 1280
+  (a 750-unit scale in a 698 px body — law 6, since 8 Sept, the walker's
+  law passes it because the body has no more room); the phone chart is 1,242
+  px tall with Join directly under it (decision (a) of the polish cut stands).
+  Both are Book A's cut to look at, not this one's. So is a third thing seen
+  tonight: on the boxplot board (Ex 5) the new stage instruction ("Choose a
+  marker, then choose where it belongs on the scale. All five go on.") sits
+  above the kind's own plain line ("Five markers — put each one on the scale
+  where it belongs.") — the same thing twice, in two wordings, his 6 Sept
+  class; the said-twice law's one-token rule does not see it. The plain line
+  is `statTrayFiction`, one of the named fictions, so the call is a design
+  one: either the stage sentence absorbs the fiction or the fiction line
+  goes; then re-judge the transcript and give the law this pair as a plant. Not tonight: a
+  sentence change re-opens the cold read, and this cut is the chart.
+
+Proof (all at the commit below): `--fast` green (qa-repo-prod red only while
+the tree was dirty); `control.js --only sit-pupil` 19:47–20:40 — **14 controls
+FIRED including `board-squeezed-beside-the-table`, over-tightening PASSES**;
+`--full --book stats-quartiles` 19:38–19:47: the three walkers GREEN (592 /
+202 / 52 checks), qa-cold-read red only because the extractor ran before the
+walkers finished (re-extracted: hash 3893784d, the judged one), and
+qa-coverage red on NINE cells — walk-right for q17, q18 and q23 at every
+width. Those are NOT this cut's: the same walk with the re-cut stashed (the
+polish tree, exactly what is live) fails the same three the same way
+(20:45–21:02, `scratchpad/walkA.log` / `walkB.log`). Cause, inside the
+30-minute cap: **q17 is a real marking fault of the live book** — for n = 50
+the engine's `split50` convention wants the rule at (n+1)/2 = 25.5, and the
+rule moves in whole small squares of 2 (half a square when dragged), so 25.5
+is unreachable and "Where you read the median" is ✗ for every pupil (the
+walker's 13 presses give 26). q18 and q23 are RESERVE questions no pupil sees
+(`script.js`, preview `?reserve=1` only); their walker routes fail on the
+polish tree too, cause not found in the cap. All nine are dated rows in
+`MATHS_COVERAGE_DEBT.md` (owner named; the q17 fix is Book A's opening P0:
+judge the rule to the grid's resolution, half a small square strictly, in
+statcore with selfTest rows and a dated DESIGN 4.4/6.2 correction). How the
+09:47 full run closed q17 walk-right on the same engine is not explained;
+the sidecar it used is gone. The whole-tree `--full` (all books; the shared
+files moved every book's content hash) and its verdict are recorded in the
+paragraph below this one. Then build-pathb → commit → push → the pair pasted →
+DATA and FRONT DOOR as new versions by Deployment ID. The front-door cut needs
+Damien's two-line manifest edit (USER_ACCESSING + DOMAIN, then back), which
+the desktop app refuses Claude; until that cut, prod is the polish cut
+(V26/V25) and the squeeze is live on tablets and laptops.
+
 ## 11 SEPT 2026, 18:49 — POLISH CUT LIVE, FRONT DOOR Version 26 / DATA Version 25, `f2a5f7b`
 
 His nine rulings of 11 Sept (feedback master 34–42), all nine done, each with a
@@ -130,14 +215,14 @@ prompt's TIME section now.
 ## HOW TO RESUME, in order
 
 ```bash
-# 1. the worktree (recreate it if /tmp was cleared)
-git -C ~/Sites/ols-digital-skills worktree add /tmp/gj-wt draft/issue-24-25-maths-m2-revision
-cd /tmp/gj-wt/maths/mathshelf
+# 1. the worktree — ~/Sites/ols-wt-maths, NEVER under /tmp (macOS's cleaner ate /tmp/gj-wt on 10 Sept 2026); recreate only if missing
+git -C ~/Sites/ols-digital-skills worktree add ~/Sites/ols-wt-maths draft/issue-24-25-maths-m2-revision
+cd ~/Sites/ols-wt-maths/maths/mathshelf
 node tools/qa/install-hooks.js            # SAYS NO in a linked worktree, on purpose
 
 # 2. the two preview servers (nohup, never the preview tool)
-nohup python3 tools/qa/serve-preview.py /tmp/gj-wt                        8099 &
-nohup python3 tools/qa/serve-built.py   /tmp/gj-wt/maths/mathshelf/server 8100 &
+nohup python3 tools/qa/serve-preview.py ~/Sites/ols-wt-maths                        8099 &
+nohup python3 tools/qa/serve-built.py   ~/Sites/ols-wt-maths/maths/mathshelf/server 8100 &
 
 # 3. where things stand
 export NODE_PATH="$(npm root -g)"
