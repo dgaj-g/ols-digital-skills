@@ -379,6 +379,7 @@
       csvCopied: 'Copied. Paste it into a spreadsheet.',
       csvFallback: 'Your browser would not let the page copy for you. Select the text below and copy it yourself.',
       setUpHint: 'Tick the books this class should see.',
+      setUpClosedHint: 'A book that is not ticked is closed for that class: it is not on the pupils’ shelf at all.',
 
       /* the markbook's own words */
       overConfident: 'Over-confident — confidence high, working weaker',

@@ -361,14 +361,17 @@
       hold.style.cssText = 'display:inline-block;position:relative;padding:0';
       eq.parentNode.insertBefore(hold, eq);
       hold.appendChild(eq);
+      var inset = 2; // keeps the 3px stroke fully inside the canvas
+      /* the 8px is CLEAR paper between the glyphs and the stroke's inner edge,
+         so the canvas reaches further out by the inset and half the stroke */
+      var gap = pad + inset + 1.5;
       var hr = hold.getBoundingClientRect();
       var er = eq.getBoundingClientRect();
-      var w = er.width + pad * 2, h = er.height + pad * 2;
-      var left = (er.left - hr.left) - pad, top = (er.top - hr.top) - pad;
+      var w = er.width + gap * 2, h = er.height + gap * 2;
+      var left = (er.left - hr.left) - gap, top = (er.top - hr.top) - gap;
       var s = sv('svg', { class: 'box-draw', viewBox: '0 0 ' + w + ' ' + h });
       s.style.cssText = 'position:absolute;overflow:visible;max-width:none;max-height:none;' +
         'left:' + left + 'px;top:' + top + 'px;width:' + w + 'px;height:' + h + 'px';
-      var inset = 2; // keeps the 3px stroke fully inside the canvas
       var p = sv('path', { d: 'M' + inset + ' ' + inset + ' H ' + (w - inset) + ' V ' + (h - inset) + ' H ' + inset + ' Z' });
       s.appendChild(p);
       hold.appendChild(s);

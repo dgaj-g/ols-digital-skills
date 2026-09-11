@@ -332,7 +332,6 @@ const ACTIONS = {
   openBook: `((bookId) => {
     const card = document.querySelector('.book[data-book="' + bookId + '"]');
     if (!card) return { ok: false, why: 'no book card for ' + bookId };
-    if (card.classList.contains('not-set')) return { ok: false, why: bookId + ' is not set for this class' };
     card.click();
     return { ok: true };
   })`,

@@ -39,3 +39,5 @@ tools/qa/sit-confused.js
 tools/qa/qa-human-pace.js
 # rulings 34/35/37 (wait-card breath, tick reacts at once) are held by qa-waits; its wait-card-still and tick-waits controls live there
 tools/qa/qa-waits.js
+# the stage instructions carry live counts {n} and {m}; the transcript extractor fills them so the judge reads a number
+tools/qa/extract-transcript.js

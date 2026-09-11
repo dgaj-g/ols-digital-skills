@@ -36,7 +36,7 @@ const COVERS = {
 const CONTROLS = [
   { id: 'setacts-wipes-rows', kind: 'fixture', plant: 'fixture-server-wipe', mustFail: /lost the pupil's work/ },
   { id: 'new-book-defaults-true', kind: 'mutation', plant: 'fixture-server-default-true', mustFail: /arrives ticked/ },
-  { id: 'unticked-book-on-shelf', kind: 'fixture', plant: 'fixture-shelf-shows-unticked', mustFail: /still on the pupil's shelf/ },
+  { id: 'shelf-shows-unticked', kind: 'fixture', plant: 'fixture-shelf-shows-unticked', mustFail: /still on the pupil's shelf/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
