@@ -3,8 +3,8 @@
  "scope": "algebra",
  "width": 768,
  "tier": "preview",
- "contentHash": "a38cba1d59b3",
- "when": "2026-09-09T21:48:30.732Z",
+ "contentHash": "e0ae47590a69",
+ "when": "2026-09-11T08:32:58.882Z",
  "states": [
   {
    "surface": "cover",
@@ -2364,7 +2364,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 36
+    "readability": 37
    }
   },
   {
@@ -2393,7 +2393,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 36
+    "readability": 37
    }
   },
   {
@@ -2421,7 +2421,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 36
+    "readability": 37
    }
   },
   {

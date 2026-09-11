@@ -158,6 +158,12 @@ raw.forEach(f => {
   const who = f.replace(/\.txt$/, '');
   const body = A.read(A.out('transcript/' + f))
     .split('\n').map(l => l.trim()).filter(Boolean)
+    /* A PORT IS NOT A SENTENCE. The teacher walk prints the class link, and
+       under the worker pool each run's preview server sits on a different
+       port - so the teacher transcript's hash moved on every run and no
+       verdict could ever stay current (11 Sept 2026). The link is judged as
+       a link; its port is the rig's. */
+    .map(l => l.replace(/localhost:\d+/g, 'localhost'))
     .filter((v, i, arr) => arr.indexOf(v) === i);
   const hash = sha1(body.join('\n')).slice(0, 16);
   const head = [

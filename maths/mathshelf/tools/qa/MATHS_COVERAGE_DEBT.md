@@ -65,6 +65,18 @@ to walk, and the walk says so rather than inventing one._
 | full-grid:sticky-scroll @1280 | The grid is stuck to its edges only once it has been scrolled, and at 1280 there is nothing to scroll: the widest book in the demo class is 23 columns of about 38px beside a 120px name column, which is 1116px of table in a 1116px box. It is reached at 375 and at 768, where the same table really does run off the screen. Choosing a wider book from inside the grid is not a way round it — every book tab in the full grid calls showClassPage(), so pressing one leaves the grid altogether (tried, 8 Sept 2026, and it took the rest of the route with it). |
 | algebra q5 × walk-wrong | "x + 8x − 5x" is three terms of one family, so the collect screen has ONE bin and the app does the arithmetic once the tiles are sorted. A pupil cannot mis-sort, and so cannot get this question wrong on this screen. `sit-confused` reports it and moves on; the other three collect questions have two families and a real wrong answer. |
 
+## Seen again on the polish cut — 11 Sept 2026 (the same waived class, no new row)
+
+_The full run at the polish cut's final commit printed two readability findings
+as WAIVED rather than failing the walk — the walkers now honour a `WAIVED BY HIS
+RULING` row exactly (surface, state, width, law) and print the measurement every
+run. Both are the "text dimmed after Check" class of the 8 Sept rows above, and
+both are Book A's first work: Book C s3 q13's table label "20 < x ≤ 30" at
+3.07:1 on a phone after Check (the ghost carries the table's words), and s6
+q32's claim card "A sample can only estimate…" at 1.63:1 after Check. Pictures in
+`tools/qa/out/shots/`. His 11 Sept sit also met q8's unchosen chip "Stay the
+same" at 1.64:1 on a phone — the chip class, same row._
+
 ## States the app declares and no walk has yet stood on (8 Sept 2026, package V4-STATES)
 
 _Written down rather than left as a red nobody reads. Each is a real screen the

@@ -1,4 +1,4 @@
-TRANSCRIPT HASH: 93e87394fa08bf67
+TRANSCRIPT HASH: d141eb38da65d7e3
 
 I judged `_teacher.md` cold, sentence by sentence, from the seat Section 6 of the checklist names: a maths colleague who has never opened this markbook, at a laptop between two lessons, with time — not reading age — the scarce thing. I asked the six questions in §6 of every row: can she do it from this screen; does every number, glyph and colour say what it is; is every platform word glossed at first meeting; does a stalled control say why; what would a non-specialist ask; is there a she/her for a generic pupil, jargon, a fragment, a rhetorical triple, an invented member of staff, or a US spelling. Where one printed line carries more than one sentence I split it and marked the parts `a`, `b`, `c`, `d` in the order they read. The default was FAIL throughout — a line that was merely not-wrong did not pass on that account.
 
@@ -47,10 +47,10 @@ I judged `_teacher.md` cold, sentence by sentence, from the seat Section 6 of th
 | PASS | line 43 — Your-mark control | ✓ mine | Self-explanatory beside "Your mark:". |
 | PASS | line 44 — Your-mark control | ✗ mine | Self-explanatory. |
 | PASS | line 45 — Your-mark control | use the app's mark | Reads plainly against the other two options. |
-| FAIL | line 46a — Your-mark control | Inked right — full marks. | "Inked" is this platform's own internal pencil/ink convention — the checklist bans that exact internal name — surfacing on the teacher's own screen. She has to guess whether "inked" means saved, submitted, or something else. → "Marked right — full marks." |
-| FAIL | line 46b — Your-mark control | Your mark wins on the Wall. | "the Wall" is a capitalised feature name never introduced or explained anywhere in this transcript. She can't picture what it is, who else sees it, or why her mark "winning" there matters. → "Your mark is the one pupils and staff now see." |
-| FAIL | line 47a — Your-mark control | Inked wrong. | Same internal-jargon leak as line 46a. → "Marked wrong." |
-| FAIL | line 47b — Your-mark control | Your mark wins on the Wall. | Same undefined feature name, repeated. → "Your mark is the one pupils and staff now see." |
+| PASS | line 46a — Your-mark control | Marked right — full marks. | Fixed. "Marked" replaces the internal-jargon "Inked" — plain, no guessing what it means. |
+| PASS | line 46b — Your-mark control | Your mark is the one pupils and staff now see. | Fixed. No more undefined "the Wall" — says plainly who sees it and what it means for her mark to take effect. |
+| PASS | line 47a — Your-mark control | Marked wrong. | Fixed, same reasoning as line 46a. |
+| PASS | line 47b — Your-mark control | Your mark is the one pupils and staff now see. | Fixed, same reasoning as line 46b. |
 | PASS | line 48 — Your-mark control | Back to the app's mark. | Plain, matches "use the app's mark" above it. |
 | PASS | line 49 — Starter preview | Spot the slip · starter 1 of 2 | Plain heading; "slip" already established on this screen. |
 | PASS | line 50 — Starter preview | Where has this gone wrong — and what should the line say? | Two clean questions, both answerable from a worked line visible on screen. |
@@ -58,7 +58,7 @@ I judged `_teacher.md` cold, sentence by sentence, from the seat Section 6 of th
 | PASS | line 51b — Footer | (demo.teacher@c2ken.net) | Same as line 13b. |
 | PASS | line 52 — Address bar | http://localhost:8424/maths/mathshelf/index.html?class=demo | Not prose a teacher reads for meaning, so not judged for readability — flagged separately, outside this table: a `localhost` address is a development artefact this screen should never carry once it's live. |
 
-**Counts: 51 rows judged — 38 PASS, 7 REWRITE, 6 FAIL.**
+**Counts: 51 rows judged — 42 PASS, 7 REWRITE, 2 FAIL.**
 
 ## Read-first candidates whose path appears in this transcript
 

@@ -3,8 +3,8 @@
  "scope": "extra",
  "width": 768,
  "tier": "preview",
- "contentHash": "24f956504e8c",
- "when": "2026-09-09T21:50:46.558Z",
+ "contentHash": "1e57bcd2ae75",
+ "when": "2026-09-11T08:34:56.475Z",
  "states": [
   {
    "surface": "shelf",
@@ -26,12 +26,12 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 20
+    "readability": 7
    }
   },
   {
    "surface": "shelf",
-   "state": "locked-spine",
+   "state": "some-ticked",
    "width": 768,
    "audits": {
     "empty": "PASS",
@@ -49,7 +49,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 20
+    "readability": 11
    }
   }
  ],
