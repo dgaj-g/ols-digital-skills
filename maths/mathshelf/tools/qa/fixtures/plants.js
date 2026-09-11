@@ -510,6 +510,27 @@ const PLANTS = {
     return { env: { MS_TIER_RUN: 'full' } };
   },
 
+  /* ── the two leashes of the polish cut (11 Sept 2026) ─────────────── */
+  'fixture-scope-breach': (dir) => {
+    /* a cut whose scope does not name lib/contrast-audit.js, and an edit to
+       it anyway: the sampler is exactly the file the 8 Sept build kept
+       "fixing" instead of filing a debt row */
+    gitify(dir);
+    const head = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: dir, encoding: 'utf8' }).trim();
+    write(dir, 'tools/qa/CUT_SCOPE.txt', 'jotter-stats.js\nstrings.js\ntools/qa/CUT_SCOPE.txt\ntools/qa/out/*\n');
+    write(dir, 'tools/qa/out/cut-start.json', JSON.stringify({ start: new Date().toISOString(), budgetMin: 180, startCommit: head }));
+    fs.appendFileSync(path.join(dir, 'tools/qa/lib/contrast-audit.js'), '\n/* planted: an edit outside the scope */\n');
+  },
+  'fixture-budget-spent': (dir) => {
+    /* a stamp from four hours ago on a three-hour budget: run.js --full and
+       control.js must refuse, and qa-scope at the full tier must quote it */
+    gitify(dir);
+    const head = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: dir, encoding: 'utf8' }).trim();
+    write(dir, 'tools/qa/CUT_SCOPE.txt', 'tools/qa/CUT_SCOPE.txt\ntools/qa/out/*\n');
+    write(dir, 'tools/qa/out/cut-start.json', JSON.stringify({ start: new Date(Date.now() - 4 * 3600 * 1000).toISOString(), budgetMin: 180, startCommit: head }));
+    return { env: { MS_TIER_RUN: 'full' } };
+  },
+
   /* ── an exercise pushed onto the generic self-evaluation chips ────── */
   'fixture-selfeval-fallback': (dir) => {
     edit(dir, 'script.js', "  var SELF_EVAL_TRIPS = {", "  var SELF_EVAL_TRIPS = {\n    _planted: {},");

@@ -1,0 +1,33 @@
+# CUT_SCOPE.txt — what THIS cut may touch (leash L2; read by qa-scope.js).
+# One path or glob per line, relative to maths/mathshelf. `*` matches anything,
+# `/` included. A file changed since the cut's start commit (tools/qa/out/
+# cut-start.json) that matches no line here fails qa-scope by name.
+#
+# Book C polish cut, 11 Sept 2026 (MATHS_BOOKC_POLISH_PROMPT.txt).
+jotter-stats.js
+strings.js
+style.css
+shell.css
+player.js
+statchart.js
+script.js
+staff.js
+content-stats-quartiles.js
+tools/qa/lib/drive.js
+tools/qa/lib/walk-moves.js
+tools/qa/lib/budget.js
+tools/qa/fixtures/plants.js
+tools/qa/qa-tickbox.js
+tools/qa/qa-scope.js
+tools/qa/run.js
+tools/qa/control.js
+tools/qa/CUT_SCOPE.txt
+tools/qa/MATHS_HUMAN_PACE_INVENTORY.md
+tools/qa/MATHS_*.md
+tools/qa/vocab/*
+tools/qa/out/*
+server/Index.html
+server/Code.gs
+server/DEPLOY_LOG.md
+HANDOVER.md
+PROGRESS.md

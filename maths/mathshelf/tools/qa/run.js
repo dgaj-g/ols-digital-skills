@@ -46,6 +46,7 @@ const path = require('path');
 const { spawnSync, spawn, execFileSync } = require('child_process');
 const { stripComments } = require('./lib/decl.js');
 const { matrix } = require('./lib/report.js');
+const budget = require('./lib/budget.js');
 
 const QA = __dirname;
 const APP = path.resolve(QA, '../..');
@@ -204,6 +205,14 @@ async function main() {
     (TIER === 'full' ? '  MS_WORKERS=' + WORKERS : '') +
     '   ' + new Date().toISOString().slice(0, 19).replace('T', ' '));
   console.log('app: ' + APP);
+  /* THE BUDGET CLOCK (leash L1, 11 Sept 2026): every run says how much of the
+     cut is spent; the expensive tiers refuse once it is. --fast never refuses,
+     so a commit can always be proved. */
+  console.log(budget.line());
+  if (TIER !== 'fast' && budget.refusal()) {
+    console.log('REFUSED — ' + budget.refusal());
+    process.exit(1);
+  }
 
   if (undeclared.length) {
     undeclared.forEach(g => console.log('  FAIL  ' + g.name + ' x registration: no TIER declared — a gate nothing runs is not a gate'));
