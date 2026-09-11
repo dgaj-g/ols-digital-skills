@@ -1428,10 +1428,22 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 
 /* ═══ EXERCISE 3'S LAYOUT: the action row directly under the board (ruling 42) ═══
    The given table sits after the dock in the flow, so on a phone the Join
-   button is one flick from the chart; the chart itself is capped at 55vh.
-   From 768px the table is lifted into a column beside the chart. */
+   button is one flick from the chart. From 768px the table is lifted into a
+   column beside the chart - but ONLY when the body can hold the chart at its
+   own width (statchart law 6: a small square never under 12px), the gap and
+   the table together: jotter-stats.js measures that and puts `stat-stack` on
+   the body when it cannot, and the table then stays after the dock (steward
+   re-cut, 11 Sept 2026: the bare breakpoint had squeezed the grid to 268 of
+   347px at 1280 and 176 at 768, the right-hand classes behind a sideways
+   scroll). The 55vh phone cap of DESIGN 4.0 is not applied (PROGRESS.md,
+   11 Sept 2026, decision a). */
 @media (min-width: 768px) {
-  .stat-q-cfplot > .jq-body { display: grid; grid-template-columns: minmax(0, 1fr) max-content; column-gap: 20px; align-items: start; }
+  .stat-q-cfplot > .jq-body:not(.stat-stack) { display: grid; grid-template-columns: minmax(0, 1fr) max-content; column-gap: 20px; align-items: start; }
   .stat-q-cfplot > .jq-body > * { grid-column: 1; min-width: 0; }
   .stat-q-cfplot > .jq-body > .stat-given { grid-column: 2; grid-row: 5 / span 3; align-self: start; margin-top: 6px; }
+  /* the given table wraps its long headings ('Cumulative frequency') so that
+     it can sit beside a chart at all: 347 + 20 + 320 fits a 698px body */
+  .stat-q-cfplot > .jq-body > .stat-given .stat-table { max-width: 320px; }
+  .stat-q-cfplot > .jq-body > .stat-given .stat-table th, .stat-q-cfplot > .jq-body > .stat-given .stat-table td { padding: 6px 8px; }
+  .stat-q-cfplot > .jq-body > .stat-given .stat-table td:first-child { white-space: nowrap; }   /* a class interval is printed whole, as the paper prints it */
 }

@@ -3,41 +3,18 @@
 # `/` included. A file changed since the cut's start commit (tools/qa/out/
 # cut-start.json) that matches no line here fails qa-scope by name.
 #
-# Book C polish cut, 11 Sept 2026 (MATHS_BOOKC_POLISH_PROMPT.txt).
+# Steward re-cut, 11 Sept 2026 (Fable, after the polish cut went live at 18:49):
+# the Exercise 3 chart squeezed by its side column from 768px up. Two-hour clock.
 jotter-stats.js
-strings.js
-style.css
-shell.css
-player.js
 statchart.js
-script.js
-staff.js
-content-stats-quartiles.js
-tools/qa/lib/drive.js
+style.css
 tools/qa/lib/walk-moves.js
-tools/qa/lib/budget.js
+tools/qa/sit-pupil.js
 tools/qa/fixtures/plants.js
-tools/qa/qa-tickbox.js
-tools/qa/qa-scope.js
-tools/qa/run.js
-tools/qa/control.js
 tools/qa/CUT_SCOPE.txt
-tools/qa/MATHS_HUMAN_PACE_INVENTORY.md
 tools/qa/MATHS_*.md
-tools/qa/vocab/*
 tools/qa/out/*
 server/Index.html
-server/Code.gs
 server/DEPLOY_LOG.md
 HANDOVER.md
 PROGRESS.md
-# ruling 36 retires a shelf state the pupil walker expects; its shelf pass and one control change with it
-tools/qa/sit-pupil.js
-# the TIME rules say a red on an old screen is a WAIVED ledger row; the walkers must honour the ledger for a --full to be green at all
-tools/qa/sit-confused.js
-# ruling 38 (film pace) is held by qa-human-pace; its film-too-fast control lives there
-tools/qa/qa-human-pace.js
-# rulings 34/35/37 (wait-card breath, tick reacts at once) are held by qa-waits; its wait-card-still and tick-waits controls live there
-tools/qa/qa-waits.js
-# the stage instructions carry live counts {n} and {m}; the transcript extractor fills them so the judge reads a number
-tools/qa/extract-transcript.js

@@ -1639,12 +1639,24 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 
 /* \2550 \2550 \2550  EXERCISE 3'S LAYOUT: the action row directly under the board (ruling 42) \2550 \2550 \2550 
    The given table sits after the dock in the flow, so on a phone the Join
-   button is one flick from the chart; the chart itself is capped at 55vh.
-   From 768px the table is lifted into a column beside the chart. */
+   button is one flick from the chart. From 768px the table is lifted into a
+   column beside the chart - but ONLY when the body can hold the chart at its
+   own width (statchart law 6: a small square never under 12px), the gap and
+   the table together: jotter-stats.js measures that and puts `stat-stack` on
+   the body when it cannot, and the table then stays after the dock (steward
+   re-cut, 11 Sept 2026: the bare breakpoint had squeezed the grid to 268 of
+   347px at 1280 and 176 at 768, the right-hand classes behind a sideways
+   scroll). The 55vh phone cap of DESIGN 4.0 is not applied (PROGRESS.md,
+   11 Sept 2026, decision a). */
 @media (min-width: 768px) {
-  .stat-q-cfplot > .jq-body { display: grid; grid-template-columns: minmax(0, 1fr) max-content; column-gap: 20px; align-items: start; }
+  .stat-q-cfplot > .jq-body:not(.stat-stack) { display: grid; grid-template-columns: minmax(0, 1fr) max-content; column-gap: 20px; align-items: start; }
   .stat-q-cfplot > .jq-body > * { grid-column: 1; min-width: 0; }
   .stat-q-cfplot > .jq-body > .stat-given { grid-column: 2; grid-row: 5 / span 3; align-self: start; margin-top: 6px; }
+  /* the given table wraps its long headings ('Cumulative frequency') so that
+     it can sit beside a chart at all: 347 + 20 + 320 fits a 698px body */
+  .stat-q-cfplot > .jq-body > .stat-given .stat-table { max-width: 320px; }
+  .stat-q-cfplot > .jq-body > .stat-given .stat-table th, .stat-q-cfplot > .jq-body > .stat-given .stat-table td { padding: 6px 8px; }
+  .stat-q-cfplot > .jq-body > .stat-given .stat-table td:first-child { white-space: nowrap; }   /* a class interval is printed whole, as the paper prints it */
 }
 
 /* ===== shell.css (the v4 identity layer, LAST so it wins) ===== */
@@ -7972,6 +7984,14 @@ function statsBoard(q, wrong) {
     // ---- DOM scaffold --------------------------------------------------
     var frame = he('div', 'stat-board-frame');
     frame.style.cssText = 'position:relative;overflow-x:auto;overflow-y:hidden;width:100%;background:var(--panel);';
+    /* A BOARD IS DRAWN AT ITS OWN SIZE, NEVER STRETCHED (steward re-cut,
+       11 Sept 2026). The svg scales with its frame at a fixed aspect, so a
+       frame that fills a 718px body drew this book's CF grid 2,500px tall on
+       a laptop - the same grid a phone draws at 347 x 1,242, the size every
+       phone walk has already passed. The frame is capped at the width law 6
+       needs (a small square at MIN_SQUARE_PX); on a narrower body it still
+       scrolls sideways, exactly as before. */
+    frame.style.maxWidth = (Math.ceil(st.geo.vbw * (MIN_SQUARE_PX / SQ_UNIT)) + 2) + 'px';   /* + the frame's 1px border each side (border-box) */
     frame.setAttribute('data-work', '');
 
     var svg = sv('svg', {
@@ -8838,6 +8858,10 @@ function statsBoard(q, wrong) {
       annotate: annotate,
       destroy: destroy,
       needsScroll: function () { return st.needsScroll; },
+      /* the width below which a small square would fall under MIN_SQUARE_PX
+         (law 6) - what a layout must be able to hold before it puts anything
+         beside this board (jotter-stats.js layoutGiven, 11 Sept 2026) */
+      minWidth: function () { return st.geo.vbw * (MIN_SQUARE_PX / SQ_UNIT); },
       /* a marker comes OFF the scale when a pupil presses it twice (the
          two-press law), so removal is part of the contract, not an internal */
       removeMarker: removeMarkerInternal,
@@ -12447,6 +12471,28 @@ function statsBoard(q, wrong) {
        768px the stylesheet lifts it into a column beside the chart. */
     var tableWrap = el('div', 'stat-given');
     ctx.body.insertBefore(tableWrap, ctx.body.querySelector('.check-row'));
+    /* THE CHART GETS THE WHOLE BODY BEFORE ANYTHING SITS BESIDE IT (steward
+       re-cut, 11 Sept 2026). The stylesheet lifts the table beside the chart
+       from 768px, but a chart keeps every small square at 12px (statchart law
+       6) and so has a width of its own: when the body could not hold that
+       width, the 20px gap and the table side by side, the grid was squeezed
+       to 268 of its 347px at 1280 and 176 at 768, and the right-hand classes
+       lived behind a sideways scroll nobody was told about. The decision is
+       MEASURED, never a breakpoint: beside when the body can hold both, after
+       the dock when it cannot, re-measured whenever the body's width changes.
+       (`stat-stack` on the body turns the side column off; style.css.) */
+    function layoutGiven() {
+      var table = tableWrap.firstElementChild;
+      if (!bd || !table || !ctx.body.clientWidth) return;
+      var bcs = getComputedStyle(ctx.body);
+      var inner = ctx.body.clientWidth - parseFloat(bcs.paddingLeft || 0) - parseFloat(bcs.paddingRight || 0);
+      var need = bd.minWidth() + 20 + table.getBoundingClientRect().width;
+      var stack = inner < need + 2;
+      if (ctx.body.classList.contains('stat-stack') !== stack) ctx.body.classList.toggle('stat-stack', stack);
+    }
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(function () { layoutGiven(); }).observe(ctx.body);
+    }
 
     function givenTable() {
       tableWrap.innerHTML = '';
@@ -12482,6 +12528,7 @@ function statsBoard(q, wrong) {
           after();
         }
       });
+      layoutGiven();
       if (bd.needsScroll()) ctx.say(T().statScrollGraph);
       after();
     }

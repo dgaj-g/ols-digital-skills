@@ -727,6 +727,15 @@ const PLANTS = {
       "  /* planted: no side column */");
     return { env: BOOK_C };
   },
+  'stats-board-squeezed': (dir) => {
+    /* the side column back to a bare breakpoint: the table lifted beside the
+       chart from 768px whether or not the body can hold them both (the polish
+       cut as it shipped on 11 Sept 2026: 268 of the grid's 347px at 1280) */
+    edit(dir, 'style.css',
+      "  .stat-q-cfplot > .jq-body:not(.stat-stack) { display: grid;",
+      "  .stat-q-cfplot > .jq-body { display: grid;   /* planted: beside whether it fits or not */");
+    return { env: BOOK_C };
+  },
   /* ── a film that does not draw what its caption says (ruling 39) ──────── */
   'film-ring-draws-nothing': (dir) => {
     edit(dir, 'player.js', "if (op.ring && movie.mode === 'paper') return paperRing(op, instant);", '/* planted: the ring op draws nothing again */');

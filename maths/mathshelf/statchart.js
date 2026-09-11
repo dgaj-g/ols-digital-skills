@@ -262,6 +262,14 @@
     // ---- DOM scaffold --------------------------------------------------
     var frame = he('div', 'stat-board-frame');
     frame.style.cssText = 'position:relative;overflow-x:auto;overflow-y:hidden;width:100%;background:var(--panel);';
+    /* A BOARD IS DRAWN AT ITS OWN SIZE, NEVER STRETCHED (steward re-cut,
+       11 Sept 2026). The svg scales with its frame at a fixed aspect, so a
+       frame that fills a 718px body drew this book's CF grid 2,500px tall on
+       a laptop - the same grid a phone draws at 347 x 1,242, the size every
+       phone walk has already passed. The frame is capped at the width law 6
+       needs (a small square at MIN_SQUARE_PX); on a narrower body it still
+       scrolls sideways, exactly as before. */
+    frame.style.maxWidth = (Math.ceil(st.geo.vbw * (MIN_SQUARE_PX / SQ_UNIT)) + 2) + 'px';   /* + the frame's 1px border each side (border-box) */
     frame.setAttribute('data-work', '');
 
     var svg = sv('svg', {
@@ -1128,6 +1136,10 @@
       annotate: annotate,
       destroy: destroy,
       needsScroll: function () { return st.needsScroll; },
+      /* the width below which a small square would fall under MIN_SQUARE_PX
+         (law 6) - what a layout must be able to hold before it puts anything
+         beside this board (jotter-stats.js layoutGiven, 11 Sept 2026) */
+      minWidth: function () { return st.geo.vbw * (MIN_SQUARE_PX / SQ_UNIT); },
       /* a marker comes OFF the scale when a pupil presses it twice (the
          two-press law), so removal is part of the contract, not an internal */
       removeMarker: removeMarkerInternal,

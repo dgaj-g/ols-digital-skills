@@ -32,7 +32,7 @@ log showing the deployment actually ran.
 | 2026-09-09 22:01 | DATA | Version 23 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | 300dfc4 | 2221999671673d818adb24e3bd07b7ca | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-09 22:03 | FRONT DOOR | Version 24 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 300dfc4 | 2221999671673d818adb24e3bd07b7ca | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-11 09:50 | DATA | Version 25 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | f2a5f7b | 9a4f9c321834312a59bc12e73a70752d | 6c2eb7d561a77ab149f8f1163c885abc |
-| 2026-09-11 09:57 | FRONT DOOR | Version 26 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut (Damien made the two-line manifest edit himself — the desktop app's permission classifier refused Claude the access change) | f2a5f7b | 9a4f9c321834312a59bc12e73a70752d | 6c2eb7d561a77ab149f8f1163c885abc |
+| 2026-09-11 18:49 | FRONT DOOR | Version 26 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut (Damien made the two-line manifest edit himself — the desktop app's permission classifier refused Claude the access change) | f2a5f7b | 9a4f9c321834312a59bc12e73a70752d | 6c2eb7d561a77ab149f8f1163c885abc |
 
 ## Proof rows
 
@@ -221,7 +221,7 @@ two-homes mock (the exact exception, as a pupil) and by his next pupil login.
 
 ### What is live, in one line each
 
-- **Live since 9 Sept 2026 22:04, from commit `300dfc4`: FRONT DOOR Version 24, DATA Version 23 — the front door never touches the Sheet; Handling Data Book C on the shelf.**
+- **Live since 11 Sept 2026 18:49, from commit `f2a5f7b`: FRONT DOOR Version 26, DATA Version 25 — the Book C polish cut (his nine rulings of 11 Sept); `Code.gs` unchanged since Version 23; Handling Data Book C on the shelf.**
 - **Project** `OLS - MathShelf`, script id `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`
 - **Sheet** `OLS - MathShelf`, id `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y` (bound)
 - **FRONT DOOR** (the only link anybody opens)
@@ -261,9 +261,7 @@ Version 26  apiCall  Web app  11 Sept 2026, 18:49:46  9.254 s  Completed
 Version 25  doPost   Web app  11 Sept 2026, 18:49:50  4.759 s  Completed
 ```
 
-(The log's clock reads 18:49 for a 09:58 BST visit and re-labels every older
-row with the deployment's CURRENT version — his 08:30 ticks now show as
-"Version 26 / Version 25". The durations are the rows' own.) The tick round
+(The visit was at 18:49 BST, straight after the front-door cut — the DATA cut was at 09:50 and the front door waited nine hours for the two-line manifest edit only Damien could make. The log re-labels every older row with the deployment's CURRENT version, so his 08:30 ticks now show as "Version 26 / Version 25"; the durations are the rows' own.) The tick round
 trip he felt this morning, from those rows: `apiCall` 7.1–10.3 s wrapping
 `doPost` 4.7–6.9 s. Both hops are Google's — the relay to DATA and the Sheet
 write under its lock — and the client change does not shorten them; what it

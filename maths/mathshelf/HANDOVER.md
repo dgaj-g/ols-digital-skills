@@ -139,6 +139,8 @@ class re-seeds, and always use `?nointro`.
 
 **Live since 11 September 2026 18:49, from commit `f2a5f7b` — the Book C POLISH CUT (his nine rulings of 11 Sept: the stage strip and whole-act instructions, the film that rings and paces itself, the shelf that omits unticked books, the tick that flips at once with a gold saving card, the breathing passcode card, Exercise 3's table beside the chart). `Code.gs` unchanged since Version 23.**
 
+**The branch tip is AHEAD of prod by one re-cut (Fable, 11 Sept evening): Exercise 3's chart no longer squeezed by its side column on tablets and laptops, a board drawn at its own law-6 size, the given table beside the chart only when the body can hold both — proved in the tree, awaiting the two cuts. PROGRESS.md's top entry says whether it is live; if the versions below still read 26/25, deploy it with `server/DEPLOY.md` (the two manifest lines are Damien's step).**
+
 | | /exec | version | executeAs | who can reach it |
 |---|---|---|---|---|
 | FRONT DOOR (everybody) | `https://script.google.com/a/macros/c2ken.net/s/AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP/exec` | Version 26, 11 Sept 18:49 | USER_ACCESSING | anyone in `c2ken.net` |

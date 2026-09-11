@@ -98,6 +98,7 @@ const CONTROLS = [
   { id: 'film-ring-draws-nothing', kind: 'fixture', plant: 'film-ring-draws-nothing', mustFail: /ring\(s\) drawn — a film draws what its caption says/ },
   { id: 'film-box-on-the-glyphs', kind: 'fixture', plant: 'film-box-on-the-glyphs', mustFail: /px from the text it boxes/ },
   { id: 'table-between-board-and-dock', kind: 'fixture', plant: 'stats-table-between', mustFail: /the control for the current stage is directly under the board, never a screen away/ },
+  { id: 'board-squeezed-beside-the-table', kind: 'fixture', plant: 'stats-board-squeezed', mustFail: /the chart gets the whole body before anything sits beside it/ },
   { id: 'lit-spine-unreadable', kind: 'fixture', plant: 'fixture-css-lit-spine', mustFail: /against what is actually behind it/ },
   /* AND THE SAME SCREEN, WITH ONLY THE EMBLEM WRONG. The plant above moves
      two things at once, so it fired on the band alone while the emblem's
@@ -450,6 +451,14 @@ async function walkBook(page, book, width, sidecar, transcript) {
              and nothing else. */
           if (b && b.kind === 'cfplot' && b.dockGap !== null && b.dockGap > 160)
             g.fail('question > ' + qid + ' @' + width, 'reach', 'the action row sits ' + b.dockGap + ' px below the board on ' + qid + ' — the control for the current stage is directly under the board, never a screen away');
+          /* THE CHART GETS THE WHOLE BODY BEFORE ANYTHING SITS BESIDE IT
+             (steward re-cut, 11 Sept 2026): the polish cut's side column
+             squeezed the grid to 268 of 347px at 1280 and 176 at 768, the
+             right-hand classes behind a sideways scroll nobody is told about.
+             A frame narrower than the chart is law 6 on a phone and allowed;
+             a frame that hides grid while its BODY had the room is not. */
+          if (b && b.kind === 'cfplot' && b.boardHidden > 0 && b.boardSqueeze !== null && b.boardSqueeze > 8)
+            g.fail('question > ' + qid + ' @' + width, 'reach', 'the board hides ' + b.boardHidden + ' px of its grid behind a sideways scroll while its body is ' + b.bodyWidth + ' px wide and the frame ' + b.boardFrame + ' on ' + qid + ' — the chart gets the whole body before anything sits beside it');
           await W.settle(page);
           const now = await page.evaluate((s2, id) => eval(s2)(id), W.STAGES_OF, qid);
           if (now.stage && visited.indexOf(now.stage) === -1) visited.push(now.stage);

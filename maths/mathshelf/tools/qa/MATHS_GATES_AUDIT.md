@@ -108,7 +108,7 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | 39 | sit-pupil | film-ring-draws-nothing, film-box-on-the-glyphs |
 | 40 | sit-pupil | stage-strip-behind, stage-without-a-beat, check-without-a-glow |
 | 41 (the sentences, mechanically) | qa-language | must-fail-exhibits, must-pass-exemplars |
-| 42 | sit-pupil | table-between-board-and-dock |
+| 42 | sit-pupil | table-between-board-and-dock, board-squeezed-beside-the-table |
 
 ## B. JUDGED — the rule is a judgement, and the judgement is machine-gated
 
@@ -158,6 +158,18 @@ weakened, hidden, or marked green.
 | qa-click-safety | single-press-lift | same plant, same symptom |
 | qa-waits | control-with-no-busy-state, outbox-dropped-on-reload | not yet investigated |
 | qa-fonts | face-removed | the plant removes a face file; with the gate now asking the face to LOAD rather than whether it was painted, the control needs re-aiming at that question |
+
+### After the steward re-cut of Exercise 3's chart — 11 Sept 2026, 19:47–20:40 (sit-pupil only)
+
+`control.js --only sit-pupil` on the re-cut tree: **14 controls FIRED**
+(the thirteen of the polish cut plus the new `board-squeezed-beside-the-table`,
+whose plant puts the bare 768px side column back and is caught at 768 and
+1280), **over-tightening PASSES** (the shipped tree walks clean, 2,269
+checks). The whole battery was not run: the re-cut's 120-minute clock and
+the walkers' reds on q17/q18/q23 (debt rows dated 11 Sept evening in
+`MATHS_COVERAGE_DEBT.md`; reproduced on the polish tree, not this cut's) are
+recorded in PROGRESS.md; the next session runs the whole battery after
+deleting `tools/qa/out/cut-start.json`.
 
 ### After the front-door fix — 9 Sept 2026, 22:07–22:52, at `15ceb30`
 
