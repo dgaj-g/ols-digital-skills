@@ -13,7 +13,7 @@ strings.js > pupil > coverPreview  ::  This is the preview copy of MathShelf. No
 strings.js > pupil > shelfGreetingMorning  ::  Good morning
 strings.js > pupil > shelfGreetingAfternoon  ::  Good afternoon
 strings.js > pupil > shelfPlain  ::  Your maths books live here. Your teacher chooses which ones are out.
-strings.js > pupil > shelfMore  ::  Your teacher will add more books to this shelf during the year.
+strings.js > pupil > shelfMore  ::  Your teacher decides which books are on this shelf, and may add more during the year.
 strings.js > pupil > shelfMarks  ::  6 of 8 marks · 5 of 8 answered
 strings.js > pupil > backToShelf  ::  The shelf
 strings.js > pupil > opening  ::  Opening Angles…
@@ -90,7 +90,7 @@ strings.js > pupil > statBoxPlaceWhy  ::  Put all five markers on the scale firs
 strings.js > pupil > statDrawBoxPlot  ::  ✓ Draw the box plot
 strings.js > pupil > statBoxDrawWhy  ::  Draw the box plot first.
 strings.js > pupil > statBoxDrawnAlready  ::  The box plot is drawn.
-strings.js > pupil > statBoxStageWhy  ::  Finish the first part first.
+strings.js > pupil > statBoxStageWhy  ::  Finish the first part before this one.
 strings.js > pupil > statNextDrawBox  ::  Next: draw the box plot
 strings.js > pupil > statCompareWhy  ::  Finish both sentences first.
 strings.js > pupil > statCompareValue  ::  Value
@@ -112,8 +112,8 @@ strings.js > pupil > statJudgeReasonWhy  ::  Give a reason for each one you call
 strings.js > pupil > statValuesStart  ::  Choose a box and put your answer in.
 strings.js > pupil > statValuesWhy  ::  Put a number in at least one box first.
 strings.js > pupil > statPillOrder  ::  Put in order
-strings.js > pupil > statPillCuts  ::  Mark the cuts
-strings.js > pupil > statPillIqr  ::  Find the IQR
+strings.js > pupil > statPillCuts  ::  Find the quartiles
+strings.js > pupil > statPillIqr  ::  Find the interquartile range
 strings.js > pupil > statPillCftable  ::  Fill the running total
 strings.js > pupil > statPillValues  ::  Work out the values
 strings.js > pupil > statPillPlot  ::  Plot the points
@@ -121,13 +121,14 @@ strings.js > pupil > statPillJoin  ::  Join the points
 strings.js > pupil > statPillRead  ::  Read the median
 strings.js > pupil > statPillReadAt  ::  Read at 30
 strings.js > pupil > statPillBoxPlace  ::  Place the markers
-strings.js > pupil > statPillBoxDraw  ::  Draw the plot
+strings.js > pupil > statPillBoxDraw  ::  Draw the box plot
 strings.js > pupil > statPillCompare1  ::  The averages
 strings.js > pupil > statPillCompare2  ::  The spread
 strings.js > pupil > statPillJudge  ::  Decide each one
 strings.js > pupil > statStageQlistOrder  ::  Build the ordered list. Choose the smallest value first, then the next smallest, and keep going until every value is in the row. (3 still to place.)
 strings.js > pupil > statStageQlistPick  ::  Now choose the value you think is the median. If it sits between two values, choose both. Then press ✓ That’s my median.
-strings.js > pupil > statStageIqr  ::  Enter the interquartile range on the pad, then press ✓.
+strings.js > pupil > statStageIqr  ::  Enter the interquartile range on the pad. When it is in, press Mark my working.
+strings.js > pupil > statStageIqrCommit  ::  Enter the interquartile range on the pad, then press ✓ That’s my answer.
 strings.js > pupil > statStageCftable  ::  Fill in the running total from the top row down: each box is the total so far plus that row’s frequency. Choose a box, then use the pad.
 strings.js > pupil > statStageCfplotPlace  ::  Put a point on the grid for every row of the table. Choose a spot to place a point; choose a placed point to move it with the arrows. (3 of 5 placed.)
 strings.js > pupil > statStageCfplotJoin  ::  Every point is placed. Join them to draw the curve: press ✓ Join the points.
@@ -185,7 +186,7 @@ strings.js > pupil > expandIntro  ::  Multiply every term — choose the right p
 strings.js > pupil > solveChooseMove  ::  Choose a move — you will see the next line, already checked for balance.
 strings.js > pupil > solveNeedNumber  ::  Enter a number for that move first.
 strings.js > pupil > angleOneOpenHint  ::  One angle is dashed on the diagram — choose it, give its size, and choose the reason.
-strings.js > pupil > angleMultiOpenHint  ::  Choose a dashed angle on the diagram, give its size and reason, then work your way to a.
+strings.js > pupil > angleMultiOpenHint  ::  Choose a dashed angle on the diagram, give its size and reason, then work your way to angle a.
 strings.js > pupil > removeLastStepBtn  ::  ↶ remove last step
 strings.js > pupil > removedLastStep  ::  Removed your last step.
 strings.js > pupil > angleStepHeading  ::  Work out ∠x
@@ -196,9 +197,11 @@ strings.js > pupil > nudgeBannerStar  ::  ★ Your teacher suggested watching th
 strings.js > pupil > selfEvalSavedFlash  ::  ✓ Saved — your teacher sees this on her class list.
 strings.js > pupil > selfEvalSavedIdle  ::  Saved as you go — your teacher sees this on her class list.
 strings.js > pupil > angleUnreadableLine  ::  That does not read as a number yet. Put in the size in degrees, or a sum that works it out.
-strings.js > teacher > artefactUndrawable  ::  Her work is saved, but this screen could not re-draw the board.
+strings.js > teacher > artefactUndrawable  ::  The pupil’s work is saved, but this screen could not re-draw the board.
 strings.js > teacher > passcodeChecking  ::  Checking the passcode…
 strings.js > teacher > tickSaving  ::  Saving Angles for 10A-Maths…
+strings.js > teacher > overrideRight  ::  Marked right — full marks. Your mark is the one pupils and staff now see.
+strings.js > teacher > overrideWrong  ::  Marked wrong. Your mark is the one pupils and staff now see.
 strings.js > teacher > tickOn  ::  Angles is now on 10A-Maths’s shelf.
 strings.js > teacher > tickOff  ::  Angles removed from 10A-Maths’s shelf.
 strings.js > teacher > openMarkbook  ::  Open the markbook
