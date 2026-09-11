@@ -114,7 +114,7 @@ node server/build-pathb.js                       # regenerate the deploy pair
 
 Preview (never the preview tool — a dev server goes up with nohup):
 ```
-nohup python3 /tmp/gj-serve.py /tmp/gj-wt 8099 &
+nohup python3 tools/qa/serve-preview.py ~/Sites/ols-wt-maths 8099 &
 http://localhost:8099/maths/mathshelf/index.html?class=demo&nointro
 ```
 Staff passcode in the preview is `demo`. Clear localStorage first so the demo
@@ -148,10 +148,16 @@ sessions and may hold their uncommitted work. **Do not clobber it.** This work i
 done in an isolated worktree:
 
 ```
-git -C ~/Sites/ols-digital-skills worktree add /tmp/gj-wt draft/issue-24-25-maths-m2-revision
-cd /tmp/gj-wt/maths/mathshelf
-node tools/qa/install-hooks.js
+git -C ~/Sites/ols-digital-skills worktree add ~/Sites/ols-wt-maths draft/issue-24-25-maths-m2-revision
+cd ~/Sites/ols-wt-maths/maths/mathshelf
 ```
+
+**Never under /tmp.** The worktree used to live at `/tmp/gj-wt`; on 10 Sept 2026
+macOS's temporary-files cleaner deleted every file in it that had not been
+touched for three days — `.git`, `player.js`, most of the tree — while a
+session was between deploys. Nothing was lost (every commit was pushed), but a
+session that had been mid-edit would have lost its work. `~/Sites/ols-wt-maths`
+is the home now, beside the other worktrees.
 
 The KS3 DT platform (`ks3-dt/`) is **read-only** in every respect. Every module
 copied out of it carries a header line naming the source path, commit and date,

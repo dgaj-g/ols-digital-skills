@@ -290,4 +290,12 @@ checked against that sentence first.
 
 | rule | gap | owner / phase |
 |---|---|---|
-_(none open at the close of the v4 build; a gap here blocks the DONE list.)_
+| 31 | the markbook's wait card is not seen to move; needs a rendered-frame proof and a control | the Book C polish cut (`MATHS_BOOKC_POLISH_PROMPT.txt`) |
+| 32 | the saving line is a plain `.ui-msg`; becomes the gold wait card | the Book C polish cut |
+| 33 | unticked books render as locked spines; the shelf must omit them; `qa-tickbox`'s shelf half and the registry's `locked-spine` state change with it | the Book C polish cut |
+| 34 | a tick waits for the relay before it moves; optimistic tick + a measured round trip | the Book C polish cut |
+| 35 | film dwell is 0.2 s a word, floor 0.85 s; becomes 0.35 s a word, floor 1.2 s, with inventory rows | the Book C polish cut |
+| 36 | `ring` in paper mode draws nothing; the gold `box` is not measured from its text | the Book C polish cut |
+| 37 | no stage strip; `data-stage` has no visible twin | the Book C polish cut |
+| 38 | stage instructions are terse; the commit verbs are unexplained | the Book C polish cut (the strings, then the cold read) |
+| 39 | the cfplot action row sits below the table, a screen away from the board | the Book C polish cut |
